@@ -13,7 +13,6 @@
 
 <script setup>
 import { computed } from 'vue'
-
 const props = defineProps({
   title: {
     type: String,
@@ -29,25 +28,43 @@ const props = defineProps({
   },
   color: {
     type: String,
-    required: true,
+    default: 'purple',
   },
 })
-
-const cardBgColor = computed(() => `bg-${props.color}-50`)
-const titleColor = computed(() => `text-${props.color}-600`)
-const statColor = computed(() => `text-${props.color}-900`)
-
+const colorStyles = {
+  red: {
+    background: 'bg-red-50',
+    title: 'text-red-600',
+    stat: 'text-red-900',
+  },
+  green: {
+    background: 'bg-green-50',
+    title: 'text-green-600',
+    stat: 'text-green-900',
+  },
+  yellow: {
+    background: 'bg-yellow-50',
+    title: 'text-yellow-600',
+    stat: 'text-yellow-900',
+  },
+  purple: {
+    background: 'bg-purple-50',
+    title: 'text-purple-600',
+    stat: 'text-purple-900',
+  },
+}
+const cardBgColor = computed(
+  () => colorStyles[props.color]?.background || colorStyles.purple.background,
+)
+const titleColor = computed(() => colorStyles[props.color]?.title || colorStyles.purple.title)
+const statColor = computed(() => colorStyles[props.color]?.stat || colorStyles.purple.stat)
 const isPositive = computed(() => props.improvement >= 0)
-
 const improvementText = computed(() => {
   const percentage = Math.abs(props.improvement)
   const action = isPositive.value ? 'Tăng' : 'Giảm'
   return `${action} ${percentage}% so với tháng trước`
 })
-
 const improvementTextColor = computed(() => {
   return isPositive.value ? 'text-green-500' : 'text-red-500'
 })
 </script>
-
-<style scoped></style>

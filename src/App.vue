@@ -1,11 +1,12 @@
 <script setup>
 import TheNavBar from './components/layout/TheNavBar.vue'
-import TheHome from './views/TheHome.vue'
 </script>
 
 <template>
-  <TheNavBar></TheNavBar>
-  <TheHome></TheHome>
+  <div class="flex min-h-screen">
+    <TheNavBar></TheNavBar>
+    <div class="flex-1 p-8 ml-64">
+      <RouterView></RouterView>
+    </div>
+  </div>
 </template>
-
-<style scoped></style>
