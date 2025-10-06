@@ -10,5 +10,3 @@ import TheNavBar from './components/layout/TheNavBar.vue'
     </div>
   </div>
 </template>
-
-<style scoped></style>
