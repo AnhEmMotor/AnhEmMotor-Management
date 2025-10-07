@@ -148,7 +148,7 @@ function cancelCustomerOrder(order) {
   @apply bg-gray-200 text-gray-600 uppercase text-sm leading-normal;
 }
 .tbody-table-style {
-  @apply text-gray-600 text-sm font-light;
+  @apply text-gray-600 text-sm;
 }
 .row-table-style {
   @apply border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200;

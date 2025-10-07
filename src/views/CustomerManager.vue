@@ -148,10 +148,10 @@ const deleteCustomer = (id) => {
 <style scoped>
 @reference "../assets/main.css";
 .box-style {
-  @apply bg-gray-100 p-4 sm:p-6 rounded-xl shadow-lg font-sans;
+  @apply bg-gray-100 p-4 sm:p-6 rounded-xl shadow-lg;
 }
 .title-style {
-  @apply text-3xl font-bold mb-4 text-center text-gray-800;
+  @apply text-3xl font-bold text-center text-gray-800;
 }
 .content-box-style {
   @apply flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0;
