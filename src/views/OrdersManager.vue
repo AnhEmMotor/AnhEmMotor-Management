@@ -53,8 +53,8 @@
 
 <script setup>
 import { ref } from 'vue'
-import RoundBadge from '@/components/orders/RoundBadge.vue'
-import RoundButton from '@/components/orders/RoundButton.vue'
+import RoundBadge from '@/components/ui/RoundBadge.vue'
+import RoundButton from '@/components/ui/BaseRoundButton.vue'
 
 const orders = ref([
   {
