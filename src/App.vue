@@ -10,3 +10,9 @@ import TheNavBar from './components/layout/TheNavBar.vue'
     </div>
   </div>
 </template>
+
+<style lang="css">
+body {
+  font-family: 'Inter Variable', sans-serif;
+}
+</style>

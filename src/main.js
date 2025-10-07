@@ -1,5 +1,5 @@
 import './assets/main.css'
-
+import '@fontsource-variable/inter'
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router/main'
