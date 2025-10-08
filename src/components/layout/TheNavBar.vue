@@ -55,7 +55,7 @@ import InputSVG from '@/assets/svg/InputSVG.vue'
           </RouterLink>
         </li>
         <li>
-          <RouterLink to="/xyz" class="router-link">
+          <RouterLink to="/products" class="router-link">
             <ProductSVG />
             <span>Quản lý Sản Phẩm</span>
           </RouterLink>

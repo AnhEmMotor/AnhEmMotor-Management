@@ -35,6 +35,7 @@ const colorVariants = {
   red: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
   yellow: 'bg-amber-500 text-slate-900 hover:bg-amber-600 focus:ring-amber-500',
   gray: 'bg-slate-500 text-white hover:bg-slate-600 focus:ring-slate-500',
+  purple: 'bg-purple-500 text-white hover:bg-purple-600 focus:ring-purple-500',
 }
 
 const buttonClasses = computed(() => {
