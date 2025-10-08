@@ -10,8 +10,8 @@
       </div>
     </div>
     <div class="overflow-x-auto">
-      <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-sm">
-        <thead class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+      <table class="table-style">
+        <thead class="table-header-style">
           <tr>
             <th class="normal-cell-style">Mã KH</th>
             <th class="normal-cell-style">Tên Khách Hàng</th>
@@ -22,18 +22,11 @@
             <th class="center-cell-style">Thao Tác</th>
           </tr>
         </thead>
-        <tbody class="text-gray-600 text-sm font-light">
+        <tbody class="table-body-style">
           <tr v-if="displayCustomers.length === 0">
-            <td colspan="7" class="text-center py-6 text-gray-500">
-              Không tìm thấy khách hàng nào.
-            </td>
+            <td colspan="7" class="not-found-text-style">Không tìm thấy khách hàng nào.</td>
           </tr>
-
-          <tr
-            v-for="customer in displayCustomers"
-            :key="customer.id"
-            class="border-b border-gray-200 hover:bg-gray-100 transition-colors duration-200"
-          >
+          <tr v-for="customer in displayCustomers" :key="customer.id" class="table-row-style">
             <td class="normal-cell-style whitespace-nowrap">{{ customer.code }}</td>
             <td class="normal-cell-style">{{ customer.name }}</td>
             <td class="normal-cell-style">{{ customer.email }}</td>
@@ -173,5 +166,20 @@ const deleteCustomer = (id) => {
 }
 .center-cell-style {
   @apply py-3 px-6 text-center;
+}
+.table-style {
+  @apply min-w-full bg-white rounded-lg overflow-hidden shadow-sm;
+}
+.table-header-style {
+  @apply bg-gray-200 text-gray-600 uppercase text-sm leading-normal;
+}
+.table-body-style {
+  @apply text-gray-600 text-sm font-light;
+}
+.not-found-text-style {
+  @apply text-center py-6 text-gray-500;
+}
+.table-row-style {
+  @apply border-b border-gray-200 hover:bg-gray-100 transition-colors duration-200;
 }
 </style>
