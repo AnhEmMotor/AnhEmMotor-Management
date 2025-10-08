@@ -5,7 +5,11 @@
   >
     <p class="text-sm font-medium" :class="titleColor">{{ title }}</p>
     <p class="text-3xl font-bold mt-1" :class="statColor">{{ stat }}</p>
-    <p class="text-xs mt-2 flex items-center" :class="improvementTextColor">
+    <p
+      v-if="improvement != null"
+      class="text-xs mt-2 flex items-center"
+      :class="improvementTextColor"
+    >
       {{ improvementText }}
     </p>
   </div>
@@ -24,7 +28,7 @@ const props = defineProps({
   },
   improvement: {
     type: Number,
-    required: true,
+    required: false,
   },
   color: {
     type: String,
@@ -51,6 +55,11 @@ const colorStyles = {
     background: 'bg-purple-50',
     title: 'text-purple-600',
     stat: 'text-purple-900',
+  },
+  indigo: {
+    background: 'bg-indigo-50',
+    title: 'text-indigo-600',
+    stat: 'text-indigo-900',
   },
 }
 const cardBgColor = computed(

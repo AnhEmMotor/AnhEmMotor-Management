@@ -43,7 +43,7 @@
 import ChartFrame3month from '@/components/report/ChartFrame3month.vue'
 import RevenueChart7day from '@/components/report/RevenueChart7day.vue'
 import PieChartFrame from '@/components/report/OrderChart.vue'
-import StatsCard from '@/components/report/StatsCard.vue'
+import StatsCard from '@/components/ui/ReportStatsCard.vue'
 
 const revenueData = [
   { date: '2025-09-15', revenue: 250, profit: 90 },
