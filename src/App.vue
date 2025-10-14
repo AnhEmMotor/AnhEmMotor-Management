@@ -5,7 +5,7 @@ import TheNavBar from './components/layout/TheNavBar.vue'
 <template>
   <div class="flex min-h-screen">
     <TheNavBar></TheNavBar>
-    <div class="flex-1 p-8 ml-64">
+    <div class="flex-1 p-8 ml-84">
       <RouterView></RouterView>
     </div>
   </div>
