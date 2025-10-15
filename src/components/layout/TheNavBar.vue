@@ -23,7 +23,7 @@ const toggleGroup = (group) => {
 
 <template>
   <div class="box-style">
-    <h1 class="text-3xl font-bold mb-8">AnhEm Motor</h1>
+    <h1 class="text-2xl font-bold mb-8">AnhEm Motor Admin</h1>
     <nav class="w-full">
       <ul class="space-y-2">
         <li>
