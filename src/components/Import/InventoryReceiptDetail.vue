@@ -1,4 +1,9 @@
 <script setup>
+import BaseDropdown from '../ui/input/BaseDropdown.vue'
+import BaseDateTimePicker from '../ui/input/BaseDateTimePicker.vue'
+import BaseTextarea from '../ui/input/BaseTextarea.vue'
+import BaseInput from '../ui/input/BaseInput.vue'
+
 defineProps({
   itemData: Object,
 })
@@ -24,40 +29,19 @@ const totalDiscount = (products) => {
   >
     <!-- Phần thông tin chung -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 text-xs">
-      <div>
-        <label class="block text-xs font-medium text-gray-500 mb-1">Người tạo</label>
-        <select class="w-full p-1.5 border border-gray-300 rounded-md text-sm">
-          <option>{{ itemData.creator }}</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-xs font-medium text-gray-500 mb-1">Người nhập</label>
-        <select class="w-full p-1.5 border border-gray-300 rounded-md text-sm">
-          <option>{{ itemData.importer }}</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-xs font-medium text-gray-500 mb-1">Ngày nhập</label>
-        <div class="relative">
-          <input
-            type="date"
-            :value="itemData.importDate"
-            class="w-full p-1.5 border border-gray-300 rounded-md text-sm"
-          />
-        </div>
-      </div>
+      <BaseDropdown
+        label="Người tạo"
+        :options="[{ value: itemData.creator, text: itemData.creator }]"
+        :model-value="itemData.creator"
+      />
+      <BaseDropdown
+        label="Người nhập"
+        :options="[{ value: itemData.importer, text: itemData.importer }]"
+        :model-value="itemData.importer"
+      />
+      <BaseDateTimePicker label="Ngày nhập" :model-value="itemData.importDate" />
       <div class="col-span-2">
-        <label class="block text-xs font-medium text-gray-500 mb-1">Nhà cung cấp</label>
-        <div class="flex space-x-2">
-          <div class="flex-1">
-            <input
-              type="text"
-              :value="itemData.supplierName"
-              readonly
-              class="w-full p-1.5 border border-gray-300 rounded-md text-sm bg-gray-50"
-            />
-          </div>
-        </div>
+        <BaseInput label="Nhà cung cấp" :model-value="itemData.supplierName" readonly />
       </div>
     </div>
 
@@ -101,18 +85,10 @@ const totalDiscount = (products) => {
         <tbody class="bg-white divide-y divide-gray-200 text-sm">
           <tr v-if="itemData.status !== 'Đã hủy'">
             <td class="p-1.5">
-              <input
-                type="text"
-                placeholder="Tìm mã hàng"
-                class="w-full p-1 border border-gray-300 rounded text-xs focus:ring-red-500 focus:border-red-500"
-              />
+              <BaseInput placeholder="Tìm mã hàng" />
             </td>
             <td class="p-1.5">
-              <input
-                type="text"
-                placeholder="Tìm tên hàng"
-                class="w-full p-1 border border-gray-300 rounded text-xs focus:ring-red-500 focus:border-red-500"
-              />
+              <BaseInput placeholder="Tìm tên hàng" />
             </td>
             <td colspan="5" class="p-1.5"></td>
           </tr>
@@ -143,12 +119,12 @@ const totalDiscount = (products) => {
     <!-- Tổng kết và Ghi chú -->
     <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-6 items-center">
       <div class="flex-1">
-        <textarea
+        <BaseTextarea
           placeholder="Ghi chú..."
-          rows="3"
+          :rows="3"
+          :model-value="itemData.notes"
           :readonly="itemData.status === 'Đã hủy'"
-          class="w-full p-2 border border-gray-300 rounded-md text-xs focus:ring-red-500 focus:border-red-500 resize-none"
-        ></textarea>
+        />
       </div>
       <div class="w-full md:w-64 space-y-1 text-xs">
         <div class="flex justify-between">

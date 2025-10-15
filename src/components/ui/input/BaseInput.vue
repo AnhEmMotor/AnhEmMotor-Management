@@ -12,7 +12,7 @@
       @blur="handleBlur"
       :placeholder="placeholder"
       :class="[
-        'w-full p-3 border rounded-lg focus:outline-none shadow-sm transition-all duration-300',
+        'w-full p-1.5 border rounded-md text-sm focus:outline-none transition-all duration-300',
         inputClasses,
       ]"
     />
@@ -50,22 +50,31 @@ const props = defineProps({
     type: String,
     default: 'blue',
   },
+  readonly: {
+    type: Boolean,
+    default: false,
+  },
 })
 const emit = defineEmits(['update:modelValue'])
 const errorMessage = ref(null)
 const isTouched = ref(false)
 const inputId = `reusable-input-${Math.random().toString(36).substring(2, 9)}`
 const handleInput = (event) => {
+  if (props.readonly) return
   isTouched.value = true
   const newValue = event.target.value
   emit('update:modelValue', newValue)
   errorMessage.value = props.validation(newValue)
 }
 const handleBlur = () => {
+  if (props.readonly) return
   isTouched.value = true
   errorMessage.value = props.validation(props.modelValue)
 }
 const inputClasses = computed(() => {
+  if (props.readonly) {
+    return 'bg-gray-100 cursor-not-allowed'
+  }
   if (errorMessage.value && isTouched.value) {
     return 'border-red-500 ring-2 ring-red-200'
   }

@@ -3,7 +3,7 @@ import { ref, computed, watch } from 'vue'
 import * as XLSX from 'xlsx'
 import InventoryItem from '@/components/import/InventoryItem.vue'
 import BaseButton from '@/components/ui/BaseButton.vue'
-import BaseInput from '@/components/ui/BaseInput.vue'
+import BaseInput from '@/components/ui/input/BaseInput.vue'
 import BasePagination from '@/components/ui/BasePagination.vue'
 import InventoryFilterButtons from '@/components/import/InventoryFilterButtons.vue'
 

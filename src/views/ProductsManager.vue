@@ -62,7 +62,7 @@
 <script setup>
 import ProductFilterButtons from '@/components/product/ProductFilterButtons.vue'
 import BaseButton from '@/components/ui/BaseButton.vue'
-import BaseInput from '@/components/ui/BaseInput.vue'
+import BaseInput from '@/components/ui/input/BaseInput.vue'
 import BasePagination from '@/components/ui/BasePagination.vue'
 import BaseSmallNoBgButton from '@/components/ui/BaseSmallNoBgButton.vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
