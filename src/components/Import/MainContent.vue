@@ -19,25 +19,6 @@ function handleToggle(itemId) {
 <template>
   <!-- 3. Khu vực Nội dung chính -->
   <div class="flex-1 flex flex-col overflow-hidden">
-    <!-- Thanh Header cho danh sách phiếu nhập -->
-    <div class="flex-shrink-0 bg-white border-b border-gray-200 px-6 pt-3">
-      <div
-        class="grid summary-row-grid text-xs text-gray-500 font-medium whitespace-nowrap overflow-x-auto custom-scroll"
-      >
-        <div class="pb-2 px-3"></div>
-        <!-- Cột rỗng cho Checkbox -->
-        <div class="pb-2 px-3 border-b-2 border-red-600 text-red-600 cursor-pointer">
-          Mã nhập hàng
-        </div>
-        <div class="pb-2 px-3 hover:text-gray-800 cursor-pointer">Thời gian</div>
-        <div class="pb-2 px-3 hover:text-gray-800 cursor-pointer">Mã NCC</div>
-        <div class="pb-2 px-3 hover:text-gray-800 cursor-pointer">Nhà cung cấp</div>
-        <div class="pb-2 px-3 hover:text-gray-800 cursor-pointer text-right">Cần trả NCC</div>
-        <div class="pb-2 px-3">Trạng thái</div>
-        <!-- Cột rỗng cho trạng thái -->
-      </div>
-    </div>
-
     <!-- Khung cuộn cho danh sách phiếu và chi tiết -->
     <div class="flex-1 overflow-y-auto custom-scroll p-4 space-y-3">
       <InventoryItem

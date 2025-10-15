@@ -1,11 +1,7 @@
 <template>
-  <!-- 1. Thanh Header (Top Bar) -->
   <header
     class="flex items-center justify-between bg-white shadow-md py-2 px-4 border-b border-gray-200"
   >
-    <h1 class="text-lg font-semibold text-gray-800 hidden sm:block">Nhập hàng</h1>
-
-    <!-- Ô tìm kiếm và lọc -->
     <div class="flex items-center space-x-2 flex-grow mx-4 max-w-md">
       <div class="relative w-full">
         <input
@@ -91,61 +87,6 @@
           </svg>
         </button>
       </div>
-      <!-- Icons bên phải -->
-      <button
-        class="text-gray-500 hover:text-gray-800 p-1 rounded-full hover:bg-gray-100 hidden sm:block"
-      >
-        <svg
-          class="w-4 h-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M8.228 9.247a3 3 0 100 5.506 3 3 0 100-5.506z"
-          ></path>
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M15 11a3 3 0 100 6 3 3 0 000-6z"
-          ></path>
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M19 9a2 2 0 012 2v2a2 2 0 01-2 2h-1a2 2 0 01-2-2v-2a2 2 0 012-2h1z"
-          ></path>
-        </svg>
-      </button>
-      <button
-        class="text-gray-500 hover:text-gray-800 p-1 rounded-full hover:bg-gray-100 hidden sm:block"
-      >
-        <svg
-          class="w-4 h-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M5.121 17.804A13.935 13.935 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"
-          ></path>
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 14c-5.143 0-9.574 3.007-11.233 7.558.175.247.368.488.577.726a13.935 13.935 0 0010.656 2.716c3.279.172 6.556-.27 9.544-1.314.28-.103.55-.21.807-.323-1.659-4.551-6.09-7.558-11.233-7.558z"
-          ></path>
-        </svg>
-      </button>
     </div>
   </header>
 </template>
