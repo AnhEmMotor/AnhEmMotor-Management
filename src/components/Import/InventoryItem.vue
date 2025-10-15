@@ -10,7 +10,7 @@ defineEmits(['toggle-detail'])
 
 <template>
   <div
-    class="inventory-item bg-white rounded-md"
+    class="inventory-item bg-white"
     :class="{
       'item-open shadow-xl': itemData.isOpen,
       'shadow-sm border border-gray-200': !itemData.isOpen,

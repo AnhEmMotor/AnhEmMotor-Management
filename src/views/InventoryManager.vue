@@ -8,7 +8,7 @@ import BasePagination from '@/components/ui/BasePagination.vue'
 import InventoryFilterButtons from '@/components/import/InventoryFilterButtons.vue'
 
 const searchTerm = ref('')
-const selectedStatuses = ref(['Phiếu tạm', 'Đã nhập hàng', 'Đã hủy'])
+const selectedStatuses = ref([])
 
 // Mock data
 const allInventoryItems = ref([
@@ -124,19 +124,23 @@ const filteredItems = computed(() => {
 })
 
 function handleToggleDetail(itemId) {
-  const item = allInventoryItems.value.find((i) => i.id === itemId)
-  if (item) {
-    item.isOpen = !item.isOpen
+  const clickedItem = allInventoryItems.value.find((i) => i.id === itemId)
+  if (clickedItem) {
+    const wasOpen = clickedItem.isOpen
+    allInventoryItems.value.forEach((item) => {
+      item.isOpen = false
+    })
+    if (!wasOpen) {
+      clickedItem.isOpen = true
+    }
   }
 }
 
-// Pagination (giả lập)
 const totalPages = ref(5)
 const currentPage = ref(1)
 const isLoading = ref(false)
 
-watch(currentPage, (newPage) => {
-  // Giả lập fetch data cho trang mới
+watch(currentPage, () => {
   isLoading.value = true
   setTimeout(() => {
     isLoading.value = false
@@ -194,7 +198,7 @@ const exportExcel = () => {
       <div class="action-button-style">
         <BaseButton text="Nhập hàng" color="purple" />
         <BaseButton text="Export" color="green" @click="exportExcel" />
-        <span class="text-gray-400 mx-4 hidden border-r-2 sm:block" />
+        <div class="h-8 border-r-2 border-black-300 mx-2"></div>
         <InventoryFilterButtons v-model="selectedStatuses" />
       </div>
     </div>
@@ -208,14 +212,14 @@ const exportExcel = () => {
 
     <!-- Table Header -->
     <div
-      class="hidden md:grid summary-row-grid items-center py-2 px-3 text-sm font-semibold text-gray-600 bg-gray-200 rounded-t-md"
+      class="hidden md:grid summary-row-grid items-center py-3 px-5 text-sm font-semibold text-gray-600 bg-gray-200 rounded-t-md"
     >
       <div class="px-3">Mã nhập hàng</div>
       <div class="px-3">Thời gian</div>
-      <div class="px-3">Mã NCC</div>
-      <div class="px-3">Nhà cung cấp</div>
-      <div class="px-3 text-right">Cần trả NCC</div>
-      <div class="px-3">Trạng thái</div>
+      <div class="px-4">Mã NCC</div>
+      <div class="px-5">Nhà cung cấp</div>
+      <div class="px-5 text-right">Cần trả NCC</div>
+      <div class="px-5">Trạng thái</div>
     </div>
 
     <!-- Inventory List -->
@@ -239,7 +243,7 @@ const exportExcel = () => {
   </div>
 </template>
 
-<style scoped>
+<style lang="css" scoped>
 @reference '../assets/main.css';
 
 .box-style {

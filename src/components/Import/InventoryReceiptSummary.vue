@@ -1,4 +1,6 @@
 <script setup>
+import RoundBadge from '../ui/RoundBadge.vue'
+
 defineProps({
   itemData: Object,
   isOpen: Boolean,
@@ -10,55 +12,48 @@ function formatCurrency(value) {
   return value.toLocaleString('vi-VN')
 }
 
-function getStatusClass(status) {
+function getStatusColor(status) {
   switch (status) {
     case 'Đã nhập hàng':
-      return 'bg-green-100 text-green-800'
+      return 'green'
     case 'Phiếu tạm':
-      return 'bg-yellow-100 text-yellow-800'
+      return 'yellow'
     case 'Đã hủy':
-      return 'bg-red-100 text-red-800'
+      return 'red'
     default:
-      return 'bg-gray-100 text-gray-800'
+      return 'gray'
   }
 }
 </script>
 
 <template>
   <div
-    class="summary-row-responsive border rounded-md p-3 md:p-0 md:border-none"
-    :class="{ 'rounded-b-none': isOpen, 'hover:bg-gray-50': !isOpen }"
+    class="summary-row-responsive border p-3 md:p-0 md:border-none"
     @click="$emit('toggle-detail')"
   >
     <div
       class="hidden md:grid summary-row-grid items-center py-2 px-3 text-sm cursor-pointer transition duration-150"
     >
-      <div class="px-3 font-semibold text-gray-800 text-sm">{{ itemData.id }}</div>
-      <div class="px-3 text-gray-600 whitespace-nowrap text-xs">{{ itemData.time }}</div>
-      <div class="px-3 text-gray-600 text-xs">{{ itemData.supplierCode }}</div>
-      <div class="px-3 font-medium text-gray-800 truncate text-sm">{{ itemData.supplierName }}</div>
-      <div class="px-3 text-gray-600 text-right text-sm font-semibold text-red-600">
+      <div class="px-5 font-semibold text-gray-800 text-sm">{{ itemData.id }}</div>
+      <div class="px-5 text-gray-600 whitespace-nowrap text-xs">{{ itemData.time }}</div>
+      <div class="px-5 text-gray-600 text-xs">{{ itemData.supplierCode }}</div>
+      <div class="px-5 font-medium text-gray-800 truncate text-sm">{{ itemData.supplierName }}</div>
+      <div class="px-5 text-right text-sm font-semibold text-red-600">
         {{ formatCurrency(itemData.payable) }}
       </div>
       <div class="flex justify-start px-3">
-        <span
-          class="text-xs font-semibold px-2 py-0.5 rounded-full"
-          :class="getStatusClass(itemData.status)"
-        >
+        <RoundBadge :color="getStatusColor(itemData.status)">
           {{ itemData.status }}
-        </span>
+        </RoundBadge>
       </div>
     </div>
 
     <div class="block md:hidden space-y-2 text-sm">
       <div class="flex justify-between items-center">
         <div class="font-semibold text-gray-800">{{ itemData.id }}</div>
-        <span
-          class="text-xs font-semibold px-2 py-0.5 rounded-full"
-          :class="getStatusClass(itemData.status)"
-        >
+        <RoundBadge :color="getStatusColor(itemData.status)">
           {{ itemData.status }}
-        </span>
+        </RoundBadge>
       </div>
       <div class="text-gray-600 text-xs">{{ itemData.time }}</div>
       <div class="pt-2">
@@ -74,13 +69,10 @@ function getStatusClass(status) {
 </template>
 
 <style scoped>
-/* Bạn vẫn cần định nghĩa các cột grid cho màn hình lớn */
 .summary-row-grid {
-  /* Thay đổi số cột và độ rộng cho phù hợp với thiết kế của bạn */
   grid-template-columns: 1fr 1.5fr 1fr 2fr 1.5fr 1.2fr;
 }
 .summary-row-responsive {
-  /* Thêm khoảng cách giữa các card trên mobile */
   margin-bottom: 0.75rem; /* 12px */
 }
 @media (min-width: 768px) {
