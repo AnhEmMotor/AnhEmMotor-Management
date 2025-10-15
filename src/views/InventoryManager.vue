@@ -2,9 +2,9 @@
 import { ref, computed, watch } from 'vue'
 import * as XLSX from 'xlsx'
 import InventoryItem from '@/components/import/InventoryItem.vue'
-import BaseButton from '@/components/ui/BaseButton.vue'
+import BaseButton from '@/components/ui/button/BaseButton.vue'
 import BaseInput from '@/components/ui/input/BaseInput.vue'
-import BasePagination from '@/components/ui/BasePagination.vue'
+import BasePagination from '@/components/ui/button/BasePagination.vue'
 import InventoryFilterButtons from '@/components/import/InventoryFilterButtons.vue'
 
 const searchTerm = ref('')

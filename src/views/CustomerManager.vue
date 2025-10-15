@@ -52,9 +52,9 @@
 
 <script setup>
 import CustomerFilterButtons from '@/components/customers/CustomerFilterButtons.vue'
-import BaseActionButton from '@/components/ui/BaseButton.vue'
+import BaseActionButton from '@/components/ui/button/BaseButton.vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
-import BaseSmallNoBgButton from '@/components/ui/BaseSmallNoBgButton.vue'
+import BaseSmallNoBgButton from '@/components/ui/button/BaseSmallNoBgButton.vue'
 import { onMounted, ref } from 'vue'
 
 const allCustomers = ref([

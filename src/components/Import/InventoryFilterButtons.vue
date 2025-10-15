@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import BaseFilterButton from '../ui/BaseFilterButton.vue'
+import BaseFilterButton from '../ui/button/BaseFilterButton.vue'
 const props = defineProps({
   modelValue: {
     type: Array,
