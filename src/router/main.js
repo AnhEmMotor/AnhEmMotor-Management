@@ -5,6 +5,7 @@ import CustomerManager from '@/views/CustomerManager.vue'
 import ProductsManager from '@/views/ProductsManager.vue'
 import ProductReport from '@/views/ProductReport.vue'
 import RevenueAnalysis from '@/views/RevenueAnalysis.vue'
+import Sidebar from '@/components/Import/Sidebar.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,6 +39,11 @@ const router = createRouter({
       name: 'revenue-analysis',
       path: '/revenue',
       component: RevenueAnalysis,
+    },
+    {
+      name: 'inventory-input',
+      path: '/inputs',
+      component: Sidebar,
     },
   ],
 })
