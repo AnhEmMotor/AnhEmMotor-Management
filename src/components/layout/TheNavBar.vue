@@ -1,13 +1,13 @@
 <script setup lang="js">
 import { ref } from 'vue'
-import HomeSVG from '@/assets/svg/HomeSVG.vue'
-import ReportSVG from '@/assets/svg/ReportSVG.vue'
-import ProductSVG from '@/assets/svg/ProductSVG.vue'
-import UserSVG from '@/assets/svg/UserSVG.vue'
-import OrderSVG from '@/assets/svg/OrderSVG.vue'
-import UpArrowSVG from '@/assets/svg/UpArrowSVG.vue'
-import WarehouseSVG from '@/assets/svg/WarehouseSVG.vue'
-import SettingsSVG from '@/assets/svg/SettingsSVG.vue'
+import IconHome from '@/components/icons/IconHome.vue'
+import IconReport from '@/components/icons/IconReport.vue'
+import IconProduct from '@/components/icons/IconProduct.vue'
+import IconUser from '@/components/icons/IconUser.vue'
+import IconOrder from '@/components/icons/IconOrder.vue'
+import IconUpArrow from '@/components/icons/IconUpArrow.vue'
+import IconWarehouse from '@/components/icons/IconWarehouse.vue'
+import IconSettings from '@/components/icons/IconSettings.vue'
 
 const openGroups = ref([])
 
@@ -28,14 +28,14 @@ const toggleGroup = (group) => {
       <ul class="space-y-2">
         <li>
           <RouterLink to="/" class="router-link">
-            <HomeSVG />
+            <IconHome />
             <span>Trang chủ</span>
           </RouterLink>
         </li>
 
         <li>
           <RouterLink to="/products" class="router-link">
-            <ProductSVG />
+            <IconProduct />
             <span>Quản lý sản phẩm</span>
           </RouterLink>
         </li>
@@ -43,11 +43,11 @@ const toggleGroup = (group) => {
         <li>
           <button @click="toggleGroup('warehouse')" class="menu-group-button">
             <div class="flex items-center space-x-3">
-              <WarehouseSVG />
+              <IconWarehouse />
               <span>Quản lý kho</span>
             </div>
 
-            <UpArrowSVG :isOpen="openGroups.includes('warehouse')" />
+            <IconUpArrow :isOpen="openGroups.includes('warehouse')" />
           </button>
 
           <ul v-if="openGroups.includes('warehouse')" class="mt-2 space-y-2 pl-5">
@@ -72,11 +72,11 @@ const toggleGroup = (group) => {
         <li>
           <button @click="toggleGroup('user')" class="menu-group-button">
             <div class="flex items-center space-x-3">
-              <UserSVG />
+              <IconUser />
               <span>Quản lý người dùng</span>
             </div>
 
-            <UpArrowSVG :isOpen="openGroups.includes('user')" />
+            <IconUpArrow :isOpen="openGroups.includes('user')" />
           </button>
 
           <ul v-if="openGroups.includes('user')" class="mt-2 space-y-2 pl-5">
@@ -95,7 +95,7 @@ const toggleGroup = (group) => {
 
         <li>
           <RouterLink to="/orders" class="router-link">
-            <OrderSVG />
+            <IconOrder />
             <span>Quản lý đơn hàng</span>
           </RouterLink>
         </li>
@@ -103,11 +103,11 @@ const toggleGroup = (group) => {
         <li>
           <button @click="toggleGroup('reports')" class="menu-group-button">
             <div class="flex items-center space-x-3">
-              <ReportSVG />
+              <IconReport />
               <span>Báo cáo</span>
             </div>
 
-            <UpArrowSVG :isOpen="openGroups.includes('reports')" />
+            <IconUpArrow :isOpen="openGroups.includes('reports')" />
           </button>
 
           <ul v-if="openGroups.includes('reports')" class="mt-2 space-y-2 pl-5">
@@ -130,8 +130,8 @@ const toggleGroup = (group) => {
         </li>
 
         <li>
-          <RouterLink to="/orders" class="router-link">
-            <SettingsSVG />
+          <RouterLink to="/settings" class="router-link">
+            <IconSettings />
             <span>Cài đặt chung</span>
           </RouterLink>
         </li>
