@@ -6,6 +6,7 @@ import ProductsManager from '@/views/ProductsManager.vue'
 import ProductReport from '@/views/ProductReport.vue'
 import RevenueAnalysis from '@/views/RevenueAnalysis.vue'
 import InventoryManager from '@/views/InventoryManager.vue'
+import NccManager from '@/components/NCC/NccManager.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -44,6 +45,11 @@ const router = createRouter({
       name: 'inventory-input',
       path: '/inputs',
       component: InventoryManager,
+    },
+    {
+      name: 'supplier',
+      path: '/suppliers',
+      component: NccManager,
     },
   ],
 })
