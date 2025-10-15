@@ -186,7 +186,7 @@ const totalDiscount = (products) => {
     </div>
 
     <!-- Tổng kết và Ghi chú -->
-    <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-6">
+    <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-6 items-center">
       <div class="flex-1">
         <textarea
           placeholder="Ghi chú..."
@@ -197,43 +197,15 @@ const totalDiscount = (products) => {
         ></textarea>
       </div>
       <div class="w-full md:w-64 space-y-1 text-xs">
-        <div class="text-right">
-          <button
-            class="text-red-600 font-medium text-xs hover:underline"
-            :disabled="itemData.status === 'Đã hủy'"
-          >
-            Thiết lập giá
-          </button>
-        </div>
         <div class="flex justify-between">
           <span class="text-gray-600">Số lượng mặt hàng</span>
           <span class="font-medium text-gray-800">{{ itemData.products.length }}</span>
         </div>
-        <div class="flex justify-between">
-          <span class="text-gray-600"
-            >Tổng tiền hàng ({{ totalProductQuantity(itemData.products) }})</span
-          >
-          <span class="font-medium text-gray-800">{{
-            formatCurrency(totalProductValue(itemData.products))
-          }}</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-gray-600">Giảm giá</span>
-          <span class="font-medium text-gray-800">{{
-            formatCurrency(totalDiscount(itemData.products))
-          }}</span>
-        </div>
-        <div class="flex justify-between pt-1 border-t">
+        <div class="flex justify-between pt-1">
           <span class="text-gray-600 font-semibold">Tổng cộng</span>
           <span class="font-bold text-gray-900 text-sm">{{
-            formatCurrency(
-              totalProductValue(itemData.products) - totalDiscount(itemData.products),
-            )
+            formatCurrency(totalProductValue(itemData.products) - totalDiscount(itemData.products))
           }}</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-gray-600">Tiền đã trả NCC</span>
-          <span class="font-bold text-red-600">{{ formatCurrency(itemData.paid) }}</span>
         </div>
       </div>
     </div>

@@ -33,9 +33,6 @@ function getStatusClass(status) {
     <div
       class="hidden md:grid summary-row-grid items-center py-2 px-3 text-sm cursor-pointer transition duration-150"
     >
-      <div class="flex justify-center px-3">
-        <input type="checkbox" class="w-3.5 h-3.5 rounded text-red-600 focus:ring-red-500" />
-      </div>
       <div class="px-3 font-semibold text-gray-800 text-sm">{{ itemData.id }}</div>
       <div class="px-3 text-gray-600 whitespace-nowrap text-xs">{{ itemData.time }}</div>
       <div class="px-3 text-gray-600 text-xs">{{ itemData.supplierCode }}</div>
@@ -80,7 +77,7 @@ function getStatusClass(status) {
 /* Bạn vẫn cần định nghĩa các cột grid cho màn hình lớn */
 .summary-row-grid {
   /* Thay đổi số cột và độ rộng cho phù hợp với thiết kế của bạn */
-  grid-template-columns: 40px 1fr 1.5fr 1fr 2fr 1.5fr 1.2fr;
+  grid-template-columns: 1fr 1.5fr 1fr 2fr 1.5fr 1.2fr;
 }
 .summary-row-responsive {
   /* Thêm khoảng cách giữa các card trên mobile */
