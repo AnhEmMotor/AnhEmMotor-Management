@@ -1,0 +1,213 @@
+<script setup>
+import BaseDropdown from '../ui/input/BaseDropdown.vue'
+import BaseDateTimePicker from '../ui/input/BaseDateTimePicker.vue'
+import BaseTextarea from '../ui/input/BaseTextarea.vue'
+import BaseInput from '../ui/input/BaseInput.vue'
+
+defineProps({
+  itemData: Object,
+})
+
+function formatCurrency(value) {
+  if (!value && value !== 0) return ''
+  return value.toLocaleString('vi-VN')
+}
+
+const totalProductValue = (products) => {
+  return products.reduce((sum, product) => sum + product.total, 0)
+}
+const totalDiscount = (products) => {
+  return products.reduce((sum, product) => sum + product.discount * product.quantity, 0)
+}
+</script>
+
+<template>
+  <!-- Chi tiết phiếu (Detail Panel) -->
+  <div
+    class="border-t bg-white p-5"
+    :class="itemData.status === 'Đã nhập hàng' ? 'border-red-300' : 'border-gray-200'"
+  >
+    <!-- Phần thông tin chung -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 text-xs">
+      <BaseDropdown
+        label="Người tạo"
+        :options="[{ value: itemData.creator, text: itemData.creator }]"
+        :model-value="itemData.creator"
+      />
+      <BaseDropdown
+        label="Người nhập"
+        :options="[{ value: itemData.importer, text: itemData.importer }]"
+        :model-value="itemData.importer"
+      />
+      <BaseDateTimePicker label="Ngày nhập" :model-value="itemData.importDate" />
+      <div class="col-span-2">
+        <BaseInput label="Nhà cung cấp" :model-value="itemData.supplierName" readonly />
+      </div>
+    </div>
+
+    <!-- Bảng chi tiết hàng hóa -->
+    <div class="border border-gray-200 rounded-md overflow-hidden mb-4">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th
+              class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Tên hàng
+            </th>
+            <th
+              class="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Số lượng
+            </th>
+            <th
+              class="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Đơn giá
+            </th>
+            <th
+              class="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Giảm giá
+            </th>
+            <th
+              class="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Giá nhập
+            </th>
+            <th
+              class="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Thành tiền
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200 text-sm">
+          <tr v-if="itemData.status !== 'Đã hủy'">
+            <td class="p-1.5">
+              <BaseInput placeholder="Tìm mã hàng" />
+            </td>
+            <td class="p-1.5">
+              <BaseInput placeholder="Tìm tên hàng" />
+            </td>
+            <td colspan="5" class="p-1.5"></td>
+          </tr>
+          <tr v-else>
+            <td colspan="7" class="p-1.5 bg-gray-100 text-center text-xs text-gray-500 italic">
+              Phiếu nhập đã bị hủy. Không thể chỉnh sửa chi tiết hàng hóa.
+            </td>
+          </tr>
+          <tr
+            v-for="(product, index) in itemData.products"
+            :key="product.code"
+            class="text-xs"
+            :class="{ 'bg-gray-50': index % 2 !== 0 }"
+          >
+            <td class="px-2 py-2.5 font-medium text-gray-800">{{ product.name }}</td>
+            <td class="px-2 py-2.5 text-right">{{ formatCurrency(product.quantity) }}</td>
+            <td class="px-2 py-2.5 text-right">{{ formatCurrency(product.unitPrice) }}</td>
+            <td class="px-2 py-2.5 text-right">{{ formatCurrency(product.discount) }}</td>
+            <td class="px-2 py-2.5 text-right">{{ formatCurrency(product.importPrice) }}</td>
+            <td class="px-2 py-2.5 text-right font-semibold">
+              {{ formatCurrency(product.total) }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Tổng kết và Ghi chú -->
+    <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-6 items-center">
+      <div class="flex-1">
+        <BaseTextarea
+          placeholder="Ghi chú..."
+          :rows="3"
+          :model-value="itemData.notes"
+          :readonly="itemData.status === 'Đã hủy'"
+        />
+      </div>
+      <div class="w-full md:w-64 space-y-1 text-xs">
+        <div class="flex justify-between">
+          <span class="text-gray-600">Số lượng mặt hàng</span>
+          <span class="font-medium text-gray-800">{{ itemData.products.length }}</span>
+        </div>
+        <div class="flex justify-between pt-1">
+          <span class="text-gray-600 font-semibold">Tổng cộng</span>
+          <span class="font-bold text-gray-900 text-sm">{{
+            formatCurrency(totalProductValue(itemData.products) - totalDiscount(itemData.products))
+          }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Thanh hành động chi tiết phiếu -->
+    <div class="flex justify-between items-center mt-4 pt-5 border-t border-gray-200">
+      <div class="flex items-center space-x-3">
+        <button
+          class="flex items-center space-x-1.5 text-gray-600 py-1.5 px-3 rounded-md hover:bg-gray-100 text-xs font-medium transition duration-150"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            ></path>
+          </svg>
+          <span>Hủy</span>
+        </button>
+        <button
+          class="flex items-center space-x-1.5 text-gray-600 py-1.5 px-3 rounded-md hover:bg-gray-100 text-xs font-medium transition duration-150"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+            ></path>
+          </svg>
+          <span>Sao chép</span>
+        </button>
+      </div>
+      <div class="flex items-center space-x-2">
+        <button
+          class="bg-red-600 text-white py-1.5 px-3 rounded-md hover:bg-red-700 text-xs font-medium transition duration-150 flex items-center space-x-1.5"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+            ></path>
+          </svg>
+          <span>Chỉnh sửa chi tiết phiếu</span>
+        </button>
+        <button
+          class="text-gray-600 py-1.5 px-3 rounded-md hover:bg-gray-100 text-xs font-medium transition duration-150 border border-gray-300"
+        >
+          Lưu
+        </button>
+      </div>
+    </div>
+  </div>
+</template>

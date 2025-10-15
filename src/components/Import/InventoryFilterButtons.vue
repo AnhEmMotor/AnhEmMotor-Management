@@ -1,5 +1,6 @@
 <template>
-  <div class="flex flex-wrap gap-2">
+  <div class="flex flex-wrap gap-2 items-center">
+    <p>Lọc trạng thái:</p>
     <BaseFilterButton
       v-for="filter in filterOptions"
       :key="filter.status"
@@ -22,9 +23,9 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:modelValue'])
 const filterOptions = [
-  { status: 'active', label: 'Hoạt Động', color: 'green' },
-  { status: 'new', label: 'Mới', color: 'yellow' },
-  { status: 'inactive', label: 'Không Hoạt Động', color: 'red' },
+  { status: 'Phiếu tạm', label: 'Phiếu Tạm', color: 'yellow' },
+  { status: 'Đã nhập hàng', label: 'Đã Nhập Hàng', color: 'green' },
+  { status: 'Đã hủy', label: 'Đã Hủy', color: 'red' },
 ]
 const isActive = (status) => {
   return props.modelValue.includes(status)

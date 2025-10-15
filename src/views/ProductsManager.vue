@@ -61,10 +61,10 @@
 
 <script setup>
 import ProductFilterButtons from '@/components/product/ProductFilterButtons.vue'
-import BaseButton from '@/components/ui/BaseButton.vue'
-import BaseInput from '@/components/ui/BaseInput.vue'
-import BasePagination from '@/components/ui/BasePagination.vue'
-import BaseSmallNoBgButton from '@/components/ui/BaseSmallNoBgButton.vue'
+import BaseButton from '@/components/ui/button/BaseButton.vue'
+import BaseInput from '@/components/ui/input/BaseInput.vue'
+import BasePagination from '@/components/ui/button/BasePagination.vue'
+import BaseSmallNoBgButton from '@/components/ui/button/BaseSmallNoBgButton.vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
 import { ref, watch } from 'vue'
 import * as XLSX from 'xlsx'
