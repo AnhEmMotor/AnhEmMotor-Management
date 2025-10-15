@@ -1,11 +1,11 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import * as XLSX from 'xlsx'
-import InventoryItem from '@/components/import/InventoryItem.vue'
+import InventoryItem from '@/components/InventoryInput/InventoryItem.vue'
 import BaseButton from '@/components/ui/button/BaseButton.vue'
 import BaseInput from '@/components/ui/input/BaseInput.vue'
 import BasePagination from '@/components/ui/button/BasePagination.vue'
-import InventoryFilterButtons from '@/components/import/InventoryFilterButtons.vue'
+import InventoryFilterButtons from '@/components/InventoryInput/InventoryFilterButtons.vue'
 
 const searchTerm = ref('')
 const selectedStatuses = ref([])
@@ -19,7 +19,7 @@ const allInventoryItems = ref([
     supplierName: 'NCC ĐỒNG NAI',
     payable: 3500000000,
     status: 'Đã nhập hàng',
-    isOpen: true,
+    isOpen: false,
     branch: 'Chi nhánh trung tâm',
     creator: 'Kim Ngân',
     importer: 'Kim Ngân',
