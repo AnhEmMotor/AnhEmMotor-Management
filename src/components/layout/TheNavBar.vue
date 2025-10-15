@@ -1,17 +1,15 @@
 <script setup lang="js">
 import { ref } from 'vue'
-import HomeSVG from '@/assets/svg/HomeSVG.vue'
-import ReportSVG from '@/assets/svg/ReportSVG.vue'
-import ProductSVG from '@/assets/svg/ProductSVG.vue'
-import UserSVG from '@/assets/svg/UserSVG.vue'
-import OrderSVG from '@/assets/svg/OrderSVG.vue'
-import UpArrowSVG from '@/assets/svg/UpArrowSVG.vue'
-import WarehouseSVG from '@/assets/svg/WarehouseSVG.vue'
-import SupplierSVG from '@/assets/svg/SupplierSVG.vue'
-import InputWarehouseSVG from '@/assets/svg/InputWarehouseSVG.vue'
-import PriceTagSVG from '@/assets/svg/PriceTagSVG.vue'
+import IconHome from '@/components/icons/IconHome.vue'
+import IconReport from '@/components/icons/IconReport.vue'
+import IconProduct from '@/components/icons/IconProduct.vue'
+import IconUser from '@/components/icons/IconUser.vue'
+import IconOrder from '@/components/icons/IconOrder.vue'
+import IconUpArrow from '@/components/icons/IconUpArrow.vue'
+import IconWarehouse from '@/components/icons/IconWarehouse.vue'
+import IconSettings from '@/components/icons/IconSettings.vue'
 
-const openGroups = ref(['reports', 'warehouse'])
+const openGroups = ref([])
 
 const toggleGroup = (group) => {
   const index = openGroups.value.indexOf(group)
@@ -25,56 +23,46 @@ const toggleGroup = (group) => {
 
 <template>
   <div class="box-style">
-    <h1 class="text-3xl font-bold mb-8">AnhEm Motor</h1>
+    <h1 class="text-2xl font-bold mb-8">AnhEm Motor Admin</h1>
     <nav class="w-full">
       <ul class="space-y-2">
         <li>
           <RouterLink to="/" class="router-link">
-            <HomeSVG />
+            <IconHome />
             <span>Trang chủ</span>
           </RouterLink>
         </li>
 
         <li>
           <RouterLink to="/products" class="router-link">
-            <ProductSVG />
+            <IconProduct />
             <span>Quản lý sản phẩm</span>
-          </RouterLink>
-        </li>
-
-        <li>
-          <RouterLink to="/customers" class="router-link">
-            <UserSVG />
-            <span>Quản lý khách hàng</span>
           </RouterLink>
         </li>
 
         <li>
           <button @click="toggleGroup('warehouse')" class="menu-group-button">
             <div class="flex items-center space-x-3">
-              <WarehouseSVG />
+              <IconWarehouse />
               <span>Quản lý kho</span>
             </div>
 
-            <UpArrowSVG :isOpen="openGroups.includes('warehouse')" />
+            <IconUpArrow :isOpen="openGroups.includes('warehouse')" />
           </button>
 
           <ul v-if="openGroups.includes('warehouse')" class="mt-2 space-y-2 pl-5">
             <li>
               <RouterLink to="/suppliers" class="router-link-child">
-                <SupplierSVG />
                 <span>Quản lý nhà cung cấp</span>
               </RouterLink>
             </li>
             <li>
               <RouterLink to="/inputs" class="router-link-child">
-                <InputWarehouseSVG />
                 <span>Quản lý phiếu nhập</span>
               </RouterLink>
             </li>
             <li>
               <RouterLink to="/prices" class="router-link-child">
-                <PriceTagSVG />
                 <span>Thiết lập giá</span>
               </RouterLink>
             </li>
@@ -82,8 +70,32 @@ const toggleGroup = (group) => {
         </li>
 
         <li>
+          <button @click="toggleGroup('user')" class="menu-group-button">
+            <div class="flex items-center space-x-3">
+              <IconUser />
+              <span>Quản lý người dùng</span>
+            </div>
+
+            <IconUpArrow :isOpen="openGroups.includes('user')" />
+          </button>
+
+          <ul v-if="openGroups.includes('user')" class="mt-2 space-y-2 pl-5">
+            <li>
+              <RouterLink to="/users" class="router-link-child">
+                <span>Quản lý thông tin & vai trò</span>
+              </RouterLink>
+            </li>
+            <li>
+              <RouterLink to="/permissions" class="router-link-child">
+                <span>Quản lý quyền hạn của vai trò</span>
+              </RouterLink>
+            </li>
+          </ul>
+        </li>
+
+        <li>
           <RouterLink to="/orders" class="router-link">
-            <OrderSVG />
+            <IconOrder />
             <span>Quản lý đơn hàng</span>
           </RouterLink>
         </li>
@@ -91,33 +103,37 @@ const toggleGroup = (group) => {
         <li>
           <button @click="toggleGroup('reports')" class="menu-group-button">
             <div class="flex items-center space-x-3">
-              <ReportSVG />
+              <IconReport />
               <span>Báo cáo</span>
             </div>
 
-            <UpArrowSVG :isOpen="openGroups.includes('reports')" />
+            <IconUpArrow :isOpen="openGroups.includes('reports')" />
           </button>
 
           <ul v-if="openGroups.includes('reports')" class="mt-2 space-y-2 pl-5">
             <li>
               <RouterLink to="/report-warehouse" class="router-link-child">
-                <ReportSVG />
                 <span>Báo cáo kho</span>
               </RouterLink>
             </li>
             <li>
               <RouterLink to="/report-revenue" class="router-link-child">
-                <ReportSVG />
                 <span>Phân tích doanh thu</span>
               </RouterLink>
             </li>
             <li>
               <RouterLink to="/report-product" class="router-link-child">
-                <ReportSVG />
                 <span>Báo cáo sản phẩm</span>
               </RouterLink>
             </li>
           </ul>
+        </li>
+
+        <li>
+          <RouterLink to="/settings" class="router-link">
+            <IconSettings />
+            <span>Cài đặt chung</span>
+          </RouterLink>
         </li>
       </ul>
     </nav>

@@ -13,7 +13,6 @@
 </template>
 
 <script setup lang="ts">
-// This component accepts an 'isOpen' prop to control its rotation state.
 defineProps({
   isOpen: {
     type: Boolean,
