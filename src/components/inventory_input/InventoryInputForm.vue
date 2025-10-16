@@ -279,7 +279,11 @@ onBeforeUnmount(() => {
             class="search-input"
           />
 
-          <div v-if="showProductDropdown" :style="dropdownStyle" class="dropdown-menu floating-dropdown">
+          <div
+            v-if="showProductDropdown"
+            :style="dropdownStyle"
+            class="dropdown-menu floating-dropdown"
+          >
             <div
               v-for="product in filteredProducts"
               :key="product.code"
@@ -577,9 +581,9 @@ onBeforeUnmount(() => {
 .floating-dropdown {
   position: fixed;
   background: #ffffff;
-  border: 1px solid rgba(0,0,0,0.08);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 6px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
   overflow-y: auto;
 }
 </style>
