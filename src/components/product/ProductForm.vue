@@ -13,6 +13,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  errors: {
+    type: Object,
+    default: () => ({}),
+  },
 })
 
 const emit = defineEmits(['update:modelValue', 'update:dirty'])
@@ -52,50 +56,54 @@ watch(
   <form @submit.prevent id="product-form">
     <div class="space-y-4 max-h-[70vh] overflow-y-auto px-2">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <BaseInput
-          label="Mã Sản Phẩm *"
-          v-model="localProduct.code"
-          placeholder="Bắt buộc"
-          required
-          :readonly="isEditMode"
-        />
-        <BaseInput
-          label="Tên Sản Phẩm *"
-          v-model="localProduct.name"
-          placeholder="Bắt buộc"
-          required
-        />
-        <BaseDropdown
-          label="Danh Mục *"
-          v-model="localProduct.category"
-          :options="categoryOptions"
-          placeholder="Chọn Danh Mục"
-          required
-        />
-        <BaseInput
-          label="Giá Bán *"
-          type="number"
-          v-model.number="localProduct.price"
-          placeholder="Nhập giá bán"
-          required
-          :min="0"
-        />
-        <BaseInput
-          label="Giá Vốn *"
-          type="number"
-          v-model.number="localProduct.cost"
-          placeholder="Nhập giá vốn"
-          required
-          :min="0"
-        />
-        <BaseInput
-          label="Số Lượng *"
-          type="number"
-          v-model.number="localProduct.quantity"
-          placeholder="Nhập số lượng"
-          required
-          :min="0"
-        />
+        <div>
+          <BaseInput
+            label="Mã Sản Phẩm *"
+            v-model="localProduct.code"
+            placeholder="Bắt buộc"
+            required
+            :readonly="isEditMode"
+          />
+          <div v-if="errors && errors.code" class="text-red-500 text-xs mt-1">
+            {{ errors.code }}
+          </div>
+        </div>
+        <div>
+          <BaseInput
+            label="Tên Sản Phẩm *"
+            v-model="localProduct.name"
+            placeholder="Bắt buộc"
+            required
+          />
+          <div v-if="errors && errors.name" class="text-red-500 text-xs mt-1">
+            {{ errors.name }}
+          </div>
+        </div>
+        <div>
+          <BaseDropdown
+            label="Danh Mục *"
+            v-model="localProduct.category"
+            :options="categoryOptions"
+            placeholder="Chọn Danh Mục"
+            required
+          />
+          <div v-if="errors && errors.category" class="text-red-500 text-xs mt-1">
+            {{ errors.category }}
+          </div>
+        </div>
+        <div>
+          <BaseInput
+            label="Giá Bán *"
+            type="number"
+            v-model.number="localProduct.price"
+            placeholder="Nhập giá bán"
+            required
+            :min="0"
+          />
+          <div v-if="errors && errors.price" class="text-red-500 text-xs mt-1">
+            {{ errors.price }}
+          </div>
+        </div>
       </div>
       <BaseTextarea
         label="Mô Tả Sản Phẩm"

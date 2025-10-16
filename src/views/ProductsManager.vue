@@ -66,6 +66,7 @@
       <ProductForm
         v-model="editableProduct"
         :is-edit-mode="isEditMode"
+        :errors="formErrors"
         @update:dirty="isFormDirty = $event"
       />
     </template>
@@ -141,6 +142,8 @@ function executeConfirmation() {
 
 const openAddEditModal = (product = null) => {
   const openForm = () => {
+    // Reset form errors when opening a new form
+    formErrors.value = { code: '', name: '', category: '', price: '' }
     if (product) {
       editableProduct.value = { ...product }
       formModalTitle.value = 'Chỉnh Sửa Sản Phẩm'
@@ -186,12 +189,37 @@ const handleCloseFormModal = () => {
   }
 }
 
+// Form validation errors
+const formErrors = ref({ code: '', name: '', category: '', price: '' })
+
 const handleSaveProduct = () => {
   const productData = editableProduct.value
-  if (!productData.code || !productData.name || !productData.category) {
-    alert('Vui lòng điền đầy đủ các trường bắt buộc (Mã, Tên, Danh mục).')
-    return
+  // Reset errors
+
+  formErrors.value = { code: '', name: '', category: '', price: '' }
+  let hasError = false
+  if (!productData.code) {
+    formErrors.value.code = 'Vui lòng nhập mã sản phẩm.'
+    hasError = true
   }
+  if (!productData.name) {
+    formErrors.value.name = 'Vui lòng nhập tên sản phẩm.'
+    hasError = true
+  }
+  if (!productData.category) {
+    formErrors.value.category = 'Vui lòng nhập danh mục.'
+    hasError = true
+  }
+  if (
+    productData.price === null ||
+    productData.price === undefined ||
+    productData.price === '' ||
+    isNaN(productData.price)
+  ) {
+    formErrors.value.price = 'Vui lòng nhập giá bán.'
+    hasError = true
+  }
+  if (hasError) return
 
   if (isEditMode.value) {
     // Update
@@ -202,7 +230,7 @@ const handleSaveProduct = () => {
   } else {
     // Add new
     if (products.value.some((p) => p.code === productData.code)) {
-      alert(`Mã sản phẩm "${productData.code}" đã tồn tại.`)
+      formErrors.value.code = `Mã sản phẩm "${productData.code}" đã tồn tại.`
       return
     }
     products.value.unshift(productData)
