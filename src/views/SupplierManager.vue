@@ -9,6 +9,7 @@ import SupplierFilterButtons from '@/components/supplier/SupplierFilterButtons.v
 import SupplierDeleteModal from '@/components/supplier/SupplierDeleteModal.vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
 import SupplierForm from '@/components/supplier/SupplierForm.vue'
+import FullScreenModal from '@/components/ui/FullScreenModal.vue'
 
 const initialSuppliers = [
   {
@@ -183,6 +184,14 @@ const formModalTitle = ref('')
 const formModalKey = ref(0)
 const originalSupplierOnEdit = ref(null) // For refresh functionality
 
+// --- NEW: Confirmation Modal State ---
+const isConfirmationModalVisible = ref(false)
+const confirmationModalProps = reactive({
+  title: '',
+  message: '',
+  onConfirm: () => {},
+})
+
 const isEditMode = computed(() => !!editableSupplier.value?.id)
 // --- End New/Modified State ---
 
@@ -230,56 +239,88 @@ function showMessage(text, type = 'success', duration = 3000) {
   }, duration)
 }
 
+// --- NEW: Confirmation Modal Helpers ---
+function showConfirmation(title, message, onConfirmAction) {
+  confirmationModalProps.title = title
+  confirmationModalProps.message = message
+  confirmationModalProps.onConfirm = onConfirmAction
+  isConfirmationModalVisible.value = true
+}
+
+function executeConfirmation() {
+  confirmationModalProps.onConfirm()
+  isConfirmationModalVisible.value = false
+}
+
 // --- MODIFIED ---
 function openAddEditModal(supplier = null) {
-  if (isFormModalVisible.value && isFormDirty.value) {
-    if (!confirm('Bạn có các thay đổi chưa lưu. Bạn có chắc muốn đóng không?')) {
-      return
+  const openNewForm = () => {
+    if (supplier) {
+      // Use a deep copy for editing and keep original state for refresh
+      originalSupplierOnEdit.value = JSON.parse(JSON.stringify(supplier))
+      editableSupplier.value = JSON.parse(JSON.stringify(supplier))
+      formModalTitle.value = 'Chỉnh sửa Nhà cung cấp'
+    } else {
+      // Reset for a new supplier
+      originalSupplierOnEdit.value = null
+      editableSupplier.value = {
+        name: '',
+        phone: '',
+        email: '',
+        address: '',
+      }
+      formModalTitle.value = 'Thêm Nhà cung cấp'
     }
+    isFormDirty.value = false // Reset dirty state for the new form
+    formModalKey.value++
+    isFormModalVisible.value = true
   }
 
-  if (supplier) {
-    // Use a deep copy for editing and keep original state for refresh
-    originalSupplierOnEdit.value = JSON.parse(JSON.stringify(supplier))
-    editableSupplier.value = JSON.parse(JSON.stringify(supplier))
-    formModalTitle.value = 'Chỉnh sửa Nhà cung cấp'
+  if (isFormModalVisible.value && isFormDirty.value) {
+    showConfirmation(
+      'Mở biểu mẫu mới?',
+      'Bạn có các thay đổi chưa lưu. Bạn có chắc muốn hủy và mở một biểu mẫu mới không?',
+      openNewForm,
+    )
   } else {
-    // Reset for a new supplier
-    originalSupplierOnEdit.value = null
-    editableSupplier.value = {
-      name: '',
-      phone: '',
-      email: '',
-      address: '',
-    }
-    formModalTitle.value = 'Thêm Nhà cung cấp'
+    openNewForm()
   }
-  isFormDirty.value = false // Reset dirty state for the new form
-  formModalKey.value++
-  isFormModalVisible.value = true
 }
 
 // --- NEW: Refresh handler ---
 function handleFormRefresh() {
-  if (isFormDirty.value) {
-    if (!confirm('Bạn có các thay đổi chưa lưu. Bạn có chắc muốn tải lại dữ liệu gốc không?')) {
-      return
+  const doRefresh = () => {
+    if (originalSupplierOnEdit.value) {
+      editableSupplier.value = JSON.parse(JSON.stringify(originalSupplierOnEdit.value))
+      isFormDirty.value = false // After refresh, form is no longer dirty
+      showMessage('Đã tải lại dữ liệu gốc của nhà cung cấp.')
     }
   }
-  if (originalSupplierOnEdit.value) {
-    editableSupplier.value = JSON.parse(JSON.stringify(originalSupplierOnEdit.value))
-    showMessage('Đã tải lại dữ liệu gốc của nhà cung cấp.')
+
+  if (isFormDirty.value) {
+    showConfirmation(
+      'Tải lại dữ liệu gốc?',
+      'Bạn có các thay đổi chưa lưu. Bạn có chắc muốn tải lại dữ liệu gốc không?',
+      doRefresh,
+    )
+  } else {
+    doRefresh()
   }
 }
 
 // --- NEW ---
 function handleCloseFormModal() {
   if (isFormDirty.value) {
-    if (!confirm('Bạn có các thay đổi chưa lưu. Bạn có chắc muốn đóng không?')) {
-      return
-    }
+    showConfirmation(
+      'Đóng biểu mẫu?',
+      'Bạn có các thay đổi chưa lưu. Bạn có chắc muốn đóng không?',
+      () => {
+        isFormModalVisible.value = false
+      },
+    )
+  } else {
+    isFormModalVisible.value = false
   }
-  isFormModalVisible.value = false
 }
 
 // --- MODIFIED ---
@@ -336,14 +377,20 @@ function handleDeleteSupplier() {
 
 function toggleActivation(supplierId) {
   const supplier = suppliers.value.find((s) => s.id === supplierId)
-  if (supplier) {
+  if (!supplier) return
+
+  const actionText = supplier.status === 'active' ? 'ngừng hoạt động' : 'kích hoạt'
+  const title = `Xác nhận ${actionText}`
+  const message = `Bạn có chắc chắn muốn ${actionText} nhà cung cấp "${supplier.name}" không?`
+
+  showConfirmation(title, message, () => {
     supplier.status = supplier.status === 'active' ? 'inactive' : 'active'
     showMessage(
-      `Đã ${supplier.status === 'active' ? 'kích hoạt' : 'ngừng hoạt động'} nhà cung cấp ${
-        supplier.name
-      }.`,
+      `Đã ${
+        supplier.status === 'active' ? 'kích hoạt' : 'ngừng hoạt động'
+      } nhà cung cấp ${supplier.name}.`,
     )
-  }
+  })
 }
 
 const totalPages = ref(5)
@@ -538,6 +585,20 @@ onMounted(() => {
       @close="isDeleteModalVisible = false"
       @confirm="handleDeleteSupplier"
     />
+
+    <!-- NEW: Confirmation Modal -->
+    <FullScreenModal
+      v-if="isConfirmationModalVisible"
+      :show="isConfirmationModalVisible"
+      :title="confirmationModalProps.title"
+      @close="isConfirmationModalVisible = false"
+    >
+      <p class="text-gray-600 text-center">{{ confirmationModalProps.message }}</p>
+      <template #actions>
+        <BaseButton text="Bỏ qua" color="gray" @click="isConfirmationModalVisible = false" />
+        <BaseButton text="Xác nhận" color="red" @click="executeConfirmation" />
+      </template>
+    </FullScreenModal>
 
     <!-- Message Box -->
     <div

@@ -1,5 +1,6 @@
 <template>
-  <div class="flex flex-wrap gap-2">
+  <div class="flex flex-wrap gap-2 items-center">
+    <p>Lọc trạng thái:</p>
     <BaseFilterButton
       v-for="filter in filterOptions"
       :key="filter.status"

@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import RoundBadge from '@/components/ui/RoundBadge.vue'
 
 defineProps({
   itemData: Object,
@@ -39,10 +40,6 @@ function formatDateTime(timestamp) {
   const hours = date.getHours().toString().padStart(2, '0')
   const minutes = date.getMinutes().toString().padStart(2, '0')
   return `${day}/${month}/${year} ${hours}:${minutes}`
-}
-
-function getTransactionStatusClass(status) {
-  return status === 'Đã nhập hàng' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-700'
 }
 </script>
 
@@ -171,11 +168,9 @@ function getTransactionStatusClass(status) {
             <div class="text-gray-600">{{ t.creator }}</div>
             <div class="text-right font-medium">{{ formatCurrency(t.total) }}</div>
             <div class="text-right">
-              <span
-                class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full"
-                :class="getTransactionStatusClass(t.status)"
-                >{{ t.status }}</span
-              >
+              <RoundBadge :color="t.status === 'Đã nhập hàng' ? 'green' : 'gray'">
+                {{ t.status }}
+              </RoundBadge>
             </div>
           </div>
         </div>
