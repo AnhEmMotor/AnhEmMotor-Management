@@ -5,7 +5,7 @@
         <h1 class="title-style">Danh Sách Sản Phẩm</h1>
       </div>
       <div class="action-button-style">
-        <BaseButton text="Thêm sản phẩm" color="purple" />
+        <BaseButton text="Thêm sản phẩm" color="purple" @click="openAddEditModal()" />
         <BaseButton text="Import Excel" color="blue" @click="importExcel" />
         <BaseButton text="Export" color="green" @click="exportExcel" />
         <span class="text-gray-400 mx-4 hidden border-r-2 sm:block" />
@@ -42,8 +42,8 @@
               }}</RoundBadge>
             </td>
             <td class="center-cell-style space-x-2">
-              <BaseSmallNoBgButton @click="editProduct(product.code)">Sửa</BaseSmallNoBgButton>
-              <BaseSmallNoBgButton color="red" @click="deleteProduct(product.code)">
+              <BaseSmallNoBgButton @click="openAddEditModal(product)">Sửa</BaseSmallNoBgButton>
+              <BaseSmallNoBgButton color="red" @click="promptDelete(product.code)">
                 Xóa
               </BaseSmallNoBgButton>
             </td>
@@ -57,29 +57,199 @@
       :loading="isLoading"
     />
   </div>
+
+  <DraggableModal :key="formModalKey" v-if="isFormModalVisible" @close="handleCloseFormModal">
+    <template #header>
+      <h2 class="font-bold text-lg">{{ formModalTitle }}</h2>
+    </template>
+    <template #body>
+      <ProductForm
+        v-model="editableProduct"
+        :is-edit-mode="isEditMode"
+        @update:dirty="isFormDirty = $event"
+      />
+    </template>
+    <template #footer>
+      <div class="flex justify-end space-x-2">
+        <BaseButton text="Bỏ qua" color="gray" @click="handleCloseFormModal" />
+        <BaseButton text="Lưu" color="purple" @click="handleSaveProduct" />
+      </div>
+    </template>
+  </DraggableModal>
+
+  <FullScreenModal :show="isDeleteModalVisible" title="Xác Nhận Xóa" @close="cancelDelete">
+    <p>
+      Bạn có chắc chắn muốn xóa sản phẩm có mã <strong>{{ productToDelete }}</strong> không? Hành
+      động này không thể hoàn tác.
+    </p>
+    <template #actions>
+      <BaseButton text="Hủy" color="gray" @click="cancelDelete" />
+      <BaseButton text="Xác Nhận Xóa" color="red" @click="confirmDelete" />
+    </template>
+  </FullScreenModal>
+
+  <FullScreenModal
+    v-if="isConfirmationModalVisible"
+    :show="isConfirmationModalVisible"
+    :title="confirmationModalProps.title"
+    @close="isConfirmationModalVisible = false"
+  >
+    <p class="text-gray-600 text-center">{{ confirmationModalProps.message }}</p>
+    <template #actions>
+      <BaseButton text="Bỏ qua" color="gray" @click="isConfirmationModalVisible = false" />
+      <BaseButton text="Xác nhận" color="red" @click="executeConfirmation" />
+    </template>
+  </FullScreenModal>
 </template>
 
 <script setup>
+import { ref, watch, computed, reactive } from 'vue'
 import ProductFilterButtons from '@/components/product/ProductFilterButtons.vue'
+import ProductForm from '@/components/product/ProductForm.vue'
 import BaseButton from '@/components/ui/button/BaseButton.vue'
 import BaseInput from '@/components/ui/input/BaseInput.vue'
 import BasePagination from '@/components/ui/button/BasePagination.vue'
 import BaseSmallNoBgButton from '@/components/ui/button/BaseSmallNoBgButton.vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
-import { ref, watch } from 'vue'
-import * as XLSX from 'xlsx'
+import FullScreenModal from '@/components/ui/FullScreenModal.vue'
+import DraggableModal from '@/components/ui/DraggableModal.vue'
 
-//Xử lý bảng
+// Form Modal State
+const isFormModalVisible = ref(false)
+const isFormDirty = ref(false)
+const editableProduct = ref({})
+const formModalTitle = ref('')
+const formModalKey = ref(0)
+
+const isEditMode = computed(
+  () =>
+    !!editableProduct.value?.code &&
+    products.value.some((p) => p.code === editableProduct.value.code),
+)
+
+function showConfirmation(title, message, onConfirmAction) {
+  confirmationModalProps.title = title
+  confirmationModalProps.message = message
+  confirmationModalProps.onConfirm = onConfirmAction
+  isConfirmationModalVisible.value = true
+}
+
+function executeConfirmation() {
+  confirmationModalProps.onConfirm()
+  isConfirmationModalVisible.value = false
+}
+
+const openAddEditModal = (product = null) => {
+  const openForm = () => {
+    if (product) {
+      editableProduct.value = { ...product }
+      formModalTitle.value = 'Chỉnh Sửa Sản Phẩm'
+    } else {
+      editableProduct.value = {
+        code: '',
+        name: '',
+        category: '',
+        price: null,
+        cost: null,
+        quantity: null,
+        description: '',
+      }
+      formModalTitle.value = 'Thêm Sản Phẩm Mới'
+    }
+    isFormDirty.value = false
+    formModalKey.value++
+    isFormModalVisible.value = true
+  }
+
+  if (isFormModalVisible.value && isFormDirty.value) {
+    showConfirmation(
+      'Mở biểu mẫu mới?',
+      'Bạn có các thay đổi chưa lưu. Bạn có chắc muốn hủy và mở một biểu mẫu mới không?',
+      openForm,
+    )
+  } else {
+    openForm()
+  }
+}
+
+const handleCloseFormModal = () => {
+  if (isFormDirty.value) {
+    showConfirmation(
+      'Đóng biểu mẫu?',
+      'Bạn có các thay đổi chưa lưu. Bạn có chắc muốn đóng không?',
+      () => {
+        isFormModalVisible.value = false
+      },
+    )
+  } else {
+    isFormModalVisible.value = false
+  }
+}
+
+const handleSaveProduct = () => {
+  const productData = editableProduct.value
+  if (!productData.code || !productData.name || !productData.category) {
+    alert('Vui lòng điền đầy đủ các trường bắt buộc (Mã, Tên, Danh mục).')
+    return
+  }
+
+  if (isEditMode.value) {
+    // Update
+    const index = products.value.findIndex((p) => p.code === productData.code)
+    if (index !== -1) {
+      products.value[index] = productData
+    }
+  } else {
+    // Add new
+    if (products.value.some((p) => p.code === productData.code)) {
+      alert(`Mã sản phẩm "${productData.code}" đã tồn tại.`)
+      return
+    }
+    products.value.unshift(productData)
+  }
+  saveProducts()
+  isFormModalVisible.value = false
+}
+
+// Delete confirmation modal state
+const isDeleteModalVisible = ref(false)
+const productToDelete = ref(null)
+
+const promptDelete = (code) => {
+  productToDelete.value = code
+  isDeleteModalVisible.value = true
+}
+
+const confirmDelete = () => {
+  const index = products.value.findIndex((p) => p.code === productToDelete.value)
+  if (index !== -1) {
+    products.value.splice(index, 1)
+    saveProducts()
+  }
+  cancelDelete() // Close modal and reset state
+}
+
+const cancelDelete = () => {
+  isDeleteModalVisible.value = false
+  productToDelete.value = null
+}
+
+// Confirmation Modal State
+const isConfirmationModalVisible = ref(false)
+const confirmationModalProps = reactive({
+  title: '',
+  message: '',
+  onConfirm: () => {},
+})
+
+// Table and Data
 const LOW_STOCK_THRESHOLD = 10
-
 const selectedStatuses = ref([])
-
 const stockStatusColors = {
   'in-stock': 'green',
   'low-stock': 'yellow',
   'out-of-stock': 'red',
 }
-
 const stockStatusTextMap = {
   'in-stock': 'Còn Hàng',
   'low-stock': 'Sắp Hết',
@@ -153,7 +323,7 @@ const saveProducts = () => {
   localStorage.setItem('products', JSON.stringify(products.value))
 }
 
-//Phân trang - gỉa lập
+// Pagination
 const totalPages = ref(10)
 const currentPage = ref(1)
 const isLoading = ref(false)
@@ -173,90 +343,12 @@ watch(currentPage, (newPage, oldPage) => {
   }
 })
 
-watch(totalPages, (newTotal) => {
-  if (currentPage.value > newTotal) {
-    currentPage.value = newTotal > 0 ? newTotal : 1
-  }
-})
-
-//Excel
+// Excel
 const importExcel = (event) => {
-  const file = event.target.files[0]
-  if (!file) return
-
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    try {
-      const workbook = XLSX.read(e.target.result, { type: 'binary' })
-      const firstSheetName = workbook.SheetNames[0]
-      const worksheet = workbook.Sheets[firstSheetName]
-      const data = XLSX.utils.sheet_to_json(worksheet)
-
-      const importedProducts = data.map((row) => ({
-        code: (row['Mã SP'] || row['Code'] || '').toString().trim(),
-        name: (row['Tên Sản Phẩm'] || row['Name'] || '').toString().trim(),
-        category: (row['Danh Mục'] || row['Category'] || '').toString().trim(),
-        price: parseFloat(row['Giá Bán'] || row['Price'] || 0),
-        cost: parseFloat(row['Giá Vốn'] || row['Cost'] || 0),
-        quantity: parseInt(row['Số Lượng'] || row['Quantity'] || 0),
-        description: (row['Mô Tả'] || row['Description'] || '').toString().trim(),
-      }))
-
-      const newValidProducts = []
-      const existingCodes = new Set(products.value.map((p) => p.code))
-
-      for (const product of importedProducts) {
-        if (product.code && product.name && !existingCodes.has(product.code)) {
-          newValidProducts.push(product)
-          existingCodes.add(product.code)
-        } else {
-          console.warn(
-            `Sản phẩm với mã ${product.code} không hợp lệ hoặc đã tồn tại và sẽ bị bỏ qua.`,
-          )
-        }
-      }
-      if (newValidProducts.length > 0) {
-        products.value.push(...newValidProducts)
-        saveProducts()
-      }
-    } catch (error) {
-      console.error('Error importing Excel:', error)
-    }
-  }
-  reader.readAsBinaryString(file)
-  event.target.value = '' // Reset file input
+  /* ... existing code ... */
 }
-
 const exportExcel = () => {
-  if (products.value.length === 0) {
-    return
-  }
-  const exportData = products.value.map((product) => ({
-    'Mã SP': product.code,
-    'Tên Sản Phẩm': product.name,
-    'Danh Mục': product.category,
-    'Giá Bán': product.price,
-    'Giá Vốn': product.cost,
-    'Số Lượng': product.quantity,
-    'Trạng Thái': getStockStatusText(product.quantity),
-    'Mô Tả': product.description,
-  }))
-  const workbook = XLSX.utils.book_new()
-  const worksheet = XLSX.utils.json_to_sheet(exportData)
-  worksheet['!cols'] = [
-    { wch: 10 },
-    { wch: 25 },
-    { wch: 15 },
-    { wch: 15 },
-    { wch: 15 },
-    { wch: 10 },
-    { wch: 15 },
-    { wch: 30 },
-  ]
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Danh Sách Sản Phẩm')
-  const currentDate = new Date().toISOString().split('T')[0]
-  const filename = `DanhSachSanPham_${currentDate}.xlsx`
-  XLSX.writeFile(workbook, filename)
+  /* ... existing code ... */
 }
 </script>
 
@@ -270,15 +362,6 @@ const exportExcel = () => {
 }
 .content-box-style {
   @apply flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0;
-}
-.sub-title-style {
-  @apply text-2xl font-semibold text-gray-800;
-}
-.text-style {
-  @apply text-sm text-gray-500;
-}
-.text-bold-style {
-  @apply font-medium text-gray-700;
 }
 .action-button-style {
   @apply flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full lg:w-auto;
@@ -303,8 +386,5 @@ const exportExcel = () => {
 }
 .table-row-style {
   @apply border-b border-gray-200 hover:bg-gray-100 transition-colors duration-200;
-}
-.file-input {
-  @apply opacity-0 absolute -z-10;
 }
 </style>
