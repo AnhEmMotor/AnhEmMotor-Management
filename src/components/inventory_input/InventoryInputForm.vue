@@ -78,6 +78,8 @@ const filteredSuppliers = computed(() => {
 
 const productSearchTerm = ref('')
 const showProductDropdown = ref(false)
+const productInputRef = ref(null)
+const dropdownStyle = ref({})
 const filteredProducts = computed(() => {
   if (!productSearchTerm.value) return allProducts.value
   const term = productSearchTerm.value.toLowerCase()
@@ -120,6 +122,35 @@ const selectProduct = (product) => {
     console.error('Error selecting product:', error)
   }
 }
+
+const updateDropdownPosition = () => {
+  if (!productInputRef.value) return
+  const rect = productInputRef.value.getBoundingClientRect()
+  dropdownStyle.value = {
+    position: 'fixed',
+    top: `${rect.bottom}px`,
+    left: `${rect.left}px`,
+    width: `${rect.width}px`,
+    maxHeight: '300px',
+    overflowY: 'auto',
+    zIndex: 2000,
+  }
+}
+
+const onShowProductDropdown = (val) => {
+  if (val) {
+    // compute position after render
+    setTimeout(updateDropdownPosition, 0)
+    window.addEventListener('resize', updateDropdownPosition)
+    // use capture scroll to recalc when scrolling any ancestor
+    window.addEventListener('scroll', updateDropdownPosition, true)
+  } else {
+    window.removeEventListener('resize', updateDropdownPosition)
+    window.removeEventListener('scroll', updateDropdownPosition, true)
+  }
+}
+
+watch(showProductDropdown, onShowProductDropdown)
 
 const removeProduct = (index) => {
   localData.value.products.splice(index, 1)
@@ -171,6 +202,9 @@ onBeforeUnmount(() => {
   if (emitTimer.value) {
     clearTimeout(emitTimer.value)
   }
+  // cleanup any listeners attached by dropdown positioning
+  window.removeEventListener('resize', updateDropdownPosition)
+  window.removeEventListener('scroll', updateDropdownPosition, true)
 })
 </script>
 
@@ -235,7 +269,9 @@ onBeforeUnmount(() => {
         <label class="form-label">Hàng hoá nhập</label>
         <div class="relative">
           <input
+            ref="productInputRef"
             v-model="productSearchTerm"
+            @input="updateDropdownPosition"
             @focus="showProductDropdown = true"
             @blur="handleProductBlur"
             type="text"
@@ -243,7 +279,7 @@ onBeforeUnmount(() => {
             class="search-input"
           />
 
-          <div v-if="showProductDropdown" class="dropdown-menu">
+          <div v-if="showProductDropdown" :style="dropdownStyle" class="dropdown-menu floating-dropdown">
             <div
               v-for="product in filteredProducts"
               :key="product.code"
@@ -273,7 +309,10 @@ onBeforeUnmount(() => {
           </div>
         </div>
       </div>
-      <div v-if="props.errors && props.errors.products && props.errors.products.__global" class="text-red-500 text-xs mb-2">
+      <div
+        v-if="props.errors && props.errors.products && props.errors.products.__global"
+        class="text-red-500 text-xs mb-2"
+      >
         {{ props.errors.products.__global }}
       </div>
 
@@ -314,7 +353,15 @@ onBeforeUnmount(() => {
                   min="1"
                   class="quantity-input"
                 />
-                <div v-if="props.errors && props.errors.products && props.errors.products[product.id] && props.errors.products[product.id].quantity" class="text-red-500 text-xs mt-1">
+                <div
+                  v-if="
+                    props.errors &&
+                    props.errors.products &&
+                    props.errors.products[product.id] &&
+                    props.errors.products[product.id].quantity
+                  "
+                  class="text-red-500 text-xs mt-1"
+                >
                   {{ props.errors.products[product.id].quantity }}
                 </div>
               </td>
@@ -326,7 +373,15 @@ onBeforeUnmount(() => {
                   min="0"
                   class="price-input"
                 />
-                <div v-if="props.errors && props.errors.products && props.errors.products[product.id] && props.errors.products[product.id].unitPrice" class="text-red-500 text-xs mt-1">
+                <div
+                  v-if="
+                    props.errors &&
+                    props.errors.products &&
+                    props.errors.products[product.id] &&
+                    props.errors.products[product.id].unitPrice
+                  "
+                  class="text-red-500 text-xs mt-1"
+                >
                   {{ props.errors.products[product.id].unitPrice }}
                 </div>
               </td>
@@ -517,5 +572,14 @@ onBeforeUnmount(() => {
 
 .total-section {
   @apply flex-col items-start gap-1;
+}
+
+.floating-dropdown {
+  position: fixed;
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  overflow-y: auto;
 }
 </style>
