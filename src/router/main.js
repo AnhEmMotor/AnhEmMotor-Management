@@ -38,7 +38,7 @@ const router = createRouter({
     },
     {
       name: 'revenue-analysis',
-      path: '/revenue',
+      path: '/report-revenue',
       component: RevenueAnalysis,
     },
     {

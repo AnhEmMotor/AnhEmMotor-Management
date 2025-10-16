@@ -5,7 +5,12 @@ defineProps({
   itemData: Object,
   isOpen: Boolean,
 })
-defineEmits(['toggle-detail'])
+const emit = defineEmits(['toggle-detail', 'edit', 'copy', 'cancel-request'])
+
+function handleEditClick() {
+  emit('toggle-detail')
+  emit('edit')
+}
 
 function formatCurrency(value) {
   if (!value && value !== 0) return ''
@@ -63,6 +68,29 @@ function getStatusColor(status) {
       <div class="flex justify-between items-center pt-2">
         <div class="text-gray-500">Cần trả NCC</div>
         <div class="font-semibold text-red-600">{{ formatCurrency(itemData.payable) }}</div>
+      </div>
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button
+          v-if="itemData.status !== 'Đã hủy' && itemData.status !== 'Đã nhập hàng'"
+          @click.stop="handleEditClick()"
+          class="text-xs bg-red-600 text-white py-1 px-2 rounded"
+        >
+          Chỉnh sửa
+        </button>
+        <button
+          v-if="itemData.status !== 'Đã hủy'"
+          @click.stop="$emit('copy')"
+          class="text-xs border border-gray-300 py-1 px-2 rounded"
+        >
+          Sao chép
+        </button>
+        <button
+          v-if="itemData.status !== 'Đã hủy' && itemData.status !== 'Đã nhập hàng'"
+          @click.stop="$emit('cancel-request')"
+          class="text-xs border border-gray-300 py-1 px-2 rounded text-red-600"
+        >
+          Hủy
+        </button>
       </div>
     </div>
   </div>

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onBeforeUnmount, computed } from 'vue'
+import { ref, onBeforeUnmount, computed, onMounted } from 'vue'
 import IconMaximize from '@/components/icons/IconMaximize.vue'
 import IconMinimize from '@/components/icons/IconMinimize.vue'
 import IconClose from '@/components/icons/IconClose.vue'
@@ -18,6 +18,10 @@ const props = defineProps({
     type: Function,
     required: false,
   },
+  width: {
+    type: String,
+    default: '500px',
+  },
 })
 const emit = defineEmits(['close', 'activate', 'refresh'])
 
@@ -25,37 +29,54 @@ const emit = defineEmits(['close', 'activate', 'refresh'])
 const hasRefreshListener = computed(() => !!props.onRefresh)
 
 const modalRef = ref(null)
-const position = ref({ x: props.initialPosition.x, y: props.initialPosition.y })
+const positionX = ref(props.initialPosition.x)
+const positionY = ref(props.initialPosition.y)
 const isDragging = ref(false)
 const dragOffset = ref({ x: 0, y: 0 })
 const isMaximized = ref(false)
-const previousPosition = ref(null)
+const previousPosition = ref({ x: 0, y: 0 })
+
+// Initialize position on mount
+onMounted(() => {
+  positionX.value = props.initialPosition.x
+  positionY.value = props.initialPosition.y
+})
 
 const toggleMaximize = () => {
   isMaximized.value = !isMaximized.value
   if (isMaximized.value) {
-    previousPosition.value = { x: position.value.x, y: position.value.y }
-    position.value = { x: 0, y: 0 }
+    // Save current position before maximizing
+    previousPosition.value.x = positionX.value
+    previousPosition.value.y = positionY.value
+    positionX.value = 0
+    positionY.value = 0
   } else {
-    position.value = previousPosition.value
-    previousPosition.value = null
+    // Restore previous position
+    positionX.value = previousPosition.value.x
+    positionY.value = previousPosition.value.y
   }
 }
+
 const startDrag = (event) => {
   if (isMaximized.value) return
   emit('activate')
   isDragging.value = true
-  dragOffset.value.x = event.clientX - position.value.x
-  dragOffset.value.y = event.clientY - position.value.y
+  dragOffset.value.x = event.clientX - positionX.value
+  dragOffset.value.y = event.clientY - positionY.value
   window.addEventListener('mousemove', doDrag)
   window.addEventListener('mouseup', stopDrag)
 }
+
 const doDrag = (event) => {
-  if (isDragging.value) {
-    position.value.x = event.clientX - dragOffset.value.x
-    position.value.y = event.clientY - dragOffset.value.y
-  }
+  if (!isDragging.value) return
+
+  // Use requestAnimationFrame for smooth dragging
+  requestAnimationFrame(() => {
+    positionX.value = event.clientX - dragOffset.value.x
+    positionY.value = event.clientY - dragOffset.value.y
+  })
 }
+
 const stopDrag = () => {
   isDragging.value = false
   window.removeEventListener('mousemove', doDrag)
@@ -76,7 +97,12 @@ onBeforeUnmount(() => {
         'is-maximized': isMaximized,
         'is-dragging': isDragging,
       }"
-      :style="{ top: position.y + 'px', left: position.x + 'px', zIndex: zIndex }"
+      :style="{
+        top: positionY + 'px',
+        left: positionX + 'px',
+        zIndex: zIndex,
+        width: isMaximized ? '100%' : width,
+      }"
       @mousedown.self="emit('activate')"
     >
       <div class="modal-header" @mousedown="!isMaximized && startDrag($event)">
@@ -170,6 +196,7 @@ onBeforeUnmount(() => {
 .modal-footer {
   display: flex;
   justify-content: flex-end;
+  gap: 8px;
   padding: 10px 20px;
   border-top: 1px solid #e5e5e5;
   background-color: #f7f7f7;

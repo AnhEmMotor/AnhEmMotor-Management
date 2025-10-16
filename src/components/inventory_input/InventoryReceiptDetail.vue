@@ -4,9 +4,25 @@ import BaseDateTimePicker from '../ui/input/BaseDateTimePicker.vue'
 import BaseTextarea from '../ui/input/BaseTextarea.vue'
 import BaseInput from '../ui/input/BaseInput.vue'
 
-defineProps({
+const props = defineProps({
   itemData: Object,
 })
+
+defineEmits(['edit', 'cancel-request', 'copy', 'complete-request', 'save-notes'])
+
+import { ref, watch, toRefs } from 'vue'
+
+const { itemData } = toRefs(props)
+
+const notes = ref('')
+
+watch(
+  itemData,
+  (v) => {
+    notes.value = v && v.notes ? v.notes : ''
+  },
+  { immediate: true, deep: true },
+)
 
 function formatCurrency(value) {
   if (!value && value !== 0) return ''
@@ -83,20 +99,6 @@ const totalDiscount = (products) => {
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200 text-sm">
-          <tr v-if="itemData.status !== 'Đã hủy'">
-            <td class="p-1.5">
-              <BaseInput placeholder="Tìm mã hàng" />
-            </td>
-            <td class="p-1.5">
-              <BaseInput placeholder="Tìm tên hàng" />
-            </td>
-            <td colspan="5" class="p-1.5"></td>
-          </tr>
-          <tr v-else>
-            <td colspan="7" class="p-1.5 bg-gray-100 text-center text-xs text-gray-500 italic">
-              Phiếu nhập đã bị hủy. Không thể chỉnh sửa chi tiết hàng hóa.
-            </td>
-          </tr>
           <tr
             v-for="(product, index) in itemData.products"
             :key="product.code"
@@ -119,12 +121,7 @@ const totalDiscount = (products) => {
     <!-- Tổng kết và Ghi chú -->
     <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-6 items-center">
       <div class="flex-1">
-        <BaseTextarea
-          placeholder="Ghi chú..."
-          :rows="3"
-          :model-value="itemData.notes"
-          :readonly="itemData.status === 'Đã hủy'"
-        />
+        <BaseTextarea v-model="notes" placeholder="Ghi chú..." :rows="3" />
       </div>
       <div class="w-full md:w-64 space-y-1 text-xs">
         <div class="flex justify-between">
@@ -144,6 +141,8 @@ const totalDiscount = (products) => {
     <div class="flex justify-between items-center mt-4 pt-5 border-t border-gray-200">
       <div class="flex items-center space-x-3">
         <button
+          @click="$emit('cancel-request', itemData)"
+          :disabled="itemData.status === 'Đã hủy' || itemData.status === 'Đã nhập hàng'"
           class="flex items-center space-x-1.5 text-gray-600 py-1.5 px-3 rounded-md hover:bg-gray-100 text-xs font-medium transition duration-150"
         >
           <svg
@@ -163,6 +162,7 @@ const totalDiscount = (products) => {
           <span>Hủy</span>
         </button>
         <button
+          @click="$emit('copy', itemData)"
           class="flex items-center space-x-1.5 text-gray-600 py-1.5 px-3 rounded-md hover:bg-gray-100 text-xs font-medium transition duration-150"
         >
           <svg
@@ -184,6 +184,8 @@ const totalDiscount = (products) => {
       </div>
       <div class="flex items-center space-x-2">
         <button
+          v-if="itemData.status !== 'Đã hủy' && itemData.status !== 'Đã nhập hàng'"
+          @click="$emit('edit', itemData)"
           class="bg-red-600 text-white py-1.5 px-3 rounded-md hover:bg-red-700 text-xs font-medium transition duration-150 flex items-center space-x-1.5"
         >
           <svg
@@ -203,6 +205,7 @@ const totalDiscount = (products) => {
           <span>Chỉnh sửa chi tiết phiếu</span>
         </button>
         <button
+          @click="$emit('save-notes', { id: itemData.id, notes: notes })"
           class="text-gray-600 py-1.5 px-3 rounded-md hover:bg-gray-100 text-xs font-medium transition duration-150 border border-gray-300"
         >
           Lưu
