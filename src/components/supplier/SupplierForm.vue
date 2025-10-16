@@ -8,20 +8,21 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  errors: {
+    type: Object,
+    default: () => ({}),
+  },
 })
 
-const emit = defineEmits(['update:modelValue', 'update:dirty'])
+const emit = defineEmits(['update:modelValue'])
 
 const localSupplier = ref({})
-const initialDataJson = ref('')
 
 watch(
   () => props.modelValue,
   (newVal) => {
     const copy = JSON.parse(JSON.stringify(newVal || {}))
     localSupplier.value = copy
-    initialDataJson.value = JSON.stringify(copy)
-    emit('update:dirty', false)
   },
   { immediate: true, deep: true },
 )
@@ -30,8 +31,6 @@ watch(
   localSupplier,
   (newVal) => {
     emit('update:modelValue', newVal)
-    const isNowDirty = JSON.stringify(newVal) !== initialDataJson.value
-    emit('update:dirty', isNowDirty)
   },
   { deep: true },
 )
@@ -42,30 +41,45 @@ watch(
   <form @submit.prevent>
     <div class="space-y-4 max-h-[70vh] overflow-y-auto px-2">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <BaseInput
-          label="Tên nhà cung cấp *"
-          v-model="localSupplier.name"
-          placeholder="Bắt buộc"
-          required
-        />
-        <BaseInput
-          label="Mã nhà cung cấp"
-          :modelValue="localSupplier.id || 'Tự động'"
-          :readonly="true"
-        />
-        <BaseInput
-          label="Điện thoại"
-          v-model="localSupplier.phone"
-          placeholder="Nhập số điện thoại"
-        />
-        <BaseInput
-          label="Email"
-          v-model="localSupplier.email"
-          type="email"
-          placeholder="email@gmail.com"
-        />
+        <div>
+          <BaseInput
+            label="Tên nhà cung cấp"
+            v-model="localSupplier.name"
+            placeholder="Bắt buộc"
+            required
+          />
+          <div v-if="errors && errors.name" class="text-red-500 text-xs mt-1">
+            {{ errors.name }}
+          </div>
+        </div>
+        <div>
+          <BaseInput
+            label="Điện thoại"
+            v-model="localSupplier.phone"
+            placeholder="Nhập số điện thoại"
+          />
+          <div v-if="errors && errors.phone" class="text-red-500 text-xs mt-1">
+            {{ errors.phone }}
+          </div>
+        </div>
+        <div>
+          <BaseInput
+            label="Email"
+            v-model="localSupplier.email"
+            type="email"
+            placeholder="email@gmail.com"
+          />
+          <div v-if="errors && errors.email" class="text-red-500 text-xs mt-1">
+            {{ errors.email }}
+          </div>
+        </div>
       </div>
-      <BaseInput label="Địa chỉ" v-model="localSupplier.address" placeholder="Nhập địa chỉ" />
+      <div>
+        <BaseInput label="Địa chỉ" v-model="localSupplier.address" placeholder="Nhập địa chỉ" />
+        <div v-if="errors && errors.address" class="text-red-500 text-xs mt-1">
+          {{ errors.address }}
+        </div>
+      </div>
       <BaseTextarea
         label="Ghi chú"
         v-model="localSupplier.notes"

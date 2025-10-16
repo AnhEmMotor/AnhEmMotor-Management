@@ -253,38 +253,31 @@ function executeConfirmation() {
 }
 
 // --- MODIFIED ---
-function openAddEditModal(supplier = null) {
-  const openNewForm = () => {
-    if (supplier) {
-      // Use a deep copy for editing and keep original state for refresh
-      originalSupplierOnEdit.value = JSON.parse(JSON.stringify(supplier))
-      editableSupplier.value = JSON.parse(JSON.stringify(supplier))
-      formModalTitle.value = 'Chỉnh sửa Nhà cung cấp'
-    } else {
-      // Reset for a new supplier
-      originalSupplierOnEdit.value = null
-      editableSupplier.value = {
-        name: '',
-        phone: '',
-        email: '',
-        address: '',
-      }
-      formModalTitle.value = 'Thêm Nhà cung cấp'
-    }
-    isFormDirty.value = false // Reset dirty state for the new form
-    formModalKey.value++
-    isFormModalVisible.value = true
-  }
+// Form validation errors
+const formErrors = ref({ name: '', phone: '', email: '', address: '' })
 
-  if (isFormModalVisible.value && isFormDirty.value) {
-    showConfirmation(
-      'Mở biểu mẫu mới?',
-      'Bạn có các thay đổi chưa lưu. Bạn có chắc muốn hủy và mở một biểu mẫu mới không?',
-      openNewForm,
-    )
+function openAddEditModal(supplier = null) {
+  // Reset form errors when opening a new form
+  formErrors.value = { name: '', phone: '', email: '', address: '' }
+  if (supplier) {
+    // Use a deep copy for editing and keep original state for refresh
+    originalSupplierOnEdit.value = JSON.parse(JSON.stringify(supplier))
+    editableSupplier.value = JSON.parse(JSON.stringify(supplier))
+    formModalTitle.value = 'Chỉnh sửa Nhà cung cấp'
   } else {
-    openNewForm()
+    // Reset for a new supplier
+    originalSupplierOnEdit.value = null
+    editableSupplier.value = {
+      name: '',
+      phone: '',
+      email: '',
+      address: '',
+    }
+    formModalTitle.value = 'Thêm Nhà cung cấp'
   }
+  isFormDirty.value = false // Reset dirty state for the new form
+  formModalKey.value++
+  isFormModalVisible.value = true
 }
 
 // --- NEW: Refresh handler ---
@@ -292,7 +285,7 @@ function handleFormRefresh() {
   const doRefresh = () => {
     if (originalSupplierOnEdit.value) {
       editableSupplier.value = JSON.parse(JSON.stringify(originalSupplierOnEdit.value))
-      isFormDirty.value = false // After refresh, form is no longer dirty
+      isFormDirty.value = false
       showMessage('Đã tải lại dữ liệu gốc của nhà cung cấp.')
     }
   }
@@ -326,10 +319,25 @@ function handleCloseFormModal() {
 // --- MODIFIED ---
 function handleSaveSupplier() {
   const supplierData = editableSupplier.value
-  if (!supplierData.name) {
-    showMessage('Tên nhà cung cấp là bắt buộc!', 'error')
-    return
+  // Reset errors
+  formErrors.value = { name: '', phone: '', email: '', address: '' }
+  let hasError = false
+  if (!supplierData.name || !supplierData.name.trim()) {
+    formErrors.value.name = 'Vui lòng nhập tên nhà cung cấp.'
+    hasError = true
   }
+  if (!supplierData.address || !supplierData.address.trim()) {
+    formErrors.value.address = 'Vui lòng nhập địa chỉ.'
+    hasError = true
+  }
+  // Phải có ít nhất 1 trong 2: phone hoặc email
+  if (!supplierData.phone && !supplierData.email) {
+    formErrors.value.phone = 'Cần nhập ít nhất SĐT hoặc Email.'
+    formErrors.value.email = 'Cần nhập ít nhất SĐT hoặc Email.'
+    hasError = true
+  }
+  if (hasError) return
+
   if (supplierData.id) {
     const index = suppliers.value.findIndex((s) => s.id === supplierData.id)
     if (index !== -1) {
@@ -568,7 +576,11 @@ onMounted(() => {
         <h2 class="font-bold text-lg">{{ formModalTitle }}</h2>
       </template>
       <template #body>
-        <SupplierForm v-model="editableSupplier" @update:dirty="isFormDirty = $event" />
+        <SupplierForm
+          v-model="editableSupplier"
+          :errors="formErrors"
+          @update:dirty="isFormDirty = $event"
+        />
       </template>
       <template #footer>
         <div class="flex justify-end space-x-2">
