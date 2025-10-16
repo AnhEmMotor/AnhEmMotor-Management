@@ -1,14 +1,15 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import * as XLSX from 'xlsx'
-import InventoryItem from '@/components/import/InventoryItem.vue'
+import InventoryItem from '@/components/InventoryInput/InventoryItem.vue'
 import BaseButton from '@/components/ui/button/BaseButton.vue'
 import BaseInput from '@/components/ui/input/BaseInput.vue'
 import BasePagination from '@/components/ui/button/BasePagination.vue'
-import InventoryFilterButtons from '@/components/import/InventoryFilterButtons.vue'
+import InventoryFilterButtons from '@/components/InventoryInput/InventoryFilterButtons.vue'
 
 const searchTerm = ref('')
 const selectedStatuses = ref([])
+const expandedItemId = ref(null)
 
 // Mock data
 const allInventoryItems = ref([
@@ -19,7 +20,6 @@ const allInventoryItems = ref([
     supplierName: 'NCC ĐỒNG NAI',
     payable: 3500000000,
     status: 'Đã nhập hàng',
-    isOpen: true,
     branch: 'Chi nhánh trung tâm',
     creator: 'Kim Ngân',
     importer: 'Kim Ngân',
@@ -32,11 +32,11 @@ const allInventoryItems = ref([
         unitPrice: 35000000,
         discount: 0,
         importPrice: 35000000,
-        total: 3500000000,
-      },
+        total: 3500000000
+      }
     ],
     notes: '',
-    paid: 3500000000,
+    paid: 3500000000
   },
   {
     id: 'PN000002',
@@ -45,7 +45,6 @@ const allInventoryItems = ref([
     supplierName: 'NCC PHÚ THỌ',
     payable: 3440700000,
     status: 'Phiếu tạm',
-    isOpen: false,
     branch: 'Chi nhánh TP.HCM',
     creator: 'Trần Văn A',
     importer: 'Lê Thị B',
@@ -58,7 +57,7 @@ const allInventoryItems = ref([
         unitPrice: 65000000,
         discount: 300000,
         importPrice: 64700000,
-        total: 1941000000,
+        total: 1941000000
       },
       {
         code: 'SP001002',
@@ -67,11 +66,11 @@ const allInventoryItems = ref([
         unitPrice: 30000000,
         discount: 0,
         importPrice: 30000000,
-        total: 1500000000,
-      },
+        total: 1500000000
+      }
     ],
     notes: 'Nhập hàng đầu tháng, số lượng lớn.',
-    paid: 1200000000,
+    paid: 1200000000
   },
   {
     id: 'PN000003',
@@ -80,7 +79,6 @@ const allInventoryItems = ref([
     supplierName: 'NCC QUẢNG NAM',
     payable: 0,
     status: 'Đã hủy',
-    isOpen: false,
     branch: 'Chi nhánh Đà Nẵng',
     creator: 'Nguyễn Văn C',
     importer: 'Đã hủy',
@@ -93,12 +91,12 @@ const allInventoryItems = ref([
         unitPrice: 12500000,
         discount: 0,
         importPrice: 12500000,
-        total: 500000000,
-      },
+        total: 500000000
+      }
     ],
     notes: 'Đã hủy do lỗi đặt hàng sai mẫu mã.',
-    paid: 0,
-  },
+    paid: 0
+  }
 ])
 
 const filteredItems = computed(() => {
@@ -116,7 +114,7 @@ const filteredItems = computed(() => {
       (item) =>
         item.id.toLowerCase().includes(lowerCaseSearchTerm) ||
         item.supplierName.toLowerCase().includes(lowerCaseSearchTerm) ||
-        item.supplierCode.toLowerCase().includes(lowerCaseSearchTerm),
+        item.supplierCode.toLowerCase().includes(lowerCaseSearchTerm)
     )
   }
 
@@ -124,16 +122,7 @@ const filteredItems = computed(() => {
 })
 
 function handleToggleDetail(itemId) {
-  const clickedItem = allInventoryItems.value.find((i) => i.id === itemId)
-  if (clickedItem) {
-    const wasOpen = clickedItem.isOpen
-    allInventoryItems.value.forEach((item) => {
-      item.isOpen = false
-    })
-    if (!wasOpen) {
-      clickedItem.isOpen = true
-    }
-  }
+  expandedItemId.value = expandedItemId.value === itemId ? null : itemId
 }
 
 const totalPages = ref(5)
@@ -164,7 +153,7 @@ const exportExcel = () => {
     'Người Nhập': item.importer,
     'Ngày Nhập': item.importDate,
     'Đã Trả NCC': item.paid,
-    'Ghi Chú': item.notes,
+    'Ghi Chú': item.notes
   }))
   const workbook = XLSX.utils.book_new()
   const worksheet = XLSX.utils.json_to_sheet(exportData)
@@ -180,7 +169,7 @@ const exportExcel = () => {
     { wch: 15 },
     { wch: 15 },
     { wch: 15 },
-    { wch: 30 },
+    { wch: 30 }
   ]
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Danh Sách Phiếu Nhập')
   const currentDate = new Date().toISOString().split('T')[0]
@@ -231,6 +220,7 @@ const exportExcel = () => {
         v-for="item in filteredItems"
         :key="item.id"
         :itemData="item"
+                :is-open="item.id === expandedItemId"
         @toggle-detail="handleToggleDetail"
       />
     </div>

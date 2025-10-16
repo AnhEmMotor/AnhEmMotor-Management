@@ -5,7 +5,8 @@ import CustomerManager from '@/views/CustomerManager.vue'
 import ProductsManager from '@/views/ProductsManager.vue'
 import ProductReport from '@/views/ProductReport.vue'
 import RevenueAnalysis from '@/views/RevenueAnalysis.vue'
-import InventoryManager from '@/views/InventoryManager.vue'
+import InventoryInputManager from '@/views/InventoryInputManager.vue'
+import SupplierManager from '@/views/SupplierManager.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -43,7 +44,12 @@ const router = createRouter({
     {
       name: 'inventory-input',
       path: '/inputs',
-      component: InventoryManager,
+      component: InventoryInputManager,
+    },
+    {
+      name: 'supplier',
+      path: '/suppliers',
+      component: SupplierManager,
     },
   ],
 })
