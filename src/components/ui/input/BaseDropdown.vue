@@ -12,7 +12,6 @@ defineProps({
   options: {
     type: Array,
     required: true,
-    validator: (value) => value.every((opt) => 'value' in opt && 'text' in opt),
   },
   placeholder: {
     type: String,
