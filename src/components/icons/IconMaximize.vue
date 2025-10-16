@@ -1,0 +1,23 @@
+<template>
+  <svg
+    width="12px"
+    height="12px"
+    viewBox="0 0 16 16"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    stroke="#ff0000"
+  >
+    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+    <g id="SVGRepo_iconCarrier">
+      <path
+        d="M10 0L9 1L11.2929 3.29289L8.29289 6.29289L9.70711 7.70711L12.7071 4.70711L15 7L16 6L16 0H10Z"
+        fill="#ff0000"
+      ></path>
+      <path
+        d="M0 16H6L7 15L4.70711 12.7071L7.70711 9.70711L6.29289 8.29289L3.29289 11.2929L1 9L0 10V16Z"
+        fill="#ff0000"
+      ></path>
+    </g>
+  </svg>
+</template>
