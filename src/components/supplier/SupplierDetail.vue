@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import RoundBadge from '@/components/ui/RoundBadge.vue'
 
 defineProps({
   itemData: Object,
@@ -10,55 +11,59 @@ const activeTab = ref('info')
 
 // Hàm định dạng tiền tệ (hiển thị)
 const currencyFormatter = new Intl.NumberFormat('vi-VN', {
-    style: 'decimal',
-    minimumFractionDigits: 0
-});
+  style: 'decimal',
+  minimumFractionDigits: 0,
+})
 
 function formatCurrency(number) {
-    if (typeof number !== 'number') return '0';
-    return currencyFormatter.format(number) + '';
+  if (typeof number !== 'number') return '0'
+  return currencyFormatter.format(number) + ''
 }
 
 // Hàm chuyển timestamp sang định dạng ngày tháng
 function formatDate(timestamp) {
-    if (!timestamp) return '';
-    const date = new Date(timestamp);
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
+  if (!timestamp) return ''
+  const date = new Date(timestamp)
+  const day = date.getDate().toString().padStart(2, '0')
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  const year = date.getFullYear()
+  return `${day}/${month}/${year}`
 }
 
 // Hàm chuyển timestamp sang định dạng ngày tháng và giờ (dd/mm/yyyy hh:mm)
 function formatDateTime(timestamp) {
-    if (!timestamp) return '';
-    const date = new Date(timestamp);
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear();
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${day}/${month}/${year} ${hours}:${minutes}`;
-}
-
-function getTransactionStatusClass(status) {
-  return status === 'Đã nhập hàng' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-700'
+  if (!timestamp) return ''
+  const date = new Date(timestamp)
+  const day = date.getDate().toString().padStart(2, '0')
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  const year = date.getFullYear()
+  const hours = date.getHours().toString().padStart(2, '0')
+  const minutes = date.getMinutes().toString().padStart(2, '0')
+  return `${day}/${month}/${year} ${hours}:${minutes}`
 }
 </script>
 
 <template>
-  <div class="p-3 border-t border-gray-200 bg-white">
+  <div class="p-3 px-10 border-t border-gray-200 bg-white">
     <div class="flex border-b border-gray-200 mb-3 space-x-5">
       <button
         class="py-1.5 text-sm"
-        :class="activeTab === 'info' ? 'font-semibold border-b-2 border-red-500 text-red-600' : 'text-gray-600 hover:text-gray-800'"
+        :class="
+          activeTab === 'info'
+            ? 'font-semibold border-b-2 border-red-500 text-red-600'
+            : 'text-gray-600 hover:text-gray-800'
+        "
         @click="activeTab = 'info'"
       >
         Thông tin
       </button>
       <button
         class="py-1.5 text-sm"
-        :class="activeTab === 'history' ? 'font-semibold border-b-2 border-red-500 text-red-600' : 'text-gray-600 hover:text-gray-800'"
+        :class="
+          activeTab === 'history'
+            ? 'font-semibold border-b-2 border-red-500 text-red-600'
+            : 'text-gray-600 hover:text-gray-800'
+        "
         @click="activeTab = 'history'"
       >
         Lịch sử nhập hàng
@@ -93,9 +98,8 @@ function getTransactionStatusClass(status) {
         <div class="text-sm col-span-1 md:col-span-2 lg:col-span-3">
           <span class="text-gray-500 block">Địa chỉ</span>
           <span class="font-medium text-gray-800">{{
-            [itemData.address, itemData.ward, itemData.cityDistrict]
-              .filter(Boolean)
-              .join(', ') || 'Chưa có'
+            [itemData.address, itemData.ward, itemData.cityDistrict].filter(Boolean).join(', ') ||
+            'Chưa có'
           }}</span>
         </div>
       </div>
@@ -137,7 +141,10 @@ function getTransactionStatusClass(status) {
 
     <div v-show="activeTab === 'history'">
       <div
-        v-if="itemData.transactions && itemData.transactions.filter((t) => t.status === 'Đã nhập hàng').length > 0"
+        v-if="
+          itemData.transactions &&
+          itemData.transactions.filter((t) => t.status === 'Đã nhập hàng').length > 0
+        "
         class="p-4 border border-gray-200 rounded-lg bg-white"
       >
         <h4 class="font-semibold text-gray-800 mb-3">Lịch sử giao dịch</h4>
@@ -161,11 +168,9 @@ function getTransactionStatusClass(status) {
             <div class="text-gray-600">{{ t.creator }}</div>
             <div class="text-right font-medium">{{ formatCurrency(t.total) }}</div>
             <div class="text-right">
-              <span
-                class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full"
-                :class="getTransactionStatusClass(t.status)"
-                >{{ t.status }}</span
-              >
+              <RoundBadge :color="t.status === 'Đã nhập hàng' ? 'green' : 'gray'">
+                {{ t.status }}
+              </RoundBadge>
             </div>
           </div>
         </div>

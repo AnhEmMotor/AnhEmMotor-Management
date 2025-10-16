@@ -1,0 +1,46 @@
+<template>
+  <svg
+    width="16px"
+    height="16px"
+    id="Layer_1"
+    xmlns="http://www.w3.org/2000/svg"
+    version="1.1"
+    viewBox="0 0 12 12"
+  >
+    <g id="SVGRepo_iconCarrier">
+      <path class="st1" d="M8.5,3.5l-2.5,2.5M6,6h1.88M6,6v-1.88" />
+      <path
+        class="st0"
+        d="M1,9c0-.94,0-1.41.29-1.71.29-.29.76-.29,1.71-.29s1.41,0,1.71.29c.29.29.29.76.29,1.71s0,1.41-.29,1.71c-.29.29-.76.29-1.71.29s-1.41,0-1.71-.29c-.29-.29-.29-.76-.29-1.71Z"
+      />
+      <path
+        class="st2"
+        d="M6,1c2.36,0,3.54,0,4.27.73.73.73.73,1.91.73,4.27s0,3.54-.73,4.27c-.68.68-1.74.73-3.77.73M1,5.5c0-2.03.05-3.09.73-3.77.49-.49,1.17-.65,2.27-.7"
+      />
+    </g>
+  </svg>
+</template>
+
+<style scoped>
+.st0,
+.st1,
+.st2 {
+  fill: none;
+  stroke: red;
+  stroke-width: 1.3px;
+}
+
+.st0,
+.st2 {
+  stroke-miterlimit: 2;
+}
+
+.st1 {
+  stroke-linejoin: round;
+}
+
+.st1,
+.st2 {
+  stroke-linecap: round;
+}
+</style>

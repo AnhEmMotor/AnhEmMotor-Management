@@ -31,24 +31,24 @@ const props = defineProps({
 const emit = defineEmits(['toggle'])
 const colorClasses = {
   blue: {
-    active: 'bg-blue-500 text-white',
-    inactive: 'bg-transparent text-blue-600 hover:bg-blue-100',
+    active: 'bg-blue-500 text-white border border-blue-500',
+    inactive: 'bg-transparent text-blue-600 hover:bg-blue-100 border border-blue-300',
   },
   gray: {
-    active: 'bg-gray-500 text-white',
-    inactive: 'bg-transparent text-gray-600 hover:bg-gray-100',
+    active: 'bg-gray-500 text-white border border-gray-500',
+    inactive: 'bg-transparent text-gray-600 hover:bg-gray-100 border border-gray-300',
   },
   green: {
-    active: 'bg-green-500 text-white',
-    inactive: 'bg-transparent text-green-600 hover:bg-green-100',
+    active: 'bg-green-500 text-white border border-green-500',
+    inactive: 'bg-transparent text-green-600 hover:bg-green-100 border border-green-300',
   },
   yellow: {
-    active: 'bg-yellow-500 text-white',
-    inactive: 'bg-transparent text-yellow-600 hover:bg-yellow-100',
+    active: 'bg-yellow-500 text-white border border-yellow-500',
+    inactive: 'bg-transparent text-yellow-600 hover:bg-yellow-100 border border-yellow-300',
   },
   red: {
-    active: 'bg-red-500 text-white',
-    inactive: 'bg-transparent text-red-600 hover:bg-red-100',
+    active: 'bg-red-500 text-white border border-red-500',
+    inactive: 'bg-transparent text-red-600 hover:bg-red-100 border border-red-300',
   },
 }
 
