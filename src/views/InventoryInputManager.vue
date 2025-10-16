@@ -9,6 +9,7 @@ import InventoryFilterButtons from '@/components/inventory_input/InventoryFilter
 import DraggableModal from '@/components/ui/DraggableModal.vue'
 import InventoryInputForm from '@/components/inventory_input/InventoryInputForm.vue'
 import ProductForm from '@/components/product/ProductForm.vue'
+import FullScreenModal from '@/components/ui/FullScreenModal.vue'
 
 const searchTerm = ref('')
 const selectedStatuses = ref([])
@@ -183,11 +184,16 @@ const exportExcel = () => {
 // Modal states
 const showInventoryModal = ref(false)
 const showProductModal = ref(false)
+const showConfirmModal = ref(false)
+const confirmModalTitle = ref('')
+const confirmModalMessage = ref('')
+const confirmAction = ref(null)
 const currentInventoryData = ref({
   supplier: null,
   products: [],
   notes: '',
 })
+const inventoryErrors = ref({ supplier: '', products: {} })
 const isEditMode = ref(false)
 const currentProductData = ref({
   code: '',
@@ -214,6 +220,7 @@ const openEditInventoryModal = (item) => {
   isEditMode.value = true
   // Chuyển đổi dữ liệu phiếu nhập sang format của form
   currentInventoryData.value = {
+    id: item.id,
     supplier: {
       code: item.supplierCode,
       name: item.supplierName,
@@ -255,36 +262,203 @@ const closeProductModal = () => {
   showProductModal.value = false
 }
 
+// Clear inline errors when user modifies the current inventory data
+watch(
+  () => currentInventoryData.value,
+  () => {
+    inventoryErrors.value = { supplier: '', products: {} }
+  },
+  { deep: true },
+)
+
+// Lưu phiếu nhập
+// Validation helper
+function validateInventory(data) {
+  const errors = { supplier: '', products: {} }
+  if (!data.supplier) {
+    errors.supplier = 'Vui lòng chọn nhà cung cấp'
+  }
+  if (!data.products || data.products.length === 0) {
+    errors.products.__global = 'Vui lòng thêm ít nhất một sản phẩm'
+    return errors
+  }
+  data.products.forEach((p) => {
+    const per = {}
+    if (Number(p.quantity) <= 0) {
+      per.quantity = 'Số lượng phải lớn hơn 0'
+    }
+    if (Number(p.unitPrice) < 0) {
+      per.unitPrice = 'Đơn giá không được nhỏ hơn 0'
+    }
+    if (Object.keys(per).length > 0) {
+      errors.products[p.id] = per
+    }
+  })
+  return errors
+}
+
 // Lưu phiếu nhập
 const saveInventoryReceipt = () => {
-  if (!currentInventoryData.value.supplier) {
-    alert('Vui lòng chọn nhà cung cấp')
+  // Validate inventory data
+  const errors = validateInventory(currentInventoryData.value)
+  if (Object.keys(errors.products).length > 0 || errors.supplier) {
+    inventoryErrors.value = errors
+    // keep modal open and show inline errors
     return
   }
-  if (currentInventoryData.value.products.length === 0) {
-    alert('Vui lòng thêm ít nhất một sản phẩm')
-    return
+  // clear errors
+  inventoryErrors.value = { supplier: '', products: {} }
+
+  // Compute totals
+  const computedProducts = currentInventoryData.value.products.map((p) => ({
+    code: p.code,
+    name: p.name,
+    quantity: Number(p.quantity) || 0,
+    unitPrice: Number(p.unitPrice) || 0,
+    discount: p.discount || 0,
+    importPrice: p.importPrice || p.unitPrice || 0,
+    total: Number(p.total) || (Number(p.quantity) || 0) * (Number(p.unitPrice) || 0),
+  }))
+
+  const payable = computedProducts.reduce((s, p) => s + (p.total || 0), 0)
+
+  if (isEditMode.value) {
+    // Find existing receipt by matching supplier + date or by id if provided in model
+    // We expect that when editing, the parent passed the original id as currentInventoryData.id
+    const existingId = currentInventoryData.value.id
+    if (existingId) {
+      const idx = allInventoryItems.value.findIndex((it) => it.id === existingId)
+      if (idx !== -1) {
+        allInventoryItems.value[idx] = {
+          ...allInventoryItems.value[idx],
+          supplierCode: currentInventoryData.value.supplier.code,
+          supplierName: currentInventoryData.value.supplier.name,
+          products: computedProducts,
+          payable,
+          notes: currentInventoryData.value.notes || '',
+          status: 'Phiếu tạm',
+        }
+        alert('Đã lưu thay đổi phiếu nhập!')
+        closeInventoryModal()
+        return
+      }
+    }
+    // If no id or not found, fallthrough to create new
   }
 
-  // Logic lưu phiếu nhập
-  console.log('Lưu phiếu nhập:', currentInventoryData.value)
+  // Create new receipt
+  const newIdNumber = allInventoryItems.value.length + 1
+  const newId = `PN${String(newIdNumber).padStart(6, '0')}`
+  const now = new Date()
+  const timeStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(
+    2,
+    '0',
+  )}/${now.getFullYear()} ${String(now.getHours()).padStart(2, '0')}:${String(
+    now.getMinutes(),
+  ).padStart(2, '0')}`
+
+  const newReceipt = {
+    id: newId,
+    time: timeStr,
+    supplierCode: currentInventoryData.value.supplier.code,
+    supplierName: currentInventoryData.value.supplier.name,
+    payable,
+    status: 'Phiếu tạm',
+    branch: 'Chi nhánh trung tâm',
+    creator: 'Người dùng',
+    importer: 'Người dùng',
+    importDate: now.toISOString().split('T')[0],
+    products: computedProducts,
+    notes: currentInventoryData.value.notes || '',
+    paid: 0,
+  }
+
+  allInventoryItems.value.unshift(newReceipt)
   alert('Đã lưu phiếu nhập thành công!')
   closeInventoryModal()
 }
 
 // Hoàn thành phiếu nhập
 const completeInventoryReceipt = () => {
-  if (!currentInventoryData.value.supplier) {
-    alert('Vui lòng chọn nhà cung cấp')
+  const errors = validateInventory(currentInventoryData.value)
+  if (Object.keys(errors.products).length > 0 || errors.supplier) {
+    inventoryErrors.value = errors
     return
   }
-  if (currentInventoryData.value.products.length === 0) {
-    alert('Vui lòng thêm ít nhất một sản phẩm')
-    return
+  inventoryErrors.value = { supplier: '', products: {} }
+
+  // Compute totals similarly to save
+  const computedProducts = currentInventoryData.value.products.map((p) => ({
+    code: p.code,
+    name: p.name,
+    quantity: Number(p.quantity) || 0,
+    unitPrice: Number(p.unitPrice) || 0,
+    discount: p.discount || 0,
+    importPrice: p.importPrice || p.unitPrice || 0,
+    total: Number(p.total) || (Number(p.quantity) || 0) * (Number(p.unitPrice) || 0),
+  }))
+
+  const payable = computedProducts.reduce((s, p) => s + (p.total || 0), 0)
+
+  if (isEditMode.value) {
+    const existingId = currentInventoryData.value.id
+    if (existingId) {
+      const idx = allInventoryItems.value.findIndex((it) => it.id === existingId)
+      if (idx !== -1) {
+        const now = new Date()
+        allInventoryItems.value[idx] = {
+          ...allInventoryItems.value[idx],
+          supplierCode: currentInventoryData.value.supplier.code,
+          supplierName: currentInventoryData.value.supplier.name,
+          products: computedProducts,
+          payable,
+          paid: payable,
+          status: 'Đã nhập hàng',
+          importer: 'Người dùng',
+          importDate: now.toISOString().split('T')[0],
+          time: `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(
+            2,
+            '0',
+          )}/${now.getFullYear()} ${String(now.getHours()).padStart(2, '0')}:${String(
+            now.getMinutes(),
+          ).padStart(2, '0')}`,
+        }
+        alert('Đã hoàn thành phiếu nhập!')
+        closeInventoryModal()
+        return
+      }
+    }
+    // If editing but id not found, fallthrough to create new completed receipt
   }
 
-  // Logic hoàn thành phiếu nhập
-  console.log('Hoàn thành phiếu nhập:', currentInventoryData.value)
+  // Create new completed receipt
+  const newIdNumber = allInventoryItems.value.length + 1
+  const newId = `PN${String(newIdNumber).padStart(6, '0')}`
+  const now = new Date()
+  const timeStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(
+    2,
+    '0',
+  )}/${now.getFullYear()} ${String(now.getHours()).padStart(2, '0')}:${String(
+    now.getMinutes(),
+  ).padStart(2, '0')}`
+
+  const newReceipt = {
+    id: newId,
+    time: timeStr,
+    supplierCode: currentInventoryData.value.supplier.code,
+    supplierName: currentInventoryData.value.supplier.name,
+    payable,
+    status: 'Đã nhập hàng',
+    branch: 'Chi nhánh trung tâm',
+    creator: 'Người dùng',
+    importer: 'Người dùng',
+    importDate: now.toISOString().split('T')[0],
+    products: computedProducts,
+    notes: currentInventoryData.value.notes || '',
+    paid: payable,
+  }
+
+  allInventoryItems.value.unshift(newReceipt)
   alert('Đã hoàn thành phiếu nhập!')
   closeInventoryModal()
 }
@@ -308,6 +482,65 @@ const saveNewProduct = () => {
 
   currentInventoryData.value.products.push(newProduct)
   closeProductModal()
+}
+
+// Handlers for copy / cancel requests from list items
+const handleCopyReceipt = (item) => {
+  // Create a deep copy and open modal in new (temporary) mode
+  const copyData = JSON.parse(JSON.stringify(item))
+  // Reset id so save creates a new one, set status to temporary and clear paid
+  delete copyData.id
+  copyData.status = 'Phiếu tạm'
+  copyData.paid = 0
+  // Map to form shape
+  currentInventoryData.value = {
+    supplier: {
+      code: copyData.supplierCode,
+      name: copyData.supplierName,
+      phone: '0123456789',
+    },
+    products: copyData.products.map((p) => ({
+      id: Date.now() + Math.random(),
+      code: p.code,
+      name: p.name,
+      quantity: p.quantity,
+      unitPrice: p.unitPrice,
+      total: p.total,
+    })),
+    notes: copyData.notes || '',
+  }
+  isEditMode.value = false
+  showInventoryModal.value = true
+}
+
+const handleCancelRequest = (item) => {
+  confirmModalTitle.value = 'Xác nhận huỷ phiếu'
+  confirmModalMessage.value = `Bạn có chắc muốn huỷ phiếu ${item.id}? Hành động này không thể hoàn tác.`
+  confirmAction.value = () => confirmCancel(item)
+  showConfirmModal.value = true
+}
+
+const confirmCancel = (item) => {
+  const idx = allInventoryItems.value.findIndex((it) => it.id === item.id)
+  if (idx !== -1) {
+    allInventoryItems.value[idx] = {
+      ...allInventoryItems.value[idx],
+      status: 'Đã hủy',
+    }
+  }
+  showConfirmModal.value = false
+}
+
+// Save notes handler from detail component
+const handleSaveNotes = ({ id, notes }) => {
+  const idx = allInventoryItems.value.findIndex((it) => it.id === id)
+  if (idx !== -1) {
+    allInventoryItems.value[idx] = {
+      ...allInventoryItems.value[idx],
+      notes: notes || '',
+    }
+    alert('Ghi chú đã được lưu')
+  }
 }
 </script>
 
@@ -356,6 +589,9 @@ const saveNewProduct = () => {
         :is-open="item.id === expandedItemId"
         @toggle-detail="handleToggleDetail"
         @edit="openEditInventoryModal"
+        @copy="handleCopyReceipt"
+        @cancel-request="handleCancelRequest"
+        @save-notes="handleSaveNotes"
       />
     </div>
 
@@ -383,6 +619,7 @@ const saveNewProduct = () => {
         <InventoryInputForm
           v-model="currentInventoryData"
           :is-edit-mode="isEditMode"
+          :errors="inventoryErrors"
           @add-product="openProductModal"
         />
       </template>
@@ -432,6 +669,31 @@ const saveNewProduct = () => {
         <BaseButton text="Thêm sản phẩm" color="green" @click="saveNewProduct" />
       </template>
     </DraggableModal>
+
+    <!-- Confirm modal (Full screen) -->
+    <FullScreenModal
+      :show="showConfirmModal"
+      title="Xác nhận hành động"
+      @close="showConfirmModal = false"
+    >
+      <template #default>
+        <div class="py-4">
+          <p class="text-sm text-gray-700">{{ confirmModalMessage }}</p>
+        </div>
+      </template>
+      <template #actions>
+        <BaseButton text="Huỷ" color="gray" @click="showConfirmModal = false" />
+        <BaseButton
+          text="Xác nhận"
+          color="red"
+          @click="
+            () => {
+              if (typeof confirmAction.value === 'function') confirmAction.value()
+            }
+          "
+        />
+      </template>
+    </FullScreenModal>
   </div>
 </template>
 

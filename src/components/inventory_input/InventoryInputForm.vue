@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, watch, onBeforeUnmount } from 'vue'
 import BaseTextarea from '@/components/ui/input/BaseTextarea.vue'
+import RoundBadge from '../ui/RoundBadge.vue'
 
 const props = defineProps({
   modelValue: {
@@ -10,6 +11,10 @@ const props = defineProps({
   isEditMode: {
     type: Boolean,
     default: false,
+  },
+  errors: {
+    type: Object,
+    default: () => ({}),
   },
 })
 
@@ -105,8 +110,8 @@ const selectProduct = (product) => {
       code: product.code,
       name: product.name,
       quantity: 1,
-      unitPrice: 0,
-      total: 0,
+      unitPrice: 1000,
+      total: 1000,
     }
     localData.value.products.push(newProduct)
     productSearchTerm.value = ''
@@ -220,6 +225,9 @@ onBeforeUnmount(() => {
               </div>
             </div>
           </div>
+          <div v-else-if="props.errors && props.errors.supplier" class="text-red-500 text-xs mt-1">
+            {{ props.errors.supplier }}
+          </div>
         </div>
       </div>
 
@@ -265,6 +273,9 @@ onBeforeUnmount(() => {
           </div>
         </div>
       </div>
+      <div v-if="props.errors && props.errors.products && props.errors.products.__global" class="text-red-500 text-xs mb-2">
+        {{ props.errors.products.__global }}
+      </div>
 
       <div class="product-table-section">
         <table class="product-table">
@@ -303,6 +314,9 @@ onBeforeUnmount(() => {
                   min="1"
                   class="quantity-input"
                 />
+                <div v-if="props.errors && props.errors.products && props.errors.products[product.id] && props.errors.products[product.id].quantity" class="text-red-500 text-xs mt-1">
+                  {{ props.errors.products[product.id].quantity }}
+                </div>
               </td>
               <td>
                 <input
@@ -312,6 +326,9 @@ onBeforeUnmount(() => {
                   min="0"
                   class="price-input"
                 />
+                <div v-if="props.errors && props.errors.products && props.errors.products[product.id] && props.errors.products[product.id].unitPrice" class="text-red-500 text-xs mt-1">
+                  {{ props.errors.products[product.id].unitPrice }}
+                </div>
               </td>
               <td class="text-right font-medium">
                 {{ (product.total || 0).toLocaleString() }}
@@ -331,7 +348,7 @@ onBeforeUnmount(() => {
       <div class="sidebar-section">
         <h3 class="sidebar-title">Trạng thái</h3>
         <div class="sidebar-content">
-          <span class="status-badge">Phiếu tạm</span>
+          <RoundBadge color="yellow">Phiếu tạm</RoundBadge>
         </div>
       </div>
 
@@ -487,7 +504,7 @@ onBeforeUnmount(() => {
 }
 
 .sidebar-content {
-  @apply text-sm text-gray-500;
+  @apply text-sm text-gray-500 py-1;
 }
 
 .status-badge {

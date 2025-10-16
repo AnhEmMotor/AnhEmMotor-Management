@@ -6,7 +6,14 @@ defineProps({
   itemData: Object,
   isOpen: Boolean,
 })
-defineEmits(['toggle-detail', 'edit'])
+const emit = defineEmits([
+  'toggle-detail',
+  'edit',
+  'cancel-request',
+  'copy',
+  'complete-request',
+  'save-notes',
+])
 </script>
 
 <template>
@@ -21,9 +28,19 @@ defineEmits(['toggle-detail', 'edit'])
       <InventoryReceiptSummary
         :item-data="itemData"
         :is-open="isOpen"
-        @toggle-detail="$emit('toggle-detail', itemData.id)"
+        @toggle-detail="() => emit('toggle-detail', itemData.id)"
+        @edit="() => emit('edit', itemData)"
+        @copy="() => emit('copy', itemData)"
+        @cancel-request="() => emit('cancel-request', itemData)"
       />
-      <InventoryReceiptDetail v-if="isOpen" :item-data="itemData" @edit="$emit('edit', itemData)" />
+      <InventoryReceiptDetail
+        v-if="isOpen"
+        :item-data="itemData"
+        @edit="() => emit('edit', itemData)"
+        @copy="() => emit('copy', itemData)"
+        @cancel-request="() => emit('cancel-request', itemData)"
+        @save-notes="(payload) => emit('save-notes', payload)"
+      />
     </div>
   </div>
 </template>
