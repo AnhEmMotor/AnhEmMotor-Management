@@ -8,6 +8,8 @@ defineProps({
   itemData: Object,
 })
 
+defineEmits(['edit'])
+
 function formatCurrency(value) {
   if (!value && value !== 0) return ''
   return value.toLocaleString('vi-VN')
@@ -184,6 +186,7 @@ const totalDiscount = (products) => {
       </div>
       <div class="flex items-center space-x-2">
         <button
+          @click="$emit('edit', itemData)"
           class="bg-red-600 text-white py-1.5 px-3 rounded-md hover:bg-red-700 text-xs font-medium transition duration-150 flex items-center space-x-1.5"
         >
           <svg

@@ -4,9 +4,9 @@ import InventoryReceiptDetail from './InventoryReceiptDetail.vue'
 
 defineProps({
   itemData: Object,
-  isOpen: Boolean
+  isOpen: Boolean,
 })
-defineEmits(['toggle-detail'])
+defineEmits(['toggle-detail', 'edit'])
 </script>
 
 <template>
@@ -14,7 +14,7 @@ defineEmits(['toggle-detail'])
     class="inventory-item bg-white"
     :class="{
       'item-open shadow-xl': isOpen,
-      'shadow-sm border border-gray-200': !isOpen
+      'shadow-sm border border-gray-200': !isOpen,
     }"
   >
     <div class="overflow-x-auto">
@@ -23,7 +23,7 @@ defineEmits(['toggle-detail'])
         :is-open="isOpen"
         @toggle-detail="$emit('toggle-detail', itemData.id)"
       />
-      <InventoryReceiptDetail v-if="isOpen" :item-data="itemData" />
+      <InventoryReceiptDetail v-if="isOpen" :item-data="itemData" @edit="$emit('edit', itemData)" />
     </div>
   </div>
 </template>

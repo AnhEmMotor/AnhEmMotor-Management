@@ -6,6 +6,9 @@ import BaseButton from '@/components/ui/button/BaseButton.vue'
 import BaseInput from '@/components/ui/input/BaseInput.vue'
 import BasePagination from '@/components/ui/button/BasePagination.vue'
 import InventoryFilterButtons from '@/components/inventory_input/InventoryFilterButtons.vue'
+import DraggableModal from '@/components/ui/DraggableModal.vue'
+import InventoryInputForm from '@/components/inventory_input/InventoryInputForm.vue'
+import ProductForm from '@/components/product/ProductForm.vue'
 
 const searchTerm = ref('')
 const selectedStatuses = ref([])
@@ -176,6 +179,136 @@ const exportExcel = () => {
   const filename = `DanhSachPhieuNhap_${currentDate}.xlsx`
   XLSX.writeFile(workbook, filename)
 }
+
+// Modal states
+const showInventoryModal = ref(false)
+const showProductModal = ref(false)
+const currentInventoryData = ref({
+  supplier: null,
+  products: [],
+  notes: '',
+})
+const isEditMode = ref(false)
+const currentProductData = ref({
+  code: '',
+  name: '',
+  category: '',
+  price: 0,
+  quantity: 0,
+  unitPrice: 0,
+})
+
+// Mở modal nhập hàng mới
+const openNewInventoryModal = () => {
+  isEditMode.value = false
+  currentInventoryData.value = {
+    supplier: null,
+    products: [],
+    notes: '',
+  }
+  showInventoryModal.value = true
+}
+
+// Mở modal chỉnh sửa phiếu nhập
+const openEditInventoryModal = (item) => {
+  isEditMode.value = true
+  // Chuyển đổi dữ liệu phiếu nhập sang format của form
+  currentInventoryData.value = {
+    supplier: {
+      code: item.supplierCode,
+      name: item.supplierName,
+      phone: '0123456789', // Mock data, nên lấy từ API
+    },
+    products: item.products.map((p) => ({
+      id: Date.now() + Math.random(),
+      code: p.code,
+      name: p.name,
+      quantity: p.quantity,
+      unitPrice: p.unitPrice,
+      total: p.total,
+    })),
+    notes: item.notes || '',
+  }
+  showInventoryModal.value = true
+}
+
+// Đóng modal nhập hàng
+const closeInventoryModal = () => {
+  showInventoryModal.value = false
+}
+
+// Mở modal thêm sản phẩm mới
+const openProductModal = () => {
+  currentProductData.value = {
+    code: '',
+    name: '',
+    category: '',
+    price: 0,
+    quantity: 1,
+    unitPrice: 0,
+  }
+  showProductModal.value = true
+}
+
+// Đóng modal sản phẩm
+const closeProductModal = () => {
+  showProductModal.value = false
+}
+
+// Lưu phiếu nhập
+const saveInventoryReceipt = () => {
+  if (!currentInventoryData.value.supplier) {
+    alert('Vui lòng chọn nhà cung cấp')
+    return
+  }
+  if (currentInventoryData.value.products.length === 0) {
+    alert('Vui lòng thêm ít nhất một sản phẩm')
+    return
+  }
+
+  // Logic lưu phiếu nhập
+  console.log('Lưu phiếu nhập:', currentInventoryData.value)
+  alert('Đã lưu phiếu nhập thành công!')
+  closeInventoryModal()
+}
+
+// Hoàn thành phiếu nhập
+const completeInventoryReceipt = () => {
+  if (!currentInventoryData.value.supplier) {
+    alert('Vui lòng chọn nhà cung cấp')
+    return
+  }
+  if (currentInventoryData.value.products.length === 0) {
+    alert('Vui lòng thêm ít nhất một sản phẩm')
+    return
+  }
+
+  // Logic hoàn thành phiếu nhập
+  console.log('Hoàn thành phiếu nhập:', currentInventoryData.value)
+  alert('Đã hoàn thành phiếu nhập!')
+  closeInventoryModal()
+}
+
+// Lưu sản phẩm mới từ modal sản phẩm
+const saveNewProduct = () => {
+  if (!currentProductData.value.code || !currentProductData.value.name) {
+    alert('Vui lòng nhập mã và tên sản phẩm')
+    return
+  }
+
+  // Thêm sản phẩm mới vào danh sách
+  const newProduct = {
+    id: Date.now(),
+    code: currentProductData.value.code,
+    name: currentProductData.value.name,
+    quantity: currentProductData.value.quantity || 1,
+    unitPrice: currentProductData.value.unitPrice || 0,
+    total: (currentProductData.value.quantity || 1) * (currentProductData.value.unitPrice || 0),
+  }
+
+  currentInventoryData.value.products.push(newProduct)
+  closeProductModal()
+}
 </script>
 
 <template>
@@ -185,7 +318,7 @@ const exportExcel = () => {
         <h1 class="title-style">Quản lý phiếu nhập</h1>
       </div>
       <div class="action-button-style">
-        <BaseButton text="Nhập hàng" color="purple" />
+        <BaseButton text="Nhập hàng" color="purple" @click="openNewInventoryModal" />
         <BaseButton text="Export" color="green" @click="exportExcel" />
         <div class="h-8 border-r-2 border-black-300 mx-2"></div>
         <InventoryFilterButtons v-model="selectedStatuses" />
@@ -222,6 +355,7 @@ const exportExcel = () => {
         :itemData="item"
         :is-open="item.id === expandedItemId"
         @toggle-detail="handleToggleDetail"
+        @edit="openEditInventoryModal"
       />
     </div>
 
@@ -230,6 +364,74 @@ const exportExcel = () => {
       v-model:currentPage="currentPage"
       :loading="isLoading"
     />
+
+    <!-- Modal Nhập hàng -->
+    <DraggableModal
+      v-if="showInventoryModal"
+      :initial-position="{ x: 100, y: 50 }"
+      :z-index="1000"
+      width="70vw"
+      @close="closeInventoryModal"
+    >
+      <template #header>
+        <h3 class="text-lg font-semibold">
+          {{ isEditMode ? 'Chỉnh sửa phiếu nhập' : 'Nhập hàng' }}
+        </h3>
+      </template>
+
+      <template #body>
+        <InventoryInputForm
+          v-model="currentInventoryData"
+          :is-edit-mode="isEditMode"
+          @add-product="openProductModal"
+        />
+      </template>
+
+      <template #footer>
+        <BaseButton text="Hủy" color="gray" @click="closeInventoryModal" />
+        <BaseButton text="Lưu tạm" color="blue" @click="saveInventoryReceipt" />
+        <BaseButton text="Hoàn thành" color="green" @click="completeInventoryReceipt" />
+      </template>
+    </DraggableModal>
+
+    <!-- Modal Thêm sản phẩm mới -->
+    <DraggableModal
+      v-if="showProductModal"
+      :initial-position="{ x: 150, y: 100 }"
+      :z-index="1001"
+      @close="closeProductModal"
+    >
+      <template #header>
+        <h3 class="text-lg font-semibold">Thêm sản phẩm mới</h3>
+      </template>
+
+      <template #body>
+        <ProductForm v-model="currentProductData" :is-edit-mode="false" />
+
+        <!-- Thêm trường số lượng và đơn giá nhập -->
+        <div class="grid grid-cols-2 gap-4 mt-4 px-2">
+          <BaseInput
+            v-model.number="currentProductData.quantity"
+            label="Số lượng *"
+            type="number"
+            min="1"
+            placeholder="Nhập số lượng"
+          />
+          <BaseInput
+            v-model.number="currentProductData.unitPrice"
+            label="Đơn giá nhập *"
+            type="number"
+            min="0"
+            placeholder="Nhập đơn giá"
+          />
+        </div>
+      </template>
+
+      <template #footer>
+        <BaseButton text="Hủy" color="gray" @click="closeProductModal" />
+        <BaseButton text="Thêm sản phẩm" color="green" @click="saveNewProduct" />
+      </template>
+    </DraggableModal>
   </div>
 </template>
 
