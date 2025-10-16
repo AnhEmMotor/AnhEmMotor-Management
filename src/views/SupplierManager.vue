@@ -180,6 +180,10 @@ const isFormModalVisible = ref(false)
 const isFormDirty = ref(false)
 const editableSupplier = ref({}) // Will hold the supplier for the form
 const formModalTitle = ref('')
+const formModalKey = ref(0)
+const originalSupplierOnEdit = ref(null) // For refresh functionality
+
+const isEditMode = computed(() => !!editableSupplier.value?.id)
 // --- End New/Modified State ---
 
 const isDeleteModalVisible = ref(false)
@@ -235,11 +239,13 @@ function openAddEditModal(supplier = null) {
   }
 
   if (supplier) {
-    // Use a deep copy for editing
+    // Use a deep copy for editing and keep original state for refresh
+    originalSupplierOnEdit.value = JSON.parse(JSON.stringify(supplier))
     editableSupplier.value = JSON.parse(JSON.stringify(supplier))
     formModalTitle.value = 'Chỉnh sửa Nhà cung cấp'
   } else {
     // Reset for a new supplier
+    originalSupplierOnEdit.value = null
     editableSupplier.value = {
       name: '',
       phone: '',
@@ -249,7 +255,21 @@ function openAddEditModal(supplier = null) {
     formModalTitle.value = 'Thêm Nhà cung cấp'
   }
   isFormDirty.value = false // Reset dirty state for the new form
+  formModalKey.value++
   isFormModalVisible.value = true
+}
+
+// --- NEW: Refresh handler ---
+function handleFormRefresh() {
+  if (isFormDirty.value) {
+    if (!confirm('Bạn có các thay đổi chưa lưu. Bạn có chắc muốn tải lại dữ liệu gốc không?')) {
+      return
+    }
+  }
+  if (originalSupplierOnEdit.value) {
+    editableSupplier.value = JSON.parse(JSON.stringify(originalSupplierOnEdit.value))
+    showMessage('Đã tải lại dữ liệu gốc của nhà cung cấp.')
+  }
 }
 
 // --- NEW ---
@@ -491,7 +511,12 @@ onMounted(() => {
     />
 
     <!-- Modals -->
-    <DraggableModal v-if="isFormModalVisible" @close="handleCloseFormModal">
+    <DraggableModal
+      :key="formModalKey"
+      v-if="isFormModalVisible"
+      @close="handleCloseFormModal"
+      :onRefresh="isEditMode ? handleFormRefresh : undefined"
+    >
       <template #header>
         <h2 class="font-bold text-lg">{{ formModalTitle }}</h2>
       </template>

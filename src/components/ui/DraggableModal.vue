@@ -1,8 +1,9 @@
 <script setup>
-import { ref, onBeforeUnmount } from 'vue'
+import { ref, onBeforeUnmount, computed } from 'vue'
 import IconMaximize from '@/components/icons/IconMaximize.vue'
 import IconMinimize from '@/components/icons/IconMinimize.vue'
 import IconClose from '@/components/icons/IconClose.vue'
+import IconRefresh from '@/components/icons/IconRefresh.vue'
 
 const props = defineProps({
   initialPosition: {
@@ -13,14 +14,23 @@ const props = defineProps({
     type: Number,
     default: 100,
   },
+  onRefresh: {
+    type: Function,
+    required: false,
+  },
 })
-const emit = defineEmits(['close', 'activate'])
+const emit = defineEmits(['close', 'activate', 'refresh'])
+
+// Check for refresh listener via props
+const hasRefreshListener = computed(() => !!props.onRefresh)
+
 const modalRef = ref(null)
 const position = ref({ x: props.initialPosition.x, y: props.initialPosition.y })
 const isDragging = ref(false)
 const dragOffset = ref({ x: 0, y: 0 })
 const isMaximized = ref(false)
 const previousPosition = ref(null)
+
 const toggleMaximize = () => {
   isMaximized.value = !isMaximized.value
   if (isMaximized.value) {
@@ -72,6 +82,9 @@ onBeforeUnmount(() => {
       <div class="modal-header" @mousedown="!isMaximized && startDrag($event)">
         <slot name="header">Tiêu đề</slot>
         <div class="modal-controls">
+          <button v-if="hasRefreshListener" class="modal-control-button" @click="emit('refresh')">
+            <IconRefresh />
+          </button>
           <button class="modal-control-button" @click="toggleMaximize">
             <IconMinimize v-if="isMaximized" />
             <IconMaximize v-else />
