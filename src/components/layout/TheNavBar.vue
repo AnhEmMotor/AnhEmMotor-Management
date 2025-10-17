@@ -58,7 +58,7 @@ const toggleGroup = (group) => {
             </li>
             <li>
               <RouterLink to="/inputs" class="router-link-child">
-                <span>Quản lý phiếu nhập</span>
+                <span>Quản lý phiếu nhập kho</span>
               </RouterLink>
             </li>
             <li>

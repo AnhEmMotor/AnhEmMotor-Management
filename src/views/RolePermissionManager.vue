@@ -14,6 +14,7 @@ const roles = ref([
     description: 'Quyền quản lý toàn bộ hệ thống',
     permissionCount: 15,
     createdAt: '2025-01-10',
+    status: 'active',
     permissions: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
   },
   {
@@ -22,6 +23,7 @@ const roles = ref([
     description: 'Quyền quản lý kho hàng và nhập xuất',
     permissionCount: 8,
     createdAt: '2025-01-15',
+    status: 'active',
     permissions: [6, 7, 8, 9, 10, 11, 12, 13],
   },
   {
@@ -30,6 +32,7 @@ const roles = ref([
     description: 'Quyền cơ bản cho nhân viên',
     permissionCount: 5,
     createdAt: '2025-01-20',
+    status: 'disabled',
     permissions: [1, 2, 14, 15, 16],
   },
 ])
@@ -270,6 +273,7 @@ const handleSaveRole = (roleData) => {
         description: roleData.description,
         permissions: roleData.permissions,
         permissionCount: roleData.permissions.length,
+        status: roleData.status,
       }
     }
   } else {
@@ -281,6 +285,7 @@ const handleSaveRole = (roleData) => {
       permissions: roleData.permissions,
       permissionCount: roleData.permissions.length,
       createdAt: new Date().toISOString().split('T')[0],
+      status: roleData.status || 'active',
     }
     roles.value.push(newRole)
   }

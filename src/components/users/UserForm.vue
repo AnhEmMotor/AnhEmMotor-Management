@@ -88,8 +88,9 @@ watch(
         email: newUser.email || '',
         phone: newUser.phone || '',
         address: newUser.address || '',
+        // Clone arrays/objects to avoid mutating parent data directly
         status: newUser.status || 'active',
-        roleIds: newUser.roleIds || [],
+        roleIds: newUser.roleIds ? [...newUser.roleIds] : [],
       }
     } else {
       resetForm()

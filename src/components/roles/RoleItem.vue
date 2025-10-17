@@ -63,7 +63,7 @@ function statusInfo(status) {
 
 <template>
   <div
-    class="grid grid-cols-16 gap-4 p-2 border-b border-gray-200 hover:bg-gray-50 transition-colors duration-150"
+    class="grid grid-cols-16 gap-4 p-3 border-b border-gray-200 hover:bg-gray-50 transition-colors duration-150"
   >
     <!-- STT -->
     <div class="col-span-1 flex items-center justify-center text-gray-600">

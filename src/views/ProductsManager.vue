@@ -2,7 +2,7 @@
   <div class="box-style">
     <div class="content-box-style">
       <div>
-        <h1 class="title-style">Danh Sách Sản Phẩm</h1>
+        <h1 class="title-style">Quản lý sản phẩm</h1>
       </div>
       <div class="action-button-style">
         <BaseButton text="Thêm sản phẩm" color="purple" @click="openAddEditModal()" />

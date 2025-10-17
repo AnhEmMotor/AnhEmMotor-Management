@@ -191,7 +191,8 @@ const editCustomer = (id) => {
   const customer = allCustomers.value.find((c) => c.id === id)
   if (customer) {
     isEditMode.value = true
-    selectedUser.value = { ...customer }
+    // Deep clone to avoid mutating the original object before save
+    selectedUser.value = JSON.parse(JSON.stringify(customer))
     showUserForm.value = true
     activeModalId.value = 'form'
     modalZIndex.value = 100

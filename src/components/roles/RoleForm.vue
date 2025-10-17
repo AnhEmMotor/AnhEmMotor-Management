@@ -224,7 +224,6 @@ const handleClose = () => {
                 :options="[
                   { value: 'active', text: 'Hoạt động' },
                   { value: 'disabled', text: 'Vô hiệu' },
-                  { value: 'pending', text: 'Chờ xử lý' },
                 ]"
               />
             </div>
