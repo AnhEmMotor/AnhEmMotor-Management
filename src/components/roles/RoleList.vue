@@ -15,12 +15,13 @@ const emit = defineEmits(['edit', 'delete'])
   <div class="h-full flex flex-col bg-white rounded-lg shadow-md overflow-hidden">
     <!-- Table Header -->
     <div
-      class="grid grid-cols-12 gap-4 p-4 bg-gray-100 border-b border-gray-200 font-semibold text-gray-700"
+      class="grid grid-cols-16 gap-4 p-2 bg-gray-100 border-b border-gray-200 font-semibold text-gray-700"
     >
       <div class="col-span-1 text-center">STT</div>
       <div class="col-span-3">Tên vai trò</div>
-      <div class="col-span-4">Ghi chú</div>
+      <div class="col-span-6">Ghi chú</div>
       <div class="col-span-2 text-center">Số quyền hạn</div>
+      <div class="col-span-2 text-center mr-[4px]">Trạng thái</div>
       <div class="col-span-2 text-center">Thao tác</div>
     </div>
 

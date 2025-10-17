@@ -243,13 +243,6 @@ const handleActivateModal = (modalId) => {
     activeModalId.value = modalId
   }
 }
-
-const getRoleNames = (roleIds) => {
-  return availableRoles.value
-    .filter((role) => roleIds.includes(role.id))
-    .map((role) => role.name)
-    .join(', ')
-}
 </script>
 
 <style scoped>

@@ -189,25 +189,11 @@ const isEditMode = ref(false)
 const modalZIndex = ref(100)
 const activeModalId = ref(null)
 
+const selectedStatuses = ref([])
+
 onMounted(() => {
   filteredRoles.value = [...roles.value]
 })
-
-// Filter and search functions
-const handleSearch = (query) => {
-  searchQuery.value = query
-  applyFilters()
-}
-
-const handleSort = (field) => {
-  if (sortBy.value === field) {
-    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
-  } else {
-    sortBy.value = field
-    sortOrder.value = 'asc'
-  }
-  applyFilters()
-}
 
 const applyFilters = () => {
   let result = [...roles.value]
@@ -313,23 +299,20 @@ const handleActivateModal = (modalId) => {
 <template>
   <div class="w-full h-full flex flex-col bg-gray-50 p-6 overflow-hidden">
     <!-- Header -->
-    <div class="mb-6">
-      <h1 class="text-3xl font-bold text-gray-800 mb-2">Quản lý Vai trò & Quyền hạn</h1>
-      <p class="text-gray-600">Quản lý danh sách vai trò và phân quyền trong hệ thống</p>
-    </div>
+    <div
+      class="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0"
+    >
+      <div class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">Quản lý Vai trò & Quyền hạn</h1>
+        <p class="text-gray-600">Quản lý danh sách vai trò và phân quyền trong hệ thống</p>
+      </div>
 
-    <!-- Filter and Actions -->
-    <div class="flex justify-between items-center mb-6">
-      <RoleFilterButtons
-        @search="handleSearch"
-        @sort="handleSort"
-        :currentSort="sortBy"
-        :sortOrder="sortOrder"
-      />
-      <BaseButton @click="handleAddRole" variant="primary">
-        <span class="text-lg mr-2">+</span>
-        Thêm vai trò mới
-      </BaseButton>
+      <!-- Filter and Actions -->
+      <div class="flex justify-between items-center mb-6">
+        <RoleFilterButtons v-model="selectedStatuses" />
+        <span class="h-8 border-r-2 border-black-300 mx-2" />
+        <BaseButton @click="handleAddRole" variant="primary" text="Thêm vai trò mới" />
+      </div>
     </div>
 
     <!-- Role List -->
@@ -360,7 +343,3 @@ const handleActivateModal = (modalId) => {
     />
   </div>
 </template>
-
-<style scoped>
-/* Additional custom styles if needed */
-</style>
