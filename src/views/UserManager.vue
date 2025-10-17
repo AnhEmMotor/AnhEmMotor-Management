@@ -6,7 +6,7 @@
       </div>
       <div class="action-button-style">
         <BaseActionButton text="Thêm mới" icon="fas fa-plus" color="blue" @click="openAddModal" />
-        <CustomerFilterButtons v-model="selectedStatuses" multiple />
+        <UserFilterButtons v-model="selectedStatuses" multiple />
       </div>
     </div>
     <div class="overflow-x-auto">
@@ -17,7 +17,7 @@
             <th class="normal-cell-style">Tên Khách Hàng</th>
             <th class="normal-cell-style">Email</th>
             <th class="normal-cell-style">Số Điện Thoại</th>
-            <th class="normal-cell-style">Địa Chỉ</th>
+            <th class="normal-cell-style">Vai trò</th>
             <th class="normal-cell-style">Trạng Thái</th>
             <th class="center-cell-style">Thao Tác</th>
           </tr>
@@ -31,7 +31,18 @@
             <td class="normal-cell-style">{{ customer.name }}</td>
             <td class="normal-cell-style">{{ customer.email }}</td>
             <td class="normal-cell-style">{{ customer.phone }}</td>
-            <td class="normal-cell-style">{{ customer.address }}</td>
+            <td class="normal-cell-style">
+              <div class="flex flex-wrap gap-1">
+                <RoundBadge
+                  v-for="roleId in customer.roleIds"
+                  :key="roleId"
+                  color="blue"
+                  class="text-xs"
+                >
+                  {{ availableRoles.find((r) => r.id === roleId)?.name }}
+                </RoundBadge>
+              </div>
+            </td>
             <td class="normal-cell-style">
               <RoundBadge :color="statusColors[customer.status]">{{
                 statusText[customer.status]
@@ -47,11 +58,35 @@
         </tbody>
       </table>
     </div>
+
+    <!-- User Form Modal -->
+    <UserForm
+      v-if="showUserForm"
+      :show="showUserForm"
+      :user="selectedUser"
+      :isEditMode="isEditMode"
+      :availableRoles="availableRoles"
+      :zIndex="activeModalId === 'form' ? modalZIndex : modalZIndex - 1"
+      @close="showUserForm = false"
+      @save="handleSaveUser"
+      @activate="handleActivateModal('form')"
+    />
+
+    <!-- Delete Confirmation Modal -->
+    <UserDeleteModal
+      v-if="showDeleteModal"
+      :show="showDeleteModal"
+      :user="selectedUser"
+      @close="showDeleteModal = false"
+      @confirm="confirmDelete"
+    />
   </div>
 </template>
 
 <script setup>
-import CustomerFilterButtons from '@/components/customers/CustomerFilterButtons.vue'
+import UserFilterButtons from '@/components/users/UserFilterButtons.vue'
+import UserForm from '@/components/users/UserForm.vue'
+import UserDeleteModal from '@/components/users/UserDeleteModal.vue'
 import BaseActionButton from '@/components/ui/button/BaseButton.vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
 import BaseSmallNoBgButton from '@/components/ui/button/BaseSmallNoBgButton.vue'
@@ -66,6 +101,7 @@ const allCustomers = ref([
     phone: '0901234567',
     address: '123 Đường ABC, Quận 1, TP.HCM',
     status: 'active',
+    roleIds: [1, 2],
   },
   {
     id: '2',
@@ -75,6 +111,7 @@ const allCustomers = ref([
     phone: '0912345678',
     address: '456 Đường XYZ, Quận 2, TP.HCM',
     status: 'new',
+    roleIds: [3],
   },
   {
     id: '3',
@@ -84,6 +121,7 @@ const allCustomers = ref([
     phone: '0987654321',
     address: '789 Đường KLM, Quận 3, TP.HCM',
     status: 'inactive',
+    roleIds: [2, 3],
   },
   {
     id: '4',
@@ -93,6 +131,7 @@ const allCustomers = ref([
     phone: '0978123456',
     address: '101 Đường DEF, Quận 4, TP.HCM',
     status: 'active',
+    roleIds: [1],
   },
   {
     id: '5',
@@ -102,10 +141,27 @@ const allCustomers = ref([
     phone: '0934567890',
     address: '212 Đường GHI, Quận 5, TP.HCM',
     status: 'new',
+    roleIds: [1, 2, 3],
   },
 ])
+
+// Mock roles data - should come from API
+const availableRoles = ref([
+  { id: 1, name: 'Quản lý', description: 'Quyền quản lý toàn bộ hệ thống', permissionCount: 15 },
+  { id: 2, name: 'Quản kho', description: 'Quyền quản lý kho hàng', permissionCount: 8 },
+  { id: 3, name: 'Nhân viên', description: 'Quyền cơ bản', permissionCount: 5 },
+])
+
 const selectedStatuses = ref(['active', 'new', 'inactive'])
 const displayCustomers = ref([])
+
+// Modal states
+const showUserForm = ref(false)
+const showDeleteModal = ref(false)
+const selectedUser = ref(null)
+const isEditMode = ref(false)
+const modalZIndex = ref(100)
+const activeModalId = ref(null)
 
 const statusColors = {
   active: 'green',
@@ -124,17 +180,69 @@ onMounted(() => {
 })
 
 const openAddModal = () => {
-  console.log('Mở modal thêm khách hàng')
+  isEditMode.value = false
+  selectedUser.value = null
+  showUserForm.value = true
+  activeModalId.value = 'form'
+  modalZIndex.value = 100
 }
 
 const editCustomer = (id) => {
   const customer = allCustomers.value.find((c) => c.id === id)
-  console.log('Sửa khách hàng:', customer)
+  if (customer) {
+    isEditMode.value = true
+    // Deep clone to avoid mutating the original object before save
+    selectedUser.value = JSON.parse(JSON.stringify(customer))
+    showUserForm.value = true
+    activeModalId.value = 'form'
+    modalZIndex.value = 100
+  }
 }
 
 const deleteCustomer = (id) => {
   const customer = allCustomers.value.find((c) => c.id === id)
-  console.log('Xóa khách hàng:', customer)
+  if (customer) {
+    selectedUser.value = customer
+    showDeleteModal.value = true
+    activeModalId.value = 'delete'
+    modalZIndex.value = 100
+  }
+}
+
+const handleSaveUser = (userData) => {
+  if (isEditMode.value) {
+    // Update existing user
+    const index = allCustomers.value.findIndex((c) => c.id === selectedUser.value.id)
+    if (index !== -1) {
+      allCustomers.value[index] = {
+        ...allCustomers.value[index],
+        ...userData,
+      }
+    }
+  } else {
+    // Add new user
+    const newUser = {
+      id: String(Math.max(...allCustomers.value.map((c) => parseInt(c.id))) + 1),
+      ...userData,
+    }
+    allCustomers.value.push(newUser)
+  }
+  displayCustomers.value = allCustomers.value
+  showUserForm.value = false
+}
+
+const confirmDelete = () => {
+  allCustomers.value = allCustomers.value.filter((c) => c.id !== selectedUser.value.id)
+  displayCustomers.value = allCustomers.value
+  showDeleteModal.value = false
+  selectedUser.value = null
+}
+
+const handleActivateModal = (modalId) => {
+  if (activeModalId.value !== modalId) {
+    modalZIndex.value += 1
+    activeModalId.value = modalId
+  }
 }
 </script>
 

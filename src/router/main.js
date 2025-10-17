@@ -1,12 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import TheHome from '@/views/TheHome.vue'
 import OrdersManager from '@/views/OrdersManager.vue'
-import CustomerManager from '@/views/CustomerManager.vue'
+import CustomerManager from '@/views/UserManager.vue'
 import ProductsManager from '@/views/ProductsManager.vue'
 import ProductReport from '@/views/ProductReport.vue'
 import RevenueAnalysis from '@/views/RevenueAnalysis.vue'
 import InventoryInputManager from '@/views/InventoryInputManager.vue'
 import SupplierManager from '@/views/SupplierManager.vue'
+import UserManager from '@/views/UserManager.vue'
+import RolePermissionManager from '@/views/RolePermissionManager.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -50,6 +52,16 @@ const router = createRouter({
       name: 'supplier',
       path: '/suppliers',
       component: SupplierManager,
+    },
+    {
+      name: 'users',
+      path: '/users',
+      component: UserManager,
+    },
+    {
+      name: 'permissions',
+      path: '/permissions',
+      component: RolePermissionManager,
     },
   ],
 })

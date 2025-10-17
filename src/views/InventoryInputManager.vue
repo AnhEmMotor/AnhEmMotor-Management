@@ -548,7 +548,7 @@ const handleSaveNotes = ({ id, notes }) => {
   <div class="box-style">
     <div class="content-box-style">
       <div>
-        <h1 class="title-style">Quản lý phiếu nhập</h1>
+        <h1 class="title-style">Quản lý phiếu nhập kho</h1>
       </div>
       <div class="action-button-style">
         <BaseButton text="Nhập hàng" color="purple" @click="openNewInventoryModal" />
