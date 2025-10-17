@@ -82,12 +82,12 @@ const toggleGroup = (group) => {
           <ul v-if="openGroups.includes('user')" class="mt-2 space-y-2 pl-5">
             <li>
               <RouterLink to="/users" class="router-link-child">
-                <span>Quản lý thông tin & vai trò</span>
+                <span>Quản lý thông tin & vai trò người dùng</span>
               </RouterLink>
             </li>
             <li>
               <RouterLink to="/permissions" class="router-link-child">
-                <span>Quản lý quyền hạn của vai trò</span>
+                <span>Quản lý danh sách vai trò & quyền hạn của vai trò</span>
               </RouterLink>
             </li>
           </ul>
