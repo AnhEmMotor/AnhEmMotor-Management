@@ -1,0 +1,18 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f9fafb;
+    color: #1f2937;
+}
+
+.modal-overlay {
+    z-index: 50;
+}
+
+.modal-content {
+    z-index: 60;
+}
+
+/* Ghi đè màu mặc định của h1 */
+h1 {
+    color: inherit; 
+}
