@@ -4,9 +4,9 @@
       <h1 class="title-style">Đơn Hàng Của Tôi</h1>
       <div class="flex items-center">
         <!-- Right side filter/menu (matches RolePermissionManager layout) -->
-  <OrderFilterButtons v-model="selectedStatuses" />
-  <span class="h-8 border-r-2 border-black-300 mx-2" />
-  <RoundButton color="blue" @click="createNewOrder">Tạo đơn mới</RoundButton>
+        <OrderFilterButtons v-model="selectedStatuses" />
+        <span class="h-8 border-r-2 border-black-300 mx-2" />
+        <RoundButton color="blue" @click="createNewOrder">Tạo đơn mới</RoundButton>
       </div>
     </div>
     <div class="overflow-x-auto">
@@ -17,7 +17,6 @@
             <th class="text-style">Ngày Đặt</th>
             <th class="text-style">Sản phẩm</th>
             <th class="text-style">Trạng Thái</th>
-            <th class="text-style">Thanh Toán</th>
             <th class="text-style">Tổng Tiền</th>
             <th class="text-center-style">Hành động</th>
           </tr>
@@ -33,21 +32,11 @@
             <td class="text-style">
               <RoundBadge :color="order.status.color">{{ order.status.text }}</RoundBadge>
             </td>
-            <td class="text-style">
-              <RoundBadge :color="order.payment.color">{{ order.payment.text }}</RoundBadge>
-            </td>
             <td class="text-style">{{ order.total }}</td>
             <td class="text-center-style">
-              <RoundButton
-                v-if="order.status.text === 'Đã Hoàn Thành' || order.status.text === 'Đã Giao - Hoàn Thành'"
-                @click="openOrderDetail(order)"
-                color="green"
+              <BaseSmallNoBgButton color="blue" @click="openOrderDetail(order)"
+                >Sửa</BaseSmallNoBgButton
               >
-                Xem ảnh giao
-              </RoundButton>
-              <RoundButton v-else @click="cancelCustomerOrder(order)" color="red">
-                Hủy Đơn
-              </RoundButton>
             </td>
           </tr>
         </tbody>
@@ -79,6 +68,7 @@ import RoundButton from '@/components/ui/BaseRoundButton.vue'
 import OrderFilterButtons from '@/components/orders/OrderFilterButtons.vue'
 import OrderDetailModal from '@/components/orders/OrderDetailModal.vue'
 import OrderForm from '@/components/orders/OrderForm.vue'
+import BaseSmallNoBgButton from '@/components/ui/button/BaseSmallNoBgButton.vue'
 
 // Richer mock orders (numeric totals and products) so modal can display details
 const orders = ref([
@@ -88,7 +78,6 @@ const orders = ref([
     customerName: 'Nguyễn Văn A',
     productSummary: '1 sản phẩm (Xe Máy)',
     status: { text: 'Đã Hoàn Thành', color: 'green' },
-    payment: { text: 'Đã Thanh Toán', color: 'green' },
     total: 55000000,
     type: 'sale',
     products: [{ name: 'Xe Máy ABC', qty: 1, price: 55000000 }],
@@ -99,7 +88,6 @@ const orders = ref([
     customerName: 'Trần Thị B',
     productSummary: '1 sản phẩm (Xe Máy)',
     status: { text: 'Đã Xác Nhận', color: 'yellow' },
-    payment: { text: 'Chưa thanh toán', color: 'red' },
     total: 42000000,
     type: 'sale',
     products: [{ name: 'Xe Máy XYZ', qty: 1, price: 42000000 }],
@@ -110,7 +98,6 @@ const orders = ref([
     customerName: 'Lê Văn C',
     productSummary: '1 sản phẩm (Phụ Tùng)',
     status: { text: 'Đã Xác Nhận', color: 'yellow' },
-    payment: { text: 'Đã Thanh Toán', color: 'green' },
     total: 3500000,
     type: 'sale',
     products: [{ name: 'Bộ phận 123', qty: 1, price: 3500000 }],
@@ -121,7 +108,6 @@ const orders = ref([
     customerName: 'Phạm Thị D',
     productSummary: '1 sản phẩm (Phụ Kiện)',
     status: { text: 'Đang Giao Hàng', color: 'blue' },
-    payment: { text: 'Chưa Thanh Toán', color: 'red' },
     total: 490000,
     type: 'sale',
     products: [{ name: 'Phụ Kiện A', qty: 1, price: 490000 }],
@@ -132,7 +118,6 @@ const orders = ref([
     customerName: 'Hoàng Văn E',
     productSummary: '1 sản phẩm (Phụ Kiện)',
     status: { text: 'Chưa Xác Nhận', color: 'red' },
-    payment: { text: 'Chưa Thanh Toán', color: 'red' },
     total: 120000,
     type: 'sale',
     products: [{ name: 'Phụ Kiện B', qty: 1, price: 120000 }],
@@ -143,7 +128,6 @@ const orders = ref([
     customerName: 'Nguyễn Văn F',
     productSummary: '1 sản phẩm (Phụ Tùng)',
     status: { text: 'Đã Giao - Hoàn Thành', color: 'green' },
-    payment: { text: 'Đã Thanh Toán', color: 'green' },
     total: 280000,
     type: 'sale',
     products: [{ name: 'Phụ Tùng C', qty: 1, price: 280000 }],
@@ -182,18 +166,19 @@ function createNewOrder() {
   showOrderForm.value = true
 }
 
-function handleSaveNewOrder({ customerName, productName, price }) {
+function handleSaveNewOrder(payload) {
   const nextId = `ORD-${String(Math.floor(Math.random() * 900000) + 100000)}`
   const newOrder = {
     id: nextId,
     date: new Date().toISOString().split('T')[0],
-    customerName,
-    productSummary: `1 sản phẩm (${productName})`,
+    customerName: payload.customerName,
+    productSummary: `${payload.products.length} sản phẩm`,
     status: { text: 'Chưa Xác Nhận', color: 'red' },
     payment: { text: 'Chưa Thanh Toán', color: 'red' },
-    total: price,
+    total: payload.total,
     type: 'sale',
-    products: [{ name: productName, qty: 1, price }],
+    products: payload.products.map((p) => ({ name: p.name, qty: p.quantity, price: p.unitPrice })),
+    notes: payload.notes,
   }
   orders.value = [newOrder, ...orders.value]
   showOrderForm.value = false
