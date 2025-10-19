@@ -10,6 +10,7 @@ import SupplierManager from '@/views/SupplierManager.vue'
 import UserManager from '@/views/UserManager.vue'
 import RolePermissionManager from '@/views/RolePermissionManager.vue'
 import PriceManagement from '@/views/PriceManagement.vue'
+import SettingsView from '@/views/SettingsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -68,6 +69,11 @@ const router = createRouter({
       name: 'price-management',
       path: '/price-management',
       component: PriceManagement,
+    },
+    {
+      name: 'settings',
+      path: '/settings',
+      component: SettingsView,
     },
   ],
 })
