@@ -219,6 +219,7 @@ function handleEditOrder(order) {
 }
 
 function handleSaveNewOrder(payload) {
+  console.debug('[OrdersManager] handleSaveNewOrder received payload:', payload)
   // If payload contains an id, update existing order
   const statusMap = {
     pending: { text: 'Chờ xác nhận', color: 'gray' },
@@ -246,9 +247,17 @@ function handleSaveNewOrder(payload) {
       orders.value[idx].total = payload.total
       orders.value[idx].notes = payload.notes
       // update status if provided
-      const key = payload.statusKey || orders.value[idx].status.key || 'pending'
-      const s = statusMap[key] || { text: key, color: 'gray' }
-      orders.value[idx].status = { key, text: s.text, color: s.color }
+      if (payload.status && payload.status.key) {
+        // if form emitted a status object, use it directly and keep OrdersManager
+        // responsible for color mapping / further API calls
+        const key = payload.status.key
+        const s = statusMap[key] || { text: payload.status.text || key, color: 'gray' }
+        orders.value[idx].status = { key, text: s.text, color: s.color }
+      } else {
+        const key = payload.statusKey || orders.value[idx].status.key || 'pending'
+        const s = statusMap[key] || { text: key, color: 'gray' }
+        orders.value[idx].status = { key, text: s.text, color: s.color }
+      }
     }
   } else {
     const nextId = `ORD-${String(Math.floor(Math.random() * 900000) + 100000)}`
@@ -257,7 +266,7 @@ function handleSaveNewOrder(payload) {
       date: new Date().toISOString().split('T')[0],
       customerName: payload.customerName,
       productSummary: `${payload.products.length} sản phẩm`,
-      status: { key: 'pending', text: statusMap.pending.text, color: statusMap.pending.color },
+  status: { key: payload.status?.key || 'pending', text: (payload.status && payload.status.text) || statusMap.pending.text, color: statusMap.pending.color },
       payment: { text: 'Chưa Thanh Toán', color: 'red' },
       total: payload.total,
       type: 'sale',

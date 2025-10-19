@@ -54,6 +54,15 @@ const isLocked = computed(() => {
   return LOCKED_STATUSES.includes(key)
 })
 
+// original status key (when editing) and whether user changed it
+const originalStatusKey = computed(() =>
+  props.order && props.order.status ? props.order.status.key : null,
+)
+const statusChanged = computed(() => {
+  if (!props.order) return false
+  return localStatus.value !== originalStatusKey.value
+})
+
 // compute allowed target statuses based on current status key
 function allowedStatusOptionsFor(currentKey) {
   // Define allowed transitions per project logic (admin can move forward or to cancel/refund paths)
@@ -65,9 +74,9 @@ function allowedStatusOptionsFor(currentKey) {
     deposit_paid: ['delivering', 'waiting_pickup', 'completed', 'refunding'],
     delivering: ['completed', 'refunding'],
     waiting_pickup: ['completed', 'refunding'],
-    canceled: [],
-    refunding: ['refunded'],
-    refunded: [],
+    canceled: ['pending'],
+    refunding: ['refunded', 'pending'],
+    refunded: ['pending'],
     completed: [],
   }
   const allowed = map[currentKey] || []
@@ -211,20 +220,34 @@ function submit() {
     alert('Vui lòng nhập tên khách hàng')
     return
   }
-  if (localData.value.products.length === 0) {
+  // Require products only when creating a new order. When editing an
+  // existing order we allow saving even if products array is empty (admin
+  // may be updating status/notes only).
+  if (!props.order && localData.value.products.length === 0) {
     alert('Vui lòng thêm ít nhất 1 sản phẩm')
     return
   }
+
+  const statusEntry = STATUS_LIST.find((s) => s.key === localStatus.value) || STATUS_LIST[0]
   const payload = {
     id: props.order ? props.order.id : undefined,
     customerName: localData.value.customerName,
     products: JSON.parse(JSON.stringify(localData.value.products)),
     total: totalAmount.value,
     notes: localData.value.notes,
-    statusKey: props.order ? localStatus.value : 'pending',
+    // Emit a full status object so parent (OrdersManager) can decide how to
+    // persist / map colors. This makes switching to API calls easier later.
+    status: props.order
+      ? { key: localStatus.value, text: statusEntry.text }
+      : { key: 'pending', text: STATUS_LIST.find((s) => s.key === 'pending').text },
     createdAt: props.order ? props.order.date : new Date().toISOString(),
   }
+  // debug: trace submit attempts
+  console.debug('[OrderForm] submit payload:', payload)
+
   emit('save', payload)
+  // also request the parent to close the modal immediately
+  emit('close')
 }
 
 onBeforeUnmount(() => {
@@ -255,7 +278,7 @@ onBeforeUnmount(() => {
         >
           Đơn hàng đang ở trạng thái
           <strong>{{ STATUS_LIST.find((s) => s.key === localStatus)?.text || localStatus }}</strong>
-          nên không thể sửa đổi nội dung.
+          nên hầu hết các trường bị khoá. Bạn vẫn có thể thay đổi "Trạng thái" và nhấn Lưu.
         </div>
         <div>
           <label class="block text-sm font-medium mb-1">Tên khách hàng</label>
@@ -403,7 +426,7 @@ onBeforeUnmount(() => {
           <button
             class="px-4 py-2 bg-blue-600 text-white rounded"
             @click="submit"
-            :disabled="isLocked"
+            :disabled="isLocked && !statusChanged"
           >
             {{ props.order ? 'Lưu' : 'Tạo đơn' }}
           </button>
