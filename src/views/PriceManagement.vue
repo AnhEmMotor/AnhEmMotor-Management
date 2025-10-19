@@ -1,6 +1,7 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import PriceModal from '@/components/price_management/PriceModal.vue'
+import PriceQuickMenu from '@/components/price_management/PriceQuickMenu.vue'
 import BaseInput from '@/components/ui/input/BaseInput.vue'
 import BasePagination from '@/components/ui/button/BasePagination.vue'
 
@@ -9,7 +10,7 @@ const priceHistoryData = {
   SP000007: { name: 'VS', recentInputPrice: null, oldPrices: [] },
   SP000006: {
     name: 'SH350i',
-    recentInputPrice: 4500000,
+    recentInputPrice: 45000000,
     oldPrices: [
       { price: 48000000, date: '01/05/2024' },
       { price: 47500000, date: '15/03/2024' },
@@ -57,6 +58,8 @@ const paginatedProducts = computed(() => {
 // modal
 const isModalVisible = ref(false)
 const selectedProduct = ref(null)
+// quick menu state
+const quickMenu = ref({ visible: false, x: 0, y: 0, item: null })
 
 function handleOpenModal(product) {
   // prefer the live product object from `products` so we show the latest history
@@ -69,6 +72,48 @@ function handleOpenModal(product) {
 function handleCloseModal() {
   isModalVisible.value = false
   selectedProduct.value = null
+}
+
+function openQuickMenu(evt, item) {
+  // prevent blur on the input by preventing default on mousedown handled in menu
+  quickMenu.value.visible = true
+  quickMenu.value.item = item
+  // position the menu near the click target
+  const rect = evt.target.getBoundingClientRect()
+  const menuWidth = 260 // approximate width of menu
+  // prefer placing menu below input
+  let left = rect.left
+  const rightOverflow = left + menuWidth - window.innerWidth
+  if (rightOverflow > 0) left = Math.max(8, left - rightOverflow)
+  quickMenu.value.x = left
+  quickMenu.value.y = rect.bottom + 6
+}
+
+function closeQuickMenu() {
+  quickMenu.value.visible = false
+  quickMenu.value.item = null
+}
+
+function onDocClick(e) {
+  // if clicking outside the menu, close it
+  const menuEl = document.querySelector('.price-quick-menu')
+  if (!menuEl) return closeQuickMenu()
+  if (menuEl.contains(e.target)) return
+  // if clicking an input inside table, keep it open
+  if (e.target && e.target.closest && e.target.closest('.box-style')) {
+    // but ensure it's not inside the quick menu
+    if (menuEl.contains(e.target)) return
+    // otherwise close
+  }
+  closeQuickMenu()
+}
+
+function applyQuickPrice(newPrice) {
+  const it = quickMenu.value.item
+  if (!it) return
+  it.sellingPrice = String(newPrice)
+  setPrice(it)
+  closeQuickMenu()
 }
 
 // toast
@@ -102,7 +147,9 @@ function setPrice(item) {
 
   // format as numeric if possible, otherwise keep string
   const numeric = parseNumber(v)
-  const formattedPrice = numeric !== null ? numeric : v
+  let formattedPrice = numeric !== null ? numeric : v
+  // enforce non-negative numeric prices
+  if (typeof formattedPrice === 'number' && formattedPrice < 0) formattedPrice = 0
   const date = formatDate(Date.now())
 
   // push into product.history (most recent first)
@@ -151,6 +198,37 @@ function parseNumber(v) {
   return Number.isFinite(n) ? n : null
 }
 
+// compute percent difference between current entered price and the recent input price
+function computePercent(item) {
+  const current = parseNumber(item.sellingPrice)
+  if (current === null) return null
+
+  // prefer explicit recentInputPrice from global map if available
+  let recentRaw = null
+  if (
+    priceHistoryData[item.id] &&
+    priceHistoryData[item.id].recentInputPrice !== undefined &&
+    priceHistoryData[item.id].recentInputPrice !== null
+  ) {
+    recentRaw = priceHistoryData[item.id].recentInputPrice
+  } else if (item.history && item.history.length > 0) {
+    recentRaw = item.history[0].price
+  }
+
+  const recent = parseNumber(recentRaw)
+  if (recent === null || recent === 0) return null
+
+  return ((current - recent) / recent) * 100
+}
+
+function formatPercent(item) {
+  const p = computePercent(item)
+  if (p === null) return '-'
+  const rounded = Math.round(p * 10) / 10
+  const sign = rounded > 0 ? '+' : ''
+  return `${sign}${rounded}%`
+}
+
 function handlePriceBlur(item) {
   const v = (item.sellingPrice || '').toString().trim()
   if (!v) return
@@ -159,6 +237,11 @@ function handlePriceBlur(item) {
 
 onMounted(() => {
   products.value.forEach((p) => (p.isOpen = false))
+  document.addEventListener('mousedown', onDocClick)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('mousedown', onDocClick)
 })
 </script>
 
@@ -180,7 +263,8 @@ onMounted(() => {
       <div class="px-3 md:[grid-column:span_3]">Tên hàng</div>
       <div class="px-4 md:[grid-column:span_3]">Giá nhập gần nhất</div>
       <div class="px-5 md:[grid-column:span_3]">Ngày cập nhật</div>
-      <div class="px-3 md:[grid-column:span_5]">Nhập giá</div>
+      <div class="px-3 md:[grid-column:span_4]">Nhập giá</div>
+      <div class="px-3 md:[grid-column:span_1] text-right">%</div>
     </div>
 
     <!-- List -->
@@ -220,20 +304,52 @@ onMounted(() => {
           </div>
 
           <!-- Nhập giá + actions -->
-          <div class="px-0 md:px-3 md:[grid-column:span_5]">
+          <div class="px-0 md:px-1 md:[grid-column:span_4]">
             <div class="text-xs text-gray-500 md:hidden">Nhập giá</div>
             <div class="flex items-center gap-2">
               <BaseInput
                 v-model="item.sellingPrice"
                 type="text"
                 placeholder="0"
+                @focus="(e) => openQuickMenu(e, item)"
                 @blur="() => handlePriceBlur(item)"
                 @keydown.enter.prevent="() => setPrice(item)"
                 @dblclick.stop
               />
             </div>
           </div>
+          <!-- percent column for md+ -->
+          <div class="hidden md:flex items-center justify-end px-0 md:px-3 md:[grid-column:span_1]">
+            <div v-if="computePercent(item) !== null" class="text-sm font-medium">
+              <span
+                :class="{
+                  'text-green-600': computePercent(item) > 0,
+                  'text-red-600': computePercent(item) < 0,
+                  'text-gray-500': computePercent(item) === 0,
+                }"
+              >
+                {{ formatPercent(item) }}
+              </span>
+            </div>
+          </div>
         </div>
+      </div>
+      <!-- Floating quick menu -->
+      <div
+        v-if="quickMenu.visible"
+        :style="{
+          position: 'absolute',
+          left: quickMenu.x + 'px',
+          top: quickMenu.y + 'px',
+          zIndex: 50,
+          maxWidth: '320px',
+        }"
+      >
+        <PriceQuickMenu
+          :basePrice="getRecentInputPriceDisplay(quickMenu.item || {})"
+          @apply="applyQuickPrice"
+          @menu-mousedown="() => {}"
+        />
       </div>
     </div>
 
