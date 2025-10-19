@@ -62,8 +62,8 @@ const toggleGroup = (group) => {
               </RouterLink>
             </li>
             <li>
-              <RouterLink to="/prices" class="router-link-child">
-                <span>Thiết lập giá</span>
+              <RouterLink to="/price-management" class="router-link-child">
+                <span>Thiết lập giá bán</span>
               </RouterLink>
             </li>
           </ul>

@@ -9,6 +9,7 @@ import InventoryInputManager from '@/views/InventoryInputManager.vue'
 import SupplierManager from '@/views/SupplierManager.vue'
 import UserManager from '@/views/UserManager.vue'
 import RolePermissionManager from '@/views/RolePermissionManager.vue'
+import PriceManagement from '@/views/PriceManagement.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -62,6 +63,11 @@ const router = createRouter({
       name: 'permissions',
       path: '/permissions',
       component: RolePermissionManager,
+    },
+    {
+      name: 'price-management',
+      path: '/price-management',
+      component: PriceManagement,
     },
   ],
 })
