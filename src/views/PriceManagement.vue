@@ -1,6 +1,5 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-import PriceModal from '@/components/price_management/PriceModal.vue'
 import PriceQuickMenu from '@/components/price_management/PriceQuickMenu.vue'
 import BaseInput from '@/components/ui/input/BaseInput.vue'
 import BasePagination from '@/components/ui/button/BasePagination.vue'
@@ -55,24 +54,8 @@ const paginatedProducts = computed(() => {
   return filteredProducts.value.slice(start, start + pageSize)
 })
 
-// modal
-const isModalVisible = ref(false)
-const selectedProduct = ref(null)
 // quick menu state
 const quickMenu = ref({ visible: false, x: 0, y: 0, item: null })
-
-function handleOpenModal(product) {
-  // prefer the live product object from `products` so we show the latest history
-  const live = products.value.find((p) => p.id === product.id) || product
-  // also keep priceHistoryData in sync if available
-  if (priceHistoryData[product.id]) priceHistoryData[product.id].oldPrices = live.history || []
-  selectedProduct.value = live
-  isModalVisible.value = true
-}
-function handleCloseModal() {
-  isModalVisible.value = false
-  selectedProduct.value = null
-}
 
 function openQuickMenu(evt, item) {
   // prevent blur on the input by preventing default on mousedown handled in menu
@@ -81,10 +64,10 @@ function openQuickMenu(evt, item) {
   // position the menu near the click target
   const rect = evt.target.getBoundingClientRect()
   const menuWidth = 260 // approximate width of menu
-  // prefer placing menu below input
-  let left = rect.left
-  const rightOverflow = left + menuWidth - window.innerWidth
-  if (rightOverflow > 0) left = Math.max(8, left - rightOverflow)
+  // anchor to the input's top-right: align menu's right edge with input's right edge
+  let left = rect.right - menuWidth
+  // clamp to viewport (keep at least 8px padding)
+  if (left < 8) left = 8
   quickMenu.value.x = left
   quickMenu.value.y = rect.bottom + 6
 }
@@ -260,10 +243,9 @@ onBeforeUnmount(() => {
       class="hidden md:grid md:[grid-template-columns:repeat(16,minmax(0,1fr))] items-center py-3 px-4 text-sm font-semibold text-gray-600 bg-gray-200 rounded-t-md"
     >
       <div class="px-3 md:[grid-column:span_2]">Mã hàng</div>
-      <div class="px-3 md:[grid-column:span_3]">Tên hàng</div>
-      <div class="px-4 md:[grid-column:span_3]">Giá nhập gần nhất</div>
-      <div class="px-5 md:[grid-column:span_3]">Ngày cập nhật</div>
-      <div class="px-3 md:[grid-column:span_4]">Nhập giá</div>
+      <div class="px-3 md:[grid-column:span_9]">Tên hàng</div>
+      <div class="px-4 md:[grid-column:span_2] text-right">Giá nhập gần nhất</div>
+      <div class="px-3 md:[grid-column:span_2] text-right">Nhập giá</div>
       <div class="px-3 md:[grid-column:span_1] text-right">%</div>
     </div>
 
@@ -276,8 +258,7 @@ onBeforeUnmount(() => {
         <div
           v-for="item in paginatedProducts"
           :key="item.id"
-          class="grid grid-cols-1 md:[grid-template-columns:repeat(16,minmax(0,1fr))] md:items-center py-1 md:py-1 px-4 md:px-4 border-b text-sm gap-2 md:gap-0"
-          @dblclick="handleOpenModal(item)"
+          class="grid grid-cols-1 md:[grid-template-columns:repeat(16,minmax(0,1fr))] md:items-center py-1 md:py-1 px-4 md:px-4 border-b border-gray-300 text-sm gap-2 md:gap-0"
         >
           <!-- Mã hàng -->
           <div class="px-0 md:px-3 md:[grid-column:span_2]">
@@ -286,25 +267,19 @@ onBeforeUnmount(() => {
           </div>
 
           <!-- Tên hàng -->
-          <div class="px-0 md:px-3 max-w-full md:[grid-column:span_3]">
+          <div class="px-0 md:px-3 max-w-full md:[grid-column:span_9]">
             <div class="text-xs text-gray-500 md:hidden">Tên hàng</div>
             <div class="truncate" :title="item.name">{{ item.name }}</div>
           </div>
 
           <!-- Giá nhập gần nhất (from recentInputPrice or history) -->
-          <div class="px-0 md:px-4 text-right md:[grid-column:span_3]">
+          <div class="px-0 md:px-4 text-right md:[grid-column:span_2]">
             <div class="text-xs text-gray-500 md:hidden">Giá nhập gần nhất</div>
             <div>{{ getRecentInputPriceDisplay(item) }}</div>
           </div>
 
-          <!-- Ngày cập nhật -->
-          <div class="px-0 md:px-5 md:[grid-column:span_3]">
-            <div class="text-xs text-gray-500 md:hidden">Ngày cập nhật</div>
-            <div>{{ item.history && item.history.length > 0 ? item.history[0].date : '-' }}</div>
-          </div>
-
           <!-- Nhập giá + actions -->
-          <div class="px-0 md:px-1 md:[grid-column:span_4]">
+          <div class="px-0 md:px-1 md:[grid-column:span_2]">
             <div class="text-xs text-gray-500 md:hidden">Nhập giá</div>
             <div class="flex items-center gap-2">
               <BaseInput
@@ -356,7 +331,18 @@ onBeforeUnmount(() => {
     <div class="py-4 flex justify-center">
       <BasePagination :total-pages="totalPages" v-model:currentPage="currentPage" />
     </div>
-
-    <PriceModal :is-visible="isModalVisible" :product="selectedProduct" @close="handleCloseModal" />
   </div>
 </template>
+
+<style scoped>
+@reference "../assets/main.css";
+.box-style {
+  @apply bg-gray-100 p-4 sm:p-6 rounded-xl shadow-lg;
+}
+.title-style {
+  @apply text-3xl font-bold text-center text-gray-800;
+}
+.content-box-style {
+  @apply flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0;
+}
+</style>
