@@ -370,14 +370,6 @@ watch(currentPage, (newPage, oldPage) => {
     fetchDataForPage(newPage)
   }
 })
-
-// Excel
-const importExcel = (event) => {
-  /* ... existing code ... */
-}
-const exportExcel = () => {
-  /* ... existing code ... */
-}
 </script>
 
 <style scoped>

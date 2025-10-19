@@ -10,11 +10,14 @@
       :value="modelValue"
       @input="handleInput"
       @blur="handleBlur"
+      :readonly="readonly"
       :placeholder="placeholder"
       :class="[
         'w-full p-1.5 border rounded-md text-sm focus:outline-none transition-all duration-300',
         inputClasses,
+        inputClass,
       ]"
+      v-bind="$attrs"
     />
 
     <p v-if="errorMessage" class="mt-1 text-sm text-red-600">
@@ -53,6 +56,11 @@ const props = defineProps({
   readonly: {
     type: Boolean,
     default: false,
+  },
+  // classes that should be applied directly to the inner <input>
+  inputClass: {
+    type: [String, Array, Object],
+    default: '',
   },
 })
 const emit = defineEmits(['update:modelValue'])
