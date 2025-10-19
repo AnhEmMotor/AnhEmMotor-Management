@@ -266,7 +266,11 @@ function handleSaveNewOrder(payload) {
       date: new Date().toISOString().split('T')[0],
       customerName: payload.customerName,
       productSummary: `${payload.products.length} sản phẩm`,
-  status: { key: payload.status?.key || 'pending', text: (payload.status && payload.status.text) || statusMap.pending.text, color: statusMap.pending.color },
+      status: {
+        key: payload.status?.key || 'pending',
+        text: (payload.status && payload.status.text) || statusMap.pending.text,
+        color: statusMap.pending.color,
+      },
       payment: { text: 'Chưa Thanh Toán', color: 'red' },
       total: payload.total,
       type: 'sale',

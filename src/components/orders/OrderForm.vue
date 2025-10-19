@@ -108,6 +108,12 @@ const showProductDropdown = ref(false)
 const productInputRef = ref(null)
 const dropdownStyle = ref({})
 
+// inline validation errors (similar to UserForm.vue)
+const errors = ref({
+  products: '',
+  customerName: '',
+})
+
 const filteredProducts = computed(() => {
   if (!productSearchTerm.value) return allProducts.value
   const term = productSearchTerm.value.toLowerCase()
@@ -211,21 +217,48 @@ watch(
       localData.value = { customerName: '', products: [], notes: '' }
       productSearchTerm.value = ''
       showProductDropdown.value = false
+      errors.value.products = ''
+      errors.value.customerName = ''
     }
+  },
+)
+
+// clear product error when user adds/removes products
+watch(
+  () => localData.value.products.length,
+  (len) => {
+    if (len > 0) errors.value.products = ''
+  },
+)
+
+watch(
+  () => localData.value.customerName,
+  (val) => {
+    if (val && val.trim() !== '') errors.value.customerName = ''
   },
 )
 
 function submit() {
   if (!localData.value.customerName) {
-    alert('Vui lòng nhập tên khách hàng')
+    errors.value.customerName = 'Vui lòng nhập tên khách hàng'
     return
   }
-  // Require products only when creating a new order. When editing an
-  // existing order we allow saving even if products array is empty (admin
-  // may be updating status/notes only).
-  if (!props.order && localData.value.products.length === 0) {
-    alert('Vui lòng thêm ít nhất 1 sản phẩm')
-    return
+  // Require at least one product when creating a new order.
+  // When editing, disallow saving if the product list is emptied (user
+  // removed all products) unless the user only changed the status.
+  if (localData.value.products.length === 0) {
+    if (!props.order) {
+      errors.value.products = 'Vui lòng thêm ít nhất 1 sản phẩm'
+      return
+    }
+    // props.order exists (editing) — allow only if the user changed status
+    // and did not remove products intentionally. If products are empty and
+    // status wasn't changed, show validation error.
+    if (!statusChanged.value) {
+      errors.value.products = 'Đơn hàng phải có ít nhất 1 sản phẩm'
+      return
+    }
+    // if statusChanged is true we allow saving (status-only change)
   }
 
   const statusEntry = STATUS_LIST.find((s) => s.key === localStatus.value) || STATUS_LIST[0]
@@ -283,6 +316,7 @@ onBeforeUnmount(() => {
         <div>
           <label class="block text-sm font-medium mb-1">Tên khách hàng</label>
           <input v-model="localData.customerName" class="w-full border rounded px-3 py-2" />
+          <p v-if="errors.customerName" class="mt-1 text-sm text-red-500">{{ errors.customerName }}</p>
         </div>
 
         <div>
@@ -324,6 +358,7 @@ onBeforeUnmount(() => {
               </div>
             </div>
           </div>
+          <p v-if="errors.products" class="mt-1 text-sm text-red-500">{{ errors.products }}</p>
         </div>
 
         <!-- Status dropdown (only when editing an existing order) -->
