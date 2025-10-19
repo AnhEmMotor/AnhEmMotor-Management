@@ -6,7 +6,7 @@
         <!-- Right side filter/menu (matches RolePermissionManager layout) -->
         <OrderFilterButtons v-model="selectedStatuses" />
         <span class="h-8 border-r-2 border-black-300 mx-2" />
-        <RoundButton color="blue" @click="createNewOrder">Tạo đơn mới</RoundButton>
+        <BaseButton color="green" @click="createNewOrder" text="Tạo Đơn Hàng Mới"></BaseButton>
       </div>
     </div>
     <div class="overflow-x-auto">
@@ -65,11 +65,11 @@
 <script setup>
 import { ref, computed } from 'vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
-import RoundButton from '@/components/ui/BaseRoundButton.vue'
 import OrderFilterButtons from '@/components/orders/OrderFilterButtons.vue'
 import OrderDetailModal from '@/components/orders/OrderDetailModal.vue'
 import OrderForm from '@/components/orders/OrderForm.vue'
 import BaseSmallNoBgButton from '@/components/ui/button/BaseSmallNoBgButton.vue'
+import BaseButton from '@/components/ui/button/BaseButton.vue'
 
 // Richer mock orders (numeric totals and products) so modal can display details
 const orders = ref([

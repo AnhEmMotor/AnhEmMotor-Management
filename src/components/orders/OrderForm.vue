@@ -2,6 +2,9 @@
 import { ref, computed, watch, onBeforeUnmount } from 'vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
 import BaseDropdown from '@/components/ui/input/BaseDropdown.vue'
+import BaseInput from '@/components/ui/input/BaseInput.vue'
+import BaseTextarea from '../ui/input/BaseTextarea.vue'
+import BaseButton from '@/components/ui/button/BaseButton.vue'
 
 const props = defineProps({
   show: { type: Boolean, default: false },
@@ -315,23 +318,20 @@ onBeforeUnmount(() => {
         </div>
         <div>
           <label class="block text-sm font-medium mb-1">Tên khách hàng</label>
-          <input v-model="localData.customerName" class="w-full border rounded px-3 py-2" />
-          <p v-if="errors.customerName" class="mt-1 text-sm text-red-500">{{ errors.customerName }}</p>
+          <BaseInput v-model="localData.customerName" :error="errors.customerName" />
         </div>
 
         <div>
           <label class="block text-sm font-medium mb-1">Thêm sản phẩm</label>
           <div class="relative">
-            <input
+            <BaseInput
               ref="productInputRef"
               v-model="productSearchTerm"
               @input="updateDropdownPosition"
               @focus="openProductDropdown"
               @blur="handleProductBlur"
               :disabled="isLocked"
-              type="text"
               placeholder="Tìm hàng hóa theo tên...."
-              class="search-input w-full"
             />
 
             <div
@@ -404,7 +404,7 @@ onBeforeUnmount(() => {
                 <td class="py-2 px-3 text-sm text-gray-700">{{ p.code }}</td>
                 <td class="py-2 px-3 text-sm text-gray-700">{{ p.name }}</td>
                 <td class="py-2 px-3 text-right">
-                  <input
+                  <BaseInput
                     v-model.number="p.quantity"
                     @change="calculateProductTotal(p)"
                     type="number"
@@ -414,7 +414,7 @@ onBeforeUnmount(() => {
                   />
                 </td>
                 <td class="py-2 px-3 text-right">
-                  <input
+                  <BaseInput
                     v-model.number="p.unitPrice"
                     @change="calculateProductTotal(p)"
                     type="number"
@@ -427,14 +427,13 @@ onBeforeUnmount(() => {
                   {{ (p.total || 0).toLocaleString('vi-VN') }}
                 </td>
                 <td class="py-2 px-3 text-center">
-                  <button
+                  <BaseSmallNoBgButton
                     v-if="!isLocked"
                     @click="removeProduct(idx)"
-                    class="delete-button"
                     title="Xóa sản phẩm"
                   >
                     🗑️
-                  </button>
+                  </BaseSmallNoBgButton>
                 </td>
               </tr>
             </tbody>
@@ -443,12 +442,7 @@ onBeforeUnmount(() => {
 
         <div>
           <label class="block text-sm font-medium mb-1">Ghi chú</label>
-          <textarea
-            v-model="localData.notes"
-            :disabled="isLocked"
-            class="w-full border rounded px-3 py-2"
-            rows="3"
-          ></textarea>
+          <BaseTextarea v-model="localData.notes" :disabled="isLocked" rows="3" />
         </div>
       </div>
     </template>
@@ -457,14 +451,13 @@ onBeforeUnmount(() => {
       <div class="flex items-center justify-between w-full">
         <div class="text-sm font-semibold">Tổng: {{ totalAmount.toLocaleString() }} VNĐ</div>
         <div class="flex gap-2">
-          <button class="px-4 py-2 border rounded" @click="$emit('close')">Huỷ</button>
-          <button
-            class="px-4 py-2 bg-blue-600 text-white rounded"
+          <BaseButton text="Huỷ" color="gray" @click="$emit('close')" />
+          <BaseButton
+            :text="props.order ? 'Lưu' : 'Tạo đơn'"
+            color="primary"
             @click="submit"
             :disabled="isLocked && !statusChanged"
-          >
-            {{ props.order ? 'Lưu' : 'Tạo đơn' }}
-          </button>
+          />
         </div>
       </div>
     </template>
@@ -477,9 +470,18 @@ onBeforeUnmount(() => {
 .search-input {
   @apply w-full py-2 px-3 border border-gray-300 rounded-md;
 }
-.quantity-input,
-.price-input {
-  @apply py-1 px-2 border rounded text-center bg-white;
+ .quantity-input,
+ .price-input {
+  /* keep spacing on the wrapper but remove border so we don't get double borders
+     (BaseInput already renders the input's own border). We only use the wrapper
+     to control width/alignment for the table layout. */
+  @apply py-1 px-2 text-center bg-transparent;
+}
+.quantity-input input {
+  @apply text-center;
+}
+.price-input input {
+  @apply text-right;
 }
 .delete-button {
   @apply bg-transparent border-none cursor-pointer text-lg opacity-80 hover:opacity-100;
