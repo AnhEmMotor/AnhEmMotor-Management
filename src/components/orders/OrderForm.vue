@@ -1,10 +1,12 @@
 <script setup>
 import { ref, computed, watch, onBeforeUnmount } from 'vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
+import BaseDropdown from '@/components/ui/input/BaseDropdown.vue'
 
 const props = defineProps({
   show: { type: Boolean, default: false },
   zIndex: { type: Number, default: 100 },
+  order: { type: Object, default: null },
 })
 const emit = defineEmits(['close', 'save', 'activate'])
 
@@ -14,6 +16,76 @@ const localData = ref({
   products: [],
   notes: '',
 })
+
+// Status list (11 statuses) - key/value pairs
+const STATUS_LIST = [
+  { key: 'pending', text: 'Chờ xác nhận' }, //1
+  { key: 'completed', text: 'Đã hoàn thành' }, //2
+  { key: 'canceled', text: 'Đã hủy' }, //3
+  { key: 'refunding', text: 'Đang hoàn tiền' }, //4
+  { key: 'refunded', text: 'Đã hoàn tiền' }, //5
+  { key: 'confirmed_cod', text: 'Đã xác nhận (Chờ thanh toán COD)' }, //6
+  { key: 'paid_processing', text: 'Đã thanh toán (Chờ xử lý)' }, //7
+  { key: 'waiting_deposit', text: 'Chờ đặt cọc' }, //8
+  { key: 'deposit_paid', text: 'Đã đặt cọc (Chờ xử lý)' }, //9
+  { key: 'delivering', text: 'Đang giao hàng' }, //10
+  { key: 'waiting_pickup', text: 'Chờ lấy hàng tại cửa hàng' }, //11
+]
+
+const localStatus = ref('pending')
+
+// statuses that lock editing according to the sales workflow
+const LOCKED_STATUSES = [
+  'confirmed_cod', // 6 - Đã xác nhận (Chờ thanh toán COD)
+  'paid_processing', // 7 - Đã thanh toán (Chờ xử lý)
+  'deposit_paid', // 9 - Đã đặt cọc (Chờ xử lý)
+  'delivering', // 10 - Đang giao hàng
+  'waiting_pickup', // 11 - Chờ lấy hàng tại cửa hàng
+  'completed',
+  'canceled',
+  'refunding',
+  'refunded',
+]
+
+const isLocked = computed(() => {
+  // If creating a new order (no props.order) it's not locked
+  if (!props.order) return false
+  const key = localStatus.value || (props.order.status && props.order.status.key) || 'pending'
+  return LOCKED_STATUSES.includes(key)
+})
+
+// compute allowed target statuses based on current status key
+function allowedStatusOptionsFor(currentKey) {
+  // Define allowed transitions per project logic (admin can move forward or to cancel/refund paths)
+  const map = {
+    pending: ['confirmed_cod', 'paid_processing', 'waiting_deposit', 'canceled'],
+    confirmed_cod: ['delivering', 'waiting_pickup', 'completed', 'canceled'],
+    paid_processing: ['delivering', 'waiting_pickup', 'completed', 'refunding'],
+    waiting_deposit: ['deposit_paid', 'canceled'],
+    deposit_paid: ['delivering', 'waiting_pickup', 'completed', 'refunding'],
+    delivering: ['completed', 'refunding'],
+    waiting_pickup: ['completed', 'refunding'],
+    canceled: [],
+    refunding: ['refunded'],
+    refunded: [],
+    completed: [],
+  }
+  const allowed = map[currentKey] || []
+  // Find current status entry
+  const currentEntry = STATUS_LIST.find((s) => s.key === currentKey)
+  const result = []
+  if (currentEntry) {
+    // include current status first and mark it as current in the label
+    result.push({ value: currentEntry.key, text: `${currentEntry.text} (Hiện tại)` })
+  }
+  // Add allowed transitions (excluding current if present)
+  STATUS_LIST.forEach((s) => {
+    if (s.key !== currentKey && allowed.includes(s.key)) {
+      result.push({ value: s.key, text: s.text })
+    }
+  })
+  return result
+}
 
 const allProducts = ref([
   { code: 'SP000001', name: 'VISION', price: 30000000, stock: 10 },
@@ -36,6 +108,11 @@ const filteredProducts = computed(() => {
 })
 
 const selectProduct = (product) => {
+  if (isLocked.value) {
+    // prevent adding when locked
+    showProductDropdown.value = false
+    return
+  }
   const newProduct = {
     id: Date.now() + Math.random(),
     code: product.code,
@@ -47,6 +124,26 @@ const selectProduct = (product) => {
   localData.value.products.push(newProduct)
   productSearchTerm.value = ''
   showProductDropdown.value = false
+}
+
+const openProductDropdown = () => {
+  if (isLocked.value) return
+  showProductDropdown.value = true
+}
+
+// when editing an order, initialize localData and status
+if (props.order) {
+  localData.value.customerName = props.order.customerName || ''
+  localData.value.products = (props.order.products || []).map((p) => ({
+    id: Date.now() + Math.random(),
+    code: p.code || p.name || '',
+    name: p.name,
+    quantity: p.qty || p.quantity || 1,
+    unitPrice: p.price || p.unitPrice || 0,
+    total: (p.price || p.unitPrice || 0) * (p.qty || p.quantity || 1),
+  }))
+  localData.value.notes = props.order.notes || ''
+  localStatus.value = (props.order.status && props.order.status.key) || 'pending'
 }
 
 const handleProductBlur = () => {
@@ -119,11 +216,13 @@ function submit() {
     return
   }
   const payload = {
+    id: props.order ? props.order.id : undefined,
     customerName: localData.value.customerName,
     products: JSON.parse(JSON.stringify(localData.value.products)),
     total: totalAmount.value,
     notes: localData.value.notes,
-    createdAt: new Date().toISOString(),
+    statusKey: props.order ? localStatus.value : 'pending',
+    createdAt: props.order ? props.order.date : new Date().toISOString(),
   }
   emit('save', payload)
 }
@@ -150,6 +249,14 @@ onBeforeUnmount(() => {
 
     <template #body>
       <div class="space-y-4">
+        <div
+          v-if="isLocked"
+          class="p-3 rounded bg-yellow-50 border-l-4 border-yellow-400 text-sm text-yellow-800"
+        >
+          Đơn hàng đang ở trạng thái
+          <strong>{{ STATUS_LIST.find((s) => s.key === localStatus)?.text || localStatus }}</strong>
+          nên không thể sửa đổi nội dung.
+        </div>
         <div>
           <label class="block text-sm font-medium mb-1">Tên khách hàng</label>
           <input v-model="localData.customerName" class="w-full border rounded px-3 py-2" />
@@ -162,8 +269,9 @@ onBeforeUnmount(() => {
               ref="productInputRef"
               v-model="productSearchTerm"
               @input="updateDropdownPosition"
-              @focus="showProductDropdown = true"
+              @focus="openProductDropdown"
               @blur="handleProductBlur"
+              :disabled="isLocked"
               type="text"
               placeholder="Tìm hàng hóa theo tên...."
               class="search-input w-full"
@@ -195,6 +303,17 @@ onBeforeUnmount(() => {
           </div>
         </div>
 
+        <!-- Status dropdown (only when editing an existing order) -->
+        <div v-if="props.order">
+          <label class="block text-sm font-medium mb-1">Trạng thái đơn</label>
+          <BaseDropdown
+            v-model="localStatus"
+            :options="allowedStatusOptionsFor(localStatus)"
+            placeholder="Chọn trạng thái"
+            :disabled="isLocked"
+          />
+        </div>
+
         <div class="product-table-section">
           <table class="product-table w-full text-sm bg-white rounded-md overflow-hidden shadow-sm">
             <thead class="bg-gray-50 border-b">
@@ -202,9 +321,15 @@ onBeforeUnmount(() => {
                 <th class="py-2 px-3 text-left text-xs font-semibold text-gray-600 w-12">STT</th>
                 <th class="py-2 px-3 text-left text-xs font-semibold text-gray-600 w-28">Mã</th>
                 <th class="py-2 px-3 text-left text-xs font-semibold text-gray-600">Tên</th>
-                <th class="py-2 px-3 text-right text-xs font-semibold text-gray-600 w-24">Số lượng</th>
-                <th class="py-2 px-3 text-right text-xs font-semibold text-gray-600 w-44">Đơn giá</th>
-                <th class="py-2 px-3 text-right text-xs font-semibold text-gray-600 w-40">Thành tiền</th>
+                <th class="py-2 px-3 text-right text-xs font-semibold text-gray-600 w-24">
+                  Số lượng
+                </th>
+                <th class="py-2 px-3 text-right text-xs font-semibold text-gray-600 w-44">
+                  Đơn giá
+                </th>
+                <th class="py-2 px-3 text-right text-xs font-semibold text-gray-600 w-40">
+                  Thành tiền
+                </th>
                 <th class="py-2 px-3 text-center text-xs font-semibold text-gray-600 w-12"></th>
               </tr>
             </thead>
@@ -226,6 +351,7 @@ onBeforeUnmount(() => {
                     @change="calculateProductTotal(p)"
                     type="number"
                     min="1"
+                    :disabled="isLocked"
                     class="quantity-input"
                   />
                 </td>
@@ -235,6 +361,7 @@ onBeforeUnmount(() => {
                     @change="calculateProductTotal(p)"
                     type="number"
                     min="0"
+                    :disabled="isLocked"
                     class="price-input"
                   />
                 </td>
@@ -242,7 +369,12 @@ onBeforeUnmount(() => {
                   {{ (p.total || 0).toLocaleString('vi-VN') }}
                 </td>
                 <td class="py-2 px-3 text-center">
-                  <button @click="removeProduct(idx)" class="delete-button" title="Xóa sản phẩm">
+                  <button
+                    v-if="!isLocked"
+                    @click="removeProduct(idx)"
+                    class="delete-button"
+                    title="Xóa sản phẩm"
+                  >
                     🗑️
                   </button>
                 </td>
@@ -255,6 +387,7 @@ onBeforeUnmount(() => {
           <label class="block text-sm font-medium mb-1">Ghi chú</label>
           <textarea
             v-model="localData.notes"
+            :disabled="isLocked"
             class="w-full border rounded px-3 py-2"
             rows="3"
           ></textarea>
@@ -267,7 +400,13 @@ onBeforeUnmount(() => {
         <div class="text-sm font-semibold">Tổng: {{ totalAmount.toLocaleString() }} VNĐ</div>
         <div class="flex gap-2">
           <button class="px-4 py-2 border rounded" @click="$emit('close')">Huỷ</button>
-          <button class="px-4 py-2 bg-blue-600 text-white rounded" @click="submit">Tạo đơn</button>
+          <button
+            class="px-4 py-2 bg-blue-600 text-white rounded"
+            @click="submit"
+            :disabled="isLocked"
+          >
+            {{ props.order ? 'Lưu' : 'Tạo đơn' }}
+          </button>
         </div>
       </div>
     </template>
@@ -295,10 +434,18 @@ onBeforeUnmount(() => {
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
-.quantity-input { @apply w-16 }
-.price-input { @apply w-36 }
-.dropdown-item { @apply p-3 cursor-pointer border-b border-gray-100 }
-.dropdown-item .product-icon { @apply mr-3 }
+.quantity-input {
+  @apply w-16;
+}
+.price-input {
+  @apply w-36;
+}
+.dropdown-item {
+  @apply p-3 cursor-pointer border-b border-gray-100;
+}
+.dropdown-item .product-icon {
+  @apply mr-3;
+}
 .product-table {
   border-collapse: collapse;
 }

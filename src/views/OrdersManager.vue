@@ -32,9 +32,9 @@
             <td class="text-style">
               <RoundBadge :color="order.status.color">{{ order.status.text }}</RoundBadge>
             </td>
-            <td class="text-style">{{ order.total }}</td>
+            <td class="text-style">{{ order.total.toLocaleString('vi-VN') }} VNĐ</td>
             <td class="text-center-style">
-              <BaseSmallNoBgButton color="blue" @click="openOrderDetail(order)"
+              <BaseSmallNoBgButton color="blue" @click="handleEditOrder(order)"
                 >Sửa</BaseSmallNoBgButton
               >
             </td>
@@ -54,6 +54,7 @@
       v-if="showOrderForm"
       :show="showOrderForm"
       :zIndex="110"
+      :order="selectedOrder"
       @close="showOrderForm = false"
       @save="handleSaveNewOrder"
       @activate="() => {}"
@@ -74,63 +75,113 @@ import BaseSmallNoBgButton from '@/components/ui/button/BaseSmallNoBgButton.vue'
 const orders = ref([
   {
     id: 'ORD-001',
-    date: '2023-10-26',
-    customerName: 'Nguyễn Văn A',
-    productSummary: '1 sản phẩm (Xe Máy)',
-    status: { text: 'Đã Hoàn Thành', color: 'green' },
-    total: 55000000,
+    date: '2025-10-01',
+    customerName: 'A',
+    productSummary: '1 xe',
+    status: { key: 'pending', text: 'Chờ xác nhận', color: 'gray' },
+    total: 10000000,
     type: 'sale',
-    products: [{ name: 'Xe Máy ABC', qty: 1, price: 55000000 }],
+    products: [{ name: 'Xe A', qty: 1, price: 10000000 }],
   },
   {
     id: 'ORD-002',
-    date: '2023-10-25',
-    customerName: 'Trần Thị B',
-    productSummary: '1 sản phẩm (Xe Máy)',
-    status: { text: 'Đã Xác Nhận', color: 'yellow' },
-    total: 42000000,
+    date: '2025-10-02',
+    customerName: 'B',
+    productSummary: '1 phụ kiện',
+    status: { key: 'completed', text: 'Đã hoàn thành', color: 'green' },
+    total: 500000,
     type: 'sale',
-    products: [{ name: 'Xe Máy XYZ', qty: 1, price: 42000000 }],
+    products: [{ name: 'PK B', qty: 1, price: 500000 }],
   },
   {
     id: 'ORD-003',
-    date: '2023-10-24',
-    customerName: 'Lê Văn C',
-    productSummary: '1 sản phẩm (Phụ Tùng)',
-    status: { text: 'Đã Xác Nhận', color: 'yellow' },
-    total: 3500000,
+    date: '2025-10-03',
+    customerName: 'C',
+    productSummary: '1 đơn',
+    status: { key: 'canceled', text: 'Đã hủy', color: 'red' },
+    total: 0,
     type: 'sale',
-    products: [{ name: 'Bộ phận 123', qty: 1, price: 3500000 }],
+    products: [],
   },
   {
     id: 'ORD-004',
-    date: '2023-10-23',
-    customerName: 'Phạm Thị D',
-    productSummary: '1 sản phẩm (Phụ Kiện)',
-    status: { text: 'Đang Giao Hàng', color: 'blue' },
-    total: 490000,
+    date: '2025-10-04',
+    customerName: 'D',
+    productSummary: '1 đơn',
+    status: { key: 'refunding', text: 'Đang hoàn tiền', color: 'yellow' },
+    total: 200000,
     type: 'sale',
-    products: [{ name: 'Phụ Kiện A', qty: 1, price: 490000 }],
+    products: [{ name: 'P D', qty: 1, price: 200000 }],
   },
   {
     id: 'ORD-005',
-    date: '2023-10-22',
-    customerName: 'Hoàng Văn E',
-    productSummary: '1 sản phẩm (Phụ Kiện)',
-    status: { text: 'Chưa Xác Nhận', color: 'red' },
-    total: 120000,
+    date: '2025-10-05',
+    customerName: 'E',
+    productSummary: '1 đơn',
+    status: { key: 'refunded', text: 'Đã hoàn tiền', color: 'gray' },
+    total: 0,
     type: 'sale',
-    products: [{ name: 'Phụ Kiện B', qty: 1, price: 120000 }],
+    products: [],
   },
   {
     id: 'ORD-006',
-    date: '2023-10-21',
-    customerName: 'Nguyễn Văn F',
-    productSummary: '1 sản phẩm (Phụ Tùng)',
-    status: { text: 'Đã Giao - Hoàn Thành', color: 'green' },
-    total: 280000,
+    date: '2025-10-06',
+    customerName: 'F',
+    productSummary: '1 đơn',
+    status: { key: 'confirmed_cod', text: 'Đã xác nhận (Chờ thanh toán COD)', color: 'yellow' },
+    total: 12000000,
     type: 'sale',
-    products: [{ name: 'Phụ Tùng C', qty: 1, price: 280000 }],
+    products: [{ name: 'Xe F', qty: 1, price: 12000000 }],
+  },
+  {
+    id: 'ORD-007',
+    date: '2025-10-07',
+    customerName: 'G',
+    productSummary: '1 đơn',
+    status: { key: 'paid_processing', text: 'Đã thanh toán (Chờ xử lý)', color: 'blue' },
+    total: 8000000,
+    type: 'sale',
+    products: [{ name: 'Xe G', qty: 1, price: 8000000 }],
+  },
+  {
+    id: 'ORD-008',
+    date: '2025-10-08',
+    customerName: 'H',
+    productSummary: '1 đơn',
+    status: { key: 'waiting_deposit', text: 'Chờ đặt cọc', color: 'gray' },
+    total: 20000000,
+    type: 'sale',
+    products: [{ name: 'Xe H', qty: 1, price: 20000000 }],
+  },
+  {
+    id: 'ORD-009',
+    date: '2025-10-09',
+    customerName: 'I',
+    productSummary: '1 đơn',
+    status: { key: 'deposit_paid', text: 'Đã đặt cọc (Chờ xử lý)', color: 'blue' },
+    total: 20000000,
+    type: 'sale',
+    products: [{ name: 'Xe I', qty: 1, price: 20000000 }],
+  },
+  {
+    id: 'ORD-010',
+    date: '2025-10-10',
+    customerName: 'J',
+    productSummary: '1 đơn',
+    status: { key: 'delivering', text: 'Đang giao hàng', color: 'blue' },
+    total: 300000,
+    type: 'sale',
+    products: [{ name: 'PK J', qty: 1, price: 300000 }],
+  },
+  {
+    id: 'ORD-011',
+    date: '2025-10-11',
+    customerName: 'K',
+    productSummary: '1 đơn',
+    status: { key: 'waiting_pickup', text: 'Chờ lấy hàng tại cửa hàng', color: 'green' },
+    total: 15000000,
+    type: 'sale',
+    products: [{ name: 'Xe K', qty: 1, price: 15000000 }],
   },
 ])
 
@@ -157,30 +208,68 @@ const displayedOrders = computed(() => {
   return orders.value.filter((o) => selectedStatuses.value.includes(statusTextToKey(o.status.text)))
 })
 
-function openOrderDetail(order) {
-  selectedOrder.value = { ...order }
-  showDetailModal.value = true
+function createNewOrder() {
+  selectedOrder.value = null
+  showOrderForm.value = true
 }
 
-function createNewOrder() {
+function handleEditOrder(order) {
+  selectedOrder.value = { ...order }
   showOrderForm.value = true
 }
 
 function handleSaveNewOrder(payload) {
-  const nextId = `ORD-${String(Math.floor(Math.random() * 900000) + 100000)}`
-  const newOrder = {
-    id: nextId,
-    date: new Date().toISOString().split('T')[0],
-    customerName: payload.customerName,
-    productSummary: `${payload.products.length} sản phẩm`,
-    status: { text: 'Chưa Xác Nhận', color: 'red' },
-    payment: { text: 'Chưa Thanh Toán', color: 'red' },
-    total: payload.total,
-    type: 'sale',
-    products: payload.products.map((p) => ({ name: p.name, qty: p.quantity, price: p.unitPrice })),
-    notes: payload.notes,
+  // If payload contains an id, update existing order
+  const statusMap = {
+    pending: { text: 'Chờ xác nhận', color: 'gray' },
+    completed: { text: 'Đã hoàn thành', color: 'green' },
+    canceled: { text: 'Đã hủy', color: 'red' },
+    refunding: { text: 'Đang hoàn tiền', color: 'yellow' },
+    refunded: { text: 'Đã hoàn tiền', color: 'gray' },
+    confirmed_cod: { text: 'Đã xác nhận (Chờ thanh toán COD)', color: 'yellow' },
+    paid_processing: { text: 'Đã thanh toán (Chờ xử lý)', color: 'blue' },
+    waiting_deposit: { text: 'Chờ đặt cọc', color: 'gray' },
+    deposit_paid: { text: 'Đã đặt cọc (Chờ xử lý)', color: 'blue' },
+    delivering: { text: 'Đang giao hàng', color: 'blue' },
+    waiting_pickup: { text: 'Chờ lấy hàng tại cửa hàng', color: 'green' },
   }
-  orders.value = [newOrder, ...orders.value]
+
+  if (payload.id) {
+    const idx = orders.value.findIndex((o) => o.id === payload.id)
+    if (idx !== -1) {
+      orders.value[idx].customerName = payload.customerName
+      orders.value[idx].products = payload.products.map((p) => ({
+        name: p.name,
+        qty: p.quantity,
+        price: p.unitPrice,
+      }))
+      orders.value[idx].total = payload.total
+      orders.value[idx].notes = payload.notes
+      // update status if provided
+      const key = payload.statusKey || orders.value[idx].status.key || 'pending'
+      const s = statusMap[key] || { text: key, color: 'gray' }
+      orders.value[idx].status = { key, text: s.text, color: s.color }
+    }
+  } else {
+    const nextId = `ORD-${String(Math.floor(Math.random() * 900000) + 100000)}`
+    const newOrder = {
+      id: nextId,
+      date: new Date().toISOString().split('T')[0],
+      customerName: payload.customerName,
+      productSummary: `${payload.products.length} sản phẩm`,
+      status: { key: 'pending', text: statusMap.pending.text, color: statusMap.pending.color },
+      payment: { text: 'Chưa Thanh Toán', color: 'red' },
+      total: payload.total,
+      type: 'sale',
+      products: payload.products.map((p) => ({
+        name: p.name,
+        qty: p.quantity,
+        price: p.unitPrice,
+      })),
+      notes: payload.notes,
+    }
+    orders.value = [newOrder, ...orders.value]
+  }
   showOrderForm.value = false
 }
 
@@ -204,12 +293,7 @@ function updateOrderStatus({ orderId, newStatus }) {
   showDetailModal.value = false
 }
 
-function cancelCustomerOrder(order) {
-  if (confirm(`Bạn có chắc chắn muốn hủy đơn hàng "${order.id}" không?`)) {
-    alert(`Đơn hàng "${order.id}" đã được hủy thành công.`)
-    orders.value = orders.value.filter((o) => o.id !== order.id)
-  }
-}
+// cancelCustomerOrder removed - not used in manager view
 </script>
 
 <style lang="css" scoped>
