@@ -470,8 +470,8 @@ onBeforeUnmount(() => {
 .search-input {
   @apply w-full py-2 px-3 border border-gray-300 rounded-md;
 }
- .quantity-input,
- .price-input {
+.quantity-input,
+.price-input {
   /* keep spacing on the wrapper but remove border so we don't get double borders
      (BaseInput already renders the input's own border). We only use the wrapper
      to control width/alignment for the table layout. */
