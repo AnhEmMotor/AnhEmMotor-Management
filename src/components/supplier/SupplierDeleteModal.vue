@@ -11,9 +11,8 @@ defineEmits(['close', 'confirm'])
   <FullScreenModal :show="isOpen" title="Xác nhận xóa" @close="$emit('close')">
     <p class="text-gray-700" v-if="supplier">
       Bạn có chắc chắn muốn xóa nhà cung cấp
-      <strong class="font-semibold">{{ supplier.name }}</strong>
-      (ID: <span class="font-mono text-xs">{{ supplier.id }}</span
-      >)? Thao tác này không thể hoàn tác.
+      <strong class="font-semibold">{{ supplier.name }}</strong
+      >? Thao tác này không thể hoàn tác.
     </p>
 
     <template #actions>
@@ -34,4 +33,3 @@ defineEmits(['close', 'confirm'])
     </template>
   </FullScreenModal>
 </template>
-

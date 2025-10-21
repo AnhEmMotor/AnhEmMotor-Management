@@ -9,13 +9,13 @@ defineEmits(['toggle-detail'])
 
 // Hàm định dạng tiền tệ (hiển thị)
 const currencyFormatter = new Intl.NumberFormat('vi-VN', {
-    style: 'decimal',
-    minimumFractionDigits: 0
-});
+  style: 'decimal',
+  minimumFractionDigits: 0,
+})
 
 function formatCurrency(number) {
-    if (typeof number !== 'number') return '0';
-    return currencyFormatter.format(number) + '';
+  if (typeof number !== 'number') return '0'
+  return currencyFormatter.format(number) + ''
 }
 
 function getStatusColor(status) {
@@ -38,7 +38,6 @@ function getStatusColor(status) {
     <div
       class="hidden md:grid summary-row-grid items-center py-2 px-3 text-sm cursor-pointer transition duration-150"
     >
-      <div class="px-5 font-semibold text-gray-800 text-sm">{{ itemData.id }}</div>
       <div class="px-5 font-medium text-gray-800 truncate text-sm">{{ itemData.name }}</div>
       <div class="px-5 text-gray-600 text-xs">{{ itemData.phone || '---' }}</div>
       <div class="px-5 text-gray-600 text-xs">{{ itemData.email || 'Chưa có' }}</div>

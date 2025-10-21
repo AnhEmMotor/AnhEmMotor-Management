@@ -4,6 +4,7 @@ import SupplierDetail from './SupplierDetail.vue'
 
 defineProps({
   itemData: Object,
+  isOpen: Boolean,
 })
 defineEmits(['toggle-detail', 'edit-supplier', 'delete-supplier', 'toggle-activation'])
 </script>
@@ -12,18 +13,18 @@ defineEmits(['toggle-detail', 'edit-supplier', 'delete-supplier', 'toggle-activa
   <div
     class="supplier-item bg-white"
     :class="{
-      'item-open shadow-xl': itemData.isOpen,
-      'shadow-sm border border-gray-200': !itemData.isOpen,
+      'item-open shadow-xl': isOpen,
+      'shadow-sm border border-gray-200': !isOpen,
     }"
   >
     <div class="overflow-x-auto">
       <SupplierSummary
         :item-data="itemData"
-        :is-open="itemData.isOpen"
+        :is-open="isOpen"
         @toggle-detail="$emit('toggle-detail', itemData.id)"
       />
-      <SupplierDetail 
-        v-if="itemData.isOpen" 
+      <SupplierDetail
+        v-if="isOpen"
         :item-data="itemData"
         @edit-supplier="$emit('edit-supplier', itemData)"
         @delete-supplier="$emit('delete-supplier', itemData)"
