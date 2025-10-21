@@ -34,10 +34,10 @@ const openStates = reactive({})
 
 const isFormModalVisible = ref(false)
 const isFormDirty = ref(false)
-const editableSupplier = ref({}) // Will hold the supplier for the form
+const editableSupplier = ref({})
 const formModalTitle = ref('')
 const formModalKey = ref(0)
-const originalSupplierOnEdit = ref(null) // For refresh functionality
+const originalSupplierOnEdit = ref(null)
 const isEditMode = computed(() => !!editableSupplier.value?.id)
 
 const isConfirmationModalVisible = ref(false)
@@ -111,15 +111,12 @@ function executeConfirmation() {
 }
 
 function openAddEditModal(supplier = null) {
-  // Reset form errors when opening a new form
   formErrors.value = { name: '', phone: '', email: '', address: '' }
   if (supplier) {
-    // Use a deep copy for editing and keep original state for refresh
     originalSupplierOnEdit.value = JSON.parse(JSON.stringify(supplier))
     editableSupplier.value = JSON.parse(JSON.stringify(supplier))
     formModalTitle.value = 'Chỉnh sửa Nhà cung cấp'
   } else {
-    // Reset for a new supplier
     originalSupplierOnEdit.value = null
     editableSupplier.value = {
       name: '',
@@ -130,7 +127,7 @@ function openAddEditModal(supplier = null) {
     }
     formModalTitle.value = 'Thêm Nhà cung cấp'
   }
-  isFormDirty.value = false // Reset dirty state for the new form
+  isFormDirty.value = false
   formModalKey.value++
   isFormModalVisible.value = true
 }
@@ -171,7 +168,7 @@ function handleCloseFormModal() {
 
 async function handleSaveSupplier() {
   const supplierData = editableSupplier.value
-  // Reset errors
+
   formErrors.value = { name: '', phone: '', email: '', address: '' }
   let hasError = false
   if (!supplierData.name || !supplierData.name.toString().trim()) {
@@ -182,7 +179,7 @@ async function handleSaveSupplier() {
     formErrors.value.address = 'Vui lòng nhập địa chỉ.'
     hasError = true
   }
-  // Phải có ít nhất 1 trong 2: phone hoặc email
+
   if (!supplierData.phone && !supplierData.email) {
     formErrors.value.phone = 'Cần nhập ít nhất SĐT hoặc Email.'
     formErrors.value.email = 'Cần nhập ít nhất SĐT hoặc Email.'
@@ -207,7 +204,7 @@ async function handleSaveSupplier() {
   } finally {
     isFormModalVisible.value = false
     isFormDirty.value = false
-    // refresh list if needed
+
     await store.dispatch('suppliers/fetchSuppliers')
   }
 }
@@ -233,7 +230,7 @@ async function handleDeleteSupplier() {
 
 function handleToggleDetail(supplierId) {
   const wasOpen = !!openStates[supplierId]
-  // close all
+
   Object.keys(openStates).forEach((k) => {
     openStates[k] = false
   })
@@ -261,7 +258,6 @@ function toggleActivation(supplierId) {
   })
 }
 
-// Excel export
 const handleExport = () => {
   if (filteredItems.value.length === 0) {
     return
@@ -314,7 +310,6 @@ const handleImport = async (event) => {
           if (h === 'Ghi chú') newSupplierData.notes = row[idx]
         })
         if (!newSupplierData.name || !String(newSupplierData.name).trim()) continue
-        // dispatch addSupplier for each row (backend should assign id)
         try {
           await store.dispatch('suppliers/addSupplier', {
             ...newSupplierData,
@@ -382,18 +377,16 @@ onMounted(async () => {
       class="mb-3"
     />
 
-    <!-- Table Header -->
     <div
       class="hidden md:grid summary-row-grid items-center py-3 px-5 text-sm font-semibold text-gray-600 bg-gray-200 rounded-t-md"
     >
-      <div class="px-3">Tên nhà cung cấp</div>
-      <div class="px-4">Điện thoại</div>
-      <div class="px-5">Email</div>
-      <div class="px-5 text-right">Tổng mua</div>
-      <div class="px-5">Trạng thái</div>
+      <div>Tên nhà cung cấp</div>
+      <div>Điện thoại</div>
+      <div>Email</div>
+      <div>Tổng mua</div>
+      <div>Trạng thái</div>
     </div>
 
-    <!-- Inventory List -->
     <div class="bg-white rounded-b-md shadow-sm">
       <div v-if="filteredItems.length === 0" class="text-center py-6 text-gray-500">
         Không có nhà cung cấp nào để hiển thị.
@@ -416,7 +409,6 @@ onMounted(async () => {
       :loading="isLoading"
     />
 
-    <!-- Modals -->
     <DraggableModal
       :key="formModalKey"
       v-if="isFormModalVisible"
@@ -449,7 +441,6 @@ onMounted(async () => {
       @confirm="handleDeleteSupplier"
     />
 
-    <!-- NEW: Confirmation Modal -->
     <FullScreenModal
       v-if="isConfirmationModalVisible"
       :show="isConfirmationModalVisible"
@@ -462,8 +453,6 @@ onMounted(async () => {
         <BaseButton text="Xác nhận" color="red" @click="executeConfirmation" />
       </template>
     </FullScreenModal>
-
-    <!-- Message Box removed: now using Vue Toastification -->
   </div>
 </template>
 
@@ -483,6 +472,34 @@ onMounted(async () => {
   @apply flex flex-wrap items-center gap-2;
 }
 .summary-row-grid {
-  grid-template-columns: 1fr 2fr 1fr 1.5fr 1.5fr 1.2fr;
+  /* Use a 16-column layout so individual header items can span multiple cols */
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Assign header column spans to match: 8 / 2 / 2 / 2 / 2 (total 16)
+   - Tên nhà cung cấp: 8 cols
+   - Điện thoại: 2 cols
+   - Email: 2 cols
+   - Tổng mua: 2 cols
+   - Trạng thái: 2 cols
+*/
+.summary-row-grid > :nth-child(1) {
+  grid-column: 1 / span 8; /* Tên nhà cung cấp */
+}
+.summary-row-grid > :nth-child(2) {
+  grid-column: 9 / span 2; /* Điện thoại */
+}
+.summary-row-grid > :nth-child(3) {
+  grid-column: 11 / span 2; /* Email */
+}
+.summary-row-grid > :nth-child(4) {
+  grid-column: 13 / span 2; /* Tổng mua */
+  justify-self: end;
+}
+.summary-row-grid > :nth-child(5) {
+  grid-column: 15 / span 2; /* Trạng thái */
 }
 </style>
