@@ -2,14 +2,14 @@
 import { ref } from 'vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
 
-defineProps({
+const props = defineProps({
   itemData: Object,
 })
 defineEmits(['edit-supplier', 'delete-supplier', 'toggle-activation'])
 
+console.log('SupplierDetail itemData:', props.itemData)
 const activeTab = ref('info')
 
-// Hàm định dạng tiền tệ (hiển thị)
 const currencyFormatter = new Intl.NumberFormat('vi-VN', {
   style: 'decimal',
   minimumFractionDigits: 0,
@@ -20,7 +20,6 @@ function formatCurrency(number) {
   return currencyFormatter.format(number) + ''
 }
 
-// Hàm chuyển timestamp sang định dạng ngày tháng
 function formatDate(timestamp) {
   if (!timestamp) return ''
   const date = new Date(timestamp)
@@ -30,7 +29,6 @@ function formatDate(timestamp) {
   return `${day}/${month}/${year}`
 }
 
-// Hàm chuyển timestamp sang định dạng ngày tháng và giờ (dd/mm/yyyy hh:mm)
 function formatDateTime(timestamp) {
   if (!timestamp) return ''
   const date = new Date(timestamp)
@@ -73,13 +71,8 @@ function formatDateTime(timestamp) {
     <div v-show="activeTab === 'info'">
       <h3 class="text-lg font-bold text-gray-800 mb-3">
         {{ itemData.name }}
-        <span class="text-sm font-normal text-gray-500 ml-2">{{ itemData.id }}</span>
       </h3>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3 mb-4">
-        <div class="text-sm">
-          <span class="text-gray-500 block">Người tạo:</span>
-          <span class="font-medium text-gray-700">{{ itemData.creator }}</span>
-        </div>
         <div class="text-sm">
           <span class="text-gray-500 block">Ngày tạo:</span>
           <span class="font-medium text-gray-700">{{ formatDate(itemData.creationDate) }}</span>
