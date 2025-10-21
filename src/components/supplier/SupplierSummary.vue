@@ -7,7 +7,6 @@ defineProps({
 })
 defineEmits(['toggle-detail'])
 
-// Hàm định dạng tiền tệ (hiển thị)
 const currencyFormatter = new Intl.NumberFormat('vi-VN', {
   style: 'decimal',
   minimumFractionDigits: 0,
@@ -36,15 +35,15 @@ function getStatusColor(status) {
     @click="$emit('toggle-detail')"
   >
     <div
-      class="hidden md:grid summary-row-grid items-center py-2 px-3 text-sm cursor-pointer transition duration-150"
+      class="hidden md:grid summary-row-grid items-center py-3 px-5 text-sm cursor-pointer transition duration-150"
     >
-      <div class="px-5 font-medium text-gray-800 truncate text-sm">{{ itemData.name }}</div>
-      <div class="px-5 text-gray-600 text-xs">{{ itemData.phone || '---' }}</div>
-      <div class="px-5 text-gray-600 text-xs">{{ itemData.email || 'Chưa có' }}</div>
-      <div class="px-5 text-right text-sm font-semibold text-red-600">
+      <div class="font-medium text-gray-800 truncate text-sm">{{ itemData.name }}</div>
+      <div class="text-gray-600 text-xs">{{ itemData.phone || '---' }}</div>
+      <div class="text-gray-600 text-xs">{{ itemData.email || 'Chưa có' }}</div>
+      <div class="text-right text-sm font-semibold text-red-600">
         {{ formatCurrency(itemData.totalPurchase) }}
       </div>
-      <div class="flex justify-start px-3">
+      <div class="flex justify-start">
         <RoundBadge :color="getStatusColor(itemData.status)">
           {{ itemData.status === 'active' ? 'Đang hoạt động' : 'Ngừng hoạt động' }}
         </RoundBadge>
@@ -72,7 +71,28 @@ function getStatusColor(status) {
 
 <style scoped>
 .summary-row-grid {
-  grid-template-columns: 1fr 2fr 1fr 1.5fr 1.5fr 1.2fr;
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Match header spans: 8 / 2 / 2 / 2 / 2 */
+.summary-row-grid > :nth-child(1) {
+  grid-column: 1 / span 8; /* Tên */
+}
+.summary-row-grid > :nth-child(2) {
+  grid-column: 9 / span 2; /* Điện thoại */
+}
+.summary-row-grid > :nth-child(3) {
+  grid-column: 11 / span 2; /* Email */
+}
+.summary-row-grid > :nth-child(4) {
+  grid-column: 13 / span 2; /* Tổng mua */
+  justify-self: end;
+}
+.summary-row-grid > :nth-child(5) {
+  grid-column: 15 / span 2; /* Trạng thái */
 }
 .summary-row-responsive {
   margin-bottom: 0.75rem; /* 12px */
