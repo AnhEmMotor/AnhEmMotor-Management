@@ -16,6 +16,10 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  productList: {
+    type: Array,
+    default: null,
+  },
 })
 
 const emit = defineEmits(['update:modelValue', 'addProduct'])
@@ -56,12 +60,20 @@ const allSuppliers = ref([
   { code: 'NCC00003', name: 'NCC QUẢNG NAM', phone: '0123456780' },
 ])
 
+// Local fallback catalog used when parent doesn't provide one
 const allProducts = ref([
   { code: '1233289314912', name: 'Siro đào VINASYRUP 750ml', price: 34800, stock: 5 },
   { code: 'SP000001', name: 'VISION', price: 30000000, stock: 10 },
   { code: 'SP000002', name: 'VARIO', price: 35000000, stock: 5 },
   { code: 'SP001001', name: 'SH Mode 2024', price: 65000000, stock: 8 },
 ])
+
+// Use parent's productList if provided, otherwise fallback to local allProducts
+const currentAllProducts = computed(() => {
+  return props.productList && Array.isArray(props.productList) && props.productList.length
+    ? props.productList
+    : allProducts.value
+})
 
 const supplierSearchTerm = ref('')
 const showSupplierDropdown = ref(false)
@@ -81,11 +93,10 @@ const showProductDropdown = ref(false)
 const productInputRef = ref(null)
 const dropdownStyle = ref({})
 const filteredProducts = computed(() => {
-  if (!productSearchTerm.value) return allProducts.value
+  const list = currentAllProducts.value || []
+  if (!productSearchTerm.value) return list
   const term = productSearchTerm.value.toLowerCase()
-  return allProducts.value.filter(
-    (p) => p.code.toLowerCase().includes(term) || p.name.toLowerCase().includes(term),
-  )
+  return list.filter((p) => p.code.toLowerCase().includes(term) || p.name.toLowerCase().includes(term))
 })
 
 const selectSupplier = (supplier) => {
@@ -112,8 +123,8 @@ const selectProduct = (product) => {
       code: product.code,
       name: product.name,
       quantity: 1,
-      unitPrice: 1000,
-      total: 1000,
+      unitPrice: product.price || 0,
+      total: product.price || 0,
     }
     localData.value.products.push(newProduct)
     productSearchTerm.value = ''
