@@ -11,6 +11,14 @@ import InventoryInputForm from '@/components/inventory_input/InventoryInputForm.
 import ProductForm from '@/components/product/ProductForm.vue'
 import FullScreenModal from '@/components/ui/FullScreenModal.vue'
 
+// Local products catalog shared with the inventory input form
+const productsCatalog = ref([
+  { code: '1233289314912', name: 'Siro đào VINASYRUP 750ml', price: 34800, stock: 5 },
+  { code: 'SP000001', name: 'VISION', price: 30000000, stock: 10 },
+  { code: 'SP000002', name: 'VARIO', price: 35000000, stock: 5 },
+  { code: 'SP001001', name: 'SH Mode 2024', price: 65000000, stock: 8 },
+])
+
 const searchTerm = ref('')
 const selectedStatuses = ref([])
 const expandedItemId = ref(null)
@@ -481,6 +489,14 @@ const saveNewProduct = () => {
   }
 
   currentInventoryData.value.products.push(newProduct)
+  // Add to product catalog so it will be searchable in InventoryInputForm
+  productsCatalog.value.push({
+    code: currentProductData.value.code,
+    name: currentProductData.value.name,
+    price: currentProductData.value.unitPrice || currentProductData.value.price || 0,
+    stock: 0,
+  })
+
   closeProductModal()
 }
 
@@ -620,6 +636,7 @@ const handleSaveNotes = ({ id, notes }) => {
           v-model="currentInventoryData"
           :is-edit-mode="isEditMode"
           :errors="inventoryErrors"
+          :productList="productsCatalog"
           @add-product="openProductModal"
         />
       </template>
@@ -645,9 +662,9 @@ const handleSaveNotes = ({ id, notes }) => {
       <template #body>
         <ProductForm v-model="currentProductData" :is-edit-mode="false" />
 
-        <!-- Thêm trường số lượng và đơn giá nhập -->
+        <!-- TODO: Thêm trường số lượng và đơn giá nhập trong phiếu nhập hàng của đơn hàng -->
         <div class="grid grid-cols-2 gap-4 mt-4 px-2">
-          <BaseInput
+          <!-- <BaseInput
             v-model.number="currentProductData.quantity"
             label="Số lượng *"
             type="number"
@@ -660,7 +677,7 @@ const handleSaveNotes = ({ id, notes }) => {
             type="number"
             min="0"
             placeholder="Nhập đơn giá"
-          />
+          /> -->
         </div>
       </template>
 
