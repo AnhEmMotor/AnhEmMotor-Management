@@ -3,9 +3,7 @@ import { supabase } from '@/lib/supabaseClient'
 // Helper: find status_id by name if a name is provided
 const resolveStatusId = async (status) => {
   if (!status) return null
-  // if already looks like an id (uuid) return as-is
   if (typeof status === 'string' && status.match(/^[0-9a-fA-F-]{36,}$/)) return status
-  // otherwise assume it's a name and query supplier_status
   const { data, error } = await supabase
     .from('supplier_status')
     .select('id')
@@ -16,28 +14,45 @@ const resolveStatusId = async (status) => {
 }
 
 export const getAllSuppliers = async () => {
-  // select core columns and join status name, include created_at
   const { data, error } = await supabase
     .from('supplier')
     .select(
       `id, name, phone, email, address, notes, deleted_at, created_at, status:status_id(name)`,
     )
+    .order('name', { ascending: true })
     .is('deleted_at', null)
   if (error) throw error
   return data
 }
 
-export const getSupplierById = async (id) => {
-  const { data, error } = await supabase
-    .from('supplier')
-    .select(
-      `id, name, phone, email, address, notes, deleted_at, created_at, status:status_id(name)`,
-    )
-    .eq('id', id)
-    .is('deleted_at', null)
-    .single()
-  if (error) throw error
-  return data
+export const fetchSuppliers = async (
+  page = 1,
+  itemsPerPage = 10,
+  statusFilters = [],
+  search = '',
+) => {
+  console.log('Fetching suppliers with:', { page, itemsPerPage, statusFilters, search })
+  const statusParam =
+    Array.isArray(statusFilters) && statusFilters.length > 0 ? statusFilters : null
+  const searchParam = search ? String(search).trim() : null
+  const { data, error } = await supabase.rpc('get_suppliers_with_details', {
+    p_page: page,
+    p_items_per_page: itemsPerPage,
+    p_status_ids: statusParam,
+    p_search: searchParam,
+  })
+  if (error) {
+    throw error
+  }
+  const suppliers = data || []
+  const count = suppliers.length > 0 ? Number(suppliers[0].total_count) : 0
+  const normalizedSuppliers = suppliers.map((s) => {
+    // eslint-disable-next-line no-unused-vars
+    const { total_count, ...rest } = s
+    return rest
+  })
+
+  return { suppliers: normalizedSuppliers, count }
 }
 
 export const createSupplier = async (supplier) => {
@@ -48,7 +63,6 @@ export const createSupplier = async (supplier) => {
     address: supplier.address || null,
     notes: supplier.notes || null,
   }
-  // resolve status name -> status_id if necessary
   if (supplier.status) {
     const statusId = await resolveStatusId(supplier.status)
     if (statusId) payload.status_id = statusId

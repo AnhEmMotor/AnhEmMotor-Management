@@ -23,8 +23,10 @@ function formatDate(timestamp) {
   return `${day}/${month}/${year}`
 }
 
-const storeSuppliers = computed(() => store.getters['suppliers/allSuppliers'] || [])
-const isLoading = computed(() => store.state.suppliers?.isLoading || false)
+const route = useRoute()
+const page = computed(() => parseInt(route.query.page) || 1)
+// const storeSuppliers = computed(() => store.getters['suppliers/allSuppliers'] || [])
+// const isLoading = computed(() => store.state.suppliers?.isLoading || false)
 
 const searchTerm = ref('')
 const selectedStatuses = ref([])
@@ -40,6 +42,8 @@ const formModalKey = ref(0)
 const originalSupplierOnEdit = ref(null)
 const isEditMode = computed(() => !!editableSupplier.value?.id)
 
+const itemsPerPage = ref(10)
+
 const isConfirmationModalVisible = ref(false)
 const confirmationModalProps = reactive({
   title: '',
@@ -51,45 +55,15 @@ const isDeleteModalVisible = ref(false)
 const supplierToDelete = ref(null)
 
 import { useToast } from 'vue-toastification'
+import { useRoute, useRouter } from 'vue-router'
+import BaseSpinner from '@/components/ui/BaseSpinner.vue'
+import { useQuery, useQueryClient } from '@tanstack/vue-query'
 const toast = useToast()
+const queryClient = useQueryClient()
 
 const formErrors = ref({ name: '', phone: '', email: '', address: '' })
 
-const totalPages = ref(5)
-const currentPage = ref(1)
-
-watch(currentPage, () => {})
-
-watch(
-  storeSuppliers,
-  (list) => {
-    list.forEach((s) => {
-      if (!(s.id in openStates)) openStates[s.id] = false
-    })
-  },
-  { immediate: true },
-)
-
-const filteredItems = computed(() => {
-  let items = (storeSuppliers.value || []).slice()
-  if (selectedStatuses.value.length > 0) {
-    items = items.filter((item) => selectedStatuses.value.includes(item.status))
-  }
-  if (searchTerm.value) {
-    const lowerCaseSearchTerm = searchTerm.value.toLowerCase()
-    items = items.filter(
-      (item) =>
-        String(item.id).toLowerCase().includes(lowerCaseSearchTerm) ||
-        String(item.name || '')
-          .toLowerCase()
-          .includes(lowerCaseSearchTerm) ||
-        String(item.phone || '')
-          .toLowerCase()
-          .includes(lowerCaseSearchTerm),
-    )
-  }
-  return items.sort((a, b) => (b.creationDate || 0) - (a.creationDate || 0))
-})
+const router = useRouter()
 
 function showMessage(text, type = 'success', duration = 3000) {
   if (type === 'error') {
@@ -204,10 +178,61 @@ async function handleSaveSupplier() {
   } finally {
     isFormModalVisible.value = false
     isFormDirty.value = false
-
-    await store.dispatch('suppliers/fetchSuppliers')
   }
 }
+
+const {
+  data: suppliersData,
+  isLoading,
+  isError,
+} = useQuery({
+  queryKey: ['suppliers', page, searchTerm, selectedStatuses],
+  queryFn: () =>
+    store.dispatch('suppliers/fetchSuppliers', {
+      page: page.value,
+      itemsPerPage: itemsPerPage.value,
+      statusFilters: selectedStatuses.value,
+      search: searchTerm.value,
+    }),
+  keepPreviousData: true,
+})
+const storeSuppliers = computed(() => suppliersData.value?.suppliers || [])
+
+const totalPages = computed(() => {
+  const count = suppliersData.value?.count
+  if (!count) return 1
+  return Math.ceil(count / itemsPerPage.value)
+})
+
+watch(suppliersData, (newData) => {
+  if (!newData) return
+  const currentPage = page.value
+  const total = totalPages.value
+  if (currentPage < total) {
+    queryClient.prefetchQuery({
+      queryKey: ['suppliers', currentPage + 1, searchTerm, selectedStatuses],
+      queryFn: () =>
+        store.dispatch('suppliers/fetchSuppliers', {
+          page: currentPage + 1,
+          itemsPerPage: itemsPerPage.value,
+          statusFilters: selectedStatuses.value,
+          search: searchTerm.value,
+        }),
+    })
+  }
+  if (currentPage > 1) {
+    queryClient.prefetchQuery({
+      queryKey: ['suppliers', currentPage - 1, searchTerm, selectedStatuses],
+      queryFn: () =>
+        store.dispatch('suppliers/fetchSuppliers', {
+          page: currentPage - 1,
+          itemsPerPage: itemsPerPage.value,
+          statusFilters: selectedStatuses.value,
+          search: searchTerm.value,
+        }),
+    })
+  }
+})
 
 function openDeleteModal(supplier) {
   supplierToDelete.value = supplier
@@ -259,10 +284,10 @@ function toggleActivation(supplierId) {
 }
 
 const handleExport = () => {
-  if (filteredItems.value.length === 0) {
+  if (storeSuppliers.value.length === 0) {
     return
   }
-  const exportData = filteredItems.value.map((s) => ({
+  const exportData = storeSuppliers.value.map((s) => ({
     'Mã nhà cung cấp': s.id,
     'Tên nhà cung cấp': s.name,
     'Số điện thoại': s.phone || '',
@@ -326,7 +351,7 @@ const handleImport = async (event) => {
       }
       if (created.length > 0) {
         showMessage(`Đã nhập thành công ${created.length} nhà cung cấp.`)
-        await store.dispatch('suppliers/fetchSuppliers')
+        // await store.dispatch('suppliers/fetchSuppliers')
       } else {
         showMessage('Không có nhà cung cấp nào hợp lệ trong file.', 'error')
       }
@@ -339,9 +364,11 @@ const handleImport = async (event) => {
   event.target.value = null
 }
 
-onMounted(async () => {
-  await store.dispatch('suppliers/fetchSuppliers')
-})
+function onPageChange(newPage) {
+  if (newPage !== page.value) {
+    router.push({ query: { ...route.query, page: newPage } })
+  }
+}
 </script>
 
 <template>
@@ -388,11 +415,19 @@ onMounted(async () => {
     </div>
 
     <div class="bg-white rounded-b-md shadow-sm">
-      <div v-if="filteredItems.length === 0" class="text-center py-6 text-gray-500">
+      <div v-if="isLoading">
+        <BaseSpinner />
+      </div>
+      <div v-else-if="isError">
+        <p class="not-found-msg">
+          Could not fetch suppliers. Please try again later. {{ isError }}
+        </p>
+      </div>
+      <div v-else-if="storeSuppliers.length === 0" class="text-center py-6 text-gray-500">
         Không có nhà cung cấp nào để hiển thị.
       </div>
       <SupplierItem
-        v-for="item in filteredItems"
+        v-for="item in storeSuppliers"
         :key="item.id"
         :itemData="item"
         :is-open="openStates[item.id]"
@@ -405,7 +440,8 @@ onMounted(async () => {
 
     <BasePagination
       :total-pages="totalPages"
-      v-model:currentPage="currentPage"
+      :currentPage="page"
+      @update:currentPage="onPageChange"
       :loading="isLoading"
     />
 

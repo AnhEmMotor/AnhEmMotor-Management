@@ -6,6 +6,7 @@ import router from './router/main'
 import Toast from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
 import store from './store'
+import { VueQueryPlugin } from '@tanstack/vue-query'
 
 const app = createApp(App)
 
@@ -31,5 +32,6 @@ const options = {
 
 app.use(Toast, options)
 app.use(store)
+app.use(VueQueryPlugin)
 
 app.mount('#app')
