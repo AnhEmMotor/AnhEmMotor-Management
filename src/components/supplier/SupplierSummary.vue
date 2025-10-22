@@ -41,7 +41,7 @@ function getStatusColor(status) {
       <div class="text-gray-600 text-xs">{{ itemData.phone || '---' }}</div>
       <div class="text-gray-600 text-xs">{{ itemData.email || 'Chưa có' }}</div>
       <div class="text-right text-sm font-semibold text-red-600">
-        {{ formatCurrency(itemData.totalPurchase) }}
+        {{ formatCurrency(itemData.total_purchase) }}
       </div>
       <div class="flex justify-start">
         <RoundBadge :color="getStatusColor(itemData.status)">
@@ -77,25 +77,24 @@ function getStatusColor(status) {
   align-items: center;
 }
 
-/* Match header spans: 8 / 2 / 2 / 2 / 2 */
 .summary-row-grid > :nth-child(1) {
-  grid-column: 1 / span 8; /* Tên */
+  grid-column: 1 / span 8;
 }
 .summary-row-grid > :nth-child(2) {
-  grid-column: 9 / span 2; /* Điện thoại */
+  grid-column: 9 / span 2;
 }
 .summary-row-grid > :nth-child(3) {
-  grid-column: 11 / span 2; /* Email */
+  grid-column: 11 / span 2;
 }
 .summary-row-grid > :nth-child(4) {
-  grid-column: 13 / span 2; /* Tổng mua */
+  grid-column: 13 / span 2;
   justify-self: end;
 }
 .summary-row-grid > :nth-child(5) {
-  grid-column: 15 / span 2; /* Trạng thái */
+  grid-column: 15 / span 2;
 }
 .summary-row-responsive {
-  margin-bottom: 0.75rem; /* 12px */
+  margin-bottom: 0.75rem;
 }
 @media (min-width: 768px) {
   .summary-row-responsive {

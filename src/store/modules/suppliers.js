@@ -1,11 +1,10 @@
 import * as supplierApi from '@/api/supplier'
-import * as inputApi from '@/api/input'
-import * as inputInfoApi from '@/api/inputInfo'
 
 const state = {
   suppliers: [],
   isLoading: false,
   error: null,
+  totalCount: 0,
 }
 
 const mutations = {
@@ -30,64 +29,35 @@ const mutations = {
   SET_ERROR(state, error) {
     state.error = error
   },
+  SET_TOTAL_COUNT(state, count) {
+    state.totalCount = count
+  },
 }
 
 const actions = {
-  async fetchSuppliers({ commit }) {
+  // Trong file vuex store của bạn
+  async fetchSuppliers({ commit }, payload) {
+    const { page, itemsPerPage, statusFilters, search } = payload || {}
     commit('SET_LOADING', true)
     commit('SET_ERROR', null)
     try {
-      // fetch suppliers and related inputs to calculate totalPurchase
-      const [suppliers, inputs, inputInfos] = await Promise.all([
-        supplierApi.getAllSuppliers(),
-        inputApi.getAllInputs(),
-        inputInfoApi.getAllInputInfos(),
-      ])
+      // Giả sử API trả về object { suppliers, count }
+      const { suppliers, count } = await supplierApi.fetchSuppliers(
+        page,
+        itemsPerPage,
+        statusFilters,
+        search,
+      )
+      commit('SET_SUPPLIERS', suppliers)
+      commit('SET_TOTAL_COUNT', count)
 
-      // build a map of input_info entries by input_id
-      const inputInfoByInput = {}
-      inputInfos.forEach((info) => {
-        const inputId = info.input_id || info.input?.id
-        if (!inputId) return
-        if (!inputInfoByInput[inputId]) inputInfoByInput[inputId] = []
-        inputInfoByInput[inputId].push(info)
-      })
-
-      // compute totalPurchase per supplier: for each input where input_status.name === 'Đã hoàn thành'
-      const totalBySupplier = {}
-      inputs.forEach((input) => {
-        const supplierId = input.supplier_id || input.supplier?.id
-        const statusName = input.input_status?.name || input['input_status']?.name
-        if (!supplierId) return
-        if (statusName !== 'Đã hoàn thành') return
-        const infos = inputInfoByInput[input.id] || []
-        // sum qty * input_price (fields from input_info: count, input_price)
-        const sum = infos.reduce((acc, info) => {
-          const count = Number(info.count || info['count'] || 0)
-          const price = Number(info.input_price || info['input_price'] || 0)
-          return acc + count * price
-        }, 0)
-        totalBySupplier[supplierId] = (totalBySupplier[supplierId] || 0) + sum
-      })
-
-      // attach totalPurchase and normalize status (status.name -> status)
-      const normalized = suppliers.map((s) => ({
-        id: s.id,
-        name: s.name,
-        phone: s.phone || null,
-        email: s.email || null,
-        address: s.address || null,
-        notes: s.notes || null,
-        // the supplier API returns status as nested object: status: { name }
-        status: s.status?.name || s.status || 'active',
-        deleted_at: s.deleted_at || null,
-        creationDate: s.created_at || null,
-        totalPurchase: totalBySupplier[s.id] || 0,
-      }))
-
-      commit('SET_SUPPLIERS', normalized)
+      // (A) Trả về dữ liệu để useQuery có thể nhận được
+      return { suppliers, count }
     } catch (error) {
       commit('SET_ERROR', error.message)
+
+      // (B) Ném lỗi ra ngoài để useQuery biết và set isError = true
+      throw error
     } finally {
       commit('SET_LOADING', false)
     }
