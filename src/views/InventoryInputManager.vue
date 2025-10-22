@@ -662,7 +662,7 @@ const handleSaveNotes = ({ id, notes }) => {
       <template #body>
         <ProductForm v-model="currentProductData" :is-edit-mode="false" />
 
-        <!-- Thêm trường số lượng và đơn giá nhập -->
+        <!-- TODO: Thêm trường số lượng và đơn giá nhập trong phiếu nhập hàng của đơn hàng -->
         <div class="grid grid-cols-2 gap-4 mt-4 px-2">
           <!-- <BaseInput
             v-model.number="currentProductData.quantity"
