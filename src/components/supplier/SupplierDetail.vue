@@ -164,7 +164,7 @@ onUnmounted(() => {
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3 mb-4">
         <div class="text-sm">
           <span class="text-gray-500 block">Ngày tạo:</span>
-          <span class="font-medium text-gray-700">{{ formatDate(itemData.creationDate) }}</span>
+          <span class="font-medium text-gray-700">{{ formatDate(itemData.created_at) }}</span>
         </div>
       </div>
       <hr class="my-3 border-gray-100" />
