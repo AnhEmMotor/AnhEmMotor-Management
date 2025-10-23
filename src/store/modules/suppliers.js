@@ -35,13 +35,11 @@ const mutations = {
 }
 
 const actions = {
-  // Trong file vuex store của bạn
   async fetchSuppliers({ commit }, payload) {
     const { page, itemsPerPage, statusFilters, search } = payload || {}
     commit('SET_LOADING', true)
     commit('SET_ERROR', null)
     try {
-      // Giả sử API trả về object { suppliers, count }
       const { suppliers, count } = await supplierApi.fetchSuppliers(
         page,
         itemsPerPage,
@@ -50,13 +48,9 @@ const actions = {
       )
       commit('SET_SUPPLIERS', suppliers)
       commit('SET_TOTAL_COUNT', count)
-
-      // (A) Trả về dữ liệu để useQuery có thể nhận được
       return { suppliers, count }
     } catch (error) {
       commit('SET_ERROR', error.message)
-
-      // (B) Ném lỗi ra ngoài để useQuery biết và set isError = true
       throw error
     } finally {
       commit('SET_LOADING', false)
@@ -66,6 +60,7 @@ const actions = {
     commit('SET_LOADING', true)
     commit('SET_ERROR', null)
     try {
+      supplier = { ...supplier, status: 'active' }
       const newSupplier = await supplierApi.createSupplier(supplier)
       commit('ADD_SUPPLIER', newSupplier)
     } catch (error) {
@@ -90,9 +85,7 @@ const actions = {
     commit('SET_LOADING', true)
     commit('SET_ERROR', null)
     try {
-      // supplierApi.deleteSupplier now performs a soft-delete (sets deleted_at)
       const updated = await supplierApi.deleteSupplier(id)
-      // reflect change in state: replace the supplier entry with updated row
       commit('UPDATE_SUPPLIER', updated)
     } catch (error) {
       commit('SET_ERROR', error.message)
