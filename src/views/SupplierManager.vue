@@ -25,8 +25,10 @@ function formatDate(timestamp) {
 const route = useRoute()
 const page = computed(() => parseInt(route.query.page) || 1)
 
-const searchTerm = ref('')
-const selectedStatuses = ref([])
+const searchTerm = ref(route.query.search ? String(route.query.search) : '')
+const selectedStatuses = ref(
+  route.query.statuses ? String(route.query.statuses).split(',').filter(Boolean) : [],
+)
 const selectedSupplierId = ref(null)
 
 const openStates = reactive({})
@@ -212,7 +214,6 @@ watch(suppliersData, (newData) => {
     })
   }
 })
-
 async function openDeleteModal(supplier) {
   if (!supplier) return
   const title = 'Xác nhận xóa'
@@ -344,9 +345,49 @@ const handleImport = async (event) => {
 
 function onPageChange(newPage) {
   if (newPage !== page.value) {
-    router.push({ query: { ...route.query, page: newPage } })
+    router.replace({ query: { ...route.query, page: newPage } })
   }
 }
+
+watch([searchTerm, selectedStatuses], ([newSearch, newStatuses]) => {
+  const qs = { ...route.query }
+  if (newSearch && String(newSearch).trim()) qs.search = String(newSearch).trim()
+  else delete qs.search
+  if (Array.isArray(newStatuses) && newStatuses.length > 0) qs.statuses = newStatuses.join(',')
+  else delete qs.statuses
+  qs.page = 1
+  router.replace({ query: qs })
+})
+
+watch(
+  () => route.query,
+  (newQuery) => {
+    if (newQuery.search !== undefined && String(newQuery.search) !== searchTerm.value) {
+      searchTerm.value = String(newQuery.search || '')
+    }
+    if (newQuery.statuses !== undefined) {
+      const vals = String(newQuery.statuses || '')
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+      if (JSON.stringify(vals) !== JSON.stringify(selectedStatuses.value)) {
+        selectedStatuses.value = vals
+      }
+    }
+  },
+)
+
+watch(
+  [() => page.value, totalPages],
+  ([currentPage, total]) => {
+    const tp = Number(total) || 1
+    const cp = Number(currentPage) || 1
+    if (tp > 0 && cp > tp) {
+      router.replace({ query: { ...route.query, page: 1 } })
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
