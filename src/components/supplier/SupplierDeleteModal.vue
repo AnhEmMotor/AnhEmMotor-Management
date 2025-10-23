@@ -8,7 +8,6 @@ const props = defineProps({
 })
 const emit = defineEmits(['close', 'confirm'])
 
-// When parent sets isOpen -> true, use the global confirmation modal and re-emit
 watch(
   () => props.isOpen,
   async (val) => {
@@ -24,5 +23,3 @@ watch(
   },
 )
 </script>
-
-<!-- This component is a programmatic wrapper around the global confirmation modal; it does not render local UI. -->
