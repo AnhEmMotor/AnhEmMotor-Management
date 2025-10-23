@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
 
-const props = defineProps({
+defineProps({
   itemData: Object,
 })
 defineEmits(['edit-supplier', 'delete-supplier', 'toggle-activation'])
