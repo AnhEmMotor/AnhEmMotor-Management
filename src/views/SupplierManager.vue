@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, computed, watch } from 'vue'
+import { ref, reactive, computed, watch, onUnmounted } from 'vue'
 import { useStore } from 'vuex'
 import * as XLSX from 'xlsx'
 import SupplierItem from '@/components/supplier/SupplierItem.vue'
@@ -26,6 +26,7 @@ const route = useRoute()
 const page = computed(() => parseInt(route.query.page) || 1)
 
 const searchTerm = ref(route.query.search ? String(route.query.search) : '')
+const rawSearch = ref(searchTerm.value)
 const selectedStatuses = ref(
   route.query.statuses ? String(route.query.statuses).split(',').filter(Boolean) : [],
 )
@@ -47,6 +48,7 @@ import { useToast } from 'vue-toastification'
 import { useRoute, useRouter } from 'vue-router'
 import BaseSpinner from '@/components/ui/BaseSpinner.vue'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
+import { debounce, throttle } from '@/utils/debounceThrottle'
 const toast = useToast()
 const queryClient = useQueryClient()
 
@@ -181,13 +183,34 @@ const storeSuppliers = computed(() => suppliersData.value?.suppliers || [])
 
 const totalPages = computed(() => {
   const count = suppliersData.value?.count
-  if (!count) return 1
-  return Math.ceil(count / itemsPerPage.value)
+  if (count == null) return null
+  return Math.max(1, Math.ceil(count / itemsPerPage.value))
 })
 
-watch(suppliersData, (newData) => {
-  if (!newData) return
-  const currentPage = page.value
+const applyQueryFromRaw = () => {
+  const qs = { ...route.query }
+  if (rawSearch.value && String(rawSearch.value).trim()) qs.search = String(rawSearch.value).trim()
+  else delete qs.search
+  if (Array.isArray(selectedStatuses.value) && selectedStatuses.value.length > 0)
+    qs.statuses = selectedStatuses.value.join(',')
+  else delete qs.statuses
+  qs.page = 1
+  router.replace({ query: qs })
+}
+
+const debouncedApplyQuery = debounce(applyQueryFromRaw, 400)
+
+watch(rawSearch, () => {
+  debouncedApplyQuery()
+})
+
+watch(selectedStatuses, () => {
+  if (debouncedApplyQuery.cancel) debouncedApplyQuery.cancel()
+  applyQueryFromRaw()
+})
+
+const throttledPrefetch = throttle((currentPage) => {
+  if (!suppliersData.value) return
   const total = totalPages.value
   if (currentPage < total) {
     queryClient.prefetchQuery({
@@ -213,6 +236,16 @@ watch(suppliersData, (newData) => {
         }),
     })
   }
+}, 600)
+
+watch(suppliersData, () => {
+  const currentPage = page.value
+  throttledPrefetch(currentPage)
+})
+
+onUnmounted(() => {
+  if (debouncedApplyQuery && debouncedApplyQuery.cancel) debouncedApplyQuery.cancel()
+  if (throttledPrefetch && throttledPrefetch.cancel) throttledPrefetch.cancel()
 })
 async function openDeleteModal(supplier) {
   if (!supplier) return
@@ -362,17 +395,20 @@ watch([searchTerm, selectedStatuses], ([newSearch, newStatuses]) => {
 watch(
   () => route.query,
   (newQuery) => {
-    if (newQuery.search !== undefined && String(newQuery.search) !== searchTerm.value) {
-      searchTerm.value = String(newQuery.search || '')
+    const qSearch = newQuery.search === undefined ? '' : String(newQuery.search || '')
+    if (qSearch !== searchTerm.value) {
+      searchTerm.value = qSearch
+      rawSearch.value = qSearch
     }
-    if (newQuery.statuses !== undefined) {
-      const vals = String(newQuery.statuses || '')
-        .split(',')
-        .map((s) => s.trim())
-        .filter(Boolean)
-      if (JSON.stringify(vals) !== JSON.stringify(selectedStatuses.value)) {
-        selectedStatuses.value = vals
-      }
+    const qs = String(newQuery.statuses || '')
+    const vals = qs
+      ? qs
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : []
+    if (JSON.stringify(vals) !== JSON.stringify(selectedStatuses.value)) {
+      selectedStatuses.value = vals
     }
   },
 )
@@ -382,8 +418,10 @@ watch(
   ([currentPage, total]) => {
     const tp = Number(total) || 1
     const cp = Number(currentPage) || 1
-    if (tp > 0 && cp > tp) {
-      router.replace({ query: { ...route.query, page: 1 } })
+    if (suppliersData.value && suppliersData.value.count != null) {
+      if (tp > 0 && cp > tp) {
+        router.replace({ query: { ...route.query, page: 1 } })
+      }
     }
   },
   { immediate: true },
@@ -417,7 +455,7 @@ watch(
     </div>
 
     <BaseInput
-      v-model="searchTerm"
+      v-model="rawSearch"
       type="text"
       placeholder="Tìm kiếm theo mã, tên, SĐT nhà cung cấp..."
       class="mb-3"
@@ -457,12 +495,16 @@ watch(
       />
     </div>
 
-    <BasePagination
-      :total-pages="totalPages"
-      :currentPage="page"
-      @update:currentPage="onPageChange"
-      :loading="isLoading"
-    />
+    <div>
+      <BasePagination
+        v-if="totalPages !== null"
+        :total-pages="totalPages"
+        :currentPage="page"
+        @update:currentPage="onPageChange"
+        :loading="isLoading"
+      />
+      <div v-else class="flex justify-center py-4 text-sm text-gray-500">Đang tải...</div>
+    </div>
 
     <DraggableModal
       :key="formModalKey"
@@ -487,10 +529,6 @@ watch(
         </div>
       </template>
     </DraggableModal>
-
-    <!-- deletion now uses the global confirmation modal via showConfirmation() -->
-
-    <!-- global confirmation modal is mounted in App.vue -->
   </div>
 </template>
 
@@ -517,27 +555,20 @@ watch(
   align-items: center;
 }
 
-/* Assign header column spans to match: 8 / 2 / 2 / 2 / 2 (total 16)
-   - Tên nhà cung cấp: 8 cols
-   - Điện thoại: 2 cols
-   - Email: 2 cols
-   - Tổng mua: 2 cols
-   - Trạng thái: 2 cols
-*/
 .summary-row-grid > :nth-child(1) {
-  grid-column: 1 / span 8; /* Tên nhà cung cấp */
+  grid-column: 1 / span 8;
 }
 .summary-row-grid > :nth-child(2) {
-  grid-column: 9 / span 2; /* Điện thoại */
+  grid-column: 9 / span 2;
 }
 .summary-row-grid > :nth-child(3) {
-  grid-column: 11 / span 2; /* Email */
+  grid-column: 11 / span 2;
 }
 .summary-row-grid > :nth-child(4) {
-  grid-column: 13 / span 2; /* Tổng mua */
+  grid-column: 13 / span 2;
   justify-self: end;
 }
 .summary-row-grid > :nth-child(5) {
-  grid-column: 15 / span 2; /* Trạng thái */
+  grid-column: 15 / span 2;
 }
 </style>
