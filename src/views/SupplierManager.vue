@@ -35,7 +35,6 @@ const selectedSupplierId = ref(null)
 const openStates = reactive({})
 
 const isFormModalVisible = ref(false)
-const isFormDirty = ref(false)
 const editableSupplier = ref({})
 const formModalTitle = ref('')
 const formModalKey = ref(0)
@@ -47,7 +46,9 @@ const itemsPerPage = ref(20)
 import { useToast } from 'vue-toastification'
 import { useRoute, useRouter } from 'vue-router'
 import BaseSpinner from '@/components/ui/BaseSpinner.vue'
+import BaseLoadingOverlay from '@/components/ui/BaseLoadingOverlay.vue'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
+import { getSupplierById } from '@/api/supplier'
 import { debounce, throttle } from '@/utils/debounceThrottle'
 const toast = useToast()
 const queryClient = useQueryClient()
@@ -55,6 +56,9 @@ const queryClient = useQueryClient()
 const formErrors = ref({ name: '', phone: '', email: '', address: '' })
 
 const router = useRouter()
+
+const showOverlay = ref(false)
+const overlayMessage = ref('Đang xử lý, vui lòng chờ...')
 
 function showMessage(text, type = 'success', duration = 3000) {
   if (type === 'error') {
@@ -81,48 +85,41 @@ function openAddEditModal(supplier = null) {
     }
     formModalTitle.value = 'Thêm Nhà cung cấp'
   }
-  isFormDirty.value = false
   formModalKey.value++
   isFormModalVisible.value = true
 }
 
-function handleFormRefresh() {
-  const doRefresh = async () => {
-    if (originalSupplierOnEdit.value) {
-      editableSupplier.value = JSON.parse(JSON.stringify(originalSupplierOnEdit.value))
-      isFormDirty.value = false
-      showMessage('Đã tải lại dữ liệu gốc của nhà cung cấp.')
-      await queryClient.invalidateQueries({ queryKey: ['suppliers'] })
+const handleFormRefresh = async () => {
+  if (!originalSupplierOnEdit.value) return
+  const id = originalSupplierOnEdit.value.id
+  if (!id) return
+  try {
+    showOverlay.value = true
+    overlayMessage.value = 'Đang tải lại dữ liệu nhà cung cấp...'
+    const fresh = await getSupplierById(id)
+    if (!fresh) {
+      showMessage('Không tìm thấy nhà cung cấp trên server.', 'error')
+      showOverlay.value = false
+      return
     }
-  }
-
-  if (isFormDirty.value) {
-    showConfirmation(
-      'Tải lại dữ liệu gốc?',
-      'Bạn có các thay đổi chưa lưu. Bạn có chắc muốn tải lại dữ liệu gốc không?',
-    ).then((confirmed) => {
-      if (confirmed) doRefresh()
-    })
-  } else {
-    doRefresh()
-  }
-}
-
-function handleCloseFormModal() {
-  if (isFormDirty.value) {
-    showConfirmation(
-      'Đóng biểu mẫu?',
-      'Bạn có các thay đổi chưa lưu. Bạn có chắc muốn đóng không?',
-    ).then((confirmed) => {
-      if (confirmed) isFormModalVisible.value = false
-    })
-  } else {
-    isFormModalVisible.value = false
+    originalSupplierOnEdit.value = JSON.parse(JSON.stringify(fresh))
+    editableSupplier.value = JSON.parse(JSON.stringify(fresh))
+    showMessage('Đã tải lại dữ liệu gốc của nhà cung cấp.')
+    await queryClient.invalidateQueries({ queryKey: ['suppliers'] })
+  } catch (err) {
+    console.error('Lỗi khi tải lại nhà cung cấp:', err)
+    showMessage('Lỗi khi tải lại dữ liệu nhà cung cấp.', 'error')
+  } finally {
+    showOverlay.value = false
   }
 }
 
 async function handleSaveSupplier() {
+  showOverlay.value = true
   const supplierData = editableSupplier.value
+  overlayMessage.value = supplierData.id
+    ? 'Đang cập nhật nhà cung cấp...'
+    : 'Đang tạo nhà cung cấp mới...'
 
   formErrors.value = { name: '', phone: '', email: '', address: '' }
   let hasError = false
@@ -160,7 +157,7 @@ async function handleSaveSupplier() {
     console.error(err)
   } finally {
     isFormModalVisible.value = false
-    isFormDirty.value = false
+    showOverlay.value = false
   }
 }
 
@@ -251,6 +248,10 @@ onUnmounted(() => {
   if (throttledPrefetch && throttledPrefetch.cancel) throttledPrefetch.cancel()
 })
 
+function handleCloseFormModal() {
+  isFormModalVisible.value = false
+}
+
 async function openDeleteModal(supplier) {
   if (!supplier) return
   const title = 'Xác nhận xóa'
@@ -259,6 +260,8 @@ async function openDeleteModal(supplier) {
   if (!confirmed) return
 
   try {
+    showOverlay.value = true
+    overlayMessage.value = 'Đang xóa nhà cung cấp...'
     await store.dispatch('suppliers/deleteSupplier', supplier.id)
     showMessage(`Đã xóa nhà cung cấp: ${supplier.name}.`)
     if (selectedSupplierId.value === supplier.id) selectedSupplierId.value = null
@@ -266,6 +269,8 @@ async function openDeleteModal(supplier) {
   } catch (err) {
     showMessage('Lỗi khi xóa nhà cung cấp.', 'error')
     console.error(err)
+  } finally {
+    showOverlay.value = false
   }
 }
 
@@ -440,6 +445,7 @@ watch(
 
 <template>
   <div class="box-style">
+    <BaseLoadingOverlay :show="showOverlay" :message="overlayMessage" />
     <div class="content-box-style">
       <div>
         <h1 class="title-style">Quản lý nhà cung cấp</h1>
@@ -526,11 +532,7 @@ watch(
         <h2 class="font-bold text-lg">{{ formModalTitle }}</h2>
       </template>
       <template #body>
-        <SupplierForm
-          v-model="editableSupplier"
-          :errors="formErrors"
-          @update:dirty="isFormDirty = $event"
-        />
+        <SupplierForm v-model="editableSupplier" :errors="formErrors" />
       </template>
       <template #footer>
         <div class="flex justify-end space-x-2">

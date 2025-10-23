@@ -106,3 +106,14 @@ export const restoreSupplier = async (id) => {
   if (error) throw error
   return data
 }
+
+export const getSupplierById = async (id) => {
+  if (!id) throw new Error('id is required')
+  const { data, error } = await supabase
+    .from('supplier')
+    .select(`id, name, phone, email, address, notes`)
+    .eq('id', id)
+    .maybeSingle()
+  if (error) throw error
+  return data
+}
