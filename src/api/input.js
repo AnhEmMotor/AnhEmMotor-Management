@@ -45,9 +45,6 @@ export const getAllInputBySupplierID = async (
   const inputs = data || []
   const normalizedInputs = inputs.map((input) => {
     const total = (input.input_info || []).reduce((sum, detail) => {
-      console.log('detail', detail)
-      console.log('detail.count', detail.count)
-      console.log('detail.input_price', detail.input_price)
       const lineTotal = (detail.count || 0) * (detail.input_price || 0)
       return sum + lineTotal
     }, 0)

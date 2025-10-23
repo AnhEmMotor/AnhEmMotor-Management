@@ -250,6 +250,7 @@ onUnmounted(() => {
   if (debouncedApplyQuery && debouncedApplyQuery.cancel) debouncedApplyQuery.cancel()
   if (throttledPrefetch && throttledPrefetch.cancel) throttledPrefetch.cancel()
 })
+
 async function openDeleteModal(supplier) {
   if (!supplier) return
   const title = 'Xác nhận xóa'
