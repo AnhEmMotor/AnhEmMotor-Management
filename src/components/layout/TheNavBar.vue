@@ -1,5 +1,5 @@
 <script setup lang="js">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import IconHome from '@/components/icons/IconHome.vue'
 import IconReport from '@/components/icons/IconReport.vue'
 import IconProduct from '@/components/icons/IconProduct.vue'
@@ -8,8 +8,10 @@ import IconOrder from '@/components/icons/IconOrder.vue'
 import IconUpArrow from '@/components/icons/IconUpArrow.vue'
 import IconWarehouse from '@/components/icons/IconWarehouse.vue'
 import IconSettings from '@/components/icons/IconSettings.vue'
+import { useRoute } from 'vue-router'
 
 const openGroups = ref([])
+const route = new useRoute()
 
 const toggleGroup = (group) => {
   const index = openGroups.value.indexOf(group)
@@ -19,6 +21,31 @@ const toggleGroup = (group) => {
     openGroups.value.push(group)
   }
 }
+
+const groupRoutes = {
+  warehouse: ['/suppliers', '/inputs', '/price-management'],
+  user: ['/users', '/permissions'],
+  reports: ['/report-warehouse', '/report-revenue', '/report-product'],
+}
+
+const openActiveGroup = (path) => {
+  for (const groupName in groupRoutes) {
+    if (groupRoutes[groupName].includes(path)) {
+      if (!openGroups.value.includes(groupName)) {
+        openGroups.value.push(groupName)
+      }
+      return
+    }
+  }
+}
+
+watch(
+  () => route.path,
+  (newPath) => {
+    openActiveGroup(newPath)
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
