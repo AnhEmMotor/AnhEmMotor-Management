@@ -1,51 +1,22 @@
 <script setup>
-import { computed, onUnmounted, ref, watch } from 'vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
+import BasePagination from '../ui/button/BasePagination.vue'
+import BaseSpinner from '../ui/BaseSpinner.vue'
+import { computed, onUnmounted, ref, watch } from 'vue'
+import { throttle } from '@/utils/debounceThrottle'
 import { getAllInputBySupplierID } from '@/api/input'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
-import BasePagination from '../ui/button/BasePagination.vue'
-import { throttle } from '@/utils/debounceThrottle'
-import BaseSpinner from '../ui/BaseSpinner.vue'
+import { formatDate, formatDateTime } from '@/composables/date'
+import { formatCurrency } from '@/composables/currency'
 
 const props = defineProps({
   itemData: Object,
 })
 defineEmits(['edit-supplier', 'delete-supplier', 'toggle-activation'])
-
 const activeTab = ref('info')
 const historyCurrentPage = ref(1)
 const historyItemsPerPage = ref(10)
 const queryClient = useQueryClient()
-
-const currencyFormatter = new Intl.NumberFormat('vi-VN', {
-  style: 'decimal',
-  minimumFractionDigits: 0,
-})
-
-function formatCurrency(number) {
-  if (typeof number !== 'number') return '0'
-  return currencyFormatter.format(number) + ''
-}
-
-function formatDate(timestamp) {
-  if (!timestamp) return ''
-  const date = new Date(timestamp)
-  const day = date.getDate().toString().padStart(2, '0')
-  const month = (date.getMonth() + 1).toString().padStart(2, '0')
-  const year = date.getFullYear()
-  return `${day}/${month}/${year}`
-}
-
-function formatDateTime(timestamp) {
-  if (!timestamp) return ''
-  const date = new Date(timestamp)
-  const day = date.getDate().toString().padStart(2, '0')
-  const month = (date.getMonth() + 1).toString().padStart(2, '0')
-  const year = date.getFullYear()
-  const hours = date.getHours().toString().padStart(2, '0')
-  const minutes = date.getMinutes().toString().padStart(2, '0')
-  return `${day}/${month}/${year} ${hours}:${minutes}`
-}
 
 function getStatusInfo(statusId) {
   switch (statusId) {

@@ -1,21 +1,12 @@
 <script setup>
 import RoundBadge from '../ui/RoundBadge.vue'
+import { formatCurrency } from '@/composables/currency'
 
 defineProps({
   itemData: Object,
   isOpen: Boolean,
 })
 defineEmits(['toggle-detail'])
-
-const currencyFormatter = new Intl.NumberFormat('vi-VN', {
-  style: 'decimal',
-  minimumFractionDigits: 0,
-})
-
-function formatCurrency(number) {
-  if (typeof number !== 'number') return '0'
-  return currencyFormatter.format(number) + ''
-}
 
 function getStatusColor(status) {
   switch (status) {

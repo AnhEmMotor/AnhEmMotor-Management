@@ -9,54 +9,38 @@ import BasePagination from '@/components/ui/button/BasePagination.vue'
 import SupplierFilterButtons from '@/components/supplier/SupplierFilterButtons.vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
 import SupplierForm from '@/components/supplier/SupplierForm.vue'
+import BaseSpinner from '@/components/ui/BaseSpinner.vue'
+import BaseLoadingOverlay from '@/components/ui/BaseLoadingOverlay.vue'
 import { showConfirmation } from '@/composables/confirmation'
+import { formatDate } from '@/composables/date'
+import { useToast } from 'vue-toastification'
+import { useRoute, useRouter } from 'vue-router'
+import { useQuery, useQueryClient } from '@tanstack/vue-query'
+import { getSupplierById } from '@/api/supplier'
+import { debounce, throttle } from '@/utils/debounceThrottle'
 
 const store = useStore()
-
-function formatDate(timestamp) {
-  if (!timestamp) return ''
-  const date = new Date(timestamp)
-  const day = date.getDate().toString().padStart(2, '0')
-  const month = (date.getMonth() + 1).toString().padStart(2, '0')
-  const year = date.getFullYear()
-  return `${day}/${month}/${year}`
-}
-
 const route = useRoute()
-const page = computed(() => parseInt(route.query.page) || 1)
+const toast = useToast()
+const router = useRouter()
+const queryClient = useQueryClient()
 
+const page = computed(() => parseInt(route.query.page) || 1)
 const searchTerm = ref(route.query.search ? String(route.query.search) : '')
 const rawSearch = ref(searchTerm.value)
 const selectedStatuses = ref(
   route.query.statuses ? String(route.query.statuses).split(',').filter(Boolean) : [],
 )
 const selectedSupplierId = ref(null)
-
 const openStates = reactive({})
-
 const isFormModalVisible = ref(false)
 const editableSupplier = ref({})
 const formModalTitle = ref('')
 const formModalKey = ref(0)
 const originalSupplierOnEdit = ref(null)
 const isEditMode = computed(() => !!editableSupplier.value?.id)
-
 const itemsPerPage = ref(20)
-
-import { useToast } from 'vue-toastification'
-import { useRoute, useRouter } from 'vue-router'
-import BaseSpinner from '@/components/ui/BaseSpinner.vue'
-import BaseLoadingOverlay from '@/components/ui/BaseLoadingOverlay.vue'
-import { useQuery, useQueryClient } from '@tanstack/vue-query'
-import { getSupplierById } from '@/api/supplier'
-import { debounce, throttle } from '@/utils/debounceThrottle'
-const toast = useToast()
-const queryClient = useQueryClient()
-
 const formErrors = ref({ name: '', phone: '', email: '', address: '' })
-
-const router = useRouter()
-
 const showOverlay = ref(false)
 const overlayMessage = ref('Đang xử lý, vui lòng chờ...')
 

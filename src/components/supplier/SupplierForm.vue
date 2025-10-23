@@ -40,12 +40,10 @@ watch(
   (newVal) => {
     try {
       if (JSON.stringify(newVal) !== JSON.stringify(props.modelValue)) {
-        // Emit a deep-cloned object to avoid passing reactive references back
         emit('update:modelValue', JSON.parse(JSON.stringify(newVal)))
       }
     } catch (err) {
       void err
-      // If stringify fails (rare), fall back to emitting the raw value once
       emit('update:modelValue', newVal)
     }
   },
