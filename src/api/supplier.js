@@ -1,17 +1,5 @@
 import { supabase } from '@/lib/supabaseClient'
 
-const resolveStatusId = async (status) => {
-  if (!status) return null
-  if (typeof status === 'string' && status.match(/^[0-9a-fA-F-]{36,}$/)) return status
-  const { data, error } = await supabase
-    .from('supplier_status')
-    .select('id')
-    .eq('name', status)
-    .maybeSingle()
-  if (error) throw error
-  return data?.id || null
-}
-
 export const getAllSuppliers = async () => {
   const { data, error } = await supabase
     .from('supplier')
@@ -72,18 +60,16 @@ export const createSupplier = async (supplier) => {
 }
 
 export const updateSupplier = async (id, supplier) => {
+  console.log('Updating supplier ID:', id, 'with data:', supplier)
   const payload = {
     name: supplier.name,
     phone: supplier.phone || null,
     email: supplier.email || null,
     address: supplier.address || null,
     notes: supplier.notes || null,
+    status_id: supplier.status || null,
   }
-  if (supplier.status) {
-    const statusId = await resolveStatusId(supplier.status)
-    if (statusId) payload.status_id = statusId
-  }
-
+  console.log('Updating supplier with payload:', payload)
   const { data, error } = await supabase
     .from('supplier')
     .update(payload)
@@ -96,7 +82,6 @@ export const updateSupplier = async (id, supplier) => {
   return data
 }
 
-// Soft-delete: set deleted_at timestamp and return updated row
 export const deleteSupplier = async (id) => {
   const payload = { deleted_at: new Date().toISOString() }
   const { data, error } = await supabase

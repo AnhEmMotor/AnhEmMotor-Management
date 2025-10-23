@@ -81,6 +81,18 @@ const actions = {
       commit('SET_LOADING', false)
     }
   },
+  async updateSupplierStatus({ commit }, { id, status }) {
+    commit('SET_LOADING', true)
+    commit('SET_ERROR', null)
+    try {
+      const updatedSupplier = await supplierApi.updateSupplier(id, { status })
+      commit('UPDATE_SUPPLIER', updatedSupplier)
+    } catch (error) {
+      commit('SET_ERROR', error.message)
+    } finally {
+      commit('SET_LOADING', false)
+    }
+  },
   async deleteSupplier({ commit }, id) {
     commit('SET_LOADING', true)
     commit('SET_ERROR', null)
