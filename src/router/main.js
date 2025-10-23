@@ -1,16 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import TheHome from '@/views/TheHome.vue'
-import OrdersManager from '@/views/OrdersManager.vue'
-import CustomerManager from '@/views/UserManager.vue'
-import ProductsManager from '@/views/ProductsManager.vue'
-import ProductReport from '@/views/ProductReport.vue'
-import RevenueAnalysis from '@/views/RevenueAnalysis.vue'
-import InventoryInputManager from '@/views/InventoryInputManager.vue'
-import SupplierManager from '@/views/SupplierManager.vue'
-import UserManager from '@/views/UserManager.vue'
-import RolePermissionManager from '@/views/RolePermissionManager.vue'
-import PriceManagement from '@/views/PriceManagement.vue'
-import SettingsView from '@/views/SettingsView.vue'
+const TheHome = () => import('@/views/TheHome.vue')
+const OrdersManager = () => import('@/views/OrdersManager.vue')
+const CustomerManager = () => import('@/views/UserManager.vue')
+const ProductsManager = () => import('@/views/ProductsManager.vue')
+const ProductReport = () => import('@/views/ProductReport.vue')
+const RevenueAnalysis = () => import('@/views/RevenueAnalysis.vue')
+const InventoryInputManager = () => import('@/views/InventoryInputManager.vue')
+const SupplierManager = () => import('@/views/SupplierManager.vue')
+const UserManager = () => import('@/views/UserManager.vue')
+const RolePermissionManager = () => import('@/views/RolePermissionManager.vue')
+const PriceManagement = () => import('@/views/PriceManagement.vue')
+const SettingsView = () => import('@/views/SettingsView.vue')
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
