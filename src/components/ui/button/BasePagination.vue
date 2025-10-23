@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="loading || totalPages > 0"
+    v-if="loading || totalPages > 1"
     class="mt-6 flex justify-center items-center space-x-2 h-10"
   >
     <div v-if="loading" class="flex items-center justify-center space-x-2">
