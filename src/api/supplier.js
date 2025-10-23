@@ -33,8 +33,7 @@ export const fetchSuppliers = async (
   const suppliers = data || []
   const count = suppliers.length > 0 ? Number(suppliers[0].total_count) : 0
   const normalizedSuppliers = suppliers.map((s) => {
-    // eslint-disable-next-line no-unused-vars
-    const { total_count, ...rest } = s
+    const { _total_count, ...rest } = s
     return rest
   })
 
@@ -60,7 +59,6 @@ export const createSupplier = async (supplier) => {
 }
 
 export const updateSupplier = async (id, supplier) => {
-  console.log('Updating supplier ID:', id, 'with data:', supplier)
   const payload = {
     name: supplier.name,
     phone: supplier.phone || null,
@@ -69,7 +67,6 @@ export const updateSupplier = async (id, supplier) => {
     notes: supplier.notes || null,
     status_id: supplier.status || null,
   }
-  console.log('Updating supplier with payload:', payload)
   const { data, error } = await supabase
     .from('supplier')
     .update(payload)

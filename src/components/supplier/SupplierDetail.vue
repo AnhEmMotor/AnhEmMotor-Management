@@ -1,7 +1,10 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { computed, onUnmounted, ref, watch } from 'vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
 import { getAllInputBySupplierID } from '@/api/input'
+import { useQuery, useQueryClient } from '@tanstack/vue-query'
+import BasePagination from '../ui/button/BasePagination.vue'
+import { throttle } from '@/utils/debounceThrottle'
 import BaseSpinner from '../ui/BaseSpinner.vue'
 
 const props = defineProps({
@@ -10,10 +13,9 @@ const props = defineProps({
 defineEmits(['edit-supplier', 'delete-supplier', 'toggle-activation'])
 
 const activeTab = ref('info')
-const inputsData = ref([])
-const inputCount = ref(0)
-const loading = ref(true)
-const error = ref(null)
+const historyCurrentPage = ref(1)
+const historyItemsPerPage = ref(10)
+const queryClient = useQueryClient()
 
 const currencyFormatter = new Intl.NumberFormat('vi-VN', {
   style: 'decimal',
@@ -58,32 +60,72 @@ function getStatusInfo(statusId) {
   }
 }
 
-onMounted(async () => {
-  try {
-    loading.value = true
-    error.value = null
+const {
+  data: historyData,
+  isLoading: historyLoading,
+  isError: historyIsError,
+  error: historyError,
+} = useQuery({
+  queryKey: ['inputHistoryOfSupplier', props.itemData.id, historyCurrentPage],
+  queryFn: () =>
+    getAllInputBySupplierID(
+      props.itemData.id,
+      historyCurrentPage.value,
+      historyItemsPerPage.value,
+      [],
+      '',
+    ),
+  keepPreviousData: true,
+})
 
-    const SUPPLIER_ID_TO_TEST = props.itemData.id
-    const PAGE = 1
-    const ITEMS_PER_PAGE = 5
-    const STATUS_FILTERS = []
-    const SEARCH = ''
+const inputsData = computed(() => historyData.value?.inputs || [])
+const inputCount = computed(() => historyData.value?.count || 0)
 
-    const result = await getAllInputBySupplierID(
-      SUPPLIER_ID_TO_TEST,
-      PAGE,
-      ITEMS_PER_PAGE,
-      STATUS_FILTERS,
-      SEARCH,
-    )
+const historyTotalPages = computed(() => {
+  const count = inputCount.value
+  if (!count || count === 0) return 1
+  return Math.max(1, Math.ceil(count / historyItemsPerPage.value))
+})
 
-    inputsData.value = result.inputs
-    inputCount.value = result.count
-  } catch (e) {
-    console.error('Test thất bại:', e)
-    error.value = e.message
-  } finally {
-    loading.value = false
+const throttledPrefetchHistory = throttle((currentPage, total) => {
+  if (!historyData.value) return
+  if (currentPage < total) {
+    queryClient.prefetchQuery({
+      queryKey: ['inputHistoryOfSupplier', props.itemData.id, currentPage + 1],
+      queryFn: () =>
+        getAllInputBySupplierID(
+          props.itemData.id,
+          currentPage + 1,
+          historyItemsPerPage.value,
+          [],
+          '',
+        ),
+    })
+  }
+  if (currentPage > 1) {
+    queryClient.prefetchQuery({
+      queryKey: ['inputHistoryOfSupplier', props.itemData.id, currentPage - 1],
+      queryFn: () =>
+        getAllInputBySupplierID(
+          props.itemData.id,
+          currentPage - 1,
+          historyItemsPerPage.value,
+          [],
+          '',
+        ),
+    })
+  }
+}, 600)
+
+watch(historyData, () => {
+  if (historyData.value && historyTotalPages.value) {
+    throttledPrefetchHistory(historyCurrentPage.value, historyTotalPages.value)
+  }
+})
+
+onUnmounted(() => {
+  if (throttledPrefetchHistory && throttledPrefetchHistory.cancel) {
+    throttledPrefetchHistory.cancel()
   }
 })
 </script>
@@ -180,9 +222,9 @@ onMounted(async () => {
     </div>
 
     <div v-show="activeTab === 'history'">
-      <div v-if="loading" class="p-4 text-center text-gray-500"><BaseSpinner /></div>
-      <div v-else-if="error" class="p-4 text-center text-red-500 bg-red-50 rounded-lg">
-        Lỗi khi tải lịch sử: {{ error }}
+      <div v-if="historyLoading" class="p-4 text-center text-gray-500"><BaseSpinner /></div>
+      <div v-else-if="historyIsError" class="p-4 text-center text-red-500 bg-red-50 rounded-lg">
+        Lỗi khi tải lịch sử: {{ historyError?.message }}
       </div>
       <div v-else-if="inputsData && inputsData.length > 0" class="p-4 bg-white pr-12">
         <div class="grid grid-cols-16 gap-4 text-xs font-semibold text-gray-600 border-b pb-2 mb-2">
@@ -214,9 +256,9 @@ onMounted(async () => {
           </div>
         </div>
         <BasePagination
-          :total-pages="totalPages"
-          v-model:currentPage="currentPage"
-          :loading="loading"
+          :total-pages="historyTotalPages"
+          v-model:currentPage="historyCurrentPage"
+          :loading="historyLoading"
         />
       </div>
 
