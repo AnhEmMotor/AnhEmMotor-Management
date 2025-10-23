@@ -42,7 +42,7 @@ const formModalKey = ref(0)
 const originalSupplierOnEdit = ref(null)
 const isEditMode = computed(() => !!editableSupplier.value?.id)
 
-const itemsPerPage = ref(10)
+const itemsPerPage = ref(20)
 
 import { useToast } from 'vue-toastification'
 import { useRoute, useRouter } from 'vue-router'
@@ -187,7 +187,7 @@ const totalPages = computed(() => {
   return Math.max(1, Math.ceil(count / itemsPerPage.value))
 })
 
-const applyQueryFromRaw = () => {
+const applyQueryFromRaw = async () => {
   const qs = { ...route.query }
   if (rawSearch.value && String(rawSearch.value).trim()) qs.search = String(rawSearch.value).trim()
   else delete qs.search
@@ -195,7 +195,10 @@ const applyQueryFromRaw = () => {
     qs.statuses = selectedStatuses.value.join(',')
   else delete qs.statuses
   qs.page = 1
-  router.replace({ query: qs })
+  await router.replace({ query: qs })
+  if (typeof window !== 'undefined' && window.scrollTo) {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 }
 
 const debouncedApplyQuery = debounce(applyQueryFromRaw, 400)
@@ -284,11 +287,14 @@ function toggleActivation(supplierId) {
   showConfirmation(title, messageText).then(async (confirmed) => {
     if (!confirmed) return
     try {
-      const updated = { ...supplier, status: supplier.status === 'active' ? 'inactive' : 'active' }
-      await store.dispatch('suppliers/updateSupplier', { id: supplier.id, supplier: updated })
+      await store.dispatch('suppliers/updateSupplierStatus', {
+        id: supplier.id,
+        status: supplier.status === 'active' ? 'inactive' : 'active',
+      })
       showMessage(
-        `Đã ${updated.status === 'active' ? 'kích hoạt' : 'ngừng hoạt động'} nhà cung cấp ${supplier.name}.`,
+        `Đã ${supplier.status === 'active' ? 'kích hoạt' : 'ngừng hoạt động'} nhà cung cấp ${supplier.name}.`,
       )
+      await queryClient.invalidateQueries({ queryKey: ['suppliers'] })
     } catch (err) {
       showMessage('Lỗi khi cập nhật trạng thái.', 'error')
       console.error(err)
@@ -376,9 +382,12 @@ const handleImport = async (event) => {
   event.target.value = null
 }
 
-function onPageChange(newPage) {
+async function onPageChange(newPage) {
   if (newPage !== page.value) {
-    router.replace({ query: { ...route.query, page: newPage } })
+    await router.replace({ query: { ...route.query, page: newPage } })
+    if (typeof window !== 'undefined' && window.scrollTo) {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
   }
 }
 
@@ -548,7 +557,6 @@ watch(
   @apply flex flex-wrap items-center gap-2;
 }
 .summary-row-grid {
-  /* Use a 16-column layout so individual header items can span multiple cols */
   display: grid;
   grid-template-columns: repeat(16, minmax(0, 1fr));
   gap: 0.5rem;
