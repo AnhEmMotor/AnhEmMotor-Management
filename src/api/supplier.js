@@ -1,6 +1,5 @@
 import { supabase } from '@/lib/supabaseClient'
 
-// Helper: find status_id by name if a name is provided
 const resolveStatusId = async (status) => {
   if (!status) return null
   if (typeof status === 'string' && status.match(/^[0-9a-fA-F-]{36,}$/)) return status
@@ -31,7 +30,6 @@ export const fetchSuppliers = async (
   statusFilters = [],
   search = '',
 ) => {
-  console.log('Fetching suppliers with:', { page, itemsPerPage, statusFilters, search })
   const statusParam =
     Array.isArray(statusFilters) && statusFilters.length > 0 ? statusFilters : null
   const searchParam = search ? String(search).trim() : null
@@ -62,18 +60,12 @@ export const createSupplier = async (supplier) => {
     email: supplier.email || null,
     address: supplier.address || null,
     notes: supplier.notes || null,
+    status_id: supplier.status || null,
   }
-  if (supplier.status) {
-    const statusId = await resolveStatusId(supplier.status)
-    if (statusId) payload.status_id = statusId
-  }
-
   const { data, error } = await supabase
     .from('supplier')
     .insert(payload)
-    .select(
-      `id, name, phone, email, address, notes, deleted_at, created_at, status:status_id(name)`,
-    )
+    .select(`id, name, phone, email, address, notes, deleted_at, created_at`)
     .single()
   if (error) throw error
   return data

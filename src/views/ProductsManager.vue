@@ -304,11 +304,9 @@ const totalPages = ref(10)
 const currentPage = ref(1)
 const isLoading = ref(false)
 
-const fetchDataForPage = (page) => {
-  console.log(`Bắt đầu tải dữ liệu cho trang ${page}...`)
+const fetchDataForPage = () => {
   isLoading.value = true
   setTimeout(() => {
-    console.log(`Tải xong dữ liệu cho trang ${page}!`)
     isLoading.value = false
   }, 1500)
 }

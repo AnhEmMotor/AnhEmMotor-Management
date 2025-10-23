@@ -7,7 +7,6 @@ const props = defineProps({
 })
 defineEmits(['edit-supplier', 'delete-supplier', 'toggle-activation'])
 
-console.log('SupplierDetail itemData:', props.itemData)
 const activeTab = ref('info')
 
 const currencyFormatter = new Intl.NumberFormat('vi-VN', {

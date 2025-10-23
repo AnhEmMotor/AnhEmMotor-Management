@@ -41,10 +41,6 @@ const isEditMode = computed(() => !!editableSupplier.value?.id)
 
 const itemsPerPage = ref(10)
 
-// confirmation is handled by the global confirmation composable/component
-
-// delete confirmation uses global confirmation modal via showConfirmation()
-
 import { useToast } from 'vue-toastification'
 import { useRoute, useRouter } from 'vue-router'
 import BaseSpinner from '@/components/ui/BaseSpinner.vue'
@@ -87,11 +83,12 @@ function openAddEditModal(supplier = null) {
 }
 
 function handleFormRefresh() {
-  const doRefresh = () => {
+  const doRefresh = async () => {
     if (originalSupplierOnEdit.value) {
       editableSupplier.value = JSON.parse(JSON.stringify(originalSupplierOnEdit.value))
       isFormDirty.value = false
       showMessage('Đã tải lại dữ liệu gốc của nhà cung cấp.')
+      await queryClient.invalidateQueries({ queryKey: ['suppliers'] })
     }
   }
 
@@ -148,9 +145,11 @@ async function handleSaveSupplier() {
         supplier: supplierData,
       })
       showMessage(`Đã cập nhật nhà cung cấp: ${supplierData.name}.`)
+      await queryClient.invalidateQueries({ queryKey: ['suppliers'] })
     } else {
       await store.dispatch('suppliers/addSupplier', supplierData)
       showMessage(`Đã tạo nhà cung cấp mới: ${supplierData.name}.`)
+      await queryClient.invalidateQueries({ queryKey: ['suppliers'] })
     }
   } catch (err) {
     showMessage('Lỗi khi lưu nhà cung cấp.', 'error')
@@ -225,6 +224,7 @@ async function openDeleteModal(supplier) {
     await store.dispatch('suppliers/deleteSupplier', supplier.id)
     showMessage(`Đã xóa nhà cung cấp: ${supplier.name}.`)
     if (selectedSupplierId.value === supplier.id) selectedSupplierId.value = null
+    await queryClient.invalidateQueries({ queryKey: ['suppliers'] })
   } catch (err) {
     showMessage('Lỗi khi xóa nhà cung cấp.', 'error')
     console.error(err)
@@ -356,7 +356,7 @@ function onPageChange(newPage) {
         <h1 class="title-style">Quản lý nhà cung cấp</h1>
       </div>
       <div class="action-button-style">
-        <BaseButton text="Thêm NCC" color="purple" @click="openAddEditModal()" />
+        <BaseButton text="Thêm nhà cung cấp" color="purple" @click="openAddEditModal()" />
 
         <label for="import-file-input" class="cursor-pointer">
           <BaseButton text="Import" color="blue" as="span" />
