@@ -9,7 +9,7 @@ import InventoryFilterButtons from '@/components/inventory_input/InventoryFilter
 import DraggableModal from '@/components/ui/DraggableModal.vue'
 import InventoryInputForm from '@/components/inventory_input/InventoryInputForm.vue'
 import ProductForm from '@/components/product/ProductForm.vue'
-import FullScreenModal from '@/components/ui/FullScreenModal.vue'
+import { showConfirmation } from '@/composables/confirmation'
 
 // Local products catalog shared with the inventory input form
 const productsCatalog = ref([
@@ -192,10 +192,6 @@ const exportExcel = () => {
 // Modal states
 const showInventoryModal = ref(false)
 const showProductModal = ref(false)
-const showConfirmModal = ref(false)
-const confirmModalTitle = ref('')
-const confirmModalMessage = ref('')
-const confirmAction = ref(null)
 const currentInventoryData = ref({
   supplier: null,
   products: [],
@@ -529,11 +525,12 @@ const handleCopyReceipt = (item) => {
   showInventoryModal.value = true
 }
 
-const handleCancelRequest = (item) => {
-  confirmModalTitle.value = 'Xác nhận huỷ phiếu'
-  confirmModalMessage.value = `Bạn có chắc muốn huỷ phiếu ${item.id}? Hành động này không thể hoàn tác.`
-  confirmAction.value = () => confirmCancel(item)
-  showConfirmModal.value = true
+const handleCancelRequest = async (item) => {
+  const title = 'Xác nhận huỷ phi'
+  const message = `Bạn có chắc muốn huỷ phiếu ${item.id}? Hành động này không thể hoàn tác.`
+  const confirmed = await showConfirmation(title, message)
+  if (!confirmed) return
+  confirmCancel(item)
 }
 
 const confirmCancel = (item) => {
@@ -544,7 +541,6 @@ const confirmCancel = (item) => {
       status: 'Đã hủy',
     }
   }
-  showConfirmModal.value = false
 }
 
 // Save notes handler from detail component
@@ -687,30 +683,7 @@ const handleSaveNotes = ({ id, notes }) => {
       </template>
     </DraggableModal>
 
-    <!-- Confirm modal (Full screen) -->
-    <FullScreenModal
-      :show="showConfirmModal"
-      title="Xác nhận hành động"
-      @close="showConfirmModal = false"
-    >
-      <template #default>
-        <div class="py-4">
-          <p class="text-sm text-gray-700">{{ confirmModalMessage }}</p>
-        </div>
-      </template>
-      <template #actions>
-        <BaseButton text="Huỷ" color="gray" @click="showConfirmModal = false" />
-        <BaseButton
-          text="Xác nhận"
-          color="red"
-          @click="
-            () => {
-              if (typeof confirmAction.value === 'function') confirmAction.value()
-            }
-          "
-        />
-      </template>
-    </FullScreenModal>
+    <!-- global confirmation modal is mounted in App.vue and used via showConfirmation() -->
   </div>
 </template>
 

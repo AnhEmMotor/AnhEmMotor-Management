@@ -77,34 +77,10 @@
       </div>
     </template>
   </DraggableModal>
-
-  <FullScreenModal :show="isDeleteModalVisible" title="Xác Nhận Xóa" @close="cancelDelete">
-    <p>
-      Bạn có chắc chắn muốn xóa sản phẩm có mã <strong>{{ productToDelete }}</strong> không? Hành
-      động này không thể hoàn tác.
-    </p>
-    <template #actions>
-      <BaseButton text="Hủy" color="gray" @click="cancelDelete" />
-      <BaseButton text="Xác Nhận Xóa" color="red" @click="confirmDelete" />
-    </template>
-  </FullScreenModal>
-
-  <FullScreenModal
-    v-if="isConfirmationModalVisible"
-    :show="isConfirmationModalVisible"
-    :title="confirmationModalProps.title"
-    @close="isConfirmationModalVisible = false"
-  >
-    <p class="text-gray-600 text-center">{{ confirmationModalProps.message }}</p>
-    <template #actions>
-      <BaseButton text="Bỏ qua" color="gray" @click="isConfirmationModalVisible = false" />
-      <BaseButton text="Xác nhận" color="red" @click="executeConfirmation" />
-    </template>
-  </FullScreenModal>
 </template>
 
 <script setup>
-import { ref, watch, computed, reactive } from 'vue'
+import { ref, watch, computed } from 'vue'
 import ProductFilterButtons from '@/components/product/ProductFilterButtons.vue'
 import ProductForm from '@/components/product/ProductForm.vue'
 import BaseButton from '@/components/ui/button/BaseButton.vue'
@@ -112,7 +88,7 @@ import BaseInput from '@/components/ui/input/BaseInput.vue'
 import BasePagination from '@/components/ui/button/BasePagination.vue'
 import BaseSmallNoBgButton from '@/components/ui/button/BaseSmallNoBgButton.vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
-import FullScreenModal from '@/components/ui/FullScreenModal.vue'
+import { showConfirmation } from '@/composables/confirmation'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
 
 // Form Modal State
@@ -127,18 +103,6 @@ const isEditMode = computed(
     !!editableProduct.value?.code &&
     products.value.some((p) => p.code === editableProduct.value.code),
 )
-
-function showConfirmation(title, message, onConfirmAction) {
-  confirmationModalProps.title = title
-  confirmationModalProps.message = message
-  confirmationModalProps.onConfirm = onConfirmAction
-  isConfirmationModalVisible.value = true
-}
-
-function executeConfirmation() {
-  confirmationModalProps.onConfirm()
-  isConfirmationModalVisible.value = false
-}
 
 const openAddEditModal = (product = null) => {
   const openForm = () => {
@@ -239,36 +203,20 @@ const handleSaveProduct = () => {
   isFormModalVisible.value = false
 }
 
-// Delete confirmation modal state
-const isDeleteModalVisible = ref(false)
-const productToDelete = ref(null)
-
-const promptDelete = (code) => {
-  productToDelete.value = code
-  isDeleteModalVisible.value = true
-}
-
-const confirmDelete = () => {
-  const index = products.value.findIndex((p) => p.code === productToDelete.value)
+// Delete confirmation uses global confirmation modal
+const promptDelete = async (code) => {
+  const title = 'Xác nhận xóa'
+  const message = `Bạn có chắc chắn muốn xóa sản phẩm có mã ${code}? Hành động này không thể hoàn tác.`
+  const confirmed = await showConfirmation(title, message)
+  if (!confirmed) return
+  const index = products.value.findIndex((p) => p.code === code)
   if (index !== -1) {
     products.value.splice(index, 1)
     saveProducts()
   }
-  cancelDelete() // Close modal and reset state
 }
 
-const cancelDelete = () => {
-  isDeleteModalVisible.value = false
-  productToDelete.value = null
-}
-
-// Confirmation Modal State
-const isConfirmationModalVisible = ref(false)
-const confirmationModalProps = reactive({
-  title: '',
-  message: '',
-  onConfirm: () => {},
-})
+// Confirmation handled via global confirmation modal
 
 // Table and Data
 const LOW_STOCK_THRESHOLD = 10

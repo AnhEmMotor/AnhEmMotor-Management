@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 import { useStore } from 'vuex'
 import * as XLSX from 'xlsx'
 import SupplierItem from '@/components/supplier/SupplierItem.vue'
@@ -7,10 +7,9 @@ import BaseButton from '@/components/ui/button/BaseButton.vue'
 import BaseInput from '@/components/ui/input/BaseInput.vue'
 import BasePagination from '@/components/ui/button/BasePagination.vue'
 import SupplierFilterButtons from '@/components/supplier/SupplierFilterButtons.vue'
-import SupplierDeleteModal from '@/components/supplier/SupplierDeleteModal.vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
 import SupplierForm from '@/components/supplier/SupplierForm.vue'
-import FullScreenModal from '@/components/ui/FullScreenModal.vue'
+import { showConfirmation } from '@/composables/confirmation'
 
 const store = useStore()
 
@@ -25,8 +24,6 @@ function formatDate(timestamp) {
 
 const route = useRoute()
 const page = computed(() => parseInt(route.query.page) || 1)
-// const storeSuppliers = computed(() => store.getters['suppliers/allSuppliers'] || [])
-// const isLoading = computed(() => store.state.suppliers?.isLoading || false)
 
 const searchTerm = ref('')
 const selectedStatuses = ref([])
@@ -44,15 +41,9 @@ const isEditMode = computed(() => !!editableSupplier.value?.id)
 
 const itemsPerPage = ref(10)
 
-const isConfirmationModalVisible = ref(false)
-const confirmationModalProps = reactive({
-  title: '',
-  message: '',
-  onConfirm: () => {},
-})
+// confirmation is handled by the global confirmation composable/component
 
-const isDeleteModalVisible = ref(false)
-const supplierToDelete = ref(null)
+// delete confirmation uses global confirmation modal via showConfirmation()
 
 import { useToast } from 'vue-toastification'
 import { useRoute, useRouter } from 'vue-router'
@@ -71,17 +62,6 @@ function showMessage(text, type = 'success', duration = 3000) {
   } else {
     toast.success(text, { timeout: duration })
   }
-}
-
-function showConfirmation(title, msg, onConfirmAction) {
-  confirmationModalProps.title = title
-  confirmationModalProps.message = msg
-  confirmationModalProps.onConfirm = onConfirmAction
-  isConfirmationModalVisible.value = true
-}
-function executeConfirmation() {
-  confirmationModalProps.onConfirm()
-  isConfirmationModalVisible.value = false
 }
 
 function openAddEditModal(supplier = null) {
@@ -119,8 +99,9 @@ function handleFormRefresh() {
     showConfirmation(
       'Tải lại dữ liệu gốc?',
       'Bạn có các thay đổi chưa lưu. Bạn có chắc muốn tải lại dữ liệu gốc không?',
-      doRefresh,
-    )
+    ).then((confirmed) => {
+      if (confirmed) doRefresh()
+    })
   } else {
     doRefresh()
   }
@@ -131,10 +112,9 @@ function handleCloseFormModal() {
     showConfirmation(
       'Đóng biểu mẫu?',
       'Bạn có các thay đổi chưa lưu. Bạn có chắc muốn đóng không?',
-      () => {
-        isFormModalVisible.value = false
-      },
-    )
+    ).then((confirmed) => {
+      if (confirmed) isFormModalVisible.value = false
+    })
   } else {
     isFormModalVisible.value = false
   }
@@ -234,22 +214,20 @@ watch(suppliersData, (newData) => {
   }
 })
 
-function openDeleteModal(supplier) {
-  supplierToDelete.value = supplier
-  isDeleteModalVisible.value = true
-}
+async function openDeleteModal(supplier) {
+  if (!supplier) return
+  const title = 'Xác nhận xóa'
+  const message = `Bạn có chắc chắn muốn xóa nhà cung cấp "${supplier.name}"? Hành động này không thể hoàn tác.`
+  const confirmed = await showConfirmation(title, message)
+  if (!confirmed) return
 
-async function handleDeleteSupplier() {
-  if (!supplierToDelete.value) return
   try {
-    await store.dispatch('suppliers/deleteSupplier', supplierToDelete.value.id)
-    showMessage(`Đã xóa nhà cung cấp: ${supplierToDelete.value.name}.`)
-    if (selectedSupplierId.value === supplierToDelete.value.id) selectedSupplierId.value = null
+    await store.dispatch('suppliers/deleteSupplier', supplier.id)
+    showMessage(`Đã xóa nhà cung cấp: ${supplier.name}.`)
+    if (selectedSupplierId.value === supplier.id) selectedSupplierId.value = null
   } catch (err) {
     showMessage('Lỗi khi xóa nhà cung cấp.', 'error')
     console.error(err)
-  } finally {
-    isDeleteModalVisible.value = false
   }
 }
 
@@ -269,7 +247,8 @@ function toggleActivation(supplierId) {
   const title = `Xác nhận ${actionText}`
   const messageText = `Bạn có chắc chắn muốn ${actionText} nhà cung cấp "${supplier.name}" không?`
 
-  showConfirmation(title, messageText, async () => {
+  showConfirmation(title, messageText).then(async (confirmed) => {
+    if (!confirmed) return
     try {
       const updated = { ...supplier, status: supplier.status === 'active' ? 'inactive' : 'active' }
       await store.dispatch('suppliers/updateSupplier', { id: supplier.id, supplier: updated })
@@ -351,7 +330,6 @@ const handleImport = async (event) => {
       }
       if (created.length > 0) {
         showMessage(`Đã nhập thành công ${created.length} nhà cung cấp.`)
-        // await store.dispatch('suppliers/fetchSuppliers')
       } else {
         showMessage('Không có nhà cung cấp nào hợp lệ trong file.', 'error')
       }
@@ -469,26 +447,9 @@ function onPageChange(newPage) {
       </template>
     </DraggableModal>
 
-    <SupplierDeleteModal
-      v-if="isDeleteModalVisible"
-      :is-open="isDeleteModalVisible"
-      :supplier="supplierToDelete"
-      @close="isDeleteModalVisible = false"
-      @confirm="handleDeleteSupplier"
-    />
+    <!-- deletion now uses the global confirmation modal via showConfirmation() -->
 
-    <FullScreenModal
-      v-if="isConfirmationModalVisible"
-      :show="isConfirmationModalVisible"
-      :title="confirmationModalProps.title"
-      @close="isConfirmationModalVisible = false"
-    >
-      <p class="text-gray-600 text-center">{{ confirmationModalProps.message }}</p>
-      <template #actions>
-        <BaseButton text="Bỏ qua" color="gray" @click="isConfirmationModalVisible = false" />
-        <BaseButton text="Xác nhận" color="red" @click="executeConfirmation" />
-      </template>
-    </FullScreenModal>
+    <!-- global confirmation modal is mounted in App.vue -->
   </div>
 </template>
 
