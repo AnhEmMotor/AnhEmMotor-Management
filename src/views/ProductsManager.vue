@@ -17,7 +17,7 @@
     <BaseInput
       v-model="searchTerm"
       type="text"
-      placeholder="Tìm kiếm (Tên, Mã SKU, Danh mục...)"
+      placeholder="Tìm kiếm (Tên, Danh mục...)"
       class="mb-3"
     />
 
@@ -120,7 +120,7 @@
                   <tbody>
                     <tr
                       v-for="variant in product.variants"
-                      :key="variant.code"
+                      :key="variant.id"
                       class="border-b last:border-b-0"
                     >
                       <td class="detail-cell-style text-gray-800">
@@ -150,7 +150,12 @@
   </div>
 
   <!-- MODAL FORM: Không thay đổi template, chỉ thay đổi logic bên dưới -->
-  <DraggableModal :key="formModalKey" v-if="isFormModalVisible" @close="handleCloseFormModal">
+  <DraggableModal
+    :key="formModalKey"
+    v-if="isFormModalVisible"
+    @close="handleCloseFormModal"
+    width="72vw"
+  >
     <template #header>
       <h2 class="font-bold text-lg">{{ formModalTitle }}</h2>
     </template>
@@ -199,18 +204,21 @@ const products = ref([
     ],
     variants: [
       {
+        id: 'var_001',
         price: 45000000,
         cost: 40000000,
         quantity: 12,
         optionValues: { 'Dung tích động cơ': '125cc', 'Màu sắc': 'Đen Mờ' },
       },
       {
+        id: 'var_002',
         price: 45000000,
         cost: 40000000,
         quantity: 8,
         optionValues: { 'Dung tích động cơ': '125cc', 'Màu sắc': 'Xanh Xi Măng' },
       },
       {
+        id: 'var_003',
         price: 60000000,
         cost: 55000000,
         quantity: 5,
@@ -230,18 +238,21 @@ const products = ref([
     ],
     variants: [
       {
+        id: 'var_004',
         price: 550000,
         cost: 450000,
         quantity: 20,
         optionValues: { 'Kích cỡ': 'M', 'Màu sắc': 'Đỏ' },
       },
       {
+        id: 'var_005',
         price: 550000,
         cost: 450000,
         quantity: 0,
         optionValues: { 'Kích cỡ': 'L', 'Màu sắc': 'Đỏ' },
       },
       {
+        id: 'var_006',
         price: 550000,
         cost: 450000,
         quantity: 15,
@@ -259,6 +270,7 @@ const products = ref([
     variants: [
       // Chỉ có 1 biến thể
       {
+        id: 'var_007',
         price: 85000,
         cost: 65000,
         quantity: 3,
@@ -375,9 +387,10 @@ const filteredProducts = computed(() => {
 
       if (inParent) return true
 
-      // Tìm ở các biến thể con
+      // Tìm ở các biến thể con (ĐÃ BỎ TÌM KIẾM BẰNG CODE)
       const inVariants = product.variants.some((variant) =>
-        variant.code.toLowerCase().includes(lowerSearch),
+        // Ví dụ: tìm theo thuộc tính
+        getVariantOptionsText(variant).toLowerCase().includes(lowerSearch),
       )
 
       return inVariants
@@ -405,7 +418,7 @@ const getNewEmptyProduct = () => {
     variants: [
       // Biến thể mặc định khi là sản phẩm đơn
       {
-        code: '',
+        id: null,
         price: null,
         cost: null,
         quantity: null,
@@ -491,19 +504,38 @@ const handleSaveProduct = () => {
   // b. Validate thông tin biến thể
   const variantErrors = []
   if (!productData.variants || productData.variants.length === 0) {
-    hasError = true
-  } else {
-    const allSkus = products.value.flatMap((p) => p.variants.map((v) => v.code))
-    const currentProductSkus = isEditMode.value
-      ? products.value.find((p) => p.id === productData.id)?.variants.map((v) => v.code) || []
-      : []
+    // Nếu có thuộc tính, bắt buộc phải có ít nhất 1 biến thể
+    if (productData.options.length > 0) {
+      // Tạm thời chỉ log, có thể thêm lỗi chung
+      console.error('Sản phẩm có thuộc tính nhưng không có biến thể nào.')
+      hasError = true
+    }
+    // Nếu không có thuộc tính (sản phẩm đơn) thì lỗi này không áp dụng
+    // (Vì logic cũ vẫn check giá của variants[0])
+  }
+
+  // Trường hợp sản phẩm đơn (Không có thuộc tính)
+  if (productData.options.length === 0 && productData.variants[0]) {
+    const errors = {}
+    if (
+      productData.variants[0].price === null ||
+      productData.variants[0].price === undefined ||
+      productData.variants[0].price === '' ||
+      isNaN(productData.variants[0].price)
+    ) {
+      errors.price = 'Vui lòng nhập Giá Bán.'
+      hasError = true
+    }
+    variantErrors[0] = errors
+  }
+  // Trường hợp sản phẩm có biến thể
+  else if (productData.options.length > 0) {
+    const seenCombinations = new Set() // Dùng để kiểm tra trùng lặp
 
     productData.variants.forEach((variant, index) => {
       const errors = {}
-      if (!variant.code) {
-        errors.code = 'Vui lòng nhập Mã SKU.'
-        hasError = true
-      }
+
+      // 1. Kiểm tra Giá
       if (
         variant.price === null ||
         variant.price === undefined ||
@@ -514,22 +546,31 @@ const handleSaveProduct = () => {
         hasError = true
       }
 
-      // Kiểm tra trùng lặp SKU trong CÙNG 1 sản phẩm
-      const duplicateInSelf = productData.variants.find(
-        (v, i) => v.code === variant.code && i < index,
-      )
-      if (duplicateInSelf) {
-        errors.code = `Mã SKU "${variant.code}" bị trùng lặp.`
+      // 2. Kiểm tra đã chọn đủ thuộc tính
+      const allOptionsSelected = productData.options.every((opt) => variant.optionValues[opt.name])
+      if (!allOptionsSelected) {
+        errors.combination = 'Vui lòng chọn đầy đủ thuộc tính.'
         hasError = true
       }
 
-      // Kiểm tra trùng lặp SKU với TẤT CẢ sản phẩm khác (chỉ khi Thêm mới, hoặc Sửa 1 SKU khác)
-      if (variant.code && !errors.code) {
-        const isSkuUsedByOthers =
-          allSkus.includes(variant.code) && !currentProductSkus.includes(variant.code)
-        if (isSkuUsedByOthers) {
-          errors.code = `Mã SKU "${variant.code}" đã tồn tại ở sản phẩm khác.`
+      // 3. Kiểm tra trùng lặp tổ hợp thuộc tính
+      if (allOptionsSelected) {
+        // Chỉ check trùng khi đã điền đủ
+        // Sắp xếp key để đảm bảo thứ tự không ảnh hưởng
+        const combinationSignature = JSON.stringify(
+          Object.keys(variant.optionValues)
+            .sort()
+            .reduce((obj, key) => {
+              obj[key] = variant.optionValues[key]
+              return obj
+            }, {}),
+        )
+
+        if (seenCombinations.has(combinationSignature)) {
+          errors.combination = 'Tổ hợp thuộc tính này bị trùng lặp.'
           hasError = true
+        } else {
+          seenCombinations.add(combinationSignature)
         }
       }
 
@@ -555,6 +596,12 @@ const handleSaveProduct = () => {
   } else {
     // Add new
     productData.id = `prod_${crypto.randomUUID()}` // Tạo ID mới
+    // Gán ID cho các biến thể mới (nếu chúng chưa có)
+    productData.variants.forEach((v) => {
+      if (!v.id) {
+        v.id = `var_${crypto.randomUUID()}`
+      }
+    })
     products.value.unshift(productData)
   }
 

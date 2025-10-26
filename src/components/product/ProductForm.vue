@@ -11,8 +11,6 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  // isEditMode không còn dùng để khóa Mã SP,
-  // mà có thể dùng để khóa việc thay đổi thuộc tính
   isEditMode: {
     type: Boolean,
     default: false,
@@ -25,30 +23,61 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue', 'update:dirty'])
 
-// localProduct giờ đây có cấu trúc phức tạp hơn
 const localProduct = ref({})
 const initialDataJson = ref('')
 
 // === DỮ LIỆU MOCK (Giả định) ===
-// Dữ liệu này nên được fetch từ CSDL trong thực tế
 const categoryOptions = [
   { value: 'Xe Máy', text: 'Xe Máy' },
   { value: 'Phụ Kiện', text: 'Phụ Kiện' },
   { value: 'Phụ Tùng', text: 'Phụ Tùng' },
 ]
-// Thêm brandOptions dựa trên schema
 const brandOptions = [
   { value: 'uuid-honda', text: 'Honda' },
   { value: 'uuid-yamaha', text: 'Yamaha' },
   { value: 'uuid-royal', text: 'Royal' },
 ]
-// Thêm allAvailableOptions (Bảng 'options' của bạn)
 const allAvailableOptions = [
   { value: 'Màu sắc', text: 'Màu sắc' },
   { value: 'Dung tích động cơ', text: 'Dung tích động cơ' },
   { value: 'Kích cỡ', text: 'Kích cỡ' },
 ]
 // === KẾT THÚC DỮ LIỆU MOCK ===
+
+// Computed kiểm tra xem có thuộc tính nào không
+const hasOptions = computed(() => {
+  return localProduct.value.options && localProduct.value.options.length > 0
+})
+
+// Chuyển chuỗi "Val1, Val2" thành mảng cho dropdown
+const getOptionValuesArray = (valuesString) => {
+  if (!valuesString) return []
+  return valuesString.split(',').map((v) => {
+    const trimmedVal = v.trim()
+    return { value: trimmedVal, text: trimmedVal }
+  })
+}
+
+// Lấy lỗi cho từng biến thể
+const getVariantErrors = (index) => {
+  if (props.errors?.variants && props.errors.variants[index]) {
+    return props.errors.variants[index]
+  }
+  return {}
+}
+
+// Lỗi cho sản phẩm đơn
+const simpleProductErrors = computed(() => {
+  if (!hasOptions.value && props.errors?.variants && props.errors.variants[0]) {
+    return {
+      price: props.errors.variants[0].price,
+      // Thêm lỗi khác nếu có
+    }
+  }
+  return {}
+})
+
+// === LOGIC WATCH ===
 
 watch(
   () => props.modelValue,
@@ -58,11 +87,11 @@ watch(
     if (!copy.options) {
       copy.options = []
     }
-    if (!copy.variants) {
-      // Nếu không có biến thể, tạo 1 biến thể mặc định
+    // Luôn đảm bảo có ít nhất 1 biến thể (cho trường hợp sản phẩm đơn)
+    if (!copy.variants || copy.variants.length === 0) {
       copy.variants = [
         {
-          code: '',
+          id: null,
           price: null,
           cost: null,
           quantity: null,
@@ -70,6 +99,7 @@ watch(
         },
       ]
     }
+
     localProduct.value = copy
     initialDataJson.value = JSON.stringify(copy)
     emit('update:dirty', false)
@@ -87,135 +117,109 @@ watch(
   { deep: true },
 )
 
-// === LOGIC XỬ LÝ THUỘC TÍNH & BIẾN THỂ ===
+// === FIX: WATCH SÂU CÁC THUỘC TÍNH ===
+// Watch này thay thế watch cũ (chỉ theo dõi length)
+// Nó đồng bộ các `optionValues` của variants khi thuộc tính (options) thay đổi.
+watch(
+  () => localProduct.value.options,
+  (newOptions, oldOptions) => {
+    // Bỏ qua lần khởi tạo đầu tiên nếu oldOptions là undefined
+    if (oldOptions === undefined) {
+      return
+    }
 
-// Thêm một dòng định nghĩa thuộc tính mới
+    if (!localProduct.value.variants) localProduct.value.variants = []
+
+    // 1. Xử lý chuyển đổi giữa sản phẩm đơn và có biến thể
+    if (newOptions.length > 0 && oldOptions.length === 0) {
+      // Chuyển từ sản phẩm đơn -> có biến thể
+      // Xóa biến thể "mặc định" để bắt đầu thêm thủ công
+      localProduct.value.variants = []
+    } else if (newOptions.length === 0 && oldOptions.length > 0) {
+      // Chuyển từ có biến thể -> sản phẩm đơn
+      // Reset về 1 biến thể mặc định
+      localProduct.value.variants = [
+        {
+          id: null,
+          price: null,
+          cost: null,
+          quantity: null,
+          optionValues: {},
+        },
+      ]
+    }
+
+    // 2. Đồng bộ các keys của variants với các tên thuộc tính mới
+    const currentOptionNames = newOptions.map((o) => o.name)
+
+    localProduct.value.variants.forEach((variant) => {
+      const existingValueKeys = Object.keys(variant.optionValues)
+
+      // Xóa các key trong variant.optionValues không còn tồn tại trong options
+      existingValueKeys.forEach((key) => {
+        if (!currentOptionNames.includes(key)) {
+          delete variant.optionValues[key]
+        }
+      })
+
+      // Thêm các key mới (với giá trị rỗng) vào variant.optionValues
+      // Đây chính là phần sửa lỗi `undefined`
+      currentOptionNames.forEach((name) => {
+        if (name && !variant.optionValues.hasOwnProperty(name)) {
+          variant.optionValues[name] = '' // Khởi tạo giá trị rỗng
+        }
+      })
+    })
+  },
+  { deep: true }, // Quan trọng: `deep: true` để theo dõi thay đổi trong mảng
+)
+
+// === LOGIC THUỘC TÍNH & BIẾN THỂ ===
+
 const addOption = () => {
   if (!localProduct.value.options) {
     localProduct.value.options = []
   }
-  // Thêm một thuộc tính rỗng
   localProduct.value.options.push({
-    name: '', // Tên thuộc tính (ví dụ: 'Màu sắc')
-    values: '', // Các giá trị, cách nhau bằng dấu phẩy (ví dụ: 'Đỏ, Xanh, Vàng')
+    name: '',
+    values: '',
   })
 }
 
-// Xóa một dòng định nghĩa thuộc tính
 const removeOption = (index) => {
+  // Logic xóa đã được xử lý bởi deep watch ở trên
   localProduct.value.options.splice(index, 1)
-  // Nếu xóa hết thuộc tính, reset về 1 biến thể
-  if (localProduct.value.options.length === 0) {
-    localProduct.value.variants = [
-      localProduct.value.variants[0] || {
-        code: '',
-        price: null,
-        cost: null,
-        quantity: null,
-        optionValues: {},
-      },
-    ]
-    localProduct.value.variants.length = 1 // Giữ lại 1 cái
-  }
 }
 
-// Hàm tính toán "Tích Đề-các" (Cartesian Product)
-const cartesianProduct = (arrays) => {
-  return arrays.reduce(
-    (acc, curr) => {
-      return acc
-        .map((x) => {
-          return curr.map((y) => {
-            return x.concat([y])
-          })
-        })
-        .flat()
-    },
-    [[]],
-  )
-}
-
-// Hàm quan trọng: Tạo/Cập nhật danh sách biến thể
-const generateVariants = () => {
-  const options = localProduct.value.options
-  if (!options || options.length === 0) {
-    return // Không có thuộc tính, không tạo
+// Thêm một biến thể thủ công
+const addVariant = () => {
+  const newVariant = {
+    id: null,
+    price: null,
+    cost: null,
+    quantity: null,
+    optionValues: {},
   }
-
-  // 1. Chuẩn bị mảng các giá trị
-  // input: [{ name: 'Màu', values: 'Đỏ, Xanh' }, { name: 'Cỡ', values: 'M, L' }]
-  // output: [ ['Đỏ', 'Xanh'], ['M', 'L'] ]
-  const valueArrays = options.map((opt) => opt.values.split(',').map((v) => v.trim()))
-
-  // 2. Tính toán các tổ hợp
-  // output: [ ['Đỏ', 'M'], ['Đỏ', 'L'], ['Xanh', 'M'], ['Xanh', 'L'] ]
-  const combinations = cartesianProduct(valueArrays)
-
-  // 3. Tạo danh sách biến thể mới
-  const newVariants = combinations.map((combo) => {
-    // combo = ['Đỏ', 'M']
-    const optionValues = {}
-    options.forEach((opt, index) => {
-      optionValues[opt.name] = combo[index]
-    })
-    // { 'Màu': 'Đỏ', 'Cỡ': 'M' }
-
-    // Cố gắng giữ lại dữ liệu cũ nếu biến thể đã tồn tại
-    const oldVariant = findOldVariant(optionValues)
-
-    return {
-      code: oldVariant?.code || '',
-      price: oldVariant?.price || null,
-      cost: oldVariant?.cost || null,
-      quantity: oldVariant?.quantity || null,
-      optionValues: optionValues,
+  // Khởi tạo các giá trị thuộc tính dựa trên options hiện tại
+  localProduct.value.options.forEach((opt) => {
+    if (opt.name) {
+      newVariant.optionValues[opt.name] = '' // Khởi tạo rỗng
     }
   })
 
-  localProduct.value.variants = newVariants
+  localProduct.value.variants.push(newVariant)
 }
 
-// Tìm biến thể cũ để giữ lại data (price, code...)
-const findOldVariant = (optionValues) => {
-  const oldVariants = localProduct.value.variants
-  if (!oldVariants) return null
-
-  const keys = Object.keys(optionValues)
-  return oldVariants.find((variant) => {
-    return keys.every((key) => variant.optionValues[key] === optionValues[key])
-  })
+// Xóa một biến thể
+const removeVariant = (index) => {
+  localProduct.value.variants.splice(index, 1)
 }
-
-// === LỖI VALIDATION ===
-// Computed để lấy lỗi cho từng biến thể
-const getVariantErrors = (index) => {
-  if (props.errors?.variants && props.errors.variants[index]) {
-    return props.errors.variants[index]
-  }
-  return {}
-}
-
-// Computed cho lỗi của form sản phẩm đơn (khi không có options)
-const simpleProductErrors = computed(() => {
-  if (
-    localProduct.value.options.length === 0 &&
-    props.errors?.variants &&
-    props.errors.variants[0]
-  ) {
-    // Map lỗi từ variants[0] sang tên dễ hiểu hơn
-    return {
-      code: props.errors.variants[0].code,
-      price: props.errors.variants[0].price,
-      // ... thêm các lỗi khác nếu có
-    }
-  }
-  return {}
-})
 </script>
 
 <template>
   <form @submit.prevent id="product-form">
     <div class="space-y-4 max-h-[70vh] overflow-y-auto px-2">
+      <!-- === 1. THÔNG TIN CHUNG (PARENT PRODUCT) === -->
       <fieldset class="border rounded-md p-4">
         <legend class="px-2 font-semibold text-gray-700">Thông tin chung</legend>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -261,6 +265,7 @@ const simpleProductErrors = computed(() => {
         </div>
       </fieldset>
 
+      <!-- === 2. THUỘC TÍNH (OPTIONS) === -->
       <fieldset class="border rounded-md p-4">
         <legend class="px-2 font-semibold text-gray-700">Thuộc tính sản phẩm</legend>
         <div class="space-y-3">
@@ -290,25 +295,16 @@ const simpleProductErrors = computed(() => {
         <BaseButton text="Thêm thuộc tính" color="gray" @click="addOption" class="mt-4" />
       </fieldset>
 
+      <!-- === 3. BIẾN THỂ (VARIANTS) === -->
       <fieldset class="border rounded-md p-4">
         <legend class="px-2 font-semibold text-gray-700">Các biến thể</legend>
 
-        <div v-if="localProduct.options.length === 0">
+        <!-- Trường hợp 3a: SẢN PHẨM ĐƠN (Không có thuộc tính) -->
+        <div v-if="!hasOptions">
           <p class="text-sm text-gray-500 mb-4">
             Sản phẩm này không có thuộc tính. Vui lòng nhập thông tin cho biến thể mặc định.
           </p>
           <div v-if="localProduct.variants[0]" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <BaseInput
-                label="Mã SP / SKU *"
-                v-model="localProduct.variants[0].code"
-                placeholder="Bắt buộc"
-                :readonly="isEditMode"
-              />
-              <div v-if="simpleProductErrors.code" class="text-red-500 text-xs mt-1">
-                {{ simpleProductErrors.code }}
-              </div>
-            </div>
             <div>
               <BaseInput
                 label="Giá Bán *"
@@ -342,46 +338,45 @@ const simpleProductErrors = computed(() => {
           </div>
         </div>
 
+        <!-- Trường hợp 3b: SẢN PHẨM CÓ BIẾN THỂ -->
         <div v-else>
-          <BaseButton
-            text="Tạo / Cập nhật danh sách biến thể"
-            color="blue"
-            @click="generateVariants"
-            class="mb-4"
-          />
           <div class="overflow-x-auto">
             <table class="min-w-full text-sm">
               <thead class="bg-gray-100">
                 <tr>
+                  <!-- Các cột thuộc tính động -->
                   <th
                     v-for="option in localProduct.options"
                     :key="option.name"
                     class="py-2 px-3 text-left font-medium text-gray-600"
                   >
-                    {{ option.name }}
+                    {{ option.name || 'Chọn thuộc tính' }} *
                   </th>
-                  <th class="py-2 px-3 text-left font-medium text-gray-600">Mã SKU *</th>
+                  <!-- Các cột thông tin biến thể -->
                   <th class="py-2 px-3 text-left font-medium text-gray-600">Giá Bán *</th>
                   <th class="py-2 px-3 text-left font-medium text-gray-600">Giá Vốn</th>
                   <th class="py-2 px-3 text-left font-medium text-gray-600">Số Lượng</th>
+                  <th class="py-2 px-3 text-left font-medium text-gray-600">Xóa</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="(variant, index) in localProduct.variants" :key="index" class="border-b">
+                  <!-- Dropdown chọn thuộc tính động -->
                   <td v-for="option in localProduct.options" :key="option.name" class="py-2 px-3">
-                    {{ variant.optionValues[option.name] }}
+                    <!-- Chỉ render dropdown nếu option.name đã được chọn -->
+                    <BaseDropdown
+                      v-if="option.name"
+                      v-model="variant.optionValues[option.name]"
+                      :options="getOptionValuesArray(option.values)"
+                      placeholder="Chọn"
+                      :show-label="false"
+                    />
+                    <span v-else class="text-xs text-gray-500">...</span>
                   </td>
-                  <td class="py-2 px-3">
-                    <BaseInput v-model="variant.code" placeholder="Mã SKU" />
-                    <div v-if="getVariantErrors(index).code" class="text-red-500 text-xs mt-1">
-                      {{ getVariantErrors(index).code }}
-                    </div>
-                  </td>
+
+                  <!-- Input thông tin biến thể -->
                   <td class="py-2 px-3">
                     <BaseInput type="number" v-model.number="variant.price" placeholder="Giá bán" />
-                    <div v-if="getVariantErrors(index).price" class="text-red-500 text-xs mt-1">
-                      {{ getVariantErrors(index).price }}
-                    </div>
                   </td>
                   <td class="py-2 px-3">
                     <BaseInput type="number" v-model.number="variant.cost" placeholder="Giá vốn" />
@@ -393,12 +388,32 @@ const simpleProductErrors = computed(() => {
                       placeholder="Số lượng"
                     />
                   </td>
+                  <td classs="py-2 px-3">
+                    <BaseSmallNoBgButton color="red" @click="removeVariant(index)">
+                      Xóa
+                    </BaseSmallNoBgButton>
+                  </td>
+                </tr>
+                <!-- Hàng hiển thị lỗi chung của biến thể -->
+                <tr v-for="(variant, index) in localProduct.variants" :key="'err-' + index">
+                  <td :colspan="localProduct.options.length + 4" class="py-0 px-3">
+                    <div v-if="getVariantErrors(index).price" class="text-red-500 text-xs mt-1">
+                      Lỗi giá: {{ getVariantErrors(index).price }}
+                    </div>
+                    <div
+                      v-if="getVariantErrors(index).combination"
+                      class="text-red-500 text-xs mt-1"
+                    >
+                      Lỗi thuộc tính: {{ getVariantErrors(index).combination }}
+                    </div>
+                  </td>
                 </tr>
               </tbody>
             </table>
-            <div v-if="localProduct.variants.length === 0" class="text-center py-4 text-gray-500">
-              Nhấn nút "Tạo biến thể" để bắt đầu.
-            </div>
+          </div>
+          <BaseButton text="Thêm biến thể" color="blue" @click="addVariant" class="mt-4" />
+          <div v-if="localProduct.variants.length === 0" class="text-center py-4 text-gray-500">
+            Nhấn "Thêm biến thể" để tạo tổ hợp thuộc tính đầu tiên.
           </div>
         </div>
       </fieldset>
