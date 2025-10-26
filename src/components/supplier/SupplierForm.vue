@@ -28,7 +28,6 @@ watch(
       }
     } catch (err) {
       void err
-      // Fallback: if stringify fails for some reason, still assign.
       localSupplier.value = copy
     }
   },

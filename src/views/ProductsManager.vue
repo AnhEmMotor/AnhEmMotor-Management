@@ -9,7 +9,7 @@
         <BaseButton text="Import Excel" color="blue" @click="importExcel" />
         <BaseButton text="Export" color="green" @click="exportExcel" />
         <span class="text-gray-400 mx-4 hidden border-r-2 sm:block" />
-        <!-- ProductFilterButtons vẫn hoạt động như cũ -->
+
         <ProductFilterButtons v-model="selectedStatuses" />
       </div>
     </div>
@@ -25,9 +25,8 @@
       <table class="table-style">
         <thead class="table-header-style">
           <tr>
-            <!-- Cột mở rộng/thu gọn -->
             <th class="normal-cell-style w-12"></th>
-            <!-- Các cột Master (Sản phẩm cha) -->
+
             <th class="normal-cell-style">Tên Dòng Sản Phẩm</th>
             <th class="normal-cell-style">Danh Mục</th>
             <th class="normal-cell-style">Thương Hiệu</th>
@@ -42,18 +41,15 @@
               Không có sản phẩm nào để hiển thị.
             </td>
           </tr>
-          <!-- Sử dụng <template> để render 2 hàng cho mỗi product -->
+
           <template v-for="product in filteredProducts" :key="product.id">
-            <!-- HÀNG MASTER (SẢN PHẨM CHA) -->
             <tr class="table-row-style">
-              <!-- Nút Mở rộng/Thu gọn -->
               <td class="normal-cell-style w-12 text-center">
                 <button
                   v-if="product.variants.length > 0"
                   @click="toggleDetails(product.id)"
                   class="text-gray-500 hover:text-gray-800"
                 >
-                  <!-- Icon Chevron -->
                   <svg
                     v-if="!isExpanded(product.id)"
                     xmlns="http://www.w3.org/2000/svg"
@@ -82,7 +78,7 @@
                   </svg>
                 </button>
               </td>
-              <!-- Thông tin sản phẩm cha -->
+
               <td class="normal-cell-style whitespace-nowrap font-medium text-gray-800">
                 {{ product.name }}
               </td>
@@ -90,13 +86,11 @@
               <td class="normal-cell-style">{{ product.brand }}</td>
               <td class="normal-cell-style">{{ product.variants.length }}</td>
               <td class="normal-cell-style">
-                <!-- Trạng thái tổng hợp -->
                 <RoundBadge :color="getAggregateStatusColor(product)">
                   {{ getAggregateStatusText(product) }}
                 </RoundBadge>
               </td>
               <td class="center-cell-style space-x-2">
-                <!-- Nút Sửa/Xóa cho sản phẩm cha -->
                 <BaseSmallNoBgButton @click="openAddEditModal(product)">Sửa</BaseSmallNoBgButton>
                 <BaseSmallNoBgButton color="red" @click="promptDelete(product)">
                   Xóa
@@ -104,7 +98,6 @@
               </td>
             </tr>
 
-            <!-- HÀNG DETAIL (BẢNG BIẾN THỂ CON) -->
             <tr v-if="isExpanded(product.id)" class="bg-gray-50">
               <td :colspan="numberOfColumns" class="p-4">
                 <h4 class="text-sm font-semibold mb-2 text-gray-700">Chi tiết biến thể:</h4>
@@ -149,7 +142,6 @@
     />
   </div>
 
-  <!-- MODAL FORM: Không thay đổi template, chỉ thay đổi logic bên dưới -->
   <DraggableModal
     :key="formModalKey"
     v-if="isFormModalVisible"
@@ -160,7 +152,6 @@
       <h2 class="font-bold text-lg">{{ formModalTitle }}</h2>
     </template>
     <template #body>
-      <!-- ProductForm (từ bài trước) sẽ nhận đúng `editableProduct` -->
       <ProductForm
         v-model="editableProduct"
         :is-edit-mode="isEditMode"
@@ -180,7 +171,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
 import ProductFilterButtons from '@/components/product/ProductFilterButtons.vue'
-import ProductForm from '@/components/product/ProductForm.vue' // Import form mới
+import ProductForm from '@/components/product/ProductForm.vue'
 import BaseButton from '@/components/ui/button/BaseButton.vue'
 import BaseInput from '@/components/ui/input/BaseInput.vue'
 import BasePagination from '@/components/ui/button/BasePagination.vue'
@@ -189,8 +180,6 @@ import RoundBadge from '@/components/ui/RoundBadge.vue'
 import { showConfirmation } from '@/composables/confirmation'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
 
-// === CẤU TRÚC DỮ LIỆU MỚI ===
-// Dữ liệu mock mới phản ánh cấu trúc lồng nhau (nested)
 const products = ref([
   {
     id: 'prod_001',
@@ -266,9 +255,8 @@ const products = ref([
     category: 'Phụ Tùng',
     brand: 'Castrol',
     description: 'Dầu nhớt Castrol 10W-30 1L',
-    options: [], // Sản phẩm đơn
+    options: [],
     variants: [
-      // Chỉ có 1 biến thể
       {
         id: 'var_007',
         price: 85000,
@@ -280,9 +268,8 @@ const products = ref([
   },
 ])
 
-// === LOGIC MASTER-DETAIL & BẢNG ===
-const expandedProductIds = ref([]) // Lưu ID của các product đang được mở
-const numberOfColumns = ref(7) // Tổng số cột của bảng master
+const expandedProductIds = ref([])
+const numberOfColumns = ref(7)
 
 const isExpanded = (productId) => {
   return expandedProductIds.value.includes(productId)
@@ -291,26 +278,23 @@ const isExpanded = (productId) => {
 const toggleDetails = (productId) => {
   const index = expandedProductIds.value.indexOf(productId)
   if (index > -1) {
-    expandedProductIds.value.splice(index, 1) // Thu gọn
+    expandedProductIds.value.splice(index, 1)
   } else {
-    expandedProductIds.value.push(productId) // Mở rộng
+    expandedProductIds.value.push(productId)
   }
 }
 
-// Helper format tiền tệ
 const formatCurrency = (value) => {
   if (value === null || value === undefined) return ''
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
 }
 
-// Helper tạo text cho thuộc tính biến thể
 const getVariantOptionsText = (variant) => {
   const values = Object.entries(variant.optionValues)
   if (values.length === 0) return 'Mặc định'
   return values.map(([key, value]) => `${key}: ${value}`).join(', ')
 }
 
-// === LOGIC TRẠNG THÁI KHO (TỔNG HỢP VÀ CHI TIẾT) ===
 const LOW_STOCK_THRESHOLD = 10
 const stockStatusColors = {
   'in-stock': 'green',
@@ -323,7 +307,6 @@ const stockStatusTextMap = {
   'out-of-stock': 'Hết Hàng',
 }
 
-// Logic cho từng biến thể (như cũ)
 const getStockStatus = (quantity) => {
   if (quantity === 0) return 'out-of-stock'
   if (quantity <= LOW_STOCK_THRESHOLD) return 'low-stock'
@@ -336,7 +319,6 @@ const getStockStatusText = (quantity) => {
   return stockStatusTextMap[getStockStatus(quantity)]
 }
 
-// Logic TỔNG HỢP cho sản phẩm cha (Master row)
 const getAggregateStockStatus = (product) => {
   const quantities = product.variants.map((v) => v.quantity)
   if (quantities.length === 0) return 'out-of-stock'
@@ -344,12 +326,10 @@ const getAggregateStockStatus = (product) => {
   const totalQuantity = quantities.reduce((sum, q) => sum + q, 0)
   if (totalQuantity === 0) return 'out-of-stock'
 
-  // Nếu bất kỳ biến thể nào > threshold, coi là "Còn hàng"
   if (quantities.some((q) => q > LOW_STOCK_THRESHOLD)) {
     return 'in-stock'
   }
 
-  // Nếu không có cái nào > threshold, nhưng tổng > 0, coi là "Sắp hết"
   return 'low-stock'
 }
 
@@ -361,25 +341,21 @@ const getAggregateStatusText = (product) => {
   return stockStatusTextMap[getAggregateStockStatus(product)]
 }
 
-// === LOGIC LỌC VÀ TÌM KIẾM (CẬP NHẬT) ===
 const searchTerm = ref('')
-const selectedStatuses = ref([]) // Từ ProductFilterButtons
+const selectedStatuses = ref([])
 
 const filteredProducts = computed(() => {
   let filtered = products.value
 
-  // 1. Lọc theo Trạng thái (dùng trạng thái tổng hợp)
   if (selectedStatuses.value.length > 0) {
     filtered = filtered.filter((product) =>
       selectedStatuses.value.includes(getAggregateStockStatus(product)),
     )
   }
 
-  // 2. Lọc theo Tìm kiếm
   if (searchTerm.value) {
     const lowerSearch = searchTerm.value.toLowerCase()
     filtered = filtered.filter((product) => {
-      // Tìm ở sản phẩm cha
       const inParent =
         product.name.toLowerCase().includes(lowerSearch) ||
         product.category.toLowerCase().includes(lowerSearch) ||
@@ -387,9 +363,7 @@ const filteredProducts = computed(() => {
 
       if (inParent) return true
 
-      // Tìm ở các biến thể con (ĐÃ BỎ TÌM KIẾM BẰNG CODE)
       const inVariants = product.variants.some((variant) =>
-        // Ví dụ: tìm theo thuộc tính
         getVariantOptionsText(variant).toLowerCase().includes(lowerSearch),
       )
 
@@ -400,23 +374,20 @@ const filteredProducts = computed(() => {
   return filtered
 })
 
-// === LOGIC FORM MODAL (CẬP NHẬT) ===
 const isFormModalVisible = ref(false)
 const isFormDirty = ref(false)
 const formModalTitle = ref('')
 const formModalKey = ref(0)
 
-// Cấu trúc rỗng mới cho sản phẩm
 const getNewEmptyProduct = () => {
   return {
-    id: null, // Sẽ có khi ở chế độ Edit (ví dụ: dùng crypto.randomUUID() khi tạo mới)
+    id: null,
     name: '',
     category: '',
     brand: '',
     description: '',
-    options: [], // Định nghĩa các thuộc tính
+    options: [],
     variants: [
-      // Biến thể mặc định khi là sản phẩm đơn
       {
         id: null,
         price: null,
@@ -429,32 +400,28 @@ const getNewEmptyProduct = () => {
 }
 
 const editableProduct = ref(getNewEmptyProduct())
-const isEditMode = computed(() => !!editableProduct.value?.id) // Dựa trên ID của cha
+const isEditMode = computed(() => !!editableProduct.value?.id)
 
-// Cấu trúc lỗi validation mới
 const formErrors = ref({
   name: '',
   category: '',
   brand: '',
-  variants: [], // Mảng các đối tượng lỗi
+  variants: [],
 })
 
-// Mở modal (Logic này giờ đã đúng)
 const openAddEditModal = (product = null) => {
   const openForm = () => {
     formErrors.value = { name: '', category: '', brand: '', variants: [] }
 
     if (product) {
-      // Chế độ "Sửa": Clone sâu product cha
       editableProduct.value = JSON.parse(JSON.stringify(product))
       formModalTitle.value = 'Chỉnh Sửa Sản Phẩm'
     } else {
-      // Chế độ "Thêm":
       editableProduct.value = getNewEmptyProduct()
       formModalTitle.value = 'Thêm Sản Phẩm Mới'
     }
     isFormDirty.value = false
-    formModalKey.value++ // Reset form
+    formModalKey.value++
     isFormModalVisible.value = true
   }
 
@@ -483,15 +450,12 @@ const handleCloseFormModal = () => {
   }
 }
 
-// Logic Lưu (Logic từ bài trước)
 const handleSaveProduct = () => {
   const productData = editableProduct.value
 
-  // Reset errors
   formErrors.value = { name: '', category: '', brand: '', variants: [] }
   let hasError = false
 
-  // a. Validate thông tin chung
   if (!productData.name) {
     formErrors.value.name = 'Vui lòng nhập tên dòng sản phẩm.'
     hasError = true
@@ -501,20 +465,14 @@ const handleSaveProduct = () => {
     hasError = true
   }
 
-  // b. Validate thông tin biến thể
   const variantErrors = []
   if (!productData.variants || productData.variants.length === 0) {
-    // Nếu có thuộc tính, bắt buộc phải có ít nhất 1 biến thể
     if (productData.options.length > 0) {
-      // Tạm thời chỉ log, có thể thêm lỗi chung
       console.error('Sản phẩm có thuộc tính nhưng không có biến thể nào.')
       hasError = true
     }
-    // Nếu không có thuộc tính (sản phẩm đơn) thì lỗi này không áp dụng
-    // (Vì logic cũ vẫn check giá của variants[0])
   }
 
-  // Trường hợp sản phẩm đơn (Không có thuộc tính)
   if (productData.options.length === 0 && productData.variants[0]) {
     const errors = {}
     if (
@@ -527,15 +485,12 @@ const handleSaveProduct = () => {
       hasError = true
     }
     variantErrors[0] = errors
-  }
-  // Trường hợp sản phẩm có biến thể
-  else if (productData.options.length > 0) {
-    const seenCombinations = new Set() // Dùng để kiểm tra trùng lặp
+  } else if (productData.options.length > 0) {
+    const seenCombinations = new Set()
 
     productData.variants.forEach((variant, index) => {
       const errors = {}
 
-      // 1. Kiểm tra Giá
       if (
         variant.price === null ||
         variant.price === undefined ||
@@ -546,17 +501,13 @@ const handleSaveProduct = () => {
         hasError = true
       }
 
-      // 2. Kiểm tra đã chọn đủ thuộc tính
       const allOptionsSelected = productData.options.every((opt) => variant.optionValues[opt.name])
       if (!allOptionsSelected) {
         errors.combination = 'Vui lòng chọn đầy đủ thuộc tính.'
         hasError = true
       }
 
-      // 3. Kiểm tra trùng lặp tổ hợp thuộc tính
       if (allOptionsSelected) {
-        // Chỉ check trùng khi đã điền đủ
-        // Sắp xếp key để đảm bảo thứ tự không ảnh hưởng
         const combinationSignature = JSON.stringify(
           Object.keys(variant.optionValues)
             .sort()
@@ -583,20 +534,14 @@ const handleSaveProduct = () => {
     return
   }
 
-  // c. Xử lý lưu trữ
-  // Trong ứng dụng thực tế, đây là lúc gọi API
-  // để lưu 5 bảng CSDL của bạn.
-
   if (isEditMode.value) {
-    // Update
     const index = products.value.findIndex((p) => p.id === productData.id)
     if (index !== -1) {
       products.value[index] = productData
     }
   } else {
-    // Add new
-    productData.id = `prod_${crypto.randomUUID()}` // Tạo ID mới
-    // Gán ID cho các biến thể mới (nếu chúng chưa có)
+    productData.id = `prod_${crypto.randomUUID()}`
+
     productData.variants.forEach((v) => {
       if (!v.id) {
         v.id = `var_${crypto.randomUUID()}`
@@ -609,10 +554,9 @@ const handleSaveProduct = () => {
   isFormModalVisible.value = false
 }
 
-// === LOGIC XÓA (CẬP NHẬT) ===
 const promptDelete = async (product) => {
   const title = 'Xác nhận xóa'
-  // Xóa sản phẩm cha sẽ xóa tất cả biến thể con
+
   const message = `Bạn có chắc chắn muốn xóa dòng sản phẩm "${product.name}"? 
                    Tất cả ${product.variants.length} biến thể con cũng sẽ bị xóa. 
                    Hành động này không thể hoàn tác.`
@@ -626,21 +570,17 @@ const promptDelete = async (product) => {
   }
 }
 
-// === LƯU LOCALSTORAGE (CẬP NHẬT) ===
 const saveProducts = () => {
-  // Lưu cấu trúc lồng nhau mới
   localStorage.setItem('products_nested', JSON.stringify(products.value))
 }
 
-// === PHÂN TRANG (Không đổi) ===
 const totalPages = ref(10)
 const currentPage = ref(1)
 const isLoading = ref(false)
 
 const fetchDataForPage = () => {
   isLoading.value = true
-  // Trong ứng dụng thực, bạn sẽ fetch dữ liệu theo trang
-  // và cập nhật `products.value`
+
   setTimeout(() => {
     isLoading.value = false
   }, 1000)
@@ -652,13 +592,10 @@ watch(currentPage, (newPage, oldPage) => {
   }
 })
 
-// === CÁC HÀM KHÁC (Import/Export) ===
 const importExcel = () => {
-  // TODO: Logic import Excel
   alert('Chức năng Import Excel chưa được triển khai.')
 }
 const exportExcel = () => {
-  // TODO: Logic export Excel
   alert('Chức năng Export Excel chưa được triển khai.')
 }
 </script>
@@ -698,7 +635,7 @@ const exportExcel = () => {
 .table-row-style {
   @apply border-b border-gray-200 hover:bg-gray-100 transition-colors duration-200;
 }
-/* Style cho bảng detail con */
+
 .detail-cell-style {
   @apply py-2 px-4 text-left;
 }
