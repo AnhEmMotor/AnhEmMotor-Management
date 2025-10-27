@@ -1,26 +1,26 @@
-import * as brandApi from '@/api/brand'
+import * as optionsApi from '@/api/options'
 
 const state = {
-  brands: [],
+  options: [],
   isLoading: false,
   error: null,
 }
 
 const mutations = {
-  SET_BRANDS(state, brands) {
-    state.brands = brands
+  SET_OPTIONS(state, options) {
+    state.options = options
   },
-  ADD_BRAND(state, brand) {
-    state.brands.push(brand)
+  ADD_OPTION(state, option) {
+    state.options.push(option)
   },
-  UPDATE_BRAND(state, updatedBrand) {
-    const index = state.brands.findIndex((b) => b.id === updatedBrand.id)
+  UPDATE_OPTION(state, updatedOption) {
+    const index = state.options.findIndex((o) => o.id === updatedOption.id)
     if (index !== -1) {
-      state.brands.splice(index, 1, updatedBrand)
+      state.options.splice(index, 1, updatedOption)
     }
   },
-  DELETE_BRAND(state, id) {
-    state.brands = state.brands.filter((b) => b.id !== id)
+  DELETE_OPTION(state, id) {
+    state.options = state.options.filter((o) => o.id !== id)
   },
   SET_LOADING(state, isLoading) {
     state.isLoading = isLoading
@@ -31,50 +31,53 @@ const mutations = {
 }
 
 const actions = {
-  async fetchBrands({ commit }) {
+  async fetchOptions({ commit }) {
     commit('SET_LOADING', true)
     commit('SET_ERROR', null)
     try {
-      const brands = await brandApi.getAllBrands()
-      commit('SET_BRANDS', brands)
+      const options = await optionsApi.getAllOptions()
+      commit('SET_OPTIONS', options)
     } catch (error) {
       commit('SET_ERROR', error.message)
     } finally {
       commit('SET_LOADING', false)
     }
   },
-  async addBrand({ commit }, brand) {
+  async addOption({ commit }, option) {
     commit('SET_LOADING', true)
     commit('SET_ERROR', null)
     try {
-      const newBrand = await brandApi.createBrand(brand)
-      commit('ADD_BRAND', newBrand)
+      const newOption = await optionsApi.createOption(option)
+      commit('ADD_OPTION', newOption)
     } catch (error) {
       commit('SET_ERROR', error.message)
+      throw error
     } finally {
       commit('SET_LOADING', false)
     }
   },
-  async updateBrand({ commit }, { id, brand }) {
+  async updateOption({ commit }, { id, option }) {
     commit('SET_LOADING', true)
     commit('SET_ERROR', null)
     try {
-      const updatedBrand = await brandApi.updateBrand(id, brand)
-      commit('UPDATE_BRAND', updatedBrand)
+      const updatedOption = await optionsApi.updateOption(id, option)
+      commit('UPDATE_OPTION', updatedOption)
     } catch (error) {
       commit('SET_ERROR', error.message)
+      throw error
     } finally {
       commit('SET_LOADING', false)
     }
   },
-  async deleteBrand({ commit }, id) {
+  async deleteOption({ commit }, id) {
     commit('SET_LOADING', true)
     commit('SET_ERROR', null)
     try {
-      await brandApi.deleteBrand(id)
-      commit('DELETE_BRAND', id)
+      await optionsApi.deleteOption(id)
+      commit('DELETE_OPTION', id)
     } catch (error) {
       commit('SET_ERROR', error.message)
+      throw error
     } finally {
       commit('SET_LOADING', false)
     }
@@ -82,8 +85,8 @@ const actions = {
 }
 
 const getters = {
-  allBrands: (state) => state.brands,
-  brandById: (state) => (id) => state.brands.find((b) => b.id === id),
+  allOptions: (state) => state.options,
+  optionById: (state) => (id) => state.options.find((o) => o.id === id),
 }
 
 export default {

@@ -1,11 +1,11 @@
 <script setup>
-import { ref, watch, computed, nextTick } from 'vue'
+import { ref, watch, computed, nextTick, onMounted } from 'vue'
+import { useStore } from 'vuex'
 import BaseInput from '@/components/ui/input/BaseInput.vue'
 import BaseTextarea from '@/components/ui/input/BaseTextarea.vue'
 import BaseDropdown from '@/components/ui/input/BaseDropdown.vue'
 import BaseButton from '@/components/ui/button/BaseButton.vue'
 import BaseSmallNoBgButton from '@/components/ui/button/BaseSmallNoBgButton.vue'
-// IMPORT COMPONENT MỚI
 import BaseImage from '@/components/ui/input/BaseImage.vue'
 import BaseGroupImage from '@/components/ui/input/BaseGroupImage.vue'
 
@@ -24,28 +24,37 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:modelValue', 'update:dirty']) // Thêm emit 'update:dirty'
+const emit = defineEmits(['update:modelValue', 'update:dirty'])
+const store = useStore()
 
 const localProduct = ref({})
 const initialDataJson = ref('')
 const isUpdatingFromProp = ref(false)
 
-const categoryOptions = [
-  { value: 'Xe Máy', text: 'Xe Máy' },
-  { value: 'Phụ Kiện', text: 'Phụ Kiện' },
-  { value: 'Phụ Tùng', text: 'Phụ Tùng' },
-]
-const brandOptions = [
-  { value: 'Honda', text: 'Honda' },
-  { value: 'Yamaha', text: 'Yamaha' },
-  { value: 'Royal', text: 'Royal' },
-  { value: 'Castrol', text: 'Castrol' },
-]
-const allAvailableOptions = [
-  { value: 'Màu sắc', text: 'Màu sắc' },
-  { value: 'Dung tích động cơ', text: 'Dung tích động cơ' },
-  { value: 'Kích cỡ', text: 'Kích cỡ' },
-]
+const generalCoverImage = ref('')
+const generalPhotoCollection = ref([])
+
+const categoryOptions = computed(() =>
+  store.getters['productCategory/allCategories'].map((c) => ({
+    value: c.id,
+    text: c.name,
+  })),
+)
+const brandOptions = computed(() =>
+  store.getters['brand/allBrands'].map((b) => ({ value: b.id, text: b.name })),
+)
+const allAvailableOptions = computed(() =>
+  store.getters['options/allOptions'].map((o) => ({
+    value: o.name,
+    text: o.name,
+  })),
+)
+
+onMounted(() => {
+  store.dispatch('productCategory/fetchCategories')
+  store.dispatch('brand/fetchBrands')
+  store.dispatch('options/fetchOptions')
+})
 
 const hasOptions = computed(() => {
   return localProduct.value.options && localProduct.value.options.length > 0
@@ -70,12 +79,40 @@ const simpleProductErrors = computed(() => {
   if (!hasOptions.value && props.errors?.variants && props.errors.variants[0]) {
     return {
       price: props.errors.variants[0].price,
+      url: props.errors.variants[0].url,
     }
   }
   return {}
 })
 
-// === KHỞI TẠO VÀ ĐỒNG BỘ DATA ===
+const slugify = (str) => {
+  if (!str) return ''
+  return str
+    .toLowerCase()
+    .trim()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+const generateVariantSlug = (variant) => {
+  const productNameSlug = slugify(localProduct.value.name)
+  if (!variant.optionValues) return productNameSlug
+
+  const optionSlugs = Object.entries(variant.optionValues)
+    .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
+    .map(([key, value]) => `${slugify(key)}-${slugify(value)}`)
+    .join('-')
+
+  if (optionSlugs) {
+    return `${productNameSlug}-${optionSlugs}`
+  }
+  return productNameSlug
+}
+
 watch(
   () => props.modelValue,
   (newVal) => {
@@ -86,19 +123,8 @@ watch(
     isUpdatingFromProp.value = true
     const copy = JSON.parse(JSON.stringify(newVal || {}))
 
-    // Đảm bảo các trường luôn tồn tại
     if (!copy.options) {
       copy.options = []
-    }
-    // Quan trọng: Đảm bảo photo_collection là một array
-    if (!copy.photo_collection || typeof copy.photo_collection === 'string') {
-      // Nếu là string từ dữ liệu cũ (ví dụ: "url1\nurl2"),
-      // thì chuyển nó thành array.
-      if (typeof copy.photo_collection === 'string' && copy.photo_collection.trim() !== '') {
-        copy.photo_collection = copy.photo_collection.split('\n').filter((url) => url.trim() !== '')
-      } else {
-        copy.photo_collection = []
-      }
     }
 
     if (!copy.variants || copy.variants.length === 0) {
@@ -107,13 +133,27 @@ watch(
           id: null,
           price: null,
           optionValues: {},
+          cover_image_url: '',
+          photo_collection: [],
+          url: '',
         },
       ]
+    } else {
+      copy.variants.forEach((v) => {
+        if (!v.photo_collection) v.photo_collection = []
+        if (!v.cover_image_url) v.cover_image_url = ''
+        if (!v.url) v.url = generateVariantSlug(v)
+      })
+    }
+
+    if (copy.variants.length > 0) {
+      generalCoverImage.value = copy.variants[0].cover_image_url || ''
+      generalPhotoCollection.value = copy.variants[0].photo_collection || []
     }
 
     localProduct.value = copy
     initialDataJson.value = JSON.stringify(copy)
-    emit('update:dirty', false) // Reset dirty state
+    emit('update:dirty', false)
     nextTick(() => {
       isUpdatingFromProp.value = false
     })
@@ -121,24 +161,32 @@ watch(
   { immediate: true, deep: true },
 )
 
-// === WATCH SỰ THAY ĐỔI VÀ EMIT ===
 watch(
   localProduct,
   (newVal) => {
     if (isUpdatingFromProp.value) {
       return
     }
-
-    // Check if form is dirty
     const isDirty = JSON.stringify(newVal) !== initialDataJson.value
-    emit('update:dirty', isDirty) // Emit trạng thái dirty
-
+    emit('update:dirty', isDirty)
     emit('update:modelValue', newVal)
   },
   { deep: true },
 )
 
-// === LOGIC XỬ LÝ OPTIONS VÀ VARIANTS ===
+const updateAllVariantSlugs = () => {
+  if (localProduct.value.variants) {
+    localProduct.value.variants.forEach((v) => {
+      v.url = generateVariantSlug(v)
+    })
+  }
+}
+
+watch(() => localProduct.value.name, updateAllVariantSlugs)
+watch(() => localProduct.value.variants.map((v) => v.optionValues), updateAllVariantSlugs, {
+  deep: true,
+})
+
 watch(
   () => localProduct.value.options,
   (newOptions, oldOptions) => {
@@ -148,37 +196,31 @@ watch(
 
     if (!localProduct.value.variants) localProduct.value.variants = []
 
-    // Từ không có options -> có options
     if (newOptions.length > 0 && oldOptions.length === 0) {
-      // Xóa biến thể mặc định và reset
       localProduct.value.variants = []
-      // Thêm 1 biến thể mới với các trường option
       addVariant()
-    }
-    // Từ có options -> về 0 options
-    else if (newOptions.length === 0 && oldOptions.length > 0) {
+    } else if (newOptions.length === 0 && oldOptions.length > 0) {
       localProduct.value.variants = [
         {
           id: null,
           price: null,
           optionValues: {},
+          cover_image_url: generalCoverImage.value,
+          photo_collection: [...generalPhotoCollection.value],
+          url: slugify(localProduct.value.name),
         },
       ]
-    }
-    // Chỉ là thay đổi options
-    else {
+    } else {
       const currentOptionNames = newOptions.map((o) => o.name)
       localProduct.value.variants.forEach((variant) => {
         const existingValueKeys = Object.keys(variant.optionValues)
 
-        // Xóa các optionValue không còn tồn tại trong options
         existingValueKeys.forEach((key) => {
           if (!currentOptionNames.includes(key)) {
             delete variant.optionValues[key]
           }
         })
 
-        // Thêm các optionValue mới
         currentOptionNames.forEach((name) => {
           if (name && !Object.prototype.hasOwnProperty.call(variant.optionValues, name)) {
             variant.optionValues[name] = ''
@@ -209,6 +251,9 @@ const addVariant = () => {
     id: null,
     price: null,
     optionValues: {},
+    cover_image_url: generalCoverImage.value || '',
+    photo_collection: [...(generalPhotoCollection.value || [])],
+    url: '',
   }
 
   localProduct.value.options.forEach((opt) => {
@@ -217,17 +262,31 @@ const addVariant = () => {
     }
   })
 
+  newVariant.url = generateVariantSlug(newVariant)
   localProduct.value.variants.push(newVariant)
 }
 
 const removeVariant = (index) => {
   localProduct.value.variants.splice(index, 1)
 }
+
+const applyGeneralCoverImage = () => {
+  if (!generalCoverImage.value) return
+  localProduct.value.variants.forEach((v) => {
+    v.cover_image_url = generalCoverImage.value
+  })
+}
+
+const applyGeneralPhotoCollection = () => {
+  if (generalPhotoCollection.value.length === 0) return
+  localProduct.value.variants.forEach((v) => {
+    v.photo_collection = [...generalPhotoCollection.value]
+  })
+}
 </script>
 
 <template>
   <form @submit.prevent id="product-form">
-    <!-- Thêm max-h-[75vh] và px-1 pr-2 để scrollbar đẹp hơn -->
     <div class="space-y-4 max-h-[75vh] overflow-y-auto px-1 pr-2">
       <!-- === Thông Tin Chung === -->
       <fieldset class="border rounded-md p-4">
@@ -247,19 +306,19 @@ const removeVariant = (index) => {
           <div>
             <BaseDropdown
               label="Danh Mục *"
-              v-model="localProduct.category"
+              v-model="localProduct.category_id"
               :options="categoryOptions"
               placeholder="Chọn Danh Mục"
               required
             />
-            <div v-if="errors && errors.category" class="text-red-500 text-xs mt-1">
-              {{ errors.category }}
+            <div v-if="errors && errors.category_id" class="text-red-500 text-xs mt-1">
+              {{ errors.category_id }}
             </div>
           </div>
           <div>
             <BaseDropdown
               label="Thương Hiệu"
-              v-model="localProduct.brand"
+              v-model="localProduct.brand_id"
               :options="brandOptions"
               placeholder="Chọn Thương Hiệu"
             />
@@ -275,26 +334,34 @@ const removeVariant = (index) => {
         </div>
       </fieldset>
 
-      <!-- === Hình Ảnh (SỬ DỤNG COMPONENT MỚI) === -->
+      <!-- === Hình Ảnh Chung (Để Áp Dụng Nhanh) === -->
       <fieldset class="border rounded-md p-4">
-        <legend class="px-2 font-semibold text-gray-700">Hình ảnh</legend>
+        <legend class="px-2 font-semibold text-gray-700">Hình ảnh chung (Để áp dụng nhanh)</legend>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <!-- Ảnh Bìa -->
           <BaseImage
-            label="Ảnh Bìa (Cover Image)"
-            v-model="localProduct.cover_image"
+            label="Ảnh Bìa Chung"
+            v-model="generalCoverImage"
             class="md:col-span-1"
+            bucket="cover"
           />
-          <!-- Bộ Sưu Tập Ảnh -->
           <BaseGroupImage
-            label="Bộ Sưu Tập Ảnh (Photo Collection)"
-            v-model="localProduct.photo_collection"
+            label="Bộ Sưu Tập Chung"
+            v-model="generalPhotoCollection"
             class="md:col-span-2"
+            bucket="photo-collection"
+          />
+        </div>
+        <div class="flex space-x-2 mt-4">
+          <BaseButton text="Áp dụng Ảnh Bìa Chung" color="gray" @click="applyGeneralCoverImage" />
+          <BaseButton
+            text="Áp dụng Bộ Sưu Tập Chung"
+            color="gray"
+            @click="applyGeneralPhotoCollection"
           />
         </div>
       </fieldset>
 
-      <!-- === Thông Số Kỹ Thuật (ĐÃ ĐỔI TÊN TIẾNG ANH) === -->
+      <!-- === Thông Số Kỹ Thuật === -->
       <fieldset class="border rounded-md p-4">
         <legend class="px-2 font-semibold text-gray-700">Thông số kỹ thuật</legend>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -445,92 +512,127 @@ const removeVariant = (index) => {
           <p class="text-sm text-gray-500 mb-4">
             Sản phẩm này không có thuộc tính. Vui lòng nhập thông tin cho biến thể mặc định.
           </p>
-          <div v-if="localProduct.variants[0]" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <BaseInput
-                label="Giá Bán *"
-                type="number"
-                v-model.number="localProduct.variants[0].price"
-                placeholder="Nhập giá bán"
-                :min="0"
-              />
-              <div v-if="simpleProductErrors.price" class="text-red-500 text-xs mt-1">
-                {{ simpleProductErrors.price }}
+          <div v-if="localProduct.variants[0]" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <BaseInput
+                  label="Giá Bán *"
+                  type="number"
+                  v-model.number="localProduct.variants[0].price"
+                  placeholder="Nhập giá bán"
+                  :min="0"
+                />
+                <div v-if="simpleProductErrors.price" class="text-red-500 text-xs mt-1">
+                  {{ simpleProductErrors.price }}
+                </div>
               </div>
+              <div>
+                <BaseInput
+                  label="URL Slug *"
+                  v-model="localProduct.variants[0].url"
+                  placeholder="ví dụ: ten-san-pham"
+                />
+                <div v-if="simpleProductErrors.url" class="text-red-500 text-xs mt-1">
+                  {{ simpleProductErrors.url }}
+                </div>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <BaseImage
+                label="Ảnh Bìa Biến Thể"
+                v-model="localProduct.variants[0].cover_image_url"
+                class="md:col-span-1"
+                bucket="cover"
+              />
+              <BaseGroupImage
+                label="Bộ Sưu Tập Biến Thể"
+                v-model="localProduct.variants[0].photo_collection"
+                class="md:col-span-2"
+                bucket="photo-collection"
+              />
             </div>
           </div>
         </div>
 
         <!-- TRƯỜNG HỢP 2: SẢN PHẨM CÓ BIẾN THỂ (Có options) -->
         <div v-else>
-          <div class="overflow-x-auto">
-            <table class="min-w-full text-sm">
-              <thead class="bg-gray-100">
-                <tr>
-                  <!-- Các cột thuộc tính động -->
-                  <th
-                    v-for="option in localProduct.options"
-                    :key="option.name"
-                    class="py-2 px-3 text-left font-medium text-gray-600"
-                  >
-                    {{ option.name || 'Chọn thuộc tính' }} *
-                  </th>
+          <div class="space-y-6">
+            <div
+              v-for="(variant, index) in localProduct.variants"
+              :key="index"
+              class="border rounded-lg p-4 bg-gray-50 relative"
+            >
+              <BaseSmallNoBgButton
+                color="red"
+                @click="removeVariant(index)"
+                class="absolute top-3 right-3"
+              >
+                Xóa Biến Thể
+              </BaseSmallNoBgButton>
 
-                  <!-- Các cột cố định -->
-                  <th class="py-2 px-3 text-left font-medium text-gray-600">Giá Bán *</th>
-                  <th class="py-2 px-3 text-left font-medium text-gray-600">Xóa</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Hàng nhập liệu cho từng biến thể -->
-                <tr v-for="(variant, index) in localProduct.variants" :key="index" class="border-b">
-                  <!-- Cột chọn giá trị thuộc tính (động) -->
-                  <td v-for="option in localProduct.options" :key="option.name" class="py-2 px-3">
-                    <BaseDropdown
-                      v-if="option.name"
-                      v-model="variant.optionValues[option.name]"
-                      :options="getOptionValuesArray(option.values)"
-                      placeholder="Chọn"
-                      :show-label="false"
-                      class="min-w-[100px]"
-                    />
-                    <span v-else class="text-xs text-gray-500">...</span>
-                  </td>
+              <h4 class="font-semibold text-lg mb-3">Biến thể #{{ index + 1 }}</h4>
 
-                  <!-- Cột nhập liệu cố định -->
-                  <td class="py-2 px-3">
-                    <BaseInput
-                      type="number"
-                      v-model.number="variant.price"
-                      placeholder="Giá bán"
-                      :show-label="false"
-                      class="min-w-[100px]"
-                    />
-                  </td>
-                  <td class="py-2 px-3">
-                    <BaseSmallNoBgButton color="red" @click="removeVariant(index)">
-                      Xóa
-                    </BaseSmallNoBgButton>
-                  </td>
-                </tr>
+              <!-- Hàng 1: Thuộc tính & Giá -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div v-for="option in localProduct.options" :key="option.name" class="flex-1">
+                  <BaseDropdown
+                    v-if="option.name"
+                    :label="option.name || 'Chọn thuộc tính'"
+                    v-model="variant.optionValues[option.name]"
+                    :options="getOptionValuesArray(option.values)"
+                    placeholder="Chọn"
+                  />
+                  <span v-else class="text-xs text-gray-500">...</span>
+                </div>
 
-                <!-- Hàng hiển thị lỗi (nếu có) -->
-                <tr
-                  v-for="(variant, index) in localProduct.variants"
-                  :key="'err-' + index"
-                  class="!border-0"
-                >
-                  <td :colspan="localProduct.options.length + 4" class="py-0 px-3">
-                    <div v-if="getVariantErrors(index).price" class="text-red-500 text-xs">
-                      Lỗi giá: {{ getVariantErrors(index).price }}
-                    </div>
-                    <div v-if="getVariantErrors(index).combination" class="text-red-500 text-xs">
-                      Lỗi thuộc tính: {{ getVariantErrors(index).combination }}
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                <div class="flex-1">
+                  <BaseInput
+                    label="Giá Bán *"
+                    type="number"
+                    v-model.number="variant.price"
+                    placeholder="Giá bán"
+                  />
+                </div>
+              </div>
+
+              <!-- Hàng 2: URL Slug -->
+              <div class="mb-4">
+                <BaseInput
+                  label="URL Slug *"
+                  v-model="variant.url"
+                  placeholder="ví dụ: ten-san-pham-thuoc-tinh"
+                />
+              </div>
+
+              <!-- Hàng 3: Hình ảnh -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <BaseImage
+                  label="Ảnh Bìa Biến Thể"
+                  v-model="variant.cover_image_url"
+                  class="md:col-span-1"
+                  bucket="cover"
+                />
+                <BaseGroupImage
+                  label="Bộ Sưu Tập Biến Thể"
+                  v-model="variant.photo_collection"
+                  class="md:col-span-2"
+                  bucket="photo-collection"
+                />
+              </div>
+
+              <!-- Hiển thị lỗi -->
+              <div class="mt-2 text-red-500 text-xs space-y-1">
+                <div v-if="getVariantErrors(index).price">
+                  Lỗi giá: {{ getVariantErrors(index).price }}
+                </div>
+                <div v-if="getVariantErrors(index).combination">
+                  Lỗi thuộc tính: {{ getVariantErrors(index).combination }}
+                </div>
+                <div v-if="getVariantErrors(index).url">
+                  Lỗi URL: {{ getVariantErrors(index).url }}
+                </div>
+              </div>
+            </div>
           </div>
           <BaseButton text="Thêm biến thể" color="blue" @click="addVariant" class="mt-4" />
           <div v-if="localProduct.variants.length === 0" class="text-center py-4 text-gray-500">

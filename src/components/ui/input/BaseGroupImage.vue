@@ -4,7 +4,6 @@
       {{ label }}
     </label>
 
-    <!-- Vùng kéo thả / click -->
     <div
       @click="openFilePicker"
       @dragover.prevent="onDragOver"
@@ -16,7 +15,6 @@
         isLoading ? 'pointer-events-none' : '',
       ]"
     >
-      <!-- Lớp phủ Loading Spinner -->
       <div
         v-if="isLoading"
         class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10 rounded-md"
@@ -43,7 +41,6 @@
         </svg>
       </div>
 
-      <!-- Nội dung kéo thả -->
       <div class="text-center p-4">
         <svg
           class="mx-auto h-10 w-10 text-gray-400"
@@ -68,7 +65,6 @@
       </div>
     </div>
 
-    <!-- Input file ẩn (cho phép chọn nhiều file) -->
     <input
       type="file"
       ref="fileInput"
@@ -78,7 +74,6 @@
       multiple
     />
 
-    <!-- Lưới hiển thị các ảnh đã thêm -->
     <div
       v-if="localValue && localValue.length > 0"
       class="mt-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3"
@@ -114,24 +109,30 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { uploadFile, getPublicUrl, deleteFile } from '@/api/supabaseStorage'
 
 const props = defineProps({
   modelValue: {
-    type: Array, // Luôn là một Array
+    type: Array,
     default: () => [],
   },
   label: {
     type: String,
     default: '',
   },
+  bucket: {
+    type: String,
+    default: 'photo-collection',
+  },
 })
 
 const emit = defineEmits(['update:modelValue'])
 
 const isDragging = ref(false)
-const isLoading = ref(false) // Thêm trạng thái loading
+const isLoading = ref(false)
 const fileInput = ref(null)
 const error = ref('')
+const currentPaths = ref([])
 
 const localValue = computed({
   get: () => props.modelValue || [],
@@ -172,7 +173,6 @@ const onDrop = (event) => {
   }
 }
 
-// 1. Hàm XỬ LÝ FILE (Validation)
 const processFiles = (files) => {
   error.value = ''
   let hadError = false
@@ -182,7 +182,6 @@ const processFiles = (files) => {
       return false
     }
     if (file.size > 5 * 1024 * 1024) {
-      // 5MB
       console.warn(`Bỏ qua file ${file.name} vì quá nặng.`)
       hadError = true
       return false
@@ -199,100 +198,61 @@ const processFiles = (files) => {
     error.value = 'Một số file bị bỏ qua (không phải ảnh hoặc quá 5MB).'
   }
 
-  // Nếu có file hợp lệ, gọi hàm upload
   if (imageFiles.length > 0) {
     uploadFilesHandler(imageFiles)
   }
 
-  // Reset input file để có thể chọn lại
   if (fileInput.value) {
     fileInput.value.value = null
   }
 }
 
-// 2. Hàm UPLOAD (Đây là nơi bạn sẽ sửa)
 const uploadFilesHandler = async (files) => {
   isLoading.value = true
-  // Tạm xóa lỗi cũ, lỗi mới sẽ báo trong catch
-  // error.value = '';
 
-  // =================================================================
-  // === LOGIC UPLOAD HIỆN TẠI (CHUYỂN SANG BASE64 ĐỂ DEMO) =========
-  // =================================================================
-  // Sau này bạn SẼ XÓA/COMMENT phần này
+  const uploadSingleFile = async (file) => {
+    const path = await uploadFile(file, props.bucket)
+    const url = getPublicUrl(path, props.bucket)
+    return { url, path }
+  }
+
   try {
-    const promises = files.map((file) => {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader()
-        reader.onload = (e) => resolve(e.target.result)
-        reader.onerror = (e) => reject(e)
-        reader.readAsDataURL(file)
-      })
-    })
+    const uploadPromises = files.map((file) => uploadSingleFile(file))
+    const results = await Promise.all(uploadPromises)
 
-    const base64Strings = await Promise.all(promises)
+    const newUrls = results.map((r) => r.url)
+    const newPaths = results.map((r) => r.path)
 
-    // Thêm các ảnh mới vào mảng
-    localValue.value = [...localValue.value, ...base64Strings]
-  } catch (readerError) {
-    error.value = 'Đã xảy ra lỗi khi đọc file.'
-    console.error('FileReader error:', readerError)
+    localValue.value = [...localValue.value, ...newUrls]
+    currentPaths.value = [...currentPaths.value, ...newPaths]
+  } catch (apiError) {
+    console.error('API Upload Error:', apiError)
+    error.value = `Lỗi upload: ${apiError.message}`
   } finally {
     isLoading.value = false
   }
-  // === KẾT THÚC LOGIC BASE64 ========================================
-
-  /*
-  // =================================================================
-  // === VÍ DỤ LOGIC UPLOAD BẰNG API THẬT (SAU NÀY BẠN MỞ RA) =======
-  // =================================================================
-  
-  // Hàm helper để upload 1 file (bạn có thể đặt bên ngoài)
-  const uploadSingleFile = async (file) => {
-    const formData = new FormData();
-    formData.append('image', file);
-    
-    const response = await fetch('/api/upload-image', {
-        method: 'POST',
-        body: formData,
-    });
-    
-    if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.message || `Lỗi upload ${file.name}`);
-    }
-    
-    const result = await response.json();
-    if (!result.url) {
-        throw new Error(`Server không trả về URL cho file ${file.name}`);
-    }
-    return result.url; // Trả về URL
-  }
-
-  // Thực thi song song
-  try {
-    // Tạo một mảng các promise upload
-    const uploadPromises = files.map(file => uploadSingleFile(file));
-    
-    // Đợi tất cả upload hoàn thành
-    const newUrls = await Promise.all(uploadPromises);
-    
-    // Thêm các URL mới vào mảng
-    localValue.value = [...localValue.value, ...newUrls];
-    
-  } catch (apiError) {
-    console.error("API Upload Error:", apiError);
-    error.value = `Lỗi upload: ${apiError.message}`;
-  } finally {
-    isLoading.value = false;
-  }
-  // === KẾT THÚC VÍ DỤ API ===========================================
-  */
 }
 
-const removeImage = (index) => {
+const removeImage = async (index) => {
   const newArray = [...localValue.value]
+  const newPaths = [...currentPaths.value]
+
+  const urlToRemove = newArray[index]
+  const pathToRemove = newPaths[index]
+
   newArray.splice(index, 1)
+  newPaths.splice(index, 1)
+
   localValue.value = newArray
+  currentPaths.value = newPaths
+
+  if (pathToRemove) {
+    try {
+      await deleteFile(pathToRemove, props.bucket)
+    } catch (deleteError) {
+      console.error('Lỗi khi xóa file:', deleteError)
+      error.value = 'Lỗi khi xóa ảnh cũ khỏi server.'
+    }
+  }
 }
 </script>
