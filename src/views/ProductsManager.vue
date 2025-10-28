@@ -79,7 +79,7 @@
             <tr class="table-row-style">
               <td class="normal-cell-style w-12 text-center">
                 <button
-                  v-if="product.variants.length > 0"
+                  v-if="product.variants && product.variants.length > 0"
                   @click="toggleDetails(product.id)"
                   class="text-gray-500 hover:text-gray-800"
                 >
@@ -128,7 +128,9 @@
               </td>
               <td class="normal-cell-style">{{ product.category }}</td>
               <td class="normal-cell-style">{{ product.brand }}</td>
-              <td class="normal-cell-style">{{ product.variants.length }}</td>
+              <td class="normal-cell-style">
+                {{ product.variants ? product.variants.length : 0 }}
+              </td>
               <td class="normal-cell-style">
                 <RoundBadge :color="getAggregateStatusColor(product.status_stock_id)">
                   {{ getAggregateStatusText(product.status_stock_id) }}
@@ -153,7 +155,9 @@
                           <th class="detail-cell-style w-20">Ảnh</th>
                           <th class="detail-cell-style">Thuộc tính</th>
                           <th class="detail-cell-style">Giá Bán</th>
-                          <th class="detail-cell-style">Tồn Kho</th>
+                          <th class="detail-cell-style">Tồn Kho (Tổng)</th>
+                          <th class="detail-cell-style">Đã Đặt</th>
+                          <th class="detail-cell-style">Hiện Có</th>
                           <th class="detail-cell-style">Trạng Thái</th>
                         </tr>
                       </thead>
@@ -184,9 +188,15 @@
                           <td class="detail-cell-style">
                             {{ formatCurrency(variant.price) }}
                           </td>
+
+                          <td class="detail-cell-style">{{ variant.stock }}</td>
+
+                          <td class="detail-cell-style">{{ variant.has_been_booked }}</td>
+
                           <td class="detail-cell-style">
                             {{ variant.stock - variant.has_been_booked }}
                           </td>
+
                           <td class="detail-cell-style">
                             <RoundBadge :color="getStatusColorClass(variant.status_stock_id)">
                               {{ getStockStatusText(variant.status_stock_id) }}
@@ -241,12 +251,7 @@
       <h2 class="font-bold text-lg">{{ formModalTitle }}</h2>
     </template>
     <template #body>
-      <ProductForm
-        v-model="editableProduct"
-        :is-edit-mode="isEditMode"
-        :errors="formErrors"
-        @update:dirty="isFormDirty = $event"
-      />
+      <ProductForm v-model="editableProduct" :is-edit-mode="isEditMode" :errors="formErrors" />
     </template>
     <template #footer>
       <div class="flex justify-end space-x-2">
@@ -351,7 +356,6 @@ watch(searchTerm, debouncedFetch)
 watch(selectedStatuses, debouncedFetch)
 
 const isFormModalVisible = ref(false)
-const isFormDirty = ref(false)
 const formModalTitle = ref('')
 const formModalKey = ref(0)
 
@@ -381,7 +385,7 @@ const getNewEmptyProduct = () => {
     displacement: null,
     bore_stroke: '',
     compression_ratio: '',
-    status_id: 'draft',
+    status_id: 'out-of-business',
     options: [],
     variants: [
       {
@@ -416,34 +420,14 @@ const openAddEditModal = (product = null) => {
       editableProduct.value = getNewEmptyProduct()
       formModalTitle.value = 'Thêm Sản Phẩm Mới'
     }
-    isFormDirty.value = false
     formModalKey.value++
     isFormModalVisible.value = true
   }
-
-  if (isFormModalVisible.value && isFormDirty.value) {
-    showConfirmation(
-      'Mở biểu mẫu mới?',
-      'Bạn có các thay đổi chưa lưu. Bạn có chắc muốn hủy và mở một biểu mẫu mới không?',
-      openForm,
-    )
-  } else {
-    openForm()
-  }
+  openForm()
 }
 
 const handleCloseFormModal = () => {
-  if (isFormDirty.value) {
-    showConfirmation(
-      'Đóng biểu mẫu?',
-      'Bạn có các thay đổi chưa lưu. Bạn có chắc muốn đóng không?',
-      () => {
-        isFormModalVisible.value = false
-      },
-    )
-  } else {
-    isFormModalVisible.value = false
-  }
+  isFormModalVisible.value = false
 }
 
 const validateProduct = (productData) => {
@@ -542,7 +526,6 @@ const handleSaveProduct = async () => {
   try {
     await store.dispatch('products/saveProduct', productData)
     isFormModalVisible.value = false
-    isFormDirty.value = false
   } catch (error) {
     console.error('Lỗi khi lưu sản phẩm:', error)
     formErrors.value.general = error.message || 'Lỗi từ server. Vui lòng thử lại.'

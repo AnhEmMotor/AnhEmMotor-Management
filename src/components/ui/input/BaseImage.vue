@@ -96,7 +96,8 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { uploadFile, getPublicUrl, deleteFile } from '@/api/supabaseStorage'
+import { useStore } from 'vuex'
+import * as storageApi from '@/api/supabaseStorage'
 
 const props = defineProps({
   modelValue: {
@@ -107,19 +108,17 @@ const props = defineProps({
     type: String,
     default: '',
   },
-  bucket: {
-    type: String,
-    default: 'cover',
-  },
 })
 
 const emit = defineEmits(['update:modelValue'])
+const store = useStore()
+const bucketName = 'cover'
 
 const isDragging = ref(false)
 const isLoading = ref(false)
 const fileInput = ref(null)
 const error = ref('')
-const currentPath = ref('')
+const initialImageUrl = ref(props.modelValue) // Lưu URL ban đầu để xóa
 
 const localValue = computed({
   get: () => props.modelValue,
@@ -180,12 +179,20 @@ const uploadHandler = async (file) => {
   error.value = ''
 
   try {
-    const path = await uploadFile(file, props.bucket)
-    const publicUrl = getPublicUrl(path, props.bucket)
+    // 1. Xóa ảnh cũ (Nếu tồn tại và không phải placeholder)
+    if (initialImageUrl.value && initialImageUrl.value !== localValue.value) {
+      await store.dispatch('products/deleteProductImage', {
+        url: initialImageUrl.value,
+        bucket: bucketName,
+      })
+    }
 
-    localValue.value = publicUrl
-    currentPath.value = path
-    error.value = ''
+    // 2. Upload file mới
+    const result = await storageApi.uploadFile(file, bucketName)
+
+    // 3. Cập nhật giá trị
+    localValue.value = result.publicUrl
+    initialImageUrl.value = result.publicUrl // Đặt URL mới làm URL ban đầu
   } catch (apiError) {
     console.error('API Upload Error:', apiError)
     error.value = `Lỗi upload: ${apiError.message}`
@@ -195,18 +202,18 @@ const uploadHandler = async (file) => {
 }
 
 const clearImage = async () => {
-  localValue.value = ''
-  error.value = ''
-
-  if (currentPath.value) {
-    try {
-      await deleteFile(currentPath.value, props.bucket)
-      currentPath.value = ''
-    } catch (deleteError) {
-      console.error('Lỗi khi xóa file:', deleteError)
-      error.value = 'Lỗi khi xóa ảnh cũ khỏi server.'
-    }
+  // 1. Xóa ảnh khỏi Storage (Nếu có URL)
+  if (localValue.value) {
+    await store.dispatch('products/deleteProductImage', {
+      url: localValue.value,
+      bucket: bucketName,
+    })
   }
+
+  // 2. Reset giá trị trong Form
+  localValue.value = ''
+  initialImageUrl.value = ''
+  error.value = ''
 
   if (fileInput.value) {
     fileInput.value.value = null

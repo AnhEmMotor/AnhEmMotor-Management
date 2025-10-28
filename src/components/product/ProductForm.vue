@@ -24,7 +24,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:modelValue', 'update:dirty'])
+const emit = defineEmits(['update:modelValue'])
 const store = useStore()
 
 const localProduct = ref({})
@@ -34,25 +34,28 @@ const isUpdatingFromProp = ref(false)
 const generalCoverImage = ref('')
 const generalPhotoCollection = ref([])
 
-const categoryOptions = computed(() =>
-  store.getters['productCategory/allCategories'].map((c) => ({
+const categoryOptions = computed(() => {
+  return (store.getters['productCategories/allCategories'] || []).map((c) => ({
     value: c.id,
     text: c.name,
-  })),
-)
-const brandOptions = computed(() =>
-  store.getters['brand/allBrands'].map((b) => ({ value: b.id, text: b.name })),
-)
-const allAvailableOptions = computed(() =>
-  store.getters['options/allOptions'].map((o) => ({
+  }))
+})
+const brandOptions = computed(() => {
+  return (store.getters['brands/allBrands'] || []).map((b) => ({
+    value: b.id,
+    text: b.name,
+  }))
+})
+const allAvailableOptions = computed(() => {
+  return (store.getters['options/allOptions'] || []).map((o) => ({
     value: o.name,
     text: o.name,
-  })),
-)
+  }))
+})
 
 onMounted(() => {
-  store.dispatch('productCategory/fetchCategories')
-  store.dispatch('brand/fetchBrands')
+  store.dispatch('productCategories/fetchCategories')
+  store.dispatch('brands/fetchBrands')
   store.dispatch('options/fetchOptions')
 })
 
@@ -123,6 +126,9 @@ watch(
     isUpdatingFromProp.value = true
     const copy = JSON.parse(JSON.stringify(newVal || {}))
 
+    copy.category_id = copy.category_id || ''
+    copy.brand_id = copy.brand_id || ''
+
     if (!copy.options) {
       copy.options = []
     }
@@ -153,7 +159,6 @@ watch(
 
     localProduct.value = copy
     initialDataJson.value = JSON.stringify(copy)
-    emit('update:dirty', false)
     nextTick(() => {
       isUpdatingFromProp.value = false
     })
@@ -167,8 +172,6 @@ watch(
     if (isUpdatingFromProp.value) {
       return
     }
-    const isDirty = JSON.stringify(newVal) !== initialDataJson.value
-    emit('update:dirty', isDirty)
     emit('update:modelValue', newVal)
   },
   { deep: true },

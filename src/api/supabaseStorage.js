@@ -28,12 +28,26 @@ export const getPublicUrl = (path, bucketName) => {
   return data.publicUrl
 }
 
-export const deleteFile = async (path, bucketName) => {
-  const { data, error } = await supabase.storage.from(bucketName).remove([path])
+const getFilePath = (url, bucketName) => {
+  const path = url.split(`${bucketName}/`)[1]
+  return path
+}
 
-  if (error) {
-    throw error
+export const deleteFile = async (url, bucketName) => {
+  if (!url || url.includes('placehold.co')) {
+    return
   }
-
+  const filePath = getFilePath(url, bucketName)
+  if (!filePath) {
+    return
+  }
+  const { data, error } = await supabase.storage.from(bucketName).remove([filePath])
+  if (error) {
+    if (error.message.includes('The resource was not found')) {
+      console.warn(`File already deleted or not found in storage: ${filePath}`)
+      return
+    }
+    throw new Error(`Delete failed: ${error.message}`)
+  }
   return data
 }

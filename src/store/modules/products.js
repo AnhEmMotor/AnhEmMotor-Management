@@ -1,27 +1,30 @@
 import * as productApi from '@/api/product'
+import * as storageApi from '@/api/supabaseStorage'
 import { showConfirmation } from '@/composables/confirmation'
+
+const getDefaultPagination = () => ({
+  page: 1,
+  itemsPerPage: 20,
+  totalCount: 0,
+  totalPages: 1,
+})
+
+const getDefaultFilters = () => ({
+  search: '',
+  statusIds: [],
+})
 
 const state = {
   products: [],
   isLoading: false,
   error: null,
-  filters: {
-    search: '',
-    statusIds: [],
-  },
-  pagination: {
-    page: 1,
-    itemsPerPage: 1000,
-    totalPages: 1,
-  },
+  pagination: getDefaultPagination(),
+  filters: getDefaultFilters(),
 }
 
 const mutations = {
   SET_PRODUCTS(state, products) {
     state.products = products
-  },
-  ADD_PRODUCT(state, product) {
-    state.products.unshift(product)
   },
   UPDATE_PRODUCT(state, updatedProduct) {
     const index = state.products.findIndex((p) => p.id === updatedProduct.id)
@@ -38,35 +41,28 @@ const mutations = {
   SET_ERROR(state, error) {
     state.error = error
   },
-  SET_FILTERS(state, { search, statusIds }) {
-    if (search !== undefined) {
-      state.filters.search = search
-    }
-    if (statusIds !== undefined) {
-      state.filters.statusIds = statusIds
+  SET_PAGINATION(state, { page, totalCount }) {
+    if (page) state.pagination.page = page
+    if (totalCount !== undefined) {
+      state.pagination.totalCount = totalCount
+      state.pagination.totalPages = Math.ceil(totalCount / state.pagination.itemsPerPage)
     }
   },
-  SET_PAGINATION(state, { page, totalPages }) {
-    if (page) {
-      state.pagination.page = page
-    }
-    if (totalPages) {
-      state.pagination.totalPages = totalPages
-    }
+  SET_FILTERS(state, filters) {
+    Object.assign(state.filters, filters)
   },
 }
 
 const actions = {
-  async fetchProducts({ commit, state }) {
+  async fetchProducts({ commit, getters }) {
     commit('SET_LOADING', true)
     commit('SET_ERROR', null)
     try {
-      const params = {
-        ...state.pagination,
-        ...state.filters,
-      }
-      const products = await productApi.getProducts(params)
-      commit('SET_PRODUCTS', products)
+      const { filters, pagination } = getters
+      const result = await productApi.getProducts(filters, pagination)
+
+      commit('SET_PRODUCTS', result.products)
+      commit('SET_PAGINATION', { totalCount: result.totalCount })
     } catch (error) {
       commit('SET_ERROR', error.message)
     } finally {
@@ -74,21 +70,14 @@ const actions = {
     }
   },
 
-  async saveProduct({ commit, dispatch }, productData) {
+  async saveProduct({ commit, dispatch }, product) {
     commit('SET_LOADING', true)
     commit('SET_ERROR', null)
     try {
-      const isEditMode = !!productData.id
-      const savedProductData = await productApi.upsertProduct(productData)
-
-      if (isEditMode) {
-        commit('UPDATE_PRODUCT', savedProductData)
-      } else {
-        commit('ADD_PRODUCT', savedProductData)
-      }
+      const { product: _savedProduct } = await productApi.saveProduct(product)
       dispatch('fetchProducts')
-      return savedProductData
     } catch (error) {
+      console.error('Lỗi saveProduct action:', error)
       commit('SET_ERROR', error.message)
       throw error
     } finally {
@@ -97,39 +86,53 @@ const actions = {
   },
 
   async deleteProduct({ commit, dispatch }, product) {
-    const confirmed = await showConfirmation(
-      'Xác nhận xóa',
-      `Bạn có chắc chắn muốn xóa dòng sản phẩm "${product.name}"? 
-       Hành động này không thể hoàn tác.`,
-    )
+    const title = 'Xác nhận xóa'
+    const message = `Bạn có chắc chắn muốn xóa dòng sản phẩm "${product.name}"? Hành động này không thể hoàn tác.`
+
+    const confirmed = await showConfirmation(title, message)
     if (!confirmed) return
 
     commit('SET_LOADING', true)
     commit('SET_ERROR', null)
     try {
+      for (const variant of product.variants) {
+        if (variant.cover_image) {
+          await dispatch('deleteProductImage', { url: variant.cover_image, bucket: 'cover' })
+        }
+        for (const url of variant.photo_collection || []) {
+          await dispatch('deleteProductImage', { url, bucket: 'photo_collection' })
+        }
+      }
+
       await productApi.deleteProduct(product.id)
-      commit('DELETE_PRODUCT', product.id)
+      dispatch('fetchProducts')
     } catch (error) {
+      console.error('Lỗi deleteProduct action:', error)
       commit('SET_ERROR', error.message)
+      throw error
     } finally {
       commit('SET_LOADING', false)
     }
   },
 
-  async updateFilters({ commit, dispatch }, { search, statusIds }) {
-    commit('SET_FILTERS', { search, statusIds })
-    commit('SET_PAGINATION', { page: 1 })
-    await dispatch('fetchProducts')
+  async deleteProductImage({ commit }, { url, bucket }) {
+    await storageApi.deleteFile(url, bucket)
   },
 
-  async changePage({ commit, dispatch }, page) {
+  updateFilters({ commit, dispatch }, filters) {
+    commit('SET_FILTERS', filters)
+    dispatch('fetchProducts')
+  },
+
+  changePage({ commit, dispatch }, page) {
     commit('SET_PAGINATION', { page })
-    await dispatch('fetchProducts')
+    dispatch('fetchProducts')
   },
 }
 
 const getters = {
   allProducts: (state) => state.products,
+  productById: (state) => (id) => state.products.find((p) => p.id === id),
   isLoading: (state) => state.isLoading,
   error: (state) => state.error,
   pagination: (state) => state.pagination,

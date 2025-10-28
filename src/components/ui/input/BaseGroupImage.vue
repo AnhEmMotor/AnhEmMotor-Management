@@ -80,7 +80,7 @@
     >
       <div
         v-for="(url, index) in localValue"
-        :key="index"
+        :key="url"
         class="relative w-full aspect-square border border-gray-200 rounded-md overflow-hidden shadow-sm"
       >
         <img :src="url" alt="Preview" class="w-full h-full object-cover" />
@@ -109,7 +109,8 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { uploadFile, getPublicUrl, deleteFile } from '@/api/supabaseStorage'
+import { useStore } from 'vuex'
+import * as storageApi from '@/api/supabaseStorage'
 
 const props = defineProps({
   modelValue: {
@@ -120,19 +121,16 @@ const props = defineProps({
     type: String,
     default: '',
   },
-  bucket: {
-    type: String,
-    default: 'photo-collection',
-  },
 })
 
 const emit = defineEmits(['update:modelValue'])
+const store = useStore()
+const bucketName = 'photo_collection'
 
 const isDragging = ref(false)
 const isLoading = ref(false)
 const fileInput = ref(null)
 const error = ref('')
-const currentPaths = ref([])
 
 const localValue = computed({
   get: () => props.modelValue || [],
@@ -175,18 +173,20 @@ const onDrop = (event) => {
 
 const processFiles = (files) => {
   error.value = ''
+  let imageFiles = []
   let hadError = false
-  const imageFiles = Array.from(files).filter((file) => {
+
+  Array.from(files).forEach((file) => {
     if (!file.type.startsWith('image/')) {
       hadError = true
-      return false
+      return
     }
     if (file.size > 5 * 1024 * 1024) {
-      console.warn(`Bỏ qua file ${file.name} vì quá nặng.`)
+      console.warn(`Skipping file ${file.name} due to size.`)
       hadError = true
-      return false
+      return
     }
-    return true
+    imageFiles.push(file)
   })
 
   if (imageFiles.length === 0 && files.length > 0) {
@@ -209,22 +209,19 @@ const processFiles = (files) => {
 
 const uploadFilesHandler = async (files) => {
   isLoading.value = true
-
-  const uploadSingleFile = async (file) => {
-    const path = await uploadFile(file, props.bucket)
-    const url = getPublicUrl(path, props.bucket)
-    return { url, path }
-  }
+  error.value = ''
+  const uploadPromises = []
 
   try {
-    const uploadPromises = files.map((file) => uploadSingleFile(file))
+    for (const file of files) {
+      uploadPromises.push(storageApi.uploadFile(file, bucketName))
+    }
+
     const results = await Promise.all(uploadPromises)
+    const newUrls = results.map((r) => r.publicUrl)
 
-    const newUrls = results.map((r) => r.url)
-    const newPaths = results.map((r) => r.path)
-
+    // Thêm các URL mới vào mảng
     localValue.value = [...localValue.value, ...newUrls]
-    currentPaths.value = [...currentPaths.value, ...newPaths]
   } catch (apiError) {
     console.error('API Upload Error:', apiError)
     error.value = `Lỗi upload: ${apiError.message}`
@@ -234,25 +231,18 @@ const uploadFilesHandler = async (files) => {
 }
 
 const removeImage = async (index) => {
-  const newArray = [...localValue.value]
-  const newPaths = [...currentPaths.value]
+  if (isLoading.value) return
 
-  const urlToRemove = newArray[index]
-  const pathToRemove = newPaths[index]
+  const urlToRemove = localValue.value[index]
 
-  newArray.splice(index, 1)
-  newPaths.splice(index, 1)
-
-  localValue.value = newArray
-  currentPaths.value = newPaths
-
-  if (pathToRemove) {
-    try {
-      await deleteFile(pathToRemove, props.bucket)
-    } catch (deleteError) {
-      console.error('Lỗi khi xóa file:', deleteError)
-      error.value = 'Lỗi khi xóa ảnh cũ khỏi server.'
-    }
+  // 1. Xóa ảnh khỏi Storage (Gọi action)
+  if (urlToRemove) {
+    await store.dispatch('products/deleteProductImage', { url: urlToRemove, bucket: bucketName })
   }
+
+  // 2. Xóa khỏi Model
+  const newArray = [...localValue.value]
+  newArray.splice(index, 1)
+  localValue.value = newArray
 }
 </script>
