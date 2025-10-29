@@ -477,16 +477,12 @@ watch(
       />
     </div>
 
-    <div>
-      <BasePagination
-        v-if="totalPages !== null"
-        :total-pages="totalPages"
-        :currentPage="page"
-        @update:currentPage="onPageChange"
-        :loading="isLoading"
-      />
-      <div v-else class="flex justify-center py-4 text-sm text-gray-500">Đang tải...</div>
-    </div>
+    <BasePagination
+      :total-pages="totalPages"
+      :currentPage="page"
+      @update:currentPage="onPageChange"
+      :loading="isLoading"
+    />
 
     <DraggableModal
       :key="formModalKey"

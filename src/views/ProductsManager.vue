@@ -1,15 +1,16 @@
 <template>
-  <div class="box-style">
-    <div class="content-box-style">
+  <div class="bg-gray-100 p-4 sm:p-6 rounded-xl shadow-lg">
+    <div
+      class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0"
+    >
       <div>
-        <h1 class="title-style">Quản lý sản phẩm</h1>
+        <h1 class="text-3xl font-bold text-center text-gray-800">Quản lý sản phẩm</h1>
       </div>
-      <div class="action-button-style">
+      <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full lg:w-auto">
         <BaseButton text="Thêm sản phẩm" color="purple" @click="openAddEditModal()" />
         <BaseButton text="Import Excel" color="blue" @click="importExcel" />
         <BaseButton text="Export" color="green" @click="exportExcel" />
         <span class="text-gray-400 mx-4 hidden border-r-2 sm:block" />
-
         <ProductFilterButtons v-model="selectedStatuses" />
       </div>
     </div>
@@ -22,27 +23,7 @@
     />
 
     <div v-if="isLoading" class="text-center py-10">
-      <svg
-        class="animate-spin h-8 w-8 text-purple-600 mx-auto"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
-        <circle
-          class="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          stroke-width="4"
-        ></circle>
-        <path
-          class="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-        ></path>
-      </svg>
-      <p class="text-gray-600 mt-2">Đang tải dữ liệu...</p>
+      <BaseSpinner />
     </div>
 
     <div
@@ -55,64 +36,40 @@
     </div>
 
     <div class="overflow-x-auto" v-if="!isLoading && !error">
-      <table class="table-style">
-        <thead class="table-header-style">
+      <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-sm">
+        <thead class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
           <tr>
-            <th class="normal-cell-style w-12"></th>
-            <th class="normal-cell-style w-20">Ảnh Bìa</th>
-            <th class="normal-cell-style">Tên Dòng Sản Phẩm</th>
-            <th class="normal-cell-style">Danh Mục</th>
-            <th class="normal-cell-style">Thương Hiệu</th>
-            <th class="normal-cell-style">Số Biến Thể</th>
-            <th class="normal-cell-style">Trạng Thái Kho</th>
-            <th class="center-cell-style">Thao Tác</th>
+            <th class="py-3 px-6 text-left w-12"></th>
+            <th class="py-3 px-6 text-left w-20">Ảnh Bìa</th>
+            <th class="py-3 px-6 text-left">Tên Dòng Sản Phẩm</th>
+            <th class="py-3 px-6 text-left">Danh Mục</th>
+            <th class="py-3 px-6 text-left">Thương Hiệu</th>
+            <th class="py-3 px-6 text-left">Số Biến Thể</th>
+            <th class="py-3 px-6 text-left">Trạng Thái Kho</th>
+            <th class="py-3 px-6 text-center">Thao Tác</th>
           </tr>
         </thead>
-        <tbody class="table-body-style">
+        <tbody class="text-gray-600 text-sm font-light">
           <tr v-if="filteredProducts.length === 0">
-            <td :colspan="numberOfColumns" class="not-found-text-style">
+            <td :colspan="numberOfColumns" class="text-center py-6 text-gray-500">
               Không có sản phẩm nào để hiển thị.
             </td>
           </tr>
 
           <template v-for="product in filteredProducts" :key="product.id">
-            <tr class="table-row-style">
-              <td class="normal-cell-style w-12 text-center">
+            <tr class="border-b border-gray-200 hover:bg-gray-100 transition-colors duration-200">
+              <td class="py-3 px-6 w-12 text-center">
                 <button
                   v-if="product.variants && product.variants.length > 0"
                   @click="toggleDetails(product.id)"
                   class="text-gray-500 hover:text-gray-800"
                 >
-                  <svg
-                    v-if="!isExpanded(product.id)"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    class="w-5 h-5"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                  <svg
-                    v-else
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    class="w-5 h-5"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
+                  <IconLeftArrow v-if="!isExpanded(product.id)" />
+                  <IconDownArrow v-else />
                 </button>
               </td>
 
-              <td class="normal-cell-style w-20">
+              <td class="py-3 px-6 text-left w-20">
                 <img
                   :src="
                     product.cover_image_url || 'https://placehold.co/100x100/gray/white?text=N/A'
@@ -125,20 +82,20 @@
                 />
               </td>
 
-              <td class="normal-cell-style whitespace-nowrap font-medium text-gray-800">
+              <td class="py-3 px-6 text-left whitespace-nowrap font-medium text-gray-800">
                 {{ product.name }}
               </td>
-              <td class="normal-cell-style">{{ product.category }}</td>
-              <td class="normal-cell-style">{{ product.brand }}</td>
-              <td class="normal-cell-style">
+              <td class="py-3 px-6 text-left">{{ product.category }}</td>
+              <td class="py-3 px-6 text-left">{{ product.brand }}</td>
+              <td class="py-3 px-6 text-left">
                 {{ product.variants ? product.variants.length : 0 }}
               </td>
-              <td class="normal-cell-style">
+              <td class="py-3 px-6 text-left">
                 <RoundBadge :color="getAggregateStatusColor(product.status_stock_id)">
                   {{ getAggregateStatusText(product.status_stock_id) }}
                 </RoundBadge>
               </td>
-              <td class="center-cell-style space-x-2">
+              <td class="py-3 px-6 text-center space-x-2">
                 <BaseSmallNoBgButton @click="openAddEditModal(product)">Sửa</BaseSmallNoBgButton>
                 <BaseSmallNoBgButton color="red" @click="promptDelete(product)">
                   Xóa
@@ -154,13 +111,13 @@
                     <table class="min-w-full bg-white rounded shadow-inner text-sm">
                       <thead class="bg-gray-100">
                         <tr>
-                          <th class="detail-cell-style w-20">Ảnh</th>
-                          <th class="detail-cell-style">Thuộc tính</th>
-                          <th class="detail-cell-style">Giá Bán</th>
-                          <th class="detail-cell-style">Tồn Kho (Tổng)</th>
-                          <th class="detail-cell-style">Đã Đặt</th>
-                          <th class="detail-cell-style">Hiện Có</th>
-                          <th class="detail-cell-style">Trạng Thái</th>
+                          <th class="py-2 px-4 text-left w-20">Ảnh</th>
+                          <th class="py-2 px-4 text-left">Thuộc tính</th>
+                          <th class="py-2 px-4 text-left">Giá Bán</th>
+                          <th class="py-2 px-4 text-left">Tồn Kho (Tổng)</th>
+                          <th class="py-2 px-4 text-left">Đã Đặt</th>
+                          <th class="py-2 px-4 text-left">Hiện Có</th>
+                          <th class="py-2 px-4 text-left">Trạng Thái</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -169,7 +126,7 @@
                           :key="variant.id"
                           class="border-b last:border-b-0"
                         >
-                          <td class="detail-cell-style w-20">
+                          <td class="py-2 px-4 text-left w-20">
                             <img
                               :src="
                                 variant.cover_image_url ||
@@ -184,22 +141,22 @@
                               "
                             />
                           </td>
-                          <td class="detail-cell-style text-gray-800">
+                          <td class="py-2 px-4 text-left text-gray-800">
                             {{ getVariantOptionsText(variant) }}
                           </td>
-                          <td class="detail-cell-style">
+                          <td class="py-2 px-4 text-left">
                             {{ formatCurrency(variant.price) }}
                           </td>
 
-                          <td class="detail-cell-style">{{ variant.stock }}</td>
+                          <td class="py-2 px-4 text-left">{{ variant.stock }}</td>
 
-                          <td class="detail-cell-style">{{ variant.has_been_booked }}</td>
+                          <td class="py-2 px-4 text-left">{{ variant.has_been_booked }}</td>
 
-                          <td class="detail-cell-style">
+                          <td class="py-2 px-4 text-left">
                             {{ variant.stock - variant.has_been_booked }}
                           </td>
 
-                          <td class="detail-cell-style">
+                          <td class="py-2 px-4 text-left">
                             <RoundBadge :color="getStatusColorClass(variant.status_stock_id)">
                               {{ getStockStatusText(variant.status_stock_id) }}
                             </RoundBadge>
@@ -276,6 +233,9 @@ import BasePagination from '@/components/ui/button/BasePagination.vue'
 import BaseSmallNoBgButton from '@/components/ui/button/BaseSmallNoBgButton.vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
+import BaseSpinner from '@/components/ui/BaseSpinner.vue'
+import IconLeftArrow from '@/components/icons/IconLeftArrow.vue'
+import IconDownArrow from '@/components/icons/IconDownArrow.vue'
 
 const store = useStore()
 
@@ -553,43 +513,3 @@ const exportExcel = () => {
   alert('Chức năng Export Excel chưa được triển khai.')
 }
 </script>
-
-<style scoped>
-@reference "../assets/main.css";
-.box-style {
-  @apply bg-gray-100 p-4 sm:p-6 rounded-xl shadow-lg;
-}
-.title-style {
-  @apply text-3xl font-bold text-center text-gray-800;
-}
-.content-box-style {
-  @apply flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0;
-}
-.action-button-style {
-  @apply flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full lg:w-auto;
-}
-.normal-cell-style {
-  @apply py-3 px-6 text-left;
-}
-.center-cell-style {
-  @apply py-3 px-6 text-center;
-}
-.table-style {
-  @apply min-w-full bg-white rounded-lg overflow-hidden shadow-sm;
-}
-.table-header-style {
-  @apply bg-gray-200 text-gray-600 uppercase text-sm leading-normal;
-}
-.table-body-style {
-  @apply text-gray-600 text-sm font-light;
-}
-.not-found-text-style {
-  @apply text-center py-6 text-gray-500;
-}
-.table-row-style {
-  @apply border-b border-gray-200 hover:bg-gray-100 transition-colors duration-200;
-}
-.detail-cell-style {
-  @apply py-2 px-4 text-left;
-}
-</style>
