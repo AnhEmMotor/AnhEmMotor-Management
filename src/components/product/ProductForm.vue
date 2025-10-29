@@ -8,6 +8,7 @@ import BaseButton from '@/components/ui/button/BaseButton.vue'
 import BaseSmallNoBgButton from '@/components/ui/button/BaseSmallNoBgButton.vue'
 import BaseImage from '@/components/ui/input/BaseImage.vue'
 import BaseGroupImage from '@/components/ui/input/BaseGroupImage.vue'
+import BaseLoadingOverlay from '../ui/BaseLoadingOverlay.vue'
 
 const props = defineProps({
   modelValue: {
@@ -22,10 +23,16 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  isSaving: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const emit = defineEmits(['update:modelValue'])
 const store = useStore()
+
+const isFormLoading = ref(false)
 
 const localProduct = ref({})
 const initialDataJson = ref('')
@@ -53,10 +60,29 @@ const allAvailableOptions = computed(() => {
   }))
 })
 
-onMounted(() => {
-  store.dispatch('productCategories/fetchCategories')
-  store.dispatch('brands/fetchBrands')
-  store.dispatch('options/fetchOptions')
+onMounted(async () => {
+  isFormLoading.value = true
+  try {
+    await Promise.all([
+      store.dispatch('productCategories/fetchCategories'),
+      store.dispatch('brands/fetchBrands'),
+      store.dispatch('options/fetchOptions'),
+    ])
+  } catch (error) {
+    console.error('Lỗi khi tải dữ liệu form:', error)
+  } finally {
+    isFormLoading.value = false
+  }
+})
+
+const showLoadingOverlay = computed(() => {
+  return isFormLoading.value || props.isSaving
+})
+
+const loadingMessage = computed(() => {
+  if (isFormLoading.value) return 'Đang tải dữ liệu form...'
+  if (props.isSaving) return 'Đang lưu sản phẩm...'
+  return ''
 })
 
 const hasOptions = computed(() => {
@@ -302,6 +328,7 @@ const applyGeneralPhotoCollection = () => {
 </script>
 
 <template>
+  <BaseLoadingOverlay :show="showLoadingOverlay" :message="loadingMessage" />
   <form @submit.prevent id="product-form">
     <div class="space-y-4 max-h-[75vh] overflow-y-auto px-1 pr-2">
       <!-- === Thông Tin Chung === -->

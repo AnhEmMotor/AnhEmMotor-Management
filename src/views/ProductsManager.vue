@@ -1,4 +1,6 @@
 <template>
+  <BaseLoadingOverlay :show="isVuexLoading" message="Đang xoá sản phẩm..." />
+
   <div class="bg-gray-100 p-4 sm:p-6 rounded-xl shadow-lg">
     <div
       class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0"
@@ -27,12 +29,12 @@
     </div>
 
     <div
-      v-if="error"
+      v-if="isError"
       class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
       role="alert"
     >
       <strong class="font-bold">Lỗi!</strong>
-      <span class="block sm:inline">{{ error }}</span>
+      <span class="block sm:inline">{{ error.message }}</span>
     </div>
 
     <div class="overflow-x-auto" v-if="!isLoading && !error">
@@ -194,7 +196,7 @@
       </table>
     </div>
     <BasePagination
-      :total-pages="pagination.totalPages"
+      :total-pages="totalPages"
       v-model:currentPage="currentPage"
       :loading="isLoading"
     />
@@ -206,25 +208,29 @@
     @close="handleCloseFormModal"
     width="72vw"
   >
-    <template #header>
-      <h2 class="font-bold text-lg">{{ formModalTitle }}</h2>
-    </template>
     <template #body>
-      <ProductForm v-model="editableProduct" :is-edit-mode="isEditMode" :errors="formErrors" />
+      <ProductForm
+        v-model="editableProduct"
+        :is-edit-mode="isEditMode"
+        :errors="formErrors"
+        :is-saving="isSaving"
+      />
     </template>
+
     <template #footer>
-      <div class="flex justify-end space-x-2">
-        <BaseButton text="Bỏ qua" color="gray" @click="handleCloseFormModal" />
-        <BaseButton text="Lưu" color="purple" @click="handleSaveProduct" :loading="isSaving" />
-      </div>
+      <BaseButton text="Lưu" color="purple" @click="handleSaveProduct" :loading="isSaving" />
     </template>
   </DraggableModal>
 </template>
 
 <script setup>
-import { ref, watch, computed, onMounted } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useStore } from 'vuex'
-import { debounce } from 'lodash-es'
+import { useRoute, useRouter } from 'vue-router'
+import { useQueryClient } from '@tanstack/vue-query'
+import { debounce } from '@/utils/debounceThrottle'
+import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
+import { getProducts } from '@/api/product'
 import ProductFilterButtons from '@/components/product/ProductFilterButtons.vue'
 import ProductForm from '@/components/product/ProductForm.vue'
 import BaseButton from '@/components/ui/button/BaseButton.vue'
@@ -236,20 +242,68 @@ import DraggableModal from '@/components/ui/DraggableModal.vue'
 import BaseSpinner from '@/components/ui/BaseSpinner.vue'
 import IconLeftArrow from '@/components/icons/IconLeftArrow.vue'
 import IconDownArrow from '@/components/icons/IconDownArrow.vue'
+import BaseLoadingOverlay from '@/components/ui/BaseLoadingOverlay.vue'
+import { useToast } from 'vue-toastification'
 
 const store = useStore()
+const route = useRoute()
+const router = useRouter()
+const queryClient = useQueryClient()
+const toast = useToast()
 
 const expandedProductIds = ref([])
 const numberOfColumns = ref(8)
-
-const filteredProducts = computed(() => store.getters['products/allProducts'])
-const isLoading = computed(() => store.getters['products/isLoading'])
 const isSaving = ref(false)
-const error = computed(() => store.getters['products/error'])
-const pagination = computed(() => store.getters['products/pagination'])
 
-onMounted(() => {
-  store.dispatch('products/fetchProducts')
+const itemsPerPage = ref(7)
+const page = computed(() => parseInt(route.query.page) || 1)
+const searchTerm = ref(route.query.search ? String(route.query.search) : '')
+const selectedStatuses = ref(
+  route.query.statuses ? String(route.query.statuses).split(',').filter(Boolean) : [],
+)
+
+const isVuexLoading = computed(() => store.getters['products/isLoading'])
+
+const querySearch = computed(() => (route.query.search ? String(route.query.search).trim() : ''))
+const queryStatuses = computed(() =>
+  route.query.statuses ? String(route.query.statuses).split(',').filter(Boolean) : [],
+)
+
+function showMessage(text, type = 'success', duration = 3000) {
+  if (type === 'error') {
+    toast.error(text, { timeout: duration })
+  } else {
+    toast.success(text, { timeout: duration })
+  }
+}
+
+const filters = computed(() => ({
+  search: querySearch.value,
+  statusIds: queryStatuses.value,
+}))
+
+const fetchProductsFn = (params) => {
+  return getProducts(params)
+}
+
+const productDataMapper = (data) => ({
+  items: data?.products || [],
+  count: data?.totalCount,
+})
+
+const {
+  items: filteredProducts,
+  totalPages,
+  isLoading,
+  isError,
+  error,
+} = usePaginatedQuery({
+  queryKeyBase: ref('products'),
+  filters: filters,
+  page: page,
+  itemsPerPage: itemsPerPage,
+  fetchFn: fetchProductsFn,
+  dataMapper: productDataMapper,
 })
 
 const isExpanded = (productId) => {
@@ -303,18 +357,45 @@ const getAggregateStatusText = (status) => {
   return stockStatusTextMap[status] || 'Không rõ'
 }
 
-const searchTerm = ref(store.getters['products/filters'].search)
-const selectedStatuses = ref(store.getters['products/filters'].statusIds)
-
-const debouncedFetch = debounce(() => {
-  store.dispatch('products/updateFilters', {
-    search: searchTerm.value,
-    statusIds: selectedStatuses.value,
-  })
+const debouncedApplyQuery = debounce(() => {
+  const qs = { ...route.query }
+  if (searchTerm.value && String(searchTerm.value).trim()) {
+    qs.search = String(searchTerm.value).trim()
+  } else {
+    delete qs.search
+  }
+  if (Array.isArray(selectedStatuses.value) && selectedStatuses.value.length > 0) {
+    qs.statuses = selectedStatuses.value.join(',')
+  } else {
+    delete qs.statuses
+  }
+  qs.page = 1
+  router.replace({ query: qs })
 }, 300)
 
-watch(searchTerm, debouncedFetch)
-watch(selectedStatuses, debouncedFetch)
+watch(searchTerm, debouncedApplyQuery)
+watch(selectedStatuses, debouncedApplyQuery)
+
+watch(
+  () => route.query,
+  (newQuery) => {
+    const qSearch = newQuery.search === undefined ? '' : String(newQuery.search || '')
+    if (qSearch !== searchTerm.value) {
+      searchTerm.value = qSearch
+    }
+    const qs = String(newQuery.statuses || '')
+    const vals = qs
+      ? qs
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : []
+    if (JSON.stringify(vals) !== JSON.stringify(selectedStatuses.value)) {
+      selectedStatuses.value = vals
+    }
+  },
+  { immediate: true },
+)
 
 const isFormModalVisible = ref(false)
 const formModalTitle = ref('')
@@ -485,24 +566,37 @@ const handleSaveProduct = async () => {
 
   isSaving.value = true
   try {
+    const isEditing = isEditMode.value
     await store.dispatch('products/saveProduct', productData)
     isFormModalVisible.value = false
+    await queryClient.invalidateQueries({ queryKey: ['products'] })
+    showMessage(isEditing ? 'Cập nhật sản phẩm thành công' : 'Thêm sản phẩm thành công', 'success')
   } catch (error) {
     console.error('Lỗi khi lưu sản phẩm:', error)
     formErrors.value.general = error.message || 'Lỗi từ server. Vui lòng thử lại.'
+    showMessage(error.message || 'Lỗi khi lưu sản phẩm', 'error')
   } finally {
     isSaving.value = false
   }
 }
 
 const promptDelete = async (product) => {
-  await store.dispatch('products/deleteProduct', product)
+  try {
+    await store.dispatch('products/deleteProduct', product)
+    await queryClient.invalidateQueries({ queryKey: ['products'] })
+    showMessage('Xoá sản phẩm thành công', 'success')
+  } catch (error) {
+    showMessage(error.message || 'Lỗi khi xoá sản phẩm', 'error')
+  }
 }
 
 const currentPage = computed({
-  get: () => pagination.value.page,
+  get: () => page.value,
   set: (value) => {
-    store.dispatch('products/changePage', value)
+    if (value !== page.value) {
+      router.replace({ query: { ...route.query, page: value } })
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
   },
 })
 
