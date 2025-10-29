@@ -15,9 +15,10 @@ import { showConfirmation } from '@/composables/confirmation'
 import { formatDate } from '@/composables/date'
 import { useToast } from 'vue-toastification'
 import { useRoute, useRouter } from 'vue-router'
-import { useQuery, useQueryClient } from '@tanstack/vue-query'
+import { useQueryClient } from '@tanstack/vue-query'
 import { getSupplierById } from '@/api/supplier'
-import { debounce, throttle } from '@/utils/debounceThrottle'
+import { debounce } from '@/utils/debounceThrottle'
+import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 
 const store = useStore()
 const route = useRoute()
@@ -121,7 +122,10 @@ async function handleSaveSupplier() {
     formErrors.value.email = 'Cần nhập ít nhất SĐT hoặc Email.'
     hasError = true
   }
-  if (hasError) return
+  if (hasError) {
+    showOverlay.value = false
+    return
+  }
 
   try {
     if (supplierData.id) {
@@ -145,27 +149,39 @@ async function handleSaveSupplier() {
   }
 }
 
+const filters = computed(() => ({
+  statusFilters: selectedStatuses.value,
+  search: searchTerm.value,
+}))
+
+const fetchSuppliersFn = (params) => {
+  return store.dispatch('suppliers/fetchSuppliers', {
+    page: params.page,
+    itemsPerPage: params.itemsPerPage,
+    statusFilters: params.statusFilters,
+    search: params.search,
+  })
+}
+
+const supplierDataMapper = (data) => ({
+  items: data?.suppliers || [],
+  count: data?.count,
+})
+
 const {
   data: suppliersData,
   isLoading,
   isError,
-} = useQuery({
-  queryKey: ['suppliers', page, searchTerm, selectedStatuses],
-  queryFn: () =>
-    store.dispatch('suppliers/fetchSuppliers', {
-      page: page.value,
-      itemsPerPage: itemsPerPage.value,
-      statusFilters: selectedStatuses.value,
-      search: searchTerm.value,
-    }),
-  keepPreviousData: true,
-})
-const storeSuppliers = computed(() => suppliersData.value?.suppliers || [])
-
-const totalPages = computed(() => {
-  const count = suppliersData.value?.count
-  if (count == null) return null
-  return Math.max(1, Math.ceil(count / itemsPerPage.value))
+  error,
+  items: storeSuppliers,
+  totalPages,
+} = usePaginatedQuery({
+  queryKeyBase: ref('suppliers'),
+  filters: filters,
+  page: page,
+  itemsPerPage: itemsPerPage,
+  fetchFn: fetchSuppliersFn,
+  dataMapper: supplierDataMapper,
 })
 
 const applyQueryFromRaw = async () => {
@@ -193,43 +209,8 @@ watch(selectedStatuses, () => {
   applyQueryFromRaw()
 })
 
-const throttledPrefetch = throttle((currentPage) => {
-  if (!suppliersData.value) return
-  const total = totalPages.value
-  if (currentPage < total) {
-    queryClient.prefetchQuery({
-      queryKey: ['suppliers', currentPage + 1, searchTerm, selectedStatuses],
-      queryFn: () =>
-        store.dispatch('suppliers/fetchSuppliers', {
-          page: currentPage + 1,
-          itemsPerPage: itemsPerPage.value,
-          statusFilters: selectedStatuses.value,
-          search: searchTerm.value,
-        }),
-    })
-  }
-  if (currentPage > 1) {
-    queryClient.prefetchQuery({
-      queryKey: ['suppliers', currentPage - 1, searchTerm, selectedStatuses],
-      queryFn: () =>
-        store.dispatch('suppliers/fetchSuppliers', {
-          page: currentPage - 1,
-          itemsPerPage: itemsPerPage.value,
-          statusFilters: selectedStatuses.value,
-          search: searchTerm.value,
-        }),
-    })
-  }
-}, 600)
-
-watch(suppliersData, () => {
-  const currentPage = page.value
-  throttledPrefetch(currentPage)
-})
-
 onUnmounted(() => {
   if (debouncedApplyQuery && debouncedApplyQuery.cancel) debouncedApplyQuery.cancel()
-  if (throttledPrefetch && throttledPrefetch.cancel) throttledPrefetch.cancel()
 })
 
 function handleCloseFormModal() {
@@ -360,6 +341,7 @@ const handleImport = async (event) => {
       }
       if (created.length > 0) {
         showMessage(`Đã nhập thành công ${created.length} nhà cung cấp.`)
+        await queryClient.invalidateQueries({ queryKey: ['suppliers'] })
       } else {
         showMessage('Không có nhà cung cấp nào hợp lệ trong file.', 'error')
       }
@@ -428,13 +410,15 @@ watch(
 </script>
 
 <template>
-  <div class="box-style">
+  <div class="bg-gray-100 p-4 sm:p-6 rounded-xl shadow-lg">
     <BaseLoadingOverlay :show="showOverlay" :message="overlayMessage" />
-    <div class="content-box-style">
+    <div
+      class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0"
+    >
       <div>
-        <h1 class="title-style">Quản lý nhà cung cấp</h1>
+        <h1 class="text-3xl font-bold text-gray-800">Quản lý nhà cung cấp</h1>
       </div>
-      <div class="action-button-style">
+      <div class="flex flex-wrap items-center gap-2">
         <BaseButton text="Thêm nhà cung cấp" color="purple" @click="openAddEditModal()" />
 
         <label for="import-file-input" class="cursor-pointer">
@@ -462,13 +446,13 @@ watch(
     />
 
     <div
-      class="hidden md:grid summary-row-grid items-center py-3 px-5 text-sm font-semibold text-gray-600 bg-gray-200 rounded-t-md"
+      class="hidden md:grid md:grid-cols-16 items-center gap-2 py-3 px-5 text-sm font-semibold text-gray-600 bg-gray-200 rounded-t-md"
     >
-      <div>Tên nhà cung cấp</div>
-      <div>Điện thoại</div>
-      <div>Email</div>
-      <div>Tổng mua</div>
-      <div>Trạng thái</div>
+      <div class="md:col-span-8">Tên nhà cung cấp</div>
+      <div class="md:col-start-9 md:col-span-2">Điện thoại</div>
+      <div class="md:col-start-11 md:col-span-2">Email</div>
+      <div class="md:col-start-13 md:col-span-2 md:justify-self-end">Tổng mua</div>
+      <div class="md:col-start-15 md:col-span-2">Trạng thái</div>
     </div>
 
     <div class="bg-white rounded-b-md shadow-sm">
@@ -476,9 +460,7 @@ watch(
         <BaseSpinner />
       </div>
       <div v-else-if="isError">
-        <p class="not-found-msg">
-          Could not fetch suppliers. Please try again later. {{ isError }}
-        </p>
+        <p class="not-found-msg">Could not fetch suppliers. Please try again later. {{ error }}</p>
       </div>
       <div v-else-if="storeSuppliers.length === 0" class="text-center py-6 text-gray-500">
         Không có nhà cung cấp nào để hiển thị.
@@ -527,43 +509,3 @@ watch(
     </DraggableModal>
   </div>
 </template>
-
-<style lang="css" scoped>
-@reference "../assets/main.css";
-
-.box-style {
-  @apply bg-gray-100 p-4 sm:p-6 rounded-xl shadow-lg;
-}
-.title-style {
-  @apply text-3xl font-bold text-gray-800;
-}
-.content-box-style {
-  @apply flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0;
-}
-.action-button-style {
-  @apply flex flex-wrap items-center gap-2;
-}
-.summary-row-grid {
-  display: grid;
-  grid-template-columns: repeat(16, minmax(0, 1fr));
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.summary-row-grid > :nth-child(1) {
-  grid-column: 1 / span 8;
-}
-.summary-row-grid > :nth-child(2) {
-  grid-column: 9 / span 2;
-}
-.summary-row-grid > :nth-child(3) {
-  grid-column: 11 / span 2;
-}
-.summary-row-grid > :nth-child(4) {
-  grid-column: 13 / span 2;
-  justify-self: end;
-}
-.summary-row-grid > :nth-child(5) {
-  grid-column: 15 / span 2;
-}
-</style>

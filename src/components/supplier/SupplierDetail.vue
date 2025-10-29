@@ -2,12 +2,11 @@
 import RoundBadge from '@/components/ui/RoundBadge.vue'
 import BasePagination from '../ui/button/BasePagination.vue'
 import BaseSpinner from '../ui/BaseSpinner.vue'
-import { computed, onUnmounted, ref, watch } from 'vue'
-import { throttle } from '@/utils/debounceThrottle'
+import { computed, ref } from 'vue'
 import { getAllInputBySupplierID } from '@/api/input'
-import { useQuery, useQueryClient } from '@tanstack/vue-query'
-import { formatDate, formatDateTime } from '@/composables/date'
+import { formatDateTime, formatDate } from '@/composables/date'
 import { formatCurrency } from '@/composables/currency'
+import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 
 const props = defineProps({
   itemData: Object,
@@ -16,7 +15,6 @@ defineEmits(['edit-supplier', 'delete-supplier', 'toggle-activation'])
 const activeTab = ref('info')
 const historyCurrentPage = ref(1)
 const historyItemsPerPage = ref(10)
-const queryClient = useQueryClient()
 
 function getStatusInfo(statusId) {
   switch (statusId) {
@@ -31,73 +29,41 @@ function getStatusInfo(statusId) {
   }
 }
 
+const queryKeyBase = computed(() => ['inputHistoryOfSupplier', props.itemData.id])
+
+const filters = computed(() => ({
+  statusFilters: [],
+  search: '',
+}))
+
+const fetchHistoryFn = (params) => {
+  return getAllInputBySupplierID(
+    props.itemData.id,
+    params.page,
+    params.itemsPerPage,
+    params.statusFilters,
+    params.search,
+  )
+}
+
+const historyDataMapper = (data) => ({
+  items: data?.inputs || [],
+  count: data?.count,
+})
+
 const {
-  data: historyData,
   isLoading: historyLoading,
   isError: historyIsError,
   error: historyError,
-} = useQuery({
-  queryKey: ['inputHistoryOfSupplier', props.itemData.id, historyCurrentPage],
-  queryFn: () =>
-    getAllInputBySupplierID(
-      props.itemData.id,
-      historyCurrentPage.value,
-      historyItemsPerPage.value,
-      [],
-      '',
-    ),
-  keepPreviousData: true,
-})
-
-const inputsData = computed(() => historyData.value?.inputs || [])
-const inputCount = computed(() => historyData.value?.count || 0)
-
-const historyTotalPages = computed(() => {
-  const count = inputCount.value
-  if (!count || count === 0) return 1
-  return Math.max(1, Math.ceil(count / historyItemsPerPage.value))
-})
-
-const throttledPrefetchHistory = throttle((currentPage, total) => {
-  if (!historyData.value) return
-  if (currentPage < total) {
-    queryClient.prefetchQuery({
-      queryKey: ['inputHistoryOfSupplier', props.itemData.id, currentPage + 1],
-      queryFn: () =>
-        getAllInputBySupplierID(
-          props.itemData.id,
-          currentPage + 1,
-          historyItemsPerPage.value,
-          [],
-          '',
-        ),
-    })
-  }
-  if (currentPage > 1) {
-    queryClient.prefetchQuery({
-      queryKey: ['inputHistoryOfSupplier', props.itemData.id, currentPage - 1],
-      queryFn: () =>
-        getAllInputBySupplierID(
-          props.itemData.id,
-          currentPage - 1,
-          historyItemsPerPage.value,
-          [],
-          '',
-        ),
-    })
-  }
-}, 600)
-
-watch(historyData, () => {
-  if (historyData.value && historyTotalPages.value) {
-    throttledPrefetchHistory(historyCurrentPage.value, historyTotalPages.value)
-  }
-})
-
-onUnmounted(() => {
-  if (throttledPrefetchHistory && throttledPrefetchHistory.cancel) {
-    throttledPrefetchHistory.cancel()
-  }
+  items: inputsData,
+  totalPages: historyTotalPages,
+} = usePaginatedQuery({
+  queryKeyBase: queryKeyBase,
+  filters: filters,
+  page: historyCurrentPage,
+  itemsPerPage: historyItemsPerPage,
+  fetchFn: fetchHistoryFn,
+  dataMapper: historyDataMapper,
 })
 </script>
 
