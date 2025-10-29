@@ -74,7 +74,7 @@ const actions = {
     commit('SET_LOADING', true)
     commit('SET_ERROR', null)
     try {
-      const { product: _savedProduct } = await productApi.saveProduct(product)
+      const { product: _savedProduct } = await productApi.upsertProduct(product)
       dispatch('fetchProducts')
     } catch (error) {
       console.error('Lỗi saveProduct action:', error)
@@ -96,11 +96,11 @@ const actions = {
     commit('SET_ERROR', null)
     try {
       for (const variant of product.variants) {
-        if (variant.cover_image) {
-          await dispatch('deleteProductImage', { url: variant.cover_image, bucket: 'cover' })
+        if (variant.cover_image_url) {
+          await dispatch('deleteProductImage', { url: variant.cover_image_url, bucket: 'cover' })
         }
         for (const url of variant.photo_collection || []) {
-          await dispatch('deleteProductImage', { url, bucket: 'photo_collection' })
+          await dispatch('deleteProductImage', { url, bucket: 'photo-collection' })
         }
       }
 
@@ -115,7 +115,7 @@ const actions = {
     }
   },
 
-  async deleteProductImage({ commit }, { url, bucket }) {
+  async deleteProductImage(_, { url, bucket }) {
     await storageApi.deleteFile(url, bucket)
   },
 

@@ -35,12 +35,15 @@ export const upsertProduct = async (productData) => {
 }
 
 export const deleteProduct = async (productId) => {
-  const { data, error } = await supabase.from('product').delete().eq('id', productId)
+  const { error } = await supabase.rpc('delete_product_cascade', {
+    p_product_id: productId,
+  })
 
   if (error) {
-    console.error('Lỗi khi xóa sản phẩm:', error)
+    console.error('Lỗi khi gọi RPC delete_product_cascade:', error)
     throw error
   }
 
-  return data
+  // RPC không trả về data khi thành công
+  return true
 }

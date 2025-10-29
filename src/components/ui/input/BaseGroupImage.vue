@@ -125,7 +125,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 const store = useStore()
-const bucketName = 'photo_collection'
+const bucketName = 'photo-collection'
 
 const isDragging = ref(false)
 const isLoading = ref(false)
@@ -216,11 +216,8 @@ const uploadFilesHandler = async (files) => {
     for (const file of files) {
       uploadPromises.push(storageApi.uploadFile(file, bucketName))
     }
-
-    const results = await Promise.all(uploadPromises)
-    const newUrls = results.map((r) => r.publicUrl)
-
-    // Thêm các URL mới vào mảng
+    const filePaths = await Promise.all(uploadPromises)
+    const newUrls = filePaths.map((path) => storageApi.getPublicUrl(path, bucketName))
     localValue.value = [...localValue.value, ...newUrls]
   } catch (apiError) {
     console.error('API Upload Error:', apiError)

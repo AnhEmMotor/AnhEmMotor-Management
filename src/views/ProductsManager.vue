@@ -114,7 +114,9 @@
 
               <td class="normal-cell-style w-20">
                 <img
-                  :src="product.cover_image || 'https://placehold.co/100x100/gray/white?text=N/A'"
+                  :src="
+                    product.cover_image_url || 'https://placehold.co/100x100/gray/white?text=N/A'
+                  "
                   alt="Ảnh bìa"
                   class="w-16 h-16 object-cover rounded-md border border-gray-200"
                   @error="
@@ -170,7 +172,7 @@
                           <td class="detail-cell-style w-20">
                             <img
                               :src="
-                                variant.cover_image ||
+                                variant.cover_image_url ||
                                 'https://placehold.co/100x100/gray/white?text=N/A'
                               "
                               alt="Ảnh biến thể"
@@ -273,7 +275,6 @@ import BaseInput from '@/components/ui/input/BaseInput.vue'
 import BasePagination from '@/components/ui/button/BasePagination.vue'
 import BaseSmallNoBgButton from '@/components/ui/button/BaseSmallNoBgButton.vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
-import { showConfirmation } from '@/composables/confirmation'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
 
 const store = useStore()

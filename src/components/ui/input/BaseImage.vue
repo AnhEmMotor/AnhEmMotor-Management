@@ -95,7 +95,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useStore } from 'vuex'
 import * as storageApi from '@/api/supabaseStorage'
 
@@ -118,7 +118,7 @@ const isDragging = ref(false)
 const isLoading = ref(false)
 const fileInput = ref(null)
 const error = ref('')
-const initialImageUrl = ref(props.modelValue) // Lưu URL ban đầu để xóa
+const initialImageUrl = ref(props.modelValue)
 
 const localValue = computed({
   get: () => props.modelValue,
@@ -126,6 +126,17 @@ const localValue = computed({
     emit('update:modelValue', value)
   },
 })
+
+// === SỬA LỖI: Loại bỏ điều kiện IF để luôn đồng bộ ===
+watch(
+  () => props.modelValue,
+  (newVal) => {
+    // Luôn cập nhật initialImageUrl khi modelValue thay đổi
+    initialImageUrl.value = newVal
+  },
+  { immediate: true },
+)
+// =======================================================================
 
 const openFilePicker = () => {
   if (isLoading.value) return
@@ -180,19 +191,26 @@ const uploadHandler = async (file) => {
 
   try {
     // 1. Xóa ảnh cũ (Nếu tồn tại và không phải placeholder)
-    if (initialImageUrl.value && initialImageUrl.value !== localValue.value) {
+    if (
+      initialImageUrl.value &&
+      initialImageUrl.value !== localValue.value &&
+      !initialImageUrl.value.includes('placehold.co')
+    ) {
       await store.dispatch('products/deleteProductImage', {
         url: initialImageUrl.value,
         bucket: bucketName,
       })
     }
 
-    // 2. Upload file mới
-    const result = await storageApi.uploadFile(file, bucketName)
+    // 2. Upload file mới -> Lấy path
+    const filePath = await storageApi.uploadFile(file, bucketName)
 
-    // 3. Cập nhật giá trị
-    localValue.value = result.publicUrl
-    initialImageUrl.value = result.publicUrl // Đặt URL mới làm URL ban đầu
+    // 3. Lấy Public URL từ path
+    const publicUrl = storageApi.getPublicUrl(filePath, bucketName)
+
+    // 4. Cập nhật giá trị bằng Public URL
+    localValue.value = publicUrl
+    initialImageUrl.value = publicUrl // Đặt URL mới làm URL ban đầu
   } catch (apiError) {
     console.error('API Upload Error:', apiError)
     error.value = `Lỗi upload: ${apiError.message}`
@@ -203,7 +221,7 @@ const uploadHandler = async (file) => {
 
 const clearImage = async () => {
   // 1. Xóa ảnh khỏi Storage (Nếu có URL)
-  if (localValue.value) {
+  if (localValue.value && !localValue.value.includes('placehold.co')) {
     await store.dispatch('products/deleteProductImage', {
       url: localValue.value,
       bucket: bucketName,

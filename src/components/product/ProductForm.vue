@@ -203,19 +203,32 @@ watch(
       localProduct.value.variants = []
       addVariant()
     } else if (newOptions.length === 0 && oldOptions.length > 0) {
-      localProduct.value.variants = [
-        {
-          id: null,
-          price: null,
-          optionValues: {},
-          cover_image_url: generalCoverImage.value,
-          photo_collection: [...generalPhotoCollection.value],
-          url: slugify(localProduct.value.name),
-        },
-      ]
+      // GIỮ LẠI dữ liệu của biến thể đầu tiên thay vì tạo mới
+      const firstVariant = localProduct.value.variants[0]
+        ? JSON.parse(JSON.stringify(localProduct.value.variants[0]))
+        : {
+            id: null,
+            price: null,
+            cover_image_url: generalCoverImage.value,
+            photo_collection: [...generalPhotoCollection.value],
+          } // Xóa các thuộc tính và cập nhật lại URL cho sản phẩm đơn giản
+
+      firstVariant.optionValues = {}
+      firstVariant.url = slugify(localProduct.value.name) // Đặt mảng variants CHỈ chứa biến thể đã được chỉnh sửa này
+
+      localProduct.value.variants = [firstVariant]
     } else {
+      // Khối else này chạy khi thay đổi options
       const currentOptionNames = newOptions.map((o) => o.name)
       localProduct.value.variants.forEach((variant) => {
+        // Lặp qua các biến thể hiện có
+
+        // === SỬA LỖI: Đảm bảo optionValues là một object ===
+        if (!variant.optionValues || typeof variant.optionValues !== 'object') {
+          variant.optionValues = {} // Khởi tạo nếu chưa phải object
+        }
+        // ===================================================
+
         const existingValueKeys = Object.keys(variant.optionValues)
 
         existingValueKeys.forEach((key) => {
