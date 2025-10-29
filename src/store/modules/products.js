@@ -1,6 +1,6 @@
 import * as productApi from '@/api/product'
 import * as storageApi from '@/api/supabaseStorage'
-import { showConfirmation } from '@/composables/confirmation'
+import { showConfirmation } from '@/composables/useConfirmationState'
 
 const getDefaultPagination = () => ({
   page: 1,

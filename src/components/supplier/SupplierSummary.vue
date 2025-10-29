@@ -1,6 +1,6 @@
 <script setup>
 import RoundBadge from '../ui/RoundBadge.vue'
-import { formatCurrency } from '@/composables/currency'
+import { formatCurrency } from '@/composables/useCurrency'
 
 defineProps({
   itemData: Object,

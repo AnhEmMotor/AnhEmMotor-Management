@@ -16,7 +16,7 @@
 <script setup>
 import BaseConfirmationModal from './BaseConfirmationModal.vue'
 import BaseButton from '@/components/ui/button/BaseButton.vue'
-import { useConfirmationState, confirm, cancel } from '@/composables/confirmation'
+import { useConfirmationState, confirm, cancel } from '@/composables/useConfirmationState'
 
 const { state } = useConfirmationState()
 

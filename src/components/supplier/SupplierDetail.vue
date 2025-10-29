@@ -4,8 +4,8 @@ import BasePagination from '../ui/button/BasePagination.vue'
 import BaseSpinner from '../ui/BaseSpinner.vue'
 import { computed, ref } from 'vue'
 import { getAllInputBySupplierID } from '@/api/input'
-import { formatDateTime, formatDate } from '@/composables/date'
-import { formatCurrency } from '@/composables/currency'
+import { formatDateTime, formatDate } from '@/composables/useDate'
+import { formatCurrency } from '@/composables/useCurrency'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 
 const props = defineProps({

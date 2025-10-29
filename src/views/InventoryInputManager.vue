@@ -9,7 +9,7 @@ import InventoryFilterButtons from '@/components/inventory_input/InventoryFilter
 import DraggableModal from '@/components/ui/DraggableModal.vue'
 import InventoryInputForm from '@/components/inventory_input/InventoryInputForm.vue'
 import ProductForm from '@/components/product/ProductForm.vue'
-import { showConfirmation } from '@/composables/confirmation'
+import { showConfirmation } from '@/composables/useConfirmationState'
 
 // Local products catalog shared with the inventory input form
 const productsCatalog = ref([

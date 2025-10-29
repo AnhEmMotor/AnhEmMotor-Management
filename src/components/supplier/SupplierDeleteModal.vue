@@ -1,6 +1,6 @@
 <script setup>
 import { watch } from 'vue'
-import { showConfirmation } from '@/composables/confirmation'
+import { showConfirmation } from '@/composables/useConfirmationState'
 
 const props = defineProps({
   isOpen: Boolean,

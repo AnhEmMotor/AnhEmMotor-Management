@@ -1,6 +1,5 @@
 import { reactive, readonly } from 'vue'
 
-// singleton state used by the global confirmation component and callers
 const state = reactive({
   show: false,
   title: '',
