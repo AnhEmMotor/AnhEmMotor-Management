@@ -52,16 +52,17 @@ const mutations = {
 }
 
 const actions = {
-  async fetchProducts({ commit, state }) {
+  // Thay đổi chữ ký từ { commit, state } thành { commit, state }, params
+  async fetchProducts({ commit, state }, params) {
     commit('SET_LOADING', true)
     try {
-      const { currentPage, pageSize } = state.pagination
-      const { searchTerm, statusIds } = state.filters
+      const { page, itemsPerPage, search } = params
+      const { statusIds } = state.filters
 
       const data = await priceApi.getProducts({
-        page: currentPage,
-        itemsPerPage: pageSize,
-        search: searchTerm,
+        page: page,
+        itemsPerPage: itemsPerPage,
+        search: search,
         statusIds: statusIds,
       })
 
@@ -69,8 +70,11 @@ const actions = {
         products: data.products || [],
         totalCount: data.totalCount || 0,
       })
+
+      return data
     } catch (error) {
       commit('SET_ERROR', error.message)
+      throw error
     } finally {
       commit('SET_LOADING', false)
     }
