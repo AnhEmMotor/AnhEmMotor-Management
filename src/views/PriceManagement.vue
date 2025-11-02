@@ -1,75 +1,67 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { useStore } from 'vuex'
 import PriceQuickMenu from '@/components/price_management/PriceQuickMenu.vue'
 import BaseInput from '@/components/ui/input/BaseInput.vue'
 import BasePagination from '@/components/ui/button/BasePagination.vue'
 
-// sample data (kept from original)
-const priceHistoryData = {
-  SP000007: { name: 'VS', recentInputPrice: null, oldPrices: [] },
-  SP000006: {
-    name: 'SH350i',
-    recentInputPrice: 45000000,
-    oldPrices: [
-      { price: 48000000, date: '01/05/2024' },
-      { price: 47500000, date: '15/03/2024' },
-    ],
-  },
-  SP000004: {
-    name: 'AirBlade',
-    recentInputPrice: 38000000,
-    oldPrices: [{ price: 39500000, date: '12/04/2024' }],
-  },
+const store = useStore()
+
+const products = computed(() => store.state.price.products)
+const totalPages = computed(() => store.getters['price/totalPages'])
+const isLoading = computed(() => store.state.price.isLoading)
+const error = computed(() => store.state.price.error)
+
+const currentPage = computed({
+  get: () => store.state.price.pagination.currentPage,
+  set: (value) => store.dispatch('price/updatePage', value),
+})
+
+const localSearchTerm = ref(store.state.price.filters.searchTerm)
+let searchTimeout = null
+
+watch(localSearchTerm, (newValue) => {
+  clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(() => {
+    store.dispatch('price/updateSearch', newValue)
+  }, 500)
+})
+
+const quickMenu = ref({ visible: false, x: 0, y: 0, item: null })
+const selectedProductId = ref(null)
+
+function selectProduct(productId) {
+  if (selectedProductId.value === productId) {
+    selectedProductId.value = null
+  } else {
+    selectedProductId.value = productId
+  }
 }
 
-const products = ref(
-  Object.keys(priceHistoryData).map((id) => {
-    const history = priceHistoryData[id].oldPrices || []
-    return {
-      id,
-      name: priceHistoryData[id].name,
-      history,
-      status: 'active',
-      sellingPrice: history && history.length > 0 ? history[0].price : '',
-    }
-  }),
-)
+function openQuickMenu(evt, product, variant) {
+  if (variant.latest_input_price === null || variant.latest_input_price === undefined) {
+    return
+  }
 
-// search / pagination
-const searchTerm = ref('')
-const pageSize = 5
-const currentPage = ref(1)
-const totalPages = computed(() => Math.max(1, Math.ceil(filteredProducts.value.length / pageSize)))
-
-const filteredProducts = computed(() => {
-  const term = searchTerm.value.trim().toLowerCase()
-  if (!term) return products.value
-  return products.value.filter(
-    (p) => p.id.toLowerCase().includes(term) || p.name.toLowerCase().includes(term),
-  )
-})
-
-const paginatedProducts = computed(() => {
-  const start = (currentPage.value - 1) * pageSize
-  return filteredProducts.value.slice(start, start + pageSize)
-})
-
-// quick menu state
-const quickMenu = ref({ visible: false, x: 0, y: 0, item: null })
-
-function openQuickMenu(evt, item) {
-  // prevent blur on the input by preventing default on mousedown handled in menu
   quickMenu.value.visible = true
-  quickMenu.value.item = item
-  // position the menu near the click target
+  quickMenu.value.item = { product, variant }
+
   const rect = evt.target.getBoundingClientRect()
-  const menuWidth = 260 // approximate width of menu
-  // anchor to the input's top-right: align menu's right edge with input's right edge
-  let left = rect.right - menuWidth
-  // clamp to viewport (keep at least 8px padding)
-  if (left < 8) left = 8
+  const menuWidth = 384
+  const windowWidth = window.innerWidth
+
+  let left = rect.left + window.scrollX
+
+  if (left + menuWidth > windowWidth - 8) {
+    left = windowWidth - menuWidth - 8
+  }
+
+  if (left < 8) {
+    left = 8
+  }
+
   quickMenu.value.x = left
-  quickMenu.value.y = rect.bottom + 6
+  quickMenu.value.y = rect.bottom + window.scrollY + 6
 }
 
 function closeQuickMenu() {
@@ -78,101 +70,45 @@ function closeQuickMenu() {
 }
 
 function onDocClick(e) {
-  // if clicking outside the menu, close it
   const menuEl = document.querySelector('.price-quick-menu')
-  if (!menuEl) return closeQuickMenu()
-  if (menuEl.contains(e.target)) return
-  // if clicking an input inside table, keep it open
-  if (e.target && e.target.closest && e.target.closest('.box-style')) {
-    // but ensure it's not inside the quick menu
-    if (menuEl.contains(e.target)) return
-    // otherwise close
+  if (!menuEl || !menuEl.contains(e.target)) {
+    if (e.target && e.target.closest && e.target.closest('.price-input')) {
+      return
+    }
+    closeQuickMenu()
   }
-  closeQuickMenu()
 }
 
 function applyQuickPrice(newPrice) {
-  const it = quickMenu.value.item
-  if (!it) return
-  it.sellingPrice = String(newPrice)
-  setPrice(it)
+  const { product, variant } = quickMenu.value.item
+  if (!product || !variant) return
+
+  const formattedPrice = String(newPrice)
+  variant.price = formattedPrice
+  store.dispatch('price/updatePrice', {
+    productId: product.product_id,
+    variantId: variant.variant_id,
+    newPrice: formattedPrice,
+  })
   closeQuickMenu()
 }
 
-// toast
+function handlePriceBlur(product, variant) {
+  const v = (variant.price || '').toString().trim()
+  if (!v) return
 
-function formatDate(timestamp) {
-  if (!timestamp) return ''
-  const d = new Date(timestamp)
-  const dd = String(d.getDate()).padStart(2, '0')
-  const mm = String(d.getMonth() + 1).padStart(2, '0')
-  const yyyy = d.getFullYear()
-  return `${dd}/${mm}/${yyyy}`
+  store.dispatch('price/updatePrice', {
+    productId: product.product_id,
+    variantId: variant.variant_id,
+    newPrice: v,
+  })
 }
 
-function getRecentInputPriceDisplay(item) {
-  const rec =
-    priceHistoryData[item.id] && priceHistoryData[item.id].recentInputPrice !== undefined
-      ? priceHistoryData[item.id].recentInputPrice
-      : item.history && item.history.length > 0
-        ? item.history[0].price
-        : null
-  return rec === null || rec === undefined || rec === '' ? '-' : rec
+function getRecentInputPriceDisplay(variant) {
+  const price = variant.latest_input_price
+  return price === null || price === undefined ? '-' : formatMoney(price)
 }
 
-function setPrice(item) {
-  const v = (item.sellingPrice || '').toString().trim()
-  if (!v) {
-    return
-  }
-  // Update selling price and also record it into history + global priceHistoryData
-  item.sellingPrice = v
-
-  // format as numeric if possible, otherwise keep string
-  const numeric = parseNumber(v)
-  let formattedPrice = numeric !== null ? numeric : v
-  // enforce non-negative numeric prices
-  if (typeof formattedPrice === 'number' && formattedPrice < 0) formattedPrice = 0
-  const date = formatDate(Date.now())
-
-  // push into product.history (most recent first)
-  item.history = item.history || []
-  // Avoid duplicating identical most-recent entries
-  const lastPriceRaw = item.history.length > 0 ? item.history[0].price : null
-  const lastNumeric = parseNumber(lastPriceRaw)
-  const newNumeric = numeric
-  let isSame = false
-  if (newNumeric !== null && lastNumeric !== null) {
-    // both are numeric -> compare numbers
-    isSame = newNumeric === lastNumeric
-  } else {
-    // fallback: compare normalized strings (remove dots/commas/spaces)
-    const normalize = (s) =>
-      s === null || s === undefined
-        ? ''
-        : String(s)
-            .replace(/[.,\s]/g, '')
-            .trim()
-    isSame = normalize(lastPriceRaw) === normalize(formattedPrice)
-  }
-  if (!isSame) {
-    item.history.unshift({ price: formattedPrice, date })
-  }
-
-  // keep global map in sync for oldPrices only. Do NOT overwrite recentInputPrice (it's the reference/import price).
-  if (!priceHistoryData[item.id]) {
-    priceHistoryData[item.id] = {
-      name: item.name,
-      recentInputPrice: null,
-      oldPrices: item.history.slice(),
-    }
-  } else {
-    priceHistoryData[item.id].oldPrices = item.history.slice()
-    // preserve existing recentInputPrice; do not overwrite
-  }
-}
-
-// helper to coerce numeric values from strings like '48,000,000' or '48000000'
 function parseNumber(v) {
   if (v === null || v === undefined || v === '') return null
   if (typeof v === 'number') return v
@@ -181,135 +117,185 @@ function parseNumber(v) {
   return Number.isFinite(n) ? n : null
 }
 
-// compute percent difference between current entered price and the recent input price
-function computePercent(item) {
-  const current = parseNumber(item.sellingPrice)
+function computePercent(variant) {
+  const current = parseNumber(variant.price)
   if (current === null) return null
 
-  // prefer explicit recentInputPrice from global map if available
-  let recentRaw = null
-  if (
-    priceHistoryData[item.id] &&
-    priceHistoryData[item.id].recentInputPrice !== undefined &&
-    priceHistoryData[item.id].recentInputPrice !== null
-  ) {
-    recentRaw = priceHistoryData[item.id].recentInputPrice
-  } else if (item.history && item.history.length > 0) {
-    recentRaw = item.history[0].price
-  }
-
-  const recent = parseNumber(recentRaw)
+  const recent = parseNumber(variant.latest_input_price)
   if (recent === null || recent === 0) return null
 
   return ((current - recent) / recent) * 100
 }
 
-function formatPercent(item) {
-  const p = computePercent(item)
+function formatPercent(variant) {
+  const p = computePercent(variant)
   if (p === null) return '-'
   const rounded = Math.round(p * 10) / 10
   const sign = rounded > 0 ? '+' : ''
   return `${sign}${rounded}%`
 }
 
-function handlePriceBlur(item) {
-  const v = (item.sellingPrice || '').toString().trim()
-  if (!v) return
-  setPrice(item)
+function formatMoney(v) {
+  if (v === null || v === undefined) return '-'
+  if (typeof v === 'number') return new Intl.NumberFormat('vi-VN').format(v)
+  return String(v)
+}
+
+function getVariantOptionsText(optionValues) {
+  if (!optionValues) return 'Mặc định'
+  return Object.values(optionValues).join(' - ')
 }
 
 onMounted(() => {
-  products.value.forEach((p) => (p.isOpen = false))
+  store.dispatch('price/fetchProducts')
   document.addEventListener('mousedown', onDocClick)
 })
 
 onBeforeUnmount(() => {
   document.removeEventListener('mousedown', onDocClick)
+  clearTimeout(searchTimeout)
 })
 </script>
 
 <template>
-  <div class="box-style">
-    <div class="content-box-style">
+  <div class="bg-gray-100 p-4 sm:p-6 rounded-xl shadow-lg">
+    <div class="text-3xl font-bold text-center text-gray-800">
       <div>
-        <h1 class="title-style">Thiết Lập Giá Hàng Hóa</h1>
+        <h1
+          class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0"
+        >
+          Thiết Lập Giá Hàng Hóa
+        </h1>
       </div>
     </div>
 
-    <BaseInput v-model="searchTerm" type="text" placeholder="Tìm kiếm mã, tên, ..." class="mb-3" />
+    <BaseInput
+      v-model="localSearchTerm"
+      type="text"
+      placeholder="Tìm kiếm mã, tên, ..."
+      class="mb-3"
+    />
 
-    <!-- Table Header (visible on md+) -->
     <div
-      class="hidden md:grid md:[grid-template-columns:repeat(16,minmax(0,1fr))] items-center py-3 px-4 text-sm font-semibold text-gray-600 bg-gray-200 rounded-t-md"
+      class="hidden md:grid md:grid-cols-12 items-center py-3 px-4 text-sm font-semibold text-gray-600 bg-gray-200 rounded-t-md"
     >
-      <div class="px-3 md:[grid-column:span_2]">Mã hàng</div>
-      <div class="px-3 md:[grid-column:span_9]">Tên hàng</div>
-      <div class="px-4 md:[grid-column:span_2] text-right">Giá nhập gần nhất</div>
-      <div class="px-3 md:[grid-column:span_2] text-right">Nhập giá</div>
-      <div class="px-3 md:[grid-column:span_1] text-right">%</div>
+      <div class="md:col-span-8">Tên Sản Phẩm</div>
+      <div class="md:col-span-3">Số biến thể</div>
+      <div class="md:col-span-1 text-right"></div>
     </div>
 
-    <!-- List -->
     <div class="bg-white rounded-b-md shadow-sm">
-      <div v-if="filteredProducts.length === 0" class="text-center py-6 text-gray-500">
+      <div v-if="isLoading" class="text-center py-6 text-gray-500">Đang tải dữ liệu...</div>
+      <div v-else-if="error" class="text-center py-6 text-red-500">
+        {{ error }}
+      </div>
+      <div v-else-if="!products || products.length === 0" class="text-center py-6 text-gray-500">
         Không có mặt hàng để hiển thị.
       </div>
-      <div v-else>
+
+      <template v-else>
         <div
-          v-for="item in paginatedProducts"
-          :key="item.id"
-          class="grid grid-cols-1 md:[grid-template-columns:repeat(16,minmax(0,1fr))] md:items-center py-1 md:py-1 px-4 md:px-4 border-b border-gray-300 text-sm gap-2 md:gap-0"
+          v-for="product in products"
+          :key="product.product_id"
+          class="border-b border-gray-200 last:border-b-0"
         >
-          <!-- Mã hàng -->
-          <div class="px-0 md:px-3 md:[grid-column:span_2]">
-            <div class="text-xs text-gray-500 md:hidden">Mã hàng</div>
-            <div class="font-medium">{{ item.id }}</div>
-          </div>
-
-          <!-- Tên hàng -->
-          <div class="px-0 md:px-3 max-w-full md:[grid-column:span_9]">
-            <div class="text-xs text-gray-500 md:hidden">Tên hàng</div>
-            <div class="truncate" :title="item.name">{{ item.name }}</div>
-          </div>
-
-          <!-- Giá nhập gần nhất (from recentInputPrice or history) -->
-          <div class="px-0 md:px-4 text-right md:[grid-column:span_2]">
-            <div class="text-xs text-gray-500 md:hidden">Giá nhập gần nhất</div>
-            <div>{{ getRecentInputPriceDisplay(item) }}</div>
-          </div>
-
-          <!-- Nhập giá + actions -->
-          <div class="px-0 md:px-1 md:[grid-column:span_2]">
-            <div class="text-xs text-gray-500 md:hidden">Nhập giá</div>
-            <div class="flex items-center gap-2">
-              <BaseInput
-                v-model="item.sellingPrice"
-                type="text"
-                placeholder="0"
-                @focus="(e) => openQuickMenu(e, item)"
-                @blur="() => handlePriceBlur(item)"
-                @keydown.enter.prevent="() => setPrice(item)"
-                @dblclick.stop
-              />
+          <div
+            @click="selectProduct(product.product_id)"
+            class="grid grid-cols-1 md:grid-cols-12 items-center py-3 px-4 cursor-pointer hover:bg-gray-50"
+            :class="{ 'bg-gray-50': selectedProductId === product.product_id }"
+          >
+            <div class="font-medium text-gray-800 md:col-span-8">{{ product.product_name }}</div>
+            <div class="text-sm text-gray-600 md:col-span-3">
+              {{ product.variants?.length || 0 }} biến thể/phiên bản
             </div>
-          </div>
-          <!-- percent column for md+ -->
-          <div class="hidden md:flex items-center justify-end px-0 md:px-3 md:[grid-column:span_1]">
-            <div v-if="computePercent(item) !== null" class="text-sm font-medium">
-              <span
-                :class="{
-                  'text-green-600': computePercent(item) > 0,
-                  'text-red-600': computePercent(item) < 0,
-                  'text-gray-500': computePercent(item) === 0,
-                }"
+            <div class="hidden md:flex justify-end items-center md:col-span-1">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 text-gray-500 transition-transform duration-200"
+                :class="{ 'rotate-180': selectedProductId === product.product_id }"
+                viewBox="0 0 20 20"
+                fill="currentColor"
               >
-                {{ formatPercent(item) }}
-              </span>
+                <path
+                  fill-rule="evenodd"
+                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                  clip-rule="evenodd"
+                />
+              </svg>
             </div>
           </div>
+
+          <transition name="slide-fade">
+            <div
+              v-if="selectedProductId === product.product_id"
+              class="bg-gray-50 pl-4 pr-4 md:pl-12 pb-4 pt-2"
+            >
+              <div
+                class="hidden md:grid md:grid-cols-12 items-center pt-2 pb-2 text-xs font-semibold text-gray-500 border-b border-gray-300"
+              >
+                <div class="md:col-span-4 px-3">Biến thể/phiên bản</div>
+                <div class="md:col-span-3 px-4 text-right">Giá nhập gần nhất</div>
+                <div class="md:col-span-4 px-1 text-right">Nhập giá</div>
+                <div class="md:col-span-1 px-3 text-right">%</div>
+              </div>
+
+              <div
+                v-if="!product.variants || product.variants.length === 0"
+                class="text-center py-4 text-gray-500 text-sm"
+              >
+                Sản phẩm này chưa có biến thể.
+              </div>
+
+              <div
+                v-for="variant in product.variants"
+                :key="variant.variant_id"
+                class="grid grid-cols-1 md:grid-cols-12 md:items-center py-2 md:py-2 border-t border-gray-200 text-sm gap-2 md:gap-0 first:border-t-0 md:first:border-t-0"
+              >
+                <div class="px-0 md:px-3 md:col-span-4">
+                  <div class="text-xs text-gray-500 md:hidden">Biến thể</div>
+                  <div class="font-medium">{{ getVariantOptionsText(variant.option_values) }}</div>
+                </div>
+
+                <div class="px-0 md:px-4 text-right md:col-span-3">
+                  <div class="text-xs text-gray-500 md:hidden">Giá nhập gần nhất</div>
+                  <div>{{ getRecentInputPriceDisplay(variant) }}</div>
+                </div>
+
+                <div class="px-0 md:px-1 md:col-span-4">
+                  <div class="text-xs text-gray-500 md:hidden">Nhập giá</div>
+                  <div class="flex items-center gap-2">
+                    <BaseInput
+                      v-model="variant.price"
+                      type="text"
+                      placeholder="0"
+                      class="price-input"
+                      @focus="(e) => openQuickMenu(e, product, variant)"
+                      @blur="() => handlePriceBlur(product, variant)"
+                      @keydown.enter.prevent="() => handlePriceBlur(product, variant)"
+                      @dblclick.stop
+                    />
+                  </div>
+                </div>
+
+                <div class="hidden md:flex items-center justify-end px-0 md:px-3 md:col-span-1">
+                  <div v-if="computePercent(variant) !== null" class="text-sm font-medium">
+                    <span
+                      :class="{
+                        'text-green-600': computePercent(variant) > 0,
+                        'text-red-600': computePercent(variant) < 0,
+                        'text-gray-500': computePercent(variant) === 0,
+                      }"
+                    >
+                      {{ formatPercent(variant) }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </transition>
         </div>
-      </div>
-      <!-- Floating quick menu -->
+      </template>
+
       <div
         v-if="quickMenu.visible"
         :style="{
@@ -321,7 +307,7 @@ onBeforeUnmount(() => {
         }"
       >
         <PriceQuickMenu
-          :basePrice="getRecentInputPriceDisplay(quickMenu.item || {})"
+          :basePrice="getRecentInputPriceDisplay(quickMenu.item.variant || {})"
           @apply="applyQuickPrice"
           @menu-mousedown="() => {}"
         />
@@ -333,16 +319,3 @@ onBeforeUnmount(() => {
     </div>
   </div>
 </template>
-
-<style scoped>
-@reference "../assets/main.css";
-.box-style {
-  @apply bg-gray-100 p-4 sm:p-6 rounded-xl shadow-lg;
-}
-.title-style {
-  @apply text-3xl font-bold text-center text-gray-800;
-}
-.content-box-style {
-  @apply flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0;
-}
-</style>

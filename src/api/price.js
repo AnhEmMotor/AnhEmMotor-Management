@@ -1,37 +1,35 @@
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient'
 
-export const getAllPrices = async () => {
-  const { data, error } = await supabase.from('price').select(`
-    *,
-    product_variants:product_id(*)
-  `);
-  if (error) throw error;
-  return data;
-};
+export const priceApi = {
+  async getProducts({ page, itemsPerPage, search, statusIds }) {
+    const { data, error } = await supabase.rpc('get_product_variant_prices', {
+      p_page: page,
+      p_items_per_page: itemsPerPage,
+      p_search: search,
+      p_status_ids: statusIds,
+    })
 
-export const getPriceById = async (id) => {
-  const { data, error } = await supabase.from('price').select(`
-    *,
-    product_variants:product_id(*)
-  `).eq('id', id).single();
-  if (error) throw error;
-  return data;
-};
+    if (error) {
+      console.error('Error fetching products:', error)
+      throw error
+    }
 
-export const createPrice = async (price) => {
-  const { data, error } = await supabase.from('price').insert(price).select().single();
-  if (error) throw error;
-  return data;
-};
+    return data
+  },
 
-export const updatePrice = async (id, price) => {
-  const { data, error } = await supabase.from('price').update(price).eq('id', id).select().single();
-  if (error) throw error;
-  return data;
-};
+  async updateVariantPrice(variantId, newPrice) {
+    const { data, error } = await supabase
+      .from('product_variants')
+      .update({ price: newPrice })
+      .eq('id', variantId)
+      .select()
+      .single()
 
-export const deletePrice = async (id) => {
-  const { data, error } = await supabase.from('price').delete().eq('id', id);
-  if (error) throw error;
-  return data;
-};
+    if (error) {
+      console.error('Error updating variant price:', error)
+      throw error
+    }
+
+    return data
+  },
+}

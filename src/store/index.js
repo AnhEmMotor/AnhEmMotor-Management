@@ -7,6 +7,7 @@ import inputsModule from './modules/inputs.js'
 import outputsModule from './modules/outputs.js'
 import optionsModule from './modules/options.js'
 import optionValuesModule from './modules/optionValues.js'
+import priceModule from './modules/price.js'
 
 const store = createStore({
   modules: {
@@ -18,6 +19,7 @@ const store = createStore({
     productCategories: productCategoriesModule,
     products: productsModule,
     suppliers: suppliersModule,
+    price: priceModule,
   },
 })
 
