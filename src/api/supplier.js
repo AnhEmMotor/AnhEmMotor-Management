@@ -117,3 +117,20 @@ export const getSupplierById = async (id) => {
   if (error) throw error
   return data
 }
+
+export const searchActiveSuppliers = async (search = '') => {
+  const { data, error } = await supabase.rpc('search_active_suppliers', {
+    p_search: search,
+  })
+
+  if (error) {
+    console.error('Error fetching suppliers:', error)
+    throw error
+  }
+
+  return data.map((s) => ({
+    id: s.id,
+    name: s.name,
+    phone: s.phone,
+  }))
+}

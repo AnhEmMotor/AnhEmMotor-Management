@@ -1,29 +1,33 @@
 <template>
-  <div class="report-container">
-    <h1 class="main-title">Phân Tích Doanh Thu Chi Tiết</h1>
-    <div class="filter-bar">
+  <div class="bg-white p-6 rounded-xl shadow-lg">
+    <h1 class="text-3xl font-bold mb-4 text-red-800">Phân Tích Doanh Thu Chi Tiết</h1>
+    <div class="flex flex-wrap items-center gap-4 mb-6">
       <div>
-        <span class="filter-label">Khoảng Thời gian:</span>
+        <span class="text-sm font-medium text-red-700 mr-2">Khoảng Thời gian:</span>
         <div class="inline-flex">
           <RevenueFilterButtons v-model="selectedStatuses" />
         </div>
       </div>
       <div>
-        <label for="car-brand" class="filter-label">Hãng Xe:</label>
-        <select id="car-brand" v-model="selectedBrand" class="select-input">
+        <label for="car-brand" class="text-sm font-medium text-red-700 mr-2">Hãng Xe:</label>
+        <select
+          id="car-brand"
+          v-model="selectedBrand"
+          class="rounded-md border-red-300 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200"
+        >
           <option v-for="brand in carBrands" :key="brand" :value="brand">{{ brand }}</option>
         </select>
       </div>
     </div>
 
-    <div class="chart-grid">
-      <div class="lg:col-span-3 chart-card">
-        <h3 class="card-title">Xu Hướng Doanh Thu</h3>
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+      <div class="lg:col-span-3 bg-white p-6 rounded-xl shadow-md h-96">
+        <h3 class="text-lg font-semibold text-red-700 mb-4">Xu Hướng Doanh Thu</h3>
         <RevenueChart7day :revenue-data="revenueData" />
       </div>
 
-      <div class="lg:col-span-2 chart-card">
-        <h3 class="card-title">Doanh Thu Theo Hãng Xe</h3>
+      <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md h-96">
+        <h3 class="text-lg font-semibold text-red-700 mb-4">Doanh Thu Theo Hãng Xe</h3>
         <RevenueChartByBrand :chart-data="brandRevenueData" />
       </div>
     </div>
@@ -59,38 +63,4 @@ const brandRevenueData = [
   { brand: 'Mazda', revenue: 250 },
   { brand: 'Kia', revenue: 210 },
 ]
-
-// watch([activePeriod, selectedBrand], ([newPeriod, newBrand]) => {})
 </script>
-
-<style scoped>
-@reference "../assets/main.css";
-
-.report-container {
-  @apply bg-white p-6 rounded-xl shadow-lg;
-}
-.main-title {
-  @apply text-3xl font-bold mb-4 text-red-800;
-}
-.filter-bar {
-  @apply flex flex-wrap items-center gap-4 mb-6;
-}
-.filter-label {
-  @apply text-sm font-medium text-red-700 mr-2;
-}
-.select-input {
-  @apply rounded-md border-red-300 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200;
-}
-.chart-grid {
-  @apply grid grid-cols-1 lg:grid-cols-5 gap-6;
-}
-.chart-card {
-  @apply bg-white p-6 rounded-xl shadow-md h-96;
-}
-.card-title {
-  @apply text-lg font-semibold text-red-700 mb-4;
-}
-.filter-btn.active {
-  @apply bg-blue-500 text-white;
-}
-</style>

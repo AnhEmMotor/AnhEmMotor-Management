@@ -1,7 +1,9 @@
 <script setup>
-import { ref, computed, watch, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, onBeforeUnmount, reactive } from 'vue'
 import BaseTextarea from '@/components/ui/input/BaseTextarea.vue'
 import RoundBadge from '../ui/RoundBadge.vue'
+import * as apiSuppliers from '@/api/supplier'
+import * as apiProducts from '@/api/product'
 
 const props = defineProps({
   modelValue: {
@@ -16,10 +18,6 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
-  productList: {
-    type: Array,
-    default: null,
-  },
 })
 
 const emit = defineEmits(['update:modelValue', 'addProduct'])
@@ -33,15 +31,34 @@ const localData = ref({
 const isUpdatingFromParent = ref(false)
 const emitTimer = ref(null)
 
+const supplierSearch = reactive({
+  term: '',
+  results: [],
+  showDropdown: false,
+  isLoading: false,
+  debounceTimer: null,
+})
+
+const productSearch = reactive({
+  term: '',
+  results: [],
+  showDropdown: false,
+  isLoading: false,
+  debounceTimer: null,
+})
+
+const productInputRef = ref(null)
+const dropdownStyle = ref({})
+
 const handleSupplierBlur = () => {
   window.setTimeout(() => {
-    showSupplierDropdown.value = false
+    supplierSearch.showDropdown = false
   }, 200)
 }
 
 const handleProductBlur = () => {
   window.setTimeout(() => {
-    showProductDropdown.value = false
+    productSearch.showDropdown = false
   }, 200)
 }
 
@@ -54,81 +71,94 @@ const debouncedEmit = (value) => {
   }, 100)
 }
 
-const allSuppliers = ref([
-  { code: 'NCC00001', name: 'NCC ĐỒNG NAI', phone: '0123456789' },
-  { code: 'NCC00002', name: 'NCC PHÚ THỌ', phone: '0987654321' },
-  { code: 'NCC00003', name: 'NCC QUẢNG NAM', phone: '0123456780' },
-])
+watch(
+  () => supplierSearch.term,
+  (newVal) => {
+    if (
+      newVal &&
+      localData.value.supplier &&
+      `${localData.value.supplier.name} - ${localData.value.supplier.phone}` === newVal
+    ) {
+      return
+    }
+    if (!newVal) {
+      localData.value.supplier = null
+    }
 
-// Local fallback catalog used when parent doesn't provide one
-const allProducts = ref([
-  { code: '1233289314912', name: 'Siro đào VINASYRUP 750ml', price: 34800, stock: 5 },
-  { code: 'SP000001', name: 'VISION', price: 30000000, stock: 10 },
-  { code: 'SP000002', name: 'VARIO', price: 35000000, stock: 5 },
-  { code: 'SP001001', name: 'SH Mode 2024', price: 65000000, stock: 8 },
-])
+    supplierSearch.showDropdown = true
+    supplierSearch.isLoading = true
+    if (supplierSearch.debounceTimer) {
+      clearTimeout(supplierSearch.debounceTimer)
+    }
+    supplierSearch.debounceTimer = window.setTimeout(async () => {
+      try {
+        supplierSearch.results = await apiSuppliers.searchActiveSuppliers(newVal)
+      } catch (error) {
+        console.error(error)
+        supplierSearch.results = []
+      } finally {
+        supplierSearch.isLoading = false
+      }
+    }, 300)
+  },
+)
 
-// Use parent's productList if provided, otherwise fallback to local allProducts
-const currentAllProducts = computed(() => {
-  return props.productList && Array.isArray(props.productList) && props.productList.length
-    ? props.productList
-    : allProducts.value
-})
-
-const supplierSearchTerm = ref('')
-const showSupplierDropdown = ref(false)
-const filteredSuppliers = computed(() => {
-  if (!supplierSearchTerm.value) return allSuppliers.value
-  const term = supplierSearchTerm.value.toLowerCase()
-  return allSuppliers.value.filter(
-    (s) =>
-      s.code.toLowerCase().includes(term) ||
-      s.name.toLowerCase().includes(term) ||
-      s.phone.includes(term),
-  )
-})
-
-const productSearchTerm = ref('')
-const showProductDropdown = ref(false)
-const productInputRef = ref(null)
-const dropdownStyle = ref({})
-const filteredProducts = computed(() => {
-  const list = currentAllProducts.value || []
-  if (!productSearchTerm.value) return list
-  const term = productSearchTerm.value.toLowerCase()
-  return list.filter((p) => p.code.toLowerCase().includes(term) || p.name.toLowerCase().includes(term))
-})
+watch(
+  () => productSearch.term,
+  (newVal) => {
+    if (!newVal) {
+      productSearch.results = []
+      productSearch.showDropdown = false
+      return
+    }
+    productSearch.showDropdown = true
+    productSearch.isLoading = true
+    if (productSearch.debounceTimer) {
+      clearTimeout(productSearch.debounceTimer)
+    }
+    productSearch.debounceTimer = window.setTimeout(async () => {
+      try {
+        productSearch.results = await apiProducts.searchProductsFlatType(newVal)
+      } catch (error) {
+        console.error(error)
+        productSearch.results = []
+      } finally {
+        productSearch.isLoading = false
+      }
+    }, 300)
+  },
+)
 
 const selectSupplier = (supplier) => {
   localData.value.supplier = { ...supplier }
-  supplierSearchTerm.value = `${supplier.name} - ${supplier.phone}`
-  showSupplierDropdown.value = false
+  supplierSearch.term = `${supplier.name} - ${supplier.phone}`
+  supplierSearch.showDropdown = false
 }
 
 const clearSupplier = () => {
   localData.value.supplier = null
-  supplierSearchTerm.value = ''
+  supplierSearch.term = ''
 }
 
 const addNewProduct = () => {
   emit('addProduct')
-  productSearchTerm.value = ''
-  showProductDropdown.value = false
+  productSearch.term = ''
+  productSearch.showDropdown = false
 }
 
 const selectProduct = (product) => {
   try {
     const newProduct = {
       id: Date.now() + Math.random(),
-      code: product.code,
+      code: product.id,
       name: product.name,
       quantity: 1,
       unitPrice: product.price || 0,
       total: product.price || 0,
     }
     localData.value.products.push(newProduct)
-    productSearchTerm.value = ''
-    showProductDropdown.value = false
+    productSearch.term = ''
+    productSearch.showDropdown = false
   } catch (error) {
     console.error('Error selecting product:', error)
   }
@@ -150,10 +180,8 @@ const updateDropdownPosition = () => {
 
 const onShowProductDropdown = (val) => {
   if (val) {
-    // compute position after render
     setTimeout(updateDropdownPosition, 0)
     window.addEventListener('resize', updateDropdownPosition)
-    // use capture scroll to recalc when scrolling any ancestor
     window.addEventListener('scroll', updateDropdownPosition, true)
   } else {
     window.removeEventListener('resize', updateDropdownPosition)
@@ -161,7 +189,7 @@ const onShowProductDropdown = (val) => {
   }
 }
 
-watch(showProductDropdown, onShowProductDropdown)
+watch(() => productSearch.showDropdown, onShowProductDropdown)
 
 const removeProduct = (index) => {
   localData.value.products.splice(index, 1)
@@ -174,7 +202,7 @@ const calculateProductTotal = (product) => {
 }
 
 const totalAmount = computed(() => {
-  return localData.value.products.reduce((sum, p) => sum + p.total, 0)
+  return localData.value.products.reduce((sum, p) => sum + (p.total || 0), 0)
 })
 
 watch(
@@ -188,7 +216,9 @@ watch(
       isUpdatingFromParent.value = true
       localData.value = JSON.parse(JSON.stringify(newVal))
       if (localData.value.supplier) {
-        supplierSearchTerm.value = `${localData.value.supplier.name} - ${localData.value.supplier.phone}`
+        supplierSearch.term = `${localData.value.supplier.name} - ${localData.value.supplier.phone || ''}`
+      } else {
+        supplierSearch.term = ''
       }
 
       window.setTimeout(() => {
@@ -213,59 +243,77 @@ onBeforeUnmount(() => {
   if (emitTimer.value) {
     clearTimeout(emitTimer.value)
   }
-  // cleanup any listeners attached by dropdown positioning
+  if (supplierSearch.debounceTimer) {
+    clearTimeout(supplierSearch.debounceTimer)
+  }
+  if (productSearch.debounceTimer) {
+    clearTimeout(productSearch.debounceTimer)
+  }
   window.removeEventListener('resize', updateDropdownPosition)
   window.removeEventListener('scroll', updateDropdownPosition, true)
 })
 </script>
 
 <template>
-  <div class="inventory-input-form">
-    <div class="form-main">
-      <div class="form-section">
-        <label class="form-label">Nhà cung cấp</label>
-        <div class="supplier-search-wrapper">
+  <div class="flex gap-5">
+    <div class="flex-1 overflow-y-auto pr-2.5">
+      <div class="mb-5">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Nhà cung cấp</label>
+        <div class="relative">
           <div class="relative">
             <input
-              v-model="supplierSearchTerm"
-              @focus="showSupplierDropdown = true"
+              v-model="supplierSearch.term"
+              @focus="supplierSearch.showDropdown = true"
               @blur="handleSupplierBlur"
               type="text"
               placeholder="Tìm nhà cung cấp"
-              class="search-input"
+              class="w-full py-2.5 px-3 border border-gray-300 rounded-md text-sm outline-none transition-colors duration-200"
             />
             <button
               v-if="localData.supplier"
               @click="clearSupplier"
               type="button"
-              class="clear-button"
+              class="absolute right-2.5 top-1/2 -translate-y-1/2 bg-gray-200 border-none rounded-full w-6 h-6 flex items-center justify-center cursor-pointer text-lg text-gray-500"
             >
               ×
             </button>
           </div>
 
-          <div v-if="showSupplierDropdown" class="dropdown-menu">
+          <div
+            v-if="supplierSearch.showDropdown"
+            class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-[300px] overflow-y-auto z-50"
+          >
+            <div v-if="supplierSearch.isLoading" class="p-3 text-center text-gray-400">
+              Đang tìm...
+            </div>
             <div
-              v-for="supplier in filteredSuppliers"
-              :key="supplier.code"
+              v-else
+              v-for="supplier in supplierSearch.results"
+              :key="supplier.id"
               @click="selectSupplier(supplier)"
-              class="dropdown-item"
+              class="p-3 cursor-pointer border-b border-gray-100 transition-colors duration-150"
             >
               <div class="font-medium">{{ supplier.name }}</div>
-              <div class="text-xs text-gray-500">{{ supplier.code }} - {{ supplier.phone }}</div>
+              <div class="text-xs text-gray-500">{{ supplier.id }} - {{ supplier.phone }}</div>
             </div>
-            <div v-if="filteredSuppliers.length === 0" class="dropdown-empty">
+            <div
+              v-if="!supplierSearch.isLoading && supplierSearch.results.length === 0"
+              class="p-3 text-center text-gray-400"
+            >
               Không tìm thấy nhà cung cấp
             </div>
           </div>
 
-          <div v-if="localData.supplier" class="selected-supplier">
+          <div
+            v-if="localData.supplier"
+            class="mt-3 p-3 bg-gray-50 border border-gray-200 rounded-md"
+          >
             <div class="flex items-center gap-2">
-              <span class="supplier-icon">👤</span>
+              <span class="text-2xl">👤</span>
               <div>
                 <div class="font-medium">{{ localData.supplier.name }}</div>
                 <div class="text-xs text-gray-500">
-                  {{ localData.supplier.code }} - {{ localData.supplier.phone }}
+                  {{ localData.supplier.id }} - {{ localData.supplier.phone }}
                 </div>
               </div>
             </div>
@@ -276,37 +324,45 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <div class="form-section">
-        <label class="form-label">Hàng hoá nhập</label>
+      <div class="mb-5">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Hàng hoá nhập</label>
         <div class="relative">
           <input
             ref="productInputRef"
-            v-model="productSearchTerm"
+            v-model="productSearch.term"
             @input="updateDropdownPosition"
-            @focus="showProductDropdown = true"
+            @focus="productSearch.showDropdown = true"
             @blur="handleProductBlur"
             type="text"
             placeholder="Tìm hàng hóa theo tên...."
-            class="search-input"
+            class="w-full py-2.5 px-3 border border-gray-300 rounded-md text-sm outline-none transition-colors duration-200"
           />
 
           <div
-            v-if="showProductDropdown"
+            v-if="productSearch.showDropdown"
             :style="dropdownStyle"
-            class="dropdown-menu floating-dropdown"
+            class="fixed z-50 max-h-[300px] overflow-y-auto bg-white rounded-md border border-[rgba(0,0,0,0.08)] shadow-[0_6px_18px_rgba(0,0,0,0.08)]"
           >
+            <div v-if="productSearch.isLoading" class="p-3 text-center text-gray-400">
+              Đang tìm...
+            </div>
             <div
-              v-for="product in filteredProducts"
-              :key="product.code"
+              v-else
+              v-for="product in productSearch.results"
+              :key="product.id"
               @click="selectProduct(product)"
-              class="dropdown-item"
+              class="p-3 cursor-pointer border-b border-gray-100 transition-colors duration-150"
             >
               <div class="flex items-center gap-3">
-                <div class="product-icon">📦</div>
+                <img
+                  :src="product.cover_image_url || 'https://placehold.co/40x40'"
+                  alt="product"
+                  class="w-10 h-10 rounded object-cover"
+                />
                 <div class="flex-1">
                   <div class="font-medium">{{ product.name }}</div>
                   <div class="text-xs text-gray-500">
-                    {{ product.code }} | Giá: {{ product.price.toLocaleString() }} | Tồn:
+                    {{ product.id }} | Giá: {{ (product.price || 0).toLocaleString() }} | Tồn:
                     {{ product.stock }}
                   </div>
                 </div>
@@ -314,9 +370,11 @@ onBeforeUnmount(() => {
             </div>
 
             <div
-              v-if="productSearchTerm && filteredProducts.length === 0"
+              v-if="
+                productSearch.term && !productSearch.isLoading && productSearch.results.length === 0
+              "
               @click="addNewProduct"
-              class="dropdown-item-add"
+              class="p-3 cursor-pointer flex items-center gap-2 text-blue-500 font-medium transition-colors duration-150; hover:bg-blue-50"
             >
               <span class="text-lg">+</span>
               <span>Thêm sản phẩm mới</span>
@@ -331,8 +389,8 @@ onBeforeUnmount(() => {
         {{ props.errors.products.__global }}
       </div>
 
-      <div class="product-table-section">
-        <table class="product-table">
+      <div class="mt-5 border border-gray-200 rounded-lg overflow-hidden">
+        <table class="w-full border-collapse text-sm">
           <thead>
             <tr>
               <th class="w-12">STT</th>
@@ -352,7 +410,7 @@ onBeforeUnmount(() => {
             <tr
               v-for="(product, index) in localData.products"
               :key="product.id"
-              class="product-row"
+              class="hover:bg-gray-50"
             >
               <td class="text-center">{{ index + 1 }}</td>
               <td>
@@ -366,7 +424,7 @@ onBeforeUnmount(() => {
                   @change="calculateProductTotal(product)"
                   type="number"
                   min="1"
-                  class="quantity-input"
+                  class="w-full py-1.5 px-2 border border-gray-300 rounded text-center text-sm outline-none"
                 />
                 <div
                   v-if="
@@ -386,7 +444,7 @@ onBeforeUnmount(() => {
                   @change="calculateProductTotal(product)"
                   type="number"
                   min="0"
-                  class="price-input"
+                  class="w-full py-1.5 px-2 border border-gray-300 rounded text-center text-sm outline-none"
                 />
                 <div
                   v-if="
@@ -404,7 +462,11 @@ onBeforeUnmount(() => {
                 {{ (product.total || 0).toLocaleString() }}
               </td>
               <td class="text-center">
-                <button @click="removeProduct(index)" class="delete-button" type="button">
+                <button
+                  @click="removeProduct(index)"
+                  class="bg-transparent border-none cursor-pointer text-lg p-1 opacity-60 transition-opacity duration-150"
+                  type="button"
+                >
                   🗑️
                 </button>
               </td>
@@ -414,187 +476,26 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <div class="form-sidebar">
-      <div class="sidebar-section">
-        <h3 class="sidebar-title">Trạng thái</h3>
-        <div class="sidebar-content">
+    <div class="w-[300px] border-l border-gray-200 pl-5 overflow-y-auto">
+      <div class="flex justify-between items-center mb-5">
+        <h3 class="text-sm font-semibold text-gray-700">Trạng thái</h3>
+        <div class="text-sm text-gray-500 py-1">
           <RoundBadge color="yellow">Phiếu tạm</RoundBadge>
         </div>
       </div>
 
-      <div class="sidebar-section total-section">
-        <h3 class="sidebar-title">Tổng giá trị đơn nhập</h3>
-        <div class="sidebar-content">
-          <div class="total-amount">{{ totalAmount.toLocaleString() }}</div>
+      <div class="flex justify-between items-center mb-5 flex-col items-start gap-1">
+        <h3 class="text-sm font-semibold text-gray-700">Tổng giá trị đơn nhập</h3>
+        <div class="text-sm text-gray-500 py-1">
+          <div class="text-2xl font-bold text-blue-500 break-all">
+            {{ totalAmount.toLocaleString() }}
+          </div>
         </div>
       </div>
 
-      <div class="sidebar-section">
+      <div class="flex justify-between items-center mb-5">
         <BaseTextarea v-model="localData.notes" label="Ghi chú" placeholder="Ghi chú" :rows="4" />
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-@reference "../../assets/main.css";
-
-.inventory-input-form {
-  @apply flex gap-5;
-}
-
-.form-main {
-  @apply flex-1 overflow-y-auto pr-2.5;
-}
-
-.form-sidebar {
-  @apply w-[300px] border-l border-gray-200 pl-5 overflow-y-auto;
-}
-
-.form-section {
-  @apply mb-5;
-}
-
-.form-label {
-  @apply block text-sm font-medium text-gray-700 mb-2;
-}
-
-.supplier-search-wrapper {
-  @apply relative;
-}
-
-.search-input {
-  @apply w-full py-2.5 px-3 border border-gray-300 rounded-md text-sm outline-none transition-colors duration-200;
-}
-
-.search-input:focus {
-  @apply focus:border-blue-500 focus:ring focus:ring-blue-500/10;
-}
-
-.clear-button {
-  @apply absolute right-2.5 top-1/2 -translate-y-1/2 bg-gray-200 border-none rounded-full w-6 h-6 flex items-center justify-center cursor-pointer text-lg text-gray-500;
-}
-
-.clear-button:hover {
-  @apply hover:bg-gray-300;
-}
-
-.dropdown-menu {
-  @apply absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-[300px] overflow-y-auto z-50;
-}
-
-.dropdown-item {
-  @apply p-3 cursor-pointer border-b border-gray-100 transition-colors duration-150;
-}
-
-.dropdown-item:hover {
-  @apply hover:bg-gray-100;
-}
-
-.dropdown-item:last-child {
-  @apply last:border-b-0;
-}
-
-.dropdown-item-add {
-  @apply p-3 cursor-pointer flex items-center gap-2 text-blue-500 font-medium transition-colors duration-150;
-}
-
-.dropdown-item-add:hover {
-  @apply hover:bg-blue-50;
-}
-
-.dropdown-empty {
-  @apply p-3 text-center text-gray-400;
-}
-
-.selected-supplier {
-  @apply mt-3 p-3 bg-gray-50 border border-gray-200 rounded-md;
-}
-
-.supplier-icon {
-  @apply text-2xl;
-}
-
-.product-icon {
-  @apply text-2xl;
-}
-
-.product-table-section {
-  @apply mt-5 border border-gray-200 rounded-lg overflow-hidden;
-}
-
-.product-table {
-  @apply w-full border-collapse text-sm;
-}
-
-.product-table thead {
-  @apply bg-gray-100;
-}
-
-.product-table th {
-  @apply py-3 px-2 text-left font-semibold text-gray-700 border-b-2 border-gray-200;
-}
-
-.product-table td {
-  @apply py-3 px-2 border-b border-gray-100;
-}
-
-.product-row:hover {
-  @apply hover:bg-gray-50;
-}
-
-.quantity-input,
-.price-input {
-  @apply w-full py-1.5 px-2 border border-gray-300 rounded text-center text-sm outline-none;
-}
-
-.quantity-input:focus,
-.price-input:focus {
-  @apply focus:border-blue-500 focus:ring-2 focus:ring-blue-100;
-}
-
-.delete-button {
-  @apply bg-transparent border-none cursor-pointer text-lg p-1 opacity-60 transition-opacity duration-150;
-}
-
-.delete-button:hover {
-  @apply hover:opacity-100;
-}
-
-.sidebar-section {
-  @apply flex justify-between items-center mb-5;
-}
-
-.sidebar-section:last-child {
-  @apply last:mb-0;
-}
-
-.sidebar-title {
-  @apply text-sm font-semibold text-gray-700;
-}
-
-.sidebar-content {
-  @apply text-sm text-gray-500 py-1;
-}
-
-.status-badge {
-  @apply inline-block py-1.5 px-3 bg-amber-100 text-amber-800 rounded-md font-medium text-[13px];
-}
-
-.total-amount {
-  @apply text-2xl font-bold text-blue-500 break-all;
-}
-
-.total-section {
-  @apply flex-col items-start gap-1;
-}
-
-.floating-dropdown {
-  position: fixed;
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 6px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  overflow-y: auto;
-}
-</style>

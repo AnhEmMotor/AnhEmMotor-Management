@@ -75,7 +75,3 @@ const emit = defineEmits(['close', 'confirm'])
     </template>
   </FullScreenModal>
 </template>
-
-<style scoped>
-/* Additional styles if needed */
-</style>

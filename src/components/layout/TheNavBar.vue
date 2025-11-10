@@ -11,7 +11,7 @@ import IconSettings from '@/components/icons/IconSettings.vue'
 import { useRoute } from 'vue-router'
 
 const openGroups = ref([])
-const route = new useRoute()
+const route = useRoute()
 
 const toggleGroup = (group) => {
   const index = openGroups.value.indexOf(group)

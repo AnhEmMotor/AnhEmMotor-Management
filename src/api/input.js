@@ -1,93 +1,62 @@
 import { supabase } from '@/lib/supabaseClient'
 
-export const getAllInputs = async () => {
-  const { data, error } = await supabase.from('input').select(`
-    *,
-    supplier:supplier_id(*),
-    input_status:status_id(*)
-  `)
+export const fetchInputs = async ({ page, itemsPerPage, statusFilters, search }) => {
+  const { data, error } = await supabase.rpc('get_input_receipts', {
+    p_page: page,
+    p_items_per_page: itemsPerPage,
+    p_status_ids: statusFilters,
+    p_search: search,
+  })
+
   if (error) throw error
   return data
 }
 
-export const getAllInputBySupplierID = async (
-  supplierId,
-  page = 1,
-  itemsPerPage = 10,
-  statusFilters = [],
-  search = '',
-) => {
-  if (!supplierId) {
-    throw new Error('supplierId là bắt buộc')
-  }
-  let query = supabase
-    .from('input')
-    .select('id, input_date , created_at, name_verify, status_id, input_info(count, input_price)', {
-      count: 'exact',
-    })
-    .eq('supplier_id', supplierId)
-  const statusParam =
-    Array.isArray(statusFilters) && statusFilters.length > 0 ? statusFilters : null
-  if (statusParam) {
-    query = query.in('status_id', statusParam)
-  }
-  const searchParam = search ? String(search).trim() : null
-  if (searchParam) {
-    query = query.ilike('name_verify', `%${searchParam}%`)
-  }
-  const from = (page - 1) * itemsPerPage
-  const to = from + itemsPerPage - 1
-  query = query.range(from, to).order('created_at', { ascending: false })
-  const { data, error, count } = await query
-  if (error) {
-    throw error
-  }
-  const inputs = data || []
-  const normalizedInputs = inputs.map((input) => {
-    const total = (input.input_info || []).reduce((sum, detail) => {
-      const lineTotal = (detail.count || 0) * (detail.input_price || 0)
-      return sum + lineTotal
-    }, 0)
-    // eslint-disable-next-line no-unused-vars
-    const { input_details, ...rest } = input
-    return {
-      ...rest,
-      total: total,
-    }
+export const saveReceipt = async ({
+  id,
+  supplier,
+  products,
+  notes,
+  status_id,
+  user_name,
+  import_date,
+  paid,
+}) => {
+  const p_products = products.map((p) => ({
+    code: p.code,
+    name: p.name,
+    quantity: Number(p.quantity) || 0,
+    unitPrice: Number(p.unitPrice) || 0,
+  }))
+
+  const { data, error } = await supabase.rpc('save_input_receipt', {
+    p_input_id: id || null,
+    p_supplier_id: supplier.id,
+    p_status_id: status_id,
+    p_name_verify: user_name,
+    p_import_date: import_date,
+    p_notes: notes,
+    p_paid: paid,
+    p_products: p_products,
   })
-  return { inputs: normalizedInputs, count: count || 0 }
+
+  if (error) throw error
+  return data
 }
 
-export const getInputById = async (id) => {
+export const updateInputStatus = async (id, status_id) => {
   const { data, error } = await supabase
     .from('input')
+    .update({ status_id: status_id, name_verify: 'Hệ thống' })
+    .eq('id', id)
     .select(
       `
-    *,
-    supplier:supplier_id(*),
-    input_status:status_id(*)
-  `,
+      id,
+      input_status:status_id(id, name)
+    `,
     )
-    .eq('id', id)
     .single()
-  if (error) throw error
-  return data
-}
 
-export const createInput = async (input) => {
-  const { data, error } = await supabase.from('input').insert(input).select().single()
-  if (error) throw error
-  return data
-}
-
-export const updateInput = async (id, input) => {
-  const { data, error } = await supabase.from('input').update(input).eq('id', id).select().single()
-  if (error) throw error
-  return data
-}
-
-export const deleteInput = async (id) => {
-  const { data, error } = await supabase.from('input').delete().eq('id', id)
   if (error) throw error
   return data
 }

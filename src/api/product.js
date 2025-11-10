@@ -44,6 +44,24 @@ export const deleteProduct = async (productId) => {
     throw error
   }
 
-  // RPC không trả về data khi thành công
   return true
+}
+
+export const searchProductsFlatType = async (search) => {
+  const { data, error } = await supabase.rpc('get_all_variants_lite', {
+    p_page: 1,
+    p_items_per_page: 20,
+    p_search: search,
+    p_status_ids: null,
+  })
+
+  if (error) {
+    console.error('Error fetching products:', error)
+    throw error
+  }
+
+  if (data && data.products) {
+    return data.products
+  }
+  return []
 }

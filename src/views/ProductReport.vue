@@ -1,7 +1,7 @@
 <template>
-  <div class="box-bg">
-    <h1 class="title-style">Báo Cáo Sản Phẩm & Tồn Kho</h1>
-    <div class="report-card-style">
+  <div class="bg-gray-100 p-6 rounded-xl shadow-lg">
+    <h1 class="text-3xl font-bold mb-4 text-gray-800">Báo Cáo Sản Phẩm & Tồn Kho</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-8">
       <ReportStatsCard
         title="Sản phẩm sắp hết hàng (&lt; 5)"
         :stat="lowStockProductsCount"
@@ -10,23 +10,51 @@
       <ReportStatsCard title="Tổng Doanh Thu (Tháng)" :stat="totalProducts" color="indigo" />
     </div>
     <div class="overflow-x-auto">
-      <table class="table-style">
-        <thead class="header-table-style">
+      <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-sm">
+        <thead class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
           <tr>
-            <th class="cell-header-table-style">Tên Sản Phẩm</th>
-            <th class="cell-header-table-style">Tồn Kho</th>
-            <th class="cell-header-table-style">Đã Bán (Tháng)</th>
-            <th class="cell-header-table-style">Trạng Thái</th>
+            <th
+              class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Tên Sản Phẩm
+            </th>
+            <th
+              class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Tồn Kho
+            </th>
+            <th
+              class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Đã Bán (Tháng)
+            </th>
+            <th
+              class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Trạng Thái
+            </th>
           </tr>
         </thead>
-        <tbody class="tbody-table-style">
+        <tbody class="text-gray-600 text-sm divide-y divide-gray-200">
           <tr v-for="product in productData" :key="product.name">
-            <td class="row-table-style font-medium text-gray-900">
+            <td
+              class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200 py-4 px-4 whitespace-nowrap font-medium text-gray-900"
+            >
               {{ product.name }}
             </td>
-            <td class="row-table-style text-gray-500">{{ product.stock }}</td>
-            <td class="row-table-style text-gray-500">{{ product.sold }}</td>
-            <td class="row-table-style">
+            <td
+              class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200 py-4 px-4 whitespace-nowrap text-gray-500"
+            >
+              {{ product.stock }}
+            </td>
+            <td
+              class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200 py-4 px-4 whitespace-nowrap text-gray-500"
+            >
+              {{ product.sold }}
+            </td>
+            <td
+              class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200 py-4 px-4 whitespace-nowrap"
+            >
               <RoundBadge :color="getStatusClass(product.status)">{{ product.status }}</RoundBadge>
             </td>
           </tr>
@@ -60,37 +88,3 @@ const getStatusClass = (status) => {
   return 'red'
 }
 </script>
-
-<style lang="css" scoped>
-@reference "../assets/main.css";
-.report-card-style {
-  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-8;
-}
-.box-bg {
-  @apply bg-gray-100 p-6 rounded-xl shadow-lg;
-}
-.title-style {
-  @apply text-3xl font-bold mb-4 text-gray-800;
-}
-.text-style {
-  @apply py-3 px-6 text-left;
-}
-.text-center-style {
-  @apply py-3 px-6 text-center;
-}
-.table-style {
-  @apply min-w-full bg-white rounded-lg overflow-hidden shadow-sm;
-}
-.header-table-style {
-  @apply bg-gray-200 text-gray-600 uppercase text-sm leading-normal;
-}
-.cell-header-table-style {
-  @apply py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider;
-}
-.tbody-table-style {
-  @apply text-gray-600 text-sm divide-y divide-gray-200;
-}
-.row-table-style {
-  @apply border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200 py-4 px-4 whitespace-nowrap;
-}
-</style>

@@ -48,7 +48,7 @@ import { ref, computed, nextTick } from 'vue'
 const props = defineProps({
   totalPages: {
     type: Number,
-    required: true,
+    required: false,
   },
   currentPage: {
     type: Number,

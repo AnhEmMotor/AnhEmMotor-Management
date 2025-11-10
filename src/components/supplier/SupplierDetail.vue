@@ -3,10 +3,10 @@ import RoundBadge from '@/components/ui/RoundBadge.vue'
 import BasePagination from '../ui/button/BasePagination.vue'
 import BaseSpinner from '../ui/BaseSpinner.vue'
 import { computed, ref } from 'vue'
-import { getAllInputBySupplierID } from '@/api/input'
 import { formatDateTime, formatDate } from '@/composables/useDate'
 import { formatCurrency } from '@/composables/useCurrency'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
+import { fetchInputsBySupplier } from '@/api/inputs_supplier_function'
 
 const props = defineProps({
   itemData: Object,
@@ -37,7 +37,7 @@ const filters = computed(() => ({
 }))
 
 const fetchHistoryFn = (params) => {
-  return getAllInputBySupplierID(
+  return fetchInputsBySupplier(
     props.itemData.id,
     params.page,
     params.itemsPerPage,

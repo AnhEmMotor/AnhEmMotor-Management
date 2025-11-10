@@ -1,39 +1,38 @@
 <template>
-  <div class="box-bg">
+  <div class="bg-gray-100 p-6 rounded-xl shadow-lg">
     <div class="flex items-start justify-between mb-4">
-      <h1 class="title-style">Đơn Hàng Của Tôi</h1>
+      <h1 class="text-3xl font-bold mb-4 text-gray-800">Đơn Hàng Của Tôi</h1>
       <div class="flex items-center">
-        <!-- Right side filter/menu (matches RolePermissionManager layout) -->
         <OrderFilterButtons v-model="selectedStatuses" />
         <span class="h-8 border-r-2 border-black-300 mx-2" />
         <BaseButton color="green" @click="createNewOrder" text="Tạo Đơn Hàng Mới"></BaseButton>
       </div>
     </div>
     <div class="overflow-x-auto">
-      <table class="table-style">
+      <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-sm">
         <thead>
-          <tr class="header-table-style">
-            <th class="text-style">Mã ĐH</th>
-            <th class="text-style">Ngày Đặt</th>
-            <th class="text-style">Sản phẩm</th>
-            <th class="text-style">Trạng Thái</th>
-            <th class="text-style">Tổng Tiền</th>
-            <th class="text-center-style">Hành động</th>
+          <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+            <th class="py-3 px-6 text-left">Mã ĐH</th>
+            <th class="py-3 px-6 text-left">Ngày Đặt</th>
+            <th class="py-3 px-6 text-left">Sản phẩm</th>
+            <th class="py-3 px-6 text-left">Trạng Thái</th>
+            <th class="py-3 px-6 text-left">Tổng Tiền</th>
+            <th class="py-3 px-6 text-center">Hành động</th>
           </tr>
         </thead>
-        <tbody class="tbody-table-style">
+        <tbody class="text-gray-600 text-sm">
           <tr v-if="orders.length === 0">
             <td colspan="7" class="text-center p-4">Không có đơn hàng nào.</td>
           </tr>
           <tr v-else v-for="order in displayedOrders" :key="order.id" class="row-table-style">
-            <td class="text-style whitespace-nowrap">{{ order.id }}</td>
-            <td class="text-style">{{ order.date }}</td>
-            <td class="text-style">{{ order.productSummary }}</td>
-            <td class="text-style">
+            <td class="py-3 px-6 text-left whitespace-nowrap">{{ order.id }}</td>
+            <td class="py-3 px-6 text-left">{{ order.date }}</td>
+            <td class="py-3 px-6 text-left">{{ order.productSummary }}</td>
+            <td class="py-3 px-6 text-left">
               <RoundBadge :color="order.status.color">{{ order.status.text }}</RoundBadge>
             </td>
-            <td class="text-style">{{ order.total.toLocaleString('vi-VN') }} VNĐ</td>
-            <td class="text-center-style">
+            <td class="py-3 px-6 text-left">{{ order.total.toLocaleString('vi-VN') }} VNĐ</td>
+            <td class="py-3 px-6 text-center">
               <BaseSmallNoBgButton color="blue" @click="handleEditOrder(order)"
                 >Sửa</BaseSmallNoBgButton
               >
@@ -71,7 +70,6 @@ import OrderForm from '@/components/orders/OrderForm.vue'
 import BaseSmallNoBgButton from '@/components/ui/button/BaseSmallNoBgButton.vue'
 import BaseButton from '@/components/ui/button/BaseButton.vue'
 
-// Richer mock orders (numeric totals and products) so modal can display details
 const orders = ref([
   {
     id: 'ORD-001',
@@ -185,13 +183,11 @@ const orders = ref([
   },
 ])
 
-// UI state
 const selectedStatuses = ref([])
 const showDetailModal = ref(false)
 const selectedOrder = ref(null)
 const showOrderForm = ref(false)
 
-// Map Vietnamese status text to a normalized key used by filter buttons
 function statusTextToKey(text) {
   if (!text) return ''
   const t = text.toLowerCase()
@@ -220,7 +216,6 @@ function handleEditOrder(order) {
 
 function handleSaveNewOrder(payload) {
   console.debug('[OrdersManager] handleSaveNewOrder received payload:', payload)
-  // If payload contains an id, update existing order
   const statusMap = {
     pending: { text: 'Chờ xác nhận', color: 'gray' },
     completed: { text: 'Đã hoàn thành', color: 'green' },
@@ -246,10 +241,7 @@ function handleSaveNewOrder(payload) {
       }))
       orders.value[idx].total = payload.total
       orders.value[idx].notes = payload.notes
-      // update status if provided
       if (payload.status && payload.status.key) {
-        // if form emitted a status object, use it directly and keep OrdersManager
-        // responsible for color mapping / further API calls
         const key = payload.status.key
         const s = statusMap[key] || { text: payload.status.text || key, color: 'gray' }
         orders.value[idx].status = { key, text: s.text, color: s.color }
@@ -287,7 +279,6 @@ function handleSaveNewOrder(payload) {
 }
 
 function updateOrderStatus({ orderId, newStatus }) {
-  // Map status key to display text/color
   const map = {
     completed: { text: 'Đã Hoàn Thành', color: 'green' },
     confirmed: { text: 'Đã Xác Nhận', color: 'yellow' },
@@ -298,41 +289,10 @@ function updateOrderStatus({ orderId, newStatus }) {
   const idx = orders.value.findIndex((o) => o.id === orderId)
   if (idx !== -1) {
     orders.value[idx].status = { text: s.text, color: s.color }
-    // If modal is open, refresh selectedOrder too
     if (selectedOrder.value && selectedOrder.value.id === orderId) {
       selectedOrder.value.status = { ...orders.value[idx].status }
     }
   }
   showDetailModal.value = false
 }
-
-// cancelCustomerOrder removed - not used in manager view
 </script>
-
-<style lang="css" scoped>
-@reference "../assets/main.css";
-.box-bg {
-  @apply bg-gray-100 p-6 rounded-xl shadow-lg;
-}
-.title-style {
-  @apply text-3xl font-bold mb-4 text-gray-800;
-}
-.text-style {
-  @apply py-3 px-6 text-left;
-}
-.text-center-style {
-  @apply py-3 px-6 text-center;
-}
-.table-style {
-  @apply min-w-full bg-white rounded-lg overflow-hidden shadow-sm;
-}
-.header-table-style {
-  @apply bg-gray-200 text-gray-600 uppercase text-sm leading-normal;
-}
-.tbody-table-style {
-  @apply text-gray-600 text-sm;
-}
-.row-table-style {
-  @apply border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200;
-}
-</style>

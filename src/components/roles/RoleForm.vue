@@ -320,7 +320,3 @@ const handleClose = () => {
     </template>
   </DraggableModal>
 </template>
-
-<style scoped>
-/* Additional styles if needed */
-</style>
