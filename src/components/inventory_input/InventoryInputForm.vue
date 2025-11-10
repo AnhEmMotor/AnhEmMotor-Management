@@ -394,7 +394,6 @@ onBeforeUnmount(() => {
           <thead>
             <tr>
               <th class="w-12">STT</th>
-              <th class="w-32">Mã hàng</th>
               <th class="flex-1">Tên hàng</th>
               <th class="w-24">ĐVT</th>
               <th class="w-32">Số lượng</th>
@@ -413,9 +412,6 @@ onBeforeUnmount(() => {
               class="hover:bg-gray-50"
             >
               <td class="text-center">{{ index + 1 }}</td>
-              <td>
-                <div class="text-blue-600">{{ product.code }}</div>
-              </td>
               <td>{{ product.name }}</td>
               <td class="text-center">Cái</td>
               <td>

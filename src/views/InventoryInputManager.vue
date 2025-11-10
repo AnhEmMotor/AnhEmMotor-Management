@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import * as XLSX from 'xlsx'
 import InventoryItem from '@/components/inventory_input/InventoryItem.vue'
@@ -11,45 +11,42 @@ import DraggableModal from '@/components/ui/DraggableModal.vue'
 import InventoryInputForm from '@/components/inventory_input/InventoryInputForm.vue'
 import ProductForm from '@/components/product/ProductForm.vue'
 import { showConfirmation } from '@/composables/useConfirmationState'
+import { useQueryClient } from '@tanstack/vue-query'
+import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 
 const store = useStore()
+const queryClient = useQueryClient()
 
 const searchTerm = ref('')
 const selectedStatuses = ref([])
 const expandedItemId = ref(null)
 
-const statusMap = {
-  'Phiếu tạm': 'working',
-  'Đã nhập hàng': 'finished',
-  'Đã hủy': 'cancelled',
-}
-const reverseStatusMap = {
-  working: 'Phiếu tạm',
-  finished: 'Đã nhập hàng',
-  cancelled: 'Đã hủy',
-}
-
-const allInventoryItems = computed(() => store.getters['inputs/allInputs'])
-const totalCount = computed(() => store.getters['inputs/totalCount'])
-const isLoading = computed(() => store.getters['inputs/isLoading'])
-const totalPages = computed(() => Math.ceil(totalCount.value / itemsPerPage.value))
 const currentPage = ref(1)
-const itemsPerPage = ref(10)
+const itemsPerPage = ref(15)
 
-const fetchItems = () => {
-  const statusIds = selectedStatuses.value.map((label) => statusMap[label]).filter(Boolean)
-  store.dispatch('inputs/fetchInputs', {
-    page: currentPage.value,
-    itemsPerPage: itemsPerPage.value,
-    statusFilters: statusIds,
-    search: searchTerm.value,
-  })
+const fetchInputsFn = (params) => {
+  return store.dispatch('inputs/fetchInputs', params)
 }
 
-onMounted(fetchItems)
-watch([currentPage, selectedStatuses, searchTerm], fetchItems)
+const inputsDataMapper = (data) => ({
+  items: data?.inputs || [],
+  count: data?.count || 0,
+})
 
-const filteredItems = computed(() => allInventoryItems.value)
+const {
+  items: filteredItems,
+  _totalCount,
+  totalPages,
+  isLoading,
+  isError,
+  error,
+} = usePaginatedQuery({
+  queryKeyBase: ref('inventoryInputs'),
+  page: currentPage,
+  itemsPerPage: itemsPerPage,
+  fetchFn: fetchInputsFn,
+  dataMapper: inputsDataMapper,
+})
 
 function handleToggleDetail(itemId) {
   expandedItemId.value = expandedItemId.value === itemId ? null : itemId
@@ -212,8 +209,8 @@ const saveInventoryReceipt = async () => {
       isEditMode: isEditMode.value,
       status_id: 'working',
     })
-    console.log('Đã lưu phiếu nhập tạm!')
     closeInventoryModal()
+    queryClient.invalidateQueries({ queryKey: ['inventoryInputs'] })
   } catch (error) {
     console.error('Lỗi khi lưu phiếu nhập:', error)
   }
@@ -235,6 +232,7 @@ const completeInventoryReceipt = async () => {
     })
     console.log('Đã hoàn thành phiếu nhập!')
     closeInventoryModal()
+    queryClient.invalidateQueries({ queryKey: ['inventoryInputs'] })
   } catch (error) {
     console.error('Lỗi khi hoàn thành phiếu nhập:', error)
   }
@@ -288,11 +286,22 @@ const handleCancelRequest = async (item) => {
   const message = `Bạn có chắc muốn huỷ phiếu ${item.id}? Hành động này không thể hoàn tác.`
   const confirmed = await showConfirmation(title, message)
   if (!confirmed) return
-  store.dispatch('inputs/cancelReceipt', { id: item.id })
+
+  try {
+    await store.dispatch('inputs/cancelReceipt', { id: item.id })
+    queryClient.invalidateQueries({ queryKey: ['inventoryInputs'] })
+  } catch (error) {
+    console.error('Lỗi khi huỷ phiếu:', error)
+  }
 }
 
-const handleSaveNotes = ({ id, notes }) => {
-  store.dispatch('inputs/saveNotes', { id, notes })
+const handleSaveNotes = async ({ id, notes }) => {
+  try {
+    await store.dispatch('inputs/saveNotes', { id, notes })
+    queryClient.invalidateQueries({ queryKey: ['inventoryInputs'] })
+  } catch (error) {
+    console.error('Lỗi khi lưu ghi chú:', error)
+  }
 }
 </script>
 
@@ -304,34 +313,35 @@ const handleSaveNotes = ({ id, notes }) => {
       <div>
         <h1 class="text-3xl font-bold text-gray-800">Quản lý phiếu nhập kho</h1>
       </div>
-      <div class="flex flex-wrap items-center gap-2">
+      <!-- <div class="flex flex-wrap items-center gap-2">
         <BaseButton text="Nhập hàng" color="purple" @click="openNewInventoryModal" />
         <BaseButton text="Export" color="green" @click="exportExcel" />
         <div class="h-8 border-r-2 border-black-300 mx-2"></div>
         <InventoryFilterButtons v-model="selectedStatuses" />
-      </div>
+      </div> -->
     </div>
 
-    <BaseInput
+    <!-- <BaseInput
       v-model="searchTerm"
       type="text"
       placeholder="Tìm kiếm theo mã phiếu, mã hoặc tên NCC..."
       class="mb-3"
-    />
+    /> -->
 
     <div
-      class="hidden md:grid grid-cols-[1fr_1.5fr_1fr_2fr_1.5fr_1.2fr] items-center py-3 px-5 text-sm font-semibold text-gray-600 bg-gray-200 rounded-t-md"
+      class="hidden md:grid grid-cols-[1.5fr_2fr_1.5fr_1.2fr] items-center py-3 px-5 text-sm font-semibold text-gray-600 bg-gray-200 rounded-t-md"
     >
-      <div class="px-3">Mã nhập hàng</div>
       <div class="px-3">Thời gian</div>
-      <div class="px-4">Mã NCC</div>
       <div class="px-5">Nhà cung cấp</div>
-      <div class="px-5 text-right">Cần trả NCC</div>
+      <div class="px-5 text-right">Tổng giá trị phiếu nhập</div>
       <div class="px-5">Trạng thái</div>
     </div>
 
     <div class="bg-white rounded-b-md shadow-sm">
       <div v-if="isLoading" class="text-center py-6 text-gray-500">Đang tải dữ liệu...</div>
+      <div v-else-if="isError" class="text-center py-6 text-red-500">
+        Đã xảy ra lỗi: {{ error?.message || 'Không thể tải dữ liệu' }}
+      </div>
       <div v-else-if="filteredItems.length === 0" class="text-center py-6 text-gray-500">
         Không có phiếu nhập nào để hiển thị.
       </div>

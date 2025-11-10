@@ -47,7 +47,7 @@ export const saveReceipt = async ({
 export const updateInputStatus = async (id, status_id) => {
   const { data, error } = await supabase
     .from('input')
-    .update({ status_id: status_id, name_verify: 'Hệ thống' })
+    .update({ status_id: status_id })
     .eq('id', id)
     .select(
       `
@@ -58,5 +58,26 @@ export const updateInputStatus = async (id, status_id) => {
     .single()
 
   if (error) throw error
+  return data
+}
+
+export const updateInput = async (id, updates) => {
+  const { data, error } = await supabase
+    .from('input')
+    .update(updates)
+    .eq('id', id)
+    .select(
+      `
+      *,
+      supplier:supplier_id(*),
+      input_status:status_id(id, name)
+    `,
+    )
+    .single()
+
+  if (error) {
+    console.error('Lỗi khi updateInput:', error)
+    throw error
+  }
   return data
 }
