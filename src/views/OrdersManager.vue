@@ -32,7 +32,7 @@
             v-for="order in displayedOrders"
             :key="order.id"
             class="row-table-style cursor-pointer"
-            @click="openOrderDetails(order)"
+            @click="handleEditOrder(order)"
           >
             <td class="py-3 px-6 text-left whitespace-nowrap">{{ order.id.substring(0, 8) }}...</td>
             <td class="py-3 px-6 text-left">
@@ -57,12 +57,6 @@
       </table>
     </div>
 
-    <OrderDetailModal
-      :visible="showDetailModal"
-      :order="selectedOrder"
-      @close="showDetailModal = false"
-    />
-
     <OrderForm
       v-if="showOrderForm"
       :show="showOrderForm"
@@ -83,7 +77,6 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 
 import RoundBadge from '@/components/ui/RoundBadge.vue'
 import OrderFilterButtons from '@/components/orders/OrderFilterButtons.vue'
-import OrderDetailModal from '@/components/orders/OrderDetailModal.vue'
 import OrderForm from '@/components/orders/OrderForm.vue'
 import BaseSmallNoBgButton from '@/components/ui/button/BaseSmallNoBgButton.vue'
 import BaseButton from '@/components/ui/button/BaseButton.vue'
@@ -128,7 +121,6 @@ function getStatusColor(key) {
 }
 
 const selectedStatuses = ref([])
-const showDetailModal = ref(false)
 const selectedOrder = ref(null)
 const showOrderForm = ref(false)
 
@@ -169,6 +161,7 @@ const {
   dataMapper: dataMapper,
 })
 
+// --- Mutations (Tanstack Query + Vuex) ---
 const saveOrderMutation = useMutation({
   mutationFn: (orderPayload) => store.dispatch('orders/saveOrder', orderPayload),
   onSuccess: (savedOrder) => {
@@ -181,6 +174,7 @@ const saveOrderMutation = useMutation({
   },
 })
 
+// --- Event Handlers ---
 function createNewOrder() {
   selectedOrder.value = null
   showOrderForm.value = true
@@ -189,11 +183,6 @@ function createNewOrder() {
 function handleEditOrder(order) {
   selectedOrder.value = { ...order }
   showOrderForm.value = true
-}
-
-function openOrderDetails(order) {
-  selectedOrder.value = { ...order }
-  showDetailModal.value = true
 }
 
 function handleSaveOrder(payload) {
