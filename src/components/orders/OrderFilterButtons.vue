@@ -13,7 +13,10 @@
 </template>
 
 <script setup>
+import { computed, onMounted } from 'vue'
+import { useStore } from 'vuex'
 import BaseFilterButton from '../ui/button/BaseFilterButton.vue'
+
 const props = defineProps({
   modelValue: {
     type: Array,
@@ -22,18 +25,64 @@ const props = defineProps({
   },
 })
 const emit = defineEmits(['update:modelValue'])
+const store = useStore()
 
-// Order status options mapping to the values used in OrdersManager
-const filterOptions = [
-  { status: 'completed', label: 'Đã Hoàn Thành', color: 'green' },
-  { status: 'confirmed', label: 'Đã Xác Nhận', color: 'yellow' },
-  { status: 'delivering', label: 'Đang Giao Hàng', color: 'blue' },
-  { status: 'pending', label: 'Chưa Xác Nhận', color: 'red' },
-]
+const STATUS_TEXT_MAP = {
+  pending: 'Chờ xác nhận',
+  completed: 'Đã hoàn thành',
+  canceled: 'Đã hủy',
+  refunding: 'Đang hoàn tiền',
+  refunded: 'Đã hoàn tiền',
+  confirmed_cod: 'Đã xác nhận (COD)',
+  paid_processing: 'Đã thanh toán (Chờ xử lý)',
+  waiting_deposit: 'Chờ đặt cọc',
+  deposit_paid: 'Đã đặt cọc (Chờ xử lý)',
+  delivering: 'Đang giao hàng',
+  waiting_pickup: 'Chờ lấy hàng',
+}
+
+const STATUS_COLOR_MAP = {
+  pending: 'gray',
+  waiting_deposit: 'gray',
+  refunded: 'gray',
+  completed: 'green',
+  waiting_pickup: 'green',
+  confirmed_cod: 'yellow',
+  refunding: 'yellow',
+  paid_processing: 'blue',
+  deposit_paid: 'blue',
+  delivering: 'blue',
+  canceled: 'red',
+}
+
+function getStatusLabel(key) {
+  return STATUS_TEXT_MAP[key] || key
+}
+
+function getStatusColor(key) {
+  return STATUS_COLOR_MAP[key] || 'gray'
+}
+
+onMounted(() => {
+  store.dispatch('orders/fetchStatuses')
+})
+
+const allStatuses = computed(() => store.getters['orders/allStatuses'])
+
+const filterOptions = computed(() => {
+  return allStatuses.value
+    .map((s) => ({
+      status: s.id,
+      label: getStatusLabel(s.id),
+      color: getStatusColor(s.id),
+    }))
+    .filter((s) => ['completed', 'confirmed_cod', 'delivering', 'pending'].includes(s.status))
+})
 
 const isActive = (status) => {
   return props.modelValue.includes(status)
 }
+
 const selectFilter = (status) => {
   const newSelection = [...props.modelValue]
   const index = newSelection.indexOf(status)
