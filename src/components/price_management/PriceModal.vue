@@ -79,16 +79,3 @@ function closeModal() {
     </div>
   </transition>
 </template>
-
-<style scoped>
-.modal-enter-active,
-.modal-leave-active {
-  transition: all 300ms ease-out;
-}
-
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-  transform: scale(0.95);
-}
-</style>

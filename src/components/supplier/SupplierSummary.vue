@@ -1,22 +1,12 @@
 <script setup>
 import RoundBadge from '../ui/RoundBadge.vue'
+import { formatCurrency } from '@/composables/useCurrency'
 
 defineProps({
   itemData: Object,
   isOpen: Boolean,
 })
 defineEmits(['toggle-detail'])
-
-// Hàm định dạng tiền tệ (hiển thị)
-const currencyFormatter = new Intl.NumberFormat('vi-VN', {
-    style: 'decimal',
-    minimumFractionDigits: 0
-});
-
-function formatCurrency(number) {
-    if (typeof number !== 'number') return '0';
-    return currencyFormatter.format(number) + '';
-}
 
 function getStatusColor(status) {
   switch (status) {
@@ -31,21 +21,17 @@ function getStatusColor(status) {
 </script>
 
 <template>
-  <div
-    class="summary-row-responsive border p-3 md:p-0 md:border-none"
-    @click="$emit('toggle-detail')"
-  >
+  <div class="border p-3 md:p-0 md:border-none mb-3 md:mb-0" @click="$emit('toggle-detail')">
     <div
-      class="hidden md:grid summary-row-grid items-center py-2 px-3 text-sm cursor-pointer transition duration-150"
+      class="hidden md:grid grid-cols-16 gap-2 items-center py-3 px-5 text-sm cursor-pointer transition duration-150"
     >
-      <div class="px-5 font-semibold text-gray-800 text-sm">{{ itemData.id }}</div>
-      <div class="px-5 font-medium text-gray-800 truncate text-sm">{{ itemData.name }}</div>
-      <div class="px-5 text-gray-600 text-xs">{{ itemData.phone || '---' }}</div>
-      <div class="px-5 text-gray-600 text-xs">{{ itemData.email || 'Chưa có' }}</div>
-      <div class="px-5 text-right text-sm font-semibold text-red-600">
-        {{ formatCurrency(itemData.totalPurchase) }}
+      <div class="font-medium text-gray-800 truncate text-sm col-span-8">{{ itemData.name }}</div>
+      <div class="text-gray-600 text-xs col-span-2">{{ itemData.phone || '---' }}</div>
+      <div class="text-gray-600 text-xs col-span-2">{{ itemData.email || 'Chưa có' }}</div>
+      <div class="text-right text-sm font-semibold text-red-600 col-span-2 justify-self-end">
+        {{ formatCurrency(itemData.total_purchase) }}
       </div>
-      <div class="flex justify-start px-3">
+      <div class="flex justify-start col-span-2">
         <RoundBadge :color="getStatusColor(itemData.status)">
           {{ itemData.status === 'active' ? 'Đang hoạt động' : 'Ngừng hoạt động' }}
         </RoundBadge>
@@ -70,17 +56,3 @@ function getStatusColor(status) {
     </div>
   </div>
 </template>
-
-<style scoped>
-.summary-row-grid {
-  grid-template-columns: 1fr 2fr 1fr 1.5fr 1.5fr 1.2fr;
-}
-.summary-row-responsive {
-  margin-bottom: 0.75rem; /* 12px */
-}
-@media (min-width: 768px) {
-  .summary-row-responsive {
-    margin-bottom: 0;
-  }
-}
-</style>

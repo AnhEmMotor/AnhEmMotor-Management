@@ -22,7 +22,14 @@ watch(
   () => props.modelValue,
   (newVal) => {
     const copy = JSON.parse(JSON.stringify(newVal || {}))
-    localSupplier.value = copy
+    try {
+      if (JSON.stringify(copy) !== JSON.stringify(localSupplier.value)) {
+        localSupplier.value = copy
+      }
+    } catch (err) {
+      void err
+      localSupplier.value = copy
+    }
   },
   { immediate: true, deep: true },
 )
@@ -30,14 +37,20 @@ watch(
 watch(
   localSupplier,
   (newVal) => {
-    emit('update:modelValue', newVal)
+    try {
+      if (JSON.stringify(newVal) !== JSON.stringify(props.modelValue)) {
+        emit('update:modelValue', JSON.parse(JSON.stringify(newVal)))
+      }
+    } catch (err) {
+      void err
+      emit('update:modelValue', newVal)
+    }
   },
   { deep: true },
 )
 </script>
 
 <template>
-  <!-- Using a dummy form tag that doesn't submit, parent component handles save -->
   <form @submit.prevent>
     <div class="space-y-4 max-h-[70vh] overflow-y-auto px-2">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

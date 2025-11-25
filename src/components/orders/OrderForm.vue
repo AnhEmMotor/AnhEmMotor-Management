@@ -1,5 +1,7 @@
 <script setup>
 import { ref, computed, watch, onBeforeUnmount } from 'vue'
+import { useStore } from 'vuex'
+import { debounce } from '@/utils/debounceThrottle'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
 import BaseDropdown from '@/components/ui/input/BaseDropdown.vue'
 import BaseInput from '@/components/ui/input/BaseInput.vue'
@@ -12,15 +14,14 @@ const props = defineProps({
   order: { type: Object, default: null },
 })
 const emit = defineEmits(['close', 'save', 'activate'])
+const store = useStore()
 
-// local form state inspired by InventoryInputForm
 const localData = ref({
   customerName: '',
   products: [],
   notes: '',
 })
 
-// Status list (11 statuses) - key/value pairs
 const STATUS_LIST = [
   { key: 'pending', text: 'Chờ xác nhận' }, //1
   { key: 'completed', text: 'Đã hoàn thành' }, //2
@@ -37,13 +38,12 @@ const STATUS_LIST = [
 
 const localStatus = ref('pending')
 
-// statuses that lock editing according to the sales workflow
 const LOCKED_STATUSES = [
-  'confirmed_cod', // 6 - Đã xác nhận (Chờ thanh toán COD)
-  'paid_processing', // 7 - Đã thanh toán (Chờ xử lý)
-  'deposit_paid', // 9 - Đã đặt cọc (Chờ xử lý)
-  'delivering', // 10 - Đang giao hàng
-  'waiting_pickup', // 11 - Chờ lấy hàng tại cửa hàng
+  'confirmed_cod',
+  'paid_processing',
+  'deposit_paid',
+  'delivering',
+  'waiting_pickup',
   'completed',
   'canceled',
   'refunding',
@@ -51,24 +51,18 @@ const LOCKED_STATUSES = [
 ]
 
 const isLocked = computed(() => {
-  // If creating a new order (no props.order) it's not locked
   if (!props.order) return false
-  const key = localStatus.value || (props.order.status && props.order.status.key) || 'pending'
+  const key = localStatus.value || (props.order && props.order.status_id) || 'pending'
   return LOCKED_STATUSES.includes(key)
 })
 
-// original status key (when editing) and whether user changed it
-const originalStatusKey = computed(() =>
-  props.order && props.order.status ? props.order.status.key : null,
-)
+const originalStatusKey = computed(() => (props.order ? props.order.status_id : null))
 const statusChanged = computed(() => {
   if (!props.order) return false
   return localStatus.value !== originalStatusKey.value
 })
 
-// compute allowed target statuses based on current status key
 function allowedStatusOptionsFor(currentKey) {
-  // Define allowed transitions per project logic (admin can move forward or to cancel/refund paths)
   const map = {
     pending: ['confirmed_cod', 'paid_processing', 'waiting_deposit', 'canceled'],
     confirmed_cod: ['delivering', 'waiting_pickup', 'completed', 'canceled'],
@@ -83,14 +77,11 @@ function allowedStatusOptionsFor(currentKey) {
     completed: [],
   }
   const allowed = map[currentKey] || []
-  // Find current status entry
   const currentEntry = STATUS_LIST.find((s) => s.key === currentKey)
   const result = []
   if (currentEntry) {
-    // include current status first and mark it as current in the label
     result.push({ value: currentEntry.key, text: `${currentEntry.text} (Hiện tại)` })
   }
-  // Add allowed transitions (excluding current if present)
   STATUS_LIST.forEach((s) => {
     if (s.key !== currentKey && allowed.includes(s.key)) {
       result.push({ value: s.key, text: s.text })
@@ -99,73 +90,105 @@ function allowedStatusOptionsFor(currentKey) {
   return result
 }
 
-const allProducts = ref([
-  { code: 'SP000001', name: 'VISION', price: 30000000, stock: 10 },
-  { code: 'SP000002', name: 'VARIO', price: 35000000, stock: 5 },
-  { code: 'SP001001', name: 'SH Mode 2024', price: 65000000, stock: 8 },
-  { code: '1233289314912', name: 'Siro đào VINASYRUP 750ml', price: 34800, stock: 5 },
-])
-
+const productSearchResults = ref([])
 const productSearchTerm = ref('')
 const showProductDropdown = ref(false)
 const productInputRef = ref(null)
 const dropdownStyle = ref({})
 
-// inline validation errors (similar to UserForm.vue)
 const errors = ref({
   products: '',
   customerName: '',
 })
 
+const debouncedSearch = debounce(async (term) => {
+  if (term.length < 2) {
+    productSearchResults.value = []
+    return
+  }
+  try {
+    const data = await store.dispatch('orders/fetchProductVariants', {
+      p_page: 1,
+      p_items_per_page: 10,
+      p_search: term,
+      p_status_ids: null,
+    })
+    productSearchResults.value = data.products || []
+    if (productSearchResults.value.length > 0) {
+      openProductDropdown()
+    }
+  } catch (err) {
+    console.error('Lỗi tìm sản phẩm:', err)
+  }
+}, 300)
+
+watch(productSearchTerm, (newTerm) => {
+  debouncedSearch(newTerm)
+})
+
 const filteredProducts = computed(() => {
-  if (!productSearchTerm.value) return allProducts.value
-  const term = productSearchTerm.value.toLowerCase()
-  return allProducts.value.filter(
-    (p) => p.code.toLowerCase().includes(term) || p.name.toLowerCase().includes(term),
-  )
+  return productSearchResults.value
 })
 
 const selectProduct = (product) => {
   if (isLocked.value) {
-    // prevent adding when locked
     showProductDropdown.value = false
     return
   }
   const newProduct = {
     id: Date.now() + Math.random(),
-    code: product.code,
+    product_id: product.id,
+    code: product.id.substring(0, 8),
     name: product.name,
     quantity: 1,
     unitPrice: product.price || 0,
     total: product.price || 0,
+    costPrice: product.cost_price || 0,
   }
   localData.value.products.push(newProduct)
   productSearchTerm.value = ''
+  productSearchResults.value = []
   showProductDropdown.value = false
 }
 
 const openProductDropdown = () => {
   if (isLocked.value) return
-  showProductDropdown.value = true
+  if (filteredProducts.value.length > 0) {
+    showProductDropdown.value = true
+  }
 }
 
-// when editing an order, initialize localData and status
-if (props.order) {
-  localData.value.customerName = props.order.customerName || ''
-  localData.value.products = (props.order.products || []).map((p) => ({
-    id: Date.now() + Math.random(),
-    code: p.code || p.name || '',
-    name: p.name,
-    quantity: p.qty || p.quantity || 1,
-    unitPrice: p.price || p.unitPrice || 0,
-    total: (p.price || p.unitPrice || 0) * (p.qty || p.quantity || 1),
-  }))
-  localData.value.notes = props.order.notes || ''
-  localStatus.value = (props.order.status && props.order.status.key) || 'pending'
-}
+watch(
+  () => props.show,
+  (newShow) => {
+    if (newShow) {
+      if (props.order) {
+        localData.value.customerName = props.order.customer_name || ''
+        localData.value.products = (props.order.products || []).map((p) => ({
+          id: p.id || Date.now() + Math.random(),
+          product_id: p.product_id,
+          code: p.product_id ? p.product_id.substring(0, 8) : 'N/A',
+          name: p.name,
+          quantity: p.count || p.quantity || 1,
+          unitPrice: p.price || p.unitPrice || 0,
+          total: (p.price || p.unitPrice || 0) * (p.count || p.quantity || 1),
+          costPrice: p.cost_price || 0,
+        }))
+        localData.value.notes = props.order.notes || ''
+        localStatus.value = props.order.status_id || 'pending'
+      } else {
+        localData.value = { customerName: '', products: [], notes: '' }
+        localStatus.value = 'pending'
+      }
+      productSearchTerm.value = ''
+      showProductDropdown.value = false
+      errors.value = { products: '', customerName: '' }
+    }
+  },
+  { immediate: true },
+)
 
 const handleProductBlur = () => {
-  // delay hiding to allow clicks on dropdown items to register
   window.setTimeout(() => {
     showProductDropdown.value = false
   }, 200)
@@ -187,7 +210,7 @@ const totalAmount = computed(() => {
 
 const updateDropdownPosition = () => {
   if (!productInputRef.value) return
-  const rect = productInputRef.value.getBoundingClientRect()
+  const rect = productInputRef.value.$el.getBoundingClientRect()
   dropdownStyle.value = {
     position: 'fixed',
     top: `${rect.bottom}px`,
@@ -195,7 +218,7 @@ const updateDropdownPosition = () => {
     width: `${rect.width}px`,
     maxHeight: '300px',
     overflowY: 'auto',
-    zIndex: 2000,
+    zIndex: (props.zIndex || 100) + 10,
   }
 }
 
@@ -212,21 +235,6 @@ const onShowProductDropdown = (val) => {
 
 watch(showProductDropdown, onShowProductDropdown)
 
-watch(
-  () => props.show,
-  (val) => {
-    if (!val) {
-      // reset form
-      localData.value = { customerName: '', products: [], notes: '' }
-      productSearchTerm.value = ''
-      showProductDropdown.value = false
-      errors.value.products = ''
-      errors.value.customerName = ''
-    }
-  },
-)
-
-// clear product error when user adds/removes products
 watch(
   () => localData.value.products.length,
   (len) => {
@@ -246,22 +254,15 @@ function submit() {
     errors.value.customerName = 'Vui lòng nhập tên khách hàng'
     return
   }
-  // Require at least one product when creating a new order.
-  // When editing, disallow saving if the product list is emptied (user
-  // removed all products) unless the user only changed the status.
   if (localData.value.products.length === 0) {
     if (!props.order) {
       errors.value.products = 'Vui lòng thêm ít nhất 1 sản phẩm'
       return
     }
-    // props.order exists (editing) — allow only if the user changed status
-    // and did not remove products intentionally. If products are empty and
-    // status wasn't changed, show validation error.
     if (!statusChanged.value) {
       errors.value.products = 'Đơn hàng phải có ít nhất 1 sản phẩm'
       return
     }
-    // if statusChanged is true we allow saving (status-only change)
   }
 
   const statusEntry = STATUS_LIST.find((s) => s.key === localStatus.value) || STATUS_LIST[0]
@@ -271,19 +272,11 @@ function submit() {
     products: JSON.parse(JSON.stringify(localData.value.products)),
     total: totalAmount.value,
     notes: localData.value.notes,
-    // Emit a full status object so parent (OrdersManager) can decide how to
-    // persist / map colors. This makes switching to API calls easier later.
-    status: props.order
-      ? { key: localStatus.value, text: statusEntry.text }
-      : { key: 'pending', text: STATUS_LIST.find((s) => s.key === 'pending').text },
-    createdAt: props.order ? props.order.date : new Date().toISOString(),
+    status: { key: localStatus.value, text: statusEntry.text },
+    createdAt: props.order ? props.order.created_at : new Date().toISOString(),
   }
-  // debug: trace submit attempts
   console.debug('[OrderForm] submit payload:', payload)
-
   emit('save', payload)
-  // also request the parent to close the modal immediately
-  emit('close')
 }
 
 onBeforeUnmount(() => {
@@ -302,7 +295,7 @@ onBeforeUnmount(() => {
   >
     <template #header>
       <div class="flex items-center gap-2">
-        <h3 class="text-lg font-semibold">Tạo Đơn Mới</h3>
+        <h3 class="text-lg font-semibold">{{ props.order ? 'Sửa Đơn Hàng' : 'Tạo Đơn Mới' }}</h3>
       </div>
     </template>
 
@@ -318,7 +311,11 @@ onBeforeUnmount(() => {
         </div>
         <div>
           <label class="block text-sm font-medium mb-1">Tên khách hàng</label>
-          <BaseInput v-model="localData.customerName" :error="errors.customerName" />
+          <BaseInput
+            v-model="localData.customerName"
+            :error="errors.customerName"
+            :disabled="isLocked"
+          />
         </div>
 
         <div>
@@ -327,30 +324,41 @@ onBeforeUnmount(() => {
             <BaseInput
               ref="productInputRef"
               v-model="productSearchTerm"
-              @input="updateDropdownPosition"
               @focus="openProductDropdown"
               @blur="handleProductBlur"
               :disabled="isLocked"
-              placeholder="Tìm hàng hóa theo tên...."
+              placeholder="Tìm hàng hóa theo tên (gõ ít nhất 2 ký tự)..."
             />
 
             <div
               v-if="showProductDropdown"
               :style="dropdownStyle"
-              class="dropdown-menu floating-dropdown"
+              class="fixed bg-white border border-[rgba(0,0,0,0.08)] rounded-md shadow-[0_6px_18px_rgba(0,0,0,0.08)] z-50"
             >
+              <div v-if="filteredProducts.length === 0" class="p-3 text-gray-500 text-sm">
+                Không tìm thấy sản phẩm...
+              </div>
               <div
                 v-for="product in filteredProducts"
-                :key="product.code"
+                :key="product.id"
                 @mousedown.prevent="selectProduct(product)"
-                class="dropdown-item"
+                class="p-3 cursor-pointer border-b border-gray-100 hover:bg-gray-50"
               >
                 <div class="flex items-center gap-3">
-                  <div class="product-icon">📦</div>
+                  <div class="mr-3">
+                    <img
+                      :src="
+                        product.cover_image_url ||
+                        'https://placehold.co/40x40/f0f0f0/AAAAAA?text=...'
+                      "
+                      alt="Product"
+                      class="w-10 h-10 object-cover rounded"
+                    />
+                  </div>
                   <div class="flex-1">
                     <div class="font-medium">{{ product.name }}</div>
                     <div class="text-xs text-gray-500">
-                      {{ product.code }} | Giá: {{ product.price.toLocaleString() }} | Tồn:
+                      Giá: {{ (product.price || 0).toLocaleString() }} | Tồn:
                       {{ product.stock }}
                     </div>
                   </div>
@@ -361,79 +369,113 @@ onBeforeUnmount(() => {
           <p v-if="errors.products" class="mt-1 text-sm text-red-500">{{ errors.products }}</p>
         </div>
 
-        <!-- Status dropdown (only when editing an existing order) -->
         <div v-if="props.order">
           <label class="block text-sm font-medium mb-1">Trạng thái đơn</label>
           <BaseDropdown
             v-model="localStatus"
-            :options="allowedStatusOptionsFor(localStatus)"
+            :options="allowedStatusOptionsFor(originalStatusKey)"
             placeholder="Chọn trạng thái"
-            :disabled="isLocked"
           />
         </div>
 
-        <div class="product-table-section">
-          <table class="product-table w-full text-sm bg-white rounded-md overflow-hidden shadow-sm">
-            <thead class="bg-gray-50 border-b">
+        <div class="product-table-section max-h-[300px] overflow-y-auto">
+          <table
+            class="w-full text-sm bg-white rounded-md overflow-hidden shadow-sm border-collapse"
+          >
+            <thead class="bg-gray-50 sticky top-0">
               <tr>
-                <th class="py-2 px-3 text-left text-xs font-semibold text-gray-600 w-12">STT</th>
-                <th class="py-2 px-3 text-left text-xs font-semibold text-gray-600 w-28">Mã</th>
-                <th class="py-2 px-3 text-left text-xs font-semibold text-gray-600">Tên</th>
-                <th class="py-2 px-3 text-right text-xs font-semibold text-gray-600 w-24">
-                  Số lượng
+                <th
+                  class="py-2 px-3 text-left text-xs font-semibold text-gray-600 w-12 border-b border-[rgba(0,0,0,0.04)]"
+                >
+                  STT
                 </th>
-                <th class="py-2 px-3 text-right text-xs font-semibold text-gray-600 w-44">
+                <th
+                  class="py-2 px-3 text-left text-xs font-semibold text-gray-600 w-28 border-b border-[rgba(0,0,0,0.04)]"
+                >
+                  Mã
+                </th>
+                <th
+                  class="py-2 px-3 text-left text-xs font-semibold text-gray-600 border-b border-[rgba(0,0,0,0.04)]"
+                >
+                  Tên
+                </th>
+                <th
+                  class="py-2 px-3 text-right text-xs font-semibold text-gray-600 w-24 border-b border-[rgba(0,0,0,0.04)]"
+                >
+                  SL
+                </th>
+                <th
+                  class="py-2 px-3 text-right text-xs font-semibold text-gray-600 w-32 border-b border-[rgba(0,0,0,0.04)]"
+                >
                   Đơn giá
                 </th>
-                <th class="py-2 px-3 text-right text-xs font-semibold text-gray-600 w-40">
+                <th
+                  class="py-2 px-3 text-right text-xs font-semibold text-gray-600 w-32 border-b border-[rgba(0,0,0,0.04)]"
+                >
                   Thành tiền
                 </th>
-                <th class="py-2 px-3 text-center text-xs font-semibold text-gray-600 w-12"></th>
+                <th
+                  class="py-2 px-3 text-center text-xs font-semibold text-gray-600 w-12 border-b border-[rgba(0,0,0,0.04)]"
+                ></th>
               </tr>
             </thead>
             <tbody>
               <tr v-if="localData.products.length === 0">
-                <td colspan="7" class="text-center py-6 text-gray-400">Chưa có sản phẩm nào</td>
+                <td
+                  colspan="7"
+                  class="text-center py-6 text-gray-400 border-b border-[rgba(0,0,0,0.04)]"
+                >
+                  Chưa có sản phẩm nào
+                </td>
               </tr>
               <tr
                 v-for="(p, idx) in localData.products"
                 :key="p.id"
-                class="product-row even:bg-gray-50"
+                class="even:bg-gray-50 hover:bg-[rgba(59,130,246,0.03)]"
               >
-                <td class="py-2 px-3 text-sm text-gray-700">{{ idx + 1 }}</td>
-                <td class="py-2 px-3 text-sm text-gray-700">{{ p.code }}</td>
-                <td class="py-2 px-3 text-sm text-gray-700">{{ p.name }}</td>
-                <td class="py-2 px-3 text-right">
+                <td class="py-2 px-3 text-sm text-gray-700 border-b border-[rgba(0,0,0,0.04)]">
+                  {{ idx + 1 }}
+                </td>
+                <td class="py-2 px-3 text-sm text-gray-700 border-b border-[rgba(0,0,0,0.04)]">
+                  {{ p.code }}
+                </td>
+                <td class="py-2 px-3 text-sm text-gray-700 border-b border-[rgba(0,0,0,0.04)]">
+                  {{ p.name }}
+                </td>
+                <td class="py-2 px-3 text-right border-b border-[rgba(0,0,0,0.04)]">
                   <BaseInput
                     v-model.number="p.quantity"
                     @change="calculateProductTotal(p)"
                     type="number"
                     min="1"
                     :disabled="isLocked"
-                    class="quantity-input"
+                    class="w-20 py-1 px-2 text-center bg-transparent"
                   />
                 </td>
-                <td class="py-2 px-3 text-right">
+                <td class="py-2 px-3 text-right border-b border-[rgba(0,0,0,0.04)]">
                   <BaseInput
                     v-model.number="p.unitPrice"
                     @change="calculateProductTotal(p)"
                     type="number"
                     min="0"
                     :disabled="isLocked"
-                    class="price-input"
+                    class="w-28 py-1 px-2 text-right bg-transparent"
                   />
                 </td>
-                <td class="py-2 px-3 text-right font-medium text-gray-800">
+                <td
+                  class="py-2 px-3 text-right font-medium text-gray-800 border-b border-[rgba(0,0,0,0.04)]"
+                >
                   {{ (p.total || 0).toLocaleString('vi-VN') }}
                 </td>
-                <td class="py-2 px-3 text-center">
-                  <BaseSmallNoBgButton
+                <td class="py-2 px-3 text-center border-b border-[rgba(0,0,0,0.04)]">
+                  <button
                     v-if="!isLocked"
                     @click="removeProduct(idx)"
                     title="Xóa sản phẩm"
+                    class="text-red-500 hover:text-red-700 text-lg"
                   >
                     🗑️
-                  </BaseSmallNoBgButton>
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -449,7 +491,7 @@ onBeforeUnmount(() => {
 
     <template #footer>
       <div class="flex items-center justify-between w-full">
-        <div class="text-sm font-semibold">Tổng: {{ totalAmount.toLocaleString() }} VNĐ</div>
+        <div class="text-sm font-semibold">Tổng: {{ totalAmount.toLocaleString('vi-VN') }} VNĐ</div>
         <div class="flex gap-2">
           <BaseButton text="Huỷ" color="gray" @click="$emit('close')" />
           <BaseButton
@@ -463,60 +505,3 @@ onBeforeUnmount(() => {
     </template>
   </DraggableModal>
 </template>
-
-<style scoped>
-@reference "../../assets/main.css";
-
-.search-input {
-  @apply w-full py-2 px-3 border border-gray-300 rounded-md;
-}
-.quantity-input,
-.price-input {
-  /* keep spacing on the wrapper but remove border so we don't get double borders
-     (BaseInput already renders the input's own border). We only use the wrapper
-     to control width/alignment for the table layout. */
-  @apply py-1 px-2 text-center bg-transparent;
-}
-.quantity-input input {
-  @apply text-center;
-}
-.price-input input {
-  @apply text-right;
-}
-.delete-button {
-  @apply bg-transparent border-none cursor-pointer text-lg opacity-80 hover:opacity-100;
-}
-.floating-dropdown {
-  position: fixed;
-  background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 6px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-}
-
-.quantity-input {
-  @apply w-16;
-}
-.price-input {
-  @apply w-36;
-}
-.dropdown-item {
-  @apply p-3 cursor-pointer border-b border-gray-100;
-}
-.dropdown-item .product-icon {
-  @apply mr-3;
-}
-.product-table {
-  border-collapse: collapse;
-}
-.product-table th,
-.product-table td {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-}
-.product-row:hover {
-  background: rgba(59, 130, 246, 0.03);
-}
-.DraggableModalFooter {
-  display: flex;
-}
-</style>

@@ -1,5 +1,5 @@
 <script setup>
-import FullScreenModal from '@/components/ui/FullScreenModal.vue'
+import FullScreenModal from '@/components/ui/confirm_modal/BaseConfirmationModal.vue'
 import BaseButton from '@/components/ui/button/BaseButton.vue'
 
 defineProps({
@@ -71,7 +71,3 @@ const emit = defineEmits(['close', 'confirm'])
     </template>
   </FullScreenModal>
 </template>
-
-<style scoped>
-/* Additional styles if needed */
-</style>

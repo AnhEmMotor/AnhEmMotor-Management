@@ -1,46 +1,70 @@
 <script setup>
-import { ref } from 'vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
+import BasePagination from '../ui/button/BasePagination.vue'
+import BaseSpinner from '../ui/BaseSpinner.vue'
+import { computed, ref } from 'vue'
+import { formatDateTime, formatDate } from '@/composables/useDate'
+import { formatCurrency } from '@/composables/useCurrency'
+import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
+import { fetchInputsBySupplier } from '@/api/inputs_supplier_function'
 
-defineProps({
+const props = defineProps({
   itemData: Object,
 })
 defineEmits(['edit-supplier', 'delete-supplier', 'toggle-activation'])
-
 const activeTab = ref('info')
+const historyCurrentPage = ref(1)
+const historyItemsPerPage = ref(10)
 
-// Hàm định dạng tiền tệ (hiển thị)
-const currencyFormatter = new Intl.NumberFormat('vi-VN', {
-  style: 'decimal',
-  minimumFractionDigits: 0,
+function getStatusInfo(statusId) {
+  switch (statusId) {
+    case 'finished':
+      return { text: 'Đã nhập hàng', color: 'green' }
+    case 'working':
+      return { text: 'Chờ xử lý', color: 'yellow' }
+    case 'cancelled':
+      return { text: 'Đã hủy', color: 'red' }
+    default:
+      return { text: `ID: ${statusId}`, color: 'gray' }
+  }
+}
+
+const queryKeyBase = computed(() => ['inputHistoryOfSupplier', props.itemData.id])
+
+const filters = computed(() => ({
+  statusFilters: [],
+  search: '',
+}))
+
+const fetchHistoryFn = (params) => {
+  return fetchInputsBySupplier(
+    props.itemData.id,
+    params.page,
+    params.itemsPerPage,
+    params.statusFilters,
+    params.search,
+  )
+}
+
+const historyDataMapper = (data) => ({
+  items: data?.inputs || [],
+  count: data?.count,
 })
 
-function formatCurrency(number) {
-  if (typeof number !== 'number') return '0'
-  return currencyFormatter.format(number) + ''
-}
-
-// Hàm chuyển timestamp sang định dạng ngày tháng
-function formatDate(timestamp) {
-  if (!timestamp) return ''
-  const date = new Date(timestamp)
-  const day = date.getDate().toString().padStart(2, '0')
-  const month = (date.getMonth() + 1).toString().padStart(2, '0')
-  const year = date.getFullYear()
-  return `${day}/${month}/${year}`
-}
-
-// Hàm chuyển timestamp sang định dạng ngày tháng và giờ (dd/mm/yyyy hh:mm)
-function formatDateTime(timestamp) {
-  if (!timestamp) return ''
-  const date = new Date(timestamp)
-  const day = date.getDate().toString().padStart(2, '0')
-  const month = (date.getMonth() + 1).toString().padStart(2, '0')
-  const year = date.getFullYear()
-  const hours = date.getHours().toString().padStart(2, '0')
-  const minutes = date.getMinutes().toString().padStart(2, '0')
-  return `${day}/${month}/${year} ${hours}:${minutes}`
-}
+const {
+  isLoading: historyLoading,
+  isError: historyIsError,
+  error: historyError,
+  items: inputsData,
+  totalPages: historyTotalPages,
+} = usePaginatedQuery({
+  queryKeyBase: queryKeyBase,
+  filters: filters,
+  page: historyCurrentPage,
+  itemsPerPage: historyItemsPerPage,
+  fetchFn: fetchHistoryFn,
+  dataMapper: historyDataMapper,
+})
 </script>
 
 <template>
@@ -73,16 +97,11 @@ function formatDateTime(timestamp) {
     <div v-show="activeTab === 'info'">
       <h3 class="text-lg font-bold text-gray-800 mb-3">
         {{ itemData.name }}
-        <span class="text-sm font-normal text-gray-500 ml-2">{{ itemData.id }}</span>
       </h3>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3 mb-4">
         <div class="text-sm">
-          <span class="text-gray-500 block">Người tạo:</span>
-          <span class="font-medium text-gray-700">{{ itemData.creator }}</span>
-        </div>
-        <div class="text-sm">
           <span class="text-gray-500 block">Ngày tạo:</span>
-          <span class="font-medium text-gray-700">{{ formatDate(itemData.creationDate) }}</span>
+          <span class="font-medium text-gray-700">{{ formatDate(itemData.created_at) }}</span>
         </div>
       </div>
       <hr class="my-3 border-gray-100" />
@@ -140,41 +159,46 @@ function formatDateTime(timestamp) {
     </div>
 
     <div v-show="activeTab === 'history'">
-      <div
-        v-if="
-          itemData.transactions &&
-          itemData.transactions.filter((t) => t.status === 'Đã nhập hàng').length > 0
-        "
-        class="p-4 border border-gray-200 rounded-lg bg-white"
-      >
-        <h4 class="font-semibold text-gray-800 mb-3">Lịch sử giao dịch</h4>
-        <div class="grid grid-cols-5 gap-4 text-xs font-semibold text-gray-600 border-b pb-2 mb-2">
-          <div>Mã phiếu</div>
-          <div>Thời gian</div>
-          <div>Người tạo</div>
-          <div class="text-right">Tổng cộng</div>
-          <div class="text-right">Trạng thái</div>
+      <div v-if="historyLoading" class="p-4 text-center text-gray-500"><BaseSpinner /></div>
+      <div v-else-if="historyIsError" class="p-4 text-center text-red-500 bg-red-50 rounded-lg">
+        Lỗi khi tải lịch sử: {{ historyError?.message }}
+      </div>
+      <div v-else-if="inputsData && inputsData.length > 0" class="p-4 bg-white pr-12">
+        <div class="grid grid-cols-16 gap-4 text-xs font-semibold text-gray-600 border-b pb-2 mb-2">
+          <div class="col-span-4">Thời gian</div>
+          <div class="col-span-7">Người xác nhận</div>
+          <div class="text-right col-span-3">Tổng cộng</div>
+          <div class="text-right col-span-2">Trạng thái</div>
         </div>
         <div>
           <div
-            v-for="t in itemData.transactions.filter((tx) => tx.status === 'Đã nhập hàng')"
-            :key="t.code"
-            class="grid grid-cols-5 gap-4 items-center py-2 border-b border-gray-100 text-sm"
+            v-for="input in inputsData"
+            :key="input.id"
+            class="grid grid-cols-16 gap-4 items-center py-2 border-b border-gray-100 text-sm"
           >
-            <div class="font-medium text-red-600 hover:text-red-700 cursor-pointer">
-              {{ t.code }}
+            <div class="text-gray-600 col-span-4">
+              {{ formatDateTime(input.created_at) }}
             </div>
-            <div class="text-gray-600">{{ formatDateTime(t.time) }}</div>
-            <div class="text-gray-600">{{ t.creator }}</div>
-            <div class="text-right font-medium">{{ formatCurrency(t.total) }}</div>
-            <div class="text-right">
-              <RoundBadge :color="t.status === 'Đã nhập hàng' ? 'green' : 'gray'">
-                {{ t.status }}
+            <div class="text-gray-600 col-span-7">
+              {{ input.name_verify || 'Chưa có' }}
+            </div>
+            <div class="text-right font-medium col-span-3">
+              {{ formatCurrency(input.total) }}
+            </div>
+            <div class="text-right col-span-2">
+              <RoundBadge :color="getStatusInfo(input.status_id).color">
+                {{ getStatusInfo(input.status_id).text }}
               </RoundBadge>
             </div>
           </div>
         </div>
+        <BasePagination
+          :total-pages="historyTotalPages"
+          v-model:currentPage="historyCurrentPage"
+          :loading="historyLoading"
+        />
       </div>
+
       <div v-else class="p-4 text-center text-gray-500 bg-gray-50 rounded-lg">
         Chưa có giao dịch nào được ghi nhận.
       </div>

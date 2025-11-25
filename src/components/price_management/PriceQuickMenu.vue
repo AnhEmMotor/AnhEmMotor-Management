@@ -61,27 +61,23 @@ watch(
 watch(
   () => mode.value,
   (m) => {
+    preview.value = null
     const base = parseNumber(props.basePrice)
     if (m === 'percent') {
-      // switch to percent: if current value is numeric absolute and base exists, compute percent
       const currAbs = parseNumber(value.value)
       if (currAbs !== null && base !== null && base !== 0) {
-        const percent = Math.round((currAbs / base) * 1000) / 10
+        const percent = Math.round(((currAbs - base) / base) * 1000) / 10
         value.value = String(percent)
       } else {
-        // default to 5%
         value.value = '5'
       }
     } else {
-      // switch to absolute: if current value is numeric percent and base exists, compute absolute value
       const currPerc = parseNumber(value.value)
       if (currPerc !== null && base !== null) {
-        const abs = Math.round(base * (currPerc / 100))
+        const abs = Math.round(base * (1 + currPerc / 100))
         value.value = String(abs)
       } else {
-        // default to 5% of base if base exists
-        if (base !== null) value.value = String(Math.round(base * 0.05))
-        else value.value = ''
+        value.value = base !== null ? String(base) : ''
       }
     }
   },
@@ -96,7 +92,6 @@ function parseNumber(v) {
 }
 
 function apply() {
-  // If preview was set by quick actions, apply that value
   if (preview.value !== null) {
     const v = preview.value
     emit('apply', v < 0 ? 0 : v)
@@ -109,7 +104,6 @@ function apply() {
     if (v === null) return
     emit('apply', v < 0 ? 0 : v)
   } else {
-    // percent mode: value is percent change
     const p = parseNumber(value.value)
     if (p === null || base === null) return
     const newPrice = Math.round(base * (1 + p / 100))
@@ -161,11 +155,4 @@ function formatMoney(v) {
   if (typeof v === 'number') return new Intl.NumberFormat('vi-VN').format(v)
   return String(v)
 }
-
-// keep menu open when clicking inside
-// root element handles mouse down to keep menu open
 </script>
-
-<style scoped>
-/* small styling to ensure menu looks OK */
-</style>

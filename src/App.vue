@@ -1,5 +1,7 @@
 <script setup>
+import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
 import TheNavBar from './components/layout/TheNavBar.vue'
+import GlobalConfirmation from './components/ui/confirm_modal/GlobalConfirmationModal.vue'
 </script>
 
 <template>
@@ -9,6 +11,8 @@ import TheNavBar from './components/layout/TheNavBar.vue'
       <RouterView></RouterView>
     </div>
   </div>
+  <VueQueryDevtools />
+  <GlobalConfirmation />
 </template>
 
 <style lang="css">

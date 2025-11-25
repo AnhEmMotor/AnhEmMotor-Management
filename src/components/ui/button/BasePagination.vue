@@ -1,14 +1,9 @@
 <template>
   <div
-    v-if="loading || totalPages > 0"
+    v-if="loading || totalPages > 1"
     class="mt-6 flex justify-center items-center space-x-2 h-10"
   >
-    <div v-if="loading" class="flex items-center justify-center space-x-2">
-      <div
-        class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-6 w-6"
-      ></div>
-      <span class="text-sm text-gray-500">Đang tải...</span>
-    </div>
+    <span v-if="loading"></span>
     <div v-else-if="totalPages > 0" class="flex justify-center items-center space-x-2">
       <button
         @click="prevPage"
@@ -53,7 +48,7 @@ import { ref, computed, nextTick } from 'vue'
 const props = defineProps({
   totalPages: {
     type: Number,
-    required: true,
+    required: false,
   },
   currentPage: {
     type: Number,

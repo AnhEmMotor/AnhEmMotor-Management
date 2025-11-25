@@ -1,10 +1,14 @@
 <template>
-  <div class="box-style">
-    <div class="content-box-style">
+  <BaseLoadingOverlay :show="isVuexLoading" message="Đang xoá sản phẩm..." />
+
+  <div class="bg-gray-100 p-4 sm:p-6 rounded-xl shadow-lg">
+    <div
+      class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0"
+    >
       <div>
-        <h1 class="title-style">Quản lý sản phẩm</h1>
+        <h1 class="text-3xl font-bold text-center text-gray-800">Quản lý sản phẩm</h1>
       </div>
-      <div class="action-button-style">
+      <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full lg:w-auto">
         <BaseButton text="Thêm sản phẩm" color="purple" @click="openAddEditModal()" />
         <BaseButton text="Import Excel" color="blue" @click="importExcel" />
         <BaseButton text="Export" color="green" @click="exportExcel" />
@@ -13,41 +17,181 @@
       </div>
     </div>
 
-    <BaseInput v-model="searchTerm" type="text" placeholder="Tìm kiếm sản phẩm" class="mb-3" />
+    <BaseInput
+      v-model="searchTerm"
+      type="text"
+      placeholder="Tìm kiếm (Tên, Danh mục...)"
+      class="mb-3"
+    />
 
-    <div class="overflow-x-auto">
-      <table class="table-style">
-        <thead class="table-header-style">
+    <div v-if="isLoading" class="text-center py-10">
+      <BaseSpinner />
+    </div>
+
+    <div
+      v-if="isError"
+      class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+      role="alert"
+    >
+      <strong class="font-bold">Lỗi!</strong>
+      <span class="block sm:inline">{{ error.message }}</span>
+    </div>
+
+    <div class="overflow-x-auto" v-if="!isLoading && !error">
+      <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-sm">
+        <thead class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
           <tr>
-            <th class="normal-cell-style">Mã SP</th>
-            <th class="normal-cell-style">Tên Sản Phẩm</th>
-            <th class="normal-cell-style">Danh Mục</th>
-            <th class="normal-cell-style">Số Lượng</th>
-            <th class="normal-cell-style">Trạng Thái</th>
-            <th class="center-cell-style">Thao Tác</th>
+            <th class="py-3 px-6 text-left w-12"></th>
+            <th class="py-3 px-6 text-left w-20">Ảnh Bìa</th>
+            <th class="py-3 px-6 text-left">Tên Dòng Sản Phẩm</th>
+            <th class="py-3 px-6 text-left">Danh Mục</th>
+            <th class="py-3 px-6 text-left">Thương Hiệu</th>
+            <th class="py-3 px-6 text-left">Số Biến Thể</th>
+            <th class="py-3 px-6 text-left">Trạng Thái Kho</th>
+            <th class="py-3 px-6 text-center">Thao Tác</th>
           </tr>
         </thead>
-        <tbody class="table-body-style">
-          <tr v-if="products.length === 0">
-            <td colspan="6" class="not-found-text-style">Không có sản phẩm nào để hiển thị.</td>
-          </tr>
-          <tr v-for="product in products" :key="product.code" class="table-row-style">
-            <td class="normal-cell-style whitespace-nowrap">{{ product.code }}</td>
-            <td class="normal-cell-style">{{ product.name }}</td>
-            <td class="normal-cell-style">{{ product.category }}</td>
-            <td class="normal-cell-style">{{ product.quantity }}</td>
-            <td class="normal-cell-style">
-              <RoundBadge :color="getStatusColorClass(product.quantity)">{{
-                getStockStatusText(product.quantity)
-              }}</RoundBadge>
-            </td>
-            <td class="center-cell-style space-x-2">
-              <BaseSmallNoBgButton @click="openAddEditModal(product)">Sửa</BaseSmallNoBgButton>
-              <BaseSmallNoBgButton color="red" @click="promptDelete(product.code)">
-                Xóa
-              </BaseSmallNoBgButton>
+        <tbody class="text-gray-600 text-sm font-light">
+          <tr v-if="filteredProducts.length === 0">
+            <td :colspan="numberOfColumns" class="text-center py-6 text-gray-500">
+              Không có sản phẩm nào để hiển thị.
             </td>
           </tr>
+
+          <template v-for="product in filteredProducts" :key="product.id">
+            <tr class="border-b border-gray-200 hover:bg-gray-100 transition-colors duration-200">
+              <td class="py-3 px-6 w-12 text-center">
+                <button
+                  v-if="product.variants && product.variants.length > 0"
+                  @click="toggleDetails(product.id)"
+                  class="text-gray-500 hover:text-gray-800"
+                >
+                  <IconLeftArrow v-if="!isExpanded(product.id)" />
+                  <IconDownArrow v-else />
+                </button>
+              </td>
+
+              <td class="py-3 px-6 text-left w-20">
+                <img
+                  :src="
+                    product.cover_image_url || 'https://placehold.co/100x100/gray/white?text=N/A'
+                  "
+                  alt="Ảnh bìa"
+                  class="w-16 h-16 object-cover rounded-md border border-gray-200"
+                  @error="
+                    (e) => (e.target.src = 'https://placehold.co/100x100/gray/white?text=Error')
+                  "
+                />
+              </td>
+
+              <td class="py-3 px-6 text-left whitespace-nowrap font-medium text-gray-800">
+                {{ product.name }}
+              </td>
+              <td class="py-3 px-6 text-left">{{ product.category }}</td>
+              <td class="py-3 px-6 text-left">{{ product.brand }}</td>
+              <td class="py-3 px-6 text-left">
+                {{ product.variants ? product.variants.length : 0 }}
+              </td>
+              <td class="py-3 px-6 text-left">
+                <RoundBadge :color="getAggregateStatusColor(product.status_stock_id)">
+                  {{ getAggregateStatusText(product.status_stock_id) }}
+                </RoundBadge>
+              </td>
+              <td class="py-3 px-6 text-center space-x-2">
+                <BaseSmallNoBgButton @click="openAddEditModal(product)">Sửa</BaseSmallNoBgButton>
+                <BaseSmallNoBgButton color="red" @click="promptDelete(product)">
+                  Xóa
+                </BaseSmallNoBgButton>
+              </td>
+            </tr>
+
+            <tr v-if="isExpanded(product.id)" class="bg-gray-50">
+              <td :colspan="numberOfColumns" class="p-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h4 class="text-sm font-semibold mb-2 text-gray-700">Chi tiết biến thể:</h4>
+                    <table class="min-w-full bg-white rounded shadow-inner text-sm">
+                      <thead class="bg-gray-100">
+                        <tr>
+                          <th class="py-2 px-4 text-left w-20">Ảnh</th>
+                          <th class="py-2 px-4 text-left">Thuộc tính</th>
+                          <th class="py-2 px-4 text-left">Giá Bán</th>
+                          <th class="py-2 px-4 text-left">Tồn Kho (Tổng)</th>
+                          <th class="py-2 px-4 text-left">Đã Đặt</th>
+                          <th class="py-2 px-4 text-left">Hiện Có</th>
+                          <th class="py-2 px-4 text-left">Trạng Thái</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr
+                          v-for="variant in product.variants"
+                          :key="variant.id"
+                          class="border-b last:border-b-0"
+                        >
+                          <td class="py-2 px-4 text-left w-20">
+                            <img
+                              :src="
+                                variant.cover_image_url ||
+                                'https://placehold.co/100x100/gray/white?text=N/A'
+                              "
+                              alt="Ảnh biến thể"
+                              class="w-12 h-12 object-cover rounded-md border border-gray-200"
+                              @error="
+                                (e) =>
+                                  (e.target.src =
+                                    'https://placehold.co/100x100/gray/white?text=Error')
+                              "
+                            />
+                          </td>
+                          <td class="py-2 px-4 text-left text-gray-800">
+                            {{ getVariantOptionsText(variant) }}
+                          </td>
+                          <td class="py-2 px-4 text-left">
+                            {{ formatCurrency(variant.price) }}
+                          </td>
+
+                          <td class="py-2 px-4 text-left">{{ variant.stock }}</td>
+
+                          <td class="py-2 px-4 text-left">{{ variant.has_been_booked }}</td>
+
+                          <td class="py-2 px-4 text-left">
+                            {{ variant.stock - variant.has_been_booked }}
+                          </td>
+
+                          <td class="py-2 px-4 text-left">
+                            <RoundBadge :color="getStatusColorClass(variant.status_stock_id)">
+                              {{ getStockStatusText(variant.status_stock_id) }}
+                            </RoundBadge>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div>
+                    <h4 class="text-sm font-semibold mb-2 text-gray-700">Thông số kỹ thuật:</h4>
+                    <div class="bg-white rounded shadow-inner p-4 text-sm space-y-2">
+                      <div v-if="product.weight">
+                        <strong>Khối lượng:</strong> {{ product.weight }} kg
+                      </div>
+                      <div v-if="product.dimensions">
+                        <strong>Kích thước (DxRxC):</strong> {{ product.dimensions }} mm
+                      </div>
+                      <div v-if="product.displacement">
+                        <strong>Dung tích xy-lanh:</strong> {{ product.displacement }} cc
+                      </div>
+                      <div v-if="product.engine_type">
+                        <strong>Loại động cơ:</strong> {{ product.engine_type }}
+                      </div>
+                      <div v-if="product.fuel_consumption">
+                        <strong>Tiêu thụ nhiên liệu:</strong> {{ product.fuel_consumption }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </template>
         </tbody>
       </table>
     </div>
@@ -58,53 +202,35 @@
     />
   </div>
 
-  <DraggableModal :key="formModalKey" v-if="isFormModalVisible" @close="handleCloseFormModal">
-    <template #header>
-      <h2 class="font-bold text-lg">{{ formModalTitle }}</h2>
-    </template>
+  <DraggableModal
+    :key="formModalKey"
+    v-if="isFormModalVisible"
+    @close="handleCloseFormModal"
+    width="72vw"
+  >
     <template #body>
       <ProductForm
         v-model="editableProduct"
         :is-edit-mode="isEditMode"
         :errors="formErrors"
-        @update:dirty="isFormDirty = $event"
+        :is-saving="isSaving"
       />
     </template>
+
     <template #footer>
-      <div class="flex justify-end space-x-2">
-        <BaseButton text="Bỏ qua" color="gray" @click="handleCloseFormModal" />
-        <BaseButton text="Lưu" color="purple" @click="handleSaveProduct" />
-      </div>
+      <BaseButton text="Lưu" color="purple" @click="handleSaveProduct" :loading="isSaving" />
     </template>
   </DraggableModal>
-
-  <FullScreenModal :show="isDeleteModalVisible" title="Xác Nhận Xóa" @close="cancelDelete">
-    <p>
-      Bạn có chắc chắn muốn xóa sản phẩm có mã <strong>{{ productToDelete }}</strong> không? Hành
-      động này không thể hoàn tác.
-    </p>
-    <template #actions>
-      <BaseButton text="Hủy" color="gray" @click="cancelDelete" />
-      <BaseButton text="Xác Nhận Xóa" color="red" @click="confirmDelete" />
-    </template>
-  </FullScreenModal>
-
-  <FullScreenModal
-    v-if="isConfirmationModalVisible"
-    :show="isConfirmationModalVisible"
-    :title="confirmationModalProps.title"
-    @close="isConfirmationModalVisible = false"
-  >
-    <p class="text-gray-600 text-center">{{ confirmationModalProps.message }}</p>
-    <template #actions>
-      <BaseButton text="Bỏ qua" color="gray" @click="isConfirmationModalVisible = false" />
-      <BaseButton text="Xác nhận" color="red" @click="executeConfirmation" />
-    </template>
-  </FullScreenModal>
 </template>
 
 <script setup>
-import { ref, watch, computed, reactive } from 'vue'
+import { ref, watch, computed } from 'vue'
+import { useStore } from 'vuex'
+import { useRoute, useRouter } from 'vue-router'
+import { useQueryClient } from '@tanstack/vue-query'
+import { debounce } from '@/utils/debounceThrottle'
+import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
+import { getProducts } from '@/api/product'
 import ProductFilterButtons from '@/components/product/ProductFilterButtons.vue'
 import ProductForm from '@/components/product/ProductForm.vue'
 import BaseButton from '@/components/ui/button/BaseButton.vue'
@@ -112,299 +238,372 @@ import BaseInput from '@/components/ui/input/BaseInput.vue'
 import BasePagination from '@/components/ui/button/BasePagination.vue'
 import BaseSmallNoBgButton from '@/components/ui/button/BaseSmallNoBgButton.vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
-import FullScreenModal from '@/components/ui/FullScreenModal.vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
+import BaseSpinner from '@/components/ui/BaseSpinner.vue'
+import IconLeftArrow from '@/components/icons/IconLeftArrow.vue'
+import IconDownArrow from '@/components/icons/IconDownArrow.vue'
+import BaseLoadingOverlay from '@/components/ui/BaseLoadingOverlay.vue'
+import { useToast } from 'vue-toastification'
 
-// Form Modal State
+const store = useStore()
+const route = useRoute()
+const router = useRouter()
+const queryClient = useQueryClient()
+const toast = useToast()
+
+const expandedProductIds = ref([])
+const numberOfColumns = ref(8)
+const isSaving = ref(false)
+
+const itemsPerPage = ref(7)
+const page = computed(() => parseInt(route.query.page) || 1)
+const searchTerm = ref(route.query.search ? String(route.query.search) : '')
+const selectedStatuses = ref(
+  route.query.statuses ? String(route.query.statuses).split(',').filter(Boolean) : [],
+)
+
+const isVuexLoading = computed(() => store.getters['products/isLoading'])
+
+const querySearch = computed(() => (route.query.search ? String(route.query.search).trim() : ''))
+const queryStatuses = computed(() =>
+  route.query.statuses ? String(route.query.statuses).split(',').filter(Boolean) : [],
+)
+
+function showMessage(text, type = 'success', duration = 3000) {
+  if (type === 'error') {
+    toast.error(text, { timeout: duration })
+  } else {
+    toast.success(text, { timeout: duration })
+  }
+}
+
+const filters = computed(() => ({
+  search: querySearch.value,
+  statusIds: queryStatuses.value,
+}))
+
+const fetchProductsFn = (params) => {
+  return getProducts(params)
+}
+
+const productDataMapper = (data) => ({
+  items: data?.products || [],
+  count: data?.totalCount,
+})
+
+const {
+  items: filteredProducts,
+  totalPages,
+  isLoading,
+  isError,
+  error,
+} = usePaginatedQuery({
+  queryKeyBase: ref('products'),
+  filters: filters,
+  page: page,
+  itemsPerPage: itemsPerPage,
+  fetchFn: fetchProductsFn,
+  dataMapper: productDataMapper,
+})
+
+const isExpanded = (productId) => {
+  return expandedProductIds.value.includes(productId)
+}
+
+const toggleDetails = (productId) => {
+  const index = expandedProductIds.value.indexOf(productId)
+  if (index > -1) {
+    expandedProductIds.value.splice(index, 1)
+  } else {
+    expandedProductIds.value.push(productId)
+  }
+}
+
+const formatCurrency = (value) => {
+  if (value === null || value === undefined) return ''
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
+}
+
+const getVariantOptionsText = (variant) => {
+  if (!variant.optionValues) return 'Mặc định'
+  const values = Object.entries(variant.optionValues)
+  if (values.length === 0) return 'Mặc định'
+  return values.map(([key, value]) => `${key}: ${value}`).join(', ')
+}
+
+const stockStatusColors = {
+  in_stock: 'green',
+  low_in_stock: 'yellow',
+  out_of_stock: 'red',
+}
+const stockStatusTextMap = {
+  in_stock: 'Còn Hàng',
+  low_in_stock: 'Sắp Hết',
+  out_of_stock: 'Hết Hàng',
+}
+
+const getStatusColorClass = (status) => {
+  return stockStatusColors[status] || 'gray'
+}
+const getStockStatusText = (status) => {
+  return stockStatusTextMap[status] || 'Không rõ'
+}
+
+const getAggregateStatusColor = (status) => {
+  return stockStatusColors[status] || 'gray'
+}
+
+const getAggregateStatusText = (status) => {
+  return stockStatusTextMap[status] || 'Không rõ'
+}
+
+const debouncedApplyQuery = debounce(() => {
+  const qs = { ...route.query }
+  if (searchTerm.value && String(searchTerm.value).trim()) {
+    qs.search = String(searchTerm.value).trim()
+  } else {
+    delete qs.search
+  }
+  if (Array.isArray(selectedStatuses.value) && selectedStatuses.value.length > 0) {
+    qs.statuses = selectedStatuses.value.join(',')
+  } else {
+    delete qs.statuses
+  }
+  qs.page = 1
+  router.replace({ query: qs })
+}, 300)
+
+watch(searchTerm, debouncedApplyQuery)
+watch(selectedStatuses, debouncedApplyQuery)
+
+watch(
+  () => route.query,
+  (newQuery) => {
+    const qSearch = newQuery.search === undefined ? '' : String(newQuery.search || '')
+    if (qSearch !== searchTerm.value) {
+      searchTerm.value = qSearch
+    }
+    const qs = String(newQuery.statuses || '')
+    const vals = qs
+      ? qs
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : []
+    if (JSON.stringify(vals) !== JSON.stringify(selectedStatuses.value)) {
+      selectedStatuses.value = vals
+    }
+  },
+  { immediate: true },
+)
+
 const isFormModalVisible = ref(false)
-const isFormDirty = ref(false)
-const editableProduct = ref({})
 const formModalTitle = ref('')
 const formModalKey = ref(0)
 
-const isEditMode = computed(
-  () =>
-    !!editableProduct.value?.code &&
-    products.value.some((p) => p.code === editableProduct.value.code),
-)
-
-function showConfirmation(title, message, onConfirmAction) {
-  confirmationModalProps.title = title
-  confirmationModalProps.message = message
-  confirmationModalProps.onConfirm = onConfirmAction
-  isConfirmationModalVisible.value = true
+const getNewEmptyProduct = () => {
+  return {
+    id: null,
+    name: '',
+    category_id: null,
+    brand_id: null,
+    description: '',
+    weight: null,
+    dimensions: '',
+    wheelbase: null,
+    seat_height: null,
+    ground_clearance: null,
+    fuel_capacity: null,
+    tire_size: '',
+    front_suspension: '',
+    rear_suspension: '',
+    engine_type: '',
+    max_power: '',
+    oil_capacity: null,
+    fuel_consumption: '',
+    transmission_type: '',
+    starter_system: '',
+    max_torque: '',
+    displacement: null,
+    bore_stroke: '',
+    compression_ratio: '',
+    status_id: 'out-of-business',
+    options: [],
+    variants: [
+      {
+        id: null,
+        price: null,
+        optionValues: {},
+        cover_image_url: '',
+        photo_collection: [],
+        url: '',
+      },
+    ],
+  }
 }
 
-function executeConfirmation() {
-  confirmationModalProps.onConfirm()
-  isConfirmationModalVisible.value = false
-}
+const editableProduct = ref(getNewEmptyProduct())
+const isEditMode = computed(() => !!editableProduct.value?.id)
+
+const formErrors = ref({
+  name: '',
+  category_id: '',
+  variants: [],
+})
 
 const openAddEditModal = (product = null) => {
   const openForm = () => {
-    // Reset form errors when opening a new form
-    formErrors.value = { code: '', name: '', category: '', price: '' }
+    formErrors.value = { name: '', category_id: '', variants: [] }
+
     if (product) {
-      editableProduct.value = { ...product }
+      editableProduct.value = JSON.parse(JSON.stringify(product))
       formModalTitle.value = 'Chỉnh Sửa Sản Phẩm'
     } else {
-      editableProduct.value = {
-        code: '',
-        name: '',
-        category: '',
-        price: null,
-        cost: null,
-        quantity: null,
-        description: '',
-      }
+      editableProduct.value = getNewEmptyProduct()
       formModalTitle.value = 'Thêm Sản Phẩm Mới'
     }
-    isFormDirty.value = false
     formModalKey.value++
     isFormModalVisible.value = true
   }
-
-  if (isFormModalVisible.value && isFormDirty.value) {
-    showConfirmation(
-      'Mở biểu mẫu mới?',
-      'Bạn có các thay đổi chưa lưu. Bạn có chắc muốn hủy và mở một biểu mẫu mới không?',
-      openForm,
-    )
-  } else {
-    openForm()
-  }
+  openForm()
 }
 
 const handleCloseFormModal = () => {
-  if (isFormDirty.value) {
-    showConfirmation(
-      'Đóng biểu mẫu?',
-      'Bạn có các thay đổi chưa lưu. Bạn có chắc muốn đóng không?',
-      () => {
-        isFormModalVisible.value = false
-      },
-    )
-  } else {
-    isFormModalVisible.value = false
-  }
-}
-
-// Form validation errors
-const formErrors = ref({ code: '', name: '', category: '', price: '' })
-
-const handleSaveProduct = () => {
-  const productData = editableProduct.value
-  // Reset errors
-
-  formErrors.value = { code: '', name: '', category: '', price: '' }
-  let hasError = false
-  if (!productData.code) {
-    formErrors.value.code = 'Vui lòng nhập mã sản phẩm.'
-    hasError = true
-  }
-  if (!productData.name) {
-    formErrors.value.name = 'Vui lòng nhập tên sản phẩm.'
-    hasError = true
-  }
-  if (!productData.category) {
-    formErrors.value.category = 'Vui lòng nhập danh mục.'
-    hasError = true
-  }
-  if (
-    productData.price === null ||
-    productData.price === undefined ||
-    productData.price === '' ||
-    isNaN(productData.price)
-  ) {
-    formErrors.value.price = 'Vui lòng nhập giá bán.'
-    hasError = true
-  }
-  if (hasError) return
-
-  if (isEditMode.value) {
-    // Update
-    const index = products.value.findIndex((p) => p.code === productData.code)
-    if (index !== -1) {
-      products.value[index] = productData
-    }
-  } else {
-    // Add new
-    if (products.value.some((p) => p.code === productData.code)) {
-      formErrors.value.code = `Mã sản phẩm "${productData.code}" đã tồn tại.`
-      return
-    }
-    products.value.unshift(productData)
-  }
-  saveProducts()
   isFormModalVisible.value = false
 }
 
-// Delete confirmation modal state
-const isDeleteModalVisible = ref(false)
-const productToDelete = ref(null)
+const validateProduct = (productData) => {
+  const errors = { name: '', category_id: '', variants: [] }
+  let hasError = false
 
-const promptDelete = (code) => {
-  productToDelete.value = code
-  isDeleteModalVisible.value = true
-}
-
-const confirmDelete = () => {
-  const index = products.value.findIndex((p) => p.code === productToDelete.value)
-  if (index !== -1) {
-    products.value.splice(index, 1)
-    saveProducts()
+  if (!productData.name) {
+    errors.name = 'Vui lòng nhập tên dòng sản phẩm.'
+    hasError = true
   }
-  cancelDelete() // Close modal and reset state
+  if (!productData.category_id) {
+    errors.category_id = 'Vui lòng chọn danh mục.'
+    hasError = true
+  }
+
+  const variantErrors = []
+  if (!productData.variants || productData.variants.length === 0) {
+    console.error('Lỗi: Không tìm thấy biến thể mặc định.')
+    hasError = true
+  }
+
+  if (productData.options.length === 0 && productData.variants[0]) {
+    const vErrors = {}
+    if (
+      productData.variants[0].price === null ||
+      isNaN(productData.variants[0].price) ||
+      productData.variants[0].price < 0
+    ) {
+      vErrors.price = 'Vui lòng nhập Giá Bán hợp lệ (lớn hơn 0).'
+      hasError = true
+    }
+    if (!productData.variants[0].url) {
+      vErrors.url = 'Vui lòng nhập URL Slug.'
+      hasError = true
+    }
+    variantErrors[0] = vErrors
+  } else if (productData.options.length > 0) {
+    const seenCombinations = new Set()
+
+    productData.variants.forEach((variant, index) => {
+      const vErrors = {}
+
+      if (variant.price === null || isNaN(variant.price) || variant.price < 0) {
+        vErrors.price = 'Vui lòng nhập Giá Bán hợp lệ (lớn hơn 0).'
+        hasError = true
+      }
+
+      if (!variant.url) {
+        vErrors.url = 'Vui lòng nhập URL Slug.'
+        hasError = true
+      }
+
+      const allOptionsSelected = productData.options.every((opt) => variant.optionValues[opt.name])
+      if (!allOptionsSelected) {
+        vErrors.combination = 'Vui lòng chọn đầy đủ thuộc tính.'
+        hasError = true
+      }
+
+      if (allOptionsSelected) {
+        const combinationSignature = JSON.stringify(
+          Object.keys(variant.optionValues)
+            .sort()
+            .reduce((obj, key) => {
+              obj[key] = variant.optionValues[key]
+              return obj
+            }, {}),
+        )
+
+        if (seenCombinations.has(combinationSignature)) {
+          vErrors.combination = 'Tổ hợp thuộc tính này bị trùng lặp.'
+          hasError = true
+        } else {
+          seenCombinations.add(combinationSignature)
+        }
+      }
+      variantErrors[index] = vErrors
+    })
+  }
+
+  errors.variants = variantErrors
+  return { hasError, errors }
 }
 
-const cancelDelete = () => {
-  isDeleteModalVisible.value = false
-  productToDelete.value = null
+const handleSaveProduct = async () => {
+  const productData = editableProduct.value
+
+  const { hasError, errors } = validateProduct(productData)
+  formErrors.value = errors
+
+  if (hasError) {
+    console.warn('Validation Errors:', formErrors.value)
+    return
+  }
+
+  isSaving.value = true
+  try {
+    const isEditing = isEditMode.value
+    await store.dispatch('products/saveProduct', productData)
+    isFormModalVisible.value = false
+    await queryClient.invalidateQueries({ queryKey: ['products'] })
+    showMessage(isEditing ? 'Cập nhật sản phẩm thành công' : 'Thêm sản phẩm thành công', 'success')
+  } catch (error) {
+    console.error('Lỗi khi lưu sản phẩm:', error)
+    formErrors.value.general = error.message || 'Lỗi từ server. Vui lòng thử lại.'
+    showMessage(error.message || 'Lỗi khi lưu sản phẩm', 'error')
+  } finally {
+    isSaving.value = false
+  }
 }
 
-// Confirmation Modal State
-const isConfirmationModalVisible = ref(false)
-const confirmationModalProps = reactive({
-  title: '',
-  message: '',
-  onConfirm: () => {},
+const promptDelete = async (product) => {
+  try {
+    await store.dispatch('products/deleteProduct', product)
+    await queryClient.invalidateQueries({ queryKey: ['products'] })
+    showMessage('Xoá sản phẩm thành công', 'success')
+  } catch (error) {
+    showMessage(error.message || 'Lỗi khi xoá sản phẩm', 'error')
+  }
+}
+
+const currentPage = computed({
+  get: () => page.value,
+  set: (value) => {
+    if (value !== page.value) {
+      router.replace({ query: { ...route.query, page: value } })
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  },
 })
 
-// Table and Data
-const LOW_STOCK_THRESHOLD = 10
-const selectedStatuses = ref([])
-const stockStatusColors = {
-  'in-stock': 'green',
-  'low-stock': 'yellow',
-  'out-of-stock': 'red',
+const importExcel = () => {
+  alert('Chức năng Import Excel chưa được triển khai.')
 }
-const stockStatusTextMap = {
-  'in-stock': 'Còn Hàng',
-  'low-stock': 'Sắp Hết',
-  'out-of-stock': 'Hết Hàng',
+const exportExcel = () => {
+  alert('Chức năng Export Excel chưa được triển khai.')
 }
-
-const products = ref([
-  {
-    code: 'SP001',
-    name: 'Honda Wave RSX',
-    category: 'Xe Máy',
-    price: 25000000,
-    cost: 22000000,
-    quantity: 15,
-    description: 'Xe máy Honda Wave RSX 110cc',
-  },
-  {
-    code: 'SP002',
-    name: 'Yamaha Jupiter',
-    category: 'Xe Máy',
-    price: 27000000,
-    cost: 24000000,
-    quantity: 8,
-    description: 'Xe máy Yamaha Jupiter Fi 115cc',
-  },
-  {
-    code: 'SP003',
-    name: 'Mũ Bảo Hiểm Royal',
-    category: 'Phụ Kiện',
-    price: 350000,
-    cost: 250000,
-    quantity: 45,
-    description: 'Mũ bảo hiểm Royal M20',
-  },
-  {
-    code: 'SP004',
-    name: 'Lốp Michelin City Grip',
-    category: 'Phụ Tùng',
-    price: 1200000,
-    cost: 950000,
-    quantity: 2,
-    description: 'Lốp Michelin City Grip 80/90-14',
-  },
-  {
-    code: 'SP005',
-    name: 'Dầu Nhớt Castrol',
-    category: 'Phụ Tùng',
-    price: 85000,
-    cost: 65000,
-    quantity: 0,
-    description: 'Dầu nhớt Castrol 10W-30 1L',
-  },
-])
-const searchTerm = ref('')
-
-const getStockStatus = (quantity) => {
-  if (quantity === 0) return 'out-of-stock'
-  if (quantity <= LOW_STOCK_THRESHOLD) return 'low-stock'
-  return 'in-stock'
-}
-
-const getStatusColorClass = (quantity) => {
-  return stockStatusColors[getStockStatus(quantity)]
-}
-
-const getStockStatusText = (quantity) => {
-  return stockStatusTextMap[getStockStatus(quantity)]
-}
-
-const saveProducts = () => {
-  localStorage.setItem('products', JSON.stringify(products.value))
-}
-
-// Pagination
-const totalPages = ref(10)
-const currentPage = ref(1)
-const isLoading = ref(false)
-
-const fetchDataForPage = (page) => {
-  console.log(`Bắt đầu tải dữ liệu cho trang ${page}...`)
-  isLoading.value = true
-  setTimeout(() => {
-    console.log(`Tải xong dữ liệu cho trang ${page}!`)
-    isLoading.value = false
-  }, 1500)
-}
-
-watch(currentPage, (newPage, oldPage) => {
-  if (newPage !== oldPage) {
-    fetchDataForPage(newPage)
-  }
-})
 </script>
-
-<style scoped>
-@reference "../assets/main.css";
-.box-style {
-  @apply bg-gray-100 p-4 sm:p-6 rounded-xl shadow-lg;
-}
-.title-style {
-  @apply text-3xl font-bold text-center text-gray-800;
-}
-.content-box-style {
-  @apply flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0;
-}
-.action-button-style {
-  @apply flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full lg:w-auto;
-}
-.normal-cell-style {
-  @apply py-3 px-6 text-left;
-}
-.center-cell-style {
-  @apply py-3 px-6 text-center;
-}
-.table-style {
-  @apply min-w-full bg-white rounded-lg overflow-hidden shadow-sm;
-}
-.table-header-style {
-  @apply bg-gray-200 text-gray-600 uppercase text-sm leading-normal;
-}
-.table-body-style {
-  @apply text-gray-600 text-sm font-light;
-}
-.not-found-text-style {
-  @apply text-center py-6 text-gray-500;
-}
-.table-row-style {
-  @apply border-b border-gray-200 hover:bg-gray-100 transition-colors duration-200;
-}
-</style>

@@ -1,37 +1,41 @@
 <template>
-  <div class="box-style">
-    <div class="content-box-style">
+  <div class="bg-gray-100 p-4 sm:p-6 rounded-xl shadow-lg">
+    <div
+      class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0"
+    >
       <div>
-        <h2 class="title-style">Quản Lý Khách Hàng</h2>
+        <h2 class="text-3xl font-bold text-center text-gray-800">Quản Lý Khách Hàng</h2>
       </div>
-      <div class="action-button-style">
+      <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full lg:w-auto">
         <BaseActionButton text="Thêm mới" icon="fas fa-plus" color="blue" @click="openAddModal" />
         <UserFilterButtons v-model="selectedStatuses" multiple />
       </div>
     </div>
     <div class="overflow-x-auto">
-      <table class="table-style">
-        <thead class="table-header-style">
+      <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-sm">
+        <thead class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
           <tr>
-            <th class="normal-cell-style">Mã KH</th>
-            <th class="normal-cell-style">Tên Khách Hàng</th>
-            <th class="normal-cell-style">Email</th>
-            <th class="normal-cell-style">Số Điện Thoại</th>
-            <th class="normal-cell-style">Vai trò</th>
-            <th class="normal-cell-style">Trạng Thái</th>
-            <th class="center-cell-style">Thao Tác</th>
+            <th class="py-3 px-6 text-left">Mã KH</th>
+            <th class="py-3 px-6 text-left">Tên Khách Hàng</th>
+            <th class="py-3 px-6 text-left">Email</th>
+            <th class="py-3 px-6 text-left">Số Điện Thoại</th>
+            <th class="py-3 px-6 text-left">Vai trò</th>
+            <th class="py-3 px-6 text-left">Trạng Thái</th>
+            <th class="py-3 px-6 text-center">Thao Tác</th>
           </tr>
         </thead>
-        <tbody class="table-body-style">
+        <tbody class="text-gray-600 text-sm font-light">
           <tr v-if="displayCustomers.length === 0">
-            <td colspan="7" class="not-found-text-style">Không tìm thấy khách hàng nào.</td>
+            <td colspan="7" class="text-center py-6 text-gray-500">
+              Không tìm thấy khách hàng nào.
+            </td>
           </tr>
           <tr v-for="customer in displayCustomers" :key="customer.id" class="table-row-style">
-            <td class="normal-cell-style whitespace-nowrap">{{ customer.code }}</td>
-            <td class="normal-cell-style">{{ customer.name }}</td>
-            <td class="normal-cell-style">{{ customer.email }}</td>
-            <td class="normal-cell-style">{{ customer.phone }}</td>
-            <td class="normal-cell-style">
+            <td class="py-3 px-6 text-left whitespace-nowrap">{{ customer.code }}</td>
+            <td class="py-3 px-6 text-left">{{ customer.name }}</td>
+            <td class="py-3 px-6 text-left">{{ customer.email }}</td>
+            <td class="py-3 px-6 text-left">{{ customer.phone }}</td>
+            <td class="py-3 px-6 text-left">
               <div class="flex flex-wrap gap-1">
                 <RoundBadge
                   v-for="roleId in customer.roleIds"
@@ -43,12 +47,12 @@
                 </RoundBadge>
               </div>
             </td>
-            <td class="normal-cell-style">
+            <td class="py-3 px-6 text-left">
               <RoundBadge :color="statusColors[customer.status]">{{
                 statusText[customer.status]
               }}</RoundBadge>
             </td>
-            <td class="center-cell-style space-x-2">
+            <td class="py-3 px-6 text-left space-x-2">
               <BaseSmallNoBgButton @click="editCustomer(customer.id)">Sửa</BaseSmallNoBgButton>
               <BaseSmallNoBgButton color="red" @click="deleteCustomer(customer.id)">
                 Xóa
@@ -59,7 +63,6 @@
       </table>
     </div>
 
-    <!-- User Form Modal -->
     <UserForm
       v-if="showUserForm"
       :show="showUserForm"
@@ -72,7 +75,6 @@
       @activate="handleActivateModal('form')"
     />
 
-    <!-- Delete Confirmation Modal -->
     <UserDeleteModal
       v-if="showDeleteModal"
       :show="showDeleteModal"
@@ -245,49 +247,3 @@ const handleActivateModal = (modalId) => {
   }
 }
 </script>
-
-<style scoped>
-@reference "../assets/main.css";
-.box-style {
-  @apply bg-gray-100 p-4 sm:p-6 rounded-xl shadow-lg;
-}
-.title-style {
-  @apply text-3xl font-bold text-center text-gray-800;
-}
-.content-box-style {
-  @apply flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0;
-}
-.sub-title-style {
-  @apply text-2xl font-semibold text-gray-800;
-}
-.text-style {
-  @apply text-sm text-gray-500;
-}
-.text-bold-style {
-  @apply font-medium text-gray-700;
-}
-.action-button-style {
-  @apply flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full lg:w-auto;
-}
-.normal-cell-style {
-  @apply py-3 px-6 text-left;
-}
-.center-cell-style {
-  @apply py-3 px-6 text-center;
-}
-.table-style {
-  @apply min-w-full bg-white rounded-lg overflow-hidden shadow-sm;
-}
-.table-header-style {
-  @apply bg-gray-200 text-gray-600 uppercase text-sm leading-normal;
-}
-.table-body-style {
-  @apply text-gray-600 text-sm font-light;
-}
-.not-found-text-style {
-  @apply text-center py-6 text-gray-500;
-}
-.table-row-style {
-  @apply border-b border-gray-200 hover:bg-gray-100 transition-colors duration-200;
-}
-</style>

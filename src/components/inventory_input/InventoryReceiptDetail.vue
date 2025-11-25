@@ -1,16 +1,15 @@
 <script setup>
-import BaseDropdown from '../ui/input/BaseDropdown.vue'
-import BaseDateTimePicker from '../ui/input/BaseDateTimePicker.vue'
+import { ref, watch, toRefs } from 'vue'
+import IconTrash from '../icons/IconTrash.vue'
+import IconDuplicate from '../icons/IconDuplicate.vue'
+import IconExpand from '../icons/IconExpand.vue'
 import BaseTextarea from '../ui/input/BaseTextarea.vue'
-import BaseInput from '../ui/input/BaseInput.vue'
 
 const props = defineProps({
   itemData: Object,
 })
 
 defineEmits(['edit', 'cancel-request', 'copy', 'complete-request', 'save-notes'])
-
-import { ref, watch, toRefs } from 'vue'
 
 const { itemData } = toRefs(props)
 
@@ -38,30 +37,10 @@ const totalDiscount = (products) => {
 </script>
 
 <template>
-  <!-- Chi tiết phiếu (Detail Panel) -->
   <div
     class="border-t bg-white p-5"
-    :class="itemData.status === 'Đã nhập hàng' ? 'border-red-300' : 'border-gray-200'"
+    :class="itemData.status === 'finished' ? 'border-red-300' : 'border-gray-200'"
   >
-    <!-- Phần thông tin chung -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 text-xs">
-      <BaseDropdown
-        label="Người tạo"
-        :options="[{ value: itemData.creator, text: itemData.creator }]"
-        :model-value="itemData.creator"
-      />
-      <BaseDropdown
-        label="Người nhập"
-        :options="[{ value: itemData.importer, text: itemData.importer }]"
-        :model-value="itemData.importer"
-      />
-      <BaseDateTimePicker label="Ngày nhập" :model-value="itemData.importDate" />
-      <div class="col-span-2">
-        <BaseInput label="Nhà cung cấp" :model-value="itemData.supplierName" readonly />
-      </div>
-    </div>
-
-    <!-- Bảng chi tiết hàng hóa -->
     <div class="border border-gray-200 rounded-md overflow-hidden mb-4">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
@@ -118,10 +97,10 @@ const totalDiscount = (products) => {
       </table>
     </div>
 
-    <!-- Tổng kết và Ghi chú -->
     <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-6 items-center">
       <div class="flex-1">
-        <BaseTextarea v-model="notes" placeholder="Ghi chú..." :rows="3" />
+        <span class="text-gray-600 text-xs">Ghi chú</span>
+        <BaseTextarea v-model="notes" placeholder="Gõ ghi chú của bạn ở đây..." :rows="4" />
       </div>
       <div class="w-full md:w-64 space-y-1 text-xs">
         <div class="flex justify-between">
@@ -137,71 +116,31 @@ const totalDiscount = (products) => {
       </div>
     </div>
 
-    <!-- Thanh hành động chi tiết phiếu -->
     <div class="flex justify-between items-center mt-4 pt-5 border-t border-gray-200">
       <div class="flex items-center space-x-3">
         <button
+          v-if="itemData.status !== 'cancelled' && itemData.status !== 'finished'"
           @click="$emit('cancel-request', itemData)"
-          :disabled="itemData.status === 'Đã hủy' || itemData.status === 'Đã nhập hàng'"
           class="flex items-center space-x-1.5 text-gray-600 py-1.5 px-3 rounded-md hover:bg-gray-100 text-xs font-medium transition duration-150"
         >
-          <svg
-            class="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-            ></path>
-          </svg>
+          <IconTrash class="w-4 h-4" />
           <span>Hủy</span>
         </button>
         <button
           @click="$emit('copy', itemData)"
           class="flex items-center space-x-1.5 text-gray-600 py-1.5 px-3 rounded-md hover:bg-gray-100 text-xs font-medium transition duration-150"
         >
-          <svg
-            class="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-            ></path>
-          </svg>
+          <IconDuplicate class="w-4 h-4" />
           <span>Sao chép</span>
         </button>
       </div>
       <div class="flex items-center space-x-2">
         <button
-          v-if="itemData.status !== 'Đã hủy' && itemData.status !== 'Đã nhập hàng'"
+          v-if="itemData.status !== 'cancelled' && itemData.status !== 'finished'"
           @click="$emit('edit', itemData)"
           class="bg-red-600 text-white py-1.5 px-3 rounded-md hover:bg-red-700 text-xs font-medium transition duration-150 flex items-center space-x-1.5"
         >
-          <svg
-            class="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-            ></path>
-          </svg>
+          <IconExpand class="w-4 h-4" />
           <span>Chỉnh sửa chi tiết phiếu</span>
         </button>
         <button
