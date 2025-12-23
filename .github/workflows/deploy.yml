@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - master
+      - ci/fix-setup-github-actions
   workflow_dispatch:
 
 jobs:
@@ -22,8 +23,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install @rollup/rollup-linux-x64-gnu
-          npm ci
+          npm install --include=optional @rollup/rollup-linux-x64-gnu lightningcss-linux-x64-gnu
+          npm install
 
       - name: Build project
         run: npm run build
