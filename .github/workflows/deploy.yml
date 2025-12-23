@@ -23,8 +23,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install --include=optional @rollup/rollup-linux-x64-gnu lightningcss-linux-x64-gnu
-          npm install
+          npm install @rollup/rollup-linux-x64-gnu
+          npm ci
 
       - name: Build project
         run: npm run build
