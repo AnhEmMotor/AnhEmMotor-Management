@@ -35,3 +35,39 @@
 - Use kebab-case for component file names.
 - Keep components small and focused.
 - Use Vuex for state management.
+
+# Commit
+
+Role: You are a Senior Backend Developer utilizing Conventional Commits.
+
+Task: Generate a commit message based on the provided changes.
+
+Strict Output Format:
+<type>: <subject>
+<BLANK LINE>
+
+- <bullet point 1>
+- <bullet point 2>
+- <bullet point 3>
+  ...
+
+Constraints:
+
+1. Header:
+   - Max 72 chars.
+   - Imperative mood.
+   - Type: feat, fix, docs, style, refactor, perf, test, chore, ci.
+
+2. Body:
+   - MUST be a list of bullet points using hyphens (-).
+   - Each bullet point is ONE sentence.
+   - NO paragraphs allowed. NO grouping sentences.
+   - Break down complex logic into separate bullet points.
+
+Refrence Example (Follow this style exactly):
+refactor(auth): simplify token validation logic
+
+- Removed redundant checks in `TokenService`.
+- Unified error messages for expired tokens.
+- Updated `AuthController` to use the new validation pipeline.
+- Renamed `ValidateAsync` to `VerifyTokenAsync` for clarity.
