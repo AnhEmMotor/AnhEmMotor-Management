@@ -1,0 +1,59 @@
+export const Permissions = {
+    BrandsView: "Permissions.Brands.View",
+    BrandsCreate: "Permissions.Brands.Create",
+    BrandsEdit: "Permissions.Brands.Edit",
+    BrandsDelete: "Permissions.Brands.Delete",
+    ProductsView: "Permissions.Products.View",
+    ProductsCreate: "Permissions.Products.Create",
+    ProductsEdit: "Permissions.Products.Edit",
+    ProductsDelete: "Permissions.Products.Delete",
+    ProductsEditPrice: "Permissions.Products.EditPrice",
+    ProductsChangeStatus: "Permissions.Products.ChangeStatus",
+    ProductCategoriesView: "Permissions.ProductCategories.View",
+    ProductCategoriesCreate: "Permissions.ProductCategories.Create",
+    ProductCategoriesEdit: "Permissions.ProductCategories.Edit",
+    ProductCategoriesDelete: "Permissions.ProductCategories.Delete",
+    SuppliersView: "Permissions.Suppliers.View",
+    SuppliersCreate: "Permissions.Suppliers.Create",
+    SuppliersEdit: "Permissions.Suppliers.Edit",
+    SuppliersDelete: "Permissions.Suppliers.Delete",
+    InputsView: "Permissions.Inputs.View",
+    InputsCreate: "Permissions.Inputs.Create",
+    InputsEdit: "Permissions.Inputs.Edit",
+    InputsDelete: "Permissions.Inputs.Delete",
+    InputsChangeStatus: "Permissions.Inputs.ChangeStatus",
+    OutputsView: "Permissions.Outputs.View",
+    OutputsCreate: "Permissions.Outputs.Create",
+    OutputsEdit: "Permissions.Outputs.Edit",
+    OutputsDelete: "Permissions.Outputs.Delete",
+    OutputsChangeStatus: "Permissions.Outputs.ChangeStatus",
+    FilesView: "Permissions.Files.View",
+    FilesUpload: "Permissions.Files.Upload",
+    FilesDelete: "Permissions.Files.Delete",
+    SettingsView: "Permissions.Settings.View",
+    SettingsEdit: "Permissions.Settings.Edit",
+    StatisticalView: "Permissions.Statistical.View",
+    StatisticalExport: "Permissions.Statistical.Export",
+    RolesView: "Permissions.Roles.View",
+    RolesCreate: "Permissions.Roles.Create",
+    RolesEdit: "Permissions.Roles.Edit",
+    RolesDelete: "Permissions.Roles.Delete",
+    UsersView: "Permissions.Users.View",
+    UsersCreate: "Permissions.Users.Create",
+    UsersEdit: "Permissions.Users.Edit",
+    UsersDelete: "Permissions.Users.Delete",
+    UsersAssignRoles: "Permissions.Users.AssignRoles",
+    UsersChangePassword: "Permissions.Users.ChangePassword"
+};
+
+export const PERMISSION_RULES = {
+  // Trong hệ thống này chưa có
+};
+
+export const PERMISSION_METADATA = {
+  //Sẽ được lấy từ Server qua API /api/v1/permission/permissions 
+};
+
+export const PERMISSION_GROUPS = [
+  // Trong hệ thống này chưa có
+];
