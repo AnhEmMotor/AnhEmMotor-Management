@@ -10,6 +10,7 @@ import { VueQueryPlugin } from '@tanstack/vue-query'
 
 const app = createApp(App)
 
+app.use(createPinia())
 app.use(router)
 
 const options = {
@@ -32,7 +33,6 @@ const options = {
 
 app.use(Toast, options)
 
-app.use(createPinia())
 app.use(VueQueryPlugin)
 
 app.mount('#app')

@@ -8,10 +8,18 @@ import IconOrder from '@/components/icons/IconOrder.vue'
 import IconUpArrow from '@/components/icons/IconUpArrow.vue'
 import IconWarehouse from '@/components/icons/IconWarehouse.vue'
 import IconSettings from '@/components/icons/IconSettings.vue'
-import { useRoute } from 'vue-router'
+import { useAuthStore } from '@/stores/useAuthStore'
+import { useRouter, useRoute } from 'vue-router'
 
 const openGroups = ref([])
 const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore()
+
+const handleLogout = async () => {
+  await authStore.logout()
+  router.push('/login')
+}
 
 const toggleGroup = (group) => {
   const index = openGroups.value.indexOf(group)
@@ -52,13 +60,15 @@ watch(
   <div
     class="fixed left-0 top-0 w-84 h-full p-6 shadow-xl flex-shrink-0 flex flex-col items-center bg-white"
   >
-    <h1 class="text-2xl font-bold mb-8 text-red-500">AnhEm Motor Admin</h1>
+    <h1 class="text-2xl font-bold mb-8 mt-8 text-red-500">AnhEm Motor Admin</h1>
     <nav class="w-full">
       <ul class="space-y-2">
         <li>
           <RouterLink
             to="/"
             class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-200 transition-colors duration-200 w-full"
+            active-class=" "
+            exact-active-class="bg-gray-200 text-black font-semibold"
           >
             <IconHome />
             <span>Trang chủ</span>
@@ -211,6 +221,32 @@ watch(
         </li>
       </ul>
     </nav>
+    
+    <div class="mt-auto w-full p-4">
+      <div class="flex items-center gap-3 w-full rounded-xl p-3">
+        <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold shrink-0">
+          {{ authStore.user?.fullName?.charAt(0) || 'A' }}
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-gray-900 truncate">
+            {{ authStore.user?.fullName || 'Admin User' }}
+          </p>
+          <p class="text-xs text-gray-500 truncate">
+            {{ authStore.user?.role || 'Administrator' }}
+          </p>
+        </div>
+        
+        <button
+          @click="handleLogout"
+          class="p-2 text-gray-400 hover:text-red-600 hover:bg-white rounded-lg transition-all duration-200 shrink-0"
+          title="Đăng xuất"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
