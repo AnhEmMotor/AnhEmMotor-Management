@@ -6,7 +6,6 @@ import RoleDeleteModal from '@/components/roles/RoleDeleteModal.vue'
 import RoleFilterButtons from '@/components/roles/RoleFilterButtons.vue'
 import BaseButton from '@/components/ui/button/BaseButton.vue'
 
-// Mock data - thay thế bằng API call thực tế
 const roles = ref([
   {
     id: 1,
@@ -37,9 +36,7 @@ const roles = ref([
   },
 ])
 
-// Mock permissions data
 const availablePermissions = ref([
-  // Sản phẩm
   {
     id: 1,
     name: 'Xem sản phẩm',
@@ -71,7 +68,6 @@ const availablePermissions = ref([
     category: 'Quản lý sản phẩm',
   },
 
-  // Kho
   { id: 6, name: 'Xem kho', description: 'Xem thông tin kho hàng', category: 'Quản lý kho' },
   {
     id: 7,
@@ -106,7 +102,6 @@ const availablePermissions = ref([
     category: 'Quản lý kho',
   },
 
-  // Đơn hàng
   {
     id: 14,
     name: 'Xem đơn hàng',
@@ -127,8 +122,6 @@ const availablePermissions = ref([
     description: 'Xuất hóa đơn cho đơn hàng',
     category: 'Quản lý đơn hàng',
   },
-
-  // Người dùng
   {
     id: 19,
     name: 'Xem người dùng',
@@ -159,8 +152,6 @@ const availablePermissions = ref([
     description: 'Phân quyền cho người dùng',
     category: 'Quản lý người dùng',
   },
-
-  // Báo cáo
   {
     id: 24,
     name: 'Xem báo cáo doanh thu',
@@ -182,13 +173,11 @@ const searchQuery = ref('')
 const sortBy = ref('name')
 const sortOrder = ref('asc')
 
-// Modal states
 const showRoleForm = ref(false)
 const showDeleteModal = ref(false)
 const selectedRole = ref(null)
 const isEditMode = ref(false)
 
-// Z-index management for modals
 const modalZIndex = ref(100)
 const activeModalId = ref(null)
 
@@ -201,7 +190,6 @@ onMounted(() => {
 const applyFilters = () => {
   let result = [...roles.value]
 
-  // Apply search
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
     result = result.filter(
@@ -210,7 +198,6 @@ const applyFilters = () => {
     )
   }
 
-  // Apply sort
   result.sort((a, b) => {
     let aValue = a[sortBy.value]
     let bValue = b[sortBy.value]
@@ -230,7 +217,6 @@ const applyFilters = () => {
   filteredRoles.value = result
 }
 
-// CRUD operations
 const handleAddRole = () => {
   isEditMode.value = false
   selectedRole.value = null
@@ -255,7 +241,6 @@ const handleDeleteRole = (role) => {
 }
 
 const confirmDelete = () => {
-  // Thực hiện xóa vai trò
   roles.value = roles.value.filter((r) => r.id !== selectedRole.value.id)
   applyFilters()
   showDeleteModal.value = false
@@ -264,7 +249,6 @@ const confirmDelete = () => {
 
 const handleSaveRole = (roleData) => {
   if (isEditMode.value) {
-    // Update existing role
     const index = roles.value.findIndex((r) => r.id === selectedRole.value.id)
     if (index !== -1) {
       roles.value[index] = {
@@ -277,7 +261,6 @@ const handleSaveRole = (roleData) => {
       }
     }
   } else {
-    // Add new role
     const newRole = {
       id: Math.max(...roles.value.map((r) => r.id)) + 1,
       name: roleData.name,
@@ -303,7 +286,6 @@ const handleActivateModal = (modalId) => {
 
 <template>
   <div class="w-full h-full flex flex-col bg-gray-50 p-6 overflow-hidden">
-    <!-- Header -->
     <div
       class="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0"
     >
@@ -312,7 +294,6 @@ const handleActivateModal = (modalId) => {
         <p class="text-gray-600">Quản lý danh sách vai trò và phân quyền trong hệ thống</p>
       </div>
 
-      <!-- Filter and Actions -->
       <div class="flex justify-between items-center mb-6">
         <RoleFilterButtons v-model="selectedStatuses" />
         <span class="h-8 border-r-2 border-black-300 mx-2" />
@@ -320,12 +301,10 @@ const handleActivateModal = (modalId) => {
       </div>
     </div>
 
-    <!-- Role List -->
     <div class="flex-1 overflow-hidden">
       <RoleList :roles="filteredRoles" @edit="handleEditRole" @delete="handleDeleteRole" />
     </div>
 
-    <!-- Role Form Modal -->
     <RoleForm
       v-if="showRoleForm"
       :show="showRoleForm"
@@ -338,7 +317,6 @@ const handleActivateModal = (modalId) => {
       @activate="handleActivateModal('form')"
     />
 
-    <!-- Delete Confirmation Modal -->
     <RoleDeleteModal
       v-if="showDeleteModal"
       :show="showDeleteModal"

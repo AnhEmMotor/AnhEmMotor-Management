@@ -1,6 +1,3 @@
-// import { supabase } from '@/lib/supabaseClient'
-// TODO: Refactor to use VITE_API_URL
-
 export const priceApi = {
   async getProducts({ page, itemsPerPage, search, statusIds }) {
     const { data, error } = await supabase.rpc('get_product_variant_prices', {

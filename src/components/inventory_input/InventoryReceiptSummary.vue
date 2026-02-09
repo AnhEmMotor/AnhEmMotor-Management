@@ -81,7 +81,7 @@ function getStatusName(status) {
 
 <style scoped>
 .summary-row-responsive {
-  margin-bottom: 0.75rem; /* 12px */
+  margin-bottom: 0.75rem;
 }
 @media (min-width: 768px) {
   .summary-row-responsive {

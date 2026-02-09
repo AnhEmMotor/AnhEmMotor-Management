@@ -1,6 +1,3 @@
-// import { supabase } from '@/lib/supabaseClient'
-// TODO: Refactor to use VITE_API_URL
-
 export const getAllOutputStatuses = async () => {
   const { data, error } = await supabase.from('output_status').select('*');
   if (error) throw error;

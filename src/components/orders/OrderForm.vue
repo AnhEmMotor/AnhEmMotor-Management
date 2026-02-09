@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watch, onBeforeUnmount } from 'vue'
-import { useStore } from 'vuex'
+import { useOrdersStore } from '@/stores/useOrdersStore'
 import { debounce } from '@/utils/debounceThrottle'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
 import BaseDropdown from '@/components/ui/input/BaseDropdown.vue'
@@ -14,7 +14,7 @@ const props = defineProps({
   order: { type: Object, default: null },
 })
 const emit = defineEmits(['close', 'save', 'activate'])
-const store = useStore()
+const ordersStore = useOrdersStore()
 
 const localData = ref({
   customerName: '',
@@ -23,17 +23,17 @@ const localData = ref({
 })
 
 const STATUS_LIST = [
-  { key: 'pending', text: 'Chờ xác nhận' }, //1
-  { key: 'completed', text: 'Đã hoàn thành' }, //2
-  { key: 'canceled', text: 'Đã hủy' }, //3
-  { key: 'refunding', text: 'Đang hoàn tiền' }, //4
-  { key: 'refunded', text: 'Đã hoàn tiền' }, //5
-  { key: 'confirmed_cod', text: 'Đã xác nhận (Chờ thanh toán COD)' }, //6
-  { key: 'paid_processing', text: 'Đã thanh toán (Chờ xử lý)' }, //7
-  { key: 'waiting_deposit', text: 'Chờ đặt cọc' }, //8
-  { key: 'deposit_paid', text: 'Đã đặt cọc (Chờ xử lý)' }, //9
-  { key: 'delivering', text: 'Đang giao hàng' }, //10
-  { key: 'waiting_pickup', text: 'Chờ lấy hàng tại cửa hàng' }, //11
+  { key: 'pending', text: 'Chờ xác nhận' }, 
+  { key: 'completed', text: 'Đã hoàn thành' },
+  { key: 'canceled', text: 'Đã hủy' }, 
+  { key: 'refunding', text: 'Đang hoàn tiền' },
+  { key: 'refunded', text: 'Đã hoàn tiền' },
+  { key: 'confirmed_cod', text: 'Đã xác nhận (Chờ thanh toán COD)' }, 
+  { key: 'paid_processing', text: 'Đã thanh toán (Chờ xử lý)' },
+  { key: 'waiting_deposit', text: 'Chờ đặt cọc' },
+  { key: 'deposit_paid', text: 'Đã đặt cọc (Chờ xử lý)' },
+  { key: 'delivering', text: 'Đang giao hàng' },
+  { key: 'waiting_pickup', text: 'Chờ lấy hàng tại cửa hàng' },
 ]
 
 const localStatus = ref('pending')
@@ -107,7 +107,7 @@ const debouncedSearch = debounce(async (term) => {
     return
   }
   try {
-    const data = await store.dispatch('orders/fetchProductVariants', {
+    const data = await ordersStore.fetchProductVariants({
       p_page: 1,
       p_items_per_page: 10,
       p_search: term,

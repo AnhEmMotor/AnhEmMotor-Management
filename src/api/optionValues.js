@@ -1,6 +1,3 @@
-// import { supabase } from '@/lib/supabaseClient'
-// TODO: Refactor to use VITE_API_URL
-
 export const getAllOptionValues = async () => {
   const { data, error } = await supabase
     .from('option_values')

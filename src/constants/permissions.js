@@ -51,7 +51,7 @@ export const PERMISSION_RULES = {
 };
 
 export const PERMISSION_METADATA = {
-  //Sẽ được lấy từ Server qua API /api/v1/permission/permissions 
+  // Sẽ được lấy từ Server qua API /api/v1/permission/permissions 
 };
 
 export const PERMISSION_GROUPS = [

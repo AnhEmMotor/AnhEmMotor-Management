@@ -18,7 +18,6 @@
       </div>
 
       <div v-if="order" class="grid grid-cols-2 gap-6">
-        <!-- Order Info -->
         <div class="space-y-4">
           <p class="text-lg">
             Khách hàng: <strong>{{ order.customer_name }}</strong>
@@ -46,7 +45,6 @@
           </div>
         </div>
 
-        <!-- Product List -->
         <div>
           <h3 class="text-lg font-semibold mb-3">Sản Phẩm Trong Đơn Hàng</h3>
           <div class="overflow-x-auto max-h-96">

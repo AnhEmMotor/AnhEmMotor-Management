@@ -1,6 +1,3 @@
-// import { supabase } from '@/lib/supabaseClient'
-// TODO: Refactor to use VITE_API_URL
-
 export const getProducts = async ({
   page = 1,
   itemsPerPage = 1000,

@@ -1,6 +1,3 @@
-// import { supabase } from '@/lib/supabaseClient'
-// TODO: Refactor to use VITE_API_URL
-
 export const getAllProductVariants = async () => {
   const { data, error } = await supabase.from('product_variants').select(`
     *,

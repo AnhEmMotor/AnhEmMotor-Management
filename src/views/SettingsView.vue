@@ -2,7 +2,6 @@
   <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-lg p-8">
     <h1 class="text-3xl font-bold text-gray-800 mb-8 border-b pb-4">⚙️ Cài Đặt Quy Tắc Bán Hàng</h1>
 
-    <!-- Deposit Rule Section -->
     <div class="space-y-10">
       <div class="p-6 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
         <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
@@ -63,7 +62,6 @@
         </p>
       </div>
 
-      <!-- Large Order Rule Section -->
       <div class="p-6 bg-yellow-50 border-l-4 border-yellow-500 rounded-r-lg">
         <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
           <svg
@@ -109,7 +107,6 @@
         </p>
       </div>
 
-      <!-- Stock Warning Rule Section -->
       <div class="p-6 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
         <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
           <svg
@@ -148,7 +145,6 @@
       </div>
     </div>
 
-    <!-- Save Button -->
     <div class="flex justify-end pt-8 mt-8 border-t">
       <button
         @click="saveSettings"
@@ -172,15 +168,13 @@
       </button>
     </div>
   </div>
-  <Notification :show="showNotification" message="✅ Đã lưu cài đặt thành công!" />
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
-import Notification from '@/components/settings/Notification.vue'
+import { reactive, onMounted, computed } from 'vue'
+import { useToast } from 'vue-toastification'
 import BaseInput from '@/components/ui/input/BaseInput.vue'
 
-// Reactive state for settings
 const settings = reactive({
   maxOrder: 10000000,
   deposit: 10,
@@ -188,22 +182,18 @@ const settings = reactive({
   stockLevel: 5,
 })
 
-// State for notification visibility
-const showNotification = ref(false)
+const toast = useToast()
 
-// Format number with commas
 const formatNumber = (num) => {
   if (num === null || num === undefined) return '0'
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
 
-// Computed property to display formatted max order value
 const formattedMaxOrder = computed(() => {
   return formatNumber(settings.maxOrder)
 })
 
-// Because BaseInput works with string modelValue, use computed proxies to
-// convert between string and number while keeping user input responsive.
+
 const maxOrderProxy = computed({
   get() {
     return settings.maxOrder != null ? String(settings.maxOrder) : ''
@@ -244,29 +234,20 @@ const stockLevelProxy = computed({
   },
 })
 
-// Function to save settings to localStorage
 const saveSettings = () => {
   localStorage.setItem('anhemMotorSettings', JSON.stringify(settings))
 
-  // Show notification
-  showNotification.value = true
-  // Hide notification after 3 seconds
-  setTimeout(() => {
-    showNotification.value = false
-  }, 3000)
+  toast.success('Đã lưu cài đặt thành công!')
 }
 
-// Function to load settings from localStorage
 const loadSettings = () => {
   const savedSettings = localStorage.getItem('anhemMotorSettings')
   if (savedSettings) {
     const parsedSettings = JSON.parse(savedSettings)
-    // Assign values to the reactive object
     Object.assign(settings, parsedSettings)
   }
 }
 
-// Load settings when the component is mounted
 onMounted(() => {
   loadSettings()
 })

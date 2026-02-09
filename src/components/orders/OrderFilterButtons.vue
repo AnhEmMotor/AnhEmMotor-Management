@@ -14,7 +14,7 @@
 
 <script setup>
 import { computed, onMounted } from 'vue'
-import { useStore } from 'vuex'
+import { useOrdersStore } from '@/stores/useOrdersStore'
 import BaseFilterButton from '../ui/button/BaseFilterButton.vue'
 
 const props = defineProps({
@@ -25,7 +25,7 @@ const props = defineProps({
   },
 })
 const emit = defineEmits(['update:modelValue'])
-const store = useStore()
+const ordersStore = useOrdersStore()
 
 const STATUS_TEXT_MAP = {
   pending: 'Chờ xác nhận',
@@ -64,10 +64,10 @@ function getStatusColor(key) {
 }
 
 onMounted(() => {
-  store.dispatch('orders/fetchStatuses')
+  ordersStore.fetchStatuses()
 })
 
-const allStatuses = computed(() => store.getters['orders/allStatuses'])
+const allStatuses = computed(() => ordersStore.allStatuses)
 
 const filterOptions = computed(() => {
   return allStatuses.value

@@ -57,7 +57,7 @@ onMounted(() => {
       locale: Vietnamese,
       dateFormat: 'd/m/Y',
       defaultDate: props.modelValue,
-      onChange: (selectedDates, dateStr) => {
+      onChange: (selectedDates) => {
         if (selectedDates.length === 2) {
           emit('update:modelValue', {
             from: selectedDates[0],

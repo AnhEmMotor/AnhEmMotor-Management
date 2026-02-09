@@ -30,7 +30,6 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'save', 'activate'])
 
-// Form data
 const formData = ref({
   code: '',
   name: '',
@@ -56,7 +55,6 @@ const statusOptions = [
   { value: 'inactive', text: 'Không hoạt động' },
 ]
 
-// Function definitions first
 const resetForm = () => {
   formData.value = {
     code: '',
@@ -77,7 +75,6 @@ const resetForm = () => {
   }
 }
 
-// Watch for prop changes
 watch(
   () => props.user,
   (newUser) => {
@@ -88,7 +85,6 @@ watch(
         email: newUser.email || '',
         phone: newUser.phone || '',
         address: newUser.address || '',
-        // Clone arrays/objects to avoid mutating parent data directly
         status: newUser.status || 'active',
         roleIds: newUser.roleIds ? [...newUser.roleIds] : [],
       }
@@ -110,7 +106,6 @@ const validateForm = () => {
     roleIds: '',
   }
 
-  // Validate code
   if (!props.isEditMode) {
     if (!formData.value.code || formData.value.code.trim() === '') {
       errors.value.code = 'Mã khách hàng không được để trống'
@@ -118,13 +113,11 @@ const validateForm = () => {
     }
   }
 
-  // Validate name
   if (!formData.value.name || formData.value.name.trim() === '') {
     errors.value.name = 'Tên khách hàng không được để trống'
     isValid = false
   }
 
-  // Validate email
   if (!formData.value.email || formData.value.email.trim() === '') {
     errors.value.email = 'Email không được để trống'
     isValid = false
@@ -133,7 +126,6 @@ const validateForm = () => {
     isValid = false
   }
 
-  // Validate phone
   if (!formData.value.phone || formData.value.phone.trim() === '') {
     errors.value.phone = 'Số điện thoại không được để trống'
     isValid = false
@@ -142,13 +134,11 @@ const validateForm = () => {
     isValid = false
   }
 
-  // Validate address
   if (!formData.value.address || formData.value.address.trim() === '') {
     errors.value.address = 'Địa chỉ không được để trống'
     isValid = false
   }
 
-  // Validate roles
   if (formData.value.roleIds.length === 0) {
     errors.value.roleIds = 'Vui lòng chọn ít nhất một vai trò'
     isValid = false
@@ -206,7 +196,6 @@ const isRoleSelected = (roleId) => {
 
     <template #body>
       <div class="space-y-4 max-h-[calc(100vh-300px)] overflow-y-auto pr-2">
-        <!-- Mã khách hàng -->
         <div v-if="!isEditMode">
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Mã khách hàng <span class="text-red-500">*</span>
@@ -215,7 +204,6 @@ const isRoleSelected = (roleId) => {
           <p v-if="errors.code" class="mt-1 text-sm text-red-500">{{ errors.code }}</p>
         </div>
 
-        <!-- Tên khách hàng -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Tên khách hàng <span class="text-red-500">*</span>
@@ -228,7 +216,6 @@ const isRoleSelected = (roleId) => {
           <p v-if="errors.name" class="mt-1 text-sm text-red-500">{{ errors.name }}</p>
         </div>
 
-        <!-- Email -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Email <span class="text-red-500">*</span>
@@ -242,7 +229,6 @@ const isRoleSelected = (roleId) => {
           <p v-if="errors.email" class="mt-1 text-sm text-red-500">{{ errors.email }}</p>
         </div>
 
-        <!-- Số điện thoại -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Số điện thoại <span class="text-red-500">*</span>
@@ -251,7 +237,6 @@ const isRoleSelected = (roleId) => {
           <p v-if="errors.phone" class="mt-1 text-sm text-red-500">{{ errors.phone }}</p>
         </div>
 
-        <!-- Địa chỉ -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Địa chỉ <span class="text-red-500">*</span>
@@ -264,7 +249,6 @@ const isRoleSelected = (roleId) => {
           <p v-if="errors.address" class="mt-1 text-sm text-red-500">{{ errors.address }}</p>
         </div>
 
-        <!-- Trạng thái -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Trạng thái <span class="text-red-500">*</span>
@@ -276,7 +260,6 @@ const isRoleSelected = (roleId) => {
           />
         </div>
 
-        <!-- Vai trò -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Vai trò <span class="text-red-500">*</span>

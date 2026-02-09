@@ -57,7 +57,6 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  // classes that should be applied directly to the inner <input>
   inputClass: {
     type: [String, Array, Object],
     default: '',

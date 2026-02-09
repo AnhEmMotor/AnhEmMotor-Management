@@ -1,5 +1,4 @@
 <script setup>
-// Define props and emits
 defineProps({
   isVisible: Boolean,
   product: Object,
@@ -20,7 +19,6 @@ function closeModal() {
       class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 z-50"
     >
       <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl transform">
-        <!-- Modal Header -->
         <div class="flex justify-between items-center p-4 border-b border-gray-200">
           <h2 class="text-xl font-bold text-gray-800">
             Lịch sử giá:
@@ -44,7 +42,6 @@ function closeModal() {
           </button>
         </div>
 
-        <!-- Modal Body -->
         <div class="p-6 grid grid-cols-1 md:grid-cols-1 gap-6 max-h-[70vh] overflow-y-auto">
           <div>
             <h3 class="font-semibold text-lg text-gray-700 mb-3 border-b pb-2">Lịch sử giá bán</h3>
@@ -66,7 +63,6 @@ function closeModal() {
           </div>
         </div>
 
-        <!-- Modal Footer -->
         <div class="px-6 py-4 bg-gray-50 rounded-b-xl text-right">
           <button
             @click="closeModal"

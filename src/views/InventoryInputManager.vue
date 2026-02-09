@@ -1,12 +1,10 @@
 <script setup>
 import { ref, watch } from 'vue'
-import { useStore } from 'vuex'
+import { useInputsStore } from '@/stores/useInputsStore'
 import * as XLSX from 'xlsx'
 import InventoryItem from '@/components/inventory_input/InventoryItem.vue'
 import BaseButton from '@/components/ui/button/BaseButton.vue'
-import BaseInput from '@/components/ui/input/BaseInput.vue'
 import BasePagination from '@/components/ui/button/BasePagination.vue'
-import InventoryFilterButtons from '@/components/inventory_input/InventoryFilterButtons.vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
 import InventoryInputForm from '@/components/inventory_input/InventoryInputForm.vue'
 import ProductForm from '@/components/product/ProductForm.vue'
@@ -14,18 +12,16 @@ import { showConfirmation } from '@/composables/useConfirmationState'
 import { useQueryClient } from '@tanstack/vue-query'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 
-const store = useStore()
+const inputsStore = useInputsStore()
 const queryClient = useQueryClient()
 
-const searchTerm = ref('')
-const selectedStatuses = ref([])
 const expandedItemId = ref(null)
 
 const currentPage = ref(1)
 const itemsPerPage = ref(15)
 
 const fetchInputsFn = (params) => {
-  return store.dispatch('inputs/fetchInputs', params)
+  return inputsStore.fetchInputs(params)
 }
 
 const inputsDataMapper = (data) => ({
@@ -204,7 +200,7 @@ const saveInventoryReceipt = async () => {
   inventoryErrors.value = { supplier: '', products: {} }
 
   try {
-    await store.dispatch('inputs/saveReceipt', {
+    await inputsStore.saveReceipt({
       receiptData: currentInventoryData.value,
       isEditMode: isEditMode.value,
       status_id: 'working',
@@ -225,7 +221,7 @@ const completeInventoryReceipt = async () => {
   inventoryErrors.value = { supplier: '', products: {} }
 
   try {
-    await store.dispatch('inputs/saveReceipt', {
+    await inputsStore.saveReceipt({
       receiptData: currentInventoryData.value,
       isEditMode: isEditMode.value,
       status_id: 'finished',
@@ -288,7 +284,7 @@ const handleCancelRequest = async (item) => {
   if (!confirmed) return
 
   try {
-    await store.dispatch('inputs/cancelReceipt', { id: item.id })
+    await inputsStore.cancelReceipt({ id: item.id })
     queryClient.invalidateQueries({ queryKey: ['inventoryInputs'] })
   } catch (error) {
     console.error('Lỗi khi huỷ phiếu:', error)
@@ -297,7 +293,7 @@ const handleCancelRequest = async (item) => {
 
 const handleSaveNotes = async ({ id, notes }) => {
   try {
-    await store.dispatch('inputs/saveNotes', { id, notes })
+    await inputsStore.saveNotes({ id, notes })
     queryClient.invalidateQueries({ queryKey: ['inventoryInputs'] })
   } catch (error) {
     console.error('Lỗi khi lưu ghi chú:', error)
@@ -313,20 +309,24 @@ const handleSaveNotes = async ({ id, notes }) => {
       <div>
         <h1 class="text-3xl font-bold text-gray-800">Quản lý phiếu nhập kho</h1>
       </div>
-      <!-- <div class="flex flex-wrap items-center gap-2">
+      
+      <div class="flex flex-wrap items-center gap-2">
         <BaseButton text="Nhập hàng" color="purple" @click="openNewInventoryModal" />
         <BaseButton text="Export" color="green" @click="exportExcel" />
         <div class="h-8 border-r-2 border-black-300 mx-2"></div>
         <InventoryFilterButtons v-model="selectedStatuses" />
-      </div> -->
+      </div> 
+
     </div>
 
-    <!-- <BaseInput
+    
+    <BaseInput
       v-model="searchTerm"
       type="text"
       placeholder="Tìm kiếm theo mã phiếu, mã hoặc tên NCC..."
       class="mb-3"
-    /> -->
+    /> 
+
 
     <div
       class="hidden md:grid grid-cols-[1.5fr_2fr_1.5fr_1.2fr] items-center py-3 px-5 text-sm font-semibold text-gray-600 bg-gray-200 rounded-t-md"

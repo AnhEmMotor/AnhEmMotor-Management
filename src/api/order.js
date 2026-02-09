@@ -1,10 +1,3 @@
-// import { supabase } from '@/lib/supabaseClient'
-// TODO: Refactor to use VITE_API_URL
-
-/**
- * Lấy danh sách đơn hàng đã phân trang.
- * @param {object} params - { page, itemsPerPage, status_ids, search }
- */
 export const fetchOrders = async (params) => {
   const { page, itemsPerPage, status_ids, search } = params
 
@@ -22,10 +15,6 @@ export const fetchOrders = async (params) => {
   return data
 }
 
-/**
- * Lưu (tạo mới/cập nhật) đơn hàng.
- * @param {object} payload - Dữ liệu đơn hàng
- */
 export const saveOrder = async (payload) => {
   const { id, customerName, notes, status, products } = payload
 
@@ -51,10 +40,6 @@ export const saveOrder = async (payload) => {
   return data
 }
 
-/**
- * Lấy danh sách sản phẩm (biến thể) cho form.
- * @param {object} params - { p_page, p_items_per_page, p_search, p_status_ids }
- */
 export const fetchProductVariants = async (params) => {
   const { data, error } = await supabase.rpc('get_all_variants_lite', params)
 
@@ -65,9 +50,6 @@ export const fetchProductVariants = async (params) => {
   return data
 }
 
-/**
- * Lấy tất cả các trạng thái đơn hàng.
- */
 export const fetchOutputStatuses = async () => {
   const { data, error } = await supabase.from('output_status').select('*')
   if (error) {

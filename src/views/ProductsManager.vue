@@ -1,5 +1,5 @@
 <template>
-  <BaseLoadingOverlay :show="isVuexLoading" message="Đang xoá sản phẩm..." />
+  <BaseLoadingOverlay :show="isStoreLoading" message="Đang xoá sản phẩm..." />
 
   <div class="bg-gray-100 p-4 sm:p-6 rounded-xl shadow-lg">
     <div
@@ -225,7 +225,7 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
-import { useStore } from 'vuex'
+import { useProductsStore } from '@/stores/useProductsStore'
 import { useRoute, useRouter } from 'vue-router'
 import { useQueryClient } from '@tanstack/vue-query'
 import { debounce } from '@/utils/debounceThrottle'
@@ -245,7 +245,7 @@ import IconDownArrow from '@/components/icons/IconDownArrow.vue'
 import BaseLoadingOverlay from '@/components/ui/BaseLoadingOverlay.vue'
 import { useToast } from 'vue-toastification'
 
-const store = useStore()
+const productsStore = useProductsStore()
 const route = useRoute()
 const router = useRouter()
 const queryClient = useQueryClient()
@@ -262,7 +262,7 @@ const selectedStatuses = ref(
   route.query.statuses ? String(route.query.statuses).split(',').filter(Boolean) : [],
 )
 
-const isVuexLoading = computed(() => store.getters['products/isLoading'])
+const isStoreLoading = computed(() => productsStore.isLoading)
 
 const querySearch = computed(() => (route.query.search ? String(route.query.search).trim() : ''))
 const queryStatuses = computed(() =>
@@ -567,7 +567,7 @@ const handleSaveProduct = async () => {
   isSaving.value = true
   try {
     const isEditing = isEditMode.value
-    await store.dispatch('products/saveProduct', productData)
+    await productsStore.saveProduct(productData)
     isFormModalVisible.value = false
     await queryClient.invalidateQueries({ queryKey: ['products'] })
     showMessage(isEditing ? 'Cập nhật sản phẩm thành công' : 'Thêm sản phẩm thành công', 'success')
@@ -582,7 +582,7 @@ const handleSaveProduct = async () => {
 
 const promptDelete = async (product) => {
   try {
-    await store.dispatch('products/deleteProduct', product)
+    await productsStore.deleteProduct(product)
     await queryClient.invalidateQueries({ queryKey: ['products'] })
     showMessage('Xoá sản phẩm thành công', 'success')
   } catch (error) {

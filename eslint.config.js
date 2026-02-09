@@ -32,6 +32,13 @@ export default defineConfig([
           varsIgnorePattern: '^_',
         },
       ],
+      'multiline-comment-style': ['error', 'starred-block'],
+      'no-multi-str': 'error',
+      'vue/html-comment-content-spacing': ['error', 'always'],
+      'vue/html-comment-content-newline': ['error', {
+        singleline: 'never',
+        multiline: 'always'
+      }],
     },
   },
 ])

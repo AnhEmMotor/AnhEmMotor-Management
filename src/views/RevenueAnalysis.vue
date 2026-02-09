@@ -40,7 +40,6 @@ import { ref } from 'vue'
 import RevenueChart7day from '@/components/report/RevenueChart7day.vue'
 import RevenueChartByBrand from '@/components/report/RevenueChartByBrand.vue'
 
-// const activePeriod = ref(7)
 const selectedBrand = ref('Tất cả')
 const selectedStatuses = ref(['30-days'])
 

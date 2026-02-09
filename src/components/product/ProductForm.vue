@@ -1,6 +1,8 @@
 <script setup>
 import { ref, watch, computed, nextTick, onMounted } from 'vue'
-import { useStore } from 'vuex'
+import { useProductCategoriesStore } from '@/stores/useProductCategoriesStore'
+import { useBrandsStore } from '@/stores/useBrandsStore'
+import { useOptionsStore } from '@/stores/useOptionsStore'
 import BaseInput from '@/components/ui/input/BaseInput.vue'
 import BaseTextarea from '@/components/ui/input/BaseTextarea.vue'
 import BaseDropdown from '@/components/ui/input/BaseDropdown.vue'
@@ -30,7 +32,9 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue'])
-const store = useStore()
+const productCategoriesStore = useProductCategoriesStore()
+const brandsStore = useBrandsStore()
+const optionsStore = useOptionsStore()
 
 const isFormLoading = ref(false)
 
@@ -42,19 +46,19 @@ const generalCoverImage = ref('')
 const generalPhotoCollection = ref([])
 
 const categoryOptions = computed(() => {
-  return (store.getters['productCategories/allCategories'] || []).map((c) => ({
+  return (productCategoriesStore.allCategories || []).map((c) => ({
     value: c.id,
     text: c.name,
   }))
 })
 const brandOptions = computed(() => {
-  return (store.getters['brands/allBrands'] || []).map((b) => ({
+  return (brandsStore.allBrands || []).map((b) => ({
     value: b.id,
     text: b.name,
   }))
 })
 const allAvailableOptions = computed(() => {
-  return (store.getters['options/allOptions'] || []).map((o) => ({
+  return (optionsStore.allOptions || []).map((o) => ({
     value: o.name,
     text: o.name,
   }))
@@ -64,9 +68,9 @@ onMounted(async () => {
   isFormLoading.value = true
   try {
     await Promise.all([
-      store.dispatch('productCategories/fetchCategories'),
-      store.dispatch('brands/fetchBrands'),
-      store.dispatch('options/fetchOptions'),
+      productCategoriesStore.fetchCategories(),
+      brandsStore.fetchBrands(),
+      optionsStore.fetchOptions(),
     ])
   } catch (error) {
     console.error('Lỗi khi tải dữ liệu form:', error)
@@ -229,7 +233,6 @@ watch(
       localProduct.value.variants = []
       addVariant()
     } else if (newOptions.length === 0 && oldOptions.length > 0) {
-      // GIỮ LẠI dữ liệu của biến thể đầu tiên thay vì tạo mới
       const firstVariant = localProduct.value.variants[0]
         ? JSON.parse(JSON.stringify(localProduct.value.variants[0]))
         : {
@@ -237,23 +240,18 @@ watch(
             price: null,
             cover_image_url: generalCoverImage.value,
             photo_collection: [...generalPhotoCollection.value],
-          } // Xóa các thuộc tính và cập nhật lại URL cho sản phẩm đơn giản
+          } 
 
       firstVariant.optionValues = {}
-      firstVariant.url = slugify(localProduct.value.name) // Đặt mảng variants CHỈ chứa biến thể đã được chỉnh sửa này
+      firstVariant.url = slugify(localProduct.value.name) 
 
       localProduct.value.variants = [firstVariant]
     } else {
-      // Khối else này chạy khi thay đổi options
       const currentOptionNames = newOptions.map((o) => o.name)
       localProduct.value.variants.forEach((variant) => {
-        // Lặp qua các biến thể hiện có
-
-        // === SỬA LỖI: Đảm bảo optionValues là một object ===
         if (!variant.optionValues || typeof variant.optionValues !== 'object') {
-          variant.optionValues = {} // Khởi tạo nếu chưa phải object
+          variant.optionValues = {}   
         }
-        // ===================================================
 
         const existingValueKeys = Object.keys(variant.optionValues)
 
@@ -331,7 +329,6 @@ const applyGeneralPhotoCollection = () => {
   <BaseLoadingOverlay :show="showLoadingOverlay" :message="loadingMessage" />
   <form @submit.prevent id="product-form">
     <div class="space-y-4 max-h-[75vh] overflow-y-auto px-1 pr-2">
-      <!-- === Thông Tin Chung === -->
       <fieldset class="border rounded-md p-4">
         <legend class="px-2 font-semibold text-gray-700">Thông tin chung</legend>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -377,7 +374,6 @@ const applyGeneralPhotoCollection = () => {
         </div>
       </fieldset>
 
-      <!-- === Hình Ảnh Chung (Để Áp Dụng Nhanh) === -->
       <fieldset class="border rounded-md p-4">
         <legend class="px-2 font-semibold text-gray-700">Hình ảnh chung (Để áp dụng nhanh)</legend>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -404,7 +400,6 @@ const applyGeneralPhotoCollection = () => {
         </div>
       </fieldset>
 
-      <!-- === Thông Số Kỹ Thuật === -->
       <fieldset class="border rounded-md p-4">
         <legend class="px-2 font-semibold text-gray-700">Thông số kỹ thuật</legend>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -516,7 +511,6 @@ const applyGeneralPhotoCollection = () => {
         </div>
       </fieldset>
 
-      <!-- === Thuộc Tính Sản Phẩm === -->
       <fieldset class="border rounded-md p-4">
         <legend class="px-2 font-semibold text-gray-700">Thuộc tính sản phẩm (Options)</legend>
         <div class="space-y-3">
@@ -546,11 +540,9 @@ const applyGeneralPhotoCollection = () => {
         <BaseButton text="Thêm thuộc tính" color="gray" @click="addOption" class="mt-4" />
       </fieldset>
 
-      <!-- === Các Biến Thể (Variants) === -->
       <fieldset class="border rounded-md p-4">
         <legend class="px-2 font-semibold text-gray-700">Các biến thể (Variants)</legend>
 
-        <!-- TRƯỜNG HỢP 1: SẢN PHẨM ĐƠN (Không có options) -->
         <div v-if="!hasOptions">
           <p class="text-sm text-gray-500 mb-4">
             Sản phẩm này không có thuộc tính. Vui lòng nhập thông tin cho biến thể mặc định.
@@ -597,7 +589,6 @@ const applyGeneralPhotoCollection = () => {
           </div>
         </div>
 
-        <!-- TRƯỜNG HỢP 2: SẢN PHẨM CÓ BIẾN THỂ (Có options) -->
         <div v-else>
           <div class="space-y-6">
             <div
@@ -615,7 +606,6 @@ const applyGeneralPhotoCollection = () => {
 
               <h4 class="font-semibold text-lg mb-3">Biến thể #{{ index + 1 }}</h4>
 
-              <!-- Hàng 1: Thuộc tính & Giá -->
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div v-for="option in localProduct.options" :key="option.name" class="flex-1">
                   <BaseDropdown
@@ -638,7 +628,6 @@ const applyGeneralPhotoCollection = () => {
                 </div>
               </div>
 
-              <!-- Hàng 2: URL Slug -->
               <div class="mb-4">
                 <BaseInput
                   label="URL Slug *"
@@ -647,7 +636,6 @@ const applyGeneralPhotoCollection = () => {
                 />
               </div>
 
-              <!-- Hàng 3: Hình ảnh -->
               <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <BaseImage
                   label="Ảnh Bìa Biến Thể"
@@ -663,7 +651,6 @@ const applyGeneralPhotoCollection = () => {
                 />
               </div>
 
-              <!-- Hiển thị lỗi -->
               <div class="mt-2 text-red-500 text-xs space-y-1">
                 <div v-if="getVariantErrors(index).price">
                   Lỗi giá: {{ getVariantErrors(index).price }}
