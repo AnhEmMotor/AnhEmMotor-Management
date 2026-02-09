@@ -1,3 +1,23 @@
+// SUPABASE STORAGE HAS BEEN REMOVED.
+// TODO: Implement new file upload logic using the real API.
+
+export const uploadFile = async (file, bucketName) => {
+  console.warn('uploadFile not implemented', file, bucketName)
+  return ''
+}
+
+export const getPublicUrl = (path, bucketName) => {
+  console.warn('getPublicUrl not implemented', path, bucketName)
+  return ''
+}
+
+export const deleteFile = async (url, bucketName) => {
+  console.warn('deleteFile not implemented', url, bucketName)
+  return
+}
+
+/*
+ORIGINAL SUPABASE IMPLEMENTATION:
 import { supabase } from '@/lib/supabaseClient'
 
 const getFileExtension = (filename) => {
@@ -51,3 +71,4 @@ export const deleteFile = async (url, bucketName) => {
   }
   return data
 }
+*/

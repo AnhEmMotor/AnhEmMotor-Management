@@ -1,4 +1,5 @@
-import { supabase } from '@/lib/supabaseClient'
+// import { supabase } from '@/lib/supabaseClient'
+// TODO: Refactor to use VITE_API_URL
 
 /**
  * Lấy danh sách đơn hàng đã phân trang.

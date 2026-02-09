@@ -1,4 +1,5 @@
-import { supabase } from '@/lib/supabaseClient';
+// import { supabase } from '@/lib/supabaseClient'
+// TODO: Refactor to use VITE_API_URL
 
 export const getAllOutputInfos = async () => {
   const { data, error } = await supabase.from('output_info').select(`
