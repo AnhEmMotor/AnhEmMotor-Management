@@ -1,5 +1,3 @@
-import { supabase } from '@/lib/supabaseClient';
-
 export const getAllProductStatuses = async () => {
   const { data, error } = await supabase.from('product_status').select('*');
   if (error) throw error;

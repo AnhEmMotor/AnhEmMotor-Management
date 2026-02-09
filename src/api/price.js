@@ -1,5 +1,3 @@
-import { supabase } from '@/lib/supabaseClient'
-
 export const priceApi = {
   async getProducts({ page, itemsPerPage, search, statusIds }) {
     const { data, error } = await supabase.rpc('get_product_variant_prices', {

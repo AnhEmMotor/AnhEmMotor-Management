@@ -1,6 +1,6 @@
 <script setup>
 import { ref, reactive, computed, watch, onUnmounted } from 'vue'
-import { useStore } from 'vuex'
+import { useSuppliersStore } from '@/stores/useSuppliersStore'
 import * as XLSX from 'xlsx'
 import SupplierItem from '@/components/supplier/SupplierItem.vue'
 import BaseButton from '@/components/ui/button/BaseButton.vue'
@@ -20,7 +20,7 @@ import { getSupplierById } from '@/api/supplier'
 import { debounce } from '@/utils/debounceThrottle'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 
-const store = useStore()
+const suppliersStore = useSuppliersStore()
 const route = useRoute()
 const toast = useToast()
 const router = useRouter()
@@ -129,14 +129,14 @@ async function handleSaveSupplier() {
 
   try {
     if (supplierData.id) {
-      await store.dispatch('suppliers/updateSupplier', {
+      await suppliersStore.updateSupplier({
         id: supplierData.id,
         supplier: supplierData,
       })
       showMessage(`Đã cập nhật nhà cung cấp: ${supplierData.name}.`)
       await queryClient.invalidateQueries({ queryKey: ['suppliers'] })
     } else {
-      await store.dispatch('suppliers/addSupplier', supplierData)
+      await suppliersStore.addSupplier(supplierData)
       showMessage(`Đã tạo nhà cung cấp mới: ${supplierData.name}.`)
       await queryClient.invalidateQueries({ queryKey: ['suppliers'] })
     }
@@ -155,7 +155,7 @@ const filters = computed(() => ({
 }))
 
 const fetchSuppliersFn = (params) => {
-  return store.dispatch('suppliers/fetchSuppliers', {
+  return suppliersStore.fetchSuppliers({
     page: params.page,
     itemsPerPage: params.itemsPerPage,
     statusFilters: params.statusFilters,
@@ -227,7 +227,7 @@ async function openDeleteModal(supplier) {
   try {
     showOverlay.value = true
     overlayMessage.value = 'Đang xóa nhà cung cấp...'
-    await store.dispatch('suppliers/deleteSupplier', supplier.id)
+    await suppliersStore.deleteSupplier(supplier.id)
     showMessage(`Đã xóa nhà cung cấp: ${supplier.name}.`)
     if (selectedSupplierId.value === supplier.id) selectedSupplierId.value = null
     await queryClient.invalidateQueries({ queryKey: ['suppliers'] })
@@ -258,7 +258,7 @@ function toggleActivation(supplierId) {
   showConfirmation(title, messageText).then(async (confirmed) => {
     if (!confirmed) return
     try {
-      await store.dispatch('suppliers/updateSupplierStatus', {
+      await suppliersStore.updateSupplierStatus({
         id: supplier.id,
         status: supplier.status === 'active' ? 'inactive' : 'active',
       })
@@ -326,7 +326,7 @@ const handleImport = async (event) => {
         })
         if (!newSupplierData.name || !String(newSupplierData.name).trim()) continue
         try {
-          await store.dispatch('suppliers/addSupplier', {
+          await suppliersStore.addSupplier({
             ...newSupplierData,
             totalPurchase: 0,
             status: 'active',

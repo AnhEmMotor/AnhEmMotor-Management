@@ -1,4 +1,7 @@
-import { supabase } from '@/lib/supabaseClient'
+/*
+ * import { supabase } from '@/lib/supabaseClient'
+ * TODO: Refactor to use VITE_API_URL
+ */
 
 export const fetchInputs = async ({ page, itemsPerPage, statusFilters, search }) => {
   const { data, error } = await supabase.rpc('get_input_receipts', {

@@ -35,3 +35,6 @@ coverage
 
 *.tsbuildinfo
 .env
+
+API_Swagger_Document.json
+frontend-vuejs

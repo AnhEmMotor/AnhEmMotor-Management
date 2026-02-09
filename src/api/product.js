@@ -1,5 +1,3 @@
-import { supabase } from '@/lib/supabaseClient'
-
 export const getProducts = async ({
   page = 1,
   itemsPerPage = 1000,

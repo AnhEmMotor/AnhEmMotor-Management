@@ -1,5 +1,3 @@
-import { supabase } from '@/lib/supabaseClient'
-
 export const fetchInputsBySupplier = async ({
   supplierId,
   page,

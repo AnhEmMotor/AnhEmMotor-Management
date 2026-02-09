@@ -13,7 +13,6 @@ const emit = defineEmits(['edit', 'delete'])
 
 <template>
   <div class="h-full flex flex-col bg-white rounded-lg shadow-md overflow-hidden">
-    <!-- Table Header -->
     <div
       class="grid grid-cols-16 gap-4 p-2 bg-gray-100 border-b border-gray-200 font-semibold text-gray-700"
     >
@@ -25,7 +24,6 @@ const emit = defineEmits(['edit', 'delete'])
       <div class="col-span-2 text-center">Thao tác</div>
     </div>
 
-    <!-- Table Body -->
     <div class="flex-1 overflow-y-auto">
       <div v-if="roles.length === 0" class="flex items-center justify-center h-64 text-gray-500">
         <div class="text-center">

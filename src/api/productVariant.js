@@ -1,5 +1,3 @@
-import { supabase } from '@/lib/supabaseClient';
-
 export const getAllProductVariants = async () => {
   const { data, error } = await supabase.from('product_variants').select(`
     *,

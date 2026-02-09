@@ -1,5 +1,3 @@
-import { supabase } from '@/lib/supabaseClient'
-
 export const getAllOptionValues = async () => {
   const { data, error } = await supabase
     .from('option_values')

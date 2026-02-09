@@ -109,7 +109,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useStore } from 'vuex'
+import { useProductsStore } from '@/stores/useProductsStore'
 import * as storageApi from '@/api/supabaseStorage'
 
 const props = defineProps({
@@ -124,7 +124,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue'])
-const store = useStore()
+const productsStore = useProductsStore()
 const bucketName = 'photo-collection'
 
 const isDragging = ref(false)
@@ -232,12 +232,10 @@ const removeImage = async (index) => {
 
   const urlToRemove = localValue.value[index]
 
-  // 1. Xóa ảnh khỏi Storage (Gọi action)
   if (urlToRemove) {
-    await store.dispatch('products/deleteProductImage', { url: urlToRemove, bucket: bucketName })
+    await productsStore.deleteProductImage({ url: urlToRemove, bucket: bucketName })
   }
 
-  // 2. Xóa khỏi Model
   const newArray = [...localValue.value]
   newArray.splice(index, 1)
   localValue.value = newArray

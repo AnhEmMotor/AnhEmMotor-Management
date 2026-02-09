@@ -147,7 +147,6 @@ const allCustomers = ref([
   },
 ])
 
-// Mock roles data - should come from API
 const availableRoles = ref([
   { id: 1, name: 'Quản lý', description: 'Quyền quản lý toàn bộ hệ thống', permissionCount: 15 },
   { id: 2, name: 'Quản kho', description: 'Quyền quản lý kho hàng', permissionCount: 8 },
@@ -157,7 +156,6 @@ const availableRoles = ref([
 const selectedStatuses = ref(['active', 'new', 'inactive'])
 const displayCustomers = ref([])
 
-// Modal states
 const showUserForm = ref(false)
 const showDeleteModal = ref(false)
 const selectedUser = ref(null)
@@ -193,7 +191,6 @@ const editCustomer = (id) => {
   const customer = allCustomers.value.find((c) => c.id === id)
   if (customer) {
     isEditMode.value = true
-    // Deep clone to avoid mutating the original object before save
     selectedUser.value = JSON.parse(JSON.stringify(customer))
     showUserForm.value = true
     activeModalId.value = 'form'
@@ -213,7 +210,6 @@ const deleteCustomer = (id) => {
 
 const handleSaveUser = (userData) => {
   if (isEditMode.value) {
-    // Update existing user
     const index = allCustomers.value.findIndex((c) => c.id === selectedUser.value.id)
     if (index !== -1) {
       allCustomers.value[index] = {
@@ -222,7 +218,6 @@ const handleSaveUser = (userData) => {
       }
     }
   } else {
-    // Add new user
     const newUser = {
       id: String(Math.max(...allCustomers.value.map((c) => parseInt(c.id))) + 1),
       ...userData,

@@ -1,5 +1,3 @@
-import { supabase } from '@/lib/supabaseClient'
-
 export const getAllSuppliers = async () => {
   const { data, error } = await supabase
     .from('supplier')

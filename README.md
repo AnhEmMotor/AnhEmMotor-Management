@@ -1,44 +1,58 @@
-# AnhEmMotor-Management
+# AnhEmMotor Management Dashboard Project
 
-This template should help get you started developing with Vue 3 in Vite.
+Dự án này là hệ thống quản trị của AnhEmMotor (sản phẩm, giá, đơn hàng, người dùng, ...)
 
-## Recommended IDE Setup
+# Yêu cầu hệ thống
+- Node.js (v20 trở lên)
+- Access to GitHub Repository
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+# Cài đặt
 
-## Recommended Browser Setup
+Clone dự án và cài đặt dependencies:
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
+```bash
+git clone <repo-url>
+cd AnhEmMotor-Management
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+# Cấu hình Môi trường
 
-```sh
+Tạo file `.env` từ file mẫu:
+
+```bash
+cp .env.template .env
+```
+
+Cập nhật thông tin trong `.env`:
+
+```properties
+# URL của Backend API (Production hoặc Local)
+VITE_API_URL=https://localhost:7001
+```
+
+# Chạy Local Development
+
+```bash
 npm run dev
 ```
+Trang web có thể sẽ chạy tại: `http://localhost:5173`
 
-### Compile and Minify for Production
+# Deployment & CI/CD
 
-```sh
-npm run build
-```
+Dự án sử dụng GitHub Actions để auto deploy.
 
-### Lint with [ESLint](https://eslint.org/)
+## Secrets cần cấu hình trên GitHub Repo:
 
-```sh
-npm run lint
-```
+| Secret Name | Mô tả |
+|-------------|-------|
+| `VITE_API_URL` | URL của Backend API (Production) |
+| `REMOTE_HOST` | IP của Server deploy |
+| `REMOTE_USER` | Username SSH (thường là root) |
+| `SSH_PRIVATE_KEY` | Key SSH private để access server |
+| `REMOTE_PORT` | Port SSH (mặc định 22) |
+
+## Workflow
+1. Tạo pull request
+2. Sau khi được chắp nhận pull request (nếu đạt đủ chất lượng), GitHub Action sẽ tự động build.
+3. Nếu build thành công, code sẽ được deploy lên server.

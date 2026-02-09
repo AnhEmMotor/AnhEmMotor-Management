@@ -31,7 +31,6 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'save', 'activate'])
 
-// Form data
 const formData = ref({
   name: '',
   description: '',
@@ -44,7 +43,6 @@ const errors = ref({
   description: '',
 })
 
-// Group permissions by category
 const permissionsByCategory = computed(() => {
   const grouped = {}
   props.availablePermissions.forEach((permission) => {
@@ -56,7 +54,6 @@ const permissionsByCategory = computed(() => {
   return grouped
 })
 
-// Function definitions first
 const resetForm = () => {
   formData.value = {
     name: '',
@@ -70,7 +67,6 @@ const resetForm = () => {
   }
 }
 
-// Watch for prop changes
 watch(
   () => props.role,
   (newRole) => {
@@ -88,7 +84,6 @@ watch(
   { immediate: true },
 )
 
-// Permission management functions
 const togglePermission = (permissionId) => {
   const index = formData.value.permissions.indexOf(permissionId)
   if (index > -1) {
@@ -107,7 +102,6 @@ const selectAllInCategory = (category) => {
   const allSelected = categoryPermissions.every((p) => formData.value.permissions.includes(p.id))
 
   if (allSelected) {
-    // Deselect all in category
     categoryPermissions.forEach((p) => {
       const index = formData.value.permissions.indexOf(p.id)
       if (index > -1) {
@@ -115,7 +109,6 @@ const selectAllInCategory = (category) => {
       }
     })
   } else {
-    // Select all in category
     categoryPermissions.forEach((p) => {
       if (!formData.value.permissions.includes(p.id)) {
         formData.value.permissions.push(p.id)
@@ -136,7 +129,6 @@ const validateForm = () => {
     description: '',
   }
 
-  // Validate name
   if (!formData.value.name || formData.value.name.trim() === '') {
     errors.value.name = 'Tên vai trò không được để trống'
     isValid = false
@@ -148,7 +140,6 @@ const validateForm = () => {
     isValid = false
   }
 
-  // Validate description (optional but has max length)
   if (formData.value.description && formData.value.description.length > 255) {
     errors.value.description = 'Ghi chú không được vượt quá 255 ký tự'
     isValid = false
@@ -216,7 +207,6 @@ const handleClose = () => {
               <p class="mt-1 text-sm text-gray-500">{{ formData.description.length }}/255 ký tự</p>
             </div>
 
-            <!-- Trạng thái -->
             <div>
               <BaseDropdown
                 v-model="formData.status"
@@ -229,7 +219,6 @@ const handleClose = () => {
             </div>
           </div>
 
-          <!-- Right column: permissions -->
           <div class="space-y-4">
             <div class="flex items-center justify-between border-b pb-2">
               <h4 class="text-md font-semibold text-gray-800">Phân quyền cho vai trò</h4>
@@ -239,14 +228,12 @@ const handleClose = () => {
               </span>
             </div>
 
-            <!-- Permissions grouped by category -->
             <div v-if="Object.keys(permissionsByCategory).length > 0" class="space-y-3">
               <div
                 v-for="(permissions, category) in permissionsByCategory"
                 :key="category"
                 class="border border-gray-200 rounded-lg overflow-hidden"
               >
-                <!-- Category Header -->
                 <div
                   class="bg-gradient-to-r from-gray-100 to-gray-50 px-4 py-3 flex items-center justify-between cursor-pointer hover:from-gray-200 hover:to-gray-100 transition-all"
                   @click="selectAllInCategory(category)"
@@ -269,7 +256,6 @@ const handleClose = () => {
                   </span>
                 </div>
 
-                <!-- Permissions in Category -->
                 <div class="bg-white divide-y divide-gray-100">
                   <div
                     v-for="permission in permissions"

@@ -1,5 +1,3 @@
-import { supabase } from '@/lib/supabaseClient';
-
 export const getAllOutputStatuses = async () => {
   const { data, error } = await supabase.from('output_status').select('*');
   if (error) throw error;

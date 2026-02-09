@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
-import { useStore } from 'vuex'
+import { usePriceStore } from '@/stores/usePriceStore'
 import { useRoute, useRouter } from 'vue-router'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
@@ -8,7 +8,7 @@ import PriceQuickMenu from '@/components/price_management/PriceQuickMenu.vue'
 import BaseInput from '@/components/ui/input/BaseInput.vue'
 import BasePagination from '@/components/ui/button/BasePagination.vue'
 
-const store = useStore()
+const priceStore = usePriceStore()
 const router = useRouter()
 const route = useRoute()
 const queryClient = useQueryClient()
@@ -26,7 +26,7 @@ const localSearchTerm = ref(searchTerm.value)
 let searchTimeout = null
 
 const fetchProductsFn = (params) => {
-  return store.dispatch('price/fetchProducts', params)
+  return priceStore.fetchProducts(params)
 }
 
 const productDataMapper = (data) => ({
@@ -60,7 +60,7 @@ watch(
     }
   },
   {
-    immediate: true, // Chạy ngay lần đầu để khởi tạo
+    immediate: true, 
     deep: true,
   },
 )
@@ -86,7 +86,7 @@ watch(searchTerm, (newSearch) => {
 })
 
 const { mutate: updatePriceMutation } = useMutation({
-  mutationFn: (variables) => store.dispatch('price/updatePrice', variables),
+  mutationFn: (variables) => priceStore.updatePrice(variables),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['products'] })
   },

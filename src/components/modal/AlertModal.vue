@@ -41,7 +41,7 @@ const props = defineProps({
   },
   type: {
     type: String,
-    default: 'alert', // 'alert' or 'confirm'
+    default: 'alert', 
     validator: (value) => ['alert', 'confirm'].includes(value)
   }
 });

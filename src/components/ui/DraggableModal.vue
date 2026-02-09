@@ -25,7 +25,6 @@ const props = defineProps({
 })
 const emit = defineEmits(['close', 'activate', 'refresh'])
 
-// Check for refresh listener via props
 const hasRefreshListener = computed(() => !!props.onRefresh)
 
 const modalRef = ref(null)
@@ -36,7 +35,6 @@ const dragOffset = ref({ x: 0, y: 0 })
 const isMaximized = ref(false)
 const previousPosition = ref({ x: 0, y: 0 })
 
-// Initialize position on mount
 onMounted(() => {
   positionX.value = props.initialPosition.x
   positionY.value = props.initialPosition.y
@@ -45,13 +43,11 @@ onMounted(() => {
 const toggleMaximize = () => {
   isMaximized.value = !isMaximized.value
   if (isMaximized.value) {
-    // Save current position before maximizing
     previousPosition.value.x = positionX.value
     previousPosition.value.y = positionY.value
     positionX.value = 0
     positionY.value = 0
   } else {
-    // Restore previous position
     positionX.value = previousPosition.value.x
     positionY.value = previousPosition.value.y
   }
@@ -70,7 +66,6 @@ const startDrag = (event) => {
 const doDrag = (event) => {
   if (!isDragging.value) return
 
-  // Use requestAnimationFrame for smooth dragging
   requestAnimationFrame(() => {
     positionX.value = event.clientX - dragOffset.value.x
     positionY.value = event.clientY - dragOffset.value.y

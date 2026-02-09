@@ -1,5 +1,3 @@
-import { supabase } from '@/lib/supabaseClient'
-
 export const getAllProductCategories = async () => {
   const { data, error } = await supabase.from('product_category').select('*')
   if (error) throw error

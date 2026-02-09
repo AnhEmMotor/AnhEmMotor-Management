@@ -6,13 +6,11 @@
     </p>
     <div>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <!-- TODO: Thực hiện thay vì truyền động thì truyền tĩnh -->
         <StatsCard title="Tổng Doanh Thu (Tháng)" stat="1.25 tỷ" :improvement="12" color="red" />
         <StatsCard title="Lợi Nhuận (Tháng)" stat="280 triệu" :improvement="8.5" color="green" />
         <StatsCard title="Đơn Hàng Mới" stat="32" :improvement="-5" color="yellow" />
         <StatsCard title="Khách Hàng Mới" stat="15" :improvement="-20" color="purple" />
       </div>
-      <!-- TODO: Thực hiện thay vì truyền động thì truyền tĩnh -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="bg-gray-50 p-6 rounded-xl shadow-md h-96">
           <h3 class="text-lg font-semibold text-gray-700 mb-4">

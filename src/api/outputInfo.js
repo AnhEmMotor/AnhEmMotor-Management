@@ -1,5 +1,3 @@
-import { supabase } from '@/lib/supabaseClient';
-
 export const getAllOutputInfos = async () => {
   const { data, error } = await supabase.from('output_info').select(`
     *,

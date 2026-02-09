@@ -18,7 +18,6 @@ watch(
       : 'Bạn có chắc chắn muốn xóa mục này?'
     const confirmed = await showConfirmation(title, message)
     if (confirmed) emit('confirm')
-    // always notify parent to close the local modal state
     emit('close')
   },
 )

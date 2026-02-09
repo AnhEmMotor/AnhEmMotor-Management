@@ -71,7 +71,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useStore } from 'vuex'
+import { useOrdersStore } from '@/stores/useOrdersStore'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 
@@ -81,7 +81,7 @@ import OrderForm from '@/components/orders/OrderForm.vue'
 import BaseSmallNoBgButton from '@/components/ui/button/BaseSmallNoBgButton.vue'
 import BaseButton from '@/components/ui/button/BaseButton.vue'
 
-const store = useStore()
+const ordersStore = useOrdersStore()
 const queryClient = useQueryClient()
 
 const STATUS_TEXT_MAP = {
@@ -129,7 +129,7 @@ const itemsPerPage = ref(20)
 const searchTerm = ref('')
 
 onMounted(() => {
-  store.dispatch('orders/fetchStatuses')
+  ordersStore.fetchStatuses()
 })
 
 const filters = computed(() => ({
@@ -138,7 +138,7 @@ const filters = computed(() => ({
 }))
 
 const fetchFn = (params) => {
-  return store.dispatch('orders/fetchOrders', params)
+  return ordersStore.fetchOrders(params)
 }
 
 const dataMapper = (data) => ({
@@ -161,9 +161,8 @@ const {
   dataMapper: dataMapper,
 })
 
-// --- Mutations (Tanstack Query + Vuex) ---
 const saveOrderMutation = useMutation({
-  mutationFn: (orderPayload) => store.dispatch('orders/saveOrder', orderPayload),
+  mutationFn: (orderPayload) => ordersStore.saveOrder(orderPayload),
   onSuccess: (savedOrder) => {
     console.debug('Order saved, invalidating queries...', savedOrder)
     queryClient.invalidateQueries({ queryKey: ['orders'] })
@@ -174,7 +173,6 @@ const saveOrderMutation = useMutation({
   },
 })
 
-// --- Event Handlers ---
 function createNewOrder() {
   selectedOrder.value = null
   showOrderForm.value = true
