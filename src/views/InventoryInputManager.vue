@@ -9,18 +9,25 @@ import Input from '@/components/ui/input/Input.vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
 import InventoryInputForm from '@/components/inventory_input/InventoryInputForm.vue'
 import ProductForm from '@/components/product/ProductForm.vue'
+import InventoryFilterButtons from '@/components/inventory_input/InventoryFilterButtons.vue'
 import { showConfirmation } from '@/composables/useConfirmationState'
 import { useQueryClient } from '@tanstack/vue-query'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
+import { useToast } from 'vue-toastification'
+import IconPlus from '@/components/icons/IconPlus.vue'
+import IconFileImport from '@/components/icons/IconFileImport.vue'
+import IconFileExport from '@/components/icons/IconFileExport.vue'
 
 const inputsStore = useInputsStore()
 const queryClient = useQueryClient()
+const toast = useToast()
 
 const expandedItemId = ref(null)
-
 const currentPage = ref(1)
 const itemsPerPage = ref(15)
+const selectedStatuses = ref([])
+const searchTerm = ref('')
 
 const fetchInputsFn = (params) => {
   return inputsStore.fetchInputs(params)
@@ -46,12 +53,20 @@ const {
   dataMapper: inputsDataMapper,
 })
 
+watch(isError, (hasError) => {
+  if (hasError) {
+    const errorMsg = error.value?.message || 'Lỗi tải dữ liệu phiếu nhập'
+    toast.error(errorMsg)
+  }
+})
+
 function handleToggleDetail(itemId) {
   expandedItemId.value = expandedItemId.value === itemId ? null : itemId
 }
 
 const exportExcel = () => {
   if (filteredItems.value.length === 0) {
+    toast.warning('Không có dữ liệu để xuất')
     return
   }
   const exportData = filteredItems.value.map((item) => ({
@@ -88,6 +103,10 @@ const exportExcel = () => {
   const currentDate = new Date().toISOString().split('T')[0]
   const filename = `DanhSachPhieuNhap_${currentDate}.xlsx`
   XLSX.writeFile(workbook, filename)
+}
+
+const handleImport = () => {
+  toast.info('Chức năng nhập Excel đang phát triển')
 }
 
 const showInventoryModal = ref(false)
@@ -143,6 +162,7 @@ const openEditInventoryModal = (item) => {
 
 const closeInventoryModal = () => {
   showInventoryModal.value = false
+  showProductModal.value = false
 }
 
 const openProductModal = () => {
@@ -159,6 +179,32 @@ const openProductModal = () => {
 
 const closeProductModal = () => {
   showProductModal.value = false
+}
+
+const handleInventoryRefresh = () => {
+  if (isEditMode.value) {
+    toast.info('Đã làm mới form')
+  } else {
+    currentInventoryData.value = {
+      supplier: null,
+      products: [],
+      notes: '',
+    }
+    inventoryErrors.value = { supplier: '', products: {} }
+    toast.info('Đã làm mới form')
+  }
+}
+
+const handleProductRefresh = () => {
+  currentProductData.value = {
+    code: '',
+    name: '',
+    category: '',
+    price: 0,
+    quantity: 1,
+    unitPrice: 0,
+  }
+  toast.info('Đã làm mới form sản phẩm')
 }
 
 watch(
@@ -207,10 +253,11 @@ const saveInventoryReceipt = async () => {
       isEditMode: isEditMode.value,
       status_id: 'working',
     })
+    toast.success('Đã lưu phiếu tạm')
     closeInventoryModal()
     queryClient.invalidateQueries({ queryKey: ['inventoryInputs'] })
-  } catch (error) {
-    console.error('Lỗi khi lưu phiếu nhập:', error)
+  } catch (err) {
+    toast.error(`Lỗi khi lưu phiếu nhập: ${err.message}`)
   }
 }
 
@@ -228,17 +275,17 @@ const completeInventoryReceipt = async () => {
       isEditMode: isEditMode.value,
       status_id: 'finished',
     })
-    console.log('Đã hoàn thành phiếu nhập!')
+    toast.success('Đã hoàn thành phiếu nhập!')
     closeInventoryModal()
     queryClient.invalidateQueries({ queryKey: ['inventoryInputs'] })
-  } catch (error) {
-    console.error('Lỗi khi hoàn thành phiếu nhập:', error)
+  } catch (err) {
+    toast.error(`Lỗi khi hoàn thành phiếu nhập: ${err.message}`)
   }
 }
 
 const saveNewProduct = () => {
   if (!currentProductData.value.code || !currentProductData.value.name) {
-    console.log('Vui lòng nhập mã và tên sản phẩm')
+    toast.warning('Vui lòng nhập mã và tên sản phẩm')
     return
   }
   const newProduct = {
@@ -287,18 +334,20 @@ const handleCancelRequest = async (item) => {
 
   try {
     await inputsStore.cancelReceipt({ id: item.id })
+    toast.success('Đã huỷ phiếu thành công')
     queryClient.invalidateQueries({ queryKey: ['inventoryInputs'] })
-  } catch (error) {
-    console.error('Lỗi khi huỷ phiếu:', error)
+  } catch (err) {
+    toast.error(`Lỗi khi huỷ phiếu: ${err.message}`)
   }
 }
 
 const handleSaveNotes = async ({ id, notes }) => {
   try {
     await inputsStore.saveNotes({ id, notes })
+    toast.success('Đã lưu ghi chú')
     queryClient.invalidateQueries({ queryKey: ['inventoryInputs'] })
-  } catch (error) {
-    console.error('Lỗi khi lưu ghi chú:', error)
+  } catch (err) {
+    toast.error(`Lỗi khi lưu ghi chú: ${err.message}`)
   }
 }
 </script>
@@ -311,59 +360,76 @@ const handleSaveNotes = async ({ id, notes }) => {
       <div>
         <h1 class="text-3xl font-bold text-gray-800">Quản lý phiếu nhập kho</h1>
       </div>
-      
-      <div class="flex flex-wrap items-center gap-2">
-        <Button text="Nhập hàng" icon="fas fa-plus" color="primary" @click="openNewInventoryModal" />
-        <Button text="Export" icon="fas fa-file-export" color="secondary" @click="exportExcel" />
-        <InventoryFilterButtons v-model="selectedStatuses" />
-      </div> 
 
+      <div class="flex flex-wrap gap-2">
+        <Button text="Tạo phiếu nhập hàng" :icon="IconPlus" color="primary" @click="openNewInventoryModal" />
+
+        <label class="cursor-pointer">
+          <Button text="Import" :icon="IconFileImport" color="secondary" as="span" @click="handleImport" />
+        </label>
+
+        <Button text="Export" :icon="IconFileExport" color="secondary" @click="exportExcel" />
+
+        <span class="text-gray-400 mx-4 hidden border-r-2 sm:block" />
+
+        <InventoryFilterButtons v-model="selectedStatuses" />
+      </div>
     </div>
 
-    
     <Input
       v-model="searchTerm"
       type="text"
       placeholder="Tìm theo mã phiếu, NCC..."
       class="mb-3"
-    /> 
+    />
 
+    <div class="border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+      <div
+        class="hidden md:grid grid-cols-[1.5fr_2fr_1.5fr_1.2fr] items-center py-3 px-5 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 border-b border-gray-200"
+      >
+        <div class="px-3">Thời gian</div>
+        <div class="px-5">Nhà cung cấp</div>
+        <div class="px-5 text-right">Tổng giá trị phiếu nhập</div>
+        <div class="px-5">Trạng thái</div>
+      </div>
 
-    <div
-      class="hidden md:grid grid-cols-[1.5fr_2fr_1.5fr_1.2fr] items-center py-3 px-5 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 border-b border-gray-200 rounded-t-md"
-    >
-      <div class="px-3">Thời gian</div>
-      <div class="px-5">Nhà cung cấp</div>
-      <div class="px-5 text-right">Tổng giá trị phiếu nhập</div>
-      <div class="px-5">Trạng thái</div>
-    </div>
+      <div class="bg-white">
+        <div v-if="isLoading">
+          <div
+            v-for="i in 5"
+            :key="i"
+            class="grid grid-cols-[1.5fr_2fr_1.5fr_1.2fr] items-center py-3 px-5 border-b border-gray-50 last:border-0"
+          >
+            <div class="px-3"><SkeletonLoader width="80%" height="16px" /></div>
+            <div class="px-5"><SkeletonLoader width="70%" height="16px" /></div>
+            <div class="px-5 flex justify-end"><SkeletonLoader width="60%" height="16px" /></div>
+            <div class="px-5"><SkeletonLoader width="70%" height="24px" class="rounded-full" /></div>
+          </div>
+        </div>
 
-    <div class="bg-white rounded-b-md shadow-sm">
-      <div v-if="isLoading" class="bg-white">
-        <div v-for="i in 5" :key="i" class="grid grid-cols-[1.5fr_2fr_1.5fr_1.2fr] gap-4 py-4 px-5 border-b border-gray-100 items-center">
-          <SkeletonLoader width="80%" height="16px" />
-          <SkeletonLoader width="90%" height="16px" />
-          <div class="flex justify-end"><SkeletonLoader width="60%" height="16px" /></div>
-          <SkeletonLoader width="70%" height="24px" class="rounded-full" />
+        <div v-else-if="filteredItems.length === 0" class="text-center py-12 flex flex-col items-center justify-center space-y-3">
+          <div class="bg-gray-50 p-3 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+            </svg>
+          </div>
+          <p class="text-gray-500 font-medium">Không có phiếu nhập nào để hiển thị.</p>
+        </div>
+
+        <div v-else class="divide-y divide-gray-50">
+          <InventoryItem
+            v-for="item in filteredItems"
+            :key="item.id"
+            :itemData="item"
+            :is-open="item.id === expandedItemId"
+            @toggle-detail="handleToggleDetail"
+            @edit="openEditInventoryModal"
+            @copy="handleCopyReceipt"
+            @cancel-request="handleCancelRequest"
+            @save-notes="handleSaveNotes"
+          />
         </div>
       </div>
-      <div v-else-if="isError" class="text-center py-6 text-red-500">
-        Đã xảy ra lỗi: {{ error?.message || 'Không thể tải dữ liệu' }}
-      </div>
-      <div v-else-if="filteredItems.length === 0" class="text-center py-6 text-gray-500">
-        Không có phiếu nhập nào để hiển thị.
-      </div>
-      <InventoryItem
-        v-for="item in filteredItems"
-        :key="item.id"
-        :itemData="item"
-        :is-open="item.id === expandedItemId"
-        @toggle-detail="handleToggleDetail"
-        @edit="openEditInventoryModal"
-        @copy="handleCopyReceipt"
-        @cancel-request="handleCancelRequest"
-        @save-notes="handleSaveNotes"
-      />
     </div>
 
     <Pagination
@@ -374,14 +440,15 @@ const handleSaveNotes = async ({ id, notes }) => {
 
     <DraggableModal
       v-if="showInventoryModal"
-      :initial-position="{ x: 100, y: 50 }"
       :z-index="1000"
       width="70vw"
+      :disabled="showProductModal"
+      :onRefresh="handleInventoryRefresh"
       @close="closeInventoryModal"
     >
       <template #header>
         <h3 class="text-lg font-semibold">
-          {{ isEditMode ? 'Chỉnh sửa phiếu nhập' : 'Nhập hàng' }}
+          {{ isEditMode ? 'Chỉnh sửa phiếu nhập' : 'Tạo phiếu nhập hàng' }}
         </h3>
       </template>
 
@@ -396,15 +463,16 @@ const handleSaveNotes = async ({ id, notes }) => {
 
       <template #footer>
         <Button text="Hủy" color="gray" @click="closeInventoryModal" />
-        <Button text="Lưu tạm" color="blue" @click="saveInventoryReceipt" />
-        <Button text="Hoàn thành" color="green" @click="completeInventoryReceipt" />
+        <Button text="Lưu tạm" color="secondary" @click="saveInventoryReceipt" />
+        <Button text="Hoàn thành" color="primary" @click="completeInventoryReceipt" />
       </template>
     </DraggableModal>
 
     <DraggableModal
       v-if="showProductModal"
-      :initial-position="{ x: 150, y: 100 }"
       :z-index="1001"
+      width="72vw"
+      :onRefresh="handleProductRefresh"
       @close="closeProductModal"
     >
       <template #header>
@@ -417,7 +485,7 @@ const handleSaveNotes = async ({ id, notes }) => {
 
       <template #footer>
         <Button text="Hủy" color="gray" @click="closeProductModal" />
-        <Button text="Thêm sản phẩm" color="green" @click="saveNewProduct" />
+        <Button text="Thêm sản phẩm" color="primary" @click="saveNewProduct" />
       </template>
     </DraggableModal>
   </div>

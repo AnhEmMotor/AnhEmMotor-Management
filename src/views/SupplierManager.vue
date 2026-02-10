@@ -7,7 +7,7 @@
       <div>
         <h1 class="text-3xl font-bold text-gray-800">Quản lý nhà cung cấp</h1>
       </div>
-      <div class="flex flex-wrap items-center gap-2">
+      <div class="flex flex-wrap gap-2">
         <Button text="Thêm nhà cung cấp" :icon="IconPlus" color="primary" @click="openAddEditModal()" />
 
         <label for="import-file-input" class="cursor-pointer">
@@ -22,6 +22,9 @@
         </label>
 
         <Button text="Export" :icon="IconFileExport" color="secondary" @click="handleExport" />
+
+        <span class="text-gray-400 mx-4 hidden border-r-2 sm:block" />
+
         <SupplierFilterButtons v-model="selectedStatuses" />
       </div>
     </div>
