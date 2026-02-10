@@ -2,9 +2,10 @@
   <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-lg p-8">
     <h1 class="text-3xl font-bold text-gray-800 mb-8 border-b pb-4">⚙️ Cài Đặt Quy Tắc Bán Hàng</h1>
 
-    <div class="space-y-10">
-      <div class="p-6 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
-        <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+    <div class="space-y-8">
+      <!-- Quy Tắc Đặt Cọc -->
+      <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
           <svg
             class="w-6 h-6 mr-3 text-blue-600"
             fill="none"
@@ -21,29 +22,29 @@
           </svg>
           Quy Tắc Đặt Cọc
         </h2>
-        <p class="text-gray-600 mb-4">Thiết lập quy tắc đơn hàng phải đặt cọc trước.</p>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+        <p class="text-gray-600 mb-6 text-sm">Thiết lập quy tắc đơn hàng phải đặt cọc trước.</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           <div>
             <BaseInput
               v-model="maxOrderProxy"
               type="text"
               id="max-order-value"
-              placeholder="Ví dụ: 10000000"
-              :inputClass="'setting-input w-full'"
-              label="Giá trị đơn hàng vượt quá (X đồng):"
+              placeholder="Ví dụ: 10,000,000"
+              :inputClass="'setting-input w-full max-w-xs'"
+              label="Giá trị đơn hàng vượt quá (VNĐ):"
             />
           </div>
           <div>
             <label for="deposit-percentage" class="block text-sm font-medium text-gray-700 mb-1"
-              >Tỷ lệ đặt cọc (Y%):</label
+              >Tỷ lệ đặt cọc (%):</label
             >
-            <div class="relative">
+            <div class="relative w-full max-w-[120px]">
               <BaseInput
                 v-model="depositProxy"
                 type="number"
                 id="deposit-percentage"
-                placeholder="Ví dụ: 10"
-                :inputClass="'setting-input w-full pr-10'"
+                placeholder="10"
+                :inputClass="'setting-input w-full pr-8'"
                 min="0"
                 max="100"
               />
@@ -54,16 +55,18 @@
             </div>
           </div>
         </div>
-        <p class="mt-4 text-sm text-blue-700 bg-blue-100 p-3 rounded-lg">
-          Khi đơn hàng vượt quá
-          <span class="font-bold text-lg">{{ formattedMaxOrder }}</span> đồng, khách hàng phải đặt
-          cọc trước <span class="font-bold text-lg">{{ settings.deposit }}</span
-          >%.
-        </p>
+        <div class="mt-6 p-4 bg-gray-50 rounded-md border border-gray-100">
+          <p class="text-sm text-gray-600">
+            Minh họa: Khi đơn hàng >
+            <span class="font-bold text-gray-900">{{ formattedMaxOrder }}</span> đ, khách phải cọc
+            <span class="font-bold text-gray-900">{{ settings.deposit }}%</span>.
+          </p>
+        </div>
       </div>
 
-      <div class="p-6 bg-yellow-50 border-l-4 border-yellow-500 rounded-r-lg">
-        <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+      <!-- Quy Tắc Đơn Hàng Số Lượng Lớn -->
+      <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
           <svg
             class="w-6 h-6 mr-3 text-yellow-600"
             fill="none"
@@ -86,29 +89,32 @@
           </svg>
           Quy Tắc Đơn Hàng Số Lượng Lớn
         </h2>
-        <p class="text-gray-600 mb-4">
+        <p class="text-gray-600 mb-6 text-sm">
           Cho phép tạo đơn hàng số lượng lớn nhưng yêu cầu gặp trực tiếp.
         </p>
-        <div class="w-full md:w-1/2">
+        <div class="w-full">
           <BaseInput
             v-model="maxCountProxy"
             type="number"
             id="max-motorcycle-count"
-            placeholder="Ví dụ: 3"
-            :inputClass="'setting-input w-full'"
+            placeholder="3"
+            :inputClass="'setting-input w-32 text-center'"
             min="1"
-            label="Số lượng xe máy tối đa (Z chiếc) trước khi yêu cầu gặp mặt:"
+            label="Số lượng xe tối đa (chiếc):"
           />
         </div>
-        <p class="mt-4 text-sm text-yellow-700 bg-yellow-100 p-3 rounded-lg">
-          Khi tổng số lượng xe máy trong đơn hàng vượt quá
-          <span class="font-bold text-lg">{{ settings.maxCount }}</span> chiếc, đơn hàng sẽ chuyển
-          sang trạng thái chờ xác nhận và yêu cầu nhập thông tin liên hệ.
-        </p>
+        <div class="mt-6 p-4 bg-gray-50 rounded-md border border-gray-100">
+          <p class="text-sm text-gray-600">
+            Minh họa: Đơn hàng >
+            <span class="font-bold text-gray-900">{{ settings.maxCount }}</span> xe sẽ yêu cầu xác
+            minh trực tiếp.
+          </p>
+        </div>
       </div>
 
-      <div class="p-6 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
-        <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+      <!-- Cảnh Báo Tồn Kho -->
+      <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
           <svg
             class="w-6 h-6 mr-3 text-red-600"
             fill="none"
@@ -125,23 +131,26 @@
           </svg>
           Cảnh Báo Tồn Kho
         </h2>
-        <p class="text-gray-600 mb-4">Thiết lập mức tồn kho tối thiểu để kích hoạt cảnh báo.</p>
-        <div class="w-full md:w-1/2">
+        <p class="text-gray-600 mb-6 text-sm">
+          Thiết lập mức tồn kho tối thiểu để kích hoạt cảnh báo.
+        </p>
+        <div class="w-full">
           <BaseInput
             v-model="stockLevelProxy"
             type="number"
             id="stock-warning-level"
-            placeholder="Ví dụ: 5"
-            :inputClass="'setting-input w-full'"
+            placeholder="5"
+            :inputClass="'setting-input w-32 text-center'"
             min="0"
-            label="Ngưỡng cảnh báo tồn kho (số lượng sản phẩm):"
+            label="Ngưỡng cảnh báo (sản phẩm):"
           />
         </div>
-        <p class="mt-4 text-sm text-red-700 bg-red-100 p-3 rounded-lg">
-          Khi tồn kho của một sản phẩm bằng hoặc dưới
-          <span class="font-bold text-lg">{{ settings.stockLevel }}</span
-          >, hệ thống sẽ gửi cảnh báo.
-        </p>
+        <div class="mt-6 p-4 bg-gray-50 rounded-md border border-gray-100">
+          <p class="text-sm text-gray-600">
+            Minh họa: Tồn kho <=
+            <span class="font-bold text-gray-900">{{ settings.stockLevel }}</span> sẽ báo động đỏ.
+          </p>
+        </div>
       </div>
     </div>
 

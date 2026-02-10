@@ -19,17 +19,17 @@
               Tên Sản Phẩm
             </th>
             <th
-              class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              class="py-3 px-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider"
             >
               Tồn Kho
             </th>
             <th
-              class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              class="py-3 px-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider"
             >
               Đã Bán (Tháng)
             </th>
             <th
-              class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              class="py-3 px-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider"
             >
               Trạng Thái
             </th>
@@ -43,17 +43,17 @@
               {{ product.name }}
             </td>
             <td
-              class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200 py-4 px-4 whitespace-nowrap text-gray-500"
+              class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200 py-4 px-4 whitespace-nowrap text-gray-500 text-right font-mono"
             >
               {{ product.stock }}
             </td>
             <td
-              class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200 py-4 px-4 whitespace-nowrap text-gray-500"
+              class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200 py-4 px-4 whitespace-nowrap text-gray-500 text-right font-mono"
             >
               {{ product.sold }}
             </td>
             <td
-              class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200 py-4 px-4 whitespace-nowrap"
+              class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200 py-4 px-4 whitespace-nowrap text-center"
             >
               <RoundBadge :color="getStatusClass(product.status)">{{ product.status }}</RoundBadge>
             </td>
@@ -68,23 +68,41 @@
 import ReportStatsCard from '@/components/ui/ReportStatsCard.vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
 import { ref, computed } from 'vue'
+
 const productData = ref([
-  { name: 'VinFast VF8', stock: 12, sold: 85, status: 'Còn hàng' },
-  { name: 'Hyundai Accent', stock: 8, sold: 72, status: 'Còn hàng' },
-  { name: 'Toyota Vios', stock: 3, sold: 65, status: 'Sắp hết' },
-  { name: 'Ford Ranger', stock: 15, sold: 58, status: 'Còn hàng' },
-  { name: 'Mazda CX-5', stock: 4, sold: 51, status: 'Sắp hết' },
-  { name: 'Kia Seltos', stock: 0, sold: 45, status: 'Hết hàng' },
+  { name: 'Nhông Sên Dĩa (SSS 428)', stock: 45, sold: 23, status: 'Còn hàng' },
+  { name: 'Dầu Nhớt Motul 7100 (1L)', stock: 120, sold: 87, status: 'Còn hàng' },
+  { name: 'Lốp Michelin Pilot Street', stock: 18, sold: 34, status: 'Còn hàng' },
+  { name: 'Ắc Quy GS GTZ7V (12V-6Ah)', stock: 8, sold: 15, status: 'Sắp hết' },
+  { name: 'Phanh ABS Bosch (Winner X)', stock: 3, sold: 7, status: 'Sắp hết' },
+  { name: 'Gương Chiếu Hậu (Exciter 155)', stock: 25, sold: 41, status: 'Còn hàng' },
+  { name: 'Bugi NGK Iridium', stock: 0, sold: 45, status: 'Hết hàng' },
 ])
+
 const lowStockProductsCount = computed(() => {
   return productData.value.filter((p) => p.stock > 0 && p.stock < 5).length
 })
+
 const totalProducts = computed(() => {
   return productData.value.length
 })
+
+const getStatusClass = (product) => {
+  if (product.stock === 0) return 'red'
+  if (product.stock < 10) return 'yellow'
+  return 'green'
+}
+
+// Override logic status string based on stock for display consistency if needed,
+// but data already has status string. Let's keep existing helper but simplify based on string.
+// Actually, let's fix the helper to match the data or vice versa.
+// The previous helper used the string status.
+/*
 const getStatusClass = (status) => {
   if (status === 'Còn hàng') return 'green'
   if (status === 'Sắp hết') return 'yellow'
   return 'red'
 }
+*/
+// The data has status strings.
 </script>

@@ -4,10 +4,10 @@ import RoundBadge from '@/components/ui/RoundBadge.vue';
 import { ref, computed } from 'vue';
 
 const warehouseData = ref([
-  { name: 'HonDa', totalStock: 245, lowStock: 12, outOfStock: 3, status: 'Bình thường' },
-  { name: 'YaMaHa', totalStock: 198, lowStock: 8, outOfStock: 1, status: 'Bình thường' },
-  { name: 'SuZuKi', totalStock: 156, lowStock: 15, outOfStock: 5, status: 'Cảnh báo' },
-  { name: 'KaWaSaKi', totalStock: 89, lowStock: 22, outOfStock: 8, status: 'Cảnh báo' },
+  { name: 'Honda', totalStock: 245, lowStock: 12, outOfStock: 3, status: 'Bình thường' },
+  { name: 'Yamaha', totalStock: 198, lowStock: 8, outOfStock: 1, status: 'Bình thường' },
+  { name: 'Suzuki', totalStock: 156, lowStock: 15, outOfStock: 5, status: 'Cảnh báo' },
+  { name: 'Kawasaki', totalStock: 89, lowStock: 22, outOfStock: 8, status: 'Cảnh báo' },
 ]);
 
 const totalStock = computed(() => {
@@ -55,22 +55,22 @@ const getStatusClass = (status) => {
               Hãng Xe
             </th>
             <th
-              class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              class="py-3 px-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider"
             >
               Tổng Tồn Kho
             </th>
             <th
-              class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              class="py-3 px-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider"
             >
               Sắp Hết Hàng
             </th>
             <th
-              class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              class="py-3 px-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider"
             >
               Hết Hàng
             </th>
             <th
-              class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              class="py-3 px-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider"
             >
               Trạng Thái
             </th>
@@ -84,17 +84,17 @@ const getStatusClass = (status) => {
               {{ item.name }}
             </td>
             <td
-              class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200 py-4 px-4 whitespace-nowrap text-gray-500"
+              class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200 py-4 px-4 whitespace-nowrap text-gray-500 text-right font-mono"
             >
               {{ item.totalStock }}
             </td>
             <td
-              class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200 py-4 px-4 whitespace-nowrap text-gray-500"
+              class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200 py-4 px-4 whitespace-nowrap text-gray-500 text-right font-mono"
             >
               {{ item.lowStock }}
             </td>
             <td
-              class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200 py-4 px-4 whitespace-nowrap text-gray-500"
+              class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200 py-4 px-4 whitespace-nowrap text-gray-500 text-right font-mono"
             >
               {{ item.outOfStock }}
             </td>

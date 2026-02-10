@@ -77,7 +77,7 @@ function statusInfo(status) {
     </div>
 
     <div class="col-span-2 flex items-center justify-center text-sm">
-      <RoundBadge color="blue">{{ role.permissionCount }} quyền</RoundBadge>
+      <RoundBadge color="blue" title="Số lượng quyền được gán">{{ role.permissionCount }} quyền</RoundBadge>
     </div>
 
     <div class="col-span-2 flex items-center justify-center text-sm">

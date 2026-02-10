@@ -2,14 +2,14 @@
   <svg
     width="24px"
     height="24px"
-    fill="#ff0000"
+    fill="currentColor"
     version="1.1"
     id="Layer_1"
     xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink"
     viewBox="0 0 490 490"
     xml:space="preserve"
-    stroke="#ff0000"
+    stroke="currentColor"
   >
     <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
     <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>

@@ -1,11 +1,11 @@
 <template>
   <div class="bg-gray-100 p-6 rounded-xl shadow-lg">
     <div class="flex items-start justify-between mb-4">
-      <h1 class="text-3xl font-bold mb-4 text-gray-800">Đơn Hàng Của Tôi</h1>
+      <h1 class="text-3xl font-bold mb-4 text-gray-800">Quản Lý Đơn Hàng</h1>
       <div class="flex items-center">
         <OrderFilterButtons v-model="selectedStatuses" />
         <span class="h-8 border-r-2 border-black-300 mx-2" />
-        <BaseButton color="green" @click="createNewOrder" text="Tạo Đơn Hàng Mới"></BaseButton>
+        <BaseButton color="blue" @click="createNewOrder" text="Tạo Đơn Hàng Mới"></BaseButton>
       </div>
     </div>
     <div class="overflow-x-auto">

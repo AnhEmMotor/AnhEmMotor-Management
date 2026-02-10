@@ -57,8 +57,8 @@ const drawChart = (data) => {
     .y((d) => y(d.profit))
     .curve(d3.curveMonotoneX)
   const lines = [
-    { data: processedData, line: revenueLine, color: '#e53e3e' },
-    { data: processedData, line: profitLine, color: '#22c55e' },
+    { data: processedData, line: revenueLine, color: '#3b82f6' }, // Blue for Revenue
+    { data: processedData, line: profitLine, color: '#22c55e' }, // Green for Profit
   ]
   lines.forEach((pathInfo) => {
     const path = svg
@@ -78,7 +78,7 @@ const drawChart = (data) => {
       .attr('stroke-dashoffset', 0)
   })
   const legend = svg.append('g').attr('transform', `translate(${width - 150}, -20)`)
-  legend.append('rect').attr('x', 0).attr('width', 12).attr('height', 12).attr('fill', '#e53e3e')
+  legend.append('rect').attr('x', 0).attr('width', 12).attr('height', 12).attr('fill', '#3b82f6')
   legend.append('text').attr('x', 20).attr('y', 10).text('Doanh thu').style('font-size', '12px')
   legend.append('rect').attr('x', 80).attr('width', 12).attr('height', 12).attr('fill', '#22c55e')
   legend.append('text').attr('x', 100).attr('y', 10).text('Lợi nhuận').style('font-size', '12px')

@@ -23,8 +23,8 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:modelValue'])
 const filterOptions = [
-  { status: 'enable', label: 'Hoạt động', color: 'green' },
-  { status: 'disable', label: 'Vô hiệu hoá', color: 'red' },
+  { status: 'enable', label: 'Hoạt động', color: 'gray' },
+  { status: 'disable', label: 'Vô hiệu hoá', color: 'gray' },
 ]
 const isActive = (status) => {
   return props.modelValue.includes(status)
