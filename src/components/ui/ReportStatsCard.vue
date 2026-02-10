@@ -37,28 +37,28 @@ const props = defineProps({
 })
 const colorStyles = {
   red: {
-    background: 'bg-red-50',
-    title: 'text-red-600',
+    background: 'bg-red-50 border border-red-100',
+    title: 'text-red-700',
     stat: 'text-red-900',
   },
   green: {
-    background: 'bg-green-50',
-    title: 'text-green-600',
+    background: 'bg-green-50 border border-green-100',
+    title: 'text-green-700',
     stat: 'text-green-900',
   },
   yellow: {
-    background: 'bg-yellow-50',
-    title: 'text-yellow-600',
+    background: 'bg-yellow-50 border border-yellow-100',
+    title: 'text-yellow-700',
     stat: 'text-yellow-900',
   },
   purple: {
-    background: 'bg-purple-50',
-    title: 'text-purple-600',
+    background: 'bg-purple-50 border border-purple-100',
+    title: 'text-purple-700',
     stat: 'text-purple-900',
   },
   indigo: {
-    background: 'bg-indigo-50',
-    title: 'text-indigo-600',
+    background: 'bg-indigo-50 border border-indigo-100',
+    title: 'text-indigo-700',
     stat: 'text-indigo-900',
   },
 }

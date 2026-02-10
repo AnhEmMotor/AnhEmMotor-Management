@@ -30,25 +30,36 @@ const props = defineProps({
 
 const emit = defineEmits(['toggle'])
 const colorClasses = {
+  // Semantic
+  primary: {
+    active: 'bg-primary-600 text-white border border-primary-600',
+    inactive: 'bg-transparent text-gray-600 hover:bg-gray-100 border border-gray-300',
+  },
+  input: {
+    active: 'bg-white text-gray-900 border-primary-500 ring-1 ring-primary-500',
+    inactive: 'bg-white text-gray-500 border-gray-300 hover:border-gray-400',
+  },
+  
+  // Legacy Mapping
   blue: {
-    active: 'bg-blue-500 text-white border border-blue-500',
-    inactive: 'bg-transparent text-blue-600 hover:bg-blue-100 border border-blue-300',
+    active: 'bg-blue-600 text-white border border-blue-600',
+    inactive: 'bg-transparent text-gray-600 hover:bg-blue-50 border border-gray-300',
   },
   gray: {
-    active: 'bg-gray-500 text-white border border-gray-500',
+    active: 'bg-gray-600 text-white border border-gray-600',
     inactive: 'bg-transparent text-gray-600 hover:bg-gray-100 border border-gray-300',
   },
   green: {
-    active: 'bg-green-500 text-white border border-green-500',
-    inactive: 'bg-transparent text-green-600 hover:bg-green-100 border border-green-300',
+    active: 'bg-green-600 text-white border border-green-600',
+    inactive: 'bg-transparent text-gray-600 hover:bg-green-50 border border-gray-300',
   },
   yellow: {
     active: 'bg-yellow-500 text-white border border-yellow-500',
-    inactive: 'bg-transparent text-yellow-600 hover:bg-yellow-100 border border-yellow-300',
+    inactive: 'bg-transparent text-gray-600 hover:bg-yellow-50 border border-gray-300',
   },
   red: {
-    active: 'bg-red-500 text-white border border-red-500',
-    inactive: 'bg-transparent text-red-600 hover:bg-red-100 border border-red-300',
+    active: 'bg-red-600 text-white border border-red-600',
+    inactive: 'bg-transparent text-gray-600 hover:bg-red-50 border border-gray-300',
   },
 }
 
