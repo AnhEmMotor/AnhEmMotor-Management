@@ -1,7 +1,8 @@
 <template>
   <button :class="buttonClasses" :disabled="disabled" @click="handleClick">
-    <i v-if="icon" :class="icon"></i>
-    <span :class="{ 'ml-2': icon && text }">{{ text }}</span>
+    <component :is="icon" v-if="typeof icon === 'object' || typeof icon === 'function'" class="w-5 h-5" :class="{ 'mr-2': text }" />
+    <i v-else-if="icon" :class="icon"></i>
+    <span :class="{ 'ml-2': icon && typeof icon === 'string' && text }">{{ text }}</span>
   </button>
 </template>
 
@@ -14,7 +15,7 @@ const props = defineProps({
     required: true,
   },
   icon: {
-    type: String,
+    type: [String, Object, Function],
     default: null,
   },
   color: {

@@ -6,6 +6,7 @@
       :key="filter.status"
       :text="filter.label"
       :color="filter.color"
+      :icon="filter.icon"
       :is-active="isActive(filter.status)"
       @toggle="selectFilter(filter.status)"
     />
@@ -14,6 +15,10 @@
 
 <script setup>
 import FilterButton from '../ui/button/FilterButton.vue'
+import IconCheckCircle from '@/components/icons/IconCheckCircle.vue'
+import IconExclamationCircle from '@/components/icons/IconExclamationCircle.vue'
+import IconXCircle from '@/components/icons/IconXCircle.vue'
+
 const props = defineProps({
   modelValue: {
     type: Array,
@@ -23,9 +28,9 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:modelValue'])
 const filterOptions = [
-  { status: 'in-stock', label: 'Còn Hàng', color: 'primary' },
-  { status: 'almost-out-of-stock', label: 'Sắp Hết', color: 'primary' },
-  { status: 'out-of-stock', label: 'Hết hàng', color: 'primary' },
+  { status: 'in-stock', label: 'Còn Hàng', color: 'primary', icon: IconCheckCircle },
+  { status: 'almost-out-of-stock', label: 'Sắp Hết', color: 'primary', icon: IconExclamationCircle },
+  { status: 'out-of-stock', label: 'Hết hàng', color: 'primary', icon: IconXCircle },
 ]
 const isActive = (status) => {
   return props.modelValue.includes(status)

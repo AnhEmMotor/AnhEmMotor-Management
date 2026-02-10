@@ -9,9 +9,9 @@
         <h1 class="text-3xl font-bold text-center text-gray-800">Quản lý sản phẩm</h1>
       </div>
       <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full lg:w-auto">
-        <Button text="Thêm sản phẩm" icon="fas fa-plus" color="primary" @click="openAddEditModal()" />
-        <Button text="Import Excel" icon="fas fa-file-import" color="secondary" @click="importExcel" />
-        <Button text="Export" icon="fas fa-file-export" color="secondary" @click="exportExcel" />
+        <Button text="Thêm sản phẩm" :icon="IconPlus" color="primary" @click="openAddEditModal()" />
+        <Button text="Import Excel" :icon="IconFileImport" color="secondary" @click="importExcel" />
+        <Button text="Export" :icon="IconFileExport" color="secondary" @click="exportExcel" />
         <span class="text-gray-400 mx-4 hidden border-r-2 sm:block" />
         <ProductFilterButtons v-model="selectedStatuses" />
       </div>
@@ -24,21 +24,42 @@
       class="mb-3"
     />
 
-    <div v-if="isLoading" class="text-center py-10">
-      <Spinner />
+    <div v-if="isLoading" class="overflow-x-auto rounded-lg shadow-sm border border-gray-300">
+      <table class="min-w-full bg-white">
+        <thead class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs font-medium border-b border-gray-200">
+          <tr>
+            <th class="py-3 px-6 text-left w-12"></th>
+            <th class="py-3 px-6 text-left w-20">Ảnh Bìa</th>
+            <th class="py-3 px-6 text-left">Tên Dòng Sản Phẩm</th>
+            <th class="py-3 px-6 text-left">Danh Mục</th>
+            <th class="py-3 px-6 text-left">Thương Hiệu</th>
+            <th class="py-3 px-6 text-left">Số Biến Thể</th>
+            <th class="py-3 px-6 text-left">Trạng Thái Kho</th>
+            <th class="py-3 px-6 text-center">Thao Tác</th>
+          </tr>
+        </thead>
+        <tbody>
+           <tr v-for="i in 5" :key="i" class="border-b border-gray-200">
+             <td class="py-3 px-6 w-12 text-center"><SkeletonLoader width="16px" height="16px" /></td>
+             <td class="py-3 px-6"><SkeletonLoader width="64px" height="64px" className="rounded-md" /></td>
+             <td class="py-3 px-6"><SkeletonLoader width="150px" height="20px" /></td>
+             <td class="py-3 px-6"><SkeletonLoader width="100px" height="20px" /></td>
+             <td class="py-3 px-6"><SkeletonLoader width="80px" height="20px" /></td>
+             <td class="py-3 px-6"><SkeletonLoader width="40px" height="20px" /></td>
+             <td class="py-3 px-6"><SkeletonLoader width="90px" height="24px" className="rounded-full" /></td>
+             <td class="py-3 px-6 text-center flex justify-center gap-2 mt-4">
+                <SkeletonLoader width="40px" height="20px" />
+                <SkeletonLoader width="40px" height="20px" />
+             </td>
+           </tr>
+        </tbody>
+      </table>
     </div>
 
-    <div
-      v-if="isError"
-      class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
-      role="alert"
-    >
-      <strong class="font-bold">Lỗi!</strong>
-      <span class="block sm:inline">{{ error.message }}</span>
-    </div>
 
-    <div class="overflow-x-auto" v-if="!isLoading">
-      <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-sm">
+
+    <div class="overflow-x-auto rounded-lg shadow-sm border border-gray-300" v-if="!isLoading">
+      <table class="min-w-full bg-white">
         <thead
           class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs font-medium border-b border-gray-200"
         >
@@ -238,6 +259,10 @@ import DraggableModal from '@/components/ui/DraggableModal.vue'
 import Spinner from '@/components/ui/Spinner.vue'
 import IconLeftArrow from '@/components/icons/IconLeftArrow.vue'
 import IconDownArrow from '@/components/icons/IconDownArrow.vue'
+import IconPlus from '@/components/icons/IconPlus.vue'
+import IconFileImport from '@/components/icons/IconFileImport.vue'
+import IconFileExport from '@/components/icons/IconFileExport.vue'
+import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 import { useToast } from 'vue-toastification'
 
@@ -371,6 +396,14 @@ const debouncedApplyQuery = debounce(() => {
 
 watch(searchTerm, debouncedApplyQuery)
 watch(selectedStatuses, debouncedApplyQuery)
+
+watch(isError, (hasError) => {
+  if (hasError) {
+    const errorMsg = error.value?.message || 'Lỗi khi tải danh sách sản phẩm.'
+    toast.error(errorMsg)
+  }
+})
+
 
 watch(
   () => route.query,
