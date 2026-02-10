@@ -13,7 +13,7 @@
     </div>
     <div class="overflow-x-auto">
       <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-sm">
-        <thead class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+        <thead class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs font-medium border-b border-gray-200">
           <tr>
             <th class="py-3 px-6 text-left">Mã KH</th>
             <th class="py-3 px-6 text-left">Tên Khách Hàng</th>

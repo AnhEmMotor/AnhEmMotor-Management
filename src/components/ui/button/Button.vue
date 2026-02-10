@@ -29,13 +29,20 @@ const props = defineProps({
 
 const emit = defineEmits(['click'])
 const colorVariants = {
-  primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
-  blue: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
-  green: 'bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500',
-  red: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
-  yellow: 'bg-amber-500 text-slate-900 hover:bg-amber-600 focus:ring-amber-500',
-  gray: 'bg-slate-500 text-white hover:bg-slate-600 focus:ring-slate-500',
-  purple: 'bg-purple-500 text-white hover:bg-purple-600 focus:ring-purple-500',
+  // Semantic Variants
+  primary: 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500',
+  secondary: 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-gray-500',
+  outline: 'bg-transparent text-primary-600 border border-primary-600 hover:bg-primary-50 focus:ring-primary-500',
+  ghost: 'bg-transparent text-gray-600 hover:bg-gray-100 focus:ring-gray-500',
+  danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
+  
+  // Legacy Support (Mapping to new system or keeping closest tailwind color)
+  blue: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500', // Info actions
+  green: 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500', // Success actions
+  red: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500', // Destructive actions
+  yellow: 'bg-amber-500 text-white hover:bg-amber-600 focus:ring-amber-500', // Warning actions
+  purple: 'bg-purple-600 text-white hover:bg-purple-700 focus:ring-purple-500', // Special actions
+  gray: 'bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-500',
 }
 
 const buttonClasses = computed(() => {

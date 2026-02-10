@@ -330,7 +330,7 @@ const handleSaveNotes = async ({ id, notes }) => {
 
 
     <div
-      class="hidden md:grid grid-cols-[1.5fr_2fr_1.5fr_1.2fr] items-center py-3 px-5 text-sm font-semibold text-gray-600 bg-gray-200 rounded-t-md"
+      class="hidden md:grid grid-cols-[1.5fr_2fr_1.5fr_1.2fr] items-center py-3 px-5 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 border-b border-gray-200 rounded-t-md"
     >
       <div class="px-3">Thời gian</div>
       <div class="px-5">Nhà cung cấp</div>
