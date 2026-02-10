@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onBeforeUnmount, computed, onMounted } from 'vue'
+import { ref, onBeforeUnmount, computed, onMounted, nextTick } from 'vue'
 import IconMaximize from '@/components/icons/IconMaximize.vue'
 import IconMinimize from '@/components/icons/IconMinimize.vue'
 import IconClose from '@/components/icons/IconClose.vue'
@@ -8,7 +8,7 @@ import IconRefresh from '@/components/icons/IconRefresh.vue'
 const props = defineProps({
   initialPosition: {
     type: Object,
-    default: () => ({ x: 150, y: 150 }),
+    default: null,
   },
   zIndex: {
     type: Number,
@@ -28,16 +28,38 @@ const emit = defineEmits(['close', 'activate', 'refresh'])
 const hasRefreshListener = computed(() => !!props.onRefresh)
 
 const modalRef = ref(null)
-const positionX = ref(props.initialPosition.x)
-const positionY = ref(props.initialPosition.y)
+const positionX = ref(0)
+const positionY = ref(0)
 const isDragging = ref(false)
 const dragOffset = ref({ x: 0, y: 0 })
 const isMaximized = ref(false)
+const isReady = ref(false)
+const isAnimated = ref(false)
 const previousPosition = ref({ x: 0, y: 0 })
 
-onMounted(() => {
-  positionX.value = props.initialPosition.x
-  positionY.value = props.initialPosition.y
+const enableAnimation = () => {
+  requestAnimationFrame(() => {
+    isAnimated.value = true
+  })
+}
+
+onMounted(async () => {
+  if (props.initialPosition) {
+    positionX.value = props.initialPosition.x
+    positionY.value = props.initialPosition.y
+    isReady.value = true
+    enableAnimation()
+    return
+  }
+
+  await nextTick()
+  if (modalRef.value) {
+    const { width, height } = modalRef.value.getBoundingClientRect()
+    positionX.value = Math.max(0, (window.innerWidth - width) / 2)
+    positionY.value = Math.max(0, (window.innerHeight - height) / 2)
+  }
+  isReady.value = true
+  enableAnimation()
 })
 
 const toggleMaximize = () => {
@@ -91,6 +113,8 @@ onBeforeUnmount(() => {
       :class="{
         'is-maximized': isMaximized,
         'is-dragging': isDragging,
+        'is-ready': isReady,
+        'is-animated': isAnimated,
       }"
       :style="{
         top: positionY + 'px',
@@ -136,6 +160,12 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  opacity: 0;
+}
+.draggable-modal-container.is-ready {
+  opacity: 1;
+}
+.draggable-modal-container.is-animated {
   transition: all 0.2s ease-in-out;
 }
 .draggable-modal-container.is-dragging {
