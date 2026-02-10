@@ -58,7 +58,11 @@
 
 
 
-    <div class="overflow-x-auto rounded-lg shadow-sm border border-gray-300" v-if="!isLoading">
+    <div v-else-if="isError" class="text-center py-12 text-red-500 font-medium bg-white rounded-lg shadow-sm border border-gray-200">
+      Đã xảy ra lỗi khi lấy dữ liệu sản phẩm
+    </div>
+
+    <div class="overflow-x-auto rounded-lg shadow-sm border border-gray-300" v-else>
       <table class="min-w-full bg-white">
         <thead
           class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs font-medium border-b border-gray-200"

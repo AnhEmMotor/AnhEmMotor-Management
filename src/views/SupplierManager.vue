@@ -61,6 +61,10 @@
            </div>
         </div>
         
+        <div v-else-if="isError" class="text-center py-12 text-red-500 font-medium">
+          Đã xảy ra lỗi khi lấy dữ liệu nhà cung cấp
+        </div>
+        
         <div v-else-if="storeSuppliers.length === 0" class="text-center py-12 flex flex-col items-center justify-center space-y-3">
           <div class="bg-gray-50 p-3 rounded-full">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
