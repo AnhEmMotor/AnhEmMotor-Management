@@ -32,8 +32,8 @@ const emit = defineEmits(['toggle'])
 const colorClasses = {
   // Semantic
   primary: {
-    active: 'bg-primary-600 text-white border border-primary-600',
-    inactive: 'bg-transparent text-gray-600 hover:bg-gray-100 border border-gray-300',
+    active: 'bg-red-600 text-white border border-red-600',
+    inactive: 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-300',
   },
   input: {
     active: 'bg-white text-gray-900 border-primary-500 ring-1 ring-primary-500',

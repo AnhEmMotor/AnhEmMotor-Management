@@ -1,13 +1,13 @@
 <template>
-  <div class="bg-gray-100 p-4 sm:p-6 rounded-xl shadow-lg">
+  <div class="p-4 sm:p-6 rounded-xl shadow-lg bg-white">
     <div
       class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0"
     >
       <div>
-        <h2 class="text-3xl font-bold text-center text-gray-800">Quản Lý Khách Hàng</h2>
+        <h2 class="text-3xl font-bold text-center text-gray-800">Danh Sách Nhân Viên</h2>
       </div>
       <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full lg:w-auto">
-        <Button text="Thêm mới" icon="fas fa-plus" color="blue" @click="openAddModal" />
+        <Button text="Thêm mới" icon="fas fa-plus" color="primary" @click="openAddModal" />
         <UserFilterButtons v-model="selectedStatuses" multiple />
       </div>
     </div>
@@ -15,8 +15,8 @@
       <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-sm">
         <thead class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs font-medium border-b border-gray-200">
           <tr>
-            <th class="py-3 px-6 text-left">Mã KH</th>
-            <th class="py-3 px-6 text-left">Tên Khách Hàng</th>
+            <th class="py-3 px-6 text-left">Mã NV</th>
+            <th class="py-3 px-6 text-left">Tên Nhân Viên</th>
             <th class="py-3 px-6 text-left">Email</th>
             <th class="py-3 px-6 text-left">Số Điện Thoại</th>
             <th class="py-3 px-6 text-left">Vai trò</th>
@@ -25,9 +25,22 @@
           </tr>
         </thead>
         <tbody class="text-gray-600 text-sm font-light">
-          <tr v-if="displayCustomers.length === 0">
+          <tr v-if="isLoading">
+            <td colspan="7" class="p-0">
+               <div v-for="i in 5" :key="i" class="grid grid-cols-7 gap-4 p-4 border-b border-gray-100 items-center">
+                  <div class="col-span-1"><SkeletonLoader width="80%" height="16px" /></div>
+                  <div class="col-span-1"><SkeletonLoader width="90%" height="16px" /></div>
+                  <div class="col-span-1"><SkeletonLoader width="100%" height="16px" /></div>
+                  <div class="col-span-1"><SkeletonLoader width="80%" height="16px" /></div>
+                  <div class="col-span-1"><SkeletonLoader width="70%" height="24px" /></div>
+                  <div class="col-span-1"><SkeletonLoader width="60%" height="24px" /></div>
+                  <div class="col-span-1"><SkeletonLoader width="50%" height="16px" /></div>
+               </div>
+            </td>
+          </tr>
+          <tr v-else-if="displayCustomers.length === 0">
             <td colspan="7" class="text-center py-6 text-gray-500">
-              Không tìm thấy khách hàng nào.
+              Không tìm thấy nhân viên nào.
             </td>
           </tr>
           <tr v-for="customer in displayCustomers" :key="customer.id" class="table-row-style">

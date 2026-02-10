@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-100 p-4 sm:p-6 rounded-xl shadow-lg">
+  <div class="p-4 sm:p-6 rounded-xl shadow-lg bg-white">
     <LoadingOverlay :show="showOverlay" :message="overlayMessage" />
     <div
       class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0"
@@ -8,10 +8,10 @@
         <h1 class="text-3xl font-bold text-gray-800">Quản lý nhà cung cấp</h1>
       </div>
       <div class="flex flex-wrap items-center gap-2">
-        <Button text="Thêm nhà cung cấp" color="purple" @click="openAddEditModal()" />
+        <Button text="Thêm nhà cung cấp" icon="fas fa-plus" color="primary" @click="openAddEditModal()" />
 
         <label for="import-file-input" class="cursor-pointer">
-          <Button text="Import" color="blue" as="span" />
+          <Button text="Import" icon="fas fa-file-import" color="secondary" as="span" />
           <input
             type="file"
             id="import-file-input"
@@ -21,8 +21,7 @@
           />
         </label>
 
-        <Button text="Export" color="green" @click="handleExport" />
-        <div class="h-8 border-r-2 border-black-300 mx-2"></div>
+        <Button text="Export" icon="fas fa-file-export" color="secondary" @click="handleExport" />
         <SupplierFilterButtons v-model="selectedStatuses" />
       </div>
     </div>
@@ -46,7 +45,13 @@
 
     <div class="bg-white rounded-b-md shadow-sm">
       <div v-if="isLoading">
-        <Spinner />
+         <div v-for="i in 5" :key="i" class="grid md:grid-cols-16 gap-2 py-4 px-5 border-b border-gray-100 items-center">
+            <div class="md:col-span-8"><SkeletonLoader width="60%" height="16px" /></div>
+            <div class="md:col-start-9 md:col-span-2"><SkeletonLoader width="80%" height="16px" /></div>
+            <div class="md:col-start-11 md:col-span-2"><SkeletonLoader width="90%" height="16px" /></div>
+            <div class="md:col-start-13 md:col-span-2 justify-self-end"><SkeletonLoader width="60%" height="16px" /></div>
+            <div class="md:col-start-15 md:col-span-2"><SkeletonLoader width="70%" height="24px" class="rounded-full" /></div>
+         </div>
       </div>
       <div v-else-if="isError">
         <p class="not-found-msg">Could not fetch suppliers. Please try again later. {{ error }}</p>
@@ -108,6 +113,7 @@ import DraggableModal from '@/components/ui/DraggableModal.vue'
 import SupplierForm from '@/components/supplier/SupplierForm.vue'
 import Spinner from '@/components/ui/Spinner.vue'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
+import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 import { showConfirmation } from '@/composables/useConfirmationState'
 import { useToast } from 'vue-toastification'
 

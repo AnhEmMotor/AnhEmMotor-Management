@@ -1,7 +1,7 @@
 <template>
   <LoadingOverlay :show="isStoreLoading" message="Đang xoá sản phẩm..." />
 
-  <div class="bg-gray-100 p-4 sm:p-6 rounded-xl shadow-lg">
+  <div class="p-4 sm:p-6 rounded-xl shadow-lg bg-white">
     <div
       class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0"
     >
@@ -9,9 +9,9 @@
         <h1 class="text-3xl font-bold text-center text-gray-800">Quản lý sản phẩm</h1>
       </div>
       <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full lg:w-auto">
-        <Button text="Thêm sản phẩm" color="purple" @click="openAddEditModal()" />
-        <Button text="Import Excel" color="blue" @click="importExcel" />
-        <Button text="Export" color="green" @click="exportExcel" />
+        <Button text="Thêm sản phẩm" icon="fas fa-plus" color="primary" @click="openAddEditModal()" />
+        <Button text="Import Excel" icon="fas fa-file-import" color="secondary" @click="importExcel" />
+        <Button text="Export" icon="fas fa-file-export" color="secondary" @click="exportExcel" />
         <span class="text-gray-400 mx-4 hidden border-r-2 sm:block" />
         <ProductFilterButtons v-model="selectedStatuses" />
       </div>
@@ -37,9 +37,11 @@
       <span class="block sm:inline">{{ error.message }}</span>
     </div>
 
-    <div class="overflow-x-auto" v-if="!isLoading && !error">
+    <div class="overflow-x-auto" v-if="!isLoading">
       <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-sm">
-        <thead class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs font-medium border-b border-gray-200">
+        <thead
+          class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs font-medium border-b border-gray-200"
+        >
           <tr>
             <th class="py-3 px-6 text-left w-12"></th>
             <th class="py-3 px-6 text-left w-20">Ảnh Bìa</th>
@@ -99,9 +101,7 @@
               </td>
               <td class="py-3 px-6 text-center space-x-2">
                 <SmallNoBgButton @click="openAddEditModal(product)">Sửa</SmallNoBgButton>
-                <SmallNoBgButton color="red" @click="promptDelete(product)">
-                  Xóa
-                </SmallNoBgButton>
+                <SmallNoBgButton color="red" @click="promptDelete(product)"> Xóa </SmallNoBgButton>
               </td>
             </tr>
 
@@ -195,11 +195,7 @@
         </tbody>
       </table>
     </div>
-    <Pagination
-      :total-pages="totalPages"
-      v-model:currentPage="currentPage"
-      :loading="isLoading"
-    />
+    <Pagination :total-pages="totalPages" v-model:currentPage="currentPage" :loading="isLoading" />
   </div>
 
   <DraggableModal

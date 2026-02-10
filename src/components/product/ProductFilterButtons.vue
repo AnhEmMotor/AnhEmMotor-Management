@@ -23,9 +23,9 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:modelValue'])
 const filterOptions = [
-  { status: 'in-stock', label: 'Còn Hàng', color: 'green' },
-  { status: 'almost-out-of-stock', label: 'Sắp Hết', color: 'yellow' },
-  { status: 'out-of-stock', label: 'Hết hàng', color: 'red' },
+  { status: 'in-stock', label: 'Còn Hàng', color: 'primary' },
+  { status: 'almost-out-of-stock', label: 'Sắp Hết', color: 'primary' },
+  { status: 'out-of-stock', label: 'Hết hàng', color: 'primary' },
 ]
 const isActive = (status) => {
   return props.modelValue.includes(status)

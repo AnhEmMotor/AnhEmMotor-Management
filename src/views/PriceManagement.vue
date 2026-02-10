@@ -7,6 +7,7 @@ import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import PriceQuickMenu from '@/components/price_management/PriceQuickMenu.vue'
 import Input from '@/components/ui/input/Input.vue'
 import Pagination from '@/components/ui/button/Pagination.vue'
+import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 
 const priceStore = usePriceStore()
 const router = useRouter()
@@ -236,7 +237,7 @@ onBeforeUnmount(() => {
     />
 
     <div
-      class="hidden md:grid md:grid-cols-12 items-center py-3 px-4 text-sm font-semibold text-gray-600 bg-gray-200 rounded-t-md"
+      class="hidden md:grid md:grid-cols-12 items-center py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 border-b border-gray-200 rounded-t-md"
     >
       <div class="md:col-span-8">Tên Sản Phẩm</div>
       <div class="md:col-span-3">Số biến thể</div>
@@ -244,7 +245,23 @@ onBeforeUnmount(() => {
     </div>
 
     <div class="bg-white rounded-b-md shadow-sm">
-      <div v-if="isLoading" class="text-center py-6 text-gray-500">Đang tải dữ liệu...</div>
+      <div v-if="isLoading" class="p-0">
+        <div v-for="i in 5" :key="i" class="border-b border-gray-200 p-4 bg-white">
+          <!-- Header Row Skeleton -->
+          <div class="grid grid-cols-12 gap-4 mb-2">
+            <div class="col-span-8"><SkeletonLoader height="20px" width="60%" /></div>
+            <div class="col-span-3"><SkeletonLoader height="20px" width="40%" /></div>
+          </div>
+          <!-- Detail Row Skeleton to match columns -->
+          <div class="grid grid-cols-12 gap-4 mt-4 pl-12">
+             <div class="col-span-3"><SkeletonLoader height="16px" width="80%" /></div> <!-- Variant -->
+             <div class="col-span-2"><SkeletonLoader height="16px" width="100%" /></div> <!-- Cost -->
+             <div class="col-span-2"><SkeletonLoader height="16px" width="100%" /></div> <!-- Price -->
+             <div class="col-span-3"><SkeletonLoader height="32px" width="100%" /></div> <!-- Input -->
+             <div class="col-span-2"><SkeletonLoader height="16px" width="50%" /></div> <!-- Margin -->
+          </div>
+        </div>
+      </div>
       <div v-else-if="isError" class="text-center py-6 text-red-500">
         {{ error?.message || 'Đã xảy ra lỗi' }}
       </div>
@@ -267,12 +284,13 @@ onBeforeUnmount(() => {
 
           <div class="bg-gray-50 pl-4 pr-4 md:pl-12 pb-4 pt-2">
             <div
-              class="hidden md:grid md:grid-cols-12 items-center pt-2 pb-2 text-xs font-semibold text-gray-500 border-b border-gray-300"
+              class="hidden md:grid md:grid-cols-12 items-center pt-2 pb-2 text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-300"
             >
-              <div class="md:col-span-4 px-3">Biến thể/phiên bản</div>
-              <div class="md:col-span-3 px-4 text-right">Giá nhập gần nhất</div>
-              <div class="md:col-span-4 px-1 text-right">Nhập giá</div>
-              <div class="md:col-span-1 px-3 text-right">%</div>
+              <div class="md:col-span-3 px-3">Biến thể/phiên bản</div>
+              <div class="md:col-span-2 px-2 text-right">Giá vốn</div>
+              <div class="md:col-span-2 px-2 text-right">Giá bán</div>
+              <div class="md:col-span-3 px-1 text-right">Nhập giá bán mới</div>
+              <div class="md:col-span-2 px-2 text-right">Biên lợi nhuận</div>
             </div>
 
             <div
@@ -287,18 +305,23 @@ onBeforeUnmount(() => {
               :key="variant.variant_id"
               class="grid grid-cols-1 md:grid-cols-12 md:items-center py-2 md:py-2 border-t border-gray-200 text-sm gap-2 md:gap-0 first:border-t-0 md:first:border-t-0"
             >
-              <div class="px-0 md:px-3 md:col-span-4">
+              <div class="px-0 md:px-3 md:col-span-3">
                 <div class="text-xs text-gray-500 md:hidden">Biến thể</div>
                 <div class="font-medium">{{ getVariantOptionsText(variant.option_values) }}</div>
               </div>
 
-              <div class="px-0 md:px-4 text-right md:col-span-3">
-                <div class="text-xs text-gray-500 md:hidden">Giá nhập gần nhất</div>
-                <div>{{ getRecentInputPriceDisplay(variant) }}</div>
+              <div class="px-0 md:px-2 text-right md:col-span-2">
+                <div class="text-xs text-gray-500 md:hidden">Giá vốn (nhập gần nhất)</div>
+                <div class="font-mono">{{ getRecentInputPriceDisplay(variant) }}</div>
               </div>
 
-              <div class="px-0 md:px-1 md:col-span-4">
-                <div class="text-xs text-gray-500 md:hidden">Nhập giá</div>
+              <div class="px-0 md:px-2 text-right md:col-span-2">
+                <div class="text-xs text-gray-500 md:hidden">Giá bán hiện tại</div>
+                <div class="font-mono font-semibold text-gray-900">{{ formatMoney(variant.price) }}</div>
+              </div>
+
+              <div class="px-0 md:px-1 md:col-span-3">
+                <div class="text-xs text-gray-500 md:hidden">Nhập giá bán mới</div>
                 <div class="flex items-center gap-2">
                   <Input
                     v-model="variant.price"
@@ -313,8 +336,9 @@ onBeforeUnmount(() => {
                 </div>
               </div>
 
-              <div class="hidden md:flex items-center justify-end px-0 md:px-3 md:col-span-1">
-                <div v-if="computePercent(variant) !== null" class="text-sm font-medium">
+              <div class="px-0 md:px-2 text-right md:col-span-2">
+                <div class="text-xs text-gray-500 md:hidden">Biên lợi nhuận</div>
+                <div v-if="computePercent(variant) !== null" class="text-sm font-medium font-mono">
                   <span
                     :class="{
                       'text-green-600': computePercent(variant) > 0,
@@ -325,6 +349,7 @@ onBeforeUnmount(() => {
                     {{ formatPercent(variant) }}
                   </span>
                 </div>
+                <div v-else class="text-gray-400">-</div>
               </div>
             </div>
           </div>

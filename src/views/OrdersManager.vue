@@ -1,17 +1,16 @@
 <template>
-  <div class="bg-gray-100 p-6 rounded-xl shadow-lg">
+  <div class="p-6 rounded-xl shadow-lg bg-white">
     <div class="flex items-start justify-between mb-4">
       <h1 class="text-3xl font-bold mb-4 text-gray-800">Quản Lý Đơn Hàng</h1>
       <div class="flex items-center">
         <OrderFilterButtons v-model="selectedStatuses" />
-        <span class="h-8 border-r-2 border-black-300 mx-2" />
-        <Button color="blue" @click="createNewOrder" text="Tạo Đơn Hàng Mới"></Button>
+        <Button color="primary" icon="fas fa-plus" @click="createNewOrder" text="Tạo Đơn Hàng Mới"></Button>
       </div>
     </div>
     <div class="overflow-x-auto">
       <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-sm">
         <thead>
-          <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+          <tr class="bg-gray-50 text-gray-500 uppercase text-xs font-medium tracking-wider leading-normal border-b border-gray-200">
             <th class="py-3 px-6 text-left">Mã ĐH</th>
             <th class="py-3 px-6 text-left">Ngày Đặt</th>
             <th class="py-3 px-6 text-left">Sản phẩm</th>
@@ -22,7 +21,16 @@
         </thead>
         <tbody class="text-gray-600 text-sm">
           <tr v-if="isLoading">
-            <td colspan="7" class="text-center p-4">Đang tải dữ liệu...</td>
+            <td colspan="7" class="p-0">
+               <div v-for="i in 5" :key="i" class="grid grid-cols-6 gap-4 p-4 border-b border-gray-100 items-center">
+                  <SkeletonLoader width="80%" height="16px" />
+                  <SkeletonLoader width="60%" height="16px" />
+                  <SkeletonLoader width="90%" height="16px" />
+                  <SkeletonLoader width="70%" height="24px" />
+                  <SkeletonLoader width="50%" height="16px" />
+                  <SkeletonLoader width="40%" height="16px" />
+               </div>
+            </td>
           </tr>
           <tr v-else-if="!displayedOrders || displayedOrders.length === 0">
             <td colspan="7" class="text-center p-4">Không có đơn hàng nào.</td>

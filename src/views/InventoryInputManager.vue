@@ -12,6 +12,7 @@ import ProductForm from '@/components/product/ProductForm.vue'
 import { showConfirmation } from '@/composables/useConfirmationState'
 import { useQueryClient } from '@tanstack/vue-query'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
+import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 
 const inputsStore = useInputsStore()
 const queryClient = useQueryClient()
@@ -303,7 +304,7 @@ const handleSaveNotes = async ({ id, notes }) => {
 </script>
 
 <template>
-  <div class="bg-gray-100 p-4 sm:p-6 rounded-xl shadow-lg">
+  <div class="p-4 sm:p-6 rounded-xl shadow-lg bg-white">
     <div
       class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0"
     >
@@ -312,9 +313,8 @@ const handleSaveNotes = async ({ id, notes }) => {
       </div>
       
       <div class="flex flex-wrap items-center gap-2">
-        <Button text="Nhập hàng" color="purple" @click="openNewInventoryModal" />
-        <Button text="Export" color="green" @click="exportExcel" />
-        <div class="h-8 border-r-2 border-black-300 mx-2"></div>
+        <Button text="Nhập hàng" icon="fas fa-plus" color="primary" @click="openNewInventoryModal" />
+        <Button text="Export" icon="fas fa-file-export" color="secondary" @click="exportExcel" />
         <InventoryFilterButtons v-model="selectedStatuses" />
       </div> 
 
@@ -324,7 +324,7 @@ const handleSaveNotes = async ({ id, notes }) => {
     <Input
       v-model="searchTerm"
       type="text"
-      placeholder="Tìm kiếm theo mã phiếu, mã hoặc tên NCC..."
+      placeholder="Tìm theo mã phiếu, NCC..."
       class="mb-3"
     /> 
 
@@ -339,7 +339,14 @@ const handleSaveNotes = async ({ id, notes }) => {
     </div>
 
     <div class="bg-white rounded-b-md shadow-sm">
-      <div v-if="isLoading" class="text-center py-6 text-gray-500">Đang tải dữ liệu...</div>
+      <div v-if="isLoading" class="bg-white">
+        <div v-for="i in 5" :key="i" class="grid grid-cols-[1.5fr_2fr_1.5fr_1.2fr] gap-4 py-4 px-5 border-b border-gray-100 items-center">
+          <SkeletonLoader width="80%" height="16px" />
+          <SkeletonLoader width="90%" height="16px" />
+          <div class="flex justify-end"><SkeletonLoader width="60%" height="16px" /></div>
+          <SkeletonLoader width="70%" height="24px" class="rounded-full" />
+        </div>
+      </div>
       <div v-else-if="isError" class="text-center py-6 text-red-500">
         Đã xảy ra lỗi: {{ error?.message || 'Không thể tải dữ liệu' }}
       </div>
