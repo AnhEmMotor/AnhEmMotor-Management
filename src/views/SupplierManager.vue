@@ -8,10 +8,10 @@
         <h1 class="text-3xl font-bold text-gray-800">Quản lý nhà cung cấp</h1>
       </div>
       <div class="flex flex-wrap items-center gap-2">
-        <Button text="Thêm nhà cung cấp" icon="fas fa-plus" color="primary" @click="openAddEditModal()" />
+        <Button text="Thêm nhà cung cấp" :icon="IconPlus" color="primary" @click="openAddEditModal()" />
 
         <label for="import-file-input" class="cursor-pointer">
-          <Button text="Import" icon="fas fa-file-import" color="secondary" as="span" />
+          <Button text="Import" :icon="IconFileImport" color="secondary" as="span" />
           <input
             type="file"
             id="import-file-input"
@@ -21,7 +21,7 @@
           />
         </label>
 
-        <Button text="Export" icon="fas fa-file-export" color="secondary" @click="handleExport" />
+        <Button text="Export" :icon="IconFileExport" color="secondary" @click="handleExport" />
         <SupplierFilterButtons v-model="selectedStatuses" />
       </div>
     </div>
@@ -33,42 +33,53 @@
       class="mb-3"
     />
 
-    <div
-      class="hidden md:grid md:grid-cols-16 items-center gap-2 py-3 px-5 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 border-b border-gray-200 rounded-t-md"
-    >
-      <div class="md:col-span-8">Tên nhà cung cấp</div>
-      <div class="md:col-start-9 md:col-span-2">Điện thoại</div>
-      <div class="md:col-start-11 md:col-span-2">Email</div>
-      <div class="md:col-start-13 md:col-span-2 md:justify-self-end">Tổng mua</div>
-      <div class="md:col-start-15 md:col-span-2">Trạng thái</div>
-    </div>
+    <!-- UNIFIED TABLE CONTAINER -->
+    <div class="border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+      <!-- Header -->
+      <div
+        class="hidden md:grid md:grid-cols-16 items-center gap-2 py-3 px-5 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 border-b border-gray-200"
+      >
+        <div class="md:col-span-8">Tên nhà cung cấp</div>
+        <div class="md:col-start-9 md:col-span-2">Điện thoại</div>
+        <div class="md:col-start-11 md:col-span-2">Email</div>
+        <div class="md:col-start-13 md:col-span-2 md:justify-self-end">Tổng mua</div>
+        <div class="md:col-start-15 md:col-span-2">Trạng thái</div>
+      </div>
 
-    <div class="bg-white rounded-b-md shadow-sm">
-      <div v-if="isLoading">
-         <div v-for="i in 5" :key="i" class="grid md:grid-cols-16 gap-2 py-4 px-5 border-b border-gray-100 items-center">
-            <div class="md:col-span-8"><SkeletonLoader width="60%" height="16px" /></div>
-            <div class="md:col-start-9 md:col-span-2"><SkeletonLoader width="80%" height="16px" /></div>
-            <div class="md:col-start-11 md:col-span-2"><SkeletonLoader width="90%" height="16px" /></div>
-            <div class="md:col-start-13 md:col-span-2 justify-self-end"><SkeletonLoader width="60%" height="16px" /></div>
-            <div class="md:col-start-15 md:col-span-2"><SkeletonLoader width="70%" height="24px" class="rounded-full" /></div>
-         </div>
+      <!-- Body -->
+      <div class="bg-white">
+        <div v-if="isLoading">
+           <div v-for="i in 5" :key="i" class="grid md:grid-cols-16 gap-2 py-4 px-5 border-b border-gray-50 items-center last:border-0">
+              <div class="md:col-span-8"><SkeletonLoader width="60%" height="16px" /></div>
+              <div class="md:col-start-9 md:col-span-2"><SkeletonLoader width="80%" height="16px" /></div>
+              <div class="md:col-start-11 md:col-span-2"><SkeletonLoader width="90%" height="16px" /></div>
+              <div class="md:col-start-13 md:col-span-2 flex justify-end"><SkeletonLoader width="60%" height="16px" /></div>
+              <div class="md:col-start-15 md:col-span-2"><SkeletonLoader width="70%" height="24px" class="rounded-full" /></div>
+           </div>
+        </div>
+        
+        <div v-else-if="storeSuppliers.length === 0" class="text-center py-12 flex flex-col items-center justify-center space-y-3">
+          <div class="bg-gray-50 p-3 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+            </svg>
+          </div>
+          <p class="text-gray-500 font-medium">Không có nhà cung cấp nào để hiển thị.</p>
+        </div>
+        
+        <div v-else class="divide-y divide-gray-50">
+          <SupplierItem
+            v-for="item in storeSuppliers"
+            :key="item.id"
+            :itemData="item"
+            :is-open="openStates[item.id]"
+            @toggle-detail="handleToggleDetail"
+            @edit-supplier="openAddEditModal"
+            @delete-supplier="openDeleteModal"
+            @toggle-activation="toggleActivation"
+          />
+        </div>
       </div>
-      <div v-else-if="isError">
-        <p class="not-found-msg">Could not fetch suppliers. Please try again later. {{ error }}</p>
-      </div>
-      <div v-else-if="storeSuppliers.length === 0" class="text-center py-6 text-gray-500">
-        Không có nhà cung cấp nào để hiển thị.
-      </div>
-      <SupplierItem
-        v-for="item in storeSuppliers"
-        :key="item.id"
-        :itemData="item"
-        :is-open="openStates[item.id]"
-        @toggle-detail="handleToggleDetail"
-        @edit-supplier="openAddEditModal"
-        @delete-supplier="openDeleteModal"
-        @toggle-activation="toggleActivation"
-      />
     </div>
 
     <Pagination
@@ -82,7 +93,7 @@
       :key="formModalKey"
       v-if="isFormModalVisible"
       @close="handleCloseFormModal"
-      :onRefresh="isEditMode ? handleFormRefresh : undefined"
+      :onRefresh="handleFormRefresh"
     >
       <template #header>
         <h2 class="font-bold text-lg">{{ formModalTitle }}</h2>
@@ -116,6 +127,9 @@ import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 import { showConfirmation } from '@/composables/useConfirmationState'
 import { useToast } from 'vue-toastification'
+import IconPlus from '@/components/icons/IconPlus.vue'
+import IconFileImport from '@/components/icons/IconFileImport.vue'
+import IconFileExport from '@/components/icons/IconFileExport.vue'
 
 const suppliersStore = useSuppliersStore()
 const toast = useToast()
@@ -278,11 +292,34 @@ const openDeleteModal = async (supplier) => {
   }
 }
 
-const handleFormRefresh = () => {
-  // Reset form logic if needed
-  editableSupplier.value = {}
-  formErrors.value = {}
+const handleFormRefresh = async () => {
+  if (isEditMode.value && editableSupplier.value.id) {
+      try {
+        // Simulate fetching fresh data
+        const freshData = await suppliersStore.refreshSupplier(editableSupplier.value.id)
+        if (freshData) {
+            editableSupplier.value = { ...freshData }
+        }
+        toast.info("Đã làm mới dữ liệu")
+      } catch (e) {
+        toast.error("Lỗi làm mới: " + e.message)
+      }
+  } else {
+    // Reset form for create mode
+    editableSupplier.value = {}
+    formErrors.value = {}
+    toast.info("Đã làm mới form")
+  }
 }
+
+// Watch for errors
+watch(isError, (hasError) => {
+  if (hasError) {
+    const errorMsg = error.value?.message || 'Lỗi tải dữ liệu nhà cung cấp'
+    // Prevent duplicate toast spam if needed, relies on toast dedup usually
+    toast.error(errorMsg)
+  }
+})
 
 // Import/Export
 const handleExport = () => {

@@ -11,9 +11,9 @@ defineEmits(['toggle-detail'])
 function getStatusColor(status) {
   switch (status) {
     case 'active':
-      return 'green'
+      return 'red' // "Đang hoạt động" should be Red/Primary according to user
     case 'inactive':
-      return 'red'
+      return 'gray'
     default:
       return 'gray'
   }

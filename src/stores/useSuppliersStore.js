@@ -19,6 +19,8 @@ export const useSuppliersStore = defineStore('suppliers', {
       const { page, itemsPerPage, statusFilters, search } = payload || {}
       this.isLoading = true
       this.error = null
+      // DEMO DELAY: 2 seconds to show Skeleton Loader
+      await new Promise((resolve) => setTimeout(resolve, 2000))
       try {
         const { suppliers, count } = await supplierApi.fetchSuppliers(
           page,
@@ -30,11 +32,22 @@ export const useSuppliersStore = defineStore('suppliers', {
         this.totalCount = count
         return { suppliers, count }
       } catch (error) {
+        console.error('API Error:', error)
         this.error = error.message
-        throw error
+        this.suppliers = []
+        this.totalCount = 0
+        return { suppliers: [], count: 0 }
       } finally {
         this.isLoading = false
       }
+    },
+
+    async refreshSupplier(id) {
+       // Simulate API call
+       await new Promise(resolve => setTimeout(resolve, 500))
+       // Return existing supplier data from state (or mock) to simulate refresh
+       const supplier = this.suppliers.find(s => s.id === id)
+       return supplier ? JSON.parse(JSON.stringify(supplier)) : null
     },
 
     async addSupplier(supplier) {

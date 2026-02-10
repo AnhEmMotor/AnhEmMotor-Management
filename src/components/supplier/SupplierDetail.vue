@@ -1,7 +1,7 @@
 <script setup>
 import RoundBadge from '@/components/ui/RoundBadge.vue'
 import Pagination from '../ui/button/Pagination.vue'
-import Spinner from '../ui/Spinner.vue'
+import SkeletonLoader from '../ui/SkeletonLoader.vue'
 import { computed, ref } from 'vue'
 import { formatDateTime, formatDate } from '@/composables/useDate'
 import { formatCurrency } from '@/composables/useCurrency'
@@ -36,7 +36,10 @@ const filters = computed(() => ({
   search: '',
 }))
 
-const fetchHistoryFn = (params) => {
+const fetchHistoryFn = async (params) => {
+  // DEMO DELAY: 2 seconds to show Skeleton Loader in History tab
+  await new Promise((resolve) => setTimeout(resolve, 2000))
+
   return fetchInputsBySupplier(
     props.itemData.id,
     params.page,
@@ -65,6 +68,17 @@ const {
   fetchFn: fetchHistoryFn,
   dataMapper: historyDataMapper,
 })
+
+import { watch } from 'vue'
+import { useToast } from 'vue-toastification'
+const toast = useToast()
+
+watch(historyIsError, (hasError) => {
+  if (hasError) {
+    toast.error('Lỗi khi tải lịch sử: ' + (historyError.value?.message || 'Không xác định'))
+  }
+})
+
 </script>
 
 <template>
@@ -158,49 +172,67 @@ const {
       </div>
     </div>
 
-    <div v-show="activeTab === 'history'">
-      <div v-if="historyLoading" class="p-4 text-center text-gray-500"><Spinner /></div>
-      <div v-else-if="historyIsError" class="p-4 text-center text-red-500 bg-red-50 rounded-lg">
-        Lỗi khi tải lịch sử: {{ historyError?.message }}
-      </div>
-      <div v-else-if="inputsData && inputsData.length > 0" class="p-4 bg-white pr-12">
-        <div class="grid grid-cols-16 gap-4 text-xs font-semibold text-gray-600 border-b pb-2 mb-2">
+    <div v-show="activeTab === 'history'" class="relative">
+      <div class="border border-gray-200 rounded-lg overflow-hidden">
+        <!-- Permanent Header -->
+        <div class="grid grid-cols-16 gap-4 text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50 border-b border-gray-200 px-4 py-3">
           <div class="col-span-4">Thời gian</div>
           <div class="col-span-7">Người xác nhận</div>
           <div class="text-right col-span-3">Tổng cộng</div>
           <div class="text-right col-span-2">Trạng thái</div>
         </div>
-        <div>
-          <div
-            v-for="input in inputsData"
-            :key="input.id"
-            class="grid grid-cols-16 gap-4 items-center py-2 border-b border-gray-100 text-sm"
-          >
-            <div class="text-gray-600 col-span-4">
-              {{ formatDateTime(input.created_at) }}
+
+        <div v-if="historyLoading" class="bg-white">
+            <div v-for="i in 3" :key="i" class="grid grid-cols-16 gap-4 px-4 py-3 border-b border-gray-50 items-center animate-pulse last:border-0">
+              <div class="col-span-4"><SkeletonLoader width="80%" height="14px" /></div>
+              <div class="col-span-7"><SkeletonLoader width="60%" height="14px" /></div>
+              <div class="col-span-3 flex justify-end"><SkeletonLoader width="50%" height="14px" /></div>
+              <div class="col-span-2 flex justify-end"><SkeletonLoader width="70%" height="20px" class="rounded-full" /></div>
             </div>
-            <div class="text-gray-600 col-span-7">
-              {{ input.name_verify || 'Chưa có' }}
+        </div>
+
+        <div v-else-if="!historyIsError && inputsData && inputsData.length > 0" class="bg-white">
+            <div
+              v-for="input in inputsData"
+              :key="input.id"
+              class="grid grid-cols-16 gap-4 items-center px-4 py-3 border-b border-gray-50 text-sm hover:bg-gray-50 transition-colors last:border-0"
+            >
+              <div class="text-gray-700 font-medium col-span-4">
+                {{ formatDateTime(input.created_at) }}
+              </div>
+              <div class="text-gray-600 col-span-7">
+                {{ input.name_verify || '---' }}
+              </div>
+              <div class="text-right font-medium text-gray-800 col-span-3">
+                {{ formatCurrency(input.total) }}
+              </div>
+              <div class="text-right col-span-2">
+                <RoundBadge :color="getStatusInfo(input.status_id).color">
+                  {{ getStatusInfo(input.status_id).text }}
+                </RoundBadge>
+              </div>
             </div>
-            <div class="text-right font-medium col-span-3">
-              {{ formatCurrency(input.total) }}
-            </div>
-            <div class="text-right col-span-2">
-              <RoundBadge :color="getStatusInfo(input.status_id).color">
-                {{ getStatusInfo(input.status_id).text }}
-              </RoundBadge>
-            </div>
+          <div class="p-4 border-t border-gray-100 bg-gray-50">
+               <Pagination
+                :total-pages="historyTotalPages"
+                v-model:currentPage="historyCurrentPage"
+                :loading="historyLoading"
+              />
           </div>
         </div>
-        <Pagination
-          :total-pages="historyTotalPages"
-          v-model:currentPage="historyCurrentPage"
-          :loading="historyLoading"
-        />
-      </div>
 
-      <div v-else class="p-4 text-center text-gray-500 bg-gray-50 rounded-lg">
-        Chưa có giao dịch nào được ghi nhận.
+        <!-- Beautiful Empty/Error State -->
+        <div v-else class="py-12 flex flex-col items-center justify-center text-center space-y-3 bg-white">
+          <div class="bg-gray-50 p-3 rounded-full">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+              </svg>
+          </div>
+          <div class="text-gray-500 font-medium">Chưa có lịch sử nhập hàng</div>
+          <div class="text-xs text-gray-400 max-w-xs">
+             Hiện tại chưa có giao dịch nào được ghi nhận cho nhà cung cấp này.
+          </div>
+        </div>
       </div>
     </div>
   </div>

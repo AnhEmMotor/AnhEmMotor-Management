@@ -13,8 +13,8 @@ defineEmits(['toggle-detail', 'edit-supplier', 'delete-supplier', 'toggle-activa
   <div
     class="supplier-item bg-white"
     :class="{
-      'item-open shadow-xl': isOpen,
-      'shadow-sm border border-gray-200': !isOpen,
+      'item-open z-10 relative shadow-md my-2 rounded-lg border border-gray-200': isOpen,
+      'hover:bg-gray-50 transition-colors': !isOpen,
     }"
   >
     <div class="overflow-x-auto">
