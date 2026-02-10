@@ -1,5 +1,5 @@
 <template>
-  <BaseLoadingOverlay :show="isStoreLoading" message="Đang xoá sản phẩm..." />
+  <LoadingOverlay :show="isStoreLoading" message="Đang xoá sản phẩm..." />
 
   <div class="bg-gray-100 p-4 sm:p-6 rounded-xl shadow-lg">
     <div
@@ -9,15 +9,15 @@
         <h1 class="text-3xl font-bold text-center text-gray-800">Quản lý sản phẩm</h1>
       </div>
       <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full lg:w-auto">
-        <BaseButton text="Thêm sản phẩm" color="purple" @click="openAddEditModal()" />
-        <BaseButton text="Import Excel" color="blue" @click="importExcel" />
-        <BaseButton text="Export" color="green" @click="exportExcel" />
+        <Button text="Thêm sản phẩm" color="purple" @click="openAddEditModal()" />
+        <Button text="Import Excel" color="blue" @click="importExcel" />
+        <Button text="Export" color="green" @click="exportExcel" />
         <span class="text-gray-400 mx-4 hidden border-r-2 sm:block" />
         <ProductFilterButtons v-model="selectedStatuses" />
       </div>
     </div>
 
-    <BaseInput
+    <Input
       v-model="searchTerm"
       type="text"
       placeholder="Tìm kiếm (Tên, Danh mục...)"
@@ -25,7 +25,7 @@
     />
 
     <div v-if="isLoading" class="text-center py-10">
-      <BaseSpinner />
+      <Spinner />
     </div>
 
     <div
@@ -98,10 +98,10 @@
                 </RoundBadge>
               </td>
               <td class="py-3 px-6 text-center space-x-2">
-                <BaseSmallNoBgButton @click="openAddEditModal(product)">Sửa</BaseSmallNoBgButton>
-                <BaseSmallNoBgButton color="red" @click="promptDelete(product)">
+                <SmallNoBgButton @click="openAddEditModal(product)">Sửa</SmallNoBgButton>
+                <SmallNoBgButton color="red" @click="promptDelete(product)">
                   Xóa
-                </BaseSmallNoBgButton>
+                </SmallNoBgButton>
               </td>
             </tr>
 
@@ -195,7 +195,7 @@
         </tbody>
       </table>
     </div>
-    <BasePagination
+    <Pagination
       :total-pages="totalPages"
       v-model:currentPage="currentPage"
       :loading="isLoading"
@@ -218,7 +218,7 @@
     </template>
 
     <template #footer>
-      <BaseButton text="Lưu" color="purple" @click="handleSaveProduct" :loading="isSaving" />
+      <Button text="Lưu" color="purple" @click="handleSaveProduct" :loading="isSaving" />
     </template>
   </DraggableModal>
 </template>
@@ -233,16 +233,16 @@ import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { getProducts } from '@/api/product'
 import ProductFilterButtons from '@/components/product/ProductFilterButtons.vue'
 import ProductForm from '@/components/product/ProductForm.vue'
-import BaseButton from '@/components/ui/button/BaseButton.vue'
-import BaseInput from '@/components/ui/input/BaseInput.vue'
-import BasePagination from '@/components/ui/button/BasePagination.vue'
-import BaseSmallNoBgButton from '@/components/ui/button/BaseSmallNoBgButton.vue'
+import Button from '@/components/ui/button/Button.vue'
+import Input from '@/components/ui/input/Input.vue'
+import Pagination from '@/components/ui/button/Pagination.vue'
+import SmallNoBgButton from '@/components/ui/button/SmallNoBgButton.vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
-import BaseSpinner from '@/components/ui/BaseSpinner.vue'
+import Spinner from '@/components/ui/Spinner.vue'
 import IconLeftArrow from '@/components/icons/IconLeftArrow.vue'
 import IconDownArrow from '@/components/icons/IconDownArrow.vue'
-import BaseLoadingOverlay from '@/components/ui/BaseLoadingOverlay.vue'
+import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 import { useToast } from 'vue-toastification'
 
 const productsStore = useProductsStore()

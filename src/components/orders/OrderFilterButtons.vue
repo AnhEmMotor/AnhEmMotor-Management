@@ -15,7 +15,7 @@
 <script setup>
 import { computed, onMounted } from 'vue'
 import { useOrdersStore } from '@/stores/useOrdersStore'
-import BaseFilterButton from '../ui/button/BaseFilterButton.vue'
+import FilterButton from '../ui/button/FilterButton.vue'
 
 const props = defineProps({
   modelValue: {

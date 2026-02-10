@@ -5,7 +5,7 @@
       <div class="flex items-center">
         <OrderFilterButtons v-model="selectedStatuses" />
         <span class="h-8 border-r-2 border-black-300 mx-2" />
-        <BaseButton color="blue" @click="createNewOrder" text="Tạo Đơn Hàng Mới"></BaseButton>
+        <Button color="blue" @click="createNewOrder" text="Tạo Đơn Hàng Mới"></Button>
       </div>
     </div>
     <div class="overflow-x-auto">
@@ -48,9 +48,9 @@
               {{ (order.total || 0).toLocaleString('vi-VN') }} VNĐ
             </td>
             <td class="py-3 px-6 text-center">
-              <BaseSmallNoBgButton color="blue" @click.stop="handleEditOrder(order)">
+              <SmallNoBgButton color="blue" @click.stop="handleEditOrder(order)">
                 Sửa
-              </BaseSmallNoBgButton>
+              </SmallNoBgButton>
             </td>
           </tr>
         </tbody>
@@ -78,8 +78,8 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
 import OrderFilterButtons from '@/components/orders/OrderFilterButtons.vue'
 import OrderForm from '@/components/orders/OrderForm.vue'
-import BaseSmallNoBgButton from '@/components/ui/button/BaseSmallNoBgButton.vue'
-import BaseButton from '@/components/ui/button/BaseButton.vue'
+import SmallNoBgButton from '@/components/ui/button/SmallNoBgButton.vue'
+import Button from '@/components/ui/button/Button.vue'
 
 const ordersStore = useOrdersStore()
 const queryClient = useQueryClient()

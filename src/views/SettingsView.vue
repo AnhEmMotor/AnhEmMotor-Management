@@ -25,7 +25,7 @@
         <p class="text-gray-600 mb-6 text-sm">Thiết lập quy tắc đơn hàng phải đặt cọc trước.</p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           <div>
-            <BaseInput
+            <Input
               v-model="maxOrderProxy"
               type="text"
               id="max-order-value"
@@ -39,7 +39,7 @@
               >Tỷ lệ đặt cọc (%):</label
             >
             <div class="relative w-full max-w-[120px]">
-              <BaseInput
+              <Input
                 v-model="depositProxy"
                 type="number"
                 id="deposit-percentage"
@@ -93,7 +93,7 @@
           Cho phép tạo đơn hàng số lượng lớn nhưng yêu cầu gặp trực tiếp.
         </p>
         <div class="w-full">
-          <BaseInput
+          <Input
             v-model="maxCountProxy"
             type="number"
             id="max-motorcycle-count"
@@ -135,7 +135,7 @@
           Thiết lập mức tồn kho tối thiểu để kích hoạt cảnh báo.
         </p>
         <div class="w-full">
-          <BaseInput
+          <Input
             v-model="stockLevelProxy"
             type="number"
             id="stock-warning-level"
@@ -182,7 +182,7 @@
 <script setup>
 import { reactive, onMounted, computed } from 'vue'
 import { useToast } from 'vue-toastification'
-import BaseInput from '@/components/ui/input/BaseInput.vue'
+import Input from '@/components/ui/input/Input.vue'
 
 const settings = reactive({
   maxOrder: 10000000,

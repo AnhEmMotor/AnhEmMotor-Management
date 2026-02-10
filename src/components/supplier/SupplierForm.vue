@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch } from 'vue'
-import BaseInput from '@/components/ui/input/BaseInput.vue'
-import BaseTextarea from '@/components/ui/input/BaseTextarea.vue'
+import Input from '@/components/ui/input/Input.vue'
+import Textarea from '@/components/ui/input/Textarea.vue'
 
 const props = defineProps({
   modelValue: {
@@ -55,7 +55,7 @@ watch(
     <div class="space-y-4 max-h-[70vh] overflow-y-auto px-2">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <BaseInput
+          <Input
             label="Tên nhà cung cấp"
             v-model="localSupplier.name"
             placeholder="Bắt buộc"
@@ -66,7 +66,7 @@ watch(
           </div>
         </div>
         <div>
-          <BaseInput
+          <Input
             label="Điện thoại"
             v-model="localSupplier.phone"
             placeholder="Nhập số điện thoại"
@@ -76,7 +76,7 @@ watch(
           </div>
         </div>
         <div>
-          <BaseInput
+          <Input
             label="Email"
             v-model="localSupplier.email"
             type="email"
@@ -88,12 +88,12 @@ watch(
         </div>
       </div>
       <div>
-        <BaseInput label="Địa chỉ" v-model="localSupplier.address" placeholder="Nhập địa chỉ" />
+        <Input label="Địa chỉ" v-model="localSupplier.address" placeholder="Nhập địa chỉ" />
         <div v-if="errors && errors.address" class="text-red-500 text-xs mt-1">
           {{ errors.address }}
         </div>
       </div>
-      <BaseTextarea
+      <Textarea
         label="Ghi chú"
         v-model="localSupplier.notes"
         placeholder="Nhập ghi chú..."

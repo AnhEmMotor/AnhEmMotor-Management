@@ -7,7 +7,7 @@
         <h2 class="text-3xl font-bold text-center text-gray-800">Quản Lý Khách Hàng</h2>
       </div>
       <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full lg:w-auto">
-        <BaseActionButton text="Thêm mới" icon="fas fa-plus" color="blue" @click="openAddModal" />
+        <Button text="Thêm mới" icon="fas fa-plus" color="blue" @click="openAddModal" />
         <UserFilterButtons v-model="selectedStatuses" multiple />
       </div>
     </div>
@@ -53,10 +53,10 @@
               }}</RoundBadge>
             </td>
             <td class="py-3 px-6 text-left space-x-2">
-              <BaseSmallNoBgButton @click="editCustomer(customer.id)">Sửa</BaseSmallNoBgButton>
-              <BaseSmallNoBgButton color="red" @click="deleteCustomer(customer.id)">
+              <SmallNoBgButton @click="editCustomer(customer.id)">Sửa</SmallNoBgButton>
+              <SmallNoBgButton color="red" @click="deleteCustomer(customer.id)">
                 Xóa
-              </BaseSmallNoBgButton>
+              </SmallNoBgButton>
             </td>
           </tr>
         </tbody>
@@ -89,9 +89,9 @@
 import UserFilterButtons from '@/components/users/UserFilterButtons.vue'
 import UserForm from '@/components/users/UserForm.vue'
 import UserDeleteModal from '@/components/users/UserDeleteModal.vue'
-import BaseActionButton from '@/components/ui/button/BaseButton.vue'
+import Button from '@/components/ui/button/Button.vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
-import BaseSmallNoBgButton from '@/components/ui/button/BaseSmallNoBgButton.vue'
+import SmallNoBgButton from '@/components/ui/button/SmallNoBgButton.vue'
 import { onMounted, ref } from 'vue'
 
 const allCustomers = ref([

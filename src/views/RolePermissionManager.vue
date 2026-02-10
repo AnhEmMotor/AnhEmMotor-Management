@@ -4,7 +4,7 @@ import RoleList from '@/components/roles/RoleList.vue'
 import RoleForm from '@/components/roles/RoleForm.vue'
 import RoleDeleteModal from '@/components/roles/RoleDeleteModal.vue'
 import RoleFilterButtons from '@/components/roles/RoleFilterButtons.vue'
-import BaseButton from '@/components/ui/button/BaseButton.vue'
+import Button from '@/components/ui/button/Button.vue'
 
 const roles = ref([
   {
@@ -297,7 +297,7 @@ const handleActivateModal = (modalId) => {
       <div class="flex justify-between items-center mb-6">
         <RoleFilterButtons v-model="selectedStatuses" />
         <span class="h-8 border-r-2 border-black-300 mx-2" />
-        <BaseButton @click="handleAddRole" variant="primary" text="Thêm vai trò mới" />
+        <Button @click="handleAddRole" variant="primary" text="Thêm vai trò mới" />
       </div>
     </div>
 

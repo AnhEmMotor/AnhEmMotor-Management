@@ -3,8 +3,9 @@ import { ref, watch } from 'vue'
 import { useInputsStore } from '@/stores/useInputsStore'
 import * as XLSX from 'xlsx'
 import InventoryItem from '@/components/inventory_input/InventoryItem.vue'
-import BaseButton from '@/components/ui/button/BaseButton.vue'
-import BasePagination from '@/components/ui/button/BasePagination.vue'
+import Button from '@/components/ui/button/Button.vue'
+import Pagination from '@/components/ui/button/Pagination.vue'
+import Input from '@/components/ui/input/Input.vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
 import InventoryInputForm from '@/components/inventory_input/InventoryInputForm.vue'
 import ProductForm from '@/components/product/ProductForm.vue'
@@ -311,8 +312,8 @@ const handleSaveNotes = async ({ id, notes }) => {
       </div>
       
       <div class="flex flex-wrap items-center gap-2">
-        <BaseButton text="Nhập hàng" color="purple" @click="openNewInventoryModal" />
-        <BaseButton text="Export" color="green" @click="exportExcel" />
+        <Button text="Nhập hàng" color="purple" @click="openNewInventoryModal" />
+        <Button text="Export" color="green" @click="exportExcel" />
         <div class="h-8 border-r-2 border-black-300 mx-2"></div>
         <InventoryFilterButtons v-model="selectedStatuses" />
       </div> 
@@ -320,7 +321,7 @@ const handleSaveNotes = async ({ id, notes }) => {
     </div>
 
     
-    <BaseInput
+    <Input
       v-model="searchTerm"
       type="text"
       placeholder="Tìm kiếm theo mã phiếu, mã hoặc tên NCC..."
@@ -358,7 +359,7 @@ const handleSaveNotes = async ({ id, notes }) => {
       />
     </div>
 
-    <BasePagination
+    <Pagination
       :total-pages="totalPages"
       v-model:currentPage="currentPage"
       :loading="isLoading"
@@ -387,9 +388,9 @@ const handleSaveNotes = async ({ id, notes }) => {
       </template>
 
       <template #footer>
-        <BaseButton text="Hủy" color="gray" @click="closeInventoryModal" />
-        <BaseButton text="Lưu tạm" color="blue" @click="saveInventoryReceipt" />
-        <BaseButton text="Hoàn thành" color="green" @click="completeInventoryReceipt" />
+        <Button text="Hủy" color="gray" @click="closeInventoryModal" />
+        <Button text="Lưu tạm" color="blue" @click="saveInventoryReceipt" />
+        <Button text="Hoàn thành" color="green" @click="completeInventoryReceipt" />
       </template>
     </DraggableModal>
 
@@ -408,8 +409,8 @@ const handleSaveNotes = async ({ id, notes }) => {
       </template>
 
       <template #footer>
-        <BaseButton text="Hủy" color="gray" @click="closeProductModal" />
-        <BaseButton text="Thêm sản phẩm" color="green" @click="saveNewProduct" />
+        <Button text="Hủy" color="gray" @click="closeProductModal" />
+        <Button text="Thêm sản phẩm" color="green" @click="saveNewProduct" />
       </template>
     </DraggableModal>
   </div>

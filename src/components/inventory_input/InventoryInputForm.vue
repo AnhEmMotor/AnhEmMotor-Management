@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watch, onBeforeUnmount, reactive } from 'vue'
-import BaseTextarea from '@/components/ui/input/BaseTextarea.vue'
+import Textarea from '@/components/ui/input/Textarea.vue'
 import RoundBadge from '../ui/RoundBadge.vue'
 import * as apiSuppliers from '@/api/supplier'
 import * as apiProducts from '@/api/product'
@@ -490,7 +490,7 @@ onBeforeUnmount(() => {
       </div>
 
       <div class="flex justify-between items-center mb-5">
-        <BaseTextarea v-model="localData.notes" label="Ghi chú" placeholder="Ghi chú" :rows="4" />
+        <Textarea v-model="localData.notes" label="Ghi chú" placeholder="Ghi chú" :rows="4" />
       </div>
     </div>
   </div>

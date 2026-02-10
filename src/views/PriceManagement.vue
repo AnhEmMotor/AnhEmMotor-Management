@@ -5,8 +5,8 @@ import { useRoute, useRouter } from 'vue-router'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import PriceQuickMenu from '@/components/price_management/PriceQuickMenu.vue'
-import BaseInput from '@/components/ui/input/BaseInput.vue'
-import BasePagination from '@/components/ui/button/BasePagination.vue'
+import Input from '@/components/ui/input/Input.vue'
+import Pagination from '@/components/ui/button/Pagination.vue'
 
 const priceStore = usePriceStore()
 const router = useRouter()
@@ -228,7 +228,7 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <BaseInput
+    <Input
       v-model="localSearchTerm"
       type="text"
       placeholder="Tìm kiếm mã, tên, ..."
@@ -300,7 +300,7 @@ onBeforeUnmount(() => {
               <div class="px-0 md:px-1 md:col-span-4">
                 <div class="text-xs text-gray-500 md:hidden">Nhập giá</div>
                 <div class="flex items-center gap-2">
-                  <BaseInput
+                  <Input
                     v-model="variant.price"
                     type="text"
                     placeholder="0"
@@ -349,6 +349,6 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <BasePagination :total-pages="totalPages || 0" v-model:currentPage="currentPage" />
+    <Pagination :total-pages="totalPages || 0" v-model:currentPage="currentPage" />
   </div>
 </template>

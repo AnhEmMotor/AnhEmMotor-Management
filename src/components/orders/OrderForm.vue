@@ -3,10 +3,10 @@ import { ref, computed, watch, onBeforeUnmount } from 'vue'
 import { useOrdersStore } from '@/stores/useOrdersStore'
 import { debounce } from '@/utils/debounceThrottle'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
-import BaseDropdown from '@/components/ui/input/BaseDropdown.vue'
-import BaseInput from '@/components/ui/input/BaseInput.vue'
-import BaseTextarea from '../ui/input/BaseTextarea.vue'
-import BaseButton from '@/components/ui/button/BaseButton.vue'
+import Dropdown from '@/components/ui/input/Dropdown.vue'
+import Input from '@/components/ui/input/Input.vue'
+import Textarea from '../ui/input/Textarea.vue'
+import Button from '@/components/ui/button/Button.vue'
 
 const props = defineProps({
   show: { type: Boolean, default: false },
@@ -311,7 +311,7 @@ onBeforeUnmount(() => {
         </div>
         <div>
           <label class="block text-sm font-medium mb-1">Tên khách hàng</label>
-          <BaseInput
+          <Input
             v-model="localData.customerName"
             :error="errors.customerName"
             :disabled="isLocked"
@@ -321,7 +321,7 @@ onBeforeUnmount(() => {
         <div>
           <label class="block text-sm font-medium mb-1">Thêm sản phẩm</label>
           <div class="relative">
-            <BaseInput
+            <Input
               ref="productInputRef"
               v-model="productSearchTerm"
               @focus="openProductDropdown"
@@ -371,7 +371,7 @@ onBeforeUnmount(() => {
 
         <div v-if="props.order">
           <label class="block text-sm font-medium mb-1">Trạng thái đơn</label>
-          <BaseDropdown
+          <Dropdown
             v-model="localStatus"
             :options="allowedStatusOptionsFor(originalStatusKey)"
             placeholder="Chọn trạng thái"
@@ -443,7 +443,7 @@ onBeforeUnmount(() => {
                   {{ p.name }}
                 </td>
                 <td class="py-2 px-3 text-right border-b border-[rgba(0,0,0,0.04)]">
-                  <BaseInput
+                  <Input
                     v-model.number="p.quantity"
                     @change="calculateProductTotal(p)"
                     type="number"
@@ -453,7 +453,7 @@ onBeforeUnmount(() => {
                   />
                 </td>
                 <td class="py-2 px-3 text-right border-b border-[rgba(0,0,0,0.04)]">
-                  <BaseInput
+                  <Input
                     v-model.number="p.unitPrice"
                     @change="calculateProductTotal(p)"
                     type="number"
@@ -484,7 +484,7 @@ onBeforeUnmount(() => {
 
         <div>
           <label class="block text-sm font-medium mb-1">Ghi chú</label>
-          <BaseTextarea v-model="localData.notes" :disabled="isLocked" rows="3" />
+          <Textarea v-model="localData.notes" :disabled="isLocked" rows="3" />
         </div>
       </div>
     </template>
@@ -493,8 +493,8 @@ onBeforeUnmount(() => {
       <div class="flex items-center justify-between w-full">
         <div class="text-sm font-semibold">Tổng: {{ totalAmount.toLocaleString('vi-VN') }} VNĐ</div>
         <div class="flex gap-2">
-          <BaseButton text="Huỷ" color="gray" @click="$emit('close')" />
-          <BaseButton
+          <Button text="Huỷ" color="gray" @click="$emit('close')" />
+          <Button
             :text="props.order ? 'Lưu' : 'Tạo đơn'"
             color="primary"
             @click="submit"

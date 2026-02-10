@@ -348,7 +348,7 @@
       </nav>
 
       <div class="mt-auto w-full p-4 border-t border-gray-100 bg-gray-50/50">
-        <BaseLoadingOverlay :show="loading" message="Đang đăng xuất..." />
+        <LoadingOverlay :show="loading" message="Đang đăng xuất..." />
         <div class="flex items-center gap-3 w-full rounded-xl p-2">
           <div
             class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold shrink-0"
@@ -402,7 +402,7 @@ import IconWarehouse from '@/components/icons/IconWarehouse.vue'
 import IconSettings from '@/components/icons/IconSettings.vue'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useRouter, useRoute } from 'vue-router'
-import BaseLoadingOverlay from '@/components/ui/BaseLoadingOverlay.vue'
+import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 
 const openGroups = ref([])
 const route = useRoute()

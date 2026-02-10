@@ -1,9 +1,9 @@
 <script setup>
 import { ref, watch } from 'vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
-import BaseInput from '@/components/ui/input/BaseInput.vue'
-import BaseDropdown from '@/components/ui/input/BaseDropdown.vue'
-import BaseButton from '@/components/ui/button/BaseButton.vue'
+import Input from '@/components/ui/input/Input.vue'
+import Dropdown from '@/components/ui/input/Dropdown.vue'
+import Button from '@/components/ui/button/Button.vue'
 
 const props = defineProps({
   show: {
@@ -200,7 +200,7 @@ const isRoleSelected = (roleId) => {
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Mã khách hàng <span class="text-red-500">*</span>
           </label>
-          <BaseInput v-model="formData.code" placeholder="VD: KH001" :error="errors.code" />
+          <Input v-model="formData.code" placeholder="VD: KH001" :error="errors.code" />
           <p v-if="errors.code" class="mt-1 text-sm text-red-500">{{ errors.code }}</p>
         </div>
 
@@ -208,7 +208,7 @@ const isRoleSelected = (roleId) => {
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Tên khách hàng <span class="text-red-500">*</span>
           </label>
-          <BaseInput
+          <Input
             v-model="formData.name"
             placeholder="Nhập tên khách hàng"
             :error="errors.name"
@@ -220,7 +220,7 @@ const isRoleSelected = (roleId) => {
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Email <span class="text-red-500">*</span>
           </label>
-          <BaseInput
+          <Input
             v-model="formData.email"
             type="email"
             placeholder="example@email.com"
@@ -233,7 +233,7 @@ const isRoleSelected = (roleId) => {
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Số điện thoại <span class="text-red-500">*</span>
           </label>
-          <BaseInput v-model="formData.phone" placeholder="0901234567" :error="errors.phone" />
+          <Input v-model="formData.phone" placeholder="0901234567" :error="errors.phone" />
           <p v-if="errors.phone" class="mt-1 text-sm text-red-500">{{ errors.phone }}</p>
         </div>
 
@@ -241,7 +241,7 @@ const isRoleSelected = (roleId) => {
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Địa chỉ <span class="text-red-500">*</span>
           </label>
-          <BaseInput
+          <Input
             v-model="formData.address"
             placeholder="Nhập địa chỉ"
             :error="errors.address"
@@ -253,7 +253,7 @@ const isRoleSelected = (roleId) => {
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Trạng thái <span class="text-red-500">*</span>
           </label>
-          <BaseDropdown
+          <Dropdown
             v-model="formData.status"
             :options="statusOptions"
             placeholder="Chọn trạng thái"
@@ -295,8 +295,8 @@ const isRoleSelected = (roleId) => {
     </template>
 
     <template #footer>
-      <BaseButton text="Hủy" color="gray" @click="handleClose" />
-      <BaseButton
+      <Button text="Hủy" color="gray" @click="handleClose" />
+      <Button
         :text="isEditMode ? 'Cập nhật' : 'Thêm mới'"
         color="primary"
         @click="handleSave"

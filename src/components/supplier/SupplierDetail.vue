@@ -1,7 +1,7 @@
 <script setup>
 import RoundBadge from '@/components/ui/RoundBadge.vue'
-import BasePagination from '../ui/button/BasePagination.vue'
-import BaseSpinner from '../ui/BaseSpinner.vue'
+import Pagination from '../ui/button/Pagination.vue'
+import Spinner from '../ui/Spinner.vue'
 import { computed, ref } from 'vue'
 import { formatDateTime, formatDate } from '@/composables/useDate'
 import { formatCurrency } from '@/composables/useCurrency'
@@ -159,7 +159,7 @@ const {
     </div>
 
     <div v-show="activeTab === 'history'">
-      <div v-if="historyLoading" class="p-4 text-center text-gray-500"><BaseSpinner /></div>
+      <div v-if="historyLoading" class="p-4 text-center text-gray-500"><Spinner /></div>
       <div v-else-if="historyIsError" class="p-4 text-center text-red-500 bg-red-50 rounded-lg">
         Lỗi khi tải lịch sử: {{ historyError?.message }}
       </div>
@@ -192,7 +192,7 @@ const {
             </div>
           </div>
         </div>
-        <BasePagination
+        <Pagination
           :total-pages="historyTotalPages"
           v-model:currentPage="historyCurrentPage"
           :loading="historyLoading"

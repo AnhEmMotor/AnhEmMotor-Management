@@ -1,10 +1,10 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
-import BaseInput from '@/components/ui/input/BaseInput.vue'
-import BaseTextarea from '@/components/ui/input/BaseTextarea.vue'
-import BaseButton from '@/components/ui/button/BaseButton.vue'
-import BaseDropdown from '../ui/input/BaseDropdown.vue'
+import Input from '@/components/ui/input/Input.vue'
+import Textarea from '@/components/ui/input/Textarea.vue'
+import Button from '@/components/ui/button/Button.vue'
+import Dropdown from '../ui/input/Dropdown.vue'
 
 const props = defineProps({
   show: {
@@ -185,7 +185,7 @@ const handleClose = () => {
           <div class="space-y-4">
             <h4 class="text-md font-semibold text-gray-800 border-b pb-2">Thông tin vai trò</h4>
             <div>
-              <BaseInput
+              <Input
                 v-model="formData.name"
                 label="Tên vai trò"
                 placeholder="Nhập tên vai trò (VD: Quản lý, Nhân viên, ...)"
@@ -194,7 +194,7 @@ const handleClose = () => {
               <p v-if="errors.name" class="mt-1 text-sm text-red-500">{{ errors.name }}</p>
             </div>
             <div>
-              <BaseTextarea
+              <Textarea
                 v-model="formData.description"
                 label="Ghi chú"
                 placeholder="Nhập mô tả về vai trò này..."
@@ -208,7 +208,7 @@ const handleClose = () => {
             </div>
 
             <div>
-              <BaseDropdown
+              <Dropdown
                 v-model="formData.status"
                 label="Trạng thái"
                 :options="[
@@ -297,8 +297,8 @@ const handleClose = () => {
     </template>
 
     <template #footer>
-      <BaseButton text="Hủy" color="gray" @click="handleClose" />
-      <BaseButton
+      <Button text="Hủy" color="gray" @click="handleClose" />
+      <Button
         :text="isEditMode ? 'Cập nhật' : 'Thêm mới'"
         color="primary"
         @click="handleSave"
