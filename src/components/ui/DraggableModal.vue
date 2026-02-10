@@ -154,6 +154,7 @@ onBeforeUnmount(() => {
   position: fixed;
   width: 500px;
   min-height: 200px;
+  max-height: 90vh; /* Ensure modal fits on screen and triggers scroll */
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
@@ -172,10 +173,14 @@ onBeforeUnmount(() => {
   transition: none;
 }
 .draggable-modal-container.is-maximized {
-  width: 100%;
-  height: 100%;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+  top: 0 !important;
+  left: 0 !important;
   border-radius: 0;
   box-shadow: none;
+  transform: none;
 }
 .modal-header {
   display: flex;

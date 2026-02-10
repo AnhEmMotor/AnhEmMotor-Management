@@ -22,7 +22,7 @@ export function usePaginatedQuery(options) {
     return [...baseKey, page.value, isRef(filters) ? filters.value : filters]
   })
 
-  const { data, isLoading, isError, error } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: queryKey,
     queryFn: () =>
       fetchFn({
@@ -100,6 +100,7 @@ export function usePaginatedQuery(options) {
     isLoading,
     isError,
     error,
+    refetch,
     items,
     totalCount,
     totalPages,

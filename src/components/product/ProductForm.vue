@@ -328,7 +328,7 @@ const applyGeneralPhotoCollection = () => {
 <template>
   <LoadingOverlay :show="showLoadingOverlay" :message="loadingMessage" />
   <form @submit.prevent id="product-form">
-    <div class="space-y-4 max-h-[75vh] overflow-y-auto px-1 pr-2">
+    <div class="space-y-4 px-1 pr-2">
       <fieldset class="border rounded-md p-4">
         <legend class="px-2 font-semibold text-gray-700">Thông tin chung</legend>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -223,8 +223,12 @@
     :key="formModalKey"
     v-if="isFormModalVisible"
     @close="handleCloseFormModal"
+    @refresh="handleRefreshForm"
     width="72vw"
   >
+    <template #header>
+      <span class="font-bold text-lg">{{ formModalTitle }}</span>
+    </template>
     <template #body>
       <ProductForm
         v-model="editableProduct"
@@ -318,6 +322,7 @@ const {
   isLoading,
   isError,
   error,
+  refetch,
 } = usePaginatedQuery({
   queryKeyBase: ref('products'),
   filters: filters,
@@ -634,5 +639,15 @@ const importExcel = () => {
 }
 const exportExcel = () => {
   alert('Chức năng Export Excel chưa được triển khai.')
+}
+
+const handleRefreshForm = () => {
+  // Placeholder logic as requested
+  if (isEditMode.value) {
+     // Optional: logic to re-fetch specific product
+     toast.info("Đã làm mới dữ liệu sản phẩm (Demo)")
+  } else {
+     toast.info("Đã làm mới form (Demo)")
+  }
 }
 </script>
