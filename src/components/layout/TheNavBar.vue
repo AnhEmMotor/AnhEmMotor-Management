@@ -10,15 +10,22 @@ import IconWarehouse from '@/components/icons/IconWarehouse.vue'
 import IconSettings from '@/components/icons/IconSettings.vue'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useRouter, useRoute } from 'vue-router'
+import BaseLoadingOverlay from '@/components/ui/BaseLoadingOverlay.vue'
 
 const openGroups = ref([])
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
+const loading = ref(false)
 
 const handleLogout = async () => {
-  await authStore.logout()
-  router.push('/login')
+  loading.value = true
+  try {
+    await authStore.logout()
+    router.push('/login')
+  } finally {
+    loading.value = false
+  }
 }
 
 const toggleGroup = (group) => {
@@ -60,6 +67,7 @@ watch(
   <div
     class="fixed left-0 top-0 w-84 h-full p-6 shadow-xl flex-shrink-0 flex flex-col items-center bg-white"
   >
+    <BaseLoadingOverlay :show="loading" message="Đang đăng xuất..." />
     <h1 class="text-2xl font-bold mb-8 mt-8 text-red-500">AnhEm Motor Admin</h1>
     <nav class="w-full">
       <ul class="space-y-2">

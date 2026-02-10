@@ -3,6 +3,7 @@ import { ref, reactive } from 'vue';
 import { useAuthStore } from '../stores/useAuthStore';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
+import BaseLoadingOverlay from '../components/ui/BaseLoadingOverlay.vue';
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -35,6 +36,7 @@ const handleLogin = async () => {
 
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 via-white to-red-50">
+    <BaseLoadingOverlay :show="loading" message="Đang đăng nhập..." />
     <div class="w-full max-w-md">
       <div class="bg-white rounded-2xl shadow-2xl p-8 space-y-6">
         <div class="text-center">
