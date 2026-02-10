@@ -8,6 +8,7 @@ const CustomerManager = () => import('@/views/UserManager.vue')
 const ProductsManager = () => import('@/views/ProductsManager.vue')
 const ProductReport = () => import('@/views/ProductReport.vue')
 const RevenueAnalysis = () => import('@/views/RevenueAnalysis.vue')
+const WarehouseReport = () => import('@/views/WarehouseReport.vue')
 const InventoryInputManager = () => import('@/views/InventoryInputManager.vue')
 const SupplierManager = () => import('@/views/SupplierManager.vue')
 const UserManager = () => import('@/views/UserManager.vue')
@@ -64,6 +65,12 @@ const router = createRouter({
           name: 'revenue-analysis',
           path: 'report-revenue',
           component: RevenueAnalysis,
+          meta: { requiresAuth: true },
+        },
+        {
+          name: 'warehouse-report',
+          path: 'report-warehouse',
+          component: WarehouseReport,
           meta: { requiresAuth: true },
         },
         {
