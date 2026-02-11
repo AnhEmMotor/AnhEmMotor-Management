@@ -210,7 +210,7 @@
             >
               <div class="flex items-center space-x-3">
                 <IconUser class="flex-shrink-0" :class="isGroupActive('user') ? 'text-red-600' : 'text-gray-500'" />
-                <span>Nhân viên</span>
+                <span>Người dùng</span>
               </div>
               <IconUpArrow :isOpen="openGroups.includes('user')" />
             </button>
@@ -228,7 +228,7 @@
                   "
                   @click="closeMobileMenu"
                 >
-                  <span>Danh sách nhân viên</span>
+                  <span>Danh sách</span>
                 </RouterLink>
               </li>
               <li>
@@ -243,7 +243,7 @@
                   "
                   @click="closeMobileMenu"
                 >
-                  <span>Phân quyền</span>
+                  <span>Vai trò & quyền hạn</span>
                 </RouterLink>
               </li>
             </ul>

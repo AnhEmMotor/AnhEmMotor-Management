@@ -4,6 +4,7 @@ import DraggableModal from '@/components/ui/DraggableModal.vue'
 import Input from '@/components/ui/input/Input.vue'
 import Dropdown from '@/components/ui/input/Dropdown.vue'
 import Button from '@/components/ui/button/Button.vue'
+import { useToast } from 'vue-toastification'
 
 const props = defineProps({
   show: {
@@ -29,6 +30,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['close', 'save', 'activate'])
+const toast = useToast()
 
 const formData = ref({
   code: '',
@@ -178,13 +180,31 @@ const toggleRole = (roleId) => {
 const isRoleSelected = (roleId) => {
   return formData.value.roleIds.includes(roleId)
 }
+
+const handleRefresh = () => {
+  if (props.isEditMode && props.user) {
+    formData.value = {
+      code: props.user.code || '',
+      name: props.user.name || '',
+      email: props.user.email || '',
+      phone: props.user.phone || '',
+      address: props.user.address || '',
+      status: props.user.status || 'active',
+      roleIds: props.user.roleIds ? [...props.user.roleIds] : [],
+    }
+    toast.info('Đã làm mới dữ liệu')
+  } else {
+    resetForm()
+    toast.info('Đã làm mới form')
+  }
+}
 </script>
 
 <template>
   <DraggableModal
     :zIndex="zIndex"
-    :initialPosition="{ x: 300, y: 50 }"
     width="700px"
+    :onRefresh="handleRefresh"
     @close="handleClose"
     @activate="emit('activate')"
   >
@@ -195,7 +215,7 @@ const isRoleSelected = (roleId) => {
     </template>
 
     <template #body>
-      <div class="space-y-4 max-h-[calc(100vh-300px)] overflow-y-auto pr-2">
+      <div class="space-y-4 overflow-y-auto pr-2">
         <div v-if="!isEditMode">
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Mã khách hàng <span class="text-red-500">*</span>

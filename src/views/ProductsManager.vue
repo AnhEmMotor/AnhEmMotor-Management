@@ -10,7 +10,7 @@
       </div>
       <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full lg:w-auto">
         <Button text="Thêm sản phẩm" :icon="IconPlus" color="primary" @click="openAddEditModal()" />
-        <Button text="Import Excel" :icon="IconFileImport" color="secondary" @click="importExcel" />
+        <Button text="Import" :icon="IconFileImport" color="secondary" @click="importExcel" />
         <Button text="Export" :icon="IconFileExport" color="secondary" @click="exportExcel" />
         <span class="text-gray-400 mx-4 hidden border-r-2 sm:block" />
         <ProductFilterButtons v-model="selectedStatuses" />
