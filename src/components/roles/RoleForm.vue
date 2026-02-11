@@ -168,7 +168,6 @@ const handleClose = () => {
 <template>
   <DraggableModal
     :zIndex="zIndex"
-    :initialPosition="{ x: 300, y: 50 }"
     width="800px"
     @close="handleClose"
     @activate="emit('activate')"
@@ -180,7 +179,7 @@ const handleClose = () => {
     </template>
 
     <template #body>
-      <div class="max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
+      <div class="overflow-y-auto pr-2">
         <div class="grid grid-cols-1 gap-6">
           <div class="space-y-4">
             <h4 class="text-md font-semibold text-gray-800 border-b pb-2">Thông tin vai trò</h4>
