@@ -5,7 +5,7 @@ import RoleList from '@/components/roles/RoleList.vue'
 import RoleForm from '@/components/roles/RoleForm.vue'
 import RoleDeleteModal from '@/components/roles/RoleDeleteModal.vue'
 import RoleFilterButtons from '@/components/roles/RoleFilterButtons.vue'
-import Button from '@/components/ui/button/Button.vue'
+import Button from '@/components/ui/button/BaseButton.vue'
 import IconPlus from '@/components/icons/IconPlus.vue'
 import IconFileImport from '@/components/icons/IconFileImport.vue'
 import IconFileExport from '@/components/icons/IconFileExport.vue'
@@ -172,12 +172,8 @@ const fetchData = async () => {
   isError.value = false
   errorMessage.value = ''
   try {
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 2000))
-    // Simulate Error
     throw new Error('Lỗi tải dữ liệu vai trò')
-
-    // filteredRoles.value = [...roles.value]
   } catch {
     isError.value = true
     errorMessage.value = 'Đã xảy ra lỗi trong quá trình tải dữ liệu vai trò.'

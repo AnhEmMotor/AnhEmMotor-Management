@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import PriceQuickMenu from '@/components/price_management/PriceQuickMenu.vue'
 import Input from '@/components/ui/input/BaseInput.vue'
-import Button from '@/components/ui/button/Button.vue'
+import Button from '@/components/ui/button/BaseButton.vue'
 import Pagination from '@/components/ui/button/Pagination.vue'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 import IconFileImport from '@/components/icons/IconFileImport.vue'
@@ -21,8 +21,7 @@ const route = useRoute()
 const queryClient = useQueryClient()
 const toast = useToast()
 
-const itemsPerPage = ref(5) // Default to 5 items to show pagination
-
+const itemsPerPage = ref(5)
 const page = computed(() => parseInt(route.query.page) || 1)
 const searchTerm = computed(() => route.query.search || '')
 
@@ -63,12 +62,11 @@ watch(
   (newProductsData) => {
     if (newProductsData) {
       const cloned = JSON.parse(JSON.stringify(newProductsData))
-      
+
       if (cloned && cloned.length > 0) {
-        // Auto format prices for input
-        cloned.forEach(p => {
+        cloned.forEach((p) => {
           if (p.variants) {
-            p.variants.forEach(v => {
+            p.variants.forEach((v) => {
               if (v.price !== null && v.price !== undefined) {
                 v.price = formatMoney(v.price)
               }
@@ -76,14 +74,14 @@ watch(
           }
         })
       }
-      
+
       products.value = cloned
     } else {
       products.value = []
     }
   },
   {
-    immediate: true, 
+    immediate: true,
     deep: true,
   },
 )
@@ -118,9 +116,6 @@ const { mutate: updatePriceMutation } = useMutation({
   mutationFn: (variables) => priceStore.updatePrice(variables),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['products'] })
-  },
-  onError: (err) => {
-    console.error('Failed to update price:', err)
   },
 })
 
@@ -183,7 +178,7 @@ function isExpanded(productId) {
 
 function getPriceRange(variants, field) {
   if (!variants || variants.length === 0) return '-'
-  const prices = variants.map(v => parseNumber(v[field])).filter(p => p !== null)
+  const prices = variants.map((v) => parseNumber(v[field])).filter((p) => p !== null)
   if (prices.length === 0) return '-'
   const min = Math.min(...prices)
   const max = Math.max(...prices)
@@ -212,7 +207,6 @@ function onDocClick(e) {
 }
 
 function applyQuickPrice(newPrice) {
-  // console.log(newPrice)
   const { product, variant } = quickMenu.value.item
   if (!product || !variant) return
 
@@ -262,10 +256,10 @@ function formatPercent(variant) {
   const recent = parseNumber(variant.latest_input_price)
   if (current === null || recent === null || recent === 0) return '-'
   const ratio = (current - recent) / recent
-  return new Intl.NumberFormat('vi-VN', { 
-    style: 'percent', 
-    minimumFractionDigits: 0, 
-    maximumFractionDigits: 2 
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'percent',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
   }).format(ratio)
 }
 
@@ -283,13 +277,9 @@ onMounted(() => {
   document.addEventListener('mousedown', onDocClick)
 })
 
-function handleImport() {
-  console.log('Import functionality to be implemented')
-}
+function handleImport() {}
 
-function handleExport() {
-  console.log('Export functionality to be implemented')
-}
+function handleExport() {}
 
 onBeforeUnmount(() => {
   document.removeEventListener('mousedown', onDocClick)
@@ -299,7 +289,9 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="bg-white p-4 sm:p-6 rounded-xl shadow-lg">
-    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0">
+    <div
+      class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0"
+    >
       <div>
         <h1 class="text-3xl font-bold text-gray-800">Thiết Lập Giá Hàng Hóa</h1>
       </div>
@@ -317,7 +309,6 @@ onBeforeUnmount(() => {
     />
 
     <div class="border border-gray-200 rounded-md overflow-hidden">
-      <!-- Unified Header - Appears Once -->
       <div
         class="hidden md:grid md:grid-cols-12 items-center py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 border-b border-gray-200"
       >
@@ -333,122 +324,135 @@ onBeforeUnmount(() => {
           <div v-for="i in 5" :key="i" class="border-b border-gray-200 bg-white">
             <div class="grid grid-cols-1 md:grid-cols-12 items-center py-4 px-4 bg-white">
               <div class="md:col-span-4 pl-2"><SkeletonLoader height="24px" width="70%" /></div>
-              <div class="md:col-span-2 flex justify-end pr-2"><SkeletonLoader height="20px" width="50%" /></div>
-              <div class="md:col-span-2 flex justify-end pr-2"><SkeletonLoader height="20px" width="50%" /></div>
+              <div class="md:col-span-2 flex justify-end pr-2">
+                <SkeletonLoader height="20px" width="50%" />
+              </div>
+              <div class="md:col-span-2 flex justify-end pr-2">
+                <SkeletonLoader height="20px" width="50%" />
+              </div>
               <div class="md:col-span-2"></div>
               <div class="md:col-span-2"></div>
             </div>
           </div>
         </div>
-      <div v-else-if="isError" class="text-center py-6 text-red-500">
-        Đã xảy ra lỗi trong quá trình lấy dữ liệu.
-      </div>
-      <div v-else-if="!products || products.length === 0" class="text-center py-6 text-gray-500">
-        Không có mặt hàng để hiển thị.
-      </div>
+        <div v-else-if="isError" class="text-center py-6 text-red-500">
+          Đã xảy ra lỗi trong quá trình lấy dữ liệu.
+        </div>
+        <div v-else-if="!products || products.length === 0" class="text-center py-6 text-gray-500">
+          Không có mặt hàng để hiển thị.
+        </div>
 
-      <template v-else>
-        <div
-          v-for="product in products"
-          :key="product.product_id"
-          class="border-b border-gray-200 last:border-b-0"
-        >
-          <!-- Parent Row (Master - Product) -->
-          <div 
-            class="grid grid-cols-1 md:grid-cols-12 items-center py-4 px-4 bg-white hover:bg-gray-50 cursor-pointer transition-colors"
-            @click="toggleProduct(product.product_id)"
+        <template v-else>
+          <div
+            v-for="product in products"
+            :key="product.product_id"
+            class="border-b border-gray-200 last:border-b-0"
           >
-            <div class="font-bold text-base text-gray-900 md:col-span-4 flex items-center gap-2">
-              <component 
-                :is="isExpanded(product.product_id) ? IconDownArrow : IconRightArrow" 
-                class="w-4 h-4 text-gray-500 flex-shrink-0"
-              />
-              <span class="truncate">{{ product.product_name }}</span>
-              <span class="text-xs text-gray-500 font-normal ml-2">({{ product.variants?.length || 0 }})</span>
-            </div>
-            <div class="text-sm text-gray-600 md:col-span-2 text-right pr-2">
-              {{ getPriceRange(product.variants, 'latest_input_price') }}
-            </div>
-            <div class="text-sm text-gray-600 md:col-span-2 text-right pr-2">
-              {{ getPriceRange(product.variants, 'price') }}
-            </div>
-            <div class="md:col-span-2"></div>
-            <div class="md:col-span-2"></div>
-          </div>
-
-          <!-- Child Rows (Detail - Variants) -->
-          <template v-if="isExpanded(product.product_id)">
             <div
-              v-if="!product.variants || product.variants.length === 0"
-              class="text-center py-4 text-gray-500 text-sm bg-gray-50"
+              class="grid grid-cols-1 md:grid-cols-12 items-center py-4 px-4 bg-white hover:bg-gray-50 cursor-pointer transition-colors"
+              @click="toggleProduct(product.product_id)"
             >
-              Sản phẩm này chưa có biến thể.
-            </div>
-
-            <div
-              v-for="variant in product.variants"
-              :key="variant.variant_id"
-              class="grid grid-cols-1 md:grid-cols-12 md:items-center py-2 md:py-3 border-t border-gray-100 text-sm gap-2 md:gap-0 first:border-t-0 bg-white hover:bg-gray-50 transition-colors"
-            >
-              <div class="px-0 md:pl-12 md:col-span-4 flex items-center gap-2">
-                <div class="text-xs text-gray-500 md:hidden">Biến thể</div>
-                <div class="font-medium text-gray-700">{{ getVariantOptionsText(variant.option_values) }}</div>
-              </div>
-
-              <div class="px-0 md:pr-2 text-right md:col-span-2">
-                <div class="text-xs text-gray-500 md:hidden">Giá vốn (nhập gần nhất)</div>
-                <div class="font-mono text-gray-700">{{ getRecentInputPriceDisplay(variant) }}</div>
-              </div>
-
-              <div class="px-0 md:pr-2 text-right md:col-span-2">
-                <div class="text-xs text-gray-500 md:hidden">Giá bán hiện tại</div>
-                <div class="font-mono font-semibold text-gray-900">{{ formatMoney(variant.price) }}</div>
-              </div>
-
-              <div class="px-0 md:pr-2 md:col-span-2">
-                <div class="text-xs text-gray-500 md:hidden">Nhập giá bán mới</div>
-                <Input
-                  :model-value="variant.price"
-                  @update:model-value="(val) => updatePriceInput(val, variant)"
-                  type="text"
-                  placeholder="0"
-                  class="price-input w-full"
-                  inputClass="text-right font-mono font-medium"
-                  @focus="(e) => openQuickMenu(e, product, variant)"
-                  @blur="() => handlePriceBlur(product, variant)"
-                  @keydown.enter.prevent="() => handlePriceBlur(product, variant)"
-                  @dblclick.stop
+              <div class="font-bold text-base text-gray-900 md:col-span-4 flex items-center gap-2">
+                <component
+                  :is="isExpanded(product.product_id) ? IconDownArrow : IconRightArrow"
+                  class="w-4 h-4 text-gray-500 flex-shrink-0"
                 />
+                <span class="truncate">{{ product.product_name }}</span>
+                <span class="text-xs text-gray-500 font-normal ml-2"
+                  >({{ product.variants?.length || 0 }})</span
+                >
               </div>
-
-              <div class="px-0 md:pr-2 text-right md:col-span-2">
-                <div class="text-xs text-gray-500 md:hidden">Biên lợi nhuận</div>
-                <div v-if="computeProfitAmount(variant) !== null" class="text-sm font-medium font-mono">
-                  <span
-                    :class="{
-                      'text-green-600': computeProfitAmount(variant) > 0,
-                      'text-red-600': computeProfitAmount(variant) < 0,
-                      'text-gray-500': computeProfitAmount(variant) === 0,
-                    }"
-                  >
-                {{ formatPercent(variant) }}
-                  </span>
-                </div>
-                <div v-else class="text-gray-400">-</div>
+              <div class="text-sm text-gray-600 md:col-span-2 text-right pr-2">
+                {{ getPriceRange(product.variants, 'latest_input_price') }}
               </div>
+              <div class="text-sm text-gray-600 md:col-span-2 text-right pr-2">
+                {{ getPriceRange(product.variants, 'price') }}
+              </div>
+              <div class="md:col-span-2"></div>
+              <div class="md:col-span-2"></div>
             </div>
-          </template>
-        </div>
-      </template>
 
-      <div
-        v-if="quickMenu.visible"
-        class="price-quick-menu fixed z-50 bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden animate-fade-in-up"
-        :style="{ top: quickMenu.y + 'px', left: quickMenu.x + 'px' }"
-      >
-        <PriceQuickMenu :item="quickMenu.item" @apply="applyQuickPrice" @close="closeQuickMenu" />
+            <template v-if="isExpanded(product.product_id)">
+              <div
+                v-if="!product.variants || product.variants.length === 0"
+                class="text-center py-4 text-gray-500 text-sm bg-gray-50"
+              >
+                Sản phẩm này chưa có biến thể.
+              </div>
+
+              <div
+                v-for="variant in product.variants"
+                :key="variant.variant_id"
+                class="grid grid-cols-1 md:grid-cols-12 md:items-center py-2 md:py-3 border-t border-gray-100 text-sm gap-2 md:gap-0 first:border-t-0 bg-white hover:bg-gray-50 transition-colors"
+              >
+                <div class="px-0 md:pl-12 md:col-span-4 flex items-center gap-2">
+                  <div class="text-xs text-gray-500 md:hidden">Biến thể</div>
+                  <div class="font-medium text-gray-700">
+                    {{ getVariantOptionsText(variant.option_values) }}
+                  </div>
+                </div>
+
+                <div class="px-0 md:pr-2 text-right md:col-span-2">
+                  <div class="text-xs text-gray-500 md:hidden">Giá vốn (nhập gần nhất)</div>
+                  <div class="font-mono text-gray-700">
+                    {{ getRecentInputPriceDisplay(variant) }}
+                  </div>
+                </div>
+
+                <div class="px-0 md:pr-2 text-right md:col-span-2">
+                  <div class="text-xs text-gray-500 md:hidden">Giá bán hiện tại</div>
+                  <div class="font-mono font-semibold text-gray-900">
+                    {{ formatMoney(variant.price) }}
+                  </div>
+                </div>
+
+                <div class="px-0 md:pr-2 md:col-span-2">
+                  <div class="text-xs text-gray-500 md:hidden">Nhập giá bán mới</div>
+                  <Input
+                    :model-value="variant.price"
+                    @update:model-value="(val) => updatePriceInput(val, variant)"
+                    type="text"
+                    placeholder="0"
+                    class="price-input w-full"
+                    inputClass="text-right font-mono font-medium"
+                    @focus="(e) => openQuickMenu(e, product, variant)"
+                    @blur="() => handlePriceBlur(product, variant)"
+                    @keydown.enter.prevent="() => handlePriceBlur(product, variant)"
+                    @dblclick.stop
+                  />
+                </div>
+
+                <div class="px-0 md:pr-2 text-right md:col-span-2">
+                  <div class="text-xs text-gray-500 md:hidden">Biên lợi nhuận</div>
+                  <div
+                    v-if="computeProfitAmount(variant) !== null"
+                    class="text-sm font-medium font-mono"
+                  >
+                    <span
+                      :class="{
+                        'text-green-600': computeProfitAmount(variant) > 0,
+                        'text-red-600': computeProfitAmount(variant) < 0,
+                        'text-gray-500': computeProfitAmount(variant) === 0,
+                      }"
+                    >
+                      {{ formatPercent(variant) }}
+                    </span>
+                  </div>
+                  <div v-else class="text-gray-400">-</div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </template>
+
+        <div
+          v-if="quickMenu.visible"
+          class="price-quick-menu fixed z-50 bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden animate-fade-in-up"
+          :style="{ top: quickMenu.y + 'px', left: quickMenu.x + 'px' }"
+        >
+          <PriceQuickMenu :item="quickMenu.item" @apply="applyQuickPrice" @close="closeQuickMenu" />
+        </div>
       </div>
-    </div>
     </div>
 
     <Pagination :total-pages="totalPages || 0" v-model:currentPage="currentPage" />

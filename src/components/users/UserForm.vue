@@ -3,7 +3,7 @@ import { ref, watch } from 'vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
 import Input from '@/components/ui/input/BaseInput.vue'
 import Dropdown from '@/components/ui/input/BaseDropdown.vue'
-import Button from '@/components/ui/button/Button.vue'
+import Button from '@/components/ui/button/BaseButton.vue'
 import { useToast } from 'vue-toastification'
 
 const props = defineProps({

@@ -4,11 +4,14 @@
     <p id="greeting" class="text-gray-500 mb-6">
       Chúc bạn một buổi sáng tốt lành! Đây là báo cáo tổng quan.
     </p>
-    
-    <!-- Skeleton Loading State -->
+
     <div v-if="isLoading">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div v-for="i in 4" :key="i" class="p-6 rounded-xl shadow-md bg-gray-50 border border-gray-100">
+        <div
+          v-for="i in 4"
+          :key="i"
+          class="p-6 rounded-xl shadow-md bg-gray-50 border border-gray-100"
+        >
           <SkeletonLoader width="40%" height="14px" class="mb-2" />
           <SkeletonLoader width="60%" height="30px" class="mb-2" />
           <SkeletonLoader width="30%" height="12px" />
@@ -30,7 +33,6 @@
       </div>
     </div>
 
-    <!-- Actual Content -->
     <div v-else>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatsCard title="Tổng Doanh Thu (Tháng)" stat="1.25 tỷ" :improvement="12" color="red" />
@@ -97,7 +99,6 @@ const monthlyComparisonData = [
 ]
 
 onMounted(() => {
-  // Simulate data fetching
   setTimeout(() => {
     isLoading.value = false
   }, 1000)

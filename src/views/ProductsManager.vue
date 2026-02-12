@@ -35,7 +35,9 @@
 
     <div v-if="isLoading" class="overflow-x-auto rounded-lg shadow-sm border border-gray-300">
       <table class="min-w-full bg-white border-collapse">
-        <thead class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs font-medium border-b border-gray-200">
+        <thead
+          class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs font-medium border-b border-gray-200"
+        >
           <tr>
             <th class="py-3 px-6 text-left w-12"></th>
             <th class="py-3 px-6 text-left w-20">Ảnh Bìa</th>
@@ -48,26 +50,33 @@
           </tr>
         </thead>
         <tbody>
-           <tr v-for="i in 5" :key="i" class="border-b border-gray-200">
-             <td class="py-3 px-6 w-12 text-center border-r border-gray-200"><SkeletonLoader width="16px" height="16px" /></td>
-             <td class="py-3 px-6"><SkeletonLoader width="64px" height="64px" className="rounded-md" /></td>
-             <td class="py-3 px-6"><SkeletonLoader width="150px" height="20px" /></td>
-             <td class="py-3 px-6"><SkeletonLoader width="100px" height="20px" /></td>
-             <td class="py-3 px-6"><SkeletonLoader width="80px" height="20px" /></td>
-             <td class="py-3 px-6"><SkeletonLoader width="40px" height="20px" /></td>
-             <td class="py-3 px-6"><SkeletonLoader width="90px" height="24px" className="rounded-full" /></td>
-             <td class="py-3 px-6 text-center flex justify-center gap-2 mt-4">
-                <SkeletonLoader width="40px" height="20px" />
-                <SkeletonLoader width="40px" height="20px" />
-             </td>
-           </tr>
+          <tr v-for="i in 5" :key="i" class="border-b border-gray-200">
+            <td class="py-3 px-6 w-12 text-center border-r border-gray-200">
+              <SkeletonLoader width="16px" height="16px" />
+            </td>
+            <td class="py-3 px-6">
+              <SkeletonLoader width="64px" height="64px" className="rounded-md" />
+            </td>
+            <td class="py-3 px-6"><SkeletonLoader width="150px" height="20px" /></td>
+            <td class="py-3 px-6"><SkeletonLoader width="100px" height="20px" /></td>
+            <td class="py-3 px-6"><SkeletonLoader width="80px" height="20px" /></td>
+            <td class="py-3 px-6"><SkeletonLoader width="40px" height="20px" /></td>
+            <td class="py-3 px-6">
+              <SkeletonLoader width="90px" height="24px" className="rounded-full" />
+            </td>
+            <td class="py-3 px-6 text-center flex justify-center gap-2 mt-4">
+              <SkeletonLoader width="40px" height="20px" />
+              <SkeletonLoader width="40px" height="20px" />
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
 
-
-
-    <div v-else-if="isError" class="text-center py-12 text-red-500 font-medium bg-white rounded-lg shadow-sm border border-gray-200">
+    <div
+      v-else-if="isError"
+      class="text-center py-12 text-red-500 font-medium bg-white rounded-lg shadow-sm border border-gray-200"
+    >
       Đã xảy ra lỗi khi lấy dữ liệu sản phẩm
     </div>
 
@@ -134,8 +143,12 @@
                 </RoundBadge>
               </td>
               <td class="py-3 px-6 text-center space-x-2">
-                <SmallNoBgButton @click="openAddEditModal(product)" :icon="IconEdit">Sửa</SmallNoBgButton>
-                <SmallNoBgButton color="red" @click="promptDelete(product)" :icon="IconTrash"> Xóa </SmallNoBgButton>
+                <SmallNoBgButton @click="openAddEditModal(product)" :icon="IconEdit"
+                  >Sửa</SmallNoBgButton
+                >
+                <SmallNoBgButton color="red" @click="promptDelete(product)" :icon="IconTrash">
+                  Xóa
+                </SmallNoBgButton>
               </td>
             </tr>
 
@@ -144,7 +157,9 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <h4 class="text-sm font-semibold mb-2 text-gray-700">Chi tiết biến thể:</h4>
-                    <table class="min-w-full bg-white rounded shadow-inner text-sm border border-gray-200">
+                    <table
+                      class="min-w-full bg-white rounded shadow-inner text-sm border border-gray-200"
+                    >
                       <thead class="bg-gray-100">
                         <tr>
                           <th class="py-2 px-4 text-left w-20">Ảnh</th>
@@ -265,7 +280,7 @@ import { useQueryClient } from '@tanstack/vue-query'
 import { debounce } from '@/utils/debounceThrottle'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import ProductForm from '@/components/product/ProductForm.vue'
-import Button from '@/components/ui/button/Button.vue'
+import Button from '@/components/ui/button/BaseButton.vue'
 import Input from '@/components/ui/input/BaseInput.vue'
 import Pagination from '@/components/ui/button/Pagination.vue'
 import SmallNoBgButton from '@/components/ui/button/SmallNoBgButton.vue'
@@ -329,11 +344,26 @@ const mockProducts = [
     brand_name: 'Honda',
     variant_count: 2,
     inventory_status: 'in_stock',
-    cover_image_url: 'https://cdn.honda.com.vn/motorbike-versions/October2024/1JgXXyKgQ2y2Zp5p5p5p.png',
+    cover_image_url:
+      'https://cdn.honda.com.vn/motorbike-versions/October2024/1JgXXyKgQ2y2Zp5p5p5p.png',
     variants: [
-      { id: 101, price: 56000000, optionValues: { 'Màu sắc': 'Xanh Xám', 'Phiên bản': 'Tiêu chuẩn' }, url: 'ab-160-xanh-xam', cover_image_url: 'https://cdn.honda.com.vn/motorbike-versions/October2024/1JgXXyKgQ2y2Zp5p5p5p.png' },
-      { id: 102, price: 60000000, optionValues: { 'Màu sắc': 'Đỏ Xám', 'Phiên bản': 'Đặc biệt' }, url: 'ab-160-do-xam', cover_image_url: 'https://cdn.honda.com.vn/motorbike-versions/October2024/1JgXXyKgQ2y2Zp5p5p5p.png' }
-    ]
+      {
+        id: 101,
+        price: 56000000,
+        optionValues: { 'Màu sắc': 'Xanh Xám', 'Phiên bản': 'Tiêu chuẩn' },
+        url: 'ab-160-xanh-xam',
+        cover_image_url:
+          'https://cdn.honda.com.vn/motorbike-versions/October2024/1JgXXyKgQ2y2Zp5p5p5p.png',
+      },
+      {
+        id: 102,
+        price: 60000000,
+        optionValues: { 'Màu sắc': 'Đỏ Xám', 'Phiên bản': 'Đặc biệt' },
+        url: 'ab-160-do-xam',
+        cover_image_url:
+          'https://cdn.honda.com.vn/motorbike-versions/October2024/1JgXXyKgQ2y2Zp5p5p5p.png',
+      },
+    ],
   },
   {
     id: 2,
@@ -344,10 +374,17 @@ const mockProducts = [
     brand_name: 'Motul',
     variant_count: 1,
     inventory_status: 'in_stock',
-    cover_image_url: 'https://shop2banh.vn/images/thumbs/2023/11/nhot-motul-300v-factory-line-10w40-1l-tem-3-lop-moi-nhat-2024-2195-slide-products-65543c7b3c7b3.jpg',
+    cover_image_url:
+      'https://shop2banh.vn/images/thumbs/2023/11/nhot-motul-300v-factory-line-10w40-1l-tem-3-lop-moi-nhat-2024-2195-slide-products-65543c7b3c7b3.jpg',
     variants: [
-      { id: 201, price: 435000, optionValues: { 'Dung tích': '1L' }, url: 'motul-300v-1l', cover_image_url: '' }
-    ]
+      {
+        id: 201,
+        price: 435000,
+        optionValues: { 'Dung tích': '1L' },
+        url: 'motul-300v-1l',
+        cover_image_url: '',
+      },
+    ],
   },
   {
     id: 3,
@@ -358,11 +395,24 @@ const mockProducts = [
     brand_name: 'Michelin',
     variant_count: 2,
     inventory_status: 'low_stock',
-    cover_image_url: 'https://shop2banh.vn/images/thumbs/2022/04/vo-michelin-city-grip-2-11070-14-dung-cho-banh-sau-pcx-vario-click-1854-slide-products-625e2e2e2e2e2.jpg',
+    cover_image_url:
+      'https://shop2banh.vn/images/thumbs/2022/04/vo-michelin-city-grip-2-11070-14-dung-cho-banh-sau-pcx-vario-click-1854-slide-products-625e2e2e2e2e2.jpg',
     variants: [
-      { id: 301, price: 1450000, optionValues: { 'Kích thước': '110/70-14' }, url: 'michelin-city-grip-2-110-70-14', cover_image_url: '' },
-      { id: 302, price: 1650000, optionValues: { 'Kích thước': '130/70-13' }, url: 'michelin-city-grip-2-130-70-13', cover_image_url: '' }
-    ]
+      {
+        id: 301,
+        price: 1450000,
+        optionValues: { 'Kích thước': '110/70-14' },
+        url: 'michelin-city-grip-2-110-70-14',
+        cover_image_url: '',
+      },
+      {
+        id: 302,
+        price: 1650000,
+        optionValues: { 'Kích thước': '130/70-13' },
+        url: 'michelin-city-grip-2-130-70-13',
+        cover_image_url: '',
+      },
+    ],
   },
   {
     id: 4,
@@ -373,8 +423,9 @@ const mockProducts = [
     brand_name: 'Ohlins',
     variant_count: 0,
     inventory_status: 'out_of_stock',
-    cover_image_url: 'https://shop2banh.vn/images/thumbs/2021/12/phuoc-ohlins-ho-819-chinh-hang-cho-vario-click-1738-slide-products-61b8b8b8b8b8b.jpg',
-    variants: []
+    cover_image_url:
+      'https://shop2banh.vn/images/thumbs/2021/12/phuoc-ohlins-ho-819-chinh-hang-cho-vario-click-1738-slide-products-61b8b8b8b8b8b.jpg',
+    variants: [],
   },
   {
     id: 5,
@@ -385,23 +436,40 @@ const mockProducts = [
     brand_name: 'Daytona',
     variant_count: 3,
     inventory_status: 'in_stock',
-    cover_image_url: 'https://shop2banh.vn/images/thumbs/2023/08/bao-tay-daytona-chinh-hang-nhat-ban-2088-slide-products-64c8c8c8c8c8c.jpg',
+    cover_image_url:
+      'https://shop2banh.vn/images/thumbs/2023/08/bao-tay-daytona-chinh-hang-nhat-ban-2088-slide-products-64c8c8c8c8c8c.jpg',
     variants: [
-       { id: 501, price: 350000, optionValues: { 'Màu': 'Đen' }, url: 'bao-tay-daytona-den', cover_image_url: '' },
-       { id: 502, price: 350000, optionValues: { 'Màu': 'Nâu' }, url: 'bao-tay-daytona-nau', cover_image_url: '' },
-       { id: 503, price: 350000, optionValues: { 'Màu': 'Xám' }, url: 'bao-tay-daytona-xam', cover_image_url: '' }
-    ]
-  }
+      {
+        id: 501,
+        price: 350000,
+        optionValues: { Màu: 'Đen' },
+        url: 'bao-tay-daytona-den',
+        cover_image_url: '',
+      },
+      {
+        id: 502,
+        price: 350000,
+        optionValues: { Màu: 'Nâu' },
+        url: 'bao-tay-daytona-nau',
+        cover_image_url: '',
+      },
+      {
+        id: 503,
+        price: 350000,
+        optionValues: { Màu: 'Xám' },
+        url: 'bao-tay-daytona-xam',
+        cover_image_url: '',
+      },
+    ],
+  },
 ]
 
 const fetchProductsFn = async () => {
-  // Simulate delay for Skeleton testing
-  await new Promise(resolve => setTimeout(resolve, 2000))
-  // return getProducts(params)
+  await new Promise((resolve) => setTimeout(resolve, 2000))
   return {
     data: mockProducts,
     total: mockProducts.length,
-    last_page: 1
+    last_page: 1,
   }
 }
 
@@ -501,7 +569,6 @@ watch(isError, (hasError) => {
     toast.error(errorMsg)
   }
 })
-
 
 watch(
   () => route.query,
@@ -614,7 +681,6 @@ const validateProduct = (productData) => {
 
   const variantErrors = []
   if (!productData.variants || productData.variants.length === 0) {
-    console.error('Lỗi: Không tìm thấy biến thể mặc định.')
     hasError = true
   }
 
@@ -687,7 +753,6 @@ const handleSaveProduct = async () => {
   formErrors.value = errors
 
   if (hasError) {
-    console.warn('Validation Errors:', formErrors.value)
     return
   }
 
@@ -699,7 +764,6 @@ const handleSaveProduct = async () => {
     await queryClient.invalidateQueries({ queryKey: ['products'] })
     showMessage(isEditing ? 'Cập nhật sản phẩm thành công' : 'Thêm sản phẩm thành công', 'success')
   } catch (error) {
-    console.error('Lỗi khi lưu sản phẩm:', error)
     formErrors.value.general = error.message || 'Lỗi từ server. Vui lòng thử lại.'
     showMessage(error.message || 'Lỗi khi lưu sản phẩm', 'error')
   } finally {
@@ -728,7 +792,6 @@ const currentPage = computed({
 })
 
 const importExcel = (event) => {
-  // alert('Chức năng Import Excel chưa được triển khai.')
   toast.info('Chức năng Import Excel đang phát triển')
   event.target.value = ''
 }
@@ -737,12 +800,10 @@ const exportExcel = () => {
 }
 
 const handleRefreshForm = () => {
-  // Placeholder logic as requested
   if (isEditMode.value) {
-     // Optional: logic to re-fetch specific product
-     toast.info("Đã làm mới dữ liệu sản phẩm (Demo)")
+    toast.info('Đã làm mới dữ liệu sản phẩm (Demo)')
   } else {
-     toast.info("Đã làm mới form (Demo)")
+    toast.info('Đã làm mới form (Demo)')
   }
 }
 </script>

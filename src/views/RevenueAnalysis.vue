@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import ReportStatsCard from '@/components/ui/ReportStatsCard.vue'
-import Button from '@/components/ui/button/Button.vue'
+import Button from '@/components/ui/button/BaseButton.vue'
 import RevenueFilterButtons from '@/components/report/RevenueFilterButtons.vue'
 import RevenueChart7day from '@/components/report/RevenueChart7day.vue'
 import DonutChart from '@/components/charts/DonutChart.vue'
@@ -20,22 +20,14 @@ const revenueData = [
   { date: '2025-09-21', revenue: 450, profit: 200 },
 ]
 
-const totalRevenue = computed(() =>
-  revenueData.reduce((sum, d) => sum + d.revenue, 0),
-)
+const totalRevenue = computed(() => revenueData.reduce((sum, d) => sum + d.revenue, 0))
 
-const totalProfit = computed(() =>
-  revenueData.reduce((sum, d) => sum + d.profit, 0),
-)
+const totalProfit = computed(() => revenueData.reduce((sum, d) => sum + d.profit, 0))
 
-const profitMargin = computed(() =>
-  Math.round((totalProfit.value / totalRevenue.value) * 100),
-)
+const profitMargin = computed(() => Math.round((totalProfit.value / totalRevenue.value) * 100))
 
 const totalOrders = ref(120)
-const avgOrderValue = computed(() =>
-  Math.round(totalRevenue.value / totalOrders.value),
-)
+const avgOrderValue = computed(() => Math.round(totalRevenue.value / totalOrders.value))
 
 const formatCurrency = (value) => {
   if (value >= 1000) return `${(value / 1000).toFixed(2)} tỷ`
@@ -66,9 +58,7 @@ const brandDonutData = computed(() =>
   })),
 )
 
-const brandDonutTotal = computed(() =>
-  brandRevenueData.reduce((sum, d) => sum + d.revenue, 0),
-)
+const brandDonutTotal = computed(() => brandRevenueData.reduce((sum, d) => sum + d.revenue, 0))
 
 const brandDonutColors = ['#DC2626', '#EF4444', '#F87171', '#FCA5A5', '#FECACA', '#FEE2E2']
 
@@ -89,13 +79,13 @@ const dailyData = ref([
   { date: '15/09/2025', orders: 11, revenue: 250, profit: 30, growth: 0 },
 ])
 
-const handleExport = () => {
-  console.debug('[RevenueAnalysis] Export clicked')
-}
+const handleExport = () => {}
 const selectedStatuses = ref(['30-days'])
 
 onMounted(() => {
-  setTimeout(() => { isLoading.value = false }, 1200)
+  setTimeout(() => {
+    isLoading.value = false
+  }, 1200)
 })
 </script>
 
@@ -135,120 +125,123 @@ onMounted(() => {
     </template>
 
     <template v-else>
-
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-      <ReportStatsCard
-        title="Tổng Doanh Thu"
-        :stat="formatCurrency(totalRevenue)"
-        :improvement="15"
-        color="red"
-      />
-      <ReportStatsCard
-        title="Lợi Nhuận Ròng"
-        :stat="formatCurrency(totalProfit)"
-        :improvement="profitMargin"
-        color="green"
-      />
-      <ReportStatsCard
-        title="Tổng Đơn Hàng"
-        :stat="totalOrders"
-        :improvement="-2"
-        color="yellow"
-      />
-      <ReportStatsCard
-        title="Giá Trị trung bình / đơn"
-        :stat="`${avgOrderValue} tr`"
-        color="purple"
-      />
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-      <div class="lg:col-span-2 border border-gray-200 rounded-lg p-4">
-        <h2 class="text-sm font-semibold text-gray-700 mb-3">Xu Hướng Doanh Thu & Lợi Nhuận</h2>
-        <RevenueChart7day :revenue-data="revenueData" />
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <ReportStatsCard
+          title="Tổng Doanh Thu"
+          :stat="formatCurrency(totalRevenue)"
+          :improvement="15"
+          color="red"
+        />
+        <ReportStatsCard
+          title="Lợi Nhuận Ròng"
+          :stat="formatCurrency(totalProfit)"
+          :improvement="profitMargin"
+          color="green"
+        />
+        <ReportStatsCard
+          title="Tổng Đơn Hàng"
+          :stat="totalOrders"
+          :improvement="-2"
+          color="yellow"
+        />
+        <ReportStatsCard
+          title="Giá Trị trung bình / đơn"
+          :stat="`${avgOrderValue} tr`"
+          color="purple"
+        />
       </div>
 
-      <div class="border border-gray-200 rounded-lg p-4">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-sm font-semibold text-gray-700">Top Sản Phẩm Bán Chạy</h2>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div class="lg:col-span-2 border border-gray-200 rounded-lg p-4">
+          <h2 class="text-sm font-semibold text-gray-700 mb-3">Xu Hướng Doanh Thu & Lợi Nhuận</h2>
+          <RevenueChart7day :revenue-data="revenueData" />
         </div>
-        <div class="space-y-3">
-          <div
-            v-for="(product, index) in topProducts"
-            :key="product.name"
-            class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            <span
-              class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-              :class="index < 3 ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-500'"
+
+        <div class="border border-gray-200 rounded-lg p-4">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-sm font-semibold text-gray-700">Top Sản Phẩm Bán Chạy</h2>
+          </div>
+          <div class="space-y-3">
+            <div
+              v-for="(product, index) in topProducts"
+              :key="product.name"
+              class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
             >
-              {{ index + 1 }}
-            </span>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-gray-800 truncate">{{ product.name }}</p>
-              <p class="text-xs text-gray-400">{{ product.units }} đã bán</p>
+              <span
+                class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+                :class="index < 3 ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-500'"
+              >
+                {{ index + 1 }}
+              </span>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-800 truncate">{{ product.name }}</p>
+                <p class="text-xs text-gray-400">{{ product.units }} đã bán</p>
+              </div>
+              <span class="text-sm font-semibold text-red-600 shrink-0"
+                >{{ product.revenue }} tr</span
+              >
             </div>
-            <span class="text-sm font-semibold text-red-600 shrink-0">{{ product.revenue }} tr</span>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-      <div class="border border-gray-200 rounded-lg p-4">
-        <h2 class="text-sm font-semibold text-gray-700 mb-3">Tỷ Trọng Doanh Thu Theo Hãng</h2>
-        <DonutChart
-          :data="brandDonutData"
-          :colors="brandDonutColors"
-          :centerValue="formatCurrency(brandDonutTotal)"
-          centerLabel="Tổng DT"
-        />
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div class="border border-gray-200 rounded-lg p-4">
+          <h2 class="text-sm font-semibold text-gray-700 mb-3">Tỷ Trọng Doanh Thu Theo Hãng</h2>
+          <DonutChart
+            :data="brandDonutData"
+            :colors="brandDonutColors"
+            :centerValue="formatCurrency(brandDonutTotal)"
+            centerLabel="Tổng DT"
+          />
+        </div>
+
+        <div class="border border-gray-200 rounded-lg p-4">
+          <h2 class="text-sm font-semibold text-gray-700 mb-3">Phân Tích Thanh Toán</h2>
+          <DonutChart
+            :data="paymentData"
+            :colors="paymentColors"
+            centerValue="100%"
+            centerLabel="Tổng"
+          />
+        </div>
       </div>
 
-      <div class="border border-gray-200 rounded-lg p-4">
-        <h2 class="text-sm font-semibold text-gray-700 mb-3">Phân Tích Thanh Toán</h2>
-        <DonutChart
-          :data="paymentData"
-          :colors="paymentColors"
-          centerValue="100%"
-          centerLabel="Tổng"
-        />
+      <div class="overflow-x-auto rounded-lg shadow-sm border border-gray-300">
+        <table class="min-w-full bg-white border-collapse">
+          <thead>
+            <tr
+              class="bg-gray-50 text-gray-500 uppercase text-xs font-medium tracking-wider leading-normal border-b border-gray-200"
+            >
+              <th class="py-3 px-6 text-left">Ngày</th>
+              <th class="py-3 px-6 text-right">Số Đơn</th>
+              <th class="py-3 px-6 text-right">Doanh Thu</th>
+              <th class="py-3 px-6 text-right">Lợi Nhuận</th>
+              <th class="py-3 px-6 text-center">Tăng Trưởng</th>
+            </tr>
+          </thead>
+          <tbody class="text-gray-600 text-sm">
+            <tr
+              v-for="row in dailyData"
+              :key="row.date"
+              class="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+            >
+              <td class="py-3 px-6 whitespace-nowrap font-medium text-gray-900">{{ row.date }}</td>
+              <td class="py-3 px-6 whitespace-nowrap text-right font-mono">{{ row.orders }}</td>
+              <td class="py-3 px-6 whitespace-nowrap text-right font-mono">{{ row.revenue }} tr</td>
+              <td class="py-3 px-6 whitespace-nowrap text-right font-mono">{{ row.profit }} tr</td>
+              <td class="py-3 px-6 whitespace-nowrap text-center">
+                <span
+                  class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold"
+                  :class="row.growth >= 0 ? 'bg-red-50 text-red-700' : 'bg-gray-100 text-gray-600'"
+                >
+                  {{ row.growth >= 0 ? '▲' : '▼' }} {{ Math.abs(row.growth) }}%
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-    </div>
-
-    <div class="overflow-x-auto rounded-lg shadow-sm border border-gray-300">
-      <table class="min-w-full bg-white border-collapse">
-        <thead>
-          <tr class="bg-gray-50 text-gray-500 uppercase text-xs font-medium tracking-wider leading-normal border-b border-gray-200">
-            <th class="py-3 px-6 text-left">Ngày</th>
-            <th class="py-3 px-6 text-right">Số Đơn</th>
-            <th class="py-3 px-6 text-right">Doanh Thu</th>
-            <th class="py-3 px-6 text-right">Lợi Nhuận</th>
-            <th class="py-3 px-6 text-center">Tăng Trưởng</th>
-          </tr>
-        </thead>
-        <tbody class="text-gray-600 text-sm">
-          <tr
-            v-for="row in dailyData"
-            :key="row.date"
-            class="border-b border-gray-200 hover:bg-gray-50 transition-colors"
-          >
-            <td class="py-3 px-6 whitespace-nowrap font-medium text-gray-900">{{ row.date }}</td>
-            <td class="py-3 px-6 whitespace-nowrap text-right font-mono">{{ row.orders }}</td>
-            <td class="py-3 px-6 whitespace-nowrap text-right font-mono">{{ row.revenue }} tr</td>
-            <td class="py-3 px-6 whitespace-nowrap text-right font-mono">{{ row.profit }} tr</td>
-            <td class="py-3 px-6 whitespace-nowrap text-center">
-              <span
-                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold"
-                :class="row.growth >= 0 ? 'bg-red-50 text-red-700' : 'bg-gray-100 text-gray-600'"
-              >
-                {{ row.growth >= 0 ? '▲' : '▼' }} {{ Math.abs(row.growth) }}%
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
     </template>
   </div>
 </template>

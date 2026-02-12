@@ -1,6 +1,6 @@
 <script setup>
 import FullScreenModal from '@/components/ui/confirm_modal/ConfirmationModal.vue'
-import Button from '@/components/ui/button/Button.vue'
+import Button from '@/components/ui/button/BaseButton.vue'
 
 defineProps({
   show: {

@@ -79,8 +79,10 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config
 
     if (error.response?.status === 401 && !originalRequest._retry) {
-      if (originalRequest.url.includes('/refresh-token') || originalRequest.url.includes('/login')) {
-        // Don't retry refresh token or login requests
+      if (
+        originalRequest.url.includes('/refresh-token') ||
+        originalRequest.url.includes('/login')
+      ) {
         if (originalRequest.url.includes('/refresh-token')) {
           handleAuthFailure()
         }

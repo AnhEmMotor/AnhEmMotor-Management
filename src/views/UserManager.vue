@@ -31,7 +31,9 @@
     </div>
     <div class="border border-gray-200 rounded-lg shadow-sm overflow-hidden">
       <table class="min-w-full bg-white">
-        <thead class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs font-medium border-b border-gray-200">
+        <thead
+          class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs font-medium border-b border-gray-200"
+        >
           <tr>
             <th class="py-3 px-6 text-left">Tên Nhân Viên</th>
             <th class="py-3 px-6 text-left">Email</th>
@@ -47,8 +49,12 @@
               <td class="py-3 px-6 text-left"><SkeletonLoader width="80%" height="16px" /></td>
               <td class="py-3 px-6 text-left"><SkeletonLoader width="90%" height="16px" /></td>
               <td class="py-3 px-6 text-left"><SkeletonLoader width="80%" height="16px" /></td>
-              <td class="py-3 px-6 text-left"><SkeletonLoader width="70%" height="24px" class="rounded-full" /></td>
-              <td class="py-3 px-6 text-left"><SkeletonLoader width="60%" height="24px" class="rounded-full" /></td>
+              <td class="py-3 px-6 text-left">
+                <SkeletonLoader width="70%" height="24px" class="rounded-full" />
+              </td>
+              <td class="py-3 px-6 text-left">
+                <SkeletonLoader width="60%" height="24px" class="rounded-full" />
+              </td>
               <td class="py-3 px-6 text-center">
                 <div class="flex justify-center gap-2">
                   <SkeletonLoader width="30px" height="20px" class="rounded" />
@@ -70,7 +76,12 @@
               Không tìm thấy nhân viên nào.
             </td>
           </tr>
-          <tr v-else v-for="customer in displayCustomers" :key="customer.id" class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+          <tr
+            v-else
+            v-for="customer in displayCustomers"
+            :key="customer.id"
+            class="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+          >
             <td class="py-3 px-6 text-left">{{ customer.name }}</td>
             <td class="py-3 px-6 text-left">{{ customer.email }}</td>
             <td class="py-3 px-6 text-left">{{ customer.phone }}</td>
@@ -92,7 +103,9 @@
             <td class="py-3 px-6">
               <div class="flex justify-center gap-2">
                 <SmallNoBgButton @click="editCustomer(customer.id)">Sửa</SmallNoBgButton>
-                <SmallNoBgButton color="red" @click="deleteCustomer(customer.id)">Xóa</SmallNoBgButton>
+                <SmallNoBgButton color="red" @click="deleteCustomer(customer.id)"
+                  >Xóa</SmallNoBgButton
+                >
               </div>
             </td>
           </tr>
@@ -126,7 +139,7 @@
 import UserFilterButtons from '@/components/users/UserFilterButtons.vue'
 import UserForm from '@/components/users/UserForm.vue'
 import UserDeleteModal from '@/components/users/UserDeleteModal.vue'
-import Button from '@/components/ui/button/Button.vue'
+import Button from '@/components/ui/button/BaseButton.vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
 import SmallNoBgButton from '@/components/ui/button/SmallNoBgButton.vue'
 import IconPlus from '@/components/icons/IconPlus.vue'
@@ -169,15 +182,8 @@ const fetchData = async () => {
   isError.value = false
   errorMessage.value = ''
   try {
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000))
-    /*
-     * Simulate Error
-     * Remove this line to test success case
-     */
     throw new Error('Lỗi kết nối CSDL')
-    
-    // displayCustomers.value = allCustomers.value
   } catch {
     isError.value = true
     errorMessage.value = 'Đã xảy ra lỗi trong quá trình tải dữ liệu.'

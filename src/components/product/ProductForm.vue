@@ -6,7 +6,7 @@ import { useOptionsStore } from '@/stores/useOptionsStore'
 import Input from '@/components/ui/input/BaseInput.vue'
 import Textarea from '@/components/ui/input/BaseTextarea.vue'
 import Dropdown from '@/components/ui/input/BaseDropdown.vue'
-import Button from '@/components/ui/button/Button.vue'
+import Button from '@/components/ui/button/BaseButton.vue'
 import SmallNoBgButton from '@/components/ui/button/SmallNoBgButton.vue'
 import Image from '@/components/ui/input/BaseImage.vue'
 import GroupImage from '@/components/ui/input/GroupImage.vue'
@@ -75,8 +75,6 @@ onMounted(async () => {
       brandsStore.fetchBrands(),
       optionsStore.fetchOptions(),
     ])
-  } catch (error) {
-    console.error('Lỗi khi tải dữ liệu form:', error)
   } finally {
     isFormLoading.value = false
   }

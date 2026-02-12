@@ -35,7 +35,6 @@ const props = defineProps({
 
 const emit = defineEmits(['toggle'])
 const colorClasses = {
-  // Semantic
   primary: {
     active: 'bg-red-600 text-white border border-red-600',
     inactive: 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-300',
@@ -44,8 +43,6 @@ const colorClasses = {
     active: 'bg-white text-gray-900 border-primary-500 ring-1 ring-primary-500',
     inactive: 'bg-white text-gray-500 border-gray-300 hover:border-gray-400',
   },
-  
-  // Legacy Mapping
   blue: {
     active: 'bg-blue-600 text-white border border-blue-600',
     inactive: 'bg-transparent text-gray-600 hover:bg-blue-50 border border-gray-300',

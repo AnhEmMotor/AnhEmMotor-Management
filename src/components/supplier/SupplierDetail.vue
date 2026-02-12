@@ -19,7 +19,6 @@ const historyItemsPerPage = ref(10)
 const inputsStore = useInputsStore()
 const suppliersStore = useSuppliersStore()
 
-// Fetch latest supplier details when opened
 const { data: detailData } = useQuery({
   queryKey: computed(() => ['suppliers', props.itemData.id]),
   queryFn: () => suppliersStore.getSupplierById(props.itemData.id),
@@ -28,7 +27,6 @@ const { data: detailData } = useQuery({
 const supplierInfo = computed(() => ({ ...props.itemData, ...(detailData.value || {}) }))
 
 function getStatusInfo(statusId) {
-  // ... rest of script
   switch (statusId) {
     case 'finished':
       return { text: 'Đã nhập hàng', color: 'green' }
@@ -49,7 +47,6 @@ const filters = computed(() => ({
 }))
 
 const fetchHistoryFn = async (params) => {
-  // DEMO DELAY: 2 seconds to show Skeleton Loader in History tab
   await new Promise((resolve) => setTimeout(resolve, 2000))
 
   const response = await inputsStore.fetchInputsBySupplier(props.itemData.id, {
@@ -59,7 +56,6 @@ const fetchHistoryFn = async (params) => {
     search: params.search,
   })
 
-  // Transform response to match usePaginatedQuery expected format
   const inputs = response?.inputs || []
   const count = response?.count || 0
 
@@ -77,7 +73,7 @@ const {
   isLoading: historyLoading,
   isError: historyIsError,
   error: historyError,
-  data: inputsData, // Maps to 'data' from composable return
+  data: inputsData,
   pagination: { totalPages: historyTotalPages, currentPage: historyCurrentPage },
 } = usePaginatedQuery({
   queryKey: queryKeyBase,
@@ -154,8 +150,9 @@ watch(historyIsError, (hasError) => {
         <div class="text-sm col-span-1 md:col-span-2 lg:col-span-3">
           <span class="text-gray-500 block">Địa chỉ</span>
           <span class="font-medium text-gray-800">{{
-            [supplierInfo.address, supplierInfo.ward, supplierInfo.cityDistrict].filter(Boolean).join(', ') ||
-            'Chưa có'
+            [supplierInfo.address, supplierInfo.ward, supplierInfo.cityDistrict]
+              .filter(Boolean)
+              .join(', ') || 'Chưa có'
           }}</span>
         </div>
       </div>
@@ -197,7 +194,6 @@ watch(historyIsError, (hasError) => {
 
     <div v-show="activeTab === 'history'" class="relative">
       <div class="border border-gray-200 rounded-lg overflow-hidden">
-        <!-- Permanent Header -->
         <div
           class="grid grid-cols-16 gap-4 text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50 border-b border-gray-200 px-4 py-3"
         >
@@ -254,7 +250,6 @@ watch(historyIsError, (hasError) => {
           </div>
         </div>
 
-        <!-- Beautiful Empty/Error State -->
         <div
           v-else
           class="py-12 flex flex-col items-center justify-center text-center space-y-3 bg-white"

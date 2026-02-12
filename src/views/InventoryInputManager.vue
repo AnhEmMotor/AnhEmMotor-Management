@@ -3,7 +3,7 @@ import { ref, watch } from 'vue'
 import { useInputsStore } from '@/stores/useInputsStore'
 import * as XLSX from 'xlsx'
 import InventoryItem from '@/components/inventory_input/InventoryItem.vue'
-import Button from '@/components/ui/button/Button.vue'
+import Button from '@/components/ui/button/BaseButton.vue'
 import Pagination from '@/components/ui/button/Pagination.vue'
 import Input from '@/components/ui/input/BaseInput.vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
@@ -362,10 +362,21 @@ const handleSaveNotes = async ({ id, notes }) => {
       </div>
 
       <div class="flex flex-wrap gap-2">
-        <Button text="Tạo phiếu nhập hàng" :icon="IconPlus" color="primary" @click="openNewInventoryModal" />
+        <Button
+          text="Tạo phiếu nhập hàng"
+          :icon="IconPlus"
+          color="primary"
+          @click="openNewInventoryModal"
+        />
 
         <label class="cursor-pointer">
-          <Button text="Import" :icon="IconFileImport" color="secondary" as="span" @click="handleImport" />
+          <Button
+            text="Import"
+            :icon="IconFileImport"
+            color="secondary"
+            as="span"
+            @click="handleImport"
+          />
         </label>
 
         <Button text="Export" :icon="IconFileExport" color="secondary" @click="exportExcel" />
@@ -376,12 +387,7 @@ const handleSaveNotes = async ({ id, notes }) => {
       </div>
     </div>
 
-    <Input
-      v-model="searchTerm"
-      type="text"
-      placeholder="Tìm theo mã phiếu, NCC..."
-      class="mb-3"
-    />
+    <Input v-model="searchTerm" type="text" placeholder="Tìm theo mã phiếu, NCC..." class="mb-3" />
 
     <div class="border border-gray-200 rounded-lg shadow-sm overflow-hidden">
       <div
@@ -403,7 +409,9 @@ const handleSaveNotes = async ({ id, notes }) => {
             <div class="px-3"><SkeletonLoader width="80%" height="16px" /></div>
             <div class="px-5"><SkeletonLoader width="70%" height="16px" /></div>
             <div class="px-5 flex justify-end"><SkeletonLoader width="60%" height="16px" /></div>
-            <div class="px-5"><SkeletonLoader width="70%" height="24px" class="rounded-full" /></div>
+            <div class="px-5">
+              <SkeletonLoader width="70%" height="24px" class="rounded-full" />
+            </div>
           </div>
         </div>
 
@@ -411,10 +419,24 @@ const handleSaveNotes = async ({ id, notes }) => {
           Đã xảy ra lỗi khi lấy dữ liệu
         </div>
 
-        <div v-else-if="filteredItems.length === 0" class="text-center py-12 flex flex-col items-center justify-center space-y-3">
+        <div
+          v-else-if="filteredItems.length === 0"
+          class="text-center py-12 flex flex-col items-center justify-center space-y-3"
+        >
           <div class="bg-gray-50 p-3 rounded-full">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-8 w-8 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+              />
             </svg>
           </div>
           <p class="text-gray-500 font-medium">Không có phiếu nhập nào để hiển thị.</p>
@@ -436,11 +458,7 @@ const handleSaveNotes = async ({ id, notes }) => {
       </div>
     </div>
 
-    <Pagination
-      :total-pages="totalPages"
-      v-model:currentPage="currentPage"
-      :loading="isLoading"
-    />
+    <Pagination :total-pages="totalPages" v-model:currentPage="currentPage" :loading="isLoading" />
 
     <DraggableModal
       v-if="showInventoryModal"

@@ -38,7 +38,6 @@ const emit = defineEmits(['edit', 'delete'])
     </div>
 
     <div class="flex-1 overflow-y-auto">
-      <!-- Skeleton Loading -->
       <div v-if="isLoading">
         <div
           v-for="i in 5"
@@ -67,14 +66,12 @@ const emit = defineEmits(['edit', 'delete'])
         </div>
       </div>
 
-      <!-- Error State -->
       <div v-else-if="isError" class="flex items-center justify-center h-64">
         <div class="text-center text-red-500 font-medium">
           {{ errorMessage }}
         </div>
       </div>
 
-      <!-- Empty State -->
       <div
         v-else-if="roles.length === 0"
         class="flex items-center justify-center h-64 text-gray-500"
@@ -85,7 +82,6 @@ const emit = defineEmits(['edit', 'delete'])
         </div>
       </div>
 
-      <!-- Roles List -->
       <RoleItem
         v-else
         v-for="(role, index) in roles"

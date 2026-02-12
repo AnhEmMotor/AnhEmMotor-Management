@@ -12,7 +12,6 @@ export const getProducts = async ({
   })
 
   if (error) {
-    console.error('Lỗi khi gọi RPC get_all_products_with_details:', error)
     throw error
   }
 
@@ -25,7 +24,6 @@ export const upsertProduct = async (productData) => {
   })
 
   if (error) {
-    console.error('Lỗi khi gọi RPC upsert_product_with_variants:', error)
     throw error
   }
 
@@ -38,7 +36,6 @@ export const deleteProduct = async (productId) => {
   })
 
   if (error) {
-    console.error('Lỗi khi gọi RPC delete_product_cascade:', error)
     throw error
   }
 
@@ -54,7 +51,6 @@ export const searchProductsFlatType = async (search) => {
   })
 
   if (error) {
-    console.error('Error fetching products:', error)
     throw error
   }
 

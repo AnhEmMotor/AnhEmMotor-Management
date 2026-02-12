@@ -1,11 +1,12 @@
 <script setup>
-import { ref, reactive, computed, watch } from 'vue'
+import { computed, watch, ref } from 'vue'
 import { useQueryClient } from '@tanstack/vue-query'
 import { useSuppliersStore } from '@/stores/useSuppliersStore'
 import { useToast } from 'vue-toastification'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { fetchSuppliers } from '@/api/supplier'
 import { useRoute } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import SupplierItem from '@/components/supplier/SupplierItem.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
 import Input from '@/components/ui/input/BaseInput.vue'
@@ -25,9 +26,7 @@ const queryClient = useQueryClient()
 const suppliersStore = useSuppliersStore()
 const route = useRoute()
 
-const rawSearch = ref('')
-const debouncedSearch = ref('')
-// Initialize from URL if present
+const { isFormModalVisible, isEditMode, editableSupplier, formErrors } = storeToRefs(suppliersStore)
 const initializeStatus = () => {
   const statusQuery = route.query.status
   if (!statusQuery) return []
@@ -36,17 +35,9 @@ const initializeStatus = () => {
 }
 const selectedStatuses = ref(initializeStatus())
 
-const openStates = reactive({})
+const openStates = ref({})
 const showOverlay = ref(false)
 const overlayMessage = ref('')
-
-let searchTimeout
-watch(rawSearch, (val) => {
-  clearTimeout(searchTimeout)
-  searchTimeout = setTimeout(() => {
-    debouncedSearch.value = val
-  }, 300)
-})
 
 const filters = computed(() => {
   const f = {}
@@ -83,7 +74,7 @@ watch(isMutating, (val) => {
 })
 
 const handleToggleDetail = (id) => {
-  openStates[id] = !openStates[id]
+  openStates.value = { ...openStates.value, [id]: !openStates.value[id] }
 }
 
 const toggleActivation = async (supplier) => {
@@ -97,29 +88,23 @@ const toggleActivation = async (supplier) => {
 
   if (confirmed) {
     overlayMessage.value = `Đang ${actionName.toLowerCase()}...`
-    try {
-      await suppliersStore.updateSupplierStatus(supplier.id, newStatus)
+    const result = await suppliersStore.toggleStatus(supplier.id, supplier.statusId)
+
+    if (result.success) {
       toast.success(`${actionName} thành công!`)
-    } catch (error) {
-      toast.error(`Lỗi: ${error.message || error}`)
+    } else {
+      toast.error(`Lỗi: ${result.error.message || result.error}`)
     }
   }
 }
 
-const isFormModalVisible = ref(false)
-const formModalKey = ref(0)
-const isEditMode = ref(false)
 const formModalTitle = computed(() =>
   isEditMode.value ? 'Cập nhật nhà cung cấp' : 'Thêm nhà cung cấp mới',
 )
-const editableSupplier = ref({})
-const formErrors = ref({})
+const formModalKey = ref(0)
 
 const openAddEditModal = async (supplier = null) => {
-  isEditMode.value = !!supplier
-  editableSupplier.value = supplier ? { ...supplier } : {}
-  formErrors.value = {}
-  isFormModalVisible.value = true
+  suppliersStore.openFormModal(supplier)
   formModalKey.value++
 
   if (supplier) {
@@ -128,46 +113,20 @@ const openAddEditModal = async (supplier = null) => {
 }
 
 const handleCloseFormModal = () => {
-  isFormModalVisible.value = false
-}
-
-const validateForm = () => {
-  const errors = {}
-  if (!editableSupplier.value.name) errors.name = 'Tên nhà cung cấp là bắt buộc'
-  if (!editableSupplier.value.phone) errors.phone = 'Số điện thoại là bắt buộc'
-  formErrors.value = errors
-  return Object.keys(errors).length === 0
+  suppliersStore.closeFormModal()
 }
 
 const handleSaveSupplier = async () => {
-  if (!validateForm()) return
+  overlayMessage.value = isEditMode.value ? 'Đang cập nhật...' : 'Đang tạo mới...'
 
-  try {
-    if (isEditMode.value) {
-      overlayMessage.value = 'Đang cập nhật...'
-      await suppliersStore.updateSupplier(editableSupplier.value.id, editableSupplier.value)
-      toast.success('Cập nhật thành công!')
-    } else {
-      overlayMessage.value = 'Đang tạo mới...'
-      await suppliersStore.addSupplier(editableSupplier.value)
-      toast.success('Thêm mới thành công!')
-    }
+  const result = await suppliersStore.saveSupplier()
+
+  if (result.success) {
+    toast.success(isEditMode.value ? 'Cập nhật thành công!' : 'Thêm mới thành công!')
     handleCloseFormModal()
-  } catch (error) {
-    const data = error.response?.data
-
-    // Handle Validation Errors
-    if (data?.type === 'Validation' && data?.errors?.length > 0) {
-      const backendErrors = {}
-      data.errors.forEach((e) => {
-        if (e.field) {
-          backendErrors[e.field.toLowerCase()] = e.message
-        }
-      })
-      formErrors.value = backendErrors
-      // No toast for validation errors as they are shown inline
-    } else {
-      // Handle other errors
+  } else {
+    const error = result.error
+    if (error.type !== 'Validation') {
       if (error.response?.status === 400) {
         toast.error('Có lỗi trong quá trình lưu nhà cung cấp')
       } else {
@@ -185,11 +144,12 @@ const openDeleteModal = async (supplier) => {
 
   if (confirmed) {
     overlayMessage.value = 'Đang xóa...'
-    try {
-      await suppliersStore.deleteSupplier(supplier.id)
+    const result = await suppliersStore.deleteSupplier(supplier.id)
+
+    if (result.success) {
       toast.success('Xóa thành công!')
-    } catch (error) {
-      toast.error(`Lỗi: ${error.message || error}`)
+    } else {
+      toast.error(`Lỗi: ${result.error.message || result.error}`)
     }
   }
 }

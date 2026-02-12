@@ -34,7 +34,6 @@ export function usePaginatedQuery({
     },
   })
 
-  /* Search Logic */
   const searchTerm = ref(route.query.search || '')
   const debouncedSearch = ref(searchTerm.value)
   let searchTimeout
@@ -46,8 +45,6 @@ export function usePaginatedQuery({
     }, queryOptions.debounce || 300)
   })
 
-  /* Params construction */
-  /* Params construction */
   const validFilters = computed(() => unref(filters))
 
   const allFilters = computed(() => {
@@ -58,29 +55,15 @@ export function usePaginatedQuery({
     return f
   })
 
-  // Filters + Page + Limit
   const queryParams = computed(() => {
-    // If syncing to URL, derive params from URL to ensure atomic update (Page 1 + New Filters)
     if (queryOptions.syncFiltersToUrl) {
       const { page: _page, _limit, ...otherParams } = route.query
-      
-      /*
-       * We need to ensure we capture all potential filters from URL
-       * But we also need to respect potentially complex objects in otherParams?
-       * Sieve params are usually strings/arrays.
-       */
-      
-      // Should we merge validFilters keys? No, validFilters triggered change. URL is source of truth.
-      
       return {
-        page: currentPage.value, // Already synced to URL/Local
+        page: currentPage.value,
         limit: unref(itemsPerPage),
-        // Ensure search is included if present in URL
-        ...otherParams, 
+        ...otherParams,
       }
     }
-    
-    // Legacy behavior: Derive from local state
     return {
       page: currentPage.value,
       limit: unref(itemsPerPage),
@@ -152,48 +135,37 @@ export function usePaginatedQuery({
     currentPage.value = target
   }
 
-  /*
-   * Existing watcher for Page 1 reset is redundant if we use syncFiltersToUrl because URL update triggers page reset naturally?
-   * No. If we update URL page=1, that triggers page reset.
-   * But if syncFiltersToUrl is FALSE, we still need the existing watcher.
-   * So we should make the existing watcher conditional or smarter.
-   */
-
-  // Optimize: Sync filters to URL (if enabled)
   if (queryOptions.syncFiltersToUrl) {
-    console.log('[usePaginatedQuery] Sync filters enabled');
     watch(
       allFilters,
       (newFilters) => {
         const query = { ...route.query }
-        
-        Object.keys(newFilters).forEach(key => {
+
+        Object.keys(newFilters).forEach((key) => {
           const value = newFilters[key]
           if (value !== undefined && value !== null && value !== '') {
-             // Handle arrays as comma-separated strings
-             if (Array.isArray(value)) {
-               if (value.length > 0) {
-                 query[key] = value.join(',')
-               } else {
-                 delete query[key]
-               }
-             } else {
-               query[key] = value
-             }
+            if (Array.isArray(value)) {
+              if (value.length > 0) {
+                query[key] = value.join(',')
+              } else {
+                delete query[key]
+              }
+            } else {
+              query[key] = value
+            }
           } else {
-             delete query[key]
+            delete query[key]
           }
         })
-        
+
         if (!newFilters.search) delete query.search
-        
+
         query.page = 1
         router.replace({ query }).catch(() => {})
       },
-      { deep: true }
+      { deep: true },
     )
   } else {
-    // Legacy behavior
     watch(
       allFilters,
       () => {

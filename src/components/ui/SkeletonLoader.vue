@@ -14,7 +14,7 @@ defineProps({
   },
   height: {
     type: String,
-    default: '1rem', // Default text line height
+    default: '1rem',
   },
   className: {
     type: String,

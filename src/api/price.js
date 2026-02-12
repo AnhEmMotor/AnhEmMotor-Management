@@ -8,7 +8,6 @@ export const priceApi = {
     })
 
     if (error) {
-      console.error('Error fetching products:', error)
       throw error
     }
 
@@ -24,7 +23,6 @@ export const priceApi = {
       .single()
 
     if (error) {
-      console.error('Error updating variant price:', error)
       throw error
     }
 

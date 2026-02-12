@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- Mobile Header -->
     <div
       class="lg:hidden fixed top-0 left-0 w-full bg-white shadow-md z-30 h-16 flex items-center justify-between px-4"
     >
@@ -8,7 +7,6 @@
         <img src="/anhemmotor.webp" alt="AnhEm Motor Admin" class="h-full w-auto object-contain" />
       </div>
       <div class="flex items-center gap-3">
-        <!-- User Info - Hidden on very small screens -->
         <div class="hidden sm:flex items-center gap-2">
           <div
             class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-sm shrink-0"
@@ -20,7 +18,6 @@
           </span>
         </div>
 
-        <!-- Logout Button - Always Visible -->
         <button
           @click="handleLogout"
           class="text-gray-500 hover:text-red-600 transition-colors p-1"
@@ -42,8 +39,10 @@
           </svg>
         </button>
 
-        <!-- Hamburger Menu -->
-        <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="text-gray-600 focus:outline-none ml-2">
+        <button
+          @click="isMobileMenuOpen = !isMobileMenuOpen"
+          class="text-gray-600 focus:outline-none ml-2"
+        >
           <svg
             class="w-8 h-8"
             fill="none"
@@ -62,14 +61,12 @@
       </div>
     </div>
 
-    <!-- Overlay for mobile -->
     <div
       v-if="isMobileMenuOpen"
       class="fixed inset-0 bg-black/50 z-30 lg:hidden"
       @click="isMobileMenuOpen = false"
     ></div>
 
-    <!-- Sidebar -->
     <div
       :class="[
         'fixed left-0 top-0 h-full w-64 bg-white shadow-xl flex flex-col z-40 transition-transform duration-300 ease-in-out',
@@ -77,7 +74,6 @@
       ]"
     >
       <div class="p-6 flex flex-col items-center flex-shrink-0 relative">
-        <!-- Close button for mobile -->
         <button
           @click="isMobileMenuOpen = false"
           class="absolute top-4 right-4 lg:hidden text-gray-500 hover:text-gray-700"
@@ -118,7 +114,10 @@
               "
               @click="closeMobileMenu"
             >
-              <IconHome class="flex-shrink-0" :class="route.path === '/' ? 'text-red-600' : 'text-gray-500'" />
+              <IconHome
+                class="flex-shrink-0"
+                :class="route.path === '/' ? 'text-red-600' : 'text-gray-500'"
+              />
               <span>Trang chủ</span>
             </RouterLink>
           </li>
@@ -135,7 +134,10 @@
               "
               @click="closeMobileMenu"
             >
-              <IconProduct class="flex-shrink-0" :class="route.path.startsWith('/products') ? 'text-red-600' : 'text-gray-500'" />
+              <IconProduct
+                class="flex-shrink-0"
+                :class="route.path.startsWith('/products') ? 'text-red-600' : 'text-gray-500'"
+              />
               <span>Sản phẩm</span>
             </RouterLink>
           </li>
@@ -147,7 +149,10 @@
               :class="{ 'text-red-700': isGroupActive('warehouse') }"
             >
               <div class="flex items-center space-x-3">
-                <IconWarehouse class="flex-shrink-0" :class="isGroupActive('warehouse') ? 'text-red-600' : 'text-gray-500'" />
+                <IconWarehouse
+                  class="flex-shrink-0"
+                  :class="isGroupActive('warehouse') ? 'text-red-600' : 'text-gray-500'"
+                />
                 <span>Kho vận</span>
               </div>
               <IconUpArrow :isOpen="openGroups.includes('warehouse')" />
@@ -209,7 +214,10 @@
               :class="{ 'text-red-700': isGroupActive('user') }"
             >
               <div class="flex items-center space-x-3">
-                <IconUser class="flex-shrink-0" :class="isGroupActive('user') ? 'text-red-600' : 'text-gray-500'" />
+                <IconUser
+                  class="flex-shrink-0"
+                  :class="isGroupActive('user') ? 'text-red-600' : 'text-gray-500'"
+                />
                 <span>Người dùng</span>
               </div>
               <IconUpArrow :isOpen="openGroups.includes('user')" />
@@ -261,7 +269,10 @@
               "
               @click="closeMobileMenu"
             >
-              <IconOrder class="flex-shrink-0" :class="route.path.startsWith('/orders') ? 'text-red-600' : 'text-gray-500'" />
+              <IconOrder
+                class="flex-shrink-0"
+                :class="route.path.startsWith('/orders') ? 'text-red-600' : 'text-gray-500'"
+              />
               <span>Đơn hàng</span>
             </RouterLink>
           </li>
@@ -273,7 +284,10 @@
               :class="{ 'text-red-700': isGroupActive('reports') }"
             >
               <div class="flex items-center space-x-3">
-                <IconReport class="flex-shrink-0" :class="isGroupActive('reports') ? 'text-red-600' : 'text-gray-500'" />
+                <IconReport
+                  class="flex-shrink-0"
+                  :class="isGroupActive('reports') ? 'text-red-600' : 'text-gray-500'"
+                />
                 <span>Báo cáo</span>
               </div>
               <IconUpArrow :isOpen="openGroups.includes('reports')" />
@@ -340,7 +354,10 @@
               "
               @click="closeMobileMenu"
             >
-              <IconSettings class="flex-shrink-0" :class="route.path.startsWith('/settings') ? 'text-red-600' : 'text-gray-500'" />
+              <IconSettings
+                class="flex-shrink-0"
+                :class="route.path.startsWith('/settings') ? 'text-red-600' : 'text-gray-500'"
+              />
               <span>Cài đặt</span>
             </RouterLink>
           </li>
@@ -350,7 +367,6 @@
       <div class="mt-auto w-full p-4 border-t border-gray-100 bg-gray-50/50">
         <LoadingOverlay :show="loading" message="Đang đăng xuất..." />
         <div class="relative" @mouseleave="isUserMenuOpen = false">
-          <!-- Dropdown Menu -->
           <div
             v-show="isUserMenuOpen"
             class="user-menu absolute bottom-full left-0 w-full mb-2 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50 after:content-[''] after:absolute after:left-0 after:bottom-[-8px] after:w-full after:h-2 after:bg-transparent"
@@ -359,8 +375,19 @@
               to="/profile?tab=profile"
               class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
               </svg>
               Hồ sơ cá nhân
             </RouterLink>
@@ -368,14 +395,25 @@
               to="/profile?tab=password"
               class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                />
               </svg>
               Đổi mật khẩu
             </RouterLink>
           </div>
 
-          <div 
+          <div
             class="flex items-center gap-3 w-full rounded-xl p-2 cursor-pointer hover:bg-white transition-colors border border-transparent hover:border-gray-100"
             @mouseenter="isUserMenuOpen = true"
           >
@@ -422,14 +460,14 @@
 
 <style scoped>
 .user-menu::after {
-    content: "";
-    display: block;
-    position: absolute;
-    left: 0;
-    bottom: -8px;
-    width: 100%;
-    height: 8px;
-    background-color: transparent;
+  content: '';
+  display: block;
+  position: absolute;
+  left: 0;
+  bottom: -8px;
+  width: 100%;
+  height: 8px;
+  background-color: transparent;
 }
 </style>
 
@@ -465,34 +503,28 @@ const handleLogout = async () => {
   }
 }
 
-// Group Routes Mapping
 const groupRoutes = {
   warehouse: ['/suppliers', '/inputs', '/price-management'],
   user: ['/users', '/permissions'],
   reports: ['/report-warehouse', '/report-revenue', '/report-product'],
 }
 
-// Accordion Logic: Only one group open at a time
 const toggleGroup = (group) => {
   const index = openGroups.value.indexOf(group)
   if (index > -1) {
-    // If clicking open group, close it
     openGroups.value = []
   } else {
-    // If clicking closed group, open it and close others
     openGroups.value = [group]
   }
 }
 
-// Check if a group has an active child
 const isGroupActive = (group) => {
-  return groupRoutes[group].some(path => route.path.startsWith(path))
+  return groupRoutes[group].some((path) => route.path.startsWith(path))
 }
 
 const openActiveGroup = (path) => {
   for (const groupName in groupRoutes) {
-    if (groupRoutes[groupName].some(p => path.startsWith(p))) {
-      // Accordion: Set only this group as open
+    if (groupRoutes[groupName].some((p) => path.startsWith(p))) {
       openGroups.value = [groupName]
       return
     }
@@ -511,24 +543,22 @@ watch(
   { immediate: true },
 )
 
-// Close mobile menu when screen size changes to desktop
-const  checkScreenSize = () => {
-    if (window.innerWidth >= 1024) {
-        isMobileMenuOpen.value = false
-    }
+const checkScreenSize = () => {
+  if (window.innerWidth >= 1024) {
+    isMobileMenuOpen.value = false
+  }
 }
 
 onMounted(() => {
-    window.addEventListener('resize', checkScreenSize)
+  window.addEventListener('resize', checkScreenSize)
 })
 
 onUnmounted(() => {
-    window.removeEventListener('resize', checkScreenSize)
+  window.removeEventListener('resize', checkScreenSize)
 })
 </script>
 
 <style scoped>
-/* Custom scrollbar for sidebar */
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;
 }

@@ -25,7 +25,9 @@
     <div class="overflow-x-auto rounded-lg shadow-sm border border-gray-300">
       <table class="min-w-full bg-white border-collapse">
         <thead>
-          <tr class="bg-gray-50 text-gray-500 uppercase text-xs font-medium tracking-wider leading-normal border-b border-gray-200">
+          <tr
+            class="bg-gray-50 text-gray-500 uppercase text-xs font-medium tracking-wider leading-normal border-b border-gray-200"
+          >
             <th class="py-3 px-6 text-left w-40">Ngày Đặt</th>
             <th class="py-3 px-6 text-left">Sản phẩm</th>
             <th class="py-3 px-6 text-left w-64">Trạng Thái</th>
@@ -38,7 +40,9 @@
             <tr v-for="i in 5" :key="i" class="border-b border-gray-100">
               <td class="py-3 px-6"><SkeletonLoader width="100%" height="20px" /></td>
               <td class="py-3 px-6"><SkeletonLoader width="80%" height="20px" /></td>
-              <td class="py-3 px-6"><SkeletonLoader width="100px" height="24px" class="rounded-full" /></td>
+              <td class="py-3 px-6">
+                <SkeletonLoader width="100px" height="24px" class="rounded-full" />
+              </td>
               <td class="py-3 px-6"><SkeletonLoader width="80%" height="20px" /></td>
               <td class="py-3 px-6 text-center">
                 <div class="flex justify-center">
@@ -62,7 +66,6 @@
             class="row-table-style cursor-pointer border-b border-gray-200 hover:bg-gray-50 transition-colors"
             @click="handleEditOrder(order)"
           >
-
             <td class="py-3 px-6 text-left">
               {{ new Date(order.created_at).toLocaleDateString('vi-VN') }}
             </td>
@@ -106,7 +109,7 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
 import OrderForm from '@/components/orders/OrderForm.vue'
 import SmallNoBgButton from '@/components/ui/button/SmallNoBgButton.vue'
-import Button from '@/components/ui/button/Button.vue'
+import Button from '@/components/ui/button/BaseButton.vue'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 import IconPlus from '@/components/icons/IconPlus.vue'
 import IconFileImport from '@/components/icons/IconFileImport.vue'
@@ -171,97 +174,8 @@ const filters = computed(() => ({
   search: searchTerm.value || null,
 }))
 
-/*
- *const mockOrders = [
- *  {
- *    id: 'ORD-20250211-001-AEM',
- *    created_at: '2025-02-11T08:30:00',
- *    customer_name: 'Nguyễn Văn A',
- *    product_summary: 'Nhớt Motul 300V (x2), Lọc nhớt Yamaha (x1)',
- *    status_id: 'pending',
- *    total: 1250000,
- *    products: [
- *      { id: 201, code: 'OIL-300V', name: 'Nhớt Motul 300V Factory Line', quantity: 2, unitPrice: 435000, total: 870000 },
- *      { id: 901, code: 'FIL-YAM', name: 'Lọc nhớt Yamaha chính hãng', quantity: 1, unitPrice: 380000, total: 380000 }
- *    ]
- *  },
- *  {
- *    id: 'ORD-20250210-005-AEM',
- *    created_at: '2025-02-10T14:15:00',
- *    customer_name: 'Trần Thị B',
- *    product_summary: 'Lốp Michelin City Grip 2 (x1), Vỏ xe Pirelli (x1)',
- *    status_id: 'delivering',
- *    total: 2800000,
- *    products: [
- *      { id: 301, code: 'TYR-MIC-CG2', name: 'Lốp Michelin City Grip 2 110/70-14', quantity: 1, unitPrice: 1450000, total: 1450000 },
- *      { id: 305, code: 'TYR-PIR', name: 'Vỏ xe Pirelli Diablo Rosso Sport', quantity: 1, unitPrice: 1350000, total: 1350000 }
- *    ]
- *  },
- *  {
- *    id: 'ORD-20250209-012-AEM',
- *    created_at: '2025-02-09T09:00:00',
- *    customer_name: 'Lê Văn C',
- *    product_summary: 'Dầu nhớt Repsol Racing (x1)',
- *    status_id: 'completed',
- *    total: 450000,
- *    products: [
- *      { id: 205, code: 'OIL-REP', name: 'Dầu nhớt Repsol Racing 4T', quantity: 1, unitPrice: 450000, total: 450000 }
- *    ]
- *  },
- *  {
- *    id: 'ORD-20250208-003-AEM',
- *    created_at: '2025-02-08T16:45:00',
- *    customer_name: 'Phạm Văn D',
- *    product_summary: 'Nhông sên dĩa DID (x1)',
- *    status_id: 'canceled',
- *    total: 890000,
- *    products: [
- *      { id: 401, code: 'NSD-DID', name: 'Bộ Nhông sên dĩa DID vàng', quantity: 1, unitPrice: 890000, total: 890000 }
- *    ]
- *  },
- *  {
- *    id: 'ORD-20250207-008-AEM',
- *    created_at: '2025-02-07T11:20:00',
- *    customer_name: 'Hoàng Thị E',
- *    product_summary: 'Phuộc Ohlins (x1), Tay thắng Brembo (x1)',
- *    status_id: 'confirmed_cod',
- *    total: 15400000,
- *    products: [
- *       { id: 402, code: 'SUS-OHL', name: 'Phuộc Ohlins HO 819', quantity: 1, unitPrice: 9500000, total: 9500000 },
- *       { id: 405, code: 'BRK-BRE', name: 'Tay thắng Brembo RCS 19', quantity: 1, unitPrice: 5900000, total: 5900000 }
- *    ]
- *  },
- *  {
- *    id: 'ORD-TEST-LONG-LIST',
- *    created_at: '2025-02-06T10:00:00',
- *    customer_name: 'Khách Hàng Test Danh Sách Dài',
- *    product_summary: '20 Sản phẩm các loại...',
- *    status_id: 'pending',
- *    total: 25000000,
- *    products: Array.from({ length: 20 }, (_, i) => ({
- *      id: 1000 + i,
- *      code: `TEST-PROD-${i + 1}`,
- *      name: `Sản phẩm Test số ${i + 1} - Mô tả dài để kiểm tra xuống dòng`,
- *      quantity: Math.floor(Math.random() * 5) + 1,
- *      unitPrice: (i + 1) * 100000,
- *      total: (i + 1) * 100000 * (Math.floor(Math.random() * 5) + 1)
- *    }))
- *  }
- *]
- */
-
 const fetchFn = async (params) => {
-  /*
-   * Simulate delay
-   * await new Promise((resolve) => setTimeout(resolve, 2000))
-   */
   return ordersStore.fetchOrders(params)
-  /*
-   * return {
-   *   orders: mockOrders,
-   *   totalCount: mockOrders.length,
-   * }
-   */
 }
 
 const dataMapper = (data) => ({
@@ -288,19 +202,14 @@ watch(_isError, (isError) => {
   if (isError) {
     const errorMsg = _error.value?.message || _error.value || 'Có lỗi xảy ra khi tải dữ liệu'
     toast.error(`Không thể tải danh sách đơn hàng: ${errorMsg}`)
-    console.error('API Error:', _error.value)
   }
 })
 
 const saveOrderMutation = useMutation({
   mutationFn: (orderPayload) => ordersStore.saveOrder(orderPayload),
-  onSuccess: (savedOrder) => {
-    console.debug('Order saved, invalidating queries...', savedOrder)
+  onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['orders'] })
     showOrderForm.value = false
-  },
-  onError: (error) => {
-    console.error('Lỗi khi lưu đơn hàng:', error)
   },
 })
 
@@ -315,7 +224,6 @@ function handleEditOrder(order) {
 }
 
 function handleSaveOrder(payload) {
-  console.debug('[OrdersManager] handleSaveOrder received payload:', payload)
   saveOrderMutation.mutate(payload)
 }
 

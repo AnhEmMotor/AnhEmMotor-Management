@@ -6,7 +6,7 @@ import DraggableModal from '@/components/ui/DraggableModal.vue'
 import Dropdown from '@/components/ui/input/BaseDropdown.vue'
 import Input from '@/components/ui/input/BaseInput.vue'
 import Textarea from '../ui/input/BaseTextarea.vue'
-import Button from '@/components/ui/button/Button.vue'
+import Button from '@/components/ui/button/BaseButton.vue'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 
 const props = defineProps({
@@ -38,7 +38,7 @@ const STATUS_LIST = [
 ]
 
 const localStatus = ref('pending')
-const isLoading = ref(false) // Local loading state for skeleton demo
+const isLoading = ref(false)
 
 const LOCKED_STATUSES = [
   'confirmed_cod',
@@ -108,19 +108,15 @@ const debouncedSearch = debounce(async (term) => {
     productSearchResults.value = []
     return
   }
-  try {
-    const data = await ordersStore.fetchProductVariants({
-      p_page: 1,
-      p_items_per_page: 10,
-      p_search: term,
-      p_status_ids: null,
-    })
-    productSearchResults.value = data.products || []
-    if (productSearchResults.value.length > 0) {
-      openProductDropdown()
-    }
-  } catch (err) {
-    console.error('Lỗi tìm sản phẩm:', err)
+  const data = await ordersStore.fetchProductVariants({
+    p_page: 1,
+    p_items_per_page: 10,
+    p_search: term,
+    p_status_ids: null,
+  })
+  productSearchResults.value = data.products || []
+  if (productSearchResults.value.length > 0) {
+    openProductDropdown()
   }
 }, 300)
 
@@ -189,7 +185,6 @@ watch(
         localData.value.notes = props.order.notes || ''
         localStatus.value = props.order.status_id || 'pending'
 
-        // Simulate loading for Skeleton
         isLoading.value = true
         setTimeout(() => {
           isLoading.value = false
@@ -294,7 +289,6 @@ function submit() {
     status: { key: localStatus.value, text: statusEntry.text },
     createdAt: props.order ? props.order.created_at : new Date().toISOString(),
   }
-  console.debug('[OrderForm] submit payload:', payload)
   emit('save', payload)
 }
 
