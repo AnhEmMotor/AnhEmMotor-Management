@@ -11,6 +11,9 @@ import SmallNoBgButton from '@/components/ui/button/SmallNoBgButton.vue'
 import Image from '@/components/ui/input/Image.vue'
 import GroupImage from '@/components/ui/input/GroupImage.vue'
 import LoadingOverlay from '../ui/LoadingOverlay.vue'
+import IconTrash from '@/components/icons/IconTrash.vue'
+import IconPlus from '@/components/icons/IconPlus.vue'
+import IconCheck from '@/components/icons/IconCheck.vue'
 
 const props = defineProps({
   modelValue: {
@@ -391,11 +394,12 @@ const applyGeneralPhotoCollection = () => {
           />
         </div>
         <div class="flex space-x-2 mt-4">
-          <Button text="Áp dụng Ảnh Bìa Chung" color="gray" @click="applyGeneralCoverImage" />
+          <Button text="Áp dụng Ảnh Bìa Chung" color="gray" @click="applyGeneralCoverImage" :icon="IconCheck" />
           <Button
             text="Áp dụng Bộ Sưu Tập Chung"
             color="gray"
             @click="applyGeneralPhotoCollection"
+            :icon="IconCheck"
           />
         </div>
       </fieldset>
@@ -532,12 +536,12 @@ const applyGeneralPhotoCollection = () => {
               placeholder="Cách nhau bằng dấu phẩy (ví dụ: Đỏ, Xanh)"
               class="flex-1"
             />
-            <SmallNoBgButton color="red" @click="removeOption(index)" class="mt-6 sm:mt-7">
+            <SmallNoBgButton color="red" @click="removeOption(index)" class="mt-6 sm:mt-7" :icon="IconTrash">
               Xóa
             </SmallNoBgButton>
           </div>
         </div>
-        <Button text="Thêm thuộc tính" color="gray" @click="addOption" class="mt-4" />
+        <Button text="Thêm thuộc tính" color="gray" @click="addOption" class="mt-4" :icon="IconPlus" />
       </fieldset>
 
       <fieldset class="border rounded-md p-4">
@@ -600,6 +604,7 @@ const applyGeneralPhotoCollection = () => {
                 color="red"
                 @click="removeVariant(index)"
                 class="absolute top-3 right-3"
+                :icon="IconTrash"
               >
                 Xóa Biến Thể
               </SmallNoBgButton>
@@ -664,7 +669,7 @@ const applyGeneralPhotoCollection = () => {
               </div>
             </div>
           </div>
-          <Button text="Thêm biến thể" color="blue" @click="addVariant" class="mt-4" />
+          <Button text="Thêm biến thể" color="blue" @click="addVariant" class="mt-4" :icon="IconPlus" />
           <div v-if="localProduct.variants.length === 0" class="text-center py-4 text-gray-500">
             Nhấn "Thêm biến thể" để tạo tổ hợp thuộc tính đầu tiên.
           </div>

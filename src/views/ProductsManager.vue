@@ -10,10 +10,19 @@
       </div>
       <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full lg:w-auto">
         <Button text="Thêm sản phẩm" :icon="IconPlus" color="primary" @click="openAddEditModal()" />
-        <Button text="Import" :icon="IconFileImport" color="secondary" @click="importExcel" />
+
+        <label for="import-product-input" class="cursor-pointer">
+          <Button text="Import" :icon="IconFileImport" color="secondary" as="span" />
+          <input
+            type="file"
+            id="import-product-input"
+            accept=".xlsx, .xls"
+            class="hidden"
+            @change="importExcel"
+          />
+        </label>
+
         <Button text="Export" :icon="IconFileExport" color="secondary" @click="exportExcel" />
-        <span class="text-gray-400 mx-4 hidden border-r-2 sm:block" />
-        <ProductFilterButtons v-model="selectedStatuses" />
       </div>
     </div>
 
@@ -25,7 +34,7 @@
     />
 
     <div v-if="isLoading" class="overflow-x-auto rounded-lg shadow-sm border border-gray-300">
-      <table class="min-w-full bg-white">
+      <table class="min-w-full bg-white border-collapse">
         <thead class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs font-medium border-b border-gray-200">
           <tr>
             <th class="py-3 px-6 text-left w-12"></th>
@@ -40,7 +49,7 @@
         </thead>
         <tbody>
            <tr v-for="i in 5" :key="i" class="border-b border-gray-200">
-             <td class="py-3 px-6 w-12 text-center"><SkeletonLoader width="16px" height="16px" /></td>
+             <td class="py-3 px-6 w-12 text-center border-r border-gray-200"><SkeletonLoader width="16px" height="16px" /></td>
              <td class="py-3 px-6"><SkeletonLoader width="64px" height="64px" className="rounded-md" /></td>
              <td class="py-3 px-6"><SkeletonLoader width="150px" height="20px" /></td>
              <td class="py-3 px-6"><SkeletonLoader width="100px" height="20px" /></td>
@@ -63,7 +72,7 @@
     </div>
 
     <div class="overflow-x-auto rounded-lg shadow-sm border border-gray-300" v-else>
-      <table class="min-w-full bg-white">
+      <table class="min-w-full bg-white border-collapse">
         <thead
           class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs font-medium border-b border-gray-200"
         >
@@ -87,7 +96,7 @@
 
           <template v-for="product in filteredProducts" :key="product.id">
             <tr class="border-b border-gray-200 hover:bg-gray-100 transition-colors duration-200">
-              <td class="py-3 px-6 w-12 text-center">
+              <td class="py-3 px-6 w-12 text-center border-r border-gray-200">
                 <button
                   v-if="product.variants && product.variants.length > 0"
                   @click="toggleDetails(product.id)"
@@ -125,8 +134,8 @@
                 </RoundBadge>
               </td>
               <td class="py-3 px-6 text-center space-x-2">
-                <SmallNoBgButton @click="openAddEditModal(product)">Sửa</SmallNoBgButton>
-                <SmallNoBgButton color="red" @click="promptDelete(product)"> Xóa </SmallNoBgButton>
+                <SmallNoBgButton @click="openAddEditModal(product)" :icon="IconEdit">Sửa</SmallNoBgButton>
+                <SmallNoBgButton color="red" @click="promptDelete(product)" :icon="IconTrash"> Xóa </SmallNoBgButton>
               </td>
             </tr>
 
@@ -135,7 +144,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <h4 class="text-sm font-semibold mb-2 text-gray-700">Chi tiết biến thể:</h4>
-                    <table class="min-w-full bg-white rounded shadow-inner text-sm">
+                    <table class="min-w-full bg-white rounded shadow-inner text-sm border border-gray-200">
                       <thead class="bg-gray-100">
                         <tr>
                           <th class="py-2 px-4 text-left w-20">Ảnh</th>
@@ -256,7 +265,6 @@ import { useQueryClient } from '@tanstack/vue-query'
 import { debounce } from '@/utils/debounceThrottle'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { getProducts } from '@/api/product'
-import ProductFilterButtons from '@/components/product/ProductFilterButtons.vue'
 import ProductForm from '@/components/product/ProductForm.vue'
 import Button from '@/components/ui/button/Button.vue'
 import Input from '@/components/ui/input/Input.vue'
@@ -270,6 +278,8 @@ import IconDownArrow from '@/components/icons/IconDownArrow.vue'
 import IconPlus from '@/components/icons/IconPlus.vue'
 import IconFileImport from '@/components/icons/IconFileImport.vue'
 import IconFileExport from '@/components/icons/IconFileExport.vue'
+import IconEdit from '@/components/icons/IconEdit.vue'
+import IconTrash from '@/components/icons/IconTrash.vue'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 import { useToast } from 'vue-toastification'
@@ -311,8 +321,90 @@ const filters = computed(() => ({
   statusIds: queryStatuses.value,
 }))
 
-const fetchProductsFn = (params) => {
-  return getProducts(params)
+const mockProducts = [
+  {
+    id: 1,
+    name: 'Honda Air Blade 160cc 2025',
+    category_id: 1,
+    category_name: 'Xe Máy',
+    brand_id: 1,
+    brand_name: 'Honda',
+    variant_count: 2,
+    inventory_status: 'in_stock',
+    cover_image_url: 'https://cdn.honda.com.vn/motorbike-versions/October2024/1JgXXyKgQ2y2Zp5p5p5p.png',
+    variants: [
+      { id: 101, price: 56000000, optionValues: { 'Màu sắc': 'Xanh Xám', 'Phiên bản': 'Tiêu chuẩn' }, url: 'ab-160-xanh-xam', cover_image_url: 'https://cdn.honda.com.vn/motorbike-versions/October2024/1JgXXyKgQ2y2Zp5p5p5p.png' },
+      { id: 102, price: 60000000, optionValues: { 'Màu sắc': 'Đỏ Xám', 'Phiên bản': 'Đặc biệt' }, url: 'ab-160-do-xam', cover_image_url: 'https://cdn.honda.com.vn/motorbike-versions/October2024/1JgXXyKgQ2y2Zp5p5p5p.png' }
+    ]
+  },
+  {
+    id: 2,
+    name: 'Nhớt Motul 300V Factory Line',
+    category_id: 2,
+    category_name: 'Dầu Nhớt',
+    brand_id: 2,
+    brand_name: 'Motul',
+    variant_count: 1,
+    inventory_status: 'in_stock',
+    cover_image_url: 'https://shop2banh.vn/images/thumbs/2023/11/nhot-motul-300v-factory-line-10w40-1l-tem-3-lop-moi-nhat-2024-2195-slide-products-65543c7b3c7b3.jpg',
+    variants: [
+      { id: 201, price: 435000, optionValues: { 'Dung tích': '1L' }, url: 'motul-300v-1l', cover_image_url: '' }
+    ]
+  },
+  {
+    id: 3,
+    name: 'Lốp Michelin City Grip 2',
+    category_id: 3,
+    category_name: 'Phụ Tùng',
+    brand_id: 3,
+    brand_name: 'Michelin',
+    variant_count: 2,
+    inventory_status: 'low_stock',
+    cover_image_url: 'https://shop2banh.vn/images/thumbs/2022/04/vo-michelin-city-grip-2-11070-14-dung-cho-banh-sau-pcx-vario-click-1854-slide-products-625e2e2e2e2e2.jpg',
+    variants: [
+      { id: 301, price: 1450000, optionValues: { 'Kích thước': '110/70-14' }, url: 'michelin-city-grip-2-110-70-14', cover_image_url: '' },
+      { id: 302, price: 1650000, optionValues: { 'Kích thước': '130/70-13' }, url: 'michelin-city-grip-2-130-70-13', cover_image_url: '' }
+    ]
+  },
+  {
+    id: 4,
+    name: 'Phuộc Ohlins HO 819',
+    category_id: 3,
+    category_name: 'Phụ Tùng',
+    brand_id: 4,
+    brand_name: 'Ohlins',
+    variant_count: 0,
+    inventory_status: 'out_of_stock',
+    cover_image_url: 'https://shop2banh.vn/images/thumbs/2021/12/phuoc-ohlins-ho-819-chinh-hang-cho-vario-click-1738-slide-products-61b8b8b8b8b8b.jpg',
+    variants: []
+  },
+  {
+    id: 5,
+    name: 'Bao tay Daytona',
+    category_id: 3,
+    category_name: 'Đồ Chơi Xe',
+    brand_id: 5,
+    brand_name: 'Daytona',
+    variant_count: 3,
+    inventory_status: 'in_stock',
+    cover_image_url: 'https://shop2banh.vn/images/thumbs/2023/08/bao-tay-daytona-chinh-hang-nhat-ban-2088-slide-products-64c8c8c8c8c8c.jpg',
+    variants: [
+       { id: 501, price: 350000, optionValues: { 'Màu': 'Đen' }, url: 'bao-tay-daytona-den', cover_image_url: '' },
+       { id: 502, price: 350000, optionValues: { 'Màu': 'Nâu' }, url: 'bao-tay-daytona-nau', cover_image_url: '' },
+       { id: 503, price: 350000, optionValues: { 'Màu': 'Xám' }, url: 'bao-tay-daytona-xam', cover_image_url: '' }
+    ]
+  }
+]
+
+const fetchProductsFn = async (params) => {
+  // Simulate delay for Skeleton testing
+  await new Promise(resolve => setTimeout(resolve, 2000))
+  // return getProducts(params)
+  return {
+    data: mockProducts,
+    total: mockProducts.length,
+    last_page: 1
+  }
 }
 
 const productDataMapper = (data) => ({
@@ -638,8 +730,10 @@ const currentPage = computed({
   },
 })
 
-const importExcel = () => {
-  alert('Chức năng Import Excel chưa được triển khai.')
+const importExcel = (event) => {
+  // alert('Chức năng Import Excel chưa được triển khai.')
+  toast.info('Chức năng Import Excel đang phát triển')
+  event.target.value = ''
 }
 const exportExcel = () => {
   alert('Chức năng Export Excel chưa được triển khai.')

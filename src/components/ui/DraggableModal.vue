@@ -218,7 +218,7 @@ onBeforeUnmount(() => {
         left: positionX + 'px',
         zIndex: zIndex,
         width: isMaximized ? '100%' : modalWidth + 'px',
-        height: isMaximized ? '100%' : (modalHeight > 0 ? modalHeight + 'px' : 'auto'),
+        height: isMaximized ? '100%' : 'auto',
       }"
       @mousedown.self="emit('activate')"
     >
