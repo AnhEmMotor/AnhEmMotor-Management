@@ -3,7 +3,7 @@ import { ref, watch, toRefs } from 'vue'
 import IconTrash from '../icons/IconTrash.vue'
 import IconDuplicate from '../icons/IconDuplicate.vue'
 import IconExpand from '../icons/IconExpand.vue'
-import BaseTextarea from '../ui/input/BaseTextarea.vue'
+import Textarea from '../ui/input/BaseTextarea.vue'
 
 const props = defineProps({
   itemData: Object,
@@ -100,7 +100,7 @@ const totalDiscount = (products) => {
     <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-6 items-center">
       <div class="flex-1">
         <span class="text-gray-600 text-xs">Ghi chú</span>
-        <BaseTextarea v-model="notes" placeholder="Gõ ghi chú của bạn ở đây..." :rows="4" />
+        <Textarea v-model="notes" placeholder="Gõ ghi chú của bạn ở đây..." :rows="4" />
       </div>
       <div class="w-full md:w-64 space-y-1 text-xs">
         <div class="flex justify-between">

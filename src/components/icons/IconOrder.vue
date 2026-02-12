@@ -1,5 +1,5 @@
 <template>
-  <svg fill="none" stroke="#ff0000" class="h-6 w-6 text-red-600-icon" viewBox="0 0 24 24">
+  <svg fill="none" stroke="currentColor" class="h-6 w-6" viewBox="0 0 24 24">
     <path
       stroke-linecap="round"
       stroke-linejoin="round"

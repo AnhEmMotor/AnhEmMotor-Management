@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import BaseSmallNoBgButton from '../ui/button/BaseSmallNoBgButton.vue'
+import SmallNoBgButton from '../ui/button/SmallNoBgButton.vue'
 import RoundBadge from '../ui/RoundBadge.vue'
 
 const props = defineProps({
@@ -77,7 +77,7 @@ function statusInfo(status) {
     </div>
 
     <div class="col-span-2 flex items-center justify-center text-sm">
-      <RoundBadge color="blue">{{ role.permissionCount }} quyền</RoundBadge>
+      <RoundBadge color="blue" title="Số lượng quyền được gán">{{ role.permissionCount }} quyền</RoundBadge>
     </div>
 
     <div class="col-span-2 flex items-center justify-center text-sm">
@@ -87,8 +87,8 @@ function statusInfo(status) {
     </div>
 
     <div class="col-span-2 flex items-center justify-center gap-2">
-      <BaseSmallNoBgButton @click="emit('edit')" color="blue">Sửa</BaseSmallNoBgButton>
-      <BaseSmallNoBgButton @click="emit('delete')" color="red">Xoá</BaseSmallNoBgButton>
+      <SmallNoBgButton @click="emit('edit')" color="blue">Sửa</SmallNoBgButton>
+      <SmallNoBgButton @click="emit('delete')" color="red">Xoá</SmallNoBgButton>
     </div>
   </div>
 </template>

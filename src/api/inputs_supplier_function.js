@@ -18,7 +18,6 @@ export const fetchInputsBySupplier = async ({
   })
 
   if (error) {
-    console.error('Error fetching inputs by supplier:', error)
     throw error
   }
 

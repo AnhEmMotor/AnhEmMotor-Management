@@ -1,179 +1,11 @@
-<template>
-  <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-lg p-8">
-    <h1 class="text-3xl font-bold text-gray-800 mb-8 border-b pb-4">⚙️ Cài Đặt Quy Tắc Bán Hàng</h1>
-
-    <div class="space-y-10">
-      <div class="p-6 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
-        <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
-          <svg
-            class="w-6 h-6 mr-3 text-blue-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 12v-2.5M9 10H7M15 10h2M9 14H7M15 14h2M12 12a5 5 0 01-5 5h10a5 5 0 01-5-5z"
-            ></path>
-          </svg>
-          Quy Tắc Đặt Cọc
-        </h2>
-        <p class="text-gray-600 mb-4">Thiết lập quy tắc đơn hàng phải đặt cọc trước.</p>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
-          <div>
-            <BaseInput
-              v-model="maxOrderProxy"
-              type="text"
-              id="max-order-value"
-              placeholder="Ví dụ: 10000000"
-              :inputClass="'setting-input w-full'"
-              label="Giá trị đơn hàng vượt quá (X đồng):"
-            />
-          </div>
-          <div>
-            <label for="deposit-percentage" class="block text-sm font-medium text-gray-700 mb-1"
-              >Tỷ lệ đặt cọc (Y%):</label
-            >
-            <div class="relative">
-              <BaseInput
-                v-model="depositProxy"
-                type="number"
-                id="deposit-percentage"
-                placeholder="Ví dụ: 10"
-                :inputClass="'setting-input w-full pr-10'"
-                min="0"
-                max="100"
-              />
-              <span
-                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-semibold"
-                >%</span
-              >
-            </div>
-          </div>
-        </div>
-        <p class="mt-4 text-sm text-blue-700 bg-blue-100 p-3 rounded-lg">
-          Khi đơn hàng vượt quá
-          <span class="font-bold text-lg">{{ formattedMaxOrder }}</span> đồng, khách hàng phải đặt
-          cọc trước <span class="font-bold text-lg">{{ settings.deposit }}</span
-          >%.
-        </p>
-      </div>
-
-      <div class="p-6 bg-yellow-50 border-l-4 border-yellow-500 rounded-r-lg">
-        <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
-          <svg
-            class="w-6 h-6 mr-3 text-yellow-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-            ></path>
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-            ></path>
-          </svg>
-          Quy Tắc Đơn Hàng Số Lượng Lớn
-        </h2>
-        <p class="text-gray-600 mb-4">
-          Cho phép tạo đơn hàng số lượng lớn nhưng yêu cầu gặp trực tiếp.
-        </p>
-        <div class="w-full md:w-1/2">
-          <BaseInput
-            v-model="maxCountProxy"
-            type="number"
-            id="max-motorcycle-count"
-            placeholder="Ví dụ: 3"
-            :inputClass="'setting-input w-full'"
-            min="1"
-            label="Số lượng xe máy tối đa (Z chiếc) trước khi yêu cầu gặp mặt:"
-          />
-        </div>
-        <p class="mt-4 text-sm text-yellow-700 bg-yellow-100 p-3 rounded-lg">
-          Khi tổng số lượng xe máy trong đơn hàng vượt quá
-          <span class="font-bold text-lg">{{ settings.maxCount }}</span> chiếc, đơn hàng sẽ chuyển
-          sang trạng thái chờ xác nhận và yêu cầu nhập thông tin liên hệ.
-        </p>
-      </div>
-
-      <div class="p-6 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
-        <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
-          <svg
-            class="w-6 h-6 mr-3 text-red-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.398 16c-.77 1.333.192 3 1.732 3z"
-            ></path>
-          </svg>
-          Cảnh Báo Tồn Kho
-        </h2>
-        <p class="text-gray-600 mb-4">Thiết lập mức tồn kho tối thiểu để kích hoạt cảnh báo.</p>
-        <div class="w-full md:w-1/2">
-          <BaseInput
-            v-model="stockLevelProxy"
-            type="number"
-            id="stock-warning-level"
-            placeholder="Ví dụ: 5"
-            :inputClass="'setting-input w-full'"
-            min="0"
-            label="Ngưỡng cảnh báo tồn kho (số lượng sản phẩm):"
-          />
-        </div>
-        <p class="mt-4 text-sm text-red-700 bg-red-100 p-3 rounded-lg">
-          Khi tồn kho của một sản phẩm bằng hoặc dưới
-          <span class="font-bold text-lg">{{ settings.stockLevel }}</span
-          >, hệ thống sẽ gửi cảnh báo.
-        </p>
-      </div>
-    </div>
-
-    <div class="flex justify-end pt-8 mt-8 border-t">
-      <button
-        @click="saveSettings"
-        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition duration-200 shadow-md flex items-center"
-      >
-        <svg
-          class="w-5 h-5 mr-2"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
-          ></path>
-        </svg>
-        Lưu Cài Đặt
-      </button>
-    </div>
-  </div>
-</template>
-
 <script setup>
-import { reactive, onMounted, computed } from 'vue'
+import { reactive, ref, onMounted, computed } from 'vue'
 import { useToast } from 'vue-toastification'
-import BaseInput from '@/components/ui/input/BaseInput.vue'
+import Button from '@/components/ui/button/BaseButton.vue'
+import RoundBadge from '@/components/ui/RoundBadge.vue'
+import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
+
+const isLoading = ref(true)
 
 const settings = reactive({
   maxOrder: 10000000,
@@ -182,6 +14,14 @@ const settings = reactive({
   stockLevel: 5,
 })
 
+const toggles = reactive({
+  deposit: true,
+  orderLimit: true,
+  stockWarning: true,
+})
+
+const testOrderValue = ref(15000000)
+
 const toast = useToast()
 
 const formatNumber = (num) => {
@@ -189,66 +29,295 @@ const formatNumber = (num) => {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
 
-const formattedMaxOrder = computed(() => {
-  return formatNumber(settings.maxOrder)
+const parseNumber = (str) => {
+  const n = Number(String(str).replace(/,/g, ''))
+  return Number.isFinite(n) ? n : 0
+}
+
+const depositAmount = computed(() => {
+  if (!toggles.deposit || testOrderValue.value <= settings.maxOrder) return 0
+  return Math.round(testOrderValue.value * (settings.deposit / 100))
 })
 
+const needsDeposit = computed(() => toggles.deposit && testOrderValue.value > settings.maxOrder)
 
-const maxOrderProxy = computed({
-  get() {
-    return settings.maxOrder != null ? String(settings.maxOrder) : ''
-  },
-  set(val) {
-    const n = Number(val.replace(/,/g, ''))
-    settings.maxOrder = Number.isFinite(n) ? n : 0
-  },
-})
+const handleMaxOrderInput = (e) => {
+  settings.maxOrder = parseNumber(e.target.value)
+}
 
-const depositProxy = computed({
-  get() {
-    return settings.deposit != null ? String(settings.deposit) : ''
-  },
-  set(val) {
-    const n = Number(val)
-    settings.deposit = Number.isFinite(n) ? n : 0
-  },
-})
+const handleDepositInput = (e) => {
+  const n = Number(e.target.value)
+  settings.deposit = Number.isFinite(n) ? Math.min(100, Math.max(0, n)) : 0
+}
 
-const maxCountProxy = computed({
-  get() {
-    return settings.maxCount != null ? String(settings.maxCount) : ''
-  },
-  set(val) {
-    const n = Number(val)
-    settings.maxCount = Number.isFinite(n) ? n : 0
-  },
-})
+const handleMaxCountInput = (e) => {
+  const n = Number(e.target.value)
+  settings.maxCount = Number.isFinite(n) ? Math.max(1, n) : 1
+}
 
-const stockLevelProxy = computed({
-  get() {
-    return settings.stockLevel != null ? String(settings.stockLevel) : ''
-  },
-  set(val) {
-    const n = Number(val)
-    settings.stockLevel = Number.isFinite(n) ? n : 0
-  },
-})
+const handleStockLevelInput = (e) => {
+  const n = Number(e.target.value)
+  settings.stockLevel = Number.isFinite(n) ? Math.max(0, n) : 0
+}
+
+const handleTestValueInput = (e) => {
+  testOrderValue.value = parseNumber(e.target.value)
+}
 
 const saveSettings = () => {
   localStorage.setItem('anhemMotorSettings', JSON.stringify(settings))
-
+  localStorage.setItem('anhemMotorToggles', JSON.stringify(toggles))
   toast.success('Đã lưu cài đặt thành công!')
 }
 
+const resetDefaults = () => {
+  Object.assign(settings, { maxOrder: 10000000, deposit: 10, maxCount: 3, stockLevel: 5 })
+  Object.assign(toggles, { deposit: true, orderLimit: true, stockWarning: true })
+  testOrderValue.value = 15000000
+  toast.info('Đã khôi phục cài đặt mặc định')
+}
+
 const loadSettings = () => {
-  const savedSettings = localStorage.getItem('anhemMotorSettings')
-  if (savedSettings) {
-    const parsedSettings = JSON.parse(savedSettings)
-    Object.assign(settings, parsedSettings)
-  }
+  const saved = localStorage.getItem('anhemMotorSettings')
+  if (saved) Object.assign(settings, JSON.parse(saved))
+  const savedToggles = localStorage.getItem('anhemMotorToggles')
+  if (savedToggles) Object.assign(toggles, JSON.parse(savedToggles))
 }
 
 onMounted(() => {
   loadSettings()
+  setTimeout(() => {
+    isLoading.value = false
+  }, 800)
 })
 </script>
+
+<template>
+  <div class="p-6 rounded-xl shadow-lg bg-white">
+    <div
+      class="flex items-start justify-between mb-6 sticky top-0 bg-white z-10 pb-4 border-b border-gray-200"
+    >
+      <div>
+        <h1 class="text-3xl font-bold mb-1 text-gray-800">Cài Đặt Bán Hàng</h1>
+        <p class="text-gray-500 text-sm">
+          Quản lý quy tắc đặt cọc, giới hạn đơn hàng và cảnh báo tồn kho
+        </p>
+      </div>
+      <div v-if="isLoading" class="flex gap-2">
+        <SkeletonLoader width="100px" height="2.5rem" className="rounded-lg" />
+        <SkeletonLoader width="120px" height="2.5rem" className="rounded-lg" />
+      </div>
+      <div v-else class="flex items-center gap-2">
+        <Button color="secondary" text="Mặc định" @click="resetDefaults" />
+        <Button color="primary" text="Lưu thay đổi" @click="saveSettings" />
+      </div>
+    </div>
+
+    <template v-if="isLoading">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <SkeletonLoader height="320px" className="rounded-lg" />
+        <div class="space-y-6">
+          <SkeletonLoader height="180px" className="rounded-lg" />
+          <SkeletonLoader height="220px" className="rounded-lg" />
+        </div>
+      </div>
+    </template>
+
+    <template v-else>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="space-y-6">
+          <div class="border border-gray-200 rounded-lg overflow-hidden">
+            <div
+              class="flex items-center justify-between px-5 py-4 bg-gray-50 border-b border-gray-200"
+            >
+              <div class="flex items-center gap-2">
+                <span class="text-red-600 text-lg">💰</span>
+                <h2 class="text-sm font-semibold text-gray-800">Quy Tắc Đặt Cọc</h2>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" v-model="toggles.deposit" class="sr-only peer" />
+                <div
+                  class="w-9 h-5 bg-gray-200 peer-focus:ring-2 peer-focus:ring-red-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-500"
+                ></div>
+              </label>
+            </div>
+
+            <div v-if="toggles.deposit" class="p-5 space-y-4">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-medium text-gray-500 mb-1.5"
+                    >Đơn hàng vượt quá</label
+                  >
+                  <div class="relative">
+                    <input
+                      type="text"
+                      :value="formatNumber(settings.maxOrder)"
+                      @input="handleMaxOrderInput"
+                      class="w-full px-3 py-2 pr-12 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-200 focus:border-red-400 outline-none"
+                    />
+                    <span
+                      class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-medium"
+                      >VNĐ</span
+                    >
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-500 mb-1.5"
+                    >Tỷ lệ đặt cọc</label
+                  >
+                  <div class="relative">
+                    <input
+                      type="number"
+                      :value="settings.deposit"
+                      @input="handleDepositInput"
+                      min="0"
+                      max="100"
+                      class="w-full px-3 py-2 pr-8 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-200 focus:border-red-400 outline-none"
+                    />
+                    <span
+                      class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-medium"
+                      >%</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-3 bg-red-50 border border-red-100 rounded-lg">
+                <p class="text-xs font-semibold text-red-600 mb-2">⚡ Dùng thử</p>
+                <div class="flex items-center gap-2 mb-2">
+                  <label class="text-xs text-gray-500 shrink-0">Giá trị đơn:</label>
+                  <div class="relative flex-1">
+                    <input
+                      type="text"
+                      :value="formatNumber(testOrderValue)"
+                      @input="handleTestValueInput"
+                      class="w-full px-3 py-1.5 pr-12 text-sm border border-red-200 rounded-lg focus:ring-2 focus:ring-red-200 focus:border-red-400 outline-none bg-white"
+                    />
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400"
+                      >VNĐ</span
+                    >
+                  </div>
+                </div>
+                <div
+                  class="text-sm font-medium"
+                  :class="needsDeposit ? 'text-red-700' : 'text-gray-500'"
+                >
+                  <template v-if="needsDeposit">
+                    → Khách phải cọc:
+                    <span class="font-bold">{{ formatNumber(depositAmount) }} VNĐ</span>
+                  </template>
+                  <template v-else> → Không yêu cầu cọc (đơn hàng chưa vượt ngưỡng) </template>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-6">
+          <div class="border border-gray-200 rounded-lg overflow-hidden">
+            <div
+              class="flex items-center justify-between px-5 py-4 bg-gray-50 border-b border-gray-200"
+            >
+              <div class="flex items-center gap-2">
+                <span class="text-yellow-600 text-lg">📦</span>
+                <h2 class="text-sm font-semibold text-gray-800">Giới Hạn Đơn Hàng</h2>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" v-model="toggles.orderLimit" class="sr-only peer" />
+                <div
+                  class="w-9 h-5 bg-gray-200 peer-focus:ring-2 peer-focus:ring-red-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-500"
+                ></div>
+              </label>
+            </div>
+
+            <div v-if="toggles.orderLimit" class="p-5 space-y-4">
+              <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1.5"
+                  >Số lượng xe tối đa / đơn</label
+                >
+                <div class="relative w-40">
+                  <input
+                    type="number"
+                    :value="settings.maxCount"
+                    @input="handleMaxCountInput"
+                    min="1"
+                    class="w-full px-3 py-2 pr-14 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-200 focus:border-red-400 outline-none"
+                  />
+                  <span
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-medium"
+                    >chiếc</span
+                  >
+                </div>
+              </div>
+              <div
+                class="flex items-start gap-2 p-3 bg-yellow-50 border border-yellow-100 rounded-lg"
+              >
+                <span class="text-yellow-500 text-sm mt-0.5">ℹ️</span>
+                <p class="text-xs text-yellow-700">
+                  Đơn hàng vượt quá <span class="font-bold">{{ settings.maxCount }} xe</span> sẽ
+                  chuyển sang trạng thái <span class="font-semibold">"Chờ duyệt"</span> thay vì xác
+                  nhận ngay. Admin cần phê duyệt thủ công.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="border border-gray-200 rounded-lg overflow-hidden">
+            <div
+              class="flex items-center justify-between px-5 py-4 bg-gray-50 border-b border-gray-200"
+            >
+              <div class="flex items-center gap-2">
+                <span class="text-red-600 text-lg">⚠️</span>
+                <h2 class="text-sm font-semibold text-gray-800">Cảnh Báo Tồn Kho</h2>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" v-model="toggles.stockWarning" class="sr-only peer" />
+                <div
+                  class="w-9 h-5 bg-gray-200 peer-focus:ring-2 peer-focus:ring-red-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-500"
+                ></div>
+              </label>
+            </div>
+
+            <div v-if="toggles.stockWarning" class="p-5 space-y-4">
+              <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1.5"
+                  >Ngưỡng cảnh báo chung</label
+                >
+                <div class="relative w-40">
+                  <input
+                    type="number"
+                    :value="settings.stockLevel"
+                    @input="handleStockLevelInput"
+                    min="0"
+                    class="w-full px-3 py-2 pr-16 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-200 focus:border-red-400 outline-none"
+                  />
+                  <span
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-medium"
+                    >sản phẩm</span
+                  >
+                </div>
+              </div>
+              <div class="p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                <p class="text-xs text-gray-500 mb-2">Xem trước hiển thị:</p>
+                <div class="flex items-center gap-3">
+                  <span class="text-sm text-gray-700"
+                    >Tồn kho: <span class="font-bold">{{ settings.stockLevel }}</span></span
+                  >
+                  <span class="text-gray-300">→</span>
+                  <RoundBadge color="yellow">Sắp hết hàng</RoundBadge>
+                </div>
+                <div class="flex items-center gap-3 mt-2">
+                  <span class="text-sm text-gray-700"
+                    >Tồn kho: <span class="font-bold">0</span></span
+                  >
+                  <span class="text-gray-300">→</span>
+                  <RoundBadge color="red">Hết hàng</RoundBadge>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+  </div>
+</template>

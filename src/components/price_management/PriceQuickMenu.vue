@@ -9,144 +9,164 @@
         <option value="absolute">Chỉnh sửa theo giá</option>
         <option value="percent">Chỉnh sửa theo %</option>
       </select>
-      <button class="p-1 bg-blue-500 text-white rounded" @click="applyPlus">+</button>
-      <button class="p-1 bg-gray-200 rounded" @click="applyMinus">-</button>
+
+      <div class="flex bg-gray-100 rounded p-1 gap-1">
+        <button
+          class="w-8 h-7 rounded text-sm font-bold transition-colors"
+          :class="
+            operation === 'add'
+              ? 'bg-white shadow text-blue-600'
+              : 'text-gray-500 hover:bg-gray-200'
+          "
+          @click="operation = 'add'"
+        >
+          +
+        </button>
+        <button
+          class="w-8 h-7 rounded text-sm font-bold transition-colors"
+          :class="
+            operation === 'subtract'
+              ? 'bg-white shadow text-red-600'
+              : 'text-gray-500 hover:bg-gray-200'
+          "
+          @click="operation = 'subtract'"
+        >
+          -
+        </button>
+      </div>
     </div>
 
     <div class="flex items-center gap-2 mb-2">
-      <input v-model="value" type="text" class="flex-1 border rounded p-1 text-sm" />
-      <button class="px-2 py-1 bg-blue-600 text-white rounded text-sm" @click="apply">
+      <div class="flex-1">
+        <div class="text-xs text-gray-500 mb-1">
+          {{ operation === 'add' ? 'Tăng thêm' : 'Giảm đi' }}
+        </div>
+        <input
+          v-model="delta"
+          type="text"
+          class="w-full border rounded p-1 text-sm"
+          :placeholder="mode === 'percent' ? 'Nhập số %' : 'Nhập số tiền'"
+          @keydown.enter="apply"
+        />
+      </div>
+      <button
+        class="px-3 py-1 bg-blue-600 text-white rounded text-sm mt-5 h-8 font-medium hover:bg-blue-700"
+        @click="apply"
+      >
         Áp dụng
       </button>
     </div>
 
-    <div v-if="preview !== null" class="mb-2 text-sm">
-      <div class="text-xs text-gray-500">Kết quả</div>
-      <div class="font-medium">{{ formatMoney(preview) }}</div>
+    <div
+      v-if="computedPreview !== null"
+      class="mb-2 text-sm bg-blue-50 p-2 rounded border border-blue-100"
+    >
+      <div class="flex justify-between items-center">
+        <span class="text-xs text-gray-500">Giá sau khi thay đổi:</span>
+        <span class="font-bold text-lg text-blue-700">{{ formatMoney(computedPreview) }}</span>
+      </div>
     </div>
 
     <div class="flex gap-2 text-sm">
-      <button class="px-2 py-1 bg-green-100 rounded" @click="quickPercent(5)">+5%</button>
-      <button class="px-2 py-1 bg-green-100 rounded" @click="quickPercent(10)">+10%</button>
-      <button class="px-2 py-1 bg-red-100 rounded" @click="quickPercent(-5)">-5%</button>
-      <button class="px-2 py-1 bg-red-100 rounded" @click="quickPercent(-10)">-10%</button>
+      <button
+        class="px-2 py-1 bg-green-50 text-green-700 border border-green-200 rounded hover:bg-green-100"
+        @click="quickPercent(5)"
+      >
+        +5%
+      </button>
+      <button
+        class="px-2 py-1 bg-green-50 text-green-700 border border-green-200 rounded hover:bg-green-100"
+        @click="quickPercent(10)"
+      >
+        +10%
+      </button>
+      <button
+        class="px-2 py-1 bg-red-50 text-red-700 border border-red-200 rounded hover:bg-red-100"
+        @click="quickPercent(-5)"
+      >
+        -5%
+      </button>
+      <button
+        class="px-2 py-1 bg-red-50 text-red-700 border border-red-200 rounded hover:bg-red-100"
+        @click="quickPercent(-10)"
+      >
+        -10%
+      </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
+
 const props = defineProps({
   basePrice: { type: [Number, String], default: null },
 })
 const emit = defineEmits(['apply', 'menu-mousedown'])
 
-const mode = ref('absolute')
-const value = ref('')
-const preview = ref(null)
+const mode = ref('percent')
+const operation = ref('add')
+const delta = ref('')
+
+const computedPreview = computed(() => {
+  const base = parseNumber(props.basePrice)
+  const deltaValue = parseNumber(delta.value)
+
+  if (base === null || deltaValue === null) return null
+
+  let result
+  if (mode.value === 'absolute') {
+    if (operation.value === 'add') {
+      result = base + deltaValue
+    } else {
+      result = base - deltaValue
+    }
+  } else {
+    if (operation.value === 'add') {
+      result = Math.round(base * (1 + deltaValue / 100))
+    } else {
+      result = Math.round(base * (1 - deltaValue / 100))
+    }
+  }
+
+  return Math.max(0, result)
+})
 
 watch(
   () => props.basePrice,
-  (v) => {
-    const base = parseNumber(v)
-    if (mode.value === 'percent') {
-      value.value = '5'
-    } else {
-      value.value = base === null || base === undefined ? '' : String(base)
-    }
+  () => {
+    delta.value = ''
+    operation.value = 'add'
   },
   { immediate: true },
 )
 
-watch(
-  () => mode.value,
-  (m) => {
-    preview.value = null
-    const base = parseNumber(props.basePrice)
-    if (m === 'percent') {
-      const currAbs = parseNumber(value.value)
-      if (currAbs !== null && base !== null && base !== 0) {
-        const percent = Math.round(((currAbs - base) / base) * 1000) / 10
-        value.value = String(percent)
-      } else {
-        value.value = '5'
-      }
-    } else {
-      const currPerc = parseNumber(value.value)
-      if (currPerc !== null && base !== null) {
-        const abs = Math.round(base * (1 + currPerc / 100))
-        value.value = String(abs)
-      } else {
-        value.value = base !== null ? String(base) : ''
-      }
-    }
-  },
-)
+watch(mode, () => {
+  delta.value = ''
+})
 
 function parseNumber(v) {
   if (v === null || v === undefined || v === '') return null
   if (typeof v === 'number') return v
-  const s = String(v).replace(/\./g, '').replace(/,/g, '')
+  const s = String(v).replace(/[.,+]/g, '')
   const n = Number(s)
   return Number.isFinite(n) ? n : null
 }
 
 function apply() {
-  if (preview.value !== null) {
-    const v = preview.value
-    emit('apply', v < 0 ? 0 : v)
-    preview.value = null
-    return
-  }
-  const base = parseNumber(props.basePrice)
-  if (mode.value === 'absolute') {
-    const v = parseNumber(value.value)
-    if (v === null) return
-    emit('apply', v < 0 ? 0 : v)
-  } else {
-    const p = parseNumber(value.value)
-    if (p === null || base === null) return
-    const newPrice = Math.round(base * (1 + p / 100))
-    emit('apply', newPrice < 0 ? 0 : newPrice)
+  if (computedPreview.value !== null) {
+    emit('apply', computedPreview.value)
   }
 }
 
 function quickPercent(p) {
-  const base = parseNumber(props.basePrice)
-  if (base === null) return
-  const newPrice = Math.round(base * (1 + p / 100))
-  preview.value = newPrice
-}
-
-function applyPlus() {
-  const base = parseNumber(props.basePrice)
-  if (base === null) return
-  if (mode.value === 'absolute') {
-    const delta = parseNumber(value.value)
-    if (delta === null) return
-    const v = base + delta
-    preview.value = v < 0 ? 0 : v
+  mode.value = 'percent'
+  if (p > 0) {
+    operation.value = 'add'
+    delta.value = String(p)
   } else {
-    const p = parseNumber(value.value)
-    if (p === null) return
-    const newPrice = Math.round(base * (1 + p / 100))
-    preview.value = newPrice < 0 ? 0 : newPrice
-  }
-}
-
-function applyMinus() {
-  const base = parseNumber(props.basePrice)
-  if (base === null) return
-  if (mode.value === 'absolute') {
-    const delta = parseNumber(value.value)
-    if (delta === null) return
-    const v = base - delta
-    preview.value = v < 0 ? 0 : v
-  } else {
-    const p = parseNumber(value.value)
-    if (p === null) return
-    const newPrice = Math.round(base * (1 - p / 100))
-    preview.value = newPrice < 0 ? 0 : newPrice
+    operation.value = 'subtract'
+    delta.value = String(Math.abs(p))
   }
 }
 

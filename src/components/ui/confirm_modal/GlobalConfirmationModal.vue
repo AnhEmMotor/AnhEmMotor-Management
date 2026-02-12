@@ -1,21 +1,16 @@
 <template>
-  <BaseConfirmationModal
-    v-if="state.show"
-    :show="state.show"
-    :title="state.title"
-    @close="onCancel"
-  >
+  <ConfirmationModal v-if="state.show" :show="state.show" :title="state.title" @close="onCancel">
     <p class="text-gray-600">{{ state.message }}</p>
     <template #actions>
-      <BaseButton text="Bỏ qua" color="gray" @click="onCancel" />
-      <BaseButton text="Xác nhận" color="red" @click="onConfirm" />
+      <Button text="Bỏ qua" color="gray" @click="onCancel" />
+      <Button text="Xác nhận" color="red" @click="onConfirm" />
     </template>
-  </BaseConfirmationModal>
+  </ConfirmationModal>
 </template>
 
 <script setup>
-import BaseConfirmationModal from './BaseConfirmationModal.vue'
-import BaseButton from '@/components/ui/button/BaseButton.vue'
+import ConfirmationModal from './ConfirmationModal.vue'
+import Button from '@/components/ui/button/BaseButton.vue'
 import { useConfirmationState, confirm, cancel } from '@/composables/useConfirmationState'
 
 const { state } = useConfirmationState()

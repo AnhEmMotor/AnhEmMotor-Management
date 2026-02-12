@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-wrap gap-2">
-    <BaseFilterButton
+    <FilterButton
       v-for="filter in filterOptions"
       :key="filter.status"
       :text="filter.label"
@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import BaseFilterButton from '../ui/button/BaseFilterButton.vue'
+import FilterButton from '../ui/button/FilterButton.vue'
 const props = defineProps({
   modelValue: {
     type: Array,

@@ -3,14 +3,17 @@ import { ref, watch, computed, nextTick, onMounted } from 'vue'
 import { useProductCategoriesStore } from '@/stores/useProductCategoriesStore'
 import { useBrandsStore } from '@/stores/useBrandsStore'
 import { useOptionsStore } from '@/stores/useOptionsStore'
-import BaseInput from '@/components/ui/input/BaseInput.vue'
-import BaseTextarea from '@/components/ui/input/BaseTextarea.vue'
-import BaseDropdown from '@/components/ui/input/BaseDropdown.vue'
-import BaseButton from '@/components/ui/button/BaseButton.vue'
-import BaseSmallNoBgButton from '@/components/ui/button/BaseSmallNoBgButton.vue'
-import BaseImage from '@/components/ui/input/BaseImage.vue'
-import BaseGroupImage from '@/components/ui/input/BaseGroupImage.vue'
-import BaseLoadingOverlay from '../ui/BaseLoadingOverlay.vue'
+import Input from '@/components/ui/input/BaseInput.vue'
+import Textarea from '@/components/ui/input/BaseTextarea.vue'
+import Dropdown from '@/components/ui/input/BaseDropdown.vue'
+import Button from '@/components/ui/button/BaseButton.vue'
+import SmallNoBgButton from '@/components/ui/button/SmallNoBgButton.vue'
+import Image from '@/components/ui/input/BaseImage.vue'
+import GroupImage from '@/components/ui/input/GroupImage.vue'
+import LoadingOverlay from '../ui/LoadingOverlay.vue'
+import IconTrash from '@/components/icons/IconTrash.vue'
+import IconPlus from '@/components/icons/IconPlus.vue'
+import IconCheck from '@/components/icons/IconCheck.vue'
 
 const props = defineProps({
   modelValue: {
@@ -72,8 +75,6 @@ onMounted(async () => {
       brandsStore.fetchBrands(),
       optionsStore.fetchOptions(),
     ])
-  } catch (error) {
-    console.error('Lỗi khi tải dữ liệu form:', error)
   } finally {
     isFormLoading.value = false
   }
@@ -240,17 +241,17 @@ watch(
             price: null,
             cover_image_url: generalCoverImage.value,
             photo_collection: [...generalPhotoCollection.value],
-          } 
+          }
 
       firstVariant.optionValues = {}
-      firstVariant.url = slugify(localProduct.value.name) 
+      firstVariant.url = slugify(localProduct.value.name)
 
       localProduct.value.variants = [firstVariant]
     } else {
       const currentOptionNames = newOptions.map((o) => o.name)
       localProduct.value.variants.forEach((variant) => {
         if (!variant.optionValues || typeof variant.optionValues !== 'object') {
-          variant.optionValues = {}   
+          variant.optionValues = {}
         }
 
         const existingValueKeys = Object.keys(variant.optionValues)
@@ -326,14 +327,14 @@ const applyGeneralPhotoCollection = () => {
 </script>
 
 <template>
-  <BaseLoadingOverlay :show="showLoadingOverlay" :message="loadingMessage" />
+  <LoadingOverlay :show="showLoadingOverlay" :message="loadingMessage" />
   <form @submit.prevent id="product-form">
-    <div class="space-y-4 max-h-[75vh] overflow-y-auto px-1 pr-2">
+    <div class="space-y-4 px-1 pr-2">
       <fieldset class="border rounded-md p-4">
         <legend class="px-2 font-semibold text-gray-700">Thông tin chung</legend>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <BaseInput
+            <Input
               label="Tên Dòng Sản Phẩm *"
               v-model="localProduct.name"
               placeholder="Bắt buộc (ví dụ: 'Honda Air Blade')"
@@ -344,7 +345,7 @@ const applyGeneralPhotoCollection = () => {
             </div>
           </div>
           <div>
-            <BaseDropdown
+            <Dropdown
               label="Danh Mục *"
               v-model="localProduct.category_id"
               :options="categoryOptions"
@@ -356,7 +357,7 @@ const applyGeneralPhotoCollection = () => {
             </div>
           </div>
           <div>
-            <BaseDropdown
+            <Dropdown
               label="Thương Hiệu"
               v-model="localProduct.brand_id"
               :options="brandOptions"
@@ -364,7 +365,7 @@ const applyGeneralPhotoCollection = () => {
             />
           </div>
           <div class="md:col-span-2">
-            <BaseTextarea
+            <Textarea
               label="Mô Tả Sản Phẩm"
               v-model="localProduct.description"
               placeholder="Nhập mô tả..."
@@ -377,13 +378,13 @@ const applyGeneralPhotoCollection = () => {
       <fieldset class="border rounded-md p-4">
         <legend class="px-2 font-semibold text-gray-700">Hình ảnh chung (Để áp dụng nhanh)</legend>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <BaseImage
+          <Image
             label="Ảnh Bìa Chung"
             v-model="generalCoverImage"
             class="md:col-span-1"
             bucket="cover"
           />
-          <BaseGroupImage
+          <GroupImage
             label="Bộ Sưu Tập Chung"
             v-model="generalPhotoCollection"
             class="md:col-span-2"
@@ -391,11 +392,17 @@ const applyGeneralPhotoCollection = () => {
           />
         </div>
         <div class="flex space-x-2 mt-4">
-          <BaseButton text="Áp dụng Ảnh Bìa Chung" color="gray" @click="applyGeneralCoverImage" />
-          <BaseButton
+          <Button
+            text="Áp dụng Ảnh Bìa Chung"
+            color="gray"
+            @click="applyGeneralCoverImage"
+            :icon="IconCheck"
+          />
+          <Button
             text="Áp dụng Bộ Sưu Tập Chung"
             color="gray"
             @click="applyGeneralPhotoCollection"
+            :icon="IconCheck"
           />
         </div>
       </fieldset>
@@ -403,107 +410,107 @@ const applyGeneralPhotoCollection = () => {
       <fieldset class="border rounded-md p-4">
         <legend class="px-2 font-semibold text-gray-700">Thông số kỹ thuật</legend>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <BaseInput
+          <Input
             label="Khối lượng bản thân (kg)"
             type="number"
             v-model.number="localProduct.weight"
             placeholder="ví dụ: 114"
           />
-          <BaseInput
+          <Input
             label="Kích thước (D x R x C) (mm)"
             v-model="localProduct.dimensions"
             placeholder="ví dụ: 1.902 x 686 x 1.116"
           />
-          <BaseInput
+          <Input
             label="Khoảng cách trục bánh xe (mm)"
             type="number"
             v-model.number="localProduct.wheelbase"
             placeholder="ví dụ: 1286"
           />
-          <BaseInput
+          <Input
             label="Độ cao yên (mm)"
             type="number"
             v-model.number="localProduct.seat_height"
             placeholder="ví dụ: 775"
           />
-          <BaseInput
+          <Input
             label="Khoảng sáng gầm xe (mm)"
             type="number"
             v-model.number="localProduct.ground_clearance"
             placeholder="ví dụ: 141"
           />
-          <BaseInput
+          <Input
             label="Dung tích bình xăng (lít)"
             type="number"
             step="0.1"
             v-model.number="localProduct.fuel_capacity"
             placeholder="ví dụ: 4.4"
           />
-          <BaseInput
+          <Input
             label="Kích cỡ lốp trước/sau"
             v-model="localProduct.tire_size"
             placeholder="ví dụ: 90/80-14 / 100/80-14"
           />
-          <BaseInput
+          <Input
             label="Phuộc trước"
             v-model="localProduct.front_suspension"
             placeholder="ví dụ: Ống lồng"
           />
-          <BaseInput
+          <Input
             label="Phuộc sau"
             v-model="localProduct.rear_suspension"
             placeholder="ví dụ: Lò xo trụ"
           />
-          <BaseInput
+          <Input
             label="Loại động cơ"
             v-model="localProduct.engine_type"
             placeholder="ví dụ: 4 kỳ, 1 xi-lanh..."
           />
-          <BaseInput
+          <Input
             label="Công suất tối đa"
             v-model="localProduct.max_power"
             placeholder="ví dụ: 11,7 mã lực @ 8.500 vòng/phút"
           />
-          <BaseInput
+          <Input
             label="Dung tích nhớt máy (lít)"
             type="number"
             step="0.1"
             v-model.number="localProduct.oil_capacity"
             placeholder="ví dụ: 0.8"
           />
-          <BaseInput
+          <Input
             label="Mức tiêu thụ nhiên liệu"
             v-model="localProduct.fuel_consumption"
             placeholder="ví dụ: 2,31 l/100km"
           />
-          <BaseInput
+          <Input
             label="Loại truyền động"
             v-model="localProduct.transmission_type"
             placeholder="ví dụ: Tự động, vô cấp"
           />
-          <BaseInput
+          <Input
             label="Hệ thống khởi động"
             v-model="localProduct.starter_system"
             placeholder="ví dụ: Điện"
           />
-          <BaseInput
+          <Input
             label="Moment xoắn cực đại"
             v-model="localProduct.max_torque"
             placeholder="ví dụ: 14,6 Nm @ 6.500 vòng/phút"
           />
-          <BaseInput
+          <Input
             label="Dung tích xy-lanh (cc)"
             type="number"
             step="0.1"
             v-model.number="localProduct.displacement"
             placeholder="ví dụ: 156.9"
           />
-          <BaseInput
+          <Input
             label="Đường kính x Hành trình piston (mm)"
             v-model="localProduct.bore_stroke"
             placeholder="ví dụ: 60,0 x 55,5"
           />
-          <BaseInput
+          <Input
             label="Tỷ số nén"
             v-model="localProduct.compression_ratio"
             placeholder="ví dụ: 12,0:1"
@@ -519,25 +526,36 @@ const applyGeneralPhotoCollection = () => {
             :key="index"
             class="flex flex-col sm:flex-row gap-2 items-start"
           >
-            <BaseDropdown
+            <Dropdown
               label="Tên thuộc tính"
               v-model="option.name"
               :options="allAvailableOptions"
               placeholder="Chọn thuộc tính"
               class="flex-1"
             />
-            <BaseInput
+            <Input
               label="Các giá trị"
               v-model="option.values"
               placeholder="Cách nhau bằng dấu phẩy (ví dụ: Đỏ, Xanh)"
               class="flex-1"
             />
-            <BaseSmallNoBgButton color="red" @click="removeOption(index)" class="mt-6 sm:mt-7">
+            <SmallNoBgButton
+              color="red"
+              @click="removeOption(index)"
+              class="mt-6 sm:mt-7"
+              :icon="IconTrash"
+            >
               Xóa
-            </BaseSmallNoBgButton>
+            </SmallNoBgButton>
           </div>
         </div>
-        <BaseButton text="Thêm thuộc tính" color="gray" @click="addOption" class="mt-4" />
+        <Button
+          text="Thêm thuộc tính"
+          color="gray"
+          @click="addOption"
+          class="mt-4"
+          :icon="IconPlus"
+        />
       </fieldset>
 
       <fieldset class="border rounded-md p-4">
@@ -550,7 +568,7 @@ const applyGeneralPhotoCollection = () => {
           <div v-if="localProduct.variants[0]" class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <BaseInput
+                <Input
                   label="Giá Bán *"
                   type="number"
                   v-model.number="localProduct.variants[0].price"
@@ -562,7 +580,7 @@ const applyGeneralPhotoCollection = () => {
                 </div>
               </div>
               <div>
-                <BaseInput
+                <Input
                   label="URL Slug *"
                   v-model="localProduct.variants[0].url"
                   placeholder="ví dụ: ten-san-pham"
@@ -573,13 +591,13 @@ const applyGeneralPhotoCollection = () => {
               </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <BaseImage
+              <Image
                 label="Ảnh Bìa Biến Thể"
                 v-model="localProduct.variants[0].cover_image_url"
                 class="md:col-span-1"
                 bucket="cover"
               />
-              <BaseGroupImage
+              <GroupImage
                 label="Bộ Sưu Tập Biến Thể"
                 v-model="localProduct.variants[0].photo_collection"
                 class="md:col-span-2"
@@ -596,19 +614,20 @@ const applyGeneralPhotoCollection = () => {
               :key="index"
               class="border rounded-lg p-4 bg-gray-50 relative"
             >
-              <BaseSmallNoBgButton
+              <SmallNoBgButton
                 color="red"
                 @click="removeVariant(index)"
                 class="absolute top-3 right-3"
+                :icon="IconTrash"
               >
                 Xóa Biến Thể
-              </BaseSmallNoBgButton>
+              </SmallNoBgButton>
 
               <h4 class="font-semibold text-lg mb-3">Biến thể #{{ index + 1 }}</h4>
 
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div v-for="option in localProduct.options" :key="option.name" class="flex-1">
-                  <BaseDropdown
+                  <Dropdown
                     v-if="option.name"
                     :label="option.name || 'Chọn thuộc tính'"
                     v-model="variant.optionValues[option.name]"
@@ -619,7 +638,7 @@ const applyGeneralPhotoCollection = () => {
                 </div>
 
                 <div class="flex-1">
-                  <BaseInput
+                  <Input
                     label="Giá Bán *"
                     type="number"
                     v-model.number="variant.price"
@@ -629,7 +648,7 @@ const applyGeneralPhotoCollection = () => {
               </div>
 
               <div class="mb-4">
-                <BaseInput
+                <Input
                   label="URL Slug *"
                   v-model="variant.url"
                   placeholder="ví dụ: ten-san-pham-thuoc-tinh"
@@ -637,13 +656,13 @@ const applyGeneralPhotoCollection = () => {
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <BaseImage
+                <Image
                   label="Ảnh Bìa Biến Thể"
                   v-model="variant.cover_image_url"
                   class="md:col-span-1"
                   bucket="cover"
                 />
-                <BaseGroupImage
+                <GroupImage
                   label="Bộ Sưu Tập Biến Thể"
                   v-model="variant.photo_collection"
                   class="md:col-span-2"
@@ -664,7 +683,13 @@ const applyGeneralPhotoCollection = () => {
               </div>
             </div>
           </div>
-          <BaseButton text="Thêm biến thể" color="blue" @click="addVariant" class="mt-4" />
+          <Button
+            text="Thêm biến thể"
+            color="blue"
+            @click="addVariant"
+            class="mt-4"
+            :icon="IconPlus"
+          />
           <div v-if="localProduct.variants.length === 0" class="text-center py-4 text-gray-500">
             Nhấn "Thêm biến thể" để tạo tổ hợp thuộc tính đầu tiên.
           </div>

@@ -1,28 +1,60 @@
 <template>
-  <div class="bg-gray-100 p-6 rounded-xl shadow-lg">
+  <div class="p-6 rounded-xl shadow-lg bg-white">
     <div class="flex items-start justify-between mb-4">
-      <h1 class="text-3xl font-bold mb-4 text-gray-800">Đơn Hàng Của Tôi</h1>
-      <div class="flex items-center">
-        <OrderFilterButtons v-model="selectedStatuses" />
-        <span class="h-8 border-r-2 border-black-300 mx-2" />
-        <BaseButton color="green" @click="createNewOrder" text="Tạo Đơn Hàng Mới"></BaseButton>
+      <div>
+        <h1 class="text-3xl font-bold mb-1 text-gray-800">Quản Lý Đơn Hàng</h1>
+        <p class="text-gray-500 text-sm">Quản lý đơn hàng bán ra của cửa hàng</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <Button color="primary" :icon="IconPlus" @click="createNewOrder" text="Tạo Đơn Hàng Mới" />
+
+        <label for="import-order-input" class="cursor-pointer">
+          <Button text="Import" :icon="IconFileImport" color="secondary" as="span" />
+          <input
+            type="file"
+            id="import-order-input"
+            accept=".xlsx, .xls"
+            class="hidden"
+            @change="handleImport"
+          />
+        </label>
+
+        <Button text="Export" :icon="IconFileExport" color="secondary" @click="handleExport" />
       </div>
     </div>
-    <div class="overflow-x-auto">
-      <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-sm">
+    <div class="overflow-x-auto rounded-lg shadow-sm border border-gray-300">
+      <table class="min-w-full bg-white border-collapse">
         <thead>
-          <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-            <th class="py-3 px-6 text-left">Mã ĐH</th>
-            <th class="py-3 px-6 text-left">Ngày Đặt</th>
+          <tr
+            class="bg-gray-50 text-gray-500 uppercase text-xs font-medium tracking-wider leading-normal border-b border-gray-200"
+          >
+            <th class="py-3 px-6 text-left w-40">Ngày Đặt</th>
             <th class="py-3 px-6 text-left">Sản phẩm</th>
-            <th class="py-3 px-6 text-left">Trạng Thái</th>
-            <th class="py-3 px-6 text-left">Tổng Tiền</th>
-            <th class="py-3 px-6 text-center">Hành động</th>
+            <th class="py-3 px-6 text-left w-64">Trạng Thái</th>
+            <th class="py-3 px-6 text-left w-40">Tổng Tiền</th>
+            <th class="py-3 px-6 text-center w-32">Hành động</th>
           </tr>
         </thead>
         <tbody class="text-gray-600 text-sm">
-          <tr v-if="isLoading">
-            <td colspan="7" class="text-center p-4">Đang tải dữ liệu...</td>
+          <template v-if="isLoading">
+            <tr v-for="i in 5" :key="i" class="border-b border-gray-100">
+              <td class="py-3 px-6"><SkeletonLoader width="100%" height="20px" /></td>
+              <td class="py-3 px-6"><SkeletonLoader width="80%" height="20px" /></td>
+              <td class="py-3 px-6">
+                <SkeletonLoader width="100px" height="24px" class="rounded-full" />
+              </td>
+              <td class="py-3 px-6"><SkeletonLoader width="80%" height="20px" /></td>
+              <td class="py-3 px-6 text-center">
+                <div class="flex justify-center">
+                  <SkeletonLoader width="40px" height="20px" class="rounded" />
+                </div>
+              </td>
+            </tr>
+          </template>
+          <tr v-else-if="_isError">
+            <td colspan="7" class="text-center p-4 text-red-500">
+              Đã có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại.
+            </td>
           </tr>
           <tr v-else-if="!displayedOrders || displayedOrders.length === 0">
             <td colspan="7" class="text-center p-4">Không có đơn hàng nào.</td>
@@ -31,15 +63,14 @@
             v-else
             v-for="order in displayedOrders"
             :key="order.id"
-            class="row-table-style cursor-pointer"
+            class="row-table-style cursor-pointer border-b border-gray-200 hover:bg-gray-50 transition-colors"
             @click="handleEditOrder(order)"
           >
-            <td class="py-3 px-6 text-left whitespace-nowrap">{{ order.id.substring(0, 8) }}...</td>
             <td class="py-3 px-6 text-left">
               {{ new Date(order.created_at).toLocaleDateString('vi-VN') }}
             </td>
             <td class="py-3 px-6 text-left">{{ order.product_summary }}</td>
-            <td class="py-3 px-6 text-left">
+            <td class="py-3 px-6 text-left whitespace-nowrap">
               <RoundBadge :color="getStatusColor(order.status_id)">
                 {{ getStatusLabel(order.status_id) }}
               </RoundBadge>
@@ -48,9 +79,9 @@
               {{ (order.total || 0).toLocaleString('vi-VN') }} VNĐ
             </td>
             <td class="py-3 px-6 text-center">
-              <BaseSmallNoBgButton color="blue" @click.stop="handleEditOrder(order)">
+              <SmallNoBgButton color="blue" :icon="IconEdit" @click.stop="handleEditOrder(order)">
                 Sửa
-              </BaseSmallNoBgButton>
+              </SmallNoBgButton>
             </td>
           </tr>
         </tbody>
@@ -70,19 +101,25 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useOrdersStore } from '@/stores/useOrdersStore'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 
 import RoundBadge from '@/components/ui/RoundBadge.vue'
-import OrderFilterButtons from '@/components/orders/OrderFilterButtons.vue'
 import OrderForm from '@/components/orders/OrderForm.vue'
-import BaseSmallNoBgButton from '@/components/ui/button/BaseSmallNoBgButton.vue'
-import BaseButton from '@/components/ui/button/BaseButton.vue'
+import SmallNoBgButton from '@/components/ui/button/SmallNoBgButton.vue'
+import Button from '@/components/ui/button/BaseButton.vue'
+import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
+import IconPlus from '@/components/icons/IconPlus.vue'
+import IconFileImport from '@/components/icons/IconFileImport.vue'
+import IconFileExport from '@/components/icons/IconFileExport.vue'
+import IconEdit from '@/components/icons/IconEdit.vue'
+import { useToast } from 'vue-toastification'
 
 const ordersStore = useOrdersStore()
 const queryClient = useQueryClient()
+const toast = useToast()
 
 const STATUS_TEXT_MAP = {
   pending: 'Chờ xác nhận',
@@ -137,7 +174,7 @@ const filters = computed(() => ({
   search: searchTerm.value || null,
 }))
 
-const fetchFn = (params) => {
+const fetchFn = async (params) => {
   return ordersStore.fetchOrders(params)
 }
 
@@ -148,10 +185,10 @@ const dataMapper = (data) => ({
 
 const {
   items: displayedOrders,
-  _totalPages,
+  totalPages: _totalPages,
   isLoading,
-  _isError,
-  _error,
+  isError: _isError,
+  error: _error,
 } = usePaginatedQuery({
   queryKeyBase: ref('orders'),
   filters: filters,
@@ -161,15 +198,18 @@ const {
   dataMapper: dataMapper,
 })
 
+watch(_isError, (isError) => {
+  if (isError) {
+    const errorMsg = _error.value?.message || _error.value || 'Có lỗi xảy ra khi tải dữ liệu'
+    toast.error(`Không thể tải danh sách đơn hàng: ${errorMsg}`)
+  }
+})
+
 const saveOrderMutation = useMutation({
   mutationFn: (orderPayload) => ordersStore.saveOrder(orderPayload),
-  onSuccess: (savedOrder) => {
-    console.debug('Order saved, invalidating queries...', savedOrder)
+  onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['orders'] })
     showOrderForm.value = false
-  },
-  onError: (error) => {
-    console.error('Lỗi khi lưu đơn hàng:', error)
   },
 })
 
@@ -184,7 +224,15 @@ function handleEditOrder(order) {
 }
 
 function handleSaveOrder(payload) {
-  console.debug('[OrdersManager] handleSaveOrder received payload:', payload)
   saveOrderMutation.mutate(payload)
+}
+
+const handleImport = (event) => {
+  toast.info('Chức năng Import Excel đang phát triển')
+  event.target.value = ''
+}
+
+const handleExport = () => {
+  toast.info('Chức năng Export Excel đang phát triển')
 }
 </script>

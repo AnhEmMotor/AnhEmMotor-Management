@@ -3,6 +3,7 @@ import { ref, reactive } from 'vue';
 import { useAuthStore } from '../stores/useAuthStore';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
+import LoadingOverlay from '../components/ui/LoadingOverlay.vue';
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -34,7 +35,8 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 via-white to-red-50">
+  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 via-white to-red-50 px-4">
+    <LoadingOverlay :show="loading" message="Đang đăng nhập..." />
     <div class="w-full max-w-md">
       <div class="bg-white rounded-2xl shadow-2xl p-8 space-y-6">
         <div class="text-center">
@@ -43,8 +45,9 @@ const handleLogin = async () => {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
           </div>
-          <h2 class="text-3xl font-bold text-gray-900">AnhEm Motor Admin</h2>
-          <p class="mt-2 text-sm text-gray-600">Đăng nhập để tiếp tục</p>
+          <h2 class="text-2xl font-extrabold tracking-tight text-gray-900 sm:text-2xl mb-2">
+  Đăng nhập để <span class="text-red-600">tiếp tục</span>
+</h2>
         </div>
 
         <form @submit.prevent="handleLogin" class="space-y-5">
@@ -94,10 +97,6 @@ const handleLogin = async () => {
           </button>
         </form>
       </div>
-      
-      <p class="mt-8 text-center text-sm text-gray-600">
-        © 2026 AnhEm Motor. All rights reserved.
-      </p>
     </div>
   </div>
 </template>

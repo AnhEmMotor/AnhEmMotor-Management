@@ -1,107 +1,208 @@
-import { computed, watch, onUnmounted, isRef } from 'vue'
-import { useQuery, useQueryClient } from '@tanstack/vue-query'
-import { throttle } from '@/utils/debounceThrottle'
+import { computed, ref, watch, unref } from 'vue'
+import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/vue-query'
+import { useRoute, useRouter } from 'vue-router'
 
-export function usePaginatedQuery(options) {
-  const {
-    queryKeyBase,
-    filters,
-    page,
-    itemsPerPage,
-    fetchFn,
-    dataMapper,
-    prefetchThrottleWait = 600,
-    keepPreviousData = true,
-  } = options
-
+export function usePaginatedQuery({
+  queryKey,
+  queryFn,
+  itemsPerPage = 10,
+  filters = {},
+  queryOptions = {},
+  useLocalPagination = false,
+}) {
+  const route = useRoute()
+  const router = useRouter()
   const queryClient = useQueryClient()
 
-  const queryKey = computed(() => {
-    const base = isRef(queryKeyBase) ? queryKeyBase.value : queryKeyBase
-    const baseKey = Array.isArray(base) ? base : [base]
-    return [...baseKey, page.value, isRef(filters) ? filters.value : filters]
+  const localPage = ref(1)
+
+  const lastValidTotalPages = ref(1)
+
+  const currentPage = computed({
+    get: () => {
+      if (useLocalPagination) return localPage.value
+      return Number(route.query.page) || 1
+    },
+    set: (val) => {
+      if (useLocalPagination) {
+        localPage.value = val
+      } else {
+        router.replace({
+          query: { ...route.query, page: val },
+        })
+      }
+    },
   })
 
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: queryKey,
-    queryFn: () =>
-      fetchFn({
-        page: page.value,
-        itemsPerPage: itemsPerPage.value,
-        ...(isRef(filters) ? filters.value : filters),
-      }),
-    keepPreviousData: keepPreviousData,
+  const searchTerm = ref(route.query.search || '')
+  const debouncedSearch = ref(searchTerm.value)
+  let searchTimeout
+
+  watch(searchTerm, (val) => {
+    clearTimeout(searchTimeout)
+    searchTimeout = setTimeout(() => {
+      debouncedSearch.value = val
+    }, queryOptions.debounce || 300)
   })
 
-  const mappedData = computed(() => {
-    if (!data.value) return { items: [], count: null }
-    return dataMapper(data.value)
+  const validFilters = computed(() => unref(filters))
+
+  const allFilters = computed(() => {
+    const f = { ...validFilters.value }
+    if (debouncedSearch.value) {
+      f.search = debouncedSearch.value
+    }
+    return f
   })
 
-  const items = computed(() => mappedData.value.items)
-  const totalCount = computed(() => mappedData.value.count)
+  const queryParams = computed(() => {
+    if (queryOptions.syncFiltersToUrl) {
+      const { page: _page, _limit, ...otherParams } = route.query
+      return {
+        page: currentPage.value,
+        limit: unref(itemsPerPage),
+        ...otherParams,
+      }
+    }
+    return {
+      page: currentPage.value,
+      limit: unref(itemsPerPage),
+      ...allFilters.value,
+    }
+  })
+
+  const { data, isLoading, isError, error, isPlaceholderData, isFetching } = useQuery({
+    queryKey: computed(() => [...unref(queryKey), queryParams.value]),
+    queryFn: () => queryFn(queryParams.value),
+    placeholderData: keepPreviousData,
+    ...queryOptions,
+  })
+
+  const paginationData = computed(() => data.value?.pagination || {})
 
   const totalPages = computed(() => {
-    if (totalCount.value == null) return null
-    return Math.max(1, Math.ceil(totalCount.value / itemsPerPage.value))
+    return paginationData.value.totalPages || lastValidTotalPages.value || 1
   })
 
-  const throttledPrefetch = throttle((currentPage, total) => {
-    if (!data.value || !total || total <= 1) return
-
-    const base = isRef(queryKeyBase) ? queryKeyBase.value : queryKeyBase
-    const baseKey = Array.isArray(base) ? base : [base]
-    const currentFilters = isRef(filters) ? filters.value : filters
-
-    if (currentPage < total) {
-      const nextPage = currentPage + 1
-      queryClient.prefetchQuery({
-        queryKey: [...baseKey, nextPage, currentFilters],
-        queryFn: () =>
-          fetchFn({
-            page: nextPage,
-            itemsPerPage: itemsPerPage.value,
-            ...currentFilters,
-          }),
-      })
-    }
-    if (currentPage > 1) {
-      const prevPage = currentPage - 1
-      queryClient.prefetchQuery({
-        queryKey: [...baseKey, prevPage, currentFilters],
-        queryFn: () =>
-          fetchFn({
-            page: prevPage,
-            itemsPerPage: itemsPerPage.value,
-            ...currentFilters,
-          }),
-      })
-    }
-  }, prefetchThrottleWait)
-
   watch(
-    data,
-    () => {
-      if (page.value && totalPages.value) {
-        throttledPrefetch(page.value, totalPages.value)
+    () => paginationData.value.totalPages,
+    (newTotal) => {
+      if (newTotal && newTotal > 0) {
+        lastValidTotalPages.value = newTotal
       }
     },
     { immediate: true },
   )
 
-  onUnmounted(() => {
-    if (throttledPrefetch && throttledPrefetch.cancel) {
-      throttledPrefetch.cancel()
+  const isPotentiallyInvalid = computed(() => {
+    return currentPage.value > lastValidTotalPages.value
+  })
+
+  watch([currentPage, totalPages, isLoading, data], ([page, total, loading, currentData]) => {
+    if (useLocalPagination) return
+    if (!loading && currentData && page > total && total > 0) {
+      router.replace({
+        query: { ...route.query, page: total },
+      })
     }
   })
 
+  watch(
+    [data, currentPage, totalPages, queryParams, validFilters, isPotentiallyInvalid],
+    ([newData, page, total, params, invalid]) => {
+      if (newData && !invalid) {
+        if (page < total) {
+          const nextPageParams = { ...params, page: page + 1 }
+          queryClient.prefetchQuery({
+            queryKey: [...unref(queryKey), nextPageParams],
+            queryFn: () => queryFn(nextPageParams),
+          })
+        }
+
+        if (page > 1) {
+          const prevPageParams = { ...params, page: page - 1 }
+          queryClient.prefetchQuery({
+            queryKey: [...unref(queryKey), prevPageParams],
+            queryFn: () => queryFn(prevPageParams),
+          })
+        }
+      }
+    },
+  )
+
+  const changePage = (page) => {
+    const target = Math.max(1, Math.min(page, totalPages.value))
+    currentPage.value = target
+  }
+
+  if (queryOptions.syncFiltersToUrl) {
+    watch(
+      allFilters,
+      (newFilters) => {
+        const query = { ...route.query }
+
+        Object.keys(newFilters).forEach((key) => {
+          const value = newFilters[key]
+          if (value !== undefined && value !== null && value !== '') {
+            if (Array.isArray(value)) {
+              if (value.length > 0) {
+                query[key] = value.join(',')
+              } else {
+                delete query[key]
+              }
+            } else {
+              query[key] = value
+            }
+          } else {
+            delete query[key]
+          }
+        })
+
+        if (!newFilters.search) delete query.search
+
+        query.page = 1
+        router.replace({ query }).catch(() => {})
+      },
+      { deep: true },
+    )
+  } else {
+    watch(
+      allFilters,
+      () => {
+        changePage(1)
+      },
+      { deep: true },
+    )
+  }
+
+  const shouldShowLoading = computed(
+    () =>
+      unref(isLoading) ||
+      isPotentiallyInvalid.value ||
+      (data.value && currentPage.value > totalPages.value && totalPages.value > 0),
+  )
+
   return {
-    data,
-    isLoading,
+    data: computed(() => data.value?.data || []),
+    isLoading: shouldShowLoading,
+    isOriginalLoading: isLoading,
     isError,
     error,
-    items,
-    totalCount,
-    totalPages,
+    isFetching,
+    isPlaceholderData,
+    searchTerm,
+
+    pagination: {
+      currentPage,
+      totalPages,
+      totalCount: computed(() => paginationData.value.totalCount || 0),
+      changePage,
+      nextPage: () => changePage(currentPage.value + 1),
+      prevPage: () => changePage(currentPage.value - 1),
+      isFirstPage: computed(() => currentPage.value <= 1),
+      isLastPage: computed(() => currentPage.value >= totalPages.value),
+      hasNextPage: computed(() => currentPage.value < totalPages.value),
+      hasPrevPage: computed(() => currentPage.value > 1),
+    },
   }
 }

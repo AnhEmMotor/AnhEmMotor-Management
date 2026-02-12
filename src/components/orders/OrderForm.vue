@@ -3,10 +3,11 @@ import { ref, computed, watch, onBeforeUnmount } from 'vue'
 import { useOrdersStore } from '@/stores/useOrdersStore'
 import { debounce } from '@/utils/debounceThrottle'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
-import BaseDropdown from '@/components/ui/input/BaseDropdown.vue'
-import BaseInput from '@/components/ui/input/BaseInput.vue'
-import BaseTextarea from '../ui/input/BaseTextarea.vue'
-import BaseButton from '@/components/ui/button/BaseButton.vue'
+import Dropdown from '@/components/ui/input/BaseDropdown.vue'
+import Input from '@/components/ui/input/BaseInput.vue'
+import Textarea from '../ui/input/BaseTextarea.vue'
+import Button from '@/components/ui/button/BaseButton.vue'
+import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 
 const props = defineProps({
   show: { type: Boolean, default: false },
@@ -23,12 +24,12 @@ const localData = ref({
 })
 
 const STATUS_LIST = [
-  { key: 'pending', text: 'Chờ xác nhận' }, 
+  { key: 'pending', text: 'Chờ xác nhận' },
   { key: 'completed', text: 'Đã hoàn thành' },
-  { key: 'canceled', text: 'Đã hủy' }, 
+  { key: 'canceled', text: 'Đã hủy' },
   { key: 'refunding', text: 'Đang hoàn tiền' },
   { key: 'refunded', text: 'Đã hoàn tiền' },
-  { key: 'confirmed_cod', text: 'Đã xác nhận (Chờ thanh toán COD)' }, 
+  { key: 'confirmed_cod', text: 'Đã xác nhận (Chờ thanh toán COD)' },
   { key: 'paid_processing', text: 'Đã thanh toán (Chờ xử lý)' },
   { key: 'waiting_deposit', text: 'Chờ đặt cọc' },
   { key: 'deposit_paid', text: 'Đã đặt cọc (Chờ xử lý)' },
@@ -37,6 +38,7 @@ const STATUS_LIST = [
 ]
 
 const localStatus = ref('pending')
+const isLoading = ref(false)
 
 const LOCKED_STATUSES = [
   'confirmed_cod',
@@ -106,19 +108,15 @@ const debouncedSearch = debounce(async (term) => {
     productSearchResults.value = []
     return
   }
-  try {
-    const data = await ordersStore.fetchProductVariants({
-      p_page: 1,
-      p_items_per_page: 10,
-      p_search: term,
-      p_status_ids: null,
-    })
-    productSearchResults.value = data.products || []
-    if (productSearchResults.value.length > 0) {
-      openProductDropdown()
-    }
-  } catch (err) {
-    console.error('Lỗi tìm sản phẩm:', err)
+  const data = await ordersStore.fetchProductVariants({
+    p_page: 1,
+    p_items_per_page: 10,
+    p_search: term,
+    p_status_ids: null,
+  })
+  productSearchResults.value = data.products || []
+  if (productSearchResults.value.length > 0) {
+    openProductDropdown()
   }
 }, 300)
 
@@ -129,6 +127,16 @@ watch(productSearchTerm, (newTerm) => {
 const filteredProducts = computed(() => {
   return productSearchResults.value
 })
+
+const formatCurrency = (value) => {
+  if (value === '' || value === null || value === undefined) return ''
+  return Number(value).toLocaleString('vi-VN')
+}
+
+const parseCurrency = (value) => {
+  if (value === '' || value === null || value === undefined) return 0
+  return Number(String(value).replace(/\./g, ''))
+}
 
 const selectProduct = (product) => {
   if (isLocked.value) {
@@ -167,7 +175,7 @@ watch(
         localData.value.products = (props.order.products || []).map((p) => ({
           id: p.id || Date.now() + Math.random(),
           product_id: p.product_id,
-          code: p.product_id ? p.product_id.substring(0, 8) : 'N/A',
+          code: p.code || (p.product_id ? p.product_id.substring(0, 8) : 'N/A'),
           name: p.name,
           quantity: p.count || p.quantity || 1,
           unitPrice: p.price || p.unitPrice || 0,
@@ -176,9 +184,15 @@ watch(
         }))
         localData.value.notes = props.order.notes || ''
         localStatus.value = props.order.status_id || 'pending'
+
+        isLoading.value = true
+        setTimeout(() => {
+          isLoading.value = false
+        }, 2000)
       } else {
         localData.value = { customerName: '', products: [], notes: '' }
         localStatus.value = 'pending'
+        isLoading.value = false
       }
       productSearchTerm.value = ''
       showProductDropdown.value = false
@@ -275,8 +289,12 @@ function submit() {
     status: { key: localStatus.value, text: statusEntry.text },
     createdAt: props.order ? props.order.created_at : new Date().toISOString(),
   }
-  console.debug('[OrderForm] submit payload:', payload)
   emit('save', payload)
+}
+
+const handleReload = async () => {
+  if (!props.order?.id) return
+  await ordersStore.reloadOrderData(props.order.id)
 }
 
 onBeforeUnmount(() => {
@@ -291,6 +309,7 @@ onBeforeUnmount(() => {
     :zIndex="zIndex"
     @close="$emit('close')"
     @activate="$emit('activate')"
+    :onRefresh="props.order ? handleReload : undefined"
     width="40vw"
   >
     <template #header>
@@ -311,17 +330,26 @@ onBeforeUnmount(() => {
         </div>
         <div>
           <label class="block text-sm font-medium mb-1">Tên khách hàng</label>
-          <BaseInput
+          <Input
             v-model="localData.customerName"
             :error="errors.customerName"
             :disabled="isLocked"
           />
         </div>
 
+        <div v-if="props.order">
+          <label class="block text-sm font-medium mb-1">Trạng thái đơn</label>
+          <Dropdown
+            v-model="localStatus"
+            :options="allowedStatusOptionsFor(originalStatusKey)"
+            placeholder="Chọn trạng thái"
+          />
+        </div>
+
         <div>
           <label class="block text-sm font-medium mb-1">Thêm sản phẩm</label>
           <div class="relative">
-            <BaseInput
+            <Input
               ref="productInputRef"
               v-model="productSearchTerm"
               @focus="openProductDropdown"
@@ -369,20 +397,9 @@ onBeforeUnmount(() => {
           <p v-if="errors.products" class="mt-1 text-sm text-red-500">{{ errors.products }}</p>
         </div>
 
-        <div v-if="props.order">
-          <label class="block text-sm font-medium mb-1">Trạng thái đơn</label>
-          <BaseDropdown
-            v-model="localStatus"
-            :options="allowedStatusOptionsFor(originalStatusKey)"
-            placeholder="Chọn trạng thái"
-          />
-        </div>
-
-        <div class="product-table-section max-h-[300px] overflow-y-auto">
-          <table
-            class="w-full text-sm bg-white rounded-md overflow-hidden shadow-sm border-collapse"
-          >
-            <thead class="bg-gray-50 sticky top-0">
+        <div class="product-table-section border border-gray-300 rounded-md">
+          <table class="w-full text-sm bg-white border-collapse">
+            <thead class="bg-gray-50">
               <tr>
                 <th
                   class="py-2 px-3 text-left text-xs font-semibold text-gray-600 w-12 border-b border-[rgba(0,0,0,0.04)]"
@@ -390,17 +407,12 @@ onBeforeUnmount(() => {
                   STT
                 </th>
                 <th
-                  class="py-2 px-3 text-left text-xs font-semibold text-gray-600 w-28 border-b border-[rgba(0,0,0,0.04)]"
-                >
-                  Mã
-                </th>
-                <th
                   class="py-2 px-3 text-left text-xs font-semibold text-gray-600 border-b border-[rgba(0,0,0,0.04)]"
                 >
                   Tên
                 </th>
                 <th
-                  class="py-2 px-3 text-right text-xs font-semibold text-gray-600 w-24 border-b border-[rgba(0,0,0,0.04)]"
+                  class="py-2 px-3 text-center text-xs font-semibold text-gray-600 w-24 border-b border-[rgba(0,0,0,0.04)]"
                 >
                   SL
                 </th>
@@ -420,15 +432,34 @@ onBeforeUnmount(() => {
               </tr>
             </thead>
             <tbody>
-              <tr v-if="localData.products.length === 0">
+              <template v-if="isLoading">
+                <tr v-for="i in 3" :key="i" class="border-b border-[rgba(0,0,0,0.04)]">
+                  <td class="py-2 px-3"><SkeletonLoader width="20px" height="16px" /></td>
+                  <td class="py-2 px-3"><SkeletonLoader width="150px" height="16px" /></td>
+                  <td class="py-2 px-3">
+                    <SkeletonLoader width="40px" height="24px" class="mx-auto" />
+                  </td>
+                  <td class="py-2 px-3 text-right">
+                    <SkeletonLoader width="80px" height="24px" class="ml-auto" />
+                  </td>
+                  <td class="py-2 px-3 text-right">
+                    <SkeletonLoader width="80px" height="16px" class="ml-auto" />
+                  </td>
+                  <td class="py-2 px-3 text-center">
+                    <SkeletonLoader width="20px" height="20px" class="mx-auto rounded" />
+                  </td>
+                </tr>
+              </template>
+              <tr v-else-if="localData.products.length === 0">
                 <td
-                  colspan="7"
+                  colspan="6"
                   class="text-center py-6 text-gray-400 border-b border-[rgba(0,0,0,0.04)]"
                 >
                   Chưa có sản phẩm nào
                 </td>
               </tr>
               <tr
+                v-else
                 v-for="(p, idx) in localData.products"
                 :key="p.id"
                 class="even:bg-gray-50 hover:bg-[rgba(59,130,246,0.03)]"
@@ -436,30 +467,32 @@ onBeforeUnmount(() => {
                 <td class="py-2 px-3 text-sm text-gray-700 border-b border-[rgba(0,0,0,0.04)]">
                   {{ idx + 1 }}
                 </td>
-                <td class="py-2 px-3 text-sm text-gray-700 border-b border-[rgba(0,0,0,0.04)]">
-                  {{ p.code }}
-                </td>
+
                 <td class="py-2 px-3 text-sm text-gray-700 border-b border-[rgba(0,0,0,0.04)]">
                   {{ p.name }}
                 </td>
-                <td class="py-2 px-3 text-right border-b border-[rgba(0,0,0,0.04)]">
-                  <BaseInput
+                <td class="py-2 px-3 text-center border-b border-[rgba(0,0,0,0.04)]">
+                  <Input
                     v-model.number="p.quantity"
                     @change="calculateProductTotal(p)"
                     type="number"
                     min="1"
                     :disabled="isLocked"
-                    class="w-20 py-1 px-2 text-center bg-transparent"
+                    :inputClass="'text-center bg-transparent py-1 px-2'"
                   />
                 </td>
-                <td class="py-2 px-3 text-right border-b border-[rgba(0,0,0,0.04)]">
-                  <BaseInput
-                    v-model.number="p.unitPrice"
-                    @change="calculateProductTotal(p)"
-                    type="number"
-                    min="0"
+                <td class="py-2 pl-3 text-right border-b border-[rgba(0,0,0,0.04)]">
+                  <Input
+                    :modelValue="formatCurrency(p.unitPrice)"
+                    @update:modelValue="
+                      (val) => {
+                        p.unitPrice = parseCurrency(val)
+                        calculateProductTotal(p)
+                      }
+                    "
+                    type="text"
                     :disabled="isLocked"
-                    class="w-28 py-1 px-2 text-right bg-transparent"
+                    :inputClass="'text-right bg-transparent py-1 px-2'"
                   />
                 </td>
                 <td
@@ -484,7 +517,7 @@ onBeforeUnmount(() => {
 
         <div>
           <label class="block text-sm font-medium mb-1">Ghi chú</label>
-          <BaseTextarea v-model="localData.notes" :disabled="isLocked" rows="3" />
+          <Textarea v-model="localData.notes" :disabled="isLocked" rows="3" />
         </div>
       </div>
     </template>
@@ -493,8 +526,8 @@ onBeforeUnmount(() => {
       <div class="flex items-center justify-between w-full">
         <div class="text-sm font-semibold">Tổng: {{ totalAmount.toLocaleString('vi-VN') }} VNĐ</div>
         <div class="flex gap-2">
-          <BaseButton text="Huỷ" color="gray" @click="$emit('close')" />
-          <BaseButton
+          <Button text="Huỷ" color="gray" @click="$emit('close')" />
+          <Button
             :text="props.order ? 'Lưu' : 'Tạo đơn'"
             color="primary"
             @click="submit"

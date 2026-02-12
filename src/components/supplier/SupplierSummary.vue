@@ -8,12 +8,12 @@ defineProps({
 })
 defineEmits(['toggle-detail'])
 
-function getStatusColor(status) {
-  switch (status) {
+function getStatusColor(statusId) {
+  switch (statusId) {
     case 'active':
-      return 'green'
-    case 'inactive':
       return 'red'
+    case 'inactive':
+      return 'gray'
     default:
       return 'gray'
   }
@@ -29,11 +29,11 @@ function getStatusColor(status) {
       <div class="text-gray-600 text-xs col-span-2">{{ itemData.phone || '---' }}</div>
       <div class="text-gray-600 text-xs col-span-2">{{ itemData.email || 'Chưa có' }}</div>
       <div class="text-right text-sm font-semibold text-red-600 col-span-2 justify-self-end">
-        {{ formatCurrency(itemData.total_purchase) }}
+        {{ formatCurrency(itemData.totalInput) }}
       </div>
       <div class="flex justify-start col-span-2">
-        <RoundBadge :color="getStatusColor(itemData.status)">
-          {{ itemData.status === 'active' ? 'Đang hoạt động' : 'Ngừng hoạt động' }}
+        <RoundBadge :color="getStatusColor(itemData.statusId)">
+          {{ itemData.statusId === 'active' ? 'Đang hoạt động' : 'Ngừng hoạt động' }}
         </RoundBadge>
       </div>
     </div>
@@ -41,8 +41,8 @@ function getStatusColor(status) {
     <div class="block md:hidden space-y-2 text-sm">
       <div class="flex justify-between items-center">
         <div class="font-semibold text-gray-800">{{ itemData.id }}</div>
-        <RoundBadge :color="getStatusColor(itemData.status)">
-          {{ itemData.status === 'active' ? 'Đang hoạt động' : 'Ngừng hoạt động' }}
+        <RoundBadge :color="getStatusColor(itemData.statusId)">
+          {{ itemData.statusId === 'active' ? 'Đang hoạt động' : 'Ngừng hoạt động' }}
         </RoundBadge>
       </div>
       <div class="pt-2">
@@ -51,7 +51,7 @@ function getStatusColor(status) {
       </div>
       <div class="flex justify-between items-center pt-2">
         <div class="text-gray-500">Tổng mua</div>
-        <div class="font-semibold text-red-600">{{ formatCurrency(itemData.totalPurchase) }}</div>
+        <div class="font-semibold text-red-600">{{ formatCurrency(itemData.totalInput) }}</div>
       </div>
     </div>
   </div>

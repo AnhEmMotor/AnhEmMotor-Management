@@ -1,7 +1,7 @@
 <template>
-  <BaseLoadingOverlay :show="isStoreLoading" message="Đang xoá sản phẩm..." />
+  <LoadingOverlay :show="isStoreLoading" message="Đang xoá sản phẩm..." />
 
-  <div class="bg-gray-100 p-4 sm:p-6 rounded-xl shadow-lg">
+  <div class="p-4 sm:p-6 rounded-xl shadow-lg bg-white">
     <div
       class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0"
     >
@@ -9,37 +9,82 @@
         <h1 class="text-3xl font-bold text-center text-gray-800">Quản lý sản phẩm</h1>
       </div>
       <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full lg:w-auto">
-        <BaseButton text="Thêm sản phẩm" color="purple" @click="openAddEditModal()" />
-        <BaseButton text="Import Excel" color="blue" @click="importExcel" />
-        <BaseButton text="Export" color="green" @click="exportExcel" />
-        <span class="text-gray-400 mx-4 hidden border-r-2 sm:block" />
-        <ProductFilterButtons v-model="selectedStatuses" />
+        <Button text="Thêm sản phẩm" :icon="IconPlus" color="primary" @click="openAddEditModal()" />
+
+        <label for="import-product-input" class="cursor-pointer">
+          <Button text="Import" :icon="IconFileImport" color="secondary" as="span" />
+          <input
+            type="file"
+            id="import-product-input"
+            accept=".xlsx, .xls"
+            class="hidden"
+            @change="importExcel"
+          />
+        </label>
+
+        <Button text="Export" :icon="IconFileExport" color="secondary" @click="exportExcel" />
       </div>
     </div>
 
-    <BaseInput
+    <Input
       v-model="searchTerm"
       type="text"
       placeholder="Tìm kiếm (Tên, Danh mục...)"
       class="mb-3"
     />
 
-    <div v-if="isLoading" class="text-center py-10">
-      <BaseSpinner />
+    <div v-if="isLoading" class="overflow-x-auto rounded-lg shadow-sm border border-gray-300">
+      <table class="min-w-full bg-white border-collapse">
+        <thead
+          class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs font-medium border-b border-gray-200"
+        >
+          <tr>
+            <th class="py-3 px-6 text-left w-12"></th>
+            <th class="py-3 px-6 text-left w-20">Ảnh Bìa</th>
+            <th class="py-3 px-6 text-left">Tên Dòng Sản Phẩm</th>
+            <th class="py-3 px-6 text-left">Danh Mục</th>
+            <th class="py-3 px-6 text-left">Thương Hiệu</th>
+            <th class="py-3 px-6 text-left">Số Biến Thể</th>
+            <th class="py-3 px-6 text-left">Trạng Thái Kho</th>
+            <th class="py-3 px-6 text-center">Thao Tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="i in 5" :key="i" class="border-b border-gray-200">
+            <td class="py-3 px-6 w-12 text-center border-r border-gray-200">
+              <SkeletonLoader width="16px" height="16px" />
+            </td>
+            <td class="py-3 px-6">
+              <SkeletonLoader width="64px" height="64px" className="rounded-md" />
+            </td>
+            <td class="py-3 px-6"><SkeletonLoader width="150px" height="20px" /></td>
+            <td class="py-3 px-6"><SkeletonLoader width="100px" height="20px" /></td>
+            <td class="py-3 px-6"><SkeletonLoader width="80px" height="20px" /></td>
+            <td class="py-3 px-6"><SkeletonLoader width="40px" height="20px" /></td>
+            <td class="py-3 px-6">
+              <SkeletonLoader width="90px" height="24px" className="rounded-full" />
+            </td>
+            <td class="py-3 px-6 text-center flex justify-center gap-2 mt-4">
+              <SkeletonLoader width="40px" height="20px" />
+              <SkeletonLoader width="40px" height="20px" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
     <div
-      v-if="isError"
-      class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
-      role="alert"
+      v-else-if="isError"
+      class="text-center py-12 text-red-500 font-medium bg-white rounded-lg shadow-sm border border-gray-200"
     >
-      <strong class="font-bold">Lỗi!</strong>
-      <span class="block sm:inline">{{ error.message }}</span>
+      Đã xảy ra lỗi khi lấy dữ liệu sản phẩm
     </div>
 
-    <div class="overflow-x-auto" v-if="!isLoading && !error">
-      <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-sm">
-        <thead class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+    <div class="overflow-x-auto rounded-lg shadow-sm border border-gray-300" v-else>
+      <table class="min-w-full bg-white border-collapse">
+        <thead
+          class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs font-medium border-b border-gray-200"
+        >
           <tr>
             <th class="py-3 px-6 text-left w-12"></th>
             <th class="py-3 px-6 text-left w-20">Ảnh Bìa</th>
@@ -60,7 +105,7 @@
 
           <template v-for="product in filteredProducts" :key="product.id">
             <tr class="border-b border-gray-200 hover:bg-gray-100 transition-colors duration-200">
-              <td class="py-3 px-6 w-12 text-center">
+              <td class="py-3 px-6 w-12 text-center border-r border-gray-200">
                 <button
                   v-if="product.variants && product.variants.length > 0"
                   @click="toggleDetails(product.id)"
@@ -98,10 +143,12 @@
                 </RoundBadge>
               </td>
               <td class="py-3 px-6 text-center space-x-2">
-                <BaseSmallNoBgButton @click="openAddEditModal(product)">Sửa</BaseSmallNoBgButton>
-                <BaseSmallNoBgButton color="red" @click="promptDelete(product)">
+                <SmallNoBgButton @click="openAddEditModal(product)" :icon="IconEdit"
+                  >Sửa</SmallNoBgButton
+                >
+                <SmallNoBgButton color="red" @click="promptDelete(product)" :icon="IconTrash">
                   Xóa
-                </BaseSmallNoBgButton>
+                </SmallNoBgButton>
               </td>
             </tr>
 
@@ -110,7 +157,9 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <h4 class="text-sm font-semibold mb-2 text-gray-700">Chi tiết biến thể:</h4>
-                    <table class="min-w-full bg-white rounded shadow-inner text-sm">
+                    <table
+                      class="min-w-full bg-white rounded shadow-inner text-sm border border-gray-200"
+                    >
                       <thead class="bg-gray-100">
                         <tr>
                           <th class="py-2 px-4 text-left w-20">Ảnh</th>
@@ -195,19 +244,19 @@
         </tbody>
       </table>
     </div>
-    <BasePagination
-      :total-pages="totalPages"
-      v-model:currentPage="currentPage"
-      :loading="isLoading"
-    />
+    <Pagination :total-pages="totalPages" v-model:currentPage="currentPage" :loading="isLoading" />
   </div>
 
   <DraggableModal
     :key="formModalKey"
     v-if="isFormModalVisible"
     @close="handleCloseFormModal"
+    @refresh="handleRefreshForm"
     width="72vw"
   >
+    <template #header>
+      <span class="font-bold text-lg">{{ formModalTitle }}</span>
+    </template>
     <template #body>
       <ProductForm
         v-model="editableProduct"
@@ -218,7 +267,7 @@
     </template>
 
     <template #footer>
-      <BaseButton text="Lưu" color="purple" @click="handleSaveProduct" :loading="isSaving" />
+      <Button text="Lưu" color="purple" @click="handleSaveProduct" :loading="isSaving" />
     </template>
   </DraggableModal>
 </template>
@@ -230,19 +279,22 @@ import { useRoute, useRouter } from 'vue-router'
 import { useQueryClient } from '@tanstack/vue-query'
 import { debounce } from '@/utils/debounceThrottle'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
-import { getProducts } from '@/api/product'
-import ProductFilterButtons from '@/components/product/ProductFilterButtons.vue'
 import ProductForm from '@/components/product/ProductForm.vue'
-import BaseButton from '@/components/ui/button/BaseButton.vue'
-import BaseInput from '@/components/ui/input/BaseInput.vue'
-import BasePagination from '@/components/ui/button/BasePagination.vue'
-import BaseSmallNoBgButton from '@/components/ui/button/BaseSmallNoBgButton.vue'
+import Button from '@/components/ui/button/BaseButton.vue'
+import Input from '@/components/ui/input/BaseInput.vue'
+import Pagination from '@/components/ui/button/Pagination.vue'
+import SmallNoBgButton from '@/components/ui/button/SmallNoBgButton.vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
-import BaseSpinner from '@/components/ui/BaseSpinner.vue'
 import IconLeftArrow from '@/components/icons/IconLeftArrow.vue'
 import IconDownArrow from '@/components/icons/IconDownArrow.vue'
-import BaseLoadingOverlay from '@/components/ui/BaseLoadingOverlay.vue'
+import IconPlus from '@/components/icons/IconPlus.vue'
+import IconFileImport from '@/components/icons/IconFileImport.vue'
+import IconFileExport from '@/components/icons/IconFileExport.vue'
+import IconEdit from '@/components/icons/IconEdit.vue'
+import IconTrash from '@/components/icons/IconTrash.vue'
+import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
+import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 import { useToast } from 'vue-toastification'
 
 const productsStore = useProductsStore()
@@ -282,8 +334,143 @@ const filters = computed(() => ({
   statusIds: queryStatuses.value,
 }))
 
-const fetchProductsFn = (params) => {
-  return getProducts(params)
+const mockProducts = [
+  {
+    id: 1,
+    name: 'Honda Air Blade 160cc 2025',
+    category_id: 1,
+    category_name: 'Xe Máy',
+    brand_id: 1,
+    brand_name: 'Honda',
+    variant_count: 2,
+    inventory_status: 'in_stock',
+    cover_image_url:
+      'https://cdn.honda.com.vn/motorbike-versions/October2024/1JgXXyKgQ2y2Zp5p5p5p.png',
+    variants: [
+      {
+        id: 101,
+        price: 56000000,
+        optionValues: { 'Màu sắc': 'Xanh Xám', 'Phiên bản': 'Tiêu chuẩn' },
+        url: 'ab-160-xanh-xam',
+        cover_image_url:
+          'https://cdn.honda.com.vn/motorbike-versions/October2024/1JgXXyKgQ2y2Zp5p5p5p.png',
+      },
+      {
+        id: 102,
+        price: 60000000,
+        optionValues: { 'Màu sắc': 'Đỏ Xám', 'Phiên bản': 'Đặc biệt' },
+        url: 'ab-160-do-xam',
+        cover_image_url:
+          'https://cdn.honda.com.vn/motorbike-versions/October2024/1JgXXyKgQ2y2Zp5p5p5p.png',
+      },
+    ],
+  },
+  {
+    id: 2,
+    name: 'Nhớt Motul 300V Factory Line',
+    category_id: 2,
+    category_name: 'Dầu Nhớt',
+    brand_id: 2,
+    brand_name: 'Motul',
+    variant_count: 1,
+    inventory_status: 'in_stock',
+    cover_image_url:
+      'https://shop2banh.vn/images/thumbs/2023/11/nhot-motul-300v-factory-line-10w40-1l-tem-3-lop-moi-nhat-2024-2195-slide-products-65543c7b3c7b3.jpg',
+    variants: [
+      {
+        id: 201,
+        price: 435000,
+        optionValues: { 'Dung tích': '1L' },
+        url: 'motul-300v-1l',
+        cover_image_url: '',
+      },
+    ],
+  },
+  {
+    id: 3,
+    name: 'Lốp Michelin City Grip 2',
+    category_id: 3,
+    category_name: 'Phụ Tùng',
+    brand_id: 3,
+    brand_name: 'Michelin',
+    variant_count: 2,
+    inventory_status: 'low_stock',
+    cover_image_url:
+      'https://shop2banh.vn/images/thumbs/2022/04/vo-michelin-city-grip-2-11070-14-dung-cho-banh-sau-pcx-vario-click-1854-slide-products-625e2e2e2e2e2.jpg',
+    variants: [
+      {
+        id: 301,
+        price: 1450000,
+        optionValues: { 'Kích thước': '110/70-14' },
+        url: 'michelin-city-grip-2-110-70-14',
+        cover_image_url: '',
+      },
+      {
+        id: 302,
+        price: 1650000,
+        optionValues: { 'Kích thước': '130/70-13' },
+        url: 'michelin-city-grip-2-130-70-13',
+        cover_image_url: '',
+      },
+    ],
+  },
+  {
+    id: 4,
+    name: 'Phuộc Ohlins HO 819',
+    category_id: 3,
+    category_name: 'Phụ Tùng',
+    brand_id: 4,
+    brand_name: 'Ohlins',
+    variant_count: 0,
+    inventory_status: 'out_of_stock',
+    cover_image_url:
+      'https://shop2banh.vn/images/thumbs/2021/12/phuoc-ohlins-ho-819-chinh-hang-cho-vario-click-1738-slide-products-61b8b8b8b8b8b.jpg',
+    variants: [],
+  },
+  {
+    id: 5,
+    name: 'Bao tay Daytona',
+    category_id: 3,
+    category_name: 'Đồ Chơi Xe',
+    brand_id: 5,
+    brand_name: 'Daytona',
+    variant_count: 3,
+    inventory_status: 'in_stock',
+    cover_image_url:
+      'https://shop2banh.vn/images/thumbs/2023/08/bao-tay-daytona-chinh-hang-nhat-ban-2088-slide-products-64c8c8c8c8c8c.jpg',
+    variants: [
+      {
+        id: 501,
+        price: 350000,
+        optionValues: { Màu: 'Đen' },
+        url: 'bao-tay-daytona-den',
+        cover_image_url: '',
+      },
+      {
+        id: 502,
+        price: 350000,
+        optionValues: { Màu: 'Nâu' },
+        url: 'bao-tay-daytona-nau',
+        cover_image_url: '',
+      },
+      {
+        id: 503,
+        price: 350000,
+        optionValues: { Màu: 'Xám' },
+        url: 'bao-tay-daytona-xam',
+        cover_image_url: '',
+      },
+    ],
+  },
+]
+
+const fetchProductsFn = async () => {
+  await new Promise((resolve) => setTimeout(resolve, 2000))
+  return {
+    data: mockProducts,
+    total: mockProducts.length,
+    last_page: 1,
+  }
 }
 
 const productDataMapper = (data) => ({
@@ -375,6 +562,13 @@ const debouncedApplyQuery = debounce(() => {
 
 watch(searchTerm, debouncedApplyQuery)
 watch(selectedStatuses, debouncedApplyQuery)
+
+watch(isError, (hasError) => {
+  if (hasError) {
+    const errorMsg = error.value?.message || 'Lỗi khi tải danh sách sản phẩm.'
+    toast.error(errorMsg)
+  }
+})
 
 watch(
   () => route.query,
@@ -487,7 +681,6 @@ const validateProduct = (productData) => {
 
   const variantErrors = []
   if (!productData.variants || productData.variants.length === 0) {
-    console.error('Lỗi: Không tìm thấy biến thể mặc định.')
     hasError = true
   }
 
@@ -560,7 +753,6 @@ const handleSaveProduct = async () => {
   formErrors.value = errors
 
   if (hasError) {
-    console.warn('Validation Errors:', formErrors.value)
     return
   }
 
@@ -572,7 +764,6 @@ const handleSaveProduct = async () => {
     await queryClient.invalidateQueries({ queryKey: ['products'] })
     showMessage(isEditing ? 'Cập nhật sản phẩm thành công' : 'Thêm sản phẩm thành công', 'success')
   } catch (error) {
-    console.error('Lỗi khi lưu sản phẩm:', error)
     formErrors.value.general = error.message || 'Lỗi từ server. Vui lòng thử lại.'
     showMessage(error.message || 'Lỗi khi lưu sản phẩm', 'error')
   } finally {
@@ -600,10 +791,19 @@ const currentPage = computed({
   },
 })
 
-const importExcel = () => {
-  alert('Chức năng Import Excel chưa được triển khai.')
+const importExcel = (event) => {
+  toast.info('Chức năng Import Excel đang phát triển')
+  event.target.value = ''
 }
 const exportExcel = () => {
   alert('Chức năng Export Excel chưa được triển khai.')
+}
+
+const handleRefreshForm = () => {
+  if (isEditMode.value) {
+    toast.info('Đã làm mới dữ liệu sản phẩm (Demo)')
+  } else {
+    toast.info('Đã làm mới form (Demo)')
+  }
 }
 </script>

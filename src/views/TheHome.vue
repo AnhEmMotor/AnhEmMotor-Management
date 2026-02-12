@@ -4,7 +4,36 @@
     <p id="greeting" class="text-gray-500 mb-6">
       Chúc bạn một buổi sáng tốt lành! Đây là báo cáo tổng quan.
     </p>
-    <div>
+
+    <div v-if="isLoading">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div
+          v-for="i in 4"
+          :key="i"
+          class="p-6 rounded-xl shadow-md bg-gray-50 border border-gray-100"
+        >
+          <SkeletonLoader width="40%" height="14px" class="mb-2" />
+          <SkeletonLoader width="60%" height="30px" class="mb-2" />
+          <SkeletonLoader width="30%" height="12px" />
+        </div>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-gray-50 p-6 rounded-xl shadow-md h-96">
+          <SkeletonLoader width="50%" height="20px" class="mb-4" />
+          <SkeletonLoader width="100%" height="300px" />
+        </div>
+        <div class="bg-gray-50 p-6 rounded-xl shadow-md h-96">
+          <SkeletonLoader width="50%" height="20px" class="mb-4" />
+          <SkeletonLoader width="100%" height="300px" />
+        </div>
+        <div class="bg-gray-50 p-6 rounded-xl shadow-md lg:col-span-2 h-96">
+          <SkeletonLoader width="40%" height="20px" class="mb-4" />
+          <SkeletonLoader width="100%" height="300px" />
+        </div>
+      </div>
+    </div>
+
+    <div v-else>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatsCard title="Tổng Doanh Thu (Tháng)" stat="1.25 tỷ" :improvement="12" color="red" />
         <StatsCard title="Lợi Nhuận (Tháng)" stat="280 triệu" :improvement="8.5" color="green" />
@@ -38,10 +67,14 @@
 </template>
 
 <script setup lang="js">
+import { ref, onMounted } from 'vue'
 import ChartFrame3month from '@/components/report/ChartFrame3month.vue'
 import RevenueChart7day from '@/components/report/RevenueChart7day.vue'
 import PieChartFrame from '@/components/report/OrderChart.vue'
 import StatsCard from '@/components/ui/ReportStatsCard.vue'
+import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
+
+const isLoading = ref(true)
 
 const revenueData = [
   { date: '2025-09-15', revenue: 250, profit: 90 },
@@ -64,4 +97,10 @@ const monthlyComparisonData = [
   { month: 'Tháng 8', revenue: 1250, profit: 280 },
   { month: 'Tháng 9', revenue: 1450, profit: 340 },
 ]
+
+onMounted(() => {
+  setTimeout(() => {
+    isLoading.value = false
+  }, 1000)
+})
 </script>

@@ -1,8 +1,3 @@
-/*
- * import { supabase } from '@/lib/supabaseClient'
- * TODO: Refactor to use VITE_API_URL
- */
-
 export const fetchInputs = async ({ page, itemsPerPage, statusFilters, search }) => {
   const { data, error } = await supabase.rpc('get_input_receipts', {
     p_page: page,
@@ -79,7 +74,6 @@ export const updateInput = async (id, updates) => {
     .single()
 
   if (error) {
-    console.error('Lỗi khi updateInput:', error)
     throw error
   }
   return data

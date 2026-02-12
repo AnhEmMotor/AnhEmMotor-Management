@@ -1,486 +1,322 @@
 <script setup>
-import { ref, reactive, computed, watch, onUnmounted } from 'vue'
+import { computed, watch, ref } from 'vue'
+import { useQueryClient } from '@tanstack/vue-query'
 import { useSuppliersStore } from '@/stores/useSuppliersStore'
-import * as XLSX from 'xlsx'
+import { useToast } from 'vue-toastification'
+import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
+import { fetchSuppliers } from '@/api/supplier'
+import { useRoute } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import SupplierItem from '@/components/supplier/SupplierItem.vue'
-import BaseButton from '@/components/ui/button/BaseButton.vue'
-import BaseInput from '@/components/ui/input/BaseInput.vue'
-import BasePagination from '@/components/ui/button/BasePagination.vue'
+import Button from '@/components/ui/button/BaseButton.vue'
+import Input from '@/components/ui/input/BaseInput.vue'
+import Pagination from '@/components/ui/button/BasePagination.vue'
 import SupplierFilterButtons from '@/components/supplier/SupplierFilterButtons.vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
 import SupplierForm from '@/components/supplier/SupplierForm.vue'
-import BaseSpinner from '@/components/ui/BaseSpinner.vue'
-import BaseLoadingOverlay from '@/components/ui/BaseLoadingOverlay.vue'
+import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
+import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 import { showConfirmation } from '@/composables/useConfirmationState'
-import { formatDate } from '@/composables/useDate'
-import { useToast } from 'vue-toastification'
-import { useRoute, useRouter } from 'vue-router'
-import { useQueryClient } from '@tanstack/vue-query'
-import { getSupplierById } from '@/api/supplier'
-import { debounce } from '@/utils/debounceThrottle'
-import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
+import IconPlus from '@/components/icons/IconPlus.vue'
+import IconFileImport from '@/components/icons/IconFileImport.vue'
+import IconFileExport from '@/components/icons/IconFileExport.vue'
 
+const toast = useToast()
+const queryClient = useQueryClient()
 const suppliersStore = useSuppliersStore()
 const route = useRoute()
-const toast = useToast()
-const router = useRouter()
-const queryClient = useQueryClient()
 
-const page = computed(() => parseInt(route.query.page) || 1)
-const searchTerm = ref(route.query.search ? String(route.query.search) : '')
-const rawSearch = ref(searchTerm.value)
-const selectedStatuses = ref(
-  route.query.statuses ? String(route.query.statuses).split(',').filter(Boolean) : [],
-)
-const selectedSupplierId = ref(null)
-const openStates = reactive({})
-const isFormModalVisible = ref(false)
-const editableSupplier = ref({})
-const formModalTitle = ref('')
-const formModalKey = ref(0)
-const originalSupplierOnEdit = ref(null)
-const isEditMode = computed(() => !!editableSupplier.value?.id)
-const itemsPerPage = ref(20)
-const formErrors = ref({ name: '', phone: '', email: '', address: '' })
+const { isFormModalVisible, isEditMode, editableSupplier, formErrors } = storeToRefs(suppliersStore)
+const initializeStatus = () => {
+  const statusQuery = route.query.status
+  if (!statusQuery) return []
+  if (Array.isArray(statusQuery)) return statusQuery
+  return statusQuery.includes(',') ? statusQuery.split(',') : [statusQuery]
+}
+const selectedStatuses = ref(initializeStatus())
+
+const openStates = ref({})
 const showOverlay = ref(false)
-const overlayMessage = ref('Đang xử lý, vui lòng chờ...')
+const overlayMessage = ref('')
 
-function showMessage(text, type = 'success', duration = 3000) {
-  if (type === 'error') {
-    toast.error(text, { timeout: duration })
-  } else {
-    toast.success(text, { timeout: duration })
-  }
-}
-
-function openAddEditModal(supplier = null) {
-  formErrors.value = { name: '', phone: '', email: '', address: '' }
-  if (supplier) {
-    originalSupplierOnEdit.value = JSON.parse(JSON.stringify(supplier))
-    editableSupplier.value = JSON.parse(JSON.stringify(supplier))
-    formModalTitle.value = 'Chỉnh sửa Nhà cung cấp'
-  } else {
-    originalSupplierOnEdit.value = null
-    editableSupplier.value = {
-      name: '',
-      phone: '',
-      email: '',
-      address: '',
-      notes: '',
-    }
-    formModalTitle.value = 'Thêm Nhà cung cấp'
-  }
-  formModalKey.value++
-  isFormModalVisible.value = true
-}
-
-const handleFormRefresh = async () => {
-  if (!originalSupplierOnEdit.value) return
-  const id = originalSupplierOnEdit.value.id
-  if (!id) return
-  try {
-    showOverlay.value = true
-    overlayMessage.value = 'Đang tải lại dữ liệu nhà cung cấp...'
-    const fresh = await getSupplierById(id)
-    if (!fresh) {
-      showMessage('Không tìm thấy nhà cung cấp trên server.', 'error')
-      showOverlay.value = false
-      return
-    }
-    originalSupplierOnEdit.value = JSON.parse(JSON.stringify(fresh))
-    editableSupplier.value = JSON.parse(JSON.stringify(fresh))
-    showMessage('Đã tải lại dữ liệu gốc của nhà cung cấp.')
-    await queryClient.invalidateQueries({ queryKey: ['suppliers'] })
-  } catch (err) {
-    console.error('Lỗi khi tải lại nhà cung cấp:', err)
-    showMessage('Lỗi khi tải lại dữ liệu nhà cung cấp.', 'error')
-  } finally {
-    showOverlay.value = false
-  }
-}
-
-async function handleSaveSupplier() {
-  showOverlay.value = true
-  const supplierData = editableSupplier.value
-  overlayMessage.value = supplierData.id
-    ? 'Đang cập nhật nhà cung cấp...'
-    : 'Đang tạo nhà cung cấp mới...'
-
-  formErrors.value = { name: '', phone: '', email: '', address: '' }
-  let hasError = false
-  if (!supplierData.name || !supplierData.name.toString().trim()) {
-    formErrors.value.name = 'Vui lòng nhập tên nhà cung cấp.'
-    hasError = true
-  }
-  if (!supplierData.address || !supplierData.address.toString().trim()) {
-    formErrors.value.address = 'Vui lòng nhập địa chỉ.'
-    hasError = true
-  }
-
-  if (!supplierData.phone && !supplierData.email) {
-    formErrors.value.phone = 'Cần nhập ít nhất SĐT hoặc Email.'
-    formErrors.value.email = 'Cần nhập ít nhất SĐT hoặc Email.'
-    hasError = true
-  }
-  if (hasError) {
-    showOverlay.value = false
-    return
-  }
-
-  try {
-    if (supplierData.id) {
-      await suppliersStore.updateSupplier({
-        id: supplierData.id,
-        supplier: supplierData,
-      })
-      showMessage(`Đã cập nhật nhà cung cấp: ${supplierData.name}.`)
-      await queryClient.invalidateQueries({ queryKey: ['suppliers'] })
-    } else {
-      await suppliersStore.addSupplier(supplierData)
-      showMessage(`Đã tạo nhà cung cấp mới: ${supplierData.name}.`)
-      await queryClient.invalidateQueries({ queryKey: ['suppliers'] })
-    }
-  } catch (err) {
-    showMessage('Lỗi khi lưu nhà cung cấp.', 'error')
-    console.error(err)
-  } finally {
-    isFormModalVisible.value = false
-    showOverlay.value = false
-  }
-}
-
-const filters = computed(() => ({
-  statusFilters: selectedStatuses.value,
-  search: searchTerm.value,
-}))
-
-const fetchSuppliersFn = (params) => {
-  return suppliersStore.fetchSuppliers({
-    page: params.page,
-    itemsPerPage: params.itemsPerPage,
-    statusFilters: params.statusFilters,
-    search: params.search,
-  })
-}
-
-const supplierDataMapper = (data) => ({
-  items: data?.suppliers || [],
-  count: data?.count,
+const filters = computed(() => {
+  const f = {}
+  f.status = selectedStatuses.value.length ? selectedStatuses.value : undefined
+  return f
 })
 
 const {
-  data: suppliersData,
+  data: suppliers,
   isLoading,
   isError,
-  error,
-  items: storeSuppliers,
-  totalPages,
+  pagination,
+  searchTerm,
 } = usePaginatedQuery({
-  queryKeyBase: ref('suppliers'),
-  filters: filters,
-  page: page,
-  itemsPerPage: itemsPerPage,
-  fetchFn: fetchSuppliersFn,
-  dataMapper: supplierDataMapper,
+  queryKey: ['suppliers'],
+  queryFn: fetchSuppliers,
+  itemsPerPage: 10,
+  filters,
+  queryOptions: {
+    syncFiltersToUrl: true,
+  },
 })
 
-const applyQueryFromRaw = async () => {
-  const qs = { ...route.query }
-  if (rawSearch.value && String(rawSearch.value).trim()) qs.search = String(rawSearch.value).trim()
-  else delete qs.search
-  if (Array.isArray(selectedStatuses.value) && selectedStatuses.value.length > 0)
-    qs.statuses = selectedStatuses.value.join(',')
-  else delete qs.statuses
-  qs.page = 1
-  await router.replace({ query: qs })
-  if (typeof window !== 'undefined' && window.scrollTo) {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-}
+const isMutating = computed(
+  () =>
+    suppliersStore.isAdding ||
+    suppliersStore.isEditing ||
+    suppliersStore.isDeleting ||
+    suppliersStore.isToggling,
+)
 
-const debouncedApplyQuery = debounce(applyQueryFromRaw, 400)
-
-watch(rawSearch, () => {
-  debouncedApplyQuery()
+watch(isMutating, (val) => {
+  showOverlay.value = val
 })
 
-watch(selectedStatuses, () => {
-  if (debouncedApplyQuery.cancel) debouncedApplyQuery.cancel()
-  applyQueryFromRaw()
-})
-
-onUnmounted(() => {
-  if (debouncedApplyQuery && debouncedApplyQuery.cancel) debouncedApplyQuery.cancel()
-})
-
-function handleCloseFormModal() {
-  isFormModalVisible.value = false
+const handleToggleDetail = (id) => {
+  openStates.value = { ...openStates.value, [id]: !openStates.value[id] }
 }
 
-async function openDeleteModal(supplier) {
-  if (!supplier) return
-  const title = 'Xác nhận xóa'
-  const message = `Bạn có chắc chắn muốn xóa nhà cung cấp "${supplier.name}"? Hành động này không thể hoàn tác.`
-  const confirmed = await showConfirmation(title, message)
-  if (!confirmed) return
+const toggleActivation = async (supplier) => {
+  const newStatus = supplier.statusId === 'active' ? 'inactive' : 'active'
+  const actionName = newStatus === 'active' ? 'Kích hoạt' : 'Ngưng kích hoạt'
 
-  try {
-    showOverlay.value = true
-    overlayMessage.value = 'Đang xóa nhà cung cấp...'
-    await suppliersStore.deleteSupplier(supplier.id)
-    showMessage(`Đã xóa nhà cung cấp: ${supplier.name}.`)
-    if (selectedSupplierId.value === supplier.id) selectedSupplierId.value = null
-    await queryClient.invalidateQueries({ queryKey: ['suppliers'] })
-  } catch (err) {
-    showMessage('Lỗi khi xóa nhà cung cấp.', 'error')
-    console.error(err)
-  } finally {
-    showOverlay.value = false
-  }
-}
+  const confirmed = await showConfirmation(
+    `Xác nhận ${actionName}`,
+    `Bạn có chắc chắn muốn ${actionName.toLowerCase()} nhà cung cấp ${supplier.name}?`,
+  )
 
-function handleToggleDetail(supplierId) {
-  const wasOpen = !!openStates[supplierId]
+  if (confirmed) {
+    overlayMessage.value = `Đang ${actionName.toLowerCase()}...`
+    const result = await suppliersStore.toggleStatus(supplier.id, supplier.statusId)
 
-  Object.keys(openStates).forEach((k) => {
-    openStates[k] = false
-  })
-  if (!wasOpen) openStates[supplierId] = true
-}
-
-function toggleActivation(supplierId) {
-  const supplier = storeSuppliers.value.find((s) => s.id === supplierId)
-  if (!supplier) return
-  const actionText = supplier.status === 'active' ? 'ngừng hoạt động' : 'kích hoạt'
-  const title = `Xác nhận ${actionText}`
-  const messageText = `Bạn có chắc chắn muốn ${actionText} nhà cung cấp "${supplier.name}" không?`
-
-  showConfirmation(title, messageText).then(async (confirmed) => {
-    if (!confirmed) return
-    try {
-      await suppliersStore.updateSupplierStatus({
-        id: supplier.id,
-        status: supplier.status === 'active' ? 'inactive' : 'active',
-      })
-      showMessage(
-        `Đã ${supplier.status === 'active' ? 'kích hoạt' : 'ngừng hoạt động'} nhà cung cấp ${supplier.name}.`,
-      )
-      await queryClient.invalidateQueries({ queryKey: ['suppliers'] })
-    } catch (err) {
-      showMessage('Lỗi khi cập nhật trạng thái.', 'error')
-      console.error(err)
+    if (result.success) {
+      toast.success(`${actionName} thành công!`)
+    } else {
+      toast.error(`Lỗi: ${result.error.message || result.error}`)
     }
-  })
+  }
 }
+
+const formModalTitle = computed(() =>
+  isEditMode.value ? 'Cập nhật nhà cung cấp' : 'Thêm nhà cung cấp mới',
+)
+const formModalKey = ref(0)
+
+const openAddEditModal = async (supplier = null) => {
+  suppliersStore.openFormModal(supplier)
+  formModalKey.value++
+
+  if (supplier) {
+    await handleFormRefresh(false, false)
+  }
+}
+
+const handleCloseFormModal = () => {
+  suppliersStore.closeFormModal()
+}
+
+const handleSaveSupplier = async () => {
+  overlayMessage.value = isEditMode.value ? 'Đang cập nhật...' : 'Đang tạo mới...'
+
+  const result = await suppliersStore.saveSupplier()
+
+  if (result.success) {
+    toast.success(isEditMode.value ? 'Cập nhật thành công!' : 'Thêm mới thành công!')
+    handleCloseFormModal()
+  } else {
+    const error = result.error
+    if (error.type !== 'Validation') {
+      if (error.response?.status === 400) {
+        toast.error('Có lỗi trong quá trình lưu nhà cung cấp')
+      } else {
+        toast.error(`Lỗi: ${error.message || error}`)
+      }
+    }
+  }
+}
+
+const openDeleteModal = async (supplier) => {
+  const confirmed = await showConfirmation(
+    'Xóa nhà cung cấp',
+    `Bạn có chắc chắn muốn xóa nhà cung cấp ${supplier.name}?`,
+  )
+
+  if (confirmed) {
+    overlayMessage.value = 'Đang xóa...'
+    const result = await suppliersStore.deleteSupplier(supplier.id)
+
+    if (result.success) {
+      toast.success('Xóa thành công!')
+    } else {
+      toast.error(`Lỗi: ${result.error.message || result.error}`)
+    }
+  }
+}
+
+const isRefreshing = ref(false)
+
+const handleFormRefresh = async (showToast = true, showLoading = true) => {
+  if (isEditMode.value && editableSupplier.value.id) {
+    if (showLoading) isRefreshing.value = true
+    try {
+      const freshData = await queryClient.fetchQuery({
+        queryKey: ['suppliers', editableSupplier.value.id],
+        queryFn: () => suppliersStore.getSupplierById(editableSupplier.value.id),
+      })
+      if (freshData) {
+        editableSupplier.value = { ...freshData }
+      }
+      if (showToast) toast.info('Đã làm mới dữ liệu')
+    } catch (e) {
+      toast.error(`Lỗi làm mới: ${e.message}`)
+    } finally {
+      if (showLoading) isRefreshing.value = false
+    }
+  } else {
+    editableSupplier.value = {}
+    formErrors.value = {}
+    if (showToast) toast.info('Đã làm mới form')
+  }
+}
+
+watch(isError, (hasError) => {
+  if (hasError) {
+    toast.error('Lỗi tải dữ liệu nhà cung cấp')
+  }
+})
 
 const handleExport = () => {
-  if (storeSuppliers.value.length === 0) {
-    return
-  }
-  const exportData = storeSuppliers.value.map((s) => ({
-    'Mã nhà cung cấp': s.id,
-    'Tên nhà cung cấp': s.name,
-    'Số điện thoại': s.phone || '',
-    Email: s.email || '',
-    'Tổng mua (VND)': s.totalPurchase,
-    'Trạng thái': s.status === 'active' ? 'Đang hoạt động' : 'Ngừng hoạt động',
-    'Địa chỉ': [s.address, s.ward, s.cityDistrict].filter(Boolean).join(', '),
-    'Ghi chú': s.notes || '',
-  }))
-  const ws = XLSX.utils.json_to_sheet(exportData)
-  const wb = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(wb, ws, 'DanhSachNhaCungCap')
-  const fileName = `Danh_sach_NCC_${formatDate(Date.now()).replace(/\//g, '-')}.xlsx`
-  XLSX.writeFile(wb, fileName)
-  showMessage(`Đã xuất ${exportData.length} nhà cung cấp ra file Excel.`)
+  toast.info('Chức năng xuất Excel đang phát triển')
 }
 
-const handleImport = async (event) => {
-  const file = event.target.files[0]
-  if (!file) return
-  const reader = new FileReader()
-  reader.onload = async (e) => {
-    try {
-      const data = new Uint8Array(e.target.result)
-      const workbook = XLSX.read(data, { type: 'array' })
-      const sheetName = workbook.SheetNames[0]
-      const worksheet = workbook.Sheets[sheetName]
-      const jsonArr = XLSX.utils.sheet_to_json(worksheet, { header: 1 })
-      if (jsonArr.length < 2) {
-        showMessage('File Excel không có dữ liệu.', 'error')
-        return
-      }
-      const headers = jsonArr[0].map((h) => String(h).trim())
-      const importedRows = jsonArr.slice(1)
-      const created = []
-      for (let i = 0; i < importedRows.length; i++) {
-        const row = importedRows[i]
-        const newSupplierData = {}
-        headers.forEach((h, idx) => {
-          if (h === 'Tên nhà cung cấp') newSupplierData.name = row[idx]
-          if (h === 'Số điện thoại') newSupplierData.phone = row[idx]
-          if (h === 'Email') newSupplierData.email = row[idx]
-          if (h === 'Nhóm NCC') newSupplierData.group = row[idx]
-          if (h === 'Địa chỉ') newSupplierData.address = row[idx]
-          if (h === 'Ghi chú') newSupplierData.notes = row[idx]
-        })
-        if (!newSupplierData.name || !String(newSupplierData.name).trim()) continue
-        try {
-          await suppliersStore.addSupplier({
-            ...newSupplierData,
-            totalPurchase: 0,
-            status: 'active',
-            creator: 'Import User',
-            creationDate: Date.now(),
-            transactions: [],
-          })
-          created.push(newSupplierData)
-        } catch (err) {
-          console.error('Import row error', err)
-        }
-      }
-      if (created.length > 0) {
-        showMessage(`Đã nhập thành công ${created.length} nhà cung cấp.`)
-        await queryClient.invalidateQueries({ queryKey: ['suppliers'] })
-      } else {
-        showMessage('Không có nhà cung cấp nào hợp lệ trong file.', 'error')
-      }
-    } catch (error) {
-      console.error('Lỗi import:', error)
-      showMessage('Lỗi xử lý file Excel.', 'error')
-    }
-  }
-  reader.readAsArrayBuffer(file)
-  event.target.value = null
+const handleImport = () => {
+  toast.info('Chức năng nhập Excel đang phát triển')
 }
-
-async function onPageChange(newPage) {
-  if (newPage !== page.value) {
-    await router.replace({ query: { ...route.query, page: newPage } })
-    if (typeof window !== 'undefined' && window.scrollTo) {
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-    }
-  }
-}
-
-watch([searchTerm, selectedStatuses], ([newSearch, newStatuses]) => {
-  const qs = { ...route.query }
-  if (newSearch && String(newSearch).trim()) qs.search = String(newSearch).trim()
-  else delete qs.search
-  if (Array.isArray(newStatuses) && newStatuses.length > 0) qs.statuses = newStatuses.join(',')
-  else delete qs.statuses
-  qs.page = 1
-  router.replace({ query: qs })
-})
-
-watch(
-  () => route.query,
-  (newQuery) => {
-    const qSearch = newQuery.search === undefined ? '' : String(newQuery.search || '')
-    if (qSearch !== searchTerm.value) {
-      searchTerm.value = qSearch
-      rawSearch.value = qSearch
-    }
-    const qs = String(newQuery.statuses || '')
-    const vals = qs
-      ? qs
-          .split(',')
-          .map((s) => s.trim())
-          .filter(Boolean)
-      : []
-    if (JSON.stringify(vals) !== JSON.stringify(selectedStatuses.value)) {
-      selectedStatuses.value = vals
-    }
-  },
-)
-
-watch(
-  [() => page.value, totalPages],
-  ([currentPage, total]) => {
-    const tp = Number(total) || 1
-    const cp = Number(currentPage) || 1
-    if (suppliersData.value && suppliersData.value.count != null) {
-      if (tp > 0 && cp > tp) {
-        router.replace({ query: { ...route.query, page: 1 } })
-      }
-    }
-  },
-  { immediate: true },
-)
 </script>
 
 <template>
-  <div class="bg-gray-100 p-4 sm:p-6 rounded-xl shadow-lg">
-    <BaseLoadingOverlay :show="showOverlay" :message="overlayMessage" />
+  <div class="p-4 sm:p-6 rounded-xl shadow-lg bg-white">
+    <LoadingOverlay :show="showOverlay" :message="overlayMessage" />
     <div
       class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0"
     >
       <div>
         <h1 class="text-3xl font-bold text-gray-800">Quản lý nhà cung cấp</h1>
       </div>
-      <div class="flex flex-wrap items-center gap-2">
-        <BaseButton text="Thêm nhà cung cấp" color="purple" @click="openAddEditModal()" />
+      <div class="flex flex-wrap gap-2">
+        <Button
+          text="Thêm nhà cung cấp"
+          :icon="IconPlus"
+          color="primary"
+          @click="openAddEditModal()"
+        />
 
         <label for="import-file-input" class="cursor-pointer">
-          <BaseButton text="Import" color="blue" as="span" />
-          <input
-            type="file"
-            id="import-file-input"
-            accept=".xlsx, .xls"
-            class="hidden"
-            @change="handleImport"
+          <Button
+            text="Import"
+            :icon="IconFileImport"
+            color="secondary"
+            as="span"
+            @click="handleImport"
           />
         </label>
 
-        <BaseButton text="Export" color="green" @click="handleExport" />
-        <div class="h-8 border-r-2 border-black-300 mx-2"></div>
+        <Button text="Export" :icon="IconFileExport" color="secondary" @click="handleExport" />
+
+        <span class="text-gray-400 mx-4 hidden border-r-2 sm:block" />
+
         <SupplierFilterButtons v-model="selectedStatuses" />
       </div>
     </div>
 
-    <BaseInput
-      v-model="rawSearch"
+    <Input
+      v-model="searchTerm"
       type="text"
       placeholder="Tìm kiếm theo mã, tên, SĐT nhà cung cấp..."
       class="mb-3"
     />
 
-    <div
-      class="hidden md:grid md:grid-cols-16 items-center gap-2 py-3 px-5 text-sm font-semibold text-gray-600 bg-gray-200 rounded-t-md"
-    >
-      <div class="md:col-span-8">Tên nhà cung cấp</div>
-      <div class="md:col-start-9 md:col-span-2">Điện thoại</div>
-      <div class="md:col-start-11 md:col-span-2">Email</div>
-      <div class="md:col-start-13 md:col-span-2 md:justify-self-end">Tổng mua</div>
-      <div class="md:col-start-15 md:col-span-2">Trạng thái</div>
+    <div class="border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+      <div
+        class="hidden md:grid md:grid-cols-16 items-center gap-2 py-3 px-5 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 border-b border-gray-200"
+      >
+        <div class="md:col-span-8">Tên nhà cung cấp</div>
+        <div class="md:col-start-9 md:col-span-2">Điện thoại</div>
+        <div class="md:col-start-11 md:col-span-2">Email</div>
+        <div class="md:col-start-13 md:col-span-2 md:justify-self-end">Tổng mua</div>
+        <div class="md:col-start-15 md:col-span-2">Trạng thái</div>
+      </div>
+
+      <div class="bg-white">
+        <div v-if="isLoading">
+          <div
+            v-for="i in 5"
+            :key="i"
+            class="grid md:grid-cols-16 gap-2 py-4 px-5 border-b border-gray-50 items-center last:border-0"
+          >
+            <div class="md:col-span-8"><SkeletonLoader width="60%" height="16px" /></div>
+            <div class="md:col-start-9 md:col-span-2">
+              <SkeletonLoader width="80%" height="16px" />
+            </div>
+            <div class="md:col-start-11 md:col-span-2">
+              <SkeletonLoader width="90%" height="16px" />
+            </div>
+            <div class="md:col-start-13 md:col-span-2 flex justify-end">
+              <SkeletonLoader width="60%" height="16px" />
+            </div>
+            <div class="md:col-start-15 md:col-span-2">
+              <SkeletonLoader width="70%" height="24px" class="rounded-full" />
+            </div>
+          </div>
+        </div>
+
+        <div v-else-if="isError" class="text-center py-12 text-red-500 font-medium">
+          Đã xảy ra lỗi khi lấy dữ liệu nhà cung cấp
+        </div>
+
+        <div
+          v-else-if="suppliers.length === 0"
+          class="text-center py-12 flex flex-col items-center justify-center space-y-3"
+        >
+          <div class="bg-gray-50 p-3 rounded-full">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-8 w-8 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+              />
+            </svg>
+          </div>
+          <p class="text-gray-500 font-medium">Không có nhà cung cấp nào để hiển thị.</p>
+        </div>
+
+        <div v-else class="divide-y divide-gray-50">
+          <SupplierItem
+            v-for="item in suppliers"
+            :key="item.id"
+            :itemData="item"
+            :is-open="openStates[item.id]"
+            @toggle-detail="handleToggleDetail"
+            @edit-supplier="openAddEditModal"
+            @delete-supplier="openDeleteModal"
+            @toggle-activation="toggleActivation"
+          />
+        </div>
+      </div>
     </div>
 
-    <div class="bg-white rounded-b-md shadow-sm">
-      <div v-if="isLoading">
-        <BaseSpinner />
-      </div>
-      <div v-else-if="isError">
-        <p class="not-found-msg">Could not fetch suppliers. Please try again later. {{ error }}</p>
-      </div>
-      <div v-else-if="storeSuppliers.length === 0" class="text-center py-6 text-gray-500">
-        Không có nhà cung cấp nào để hiển thị.
-      </div>
-      <SupplierItem
-        v-for="item in storeSuppliers"
-        :key="item.id"
-        :itemData="item"
-        :is-open="openStates[item.id]"
-        @toggle-detail="handleToggleDetail"
-        @edit-supplier="openAddEditModal"
-        @delete-supplier="openDeleteModal"
-        @toggle-activation="toggleActivation"
-      />
-    </div>
-
-    <BasePagination
-      :total-pages="totalPages"
-      :currentPage="page"
-      @update:currentPage="onPageChange"
+    <Pagination
+      :total-pages="pagination.totalPages.value"
+      :currentPage="pagination.currentPage.value"
+      @update:currentPage="pagination.changePage"
       :loading="isLoading"
     />
 
@@ -489,6 +325,7 @@ watch(
       v-if="isFormModalVisible"
       @close="handleCloseFormModal"
       :onRefresh="isEditMode ? handleFormRefresh : undefined"
+      :isLoading="isRefreshing"
     >
       <template #header>
         <h2 class="font-bold text-lg">{{ formModalTitle }}</h2>
@@ -498,8 +335,8 @@ watch(
       </template>
       <template #footer>
         <div class="flex justify-end space-x-2">
-          <BaseButton text="Bỏ qua" color="gray" @click="handleCloseFormModal" />
-          <BaseButton text="Lưu" color="purple" @click="handleSaveSupplier" />
+          <Button text="Bỏ qua" color="gray" @click="handleCloseFormModal" />
+          <Button text="Lưu" color="purple" @click="handleSaveSupplier" />
         </div>
       </template>
     </DraggableModal>

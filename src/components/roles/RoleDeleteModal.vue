@@ -1,6 +1,6 @@
 <script setup>
-import FullScreenModal from '@/components/ui/confirm_modal/BaseConfirmationModal.vue'
-import BaseButton from '@/components/ui/button/BaseButton.vue'
+import FullScreenModal from '@/components/ui/confirm_modal/ConfirmationModal.vue'
+import Button from '@/components/ui/button/BaseButton.vue'
 
 defineProps({
   show: {
@@ -66,8 +66,8 @@ const emit = defineEmits(['close', 'confirm'])
     </div>
 
     <template #actions>
-      <BaseButton text="Hủy bỏ" color="gray" @click="emit('close')" />
-      <BaseButton text="Xóa vai trò" color="red" @click="emit('confirm')" />
+      <Button text="Hủy bỏ" color="gray" @click="emit('close')" />
+      <Button text="Xóa vai trò" color="red" @click="emit('confirm')" />
     </template>
   </FullScreenModal>
 </template>

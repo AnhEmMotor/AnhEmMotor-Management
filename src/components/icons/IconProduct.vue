@@ -4,8 +4,8 @@
     height="24px"
     viewBox="0 0 24.00 24.00"
     xmlns="http://www.w3.org/2000/svg"
-    fill="#ff0000"
-    stroke="#ff0000"
+    fill="currentColor"
+    stroke="currentColor"
     stroke-width="0.00024000000000000003"
   >
     <g id="SVGRepo_bgCarrier" stroke-width="0"></g>

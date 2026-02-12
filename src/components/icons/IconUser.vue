@@ -20,7 +20,7 @@
 <style scoped>
 .st0 {
   fill: none;
-  stroke: red;
+  stroke: currentColor;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 2px;

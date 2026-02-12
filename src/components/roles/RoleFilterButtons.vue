@@ -1,11 +1,11 @@
 <template>
   <div class="flex flex-wrap gap-2 items-center">
-    <p>Lọc trạng thái:</p>
-    <BaseFilterButton
+    <FilterButton
       v-for="filter in filterOptions"
       :key="filter.status"
       :text="filter.label"
       :color="filter.color"
+      :icon="filter.icon"
       :is-active="isActive(filter.status)"
       @toggle="selectFilter(filter.status)"
     />
@@ -13,7 +13,10 @@
 </template>
 
 <script setup>
-import BaseFilterButton from '../ui/button/BaseFilterButton.vue'
+import FilterButton from '../ui/button/FilterButton.vue'
+import IconCheckCircle from '@/components/icons/IconCheckCircle.vue'
+import IconXCircle from '@/components/icons/IconXCircle.vue'
+
 const props = defineProps({
   modelValue: {
     type: Array,
@@ -23,8 +26,8 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:modelValue'])
 const filterOptions = [
-  { status: 'enable', label: 'Hoạt động', color: 'green' },
-  { status: 'disable', label: 'Vô hiệu hoá', color: 'red' },
+  { status: 'active', label: 'Hoạt động', color: 'red', icon: IconCheckCircle },
+  { status: 'disabled', label: 'Vô hiệu hoá', color: 'red', icon: IconXCircle },
 ]
 const isActive = (status) => {
   return props.modelValue.includes(status)

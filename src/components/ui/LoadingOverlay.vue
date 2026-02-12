@@ -40,7 +40,7 @@ defineProps({
   width: 80px;
   height: 80px;
   border: 8px solid #f3f3f3;
-  border-top: 8px solid #3d008d;
+  border-top: 8px solid red;
   border-radius: 50%;
   animation: spin 1.5s linear infinite;
 }

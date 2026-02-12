@@ -34,7 +34,7 @@ export const useProductsStore = defineStore('products', {
         const result = await productApi.getProducts(filters, pagination)
 
         this.products = result.products
-        
+
         if (result.totalCount !== undefined) {
           this.pagination.totalCount = result.totalCount
           this.pagination.totalPages = Math.ceil(result.totalCount / this.pagination.itemsPerPage)
@@ -53,7 +53,6 @@ export const useProductsStore = defineStore('products', {
         await productApi.upsertProduct(product)
         await this.fetchProducts()
       } catch (error) {
-        console.error('Lỗi saveProduct action:', error)
         this.error = error.message
         throw error
       } finally {
@@ -83,7 +82,6 @@ export const useProductsStore = defineStore('products', {
         await productApi.deleteProduct(product.id)
         await this.fetchProducts()
       } catch (error) {
-        console.error('Lỗi deleteProduct action:', error)
         this.error = error.message
         throw error
       } finally {

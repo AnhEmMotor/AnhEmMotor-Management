@@ -182,7 +182,6 @@ const processFiles = (files) => {
       return
     }
     if (file.size > 5 * 1024 * 1024) {
-      console.warn(`Skipping file ${file.name} due to size.`)
       hadError = true
       return
     }
@@ -220,7 +219,6 @@ const uploadFilesHandler = async (files) => {
     const newUrls = filePaths.map((path) => storageApi.getPublicUrl(path, bucketName))
     localValue.value = [...localValue.value, ...newUrls]
   } catch (apiError) {
-    console.error('API Upload Error:', apiError)
     error.value = `Lỗi upload: ${apiError.message}`
   } finally {
     isLoading.value = false

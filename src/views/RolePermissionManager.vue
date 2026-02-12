@@ -1,40 +1,16 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useToast } from 'vue-toastification'
 import RoleList from '@/components/roles/RoleList.vue'
 import RoleForm from '@/components/roles/RoleForm.vue'
 import RoleDeleteModal from '@/components/roles/RoleDeleteModal.vue'
 import RoleFilterButtons from '@/components/roles/RoleFilterButtons.vue'
-import BaseButton from '@/components/ui/button/BaseButton.vue'
+import Button from '@/components/ui/button/BaseButton.vue'
+import IconPlus from '@/components/icons/IconPlus.vue'
+import IconFileImport from '@/components/icons/IconFileImport.vue'
+import IconFileExport from '@/components/icons/IconFileExport.vue'
 
-const roles = ref([
-  {
-    id: 1,
-    name: 'Quản lý',
-    description: 'Quyền quản lý toàn bộ hệ thống',
-    permissionCount: 15,
-    createdAt: '2025-01-10',
-    status: 'active',
-    permissions: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
-  },
-  {
-    id: 2,
-    name: 'Quản kho',
-    description: 'Quyền quản lý kho hàng và nhập xuất',
-    permissionCount: 8,
-    createdAt: '2025-01-15',
-    status: 'active',
-    permissions: [6, 7, 8, 9, 10, 11, 12, 13],
-  },
-  {
-    id: 3,
-    name: 'Nhân viên',
-    description: 'Quyền cơ bản cho nhân viên',
-    permissionCount: 5,
-    createdAt: '2025-01-20',
-    status: 'disabled',
-    permissions: [1, 2, 14, 15, 16],
-  },
-])
+const roles = ref([])
 
 const availablePermissions = ref([
   {
@@ -180,12 +156,41 @@ const isEditMode = ref(false)
 
 const modalZIndex = ref(100)
 const activeModalId = ref(null)
+const isLoading = ref(false)
+const isError = ref(false)
+const errorMessage = ref('')
 
 const selectedStatuses = ref([])
+const toast = useToast()
 
 onMounted(() => {
-  filteredRoles.value = [...roles.value]
+  fetchData()
 })
+
+const fetchData = async () => {
+  isLoading.value = true
+  isError.value = false
+  errorMessage.value = ''
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+    throw new Error('Lỗi tải dữ liệu vai trò')
+  } catch {
+    isError.value = true
+    errorMessage.value = 'Đã xảy ra lỗi trong quá trình tải dữ liệu vai trò.'
+    toast.error('Đã xảy ra lỗi trong quá trình tải dữ liệu vai trò.')
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const handleExport = () => {
+  toast.info('Chức năng xuất Excel đang phát triển')
+}
+
+const handleImport = (event) => {
+  toast.info('Chức năng nhập Excel đang phát triển')
+  event.target.value = ''
+}
 
 const applyFilters = () => {
   let result = [...roles.value]
@@ -285,7 +290,7 @@ const handleActivateModal = (modalId) => {
 </script>
 
 <template>
-  <div class="w-full h-full flex flex-col bg-gray-50 p-6 overflow-hidden">
+  <div class="p-4 sm:p-6 rounded-xl shadow-lg bg-white">
     <div
       class="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0"
     >
@@ -294,15 +299,39 @@ const handleActivateModal = (modalId) => {
         <p class="text-gray-600">Quản lý danh sách vai trò và phân quyền trong hệ thống</p>
       </div>
 
-      <div class="flex justify-between items-center mb-6">
+      <div class="flex flex-wrap gap-2 items-center">
+        <Button text="Thêm vai trò mới" :icon="IconPlus" color="primary" @click="handleAddRole" />
+
+        <label for="import-role-input" class="cursor-pointer">
+          <Button text="Import" :icon="IconFileImport" color="secondary" as="span" />
+          <input
+            type="file"
+            id="import-role-input"
+            accept=".xlsx, .xls"
+            class="hidden"
+            @change="handleImport"
+          />
+        </label>
+
+        <Button text="Export" :icon="IconFileExport" color="secondary" @click="handleExport" />
+
+        <span class="text-gray-400 mx-4 hidden border-r-2 sm:block h-6" />
+
+        <span class="text-gray-600 font-medium mr-2 hidden sm:inline-block">Lọc trạng thái:</span>
+
         <RoleFilterButtons v-model="selectedStatuses" />
-        <span class="h-8 border-r-2 border-black-300 mx-2" />
-        <BaseButton @click="handleAddRole" variant="primary" text="Thêm vai trò mới" />
       </div>
     </div>
 
-    <div class="flex-1 overflow-hidden">
-      <RoleList :roles="filteredRoles" @edit="handleEditRole" @delete="handleDeleteRole" />
+    <div>
+      <RoleList
+        :roles="filteredRoles"
+        :is-loading="isLoading"
+        :is-error="isError"
+        :error-message="errorMessage"
+        @edit="handleEditRole"
+        @delete="handleDeleteRole"
+      />
     </div>
 
     <RoleForm

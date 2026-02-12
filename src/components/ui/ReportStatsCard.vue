@@ -4,7 +4,8 @@
     :class="cardBgColor"
   >
     <p class="text-sm font-medium" :class="titleColor">{{ title }}</p>
-    <p class="text-3xl font-bold mt-1" :class="statColor">{{ stat }}</p>
+    <p class="font-bold mt-1" :class="[statColor, mode === 'detail' ? 'text-base truncate' : 'text-3xl']">{{ stat }}</p>
+    <p v-if="subtitle" class="mt-1" :class="[titleColor, mode === 'detail' ? 'text-sm' : 'text-xs']">{{ subtitle }}</p>
     <p
       v-if="improvement != null"
       class="text-xs mt-2 flex items-center"
@@ -26,6 +27,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  subtitle: {
+    type: String,
+    default: '',
+  },
   improvement: {
     type: Number,
     required: false,
@@ -34,31 +39,36 @@ const props = defineProps({
     type: String,
     default: 'purple',
   },
+  mode: {
+    type: String,
+    default: 'stat',
+    validator: (v) => ['stat', 'detail'].includes(v),
+  },
 })
 const colorStyles = {
   red: {
-    background: 'bg-red-50',
-    title: 'text-red-600',
+    background: 'bg-red-50 border border-red-100',
+    title: 'text-red-700',
     stat: 'text-red-900',
   },
   green: {
-    background: 'bg-green-50',
-    title: 'text-green-600',
+    background: 'bg-green-50 border border-green-100',
+    title: 'text-green-700',
     stat: 'text-green-900',
   },
   yellow: {
-    background: 'bg-yellow-50',
-    title: 'text-yellow-600',
+    background: 'bg-yellow-50 border border-yellow-100',
+    title: 'text-yellow-700',
     stat: 'text-yellow-900',
   },
   purple: {
-    background: 'bg-purple-50',
-    title: 'text-purple-600',
+    background: 'bg-purple-50 border border-purple-100',
+    title: 'text-purple-700',
     stat: 'text-purple-900',
   },
   indigo: {
-    background: 'bg-indigo-50',
-    title: 'text-indigo-600',
+    background: 'bg-indigo-50 border border-indigo-100',
+    title: 'text-indigo-700',
     stat: 'text-indigo-900',
   },
 }

@@ -1,5 +1,478 @@
+<template>
+  <div>
+    <div
+      class="lg:hidden fixed top-0 left-0 w-full bg-white shadow-md z-30 h-16 flex items-center justify-between px-4"
+    >
+      <div class="flex items-center h-full py-2">
+        <img src="/anhemmotor.webp" alt="AnhEm Motor Admin" class="h-full w-auto object-contain" />
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="hidden sm:flex items-center gap-2">
+          <div
+            class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-sm shrink-0"
+          >
+            {{ authStore.user?.fullName?.charAt(0) || 'A' }}
+          </div>
+          <span class="text-sm font-medium text-gray-700 truncate max-w-[120px]">
+            {{ authStore.user?.fullName }}
+          </span>
+        </div>
+
+        <button
+          @click="handleLogout"
+          class="text-gray-500 hover:text-red-600 transition-colors p-1"
+          title="Đăng xuất"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+            />
+          </svg>
+        </button>
+
+        <button
+          @click="isMobileMenuOpen = !isMobileMenuOpen"
+          class="text-gray-600 focus:outline-none ml-2"
+        >
+          <svg
+            class="w-8 h-8"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"
+            ></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div
+      v-if="isMobileMenuOpen"
+      class="fixed inset-0 bg-black/50 z-30 lg:hidden"
+      @click="isMobileMenuOpen = false"
+    ></div>
+
+    <div
+      :class="[
+        'fixed left-0 top-0 h-full w-64 bg-white shadow-xl flex flex-col z-40 transition-transform duration-300 ease-in-out',
+        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
+      ]"
+    >
+      <div class="p-6 flex flex-col items-center flex-shrink-0 relative">
+        <button
+          @click="isMobileMenuOpen = false"
+          class="absolute top-4 right-4 lg:hidden text-gray-500 hover:text-gray-700"
+        >
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            ></path>
+          </svg>
+        </button>
+
+        <div class="mb-8 mt-2 lg:mt-8 px-4">
+          <img src="/anhemmotor.webp" alt="AnhEm Motor Admin" class="h-16 w-auto object-contain" />
+        </div>
+      </div>
+
+      <nav class="w-full flex-1 overflow-y-auto px-4 pb-4 custom-scrollbar">
+        <ul class="space-y-1">
+          <li>
+            <RouterLink
+              to="/"
+              class="flex items-center space-x-3 p-3 rounded-lg w-full font-medium"
+              active-class=""
+              exact
+              :class="
+                route.path === '/'
+                  ? 'bg-red-50 text-red-700 border-l-4 border-red-600'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-red-600 border-l-4 border-transparent'
+              "
+              @click="closeMobileMenu"
+            >
+              <IconHome
+                class="flex-shrink-0"
+                :class="route.path === '/' ? 'text-red-600' : 'text-gray-500'"
+              />
+              <span>Trang chủ</span>
+            </RouterLink>
+          </li>
+
+          <li>
+            <RouterLink
+              to="/products"
+              class="flex items-center space-x-3 p-3 rounded-lg w-full font-medium"
+              active-class="bg-red-50 text-red-700 border-l-4 border-red-600"
+              :class="
+                route.path.startsWith('/products')
+                  ? 'bg-red-50 text-red-700 border-l-4 border-red-600'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-red-600 border-l-4 border-transparent'
+              "
+              @click="closeMobileMenu"
+            >
+              <IconProduct
+                class="flex-shrink-0"
+                :class="route.path.startsWith('/products') ? 'text-red-600' : 'text-gray-500'"
+              />
+              <span>Sản phẩm</span>
+            </RouterLink>
+          </li>
+
+          <li>
+            <button
+              @click="toggleGroup('warehouse')"
+              class="flex items-center justify-between space-x-3 p-3 rounded-lg w-full font-medium cursor-pointer text-gray-600 hover:bg-gray-50 hover:text-red-600 border-l-4 border-transparent"
+              :class="{ 'text-red-700': isGroupActive('warehouse') }"
+            >
+              <div class="flex items-center space-x-3">
+                <IconWarehouse
+                  class="flex-shrink-0"
+                  :class="isGroupActive('warehouse') ? 'text-red-600' : 'text-gray-500'"
+                />
+                <span>Kho vận</span>
+              </div>
+              <IconUpArrow :isOpen="openGroups.includes('warehouse')" />
+            </button>
+
+            <ul v-if="openGroups.includes('warehouse')" class="mt-1 space-y-1 pl-3">
+              <li>
+                <RouterLink
+                  to="/suppliers"
+                  class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
+                  active-class="bg-red-50 text-red-700"
+                  :class="
+                    route.path === '/suppliers'
+                      ? 'bg-red-50 text-red-700'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-red-600'
+                  "
+                  @click="closeMobileMenu"
+                >
+                  <span>Nhà cung cấp</span>
+                </RouterLink>
+              </li>
+              <li>
+                <RouterLink
+                  to="/inputs"
+                  class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
+                  active-class="bg-red-50 text-red-700"
+                  :class="
+                    route.path === '/inputs'
+                      ? 'bg-red-50 text-red-700'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-red-600'
+                  "
+                  @click="closeMobileMenu"
+                >
+                  <span>Nhập kho</span>
+                </RouterLink>
+              </li>
+              <li>
+                <RouterLink
+                  to="/price-management"
+                  class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
+                  active-class="bg-red-50 text-red-700"
+                  :class="
+                    route.path === '/price-management'
+                      ? 'bg-red-50 text-red-700'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-red-600'
+                  "
+                  @click="closeMobileMenu"
+                >
+                  <span>Thiết lập giá</span>
+                </RouterLink>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <button
+              @click="toggleGroup('user')"
+              class="flex items-center justify-between space-x-3 p-3 rounded-lg w-full font-medium cursor-pointer text-gray-600 hover:bg-gray-50 hover:text-red-600 border-l-4 border-transparent"
+              :class="{ 'text-red-700': isGroupActive('user') }"
+            >
+              <div class="flex items-center space-x-3">
+                <IconUser
+                  class="flex-shrink-0"
+                  :class="isGroupActive('user') ? 'text-red-600' : 'text-gray-500'"
+                />
+                <span>Người dùng</span>
+              </div>
+              <IconUpArrow :isOpen="openGroups.includes('user')" />
+            </button>
+
+            <ul v-if="openGroups.includes('user')" class="mt-1 space-y-1 pl-3">
+              <li>
+                <RouterLink
+                  to="/users"
+                  class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
+                  active-class="bg-red-50 text-red-700"
+                  :class="
+                    route.path === '/users'
+                      ? 'bg-red-50 text-red-700'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-red-600'
+                  "
+                  @click="closeMobileMenu"
+                >
+                  <span>Danh sách</span>
+                </RouterLink>
+              </li>
+              <li>
+                <RouterLink
+                  to="/permissions"
+                  class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
+                  active-class="bg-red-50 text-red-700"
+                  :class="
+                    route.path === '/permissions'
+                      ? 'bg-red-50 text-red-700'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-red-600'
+                  "
+                  @click="closeMobileMenu"
+                >
+                  <span>Vai trò & quyền hạn</span>
+                </RouterLink>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <RouterLink
+              to="/orders"
+              class="flex items-center space-x-3 p-3 rounded-lg w-full font-medium"
+              active-class="bg-red-50 text-red-700 border-l-4 border-red-600"
+              :class="
+                route.path.startsWith('/orders')
+                  ? 'bg-red-50 text-red-700 border-l-4 border-red-600'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-red-600 border-l-4 border-transparent'
+              "
+              @click="closeMobileMenu"
+            >
+              <IconOrder
+                class="flex-shrink-0"
+                :class="route.path.startsWith('/orders') ? 'text-red-600' : 'text-gray-500'"
+              />
+              <span>Đơn hàng</span>
+            </RouterLink>
+          </li>
+
+          <li>
+            <button
+              @click="toggleGroup('reports')"
+              class="flex items-center justify-between space-x-3 p-3 rounded-lg w-full font-medium cursor-pointer text-gray-600 hover:bg-gray-50 hover:text-red-600 border-l-4 border-transparent"
+              :class="{ 'text-red-700': isGroupActive('reports') }"
+            >
+              <div class="flex items-center space-x-3">
+                <IconReport
+                  class="flex-shrink-0"
+                  :class="isGroupActive('reports') ? 'text-red-600' : 'text-gray-500'"
+                />
+                <span>Báo cáo</span>
+              </div>
+              <IconUpArrow :isOpen="openGroups.includes('reports')" />
+            </button>
+
+            <ul v-if="openGroups.includes('reports')" class="mt-1 space-y-1 pl-3">
+              <li>
+                <RouterLink
+                  to="/report-warehouse"
+                  class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
+                  active-class="bg-red-50 text-red-700"
+                  :class="
+                    route.path === '/report-warehouse'
+                      ? 'bg-red-50 text-red-700'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-red-600'
+                  "
+                  @click="closeMobileMenu"
+                >
+                  <span>Tồn kho</span>
+                </RouterLink>
+              </li>
+              <li>
+                <RouterLink
+                  to="/report-revenue"
+                  class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
+                  active-class="bg-red-50 text-red-700"
+                  :class="
+                    route.path === '/report-revenue'
+                      ? 'bg-red-50 text-red-700'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-red-600'
+                  "
+                  @click="closeMobileMenu"
+                >
+                  <span>Doanh thu</span>
+                </RouterLink>
+              </li>
+              <li>
+                <RouterLink
+                  to="/report-product"
+                  class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
+                  active-class="bg-red-50 text-red-700"
+                  :class="
+                    route.path === '/report-product'
+                      ? 'bg-red-50 text-red-700'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-red-600'
+                  "
+                  @click="closeMobileMenu"
+                >
+                  <span>Sản phẩm</span>
+                </RouterLink>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <RouterLink
+              to="/settings"
+              class="flex items-center space-x-3 p-3 rounded-lg w-full font-medium"
+              active-class="bg-red-50 text-red-700 border-l-4 border-red-600"
+              :class="
+                route.path.startsWith('/settings')
+                  ? 'bg-red-50 text-red-700 border-l-4 border-red-600'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-red-600 border-l-4 border-transparent'
+              "
+              @click="closeMobileMenu"
+            >
+              <IconSettings
+                class="flex-shrink-0"
+                :class="route.path.startsWith('/settings') ? 'text-red-600' : 'text-gray-500'"
+              />
+              <span>Cài đặt</span>
+            </RouterLink>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="mt-auto w-full p-4 border-t border-gray-100 bg-gray-50/50">
+        <LoadingOverlay :show="loading" message="Đang đăng xuất..." />
+        <div class="relative" @mouseleave="isUserMenuOpen = false">
+          <div
+            v-show="isUserMenuOpen"
+            class="user-menu absolute bottom-full left-0 w-full mb-2 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50 after:content-[''] after:absolute after:left-0 after:bottom-[-8px] after:w-full after:h-2 after:bg-transparent"
+          >
+            <RouterLink
+              to="/profile?tab=profile"
+              class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+              Hồ sơ cá nhân
+            </RouterLink>
+            <RouterLink
+              to="/profile?tab=password"
+              class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                />
+              </svg>
+              Đổi mật khẩu
+            </RouterLink>
+          </div>
+
+          <div
+            class="flex items-center gap-3 w-full rounded-xl p-2 cursor-pointer hover:bg-white transition-colors border border-transparent hover:border-gray-100"
+            @mouseenter="isUserMenuOpen = true"
+          >
+            <div
+              class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold shrink-0"
+            >
+              {{ authStore.user?.fullName?.charAt(0) || 'A' }}
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium text-gray-900 truncate">
+                {{ authStore.user?.fullName || 'Admin User' }}
+              </p>
+              <p class="text-xs text-gray-500 truncate">
+                {{ authStore.user?.role || 'Administrator' }}
+              </p>
+            </div>
+
+            <button
+              @click.stop="handleLogout"
+              class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 shrink-0 z-10"
+              title="Đăng xuất"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.user-menu::after {
+  content: '';
+  display: block;
+  position: absolute;
+  left: 0;
+  bottom: -8px;
+  width: 100%;
+  height: 8px;
+  background-color: transparent;
+}
+</style>
+
 <script setup lang="js">
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import IconHome from '@/components/icons/IconHome.vue'
 import IconReport from '@/components/icons/IconReport.vue'
 import IconProduct from '@/components/icons/IconProduct.vue'
@@ -10,23 +483,23 @@ import IconWarehouse from '@/components/icons/IconWarehouse.vue'
 import IconSettings from '@/components/icons/IconSettings.vue'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useRouter, useRoute } from 'vue-router'
+import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 
 const openGroups = ref([])
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
+const loading = ref(false)
+const isMobileMenuOpen = ref(false)
+const isUserMenuOpen = ref(false)
 
 const handleLogout = async () => {
-  await authStore.logout()
-  router.push('/login')
-}
-
-const toggleGroup = (group) => {
-  const index = openGroups.value.indexOf(group)
-  if (index > -1) {
-    openGroups.value.splice(index, 1)
-  } else {
-    openGroups.value.push(group)
+  loading.value = true
+  try {
+    await authStore.logout()
+    router.push('/login')
+  } finally {
+    loading.value = false
   }
 }
 
@@ -36,15 +509,30 @@ const groupRoutes = {
   reports: ['/report-warehouse', '/report-revenue', '/report-product'],
 }
 
+const toggleGroup = (group) => {
+  const index = openGroups.value.indexOf(group)
+  if (index > -1) {
+    openGroups.value = []
+  } else {
+    openGroups.value = [group]
+  }
+}
+
+const isGroupActive = (group) => {
+  return groupRoutes[group].some((path) => route.path.startsWith(path))
+}
+
 const openActiveGroup = (path) => {
   for (const groupName in groupRoutes) {
-    if (groupRoutes[groupName].includes(path)) {
-      if (!openGroups.value.includes(groupName)) {
-        openGroups.value.push(groupName)
-      }
+    if (groupRoutes[groupName].some((p) => path.startsWith(p))) {
+      openGroups.value = [groupName]
       return
     }
   }
+}
+
+const closeMobileMenu = () => {
+  isMobileMenuOpen.value = false
 }
 
 watch(
@@ -54,206 +542,34 @@ watch(
   },
   { immediate: true },
 )
+
+const checkScreenSize = () => {
+  if (window.innerWidth >= 1024) {
+    isMobileMenuOpen.value = false
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('resize', checkScreenSize)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', checkScreenSize)
+})
 </script>
 
-<template>
-  <div
-    class="fixed left-0 top-0 w-84 h-full p-6 shadow-xl flex-shrink-0 flex flex-col items-center bg-white"
-  >
-    <h1 class="text-2xl font-bold mb-8 mt-8 text-red-500">AnhEm Motor Admin</h1>
-    <nav class="w-full">
-      <ul class="space-y-2">
-        <li>
-          <RouterLink
-            to="/"
-            class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-200 transition-colors duration-200 w-full"
-            active-class=" "
-            exact-active-class="bg-gray-200 text-black font-semibold"
-          >
-            <IconHome />
-            <span>Trang chủ</span>
-          </RouterLink>
-        </li>
-
-        <li>
-          <RouterLink
-            to="/products"
-            class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-200 transition-colors duration-200 w-full"
-          >
-            <IconProduct />
-            <span>Quản lý sản phẩm</span>
-          </RouterLink>
-        </li>
-
-        <li>
-          <button
-            @click="toggleGroup('warehouse')"
-            class="flex items-center justify-between space-x-3 p-3 rounded-lg hover:bg-gray-200 transition-colors duration-200 w-full cursor-pointer"
-          >
-            <div class="flex items-center space-x-3">
-              <IconWarehouse />
-              <span>Quản lý kho</span>
-            </div>
-
-            <IconUpArrow :isOpen="openGroups.includes('warehouse')" />
-          </button>
-
-          <ul v-if="openGroups.includes('warehouse')" class="mt-2 space-y-2 pl-5">
-            <li>
-              <RouterLink
-                to="/suppliers"
-                class="flex items-center space-x-3 py-2 px-3 rounded-lg hover:bg-gray-100 transition-colors duration-200 w-full text-sm"
-              >
-                <span>Quản lý nhà cung cấp</span>
-              </RouterLink>
-            </li>
-            <li>
-              <RouterLink
-                to="/inputs"
-                class="flex items-center space-x-3 py-2 px-3 rounded-lg hover:bg-gray-100 transition-colors duration-200 w-full text-sm"
-              >
-                <span>Quản lý phiếu nhập kho</span>
-              </RouterLink>
-            </li>
-            <li>
-              <RouterLink
-                to="/price-management"
-                class="flex items-center space-x-3 py-2 px-3 rounded-lg hover:bg-gray-100 transition-colors duration-200 w-full text-sm"
-              >
-                <span>Thiết lập giá bán</span>
-              </RouterLink>
-            </li>
-          </ul>
-        </li>
-
-        <li>
-          <button
-            @click="toggleGroup('user')"
-            class="flex items-center justify-between space-x-3 p-3 rounded-lg hover:bg-gray-200 transition-colors duration-200 w-full cursor-pointer"
-          >
-            <div class="flex items-center space-x-3">
-              <IconUser />
-              <span>Quản lý người dùng</span>
-            </div>
-
-            <IconUpArrow :isOpen="openGroups.includes('user')" />
-          </button>
-
-          <ul v-if="openGroups.includes('user')" class="mt-2 space-y-2 pl-5">
-            <li>
-              <RouterLink
-                to="/users"
-                class="flex items-center space-x-3 py-2 px-3 rounded-lg hover:bg-gray-100 transition-colors duration-200 w-full text-sm"
-              >
-                <span>Quản lý thông tin & vai trò người dùng</span>
-              </RouterLink>
-            </li>
-            <li>
-              <RouterLink
-                to="/permissions"
-                class="flex items-center space-x-3 py-2 px-3 rounded-lg hover:bg-gray-100 transition-colors duration-200 w-full text-sm"
-              >
-                <span>Quản lý danh sách vai trò & quyền hạn của vai trò</span>
-              </RouterLink>
-            </li>
-          </ul>
-        </li>
-
-        <li>
-          <RouterLink
-            to="/orders"
-            class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-200 transition-colors duration-200 w-full"
-          >
-            <IconOrder />
-            <span>Quản lý đơn hàng</span>
-          </RouterLink>
-        </li>
-
-        <li>
-          <button
-            @click="toggleGroup('reports')"
-            class="flex items-center justify-between space-x-3 p-3 rounded-lg hover:bg-gray-200 transition-colors duration-200 w-full cursor-pointer"
-          >
-            <div class="flex items-center space-x-3">
-              <IconReport />
-              <span>Báo cáo</span>
-            </div>
-
-            <IconUpArrow :isOpen="openGroups.includes('reports')" />
-          </button>
-
-          <ul v-if="openGroups.includes('reports')" class="mt-2 space-y-2 pl-5">
-            <li>
-              <RouterLink
-                to="/report-warehouse"
-                class="flex items-center space-x-3 py-2 px-3 rounded-lg hover:bg-gray-100 transition-colors duration-200 w-full text-sm"
-              >
-                <span>Báo cáo kho</span>
-              </RouterLink>
-            </li>
-            <li>
-              <RouterLink
-                to="/report-revenue"
-                class="flex items-center space-x-3 py-2 px-3 rounded-lg hover:bg-gray-100 transition-colors duration-200 w-full text-sm"
-              >
-                <span>Phân tích doanh thu</span>
-              </RouterLink>
-            </li>
-            <li>
-              <RouterLink
-                to="/report-product"
-                class="flex items-center space-x-3 py-2 px-3 rounded-lg hover:bg-gray-100 transition-colors duration-200 w-full text-sm"
-              >
-                <span>Báo cáo sản phẩm</span>
-              </RouterLink>
-            </li>
-          </ul>
-        </li>
-
-        <li>
-          <RouterLink
-            to="/settings"
-            class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-200 transition-colors duration-200 w-full"
-          >
-            <IconSettings />
-            <span>Cài đặt chung</span>
-          </RouterLink>
-        </li>
-      </ul>
-    </nav>
-    
-    <div class="mt-auto w-full p-4">
-      <div class="flex items-center gap-3 w-full rounded-xl p-3">
-        <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold shrink-0">
-          {{ authStore.user?.fullName?.charAt(0) || 'A' }}
-        </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-sm font-medium text-gray-900 truncate">
-            {{ authStore.user?.fullName || 'Admin User' }}
-          </p>
-          <p class="text-xs text-gray-500 truncate">
-            {{ authStore.user?.role || 'Administrator' }}
-          </p>
-        </div>
-        
-        <button
-          @click="handleLogout"
-          class="p-2 text-gray-400 hover:text-red-600 hover:bg-white rounded-lg transition-all duration-200 shrink-0"
-          title="Đăng xuất"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-          </svg>
-        </button>
-      </div>
-    </div>
-  </div>
-</template>
-
-<style lang="css" scoped>
-@reference "../../assets/main.css";
-
-.router-link-active {
-  @apply bg-gray-200 text-black font-semibold;
+<style scoped>
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 2px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #d1d5db;
 }
 </style>

@@ -1,22 +1,41 @@
 <template>
-  <div class="bg-gray-100 p-4 sm:p-6 rounded-xl shadow-lg">
+  <div class="p-4 sm:p-6 rounded-xl shadow-lg bg-white">
     <div
       class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0"
     >
       <div>
-        <h2 class="text-3xl font-bold text-center text-gray-800">Quản Lý Khách Hàng</h2>
+        <h2 class="text-3xl font-bold text-center text-gray-800">Danh Sách Người Dùng</h2>
       </div>
-      <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full lg:w-auto">
-        <BaseActionButton text="Thêm mới" icon="fas fa-plus" color="blue" @click="openAddModal" />
+      <div class="flex flex-wrap gap-2 items-center">
+        <Button text="Thêm mới" :icon="IconPlus" color="primary" @click="openAddModal" />
+
+        <label for="import-user-input" class="cursor-pointer">
+          <Button text="Import" :icon="IconFileImport" color="secondary" as="span" />
+          <input
+            type="file"
+            id="import-user-input"
+            accept=".xlsx, .xls"
+            class="hidden"
+            @change="handleImport"
+          />
+        </label>
+
+        <Button text="Export" :icon="IconFileExport" color="secondary" @click="handleExport" />
+
+        <span class="text-gray-400 mx-4 hidden border-r-2 sm:block h-6" />
+
+        <span class="text-gray-600 font-medium mr-2 hidden sm:inline-block">Lọc trạng thái:</span>
+
         <UserFilterButtons v-model="selectedStatuses" multiple />
       </div>
     </div>
-    <div class="overflow-x-auto">
-      <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-sm">
-        <thead class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+    <div class="border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+      <table class="min-w-full bg-white">
+        <thead
+          class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs font-medium border-b border-gray-200"
+        >
           <tr>
-            <th class="py-3 px-6 text-left">Mã KH</th>
-            <th class="py-3 px-6 text-left">Tên Khách Hàng</th>
+            <th class="py-3 px-6 text-left">Tên Nhân Viên</th>
             <th class="py-3 px-6 text-left">Email</th>
             <th class="py-3 px-6 text-left">Số Điện Thoại</th>
             <th class="py-3 px-6 text-left">Vai trò</th>
@@ -25,13 +44,44 @@
           </tr>
         </thead>
         <tbody class="text-gray-600 text-sm font-light">
-          <tr v-if="displayCustomers.length === 0">
-            <td colspan="7" class="text-center py-6 text-gray-500">
-              Không tìm thấy khách hàng nào.
+          <template v-if="isLoading">
+            <tr v-for="i in 5" :key="`skeleton-${i}`" class="border-b border-gray-100">
+              <td class="py-3 px-6 text-left"><SkeletonLoader width="80%" height="16px" /></td>
+              <td class="py-3 px-6 text-left"><SkeletonLoader width="90%" height="16px" /></td>
+              <td class="py-3 px-6 text-left"><SkeletonLoader width="80%" height="16px" /></td>
+              <td class="py-3 px-6 text-left">
+                <SkeletonLoader width="70%" height="24px" class="rounded-full" />
+              </td>
+              <td class="py-3 px-6 text-left">
+                <SkeletonLoader width="60%" height="24px" class="rounded-full" />
+              </td>
+              <td class="py-3 px-6 text-center">
+                <div class="flex justify-center gap-2">
+                  <SkeletonLoader width="30px" height="20px" class="rounded" />
+                  <SkeletonLoader width="30px" height="20px" class="rounded" />
+                </div>
+              </td>
+            </tr>
+          </template>
+
+          <tr v-else-if="isError">
+            <td colspan="6">
+              <div class="text-center py-12 text-red-500 font-medium">
+                {{ errorMessage }}
+              </div>
             </td>
           </tr>
-          <tr v-for="customer in displayCustomers" :key="customer.id" class="table-row-style">
-            <td class="py-3 px-6 text-left whitespace-nowrap">{{ customer.code }}</td>
+          <tr v-else-if="displayCustomers.length === 0">
+            <td colspan="6" class="text-center py-6 text-gray-500">
+              Không tìm thấy nhân viên nào.
+            </td>
+          </tr>
+          <tr
+            v-else
+            v-for="customer in displayCustomers"
+            :key="customer.id"
+            class="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+          >
             <td class="py-3 px-6 text-left">{{ customer.name }}</td>
             <td class="py-3 px-6 text-left">{{ customer.email }}</td>
             <td class="py-3 px-6 text-left">{{ customer.phone }}</td>
@@ -40,7 +90,7 @@
                 <RoundBadge
                   v-for="roleId in customer.roleIds"
                   :key="roleId"
-                  color="blue"
+                  color="gray"
                   class="text-xs"
                 >
                   {{ availableRoles.find((r) => r.id === roleId)?.name }}
@@ -48,15 +98,15 @@
               </div>
             </td>
             <td class="py-3 px-6 text-left">
-              <RoundBadge :color="statusColors[customer.status]">{{
-                statusText[customer.status]
-              }}</RoundBadge>
+              <RoundBadge color="gray">{{ statusText[customer.status] }}</RoundBadge>
             </td>
-            <td class="py-3 px-6 text-left space-x-2">
-              <BaseSmallNoBgButton @click="editCustomer(customer.id)">Sửa</BaseSmallNoBgButton>
-              <BaseSmallNoBgButton color="red" @click="deleteCustomer(customer.id)">
-                Xóa
-              </BaseSmallNoBgButton>
+            <td class="py-3 px-6">
+              <div class="flex justify-center gap-2">
+                <SmallNoBgButton @click="editCustomer(customer.id)">Sửa</SmallNoBgButton>
+                <SmallNoBgButton color="red" @click="deleteCustomer(customer.id)"
+                  >Xóa</SmallNoBgButton
+                >
+              </div>
             </td>
           </tr>
         </tbody>
@@ -89,63 +139,17 @@
 import UserFilterButtons from '@/components/users/UserFilterButtons.vue'
 import UserForm from '@/components/users/UserForm.vue'
 import UserDeleteModal from '@/components/users/UserDeleteModal.vue'
-import BaseActionButton from '@/components/ui/button/BaseButton.vue'
+import Button from '@/components/ui/button/BaseButton.vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
-import BaseSmallNoBgButton from '@/components/ui/button/BaseSmallNoBgButton.vue'
+import SmallNoBgButton from '@/components/ui/button/SmallNoBgButton.vue'
+import IconPlus from '@/components/icons/IconPlus.vue'
+import IconFileImport from '@/components/icons/IconFileImport.vue'
+import IconFileExport from '@/components/icons/IconFileExport.vue'
+import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 import { onMounted, ref } from 'vue'
+import { useToast } from 'vue-toastification'
 
-const allCustomers = ref([
-  {
-    id: '1',
-    code: 'KH001',
-    name: 'Nguyễn Văn An',
-    email: 'an.nguyen@example.com',
-    phone: '0901234567',
-    address: '123 Đường ABC, Quận 1, TP.HCM',
-    status: 'active',
-    roleIds: [1, 2],
-  },
-  {
-    id: '2',
-    code: 'KH002',
-    name: 'Trần Thị Bình',
-    email: 'binh.tran@example.com',
-    phone: '0912345678',
-    address: '456 Đường XYZ, Quận 2, TP.HCM',
-    status: 'new',
-    roleIds: [3],
-  },
-  {
-    id: '3',
-    code: 'KH003',
-    name: 'Lê Văn Cường',
-    email: 'cuong.le@example.com',
-    phone: '0987654321',
-    address: '789 Đường KLM, Quận 3, TP.HCM',
-    status: 'inactive',
-    roleIds: [2, 3],
-  },
-  {
-    id: '4',
-    code: 'KH004',
-    name: 'Phạm Thị Dung',
-    email: 'dung.pham@example.com',
-    phone: '0978123456',
-    address: '101 Đường DEF, Quận 4, TP.HCM',
-    status: 'active',
-    roleIds: [1],
-  },
-  {
-    id: '5',
-    code: 'KH005',
-    name: 'Hoàng Văn Em',
-    email: 'em.hoang@example.com',
-    phone: '0934567890',
-    address: '212 Đường GHI, Quận 5, TP.HCM',
-    status: 'new',
-    roleIds: [1, 2, 3],
-  },
-])
+const allCustomers = ref([])
 
 const availableRoles = ref([
   { id: 1, name: 'Quản lý', description: 'Quyền quản lý toàn bộ hệ thống', permissionCount: 15 },
@@ -153,7 +157,11 @@ const availableRoles = ref([
   { id: 3, name: 'Nhân viên', description: 'Quyền cơ bản', permissionCount: 5 },
 ])
 
+const isLoading = ref(false)
+const isError = ref(false)
+const errorMessage = ref('')
 const selectedStatuses = ref(['active', 'new', 'inactive'])
+const toast = useToast()
 const displayCustomers = ref([])
 
 const showUserForm = ref(false)
@@ -163,20 +171,30 @@ const isEditMode = ref(false)
 const modalZIndex = ref(100)
 const activeModalId = ref(null)
 
-const statusColors = {
-  active: 'green',
-  new: 'yellow',
-  inactive: 'red',
-}
-
 const statusText = {
   active: 'Hoạt Động',
   new: 'Mới',
   inactive: 'Không Hoạt Động',
 }
 
+const fetchData = async () => {
+  isLoading.value = true
+  isError.value = false
+  errorMessage.value = ''
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+    throw new Error('Lỗi kết nối CSDL')
+  } catch {
+    isError.value = true
+    errorMessage.value = 'Đã xảy ra lỗi trong quá trình tải dữ liệu.'
+    toast.error('Đã xảy ra lỗi trong quá trình tải dữ liệu.')
+  } finally {
+    isLoading.value = false
+  }
+}
+
 onMounted(() => {
-  displayCustomers.value = allCustomers.value
+  fetchData()
 })
 
 const openAddModal = () => {
@@ -240,5 +258,13 @@ const handleActivateModal = (modalId) => {
     modalZIndex.value += 1
     activeModalId.value = modalId
   }
+}
+
+const handleExport = () => {
+  toast.info('Chức năng xuất Excel đang phát triển')
+}
+
+const handleImport = () => {
+  toast.info('Chức năng nhập Excel đang phát triển')
 }
 </script>

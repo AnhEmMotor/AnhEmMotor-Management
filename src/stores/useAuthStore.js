@@ -59,10 +59,7 @@ export const useAuthStore = defineStore('auth', () => {
     },
   )
 
-  // fetchUser đã được loại bỏ để dùng SSE hoàn toàn
-  // Chỉ giữ lại để dùng nếu cần re-fetch thủ công (nhưng SSE đã lo việc này)
   const fetchUser = async () => {
-    // Deprecated: Logic đã chuyển sang connectSSE
     return user.value
   }
 
@@ -73,13 +70,11 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.setItem('isLoggedIn', 'true')
     setAccessToken(data.accessToken)
     localStorage.setItem('isLoggedIn', 'true')
-    
-    // Đợi tối đa 2s cho SSE, nếu không có data -> Fallback gọi API
+
     try {
       await connectSSE()
-    } catch (e) {
+    } catch {
       if (!user.value) {
-        // Fallback: Nếu SSE timeout/error mà chưa có user -> Gọi API thường
         const { data } = await axiosInstance.get('/api/v1/user/me', { skipRedirect: true })
         user.value = data
       }
@@ -94,8 +89,6 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       closeSSE()
       await axiosInstance.post('/api/v1/auth/logout')
-    } catch (e) {
-      // Ignore logout error
     } finally {
       resetState()
     }
@@ -115,16 +108,11 @@ export const useAuthStore = defineStore('auth', () => {
       const sseUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/v1/user/me`
 
       sseStatus.value = 'connecting'
-      
+
       sseStatus.value = 'connecting'
-      
-      // Timeout thông minh:
-      // 1. Chờ 2s để xem SSE có data không.
-      // 2. Nếu sau 2s chưa có data -> Reject (để catch block bên ngoài gọi API fallback).
-      // 3. Không close connection, vẫn để nó chạy ngầm để nhận update sau này.
+
       const connectionTimeout = setTimeout(() => {
         if (!user.value) {
-          // Không closeSSE() ở đây để cho nó retry ngầm
           reject(new Error('SSE_TIMEOUT'))
         }
       }, 2000)
@@ -139,7 +127,10 @@ export const useAuthStore = defineStore('auth', () => {
             Accept: 'text/event-stream',
           },
           async onopen(response) {
-            if (response.ok && response.headers.get('content-type')?.includes('text/event-stream')) {
+            if (
+              response.ok &&
+              response.headers.get('content-type')?.includes('text/event-stream')
+            ) {
               sseStatus.value = 'connected'
               return
             }
@@ -157,12 +148,10 @@ export const useAuthStore = defineStore('auth', () => {
           onmessage(msg) {
             if (!msg.data || msg.data === 'heartbeat') return
             const data = JSON.parse(msg.data)
-            
-            // Fix: Check đúng key userName hoặc fullName (theo Swagger)
+
             if (data && (data.userName || data.fullName || data.username)) {
               user.value = { ...user.value, ...data }
-              
-              // Resolve promise khi nhận được data đầu tiên
+
               clearTimeout(connectionTimeout)
               resolve(user.value)
             }
@@ -185,14 +174,16 @@ export const useAuthStore = defineStore('auth', () => {
                   .then((resp) => {
                     const newToken = resp.data.accessToken
                     setAccessToken(newToken)
-                    // Recursive call cũng trả về promise
-                    connectSSE(retryCount + 1).then(resolve).catch(reject)
+                    connectSSE(retryCount + 1)
+                      .then(resolve)
+                      .catch(reject)
                   })
                   .then((resp) => {
                     const newToken = resp.data.accessToken
                     setAccessToken(newToken)
-                    // Recursive call cũng trả về promise
-                    connectSSE(retryCount + 1).then(resolve).catch(reject)
+                    connectSSE(retryCount + 1)
+                      .then(resolve)
+                      .catch(reject)
                   })
                   .catch(() => {
                     resetState()
@@ -239,20 +230,16 @@ export const useAuthStore = defineStore('auth', () => {
   const initAuth = async () => {
     if (isInitialized.value) return
 
-    // Tối ưu: Nếu không có flag isLoggedIn trong localStorage, coi như chưa đăng nhập
-    // Không cần gọi API để tránh lỗi 401/400 không cần thiết
     if (!localStorage.getItem('isLoggedIn')) {
       isInitialized.value = true
       return
     }
 
-    // Check Token: Nếu chưa có Access Token (do F5 reload), thử refresh
     if (!getAccessToken()) {
       try {
         const { data } = await axiosInstance.post('/api/v1/auth/refresh-token')
         setAccessToken(data.accessToken)
-      } catch (error) {
-        // Refresh thất bại -> Session hết hạn -> Logout
+      } catch {
         localStorage.removeItem('isLoggedIn')
         isInitialized.value = true
         return
@@ -260,17 +247,15 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     try {
-      // Thay thế fetchUser bằng connectSSE
       await connectSSE()
-    } catch (error) {
-      // Fallback: Nếu SSE fail, thử gọi API thường
+    } catch {
       if (!user.value) {
-         try {
-            const { data } = await axiosInstance.get('/api/v1/user/me', { skipRedirect: true })
-            user.value = data
-         } catch (apiError) {
-            localStorage.removeItem('isLoggedIn')
-         }
+        try {
+          const { data } = await axiosInstance.get('/api/v1/user/me', { skipRedirect: true })
+          user.value = data
+        } catch {
+          localStorage.removeItem('isLoggedIn')
+        }
       }
     } finally {
       isInitialized.value = true

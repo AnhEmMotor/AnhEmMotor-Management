@@ -58,7 +58,7 @@ const createChart = (data) => {
     .attr('class', 'bar')
     .attr('y', (d) => y(d.brand))
     .attr('height', y.bandwidth())
-    .attr('fill', '#dc2626')
+    .attr('fill', '#3b82f6')
     .attr('width', 0)
     .transition()
     .duration(800)

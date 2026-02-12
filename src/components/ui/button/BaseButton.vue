@@ -1,7 +1,13 @@
 <template>
   <button :class="buttonClasses" :disabled="disabled" @click="handleClick">
-    <i v-if="icon" :class="icon"></i>
-    <span :class="{ 'ml-2': icon && text }">{{ text }}</span>
+    <component
+      :is="icon"
+      v-if="typeof icon === 'object' || typeof icon === 'function'"
+      class="w-5 h-5"
+      :class="{ 'mr-2': text }"
+    />
+    <i v-else-if="icon" :class="icon"></i>
+    <span :class="{ 'ml-2': icon && typeof icon === 'string' && text }">{{ text }}</span>
   </button>
 </template>
 
@@ -14,7 +20,7 @@ const props = defineProps({
     required: true,
   },
   icon: {
-    type: String,
+    type: [String, Object, Function],
     default: null,
   },
   color: {
@@ -29,13 +35,17 @@ const props = defineProps({
 
 const emit = defineEmits(['click'])
 const colorVariants = {
-  primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
-  blue: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
-  green: 'bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500',
-  red: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
-  yellow: 'bg-amber-500 text-slate-900 hover:bg-amber-600 focus:ring-amber-500',
-  gray: 'bg-slate-500 text-white hover:bg-slate-600 focus:ring-slate-500',
-  purple: 'bg-purple-500 text-white hover:bg-purple-600 focus:ring-purple-500',
+  primary: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 border border-transparent',
+  secondary: 'bg-white text-gray-700 border border-gray-400 hover:bg-gray-50 focus:ring-gray-500',
+  outline: 'bg-transparent text-red-600 border border-red-600 hover:bg-red-50 focus:ring-red-500',
+  ghost: 'bg-transparent text-gray-600 hover:bg-gray-100 focus:ring-gray-500',
+  danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
+  blue: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
+  green: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
+  purple: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
+  yellow: 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50',
+  red: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 focus:ring-offset-2',
+  gray: 'bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-500',
 }
 
 const buttonClasses = computed(() => {

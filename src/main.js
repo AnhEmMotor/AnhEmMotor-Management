@@ -7,6 +7,7 @@ import Toast from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
 import { createPinia } from 'pinia'
 import { VueQueryPlugin } from '@tanstack/vue-query'
+import { queryClient } from '@/api/queryClient'
 
 const app = createApp(App)
 
@@ -33,6 +34,6 @@ const options = {
 
 app.use(Toast, options)
 
-app.use(VueQueryPlugin)
+app.use(VueQueryPlugin, { queryClient })
 
 app.mount('#app')

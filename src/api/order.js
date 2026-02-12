@@ -9,7 +9,6 @@ export const fetchOrders = async (params) => {
   })
 
   if (error) {
-    console.error('[API Error] fetchOrders:', error)
     throw error
   }
   return data
@@ -34,7 +33,6 @@ export const saveOrder = async (payload) => {
   })
 
   if (error) {
-    console.error('[API Error] saveOrder:', error)
     throw error
   }
   return data
@@ -44,7 +42,6 @@ export const fetchProductVariants = async (params) => {
   const { data, error } = await supabase.rpc('get_all_variants_lite', params)
 
   if (error) {
-    console.error('[API Error] fetchProductVariants:', error)
     throw error
   }
   return data
@@ -53,7 +50,6 @@ export const fetchProductVariants = async (params) => {
 export const fetchOutputStatuses = async () => {
   const { data, error } = await supabase.from('output_status').select('*')
   if (error) {
-    console.error('[API Error] fetchOutputStatuses:', error)
     throw error
   }
   return data

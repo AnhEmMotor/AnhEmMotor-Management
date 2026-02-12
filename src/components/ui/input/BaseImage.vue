@@ -203,9 +203,8 @@ const uploadHandler = async (file) => {
     const publicUrl = storageApi.getPublicUrl(filePath, bucketName)
 
     localValue.value = publicUrl
-    initialImageUrl.value = publicUrl 
+    initialImageUrl.value = publicUrl
   } catch (apiError) {
-    console.error('API Upload Error:', apiError)
     error.value = `Lỗi upload: ${apiError.message}`
   } finally {
     isLoading.value = false

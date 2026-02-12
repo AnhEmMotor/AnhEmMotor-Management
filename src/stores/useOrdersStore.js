@@ -70,5 +70,7 @@ export const useOrdersStore = defineStore('orders', {
         this.isLoading = false
       }
     },
+
+    async reloadOrderData() {},
   },
 })

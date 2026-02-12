@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watch, onBeforeUnmount, reactive } from 'vue'
-import BaseTextarea from '@/components/ui/input/BaseTextarea.vue'
+import Textarea from '@/components/ui/input/BaseTextarea.vue'
 import RoundBadge from '../ui/RoundBadge.vue'
 import * as apiSuppliers from '@/api/supplier'
 import * as apiProducts from '@/api/product'
@@ -94,7 +94,6 @@ watch(
       try {
         supplierSearch.results = await apiSuppliers.searchActiveSuppliers(newVal)
       } catch (error) {
-        console.error(error)
         supplierSearch.results = []
       } finally {
         supplierSearch.isLoading = false
@@ -120,7 +119,6 @@ watch(
       try {
         productSearch.results = await apiProducts.searchProductsFlatType(newVal)
       } catch (error) {
-        console.error(error)
         productSearch.results = []
       } finally {
         productSearch.isLoading = false
@@ -147,21 +145,17 @@ const addNewProduct = () => {
 }
 
 const selectProduct = (product) => {
-  try {
-    const newProduct = {
-      id: Date.now() + Math.random(),
-      code: product.id,
-      name: product.name,
-      quantity: 1,
-      unitPrice: product.price || 0,
-      total: product.price || 0,
-    }
-    localData.value.products.push(newProduct)
-    productSearch.term = ''
-    productSearch.showDropdown = false
-  } catch (error) {
-    console.error('Error selecting product:', error)
+  const newProduct = {
+    id: Date.now() + Math.random(),
+    code: product.id,
+    name: product.name,
+    quantity: 1,
+    unitPrice: product.price || 0,
+    total: product.price || 0,
   }
+  localData.value.products.push(newProduct)
+  productSearch.term = ''
+  productSearch.showDropdown = false
 }
 
 const updateDropdownPosition = () => {
@@ -490,7 +484,7 @@ onBeforeUnmount(() => {
       </div>
 
       <div class="flex justify-between items-center mb-5">
-        <BaseTextarea v-model="localData.notes" label="Ghi chú" placeholder="Ghi chú" :rows="4" />
+        <Textarea v-model="localData.notes" label="Ghi chú" placeholder="Ghi chú" :rows="4" />
       </div>
     </div>
   </div>
