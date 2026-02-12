@@ -349,46 +349,89 @@
 
       <div class="mt-auto w-full p-4 border-t border-gray-100 bg-gray-50/50">
         <LoadingOverlay :show="loading" message="Đang đăng xuất..." />
-        <div class="flex items-center gap-3 w-full rounded-xl p-2">
+        <div class="relative" @mouseleave="isUserMenuOpen = false">
+          <!-- Dropdown Menu -->
           <div
-            class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold shrink-0"
+            v-show="isUserMenuOpen"
+            class="user-menu absolute bottom-full left-0 w-full mb-2 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50 after:content-[''] after:absolute after:left-0 after:bottom-[-8px] after:w-full after:h-2 after:bg-transparent"
           >
-            {{ authStore.user?.fullName?.charAt(0) || 'A' }}
-          </div>
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-gray-900 truncate">
-              {{ authStore.user?.fullName || 'Admin User' }}
-            </p>
-            <p class="text-xs text-gray-500 truncate">
-              {{ authStore.user?.role || 'Administrator' }}
-            </p>
+            <RouterLink
+              to="/profile?tab=profile"
+              class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              Hồ sơ cá nhân
+            </RouterLink>
+            <RouterLink
+              to="/profile?tab=password"
+              class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              Đổi mật khẩu
+            </RouterLink>
           </div>
 
-          <button
-            @click="handleLogout"
-            class="p-2 text-gray-400 hover:text-red-600 hover:bg-white rounded-lg transition-all duration-200 shrink-0"
-            title="Đăng xuất"
+          <div 
+            class="flex items-center gap-3 w-full rounded-xl p-2 cursor-pointer hover:bg-white transition-colors border border-transparent hover:border-gray-100"
+            @mouseenter="isUserMenuOpen = true"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+            <div
+              class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold shrink-0"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-              />
-            </svg>
-          </button>
+              {{ authStore.user?.fullName?.charAt(0) || 'A' }}
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium text-gray-900 truncate">
+                {{ authStore.user?.fullName || 'Admin User' }}
+              </p>
+              <p class="text-xs text-gray-500 truncate">
+                {{ authStore.user?.role || 'Administrator' }}
+              </p>
+            </div>
+
+            <button
+              @click.stop="handleLogout"
+              class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 shrink-0 z-10"
+              title="Đăng xuất"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.user-menu::after {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    width: 100%;
+    height: 8px;
+    background-color: transparent;
+}
+</style>
 
 <script setup lang="js">
 import { ref, watch, onMounted, onUnmounted, computed } from 'vue'
@@ -410,6 +453,7 @@ const router = useRouter()
 const authStore = useAuthStore()
 const loading = ref(false)
 const isMobileMenuOpen = ref(false)
+const isUserMenuOpen = ref(false)
 
 const handleLogout = async () => {
   loading.value = true

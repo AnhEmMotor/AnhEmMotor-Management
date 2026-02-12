@@ -176,8 +176,10 @@ const fetchData = async () => {
   try {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000))
-    // Simulate Error
-    // Remove this line to test success case
+    /*
+     * Simulate Error
+     * Remove this line to test success case
+     */
     throw new Error('Lỗi kết nối CSDL')
     
     // displayCustomers.value = allCustomers.value

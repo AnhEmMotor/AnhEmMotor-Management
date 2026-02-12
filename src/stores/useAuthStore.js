@@ -59,8 +59,10 @@ export const useAuthStore = defineStore('auth', () => {
     },
   )
 
-  // fetchUser đã được loại bỏ để dùng SSE hoàn toàn
-  // Chỉ giữ lại để dùng nếu cần re-fetch thủ công (nhưng SSE đã lo việc này)
+  /*
+   * fetchUser đã được loại bỏ để dùng SSE hoàn toàn
+   * Chỉ giữ lại để dùng nếu cần re-fetch thủ công (nhưng SSE đã lo việc này)
+   */
   const fetchUser = async () => {
     // Deprecated: Logic đã chuyển sang connectSSE
     return user.value
@@ -118,10 +120,12 @@ export const useAuthStore = defineStore('auth', () => {
       
       sseStatus.value = 'connecting'
       
-      // Timeout thông minh:
-      // 1. Chờ 2s để xem SSE có data không.
-      // 2. Nếu sau 2s chưa có data -> Reject (để catch block bên ngoài gọi API fallback).
-      // 3. Không close connection, vẫn để nó chạy ngầm để nhận update sau này.
+      /*
+       * Timeout thông minh:
+       * 1. Chờ 2s để xem SSE có data không.
+       * 2. Nếu sau 2s chưa có data -> Reject (để catch block bên ngoài gọi API fallback).
+       * 3. Không close connection, vẫn để nó chạy ngầm để nhận update sau này.
+       */
       const connectionTimeout = setTimeout(() => {
         if (!user.value) {
           // Không closeSSE() ở đây để cho nó retry ngầm
@@ -239,8 +243,10 @@ export const useAuthStore = defineStore('auth', () => {
   const initAuth = async () => {
     if (isInitialized.value) return
 
-    // Tối ưu: Nếu không có flag isLoggedIn trong localStorage, coi như chưa đăng nhập
-    // Không cần gọi API để tránh lỗi 401/400 không cần thiết
+    /*
+     * Tối ưu: Nếu không có flag isLoggedIn trong localStorage, coi như chưa đăng nhập
+     * Không cần gọi API để tránh lỗi 401/400 không cần thiết
+     */
     if (!localStorage.getItem('isLoggedIn')) {
       isInitialized.value = true
       return

@@ -15,6 +15,7 @@ const UserManager = () => import('@/views/UserManager.vue')
 const RolePermissionManager = () => import('@/views/RolePermissionManager.vue')
 const PriceManagement = () => import('@/views/PriceManagement.vue')
 const SettingsView = () => import('@/views/SettingsView.vue')
+const UserProfile = () => import('@/views/UserProfile.vue')
 const NotFoundView = () => import('@/views/NotFoundView.vue')
 
 const router = createRouter({
@@ -107,6 +108,12 @@ const router = createRouter({
           name: 'settings',
           path: 'settings',
           component: SettingsView,
+          meta: { requiresAuth: true },
+        },
+        {
+          name: 'user-profile',
+          path: 'profile',
+          component: UserProfile,
           meta: { requiresAuth: true },
         },
       ],
