@@ -4,7 +4,8 @@
     :class="cardBgColor"
   >
     <p class="text-sm font-medium" :class="titleColor">{{ title }}</p>
-    <p class="text-3xl font-bold mt-1" :class="statColor">{{ stat }}</p>
+    <p class="font-bold mt-1" :class="[statColor, mode === 'detail' ? 'text-base truncate' : 'text-3xl']">{{ stat }}</p>
+    <p v-if="subtitle" class="mt-1" :class="[titleColor, mode === 'detail' ? 'text-sm' : 'text-xs']">{{ subtitle }}</p>
     <p
       v-if="improvement != null"
       class="text-xs mt-2 flex items-center"
@@ -26,6 +27,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  subtitle: {
+    type: String,
+    default: '',
+  },
   improvement: {
     type: Number,
     required: false,
@@ -33,6 +38,11 @@ const props = defineProps({
   color: {
     type: String,
     default: 'purple',
+  },
+  mode: {
+    type: String,
+    default: 'stat',
+    validator: (v) => ['stat', 'detail'].includes(v),
   },
 })
 const colorStyles = {
