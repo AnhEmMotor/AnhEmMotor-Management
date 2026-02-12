@@ -20,9 +20,11 @@ export const fetchSuppliers = async ({ page, limit, search, status }) => {
     if (statusArray.length === 1 && statusArray[0]) {
        filters.push(`StatusId==${statusArray[0]}`);
     } 
-    // Optimization: If multiple statuses are selected (e.g. both 'active' and 'inactive'),
-    // we assume the user wants ALL statuses. Adding a complex OR filter like (A|B)
-    // seems to break pagination on the backend, so we skip filtering in this case.
+    /*
+     * Optimization: If multiple statuses are selected (e.g. both 'active' and 'inactive'),
+     * we assume the user wants ALL statuses. Adding a complex OR filter like (A|B)
+     * seems to break pagination on the backend, so we skip filtering in this case.
+     */
   }
   
   if (filters.length > 0) {

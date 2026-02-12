@@ -1,6 +1,6 @@
 <script setup>
 import RoundBadge from '@/components/ui/RoundBadge.vue'
-import Pagination from '../ui/button/Pagination.vue'
+import Pagination from '../ui/button/BasePagination.vue'
 import SkeletonLoader from '../ui/SkeletonLoader.vue'
 import { computed, ref } from 'vue'
 import { formatDateTime, formatDate } from '@/composables/useDate'
@@ -20,7 +20,7 @@ const inputsStore = useInputsStore()
 const suppliersStore = useSuppliersStore()
 
 // Fetch latest supplier details when opened
-const { data: detailData, isLoading: detailLoading } = useQuery({
+const { data: detailData } = useQuery({
   queryKey: computed(() => ['suppliers', props.itemData.id]),
   queryFn: () => suppliersStore.getSupplierById(props.itemData.id),
 })

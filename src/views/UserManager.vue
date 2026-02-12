@@ -42,19 +42,22 @@
           </tr>
         </thead>
         <tbody class="text-gray-600 text-sm font-light">
-          <tr v-if="isLoading" v-for="i in 5" :key="`skeleton-${i}`" class="border-b border-gray-100">
-             <td class="py-3 px-6 text-left"><SkeletonLoader width="80%" height="16px" /></td>
-             <td class="py-3 px-6 text-left"><SkeletonLoader width="90%" height="16px" /></td>
-             <td class="py-3 px-6 text-left"><SkeletonLoader width="80%" height="16px" /></td>
-             <td class="py-3 px-6 text-left"><SkeletonLoader width="70%" height="24px" class="rounded-full" /></td>
-             <td class="py-3 px-6 text-left"><SkeletonLoader width="60%" height="24px" class="rounded-full" /></td>
-             <td class="py-3 px-6 text-center">
+          <template v-if="isLoading">
+            <tr v-for="i in 5" :key="`skeleton-${i}`" class="border-b border-gray-100">
+              <td class="py-3 px-6 text-left"><SkeletonLoader width="80%" height="16px" /></td>
+              <td class="py-3 px-6 text-left"><SkeletonLoader width="90%" height="16px" /></td>
+              <td class="py-3 px-6 text-left"><SkeletonLoader width="80%" height="16px" /></td>
+              <td class="py-3 px-6 text-left"><SkeletonLoader width="70%" height="24px" class="rounded-full" /></td>
+              <td class="py-3 px-6 text-left"><SkeletonLoader width="60%" height="24px" class="rounded-full" /></td>
+              <td class="py-3 px-6 text-center">
                 <div class="flex justify-center gap-2">
-                   <SkeletonLoader width="30px" height="20px" class="rounded" />
-                   <SkeletonLoader width="30px" height="20px" class="rounded" />
+                  <SkeletonLoader width="30px" height="20px" class="rounded" />
+                  <SkeletonLoader width="30px" height="20px" class="rounded" />
                 </div>
-             </td>
-          </tr>
+              </td>
+            </tr>
+          </template>
+
           <tr v-else-if="isError">
             <td colspan="6">
               <div class="text-center py-12 text-red-500 font-medium">
@@ -67,7 +70,7 @@
               Không tìm thấy nhân viên nào.
             </td>
           </tr>
-          <tr v-for="customer in displayCustomers" :key="customer.id" class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+          <tr v-else v-for="customer in displayCustomers" :key="customer.id" class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
             <td class="py-3 px-6 text-left">{{ customer.name }}</td>
             <td class="py-3 px-6 text-left">{{ customer.email }}</td>
             <td class="py-3 px-6 text-left">{{ customer.phone }}</td>
@@ -84,9 +87,7 @@
               </div>
             </td>
             <td class="py-3 px-6 text-left">
-              <RoundBadge color="gray">{{
-                statusText[customer.status]
-              }}</RoundBadge>
+              <RoundBadge color="gray">{{ statusText[customer.status] }}</RoundBadge>
             </td>
             <td class="py-3 px-6">
               <div class="flex justify-center gap-2">
@@ -157,12 +158,6 @@ const isEditMode = ref(false)
 const modalZIndex = ref(100)
 const activeModalId = ref(null)
 
-const statusColors = {
-  active: 'green',
-  new: 'yellow',
-  inactive: 'red',
-}
-
 const statusText = {
   active: 'Hoạt Động',
   new: 'Mới',
@@ -183,7 +178,7 @@ const fetchData = async () => {
     throw new Error('Lỗi kết nối CSDL')
     
     // displayCustomers.value = allCustomers.value
-  } catch (err) {
+  } catch {
     isError.value = true
     errorMessage.value = 'Đã xảy ra lỗi trong quá trình tải dữ liệu.'
     toast.error('Đã xảy ra lỗi trong quá trình tải dữ liệu.')
@@ -263,7 +258,7 @@ const handleExport = () => {
   toast.info('Chức năng xuất Excel đang phát triển')
 }
 
-const handleImport = (event) => {
+const handleImport = () => {
   toast.info('Chức năng nhập Excel đang phát triển')
 }
 </script>

@@ -264,15 +264,13 @@ import { useRoute, useRouter } from 'vue-router'
 import { useQueryClient } from '@tanstack/vue-query'
 import { debounce } from '@/utils/debounceThrottle'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
-import { getProducts } from '@/api/product'
 import ProductForm from '@/components/product/ProductForm.vue'
 import Button from '@/components/ui/button/Button.vue'
-import Input from '@/components/ui/input/Input.vue'
+import Input from '@/components/ui/input/BaseInput.vue'
 import Pagination from '@/components/ui/button/Pagination.vue'
 import SmallNoBgButton from '@/components/ui/button/SmallNoBgButton.vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
-import Spinner from '@/components/ui/Spinner.vue'
 import IconLeftArrow from '@/components/icons/IconLeftArrow.vue'
 import IconDownArrow from '@/components/icons/IconDownArrow.vue'
 import IconPlus from '@/components/icons/IconPlus.vue'
@@ -396,7 +394,7 @@ const mockProducts = [
   }
 ]
 
-const fetchProductsFn = async (params) => {
+const fetchProductsFn = async () => {
   // Simulate delay for Skeleton testing
   await new Promise(resolve => setTimeout(resolve, 2000))
   // return getProducts(params)
@@ -418,7 +416,6 @@ const {
   isLoading,
   isError,
   error,
-  refetch,
 } = usePaginatedQuery({
   queryKeyBase: ref('products'),
   filters: filters,

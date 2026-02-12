@@ -3,12 +3,12 @@ import { ref, watch, computed, nextTick, onMounted } from 'vue'
 import { useProductCategoriesStore } from '@/stores/useProductCategoriesStore'
 import { useBrandsStore } from '@/stores/useBrandsStore'
 import { useOptionsStore } from '@/stores/useOptionsStore'
-import Input from '@/components/ui/input/Input.vue'
-import Textarea from '@/components/ui/input/Textarea.vue'
-import Dropdown from '@/components/ui/input/Dropdown.vue'
+import Input from '@/components/ui/input/BaseInput.vue'
+import Textarea from '@/components/ui/input/BaseTextarea.vue'
+import Dropdown from '@/components/ui/input/BaseDropdown.vue'
 import Button from '@/components/ui/button/Button.vue'
 import SmallNoBgButton from '@/components/ui/button/SmallNoBgButton.vue'
-import Image from '@/components/ui/input/Image.vue'
+import Image from '@/components/ui/input/BaseImage.vue'
 import GroupImage from '@/components/ui/input/GroupImage.vue'
 import LoadingOverlay from '../ui/LoadingOverlay.vue'
 import IconTrash from '@/components/icons/IconTrash.vue'
@@ -243,17 +243,17 @@ watch(
             price: null,
             cover_image_url: generalCoverImage.value,
             photo_collection: [...generalPhotoCollection.value],
-          } 
+          }
 
       firstVariant.optionValues = {}
-      firstVariant.url = slugify(localProduct.value.name) 
+      firstVariant.url = slugify(localProduct.value.name)
 
       localProduct.value.variants = [firstVariant]
     } else {
       const currentOptionNames = newOptions.map((o) => o.name)
       localProduct.value.variants.forEach((variant) => {
         if (!variant.optionValues || typeof variant.optionValues !== 'object') {
-          variant.optionValues = {}   
+          variant.optionValues = {}
         }
 
         const existingValueKeys = Object.keys(variant.optionValues)
@@ -394,7 +394,12 @@ const applyGeneralPhotoCollection = () => {
           />
         </div>
         <div class="flex space-x-2 mt-4">
-          <Button text="Áp dụng Ảnh Bìa Chung" color="gray" @click="applyGeneralCoverImage" :icon="IconCheck" />
+          <Button
+            text="Áp dụng Ảnh Bìa Chung"
+            color="gray"
+            @click="applyGeneralCoverImage"
+            :icon="IconCheck"
+          />
           <Button
             text="Áp dụng Bộ Sưu Tập Chung"
             color="gray"
@@ -536,12 +541,23 @@ const applyGeneralPhotoCollection = () => {
               placeholder="Cách nhau bằng dấu phẩy (ví dụ: Đỏ, Xanh)"
               class="flex-1"
             />
-            <SmallNoBgButton color="red" @click="removeOption(index)" class="mt-6 sm:mt-7" :icon="IconTrash">
+            <SmallNoBgButton
+              color="red"
+              @click="removeOption(index)"
+              class="mt-6 sm:mt-7"
+              :icon="IconTrash"
+            >
               Xóa
             </SmallNoBgButton>
           </div>
         </div>
-        <Button text="Thêm thuộc tính" color="gray" @click="addOption" class="mt-4" :icon="IconPlus" />
+        <Button
+          text="Thêm thuộc tính"
+          color="gray"
+          @click="addOption"
+          class="mt-4"
+          :icon="IconPlus"
+        />
       </fieldset>
 
       <fieldset class="border rounded-md p-4">
@@ -669,7 +685,13 @@ const applyGeneralPhotoCollection = () => {
               </div>
             </div>
           </div>
-          <Button text="Thêm biến thể" color="blue" @click="addVariant" class="mt-4" :icon="IconPlus" />
+          <Button
+            text="Thêm biến thể"
+            color="blue"
+            @click="addVariant"
+            class="mt-4"
+            :icon="IconPlus"
+          />
           <div v-if="localProduct.variants.length === 0" class="text-center py-4 text-gray-500">
             Nhấn "Thêm biến thể" để tạo tổ hợp thuộc tính đầu tiên.
           </div>

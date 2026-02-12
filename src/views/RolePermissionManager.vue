@@ -178,7 +178,7 @@ const fetchData = async () => {
     throw new Error('Lỗi tải dữ liệu vai trò')
 
     // filteredRoles.value = [...roles.value]
-  } catch (err) {
+  } catch {
     isError.value = true
     errorMessage.value = 'Đã xảy ra lỗi trong quá trình tải dữ liệu vai trò.'
     toast.error('Đã xảy ra lỗi trong quá trình tải dữ liệu vai trò.')

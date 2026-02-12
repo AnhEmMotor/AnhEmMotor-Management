@@ -79,7 +79,7 @@ export const useAuthStore = defineStore('auth', () => {
     // Đợi tối đa 2s cho SSE, nếu không có data -> Fallback gọi API
     try {
       await connectSSE()
-    } catch (e) {
+    } catch {
       if (!user.value) {
         // Fallback: Nếu SSE timeout/error mà chưa có user -> Gọi API thường
         const { data } = await axiosInstance.get('/api/v1/user/me', { skipRedirect: true })
@@ -96,7 +96,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       closeSSE()
       await axiosInstance.post('/api/v1/auth/logout')
-    } catch (e) {
+    } catch {
       // Ignore logout error
     } finally {
       resetState()
@@ -257,7 +257,7 @@ export const useAuthStore = defineStore('auth', () => {
       try {
         const { data } = await axiosInstance.post('/api/v1/auth/refresh-token')
         setAccessToken(data.accessToken)
-      } catch (error) {
+      } catch {
         // Refresh thất bại -> Session hết hạn -> Logout
         localStorage.removeItem('isLoggedIn')
         isInitialized.value = true
@@ -268,13 +268,13 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       // Thay thế fetchUser bằng connectSSE
       await connectSSE()
-    } catch (error) {
+    } catch {
       // Fallback: Nếu SSE fail, thử gọi API thường
       if (!user.value) {
          try {
             const { data } = await axiosInstance.get('/api/v1/user/me', { skipRedirect: true })
             user.value = data
-         } catch (apiError) {
+         } catch {
             localStorage.removeItem('isLoggedIn')
          }
       }

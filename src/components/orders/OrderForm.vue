@@ -3,9 +3,9 @@ import { ref, computed, watch, onBeforeUnmount } from 'vue'
 import { useOrdersStore } from '@/stores/useOrdersStore'
 import { debounce } from '@/utils/debounceThrottle'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
-import Dropdown from '@/components/ui/input/Dropdown.vue'
-import Input from '@/components/ui/input/Input.vue'
-import Textarea from '../ui/input/Textarea.vue'
+import Dropdown from '@/components/ui/input/BaseDropdown.vue'
+import Input from '@/components/ui/input/BaseInput.vue'
+import Textarea from '../ui/input/BaseTextarea.vue'
 import Button from '@/components/ui/button/Button.vue'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 
@@ -24,12 +24,12 @@ const localData = ref({
 })
 
 const STATUS_LIST = [
-  { key: 'pending', text: 'Chờ xác nhận' }, 
+  { key: 'pending', text: 'Chờ xác nhận' },
   { key: 'completed', text: 'Đã hoàn thành' },
-  { key: 'canceled', text: 'Đã hủy' }, 
+  { key: 'canceled', text: 'Đã hủy' },
   { key: 'refunding', text: 'Đang hoàn tiền' },
   { key: 'refunded', text: 'Đã hoàn tiền' },
-  { key: 'confirmed_cod', text: 'Đã xác nhận (Chờ thanh toán COD)' }, 
+  { key: 'confirmed_cod', text: 'Đã xác nhận (Chờ thanh toán COD)' },
   { key: 'paid_processing', text: 'Đã thanh toán (Chờ xử lý)' },
   { key: 'waiting_deposit', text: 'Chờ đặt cọc' },
   { key: 'deposit_paid', text: 'Đã đặt cọc (Chờ xử lý)' },
@@ -188,7 +188,7 @@ watch(
         }))
         localData.value.notes = props.order.notes || ''
         localStatus.value = props.order.status_id || 'pending'
-        
+
         // Simulate loading for Skeleton
         isLoading.value = true
         setTimeout(() => {
@@ -404,9 +404,7 @@ onBeforeUnmount(() => {
         </div>
 
         <div class="product-table-section border border-gray-300 rounded-md">
-          <table
-            class="w-full text-sm bg-white border-collapse"
-          >
+          <table class="w-full text-sm bg-white border-collapse">
             <thead class="bg-gray-50">
               <tr>
                 <th
@@ -441,14 +439,22 @@ onBeforeUnmount(() => {
             </thead>
             <tbody>
               <template v-if="isLoading">
-                 <tr v-for="i in 3" :key="i" class="border-b border-[rgba(0,0,0,0.04)]">
-                    <td class="py-2 px-3"><SkeletonLoader width="20px" height="16px" /></td>
-                    <td class="py-2 px-3"><SkeletonLoader width="150px" height="16px" /></td>
-                    <td class="py-2 px-3"><SkeletonLoader width="40px" height="24px" class="mx-auto" /></td>
-                    <td class="py-2 px-3 text-right"><SkeletonLoader width="80px" height="24px" class="ml-auto" /></td>
-                    <td class="py-2 px-3 text-right"><SkeletonLoader width="80px" height="16px" class="ml-auto" /></td>
-                    <td class="py-2 px-3 text-center"><SkeletonLoader width="20px" height="20px" class="mx-auto rounded" /></td>
-                 </tr>
+                <tr v-for="i in 3" :key="i" class="border-b border-[rgba(0,0,0,0.04)]">
+                  <td class="py-2 px-3"><SkeletonLoader width="20px" height="16px" /></td>
+                  <td class="py-2 px-3"><SkeletonLoader width="150px" height="16px" /></td>
+                  <td class="py-2 px-3">
+                    <SkeletonLoader width="40px" height="24px" class="mx-auto" />
+                  </td>
+                  <td class="py-2 px-3 text-right">
+                    <SkeletonLoader width="80px" height="24px" class="ml-auto" />
+                  </td>
+                  <td class="py-2 px-3 text-right">
+                    <SkeletonLoader width="80px" height="16px" class="ml-auto" />
+                  </td>
+                  <td class="py-2 px-3 text-center">
+                    <SkeletonLoader width="20px" height="20px" class="mx-auto rounded" />
+                  </td>
+                </tr>
               </template>
               <tr v-else-if="localData.products.length === 0">
                 <td
@@ -484,7 +490,12 @@ onBeforeUnmount(() => {
                 <td class="py-2 pl-3 text-right border-b border-[rgba(0,0,0,0.04)]">
                   <Input
                     :modelValue="formatCurrency(p.unitPrice)"
-                    @update:modelValue="(val) => { p.unitPrice = parseCurrency(val); calculateProductTotal(p) }"
+                    @update:modelValue="
+                      (val) => {
+                        p.unitPrice = parseCurrency(val)
+                        calculateProductTotal(p)
+                      }
+                    "
                     type="text"
                     :disabled="isLocked"
                     :inputClass="'text-right bg-transparent py-1 px-2'"

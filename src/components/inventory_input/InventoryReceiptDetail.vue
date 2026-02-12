@@ -3,7 +3,7 @@ import { ref, watch, toRefs } from 'vue'
 import IconTrash from '../icons/IconTrash.vue'
 import IconDuplicate from '../icons/IconDuplicate.vue'
 import IconExpand from '../icons/IconExpand.vue'
-import Textarea from '../ui/input/Textarea.vue'
+import Textarea from '../ui/input/BaseTextarea.vue'
 
 const props = defineProps({
   itemData: Object,

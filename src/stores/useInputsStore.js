@@ -70,6 +70,7 @@ export const useInputsStore = defineStore('inputs', {
 
     async fetchInputsBySupplier(supplierId, { page, limit, statusFilters, search }) {
       // Placeholder as requested by user
+      console.log(supplierId, page, limit, statusFilters, search)
       return { inputs: [], count: 0 }
     },
   },

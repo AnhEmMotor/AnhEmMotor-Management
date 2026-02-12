@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watch, onBeforeUnmount, reactive } from 'vue'
-import Textarea from '@/components/ui/input/Textarea.vue'
+import Textarea from '@/components/ui/input/BaseTextarea.vue'
 import RoundBadge from '../ui/RoundBadge.vue'
 import * as apiSuppliers from '@/api/supplier'
 import * as apiProducts from '@/api/product'

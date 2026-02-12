@@ -62,11 +62,13 @@ export function usePaginatedQuery({
   const queryParams = computed(() => {
     // If syncing to URL, derive params from URL to ensure atomic update (Page 1 + New Filters)
     if (queryOptions.syncFiltersToUrl) {
-      const { page, limit, ...otherParams } = route.query
+      const { page: _page, _limit, ...otherParams } = route.query
       
-      // We need to ensure we capture all potential filters from URL
-      // But we also need to respect potentially complex objects in otherParams?
-      // Sieve params are usually strings/arrays.
+      /*
+       * We need to ensure we capture all potential filters from URL
+       * But we also need to respect potentially complex objects in otherParams?
+       * Sieve params are usually strings/arrays.
+       */
       
       // Should we merge validFilters keys? No, validFilters triggered change. URL is source of truth.
       
@@ -124,7 +126,7 @@ export function usePaginatedQuery({
 
   watch(
     [data, currentPage, totalPages, queryParams, validFilters, isPotentiallyInvalid],
-    ([newData, page, total, params, filters, invalid]) => {
+    ([newData, page, total, params, invalid]) => {
       if (newData && !invalid) {
         if (page < total) {
           const nextPageParams = { ...params, page: page + 1 }
@@ -150,11 +152,12 @@ export function usePaginatedQuery({
     currentPage.value = target
   }
 
-  /* Existing watcher for Page 1 reset is redundant if we use syncFiltersToUrl because URL update triggers page reset naturally?
-     No. If we update URL page=1, that triggers page reset.
-     But if syncFiltersToUrl is FALSE, we still need the existing watcher.
-     So we should make the existing watcher conditional or smarter.
-  */
+  /*
+   * Existing watcher for Page 1 reset is redundant if we use syncFiltersToUrl because URL update triggers page reset naturally?
+   * No. If we update URL page=1, that triggers page reset.
+   * But if syncFiltersToUrl is FALSE, we still need the existing watcher.
+   * So we should make the existing watcher conditional or smarter.
+   */
 
   // Optimize: Sync filters to URL (if enabled)
   if (queryOptions.syncFiltersToUrl) {

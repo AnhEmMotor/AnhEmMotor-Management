@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch } from 'vue'
-import Input from '@/components/ui/input/Input.vue'
-import Textarea from '@/components/ui/input/Textarea.vue'
+import Input from '@/components/ui/input/BaseInput.vue'
+import Textarea from '@/components/ui/input/BaseTextarea.vue'
 
 const props = defineProps({
   modelValue: {
@@ -92,7 +92,7 @@ watch(
             v-model="localSupplier.taxIdentificationNumber"
             placeholder="Nhập mã số thuế"
           />
-           <div v-if="errors && errors.taxIdentificationNumber" class="text-red-500 text-xs mt-1">
+          <div v-if="errors && errors.taxIdentificationNumber" class="text-red-500 text-xs mt-1">
             {{ errors.taxIdentificationNumber }}
           </div>
         </div>

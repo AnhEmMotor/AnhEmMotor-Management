@@ -71,7 +71,7 @@ export const useOrdersStore = defineStore('orders', {
       }
     },
 
-    async reloadOrderData(orderId) {
+    async reloadOrderData() {
       // TODO: Implement reload logic for a single order
     },
   },

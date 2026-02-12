@@ -434,7 +434,7 @@
 </style>
 
 <script setup lang="js">
-import { ref, watch, onMounted, onUnmounted, computed } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import IconHome from '@/components/icons/IconHome.vue'
 import IconReport from '@/components/icons/IconReport.vue'
 import IconProduct from '@/components/icons/IconProduct.vue'

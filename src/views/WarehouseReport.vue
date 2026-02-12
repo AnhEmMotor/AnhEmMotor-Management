@@ -9,7 +9,6 @@ import DonutChart from '@/components/charts/DonutChart.vue'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 import IconPlus from '@/components/icons/IconPlus.vue'
 import IconFileExport from '@/components/icons/IconFileExport.vue'
-import IconEdit from '@/components/icons/IconEdit.vue'
 import IconExpand from '@/components/icons/IconExpand.vue'
 
 const isLoading = ref(true)

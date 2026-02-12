@@ -1,10 +1,10 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
-import Input from '@/components/ui/input/Input.vue'
-import Textarea from '@/components/ui/input/Textarea.vue'
+import Input from '@/components/ui/input/BaseInput.vue'
+import Textarea from '@/components/ui/input/BaseTextarea.vue'
 import Button from '@/components/ui/button/Button.vue'
-import Dropdown from '../ui/input/Dropdown.vue'
+import Dropdown from '../ui/input/BaseDropdown.vue'
 
 const props = defineProps({
   show: {
@@ -166,12 +166,7 @@ const handleClose = () => {
 </script>
 
 <template>
-  <DraggableModal
-    :zIndex="zIndex"
-    width="800px"
-    @close="handleClose"
-    @activate="emit('activate')"
-  >
+  <DraggableModal :zIndex="zIndex" width="800px" @close="handleClose" @activate="emit('activate')">
     <template #header>
       <h3 class="text-lg font-semibold text-gray-800">
         {{ isEditMode ? 'Chỉnh sửa vai trò' : 'Thêm vai trò mới' }}
@@ -297,11 +292,7 @@ const handleClose = () => {
 
     <template #footer>
       <Button text="Hủy" color="gray" @click="handleClose" />
-      <Button
-        :text="isEditMode ? 'Cập nhật' : 'Thêm mới'"
-        color="primary"
-        @click="handleSave"
-      />
+      <Button :text="isEditMode ? 'Cập nhật' : 'Thêm mới'" color="primary" @click="handleSave" />
     </template>
   </DraggableModal>
 </template>

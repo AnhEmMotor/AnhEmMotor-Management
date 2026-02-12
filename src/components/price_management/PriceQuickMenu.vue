@@ -115,8 +115,7 @@ watch(mode, () => {
 function parseNumber(v) {
   if (v === null || v === undefined || v === '') return null
   if (typeof v === 'number') return v
-  // Remove dots, commas, plus signs
-  const s = String(v).replace(/[\.,\+]/g, '')
+  const s = String(v).replace(/[.,+]/g, '')
   const n = Number(s)
   return Number.isFinite(n) ? n : null
 }

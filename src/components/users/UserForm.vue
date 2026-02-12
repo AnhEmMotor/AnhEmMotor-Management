@@ -1,8 +1,8 @@
 <script setup>
 import { ref, watch } from 'vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
-import Input from '@/components/ui/input/Input.vue'
-import Dropdown from '@/components/ui/input/Dropdown.vue'
+import Input from '@/components/ui/input/BaseInput.vue'
+import Dropdown from '@/components/ui/input/BaseDropdown.vue'
 import Button from '@/components/ui/button/Button.vue'
 import { useToast } from 'vue-toastification'
 
@@ -228,11 +228,7 @@ const handleRefresh = () => {
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Tên khách hàng <span class="text-red-500">*</span>
           </label>
-          <Input
-            v-model="formData.name"
-            placeholder="Nhập tên khách hàng"
-            :error="errors.name"
-          />
+          <Input v-model="formData.name" placeholder="Nhập tên khách hàng" :error="errors.name" />
           <p v-if="errors.name" class="mt-1 text-sm text-red-500">{{ errors.name }}</p>
         </div>
 
@@ -261,11 +257,7 @@ const handleRefresh = () => {
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Địa chỉ <span class="text-red-500">*</span>
           </label>
-          <Input
-            v-model="formData.address"
-            placeholder="Nhập địa chỉ"
-            :error="errors.address"
-          />
+          <Input v-model="formData.address" placeholder="Nhập địa chỉ" :error="errors.address" />
           <p v-if="errors.address" class="mt-1 text-sm text-red-500">{{ errors.address }}</p>
         </div>
 
@@ -316,11 +308,7 @@ const handleRefresh = () => {
 
     <template #footer>
       <Button text="Hủy" color="gray" @click="handleClose" />
-      <Button
-        :text="isEditMode ? 'Cập nhật' : 'Thêm mới'"
-        color="primary"
-        @click="handleSave"
-      />
+      <Button :text="isEditMode ? 'Cập nhật' : 'Thêm mới'" color="primary" @click="handleSave" />
     </template>
   </DraggableModal>
 </template>

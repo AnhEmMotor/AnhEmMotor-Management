@@ -5,7 +5,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import PriceQuickMenu from '@/components/price_management/PriceQuickMenu.vue'
-import Input from '@/components/ui/input/Input.vue'
+import Input from '@/components/ui/input/BaseInput.vue'
 import Button from '@/components/ui/button/Button.vue'
 import Pagination from '@/components/ui/button/Pagination.vue'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
@@ -245,19 +245,9 @@ function getRecentInputPriceDisplay(variant) {
 function parseNumber(v) {
   if (v === null || v === undefined || v === '') return null
   if (typeof v === 'number') return v
-  const s = String(v).replace(/[\.,\+]/g, '')
+  const s = String(v).replace(/[.,+]/g, '')
   const n = Number(s)
   return Number.isFinite(n) ? n : null
-}
-
-function computePercent(variant) {
-  const current = parseNumber(variant.price)
-  if (current === null) return null
-
-  const recent = parseNumber(variant.latest_input_price)
-  if (recent === null || recent === 0) return null
-
-  return ((current - recent) / recent) * 100
 }
 
 function computeProfitAmount(variant) {
