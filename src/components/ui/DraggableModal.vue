@@ -4,6 +4,7 @@ import IconMaximize from '@/components/icons/IconMaximize.vue'
 import IconMinimize from '@/components/icons/IconMinimize.vue'
 import IconClose from '@/components/icons/IconClose.vue'
 import IconRefresh from '@/components/icons/IconRefresh.vue'
+import LoadingOverlay from './LoadingOverlay.vue'
 
 const props = defineProps({
   initialPosition: {
@@ -23,6 +24,10 @@ const props = defineProps({
     default: '500px',
   },
   disabled: {
+    type: Boolean,
+    default: false,
+  },
+  isLoading: {
     type: Boolean,
     default: false,
   },
@@ -256,6 +261,7 @@ onBeforeUnmount(() => {
       </div>
 
       <div v-if="disabled" class="disabled-overlay"></div>
+      <LoadingOverlay :show="isLoading" />
     </div>
   </teleport>
 </template>

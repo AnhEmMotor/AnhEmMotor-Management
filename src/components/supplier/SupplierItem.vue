@@ -13,7 +13,7 @@ defineEmits(['toggle-detail', 'edit-supplier', 'delete-supplier', 'toggle-activa
   <div
     class="supplier-item bg-white"
     :class="{
-      'item-open z-10 relative shadow-md my-2 rounded-lg border border-gray-200': isOpen,
+      'item-open z-10 relative shadow-md border border-gray-200': isOpen,
       'hover:bg-gray-50 transition-colors': !isOpen,
     }"
   >
@@ -28,7 +28,7 @@ defineEmits(['toggle-detail', 'edit-supplier', 'delete-supplier', 'toggle-activa
         :item-data="itemData"
         @edit-supplier="$emit('edit-supplier', itemData)"
         @delete-supplier="$emit('delete-supplier', itemData)"
-        @toggle-activation="$emit('toggle-activation', itemData.id)"
+        @toggle-activation="$emit('toggle-activation', itemData)"
       />
     </div>
   </div>

@@ -67,5 +67,10 @@ export const useInputsStore = defineStore('inputs', {
         throw error
       }
     },
+
+    async fetchInputsBySupplier(supplierId, { page, limit, statusFilters, search }) {
+      // Placeholder as requested by user
+      return { inputs: [], count: 0 }
+    },
   },
 })

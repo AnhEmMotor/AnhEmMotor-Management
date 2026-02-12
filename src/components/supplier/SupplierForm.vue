@@ -86,6 +86,16 @@ watch(
             {{ errors.email }}
           </div>
         </div>
+        <div>
+          <Input
+            label="Mã số thuế"
+            v-model="localSupplier.taxIdentificationNumber"
+            placeholder="Nhập mã số thuế"
+          />
+           <div v-if="errors && errors.taxIdentificationNumber" class="text-red-500 text-xs mt-1">
+            {{ errors.taxIdentificationNumber }}
+          </div>
+        </div>
       </div>
       <div>
         <Input label="Địa chỉ" v-model="localSupplier.address" placeholder="Nhập địa chỉ" />

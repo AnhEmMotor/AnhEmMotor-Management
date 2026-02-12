@@ -34,13 +34,10 @@ const isActive = (status) => {
   return props.modelValue.includes(status)
 }
 const selectFilter = (status) => {
-  const newSelection = [...props.modelValue]
-  const index = newSelection.indexOf(status)
-  if (index > -1) {
-    newSelection.splice(index, 1)
+  if (props.modelValue.includes(status)) {
+    emit('update:modelValue', [])
   } else {
-    newSelection.push(status)
+    emit('update:modelValue', [status])
   }
-  emit('update:modelValue', newSelection)
 }
 </script>
