@@ -39,17 +39,17 @@ const inputsDataMapper = (data) => ({
 })
 
 const {
-  items: filteredItems,
+  data: filteredItems,
   _totalCount,
   totalPages,
   isLoading,
   isError,
   error,
 } = usePaginatedQuery({
-  queryKeyBase: ref('inventoryInputs'),
+  queryKey: ['inventoryInputs'],
   page: currentPage,
   itemsPerPage: itemsPerPage,
-  fetchFn: fetchInputsFn,
+  queryFn: fetchInputsFn,
   dataMapper: inputsDataMapper,
 })
 

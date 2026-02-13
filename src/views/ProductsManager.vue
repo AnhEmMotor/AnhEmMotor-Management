@@ -274,6 +274,7 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
+import * as productApi from '@/api/product'
 import { useProductsStore } from '@/stores/useProductsStore'
 import { useRoute, useRouter } from 'vue-router'
 import { useQueryClient } from '@tanstack/vue-query'
@@ -334,163 +335,38 @@ const filters = computed(() => ({
   statusIds: queryStatuses.value,
 }))
 
-const mockProducts = [
-  {
-    id: 1,
-    name: 'Honda Air Blade 160cc 2025',
-    category_id: 1,
-    category_name: 'Xe Máy',
-    brand_id: 1,
-    brand_name: 'Honda',
-    variant_count: 2,
-    inventory_status: 'in_stock',
-    cover_image_url:
-      'https://cdn.honda.com.vn/motorbike-versions/October2024/1JgXXyKgQ2y2Zp5p5p5p.png',
-    variants: [
-      {
-        id: 101,
-        price: 56000000,
-        optionValues: { 'Màu sắc': 'Xanh Xám', 'Phiên bản': 'Tiêu chuẩn' },
-        url: 'ab-160-xanh-xam',
-        cover_image_url:
-          'https://cdn.honda.com.vn/motorbike-versions/October2024/1JgXXyKgQ2y2Zp5p5p5p.png',
-      },
-      {
-        id: 102,
-        price: 60000000,
-        optionValues: { 'Màu sắc': 'Đỏ Xám', 'Phiên bản': 'Đặc biệt' },
-        url: 'ab-160-do-xam',
-        cover_image_url:
-          'https://cdn.honda.com.vn/motorbike-versions/October2024/1JgXXyKgQ2y2Zp5p5p5p.png',
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: 'Nhớt Motul 300V Factory Line',
-    category_id: 2,
-    category_name: 'Dầu Nhớt',
-    brand_id: 2,
-    brand_name: 'Motul',
-    variant_count: 1,
-    inventory_status: 'in_stock',
-    cover_image_url:
-      'https://shop2banh.vn/images/thumbs/2023/11/nhot-motul-300v-factory-line-10w40-1l-tem-3-lop-moi-nhat-2024-2195-slide-products-65543c7b3c7b3.jpg',
-    variants: [
-      {
-        id: 201,
-        price: 435000,
-        optionValues: { 'Dung tích': '1L' },
-        url: 'motul-300v-1l',
-        cover_image_url: '',
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: 'Lốp Michelin City Grip 2',
-    category_id: 3,
-    category_name: 'Phụ Tùng',
-    brand_id: 3,
-    brand_name: 'Michelin',
-    variant_count: 2,
-    inventory_status: 'low_stock',
-    cover_image_url:
-      'https://shop2banh.vn/images/thumbs/2022/04/vo-michelin-city-grip-2-11070-14-dung-cho-banh-sau-pcx-vario-click-1854-slide-products-625e2e2e2e2e2.jpg',
-    variants: [
-      {
-        id: 301,
-        price: 1450000,
-        optionValues: { 'Kích thước': '110/70-14' },
-        url: 'michelin-city-grip-2-110-70-14',
-        cover_image_url: '',
-      },
-      {
-        id: 302,
-        price: 1650000,
-        optionValues: { 'Kích thước': '130/70-13' },
-        url: 'michelin-city-grip-2-130-70-13',
-        cover_image_url: '',
-      },
-    ],
-  },
-  {
-    id: 4,
-    name: 'Phuộc Ohlins HO 819',
-    category_id: 3,
-    category_name: 'Phụ Tùng',
-    brand_id: 4,
-    brand_name: 'Ohlins',
-    variant_count: 0,
-    inventory_status: 'out_of_stock',
-    cover_image_url:
-      'https://shop2banh.vn/images/thumbs/2021/12/phuoc-ohlins-ho-819-chinh-hang-cho-vario-click-1738-slide-products-61b8b8b8b8b8b.jpg',
-    variants: [],
-  },
-  {
-    id: 5,
-    name: 'Bao tay Daytona',
-    category_id: 3,
-    category_name: 'Đồ Chơi Xe',
-    brand_id: 5,
-    brand_name: 'Daytona',
-    variant_count: 3,
-    inventory_status: 'in_stock',
-    cover_image_url:
-      'https://shop2banh.vn/images/thumbs/2023/08/bao-tay-daytona-chinh-hang-nhat-ban-2088-slide-products-64c8c8c8c8c8c.jpg',
-    variants: [
-      {
-        id: 501,
-        price: 350000,
-        optionValues: { Màu: 'Đen' },
-        url: 'bao-tay-daytona-den',
-        cover_image_url: '',
-      },
-      {
-        id: 502,
-        price: 350000,
-        optionValues: { Màu: 'Nâu' },
-        url: 'bao-tay-daytona-nau',
-        cover_image_url: '',
-      },
-      {
-        id: 503,
-        price: 350000,
-        optionValues: { Màu: 'Xám' },
-        url: 'bao-tay-daytona-xam',
-        cover_image_url: '',
-      },
-    ],
-  },
-]
 
-const fetchProductsFn = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 2000))
+const fetchProductsFn = async (params) => {
+  const { page, limit, search, statusIds } = params
+  const result = await productApi.getProducts({
+    page,
+    itemsPerPage: limit,
+    search: search || '',
+    statusIds: statusIds || [],
+  })
+
   return {
-    data: mockProducts,
-    total: mockProducts.length,
-    last_page: 1,
+    data: result.products || [],
+    pagination: {
+      totalCount: result.totalCount || 0,
+      totalPages: Math.ceil((result.totalCount || 0) / limit),
+    },
   }
 }
 
-const productDataMapper = (data) => ({
-  items: data?.products || [],
-  count: data?.totalCount,
-})
 
 const {
-  items: filteredProducts,
+  data: filteredProducts,
   totalPages,
   isLoading,
   isError,
   error,
 } = usePaginatedQuery({
-  queryKeyBase: ref('products'),
+  queryKey: ['products'],
   filters: filters,
   page: page,
   itemsPerPage: itemsPerPage,
-  fetchFn: fetchProductsFn,
-  dataMapper: productDataMapper,
+  queryFn: fetchProductsFn,
 })
 
 const isExpanded = (productId) => {

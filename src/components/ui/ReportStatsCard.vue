@@ -24,7 +24,7 @@ const props = defineProps({
     required: true,
   },
   stat: {
-    type: String,
+    type: [String, Number],
     required: true,
   },
   subtitle: {

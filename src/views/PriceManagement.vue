@@ -42,17 +42,17 @@ const productDataMapper = (data) => ({
 })
 
 const {
-  items: fetchedProducts,
+  data: fetchedProducts,
   totalPages,
   isLoading,
   isError,
   error,
 } = usePaginatedQuery({
-  queryKeyBase: ref('products'),
+  queryKey: ['products'],
   filters: filters,
   page: page,
   itemsPerPage: itemsPerPage,
-  fetchFn: fetchProductsFn,
+  queryFn: fetchProductsFn,
   dataMapper: productDataMapper,
 })
 
