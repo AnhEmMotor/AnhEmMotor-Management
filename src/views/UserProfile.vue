@@ -8,7 +8,11 @@ import Input from '@/components/ui/input/BaseInput.vue'
 const authStore = useAuthStore()
 const route = useRoute()
 const router = useRouter()
+
 const user = ref({ ...authStore.user })
+
+const currentUserEmail = computed(() => user.value.email)
+
 const passwordForm = ref({
   currentPassword: '',
   newPassword: '',
@@ -115,23 +119,50 @@ const handleChangePassword = () => {
     </div>
 
     <div v-if="activeTab === 'password'" class="max-w-xl animate-fade-in-up">
-      <div class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu hiện tại</label>
-          <Input v-model="passwordForm.currentPassword" type="password" placeholder="••••••" />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu mới</label>
-          <Input v-model="passwordForm.newPassword" type="password" placeholder="••••••" />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Xác nhận mật khẩu mới</label>
-          <Input v-model="passwordForm.confirmPassword" type="password" placeholder="••••••" />
-        </div>
-        <div class="pt-4">
-          <Button color="primary" text="Đổi mật khẩu" @click="handleChangePassword" />
-        </div>
+      <form class="space-y-4" @submit.prevent="handleChangePassword">
+      <input 
+        type="text" 
+        name="username" 
+        :value="currentUserEmail" 
+        autocomplete="username" 
+        class="hidden" 
+        style="display: none;"
+      />
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu hiện tại</label>
+        <Input 
+          autocomplete="current-password" 
+          v-model="passwordForm.currentPassword" 
+          type="password" 
+          placeholder="••••••" 
+        />
       </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu mới</label>
+        <Input 
+          autocomplete="new-password" 
+          v-model="passwordForm.newPassword" 
+          type="password" 
+          placeholder="••••••" 
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Xác nhận mật khẩu mới</label>
+        <Input 
+          autocomplete="new-password" 
+          v-model="passwordForm.confirmPassword" 
+          type="password" 
+          placeholder="••••••" 
+        />
+      </div>
+
+      <div class="pt-4">
+        <Button color="primary" text="Đổi mật khẩu" type="submit" />
+      </div>
+    </form>
     </div>
   </div>
 </template>

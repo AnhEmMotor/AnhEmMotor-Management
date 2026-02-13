@@ -184,17 +184,17 @@ const dataMapper = (data) => ({
 })
 
 const {
-  items: displayedOrders,
+  data: displayedOrders,
   totalPages: _totalPages,
   isLoading,
   isError: _isError,
   error: _error,
 } = usePaginatedQuery({
-  queryKeyBase: ref('orders'),
+  queryKey: ['orders'],
   filters: filters,
   page: page,
   itemsPerPage: itemsPerPage,
-  fetchFn: fetchFn,
+  queryFn: fetchFn,
   dataMapper: dataMapper,
 })
 
