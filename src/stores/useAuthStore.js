@@ -230,11 +230,6 @@ export const useAuthStore = defineStore('auth', () => {
   const initAuth = async () => {
     if (isInitialized.value) return
 
-    if (!localStorage.getItem('isLoggedIn')) {
-      isInitialized.value = true
-      return
-    }
-
     if (!getAccessToken()) {
       try {
         const { data } = await axiosInstance.post('/api/v1/auth/refresh-token')

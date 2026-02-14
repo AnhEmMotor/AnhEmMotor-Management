@@ -426,8 +426,8 @@
               <p class="text-sm font-medium text-gray-900 truncate">
                 {{ authStore.user?.fullName || 'Admin User' }}
               </p>
-              <p class="text-xs text-gray-500 truncate">
-                {{ authStore.user?.role || 'Administrator' }}
+              <p class="text-xs text-gray-500 truncate" :title="authStore.user?.email">
+                {{ authStore.user?.email }}
               </p>
             </div>
 
