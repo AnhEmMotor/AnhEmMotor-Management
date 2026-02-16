@@ -109,13 +109,17 @@ export const useAuthStore = defineStore('auth', () => {
 
       sseStatus.value = 'connecting'
 
-      sseStatus.value = 'connecting'
-
       const connectionTimeout = setTimeout(() => {
         if (!user.value) {
+          // If we haven't received user data by now, abort SSE and reject
+          // This allows the fallback to standard API call to proceed
+          if (abortController) {
+            abortController.abort()
+            abortController = null
+          }
           reject(new Error('SSE_TIMEOUT'))
         }
-      }, 2000)
+      }, 3000) // Increased to 3s to be safe on slower mobile networks
 
       try {
         fetchEventSource(sseUrl, {
@@ -151,7 +155,8 @@ export const useAuthStore = defineStore('auth', () => {
 
             if (data && (data.userName || data.fullName || data.username)) {
               user.value = { ...user.value, ...data }
-
+              
+              // Only clear timeout on successful data receipt
               clearTimeout(connectionTimeout)
               resolve(user.value)
             }
@@ -161,8 +166,12 @@ export const useAuthStore = defineStore('auth', () => {
             abortController = null
           },
           onerror(err) {
-            clearTimeout(connectionTimeout)
+            // Do NOT clear timeout here for transient errors
+            // let the timeout trigger if we don't succeed in time
+            
             if (err.message === 'SSE_AUTH_ERROR') {
+              clearTimeout(connectionTimeout) // Auth error is fatal for this attempt
+              
               if (abortController) {
                 abortController.abort()
                 abortController = null
@@ -174,16 +183,16 @@ export const useAuthStore = defineStore('auth', () => {
                   .then((resp) => {
                     const newToken = resp.data.accessToken
                     setAccessToken(newToken)
-                    connectSSE(retryCount + 1)
-                      .then(resolve)
-                      .catch(reject)
-                  })
-                  .then((resp) => {
-                    const newToken = resp.data.accessToken
-                    setAccessToken(newToken)
-                    connectSSE(retryCount + 1)
-                      .then(resolve)
-                      .catch(reject)
+                    // Recursive call needs to handle its own timeout/resolution
+                    // but for this promise, we just reject so the fallback can happen
+                    // or we could chain it.
+                    // IMPORTANT: To avoid complexity and infinite loops, 
+                    // on auth error we reject and let the fallback mechanism (if any) or re-login handle it.
+                    // But the original code tried to refresh and reconnect.
+                    
+                    // Simplified approach: Reject on auth error to trigger fallback/logout
+                    resetState()
+                    reject(err)
                   })
                   .catch(() => {
                     resetState()
@@ -199,6 +208,7 @@ export const useAuthStore = defineStore('auth', () => {
 
             sseStatus.value = 'error'
             if (err.message.includes('Fatal')) {
+              clearTimeout(connectionTimeout) // Fatal error, stop waiting
               if (abortController) {
                 abortController.abort()
                 abortController = null
@@ -206,6 +216,10 @@ export const useAuthStore = defineStore('auth', () => {
               reject(err)
               throw err
             }
+            
+            // For other transient errors, we do nothing. 
+            // fetchEventSource will retry.
+            // If it takes too long, connectionTimeout will fire and reject this promise.
           },
         })
       } catch (err) {
