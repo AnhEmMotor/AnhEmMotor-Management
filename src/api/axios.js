@@ -42,7 +42,7 @@ export const refreshAccessToken = async () => {
   while (attempts < maxAttempts) {
     attempts++
     try {
-      const response = await fetch(`${baseURL}/api/refresh-token`, {
+      const response = await fetch(`${baseURL}/api/v1/auth/refresh-token`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

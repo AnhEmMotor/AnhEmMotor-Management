@@ -1,29 +1,28 @@
+import axiosInstance from './axios'
+
+const BASE_URL = '/api/v1/brand'
+
 export const getAllBrands = async () => {
-  const { data, error } = await supabase.from('brand').select('*')
-  if (error) throw error
+  const { data } = await axiosInstance.get(BASE_URL)
   return data
 }
 
 export const getBrandById = async (id) => {
-  const { data, error } = await supabase.from('brand').select('*').eq('id', id).single()
-  if (error) throw error
+  const { data } = await axiosInstance.get(`${BASE_URL}/${id}`)
   return data
 }
 
 export const createBrand = async (brand) => {
-  const { data, error } = await supabase.from('brand').insert(brand).select().single()
-  if (error) throw error
+  const { data } = await axiosInstance.post(BASE_URL, brand)
   return data
 }
 
 export const updateBrand = async (id, brand) => {
-  const { data, error } = await supabase.from('brand').update(brand).eq('id', id).select().single()
-  if (error) throw error
+  const { data } = await axiosInstance.put(`${BASE_URL}/${id}`, brand)
   return data
 }
 
 export const deleteBrand = async (id) => {
-  const { data, error } = await supabase.from('brand').delete().eq('id', id)
-  if (error) throw error
+  const { data } = await axiosInstance.delete(`${BASE_URL}/${id}`)
   return data
 }

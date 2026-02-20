@@ -2,13 +2,14 @@ import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchEventSource } from '@microsoft/fetch-event-source'
-import axiosInstance, {
+import {
   setAccessToken,
   registerAuthFailureCallback,
   getAccessToken,
   refreshAccessToken,
 } from '../api/axios'
 import { queryClient } from '../api/queryClient'
+import * as authApi from '../api/auth'
 
 const INITIAL_RETRY_DELAY = 1000
 const MAX_RETRY_DELAY = 30000
@@ -43,7 +44,7 @@ export const useAuthStore = defineStore('auth', () => {
       queryClient.clear()
     }, 50)
 
-    axiosInstance.post('/api/v1/auth/logout').catch(() => {})
+    authApi.logoutUser().catch(() => {})
 
     setTimeout(() => {
       isLoggingOut = false
@@ -63,12 +64,13 @@ export const useAuthStore = defineStore('auth', () => {
 
       if (meta?.permission) {
         const hasAccess =
-          newPermissions.includes('ADMIN') || newPermissions.includes(meta.permission)
+          newPermissions.some((p) => p.id === 'ADMIN') ||
+          newPermissions.some((p) => p.id === meta.permission)
         if (!hasAccess) router.push('/')
       } else if (meta?.permissions) {
         const hasAccess =
-          newPermissions.includes('ADMIN') ||
-          meta.permissions.some((p) => newPermissions.includes(p))
+          newPermissions.some((p) => p.id === 'ADMIN') ||
+          meta.permissions.some((mp) => newPermissions.some((p) => p.id === mp))
         if (!hasAccess) router.push('/')
       }
     },
@@ -93,7 +95,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const login = async (credentials) => {
     isLoggingOut = false
-    const { data } = await axiosInstance.post('/v1/auth/login/for-manager', credentials)
+    const data = await authApi.loginManager(credentials)
     setAccessToken(data.accessToken)
     delete data.accessToken
     closeSSE()
@@ -104,7 +106,7 @@ export const useAuthStore = defineStore('auth', () => {
   const logout = async () => {
     try {
       closeSSE()
-      await axiosInstance.post('/api/v1/auth/logout')
+      await authApi.logoutUser()
     } finally {
       performLogout(true)
     }
@@ -121,8 +123,8 @@ export const useAuthStore = defineStore('auth', () => {
 
     sseStatus.value = 'connecting'
 
-    const { data } = await axiosInstance.get('/api/v1/user/me')
-    if (data && data.username) {
+    const data = await authApi.fetchMe()
+    if (data && data.userName) {
       user.value = user.value ? { ...user.value, ...data } : data
     }
 
@@ -155,7 +157,7 @@ export const useAuthStore = defineStore('auth', () => {
         onmessage(msg) {
           if (!msg.data || msg.data === 'heartbeat') return
           const data = JSON.parse(msg.data)
-          if (data && data.username) {
+          if (data && data.userName) {
             user.value = user.value ? { ...user.value, ...data } : data
           }
         },
@@ -176,10 +178,10 @@ export const useAuthStore = defineStore('auth', () => {
             }
 
             if (retryCount < 3) {
-              axiosInstance
-                .post('/api/v1/auth/refresh-token')
-                .then((resp) => {
-                  const newToken = resp.data.accessToken
+              authApi
+                .refreshToken()
+                .then((data) => {
+                  const newToken = data.accessToken
                   setAccessToken(newToken)
                   connectSSE(retryCount + 1)
                 })
