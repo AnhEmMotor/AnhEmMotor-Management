@@ -35,14 +35,14 @@ const handleAuthFailure = () => {
   }
 }
 
-const refreshAccessToken = async () => {
+export const refreshAccessToken = async () => {
   let attempts = 0
   const maxAttempts = getAccessToken() ? 3 : 1
 
   while (attempts < maxAttempts) {
     attempts++
     try {
-      const response = await fetch(`${baseURL}/api/v1/auth/refresh-token`, {
+      const response = await fetch(`${baseURL}/api/refresh-token`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -79,13 +79,8 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config
 
     if (error.response?.status === 401 && !originalRequest._retry) {
-      if (
-        originalRequest.url.includes('/refresh-token') ||
-        originalRequest.url.includes('/login')
-      ) {
-        if (originalRequest.url.includes('/refresh-token')) {
-          handleAuthFailure()
-        }
+      if (originalRequest.url.includes('/refresh-token') || originalRequest.url.includes('/login')) {
+        handleAuthFailure()
         return Promise.reject(error)
       }
 

@@ -6,8 +6,12 @@ import axiosInstance, {
   setAccessToken,
   registerAuthFailureCallback,
   getAccessToken,
+  refreshAccessToken,
 } from '../api/axios'
 import { queryClient } from '../api/queryClient'
+
+const INITIAL_RETRY_DELAY = 1000
+const MAX_RETRY_DELAY = 30000
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
@@ -16,26 +20,37 @@ export const useAuthStore = defineStore('auth', () => {
   const router = useRouter()
 
   let abortController = null
+  let retryTimeout = null
+  let retryDelay = INITIAL_RETRY_DELAY
   const sseStatus = ref('disconnected')
   let isLoggingOut = false
 
   const cleanState = () => {
     user.value = null
     setAccessToken(null)
-    localStorage.removeItem('isLoggedIn')
     queryClient.clear()
     closeSSE()
   }
 
-  const resetState = () => {
+  const performLogout = () => {
+    if (isLoggingOut) return
     isLoggingOut = true
+
     cleanState()
+    router.push({ name: 'login' })
+
+    setTimeout(() => {
+      queryClient.clear()
+    }, 50)
+
+    axiosInstance.post('/api/v1/auth/logout').catch(() => {})
+
     setTimeout(() => {
       isLoggingOut = false
     }, 500)
   }
 
-  registerAuthFailureCallback(() => resetState())
+  registerAuthFailureCallback(() => performLogout(false))
 
   watch(
     () => user.value?.permissions,
@@ -59,30 +74,31 @@ export const useAuthStore = defineStore('auth', () => {
     },
   )
 
-  const fetchUser = async () => {
-    return user.value
+  const waitForUser = () => {
+    return new Promise((resolve) => {
+      if (user.value) return resolve()
+      const timeout = setTimeout(() => {
+        unwatch()
+        resolve()
+      }, 10000)
+      const unwatch = watch(user, (val) => {
+        if (val) {
+          clearTimeout(timeout)
+          unwatch()
+          resolve()
+        }
+      })
+    })
   }
 
   const login = async (credentials) => {
     isLoggingOut = false
-    const { data } = await axiosInstance.post('/api/v1/auth/login/for-manager', credentials)
+    const { data } = await axiosInstance.post('/v1/auth/login/for-manager', credentials)
     setAccessToken(data.accessToken)
-    localStorage.setItem('isLoggedIn', 'true')
-    setAccessToken(data.accessToken)
-    localStorage.setItem('isLoggedIn', 'true')
-
-    try {
-      await connectSSE()
-    } catch {
-      if (!user.value) {
-        const { data } = await axiosInstance.get('/api/v1/user/me', { skipRedirect: true })
-        user.value = data
-      }
-    }
-  }
-
-  const register = async (userData) => {
-    await axiosInstance.post('/api/register', userData)
+    delete data.accessToken
+    closeSSE()
+    connectSSE()
+    await waitForUser()
   }
 
   const logout = async () => {
@@ -90,182 +106,142 @@ export const useAuthStore = defineStore('auth', () => {
       closeSSE()
       await axiosInstance.post('/api/v1/auth/logout')
     } finally {
-      resetState()
+      performLogout(true)
     }
   }
 
-  const connectSSE = (retryCount = 0) => {
-    if (abortController || isLoggingOut) return Promise.resolve()
+  const connectSSE = async (retryCount = 0) => {
+    if (abortController || isLoggingOut) return
 
-    return new Promise((resolve, reject) => {
-      let token = getAccessToken()
-      if (!token) {
-        resolve()
-        return
-      }
+    let token = getAccessToken()
+    if (!token) return
 
-      abortController = new AbortController()
-      const sseUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/v1/user/me`
+    abortController = new AbortController()
+    const sseUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/v1/user/me`
 
-      sseStatus.value = 'connecting'
+    sseStatus.value = 'connecting'
 
-      const connectionTimeout = setTimeout(() => {
-        if (!user.value) {
-          // If we haven't received user data by now, abort SSE and reject
-          // This allows the fallback to standard API call to proceed
-          if (abortController) {
-            abortController.abort()
-            abortController = null
+    const { data } = await axiosInstance.get('/api/v1/user/me')
+    if (data && data.username) {
+      user.value = user.value ? { ...user.value, ...data } : data
+    }
+
+    try {
+      await fetchEventSource(sseUrl, {
+        method: 'GET',
+        signal: abortController.signal,
+        openWhenHidden: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'text/event-stream',
+        },
+        async onopen(response) {
+          if (response.ok && response.headers.get('content-type')?.includes('text/event-stream')) {
+            sseStatus.value = 'connected'
+            retryDelay = INITIAL_RETRY_DELAY
+            return
           }
-          reject(new Error('SSE_TIMEOUT'))
-        }
-      }, 3000) // Increased to 3s to be safe on slower mobile networks
 
-      try {
-        fetchEventSource(sseUrl, {
-          method: 'GET',
-          signal: abortController.signal,
-          openWhenHidden: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: 'text/event-stream',
-          },
-          async onopen(response) {
-            if (
-              response.ok &&
-              response.headers.get('content-type')?.includes('text/event-stream')
-            ) {
-              sseStatus.value = 'connected'
-              return
-            }
+          if (response.status === 401) {
+            throw new Error('SSE_AUTH_ERROR')
+          }
 
-            if (response.status === 401) {
-              throw new Error('SSE_AUTH_ERROR')
-            }
-
-            if (response.status >= 400 && response.status < 500 && response.status !== 429) {
-              sseStatus.value = 'error'
-              throw new Error(`Fatal SSE error: ${response.status}`)
-            }
-            throw new Error(`SSE Connection failed: ${response.status}`)
-          },
-          onmessage(msg) {
-            if (!msg.data || msg.data === 'heartbeat') return
-            const data = JSON.parse(msg.data)
-
-            if (data && (data.userName || data.fullName || data.username)) {
-              user.value = { ...user.value, ...data }
-              
-              // Only clear timeout on successful data receipt
-              clearTimeout(connectionTimeout)
-              resolve(user.value)
-            }
-          },
-          onclose() {
-            sseStatus.value = 'disconnected'
-            abortController = null
-          },
-          onerror(err) {
-            // Do NOT clear timeout here for transient errors
-            // let the timeout trigger if we don't succeed in time
-            
-            if (err.message === 'SSE_AUTH_ERROR') {
-              clearTimeout(connectionTimeout) // Auth error is fatal for this attempt
-              
-              if (abortController) {
-                abortController.abort()
-                abortController = null
-              }
-
-              if (retryCount < 3) {
-                axiosInstance
-                  .post('/api/v1/auth/refresh-token')
-                  .then((resp) => {
-                    const newToken = resp.data.accessToken
-                    setAccessToken(newToken)
-                    // Recursive call needs to handle its own timeout/resolution
-                    // but for this promise, we just reject so the fallback can happen
-                    // or we could chain it.
-                    // IMPORTANT: To avoid complexity and infinite loops, 
-                    // on auth error we reject and let the fallback mechanism (if any) or re-login handle it.
-                    // But the original code tried to refresh and reconnect.
-                    
-                    // Simplified approach: Reject on auth error to trigger fallback/logout
-                    resetState()
-                    reject(err)
-                  })
-                  .catch(() => {
-                    resetState()
-                    reject(err)
-                  })
-                return
-              } else {
-                resetState()
-                reject(err)
-                throw err
-              }
-            }
-
+          if (response.status >= 400 && response.status < 500 && response.status !== 429) {
             sseStatus.value = 'error'
-            if (err.message.includes('Fatal')) {
-              clearTimeout(connectionTimeout) // Fatal error, stop waiting
-              if (abortController) {
-                abortController.abort()
-                abortController = null
-              }
-              reject(err)
+            throw new Error(`Fatal SSE error: ${response.status}`)
+          }
+          throw new Error(`SSE Connection failed: ${response.status}`)
+        },
+        onmessage(msg) {
+          if (!msg.data || msg.data === 'heartbeat') return
+          const data = JSON.parse(msg.data)
+          if (data && data.username) {
+            user.value = user.value ? { ...user.value, ...data } : data
+          }
+        },
+        onclose() {
+          sseStatus.value = 'disconnected'
+          abortController = null
+          if (!isLoggingOut) {
+            const delay = Math.min(retryDelay, MAX_RETRY_DELAY)
+            retryDelay = Math.min(delay * 2, MAX_RETRY_DELAY)
+            retryTimeout = setTimeout(() => connectSSE(), delay)
+          }
+        },
+        onerror(err) {
+          if (err.message === 'SSE_AUTH_ERROR') {
+            if (abortController) {
+              abortController.abort()
+              abortController = null
+            }
+
+            if (retryCount < 3) {
+              axiosInstance
+                .post('/api/v1/auth/refresh-token')
+                .then((resp) => {
+                  const newToken = resp.data.accessToken
+                  setAccessToken(newToken)
+                  connectSSE(retryCount + 1)
+                })
+                .catch(() => {
+                  performLogout(true)
+                })
+              throw err
+            } else {
+              performLogout(true)
               throw err
             }
-            
-            // For other transient errors, we do nothing. 
-            // fetchEventSource will retry.
-            // If it takes too long, connectionTimeout will fire and reject this promise.
-          },
-        })
-      } catch (err) {
-        clearTimeout(connectionTimeout)
-        if (err.message !== 'SSE_AUTH_ERROR') {
+          }
+
           sseStatus.value = 'error'
-          abortController = null
-          reject(err)
+          if (err.message.includes('Fatal')) {
+            if (abortController) {
+              abortController.abort()
+              abortController = null
+            }
+            throw err
+          }
+        },
+      })
+    } catch (err) {
+      if (err.message !== 'SSE_AUTH_ERROR') {
+        sseStatus.value = 'error'
+        abortController = null
+        if (!isLoggingOut && !err.message.includes('Fatal')) {
+          const delay = Math.min(retryDelay, MAX_RETRY_DELAY)
+          retryDelay = Math.min(delay * 2, MAX_RETRY_DELAY)
+          retryTimeout = setTimeout(() => connectSSE(), delay)
         }
       }
-    })
+    }
   }
 
   const closeSSE = () => {
+    if (retryTimeout) {
+      clearTimeout(retryTimeout)
+      retryTimeout = null
+    }
     if (abortController) {
       abortController.abort()
       abortController = null
       sseStatus.value = 'disconnected'
     }
+    retryDelay = INITIAL_RETRY_DELAY
   }
 
   const initAuth = async () => {
     if (isInitialized.value) return
 
-    if (!getAccessToken()) {
-      try {
-        const { data } = await axiosInstance.post('/api/v1/auth/refresh-token')
-        setAccessToken(data.accessToken)
-      } catch {
-        localStorage.removeItem('isLoggedIn')
-        isInitialized.value = true
-        return
-      }
-    }
-
     try {
-      await connectSSE()
-    } catch {
-      if (!user.value) {
-        try {
-          const { data } = await axiosInstance.get('/api/v1/user/me', { skipRedirect: true })
-          user.value = data
-        } catch {
-          localStorage.removeItem('isLoggedIn')
-        }
+      if (!getAccessToken()) {
+        await refreshAccessToken()
       }
+      if (getAccessToken()) {
+        connectSSE()
+        await waitForUser()
+      }
+    } catch {
+      await logout().catch(() => {})
     } finally {
       isInitialized.value = true
     }
@@ -276,11 +252,9 @@ export const useAuthStore = defineStore('auth', () => {
     isInitialized,
     isAuthenticated,
     login,
-    register,
     logout,
-    fetchUser,
     initAuth,
-    resetState,
+    performLogout,
     sseStatus,
     reconnectSSE: () => {
       closeSSE()
