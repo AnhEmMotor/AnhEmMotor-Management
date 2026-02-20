@@ -25,7 +25,7 @@ const router = createRouter({
       name: 'login',
       path: '/login',
       component: LoginView,
-      meta: { guest: true },
+      meta: { guest: true, title: 'Đăng nhập' },
     },
     {
       path: '/',
@@ -36,85 +36,85 @@ const router = createRouter({
           name: 'home',
           path: '',
           component: TheHome,
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, title: 'Trang chủ' },
         },
         {
           name: 'orders-manager',
           path: 'orders',
           component: OrdersManager,
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, title: 'Quản lý đơn hàng' },
         },
         {
           name: 'customer-manager',
           path: 'customers',
           component: CustomerManager,
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, title: 'Quản lý khách hàng' },
         },
         {
           name: 'product-manager',
           path: 'products',
           component: ProductsManager,
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, title: 'Quản lý sản phẩm' },
         },
         {
           name: 'report-product',
           path: 'report-product',
           component: ProductReport,
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, title: 'Báo cáo sản phẩm' },
         },
         {
           name: 'revenue-analysis',
           path: 'report-revenue',
           component: RevenueAnalysis,
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, title: 'Báo cáo doanh thu' },
         },
         {
           name: 'warehouse-report',
           path: 'report-warehouse',
           component: WarehouseReport,
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, title: 'Báo cáo kho' },
         },
         {
           name: 'inventory-input',
           path: 'inputs',
           component: InventoryInputManager,
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, title: 'Quản lý nhập kho' },
         },
         {
           name: 'supplier',
           path: 'suppliers',
           component: SupplierManager,
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, title: 'Quản lý nhà cung cấp' },
         },
         {
           name: 'users',
           path: 'users',
           component: UserManager,
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, title: 'Quản lý người dùng' },
         },
         {
           name: 'permissions',
           path: 'permissions',
           component: RolePermissionManager,
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, title: 'Quyền & Vai trò' },
         },
         {
           name: 'price-management',
           path: 'price-management',
           component: PriceManagement,
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, title: 'Quản lý giá' },
         },
         {
           name: 'settings',
           path: 'settings',
           component: SettingsView,
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, title: 'Cài đặt' },
         },
         {
           name: 'user-profile',
           path: 'profile',
           component: UserProfile,
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, title: 'Hồ sơ người dùng' },
         },
       ],
     },
@@ -122,6 +122,7 @@ const router = createRouter({
       name: 'not-found',
       path: '/:pathMatch(.*)*',
       component: NotFoundView,
+      meta: { title: 'Không tìm thấy trang' },
     },
   ],
 })
@@ -161,6 +162,15 @@ router.beforeEach(async (to, from, next) => {
   }
 
   next()
+})
+
+router.afterEach((to) => {
+  const defaultTitle = 'AnhEmMotor'
+  if (to.meta.title) {
+    document.title = `${defaultTitle} | ${to.meta.title}`
+  } else {
+    document.title = defaultTitle
+  }
 })
 
 export default router
