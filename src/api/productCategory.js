@@ -1,34 +1,46 @@
-export const getAllProductCategories = async () => {
-  const { data, error } = await supabase.from('product_category').select('*')
-  if (error) throw error
-  return data
-}
+import axiosInstance from './axios';
 
-export const getProductCategoryById = async (id) => {
-  const { data, error } = await supabase.from('product_category').select('*').eq('id', id).single()
-  if (error) throw error
-  return data
-}
+const BASE_URL = '/api/v1/productcategory';
+
+export const getCategoriesForManager = async (params = {}) => {
+  const { data } = await axiosInstance.get(`${BASE_URL}/for-manager`, { params });
+  return data;
+};
+
+export const fetchCategories = async ({ page, limit, search } = {}) => {
+  const params = { Page: page, PageSize: limit };
+  if (search) params.Filters = `name@=*${search}`;
+  const { data } = await axiosInstance.get(BASE_URL, { params });
+  return {
+    data: data.items || [],
+    pagination: {
+      totalPages: data.totalPages || 1,
+      totalCount: data.totalCount || 0,
+    },
+  };
+};
+
+export const getAllProductCategories = async () => {
+  const { data } = await axiosInstance.get(BASE_URL, { params: { PageSize: 1000 } });
+  return data;
+};
+
+
+export const getCategoryById = async (id) => {
+  const { data } = await axiosInstance.get(`${BASE_URL}/${id}`);
+  return data;
+};
 
 export const createProductCategory = async (category) => {
-  const { data, error } = await supabase.from('product_category').insert(category).select().single()
-  if (error) throw error
-  return data
-}
+  const { data } = await axiosInstance.post(BASE_URL, category);
+  return data;
+};
 
 export const updateProductCategory = async (id, category) => {
-  const { data, error } = await supabase
-    .from('product_category')
-    .update(category)
-    .eq('id', id)
-    .select()
-    .single()
-  if (error) throw error
-  return data
-}
+  const { data } = await axiosInstance.put(`${BASE_URL}/${id}`, category);
+  return data;
+};
 
 export const deleteProductCategory = async (id) => {
-  const { data, error } = await supabase.from('product_category').delete().eq('id', id)
-  if (error) throw error
-  return data
-}
+  await axiosInstance.delete(`${BASE_URL}/${id}`);
+};

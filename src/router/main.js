@@ -11,6 +11,8 @@ const RevenueAnalysis = () => import('@/views/RevenueAnalysis.vue')
 const WarehouseReport = () => import('@/views/WarehouseReport.vue')
 const InventoryInputManager = () => import('@/views/InventoryInputManager.vue')
 const SupplierManager = () => import('@/views/SupplierManager.vue')
+const BrandManager = () => import('@/views/BrandManager.vue')
+const CategoryManager = () => import('@/views/CategoryManager.vue')
 const UserManager = () => import('@/views/UserManager.vue')
 const RolePermissionManager = () => import('@/views/RolePermissionManager.vue')
 const PriceManagement = () => import('@/views/PriceManagement.vue')
@@ -79,6 +81,18 @@ const router = createRouter({
           path: 'inputs',
           component: InventoryInputManager,
           meta: { requiresAuth: true, title: 'Quản lý nhập kho' },
+        },
+        {
+          name: 'category-manager',
+          path: 'categories',
+          component: CategoryManager,
+          meta: { requiresAuth: true, title: 'Quản lý thể loại sản phẩm' },
+        },
+        {
+          name: 'brand-manager',
+          path: 'brands',
+          component: BrandManager,
+          meta: { requiresAuth: true, title: 'Quản lý thương hiệu' },
         },
         {
           name: 'supplier',

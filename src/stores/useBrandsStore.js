@@ -18,8 +18,8 @@ export const useBrandsStore = defineStore('brands', {
       this.isLoading = true
       this.error = null
       try {
-        const brands = await brandApi.getAllBrands()
-        this.brands = brands
+        const result = await brandApi.getAllBrands()
+        this.brands = result.items || result || []
       } catch (error) {
         this.error = error.message
       } finally {

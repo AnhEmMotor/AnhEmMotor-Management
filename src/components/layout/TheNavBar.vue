@@ -123,23 +123,68 @@
           </li>
 
           <li>
-            <RouterLink
-              to="/products"
-              class="flex items-center space-x-3 p-3 rounded-lg w-full font-medium"
-              active-class="bg-red-50 text-red-700 border-l-4 border-red-600"
-              :class="
-                route.path.startsWith('/products')
-                  ? 'bg-red-50 text-red-700 border-l-4 border-red-600'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-red-600 border-l-4 border-transparent'
-              "
-              @click="closeMobileMenu"
+            <button
+              @click="toggleGroup('productGroup')"
+              class="flex items-center justify-between space-x-3 p-3 rounded-lg w-full font-medium cursor-pointer text-gray-600 hover:bg-gray-50 hover:text-red-600 border-l-4 border-transparent"
+              :class="{ 'text-red-700': isGroupActive('productGroup') }"
             >
-              <IconProduct
-                class="flex-shrink-0"
-                :class="route.path.startsWith('/products') ? 'text-red-600' : 'text-gray-500'"
-              />
-              <span>Sản phẩm</span>
-            </RouterLink>
+              <div class="flex items-center space-x-3">
+                <IconProduct
+                  class="flex-shrink-0"
+                  :class="isGroupActive('productGroup') ? 'text-red-600' : 'text-gray-500'"
+                />
+                <span>Sản phẩm</span>
+              </div>
+              <IconUpArrow :isOpen="openGroups.includes('productGroup')" />
+            </button>
+            <ul v-if="openGroups.includes('productGroup')" class="mt-1 space-y-1 pl-3">
+              <li>
+                <RouterLink
+                  to="/brands"
+                  class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
+                  active-class="bg-red-50 text-red-700"
+                  :class="
+                    route.path === '/brands'
+                      ? 'bg-red-50 text-red-700'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-red-600'
+                  "
+                  @click="closeMobileMenu"
+                >
+                  <span>Thương hiệu</span>
+                </RouterLink>
+              </li>
+              <li>
+                <RouterLink
+                  to="/categories"
+                  class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
+                  active-class="bg-red-50 text-red-700"
+                  :class="
+                    route.path === '/categories'
+                      ? 'bg-red-50 text-red-700'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-red-600'
+                  "
+                  @click="closeMobileMenu"
+                >
+                  <span>Thể loại</span>
+                </RouterLink>
+              </li>
+              <li>
+                <RouterLink
+                  to="/products"
+                  class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
+                  active-class="bg-red-50 text-red-700"
+                  :class="
+                    route.path.startsWith('/products')
+                      ? 'bg-red-50 text-red-700'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-red-600'
+                  "
+                  @click="closeMobileMenu"
+                >
+                  <span>Danh sách sản phẩm</span>
+                </RouterLink>
+              </li>
+              
+            </ul>
           </li>
 
           <li>
@@ -504,6 +549,7 @@ const handleLogout = async () => {
 }
 
 const groupRoutes = {
+  productGroup: ['/products', '/brands', '/categories'],
   warehouse: ['/suppliers', '/inputs', '/price-management'],
   user: ['/users', '/permissions'],
   reports: ['/report-warehouse', '/report-revenue', '/report-product'],

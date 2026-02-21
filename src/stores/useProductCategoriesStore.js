@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia'
-import * as productCategoryApi from '@/api/productCategory'
+import { defineStore } from 'pinia';
+import * as productCategoryApi from '@/api/productCategory';
 
 export const useProductCategoriesStore = defineStore('productCategories', {
   state: () => ({
@@ -15,15 +15,15 @@ export const useProductCategoriesStore = defineStore('productCategories', {
 
   actions: {
     async fetchCategories() {
-      this.isLoading = true
-      this.error = null
+      this.isLoading = true;
+      this.error = null;
       try {
-        const categories = await productCategoryApi.getAllProductCategories()
-        this.categories = categories
+        const result = await productCategoryApi.getCategoriesForManager();
+        this.categories = result.items || [];
       } catch (error) {
-        this.error = error.message
+        this.error = error.message;
       } finally {
-        this.isLoading = false
+        this.isLoading = false;
       }
     },
 
