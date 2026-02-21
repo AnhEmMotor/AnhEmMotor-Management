@@ -22,6 +22,7 @@ const queryClient = useQueryClient();
 const toast = useToast();
 
 const isSaving = ref(false);
+const isRefreshing = ref(false);
 const isOverlayVisible = ref(false);
 const isFormModalVisible = ref(false);
 const formModalKey = ref(0);
@@ -52,13 +53,39 @@ const openAddModal = () => {
   isFormModalVisible.value = true;
 };
 
-const openEditModal = (category) => {
-  editableCategory.value = { ...category };
+const openEditModal = async (category) => {
+  editableCategory.value = { id: category.id, name: '', description: '' };
   formErrors.value = { name: '' };
   isEditMode.value = true;
   formModalTitle.value = 'Chỉnh sửa thể loại';
   formModalKey.value++;
   isFormModalVisible.value = true;
+
+  const cachedData = queryClient.getQueryData(['categories', category.id]);
+  
+  if (!cachedData) {
+    isRefreshing.value = true;
+  } else {
+    editableCategory.value = { ...cachedData };
+  }
+
+  try {
+    const fetchedData = await queryClient.fetchQuery({
+      queryKey: ['categories', category.id],
+      queryFn: () => categoryApi.getCategoryById(category.id),
+      staleTime: 0,
+    });
+    if (fetchedData) {
+      editableCategory.value = { ...fetchedData };
+    }
+  } catch (e) {
+    if (!cachedData) {
+      toast.error('Lỗi khi tải chi tiết thể loại');
+      editableCategory.value = { ...category };
+    }
+  } finally {
+    isRefreshing.value = false;
+  }
 };
 
 const handleCloseModal = () => {
@@ -81,17 +108,19 @@ const handleSave = async () => {
   isSaving.value = true;
   try {
     if (isEditMode.value) {
-      await categoryApi.updateProductCategory(editableCategory.value.id, {
+      const updatedCategory = await categoryApi.updateProductCategory(editableCategory.value.id, {
         id: editableCategory.value.id,
         name: editableCategory.value.name,
         description: editableCategory.value.description,
       });
+      queryClient.setQueryData(['categories', updatedCategory.id], updatedCategory);
       toast.success('Cập nhật thể loại thành công');
     } else {
-      await categoryApi.createProductCategory({
+      const newCategory = await categoryApi.createProductCategory({
         name: editableCategory.value.name,
         description: editableCategory.value.description,
       });
+      queryClient.setQueryData(['categories', newCategory.id], newCategory);
       toast.success('Thêm thể loại thành công');
     }
     isFormModalVisible.value = false;
@@ -113,6 +142,7 @@ const promptDelete = async (category) => {
   isOverlayVisible.value = true;
   try {
     await categoryApi.deleteProductCategory(category.id);
+    queryClient.removeQueries({ queryKey: ['categories', category.id] });
     await queryClient.invalidateQueries({ queryKey: ['categories'] });
     toast.success('Xoá thể loại thành công');
   } catch (err) {
@@ -129,6 +159,31 @@ const importExcel = (event) => {
 
 const exportExcel = () => {
   toast.info('Chức năng Export Excel đang phát triển');
+};
+
+const handleRefreshForm = async () => {
+  if (isEditMode.value && editableCategory.value.id) {
+    isRefreshing.value = true;
+    try {
+      const freshData = await queryClient.fetchQuery({
+        queryKey: ['categories', editableCategory.value.id],
+        queryFn: () => categoryApi.getCategoryById(editableCategory.value.id),
+        staleTime: 0,
+      });
+      if (freshData) {
+        editableCategory.value = { ...freshData };
+      }
+      toast.info('Đã tải lại dữ liệu thể loại');
+    } catch (e) {
+      toast.error(`Lỗi tải lại: ${e.message}`);
+    } finally {
+      isRefreshing.value = false;
+    }
+  } else {
+    editableCategory.value = { id: null, name: '', description: '' };
+    formErrors.value = { name: '' };
+    toast.info('Đã làm mới form');
+  }
 };
 </script>
 
@@ -176,7 +231,6 @@ const exportExcel = () => {
           class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs font-medium border-b border-gray-200"
         >
           <tr>
-            <th class="py-3 px-6 text-left">#</th>
             <th class="py-3 px-6 text-left">Tên thể loại</th>
             <th class="py-3 px-6 text-left">Mô tả</th>
             <th class="py-3 px-6 text-center">Thao tác</th>
@@ -186,7 +240,6 @@ const exportExcel = () => {
           <template v-if="categories.length === 0">
             <template v-if="isFetching || isLoading">
               <tr v-for="i in 5" :key="i" class="border-b border-gray-200">
-                <td class="py-3 px-6"><SkeletonLoader width="30px" height="20px" /></td>
                 <td class="py-3 px-6"><SkeletonLoader width="140px" height="20px" /></td>
                 <td class="py-3 px-6"><SkeletonLoader width="220px" height="20px" /></td>
                 <td class="py-3 px-6 text-center flex justify-center gap-2">
@@ -196,7 +249,7 @@ const exportExcel = () => {
               </tr>
             </template>
             <tr v-else>
-              <td colspan="4" class="text-center py-6 text-gray-500">
+              <td colspan="3" class="text-center py-6 text-gray-500">
                 Không có thể loại nào để hiển thị.
               </td>
             </tr>
@@ -206,7 +259,6 @@ const exportExcel = () => {
             :key="category.id"
             class="border-b border-gray-200 hover:bg-gray-100 transition-colors duration-200"
           >
-            <td class="py-3 px-6 text-gray-400">{{ category.id }}</td>
             <td class="py-3 px-6 font-medium text-gray-800">{{ category.name }}</td>
             <td class="py-3 px-6 text-gray-500">{{ category.description || '—' }}</td>
             <td class="py-3 px-6 text-center space-x-2">
@@ -230,6 +282,8 @@ const exportExcel = () => {
     :key="formModalKey"
     v-if="isFormModalVisible"
     @close="handleCloseModal"
+    :onRefresh="isEditMode ? handleRefreshForm : undefined"
+    :isLoading="isRefreshing"
     width="480px"
   >
     <template #header>
@@ -256,7 +310,10 @@ const exportExcel = () => {
       </div>
     </template>
     <template #footer>
-      <Button text="Lưu" color="purple" @click="handleSave" :loading="isSaving" />
+      <div class="flex justify-end gap-2 w-full">
+        <Button text="Huỷ bỏ" color="gray" @click="handleCloseModal" :disabled="isSaving || isRefreshing" />
+        <Button text="Lưu" color="purple" @click="handleSave" :loading="isSaving" :disabled="isRefreshing" />
+      </div>
     </template>
   </DraggableModal>
 </template>

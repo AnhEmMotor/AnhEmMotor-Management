@@ -51,7 +51,7 @@ const props = defineProps({
   },
   focusColor: {
     type: String,
-    default: 'blue',
+    default: 'red',
   },
   readonly: {
     type: Boolean,
@@ -85,7 +85,14 @@ const inputClasses = computed(() => {
   if (errorMessage.value && isTouched.value) {
     return 'border-red-500 ring-2 ring-red-200'
   }
-  return `border-gray-300 focus:ring-2 focus:ring-${props.focusColor}-500 focus:border-${props.focusColor}-500`
+  
+  const focusColorMap = {
+    blue: 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
+    red: 'border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-red-500',
+    green: 'border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500'
+  }
+  
+  return focusColorMap[props.focusColor] || focusColorMap.red
 })
 
 watch(

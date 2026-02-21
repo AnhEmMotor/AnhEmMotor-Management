@@ -102,6 +102,12 @@ axiosInstance.interceptors.response.use(
       }
     }
 
+    if (error.response?.data?.message) {
+      error.message = error.response.data.message
+    } else if (error.response?.data?.title) {
+      error.message = error.response.data.title
+    }
+
     return Promise.reject(error)
   },
 )

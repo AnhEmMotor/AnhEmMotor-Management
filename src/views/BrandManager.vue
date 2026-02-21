@@ -22,6 +22,7 @@ const queryClient = useQueryClient();
 const toast = useToast();
 
 const isSaving = ref(false);
+const isRefreshing = ref(false);
 const isOverlayVisible = ref(false);
 const isFormModalVisible = ref(false);
 const formModalKey = ref(0);
@@ -53,13 +54,40 @@ const openAddModal = () => {
   isFormModalVisible.value = true;
 };
 
-const openEditModal = (brand) => {
-  editableBrand.value = { ...brand };
+const openEditModal = async (brand) => {
+  editableBrand.value = { id: brand.id, name: '', description: '' };
   formErrors.value = { name: '' };
   isEditMode.value = true;
   formModalTitle.value = 'Chỉnh sửa thương hiệu';
   formModalKey.value++;
   isFormModalVisible.value = true;
+  
+  // Load from cache or fetch
+  const cachedData = queryClient.getQueryData(['brands', brand.id]);
+  
+  if (!cachedData) {
+    isRefreshing.value = true;
+  } else {
+    editableBrand.value = { ...cachedData };
+  }
+
+  try {
+    const fetchedData = await queryClient.fetchQuery({
+      queryKey: ['brands', brand.id],
+      queryFn: () => brandApi.getBrandById(brand.id),
+      staleTime: 0,
+    });
+    if (fetchedData) {
+      editableBrand.value = { ...fetchedData };
+    }
+  } catch (e) {
+    if (!cachedData) {
+      toast.error('Lỗi khi tải chi tiết thương hiệu');
+      editableBrand.value = { ...brand }; // Fallback to list data
+    }
+  } finally {
+    isRefreshing.value = false;
+  }
 };
 
 const handleCloseModal = () => {
@@ -82,17 +110,19 @@ const handleSave = async () => {
   isSaving.value = true;
   try {
     if (isEditMode.value) {
-      await brandApi.updateBrand(editableBrand.value.id, {
+      const updatedBrand = await brandApi.updateBrand(editableBrand.value.id, {
         id: editableBrand.value.id,
         name: editableBrand.value.name,
         description: editableBrand.value.description,
       });
+      queryClient.setQueryData(['brands', updatedBrand.id], updatedBrand);
       toast.success('Cập nhật thương hiệu thành công');
     } else {
-      await brandApi.createBrand({
+      const newBrand = await brandApi.createBrand({
         name: editableBrand.value.name,
         description: editableBrand.value.description,
       });
+      queryClient.setQueryData(['brands', newBrand.id], newBrand);
       toast.success('Thêm thương hiệu thành công');
     }
     isFormModalVisible.value = false;
@@ -114,6 +144,7 @@ const promptDelete = async (brand) => {
   isOverlayVisible.value = true;
   try {
     await brandApi.deleteBrand(brand.id);
+    queryClient.removeQueries({ queryKey: ['brands', brand.id] });
     await queryClient.invalidateQueries({ queryKey: ['brands'] });
     toast.success('Xoá thương hiệu thành công');
   } catch (err) {
@@ -130,6 +161,31 @@ const importExcel = (event) => {
 
 const exportExcel = () => {
   toast.info('Chức năng Export Excel đang phát triển');
+};
+
+const handleRefreshForm = async () => {
+  if (isEditMode.value && editableBrand.value.id) {
+    isRefreshing.value = true;
+    try {
+      const freshData = await queryClient.fetchQuery({
+        queryKey: ['brands', editableBrand.value.id],
+        queryFn: () => brandApi.getBrandById(editableBrand.value.id),
+        staleTime: 0,
+      });
+      if (freshData) {
+        editableBrand.value = { ...freshData };
+      }
+      toast.info('Đã tải lại dữ liệu thương hiệu');
+    } catch (e) {
+      toast.error(`Lỗi tải lại: ${e.message}`);
+    } finally {
+      isRefreshing.value = false;
+    }
+  } else {
+    editableBrand.value = { id: null, name: '', description: '' };
+    formErrors.value = { name: '' };
+    toast.info('Đã làm mới form');
+  }
 };
 </script>
 
@@ -177,7 +233,6 @@ const exportExcel = () => {
           class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs font-medium border-b border-gray-200"
         >
           <tr>
-            <th class="py-3 px-6 text-left">#</th>
             <th class="py-3 px-6 text-left">Tên thương hiệu</th>
             <th class="py-3 px-6 text-left">Mô tả</th>
             <th class="py-3 px-6 text-center">Thao tác</th>
@@ -187,7 +242,6 @@ const exportExcel = () => {
           <template v-if="brands.length === 0">
             <template v-if="isFetching || isLoading">
               <tr v-for="i in 5" :key="i" class="border-b border-gray-200">
-                <td class="py-3 px-6"><SkeletonLoader width="30px" height="20px" /></td>
                 <td class="py-3 px-6"><SkeletonLoader width="140px" height="20px" /></td>
                 <td class="py-3 px-6"><SkeletonLoader width="220px" height="20px" /></td>
                 <td class="py-3 px-6 text-center flex justify-center gap-2">
@@ -197,7 +251,7 @@ const exportExcel = () => {
               </tr>
             </template>
             <tr v-else>
-              <td colspan="4" class="text-center py-6 text-gray-500">
+              <td colspan="3" class="text-center py-6 text-gray-500">
                 Không có thương hiệu nào để hiển thị.
               </td>
             </tr>
@@ -207,7 +261,6 @@ const exportExcel = () => {
             :key="brand.id"
             class="border-b border-gray-200 hover:bg-gray-100 transition-colors duration-200"
           >
-            <td class="py-3 px-6 text-gray-400">{{ brand.id }}</td>
             <td class="py-3 px-6 font-medium text-gray-800">{{ brand.name }}</td>
             <td class="py-3 px-6 text-gray-500">{{ brand.description || '—' }}</td>
             <td class="py-3 px-6 text-center space-x-2">
@@ -231,6 +284,8 @@ const exportExcel = () => {
     :key="formModalKey"
     v-if="isFormModalVisible"
     @close="handleCloseModal"
+    :onRefresh="isEditMode ? handleRefreshForm : undefined"
+    :isLoading="isRefreshing"
     width="480px"
   >
     <template #header>
@@ -257,7 +312,10 @@ const exportExcel = () => {
       </div>
     </template>
     <template #footer>
-      <Button text="Lưu" color="purple" @click="handleSave" :loading="isSaving" />
+      <div class="flex justify-end gap-2 w-full">
+        <Button text="Huỷ bỏ" color="gray" @click="handleCloseModal" :disabled="isSaving || isRefreshing" />
+        <Button text="Lưu" color="purple" @click="handleSave" :loading="isSaving" :disabled="isRefreshing" />
+      </div>
     </template>
   </DraggableModal>
 </template>
