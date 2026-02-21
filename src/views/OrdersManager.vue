@@ -36,29 +36,31 @@
           </tr>
         </thead>
         <tbody class="text-gray-600 text-sm">
-          <template v-if="isLoading">
-            <tr v-for="i in 5" :key="i" class="border-b border-gray-100">
-              <td class="py-3 px-6"><SkeletonLoader width="100%" height="20px" /></td>
-              <td class="py-3 px-6"><SkeletonLoader width="80%" height="20px" /></td>
-              <td class="py-3 px-6">
-                <SkeletonLoader width="100px" height="24px" class="rounded-full" />
-              </td>
-              <td class="py-3 px-6"><SkeletonLoader width="80%" height="20px" /></td>
-              <td class="py-3 px-6 text-center">
-                <div class="flex justify-center">
-                  <SkeletonLoader width="40px" height="20px" class="rounded" />
-                </div>
-              </td>
-            </tr>
-          </template>
-          <tr v-else-if="_isError">
+          <tr v-if="_isError">
             <td colspan="7" class="text-center p-4 text-red-500">
               Đã có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại.
             </td>
           </tr>
-          <tr v-else-if="!displayedOrders || displayedOrders.length === 0">
-            <td colspan="7" class="text-center p-4">Không có đơn hàng nào.</td>
-          </tr>
+          <template v-else-if="!displayedOrders || displayedOrders.length === 0">
+            <template v-if="isLoading || isFetching">
+              <tr v-for="i in 5" :key="i" class="border-b border-gray-100">
+                <td class="py-3 px-6"><SkeletonLoader width="100%" height="20px" /></td>
+                <td class="py-3 px-6"><SkeletonLoader width="80%" height="20px" /></td>
+                <td class="py-3 px-6">
+                  <SkeletonLoader width="100px" height="24px" class="rounded-full" />
+                </td>
+                <td class="py-3 px-6"><SkeletonLoader width="80%" height="20px" /></td>
+                <td class="py-3 px-6 text-center">
+                  <div class="flex justify-center">
+                    <SkeletonLoader width="40px" height="20px" class="rounded" />
+                  </div>
+                </td>
+              </tr>
+            </template>
+            <tr v-else>
+              <td colspan="7" class="text-center p-4">Không có đơn hàng nào.</td>
+            </tr>
+          </template>
           <tr
             v-else
             v-for="order in displayedOrders"
@@ -187,6 +189,7 @@ const {
   data: displayedOrders,
   totalPages: _totalPages,
   isLoading,
+  isFetching,
   isError: _isError,
   error: _error,
 } = usePaginatedQuery({

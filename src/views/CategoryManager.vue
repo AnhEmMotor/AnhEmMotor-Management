@@ -163,34 +163,8 @@ const exportExcel = () => {
       class="mb-3"
     />
 
-    <div v-if="isLoading" class="overflow-x-auto rounded-lg shadow-sm border border-gray-300">
-      <table class="min-w-full bg-white border-collapse">
-        <thead
-          class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs font-medium border-b border-gray-200"
-        >
-          <tr>
-            <th class="py-3 px-6 text-left">#</th>
-            <th class="py-3 px-6 text-left">Tên thể loại</th>
-            <th class="py-3 px-6 text-left">Mô tả</th>
-            <th class="py-3 px-6 text-center">Thao tác</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="i in 5" :key="i" class="border-b border-gray-200">
-            <td class="py-3 px-6"><SkeletonLoader width="30px" height="20px" /></td>
-            <td class="py-3 px-6"><SkeletonLoader width="140px" height="20px" /></td>
-            <td class="py-3 px-6"><SkeletonLoader width="220px" height="20px" /></td>
-            <td class="py-3 px-6 text-center flex justify-center gap-2">
-              <SkeletonLoader width="40px" height="20px" />
-              <SkeletonLoader width="40px" height="20px" />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
     <div
-      v-else-if="isError"
+      v-if="isError"
       class="text-center py-12 text-red-500 font-medium bg-white rounded-lg shadow-sm border border-gray-200"
     >
       Đã xảy ra lỗi khi tải danh sách thể loại.
@@ -209,11 +183,24 @@ const exportExcel = () => {
           </tr>
         </thead>
         <tbody class="text-gray-600 text-sm font-light">
-          <tr v-if="categories.length === 0">
-            <td colspan="4" class="text-center py-6 text-gray-500">
-              Không có thể loại nào để hiển thị.
-            </td>
-          </tr>
+          <template v-if="categories.length === 0">
+            <template v-if="isFetching || isLoading">
+              <tr v-for="i in 5" :key="i" class="border-b border-gray-200">
+                <td class="py-3 px-6"><SkeletonLoader width="30px" height="20px" /></td>
+                <td class="py-3 px-6"><SkeletonLoader width="140px" height="20px" /></td>
+                <td class="py-3 px-6"><SkeletonLoader width="220px" height="20px" /></td>
+                <td class="py-3 px-6 text-center flex justify-center gap-2">
+                  <SkeletonLoader width="40px" height="20px" />
+                  <SkeletonLoader width="40px" height="20px" />
+                </td>
+              </tr>
+            </template>
+            <tr v-else>
+              <td colspan="4" class="text-center py-6 text-gray-500">
+                Không có thể loại nào để hiển thị.
+              </td>
+            </tr>
+          </template>
           <tr
             v-for="category in categories"
             :key="category.id"

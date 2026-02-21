@@ -249,54 +249,55 @@ const handleImport = () => {
       </div>
 
       <div class="bg-white">
-        <div v-if="isLoading">
-          <div
-            v-for="i in 5"
-            :key="i"
-            class="grid md:grid-cols-16 gap-2 py-4 px-5 border-b border-gray-50 items-center last:border-0"
-          >
-            <div class="md:col-span-8"><SkeletonLoader width="60%" height="16px" /></div>
-            <div class="md:col-start-9 md:col-span-2">
-              <SkeletonLoader width="80%" height="16px" />
-            </div>
-            <div class="md:col-start-11 md:col-span-2">
-              <SkeletonLoader width="90%" height="16px" />
-            </div>
-            <div class="md:col-start-13 md:col-span-2 flex justify-end">
-              <SkeletonLoader width="60%" height="16px" />
-            </div>
-            <div class="md:col-start-15 md:col-span-2">
-              <SkeletonLoader width="70%" height="24px" class="rounded-full" />
-            </div>
-          </div>
-        </div>
-
-        <div v-else-if="isError" class="text-center py-12 text-red-500 font-medium">
+        <div v-if="isError" class="text-center py-12 text-red-500 font-medium">
           Đã xảy ra lỗi khi lấy dữ liệu nhà cung cấp
         </div>
 
-        <div
-          v-else-if="suppliers.length === 0"
-          class="text-center py-12 flex flex-col items-center justify-center space-y-3"
-        >
-          <div class="bg-gray-50 p-3 rounded-full">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-8 w-8 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+        <template v-else-if="suppliers.length === 0">
+          <div v-if="isFetching || isLoading">
+            <div
+              v-for="i in 5"
+              :key="i"
+              class="grid md:grid-cols-16 gap-2 py-4 px-5 border-b border-gray-50 items-center last:border-0"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-              />
-            </svg>
+              <div class="md:col-span-8"><SkeletonLoader width="60%" height="16px" /></div>
+              <div class="md:col-start-9 md:col-span-2">
+                <SkeletonLoader width="80%" height="16px" />
+              </div>
+              <div class="md:col-start-11 md:col-span-2">
+                <SkeletonLoader width="90%" height="16px" />
+              </div>
+              <div class="md:col-start-13 md:col-span-2 flex justify-end">
+                <SkeletonLoader width="60%" height="16px" />
+              </div>
+              <div class="md:col-start-15 md:col-span-2">
+                <SkeletonLoader width="70%" height="24px" class="rounded-full" />
+              </div>
+            </div>
           </div>
-          <p class="text-gray-500 font-medium">Không có nhà cung cấp nào để hiển thị.</p>
-        </div>
+          <div
+            v-else
+            class="text-center py-12 flex flex-col items-center justify-center space-y-3"
+          >
+            <div class="bg-gray-50 p-3 rounded-full">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-8 w-8 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                />
+              </svg>
+            </div>
+            <p class="text-gray-500 font-medium">Không có nhà cung cấp nào để hiển thị.</p>
+          </div>
+        </template>
 
         <div v-else class="divide-y divide-gray-50">
           <SupplierItem

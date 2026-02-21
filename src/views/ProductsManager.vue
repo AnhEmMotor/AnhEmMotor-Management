@@ -315,42 +315,8 @@ const exportExcel = () => {
       class="mb-3"
     />
 
-    <div v-if="isLoading" class="overflow-x-auto rounded-lg shadow-sm border border-gray-300">
-      <table class="min-w-full bg-white border-collapse">
-        <thead
-          class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs font-medium border-b border-gray-200"
-        >
-          <tr>
-            <th class="py-3 px-6 text-left w-12"></th>
-            <th class="py-3 px-6 text-left w-20">Ảnh Bìa</th>
-            <th class="py-3 px-6 text-left">Tên Dòng Sản Phẩm</th>
-            <th class="py-3 px-6 text-left">Danh Mục</th>
-            <th class="py-3 px-6 text-left">Thương Hiệu</th>
-            <th class="py-3 px-6 text-left">Số Biến Thể</th>
-            <th class="py-3 px-6 text-left">Trạng Thái Kho</th>
-            <th class="py-3 px-6 text-center">Thao Tác</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="i in 5" :key="i" class="border-b border-gray-200">
-            <td class="py-3 px-6 text-center"><SkeletonLoader width="16px" height="16px" /></td>
-            <td class="py-3 px-6"><SkeletonLoader width="64px" height="64px" class="rounded-md" /></td>
-            <td class="py-3 px-6"><SkeletonLoader width="150px" height="20px" /></td>
-            <td class="py-3 px-6"><SkeletonLoader width="100px" height="20px" /></td>
-            <td class="py-3 px-6"><SkeletonLoader width="80px" height="20px" /></td>
-            <td class="py-3 px-6"><SkeletonLoader width="40px" height="20px" /></td>
-            <td class="py-3 px-6"><SkeletonLoader width="90px" height="24px" class="rounded-full" /></td>
-            <td class="py-3 px-6 text-center flex justify-center gap-2 mt-4">
-              <SkeletonLoader width="40px" height="20px" />
-              <SkeletonLoader width="40px" height="20px" />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
     <div
-      v-else-if="isError"
+      v-if="isError"
       class="text-center py-12 text-red-500 font-medium bg-white rounded-lg shadow-sm border border-gray-200"
     >
       Đã xảy ra lỗi khi lấy dữ liệu: {{ error?.message }}
@@ -373,11 +339,28 @@ const exportExcel = () => {
           </tr>
         </thead>
         <tbody class="text-gray-600 text-sm font-light">
-          <tr v-if="products.length === 0">
-            <td :colspan="numberOfColumns" class="text-center py-6 text-gray-500">
-              Không có sản phẩm nào để hiển thị.
-            </td>
-          </tr>
+          <template v-if="products.length === 0">
+            <template v-if="isFetching || isLoading">
+              <tr v-for="i in 5" :key="i" class="border-b border-gray-200">
+                <td class="py-3 px-6 text-center"><SkeletonLoader width="16px" height="16px" /></td>
+                <td class="py-3 px-6"><SkeletonLoader width="64px" height="64px" class="rounded-md" /></td>
+                <td class="py-3 px-6"><SkeletonLoader width="150px" height="20px" /></td>
+                <td class="py-3 px-6"><SkeletonLoader width="100px" height="20px" /></td>
+                <td class="py-3 px-6"><SkeletonLoader width="80px" height="20px" /></td>
+                <td class="py-3 px-6"><SkeletonLoader width="40px" height="20px" /></td>
+                <td class="py-3 px-6"><SkeletonLoader width="90px" height="24px" class="rounded-full" /></td>
+                <td class="py-3 px-6 text-center flex justify-center gap-2 mt-4">
+                  <SkeletonLoader width="40px" height="20px" />
+                  <SkeletonLoader width="40px" height="20px" />
+                </td>
+              </tr>
+            </template>
+            <tr v-else>
+              <td :colspan="numberOfColumns" class="text-center py-6 text-gray-500">
+                Không có sản phẩm nào để hiển thị.
+              </td>
+            </tr>
+          </template>
 
           <template v-for="product in products" :key="product.id">
             <tr class="border-b border-gray-200 hover:bg-gray-100 transition-colors duration-200">

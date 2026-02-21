@@ -45,6 +45,7 @@ const {
   data: fetchedProducts,
   totalPages,
   isLoading,
+  isFetching,
   isError,
   error,
 } = usePaginatedQuery({
@@ -320,27 +321,29 @@ onBeforeUnmount(() => {
       </div>
 
       <div class="bg-white">
-        <div v-if="isLoading" class="p-0">
-          <div v-for="i in 5" :key="i" class="border-b border-gray-200 bg-white">
-            <div class="grid grid-cols-1 md:grid-cols-12 items-center py-4 px-4 bg-white">
-              <div class="md:col-span-4 pl-2"><SkeletonLoader height="24px" width="70%" /></div>
-              <div class="md:col-span-2 flex justify-end pr-2">
-                <SkeletonLoader height="20px" width="50%" />
-              </div>
-              <div class="md:col-span-2 flex justify-end pr-2">
-                <SkeletonLoader height="20px" width="50%" />
-              </div>
-              <div class="md:col-span-2"></div>
-              <div class="md:col-span-2"></div>
-            </div>
-          </div>
-        </div>
-        <div v-else-if="isError" class="text-center py-6 text-red-500">
+        <div v-if="isError" class="text-center py-6 text-red-500">
           Đã xảy ra lỗi trong quá trình lấy dữ liệu.
         </div>
-        <div v-else-if="!products || products.length === 0" class="text-center py-6 text-gray-500">
-          Không có mặt hàng để hiển thị.
-        </div>
+        <template v-else-if="!products || products.length === 0">
+          <div v-if="isLoading || isFetching" class="p-0">
+            <div v-for="i in 5" :key="i" class="border-b border-gray-200 bg-white">
+              <div class="grid grid-cols-1 md:grid-cols-12 items-center py-4 px-4 bg-white">
+                <div class="md:col-span-4 pl-2"><SkeletonLoader height="24px" width="70%" /></div>
+                <div class="md:col-span-2 flex justify-end pr-2">
+                  <SkeletonLoader height="20px" width="50%" />
+                </div>
+                <div class="md:col-span-2 flex justify-end pr-2">
+                  <SkeletonLoader height="20px" width="50%" />
+                </div>
+                <div class="md:col-span-2"></div>
+                <div class="md:col-span-2"></div>
+              </div>
+            </div>
+          </div>
+          <div v-else class="text-center py-6 text-gray-500">
+            Không có mặt hàng để hiển thị.
+          </div>
+        </template>
 
         <template v-else>
           <div

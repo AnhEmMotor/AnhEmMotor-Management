@@ -43,6 +43,7 @@ const {
   _totalCount,
   totalPages,
   isLoading,
+  isFetching,
   isError,
   error,
 } = usePaginatedQuery({
@@ -400,47 +401,48 @@ const handleSaveNotes = async ({ id, notes }) => {
       </div>
 
       <div class="bg-white">
-        <div v-if="isLoading">
-          <div
-            v-for="i in 5"
-            :key="i"
-            class="grid grid-cols-[1.5fr_2fr_1.5fr_1.2fr] items-center py-3 px-5 border-b border-gray-50 last:border-0"
-          >
-            <div class="px-3"><SkeletonLoader width="80%" height="16px" /></div>
-            <div class="px-5"><SkeletonLoader width="70%" height="16px" /></div>
-            <div class="px-5 flex justify-end"><SkeletonLoader width="60%" height="16px" /></div>
-            <div class="px-5">
-              <SkeletonLoader width="70%" height="24px" class="rounded-full" />
-            </div>
-          </div>
-        </div>
-
-        <div v-else-if="isError" class="text-center py-12 text-red-500 font-medium">
+        <div v-if="isError" class="text-center py-12 text-red-500 font-medium">
           Đã xảy ra lỗi khi lấy dữ liệu
         </div>
 
-        <div
-          v-else-if="filteredItems.length === 0"
-          class="text-center py-12 flex flex-col items-center justify-center space-y-3"
-        >
-          <div class="bg-gray-50 p-3 rounded-full">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-8 w-8 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+        <template v-else-if="filteredItems.length === 0">
+          <div v-if="isLoading || isFetching">
+            <div
+              v-for="i in 5"
+              :key="i"
+              class="grid grid-cols-[1.5fr_2fr_1.5fr_1.2fr] items-center py-3 px-5 border-b border-gray-50 last:border-0"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-              />
-            </svg>
+              <div class="px-3"><SkeletonLoader width="80%" height="16px" /></div>
+              <div class="px-5"><SkeletonLoader width="70%" height="16px" /></div>
+              <div class="px-5 flex justify-end"><SkeletonLoader width="60%" height="16px" /></div>
+              <div class="px-5">
+                <SkeletonLoader width="70%" height="24px" class="rounded-full" />
+              </div>
+            </div>
           </div>
-          <p class="text-gray-500 font-medium">Không có phiếu nhập nào để hiển thị.</p>
-        </div>
+          <div
+            v-else
+            class="text-center py-12 flex flex-col items-center justify-center space-y-3"
+          >
+            <div class="bg-gray-50 p-3 rounded-full">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-8 w-8 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                />
+              </svg>
+            </div>
+            <p class="text-gray-500 font-medium">Không có phiếu nhập nào để hiển thị.</p>
+          </div>
+        </template>
 
         <div v-else class="divide-y divide-gray-50">
           <InventoryItem

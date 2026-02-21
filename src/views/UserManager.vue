@@ -44,38 +44,39 @@
           </tr>
         </thead>
         <tbody class="text-gray-600 text-sm font-light">
-          <template v-if="isLoading">
-            <tr v-for="i in 5" :key="`skeleton-${i}`" class="border-b border-gray-100">
-              <td class="py-3 px-6 text-left"><SkeletonLoader width="80%" height="16px" /></td>
-              <td class="py-3 px-6 text-left"><SkeletonLoader width="90%" height="16px" /></td>
-              <td class="py-3 px-6 text-left"><SkeletonLoader width="80%" height="16px" /></td>
-              <td class="py-3 px-6 text-left">
-                <SkeletonLoader width="70%" height="24px" class="rounded-full" />
-              </td>
-              <td class="py-3 px-6 text-left">
-                <SkeletonLoader width="60%" height="24px" class="rounded-full" />
-              </td>
-              <td class="py-3 px-6 text-center">
-                <div class="flex justify-center gap-2">
-                  <SkeletonLoader width="30px" height="20px" class="rounded" />
-                  <SkeletonLoader width="30px" height="20px" class="rounded" />
-                </div>
-              </td>
-            </tr>
-          </template>
-
-          <tr v-else-if="isError">
+          <tr v-if="isError">
             <td colspan="6">
               <div class="text-center py-12 text-red-500 font-medium">
                 {{ errorMessage }}
               </div>
             </td>
           </tr>
-          <tr v-else-if="displayCustomers.length === 0">
-            <td colspan="6" class="text-center py-6 text-gray-500">
-              Không tìm thấy nhân viên nào.
-            </td>
-          </tr>
+          <template v-else-if="displayCustomers.length === 0">
+            <template v-if="isLoading">
+              <tr v-for="i in 5" :key="`skeleton-${i}`" class="border-b border-gray-100">
+                <td class="py-3 px-6 text-left"><SkeletonLoader width="80%" height="16px" /></td>
+                <td class="py-3 px-6 text-left"><SkeletonLoader width="90%" height="16px" /></td>
+                <td class="py-3 px-6 text-left"><SkeletonLoader width="80%" height="16px" /></td>
+                <td class="py-3 px-6 text-left">
+                  <SkeletonLoader width="70%" height="24px" class="rounded-full" />
+                </td>
+                <td class="py-3 px-6 text-left">
+                  <SkeletonLoader width="60%" height="24px" class="rounded-full" />
+                </td>
+                <td class="py-3 px-6 text-center">
+                  <div class="flex justify-center gap-2">
+                    <SkeletonLoader width="30px" height="20px" class="rounded" />
+                    <SkeletonLoader width="30px" height="20px" class="rounded" />
+                  </div>
+                </td>
+              </tr>
+            </template>
+            <tr v-else>
+              <td colspan="6" class="text-center py-6 text-gray-500">
+                Không tìm thấy nhân viên nào.
+              </td>
+            </tr>
+          </template>
           <tr
             v-else
             v-for="customer in displayCustomers"
