@@ -1,80 +1,45 @@
-export const fetchInputs = async ({ page, itemsPerPage, statusFilters, search }) => {
-  const { data, error } = await supabase.rpc('get_input_receipts', {
-    p_page: page,
-    p_items_per_page: itemsPerPage,
-    p_status_ids: statusFilters,
-    p_search: search,
-  })
+import axiosInstance from './axios';
 
-  if (error) throw error
-  return data
-}
+export const fetchInventoryReceipts = async (params) => {
+  const { data } = await axiosInstance.get('/api/v1/InventoryReceipts', { params });
+  return data;
+};
 
-export const saveReceipt = async ({
-  id,
-  supplier,
-  products,
-  notes,
-  status_id,
-  user_name,
-  import_date,
-  paid,
-}) => {
-  const p_products = products.map((p) => ({
-    code: p.code,
-    name: p.name,
-    quantity: Number(p.quantity) || 0,
-    unitPrice: Number(p.unitPrice) || 0,
-  }))
+export const getInventoryReceiptById = async (id) => {
+  const { data } = await axiosInstance.get(`/api/v1/InventoryReceipts/${id}`);
+  return data;
+};
 
-  const { data, error } = await supabase.rpc('save_input_receipt', {
-    p_input_id: id || null,
-    p_supplier_id: supplier.id,
-    p_status_id: status_id,
-    p_name_verify: user_name,
-    p_import_date: import_date,
-    p_notes: notes,
-    p_paid: paid,
-    p_products: p_products,
-  })
+export const createInventoryReceipt = async (payload) => {
+  const { data } = await axiosInstance.post('/api/v1/InventoryReceipts', payload);
+  return data;
+};
 
-  if (error) throw error
-  return data
-}
+export const updateInventoryReceipt = async (id, payload) => {
+  const { data } = await axiosInstance.put(`/api/v1/InventoryReceipts/${id}`, payload);
+  return data;
+};
 
-export const updateInputStatus = async (id, status_id) => {
-  const { data, error } = await supabase
-    .from('input')
-    .update({ status_id: status_id })
-    .eq('id', id)
-    .select(
-      `
-      id,
-      input_status:status_id(id, name)
-    `,
-    )
-    .single()
+export const deleteInventoryReceipt = async (id) => {
+  await axiosInstance.delete(`/api/v1/InventoryReceipts/${id}`);
+};
 
-  if (error) throw error
-  return data
-}
+export const updateInventoryReceiptStatus = async (id, statusId) => {
+  const { data } = await axiosInstance.patch(`/api/v1/InventoryReceipts/${id}/status`, { statusId });
+  return data;
+};
 
-export const updateInput = async (id, updates) => {
-  const { data, error } = await supabase
-    .from('input')
-    .update(updates)
-    .eq('id', id)
-    .select(
-      `
-      *,
-      supplier:supplier_id(*),
-      input_status:status_id(id, name)
-    `,
-    )
-    .single()
+export const cloneInventoryReceipt = async (id) => {
+  const { data } = await axiosInstance.post(`/api/v1/InventoryReceipts/${id}/clone`);
+  return data;
+};
 
-  if (error) {
-    throw error
-  }
-  return data
-}
+export const fetchReceiptsBySupplier = async (supplierId, params) => {
+  const { data } = await axiosInstance.get(`/api/v1/InventoryReceipts/by-supplier/${supplierId}`, { params });
+  return data;
+};
+
+export const fetchInputStatuses = async () => {
+  const { data } = await axiosInstance.get('/api/v1/InventoryReceipts/status');
+  return data;
+};

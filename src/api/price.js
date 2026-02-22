@@ -1,31 +1,16 @@
-export const priceApi = {
-  async getProducts({ page, itemsPerPage, search, statusIds }) {
-    const { data, error } = await supabase.rpc('get_product_variant_prices', {
-      p_page: page,
-      p_items_per_page: itemsPerPage,
-      p_search: search,
-      p_status_ids: statusIds,
-    })
+import axiosInstance from './axios';
 
-    if (error) {
-      throw error
-    }
+export const fetchProductsForPricing = async (params) => {
+  const { data } = await axiosInstance.get('/api/v1/product/for-manager', { params });
+  return data;
+};
 
-    return data
-  },
+export const updateProductPrice = async (id, price) => {
+  const { data } = await axiosInstance.patch(`/api/v1/product/${id}/price`, { price });
+  return data;
+};
 
-  async updateVariantPrice(variantId, newPrice) {
-    const { data, error } = await supabase
-      .from('product_variants')
-      .update({ price: newPrice })
-      .eq('id', variantId)
-      .select()
-      .single()
-
-    if (error) {
-      throw error
-    }
-
-    return data
-  },
-}
+export const updateVariantPrice = async (variantId, price) => {
+  const { data } = await axiosInstance.patch(`/api/v1/product/variant/${variantId}/price`, { price });
+  return data;
+};

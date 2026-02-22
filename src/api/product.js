@@ -137,3 +137,16 @@ export const getVariantsByProductId = async (id) => {
   const { data } = await axiosInstance.get(`${BASE_URL}/${id}/variants-lite`);
   return data;
 };
+
+export const searchProductsFlatType = async (search = '') => {
+  const { data } = await axiosInstance.get(`${BASE_URL}/variants-lite/for-input`, {
+    params: { search, PageSize: 30 },
+  });
+  return (data.items || data || []).map((v) => ({
+    id: v.id,
+    name: v.name || v.variantName,
+    price: v.price || v.unitPrice || 0,
+    stock: v.stock ?? v.stockQuantity ?? 0,
+    cover_image_url: v.coverImageUrl || v.cover_image_url || null,
+  }));
+};

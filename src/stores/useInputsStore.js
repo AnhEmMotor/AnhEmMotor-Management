@@ -1,55 +1,52 @@
-import { defineStore } from 'pinia'
-import * as api from '@/api/input'
+import {
+  fetchInventoryReceipts,
+  getInventoryReceiptById,
+  createInventoryReceipt,
+  updateInventoryReceipt,
+  deleteInventoryReceipt,
+  updateInventoryReceiptStatus,
+  cloneInventoryReceipt,
+  fetchReceiptsBySupplier,
+  fetchInputStatuses,
+} from '@/api/input';
+import { defineStore } from 'pinia';
 
 export const useInputsStore = defineStore('inputs', {
   actions: {
-    async fetchInputs({ page, itemsPerPage, statusFilters, search }) {
-      const result = await api.fetchInputs({
-        page,
-        itemsPerPage,
-        statusFilters,
-        search,
-      })
-
-      return { inputs: result.data, count: result.totalCount }
+    async fetchInputs(params) {
+      return await fetchInventoryReceipts(params);
     },
 
-    async saveReceipt({ receiptData, isEditMode, status_id }) {
-      const now = new Date().toISOString()
-      const payload = {
-        id: isEditMode ? receiptData.id : null,
-        supplier: receiptData.supplier,
-        products: receiptData.products,
-        notes: receiptData.notes,
-        status_id: status_id,
-        user_name: 'Người dùng Hiện tại',
-        import_date: status_id === 'finished' ? now : receiptData.importDate || now,
-        paid:
-          status_id === 'finished'
-            ? receiptData.products.reduce(
-                (sum, p) => sum + (Number(p.quantity) || 0) * (Number(p.unitPrice) || 0),
-                0,
-              )
-            : 0,
-      }
-
-      const savedReceipt = await api.saveReceipt(payload)
-      return savedReceipt
+    async getInputById(id) {
+      return await getInventoryReceiptById(id);
     },
 
-    async cancelReceipt({ id }) {
-      const data = await api.updateInputStatus(id, 'cancelled')
-      return data
+    async createInput(payload) {
+      return await createInventoryReceipt(payload);
     },
 
-    async saveNotes({ id, notes }) {
-      const { data, error } = await api.updateInput(id, { notes: notes })
-      if (error) throw error
-      return data
+    async updateInput(id, payload) {
+      return await updateInventoryReceipt(id, payload);
     },
 
-    async fetchInputsBySupplier(supplierId, { page, limit, statusFilters, search }) {
-      return { inputs: [], count: 0 }
+    async deleteInput(id) {
+      return await deleteInventoryReceipt(id);
+    },
+
+    async updateInputStatus(id, statusId) {
+      return await updateInventoryReceiptStatus(id, statusId);
+    },
+
+    async cloneInput(id) {
+      return await cloneInventoryReceipt(id);
+    },
+
+    async fetchInputsBySupplier(supplierId, params) {
+      return await fetchReceiptsBySupplier(supplierId, params);
+    },
+
+    async fetchInputStatuses() {
+      return await fetchInputStatuses();
     },
   },
-})
+});

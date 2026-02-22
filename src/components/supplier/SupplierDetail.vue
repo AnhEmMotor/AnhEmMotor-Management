@@ -9,6 +9,7 @@ import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { useInputsStore } from '@/stores/useInputsStore'
 import { useSuppliersStore } from '@/stores/useSuppliersStore'
 import { useQuery } from '@tanstack/vue-query'
+import { fetchInputStatuses } from '@/api/input'
 
 const props = defineProps({
   itemData: Object,
@@ -26,17 +27,21 @@ const { data: detailData } = useQuery({
 
 const supplierInfo = computed(() => ({ ...props.itemData, ...(detailData.value || {}) }))
 
+const { data: statusMapData } = useQuery({
+  queryKey: ['inputStatuses'],
+  queryFn: fetchInputStatuses,
+  staleTime: Infinity,
+})
+
+const statusMap = computed(() => statusMapData.value || {})
+
 function getStatusInfo(statusId) {
-  switch (statusId) {
-    case 'finished':
-      return { text: 'Đã nhập hàng', color: 'green' }
-    case 'working':
-      return { text: 'Chờ xử lý', color: 'yellow' }
-    case 'cancelled':
-      return { text: 'Đã hủy', color: 'red' }
-    default:
-      return { text: `ID: ${statusId}`, color: 'gray' }
-  }
+  const label = statusMap.value[statusId]
+  if (!label) return { text: `ID: ${statusId}`, color: 'gray' }
+  if (statusId === 'finished') return { text: label, color: 'green' }
+  if (statusId === 'working') return { text: label, color: 'yellow' }
+  if (statusId === 'cancelled') return { text: label, color: 'red' }
+  return { text: label, color: 'gray' }
 }
 
 const queryKeyBase = computed(() => ['inputHistoryOfSupplier', props.itemData.id])
@@ -47,23 +52,16 @@ const filters = computed(() => ({
 }))
 
 const fetchHistoryFn = async (params) => {
-  await new Promise((resolve) => setTimeout(resolve, 2000))
-
   const response = await inputsStore.fetchInputsBySupplier(props.itemData.id, {
-    page: params.page,
-    limit: params.limit,
-    statusFilters: params.statusFilters,
-    search: params.search,
+    Page: params.page,
+    PageSize: params.limit,
   })
 
-  const inputs = response?.inputs || []
-  const count = response?.count || 0
-
   return {
-    data: inputs,
+    data: response?.items || [],
     pagination: {
-      totalCount: count,
-      totalPages: Math.ceil(count / params.limit),
+      totalCount: response?.totalCount || 0,
+      totalPages: response?.totalPages || 1,
       currentPage: params.page,
     },
   }

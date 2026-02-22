@@ -1,56 +1,35 @@
-export const fetchOrders = async (params) => {
-  const { page, itemsPerPage, status_ids, search } = params
+import axiosInstance from './axios';
 
-  const { data, error } = await supabase.rpc('get_all_orders', {
-    p_page: page,
-    p_items_per_page: itemsPerPage,
-    p_status_ids: status_ids,
-    p_search: search,
-  })
+export const fetchSalesOrders = async (params) => {
+  const { data } = await axiosInstance.get('/api/v1/SalesOrders', { params });
+  return data;
+};
 
-  if (error) {
-    throw error
-  }
-  return data
-}
+export const getSalesOrderById = async (id) => {
+  const { data } = await axiosInstance.get(`/api/v1/SalesOrders/for-manager/${id}`);
+  return data;
+};
 
-export const saveOrder = async (payload) => {
-  const { id, customerName, notes, status, products } = payload
+export const createSalesOrder = async (payload) => {
+  const { data } = await axiosInstance.post('/api/v1/SalesOrders/by-manager', payload);
+  return data;
+};
 
-  const formattedProducts = products.map((p) => ({
-    product_id: p.product_id || p.id,
-    count: p.quantity,
-    price: p.unitPrice,
-    cost_price: p.costPrice || 0,
-  }))
+export const updateSalesOrder = async (id, payload) => {
+  const { data } = await axiosInstance.put(`/api/v1/SalesOrders/for-manager/${id}`, payload);
+  return data;
+};
 
-  const { data, error } = await supabase.rpc('save_order', {
-    p_order_id: id || null,
-    p_customer_name: customerName,
-    p_notes: notes,
-    p_status_id: status.key,
-    p_products: formattedProducts,
-  })
+export const deleteSalesOrder = async (id) => {
+  await axiosInstance.delete(`/api/v1/SalesOrders/${id}`);
+};
 
-  if (error) {
-    throw error
-  }
-  return data
-}
-
-export const fetchProductVariants = async (params) => {
-  const { data, error } = await supabase.rpc('get_all_variants_lite', params)
-
-  if (error) {
-    throw error
-  }
-  return data
-}
+export const updateSalesOrderStatus = async (id, statusId) => {
+  const { data } = await axiosInstance.patch(`/api/v1/SalesOrders/${id}/status`, { statusId });
+  return data;
+};
 
 export const fetchOutputStatuses = async () => {
-  const { data, error } = await supabase.from('output_status').select('*')
-  if (error) {
-    throw error
-  }
-  return data
-}
+  const { data } = await axiosInstance.get('/api/v1/SalesOrders/status');
+  return data;
+};

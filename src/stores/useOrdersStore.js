@@ -1,76 +1,42 @@
-import { defineStore } from 'pinia'
-import * as orderApi from '@/api/order'
+import {
+  fetchSalesOrders,
+  getSalesOrderById,
+  createSalesOrder,
+  updateSalesOrder,
+  deleteSalesOrder,
+  updateSalesOrderStatus,
+  fetchOutputStatuses,
+} from '@/api/order';
+import { defineStore } from 'pinia';
 
 export const useOrdersStore = defineStore('orders', {
-  state: () => ({
-    statuses: [],
-    isLoading: false,
-    error: null,
-  }),
-
-  getters: {
-    allStatuses: (state) => state.statuses,
-    statusById: (state) => (id) => state.statuses.find((s) => s.id === id),
-  },
-
   actions: {
     async fetchOrders(params) {
-      this.isLoading = true
-      this.error = null
-      try {
-        const data = await orderApi.fetchOrders(params)
-        return data
-      } catch (error) {
-        this.error = error.message
-        throw error
-      } finally {
-        this.isLoading = false
-      }
+      return await fetchSalesOrders(params);
     },
 
-    async saveOrder(payload) {
-      this.isLoading = true
-      this.error = null
-      try {
-        const savedOrder = await orderApi.saveOrder(payload)
-        return savedOrder
-      } catch (error) {
-        this.error = error.message
-        throw error
-      } finally {
-        this.isLoading = false
-      }
+    async getOrderById(id) {
+      return await getSalesOrderById(id);
     },
 
-    async fetchProductVariants(params) {
-      this.isLoading = true
-      this.error = null
-      try {
-        const data = await orderApi.fetchProductVariants(params)
-        return data
-      } catch (error) {
-        this.error = error.message
-        throw error
-      } finally {
-        this.isLoading = false
-      }
+    async createOrder(payload) {
+      return await createSalesOrder(payload);
     },
 
-    async fetchStatuses() {
-      if (this.statuses.length > 0) return
-
-      this.isLoading = true
-      this.error = null
-      try {
-        const statuses = await orderApi.fetchOutputStatuses()
-        this.statuses = statuses
-      } catch (error) {
-        this.error = error.message
-      } finally {
-        this.isLoading = false
-      }
+    async updateOrder(id, payload) {
+      return await updateSalesOrder(id, payload);
     },
 
-    async reloadOrderData() {},
+    async deleteOrder(id) {
+      return await deleteSalesOrder(id);
+    },
+
+    async updateOrderStatus(id, statusId) {
+      return await updateSalesOrderStatus(id, statusId);
+    },
+
+    async fetchOutputStatuses() {
+      return await fetchOutputStatuses();
+    },
   },
-})
+});

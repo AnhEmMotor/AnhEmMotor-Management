@@ -1,9 +1,9 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { usePriceStore } from '@/stores/usePriceStore'
-import { useRoute, useRouter } from 'vue-router'
-import { useMutation, useQueryClient } from '@tanstack/vue-query'
+import { fetchProductsForPricing } from '@/api/price'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
+import { useQueryClient } from '@tanstack/vue-query'
 import PriceQuickMenu from '@/components/price_management/PriceQuickMenu.vue'
 import Input from '@/components/ui/input/BaseInput.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
@@ -16,75 +16,61 @@ import IconDownArrow from '@/components/icons/IconDownArrow.vue'
 import { useToast } from 'vue-toastification'
 
 const priceStore = usePriceStore()
-const router = useRouter()
-const route = useRoute()
 const queryClient = useQueryClient()
 const toast = useToast()
 
 const itemsPerPage = ref(5)
-const page = computed(() => parseInt(route.query.page) || 1)
-const searchTerm = computed(() => route.query.search || '')
 
-const filters = computed(() => ({
-  search: searchTerm.value,
-}))
-
-const localSearchTerm = ref(searchTerm.value)
-let searchTimeout = null
-
-const fetchProductsFn = async (params) => {
-  return priceStore.fetchProducts(params)
+const queryFn = async (params) => {
+  const res = await fetchProductsForPricing({
+    Page: params.page,
+    PageSize: params.limit,
+    filters: params.search ? `Name@=${params.search}` : undefined,
+  })
+  return {
+    data: res.items || [],
+    pagination: {
+      totalPages: res.totalPages,
+      totalCount: res.totalCount,
+    },
+  }
 }
 
-const productDataMapper = (data) => ({
-  items: data?.products || [],
-  count: data?.totalCount || 0,
-})
-
 const {
-  data: fetchedProducts,
-  totalPages,
+  data: rawProducts,
   isLoading,
   isFetching,
   isError,
   error,
+  searchRefs,
+  pagination,
 } = usePaginatedQuery({
   queryKey: ['products'],
-  filters: filters,
-  page: page,
-  itemsPerPage: itemsPerPage,
-  queryFn: fetchProductsFn,
-  dataMapper: productDataMapper,
+  queryFn,
+  itemsPerPage,
+  searchFields: [{ key: 'search', debounce: 400 }],
 })
 
 const products = ref([])
-watch(
-  fetchedProducts,
-  (newProductsData) => {
-    if (newProductsData) {
-      const cloned = JSON.parse(JSON.stringify(newProductsData))
 
-      if (cloned && cloned.length > 0) {
-        cloned.forEach((p) => {
-          if (p.variants) {
-            p.variants.forEach((v) => {
-              if (v.price !== null && v.price !== undefined) {
-                v.price = formatMoney(v.price)
-              }
-            })
+watch(
+  rawProducts,
+  (newData) => {
+    if (newData) {
+      const cloned = JSON.parse(JSON.stringify(newData))
+      cloned.forEach((p) => {
+        p.variants?.forEach((v) => {
+          if (v.price !== null && v.price !== undefined) {
+            v.price = formatMoney(v.price)
           }
         })
-      }
-
+      })
       products.value = cloned
     } else {
       products.value = []
     }
   },
-  {
-    immediate: true,
-    deep: true,
-  },
+  { immediate: true, deep: true },
 )
 
 watch(isError, (val) => {
@@ -93,40 +79,12 @@ watch(isError, (val) => {
   }
 })
 
-const currentPage = computed({
-  get: () => page.value,
-  set: (value) => {
-    router.push({ query: { ...route.query, page: value } })
-  },
-})
-
-watch(localSearchTerm, (newValue) => {
-  clearTimeout(searchTimeout)
-  searchTimeout = setTimeout(() => {
-    router.push({ query: { ...route.query, search: newValue || undefined, page: 1 } })
-  }, 500)
-})
-
-watch(searchTerm, (newSearch) => {
-  if (localSearchTerm.value !== newSearch) {
-    localSearchTerm.value = newSearch
-  }
-})
-
-const { mutate: updatePriceMutation } = useMutation({
-  mutationFn: (variables) => priceStore.updatePrice(variables),
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['products'] })
-  },
-})
-
 const quickMenu = ref({ visible: false, x: 0, y: 0, item: null })
 const expandedProducts = ref(new Set())
+const isSaving = ref(false)
 
 function openQuickMenu(evt, product, variant) {
-  if (variant.latest_input_price === null || variant.latest_input_price === undefined) {
-    return
-  }
+  if (variant.latestInputPrice === null || variant.latestInputPrice === undefined) return
   const rect = evt.target.getBoundingClientRect()
   const menuWidth = 384
   const menuHeight = 200
@@ -134,29 +92,17 @@ function openQuickMenu(evt, product, variant) {
   const windowHeight = window.innerHeight
 
   let left = rect.left + window.scrollX
-
-  if (left + menuWidth > windowWidth) {
-    left = windowWidth - menuWidth - 8
-  }
-
-  if (left < 8) {
-    left = 8
-  }
+  if (left + menuWidth > windowWidth) left = windowWidth - menuWidth - 8
+  if (left < 8) left = 8
 
   const spaceBelow = windowHeight - rect.bottom
   const spaceAbove = rect.top
+  const top =
+    spaceBelow < menuHeight && spaceAbove > menuHeight
+      ? rect.top + window.scrollY - menuHeight - 6
+      : rect.bottom + window.scrollY + 6
 
-  let top
-  if (spaceBelow < menuHeight && spaceAbove > menuHeight) {
-    top = rect.top + window.scrollY - menuHeight - 6
-  } else {
-    top = rect.bottom + window.scrollY + 6
-  }
-
-  quickMenu.value.x = left
-  quickMenu.value.y = top
-  quickMenu.value.visible = true
-  quickMenu.value.item = { product, variant }
+  quickMenu.value = { visible: true, x: left, y: top, item: { product, variant } }
 }
 
 function closeQuickMenu() {
@@ -193,47 +139,48 @@ function updatePriceInput(value, variant) {
     variant.price = ''
     return
   }
-  const num = Number(raw)
-  variant.price = new Intl.NumberFormat('vi-VN').format(num)
+  variant.price = new Intl.NumberFormat('vi-VN').format(Number(raw))
 }
 
 function onDocClick(e) {
   const menuEl = document.querySelector('.price-quick-menu')
   if (!menuEl || !menuEl.contains(e.target)) {
-    if (e.target && e.target.closest && e.target.closest('.price-input')) {
-      return
-    }
+    if (e.target?.closest?.('.price-input')) return
     closeQuickMenu()
   }
 }
 
-function applyQuickPrice(newPrice) {
+async function applyQuickPrice(newPrice) {
   const { product, variant } = quickMenu.value.item
   if (!product || !variant) return
-
-  const formattedPrice = String(newPrice)
-  variant.price = formattedPrice
-  updatePriceMutation({
-    productId: product.product_id,
-    variantId: variant.variant_id,
-    newPrice: formattedPrice,
-  })
+  const formatted = String(newPrice)
+  variant.price = formatted
   closeQuickMenu()
+  await saveVariantPrice(product, variant)
 }
 
-function handlePriceBlur(product, variant) {
+async function handlePriceBlur(product, variant) {
   const v = (variant.price || '').toString().trim()
   if (!v) return
+  await saveVariantPrice(product, variant)
+}
 
-  updatePriceMutation({
-    productId: product.product_id,
-    variantId: variant.variant_id,
-    newPrice: v,
-  })
+async function saveVariantPrice(product, variant) {
+  const raw = parseNumber(variant.price)
+  if (raw === null) return
+  isSaving.value = true
+  try {
+    await priceStore.updateVariantPrice(variant.id, raw)
+    queryClient.invalidateQueries({ queryKey: ['products'] })
+  } catch (err) {
+    toast.error(`Lỗi khi lưu giá: ${err.message}`)
+  } finally {
+    isSaving.value = false
+  }
 }
 
 function getRecentInputPriceDisplay(variant) {
-  const price = variant.latest_input_price
+  const price = variant.latestInputPrice
   return price === null || price === undefined ? '-' : formatMoney(price)
 }
 
@@ -247,14 +194,14 @@ function parseNumber(v) {
 
 function computeProfitAmount(variant) {
   const selling = parseNumber(variant.price)
-  const cost = parseNumber(variant.latest_input_price)
+  const cost = parseNumber(variant.latestInputPrice)
   if (selling === null || cost === null) return null
   return selling - cost
 }
 
 function formatPercent(variant) {
   const current = parseNumber(variant.price)
-  const recent = parseNumber(variant.latest_input_price)
+  const recent = parseNumber(variant.latestInputPrice)
   if (current === null || recent === null || recent === 0) return '-'
   const ratio = (current - recent) / recent
   return new Intl.NumberFormat('vi-VN', {
@@ -278,14 +225,12 @@ onMounted(() => {
   document.addEventListener('mousedown', onDocClick)
 })
 
-function handleImport() {}
-
-function handleExport() {}
-
 onBeforeUnmount(() => {
   document.removeEventListener('mousedown', onDocClick)
-  clearTimeout(searchTimeout)
 })
+
+function handleImport() {}
+function handleExport() {}
 </script>
 
 <template>
@@ -303,7 +248,7 @@ onBeforeUnmount(() => {
     </div>
 
     <Input
-      v-model="localSearchTerm"
+      v-model="searchRefs.search"
       type="text"
       placeholder="Tìm kiếm mã, tên, ..."
       class="mb-3 w-full"
@@ -348,25 +293,25 @@ onBeforeUnmount(() => {
         <template v-else>
           <div
             v-for="product in products"
-            :key="product.product_id"
+            :key="product.id"
             class="border-b border-gray-200 last:border-b-0"
           >
             <div
               class="grid grid-cols-1 md:grid-cols-12 items-center py-4 px-4 bg-white hover:bg-gray-50 cursor-pointer transition-colors"
-              @click="toggleProduct(product.product_id)"
+              @click="toggleProduct(product.id)"
             >
               <div class="font-bold text-base text-gray-900 md:col-span-4 flex items-center gap-2">
                 <component
-                  :is="isExpanded(product.product_id) ? IconDownArrow : IconRightArrow"
+                  :is="isExpanded(product.id) ? IconDownArrow : IconRightArrow"
                   class="w-4 h-4 text-gray-500 flex-shrink-0"
                 />
-                <span class="truncate">{{ product.product_name }}</span>
+                <span class="truncate">{{ product.name }}</span>
                 <span class="text-xs text-gray-500 font-normal ml-2"
                   >({{ product.variants?.length || 0 }})</span
                 >
               </div>
               <div class="text-sm text-gray-600 md:col-span-2 text-right pr-2">
-                {{ getPriceRange(product.variants, 'latest_input_price') }}
+                {{ getPriceRange(product.variants, 'latestInputPrice') }}
               </div>
               <div class="text-sm text-gray-600 md:col-span-2 text-right pr-2">
                 {{ getPriceRange(product.variants, 'price') }}
@@ -375,7 +320,7 @@ onBeforeUnmount(() => {
               <div class="md:col-span-2"></div>
             </div>
 
-            <template v-if="isExpanded(product.product_id)">
+            <template v-if="isExpanded(product.id)">
               <div
                 v-if="!product.variants || product.variants.length === 0"
                 class="text-center py-4 text-gray-500 text-sm bg-gray-50"
@@ -385,13 +330,13 @@ onBeforeUnmount(() => {
 
               <div
                 v-for="variant in product.variants"
-                :key="variant.variant_id"
+                :key="variant.id"
                 class="grid grid-cols-1 md:grid-cols-12 md:items-center py-2 md:py-3 border-t border-gray-100 text-sm gap-2 md:gap-0 first:border-t-0 bg-white hover:bg-gray-50 transition-colors"
               >
                 <div class="px-0 md:pl-12 md:col-span-4 flex items-center gap-2">
                   <div class="text-xs text-gray-500 md:hidden">Biến thể</div>
                   <div class="font-medium text-gray-700">
-                    {{ getVariantOptionsText(variant.option_values) }}
+                    {{ getVariantOptionsText(variant.optionValues) }}
                   </div>
                 </div>
 
@@ -458,6 +403,9 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <Pagination :total-pages="totalPages || 0" v-model:currentPage="currentPage" />
+    <Pagination
+      :total-pages="pagination.totalPages.value || 0"
+      v-model:currentPage="pagination.currentPage.value"
+    />
   </div>
 </template>
