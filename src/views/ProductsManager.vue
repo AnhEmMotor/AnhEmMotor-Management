@@ -34,6 +34,9 @@ const { data: predefinedOptionsData } = useQuery({
 });
 
 const expandedProductIds = ref([]);
+const activeTabs = ref({});
+const getActiveTab = (productId) => activeTabs.value[productId] || 'variants';
+const setActiveTab = (productId, tab) => { activeTabs.value[productId] = tab; };
 const numberOfColumns = ref(8);
 const isSaving = ref(false);
 const isRefreshing = ref(false);
@@ -134,7 +137,6 @@ const getNewEmptyProduct = () => ({
   bore_stroke: '',
   compression_ratio: '',
   status_id: 'out-of-stock',
-  options: [],
   variants: [
     {
       id: null,
@@ -152,22 +154,6 @@ const isEditMode = computed(() => !!editableProduct.value?.id);
 
 const formErrors = ref({ name: '', category_id: '', variants: [], _backend: {} });
 
-const extractOptionsFromProduct = (product) => {
-  if (product.options && product.options.length > 0) return product;
-  const optionNamesSet = new Set();
-  (product.variants || []).forEach((v) => {
-    Object.keys(v.optionValues || {}).forEach((key) => optionNamesSet.add(key));
-  });
-  product.options = [...optionNamesSet].map((name) => ({
-    name,
-    values: [...new Set(
-      (product.variants || [])
-        .map((v) => v.optionValues?.[name])
-        .filter(Boolean),
-    )].join(', '),
-  }));
-  return product;
-};
 
 const openAddEditModal = async (product = null) => {
   formErrors.value = { name: '', category_id: '', variants: [], _backend: {} };
@@ -178,13 +164,13 @@ const openAddEditModal = async (product = null) => {
 
     const cachedData = queryClient.getQueryData(['products', product.id]);
     if (cachedData) {
-      editableProduct.value = extractOptionsFromProduct(JSON.parse(JSON.stringify(cachedData)));
+      editableProduct.value = JSON.parse(JSON.stringify(cachedData));
       queryClient.fetchQuery({
         queryKey: ['products', product.id],
         queryFn: () => productApi.getProductById(product.id),
       }).then((freshData) => {
         if (freshData) {
-          editableProduct.value = extractOptionsFromProduct(JSON.parse(JSON.stringify(freshData)));
+          editableProduct.value = JSON.parse(JSON.stringify(freshData));
         }
       }).catch(() => {});
     } else {
@@ -195,7 +181,7 @@ const openAddEditModal = async (product = null) => {
           queryFn: () => productApi.getProductById(product.id),
         });
         if (freshData) {
-          editableProduct.value = extractOptionsFromProduct(JSON.parse(JSON.stringify(freshData)));
+          editableProduct.value = JSON.parse(JSON.stringify(freshData));
         }
       } catch (e) {
         toast.error(`Lỗi tải dữ liệu: ${e.message}`);
@@ -266,10 +252,11 @@ const validateProduct = (productData) => {
       vErrors.url = 'Vui lòng nhập URL Slug.';
       hasError = true;
     }
-    if (productData.options.length > 0) {
-      const allOptionsSelected = productData.options.every((opt) => variant.optionValues[opt.name]);
-      if (!allOptionsSelected) {
-        vErrors.combination = 'Vui lòng chọn đầy đủ thuộc tính.';
+    const optionEntries = Object.entries(variant.optionValues || {});
+    if (optionEntries.length > 0) {
+      const hasEmptyValues = optionEntries.some(([, val]) => !val || !val.trim());
+      if (hasEmptyValues) {
+        vErrors.combination = 'Vui lòng nhập đầy đủ giá trị cho tất cả thuộc tính.';
         hasError = true;
       } else {
         const sig = JSON.stringify(
@@ -518,25 +505,49 @@ const exportExcel = () => {
               </td>
             </tr>
 
-            <tr v-if="isExpanded(product.id)" class="bg-gray-50">
-              <td :colspan="numberOfColumns" class="p-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <h4 class="text-sm font-semibold mb-2 text-gray-700">Chi tiết biến thể:</h4>
-                    <table class="min-w-full bg-white rounded shadow-inner text-sm border border-gray-200">
-                      <thead class="bg-gray-100">
+            <tr v-if="isExpanded(product.id)" class="bg-gray-50 border-b border-gray-200">
+              <td :colspan="numberOfColumns" class="p-0">
+                <div class="p-3 px-10 border-t border-gray-200 bg-white">
+                  <div class="flex border-b border-gray-200 mb-3 space-x-5">
+                    <button
+                      class="py-1.5 text-sm"
+                      :class="
+                        getActiveTab(product.id) === 'variants'
+                          ? 'font-semibold border-b-2 border-red-500 text-red-600'
+                          : 'text-gray-600 hover:text-gray-800'
+                      "
+                      @click="setActiveTab(product.id, 'variants')"
+                    >
+                      Biến thể sản phẩm
+                    </button>
+                    <button
+                      class="py-1.5 text-sm"
+                      :class="
+                        getActiveTab(product.id) === 'specs'
+                          ? 'font-semibold border-b-2 border-red-500 text-red-600'
+                          : 'text-gray-600 hover:text-gray-800'
+                      "
+                      @click="setActiveTab(product.id, 'specs')"
+                    >
+                      Thông số kỹ thuật
+                    </button>
+                  </div>
+
+                  <div v-show="getActiveTab(product.id) === 'variants'">
+                    <table class="min-w-full bg-white rounded shadow-sm text-sm border border-gray-200 overflow-hidden">
+                      <thead class="bg-gray-50 border-b border-gray-200">
                         <tr>
-                          <th class="py-2 px-4 text-left w-20">Ảnh</th>
-                          <th class="py-2 px-4 text-left">Thuộc tính</th>
-                          <th class="py-2 px-4 text-left">Giá Bán</th>
-                          <th class="py-2 px-4 text-left">Tồn Kho</th>
-                          <th class="py-2 px-4 text-left">Đã Đặt</th>
-                          <th class="py-2 px-4 text-left">Hiện Có</th>
-                          <th class="py-2 px-4 text-left">Trạng Thái</th>
+                          <th class="py-2 px-4 text-left w-20 text-gray-700 font-semibold tracking-wider">Ảnh</th>
+                          <th class="py-2 px-4 text-left text-gray-700 font-semibold tracking-wider">Thuộc tính</th>
+                          <th class="py-2 px-4 text-left text-gray-700 font-semibold tracking-wider">Giá Bán</th>
+                          <th class="py-2 px-4 text-left text-gray-700 font-semibold tracking-wider">Tồn Kho</th>
+                          <th class="py-2 px-4 text-left text-gray-700 font-semibold tracking-wider">Đã Đặt</th>
+                          <th class="py-2 px-4 text-left text-gray-700 font-semibold tracking-wider">Hiện Có</th>
+                          <th class="py-2 px-4 text-left text-gray-700 font-semibold tracking-wider">Trạng Thái</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr v-for="variant in product.variants" :key="variant.id" class="border-b last:border-b-0">
+                        <tr v-for="variant in product.variants" :key="variant.id" class="border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors duration-150">
                           <td class="py-2 px-4 w-20">
                             <img
                               :src="variant.cover_image_url || 'https://placehold.co/100x100/gray/white?text=N/A'"
@@ -544,11 +555,11 @@ const exportExcel = () => {
                               @error="(e) => (e.target.src = 'https://placehold.co/100x100/gray/white?text=Error')"
                             />
                           </td>
-                          <td class="py-2 px-4 text-gray-800">{{ getVariantOptionsText(variant) }}</td>
-                          <td class="py-2 px-4">{{ formatCurrency(variant.price) }}</td>
-                          <td class="py-2 px-4">{{ variant.stock }}</td>
-                          <td class="py-2 px-4">{{ variant.has_been_booked }}</td>
-                          <td class="py-2 px-4">{{ variant.stock - variant.has_been_booked }}</td>
+                          <td class="py-2 px-4 text-gray-800 font-medium">{{ getVariantOptionsText(variant) }}</td>
+                          <td class="py-2 px-4 font-semibold text-gray-900">{{ formatCurrency(variant.price) }}</td>
+                          <td class="py-2 px-4 text-gray-600">{{ variant.stock }}</td>
+                          <td class="py-2 px-4 text-gray-600">{{ variant.has_been_booked }}</td>
+                          <td class="py-2 px-4 font-medium" :class="(variant.stock - variant.has_been_booked) > 0 ? 'text-green-600' : 'text-red-500'">{{ variant.stock - variant.has_been_booked }}</td>
                           <td class="py-2 px-4">
                             <RoundBadge :color="getStockStatusColor(variant.status_stock_id)">
                               {{ getStockStatusText(variant.status_stock_id) }}
@@ -558,14 +569,85 @@ const exportExcel = () => {
                       </tbody>
                     </table>
                   </div>
-                  <div>
-                    <h4 class="text-sm font-semibold mb-2 text-gray-700">Thông số kỹ thuật:</h4>
-                    <div class="bg-white rounded shadow-inner p-4 text-sm space-y-2">
-                      <div v-if="product.weight"><strong>Khối lượng:</strong> {{ product.weight }} kg</div>
-                      <div v-if="product.dimensions"><strong>Kích thước:</strong> {{ product.dimensions }} mm</div>
-                      <div v-if="product.displacement"><strong>Dung tích:</strong> {{ product.displacement }} cc</div>
-                      <div v-if="product.engine_type"><strong>Loại động cơ:</strong> {{ product.engine_type }}</div>
-                      <div v-if="product.fuel_consumption"><strong>Tiêu hao nhiên liệu:</strong> {{ product.fuel_consumption }}</div>
+
+                  <div v-show="getActiveTab(product.id) === 'specs'" class="pt-2">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4">
+                      <div class="text-sm">
+                        <span class="text-gray-500 block">Khối lượng</span>
+                        <span class="font-medium text-gray-800">{{ product.weight ? product.weight + ' kg' : '---' }}</span>
+                      </div>
+                      <div class="text-sm">
+                        <span class="text-gray-500 block">Kích thước</span>
+                        <span class="font-medium text-gray-800">{{ product.dimensions || '---' }}</span>
+                      </div>
+                      <div class="text-sm">
+                        <span class="text-gray-500 block">Dung tích</span>
+                        <span class="font-medium text-gray-800">{{ product.displacement ? product.displacement + ' cc' : '---' }}</span>
+                      </div>
+                      <div class="text-sm">
+                        <span class="text-gray-500 block">Tỷ số nén</span>
+                        <span class="font-medium text-gray-800">{{ product.compression_ratio || '---' }}</span>
+                      </div>
+                      <div class="text-sm">
+                        <span class="text-gray-500 block">Đường kính x Hành trình piston</span>
+                        <span class="font-medium text-gray-800">{{ product.bore_stroke || '---' }}</span>
+                      </div>
+                      <div class="text-sm">
+                        <span class="text-gray-500 block">Loại động cơ</span>
+                        <span class="font-medium text-gray-800">{{ product.engine_type || '---' }}</span>
+                      </div>
+                      <div class="text-sm">
+                        <span class="text-gray-500 block">Công suất tối đa</span>
+                        <span class="font-medium text-gray-800">{{ product.max_power || '---' }}</span>
+                      </div>
+                      <div class="text-sm">
+                        <span class="text-gray-500 block">Mô-men xoắn cực đại</span>
+                        <span class="font-medium text-gray-800">{{ product.max_torque || '---' }}</span>
+                      </div>
+                      <div class="text-sm">
+                        <span class="text-gray-500 block">Tiêu hao nhiên liệu</span>
+                        <span class="font-medium text-gray-800">{{ product.fuel_consumption || '---' }}</span>
+                      </div>
+                      <div class="text-sm">
+                        <span class="text-gray-500 block">Dung tích bình xăng</span>
+                        <span class="font-medium text-gray-800">{{ product.fuel_capacity ? product.fuel_capacity + ' L' : '---' }}</span>
+                      </div>
+                      <div class="text-sm">
+                        <span class="text-gray-500 block">Dung tích nhớt máy</span>
+                        <span class="font-medium text-gray-800">{{ product.oil_capacity ? product.oil_capacity + ' L' : '---' }}</span>
+                      </div>
+                      <div class="text-sm">
+                        <span class="text-gray-500 block">Loại truyền động</span>
+                        <span class="font-medium text-gray-800">{{ product.transmission_type || '---' }}</span>
+                      </div>
+                      <div class="text-sm">
+                        <span class="text-gray-500 block">Hệ thống khởi động</span>
+                        <span class="font-medium text-gray-800">{{ product.starter_system || '---' }}</span>
+                      </div>
+                      <div class="text-sm">
+                        <span class="text-gray-500 block">Phuộc trước</span>
+                        <span class="font-medium text-gray-800">{{ product.front_suspension || '---' }}</span>
+                      </div>
+                      <div class="text-sm">
+                        <span class="text-gray-500 block">Phuộc sau</span>
+                        <span class="font-medium text-gray-800">{{ product.rear_suspension || '---' }}</span>
+                      </div>
+                      <div class="text-sm">
+                        <span class="text-gray-500 block">Kích cỡ lốp</span>
+                        <span class="font-medium text-gray-800">{{ product.tire_size || '---' }}</span>
+                      </div>
+                      <div class="text-sm">
+                        <span class="text-gray-500 block">Khoảng cách trục bánh xe</span>
+                        <span class="font-medium text-gray-800">{{ product.wheelbase ? product.wheelbase + ' mm' : '---' }}</span>
+                      </div>
+                      <div class="text-sm">
+                        <span class="text-gray-500 block">Độ cao yên</span>
+                        <span class="font-medium text-gray-800">{{ product.seat_height ? product.seat_height + ' mm' : '---' }}</span>
+                      </div>
+                      <div class="text-sm">
+                        <span class="text-gray-500 block">Khoảng sáng gầm xe</span>
+                        <span class="font-medium text-gray-800">{{ product.ground_clearance ? product.ground_clearance + ' mm' : '---' }}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -604,7 +686,10 @@ const exportExcel = () => {
       />
     </template>
     <template #footer>
-      <Button text="Lưu" color="purple" @click="handleSaveProduct" :loading="isSaving" />
+      <div class="flex justify-end gap-3 w-full">
+        <Button text="Huỷ bỏ" color="gray" @click="handleCloseFormModal" />
+        <Button text="Lưu" color="purple" @click="handleSaveProduct" :loading="isSaving" />
+      </div>
     </template>
   </DraggableModal>
 </template>

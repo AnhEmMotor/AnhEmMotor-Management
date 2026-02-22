@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, computed, nextTick, onMounted } from 'vue'
+import { ref, watch, computed, nextTick } from 'vue'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { fetchCategories } from '@/api/productCategory'
 import { fetchBrands } from '@/api/brand'
@@ -15,7 +15,6 @@ import GroupImage from '@/components/ui/input/GroupImage.vue'
 import LoadingOverlay from '../ui/LoadingOverlay.vue'
 import IconTrash from '@/components/icons/IconTrash.vue'
 import IconPlus from '@/components/icons/IconPlus.vue'
-import IconCheck from '@/components/icons/IconCheck.vue'
 
 const props = defineProps({
   modelValue: {
@@ -93,7 +92,6 @@ const allAvailableOptions = computed(() => {
   }))
 })
 
-// Check if we are still fetching the very FIRST time (not purely background refresh)
 const showLoadingOverlay = computed(() => {
   return props.isSaving
 })
@@ -103,18 +101,6 @@ const loadingMessage = computed(() => {
   return ''
 })
 
-const hasOptions = computed(() => {
-  return localProduct.value.options && localProduct.value.options.length > 0
-})
-
-const getOptionValuesArray = (valuesString) => {
-  if (!valuesString) return []
-  return valuesString.split(',').map((v) => {
-    const trimmedVal = v.trim()
-    return { value: trimmedVal, text: trimmedVal }
-  })
-}
-
 const getVariantErrors = (index) => {
   if (props.errors?.variants && props.errors.variants[index]) {
     return props.errors.variants[index]
@@ -122,15 +108,17 @@ const getVariantErrors = (index) => {
   return {}
 }
 
-const simpleProductErrors = computed(() => {
-  if (!hasOptions.value && props.errors?.variants && props.errors.variants[0]) {
-    return {
-      price: props.errors.variants[0].price,
-      url: props.errors.variants[0].url,
-    }
-  }
-  return {}
-})
+const getPredefinedLabel = (key) => {
+  const dict = predefinedOptionsData.value || {}
+  return dict[key] || key
+}
+
+const getAvailableOptionsForVariant = (variant, currentKey) => {
+  const usedKeys = Object.keys(variant.optionValues || {})
+  return allAvailableOptions.value.filter((opt) => {
+    return opt.value === currentKey || !usedKeys.includes(opt.value)
+  })
+}
 
 const slugify = (str) => {
   if (!str) return ''
@@ -173,10 +161,6 @@ watch(
     copy.category_id = copy.category_id || ''
     copy.brand_id = copy.brand_id || ''
 
-    if (!copy.options) {
-      copy.options = []
-    }
-
     if (!copy.variants || copy.variants.length === 0) {
       copy.variants = [
         {
@@ -192,6 +176,7 @@ watch(
       copy.variants.forEach((v) => {
         if (!v.photo_collection) v.photo_collection = []
         if (!v.cover_image_url) v.cover_image_url = ''
+        if (!v.optionValues) v.optionValues = {}
         if (!v.url) v.url = generateVariantSlug(v)
       })
     }
@@ -229,79 +214,26 @@ watch(() => localProduct.value.variants.map((v) => v.optionValues), updateAllVar
   deep: true,
 })
 
-watch(
-  () => localProduct.value.options,
-  (newOptions, oldOptions) => {
-    if (isUpdatingFromProp.value || oldOptions === undefined) {
-      return
-    }
-
-    if (!localProduct.value.variants) localProduct.value.variants = []
-
-    if (newOptions.length > 0 && oldOptions.length === 0) {
-      localProduct.value.variants = []
-      addVariant()
-    } else if (newOptions.length === 0 && oldOptions.length > 0) {
-      const firstVariant = localProduct.value.variants[0]
-        ? JSON.parse(JSON.stringify(localProduct.value.variants[0]))
-        : {
-            id: null,
-            price: null,
-            cover_image_url: '',
-            photo_collection: [],
-          }
-
-      firstVariant.optionValues = {}
-      firstVariant.url = slugify(localProduct.value.name)
-
-      localProduct.value.variants = [firstVariant]
-    } else {
-      const currentOptionNames = newOptions.map((o) => o.name)
-      localProduct.value.variants.forEach((variant) => {
-        if (!variant.optionValues || typeof variant.optionValues !== 'object') {
-          variant.optionValues = {}
-        }
-
-        const existingValueKeys = Object.keys(variant.optionValues)
-
-        existingValueKeys.forEach((key) => {
-          if (!currentOptionNames.includes(key)) {
-            delete variant.optionValues[key]
-          }
-        })
-
-        currentOptionNames.forEach((name) => {
-          if (name && !Object.prototype.hasOwnProperty.call(variant.optionValues, name)) {
-            variant.optionValues[name] = ''
-          }
-        })
-      })
-
-      // If options changed to effectively empty (no names), reduce variants to 1
-      const hasValidOptions = localProduct.value.options.some((o) => o.name);
-      if (!hasValidOptions && localProduct.value.variants.length > 1) {
-        const firstVariant = localProduct.value.variants[0];
-        firstVariant.optionValues = {};
-        firstVariant.url = slugify(localProduct.value.name);
-        localProduct.value.variants = [firstVariant];
-      }
-    }
-  },
-  { deep: true },
-)
-
-const addOption = () => {
-  if (!localProduct.value.options) {
-    localProduct.value.options = []
+const addVariantOption = (variant) => {
+  if (!variant.optionValues) {
+    variant.optionValues = {}
   }
-  localProduct.value.options.push({
-    name: '',
-    values: '',
-  })
+  const usedKeys = Object.keys(variant.optionValues)
+  const nextOption = allAvailableOptions.value.find((o) => !usedKeys.includes(o.value))
+  if (nextOption) {
+    variant.optionValues[nextOption.value] = ''
+  }
 }
 
-const removeOption = (index) => {
-  localProduct.value.options.splice(index, 1)
+const removeVariantOption = (variant, key) => {
+  delete variant.optionValues[key]
+}
+
+const changeOptionKey = (variant, oldKey, newKey) => {
+  if (oldKey === newKey) return
+  const oldValue = variant.optionValues[oldKey] || ''
+  delete variant.optionValues[oldKey]
+  variant.optionValues[newKey] = oldValue
 }
 
 const addVariant = () => {
@@ -314,20 +246,16 @@ const addVariant = () => {
     url: '',
   }
 
-  localProduct.value.options.forEach((opt) => {
-    if (opt.name) {
-      newVariant.optionValues[opt.name] = ''
-    }
-  })
-
   newVariant.url = generateVariantSlug(newVariant)
   localProduct.value.variants.push(newVariant)
 }
 
 const removeVariant = (index) => {
   localProduct.value.variants.splice(index, 1)
+  if (localProduct.value.variants.length === 0) {
+    addVariant()
+  }
 }
-
 </script>
 
 <template>
@@ -491,199 +419,119 @@ const removeVariant = (index) => {
       </fieldset>
 
       <fieldset class="border rounded-md p-4">
-        <legend class="px-2 font-semibold text-gray-700">Thuộc tính sản phẩm (Options)</legend>
-        <div class="space-y-3">
-          <div
-            v-for="(option, index) in localProduct.options"
-            :key="index"
-            class="flex flex-col sm:flex-row gap-2 items-start"
-          >
-            <Dropdown
-              label="Tên thuộc tính"
-              v-model="option.name"
-              :options="allAvailableOptions"
-              :pagination="optionPagination"
-              :loading="isOptionsLoading"
-              placeholder="Chọn thuộc tính"
-              class="flex-1"
-            />
-            <Input
-              label="Các giá trị"
-              v-model="option.values"
-              placeholder="Cách nhau bằng dấu phẩy (ví dụ: Đỏ, Xanh)"
-              class="flex-1"
-            />
-            <SmallNoBgButton
-              color="red"
-              @click="removeOption(index)"
-              class="mt-6 sm:mt-7"
-              :icon="IconTrash"
-            >
-              Xóa
-            </SmallNoBgButton>
-          </div>
-        </div>
-        <Button
-          text="Thêm thuộc tính"
-          color="gray"
-          @click="addOption"
-          class="mt-4"
-          :icon="IconPlus"
-        />
-      </fieldset>
-
-      <fieldset class="border rounded-md p-4">
         <legend class="px-2 font-semibold text-gray-700">Các biến thể (Variants)</legend>
-        
+
         <div v-if="typeof props.errors?.variants === 'string'" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mb-4">
           <span class="block sm:inline whitespace-pre-line">{{ props.errors.variants }}</span>
         </div>
         <div v-if="typeof props.errors?._backend?.variants === 'string'" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mb-4">
           <span class="block sm:inline whitespace-pre-line">{{ props.errors._backend.variants }}</span>
         </div>
-        <div v-else-if="typeof props.errors?._backend?.varients === 'string'" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mb-4">
-          <span class="block sm:inline whitespace-pre-line">{{ props.errors._backend.varients }}</span>
-        </div>
 
-        <div v-if="!hasOptions">
-          <p class="text-sm text-gray-500 mb-4">
-            Sản phẩm này không có thuộc tính. Vui lòng nhập thông tin cho biến thể mặc định.
-          </p>
-          <div v-if="localProduct.variants[0]" class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Input
-                  label="Giá Bán *"
-                  type="number"
-                  v-model.number="localProduct.variants[0].price"
-                  placeholder="Nhập giá bán"
-                  :min="0"
+        <div class="space-y-6">
+          <div
+            v-for="(variant, index) in localProduct.variants"
+            :key="index"
+            class="border rounded-lg p-4 bg-gray-50 relative"
+          >
+            <SmallNoBgButton
+              v-if="localProduct.variants.length > 1"
+              color="red"
+              @click="removeVariant(index)"
+              class="absolute top-3 right-3"
+              :icon="IconTrash"
+            >
+              Xóa Biến Thể
+            </SmallNoBgButton>
+
+            <h4 class="font-semibold text-lg mb-3">Biến thể #{{ index + 1 }}</h4>
+
+            <div v-if="Object.keys(variant.optionValues || {}).length > 0" class="mb-4 space-y-2">
+              <div
+                v-for="(value, key) in variant.optionValues"
+                :key="key"
+                class="flex flex-col sm:flex-row gap-2 items-start"
+              >
+                <Dropdown
+                  :label="getPredefinedLabel(key)"
+                  :model-value="key"
+                  :options="getAvailableOptionsForVariant(variant, key)"
+                  :loading="isOptionsLoading"
+                  placeholder="Chọn thuộc tính"
+                  class="flex-1"
+                  @update:model-value="(newKey) => changeOptionKey(variant, key, newKey)"
                 />
-                <div v-if="simpleProductErrors.price" class="text-red-500 text-xs mt-1">
-                  {{ simpleProductErrors.price }}
-                </div>
-              </div>
-              <div>
                 <Input
-                  label="URL Slug *"
-                  v-model="localProduct.variants[0].url"
-                  placeholder="ví dụ: ten-san-pham"
+                  label="Giá trị"
+                  :model-value="value"
+                  placeholder="ví dụ: Đỏ, 150cc..."
+                  class="flex-1"
+                  @update:model-value="(newVal) => (variant.optionValues[key] = newVal)"
                 />
-                <div v-if="simpleProductErrors.url" class="text-red-500 text-xs mt-1">
-                  {{ simpleProductErrors.url }}
-                </div>
+                <SmallNoBgButton
+                  color="red"
+                  @click="removeVariantOption(variant, key)"
+                  class="mt-6 sm:mt-7"
+                  :icon="IconTrash"
+                >
+                  Xóa
+                </SmallNoBgButton>
               </div>
             </div>
+
+            <Button
+              v-if="Object.keys(variant.optionValues || {}).length < allAvailableOptions.length"
+              text="Thêm thuộc tính"
+              color="gray"
+              @click="addVariantOption(variant)"
+              class="mb-4"
+              :icon="IconPlus"
+              size="sm"
+            />
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <Input
+                label="Giá Bán *"
+                type="number"
+                v-model.number="variant.price"
+                placeholder="Giá bán"
+                :error="getVariantErrors(index).price"
+              />
+              <Input
+                label="URL Slug *"
+                v-model="variant.url"
+                placeholder="ví dụ: ten-san-pham-thuoc-tinh"
+                :error="getVariantErrors(index).url"
+              />
+            </div>
+
+            <div v-if="getVariantErrors(index).combination" class="text-red-500 text-sm mb-4">
+              {{ getVariantErrors(index).combination }}
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Image
                 label="Ảnh Bìa Biến Thể"
-                v-model="localProduct.variants[0].cover_image_url"
+                v-model="variant.cover_image_url"
                 class="md:col-span-1"
                 bucket="cover"
               />
               <GroupImage
                 label="Bộ Sưu Tập Biến Thể"
-                v-model="localProduct.variants[0].photo_collection"
+                v-model="variant.photo_collection"
                 class="md:col-span-2"
                 bucket="photo-collection"
               />
             </div>
           </div>
         </div>
-
-        <div v-else>
-          <div class="space-y-6">
-            <div
-              v-for="(variant, index) in localProduct.variants"
-              :key="index"
-              class="border rounded-lg p-4 bg-gray-50 relative"
-            >
-              <SmallNoBgButton
-                color="red"
-                @click="removeVariant(index)"
-                class="absolute top-3 right-3"
-                :icon="IconTrash"
-              >
-                Xóa Biến Thể
-              </SmallNoBgButton>
-
-              <h4 class="font-semibold text-lg mb-3">Biến thể #{{ index + 1 }}</h4>
-
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <div v-for="option in localProduct.options" :key="option.name" class="flex-1">
-                  <Dropdown
-                    v-if="option.name"
-                    :label="option.name || 'Chọn thuộc tính'"
-                    v-model="variant.optionValues[option.name]"
-                    :options="getOptionValuesArray(option.values)"
-                    placeholder="Chọn"
-                  />
-                  <span v-else class="text-xs text-gray-500">...</span>
-                </div>
-
-                <div class="flex-1">
-                  <Input
-                    label="Giá Bán *"
-                    type="number"
-                    v-model.number="variant.price"
-                    placeholder="Giá bán"
-                    :error="getVariantErrors(index).price"
-                  />
-                </div>
-              </div>
-
-              <div v-if="getVariantErrors(index).combination" class="text-red-500 text-sm mb-4">
-                {{ getVariantErrors(index).combination }}
-              </div>
-
-              <div class="mb-4">
-                <Input
-                  label="URL Slug *"
-                  v-model="variant.url"
-                  placeholder="ví dụ: ten-san-pham-thuoc-tinh"
-                  :error="getVariantErrors(index).url"
-                />
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Image
-                  label="Ảnh Bìa Biến Thể"
-                  v-model="variant.cover_image_url"
-                  class="md:col-span-1"
-                  bucket="cover"
-                />
-                <GroupImage
-                  label="Bộ Sưu Tập Biến Thể"
-                  v-model="variant.photo_collection"
-                  class="md:col-span-2"
-                  bucket="photo-collection"
-                />
-              </div>
-
-              <div class="mt-2 text-red-500 text-xs space-y-1">
-                <div v-if="getVariantErrors(index).price">
-                  Lỗi giá: {{ getVariantErrors(index).price }}
-                </div>
-                <div v-if="getVariantErrors(index).combination">
-                  Lỗi thuộc tính: {{ getVariantErrors(index).combination }}
-                </div>
-                <div v-if="getVariantErrors(index).url">
-                  Lỗi URL: {{ getVariantErrors(index).url }}
-                </div>
-              </div>
-            </div>
-          </div>
-          <Button
-            text="Thêm biến thể"
-            color="blue"
-            @click="addVariant"
-            class="mt-4"
-            :icon="IconPlus"
-          />
-          <div v-if="localProduct.variants.length === 0" class="text-center py-4 text-gray-500">
-            Nhấn "Thêm biến thể" để tạo tổ hợp thuộc tính đầu tiên.
-          </div>
-        </div>
+        <Button
+          text="Thêm biến thể"
+          color="blue"
+          @click="addVariant"
+          class="mt-4"
+          :icon="IconPlus"
+        />
       </fieldset>
     </div>
   </form>
