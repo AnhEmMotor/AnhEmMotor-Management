@@ -254,7 +254,7 @@ const handleImport = () => {
         </div>
 
         <template v-else-if="suppliers.length === 0">
-          <div v-if="isFetching || isLoading">
+          <div v-if="isLoading">
             <div
               v-for="i in 5"
               :key="i"

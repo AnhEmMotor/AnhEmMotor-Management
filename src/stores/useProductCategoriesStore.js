@@ -18,7 +18,7 @@ export const useProductCategoriesStore = defineStore('productCategories', {
       this.isLoading = true;
       this.error = null;
       try {
-        const result = await productCategoryApi.getCategoriesForManager();
+        const result = await productCategoryApi.getCategoriesForManager({ PageSize: 10 });
         this.categories = result.items || [];
       } catch (error) {
         this.error = error.message;

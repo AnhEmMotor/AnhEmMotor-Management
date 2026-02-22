@@ -18,7 +18,7 @@ export const useBrandsStore = defineStore('brands', {
       this.isLoading = true
       this.error = null
       try {
-        const result = await brandApi.getAllBrands()
+        const result = await brandApi.getAllBrands({ PageSize: 10 })
         this.brands = result.items || result || []
       } catch (error) {
         this.error = error.message

@@ -11,7 +11,7 @@
       @drop.prevent="onDrop"
       :class="[
         'mt-2 relative flex flex-col justify-center items-center w-full min-h-[10rem] border-2 border-dashed rounded-md cursor-pointer transition-colors',
-        isDragging ? 'border-purple-600 bg-purple-50' : 'border-gray-300 hover:border-gray-400',
+        isDragging ? 'border-purple-600 bg-purple-50' : (error ? 'border-red-400 bg-red-50' : 'border-gray-300 hover:border-gray-400'),
         isLoading ? 'pointer-events-none' : '',
       ]"
     >
@@ -61,18 +61,9 @@
           đây
         </p>
         <p class="text-xs text-gray-500">PNG, JPG, GIF (TỐI ĐA 5MB / ảnh)</p>
-        <p v-if="error" class="text-xs text-red-500 mt-1">{{ error }}</p>
+        <p v-if="uploadError" class="text-xs text-red-500 mt-1">{{ uploadError }}</p>
       </div>
     </div>
-
-    <input
-      type="file"
-      ref="fileInput"
-      @change="onFileSelected"
-      class="hidden"
-      accept="image/*"
-      multiple
-    />
 
     <div
       v-if="localValue && localValue.length > 0"
@@ -104,13 +95,16 @@
         </button>
       </div>
     </div>
+
+    <p v-if="error" class="mt-1 text-sm text-red-600">{{ error }}</p>
+
+    <input type="file" ref="fileInput" @change="onFileSelected" class="hidden" accept="image/*" multiple />
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useProductsStore } from '@/stores/useProductsStore'
-import * as storageApi from '@/api/supabaseStorage'
+import * as mediaFileApi from '@/api/mediaFile'
 
 const props = defineProps({
   modelValue: {
@@ -121,16 +115,18 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  error: {
+    type: String,
+    default: '',
+  },
 })
 
 const emit = defineEmits(['update:modelValue'])
-const productsStore = useProductsStore()
-const bucketName = 'photo-collection'
 
 const isDragging = ref(false)
 const isLoading = ref(false)
 const fileInput = ref(null)
-const error = ref('')
+const uploadError = ref('')
 
 const localValue = computed({
   get: () => props.modelValue || [],
@@ -141,7 +137,7 @@ const localValue = computed({
 
 const openFilePicker = () => {
   if (isLoading.value) return
-  error.value = ''
+  uploadError.value = ''
   fileInput.value.click()
 }
 
@@ -172,7 +168,7 @@ const onDrop = (event) => {
 }
 
 const processFiles = (files) => {
-  error.value = ''
+  uploadError.value = ''
   let imageFiles = []
   let hadError = false
 
@@ -189,12 +185,12 @@ const processFiles = (files) => {
   })
 
   if (imageFiles.length === 0 && files.length > 0) {
-    error.value = 'Tất cả file đều bị bỏ qua (không phải ảnh hoặc quá 5MB).'
+    uploadError.value = 'Tất cả file đều bị bỏ qua (không phải ảnh hoặc quá 5MB).'
     return
   }
 
   if (hadError) {
-    error.value = 'Một số file bị bỏ qua (không phải ảnh hoặc quá 5MB).'
+    uploadError.value = 'Một số file bị bỏ qua (không phải ảnh hoặc quá 5MB).'
   }
 
   if (imageFiles.length > 0) {
@@ -208,32 +204,21 @@ const processFiles = (files) => {
 
 const uploadFilesHandler = async (files) => {
   isLoading.value = true
-  error.value = ''
-  const uploadPromises = []
+  uploadError.value = ''
 
   try {
-    for (const file of files) {
-      uploadPromises.push(storageApi.uploadFile(file, bucketName))
-    }
-    const filePaths = await Promise.all(uploadPromises)
-    const newUrls = filePaths.map((path) => storageApi.getPublicUrl(path, bucketName))
+    const responses = await mediaFileApi.uploadImages(files)
+    const newUrls = responses.map((r) => r.publicUrl)
     localValue.value = [...localValue.value, ...newUrls]
   } catch (apiError) {
-    error.value = `Lỗi upload: ${apiError.message}`
+    uploadError.value = `Lỗi upload: ${apiError.message}`
   } finally {
     isLoading.value = false
   }
 }
 
-const removeImage = async (index) => {
+const removeImage = (index) => {
   if (isLoading.value) return
-
-  const urlToRemove = localValue.value[index]
-
-  if (urlToRemove) {
-    await productsStore.deleteProductImage({ url: urlToRemove, bucket: bucketName })
-  }
-
   const newArray = [...localValue.value]
   newArray.splice(index, 1)
   localValue.value = newArray

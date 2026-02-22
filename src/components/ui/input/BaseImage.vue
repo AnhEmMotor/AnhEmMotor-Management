@@ -37,7 +37,7 @@
       @drop.prevent="onDrop"
       :class="[
         'mt-2 relative flex justify-center items-center w-full h-48 border-2 border-dashed rounded-md cursor-pointer transition-colors',
-        isDragging ? 'border-purple-600 bg-purple-50' : 'border-gray-300 hover:border-gray-400',
+        isDragging ? 'border-purple-600 bg-purple-50' : (error ? 'border-red-400 bg-red-50' : 'border-gray-300 hover:border-gray-400'),
         isLoading ? 'pointer-events-none' : '',
       ]"
     >
@@ -86,9 +86,11 @@
           <span class="font-medium text-purple-600">Nhấn để chọn</span> hoặc kéo thả ảnh vào đây
         </p>
         <p class="text-xs text-gray-500">PNG, JPG, GIF (TỐI ĐA 5MB)</p>
-        <p v-if="error" class="text-xs text-red-500 mt-1">{{ error }}</p>
+        <p v-if="uploadError" class="text-xs text-red-500 mt-1">{{ uploadError }}</p>
       </div>
     </div>
+
+    <p v-if="error" class="mt-1 text-sm text-red-600">{{ error }}</p>
 
     <input type="file" ref="fileInput" @change="onFileSelected" class="hidden" accept="image/*" />
   </div>
@@ -96,8 +98,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { useProductsStore } from '@/stores/useProductsStore'
-import * as storageApi from '@/api/supabaseStorage'
+import * as mediaFileApi from '@/api/mediaFile'
 
 const props = defineProps({
   modelValue: {
@@ -108,16 +109,18 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  error: {
+    type: String,
+    default: '',
+  },
 })
 
 const emit = defineEmits(['update:modelValue'])
-const productsStore = useProductsStore()
-const bucketName = 'cover'
 
 const isDragging = ref(false)
 const isLoading = ref(false)
 const fileInput = ref(null)
-const error = ref('')
+const uploadError = ref('')
 const initialImageUrl = ref(props.modelValue)
 
 const localValue = computed({
@@ -137,7 +140,7 @@ watch(
 
 const openFilePicker = () => {
   if (isLoading.value) return
-  error.value = ''
+  uploadError.value = ''
   fileInput.value.click()
 }
 
@@ -168,14 +171,14 @@ const onDrop = (event) => {
 }
 
 const processFile = (file) => {
-  error.value = ''
+  uploadError.value = ''
   if (!file.type.startsWith('image/')) {
-    error.value = 'Chỉ chấp nhận file hình ảnh.'
+    uploadError.value = 'Chỉ chấp nhận file hình ảnh.'
     return
   }
 
   if (file.size > 5 * 1024 * 1024) {
-    error.value = 'Lỗi: Ảnh nặng hơn 5MB.'
+    uploadError.value = 'Lỗi: Ảnh nặng hơn 5MB.'
     return
   }
 
@@ -184,45 +187,26 @@ const processFile = (file) => {
 
 const uploadHandler = async (file) => {
   isLoading.value = true
-  error.value = ''
+  uploadError.value = ''
 
   try {
-    if (
-      initialImageUrl.value &&
-      initialImageUrl.value !== localValue.value &&
-      !initialImageUrl.value.includes('placehold.co')
-    ) {
-      await productsStore.deleteProductImage({
-        url: initialImageUrl.value,
-        bucket: bucketName,
-      })
-    }
-
-    const filePath = await storageApi.uploadFile(file, bucketName)
-
-    const publicUrl = storageApi.getPublicUrl(filePath, bucketName)
-
-    localValue.value = publicUrl
-    initialImageUrl.value = publicUrl
+    const response = await mediaFileApi.uploadImage(file)
+    localValue.value = response.publicUrl
+    initialImageUrl.value = response.publicUrl
   } catch (apiError) {
-    error.value = `Lỗi upload: ${apiError.message}`
+    uploadError.value = `Lỗi upload: ${apiError.message}`
   } finally {
     isLoading.value = false
+    if (fileInput.value) {
+      fileInput.value.value = null
+    }
   }
 }
 
-const clearImage = async () => {
-  if (localValue.value && !localValue.value.includes('placehold.co')) {
-    await productsStore.deleteProductImage({
-      url: localValue.value,
-      bucket: bucketName,
-    })
-  }
-
+const clearImage = () => {
   localValue.value = ''
   initialImageUrl.value = ''
-  error.value = ''
-
+  uploadError.value = ''
   if (fileInput.value) {
     fileInput.value.value = null
   }

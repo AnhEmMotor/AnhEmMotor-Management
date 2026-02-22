@@ -1,8 +1,10 @@
 <script setup>
 import { ref, watch, computed, nextTick, onMounted } from 'vue'
-import { useProductCategoriesStore } from '@/stores/useProductCategoriesStore'
-import { useBrandsStore } from '@/stores/useBrandsStore'
-import { useOptionsStore } from '@/stores/useOptionsStore'
+import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
+import { fetchCategories } from '@/api/productCategory'
+import { fetchBrands } from '@/api/brand'
+import { useQuery } from '@tanstack/vue-query'
+import { getPredefinedOptions } from '@/api/options'
 import Input from '@/components/ui/input/BaseInput.vue'
 import Textarea from '@/components/ui/input/BaseTextarea.vue'
 import Dropdown from '@/components/ui/input/BaseDropdown.vue'
@@ -35,57 +37,68 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue'])
-const productCategoriesStore = useProductCategoriesStore()
-const brandsStore = useBrandsStore()
-const optionsStore = useOptionsStore()
+const {
+  data: categoriesData,
+  isLoading: isCategoriesLoading,
+  pagination: categoryPagination,
+} = usePaginatedQuery({
+  queryKey: ['categories'],
+  queryFn: fetchCategories,
+  useLocalPagination: true,
+  itemsPerPage: 10,
+  queryOptions: { staleTime: 5 * 60 * 1000 },
+})
 
-const isFormLoading = ref(false)
+const {
+  data: brandsData,
+  isLoading: isBrandsLoading,
+  pagination: brandPagination,
+} = usePaginatedQuery({
+  queryKey: ['brands'],
+  queryFn: fetchBrands,
+  useLocalPagination: true,
+  itemsPerPage: 10,
+  queryOptions: { staleTime: 5 * 60 * 1000 },
+})
+
+const {
+  data: predefinedOptionsData,
+  isLoading: isOptionsLoading,
+} = useQuery({
+  queryKey: ['predefinedOptions'],
+  queryFn: getPredefinedOptions,
+  staleTime: 5 * 60 * 1000,
+})
 
 const localProduct = ref({})
 const initialDataJson = ref('')
 const isUpdatingFromProp = ref(false)
-
-const generalCoverImage = ref('')
-const generalPhotoCollection = ref([])
-
 const categoryOptions = computed(() => {
-  return (productCategoriesStore.allCategories || []).map((c) => ({
+  return (categoriesData.value || []).map((c) => ({
     value: c.id,
     text: c.name,
   }))
 })
 const brandOptions = computed(() => {
-  return (brandsStore.allBrands || []).map((b) => ({
+  return (brandsData.value || []).map((b) => ({
     value: b.id,
     text: b.name,
   }))
 })
 const allAvailableOptions = computed(() => {
-  return (optionsStore.allOptions || []).map((o) => ({
-    value: o.name,
-    text: o.name,
+  const dict = predefinedOptionsData.value || {}
+  return Object.entries(dict).map(([key, label]) => ({
+    value: key,
+    text: label,
   }))
 })
 
-onMounted(async () => {
-  isFormLoading.value = true
-  try {
-    await Promise.all([
-      productCategoriesStore.fetchCategories(),
-      brandsStore.fetchBrands(),
-      optionsStore.fetchOptions(),
-    ])
-  } finally {
-    isFormLoading.value = false
-  }
-})
-
+// Check if we are still fetching the very FIRST time (not purely background refresh)
 const showLoadingOverlay = computed(() => {
-  return isFormLoading.value || props.isSaving
+  return props.isSaving
 })
 
 const loadingMessage = computed(() => {
-  if (isFormLoading.value) return 'Đang tải dữ liệu form...'
   if (props.isSaving) return 'Đang lưu sản phẩm...'
   return ''
 })
@@ -183,11 +196,6 @@ watch(
       })
     }
 
-    if (copy.variants.length > 0) {
-      generalCoverImage.value = copy.variants[0].cover_image_url || ''
-      generalPhotoCollection.value = copy.variants[0].photo_collection || []
-    }
-
     localProduct.value = copy
     initialDataJson.value = JSON.stringify(copy)
     nextTick(() => {
@@ -239,8 +247,8 @@ watch(
         : {
             id: null,
             price: null,
-            cover_image_url: generalCoverImage.value,
-            photo_collection: [...generalPhotoCollection.value],
+            cover_image_url: '',
+            photo_collection: [],
           }
 
       firstVariant.optionValues = {}
@@ -268,6 +276,15 @@ watch(
           }
         })
       })
+
+      // If options changed to effectively empty (no names), reduce variants to 1
+      const hasValidOptions = localProduct.value.options.some((o) => o.name);
+      if (!hasValidOptions && localProduct.value.variants.length > 1) {
+        const firstVariant = localProduct.value.variants[0];
+        firstVariant.optionValues = {};
+        firstVariant.url = slugify(localProduct.value.name);
+        localProduct.value.variants = [firstVariant];
+      }
     }
   },
   { deep: true },
@@ -292,8 +309,8 @@ const addVariant = () => {
     id: null,
     price: null,
     optionValues: {},
-    cover_image_url: generalCoverImage.value || '',
-    photo_collection: [...(generalPhotoCollection.value || [])],
+    cover_image_url: '',
+    photo_collection: [],
     url: '',
   }
 
@@ -311,19 +328,6 @@ const removeVariant = (index) => {
   localProduct.value.variants.splice(index, 1)
 }
 
-const applyGeneralCoverImage = () => {
-  if (!generalCoverImage.value) return
-  localProduct.value.variants.forEach((v) => {
-    v.cover_image_url = generalCoverImage.value
-  })
-}
-
-const applyGeneralPhotoCollection = () => {
-  if (generalPhotoCollection.value.length === 0) return
-  localProduct.value.variants.forEach((v) => {
-    v.photo_collection = [...generalPhotoCollection.value]
-  })
-}
 </script>
 
 <template>
@@ -338,29 +342,29 @@ const applyGeneralPhotoCollection = () => {
               label="Tên Dòng Sản Phẩm *"
               v-model="localProduct.name"
               placeholder="Bắt buộc (ví dụ: 'Honda Air Blade')"
+              :error="errors?.name"
               required
             />
-            <div v-if="errors && errors.name" class="text-red-500 text-xs mt-1">
-              {{ errors.name }}
-            </div>
           </div>
           <div>
             <Dropdown
               label="Danh Mục *"
               v-model="localProduct.category_id"
               :options="categoryOptions"
+              :pagination="categoryPagination"
+              :loading="isCategoriesLoading"
+              :error="errors?.category_id"
               placeholder="Chọn Danh Mục"
               required
             />
-            <div v-if="errors && errors.category_id" class="text-red-500 text-xs mt-1">
-              {{ errors.category_id }}
-            </div>
           </div>
           <div>
             <Dropdown
               label="Thương Hiệu"
               v-model="localProduct.brand_id"
               :options="brandOptions"
+              :pagination="brandPagination"
+              :loading="isBrandsLoading"
               placeholder="Chọn Thương Hiệu"
             />
           </div>
@@ -372,38 +376,6 @@ const applyGeneralPhotoCollection = () => {
               :rows="3"
             />
           </div>
-        </div>
-      </fieldset>
-
-      <fieldset class="border rounded-md p-4">
-        <legend class="px-2 font-semibold text-gray-700">Hình ảnh chung (Để áp dụng nhanh)</legend>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Image
-            label="Ảnh Bìa Chung"
-            v-model="generalCoverImage"
-            class="md:col-span-1"
-            bucket="cover"
-          />
-          <GroupImage
-            label="Bộ Sưu Tập Chung"
-            v-model="generalPhotoCollection"
-            class="md:col-span-2"
-            bucket="photo-collection"
-          />
-        </div>
-        <div class="flex space-x-2 mt-4">
-          <Button
-            text="Áp dụng Ảnh Bìa Chung"
-            color="gray"
-            @click="applyGeneralCoverImage"
-            :icon="IconCheck"
-          />
-          <Button
-            text="Áp dụng Bộ Sưu Tập Chung"
-            color="gray"
-            @click="applyGeneralPhotoCollection"
-            :icon="IconCheck"
-          />
         </div>
       </fieldset>
 
@@ -530,6 +502,8 @@ const applyGeneralPhotoCollection = () => {
               label="Tên thuộc tính"
               v-model="option.name"
               :options="allAvailableOptions"
+              :pagination="optionPagination"
+              :loading="isOptionsLoading"
               placeholder="Chọn thuộc tính"
               class="flex-1"
             />
@@ -560,6 +534,16 @@ const applyGeneralPhotoCollection = () => {
 
       <fieldset class="border rounded-md p-4">
         <legend class="px-2 font-semibold text-gray-700">Các biến thể (Variants)</legend>
+        
+        <div v-if="typeof props.errors?.variants === 'string'" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mb-4">
+          <span class="block sm:inline whitespace-pre-line">{{ props.errors.variants }}</span>
+        </div>
+        <div v-if="typeof props.errors?._backend?.variants === 'string'" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mb-4">
+          <span class="block sm:inline whitespace-pre-line">{{ props.errors._backend.variants }}</span>
+        </div>
+        <div v-else-if="typeof props.errors?._backend?.varients === 'string'" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mb-4">
+          <span class="block sm:inline whitespace-pre-line">{{ props.errors._backend.varients }}</span>
+        </div>
 
         <div v-if="!hasOptions">
           <p class="text-sm text-gray-500 mb-4">
@@ -643,8 +627,13 @@ const applyGeneralPhotoCollection = () => {
                     type="number"
                     v-model.number="variant.price"
                     placeholder="Giá bán"
+                    :error="getVariantErrors(index).price"
                   />
                 </div>
+              </div>
+
+              <div v-if="getVariantErrors(index).combination" class="text-red-500 text-sm mb-4">
+                {{ getVariantErrors(index).combination }}
               </div>
 
               <div class="mb-4">
@@ -652,6 +641,7 @@ const applyGeneralPhotoCollection = () => {
                   label="URL Slug *"
                   v-model="variant.url"
                   placeholder="ví dụ: ten-san-pham-thuoc-tinh"
+                  :error="getVariantErrors(index).url"
                 />
               </div>
 

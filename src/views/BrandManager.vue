@@ -240,7 +240,7 @@ const handleRefreshForm = async () => {
         </thead>
         <tbody class="text-gray-600 text-sm font-light">
           <template v-if="brands.length === 0">
-            <template v-if="isFetching || isLoading">
+            <template v-if="isLoading">
               <tr v-for="i in 5" :key="i" class="border-b border-gray-200">
                 <td class="py-3 px-6"><SkeletonLoader width="140px" height="20px" /></td>
                 <td class="py-3 px-6"><SkeletonLoader width="220px" height="20px" /></td>

@@ -15,8 +15,8 @@ export const fetchBrands = async ({ page, limit, search } = {}) => {
   };
 };
 
-export const getAllBrands = async () => {
-  const { data } = await axiosInstance.get(BASE_URL, { params: { PageSize: 1000 } });
+export const getAllBrands = async (params = { PageSize: 1000 }) => {
+  const { data } = await axiosInstance.get(BASE_URL, { params });
   return data;
 };
 

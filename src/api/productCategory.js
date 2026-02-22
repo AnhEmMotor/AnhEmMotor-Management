@@ -2,7 +2,7 @@ import axiosInstance from './axios';
 
 const BASE_URL = '/api/v1/productcategory';
 
-export const getCategoriesForManager = async (params = {}) => {
+export const getCategoriesForManager = async (params = { PageSize: 1000 }) => {
   const { data } = await axiosInstance.get(`${BASE_URL}/for-manager`, { params });
   return data;
 };

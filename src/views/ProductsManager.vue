@@ -1,7 +1,8 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { useQueryClient } from '@tanstack/vue-query';
+import { useQuery, useQueryClient } from '@tanstack/vue-query';
 import * as productApi from '@/api/product';
+import { getPredefinedOptions } from '@/api/options';
 import { useProductsStore } from '@/stores/useProductsStore';
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery';
 import { useToast } from 'vue-toastification';
@@ -25,6 +26,12 @@ import LoadingOverlay from '@/components/ui/LoadingOverlay.vue';
 const productsStore = useProductsStore();
 const queryClient = useQueryClient();
 const toast = useToast();
+
+const { data: predefinedOptionsData } = useQuery({
+  queryKey: ['predefinedOptions'],
+  queryFn: getPredefinedOptions,
+  staleTime: 5 * 60 * 1000,
+});
 
 const expandedProductIds = ref([]);
 const numberOfColumns = ref(8);
@@ -80,7 +87,8 @@ const getVariantOptionsText = (variant) => {
   if (!variant.optionValues) return 'Mặc định';
   const values = Object.entries(variant.optionValues);
   if (values.length === 0) return 'Mặc định';
-  return values.map(([key, value]) => `${key}: ${value}`).join(', ');
+  const dict = predefinedOptionsData.value || {};
+  return values.map(([key, value]) => `${dict[key] || key}: ${value}`).join(', ');
 };
 
 const stockStatusColors = {
@@ -142,19 +150,65 @@ const getNewEmptyProduct = () => ({
 const editableProduct = ref(getNewEmptyProduct());
 const isEditMode = computed(() => !!editableProduct.value?.id);
 
-const formErrors = ref({ name: '', category_id: '', variants: [] });
+const formErrors = ref({ name: '', category_id: '', variants: [], _backend: {} });
+
+const extractOptionsFromProduct = (product) => {
+  if (product.options && product.options.length > 0) return product;
+  const optionNamesSet = new Set();
+  (product.variants || []).forEach((v) => {
+    Object.keys(v.optionValues || {}).forEach((key) => optionNamesSet.add(key));
+  });
+  product.options = [...optionNamesSet].map((name) => ({
+    name,
+    values: [...new Set(
+      (product.variants || [])
+        .map((v) => v.optionValues?.[name])
+        .filter(Boolean),
+    )].join(', '),
+  }));
+  return product;
+};
 
 const openAddEditModal = async (product = null) => {
-  formErrors.value = { name: '', category_id: '', variants: [] };
+  formErrors.value = { name: '', category_id: '', variants: [], _backend: {} };
   if (product) {
-    editableProduct.value = JSON.parse(JSON.stringify(product));
     formModalTitle.value = 'Chỉnh Sửa Sản Phẩm';
+    formModalKey.value++;
+    isFormModalVisible.value = true;
+
+    const cachedData = queryClient.getQueryData(['products', product.id]);
+    if (cachedData) {
+      editableProduct.value = extractOptionsFromProduct(JSON.parse(JSON.stringify(cachedData)));
+      queryClient.fetchQuery({
+        queryKey: ['products', product.id],
+        queryFn: () => productApi.getProductById(product.id),
+      }).then((freshData) => {
+        if (freshData) {
+          editableProduct.value = extractOptionsFromProduct(JSON.parse(JSON.stringify(freshData)));
+        }
+      }).catch(() => {});
+    } else {
+      isRefreshing.value = true;
+      try {
+        const freshData = await queryClient.fetchQuery({
+          queryKey: ['products', product.id],
+          queryFn: () => productApi.getProductById(product.id),
+        });
+        if (freshData) {
+          editableProduct.value = extractOptionsFromProduct(JSON.parse(JSON.stringify(freshData)));
+        }
+      } catch (e) {
+        toast.error(`Lỗi tải dữ liệu: ${e.message}`);
+      } finally {
+        isRefreshing.value = false;
+      }
+    }
   } else {
     editableProduct.value = getNewEmptyProduct();
     formModalTitle.value = 'Thêm Sản Phẩm Mới';
+    formModalKey.value++;
+    isFormModalVisible.value = true;
   }
-  formModalKey.value++;
-  isFormModalVisible.value = true;
 };
 
 const handleCloseFormModal = () => {
@@ -168,6 +222,7 @@ const handleRefreshForm = async () => {
       const freshData = await queryClient.fetchQuery({
         queryKey: ['products', editableProduct.value.id],
         queryFn: () => productApi.getProductById(editableProduct.value.id),
+        staleTime: 0,
       });
       if (freshData) {
         editableProduct.value = JSON.parse(JSON.stringify(freshData));
@@ -178,10 +233,6 @@ const handleRefreshForm = async () => {
     } finally {
       isRefreshing.value = false;
     }
-  } else {
-    editableProduct.value = getNewEmptyProduct();
-    formErrors.value = { name: '', category_id: '', variants: [] };
-    toast.info('Đã làm mới form');
   }
 };
 
@@ -203,10 +254,11 @@ const validateProduct = (productData) => {
 
   const variantErrors = [];
   const seenCombinations = new Set();
+  const seenSlugs = new Set();
 
   (productData.variants || []).forEach((variant, index) => {
     const vErrors = {};
-    if (variant.price === null || isNaN(variant.price) || variant.price < 0) {
+    if (variant.price === null || variant.price === '' || isNaN(variant.price) || variant.price < 0) {
       vErrors.price = 'Vui lòng nhập Giá Bán hợp lệ (lớn hơn 0).';
       hasError = true;
     }
@@ -233,6 +285,17 @@ const validateProduct = (productData) => {
         }
       }
     }
+    
+    // Check for duplicate URLs (slugs)
+    if (variant.url) {
+      if (seenSlugs.has(variant.url)) {
+        vErrors.url = 'URL Slug này bị trùng lặp với biến thể khác.';
+        hasError = true;
+      } else {
+        seenSlugs.add(variant.url);
+      }
+    }
+
     variantErrors[index] = vErrors;
   });
 
@@ -249,16 +312,73 @@ const handleSaveProduct = async () => {
   isSaving.value = true;
   try {
     const isEditing = isEditMode.value;
+    let result;
     if (isEditing) {
-      await productsStore.updateProduct(productData.id, productData);
+      result = await productsStore.updateProduct(productData.id, productData);
     } else {
-      await productsStore.createProduct(productData);
+      result = await productsStore.createProduct(productData);
+    }
+    if (result?.id) {
+      queryClient.setQueryData(['products', result.id], result);
     }
     isFormModalVisible.value = false;
     await queryClient.invalidateQueries({ queryKey: ['products'] });
     toast.success(isEditing ? 'Cập nhật sản phẩm thành công' : 'Thêm sản phẩm thành công');
   } catch (err) {
-    toast.error(err.message || 'Lỗi khi lưu sản phẩm');
+    const backendErrors = err?.response?.data?.errors || err?.response?.data?.Errors || null;
+    if (backendErrors && err?.response?.status === 400) {
+      const normalized = {};
+      const variantErrorsFromBackend = [];
+      Object.entries(backendErrors).forEach(([key, messages]) => {
+        const msg = Array.isArray(messages) ? messages[0] : messages;
+        const normalizedKey = key.toLowerCase();
+        normalized[normalizedKey] = msg;
+        
+        // Parse "$.variants[0].price" or "variants[0].price"
+        const variantMatch = key.match(/(?:\$\.)?variants\[(\d+)\]\.(.+)/i);
+        if (variantMatch) {
+          const index = parseInt(variantMatch[1], 10);
+          const field = variantMatch[2].toLowerCase();
+          if (!variantErrorsFromBackend[index]) {
+            variantErrorsFromBackend[index] = {};
+          }
+          variantErrorsFromBackend[index][field] = msg;
+        }
+      });
+
+      const mergedVariantErrors = [];
+      const maxLen = Math.max(
+        formErrors.value.variants?.length || 0,
+        variantErrorsFromBackend.length
+      );
+      for (let i = 0; i < maxLen; i++) {
+        mergedVariantErrors[i] = {
+          ...(formErrors.value.variants?.[i] || {}),
+          ...(variantErrorsFromBackend[i] || {})
+        };
+      }
+
+      formErrors.value = {
+        ...formErrors.value,
+        _backend: normalized,
+        name: normalized['name'] || formErrors.value.name,
+        category_id: normalized['category_id'] || normalized['categoryid'] || formErrors.value.category_id,
+        variants: mergedVariantErrors,
+      };
+      
+      // Inject global variant array errors like "duplicate slugs" into the top-level formError
+      if (normalized['varients']) {
+        formErrors.value._backend = formErrors.value._backend || {};
+        formErrors.value._backend.varients = normalized['varients'];
+      }
+      if (normalized['variants']) {
+        formErrors.value._backend = formErrors.value._backend || {};
+        formErrors.value._backend.variants = normalized['variants'];
+      }
+      toast.warning('Vui lòng kiểm tra lại các trường có lỗi.');
+    } else {
+      toast.error(err.message || 'Lỗi khi lưu sản phẩm');
+    }
   } finally {
     isSaving.value = false;
   }
@@ -267,6 +387,7 @@ const handleSaveProduct = async () => {
 const promptDelete = async (product) => {
   try {
     await productsStore.deleteProduct(product);
+    queryClient.removeQueries({ queryKey: ['products', product.id] });
     await queryClient.invalidateQueries({ queryKey: ['products'] });
     toast.success('Xoá sản phẩm thành công');
   } catch (err) {
@@ -340,7 +461,7 @@ const exportExcel = () => {
         </thead>
         <tbody class="text-gray-600 text-sm font-light">
           <template v-if="products.length === 0">
-            <template v-if="isFetching || isLoading">
+            <template v-if="isLoading">
               <tr v-for="i in 5" :key="i" class="border-b border-gray-200">
                 <td class="py-3 px-6 text-center"><SkeletonLoader width="16px" height="16px" /></td>
                 <td class="py-3 px-6"><SkeletonLoader width="64px" height="64px" class="rounded-md" /></td>
@@ -467,7 +588,7 @@ const exportExcel = () => {
     :key="formModalKey"
     v-if="isFormModalVisible"
     @close="handleCloseFormModal"
-    :onRefresh="handleRefreshForm"
+    :onRefresh="isEditMode ? handleRefreshForm : undefined"
     :isLoading="isRefreshing"
     width="72vw"
   >
