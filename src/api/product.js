@@ -41,6 +41,11 @@ export const getProductsForManager = async (params = {}) => {
   return data;
 };
 
+export const getProductsForPriceManagement = async (params = {}) => {
+  const { data } = await axiosInstance.get(`${BASE_URL}/for-price-management`, { params });
+  return data;
+};
+
 export const getDeletedProducts = async (params = {}) => {
   const { data } = await axiosInstance.get(`${BASE_URL}/deleted`, { params });
   return data;

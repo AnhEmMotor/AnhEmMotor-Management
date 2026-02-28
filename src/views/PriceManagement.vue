@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { usePriceStore } from '@/stores/usePriceStore'
-import { fetchProductsForPricing } from '@/api/price'
+import { getProductsForPriceManagement } from '@/api/product'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { useQueryClient } from '@tanstack/vue-query'
 import PriceQuickMenu from '@/components/price_management/PriceQuickMenu.vue'
@@ -22,7 +22,7 @@ const toast = useToast()
 const itemsPerPage = ref(5)
 
 const queryFn = async (params) => {
-  const res = await fetchProductsForPricing({
+  const res = await getProductsForPriceManagement({
     Page: params.page,
     PageSize: params.limit,
     filters: params.search ? `Name@=${params.search}` : undefined,
@@ -84,7 +84,6 @@ const expandedProducts = ref(new Set())
 const isSaving = ref(false)
 
 function openQuickMenu(evt, product, variant) {
-  if (variant.latestInputPrice === null || variant.latestInputPrice === undefined) return
   const rect = evt.target.getBoundingClientRect()
   const menuWidth = 384
   const menuHeight = 200
@@ -179,11 +178,6 @@ async function saveVariantPrice(product, variant) {
   }
 }
 
-function getRecentInputPriceDisplay(variant) {
-  const price = variant.latestInputPrice
-  return price === null || price === undefined ? '-' : formatMoney(price)
-}
-
 function parseNumber(v) {
   if (v === null || v === undefined || v === '') return null
   if (typeof v === 'number') return v
@@ -192,33 +186,9 @@ function parseNumber(v) {
   return Number.isFinite(n) ? n : null
 }
 
-function computeProfitAmount(variant) {
-  const selling = parseNumber(variant.price)
-  const cost = parseNumber(variant.latestInputPrice)
-  if (selling === null || cost === null) return null
-  return selling - cost
-}
-
-function formatPercent(variant) {
-  const current = parseNumber(variant.price)
-  const recent = parseNumber(variant.latestInputPrice)
-  if (current === null || recent === null || recent === 0) return '-'
-  const ratio = (current - recent) / recent
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'percent',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  }).format(ratio)
-}
-
 function formatMoney(v) {
   if (v === null || v === undefined) return '-'
   return new Intl.NumberFormat('vi-VN').format(v)
-}
-
-function getVariantOptionsText(options) {
-  if (!options) return ''
-  return Object.values(options).join(' - ')
 }
 
 onMounted(() => {
@@ -258,11 +228,8 @@ function handleExport() {}
       <div
         class="hidden md:grid md:grid-cols-12 items-center py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 border-b border-gray-200"
       >
-        <div class="md:col-span-4 pl-2">Tên Sản Phẩm / Biến Thể</div>
-        <div class="md:col-span-2 text-right pr-2">Giá Vốn</div>
-        <div class="md:col-span-2 text-right pr-2">Giá Bán</div>
-        <div class="md:col-span-2 text-right pr-2">Nhập Giá Mới</div>
-        <div class="md:col-span-2 text-right pr-2">Biên Lợi Nhuận</div>
+        <div class="md:col-span-8 pl-2">Tên Sản Phẩm / Biến Thể</div>
+        <div class="md:col-span-4 text-right pr-2">Giá Bán</div>
       </div>
 
       <div class="bg-white">
@@ -273,15 +240,10 @@ function handleExport() {}
           <div v-if="isLoading || isFetching" class="p-0">
             <div v-for="i in 5" :key="i" class="border-b border-gray-200 bg-white">
               <div class="grid grid-cols-1 md:grid-cols-12 items-center py-4 px-4 bg-white">
-                <div class="md:col-span-4 pl-2"><SkeletonLoader height="24px" width="70%" /></div>
-                <div class="md:col-span-2 flex justify-end pr-2">
+                <div class="md:col-span-8 pl-2"><SkeletonLoader height="24px" width="70%" /></div>
+                <div class="md:col-span-4 flex justify-end pr-2">
                   <SkeletonLoader height="20px" width="50%" />
                 </div>
-                <div class="md:col-span-2 flex justify-end pr-2">
-                  <SkeletonLoader height="20px" width="50%" />
-                </div>
-                <div class="md:col-span-2"></div>
-                <div class="md:col-span-2"></div>
               </div>
             </div>
           </div>
@@ -300,7 +262,7 @@ function handleExport() {}
               class="grid grid-cols-1 md:grid-cols-12 items-center py-4 px-4 bg-white hover:bg-gray-50 cursor-pointer transition-colors"
               @click="toggleProduct(product.id)"
             >
-              <div class="font-bold text-base text-gray-900 md:col-span-4 flex items-center gap-2">
+              <div class="font-bold text-base text-gray-900 md:col-span-8 flex items-center gap-2">
                 <component
                   :is="isExpanded(product.id) ? IconDownArrow : IconRightArrow"
                   class="w-4 h-4 text-gray-500 flex-shrink-0"
@@ -310,14 +272,9 @@ function handleExport() {}
                   >({{ product.variants?.length || 0 }})</span
                 >
               </div>
-              <div class="text-sm text-gray-600 md:col-span-2 text-right pr-2">
-                {{ getPriceRange(product.variants, 'latestInputPrice') }}
-              </div>
-              <div class="text-sm text-gray-600 md:col-span-2 text-right pr-2">
+              <div class="text-sm text-gray-600 md:col-span-4 text-right pr-2">
                 {{ getPriceRange(product.variants, 'price') }}
               </div>
-              <div class="md:col-span-2"></div>
-              <div class="md:col-span-2"></div>
             </div>
 
             <template v-if="isExpanded(product.id)">
@@ -333,29 +290,15 @@ function handleExport() {}
                 :key="variant.id"
                 class="grid grid-cols-1 md:grid-cols-12 md:items-center py-2 md:py-3 border-t border-gray-100 text-sm gap-2 md:gap-0 first:border-t-0 bg-white hover:bg-gray-50 transition-colors"
               >
-                <div class="px-0 md:pl-12 md:col-span-4 flex items-center gap-2">
+                <div class="px-0 md:pl-12 md:col-span-8 flex items-center gap-2">
                   <div class="text-xs text-gray-500 md:hidden">Biến thể</div>
                   <div class="font-medium text-gray-700">
-                    {{ getVariantOptionsText(variant.optionValues) }}
+                    {{ variant.name }}
                   </div>
                 </div>
 
-                <div class="px-0 md:pr-2 text-right md:col-span-2">
-                  <div class="text-xs text-gray-500 md:hidden">Giá vốn (nhập gần nhất)</div>
-                  <div class="font-mono text-gray-700">
-                    {{ getRecentInputPriceDisplay(variant) }}
-                  </div>
-                </div>
-
-                <div class="px-0 md:pr-2 text-right md:col-span-2">
-                  <div class="text-xs text-gray-500 md:hidden">Giá bán hiện tại</div>
-                  <div class="font-mono font-semibold text-gray-900">
-                    {{ formatMoney(variant.price) }}
-                  </div>
-                </div>
-
-                <div class="px-0 md:pr-2 md:col-span-2">
-                  <div class="text-xs text-gray-500 md:hidden">Nhập giá bán mới</div>
+                <div class="px-0 md:pr-2 md:col-span-4">
+                  <div class="text-xs text-gray-500 md:hidden">Giá bán</div>
                   <Input
                     :model-value="variant.price"
                     @update:model-value="(val) => updatePriceInput(val, variant)"
@@ -369,25 +312,6 @@ function handleExport() {}
                     @dblclick.stop
                   />
                 </div>
-
-                <div class="px-0 md:pr-2 text-right md:col-span-2">
-                  <div class="text-xs text-gray-500 md:hidden">Biên lợi nhuận</div>
-                  <div
-                    v-if="computeProfitAmount(variant) !== null"
-                    class="text-sm font-medium font-mono"
-                  >
-                    <span
-                      :class="{
-                        'text-green-600': computeProfitAmount(variant) > 0,
-                        'text-red-600': computeProfitAmount(variant) < 0,
-                        'text-gray-500': computeProfitAmount(variant) === 0,
-                      }"
-                    >
-                      {{ formatPercent(variant) }}
-                    </span>
-                  </div>
-                  <div v-else class="text-gray-400">-</div>
-                </div>
               </div>
             </template>
           </div>
@@ -398,7 +322,7 @@ function handleExport() {}
           class="price-quick-menu fixed z-50 bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden animate-fade-in-up"
           :style="{ top: quickMenu.y + 'px', left: quickMenu.x + 'px' }"
         >
-          <PriceQuickMenu :item="quickMenu.item" @apply="applyQuickPrice" @close="closeQuickMenu" />
+          <PriceQuickMenu :basePrice="quickMenu.item.variant.price" @apply="applyQuickPrice" @close="closeQuickMenu" />
         </div>
       </div>
     </div>
