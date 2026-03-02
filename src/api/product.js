@@ -138,6 +138,19 @@ export const getVariantsLiteForInput = async (params = {}) => {
   return data;
 };
 
+export const fetchVariantsLiteForInput = async ({ page, limit, search } = {}) => {
+  const params = { Page: page, PageSize: limit };
+  if (search) params.Filters = `search@=${search}`;
+  const { data } = await axiosInstance.get(`${BASE_URL}/variants-lite/for-input`, { params });
+  return {
+    data: data.items || [],
+    pagination: {
+      totalPages: data.totalPages || 1,
+      totalCount: data.totalCount || 0,
+    },
+  };
+};
+
 export const getVariantsByProductId = async (id) => {
   const { data } = await axiosInstance.get(`${BASE_URL}/${id}/variants-lite`);
   return data;

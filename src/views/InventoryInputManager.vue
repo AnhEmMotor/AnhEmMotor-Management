@@ -170,14 +170,14 @@ function mapResponseToForm(d) {
   return {
     id: d.id,
     supplier: d.supplier ? { id: d.supplier.id, name: d.supplier.name, phone: d.supplier.phone || '' } : null,
-    products: (d.details || []).map((p) => ({
-      id: Date.now() + Math.random(),
-      variantId: p.variantId,
-      code: p.variantCode || p.code,
-      name: p.variantName || p.name,
-      quantity: p.quantity,
-      unitPrice: p.unitPrice,
-      total: p.quantity * p.unitPrice,
+    products: (d.products || d.details || []).map((p) => ({
+      id: p.id || Date.now() + Math.random(),
+      variantId: p.productId || p.variantId,
+      code: p.variantCode || p.code || '',
+      name: p.productName || p.variantName || p.name || '',
+      quantity: p.count || p.quantity || 0,
+      unitPrice: p.inputPrice || p.unitPrice || 0,
+      total: (p.count || p.quantity || 0) * (p.inputPrice || p.unitPrice || 0),
     })),
     notes: d.notes || '',
     importDate: d.importDate,
@@ -232,10 +232,10 @@ function buildPayload(data, statusId) {
     statusId,
     notes: data.notes,
     importDate: data.importDate,
-    details: data.products.map((p) => ({
-      variantId: p.variantId,
-      quantity: Number(p.quantity),
-      unitPrice: Number(p.unitPrice),
+    products: data.products.map((p) => ({
+      productId: p.variantId,
+      count: Number(p.quantity),
+      inputPrice: Number(p.unitPrice),
     })),
   }
 }

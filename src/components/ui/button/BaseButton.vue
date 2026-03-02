@@ -38,19 +38,19 @@ const colorVariants = {
   primary: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 border border-transparent',
   secondary: 'bg-white text-gray-700 border border-gray-400 hover:bg-gray-50 focus:ring-gray-500',
   outline: 'bg-transparent text-red-600 border border-red-600 hover:bg-red-50 focus:ring-red-500',
-  ghost: 'bg-transparent text-gray-600 hover:bg-gray-100 focus:ring-gray-500',
-  danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
-  blue: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
-  green: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
-  purple: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
+  ghost: 'bg-transparent text-gray-600 hover:bg-gray-100 focus:ring-gray-500 border border-transparent',
+  danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 border border-transparent',
+  blue: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 border border-transparent',
+  green: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 border border-transparent',
+  purple: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 border border-transparent',
   yellow: 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50',
-  red: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 focus:ring-offset-2',
-  gray: 'bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-500',
+  red: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 focus:ring-offset-2 border border-transparent',
+  gray: 'bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-500 border border-transparent',
 }
 
 const buttonClasses = computed(() => {
   const baseClasses =
-    'inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md font-semibold text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2'
+    'inline-flex items-center justify-center px-4 py-2 rounded-md font-semibold text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2'
   const colorClass = colorVariants[props.color] || colorVariants.primary
   const disabledClass = props.disabled ? 'opacity-50 cursor-not-allowed' : ''
   return [baseClasses, colorClass, disabledClass]

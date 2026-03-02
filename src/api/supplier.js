@@ -59,6 +59,10 @@ export const getSupplierById = async (id) => {
   return data
 }
 
+export const fetchActiveSuppliers = async ({ page, limit, search } = {}) => {
+  return fetchSuppliers({ page, limit, search, status: 'active' })
+}
+
 export const searchActiveSuppliers = async (search = '') => {
   const params = {
     Search: search,
