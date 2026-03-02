@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchEventSource } from '@microsoft/fetch-event-source'
-import {
+import axiosInstance, {
   setAccessToken,
   registerAuthFailureCallback,
   getAccessToken,
@@ -63,14 +63,10 @@ export const useAuthStore = defineStore('auth', () => {
       const meta = currentRoute?.meta
 
       if (meta?.permission) {
-        const hasAccess =
-          newPermissions.some((p) => p.id === 'ADMIN') ||
-          newPermissions.some((p) => p.id === meta.permission)
+        const hasAccess = newPermissions.includes(meta.permission)
         if (!hasAccess) router.push('/')
       } else if (meta?.permissions) {
-        const hasAccess =
-          newPermissions.some((p) => p.id === 'ADMIN') ||
-          meta.permissions.some((mp) => newPermissions.some((p) => p.id === mp))
+        const hasAccess = meta.permissions.some((p) => newPermissions.includes(p))
         if (!hasAccess) router.push('/')
       }
     },
@@ -96,7 +92,7 @@ export const useAuthStore = defineStore('auth', () => {
   const login = async (credentials) => {
     isLoggingOut = false
     const data = await authApi.loginManager(credentials)
-    setAccessToken(data.accessToken)
+    setAccessToken(data.accessToken, data.expiresAt)
     delete data.accessToken
     closeSSE()
     connectSSE()
@@ -124,7 +120,7 @@ export const useAuthStore = defineStore('auth', () => {
     sseStatus.value = 'connecting'
 
     const data = await authApi.fetchMe()
-    if (data && data.userName) {
+    if (data && (data.username || data.userName)) {
       user.value = user.value ? { ...user.value, ...data } : data
     }
 
@@ -157,7 +153,7 @@ export const useAuthStore = defineStore('auth', () => {
         onmessage(msg) {
           if (!msg.data || msg.data === 'heartbeat') return
           const data = JSON.parse(msg.data)
-          if (data && data.userName) {
+          if (data && (data.username || data.userName)) {
             user.value = user.value ? { ...user.value, ...data } : data
           }
         },
