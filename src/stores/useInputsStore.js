@@ -8,45 +8,50 @@ import {
   cloneInventoryReceipt,
   fetchReceiptsBySupplier,
   fetchInputStatuses,
-} from '@/api/input';
-import { defineStore } from 'pinia';
+  updateInventoryReceiptNotes,
+} from '@/api/input'
+import { defineStore } from 'pinia'
 
 export const useInputsStore = defineStore('inputs', {
   actions: {
     async fetchInputs(params) {
-      return await fetchInventoryReceipts(params);
+      return await fetchInventoryReceipts(params)
     },
 
     async getInputById(id) {
-      return await getInventoryReceiptById(id);
+      return await getInventoryReceiptById(id)
     },
 
     async createInput(payload) {
-      return await createInventoryReceipt(payload);
+      return await createInventoryReceipt(payload)
     },
 
     async updateInput(id, payload) {
-      return await updateInventoryReceipt(id, payload);
+      return await updateInventoryReceipt(id, payload)
     },
 
     async deleteInput(id) {
-      return await deleteInventoryReceipt(id);
+      return await deleteInventoryReceipt(id)
     },
 
     async updateInputStatus(id, statusId) {
-      return await updateInventoryReceiptStatus(id, statusId);
+      return await updateInventoryReceiptStatus(id, statusId)
     },
 
     async cloneInput(id) {
-      return await cloneInventoryReceipt(id);
+      return await cloneInventoryReceipt(id)
     },
 
     async fetchInputsBySupplier(supplierId, params) {
-      return await fetchReceiptsBySupplier(supplierId, params);
+      return await fetchReceiptsBySupplier(supplierId, params)
     },
 
     async fetchInputStatuses() {
-      return await fetchInputStatuses();
+      return await fetchInputStatuses()
+    },
+
+    async updateInputNotes(id, notes) {
+      return await updateInventoryReceiptNotes(id, notes)
     },
   },
-});
+})

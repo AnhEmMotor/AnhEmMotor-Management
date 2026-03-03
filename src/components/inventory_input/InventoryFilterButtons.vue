@@ -30,9 +30,9 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue'])
 
 const filterOptions = [
-  { status: 'Phiếu tạm', label: 'Phiếu Tạm', color: 'red', icon: IconInput },
-  { status: 'Đã nhập hàng', label: 'Đã Nhập Hàng', color: 'red', icon: IconCheckCircle },
-  { status: 'Đã hủy', label: 'Đã Hủy', color: 'red', icon: IconXCircle },
+  { status: 'working', label: 'Phiếu Tạm', color: 'red', icon: IconInput },
+  { status: 'finished', label: 'Hoàn Thành', color: 'red', icon: IconCheckCircle },
+  { status: 'cancelled', label: 'Đã Huỷ', color: 'red', icon: IconXCircle },
 ]
 
 const isActive = (status) => {

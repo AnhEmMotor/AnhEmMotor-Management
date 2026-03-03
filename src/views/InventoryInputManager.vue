@@ -42,7 +42,9 @@ const queryFn = async (params) => {
     Page: params.page,
     PageSize: params.limit,
     ...(params.filters ? { filters: params.filters } : {}),
-    ...(params.search ? { filters: (params.filters ? params.filters + ',' : '') + `Notes@=${params.search}` } : {}),
+    ...(params.search
+      ? { filters: (params.filters ? params.filters + ',' : '') + `Notes@=${params.search}` }
+      : {}),
   })
   return {
     data: res.items || [],
@@ -116,7 +118,14 @@ const inventoryErrors = ref({ supplier: '', products: {} })
 const isEditMode = ref(false)
 const loadingOverlay = ref(false)
 const showProductModal = ref(false)
-const currentProductData = ref({ code: '', name: '', category: '', price: 0, quantity: 1, unitPrice: 0 })
+const currentProductData = ref({
+  code: '',
+  name: '',
+  category: '',
+  price: 0,
+  quantity: 1,
+  unitPrice: 0,
+})
 
 const openNewInventoryModal = () => {
   isEditMode.value = false
@@ -169,7 +178,9 @@ const handleInventoryRefresh = async () => {
 function mapResponseToForm(d) {
   return {
     id: d.id,
-    supplier: d.supplier ? { id: d.supplier.id, name: d.supplier.name, phone: d.supplier.phone || '' } : null,
+    supplier: d.supplier
+      ? { id: d.supplier.id, name: d.supplier.name, phone: d.supplier.phone || '' }
+      : null,
     products: (d.products || d.details || []).map((p) => ({
       id: p.id || Date.now() + Math.random(),
       variantId: p.productId || p.variantId,
@@ -192,7 +203,14 @@ const closeInventoryModal = () => {
 }
 
 const openProductModal = () => {
-  currentProductData.value = { code: '', name: '', category: '', price: 0, quantity: 1, unitPrice: 0 }
+  currentProductData.value = {
+    code: '',
+    name: '',
+    category: '',
+    price: 0,
+    quantity: 1,
+    unitPrice: 0,
+  }
   showProductModal.value = true
 }
 
@@ -332,7 +350,7 @@ const handleCancelRequest = async (item) => {
 
 const handleSaveNotes = async ({ id, notes }) => {
   try {
-    const result = await inputsStore.updateInput(id, { notes })
+    const result = await inputsStore.updateInputNotes(id, notes)
     if (result) queryClient.setQueryData(['inventoryReceipts', id], result)
     toast.success('Đã lưu ghi chú')
     queryClient.invalidateQueries({ queryKey: ['inventoryReceipts'] })
@@ -397,7 +415,12 @@ const handleCopyReceipt = async (item) => {
       </div>
     </div>
 
-    <Input v-model="searchRefs.search" type="text" placeholder="Tìm theo mã phiếu, NCC..." class="mb-3" />
+    <Input
+      v-model="searchRefs.search"
+      type="text"
+      placeholder="Tìm theo mã phiếu, NCC..."
+      class="mb-3"
+    />
 
     <div class="border border-gray-200 rounded-lg shadow-sm overflow-hidden">
       <div
@@ -429,10 +452,7 @@ const handleCopyReceipt = async (item) => {
               </div>
             </div>
           </div>
-          <div
-            v-else
-            class="text-center py-12 flex flex-col items-center justify-center space-y-3"
-          >
+          <div v-else class="text-center py-12 flex flex-col items-center justify-center space-y-3">
             <div class="bg-gray-50 p-3 rounded-full">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -506,12 +526,7 @@ const handleCopyReceipt = async (item) => {
       </template>
     </DraggableModal>
 
-    <DraggableModal
-      v-if="showProductModal"
-      :z-index="1001"
-      width="72vw"
-      @close="closeProductModal"
-    >
+    <DraggableModal v-if="showProductModal" :z-index="1001" width="72vw" @close="closeProductModal">
       <template #header>
         <h3 class="text-lg font-semibold">Thêm sản phẩm mới</h3>
       </template>

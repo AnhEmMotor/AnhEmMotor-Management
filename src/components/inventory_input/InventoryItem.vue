@@ -4,6 +4,7 @@ import InventoryReceiptDetail from './InventoryReceiptDetail.vue'
 
 defineProps({
   itemData: Object,
+  statusMap: Object,
   isOpen: Boolean,
 })
 const emit = defineEmits([
@@ -20,13 +21,14 @@ const emit = defineEmits([
   <div
     class="inventory-item bg-white"
     :class="{
-      'item-open z-10 relative shadow-md my-2 rounded-lg border border-gray-200': isOpen,
+      'item-open z-10 relative shadow-md rounded-lg border border-gray-200': isOpen,
       'hover:bg-gray-50 transition-colors': !isOpen,
     }"
   >
     <div class="overflow-x-auto">
       <InventoryReceiptSummary
         :item-data="itemData"
+        :status-map="statusMap"
         :is-open="isOpen"
         @toggle-detail="() => emit('toggle-detail', itemData.id)"
         @edit="() => emit('edit', itemData)"

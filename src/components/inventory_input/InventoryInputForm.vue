@@ -233,8 +233,8 @@ onBeforeUnmount(() => {
   if (emitTimer.value) {
     clearTimeout(emitTimer.value)
   }
-// debounce timers are handled by usePaginatedQuery
-// debounce timers are handled by usePaginatedQuery
+  // debounce timers are handled by usePaginatedQuery
+  // debounce timers are handled by usePaginatedQuery
   window.removeEventListener('resize', updateDropdownPosition)
   window.removeEventListener('scroll', updateDropdownPosition, true)
 })
@@ -272,9 +272,7 @@ onBeforeUnmount(() => {
             :style="supplierDropdownStyle"
             class="fixed z-50 max-h-[300px] overflow-y-auto bg-white rounded-md border border-[rgba(0,0,0,0.08)] shadow-[0_6px_18px_rgba(0,0,0,0.08)]"
           >
-            <div v-if="isSuppliersLoading" class="p-3 text-center text-gray-400">
-              Đang tìm...
-            </div>
+            <div v-if="isSuppliersLoading" class="p-3 text-center text-gray-400">Đang tìm...</div>
             <div
               v-else
               v-for="supplier in suppliers"
@@ -295,6 +293,7 @@ onBeforeUnmount(() => {
             >
               <button
                 @click.stop="supplierPagination.prevPage"
+                @mousedown.prevent
                 :disabled="supplierPagination.isFirstPage.value"
                 class="px-2 py-1 text-xs border border-gray-300 rounded disabled:opacity-50 cursor-pointer"
               >
@@ -306,6 +305,7 @@ onBeforeUnmount(() => {
               </span>
               <button
                 @click.stop="supplierPagination.nextPage"
+                @mousedown.prevent
                 :disabled="supplierPagination.isLastPage.value"
                 class="px-2 py-1 text-xs border border-gray-300 rounded disabled:opacity-50 cursor-pointer"
               >
@@ -360,9 +360,7 @@ onBeforeUnmount(() => {
             :style="dropdownStyle"
             class="fixed z-50 bg-white rounded-md border border-[rgba(0,0,0,0.08)] shadow-[0_6px_18px_rgba(0,0,0,0.08)]"
           >
-            <div v-if="isProductsLoading" class="p-3 text-center text-gray-400">
-              Đang tìm...
-            </div>
+            <div v-if="isProductsLoading" class="p-3 text-center text-gray-400">Đang tìm...</div>
             <div
               v-else
               v-for="product in products"
@@ -392,6 +390,7 @@ onBeforeUnmount(() => {
             >
               <button
                 @click.stop="productPagination.prevPage"
+                @mousedown.prevent
                 :disabled="productPagination.isFirstPage.value"
                 class="px-2 py-1 text-xs border border-gray-300 rounded disabled:opacity-50 cursor-pointer"
               >
@@ -403,6 +402,7 @@ onBeforeUnmount(() => {
               </span>
               <button
                 @click.stop="productPagination.nextPage"
+                @mousedown.prevent
                 :disabled="productPagination.isLastPage.value"
                 class="px-2 py-1 text-xs border border-gray-300 rounded disabled:opacity-50 cursor-pointer"
               >
@@ -426,90 +426,94 @@ onBeforeUnmount(() => {
         {{ props.errors.products.__global }}
       </div>
 
-      <div class="mt-5 border border-gray-200 rounded-lg overflow-hidden flex-1 flex flex-col min-h-0">
+      <div
+        class="mt-5 border border-gray-200 rounded-lg overflow-hidden flex-1 flex flex-col min-h-0"
+      >
         <div class="overflow-y-auto flex-1 min-h-[300px]">
           <table class="w-full border-collapse text-sm">
-          <thead>
-            <tr class="bg-gray-50 border-b border-gray-200">
-              <th class="w-12 py-4 px-4 text-center font-semibold text-gray-700">STT</th>
-              <th class="py-4 px-4 text-left font-semibold text-gray-700">Tên hàng</th>
-              <th class="w-24 py-4 px-4 text-center font-semibold text-gray-700">ĐVT</th>
-              <th class="w-32 py-4 px-4 text-center font-semibold text-gray-700">Số lượng</th>
-              <th class="w-40 py-4 px-4 text-center font-semibold text-gray-700">Đơn giá</th>
-              <th class="w-40 py-4 px-4 text-right font-semibold text-gray-700">Thành tiền</th>
-              <th class="w-12 py-4 px-4"></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-if="localData.products.length === 0">
-              <td colspan="8" class="text-center py-6 text-gray-400">Chưa có sản phẩm nào</td>
-            </tr>
-            <tr
-              v-for="(product, index) in localData.products"
-              :key="product.id"
-              class="border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors"
-            >
-              <td class="py-4 px-4 text-center text-gray-500">{{ index + 1 }}</td>
-              <td class="py-4 px-4 font-medium text-gray-900 leading-relaxed">{{ product.name }}</td>
-              <td class="py-4 px-4 text-center text-gray-600">Cái</td>
-              <td class="py-4 px-4">
-                <input
-                  v-model.number="product.quantity"
-                  @change="calculateProductTotal(product)"
-                  type="number"
-                  min="1"
-                  class="w-full py-2 px-3 border border-gray-300 rounded-md text-center text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium"
-                />
-                <div
-                  v-if="
-                    props.errors &&
-                    props.errors.products &&
-                    props.errors.products[product.id] &&
-                    props.errors.products[product.id].quantity
-                  "
-                  class="text-red-500 text-xs mt-1"
-                >
-                  {{ props.errors.products[product.id].quantity }}
-                </div>
-              </td>
-              <td class="py-4 px-4">
-                <input
-                  v-model.number="product.unitPrice"
-                  @change="calculateProductTotal(product)"
-                  type="number"
-                  min="0"
-                  class="w-full py-2 px-3 border border-gray-300 rounded-md text-center text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium"
-                />
-                <div
-                  v-if="
-                    props.errors &&
-                    props.errors.products &&
-                    props.errors.products[product.id] &&
-                    props.errors.products[product.id].unitPrice
-                  "
-                  class="text-red-500 text-xs mt-1"
-                >
-                  {{ props.errors.products[product.id].unitPrice }}
-                </div>
-              </td>
-              <td class="py-4 px-4 text-right font-semibold text-gray-900">
-                {{ (product.total || 0).toLocaleString() }}
-              </td>
-              <td class="py-4 px-4 text-center">
-                <button
-                  @click="removeProduct(index)"
-                  class="bg-transparent border-none cursor-pointer text-lg p-1 opacity-40 hover:opacity-100 transition-opacity duration-150 grayscale hover:grayscale-0"
-                  type="button"
-                  title="Xoá hàng này"
-                >
-                  🗑️
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+            <thead>
+              <tr class="bg-gray-50 border-b border-gray-200">
+                <th class="w-12 py-4 px-4 text-center font-semibold text-gray-700">STT</th>
+                <th class="py-4 px-4 text-left font-semibold text-gray-700">Tên hàng</th>
+                <th class="w-24 py-4 px-4 text-center font-semibold text-gray-700">ĐVT</th>
+                <th class="w-32 py-4 px-4 text-center font-semibold text-gray-700">Số lượng</th>
+                <th class="w-40 py-4 px-4 text-center font-semibold text-gray-700">Đơn giá</th>
+                <th class="w-40 py-4 px-4 text-right font-semibold text-gray-700">Thành tiền</th>
+                <th class="w-12 py-4 px-4"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-if="localData.products.length === 0">
+                <td colspan="8" class="text-center py-6 text-gray-400">Chưa có sản phẩm nào</td>
+              </tr>
+              <tr
+                v-for="(product, index) in localData.products"
+                :key="product.id"
+                class="border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors"
+              >
+                <td class="py-4 px-4 text-center text-gray-500">{{ index + 1 }}</td>
+                <td class="py-4 px-4 font-medium text-gray-900 leading-relaxed">
+                  {{ product.name }}
+                </td>
+                <td class="py-4 px-4 text-center text-gray-600">Cái</td>
+                <td class="py-4 px-4">
+                  <input
+                    v-model.number="product.quantity"
+                    @change="calculateProductTotal(product)"
+                    type="number"
+                    min="1"
+                    class="w-full py-2 px-3 border border-gray-300 rounded-md text-center text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium"
+                  />
+                  <div
+                    v-if="
+                      props.errors &&
+                      props.errors.products &&
+                      props.errors.products[product.id] &&
+                      props.errors.products[product.id].quantity
+                    "
+                    class="text-red-500 text-xs mt-1"
+                  >
+                    {{ props.errors.products[product.id].quantity }}
+                  </div>
+                </td>
+                <td class="py-4 px-4">
+                  <input
+                    v-model.number="product.unitPrice"
+                    @change="calculateProductTotal(product)"
+                    type="number"
+                    min="0"
+                    class="w-full py-2 px-3 border border-gray-300 rounded-md text-center text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium"
+                  />
+                  <div
+                    v-if="
+                      props.errors &&
+                      props.errors.products &&
+                      props.errors.products[product.id] &&
+                      props.errors.products[product.id].unitPrice
+                    "
+                    class="text-red-500 text-xs mt-1"
+                  >
+                    {{ props.errors.products[product.id].unitPrice }}
+                  </div>
+                </td>
+                <td class="py-4 px-4 text-right font-semibold text-gray-900">
+                  {{ (product.total || 0).toLocaleString() }}
+                </td>
+                <td class="py-4 px-4 text-center">
+                  <button
+                    @click="removeProduct(index)"
+                    class="bg-transparent border-none cursor-pointer text-lg p-1 opacity-40 hover:opacity-100 transition-opacity duration-150 grayscale hover:grayscale-0"
+                    type="button"
+                    title="Xoá hàng này"
+                  >
+                    🗑️
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
     </div>
 
     <div class="w-[300px] border-l border-gray-200 pl-5 flex flex-col">

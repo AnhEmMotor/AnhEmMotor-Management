@@ -55,10 +55,27 @@
   - Component Con: Chỉ nhận dữ liệu qua props, phát sự kiện qua emit. Giữ cho component nhỏ, tập trung và có thể tái sử dụng.
 - Quy tắc "Không rò rỉ": Không được phép viết các hàm tính toán logic phức tạp và các biến của tính năng bên trong file .vue nếu logic hoặc biến đó có thể đưa vào Store.
 
+# Tanstack Query (Quy trình CRUD Chuẩn)
+
+- Thêm mới/Cập nhật (Mutation): Sau khi thành công, phải gọi queryClient.setQueryData cho ID sản phẩm cụ thể để cập nhật cache chi tiết ngay lập tức.
+- Hành động "Sửa" (Fetching):
+  - Sử dụng queryClient.fetchQuery để lấy dữ liệu.
+  - UX: Nếu đã có cache, hiển thị ngay (không loading overlay) và fetch ngầm. Nếu chưa có cache, bắt buộc hiển thị loading overlay.
+- Xóa (Deletion):
+  - Phải gọi queryClient.removeQueries cho ID sản phẩm đó trước khi gọi invalidateQueries danh sách.
+- Tương tác Modal (DraggableModal):
+  - Truyền :onRefresh cho DraggableModal để hiện nút reload trên tiêu đề.
+- Điều kiện: Chỉ truyền :onRefresh khi isEditMode === true, truyền undefined khi thêm mới.
+- Hàm Refresh: Gọi queryClient.fetchQuery với staleTime: 0 để ép buộc lấy dữ liệu mới nhất từ API và hiển thị loading overlay.
+
 # Pagination & Quản lý Trang
 
 - Tiêu chuẩn: Bắt buộc sử dụng usePaginatedQuery.js cho mọi tính năng có phân trang hoặc quản lý danh sách nhiều trang.
 - AI không được phép tự ý viết nội dung, sửa đổi hoặc tạo mới file usePaginatedQuery.js. Nếu chưa có file này, AI phải yêu cầu người dùng cung cấp hoặc copy từ dự án mẫu. Tuyệt đối không tự sinh code thay thế cho công cụ này.
+
+# Build dự án
+
+Khi có sự thay đổi trong dự án, Bắt buộc chạy npm run build để xác nhận không còn lỗi. Nếu lỗi, phải sửa cho đến khi build thành công.
 
 # Commit Dự án
 
