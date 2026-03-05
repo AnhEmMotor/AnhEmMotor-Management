@@ -50,7 +50,7 @@ function getStatusName(status) {
       class="hidden md:grid grid-cols-[1.5fr_2fr_1.5fr_1.2fr] items-center py-2 px-3 text-sm cursor-pointer transition duration-150"
     >
       <div class="px-5 text-gray-600 whitespace-nowrap text-xs">
-        {{ formatDateTime(itemData.time) }}
+        {{ formatDateTime(itemData.createdAt) }}
       </div>
       <div class="px-5 font-medium text-gray-800 truncate text-sm">{{ itemData.supplierName }}</div>
       <div class="px-5 text-right text-sm font-semibold text-red-600">
@@ -70,7 +70,7 @@ function getStatusName(status) {
           {{ getStatusName(itemData.statusId) }}
         </RoundBadge>
       </div>
-      <div class="text-gray-600 text-xs">{{ itemData.time }}</div>
+      <div class="text-gray-600 text-xs">{{ itemData.createdAt }}</div>
       <div class="pt-2">
         <div class="font-medium text-gray-800 truncate">{{ itemData.supplierName }}</div>
         <div class="text-gray-600 text-xs">{{ itemData.supplierCode }}</div>

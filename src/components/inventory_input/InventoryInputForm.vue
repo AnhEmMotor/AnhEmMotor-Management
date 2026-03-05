@@ -330,7 +330,8 @@ onBeforeUnmount(() => {
               <div>
                 <div class="font-medium">{{ localData.supplier.name }}</div>
                 <div class="text-xs text-gray-500">
-                  {{ localData.supplier.id }} - {{ localData.supplier.phone }}
+                  {{ localData.supplier.phone || 'Chưa có SĐT'
+                  }}{{ localData.supplier.email ? ` | ${localData.supplier.email}` : '' }}
                 </div>
               </div>
             </div>
@@ -520,7 +521,23 @@ onBeforeUnmount(() => {
       <div class="flex justify-between items-center mb-5">
         <h3 class="text-sm font-semibold text-gray-700">Trạng thái</h3>
         <div class="text-sm text-gray-500 py-1">
-          <RoundBadge color="yellow">Phiếu tạm</RoundBadge>
+          <RoundBadge
+            :color="
+              localData.statusId === 'finished'
+                ? 'green'
+                : localData.statusId === 'cancelled'
+                  ? 'red'
+                  : 'yellow'
+            "
+          >
+            {{
+              localData.statusId === 'finished'
+                ? 'Hoàn thành'
+                : localData.statusId === 'cancelled'
+                  ? 'Đã huỷ'
+                  : 'Phiếu tạm'
+            }}
+          </RoundBadge>
         </div>
       </div>
 

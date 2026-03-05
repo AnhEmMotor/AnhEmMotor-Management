@@ -135,14 +135,17 @@ const openNewInventoryModal = () => {
 
 const openEditInventoryModal = async (item) => {
   isEditMode.value = true
+  // Reset data to clear previous state before showing modal or loading from cache
+  currentInventoryData.value = { supplier: null, products: [], notes: '' }
+
   const cached = queryClient.getQueryData(['inventoryReceipts', item.id])
   if (cached) {
     currentInventoryData.value = mapResponseToForm(cached)
-    showInventoryModal.value = true
   } else {
     loadingOverlay.value = true
-    showInventoryModal.value = true
   }
+
+  showInventoryModal.value = true
   try {
     const detail = await queryClient.fetchQuery({
       queryKey: ['inventoryReceipts', item.id],
@@ -178,20 +181,24 @@ const handleInventoryRefresh = async () => {
 function mapResponseToForm(d) {
   return {
     id: d.id,
-    supplier: d.supplier
-      ? { id: d.supplier.id, name: d.supplier.name, phone: d.supplier.phone || '' }
+    supplier: d.supplierId
+      ? {
+          id: d.supplierId,
+          name: d.supplierName || '',
+          phone: d.supplierPhone || '',
+          email: d.supplierEmail || '',
+        }
       : null,
     products: (d.products || d.details || []).map((p) => ({
       id: p.id || Date.now() + Math.random(),
       variantId: p.productId || p.variantId,
       code: p.variantCode || p.code || '',
-      name: p.productName || p.variantName || p.name || '',
-      quantity: p.count || p.quantity || 0,
-      unitPrice: p.inputPrice || p.unitPrice || 0,
-      total: (p.count || p.quantity || 0) * (p.inputPrice || p.unitPrice || 0),
+      name: p.name || p.productName || p.variantName || '',
+      quantity: p.quantity || p.count || 0,
+      unitPrice: p.unitPrice || p.inputPrice || 0,
+      total: (p.quantity || p.count || 0) * (p.unitPrice || p.inputPrice || 0),
     })),
     notes: d.notes || '',
-    importDate: d.importDate,
     statusId: d.statusId,
   }
 }
@@ -380,7 +387,7 @@ const handleCopyReceipt = async (item) => {
 
 <template>
   <div class="p-4 sm:p-6 rounded-xl shadow-lg bg-white">
-    <LoadingOverlay v-if="loadingOverlay" />
+    <LoadingOverlay :show="loadingOverlay" />
 
     <div
       class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0"
@@ -498,10 +505,12 @@ const handleCopyReceipt = async (item) => {
 
     <DraggableModal
       v-if="showInventoryModal"
+      :key="isEditMode ? `edit-${currentInventoryData.id}` : 'new'"
       :z-index="1000"
       width="70vw"
       :disabled="showProductModal"
       :onRefresh="isEditMode ? handleInventoryRefresh : undefined"
+      :isLoading="loadingOverlay"
       @close="closeInventoryModal"
     >
       <template #header>
