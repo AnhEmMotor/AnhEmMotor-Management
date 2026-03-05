@@ -62,31 +62,35 @@ const pageNumbers = computed(() => {
 </script>
 
 <template>
-  <div v-if="loading || totalPages > 1" class="mt-6 flex justify-center items-center h-10">
-    <span v-if="loading" class="loader w-6 h-6 border-2 border-gray-200 border-t-red-600 rounded-full animate-spin"></span>
-    <div v-else-if="totalPages > 0" class="flex items-center space-x-2">
+  <div v-if="totalPages > 1" class="mt-6 flex justify-center items-center h-10">
+    <div class="flex items-center space-x-2">
       <button
         @click="prevPage"
         :disabled="isPrevDisabled"
         class="inline-flex items-center justify-center px-3 py-1.5 sm:px-4 sm:py-2 text-sm font-medium rounded-md transition-colors duration-200 border"
-        :class="isPrevDisabled ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50 focus:ring-2 focus:ring-red-500 focus:outline-none'"
+        :class="
+          isPrevDisabled
+            ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50 focus:ring-2 focus:ring-red-500 focus:outline-none'
+        "
       >
         <span>&larr;</span>
         <span class="ml-1 hidden sm:inline">Trước</span>
       </button>
       <div class="flex items-center space-x-1 sm:space-x-2">
         <template v-for="(page, index) in pageNumbers" :key="index">
-          <span 
-            v-if="page === '...'" 
-            class="px-2 py-1.5 sm:px-3 sm:py-2 text-sm text-gray-500"
-          >
+          <span v-if="page === '...'" class="px-2 py-1.5 sm:px-3 sm:py-2 text-sm text-gray-500">
             ...
           </span>
           <button
             v-else
             @click="goToPage(page)"
             class="inline-flex items-center justify-center min-w-[2rem] px-2 py-1.5 sm:min-w-[2.5rem] sm:px-3 sm:py-2 text-sm font-medium rounded-md transition-colors duration-200 border"
-            :class="page === currentPage ? 'bg-red-600 text-white border-red-600 shadow-sm focus:ring-2 focus:ring-red-500 focus:ring-offset-1 focus:outline-none' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50 focus:ring-2 focus:ring-red-500 focus:outline-none'"
+            :class="
+              page === currentPage
+                ? 'bg-red-600 text-white border-red-600 shadow-sm focus:ring-2 focus:ring-red-500 focus:ring-offset-1 focus:outline-none'
+                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50 focus:ring-2 focus:ring-red-500 focus:outline-none'
+            "
           >
             {{ page }}
           </button>
@@ -96,7 +100,11 @@ const pageNumbers = computed(() => {
         @click="nextPage"
         :disabled="isNextDisabled"
         class="inline-flex items-center justify-center px-3 py-1.5 sm:px-4 sm:py-2 text-sm font-medium rounded-md transition-colors duration-200 border"
-        :class="isNextDisabled ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50 focus:ring-2 focus:ring-red-500 focus:outline-none'"
+        :class="
+          isNextDisabled
+            ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50 focus:ring-2 focus:ring-red-500 focus:outline-none'
+        "
       >
         <span class="mr-1 hidden sm:inline">Sau</span>
         <span>&rarr;</span>

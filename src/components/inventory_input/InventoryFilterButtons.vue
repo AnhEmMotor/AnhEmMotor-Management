@@ -21,9 +21,9 @@ import IconXCircle from '../icons/IconXCircle.vue'
 
 const props = defineProps({
   modelValue: {
-    type: Array,
+    type: String,
     required: true,
-    default: () => [],
+    default: '',
   },
 })
 
@@ -40,13 +40,10 @@ const isActive = (status) => {
 }
 
 const selectFilter = (status) => {
-  const newSelection = [...props.modelValue]
-  const index = newSelection.indexOf(status)
-  if (index > -1) {
-    newSelection.splice(index, 1)
+  if (props.modelValue === status) {
+    emit('update:modelValue', '')
   } else {
-    newSelection.push(status)
+    emit('update:modelValue', status)
   }
-  emit('update:modelValue', newSelection)
 }
 </script>

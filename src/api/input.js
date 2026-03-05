@@ -1,7 +1,31 @@
 import axiosInstance from './axios'
 
 export const fetchInventoryReceipts = async (params) => {
-  const { data } = await axiosInstance.get('/api/v1/InventoryReceipts', { params })
+  const serverParams = {
+    Page: params.Page || params.page,
+    PageSize: params.PageSize || params.limit,
+  }
+
+  const filters = []
+
+  if (params.search) {
+    const s = params.search
+    if (!isNaN(s) && !isNaN(parseFloat(s))) {
+      filters.push(`(Id==${s}|SupplierName@=${s})`)
+    } else {
+      filters.push(`SupplierName@=${s}`)
+    }
+  }
+
+  if (params.status) {
+    filters.push(`StatusId==${params.status}`)
+  }
+
+  if (filters.length > 0) {
+    serverParams.filters = filters.join(',')
+  }
+
+  const { data } = await axiosInstance.get('/api/v1/InventoryReceipts', { params: serverParams })
   return data
 }
 

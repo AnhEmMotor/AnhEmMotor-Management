@@ -77,24 +77,6 @@
 
 Khi có sự thay đổi trong dự án, Bắt buộc chạy npm run build để xác nhận không còn lỗi. Nếu lỗi, phải sửa cho đến khi build thành công.
 
-# Commit Dự án
+# Tuyệt đối không tự ý Commit Dự án
 
-- Cấu trúc bắt buộc
-
-  ```
-  <type>: <subject>
-
-  - <bullet point 1>
-  - <bullet point 2>
-  ```
-
-- Quy tắc:
-  - Header:
-    - Không quá 300 ký tự.
-    - Sử dụng thể mệnh lệnh (Imperative mood).
-    - Phải thuộc các loại: feat, fix, docs, style, refactor, perf, test, chore, ci.
-  - Body:
-    - Bắt buộc phải là danh sách các gạch đầu dòng sử dụng dấu gạch ngang (-).
-    - Mỗi gạch đầu dòng chỉ được phép là MỘT câu duy nhất.
-    - Tuyệt đối không viết thành đoạn văn. Không nhóm nhiều câu vào một dòng.
-    - Phải bẻ nhỏ các logic phức tạp thành nhiều điểm thay đổi riêng biệt để dễ theo dõi.
+Tuyệt đối không tự ý commit và push code lên trên git cho dự án.

@@ -27,39 +27,35 @@ const suppliersStore = useSuppliersStore()
 const route = useRoute()
 
 const { isFormModalVisible, isEditMode, editableSupplier, formErrors } = storeToRefs(suppliersStore)
-const initializeStatus = () => {
-  const statusQuery = route.query.status
-  if (!statusQuery) return []
-  if (Array.isArray(statusQuery)) return statusQuery
-  return statusQuery.includes(',') ? statusQuery.split(',') : [statusQuery]
-}
-const selectedStatuses = ref(initializeStatus())
-
-const openStates = ref({})
-const showOverlay = ref(false)
-const overlayMessage = ref('')
-
-const filters = computed(() => {
-  const f = {}
-  f.status = selectedStatuses.value.length ? selectedStatuses.value : undefined
-  return f
-})
-
 const {
   data: suppliers,
   isLoading,
   isError,
   pagination,
-  searchTerm,
+  searchRefs,
+  filterRefs,
 } = usePaginatedQuery({
   queryKey: ['suppliers'],
   queryFn: fetchSuppliers,
   itemsPerPage: 10,
-  filters,
-  queryOptions: {
-    syncFiltersToUrl: true,
+  searchFields: [{ key: 'search' }],
+  filterFields: [{ key: 'status' }],
+})
+
+const selectedStatuses = computed({
+  get: () => {
+    const val = filterRefs.status
+    if (!val) return []
+    return Array.isArray(val) ? val : [val]
+  },
+  set: (val) => {
+    filterRefs.status = val.length > 0 ? val[0] : ''
   },
 })
+
+const openStates = ref({})
+const showOverlay = ref(false)
+const overlayMessage = ref('')
 
 const isMutating = computed(
   () =>
@@ -231,9 +227,9 @@ const handleImport = () => {
     </div>
 
     <Input
-      v-model="searchTerm"
+      v-model="searchRefs.search"
       type="text"
-      placeholder="Tìm kiếm theo mã, tên, SĐT nhà cung cấp..."
+      placeholder="Tìm kiếm theo tên nhà cung cấp..."
       class="mb-3"
     />
 
@@ -275,10 +271,7 @@ const handleImport = () => {
               </div>
             </div>
           </div>
-          <div
-            v-else
-            class="text-center py-12 flex flex-col items-center justify-center space-y-3"
-          >
+          <div v-else class="text-center py-12 flex flex-col items-center justify-center space-y-3">
             <div class="bg-gray-50 p-3 rounded-full">
               <svg
                 xmlns="http://www.w3.org/2000/svg"

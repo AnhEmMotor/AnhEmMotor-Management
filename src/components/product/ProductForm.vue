@@ -60,10 +60,7 @@ const {
   queryOptions: { staleTime: 5 * 60 * 1000 },
 })
 
-const {
-  data: predefinedOptionsData,
-  isLoading: isOptionsLoading,
-} = useQuery({
+const { data: predefinedOptionsData, isLoading: isOptionsLoading } = useQuery({
   queryKey: ['predefinedOptions'],
   queryFn: getPredefinedOptions,
   staleTime: 5 * 60 * 1000,
@@ -78,6 +75,7 @@ const categoryOptions = computed(() => {
     text: c.name,
   }))
 })
+
 const brandOptions = computed(() => {
   return (brandsData.value || []).map((b) => ({
     value: b.id,
@@ -204,7 +202,13 @@ watch(
 const updateAllVariantSlugs = () => {
   if (localProduct.value.variants) {
     localProduct.value.variants.forEach((v) => {
-      v.url = generateVariantSlug(v)
+      // Chỉ tự động cập nhật slug nếu:
+      // 1. Đang tạo mới hoàn toàn (!isEditMode)
+      // 2. Hoặc đang sửa nhưng đây là biến thể mới thêm vào (!v.id)
+      // 3. Hoặc slug hiện đang trống (!v.url)
+      if (!props.isEditMode || !v.id || !v.url) {
+        v.url = generateVariantSlug(v)
+      }
     })
   }
 }
@@ -278,6 +282,7 @@ const removeVariant = (index) => {
             <Dropdown
               label="Danh Mục *"
               v-model="localProduct.category_id"
+              :selected-label="localProduct.category"
               :options="categoryOptions"
               :pagination="categoryPagination"
               :loading="isCategoriesLoading"
@@ -290,6 +295,7 @@ const removeVariant = (index) => {
             <Dropdown
               label="Thương Hiệu"
               v-model="localProduct.brand_id"
+              :selected-label="localProduct.brand"
               :options="brandOptions"
               :pagination="brandPagination"
               :loading="isBrandsLoading"
@@ -421,11 +427,19 @@ const removeVariant = (index) => {
       <fieldset class="border rounded-md p-4">
         <legend class="px-2 font-semibold text-gray-700">Các biến thể (Variants)</legend>
 
-        <div v-if="typeof props.errors?.variants === 'string'" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mb-4">
+        <div
+          v-if="typeof props.errors?.variants === 'string'"
+          class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mb-4"
+        >
           <span class="block sm:inline whitespace-pre-line">{{ props.errors.variants }}</span>
         </div>
-        <div v-if="typeof props.errors?._backend?.variants === 'string'" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mb-4">
-          <span class="block sm:inline whitespace-pre-line">{{ props.errors._backend.variants }}</span>
+        <div
+          v-if="typeof props.errors?._backend?.variants === 'string'"
+          class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mb-4"
+        >
+          <span class="block sm:inline whitespace-pre-line">{{
+            props.errors._backend.variants
+          }}</span>
         </div>
 
         <div class="space-y-6">

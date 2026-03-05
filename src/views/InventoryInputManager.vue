@@ -27,25 +27,9 @@ const toast = useToast()
 
 const expandedItemId = ref(null)
 const itemsPerPage = ref(15)
-const selectedStatuses = ref([])
-
-const filters = computed(() => {
-  const f = {}
-  if (selectedStatuses.value.length > 0) {
-    f.filters = selectedStatuses.value.map((s) => `StatusId==${s}`).join('|')
-  }
-  return f
-})
 
 const queryFn = async (params) => {
-  const res = await fetchInventoryReceipts({
-    Page: params.page,
-    PageSize: params.limit,
-    ...(params.filters ? { filters: params.filters } : {}),
-    ...(params.search
-      ? { filters: (params.filters ? params.filters + ',' : '') + `Notes@=${params.search}` }
-      : {}),
-  })
+  const res = await fetchInventoryReceipts(params)
   return {
     data: res.items || [],
     pagination: {
@@ -62,13 +46,21 @@ const {
   isError,
   error,
   searchRefs,
+  filterRefs,
   pagination,
 } = usePaginatedQuery({
   queryKey: ['inventoryReceipts'],
   queryFn,
   itemsPerPage,
-  filters,
   searchFields: [{ key: 'search', debounce: 400 }],
+  filterFields: [{ key: 'status' }],
+})
+
+const selectedStatus = computed({
+  get: () => filterRefs.status || '',
+  set: (val) => {
+    filterRefs.status = val
+  },
 })
 
 const { data: statusMapData } = useQuery({
@@ -387,8 +379,6 @@ const handleCopyReceipt = async (item) => {
 
 <template>
   <div class="p-4 sm:p-6 rounded-xl shadow-lg bg-white">
-    <LoadingOverlay :show="loadingOverlay" />
-
     <div
       class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0"
     >
@@ -418,14 +408,14 @@ const handleCopyReceipt = async (item) => {
 
         <span class="text-gray-400 mx-4 hidden border-r-2 sm:block" />
 
-        <InventoryFilterButtons v-model="selectedStatuses" :status-map="statusMap" />
+        <InventoryFilterButtons v-model="selectedStatus" :status-map="statusMap" />
       </div>
     </div>
 
     <Input
       v-model="searchRefs.search"
       type="text"
-      placeholder="Tìm theo mã phiếu, NCC..."
+      placeholder="Tìm theo mã phiếu, tên nhà cung cấp..."
       class="mb-3"
     />
 
