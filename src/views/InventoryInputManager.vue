@@ -17,9 +17,10 @@ import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 import { useToast } from 'vue-toastification'
-import IconPlus from '@/components/icons/IconPlus.vue'
-import IconFileImport from '@/components/icons/IconFileImport.vue'
-import IconFileExport from '@/components/icons/IconFileExport.vue'
+import IconPlus from '@/assets/icons/IconPlus.svg'
+import IconFileImport from '@/assets/icons/IconFileImport.svg'
+import IconFileExport from '@/assets/icons/IconFileExport.svg'
+import IconEmptyBox from '@/assets/icons/empty-box.svg'
 
 const inputsStore = useInputsStore()
 const queryClient = useQueryClient()
@@ -451,20 +452,7 @@ const handleCopyReceipt = async (item) => {
           </div>
           <div v-else class="text-center py-12 flex flex-col items-center justify-center space-y-3">
             <div class="bg-gray-50 p-3 rounded-full">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-8 w-8 text-gray-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-                />
-              </svg>
+              <IconEmptyBox class="h-8 w-8 text-gray-400" />
             </div>
             <p class="text-gray-500 font-medium">Không có phiếu nhập nào để hiển thị.</p>
           </div>

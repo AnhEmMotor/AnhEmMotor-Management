@@ -12,11 +12,11 @@ import SmallNoBgButton from '@/components/ui/button/SmallNoBgButton.vue';
 import DraggableModal from '@/components/ui/DraggableModal.vue';
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue';
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue';
-import IconPlus from '@/components/icons/IconPlus.vue';
-import IconFileImport from '@/components/icons/IconFileImport.vue';
-import IconFileExport from '@/components/icons/IconFileExport.vue';
-import IconEdit from '@/components/icons/IconEdit.vue';
-import IconTrash from '@/components/icons/IconTrash.vue';
+import IconPlus from '@/assets/icons/IconPlus.svg';
+import IconFileImport from '@/assets/icons/IconFileImport.svg';
+import IconFileExport from '@/assets/icons/IconFileExport.svg';
+import IconEdit from '@/assets/icons/IconEdit.svg';
+import IconTrash from '@/assets/icons/IconTrash.svg';
 
 const queryClient = useQueryClient();
 const toast = useToast();

@@ -1,9 +1,9 @@
 <script setup>
 import { ref, onBeforeUnmount, computed, onMounted, nextTick } from 'vue'
-import IconMaximize from '@/components/icons/IconMaximize.vue'
-import IconMinimize from '@/components/icons/IconMinimize.vue'
-import IconClose from '@/components/icons/IconClose.vue'
-import IconRefresh from '@/components/icons/IconRefresh.vue'
+import IconMaximize from '@/assets/icons/IconMaximize.svg'
+import IconMinimize from '@/assets/icons/IconMinimize.svg'
+import IconClose from '@/assets/icons/IconClose.svg'
+import IconRefresh from '@/assets/icons/IconRefresh.svg'
 import LoadingOverlay from './LoadingOverlay.vue'
 
 const props = defineProps({

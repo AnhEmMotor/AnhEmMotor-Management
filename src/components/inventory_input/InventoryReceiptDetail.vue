@@ -1,8 +1,8 @@
 <script setup>
 import { ref, watch, toRefs } from 'vue'
-import IconTrash from '../icons/IconTrash.vue'
-import IconDuplicate from '../icons/IconDuplicate.vue'
-import IconExpand from '../icons/IconExpand.vue'
+import IconTrash from '@/assets/icons/IconTrash.svg'
+import IconDuplicate from '@/assets/icons/IconDuplicate.svg'
+import IconExpand from '@/assets/icons/IconExpand.svg'
 import Textarea from '../ui/input/BaseTextarea.vue'
 
 const props = defineProps({

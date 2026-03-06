@@ -13,8 +13,8 @@ import SmallNoBgButton from '@/components/ui/button/SmallNoBgButton.vue'
 import Image from '@/components/ui/input/BaseImage.vue'
 import GroupImage from '@/components/ui/input/GroupImage.vue'
 import LoadingOverlay from '../ui/LoadingOverlay.vue'
-import IconTrash from '@/components/icons/IconTrash.vue'
-import IconPlus from '@/components/icons/IconPlus.vue'
+import IconTrash from '@/assets/icons/IconTrash.svg'
+import IconPlus from '@/assets/icons/IconPlus.svg'
 
 const props = defineProps({
   modelValue: {

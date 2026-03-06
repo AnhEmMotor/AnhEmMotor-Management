@@ -1,5 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import IconChevronDown from '@/assets/icons/chevron-down.svg'
+import IconCheck from '@/assets/icons/check.svg'
 
 const props = defineProps({
   modelValue: {
@@ -144,22 +146,10 @@ onUnmounted(() => {
           v-if="loading"
           class="loader w-4 h-4 border-2 border-gray-200 border-t-red-600 rounded-full animate-spin"
         ></span>
-        <svg
-          v-else
+        <IconChevronDown
           class="h-4 w-4 text-gray-500 transition-transform duration-200"
           :class="{ 'transform rotate-180': isOpen }"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M19 9l-7 7-7-7"
-          ></path>
-        </svg>
+        />
       </span>
     </button>
 
@@ -188,18 +178,7 @@ onUnmounted(() => {
             v-if="modelValue === option.value"
             class="absolute inset-y-0 right-0 flex items-center pr-3 text-red-600"
           >
-            <svg
-              class="h-4 w-4"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clip-rule="evenodd"
-              />
-            </svg>
+            <IconCheck class="h-4 w-4" />
           </span>
         </li>
       </ul>

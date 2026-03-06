@@ -6,7 +6,7 @@ import RevenueFilterButtons from '@/components/report/RevenueFilterButtons.vue'
 import RevenueChart7day from '@/components/report/RevenueChart7day.vue'
 import DonutChart from '@/components/charts/DonutChart.vue'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
-import IconFileExport from '@/components/icons/IconFileExport.vue'
+import IconFileExport from '@/assets/icons/IconFileExport.svg'
 
 const isLoading = ref(true)
 

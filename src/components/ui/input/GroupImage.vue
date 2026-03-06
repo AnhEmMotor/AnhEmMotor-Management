@@ -11,7 +11,11 @@
       @drop.prevent="onDrop"
       :class="[
         'mt-2 relative flex flex-col justify-center items-center w-full min-h-[10rem] border-2 border-dashed rounded-md cursor-pointer transition-colors',
-        isDragging ? 'border-purple-600 bg-purple-50' : (error ? 'border-red-400 bg-red-50' : 'border-gray-300 hover:border-gray-400'),
+        isDragging
+          ? 'border-purple-600 bg-purple-50'
+          : error
+            ? 'border-red-400 bg-red-50'
+            : 'border-gray-300 hover:border-gray-400',
         isLoading ? 'pointer-events-none' : '',
       ]"
     >
@@ -42,20 +46,7 @@
       </div>
 
       <div class="text-center p-4">
-        <svg
-          class="mx-auto h-10 w-10 text-gray-400"
-          stroke="currentColor"
-          fill="none"
-          viewBox="0 0 48 48"
-          aria-hidden="true"
-        >
-          <path
-            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
+        <IconImagePlaceholder class="mx-auto h-10 w-10 text-gray-400" />
         <p class="mt-2 text-sm text-gray-600">
           <span class="font-medium text-purple-600">Nhấn để chọn</span> hoặc kéo thả (nhiều) ảnh vào
           đây
@@ -80,31 +71,29 @@
           type="button"
           class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-0.5 leading-none hover:bg-red-600 focus:outline-none"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-3.5 w-3.5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-              clip-rule="evenodd"
-            />
-          </svg>
+          <IconCloseLine class="h-3.5 w-3.5" />
         </button>
       </div>
     </div>
 
     <p v-if="error" class="mt-1 text-sm text-red-600">{{ error }}</p>
 
-    <input type="file" ref="fileInput" @change="onFileSelected" class="hidden" accept="image/*" multiple />
+    <input
+      type="file"
+      ref="fileInput"
+      @change="onFileSelected"
+      class="hidden"
+      accept="image/*"
+      multiple
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
 import * as mediaFileApi from '@/api/mediaFile'
+import IconCloseLine from '@/assets/icons/close-line.svg'
+import IconImagePlaceholder from '@/assets/icons/image-placeholder.svg'
 
 const props = defineProps({
   modelValue: {
