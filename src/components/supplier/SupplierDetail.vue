@@ -52,9 +52,9 @@ const filters = computed(() => ({
 }))
 
 const fetchHistoryFn = async (params) => {
-  const response = await inputsStore.fetchInputsBySupplier(props.itemData.id, {
-    Page: params.page,
-    PageSize: params.limit,
+  const response = await suppliersStore.getPurchaseHistory(props.itemData.id, {
+    page: params.page,
+    limit: params.limit,
   })
 
   return {
@@ -198,7 +198,7 @@ watch(historyIsError, (hasError) => {
           class="grid grid-cols-16 gap-4 text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50 border-b border-gray-200 px-4 py-3"
         >
           <div class="col-span-4">Thời gian</div>
-          <div class="col-span-7">Người xác nhận</div>
+          <div class="col-span-7">Số lượng mặt hàng</div>
           <div class="text-right col-span-3">Tổng cộng</div>
           <div class="text-right col-span-2">Trạng thái</div>
         </div>
@@ -227,21 +227,21 @@ watch(historyIsError, (hasError) => {
             class="grid grid-cols-16 gap-4 items-center px-4 py-3 border-b border-gray-50 text-sm hover:bg-gray-50 transition-colors last:border-0"
           >
             <div class="text-gray-700 font-medium col-span-4">
-              {{ formatDateTime(input.created_at) }}
+              {{ formatDateTime(input.createdAt) }}
             </div>
             <div class="text-gray-600 col-span-7">
-              {{ input.name_verify || '---' }}
+              {{ input.totalItems }}
             </div>
             <div class="text-right font-medium text-gray-800 col-span-3">
-              {{ formatCurrency(input.total) }}
+              {{ formatCurrency(input.totalPayable) }}
             </div>
             <div class="text-right col-span-2">
-              <RoundBadge :color="getStatusInfo(input.status_id).color">
-                {{ getStatusInfo(input.status_id).text }}
+              <RoundBadge :color="getStatusInfo(input.statusId).color">
+                {{ getStatusInfo(input.statusId).text }}
               </RoundBadge>
             </div>
           </div>
-          <div class="p-4 border-t border-gray-100 bg-gray-50">
+          <div v-if="historyTotalPages > 1" class="p-4 border-t border-gray-100 bg-gray-50">
             <Pagination
               :total-pages="historyTotalPages"
               v-model:currentPage="historyCurrentPage"

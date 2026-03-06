@@ -183,7 +183,6 @@
                   <span>Danh sách sản phẩm</span>
                 </RouterLink>
               </li>
-              
             </ul>
           </li>
 
@@ -253,6 +252,26 @@
           </li>
 
           <li>
+            <RouterLink
+              to="/orders"
+              class="flex items-center space-x-3 p-3 rounded-lg w-full font-medium"
+              active-class="bg-red-50 text-red-700 border-l-4 border-red-600"
+              :class="
+                route.path.startsWith('/orders')
+                  ? 'bg-red-50 text-red-700 border-l-4 border-red-600'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-red-600 border-l-4 border-transparent'
+              "
+              @click="closeMobileMenu"
+            >
+              <IconOrder
+                class="flex-shrink-0"
+                :class="route.path.startsWith('/orders') ? 'text-red-600' : 'text-gray-500'"
+              />
+              <span>Đơn hàng</span>
+            </RouterLink>
+          </li>
+
+          <li>
             <button
               @click="toggleGroup('user')"
               class="flex items-center justify-between space-x-3 p-3 rounded-lg w-full font-medium cursor-pointer text-gray-600 hover:bg-gray-50 hover:text-red-600 border-l-4 border-transparent"
@@ -300,26 +319,6 @@
                 </RouterLink>
               </li>
             </ul>
-          </li>
-
-          <li>
-            <RouterLink
-              to="/orders"
-              class="flex items-center space-x-3 p-3 rounded-lg w-full font-medium"
-              active-class="bg-red-50 text-red-700 border-l-4 border-red-600"
-              :class="
-                route.path.startsWith('/orders')
-                  ? 'bg-red-50 text-red-700 border-l-4 border-red-600'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-red-600 border-l-4 border-transparent'
-              "
-              @click="closeMobileMenu"
-            >
-              <IconOrder
-                class="flex-shrink-0"
-                :class="route.path.startsWith('/orders') ? 'text-red-600' : 'text-gray-500'"
-              />
-              <span>Đơn hàng</span>
-            </RouterLink>
           </li>
 
           <li>

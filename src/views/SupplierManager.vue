@@ -240,7 +240,7 @@ const handleImport = () => {
         <div class="md:col-span-8">Tên nhà cung cấp</div>
         <div class="md:col-start-9 md:col-span-2">Điện thoại</div>
         <div class="md:col-start-11 md:col-span-2">Email</div>
-        <div class="md:col-start-13 md:col-span-2 md:justify-self-end">Tổng mua</div>
+        <div class="md:col-start-13 md:col-span-2 md:justify-self-end">Tổng đã mua (hoàn tất)</div>
         <div class="md:col-start-15 md:col-span-2">Trạng thái</div>
       </div>
 

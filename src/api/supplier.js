@@ -69,10 +69,22 @@ export const searchActiveSuppliers = async (search = '') => {
     StatusId: 'active',
     PageSize: 50,
   }
-  const { data } = await axiosInstance.get(BASE_URL, { params })
   return (data.items || []).map((s) => ({
     id: s.id,
     name: s.name,
     phone: s.phone,
   }))
+}
+
+export const fetchSupplierPurchaseHistory = async (id, { page, limit }) => {
+  const params = {
+    Page: page,
+    PageSize: limit,
+  }
+  const { data } = await axiosInstance.get(`${BASE_URL}/${id}/purchase-history`, { params })
+  return {
+    items: data.items,
+    totalCount: data.totalCount,
+    totalPages: data.totalPages,
+  }
 }

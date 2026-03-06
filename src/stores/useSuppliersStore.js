@@ -7,6 +7,7 @@ import {
   deleteSupplier,
   getSupplierById,
   updateSupplierStatus as updateStatusApi,
+  fetchSupplierPurchaseHistory,
 } from '@/api/supplier'
 
 export const useSuppliersStore = defineStore('suppliers', () => {
@@ -144,6 +145,7 @@ export const useSuppliersStore = defineStore('suppliers', () => {
     toggleStatus,
     deleteSupplier: removeSupplier,
     getSupplierById,
+    getPurchaseHistory: fetchSupplierPurchaseHistory,
     openFormModal,
     closeFormModal,
   }
