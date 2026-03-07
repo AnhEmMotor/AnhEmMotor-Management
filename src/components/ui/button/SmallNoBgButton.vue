@@ -35,9 +35,9 @@ const buttonClasses = computed(() => {
   return [baseClasses, colorClass, 'hover:underline']
 })
 
-const handleClick = () => {
+const handleClick = (event) => {
   if (!props.disabled) {
-    emit('click')
+    emit('click', event)
   }
 }
 </script>

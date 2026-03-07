@@ -1,8 +1,10 @@
 # AnhEmMotor Management Dashboard Project
 
+[English](#english) | [Tiếng Việt](#tieng-viet)
 
 ---
 
+<a name="english"></a>
 ## English
 
 **Copyright (C) 2026 Tran Thanh Binh, Nguyen Huynh Kim Ngan, Nguyen Trinh Anh Khoi, Trinh Minh Uyen.**
@@ -67,8 +69,21 @@ The project uses GitHub Actions for auto-deployments.
 2. After the pull request is approved (if it meets quality standards), GitHub Action will automatically build the project.
 3. If the build is successful, the code will be deployed to the server.
 
+#### Troubleshooting: Port is already in use / Not run in port 5173
+
+**Solution:**
+
+Try run 2 command in Command Prompt Administrator:
+```
+sc stop winnat
+sc start winnat
+```
+
+If it hasn't been successful yet, Restart your computer.
+
 ---
 
+<a name="tieng-viet"></a>
 ## Tiếng Việt
 
 **Copyright (C) 2026 Tran Thanh Binh, Nguyen Huynh Kim Ngan, Nguyen Trinh Anh Khoi, Trinh Minh Uyen.**
@@ -132,3 +147,16 @@ Dự án sử dụng GitHub Actions để auto deploy.
 1. Tạo pull request
 2. Sau khi được chấp nhận pull request (nếu đạt đủ chất lượng), GitHub Action sẽ tự động build.
 3. Nếu build thành công, code sẽ được deploy lên server.
+
+#### Khắc phục sự cố: Cổng đã được sử dụng / Không chạy trên cổng 5173
+
+**Giải pháp:**
+
+Hãy thử chạy 2 lệnh sau trong Command Prompt với quyền quản trị viên:
+
+```
+sc stop winnat
+sc start winnat
+```
+
+Nếu vẫn không thành công, hãy khởi động lại máy tính.

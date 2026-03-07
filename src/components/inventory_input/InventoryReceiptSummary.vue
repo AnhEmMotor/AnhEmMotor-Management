@@ -2,8 +2,9 @@
 import { formatDateTime } from '@/composables/useDate'
 import RoundBadge from '../ui/RoundBadge.vue'
 
-defineProps({
+const props = defineProps({
   itemData: Object,
+  statusMap: Object,
   isOpen: Boolean,
 })
 defineEmits(['toggle-detail', 'edit', 'copy', 'cancel-request'])
@@ -27,11 +28,14 @@ function getStatusColor(status) {
 }
 
 function getStatusName(status) {
+  if (props.statusMap && props.statusMap[status]) {
+    return props.statusMap[status]
+  }
   switch (status) {
     case 'finished':
-      return 'Đã hoàn thành'
+      return 'Hoàn thành'
     case 'working':
-      return 'Phiếu tạm/chưa hoàn thành'
+      return 'Phiếu tạm'
     case 'cancelled':
       return 'Đã huỷ'
     default:
@@ -46,15 +50,15 @@ function getStatusName(status) {
       class="hidden md:grid grid-cols-[1.5fr_2fr_1.5fr_1.2fr] items-center py-2 px-3 text-sm cursor-pointer transition duration-150"
     >
       <div class="px-5 text-gray-600 whitespace-nowrap text-xs">
-        {{ formatDateTime(itemData.time) }}
+        {{ formatDateTime(itemData.createdAt) }}
       </div>
       <div class="px-5 font-medium text-gray-800 truncate text-sm">{{ itemData.supplierName }}</div>
       <div class="px-5 text-right text-sm font-semibold text-red-600">
-        {{ formatCurrency(itemData.payable) }}
+        {{ formatCurrency(itemData.totalPayable) }}
       </div>
       <div class="flex justify-start px-3">
-        <RoundBadge :color="getStatusColor(itemData.status)">
-          {{ getStatusName(itemData.status) }}
+        <RoundBadge :color="getStatusColor(itemData.statusId)">
+          {{ getStatusName(itemData.statusId) }}
         </RoundBadge>
       </div>
     </div>
@@ -62,18 +66,18 @@ function getStatusName(status) {
     <div class="block md:hidden space-y-2 text-sm">
       <div class="flex justify-between items-center">
         <div class="font-semibold text-gray-800">{{ itemData.id }}</div>
-        <RoundBadge :color="getStatusColor(itemData.status)">
-          {{ getStatusName(itemData.status) }}
+        <RoundBadge :color="getStatusColor(itemData.statusId)">
+          {{ getStatusName(itemData.statusId) }}
         </RoundBadge>
       </div>
-      <div class="text-gray-600 text-xs">{{ itemData.time }}</div>
+      <div class="text-gray-600 text-xs">{{ itemData.createdAt }}</div>
       <div class="pt-2">
         <div class="font-medium text-gray-800 truncate">{{ itemData.supplierName }}</div>
         <div class="text-gray-600 text-xs">{{ itemData.supplierCode }}</div>
       </div>
       <div class="flex justify-between items-center pt-2">
         <div class="text-gray-500">Cần trả NCC</div>
-        <div class="font-semibold text-red-600">{{ formatCurrency(itemData.payable) }}</div>
+        <div class="font-semibold text-red-600">{{ formatCurrency(itemData.totalPayable) }}</div>
       </div>
     </div>
   </div>

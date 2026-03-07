@@ -11,9 +11,9 @@ defineEmits(['toggle-detail'])
 function getStatusColor(statusId) {
   switch (statusId) {
     case 'active':
-      return 'red'
+      return 'green'
     case 'inactive':
-      return 'gray'
+      return 'red'
     default:
       return 'gray'
   }
@@ -50,7 +50,7 @@ function getStatusColor(statusId) {
         <div class="text-gray-600 text-xs">{{ itemData.phone }}</div>
       </div>
       <div class="flex justify-between items-center pt-2">
-        <div class="text-gray-500">Tổng mua</div>
+        <div class="text-gray-500">Tổng đã mua</div>
         <div class="font-semibold text-red-600">{{ formatCurrency(itemData.totalInput) }}</div>
       </div>
     </div>

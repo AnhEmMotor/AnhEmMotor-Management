@@ -23,40 +23,14 @@
           class="text-gray-500 hover:text-red-600 transition-colors p-1"
           title="Đăng xuất"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-            />
-          </svg>
+          <IconLogout class="h-6 w-6" />
         </button>
 
         <button
           @click="isMobileMenuOpen = !isMobileMenuOpen"
           class="text-gray-600 focus:outline-none ml-2"
         >
-          <svg
-            class="w-8 h-8"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 6h16M4 12h16M4 18h16"
-            ></path>
-          </svg>
+          <IconMenu class="w-8 h-8" />
         </button>
       </div>
     </div>
@@ -78,20 +52,7 @@
           @click="isMobileMenuOpen = false"
           class="absolute top-4 right-4 lg:hidden text-gray-500 hover:text-gray-700"
         >
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            ></path>
-          </svg>
+          <IconCloseLine class="w-6 h-6" />
         </button>
 
         <div class="mb-8 mt-2 lg:mt-8 px-4">
@@ -123,23 +84,67 @@
           </li>
 
           <li>
-            <RouterLink
-              to="/products"
-              class="flex items-center space-x-3 p-3 rounded-lg w-full font-medium"
-              active-class="bg-red-50 text-red-700 border-l-4 border-red-600"
-              :class="
-                route.path.startsWith('/products')
-                  ? 'bg-red-50 text-red-700 border-l-4 border-red-600'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-red-600 border-l-4 border-transparent'
-              "
-              @click="closeMobileMenu"
+            <button
+              @click="toggleGroup('productGroup')"
+              class="flex items-center justify-between space-x-3 p-3 rounded-lg w-full font-medium cursor-pointer text-gray-600 hover:bg-gray-50 hover:text-red-600 border-l-4 border-transparent"
+              :class="{ 'text-red-700': isGroupActive('productGroup') }"
             >
-              <IconProduct
-                class="flex-shrink-0"
-                :class="route.path.startsWith('/products') ? 'text-red-600' : 'text-gray-500'"
-              />
-              <span>Sản phẩm</span>
-            </RouterLink>
+              <div class="flex items-center space-x-3">
+                <IconProduct
+                  class="flex-shrink-0"
+                  :class="isGroupActive('productGroup') ? 'text-red-600' : 'text-gray-500'"
+                />
+                <span>Sản phẩm</span>
+              </div>
+              <IconUpArrow :isOpen="openGroups.includes('productGroup')" />
+            </button>
+            <ul v-if="openGroups.includes('productGroup')" class="mt-1 space-y-1 pl-3">
+              <li>
+                <RouterLink
+                  to="/brands"
+                  class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
+                  active-class="bg-red-50 text-red-700"
+                  :class="
+                    route.path === '/brands'
+                      ? 'bg-red-50 text-red-700'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-red-600'
+                  "
+                  @click="closeMobileMenu"
+                >
+                  <span>Thương hiệu</span>
+                </RouterLink>
+              </li>
+              <li>
+                <RouterLink
+                  to="/categories"
+                  class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
+                  active-class="bg-red-50 text-red-700"
+                  :class="
+                    route.path === '/categories'
+                      ? 'bg-red-50 text-red-700'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-red-600'
+                  "
+                  @click="closeMobileMenu"
+                >
+                  <span>Thể loại</span>
+                </RouterLink>
+              </li>
+              <li>
+                <RouterLink
+                  to="/products"
+                  class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
+                  active-class="bg-red-50 text-red-700"
+                  :class="
+                    route.path.startsWith('/products')
+                      ? 'bg-red-50 text-red-700'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-red-600'
+                  "
+                  @click="closeMobileMenu"
+                >
+                  <span>Danh sách sản phẩm</span>
+                </RouterLink>
+              </li>
+            </ul>
           </li>
 
           <li>
@@ -208,6 +213,26 @@
           </li>
 
           <li>
+            <RouterLink
+              to="/orders"
+              class="flex items-center space-x-3 p-3 rounded-lg w-full font-medium"
+              active-class="bg-red-50 text-red-700 border-l-4 border-red-600"
+              :class="
+                route.path.startsWith('/orders')
+                  ? 'bg-red-50 text-red-700 border-l-4 border-red-600'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-red-600 border-l-4 border-transparent'
+              "
+              @click="closeMobileMenu"
+            >
+              <IconOrder
+                class="flex-shrink-0"
+                :class="route.path.startsWith('/orders') ? 'text-red-600' : 'text-gray-500'"
+              />
+              <span>Đơn hàng</span>
+            </RouterLink>
+          </li>
+
+          <li>
             <button
               @click="toggleGroup('user')"
               class="flex items-center justify-between space-x-3 p-3 rounded-lg w-full font-medium cursor-pointer text-gray-600 hover:bg-gray-50 hover:text-red-600 border-l-4 border-transparent"
@@ -255,26 +280,6 @@
                 </RouterLink>
               </li>
             </ul>
-          </li>
-
-          <li>
-            <RouterLink
-              to="/orders"
-              class="flex items-center space-x-3 p-3 rounded-lg w-full font-medium"
-              active-class="bg-red-50 text-red-700 border-l-4 border-red-600"
-              :class="
-                route.path.startsWith('/orders')
-                  ? 'bg-red-50 text-red-700 border-l-4 border-red-600'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-red-600 border-l-4 border-transparent'
-              "
-              @click="closeMobileMenu"
-            >
-              <IconOrder
-                class="flex-shrink-0"
-                :class="route.path.startsWith('/orders') ? 'text-red-600' : 'text-gray-500'"
-              />
-              <span>Đơn hàng</span>
-            </RouterLink>
           </li>
 
           <li>
@@ -375,40 +380,14 @@
               to="/profile?tab=profile"
               class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-              </svg>
+              <IconUserProfile class="h-5 w-5" />
               Hồ sơ cá nhân
             </RouterLink>
             <RouterLink
               to="/profile?tab=password"
               class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                />
-              </svg>
+              <IconLock class="h-5 w-5" />
               Đổi mật khẩu
             </RouterLink>
           </div>
@@ -436,20 +415,7 @@
               class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 shrink-0 z-10"
               title="Đăng xuất"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                />
-              </svg>
+              <IconLogout class="h-5 w-5" />
             </button>
           </div>
         </div>
@@ -473,14 +439,19 @@
 
 <script setup lang="js">
 import { ref, watch, onMounted, onUnmounted } from 'vue'
-import IconHome from '@/components/icons/IconHome.vue'
-import IconReport from '@/components/icons/IconReport.vue'
-import IconProduct from '@/components/icons/IconProduct.vue'
-import IconUser from '@/components/icons/IconUser.vue'
-import IconOrder from '@/components/icons/IconOrder.vue'
+import IconHome from '@/assets/icons/IconHome.svg'
+import IconReport from '@/assets/icons/IconReport.svg'
+import IconProduct from '@/assets/icons/IconProduct.svg'
+import IconUser from '@/assets/icons/IconUser.svg'
+import IconOrder from '@/assets/icons/IconOrder.svg'
 import IconUpArrow from '@/components/icons/IconUpArrow.vue'
-import IconWarehouse from '@/components/icons/IconWarehouse.vue'
-import IconSettings from '@/components/icons/IconSettings.vue'
+import IconWarehouse from '@/assets/icons/IconWarehouse.svg'
+import IconSettings from '@/assets/icons/IconSettings.svg'
+import IconLogout from '@/assets/icons/logout.svg'
+import IconMenu from '@/assets/icons/menu.svg'
+import IconCloseLine from '@/assets/icons/close-line.svg'
+import IconUserProfile from '@/assets/icons/user-profile.svg'
+import IconLock from '@/assets/icons/login-lock.svg'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useRouter, useRoute } from 'vue-router'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
@@ -504,6 +475,7 @@ const handleLogout = async () => {
 }
 
 const groupRoutes = {
+  productGroup: ['/products', '/brands', '/categories'],
   warehouse: ['/suppliers', '/inputs', '/price-management'],
   user: ['/users', '/permissions'],
   reports: ['/report-warehouse', '/report-revenue', '/report-product'],

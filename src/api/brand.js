@@ -1,29 +1,40 @@
-export const getAllBrands = async () => {
-  const { data, error } = await supabase.from('brand').select('*')
-  if (error) throw error
-  return data
-}
+import axiosInstance from './axios';
+
+const BASE_URL = '/api/v1/brand';
+
+export const fetchBrands = async ({ page, limit, search } = {}) => {
+  const params = { Page: page, PageSize: limit };
+  if (search) params.Filters = `name@=*${search}`;
+  const { data } = await axiosInstance.get(BASE_URL, { params });
+  return {
+    data: data.items || [],
+    pagination: {
+      totalPages: data.totalPages || 1,
+      totalCount: data.totalCount || 0,
+    },
+  };
+};
+
+export const getAllBrands = async (params = { PageSize: 1000 }) => {
+  const { data } = await axiosInstance.get(BASE_URL, { params });
+  return data;
+};
 
 export const getBrandById = async (id) => {
-  const { data, error } = await supabase.from('brand').select('*').eq('id', id).single()
-  if (error) throw error
-  return data
-}
+  const { data } = await axiosInstance.get(`${BASE_URL}/${id}`);
+  return data;
+};
 
 export const createBrand = async (brand) => {
-  const { data, error } = await supabase.from('brand').insert(brand).select().single()
-  if (error) throw error
-  return data
-}
+  const { data } = await axiosInstance.post(BASE_URL, brand);
+  return data;
+};
 
 export const updateBrand = async (id, brand) => {
-  const { data, error } = await supabase.from('brand').update(brand).eq('id', id).select().single()
-  if (error) throw error
-  return data
-}
+  const { data } = await axiosInstance.put(`${BASE_URL}/${id}`, brand);
+  return data;
+};
 
 export const deleteBrand = async (id) => {
-  const { data, error } = await supabase.from('brand').delete().eq('id', id)
-  if (error) throw error
-  return data
-}
+  await axiosInstance.delete(`${BASE_URL}/${id}`);
+};

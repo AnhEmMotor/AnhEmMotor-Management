@@ -2,13 +2,14 @@
 import RoundBadge from '@/components/ui/RoundBadge.vue'
 import Pagination from '../ui/button/BasePagination.vue'
 import SkeletonLoader from '../ui/SkeletonLoader.vue'
+import IconHistoryList from '@/assets/icons/history-list.svg'
 import { computed, ref } from 'vue'
-import { formatDateTime, formatDate } from '@/composables/useDate'
+import { formatDateTime } from '@/composables/useDate'
 import { formatCurrency } from '@/composables/useCurrency'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
-import { useInputsStore } from '@/stores/useInputsStore'
 import { useSuppliersStore } from '@/stores/useSuppliersStore'
 import { useQuery } from '@tanstack/vue-query'
+import { fetchInputStatuses } from '@/api/input'
 
 const props = defineProps({
   itemData: Object,
@@ -16,7 +17,6 @@ const props = defineProps({
 defineEmits(['edit-supplier', 'delete-supplier', 'toggle-activation'])
 const activeTab = ref('info')
 const historyItemsPerPage = ref(10)
-const inputsStore = useInputsStore()
 const suppliersStore = useSuppliersStore()
 
 const { data: detailData } = useQuery({
@@ -26,17 +26,21 @@ const { data: detailData } = useQuery({
 
 const supplierInfo = computed(() => ({ ...props.itemData, ...(detailData.value || {}) }))
 
+const { data: statusMapData } = useQuery({
+  queryKey: ['inputStatuses'],
+  queryFn: fetchInputStatuses,
+  staleTime: Infinity,
+})
+
+const statusMap = computed(() => statusMapData.value || {})
+
 function getStatusInfo(statusId) {
-  switch (statusId) {
-    case 'finished':
-      return { text: 'Đã nhập hàng', color: 'green' }
-    case 'working':
-      return { text: 'Chờ xử lý', color: 'yellow' }
-    case 'cancelled':
-      return { text: 'Đã hủy', color: 'red' }
-    default:
-      return { text: `ID: ${statusId}`, color: 'gray' }
-  }
+  const label = statusMap.value[statusId]
+  if (!label) return { text: `ID: ${statusId}`, color: 'gray' }
+  if (statusId === 'finished') return { text: label, color: 'green' }
+  if (statusId === 'working') return { text: label, color: 'yellow' }
+  if (statusId === 'cancelled') return { text: label, color: 'red' }
+  return { text: label, color: 'gray' }
 }
 
 const queryKeyBase = computed(() => ['inputHistoryOfSupplier', props.itemData.id])
@@ -47,23 +51,16 @@ const filters = computed(() => ({
 }))
 
 const fetchHistoryFn = async (params) => {
-  await new Promise((resolve) => setTimeout(resolve, 2000))
-
-  const response = await inputsStore.fetchInputsBySupplier(props.itemData.id, {
+  const response = await suppliersStore.getPurchaseHistory(props.itemData.id, {
     page: params.page,
     limit: params.limit,
-    statusFilters: params.statusFilters,
-    search: params.search,
   })
 
-  const inputs = response?.inputs || []
-  const count = response?.count || 0
-
   return {
-    data: inputs,
+    data: response?.items || [],
     pagination: {
-      totalCount: count,
-      totalPages: Math.ceil(count / params.limit),
+      totalCount: response?.totalCount || 0,
+      totalPages: response?.totalPages || 1,
       currentPage: params.page,
     },
   }
@@ -128,7 +125,9 @@ watch(historyIsError, (hasError) => {
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3 mb-4">
         <div class="text-sm">
           <span class="text-gray-500 block">Ngày tạo:</span>
-          <span class="font-medium text-gray-700">{{ formatDate(supplierInfo.created_at) }}</span>
+          <span class="font-medium text-gray-700">{{
+            formatDateTime(supplierInfo.created_at)
+          }}</span>
         </div>
       </div>
       <hr class="my-3 border-gray-100" />
@@ -198,7 +197,7 @@ watch(historyIsError, (hasError) => {
           class="grid grid-cols-16 gap-4 text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50 border-b border-gray-200 px-4 py-3"
         >
           <div class="col-span-4">Thời gian</div>
-          <div class="col-span-7">Người xác nhận</div>
+          <div class="col-span-7">Số lượng mặt hàng</div>
           <div class="text-right col-span-3">Tổng cộng</div>
           <div class="text-right col-span-2">Trạng thái</div>
         </div>
@@ -227,21 +226,21 @@ watch(historyIsError, (hasError) => {
             class="grid grid-cols-16 gap-4 items-center px-4 py-3 border-b border-gray-50 text-sm hover:bg-gray-50 transition-colors last:border-0"
           >
             <div class="text-gray-700 font-medium col-span-4">
-              {{ formatDateTime(input.created_at) }}
+              {{ formatDateTime(input.createdAt) }}
             </div>
             <div class="text-gray-600 col-span-7">
-              {{ input.name_verify || '---' }}
+              {{ input.totalItems }}
             </div>
             <div class="text-right font-medium text-gray-800 col-span-3">
-              {{ formatCurrency(input.total) }}
+              {{ formatCurrency(input.totalPayable) }}
             </div>
             <div class="text-right col-span-2">
-              <RoundBadge :color="getStatusInfo(input.status_id).color">
-                {{ getStatusInfo(input.status_id).text }}
+              <RoundBadge :color="getStatusInfo(input.statusId).color">
+                {{ getStatusInfo(input.statusId).text }}
               </RoundBadge>
             </div>
           </div>
-          <div class="p-4 border-t border-gray-100 bg-gray-50">
+          <div v-if="historyTotalPages > 1" class="p-4 border-t border-gray-100 bg-gray-50">
             <Pagination
               :total-pages="historyTotalPages"
               v-model:currentPage="historyCurrentPage"
@@ -255,20 +254,7 @@ watch(historyIsError, (hasError) => {
           class="py-12 flex flex-col items-center justify-center text-center space-y-3 bg-white"
         >
           <div class="bg-gray-50 p-3 rounded-full">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-              />
-            </svg>
+            <IconHistoryList class="h-6 w-6 text-gray-400" />
           </div>
           <div class="text-gray-500 font-medium">Chưa có lịch sử nhập hàng</div>
           <div class="text-xs text-gray-400 max-w-xs">

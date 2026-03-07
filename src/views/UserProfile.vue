@@ -4,6 +4,7 @@ import { useAuthStore } from '@/stores/useAuthStore'
 import { useRoute, useRouter } from 'vue-router'
 import Button from '@/components/ui/button/BaseButton.vue'
 import Input from '@/components/ui/input/BaseInput.vue'
+import IconAvatarEdit from '@/assets/icons/avatar-edit.svg'
 
 const authStore = useAuthStore()
 const route = useRoute()
@@ -79,16 +80,7 @@ const handleChangePassword = () => {
               class="absolute bottom-0 right-0 p-1.5 bg-gray-800 text-white rounded-full hover:bg-gray-700 transition"
               title="Đổi ảnh đại diện"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-3 w-3"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"
-                />
-              </svg>
+              <IconAvatarEdit class="h-3 w-3" />
             </button>
           </div>
           <div>
@@ -120,49 +112,49 @@ const handleChangePassword = () => {
 
     <div v-if="activeTab === 'password'" class="max-w-xl animate-fade-in-up">
       <form class="space-y-4" @submit.prevent="handleChangePassword">
-      <input 
-        type="text" 
-        name="username" 
-        :value="currentUserEmail" 
-        autocomplete="username" 
-        class="hidden" 
-        style="display: none;"
-      />
-
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu hiện tại</label>
-        <Input 
-          autocomplete="current-password" 
-          v-model="passwordForm.currentPassword" 
-          type="password" 
-          placeholder="••••••" 
+        <input
+          type="text"
+          name="username"
+          :value="currentUserEmail"
+          autocomplete="username"
+          class="hidden"
+          style="display: none"
         />
-      </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu mới</label>
-        <Input 
-          autocomplete="new-password" 
-          v-model="passwordForm.newPassword" 
-          type="password" 
-          placeholder="••••••" 
-        />
-      </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu hiện tại</label>
+          <Input
+            autocomplete="current-password"
+            v-model="passwordForm.currentPassword"
+            type="password"
+            placeholder="••••••"
+          />
+        </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Xác nhận mật khẩu mới</label>
-        <Input 
-          autocomplete="new-password" 
-          v-model="passwordForm.confirmPassword" 
-          type="password" 
-          placeholder="••••••" 
-        />
-      </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu mới</label>
+          <Input
+            autocomplete="new-password"
+            v-model="passwordForm.newPassword"
+            type="password"
+            placeholder="••••••"
+          />
+        </div>
 
-      <div class="pt-4">
-        <Button color="primary" text="Đổi mật khẩu" type="submit" />
-      </div>
-    </form>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Xác nhận mật khẩu mới</label>
+          <Input
+            autocomplete="new-password"
+            v-model="passwordForm.confirmPassword"
+            type="password"
+            placeholder="••••••"
+          />
+        </div>
+
+        <div class="pt-4">
+          <Button color="primary" text="Đổi mật khẩu" type="submit" />
+        </div>
+      </form>
     </div>
   </div>
 </template>

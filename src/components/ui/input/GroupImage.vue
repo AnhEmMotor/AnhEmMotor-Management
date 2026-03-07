@@ -11,7 +11,11 @@
       @drop.prevent="onDrop"
       :class="[
         'mt-2 relative flex flex-col justify-center items-center w-full min-h-[10rem] border-2 border-dashed rounded-md cursor-pointer transition-colors',
-        isDragging ? 'border-purple-600 bg-purple-50' : 'border-gray-300 hover:border-gray-400',
+        isDragging
+          ? 'border-purple-600 bg-purple-50'
+          : error
+            ? 'border-red-400 bg-red-50'
+            : 'border-gray-300 hover:border-gray-400',
         isLoading ? 'pointer-events-none' : '',
       ]"
     >
@@ -42,37 +46,15 @@
       </div>
 
       <div class="text-center p-4">
-        <svg
-          class="mx-auto h-10 w-10 text-gray-400"
-          stroke="currentColor"
-          fill="none"
-          viewBox="0 0 48 48"
-          aria-hidden="true"
-        >
-          <path
-            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
+        <IconImagePlaceholder class="mx-auto h-10 w-10 text-gray-400" />
         <p class="mt-2 text-sm text-gray-600">
           <span class="font-medium text-purple-600">Nhấn để chọn</span> hoặc kéo thả (nhiều) ảnh vào
           đây
         </p>
         <p class="text-xs text-gray-500">PNG, JPG, GIF (TỐI ĐA 5MB / ảnh)</p>
-        <p v-if="error" class="text-xs text-red-500 mt-1">{{ error }}</p>
+        <p v-if="uploadError" class="text-xs text-red-500 mt-1">{{ uploadError }}</p>
       </div>
     </div>
-
-    <input
-      type="file"
-      ref="fileInput"
-      @change="onFileSelected"
-      class="hidden"
-      accept="image/*"
-      multiple
-    />
 
     <div
       v-if="localValue && localValue.length > 0"
@@ -89,28 +71,29 @@
           type="button"
           class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-0.5 leading-none hover:bg-red-600 focus:outline-none"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-3.5 w-3.5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-              clip-rule="evenodd"
-            />
-          </svg>
+          <IconCloseLine class="h-3.5 w-3.5" />
         </button>
       </div>
     </div>
+
+    <p v-if="error" class="mt-1 text-sm text-red-600">{{ error }}</p>
+
+    <input
+      type="file"
+      ref="fileInput"
+      @change="onFileSelected"
+      class="hidden"
+      accept="image/*"
+      multiple
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useProductsStore } from '@/stores/useProductsStore'
-import * as storageApi from '@/api/supabaseStorage'
+import * as mediaFileApi from '@/api/mediaFile'
+import IconCloseLine from '@/assets/icons/close-line.svg'
+import IconImagePlaceholder from '@/assets/icons/image-placeholder.svg'
 
 const props = defineProps({
   modelValue: {
@@ -121,16 +104,18 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  error: {
+    type: String,
+    default: '',
+  },
 })
 
 const emit = defineEmits(['update:modelValue'])
-const productsStore = useProductsStore()
-const bucketName = 'photo-collection'
 
 const isDragging = ref(false)
 const isLoading = ref(false)
 const fileInput = ref(null)
-const error = ref('')
+const uploadError = ref('')
 
 const localValue = computed({
   get: () => props.modelValue || [],
@@ -141,7 +126,7 @@ const localValue = computed({
 
 const openFilePicker = () => {
   if (isLoading.value) return
-  error.value = ''
+  uploadError.value = ''
   fileInput.value.click()
 }
 
@@ -172,7 +157,7 @@ const onDrop = (event) => {
 }
 
 const processFiles = (files) => {
-  error.value = ''
+  uploadError.value = ''
   let imageFiles = []
   let hadError = false
 
@@ -189,12 +174,12 @@ const processFiles = (files) => {
   })
 
   if (imageFiles.length === 0 && files.length > 0) {
-    error.value = 'Tất cả file đều bị bỏ qua (không phải ảnh hoặc quá 5MB).'
+    uploadError.value = 'Tất cả file đều bị bỏ qua (không phải ảnh hoặc quá 5MB).'
     return
   }
 
   if (hadError) {
-    error.value = 'Một số file bị bỏ qua (không phải ảnh hoặc quá 5MB).'
+    uploadError.value = 'Một số file bị bỏ qua (không phải ảnh hoặc quá 5MB).'
   }
 
   if (imageFiles.length > 0) {
@@ -208,32 +193,21 @@ const processFiles = (files) => {
 
 const uploadFilesHandler = async (files) => {
   isLoading.value = true
-  error.value = ''
-  const uploadPromises = []
+  uploadError.value = ''
 
   try {
-    for (const file of files) {
-      uploadPromises.push(storageApi.uploadFile(file, bucketName))
-    }
-    const filePaths = await Promise.all(uploadPromises)
-    const newUrls = filePaths.map((path) => storageApi.getPublicUrl(path, bucketName))
+    const responses = await mediaFileApi.uploadImages(files)
+    const newUrls = responses.map((r) => r.publicUrl)
     localValue.value = [...localValue.value, ...newUrls]
   } catch (apiError) {
-    error.value = `Lỗi upload: ${apiError.message}`
+    uploadError.value = `Lỗi upload: ${apiError.message}`
   } finally {
     isLoading.value = false
   }
 }
 
-const removeImage = async (index) => {
+const removeImage = (index) => {
   if (isLoading.value) return
-
-  const urlToRemove = localValue.value[index]
-
-  if (urlToRemove) {
-    await productsStore.deleteProductImage({ url: urlToRemove, bucket: bucketName })
-  }
-
   const newArray = [...localValue.value]
   newArray.splice(index, 1)
   localValue.value = newArray

@@ -14,9 +14,9 @@
 
 <script setup>
 import FilterButton from '../ui/button/FilterButton.vue'
-import IconCheckCircle from '@/components/icons/IconCheckCircle.vue'
-import IconExclamationCircle from '@/components/icons/IconExclamationCircle.vue'
-import IconXCircle from '@/components/icons/IconXCircle.vue'
+import IconCheckCircle from '@/assets/icons/IconCheckCircle.svg'
+import IconExclamationCircle from '@/assets/icons/IconExclamationCircle.svg'
+import IconXCircle from '@/assets/icons/IconXCircle.svg'
 const props = defineProps({
   modelValue: {
     type: Array,

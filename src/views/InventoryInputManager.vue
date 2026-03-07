@@ -1,6 +1,7 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useInputsStore } from '@/stores/useInputsStore'
+import { fetchInventoryReceipts, getInventoryReceiptById, fetchInputStatuses } from '@/api/input'
 import * as XLSX from 'xlsx'
 import InventoryItem from '@/components/inventory_input/InventoryItem.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
@@ -11,52 +12,68 @@ import InventoryInputForm from '@/components/inventory_input/InventoryInputForm.
 import ProductForm from '@/components/product/ProductForm.vue'
 import InventoryFilterButtons from '@/components/inventory_input/InventoryFilterButtons.vue'
 import { showConfirmation } from '@/composables/useConfirmationState'
-import { useQueryClient } from '@tanstack/vue-query'
+import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 import { useToast } from 'vue-toastification'
-import IconPlus from '@/components/icons/IconPlus.vue'
-import IconFileImport from '@/components/icons/IconFileImport.vue'
-import IconFileExport from '@/components/icons/IconFileExport.vue'
+import IconPlus from '@/assets/icons/IconPlus.svg'
+import IconFileImport from '@/assets/icons/IconFileImport.svg'
+import IconFileExport from '@/assets/icons/IconFileExport.svg'
+import IconEmptyBox from '@/assets/icons/empty-box.svg'
 
 const inputsStore = useInputsStore()
 const queryClient = useQueryClient()
 const toast = useToast()
 
 const expandedItemId = ref(null)
-const currentPage = ref(1)
 const itemsPerPage = ref(15)
-const selectedStatuses = ref([])
-const searchTerm = ref('')
 
-const fetchInputsFn = (params) => {
-  return inputsStore.fetchInputs(params)
+const queryFn = async (params) => {
+  const res = await fetchInventoryReceipts(params)
+  return {
+    data: res.items || [],
+    pagination: {
+      totalPages: res.totalPages,
+      totalCount: res.totalCount,
+    },
+  }
 }
-
-const inputsDataMapper = (data) => ({
-  items: data?.inputs || [],
-  count: data?.count || 0,
-})
 
 const {
   data: filteredItems,
-  _totalCount,
-  totalPages,
   isLoading,
+  isFetching,
   isError,
   error,
+  searchRefs,
+  filterRefs,
+  pagination,
 } = usePaginatedQuery({
-  queryKey: ['inventoryInputs'],
-  page: currentPage,
-  itemsPerPage: itemsPerPage,
-  queryFn: fetchInputsFn,
-  dataMapper: inputsDataMapper,
+  queryKey: ['inventoryReceipts'],
+  queryFn,
+  itemsPerPage,
+  searchFields: [{ key: 'search', debounce: 400 }],
+  filterFields: [{ key: 'status' }],
 })
+
+const selectedStatus = computed({
+  get: () => filterRefs.status || '',
+  set: (val) => {
+    filterRefs.status = val
+  },
+})
+
+const { data: statusMapData } = useQuery({
+  queryKey: ['inputStatuses'],
+  queryFn: fetchInputStatuses,
+  staleTime: Infinity,
+})
+
+const statusMap = computed(() => statusMapData.value || {})
 
 watch(isError, (hasError) => {
   if (hasError) {
-    const errorMsg = error.value?.message || 'Lỗi tải dữ liệu phiếu nhập'
-    toast.error(errorMsg)
+    toast.error(error.value?.message || 'Lỗi tải dữ liệu phiếu nhập')
   }
 })
 
@@ -71,38 +88,16 @@ const exportExcel = () => {
   }
   const exportData = filteredItems.value.map((item) => ({
     'Mã Phiếu Nhập': item.id,
-    'Thời Gian': item.time,
-    'Mã NCC': item.supplierCode,
+    'Thời Gian': item.createdAt,
     'Tên NCC': item.supplierName,
-    'Cần Trả NCC': item.payable,
-    'Trạng Thái': item.status,
-    'Chi Nhánh': item.branch,
-    'Người Tạo': item.creator,
-    'Người Nhập': item.importer,
-    'Ngày Nhập': item.importDate,
-    'Đã Trả NCC': item.paid,
+    'Trạng Thái': statusMap.value[item.statusId] || item.statusId,
     'Ghi Chú': item.notes,
   }))
   const workbook = XLSX.utils.book_new()
   const worksheet = XLSX.utils.json_to_sheet(exportData)
-  worksheet['!cols'] = [
-    { wch: 12 },
-    { wch: 20 },
-    { wch: 12 },
-    { wch: 25 },
-    { wch: 15 },
-    { wch: 15 },
-    { wch: 20 },
-    { wch: 15 },
-    { wch: 15 },
-    { wch: 15 },
-    { wch: 15 },
-    { wch: 30 },
-  ]
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Danh Sách Phiếu Nhập')
   const currentDate = new Date().toISOString().split('T')[0]
-  const filename = `DanhSachPhieuNhap_${currentDate}.xlsx`
-  XLSX.writeFile(workbook, filename)
+  XLSX.writeFile(workbook, `DanhSachPhieuNhap_${currentDate}.xlsx`)
 }
 
 const handleImport = () => {
@@ -110,59 +105,99 @@ const handleImport = () => {
 }
 
 const showInventoryModal = ref(false)
-const showProductModal = ref(false)
-const currentInventoryData = ref({
-  supplier: null,
-  products: [],
-  notes: '',
-})
+const currentInventoryData = ref({ supplier: null, products: [], notes: '' })
 const inventoryErrors = ref({ supplier: '', products: {} })
 const isEditMode = ref(false)
+const loadingOverlay = ref(false)
+const showProductModal = ref(false)
 const currentProductData = ref({
   code: '',
   name: '',
   category: '',
   price: 0,
-  quantity: 0,
+  quantity: 1,
   unitPrice: 0,
 })
 
 const openNewInventoryModal = () => {
   isEditMode.value = false
-  currentInventoryData.value = {
-    supplier: null,
-    products: [],
-    notes: '',
-  }
+  currentInventoryData.value = { supplier: null, products: [], notes: '' }
   showInventoryModal.value = true
 }
 
-const openEditInventoryModal = (item) => {
+const openEditInventoryModal = async (item) => {
   isEditMode.value = true
-  currentInventoryData.value = {
-    id: item.id,
-    supplier: {
-      id: item.supplierCode,
-      name: item.supplierName,
-      phone: '',
-    },
-    products: item.products.map((p) => ({
-      id: Date.now() + Math.random(),
-      code: p.code,
-      name: p.name,
-      quantity: p.quantity,
-      unitPrice: p.unitPrice,
-      total: p.total,
-    })),
-    notes: item.notes || '',
-    importDate: item.importDate,
+  currentInventoryData.value = { supplier: null, products: [], notes: '' }
+
+  const cached = queryClient.getQueryData(['inventoryReceipts', item.id])
+  if (cached) {
+    currentInventoryData.value = mapResponseToForm(cached)
+  } else {
+    loadingOverlay.value = true
   }
+
   showInventoryModal.value = true
+  try {
+    const detail = await queryClient.fetchQuery({
+      queryKey: ['inventoryReceipts', item.id],
+      queryFn: () => getInventoryReceiptById(item.id),
+    })
+    currentInventoryData.value = mapResponseToForm(detail)
+  } catch (err) {
+    toast.error(`Lỗi khi tải chi tiết phiếu: ${err.message}`)
+    showInventoryModal.value = false
+  } finally {
+    loadingOverlay.value = false
+  }
+}
+
+const handleInventoryRefresh = async () => {
+  if (!isEditMode.value || !currentInventoryData.value.id) return
+  loadingOverlay.value = true
+  try {
+    const detail = await queryClient.fetchQuery({
+      queryKey: ['inventoryReceipts', currentInventoryData.value.id],
+      queryFn: () => getInventoryReceiptById(currentInventoryData.value.id),
+      staleTime: 0,
+    })
+    currentInventoryData.value = mapResponseToForm(detail)
+    toast.success('Đã tải lại thông tin phiếu nhập')
+  } catch (err) {
+    toast.error(`Lỗi khi tải lại: ${err.message}`)
+  } finally {
+    loadingOverlay.value = false
+  }
+}
+
+function mapResponseToForm(d) {
+  return {
+    id: d.id,
+    supplier: d.supplierId
+      ? {
+          id: d.supplierId,
+          name: d.supplierName || '',
+          phone: d.supplierPhone || '',
+          email: d.supplierEmail || '',
+        }
+      : null,
+    products: (d.products || d.details || []).map((p) => ({
+      id: p.id || Date.now() + Math.random(),
+      variantId: p.productId || p.variantId,
+      code: p.variantCode || p.code || '',
+      name: p.name || p.productName || p.variantName || '',
+      quantity: p.quantity || p.count || 0,
+      unitPrice: p.unitPrice || p.inputPrice || 0,
+      total: (p.quantity || p.count || 0) * (p.unitPrice || p.inputPrice || 0),
+    })),
+    notes: d.notes || '',
+    statusId: d.statusId,
+  }
 }
 
 const closeInventoryModal = () => {
   showInventoryModal.value = false
   showProductModal.value = false
+  loadingOverlay.value = false
 }
 
 const openProductModal = () => {
@@ -179,32 +214,6 @@ const openProductModal = () => {
 
 const closeProductModal = () => {
   showProductModal.value = false
-}
-
-const handleInventoryRefresh = () => {
-  if (isEditMode.value) {
-    toast.info('Đã làm mới form')
-  } else {
-    currentInventoryData.value = {
-      supplier: null,
-      products: [],
-      notes: '',
-    }
-    inventoryErrors.value = { supplier: '', products: {} }
-    toast.info('Đã làm mới form')
-  }
-}
-
-const handleProductRefresh = () => {
-  currentProductData.value = {
-    code: '',
-    name: '',
-    category: '',
-    price: 0,
-    quantity: 1,
-    unitPrice: 0,
-  }
-  toast.info('Đã làm mới form sản phẩm')
 }
 
 watch(
@@ -226,17 +235,25 @@ function validateInventory(data) {
   }
   data.products.forEach((p) => {
     const per = {}
-    if (Number(p.quantity) <= 0) {
-      per.quantity = 'Số lượng phải lớn hơn 0'
-    }
-    if (Number(p.unitPrice) < 0) {
-      per.unitPrice = 'Đơn giá không được nhỏ hơn 0'
-    }
-    if (Object.keys(per).length > 0) {
-      errors.products[p.id] = per
-    }
+    if (Number(p.quantity) <= 0) per.quantity = 'Số lượng phải lớn hơn 0'
+    if (Number(p.unitPrice) < 0) per.unitPrice = 'Đơn giá không được nhỏ hơn 0'
+    if (Object.keys(per).length > 0) errors.products[p.id] = per
   })
   return errors
+}
+
+function buildPayload(data, statusId) {
+  return {
+    supplierId: data.supplier.id,
+    statusId,
+    notes: data.notes,
+    importDate: data.importDate,
+    products: data.products.map((p) => ({
+      productId: p.variantId,
+      count: Number(p.quantity),
+      inputPrice: Number(p.unitPrice),
+    })),
+  }
 }
 
 const saveInventoryReceipt = async () => {
@@ -246,18 +263,25 @@ const saveInventoryReceipt = async () => {
     return
   }
   inventoryErrors.value = { supplier: '', products: {} }
-
+  loadingOverlay.value = true
   try {
-    await inputsStore.saveReceipt({
-      receiptData: currentInventoryData.value,
-      isEditMode: isEditMode.value,
-      status_id: 'working',
-    })
+    const payload = buildPayload(currentInventoryData.value, 'working')
+    let result
+    if (isEditMode.value && currentInventoryData.value.id) {
+      result = await inputsStore.updateInput(currentInventoryData.value.id, payload)
+    } else {
+      result = await inputsStore.createInput(payload)
+    }
+    if (result) {
+      queryClient.setQueryData(['inventoryReceipts', result.id], result)
+    }
     toast.success('Đã lưu phiếu tạm')
     closeInventoryModal()
-    queryClient.invalidateQueries({ queryKey: ['inventoryInputs'] })
+    queryClient.invalidateQueries({ queryKey: ['inventoryReceipts'] })
   } catch (err) {
     toast.error(`Lỗi khi lưu phiếu nhập: ${err.message}`)
+  } finally {
+    loadingOverlay.value = false
   }
 }
 
@@ -268,18 +292,25 @@ const completeInventoryReceipt = async () => {
     return
   }
   inventoryErrors.value = { supplier: '', products: {} }
-
+  loadingOverlay.value = true
   try {
-    await inputsStore.saveReceipt({
-      receiptData: currentInventoryData.value,
-      isEditMode: isEditMode.value,
-      status_id: 'finished',
-    })
+    const payload = buildPayload(currentInventoryData.value, 'finished')
+    let result
+    if (isEditMode.value && currentInventoryData.value.id) {
+      result = await inputsStore.updateInput(currentInventoryData.value.id, payload)
+    } else {
+      result = await inputsStore.createInput(payload)
+    }
+    if (result) {
+      queryClient.setQueryData(['inventoryReceipts', result.id], result)
+    }
     toast.success('Đã hoàn thành phiếu nhập!')
     closeInventoryModal()
-    queryClient.invalidateQueries({ queryKey: ['inventoryInputs'] })
+    queryClient.invalidateQueries({ queryKey: ['inventoryReceipts'] })
   } catch (err) {
     toast.error(`Lỗi khi hoàn thành phiếu nhập: ${err.message}`)
+  } finally {
+    loadingOverlay.value = false
   }
 }
 
@@ -288,54 +319,28 @@ const saveNewProduct = () => {
     toast.warning('Vui lòng nhập mã và tên sản phẩm')
     return
   }
-  const newProduct = {
+  currentInventoryData.value.products.push({
     id: Date.now(),
     code: currentProductData.value.code,
     name: currentProductData.value.name,
     quantity: currentProductData.value.quantity || 1,
     unitPrice: currentProductData.value.unitPrice || 0,
     total: (currentProductData.value.quantity || 1) * (currentProductData.value.unitPrice || 0),
-  }
-
-  currentInventoryData.value.products.push(newProduct)
+  })
   closeProductModal()
 }
 
-const handleCopyReceipt = (item) => {
-  const copyData = JSON.parse(JSON.stringify(item))
-  delete copyData.id
-  copyData.status = 'Phiếu tạm'
-  copyData.paid = 0
-  currentInventoryData.value = {
-    supplier: {
-      id: copyData.supplierCode,
-      name: copyData.supplierName,
-      phone: '',
-    },
-    products: copyData.products.map((p) => ({
-      id: Date.now() + Math.random(),
-      code: p.code,
-      name: p.name,
-      quantity: p.quantity,
-      unitPrice: p.unitPrice,
-      total: p.total,
-    })),
-    notes: copyData.notes || '',
-  }
-  isEditMode.value = false
-  showInventoryModal.value = true
-}
-
 const handleCancelRequest = async (item) => {
-  const title = 'Xác nhận huỷ phiếu'
-  const message = `Bạn có chắc muốn huỷ phiếu ${item.id}? Hành động này không thể hoàn tác.`
-  const confirmed = await showConfirmation(title, message)
+  const confirmed = await showConfirmation(
+    'Xác nhận huỷ phiếu',
+    `Bạn có chắc muốn huỷ phiếu ${item.id}? Hành động này không thể hoàn tác.`,
+  )
   if (!confirmed) return
-
   try {
-    await inputsStore.cancelReceipt({ id: item.id })
+    await inputsStore.updateInputStatus(item.id, 'cancelled')
     toast.success('Đã huỷ phiếu thành công')
-    queryClient.invalidateQueries({ queryKey: ['inventoryInputs'] })
+    queryClient.removeQueries({ queryKey: ['inventoryReceipts', item.id] })
+    queryClient.invalidateQueries({ queryKey: ['inventoryReceipts'] })
   } catch (err) {
     toast.error(`Lỗi khi huỷ phiếu: ${err.message}`)
   }
@@ -343,12 +348,31 @@ const handleCancelRequest = async (item) => {
 
 const handleSaveNotes = async ({ id, notes }) => {
   try {
-    await inputsStore.saveNotes({ id, notes })
+    const result = await inputsStore.updateInputNotes(id, notes)
+    if (result) queryClient.setQueryData(['inventoryReceipts', id], result)
     toast.success('Đã lưu ghi chú')
-    queryClient.invalidateQueries({ queryKey: ['inventoryInputs'] })
+    queryClient.invalidateQueries({ queryKey: ['inventoryReceipts'] })
   } catch (err) {
     toast.error(`Lỗi khi lưu ghi chú: ${err.message}`)
   }
+}
+
+const handleCopyReceipt = async (item) => {
+  isEditMode.value = false
+  currentInventoryData.value = {
+    supplier: item.supplier ? { id: item.supplier.id, name: item.supplier.name, phone: '' } : null,
+    products: (item.details || []).map((p) => ({
+      id: Date.now() + Math.random(),
+      variantId: p.variantId,
+      code: p.variantCode || p.code,
+      name: p.variantName || p.name,
+      quantity: p.quantity,
+      unitPrice: p.unitPrice,
+      total: p.quantity * p.unitPrice,
+    })),
+    notes: item.notes || '',
+  }
+  showInventoryModal.value = true
 }
 </script>
 
@@ -383,11 +407,16 @@ const handleSaveNotes = async ({ id, notes }) => {
 
         <span class="text-gray-400 mx-4 hidden border-r-2 sm:block" />
 
-        <InventoryFilterButtons v-model="selectedStatuses" />
+        <InventoryFilterButtons v-model="selectedStatus" :status-map="statusMap" />
       </div>
     </div>
 
-    <Input v-model="searchTerm" type="text" placeholder="Tìm theo mã phiếu, NCC..." class="mb-3" />
+    <Input
+      v-model="searchRefs.search"
+      type="text"
+      placeholder="Tìm theo mã phiếu, tên nhà cung cấp..."
+      class="mb-3"
+    />
 
     <div class="border border-gray-200 rounded-lg shadow-sm overflow-hidden">
       <div
@@ -400,53 +429,39 @@ const handleSaveNotes = async ({ id, notes }) => {
       </div>
 
       <div class="bg-white">
-        <div v-if="isLoading">
-          <div
-            v-for="i in 5"
-            :key="i"
-            class="grid grid-cols-[1.5fr_2fr_1.5fr_1.2fr] items-center py-3 px-5 border-b border-gray-50 last:border-0"
-          >
-            <div class="px-3"><SkeletonLoader width="80%" height="16px" /></div>
-            <div class="px-5"><SkeletonLoader width="70%" height="16px" /></div>
-            <div class="px-5 flex justify-end"><SkeletonLoader width="60%" height="16px" /></div>
-            <div class="px-5">
-              <SkeletonLoader width="70%" height="24px" class="rounded-full" />
-            </div>
-          </div>
-        </div>
-
-        <div v-else-if="isError" class="text-center py-12 text-red-500 font-medium">
+        <div v-if="isError" class="text-center py-12 text-red-500 font-medium">
           Đã xảy ra lỗi khi lấy dữ liệu
         </div>
 
-        <div
-          v-else-if="filteredItems.length === 0"
-          class="text-center py-12 flex flex-col items-center justify-center space-y-3"
-        >
-          <div class="bg-gray-50 p-3 rounded-full">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-8 w-8 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+        <template v-else-if="filteredItems.length === 0">
+          <div v-if="isLoading || isFetching">
+            <div
+              v-for="i in 5"
+              :key="i"
+              class="grid grid-cols-[1.5fr_2fr_1.5fr_1.2fr] items-center py-3 px-5 border-b border-gray-50 last:border-0"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-              />
-            </svg>
+              <div class="px-3"><SkeletonLoader width="80%" height="16px" /></div>
+              <div class="px-5"><SkeletonLoader width="70%" height="16px" /></div>
+              <div class="px-5 flex justify-end"><SkeletonLoader width="60%" height="16px" /></div>
+              <div class="px-5">
+                <SkeletonLoader width="70%" height="24px" class="rounded-full" />
+              </div>
+            </div>
           </div>
-          <p class="text-gray-500 font-medium">Không có phiếu nhập nào để hiển thị.</p>
-        </div>
+          <div v-else class="text-center py-12 flex flex-col items-center justify-center space-y-3">
+            <div class="bg-gray-50 p-3 rounded-full">
+              <IconEmptyBox class="h-8 w-8 text-gray-400" />
+            </div>
+            <p class="text-gray-500 font-medium">Không có phiếu nhập nào để hiển thị.</p>
+          </div>
+        </template>
 
         <div v-else class="divide-y divide-gray-50">
           <InventoryItem
             v-for="item in filteredItems"
             :key="item.id"
             :itemData="item"
+            :status-map="statusMap"
             :is-open="item.id === expandedItemId"
             @toggle-detail="handleToggleDetail"
             @edit="openEditInventoryModal"
@@ -458,14 +473,20 @@ const handleSaveNotes = async ({ id, notes }) => {
       </div>
     </div>
 
-    <Pagination :total-pages="totalPages" v-model:currentPage="currentPage" :loading="isLoading" />
+    <Pagination
+      :total-pages="pagination.totalPages.value"
+      v-model:currentPage="pagination.currentPage.value"
+      :loading="isLoading"
+    />
 
     <DraggableModal
       v-if="showInventoryModal"
+      :key="isEditMode ? `edit-${currentInventoryData.id}` : 'new'"
       :z-index="1000"
       width="70vw"
       :disabled="showProductModal"
-      :onRefresh="handleInventoryRefresh"
+      :onRefresh="isEditMode ? handleInventoryRefresh : undefined"
+      :isLoading="loadingOverlay"
       @close="closeInventoryModal"
     >
       <template #header>
@@ -490,13 +511,7 @@ const handleSaveNotes = async ({ id, notes }) => {
       </template>
     </DraggableModal>
 
-    <DraggableModal
-      v-if="showProductModal"
-      :z-index="1001"
-      width="72vw"
-      :onRefresh="handleProductRefresh"
-      @close="closeProductModal"
-    >
+    <DraggableModal v-if="showProductModal" :z-index="1001" width="72vw" @close="closeProductModal">
       <template #header>
         <h3 class="text-lg font-semibold">Thêm sản phẩm mới</h3>
       </template>

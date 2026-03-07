@@ -1,8 +1,8 @@
 <script setup>
 import { ref, watch, toRefs } from 'vue'
-import IconTrash from '../icons/IconTrash.vue'
-import IconDuplicate from '../icons/IconDuplicate.vue'
-import IconExpand from '../icons/IconExpand.vue'
+import IconTrash from '@/assets/icons/IconTrash.svg'
+import IconDuplicate from '@/assets/icons/IconDuplicate.svg'
+import IconExpand from '@/assets/icons/IconExpand.svg'
 import Textarea from '../ui/input/BaseTextarea.vue'
 
 const props = defineProps({
@@ -39,7 +39,7 @@ const totalDiscount = (products) => {
 <template>
   <div
     class="border-t bg-white p-5"
-    :class="itemData.status === 'finished' ? 'border-red-300' : 'border-gray-200'"
+    :class="itemData.statusId === 'finished' ? 'border-red-300' : 'border-gray-200'"
   >
     <div class="border border-gray-200 rounded-md overflow-hidden mb-4">
       <table class="min-w-full divide-y divide-gray-200">
@@ -119,7 +119,7 @@ const totalDiscount = (products) => {
     <div class="flex justify-between items-center mt-4 pt-5 border-t border-gray-200">
       <div class="flex items-center space-x-3">
         <button
-          v-if="itemData.status !== 'cancelled' && itemData.status !== 'finished'"
+          v-if="itemData.statusId !== 'cancelled' && itemData.statusId !== 'finished'"
           @click="$emit('cancel-request', itemData)"
           class="flex items-center space-x-1.5 text-gray-600 py-1.5 px-3 rounded-md hover:bg-gray-100 text-xs font-medium transition duration-150"
         >
@@ -136,7 +136,7 @@ const totalDiscount = (products) => {
       </div>
       <div class="flex items-center space-x-2">
         <button
-          v-if="itemData.status !== 'cancelled' && itemData.status !== 'finished'"
+          v-if="itemData.statusId !== 'cancelled' && itemData.statusId !== 'finished'"
           @click="$emit('edit', itemData)"
           class="bg-red-600 text-white py-1.5 px-3 rounded-md hover:bg-red-700 text-xs font-medium transition duration-150 flex items-center space-x-1.5"
         >

@@ -6,9 +6,9 @@ import RoleForm from '@/components/roles/RoleForm.vue'
 import RoleDeleteModal from '@/components/roles/RoleDeleteModal.vue'
 import RoleFilterButtons from '@/components/roles/RoleFilterButtons.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
-import IconPlus from '@/components/icons/IconPlus.vue'
-import IconFileImport from '@/components/icons/IconFileImport.vue'
-import IconFileExport from '@/components/icons/IconFileExport.vue'
+import IconPlus from '@/assets/icons/IconPlus.svg'
+import IconFileImport from '@/assets/icons/IconFileImport.svg'
+import IconFileExport from '@/assets/icons/IconFileExport.svg'
 
 const roles = ref([])
 

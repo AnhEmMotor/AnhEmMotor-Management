@@ -22,6 +22,10 @@ defineProps({
     type: Boolean,
     default: false,
   },
+  error: {
+    type: String,
+    default: '',
+  },
 })
 
 defineEmits(['update:modelValue'])
@@ -41,8 +45,9 @@ const textareaId = computed(() => `base-textarea-${Math.random().toString(36).su
       :placeholder="placeholder"
       :rows="rows"
       :readonly="readonly"
-      class="w-full p-2 border border-gray-300 rounded-md text-xs focus:ring-red-500 focus:border-red-500 resize-none"
-      :class="{ 'bg-gray-100 cursor-not-allowed': readonly }"
+      class="w-full p-2 border rounded-md text-xs focus:ring-red-500 focus:border-red-500 resize-none"
+      :class="{ 'bg-gray-100 cursor-not-allowed': readonly, 'border-red-500 ring-2 ring-red-200': error, 'border-gray-300': !error }"
     ></textarea>
+    <p v-if="error" class="mt-1 text-sm text-red-600">{{ error }}</p>
   </div>
 </template>

@@ -15,24 +15,24 @@
 
 <script setup>
 import FilterButton from '../ui/button/FilterButton.vue'
-import IconInput from '../icons/IconInput.vue'
-import IconCheckCircle from '../icons/IconCheckCircle.vue'
-import IconXCircle from '../icons/IconXCircle.vue'
+import IconInput from '@/assets/icons/IconInput.svg'
+import IconCheckCircle from '@/assets/icons/IconCheckCircle.svg'
+import IconXCircle from '@/assets/icons/IconXCircle.svg'
 
 const props = defineProps({
   modelValue: {
-    type: Array,
+    type: String,
     required: true,
-    default: () => [],
+    default: '',
   },
 })
 
 const emit = defineEmits(['update:modelValue'])
 
 const filterOptions = [
-  { status: 'Phiếu tạm', label: 'Phiếu Tạm', color: 'red', icon: IconInput },
-  { status: 'Đã nhập hàng', label: 'Đã Nhập Hàng', color: 'red', icon: IconCheckCircle },
-  { status: 'Đã hủy', label: 'Đã Hủy', color: 'red', icon: IconXCircle },
+  { status: 'working', label: 'Phiếu Tạm', color: 'red', icon: IconInput },
+  { status: 'finished', label: 'Hoàn Thành', color: 'red', icon: IconCheckCircle },
+  { status: 'cancelled', label: 'Đã Huỷ', color: 'red', icon: IconXCircle },
 ]
 
 const isActive = (status) => {
@@ -40,13 +40,10 @@ const isActive = (status) => {
 }
 
 const selectFilter = (status) => {
-  const newSelection = [...props.modelValue]
-  const index = newSelection.indexOf(status)
-  if (index > -1) {
-    newSelection.splice(index, 1)
+  if (props.modelValue === status) {
+    emit('update:modelValue', '')
   } else {
-    newSelection.push(status)
+    emit('update:modelValue', status)
   }
-  emit('update:modelValue', newSelection)
 }
 </script>

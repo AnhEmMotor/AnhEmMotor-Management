@@ -1,56 +1,67 @@
-export const fetchOrders = async (params) => {
-  const { page, itemsPerPage, status_ids, search } = params
+import axiosInstance from './axios'
 
-  const { data, error } = await supabase.rpc('get_all_orders', {
-    p_page: page,
-    p_items_per_page: itemsPerPage,
-    p_status_ids: status_ids,
-    p_search: search,
-  })
-
-  if (error) {
-    throw error
-  }
+export const fetchSalesOrders = async (params) => {
+  const { data } = await axiosInstance.get('/api/v1/SalesOrders', { params })
   return data
 }
 
-export const saveOrder = async (payload) => {
-  const { id, customerName, notes, status, products } = payload
-
-  const formattedProducts = products.map((p) => ({
-    product_id: p.product_id || p.id,
-    count: p.quantity,
-    price: p.unitPrice,
-    cost_price: p.costPrice || 0,
-  }))
-
-  const { data, error } = await supabase.rpc('save_order', {
-    p_order_id: id || null,
-    p_customer_name: customerName,
-    p_notes: notes,
-    p_status_id: status.key,
-    p_products: formattedProducts,
-  })
-
-  if (error) {
-    throw error
-  }
+export const getSalesOrderById = async (id) => {
+  const { data } = await axiosInstance.get(`/api/v1/SalesOrders/${id}`)
   return data
 }
 
-export const fetchProductVariants = async (params) => {
-  const { data, error } = await supabase.rpc('get_all_variants_lite', params)
-
-  if (error) {
-    throw error
+export const createSalesOrder = async (payload) => {
+  const mappedPayload = {
+    BuyerId: payload.customer?.id,
+    StatusId: payload.status?.key,
+    Notes: payload.notes,
+    products: (payload.products || []).map((p) => ({
+      ProductId: p.product_id,
+      Count: p.quantity,
+    })),
   }
+  const { data } = await axiosInstance.post('/api/v1/SalesOrders/by-manager', mappedPayload)
+  return data
+}
+
+export const updateSalesOrder = async (id, payload) => {
+  const mappedPayload = {
+    BuyerId: payload.customer?.id,
+    StatusId: payload.status?.key,
+    Notes: payload.notes,
+    products: (payload.products || []).map((p) => ({
+      Id: typeof p.id === 'number' && p.id > 2000000000000 ? undefined : p.id,
+      ProductId: p.product_id,
+      Count: p.quantity,
+    })),
+  }
+  const { data } = await axiosInstance.put(`/api/v1/SalesOrders/for-manager/${id}`, mappedPayload)
+  return data
+}
+
+export const deleteSalesOrder = async (id) => {
+  await axiosInstance.delete(`/api/v1/SalesOrders/${id}`)
+}
+
+export const updateSalesOrderStatus = async (id, statusId) => {
+  const { data } = await axiosInstance.patch(`/api/v1/SalesOrders/${id}/status`, { statusId })
   return data
 }
 
 export const fetchOutputStatuses = async () => {
-  const { data, error } = await supabase.from('output_status').select('*')
-  if (error) {
-    throw error
-  }
+  const { data } = await axiosInstance.get('/api/v1/SalesOrders/status')
+  return data
+}
+export const fetchOrderStatusMap = async () => {
+  const { data } = await axiosInstance.get('/api/v1/SalesOrders/status-map')
+  return data
+}
+
+export const fetchOrderTransitionMap = async () => {
+  const { data } = await axiosInstance.get('/api/v1/SalesOrders/transition-map')
+  return data
+}
+export const fetchLockedStatuses = async () => {
+  const { data } = await axiosInstance.get('/api/v1/SalesOrders/locked-statuses')
   return data
 }

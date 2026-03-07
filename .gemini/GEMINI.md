@@ -1,73 +1,114 @@
-# Code Style Guide
+# Yêu cầu chung
 
-## General Guidelines
+- Tuyệt đối không viết comment (//, /\* \*/, <!-- -->) và log (alert, console) trong code, trừ trường hợp tôi yêu cầu.
+- Tên biến bắt buộc phải sử dụng tiếng Anh.
+- Luôn luôn sử dụng cú pháp VueJS, Javascript, CSS mới nhất.
+- Không bao giờ được tự động cài thư viện cho các dự án, trừ trường hợp tôi yêu cầu. Nếu bạn muốn cài thêm thư viện, phải thông báo qua cho tôi.
+- Không bao giờ được đổi nội dung các file env trừ trường hợp tôi yêu cầu. Nếu bạn muốn thay đổi, phải thông báo qua cho tôi.
+- Tất cả phản hồi đều phải được viết bằng tiếng Việt, kể cả Task, Plan.
+- Các quy tắc của Eslint cần được tuân thủ theo cấu hình của dự án.
 
-- Keep the code simple and readable.
-- Use Prettier for code formatting.
-- Must not contain any comments.
-- Eslint rules should be followed as per the project's configuration.
+# CSS
 
-## CSS
+- Không sử dụng ID để định dạng. Không sử dụng !important.
+- Giới hạn độ sâu nesting tối đa là 3 cấp.
+- Thứ tự thuộc tính (Property Order): Phải sắp xếp theo nhóm từ ngoài vào trong:
+  - Positioning (position, top, z-index...)
+  - Box Model (display, flex, grid, margin, padding, border, width, height...)
+  - Typography (font, line-height, color, text-align...)
+  - Visual (background, opacity, transition...)
+  - Misc (cursor, pointer-events...)
 
-- Use class names that are descriptive and follow a consistent naming convention.
-- Avoid using IDs for styling.
-- Organize CSS properties in a logical order.
+# Tailwind CSS
 
-## Tailwind CSS
+- Thứ tự Class: Sắp xếp theo nhóm: Layout -> Sizing -> Spacing -> Typography -> Color -> Effects -> States (hover/focus) -> Responsive.
+- Arbitrary Values: Hạn chế tối đa sử dụng giá trị tùy chỉnh -[...]. Phải ưu tiên sử dụng các giá trị có sẵn trong theme.
+- Tối ưu hóa:
+  - Sử dụng tailwind-merge hoặc clsx khi cần xử lý class động.
+  - Không viết trùng lặp các class ghi đè nhau (ví dụ: đã có px-4 thì không viết thêm pl-2).
+  - Responsive: Ưu tiên Mobile-first.
 
-- Use utility-first classes to build components.
-- Avoid using custom CSS when possible.
-- Group related classes together for better readability.
+# JavaScript
 
-## JavaScript
+- Luôn dùng const mặc định, chỉ dùng let khi thực sự cần thay đổi giá trị.
+- Sử dụng Arrow functions cho các callback và hàm ẩn danh.
+- Sử dụng Template literals cho chuỗi. Kết thúc mọi câu lệnh bằng dấu chấm phẩy ;.
+- Tên biến phải bằng tiếng Anh, có ý nghĩa rõ ràng.
+- Hàm xử lý logic phải bắt đầu bằng động từ.
+- Biến Boolean phải bắt đầu bằng is, has, should, hoặc can.
+- Nguyên tắc Logic:
+  - Early Return: Trả về kết quả sớm để tránh lồng ghép if-else quá 2 tầng.
+  - Immutability: Không thay đổi trực tiếp tham số đầu vào hoặc dữ liệu gốc. Sử dụng Spread operator (...), map, filter, reduce.
+  - Async/Await: Mọi lời gọi bất đồng bộ bắt buộc phải nằm trong khối try-catch để kiểm soát lỗi.
+  - Single Responsibility: Một hàm chỉ thực hiện duy nhất một nhiệm vụ. Nếu hàm dài quá 20 dòng, phải cân nhắc tách hàm.
+  - Formatting: Tuân thủ chặt chẽ cấu hình Prettier. Không để lại code thừa hoặc comment rác.
 
-- Use `const` and `let` instead of `var`.
-- Prefer arrow functions for anonymous functions.
-- Use template literals for string concatenation.
-- Always use semicolons.
-- Follow the Prettier configuration for formatting.
+# Vue.js & Pinia (Kiến trúc & Quản lý State)
 
-## Vue.js
+## Cấu trúc File (.vue)
 
-- Use single-file components (SFCs) with the `.vue` extension.
-- Organize component structure in this order: `<script>` then `<template>` and lastly `<style>`.
-- Use PascalCase for component names.
-- Use kebab-case for component file names.
-- Keep components small and focused.
-- Use Vuex for state management.
+> [!IMPORTANT]
+> **Thứ tự ưu tiên:** `<script setup>` -> `<template>` -> `<style>`.
+> **Lý do:** Bạn cần đọc logic và dữ liệu trước khi xem giao diện. Để `<style>` ở giữa là một sai lầm về trải nghiệm lập trình (DX) vì nó thường rất dài, khiến bạn phải scroll mỏi tay để nhảy giữa logic và template.
 
-# Commit
+## Đặt tên
 
-Role: You are a Senior Backend Developer utilizing Conventional Commits.
+- **Component & File:** Đồng nhất sử dụng **PascalCase** (ví dụ: `UserCard.vue`).
+- **Tại sao?** Trong Vue, Component là một class/object đặc biệt. Việc dùng `kebab-case` cho tên file chỉ làm khó hệ thống tự động import và gây mất đồng nhất khi gọi Component trong template.
 
-Task: Generate a commit message based on the provided changes.
+## Phân chia nhiệm vụ (The Quadruple-Contract)
 
-Strict Output Format:
-<type>: <subject>
-<BLANK LINE>
+1. **API Service (Tầng giao tiếp):**
 
-- <bullet point 1>
-- <bullet point 2>
-- <bullet point 3>
-  ...
+- Nằm trong thư mục `services/` hoặc `api/`.
+- Là nơi duy nhất chứa các hàm gọi `axios` hoặc `fetch`.
+- Định nghĩa kiểu dữ liệu (Interfaces/Types) cho Response và Request.
+- **Nhiệm vụ:** Trả về dữ liệu thô hoặc ném lỗi kỹ thuật. Không xử lý State hay Logic ở đây.
 
-Constraints:
+2. **Pinia Store (Tầng điều phối & Logic):**
 
-1. Header:
-   - Max 72 chars.
-   - Imperative mood.
-   - Type: feat, fix, docs, style, refactor, perf, test, chore, ci.
+- Nơi duy nhất gọi đến **API Service**.
+- Xử lý logic nghiệp vụ (Business Logic): validation, biến đổi dữ liệu thô từ API thành định dạng UI cần, quản lý trạng thái loading/error.
+- Tuyệt đối không để logic nghiệp vụ trong Component.
 
-2. Body:
-   - MUST be a list of bullet points using hyphens (-).
-   - Each bullet point is ONE sentence.
-   - NO paragraphs allowed. NO grouping sentences.
-   - Break down complex logic into separate bullet points.
+3. **Component Cha (Smart Component):**
 
-Refrence Example (Follow this style exactly):
-refactor(auth): simplify token validation logic
+- Kết nối với Store, nhận dữ liệu và phân phối cho các con qua `props`.
+- Quản lý bố cục (Layout) và các logic mang tính điều hướng.
 
-- Removed redundant checks in `TokenService`.
-- Unified error messages for expired tokens.
-- Updated `AuthController` to use the new validation pipeline.
-- Renamed `ValidateAsync` to `VerifyTokenAsync` for clarity.
+4. **Component Con (Dumb/Presentational Component):**
+
+- Chỉ nhận dữ liệu qua `props` và phát sự kiện qua `emit`.
+- Không được phép biết đến sự tồn tại của Store hay API.
+- Giữ cho component nhỏ, tập trung và có khả năng tái sử dụng cao.
+
+## Quy tắc "Không rò rỉ"
+
+- Không viết các hàm tính toán phức tạp bên trong `.vue` nếu nó có thể tái sử dụng hoặc thuộc về bản chất của dữ liệu (hãy đưa vào Store hoặc Composable).
+- Mọi biến mang tính chất "trạng thái tính năng" (ví dụ: `isLoggedIn`, `userPermissions`) phải nằm ở Store.
+
+# Tanstack Query (Quy trình CRUD Chuẩn)
+
+- Thêm mới/Cập nhật (Mutation): Sau khi thành công, phải gọi queryClient.setQueryData cho ID sản phẩm cụ thể để cập nhật cache chi tiết ngay lập tức.
+- Hành động "Sửa" (Fetching):
+  - Sử dụng queryClient.fetchQuery để lấy dữ liệu.
+  - UX: Nếu đã có cache, hiển thị ngay (không loading overlay) và fetch ngầm. Nếu chưa có cache, bắt buộc hiển thị loading overlay.
+- Xóa (Deletion):
+  - Phải gọi queryClient.removeQueries cho ID sản phẩm đó trước khi gọi invalidateQueries danh sách.
+- Tương tác Modal (DraggableModal):
+  - Truyền :onRefresh cho DraggableModal để hiện nút reload trên tiêu đề.
+- Điều kiện: Chỉ truyền :onRefresh khi isEditMode === true, truyền undefined khi thêm mới.
+- Hàm Refresh: Gọi queryClient.fetchQuery với staleTime: 0 để ép buộc lấy dữ liệu mới nhất từ API và hiển thị loading overlay.
+
+# Pagination & Quản lý Trang
+
+- Tiêu chuẩn: Bắt buộc sử dụng usePaginatedQuery.js cho mọi tính năng có phân trang hoặc quản lý danh sách nhiều trang.
+- AI không được phép tự ý viết nội dung, sửa đổi hoặc tạo mới file usePaginatedQuery.js. Nếu chưa có file này, AI phải yêu cầu người dùng cung cấp hoặc copy từ dự án mẫu. Tuyệt đối không tự sinh code thay thế cho công cụ này.
+
+# Build dự án
+
+Khi có sự thay đổi trong dự án, Bắt buộc chạy npm run build để xác nhận không còn lỗi. Nếu lỗi, phải sửa cho đến khi build thành công.
+
+# Tuyệt đối không tự ý Commit Dự án
+
+Tuyệt đối không tự ý commit và push code lên trên git cho dự án.
