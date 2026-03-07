@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import * as productApi from '@/api/product'
-import { getPredefinedOptions } from '@/api/options'
+import { getPredefinedOptions, getInventoryStatuses } from '@/api/options'
 import { useProductsStore } from '@/stores/useProductsStore'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { useToast } from 'vue-toastification'
@@ -33,6 +33,26 @@ const { data: predefinedOptionsData } = useQuery({
   staleTime: 5 * 60 * 1000,
 })
 
+const { data: inventoryStatusesData } = useQuery({
+  queryKey: ['inventoryStatuses'],
+  queryFn: getInventoryStatuses,
+  staleTime: 10 * 60 * 1000,
+})
+
+const inventoryStatusMap = computed(() => {
+  const list = inventoryStatusesData.value || []
+  return list.reduce((acc, item) => {
+    acc[item.key] = item.label
+    return acc
+  }, {})
+})
+
+const inventoryStatusColorMap = {
+  OutOfStock: 'red',
+  LowStock: 'yellow',
+  InStock: 'green',
+}
+
 const expandedProductIds = ref([])
 const activeTabs = ref({})
 const getActiveTab = (productId) => activeTabs.value[productId] || 'variants'
@@ -43,10 +63,18 @@ const numberOfColumns = ref(8)
 const isSaving = ref(false)
 const isRefreshing = ref(false)
 
-const fetchProductsFn = async ({ page, limit, search }) => {
-  const params = { Page: page, PageSize: limit }
-  if (search) params.Filters = `name@=*${search}`
-  const result = await productApi.getProductsForManager(params)
+const fetchProductsFn = async (params) => {
+  const { page, limit, search, inventoryStatus, sort } = params
+  const apiParams = { Page: page, PageSize: limit }
+
+  let filterParts = []
+  if (search) filterParts.push(`name@=*${search}`)
+  if (inventoryStatus) filterParts.push(`inventoryStatus==${inventoryStatus}`)
+
+  if (filterParts.length > 0) apiParams.Filters = filterParts.join(',')
+  if (sort) apiParams.Sorts = sort
+
+  const result = await productApi.getProductsForManager(apiParams)
   return {
     data: result.items || [],
     pagination: {
@@ -63,11 +91,16 @@ const {
   error,
   pagination,
   searchRefs,
+  filterRefs,
+  toggleSort,
+  getSortDirection,
 } = usePaginatedQuery({
   queryKey: ['products'],
   queryFn: fetchProductsFn,
   itemsPerPage: 10,
   searchFields: [{ key: 'search', debounce: 400 }],
+  filterFields: [{ key: 'inventoryStatus' }],
+  sortableFields: ['inventoryStatus'],
 })
 
 const isStoreLoading = computed(() => productsStore.isLoading)
@@ -96,18 +129,9 @@ const getVariantOptionsText = (variant) => {
   return values.map(([key, value]) => `${dict[key] || key}: ${value}`).join(', ')
 }
 
-const stockStatusColors = {
-  'in-stock': 'green',
-  'almost-out-of-stock': 'yellow',
-  'out-of-stock': 'red',
-}
-const stockStatusTextMap = {
-  'in-stock': 'Còn Hàng',
-  'almost-out-of-stock': 'Sắp Hết',
-  'out-of-stock': 'Hết Hàng',
-}
-const getStockStatusColor = (statusId) => stockStatusColors[statusId] || 'gray'
-const getStockStatusText = (statusId) => stockStatusTextMap[statusId] || 'Không rõ'
+const getInventoryStatusColor = (statusKey) => inventoryStatusColorMap[statusKey] || 'gray'
+const getInventoryStatusLabel = (statusKey) =>
+  inventoryStatusMap.value[statusKey] || statusKey || 'Không rõ'
 
 const isFormModalVisible = ref(false)
 const formModalTitle = ref('')
@@ -426,12 +450,32 @@ const exportExcel = () => {
       </div>
     </div>
 
-    <Input
-      v-model="searchRefs.search"
-      type="text"
-      placeholder="Tìm kiếm theo tên sản phẩm..."
-      class="mb-3"
-    />
+    <div class="flex flex-col sm:flex-row gap-3 mb-4">
+      <Input
+        v-model="searchRefs.search"
+        type="text"
+        placeholder="Tìm kiếm theo tên sản phẩm..."
+        class="flex-1"
+      />
+
+      <div class="w-full sm:w-64">
+        <select
+          v-model="filterRefs.inventoryStatus"
+          class="w-full h-11 px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 appearance-none cursor-pointer"
+          style="
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236B7280%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C/polyline%3E%3C/svg%3E');
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+          "
+        >
+          <option value="">Tất cả trạng thái kho</option>
+          <option v-for="(label, key) in inventoryStatusMap" :key="key" :value="key">
+            {{ label }}
+          </option>
+        </select>
+      </div>
+    </div>
 
     <div
       v-if="isError"
@@ -452,7 +496,33 @@ const exportExcel = () => {
             <th class="py-3 px-6 text-left">Danh Mục</th>
             <th class="py-3 px-6 text-left">Thương Hiệu</th>
             <th class="py-3 px-6 text-left">Số Biến Thể</th>
-            <th class="py-3 px-6 text-left">Trạng Thái Kho</th>
+            <th
+              class="py-3 px-6 text-left cursor-pointer hover:bg-gray-100 transition-colors"
+              @click="toggleSort('inventoryStatus')"
+            >
+              <div class="flex items-center space-x-1">
+                <span>Trạng Thái Kho</span>
+                <div class="flex flex-col">
+                  <IconDownArrow
+                    class="w-3 h-3 transition-colors"
+                    :class="
+                      getSortDirection('inventoryStatus') === 'asc'
+                        ? 'text-red-500'
+                        : 'text-gray-300'
+                    "
+                    style="transform: rotate(180deg)"
+                  />
+                  <IconDownArrow
+                    class="w-3 h-3 transition-colors -mt-1"
+                    :class="
+                      getSortDirection('inventoryStatus') === 'desc'
+                        ? 'text-red-500'
+                        : 'text-gray-300'
+                    "
+                  />
+                </div>
+              </div>
+            </th>
             <th class="py-3 px-6 text-center">Thao Tác</th>
           </tr>
         </thead>
@@ -515,8 +585,8 @@ const exportExcel = () => {
               <td class="py-3 px-6">{{ product.brand }}</td>
               <td class="py-3 px-6">{{ product.variants ? product.variants.length : 0 }}</td>
               <td class="py-3 px-6">
-                <RoundBadge :color="getStockStatusColor(product.status_stock_id)">
-                  {{ getStockStatusText(product.status_stock_id) }}
+                <RoundBadge :color="getInventoryStatusColor(product.inventory_status)">
+                  {{ getInventoryStatusLabel(product.inventory_status) }}
                 </RoundBadge>
               </td>
               <td class="py-3 px-6 text-center space-x-2">
@@ -631,16 +701,18 @@ const exportExcel = () => {
                           <td
                             class="py-2 px-4 font-medium"
                             :class="
-                              variant.stock - variant.has_been_booked > 0
+                              getInventoryStatusColor(variant.inventory_status) === 'green'
                                 ? 'text-green-600'
-                                : 'text-red-500'
+                                : getInventoryStatusColor(variant.inventory_status) === 'yellow'
+                                  ? 'text-yellow-500'
+                                  : 'text-red-500'
                             "
                           >
                             {{ variant.stock - variant.has_been_booked }}
                           </td>
                           <td class="py-2 px-4">
-                            <RoundBadge :color="getStockStatusColor(variant.status_stock_id)">
-                              {{ getStockStatusText(variant.status_stock_id) }}
+                            <RoundBadge :color="getInventoryStatusColor(variant.inventory_status)">
+                              {{ getInventoryStatusLabel(variant.inventory_status) }}
                             </RoundBadge>
                           </td>
                         </tr>
