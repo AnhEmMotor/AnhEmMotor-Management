@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import { useOrdersStore } from '@/stores/useOrdersStore'
 import { fetchSalesOrders, getSalesOrderById, fetchOutputStatuses } from '@/api/order'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
@@ -112,24 +112,18 @@ function createNewOrder() {
 
 const handleEditOrder = async (order) => {
   isEditMode.value = true
-  const cached = queryClient.getQueryData(['salesOrders', order.id])
-  if (cached) {
-    selectedOrder.value = cached
-    showOrderForm.value = true
-  } else {
-    loadingOverlay.value = true
-    showOrderForm.value = true
-  }
+  loadingOverlay.value = true
   try {
     const detail = await queryClient.fetchQuery({
       queryKey: ['salesOrders', order.id],
       queryFn: () => getSalesOrderById(order.id),
+      staleTime: 0,
     })
     selectedOrder.value = detail
     queryClient.setQueryData(['salesOrders', order.id], detail)
+    showOrderForm.value = true
   } catch (err) {
     toast.error(`Lỗi khi tải chi tiết đơn hàng: ${err.message}`)
-    showOrderForm.value = false
   } finally {
     loadingOverlay.value = false
   }
@@ -150,6 +144,7 @@ const handleFormRefresh = async () => {
   } catch (err) {
     toast.error(`Lỗi khi tải lại: ${err.message}`)
   } finally {
+    await nextTick()
     loadingOverlay.value = false
   }
 }
@@ -199,7 +194,7 @@ const handleExport = () => {
 
 <template>
   <div class="p-6 rounded-xl shadow-lg bg-white">
-    <LoadingOverlay v-if="loadingOverlay" />
+    <LoadingOverlay :show="loadingOverlay" />
 
     <div class="flex items-start justify-between mb-4">
       <div>
@@ -230,8 +225,9 @@ const handleExport = () => {
           <tr
             class="bg-gray-50 text-gray-500 uppercase text-xs font-medium tracking-wider leading-normal border-b border-gray-200"
           >
-            <th class="py-3 px-6 text-left w-40">Ngày Đặt</th>
-            <th class="py-3 px-6 text-left">Sản phẩm</th>
+            <th class="py-3 px-6 text-left w-48">Thời Gian Đặt</th>
+            <th class="py-3 px-6 text-left w-64">Tên khách hàng</th>
+            <th class="py-3 px-6 text-left">Ghi chú</th>
             <th class="py-3 px-6 text-left w-64">Trạng Thái</th>
             <th class="py-3 px-6 text-left w-40">Tổng Tiền</th>
             <th class="py-3 px-6 text-center w-32">Hành động</th>
@@ -239,7 +235,7 @@ const handleExport = () => {
         </thead>
         <tbody class="text-gray-600 text-sm">
           <tr v-if="isError">
-            <td colspan="5" class="text-center p-4 text-red-500">
+            <td colspan="6" class="text-center p-4 text-red-500">
               Đã có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại.
             </td>
           </tr>
@@ -247,6 +243,7 @@ const handleExport = () => {
             <template v-if="isLoading || isFetching">
               <tr v-for="i in 5" :key="i" class="border-b border-gray-100">
                 <td class="py-3 px-6"><SkeletonLoader width="100%" height="20px" /></td>
+                <td class="py-3 px-6"><SkeletonLoader width="80%" height="20px" /></td>
                 <td class="py-3 px-6"><SkeletonLoader width="80%" height="20px" /></td>
                 <td class="py-3 px-6">
                   <SkeletonLoader width="100px" height="24px" class="rounded-full" />
@@ -260,7 +257,7 @@ const handleExport = () => {
               </tr>
             </template>
             <tr v-else>
-              <td colspan="5" class="text-center p-4">Không có đơn hàng nào.</td>
+              <td colspan="6" class="text-center p-4">Không có đơn hàng nào.</td>
             </tr>
           </template>
           <tr
@@ -271,16 +268,25 @@ const handleExport = () => {
             @click="handleEditOrder(order)"
           >
             <td class="py-3 px-6 text-left">
-              {{ new Date(order.createdAt).toLocaleDateString('vi-VN') }}
+              {{
+                new Date(order.createdAt).toLocaleString('vi-VN', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                })
+              }}
             </td>
-            <td class="py-3 px-6 text-left">{{ order.notes || `Đơn hàng #${order.id}` }}</td>
+            <td class="py-3 px-6 text-left truncate max-w-xs">{{ order.buyerName || '---' }}</td>
+            <td class="py-3 px-6 text-left">{{ order.notes || '' }}</td>
             <td class="py-3 px-6 text-left whitespace-nowrap">
               <RoundBadge :color="getStatusColor(order.statusId)">
                 {{ getStatusLabel(order.statusId) }}
               </RoundBadge>
             </td>
             <td class="py-3 px-6 text-left">
-              {{ (order.totalAmount || 0).toLocaleString('vi-VN') }} VNĐ
+              {{ (order.total || 0).toLocaleString('vi-VN') }} VNĐ
             </td>
             <td class="py-3 px-6 text-center">
               <SmallNoBgButton color="blue" :icon="IconEdit" @click.stop="handleEditOrder(order)">
@@ -294,9 +300,7 @@ const handleExport = () => {
 
     <div class="mt-4">
       <div class="flex items-center justify-between">
-        <p class="text-sm text-gray-500">
-          Tổng: {{ pagination.totalCount.value }} đơn hàng
-        </p>
+        <p class="text-sm text-gray-500">Tổng: {{ pagination.totalCount.value }} đơn hàng</p>
       </div>
     </div>
 

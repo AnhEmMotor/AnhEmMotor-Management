@@ -1,90 +1,88 @@
 <script setup>
-import { ref, computed, watch, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, onBeforeUnmount, reactive } from 'vue'
 import { useOrdersStore } from '@/stores/useOrdersStore'
-import { debounce } from '@/utils/debounceThrottle'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
 import Dropdown from '@/components/ui/input/BaseDropdown.vue'
 import Input from '@/components/ui/input/BaseInput.vue'
 import Textarea from '../ui/input/BaseTextarea.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
+import * as apiUsers from '@/api/user'
+import * as apiProducts from '@/api/product'
+import * as apiOrders from '@/api/order'
+import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
+import { useQuery } from '@tanstack/vue-query'
 
 const props = defineProps({
   show: { type: Boolean, default: false },
   zIndex: { type: Number, default: 100 },
   order: { type: Object, default: null },
+  onRefresh: { type: Function, default: undefined },
 })
-const emit = defineEmits(['close', 'save', 'activate'])
+const emit = defineEmits(['close', 'save', 'activate', 'delete'])
 const ordersStore = useOrdersStore()
 
 const localData = ref({
-  customerName: '',
+  customer: null,
   products: [],
   notes: '',
 })
 
-const STATUS_LIST = [
-  { key: 'pending', text: 'Chờ xác nhận' },
-  { key: 'completed', text: 'Đã hoàn thành' },
-  { key: 'canceled', text: 'Đã hủy' },
-  { key: 'refunding', text: 'Đang hoàn tiền' },
-  { key: 'refunded', text: 'Đã hoàn tiền' },
-  { key: 'confirmed_cod', text: 'Đã xác nhận (Chờ thanh toán COD)' },
-  { key: 'paid_processing', text: 'Đã thanh toán (Chờ xử lý)' },
-  { key: 'waiting_deposit', text: 'Chờ đặt cọc' },
-  { key: 'deposit_paid', text: 'Đã đặt cọc (Chờ xử lý)' },
-  { key: 'delivering', text: 'Đang giao hàng' },
-  { key: 'waiting_pickup', text: 'Chờ lấy hàng tại cửa hàng' },
-]
+const { data: statusMap } = useQuery({
+  queryKey: ['order-status-map'],
+  queryFn: apiOrders.fetchOrderStatusMap,
+  staleTime: 1000 * 60 * 10, // 10 minutes
+})
+
+const { data: lockedStatuses } = useQuery({
+  queryKey: ['order-locked-statuses'],
+  queryFn: apiOrders.fetchLockedStatuses,
+  staleTime: 1000 * 60 * 60, // 1 hour
+})
+
+const { data: transitionMap } = useQuery({
+  queryKey: ['order-transition-map'],
+  queryFn: apiOrders.fetchOrderTransitionMap,
+  staleTime: 1000 * 60 * 10, // 10 minutes
+})
+
+const STATUS_LIST = computed(() => {
+  if (!statusMap.value) return []
+  return statusMap.value.map((s) => ({ key: s.id, text: s.name }))
+})
 
 const localStatus = ref('pending')
 const isLoading = ref(false)
 
-const LOCKED_STATUSES = [
-  'confirmed_cod',
-  'paid_processing',
-  'deposit_paid',
-  'delivering',
-  'waiting_pickup',
-  'completed',
-  'canceled',
-  'refunding',
-  'refunded',
-]
-
 const isLocked = computed(() => {
-  if (!props.order) return false
-  const key = localStatus.value || (props.order && props.order.status_id) || 'pending'
-  return LOCKED_STATUSES.includes(key)
+  if (!props.order || !lockedStatuses.value) return false
+  return lockedStatuses.value.includes(originalStatusKey.value)
 })
 
-const originalStatusKey = computed(() => (props.order ? props.order.status_id : null))
+const originalStatusKey = computed(() =>
+  props.order ? props.order.statusId || props.order.status_id : null,
+)
 const statusChanged = computed(() => {
   if (!props.order) return false
   return localStatus.value !== originalStatusKey.value
 })
+const notesChanged = computed(() => {
+  if (!props.order) return false
+  return localData.value.notes !== (props.order.notes || '')
+})
 
 function allowedStatusOptionsFor(currentKey) {
-  const map = {
-    pending: ['confirmed_cod', 'paid_processing', 'waiting_deposit', 'canceled'],
-    confirmed_cod: ['delivering', 'waiting_pickup', 'completed', 'canceled'],
-    paid_processing: ['delivering', 'waiting_pickup', 'completed', 'refunding'],
-    waiting_deposit: ['deposit_paid', 'canceled'],
-    deposit_paid: ['delivering', 'waiting_pickup', 'completed', 'refunding'],
-    delivering: ['completed', 'refunding'],
-    waiting_pickup: ['completed', 'refunding'],
-    canceled: ['pending'],
-    refunding: ['refunded', 'pending'],
-    refunded: ['pending'],
-    completed: [],
-  }
-  const allowed = map[currentKey] || []
-  const currentEntry = STATUS_LIST.find((s) => s.key === currentKey)
+  if (!transitionMap.value || !STATUS_LIST.value.length) return []
+
+  const allowed = transitionMap.value[currentKey] || []
+  const currentEntry = STATUS_LIST.value.find((s) => s.key === currentKey)
   const result = []
+
   if (currentEntry) {
     result.push({ value: currentEntry.key, text: `${currentEntry.text} (Hiện tại)` })
   }
-  STATUS_LIST.forEach((s) => {
+
+  STATUS_LIST.value.forEach((s) => {
     if (s.key !== currentKey && allowed.includes(s.key)) {
       result.push({ value: s.key, text: s.text })
     }
@@ -92,41 +90,71 @@ function allowedStatusOptionsFor(currentKey) {
   return result
 }
 
-const productSearchResults = ref([])
-const productSearchTerm = ref('')
-const showProductDropdown = ref(false)
+const customerSearch = reactive({
+  showDropdown: false,
+})
+
+const {
+  data: customers,
+  isLoading: isCustomersLoading,
+  searchRefs: customerSearchRefs,
+  pagination: customerPagination,
+} = usePaginatedQuery({
+  queryKey: ['basic-users-for-orders'],
+  queryFn: apiUsers.fetchBasicUsers,
+  itemsPerPage: 5,
+  useLocalPagination: true,
+  searchFields: [{ key: 'search', debounce: 400 }],
+})
+
+const productSearch = reactive({
+  showDropdown: false,
+})
+
+const {
+  data: products,
+  isLoading: isProductsLoading,
+  searchRefs: productSearchRefs,
+  pagination: productPagination,
+} = usePaginatedQuery({
+  queryKey: ['variants-lite-for-output'],
+  queryFn: apiProducts.fetchVariantsLiteForOutput,
+  itemsPerPage: 5,
+  useLocalPagination: true,
+  searchFields: [{ key: 'search', debounce: 400 }],
+})
+
 const productInputRef = ref(null)
+const customerInputRef = ref(null)
 const dropdownStyle = ref({})
+const customerDropdownStyle = ref({})
 
 const errors = ref({
   products: '',
-  customerName: '',
+  customer: '',
 })
 
-const debouncedSearch = debounce(async (term) => {
-  if (term.length < 2) {
-    productSearchResults.value = []
+const selectCustomer = (customer) => {
+  if (isLocked.value) {
+    customerSearch.showDropdown = false
     return
   }
-  const data = await ordersStore.fetchProductVariants({
-    p_page: 1,
-    p_items_per_page: 10,
-    p_search: term,
-    p_status_ids: null,
-  })
-  productSearchResults.value = data.products || []
-  if (productSearchResults.value.length > 0) {
-    openProductDropdown()
-  }
-}, 300)
+  localData.value.customer = customer
+  customerSearchRefs.search = customer.fullName || customer.name
+  customerSearch.showDropdown = false
+}
 
-watch(productSearchTerm, (newTerm) => {
-  debouncedSearch(newTerm)
-})
+const clearCustomer = () => {
+  if (isLocked.value) return
+  localData.value.customer = null
+  customerSearchRefs.search = ''
+}
 
-const filteredProducts = computed(() => {
-  return productSearchResults.value
-})
+const handleCustomerBlur = () => {
+  window.setTimeout(() => {
+    customerSearch.showDropdown = false
+  }, 300)
+}
 
 const formatCurrency = (value) => {
   if (value === '' || value === null || value === undefined) return ''
@@ -140,71 +168,93 @@ const parseCurrency = (value) => {
 
 const selectProduct = (product) => {
   if (isLocked.value) {
-    showProductDropdown.value = false
+    productSearch.showDropdown = false
     return
   }
   const newProduct = {
     id: Date.now() + Math.random(),
     product_id: product.id,
-    code: product.id.substring(0, 8),
-    name: product.name,
+    code: String(product.id).substring(0, 8),
+    name: product.displayName || product.name,
     quantity: 1,
     unitPrice: product.price || 0,
     total: product.price || 0,
     costPrice: product.cost_price || 0,
+    coverImageUrl: product.coverImageUrl,
   }
   localData.value.products.push(newProduct)
-  productSearchTerm.value = ''
-  productSearchResults.value = []
-  showProductDropdown.value = false
+  productSearchRefs.search = ''
+  productSearch.showDropdown = false
 }
 
-const openProductDropdown = () => {
-  if (isLocked.value) return
-  if (filteredProducts.value.length > 0) {
-    showProductDropdown.value = true
+const syncLocalData = () => {
+  if (props.order) {
+    const name =
+      props.order.buyerName || props.order.customerName || props.order.customer_name || ''
+    const buyerId = props.order.buyerId || props.order.buyer_id
+    const phone = props.order.buyerPhone || props.order.customerPhone || props.order.customer_phone
+    const email = props.order.buyerEmail || props.order.customerEmail || props.order.customer_email
+    localData.value.customer =
+      name || buyerId ? { fullName: name, id: buyerId, phoneNumber: phone, email: email } : null
+    if (localData.value.customer) {
+      customerSearchRefs.search = localData.value.customer.fullName || ''
+    } else {
+      customerSearchRefs.search = ''
+    }
+
+    localData.value.products = (props.order.products || []).map((p) => {
+      const prodId = p.productId || p.product_id
+      const prodName = p.productName || p.name
+      const qty = p.count || p.quantity || 1
+      const priceVal = p.price || p.unitPrice || 0
+      return {
+        id: p.id || Date.now() + Math.random(),
+        product_id: prodId,
+        code: p.code || (prodId ? String(prodId).substring(0, 8) : 'N/A'),
+        name: prodName,
+        quantity: qty,
+        unitPrice: priceVal,
+        total: priceVal * qty,
+        costPrice: p.costPrice || p.cost_price || 0,
+        coverImageUrl: p.coverImageUrl || p.cover_image_url,
+      }
+    })
+    localData.value.notes = props.order.notes || ''
+    localStatus.value = props.order.statusId || props.order.status_id || 'pending'
+  } else {
+    localData.value = { customer: null, products: [], notes: '' }
+    customerSearchRefs.search = ''
+    localStatus.value = 'pending'
   }
+  productSearchRefs.search = ''
+  productSearch.showDropdown = false
+  customerSearch.showDropdown = false
+  errors.value = { products: '', customer: '' }
 }
 
 watch(
   () => props.show,
   (newShow) => {
     if (newShow) {
-      if (props.order) {
-        localData.value.customerName = props.order.customer_name || ''
-        localData.value.products = (props.order.products || []).map((p) => ({
-          id: p.id || Date.now() + Math.random(),
-          product_id: p.product_id,
-          code: p.code || (p.product_id ? p.product_id.substring(0, 8) : 'N/A'),
-          name: p.name,
-          quantity: p.count || p.quantity || 1,
-          unitPrice: p.price || p.unitPrice || 0,
-          total: (p.price || p.unitPrice || 0) * (p.count || p.quantity || 1),
-          costPrice: p.cost_price || 0,
-        }))
-        localData.value.notes = props.order.notes || ''
-        localStatus.value = props.order.status_id || 'pending'
-
-        isLoading.value = true
-        setTimeout(() => {
-          isLoading.value = false
-        }, 2000)
-      } else {
-        localData.value = { customerName: '', products: [], notes: '' }
-        localStatus.value = 'pending'
-        isLoading.value = false
-      }
-      productSearchTerm.value = ''
-      showProductDropdown.value = false
-      errors.value = { products: '', customerName: '' }
+      syncLocalData()
     }
   },
   { immediate: true },
 )
 
+watch(
+  () => props.order,
+  () => {
+    if (props.show) {
+      syncLocalData()
+    }
+  },
+  { deep: true },
+)
+
 const handleProductBlur = () => {
   window.setTimeout(() => {
-    showProductDropdown.value = false
+    productSearch.showDropdown = false
   }, 200)
 }
 
@@ -224,8 +274,26 @@ const totalAmount = computed(() => {
 
 const updateDropdownPosition = () => {
   if (!productInputRef.value) return
-  const rect = productInputRef.value.$el.getBoundingClientRect()
+  const rect = productInputRef.value.$el
+    ? productInputRef.value.$el.getBoundingClientRect()
+    : productInputRef.value.getBoundingClientRect()
   dropdownStyle.value = {
+    position: 'fixed',
+    top: `${rect.bottom}px`,
+    left: `${rect.left}px`,
+    width: `${rect.width}px`,
+    maxHeight: '300px',
+    overflowY: 'auto',
+    zIndex: (props.zIndex || 100) + 10,
+  }
+}
+
+const updateCustomerDropdownPosition = () => {
+  if (!customerInputRef.value) return
+  const rect = customerInputRef.value.$el
+    ? customerInputRef.value.$el.getBoundingClientRect()
+    : customerInputRef.value.getBoundingClientRect()
+  customerDropdownStyle.value = {
     position: 'fixed',
     top: `${rect.bottom}px`,
     left: `${rect.left}px`,
@@ -247,7 +315,19 @@ const onShowProductDropdown = (val) => {
   }
 }
 
-watch(showProductDropdown, onShowProductDropdown)
+const onShowCustomerDropdown = (val) => {
+  if (val) {
+    setTimeout(updateCustomerDropdownPosition, 0)
+    window.addEventListener('resize', updateCustomerDropdownPosition)
+    window.addEventListener('scroll', updateCustomerDropdownPosition, true)
+  } else {
+    window.removeEventListener('resize', updateCustomerDropdownPosition)
+    window.removeEventListener('scroll', updateCustomerDropdownPosition, true)
+  }
+}
+
+watch(() => productSearch.showDropdown, onShowProductDropdown)
+watch(() => customerSearch.showDropdown, onShowCustomerDropdown)
 
 watch(
   () => localData.value.products.length,
@@ -257,17 +337,20 @@ watch(
 )
 
 watch(
-  () => localData.value.customerName,
+  () => localData.value.customer,
   (val) => {
-    if (val && val.trim() !== '') errors.value.customerName = ''
+    if (val) errors.value.customer = ''
   },
 )
 
 function submit() {
-  if (!localData.value.customerName) {
-    errors.value.customerName = 'Vui lòng nhập tên khách hàng'
+  if (!localData.value.customer && !customerSearchRefs.search) {
+    errors.value.customer = 'Vui lòng chọn khách hàng'
     return
   }
+  const customerName = localData.value.customer
+    ? localData.value.customer.fullName || localData.value.customer.name
+    : customerSearchRefs.search
   if (localData.value.products.length === 0) {
     if (!props.order) {
       errors.value.products = 'Vui lòng thêm ít nhất 1 sản phẩm'
@@ -279,10 +362,13 @@ function submit() {
     }
   }
 
-  const statusEntry = STATUS_LIST.find((s) => s.key === localStatus.value) || STATUS_LIST[0]
+  const statusEntry = STATUS_LIST.value.find((s) => s.key === localStatus.value) || {
+    key: localStatus.value,
+    text: localStatus.value,
+  }
   const payload = {
     id: props.order ? props.order.id : undefined,
-    customerName: localData.value.customerName,
+    customer: localData.value.customer,
     products: JSON.parse(JSON.stringify(localData.value.products)),
     total: totalAmount.value,
     notes: localData.value.notes,
@@ -300,6 +386,8 @@ const handleReload = async () => {
 onBeforeUnmount(() => {
   window.removeEventListener('resize', updateDropdownPosition)
   window.removeEventListener('scroll', updateDropdownPosition, true)
+  window.removeEventListener('resize', updateCustomerDropdownPosition)
+  window.removeEventListener('scroll', updateCustomerDropdownPosition, true)
 })
 </script>
 
@@ -309,7 +397,7 @@ onBeforeUnmount(() => {
     :zIndex="zIndex"
     @close="$emit('close')"
     @activate="$emit('activate')"
-    :onRefresh="props.order ? handleReload : undefined"
+    :onRefresh="props.order ? props.onRefresh || handleReload : undefined"
     width="40vw"
   >
     <template #header>
@@ -330,11 +418,107 @@ onBeforeUnmount(() => {
         </div>
         <div>
           <label class="block text-sm font-medium mb-1">Tên khách hàng</label>
-          <Input
-            v-model="localData.customerName"
-            :error="errors.customerName"
-            :disabled="isLocked"
-          />
+          <div class="relative">
+            <div class="relative">
+              <input
+                ref="customerInputRef"
+                v-model="customerSearchRefs.search"
+                @focus="customerSearch.showDropdown = true"
+                @input="updateCustomerDropdownPosition"
+                @blur="handleCustomerBlur"
+                type="text"
+                :disabled="isLocked"
+                placeholder="Tìm khách hàng theo tên, SĐT, Email..."
+                class="w-full py-2 px-3 border border-gray-300 rounded-md text-sm outline-none transition-colors duration-200"
+                :class="errors.customer ? 'border-red-500' : ''"
+              />
+              <button
+                v-if="localData.customer"
+                @click="clearCustomer"
+                type="button"
+                :disabled="isLocked"
+                class="absolute right-2.5 top-1/2 -translate-y-1/2 bg-gray-200 border-none rounded-full w-5 h-5 flex items-center justify-center cursor-pointer text-sm text-gray-500"
+              >
+                ×
+              </button>
+            </div>
+
+            <div
+              v-if="customerSearch.showDropdown"
+              :style="customerDropdownStyle"
+              class="fixed z-50 max-h-[300px] overflow-y-auto bg-white rounded-md border border-[rgba(0,0,0,0.08)] shadow-[0_6px_18px_rgba(0,0,0,0.08)]"
+            >
+              <div v-if="isCustomersLoading" class="p-3 text-center text-gray-400">Đang tìm...</div>
+              <div
+                v-else
+                v-for="customer in customers"
+                :key="customer.id"
+                @click="selectCustomer(customer)"
+                class="p-3 cursor-pointer border-b border-gray-100 transition-colors duration-150 hover:bg-gray-50"
+              >
+                <div class="font-medium">{{ customer.fullName || customer.name }}</div>
+                <div class="text-xs text-gray-500">
+                  {{ customer.phoneNumber || 'N/A'
+                  }}{{ customer.email ? ` | ${customer.email}` : '' }}
+                </div>
+              </div>
+
+              <!-- Pagination within dropdown -->
+              <div
+                v-if="customerPagination.totalPages.value > 1"
+                class="p-2 border-t border-gray-100 bg-gray-50 flex justify-between items-center sticky bottom-0"
+              >
+                <button
+                  @click.stop="customerPagination.prevPage"
+                  @mousedown.prevent
+                  :disabled="customerPagination.isFirstPage.value"
+                  class="px-2 py-1 text-xs border border-gray-300 rounded disabled:opacity-50 cursor-pointer"
+                >
+                  Trước
+                </button>
+                <span class="text-xs text-gray-500">
+                  Trang {{ customerPagination.currentPage.value }} /
+                  {{ customerPagination.totalPages.value }}
+                </span>
+                <button
+                  @click.stop="customerPagination.nextPage"
+                  @mousedown.prevent
+                  :disabled="customerPagination.isLastPage.value"
+                  class="px-2 py-1 text-xs border border-gray-300 rounded disabled:opacity-50 cursor-pointer"
+                >
+                  Sau
+                </button>
+              </div>
+
+              <div
+                v-else-if="!isCustomersLoading && customers.length === 0"
+                class="p-3 text-center text-gray-400"
+              >
+                Không tìm thấy khách hàng
+              </div>
+            </div>
+
+            <div
+              v-if="localData.customer"
+              class="mt-3 p-3 bg-gray-50 border border-gray-200 rounded-md"
+            >
+              <div class="flex items-center gap-2">
+                <span class="text-2xl">👤</span>
+                <div>
+                  <div class="font-medium">
+                    {{ localData.customer.fullName || localData.customer.name }}
+                  </div>
+                  <div class="text-xs text-gray-500">
+                    {{ localData.customer.phoneNumber || 'Chưa có SĐT'
+                    }}{{ localData.customer.email ? ` | ${localData.customer.email}` : '' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div v-else-if="errors && errors.customer" class="text-red-500 text-sm mt-1">
+              {{ errors.customer }}
+            </div>
+          </div>
         </div>
 
         <div v-if="props.order">
@@ -349,48 +533,81 @@ onBeforeUnmount(() => {
         <div>
           <label class="block text-sm font-medium mb-1">Thêm sản phẩm</label>
           <div class="relative">
-            <Input
+            <input
               ref="productInputRef"
-              v-model="productSearchTerm"
-              @focus="openProductDropdown"
+              v-model="productSearchRefs.search"
+              @input="updateDropdownPosition"
+              @focus="productSearch.showDropdown = true"
               @blur="handleProductBlur"
+              type="text"
               :disabled="isLocked"
-              placeholder="Tìm hàng hóa theo tên (gõ ít nhất 2 ký tự)..."
+              placeholder="Tìm hàng hóa theo tên...."
+              class="w-full py-2 px-3 border border-gray-300 rounded-md text-sm outline-none transition-colors duration-200"
             />
 
             <div
-              v-if="showProductDropdown"
+              v-if="productSearch.showDropdown"
               :style="dropdownStyle"
-              class="fixed bg-white border border-[rgba(0,0,0,0.08)] rounded-md shadow-[0_6px_18px_rgba(0,0,0,0.08)] z-50"
+              class="fixed z-50 bg-white rounded-md border border-[rgba(0,0,0,0.08)] shadow-[0_6px_18px_rgba(0,0,0,0.08)]"
             >
-              <div v-if="filteredProducts.length === 0" class="p-3 text-gray-500 text-sm">
-                Không tìm thấy sản phẩm...
-              </div>
+              <div v-if="isProductsLoading" class="p-3 text-center text-gray-400">Đang tìm...</div>
               <div
-                v-for="product in filteredProducts"
+                v-else
+                v-for="product in products"
                 :key="product.id"
                 @mousedown.prevent="selectProduct(product)"
-                class="p-3 cursor-pointer border-b border-gray-100 hover:bg-gray-50"
+                class="p-3 cursor-pointer border-b border-gray-100 transition-colors duration-150 hover:bg-gray-50"
               >
                 <div class="flex items-center gap-3">
-                  <div class="mr-3">
-                    <img
-                      :src="
-                        product.cover_image_url ||
-                        'https://placehold.co/40x40/f0f0f0/AAAAAA?text=...'
-                      "
-                      alt="Product"
-                      class="w-10 h-10 object-cover rounded"
-                    />
-                  </div>
+                  <img
+                    :src="
+                      product.coverImageUrl || 'https://placehold.co/40x40/f0f0f0/AAAAAA?text=...'
+                    "
+                    alt="product"
+                    class="w-10 h-10 rounded object-cover"
+                  />
                   <div class="flex-1">
-                    <div class="font-medium">{{ product.name }}</div>
+                    <div class="font-medium">{{ product.displayName || product.name }}</div>
                     <div class="text-xs text-gray-500">
-                      Giá: {{ (product.price || 0).toLocaleString() }} | Tồn:
-                      {{ product.stock }}
+                      ID: {{ product.id || 'N/A' }} | Giá:
+                      {{ (product.price || 0).toLocaleString() }}
                     </div>
                   </div>
                 </div>
+              </div>
+
+              <!-- Pagination within dropdown -->
+              <div
+                v-if="productPagination.totalPages.value > 1"
+                class="p-2 border-t border-gray-100 bg-gray-50 flex justify-between items-center sticky bottom-0"
+              >
+                <button
+                  @click.stop="productPagination.prevPage"
+                  @mousedown.prevent
+                  :disabled="productPagination.isFirstPage.value"
+                  class="px-2 py-1 text-xs border border-gray-300 rounded disabled:opacity-50 cursor-pointer"
+                >
+                  Trước
+                </button>
+                <span class="text-xs text-gray-500">
+                  Trang {{ productPagination.currentPage.value }} /
+                  {{ productPagination.totalPages.value }}
+                </span>
+                <button
+                  @click.stop="productPagination.nextPage"
+                  @mousedown.prevent
+                  :disabled="productPagination.isLastPage.value"
+                  class="px-2 py-1 text-xs border border-gray-300 rounded disabled:opacity-50 cursor-pointer"
+                >
+                  Sau
+                </button>
+              </div>
+
+              <div
+                v-else-if="!isProductsLoading && products.length === 0"
+                class="p-3 text-center text-gray-400"
+              >
+                Không tìm thấy sản phẩm...
               </div>
             </div>
           </div>
@@ -409,7 +626,7 @@ onBeforeUnmount(() => {
                 <th
                   class="py-2 px-3 text-left text-xs font-semibold text-gray-600 border-b border-[rgba(0,0,0,0.04)]"
                 >
-                  Tên
+                  Sản phẩm
                 </th>
                 <th
                   class="py-2 px-3 text-center text-xs font-semibold text-gray-600 w-24 border-b border-[rgba(0,0,0,0.04)]"
@@ -469,7 +686,14 @@ onBeforeUnmount(() => {
                 </td>
 
                 <td class="py-2 px-3 text-sm text-gray-700 border-b border-[rgba(0,0,0,0.04)]">
-                  {{ p.name }}
+                  <div class="flex items-center gap-3">
+                    <img
+                      :src="p.coverImageUrl || 'https://placehold.co/40x40/f0f0f0/AAAAAA?text=...'"
+                      alt="product"
+                      class="w-8 h-8 rounded object-cover border border-gray-100"
+                    />
+                    <span class="line-clamp-2">{{ p.name }}</span>
+                  </div>
                 </td>
                 <td class="py-2 px-3 text-center border-b border-[rgba(0,0,0,0.04)]">
                   <Input
@@ -517,7 +741,7 @@ onBeforeUnmount(() => {
 
         <div>
           <label class="block text-sm font-medium mb-1">Ghi chú</label>
-          <Textarea v-model="localData.notes" :disabled="isLocked" rows="3" />
+          <Textarea v-model="localData.notes" :rows="3" />
         </div>
       </div>
     </template>
@@ -531,7 +755,7 @@ onBeforeUnmount(() => {
             :text="props.order ? 'Lưu' : 'Tạo đơn'"
             color="primary"
             @click="submit"
-            :disabled="isLocked && !statusChanged"
+            :disabled="isLocked && !statusChanged && !notesChanged"
           />
         </div>
       </div>

@@ -1,6 +1,6 @@
-import axiosInstance from './axios';
+import axiosInstance from './axios'
 
-const BASE_URL = '/api/v1/product';
+const BASE_URL = '/api/v1/product'
 
 const mapToCreatePayload = (product) => ({
   name: product.name,
@@ -34,32 +34,32 @@ const mapToCreatePayload = (product) => ({
     photoCollection: v.photo_collection || [],
     optionValues: v.optionValues || {},
   })),
-});
+})
 
 export const getProductsForManager = async (params = {}) => {
-  const { data } = await axiosInstance.get(`${BASE_URL}/for-manager`, { params });
-  return data;
-};
+  const { data } = await axiosInstance.get(`${BASE_URL}/for-manager`, { params })
+  return data
+}
 
 export const getProductsForPriceManagement = async (params = {}) => {
-  const { data } = await axiosInstance.get(`${BASE_URL}/for-price-management`, { params });
-  return data;
-};
+  const { data } = await axiosInstance.get(`${BASE_URL}/for-price-management`, { params })
+  return data
+}
 
 export const getDeletedProducts = async (params = {}) => {
-  const { data } = await axiosInstance.get(`${BASE_URL}/deleted`, { params });
-  return data;
-};
+  const { data } = await axiosInstance.get(`${BASE_URL}/deleted`, { params })
+  return data
+}
 
 export const getProductById = async (id) => {
-  const { data } = await axiosInstance.get(`${BASE_URL}/${id}/for-manager`);
-  return data;
-};
+  const { data } = await axiosInstance.get(`${BASE_URL}/${id}/for-manager`)
+  return data
+}
 
 export const createProduct = async (product) => {
-  const { data } = await axiosInstance.post(BASE_URL, mapToCreatePayload(product));
-  return data;
-};
+  const { data } = await axiosInstance.post(BASE_URL, mapToCreatePayload(product))
+  return data
+}
 
 export const updateProduct = async (id, product) => {
   const payload = {
@@ -95,76 +95,89 @@ export const updateProduct = async (id, product) => {
       photo_collection: v.photo_collection || [],
       optionValues: v.optionValues || {},
     })),
-  };
-  const { data } = await axiosInstance.put(`${BASE_URL}/${id}`, payload);
-  return data;
-};
+  }
+  const { data } = await axiosInstance.put(`${BASE_URL}/${id}`, payload)
+  return data
+}
 
 export const deleteProduct = async (id) => {
-  await axiosInstance.delete(`${BASE_URL}/${id}`);
-};
+  await axiosInstance.delete(`${BASE_URL}/${id}`)
+}
 
 export const deleteManyProducts = async (ids) => {
-  await axiosInstance.delete(`${BASE_URL}/delete-many`, { data: { ids } });
-};
+  await axiosInstance.delete(`${BASE_URL}/delete-many`, { data: { ids } })
+}
 
 export const restoreProduct = async (id) => {
-  const { data } = await axiosInstance.post(`${BASE_URL}/restore/${id}`);
-  return data;
-};
+  const { data } = await axiosInstance.post(`${BASE_URL}/restore/${id}`)
+  return data
+}
 
 export const checkSlug = async (slug) => {
-  const { data } = await axiosInstance.get(`${BASE_URL}/check-slug`, { params: { slug } });
-  return data;
-};
+  const { data } = await axiosInstance.get(`${BASE_URL}/check-slug`, { params: { slug } })
+  return data
+}
 
 export const updateProductStatus = async (id, statusId) => {
-  const { data } = await axiosInstance.patch(`${BASE_URL}/${id}/status`, { id, statusId });
-  return data;
-};
+  const { data } = await axiosInstance.patch(`${BASE_URL}/${id}/status`, { id, statusId })
+  return data
+}
 
 export const updateProductPrice = async (id, price) => {
-  const { data } = await axiosInstance.patch(`${BASE_URL}/${id}/price`, { id, price });
-  return data;
-};
+  const { data } = await axiosInstance.patch(`${BASE_URL}/${id}/price`, { id, price })
+  return data
+}
 
 export const getVariantsLiteForManager = async (params = {}) => {
-  const { data } = await axiosInstance.get(`${BASE_URL}/variants-lite/for-manager`, { params });
-  return data;
-};
+  const { data } = await axiosInstance.get(`${BASE_URL}/variants-lite/for-manager`, { params })
+  return data
+}
 
 export const getVariantsLiteForInput = async (params = {}) => {
-  const { data } = await axiosInstance.get(`${BASE_URL}/variants-lite/for-input`, { params });
-  return data;
-};
+  const { data } = await axiosInstance.get(`${BASE_URL}/variants-lite/for-input`, { params })
+  return data
+}
 
-export const fetchVariantsLiteForInput = async ({ page, limit, search } = {}) => {
-  const params = { Page: page, PageSize: limit };
-  if (search) params.Filters = `search@=${search}`;
-  const { data } = await axiosInstance.get(`${BASE_URL}/variants-lite/for-input`, { params });
+export const fetchVariantsLiteForOutput = async ({ page, limit, search } = {}) => {
+  const params = { Page: page, PageSize: limit }
+  if (search) params.Filters = `search@=${search}`
+  const { data } = await axiosInstance.get(`${BASE_URL}/variants-lite/for-output`, { params })
   return {
     data: data.items || [],
     pagination: {
       totalPages: data.totalPages || 1,
       totalCount: data.totalCount || 0,
     },
-  };
-};
+  }
+}
+
+export const fetchVariantsLiteForInput = async ({ page, limit, search } = {}) => {
+  const params = { Page: page, PageSize: limit }
+  if (search) params.Filters = `search@=${search}`
+  const { data } = await axiosInstance.get(`${BASE_URL}/variants-lite/for-input`, { params })
+  return {
+    data: data.items || [],
+    pagination: {
+      totalPages: data.totalPages || 1,
+      totalCount: data.totalCount || 0,
+    },
+  }
+}
 
 export const getVariantsByProductId = async (id) => {
-  const { data } = await axiosInstance.get(`${BASE_URL}/${id}/variants-lite`);
-  return data;
-};
+  const { data } = await axiosInstance.get(`${BASE_URL}/${id}/variants-lite`)
+  return data
+}
 
 export const searchProductsFlatType = async (search = '') => {
   const { data } = await axiosInstance.get(`${BASE_URL}/variants-lite/for-input`, {
     params: { search, PageSize: 30 },
-  });
+  })
   return (data.items || data || []).map((v) => ({
     id: v.id,
     name: v.name || v.variantName,
     price: v.price || v.unitPrice || 0,
     stock: v.stock ?? v.stockQuantity ?? 0,
     cover_image_url: v.coverImageUrl || v.cover_image_url || null,
-  }));
-};
+  }))
+}
