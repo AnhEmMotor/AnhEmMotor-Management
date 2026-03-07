@@ -92,10 +92,6 @@ const debouncedEmit = (value) => {
   }, 100)
 }
 
-// Supplier search is now handled by usePaginatedQuery
-
-// Product search is now handled by usePaginatedQuery
-
 const selectSupplier = (supplier) => {
   localData.value.supplier = { ...supplier }
   supplierSearchRefs.search = supplier.name
@@ -105,12 +101,6 @@ const selectSupplier = (supplier) => {
 const clearSupplier = () => {
   localData.value.supplier = null
   supplierSearchRefs.search = ''
-}
-
-const addNewProduct = () => {
-  emit('addProduct')
-  productSearchRefs.search = ''
-  productSearch.showDropdown = false
 }
 
 const selectProduct = (product) => {
@@ -233,8 +223,6 @@ onBeforeUnmount(() => {
   if (emitTimer.value) {
     clearTimeout(emitTimer.value)
   }
-  // debounce timers are handled by usePaginatedQuery
-  // debounce timers are handled by usePaginatedQuery
   window.removeEventListener('resize', updateDropdownPosition)
   window.removeEventListener('scroll', updateDropdownPosition, true)
 })
@@ -286,7 +274,6 @@ onBeforeUnmount(() => {
               </div>
             </div>
 
-            <!-- Pagination within dropdown -->
             <div
               v-if="supplierPagination.totalPages.value > 1"
               class="p-2 border-t border-gray-100 bg-gray-50 flex justify-between items-center sticky bottom-0"
@@ -384,7 +371,6 @@ onBeforeUnmount(() => {
               </div>
             </div>
 
-            <!-- Pagination within dropdown -->
             <div
               v-if="productPagination.totalPages.value > 1"
               class="p-2 border-t border-gray-100 bg-gray-50 flex justify-between items-center sticky bottom-0"

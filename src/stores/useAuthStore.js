@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchEventSource } from '@microsoft/fetch-event-source'
-import axiosInstance, {
+import {
   setAccessToken,
   registerAuthFailureCallback,
   getAccessToken,

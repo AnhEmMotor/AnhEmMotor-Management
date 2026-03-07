@@ -9,6 +9,7 @@ import RoundBadge from '@/components/ui/RoundBadge.vue'
 import OrderForm from '@/components/orders/OrderForm.vue'
 import SmallNoBgButton from '@/components/ui/button/SmallNoBgButton.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
+import Pagination from '@/components/ui/button/BasePagination.vue'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 import IconPlus from '@/assets/icons/IconPlus.svg'
@@ -56,7 +57,7 @@ const selectedOrder = ref(null)
 const showOrderForm = ref(false)
 const isEditMode = ref(false)
 const loadingOverlay = ref(false)
-const itemsPerPage = ref(20)
+const itemsPerPage = ref(10)
 
 const filters = computed(() => {
   const f = {}
@@ -88,7 +89,6 @@ const {
   isFetching,
   isError,
   error,
-  searchRefs,
   pagination,
 } = usePaginatedQuery({
   queryKey: ['salesOrders'],
@@ -112,20 +112,42 @@ function createNewOrder() {
 
 const handleEditOrder = async (order) => {
   isEditMode.value = true
-  loadingOverlay.value = true
-  try {
-    const detail = await queryClient.fetchQuery({
-      queryKey: ['salesOrders', order.id],
-      queryFn: () => getSalesOrderById(order.id),
-      staleTime: 0,
-    })
-    selectedOrder.value = detail
-    queryClient.setQueryData(['salesOrders', order.id], detail)
+  const cachedData = queryClient.getQueryData(['salesOrders', order.id])
+
+  if (cachedData) {
+    selectedOrder.value = cachedData
     showOrderForm.value = true
-  } catch (err) {
-    toast.error(`Lỗi khi tải chi tiết đơn hàng: ${err.message}`)
-  } finally {
-    loadingOverlay.value = false
+    queryClient
+      .fetchQuery({
+        queryKey: ['salesOrders', order.id],
+        queryFn: () => getSalesOrderById(order.id),
+        staleTime: 0,
+      })
+      .then((detail) => {
+        if (selectedOrder.value?.id === order.id) {
+          selectedOrder.value = detail
+          queryClient.setQueryData(['salesOrders', order.id], detail)
+        }
+      })
+      .catch((err) => {
+        toast.error(`Lỗi khi cập nhật ngầm chi tiết đơn hàng: ${err.message}`)
+      })
+  } else {
+    loadingOverlay.value = true
+    try {
+      const detail = await queryClient.fetchQuery({
+        queryKey: ['salesOrders', order.id],
+        queryFn: () => getSalesOrderById(order.id),
+        staleTime: 0,
+      })
+      selectedOrder.value = detail
+      queryClient.setQueryData(['salesOrders', order.id], detail)
+      showOrderForm.value = true
+    } catch (err) {
+      toast.error(`Lỗi khi tải chi tiết đơn hàng: ${err.message}`)
+    } finally {
+      loadingOverlay.value = false
+    }
   }
 }
 
@@ -301,6 +323,12 @@ const handleExport = () => {
     <div class="mt-4">
       <div class="flex items-center justify-between">
         <p class="text-sm text-gray-500">Tổng: {{ pagination.totalCount.value }} đơn hàng</p>
+        <Pagination
+          :total-pages="pagination.totalPages.value"
+          :currentPage="pagination.currentPage.value"
+          @update:currentPage="pagination.changePage"
+          :loading="isLoading"
+        />
       </div>
     </div>
 

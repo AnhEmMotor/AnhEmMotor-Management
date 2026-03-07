@@ -15,7 +15,6 @@ import { showConfirmation } from '@/composables/useConfirmationState'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
-import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 import { useToast } from 'vue-toastification'
 import IconPlus from '@/assets/icons/IconPlus.svg'
 import IconFileImport from '@/assets/icons/IconFileImport.svg'
@@ -128,7 +127,6 @@ const openNewInventoryModal = () => {
 
 const openEditInventoryModal = async (item) => {
   isEditMode.value = true
-  // Reset data to clear previous state before showing modal or loading from cache
   currentInventoryData.value = { supplier: null, products: [], notes: '' }
 
   const cached = queryClient.getQueryData(['inventoryReceipts', item.id])

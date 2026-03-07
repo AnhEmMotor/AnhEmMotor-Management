@@ -31,19 +31,19 @@ const localData = ref({
 const { data: statusMap } = useQuery({
   queryKey: ['order-status-map'],
   queryFn: apiOrders.fetchOrderStatusMap,
-  staleTime: 1000 * 60 * 10, // 10 minutes
+  staleTime: 1000 * 60 * 10,
 })
 
 const { data: lockedStatuses } = useQuery({
   queryKey: ['order-locked-statuses'],
   queryFn: apiOrders.fetchLockedStatuses,
-  staleTime: 1000 * 60 * 60, // 1 hour
+  staleTime: 1000 * 60 * 60,
 })
 
 const { data: transitionMap } = useQuery({
   queryKey: ['order-transition-map'],
   queryFn: apiOrders.fetchOrderTransitionMap,
-  staleTime: 1000 * 60 * 10, // 10 minutes
+  staleTime: 1000 * 60 * 10,
 })
 
 const STATUS_LIST = computed(() => {
@@ -348,9 +348,6 @@ function submit() {
     errors.value.customer = 'Vui lòng chọn khách hàng'
     return
   }
-  const customerName = localData.value.customer
-    ? localData.value.customer.fullName || localData.value.customer.name
-    : customerSearchRefs.search
   if (localData.value.products.length === 0) {
     if (!props.order) {
       errors.value.products = 'Vui lòng thêm ít nhất 1 sản phẩm'
@@ -463,7 +460,6 @@ onBeforeUnmount(() => {
                 </div>
               </div>
 
-              <!-- Pagination within dropdown -->
               <div
                 v-if="customerPagination.totalPages.value > 1"
                 class="p-2 border-t border-gray-100 bg-gray-50 flex justify-between items-center sticky bottom-0"
@@ -576,7 +572,6 @@ onBeforeUnmount(() => {
                 </div>
               </div>
 
-              <!-- Pagination within dropdown -->
               <div
                 v-if="productPagination.totalPages.value > 1"
                 class="p-2 border-t border-gray-100 bg-gray-50 flex justify-between items-center sticky bottom-0"

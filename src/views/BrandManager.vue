@@ -1,36 +1,36 @@
 <script setup>
-import { ref } from 'vue';
-import { useQueryClient } from '@tanstack/vue-query';
-import * as brandApi from '@/api/brand';
-import { usePaginatedQuery } from '@/composables/usePaginatedQuery';
-import { showConfirmation } from '@/composables/useConfirmationState';
-import { useToast } from 'vue-toastification';
-import Button from '@/components/ui/button/BaseButton.vue';
-import Input from '@/components/ui/input/BaseInput.vue';
-import Pagination from '@/components/ui/button/BasePagination.vue';
-import SmallNoBgButton from '@/components/ui/button/SmallNoBgButton.vue';
-import DraggableModal from '@/components/ui/DraggableModal.vue';
-import SkeletonLoader from '@/components/ui/SkeletonLoader.vue';
-import LoadingOverlay from '@/components/ui/LoadingOverlay.vue';
-import IconPlus from '@/assets/icons/IconPlus.svg';
-import IconFileImport from '@/assets/icons/IconFileImport.svg';
-import IconFileExport from '@/assets/icons/IconFileExport.svg';
-import IconEdit from '@/assets/icons/IconEdit.svg';
-import IconTrash from '@/assets/icons/IconTrash.svg';
+import { ref } from 'vue'
+import { useQueryClient } from '@tanstack/vue-query'
+import * as brandApi from '@/api/brand'
+import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
+import { showConfirmation } from '@/composables/useConfirmationState'
+import { useToast } from 'vue-toastification'
+import Button from '@/components/ui/button/BaseButton.vue'
+import Input from '@/components/ui/input/BaseInput.vue'
+import Pagination from '@/components/ui/button/BasePagination.vue'
+import SmallNoBgButton from '@/components/ui/button/SmallNoBgButton.vue'
+import DraggableModal from '@/components/ui/DraggableModal.vue'
+import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
+import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
+import IconPlus from '@/assets/icons/IconPlus.svg'
+import IconFileImport from '@/assets/icons/IconFileImport.svg'
+import IconFileExport from '@/assets/icons/IconFileExport.svg'
+import IconEdit from '@/assets/icons/IconEdit.svg'
+import IconTrash from '@/assets/icons/IconTrash.svg'
 
-const queryClient = useQueryClient();
-const toast = useToast();
+const queryClient = useQueryClient()
+const toast = useToast()
 
-const isSaving = ref(false);
-const isRefreshing = ref(false);
-const isOverlayVisible = ref(false);
-const isFormModalVisible = ref(false);
-const formModalKey = ref(0);
-const editableBrand = ref({ id: null, name: '', description: '' });
-const formErrors = ref({ name: '' });
+const isSaving = ref(false)
+const isRefreshing = ref(false)
+const isOverlayVisible = ref(false)
+const isFormModalVisible = ref(false)
+const formModalKey = ref(0)
+const editableBrand = ref({ id: null, name: '', description: '' })
+const formErrors = ref({ name: '' })
 
-const isEditMode = ref(false);
-const formModalTitle = ref('');
+const isEditMode = ref(false)
+const formModalTitle = ref('')
 
 const {
   data: brands,
@@ -43,32 +43,31 @@ const {
   queryFn: brandApi.fetchBrands,
   itemsPerPage: 10,
   searchFields: [{ key: 'search', debounce: 400 }],
-});
+})
 
 const openAddModal = () => {
-  editableBrand.value = { id: null, name: '', description: '' };
-  formErrors.value = { name: '' };
-  isEditMode.value = false;
-  formModalTitle.value = 'Thêm thương hiệu mới';
-  formModalKey.value++;
-  isFormModalVisible.value = true;
-};
+  editableBrand.value = { id: null, name: '', description: '' }
+  formErrors.value = { name: '' }
+  isEditMode.value = false
+  formModalTitle.value = 'Thêm thương hiệu mới'
+  formModalKey.value++
+  isFormModalVisible.value = true
+}
 
 const openEditModal = async (brand) => {
-  editableBrand.value = { id: brand.id, name: '', description: '' };
-  formErrors.value = { name: '' };
-  isEditMode.value = true;
-  formModalTitle.value = 'Chỉnh sửa thương hiệu';
-  formModalKey.value++;
-  isFormModalVisible.value = true;
-  
-  // Load from cache or fetch
-  const cachedData = queryClient.getQueryData(['brands', brand.id]);
-  
+  editableBrand.value = { id: brand.id, name: '', description: '' }
+  formErrors.value = { name: '' }
+  isEditMode.value = true
+  formModalTitle.value = 'Chỉnh sửa thương hiệu'
+  formModalKey.value++
+  isFormModalVisible.value = true
+
+  const cachedData = queryClient.getQueryData(['brands', brand.id])
+
   if (!cachedData) {
-    isRefreshing.value = true;
+    isRefreshing.value = true
   } else {
-    editableBrand.value = { ...cachedData };
+    editableBrand.value = { ...cachedData }
   }
 
   try {
@@ -76,117 +75,117 @@ const openEditModal = async (brand) => {
       queryKey: ['brands', brand.id],
       queryFn: () => brandApi.getBrandById(brand.id),
       staleTime: 0,
-    });
+    })
     if (fetchedData) {
-      editableBrand.value = { ...fetchedData };
+      editableBrand.value = { ...fetchedData }
     }
-  } catch (e) {
+  } catch {
     if (!cachedData) {
-      toast.error('Lỗi khi tải chi tiết thương hiệu');
-      editableBrand.value = { ...brand }; // Fallback to list data
+      toast.error('Lỗi khi tải chi tiết thương hiệu')
+      editableBrand.value = { ...brand }
     }
   } finally {
-    isRefreshing.value = false;
+    isRefreshing.value = false
   }
-};
+}
 
 const handleCloseModal = () => {
-  isFormModalVisible.value = false;
-};
+  isFormModalVisible.value = false
+}
 
 const validate = () => {
-  const errors = { name: '' };
-  let valid = true;
+  const errors = { name: '' }
+  let valid = true
   if (!editableBrand.value.name?.trim()) {
-    errors.name = 'Vui lòng nhập tên thương hiệu.';
-    valid = false;
+    errors.name = 'Vui lòng nhập tên thương hiệu.'
+    valid = false
   }
-  formErrors.value = errors;
-  return valid;
-};
+  formErrors.value = errors
+  return valid
+}
 
 const handleSave = async () => {
-  if (!validate()) return;
-  isSaving.value = true;
+  if (!validate()) return
+  isSaving.value = true
   try {
     if (isEditMode.value) {
       const updatedBrand = await brandApi.updateBrand(editableBrand.value.id, {
         id: editableBrand.value.id,
         name: editableBrand.value.name,
         description: editableBrand.value.description,
-      });
-      queryClient.setQueryData(['brands', updatedBrand.id], updatedBrand);
-      toast.success('Cập nhật thương hiệu thành công');
+      })
+      queryClient.setQueryData(['brands', updatedBrand.id], updatedBrand)
+      toast.success('Cập nhật thương hiệu thành công')
     } else {
       const newBrand = await brandApi.createBrand({
         name: editableBrand.value.name,
         description: editableBrand.value.description,
-      });
-      queryClient.setQueryData(['brands', newBrand.id], newBrand);
-      toast.success('Thêm thương hiệu thành công');
+      })
+      queryClient.setQueryData(['brands', newBrand.id], newBrand)
+      toast.success('Thêm thương hiệu thành công')
     }
-    isFormModalVisible.value = false;
-    await queryClient.invalidateQueries({ queryKey: ['brands'] });
+    isFormModalVisible.value = false
+    await queryClient.invalidateQueries({ queryKey: ['brands'] })
   } catch (err) {
-    toast.error(err.message || 'Lỗi khi lưu thương hiệu');
+    toast.error(err.message || 'Lỗi khi lưu thương hiệu')
   } finally {
-    isSaving.value = false;
+    isSaving.value = false
   }
-};
+}
 
 const promptDelete = async (brand) => {
   const confirmed = await showConfirmation(
     'Xác nhận xóa',
     `Bạn có chắc chắn muốn xoá thương hiệu "${brand.name}"?`,
-  );
-  if (!confirmed) return;
+  )
+  if (!confirmed) return
 
-  isOverlayVisible.value = true;
+  isOverlayVisible.value = true
   try {
-    await brandApi.deleteBrand(brand.id);
-    queryClient.removeQueries({ queryKey: ['brands', brand.id] });
-    await queryClient.invalidateQueries({ queryKey: ['brands'] });
-    toast.success('Xoá thương hiệu thành công');
+    await brandApi.deleteBrand(brand.id)
+    queryClient.removeQueries({ queryKey: ['brands', brand.id] })
+    await queryClient.invalidateQueries({ queryKey: ['brands'] })
+    toast.success('Xoá thương hiệu thành công')
   } catch (err) {
-    toast.error(err.message || 'Lỗi khi xoá thương hiệu');
+    toast.error(err.message || 'Lỗi khi xoá thương hiệu')
   } finally {
-    isOverlayVisible.value = false;
+    isOverlayVisible.value = false
   }
-};
+}
 
 const importExcel = (event) => {
-  toast.info('Chức năng Import Excel đang phát triển');
-  event.target.value = '';
-};
+  toast.info('Chức năng Import Excel đang phát triển')
+  event.target.value = ''
+}
 
 const exportExcel = () => {
-  toast.info('Chức năng Export Excel đang phát triển');
-};
+  toast.info('Chức năng Export Excel đang phát triển')
+}
 
 const handleRefreshForm = async () => {
   if (isEditMode.value && editableBrand.value.id) {
-    isRefreshing.value = true;
+    isRefreshing.value = true
     try {
       const freshData = await queryClient.fetchQuery({
         queryKey: ['brands', editableBrand.value.id],
         queryFn: () => brandApi.getBrandById(editableBrand.value.id),
         staleTime: 0,
-      });
+      })
       if (freshData) {
-        editableBrand.value = { ...freshData };
+        editableBrand.value = { ...freshData }
       }
-      toast.info('Đã tải lại dữ liệu thương hiệu');
+      toast.info('Đã tải lại dữ liệu thương hiệu')
     } catch (e) {
-      toast.error(`Lỗi tải lại: ${e.message}`);
+      toast.error(`Lỗi tải lại: ${e.message}`)
     } finally {
-      isRefreshing.value = false;
+      isRefreshing.value = false
     }
   } else {
-    editableBrand.value = { id: null, name: '', description: '' };
-    formErrors.value = { name: '' };
-    toast.info('Đã làm mới form');
+    editableBrand.value = { id: null, name: '', description: '' }
+    formErrors.value = { name: '' }
+    toast.info('Đã làm mới form')
   }
-};
+}
 </script>
 
 <template>
@@ -265,7 +264,9 @@ const handleRefreshForm = async () => {
             <td class="py-3 px-6 text-gray-500">{{ brand.description || '—' }}</td>
             <td class="py-3 px-6 text-center space-x-2">
               <SmallNoBgButton @click="openEditModal(brand)" :icon="IconEdit">Sửa</SmallNoBgButton>
-              <SmallNoBgButton color="red" @click="promptDelete(brand)" :icon="IconTrash">Xóa</SmallNoBgButton>
+              <SmallNoBgButton color="red" @click="promptDelete(brand)" :icon="IconTrash"
+                >Xóa</SmallNoBgButton
+              >
             </td>
           </tr>
         </tbody>
@@ -313,8 +314,19 @@ const handleRefreshForm = async () => {
     </template>
     <template #footer>
       <div class="flex justify-end gap-2 w-full">
-        <Button text="Huỷ bỏ" color="gray" @click="handleCloseModal" :disabled="isSaving || isRefreshing" />
-        <Button text="Lưu" color="purple" @click="handleSave" :loading="isSaving" :disabled="isRefreshing" />
+        <Button
+          text="Huỷ bỏ"
+          color="gray"
+          @click="handleCloseModal"
+          :disabled="isSaving || isRefreshing"
+        />
+        <Button
+          text="Lưu"
+          color="purple"
+          @click="handleSave"
+          :loading="isSaving"
+          :disabled="isRefreshing"
+        />
       </div>
     </template>
   </DraggableModal>

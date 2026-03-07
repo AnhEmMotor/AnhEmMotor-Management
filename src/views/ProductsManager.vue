@@ -1,58 +1,60 @@
 <script setup>
-import { ref, computed } from 'vue';
-import { useQuery, useQueryClient } from '@tanstack/vue-query';
-import * as productApi from '@/api/product';
-import { getPredefinedOptions } from '@/api/options';
-import { useProductsStore } from '@/stores/useProductsStore';
-import { usePaginatedQuery } from '@/composables/usePaginatedQuery';
-import { useToast } from 'vue-toastification';
-import ProductForm from '@/components/product/ProductForm.vue';
-import Button from '@/components/ui/button/BaseButton.vue';
-import Input from '@/components/ui/input/BaseInput.vue';
-import Pagination from '@/components/ui/button/BasePagination.vue';
-import SmallNoBgButton from '@/components/ui/button/SmallNoBgButton.vue';
-import RoundBadge from '@/components/ui/RoundBadge.vue';
-import DraggableModal from '@/components/ui/DraggableModal.vue';
-import IconLeftArrow from '@/assets/icons/IconLeftArrow.svg';
-import IconDownArrow from '@/assets/icons/IconDownArrow.svg';
-import IconPlus from '@/assets/icons/IconPlus.svg';
-import IconFileImport from '@/assets/icons/IconFileImport.svg';
-import IconFileExport from '@/assets/icons/IconFileExport.svg';
-import IconEdit from '@/assets/icons/IconEdit.svg';
-import IconTrash from '@/assets/icons/IconTrash.svg';
-import SkeletonLoader from '@/components/ui/SkeletonLoader.vue';
-import LoadingOverlay from '@/components/ui/LoadingOverlay.vue';
+import { ref, computed } from 'vue'
+import { useQuery, useQueryClient } from '@tanstack/vue-query'
+import * as productApi from '@/api/product'
+import { getPredefinedOptions } from '@/api/options'
+import { useProductsStore } from '@/stores/useProductsStore'
+import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
+import { useToast } from 'vue-toastification'
+import ProductForm from '@/components/product/ProductForm.vue'
+import Button from '@/components/ui/button/BaseButton.vue'
+import Input from '@/components/ui/input/BaseInput.vue'
+import Pagination from '@/components/ui/button/BasePagination.vue'
+import SmallNoBgButton from '@/components/ui/button/SmallNoBgButton.vue'
+import RoundBadge from '@/components/ui/RoundBadge.vue'
+import DraggableModal from '@/components/ui/DraggableModal.vue'
+import IconLeftArrow from '@/assets/icons/IconLeftArrow.svg'
+import IconDownArrow from '@/assets/icons/IconDownArrow.svg'
+import IconPlus from '@/assets/icons/IconPlus.svg'
+import IconFileImport from '@/assets/icons/IconFileImport.svg'
+import IconFileExport from '@/assets/icons/IconFileExport.svg'
+import IconEdit from '@/assets/icons/IconEdit.svg'
+import IconTrash from '@/assets/icons/IconTrash.svg'
+import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
+import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 
-const productsStore = useProductsStore();
-const queryClient = useQueryClient();
-const toast = useToast();
+const productsStore = useProductsStore()
+const queryClient = useQueryClient()
+const toast = useToast()
 
 const { data: predefinedOptionsData } = useQuery({
   queryKey: ['predefinedOptions'],
   queryFn: getPredefinedOptions,
   staleTime: 5 * 60 * 1000,
-});
+})
 
-const expandedProductIds = ref([]);
-const activeTabs = ref({});
-const getActiveTab = (productId) => activeTabs.value[productId] || 'variants';
-const setActiveTab = (productId, tab) => { activeTabs.value[productId] = tab; };
-const numberOfColumns = ref(8);
-const isSaving = ref(false);
-const isRefreshing = ref(false);
+const expandedProductIds = ref([])
+const activeTabs = ref({})
+const getActiveTab = (productId) => activeTabs.value[productId] || 'variants'
+const setActiveTab = (productId, tab) => {
+  activeTabs.value[productId] = tab
+}
+const numberOfColumns = ref(8)
+const isSaving = ref(false)
+const isRefreshing = ref(false)
 
 const fetchProductsFn = async ({ page, limit, search }) => {
-  const params = { Page: page, PageSize: limit };
-  if (search) params.Filters = `name@=*${search}`;
-  const result = await productApi.getProductsForManager(params);
+  const params = { Page: page, PageSize: limit }
+  if (search) params.Filters = `name@=*${search}`
+  const result = await productApi.getProductsForManager(params)
   return {
     data: result.items || [],
     pagination: {
       totalPages: result.totalPages || 1,
       totalCount: result.totalCount || 0,
     },
-  };
-};
+  }
+}
 
 const {
   data: products,
@@ -66,50 +68,50 @@ const {
   queryFn: fetchProductsFn,
   itemsPerPage: 10,
   searchFields: [{ key: 'search', debounce: 400 }],
-});
+})
 
-const isStoreLoading = computed(() => productsStore.isLoading);
+const isStoreLoading = computed(() => productsStore.isLoading)
 
-const isExpanded = (productId) => expandedProductIds.value.includes(productId);
+const isExpanded = (productId) => expandedProductIds.value.includes(productId)
 
 const toggleDetails = (productId) => {
-  const index = expandedProductIds.value.indexOf(productId);
+  const index = expandedProductIds.value.indexOf(productId)
   if (index > -1) {
-    expandedProductIds.value.splice(index, 1);
+    expandedProductIds.value.splice(index, 1)
   } else {
-    expandedProductIds.value.push(productId);
+    expandedProductIds.value.push(productId)
   }
-};
+}
 
 const formatCurrency = (value) => {
-  if (value === null || value === undefined) return '';
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
-};
+  if (value === null || value === undefined) return ''
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
+}
 
 const getVariantOptionsText = (variant) => {
-  if (!variant.optionValues) return 'Mặc định';
-  const values = Object.entries(variant.optionValues);
-  if (values.length === 0) return 'Mặc định';
-  const dict = predefinedOptionsData.value || {};
-  return values.map(([key, value]) => `${dict[key] || key}: ${value}`).join(', ');
-};
+  if (!variant.optionValues) return 'Mặc định'
+  const values = Object.entries(variant.optionValues)
+  if (values.length === 0) return 'Mặc định'
+  const dict = predefinedOptionsData.value || {}
+  return values.map(([key, value]) => `${dict[key] || key}: ${value}`).join(', ')
+}
 
 const stockStatusColors = {
   'in-stock': 'green',
   'almost-out-of-stock': 'yellow',
   'out-of-stock': 'red',
-};
+}
 const stockStatusTextMap = {
   'in-stock': 'Còn Hàng',
   'almost-out-of-stock': 'Sắp Hết',
   'out-of-stock': 'Hết Hàng',
-};
-const getStockStatusColor = (statusId) => stockStatusColors[statusId] || 'gray';
-const getStockStatusText = (statusId) => stockStatusTextMap[statusId] || 'Không rõ';
+}
+const getStockStatusColor = (statusId) => stockStatusColors[statusId] || 'gray'
+const getStockStatusText = (statusId) => stockStatusTextMap[statusId] || 'Không rõ'
 
-const isFormModalVisible = ref(false);
-const formModalTitle = ref('');
-const formModalKey = ref(0);
+const isFormModalVisible = ref(false)
+const formModalTitle = ref('')
+const formModalKey = ref(0)
 
 const getNewEmptyProduct = () => ({
   id: null,
@@ -147,249 +149,257 @@ const getNewEmptyProduct = () => ({
       url: '',
     },
   ],
-});
+})
 
-const editableProduct = ref(getNewEmptyProduct());
-const isEditMode = computed(() => !!editableProduct.value?.id);
+const editableProduct = ref(getNewEmptyProduct())
+const isEditMode = computed(() => !!editableProduct.value?.id)
 
-const formErrors = ref({ name: '', category_id: '', variants: [], _backend: {} });
-
+const formErrors = ref({ name: '', category_id: '', variants: [], _backend: {} })
 
 const openAddEditModal = async (product = null) => {
-  formErrors.value = { name: '', category_id: '', variants: [], _backend: {} };
+  formErrors.value = { name: '', category_id: '', variants: [], _backend: {} }
   if (product) {
-    formModalTitle.value = 'Chỉnh Sửa Sản Phẩm';
-    formModalKey.value++;
-    isFormModalVisible.value = true;
+    formModalTitle.value = 'Chỉnh Sửa Sản Phẩm'
+    formModalKey.value++
+    isFormModalVisible.value = true
 
-    const cachedData = queryClient.getQueryData(['products', product.id]);
+    const cachedData = queryClient.getQueryData(['products', product.id])
     if (cachedData) {
-      editableProduct.value = JSON.parse(JSON.stringify(cachedData));
-      queryClient.fetchQuery({
-        queryKey: ['products', product.id],
-        queryFn: () => productApi.getProductById(product.id),
-      }).then((freshData) => {
-        if (freshData) {
-          editableProduct.value = JSON.parse(JSON.stringify(freshData));
-        }
-      }).catch(() => {});
+      editableProduct.value = JSON.parse(JSON.stringify(cachedData))
+      queryClient
+        .fetchQuery({
+          queryKey: ['products', product.id],
+          queryFn: () => productApi.getProductById(product.id),
+        })
+        .then((freshData) => {
+          if (freshData) {
+            editableProduct.value = JSON.parse(JSON.stringify(freshData))
+          }
+        })
+        .catch(() => {})
     } else {
-      isRefreshing.value = true;
+      isRefreshing.value = true
       try {
         const freshData = await queryClient.fetchQuery({
           queryKey: ['products', product.id],
           queryFn: () => productApi.getProductById(product.id),
-        });
+        })
         if (freshData) {
-          editableProduct.value = JSON.parse(JSON.stringify(freshData));
+          editableProduct.value = JSON.parse(JSON.stringify(freshData))
         }
       } catch (e) {
-        toast.error(`Lỗi tải dữ liệu: ${e.message}`);
+        toast.error(`Lỗi tải dữ liệu: ${e.message}`)
       } finally {
-        isRefreshing.value = false;
+        isRefreshing.value = false
       }
     }
   } else {
-    editableProduct.value = getNewEmptyProduct();
-    formModalTitle.value = 'Thêm Sản Phẩm Mới';
-    formModalKey.value++;
-    isFormModalVisible.value = true;
+    editableProduct.value = getNewEmptyProduct()
+    formModalTitle.value = 'Thêm Sản Phẩm Mới'
+    formModalKey.value++
+    isFormModalVisible.value = true
   }
-};
+}
 
 const handleCloseFormModal = () => {
-  isFormModalVisible.value = false;
-};
+  isFormModalVisible.value = false
+}
 
 const handleRefreshForm = async () => {
   if (isEditMode.value && editableProduct.value.id) {
-    isRefreshing.value = true;
+    isRefreshing.value = true
     try {
       const freshData = await queryClient.fetchQuery({
         queryKey: ['products', editableProduct.value.id],
         queryFn: () => productApi.getProductById(editableProduct.value.id),
         staleTime: 0,
-      });
+      })
       if (freshData) {
-        editableProduct.value = JSON.parse(JSON.stringify(freshData));
+        editableProduct.value = JSON.parse(JSON.stringify(freshData))
       }
-      toast.info('Đã làm mới dữ liệu sản phẩm');
+      toast.info('Đã làm mới dữ liệu sản phẩm')
     } catch (e) {
-      toast.error(`Lỗi làm mới: ${e.message}`);
+      toast.error(`Lỗi làm mới: ${e.message}`)
     } finally {
-      isRefreshing.value = false;
+      isRefreshing.value = false
     }
   }
-};
+}
 
 const validateProduct = (productData) => {
-  const errors = { name: '', category_id: '', variants: [] };
-  let hasError = false;
+  const errors = { name: '', category_id: '', variants: [] }
+  let hasError = false
 
   if (!productData.name) {
-    errors.name = 'Vui lòng nhập tên dòng sản phẩm.';
-    hasError = true;
+    errors.name = 'Vui lòng nhập tên dòng sản phẩm.'
+    hasError = true
   }
   if (!productData.category_id) {
-    errors.category_id = 'Vui lòng chọn danh mục.';
-    hasError = true;
+    errors.category_id = 'Vui lòng chọn danh mục.'
+    hasError = true
   }
   if (!productData.variants || productData.variants.length === 0) {
-    hasError = true;
+    hasError = true
   }
 
-  const variantErrors = [];
-  const seenCombinations = new Set();
-  const seenSlugs = new Set();
+  const variantErrors = []
+  const seenCombinations = new Set()
+  const seenSlugs = new Set()
 
-  (productData.variants || []).forEach((variant, index) => {
-    const vErrors = {};
-    if (variant.price === null || variant.price === '' || isNaN(variant.price) || variant.price < 0) {
-      vErrors.price = 'Vui lòng nhập Giá Bán hợp lệ (lớn hơn 0).';
-      hasError = true;
+  ;(productData.variants || []).forEach((variant, index) => {
+    const vErrors = {}
+    if (
+      variant.price === null ||
+      variant.price === '' ||
+      isNaN(variant.price) ||
+      variant.price < 0
+    ) {
+      vErrors.price = 'Vui lòng nhập Giá Bán hợp lệ (lớn hơn 0).'
+      hasError = true
     }
     if (!variant.url) {
-      vErrors.url = 'Vui lòng nhập URL Slug.';
-      hasError = true;
+      vErrors.url = 'Vui lòng nhập URL Slug.'
+      hasError = true
     }
-    const optionEntries = Object.entries(variant.optionValues || {});
+    const optionEntries = Object.entries(variant.optionValues || {})
     if (optionEntries.length > 0) {
-      const hasEmptyValues = optionEntries.some(([, val]) => !val || !val.trim());
+      const hasEmptyValues = optionEntries.some(([, val]) => !val || !val.trim())
       if (hasEmptyValues) {
-        vErrors.combination = 'Vui lòng nhập đầy đủ giá trị cho tất cả thuộc tính.';
-        hasError = true;
+        vErrors.combination = 'Vui lòng nhập đầy đủ giá trị cho tất cả thuộc tính.'
+        hasError = true
       } else {
         const sig = JSON.stringify(
           Object.keys(variant.optionValues)
             .sort()
-            .reduce((o, k) => { o[k] = variant.optionValues[k]; return o; }, {}),
-        );
+            .reduce((o, k) => {
+              o[k] = variant.optionValues[k]
+              return o
+            }, {}),
+        )
         if (seenCombinations.has(sig)) {
-          vErrors.combination = 'Tổ hợp thuộc tính này bị trùng lặp.';
-          hasError = true;
+          vErrors.combination = 'Tổ hợp thuộc tính này bị trùng lặp.'
+          hasError = true
         } else {
-          seenCombinations.add(sig);
+          seenCombinations.add(sig)
         }
       }
     }
-    
-    // Check for duplicate URLs (slugs)
+
     if (variant.url) {
       if (seenSlugs.has(variant.url)) {
-        vErrors.url = 'URL Slug này bị trùng lặp với biến thể khác.';
-        hasError = true;
+        vErrors.url = 'URL Slug này bị trùng lặp với biến thể khác.'
+        hasError = true
       } else {
-        seenSlugs.add(variant.url);
+        seenSlugs.add(variant.url)
       }
     }
 
-    variantErrors[index] = vErrors;
-  });
+    variantErrors[index] = vErrors
+  })
 
-  errors.variants = variantErrors;
-  return { hasError, errors };
-};
+  errors.variants = variantErrors
+  return { hasError, errors }
+}
 
 const handleSaveProduct = async () => {
-  const productData = editableProduct.value;
-  const { hasError, errors } = validateProduct(productData);
-  formErrors.value = errors;
-  if (hasError) return;
+  const productData = editableProduct.value
+  const { hasError, errors } = validateProduct(productData)
+  formErrors.value = errors
+  if (hasError) return
 
-  isSaving.value = true;
+  isSaving.value = true
   try {
-    const isEditing = isEditMode.value;
-    let result;
+    const isEditing = isEditMode.value
+    let result
     if (isEditing) {
-      result = await productsStore.updateProduct(productData.id, productData);
+      result = await productsStore.updateProduct(productData.id, productData)
     } else {
-      result = await productsStore.createProduct(productData);
+      result = await productsStore.createProduct(productData)
     }
     if (result?.id) {
-      queryClient.setQueryData(['products', result.id], result);
+      queryClient.setQueryData(['products', result.id], result)
     }
-    isFormModalVisible.value = false;
-    await queryClient.invalidateQueries({ queryKey: ['products'] });
-    toast.success(isEditing ? 'Cập nhật sản phẩm thành công' : 'Thêm sản phẩm thành công');
+    isFormModalVisible.value = false
+    await queryClient.invalidateQueries({ queryKey: ['products'] })
+    toast.success(isEditing ? 'Cập nhật sản phẩm thành công' : 'Thêm sản phẩm thành công')
   } catch (err) {
-    const backendErrors = err?.response?.data?.errors || err?.response?.data?.Errors || null;
+    const backendErrors = err?.response?.data?.errors || err?.response?.data?.Errors || null
     if (backendErrors && err?.response?.status === 400) {
-      const normalized = {};
-      const variantErrorsFromBackend = [];
+      const normalized = {}
+      const variantErrorsFromBackend = []
       Object.entries(backendErrors).forEach(([key, messages]) => {
-        const msg = Array.isArray(messages) ? messages[0] : messages;
-        const normalizedKey = key.toLowerCase();
-        normalized[normalizedKey] = msg;
-        
-        // Parse "$.variants[0].price" or "variants[0].price"
-        const variantMatch = key.match(/(?:\$\.)?variants\[(\d+)\]\.(.+)/i);
-        if (variantMatch) {
-          const index = parseInt(variantMatch[1], 10);
-          const field = variantMatch[2].toLowerCase();
-          if (!variantErrorsFromBackend[index]) {
-            variantErrorsFromBackend[index] = {};
-          }
-          variantErrorsFromBackend[index][field] = msg;
-        }
-      });
+        const msg = Array.isArray(messages) ? messages[0] : messages
+        const normalizedKey = key.toLowerCase()
+        normalized[normalizedKey] = msg
 
-      const mergedVariantErrors = [];
+        const variantMatch = key.match(/(?:\$\.)?variants\[(\d+)\]\.(.+)/i)
+        if (variantMatch) {
+          const index = parseInt(variantMatch[1], 10)
+          const field = variantMatch[2].toLowerCase()
+          if (!variantErrorsFromBackend[index]) {
+            variantErrorsFromBackend[index] = {}
+          }
+          variantErrorsFromBackend[index][field] = msg
+        }
+      })
+
+      const mergedVariantErrors = []
       const maxLen = Math.max(
         formErrors.value.variants?.length || 0,
-        variantErrorsFromBackend.length
-      );
+        variantErrorsFromBackend.length,
+      )
       for (let i = 0; i < maxLen; i++) {
         mergedVariantErrors[i] = {
           ...(formErrors.value.variants?.[i] || {}),
-          ...(variantErrorsFromBackend[i] || {})
-        };
+          ...(variantErrorsFromBackend[i] || {}),
+        }
       }
 
       formErrors.value = {
         ...formErrors.value,
         _backend: normalized,
         name: normalized['name'] || formErrors.value.name,
-        category_id: normalized['category_id'] || normalized['categoryid'] || formErrors.value.category_id,
+        category_id:
+          normalized['category_id'] || normalized['categoryid'] || formErrors.value.category_id,
         variants: mergedVariantErrors,
-      };
-      
-      // Inject global variant array errors like "duplicate slugs" into the top-level formError
+      }
+
       if (normalized['varients']) {
-        formErrors.value._backend = formErrors.value._backend || {};
-        formErrors.value._backend.varients = normalized['varients'];
+        formErrors.value._backend = formErrors.value._backend || {}
+        formErrors.value._backend.varients = normalized['varients']
       }
       if (normalized['variants']) {
-        formErrors.value._backend = formErrors.value._backend || {};
-        formErrors.value._backend.variants = normalized['variants'];
+        formErrors.value._backend = formErrors.value._backend || {}
+        formErrors.value._backend.variants = normalized['variants']
       }
-      toast.warning('Vui lòng kiểm tra lại các trường có lỗi.');
+      toast.warning('Vui lòng kiểm tra lại các trường có lỗi.')
     } else {
-      toast.error(err.message || 'Lỗi khi lưu sản phẩm');
+      toast.error(err.message || 'Lỗi khi lưu sản phẩm')
     }
   } finally {
-    isSaving.value = false;
+    isSaving.value = false
   }
-};
+}
 
 const promptDelete = async (product) => {
   try {
-    await productsStore.deleteProduct(product);
-    queryClient.removeQueries({ queryKey: ['products', product.id] });
-    await queryClient.invalidateQueries({ queryKey: ['products'] });
-    toast.success('Xoá sản phẩm thành công');
+    await productsStore.deleteProduct(product)
+    queryClient.removeQueries({ queryKey: ['products', product.id] })
+    await queryClient.invalidateQueries({ queryKey: ['products'] })
+    toast.success('Xoá sản phẩm thành công')
   } catch (err) {
-    toast.error(err.message || 'Lỗi khi xoá sản phẩm');
+    toast.error(err.message || 'Lỗi khi xoá sản phẩm')
   }
-};
+}
 
 const importExcel = (event) => {
-  toast.info('Chức năng Import Excel đang phát triển');
-  event.target.value = '';
-};
+  toast.info('Chức năng Import Excel đang phát triển')
+  event.target.value = ''
+}
 
 const exportExcel = () => {
-  toast.info('Chức năng Export Excel đang phát triển');
-};
+  toast.info('Chức năng Export Excel đang phát triển')
+}
 </script>
 
 <template>
@@ -451,12 +461,16 @@ const exportExcel = () => {
             <template v-if="isLoading">
               <tr v-for="i in 5" :key="i" class="border-b border-gray-200">
                 <td class="py-3 px-6 text-center"><SkeletonLoader width="16px" height="16px" /></td>
-                <td class="py-3 px-6"><SkeletonLoader width="64px" height="64px" class="rounded-md" /></td>
+                <td class="py-3 px-6">
+                  <SkeletonLoader width="64px" height="64px" class="rounded-md" />
+                </td>
                 <td class="py-3 px-6"><SkeletonLoader width="150px" height="20px" /></td>
                 <td class="py-3 px-6"><SkeletonLoader width="100px" height="20px" /></td>
                 <td class="py-3 px-6"><SkeletonLoader width="80px" height="20px" /></td>
                 <td class="py-3 px-6"><SkeletonLoader width="40px" height="20px" /></td>
-                <td class="py-3 px-6"><SkeletonLoader width="90px" height="24px" class="rounded-full" /></td>
+                <td class="py-3 px-6">
+                  <SkeletonLoader width="90px" height="24px" class="rounded-full" />
+                </td>
                 <td class="py-3 px-6 text-center flex justify-center gap-2 mt-4">
                   <SkeletonLoader width="40px" height="20px" />
                   <SkeletonLoader width="40px" height="20px" />
@@ -484,13 +498,19 @@ const exportExcel = () => {
               </td>
               <td class="py-3 px-6 text-left w-20">
                 <img
-                  :src="product.cover_image_url || 'https://placehold.co/100x100/gray/white?text=N/A'"
+                  :src="
+                    product.cover_image_url || 'https://placehold.co/100x100/gray/white?text=N/A'
+                  "
                   alt="Ảnh bìa"
                   class="w-16 h-16 object-cover rounded-md border border-gray-200"
-                  @error="(e) => (e.target.src = 'https://placehold.co/100x100/gray/white?text=Error')"
+                  @error="
+                    (e) => (e.target.src = 'https://placehold.co/100x100/gray/white?text=Error')
+                  "
                 />
               </td>
-              <td class="py-3 px-6 whitespace-nowrap font-medium text-gray-800">{{ product.name }}</td>
+              <td class="py-3 px-6 whitespace-nowrap font-medium text-gray-800">
+                {{ product.name }}
+              </td>
               <td class="py-3 px-6">{{ product.category }}</td>
               <td class="py-3 px-6">{{ product.brand }}</td>
               <td class="py-3 px-6">{{ product.variants ? product.variants.length : 0 }}</td>
@@ -500,8 +520,12 @@ const exportExcel = () => {
                 </RoundBadge>
               </td>
               <td class="py-3 px-6 text-center space-x-2">
-                <SmallNoBgButton @click="openAddEditModal(product)" :icon="IconEdit">Sửa</SmallNoBgButton>
-                <SmallNoBgButton color="red" @click="promptDelete(product)" :icon="IconTrash">Xóa</SmallNoBgButton>
+                <SmallNoBgButton @click="openAddEditModal(product)" :icon="IconEdit"
+                  >Sửa</SmallNoBgButton
+                >
+                <SmallNoBgButton color="red" @click="promptDelete(product)" :icon="IconTrash"
+                  >Xóa</SmallNoBgButton
+                >
               </td>
             </tr>
 
@@ -534,32 +558,86 @@ const exportExcel = () => {
                   </div>
 
                   <div v-show="getActiveTab(product.id) === 'variants'">
-                    <table class="min-w-full bg-white rounded shadow-sm text-sm border border-gray-200 overflow-hidden">
+                    <table
+                      class="min-w-full bg-white rounded shadow-sm text-sm border border-gray-200 overflow-hidden"
+                    >
                       <thead class="bg-gray-50 border-b border-gray-200">
                         <tr>
-                          <th class="py-2 px-4 text-left w-20 text-gray-700 font-semibold tracking-wider">Ảnh</th>
-                          <th class="py-2 px-4 text-left text-gray-700 font-semibold tracking-wider">Thuộc tính</th>
-                          <th class="py-2 px-4 text-left text-gray-700 font-semibold tracking-wider">Giá Bán</th>
-                          <th class="py-2 px-4 text-left text-gray-700 font-semibold tracking-wider">Tồn Kho</th>
-                          <th class="py-2 px-4 text-left text-gray-700 font-semibold tracking-wider">Đã Đặt</th>
-                          <th class="py-2 px-4 text-left text-gray-700 font-semibold tracking-wider">Hiện Có</th>
-                          <th class="py-2 px-4 text-left text-gray-700 font-semibold tracking-wider">Trạng Thái</th>
+                          <th
+                            class="py-2 px-4 text-left w-20 text-gray-700 font-semibold tracking-wider"
+                          >
+                            Ảnh
+                          </th>
+                          <th
+                            class="py-2 px-4 text-left text-gray-700 font-semibold tracking-wider"
+                          >
+                            Thuộc tính
+                          </th>
+                          <th
+                            class="py-2 px-4 text-left text-gray-700 font-semibold tracking-wider"
+                          >
+                            Giá Bán
+                          </th>
+                          <th
+                            class="py-2 px-4 text-left text-gray-700 font-semibold tracking-wider"
+                          >
+                            Tồn Kho
+                          </th>
+                          <th
+                            class="py-2 px-4 text-left text-gray-700 font-semibold tracking-wider"
+                          >
+                            Đã Đặt
+                          </th>
+                          <th
+                            class="py-2 px-4 text-left text-gray-700 font-semibold tracking-wider"
+                          >
+                            Hiện Có
+                          </th>
+                          <th
+                            class="py-2 px-4 text-left text-gray-700 font-semibold tracking-wider"
+                          >
+                            Trạng Thái
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr v-for="variant in product.variants" :key="variant.id" class="border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors duration-150">
+                        <tr
+                          v-for="variant in product.variants"
+                          :key="variant.id"
+                          class="border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors duration-150"
+                        >
                           <td class="py-2 px-4 w-20">
                             <img
-                              :src="variant.cover_image_url || 'https://placehold.co/100x100/gray/white?text=N/A'"
+                              :src="
+                                variant.cover_image_url ||
+                                'https://placehold.co/100x100/gray/white?text=N/A'
+                              "
                               class="w-12 h-12 object-cover rounded-md border border-gray-200"
-                              @error="(e) => (e.target.src = 'https://placehold.co/100x100/gray/white?text=Error')"
+                              @error="
+                                (e) =>
+                                  (e.target.src =
+                                    'https://placehold.co/100x100/gray/white?text=Error')
+                              "
                             />
                           </td>
-                          <td class="py-2 px-4 text-gray-800 font-medium">{{ getVariantOptionsText(variant) }}</td>
-                          <td class="py-2 px-4 font-semibold text-gray-900">{{ formatCurrency(variant.price) }}</td>
+                          <td class="py-2 px-4 text-gray-800 font-medium">
+                            {{ getVariantOptionsText(variant) }}
+                          </td>
+                          <td class="py-2 px-4 font-semibold text-gray-900">
+                            {{ formatCurrency(variant.price) }}
+                          </td>
                           <td class="py-2 px-4 text-gray-600">{{ variant.stock }}</td>
                           <td class="py-2 px-4 text-gray-600">{{ variant.has_been_booked }}</td>
-                          <td class="py-2 px-4 font-medium" :class="(variant.stock - variant.has_been_booked) > 0 ? 'text-green-600' : 'text-red-500'">{{ variant.stock - variant.has_been_booked }}</td>
+                          <td
+                            class="py-2 px-4 font-medium"
+                            :class="
+                              variant.stock - variant.has_been_booked > 0
+                                ? 'text-green-600'
+                                : 'text-red-500'
+                            "
+                          >
+                            {{ variant.stock - variant.has_been_booked }}
+                          </td>
                           <td class="py-2 px-4">
                             <RoundBadge :color="getStockStatusColor(variant.status_stock_id)">
                               {{ getStockStatusText(variant.status_stock_id) }}
@@ -574,79 +652,117 @@ const exportExcel = () => {
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4">
                       <div class="text-sm">
                         <span class="text-gray-500 block">Khối lượng</span>
-                        <span class="font-medium text-gray-800">{{ product.weight ? product.weight + ' kg' : '---' }}</span>
+                        <span class="font-medium text-gray-800">{{
+                          product.weight ? product.weight + ' kg' : '---'
+                        }}</span>
                       </div>
                       <div class="text-sm">
                         <span class="text-gray-500 block">Kích thước</span>
-                        <span class="font-medium text-gray-800">{{ product.dimensions || '---' }}</span>
+                        <span class="font-medium text-gray-800">{{
+                          product.dimensions || '---'
+                        }}</span>
                       </div>
                       <div class="text-sm">
                         <span class="text-gray-500 block">Dung tích</span>
-                        <span class="font-medium text-gray-800">{{ product.displacement ? product.displacement + ' cc' : '---' }}</span>
+                        <span class="font-medium text-gray-800">{{
+                          product.displacement ? product.displacement + ' cc' : '---'
+                        }}</span>
                       </div>
                       <div class="text-sm">
                         <span class="text-gray-500 block">Tỷ số nén</span>
-                        <span class="font-medium text-gray-800">{{ product.compression_ratio || '---' }}</span>
+                        <span class="font-medium text-gray-800">{{
+                          product.compression_ratio || '---'
+                        }}</span>
                       </div>
                       <div class="text-sm">
                         <span class="text-gray-500 block">Đường kính x Hành trình piston</span>
-                        <span class="font-medium text-gray-800">{{ product.bore_stroke || '---' }}</span>
+                        <span class="font-medium text-gray-800">{{
+                          product.bore_stroke || '---'
+                        }}</span>
                       </div>
                       <div class="text-sm">
                         <span class="text-gray-500 block">Loại động cơ</span>
-                        <span class="font-medium text-gray-800">{{ product.engine_type || '---' }}</span>
+                        <span class="font-medium text-gray-800">{{
+                          product.engine_type || '---'
+                        }}</span>
                       </div>
                       <div class="text-sm">
                         <span class="text-gray-500 block">Công suất tối đa</span>
-                        <span class="font-medium text-gray-800">{{ product.max_power || '---' }}</span>
+                        <span class="font-medium text-gray-800">{{
+                          product.max_power || '---'
+                        }}</span>
                       </div>
                       <div class="text-sm">
                         <span class="text-gray-500 block">Mô-men xoắn cực đại</span>
-                        <span class="font-medium text-gray-800">{{ product.max_torque || '---' }}</span>
+                        <span class="font-medium text-gray-800">{{
+                          product.max_torque || '---'
+                        }}</span>
                       </div>
                       <div class="text-sm">
                         <span class="text-gray-500 block">Tiêu hao nhiên liệu</span>
-                        <span class="font-medium text-gray-800">{{ product.fuel_consumption || '---' }}</span>
+                        <span class="font-medium text-gray-800">{{
+                          product.fuel_consumption || '---'
+                        }}</span>
                       </div>
                       <div class="text-sm">
                         <span class="text-gray-500 block">Dung tích bình xăng</span>
-                        <span class="font-medium text-gray-800">{{ product.fuel_capacity ? product.fuel_capacity + ' L' : '---' }}</span>
+                        <span class="font-medium text-gray-800">{{
+                          product.fuel_capacity ? product.fuel_capacity + ' L' : '---'
+                        }}</span>
                       </div>
                       <div class="text-sm">
                         <span class="text-gray-500 block">Dung tích nhớt máy</span>
-                        <span class="font-medium text-gray-800">{{ product.oil_capacity ? product.oil_capacity + ' L' : '---' }}</span>
+                        <span class="font-medium text-gray-800">{{
+                          product.oil_capacity ? product.oil_capacity + ' L' : '---'
+                        }}</span>
                       </div>
                       <div class="text-sm">
                         <span class="text-gray-500 block">Loại truyền động</span>
-                        <span class="font-medium text-gray-800">{{ product.transmission_type || '---' }}</span>
+                        <span class="font-medium text-gray-800">{{
+                          product.transmission_type || '---'
+                        }}</span>
                       </div>
                       <div class="text-sm">
                         <span class="text-gray-500 block">Hệ thống khởi động</span>
-                        <span class="font-medium text-gray-800">{{ product.starter_system || '---' }}</span>
+                        <span class="font-medium text-gray-800">{{
+                          product.starter_system || '---'
+                        }}</span>
                       </div>
                       <div class="text-sm">
                         <span class="text-gray-500 block">Phuộc trước</span>
-                        <span class="font-medium text-gray-800">{{ product.front_suspension || '---' }}</span>
+                        <span class="font-medium text-gray-800">{{
+                          product.front_suspension || '---'
+                        }}</span>
                       </div>
                       <div class="text-sm">
                         <span class="text-gray-500 block">Phuộc sau</span>
-                        <span class="font-medium text-gray-800">{{ product.rear_suspension || '---' }}</span>
+                        <span class="font-medium text-gray-800">{{
+                          product.rear_suspension || '---'
+                        }}</span>
                       </div>
                       <div class="text-sm">
                         <span class="text-gray-500 block">Kích cỡ lốp</span>
-                        <span class="font-medium text-gray-800">{{ product.tire_size || '---' }}</span>
+                        <span class="font-medium text-gray-800">{{
+                          product.tire_size || '---'
+                        }}</span>
                       </div>
                       <div class="text-sm">
                         <span class="text-gray-500 block">Khoảng cách trục bánh xe</span>
-                        <span class="font-medium text-gray-800">{{ product.wheelbase ? product.wheelbase + ' mm' : '---' }}</span>
+                        <span class="font-medium text-gray-800">{{
+                          product.wheelbase ? product.wheelbase + ' mm' : '---'
+                        }}</span>
                       </div>
                       <div class="text-sm">
                         <span class="text-gray-500 block">Độ cao yên</span>
-                        <span class="font-medium text-gray-800">{{ product.seat_height ? product.seat_height + ' mm' : '---' }}</span>
+                        <span class="font-medium text-gray-800">{{
+                          product.seat_height ? product.seat_height + ' mm' : '---'
+                        }}</span>
                       </div>
                       <div class="text-sm">
                         <span class="text-gray-500 block">Khoảng sáng gầm xe</span>
-                        <span class="font-medium text-gray-800">{{ product.ground_clearance ? product.ground_clearance + ' mm' : '---' }}</span>
+                        <span class="font-medium text-gray-800">{{
+                          product.ground_clearance ? product.ground_clearance + ' mm' : '---'
+                        }}</span>
                       </div>
                     </div>
                   </div>

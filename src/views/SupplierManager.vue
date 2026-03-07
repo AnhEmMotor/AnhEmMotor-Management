@@ -5,7 +5,6 @@ import { useSuppliersStore } from '@/stores/useSuppliersStore'
 import { useToast } from 'vue-toastification'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { fetchSuppliers } from '@/api/supplier'
-import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import SupplierItem from '@/components/supplier/SupplierItem.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
@@ -25,7 +24,6 @@ import IconEmptyBox from '@/assets/icons/empty-box.svg'
 const toast = useToast()
 const queryClient = useQueryClient()
 const suppliersStore = useSuppliersStore()
-const route = useRoute()
 
 const { isFormModalVisible, isEditMode, editableSupplier, formErrors } = storeToRefs(suppliersStore)
 const {

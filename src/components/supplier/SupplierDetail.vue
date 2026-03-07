@@ -4,10 +4,9 @@ import Pagination from '../ui/button/BasePagination.vue'
 import SkeletonLoader from '../ui/SkeletonLoader.vue'
 import IconHistoryList from '@/assets/icons/history-list.svg'
 import { computed, ref } from 'vue'
-import { formatDateTime, formatDate } from '@/composables/useDate'
+import { formatDateTime } from '@/composables/useDate'
 import { formatCurrency } from '@/composables/useCurrency'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
-import { useInputsStore } from '@/stores/useInputsStore'
 import { useSuppliersStore } from '@/stores/useSuppliersStore'
 import { useQuery } from '@tanstack/vue-query'
 import { fetchInputStatuses } from '@/api/input'
@@ -18,7 +17,6 @@ const props = defineProps({
 defineEmits(['edit-supplier', 'delete-supplier', 'toggle-activation'])
 const activeTab = ref('info')
 const historyItemsPerPage = ref(10)
-const inputsStore = useInputsStore()
 const suppliersStore = useSuppliersStore()
 
 const { data: detailData } = useQuery({

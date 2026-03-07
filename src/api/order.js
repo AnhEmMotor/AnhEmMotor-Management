@@ -30,7 +30,7 @@ export const updateSalesOrder = async (id, payload) => {
     StatusId: payload.status?.key,
     Notes: payload.notes,
     products: (payload.products || []).map((p) => ({
-      Id: typeof p.id === 'number' && p.id > 2000000000000 ? undefined : p.id, // Nếu là temp ID (timestamp) thì bỏ qua
+      Id: typeof p.id === 'number' && p.id > 2000000000000 ? undefined : p.id,
       ProductId: p.product_id,
       Count: p.quantity,
     })),

@@ -124,7 +124,6 @@ onUnmounted(() => {
       {{ label }}
     </label>
 
-    <!-- Trigger Button -->
     <button
       type="button"
       :id="selectId"
@@ -153,12 +152,10 @@ onUnmounted(() => {
       </span>
     </button>
 
-    <!-- Dropdown Menu -->
     <div
       v-if="isOpen"
       class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg flex flex-col overflow-hidden"
     >
-      <!-- Options List -->
       <ul class="max-h-56 overflow-y-auto py-1 focus:outline-none flex-1">
         <li v-if="options.length === 0" class="text-gray-500 text-sm px-3 py-2 text-center">
           {{ loading ? 'Đang tải...' : 'Không có dữ liệu' }}
@@ -183,7 +180,6 @@ onUnmounted(() => {
         </li>
       </ul>
 
-      <!-- Internal Pagination Controls -->
       <div
         v-if="pagination && (loading || pagination.totalPages.value > 1)"
         class="border-t border-gray-100 bg-gray-50 px-2 py-2 flex justify-center sm:justify-end items-center"
@@ -257,7 +253,6 @@ onUnmounted(() => {
   }
 }
 
-/* Custom scrollbar for dropdown menu */
 ul::-webkit-scrollbar {
   width: 6px;
 }

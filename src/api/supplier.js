@@ -63,19 +63,6 @@ export const fetchActiveSuppliers = async ({ page, limit, search } = {}) => {
   return fetchSuppliers({ page, limit, search, status: 'active' })
 }
 
-export const searchActiveSuppliers = async (search = '') => {
-  const params = {
-    Search: search,
-    StatusId: 'active',
-    PageSize: 50,
-  }
-  return (data.items || []).map((s) => ({
-    id: s.id,
-    name: s.name,
-    phone: s.phone,
-  }))
-}
-
 export const fetchSupplierPurchaseHistory = async (id, { page, limit }) => {
   const params = {
     Page: page,

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { usePriceStore } from '@/stores/usePriceStore'
 import { getProductsForPriceManagement } from '@/api/product'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
@@ -247,9 +247,7 @@ function handleExport() {}
               </div>
             </div>
           </div>
-          <div v-else class="text-center py-6 text-gray-500">
-            Không có mặt hàng để hiển thị.
-          </div>
+          <div v-else class="text-center py-6 text-gray-500">Không có mặt hàng để hiển thị.</div>
         </template>
 
         <template v-else>
@@ -322,7 +320,11 @@ function handleExport() {}
           class="price-quick-menu fixed z-50 bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden animate-fade-in-up"
           :style="{ top: quickMenu.y + 'px', left: quickMenu.x + 'px' }"
         >
-          <PriceQuickMenu :basePrice="quickMenu.item.variant.price" @apply="applyQuickPrice" @close="closeQuickMenu" />
+          <PriceQuickMenu
+            :basePrice="quickMenu.item.variant.price"
+            @apply="applyQuickPrice"
+            @close="closeQuickMenu"
+          />
         </div>
       </div>
     </div>

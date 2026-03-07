@@ -202,10 +202,6 @@ watch(
 const updateAllVariantSlugs = () => {
   if (localProduct.value.variants) {
     localProduct.value.variants.forEach((v) => {
-      // Chỉ tự động cập nhật slug nếu:
-      // 1. Đang tạo mới hoàn toàn (!isEditMode)
-      // 2. Hoặc đang sửa nhưng đây là biến thể mới thêm vào (!v.id)
-      // 3. Hoặc slug hiện đang trống (!v.url)
       if (!props.isEditMode || !v.id || !v.url) {
         v.url = generateVariantSlug(v)
       }
