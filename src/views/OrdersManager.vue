@@ -251,7 +251,7 @@ const handleExport = () => {
             <th class="py-3 px-6 text-left w-64">Tên khách hàng</th>
             <th class="py-3 px-6 text-left">Ghi chú</th>
             <th class="py-3 px-6 text-left w-64">Trạng Thái</th>
-            <th class="py-3 px-6 text-left w-40">Tổng Tiền</th>
+            <th class="py-3 px-6 text-left w-48">Tổng Tiền</th>
             <th class="py-3 px-6 text-center w-32">Hành động</th>
           </tr>
         </thead>
@@ -321,8 +321,7 @@ const handleExport = () => {
     </div>
 
     <div class="mt-4">
-      <div class="flex items-center justify-between">
-        <p class="text-sm text-gray-500">Tổng: {{ pagination.totalCount.value }} đơn hàng</p>
+      <div class="flex items-center justify-center">
         <Pagination
           :total-pages="pagination.totalPages.value"
           :currentPage="pagination.currentPage.value"
