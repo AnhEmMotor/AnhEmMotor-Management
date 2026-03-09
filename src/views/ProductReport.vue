@@ -1,5 +1,7 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
+import { useQuery } from '@tanstack/vue-query'
+import { statisticsService } from '@/api/statistics'
 import ReportStatsCard from '@/components/ui/ReportStatsCard.vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
@@ -8,8 +10,8 @@ import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 import IconFileExport from '@/assets/icons/IconFileExport.svg'
 import IconSearch from '@/assets/icons/search.svg'
 
-const isLoading = ref(true)
 const sortBy = ref('sold')
+const searchQuery = ref('')
 
 const sortOptions = [
   { value: 'sold', label: 'Bán chạy nhất' },
@@ -18,91 +20,45 @@ const sortOptions = [
   { value: 'name', label: 'Tên A-Z' },
 ]
 
-const productData = ref([
-  {
-    name: 'Nhông Sên Dĩa (SSS 428)',
-    costPrice: 280000,
-    sellPrice: 350000,
-    stock: 45,
-    maxStock: 80,
-    sold: 23,
-    trend: [15, 18, 23],
-    status: 'Còn hàng',
-  },
-  {
-    name: 'Dầu Nhớt Motul 7100 (1L)',
-    costPrice: 240000,
-    sellPrice: 350000,
-    stock: 120,
-    maxStock: 200,
-    sold: 87,
-    trend: [60, 75, 87],
-    status: 'Còn hàng',
-  },
-  {
-    name: 'Lốp Michelin Pilot Street',
-    costPrice: 720000,
-    sellPrice: 850000,
-    stock: 18,
-    maxStock: 50,
-    sold: 34,
-    trend: [40, 38, 34],
-    status: 'Còn hàng',
-  },
-  {
-    name: 'Ắc Quy GS GTZ7V (12V-6Ah)',
-    costPrice: 350000,
-    sellPrice: 450000,
-    stock: 3,
-    maxStock: 30,
-    sold: 15,
-    trend: [12, 14, 15],
-    status: 'Sắp hết',
-  },
-  {
-    name: 'Phanh ABS Bosch (Winner X)',
-    costPrice: 1200000,
-    sellPrice: 1500000,
-    stock: 3,
-    maxStock: 20,
-    sold: 7,
-    trend: [5, 6, 7],
-    status: 'Sắp hết',
-  },
-  {
-    name: 'Gương Chiếu Hậu (Exciter 155)',
-    costPrice: 85000,
-    sellPrice: 120000,
-    stock: 25,
-    maxStock: 60,
-    sold: 41,
-    trend: [30, 35, 41],
-    status: 'Còn hàng',
-  },
-  {
-    name: 'Bugi NGK Iridium',
-    costPrice: 130000,
-    sellPrice: 220000,
-    stock: 0,
-    maxStock: 100,
-    sold: 45,
-    trend: [50, 48, 45],
-    status: 'Hết hàng',
-  },
-])
+const { isLoading, data: apiData } = useQuery({
+  queryKey: ['admin', 'product-report'],
+  queryFn: statisticsService.getAdminProductReport,
+  staleTime: 5 * 60 * 1000, // 5 mins
+})
 
-const getMargin = (p) => Math.round(((p.sellPrice - p.costPrice) / p.sellPrice) * 100)
+const reportData = computed(() => apiData.value || {})
 
-const getRevenue = (p) => p.sellPrice * p.sold
-const getProfit = (p) => (p.sellPrice - p.costPrice) * p.sold
+const productData = computed(() => reportData.value.productPerformanceTable || [])
+
+const highlights = computed(() => reportData.value.highlights || {})
+const bestSellerName = computed(() => highlights.value.bestSellerName)
+const bestSellerSold = computed(() => highlights.value.bestSellerSold || 0)
+const deadStockName = computed(() => highlights.value.deadStockName)
+const deadStockValue = computed(() => highlights.value.deadStockValue || 0)
+const avgTurnover = computed(() => highlights.value.avgTurnover || 0)
+const totalSKUs = computed(() => highlights.value.totalSKUs || 0)
+
+const topRevenueData = computed(() => {
+  return (reportData.value.topRevenueProducts || []).map((p) => ({
+    label: p.productName,
+    value: Math.round(p.revenue / 1000000),
+  }))
+})
+
+const topProfitData = computed(() => {
+  return (reportData.value.topProfitProducts || []).map((p) => ({
+    label: p.productName,
+    value: Math.round(p.profit / 1000000),
+  }))
+})
 
 const formatPrice = (v) => {
-  if (v >= 1000000) return `${(v / 1000000).toFixed(1)}tr`
-  return `${(v / 1000).toFixed(0)}k`
+  if (v >= 1000000) return `${(v / 1000000).toFixed(1)} tr`
+  return `${(v / 1000).toFixed(0)} k`
 }
 
 const getTrendIcon = (trend) => {
-  if (trend.length < 2) return '—'
+  if (!trend || trend.length < 2) return '—'
   const last = trend[trend.length - 1]
   const prev = trend[trend.length - 2]
   if (last > prev) return '📈'
@@ -110,68 +66,35 @@ const getTrendIcon = (trend) => {
   return '➖'
 }
 
-const stockPercent = (p) => Math.round((p.stock / p.maxStock) * 100)
-
-const getStockStatus = (p) => {
-  if (p.stock === 0) return { text: 'Hết hàng', color: 'red' }
-  if (p.stock < 5) return { text: 'Sắp hết', color: 'yellow' }
-  return { text: 'Còn hàng', color: 'green' }
+const stockPercent = (p) => {
+  if (!p.maxStockQuantity) return 0
+  return Math.min(100, Math.round((p.stockQuantity / p.maxStockQuantity) * 100))
 }
 
-const bestSeller = computed(() => {
-  const sorted = [...productData.value].sort((a, b) => b.sold - a.sold)
-  return sorted[0]
-})
-
-const deadStock = computed(() => {
-  const slow = [...productData.value].filter((p) => p.stock > 0).sort((a, b) => a.sold - b.sold)
-  return slow[0]
-})
-
-const deadStockValue = computed(() => {
-  if (!deadStock.value) return 0
-  return deadStock.value.stock * deadStock.value.costPrice
-})
-
-const avgTurnover = computed(() => {
-  const turnovers = productData.value.filter((p) => p.stock > 0).map((p) => p.sold / p.stock)
-  return turnovers.length ? (turnovers.reduce((a, b) => a + b, 0) / turnovers.length).toFixed(1) : 0
-})
-
-const totalSKUs = computed(() => productData.value.length)
-
-const topRevenueData = computed(() =>
-  [...productData.value]
-    .sort((a, b) => getRevenue(b) - getRevenue(a))
-    .slice(0, 5)
-    .map((p) => ({ label: p.name, value: Math.round(getRevenue(p) / 1000000) })),
-)
-
-const topProfitData = computed(() =>
-  [...productData.value]
-    .sort((a, b) => getProfit(b) - getProfit(a))
-    .slice(0, 5)
-    .map((p) => ({ label: p.name, value: Math.round(getProfit(p) / 1000000) })),
-)
+const getStockStatus = (p) => {
+  if (p.stockQuantity <= 0) return { text: 'Hết hàng', color: 'red' }
+  if (p.stockQuantity < 5) return { text: 'Sắp hết', color: 'yellow' }
+  return { text: 'Còn hàng', color: 'green' }
+}
 
 const filteredProducts = computed(() => {
   let result = [...productData.value]
 
   if (searchQuery.value) {
     const q = searchQuery.value.toLowerCase()
-    result = result.filter((p) => p.name.toLowerCase().includes(q))
+    result = result.filter((p) => p.productName && p.productName.toLowerCase().includes(q))
   }
 
   result.sort((a, b) => {
     switch (sortBy.value) {
       case 'sold':
-        return b.sold - a.sold
+        return Number(b.soldCount30Days) - Number(a.soldCount30Days)
       case 'margin':
-        return getMargin(b) - getMargin(a)
+        return Number(b.marginPercentage) - Number(a.marginPercentage)
       case 'stock':
-        return b.stock - a.stock
+        return Number(b.stockQuantity) - Number(a.stockQuantity)
       case 'name':
-        return a.name.localeCompare(b.name)
+        return (a.productName || '').localeCompare(b.productName || '')
       default:
         return 0
     }
@@ -181,13 +104,6 @@ const filteredProducts = computed(() => {
 })
 
 const handleExport = () => {}
-const searchQuery = ref('')
-
-onMounted(() => {
-  setTimeout(() => {
-    isLoading.value = false
-  }, 1200)
-})
 </script>
 
 <template>
@@ -241,14 +157,14 @@ onMounted(() => {
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <ReportStatsCard
           title="Best Seller"
-          :stat="bestSeller?.name"
-          :subtitle="`Đã bán: ${bestSeller?.sold} cái`"
+          :stat="bestSellerName"
+          :subtitle="`Đã bán: ${bestSellerSold} cái`"
           color="red"
           mode="detail"
         />
         <ReportStatsCard
           title="Tồn Kho Lâu Nhất"
-          :stat="deadStock?.name"
+          :stat="deadStockName"
           :subtitle="`Giá trị: ${formatPrice(deadStockValue)}`"
           color="yellow"
           mode="detail"
@@ -303,7 +219,7 @@ onMounted(() => {
           <tbody class="text-gray-600 text-sm">
             <tr
               v-for="product in filteredProducts"
-              :key="product.name"
+              :key="product.productName"
               class="border-b border-gray-200 hover:bg-gray-50 transition-colors"
             >
               <td class="py-3 px-4 whitespace-nowrap">
@@ -313,27 +229,29 @@ onMounted(() => {
                   >
                     SP
                   </div>
-                  <span class="font-medium text-gray-900">{{ product.name }}</span>
+                  <span class="font-medium text-gray-900">{{ product.productName }}</span>
                 </div>
               </td>
               <td class="py-3 px-4 whitespace-nowrap text-right font-mono text-gray-700">
                 {{ formatPrice(product.sellPrice) }}
               </td>
               <td class="py-3 px-4 whitespace-nowrap text-right">
-                <span class="font-mono text-gray-700">{{ product.sold }}</span>
+                <span class="font-mono text-gray-700">{{ product.soldCount30Days }}</span>
                 <span class="ml-1">{{ getTrendIcon(product.trend) }}</span>
               </td>
               <td class="py-3 px-4 whitespace-nowrap">
                 <div class="flex items-center gap-2">
-                  <span class="font-mono text-gray-700 w-8 text-right">{{ product.stock }}</span>
+                  <span class="font-mono text-gray-700 w-8 text-right">{{
+                    product.stockQuantity
+                  }}</span>
                   <div class="flex-1">
                     <div class="w-full bg-gray-100 rounded-full h-1.5">
                       <div
                         class="h-1.5 rounded-full transition-all duration-500"
                         :class="
-                          product.stock === 0
+                          product.stockQuantity === 0
                             ? 'bg-gray-300'
-                            : product.stock < 5
+                            : product.stockQuantity < 5
                               ? 'bg-yellow-400'
                               : 'bg-green-400'
                         "
@@ -347,14 +265,14 @@ onMounted(() => {
                 <span
                   class="font-semibold"
                   :class="
-                    getMargin(product) >= 30
+                    product.marginPercentage >= 30
                       ? 'text-green-600'
-                      : getMargin(product) >= 20
+                      : product.marginPercentage >= 20
                         ? 'text-yellow-600'
                         : 'text-red-600'
                   "
                 >
-                  {{ getMargin(product) }}%
+                  {{ product.marginPercentage }}%
                 </span>
               </td>
               <td class="py-3 px-4 whitespace-nowrap text-center">

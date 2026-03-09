@@ -35,10 +35,18 @@
 
     <div v-else>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatsCard title="Tổng Doanh Thu (Tháng)" stat="1.25 tỷ" :improvement="12" color="red" />
-        <StatsCard title="Lợi Nhuận (Tháng)" stat="280 triệu" :improvement="8.5" color="green" />
-        <StatsCard title="Đơn Hàng Mới" stat="32" :improvement="-5" color="yellow" />
-        <StatsCard title="Khách Hàng Mới" stat="15" :improvement="-20" color="purple" />
+        <StatsCard
+          title="Tổng Doanh Thu (Tháng Trước)"
+          :stat="formatCurrency(summary.lastMonthRevenue || 0)"
+          color="red"
+        />
+        <StatsCard
+          title="Lợi Nhuận (Tháng Trước)"
+          :stat="formatCurrency(summary.lastMonthProfit || 0)"
+          color="green"
+        />
+        <StatsCard title="Đơn Hàng Chờ" :stat="summary.pendingOrdersCount || 0" color="yellow" />
+        <StatsCard title="Khách Hàng Mới" :stat="summary.newCustomersCount || 0" color="purple" />
       </div>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="bg-gray-50 p-6 rounded-xl shadow-md h-96">
@@ -67,40 +75,71 @@
 </template>
 
 <script setup lang="js">
-import { ref, onMounted } from 'vue'
+import { computed } from 'vue'
+import { useQuery } from '@tanstack/vue-query'
+import { statisticsService } from '@/api/statistics'
 import ChartFrame3month from '@/components/report/ChartFrame3month.vue'
 import RevenueChart7day from '@/components/report/RevenueChart7day.vue'
 import PieChartFrame from '@/components/report/OrderChart.vue'
 import StatsCard from '@/components/ui/ReportStatsCard.vue'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 
-const isLoading = ref(true)
+const { isLoading, data: dashboardData } = useQuery({
+  queryKey: ['admin', 'dashboard-overview'],
+  queryFn: statisticsService.getAdminDashboardOverview,
+  staleTime: 5 * 60 * 1000, // 5 minutes
+})
 
-const revenueData = [
-  { date: '2025-09-15', revenue: 250, profit: 90 },
-  { date: '2025-09-16', revenue: 280, profit: 110 },
-  { date: '2025-09-17', revenue: 220, profit: 80 },
-  { date: '2025-09-18', revenue: 350, profit: 150 },
-  { date: '2025-09-19', revenue: 410, profit: 180 },
-  { date: '2025-09-20', revenue: 380, profit: 165 },
-  { date: '2025-09-21', revenue: 450, profit: 200 },
-]
+const summary = computed(() => dashboardData.value?.summary || {})
 
-const orderStatusData = [
-  { status: 'Đã giao', value: 120, color: '#e53e3e' },
-  { status: 'Đang giao', value: 35, color: '#f59e0b' },
-  { status: 'Đã huỷ', value: 15, color: '#4b5563' },
-  { status: 'Chờ thanh toán', value: 25, color: '#3b82f6' },
-]
-const monthlyComparisonData = [
-  { month: 'Tháng 7', revenue: 1100, profit: 250 },
-  { month: 'Tháng 8', revenue: 1250, profit: 280 },
-  { month: 'Tháng 9', revenue: 1450, profit: 340 },
-]
+const formatCurrency = (val) => {
+  if (val >= 1000000000) return `${(val / 1000000000).toFixed(2)} tỷ`
+  if (val >= 1000000) return `${(val / 1000000).toFixed(0)} triệu`
+  return `${val?.toLocaleString() || 0} đ`
+}
 
-onMounted(() => {
-  setTimeout(() => {
-    isLoading.value = false
-  }, 1000)
+const orderStatusColors = {
+  Pending: '#3b82f6',
+  Processing: '#f59e0b',
+  Shipped: '#8b5cf6',
+  Delivered: '#10b981',
+  Cancelled: '#ef4444',
+  Refunded: '#6b7280',
+}
+
+const orderStatusNames = {
+  Pending: 'Chờ xử lý',
+  Processing: 'Đang xử lý',
+  Shipped: 'Đang giao',
+  Delivered: 'Đã giao',
+  Cancelled: 'Đã huỷ',
+  Refunded: 'Hoàn tiền',
+}
+
+const orderStatusData = computed(() => {
+  if (!dashboardData.value?.orderStatusDistribution) return []
+  return dashboardData.value.orderStatusDistribution.map((item) => ({
+    status: orderStatusNames[item.statusName] || item.statusName,
+    value: item.orderCount,
+    color: orderStatusColors[item.statusName] || '#d1d5db',
+  }))
+})
+
+const revenueData = computed(() => {
+  if (!dashboardData.value?.dailyRevenue) return []
+  return dashboardData.value.dailyRevenue.map((item) => ({
+    date: item.reportDay,
+    revenue: item.totalRevenue / 1000000,
+    profit: (item.totalProfit || 0) / 1000000,
+  }))
+})
+
+const monthlyComparisonData = computed(() => {
+  if (!dashboardData.value?.monthlyComparison) return []
+  return dashboardData.value.monthlyComparison.map((item) => ({
+    month: `Tháng ${new Date(item.reportMonth).getMonth() + 1}`,
+    revenue: item.totalRevenue / 1000000,
+    profit: item.totalProfit / 1000000,
+  }))
 })
 </script>

@@ -1,5 +1,7 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
+import { useQuery } from '@tanstack/vue-query'
+import { statisticsService } from '@/api/statistics'
 import ReportStatsCard from '@/components/ui/ReportStatsCard.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
 import RevenueFilterButtons from '@/components/report/RevenueFilterButtons.vue'
@@ -8,85 +10,105 @@ import DonutChart from '@/components/charts/DonutChart.vue'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 import IconFileExport from '@/assets/icons/IconFileExport.svg'
 
-const isLoading = ref(true)
+const { isLoading, data: apiData } = useQuery({
+  queryKey: ['admin', 'revenue-analysis'],
+  queryFn: statisticsService.getAdminRevenueAnalysis,
+  staleTime: 5 * 60 * 1000, // 5 minutes
+})
 
-const revenueData = [
-  { date: '2025-09-15', revenue: 250, profit: 90 },
-  { date: '2025-09-16', revenue: 280, profit: 110 },
-  { date: '2025-09-17', revenue: 220, profit: 80 },
-  { date: '2025-09-18', revenue: 350, profit: 150 },
-  { date: '2025-09-19', revenue: 410, profit: 180 },
-  { date: '2025-09-20', revenue: 380, profit: 165 },
-  { date: '2025-09-21', revenue: 450, profit: 200 },
-]
+const dashboardData = computed(() => apiData.value || {})
 
-const totalRevenue = computed(() => revenueData.reduce((sum, d) => sum + d.revenue, 0))
+const totalRevenue = computed(() => dashboardData.value.summary?.lastMonthRevenue || 0)
+const totalProfit = computed(() => dashboardData.value.summary?.lastMonthProfit || 0)
 
-const totalProfit = computed(() => revenueData.reduce((sum, d) => sum + d.profit, 0))
+const profitMargin = computed(() => {
+  if (totalRevenue.value === 0) return 0
+  return Math.round((totalProfit.value / totalRevenue.value) * 100)
+})
 
-const profitMargin = computed(() => Math.round((totalProfit.value / totalRevenue.value) * 100))
+const dailyData = computed(() => {
+  if (!dashboardData.value.dailyTableData) return []
+  return dashboardData.value.dailyTableData.map((item) => {
+    const formattedDate = new Date(item.reportDay).toLocaleDateString('vi-VN')
+    return {
+      date: formattedDate,
+      orders: item.ordersCount,
+      revenue: item.totalRevenue / 1000000,
+      profit: item.totalProfit / 1000000,
+      growth: item.growth,
+    }
+  })
+})
 
-const totalOrders = ref(120)
-const avgOrderValue = computed(() => Math.round(totalRevenue.value / totalOrders.value))
+const totalOrders = computed(() => {
+  if (!dashboardData.value.dailyTableData) return 0
+  return dashboardData.value.dailyTableData.reduce((sum, d) => sum + d.ordersCount, 0)
+})
+
+const avgOrderValue = computed(() => {
+  if (totalOrders.value === 0) return 0
+  return Math.round(totalRevenue.value / 1000000 / totalOrders.value)
+})
 
 const formatCurrency = (value) => {
-  if (value >= 1000) return `${(value / 1000).toFixed(2)} tỷ`
-  return `${value} tr`
+  if (value >= 1000000000) return `${(value / 1000000000).toFixed(2)} tỷ`
+  if (value >= 1000000) return `${(value / 1000000).toFixed(0)} tr`
+  return `${value?.toLocaleString() || 0} đ`
 }
 
-const topProducts = ref([
-  { name: 'Honda Vision 2024', revenue: 500, units: 12 },
-  { name: 'Yamaha Exciter 155', revenue: 380, units: 8 },
-  { name: 'Honda Air Blade', revenue: 320, units: 10 },
-  { name: 'Nhớt Castrol Power 1', revenue: 120, units: 245 },
-  { name: 'Lọc gió Honda', revenue: 85, units: 180 },
-])
+const revenueData = computed(() => {
+  if (!dashboardData.value.revenueTrend) return []
+  return dashboardData.value.revenueTrend.map((item) => ({
+    date: item.reportDay,
+    revenue: item.totalRevenue / 1000000,
+    profit: (item.totalProfit || 0) / 1000000,
+  }))
+})
 
-const brandRevenueData = [
-  { brand: 'Honda', revenue: 450 },
-  { brand: 'Yamaha', revenue: 380 },
-  { brand: 'Suzuki', revenue: 320 },
-  { brand: 'Kawasaki', revenue: 280 },
-  { brand: 'SYM', revenue: 250 },
-  { brand: 'Piaggio', revenue: 210 },
-]
+const topProducts = computed(() => {
+  if (!dashboardData.value.topProductsByRevenue) return []
+  return dashboardData.value.topProductsByRevenue.map((item) => ({
+    name: item.productName,
+    revenue: item.revenue / 1000000,
+    units: item.unitsSold,
+  }))
+})
 
-const brandDonutData = computed(() =>
-  brandRevenueData.map((d) => ({
-    label: d.brand,
+const brandDonutData = computed(() => {
+  if (!dashboardData.value.brandRevenueDistribution) return []
+  return dashboardData.value.brandRevenueDistribution.map((d) => ({
+    label: d.brandName,
     value: d.revenue,
-  })),
+  }))
+})
+
+const brandDonutTotal = computed(
+  () => dashboardData.value.brandRevenueDistribution?.reduce((sum, d) => sum + d.revenue, 0) || 0,
 )
 
-const brandDonutTotal = computed(() => brandRevenueData.reduce((sum, d) => sum + d.revenue, 0))
+const brandDonutColors = [
+  '#DC2626',
+  '#EF4444',
+  '#F87171',
+  '#FCA5A5',
+  '#FECACA',
+  '#FEE2E2',
+  '#d1d5db',
+  '#9ca3af',
+]
 
-const brandDonutColors = ['#DC2626', '#EF4444', '#F87171', '#FCA5A5', '#FECACA', '#FEE2E2']
+const paymentData = computed(() => {
+  if (!dashboardData.value.paymentMethodDistribution) return []
+  return dashboardData.value.paymentMethodDistribution.map((d) => ({
+    label: d.methodName,
+    value: d.value,
+  }))
+})
 
-const paymentData = computed(() => [
-  { label: 'Tiền mặt', value: 65 },
-  { label: 'Chuyển khoản', value: 35 },
-])
-
-const paymentColors = ['#DC2626', '#FECACA']
-
-const dailyData = ref([
-  { date: '21/09/2025', orders: 15, revenue: 450, profit: 50, growth: 5 },
-  { date: '20/09/2025', orders: 10, revenue: 300, profit: 35, growth: -2 },
-  { date: '19/09/2025', orders: 18, revenue: 410, profit: 65, growth: 12 },
-  { date: '18/09/2025', orders: 12, revenue: 350, profit: 45, growth: 3 },
-  { date: '17/09/2025', orders: 8, revenue: 220, profit: 28, growth: -8 },
-  { date: '16/09/2025', orders: 14, revenue: 280, profit: 38, growth: 6 },
-  { date: '15/09/2025', orders: 11, revenue: 250, profit: 30, growth: 0 },
-])
+const paymentColors = ['#DC2626', '#FECACA', '#fca5a5', '#ef4444']
 
 const handleExport = () => {}
 const selectedStatuses = ref(['30-days'])
-
-onMounted(() => {
-  setTimeout(() => {
-    isLoading.value = false
-  }, 1200)
-})
 </script>
 
 <template>
