@@ -1,11 +1,18 @@
 <script setup>
-import { reactive, ref, onMounted, computed } from 'vue'
+import { reactive, ref, computed, watch } from 'vue'
 import { useToast } from 'vue-toastification'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
+import * as settingApi from '@/api/setting'
 import Button from '@/components/ui/button/BaseButton.vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 
-const isLoading = ref(true)
+const toast = useToast()
+const queryClient = useQueryClient()
+
+// No toggles needed
+
+const testOrderValue = ref(15000000)
 
 const settings = reactive({
   maxOrder: 10000000,
@@ -14,15 +21,49 @@ const settings = reactive({
   stockLevel: 5,
 })
 
-const toggles = reactive({
-  deposit: true,
-  orderLimit: true,
-  stockWarning: true,
+// No toggles to watch
+
+// Fetch settings from API
+const { isPending: isLoading, data } = useQuery({
+  queryKey: ['settings'],
+  queryFn: settingApi.fetchSettings,
+  staleTime: 1000 * 60 * 5, // 5 minutes
 })
 
-const testOrderValue = ref(15000000)
+watch(
+  data,
+  (newData) => {
+    if (newData) {
+      settings.deposit = Number(newData['Deposit_ratio']) || 0
+      settings.stockLevel = Number(newData['Inventory_alert_level']) || 0
+      settings.maxOrder = Number(newData['Order_value_exceeds']) || 0
+      settings.maxCount = Number(newData['Z-bike_threshold_for_meeting']) || 0
+    }
+  },
+  { immediate: true },
+)
 
-const toast = useToast()
+// Update settings
+const { mutate: saveSettingsCore, isPending: isSaving } = useMutation({
+  mutationFn: (payload) => settingApi.updateSettings(payload),
+  onSuccess: (updatedData) => {
+    queryClient.setQueryData(['settings'], updatedData)
+    toast.success('Đã lưu cài đặt thành công!')
+  },
+  onError: (error) => {
+    toast.error(error?.response?.data?.message || 'Lỗi khi lưu cài đặt')
+  },
+})
+
+const saveSettings = () => {
+  const payload = {
+    Deposit_ratio: String(settings.deposit),
+    Inventory_alert_level: String(settings.stockLevel),
+    Order_value_exceeds: String(settings.maxOrder),
+    'Z-bike_threshold_for_meeting': String(settings.maxCount),
+  }
+  saveSettingsCore(payload)
+}
 
 const formatNumber = (num) => {
   if (num === null || num === undefined) return '0'
@@ -35,11 +76,11 @@ const parseNumber = (str) => {
 }
 
 const depositAmount = computed(() => {
-  if (!toggles.deposit || testOrderValue.value <= settings.maxOrder) return 0
+  if (testOrderValue.value <= settings.maxOrder) return 0
   return Math.round(testOrderValue.value * (settings.deposit / 100))
 })
 
-const needsDeposit = computed(() => toggles.deposit && testOrderValue.value > settings.maxOrder)
+const needsDeposit = computed(() => testOrderValue.value > settings.maxOrder)
 
 const handleMaxOrderInput = (e) => {
   settings.maxOrder = parseNumber(e.target.value)
@@ -64,32 +105,11 @@ const handleTestValueInput = (e) => {
   testOrderValue.value = parseNumber(e.target.value)
 }
 
-const saveSettings = () => {
-  localStorage.setItem('anhemMotorSettings', JSON.stringify(settings))
-  localStorage.setItem('anhemMotorToggles', JSON.stringify(toggles))
-  toast.success('Đã lưu cài đặt thành công!')
-}
-
 const resetDefaults = () => {
   Object.assign(settings, { maxOrder: 10000000, deposit: 10, maxCount: 3, stockLevel: 5 })
-  Object.assign(toggles, { deposit: true, orderLimit: true, stockWarning: true })
   testOrderValue.value = 15000000
-  toast.info('Đã khôi phục cài đặt mặc định')
+  toast.info('Đã khôi phục cài đặt cơ bản (Chưa lưu)')
 }
-
-const loadSettings = () => {
-  const saved = localStorage.getItem('anhemMotorSettings')
-  if (saved) Object.assign(settings, JSON.parse(saved))
-  const savedToggles = localStorage.getItem('anhemMotorToggles')
-  if (savedToggles) Object.assign(toggles, JSON.parse(savedToggles))
-}
-
-onMounted(() => {
-  loadSettings()
-  setTimeout(() => {
-    isLoading.value = false
-  }, 800)
-})
 </script>
 
 <template>
@@ -134,15 +154,9 @@ onMounted(() => {
                 <span class="text-red-600 text-lg">💰</span>
                 <h2 class="text-sm font-semibold text-gray-800">Quy Tắc Đặt Cọc</h2>
               </div>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" v-model="toggles.deposit" class="sr-only peer" />
-                <div
-                  class="w-9 h-5 bg-gray-200 peer-focus:ring-2 peer-focus:ring-red-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-500"
-                ></div>
-              </label>
             </div>
 
-            <div v-if="toggles.deposit" class="p-5 space-y-4">
+            <div class="p-5 space-y-4">
               <div class="grid grid-cols-2 gap-4">
                 <div>
                   <label class="block text-xs font-medium text-gray-500 mb-1.5"
@@ -222,15 +236,9 @@ onMounted(() => {
                 <span class="text-yellow-600 text-lg">📦</span>
                 <h2 class="text-sm font-semibold text-gray-800">Giới Hạn Đơn Hàng</h2>
               </div>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" v-model="toggles.orderLimit" class="sr-only peer" />
-                <div
-                  class="w-9 h-5 bg-gray-200 peer-focus:ring-2 peer-focus:ring-red-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-500"
-                ></div>
-              </label>
             </div>
 
-            <div v-if="toggles.orderLimit" class="p-5 space-y-4">
+            <div class="p-5 space-y-4">
               <div>
                 <label class="block text-xs font-medium text-gray-500 mb-1.5"
                   >Số lượng xe tối đa / đơn</label
@@ -270,15 +278,9 @@ onMounted(() => {
                 <span class="text-red-600 text-lg">⚠️</span>
                 <h2 class="text-sm font-semibold text-gray-800">Cảnh Báo Tồn Kho</h2>
               </div>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" v-model="toggles.stockWarning" class="sr-only peer" />
-                <div
-                  class="w-9 h-5 bg-gray-200 peer-focus:ring-2 peer-focus:ring-red-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-500"
-                ></div>
-              </label>
             </div>
 
-            <div v-if="toggles.stockWarning" class="p-5 space-y-4">
+            <div class="p-5 space-y-4">
               <div>
                 <label class="block text-xs font-medium text-gray-500 mb-1.5"
                   >Ngưỡng cảnh báo chung</label
