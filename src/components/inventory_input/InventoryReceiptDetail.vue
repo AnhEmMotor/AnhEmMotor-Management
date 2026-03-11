@@ -4,6 +4,8 @@ import IconTrash from '@/assets/icons/IconTrash.svg'
 import IconDuplicate from '@/assets/icons/IconDuplicate.svg'
 import IconExpand from '@/assets/icons/IconExpand.svg'
 import Textarea from '../ui/input/BaseTextarea.vue'
+import { Permissions } from '@/constants/permissions'
+import { usePermission } from '@/composables/usePermission'
 
 const props = defineProps({
   itemData: Object,
@@ -12,6 +14,7 @@ const props = defineProps({
 defineEmits(['edit', 'cancel-request', 'copy', 'complete-request', 'save-notes'])
 
 const { itemData } = toRefs(props)
+const { hasPermission } = usePermission()
 
 const notes = ref('')
 
@@ -119,7 +122,11 @@ const totalDiscount = (products) => {
     <div class="flex justify-between items-center mt-4 pt-5 border-t border-gray-200">
       <div class="flex items-center space-x-3">
         <button
-          v-if="itemData.statusId !== 'cancelled' && itemData.statusId !== 'finished'"
+          v-if="
+            hasPermission(Permissions.InputsDelete) &&
+            itemData.statusId !== 'cancelled' &&
+            itemData.statusId !== 'finished'
+          "
           @click="$emit('cancel-request', itemData)"
           class="flex items-center space-x-1.5 text-gray-600 py-1.5 px-3 rounded-md hover:bg-gray-100 text-xs font-medium transition duration-150"
         >
@@ -127,6 +134,7 @@ const totalDiscount = (products) => {
           <span>Hủy</span>
         </button>
         <button
+          v-if="hasPermission(Permissions.InputsCreate)"
           @click="$emit('copy', itemData)"
           class="flex items-center space-x-1.5 text-gray-600 py-1.5 px-3 rounded-md hover:bg-gray-100 text-xs font-medium transition duration-150"
         >
@@ -136,7 +144,11 @@ const totalDiscount = (products) => {
       </div>
       <div class="flex items-center space-x-2">
         <button
-          v-if="itemData.statusId !== 'cancelled' && itemData.statusId !== 'finished'"
+          v-if="
+            hasPermission(Permissions.InputsEdit) &&
+            itemData.statusId !== 'cancelled' &&
+            itemData.statusId !== 'finished'
+          "
           @click="$emit('edit', itemData)"
           class="bg-red-600 text-white py-1.5 px-3 rounded-md hover:bg-red-700 text-xs font-medium transition duration-150 flex items-center space-x-1.5"
         >
@@ -144,6 +156,7 @@ const totalDiscount = (products) => {
           <span>Chỉnh sửa chi tiết phiếu</span>
         </button>
         <button
+          v-if="hasPermission(Permissions.InputsEdit)"
           @click="$emit('save-notes', { id: itemData.id, notes: notes })"
           class="text-gray-600 py-1.5 px-3 rounded-md hover:bg-gray-100 text-xs font-medium transition duration-150 border border-gray-300"
         >

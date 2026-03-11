@@ -31,6 +31,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  title: {
+    type: String,
+    default: '',
+  },
 })
 const emit = defineEmits(['close', 'activate', 'refresh'])
 
@@ -232,16 +236,34 @@ onBeforeUnmount(() => {
         <div class="resize-handle resize-right" @mousedown="startResize('right', $event)"></div>
         <div class="resize-handle resize-bottom" @mousedown="startResize('bottom', $event)"></div>
         <div class="resize-handle resize-left" @mousedown="startResize('left', $event)"></div>
-        <div class="resize-handle resize-top-left" @mousedown="startResize('top-left', $event)"></div>
-        <div class="resize-handle resize-top-right" @mousedown="startResize('top-right', $event)"></div>
-        <div class="resize-handle resize-bottom-left" @mousedown="startResize('bottom-left', $event)"></div>
-        <div class="resize-handle resize-bottom-right" @mousedown="startResize('bottom-right', $event)"></div>
+        <div
+          class="resize-handle resize-top-left"
+          @mousedown="startResize('top-left', $event)"
+        ></div>
+        <div
+          class="resize-handle resize-top-right"
+          @mousedown="startResize('top-right', $event)"
+        ></div>
+        <div
+          class="resize-handle resize-bottom-left"
+          @mousedown="startResize('bottom-left', $event)"
+        ></div>
+        <div
+          class="resize-handle resize-bottom-right"
+          @mousedown="startResize('bottom-right', $event)"
+        ></div>
       </template>
 
       <div class="modal-header" @mousedown="!isMaximized && startDrag($event)">
-        <slot name="header">Tiêu đề</slot>
+        <slot name="header">
+          <h3 class="text-lg font-semibold text-gray-800">{{ title || 'Tiêu đề' }}</h3>
+        </slot>
         <div class="modal-controls">
-          <button v-if="hasRefreshListener && !disabled" class="modal-control-button" @click="emit('refresh')">
+          <button
+            v-if="hasRefreshListener && !disabled"
+            class="modal-control-button"
+            @click="props.onRefresh ? props.onRefresh() : emit('refresh')"
+          >
             <IconRefresh />
           </button>
           <button class="modal-control-button" :disabled="disabled" @click="toggleMaximize">

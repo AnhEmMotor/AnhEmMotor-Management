@@ -12,6 +12,8 @@ import * as apiProducts from '@/api/product'
 import * as apiOrders from '@/api/order'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { useQuery } from '@tanstack/vue-query'
+import { Permissions } from '@/constants/permissions'
+import { usePermission } from '@/composables/usePermission'
 
 const props = defineProps({
   show: { type: Boolean, default: false },
@@ -21,6 +23,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['close', 'save', 'activate', 'delete'])
 const ordersStore = useOrdersStore()
+const { hasPermission } = usePermission()
 
 const localData = ref({
   customer: null,
@@ -747,6 +750,10 @@ onBeforeUnmount(() => {
         <div class="flex gap-2">
           <Button text="Huỷ" color="gray" @click="$emit('close')" />
           <Button
+            v-if="
+              (props.order && hasPermission(Permissions.OutputsEdit)) ||
+              (!props.order && hasPermission(Permissions.OutputsCreate))
+            "
             :text="props.order ? 'Lưu' : 'Tạo đơn'"
             color="primary"
             @click="submit"

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/useAuthStore'
+import { Permissions } from '@/constants/permissions'
 const DashboardLayout = () => import('@/components/layout/DashboardLayout.vue')
 const TheHome = () => import('@/views/TheHome.vue')
 const LoginView = () => import('@/views/LoginView.vue')
@@ -44,85 +45,141 @@ const router = createRouter({
           name: 'orders-manager',
           path: 'orders',
           component: OrdersManager,
-          meta: { requiresAuth: true, title: 'Quản lý đơn hàng' },
+          meta: {
+            requiresAuth: true,
+            title: 'Quản lý đơn hàng',
+            permission: Permissions.OutputsView,
+          },
         },
         {
           name: 'customer-manager',
           path: 'customers',
           component: CustomerManager,
-          meta: { requiresAuth: true, title: 'Quản lý khách hàng' },
+          meta: {
+            requiresAuth: true,
+            title: 'Quản lý khách hàng',
+            permission: Permissions.UsersView,
+          },
         },
         {
           name: 'product-manager',
           path: 'products',
           component: ProductsManager,
-          meta: { requiresAuth: true, title: 'Quản lý sản phẩm' },
+          meta: {
+            requiresAuth: true,
+            title: 'Quản lý sản phẩm',
+            permission: Permissions.ProductsView,
+          },
         },
         {
           name: 'report-product',
           path: 'report-product',
           component: ProductReport,
-          meta: { requiresAuth: true, title: 'Báo cáo sản phẩm' },
+          meta: {
+            requiresAuth: true,
+            title: 'Báo cáo sản phẩm',
+            permission: Permissions.StatisticalView,
+          },
         },
         {
           name: 'revenue-analysis',
           path: 'report-revenue',
           component: RevenueAnalysis,
-          meta: { requiresAuth: true, title: 'Báo cáo doanh thu' },
+          meta: {
+            requiresAuth: true,
+            title: 'Báo cáo doanh thu',
+            permission: Permissions.StatisticalView,
+          },
         },
         {
           name: 'warehouse-report',
           path: 'report-warehouse',
           component: WarehouseReport,
-          meta: { requiresAuth: true, title: 'Báo cáo kho' },
+          meta: {
+            requiresAuth: true,
+            title: 'Báo cáo kho',
+            permission: Permissions.StatisticalView,
+          },
         },
         {
           name: 'inventory-input',
           path: 'inputs',
           component: InventoryInputManager,
-          meta: { requiresAuth: true, title: 'Quản lý nhập kho' },
+          meta: {
+            requiresAuth: true,
+            title: 'Quản lý nhập kho',
+            permission: Permissions.InputsView,
+          },
         },
         {
           name: 'category-manager',
           path: 'categories',
           component: CategoryManager,
-          meta: { requiresAuth: true, title: 'Quản lý thể loại sản phẩm' },
+          meta: {
+            requiresAuth: true,
+            title: 'Quản lý thể loại sản phẩm',
+            permission: Permissions.ProductCategoriesView,
+          },
         },
         {
           name: 'brand-manager',
           path: 'brands',
           component: BrandManager,
-          meta: { requiresAuth: true, title: 'Quản lý thương hiệu' },
+          meta: {
+            requiresAuth: true,
+            title: 'Quản lý thương hiệu',
+            permission: Permissions.BrandsView,
+          },
         },
         {
           name: 'supplier',
           path: 'suppliers',
           component: SupplierManager,
-          meta: { requiresAuth: true, title: 'Quản lý nhà cung cấp' },
+          meta: {
+            requiresAuth: true,
+            title: 'Quản lý nhà cung cấp',
+            permission: Permissions.SuppliersView,
+          },
         },
         {
           name: 'users',
           path: 'users',
           component: UserManager,
-          meta: { requiresAuth: true, title: 'Quản lý người dùng' },
+          meta: {
+            requiresAuth: true,
+            title: 'Quản lý người dùng',
+            permission: Permissions.UsersView,
+          },
         },
         {
           name: 'permissions',
           path: 'permissions',
           component: RolePermissionManager,
-          meta: { requiresAuth: true, title: 'Quyền & Vai trò' },
+          meta: {
+            requiresAuth: true,
+            title: 'Quyền & Vai trò',
+            permission: Permissions.RolesView,
+          },
         },
         {
           name: 'price-management',
           path: 'price-management',
           component: PriceManagement,
-          meta: { requiresAuth: true, title: 'Quản lý giá' },
+          meta: {
+            requiresAuth: true,
+            title: 'Quản lý giá',
+            permission: Permissions.ProductsEditPrice,
+          },
         },
         {
           name: 'settings',
           path: 'settings',
           component: SettingsView,
-          meta: { requiresAuth: true, title: 'Cài đặt' },
+          meta: {
+            requiresAuth: true,
+            title: 'Cài đặt',
+            permission: Permissions.SettingsView,
+          },
         },
         {
           name: 'user-profile',
@@ -141,7 +198,6 @@ const router = createRouter({
   ],
 })
 
-
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
 
@@ -159,15 +215,14 @@ router.beforeEach(async (to, from, next) => {
   if (to.meta.permission) {
     const user = authStore.user
     const permissions = user?.permissions || []
-    const hasAccess = permissions.includes('ADMIN') || permissions.includes(to.meta.permission)
+    const hasAccess = permissions.includes(to.meta.permission)
     if (!hasAccess) return next('/')
   }
 
   if (to.meta.permissions) {
     const user = authStore.user
     const permissions = user?.permissions || []
-    const hasAccess =
-      permissions.includes('ADMIN') || to.meta.permissions.some((p) => permissions.includes(p))
+    const hasAccess = to.meta.permissions.some((p) => permissions.includes(p))
     if (!hasAccess) return next('/')
   }
 

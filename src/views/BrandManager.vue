@@ -5,6 +5,8 @@ import * as brandApi from '@/api/brand'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { showConfirmation } from '@/composables/useConfirmationState'
 import { useToast } from 'vue-toastification'
+import { Permissions } from '@/constants/permissions'
+import { usePermission } from '@/composables/usePermission'
 import Button from '@/components/ui/button/BaseButton.vue'
 import Input from '@/components/ui/input/BaseInput.vue'
 import Pagination from '@/components/ui/button/BasePagination.vue'
@@ -20,6 +22,7 @@ import IconTrash from '@/assets/icons/IconTrash.svg'
 
 const queryClient = useQueryClient()
 const toast = useToast()
+const { hasPermission } = usePermission()
 
 const isSaving = ref(false)
 const isRefreshing = ref(false)
@@ -197,8 +200,18 @@ const handleRefreshForm = async () => {
     >
       <h1 class="text-3xl font-bold text-gray-800">Quản lý thương hiệu</h1>
       <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full lg:w-auto">
-        <Button text="Thêm thương hiệu" :icon="IconPlus" color="primary" @click="openAddModal" />
-        <label for="import-brand-input" class="cursor-pointer">
+        <Button
+          v-if="hasPermission(Permissions.BrandsCreate)"
+          text="Thêm thương hiệu"
+          :icon="IconPlus"
+          color="primary"
+          @click="openAddModal"
+        />
+        <label
+          v-if="hasPermission(Permissions.BrandsCreate)"
+          for="import-brand-input"
+          class="cursor-pointer"
+        >
           <Button text="Import" :icon="IconFileImport" color="secondary" as="span" />
           <input
             type="file"
@@ -208,7 +221,13 @@ const handleRefreshForm = async () => {
             @change="importExcel"
           />
         </label>
-        <Button text="Export" :icon="IconFileExport" color="secondary" @click="exportExcel" />
+        <Button
+          v-if="hasPermission(Permissions.BrandsView)"
+          text="Export"
+          :icon="IconFileExport"
+          color="secondary"
+          @click="exportExcel"
+        />
       </div>
     </div>
 
@@ -263,8 +282,17 @@ const handleRefreshForm = async () => {
             <td class="py-3 px-6 font-medium text-gray-800">{{ brand.name }}</td>
             <td class="py-3 px-6 text-gray-500">{{ brand.description || '—' }}</td>
             <td class="py-3 px-6 text-center space-x-2">
-              <SmallNoBgButton @click="openEditModal(brand)" :icon="IconEdit">Sửa</SmallNoBgButton>
-              <SmallNoBgButton color="red" @click="promptDelete(brand)" :icon="IconTrash"
+              <SmallNoBgButton
+                v-if="hasPermission(Permissions.BrandsEdit)"
+                @click="openEditModal(brand)"
+                :icon="IconEdit"
+                >Sửa</SmallNoBgButton
+              >
+              <SmallNoBgButton
+                v-if="hasPermission(Permissions.BrandsDelete)"
+                color="red"
+                @click="promptDelete(brand)"
+                :icon="IconTrash"
                 >Xóa</SmallNoBgButton
               >
             </td>

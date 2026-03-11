@@ -8,11 +8,24 @@
       </div>
       <div class="flex items-center gap-3">
         <div class="hidden sm:flex items-center gap-2">
-          <div
-            class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-sm shrink-0"
-          >
-            {{ authStore.user?.fullName?.charAt(0) || 'A' }}
-          </div>
+          <template v-if="authStore.user?.avatarUrl">
+            <img
+              :src="
+                authStore.user.avatarUrl.startsWith('http')
+                  ? authStore.user.avatarUrl
+                  : `${apiUrl}${authStore.user.avatarUrl.startsWith('/') ? '' : '/'}${authStore.user.avatarUrl}`
+              "
+              alt="Avatar"
+              class="w-8 h-8 rounded-full object-cover shrink-0"
+            />
+          </template>
+          <template v-else>
+            <div
+              class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-sm shrink-0"
+            >
+              {{ authStore.user?.fullName?.charAt(0)?.toUpperCase() || 'A' }}
+            </div>
+          </template>
           <span class="text-sm font-medium text-gray-700 truncate max-w-[120px]">
             {{ authStore.user?.fullName }}
           </span>
@@ -83,7 +96,15 @@
             </RouterLink>
           </li>
 
-          <li>
+          <li
+            v-if="
+              hasAnyPermission([
+                Permissions.BrandsView,
+                Permissions.ProductCategoriesView,
+                Permissions.ProductsView,
+              ])
+            "
+          >
             <button
               @click="toggleGroup('productGroup')"
               class="flex items-center justify-between space-x-3 p-3 rounded-lg w-full font-medium cursor-pointer text-gray-600 hover:bg-gray-50 hover:text-red-600 border-l-4 border-transparent"
@@ -99,7 +120,7 @@
               <IconUpArrow :isOpen="openGroups.includes('productGroup')" />
             </button>
             <ul v-if="openGroups.includes('productGroup')" class="mt-1 space-y-1 pl-3">
-              <li>
+              <li v-if="hasPermission(Permissions.BrandsView)">
                 <RouterLink
                   to="/brands"
                   class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
@@ -114,7 +135,7 @@
                   <span>Thương hiệu</span>
                 </RouterLink>
               </li>
-              <li>
+              <li v-if="hasPermission(Permissions.ProductCategoriesView)">
                 <RouterLink
                   to="/categories"
                   class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
@@ -129,7 +150,7 @@
                   <span>Thể loại</span>
                 </RouterLink>
               </li>
-              <li>
+              <li v-if="hasPermission(Permissions.ProductsView)">
                 <RouterLink
                   to="/products"
                   class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
@@ -147,7 +168,15 @@
             </ul>
           </li>
 
-          <li>
+          <li
+            v-if="
+              hasAnyPermission([
+                Permissions.SuppliersView,
+                Permissions.InputsView,
+                Permissions.ProductsEditPrice,
+              ])
+            "
+          >
             <button
               @click="toggleGroup('warehouse')"
               class="flex items-center justify-between space-x-3 p-3 rounded-lg w-full font-medium cursor-pointer text-gray-600 hover:bg-gray-50 hover:text-red-600 border-l-4 border-transparent"
@@ -164,7 +193,7 @@
             </button>
 
             <ul v-if="openGroups.includes('warehouse')" class="mt-1 space-y-1 pl-3">
-              <li>
+              <li v-if="hasPermission(Permissions.SuppliersView)">
                 <RouterLink
                   to="/suppliers"
                   class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
@@ -179,7 +208,7 @@
                   <span>Nhà cung cấp</span>
                 </RouterLink>
               </li>
-              <li>
+              <li v-if="hasPermission(Permissions.InputsView)">
                 <RouterLink
                   to="/inputs"
                   class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
@@ -194,7 +223,7 @@
                   <span>Nhập kho</span>
                 </RouterLink>
               </li>
-              <li>
+              <li v-if="hasPermission(Permissions.ProductsEditPrice)">
                 <RouterLink
                   to="/price-management"
                   class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
@@ -212,7 +241,7 @@
             </ul>
           </li>
 
-          <li>
+          <li v-if="hasPermission(Permissions.OutputsView)">
             <RouterLink
               to="/orders"
               class="flex items-center space-x-3 p-3 rounded-lg w-full font-medium"
@@ -232,7 +261,7 @@
             </RouterLink>
           </li>
 
-          <li>
+          <li v-if="hasAnyPermission([Permissions.UsersView, Permissions.RolesView])">
             <button
               @click="toggleGroup('user')"
               class="flex items-center justify-between space-x-3 p-3 rounded-lg w-full font-medium cursor-pointer text-gray-600 hover:bg-gray-50 hover:text-red-600 border-l-4 border-transparent"
@@ -240,7 +269,7 @@
             >
               <div class="flex items-center space-x-3">
                 <IconUser
-                  class="flex-shrink-0"
+                  class="flex-shrink-0 w-6 h-6"
                   :class="isGroupActive('user') ? 'text-red-600' : 'text-gray-500'"
                 />
                 <span>Người dùng</span>
@@ -249,7 +278,7 @@
             </button>
 
             <ul v-if="openGroups.includes('user')" class="mt-1 space-y-1 pl-3">
-              <li>
+              <li v-if="hasPermission(Permissions.UsersView)">
                 <RouterLink
                   to="/users"
                   class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
@@ -264,7 +293,7 @@
                   <span>Danh sách</span>
                 </RouterLink>
               </li>
-              <li>
+              <li v-if="hasPermission(Permissions.RolesView)">
                 <RouterLink
                   to="/permissions"
                   class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
@@ -282,7 +311,7 @@
             </ul>
           </li>
 
-          <li>
+          <li v-if="hasPermission(Permissions.StatisticalView)">
             <button
               @click="toggleGroup('reports')"
               class="flex items-center justify-between space-x-3 p-3 rounded-lg w-full font-medium cursor-pointer text-gray-600 hover:bg-gray-50 hover:text-red-600 border-l-4 border-transparent"
@@ -347,7 +376,7 @@
             </ul>
           </li>
 
-          <li>
+          <li v-if="hasPermission(Permissions.SettingsView)">
             <RouterLink
               to="/settings"
               class="flex items-center space-x-3 p-3 rounded-lg w-full font-medium"
@@ -396,11 +425,24 @@
             class="flex items-center gap-3 w-full rounded-xl p-2 cursor-pointer hover:bg-white transition-colors border border-transparent hover:border-gray-100"
             @mouseenter="isUserMenuOpen = true"
           >
-            <div
-              class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold shrink-0"
-            >
-              {{ authStore.user?.fullName?.charAt(0) || 'A' }}
-            </div>
+            <template v-if="authStore.user?.avatarUrl">
+              <img
+                :src="
+                  authStore.user.avatarUrl.startsWith('http')
+                    ? authStore.user.avatarUrl
+                    : `${apiUrl}${authStore.user.avatarUrl.startsWith('/') ? '' : '/'}${authStore.user.avatarUrl}`
+                "
+                alt="Avatar"
+                class="w-10 h-10 rounded-full object-cover shrink-0 border border-gray-200"
+              />
+            </template>
+            <template v-else>
+              <div
+                class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold shrink-0"
+              >
+                {{ authStore.user?.fullName?.charAt(0)?.toUpperCase() || 'A' }}
+              </div>
+            </template>
             <div class="flex-1 min-w-0">
               <p class="text-sm font-medium text-gray-900 truncate">
                 {{ authStore.user?.fullName || 'Admin User' }}
@@ -455,6 +497,11 @@ import IconLock from '@/assets/icons/login-lock.svg'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useRouter, useRoute } from 'vue-router'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
+import { Permissions } from '@/constants/permissions'
+import { usePermission } from '@/composables/usePermission'
+
+const { hasPermission, hasAnyPermission } = usePermission()
+const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 const openGroups = ref([])
 const route = useRoute()

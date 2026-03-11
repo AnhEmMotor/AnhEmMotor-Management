@@ -33,9 +33,18 @@ export const useAuthStore = defineStore('auth', () => {
     closeSSE()
   }
 
-  const performLogout = () => {
+  const performLogout = async (skipApiCall = false) => {
     if (isLoggingOut) return
     isLoggingOut = true
+
+    const token = getAccessToken()
+    if (!skipApiCall && token) {
+      try {
+        await authApi.logoutUser()
+      } catch {
+        console.error('Có lỗi trong quá trình logout. Vui lòng liên hệ với quản trị viên!')
+      }
+    }
 
     cleanState()
     router.push({ name: 'login' })
@@ -43,8 +52,6 @@ export const useAuthStore = defineStore('auth', () => {
     setTimeout(() => {
       queryClient.clear()
     }, 50)
-
-    authApi.logoutUser().catch(() => {})
 
     setTimeout(() => {
       isLoggingOut = false
@@ -56,7 +63,11 @@ export const useAuthStore = defineStore('auth', () => {
   watch(
     () => user.value?.permissions,
     (newPermissions) => {
-      if (!newPermissions) return
+      if (user.value && (!newPermissions || newPermissions.length === 0)) {
+        performLogout()
+        return
+      }
+
       queryClient.invalidateQueries()
 
       const currentRoute = router.currentRoute.value

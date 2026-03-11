@@ -2,7 +2,6 @@
 import { ref, computed, watch } from 'vue'
 import { useInputsStore } from '@/stores/useInputsStore'
 import { fetchInventoryReceipts, getInventoryReceiptById, fetchInputStatuses } from '@/api/input'
-import * as XLSX from 'xlsx'
 import InventoryItem from '@/components/inventory_input/InventoryItem.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
 import Pagination from '@/components/ui/button/BasePagination.vue'
@@ -20,10 +19,13 @@ import IconPlus from '@/assets/icons/IconPlus.svg'
 import IconFileImport from '@/assets/icons/IconFileImport.svg'
 import IconFileExport from '@/assets/icons/IconFileExport.svg'
 import IconEmptyBox from '@/assets/icons/empty-box.svg'
+import { Permissions } from '@/constants/permissions'
+import { usePermission } from '@/composables/usePermission'
 
 const inputsStore = useInputsStore()
 const queryClient = useQueryClient()
 const toast = useToast()
+const { hasPermission } = usePermission()
 
 const expandedItemId = ref(null)
 const itemsPerPage = ref(15)
@@ -79,25 +81,6 @@ watch(isError, (hasError) => {
 
 function handleToggleDetail(itemId) {
   expandedItemId.value = expandedItemId.value === itemId ? null : itemId
-}
-
-const exportExcel = () => {
-  if (filteredItems.value.length === 0) {
-    toast.warning('Không có dữ liệu để xuất')
-    return
-  }
-  const exportData = filteredItems.value.map((item) => ({
-    'Mã Phiếu Nhập': item.id,
-    'Thời Gian': item.createdAt,
-    'Tên NCC': item.supplierName,
-    'Trạng Thái': statusMap.value[item.statusId] || item.statusId,
-    'Ghi Chú': item.notes,
-  }))
-  const workbook = XLSX.utils.book_new()
-  const worksheet = XLSX.utils.json_to_sheet(exportData)
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Danh Sách Phiếu Nhập')
-  const currentDate = new Date().toISOString().split('T')[0]
-  XLSX.writeFile(workbook, `DanhSachPhieuNhap_${currentDate}.xlsx`)
 }
 
 const handleImport = () => {
@@ -387,13 +370,14 @@ const handleCopyReceipt = async (item) => {
 
       <div class="flex flex-wrap gap-2">
         <Button
+          v-if="hasPermission(Permissions.InputsCreate)"
           text="Tạo phiếu nhập hàng"
           :icon="IconPlus"
           color="primary"
           @click="openNewInventoryModal"
         />
 
-        <label class="cursor-pointer">
+        <label v-if="hasPermission(Permissions.InputsCreate)" class="cursor-pointer">
           <Button
             text="Import"
             :icon="IconFileImport"
@@ -403,7 +387,13 @@ const handleCopyReceipt = async (item) => {
           />
         </label>
 
-        <Button text="Export" :icon="IconFileExport" color="secondary" @click="exportExcel" />
+        <Button
+          v-if="hasPermission(Permissions.InputsView)"
+          text="Export"
+          :icon="IconFileExport"
+          color="secondary"
+          @click="handleExport"
+        />
 
         <span class="text-gray-400 mx-4 hidden border-r-2 sm:block" />
 

@@ -2,9 +2,8 @@
 import { ref, watch, computed } from 'vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
 import Input from '@/components/ui/input/BaseInput.vue'
-import Textarea from '@/components/ui/input/BaseTextarea.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
-import Dropdown from '../ui/input/BaseDropdown.vue'
+import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 
 const props = defineProps({
   show: {
@@ -27,20 +26,25 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  permissionStructure: {
+    type: Object,
+    default: null,
+  },
+  isFetching: {
+    type: Boolean,
+    default: false,
+  },
 })
 
-const emit = defineEmits(['close', 'save', 'activate'])
+const emit = defineEmits(['close', 'save', 'activate', 'refresh'])
 
 const formData = ref({
   name: '',
-  description: '',
   permissions: [],
-  status: 'active',
 })
 
 const errors = ref({
   name: '',
-  description: '',
 })
 
 const permissionsByCategory = computed(() => {
@@ -57,13 +61,10 @@ const permissionsByCategory = computed(() => {
 const resetForm = () => {
   formData.value = {
     name: '',
-    description: '',
     permissions: [],
-    status: 'active',
   }
   errors.value = {
     name: '',
-    description: '',
   }
 }
 
@@ -73,9 +74,7 @@ watch(
     if (newRole) {
       formData.value = {
         name: newRole.name || '',
-        description: newRole.description || '',
         permissions: newRole.permissions || [],
-        status: newRole.status || 'active',
       }
     } else {
       resetForm()
@@ -84,12 +83,49 @@ watch(
   { immediate: true },
 )
 
-const togglePermission = (permissionId) => {
+const checkPermissionWithRules = (permissionId) => {
+  if (!formData.value.permissions.includes(permissionId)) {
+    formData.value.permissions.push(permissionId)
+  }
+
+  if (!props.permissionStructure) return
+
+  const deps = props.permissionStructure.dependencies?.[permissionId] || []
+  deps.forEach((depId) => {
+    if (!formData.value.permissions.includes(depId)) {
+      checkPermissionWithRules(depId)
+    }
+  })
+
+  const conflicts = props.permissionStructure.conflicts?.[permissionId] || []
+  conflicts.forEach((conflictId) => {
+    uncheckPermissionWithDependents(conflictId)
+  })
+}
+
+const uncheckPermissionWithDependents = (permissionId) => {
   const index = formData.value.permissions.indexOf(permissionId)
   if (index > -1) {
     formData.value.permissions.splice(index, 1)
+  }
+
+  if (!props.permissionStructure) return
+
+  const dependencies = props.permissionStructure.dependencies || {}
+  const itemsToCheck = [...formData.value.permissions]
+  itemsToCheck.forEach((selectedId) => {
+    if (dependencies[selectedId] && dependencies[selectedId].includes(permissionId)) {
+      uncheckPermissionWithDependents(selectedId)
+    }
+  })
+}
+
+const togglePermission = (permissionId) => {
+  const index = formData.value.permissions.indexOf(permissionId)
+  if (index > -1) {
+    uncheckPermissionWithDependents(permissionId)
   } else {
-    formData.value.permissions.push(permissionId)
+    checkPermissionWithRules(permissionId)
   }
 }
 
@@ -103,16 +139,11 @@ const selectAllInCategory = (category) => {
 
   if (allSelected) {
     categoryPermissions.forEach((p) => {
-      const index = formData.value.permissions.indexOf(p.id)
-      if (index > -1) {
-        formData.value.permissions.splice(index, 1)
-      }
+      uncheckPermissionWithDependents(p.id)
     })
   } else {
     categoryPermissions.forEach((p) => {
-      if (!formData.value.permissions.includes(p.id)) {
-        formData.value.permissions.push(p.id)
-      }
+      checkPermissionWithRules(p.id)
     })
   }
 }
@@ -126,7 +157,6 @@ const validateForm = () => {
   let isValid = true
   errors.value = {
     name: '',
-    description: '',
   }
 
   if (!formData.value.name || formData.value.name.trim() === '') {
@@ -140,11 +170,6 @@ const validateForm = () => {
     isValid = false
   }
 
-  if (formData.value.description && formData.value.description.length > 255) {
-    errors.value.description = 'Ghi chú không được vượt quá 255 ký tự'
-    isValid = false
-  }
-
   return isValid
 }
 
@@ -152,9 +177,7 @@ const handleSave = () => {
   if (validateForm()) {
     emit('save', {
       name: formData.value.name.trim(),
-      description: formData.value.description.trim(),
       permissions: formData.value.permissions,
-      status: formData.value.status,
     })
   }
 }
@@ -163,10 +186,21 @@ const handleClose = () => {
   resetForm()
   emit('close')
 }
+const handleRefresh = () => {
+  if (props.role?.id) {
+    emit('refresh', props.role.id)
+  }
+}
 </script>
 
 <template>
-  <DraggableModal :zIndex="zIndex" width="800px" @close="handleClose" @activate="emit('activate')">
+  <DraggableModal
+    :zIndex="zIndex"
+    width="800px"
+    :onRefresh="isEditMode ? handleRefresh : undefined"
+    @close="handleClose"
+    @activate="emit('activate')"
+  >
     <template #header>
       <h3 class="text-lg font-semibold text-gray-800">
         {{ isEditMode ? 'Chỉnh sửa vai trò' : 'Thêm vai trò mới' }}
@@ -174,6 +208,7 @@ const handleClose = () => {
     </template>
 
     <template #body>
+      <LoadingOverlay :show="isFetching" />
       <div class="overflow-y-auto pr-2">
         <div class="grid grid-cols-1 gap-6">
           <div class="space-y-4">
@@ -186,30 +221,6 @@ const handleClose = () => {
                 :error="errors.name"
               />
               <p v-if="errors.name" class="mt-1 text-sm text-red-500">{{ errors.name }}</p>
-            </div>
-            <div>
-              <Textarea
-                v-model="formData.description"
-                label="Ghi chú"
-                placeholder="Nhập mô tả về vai trò này..."
-                :rows="3"
-                :error="errors.description"
-              />
-              <p v-if="errors.description" class="mt-1 text-sm text-red-500">
-                {{ errors.description }}
-              </p>
-              <p class="mt-1 text-sm text-gray-500">{{ formData.description.length }}/255 ký tự</p>
-            </div>
-
-            <div>
-              <Dropdown
-                v-model="formData.status"
-                label="Trạng thái"
-                :options="[
-                  { value: 'active', text: 'Hoạt động' },
-                  { value: 'disabled', text: 'Vô hiệu' },
-                ]"
-              />
             </div>
           </div>
 
@@ -251,30 +262,30 @@ const handleClose = () => {
                 </div>
 
                 <div class="bg-white divide-y divide-gray-100">
-                  <div
+                  <label
                     v-for="permission in permissions"
                     :key="permission.id"
-                    class="px-4 py-3 hover:bg-blue-50 transition-colors cursor-pointer"
-                    @click="togglePermission(permission.id)"
+                    :for="'permission-' + permission.id"
+                    class="block px-4 py-3 hover:bg-blue-50 transition-colors cursor-pointer m-0"
                   >
                     <div class="flex items-start space-x-3">
                       <input
                         type="checkbox"
                         :id="'permission-' + permission.id"
                         :checked="isPermissionSelected(permission.id)"
-                        @click.stop="togglePermission(permission.id)"
+                        @change="togglePermission(permission.id)"
                         class="mt-0.5 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
                       />
-                      <label :for="'permission-' + permission.id" class="flex-1 cursor-pointer">
+                      <div class="flex-1">
                         <div class="font-medium text-gray-800 text-sm">
                           {{ permission.name }}
                         </div>
                         <div class="text-xs text-gray-500 mt-0.5">
                           {{ permission.description }}
                         </div>
-                      </label>
+                      </div>
                     </div>
-                  </div>
+                  </label>
                 </div>
               </div>
             </div>

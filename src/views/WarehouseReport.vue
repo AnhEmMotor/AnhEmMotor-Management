@@ -1,5 +1,7 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { computed } from 'vue'
+import { useQuery } from '@tanstack/vue-query'
+import { statisticsService } from '@/api/statistics'
 import ReportStatsCard from '@/components/ui/ReportStatsCard.vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
@@ -11,104 +13,56 @@ import IconPlus from '@/assets/icons/IconPlus.svg'
 import IconFileExport from '@/assets/icons/IconFileExport.svg'
 import IconExpand from '@/assets/icons/IconExpand.svg'
 
-const isLoading = ref(true)
-
-onMounted(() => {
-  setTimeout(() => {
-    isLoading.value = false
-  }, 1200)
+const { isLoading, data: apiData } = useQuery({
+  queryKey: ['admin', 'warehouse-report'],
+  queryFn: statisticsService.getAdminWarehouseReport,
+  staleTime: 5 * 60 * 1000,
 })
 
-const warehouseData = ref([
-  {
-    name: 'Honda',
-    totalStock: 245,
-    capacity: 300,
-    lowStock: 12,
-    outOfStock: 3,
-    status: 'Bình thường',
-    value: 1250000000,
-  },
-  {
-    name: 'Yamaha',
-    totalStock: 198,
-    capacity: 250,
-    lowStock: 8,
-    outOfStock: 1,
-    status: 'Bình thường',
-    value: 980000000,
-  },
-  {
-    name: 'Suzuki',
-    totalStock: 156,
-    capacity: 200,
-    lowStock: 15,
-    outOfStock: 5,
-    status: 'Cảnh báo',
-    value: 650000000,
-  },
-  {
-    name: 'Kawasaki',
-    totalStock: 89,
-    capacity: 150,
-    lowStock: 22,
-    outOfStock: 8,
-    status: 'Cảnh báo',
-    value: 420000000,
-  },
-])
+const reportData = computed(() => apiData.value || {})
 
-const totalStock = computed(() =>
-  warehouseData.value.reduce((sum, item) => sum + item.totalStock, 0),
-)
+const warehouseData = computed(() => reportData.value.warehouseTableData || [])
 
-const totalValue = computed(() => warehouseData.value.reduce((sum, item) => sum + item.value, 0))
-
-const totalLowStock = computed(() =>
-  warehouseData.value.reduce((sum, item) => sum + item.lowStock, 0),
-)
-
-const totalOutOfStock = computed(() =>
-  warehouseData.value.reduce((sum, item) => sum + item.outOfStock, 0),
-)
+const totalStock = computed(() => reportData.value.summary?.totalStock || 0)
+const totalValue = computed(() => reportData.value.summary?.totalValue || 0)
+const totalLowStock = computed(() => reportData.value.summary?.lowStockCount || 0)
+const totalOutOfStock = computed(() => reportData.value.summary?.outOfStockCount || 0)
 
 const formatCurrency = (value) => {
   if (value >= 1000000000) return `${(value / 1000000000).toFixed(2)} tỷ`
   if (value >= 1000000) return `${(value / 1000000).toFixed(0)} triệu`
-  return value.toLocaleString('vi-VN')
+  return value?.toLocaleString('vi-VN') || 0
 }
 
-const capacityPercent = (item) => Math.round((item.totalStock / item.capacity) * 100)
+const capacityPercent = (item) => {
+  if (!item.capacity) return 0
+  return Math.max(0, Math.min(100, Math.round((item.totalStock / item.capacity) * 100)))
+}
 
 const getStatusClass = (status) => {
   if (status === 'Bình thường') return 'gray'
   return 'red'
 }
 
-const barChartData = computed(() =>
-  warehouseData.value.map((item) => ({
-    name: item.name,
-    inStock: item.totalStock - item.lowStock - item.outOfStock,
+const barChartData = computed(() => {
+  return (reportData.value.stockByBrand || []).map((item) => ({
+    name: item.brandName,
+    inStock: item.inStock,
     lowStock: item.lowStock,
     outOfStock: item.outOfStock,
-  })),
-)
+  }))
+})
 
 const donutChartData = computed(() => {
-  const safe = totalStock.value - totalLowStock.value - totalOutOfStock.value
-  return [
-    { label: 'An toàn', value: safe },
-    { label: 'Sắp hết', value: totalLowStock.value },
-    { label: 'Hết hàng', value: totalOutOfStock.value },
-  ]
+  return (reportData.value.stockStatusRatio || []).map((item) => ({
+    label: item.statusLabel,
+    value: item.count,
+  }))
 })
 
 const handleExport = () => {}
-
 const handleImport = () => {}
-
 const handleViewDetail = () => {}
-
 const handleRestock = () => {}
 </script>
 
@@ -191,11 +145,11 @@ const handleRestock = () => {}
           <tbody class="text-gray-600 text-sm">
             <tr
               v-for="item in warehouseData"
-              :key="item.name"
+              :key="item.brandName"
               class="border-b border-gray-200 hover:bg-gray-50 transition-colors"
             >
               <td class="py-3 px-6 whitespace-nowrap font-medium text-gray-900">
-                {{ item.name }}
+                {{ item.brandName }}
               </td>
               <td class="py-3 px-6 whitespace-nowrap">
                 <div class="flex items-center gap-3">
