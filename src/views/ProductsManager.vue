@@ -6,6 +6,8 @@ import { getPredefinedOptions, getInventoryStatuses } from '@/api/options'
 import { useProductsStore } from '@/stores/useProductsStore'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { useToast } from 'vue-toastification'
+import { Permissions } from '@/constants/permissions'
+import { usePermission } from '@/composables/usePermission'
 import ProductForm from '@/components/product/ProductForm.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
 import Input from '@/components/ui/input/BaseInput.vue'
@@ -22,6 +24,8 @@ import IconEdit from '@/assets/icons/IconEdit.svg'
 import IconTrash from '@/assets/icons/IconTrash.svg'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
+
+const { hasPermission } = usePermission()
 
 const productsStore = useProductsStore()
 const queryClient = useQueryClient()
@@ -435,8 +439,18 @@ const exportExcel = () => {
     >
       <h1 class="text-3xl font-bold text-gray-800">Quản lý sản phẩm</h1>
       <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full lg:w-auto">
-        <Button text="Thêm sản phẩm" :icon="IconPlus" color="primary" @click="openAddEditModal()" />
-        <label for="import-product-input" class="cursor-pointer">
+        <Button
+          v-if="hasPermission(Permissions.ProductsCreate)"
+          text="Thêm sản phẩm"
+          :icon="IconPlus"
+          color="primary"
+          @click="openAddEditModal()"
+        />
+        <label
+          v-if="hasPermission(Permissions.ProductsCreate)"
+          for="import-product-input"
+          class="cursor-pointer"
+        >
           <Button text="Import" :icon="IconFileImport" color="secondary" as="span" />
           <input
             type="file"
@@ -446,7 +460,13 @@ const exportExcel = () => {
             @change="importExcel"
           />
         </label>
-        <Button text="Export" :icon="IconFileExport" color="secondary" @click="exportExcel" />
+        <Button
+          v-if="hasPermission(Permissions.ProductsView)"
+          text="Export"
+          :icon="IconFileExport"
+          color="secondary"
+          @click="exportExcel"
+        />
       </div>
     </div>
 
@@ -590,10 +610,17 @@ const exportExcel = () => {
                 </RoundBadge>
               </td>
               <td class="py-3 px-6 text-center space-x-2">
-                <SmallNoBgButton @click="openAddEditModal(product)" :icon="IconEdit"
+                <SmallNoBgButton
+                  v-if="hasPermission(Permissions.ProductsEdit)"
+                  @click="openAddEditModal(product)"
+                  :icon="IconEdit"
                   >Sửa</SmallNoBgButton
                 >
-                <SmallNoBgButton color="red" @click="promptDelete(product)" :icon="IconTrash"
+                <SmallNoBgButton
+                  v-if="hasPermission(Permissions.ProductsDelete)"
+                  color="red"
+                  @click="promptDelete(product)"
+                  :icon="IconTrash"
                   >Xóa</SmallNoBgButton
                 >
               </td>

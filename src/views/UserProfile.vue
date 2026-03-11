@@ -1,18 +1,65 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useRoute, useRouter } from 'vue-router'
 import Button from '@/components/ui/button/BaseButton.vue'
 import Input from '@/components/ui/input/BaseInput.vue'
 import IconAvatarEdit from '@/assets/icons/avatar-edit.svg'
+import { updateProfile, changePassword, uploadAvatar } from '@/api/auth'
+import { useToast } from 'vue-toastification'
+import { useQuery } from '@tanstack/vue-query'
+import { getGenderOptions } from '@/api/options'
+import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
+import DateTimePicker from '@/components/ui/input/DateTimePicker.vue'
 
+const toast = useToast()
 const authStore = useAuthStore()
 const route = useRoute()
 const router = useRouter()
 
-const user = ref({ ...authStore.user })
+// Dùng trực tiếp computed trên authStore.user để lấy realtime update từ SSE
+const user = computed(() => authStore.user || {})
 
 const currentUserEmail = computed(() => user.value.email)
+
+const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+
+const activeTab = computed({
+  get: () => route.query.tab || 'profile',
+  set: (val) => router.replace({ query: { ...route.query, tab: val } }),
+})
+
+// Lấy danh sách giới tính từ API
+const { data: genderOptions, isLoading: isGendersLoading } = useQuery({
+  queryKey: ['gender-options'],
+  queryFn: getGenderOptions,
+  staleTime: Infinity,
+  enabled: computed(() => activeTab.value === 'profile'),
+})
+
+// Tạo bản sao cho form thông tin cá nhân
+const profileForm = ref({
+  fullName: user.value.fullName || '',
+  gender: user.value.gender || '',
+  phoneNumber: user.value.phoneNumber || '',
+  dateOfBirth: user.value.dateOfBirth?.split('T')[0] || '',
+})
+
+// Theo dõi user để cập nhật form (khi SSE cập nhật)
+watch(
+  user,
+  (newUser) => {
+    if (newUser && !profileForm.value.fullName && !profileForm.value.phoneNumber) {
+      profileForm.value = {
+        fullName: newUser.fullName || '',
+        gender: newUser.gender || '',
+        phoneNumber: newUser.phoneNumber || '',
+        dateOfBirth: newUser.dateOfBirth?.split('T')[0] || '',
+      }
+    }
+  },
+  { immediate: true },
+)
 
 const passwordForm = ref({
   currentPassword: '',
@@ -20,21 +67,72 @@ const passwordForm = ref({
   confirmPassword: '',
 })
 
-const activeTab = computed({
-  get: () => route.query.tab || 'profile',
-  set: (val) => router.replace({ query: { ...route.query, tab: val } }),
-})
+const fileInputRef = ref(null)
+const isUploadingAvatar = ref(false)
+const isUpdatingProfile = ref(false)
+const isChangingPassword = ref(false)
 
-const handleUpdateProfile = () => {
-  alert('Tính năng cập nhật thông tin đang được phát triển')
+const handleUpdateProfile = async () => {
+  try {
+    isUpdatingProfile.value = true
+    const payload = {
+      ...profileForm.value,
+      dateOfBirth: profileForm.value.dateOfBirth || null,
+    }
+    await updateProfile(payload)
+    toast.success('Cập nhật thông tin thành công')
+  } catch (error) {
+    toast.error(error.response?.data?.message || 'Cập nhật thất bại')
+  } finally {
+    isUpdatingProfile.value = false
+  }
 }
 
-const handleChangePassword = () => {
+const handleChangePassword = async () => {
   if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
-    alert('Mật khẩu mới không khớp')
+    toast.error('Mật khẩu mới không khớp')
     return
   }
-  alert('Tính năng đổi mật khẩu đang được phát triển')
+  try {
+    isChangingPassword.value = true
+    await changePassword({
+      currentPassword: passwordForm.value.currentPassword,
+      newPassword: passwordForm.value.newPassword,
+    })
+    toast.success('Đổi mật khẩu thành công')
+    passwordForm.value = { currentPassword: '', newPassword: '', confirmPassword: '' }
+  } catch (error) {
+    const errorData = error.response?.data
+    if (errorData?.errors && Array.isArray(errorData.errors)) {
+      errorData.errors.forEach((err) => {
+        toast.error(err.message || err.field || 'Đổi mật khẩu thất bại')
+      })
+    } else {
+      toast.error(errorData?.message || 'Đổi mật khẩu thất bại')
+    }
+  } finally {
+    isChangingPassword.value = false
+  }
+}
+
+const handleAvatarClick = () => {
+  fileInputRef.value?.click()
+}
+
+const handleAvatarChange = async (event) => {
+  const file = event.target.files[0]
+  if (!file) return
+
+  try {
+    isUploadingAvatar.value = true
+    await uploadAvatar(file)
+    toast.success('Tải lên ảnh đại diện thành công')
+  } catch (error) {
+    toast.error(error.response?.data?.message || 'Tải ảnh thất bại')
+  } finally {
+    isUploadingAvatar.value = false
+    event.target.value = '' // Reset
+  }
 }
 </script>
 
@@ -67,41 +165,88 @@ const handleChangePassword = () => {
       </button>
     </div>
 
-    <div v-if="activeTab === 'profile'" class="max-w-xl animate-fade-in-up">
+    <div v-if="activeTab === 'profile'" class="max-w-xl">
+      <LoadingOverlay
+        :show="(isGendersLoading && !genderOptions) || isUploadingAvatar || isUpdatingProfile"
+      />
       <div class="space-y-6">
         <div class="flex items-center gap-4">
           <div class="relative">
-            <div
-              class="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-3xl shrink-0 border-2 border-white shadow-md"
-            >
-              {{ user.fullName?.charAt(0) || 'A' }}
-            </div>
+            <template v-if="user.avatarUrl">
+              <img
+                :src="
+                  user.avatarUrl.startsWith('http')
+                    ? user.avatarUrl
+                    : `${apiUrl}${user.avatarUrl.startsWith('/') ? '' : '/'}${user.avatarUrl}`
+                "
+                alt="Avatar"
+                class="w-20 h-20 rounded-full object-cover shrink-0 border-2 border-white shadow-md"
+              />
+            </template>
+            <template v-else>
+              <div
+                class="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-3xl shrink-0 border-2 border-white shadow-md"
+              >
+                {{ user.fullName?.charAt(0)?.toUpperCase() || 'A' }}
+              </div>
+            </template>
             <button
               class="absolute bottom-0 right-0 p-1.5 bg-gray-800 text-white rounded-full hover:bg-gray-700 transition"
               title="Đổi ảnh đại diện"
+              @click="handleAvatarClick"
             >
               <IconAvatarEdit class="h-3 w-3" />
             </button>
+            <input
+              type="file"
+              ref="fileInputRef"
+              class="hidden"
+              accept="image/*"
+              @change="handleAvatarChange"
+            />
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-gray-800">{{ user.fullName }}</h3>
-            <p class="text-sm text-gray-500">{{ user.role || 'Administrator' }}</p>
+            <h3 class="text-lg font-semibold text-gray-800">{{ user.fullName || 'Người dùng' }}</h3>
+            <p class="text-sm text-gray-500">{{ user.email }}</p>
           </div>
         </div>
 
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Họ và tên</label>
-            <Input v-model="user.fullName" placeholder="Nhập họ tên" />
+            <Input
+              v-model="profileForm.fullName"
+              placeholder="Nhập họ tên"
+              inputClass="h-[42px] px-3"
+            />
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Giới tính</label>
+              <select
+                v-model="profileForm.gender"
+                class="block w-full border-gray-300 rounded-lg shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm px-3 py-2 border h-[42px] appearance-none bg-no-repeat bg-[right_12px_center] bg-[length:20px] transition-all duration-200"
+                style="
+                  background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E&quot;);
+                "
+              >
+                <option value="" disabled>Chọn giới tính</option>
+                <option v-for="opt in genderOptions" :key="opt.key" :value="opt.key">
+                  {{ opt.label }}
+                </option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Số điện thoại</label>
+              <Input
+                v-model="profileForm.phoneNumber"
+                placeholder="Nhập số điện thoại"
+                inputClass="h-[42px] px-3"
+              />
+            </div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <Input
-              v-model="user.email"
-              type="email"
-              disabled
-              class="bg-gray-50 cursor-not-allowed"
-            />
+            <DateTimePicker v-model="profileForm.dateOfBirth" label="Ngày sinh" />
           </div>
           <div class="pt-4">
             <Button color="primary" text="Lưu thay đổi" @click="handleUpdateProfile" />
@@ -110,7 +255,8 @@ const handleChangePassword = () => {
       </div>
     </div>
 
-    <div v-if="activeTab === 'password'" class="max-w-xl animate-fade-in-up">
+    <div v-if="activeTab === 'password'" class="max-w-xl">
+      <LoadingOverlay :show="isChangingPassword" />
       <form class="space-y-4" @submit.prevent="handleChangePassword">
         <input
           type="text"
@@ -128,6 +274,7 @@ const handleChangePassword = () => {
             v-model="passwordForm.currentPassword"
             type="password"
             placeholder="••••••"
+            inputClass="h-[42px] px-3"
           />
         </div>
 
@@ -138,6 +285,7 @@ const handleChangePassword = () => {
             v-model="passwordForm.newPassword"
             type="password"
             placeholder="••••••"
+            inputClass="h-[42px] px-3"
           />
         </div>
 
@@ -148,6 +296,7 @@ const handleChangePassword = () => {
             v-model="passwordForm.confirmPassword"
             type="password"
             placeholder="••••••"
+            inputClass="h-[42px] px-3"
           />
         </div>
 
@@ -159,19 +308,4 @@ const handleChangePassword = () => {
   </div>
 </template>
 
-<style scoped>
-.animate-fade-in-up {
-  animation: fadeInUp 0.3s ease-out;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-</style>
+<style scoped></style>

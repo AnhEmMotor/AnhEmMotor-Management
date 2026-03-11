@@ -4,6 +4,8 @@ import { useQueryClient } from '@tanstack/vue-query'
 import { useSuppliersStore } from '@/stores/useSuppliersStore'
 import { useToast } from 'vue-toastification'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
+import { Permissions } from '@/constants/permissions'
+import { usePermission } from '@/composables/usePermission'
 import { fetchSuppliers } from '@/api/supplier'
 import { storeToRefs } from 'pinia'
 import SupplierItem from '@/components/supplier/SupplierItem.vue'
@@ -22,6 +24,7 @@ import IconFileExport from '@/assets/icons/IconFileExport.svg'
 import IconEmptyBox from '@/assets/icons/empty-box.svg'
 
 const toast = useToast()
+const { hasPermission } = usePermission()
 const queryClient = useQueryClient()
 const suppliersStore = useSuppliersStore()
 
@@ -201,13 +204,18 @@ const handleImport = () => {
       </div>
       <div class="flex flex-wrap gap-2">
         <Button
+          v-if="hasPermission(Permissions.SuppliersCreate)"
           text="Thêm nhà cung cấp"
           :icon="IconPlus"
           color="primary"
           @click="openAddEditModal()"
         />
 
-        <label for="import-file-input" class="cursor-pointer">
+        <label
+          v-if="hasPermission(Permissions.SuppliersCreate)"
+          for="import-file-input"
+          class="cursor-pointer"
+        >
           <Button
             text="Import"
             :icon="IconFileImport"
@@ -217,7 +225,13 @@ const handleImport = () => {
           />
         </label>
 
-        <Button text="Export" :icon="IconFileExport" color="secondary" @click="handleExport" />
+        <Button
+          v-if="hasPermission(Permissions.SuppliersView)"
+          text="Export"
+          :icon="IconFileExport"
+          color="secondary"
+          @click="handleExport"
+        />
 
         <span class="text-gray-400 mx-4 hidden border-r-2 sm:block" />
 

@@ -5,6 +5,8 @@ import RoundBadge from '../ui/RoundBadge.vue'
 import * as apiSuppliers from '@/api/supplier'
 import * as apiProducts from '@/api/product'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
+import { Permissions } from '@/constants/permissions'
+import { usePermission } from '@/composables/usePermission'
 
 const props = defineProps({
   modelValue: {
@@ -15,11 +17,9 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  errors: {
-    type: Object,
-    default: () => ({}),
-  },
 })
+
+const { hasPermission } = usePermission()
 
 const emit = defineEmits(['update:modelValue', 'addProduct'])
 
@@ -242,11 +242,14 @@ onBeforeUnmount(() => {
               @input="updateSupplierDropdownPosition"
               @blur="handleSupplierBlur"
               type="text"
+              :disabled="!hasPermission(Permissions.InputsEdit) && props.isEditMode"
               placeholder="Tìm nhà cung cấp"
               class="w-full py-2.5 px-3 border border-gray-300 rounded-md text-sm outline-none transition-colors duration-200"
             />
             <button
-              v-if="localData.supplier"
+              v-if="
+                localData.supplier && (hasPermission(Permissions.InputsEdit) || !props.isEditMode)
+              "
               @click="clearSupplier"
               type="button"
               class="absolute right-2.5 top-1/2 -translate-y-1/2 bg-gray-200 border-none rounded-full w-6 h-6 flex items-center justify-center cursor-pointer text-lg text-gray-500"
@@ -333,6 +336,7 @@ onBeforeUnmount(() => {
         <label class="block text-sm font-medium text-gray-700 mb-2">Hàng hoá nhập</label>
         <div class="relative">
           <input
+            v-if="hasPermission(Permissions.InputsEdit) || !props.isEditMode"
             ref="productInputRef"
             v-model="productSearchRefs.search"
             @input="updateDropdownPosition"
@@ -449,6 +453,7 @@ onBeforeUnmount(() => {
                     @change="calculateProductTotal(product)"
                     type="number"
                     min="1"
+                    :disabled="!hasPermission(Permissions.InputsEdit) && props.isEditMode"
                     class="w-full py-2 px-3 border border-gray-300 rounded-md text-center text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium"
                   />
                   <div
@@ -469,6 +474,7 @@ onBeforeUnmount(() => {
                     @change="calculateProductTotal(product)"
                     type="number"
                     min="0"
+                    :disabled="!hasPermission(Permissions.InputsEdit) && props.isEditMode"
                     class="w-full py-2 px-3 border border-gray-300 rounded-md text-center text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium"
                   />
                   <div
@@ -488,6 +494,7 @@ onBeforeUnmount(() => {
                 </td>
                 <td class="py-4 px-4 text-center">
                   <button
+                    v-if="hasPermission(Permissions.InputsEdit) || !props.isEditMode"
                     @click="removeProduct(index)"
                     class="bg-transparent border-none cursor-pointer text-lg p-1 opacity-40 hover:opacity-100 transition-opacity duration-150 grayscale hover:grayscale-0"
                     type="button"
@@ -537,7 +544,13 @@ onBeforeUnmount(() => {
       </div>
 
       <div class="flex justify-between items-center mb-5">
-        <Textarea v-model="localData.notes" label="Ghi chú" placeholder="Ghi chú" :rows="4" />
+        <Textarea
+          v-model="localData.notes"
+          label="Ghi chú"
+          placeholder="Ghi chú"
+          :rows="4"
+          :disabled="!hasPermission(Permissions.InputsEdit) && props.isEditMode"
+        />
       </div>
     </div>
   </div>

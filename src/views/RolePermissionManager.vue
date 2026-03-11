@@ -1,187 +1,112 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import Input from '@/components/ui/input/BaseInput.vue'
+import Pagination from '@/components/ui/button/BasePagination.vue'
+import { ref, computed, watch } from 'vue'
 import { useToast } from 'vue-toastification'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
+import * as roleApi from '@/api/role'
+import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
+
 import RoleList from '@/components/roles/RoleList.vue'
 import RoleForm from '@/components/roles/RoleForm.vue'
 import RoleDeleteModal from '@/components/roles/RoleDeleteModal.vue'
-import RoleFilterButtons from '@/components/roles/RoleFilterButtons.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
 import IconPlus from '@/assets/icons/IconPlus.svg'
 import IconFileImport from '@/assets/icons/IconFileImport.svg'
 import IconFileExport from '@/assets/icons/IconFileExport.svg'
+import IconSearch from '@/assets/icons/search.svg'
+import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 
-const roles = ref([])
+const toast = useToast()
+const queryClient = useQueryClient()
 
-const availablePermissions = ref([
-  {
-    id: 1,
-    name: 'Xem sản phẩm',
-    description: 'Xem danh sách và chi tiết sản phẩm',
-    category: 'Quản lý sản phẩm',
-  },
-  {
-    id: 2,
-    name: 'Thêm sản phẩm',
-    description: 'Thêm sản phẩm mới vào hệ thống',
-    category: 'Quản lý sản phẩm',
-  },
-  {
-    id: 3,
-    name: 'Sửa sản phẩm',
-    description: 'Chỉnh sửa thông tin sản phẩm',
-    category: 'Quản lý sản phẩm',
-  },
-  {
-    id: 4,
-    name: 'Xóa sản phẩm',
-    description: 'Xóa sản phẩm khỏi hệ thống',
-    category: 'Quản lý sản phẩm',
-  },
-  {
-    id: 5,
-    name: 'Xuất Excel sản phẩm',
-    description: 'Xuất danh sách sản phẩm ra Excel',
-    category: 'Quản lý sản phẩm',
-  },
-
-  { id: 6, name: 'Xem kho', description: 'Xem thông tin kho hàng', category: 'Quản lý kho' },
-  {
-    id: 7,
-    name: 'Thêm phiếu nhập',
-    description: 'Tạo phiếu nhập hàng mới',
-    category: 'Quản lý kho',
-  },
-  {
-    id: 8,
-    name: 'Sửa phiếu nhập',
-    description: 'Chỉnh sửa phiếu nhập hàng',
-    category: 'Quản lý kho',
-  },
-  { id: 9, name: 'Xóa phiếu nhập', description: 'Xóa phiếu nhập hàng', category: 'Quản lý kho' },
-  {
-    id: 10,
-    name: 'Quản lý nhà cung cấp',
-    description: 'Quản lý danh sách nhà cung cấp',
-    category: 'Quản lý kho',
-  },
-  { id: 11, name: 'Thiết lập giá', description: 'Thiết lập giá sản phẩm', category: 'Quản lý kho' },
-  {
-    id: 12,
-    name: 'Kiểm kê kho',
-    description: 'Thực hiện kiểm kê kho hàng',
-    category: 'Quản lý kho',
-  },
-  {
-    id: 13,
-    name: 'Xuất Excel kho',
-    description: 'Xuất báo cáo kho ra Excel',
-    category: 'Quản lý kho',
-  },
-
-  {
-    id: 14,
-    name: 'Xem đơn hàng',
-    description: 'Xem danh sách đơn hàng',
-    category: 'Quản lý đơn hàng',
-  },
-  { id: 15, name: 'Tạo đơn hàng', description: 'Tạo đơn hàng mới', category: 'Quản lý đơn hàng' },
-  {
-    id: 16,
-    name: 'Sửa đơn hàng',
-    description: 'Chỉnh sửa thông tin đơn hàng',
-    category: 'Quản lý đơn hàng',
-  },
-  { id: 17, name: 'Hủy đơn hàng', description: 'Hủy đơn hàng', category: 'Quản lý đơn hàng' },
-  {
-    id: 18,
-    name: 'Xuất hóa đơn',
-    description: 'Xuất hóa đơn cho đơn hàng',
-    category: 'Quản lý đơn hàng',
-  },
-  {
-    id: 19,
-    name: 'Xem người dùng',
-    description: 'Xem danh sách người dùng',
-    category: 'Quản lý người dùng',
-  },
-  {
-    id: 20,
-    name: 'Thêm người dùng',
-    description: 'Thêm người dùng mới',
-    category: 'Quản lý người dùng',
-  },
-  {
-    id: 21,
-    name: 'Sửa người dùng',
-    description: 'Chỉnh sửa thông tin người dùng',
-    category: 'Quản lý người dùng',
-  },
-  {
-    id: 22,
-    name: 'Xóa người dùng',
-    description: 'Xóa người dùng khỏi hệ thống',
-    category: 'Quản lý người dùng',
-  },
-  {
-    id: 23,
-    name: 'Phân quyền',
-    description: 'Phân quyền cho người dùng',
-    category: 'Quản lý người dùng',
-  },
-  {
-    id: 24,
-    name: 'Xem báo cáo doanh thu',
-    description: 'Xem báo cáo doanh thu',
-    category: 'Báo cáo',
-  },
-  {
-    id: 25,
-    name: 'Xem báo cáo sản phẩm',
-    description: 'Xem báo cáo sản phẩm',
-    category: 'Báo cáo',
-  },
-  { id: 26, name: 'Xem báo cáo kho', description: 'Xem báo cáo kho hàng', category: 'Báo cáo' },
-  { id: 27, name: 'Xuất báo cáo', description: 'Xuất báo cáo ra file', category: 'Báo cáo' },
-])
-
-const filteredRoles = ref([])
-const searchQuery = ref('')
-const sortBy = ref('name')
-const sortOrder = ref('asc')
-
+// Modal & Form state
 const showRoleForm = ref(false)
 const showDeleteModal = ref(false)
 const selectedRole = ref(null)
 const isEditMode = ref(false)
-
 const modalZIndex = ref(100)
 const activeModalId = ref(null)
-const isLoading = ref(false)
-const isError = ref(false)
-const errorMessage = ref('')
+const isFetchingDetail = ref(false)
 
-const selectedStatuses = ref([])
-const toast = useToast()
-
-onMounted(() => {
-  fetchData()
+// 1. Fetch Permission Structure (Groups, Rules, Metadata)
+const { data: structureData } = useQuery({
+  queryKey: ['permissionStructure'],
+  queryFn: roleApi.fetchPermissionStructure,
+  staleTime: 1000 * 60 * 60, // 1 giờ
+  enabled: showRoleForm,
 })
 
-const fetchData = async () => {
-  isLoading.value = true
-  isError.value = false
-  errorMessage.value = ''
-  try {
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    throw new Error('Lỗi tải dữ liệu vai trò')
-  } catch {
-    isError.value = true
-    errorMessage.value = 'Đã xảy ra lỗi trong quá trình tải dữ liệu vai trò.'
-    toast.error('Đã xảy ra lỗi trong quá trình tải dữ liệu vai trò.')
-  } finally {
-    isLoading.value = false
+// Chuyển đổi dữ liệu structure -> availablePermissions dạng List phẳng để đưa vào RoleForm
+const availablePermissions = computed(() => {
+  if (!structureData.value) return []
+  const { groups, metadata } = structureData.value
+  if (!groups) return []
+  const result = []
+
+  for (const [groupName, permIds] of Object.entries(groups)) {
+    for (const permId of permIds) {
+      const meta = metadata.find((m) => m.id === permId)
+      if (meta) {
+        result.push({
+          id: meta.id,
+          name: meta.name,
+          description: meta.description,
+          category: groupName,
+        })
+      }
+    }
   }
+  return result
+})
+
+// Dữ liệu structure gốc truyền thẳng vào RoleForm để hỗ trợ Conflicts / Dependencies
+const permissionStructure = computed(() => structureData.value || null)
+
+// 2. Lấy danh sách Roles sử dụng usePaginatedQuery
+const fetchRolesWrapper = async (params) => {
+  const filters = []
+
+  if (params.search) {
+    filters.push(`Name@=${params.search},Description@=${params.search}`)
+    delete params.search
+  }
+
+  if (filters.length > 0) {
+    params.filters = params.filters ? `${params.filters},${filters.join(',')}` : filters.join(',')
+  }
+
+  return roleApi.fetchRoles(params)
 }
+
+const {
+  data: roles,
+  isLoading,
+  isError,
+  error,
+  pagination,
+  searchRefs,
+} = usePaginatedQuery({
+  queryKey: ['roles'],
+  queryFn: fetchRolesWrapper,
+  itemsPerPage: 10,
+  searchFields: [{ key: 'search', debounce: 400 }],
+  sortableFields: ['name', 'status'],
+})
+
+const errorMessage = computed(() => error.value?.message || 'Lỗi tải dữ liệu vai trò')
+
+// Map thêm id = name để phù hợp với UI cũ (nếu có dùng id)
+const displayRoles = computed(() => {
+  return roles.value.map((r) => ({
+    ...r,
+    id: r.id, // backend trả về id là Guid
+    roleName: r.name, // ánh xạ lại cho các component con nếu vẫn dùng roleName
+    permissionCount: r.permissionCount || 0,
+  }))
+})
+
+// Modal state moved up
 
 const handleExport = () => {
   toast.info('Chức năng xuất Excel đang phát triển')
@@ -192,94 +117,54 @@ const handleImport = (event) => {
   event.target.value = ''
 }
 
-const applyFilters = () => {
-  let result = [...roles.value]
-
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    result = result.filter(
-      (role) =>
-        role.name.toLowerCase().includes(query) || role.description.toLowerCase().includes(query),
-    )
-  }
-
-  result.sort((a, b) => {
-    let aValue = a[sortBy.value]
-    let bValue = b[sortBy.value]
-
-    if (typeof aValue === 'string') {
-      aValue = aValue.toLowerCase()
-      bValue = bValue.toLowerCase()
-    }
-
-    if (sortOrder.value === 'asc') {
-      return aValue > bValue ? 1 : -1
-    } else {
-      return aValue < bValue ? 1 : -1
-    }
-  })
-
-  filteredRoles.value = result
-}
-
-const handleAddRole = () => {
-  isEditMode.value = false
-  selectedRole.value = null
-  showRoleForm.value = true
-  activeModalId.value = 'form'
-  modalZIndex.value = 100
-}
-
-const handleEditRole = (role) => {
-  isEditMode.value = true
-  selectedRole.value = { ...role }
-  showRoleForm.value = true
-  activeModalId.value = 'form'
-  modalZIndex.value = 100
-}
-
-const handleDeleteRole = (role) => {
-  selectedRole.value = role
-  showDeleteModal.value = true
-  activeModalId.value = 'delete'
-  modalZIndex.value = 100
-}
+const deleteRoleMutation = useMutation({
+  mutationFn: roleApi.deleteRole,
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['roles'] })
+    toast.success('Xóa vai trò thành công')
+    showDeleteModal.value = false
+    selectedRole.value = null
+  },
+  onError: (error) => {
+    toast.error(error.response?.data?.message || 'Lỗi khi xóa vai trò')
+  },
+})
 
 const confirmDelete = () => {
-  roles.value = roles.value.filter((r) => r.id !== selectedRole.value.id)
-  applyFilters()
-  showDeleteModal.value = false
-  selectedRole.value = null
+  deleteRoleMutation.mutate(selectedRole.value.id) // using id as roleName
 }
 
-const handleSaveRole = (roleData) => {
-  if (isEditMode.value) {
-    const index = roles.value.findIndex((r) => r.id === selectedRole.value.id)
-    if (index !== -1) {
-      roles.value[index] = {
-        ...roles.value[index],
-        name: roleData.name,
-        description: roleData.description,
+const saveRoleMutation = useMutation({
+  mutationFn: (roleData) => {
+    if (isEditMode.value) {
+      return roleApi.updateRole({
+        roleId: selectedRole.value.id,
+        roleName: roleData.name,
         permissions: roleData.permissions,
-        permissionCount: roleData.permissions.length,
-        status: roleData.status,
-      }
+      })
     }
-  } else {
-    const newRole = {
-      id: Math.max(...roles.value.map((r) => r.id)) + 1,
-      name: roleData.name,
-      description: roleData.description,
+    return roleApi.createRole({
+      roleName: roleData.name,
       permissions: roleData.permissions,
-      permissionCount: roleData.permissions.length,
-      createdAt: new Date().toISOString().split('T')[0],
-      status: roleData.status || 'active',
-    }
-    roles.value.push(newRole)
-  }
-  applyFilters()
-  showRoleForm.value = false
+    })
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['roles'] })
+    toast.success(isEditMode.value ? 'Cập nhật vai trò thành công' : 'Thêm vai trò thành công')
+    showRoleForm.value = false
+  },
+  onError: (error) => {
+    toast.error(error.response?.data?.message || 'Lỗi khi lưu vai trò')
+  },
+})
+
+const handleSaveRole = (roleData) => {
+  saveRoleMutation.mutate(roleData)
 }
+
+const isSavingMutation = computed(
+  () => saveRoleMutation.isPending.value || deleteRoleMutation.isPending.value,
+)
 
 const handleActivateModal = (modalId) => {
   if (activeModalId.value !== modalId) {
@@ -287,14 +172,95 @@ const handleActivateModal = (modalId) => {
     activeModalId.value = modalId
   }
 }
+
+const handleAddRole = async () => {
+  try {
+    // Đảm bảo cấu trúc quyền đã được tải
+    if (!structureData.value) {
+      isFetchingDetail.value = true
+      await queryClient.fetchQuery({
+        queryKey: ['permissionStructure'],
+        queryFn: roleApi.fetchPermissionStructure,
+      })
+    }
+    isEditMode.value = false
+    selectedRole.value = null
+    showRoleForm.value = true
+    activeModalId.value = 'form'
+    modalZIndex.value = 100
+  } catch (e) {
+    toast.error('Lỗi khi chuẩn bị dữ liệu vai trò')
+  } finally {
+    isFetchingDetail.value = false
+  }
+}
+
+const handleEditRole = async (role) => {
+  try {
+    // 1. Tải cấu trúc quyền nếu chưa có (Tránh form hiện ra bị lỗi giao diện/không căn giữa khi chưa có structure)
+    if (!structureData.value) {
+      isFetchingDetail.value = true
+      await queryClient.fetchQuery({
+        queryKey: ['permissionStructure'],
+        queryFn: roleApi.fetchPermissionStructure,
+      })
+    }
+
+    // 2. Hiện form sau khi đã có structure cơ bản
+    showRoleForm.value = true
+
+    // 3. Tải danh sách quyền của Role (Cache-first)
+    const queryKey = ['role_permissions', role.id]
+    let permissions
+    const cachedData = queryClient.getQueryData(queryKey)
+
+    if (cachedData) {
+      permissions = cachedData
+      // Reload ngầm (prefetch) nhưng không chặn việc hiện data trong form
+      queryClient.prefetchQuery({
+        queryKey,
+        queryFn: () => roleApi.fetchRolePermissions(role.id),
+      })
+    } else {
+      // Nếu chưa có cache, buộc phải đợi API rồi mới có data gán vào selectedRole
+      isFetchingDetail.value = true
+      permissions = await queryClient.fetchQuery({
+        queryKey,
+        queryFn: () => roleApi.fetchRolePermissions(role.id),
+      })
+    }
+
+    selectedRole.value = { ...role, permissions }
+    isEditMode.value = true
+    activeModalId.value = 'form'
+    modalZIndex.value = 100
+  } catch (e) {
+    toast.error('Lỗi khi tải thông tin vai trò')
+    showRoleForm.value = false
+  } finally {
+    isFetchingDetail.value = false
+  }
+}
+
+const handleRefreshRole = (id) => {
+  const role = displayRoles.value.find((r) => r.id === id)
+  if (role) {
+    handleEditRole(role)
+  }
+}
+
+const handleDeleteRole = (role) => {
+  selectedRole.value = role
+  showDeleteModal.value = true
+}
 </script>
 
 <template>
   <div class="p-4 sm:p-6 rounded-xl shadow-lg bg-white">
     <div
-      class="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0"
+      class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0"
     >
-      <div class="mb-6">
+      <div>
         <h1 class="text-3xl font-bold text-gray-800 mb-2">Quản lý Vai trò & Quyền hạn</h1>
         <p class="text-gray-600">Quản lý danh sách vai trò và phân quyền trong hệ thống</p>
       </div>
@@ -314,18 +280,21 @@ const handleActivateModal = (modalId) => {
         </label>
 
         <Button text="Export" :icon="IconFileExport" color="secondary" @click="handleExport" />
-
-        <span class="text-gray-400 mx-4 hidden border-r-2 sm:block h-6" />
-
-        <span class="text-gray-600 font-medium mr-2 hidden sm:inline-block">Lọc trạng thái:</span>
-
-        <RoleFilterButtons v-model="selectedStatuses" />
       </div>
     </div>
 
+    <!-- Search Row -->
+    <Input
+      v-model="searchRefs.search"
+      placeholder="Tìm kiếm vai trò..."
+      :icon="IconSearch"
+      class="mb-4"
+      inputClass="h-11"
+    />
+
     <div>
       <RoleList
-        :roles="filteredRoles"
+        :roles="displayRoles"
         :is-loading="isLoading"
         :is-error="isError"
         :error-message="errorMessage"
@@ -334,15 +303,28 @@ const handleActivateModal = (modalId) => {
       />
     </div>
 
+    <div class="mt-4 flex flex-col sm:flex-row justify-end items-center text-sm text-gray-600">
+      <Pagination
+        :current-page="pagination.currentPage.value"
+        :total-pages="pagination.totalPages.value"
+        @page-changed="pagination.changePage"
+      />
+    </div>
+
+    <LoadingOverlay :show="isFetchingDetail" />
+
     <RoleForm
       v-if="showRoleForm"
       :show="showRoleForm"
       :role="selectedRole"
       :isEditMode="isEditMode"
+      :is-fetching="isFetchingDetail"
       :availablePermissions="availablePermissions"
+      :permissionStructure="permissionStructure"
       :zIndex="activeModalId === 'form' ? modalZIndex : modalZIndex - 1"
       @close="showRoleForm = false"
       @save="handleSaveRole"
+      @refresh="handleRefreshRole"
       @activate="handleActivateModal('form')"
     />
 

@@ -7,28 +7,20 @@
         <h2 class="text-3xl font-bold text-center text-gray-800">Danh Sách Người Dùng</h2>
       </div>
       <div class="flex flex-wrap gap-2 items-center">
-        <Button text="Thêm mới" :icon="IconPlus" color="primary" @click="openAddModal" />
-
-        <label for="import-user-input" class="cursor-pointer">
-          <Button text="Import" :icon="IconFileImport" color="secondary" as="span" />
-          <input
-            type="file"
-            id="import-user-input"
-            accept=".xlsx, .xls"
-            class="hidden"
-            @change="handleImport"
-          />
-        </label>
-
-        <Button text="Export" :icon="IconFileExport" color="secondary" @click="handleExport" />
-
-        <span class="text-gray-400 mx-4 hidden border-r-2 sm:block h-6" />
-
-        <span class="text-gray-600 font-medium mr-2 hidden sm:inline-block">Lọc trạng thái:</span>
-
-        <UserFilterButtons v-model="selectedStatuses" multiple />
+        <div class="flex items-center gap-2">
+          <span class="text-gray-600 font-medium whitespace-nowrap">Trạng thái:</span>
+          <UserFilterButtons v-model="filterRefs.status" />
+        </div>
       </div>
     </div>
+
+    <!-- Search Row -->
+    <Input
+      v-model="searchRefs.search"
+      placeholder="Tìm kiếm theo email..."
+      class="mb-4"
+      inputClass="h-11"
+    />
     <div class="border border-gray-200 rounded-lg shadow-sm overflow-hidden">
       <table class="min-w-full bg-white">
         <thead
@@ -38,7 +30,7 @@
             <th class="py-3 px-6 text-left">Tên Nhân Viên</th>
             <th class="py-3 px-6 text-left">Email</th>
             <th class="py-3 px-6 text-left">Số Điện Thoại</th>
-            <th class="py-3 px-6 text-left">Vai trò</th>
+            <th class="py-3 px-6 text-left">Số vai trò</th>
             <th class="py-3 px-6 text-left">Trạng Thái</th>
             <th class="py-3 px-6 text-center">Thao Tác</th>
           </tr>
@@ -83,30 +75,64 @@
             :key="customer.id"
             class="border-b border-gray-200 hover:bg-gray-50 transition-colors"
           >
-            <td class="py-3 px-6 text-left">{{ customer.name }}</td>
+            <td class="py-3 px-6 text-left">{{ customer.fullName }}</td>
             <td class="py-3 px-6 text-left">{{ customer.email }}</td>
-            <td class="py-3 px-6 text-left">{{ customer.phone }}</td>
+            <td class="py-3 px-6 text-left">{{ customer.phoneNumber }}</td>
             <td class="py-3 px-6 text-left">
-              <div class="flex flex-wrap gap-1">
-                <RoundBadge
-                  v-for="roleId in customer.roleIds"
-                  :key="roleId"
-                  color="gray"
-                  class="text-xs"
-                >
-                  {{ availableRoles.find((r) => r.id === roleId)?.name }}
-                </RoundBadge>
-              </div>
+              <RoundBadge color="blue" class="text-xs font-semibold">
+                {{ customer.roles?.length || 0 }} vai trò
+              </RoundBadge>
             </td>
             <td class="py-3 px-6 text-left">
-              <RoundBadge color="gray">{{ statusText[customer.status] }}</RoundBadge>
+              <RoundBadge color="gray">{{
+                statusText[customer.status] || customer.status
+              }}</RoundBadge>
             </td>
             <td class="py-3 px-6">
-              <div class="flex justify-center gap-2">
-                <SmallNoBgButton @click="editCustomer(customer.id)">Sửa</SmallNoBgButton>
-                <SmallNoBgButton color="red" @click="deleteCustomer(customer.id)"
-                  >Xóa</SmallNoBgButton
+              <div
+                v-if="customer.id !== authStore.user?.id"
+                class="flex justify-center items-center gap-3"
+              >
+                <button
+                  v-if="hasPermission(Permissions.UsersEdit)"
+                  @click="editCustomer(customer.id)"
+                  class="text-blue-500 hover:text-blue-700 transition"
+                  title="Sửa thông tin"
                 >
+                  <IconEdit class="w-5 h-5" />
+                </button>
+                <button
+                  v-if="hasPermission(Permissions.UsersChangePassword)"
+                  @click="changePasswordAction(customer.id)"
+                  class="text-gray-500 hover:text-gray-700 transition"
+                  title="Đổi mật khẩu"
+                >
+                  <IconKey class="w-5 h-5" />
+                </button>
+                <button
+                  v-if="hasPermission(Permissions.UsersAssignRoles)"
+                  @click="assignRolesAction(customer.id)"
+                  class="text-green-500 hover:text-green-700 transition"
+                  title="Phân quyền"
+                >
+                  <IconUser class="w-5 h-5" />
+                </button>
+                <button
+                  v-if="hasPermission(Permissions.UsersEdit) && customer.status !== 'Banned'"
+                  @click="promptBanUser(customer.id)"
+                  class="text-red-500 hover:text-red-700 transition"
+                  title="Khóa tài khoản"
+                >
+                  <IconLock class="w-5 h-5" />
+                </button>
+                <button
+                  v-if="hasPermission(Permissions.UsersEdit) && customer.status === 'Banned'"
+                  @click="promptUnbanUser(customer.id)"
+                  class="text-green-600 hover:text-green-800 transition"
+                  title="Mở khóa tài khoản"
+                >
+                  <IconCheckCircle class="w-5 h-5" />
+                </button>
               </div>
             </td>
           </tr>
@@ -114,24 +140,50 @@
       </table>
     </div>
 
+    <div class="mt-4 flex flex-col sm:flex-row justify-end items-center text-sm text-gray-600">
+      <Pagination
+        :current-page="pagination.currentPage.value"
+        :total-pages="pagination.totalPages.value"
+        @page-changed="pagination.changePage"
+      />
+    </div>
+
+    <LoadingOverlay :show="isFetchingDetail" message="Đang tải dữ liệu người dùng..." />
+
     <UserForm
       v-if="showUserForm"
       :show="showUserForm"
       :user="selectedUser"
       :isEditMode="isEditMode"
       :availableRoles="availableRoles"
+      :is-saving="isUpdating"
+      :is-fetching="isFetchingDetail"
       :zIndex="activeModalId === 'form' ? modalZIndex : modalZIndex - 1"
       @close="showUserForm = false"
       @save="handleSaveUser"
-      @activate="handleActivateModal('form')"
+      @refresh="editCustomer"
+      @activate="activeModalId = 'form'"
     />
 
-    <UserDeleteModal
-      v-if="showDeleteModal"
-      :show="showDeleteModal"
-      :user="selectedUser"
-      @close="showDeleteModal = false"
-      @confirm="confirmDelete"
+    <UserChangePasswordModal
+      v-if="showChangePasswordModal"
+      :show="showChangePasswordModal"
+      :userId="selectedUser?.id"
+      :userName="selectedUser?.userName"
+      :is-saving="isChangingPassword"
+      @close="showChangePasswordModal = false"
+      @save="handleSavePassword"
+    />
+
+    <UserAssignRoleModal
+      v-if="showAssignRoleModal"
+      :show="showAssignRoleModal"
+      :userId="selectedUser?.id"
+      :initialRoles="selectedUser?.roles"
+      :is-saving="isAssigningRoles"
+      @close="showAssignRoleModal = false"
+      @save="handleSaveRoles"
+      @refresh="assignRolesAction"
     />
   </div>
 </template>
@@ -139,64 +191,114 @@
 <script setup>
 import UserFilterButtons from '@/components/users/UserFilterButtons.vue'
 import UserForm from '@/components/users/UserForm.vue'
-import UserDeleteModal from '@/components/users/UserDeleteModal.vue'
+import UserChangePasswordModal from '@/components/users/UserChangePasswordModal.vue'
+import UserAssignRoleModal from '@/components/users/UserAssignRoleModal.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
-import SmallNoBgButton from '@/components/ui/button/SmallNoBgButton.vue'
+import Input from '@/components/ui/input/BaseInput.vue'
+import Pagination from '@/components/ui/button/BasePagination.vue'
 import IconPlus from '@/assets/icons/IconPlus.svg'
 import IconFileImport from '@/assets/icons/IconFileImport.svg'
 import IconFileExport from '@/assets/icons/IconFileExport.svg'
+import IconEdit from '@/assets/icons/IconEdit.svg'
+import IconKey from '@/assets/icons/key.svg'
+import IconLock from '@/assets/icons/login-lock.svg'
+import IconUser from '@/assets/icons/IconUser.svg'
+import IconCheckCircle from '@/assets/icons/IconCheckCircle.svg'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
-import { onMounted, ref } from 'vue'
+import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
+import { computed, ref, watch } from 'vue'
 import { useToast } from 'vue-toastification'
+import { Permissions } from '@/constants/permissions'
+import { useAuthStore } from '@/stores/useAuthStore'
+import { useQueryClient, useMutation, useQuery } from '@tanstack/vue-query'
+import * as userApi from '@/api/user'
+import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
+import { fetchRoles } from '@/api/role'
+import { showConfirmation } from '@/composables/useConfirmationState'
+import { usePermission } from '@/composables/usePermission'
 
-const allCustomers = ref([])
+const { hasPermission } = usePermission()
 
-const availableRoles = ref([
-  { id: 1, name: 'Quản lý', description: 'Quyền quản lý toàn bộ hệ thống', permissionCount: 15 },
-  { id: 2, name: 'Quản kho', description: 'Quyền quản lý kho hàng', permissionCount: 8 },
-  { id: 3, name: 'Nhân viên', description: 'Quyền cơ bản', permissionCount: 5 },
-])
-
-const isLoading = ref(false)
-const isError = ref(false)
-const errorMessage = ref('')
-const selectedStatuses = ref(['active', 'new', 'inactive'])
+const authStore = useAuthStore()
+const queryClient = useQueryClient()
 const toast = useToast()
-const displayCustomers = ref([])
 
 const showUserForm = ref(false)
-const showDeleteModal = ref(false)
 const selectedUser = ref(null)
 const isEditMode = ref(false)
 const modalZIndex = ref(100)
 const activeModalId = ref(null)
+const showChangePasswordModal = ref(false)
+const showAssignRoleModal = ref(false)
+const isFetchingDetail = ref(false)
 
 const statusText = {
-  active: 'Hoạt Động',
-  new: 'Mới',
-  inactive: 'Không Hoạt Động',
+  Active: 'Hoạt Động',
+  Banned: 'Đã Khóa',
 }
 
-const fetchData = async () => {
-  isLoading.value = true
-  isError.value = false
-  errorMessage.value = ''
-  try {
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    throw new Error('Lỗi kết nối CSDL')
-  } catch {
-    isError.value = true
-    errorMessage.value = 'Đã xảy ra lỗi trong quá trình tải dữ liệu.'
-    toast.error('Đã xảy ra lỗi trong quá trình tải dữ liệu.')
-  } finally {
-    isLoading.value = false
-  }
-}
-
-onMounted(() => {
-  fetchData()
+// Lấy danh sách Roles để map Role Name
+const { data: rolesData } = useQuery({
+  queryKey: ['roles'],
+  queryFn: fetchRoles,
 })
+
+const availableRoles = computed(() => {
+  const roles = rolesData.value?.data || []
+  return roles.map((r) => ({
+    id: r.id,
+    name: r.name,
+    description: r.description,
+  }))
+})
+
+const getRoleName = (roleId) => {
+  const role = availableRoles.value.find((r) => r.id === roleId)
+  return role ? role.name : roleId
+}
+
+const fetchUsersWrapper = async (params) => {
+  const filters = []
+
+  if (params.status) {
+    filters.push(`Status==${params.status}`)
+    delete params.status
+  }
+
+  if (params.search) {
+    filters.push(`Email@=${params.search}`)
+    delete params.search
+  }
+
+  if (filters.length > 0) {
+    params.filters = params.filters ? `${params.filters},${filters.join(',')}` : filters.join(',')
+  }
+
+  return userApi.fetchUsers(params)
+}
+
+const {
+  data: usersData,
+  isLoading,
+  isError,
+  error,
+  pagination,
+  searchRefs,
+  filterRefs,
+} = usePaginatedQuery({
+  queryKey: ['users'],
+  queryFn: fetchUsersWrapper,
+  itemsPerPage: 10,
+  searchFields: [{ key: 'search', debounce: 400 }],
+  filterFields: [{ key: 'status' }],
+})
+const errorMessage = computed(
+  () => error.value?.message || 'Đã xảy ra lỗi trong quá trình tải dữ liệu.',
+)
+const displayCustomers = computed(() => usersData.value || [])
+
+// Đã gỡ bỏ watch selectedStatuses cũ vì usePaginatedQuery đã xử lý URL sync và reset page
 
 const openAddModal = () => {
   isEditMode.value = false
@@ -206,52 +308,179 @@ const openAddModal = () => {
   modalZIndex.value = 100
 }
 
-const editCustomer = (id) => {
-  const customer = allCustomers.value.find((c) => c.id === id)
-  if (customer) {
-    isEditMode.value = true
-    selectedUser.value = JSON.parse(JSON.stringify(customer))
+const editCustomer = async (id) => {
+  try {
+    const userQueryKey = ['user', id]
+    let userData
+    const cachedUser = queryClient.getQueryData(userQueryKey)
+
+    if (cachedUser) {
+      userData = cachedUser
+      queryClient.prefetchQuery({ queryKey: userQueryKey, queryFn: () => userApi.getUserById(id) })
+    } else {
+      isFetchingDetail.value = true
+      userData = await queryClient.fetchQuery({
+        queryKey: userQueryKey,
+        queryFn: () => userApi.getUserById(id),
+      })
+    }
+
+    // Đảm bảo roles list cho UserForm cũng được tải
+    const rolesQueryKey = ['roles']
+    const cachedRoles = queryClient.getQueryData(rolesQueryKey)
+    if (cachedRoles) {
+      queryClient.prefetchQuery({ queryKey: rolesQueryKey, queryFn: fetchRoles })
+    } else {
+      isFetchingDetail.value = true
+      await queryClient.fetchQuery({ queryKey: rolesQueryKey, queryFn: fetchRoles })
+    }
+
+    // Hiện form SAU KHI đã chuẩn bị dữ liệu xong
     showUserForm.value = true
+    isEditMode.value = true
+    selectedUser.value = userData
     activeModalId.value = 'form'
     modalZIndex.value = 100
+  } catch (e) {
+    toast.error('Lỗi khi tải thông tin người dùng')
+    showUserForm.value = false
+  } finally {
+    isFetchingDetail.value = false
   }
 }
 
-const deleteCustomer = (id) => {
-  const customer = allCustomers.value.find((c) => c.id === id)
-  if (customer) {
-    selectedUser.value = customer
-    showDeleteModal.value = true
-    activeModalId.value = 'delete'
-    modalZIndex.value = 100
+const changeStatusMutation = useMutation({
+  mutationFn: ({ userId, status }) => userApi.changeStatus(userId, { status }),
+  onSuccess: () => {
+    toast.success('Cập nhật trạng thái thành công')
+    queryClient.invalidateQueries({ queryKey: ['users'] })
+  },
+  onError: (err) => {
+    toast.error(err.response?.data?.message || 'Lỗi khi cập nhật trạng thái')
+  },
+})
+
+const promptBanUser = async (id) => {
+  const confirmed = await showConfirmation(
+    'Xác nhận khóa',
+    'Bạn có chắc chắn muốn khóa tài khoản này?',
+  )
+  if (!confirmed) return
+  changeStatusMutation.mutate({ userId: id, status: 'Banned' })
+}
+
+const promptUnbanUser = async (id) => {
+  const confirmed = await showConfirmation(
+    'Xác nhận mở khóa',
+    'Bạn có chắc chắn muốn mở khóa tài khoản này?',
+  )
+  if (!confirmed) return
+  changeStatusMutation.mutate({ userId: id, status: 'Active' })
+}
+
+const changePasswordAction = (id) => {
+  selectedUser.value = { id }
+  showChangePasswordModal.value = true
+}
+
+const assignRolesAction = async (id) => {
+  try {
+    // 1. Tải User (Cache-first)
+    const userQueryKey = ['user', id]
+    const cachedUser = queryClient.getQueryData(userQueryKey)
+    let userData
+
+    if (cachedUser) {
+      userData = cachedUser
+      queryClient.prefetchQuery({ queryKey: userQueryKey, queryFn: () => userApi.getUserById(id) })
+    } else {
+      isFetchingDetail.value = true
+      userData = await queryClient.fetchQuery({
+        queryKey: userQueryKey,
+        queryFn: () => userApi.getUserById(id),
+      })
+    }
+
+    // 2. Tải danh sách Roles cho Modal (Cache-first)
+    // Key 'roles_list_modal' được dùng trong UserAssignRoleModal.vue với useLocalPagination: true
+    const rolesQueryKey = ['roles_list_modal', { page: 1, limit: 10 }]
+    const cachedRoles = queryClient.getQueryData(rolesQueryKey)
+
+    if (cachedRoles) {
+      queryClient.prefetchQuery({
+        queryKey: rolesQueryKey,
+        queryFn: () => fetchRoles({ page: 1, limit: 10 }),
+      })
+    } else {
+      isFetchingDetail.value = true
+      await queryClient.fetchQuery({
+        queryKey: rolesQueryKey,
+        queryFn: () => fetchRoles({ page: 1, limit: 10 }),
+      })
+    }
+
+    // Hiện form SAU KHI đã chuẩn bị dữ liệu xong
+    selectedUser.value = userData
+    showAssignRoleModal.value = true
+  } catch (e) {
+    toast.error('Lỗi khi chuẩn bị dữ liệu gán vai trò')
+    showAssignRoleModal.value = false
+  } finally {
+    isFetchingDetail.value = false
   }
+}
+
+// Mutations
+const { isPending: isUpdating, mutate: doUpdateUser } = useMutation({
+  mutationFn: (userData) => userApi.updateUser(selectedUser.value.id, userData),
+  onSuccess: async (data) => {
+    queryClient.setQueryData(['user', selectedUser.value.id], data)
+    await queryClient.invalidateQueries({ queryKey: ['users'] })
+    toast.success('Cập nhật người dùng thành công')
+    showUserForm.value = false
+  },
+  onError: (error) => {
+    toast.error(error.response?.data?.message || 'Cập nhật thất bại')
+  },
+})
+
+const { isPending: isChangingPassword, mutate: doChangePassword } = useMutation({
+  mutationFn: (data) => userApi.changePassword(data.userId, data.payload),
+  onSuccess: () => {
+    toast.success('Đổi mật khẩu thành công')
+    showChangePasswordModal.value = false
+  },
+  onError: (error) => {
+    toast.error(error.response?.data?.message || 'Đổi mật khẩu thất bại')
+  },
+})
+
+const { isPending: isAssigningRoles, mutate: doAssignRoles } = useMutation({
+  mutationFn: (data) => userApi.assignRoles(data.userId, data.payload),
+  onSuccess: async (data) => {
+    // Cập nhật cache thông tin chi tiết người dùng ngay lập tức
+    queryClient.setQueryData(['user', selectedUser.value.id], data)
+    // Cập nhật lại danh sách người dùng ở bảng chính
+    await queryClient.invalidateQueries({ queryKey: ['users'] })
+
+    toast.success('Gán vai trò thành công')
+    showAssignRoleModal.value = false
+  },
+  onError: (error) => {
+    toast.error(error.response?.data?.message || 'Gán vai trò thất bại')
+  },
+})
+
+const handleSavePassword = (payload) => {
+  doChangePassword({ userId: selectedUser.value.id, payload })
+}
+
+const handleSaveRoles = (payload) => {
+  doAssignRoles({ userId: selectedUser.value.id, payload })
 }
 
 const handleSaveUser = (userData) => {
-  if (isEditMode.value) {
-    const index = allCustomers.value.findIndex((c) => c.id === selectedUser.value.id)
-    if (index !== -1) {
-      allCustomers.value[index] = {
-        ...allCustomers.value[index],
-        ...userData,
-      }
-    }
-  } else {
-    const newUser = {
-      id: String(Math.max(...allCustomers.value.map((c) => parseInt(c.id))) + 1),
-      ...userData,
-    }
-    allCustomers.value.push(newUser)
-  }
-  displayCustomers.value = allCustomers.value
-  showUserForm.value = false
-}
-
-const confirmDelete = () => {
-  allCustomers.value = allCustomers.value.filter((c) => c.id !== selectedUser.value.id)
-  displayCustomers.value = allCustomers.value
-  showDeleteModal.value = false
-  selectedUser.value = null
+  doUpdateUser(userData)
 }
 
 const handleActivateModal = (modalId) => {

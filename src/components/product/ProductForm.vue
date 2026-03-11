@@ -15,6 +15,8 @@ import GroupImage from '@/components/ui/input/GroupImage.vue'
 import LoadingOverlay from '../ui/LoadingOverlay.vue'
 import IconTrash from '@/assets/icons/IconTrash.svg'
 import IconPlus from '@/assets/icons/IconPlus.svg'
+import { Permissions } from '@/constants/permissions'
+import { usePermission } from '@/composables/usePermission'
 
 const props = defineProps({
   modelValue: {
@@ -34,6 +36,8 @@ const props = defineProps({
     default: false,
   },
 })
+
+const { hasPermission } = usePermission()
 
 const emit = defineEmits(['update:modelValue'])
 const {
@@ -445,7 +449,7 @@ const removeVariant = (index) => {
             class="border rounded-lg p-4 bg-gray-50 relative"
           >
             <SmallNoBgButton
-              v-if="localProduct.variants.length > 1"
+              v-if="localProduct.variants.length > 1 && hasPermission(Permissions.ProductsEdit)"
               color="red"
               @click="removeVariant(index)"
               class="absolute top-3 right-3"
@@ -479,6 +483,7 @@ const removeVariant = (index) => {
                   @update:model-value="(newVal) => (variant.optionValues[key] = newVal)"
                 />
                 <SmallNoBgButton
+                  v-if="hasPermission(Permissions.ProductsEdit)"
                   color="red"
                   @click="removeVariantOption(variant, key)"
                   class="mt-6 sm:mt-7"
@@ -490,7 +495,10 @@ const removeVariant = (index) => {
             </div>
 
             <Button
-              v-if="Object.keys(variant.optionValues || {}).length < allAvailableOptions.length"
+              v-if="
+                hasPermission(Permissions.ProductsEdit) &&
+                Object.keys(variant.optionValues || {}).length < allAvailableOptions.length
+              "
               text="Thêm thuộc tính"
               color="gray"
               @click="addVariantOption(variant)"
@@ -536,6 +544,7 @@ const removeVariant = (index) => {
           </div>
         </div>
         <Button
+          v-if="hasPermission(Permissions.ProductsEdit)"
           text="Thêm biến thể"
           color="blue"
           @click="addVariant"

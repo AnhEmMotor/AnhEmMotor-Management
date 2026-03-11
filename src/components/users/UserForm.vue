@@ -5,6 +5,14 @@ import Input from '@/components/ui/input/BaseInput.vue'
 import Dropdown from '@/components/ui/input/BaseDropdown.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
 import { useToast } from 'vue-toastification'
+import { usePermission } from '@/composables/usePermission'
+import { useQuery } from '@tanstack/vue-query'
+import { getGenderOptions } from '@/api/options'
+import { uploadUserAvatar } from '@/api/user'
+import IconAvatarEdit from '@/assets/icons/avatar-edit.svg'
+import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
+import DateTimePicker from '@/components/ui/input/DateTimePicker.vue'
+import { Permissions } from '@/constants/permissions'
 
 const props = defineProps({
   show: {
@@ -27,27 +35,45 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  isSaving: {
+    type: Boolean,
+    default: false,
+  },
+  isFetching: {
+    type: Boolean,
+    default: false,
+  },
 })
 
-const emit = defineEmits(['close', 'save', 'activate'])
+const emit = defineEmits(['close', 'save', 'activate', 'refresh'])
 const toast = useToast()
+const { hasPermission } = usePermission()
+
+// Lấy danh sách giới tính từ API (Dùng chung bộ nhớ đệm)
+const { data: genderOptions } = useQuery({
+  queryKey: ['gender-options'],
+  queryFn: getGenderOptions,
+  staleTime: Infinity,
+})
 
 const formData = ref({
   code: '',
   name: '',
+  gender: '',
   email: '',
   phone: '',
-  address: '',
   status: 'active',
   roleIds: [],
+  avatarUrl: '',
+  dateOfBirth: '',
 })
 
 const errors = ref({
   code: '',
   name: '',
+  gender: '',
   email: '',
   phone: '',
-  address: '',
   roleIds: '',
 })
 
@@ -61,18 +87,18 @@ const resetForm = () => {
   formData.value = {
     code: '',
     name: '',
+    gender: '',
     email: '',
     phone: '',
-    address: '',
     status: 'active',
     roleIds: [],
   }
   errors.value = {
     code: '',
     name: '',
+    gender: '',
     email: '',
     phone: '',
-    address: '',
     roleIds: '',
   }
 }
@@ -83,12 +109,14 @@ watch(
     if (newUser) {
       formData.value = {
         code: newUser.code || '',
-        name: newUser.name || '',
+        name: newUser.fullName || newUser.name || '',
+        gender: newUser.gender || '',
         email: newUser.email || '',
-        phone: newUser.phone || '',
-        address: newUser.address || '',
-        status: newUser.status || 'active',
-        roleIds: newUser.roleIds ? [...newUser.roleIds] : [],
+        phone: newUser.phoneNumber || newUser.phone || '',
+        status: (newUser.status || 'active').toLowerCase(),
+        roleIds: newUser.roles ? [...newUser.roles] : newUser.roleIds ? [...newUser.roleIds] : [],
+        avatarUrl: newUser.avatarUrl || '',
+        dateOfBirth: newUser.dateOfBirth?.split('T')[0] || '',
       }
     } else {
       resetForm()
@@ -97,15 +125,46 @@ watch(
   { immediate: true },
 )
 
+const fileInputRef = ref(null)
+const isUploadingAvatar = ref(false)
+const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+
+const handleAvatarClick = () => {
+  fileInputRef.value?.click()
+}
+
+const handleAvatarChange = async (event) => {
+  if (!props.user?.id) return
+  const file = event.target.files[0]
+  if (!file) return
+
+  try {
+    isUploadingAvatar.value = true
+    const newAvatarUrl = await uploadUserAvatar(props.user.id, file)
+    formData.value.avatarUrl = newAvatarUrl
+    toast.success('Cập nhật ảnh đại diện thành công')
+  } catch (error) {
+    toast.error(error.response?.data?.message || 'Tải ảnh thất bại')
+  } finally {
+    isUploadingAvatar.value = false
+    event.target.value = ''
+  }
+}
+
 const validateForm = () => {
   let isValid = true
   errors.value = {
     code: '',
     name: '',
+    gender: '',
     email: '',
     phone: '',
-    address: '',
     roleIds: '',
+  }
+
+  if (!formData.value.gender || formData.value.gender === '') {
+    errors.value.gender = 'Vui lòng chọn giới tính'
+    isValid = false
   }
 
   if (!props.isEditMode) {
@@ -136,16 +195,6 @@ const validateForm = () => {
     isValid = false
   }
 
-  if (!formData.value.address || formData.value.address.trim() === '') {
-    errors.value.address = 'Địa chỉ không được để trống'
-    isValid = false
-  }
-
-  if (formData.value.roleIds.length === 0) {
-    errors.value.roleIds = 'Vui lòng chọn ít nhất một vai trò'
-    isValid = false
-  }
-
   return isValid
 }
 
@@ -153,12 +202,13 @@ const handleSave = () => {
   if (validateForm()) {
     emit('save', {
       code: formData.value.code.trim(),
-      name: formData.value.name.trim(),
+      fullName: formData.value.name.trim(),
+      gender: formData.value.gender,
       email: formData.value.email.trim(),
-      phone: formData.value.phone.trim(),
-      address: formData.value.address.trim(),
+      phoneNumber: formData.value.phone.trim(),
       status: formData.value.status,
-      roleIds: formData.value.roleIds,
+      roleNames: formData.value.roleIds,
+      dateOfBirth: formData.value.dateOfBirth || null,
     })
   }
 }
@@ -182,17 +232,8 @@ const isRoleSelected = (roleId) => {
 }
 
 const handleRefresh = () => {
-  if (props.isEditMode && props.user) {
-    formData.value = {
-      code: props.user.code || '',
-      name: props.user.name || '',
-      email: props.user.email || '',
-      phone: props.user.phone || '',
-      address: props.user.address || '',
-      status: props.user.status || 'active',
-      roleIds: props.user.roleIds ? [...props.user.roleIds] : [],
-    }
-    toast.info('Đã làm mới dữ liệu')
+  if (props.isEditMode && props.user?.id) {
+    emit('refresh', props.user.id)
   } else {
     resetForm()
     toast.info('Đã làm mới form')
@@ -215,24 +256,75 @@ const handleRefresh = () => {
     </template>
 
     <template #body>
+      <LoadingOverlay :show="isSaving || isUploadingAvatar || isFetching" />
       <div class="space-y-4 overflow-y-auto pr-2">
+        <!-- Avatar Section for Edit Mode -->
+        <div v-if="isEditMode" class="flex items-center gap-4 mb-6">
+          <div class="relative">
+            <template v-if="formData.avatarUrl">
+              <img
+                :src="
+                  formData.avatarUrl.startsWith('http')
+                    ? formData.avatarUrl
+                    : `${apiUrl}${formData.avatarUrl.startsWith('/') ? '' : '/'}${formData.avatarUrl}`
+                "
+                alt="Avatar"
+                class="w-20 h-20 rounded-full object-cover shrink-0 border-2 border-white shadow-md"
+              />
+            </template>
+            <template v-else>
+              <div
+                class="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-3xl shrink-0 border-2 border-white shadow-md"
+              >
+                {{ formData.name?.charAt(0)?.toUpperCase() || 'A' }}
+              </div>
+            </template>
+            <button
+              class="absolute bottom-0 right-0 p-1.5 bg-gray-800 text-white rounded-full hover:bg-gray-700 transition"
+              title="Đổi ảnh đại diện"
+              @click="handleAvatarClick"
+            >
+              <IconAvatarEdit class="h-3 w-3" />
+            </button>
+            <input
+              type="file"
+              ref="fileInputRef"
+              class="hidden"
+              accept="image/*"
+              @change="handleAvatarChange"
+            />
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800">{{ formData.name || 'Người dùng' }}</h3>
+            <p class="text-sm text-gray-500">{{ formData.email }}</p>
+          </div>
+        </div>
+
         <div v-if="!isEditMode">
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Mã khách hàng <span class="text-red-500">*</span>
           </label>
-          <Input v-model="formData.code" placeholder="VD: KH001" :error="errors.code" />
-          <p v-if="errors.code" class="mt-1 text-sm text-red-500">{{ errors.code }}</p>
+          <Input
+            v-model="formData.code"
+            placeholder="VD: KH001"
+            :error="errors.code"
+            inputClass="h-[42px] px-3"
+          />
         </div>
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Tên khách hàng <span class="text-red-500">*</span>
           </label>
-          <Input v-model="formData.name" placeholder="Nhập tên khách hàng" :error="errors.name" />
-          <p v-if="errors.name" class="mt-1 text-sm text-red-500">{{ errors.name }}</p>
+          <Input
+            v-model="formData.name"
+            placeholder="Nhập tên khách hàng"
+            :error="errors.name"
+            inputClass="h-[42px] px-3"
+          />
         </div>
 
-        <div>
+        <div v-if="!isEditMode">
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Email <span class="text-red-500">*</span>
           </label>
@@ -241,74 +333,61 @@ const handleRefresh = () => {
             type="email"
             placeholder="example@email.com"
             :error="errors.email"
-          />
-          <p v-if="errors.email" class="mt-1 text-sm text-red-500">{{ errors.email }}</p>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            Số điện thoại <span class="text-red-500">*</span>
-          </label>
-          <Input v-model="formData.phone" placeholder="0901234567" :error="errors.phone" />
-          <p v-if="errors.phone" class="mt-1 text-sm text-red-500">{{ errors.phone }}</p>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            Địa chỉ <span class="text-red-500">*</span>
-          </label>
-          <Input v-model="formData.address" placeholder="Nhập địa chỉ" :error="errors.address" />
-          <p v-if="errors.address" class="mt-1 text-sm text-red-500">{{ errors.address }}</p>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            Trạng thái <span class="text-red-500">*</span>
-          </label>
-          <Dropdown
-            v-model="formData.status"
-            :options="statusOptions"
-            placeholder="Chọn trạng thái"
+            inputClass="h-[42px] px-3"
           />
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            Vai trò <span class="text-red-500">*</span>
-          </label>
-          <div class="border rounded-lg p-4 bg-gray-50">
-            <div v-if="availableRoles.length === 0" class="text-sm text-gray-500 text-center py-4">
-              Không có vai trò nào. Vui lòng tạo vai trò trước.
-            </div>
-            <div v-else class="space-y-2">
-              <div
-                v-for="role in availableRoles"
-                :key="role.id"
-                class="flex items-center space-x-3 p-2 hover:bg-gray-100 rounded transition-colors"
-              >
-                <input
-                  type="checkbox"
-                  :id="'role-' + role.id"
-                  :checked="isRoleSelected(role.id)"
-                  @change="toggleRole(role.id)"
-                  class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                />
-                <label :for="'role-' + role.id" class="flex-1 cursor-pointer">
-                  <div class="font-medium text-gray-800">{{ role.name }}</div>
-                  <div class="text-xs text-gray-500">{{ role.description }}</div>
-                </label>
-                <span class="text-xs text-gray-400">{{ role.permissionCount }} quyền</span>
-              </div>
-            </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Giới tính <span class="text-red-500">*</span>
+            </label>
+            <select
+              v-model="formData.gender"
+              class="block w-full border-gray-300 rounded-lg shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm px-3 py-2 border h-[42px] appearance-none bg-no-repeat bg-[right_12px_center] bg-[length:20px] transition-all duration-200"
+              style="
+                background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E&quot;);
+              "
+              :class="{ 'border-red-500': errors.gender }"
+            >
+              <option value="" disabled>Chọn giới tính</option>
+              <option v-for="opt in genderOptions" :key="opt.key" :value="opt.key">
+                {{ opt.label }}
+              </option>
+            </select>
+            <p v-if="errors.gender" class="mt-1 text-sm text-red-500">{{ errors.gender }}</p>
           </div>
-          <p v-if="errors.roleIds" class="mt-1 text-sm text-red-500">{{ errors.roleIds }}</p>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Số điện thoại <span class="text-red-500">*</span>
+            </label>
+            <Input
+              v-model="formData.phone"
+              placeholder="0901234567"
+              :error="errors.phone"
+              inputClass="h-[42px] px-3"
+            />
+          </div>
+        </div>
+
+        <div>
+          <DateTimePicker v-model="formData.dateOfBirth" label="Ngày sinh" />
         </div>
       </div>
     </template>
 
     <template #footer>
       <Button text="Hủy" color="gray" @click="handleClose" />
-      <Button :text="isEditMode ? 'Cập nhật' : 'Thêm mới'" color="primary" @click="handleSave" />
+      <Button
+        v-if="
+          (isEditMode && hasPermission(Permissions.UsersEdit)) ||
+          (!isEditMode && hasPermission(Permissions.UsersCreate))
+        "
+        :text="isEditMode ? 'Cập nhật' : 'Thêm mới'"
+        color="primary"
+        @click="handleSave"
+      />
     </template>
   </DraggableModal>
 </template>

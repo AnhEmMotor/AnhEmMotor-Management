@@ -20,10 +20,13 @@ import IconPlus from '@/assets/icons/IconPlus.svg'
 import IconFileImport from '@/assets/icons/IconFileImport.svg'
 import IconFileExport from '@/assets/icons/IconFileExport.svg'
 import IconEmptyBox from '@/assets/icons/empty-box.svg'
+import { Permissions } from '@/constants/permissions'
+import { usePermission } from '@/composables/usePermission'
 
 const inputsStore = useInputsStore()
 const queryClient = useQueryClient()
 const toast = useToast()
+const { hasPermission } = usePermission()
 
 const expandedItemId = ref(null)
 const itemsPerPage = ref(15)
@@ -387,13 +390,14 @@ const handleCopyReceipt = async (item) => {
 
       <div class="flex flex-wrap gap-2">
         <Button
+          v-if="hasPermission(Permissions.InputsCreate)"
           text="Tạo phiếu nhập hàng"
           :icon="IconPlus"
           color="primary"
           @click="openNewInventoryModal"
         />
 
-        <label class="cursor-pointer">
+        <label v-if="hasPermission(Permissions.InputsCreate)" class="cursor-pointer">
           <Button
             text="Import"
             :icon="IconFileImport"
@@ -403,7 +407,13 @@ const handleCopyReceipt = async (item) => {
           />
         </label>
 
-        <Button text="Export" :icon="IconFileExport" color="secondary" @click="exportExcel" />
+        <Button
+          v-if="hasPermission(Permissions.InputsView)"
+          text="Export"
+          :icon="IconFileExport"
+          color="secondary"
+          @click="handleExport"
+        />
 
         <span class="text-gray-400 mx-4 hidden border-r-2 sm:block" />
 

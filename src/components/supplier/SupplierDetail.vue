@@ -10,6 +10,8 @@ import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { useSuppliersStore } from '@/stores/useSuppliersStore'
 import { useQuery } from '@tanstack/vue-query'
 import { fetchInputStatuses } from '@/api/input'
+import { Permissions } from '@/constants/permissions'
+import { usePermission } from '@/composables/usePermission'
 
 const props = defineProps({
   itemData: Object,
@@ -18,6 +20,7 @@ defineEmits(['edit-supplier', 'delete-supplier', 'toggle-activation'])
 const activeTab = ref('info')
 const historyItemsPerPage = ref(10)
 const suppliersStore = useSuppliersStore()
+const { hasPermission } = usePermission()
 
 const { data: detailData } = useQuery({
   queryKey: computed(() => ['suppliers', props.itemData.id]),
@@ -163,31 +166,35 @@ watch(historyIsError, (hasError) => {
       </div>
       <div class="flex justify-end space-x-3 mt-4 pt-3 border-t border-gray-100">
         <button
+          v-if="hasPermission(Permissions.SuppliersDelete)"
           class="flex items-center space-x-1 text-sm font-medium text-red-600 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50 transition-colors"
           @click="$emit('delete-supplier', supplierInfo)"
         >
           <span>Xóa</span>
         </button>
         <button
+          v-if="hasPermission(Permissions.SuppliersEdit)"
           class="bg-red-600 text-white py-1.5 px-3 rounded-md hover:bg-red-700 text-xs font-medium"
           @click="$emit('edit-supplier', supplierInfo)"
         >
           <span>Chỉnh sửa</span>
         </button>
-        <button
-          v-if="supplierInfo.statusId === 'active'"
-          class="flex items-center space-x-1 text-sm font-medium text-gray-600 border border-gray-300 px-2.5 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
-          @click="$emit('toggle-activation', supplierInfo)"
-        >
-          <span>Ngừng hoạt động</span>
-        </button>
-        <button
-          v-else
-          class="flex items-center space-x-1 text-sm font-medium text-green-600 border border-green-300 px-2.5 py-1.5 rounded-lg hover:bg-green-50 transition-colors"
-          @click="$emit('toggle-activation', supplierInfo)"
-        >
-          <span>Kích hoạt lại</span>
-        </button>
+        <template v-if="hasPermission(Permissions.SuppliersEdit)">
+          <button
+            v-if="supplierInfo.statusId === 'active'"
+            class="flex items-center space-x-1 text-sm font-medium text-gray-600 border border-gray-300 px-2.5 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+            @click="$emit('toggle-activation', supplierInfo)"
+          >
+            <span>Ngừng hoạt động</span>
+          </button>
+          <button
+            v-else
+            class="flex items-center space-x-1 text-sm font-medium text-green-600 border border-green-300 px-2.5 py-1.5 rounded-lg hover:bg-green-50 transition-colors"
+            @click="$emit('toggle-activation', supplierInfo)"
+          >
+            <span>Kích hoạt lại</span>
+          </button>
+        </template>
       </div>
     </div>
 

@@ -17,10 +17,13 @@ import IconFileImport from '@/assets/icons/IconFileImport.svg'
 import IconFileExport from '@/assets/icons/IconFileExport.svg'
 import IconEdit from '@/assets/icons/IconEdit.svg'
 import { useToast } from 'vue-toastification'
+import { Permissions } from '@/constants/permissions'
+import { usePermission } from '@/composables/usePermission'
 
 const ordersStore = useOrdersStore()
 const queryClient = useQueryClient()
 const toast = useToast()
+const { hasPermission } = usePermission()
 
 const STATUS_COLOR_MAP = {
   pending: 'gray',
@@ -224,9 +227,19 @@ const handleExport = () => {
         <p class="text-gray-500 text-sm">Quản lý đơn hàng bán ra của cửa hàng</p>
       </div>
       <div class="flex items-center gap-2">
-        <Button color="primary" :icon="IconPlus" @click="createNewOrder" text="Tạo Đơn Hàng Mới" />
+        <Button
+          v-if="hasPermission(Permissions.OutputsCreate)"
+          color="primary"
+          :icon="IconPlus"
+          @click="createNewOrder"
+          text="Tạo Đơn Hàng Mới"
+        />
 
-        <label for="import-order-input" class="cursor-pointer">
+        <label
+          v-if="hasPermission(Permissions.OutputsCreate)"
+          for="import-order-input"
+          class="cursor-pointer"
+        >
           <Button text="Import" :icon="IconFileImport" color="secondary" as="span" />
           <input
             type="file"
@@ -237,7 +250,13 @@ const handleExport = () => {
           />
         </label>
 
-        <Button text="Export" :icon="IconFileExport" color="secondary" @click="handleExport" />
+        <Button
+          v-if="hasPermission(Permissions.OutputsView)"
+          text="Export"
+          :icon="IconFileExport"
+          color="secondary"
+          @click="handleExport"
+        />
       </div>
     </div>
 
@@ -311,7 +330,12 @@ const handleExport = () => {
               {{ (order.total || 0).toLocaleString('vi-VN') }} VNĐ
             </td>
             <td class="py-3 px-6 text-center">
-              <SmallNoBgButton color="blue" :icon="IconEdit" @click.stop="handleEditOrder(order)">
+              <SmallNoBgButton
+                v-if="hasPermission(Permissions.OutputsEdit)"
+                color="blue"
+                :icon="IconEdit"
+                @click.stop="handleEditOrder(order)"
+              >
                 Sửa
               </SmallNoBgButton>
             </td>
