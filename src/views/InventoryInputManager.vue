@@ -2,7 +2,6 @@
 import { ref, computed, watch } from 'vue'
 import { useInputsStore } from '@/stores/useInputsStore'
 import { fetchInventoryReceipts, getInventoryReceiptById, fetchInputStatuses } from '@/api/input'
-import * as XLSX from 'xlsx'
 import InventoryItem from '@/components/inventory_input/InventoryItem.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
 import Pagination from '@/components/ui/button/BasePagination.vue'
@@ -82,25 +81,6 @@ watch(isError, (hasError) => {
 
 function handleToggleDetail(itemId) {
   expandedItemId.value = expandedItemId.value === itemId ? null : itemId
-}
-
-const exportExcel = () => {
-  if (filteredItems.value.length === 0) {
-    toast.warning('Không có dữ liệu để xuất')
-    return
-  }
-  const exportData = filteredItems.value.map((item) => ({
-    'Mã Phiếu Nhập': item.id,
-    'Thời Gian': item.createdAt,
-    'Tên NCC': item.supplierName,
-    'Trạng Thái': statusMap.value[item.statusId] || item.statusId,
-    'Ghi Chú': item.notes,
-  }))
-  const workbook = XLSX.utils.book_new()
-  const worksheet = XLSX.utils.json_to_sheet(exportData)
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Danh Sách Phiếu Nhập')
-  const currentDate = new Date().toISOString().split('T')[0]
-  XLSX.writeFile(workbook, `DanhSachPhieuNhap_${currentDate}.xlsx`)
 }
 
 const handleImport = () => {

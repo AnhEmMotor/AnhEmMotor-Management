@@ -6,7 +6,6 @@
     <template #body>
       <LoadingOverlay :show="isSaving" />
       <form class="space-y-4" @submit.prevent="handleSubmit">
-        <!-- Hidden username field for accessibility and password managers -->
         <input
           type="text"
           name="username"

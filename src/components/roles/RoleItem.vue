@@ -1,19 +1,5 @@
 <script setup>
-import { computed } from 'vue'
 import SmallNoBgButton from '../ui/button/SmallNoBgButton.vue'
-import RoundBadge from '../ui/RoundBadge.vue'
-
-const props = defineProps({
-  role: {
-    type: Object,
-    required: true,
-  },
-  index: {
-    type: Number,
-    required: true,
-  },
-})
-
 const emit = defineEmits(['edit', 'delete'])
 </script>
 

@@ -1,7 +1,6 @@
 <script setup>
 import FullScreenModal from '@/components/ui/confirm_modal/ConfirmationModal.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
-import IconWarning from '@/assets/icons/warning.svg'
 
 defineProps({
   show: {

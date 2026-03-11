@@ -1,6 +1,6 @@
 # Yêu cầu chung
 
-- Tuyệt đối không viết comment (//, /\* \*/, <!-- -->) và log (alert, console) trong code, trừ trường hợp tôi yêu cầu.
+- Tuyệt đối không viết comment (//, /\* \*/, <!-- -->) và log (alert, console) trong code trong bất cứ trường hợp nào.
 - Tên biến bắt buộc phải sử dụng tiếng Anh.
 - Luôn luôn sử dụng cú pháp VueJS, Javascript, CSS mới nhất.
 - Không bao giờ được tự động cài thư viện cho các dự án, trừ trường hợp tôi yêu cầu. Nếu bạn muốn cài thêm thư viện, phải thông báo qua cho tôi.
@@ -107,7 +107,10 @@
 
 # Build dự án
 
-Khi có sự thay đổi trong dự án, Bắt buộc chạy npm run build để xác nhận không còn lỗi. Nếu lỗi, phải sửa cho đến khi build thành công.
+Khi có sự thay đổi trong dự án.
+
+- Đầu tiên chạy "npm run lint" để kiểm tra xem còn lỗi cú pháp thừa nào hay không
+- Sau đó chạy "npm run build" để xác nhận không còn lỗi. Nếu lỗi, phải sửa cho đến khi build thành công.
 
 # Tuyệt đối không tự ý Commit Dự án
 

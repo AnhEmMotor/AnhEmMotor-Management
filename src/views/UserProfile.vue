@@ -17,7 +17,6 @@ const authStore = useAuthStore()
 const route = useRoute()
 const router = useRouter()
 
-// Dùng trực tiếp computed trên authStore.user để lấy realtime update từ SSE
 const user = computed(() => authStore.user || {})
 
 const currentUserEmail = computed(() => user.value.email)
@@ -29,7 +28,6 @@ const activeTab = computed({
   set: (val) => router.replace({ query: { ...route.query, tab: val } }),
 })
 
-// Lấy danh sách giới tính từ API
 const { data: genderOptions, isLoading: isGendersLoading } = useQuery({
   queryKey: ['gender-options'],
   queryFn: getGenderOptions,
@@ -37,7 +35,6 @@ const { data: genderOptions, isLoading: isGendersLoading } = useQuery({
   enabled: computed(() => activeTab.value === 'profile'),
 })
 
-// Tạo bản sao cho form thông tin cá nhân
 const profileForm = ref({
   fullName: user.value.fullName || '',
   gender: user.value.gender || '',
@@ -45,7 +42,6 @@ const profileForm = ref({
   dateOfBirth: user.value.dateOfBirth?.split('T')[0] || '',
 })
 
-// Theo dõi user để cập nhật form (khi SSE cập nhật)
 watch(
   user,
   (newUser) => {
@@ -131,7 +127,7 @@ const handleAvatarChange = async (event) => {
     toast.error(error.response?.data?.message || 'Tải ảnh thất bại')
   } finally {
     isUploadingAvatar.value = false
-    event.target.value = '' // Reset
+    event.target.value = ''
   }
 }
 </script>
@@ -225,10 +221,7 @@ const handleAvatarChange = async (event) => {
               <label class="block text-sm font-medium text-gray-700 mb-1">Giới tính</label>
               <select
                 v-model="profileForm.gender"
-                class="block w-full border-gray-300 rounded-lg shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm px-3 py-2 border h-[42px] appearance-none bg-no-repeat bg-[right_12px_center] bg-[length:20px] transition-all duration-200"
-                style="
-                  background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E&quot;);
-                "
+                class="block w-full border-gray-300 rounded-lg shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm px-3 py-2 border h-[42px] appearance-none bg-no-repeat bg-[right_12px_center] bg-[length:20px] transition-all duration-200 bg-[url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke-width%3D%221.5%22%20stroke%3D%22%236B7280%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20d%3D%22m19.5%208.25-7.5%207.5-7.5-7.5%22%20%2F%3E%3C%2Fsvg%3E')]"
               >
                 <option value="" disabled>Chọn giới tính</option>
                 <option v-for="opt in genderOptions" :key="opt.key" :value="opt.key">

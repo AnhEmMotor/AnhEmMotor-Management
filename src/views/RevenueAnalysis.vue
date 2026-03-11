@@ -13,7 +13,7 @@ import IconFileExport from '@/assets/icons/IconFileExport.svg'
 const { isLoading, data: apiData } = useQuery({
   queryKey: ['admin', 'revenue-analysis'],
   queryFn: statisticsService.getAdminRevenueAnalysis,
-  staleTime: 5 * 60 * 1000, // 5 minutes
+  staleTime: 5 * 60 * 1000,
 })
 
 const dashboardData = computed(() => apiData.value || {})

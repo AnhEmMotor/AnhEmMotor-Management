@@ -2,7 +2,6 @@
 import { ref, watch } from 'vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
 import Input from '@/components/ui/input/BaseInput.vue'
-import Dropdown from '@/components/ui/input/BaseDropdown.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
 import { useToast } from 'vue-toastification'
 import { usePermission } from '@/composables/usePermission'
@@ -49,7 +48,6 @@ const emit = defineEmits(['close', 'save', 'activate', 'refresh'])
 const toast = useToast()
 const { hasPermission } = usePermission()
 
-// Lấy danh sách giới tính từ API (Dùng chung bộ nhớ đệm)
 const { data: genderOptions } = useQuery({
   queryKey: ['gender-options'],
   queryFn: getGenderOptions,
@@ -76,12 +74,6 @@ const errors = ref({
   phone: '',
   roleIds: '',
 })
-
-const statusOptions = [
-  { value: 'active', text: 'Hoạt động' },
-  { value: 'new', text: 'Mới' },
-  { value: 'inactive', text: 'Không hoạt động' },
-]
 
 const resetForm = () => {
   formData.value = {
@@ -218,19 +210,6 @@ const handleClose = () => {
   emit('close')
 }
 
-const toggleRole = (roleId) => {
-  const index = formData.value.roleIds.indexOf(roleId)
-  if (index > -1) {
-    formData.value.roleIds.splice(index, 1)
-  } else {
-    formData.value.roleIds.push(roleId)
-  }
-}
-
-const isRoleSelected = (roleId) => {
-  return formData.value.roleIds.includes(roleId)
-}
-
 const handleRefresh = () => {
   if (props.isEditMode && props.user?.id) {
     emit('refresh', props.user.id)
@@ -258,7 +237,6 @@ const handleRefresh = () => {
     <template #body>
       <LoadingOverlay :show="isSaving || isUploadingAvatar || isFetching" />
       <div class="space-y-4 overflow-y-auto pr-2">
-        <!-- Avatar Section for Edit Mode -->
         <div v-if="isEditMode" class="flex items-center gap-4 mb-6">
           <div class="relative">
             <template v-if="formData.avatarUrl">
@@ -343,12 +321,8 @@ const handleRefresh = () => {
               Giới tính <span class="text-red-500">*</span>
             </label>
             <select
-              v-model="formData.gender"
-              class="block w-full border-gray-300 rounded-lg shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm px-3 py-2 border h-[42px] appearance-none bg-no-repeat bg-[right_12px_center] bg-[length:20px] transition-all duration-200"
-              style="
-                background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E&quot;);
-              "
-              :class="{ 'border-red-500': errors.gender }"
+              v-model="profileForm.gender"
+              class="block w-full border-gray-300 rounded-lg shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm px-3 py-2 border h-[42px] appearance-none bg-no-repeat bg-[right_12px_center] bg-[length:20px] transition-all duration-200 bg-[url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke-width%3D%221.5%22%20stroke%3D%22%236B7280%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20d%3D%22m19.5%208.25-7.5%207.5-7.5-7.5%22%20%2F%3E%3C%2Fsvg%3E')]"
             >
               <option value="" disabled>Chọn giới tính</option>
               <option v-for="opt in genderOptions" :key="opt.key" :value="opt.key">

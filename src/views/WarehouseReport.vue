@@ -16,7 +16,7 @@ import IconExpand from '@/assets/icons/IconExpand.svg'
 const { isLoading, data: apiData } = useQuery({
   queryKey: ['admin', 'warehouse-report'],
   queryFn: statisticsService.getAdminWarehouseReport,
-  staleTime: 5 * 60 * 1000, // 5 mins
+  staleTime: 5 * 60 * 1000,
 })
 
 const reportData = computed(() => apiData.value || {})

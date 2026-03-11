@@ -73,7 +73,6 @@ onMounted(() => {
       },
     })
 
-    // Lắng nghe sự kiện gõ trực tiếp trên altInput để cập nhật modelValue khi gõ đủ ngày
     const altInput = fpInstance.altInput
     if (altInput) {
       altInput.addEventListener('blur', (e) => {
@@ -94,7 +93,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style>
-/* Premium Red Theme for Flatpickr */
 .premium-red-theme {
   border: 1px solid #e5e7eb !important;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
@@ -134,7 +132,6 @@ onBeforeUnmount(() => {
   fill: #dc2626 !important;
 }
 
-/* Tối ưu header để hiện cả tháng và năm */
 .premium-red-theme .flatpickr-current-month {
   display: flex !important;
   align-items: center !important;
@@ -179,19 +176,16 @@ onBeforeUnmount(() => {
   font-weight: 600 !important;
 }
 
-/* Đảm bảo mũi tên chuyển tháng hiện rõ */
 .premium-red-theme .flatpickr-month {
   fill: #dc2626 !important;
   height: 34px !important;
 }
-/* Đảm bảo Flatpickr wrapper luôn full width để input dài ra */
 .flatpickr-wrapper {
   width: 100% !important;
   display: block !important;
 }
 
-/* Lịch chọn ngày giữ độ rộng tự nhiên, không theo input */
 .premium-red-theme.flatpickr-calendar {
-  width: 307.875px !important; /* Độ rộng chuẩn của Flatpickr */
+  width: 307.875px !important;
 }
 </style>

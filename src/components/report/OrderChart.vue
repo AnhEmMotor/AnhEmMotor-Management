@@ -103,7 +103,6 @@ const drawChart = (data) => {
 onMounted(() => {
   drawChart(props.orderData)
 
-  // Add ResizeObserver for responsiveness
   resizeObserver = new ResizeObserver(() => {
     drawChart(props.orderData)
   })

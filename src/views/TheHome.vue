@@ -47,9 +47,7 @@
       <StatsCard title="Khách Hàng Mới" :stat="summary.newCustomersCount || 0" color="purple" />
     </div>
 
-    <!-- Main Content Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <!-- Charts (Only if hasStatView) -->
       <template v-if="hasStatView">
         <div v-if="isLoading" class="bg-gray-50 p-6 rounded-xl shadow-md h-96">
           <SkeletonLoader width="50%" height="20px" class="mb-4" />
@@ -76,7 +74,6 @@
         </div>
       </template>
 
-      <!-- Quick Actions Section (Replaces 3 Month Chart or shows alone) -->
       <div class="lg:col-span-2 bg-gray-50/50 p-6 rounded-xl border border-gray-100 shadow-sm">
         <h3 class="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
           <IconHome class="w-5 h-5 text-red-600" />
@@ -122,7 +119,6 @@ import { useAuthStore } from '@/stores/useAuthStore'
 import { usePermission } from '@/composables/usePermission'
 import { Permissions } from '@/constants/permissions'
 
-// Icons
 import IconHome from '@/assets/icons/IconHome.svg'
 import IconProduct from '@/assets/icons/IconProduct.svg'
 import IconOrder from '@/assets/icons/IconOrder.svg'
@@ -139,7 +135,7 @@ const hasStatView = computed(() => hasPermission(Permissions.StatisticalView))
 const { isLoading, data: dashboardData } = useQuery({
   queryKey: ['admin', 'dashboard-overview'],
   queryFn: statisticsService.getAdminDashboardOverview,
-  staleTime: 5 * 60 * 1000, // 5 minutes
+  staleTime: 5 * 60 * 1000,
   enabled: hasStatView,
 })
 
@@ -202,18 +198,18 @@ const formatCurrency = (val) => {
 }
 
 const orderStatusColors = {
-  pending: '#3b82f6', // Blue
-  waiting_deposit: '#93c5fd', // Light Blue
-  deposit_paid: '#6366f1', // Indigo
-  confirmed_cod: '#8b5cf6', // Violet
-  preparing: '#f59e0b', // Amber
-  waiting_pickup: '#fbbf24', // Yellow
-  delivering: '#ec4899', // Pink
-  completed: '#10b981', // Green
-  cancelled: '#ef4444', // Red
-  refunding: '#f97316', // Orange
-  refunded: '#6b7280', // Gray
-  paid_processing: '#06b6d4', // Cyan
+  pending: '#3b82f6',
+  waiting_deposit: '#93c5fd',
+  deposit_paid: '#6366f1',
+  confirmed_cod: '#8b5cf6',
+  preparing: '#f59e0b',
+  waiting_pickup: '#fbbf24',
+  delivering: '#ec4899',
+  completed: '#10b981',
+  cancelled: '#ef4444',
+  refunding: '#f97316',
+  refunded: '#6b7280',
+  paid_processing: '#06b6d4',
 }
 
 const orderStatusNames = {

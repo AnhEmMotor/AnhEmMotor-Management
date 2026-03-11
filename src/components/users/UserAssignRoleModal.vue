@@ -6,7 +6,6 @@
     <template #body>
       <LoadingOverlay :show="isSaving || isLoading" />
       <div class="space-y-4">
-        <!-- Search bar for roles -->
         <Input
           v-model="searchRefs.roleName"
           placeholder="Tìm kiếm vai trò..."
@@ -97,15 +96,12 @@ const queryClient = useQueryClient()
 
 const selectedRoleIds = ref([])
 
-// Sử dụng usePaginatedQuery để quản lý danh sách vai trò
-// Lưu ý: Backend fetchRoles hiện tại trả về mảng phẳng, ta bọc lại để dùng với pagination local
 const fetchRolesWrapper = async (params) => {
   return fetchRoles(params)
 }
 
 const {
   data: roles,
-  isFetching,
   searchRefs,
   pagination,
 } = usePaginatedQuery({

@@ -23,7 +23,7 @@ const sortOptions = [
 const { isLoading, data: apiData } = useQuery({
   queryKey: ['admin', 'product-report'],
   queryFn: statisticsService.getAdminProductReport,
-  staleTime: 5 * 60 * 1000, // 5 mins
+  staleTime: 5 * 60 * 1000,
 })
 
 const reportData = computed(() => apiData.value || {})

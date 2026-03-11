@@ -14,7 +14,6 @@
       </div>
     </div>
 
-    <!-- Search Row -->
     <Input
       v-model="searchRefs.search"
       placeholder="Tìm kiếm theo email..."
@@ -193,13 +192,9 @@ import UserFilterButtons from '@/components/users/UserFilterButtons.vue'
 import UserForm from '@/components/users/UserForm.vue'
 import UserChangePasswordModal from '@/components/users/UserChangePasswordModal.vue'
 import UserAssignRoleModal from '@/components/users/UserAssignRoleModal.vue'
-import Button from '@/components/ui/button/BaseButton.vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
 import Input from '@/components/ui/input/BaseInput.vue'
 import Pagination from '@/components/ui/button/BasePagination.vue'
-import IconPlus from '@/assets/icons/IconPlus.svg'
-import IconFileImport from '@/assets/icons/IconFileImport.svg'
-import IconFileExport from '@/assets/icons/IconFileExport.svg'
 import IconEdit from '@/assets/icons/IconEdit.svg'
 import IconKey from '@/assets/icons/key.svg'
 import IconLock from '@/assets/icons/login-lock.svg'
@@ -207,7 +202,7 @@ import IconUser from '@/assets/icons/IconUser.svg'
 import IconCheckCircle from '@/assets/icons/IconCheckCircle.svg'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useToast } from 'vue-toastification'
 import { Permissions } from '@/constants/permissions'
 import { useAuthStore } from '@/stores/useAuthStore'
@@ -238,7 +233,6 @@ const statusText = {
   Banned: 'Đã Khóa',
 }
 
-// Lấy danh sách Roles để map Role Name
 const { data: rolesData } = useQuery({
   queryKey: ['roles'],
   queryFn: fetchRoles,
@@ -252,11 +246,6 @@ const availableRoles = computed(() => {
     description: r.description,
   }))
 })
-
-const getRoleName = (roleId) => {
-  const role = availableRoles.value.find((r) => r.id === roleId)
-  return role ? role.name : roleId
-}
 
 const fetchUsersWrapper = async (params) => {
   const filters = []
@@ -298,16 +287,6 @@ const errorMessage = computed(
 )
 const displayCustomers = computed(() => usersData.value || [])
 
-// Đã gỡ bỏ watch selectedStatuses cũ vì usePaginatedQuery đã xử lý URL sync và reset page
-
-const openAddModal = () => {
-  isEditMode.value = false
-  selectedUser.value = null
-  showUserForm.value = true
-  activeModalId.value = 'form'
-  modalZIndex.value = 100
-}
-
 const editCustomer = async (id) => {
   try {
     const userQueryKey = ['user', id]
@@ -325,7 +304,6 @@ const editCustomer = async (id) => {
       })
     }
 
-    // Đảm bảo roles list cho UserForm cũng được tải
     const rolesQueryKey = ['roles']
     const cachedRoles = queryClient.getQueryData(rolesQueryKey)
     if (cachedRoles) {
@@ -335,13 +313,12 @@ const editCustomer = async (id) => {
       await queryClient.fetchQuery({ queryKey: rolesQueryKey, queryFn: fetchRoles })
     }
 
-    // Hiện form SAU KHI đã chuẩn bị dữ liệu xong
     showUserForm.value = true
     isEditMode.value = true
     selectedUser.value = userData
     activeModalId.value = 'form'
     modalZIndex.value = 100
-  } catch (e) {
+  } catch {
     toast.error('Lỗi khi tải thông tin người dùng')
     showUserForm.value = false
   } finally {
@@ -385,7 +362,6 @@ const changePasswordAction = (id) => {
 
 const assignRolesAction = async (id) => {
   try {
-    // 1. Tải User (Cache-first)
     const userQueryKey = ['user', id]
     const cachedUser = queryClient.getQueryData(userQueryKey)
     let userData
@@ -401,8 +377,6 @@ const assignRolesAction = async (id) => {
       })
     }
 
-    // 2. Tải danh sách Roles cho Modal (Cache-first)
-    // Key 'roles_list_modal' được dùng trong UserAssignRoleModal.vue với useLocalPagination: true
     const rolesQueryKey = ['roles_list_modal', { page: 1, limit: 10 }]
     const cachedRoles = queryClient.getQueryData(rolesQueryKey)
 
@@ -419,10 +393,9 @@ const assignRolesAction = async (id) => {
       })
     }
 
-    // Hiện form SAU KHI đã chuẩn bị dữ liệu xong
     selectedUser.value = userData
     showAssignRoleModal.value = true
-  } catch (e) {
+  } catch {
     toast.error('Lỗi khi chuẩn bị dữ liệu gán vai trò')
     showAssignRoleModal.value = false
   } finally {
@@ -430,7 +403,6 @@ const assignRolesAction = async (id) => {
   }
 }
 
-// Mutations
 const { isPending: isUpdating, mutate: doUpdateUser } = useMutation({
   mutationFn: (userData) => userApi.updateUser(selectedUser.value.id, userData),
   onSuccess: async (data) => {
@@ -458,9 +430,7 @@ const { isPending: isChangingPassword, mutate: doChangePassword } = useMutation(
 const { isPending: isAssigningRoles, mutate: doAssignRoles } = useMutation({
   mutationFn: (data) => userApi.assignRoles(data.userId, data.payload),
   onSuccess: async (data) => {
-    // Cập nhật cache thông tin chi tiết người dùng ngay lập tức
     queryClient.setQueryData(['user', selectedUser.value.id], data)
-    // Cập nhật lại danh sách người dùng ở bảng chính
     await queryClient.invalidateQueries({ queryKey: ['users'] })
 
     toast.success('Gán vai trò thành công')
@@ -481,20 +451,5 @@ const handleSaveRoles = (payload) => {
 
 const handleSaveUser = (userData) => {
   doUpdateUser(userData)
-}
-
-const handleActivateModal = (modalId) => {
-  if (activeModalId.value !== modalId) {
-    modalZIndex.value += 1
-    activeModalId.value = modalId
-  }
-}
-
-const handleExport = () => {
-  toast.info('Chức năng xuất Excel đang phát triển')
-}
-
-const handleImport = () => {
-  toast.info('Chức năng nhập Excel đang phát triển')
 }
 </script>

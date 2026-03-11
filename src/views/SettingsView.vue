@@ -10,8 +10,6 @@ import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 const toast = useToast()
 const queryClient = useQueryClient()
 
-// No toggles needed
-
 const testOrderValue = ref(15000000)
 
 const settings = reactive({
@@ -21,13 +19,10 @@ const settings = reactive({
   stockLevel: 5,
 })
 
-// No toggles to watch
-
-// Fetch settings from API
 const { isPending: isLoading, data } = useQuery({
   queryKey: ['settings'],
   queryFn: settingApi.fetchSettings,
-  staleTime: 1000 * 60 * 5, // 5 minutes
+  staleTime: 1000 * 60 * 5,
 })
 
 watch(
@@ -43,8 +38,7 @@ watch(
   { immediate: true },
 )
 
-// Update settings
-const { mutate: saveSettingsCore, isPending: isSaving } = useMutation({
+const { mutate: saveSettingsCore } = useMutation({
   mutationFn: (payload) => settingApi.updateSettings(payload),
   onSuccess: (updatedData) => {
     queryClient.setQueryData(['settings'], updatedData)

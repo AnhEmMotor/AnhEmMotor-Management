@@ -2,9 +2,7 @@
 import { ref, watch, computed } from 'vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
 import Input from '@/components/ui/input/BaseInput.vue'
-import Textarea from '@/components/ui/input/BaseTextarea.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
-import Dropdown from '../ui/input/BaseDropdown.vue'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 
 const props = defineProps({
@@ -92,7 +90,6 @@ const checkPermissionWithRules = (permissionId) => {
 
   if (!props.permissionStructure) return
 
-  // 1. Resolve Dependencies (Check required permissions)
   const deps = props.permissionStructure.dependencies?.[permissionId] || []
   deps.forEach((depId) => {
     if (!formData.value.permissions.includes(depId)) {
@@ -100,7 +97,6 @@ const checkPermissionWithRules = (permissionId) => {
     }
   })
 
-  // 2. Resolve Conflicts (Uncheck conflicting permissions)
   const conflicts = props.permissionStructure.conflicts?.[permissionId] || []
   conflicts.forEach((conflictId) => {
     uncheckPermissionWithDependents(conflictId)
@@ -115,9 +111,8 @@ const uncheckPermissionWithDependents = (permissionId) => {
 
   if (!props.permissionStructure) return
 
-  // Find all permissions that DEPEND on this permission, and uncheck them
   const dependencies = props.permissionStructure.dependencies || {}
-  const itemsToCheck = [...formData.value.permissions] // copy to avoid mutation issues loop
+  const itemsToCheck = [...formData.value.permissions]
   itemsToCheck.forEach((selectedId) => {
     if (dependencies[selectedId] && dependencies[selectedId].includes(permissionId)) {
       uncheckPermissionWithDependents(selectedId)

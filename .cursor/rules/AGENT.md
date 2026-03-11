@@ -1,6 +1,6 @@
 # Yêu cầu chung
 
-- Tuyệt đối không viết comment (//, /\* \*/, <!-- -->) và log (alert, console) trong code, trừ trường hợp tôi yêu cầu.
+- Tuyệt đối không viết comment (//, /\* \*/, <!-- -->) và log (alert, console) trong code trong bất cứ trường hợp nào.
 - Tên biến bắt buộc phải sử dụng tiếng Anh.
 - Luôn luôn sử dụng cú pháp VueJS, Javascript, CSS mới nhất.
 - Không bao giờ được tự động cài thư viện cho các dự án, trừ trường hợp tôi yêu cầu. Nếu bạn muốn cài thêm thư viện, phải thông báo qua cho tôi.
@@ -45,15 +45,47 @@
 
 # Vue.js & Pinia (Kiến trúc & Quản lý State)
 
-- Cấu trúc File (.vue): Thứ tự bắt buộc: template -> style -> script.
-- Đặt tên:
-  - Tên Component: PascalCase (ví dụ: UserCard.vue).
-  - Tên File: kebab-case (ví dụ: user-management.vue).
-- Phân chia nhiệm vụ (The Triple-Contract):
-  - Pinia Store: Nơi duy nhất chứa logic nghiệp vụ (Business Logic), xử lý API, và biến đổi dữ liệu. Tuyệt đối không để logic nghiệp vụ trong Component.
-  - Component Cha: Quản lý bố cục, kết nối với Store, và phân phối dữ liệu cho con.
-  - Component Con: Chỉ nhận dữ liệu qua props, phát sự kiện qua emit. Giữ cho component nhỏ, tập trung và có thể tái sử dụng.
-- Quy tắc "Không rò rỉ": Không được phép viết các hàm tính toán logic phức tạp và các biến của tính năng bên trong file .vue nếu logic hoặc biến đó có thể đưa vào Store.
+## Cấu trúc File (.vue)
+
+> [!IMPORTANT]
+> **Thứ tự ưu tiên:** `<script setup>` -> `<template>` -> `<style>`.
+> **Lý do:** Bạn cần đọc logic và dữ liệu trước khi xem giao diện. Để `<style>` ở giữa là một sai lầm về trải nghiệm lập trình (DX) vì nó thường rất dài, khiến bạn phải scroll mỏi tay để nhảy giữa logic và template.
+
+## Đặt tên
+
+- **Component & File:** Đồng nhất sử dụng **PascalCase** (ví dụ: `UserCard.vue`).
+- **Tại sao?** Trong Vue, Component là một class/object đặc biệt. Việc dùng `kebab-case` cho tên file chỉ làm khó hệ thống tự động import và gây mất đồng nhất khi gọi Component trong template.
+
+## Phân chia nhiệm vụ (The Quadruple-Contract)
+
+1. **API Service (Tầng giao tiếp):**
+
+- Nằm trong thư mục `services/` hoặc `api/`.
+- Là nơi duy nhất chứa các hàm gọi `axios` hoặc `fetch`.
+- Định nghĩa kiểu dữ liệu (Interfaces/Types) cho Response và Request.
+- **Nhiệm vụ:** Trả về dữ liệu thô hoặc ném lỗi kỹ thuật. Không xử lý State hay Logic ở đây.
+
+2. **Pinia Store (Tầng điều phối & Logic):**
+
+- Nơi duy nhất gọi đến **API Service**.
+- Xử lý logic nghiệp vụ (Business Logic): validation, biến đổi dữ liệu thô từ API thành định dạng UI cần, quản lý trạng thái loading/error.
+- Tuyệt đối không để logic nghiệp vụ trong Component.
+
+3. **Component Cha (Smart Component):**
+
+- Kết nối với Store, nhận dữ liệu và phân phối cho các con qua `props`.
+- Quản lý bố cục (Layout) và các logic mang tính điều hướng.
+
+4. **Component Con (Dumb/Presentational Component):**
+
+- Chỉ nhận dữ liệu qua `props` và phát sự kiện qua `emit`.
+- Không được phép biết đến sự tồn tại của Store hay API.
+- Giữ cho component nhỏ, tập trung và có khả năng tái sử dụng cao.
+
+## Quy tắc "Không rò rỉ"
+
+- Không viết các hàm tính toán phức tạp bên trong `.vue` nếu nó có thể tái sử dụng hoặc thuộc về bản chất của dữ liệu (hãy đưa vào Store hoặc Composable).
+- Mọi biến mang tính chất "trạng thái tính năng" (ví dụ: `isLoggedIn`, `userPermissions`) phải nằm ở Store.
 
 # Tanstack Query (Quy trình CRUD Chuẩn)
 
@@ -75,7 +107,10 @@
 
 # Build dự án
 
-Khi có sự thay đổi trong dự án, Bắt buộc chạy npm run build để xác nhận không còn lỗi. Nếu lỗi, phải sửa cho đến khi build thành công.
+Khi có sự thay đổi trong dự án.
+
+- Đầu tiên chạy "npm run lint" để kiểm tra xem còn lỗi cú pháp thừa nào hay không
+- Sau đó chạy "npm run build" để xác nhận không còn lỗi. Nếu lỗi, phải sửa cho đến khi build thành công.
 
 # Tuyệt đối không tự ý Commit Dự án
 
