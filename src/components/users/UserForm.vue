@@ -57,6 +57,9 @@ const { data: genderOptions } = useQuery({
 const formData = ref({
   code: '',
   name: '',
+  userName: '',
+  password: '',
+  confirmPassword: '',
   gender: '',
   email: '',
   phone: '',
@@ -69,6 +72,9 @@ const formData = ref({
 const errors = ref({
   code: '',
   name: '',
+  userName: '',
+  password: '',
+  confirmPassword: '',
   gender: '',
   email: '',
   phone: '',
@@ -79,6 +85,9 @@ const resetForm = () => {
   formData.value = {
     code: '',
     name: '',
+    userName: '',
+    password: '',
+    confirmPassword: '',
     gender: '',
     email: '',
     phone: '',
@@ -88,6 +97,9 @@ const resetForm = () => {
   errors.value = {
     code: '',
     name: '',
+    userName: '',
+    password: '',
+    confirmPassword: '',
     gender: '',
     email: '',
     phone: '',
@@ -102,6 +114,9 @@ watch(
       formData.value = {
         code: newUser.code || '',
         name: newUser.fullName || newUser.name || '',
+        userName: newUser.userName || '',
+        password: '',
+        confirmPassword: '',
         gender: newUser.gender || '',
         email: newUser.email || '',
         phone: newUser.phoneNumber || newUser.phone || '',
@@ -164,6 +179,21 @@ const validateForm = () => {
       errors.value.code = 'Mã khách hàng không được để trống'
       isValid = false
     }
+
+    if (!formData.value.userName || formData.value.userName.trim() === '') {
+      errors.value.userName = 'Tên đăng nhập không được để trống'
+      isValid = false
+    }
+
+    if (!formData.value.password || formData.value.password.length < 6) {
+      errors.value.password = 'Mật khẩu phải có ít nhất 6 ký tự'
+      isValid = false
+    }
+
+    if (formData.value.password !== formData.value.confirmPassword) {
+      errors.value.confirmPassword = 'Mật khẩu xác nhận không khớp'
+      isValid = false
+    }
   }
 
   if (!formData.value.name || formData.value.name.trim() === '') {
@@ -192,8 +222,7 @@ const validateForm = () => {
 
 const handleSave = () => {
   if (validateForm()) {
-    emit('save', {
-      code: formData.value.code.trim(),
+    const payload = {
       fullName: formData.value.name.trim(),
       gender: formData.value.gender,
       email: formData.value.email.trim(),
@@ -201,7 +230,14 @@ const handleSave = () => {
       status: formData.value.status,
       roleNames: formData.value.roleIds,
       dateOfBirth: formData.value.dateOfBirth || null,
-    })
+    }
+
+    if (!props.isEditMode) {
+      payload.userName = formData.value.userName.trim()
+      payload.password = formData.value.password
+    }
+
+    emit('save', payload)
   }
 }
 
@@ -292,14 +328,53 @@ const handleRefresh = () => {
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
-            Tên khách hàng <span class="text-red-500">*</span>
+            Tên người dùng <span class="text-red-500">*</span>
           </label>
           <Input
             v-model="formData.name"
-            placeholder="Nhập tên khách hàng"
+            placeholder="Nhập tên người dùng"
             :error="errors.name"
             inputClass="h-[42px] px-3"
           />
+        </div>
+
+        <div v-if="!isEditMode">
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Tên đăng nhập <span class="text-red-500">*</span>
+          </label>
+          <Input
+            v-model="formData.userName"
+            placeholder="Nhập tên đăng nhập"
+            :error="errors.userName"
+            inputClass="h-[42px] px-3"
+          />
+        </div>
+
+        <div v-if="!isEditMode" class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Mật khẩu <span class="text-red-500">*</span>
+            </label>
+            <Input
+              v-model="formData.password"
+              type="password"
+              placeholder="••••••"
+              :error="errors.password"
+              inputClass="h-[42px] px-3"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Xác nhận mật khẩu <span class="text-red-500">*</span>
+            </label>
+            <Input
+              v-model="formData.confirmPassword"
+              type="password"
+              placeholder="••••••"
+              :error="errors.confirmPassword"
+              inputClass="h-[42px] px-3"
+            />
+          </div>
         </div>
 
         <div v-if="!isEditMode">

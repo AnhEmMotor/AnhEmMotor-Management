@@ -40,7 +40,7 @@ Update the information in `.env`:
 
 ```properties
 # Backend API URL (Production or Local)
-VITE_API_URL=https://localhost:7001
+VITE_API_URL=http://localhost:5000
 ```
 
 ### Local Development
@@ -119,7 +119,7 @@ Cập nhật thông tin trong `.env`:
 
 ```properties
 # URL của Backend API (Production hoặc Local)
-VITE_API_URL=https://localhost:7001
+VITE_API_URL=http://localhost:5000
 ```
 
 ### Chạy Local Development
