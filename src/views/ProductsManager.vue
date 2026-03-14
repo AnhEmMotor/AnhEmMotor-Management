@@ -435,23 +435,24 @@ const exportExcel = () => {
 
   <div class="p-4 sm:p-6 rounded-xl shadow-lg bg-white">
     <div
-      class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0"
+      class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 sm:mb-6 gap-4"
     >
-      <h1 class="text-3xl font-bold text-gray-800">Quản lý sản phẩm</h1>
-      <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full lg:w-auto">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Quản lý sản phẩm</h1>
+      <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
         <Button
           v-if="hasPermission(Permissions.ProductsCreate)"
-          text="Thêm sản phẩm"
+          text="Thêm mới"
           :icon="IconPlus"
           color="primary"
           @click="openAddEditModal()"
+          class="flex-1 sm:flex-none"
         />
         <label
           v-if="hasPermission(Permissions.ProductsCreate)"
           for="import-product-input"
-          class="cursor-pointer"
+          class="cursor-pointer flex-1 sm:flex-none min-w-[100px]"
         >
-          <Button text="Import" :icon="IconFileImport" color="secondary" as="span" />
+          <Button text="Import" :icon="IconFileImport" color="secondary" as="span" class="w-full justify-center" />
           <input
             type="file"
             id="import-product-input"
@@ -466,6 +467,7 @@ const exportExcel = () => {
           :icon="IconFileExport"
           color="secondary"
           @click="exportExcel"
+          class="flex-1 sm:flex-none min-w-[100px] justify-center"
         />
       </div>
     </div>
@@ -504,8 +506,10 @@ const exportExcel = () => {
       Đã xảy ra lỗi khi lấy dữ liệu: {{ error?.message }}
     </div>
 
-    <div v-else class="overflow-x-auto rounded-lg shadow-sm border border-gray-300">
-      <table class="min-w-full bg-white border-collapse">
+    <div v-else class="rounded-lg shadow-sm border border-gray-300 bg-white">
+      <!-- Desktop Table (lg and up) -->
+      <div class="hidden lg:block overflow-x-auto">
+        <table class="min-w-full bg-white border-collapse">
         <thead
           class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs font-medium border-b border-gray-200"
         >
@@ -871,14 +875,168 @@ const exportExcel = () => {
           </template>
         </tbody>
       </table>
+      </div>
+
+      <!-- Mobile List/Cards View (below lg) -->
+      <div class="lg:hidden flex flex-col divide-y divide-gray-200">
+        <template v-if="products.length === 0">
+          <div v-if="isLoading" class="p-4 space-y-4">
+            <div v-for="i in 5" :key="`mob-loading-${i}`" class="space-y-3 pb-4 border-b border-gray-100 last:border-0">
+              <div class="flex gap-4">
+                <SkeletonLoader width="64px" height="64px" class="rounded-md shrink-0" />
+                <div class="flex-1 space-y-2 mt-1">
+                  <SkeletonLoader width="80%" height="20px" />
+                  <SkeletonLoader width="60%" height="20px" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-else class="text-center py-8 text-gray-500 text-sm">
+            Không có sản phẩm nào để hiển thị.
+          </div>
+        </template>
+        
+        <template v-else>
+          <div v-for="product in products" :key="`mobile-${product.id}`" class="p-4 flex flex-col gap-3 bg-white hover:bg-gray-50 transition-colors">
+            <div class="flex gap-3 items-start">
+              <img
+                :src="product.cover_image_url || 'https://placehold.co/100x100/gray/white?text=N/A'"
+                alt="Ảnh bìa"
+                class="w-16 h-16 object-cover rounded-md border border-gray-200 shrink-0 mt-1"
+                @error="(e) => (e.target.src = 'https://placehold.co/100x100/gray/white?text=Error')"
+              />
+              <div class="flex-1 min-w-0">
+                <h3 class="font-semibold text-gray-800 text-base break-words line-clamp-2 leading-tight mb-1">{{ product.name }}</h3>
+                <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-500">
+                  <span class="truncate">{{ product.category }}</span>
+                  <span class="w-1 h-1 rounded-full bg-gray-300"></span>
+                  <span class="truncate">{{ product.brand }}</span>
+                </div>
+                <div class="mt-2 flex flex-wrap gap-2 items-center">
+                  <RoundBadge :color="getInventoryStatusColor(product.inventory_status)" class="text-[10px] sm:text-xs">
+                    {{ getInventoryStatusLabel(product.inventory_status) }}
+                  </RoundBadge>
+                  <span class="text-xs text-gray-500">{{ product.variants ? product.variants.length : 0 }} biến thể</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-2 border-t border-gray-50 mt-1">
+              <button
+                v-if="product.variants && product.variants.length > 0"
+                @click="toggleDetails(product.id)"
+                class="flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors bg-blue-50 py-1.5 px-3 rounded-md"
+              >
+                <span>Chi tiết</span>
+                <IconDownArrow class="ml-1 w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': isExpanded(product.id) }" />
+              </button>
+              <div v-else></div>
+              
+              <div class="flex items-center gap-2">
+                <SmallNoBgButton v-if="hasPermission(Permissions.ProductsEdit)" @click="openAddEditModal(product)" :icon="IconEdit">Sửa</SmallNoBgButton>
+                <SmallNoBgButton v-if="hasPermission(Permissions.ProductsDelete)" color="red" @click="promptDelete(product)" :icon="IconTrash">Xóa</SmallNoBgButton>
+              </div>
+            </div>
+
+            <div v-if="isExpanded(product.id)" class="bg-gray-50 rounded-lg p-3 mt-1 border border-gray-100 overflow-hidden">
+              <div class="flex border-b border-gray-200 mb-3 space-x-3">
+                <button
+                  class="py-1.5 text-sm flex-1 text-center font-medium transition-colors"
+                  :class="getActiveTab(product.id) === 'variants' ? 'border-b-2 border-red-500 text-red-600' : 'text-gray-500 hover:text-gray-800'"
+                  @click="setActiveTab(product.id, 'variants')"
+                >
+                  Biến thể
+                </button>
+                <button
+                  class="py-1.5 text-sm flex-1 text-center font-medium transition-colors"
+                  :class="getActiveTab(product.id) === 'specs' ? 'border-b-2 border-red-500 text-red-600' : 'text-gray-500 hover:text-gray-800'"
+                  @click="setActiveTab(product.id, 'specs')"
+                >
+                  Thông số
+                </button>
+              </div>
+
+              <div v-show="getActiveTab(product.id) === 'variants'" class="space-y-3">
+                <div v-for="variant in product.variants" :key="`mob-var-${variant.id}`" class="flex gap-3 p-2 bg-white rounded border border-gray-100 shadow-sm relative overflow-hidden">
+                  <div class="absolute top-0 right-0 p-1 bg-gray-50 rounded-bl border-l border-b border-gray-100">
+                     <RoundBadge :color="getInventoryStatusColor(variant.inventory_status)" class="scale-90 origin-top-right">
+                       {{ getInventoryStatusLabel(variant.inventory_status) }}
+                     </RoundBadge>
+                  </div>
+                  <img
+                    :src="variant.cover_image_url || 'https://placehold.co/100x100/gray/white?text=N/A'"
+                    class="w-14 h-14 object-cover rounded border border-gray-200 mt-1 shrink-0"
+                    @error="(e) => (e.target.src = 'https://placehold.co/100x100/gray/white?text=Error')"
+                  />
+                  <div class="flex-1 min-w-0 pr-16">
+                    <div class="font-medium text-gray-800 text-sm mb-0.5 truncate">{{ getVariantOptionsText(variant) }}</div>
+                    <div class="font-bold text-red-600 text-sm mb-1">{{ formatCurrency(variant.price) }}</div>
+                    <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-xs text-gray-500">
+                      <div>Tồn kho: <span class="font-medium text-gray-700">{{ variant.stock }}</span></div>
+                      <div>Đã đặt: <span class="font-medium text-gray-700">{{ variant.has_been_booked }}</span></div>
+                      <div class="col-span-2 text-[11px]">
+                         Hiện có: 
+                         <span class="font-medium" :class="getInventoryStatusColor(variant.inventory_status) === 'green' ? 'text-green-600' : getInventoryStatusColor(variant.inventory_status) === 'yellow' ? 'text-yellow-500' : 'text-red-500'">
+                           {{ variant.stock - variant.has_been_booked }}
+                         </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div v-show="getActiveTab(product.id) === 'specs'" class="grid grid-cols-2 gap-3 text-xs">
+                <div class="flex flex-col">
+                  <span class="text-gray-500">Khối lượng</span>
+                  <span class="font-medium text-gray-800 break-words">{{ product.weight ? product.weight + ' kg' : '---' }}</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-gray-500">Dung tích</span>
+                  <span class="font-medium text-gray-800 break-words">{{ product.displacement ? product.displacement + ' cc' : '---' }}</span>
+                </div>
+                <div class="flex flex-col col-span-2">
+                  <span class="text-gray-500">Kích thước</span>
+                  <span class="font-medium text-gray-800 break-words">{{ product.dimensions || '---' }}</span>
+                </div>
+                <div class="flex flex-col col-span-2">
+                  <span class="text-gray-500">Tỷ số nén</span>
+                  <span class="font-medium text-gray-800 break-words">{{ product.compression_ratio || '---' }}</span>
+                </div>
+                <div class="flex flex-col col-span-2">
+                  <span class="text-gray-500">Đường kính x Hành trình</span>
+                  <span class="font-medium text-gray-800 break-words">{{ product.bore_stroke || '---' }}</span>
+                </div>
+                <div class="flex flex-col col-span-2">
+                  <span class="text-gray-500">Công suất tối đa</span>
+                  <span class="font-medium text-gray-800 break-words">{{ product.max_power || '---' }}</span>
+                </div>
+                <div class="flex flex-col col-span-2">
+                  <span class="text-gray-500">Mô-men xoắn</span>
+                  <span class="font-medium text-gray-800 break-words">{{ product.max_torque || '---' }}</span>
+                </div>
+                <div class="flex flex-col col-span-2">
+                  <span class="text-gray-500">Mức tiêu thụ</span>
+                  <span class="font-medium text-gray-800 break-words">{{ product.fuel_consumption || '---' }}</span>
+                </div>
+                <div class="flex flex-col col-span-2">
+                  <span class="text-gray-500">Lốp xe</span>
+                  <span class="font-medium text-gray-800 break-words">{{ product.tire_size || '---' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
     </div>
 
-    <Pagination
-      :total-pages="pagination.totalPages.value"
-      :currentPage="pagination.currentPage.value"
-      @update:currentPage="pagination.changePage"
-      :loading="isLoading"
-    />
+    <div class="mt-4">
+      <Pagination
+        :total-pages="pagination.totalPages.value"
+        :currentPage="pagination.currentPage.value"
+        @update:currentPage="pagination.changePage"
+        :loading="isLoading"
+      />
+    </div>
   </div>
 
   <DraggableModal

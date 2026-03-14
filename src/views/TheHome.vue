@@ -1,11 +1,11 @@
 <template>
-  <div class="bg-white p-6 rounded-xl shadow-lg">
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+  <div class="bg-white p-4 sm:p-6 rounded-xl shadow-lg">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 sm:mb-6">
       <div>
-        <h1 class="text-3xl font-bold mb-2 text-gray-800">
+        <h1 class="text-2xl sm:text-3xl font-bold mb-2 text-gray-800">
           Xin chào, {{ authStore.user?.fullName || 'Admin' }}!
         </h1>
-        <p id="greeting" class="text-gray-500">
+        <p id="greeting" class="text-sm sm:text-base text-gray-500">
           {{
             hasStatView
               ? 'Chúc bạn một buổi sáng tốt lành! Đây là báo cáo tổng quan.'
@@ -15,12 +15,13 @@
       </div>
     </div>
 
+    <!-- Skeleton Loading Metrics -->
     <div v-if="hasStatView && isLoading">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <div
           v-for="i in 4"
           :key="i"
-          class="p-6 rounded-xl shadow-md bg-gray-50 border border-gray-100"
+          class="p-4 sm:p-6 rounded-xl shadow-md bg-gray-50 border border-gray-100"
         >
           <SkeletonLoader width="40%" height="14px" class="mb-2" />
           <SkeletonLoader width="60%" height="30px" class="mb-2" />
@@ -29,9 +30,10 @@
       </div>
     </div>
 
+    <!-- Loaded Metrics Overview -->
     <div
       v-if="hasStatView && !isLoading"
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+      class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8"
     >
       <StatsCard
         title="Tổng Doanh Thu (Tháng Trước)"
@@ -47,55 +49,57 @@
       <StatsCard title="Khách Hàng Mới" :stat="summary.newCustomersCount || 0" color="purple" />
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Layout 2 Cột chính: Biểu đồ & Truy cập nhanh -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
       <template v-if="hasStatView">
-        <div v-if="isLoading" class="bg-gray-50 p-6 rounded-xl shadow-md h-96">
-          <SkeletonLoader width="50%" height="20px" class="mb-4" />
-          <SkeletonLoader width="100%" height="300px" />
+        <div v-if="isLoading" class="bg-gray-50 p-4 sm:p-6 rounded-xl shadow-md h-80 sm:h-96 flex flex-col">
+          <SkeletonLoader width="50%" height="20px" class="mb-4 shrink-0" />
+          <SkeletonLoader width="100%" height="100%" class="flex-1" />
         </div>
-        <div v-else class="bg-gray-50 p-6 rounded-xl shadow-md h-96">
-          <h3 class="text-lg font-semibold text-gray-700 mb-4">
+        <div v-else class="bg-gray-50 p-4 sm:p-6 rounded-xl shadow-md h-80 sm:h-96 flex flex-col">
+          <h3 class="text-base sm:text-lg font-semibold text-gray-700 mb-4 shrink-0">
             Doanh Thu &amp; Lợi Nhuận (7 Ngày)
           </h3>
-          <div class="w-full h-full">
+          <div class="w-full flex-1 min-h-0 relative">
             <RevenueChart7day :revenue-data="revenueData" />
           </div>
         </div>
 
-        <div v-if="isLoading" class="bg-gray-50 p-6 rounded-xl shadow-md h-96">
-          <SkeletonLoader width="50%" height="20px" class="mb-4" />
-          <SkeletonLoader width="100%" height="300px" />
+        <div v-if="isLoading" class="bg-gray-50 p-4 sm:p-6 rounded-xl shadow-md h-80 sm:h-96 flex flex-col">
+          <SkeletonLoader width="50%" height="20px" class="mb-4 shrink-0" />
+          <SkeletonLoader width="100%" height="100%" class="flex-1" />
         </div>
-        <div v-else class="bg-gray-50 p-6 rounded-xl shadow-md h-96">
-          <h3 class="text-lg font-semibold text-gray-700 mb-4">Tỷ Lệ Trạng Thái Đơn Hàng</h3>
-          <div class="w-full h-full">
+        <div v-else class="bg-gray-50 p-4 sm:p-6 rounded-xl shadow-md h-80 sm:h-96 flex flex-col">
+          <h3 class="text-base sm:text-lg font-semibold text-gray-700 mb-4 shrink-0">Tỷ Lệ Trạng Thái Đơn Hàng</h3>
+          <div class="w-full flex-1 min-h-0 relative">
             <PieChartFrame :order-data="orderStatusData" />
           </div>
         </div>
       </template>
 
-      <div class="lg:col-span-2 bg-gray-50/50 p-6 rounded-xl border border-gray-100 shadow-sm">
-        <h3 class="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
+      <!-- Truy cập nhanh (Luôn full 2 cột nếu không có quyền StatView, ngược lại chiếm 2 cột dưới) -->
+      <div class="lg:col-span-2 bg-gray-50/50 p-4 sm:p-6 rounded-xl border border-gray-100 shadow-sm mt-2 sm:mt-0">
+        <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-4 sm:mb-6 flex items-center gap-2">
           <IconHome class="w-5 h-5 text-red-600" />
           Truy cập nhanh
         </h3>
         <div
-          class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4"
+          class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4"
         >
           <template v-for="action in visibleActions" :key="action.route">
             <RouterLink
               :to="action.route"
-              class="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-100 bg-white hover:bg-white hover:shadow-md hover:border-red-200 transition-all duration-300 group"
+              class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-xl border border-gray-100 bg-white hover:bg-white hover:shadow-md hover:border-red-200 transition-all duration-300 group"
             >
               <div
-                class="w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center mb-3 group-hover:bg-red-50 group-hover:scale-110 transition-all duration-300"
+                class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gray-50 flex items-center justify-center mb-2 sm:mb-3 group-hover:bg-red-50 group-hover:scale-110 transition-all duration-300"
               >
                 <component
                   :is="action.icon"
-                  class="w-6 h-6 text-gray-600 group-hover:text-red-600"
+                  class="w-5 h-5 sm:w-6 sm:h-6 text-gray-600 group-hover:text-red-600"
                 />
               </div>
-              <span class="text-sm font-medium text-gray-700 group-hover:text-red-700 text-center">
+              <span class="text-xs sm:text-sm font-medium text-gray-700 group-hover:text-red-700 text-center">
                 {{ action.name }}
               </span>
             </RouterLink>
@@ -103,6 +107,26 @@
         </div>
       </div>
     </div>
+
+    <!-- Layout Component mới e.g. Bảng Đơn Hàng & So Sánh Tháng -->
+    <div v-if="hasStatView" class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+      <div v-if="isLoading" class="bg-gray-50 p-4 sm:p-6 rounded-xl shadow-md h-80 flex flex-col">
+        <SkeletonLoader width="35%" height="20px" class="mb-4 shrink-0" />
+        <SkeletonLoader width="100%" height="100%" class="flex-1" />
+      </div>
+      <MonthlyRevenueChart v-else :monthly-data="monthlyData" />
+
+      <div v-if="isLoading" class="bg-gray-50 p-4 sm:p-6 rounded-xl shadow-md h-80 flex flex-col">
+        <SkeletonLoader width="40%" height="20px" class="mb-4 shrink-0" />
+        <SkeletonLoader width="100%" height="40px" class="mb-2" />
+        <SkeletonLoader width="100%" height="40px" class="mb-2" />
+        <SkeletonLoader width="100%" height="40px" class="mb-2" />
+        <SkeletonLoader width="100%" height="40px" class="mb-2" />
+        <SkeletonLoader width="100%" height="40px" />
+      </div>
+      <RecentOrdersTable v-else :recent-orders="recentOrders" />
+    </div>
+
   </div>
 </template>
 
@@ -115,6 +139,9 @@ import RevenueChart7day from '@/components/report/RevenueChart7day.vue'
 import PieChartFrame from '@/components/report/OrderChart.vue'
 import StatsCard from '@/components/ui/ReportStatsCard.vue'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
+import MonthlyRevenueChart from '@/components/report/MonthlyRevenueChart.vue'
+import RecentOrdersTable from '@/components/report/RecentOrdersTable.vue'
+
 import { useAuthStore } from '@/stores/useAuthStore'
 import { usePermission } from '@/composables/usePermission'
 import { Permissions } from '@/constants/permissions'
@@ -140,6 +167,8 @@ const { isLoading, data: dashboardData } = useQuery({
 })
 
 const summary = computed(() => dashboardData.value?.summary || {})
+const recentOrders = computed(() => dashboardData.value?.recentOrders || [])
+const monthlyData = computed(() => dashboardData.value?.monthlyComparison || [])
 
 const currentTime = ref(new Date().toLocaleTimeString('vi-VN'))
 let timer = null
