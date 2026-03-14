@@ -254,61 +254,64 @@ function handleExport() {}
           <div
             v-for="product in products"
             :key="product.id"
-            class="border-b border-gray-200 last:border-b-0"
+            class="border-b border-gray-200 last:border-b-0 bg-white"
           >
+            <!-- Product Header -->
             <div
-              class="grid grid-cols-1 md:grid-cols-12 items-center py-4 px-4 bg-white hover:bg-gray-50 cursor-pointer transition-colors"
+              class="flex flex-col md:grid md:grid-cols-12 md:items-center py-4 px-4 hover:bg-gray-50 cursor-pointer transition-colors gap-2 md:gap-0"
               @click="toggleProduct(product.id)"
             >
               <div class="font-bold text-base text-gray-900 md:col-span-8 flex items-center gap-2">
                 <component
                   :is="isExpanded(product.id) ? IconDownArrow : IconRightArrow"
-                  class="w-4 h-4 text-gray-500 flex-shrink-0"
+                  class="w-4 h-4 text-gray-500 flex-shrink-0 transition-transform duration-200"
                 />
-                <span class="truncate">{{ product.name }}</span>
-                <span class="text-xs text-gray-500 font-normal ml-2"
-                  >({{ product.variants?.length || 0 }})</span
+                <span class="break-words line-clamp-2 md:truncate flex-1">{{ product.name }}</span>
+                <span class="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full font-medium ml-1 flex-shrink-0"
+                  >{{ product.variants?.length || 0 }} biến thể</span
                 >
               </div>
-              <div class="text-sm text-gray-600 md:col-span-4 text-right pr-2">
+              <div class="text-sm font-medium text-red-600 md:col-span-4 md:text-right md:pr-2 ml-6 md:ml-0 font-mono">
                 {{ getPriceRange(product.variants, 'price') }}
               </div>
             </div>
 
+            <!-- Product Variants (Expanded state) -->
             <template v-if="isExpanded(product.id)">
               <div
                 v-if="!product.variants || product.variants.length === 0"
-                class="text-center py-4 text-gray-500 text-sm bg-gray-50"
+                class="text-center py-4 text-gray-500 text-sm bg-gray-50 border-t border-gray-100"
               >
                 Sản phẩm này chưa có biến thể.
               </div>
 
-              <div
-                v-for="variant in product.variants"
-                :key="variant.id"
-                class="grid grid-cols-1 md:grid-cols-12 md:items-center py-2 md:py-3 border-t border-gray-100 text-sm gap-2 md:gap-0 first:border-t-0 bg-white hover:bg-gray-50 transition-colors"
-              >
-                <div class="px-0 md:pl-12 md:col-span-8 flex items-center gap-2">
-                  <div class="text-xs text-gray-500 md:hidden">Biến thể</div>
-                  <div class="font-medium text-gray-700">
-                    {{ variant.name }}
+              <div v-else class="bg-gray-50/50 border-t border-gray-100 p-2 md:p-0">
+                <div
+                  v-for="variant in product.variants"
+                  :key="variant.id"
+                  class="flex flex-col md:grid md:grid-cols-12 md:items-center py-3 md:py-3 px-3 md:px-4 text-sm gap-2 md:gap-0 bg-white border border-gray-100 md:border-0 md:border-t hover:bg-gray-50 transition-colors mb-2 md:mb-0 rounded-lg md:rounded-none shadow-sm md:shadow-none first:md:border-t-0"
+                >
+                  <div class="md:col-span-8 flex items-center gap-2 md:pl-8">
+                    <div class="font-medium text-gray-800 break-words line-clamp-2">
+                      {{ variant.name || 'Phiên bản Tiêu chuẩn' }}
+                    </div>
                   </div>
-                </div>
 
-                <div class="px-0 md:pr-2 md:col-span-4">
-                  <div class="text-xs text-gray-500 md:hidden">Giá bán</div>
-                  <Input
-                    :model-value="variant.price"
-                    @update:model-value="(val) => updatePriceInput(val, variant)"
-                    type="text"
-                    placeholder="0"
-                    class="price-input w-full"
-                    inputClass="text-right font-mono font-medium"
-                    @focus="(e) => openQuickMenu(e, product, variant)"
-                    @blur="() => handlePriceBlur(product, variant)"
-                    @keydown.enter.prevent="() => handlePriceBlur(product, variant)"
-                    @dblclick.stop
-                  />
+                  <div class="md:col-span-4 flex flex-col md:pr-2 w-full mt-1 md:mt-0">
+                    <div class="text-[11px] uppercase tracking-wider text-gray-500 md:hidden mb-1 font-semibold">Giá bán cập nhật:</div>
+                    <Input
+                      :model-value="variant.price"
+                      @update:model-value="(val) => updatePriceInput(val, variant)"
+                      type="text"
+                      placeholder="0"
+                      class="price-input w-full"
+                      inputClass="text-right font-mono font-bold text-gray-900 focus:text-red-600 transition-colors bg-white border-gray-300 shadow-sm"
+                      @focus="(e) => openQuickMenu(e, product, variant)"
+                      @blur="() => handlePriceBlur(product, variant)"
+                      @keydown.enter.prevent="() => handlePriceBlur(product, variant)"
+                      @dblclick.stop
+                    />
+                  </div>
                 </div>
               </div>
             </template>

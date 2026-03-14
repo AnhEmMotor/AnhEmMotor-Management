@@ -1,9 +1,25 @@
 <template>
-  <div ref="chartContainer" class="chart-container"></div>
+  <div class="w-full h-full flex flex-col sm:flex-row items-center justify-center gap-4">
+    <!-- Pie Chart Container -->
+    <div ref="pieContainer" class="w-full sm:w-1/2 md:w-5/12 h-48 sm:h-full shrink-0 flex flex-col items-center justify-center relative"></div>
+
+    <!-- Custom Vue Legend -->
+    <div class="w-full sm:w-1/2 md:w-7/12 flex-1 mt-2 sm:mt-0 px-2 sm:px-4 max-h-48 sm:max-h-full overflow-y-auto no-scrollbar">
+      <div class="grid grid-cols-2 sm:grid-cols-1 lg:grid-cols-2 gap-y-3 gap-x-2">
+        <template v-for="(item, index) in validOrderData" :key="index">
+          <div class="flex items-center gap-2 text-xs sm:text-sm">
+            <div class="w-3 h-3 sm:w-4 sm:h-4 rounded shrink-0" :style="{ backgroundColor: item.color || '#d1d5db' }"></div>
+            <span class="text-gray-700 truncate" :title="item.status">{{ item.status }}</span>
+            <span class="font-semibold text-gray-900 ml-auto">{{ item.value }}</span>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch, toRaw } from 'vue'
+import { ref, onMounted, onUnmounted, watch, toRaw, computed } from 'vue'
 import * as d3 from 'd3'
 
 const props = defineProps({
@@ -13,24 +29,33 @@ const props = defineProps({
   },
 })
 
-const chartContainer = ref(null)
+const pieContainer = ref(null)
 let resizeObserver = null
 
+const validOrderData = computed(() => {
+  if (!props.orderData) return []
+  // Optionally filter out 0 values if you prefer, but legend might want to show them 
+  // Let's keep all or specifically sort them by value
+  return [...props.orderData].sort((a, b) => b.value - a.value).filter(x => x.value > 0)
+})
+
 const drawChart = (data) => {
-  if (!chartContainer.value || !data || data.length === 0) return
-  const rawData = toRaw(data)
-  const container = d3.select(chartContainer.value)
+  if (!pieContainer.value || !data || data.length === 0) return
+  const rawData = toRaw(data).filter(d => d.value > 0)
+
+  const container = d3.select(pieContainer.value)
   container.selectAll('*').remove()
 
-  const width = chartContainer.value.clientWidth
-  const height = 300
-  const radius = Math.min(width, height) / 2 - 25
+  const width = pieContainer.value.clientWidth
+  const height = pieContainer.value.clientHeight
+  const radius = Math.min(width, height) / 2 - 5
 
-  if (width <= 0) return
+  if (width <= 0 || height <= 0) return
 
   const svg = container
     .append('svg')
-    .attr('viewBox', `0 0 ${width} ${height}`)
+    .attr('width', width)
+    .attr('height', height)
     .append('g')
     .attr('transform', `translate(${width / 2},${height / 2})`)
 
@@ -41,15 +66,17 @@ const drawChart = (data) => {
 
   const arc = d3
     .arc()
-    .innerRadius(radius * 0.6)
+    .innerRadius(radius * 0.55)
     .outerRadius(radius)
+
+  if (rawData.length === 0) return
 
   const arcs = svg.selectAll('.arc').data(pie(rawData)).enter().append('g').attr('class', 'arc')
 
   arcs
     .append('path')
     .attr('d', arc)
-    .attr('fill', (d) => d.data.color)
+    .attr('fill', (d) => d.data.color || '#d1d5db')
     .attr('stroke', 'white')
     .style('stroke-width', '2px')
     .transition()
@@ -60,44 +87,23 @@ const drawChart = (data) => {
     })
 
   const totalOrders = d3.sum(rawData, (d) => d.value)
+
   svg
     .append('text')
     .attr('text-anchor', 'middle')
-    .attr('dy', '-0.5em')
-    .style('font-size', '24px')
+    .attr('dy', '-0.1em')
+    .style('font-size', '20px')
     .style('font-weight', 'bold')
+    .style('fill', '#1f2937')
     .text(totalOrders)
 
   svg
     .append('text')
     .attr('text-anchor', 'middle')
-    .attr('dy', '1.0em')
-    .style('font-size', '14px')
+    .attr('dy', '1.3em')
+    .style('font-size', '12px')
+    .style('fill', '#6b7280')
     .text('Tổng đơn')
-
-  const legendHeight = rawData.length * 25
-  const legendStartY = -Math.min(legendHeight / 2, height / 2 - 20)
-
-  const legend = svg
-    .selectAll('.legend')
-    .data(rawData)
-    .enter()
-    .append('g')
-    .attr('transform', (d, i) => `translate(${-width / 2 + 20}, ${legendStartY + i * 25})`)
-
-  legend
-    .append('rect')
-    .attr('width', 18)
-    .attr('height', 18)
-    .style('fill', (d) => d.color)
-    .attr('rx', 4)
-
-  legend
-    .append('text')
-    .attr('x', 24)
-    .attr('y', 13)
-    .text((d) => d.status)
-    .style('font-size', '14px')
 }
 
 onMounted(() => {
@@ -107,8 +113,8 @@ onMounted(() => {
     drawChart(props.orderData)
   })
 
-  if (chartContainer.value) {
-    resizeObserver.observe(chartContainer.value)
+  if (pieContainer.value) {
+    resizeObserver.observe(pieContainer.value)
   }
 })
 
@@ -126,3 +132,13 @@ watch(
   { deep: true },
 )
 </script>
+
+<style scoped>
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+</style>

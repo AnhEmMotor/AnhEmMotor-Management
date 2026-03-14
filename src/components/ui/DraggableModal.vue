@@ -60,9 +60,16 @@ const MIN_HEIGHT = 200
 
 const parseInitialWidth = () => {
   const w = props.width
-  if (w.endsWith('px')) return parseInt(w)
-  if (w.endsWith('vw')) return (window.innerWidth * parseInt(w)) / 100
-  return 500
+  let parsed = 500
+  if (w.endsWith('px')) parsed = parseInt(w)
+  else if (w.endsWith('vw')) parsed = (window.innerWidth * parseInt(w)) / 100
+  else parsed = parseInt(w) || 500
+  
+  if (typeof window !== 'undefined') {
+    const maxWidth = window.innerWidth - 32
+    return Math.min(parsed, maxWidth)
+  }
+  return parsed
 }
 
 const enableAnimation = () => {
