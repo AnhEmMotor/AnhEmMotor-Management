@@ -113,18 +113,18 @@ const selectedStatuses = ref(['30-days'])
 
 <template>
   <div class="p-6 rounded-xl shadow-lg bg-white">
-    <div class="flex items-start justify-between mb-6">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
       <div>
-        <h1 class="text-3xl font-bold mb-1 text-gray-800">Phân Tích Doanh Thu Chi Tiết</h1>
+        <h1 class="text-2xl sm:text-3xl font-bold mb-1 text-gray-800">Phân Tích Doanh Thu Chi Tiết</h1>
         <p class="text-gray-500 text-sm">Theo dõi doanh thu, lợi nhuận và xu hướng kinh doanh</p>
       </div>
-      <div v-if="isLoading" class="flex gap-3">
-        <SkeletonLoader width="200px" height="2.5rem" className="rounded-lg" />
-        <SkeletonLoader width="100px" height="2.5rem" className="rounded-lg" />
+      <div v-if="isLoading" class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+        <SkeletonLoader width="100%" height="2.5rem" className="rounded-lg sm:w-[200px]" />
+        <SkeletonLoader width="100%" height="2.5rem" className="rounded-lg sm:w-[100px]" />
       </div>
-      <div v-else class="flex items-center gap-3">
-        <RevenueFilterButtons v-model="selectedStatuses" />
-        <Button color="secondary" :icon="IconFileExport" text="Export" @click="handleExport" />
+      <div v-else class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+        <RevenueFilterButtons v-model="selectedStatuses" class="flex-1 sm:flex-none" />
+        <Button color="secondary" :icon="IconFileExport" text="Export" @click="handleExport" class="flex-1 sm:flex-none" />
       </div>
     </div>
 
@@ -229,8 +229,9 @@ const selectedStatuses = ref(['30-days'])
         </div>
       </div>
 
-      <div class="overflow-x-auto rounded-lg shadow-sm border border-gray-300">
-        <table class="min-w-full bg-white border-collapse">
+      <div class="overflow-hidden rounded-lg shadow-sm border border-gray-300">
+        <!-- Desktop Table -->
+        <table class="min-w-full bg-white border-collapse hidden md:table">
           <thead>
             <tr
               class="bg-gray-50 text-gray-500 uppercase text-xs font-medium tracking-wider leading-normal border-b border-gray-200"
@@ -263,6 +264,40 @@ const selectedStatuses = ref(['30-days'])
             </tr>
           </tbody>
         </table>
+
+        <!-- Mobile Card View -->
+        <div class="md:hidden flex flex-col bg-white divide-y divide-gray-200">
+          <div
+            v-for="row in dailyData"
+            :key="`mob-${row.date}`"
+            class="p-4 flex flex-col gap-3 hover:bg-gray-50 transition-colors"
+          >
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-gray-900 text-base">{{ row.date }}</span>
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
+                :class="row.growth >= 0 ? 'bg-red-50 text-red-700 border border-red-100' : 'bg-gray-50 text-gray-500 border border-gray-200'"
+              >
+                {{ row.growth >= 0 ? '▲' : '▼' }} {{ Math.abs(row.growth) }}%
+              </span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div class="flex flex-col">
+                <span class="text-[10px] text-gray-400 uppercase font-semibold tracking-wider mb-0.5">Doanh Thu</span>
+                <span class="font-mono text-gray-800 font-bold">{{ row.revenue }} tr</span>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-[10px] text-gray-400 uppercase font-semibold tracking-wider mb-0.5">Lợi Nhuận</span>
+                <span class="font-mono text-green-600 font-bold">{{ row.profit }} tr</span>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-[10px] text-gray-400 uppercase font-semibold tracking-wider mb-0.5">Số Đơn</span>
+                <span class="font-mono text-gray-700">{{ row.orders }} đơn</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </template>
   </div>
