@@ -1,16 +1,24 @@
 <template>
   <div class="p-4 sm:p-6 rounded-xl shadow-lg bg-white">
     <div
-      class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0"
+      class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 sm:mb-6 gap-4"
     >
       <div>
-        <h2 class="text-3xl font-bold text-center text-gray-800">Danh Sách Người Dùng</h2>
+        <h2 class="text-2xl sm:text-3xl font-bold text-center text-gray-800">Danh Sách Người Dùng</h2>
       </div>
-      <div class="flex flex-wrap gap-2 items-center">
-        <div class="flex items-center gap-2">
+      <div class="flex flex-wrap gap-2 items-center w-full md:w-auto">
+        <div class="flex items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0">
           <span class="text-gray-600 font-medium whitespace-nowrap">Trạng thái:</span>
-          <UserFilterButtons v-model="filterRefs.status" />
+          <UserFilterButtons v-model="filterRefs.status" class="flex-1 sm:flex-none" />
         </div>
+        <button
+          v-if="hasPermission(Permissions.UsersCreate)"
+          @click="addNewUser"
+          class="flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all shadow-md active:transform active:scale-95 whitespace-nowrap"
+        >
+          <span class="text-lg font-bold">+</span>
+          <span class="font-medium">Thêm nhân viên</span>
+        </button>
       </div>
     </div>
 
@@ -20,8 +28,10 @@
       class="mb-4"
       inputClass="h-11"
     />
-    <div class="border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-      <table class="min-w-full bg-white">
+    <div class="border border-gray-200 rounded-lg shadow-sm overflow-hidden bg-white">
+      <!-- Desktop Table -->
+      <div class="hidden md:block overflow-x-auto">
+        <table class="min-w-full bg-white border-collapse">
         <thead
           class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs font-medium border-b border-gray-200"
         >
@@ -136,7 +146,110 @@
             </td>
           </tr>
         </tbody>
-      </table>
+        </table>
+      </div>
+
+      <!-- Mobile List/Cards View -->
+      <div class="md:hidden flex flex-col divide-y divide-gray-200">
+        <template v-if="isError">
+           <div class="text-center p-6 text-red-500 font-medium text-sm">
+              {{ errorMessage }}
+           </div>
+        </template>
+        <template v-else-if="displayCustomers.length === 0">
+          <div v-if="isLoading" class="p-4 space-y-4">
+            <div v-for="i in 5" :key="`mob-loading-${i}`" class="space-y-3 pb-4 border-b border-gray-100 last:border-0">
+               <div class="flex items-center gap-3">
+                 <SkeletonLoader width="40px" height="40px" class="rounded-full shrink-0" />
+                 <div class="flex-1 space-y-2">
+                   <SkeletonLoader width="80%" height="20px" />
+                   <SkeletonLoader width="60%" height="16px" />
+                 </div>
+               </div>
+               <div class="flex justify-between items-center pt-2">
+                 <SkeletonLoader width="80px" height="24px" class="rounded-full" />
+                 <SkeletonLoader width="80px" height="24px" class="rounded-full" />
+               </div>
+            </div>
+          </div>
+          <div v-else class="text-center py-8 text-gray-500 text-sm">
+            Không tìm thấy nhân viên nào.
+          </div>
+        </template>
+        <template v-else>
+          <div
+            v-for="customer in displayCustomers"
+            :key="`mobile-${customer.id}`"
+            class="p-4 flex flex-col gap-3 bg-white hover:bg-gray-50 transition-colors"
+          >
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg shrink-0 mt-0.5">
+                {{ customer.fullName ? customer.fullName.charAt(0).toUpperCase() : 'U' }}
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="font-semibold text-gray-800 text-base mb-0.5 truncate">{{ customer.fullName }}</div>
+                <div class="text-sm text-gray-500 truncate mb-1">{{ customer.email }}</div>
+                <div class="text-sm text-gray-500">{{ customer.phoneNumber || 'Không có SĐT' }}</div>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 mt-1">
+              <RoundBadge color="blue" class="text-xs font-semibold">
+                {{ customer.roles?.length || 0 }} vai trò
+              </RoundBadge>
+              <RoundBadge :color="customer.status === 'Active' ? 'green' : customer.status === 'Banned' ? 'red' : 'gray'" class="text-xs">
+                 {{ statusText[customer.status] || customer.status }}
+              </RoundBadge>
+            </div>
+
+            <div
+              v-if="customer.id !== authStore.user?.id"
+              class="flex items-center gap-3 mt-2 pt-3 border-t border-gray-50 justify-end"
+            >
+              <button
+                v-if="hasPermission(Permissions.UsersEdit)"
+                @click="editCustomer(customer.id)"
+                class="text-blue-500 hover:text-blue-700 bg-blue-50 p-2 rounded-full transition"
+                title="Sửa thông tin"
+              >
+                <IconEdit class="w-4 h-4" />
+              </button>
+              <button
+                v-if="hasPermission(Permissions.UsersChangePassword)"
+                @click="changePasswordAction(customer.id)"
+                class="text-gray-500 hover:text-gray-700 bg-gray-100 p-2 rounded-full transition"
+                title="Đổi mật khẩu"
+              >
+                <IconKey class="w-4 h-4" />
+              </button>
+              <button
+                v-if="hasPermission(Permissions.UsersAssignRoles)"
+                @click="assignRolesAction(customer.id)"
+                class="text-green-500 hover:text-green-700 bg-green-50 p-2 rounded-full transition"
+                title="Phân quyền"
+              >
+                <IconUser class="w-4 h-4" />
+              </button>
+              <button
+                v-if="hasPermission(Permissions.UsersEdit) && customer.status !== 'Banned'"
+                @click="promptBanUser(customer.id)"
+                class="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-full transition"
+                title="Khóa tài khoản"
+              >
+                <IconLock class="w-4 h-4" />
+              </button>
+              <button
+                v-if="hasPermission(Permissions.UsersEdit) && customer.status === 'Banned'"
+                @click="promptUnbanUser(customer.id)"
+                class="text-green-600 hover:text-green-800 bg-green-50 p-2 rounded-full transition"
+                title="Mở khóa tài khoản"
+              >
+                <IconCheckCircle class="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </template>
+      </div>
     </div>
 
     <div class="mt-4 flex flex-col sm:flex-row justify-end items-center text-sm text-gray-600">
@@ -155,7 +268,7 @@
       :user="selectedUser"
       :isEditMode="isEditMode"
       :availableRoles="availableRoles"
-      :is-saving="isUpdating"
+      :is-saving="isUpdatingOrCreate"
       :is-fetching="isFetchingDetail"
       :zIndex="activeModalId === 'form' ? modalZIndex : modalZIndex - 1"
       @close="showUserForm = false"
@@ -416,6 +529,27 @@ const { isPending: isUpdating, mutate: doUpdateUser } = useMutation({
   },
 })
 
+const { isPending: isCreating, mutate: doCreateUser } = useMutation({
+  mutationFn: (userData) => userApi.createUser(userData),
+  onSuccess: async () => {
+    await queryClient.invalidateQueries({ queryKey: ['users'] })
+    toast.success('Thêm người dùng thành công')
+    showUserForm.value = false
+  },
+  onError: (error) => {
+    toast.error(error.response?.data?.message || 'Thêm người dùng thất bại')
+  },
+})
+
+const isUpdatingOrCreate = computed(() => isUpdating.value || isCreating.value)
+
+const addNewUser = () => {
+  selectedUser.value = null
+  isEditMode.value = false
+  showUserForm.value = true
+  activeModalId.value = 'form'
+}
+
 const { isPending: isChangingPassword, mutate: doChangePassword } = useMutation({
   mutationFn: (data) => userApi.changePassword(data.userId, data.payload),
   onSuccess: () => {
@@ -450,6 +584,10 @@ const handleSaveRoles = (payload) => {
 }
 
 const handleSaveUser = (userData) => {
-  doUpdateUser(userData)
+  if (isEditMode.value) {
+    doUpdateUser(userData)
+  } else {
+    doCreateUser(userData)
+  }
 }
 </script>

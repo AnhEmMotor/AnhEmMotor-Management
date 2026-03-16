@@ -218,29 +218,30 @@ const handleExport = () => {
 </script>
 
 <template>
-  <div class="p-6 rounded-xl shadow-lg bg-white">
+  <div class="p-4 sm:p-6 rounded-xl shadow-lg bg-white">
     <LoadingOverlay :show="loadingOverlay" />
 
-    <div class="flex items-start justify-between mb-4">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 sm:mb-6 gap-4">
       <div>
-        <h1 class="text-3xl font-bold mb-1 text-gray-800">Quản Lý Đơn Hàng</h1>
+        <h1 class="text-2xl sm:text-3xl font-bold mb-1 text-gray-800">Quản Lý Đơn Hàng</h1>
         <p class="text-gray-500 text-sm">Quản lý đơn hàng bán ra của cửa hàng</p>
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
         <Button
           v-if="hasPermission(Permissions.OutputsCreate)"
           color="primary"
           :icon="IconPlus"
           @click="createNewOrder"
-          text="Tạo Đơn Hàng Mới"
+          text="Tạo Mới"
+          class="flex-1 sm:flex-none"
         />
 
         <label
           v-if="hasPermission(Permissions.OutputsCreate)"
           for="import-order-input"
-          class="cursor-pointer"
+          class="cursor-pointer flex-1 sm:flex-none min-w-[100px]"
         >
-          <Button text="Import" :icon="IconFileImport" color="secondary" as="span" />
+          <Button text="Import" :icon="IconFileImport" color="secondary" as="span" class="w-full justify-center" />
           <input
             type="file"
             id="import-order-input"
@@ -256,12 +257,15 @@ const handleExport = () => {
           :icon="IconFileExport"
           color="secondary"
           @click="handleExport"
+           class="flex-1 sm:flex-none min-w-[100px] justify-center"
         />
       </div>
     </div>
 
-    <div class="overflow-x-auto rounded-lg shadow-sm border border-gray-300">
-      <table class="min-w-full bg-white border-collapse">
+    <div class="rounded-lg shadow-sm border border-gray-300 bg-white">
+      <!-- Desktop Table -->
+      <div class="hidden md:block overflow-x-auto">
+        <table class="min-w-full bg-white border-collapse">
         <thead>
           <tr
             class="bg-gray-50 text-gray-500 uppercase text-xs font-medium tracking-wider leading-normal border-b border-gray-200"
@@ -341,7 +345,73 @@ const handleExport = () => {
             </td>
           </tr>
         </tbody>
-      </table>
+        </table>
+      </div>
+
+      <!-- Mobile List/Cards View -->
+      <div class="md:hidden flex flex-col divide-y divide-gray-200">
+        <template v-if="isError">
+           <div class="text-center p-6 text-red-500 text-sm">
+              Đã có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại.
+           </div>
+        </template>
+        <template v-else-if="!displayedOrders || displayedOrders.length === 0">
+          <div v-if="isLoading || isFetching" class="p-4 space-y-4">
+            <div v-for="i in 5" :key="`mob-loading-${i}`" class="space-y-3 pb-4 border-b border-gray-100 last:border-0">
+              <SkeletonLoader width="140px" height="20px" />
+              <SkeletonLoader width="100%" height="40px" />
+              <div class="flex justify-between items-center pt-2">
+                <SkeletonLoader width="80px" height="24px" class="rounded-full" />
+                <SkeletonLoader width="100px" height="24px" />
+              </div>
+            </div>
+          </div>
+          <div v-else class="text-center py-8 text-gray-500 text-sm">
+            Không có đơn hàng nào.
+          </div>
+        </template>
+        <template v-else>
+          <div
+            v-for="order in displayedOrders"
+            :key="`mobile-${order.id}`"
+            class="p-4 flex flex-col gap-3 bg-white hover:bg-gray-50 transition-colors cursor-pointer"
+            @click="handleEditOrder(order)"
+          >
+            <div class="flex justify-between items-start gap-2">
+              <div class="flex-1 min-w-0">
+                <div class="font-semibold text-gray-800 text-base mb-1 truncate">{{ order.buyerName || 'Khách lẻ' }}</div>
+                <div class="text-xs text-gray-500 flex items-center gap-1.5">
+                   <span>{{ new Date(order.createdAt).toLocaleDateString('vi-VN') }}</span>
+                   <span class="w-1 h-1 rounded-full bg-gray-300"></span>
+                   <span>{{ new Date(order.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) }}</span>
+                </div>
+              </div>
+              <RoundBadge :color="getStatusColor(order.statusId)" class="shrink-0 text-[10px] sm:text-xs">
+                {{ getStatusLabel(order.statusId) }}
+              </RoundBadge>
+            </div>
+
+            <p v-if="order.notes" class="text-sm text-gray-600 line-clamp-2 bg-gray-50 p-2 rounded border border-gray-100 italic">
+               {{ order.notes }}
+            </p>
+
+            <div class="flex items-center justify-between mt-1 pt-3 border-t border-gray-50">
+               <span class="font-semibold text-red-600 text-base">
+                 {{ (order.total || 0).toLocaleString('vi-VN') }} <span class="text-xs font-normal">VNĐ</span>
+               </span>
+               
+               <SmallNoBgButton
+                 v-if="hasPermission(Permissions.OutputsEdit)"
+                 color="blue"
+                 :icon="IconEdit"
+                 @click.stop="handleEditOrder(order)"
+               >
+                 Sửa
+               </SmallNoBgButton>
+            </div>
+          </div>
+        </template>
+      </div>
     </div>
 
     <div class="mt-4">

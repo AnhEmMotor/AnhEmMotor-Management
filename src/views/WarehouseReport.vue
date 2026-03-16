@@ -68,18 +68,18 @@ const handleRestock = () => {}
 
 <template>
   <div class="p-6 rounded-xl shadow-lg bg-white">
-    <div class="flex items-start justify-between mb-6">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
       <div>
-        <h1 class="text-3xl font-bold mb-1 text-gray-800">Báo Cáo Tình Trạng Kho</h1>
+        <h1 class="text-2xl sm:text-3xl font-bold mb-1 text-gray-800">Báo Cáo Tình Trạng Kho</h1>
         <p class="text-gray-500 text-sm">Tổng quan tình trạng tồn kho theo hãng xe</p>
       </div>
       <div v-if="isLoading" class="flex gap-2">
         <SkeletonLoader width="100px" height="2.5rem" className="rounded-lg" />
         <SkeletonLoader width="100px" height="2.5rem" className="rounded-lg" />
       </div>
-      <div v-else class="flex items-center gap-2">
-        <Button color="secondary" :icon="IconFileExport" text="Export" @click="handleExport" />
-        <Button color="primary" :icon="IconPlus" text="Nhập Kho" @click="handleImport" />
+      <div v-else class="flex w-full md:w-auto items-center gap-2">
+        <Button color="secondary" :icon="IconFileExport" text="Export" @click="handleExport" class="flex-1 md:flex-none" />
+        <Button color="primary" :icon="IconPlus" text="Nhập Kho" @click="handleImport" class="flex-1 md:flex-none" />
       </div>
     </div>
 
@@ -128,8 +128,9 @@ const handleRestock = () => {}
         </div>
       </div>
 
-      <div class="overflow-x-auto rounded-lg shadow-sm border border-gray-300">
-        <table class="min-w-full bg-white border-collapse">
+      <div class="overflow-hidden rounded-lg shadow-sm border border-gray-300">
+        <!-- Desktop Table View -->
+        <table class="min-w-full bg-white border-collapse hidden md:table">
           <thead>
             <tr
               class="bg-gray-50 text-gray-500 uppercase text-xs font-medium tracking-wider leading-normal border-b border-gray-200"
@@ -196,6 +197,75 @@ const handleRestock = () => {}
             </tr>
           </tbody>
         </table>
+
+        <!-- Mobile Card View -->
+        <div class="md:hidden flex flex-col bg-white divide-y divide-gray-200">
+          <div
+            v-for="item in warehouseData"
+            :key="`mob-${item.brandName}`"
+            class="p-4 flex flex-col gap-3 hover:bg-gray-50 transition-colors"
+          >
+            <!-- Brand & Status row -->
+            <div class="flex justify-between items-center bg-gray-50 px-3 py-2 -mx-2 rounded-md">
+              <div class="font-bold text-gray-900 text-base">
+                {{ item.brandName }}
+              </div>
+              <RoundBadge :color="getStatusClass(item.status)">{{ item.status }}</RoundBadge>
+            </div>
+
+            <!-- Stats grid -->
+            <div class="grid grid-cols-2 gap-y-3 gap-x-4 mt-1">
+              <div class="flex flex-col">
+                <span class="text-xs text-gray-500 uppercase tracking-wide">Tổng Tồn Kho</span>
+                <span class="font-mono font-medium text-gray-800 text-base">{{ item.totalStock }}</span>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-xs text-gray-500 uppercase tracking-wide">Tỷ Lệ Tồn</span>
+                <span class="font-mono text-gray-600 text-sm">{{ capacityPercent(item) }}%</span>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-xs text-gray-500 uppercase tracking-wide">Sắp Hết Hàng</span>
+                <span class="font-mono text-gray-600 font-medium  text-orange-500 text-sm">{{ item.lowStock }}</span>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-xs text-gray-500 uppercase tracking-wide">Hết Hàng</span>
+                <span class="font-mono text-gray-600 font-medium text-red-500 text-sm">{{ item.outOfStock }}</span>
+              </div>
+            </div>
+            
+            <!-- Progress bar -->
+            <div class="w-full bg-gray-100 rounded-full h-2 mt-1 -mb-1">
+              <div
+                class="h-2 rounded-full transition-all duration-500"
+                :class="
+                  capacityPercent(item) > 70
+                    ? 'bg-red-300'
+                    : capacityPercent(item) > 40
+                      ? 'bg-red-400'
+                      : 'bg-red-600'
+                "
+                :style="{ width: `${capacityPercent(item)}%` }"
+              ></div>
+            </div>
+
+            <!-- Actions row -->
+            <div class="flex justify-end gap-3 pt-3 mt-1 border-t border-gray-100">
+              <button 
+                @click.stop="handleViewDetail(item)"
+                class="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded transition font-medium text-sm"
+              >
+                <IconExpand class="w-4 h-4" /> Chi Tiết
+              </button>
+              <button 
+                @click.stop="handleRestock(item)"
+                class="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded transition font-medium text-sm"
+              >
+                <IconPlus class="w-4 h-4" /> Nhập Kho
+              </button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </template>
   </div>

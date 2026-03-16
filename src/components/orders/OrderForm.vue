@@ -398,7 +398,8 @@ onBeforeUnmount(() => {
     @close="$emit('close')"
     @activate="$emit('activate')"
     :onRefresh="props.order ? props.onRefresh || handleReload : undefined"
-    width="40vw"
+    width="800px"
+    class="!w-[95vw] md:!w-[800px]"
   >
     <template #header>
       <div class="flex items-center gap-2">
@@ -612,8 +613,9 @@ onBeforeUnmount(() => {
           <p v-if="errors.products" class="mt-1 text-sm text-red-500">{{ errors.products }}</p>
         </div>
 
-        <div class="product-table-section border border-gray-300 rounded-md">
-          <table class="w-full text-sm bg-white border-collapse">
+        <div class="product-table-section rounded-md bg-white border border-gray-300">
+          <div class="hidden md:block overflow-x-auto">
+            <table class="w-full text-sm bg-white border-collapse">
             <thead class="bg-gray-50">
               <tr>
                 <th
@@ -734,7 +736,89 @@ onBeforeUnmount(() => {
                 </td>
               </tr>
             </tbody>
-          </table>
+            </table>
+          </div>
+
+          <!-- Mobile Cards Layout -->
+          <div class="md:hidden flex flex-col divide-y divide-gray-100">
+             <template v-if="isLoading">
+                <div v-for="i in 3" :key="`mob-loading-${i}`" class="p-4 space-y-3">
+                   <div class="flex gap-3 items-center border-b border-gray-50 pb-2">
+                     <SkeletonLoader width="40px" height="40px" class="rounded" />
+                     <SkeletonLoader width="80%" height="20px" />
+                   </div>
+                   <div class="grid grid-cols-2 gap-3 mt-2">
+                     <SkeletonLoader width="100%" height="32px" />
+                     <SkeletonLoader width="100%" height="32px" />
+                   </div>
+                   <div class="flex justify-between items-center mt-2">
+                     <SkeletonLoader width="120px" height="24px" />
+                     <SkeletonLoader width="32px" height="32px" class="rounded" />
+                   </div>
+                </div>
+             </template>
+             <div v-else-if="localData.products.length === 0" class="text-center py-6 text-gray-400">
+                  Chưa có sản phẩm nào
+             </div>
+             <template v-else>
+                <div v-for="(p, idx) in localData.products" :key="`mob-prod-${p.id}`" class="p-3 bg-white flex flex-col gap-3 relative hover:bg-gray-50 transition-colors">
+                   <div class="flex gap-3 items-start pr-8">
+                     <div class="shrink-0 font-medium text-xs text-gray-400 bg-gray-50 w-5 h-5 flex items-center justify-center rounded">{{ idx + 1 }}</div>
+                     <img
+                       :src="p.coverImageUrl || 'https://placehold.co/40x40/f0f0f0/AAAAAA?text=...'"
+                       alt="product"
+                       class="w-12 h-12 rounded object-cover border border-gray-100 shrink-0 mt-0.5"
+                     />
+                     <div class="text-sm font-medium text-gray-800 break-words line-clamp-2 mt-0.5 leading-tight">
+                         {{ p.name }}
+                     </div>
+                   </div>
+
+                   <div class="grid grid-cols-2 gap-x-3 gap-y-2 mt-1">
+                      <div class="flex flex-col">
+                         <span class="text-[10px] text-gray-500 uppercase tracking-wider mb-1 font-semibold">Số lượng</span>
+                         <Input
+                           v-model.number="p.quantity"
+                           @change="calculateProductTotal(p)"
+                           type="number"
+                           min="1"
+                           :disabled="isLocked"
+                           :inputClass="'text-center py-1.5 px-2 text-sm'"
+                         />
+                      </div>
+                      <div class="flex flex-col">
+                         <span class="text-[10px] text-gray-500 uppercase tracking-wider mb-1 font-semibold">Đơn giá</span>
+                         <Input
+                           :modelValue="formatCurrency(p.unitPrice)"
+                           @update:modelValue="
+                             (val) => {
+                               p.unitPrice = parseCurrency(val)
+                               calculateProductTotal(p)
+                             }
+                           "
+                           type="text"
+                           :disabled="isLocked"
+                           :inputClass="'text-right py-1.5 px-2 text-sm font-mono'"
+                         />
+                      </div>
+                   </div>
+                   
+                   <div class="flex justify-between items-center bg-gray-50 rounded p-2 mt-1 border border-gray-100">
+                      <span class="text-xs font-semibold text-gray-600">Thành tiền:</span>
+                      <span class="font-bold text-red-600 text-sm font-mono">{{ (p.total || 0).toLocaleString('vi-VN') }} <span class="text-[10px] text-gray-500 font-normal">VNĐ</span></span>
+                   </div>
+
+                   <button
+                     v-if="!isLocked"
+                     @click="removeProduct(idx)"
+                     title="Xóa sản phẩm"
+                     class="absolute top-2 right-2 text-red-500 hover:text-red-700 bg-red-50 w-8 h-8 rounded flex items-center justify-center border border-red-100 transition-colors"
+                   >
+                     🗑️
+                   </button>
+                </div>
+             </template>
+          </div>
         </div>
 
         <div>

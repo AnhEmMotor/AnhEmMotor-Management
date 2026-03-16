@@ -17,6 +17,7 @@ const sortOptions = [
   { value: 'sold', label: 'Bán chạy nhất' },
   { value: 'margin', label: 'Lợi nhuận cao nhất' },
   { value: 'stock', label: 'Tồn kho nhiều nhất' },
+  
   { value: 'name', label: 'Tên A-Z' },
 ]
 
@@ -108,37 +109,37 @@ const handleExport = () => {}
 
 <template>
   <div class="p-6 rounded-xl shadow-lg bg-white">
-    <div class="flex items-start justify-between mb-6">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
       <div>
-        <h1 class="text-3xl font-bold mb-1 text-gray-800">Hiệu Quả Sản Phẩm</h1>
+        <h1 class="text-2xl sm:text-3xl font-bold mb-1 text-gray-800">Hiệu Quả Sản Phẩm</h1>
         <p class="text-gray-500 text-sm">
           Phân tích doanh thu, lợi nhuận và hiệu suất từng mã hàng
         </p>
       </div>
-      <div v-if="isLoading" class="flex gap-3">
-        <SkeletonLoader width="200px" height="2.5rem" className="rounded-lg" />
-        <SkeletonLoader width="130px" height="2.5rem" className="rounded-lg" />
-        <SkeletonLoader width="100px" height="2.5rem" className="rounded-lg" />
+      <div v-if="isLoading" class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+        <SkeletonLoader width="100%" height="2.5rem" className="rounded-lg sm:w-[200px]" />
+        <SkeletonLoader width="100%" height="2.5rem" className="rounded-lg sm:w-[130px]" />
+        <SkeletonLoader width="100%" height="2.5rem" className="rounded-lg sm:w-[100px]" />
       </div>
-      <div v-else class="flex items-center gap-3">
-        <div class="relative">
+      <div v-else class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+        <div class="relative flex-1 sm:flex-none">
           <input
             v-model="searchQuery"
             type="text"
             placeholder="Tìm sản phẩm..."
-            class="pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-200 focus:border-red-400 outline-none w-56"
+            class="pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-200 focus:border-red-400 outline-none w-full sm:w-56"
           />
           <IconSearch class="w-4 h-4 text-gray-400 absolute left-2.5 top-2.5" />
         </div>
         <select
           v-model="sortBy"
-          class="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-200 focus:border-red-400 outline-none"
+          class="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-200 focus:border-red-400 outline-none flex-1 sm:flex-none"
         >
           <option v-for="opt in sortOptions" :key="opt.value" :value="opt.value">
             {{ opt.label }}
           </option>
         </select>
-        <Button color="secondary" :icon="IconFileExport" text="Export" @click="handleExport" />
+        <Button color="secondary" :icon="IconFileExport" text="Export" @click="handleExport" class="flex-1 sm:flex-none" />
       </div>
     </div>
 
@@ -202,8 +203,9 @@ const handleExport = () => {}
         </div>
       </div>
 
-      <div class="overflow-x-auto rounded-lg shadow-sm border border-gray-300">
-        <table class="min-w-full bg-white border-collapse">
+      <div class="overflow-hidden rounded-lg shadow-sm border border-gray-300">
+        <!-- Desktop Table -->
+        <table class="min-w-full bg-white border-collapse hidden md:table">
           <thead>
             <tr
               class="bg-gray-50 text-gray-500 uppercase text-xs font-medium tracking-wider leading-normal border-b border-gray-200"
@@ -288,6 +290,71 @@ const handleExport = () => {}
             </tr>
           </tbody>
         </table>
+
+        <!-- Mobile Card View -->
+        <div class="md:hidden flex flex-col bg-white divide-y divide-gray-200">
+          <div
+            v-for="product in filteredProducts"
+            :key="`mob-${product.productName}`"
+            class="p-4 flex flex-col gap-3 hover:bg-gray-50 transition-colors"
+          >
+            <!-- Name & Status row -->
+            <div class="flex justify-between items-start gap-3">
+              <div class="flex items-center gap-2 min-w-0">
+                <div class="w-6 h-6 rounded bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-400 shrink-0">SP</div>
+                <span class="font-bold text-gray-900 text-sm truncate">{{ product.productName }}</span>
+              </div>
+              <RoundBadge :color="getStockStatus(product).color" class="shrink-0">{{ getStockStatus(product).text }}</RoundBadge>
+            </div>
+
+            <!-- Price & Margin row -->
+            <div class="flex justify-between items-end border-b border-gray-50 pb-2">
+              <div class="flex flex-col">
+                <span class="text-[10px] text-gray-400 uppercase font-semibold tracking-wider">Giá Bán</span>
+                <span class="font-mono text-gray-800 font-bold">{{ formatPrice(product.sellPrice) }}</span>
+              </div>
+              <div class="flex flex-col items-end">
+                <span class="text-[10px] text-gray-400 uppercase font-semibold tracking-wider">Margin</span>
+                <span 
+                  class="font-bold"
+                  :class="product.marginPercentage >= 30 ? 'text-green-600' : product.marginPercentage >= 20 ? 'text-yellow-600' : 'text-red-600'"
+                >
+                  {{ product.marginPercentage }}%
+                </span>
+              </div>
+            </div>
+
+            <!-- Sales & Stock grid -->
+            <div class="grid grid-cols-2 gap-x-4">
+              <div class="flex flex-col gap-1">
+                <span class="text-[10px] text-gray-400 uppercase font-semibold tracking-wider">Đã Bán (30d)</span>
+                <div class="flex items-center gap-1">
+                  <span class="font-mono text-gray-700 text-sm font-medium">{{ product.soldCount30Days }}</span>
+                  <span class="text-xs">{{ getTrendIcon(product.trend) }}</span>
+                </div>
+              </div>
+              <div class="flex flex-col gap-1">
+                <span class="text-[10px] text-gray-400 uppercase font-semibold tracking-wider">Tồn Kho</span>
+                <div class="flex items-center gap-2">
+                  <span class="font-mono text-gray-700 text-sm font-medium w-6">{{ product.stockQuantity }}</span>
+                  <div class="flex-1">
+                    <div class="w-full bg-gray-100 rounded-full h-1.5">
+                      <div
+                        class="h-1.5 rounded-full transition-all duration-500"
+                        :class="product.stockQuantity === 0 ? 'bg-gray-300' : product.stockQuantity < 5 ? 'bg-yellow-400' : 'bg-green-400'"
+                        :style="{ width: `${stockPercent(product)}%` }"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div v-if="filteredProducts.length === 0" class="p-8 text-center text-gray-400">
+            Không tìm thấy sản phẩm phù hợp
+          </div>
+        </div>
       </div>
     </template>
   </div>
