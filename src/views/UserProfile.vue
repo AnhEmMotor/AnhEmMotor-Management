@@ -69,6 +69,13 @@ const isUpdatingProfile = ref(false)
 const isChangingPassword = ref(false)
 
 const handleUpdateProfile = async () => {
+  if (profileForm.value.phoneNumber && profileForm.value.phoneNumber.trim() !== '') {
+    if (!/^\d{10,11}$/.test(profileForm.value.phoneNumber)) {
+      toast.error('Số điện thoại phải có 10-11 chữ số')
+      return
+    }
+  }
+
   try {
     isUpdatingProfile.value = true
     const payload = {

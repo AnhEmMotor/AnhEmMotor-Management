@@ -179,11 +179,13 @@ const validateForm = () => {
     isValid = false
   }
 
-  if (!formData.value.phone || formData.value.phone.trim() === '') {
+  if (formData.value.phone && formData.value.phone.trim() !== '') {
+    if (!/^[0-9]{10,11}$/.test(formData.value.phone)) {
+      errors.value.phone = 'Số điện thoại phải có 10-11 chữ số'
+      isValid = false
+    }
+  } else if (!props.isEditMode) {
     errors.value.phone = 'Số điện thoại không được để trống'
-    isValid = false
-  } else if (!/^[0-9]{10,11}$/.test(formData.value.phone)) {
-    errors.value.phone = 'Số điện thoại phải có 10-11 chữ số'
     isValid = false
   }
 
@@ -321,7 +323,7 @@ const handleRefresh = () => {
               Giới tính <span class="text-red-500">*</span>
             </label>
             <select
-              v-model="profileForm.gender"
+              v-model="formData.gender"
               class="block w-full border-gray-300 rounded-lg shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm px-3 py-2 border h-[42px] appearance-none bg-no-repeat bg-[right_12px_center] bg-[length:20px] transition-all duration-200 bg-[url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke-width%3D%221.5%22%20stroke%3D%22%236B7280%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20d%3D%22m19.5%208.25-7.5%207.5-7.5-7.5%22%20%2F%3E%3C%2Fsvg%3E')]"
             >
               <option value="" disabled>Chọn giới tính</option>
@@ -334,7 +336,7 @@ const handleRefresh = () => {
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Số điện thoại <span class="text-red-500">*</span>
+              Số điện thoại <span v-if="!isEditMode" class="text-red-500">*</span>
             </label>
             <Input
               v-model="formData.phone"

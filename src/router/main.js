@@ -198,7 +198,7 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to) => {
   const authStore = useAuthStore()
 
   if (!authStore.isInitialized) {
@@ -207,30 +207,26 @@ router.beforeEach(async (to, from, next) => {
 
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     if (to.path === '/') {
-      return next({ name: 'login' })
+      return { name: 'login' }
     }
-    return next({ name: 'login', query: { redirect: to.fullPath } })
+    return { name: 'login', query: { redirect: to.fullPath } }
   }
 
+  const permissions = authStore.user?.permissions || []
+
   if (to.meta.permission) {
-    const user = authStore.user
-    const permissions = user?.permissions || []
     const hasAccess = permissions.includes(to.meta.permission)
-    if (!hasAccess) return next('/')
+    if (!hasAccess) return '/'
   }
 
   if (to.meta.permissions) {
-    const user = authStore.user
-    const permissions = user?.permissions || []
     const hasAccess = to.meta.permissions.some((p) => permissions.includes(p))
-    if (!hasAccess) return next('/')
+    if (!hasAccess) return '/'
   }
 
   if (to.meta.guest && authStore.isAuthenticated) {
-    return next('/')
+    return '/'
   }
-
-  next()
 })
 
 router.afterEach((to) => {

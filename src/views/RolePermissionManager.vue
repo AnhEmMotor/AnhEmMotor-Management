@@ -184,8 +184,8 @@ const handleAddRole = async () => {
 
 const handleEditRole = async (role) => {
   try {
+    isFetchingDetail.value = true
     if (!structureData.value) {
-      isFetchingDetail.value = true
       await queryClient.fetchQuery({
         queryKey: ['permissionStructure'],
         queryFn: roleApi.fetchPermissionStructure,
@@ -292,14 +292,14 @@ const handleDeleteRole = (role) => {
       />
     </div>
 
-    <LoadingOverlay :show="isFetchingDetail" />
+    <LoadingOverlay :show="isFetchingDetail && !showRoleForm" />
 
     <RoleForm
       v-if="showRoleForm"
       :show="showRoleForm"
       :role="selectedRole"
       :isEditMode="isEditMode"
-      :is-fetching="isFetchingDetail"
+      :is-fetching="isFetchingDetail || saveRoleMutation.isPending.value"
       :availablePermissions="availablePermissions"
       :permissionStructure="permissionStructure"
       :zIndex="activeModalId === 'form' ? modalZIndex : modalZIndex - 1"

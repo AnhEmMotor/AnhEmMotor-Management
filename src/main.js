@@ -11,10 +11,11 @@ import { queryClient } from '@/api/queryClient'
 
 const app = createApp(App)
 
-app.use(createPinia())
+const piniaInstance = createPinia()
+app.use(piniaInstance)
 app.use(router)
 
-const options = {
+const toastOptions = {
   position: 'bottom-right',
   timeout: 5000,
   closeOnClick: true,
@@ -32,8 +33,6 @@ const options = {
   newestOnTop: true,
 }
 
-app.use(Toast, options)
-
+app.use(Toast, toastOptions)
 app.use(VueQueryPlugin, { queryClient })
-
 app.mount('#app')

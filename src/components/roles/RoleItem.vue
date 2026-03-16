@@ -1,5 +1,12 @@
 <script setup>
 import SmallNoBgButton from '../ui/button/SmallNoBgButton.vue'
+defineProps({
+  role: {
+    type: Object,
+    required: true,
+  },
+})
+
 const emit = defineEmits(['edit', 'delete'])
 </script>
 

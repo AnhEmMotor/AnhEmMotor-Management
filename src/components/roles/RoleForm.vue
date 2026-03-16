@@ -3,7 +3,6 @@ import { ref, watch, computed } from 'vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
 import Input from '@/components/ui/input/BaseInput.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
-import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 
 const props = defineProps({
   show: {
@@ -197,6 +196,7 @@ const handleRefresh = () => {
   <DraggableModal
     :zIndex="zIndex"
     width="800px"
+    :isLoading="isFetching"
     :onRefresh="isEditMode ? handleRefresh : undefined"
     @close="handleClose"
     @activate="emit('activate')"
@@ -208,7 +208,6 @@ const handleRefresh = () => {
     </template>
 
     <template #body>
-      <LoadingOverlay :show="isFetching" />
       <div class="overflow-y-auto pr-2">
         <div class="grid grid-cols-1 gap-6">
           <div class="space-y-4">
