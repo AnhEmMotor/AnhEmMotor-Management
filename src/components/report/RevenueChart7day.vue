@@ -1,5 +1,5 @@
 <template>
-  <div ref="chartContainer" class="chart-container relative"></div>
+  <div ref="chartContainer" class="chart-container relative w-full h-full min-h-[250px] sm:min-h-[300px]"></div>
 </template>
 
 <script setup>
@@ -22,22 +22,31 @@ const drawChart = (data) => {
   const container = d3.select(chartContainer.value)
   container.selectAll('*').remove()
 
-  const margin = { top: 20, right: 20, bottom: 40, left: 55 }
-  const width = chartContainer.value.clientWidth - margin.left - margin.right
-  const height = 300 - margin.top - margin.bottom
+  const cw = chartContainer.value.clientWidth
+  const ch = chartContainer.value.clientHeight || 300
+
+  // Adjust margin for mobile to fit legend at top
+  const isMobile = cw < 500
+  const margin = { top: isMobile ? 40 : 25, right: 15, bottom: 30, left: 45 }
+  
+  const width = Math.max(0, cw - margin.left - margin.right)
+  const height = Math.max(0, ch - margin.top - margin.bottom)
+
+  // Prevent D3 drawing issue entirely if box is shrunk too tiny or not visible
+  if (width <= 0 || height <= 0) return
 
   const svg = container
     .append('svg')
-    .attr('width', chartContainer.value.clientWidth)
-    .attr('height', 300)
+    .attr('width', cw)
+    .attr('height', ch)
     .append('g')
     .attr('transform', `translate(${margin.left},${margin.top})`)
 
   const parseDate = d3.timeParse('%Y-%m-%d')
   const processedData = rawData.map((d) => ({
     ...d,
-    date: parseDate(d.date),
-  }))
+    date: parseDate(d.date) || new Date(d.date),
+  })).sort((a, b) => a.date - b.date)
 
   const x = d3
     .scaleTime()
@@ -46,14 +55,15 @@ const drawChart = (data) => {
 
   const y = d3
     .scaleLinear()
-    .domain([0, d3.max(processedData, (d) => d.revenue) * 1.15])
+    .domain([0, d3.max(processedData, (d) => Math.max(d.revenue, d.profit || 0)) * 1.15])
     .nice()
     .range([height, 0])
 
+  const xTicks = isMobile ? 4 : 7
   svg
     .append('g')
     .attr('transform', `translate(0,${height})`)
-    .call(d3.axisBottom(x).ticks(7).tickFormat(d3.timeFormat('%d/%m')).tickSize(0))
+    .call(d3.axisBottom(x).ticks(xTicks).tickFormat(d3.timeFormat('%d/%m')).tickSize(0))
     .select('.domain')
     .remove()
 
@@ -65,12 +75,12 @@ const drawChart = (data) => {
 
   svg
     .append('g')
-    .call(d3.axisLeft(y).ticks(5).tickFormat((d) => `${d} tr`).tickSize(-width))
+    .call(d3.axisLeft(y).ticks(5).tickFormat((d) => `${d}M`).tickSize(-width))
     .select('.domain')
     .remove()
 
   svg.selectAll('.tick line').attr('stroke', '#E5E7EB').attr('stroke-dasharray', '3,3')
-  svg.selectAll('.tick text').attr('fill', '#6B7280').attr('font-size', '11px')
+  svg.selectAll('.tick text').attr('fill', '#6B7280').attr('font-size', '11px').attr('dx', '-5px')
 
   const revenueArea = d3
     .area()
@@ -157,16 +167,22 @@ const drawChart = (data) => {
       const d1 = processedData[i]
       if (!d0) return
       const d = d1 && x0 - d0.date > d1.date - x0 ? d1 : d0
-      const formatDate = d3.timeFormat('%d/%m/%Y')
+      const formatDate = d3.timeFormat('%d/%m')
+
+      let leftPos = x(d.date) + margin.left + 15
+      // Prevent tooltip jumping out of screen on right
+      if (leftPos > cw - 150) {
+        leftPos = x(d.date) + margin.left - 135
+      }
 
       tooltip
         .style('display', 'block')
-        .style('left', `${x(d.date) + margin.left + 15}px`)
-        .style('top', `${y(d.revenue) + margin.top - 10}px`)
+        .style('left', `${leftPos}px`)
+        .style('top', `${Math.max(0, y(d.revenue) + margin.top - 10)}px`)
         .html(
           `<div style="font-weight:600;color:#374151;margin-bottom:4px">${formatDate(d.date)}</div>` +
-            `<div style="color:#DC2626">Doanh thu: <b>${d.revenue} tr</b></div>` +
-            `<div style="color:#F87171">Lợi nhuận: <b>${d.profit} tr</b></div>`,
+            `<div style="color:#DC2626">Doanh thu: <b>${Number(d.revenue).toFixed(1)}M</b></div>` +
+            `<div style="color:#F87171">Lợi nhuận: <b>${Number(d.profit).toFixed(1)}M</b></div>`,
         )
 
       verticalLine
@@ -181,21 +197,24 @@ const drawChart = (data) => {
       verticalLine.style('display', 'none')
     })
 
+  // Responsive Legend alignment
+  const legendX = isMobile ? Math.max(0, (width / 2) - 80) : width - 180
+  const legendY = isMobile ? -30 : -15
   const legend = svg
     .append('g')
-    .attr('transform', `translate(${width - 180}, -10)`)
+    .attr('transform', `translate(${legendX}, ${legendY})`)
 
   lines.forEach((l, i) => {
-    const g = legend.append('g').attr('transform', `translate(${i * 100}, 0)`)
+    const g = legend.append('g').attr('transform', `translate(${i * 90}, 0)`)
     g.append('line')
       .attr('x1', 0)
-      .attr('x2', 16)
+      .attr('x2', 12)
       .attr('y1', 5)
       .attr('y2', 5)
       .attr('stroke', l.color)
       .attr('stroke-width', 2.5)
     g.append('text')
-      .attr('x', 22)
+      .attr('x', 16)
       .attr('y', 9)
       .text(l.label)
       .style('font-size', '11px')
