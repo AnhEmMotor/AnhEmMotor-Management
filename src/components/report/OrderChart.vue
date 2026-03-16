@@ -34,8 +34,10 @@ let resizeObserver = null
 
 const validOrderData = computed(() => {
   if (!props.orderData) return []
-  // Optionally filter out 0 values if you prefer, but legend might want to show them 
-  // Let's keep all or specifically sort them by value
+  /*
+   * Optionally filter out 0 values if you prefer, but legend might want to show them 
+   * Let's keep all or specifically sort them by value
+   */
   return [...props.orderData].sort((a, b) => b.value - a.value).filter(x => x.value > 0)
 })
 

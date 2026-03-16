@@ -43,6 +43,11 @@ export const getUserById = async (userId) => {
   return data
 }
 
+export const createUser = async (payload) => {
+  const { data } = await axiosInstance.post(BASE_URL, payload)
+  return data
+}
+
 export const updateUser = async (userId, payload) => {
   const { data } = await axiosInstance.put(`${BASE_URL}/${userId}`, payload)
   return data
