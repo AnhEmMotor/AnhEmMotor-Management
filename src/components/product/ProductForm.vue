@@ -279,6 +279,32 @@ const removeVariant = (index) => {
             />
           </div>
           <div>
+            <Input
+              label="Tiêu đề SEO (Meta Title)"
+              v-model="localProduct.meta_title"
+              placeholder="Tối ưu cho công cụ tìm kiếm"
+              :error="errors?.meta_title"
+            />
+          </div>
+          <div class="md:col-span-2">
+            <Textarea
+              label="Mô tả SEO (Meta Description)"
+              v-model="localProduct.meta_description"
+              placeholder="Nhập mô tả SEO..."
+              :rows="2"
+              :error="errors?.meta_description"
+            />
+          </div>
+          <div class="md:col-span-2">
+            <Textarea
+              label="Mô tả ngắn (Short Description)"
+              v-model="localProduct.short_description"
+              placeholder="Nhập mô tả ngắn hiển thị trên Store..."
+              :rows="2"
+              :error="errors?.short_description"
+            />
+          </div>
+          <div>
             <Dropdown
               label="Danh Mục *"
               v-model="localProduct.category_id"
