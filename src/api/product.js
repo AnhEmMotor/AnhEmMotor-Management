@@ -27,6 +27,9 @@ const mapToCreatePayload = (product) => ({
   displacement: product.displacement,
   boreStroke: product.bore_stroke,
   compressionRatio: product.compression_ratio,
+  short_description: product.short_description,
+  meta_title: product.meta_title,
+  meta_description: product.meta_description,
   variants: (product.variants || []).map((v) => ({
     price: v.price,
     urlSlug: v.url,
@@ -87,6 +90,9 @@ export const updateProduct = async (id, product) => {
     displacement: product.displacement,
     bore_stroke: product.bore_stroke,
     compression_ratio: product.compression_ratio,
+    short_description: product.short_description,
+    meta_title: product.meta_title,
+    meta_description: product.meta_description,
     variants: (product.variants || []).map((v) => ({
       id: v.id || null,
       price: v.price,
