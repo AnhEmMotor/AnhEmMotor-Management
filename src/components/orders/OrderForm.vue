@@ -27,6 +27,9 @@ const { hasPermission } = usePermission()
 
 const localData = ref({
   customer: null,
+  customerName: '',
+  customerAddress: '',
+  customerPhone: '',
   products: [],
   notes: '',
 })
@@ -143,6 +146,9 @@ const selectCustomer = (customer) => {
     return
   }
   localData.value.customer = customer
+  localData.value.customerName = customer.fullName || customer.name || ''
+  localData.value.customerPhone = customer.phoneNumber || ''
+  localData.value.customerAddress = customer.address || ''
   customerSearchRefs.search = customer.fullName || customer.name
   customerSearch.showDropdown = false
 }
@@ -150,6 +156,9 @@ const selectCustomer = (customer) => {
 const clearCustomer = () => {
   if (isLocked.value) return
   localData.value.customer = null
+  localData.value.customerName = ''
+  localData.value.customerPhone = ''
+  localData.value.customerAddress = ''
   customerSearchRefs.search = ''
 }
 
@@ -223,6 +232,10 @@ const syncLocalData = () => {
       }
     })
     localData.value.notes = props.order.notes || ''
+    localData.value.customerName = props.order.customerName || props.order.customer_name || ''
+    localData.value.customerAddress =
+      props.order.customerAddress || props.order.customer_address || ''
+    localData.value.customerPhone = props.order.customerPhone || props.order.customer_phone || ''
     localStatus.value = props.order.statusId || props.order.status_id || 'pending'
   } else {
     localData.value = { customer: null, products: [], notes: '' }
@@ -369,6 +382,9 @@ function submit() {
   const payload = {
     id: props.order ? props.order.id : undefined,
     customer: localData.value.customer,
+    customerName: localData.value.customerName,
+    customerAddress: localData.value.customerAddress,
+    customerPhone: localData.value.customerPhone,
     products: JSON.parse(JSON.stringify(localData.value.products)),
     total: totalAmount.value,
     notes: localData.value.notes,
@@ -498,20 +514,40 @@ onBeforeUnmount(() => {
             </div>
 
             <div
-              v-if="localData.customer"
-              class="mt-3 p-3 bg-gray-50 border border-gray-200 rounded-md"
+              v-if="localData.customer || customerSearchRefs.search"
+              class="mt-4 space-y-3 p-4 bg-gray-50 border border-gray-200 rounded-lg"
             >
-              <div class="flex items-center gap-2">
-                <span class="text-2xl">👤</span>
+              <div class="grid grid-cols-2 gap-4">
                 <div>
-                  <div class="font-medium">
-                    {{ localData.customer.fullName || localData.customer.name }}
-                  </div>
-                  <div class="text-xs text-gray-500">
-                    {{ localData.customer.phoneNumber || 'Chưa có SĐT'
-                    }}{{ localData.customer.email ? ` | ${localData.customer.email}` : '' }}
-                  </div>
+                  <label class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider"
+                    >Họ tên người nhận</label
+                  >
+                  <Input
+                    v-model="localData.customerName"
+                    placeholder="Nhập tên khách..."
+                    :disabled="isLocked"
+                  />
                 </div>
+                <div>
+                  <label class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider"
+                    >Số điện thoại</label
+                  >
+                  <Input
+                    v-model="localData.customerPhone"
+                    placeholder="Nhập số điện thoại..."
+                    :disabled="isLocked"
+                  />
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider"
+                  >Địa chỉ giao hàng</label
+                >
+                <Input
+                  v-model="localData.customerAddress"
+                  placeholder="Nhập địa chỉ giao hàng chi tiết..."
+                  :disabled="isLocked"
+                />
               </div>
             </div>
             <div v-else-if="errors && errors.customer" class="text-red-500 text-sm mt-1">
@@ -632,12 +668,12 @@ onBeforeUnmount(() => {
                   SL
                 </th>
                 <th
-                  class="py-2 px-3 text-right text-xs font-semibold text-gray-600 w-32 border-b border-[rgba(0,0,0,0.04)]"
+                  class="py-2 px-3 text-left text-xs font-semibold text-gray-600 w-32 border-b border-[rgba(0,0,0,0.04)]"
                 >
                   Đơn giá
                 </th>
                 <th
-                  class="py-2 px-3 text-right text-xs font-semibold text-gray-600 w-32 border-b border-[rgba(0,0,0,0.04)]"
+                  class="py-2 px-3 text-left text-xs font-semibold text-gray-600 w-32 border-b border-[rgba(0,0,0,0.04)]"
                 >
                   Thành tiền
                 </th>
@@ -703,7 +739,7 @@ onBeforeUnmount(() => {
                     :inputClass="'text-center bg-transparent py-1 px-2'"
                   />
                 </td>
-                <td class="py-2 pl-3 text-right border-b border-[rgba(0,0,0,0.04)]">
+                <td class="py-2 pl-3 text-left border-b border-[rgba(0,0,0,0.04)]">
                   <Input
                     :modelValue="formatCurrency(p.unitPrice)"
                     @update:modelValue="
@@ -714,11 +750,11 @@ onBeforeUnmount(() => {
                     "
                     type="text"
                     :disabled="isLocked"
-                    :inputClass="'text-right bg-transparent py-1 px-2'"
+                    :inputClass="'text-left bg-transparent py-1 px-2'"
                   />
                 </td>
                 <td
-                  class="py-2 px-3 text-right font-medium text-gray-800 border-b border-[rgba(0,0,0,0.04)]"
+                  class="py-2 px-3 text-left font-medium text-gray-800 border-b border-[rgba(0,0,0,0.04)]"
                 >
                   {{ (p.total || 0).toLocaleString('vi-VN') }}
                 </td>
