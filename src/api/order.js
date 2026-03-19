@@ -15,6 +15,9 @@ export const createSalesOrder = async (payload) => {
     BuyerId: payload.customer?.id,
     StatusId: payload.status?.key,
     Notes: payload.notes,
+    CustomerName: payload.customerName,
+    CustomerAddress: payload.customerAddress,
+    CustomerPhone: payload.customerPhone,
     products: (payload.products || []).map((p) => ({
       ProductId: p.product_id,
       Count: p.quantity,
@@ -29,6 +32,9 @@ export const updateSalesOrder = async (id, payload) => {
     BuyerId: payload.customer?.id,
     StatusId: payload.status?.key,
     Notes: payload.notes,
+    CustomerName: payload.customerName,
+    CustomerAddress: payload.customerAddress,
+    CustomerPhone: payload.customerPhone,
     products: (payload.products || []).map((p) => ({
       Id: typeof p.id === 'number' && p.id > 2000000000000 ? undefined : p.id,
       ProductId: p.product_id,
