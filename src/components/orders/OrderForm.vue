@@ -20,6 +20,7 @@ const props = defineProps({
   zIndex: { type: Number, default: 100 },
   order: { type: Object, default: null },
   onRefresh: { type: Function, default: undefined },
+  apiErrors: { type: Object, default: () => ({}) },
 })
 const emit = defineEmits(['close', 'save', 'activate', 'delete'])
 const ordersStore = useOrdersStore()
@@ -60,10 +61,25 @@ const STATUS_LIST = computed(() => {
 const localStatus = ref('pending')
 const isLoading = ref(false)
 
-const isLocked = computed(() => {
+const isBuyerProductLocked = computed(() => {
   if (!props.order || !lockedStatuses.value) return false
-  return lockedStatuses.value.includes(originalStatusKey.value)
+  const list = Array.isArray(lockedStatuses.value)
+    ? lockedStatuses.value
+    : lockedStatuses.value.buyerAndProducts || []
+  return list.includes(originalStatusKey.value)
 })
+
+const isDeliveryInfoLocked = computed(() => {
+  if (!props.order || !lockedStatuses.value || Array.isArray(lockedStatuses.value)) return false
+  return (lockedStatuses.value.deliveryInfo || []).includes(originalStatusKey.value)
+})
+
+const isNotesLocked = computed(() => {
+  if (!props.order || !lockedStatuses.value || Array.isArray(lockedStatuses.value)) return false
+  return (lockedStatuses.value.notes || []).includes(originalStatusKey.value)
+})
+
+const isLocked = computed(() => isBuyerProductLocked.value)
 
 const originalStatusKey = computed(() =>
   props.order ? props.order.statusId || props.order.status_id : null,
@@ -75,6 +91,14 @@ const statusChanged = computed(() => {
 const notesChanged = computed(() => {
   if (!props.order) return false
   return localData.value.notes !== (props.order.notes || '')
+})
+const deliveryInfoChanged = computed(() => {
+  if (!props.order) return false
+  return (
+    localData.value.customerName !== (props.order.customerName || '') ||
+    localData.value.customerPhone !== (props.order.customerPhone || '') ||
+    localData.value.customerAddress !== (props.order.customerAddress || '')
+  )
 })
 
 function allowedStatusOptionsFor(currentKey) {
@@ -138,6 +162,9 @@ const customerDropdownStyle = ref({})
 const errors = ref({
   products: '',
   customer: '',
+  customerName: '',
+  customerPhone: '',
+  customerAddress: '',
 })
 
 const selectCustomer = (customer) => {
@@ -149,17 +176,8 @@ const selectCustomer = (customer) => {
   localData.value.customerName = customer.fullName || customer.name || ''
   localData.value.customerPhone = customer.phoneNumber || ''
   localData.value.customerAddress = customer.address || ''
-  customerSearchRefs.search = customer.fullName || customer.name
+  customerSearchRefs.search = customer.fullName || customer.name || customer.email || ''
   customerSearch.showDropdown = false
-}
-
-const clearCustomer = () => {
-  if (isLocked.value) return
-  localData.value.customer = null
-  localData.value.customerName = ''
-  localData.value.customerPhone = ''
-  localData.value.customerAddress = ''
-  customerSearchRefs.search = ''
 }
 
 const handleCustomerBlur = () => {
@@ -201,15 +219,19 @@ const selectProduct = (product) => {
 
 const syncLocalData = () => {
   if (props.order) {
-    const name =
-      props.order.buyerName || props.order.customerName || props.order.customer_name || ''
+    const buyerEmail =
+      props.order.buyerEmail || props.order.customerEmail || props.order.customer_email || ''
+    const buyerName = props.order.buyerName || ''
     const buyerId = props.order.buyerId || props.order.buyer_id
     const phone = props.order.buyerPhone || props.order.customerPhone || props.order.customer_phone
-    const email = props.order.buyerEmail || props.order.customerEmail || props.order.customer_email
+
     localData.value.customer =
-      name || buyerId ? { fullName: name, id: buyerId, phoneNumber: phone, email: email } : null
+      buyerName || buyerEmail || buyerId
+        ? { fullName: buyerName, id: buyerId, phoneNumber: phone, email: buyerEmail }
+        : null
+
     if (localData.value.customer) {
-      customerSearchRefs.search = localData.value.customer.fullName || ''
+      customerSearchRefs.search = buyerName || buyerEmail || ''
     } else {
       customerSearchRefs.search = ''
     }
@@ -359,6 +381,41 @@ watch(
   },
 )
 
+watch(
+  () => props.apiErrors,
+  (val) => {
+    if (val && Object.keys(val).length > 0) {
+      errors.value.customerName = val.CustomerName || val.customerName || ''
+      errors.value.customerPhone = val.CustomerPhone || val.customerPhone || ''
+      errors.value.customerAddress = val.CustomerAddress || val.customerAddress || ''
+      if (val.Products || val.products) errors.value.products = val.Products || val.products
+      if (val.Customer || val.customer) errors.value.customer = val.Customer || val.customer
+    }
+  },
+  { deep: true },
+)
+
+watch(
+  () => localData.value.customerName,
+  (val) => {
+    if (val) errors.value.customerName = ''
+  },
+)
+
+watch(
+  () => localData.value.customerPhone,
+  (val) => {
+    if (val) errors.value.customerPhone = ''
+  },
+)
+
+watch(
+  () => localData.value.customerAddress,
+  (val) => {
+    if (val) errors.value.customerAddress = ''
+  },
+)
+
 function submit() {
   if (!localData.value.customer && !customerSearchRefs.search) {
     errors.value.customer = 'Vui lòng chọn khách hàng'
@@ -425,38 +482,36 @@ onBeforeUnmount(() => {
     <template #body>
       <div class="space-y-4">
         <div
-          v-if="isLocked"
+          v-if="isBuyerProductLocked || isDeliveryInfoLocked || isNotesLocked"
           class="p-3 rounded bg-yellow-50 border-l-4 border-yellow-400 text-sm text-yellow-800"
         >
           Đơn hàng đang ở trạng thái
           <strong>{{ STATUS_LIST.find((s) => s.key === localStatus)?.text || localStatus }}</strong>
-          nên hầu hết các trường bị khoá. Bạn vẫn có thể thay đổi "Trạng thái" và nhấn Lưu.
+          nên một số trường bị khoá. Bạn vẫn có thể thay đổi các phần chưa bị khoá và "Trạng thái",
+          sau đó nhấn Lưu.
         </div>
         <div>
           <label class="block text-sm font-medium mb-1">Tên khách hàng</label>
           <div class="relative">
             <div class="relative">
+              <div
+                v-if="isBuyerProductLocked"
+                class="w-full py-1 text-base text-gray-900 font-bold mb-2"
+              >
+                {{ customerSearchRefs.search || 'Chưa chọn khách hàng' }}
+              </div>
               <input
+                v-else
                 ref="customerInputRef"
                 v-model="customerSearchRefs.search"
                 @focus="customerSearch.showDropdown = true"
                 @input="updateCustomerDropdownPosition"
                 @blur="handleCustomerBlur"
                 type="text"
-                :disabled="isLocked"
-                placeholder="Tìm khách hàng theo tên, SĐT, Email..."
-                class="w-full py-2 px-3 border border-gray-300 rounded-md text-sm outline-none transition-colors duration-200"
+                placeholder="Tìm khách hàng theo tên hoặc Email..."
+                class="w-full py-2 px-3 border border-gray-300 rounded-md text-sm outline-none transition-colors duration-200 focus:border-blue-500"
                 :class="errors.customer ? 'border-red-500' : ''"
               />
-              <button
-                v-if="localData.customer"
-                @click="clearCustomer"
-                type="button"
-                :disabled="isLocked"
-                class="absolute right-2.5 top-1/2 -translate-y-1/2 bg-gray-200 border-none rounded-full w-5 h-5 flex items-center justify-center cursor-pointer text-sm text-gray-500"
-              >
-                ×
-              </button>
             </div>
 
             <div
@@ -472,10 +527,17 @@ onBeforeUnmount(() => {
                 @click="selectCustomer(customer)"
                 class="p-3 cursor-pointer border-b border-gray-100 transition-colors duration-150 hover:bg-gray-50"
               >
-                <div class="font-medium">{{ customer.fullName || customer.name }}</div>
-                <div class="text-xs text-gray-500">
-                  {{ customer.phoneNumber || 'N/A'
-                  }}{{ customer.email ? ` | ${customer.email}` : '' }}
+                <div class="font-medium text-gray-900">
+                  {{ customer.fullName || customer.name || customer.email }}
+                </div>
+                <div class="text-xs text-gray-500 mt-0.5">
+                  <span v-if="customer.fullName || customer.name" class="mr-2">{{
+                    customer.email
+                  }}</span>
+                  <span v-if="customer.phoneNumber">{{ customer.phoneNumber }}</span>
+                  <span v-else-if="!customer.email && !customer.phoneNumber"
+                    >Không có thông tin liên lạc</span
+                  >
                 </div>
               </div>
 
@@ -515,39 +577,63 @@ onBeforeUnmount(() => {
 
             <div
               v-if="localData.customer || customerSearchRefs.search"
-              class="mt-4 space-y-3 p-4 bg-gray-50 border border-gray-200 rounded-lg"
+              class="mt-4 p-4 bg-white border border-gray-200 rounded-lg shadow-sm space-y-4"
             >
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider"
-                    >Họ tên người nhận</label
-                  >
+              <div class="flex items-center justify-between border-b border-gray-100 pb-2 mb-2">
+                <h4 class="text-sm font-semibold text-gray-700">Thông tin giao nhận</h4>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-1">
+                  <label class="block text-xs font-medium text-gray-500">Họ tên người nhận</label>
+                  <div v-if="isDeliveryInfoLocked" class="py-1 text-sm font-bold text-gray-800">
+                    {{ localData.customerName || '---' }}
+                  </div>
                   <Input
+                    v-else
                     v-model="localData.customerName"
-                    placeholder="Nhập tên khách..."
-                    :disabled="isLocked"
+                    placeholder="Nhập tên người nhận..."
+                    :disabled="isDeliveryInfoLocked"
+                    :inputClass="errors.customerName ? 'border-red-500' : ''"
                   />
+                  <p v-if="errors.customerName" class="text-xs text-red-500 mt-1">
+                    {{ errors.customerName }}
+                  </p>
                 </div>
-                <div>
-                  <label class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider"
-                    >Số điện thoại</label
-                  >
+                <div class="space-y-1">
+                  <label class="block text-xs font-medium text-gray-500">Số điện thoại</label>
+                  <div v-if="isDeliveryInfoLocked" class="py-1 text-sm font-bold text-gray-800">
+                    {{ localData.customerPhone || '---' }}
+                  </div>
                   <Input
+                    v-else
                     v-model="localData.customerPhone"
                     placeholder="Nhập số điện thoại..."
-                    :disabled="isLocked"
+                    :disabled="isDeliveryInfoLocked"
+                    :inputClass="errors.customerPhone ? 'border-red-500' : ''"
                   />
+                  <p v-if="errors.customerPhone" class="text-xs text-red-500 mt-1">
+                    {{ errors.customerPhone }}
+                  </p>
                 </div>
               </div>
-              <div>
-                <label class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider"
-                  >Địa chỉ giao hàng</label
+              <div class="space-y-1">
+                <label class="block text-xs font-medium text-gray-500"
+                  >Địa chỉ giao hàng chi tiết</label
                 >
+                <div v-if="isDeliveryInfoLocked" class="py-1 text-sm font-bold text-gray-800">
+                  {{ localData.customerAddress || '---' }}
+                </div>
                 <Input
+                  v-else
                   v-model="localData.customerAddress"
-                  placeholder="Nhập địa chỉ giao hàng chi tiết..."
-                  :disabled="isLocked"
+                  placeholder="Số nhà, tên đường, phường/xã, quận/huyện..."
+                  :disabled="isDeliveryInfoLocked"
+                  :inputClass="errors.customerAddress ? 'border-red-500' : ''"
                 />
+                <p v-if="errors.customerAddress" class="text-xs text-red-500 mt-1">
+                  {{ errors.customerAddress }}
+                </p>
               </div>
             </div>
             <div v-else-if="errors && errors.customer" class="text-red-500 text-sm mt-1">
@@ -565,7 +651,7 @@ onBeforeUnmount(() => {
           />
         </div>
 
-        <div>
+        <div v-if="!isBuyerProductLocked">
           <label class="block text-sm font-medium mb-1">Thêm sản phẩm</label>
           <div class="relative">
             <input
@@ -575,11 +661,9 @@ onBeforeUnmount(() => {
               @focus="productSearch.showDropdown = true"
               @blur="handleProductBlur"
               type="text"
-              :disabled="isLocked"
-              placeholder="Tìm hàng hóa theo tên...."
-              class="w-full py-2 px-3 border border-gray-300 rounded-md text-sm outline-none transition-colors duration-200"
+              placeholder="Tìm sản phẩm hàng hóa...."
+              class="w-full py-2 px-3 border border-gray-300 rounded-md text-sm outline-none transition-colors duration-200 focus:border-blue-500"
             />
-
             <div
               v-if="productSearch.showDropdown"
               :style="dropdownStyle"
@@ -602,7 +686,9 @@ onBeforeUnmount(() => {
                     class="w-10 h-10 rounded object-cover"
                   />
                   <div class="flex-1">
-                    <div class="font-medium">{{ product.displayName || product.name }}</div>
+                    <div class="font-medium">
+                      {{ product.displayName || product.name || product.email }}
+                    </div>
                     <div class="text-xs text-gray-500">
                       ID: {{ product.id || 'N/A' }} | Giá:
                       {{ (product.price || 0).toLocaleString() }}
@@ -648,7 +734,10 @@ onBeforeUnmount(() => {
           <p v-if="errors.products" class="mt-1 text-sm text-red-500">{{ errors.products }}</p>
         </div>
 
-        <div class="product-table-section border border-gray-300 rounded-md">
+        <div
+          class="product-table-section border border-gray-200 rounded-xl overflow-hidden shadow-sm"
+          :class="{ 'opacity-80': isLocked }"
+        >
           <table class="w-full text-sm bg-white border-collapse">
             <thead class="bg-gray-50">
               <tr>
@@ -684,19 +773,19 @@ onBeforeUnmount(() => {
             </thead>
             <tbody>
               <template v-if="isLoading">
-                <tr v-for="i in 3" :key="i" class="border-b border-[rgba(0,0,0,0.04)]">
-                  <td class="py-2 px-3"><SkeletonLoader width="20px" height="16px" /></td>
-                  <td class="py-2 px-3"><SkeletonLoader width="150px" height="16px" /></td>
-                  <td class="py-2 px-3">
+                <tr v-for="i in 3" :key="i" class="border-b border-gray-50">
+                  <td class="py-3 px-4"><SkeletonLoader width="20px" height="16px" /></td>
+                  <td class="py-3 px-4"><SkeletonLoader width="150px" height="16px" /></td>
+                  <td class="py-3 px-4">
                     <SkeletonLoader width="40px" height="24px" class="mx-auto" />
                   </td>
-                  <td class="py-2 px-3 text-right">
+                  <td class="py-3 px-4 text-right">
                     <SkeletonLoader width="80px" height="24px" class="ml-auto" />
                   </td>
-                  <td class="py-2 px-3 text-right">
+                  <td class="py-3 px-4 text-right">
                     <SkeletonLoader width="80px" height="16px" class="ml-auto" />
                   </td>
-                  <td class="py-2 px-3 text-center">
+                  <td class="py-3 px-4 text-center">
                     <SkeletonLoader width="20px" height="20px" class="mx-auto rounded" />
                   </td>
                 </tr>
@@ -704,7 +793,7 @@ onBeforeUnmount(() => {
               <tr v-else-if="localData.products.length === 0">
                 <td
                   colspan="6"
-                  class="text-center py-6 text-gray-400 border-b border-[rgba(0,0,0,0.04)]"
+                  class="text-center py-10 text-gray-400 border-b border-gray-50 font-medium"
                 >
                   Chưa có sản phẩm nào
                 </td>
@@ -713,34 +802,43 @@ onBeforeUnmount(() => {
                 v-else
                 v-for="(p, idx) in localData.products"
                 :key="p.id"
-                class="even:bg-gray-50 hover:bg-[rgba(59,130,246,0.03)]"
+                class="group hover:bg-blue-50/30 transition-colors border-b border-gray-50 last:border-0"
               >
-                <td class="py-2 px-3 text-sm text-gray-700 border-b border-[rgba(0,0,0,0.04)]">
+                <td class="py-3 px-4 text-sm text-gray-500 font-medium whitespace-nowrap">
                   {{ idx + 1 }}
                 </td>
 
-                <td class="py-2 px-3 text-sm text-gray-700 border-b border-[rgba(0,0,0,0.04)]">
+                <td class="py-3 px-4">
                   <div class="flex items-center gap-3">
                     <img
                       :src="p.coverImageUrl || 'https://placehold.co/40x40/f0f0f0/AAAAAA?text=...'"
                       alt="product"
-                      class="w-8 h-8 rounded object-cover border border-gray-100"
+                      class="w-10 h-10 rounded-lg object-cover border border-gray-100 shadow-sm"
                     />
-                    <span class="line-clamp-2">{{ p.name }}</span>
+                    <div class="flex flex-col">
+                      <span class="font-bold text-gray-800 line-clamp-1">{{ p.name }}</span>
+                    </div>
                   </div>
                 </td>
-                <td class="py-2 px-3 text-center border-b border-[rgba(0,0,0,0.04)]">
+                <td class="py-3 px-4 text-center">
+                  <div v-if="isBuyerProductLocked" class="font-bold text-gray-700">
+                    {{ p.quantity }}
+                  </div>
                   <Input
+                    v-else
                     v-model.number="p.quantity"
                     @change="calculateProductTotal(p)"
                     type="number"
                     min="1"
-                    :disabled="isLocked"
-                    :inputClass="'text-center bg-transparent py-1 px-2'"
+                    inputClass="text-center bg-transparent py-1 px-1 border-gray-200 focus:border-blue-500 font-bold"
                   />
                 </td>
-                <td class="py-2 pl-3 text-left border-b border-[rgba(0,0,0,0.04)]">
+                <td class="py-3 px-4">
+                  <div v-if="isBuyerProductLocked" class="font-bold text-gray-700 text-left">
+                    {{ formatCurrency(p.unitPrice) }}
+                  </div>
                   <Input
+                    v-else
                     :modelValue="formatCurrency(p.unitPrice)"
                     @update:modelValue="
                       (val) => {
@@ -749,21 +847,18 @@ onBeforeUnmount(() => {
                       }
                     "
                     type="text"
-                    :disabled="isLocked"
-                    :inputClass="'text-left bg-transparent py-1 px-2'"
+                    inputClass="text-left bg-transparent py-1 px-1 border-gray-200 focus:border-blue-500 font-bold"
                   />
                 </td>
-                <td
-                  class="py-2 px-3 text-left font-medium text-gray-800 border-b border-[rgba(0,0,0,0.04)]"
-                >
+                <td class="py-2 px-3 text-left font-medium text-gray-800">
                   {{ (p.total || 0).toLocaleString('vi-VN') }}
                 </td>
-                <td class="py-2 px-3 text-center border-b border-[rgba(0,0,0,0.04)]">
+                <td class="py-2 px-3 text-center">
                   <button
-                    v-if="!isLocked"
+                    v-if="!isBuyerProductLocked"
                     @click="removeProduct(idx)"
                     title="Xóa sản phẩm"
-                    class="text-red-500 hover:text-red-700 text-lg"
+                    class="text-red-500 hover:text-red-700 text-lg p-1 rounded"
                   >
                     🗑️
                   </button>
@@ -775,7 +870,15 @@ onBeforeUnmount(() => {
 
         <div>
           <label class="block text-sm font-medium mb-1">Ghi chú</label>
-          <Textarea v-model="localData.notes" :rows="3" />
+          <div v-if="isNotesLocked" class="py-1 text-sm italic text-gray-600 whitespace-pre-wrap">
+            {{ localData.notes || 'Không có ghi chú' }}
+          </div>
+          <Textarea
+            v-else
+            v-model="localData.notes"
+            :rows="3"
+            placeholder="Nhập ghi chú cho đơn hàng..."
+          />
         </div>
       </div>
     </template>
@@ -793,7 +896,14 @@ onBeforeUnmount(() => {
             :text="props.order ? 'Lưu' : 'Tạo đơn'"
             color="primary"
             @click="submit"
-            :disabled="isLocked && !statusChanged && !notesChanged"
+            :disabled="
+              isBuyerProductLocked &&
+              isDeliveryInfoLocked &&
+              isNotesLocked &&
+              !statusChanged &&
+              !notesChanged &&
+              !deliveryInfoChanged
+            "
           />
         </div>
       </div>

@@ -61,6 +61,7 @@ const showOrderForm = ref(false)
 const isEditMode = ref(false)
 const loadingOverlay = ref(false)
 const itemsPerPage = ref(10)
+const formErrors = ref({})
 
 const filters = computed(() => {
   const f = {}
@@ -176,6 +177,7 @@ const handleFormRefresh = async () => {
 
 const handleSaveOrder = async (payload) => {
   loadingOverlay.value = true
+  formErrors.value = {}
   try {
     let result
     if (isEditMode.value && selectedOrder.value?.id) {
@@ -190,7 +192,15 @@ const handleSaveOrder = async (payload) => {
     showOrderForm.value = false
     queryClient.invalidateQueries({ queryKey: ['salesOrders'] })
   } catch (err) {
-    toast.error(`Lỗi khi lưu đơn hàng: ${err.message}`)
+    if (err.response?.data?.type === 'Validation') {
+      const apiErrors = err.response.data.errors || []
+      formErrors.value = apiErrors.reduce((acc, curr) => {
+        acc[curr.field] = curr.message
+        return acc
+      }, {})
+    } else {
+      toast.error(`Lỗi khi lưu đơn hàng: ${err.message}`)
+    }
   } finally {
     loadingOverlay.value = false
   }
@@ -319,7 +329,9 @@ const handleExport = () => {
                 })
               }}
             </td>
-            <td class="py-3 px-6 text-left truncate max-w-xs">{{ order.buyerName || '---' }}</td>
+            <td class="py-3 px-6 text-left truncate max-w-xs">
+              {{ order.buyerName || order.buyerEmail || '---' }}
+            </td>
             <td class="py-3 px-6 text-left">{{ order.notes || '' }}</td>
             <td class="py-3 px-6 text-left whitespace-nowrap">
               <RoundBadge :color="getStatusColor(order.statusId)">
@@ -361,6 +373,7 @@ const handleExport = () => {
       :zIndex="110"
       :order="selectedOrder"
       :onRefresh="isEditMode ? handleFormRefresh : undefined"
+      :apiErrors="formErrors"
       @close="showOrderForm = false"
       @save="handleSaveOrder"
       @delete="handleDeleteOrder"

@@ -10,7 +10,11 @@ export const fetchBasicUsers = async ({ page, limit, search }) => {
 
   const filters = []
   if (search) {
-    filters.push(`FullName@=${search}|Email@=${search}|PhoneNumber@=${search}`)
+    if (search.includes('@')) {
+      filters.push(`Email@=${search}`)
+    } else {
+      filters.push(`FullName@=${search}|Email@=${search}|PhoneNumber@=${search}`)
+    }
   }
 
   if (filters.length > 0) {
