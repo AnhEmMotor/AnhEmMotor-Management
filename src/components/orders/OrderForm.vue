@@ -79,7 +79,7 @@ const isNotesLocked = computed(() => {
   return (lockedStatuses.value.notes || []).includes(originalStatusKey.value)
 })
 
-const isLocked = computed(() => isBuyerProductLocked.value) // Compatibility
+const isLocked = computed(() => isBuyerProductLocked.value)
 
 const originalStatusKey = computed(() =>
   props.order ? props.order.statusId || props.order.status_id : null,
@@ -664,7 +664,6 @@ onBeforeUnmount(() => {
               placeholder="Tìm sản phẩm hàng hóa...."
               class="w-full py-2 px-3 border border-gray-300 rounded-md text-sm outline-none transition-colors duration-200 focus:border-blue-500"
             />
-            <!-- (Giữ nguyên phần dropdown sản phẩm bên dưới) -->
             <div
               v-if="productSearch.showDropdown"
               :style="dropdownStyle"
