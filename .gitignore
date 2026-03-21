@@ -38,3 +38,4 @@ coverage
 
 API_Swagger_Document.json
 frontend-vuejs
+*.txt

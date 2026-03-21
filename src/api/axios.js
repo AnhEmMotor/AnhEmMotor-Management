@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { queryClient } from './queryClient'
 
-const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+const baseURL = import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:3000'
 
 let accessToken = null
 let tokenExpiration = null

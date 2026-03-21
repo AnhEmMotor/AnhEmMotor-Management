@@ -21,7 +21,7 @@ const user = computed(() => authStore.user || {})
 
 const currentUserEmail = computed(() => user.value.email)
 
-const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+const apiUrl = import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:3000'
 
 const activeTab = computed({
   get: () => route.query.tab || 'profile',

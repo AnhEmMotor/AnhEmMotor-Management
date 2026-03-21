@@ -1,6 +1,6 @@
 # AnhEmMotor Management Dashboard Project
 
-[English](#english) | [Tiếng Việt](#tieng-viet) | [Rules (Quy chuẩn)](./RULES.md)
+[English](#english) | [Tiếng Việt](#tiếng-việt) | [Rules (Quy chuẩn)](./RULES.md)
 
 ---
 
@@ -52,7 +52,7 @@ Update the information in `.env`:
 
 ```properties
 # Backend API URL (Production or Local)
-VITE_API_URL=https://localhost:7001
+VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT=https://localhost:7001
 ```
 
 ### Local Development
@@ -69,13 +69,13 @@ The project uses GitHub Actions for auto-deployments.
 
 #### Required Secrets on GitHub Repo:
 
-| Secret Name       | Description                          |
-| ----------------- | ------------------------------------ |
-| `VITE_API_URL`    | Backend API URL (Production)         |
-| `REMOTE_HOST`     | Production Server IP                 |
-| `REMOTE_USER`     | SSH Username (usually root)          |
-| `SSH_PRIVATE_KEY` | Private SSH Key to access the server |
-| `REMOTE_PORT`     | SSH Port (default 22)                |
+| Secret Name                         | Description                          |
+| ----------------------------------- | ------------------------------------ |
+| `PUBLIC_API_URL_FOR_BROWSER_CLIENT` | Backend API URL (Production)         |
+| `PRODUCTION_SERVER_IP`              | Production Server IP                 |
+| `PRODUCTION_SERVER_USERNAME`        | SSH Username (usually root)          |
+| `SERVER_REMOTE_ACCESS_PRIVATE_KEY`  | Private SSH Key to access the server |
+| `SSH_PORT_FOR_PRODUCTION_SERVER`    | SSH Port (default 22)                |
 
 #### Workflow
 
@@ -87,7 +87,7 @@ The project uses GitHub Actions for auto-deployments.
 
 **Solution:**
 
-Try run 2 command in Command Prompt Administrator:
+Check if any other projects are running on port 5173. If not, try running the following two commands in Command Prompt with administrator privileges:
 
 ```
 sc stop winnat
@@ -146,7 +146,7 @@ Cập nhật thông tin trong `.env`:
 
 ```properties
 # URL của Backend API (Production hoặc Local)
-VITE_API_URL=https://localhost:7001
+VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT=https://localhost:7001
 ```
 
 ### Chạy Local Development
@@ -163,13 +163,13 @@ Dự án sử dụng GitHub Actions để auto deploy.
 
 #### Secrets cần cấu hình trên GitHub Repo:
 
-| Secret Name       | Mô tả                            |
-| ----------------- | -------------------------------- |
-| `VITE_API_URL`    | URL của Backend API (Production) |
-| `REMOTE_HOST`     | IP của Server deploy             |
-| `REMOTE_USER`     | Username SSH (thường là root)    |
-| `SSH_PRIVATE_KEY` | Key SSH private để access server |
-| `REMOTE_PORT`     | Port SSH (mặc định 22)           |
+| Secret Name                         | Mô tả                            |
+| ----------------------------------- | -------------------------------- |
+| `PUBLIC_API_URL_FOR_BROWSER_CLIENT` | URL của Backend API (Production) |
+| `PRODUCTION_SERVER_IP`              | IP của Server deploy             |
+| `PRODUCTION_SERVER_USERNAME`        | Username SSH (thường là root)    |
+| `SERVER_REMOTE_ACCESS_PRIVATE_KEY`  | Key SSH private để access server |
+| `SSH_PORT_FOR_PRODUCTION_SERVER`    | Port SSH (mặc định 22)           |
 
 #### Workflow
 
@@ -181,7 +181,7 @@ Dự án sử dụng GitHub Actions để auto deploy.
 
 **Giải pháp:**
 
-Hãy thử chạy 2 lệnh sau trong Command Prompt với quyền quản trị viên:
+Hãy xem coi có dự án nào khác chạy trên cổng 5173 hay không. Nếu không có, hãy thử chạy 2 lệnh sau trong Command Prompt với quyền quản trị viên:
 
 ```
 sc stop winnat

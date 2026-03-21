@@ -119,7 +119,7 @@ watch(
 
 const fileInputRef = ref(null)
 const isUploadingAvatar = ref(false)
-const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+const apiUrl = import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:3000'
 
 const handleAvatarClick = () => {
   fileInputRef.value?.click()
