@@ -126,7 +126,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (!token) return
 
     abortController = new AbortController()
-    const sseUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/v1/user/me`
+    const sseUrl = `${import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:3000'}/api/v1/user/me`
 
     sseStatus.value = 'connecting'
 

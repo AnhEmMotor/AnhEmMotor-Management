@@ -14,7 +14,7 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -29,16 +29,16 @@ jobs:
 
       - name: Build project
         env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT: ${{ secrets.PUBLIC_API_URL_FOR_BROWSER_CLIENT }}
         run: npm run build
 
       - name: Deploy to Server
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.REMOTE_PORT }}
+          host: ${{ secrets.PRODUCTION_SERVER_IP }}
+          username: ${{ secrets.PRODUCTION_SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_REMOTE_ACCESS_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT_FOR_PRODUCTION_SERVER }}
           source: 'dist/'
-          target: '/home/anhemmot/domains/admin.anhemmotor.online/public_html'
+          target: '/var/www/anhemmotor/frontend-management'
           strip_components: 1
