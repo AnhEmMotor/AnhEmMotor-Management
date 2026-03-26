@@ -4,7 +4,7 @@ import RoundBadge from '../ui/RoundBadge.vue'
 
 const props = defineProps({
   itemData: Object,
-  statusMap: Object,
+  statusLabel: String,
   isOpen: Boolean,
 })
 defineEmits(['toggle-detail', 'edit', 'copy', 'cancel-request'])
@@ -26,22 +26,6 @@ function getStatusColor(status) {
       return 'gray'
   }
 }
-
-function getStatusName(status) {
-  if (props.statusMap && props.statusMap[status]) {
-    return props.statusMap[status]
-  }
-  switch (status) {
-    case 'finished':
-      return 'Hoàn thành'
-    case 'working':
-      return 'Phiếu tạm'
-    case 'cancelled':
-      return 'Đã huỷ'
-    default:
-      return 'Chưa xác định'
-  }
-}
 </script>
 
 <template>
@@ -58,7 +42,7 @@ function getStatusName(status) {
       </div>
       <div class="flex justify-start px-3">
         <RoundBadge :color="getStatusColor(itemData.statusId)">
-          {{ getStatusName(itemData.statusId) }}
+          {{ statusLabel || 'Chưa xác định' }}
         </RoundBadge>
       </div>
     </div>
@@ -67,7 +51,7 @@ function getStatusName(status) {
       <div class="flex justify-between items-center">
         <div class="font-semibold text-gray-800">{{ itemData.id }}</div>
         <RoundBadge :color="getStatusColor(itemData.statusId)">
-          {{ getStatusName(itemData.statusId) }}
+          {{ statusLabel || 'Chưa xác định' }}
         </RoundBadge>
       </div>
       <div class="text-gray-600 text-xs">{{ itemData.createdAt }}</div>

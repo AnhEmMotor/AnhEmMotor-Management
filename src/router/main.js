@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { Permissions } from '@/constants/permissions'
-const DashboardLayout = () => import('@/components/layout/DashboardLayout.vue')
+const DashboardLayout = () => import('@/components/ui/layout/DashboardLayout.vue')
 const TheHome = () => import('@/views/TheHome.vue')
 const LoginView = () => import('@/views/LoginView.vue')
 const OrdersManager = () => import('@/views/OrdersManager.vue')

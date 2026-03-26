@@ -451,7 +451,7 @@ const handleCopyReceipt = async (item) => {
             v-for="item in filteredItems"
             :key="item.id"
             :itemData="item"
-            :status-map="statusMap"
+            :status-label="statusMap[item.statusId]"
             :is-open="item.id === expandedItemId"
             @toggle-detail="handleToggleDetail"
             @edit="openEditInventoryModal"
