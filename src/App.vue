@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
 import GlobalConfirmation from './components/ui/confirm_modal/GlobalConfirmationModal.vue'
 import AppLoadingScreen from './components/ui/AppLoadingScreen.vue'
-import { useAuthStore } from './stores/useAuthStore'
+import { useAuthStore } from '@/stores/auth.store'
 
 const authStore = useAuthStore()
 const router = useRouter()

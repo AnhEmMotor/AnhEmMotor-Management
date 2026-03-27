@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, watch, nextTick } from 'vue'
-import { useOrdersStore } from '@/stores/useOrdersStore'
-import { fetchSalesOrders, getSalesOrderById, fetchOutputStatuses } from '@/api/order'
+import { useOrderStore } from '@/stores/order.store'
+import orderMapper from '@/mappers/orderMapper'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
 
@@ -20,7 +20,7 @@ import { useToast } from 'vue-toastification'
 import { Permissions } from '@/constants/permissions'
 import { usePermission } from '@/composables/usePermission'
 
-const ordersStore = useOrdersStore()
+const orderStore = useOrderStore()
 const queryClient = useQueryClient()
 const toast = useToast()
 const { hasPermission } = usePermission()
@@ -40,8 +40,8 @@ const STATUS_COLOR_MAP = {
 }
 
 const { data: statusMapData } = useQuery({
-  queryKey: ['outputStatuses'],
-  queryFn: fetchOutputStatuses,
+  queryKey: ['order-statuses'],
+  queryFn: orderStore.fetchStatuses,
   staleTime: Infinity,
 })
 
@@ -63,28 +63,19 @@ const loadingOverlay = ref(false)
 const itemsPerPage = ref(10)
 const formErrors = ref({})
 
-const filters = computed(() => {
-  const f = {}
-  if (selectedStatuses.value.length > 0) {
-    f.filters = selectedStatuses.value.map((s) => `StatusId==${s}`).join('|')
-  }
-  return f
-})
+const filters = computed(() =>
+  orderMapper.toParams({
+    selectedStatuses: selectedStatuses.value,
+  }),
+)
 
 const queryFn = async (params) => {
-  const res = await fetchSalesOrders({
+  return await orderStore.fetchOrders({
     Page: params.page,
     PageSize: params.limit,
     ...(params.filters ? { filters: params.filters } : {}),
     ...(params.search ? { search: params.search } : {}),
   })
-  return {
-    data: res.items || [],
-    pagination: {
-      totalPages: res.totalPages,
-      totalCount: res.totalCount,
-    },
-  }
 }
 
 const {
@@ -124,7 +115,7 @@ const handleEditOrder = async (order) => {
     queryClient
       .fetchQuery({
         queryKey: ['salesOrders', order.id],
-        queryFn: () => getSalesOrderById(order.id),
+        queryFn: () => orderStore.getOrderById(order.id),
         staleTime: 0,
       })
       .then((detail) => {
@@ -141,7 +132,7 @@ const handleEditOrder = async (order) => {
     try {
       const detail = await queryClient.fetchQuery({
         queryKey: ['salesOrders', order.id],
-        queryFn: () => getSalesOrderById(order.id),
+        queryFn: () => orderStore.getOrderById(order.id),
         staleTime: 0,
       })
       selectedOrder.value = detail
@@ -161,7 +152,7 @@ const handleFormRefresh = async () => {
   try {
     const detail = await queryClient.fetchQuery({
       queryKey: ['salesOrders', selectedOrder.value.id],
-      queryFn: () => getSalesOrderById(selectedOrder.value.id),
+      queryFn: () => orderStore.getOrderById(selectedOrder.value.id),
       staleTime: 0,
     })
     selectedOrder.value = detail
@@ -181,9 +172,9 @@ const handleSaveOrder = async (payload) => {
   try {
     let result
     if (isEditMode.value && selectedOrder.value?.id) {
-      result = await ordersStore.updateOrder(selectedOrder.value.id, payload)
+      result = await orderStore.saveOrder(selectedOrder.value.id, payload)
     } else {
-      result = await ordersStore.createOrder(payload)
+      result = await orderStore.saveOrder(null, payload)
     }
     if (result) {
       queryClient.setQueryData(['salesOrders', result.id], result)
@@ -208,7 +199,7 @@ const handleSaveOrder = async (payload) => {
 
 const handleDeleteOrder = async (order) => {
   try {
-    await ordersStore.deleteOrder(order.id)
+    await orderStore.deleteOrder(order.id)
     queryClient.removeQueries({ queryKey: ['salesOrders', order.id] })
     queryClient.invalidateQueries({ queryKey: ['salesOrders'] })
     toast.success('Đã xoá đơn hàng')
@@ -369,6 +360,7 @@ const handleExport = () => {
 
     <OrderForm
       v-if="showOrderForm"
+      :key="selectedOrder?.id || 'new'"
       :show="showOrderForm"
       :zIndex="110"
       :order="selectedOrder"

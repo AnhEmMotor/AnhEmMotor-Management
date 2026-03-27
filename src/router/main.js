@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '@/stores/useAuthStore'
+import { useAuthStore } from '@/stores/auth.store'
 import { Permissions } from '@/constants/permissions'
 const DashboardLayout = () => import('@/components/ui/layout/DashboardLayout.vue')
 const TheHome = () => import('@/views/TheHome.vue')
@@ -7,9 +7,9 @@ const LoginView = () => import('@/views/LoginView.vue')
 const OrdersManager = () => import('@/views/OrdersManager.vue')
 const CustomerManager = () => import('@/views/UserManager.vue')
 const ProductsManager = () => import('@/views/ProductsManager.vue')
-const ProductReport = () => import('@/views/ProductReport.vue')
-const RevenueAnalysis = () => import('@/views/RevenueAnalysis.vue')
-const WarehouseReport = () => import('@/views/WarehouseReport.vue')
+const ProductStatistics = () => import('@/views/ProductStatistics.vue')
+const RevenueStatistics = () => import('@/views/RevenueStatistics.vue')
+const WarehouseStatistics = () => import('@/views/WarehouseStatistics.vue')
 const InventoryInputManager = () => import('@/views/InventoryInputManager.vue')
 const SupplierManager = () => import('@/views/SupplierManager.vue')
 const BrandManager = () => import('@/views/BrandManager.vue')
@@ -72,32 +72,32 @@ const router = createRouter({
           },
         },
         {
-          name: 'report-product',
-          path: 'report-product',
-          component: ProductReport,
+          name: 'statistics-product',
+          path: 'statistics-product',
+          component: ProductStatistics,
           meta: {
             requiresAuth: true,
-            title: 'Báo cáo sản phẩm',
+            title: 'Thống kê sản phẩm',
             permission: Permissions.StatisticalView,
           },
         },
         {
-          name: 'revenue-analysis',
-          path: 'report-revenue',
-          component: RevenueAnalysis,
+          name: 'statistics-revenue',
+          path: 'statistics-revenue',
+          component: RevenueStatistics,
           meta: {
             requiresAuth: true,
-            title: 'Báo cáo doanh thu',
+            title: 'Thống kê doanh thu',
             permission: Permissions.StatisticalView,
           },
         },
         {
-          name: 'warehouse-report',
-          path: 'report-warehouse',
-          component: WarehouseReport,
+          name: 'statistics-warehouse',
+          path: 'statistics-warehouse',
+          component: WarehouseStatistics,
           meta: {
             requiresAuth: true,
-            title: 'Báo cáo kho',
+            title: 'Thống kê kho',
             permission: Permissions.StatisticalView,
           },
         },

@@ -1,20 +1,18 @@
 <script setup>
 import { computed, watch, ref } from 'vue'
 import { useQueryClient } from '@tanstack/vue-query'
-import { useSuppliersStore } from '@/stores/useSuppliersStore'
+import { useSupplierStore } from '@/stores/supplier.store'
 import { useToast } from 'vue-toastification'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { Permissions } from '@/constants/permissions'
 import { usePermission } from '@/composables/usePermission'
-import { fetchSuppliers } from '@/api/supplier'
-import { storeToRefs } from 'pinia'
+
 import SupplierItem from '@/components/supplier/SupplierItem.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
 import Input from '@/components/ui/input/BaseInput.vue'
 import Pagination from '@/components/ui/button/BasePagination.vue'
 import SupplierFilterButtons from '@/components/supplier/SupplierFilterButtons.vue'
-import DraggableModal from '@/components/ui/DraggableModal.vue'
-import SupplierForm from '@/components/supplier/SupplierForm.vue'
+import SupplierFormModal from '@/components/supplier/SupplierFormModal.vue'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 import { showConfirmation } from '@/composables/useConfirmationState'
@@ -26,9 +24,13 @@ import IconEmptyBox from '@/assets/icons/empty-box.svg'
 const toast = useToast()
 const { hasPermission } = usePermission()
 const queryClient = useQueryClient()
-const suppliersStore = useSuppliersStore()
+const supplierStore = useSupplierStore()
 
-const { isFormModalVisible, isEditMode, editableSupplier, formErrors } = storeToRefs(suppliersStore)
+const isFormModalVisible = ref(false)
+const isEditMode = ref(false)
+const editableSupplier = ref({})
+const formErrors = ref({})
+
 const {
   data: suppliers,
   isLoading,
@@ -38,9 +40,9 @@ const {
   filterRefs,
 } = usePaginatedQuery({
   queryKey: ['suppliers'],
-  queryFn: fetchSuppliers,
+  queryFn: (query) => supplierStore.fetchSuppliers(query),
   itemsPerPage: 10,
-  searchFields: [{ key: 'search' }],
+  searchFields: [{ key: 'search', debounce: 400 }],
   filterFields: [{ key: 'status' }],
 })
 
@@ -56,20 +58,8 @@ const selectedStatuses = computed({
 })
 
 const openStates = ref({})
-const showOverlay = ref(false)
+const isSaving = ref(false)
 const overlayMessage = ref('')
-
-const isMutating = computed(
-  () =>
-    suppliersStore.isAdding ||
-    suppliersStore.isEditing ||
-    suppliersStore.isDeleting ||
-    suppliersStore.isToggling,
-)
-
-watch(isMutating, (val) => {
-  showOverlay.value = val
-})
 
 const handleToggleDetail = (id) => {
   openStates.value = { ...openStates.value, [id]: !openStates.value[id] }
@@ -85,13 +75,19 @@ const toggleActivation = async (supplier) => {
   )
 
   if (confirmed) {
+    isSaving.value = true
     overlayMessage.value = `Đang ${actionName.toLowerCase()}...`
-    const result = await suppliersStore.toggleStatus(supplier.id, supplier.statusId)
-
-    if (result.success) {
-      toast.success(`${actionName} thành công!`)
-    } else {
-      toast.error(`Lỗi: ${result.error.message || result.error}`)
+    try {
+      const result = await supplierStore.toggleSupplierStatus(supplier.id, supplier.statusId)
+      if (result) {
+        queryClient.setQueryData(['suppliers', result.id], result)
+        await queryClient.invalidateQueries({ queryKey: ['suppliers'] })
+        toast.success(`${actionName} thành công!`)
+      }
+    } catch (err) {
+      toast.error(`Lỗi: ${err.message || err}`)
+    } finally {
+      isSaving.value = false
     }
   }
 }
@@ -102,35 +98,66 @@ const formModalTitle = computed(() =>
 const formModalKey = ref(0)
 
 const openAddEditModal = async (supplier = null) => {
-  suppliersStore.openFormModal(supplier)
+  isEditMode.value = !!supplier
+  formErrors.value = {}
   formModalKey.value++
 
   if (supplier) {
+    editableSupplier.value = JSON.parse(JSON.stringify(supplier))
+    isFormModalVisible.value = true
     await handleFormRefresh(false, false)
+  } else {
+    editableSupplier.value = {
+      name: '',
+      phone: '',
+      email: '',
+      address: '',
+      taxIdentificationNumber: '',
+      notes: '',
+      statusId: 'active',
+    }
+    isFormModalVisible.value = true
   }
 }
 
 const handleCloseFormModal = () => {
-  suppliersStore.closeFormModal()
+  isFormModalVisible.value = false
+  editableSupplier.value = {}
+  formErrors.value = {}
 }
 
 const handleSaveSupplier = async () => {
+  isSaving.value = true
   overlayMessage.value = isEditMode.value ? 'Đang cập nhật...' : 'Đang tạo mới...'
 
-  const result = await suppliersStore.saveSupplier()
-
-  if (result.success) {
-    toast.success(isEditMode.value ? 'Cập nhật thành công!' : 'Thêm mới thành công!')
-    handleCloseFormModal()
-  } else {
-    const error = result.error
-    if (error.type !== 'Validation') {
-      if (error.response?.status === 400) {
-        toast.error('Có lỗi trong quá trình lưu nhà cung cấp')
-      } else {
-        toast.error(`Lỗi: ${error.message || error}`)
-      }
+  try {
+    let result
+    if (isEditMode.value) {
+      result = await supplierStore.updateSupplier(editableSupplier.value.id, editableSupplier.value)
+    } else {
+      result = await supplierStore.createSupplier(editableSupplier.value)
     }
+
+    if (result) {
+      queryClient.setQueryData(['suppliers', result.id], result)
+      await queryClient.invalidateQueries({ queryKey: ['suppliers'] })
+      toast.success(isEditMode.value ? 'Cập nhật thành công!' : 'Thêm mới thành công!')
+      handleCloseFormModal()
+    }
+  } catch (err) {
+    const backendErrors = err.response?.data?.errors || err.response?.data?.Errors || null
+    if (backendErrors && err.response?.status === 400) {
+      const normalized = {}
+      Object.entries(backendErrors).forEach(([key, messages]) => {
+        normalized[key.toLowerCase()] = Array.isArray(messages) ? messages[0] : messages
+      })
+      formErrors.value = normalized
+      toast.warning('Vui lòng kiểm tra lại các trường có lỗi.')
+    } else {
+      toast.error(`Lỗi: ${err.message || err}`)
+    }
+  } finally {
+    isSaving.value = false
   }
 }
 
@@ -141,13 +168,17 @@ const openDeleteModal = async (supplier) => {
   )
 
   if (confirmed) {
+    isSaving.value = true
     overlayMessage.value = 'Đang xóa...'
-    const result = await suppliersStore.deleteSupplier(supplier.id)
-
-    if (result.success) {
+    try {
+      await supplierStore.deleteSupplier(supplier.id)
+      queryClient.removeQueries({ queryKey: ['suppliers', supplier.id] })
+      await queryClient.invalidateQueries({ queryKey: ['suppliers'] })
       toast.success('Xóa thành công!')
-    } else {
-      toast.error(`Lỗi: ${result.error.message || result.error}`)
+    } catch (err) {
+      toast.error(`Lỗi: ${err.message || err}`)
+    } finally {
+      isSaving.value = false
     }
   }
 }
@@ -160,10 +191,11 @@ const handleFormRefresh = async (showToast = true, showLoading = true) => {
     try {
       const freshData = await queryClient.fetchQuery({
         queryKey: ['suppliers', editableSupplier.value.id],
-        queryFn: () => suppliersStore.getSupplierById(editableSupplier.value.id),
+        queryFn: () => supplierStore.getSupplierById(editableSupplier.value.id),
+        staleTime: 0,
       })
       if (freshData) {
-        editableSupplier.value = { ...freshData }
+        editableSupplier.value = JSON.parse(JSON.stringify(freshData))
       }
       if (showToast) toast.info('Đã làm mới dữ liệu')
     } catch (e) {
@@ -172,7 +204,15 @@ const handleFormRefresh = async (showToast = true, showLoading = true) => {
       if (showLoading) isRefreshing.value = false
     }
   } else {
-    editableSupplier.value = {}
+    editableSupplier.value = {
+      name: '',
+      phone: '',
+      email: '',
+      address: '',
+      taxIdentificationNumber: '',
+      notes: '',
+      statusId: 'active',
+    }
     formErrors.value = {}
     if (showToast) toast.info('Đã làm mới form')
   }
@@ -195,7 +235,7 @@ const handleImport = () => {
 
 <template>
   <div class="p-4 sm:p-6 rounded-xl shadow-lg bg-white">
-    <LoadingOverlay :show="showOverlay" :message="overlayMessage" />
+    <LoadingOverlay :show="isSaving" :message="overlayMessage" />
     <div
       class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0"
     >
@@ -216,12 +256,13 @@ const handleImport = () => {
           for="import-file-input"
           class="cursor-pointer"
         >
-          <Button
-            text="Import"
-            :icon="IconFileImport"
-            color="secondary"
-            as="span"
-            @click="handleImport"
+          <Button text="Import" :icon="IconFileImport" color="secondary" as="span" />
+          <input
+            type="file"
+            id="import-file-input"
+            accept=".xlsx, .xls"
+            class="hidden"
+            @change="handleImport"
           />
         </label>
 
@@ -314,25 +355,18 @@ const handleImport = () => {
       :loading="isLoading"
     />
 
-    <DraggableModal
+    <SupplierFormModal
       :key="formModalKey"
-      v-if="isFormModalVisible"
+      :show="isFormModalVisible"
+      :title="formModalTitle"
+      :supplier="editableSupplier"
+      :is-edit-mode="isEditMode"
+      :is-saving="isSaving"
+      :is-refreshing="isRefreshing"
+      :errors="formErrors"
+      :on-refresh="isEditMode ? handleFormRefresh : undefined"
       @close="handleCloseFormModal"
-      :onRefresh="isEditMode ? handleFormRefresh : undefined"
-      :isLoading="isRefreshing"
-    >
-      <template #header>
-        <h2 class="font-bold text-lg">{{ formModalTitle }}</h2>
-      </template>
-      <template #body>
-        <SupplierForm v-model="editableSupplier" :errors="formErrors" />
-      </template>
-      <template #footer>
-        <div class="flex justify-end space-x-2">
-          <Button text="Bỏ qua" color="gray" @click="handleCloseFormModal" />
-          <Button text="Lưu" color="purple" @click="handleSaveSupplier" />
-        </div>
-      </template>
-    </DraggableModal>
+      @save="handleSaveSupplier"
+    />
   </div>
 </template>

@@ -322,7 +322,7 @@
                   class="flex-shrink-0"
                   :class="isGroupActive('reports') ? 'text-red-600' : 'text-gray-500'"
                 />
-                <span>Báo cáo</span>
+                <span>Thống kê</span>
               </div>
               <IconUpArrow :isOpen="openGroups.includes('reports')" />
             </button>
@@ -330,11 +330,11 @@
             <ul v-if="openGroups.includes('reports')" class="mt-1 space-y-1 pl-3">
               <li>
                 <RouterLink
-                  to="/report-warehouse"
+                  to="/statistics-warehouse"
                   class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
                   active-class="bg-red-50 text-red-700"
                   :class="
-                    route.path === '/report-warehouse'
+                    route.path === '/statistics-warehouse'
                       ? 'bg-red-50 text-red-700'
                       : 'text-gray-600 hover:bg-gray-50 hover:text-red-600'
                   "
@@ -345,11 +345,11 @@
               </li>
               <li>
                 <RouterLink
-                  to="/report-revenue"
+                  to="/statistics-revenue"
                   class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
                   active-class="bg-red-50 text-red-700"
                   :class="
-                    route.path === '/report-revenue'
+                    route.path === '/statistics-revenue'
                       ? 'bg-red-50 text-red-700'
                       : 'text-gray-600 hover:bg-gray-50 hover:text-red-600'
                   "
@@ -360,11 +360,11 @@
               </li>
               <li>
                 <RouterLink
-                  to="/report-product"
+                  to="/statistics-product"
                   class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
                   active-class="bg-red-50 text-red-700"
                   :class="
-                    route.path === '/report-product'
+                    route.path === '/statistics-product'
                       ? 'bg-red-50 text-red-700'
                       : 'text-gray-600 hover:bg-gray-50 hover:text-red-600'
                   "
@@ -494,7 +494,7 @@ import IconMenu from '@/assets/icons/menu.svg'
 import IconCloseLine from '@/assets/icons/close-line.svg'
 import IconUserProfile from '@/assets/icons/user-profile.svg'
 import IconLock from '@/assets/icons/login-lock.svg'
-import { useAuthStore } from '@/stores/useAuthStore'
+import { useAuthStore } from '@/stores/auth.store'
 import { useRouter, useRoute } from 'vue-router'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 import { Permissions } from '@/constants/permissions'
@@ -525,7 +525,7 @@ const groupRoutes = {
   productGroup: ['/products', '/brands', '/categories'],
   warehouse: ['/suppliers', '/inputs', '/price-management'],
   user: ['/users', '/permissions'],
-  reports: ['/report-warehouse', '/report-revenue', '/report-product'],
+  reports: ['/statistics-warehouse', '/statistics-revenue', '/statistics-product'],
 }
 
 const toggleGroup = (group) => {

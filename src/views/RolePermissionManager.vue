@@ -4,21 +4,12 @@ import Pagination from '@/components/ui/button/BasePagination.vue'
 import { ref, computed } from 'vue'
 import { useToast } from 'vue-toastification'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import * as roleApi from '@/api/role'
+import { useRoleStore } from '@/stores/role.store'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
-
-import RoleList from '@/components/roles/RoleList.vue'
-import RoleForm from '@/components/roles/RoleForm.vue'
-import RoleDeleteModal from '@/components/roles/RoleDeleteModal.vue'
-import Button from '@/components/ui/button/BaseButton.vue'
-import IconPlus from '@/assets/icons/IconPlus.svg'
-import IconFileImport from '@/assets/icons/IconFileImport.svg'
-import IconFileExport from '@/assets/icons/IconFileExport.svg'
-import IconSearch from '@/assets/icons/search.svg'
-import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 
 const toast = useToast()
 const queryClient = useQueryClient()
+const roleStore = useRoleStore()
 
 const showRoleForm = ref(false)
 const showDeleteModal = ref(false)
@@ -28,50 +19,16 @@ const modalZIndex = ref(100)
 const activeModalId = ref(null)
 const isFetchingDetail = ref(false)
 
-const { data: structureData } = useQuery({
+const { data: permissionStructure } = useQuery({
   queryKey: ['permissionStructure'],
-  queryFn: roleApi.fetchPermissionStructure,
-  staleTime: 1000 * 60 * 60,
-  enabled: showRoleForm,
+  queryFn: () => roleStore.fetchPermissionStructure(),
+  staleTime: Infinity,
 })
 
-const availablePermissions = computed(() => {
-  if (!structureData.value) return []
-  const { groups, metadata } = structureData.value
-  if (!groups) return []
-  const result = []
-
-  for (const [groupName, permIds] of Object.entries(groups)) {
-    for (const permId of permIds) {
-      const meta = metadata.find((m) => m.id === permId)
-      if (meta) {
-        result.push({
-          id: meta.id,
-          name: meta.name,
-          description: meta.description,
-          category: groupName,
-        })
-      }
-    }
-  }
-  return result
-})
-
-const permissionStructure = computed(() => structureData.value || null)
+const availablePermissions = computed(() => permissionStructure.value?.list || [])
 
 const fetchRolesWrapper = async (params) => {
-  const filters = []
-
-  if (params.search) {
-    filters.push(`Name@=${params.search},Description@=${params.search}`)
-    delete params.search
-  }
-
-  if (filters.length > 0) {
-    params.filters = params.filters ? `${params.filters},${filters.join(',')}` : filters.join(',')
-  }
-
-  return roleApi.fetchRoles(params)
+  return await roleStore.fetchRoles(params)
 }
 
 const {
@@ -86,19 +43,11 @@ const {
   queryFn: fetchRolesWrapper,
   itemsPerPage: 10,
   searchFields: [{ key: 'search', debounce: 400 }],
-  sortableFields: ['name', 'status'],
 })
 
 const errorMessage = computed(() => error.value?.message || 'Lỗi tải dữ liệu vai trò')
 
-const displayRoles = computed(() => {
-  return roles.value.map((r) => ({
-    ...r,
-    id: r.id,
-    roleName: r.name,
-    permissionCount: r.permissionCount || 0,
-  }))
-})
+const displayRoles = computed(() => roles.value || [])
 
 const handleExport = () => {
   toast.info('Chức năng xuất Excel đang phát triển')
@@ -110,7 +59,7 @@ const handleImport = (event) => {
 }
 
 const deleteRoleMutation = useMutation({
-  mutationFn: roleApi.deleteRole,
+  mutationFn: (id) => roleStore.deleteRole(id),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['roles'] })
     toast.success('Xóa vai trò thành công')
@@ -118,7 +67,7 @@ const deleteRoleMutation = useMutation({
     selectedRole.value = null
   },
   onError: (error) => {
-    toast.error(error.response?.data?.message || 'Lỗi khi xóa vai trò')
+    toast.error(error.message || 'Lỗi khi xóa vai trò')
   },
 })
 
@@ -129,16 +78,9 @@ const confirmDelete = () => {
 const saveRoleMutation = useMutation({
   mutationFn: (roleData) => {
     if (isEditMode.value) {
-      return roleApi.updateRole({
-        roleId: selectedRole.value.id,
-        roleName: roleData.name,
-        permissions: roleData.permissions,
-      })
+      return roleStore.updateRole(selectedRole.value.id, roleData)
     }
-    return roleApi.createRole({
-      roleName: roleData.name,
-      permissions: roleData.permissions,
-    })
+    return roleStore.createRole(roleData)
   },
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['roles'] })
@@ -146,7 +88,7 @@ const saveRoleMutation = useMutation({
     showRoleForm.value = false
   },
   onError: (error) => {
-    toast.error(error.response?.data?.message || 'Lỗi khi lưu vai trò')
+    toast.error(error.message || 'Lỗi khi lưu vai trò')
   },
 })
 
@@ -163,13 +105,8 @@ const handleActivateModal = (modalId) => {
 
 const handleAddRole = async () => {
   try {
-    if (!structureData.value) {
-      isFetchingDetail.value = true
-      await queryClient.fetchQuery({
-        queryKey: ['permissionStructure'],
-        queryFn: roleApi.fetchPermissionStructure,
-      })
-    }
+    isFetchingDetail.value = true
+    await roleStore.fetchPermissionStructure()
     isEditMode.value = false
     selectedRole.value = null
     showRoleForm.value = true
@@ -185,12 +122,7 @@ const handleAddRole = async () => {
 const handleEditRole = async (role) => {
   try {
     isFetchingDetail.value = true
-    if (!structureData.value) {
-      await queryClient.fetchQuery({
-        queryKey: ['permissionStructure'],
-        queryFn: roleApi.fetchPermissionStructure,
-      })
-    }
+    await roleStore.fetchPermissionStructure()
 
     showRoleForm.value = true
 
@@ -202,13 +134,13 @@ const handleEditRole = async (role) => {
       permissions = cachedData
       queryClient.prefetchQuery({
         queryKey,
-        queryFn: () => roleApi.fetchRolePermissions(role.id),
+        queryFn: () => roleStore.fetchRolePermissions(role.id),
       })
     } else {
       isFetchingDetail.value = true
       permissions = await queryClient.fetchQuery({
         queryKey,
-        queryFn: () => roleApi.fetchRolePermissions(role.id),
+        queryFn: () => roleStore.fetchRolePermissions(role.id),
       })
     }
 

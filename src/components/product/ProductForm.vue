@@ -1,10 +1,10 @@
 <script setup>
 import { ref, watch, computed, nextTick } from 'vue'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
-import { fetchCategories } from '@/api/productCategory'
-import { fetchBrands } from '@/api/brand'
+import { useCategoryStore } from '@/stores/category.store'
+import { useBrandStore } from '@/stores/brand.store'
 import { useQuery } from '@tanstack/vue-query'
-import { getPredefinedOptions } from '@/api/options'
+import productService from '@/services/productService'
 import Input from '@/components/ui/input/BaseInput.vue'
 import Textarea from '@/components/ui/input/BaseTextarea.vue'
 import Dropdown from '@/components/ui/input/BaseDropdown.vue'
@@ -17,6 +17,7 @@ import IconTrash from '@/assets/icons/IconTrash.svg'
 import IconPlus from '@/assets/icons/IconPlus.svg'
 import { Permissions } from '@/constants/permissions'
 import { usePermission } from '@/composables/usePermission'
+import { generateVariantSlug } from '@/utils/slug'
 
 const props = defineProps({
   modelValue: {
@@ -39,6 +40,9 @@ const props = defineProps({
 
 const { hasPermission } = usePermission()
 
+const brandStore = useBrandStore()
+const categoryStore = useCategoryStore()
+
 const emit = defineEmits(['update:modelValue'])
 const {
   data: categoriesData,
@@ -46,7 +50,7 @@ const {
   pagination: categoryPagination,
 } = usePaginatedQuery({
   queryKey: ['categories'],
-  queryFn: fetchCategories,
+  queryFn: (query) => categoryStore.fetchCategories(query),
   useLocalPagination: true,
   itemsPerPage: 10,
   queryOptions: { staleTime: 5 * 60 * 1000 },
@@ -58,7 +62,7 @@ const {
   pagination: brandPagination,
 } = usePaginatedQuery({
   queryKey: ['brands'],
-  queryFn: fetchBrands,
+  queryFn: (query) => brandStore.fetchBrands(query),
   useLocalPagination: true,
   itemsPerPage: 10,
   queryOptions: { staleTime: 5 * 60 * 1000 },
@@ -66,7 +70,7 @@ const {
 
 const { data: predefinedOptionsData, isLoading: isOptionsLoading } = useQuery({
   queryKey: ['predefinedOptions'],
-  queryFn: getPredefinedOptions,
+  queryFn: () => productService.getPredefinedOptions(),
   staleTime: 5 * 60 * 1000,
 })
 
@@ -122,33 +126,7 @@ const getAvailableOptionsForVariant = (variant, currentKey) => {
   })
 }
 
-const slugify = (str) => {
-  if (!str) return ''
-  return str
-    .toLowerCase()
-    .trim()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/đ/g, 'd')
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/[\s_-]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
-
-const generateVariantSlug = (variant) => {
-  const productNameSlug = slugify(localProduct.value.name)
-  if (!variant.optionValues) return productNameSlug
-
-  const optionSlugs = Object.entries(variant.optionValues)
-    .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
-    .map(([key, value]) => `${slugify(key)}-${slugify(value)}`)
-    .join('-')
-
-  if (optionSlugs) {
-    return `${productNameSlug}-${optionSlugs}`
-  }
-  return productNameSlug
-}
+// Logic slug đã được chuyển sang src/utils/slug.js
 
 watch(
   () => props.modelValue,
@@ -179,7 +157,7 @@ watch(
         if (!v.photo_collection) v.photo_collection = []
         if (!v.cover_image_url) v.cover_image_url = ''
         if (!v.optionValues) v.optionValues = {}
-        if (!v.url) v.url = generateVariantSlug(v)
+        if (!v.url) v.url = generateVariantSlug(localProduct.value.name, v.optionValues)
       })
     }
 
@@ -207,7 +185,7 @@ const updateAllVariantSlugs = () => {
   if (localProduct.value.variants) {
     localProduct.value.variants.forEach((v) => {
       if (!props.isEditMode || !v.id || !v.url) {
-        v.url = generateVariantSlug(v)
+        v.url = generateVariantSlug(localProduct.value.name, v.optionValues)
       }
     })
   }
@@ -250,7 +228,7 @@ const addVariant = () => {
     url: '',
   }
 
-  newVariant.url = generateVariantSlug(newVariant)
+  newVariant.url = generateVariantSlug(localProduct.value.name, newVariant.optionValues)
   localProduct.value.variants.push(newVariant)
 }
 

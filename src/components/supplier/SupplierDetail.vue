@@ -4,12 +4,12 @@ import Pagination from '../ui/button/BasePagination.vue'
 import SkeletonLoader from '../ui/SkeletonLoader.vue'
 import IconHistoryList from '@/assets/icons/history-list.svg'
 import { computed, ref } from 'vue'
-import { formatDateTime } from '@/composables/useDate'
-import { formatCurrency } from '@/composables/useCurrency'
+import { formatDateTime } from '@/utils/date'
+import { formatCurrency } from '@/utils/currency'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
-import { useSuppliersStore } from '@/stores/useSuppliersStore'
+import { useSupplierStore } from '@/stores/supplier.store'
+import { useInputStore } from '@/stores/input.store'
 import { useQuery } from '@tanstack/vue-query'
-import { fetchInputStatuses } from '@/api/input'
 import { Permissions } from '@/constants/permissions'
 import { usePermission } from '@/composables/usePermission'
 
@@ -19,19 +19,20 @@ const props = defineProps({
 defineEmits(['edit-supplier', 'delete-supplier', 'toggle-activation'])
 const activeTab = ref('info')
 const historyItemsPerPage = ref(10)
-const suppliersStore = useSuppliersStore()
+const supplierStore = useSupplierStore()
+const inputStore = useInputStore()
 const { hasPermission } = usePermission()
 
 const { data: detailData } = useQuery({
   queryKey: computed(() => ['suppliers', props.itemData.id]),
-  queryFn: () => suppliersStore.getSupplierById(props.itemData.id),
+  queryFn: () => supplierStore.getSupplierById(props.itemData.id),
 })
 
 const supplierInfo = computed(() => ({ ...props.itemData, ...(detailData.value || {}) }))
 
 const { data: statusMapData } = useQuery({
   queryKey: ['inputStatuses'],
-  queryFn: fetchInputStatuses,
+  queryFn: () => inputStore.fetchInputStatuses(),
   staleTime: Infinity,
 })
 
@@ -54,19 +55,10 @@ const filters = computed(() => ({
 }))
 
 const fetchHistoryFn = async (params) => {
-  const response = await suppliersStore.getPurchaseHistory(props.itemData.id, {
+  return await supplierStore.fetchPurchaseHistory(props.itemData.id, {
     page: params.page,
     limit: params.limit,
   })
-
-  return {
-    data: response?.items || [],
-    pagination: {
-      totalCount: response?.totalCount || 0,
-      totalPages: response?.totalPages || 1,
-      currentPage: params.page,
-    },
-  }
 }
 
 const {

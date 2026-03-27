@@ -1,8 +1,8 @@
 <script setup>
-import { formatDateTime } from '@/composables/useDate'
+import { formatDateTime } from '@/utils/date'
 import RoundBadge from '../ui/RoundBadge.vue'
 
-const props = defineProps({
+defineProps({
   itemData: Object,
   statusLabel: String,
   isOpen: Boolean,

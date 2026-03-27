@@ -1,14 +1,13 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { useAuthStore } from '@/stores/useAuthStore'
+import { useAuthStore } from '@/stores/auth.store'
 import { useRoute, useRouter } from 'vue-router'
 import Button from '@/components/ui/button/BaseButton.vue'
 import Input from '@/components/ui/input/BaseInput.vue'
 import IconAvatarEdit from '@/assets/icons/avatar-edit.svg'
-import { updateProfile, changePassword, uploadAvatar } from '@/api/auth'
 import { useToast } from 'vue-toastification'
 import { useQuery } from '@tanstack/vue-query'
-import { getGenderOptions } from '@/api/options'
+import userService from '@/services/userService'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 import DateTimePicker from '@/components/ui/input/DateTimePicker.vue'
 
@@ -18,9 +17,6 @@ const route = useRoute()
 const router = useRouter()
 
 const user = computed(() => authStore.user || {})
-
-const currentUserEmail = computed(() => user.value.email)
-
 const apiUrl = import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:3000'
 
 const activeTab = computed({
@@ -30,7 +26,7 @@ const activeTab = computed({
 
 const { data: genderOptions, isLoading: isGendersLoading } = useQuery({
   queryKey: ['gender-options'],
-  queryFn: getGenderOptions,
+  queryFn: () => userService.getGenderOptions(),
   staleTime: Infinity,
   enabled: computed(() => activeTab.value === 'profile'),
 })
@@ -42,6 +38,7 @@ const profileForm = ref({
   dateOfBirth: user.value.dateOfBirth?.split('T')[0] || '',
 })
 
+// Đồng bộ form khi data user từ store (SSE) thay đổi
 watch(
   user,
   (newUser) => {
@@ -78,11 +75,7 @@ const handleUpdateProfile = async () => {
 
   try {
     isUpdatingProfile.value = true
-    const payload = {
-      ...profileForm.value,
-      dateOfBirth: profileForm.value.dateOfBirth || null,
-    }
-    await updateProfile(payload)
+    await authStore.updateProfile(profileForm.value)
     toast.success('Cập nhật thông tin thành công')
   } catch (error) {
     toast.error(error.response?.data?.message || 'Cập nhật thất bại')
@@ -98,10 +91,7 @@ const handleChangePassword = async () => {
   }
   try {
     isChangingPassword.value = true
-    await changePassword({
-      currentPassword: passwordForm.value.currentPassword,
-      newPassword: passwordForm.value.newPassword,
-    })
+    await authStore.changePassword(passwordForm.value)
     toast.success('Đổi mật khẩu thành công')
     passwordForm.value = { currentPassword: '', newPassword: '', confirmPassword: '' }
   } catch (error) {
@@ -128,7 +118,7 @@ const handleAvatarChange = async (event) => {
 
   try {
     isUploadingAvatar.value = true
-    await uploadAvatar(file)
+    await authStore.uploadAvatar(file)
     toast.success('Tải lên ảnh đại diện thành công')
   } catch (error) {
     toast.error(error.response?.data?.message || 'Tải ảnh thất bại')
@@ -168,6 +158,7 @@ const handleAvatarChange = async (event) => {
       </button>
     </div>
 
+    <!-- Tab Profile -->
     <div v-if="activeTab === 'profile'" class="max-w-xl">
       <LoadingOverlay
         :show="(isGendersLoading && !genderOptions) || isUploadingAvatar || isUpdatingProfile"
@@ -255,13 +246,14 @@ const handleAvatarChange = async (event) => {
       </div>
     </div>
 
+    <!-- Tab Password -->
     <div v-if="activeTab === 'password'" class="max-w-xl">
       <LoadingOverlay :show="isChangingPassword" />
       <form class="space-y-4" @submit.prevent="handleChangePassword">
         <input
           type="text"
           name="username"
-          :value="currentUserEmail"
+          :value="user.email"
           autocomplete="username"
           class="hidden"
           style="display: none"
@@ -307,5 +299,3 @@ const handleAvatarChange = async (event) => {
     </div>
   </div>
 </template>
-
-<style scoped></style>

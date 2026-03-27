@@ -1,15 +1,14 @@
 <script setup>
 import { ref, computed, watch, onBeforeUnmount, reactive } from 'vue'
-import { useOrdersStore } from '@/stores/useOrdersStore'
+import { useOrderStore } from '@/stores/order.store'
+import { useUserStore } from '@/stores/user.store'
+import { useProductStore } from '@/stores/product.store'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
 import Dropdown from '@/components/ui/input/BaseDropdown.vue'
 import Input from '@/components/ui/input/BaseInput.vue'
 import Textarea from '../ui/input/BaseTextarea.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
-import * as apiUsers from '@/api/user'
-import * as apiProducts from '@/api/product'
-import * as apiOrders from '@/api/order'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { useQuery } from '@tanstack/vue-query'
 import { Permissions } from '@/constants/permissions'
@@ -23,7 +22,9 @@ const props = defineProps({
   apiErrors: { type: Object, default: () => ({}) },
 })
 const emit = defineEmits(['close', 'save', 'activate', 'delete'])
-const ordersStore = useOrdersStore()
+const orderStore = useOrderStore()
+const userStore = useUserStore()
+const productStore = useProductStore()
 const { hasPermission } = usePermission()
 
 const localData = ref({
@@ -37,19 +38,19 @@ const localData = ref({
 
 const { data: statusMap } = useQuery({
   queryKey: ['order-status-map'],
-  queryFn: apiOrders.fetchOrderStatusMap,
+  queryFn: orderStore.fetchStatusMap,
   staleTime: 1000 * 60 * 10,
 })
 
 const { data: lockedStatuses } = useQuery({
   queryKey: ['order-locked-statuses'],
-  queryFn: apiOrders.fetchLockedStatuses,
+  queryFn: orderStore.fetchLockedStatuses,
   staleTime: 1000 * 60 * 60,
 })
 
 const { data: transitionMap } = useQuery({
   queryKey: ['order-transition-map'],
-  queryFn: apiOrders.fetchOrderTransitionMap,
+  queryFn: orderStore.fetchTransitionMap,
   staleTime: 1000 * 60 * 10,
 })
 
@@ -131,7 +132,7 @@ const {
   pagination: customerPagination,
 } = usePaginatedQuery({
   queryKey: ['basic-users-for-orders'],
-  queryFn: apiUsers.fetchBasicUsers,
+  queryFn: (params) => userStore.searchBasicUsers(params),
   itemsPerPage: 5,
   useLocalPagination: true,
   searchFields: [{ key: 'search', debounce: 400 }],
@@ -148,7 +149,7 @@ const {
   pagination: productPagination,
 } = usePaginatedQuery({
   queryKey: ['variants-lite-for-output'],
-  queryFn: apiProducts.fetchVariantsLiteForOutput,
+  queryFn: (params) => productStore.searchVariantsLiteForOutput(params),
   itemsPerPage: 5,
   useLocalPagination: true,
   searchFields: [{ key: 'search', debounce: 400 }],
@@ -270,25 +271,8 @@ const syncLocalData = () => {
   errors.value = { products: '', customer: '' }
 }
 
-watch(
-  () => props.show,
-  (newShow) => {
-    if (newShow) {
-      syncLocalData()
-    }
-  },
-  { immediate: true },
-)
-
-watch(
-  () => props.order,
-  () => {
-    if (props.show) {
-      syncLocalData()
-    }
-  },
-  { deep: true },
-)
+// Initial sync
+syncLocalData()
 
 const handleProductBlur = () => {
   window.setTimeout(() => {
@@ -453,7 +437,8 @@ function submit() {
 
 const handleReload = async () => {
   if (!props.order?.id) return
-  await ordersStore.reloadOrderData(props.order.id)
+  const detail = await orderStore.getOrderById(props.order.id)
+  if (detail) syncLocalData()
 }
 
 onBeforeUnmount(() => {

@@ -3,6 +3,7 @@ import { ref, watch, computed } from 'vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
 import Input from '@/components/ui/input/BaseInput.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
+import { useRoleStore } from '@/stores/role.store'
 
 const props = defineProps({
   show: {
@@ -36,6 +37,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['close', 'save', 'activate', 'refresh'])
+const roleStore = useRoleStore()
 
 const formData = ref({
   name: '',
@@ -82,50 +84,11 @@ watch(
   { immediate: true },
 )
 
-const checkPermissionWithRules = (permissionId) => {
-  if (!formData.value.permissions.includes(permissionId)) {
-    formData.value.permissions.push(permissionId)
-  }
-
-  if (!props.permissionStructure) return
-
-  const deps = props.permissionStructure.dependencies?.[permissionId] || []
-  deps.forEach((depId) => {
-    if (!formData.value.permissions.includes(depId)) {
-      checkPermissionWithRules(depId)
-    }
-  })
-
-  const conflicts = props.permissionStructure.conflicts?.[permissionId] || []
-  conflicts.forEach((conflictId) => {
-    uncheckPermissionWithDependents(conflictId)
-  })
-}
-
-const uncheckPermissionWithDependents = (permissionId) => {
-  const index = formData.value.permissions.indexOf(permissionId)
-  if (index > -1) {
-    formData.value.permissions.splice(index, 1)
-  }
-
-  if (!props.permissionStructure) return
-
-  const dependencies = props.permissionStructure.dependencies || {}
-  const itemsToCheck = [...formData.value.permissions]
-  itemsToCheck.forEach((selectedId) => {
-    if (dependencies[selectedId] && dependencies[selectedId].includes(permissionId)) {
-      uncheckPermissionWithDependents(selectedId)
-    }
-  })
-}
-
 const togglePermission = (permissionId) => {
-  const index = formData.value.permissions.indexOf(permissionId)
-  if (index > -1) {
-    uncheckPermissionWithDependents(permissionId)
-  } else {
-    checkPermissionWithRules(permissionId)
-  }
+  formData.value.permissions = roleStore.resolveTogglePermission(
+    formData.value.permissions,
+    permissionId,
+  )
 }
 
 const isPermissionSelected = (permissionId) => {
@@ -134,17 +97,10 @@ const isPermissionSelected = (permissionId) => {
 
 const selectAllInCategory = (category) => {
   const categoryPermissions = permissionsByCategory.value[category]
-  const allSelected = categoryPermissions.every((p) => formData.value.permissions.includes(p.id))
-
-  if (allSelected) {
-    categoryPermissions.forEach((p) => {
-      uncheckPermissionWithDependents(p.id)
-    })
-  } else {
-    categoryPermissions.forEach((p) => {
-      checkPermissionWithRules(p.id)
-    })
-  }
+  formData.value.permissions = roleStore.resolveSelectAllInCategory(
+    formData.value.permissions,
+    categoryPermissions,
+  )
 }
 
 const isCategoryAllSelected = (category) => {
@@ -185,6 +141,7 @@ const handleClose = () => {
   resetForm()
   emit('close')
 }
+
 const handleRefresh = () => {
   if (props.role?.id) {
     emit('refresh', props.role.id)

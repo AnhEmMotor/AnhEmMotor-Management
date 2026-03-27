@@ -151,6 +151,7 @@
 
     <UserForm
       v-if="showUserForm"
+      :key="selectedUser?.id || 'new'"
       :show="showUserForm"
       :user="selectedUser"
       :isEditMode="isEditMode"
@@ -205,16 +206,17 @@ import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 import { computed, ref } from 'vue'
 import { useToast } from 'vue-toastification'
 import { Permissions } from '@/constants/permissions'
-import { useAuthStore } from '@/stores/useAuthStore'
+import { useAuthStore } from '@/stores/auth.store'
+import { useUserStore } from '@/stores/user.store'
 import { useQueryClient, useMutation, useQuery } from '@tanstack/vue-query'
-import * as userApi from '@/api/user'
-import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
-import { fetchRoles } from '@/api/role'
-import { showConfirmation } from '@/composables/useConfirmationState'
 import { usePermission } from '@/composables/usePermission'
+import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
+import { showConfirmation } from '@/composables/useConfirmationState'
+import { useRoleStore } from '@/stores/role.store'
 
+const roleStore = useRoleStore()
 const { hasPermission } = usePermission()
-
+const userStore = useUserStore()
 const authStore = useAuthStore()
 const queryClient = useQueryClient()
 const toast = useToast()
@@ -235,7 +237,7 @@ const statusText = {
 
 const { data: rolesData } = useQuery({
   queryKey: ['roles'],
-  queryFn: fetchRoles,
+  queryFn: () => roleStore.fetchRoles({ page: 1, limit: 100 }),
 })
 
 const availableRoles = computed(() => {
@@ -248,23 +250,7 @@ const availableRoles = computed(() => {
 })
 
 const fetchUsersWrapper = async (params) => {
-  const filters = []
-
-  if (params.status) {
-    filters.push(`Status==${params.status}`)
-    delete params.status
-  }
-
-  if (params.search) {
-    filters.push(`Email@=${params.search}`)
-    delete params.search
-  }
-
-  if (filters.length > 0) {
-    params.filters = params.filters ? `${params.filters},${filters.join(',')}` : filters.join(',')
-  }
-
-  return userApi.fetchUsers(params)
+  return await userStore.fetchUsers(params)
 }
 
 const {
@@ -282,6 +268,7 @@ const {
   searchFields: [{ key: 'search', debounce: 400 }],
   filterFields: [{ key: 'status' }],
 })
+
 const errorMessage = computed(
   () => error.value?.message || 'Đã xảy ra lỗi trong quá trình tải dữ liệu.',
 )
@@ -295,22 +282,25 @@ const editCustomer = async (id) => {
 
     if (cachedUser) {
       userData = cachedUser
-      queryClient.prefetchQuery({ queryKey: userQueryKey, queryFn: () => userApi.getUserById(id) })
+      queryClient.prefetchQuery({
+        queryKey: userQueryKey,
+        queryFn: () => userStore.getUserById(id),
+      })
     } else {
       isFetchingDetail.value = true
       userData = await queryClient.fetchQuery({
         queryKey: userQueryKey,
-        queryFn: () => userApi.getUserById(id),
+        queryFn: () => userStore.getUserById(id),
       })
     }
-
     const rolesQueryKey = ['roles']
     const cachedRoles = queryClient.getQueryData(rolesQueryKey)
-    if (cachedRoles) {
-      queryClient.prefetchQuery({ queryKey: rolesQueryKey, queryFn: fetchRoles })
-    } else {
+    if (!cachedRoles) {
       isFetchingDetail.value = true
-      await queryClient.fetchQuery({ queryKey: rolesQueryKey, queryFn: fetchRoles })
+      await queryClient.fetchQuery({
+        queryKey: rolesQueryKey,
+        queryFn: () => roleStore.fetchRoles({ page: 1, limit: 100 }),
+      })
     }
 
     showUserForm.value = true
@@ -327,13 +317,13 @@ const editCustomer = async (id) => {
 }
 
 const changeStatusMutation = useMutation({
-  mutationFn: ({ userId, status }) => userApi.changeStatus(userId, { status }),
+  mutationFn: ({ userId, status }) => userStore.changeStatus(userId, status),
   onSuccess: () => {
     toast.success('Cập nhật trạng thái thành công')
     queryClient.invalidateQueries({ queryKey: ['users'] })
   },
   onError: (err) => {
-    toast.error(err.response?.data?.message || 'Lỗi khi cập nhật trạng thái')
+    toast.error(err.message || 'Lỗi khi cập nhật trạng thái')
   },
 })
 
@@ -368,28 +358,15 @@ const assignRolesAction = async (id) => {
 
     if (cachedUser) {
       userData = cachedUser
-      queryClient.prefetchQuery({ queryKey: userQueryKey, queryFn: () => userApi.getUserById(id) })
+      queryClient.prefetchQuery({
+        queryKey: userQueryKey,
+        queryFn: () => userStore.getUserById(id),
+      })
     } else {
       isFetchingDetail.value = true
       userData = await queryClient.fetchQuery({
         queryKey: userQueryKey,
-        queryFn: () => userApi.getUserById(id),
-      })
-    }
-
-    const rolesQueryKey = ['roles_list_modal', { page: 1, limit: 10 }]
-    const cachedRoles = queryClient.getQueryData(rolesQueryKey)
-
-    if (cachedRoles) {
-      queryClient.prefetchQuery({
-        queryKey: rolesQueryKey,
-        queryFn: () => fetchRoles({ page: 1, limit: 10 }),
-      })
-    } else {
-      isFetchingDetail.value = true
-      await queryClient.fetchQuery({
-        queryKey: rolesQueryKey,
-        queryFn: () => fetchRoles({ page: 1, limit: 10 }),
+        queryFn: () => userStore.getUserById(id),
       })
     }
 
@@ -404,7 +381,7 @@ const assignRolesAction = async (id) => {
 }
 
 const { isPending: isUpdating, mutate: doUpdateUser } = useMutation({
-  mutationFn: (userData) => userApi.updateUser(selectedUser.value.id, userData),
+  mutationFn: (userData) => userStore.updateUser(selectedUser.value.id, userData),
   onSuccess: async (data) => {
     queryClient.setQueryData(['user', selectedUser.value.id], data)
     await queryClient.invalidateQueries({ queryKey: ['users'] })
@@ -412,23 +389,23 @@ const { isPending: isUpdating, mutate: doUpdateUser } = useMutation({
     showUserForm.value = false
   },
   onError: (error) => {
-    toast.error(error.response?.data?.message || 'Cập nhật thất bại')
+    toast.error(error.message || 'Cập nhật thất bại')
   },
 })
 
 const { isPending: isChangingPassword, mutate: doChangePassword } = useMutation({
-  mutationFn: (data) => userApi.changePassword(data.userId, data.payload),
+  mutationFn: (data) => userStore.resetPassword(data.userId, data.payload),
   onSuccess: () => {
     toast.success('Đổi mật khẩu thành công')
     showChangePasswordModal.value = false
   },
   onError: (error) => {
-    toast.error(error.response?.data?.message || 'Đổi mật khẩu thất bại')
+    toast.error(error.message || 'Đổi mật khẩu thất bại')
   },
 })
 
 const { isPending: isAssigningRoles, mutate: doAssignRoles } = useMutation({
-  mutationFn: (data) => userApi.assignRoles(data.userId, data.payload),
+  mutationFn: (data) => userStore.assignRoles(data.userId, data.payload.roles),
   onSuccess: async (data) => {
     queryClient.setQueryData(['user', selectedUser.value.id], data)
     await queryClient.invalidateQueries({ queryKey: ['users'] })
@@ -437,7 +414,7 @@ const { isPending: isAssigningRoles, mutate: doAssignRoles } = useMutation({
     showAssignRoleModal.value = false
   },
   onError: (error) => {
-    toast.error(error.response?.data?.message || 'Gán vai trò thất bại')
+    toast.error(error.message || 'Gán vai trò thất bại')
   },
 })
 
