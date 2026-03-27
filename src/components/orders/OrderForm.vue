@@ -13,6 +13,7 @@ import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { useQuery } from '@tanstack/vue-query'
 import { Permissions } from '@/constants/permissions'
 import { usePermission } from '@/composables/usePermission'
+import { formatCurrency } from '@/utils/currency'
 
 const props = defineProps({
   show: { type: Boolean, default: false },
@@ -187,10 +188,12 @@ const handleCustomerBlur = () => {
   }, 300)
 }
 
-const formatCurrency = (value) => {
-  if (value === '' || value === null || value === undefined) return ''
-  return Number(value).toLocaleString('vi-VN')
-}
+/*
+ * const formatCurrency = (value) => {
+ *   if (value === '' || value === null || value === undefined) return ''
+ *   return Number(value).toLocaleString('vi-VN')
+ * }
+ */
 
 const parseCurrency = (value) => {
   if (value === '' || value === null || value === undefined) return 0

@@ -1,5 +1,5 @@
 import axiosInstance from '@/api/axios'
-import { PRODUCT_ENDPOINTS } from '@/mappers/product'
+import { PRODUCT_ENDPOINTS } from '@/constants/endpoints/product'
 
 const productService = {
   async fetchProducts(params) {

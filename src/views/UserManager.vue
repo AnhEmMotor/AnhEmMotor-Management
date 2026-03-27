@@ -20,124 +20,19 @@
       class="mb-4"
       inputClass="h-11"
     />
-    <div class="border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-      <table class="min-w-full bg-white">
-        <thead
-          class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs font-medium border-b border-gray-200"
-        >
-          <tr>
-            <th class="py-3 px-6 text-left">Tên Nhân Viên</th>
-            <th class="py-3 px-6 text-left">Email</th>
-            <th class="py-3 px-6 text-left">Số Điện Thoại</th>
-            <th class="py-3 px-6 text-left">Số vai trò</th>
-            <th class="py-3 px-6 text-left">Trạng Thái</th>
-            <th class="py-3 px-6 text-center">Thao Tác</th>
-          </tr>
-        </thead>
-        <tbody class="text-gray-600 text-sm font-light">
-          <tr v-if="isError">
-            <td colspan="6">
-              <div class="text-center py-12 text-red-500 font-medium">
-                {{ errorMessage }}
-              </div>
-            </td>
-          </tr>
-          <template v-else-if="displayCustomers.length === 0">
-            <template v-if="isLoading">
-              <tr v-for="i in 5" :key="`skeleton-${i}`" class="border-b border-gray-100">
-                <td class="py-3 px-6 text-left"><SkeletonLoader width="80%" height="16px" /></td>
-                <td class="py-3 px-6 text-left"><SkeletonLoader width="90%" height="16px" /></td>
-                <td class="py-3 px-6 text-left"><SkeletonLoader width="80%" height="16px" /></td>
-                <td class="py-3 px-6 text-left">
-                  <SkeletonLoader width="70%" height="24px" class="rounded-full" />
-                </td>
-                <td class="py-3 px-6 text-left">
-                  <SkeletonLoader width="60%" height="24px" class="rounded-full" />
-                </td>
-                <td class="py-3 px-6 text-center">
-                  <div class="flex justify-center gap-2">
-                    <SkeletonLoader width="30px" height="20px" class="rounded" />
-                    <SkeletonLoader width="30px" height="20px" class="rounded" />
-                  </div>
-                </td>
-              </tr>
-            </template>
-            <tr v-else>
-              <td colspan="6" class="text-center py-6 text-gray-500">
-                Không tìm thấy nhân viên nào.
-              </td>
-            </tr>
-          </template>
-          <tr
-            v-else
-            v-for="customer in displayCustomers"
-            :key="customer.id"
-            class="border-b border-gray-200 hover:bg-gray-50 transition-colors"
-          >
-            <td class="py-3 px-6 text-left">{{ customer.fullName }}</td>
-            <td class="py-3 px-6 text-left">{{ customer.email }}</td>
-            <td class="py-3 px-6 text-left">{{ customer.phoneNumber }}</td>
-            <td class="py-3 px-6 text-left">
-              <RoundBadge color="blue" class="text-xs font-semibold">
-                {{ customer.roles?.length || 0 }} vai trò
-              </RoundBadge>
-            </td>
-            <td class="py-3 px-6 text-left">
-              <RoundBadge color="gray">{{
-                statusText[customer.status] || customer.status
-              }}</RoundBadge>
-            </td>
-            <td class="py-3 px-6">
-              <div
-                v-if="customer.id !== authStore.user?.id"
-                class="flex justify-center items-center gap-3"
-              >
-                <button
-                  v-if="hasPermission(Permissions.UsersEdit)"
-                  @click="editCustomer(customer.id)"
-                  class="text-blue-500 hover:text-blue-700 transition"
-                  title="Sửa thông tin"
-                >
-                  <IconEdit class="w-5 h-5" />
-                </button>
-                <button
-                  v-if="hasPermission(Permissions.UsersChangePassword)"
-                  @click="changePasswordAction(customer.id)"
-                  class="text-gray-500 hover:text-gray-700 transition"
-                  title="Đổi mật khẩu"
-                >
-                  <IconKey class="w-5 h-5" />
-                </button>
-                <button
-                  v-if="hasPermission(Permissions.UsersAssignRoles)"
-                  @click="assignRolesAction(customer.id)"
-                  class="text-green-500 hover:text-green-700 transition"
-                  title="Phân quyền"
-                >
-                  <IconUser class="w-5 h-5" />
-                </button>
-                <button
-                  v-if="hasPermission(Permissions.UsersEdit) && customer.status !== 'Banned'"
-                  @click="promptBanUser(customer.id)"
-                  class="text-red-500 hover:text-red-700 transition"
-                  title="Khóa tài khoản"
-                >
-                  <IconLock class="w-5 h-5" />
-                </button>
-                <button
-                  v-if="hasPermission(Permissions.UsersEdit) && customer.status === 'Banned'"
-                  @click="promptUnbanUser(customer.id)"
-                  class="text-green-600 hover:text-green-800 transition"
-                  title="Mở khóa tài khoản"
-                >
-                  <IconCheckCircle class="w-5 h-5" />
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+
+    <UserTable
+      :users="displayCustomers"
+      :isLoading="isLoading"
+      :isError="isError"
+      :errorMessage="errorMessage"
+      :currentUserId="authStore.user?.id"
+      @edit="editCustomer"
+      @changePassword="changePasswordAction"
+      @assignRoles="assignRolesAction"
+      @ban="promptBanUser"
+      @unban="promptUnbanUser"
+    />
 
     <div class="mt-4 flex flex-col sm:flex-row justify-end items-center text-sm text-gray-600">
       <Pagination
@@ -190,37 +85,30 @@
 
 <script setup>
 import UserFilterButtons from '@/components/users/UserFilterButtons.vue'
+import UserTable from '@/components/users/UserTable.vue'
 import UserForm from '@/components/users/UserForm.vue'
 import UserChangePasswordModal from '@/components/users/UserChangePasswordModal.vue'
 import UserAssignRoleModal from '@/components/users/UserAssignRoleModal.vue'
-import RoundBadge from '@/components/ui/RoundBadge.vue'
 import Input from '@/components/ui/input/BaseInput.vue'
 import Pagination from '@/components/ui/button/BasePagination.vue'
-import IconEdit from '@/assets/icons/IconEdit.svg'
-import IconKey from '@/assets/icons/key.svg'
-import IconLock from '@/assets/icons/login-lock.svg'
-import IconUser from '@/assets/icons/IconUser.svg'
-import IconCheckCircle from '@/assets/icons/IconCheckCircle.svg'
-import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 import { computed, ref } from 'vue'
 import { useToast } from 'vue-toastification'
-import { Permissions } from '@/constants/permissions'
 import { useAuthStore } from '@/stores/auth.store'
 import { useUserStore } from '@/stores/user.store'
+import { useRoleStore } from '@/stores/role.store'
 import { useQueryClient, useMutation, useQuery } from '@tanstack/vue-query'
-import { usePermission } from '@/composables/usePermission'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { showConfirmation } from '@/composables/useConfirmationState'
-import { useRoleStore } from '@/stores/role.store'
+import userMapper from '@/mappers/userMapper'
 
-const roleStore = useRoleStore()
-const { hasPermission } = usePermission()
-const userStore = useUserStore()
 const authStore = useAuthStore()
+const userStore = useUserStore()
+const roleStore = useRoleStore()
 const queryClient = useQueryClient()
 const toast = useToast()
 
+// --- UI States ---
 const showUserForm = ref(false)
 const selectedUser = ref(null)
 const isEditMode = ref(false)
@@ -230,28 +118,15 @@ const showChangePasswordModal = ref(false)
 const showAssignRoleModal = ref(false)
 const isFetchingDetail = ref(false)
 
-const statusText = {
-  Active: 'Hoạt Động',
-  Banned: 'Đã Khóa',
-}
-
+// --- Queries ---
 const { data: rolesData } = useQuery({
   queryKey: ['roles'],
   queryFn: () => roleStore.fetchRoles({ page: 1, limit: 100 }),
 })
 
 const availableRoles = computed(() => {
-  const roles = rolesData.value?.data || []
-  return roles.map((r) => ({
-    id: r.id,
-    name: r.name,
-    description: r.description,
-  }))
+  return userMapper.toRoleOptions(rolesData.value?.data)
 })
-
-const fetchUsersWrapper = async (params) => {
-  return await userStore.fetchUsers(params)
-}
 
 const {
   data: usersData,
@@ -263,7 +138,7 @@ const {
   filterRefs,
 } = usePaginatedQuery({
   queryKey: ['users'],
-  queryFn: fetchUsersWrapper,
+  queryFn: (params) => userStore.fetchUsers(params),
   itemsPerPage: 10,
   searchFields: [{ key: 'search', debounce: 400 }],
   filterFields: [{ key: 'status' }],
@@ -274,6 +149,7 @@ const errorMessage = computed(
 )
 const displayCustomers = computed(() => usersData.value || [])
 
+// --- Actions & Mutations ---
 const editCustomer = async (id) => {
   try {
     const userQueryKey = ['user', id]
@@ -293,6 +169,7 @@ const editCustomer = async (id) => {
         queryFn: () => userStore.getUserById(id),
       })
     }
+
     const rolesQueryKey = ['roles']
     const cachedRoles = queryClient.getQueryData(rolesQueryKey)
     if (!cachedRoles) {

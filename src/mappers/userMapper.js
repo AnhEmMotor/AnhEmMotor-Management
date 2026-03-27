@@ -117,6 +117,18 @@ const userMapper = {
       newPassword: payload.newPassword || '',
     }
   },
+
+  /**
+   * Ánh xạ danh sách vai trò sang định dạng tùy chọn cho UI
+   */
+  toRoleOptions(roles) {
+    if (!roles) return []
+    return roles.map((r) => ({
+      id: r.id,
+      name: r.name,
+      description: r.description,
+    }))
+  },
 }
 
 export default userMapper

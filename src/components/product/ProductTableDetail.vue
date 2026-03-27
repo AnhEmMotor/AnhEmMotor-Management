@@ -2,6 +2,7 @@
 import { useQuery } from '@tanstack/vue-query'
 import productService from '@/services/productService'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
+import { formatCurrency } from '@/utils/currency'
 
 const props = defineProps({
   product: {
@@ -30,10 +31,12 @@ const { data: predefinedOptionsData } = useQuery({
   staleTime: 5 * 60 * 1000,
 })
 
-const formatCurrency = (value) => {
-  if (value === null || value === undefined) return ''
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
-}
+/*
+ * const formatCurrency = (value) => {
+ *   if (value === null || value === undefined) return ''
+ *   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
+ * }
+ */
 
 const getVariantOptionsText = (variant) => {
   if (!variant.optionValues) return 'Mặc định'
