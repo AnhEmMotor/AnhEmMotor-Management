@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import roleService from '@/services/roleService'
-import roleMapper from '@/mappers/roleMapper'
+import roleService from '@/services/role.service'
+import roleMapper from '@/mappers/role.mapper'
 
 export const useRoleStore = defineStore('role', () => {
   const structure = ref(null)

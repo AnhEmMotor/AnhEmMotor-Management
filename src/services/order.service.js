@@ -1,5 +1,5 @@
 import axiosInstance from '@/api/axios'
-import { SALES_ORDER_ENDPOINTS } from '@/constants/endpoints/order'
+import { SALES_ORDER_ENDPOINTS } from '@/constants/endpoints/order.endpoint'
 
 const orderService = {
   async fetchOrders(params) {

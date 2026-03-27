@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
-import statisticsService from '@/services/statisticsService'
-import statisticsMapper from '@/mappers/statisticsMapper'
+import statisticsService from '@/services/statistics.service'
+import statisticsMapper from '@/mappers/statistics.mapper'
 
 export const useStatisticsStore = defineStore('statistics', () => {
   // --- Báo cáo Sản phẩm ---

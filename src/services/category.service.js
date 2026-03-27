@@ -1,5 +1,5 @@
 import axiosInstance from '@/api/axios'
-import { CATEGORY_ENDPOINTS } from '@/constants/endpoints/category'
+import { CATEGORY_ENDPOINTS } from '@/constants/endpoints/category.endpoint'
 
 const categoryService = {
   async fetchCategories(params) {

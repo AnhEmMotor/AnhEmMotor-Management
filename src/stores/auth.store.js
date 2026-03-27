@@ -8,8 +8,8 @@ import {
   refreshAccessToken,
 } from '@/api/axios'
 import { queryClient } from '@/api/queryClient'
-import authService from '@/services/authService'
-import authMapper from '@/mappers/authMapper'
+import authService from '@/services/auth.service'
+import authMapper from '@/mappers/auth.mapper'
 
 const INITIAL_RETRY_DELAY = 1000
 const MAX_RETRY_DELAY = 30000

@@ -1,5 +1,5 @@
 import axiosInstance from '@/api/axios'
-import { ROLE_ENDPOINTS } from '@/constants/endpoints/role'
+import { ROLE_ENDPOINTS } from '@/constants/endpoints/role.endpoint'
 
 const roleService = {
   async fetchRoles(params) {

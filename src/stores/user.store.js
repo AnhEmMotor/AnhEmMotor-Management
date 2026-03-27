@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import userService from '@/services/userService'
-import userMapper from '@/mappers/userMapper'
+import userService from '@/services/user.service'
+import userMapper from '@/mappers/user.mapper'
 
 export const useUserStore = defineStore('user', () => {
   /**

@@ -91,7 +91,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import productService from '@/services/productService'
+import productService from '@/services/product.service'
 import IconCloseLine from '@/assets/icons/close-line.svg'
 import IconImagePlaceholder from '@/assets/icons/image-placeholder.svg'
 

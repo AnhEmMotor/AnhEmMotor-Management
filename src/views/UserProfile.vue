@@ -7,9 +7,10 @@ import Input from '@/components/ui/input/BaseInput.vue'
 import IconAvatarEdit from '@/assets/icons/avatar-edit.svg'
 import { useToast } from 'vue-toastification'
 import { useQuery } from '@tanstack/vue-query'
-import userService from '@/services/userService'
+import userService from '@/services/user.service'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 import DateTimePicker from '@/components/ui/input/DateTimePicker.vue'
+import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 
 const toast = useToast()
 const authStore = useAuthStore()
@@ -160,10 +161,44 @@ const handleAvatarChange = async (event) => {
 
     <!-- Tab Profile -->
     <div v-if="activeTab === 'profile'" class="max-w-xl">
-      <LoadingOverlay
-        :show="(isGendersLoading && !genderOptions) || isUploadingAvatar || isUpdatingProfile"
-      />
-      <div class="space-y-6">
+      <LoadingOverlay :show="isUploadingAvatar || isUpdatingProfile" />
+
+      <template v-if="isGendersLoading && !genderOptions">
+        <div class="space-y-6">
+          <div class="flex items-center gap-4">
+            <SkeletonLoader width="80px" height="80px" class="rounded-full" />
+            <div class="space-y-2">
+              <SkeletonLoader width="150px" height="24px" />
+              <SkeletonLoader width="200px" height="16px" />
+            </div>
+          </div>
+          <div class="space-y-4">
+            <div>
+              <SkeletonLoader width="80px" height="16px" class="mb-2" />
+              <SkeletonLoader width="100%" height="42px" />
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <SkeletonLoader width="80px" height="16px" class="mb-2" />
+                <SkeletonLoader width="100%" height="42px" />
+              </div>
+              <div>
+                <SkeletonLoader width="80px" height="16px" class="mb-2" />
+                <SkeletonLoader width="100%" height="42px" />
+              </div>
+            </div>
+            <div>
+              <SkeletonLoader width="80px" height="16px" class="mb-2" />
+              <SkeletonLoader width="100%" height="42px" />
+            </div>
+            <div class="pt-4">
+              <SkeletonLoader width="120px" height="42px" />
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <div v-else class="space-y-6">
         <div class="flex items-center gap-4">
           <div class="relative">
             <template v-if="user.avatarUrl">

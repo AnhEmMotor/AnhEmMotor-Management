@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { useProductStore } from '@/stores/product.store'
-import productService from '@/services/productService'
+import productService from '@/services/product.service'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { useToast } from 'vue-toastification'
 import { Permissions } from '@/constants/permissions'

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import orderService from '@/services/orderService'
-import orderMapper from '@/mappers/orderMapper'
+import orderService from '@/services/order.service'
+import orderMapper from '@/mappers/order.mapper'
 
 export const useOrderStore = defineStore('order', () => {
   const error = ref(null)

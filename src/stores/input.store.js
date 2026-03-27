@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import inputService from '@/services/inputService'
-import supplierService from '@/services/supplierService'
-import productService from '@/services/productService'
-import { inputMapper } from '@/mappers/inputMapper'
-import { supplierMapper } from '@/mappers/supplierMapper'
+import inputService from '@/services/input.service'
+import supplierService from '@/services/supplier.service'
+import productService from '@/services/product.service'
+import { inputMapper } from '@/mappers/input.mapper'
+import { supplierMapper } from '@/mappers/supplier.mapper'
 
 export const useInputStore = defineStore('input', () => {
   const error = ref(null)

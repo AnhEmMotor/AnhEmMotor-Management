@@ -1,5 +1,5 @@
 import axiosInstance from '@/api/axios'
-import { USER_ENDPOINTS } from '@/constants/endpoints/user'
+import { USER_ENDPOINTS } from '@/constants/endpoints/user.endpoint'
 
 const userService = {
   /**

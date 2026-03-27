@@ -1,6 +1,6 @@
 <script setup>
 import { useQuery } from '@tanstack/vue-query'
-import productService from '@/services/productService'
+import productService from '@/services/product.service'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
 import { formatCurrency } from '@/utils/currency'
 

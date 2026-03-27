@@ -1,5 +1,5 @@
 import axiosInstance from '@/api/axios'
-import { INPUT_ENDPOINTS } from '@/constants/endpoints/input'
+import { INPUT_ENDPOINTS } from '@/constants/endpoints/input.endpoint'
 
 const inputService = {
   async fetchInventoryReceipts(params) {

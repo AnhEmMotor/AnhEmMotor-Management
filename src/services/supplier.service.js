@@ -1,5 +1,5 @@
 import axiosInstance from '@/api/axios'
-import { SUPPLIER_ENDPOINTS } from '@/constants/endpoints/supplier'
+import { SUPPLIER_ENDPOINTS } from '@/constants/endpoints/supplier.endpoint'
 
 const supplierService = {
   async fetchSuppliers(params) {
