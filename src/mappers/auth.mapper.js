@@ -1,7 +1,4 @@
 const authMapper = {
-  /**
-   * Chuyển đổi dữ liệu form đăng nhập sang DTO
-   */
   toLoginDTO(form) {
     if (!form) return {}
     return {
@@ -10,9 +7,6 @@ const authMapper = {
     }
   },
 
-  /**
-   * Chuyển đổi DTO từ server sang Model cho UI
-   */
   toModel(dto) {
     if (!dto) return null
     return {
@@ -30,9 +24,6 @@ const authMapper = {
     }
   },
 
-  /**
-   * Chuyển đổi Model chỉnh sửa sang DTO cập nhật profile
-   */
   toUpdateProfileDTO(model) {
     if (!model) return {}
     return {
@@ -43,9 +34,6 @@ const authMapper = {
     }
   },
 
-  /**
-   * Đóng gói Avatar vào FormData
-   */
   toAvatarPayload(file) {
     if (!file) return null
     const formData = new FormData()
@@ -53,9 +41,6 @@ const authMapper = {
     return formData
   },
 
-  /**
-   * Đóng gói payload đổi mật khẩu (Self)
-   */
   toChangePasswordDTO(form) {
     return {
       currentPassword: form.currentPassword,

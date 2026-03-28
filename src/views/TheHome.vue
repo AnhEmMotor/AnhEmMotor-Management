@@ -15,7 +15,6 @@
       </div>
     </div>
 
-    <!-- Stats Section -->
     <div v-if="hasStatView && isLoading">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div
@@ -48,7 +47,6 @@
       <StatsCard title="Khách Hàng Mới" :stat="summary.newCustomersCount || 0" color="purple" />
     </div>
 
-    <!-- Charts Section -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <template v-if="hasStatView">
         <div v-if="isLoading" class="bg-gray-50 p-6 rounded-xl shadow-md h-96">
@@ -76,7 +74,6 @@
         </div>
       </template>
 
-      <!-- Quick Actions -->
       <div class="lg:col-span-2 bg-gray-50/50 p-6 rounded-xl border border-gray-100 shadow-sm">
         <h3 class="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
           <IconHome class="w-5 h-5 text-red-600" />

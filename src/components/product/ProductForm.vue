@@ -126,8 +126,6 @@ const getAvailableOptionsForVariant = (variant, currentKey) => {
   })
 }
 
-// Logic slug đã được chuyển sang src/utils/slug.js
-
 watch(
   () => props.modelValue,
   (newVal) => {

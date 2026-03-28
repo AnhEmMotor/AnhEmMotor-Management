@@ -39,7 +39,6 @@ const profileForm = ref({
   dateOfBirth: user.value.dateOfBirth?.split('T')[0] || '',
 })
 
-// Đồng bộ form khi data user từ store (SSE) thay đổi
 watch(
   user,
   (newUser) => {
@@ -159,7 +158,6 @@ const handleAvatarChange = async (event) => {
       </button>
     </div>
 
-    <!-- Tab Profile -->
     <div v-if="activeTab === 'profile'" class="max-w-xl">
       <LoadingOverlay :show="isUploadingAvatar || isUpdatingProfile" />
 
@@ -281,7 +279,6 @@ const handleAvatarChange = async (event) => {
       </div>
     </div>
 
-    <!-- Tab Password -->
     <div v-if="activeTab === 'password'" class="max-w-xl">
       <LoadingOverlay :show="isChangingPassword" />
       <form class="space-y-4" @submit.prevent="handleChangePassword">

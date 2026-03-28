@@ -4,57 +4,36 @@ import { USER_ENDPOINTS } from '@/constants/endpoints/user.endpoint'
 import { fetchEventSource } from '@microsoft/fetch-event-source'
 
 const authService = {
-  /**
-   * Đăng nhập hệ thống
-   */
   async login(credentials) {
     const { data } = await axiosInstance.post(AUTH_ENDPOINTS.LOGIN, credentials)
     return data
   },
 
-  /**
-   * Đăng xuất hệ thống
-   */
   async logout() {
     const { data } = await axiosInstance.post(AUTH_ENDPOINTS.LOGOUT)
     return data
   },
 
-  /**
-   * Lấy thông tin tài khoản hiện tại
-   */
   async fetchMe() {
     const { data } = await axiosInstance.get(USER_ENDPOINTS.MY_PROFILE)
     return data
   },
 
-  /**
-   * Làm mới access token bằng refresh token (cookie)
-   */
   async refreshToken() {
     const { data } = await axiosInstance.post(AUTH_ENDPOINTS.REFRESH)
     return data
   },
 
-  /**
-   * Tự cập nhật hồ sơ cá nhân
-   */
   async updateProfile(payload) {
     const { data } = await axiosInstance.put(USER_ENDPOINTS.MY_PROFILE, payload)
     return data
   },
 
-  /**
-   * Tự thay đổi mật khẩu (yêu cầu mật khẩu cũ)
-   */
   async changePassword(payload) {
     const { data } = await axiosInstance.post(USER_ENDPOINTS.MY_PASSWORD, payload)
     return data
   },
 
-  /**
-   * Tải ảnh đại diện cá nhân
-   */
   async uploadAvatar(payload) {
     const { data } = await axiosInstance.post(USER_ENDPOINTS.MY_AVATAR, payload, {
       headers: { 'Content-Type': 'multipart/form-data' },
@@ -62,9 +41,6 @@ const authService = {
     return data
   },
 
-  /**
-   * Kết nối Server-Sent Events để nhận cập nhật trạng thái người dùng real-time
-   */
   async connectSSE({ sseUrl, token, onMessage, onOpen, onClose, onError, signal }) {
     return await fetchEventSource(sseUrl, {
       method: 'GET',

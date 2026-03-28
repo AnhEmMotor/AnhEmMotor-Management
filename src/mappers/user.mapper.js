@@ -1,8 +1,4 @@
 const userMapper = {
-  /**
-   * Ánh xạ danh sách từ DTO sang Model dùng cho UI
-   * Hỗ trợ fallbacks cho các trường tên và quyền hạn tương tự AuthMapper
-   */
   toModel(dto) {
     if (!dto) return null
     return {
@@ -23,9 +19,6 @@ const userMapper = {
     }
   },
 
-  /**
-   * Ánh xạ Model sang DTO để gửi lên Server (Create/Update)
-   */
   toDTO(model) {
     if (!model) return {}
     return {
@@ -36,17 +29,11 @@ const userMapper = {
     }
   },
 
-  /**
-   * Ánh xạ danh sách phân trang
-   */
   toList(data) {
     if (!data || !data.items) return []
     return data.items.map((item) => this.toModel(item))
   },
 
-  /**
-   * Ánh xạ thông tin phân trang
-   */
   toPagination(data) {
     if (!data) return { totalPages: 0, totalCount: 0 }
     return {
@@ -55,9 +42,6 @@ const userMapper = {
     }
   },
 
-  /**
-   * Ánh xạ tham số tìm kiếm/lọc sang Query Params (Sieve format)
-   */
   toParams(query) {
     const params = {
       Page: query.page || 1,
@@ -85,23 +69,14 @@ const userMapper = {
     return params
   },
 
-  /**
-   * Đóng gói payload cho việc cập nhật trạng thái
-   */
   toStatusPayload(status) {
     return { status }
   },
 
-  /**
-   * Đóng gói payload cho việc gán vai trò
-   */
   toRolesPayload(roles) {
     return { roles }
   },
 
-  /**
-   * Đóng gói FormData cho việc tải lên ảnh đại diện
-   */
   toAvatarPayload(file) {
     if (!file) return null
     const formData = new FormData()
@@ -109,18 +84,12 @@ const userMapper = {
     return formData
   },
 
-  /**
-   * Đóng gói payload cho việc đặt lại mật khẩu bởi Admin
-   */
   toResetPasswordPayload(payload) {
     return {
       newPassword: payload.newPassword || '',
     }
   },
 
-  /**
-   * Ánh xạ danh sách vai trò sang định dạng tùy chọn cho UI
-   */
   toRoleOptions(roles) {
     if (!roles) return []
     return roles.map((r) => ({

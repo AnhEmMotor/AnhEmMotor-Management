@@ -188,13 +188,6 @@ const handleCustomerBlur = () => {
   }, 300)
 }
 
-/*
- * const formatCurrency = (value) => {
- *   if (value === '' || value === null || value === undefined) return ''
- *   return Number(value).toLocaleString('vi-VN')
- * }
- */
-
 const parseCurrency = (value) => {
   if (value === '' || value === null || value === undefined) return 0
   return Number(String(value).replace(/\./g, ''))
@@ -274,7 +267,6 @@ const syncLocalData = () => {
   errors.value = { products: '', customer: '' }
 }
 
-// Initial sync
 syncLocalData()
 
 const handleProductBlur = () => {

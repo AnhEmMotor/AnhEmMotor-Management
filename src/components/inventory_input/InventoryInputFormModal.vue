@@ -74,7 +74,7 @@ const openProductModal = () => {
     quantity: 1,
     unitPrice: 0,
   }
-  showProductModal.value.ref = true // Wait, ref is not needed for .value
+  showProductModal.value.ref = true
   showProductModal.value = true
 }
 
@@ -145,7 +145,6 @@ const saveNewProduct = () => {
       </template>
     </DraggableModal>
 
-    <!-- Modal thêm sản phẩm nhanh (Nếu cần thiết, có thể tách tiếp) -->
     <DraggableModal v-if="showProductModal" :z-index="1001" width="72vw" @close="closeProductModal">
       <template #header>
         <h3 class="text-lg font-semibold">Thêm sản phẩm mới</h3>

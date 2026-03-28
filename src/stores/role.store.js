@@ -40,17 +40,11 @@ export const useRoleStore = defineStore('role', () => {
     return await roleService.deleteRole(id)
   }
 
-  /**
-   * Logic trung gian để xử lý toggle quyền dựa trên cấu trúc hiện tại
-   */
   const resolveTogglePermission = (currentPermissions, permissionId) => {
     if (!structure.value) return currentPermissions
     return roleMapper.resolveTogglePermission(currentPermissions, permissionId, structure.value)
   }
 
-  /**
-   * Logic trung gian để xử lý chọn tất cả quyền trong một nhóm
-   */
   const resolveSelectAllInCategory = (currentPermissions, categoryPermissions) => {
     if (!structure.value) return currentPermissions
     return roleMapper.resolveSelectAllInCategory(

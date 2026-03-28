@@ -90,7 +90,6 @@ export const useSupplierStore = defineStore('supplier', () => {
         PageSize: query.limit || 10,
       }
       const data = await supplierService.fetchPurchaseHistory(id, params)
-      // History items mapping can be added if needed, for now returning raw with basic structure
       return {
         data: data.items || [],
         pagination: {

@@ -86,7 +86,6 @@ const productService = {
     }
   },
 
-  // Media & options logic merged from tool files
   async uploadImage(file) {
     const formData = new FormData()
     formData.append('file', file)

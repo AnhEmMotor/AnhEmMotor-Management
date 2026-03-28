@@ -244,7 +244,6 @@ const exportExcel = () => {
   <LoadingOverlay :show="productStore.isLoading || isSaving" message="Đang xử lý..." />
 
   <div class="p-4 sm:p-6 rounded-xl shadow-lg bg-white">
-    <!-- Header -->
     <div
       class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0"
     >
@@ -281,14 +280,12 @@ const exportExcel = () => {
       </div>
     </div>
 
-    <!-- Search & Filters -->
     <ProductSearch
       v-model:search="searchRefs.search"
       v-model:inventoryStatus="filterRefs.inventoryStatus"
       :inventoryStatusMap="inventoryStatusMap"
     />
 
-    <!-- Table -->
     <div
       v-if="isError"
       class="text-center py-12 text-red-500 font-medium bg-white rounded-lg shadow-sm border border-gray-200"
@@ -308,7 +305,6 @@ const exportExcel = () => {
       @sort="toggleSort"
     />
 
-    <!-- Pagination -->
     <Pagination
       :total-pages="pagination.totalPages.value"
       :currentPage="pagination.currentPage.value"
@@ -317,7 +313,6 @@ const exportExcel = () => {
     />
   </div>
 
-  <!-- Form Modal -->
   <ProductFormModal
     :key="formModalKey"
     :show="isFormModalVisible"

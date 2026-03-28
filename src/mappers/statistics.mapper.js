@@ -1,7 +1,4 @@
 const statisticsMapper = {
-  /**
-   * Báo cáo sản phẩm (API -> Model)
-   */
   toProductReport(dto) {
     if (!dto) return { highlights: {}, topRevenueChart: [], topProfitChart: [], productTable: [] }
 
@@ -30,9 +27,6 @@ const statisticsMapper = {
     }
   },
 
-  /**
-   * Phân tích doanh thu (API -> Model)
-   */
   toRevenueAnalysis(dto) {
     const defaults = {
       summary: { totalRevenue: 0, totalProfit: 0, profitMargin: 0, totalOrders: 0 },
@@ -83,9 +77,6 @@ const statisticsMapper = {
     }
   },
 
-  /**
-   * Báo cáo kho (API -> Model)
-   */
   toWarehouseReport(dto) {
     if (!dto)
       return { summary: {}, stockByBrandChart: [], stockStatusRatioChart: [], warehouseTable: [] }
@@ -115,9 +106,6 @@ const statisticsMapper = {
     }
   },
 
-  /**
-   * Chuyển đổi sang Query Params (Model -> Params)
-   */
   toParams(filters) {
     if (!filters) return ''
     const params = new URLSearchParams()
@@ -127,18 +115,11 @@ const statisticsMapper = {
     return params.toString()
   },
 
-  /**
-   * Chuyển đổi sang DTO gửi lên server (nếu cần)
-   */
   toDTO(model) {
     if (!model) return {}
-    // Hiện tại báo cáo chủ yếu là Read-only, nhưng vẫn tuân thủ interface
     return { ...model }
   },
 
-  /**
-   * Tổng quan Dashboard (API -> Model)
-   */
   toDashboardOverview(dto) {
     if (!dto) return { summary: {}, orderStatusChart: [], dailyRevenueChart: [] }
 
@@ -160,7 +141,6 @@ const statisticsMapper = {
     }
   },
 
-  // Helpers riêng tư
   _getStatusName(key) {
     const names = {
       pending: 'Chờ xử lý',

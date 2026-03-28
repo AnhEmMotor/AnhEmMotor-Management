@@ -5,7 +5,6 @@ import statisticsService from '@/services/statistics.service'
 import statisticsMapper from '@/mappers/statistics.mapper'
 
 export const useStatisticsStore = defineStore('statistics', () => {
-  // --- Báo cáo Sản phẩm ---
   const productSearchQuery = ref('')
   const productSortBy = ref('sold')
 
@@ -45,7 +44,6 @@ export const useStatisticsStore = defineStore('statistics', () => {
     return result
   })
 
-  // --- Phân tích Doanh thu ---
   const revenueAnalysisQuery = useQuery({
     queryKey: ['admin', 'revenue-analysis'],
     queryFn: async () => {
@@ -55,7 +53,6 @@ export const useStatisticsStore = defineStore('statistics', () => {
     staleTime: 5 * 60 * 1000,
   })
 
-  // --- Báo cáo Kho ---
   const warehouseReportQuery = useQuery({
     queryKey: ['admin', 'warehouse-report'],
     queryFn: async () => {
@@ -65,7 +62,6 @@ export const useStatisticsStore = defineStore('statistics', () => {
     staleTime: 5 * 60 * 1000,
   })
 
-  // --- Tổng quan Dashboard ---
   const dashboardOverviewQuery = useQuery({
     queryKey: ['admin', 'dashboard-overview'],
     queryFn: async () => {
@@ -76,22 +72,15 @@ export const useStatisticsStore = defineStore('statistics', () => {
   })
 
   return {
-    // Dashboard
     dashboardData: dashboardOverviewQuery.data,
     isDashboardLoading: dashboardOverviewQuery.isLoading,
-
-    // Product
     productSearchQuery,
     productSortBy,
     productReport: productReportQuery.data,
     isProductLoading: productReportQuery.isLoading,
     filteredProducts,
-
-    // Revenue
     revenueAnalysis: revenueAnalysisQuery.data,
     isRevenueLoading: revenueAnalysisQuery.isLoading,
-
-    // Warehouse
     warehouseReport: warehouseReportQuery.data,
     isWarehouseLoading: warehouseReportQuery.isLoading,
   }

@@ -168,7 +168,6 @@ const exportExcel = () => {
   <LoadingOverlay :show="isOverlayVisible || isSaving" message="Đang xử lý..." />
 
   <div class="p-4 sm:p-6 rounded-xl shadow-lg bg-white">
-    <!-- Header -->
     <div
       class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0"
     >
@@ -205,10 +204,8 @@ const exportExcel = () => {
       </div>
     </div>
 
-    <!-- Search -->
     <CategorySearch v-model="searchRefs.search" />
 
-    <!-- Table -->
     <div
       v-if="isError"
       class="text-center py-12 text-red-500 font-medium bg-white rounded-lg shadow-sm border border-gray-200"
@@ -223,7 +220,6 @@ const exportExcel = () => {
       @delete="promptDelete"
     />
 
-    <!-- Pagination -->
     <Pagination
       :total-pages="pagination.totalPages.value"
       :currentPage="pagination.currentPage.value"
@@ -232,7 +228,6 @@ const exportExcel = () => {
     />
   </div>
 
-  <!-- Modal -->
   <CategoryFormModal
     :key="formModalKey"
     :show="isFormModalVisible"

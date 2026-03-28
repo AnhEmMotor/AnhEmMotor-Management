@@ -108,7 +108,6 @@ const roleStore = useRoleStore()
 const queryClient = useQueryClient()
 const toast = useToast()
 
-// --- UI States ---
 const showUserForm = ref(false)
 const selectedUser = ref(null)
 const isEditMode = ref(false)
@@ -118,7 +117,6 @@ const showChangePasswordModal = ref(false)
 const showAssignRoleModal = ref(false)
 const isFetchingDetail = ref(false)
 
-// --- Queries ---
 const { data: rolesData } = useQuery({
   queryKey: ['roles'],
   queryFn: () => roleStore.fetchRoles({ page: 1, limit: 100 }),
@@ -149,7 +147,6 @@ const errorMessage = computed(
 )
 const displayCustomers = computed(() => usersData.value || [])
 
-// --- Actions & Mutations ---
 const editCustomer = async (id) => {
   try {
     const userQueryKey = ['user', id]

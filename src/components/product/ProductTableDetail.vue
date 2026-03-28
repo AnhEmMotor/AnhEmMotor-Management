@@ -31,13 +31,6 @@ const { data: predefinedOptionsData } = useQuery({
   staleTime: 5 * 60 * 1000,
 })
 
-/*
- * const formatCurrency = (value) => {
- *   if (value === null || value === undefined) return ''
- *   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
- * }
- */
-
 const getVariantOptionsText = (variant) => {
   if (!variant.optionValues) return 'Mặc định'
   const values = Object.entries(variant.optionValues)
@@ -53,7 +46,6 @@ const getInventoryStatusColor = (statusKey) => props.inventoryStatusColorMap[sta
 
 <template>
   <div class="p-3 px-10 border-t border-gray-200 bg-white">
-    <!-- Tabs -->
     <div class="flex border-b border-gray-200 mb-3 space-x-5">
       <button
         class="py-1.5 text-sm transition-all duration-200"
@@ -79,7 +71,6 @@ const getInventoryStatusColor = (statusKey) => props.inventoryStatusColorMap[sta
       </button>
     </div>
 
-    <!-- Tab Content: Variants -->
     <div v-show="activeTab === 'variants'">
       <table
         class="min-w-full bg-white rounded shadow-sm text-sm border border-gray-200 overflow-hidden"
@@ -141,7 +132,6 @@ const getInventoryStatusColor = (statusKey) => props.inventoryStatusColorMap[sta
       </table>
     </div>
 
-    <!-- Tab Content: Specs -->
     <div v-show="activeTab === 'specs'" class="pt-2">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4">
         <div class="text-sm">

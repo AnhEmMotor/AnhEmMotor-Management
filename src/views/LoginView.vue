@@ -28,7 +28,6 @@ const handleLogin = async () => {
     isLoading.value = true
     errorMessage.value = ''
 
-    // Truyền trực tiếp form thô vào store, store sẽ tự gọi mapper
     await authStore.login(form)
 
     const redirectPath = router.currentRoute.value.query.redirect || '/'

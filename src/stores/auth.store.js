@@ -39,17 +39,12 @@ export const useAuthStore = defineStore('auth', () => {
 
     const token = getAccessToken()
     if (!skipApiCall && token) {
-      try {
-        await authService.logout()
-      } catch {
-        // Silently fail logout API call
-      }
+      await authService.logout()
     }
 
     cleanState()
     router.push({ name: 'login' })
 
-    // Đảm bảo cache được xóa sạch sau khi logout
     setTimeout(() => {
       queryClient.clear()
     }, 50)
@@ -59,10 +54,8 @@ export const useAuthStore = defineStore('auth', () => {
     }, 500)
   }
 
-  // Đăng ký callback xử lý lỗi 401/403 toàn cục từ axios
   registerAuthFailureCallback(() => performLogout(false))
 
-  // Theo dõi quyền hạn để tự động logout hoặc điều hướng nếu bị thu hồi quyền
   watch(
     () => user.value?.permissions,
     (newPermissions) => {
@@ -122,29 +115,19 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  /**
-   * Cập nhật hồ sơ cá nhân (Self-service)
-   */
   const updateProfile = async (model) => {
     const dto = authMapper.toUpdateProfileDTO(model)
     const data = await authService.updateProfile(dto)
-    // Cập nhật state local ngay lập tức nếu cần (mặc dù SSE sẽ sync lại sau)
     const mapped = authMapper.toModel(data)
     user.value = user.value ? { ...user.value, ...mapped } : mapped
     return user.value
   }
 
-  /**
-   * Thay đổi mật khẩu cá nhân
-   */
   const changePassword = async (payload) => {
     const dto = authMapper.toChangePasswordDTO(payload)
     return await authService.changePassword(dto)
   }
 
-  /**
-   * Tải lên ảnh đại diện cá nhân
-   */
   const uploadAvatar = async (file) => {
     const payload = authMapper.toAvatarPayload(file)
     const data = await authService.uploadAvatar(payload)
@@ -164,14 +147,10 @@ export const useAuthStore = defineStore('auth', () => {
 
     sseStatus.value = 'connecting'
 
-    try {
-      const data = await authService.fetchMe()
-      if (data && (data.username || data.userName)) {
-        const mappedUser = authMapper.toModel(data)
-        user.value = user.value ? { ...user.value, ...mappedUser } : mappedUser
-      }
-    } catch {
-      // Bỏ qua lỗi fetch me
+    const data = await authService.fetchMe()
+    if (data && (data.username || data.userName)) {
+      const mappedUser = authMapper.toModel(data)
+      user.value = user.value ? { ...user.value, ...mappedUser } : mappedUser
     }
 
     try {
@@ -185,14 +164,10 @@ export const useAuthStore = defineStore('auth', () => {
         },
         onMessage: (msg) => {
           if (!msg.data || msg.data === 'heartbeat') return
-          try {
-            const data = JSON.parse(msg.data)
-            if (data && (data.username || data.userName)) {
-              const mappedUser = authMapper.toModel(data)
-              user.value = user.value ? { ...user.value, ...mappedUser } : mappedUser
-            }
-          } catch {
-            // Lỗi parse SSE
+          const data = JSON.parse(msg.data)
+          if (data && (data.username || data.userName)) {
+            const mappedUser = authMapper.toModel(data)
+            user.value = user.value ? { ...user.value, ...mappedUser } : mappedUser
           }
         },
         onClose: () => {

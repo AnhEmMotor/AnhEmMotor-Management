@@ -9,7 +9,6 @@ export const useProductStore = defineStore('product', () => {
   const options = ref([])
   const optionValues = ref([])
 
-  // Product Actions
   const fetchProducts = async (query) => {
     error.value = null
     try {
@@ -122,7 +121,6 @@ export const useProductStore = defineStore('product', () => {
     return await productService.fetchVariantsLiteForOutput(params)
   }
 
-  // Options & OptionValues Actions (Merged)
   const fetchOptions = async () => {
     isLoading.value = true
     try {
@@ -137,7 +135,6 @@ export const useProductStore = defineStore('product', () => {
     }
   }
 
-  // Media Actions (Merged)
   const uploadImage = async (file) => {
     return await productService.uploadImage(file)
   }

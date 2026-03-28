@@ -1,7 +1,4 @@
 const settingMapper = {
-  /**
-   * Ánh xạ từ DTO (API) sang UI Model
-   */
   toModel(dto) {
     const defaults = {
       deposit: 0,
@@ -18,9 +15,6 @@ const settingMapper = {
     }
   },
 
-  /**
-   * Ánh xạ từ UI Model sang DTO (API)
-   */
   toDTO(model) {
     if (!model) return {}
     return {
@@ -31,14 +25,10 @@ const settingMapper = {
     }
   },
 
-  /**
-   * Ánh xạ Model sang Query Params (nếu cần)
-   */
   toParams(model) {
     if (!model) return ''
     const params = new URLSearchParams()
     if (model.deposit) params.append('deposit', model.deposit)
-    // ... add more if needed by API
     return params.toString()
   },
 }
