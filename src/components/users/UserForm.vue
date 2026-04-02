@@ -1,17 +1,19 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import DraggableModal from '@/components/ui/DraggableModal.vue'
 import Input from '@/components/ui/input/BaseInput.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
 import { useToast } from 'vue-toastification'
 import { usePermission } from '@/composables/usePermission'
 import { useQuery } from '@tanstack/vue-query'
-import { getGenderOptions } from '@/api/options'
-import { uploadUserAvatar } from '@/api/user'
+import userService from '@/services/user.service'
+import { useUserStore } from '@/stores/user.store'
 import IconAvatarEdit from '@/assets/icons/avatar-edit.svg'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 import DateTimePicker from '@/components/ui/input/DateTimePicker.vue'
 import { Permissions } from '@/constants/permissions'
+
+const userStore = useUserStore()
 
 const props = defineProps({
   show: {
@@ -50,20 +52,20 @@ const { hasPermission } = usePermission()
 
 const { data: genderOptions } = useQuery({
   queryKey: ['gender-options'],
-  queryFn: getGenderOptions,
+  queryFn: () => userService.getGenderOptions(),
   staleTime: Infinity,
 })
 
 const formData = ref({
-  code: '',
-  name: '',
-  gender: '',
-  email: '',
-  phone: '',
-  status: 'active',
-  roleIds: [],
-  avatarUrl: '',
-  dateOfBirth: '',
+  code: props.user?.code || '',
+  name: props.user?.fullName || '',
+  gender: props.user?.gender || '',
+  email: props.user?.email || '',
+  phone: props.user?.phoneNumber || '',
+  status: (props.user?.status || 'active').toLowerCase(),
+  roleIds: props.user?.roles ? props.user.roles.map((r) => r.name || r) : [],
+  avatarUrl: props.user?.avatarUrl || '',
+  dateOfBirth: props.user?.dateOfBirth?.split('T')[0] || '',
 })
 
 const errors = ref({
@@ -74,48 +76,6 @@ const errors = ref({
   phone: '',
   roleIds: '',
 })
-
-const resetForm = () => {
-  formData.value = {
-    code: '',
-    name: '',
-    gender: '',
-    email: '',
-    phone: '',
-    status: 'active',
-    roleIds: [],
-  }
-  errors.value = {
-    code: '',
-    name: '',
-    gender: '',
-    email: '',
-    phone: '',
-    roleIds: '',
-  }
-}
-
-watch(
-  () => props.user,
-  (newUser) => {
-    if (newUser) {
-      formData.value = {
-        code: newUser.code || '',
-        name: newUser.fullName || newUser.name || '',
-        gender: newUser.gender || '',
-        email: newUser.email || '',
-        phone: newUser.phoneNumber || newUser.phone || '',
-        status: (newUser.status || 'active').toLowerCase(),
-        roleIds: newUser.roles ? [...newUser.roles] : newUser.roleIds ? [...newUser.roleIds] : [],
-        avatarUrl: newUser.avatarUrl || '',
-        dateOfBirth: newUser.dateOfBirth?.split('T')[0] || '',
-      }
-    } else {
-      resetForm()
-    }
-  },
-  { immediate: true },
-)
 
 const fileInputRef = ref(null)
 const isUploadingAvatar = ref(false)
@@ -132,11 +92,11 @@ const handleAvatarChange = async (event) => {
 
   try {
     isUploadingAvatar.value = true
-    const newAvatarUrl = await uploadUserAvatar(props.user.id, file)
+    const newAvatarUrl = await userStore.uploadAvatar(props.user.id, file)
     formData.value.avatarUrl = newAvatarUrl
     toast.success('Cập nhật ảnh đại diện thành công')
   } catch (error) {
-    toast.error(error.response?.data?.message || 'Tải ảnh thất bại')
+    toast.error(error.message || 'Tải ảnh thất bại')
   } finally {
     isUploadingAvatar.value = false
     event.target.value = ''
@@ -198,7 +158,6 @@ const handleSave = () => {
 }
 
 const handleClose = () => {
-  resetForm()
   emit('close')
 }
 
@@ -206,8 +165,7 @@ const handleRefresh = () => {
   if (props.isEditMode && props.user?.id) {
     emit('refresh', props.user.id)
   } else {
-    resetForm()
-    toast.info('Đã làm mới form')
+    toast.info('Vui lòng mở lại form để làm mới')
   }
 }
 </script>

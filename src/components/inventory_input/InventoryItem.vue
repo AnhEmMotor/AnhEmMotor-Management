@@ -4,7 +4,7 @@ import InventoryReceiptDetail from './InventoryReceiptDetail.vue'
 
 defineProps({
   itemData: Object,
-  statusMap: Object,
+  statusLabel: String,
   isOpen: Boolean,
 })
 const emit = defineEmits([
@@ -28,7 +28,7 @@ const emit = defineEmits([
     <div class="overflow-x-auto">
       <InventoryReceiptSummary
         :item-data="itemData"
-        :status-map="statusMap"
+        :status-label="statusLabel"
         :is-open="isOpen"
         @toggle-detail="() => emit('toggle-detail', itemData.id)"
         @edit="() => emit('edit', itemData)"

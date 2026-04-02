@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
-import { usePriceStore } from '@/stores/usePriceStore'
-import { getProductsForPriceManagement } from '@/api/product'
+import { useProductStore } from '@/stores/product.store'
+import productService from '@/services/product.service'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { useQueryClient } from '@tanstack/vue-query'
 import PriceQuickMenu from '@/components/price_management/PriceQuickMenu.vue'
@@ -15,14 +15,14 @@ import IconRightArrow from '@/assets/icons/IconLeftArrow.svg'
 import IconDownArrow from '@/assets/icons/IconDownArrow.svg'
 import { useToast } from 'vue-toastification'
 
-const priceStore = usePriceStore()
+const productStore = useProductStore()
 const queryClient = useQueryClient()
 const toast = useToast()
 
 const itemsPerPage = ref(5)
 
 const queryFn = async (params) => {
-  const res = await getProductsForPriceManagement({
+  const res = await productService.getProductsForPriceManagement({
     Page: params.page,
     PageSize: params.limit,
     filters: params.search ? `Name@=${params.search}` : undefined,
@@ -169,7 +169,7 @@ async function saveVariantPrice(product, variant) {
   if (raw === null) return
   isSaving.value = true
   try {
-    await priceStore.updateVariantPrice(variant.id, raw)
+    await productStore.updateVariantPrice(variant.id, raw)
     queryClient.invalidateQueries({ queryKey: ['products'] })
   } catch (err) {
     toast.error(`Lỗi khi lưu giá: ${err.message}`)

@@ -1,45 +1,38 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
-import * as productApi from '@/api/product'
-import { getPredefinedOptions, getInventoryStatuses } from '@/api/options'
-import { useProductsStore } from '@/stores/useProductsStore'
+import { useProductStore } from '@/stores/product.store'
+import productService from '@/services/product.service'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { useToast } from 'vue-toastification'
 import { Permissions } from '@/constants/permissions'
 import { usePermission } from '@/composables/usePermission'
-import ProductForm from '@/components/product/ProductForm.vue'
+
 import Button from '@/components/ui/button/BaseButton.vue'
-import Input from '@/components/ui/input/BaseInput.vue'
+import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 import Pagination from '@/components/ui/button/BasePagination.vue'
-import SmallNoBgButton from '@/components/ui/button/SmallNoBgButton.vue'
-import RoundBadge from '@/components/ui/RoundBadge.vue'
-import DraggableModal from '@/components/ui/DraggableModal.vue'
-import IconLeftArrow from '@/assets/icons/IconLeftArrow.svg'
-import IconDownArrow from '@/assets/icons/IconDownArrow.svg'
 import IconPlus from '@/assets/icons/IconPlus.svg'
 import IconFileImport from '@/assets/icons/IconFileImport.svg'
 import IconFileExport from '@/assets/icons/IconFileExport.svg'
-import IconEdit from '@/assets/icons/IconEdit.svg'
-import IconTrash from '@/assets/icons/IconTrash.svg'
-import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
-import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 
-const { hasPermission } = usePermission()
+import ProductSearch from '@/components/product/ProductSearch.vue'
+import ProductTable from '@/components/product/ProductTable.vue'
+import ProductFormModal from '@/components/product/ProductFormModal.vue'
 
-const productsStore = useProductsStore()
+const productStore = useProductStore()
 const queryClient = useQueryClient()
 const toast = useToast()
+const { hasPermission } = usePermission()
 
-const { data: predefinedOptionsData } = useQuery({
-  queryKey: ['predefinedOptions'],
-  queryFn: getPredefinedOptions,
-  staleTime: 5 * 60 * 1000,
-})
+const isSaving = ref(false)
+const isRefreshing = ref(false)
+const isFormModalVisible = ref(false)
+const formModalKey = ref(0)
+const formModalTitle = ref('')
 
 const { data: inventoryStatusesData } = useQuery({
   queryKey: ['inventoryStatuses'],
-  queryFn: getInventoryStatuses,
+  queryFn: () => productService.getInventoryStatuses(),
   staleTime: 10 * 60 * 1000,
 })
 
@@ -57,37 +50,6 @@ const inventoryStatusColorMap = {
   InStock: 'green',
 }
 
-const expandedProductIds = ref([])
-const activeTabs = ref({})
-const getActiveTab = (productId) => activeTabs.value[productId] || 'variants'
-const setActiveTab = (productId, tab) => {
-  activeTabs.value[productId] = tab
-}
-const numberOfColumns = ref(8)
-const isSaving = ref(false)
-const isRefreshing = ref(false)
-
-const fetchProductsFn = async (params) => {
-  const { page, limit, search, inventoryStatus, sort } = params
-  const apiParams = { Page: page, PageSize: limit }
-
-  let filterParts = []
-  if (search) filterParts.push(`name@=*${search}`)
-  if (inventoryStatus) filterParts.push(`inventoryStatus==${inventoryStatus}`)
-
-  if (filterParts.length > 0) apiParams.Filters = filterParts.join(',')
-  if (sort) apiParams.Sorts = sort
-
-  const result = await productApi.getProductsForManager(apiParams)
-  return {
-    data: result.items || [],
-    pagination: {
-      totalPages: result.totalPages || 1,
-      totalCount: result.totalCount || 0,
-    },
-  }
-}
-
 const {
   data: products,
   isLoading,
@@ -100,46 +62,12 @@ const {
   getSortDirection,
 } = usePaginatedQuery({
   queryKey: ['products'],
-  queryFn: fetchProductsFn,
+  queryFn: (query) => productStore.fetchProducts(query),
   itemsPerPage: 10,
   searchFields: [{ key: 'search', debounce: 400 }],
   filterFields: [{ key: 'inventoryStatus' }],
   sortableFields: ['inventoryStatus'],
 })
-
-const isStoreLoading = computed(() => productsStore.isLoading)
-
-const isExpanded = (productId) => expandedProductIds.value.includes(productId)
-
-const toggleDetails = (productId) => {
-  const index = expandedProductIds.value.indexOf(productId)
-  if (index > -1) {
-    expandedProductIds.value.splice(index, 1)
-  } else {
-    expandedProductIds.value.push(productId)
-  }
-}
-
-const formatCurrency = (value) => {
-  if (value === null || value === undefined) return ''
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
-}
-
-const getVariantOptionsText = (variant) => {
-  if (!variant.optionValues) return 'Mặc định'
-  const values = Object.entries(variant.optionValues)
-  if (values.length === 0) return 'Mặc định'
-  const dict = predefinedOptionsData.value || {}
-  return values.map(([key, value]) => `${dict[key] || key}: ${value}`).join(', ')
-}
-
-const getInventoryStatusColor = (statusKey) => inventoryStatusColorMap[statusKey] || 'gray'
-const getInventoryStatusLabel = (statusKey) =>
-  inventoryStatusMap.value[statusKey] || statusKey || 'Không rõ'
-
-const isFormModalVisible = ref(false)
-const formModalTitle = ref('')
-const formModalKey = ref(0)
 
 const getNewEmptyProduct = () => ({
   id: null,
@@ -180,8 +108,6 @@ const getNewEmptyProduct = () => ({
 })
 
 const editableProduct = ref(getNewEmptyProduct())
-const isEditMode = computed(() => !!editableProduct.value?.id)
-
 const formErrors = ref({ name: '', category_id: '', variants: [], _backend: {} })
 
 const openAddEditModal = async (product = null) => {
@@ -190,36 +116,27 @@ const openAddEditModal = async (product = null) => {
     formModalTitle.value = 'Chỉnh Sửa Sản Phẩm'
     formModalKey.value++
     isFormModalVisible.value = true
+    isRefreshing.value = true
 
     const cachedData = queryClient.getQueryData(['products', product.id])
     if (cachedData) {
       editableProduct.value = JSON.parse(JSON.stringify(cachedData))
-      queryClient
-        .fetchQuery({
-          queryKey: ['products', product.id],
-          queryFn: () => productApi.getProductById(product.id),
-        })
-        .then((freshData) => {
-          if (freshData) {
-            editableProduct.value = JSON.parse(JSON.stringify(freshData))
-          }
-        })
-        .catch(() => {})
-    } else {
-      isRefreshing.value = true
-      try {
-        const freshData = await queryClient.fetchQuery({
-          queryKey: ['products', product.id],
-          queryFn: () => productApi.getProductById(product.id),
-        })
-        if (freshData) {
-          editableProduct.value = JSON.parse(JSON.stringify(freshData))
-        }
-      } catch (e) {
-        toast.error(`Lỗi tải dữ liệu: ${e.message}`)
-      } finally {
-        isRefreshing.value = false
+    }
+
+    try {
+      const freshData = await queryClient.fetchQuery({
+        queryKey: ['products', product.id],
+        queryFn: () => productStore.getProductById(product.id),
+      })
+      if (freshData) {
+        editableProduct.value = JSON.parse(JSON.stringify(freshData))
       }
+    } catch (e) {
+      if (!cachedData) {
+        toast.error(`Lỗi tải dữ liệu: ${e.message}`)
+      }
+    } finally {
+      isRefreshing.value = false
     }
   } else {
     editableProduct.value = getNewEmptyProduct()
@@ -229,17 +146,13 @@ const openAddEditModal = async (product = null) => {
   }
 }
 
-const handleCloseFormModal = () => {
-  isFormModalVisible.value = false
-}
-
 const handleRefreshForm = async () => {
-  if (isEditMode.value && editableProduct.value.id) {
+  if (editableProduct.value.id) {
     isRefreshing.value = true
     try {
       const freshData = await queryClient.fetchQuery({
         queryKey: ['products', editableProduct.value.id],
-        queryFn: () => productApi.getProductById(editableProduct.value.id),
+        queryFn: () => productStore.getProductById(editableProduct.value.id),
         staleTime: 0,
       })
       if (freshData) {
@@ -254,102 +167,21 @@ const handleRefreshForm = async () => {
   }
 }
 
-const validateProduct = (productData) => {
-  const errors = { name: '', category_id: '', variants: [] }
-  let hasError = false
-
-  if (!productData.name) {
-    errors.name = 'Vui lòng nhập tên dòng sản phẩm.'
-    hasError = true
-  }
-  if (!productData.category_id) {
-    errors.category_id = 'Vui lòng chọn danh mục.'
-    hasError = true
-  }
-  if (!productData.variants || productData.variants.length === 0) {
-    hasError = true
-  }
-
-  const variantErrors = []
-  const seenCombinations = new Set()
-  const seenSlugs = new Set()
-
-  ;(productData.variants || []).forEach((variant, index) => {
-    const vErrors = {}
-    if (
-      variant.price === null ||
-      variant.price === '' ||
-      isNaN(variant.price) ||
-      variant.price < 0
-    ) {
-      vErrors.price = 'Vui lòng nhập Giá Bán hợp lệ (lớn hơn 0).'
-      hasError = true
-    }
-    if (!variant.url) {
-      vErrors.url = 'Vui lòng nhập URL Slug.'
-      hasError = true
-    }
-    const optionEntries = Object.entries(variant.optionValues || {})
-    if (optionEntries.length > 0) {
-      const hasEmptyValues = optionEntries.some(([, val]) => !val || !val.trim())
-      if (hasEmptyValues) {
-        vErrors.combination = 'Vui lòng nhập đầy đủ giá trị cho tất cả thuộc tính.'
-        hasError = true
-      } else {
-        const sig = JSON.stringify(
-          Object.keys(variant.optionValues)
-            .sort()
-            .reduce((o, k) => {
-              o[k] = variant.optionValues[k]
-              return o
-            }, {}),
-        )
-        if (seenCombinations.has(sig)) {
-          vErrors.combination = 'Tổ hợp thuộc tính này bị trùng lặp.'
-          hasError = true
-        } else {
-          seenCombinations.add(sig)
-        }
-      }
-    }
-
-    if (variant.url) {
-      if (seenSlugs.has(variant.url)) {
-        vErrors.url = 'URL Slug này bị trùng lặp với biến thể khác.'
-        hasError = true
-      } else {
-        seenSlugs.add(variant.url)
-      }
-    }
-
-    variantErrors[index] = vErrors
-  })
-
-  errors.variants = variantErrors
-  return { hasError, errors }
-}
-
-const handleSaveProduct = async () => {
-  const productData = editableProduct.value
-  const { hasError, errors } = validateProduct(productData)
-  formErrors.value = errors
-  if (hasError) return
-
+const handleSaveProduct = async (productData) => {
   isSaving.value = true
   try {
-    const isEditing = isEditMode.value
     let result
-    if (isEditing) {
-      result = await productsStore.updateProduct(productData.id, productData)
+    if (productData.id) {
+      result = await productStore.updateProduct(productData.id, productData)
     } else {
-      result = await productsStore.createProduct(productData)
+      result = await productStore.addProduct(productData)
     }
     if (result?.id) {
       queryClient.setQueryData(['products', result.id], result)
     }
     isFormModalVisible.value = false
     await queryClient.invalidateQueries({ queryKey: ['products'] })
-    toast.success(isEditing ? 'Cập nhật sản phẩm thành công' : 'Thêm sản phẩm thành công')
+    toast.success(productData.id ? 'Cập nhật sản phẩm thành công' : 'Thêm sản phẩm thành công')
   } catch (err) {
     const backendErrors = err?.response?.data?.errors || err?.response?.data?.Errors || null
     if (backendErrors && err?.response?.status === 400) {
@@ -371,34 +203,12 @@ const handleSaveProduct = async () => {
         }
       })
 
-      const mergedVariantErrors = []
-      const maxLen = Math.max(
-        formErrors.value.variants?.length || 0,
-        variantErrorsFromBackend.length,
-      )
-      for (let i = 0; i < maxLen; i++) {
-        mergedVariantErrors[i] = {
-          ...(formErrors.value.variants?.[i] || {}),
-          ...(variantErrorsFromBackend[i] || {}),
-        }
-      }
-
       formErrors.value = {
         ...formErrors.value,
         _backend: normalized,
-        name: normalized['name'] || formErrors.value.name,
-        category_id:
-          normalized['category_id'] || normalized['categoryid'] || formErrors.value.category_id,
-        variants: mergedVariantErrors,
-      }
-
-      if (normalized['varients']) {
-        formErrors.value._backend = formErrors.value._backend || {}
-        formErrors.value._backend.varients = normalized['varients']
-      }
-      if (normalized['variants']) {
-        formErrors.value._backend = formErrors.value._backend || {}
-        formErrors.value._backend.variants = normalized['variants']
+        name: normalized['name'] || '',
+        category_id: normalized['category_id'] || normalized['categoryid'] || '',
+        variants: variantErrorsFromBackend,
       }
       toast.warning('Vui lòng kiểm tra lại các trường có lỗi.')
     } else {
@@ -411,7 +221,7 @@ const handleSaveProduct = async () => {
 
 const promptDelete = async (product) => {
   try {
-    await productsStore.deleteProduct(product)
+    await productStore.deleteProduct(product.id)
     queryClient.removeQueries({ queryKey: ['products', product.id] })
     await queryClient.invalidateQueries({ queryKey: ['products'] })
     toast.success('Xoá sản phẩm thành công')
@@ -431,7 +241,7 @@ const exportExcel = () => {
 </script>
 
 <template>
-  <LoadingOverlay :show="isStoreLoading" message="Đang xử lý..." />
+  <LoadingOverlay :show="productStore.isLoading || isSaving" message="Đang xử lý..." />
 
   <div class="p-4 sm:p-6 rounded-xl shadow-lg bg-white">
     <div
@@ -470,32 +280,11 @@ const exportExcel = () => {
       </div>
     </div>
 
-    <div class="flex flex-col sm:flex-row gap-3 mb-4">
-      <Input
-        v-model="searchRefs.search"
-        type="text"
-        placeholder="Tìm kiếm theo tên sản phẩm..."
-        class="flex-1"
-      />
-
-      <div class="w-full sm:w-64">
-        <select
-          v-model="filterRefs.inventoryStatus"
-          class="w-full h-11 px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 appearance-none cursor-pointer"
-          style="
-            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236B7280%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C/polyline%3E%3C/svg%3E');
-            background-repeat: no-repeat;
-            background-position: right 1rem center;
-            background-size: 1em;
-          "
-        >
-          <option value="">Tất cả trạng thái kho</option>
-          <option v-for="(label, key) in inventoryStatusMap" :key="key" :value="key">
-            {{ label }}
-          </option>
-        </select>
-      </div>
-    </div>
+    <ProductSearch
+      v-model:search="searchRefs.search"
+      v-model:inventoryStatus="filterRefs.inventoryStatus"
+      :inventoryStatusMap="inventoryStatusMap"
+    />
 
     <div
       v-if="isError"
@@ -504,374 +293,17 @@ const exportExcel = () => {
       Đã xảy ra lỗi khi lấy dữ liệu: {{ error?.message }}
     </div>
 
-    <div v-else class="overflow-x-auto rounded-lg shadow-sm border border-gray-300">
-      <table class="min-w-full bg-white border-collapse">
-        <thead
-          class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs font-medium border-b border-gray-200"
-        >
-          <tr>
-            <th class="py-3 px-6 text-left w-12"></th>
-            <th class="py-3 px-6 text-left w-20">Ảnh Bìa</th>
-            <th class="py-3 px-6 text-left">Tên Dòng Sản Phẩm</th>
-            <th class="py-3 px-6 text-left">Danh Mục</th>
-            <th class="py-3 px-6 text-left">Thương Hiệu</th>
-            <th class="py-3 px-6 text-left">Số Biến Thể</th>
-            <th
-              class="py-3 px-6 text-left cursor-pointer hover:bg-gray-100 transition-colors"
-              @click="toggleSort('inventoryStatus')"
-            >
-              <div class="flex items-center space-x-1">
-                <span>Trạng Thái Kho</span>
-                <div class="flex flex-col">
-                  <IconDownArrow
-                    class="w-3 h-3 transition-colors"
-                    :class="
-                      getSortDirection('inventoryStatus') === 'asc'
-                        ? 'text-red-500'
-                        : 'text-gray-300'
-                    "
-                    style="transform: rotate(180deg)"
-                  />
-                  <IconDownArrow
-                    class="w-3 h-3 transition-colors -mt-1"
-                    :class="
-                      getSortDirection('inventoryStatus') === 'desc'
-                        ? 'text-red-500'
-                        : 'text-gray-300'
-                    "
-                  />
-                </div>
-              </div>
-            </th>
-            <th class="py-3 px-6 text-center">Thao Tác</th>
-          </tr>
-        </thead>
-        <tbody class="text-gray-600 text-sm font-light">
-          <template v-if="products.length === 0">
-            <template v-if="isLoading">
-              <tr v-for="i in 5" :key="i" class="border-b border-gray-200">
-                <td class="py-3 px-6 text-center"><SkeletonLoader width="16px" height="16px" /></td>
-                <td class="py-3 px-6">
-                  <SkeletonLoader width="64px" height="64px" class="rounded-md" />
-                </td>
-                <td class="py-3 px-6"><SkeletonLoader width="150px" height="20px" /></td>
-                <td class="py-3 px-6"><SkeletonLoader width="100px" height="20px" /></td>
-                <td class="py-3 px-6"><SkeletonLoader width="80px" height="20px" /></td>
-                <td class="py-3 px-6"><SkeletonLoader width="40px" height="20px" /></td>
-                <td class="py-3 px-6">
-                  <SkeletonLoader width="90px" height="24px" class="rounded-full" />
-                </td>
-                <td class="py-3 px-6 text-center flex justify-center gap-2 mt-4">
-                  <SkeletonLoader width="40px" height="20px" />
-                  <SkeletonLoader width="40px" height="20px" />
-                </td>
-              </tr>
-            </template>
-            <tr v-else>
-              <td :colspan="numberOfColumns" class="text-center py-6 text-gray-500">
-                Không có sản phẩm nào để hiển thị.
-              </td>
-            </tr>
-          </template>
-
-          <template v-for="product in products" :key="product.id">
-            <tr class="border-b border-gray-200 hover:bg-gray-100 transition-colors duration-200">
-              <td class="py-3 px-6 w-12 text-center border-r border-gray-200">
-                <button
-                  v-if="product.variants && product.variants.length > 0"
-                  @click="toggleDetails(product.id)"
-                  class="text-gray-500 hover:text-gray-800"
-                >
-                  <IconLeftArrow v-if="!isExpanded(product.id)" />
-                  <IconDownArrow v-else />
-                </button>
-              </td>
-              <td class="py-3 px-6 text-left w-20">
-                <img
-                  :src="
-                    product.cover_image_url || 'https://placehold.co/100x100/gray/white?text=N/A'
-                  "
-                  alt="Ảnh bìa"
-                  class="w-16 h-16 object-cover rounded-md border border-gray-200"
-                  @error="
-                    (e) => (e.target.src = 'https://placehold.co/100x100/gray/white?text=Error')
-                  "
-                />
-              </td>
-              <td class="py-3 px-6 whitespace-nowrap font-medium text-gray-800">
-                {{ product.name }}
-              </td>
-              <td class="py-3 px-6">{{ product.category }}</td>
-              <td class="py-3 px-6">{{ product.brand }}</td>
-              <td class="py-3 px-6">{{ product.variants ? product.variants.length : 0 }}</td>
-              <td class="py-3 px-6">
-                <RoundBadge :color="getInventoryStatusColor(product.inventory_status)">
-                  {{ getInventoryStatusLabel(product.inventory_status) }}
-                </RoundBadge>
-              </td>
-              <td class="py-3 px-6 text-center space-x-2">
-                <SmallNoBgButton
-                  v-if="hasPermission(Permissions.ProductsEdit)"
-                  @click="openAddEditModal(product)"
-                  :icon="IconEdit"
-                  >Sửa</SmallNoBgButton
-                >
-                <SmallNoBgButton
-                  v-if="hasPermission(Permissions.ProductsDelete)"
-                  color="red"
-                  @click="promptDelete(product)"
-                  :icon="IconTrash"
-                  >Xóa</SmallNoBgButton
-                >
-              </td>
-            </tr>
-
-            <tr v-if="isExpanded(product.id)" class="bg-gray-50 border-b border-gray-200">
-              <td :colspan="numberOfColumns" class="p-0">
-                <div class="p-3 px-10 border-t border-gray-200 bg-white">
-                  <div class="flex border-b border-gray-200 mb-3 space-x-5">
-                    <button
-                      class="py-1.5 text-sm"
-                      :class="
-                        getActiveTab(product.id) === 'variants'
-                          ? 'font-semibold border-b-2 border-red-500 text-red-600'
-                          : 'text-gray-600 hover:text-gray-800'
-                      "
-                      @click="setActiveTab(product.id, 'variants')"
-                    >
-                      Biến thể sản phẩm
-                    </button>
-                    <button
-                      class="py-1.5 text-sm"
-                      :class="
-                        getActiveTab(product.id) === 'specs'
-                          ? 'font-semibold border-b-2 border-red-500 text-red-600'
-                          : 'text-gray-600 hover:text-gray-800'
-                      "
-                      @click="setActiveTab(product.id, 'specs')"
-                    >
-                      Thông số kỹ thuật
-                    </button>
-                  </div>
-
-                  <div v-show="getActiveTab(product.id) === 'variants'">
-                    <table
-                      class="min-w-full bg-white rounded shadow-sm text-sm border border-gray-200 overflow-hidden"
-                    >
-                      <thead class="bg-gray-50 border-b border-gray-200">
-                        <tr>
-                          <th
-                            class="py-2 px-4 text-left w-20 text-gray-700 font-semibold tracking-wider"
-                          >
-                            Ảnh
-                          </th>
-                          <th
-                            class="py-2 px-4 text-left text-gray-700 font-semibold tracking-wider"
-                          >
-                            Thuộc tính
-                          </th>
-                          <th
-                            class="py-2 px-4 text-left text-gray-700 font-semibold tracking-wider"
-                          >
-                            Giá Bán
-                          </th>
-                          <th
-                            class="py-2 px-4 text-left text-gray-700 font-semibold tracking-wider"
-                          >
-                            Tồn Kho
-                          </th>
-                          <th
-                            class="py-2 px-4 text-left text-gray-700 font-semibold tracking-wider"
-                          >
-                            Đã Đặt
-                          </th>
-                          <th
-                            class="py-2 px-4 text-left text-gray-700 font-semibold tracking-wider"
-                          >
-                            Hiện Có
-                          </th>
-                          <th
-                            class="py-2 px-4 text-left text-gray-700 font-semibold tracking-wider"
-                          >
-                            Trạng Thái
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr
-                          v-for="variant in product.variants"
-                          :key="variant.id"
-                          class="border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors duration-150"
-                        >
-                          <td class="py-2 px-4 w-20">
-                            <img
-                              :src="
-                                variant.cover_image_url ||
-                                'https://placehold.co/100x100/gray/white?text=N/A'
-                              "
-                              class="w-12 h-12 object-cover rounded-md border border-gray-200"
-                              @error="
-                                (e) =>
-                                  (e.target.src =
-                                    'https://placehold.co/100x100/gray/white?text=Error')
-                              "
-                            />
-                          </td>
-                          <td class="py-2 px-4 text-gray-800 font-medium">
-                            {{ getVariantOptionsText(variant) }}
-                          </td>
-                          <td class="py-2 px-4 font-semibold text-gray-900">
-                            {{ formatCurrency(variant.price) }}
-                          </td>
-                          <td class="py-2 px-4 text-gray-600">{{ variant.stock }}</td>
-                          <td class="py-2 px-4 text-gray-600">{{ variant.has_been_booked }}</td>
-                          <td
-                            class="py-2 px-4 font-medium"
-                            :class="
-                              getInventoryStatusColor(variant.inventory_status) === 'green'
-                                ? 'text-green-600'
-                                : getInventoryStatusColor(variant.inventory_status) === 'yellow'
-                                  ? 'text-yellow-500'
-                                  : 'text-red-500'
-                            "
-                          >
-                            {{ variant.stock - variant.has_been_booked }}
-                          </td>
-                          <td class="py-2 px-4">
-                            <RoundBadge :color="getInventoryStatusColor(variant.inventory_status)">
-                              {{ getInventoryStatusLabel(variant.inventory_status) }}
-                            </RoundBadge>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <div v-show="getActiveTab(product.id) === 'specs'" class="pt-2">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4">
-                      <div class="text-sm">
-                        <span class="text-gray-500 block">Khối lượng</span>
-                        <span class="font-medium text-gray-800">{{
-                          product.weight ? product.weight + ' kg' : '---'
-                        }}</span>
-                      </div>
-                      <div class="text-sm">
-                        <span class="text-gray-500 block">Kích thước</span>
-                        <span class="font-medium text-gray-800">{{
-                          product.dimensions || '---'
-                        }}</span>
-                      </div>
-                      <div class="text-sm">
-                        <span class="text-gray-500 block">Dung tích</span>
-                        <span class="font-medium text-gray-800">{{
-                          product.displacement ? product.displacement + ' cc' : '---'
-                        }}</span>
-                      </div>
-                      <div class="text-sm">
-                        <span class="text-gray-500 block">Tỷ số nén</span>
-                        <span class="font-medium text-gray-800">{{
-                          product.compression_ratio || '---'
-                        }}</span>
-                      </div>
-                      <div class="text-sm">
-                        <span class="text-gray-500 block">Đường kính x Hành trình piston</span>
-                        <span class="font-medium text-gray-800">{{
-                          product.bore_stroke || '---'
-                        }}</span>
-                      </div>
-                      <div class="text-sm">
-                        <span class="text-gray-500 block">Loại động cơ</span>
-                        <span class="font-medium text-gray-800">{{
-                          product.engine_type || '---'
-                        }}</span>
-                      </div>
-                      <div class="text-sm">
-                        <span class="text-gray-500 block">Công suất tối đa</span>
-                        <span class="font-medium text-gray-800">{{
-                          product.max_power || '---'
-                        }}</span>
-                      </div>
-                      <div class="text-sm">
-                        <span class="text-gray-500 block">Mô-men xoắn cực đại</span>
-                        <span class="font-medium text-gray-800">{{
-                          product.max_torque || '---'
-                        }}</span>
-                      </div>
-                      <div class="text-sm">
-                        <span class="text-gray-500 block">Tiêu hao nhiên liệu</span>
-                        <span class="font-medium text-gray-800">{{
-                          product.fuel_consumption || '---'
-                        }}</span>
-                      </div>
-                      <div class="text-sm">
-                        <span class="text-gray-500 block">Dung tích bình xăng</span>
-                        <span class="font-medium text-gray-800">{{
-                          product.fuel_capacity ? product.fuel_capacity + ' L' : '---'
-                        }}</span>
-                      </div>
-                      <div class="text-sm">
-                        <span class="text-gray-500 block">Dung tích nhớt máy</span>
-                        <span class="font-medium text-gray-800">{{
-                          product.oil_capacity ? product.oil_capacity + ' L' : '---'
-                        }}</span>
-                      </div>
-                      <div class="text-sm">
-                        <span class="text-gray-500 block">Loại truyền động</span>
-                        <span class="font-medium text-gray-800">{{
-                          product.transmission_type || '---'
-                        }}</span>
-                      </div>
-                      <div class="text-sm">
-                        <span class="text-gray-500 block">Hệ thống khởi động</span>
-                        <span class="font-medium text-gray-800">{{
-                          product.starter_system || '---'
-                        }}</span>
-                      </div>
-                      <div class="text-sm">
-                        <span class="text-gray-500 block">Phuộc trước</span>
-                        <span class="font-medium text-gray-800">{{
-                          product.front_suspension || '---'
-                        }}</span>
-                      </div>
-                      <div class="text-sm">
-                        <span class="text-gray-500 block">Phuộc sau</span>
-                        <span class="font-medium text-gray-800">{{
-                          product.rear_suspension || '---'
-                        }}</span>
-                      </div>
-                      <div class="text-sm">
-                        <span class="text-gray-500 block">Kích cỡ lốp</span>
-                        <span class="font-medium text-gray-800">{{
-                          product.tire_size || '---'
-                        }}</span>
-                      </div>
-                      <div class="text-sm">
-                        <span class="text-gray-500 block">Khoảng cách trục bánh xe</span>
-                        <span class="font-medium text-gray-800">{{
-                          product.wheelbase ? product.wheelbase + ' mm' : '---'
-                        }}</span>
-                      </div>
-                      <div class="text-sm">
-                        <span class="text-gray-500 block">Độ cao yên</span>
-                        <span class="font-medium text-gray-800">{{
-                          product.seat_height ? product.seat_height + ' mm' : '---'
-                        }}</span>
-                      </div>
-                      <div class="text-sm">
-                        <span class="text-gray-500 block">Khoảng sáng gầm xe</span>
-                        <span class="font-medium text-gray-800">{{
-                          product.ground_clearance ? product.ground_clearance + ' mm' : '---'
-                        }}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </td>
-            </tr>
-          </template>
-        </tbody>
-      </table>
-    </div>
+    <ProductTable
+      v-else
+      :products="products"
+      :isLoading="isLoading"
+      :inventoryStatusMap="inventoryStatusMap"
+      :inventoryStatusColorMap="inventoryStatusColorMap"
+      :sortDirection="getSortDirection"
+      @edit="openAddEditModal"
+      @delete="promptDelete"
+      @sort="toggleSort"
+    />
 
     <Pagination
       :total-pages="pagination.totalPages.value"
@@ -881,30 +313,17 @@ const exportExcel = () => {
     />
   </div>
 
-  <DraggableModal
+  <ProductFormModal
     :key="formModalKey"
-    v-if="isFormModalVisible"
-    @close="handleCloseFormModal"
-    :onRefresh="isEditMode ? handleRefreshForm : undefined"
-    :isLoading="isRefreshing"
-    width="72vw"
-  >
-    <template #header>
-      <span class="font-bold text-lg">{{ formModalTitle }}</span>
-    </template>
-    <template #body>
-      <ProductForm
-        v-model="editableProduct"
-        :is-edit-mode="isEditMode"
-        :errors="formErrors"
-        :is-saving="isSaving"
-      />
-    </template>
-    <template #footer>
-      <div class="flex justify-end gap-3 w-full">
-        <Button text="Huỷ bỏ" color="gray" @click="handleCloseFormModal" />
-        <Button text="Lưu" color="purple" @click="handleSaveProduct" :loading="isSaving" />
-      </div>
-    </template>
-  </DraggableModal>
+    :show="isFormModalVisible"
+    :title="formModalTitle"
+    :product="editableProduct"
+    :is-edit-mode="!!editableProduct.id"
+    :is-saving="isSaving"
+    :is-refreshing="isRefreshing"
+    :errors="formErrors"
+    :onRefresh="editableProduct.id ? handleRefreshForm : undefined"
+    @close="isFormModalVisible = false"
+    @save="handleSaveProduct"
+  />
 </template>

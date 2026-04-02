@@ -8,7 +8,7 @@
         <p id="greeting" class="text-gray-500">
           {{
             hasStatView
-              ? 'Chúc bạn một buổi sáng tốt lành! Đây là báo cáo tổng quan.'
+              ? 'Chúc bạn một buổi sáng tốt lành! Đây là thống kê tổng quan.'
               : 'Chào mừng bạn đến với hệ thống quản lý AnhEm Motor!'
           }}
         </p>
@@ -30,7 +30,7 @@
     </div>
 
     <div
-      v-if="hasStatView && !isLoading"
+      v-else-if="hasStatView && dashboardData"
       class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
     >
       <StatsCard
@@ -53,12 +53,12 @@
           <SkeletonLoader width="50%" height="20px" class="mb-4" />
           <SkeletonLoader width="100%" height="300px" />
         </div>
-        <div v-else class="bg-gray-50 p-6 rounded-xl shadow-md h-96">
+        <div v-else-if="dashboardData" class="bg-gray-50 p-6 rounded-xl shadow-md h-96">
           <h3 class="text-lg font-semibold text-gray-700 mb-4">
             Doanh Thu &amp; Lợi Nhuận (7 Ngày)
           </h3>
           <div class="w-full h-full">
-            <RevenueChart7day :revenue-data="revenueData" />
+            <RevenueChart7day :revenue-data="dashboardData.dailyRevenueChart" />
           </div>
         </div>
 
@@ -66,10 +66,10 @@
           <SkeletonLoader width="50%" height="20px" class="mb-4" />
           <SkeletonLoader width="100%" height="300px" />
         </div>
-        <div v-else class="bg-gray-50 p-6 rounded-xl shadow-md h-96">
+        <div v-else-if="dashboardData" class="bg-gray-50 p-6 rounded-xl shadow-md h-96">
           <h3 class="text-lg font-semibold text-gray-700 mb-4">Tỷ Lệ Trạng Thái Đơn Hàng</h3>
           <div class="w-full h-full">
-            <PieChartFrame :order-data="orderStatusData" />
+            <PieChartFrame :order-data="dashboardData.orderStatusChart" />
           </div>
         </div>
       </template>
@@ -106,18 +106,19 @@
   </div>
 </template>
 
-<script setup lang="js">
+<script setup>
 import { computed, ref, onMounted, onUnmounted } from 'vue'
-import { useQuery } from '@tanstack/vue-query'
-import { statisticsService } from '@/api/statistics'
-
-import RevenueChart7day from '@/components/report/RevenueChart7day.vue'
-import PieChartFrame from '@/components/report/OrderChart.vue'
-import StatsCard from '@/components/ui/ReportStatsCard.vue'
-import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
-import { useAuthStore } from '@/stores/useAuthStore'
+import { storeToRefs } from 'pinia'
+import { useStatisticsStore } from '@/stores/statistics.store'
+import { useAuthStore } from '@/stores/auth.store'
 import { usePermission } from '@/composables/usePermission'
 import { Permissions } from '@/constants/permissions'
+import { formatCurrency } from '@/utils/currency'
+
+import RevenueChart7day from '@/components/statistics/RevenueChart7day.vue'
+import PieChartFrame from '@/components/statistics/OrderChart.vue'
+import StatsCard from '@/components/ui/ReportStatsCard.vue'
+import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 
 import IconHome from '@/assets/icons/IconHome.svg'
 import IconProduct from '@/assets/icons/IconProduct.svg'
@@ -128,17 +129,12 @@ import IconSettings from '@/assets/icons/IconSettings.svg'
 import IconInput from '@/assets/icons/IconInput.svg'
 
 const authStore = useAuthStore()
+const statsStore = useStatisticsStore()
 const { hasPermission } = usePermission()
 
+const { dashboardData, isDashboardLoading: isLoading } = storeToRefs(statsStore)
+
 const hasStatView = computed(() => hasPermission(Permissions.StatisticalView))
-
-const { isLoading, data: dashboardData } = useQuery({
-  queryKey: ['admin', 'dashboard-overview'],
-  queryFn: statisticsService.getAdminDashboardOverview,
-  staleTime: 5 * 60 * 1000,
-  enabled: hasStatView,
-})
-
 const summary = computed(() => dashboardData.value?.summary || {})
 
 const currentTime = ref(new Date().toLocaleTimeString('vi-VN'))
@@ -189,62 +185,5 @@ const quickActions = [
 
 const visibleActions = computed(() => {
   return quickActions.filter((action) => !action.permission || hasPermission(action.permission))
-})
-
-const formatCurrency = (val) => {
-  if (val >= 1000000000) return `${(val / 1000000000).toFixed(2)} tỷ`
-  if (val >= 1000000) return `${(val / 1000000).toFixed(0)} triệu`
-  return `${val?.toLocaleString() || 0} đ`
-}
-
-const orderStatusColors = {
-  pending: '#3b82f6',
-  waiting_deposit: '#93c5fd',
-  deposit_paid: '#6366f1',
-  confirmed_cod: '#8b5cf6',
-  preparing: '#f59e0b',
-  waiting_pickup: '#fbbf24',
-  delivering: '#ec4899',
-  completed: '#10b981',
-  cancelled: '#ef4444',
-  refunding: '#f97316',
-  refunded: '#6b7280',
-  paid_processing: '#06b6d4',
-}
-
-const orderStatusNames = {
-  pending: 'Chờ xử lý',
-  waiting_deposit: 'Chờ đặt cọc',
-  deposit_paid: 'Đã đặt cọc',
-  confirmed_cod: 'Đã xác nhận COD',
-  preparing: 'Đang chuẩn bị',
-  waiting_pickup: 'Chờ lấy hàng',
-  delivering: 'Đang giao',
-  completed: 'Hoàn tất',
-  cancelled: 'Đã huỷ',
-  refunding: 'Đang hoàn tiền',
-  refunded: 'Hoàn tiền',
-  paid_processing: 'Đã thanh toán',
-}
-
-const orderStatusData = computed(() => {
-  if (!dashboardData.value?.orderStatusDistribution) return []
-  return dashboardData.value.orderStatusDistribution.map((item) => {
-    const statusKey = item.statusName?.toLowerCase()
-    return {
-      status: orderStatusNames[statusKey] || item.statusName,
-      value: item.orderCount,
-      color: orderStatusColors[statusKey] || '#d1d5db',
-    }
-  })
-})
-
-const revenueData = computed(() => {
-  if (!dashboardData.value?.dailyRevenue) return []
-  return dashboardData.value.dailyRevenue.map((item) => ({
-    date: item.reportDay,
-    revenue: item.totalRevenue / 1000000,
-    profit: (item.totalProfit || 0) / 1000000,
-  }))
 })
 </script>

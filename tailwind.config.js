@@ -17,10 +17,6 @@ export default {
           900: '#7f1d1d',
           950: '#450a0a',
         },
-        /*
-         * We can define other semantic colors if needed, but Tailwind's default palette is good.
-         * We map 'primary' to Red to enforce consistency.
-         */
       },
       fontFamily: {
         sans: [

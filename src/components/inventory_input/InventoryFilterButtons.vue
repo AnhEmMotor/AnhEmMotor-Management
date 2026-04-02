@@ -14,6 +14,7 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import FilterButton from '../ui/button/FilterButton.vue'
 import IconInput from '@/assets/icons/IconInput.svg'
 import IconCheckCircle from '@/assets/icons/IconCheckCircle.svg'
@@ -25,15 +26,34 @@ const props = defineProps({
     required: true,
     default: '',
   },
+  statusMap: {
+    type: Object,
+    default: () => ({}),
+  },
 })
 
 const emit = defineEmits(['update:modelValue'])
 
-const filterOptions = [
-  { status: 'working', label: 'Phiếu Tạm', color: 'red', icon: IconInput },
-  { status: 'finished', label: 'Hoàn Thành', color: 'red', icon: IconCheckCircle },
-  { status: 'cancelled', label: 'Đã Huỷ', color: 'red', icon: IconXCircle },
-]
+const filterOptions = computed(() => [
+  {
+    status: 'working',
+    label: props.statusMap.working || 'Phiếu Tạm',
+    color: 'red',
+    icon: IconInput,
+  },
+  {
+    status: 'finished',
+    label: props.statusMap.finished || 'Hoàn Thành',
+    color: 'red',
+    icon: IconCheckCircle,
+  },
+  {
+    status: 'cancelled',
+    label: props.statusMap.cancelled || 'Đã Huỷ',
+    color: 'red',
+    icon: IconXCircle,
+  },
+])
 
 const isActive = (status) => {
   return props.modelValue.includes(status)

@@ -1,16 +1,16 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { useAuthStore } from '@/stores/useAuthStore'
+import { useAuthStore } from '@/stores/auth.store'
 import { useRoute, useRouter } from 'vue-router'
 import Button from '@/components/ui/button/BaseButton.vue'
 import Input from '@/components/ui/input/BaseInput.vue'
 import IconAvatarEdit from '@/assets/icons/avatar-edit.svg'
-import { updateProfile, changePassword, uploadAvatar } from '@/api/auth'
 import { useToast } from 'vue-toastification'
 import { useQuery } from '@tanstack/vue-query'
-import { getGenderOptions } from '@/api/options'
+import userService from '@/services/user.service'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 import DateTimePicker from '@/components/ui/input/DateTimePicker.vue'
+import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 
 const toast = useToast()
 const authStore = useAuthStore()
@@ -18,9 +18,6 @@ const route = useRoute()
 const router = useRouter()
 
 const user = computed(() => authStore.user || {})
-
-const currentUserEmail = computed(() => user.value.email)
-
 const apiUrl = import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:3000'
 
 const activeTab = computed({
@@ -30,7 +27,7 @@ const activeTab = computed({
 
 const { data: genderOptions, isLoading: isGendersLoading } = useQuery({
   queryKey: ['gender-options'],
-  queryFn: getGenderOptions,
+  queryFn: () => userService.getGenderOptions(),
   staleTime: Infinity,
   enabled: computed(() => activeTab.value === 'profile'),
 })
@@ -78,11 +75,7 @@ const handleUpdateProfile = async () => {
 
   try {
     isUpdatingProfile.value = true
-    const payload = {
-      ...profileForm.value,
-      dateOfBirth: profileForm.value.dateOfBirth || null,
-    }
-    await updateProfile(payload)
+    await authStore.updateProfile(profileForm.value)
     toast.success('Cập nhật thông tin thành công')
   } catch (error) {
     toast.error(error.response?.data?.message || 'Cập nhật thất bại')
@@ -98,10 +91,7 @@ const handleChangePassword = async () => {
   }
   try {
     isChangingPassword.value = true
-    await changePassword({
-      currentPassword: passwordForm.value.currentPassword,
-      newPassword: passwordForm.value.newPassword,
-    })
+    await authStore.changePassword(passwordForm.value)
     toast.success('Đổi mật khẩu thành công')
     passwordForm.value = { currentPassword: '', newPassword: '', confirmPassword: '' }
   } catch (error) {
@@ -128,7 +118,7 @@ const handleAvatarChange = async (event) => {
 
   try {
     isUploadingAvatar.value = true
-    await uploadAvatar(file)
+    await authStore.uploadAvatar(file)
     toast.success('Tải lên ảnh đại diện thành công')
   } catch (error) {
     toast.error(error.response?.data?.message || 'Tải ảnh thất bại')
@@ -169,10 +159,44 @@ const handleAvatarChange = async (event) => {
     </div>
 
     <div v-if="activeTab === 'profile'" class="max-w-xl">
-      <LoadingOverlay
-        :show="(isGendersLoading && !genderOptions) || isUploadingAvatar || isUpdatingProfile"
-      />
-      <div class="space-y-6">
+      <LoadingOverlay :show="isUploadingAvatar || isUpdatingProfile" />
+
+      <template v-if="isGendersLoading && !genderOptions">
+        <div class="space-y-6">
+          <div class="flex items-center gap-4">
+            <SkeletonLoader width="80px" height="80px" class="rounded-full" />
+            <div class="space-y-2">
+              <SkeletonLoader width="150px" height="24px" />
+              <SkeletonLoader width="200px" height="16px" />
+            </div>
+          </div>
+          <div class="space-y-4">
+            <div>
+              <SkeletonLoader width="80px" height="16px" class="mb-2" />
+              <SkeletonLoader width="100%" height="42px" />
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <SkeletonLoader width="80px" height="16px" class="mb-2" />
+                <SkeletonLoader width="100%" height="42px" />
+              </div>
+              <div>
+                <SkeletonLoader width="80px" height="16px" class="mb-2" />
+                <SkeletonLoader width="100%" height="42px" />
+              </div>
+            </div>
+            <div>
+              <SkeletonLoader width="80px" height="16px" class="mb-2" />
+              <SkeletonLoader width="100%" height="42px" />
+            </div>
+            <div class="pt-4">
+              <SkeletonLoader width="120px" height="42px" />
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <div v-else class="space-y-6">
         <div class="flex items-center gap-4">
           <div class="relative">
             <template v-if="user.avatarUrl">
@@ -261,7 +285,7 @@ const handleAvatarChange = async (event) => {
         <input
           type="text"
           name="username"
-          :value="currentUserEmail"
+          :value="user.email"
           autocomplete="username"
           class="hidden"
           style="display: none"
@@ -307,5 +331,3 @@ const handleAvatarChange = async (event) => {
     </div>
   </div>
 </template>
-
-<style scoped></style>

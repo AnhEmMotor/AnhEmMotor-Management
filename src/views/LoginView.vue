@@ -1,9 +1,9 @@
 <script setup>
 import { ref, reactive } from 'vue'
-import { useAuthStore } from '../stores/useAuthStore'
+import { useAuthStore } from '@/stores/auth.store'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
-import LoadingOverlay from '../components/ui/LoadingOverlay.vue'
+import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 import IconLock from '@/assets/icons/login-lock.svg'
 
 const authStore = useAuthStore()
@@ -15,22 +15,29 @@ const form = reactive({
   password: '',
 })
 
-const loading = ref(false)
-const error = ref('')
+const isLoading = ref(false)
+const errorMessage = ref('')
 
 const handleLogin = async () => {
-  loading.value = true
-  error.value = ''
+  if (!form.usernameOrEmail || !form.password) {
+    toast.warning('Vui lòng nhập đầy đủ thông tin')
+    return
+  }
+
   try {
+    isLoading.value = true
+    errorMessage.value = ''
+
     await authStore.login(form)
+
     const redirectPath = router.currentRoute.value.query.redirect || '/'
     router.push(redirectPath)
     toast.success('Đăng nhập thành công!')
   } catch (err) {
-    error.value = err.response?.data?.message || 'Đăng nhập thất bại'
-    toast.error(error.value)
+    errorMessage.value = err.response?.data?.message || 'Tên đăng nhập hoặc mật khẩu không đúng'
+    toast.error(errorMessage.value)
   } finally {
-    loading.value = false
+    isLoading.value = false
   }
 }
 </script>
@@ -39,24 +46,26 @@ const handleLogin = async () => {
   <div
     class="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 via-white to-red-50 px-4"
   >
-    <LoadingOverlay :show="loading" message="Đang đăng nhập..." />
+    <LoadingOverlay :show="isLoading" message="Đang đăng nhập..." />
+
     <div class="w-full max-w-md">
-      <div class="bg-white rounded-2xl shadow-2xl p-8 space-y-6">
+      <div class="bg-white rounded-2xl shadow-2xl p-8 space-y-6 border border-gray-100">
         <div class="text-center">
           <div
-            class="inline-flex items-center justify-center w-16 h-16 bg-red-600 rounded-full mb-4"
+            class="inline-flex items-center justify-center w-16 h-16 bg-red-600 rounded-full mb-4 shadow-lg shadow-red-200"
           >
             <IconLock class="w-8 h-8 text-white" />
           </div>
-          <h2 class="text-2xl font-extrabold tracking-tight text-gray-900 sm:text-2xl mb-2">
-            Đăng nhập để <span class="text-red-600">tiếp tục</span>
+          <h2 class="text-2xl font-extrabold tracking-tight text-gray-900 mb-1">
+            Chào mừng trở lại!
           </h2>
+          <p class="text-gray-500 text-sm">Đăng nhập để quản lý hệ thống AnhEm Motor</p>
         </div>
 
         <form @submit.prevent="handleLogin" class="space-y-5">
           <div>
             <label for="usernameOrEmail" class="block text-sm font-medium text-gray-700 mb-2">
-              Tên đăng nhập hoặc Email
+              Tài khoản hoặc Email
             </label>
             <input
               id="usernameOrEmail"
@@ -65,7 +74,7 @@ const handleLogin = async () => {
               required
               v-model="form.usernameOrEmail"
               autocomplete="username"
-              class="w-full px-4 py-3 rounded-lg border border-gray-300 outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
+              class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200 bg-gray-50/50"
               placeholder="Nhập tên đăng nhập hoặc email"
             />
           </div>
@@ -79,30 +88,51 @@ const handleLogin = async () => {
               name="password"
               type="password"
               required
-              autocomplete="password"
+              autocomplete="current-password"
               v-model="form.password"
-              class="w-full px-4 py-3 rounded-lg border border-gray-300 outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
+              class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200 bg-gray-50/50"
               placeholder="Nhập mật khẩu"
             />
           </div>
 
           <div
-            v-if="error"
-            class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"
+            v-if="errorMessage"
+            class="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-xl text-sm animate-pulse"
           >
-            {{ error }}
+            {{ errorMessage }}
           </div>
 
           <button
             type="submit"
-            :disabled="loading"
-            class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            :disabled="isLoading"
+            class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-red-200 transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <span v-if="loading">Đang đăng nhập...</span>
-            <span v-else>Đăng nhập</span>
+            {{ isLoading ? 'Đang xử lý...' : 'Đăng nhập ngay' }}
           </button>
         </form>
+
+        <div class="text-center pt-2">
+          <p class="text-xs text-gray-400">
+            &copy; 2026 AnhEm Motor - Hệ thống quản lý chuyên nghiệp
+          </p>
+        </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+</style>

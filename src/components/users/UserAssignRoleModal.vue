@@ -77,9 +77,11 @@ import BasePagination from '@/components/ui/button/BasePagination.vue'
 import Input from '@/components/ui/input/BaseInput.vue'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 import IconSearch from '@/assets/icons/search.svg'
-import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
-import { fetchRoles } from '@/api/role'
+import { useRoleStore } from '@/stores/role.store'
 import { useQueryClient } from '@tanstack/vue-query'
+import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
+
+const roleStore = useRoleStore()
 
 const props = defineProps({
   show: Boolean,
@@ -97,7 +99,7 @@ const queryClient = useQueryClient()
 const selectedRoleIds = ref([])
 
 const fetchRolesWrapper = async (params) => {
-  return fetchRoles(params)
+  return await roleStore.fetchRoles(params)
 }
 
 const {

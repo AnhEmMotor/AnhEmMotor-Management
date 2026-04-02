@@ -2,8 +2,7 @@
 import { ref, computed, watch, onBeforeUnmount, reactive } from 'vue'
 import Textarea from '@/components/ui/input/BaseTextarea.vue'
 import RoundBadge from '../ui/RoundBadge.vue'
-import * as apiSuppliers from '@/api/supplier'
-import * as apiProducts from '@/api/product'
+import { useInputStore } from '@/stores/input.store'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { Permissions } from '@/constants/permissions'
 import { usePermission } from '@/composables/usePermission'
@@ -20,6 +19,7 @@ const props = defineProps({
 })
 
 const { hasPermission } = usePermission()
+const inputStore = useInputStore()
 
 const emit = defineEmits(['update:modelValue', 'addProduct'])
 
@@ -43,7 +43,7 @@ const {
   pagination: supplierPagination,
 } = usePaginatedQuery({
   queryKey: ['active-suppliers'],
-  queryFn: apiSuppliers.fetchActiveSuppliers,
+  queryFn: (params) => inputStore.searchSuppliers(params),
   itemsPerPage: 5,
   useLocalPagination: true,
   searchFields: [{ key: 'search', debounce: 400 }],
@@ -60,7 +60,7 @@ const {
   pagination: productPagination,
 } = usePaginatedQuery({
   queryKey: ['variants-lite-for-input'],
-  queryFn: apiProducts.fetchVariantsLiteForInput,
+  queryFn: (params) => inputStore.searchProducts(params),
   itemsPerPage: 5,
   useLocalPagination: true,
   searchFields: [{ key: 'search', debounce: 400 }],

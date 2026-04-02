@@ -78,7 +78,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import * as mediaFileApi from '@/api/mediaFile'
+import productService from '@/services/product.service'
 import IconImagePlaceholder from '@/assets/icons/image-placeholder.svg'
 import IconCloseLine from '@/assets/icons/close-line.svg'
 
@@ -172,7 +172,7 @@ const uploadHandler = async (file) => {
   uploadError.value = ''
 
   try {
-    const response = await mediaFileApi.uploadImage(file)
+    const response = await productService.uploadImage(file)
     localValue.value = response.publicUrl
     initialImageUrl.value = response.publicUrl
   } catch (apiError) {
