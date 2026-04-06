@@ -6,6 +6,7 @@ import IconExpand from '@/assets/icons/IconExpand.svg'
 import Textarea from '../ui/input/BaseTextarea.vue'
 import { Permissions } from '@/constants/permissions'
 import { usePermission } from '@/composables/usePermission'
+import { formatCurrency } from '@/utils/currency'
 
 const props = defineProps({
   itemData: Object,
@@ -25,11 +26,6 @@ watch(
   },
   { immediate: true, deep: true },
 )
-
-function formatCurrency(value) {
-  if (!value && value !== 0) return ''
-  return value.toLocaleString('vi-VN')
-}
 
 const totalProductValue = (products) => {
   return products.reduce((sum, product) => sum + product.total, 0)

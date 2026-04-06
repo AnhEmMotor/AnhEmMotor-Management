@@ -11,10 +11,10 @@ const userMapper = {
       dateOfBirth: dto.dateOfBirth || null,
       status: dto.status || 'Active',
       avatarUrl: dto.avatarUrl || '',
-      roles: (dto.roles || []).map((r) => ({
-        id: r.id,
-        name: r.name,
-      })),
+      roles: (dto.roles || []).map((r) => {
+        if (typeof r === 'string') return { id: r, name: '' }
+        return { id: r.id, name: r.name }
+      }),
       permissions: dto.permissions || [],
     }
   },
