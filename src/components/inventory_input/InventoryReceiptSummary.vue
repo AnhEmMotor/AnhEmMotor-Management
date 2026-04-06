@@ -1,6 +1,7 @@
 <script setup>
 import { formatDateTime } from '@/utils/date'
 import RoundBadge from '../ui/RoundBadge.vue'
+import { formatCurrency } from '@/utils/currency'
 
 defineProps({
   itemData: Object,
@@ -8,11 +9,6 @@ defineProps({
   isOpen: Boolean,
 })
 defineEmits(['toggle-detail', 'edit', 'copy', 'cancel-request'])
-
-function formatCurrency(value) {
-  if (!value && value !== 0) return ''
-  return value.toLocaleString('vi-VN')
-}
 
 function getStatusColor(status) {
   switch (status) {

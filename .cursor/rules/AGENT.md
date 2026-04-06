@@ -69,6 +69,7 @@
       - Nằm trong src\components.
       - Chỉ giao tiếp qua props và emit.
       - Logic bên trong chỉ phục vụ hiển thị hoặc validate form tại chỗ.
+  - Ngoài ra còn có app\composables và app\utils chứa các hàm tiện ích chung xài nhiều lần trong dự án. Đưa vào composables nếu file chứa logic sử dụng Composition API của Vue. Đưa vào utils khi file chỉ chứa các hàm thuần túy (pure functions).
 
 # Tanstack Query (Quy trình CRUD Chuẩn)
 

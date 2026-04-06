@@ -104,6 +104,7 @@ const fetchRolesWrapper = async (params) => {
 
 const {
   data: roles,
+  isLoading,
   searchRefs,
   pagination,
 } = usePaginatedQuery({
@@ -118,7 +119,10 @@ watch(
   () => props.show,
   (val) => {
     if (val) {
-      selectedRoleIds.value = (props.initialRoles || []).map((id) => id.toLowerCase())
+      selectedRoleIds.value = (props.initialRoles || []).map((role) => {
+        const id = typeof role === 'string' ? role : role.id
+        return id ? id.toLowerCase() : ''
+      })
     }
   },
   { immediate: true },

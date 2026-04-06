@@ -1,5 +1,5 @@
 export const AUTH_ENDPOINTS = {
-  LOGIN: '/api/v1/user/login',
-  LOGOUT: '/api/v1/user/logout',
-  REFRESH: '/api/v1/user/refresh-token',
+  LOGIN: '/api/v1/auth/login/for-manager',
+  LOGOUT: '/api/v1/auth/logout',
+  REFRESH: '/api/v1/auth/refresh-token',
 }
