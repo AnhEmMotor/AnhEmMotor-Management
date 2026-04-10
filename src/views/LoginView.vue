@@ -4,6 +4,7 @@ import { useAuthStore } from '@/stores/auth.store'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
+import SocialLogin from '@/components/Auth/SocialLogin.vue'
 import IconLock from '@/assets/icons/login-lock.svg'
 
 const authStore = useAuthStore()
@@ -110,6 +111,8 @@ const handleLogin = async () => {
             {{ isLoading ? 'Đang xử lý...' : 'Đăng nhập ngay' }}
           </button>
         </form>
+
+        <SocialLogin @loading="(val) => (isLoading = val)" />
 
         <div class="text-center pt-2">
           <p class="text-xs text-gray-400">
