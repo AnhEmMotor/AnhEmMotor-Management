@@ -9,6 +9,25 @@ const authService = {
     return data
   },
 
+  async loginWithGoogle(idToken) {
+    const { data } = await axiosInstance.post(AUTH_ENDPOINTS.LOGIN_GOOGLE, { idToken })
+    return data
+  },
+
+  async loginWithFacebook(accessToken) {
+    const { data } = await axiosInstance.post(AUTH_ENDPOINTS.LOGIN_FACEBOOK, { accessToken })
+    return data
+  },
+
+  async getExternalAuthConfig() {
+    const baseURL =
+      import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:3000'
+    const response = await fetch(`${baseURL}${AUTH_ENDPOINTS.EXTERNAL_CONFIG}`, {
+      method: 'GET',
+    })
+    return await response.json()
+  },
+
   async logout() {
     const { data } = await axiosInstance.post(AUTH_ENDPOINTS.LOGOUT)
     return data

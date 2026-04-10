@@ -106,6 +106,24 @@ export const useAuthStore = defineStore('auth', () => {
     await waitForUser()
   }
 
+  const loginWithGoogle = async (idToken) => {
+    isLoggingOut = false
+    const data = await authService.loginWithGoogle(idToken)
+    setAccessToken(data.accessToken, data.expiresAt)
+    closeSSE()
+    connectSSE()
+    await waitForUser()
+  }
+
+  const loginWithFacebook = async (accessToken) => {
+    isLoggingOut = false
+    const data = await authService.loginWithFacebook(accessToken)
+    setAccessToken(data.accessToken, data.expiresAt)
+    closeSSE()
+    connectSSE()
+    await waitForUser()
+  }
+
   const logout = async () => {
     try {
       closeSSE()
@@ -113,6 +131,10 @@ export const useAuthStore = defineStore('auth', () => {
     } finally {
       performLogout(true)
     }
+  }
+
+  const getExternalAuthConfig = async () => {
+    return await authService.getExternalAuthConfig()
   }
 
   const updateProfile = async (model) => {
@@ -263,12 +285,15 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated,
     sseStatus,
     login,
+    loginWithGoogle,
+    loginWithFacebook,
     logout,
     updateProfile,
     changePassword,
     uploadAvatar,
     initAuth,
     performLogout,
+    getExternalAuthConfig,
     reconnectSSE: () => {
       closeSSE()
       connectSSE()
