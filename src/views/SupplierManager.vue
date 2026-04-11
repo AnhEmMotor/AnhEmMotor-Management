@@ -126,7 +126,8 @@ const handleCloseFormModal = () => {
   formErrors.value = {}
 }
 
-const handleSaveSupplier = async () => {
+const handleSaveSupplier = async (data) => {
+  editableSupplier.value = data
   isSaving.value = true
   overlayMessage.value = isEditMode.value ? 'Đang cập nhật...' : 'Đang tạo mới...'
 
