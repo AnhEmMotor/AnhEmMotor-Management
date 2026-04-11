@@ -128,9 +128,16 @@ export const useInputStore = defineStore('input', () => {
   }
 
   const searchSuppliers = async (params) => {
-    return await supplierService.fetchSuppliers(
+    const data = await supplierService.fetchSuppliers(
       supplierMapper.toParams({ ...params, status: 'active' }),
     )
+    return {
+      data: supplierMapper.toList(data.items),
+      pagination: {
+        totalPages: data.totalPages,
+        totalCount: data.totalCount,
+      },
+    }
   }
 
   const searchProducts = async (params) => {

@@ -28,10 +28,15 @@ watch(
 )
 
 const totalProductValue = (products) => {
-  return products.reduce((sum, product) => sum + product.total, 0)
+  if (!Array.isArray(products)) return 0
+  return products.reduce((sum, product) => sum + (product.total || 0), 0)
 }
 const totalDiscount = (products) => {
-  return products.reduce((sum, product) => sum + product.discount * product.quantity, 0)
+  if (!Array.isArray(products)) return 0
+  return products.reduce(
+    (sum, product) => sum + (product.discount || 0) * (product.quantity || 0),
+    0,
+  )
 }
 </script>
 

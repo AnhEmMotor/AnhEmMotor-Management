@@ -3,6 +3,8 @@ export const inputMapper = {
     if (!dto) return null
     return {
       id: dto.id,
+      supplierName: dto.supplierName || '',
+      totalPayable: dto.totalPayable || 0,
       supplier: dto.supplierId
         ? {
             id: dto.supplierId,
@@ -18,7 +20,9 @@ export const inputMapper = {
         name: p.productName || p.name || p.variantName || '',
         quantity: p.quantity || p.count || 0,
         unitPrice: p.unitPrice || p.inputPrice || 0,
-        total: (p.quantity || p.count || 0) * (p.unitPrice || p.inputPrice || 0),
+        discount: p.discount || 0,
+        importPrice: p.importPrice || 0,
+        total: p.total || (p.quantity || p.count || 0) * (p.unitPrice || p.inputPrice || 0),
       })),
       notes: dto.notes || '',
       statusId: dto.statusId,
