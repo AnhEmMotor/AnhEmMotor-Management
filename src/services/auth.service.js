@@ -21,7 +21,7 @@ const authService = {
 
   async getExternalAuthConfig() {
     const baseURL =
-      import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:3000'
+      import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:5000'
     const response = await fetch(`${baseURL}${AUTH_ENDPOINTS.EXTERNAL_CONFIG}`, {
       method: 'GET',
     })

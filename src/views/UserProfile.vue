@@ -18,7 +18,7 @@ const route = useRoute()
 const router = useRouter()
 
 const user = computed(() => authStore.user || {})
-const apiUrl = import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:3000'
+const apiUrl = import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:5000'
 
 const activeTab = computed({
   get: () => route.query.tab || 'profile',

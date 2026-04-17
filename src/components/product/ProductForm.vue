@@ -147,6 +147,10 @@ watch(
           optionValues: {},
           cover_image_url: '',
           photo_collection: [],
+          version_name: '',
+          color_name: '',
+          color_code: '#000000',
+          sku: '',
           url: '',
         },
       ]
@@ -155,6 +159,10 @@ watch(
         if (!v.photo_collection) v.photo_collection = []
         if (!v.cover_image_url) v.cover_image_url = ''
         if (!v.optionValues) v.optionValues = {}
+        if (v.version_name === undefined) v.version_name = ''
+        if (v.color_name === undefined) v.color_name = ''
+        if (v.color_code === undefined) v.color_code = '#000000'
+        if (v.sku === undefined) v.sku = ''
         if (!v.url) v.url = generateVariantSlug(localProduct.value.name, v.optionValues)
       })
     }
@@ -223,12 +231,54 @@ const addVariant = () => {
     optionValues: {},
     cover_image_url: '',
     photo_collection: [],
+    version_name: '',
+    color_name: '',
+    color_code: '#000000',
+    sku: '',
     url: '',
   }
 
   newVariant.url = generateVariantSlug(localProduct.value.name, newVariant.optionValues)
   localProduct.value.variants.push(newVariant)
 }
+
+const colorMap = {
+  'đỏ': '#FF0000',
+  'xanh': '#0000FF',
+  'trắng': '#FFFFFF',
+  'đen': '#000000',
+  'bạc': '#C0C0C0',
+  'xám': '#808080',
+  'vàng': '#FFFF00',
+  'cam': '#FFA500',
+  'tím': '#800080',
+  'hồng': '#FFC0CB',
+  'nâu': '#A52A2A',
+}
+
+const autoUpdateColorCode = (variant) => {
+  if (!variant.color_name) return
+  const name = variant.color_name.toLowerCase()
+  for (const [key, code] of Object.entries(colorMap)) {
+    if (name.includes(key)) {
+      variant.color_code = code
+      break
+    }
+  }
+}
+
+watch(
+  () => localProduct.value.variants?.map((v) => v.color_name),
+  (newVal, oldVal) => {
+    if (!newVal) return
+    newVal.forEach((name, index) => {
+      if (name !== (oldVal ? oldVal[index] : '')) {
+        autoUpdateColorCode(localProduct.value.variants[index])
+      }
+    })
+  },
+  { deep: true },
+)
 
 const removeVariant = (index) => {
   localProduct.value.variants.splice(index, 1)
@@ -508,6 +558,41 @@ const removeVariant = (index) => {
               :icon="IconPlus"
               size="sm"
             />
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <Input
+                label="Tên phiên bản *"
+                v-model="variant.version_name"
+                placeholder="ví dụ: Tiêu chuẩn, Cao cấp..."
+                required
+              />
+              <Input
+                label="Mã SKU *"
+                v-model="variant.sku"
+                placeholder="ví dụ: VISION-2024-RED"
+                required
+              />
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <Input
+                label="Tên màu sắc *"
+                v-model="variant.color_name"
+                placeholder="ví dụ: Đỏ đen, Trắng xanh..."
+                required
+              />
+              <div class="flex flex-col">
+                <label class="text-sm font-medium text-gray-700 mb-1">Mã màu (Swatch)</label>
+                <div class="flex gap-2 items-center">
+                  <input
+                    type="color"
+                    v-model="variant.color_code"
+                    class="h-10 w-20 border rounded cursor-pointer"
+                  />
+                  <span class="text-xs font-mono text-gray-500 uppercase">{{ variant.color_code }}</span>
+                </div>
+              </div>
+            </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <Input

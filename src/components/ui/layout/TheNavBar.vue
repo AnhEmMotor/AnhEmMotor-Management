@@ -501,7 +501,7 @@ import { Permissions } from '@/constants/permissions'
 import { usePermission } from '@/composables/usePermission'
 
 const { hasPermission, hasAnyPermission } = usePermission()
-const apiUrl = import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:3000'
+const apiUrl = import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:5000'
 
 const openGroups = ref([])
 const route = useRoute()

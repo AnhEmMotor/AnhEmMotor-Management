@@ -54,7 +54,7 @@ export const useAuthStore = defineStore('auth', () => {
     }, 500)
   }
 
-  registerAuthFailureCallback(() => performLogout(false))
+  registerAuthFailureCallback(() => performLogout(true))
 
   watch(
     () => user.value?.permissions,
@@ -127,7 +127,7 @@ export const useAuthStore = defineStore('auth', () => {
   const logout = async () => {
     try {
       closeSSE()
-      await authService.logout()
+      await authService.logout().catch(() => {})
     } finally {
       performLogout(true)
     }
@@ -165,7 +165,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (!token) return
 
     abortController = new AbortController()
-    const sseUrl = `${import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:3000'}/api/v1/user/me`
+    const sseUrl = `${import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:5000'}/api/v1/user/me`
 
     sseStatus.value = 'connecting'
 

@@ -79,7 +79,7 @@ const errors = ref({
 
 const fileInputRef = ref(null)
 const isUploadingAvatar = ref(false)
-const apiUrl = import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:3000'
+const apiUrl = import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:5000'
 
 const handleAvatarClick = () => {
   fileInputRef.value?.click()
