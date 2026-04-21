@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import supplierService from '@/services/supplier.service'
-import { supplierMapper } from '@/mappers/supplier.mapper'
+import supplierService from '@application/services/supplier.service'
+import { supplierMapper } from '@infrastructure/mappers/supplier.mapper'
 
 export const useSupplierStore = defineStore('supplier', () => {
   const error = ref(null)
@@ -114,3 +114,7 @@ export const useSupplierStore = defineStore('supplier', () => {
     fetchPurchaseHistory,
   }
 })
+
+
+
+

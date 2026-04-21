@@ -17,3 +17,5 @@ export function formatDateTime(timestamp) {
   const minutes = date.getMinutes().toString().padStart(2, '0')
   return `${hours}:${minutes} ${day}/${month}/${year}`
 }
+
+

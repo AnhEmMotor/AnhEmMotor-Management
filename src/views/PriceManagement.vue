@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useProductStore } from '@/stores/product.store'
-import productService from '@/services/product.service'
+import productService from '@application/services/product.service'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { useQueryClient } from '@tanstack/vue-query'
 import PriceQuickMenu from '@/components/price_management/PriceQuickMenu.vue'
@@ -335,3 +335,7 @@ function handleExport() {}
     />
   </div>
 </template>
+
+
+
+

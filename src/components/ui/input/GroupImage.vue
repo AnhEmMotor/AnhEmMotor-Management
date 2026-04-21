@@ -65,7 +65,7 @@
         :key="url"
         class="relative w-full aspect-square border border-gray-200 rounded-md overflow-hidden shadow-sm"
       >
-        <img :src="url" alt="Preview" class="w-full h-full object-cover" />
+        <img :src="getImageUrl(url)" alt="Preview" class="w-full h-full object-cover" />
         <button
           @click="removeImage(index)"
           type="button"
@@ -91,7 +91,8 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import productService from '@/services/product.service'
+import { getImageUrl } from '@/utils/image'
+import productService from '@application/services/product.service'
 import IconCloseLine from '@/assets/icons/close-line.svg'
 import IconImagePlaceholder from '@/assets/icons/image-placeholder.svg'
 
@@ -213,3 +214,7 @@ const removeImage = (index) => {
   localValue.value = newArray
 }
 </script>
+
+
+
+

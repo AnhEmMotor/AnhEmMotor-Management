@@ -108,3 +108,5 @@ const getTrendIcon = (trend) => {
     </table>
   </div>
 </template>
+
+

@@ -2,7 +2,9 @@
 import { ref, computed } from 'vue'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { useProductStore } from '@/stores/product.store'
-import productService from '@/services/product.service'
+import productService from '@application/services/product.service'
+import brandService from '@application/services/brand.service'
+import categoryService from '@application/services/category.service'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { useToast } from 'vue-toastification'
 import { Permissions } from '@/constants/permissions'
@@ -36,8 +38,51 @@ const { data: inventoryStatusesData } = useQuery({
   staleTime: 10 * 60 * 1000,
 })
 
+const { data: brandsData } = useQuery({
+  queryKey: ['brands'],
+  queryFn: () => brandService.fetchBrands({ page: 1, pageSize: 100 }),
+  staleTime: 10 * 60 * 1000,
+})
+
+const brands = computed(() => {
+  const data = brandsData.value?.data || brandsData.value
+  return data?.items || (Array.isArray(data) ? data : [])
+})
+
+const { data: categoriesData } = useQuery({
+  queryKey: ['categories'],
+  queryFn: () => categoryService.fetchCategories({ page: 1, pageSize: 100 }),
+  staleTime: 10 * 60 * 1000,
+})
+
+const categories = computed(() => {
+  const data = categoriesData.value?.data || categoriesData.value
+  return data?.items || (Array.isArray(data) ? data : [])
+})
+
+const { data: optionsData } = useQuery({
+  queryKey: ['productAllOptions'],
+  queryFn: () => productService.getOptions(),
+  staleTime: 10 * 60 * 1000,
+})
+
+const vehicleTypes = computed(() => {
+  const rawData = optionsData.value?.data || optionsData.value
+  const options = Array.isArray(rawData) ? rawData : []
+  
+  const vehicleTypeOption = options.find(o => 
+    o.name === 'VehicleType' || 
+    o.name === 'Loại xe' || 
+    o.name?.toLowerCase().includes('loại') ||
+    o.name?.toLowerCase().includes('type')
+  )
+  
+  return vehicleTypeOption?.values || vehicleTypeOption?.optionValues || []
+})
+
 const inventoryStatusMap = computed(() => {
-  const list = inventoryStatusesData.value || []
+  const data = inventoryStatusesData.value?.data || inventoryStatusesData.value
+  const list = Array.isArray(data) ? data : []
   return list.reduce((acc, item) => {
     acc[item.key] = item.label
     return acc
@@ -65,7 +110,7 @@ const {
   queryFn: (query) => productStore.fetchProducts(query),
   itemsPerPage: 10,
   searchFields: [{ key: 'search', debounce: 400 }],
-  filterFields: [{ key: 'inventoryStatus' }],
+  filterFields: [{ key: 'inventoryStatus' }, { key: 'brand_id' }, { key: 'category_id' }, { key: 'optionValueIds' }],
   sortableFields: ['inventoryStatus'],
 })
 
@@ -287,7 +332,13 @@ const exportExcel = () => {
     <ProductSearch
       v-model:search="searchRefs.search"
       v-model:inventoryStatus="filterRefs.inventoryStatus"
+      v-model:brandId="filterRefs.brand_id"
+      v-model:categoryId="filterRefs.category_id"
+      v-model:vehicleTypeId="filterRefs.optionValueIds"
       :inventoryStatusMap="inventoryStatusMap"
+      :brands="brands"
+      :categories="categories"
+      :vehicleTypes="vehicleTypes"
     />
 
     <div
@@ -331,3 +382,7 @@ const exportExcel = () => {
     @save="handleSaveProduct"
   />
 </template>
+
+
+
+

@@ -167,3 +167,5 @@ const totalDiscount = (products) => {
     </div>
   </div>
 </template>
+
+

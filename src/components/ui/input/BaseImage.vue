@@ -6,13 +6,13 @@
 
     <div
       v-if="localValue"
-      class="mt-2 relative w-full h-48 border border-gray-300 rounded-md overflow-hidden"
+      class="mt-2 relative w-full aspect-video border border-gray-200 rounded-lg overflow-hidden bg-white shadow-inner flex items-center justify-center"
     >
-      <img :src="localValue" alt="Image preview" class="w-full h-full object-cover" />
+      <img :src="getImageUrl(localValue)" alt="Image preview" class="max-w-full max-h-full object-contain" />
       <button
         @click="clearImage"
         type="button"
-        class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 leading-none hover:bg-red-600 focus:outline-none"
+        class="absolute top-2 right-2 bg-red-500/90 text-white rounded-full p-1.5 leading-none hover:bg-red-600 shadow-md transition-all hover:scale-110 z-10"
       >
         <IconCloseLine class="h-4 w-4" />
       </button>
@@ -25,12 +25,12 @@
       @dragleave.prevent="onDragLeave"
       @drop.prevent="onDrop"
       :class="[
-        'mt-2 relative flex justify-center items-center w-full h-48 border-2 border-dashed rounded-md cursor-pointer transition-colors',
+        'mt-2 relative flex justify-center items-center w-full aspect-video border-2 border-dashed rounded-lg cursor-pointer transition-all duration-200',
         isDragging
-          ? 'border-purple-600 bg-purple-50'
+          ? 'border-purple-600 bg-purple-50 scale-[0.99]'
           : error
             ? 'border-red-400 bg-red-50'
-            : 'border-gray-300 hover:border-gray-400',
+            : 'border-gray-300 hover:border-purple-400 hover:bg-gray-50',
         isLoading ? 'pointer-events-none' : '',
       ]"
     >
@@ -78,7 +78,8 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import productService from '@/services/product.service'
+import { getImageUrl } from '@/utils/image'
+import productService from '@application/services/product.service'
 import IconImagePlaceholder from '@/assets/icons/image-placeholder.svg'
 import IconCloseLine from '@/assets/icons/close-line.svg'
 
@@ -194,3 +195,7 @@ const clearImage = () => {
   }
 }
 </script>
+
+
+
+

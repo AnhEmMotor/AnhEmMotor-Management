@@ -4,3 +4,5 @@ export const STATISTICS_ENDPOINTS = {
   PRODUCT_REPORT: '/api/v1/statistics/product-report',
   WAREHOUSE_REPORT: '/api/v1/statistics/warehouse-report',
 }
+
+

@@ -11,3 +11,5 @@ export const USER_ENDPOINTS = {
   MY_PASSWORD: '/api/v1/user/change-password',
   MY_AVATAR: '/api/v1/user/upload-avatar',
 }
+
+

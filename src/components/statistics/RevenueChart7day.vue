@@ -215,3 +215,5 @@ onUnmounted(() => {
 
 watch(() => props.revenueData, (newData) => drawChart(newData), { deep: true })
 </script>
+
+

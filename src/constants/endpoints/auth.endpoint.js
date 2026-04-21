@@ -6,3 +6,5 @@ export const AUTH_ENDPOINTS = {
   REFRESH: '/api/v1/auth/refresh-token',
   EXTERNAL_CONFIG: '/api/v1/auth/external-config',
 }
+
+

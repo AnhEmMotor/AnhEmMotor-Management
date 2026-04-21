@@ -18,3 +18,5 @@ export const PRODUCT_ENDPOINTS = {
   },
   DELETE_MANY: '/api/v1/product/delete-many',
 }
+
+

@@ -187,3 +187,5 @@ const visibleActions = computed(() => {
   return quickActions.filter((action) => !action.permission || hasPermission(action.permission))
 })
 </script>
+
+

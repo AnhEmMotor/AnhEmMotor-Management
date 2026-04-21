@@ -7,3 +7,5 @@ export const ROLE_ENDPOINTS = {
   STRUCTURE: '/api/v1/Permission/structure',
   USER_PERMISSIONS: (userId) => `/api/v1/Permission/users/${userId}/permissions`,
 }
+
+

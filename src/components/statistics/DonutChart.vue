@@ -112,3 +112,5 @@ watch(() => props.data, drawChart, { deep: true })
     </div>
   </div>
 </template>
+
+

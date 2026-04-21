@@ -100,7 +100,7 @@ import { useRoleStore } from '@/stores/role.store'
 import { useQueryClient, useMutation, useQuery } from '@tanstack/vue-query'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { showConfirmation } from '@/composables/useConfirmationState'
-import userMapper from '@/mappers/user.mapper'
+import userMapper from '@infrastructure/mappers/user.mapper'
 
 const authStore = useAuthStore()
 const userStore = useUserStore()
@@ -304,3 +304,5 @@ const handleSaveUser = (userData) => {
   doUpdateUser(userData)
 }
 </script>
+
+

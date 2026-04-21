@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import userService from '@/services/user.service'
-import userMapper from '@/mappers/user.mapper'
+import userService from '@application/services/user.service'
+import userMapper from '@infrastructure/mappers/user.mapper'
 
 export const useUserStore = defineStore('user', () => {
   const fetchBasicUsers = async (query) => {
@@ -64,3 +64,7 @@ export const useUserStore = defineStore('user', () => {
     uploadAvatar,
   }
 })
+
+
+
+

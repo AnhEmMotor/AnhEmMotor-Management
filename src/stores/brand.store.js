@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import brandService from '@/services/brand.service'
-import brandMapper from '@/mappers/brand.mapper'
+import brandService from '@application/services/brand.service'
+import brandMapper from '@infrastructure/mappers/brand.mapper'
 
 export const useBrandStore = defineStore('brand', () => {
   const isLoading = ref(false)
@@ -105,3 +105,7 @@ export const useBrandStore = defineStore('brand', () => {
     deleteBrand,
   }
 })
+
+
+
+

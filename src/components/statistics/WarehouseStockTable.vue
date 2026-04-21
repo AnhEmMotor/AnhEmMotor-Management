@@ -83,3 +83,5 @@ defineEmits(['view-detail', 'restock'])
     </table>
   </div>
 </template>
+
+

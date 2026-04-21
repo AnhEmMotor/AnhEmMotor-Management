@@ -9,3 +9,5 @@ export const SALES_ORDER_ENDPOINTS = {
   TRANSITION_MAP: '/api/v1/SalesOrders/transition-map',
   LOCKED_STATUSES: '/api/v1/SalesOrders/locked-statuses',
 }
+
+

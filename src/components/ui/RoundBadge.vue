@@ -31,3 +31,5 @@ const badgeClasses = computed(() => colorClasses[props.color] || colorClasses.gr
     <slot />
   </span>
 </template>
+
+

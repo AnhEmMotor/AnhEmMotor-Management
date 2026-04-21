@@ -4,3 +4,5 @@ export const SUPPLIER_ENDPOINTS = {
   STATUS: (id) => `/api/v1/supplier/${id}/status`,
   PURCHASE_HISTORY: (id) => `/api/v1/supplier/${id}/purchase-history`,
 }
+
+

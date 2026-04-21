@@ -19,6 +19,15 @@ const RolePermissionManager = () => import('@/views/RolePermissionManager.vue')
 const PriceManagement = () => import('@/views/PriceManagement.vue')
 const SettingsView = () => import('@/views/SettingsView.vue')
 const UserProfile = () => import('@/views/UserProfile.vue')
+const NewsEditor = () => import('@/views/NewsEditor.vue')
+const BannerManagement = () => import('@/views/BannerManagement.vue')
+const ContactList = () => import('@/views/ContactList.vue')
+const BookingCalendar = () => import('@/views/booking-calendar.vue')
+const VehicleTypeManager = () => import('@/views/VehicleTypeManager.vue')
+const LeadManagement = () => import('@/views/LeadManagement.vue')
+const SalesPipeline = () => import('@/views/SalesPipeline.vue')
+const VehiclePortfolio = () => import('@/views/VehiclePortfolio.vue')
+const LoyaltyRetention = () => import('@/views/LoyaltyRetention.vue')
 const NotFoundView = () => import('@/views/NotFoundView.vue')
 
 const router = createRouter({
@@ -122,6 +131,16 @@ const router = createRouter({
           },
         },
         {
+          name: 'vehicle-type-manager',
+          path: 'vehicle-types',
+          component: VehicleTypeManager,
+          meta: {
+            requiresAuth: true,
+            title: 'Quản lý loại xe',
+            permission: Permissions.ProductCategoriesView,
+          },
+        },
+        {
           name: 'brand-manager',
           path: 'brands',
           component: BrandManager,
@@ -187,6 +206,86 @@ const router = createRouter({
           component: UserProfile,
           meta: { requiresAuth: true, title: 'Hồ sơ người dùng' },
         },
+        {
+          name: 'news-manager',
+          path: 'news',
+          component: NewsEditor,
+          meta: {
+            requiresAuth: true,
+            title: 'Quản lý tin tức',
+            permission: Permissions.NewsView,
+          },
+        },
+        {
+          name: 'banner-manager',
+          path: 'banners',
+          component: BannerManagement,
+          meta: {
+            requiresAuth: true,
+            title: 'Quản lý Banner',
+            permission: Permissions.BannersView,
+          },
+        },
+        {
+          name: 'contact-list',
+          path: 'contacts',
+          component: ContactList,
+          meta: {
+            requiresAuth: true,
+            title: 'Chăm sóc khách hàng',
+            // permission: Permissions.ContactsView,
+          },
+        },
+        {
+          name: 'booking-calendar',
+          path: 'bookings',
+          component: BookingCalendar,
+          meta: {
+            requiresAuth: true,
+            title: 'Quản lý đặt lịch',
+            // permission: Permissions.BookingsView,
+          },
+        },
+        {
+          name: 'lead-management',
+          path: 'leads',
+          component: LeadManagement,
+          meta: {
+            requiresAuth: true,
+            title: 'Quản lý Lead',
+            // permission: Permissions.LeadsView,
+          },
+        },
+        {
+          name: 'sales-pipeline',
+          path: 'pipeline',
+          component: SalesPipeline,
+          meta: {
+            requiresAuth: true,
+            title: 'Tiến độ mua hàng',
+            // permission: Permissions.LeadsView,
+          },
+        },
+        {
+          name: 'vehicle-portfolio',
+          path: 'vehicles',
+          component: VehiclePortfolio,
+          meta: {
+            requiresAuth: true,
+            title: 'Quản lý Tài sản',
+            // permission: Permissions.VehiclesView,
+          },
+        },
+        {
+          name: 'loyalty-retention',
+          path: 'loyalty',
+          component: LoyaltyRetention,
+          meta: {
+            requiresAuth: true,
+            title: 'Chăm sóc & Ưu đãi',
+            // permission: Permissions.LoyaltyView,
+          },
+        },
       ],
     },
     {
@@ -239,3 +338,5 @@ router.afterEach((to) => {
 })
 
 export default router
+
+

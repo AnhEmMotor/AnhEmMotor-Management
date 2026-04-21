@@ -51,3 +51,5 @@ const textareaId = computed(() => `base-textarea-${Math.random().toString(36).su
     <p v-if="error" class="mt-1 text-sm text-red-600">{{ error }}</p>
   </div>
 </template>
+
+

@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, watch, nextTick } from 'vue'
 import { useOrderStore } from '@/stores/order.store'
-import orderMapper from '@/mappers/order.mapper'
+import orderMapper from '@infrastructure/mappers/order.mapper'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
 
@@ -372,3 +372,5 @@ const handleExport = () => {
     />
   </div>
 </template>
+
+

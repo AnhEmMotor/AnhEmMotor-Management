@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import categoryService from '@/services/category.service'
-import categoryMapper from '@/mappers/category.mapper'
+import categoryService from '@application/services/category.service'
+import categoryMapper from '@infrastructure/mappers/category.mapper'
 
 export const useCategoryStore = defineStore('category', () => {
   const isLoading = ref(false)
@@ -105,3 +105,7 @@ export const useCategoryStore = defineStore('category', () => {
     deleteCategory,
   }
 })
+
+
+
+

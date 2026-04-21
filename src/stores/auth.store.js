@@ -6,10 +6,10 @@ import {
   registerAuthFailureCallback,
   getAccessToken,
   refreshAccessToken,
-} from '@/api/axios'
-import { queryClient } from '@/api/queryClient'
-import authService from '@/services/auth.service'
-import authMapper from '@/mappers/auth.mapper'
+} from '@infrastructure/api/axios'
+import { queryClient } from '@infrastructure/api/queryClient'
+import authService from '@application/services/auth.service'
+import authMapper from '@infrastructure/mappers/auth.mapper'
 
 const INITIAL_RETRY_DELAY = 1000
 const MAX_RETRY_DELAY = 30000
@@ -300,3 +300,7 @@ export const useAuthStore = defineStore('auth', () => {
     },
   }
 })
+
+
+
+

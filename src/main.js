@@ -7,9 +7,56 @@ import Toast from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
 import { createPinia } from 'pinia'
 import { VueQueryPlugin } from '@tanstack/vue-query'
-import { queryClient } from '@/api/queryClient'
+import { queryClient } from '@infrastructure/api/queryClient'
+
+/* import the fontawesome core */
+import { library } from '@fortawesome/fontawesome-svg-core'
+
+/* import font awesome icon component */
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+/* import specific icons */
+import { 
+  faUsersRays, 
+  faUserPlus, 
+  faEnvelopeOpenText, 
+  faCalendarCheck, 
+  faCommentDots,
+  faRotate,
+  faMagnifyingGlass,
+  faPhone,
+  faEnvelope,
+  faClock,
+  faEye,
+  faEllipsisVertical,
+  faChartLine,
+  faCar,
+  faGift
+} from '@fortawesome/free-solid-svg-icons'
+
+/* add icons to the library */
+library.add(
+  faUsersRays, 
+  faUserPlus, 
+  faEnvelopeOpenText, 
+  faCalendarCheck, 
+  faCommentDots,
+  faRotate,
+  faMagnifyingGlass,
+  faPhone,
+  faEnvelope,
+  faClock,
+  faEye,
+  faEllipsisVertical,
+  faChartLine,
+  faCar,
+  faGift
+)
 
 const app = createApp(App)
+
+// Register FontAwesomeIcon component globally
+app.component('font-awesome-icon', FontAwesomeIcon)
 
 const piniaInstance = createPinia()
 app.use(piniaInstance)

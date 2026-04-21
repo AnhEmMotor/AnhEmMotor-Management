@@ -33,3 +33,5 @@ defineEmits(['toggle-detail', 'edit-supplier', 'delete-supplier', 'toggle-activa
     </div>
   </div>
 </template>
+
+

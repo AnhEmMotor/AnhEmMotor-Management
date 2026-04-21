@@ -7,7 +7,7 @@ import Input from '@/components/ui/input/BaseInput.vue'
 import IconAvatarEdit from '@/assets/icons/avatar-edit.svg'
 import { useToast } from 'vue-toastification'
 import { useQuery } from '@tanstack/vue-query'
-import userService from '@/services/user.service'
+import userService from '@application/services/user.service'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 import DateTimePicker from '@/components/ui/input/DateTimePicker.vue'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
@@ -331,3 +331,7 @@ const handleAvatarChange = async (event) => {
     </div>
   </div>
 </template>
+
+
+
+

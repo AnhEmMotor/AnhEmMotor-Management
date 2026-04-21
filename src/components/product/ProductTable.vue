@@ -9,6 +9,7 @@ import IconEdit from '@/assets/icons/IconEdit.svg'
 import IconTrash from '@/assets/icons/IconTrash.svg'
 import { Permissions } from '@/constants/permissions'
 import { usePermission } from '@/composables/usePermission'
+import { getImageUrl } from '@/utils/image'
 import ProductTableDetail from './ProductTableDetail.vue'
 
 const props = defineProps({
@@ -69,7 +70,7 @@ const getInventoryStatusColor = (statusKey) => props.inventoryStatusColorMap[sta
       >
         <tr>
           <th class="py-3 px-6 text-left w-12"></th>
-          <th class="py-3 px-6 text-left w-20">Ảnh Bìa</th>
+          <th class="py-3 px-6 text-left w-28">Ảnh Bìa</th>
           <th class="py-3 px-6 text-left">Tên Dòng Sản Phẩm</th>
           <th class="py-3 px-6 text-left">Danh Mục</th>
           <th class="py-3 px-6 text-left">Thương Hiệu</th>
@@ -106,7 +107,7 @@ const getInventoryStatusColor = (statusKey) => props.inventoryStatusColorMap[sta
             <tr v-for="i in 5" :key="i" class="border-b border-gray-200">
               <td class="py-3 px-6 text-center"><SkeletonLoader width="16px" height="16px" /></td>
               <td class="py-3 px-6">
-                <SkeletonLoader width="64px" height="64px" class="rounded-md" />
+                <SkeletonLoader width="96px" height="64px" class="rounded-md" />
               </td>
               <td class="py-3 px-6"><SkeletonLoader width="150px" height="20px" /></td>
               <td class="py-3 px-6"><SkeletonLoader width="100px" height="20px" /></td>
@@ -140,12 +141,14 @@ const getInventoryStatusColor = (statusKey) => props.inventoryStatusColorMap[sta
                 <IconDownArrow v-else />
               </button>
             </td>
-            <td class="py-3 px-6 text-left w-20">
-              <img
-                :src="product.cover_image_url || 'https://placehold.co/100x100/gray/white?text=N/A'"
-                alt="Ảnh bìa"
-                class="w-16 h-16 object-cover rounded-md border border-gray-200"
-              />
+            <td class="py-3 px-6 text-left w-28">
+              <div class="w-24 h-16 bg-white border border-gray-200 rounded-md overflow-hidden flex items-center justify-center shadow-sm">
+                <img
+                  :src="getImageUrl(product.cover_image_url)"
+                  alt="Ảnh bìa"
+                  class="max-w-full max-h-full object-contain"
+                />
+              </div>
             </td>
             <td class="py-3 px-6 whitespace-nowrap font-medium text-gray-800">
               {{ product.name }}
@@ -193,3 +196,5 @@ const getInventoryStatusColor = (statusKey) => props.inventoryStatusColorMap[sta
     </table>
   </div>
 </template>
+
+

@@ -1,8 +1,9 @@
 <script setup>
 import { useQuery } from '@tanstack/vue-query'
-import productService from '@/services/product.service'
+import productService from '@application/services/product.service'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
 import { formatCurrency } from '@/utils/currency'
+import { getImageUrl } from '@/utils/image'
 
 const props = defineProps({
   product: {
@@ -69,6 +70,17 @@ const getInventoryStatusColor = (statusKey) => props.inventoryStatusColorMap[sta
       >
         Thông số kỹ thuật
       </button>
+      <button
+        class="py-1.5 text-sm transition-all duration-200"
+        :class="
+          activeTab === 'highlights'
+            ? 'font-semibold border-b-2 border-red-500 text-red-600'
+            : 'text-gray-600 hover:text-gray-800'
+        "
+        @click="emit('update:activeTab', 'highlights')"
+      >
+        Nổi bật & Công nghệ
+      </button>
     </div>
 
     <div v-show="activeTab === 'variants'">
@@ -77,7 +89,7 @@ const getInventoryStatusColor = (statusKey) => props.inventoryStatusColorMap[sta
       >
         <thead class="bg-gray-50 border-b border-gray-200">
           <tr>
-            <th class="py-2 px-4 text-left w-20 text-gray-700 font-semibold tracking-wider">Ảnh</th>
+            <th class="py-2 px-4 text-left w-28 text-gray-700 font-semibold tracking-wider">Ảnh</th>
             <th class="py-2 px-4 text-left text-gray-700 font-semibold tracking-wider">
               Thuộc tính
             </th>
@@ -96,11 +108,13 @@ const getInventoryStatusColor = (statusKey) => props.inventoryStatusColorMap[sta
             :key="variant.id"
             class="border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors duration-150"
           >
-            <td class="py-2 px-4 w-20">
-              <img
-                :src="variant.cover_image_url || 'https://placehold.co/100x100/gray/white?text=N/A'"
-                class="w-12 h-12 object-cover rounded-md border border-gray-200"
-              />
+            <td class="py-2 px-4 w-28">
+              <div class="w-20 h-14 bg-white border border-gray-200 rounded-md overflow-hidden flex items-center justify-center shadow-sm">
+                <img
+                  :src="getImageUrl(variant.cover_image_url)"
+                  class="max-w-full max-h-full object-contain"
+                />
+              </div>
             </td>
             <td class="py-2 px-4 text-gray-800 font-medium">
               {{ getVariantOptionsText(variant) }}
@@ -196,5 +210,29 @@ const getInventoryStatusColor = (statusKey) => props.inventoryStatusColorMap[sta
         </div>
       </div>
     </div>
+
+    <div v-show="activeTab === 'highlights'" class="py-4">
+      <div v-if="!product.highlights" class="text-center py-10 bg-gray-50 rounded-xl border-2 border-dashed">
+        <p class="text-gray-500 italic">Chưa có thông tin công nghệ nổi bật được thiết lập.</p>
+      </div>
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div v-for="(hl, idx) in JSON.parse(product.highlights)" :key="idx" class="flex gap-4 p-4 border rounded-xl bg-white shadow-sm">
+          <div class="w-32 h-32 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100 border">
+            <img :src="getImageUrl(hl.image)" :alt="hl.title" class="w-full h-full object-cover" />
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-red-100 text-red-700 uppercase tracking-tighter">{{ hl.tag }}</span>
+              <h4 class="font-bold text-gray-900">{{ hl.title }}</h4>
+            </div>
+            <p class="text-sm text-gray-600 leading-snug">{{ hl.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
+
+
+
+

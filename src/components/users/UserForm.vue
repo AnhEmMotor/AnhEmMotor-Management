@@ -6,7 +6,7 @@ import Button from '@/components/ui/button/BaseButton.vue'
 import { useToast } from 'vue-toastification'
 import { usePermission } from '@/composables/usePermission'
 import { useQuery } from '@tanstack/vue-query'
-import userService from '@/services/user.service'
+import userService from '@application/services/user.service'
 import { useUserStore } from '@/stores/user.store'
 import IconAvatarEdit from '@/assets/icons/avatar-edit.svg'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
@@ -311,3 +311,7 @@ const handleRefresh = () => {
     </template>
   </DraggableModal>
 </template>
+
+
+
+

@@ -1,7 +1,12 @@
 {
   "compilerOptions": {
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@core/*": ["./src/core/*"],
+      "@domain/*": ["./src/core/domain/*"],
+      "@application/*": ["./src/core/application/*"],
+      "@infrastructure/*": ["./src/core/infrastructure/*"],
+      "@presentation/*": ["./src/presentation/*"]
     }
   },
   "exclude": ["node_modules", "dist"]

@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
-import statisticsService from '@/services/statistics.service'
-import statisticsMapper from '@/mappers/statistics.mapper'
+import statisticsService from '@application/services/statistics.service'
+import statisticsMapper from '@infrastructure/mappers/statistics.mapper'
 
 export const useStatisticsStore = defineStore('statistics', () => {
   const productSearchQuery = ref('')
@@ -85,3 +85,7 @@ export const useStatisticsStore = defineStore('statistics', () => {
     isWarehouseLoading: warehouseReportQuery.isLoading,
   }
 })
+
+
+
+

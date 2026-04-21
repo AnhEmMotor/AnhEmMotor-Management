@@ -264,3 +264,5 @@ watch(historyIsError, (hasError) => {
     </div>
   </div>
 </template>
+
+

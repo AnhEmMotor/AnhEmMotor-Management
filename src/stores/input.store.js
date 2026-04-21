@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import inputService from '@/services/input.service'
-import supplierService from '@/services/supplier.service'
-import productService from '@/services/product.service'
-import { inputMapper } from '@/mappers/input.mapper'
-import { supplierMapper } from '@/mappers/supplier.mapper'
+import inputService from '@application/services/input.service'
+import supplierService from '@application/services/supplier.service'
+import productService from '@application/services/product.service'
+import { inputMapper } from '@infrastructure/mappers/input.mapper'
+import { supplierMapper } from '@infrastructure/mappers/supplier.mapper'
 
 export const useInputStore = defineStore('input', () => {
   const error = ref(null)
@@ -159,3 +159,7 @@ export const useInputStore = defineStore('input', () => {
     searchProducts,
   }
 })
+
+
+
+

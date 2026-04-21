@@ -136,3 +136,5 @@ watch(() => props.data, drawChart, { deep: true })
     <svg ref="chartRef"></svg>
   </div>
 </template>
+
+

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import orderService from '@/services/order.service'
-import orderMapper from '@/mappers/order.mapper'
+import orderService from '@application/services/order.service'
+import orderMapper from '@infrastructure/mappers/order.mapper'
 
 export const useOrderStore = defineStore('order', () => {
   const error = ref(null)
@@ -98,3 +98,7 @@ export const useOrderStore = defineStore('order', () => {
     fetchLockedStatuses,
   }
 })
+
+
+
+

@@ -10,6 +10,11 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@core': fileURLToPath(new URL('./src/core', import.meta.url)),
+      '@domain': fileURLToPath(new URL('./src/core/domain', import.meta.url)),
+      '@application': fileURLToPath(new URL('./src/core/application', import.meta.url)),
+      '@infrastructure': fileURLToPath(new URL('./src/core/infrastructure', import.meta.url)),
+      '@presentation': fileURLToPath(new URL('./src/presentation', import.meta.url)),
     },
   },
   build: {

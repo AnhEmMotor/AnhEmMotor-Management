@@ -6,3 +6,5 @@ export const INPUT_ENDPOINTS = {
   NOTES: (id) => `/api/v1/InventoryReceipts/${id}/notes`,
   STATUS_OPTIONS: '/api/v1/InventoryReceipts/status',
 }
+
+

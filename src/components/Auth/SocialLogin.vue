@@ -216,3 +216,5 @@ onMounted(() => {
   @apply bg-[#1877F2] text-white hover:bg-[#166fe5];
 }
 </style>
+
+

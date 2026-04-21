@@ -1,5 +1,9 @@
 <script setup>
 import TheNavBar from './TheNavBar.vue'
+import { useNotifications } from '@/composables/useNotifications'
+
+// Initialize real-time notifications
+useNotifications()
 </script>
 
 <template>

@@ -1,8 +1,8 @@
 <script setup>
 import { useToast } from 'vue-toastification'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import settingService from '@/services/setting.service'
-import settingMapper from '@/mappers/setting.mapper'
+import settingService from '@application/services/setting.service'
+import settingMapper from '@infrastructure/mappers/setting.mapper'
 import SettingsForm from '@/components/settings/SettingsForm.vue'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 
@@ -76,3 +76,7 @@ const handleReset = () => {
     </template>
   </div>
 </template>
+
+
+
+
