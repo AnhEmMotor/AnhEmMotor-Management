@@ -9,16 +9,48 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  isSaving: {
+  categories: {
+    type: Array,
+    required: true,
+  },
+  pagination: {
+    type: Object,
+    required: true,
+  },
+  isSavingSettings: {
+    type: Boolean,
+    default: false,
+  },
+  isSavingCategory: {
+    type: Boolean,
+    default: false,
+  },
+  searchRefs: {
+    type: Object,
+    required: true,
+  },
+  pagination: {
+    type: Object,
+    required: true,
+  },
+  isFetchingCategories: {
     type: Boolean,
     default: false,
   },
 })
 
-const emit = defineEmits(['save', 'reset'])
+const emit = defineEmits(['saveDeposit', 'saveStock', 'saveCategoryLimit'])
 
 const localSettings = reactive({ ...props.settings })
-const testOrderValue = ref(15000000)
+const localCategories = ref([])
+
+watch(
+  () => props.categories,
+  (newVal) => {
+    localCategories.value = newVal.map((c) => ({ ...c }))
+  },
+  { immediate: true },
+)
 
 watch(
   () => props.settings,
@@ -28,13 +60,22 @@ watch(
   { deep: true },
 )
 
-const depositAmount = computed(() => {
-  if (testOrderValue.value <= localSettings.maxOrder) return 0
-  return Math.round(testOrderValue.value * (localSettings.deposit / 100))
-})
+const handleSaveDeposit = () => {
+  emit('saveDeposit', {
+    maxOrder: localSettings.maxOrder,
+    deposit: localSettings.deposit,
+  })
+}
 
-const needsDeposit = computed(() => testOrderValue.value > localSettings.maxOrder)
+const handleSaveStock = () => {
+  emit('saveStock', localSettings.stockLevel)
+}
 
+const handleSaveCategoryLimit = (category) => {
+  emit('saveCategoryLimit', category)
+}
+
+// Formatters and Handlers
 const handleMaxOrderInput = (e) => {
   localSettings.maxOrder = parseCurrency(e.target.value)
 }
@@ -44,206 +85,264 @@ const handleDepositInput = (e) => {
   localSettings.deposit = Number.isFinite(n) ? Math.min(100, Math.max(0, n)) : 0
 }
 
-const handleMaxCountInput = (e) => {
-  const n = Number(e.target.value)
-  localSettings.maxCount = Number.isFinite(n) ? Math.max(1, n) : 1
-}
-
 const handleStockLevelInput = (e) => {
   const n = Number(e.target.value)
   localSettings.stockLevel = Number.isFinite(n) ? Math.max(0, n) : 0
 }
-
-const handleTestValueInput = (e) => {
-  testOrderValue.value = parseCurrency(e.target.value)
-}
-
-const handleSave = () => {
-  emit('save', { ...localSettings })
-}
-
-const handleReset = () => {
-  emit('reset')
-}
 </script>
 
 <template>
-  <div class="space-y-6">
-    <div class="flex items-center justify-between mb-2">
-      <h2 class="text-xl font-semibold text-gray-800">Cấu hình chi tiết</h2>
-      <div class="flex items-center gap-2">
-        <Button color="secondary" text="Mặc định" @click="handleReset" />
-        <Button color="primary" text="Lưu thay đổi" :loading="isSaving" @click="handleSave" />
+  <div class="space-y-8">
+    <!-- Section 1: Quy Tắc Đặt Cọc -->
+    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+      <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">💰</span>
+          <div>
+            <h2 class="text-lg font-bold text-gray-800">Quy Tắc Đặt Cọc</h2>
+            <p class="text-xs text-gray-500">Cấu hình giá trị đơn hàng cần đặt cọc và tỷ lệ %</p>
+          </div>
+        </div>
+        <Button
+          color="primary"
+          text="Lưu Quy Tắc Cọc"
+          :loading="isSavingSettings"
+          @click="handleSaveDeposit"
+        />
+      </div>
+
+      <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Đơn hàng vượt quá</label>
+            <div class="relative">
+              <input
+                type="text"
+                :value="formatCurrency(localSettings.maxOrder)"
+                @input="handleMaxOrderInput"
+                class="w-full pl-4 pr-12 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-100 focus:border-red-500 outline-none transition-all"
+              />
+              <span
+                class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm"
+                >VNĐ</span
+              >
+            </div>
+            <p class="mt-2 text-xs text-gray-400">
+              Ngưỡng giá trị để hệ thống yêu cầu khách hàng đặt cọc trước.
+            </p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Tỷ lệ đặt cọc (%)</label>
+            <div class="relative">
+              <input
+                type="number"
+                v-model="localSettings.deposit"
+                min="0"
+                max="100"
+                class="w-full pl-4 pr-12 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-100 focus:border-red-500 outline-none transition-all"
+              />
+              <span
+                class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm"
+                >%</span
+              >
+            </div>
+            <p class="mt-2 text-xs text-gray-400">
+              Phần trăm giá trị đơn hàng khách phải thanh toán trước.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div class="space-y-6">
-        <div class="border border-gray-200 rounded-lg overflow-hidden">
-          <div
-            class="flex items-center justify-between px-5 py-4 bg-gray-50 border-b border-gray-200"
-          >
-            <div class="flex items-center gap-2">
-              <span class="text-red-600 text-lg">💰</span>
-              <h2 class="text-sm font-semibold text-gray-800">Quy Tắc Đặt Cọc</h2>
-            </div>
+    <!-- Section 2: Giới Hạn Đơn Hàng Theo Thể Loại -->
+    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+      <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">📦</span>
+          <div>
+            <h2 class="text-lg font-bold text-gray-800">Giới Hạn Đơn Hàng</h2>
+            <p class="text-xs text-gray-500">
+              Giới hạn số lượng mua tối đa của từng thể loại sản phẩm
+            </p>
           </div>
-
-          <div class="p-5 space-y-4">
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-medium text-gray-500 mb-1.5"
-                  >Đơn hàng vượt quá</label
-                >
-                <div class="relative">
-                  <input
-                    type="text"
-                    :value="formatCurrency(localSettings.maxOrder)"
-                    @input="handleMaxOrderInput"
-                    class="w-full px-3 py-2 pr-12 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-200 focus:border-red-400 outline-none"
-                  />
-                  <span
-                    class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-medium"
-                    >VNĐ</span
-                  >
-                </div>
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-gray-500 mb-1.5">Tỷ lệ đặt cọc</label>
-                <div class="relative">
-                  <input
-                    type="number"
-                    :value="localSettings.deposit"
-                    @input="handleDepositInput"
-                    min="0"
-                    max="100"
-                    class="w-full px-3 py-2 pr-8 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-200 focus:border-red-400 outline-none"
-                  />
-                  <span
-                    class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-medium"
-                    >%</span
-                  >
-                </div>
-              </div>
-            </div>
-
-            <div class="p-3 bg-red-50 border border-red-100 rounded-lg">
-              <p class="text-xs font-semibold text-red-600 mb-2">⚡ Dùng thử</p>
-              <div class="flex items-center gap-2 mb-2">
-                <label class="text-xs text-gray-500 shrink-0">Giá trị đơn:</label>
-                <div class="relative flex-1">
-                  <input
-                    type="text"
-                    :value="formatCurrency(testOrderValue)"
-                    @input="handleTestValueInput"
-                    class="w-full px-3 py-1.5 pr-12 text-sm border border-red-200 rounded-lg focus:ring-2 focus:ring-red-200 focus:border-red-400 outline-none bg-white"
-                  />
-                  <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400"
-                    >VNĐ</span
-                  >
-                </div>
-              </div>
+        </div>
+        <div class="relative w-64">
+          <input
+            type="text"
+            v-model="searchRefs.search"
+            placeholder="Tìm thể loại..."
+            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-100 focus:border-red-500 outline-none transition-all text-sm"
+          />
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+            <template v-if="isFetchingCategories">
               <div
-                class="text-sm font-medium"
-                :class="needsDeposit ? 'text-red-700' : 'text-gray-500'"
-              >
-                <template v-if="needsDeposit">
-                  → Khách phải cọc:
-                  <span class="font-bold">{{ formatCurrency(depositAmount) }} VNĐ</span>
-                </template>
-                <template v-else> → Không yêu cầu cọc (đơn hàng chưa vượt ngưỡng) </template>
-              </div>
-            </div>
-          </div>
+                class="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin"
+              ></div>
+            </template>
+            <template v-else> 🔍 </template>
+          </span>
         </div>
       </div>
 
-      <div class="space-y-6">
-        <div class="border border-gray-200 rounded-lg overflow-hidden">
-          <div
-            class="flex items-center justify-between px-5 py-4 bg-gray-50 border-b border-gray-200"
-          >
-            <div class="flex items-center gap-2">
-              <span class="text-yellow-600 text-lg">📦</span>
-              <h2 class="text-sm font-semibold text-gray-800">Giới Hạn Đơn Hàng</h2>
-            </div>
-          </div>
+      <div class="p-6 bg-yellow-50 border-t border-yellow-100">
+        <div class="flex gap-3">
+          <span class="text-xl">ℹ️</span>
+          <p class="text-sm text-yellow-800 leading-relaxed">
+            <span class="font-bold">Giải thích:</span> Khi khách hàng thêm sản phẩm vào giỏ hàng, hệ
+            thống sẽ kiểm tra tổng số lượng sản phẩm thuộc thể loại này. Nếu vượt quá giới hạn đã
+            đặt, khách hàng sẽ được yêu cầu giảm số lượng. Điều này giúp kiểm soát các mặt hàng khan
+            hiếm hoặc giá trị cao. Bạn vẫn có thể tạo đơn hàng có số sản phẩm cao hơn con số này ở
+            trong trang quản trị.
+          </p>
+        </div>
+      </div>
 
-          <div class="p-5 space-y-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-500 mb-1.5"
-                >Số lượng xe tối đa / đơn</label
+      <div class="p-0 relative">
+        <!-- Subtle loading overlay for the table only -->
+        <div
+          v-if="isFetchingCategories"
+          class="absolute inset-0 bg-white/30 backdrop-blur-[1px] z-10 flex items-center justify-center"
+        ></div>
+
+        <table
+          class="w-full text-left"
+          :class="{ 'opacity-50 pointer-events-none': isFetchingCategories }"
+        >
+          <thead
+            class="bg-gray-50 text-xs uppercase text-gray-500 font-bold border-b border-gray-100"
+          >
+            <tr>
+              <th class="px-6 py-4">Thể loại sản phẩm</th>
+              <th class="px-6 py-4 w-48">Số lượng tối đa</th>
+              <th class="px-6 py-4 w-32">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100 bg-white">
+            <template v-if="localCategories.length > 0">
+              <tr
+                v-for="cat in localCategories"
+                :key="cat.id"
+                class="hover:bg-gray-50 transition-colors group"
               >
-              <div class="relative w-40">
-                <input
-                  type="number"
-                  :value="localSettings.maxCount"
-                  @input="handleMaxCountInput"
-                  min="1"
-                  class="w-full px-3 py-2 pr-14 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-200 focus:border-red-400 outline-none"
-                />
-                <span
-                  class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-medium"
-                  >chiếc</span
-                >
-              </div>
-            </div>
-            <div
-              class="flex items-start gap-2 p-3 bg-yellow-50 border border-yellow-100 rounded-lg"
+                <td class="px-6 py-4">
+                  <div class="font-medium text-gray-900">{{ cat.name }}</div>
+                  <div v-if="cat.description" class="text-xs text-gray-400">
+                    {{ cat.description }}
+                  </div>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="flex items-center gap-2">
+                    <input
+                      type="number"
+                      v-model="cat.maxPurchaseQuantity"
+                      placeholder="Không giới hạn"
+                      class="w-32 px-3 py-1.5 border border-gray-200 rounded-md text-sm focus:ring-1 focus:ring-red-500 focus:border-red-500 outline-none"
+                    />
+                  </div>
+                </td>
+                <td class="px-6 py-4 text-right">
+                  <button
+                    @click="handleSaveCategoryLimit(cat)"
+                    :disabled="isSavingCategory"
+                    class="px-4 py-1.5 bg-red-600 text-white text-xs font-bold rounded hover:bg-red-700 disabled:opacity-50 transition-colors"
+                  >
+                    Lưu
+                  </button>
+                </td>
+              </tr>
+            </template>
+            <template v-else>
+              <tr>
+                <td colspan="3" class="px-6 py-12 text-center">
+                  <div class="flex flex-col items-center gap-2 text-gray-400">
+                    <span class="text-3xl">🔍</span>
+                    <p class="text-sm">Không tìm thấy kết quả phù hợp</p>
+                  </div>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div
+          class="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-gray-50"
+        >
+          <span class="text-sm text-gray-500 font-medium">
+            Trang {{ pagination.currentPage.value }} / {{ pagination.totalPages.value }}
+          </span>
+          <div v-if="pagination.totalCount.value > 5" class="flex gap-2">
+            <button
+              @click="pagination.prevPage"
+              :disabled="pagination.isFirstPage.value"
+              class="px-3 py-1 border border-gray-300 rounded disabled:opacity-30 hover:bg-white text-sm"
             >
-              <span class="text-yellow-500 text-sm mt-0.5">ℹ️</span>
-              <p class="text-xs text-yellow-700">
-                Đơn hàng vượt quá <span class="font-bold">{{ localSettings.maxCount }} xe</span> sẽ
-                chuyển sang trạng thái <span class="font-semibold">"Chờ duyệt"</span> thay vì xác
-                nhận ngay. Admin cần phê duyệt thủ công.
-              </p>
-            </div>
+              Trước
+            </button>
+            <button
+              @click="pagination.nextPage"
+              :disabled="pagination.isLastPage.value"
+              class="px-3 py-1 border border-gray-300 rounded disabled:opacity-30 hover:bg-white text-sm"
+            >
+              Sau
+            </button>
           </div>
         </div>
+      </div>
+    </div>
 
-        <div class="border border-gray-200 rounded-lg overflow-hidden">
-          <div
-            class="flex items-center justify-between px-5 py-4 bg-gray-50 border-b border-gray-200"
+    <!-- Section 3: Cảnh Báo Tồn Kho -->
+    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+      <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">⚠️</span>
+          <div>
+            <h2 class="text-lg font-bold text-gray-800">Cảnh Báo Tồn Kho</h2>
+            <p class="text-xs text-gray-500">
+              Ngưỡng hiển thị trạng thái sản phẩm trong trang quản lý
+            </p>
+          </div>
+        </div>
+        <Button
+          color="primary"
+          text="Lưu Cảnh Báo"
+          :loading="isSavingSettings"
+          @click="handleSaveStock"
+        />
+      </div>
+
+      <div class="p-6">
+        <div class="max-w-md">
+          <label class="block text-sm font-semibold text-gray-700 mb-2"
+            >Ngưỡng cảnh báo chung</label
           >
-            <div class="flex items-center gap-2">
-              <span class="text-red-600 text-lg">⚠️</span>
-              <h2 class="text-sm font-semibold text-gray-800">Cảnh Báo Tồn Kho</h2>
-            </div>
+          <div class="relative w-48">
+            <input
+              type="number"
+              v-model.number="localSettings.stockLevel"
+              min="0"
+              class="w-full pl-4 pr-20 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-100 focus:border-red-500 outline-none transition-all"
+            />
+            <span
+              class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm text-right"
+              >Sản phẩm</span
+            >
           </div>
 
-          <div class="p-5 space-y-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-500 mb-1.5"
-                >Ngưỡng cảnh báo chung</label
-              >
-              <div class="relative w-40">
-                <input
-                  type="number"
-                  :value="localSettings.stockLevel"
-                  @input="handleStockLevelInput"
-                  min="0"
-                  class="w-full px-3 py-2 pr-16 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-200 focus:border-red-400 outline-none"
-                />
-                <span
-                  class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-medium"
-                  >sản phẩm</span
-                >
-              </div>
+          <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-100 space-y-3">
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">
+              Xem trước hiển thị
+            </p>
+            <div class="flex items-center gap-4">
+              <span class="text-sm font-medium">Tồn kho ≤ {{ localSettings.stockLevel }}</span>
+              <span class="text-gray-300">→</span>
+              <RoundBadge color="yellow">Sắp hết hàng</RoundBadge>
             </div>
-            <div class="p-3 bg-gray-50 border border-gray-200 rounded-lg">
-              <p class="text-xs text-gray-500 mb-2">Xem trước hiển thị:</p>
-              <div class="flex items-center gap-3">
-                <span class="text-sm text-gray-700"
-                  >Tồn kho: <span class="font-bold">{{ localSettings.stockLevel }}</span></span
-                >
-                <span class="text-gray-300">→</span>
-                <RoundBadge color="yellow">Sắp hết hàng</RoundBadge>
-              </div>
-              <div class="flex items-center gap-3 mt-2">
-                <span class="text-sm text-gray-700">Tồn kho: <span class="font-bold">0</span></span>
-                <span class="text-gray-300">→</span>
-                <RoundBadge color="red">Hết hàng</RoundBadge>
-              </div>
+            <div class="flex items-center gap-4">
+              <span class="text-sm font-medium">Tồn kho = 0</span>
+              <span class="text-gray-300">→</span>
+              <RoundBadge color="red">Hết hàng</RoundBadge>
             </div>
           </div>
         </div>
