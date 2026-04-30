@@ -1,18 +1,20 @@
 <template>
-  <button :class="buttonClasses" :disabled="disabled" @click="handleClick">
+  <button :class="buttonClasses" :disabled="disabled || loading" @click="handleClick">
+    <LoadingOverlay :show="loading" />
     <component
       :is="icon"
-      v-if="typeof icon === 'object' || typeof icon === 'function'"
+      v-if="(typeof icon === 'object' || typeof icon === 'function') && !loading"
       class="w-5 h-5"
       :class="{ 'mr-2': text }"
     />
-    <i v-else-if="icon" :class="icon"></i>
-    <span :class="{ 'ml-2': icon && typeof icon === 'string' && text }">{{ text }}</span>
+    <i v-else-if="icon && !loading" :class="icon"></i>
+    <span :class="{ 'ml-2': icon && typeof icon === 'string' && text && !loading }">{{ text }}</span>
   </button>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import LoadingOverlay from '../LoadingOverlay.vue'
 
 const props = defineProps({
   text: {
@@ -28,6 +30,10 @@ const props = defineProps({
     default: 'primary',
   },
   disabled: {
+    type: Boolean,
+    default: false,
+  },
+  loading: {
     type: Boolean,
     default: false,
   },
