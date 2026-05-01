@@ -6,6 +6,7 @@ import { useToast } from 'vue-toastification'
 import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { Permissions } from '@/constants/permissions'
 import { usePermission } from '@/composables/usePermission'
+import { normalizeBackendErrors } from '@/utils/error-helper'
 
 import SupplierItem from '@/components/supplier/SupplierItem.vue'
 import Button from '@/components/ui/button/BaseButton.vue'
@@ -146,19 +147,24 @@ const handleSaveSupplier = async (data) => {
       handleCloseFormModal()
     }
   } catch (err) {
-    const backendErrors = err.response?.data?.errors || err.response?.data?.Errors || null
-    if (backendErrors && err.response?.status === 400) {
-      const normalized = {}
-      Object.entries(backendErrors).forEach(([key, messages]) => {
-        normalized[key.toLowerCase()] = Array.isArray(messages) ? messages[0] : messages
+    if (err.response?.status === 400) {
+      formErrors.value = normalizeBackendErrors(err, {
+        fieldMappings: {
+          taxidentificationnumber: 'taxIdentificationNumber',
+        },
       })
-      formErrors.value = normalized
       toast.warning('Vui lòng kiểm tra lại các trường có lỗi.')
     } else {
       toast.error(`Lỗi: ${err.message || err}`)
     }
   } finally {
     isSaving.value = false
+  }
+}
+
+const handleClearError = (field) => {
+  if (formErrors.value[field]) {
+    formErrors.value[field] = ''
   }
 }
 
@@ -368,6 +374,7 @@ const handleImport = () => {
       :on-refresh="isEditMode ? handleFormRefresh : undefined"
       @close="handleCloseFormModal"
       @save="handleSaveSupplier"
+      @clear-error="handleClearError"
     />
   </div>
 </template>
