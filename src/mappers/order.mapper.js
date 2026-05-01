@@ -38,13 +38,16 @@ const orderMapper = {
       customerAddress: dto.customerAddress,
       customerPhone: dto.customerPhone,
       customer: dto.buyerId ? { id: dto.buyerId } : null,
+      depositRatio: dto.depositRatio,
+      depositAmount: dto.depositAmount,
+      remainingAmount: dto.remainingAmount,
       products: (dto.products || []).map((p) => ({
         id: p.id,
         product_id: p.productId,
         name: p.productName || p.name,
         quantity: p.count || p.quantity,
-        unitPrice: p.unitPrice,
-        total: p.total,
+        unitPrice: p.price || p.unitPrice || 0,
+        total: p.total || (p.price || p.unitPrice || 0) * (p.count || p.quantity || 0),
       })),
     }
   },

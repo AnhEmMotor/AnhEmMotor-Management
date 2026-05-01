@@ -13,7 +13,8 @@ import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { useQuery } from '@tanstack/vue-query'
 import { Permissions } from '@/constants/permissions'
 import { usePermission } from '@/composables/usePermission'
-import { formatCurrency } from '@/utils/currency'
+import { formatCurrency, formatVNDWithUnit } from '@/utils/currency'
+import settingService from '@/services/setting.service'
 
 const props = defineProps({
   show: { type: Boolean, default: false },
@@ -35,6 +36,19 @@ const localData = ref({
   customerPhone: '',
   products: [],
   notes: '',
+})
+
+const { data: settings } = useQuery({
+  queryKey: ['system-settings'],
+  queryFn: settingService.fetchSettings,
+  staleTime: 1000 * 60 * 60, // 1 hour
+})
+
+const depositRatio = computed(() => {
+  const ratio = props.order?.depositRatio || props.order?.deposit_ratio
+  if (ratio) return Number(ratio)
+  if (!settings.value) return 50
+  return Number(settings.value['Deposit_ratio'] || 50)
 })
 
 const { data: statusMap } = useQuery({
@@ -133,7 +147,7 @@ const {
   pagination: customerPagination,
 } = usePaginatedQuery({
   queryKey: ['basic-users-for-orders'],
-  queryFn: (params) => userStore.searchBasicUsers(params),
+  queryFn: (params) => userStore.fetchBasicUsers(params),
   itemsPerPage: 5,
   useLocalPagination: true,
   searchFields: [{ key: 'search', debounce: 400 }],
@@ -470,6 +484,7 @@ onBeforeUnmount(() => {
           nên một số trường bị khoá. Bạn vẫn có thể thay đổi các phần chưa bị khoá và "Trạng thái",
           sau đó nhấn Lưu.
         </div>
+
         <div>
           <label class="block text-sm font-medium mb-1">Tên khách hàng</label>
           <div class="relative">
@@ -629,6 +644,41 @@ onBeforeUnmount(() => {
             :options="allowedStatusOptionsFor(originalStatusKey)"
             placeholder="Chọn trạng thái"
           />
+
+          <!-- Thông tin chi tiết tỷ lệ đặt cọc và thanh toán -->
+          <div
+            v-if="
+              (originalStatusKey === 'deposit_paid' ||
+                originalStatusKey === 'delivering' ||
+                originalStatusKey === 'waiting_deposit') &&
+              totalAmount > 0
+            "
+            class="mt-3 p-4 bg-orange-50 border border-orange-200 rounded-xl space-y-3 shadow-sm"
+          >
+            <div v-if="originalStatusKey === 'waiting_deposit'" class="flex justify-between items-center text-sm">
+              <span class="text-gray-600 font-medium">Tiền đặt cọc ({{ depositRatio }}%):</span>
+              <span class="font-bold text-gray-900">
+                {{ formatVNDWithUnit(totalAmount * (depositRatio / 100)) }}
+              </span>
+            </div>
+            
+            <div
+              class="pt-2 flex justify-between items-center"
+              :class="{ 'border-t border-orange-200': originalStatusKey === 'waiting_deposit' }"
+            >
+              <span class="text-sm text-orange-800 font-semibold"
+                >Tiền còn lại ({{ 100 - depositRatio }}%):</span
+              >
+              <span class="text-xl font-black text-orange-600">
+                {{
+                  formatVNDWithUnit(
+                    props.order?.remainingAmount ||
+                      totalAmount - totalAmount * (depositRatio / 100),
+                  )
+                }}
+              </span>
+            </div>
+          </div>
         </div>
 
         <div v-if="!isBuyerProductLocked">
@@ -671,7 +721,7 @@ onBeforeUnmount(() => {
                     </div>
                     <div class="text-xs text-gray-500">
                       ID: {{ product.id || 'N/A' }} | Giá:
-                      {{ (product.price || 0).toLocaleString() }}
+                      {{ formatCurrency(product.price || 0) }}
                     </div>
                   </div>
                 </div>
@@ -831,7 +881,7 @@ onBeforeUnmount(() => {
                   />
                 </td>
                 <td class="py-2 px-3 text-left font-medium text-gray-800">
-                  {{ (p.total || 0).toLocaleString('vi-VN') }}
+                  {{ formatCurrency(p.total || 0) }}
                 </td>
                 <td class="py-2 px-3 text-center">
                   <button
@@ -865,7 +915,11 @@ onBeforeUnmount(() => {
 
     <template #footer>
       <div class="flex items-center justify-between w-full">
-        <div class="text-sm font-semibold">Tổng: {{ totalAmount.toLocaleString('vi-VN') }} VNĐ</div>
+        <div class="flex flex-col">
+          <div class="text-sm font-bold text-gray-800">
+            Tổng: {{ formatVNDWithUnit(totalAmount) }}
+          </div>
+        </div>
         <div class="flex gap-2">
           <Button text="Huỷ" color="gray" @click="$emit('close')" />
           <Button

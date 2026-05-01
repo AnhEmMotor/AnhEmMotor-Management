@@ -12,3 +12,6 @@ export function parseCurrency(str) {
   const n = Number(String(str).replace(/,/g, ''))
   return Number.isFinite(n) ? n : 0
 }
+export function formatVNDWithUnit(number) {
+  return formatCurrency(number) + ' VNĐ'
+}

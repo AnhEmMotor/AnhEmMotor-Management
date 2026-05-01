@@ -27,7 +27,7 @@ const { hasPermission } = usePermission()
 
 const STATUS_COLOR_MAP = {
   pending: 'gray',
-  waiting_deposit: 'gray',
+  waiting_deposit: 'yellow',
   refunded: 'gray',
   completed: 'green',
   waiting_pickup: 'green',
@@ -330,7 +330,11 @@ const handleExport = () => {
               </RoundBadge>
             </td>
             <td class="py-3 px-6 text-left">
-              {{ (order.total || 0).toLocaleString('vi-VN') }} VNĐ
+              <div class="flex flex-col">
+                <span class="font-bold text-gray-800">
+                  {{ (order.total || 0).toLocaleString('vi-VN') }} VNĐ
+                </span>
+              </div>
             </td>
             <td class="py-3 px-6 text-center">
               <SmallNoBgButton
