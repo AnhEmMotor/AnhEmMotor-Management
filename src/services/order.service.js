@@ -50,6 +50,12 @@ const orderService = {
     const { data } = await axiosInstance.get(SALES_ORDER_ENDPOINTS.LOCKED_STATUSES)
     return data
   },
+
+  async getPaymentLink(id) {
+    console.log(`[OrderService] Getting payment link for order: ${id}`)
+    const { data } = await axiosInstance.get(`/api/payment/link/${id}`)
+    return data
+  },
 }
 
 export default orderService

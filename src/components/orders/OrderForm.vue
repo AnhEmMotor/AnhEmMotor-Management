@@ -13,6 +13,7 @@ import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { useQuery } from '@tanstack/vue-query'
 import { Permissions } from '@/constants/permissions'
 import { usePermission } from '@/composables/usePermission'
+import { useToast } from 'vue-toastification'
 import { formatCurrency, formatVNDWithUnit } from '@/utils/currency'
 import settingService from '@/services/setting.service'
 
@@ -28,6 +29,7 @@ const orderStore = useOrderStore()
 const userStore = useUserStore()
 const productStore = useProductStore()
 const { hasPermission } = usePermission()
+const toast = useToast()
 
 const localData = ref({
   customer: null,
@@ -36,6 +38,7 @@ const localData = ref({
   customerPhone: '',
   products: [],
   notes: '',
+  paymentMethod: 'COD',
 })
 
 const { data: settings } = useQuery({
@@ -269,9 +272,10 @@ const syncLocalData = () => {
     localData.value.customerAddress =
       props.order.customerAddress || props.order.customer_address || ''
     localData.value.customerPhone = props.order.customerPhone || props.order.customer_phone || ''
+    localData.value.paymentMethod = props.order.paymentMethod || props.order.payment_method || 'COD'
     localStatus.value = props.order.statusId || props.order.status_id || 'pending'
   } else {
-    localData.value = { customer: null, products: [], notes: '' }
+    localData.value = { customer: null, products: [], notes: '', paymentMethod: 'COD' }
     customerSearchRefs.search = ''
     localStatus.value = 'pending'
   }
@@ -438,6 +442,7 @@ function submit() {
     products: JSON.parse(JSON.stringify(localData.value.products)),
     total: totalAmount.value,
     notes: localData.value.notes,
+    paymentMethod: localData.value.paymentMethod,
     status: { key: localStatus.value, text: statusEntry.text },
     createdAt: props.order ? props.order.created_at : new Date().toISOString(),
   }
@@ -448,6 +453,22 @@ const handleReload = async () => {
   if (!props.order?.id) return
   const detail = await orderStore.getOrderById(props.order.id)
   if (detail) syncLocalData()
+}
+
+const handleCopyPaymentLink = async () => {
+  if (!props.order?.id) return
+  isLoading.value = true
+  try {
+    const response = await orderStore.getPaymentLink(props.order.id)
+    if (response) {
+      await navigator.clipboard.writeText(response)
+      toast.success('Đã copy link thanh toán vào clipboard!')
+    }
+  } catch (err) {
+    toast.error(`Lỗi khi lấy link thanh toán: ${err.message}`)
+  } finally {
+    isLoading.value = false
+  }
 }
 
 onBeforeUnmount(() => {
@@ -462,6 +483,7 @@ onBeforeUnmount(() => {
   <DraggableModal
     v-if="show"
     :zIndex="zIndex"
+    :isLoading="isLoading"
     @close="$emit('close')"
     @activate="$emit('activate')"
     :onRefresh="props.order ? props.onRefresh || handleReload : undefined"
@@ -636,14 +658,44 @@ onBeforeUnmount(() => {
             </div>
           </div>
         </div>
+        <div v-if="props.order" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Trạng thái đơn</label>
+            <Dropdown
+              v-model="localStatus"
+              :options="allowedStatusOptionsFor(originalStatusKey)"
+              placeholder="Chọn trạng thái"
+            />
+          </div>
 
-        <div v-if="props.order">
-          <label class="block text-sm font-medium mb-1">Trạng thái đơn</label>
-          <Dropdown
-            v-model="localStatus"
-            :options="allowedStatusOptionsFor(originalStatusKey)"
-            placeholder="Chọn trạng thái"
-          />
+          <div v-if="localData.paymentMethod">
+            <label class="block text-sm font-medium mb-1">Phương thức thanh toán</label>
+            <div class="flex items-center gap-3">
+              <span class="text-sm font-bold text-gray-800">
+                {{ 
+                  (localData.paymentMethod && localData.paymentMethod.toLowerCase() === 'cod') 
+                  ? 'Thanh toán khi nhận hàng (COD)' 
+                  : 'Thanh toán qua ' + (localData.paymentMethod || '---')
+                }}
+              </span>
+              <Button
+                v-if="
+                  props.order &&
+                  localData.paymentMethod &&
+                  ['vnpay', 'payos'].includes(localData.paymentMethod.toLowerCase())
+                "
+                text="Copy Link"
+                color="secondary"
+                size="sm"
+                @click="handleCopyPaymentLink"
+                class="whitespace-nowrap h-[32px]"
+              >
+                <template #icon>
+                  <Icon name="fa6-solid:link" class="text-[10px]" />
+                </template>
+              </Button>
+            </div>
+          </div>
 
           <!-- Thông tin chi tiết tỷ lệ đặt cọc và thanh toán -->
           <div

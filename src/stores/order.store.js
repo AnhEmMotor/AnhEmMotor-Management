@@ -85,6 +85,10 @@ export const useOrderStore = defineStore('order', () => {
     return await orderService.fetchLockedStatuses()
   }
 
+  const getPaymentLink = async (id) => {
+    return await orderService.getPaymentLink(id)
+  }
+
   return {
     error,
     fetchOrders,
@@ -96,5 +100,6 @@ export const useOrderStore = defineStore('order', () => {
     fetchStatusMap,
     fetchTransitionMap,
     fetchLockedStatuses,
+    getPaymentLink,
   }
 })

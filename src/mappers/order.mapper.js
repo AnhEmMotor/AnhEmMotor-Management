@@ -16,6 +16,7 @@ const orderMapper = {
       CustomerName: model.customerName,
       CustomerAddress: model.customerAddress,
       CustomerPhone: model.customerPhone,
+      PaymentMethod: model.paymentMethod,
       products: (model.products || []).map((p) => ({
         Id: typeof p.id === 'number' && p.id > TEMP_ID_THRESHOLD ? undefined : p.id,
         ProductId: p.product_id,
@@ -41,6 +42,7 @@ const orderMapper = {
       depositRatio: dto.depositRatio,
       depositAmount: dto.depositAmount,
       remainingAmount: dto.remainingAmount,
+      paymentMethod: dto.paymentMethod,
       products: (dto.products || []).map((p) => ({
         id: p.id,
         product_id: p.productId,

@@ -216,6 +216,21 @@ const handleImport = (event) => {
 const handleExport = () => {
   toast.info('Chức năng Export Excel đang phát triển')
 }
+
+const handleCopyPaymentLink = async (order) => {
+  loadingOverlay.value = true
+  try {
+    const response = await orderStore.getPaymentLink(order.id)
+    if (response) {
+      await navigator.clipboard.writeText(response)
+      toast.success('Đã copy link thanh toán vào clipboard!')
+    }
+  } catch (err) {
+    toast.error(`Lỗi khi lấy link thanh toán: ${err.message}`)
+  } finally {
+    loadingOverlay.value = false
+  }
+}
 </script>
 
 <template>
@@ -337,14 +352,16 @@ const handleExport = () => {
               </div>
             </td>
             <td class="py-3 px-6 text-center">
-              <SmallNoBgButton
-                v-if="hasPermission(Permissions.OutputsEdit)"
-                color="blue"
-                :icon="IconEdit"
-                @click.stop="handleEditOrder(order)"
-              >
-                Sửa
-              </SmallNoBgButton>
+              <div class="flex items-center justify-center gap-2">
+                <SmallNoBgButton
+                  v-if="hasPermission(Permissions.OutputsEdit)"
+                  color="blue"
+                  :icon="IconEdit"
+                  @click.stop="handleEditOrder(order)"
+                >
+                  Sửa
+                </SmallNoBgButton>
+              </div>
             </td>
           </tr>
         </tbody>
