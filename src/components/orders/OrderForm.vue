@@ -39,6 +39,7 @@ const localData = ref({
   products: [],
   notes: '',
   paymentMethod: 'COD',
+  depositRatio: 0,
 })
 
 const { data: settings } = useQuery({
@@ -47,11 +48,14 @@ const { data: settings } = useQuery({
   staleTime: 1000 * 60 * 60, // 1 hour
 })
 
-const depositRatio = computed(() => {
-  const ratio = props.order?.depositRatio || props.order?.deposit_ratio
-  if (ratio) return Number(ratio)
+const depositRatioSetting = computed(() => {
   if (!settings.value) return 50
   return Number(settings.value['Deposit_ratio'] || 50)
+})
+
+const orderValueThreshold = computed(() => {
+  if (!settings.value) return 100000000
+  return Number(settings.value['Order_value_exceeds'] || 100000000)
 })
 
 const { data: statusMap } = useQuery({
@@ -273,9 +277,21 @@ const syncLocalData = () => {
       props.order.customerAddress || props.order.customer_address || ''
     localData.value.customerPhone = props.order.customerPhone || props.order.customer_phone || ''
     localData.value.paymentMethod = props.order.paymentMethod || props.order.payment_method || 'COD'
+    localData.value.depositRatio =
+      props.order.depositRatio !== undefined && props.order.depositRatio !== null
+        ? props.order.depositRatio
+        : props.order.deposit_ratio !== undefined && props.order.deposit_ratio !== null
+          ? props.order.deposit_ratio
+          : depositRatioSetting.value
     localStatus.value = props.order.statusId || props.order.status_id || 'pending'
   } else {
-    localData.value = { customer: null, products: [], notes: '', paymentMethod: 'COD' }
+    localData.value = {
+      customer: null,
+      products: [],
+      notes: '',
+      paymentMethod: 'COD',
+      depositRatio: depositRatioSetting.value,
+    }
     customerSearchRefs.search = ''
     localStatus.value = 'pending'
   }
@@ -286,6 +302,12 @@ const syncLocalData = () => {
 }
 
 syncLocalData()
+
+watch(depositRatioSetting, (newVal) => {
+  if (!props.order && (localData.value.depositRatio === 0 || localData.value.depositRatio === 50)) {
+    localData.value.depositRatio = newVal
+  }
+})
 
 const handleProductBlur = () => {
   window.setTimeout(() => {
@@ -304,7 +326,33 @@ const calculateProductTotal = (product) => {
 }
 
 const totalAmount = computed(() => {
-  return localData.value.products.reduce((sum, p) => sum + (p.total || 0), 0)
+  return Math.round(localData.value.products.reduce((sum, p) => sum + (p.total || 0), 0))
+})
+
+const depositAmount = computed(() => {
+  return Math.round(totalAmount.value * (localData.value.depositRatio / 100))
+})
+
+const remainingAmount = computed(() => {
+  return totalAmount.value - depositAmount.value
+})
+
+const showDepositInfo = computed(() => {
+  return totalAmount.value >= orderValueThreshold.value || localData.value.depositRatio > 0
+})
+
+const isDepositRatioLocked = computed(() => {
+  if (!props.order || !lockedStatuses.value) return false
+  const data = lockedStatuses.value
+  const list = Array.isArray(data) ? [] : (data.depositRatio || [])
+  return list.includes(originalStatusKey.value)
+})
+
+const isPaymentLinkAvailable = computed(() => {
+  if (!props.order || !lockedStatuses.value) return false
+  const data = lockedStatuses.value
+  const list = Array.isArray(data) ? [] : (data.paymentLink || [])
+  return list.includes(originalStatusKey.value)
 })
 
 const updateDropdownPosition = () => {
@@ -441,6 +489,7 @@ function submit() {
     customerPhone: localData.value.customerPhone,
     products: JSON.parse(JSON.stringify(localData.value.products)),
     total: totalAmount.value,
+    depositRatio: localData.value.depositRatio,
     notes: localData.value.notes,
     paymentMethod: localData.value.paymentMethod,
     status: { key: localStatus.value, text: statusEntry.text },
@@ -658,6 +707,7 @@ onBeforeUnmount(() => {
             </div>
           </div>
         </div>
+
         <div v-if="props.order" class="space-y-4">
           <div>
             <label class="block text-sm font-medium mb-1">Trạng thái đơn</label>
@@ -682,7 +732,8 @@ onBeforeUnmount(() => {
                 v-if="
                   props.order &&
                   localData.paymentMethod &&
-                  ['vnpay', 'payos'].includes(localData.paymentMethod.toLowerCase())
+                  ['vnpay', 'payos'].includes(localData.paymentMethod.toLowerCase()) &&
+                  isPaymentLinkAvailable
                 "
                 text="Copy Link"
                 color="secondary"
@@ -696,38 +747,47 @@ onBeforeUnmount(() => {
               </Button>
             </div>
           </div>
+        </div>
 
-          <!-- Thông tin chi tiết tỷ lệ đặt cọc và thanh toán -->
-          <div
-            v-if="
-              (originalStatusKey === 'deposit_paid' ||
-                originalStatusKey === 'delivering' ||
-                originalStatusKey === 'waiting_deposit') &&
-              totalAmount > 0
-            "
-            class="mt-3 p-4 bg-orange-50 border border-orange-200 rounded-xl space-y-3 shadow-sm"
-          >
-            <div v-if="originalStatusKey === 'waiting_deposit'" class="flex justify-between items-center text-sm">
-              <span class="text-gray-600 font-medium">Tiền đặt cọc ({{ depositRatio }}%):</span>
+        <!-- Thông tin chi tiết tỷ lệ đặt cọc và thanh toán -->
+        <div
+          v-if="showDepositInfo && totalAmount > 0"
+          class="mt-3 p-4 bg-orange-50 border border-orange-200 rounded-xl space-y-4 shadow-sm"
+        >
+          <div class="flex justify-between items-center text-sm">
+            <div class="flex flex-col gap-1">
+              <span class="text-gray-600 font-medium">Tỷ lệ đặt cọc (%):</span>
+              <p class="text-[10px] text-orange-600 italic">
+                * Ngưỡng yêu cầu cọc: {{ formatVNDWithUnit(orderValueThreshold) }}
+              </p>
+            </div>
+            <div class="w-24">
+              <div v-if="isDepositRatioLocked" class="text-right font-black text-orange-600 text-lg">
+                {{ localData.depositRatio }}%
+              </div>
+              <Input
+                v-else
+                v-model.number="localData.depositRatio"
+                type="number"
+                min="0"
+                max="100"
+                inputClass="text-right font-bold py-1 px-2 border-orange-200 focus:border-orange-500"
+              />
+            </div>
+          </div>
+
+          <div class="space-y-2 border-t border-orange-200 pt-3">
+            <div class="flex justify-between items-center text-sm">
+              <span class="text-gray-600 font-medium">Tiền đặt cọc:</span>
               <span class="font-bold text-gray-900">
-                {{ formatVNDWithUnit(totalAmount * (depositRatio / 100)) }}
+                {{ formatVNDWithUnit(depositAmount) }}
               </span>
             </div>
-            
-            <div
-              class="pt-2 flex justify-between items-center"
-              :class="{ 'border-t border-orange-200': originalStatusKey === 'waiting_deposit' }"
-            >
-              <span class="text-sm text-orange-800 font-semibold"
-                >Tiền còn lại ({{ 100 - depositRatio }}%):</span
-              >
+
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-orange-800 font-semibold">Tiền còn lại:</span>
               <span class="text-xl font-black text-orange-600">
-                {{
-                  formatVNDWithUnit(
-                    props.order?.remainingAmount ||
-                      totalAmount - totalAmount * (depositRatio / 100),
-                  )
-                }}
+                {{ formatVNDWithUnit(remainingAmount) }}
               </span>
             </div>
           </div>

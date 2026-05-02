@@ -16,6 +16,7 @@ import IconPlus from '@/assets/icons/IconPlus.svg'
 import IconFileImport from '@/assets/icons/IconFileImport.svg'
 import IconFileExport from '@/assets/icons/IconFileExport.svg'
 import IconEdit from '@/assets/icons/IconEdit.svg'
+import settingService from '@/services/setting.service'
 import { useToast } from 'vue-toastification'
 import { Permissions } from '@/constants/permissions'
 import { usePermission } from '@/composables/usePermission'
@@ -43,6 +44,12 @@ const { data: statusMapData } = useQuery({
   queryKey: ['order-statuses'],
   queryFn: orderStore.fetchStatuses,
   staleTime: Infinity,
+})
+
+useQuery({
+  queryKey: ['system-settings'],
+  queryFn: settingService.fetchSettings,
+  staleTime: 1000 * 60 * 60, // 1 hour
 })
 
 const statusMap = computed(() => statusMapData.value || {})
