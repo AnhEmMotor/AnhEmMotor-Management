@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, computed, watch, ref } from 'vue'
+import { reactive, watch, ref } from 'vue'
 import Button from '@/components/ui/button/BaseButton.vue'
 import RoundBadge from '@/components/ui/RoundBadge.vue'
 import { formatCurrency, parseCurrency } from '@/utils/currency'
@@ -29,17 +29,13 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  pagination: {
-    type: Object,
-    required: true,
-  },
   isFetchingCategories: {
     type: Boolean,
     default: false,
   },
 })
 
-const emit = defineEmits(['saveDeposit', 'saveStock', 'saveCategoryLimit'])
+const emit = defineEmits(['saveDeposit', 'saveStock', 'saveCategoryLimit', 'update:search'])
 
 const localSettings = reactive({ ...props.settings })
 const localCategories = ref([])
@@ -75,25 +71,17 @@ const handleSaveCategoryLimit = (category) => {
   emit('saveCategoryLimit', category)
 }
 
-// Formatters and Handlers
 const handleMaxOrderInput = (e) => {
   localSettings.maxOrder = parseCurrency(e.target.value)
 }
 
-const handleDepositInput = (e) => {
-  const n = Number(e.target.value)
-  localSettings.deposit = Number.isFinite(n) ? Math.min(100, Math.max(0, n)) : 0
-}
-
-const handleStockLevelInput = (e) => {
-  const n = Number(e.target.value)
-  localSettings.stockLevel = Number.isFinite(n) ? Math.max(0, n) : 0
+const handleSearchInput = (e) => {
+  emit('update:search', e.target.value)
 }
 </script>
 
 <template>
   <div class="space-y-8">
-    <!-- Section 1: Quy Tắc Đặt Cọc -->
     <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
       <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
         <div class="flex items-center gap-3">
@@ -155,7 +143,6 @@ const handleStockLevelInput = (e) => {
       </div>
     </div>
 
-    <!-- Section 2: Giới Hạn Đơn Hàng Theo Thể Loại -->
     <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
       <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
         <div class="flex items-center gap-3">
@@ -170,7 +157,8 @@ const handleStockLevelInput = (e) => {
         <div class="relative w-64">
           <input
             type="text"
-            v-model="searchRefs.search"
+            :value="searchRefs.search"
+            @input="handleSearchInput"
             placeholder="Tìm thể loại..."
             class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-100 focus:border-red-500 outline-none transition-all text-sm"
           />
@@ -199,7 +187,6 @@ const handleStockLevelInput = (e) => {
       </div>
 
       <div class="p-0 relative">
-        <!-- Subtle loading overlay for the table only -->
         <div
           v-if="isFetchingCategories"
           class="absolute inset-0 bg-white/30 backdrop-blur-[1px] z-10 flex items-center justify-center"
@@ -265,7 +252,6 @@ const handleStockLevelInput = (e) => {
           </tbody>
         </table>
 
-        <!-- Pagination -->
         <div
           class="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-gray-50"
         >
@@ -292,7 +278,6 @@ const handleStockLevelInput = (e) => {
       </div>
     </div>
 
-    <!-- Section 3: Cảnh Báo Tồn Kho -->
     <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
       <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
         <div class="flex items-center gap-3">

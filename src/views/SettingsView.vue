@@ -1,5 +1,4 @@
 <script setup>
-import { ref, computed } from 'vue'
 import { useToast } from 'vue-toastification'
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/vue-query'
 import settingService from '@/services/setting.service'
@@ -15,7 +14,6 @@ const toast = useToast()
 const queryClient = useQueryClient()
 const categoryStore = useCategoryStore()
 
-// Settings Query
 const { isPending: isLoadingSettings, data: settings } = useQuery({
   queryKey: ['settings'],
   queryFn: async () => {
@@ -24,10 +22,8 @@ const { isPending: isLoadingSettings, data: settings } = useQuery({
   },
 })
 
-// Categories Query using standard composable and store
 const {
   data: categories,
-  isLoading: isInitialLoadingCategories,
   isFetching: isFetchingCategories,
   searchRefs: categorySearchRefs,
   pagination: categoryPagination,
@@ -40,7 +36,6 @@ const {
   queryOptions: { placeholderData: keepPreviousData },
 })
 
-// Mutations
 const { isPending: isSavingSettings, mutate: saveSettings } = useMutation({
   mutationFn: async (dto) => {
     return await settingService.updateSettings(dto)
@@ -54,10 +49,10 @@ const { isPending: isSavingSettings, mutate: saveSettings } = useMutation({
 
 const { isPending: isSavingCategory, mutate: saveCategoryLimit } = useMutation({
   mutationFn: async ({ id, limit, name, description }) => {
-    return await categoryService.updateCategory(id, { 
-      name, 
-      description, 
-      maxPurchaseQuantity: limit 
+    return await categoryService.updateCategory(id, {
+      name,
+      description,
+      maxPurchaseQuantity: limit,
     })
   },
   onSuccess: () => {
@@ -70,13 +65,13 @@ const { isPending: isSavingCategory, mutate: saveCategoryLimit } = useMutation({
 const handleSaveDeposit = (depositData) => {
   saveSettings({
     Order_value_exceeds: depositData.maxOrder.toString(),
-    Deposit_ratio: depositData.deposit.toString()
+    Deposit_ratio: depositData.deposit.toString(),
   })
 }
 
 const handleSaveStock = (stockLevel) => {
   saveSettings({
-    Inventory_alert_level: stockLevel.toString()
+    Inventory_alert_level: stockLevel.toString(),
   })
 }
 
@@ -85,7 +80,7 @@ const handleSaveCategoryLimit = (category) => {
     id: category.id,
     limit: category.maxPurchaseQuantity,
     name: category.name,
-    description: category.description
+    description: category.description,
   })
 }
 </script>
@@ -93,8 +88,7 @@ const handleSaveCategoryLimit = (category) => {
 <template>
   <div class="p-6 rounded-xl shadow-lg bg-white">
     <LoadingOverlay :show="isSavingSettings || isSavingCategory" message="Đang xử lý yêu cầu..." />
-    
-    <!-- ... Header stays the same ... -->
+
     <div
       class="flex items-start justify-between mb-6 sticky top-0 bg-white z-10 pb-4 border-b border-gray-200"
     >
@@ -106,7 +100,6 @@ const handleSaveCategoryLimit = (category) => {
       </div>
     </div>
 
-    <!-- Show skeletons only on initial settings load -->
     <template v-if="isLoadingSettings && !settings">
       <div class="space-y-8">
         <SkeletonLoader height="200px" className="rounded-lg" />
@@ -123,6 +116,7 @@ const handleSaveCategoryLimit = (category) => {
         :isSavingSettings="isSavingSettings"
         :isSavingCategory="isSavingCategory"
         :isFetchingCategories="isFetchingCategories"
+        @update:search="val => categorySearchRefs.search = val"
         @saveDeposit="handleSaveDeposit"
         @saveStock="handleSaveStock"
         @saveCategoryLimit="handleSaveCategoryLimit"

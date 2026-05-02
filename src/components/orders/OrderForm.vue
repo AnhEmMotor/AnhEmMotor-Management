@@ -45,7 +45,7 @@ const localData = ref({
 const { data: settings } = useQuery({
   queryKey: ['system-settings'],
   queryFn: settingService.fetchSettings,
-  staleTime: 1000 * 60 * 60, // 1 hour
+  staleTime: 1000 * 60 * 60,
 })
 
 const depositRatioSetting = computed(() => {
@@ -344,14 +344,14 @@ const showDepositInfo = computed(() => {
 const isDepositRatioLocked = computed(() => {
   if (!props.order || !lockedStatuses.value) return false
   const data = lockedStatuses.value
-  const list = Array.isArray(data) ? [] : (data.depositRatio || [])
+  const list = Array.isArray(data) ? [] : data.depositRatio || []
   return list.includes(originalStatusKey.value)
 })
 
 const isPaymentLinkAvailable = computed(() => {
   if (!props.order || !lockedStatuses.value) return false
   const data = lockedStatuses.value
-  const list = Array.isArray(data) ? [] : (data.paymentLink || [])
+  const list = Array.isArray(data) ? [] : data.paymentLink || []
   return list.includes(originalStatusKey.value)
 })
 
@@ -722,10 +722,10 @@ onBeforeUnmount(() => {
             <label class="block text-sm font-medium mb-1">Phương thức thanh toán</label>
             <div class="flex items-center gap-3">
               <span class="text-sm font-bold text-gray-800">
-                {{ 
-                  (localData.paymentMethod && localData.paymentMethod.toLowerCase() === 'cod') 
-                  ? 'Thanh toán khi nhận hàng (COD)' 
-                  : 'Thanh toán qua ' + (localData.paymentMethod || '---')
+                {{
+                  localData.paymentMethod && localData.paymentMethod.toLowerCase() === 'cod'
+                    ? 'Thanh toán khi nhận hàng (COD)'
+                    : 'Thanh toán qua ' + (localData.paymentMethod || '---')
                 }}
               </span>
               <Button
@@ -749,7 +749,6 @@ onBeforeUnmount(() => {
           </div>
         </div>
 
-        <!-- Thông tin chi tiết tỷ lệ đặt cọc và thanh toán -->
         <div
           v-if="showDepositInfo && totalAmount > 0"
           class="mt-3 p-4 bg-orange-50 border border-orange-200 rounded-xl space-y-4 shadow-sm"
@@ -762,7 +761,10 @@ onBeforeUnmount(() => {
               </p>
             </div>
             <div class="w-24">
-              <div v-if="isDepositRatioLocked" class="text-right font-black text-orange-600 text-lg">
+              <div
+                v-if="isDepositRatioLocked"
+                class="text-right font-black text-orange-600 text-lg"
+              >
                 {{ localData.depositRatio }}%
               </div>
               <Input

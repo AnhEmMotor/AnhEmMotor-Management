@@ -49,7 +49,7 @@ const { data: statusMapData } = useQuery({
 useQuery({
   queryKey: ['system-settings'],
   queryFn: settingService.fetchSettings,
-  staleTime: 1000 * 60 * 60, // 1 hour
+  staleTime: 1000 * 60 * 60,
 })
 
 const statusMap = computed(() => statusMapData.value || {})
@@ -224,20 +224,6 @@ const handleExport = () => {
   toast.info('Chức năng Export Excel đang phát triển')
 }
 
-const handleCopyPaymentLink = async (order) => {
-  loadingOverlay.value = true
-  try {
-    const response = await orderStore.getPaymentLink(order.id)
-    if (response) {
-      await navigator.clipboard.writeText(response)
-      toast.success('Đã copy link thanh toán vào clipboard!')
-    }
-  } catch (err) {
-    toast.error(`Lỗi khi lấy link thanh toán: ${err.message}`)
-  } finally {
-    loadingOverlay.value = false
-  }
-}
 </script>
 
 <template>
