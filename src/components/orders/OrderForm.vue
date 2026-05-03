@@ -188,6 +188,7 @@ const errors = ref({
   customerName: '',
   customerPhone: '',
   customerAddress: '',
+  statusId: '',
 })
 
 const selectCustomer = (customer) => {
@@ -435,6 +436,7 @@ watch(
       errors.value.customerAddress = val.CustomerAddress || val.customerAddress || ''
       if (val.Products || val.products) errors.value.products = val.Products || val.products
       if (val.Customer || val.customer) errors.value.customer = val.Customer || val.customer
+      errors.value.statusId = val.StatusId || val.statusId || ''
     }
   },
   { deep: true },
@@ -715,6 +717,7 @@ onBeforeUnmount(() => {
               v-model="localStatus"
               :options="allowedStatusOptionsFor(originalStatusKey)"
               placeholder="Chọn trạng thái"
+              :error="errors.statusId"
             />
           </div>
 

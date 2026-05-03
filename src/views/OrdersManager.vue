@@ -190,12 +190,21 @@ const handleSaveOrder = async (payload) => {
     showOrderForm.value = false
     queryClient.invalidateQueries({ queryKey: ['salesOrders'] })
   } catch (err) {
-    if (err.response?.data?.type === 'Validation') {
-      const apiErrors = err.response.data.errors || []
-      formErrors.value = apiErrors.reduce((acc, curr) => {
-        acc[curr.field] = curr.message
-        return acc
-      }, {})
+    const data = err.response?.data
+    if (data?.errors && Array.isArray(data.errors)) {
+      const unmappedErrors = []
+      const newFormErrors = {}
+      data.errors.forEach((e) => {
+        if (e.field) {
+          newFormErrors[e.field] = e.message
+        } else {
+          unmappedErrors.push(e.message)
+        }
+      })
+      formErrors.value = newFormErrors
+      if (unmappedErrors.length > 0) {
+        toast.error(unmappedErrors.join('\n'))
+      }
     } else {
       toast.error(`Lỗi khi lưu đơn hàng: ${err.message}`)
     }
