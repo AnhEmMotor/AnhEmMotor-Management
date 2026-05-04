@@ -14,7 +14,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'clear-error'])
 
 const localSupplier = ref({})
 
@@ -60,6 +60,7 @@ watch(
             v-model="localSupplier.name"
             placeholder="Bắt buộc"
             required
+            @update:modelValue="emit('clear-error', 'name')"
           />
           <div v-if="errors && errors.name" class="text-red-500 text-xs mt-1">
             {{ errors.name }}
@@ -70,6 +71,7 @@ watch(
             label="Điện thoại"
             v-model="localSupplier.phone"
             placeholder="Nhập số điện thoại"
+            @update:modelValue="emit('clear-error', 'phone')"
           />
           <div v-if="errors && errors.phone" class="text-red-500 text-xs mt-1">
             {{ errors.phone }}
@@ -81,6 +83,7 @@ watch(
             v-model="localSupplier.email"
             type="email"
             placeholder="email@gmail.com"
+            @update:modelValue="emit('clear-error', 'email')"
           />
           <div v-if="errors && errors.email" class="text-red-500 text-xs mt-1">
             {{ errors.email }}
@@ -91,6 +94,7 @@ watch(
             label="Mã số thuế"
             v-model="localSupplier.taxIdentificationNumber"
             placeholder="Nhập mã số thuế"
+            @update:modelValue="emit('clear-error', 'taxIdentificationNumber')"
           />
           <div v-if="errors && errors.taxIdentificationNumber" class="text-red-500 text-xs mt-1">
             {{ errors.taxIdentificationNumber }}
@@ -98,7 +102,12 @@ watch(
         </div>
       </div>
       <div>
-        <Input label="Địa chỉ" v-model="localSupplier.address" placeholder="Nhập địa chỉ" />
+        <Input
+          label="Địa chỉ"
+          v-model="localSupplier.address"
+          placeholder="Nhập địa chỉ"
+          @update:modelValue="emit('clear-error', 'address')"
+        />
         <div v-if="errors && errors.address" class="text-red-500 text-xs mt-1">
           {{ errors.address }}
         </div>

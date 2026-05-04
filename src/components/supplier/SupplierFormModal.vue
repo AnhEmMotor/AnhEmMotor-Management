@@ -67,7 +67,11 @@ const handleSave = () => {
       <h2 class="font-bold text-lg">{{ title }}</h2>
     </template>
     <template #body>
-      <SupplierForm v-model="localSupplier" :errors="errors" />
+      <SupplierForm
+        v-model="localSupplier"
+        :errors="errors"
+        @clear-error="(field) => emit('clear-error', field)"
+      />
     </template>
     <template #footer>
       <div class="flex justify-end space-x-2">

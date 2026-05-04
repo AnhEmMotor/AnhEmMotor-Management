@@ -73,8 +73,8 @@ const userMapper = {
     return { status }
   },
 
-  toRolesPayload(roles) {
-    return { roles }
+  toRolesPayload(roleIds) {
+    return { roleIds }
   },
 
   toAvatarPayload(file) {

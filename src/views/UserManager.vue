@@ -279,7 +279,7 @@ const { isPending: isChangingPassword, mutate: doChangePassword } = useMutation(
 })
 
 const { isPending: isAssigningRoles, mutate: doAssignRoles } = useMutation({
-  mutationFn: (data) => userStore.assignRoles(data.userId, data.payload.roles),
+  mutationFn: (data) => userStore.assignRoles(data.userId, data.payload.roleIds),
   onSuccess: async (data) => {
     queryClient.setQueryData(['user', selectedUser.value.id], data)
     await queryClient.invalidateQueries({ queryKey: ['users'] })

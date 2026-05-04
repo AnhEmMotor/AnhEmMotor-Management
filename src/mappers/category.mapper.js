@@ -26,6 +26,7 @@ const categoryMapper = {
       id: item.id,
       name: item.name || '',
       description: item.description || '',
+      maxPurchaseQuantity: item.maxPurchaseQuantity || null,
     }
   },
 
@@ -35,6 +36,7 @@ const categoryMapper = {
       id: model.id,
       name: model.name,
       description: model.description,
+      maxPurchaseQuantity: model.maxPurchaseQuantity,
     }
   },
 

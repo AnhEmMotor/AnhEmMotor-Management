@@ -7,6 +7,7 @@ import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { useToast } from 'vue-toastification'
 import { Permissions } from '@/constants/permissions'
 import { usePermission } from '@/composables/usePermission'
+import { normalizeBackendErrors } from '@/utils/error-helper'
 
 import Button from '@/components/ui/button/BaseButton.vue'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
@@ -183,39 +184,50 @@ const handleSaveProduct = async (productData) => {
     await queryClient.invalidateQueries({ queryKey: ['products'] })
     toast.success(productData.id ? 'Cập nhật sản phẩm thành công' : 'Thêm sản phẩm thành công')
   } catch (err) {
-    const backendErrors = err?.response?.data?.errors || err?.response?.data?.Errors || null
-    if (backendErrors && err?.response?.status === 400) {
-      const normalized = {}
-      const variantErrorsFromBackend = []
-      Object.entries(backendErrors).forEach(([key, messages]) => {
-        const msg = Array.isArray(messages) ? messages[0] : messages
-        const normalizedKey = key.toLowerCase()
-        normalized[normalizedKey] = msg
-
-        const variantMatch = key.match(/(?:\$\.)?variants\[(\d+)\]\.(.+)/i)
-        if (variantMatch) {
-          const index = parseInt(variantMatch[1], 10)
-          const field = variantMatch[2].toLowerCase()
-          if (!variantErrorsFromBackend[index]) {
-            variantErrorsFromBackend[index] = {}
-          }
-          variantErrorsFromBackend[index][field] = msg
-        }
+    if (err?.response?.status === 400) {
+      formErrors.value = normalizeBackendErrors(err, {
+        fieldMappings: {
+          categoryid: 'category_id',
+          brandid: 'brand_id',
+          urlslug: 'url',
+          metatitle: 'meta_title',
+          metadescription: 'meta_description',
+          shortdescription: 'short_description',
+          seatheight: 'seat_height',
+          groundclearance: 'ground_clearance',
+          fuelcapacity: 'fuel_capacity',
+          tiresize: 'tire_size',
+          frontsuspension: 'front_suspension',
+          rearsuspension: 'rear_suspension',
+          enginetype: 'engine_type',
+          maxpower: 'max_power',
+          oilcapacity: 'oil_capacity',
+          fuelconsumption: 'fuel_consumption',
+          transmissiontype: 'transmission_type',
+          startersystem: 'starter_system',
+          maxtorque: 'max_torque',
+          borestroke: 'bore_stroke',
+          compressionratio: 'compression_ratio',
+        },
       })
-
-      formErrors.value = {
-        ...formErrors.value,
-        _backend: normalized,
-        name: normalized['name'] || '',
-        category_id: normalized['category_id'] || normalized['categoryid'] || '',
-        variants: variantErrorsFromBackend,
-      }
       toast.warning('Vui lòng kiểm tra lại các trường có lỗi.')
     } else {
       toast.error(err.message || 'Lỗi khi lưu sản phẩm')
     }
   } finally {
     isSaving.value = false
+  }
+}
+
+const handleClearError = (field, index = null) => {
+  if (index !== null) {
+    if (formErrors.value.variants && formErrors.value.variants[index]) {
+      formErrors.value.variants[index][field] = ''
+    }
+  } else {
+    if (formErrors.value[field]) {
+      formErrors.value[field] = ''
+    }
   }
 }
 
@@ -325,5 +337,6 @@ const exportExcel = () => {
     :onRefresh="editableProduct.id ? handleRefreshForm : undefined"
     @close="isFormModalVisible = false"
     @save="handleSaveProduct"
+    @clear-error="handleClearError"
   />
 </template>

@@ -73,6 +73,7 @@ const handleSave = () => {
         :is-edit-mode="isEditMode"
         :errors="errors"
         :is-saving="isSaving"
+        @clear-error="(field, index) => emit('clear-error', field, index)"
       />
     </template>
     <template #footer>

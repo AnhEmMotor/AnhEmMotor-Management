@@ -230,7 +230,7 @@ router.beforeEach(async (to) => {
 })
 
 router.afterEach((to) => {
-  const defaultTitle = 'AnhEmMotor'
+  const defaultTitle = 'AnhEmMotor Admin'
   if (to.meta.title) {
     document.title = `${defaultTitle} | ${to.meta.title}`
   } else {

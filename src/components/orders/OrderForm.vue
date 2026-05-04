@@ -13,7 +13,9 @@ import { usePaginatedQuery } from '@/composables/usePaginatedQuery'
 import { useQuery } from '@tanstack/vue-query'
 import { Permissions } from '@/constants/permissions'
 import { usePermission } from '@/composables/usePermission'
-import { formatCurrency } from '@/utils/currency'
+import { useToast } from 'vue-toastification'
+import { formatCurrency, formatVNDWithUnit } from '@/utils/currency'
+import settingService from '@/services/setting.service'
 
 const props = defineProps({
   show: { type: Boolean, default: false },
@@ -27,6 +29,7 @@ const orderStore = useOrderStore()
 const userStore = useUserStore()
 const productStore = useProductStore()
 const { hasPermission } = usePermission()
+const toast = useToast()
 
 const localData = ref({
   customer: null,
@@ -35,6 +38,24 @@ const localData = ref({
   customerPhone: '',
   products: [],
   notes: '',
+  paymentMethod: 'COD',
+  depositRatio: 0,
+})
+
+const { data: settings } = useQuery({
+  queryKey: ['system-settings'],
+  queryFn: settingService.fetchSettings,
+  staleTime: 1000 * 60 * 60,
+})
+
+const depositRatioSetting = computed(() => {
+  if (!settings.value) return 50
+  return Number(settings.value['Deposit_ratio'] || 50)
+})
+
+const orderValueThreshold = computed(() => {
+  if (!settings.value) return 100000000
+  return Number(settings.value['Order_value_exceeds'] || 100000000)
 })
 
 const { data: statusMap } = useQuery({
@@ -133,7 +154,7 @@ const {
   pagination: customerPagination,
 } = usePaginatedQuery({
   queryKey: ['basic-users-for-orders'],
-  queryFn: (params) => userStore.searchBasicUsers(params),
+  queryFn: (params) => userStore.fetchBasicUsers(params),
   itemsPerPage: 5,
   useLocalPagination: true,
   searchFields: [{ key: 'search', debounce: 400 }],
@@ -167,6 +188,7 @@ const errors = ref({
   customerName: '',
   customerPhone: '',
   customerAddress: '',
+  statusId: '',
 })
 
 const selectCustomer = (customer) => {
@@ -255,9 +277,22 @@ const syncLocalData = () => {
     localData.value.customerAddress =
       props.order.customerAddress || props.order.customer_address || ''
     localData.value.customerPhone = props.order.customerPhone || props.order.customer_phone || ''
+    localData.value.paymentMethod = props.order.paymentMethod || props.order.payment_method || 'COD'
+    localData.value.depositRatio =
+      props.order.depositRatio !== undefined && props.order.depositRatio !== null
+        ? props.order.depositRatio
+        : props.order.deposit_ratio !== undefined && props.order.deposit_ratio !== null
+          ? props.order.deposit_ratio
+          : depositRatioSetting.value
     localStatus.value = props.order.statusId || props.order.status_id || 'pending'
   } else {
-    localData.value = { customer: null, products: [], notes: '' }
+    localData.value = {
+      customer: null,
+      products: [],
+      notes: '',
+      paymentMethod: 'COD',
+      depositRatio: depositRatioSetting.value,
+    }
     customerSearchRefs.search = ''
     localStatus.value = 'pending'
   }
@@ -268,6 +303,12 @@ const syncLocalData = () => {
 }
 
 syncLocalData()
+
+watch(depositRatioSetting, (newVal) => {
+  if (!props.order && (localData.value.depositRatio === 0 || localData.value.depositRatio === 50)) {
+    localData.value.depositRatio = newVal
+  }
+})
 
 const handleProductBlur = () => {
   window.setTimeout(() => {
@@ -286,7 +327,33 @@ const calculateProductTotal = (product) => {
 }
 
 const totalAmount = computed(() => {
-  return localData.value.products.reduce((sum, p) => sum + (p.total || 0), 0)
+  return Math.round(localData.value.products.reduce((sum, p) => sum + (p.total || 0), 0))
+})
+
+const depositAmount = computed(() => {
+  return Math.round(totalAmount.value * (localData.value.depositRatio / 100))
+})
+
+const remainingAmount = computed(() => {
+  return totalAmount.value - depositAmount.value
+})
+
+const showDepositInfo = computed(() => {
+  return totalAmount.value >= orderValueThreshold.value || localData.value.depositRatio > 0
+})
+
+const isDepositRatioLocked = computed(() => {
+  if (!props.order || !lockedStatuses.value) return false
+  const data = lockedStatuses.value
+  const list = Array.isArray(data) ? [] : data.depositRatio || []
+  return list.includes(originalStatusKey.value)
+})
+
+const isPaymentLinkAvailable = computed(() => {
+  if (!props.order || !lockedStatuses.value) return false
+  const data = lockedStatuses.value
+  const list = Array.isArray(data) ? [] : data.paymentLink || []
+  return list.includes(originalStatusKey.value)
 })
 
 const updateDropdownPosition = () => {
@@ -369,6 +436,7 @@ watch(
       errors.value.customerAddress = val.CustomerAddress || val.customerAddress || ''
       if (val.Products || val.products) errors.value.products = val.Products || val.products
       if (val.Customer || val.customer) errors.value.customer = val.Customer || val.customer
+      errors.value.statusId = val.StatusId || val.statusId || ''
     }
   },
   { deep: true },
@@ -423,7 +491,9 @@ function submit() {
     customerPhone: localData.value.customerPhone,
     products: JSON.parse(JSON.stringify(localData.value.products)),
     total: totalAmount.value,
+    depositRatio: localData.value.depositRatio,
     notes: localData.value.notes,
+    paymentMethod: localData.value.paymentMethod,
     status: { key: localStatus.value, text: statusEntry.text },
     createdAt: props.order ? props.order.created_at : new Date().toISOString(),
   }
@@ -434,6 +504,22 @@ const handleReload = async () => {
   if (!props.order?.id) return
   const detail = await orderStore.getOrderById(props.order.id)
   if (detail) syncLocalData()
+}
+
+const handleCopyPaymentLink = async () => {
+  if (!props.order?.id) return
+  isLoading.value = true
+  try {
+    const response = await orderStore.getPaymentLink(props.order.id)
+    if (response) {
+      await navigator.clipboard.writeText(response)
+      toast.success('Đã copy link thanh toán vào clipboard!')
+    }
+  } catch (err) {
+    toast.error(`Lỗi khi lấy link thanh toán: ${err.message}`)
+  } finally {
+    isLoading.value = false
+  }
 }
 
 onBeforeUnmount(() => {
@@ -448,6 +534,7 @@ onBeforeUnmount(() => {
   <DraggableModal
     v-if="show"
     :zIndex="zIndex"
+    :isLoading="isLoading"
     @close="$emit('close')"
     @activate="$emit('activate')"
     :onRefresh="props.order ? props.onRefresh || handleReload : undefined"
@@ -470,6 +557,7 @@ onBeforeUnmount(() => {
           nên một số trường bị khoá. Bạn vẫn có thể thay đổi các phần chưa bị khoá và "Trạng thái",
           sau đó nhấn Lưu.
         </div>
+
         <div>
           <label class="block text-sm font-medium mb-1">Tên khách hàng</label>
           <div class="relative">
@@ -622,13 +710,92 @@ onBeforeUnmount(() => {
           </div>
         </div>
 
-        <div v-if="props.order">
-          <label class="block text-sm font-medium mb-1">Trạng thái đơn</label>
-          <Dropdown
-            v-model="localStatus"
-            :options="allowedStatusOptionsFor(originalStatusKey)"
-            placeholder="Chọn trạng thái"
-          />
+        <div v-if="props.order" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Trạng thái đơn</label>
+            <Dropdown
+              v-model="localStatus"
+              :options="allowedStatusOptionsFor(originalStatusKey)"
+              placeholder="Chọn trạng thái"
+              :error="errors.statusId"
+            />
+          </div>
+
+          <div v-if="localData.paymentMethod">
+            <label class="block text-sm font-medium mb-1">Phương thức thanh toán</label>
+            <div class="flex items-center gap-3">
+              <span class="text-sm font-bold text-gray-800">
+                {{
+                  localData.paymentMethod && localData.paymentMethod.toLowerCase() === 'cod'
+                    ? 'Thanh toán khi nhận hàng (COD)'
+                    : 'Thanh toán qua ' + (localData.paymentMethod || '---')
+                }}
+              </span>
+              <Button
+                v-if="
+                  props.order &&
+                  localData.paymentMethod &&
+                  ['vnpay', 'payos'].includes(localData.paymentMethod.toLowerCase()) &&
+                  isPaymentLinkAvailable
+                "
+                text="Copy Link"
+                color="secondary"
+                size="sm"
+                @click="handleCopyPaymentLink"
+                class="whitespace-nowrap h-[32px]"
+              >
+                <template #icon>
+                  <Icon name="fa6-solid:link" class="text-[10px]" />
+                </template>
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <div
+          v-if="showDepositInfo && totalAmount > 0"
+          class="mt-3 p-4 bg-orange-50 border border-orange-200 rounded-xl space-y-4 shadow-sm"
+        >
+          <div class="flex justify-between items-center text-sm">
+            <div class="flex flex-col gap-1">
+              <span class="text-gray-600 font-medium">Tỷ lệ đặt cọc (%):</span>
+              <p class="text-[10px] text-orange-600 italic">
+                * Ngưỡng yêu cầu cọc: {{ formatVNDWithUnit(orderValueThreshold) }}
+              </p>
+            </div>
+            <div class="w-24">
+              <div
+                v-if="isDepositRatioLocked"
+                class="text-right font-black text-orange-600 text-lg"
+              >
+                {{ localData.depositRatio }}%
+              </div>
+              <Input
+                v-else
+                v-model.number="localData.depositRatio"
+                type="number"
+                min="0"
+                max="100"
+                inputClass="text-right font-bold py-1 px-2 border-orange-200 focus:border-orange-500"
+              />
+            </div>
+          </div>
+
+          <div class="space-y-2 border-t border-orange-200 pt-3">
+            <div class="flex justify-between items-center text-sm">
+              <span class="text-gray-600 font-medium">Tiền đặt cọc:</span>
+              <span class="font-bold text-gray-900">
+                {{ formatVNDWithUnit(depositAmount) }}
+              </span>
+            </div>
+
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-orange-800 font-semibold">Tiền còn lại:</span>
+              <span class="text-xl font-black text-orange-600">
+                {{ formatVNDWithUnit(remainingAmount) }}
+              </span>
+            </div>
+          </div>
         </div>
 
         <div v-if="!isBuyerProductLocked">
@@ -671,7 +838,7 @@ onBeforeUnmount(() => {
                     </div>
                     <div class="text-xs text-gray-500">
                       ID: {{ product.id || 'N/A' }} | Giá:
-                      {{ (product.price || 0).toLocaleString() }}
+                      {{ formatCurrency(product.price || 0) }}
                     </div>
                   </div>
                 </div>
@@ -831,7 +998,7 @@ onBeforeUnmount(() => {
                   />
                 </td>
                 <td class="py-2 px-3 text-left font-medium text-gray-800">
-                  {{ (p.total || 0).toLocaleString('vi-VN') }}
+                  {{ formatCurrency(p.total || 0) }}
                 </td>
                 <td class="py-2 px-3 text-center">
                   <button
@@ -865,7 +1032,11 @@ onBeforeUnmount(() => {
 
     <template #footer>
       <div class="flex items-center justify-between w-full">
-        <div class="text-sm font-semibold">Tổng: {{ totalAmount.toLocaleString('vi-VN') }} VNĐ</div>
+        <div class="flex flex-col">
+          <div class="text-sm font-bold text-gray-800">
+            Tổng: {{ formatVNDWithUnit(totalAmount) }}
+          </div>
+        </div>
         <div class="flex gap-2">
           <Button text="Huỷ" color="gray" @click="$emit('close')" />
           <Button

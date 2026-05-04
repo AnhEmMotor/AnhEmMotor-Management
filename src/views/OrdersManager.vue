@@ -16,6 +16,7 @@ import IconPlus from '@/assets/icons/IconPlus.svg'
 import IconFileImport from '@/assets/icons/IconFileImport.svg'
 import IconFileExport from '@/assets/icons/IconFileExport.svg'
 import IconEdit from '@/assets/icons/IconEdit.svg'
+import settingService from '@/services/setting.service'
 import { useToast } from 'vue-toastification'
 import { Permissions } from '@/constants/permissions'
 import { usePermission } from '@/composables/usePermission'
@@ -27,7 +28,7 @@ const { hasPermission } = usePermission()
 
 const STATUS_COLOR_MAP = {
   pending: 'gray',
-  waiting_deposit: 'gray',
+  waiting_deposit: 'yellow',
   refunded: 'gray',
   completed: 'green',
   waiting_pickup: 'green',
@@ -43,6 +44,12 @@ const { data: statusMapData } = useQuery({
   queryKey: ['order-statuses'],
   queryFn: orderStore.fetchStatuses,
   staleTime: Infinity,
+})
+
+useQuery({
+  queryKey: ['system-settings'],
+  queryFn: settingService.fetchSettings,
+  staleTime: 1000 * 60 * 60,
 })
 
 const statusMap = computed(() => statusMapData.value || {})
@@ -183,12 +190,21 @@ const handleSaveOrder = async (payload) => {
     showOrderForm.value = false
     queryClient.invalidateQueries({ queryKey: ['salesOrders'] })
   } catch (err) {
-    if (err.response?.data?.type === 'Validation') {
-      const apiErrors = err.response.data.errors || []
-      formErrors.value = apiErrors.reduce((acc, curr) => {
-        acc[curr.field] = curr.message
-        return acc
-      }, {})
+    const data = err.response?.data
+    if (data?.errors && Array.isArray(data.errors)) {
+      const unmappedErrors = []
+      const newFormErrors = {}
+      data.errors.forEach((e) => {
+        if (e.field) {
+          newFormErrors[e.field] = e.message
+        } else {
+          unmappedErrors.push(e.message)
+        }
+      })
+      formErrors.value = newFormErrors
+      if (unmappedErrors.length > 0) {
+        toast.error(unmappedErrors.join('\n'))
+      }
     } else {
       toast.error(`Lỗi khi lưu đơn hàng: ${err.message}`)
     }
@@ -216,6 +232,7 @@ const handleImport = (event) => {
 const handleExport = () => {
   toast.info('Chức năng Export Excel đang phát triển')
 }
+
 </script>
 
 <template>
@@ -330,17 +347,23 @@ const handleExport = () => {
               </RoundBadge>
             </td>
             <td class="py-3 px-6 text-left">
-              {{ (order.total || 0).toLocaleString('vi-VN') }} VNĐ
+              <div class="flex flex-col">
+                <span class="font-bold text-gray-800">
+                  {{ (order.total || 0).toLocaleString('vi-VN') }} VNĐ
+                </span>
+              </div>
             </td>
             <td class="py-3 px-6 text-center">
-              <SmallNoBgButton
-                v-if="hasPermission(Permissions.OutputsEdit)"
-                color="blue"
-                :icon="IconEdit"
-                @click.stop="handleEditOrder(order)"
-              >
-                Sửa
-              </SmallNoBgButton>
+              <div class="flex items-center justify-center gap-2">
+                <SmallNoBgButton
+                  v-if="hasPermission(Permissions.OutputsEdit)"
+                  color="blue"
+                  :icon="IconEdit"
+                  @click.stop="handleEditOrder(order)"
+                >
+                  Sửa
+                </SmallNoBgButton>
+              </div>
             </td>
           </tr>
         </tbody>

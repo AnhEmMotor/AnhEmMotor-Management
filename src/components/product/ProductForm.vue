@@ -43,7 +43,7 @@ const { hasPermission } = usePermission()
 const brandStore = useBrandStore()
 const categoryStore = useCategoryStore()
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'clear-error'])
 const {
   data: categoriesData,
   isLoading: isCategoriesLoading,
@@ -136,8 +136,8 @@ watch(
     isUpdatingFromProp.value = true
     const copy = JSON.parse(JSON.stringify(newVal || {}))
 
-    copy.category_id = copy.category_id || ''
-    copy.brand_id = copy.brand_id || ''
+    copy.category_id = copy.category_id || null
+    copy.brand_id = copy.brand_id || null
 
     if (!copy.variants || copy.variants.length === 0) {
       copy.variants = [
@@ -252,6 +252,7 @@ const removeVariant = (index) => {
               placeholder="Bắt buộc (ví dụ: 'Honda Air Blade')"
               :error="errors?.name"
               required
+              @update:modelValue="emit('clear-error', 'name')"
             />
           </div>
           <div>
@@ -260,6 +261,7 @@ const removeVariant = (index) => {
               v-model="localProduct.meta_title"
               placeholder="Tối ưu cho công cụ tìm kiếm"
               :error="errors?.meta_title"
+              @update:modelValue="emit('clear-error', 'meta_title')"
             />
           </div>
           <div class="md:col-span-2">
@@ -269,6 +271,7 @@ const removeVariant = (index) => {
               placeholder="Nhập mô tả SEO..."
               :rows="2"
               :error="errors?.meta_description"
+              @update:modelValue="emit('clear-error', 'meta_description')"
             />
           </div>
           <div class="md:col-span-2">
@@ -278,6 +281,7 @@ const removeVariant = (index) => {
               placeholder="Nhập mô tả ngắn hiển thị trên Store..."
               :rows="2"
               :error="errors?.short_description"
+              @update:modelValue="emit('clear-error', 'short_description')"
             />
           </div>
           <div>
@@ -291,17 +295,21 @@ const removeVariant = (index) => {
               :error="errors?.category_id"
               placeholder="Chọn Danh Mục"
               required
+              @update:modelValue="emit('clear-error', 'category_id')"
             />
           </div>
           <div>
             <Dropdown
-              label="Thương Hiệu"
+              label="Thương Hiệu *"
               v-model="localProduct.brand_id"
               :selected-label="localProduct.brand"
               :options="brandOptions"
               :pagination="brandPagination"
               :loading="isBrandsLoading"
+              :error="errors?.brand_id"
               placeholder="Chọn Thương Hiệu"
+              required
+              @update:modelValue="emit('clear-error', 'brand_id')"
             />
           </div>
           <div class="md:col-span-2">
@@ -310,6 +318,8 @@ const removeVariant = (index) => {
               v-model="localProduct.description"
               placeholder="Nhập mô tả..."
               :rows="3"
+              :error="errors?.description"
+              @update:modelValue="emit('clear-error', 'description')"
             />
           </div>
         </div>
@@ -323,29 +333,39 @@ const removeVariant = (index) => {
             type="number"
             v-model.number="localProduct.weight"
             placeholder="ví dụ: 114"
+            :error="errors?.weight"
+            @update:modelValue="emit('clear-error', 'weight')"
           />
           <Input
             label="Kích thước (D x R x C) (mm)"
             v-model="localProduct.dimensions"
             placeholder="ví dụ: 1.902 x 686 x 1.116"
+            :error="errors?.dimensions"
+            @update:modelValue="emit('clear-error', 'dimensions')"
           />
           <Input
             label="Khoảng cách trục bánh xe (mm)"
             type="number"
             v-model.number="localProduct.wheelbase"
             placeholder="ví dụ: 1286"
+            :error="errors?.wheelbase"
+            @update:modelValue="emit('clear-error', 'wheelbase')"
           />
           <Input
             label="Độ cao yên (mm)"
             type="number"
             v-model.number="localProduct.seat_height"
             placeholder="ví dụ: 775"
+            :error="errors?.seat_height"
+            @update:modelValue="emit('clear-error', 'seat_height')"
           />
           <Input
             label="Khoảng sáng gầm xe (mm)"
             type="number"
             v-model.number="localProduct.ground_clearance"
             placeholder="ví dụ: 141"
+            :error="errors?.ground_clearance"
+            @update:modelValue="emit('clear-error', 'ground_clearance')"
           />
           <Input
             label="Dung tích bình xăng (lít)"
@@ -353,31 +373,43 @@ const removeVariant = (index) => {
             step="0.1"
             v-model.number="localProduct.fuel_capacity"
             placeholder="ví dụ: 4.4"
+            :error="errors?.fuel_capacity"
+            @update:modelValue="emit('clear-error', 'fuel_capacity')"
           />
           <Input
             label="Kích cỡ lốp trước/sau"
             v-model="localProduct.tire_size"
             placeholder="ví dụ: 90/80-14 / 100/80-14"
+            :error="errors?.tire_size"
+            @update:modelValue="emit('clear-error', 'tire_size')"
           />
           <Input
             label="Phuộc trước"
             v-model="localProduct.front_suspension"
             placeholder="ví dụ: Ống lồng"
+            :error="errors?.front_suspension"
+            @update:modelValue="emit('clear-error', 'front_suspension')"
           />
           <Input
             label="Phuộc sau"
             v-model="localProduct.rear_suspension"
             placeholder="ví dụ: Lò xo trụ"
+            :error="errors?.rear_suspension"
+            @update:modelValue="emit('clear-error', 'rear_suspension')"
           />
           <Input
             label="Loại động cơ"
             v-model="localProduct.engine_type"
             placeholder="ví dụ: 4 kỳ, 1 xi-lanh..."
+            :error="errors?.engine_type"
+            @update:modelValue="emit('clear-error', 'engine_type')"
           />
           <Input
             label="Công suất tối đa"
             v-model="localProduct.max_power"
             placeholder="ví dụ: 11,7 mã lực @ 8.500 vòng/phút"
+            :error="errors?.max_power"
+            @update:modelValue="emit('clear-error', 'max_power')"
           />
           <Input
             label="Dung tích nhớt máy (lít)"
@@ -385,26 +417,36 @@ const removeVariant = (index) => {
             step="0.1"
             v-model.number="localProduct.oil_capacity"
             placeholder="ví dụ: 0.8"
+            :error="errors?.oil_capacity"
+            @update:modelValue="emit('clear-error', 'oil_capacity')"
           />
           <Input
             label="Mức tiêu thụ nhiên liệu"
             v-model="localProduct.fuel_consumption"
             placeholder="ví dụ: 2,31 l/100km"
+            :error="errors?.fuel_consumption"
+            @update:modelValue="emit('clear-error', 'fuel_consumption')"
           />
           <Input
             label="Loại truyền động"
             v-model="localProduct.transmission_type"
             placeholder="ví dụ: Tự động, vô cấp"
+            :error="errors?.transmission_type"
+            @update:modelValue="emit('clear-error', 'transmission_type')"
           />
           <Input
             label="Hệ thống khởi động"
             v-model="localProduct.starter_system"
             placeholder="ví dụ: Điện"
+            :error="errors?.starter_system"
+            @update:modelValue="emit('clear-error', 'starter_system')"
           />
           <Input
             label="Moment xoắn cực đại"
             v-model="localProduct.max_torque"
             placeholder="ví dụ: 14,6 Nm @ 6.500 vòng/phút"
+            :error="errors?.max_torque"
+            @update:modelValue="emit('clear-error', 'max_torque')"
           />
           <Input
             label="Dung tích xy-lanh (cc)"
@@ -412,16 +454,22 @@ const removeVariant = (index) => {
             step="0.1"
             v-model.number="localProduct.displacement"
             placeholder="ví dụ: 156.9"
+            :error="errors?.displacement"
+            @update:modelValue="emit('clear-error', 'displacement')"
           />
           <Input
             label="Đường kính x Hành trình piston (mm)"
             v-model="localProduct.bore_stroke"
             placeholder="ví dụ: 60,0 x 55,5"
+            :error="errors?.bore_stroke"
+            @update:modelValue="emit('clear-error', 'bore_stroke')"
           />
           <Input
             label="Tỷ số nén"
             v-model="localProduct.compression_ratio"
             placeholder="ví dụ: 12,0:1"
+            :error="errors?.compression_ratio"
+            @update:modelValue="emit('clear-error', 'compression_ratio')"
           />
         </div>
       </fieldset>
@@ -516,12 +564,14 @@ const removeVariant = (index) => {
                 v-model.number="variant.price"
                 placeholder="Giá bán"
                 :error="getVariantErrors(index).price"
+                @update:modelValue="emit('clear-error', 'price', index)"
               />
               <Input
                 label="URL Slug *"
                 v-model="variant.url"
                 placeholder="ví dụ: ten-san-pham-thuoc-tinh"
                 :error="getVariantErrors(index).url"
+                @update:modelValue="emit('clear-error', 'url', index)"
               />
             </div>
 
