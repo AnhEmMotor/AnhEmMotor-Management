@@ -34,7 +34,6 @@ const formModalTitle = ref('')
 const { data: inventoryStatusesData } = useQuery({
   queryKey: ['inventoryStatuses'],
   queryFn: () => productService.getInventoryStatuses(),
-  staleTime: 10 * 60 * 1000,
 })
 
 const inventoryStatusMap = computed(() => {
@@ -154,7 +153,6 @@ const handleRefreshForm = async () => {
       const freshData = await queryClient.fetchQuery({
         queryKey: ['products', editableProduct.value.id],
         queryFn: () => productStore.getProductById(editableProduct.value.id),
-        staleTime: 0,
       })
       if (freshData) {
         editableProduct.value = JSON.parse(JSON.stringify(freshData))

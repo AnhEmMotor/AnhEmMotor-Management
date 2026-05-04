@@ -33,7 +33,6 @@ const supplierInfo = computed(() => ({ ...props.itemData, ...(detailData.value |
 const { data: statusMapData } = useQuery({
   queryKey: ['inputStatuses'],
   queryFn: () => inputStore.fetchInputStatuses(),
-  staleTime: Infinity,
 })
 
 const statusMap = computed(() => statusMapData.value || {})

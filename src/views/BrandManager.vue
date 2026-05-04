@@ -72,7 +72,6 @@ const openEditModal = async (brand) => {
     const fetchedData = await queryClient.fetchQuery({
       queryKey: ['brands', brand.id],
       queryFn: () => brandStore.getBrandById(brand.id),
-      staleTime: 0,
     })
     if (fetchedData) {
       editableBrand.value = { ...fetchedData }
@@ -137,7 +136,6 @@ const handleRefreshForm = async () => {
       const freshData = await queryClient.fetchQuery({
         queryKey: ['brands', editableBrand.value.id],
         queryFn: () => brandStore.getBrandById(editableBrand.value.id),
-        staleTime: 0,
       })
       if (freshData) {
         editableBrand.value = { ...freshData }

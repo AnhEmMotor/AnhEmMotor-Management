@@ -31,7 +31,6 @@ const isFetchingDetail = ref(false)
 const { data: permissionStructure } = useQuery({
   queryKey: ['permissionStructure'],
   queryFn: () => roleStore.fetchPermissionStructure(),
-  staleTime: Infinity,
 })
 
 const availablePermissions = computed(() => permissionStructure.value?.list || [])

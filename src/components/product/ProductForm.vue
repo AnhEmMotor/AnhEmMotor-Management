@@ -53,7 +53,6 @@ const {
   queryFn: (query) => categoryStore.fetchCategories(query),
   useLocalPagination: true,
   itemsPerPage: 10,
-  queryOptions: { staleTime: 5 * 60 * 1000 },
 })
 
 const {
@@ -65,13 +64,11 @@ const {
   queryFn: (query) => brandStore.fetchBrands(query),
   useLocalPagination: true,
   itemsPerPage: 10,
-  queryOptions: { staleTime: 5 * 60 * 1000 },
 })
 
 const { data: predefinedOptionsData, isLoading: isOptionsLoading } = useQuery({
   queryKey: ['predefinedOptions'],
   queryFn: () => productService.getPredefinedOptions(),
-  staleTime: 5 * 60 * 1000,
 })
 
 const localProduct = ref({})

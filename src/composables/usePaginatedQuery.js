@@ -338,7 +338,6 @@ export function usePaginatedQuery({
           queryClient.prefetchQuery({
             queryKey: [...unref(queryKey), nextPageParams],
             queryFn: () => queryFn(nextPageParams),
-            staleTime: 5000,
           })
         }
 
@@ -347,7 +346,6 @@ export function usePaginatedQuery({
           queryClient.prefetchQuery({
             queryKey: [...unref(queryKey), prevPageParams],
             queryFn: () => queryFn(prevPageParams),
-            staleTime: 5000,
           })
         }
       }
