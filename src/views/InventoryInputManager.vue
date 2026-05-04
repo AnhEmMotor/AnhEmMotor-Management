@@ -57,7 +57,6 @@ const selectedStatus = computed({
 const { data: statusMapData } = useQuery({
   queryKey: ['inputStatuses'],
   queryFn: () => inputStore.fetchInputStatuses(),
-  staleTime: Infinity,
 })
 
 const statusMap = computed(() => statusMapData.value || {})
@@ -126,7 +125,6 @@ const handleInventoryRefresh = async () => {
     const detail = await queryClient.fetchQuery({
       queryKey: ['inventoryReceipts', currentInventoryData.value.id],
       queryFn: () => inputStore.getInputById(currentInventoryData.value.id),
-      staleTime: 0,
     })
     currentInventoryData.value = JSON.parse(JSON.stringify(detail))
     toast.success('Đã làm mới thông tin phiếu nhập')

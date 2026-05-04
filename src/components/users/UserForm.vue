@@ -53,7 +53,6 @@ const { hasPermission } = usePermission()
 const { data: genderOptions } = useQuery({
   queryKey: ['gender-options'],
   queryFn: () => userService.getGenderOptions(),
-  staleTime: Infinity,
 })
 
 const formData = ref({

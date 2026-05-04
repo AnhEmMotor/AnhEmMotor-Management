@@ -72,7 +72,6 @@ const openEditModal = async (category) => {
     const fetchedData = await queryClient.fetchQuery({
       queryKey: ['categories', category.id],
       queryFn: () => categoryStore.getCategoryById(category.id),
-      staleTime: 0,
     })
     if (fetchedData) {
       editableCategory.value = { ...fetchedData }
@@ -137,7 +136,6 @@ const handleRefreshForm = async () => {
       const freshData = await queryClient.fetchQuery({
         queryKey: ['categories', editableCategory.value.id],
         queryFn: () => categoryStore.getCategoryById(editableCategory.value.id),
-        staleTime: 0,
       })
       if (freshData) {
         editableCategory.value = { ...freshData }

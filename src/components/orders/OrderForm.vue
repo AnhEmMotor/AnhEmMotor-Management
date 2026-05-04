@@ -45,7 +45,6 @@ const localData = ref({
 const { data: settings } = useQuery({
   queryKey: ['system-settings'],
   queryFn: settingService.fetchSettings,
-  staleTime: 1000 * 60 * 60,
 })
 
 const depositRatioSetting = computed(() => {
@@ -61,19 +60,16 @@ const orderValueThreshold = computed(() => {
 const { data: statusMap } = useQuery({
   queryKey: ['order-status-map'],
   queryFn: orderStore.fetchStatusMap,
-  staleTime: 1000 * 60 * 10,
 })
 
 const { data: lockedStatuses } = useQuery({
   queryKey: ['order-locked-statuses'],
   queryFn: orderStore.fetchLockedStatuses,
-  staleTime: 1000 * 60 * 60,
 })
 
 const { data: transitionMap } = useQuery({
   queryKey: ['order-transition-map'],
   queryFn: orderStore.fetchTransitionMap,
-  staleTime: 1000 * 60 * 10,
 })
 
 const STATUS_LIST = computed(() => {

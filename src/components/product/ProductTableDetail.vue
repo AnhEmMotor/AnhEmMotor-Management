@@ -28,7 +28,6 @@ const emit = defineEmits(['update:activeTab'])
 const { data: predefinedOptionsData } = useQuery({
   queryKey: ['predefinedOptions'],
   queryFn: () => productService.getPredefinedOptions(),
-  staleTime: 5 * 60 * 1000,
 })
 
 const getVariantOptionsText = (variant) => {

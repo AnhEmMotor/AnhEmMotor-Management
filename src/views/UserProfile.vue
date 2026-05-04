@@ -28,7 +28,6 @@ const activeTab = computed({
 const { data: genderOptions, isLoading: isGendersLoading } = useQuery({
   queryKey: ['gender-options'],
   queryFn: () => userService.getGenderOptions(),
-  staleTime: Infinity,
   enabled: computed(() => activeTab.value === 'profile'),
 })
 

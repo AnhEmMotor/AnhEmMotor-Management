@@ -199,7 +199,6 @@ const handleFormRefresh = async (showToast = true, showLoading = true) => {
       const freshData = await queryClient.fetchQuery({
         queryKey: ['suppliers', editableSupplier.value.id],
         queryFn: () => supplierStore.getSupplierById(editableSupplier.value.id),
-        staleTime: 0,
       })
       if (freshData) {
         editableSupplier.value = JSON.parse(JSON.stringify(freshData))

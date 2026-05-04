@@ -43,13 +43,11 @@ const STATUS_COLOR_MAP = {
 const { data: statusMapData } = useQuery({
   queryKey: ['order-statuses'],
   queryFn: orderStore.fetchStatuses,
-  staleTime: Infinity,
 })
 
 useQuery({
   queryKey: ['system-settings'],
   queryFn: settingService.fetchSettings,
-  staleTime: 1000 * 60 * 60,
 })
 
 const statusMap = computed(() => statusMapData.value || {})
@@ -123,7 +121,6 @@ const handleEditOrder = async (order) => {
       .fetchQuery({
         queryKey: ['salesOrders', order.id],
         queryFn: () => orderStore.getOrderById(order.id),
-        staleTime: 0,
       })
       .then((detail) => {
         if (selectedOrder.value?.id === order.id) {
@@ -140,7 +137,6 @@ const handleEditOrder = async (order) => {
       const detail = await queryClient.fetchQuery({
         queryKey: ['salesOrders', order.id],
         queryFn: () => orderStore.getOrderById(order.id),
-        staleTime: 0,
       })
       selectedOrder.value = detail
       queryClient.setQueryData(['salesOrders', order.id], detail)
@@ -160,7 +156,6 @@ const handleFormRefresh = async () => {
     const detail = await queryClient.fetchQuery({
       queryKey: ['salesOrders', selectedOrder.value.id],
       queryFn: () => orderStore.getOrderById(selectedOrder.value.id),
-      staleTime: 0,
     })
     selectedOrder.value = detail
     queryClient.setQueryData(['salesOrders', detail.id], detail)

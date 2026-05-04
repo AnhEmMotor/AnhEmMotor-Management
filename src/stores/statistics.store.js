@@ -14,7 +14,6 @@ export const useStatisticsStore = defineStore('statistics', () => {
       const data = await statisticsService.getAdminProductReport()
       return statisticsMapper.toProductReport(data)
     },
-    staleTime: 5 * 60 * 1000,
   })
 
   const filteredProducts = computed(() => {
@@ -50,7 +49,6 @@ export const useStatisticsStore = defineStore('statistics', () => {
       const data = await statisticsService.getAdminRevenueAnalysis()
       return statisticsMapper.toRevenueAnalysis(data)
     },
-    staleTime: 5 * 60 * 1000,
   })
 
   const warehouseReportQuery = useQuery({
@@ -59,7 +57,6 @@ export const useStatisticsStore = defineStore('statistics', () => {
       const data = await statisticsService.getAdminWarehouseReport()
       return statisticsMapper.toWarehouseReport(data)
     },
-    staleTime: 5 * 60 * 1000,
   })
 
   const dashboardOverviewQuery = useQuery({
@@ -68,7 +65,6 @@ export const useStatisticsStore = defineStore('statistics', () => {
       const data = await statisticsService.getAdminDashboardOverview()
       return statisticsMapper.toDashboardOverview(data)
     },
-    staleTime: 5 * 60 * 1000,
   })
 
   return {
