@@ -1,5 +1,5 @@
 import axiosInstance from '@infrastructure/api/axios'
-import { USER_ENDPOINTS } from '@/constants/endpoints/user.endpoint'
+import { USER_ENDPOINTS } from '@constants/endpoints/user.endpoint'
 
 const userService = {
   async fetchBasicUsers(params) {
@@ -19,6 +19,11 @@ const userService = {
 
   async updateUser(id, payload) {
     const { data } = await axiosInstance.put(USER_ENDPOINTS.BY_ID(id), payload)
+    return data
+  },
+
+  async createUser(payload) {
+    const { data } = await axiosInstance.post(USER_ENDPOINTS.BASE, payload)
     return data
   },
 
@@ -56,5 +61,6 @@ const userService = {
 }
 
 export default userService
+
 
 

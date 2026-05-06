@@ -15,6 +15,12 @@ export default defineConfig({
       '@application': fileURLToPath(new URL('./src/core/application', import.meta.url)),
       '@infrastructure': fileURLToPath(new URL('./src/core/infrastructure', import.meta.url)),
       '@presentation': fileURLToPath(new URL('./src/presentation', import.meta.url)),
+      '@components': fileURLToPath(new URL('./src/presentation/components', import.meta.url)),
+      '@views': fileURLToPath(new URL('./src/presentation/views', import.meta.url)),
+      '@stores': fileURLToPath(new URL('./src/core/application/stores', import.meta.url)),
+      '@composables': fileURLToPath(new URL('./src/presentation/composables', import.meta.url)),
+      '@constants': fileURLToPath(new URL('./src/core/domain/constants', import.meta.url)),
+      '@router': fileURLToPath(new URL('./src/presentation/router', import.meta.url)),
     },
   },
   build: {

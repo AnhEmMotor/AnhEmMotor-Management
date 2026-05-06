@@ -1,6 +1,6 @@
 import axiosInstance from '@infrastructure/api/axios'
-import { AUTH_ENDPOINTS } from '@/constants/endpoints/auth.endpoint'
-import { USER_ENDPOINTS } from '@/constants/endpoints/user.endpoint'
+import { AUTH_ENDPOINTS } from '@constants/endpoints/auth.endpoint'
+import { USER_ENDPOINTS } from '@constants/endpoints/user.endpoint'
 import { fetchEventSource } from '@microsoft/fetch-event-source'
 
 const authService = {
@@ -93,5 +93,6 @@ const authService = {
 }
 
 export default authService
+
 
 

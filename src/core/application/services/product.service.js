@@ -1,5 +1,5 @@
 import axiosInstance from '@infrastructure/api/axios'
-import { PRODUCT_ENDPOINTS } from '@/constants/endpoints/product.endpoint'
+import { PRODUCT_ENDPOINTS } from '@constants/endpoints/product.endpoint'
 
 const productService = {
   async fetchProducts(params) {
@@ -116,7 +116,22 @@ const productService = {
   },
 
   async getTechnologies() {
-    const { data } = await axiosInstance.get('/api/v1/technology')
+    const { data } = await axiosInstance.get('/api/v1/technologies')
+    return data
+  },
+
+  async createTechnology(payload) {
+    const { data } = await axiosInstance.post('/api/v1/technologies', payload)
+    return data
+  },
+
+  async getTechnologyCategories() {
+    const { data } = await axiosInstance.get('/api/v1/technologies/categories')
+    return data
+  },
+
+  async createTechnologyCategory(payload) {
+    const { data } = await axiosInstance.post('/api/v1/technologies/categories', payload)
     return data
   },
 
@@ -147,5 +162,6 @@ const productService = {
 }
 
 export default productService
+
 
 

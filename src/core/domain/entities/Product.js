@@ -31,3 +31,4 @@ export class Product {
     return this.images.length > 0 ? this.images[0].url : '/placeholder.png';
   }
 }
+

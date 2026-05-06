@@ -1,5 +1,5 @@
 import axiosInstance from '@infrastructure/api/axios'
-import { BRAND_ENDPOINTS } from '@/constants/endpoints/brand.endpoint'
+import { BRAND_ENDPOINTS } from '@constants/endpoints/brand.endpoint'
 
 const brandService = {
   async fetchBrands(params) {
@@ -29,5 +29,6 @@ const brandService = {
 }
 
 export default brandService
+
 
 

@@ -26,6 +26,12 @@ const categoryMapper = {
     return {
       id: item.id,
       name: item.name || '',
+      slug: item.slug || '',
+      imageUrl: item.imageUrl || '',
+      isActive: item.isActive ?? true,
+      sortOrder: item.sortOrder || 0,
+      parentId: item.parentId || null,
+      productCount: item.productCount || 0,
       description: item.description || '',
     }
   },
@@ -35,6 +41,11 @@ const categoryMapper = {
     return {
       id: model.id,
       name: model.name,
+      slug: model.slug,
+      imageUrl: model.imageUrl,
+      isActive: model.isActive,
+      sortOrder: model.sortOrder,
+      parentId: model.parentId,
       description: model.description,
     }
   },
@@ -47,5 +58,6 @@ const categoryMapper = {
 }
 
 export default categoryMapper
+
 
 

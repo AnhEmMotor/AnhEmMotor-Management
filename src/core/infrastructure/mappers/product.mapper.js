@@ -111,6 +111,16 @@ const productMapper = {
       displacement: item.displacement ?? null,
       bore_stroke: item.boreStroke || item.bore_stroke || '',
       compression_ratio: item.compressionRatio || item.compression_ratio || '',
+      fuel_system: item.fuelSystem || item.fuel_system || '',
+      frame_type: item.frameType || item.frame_type || '',
+      front_tire_size: item.frontTireSize || item.front_tire_size || '',
+      rear_tire_size: item.rearTireSize || item.rear_tire_size || '',
+      front_brake: item.frontBrake || item.front_brake || '',
+      rear_brake: item.rearBrake || item.rear_brake || '',
+      battery_type: item.batteryType || item.battery_type || '',
+      lighting_system: item.lightingSystem || item.lighting_system || '',
+      dashboard_type: item.dashboardType || item.dashboard_type || '',
+      compatible_vehicle_model_ids: item.compatibleVehicleModelIds || item.compatible_vehicle_model_ids || [],
       inventory_status: item.inventoryStatus || item.inventory_status || 'OutOfStock',
       cover_image_url: this.getFirstImageUrl(item.coverImageUrl || item.cover_image_url) || null,
       highlights: item.highlights || null,
@@ -152,8 +162,18 @@ const productMapper = {
       displacement: toNumOrNull(model.displacement),
       bore_stroke: model.bore_stroke || '',
       compression_ratio: model.compression_ratio || '',
-      statusId: model.status_id || 'for-sale',
+      fuel_system: model.fuel_system || '',
+      frame_type: model.frame_type || '',
+      front_tire_size: model.front_tire_size || '',
+      rear_tire_size: model.rear_tire_size || '',
+      front_brake: model.front_brake || '',
+      rear_brake: model.rear_brake || '',
+      battery_type: model.battery_type || '',
+      lighting_system: model.lighting_system || '',
+      dashboard_type: model.dashboard_type || '',
       highlights: model.highlights || null,
+      compatible_vehicle_model_ids: model.compatible_vehicle_model_ids || [],
+      statusId: model.status_id || 'for-sale',
 
       variants: (model.variants || []).map((v) => ({
         id: v.id || null,
@@ -178,5 +198,6 @@ const productMapper = {
 }
 
 export default productMapper
+
 
 

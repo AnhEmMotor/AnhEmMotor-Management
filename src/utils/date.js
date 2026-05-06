@@ -1,21 +1,25 @@
-export function formatDate(timestamp) {
-  if (!timestamp) return ''
-  const date = new Date(timestamp)
-  const day = date.getDate().toString().padStart(2, '0')
-  const month = (date.getMonth() + 1).toString().padStart(2, '0')
-  const year = date.getFullYear()
-  return `${day}/${month}/${year}`
+/**
+ * Định dạng ngày giờ theo kiểu Việt Nam
+ * @param {string|Date} date - Giá trị ngày cần định dạng
+ * @returns {string} Chuỗi ngày giờ (dd/mm/yyyy hh:mm)
+ */
+export const formatDateTime = (date) => {
+  if (!date) return '---'
+  return new Date(date).toLocaleString('vi-VN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
 }
 
-export function formatDateTime(timestamp) {
-  if (!timestamp) return ''
-  const date = new Date(timestamp)
-  const day = date.getDate().toString().padStart(2, '0')
-  const month = (date.getMonth() + 1).toString().padStart(2, '0')
-  const year = date.getFullYear()
-  const hours = date.getHours().toString().padStart(2, '0')
-  const minutes = date.getMinutes().toString().padStart(2, '0')
-  return `${hours}:${minutes} ${day}/${month}/${year}`
+/**
+ * Định dạng ngày theo kiểu Việt Nam
+ * @param {string|Date} date - Giá trị ngày cần định dạng
+ * @returns {string} Chuỗi ngày (dd/mm/yyyy)
+ */
+export const formatDate = (date) => {
+  if (!date) return '---'
+  return new Date(date).toLocaleDateString('vi-VN')
 }
-
-

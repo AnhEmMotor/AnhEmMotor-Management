@@ -26,6 +26,8 @@ const brandMapper = {
     return {
       id: item.id,
       name: item.name || item.brand_name || '',
+      origin: item.origin || '',
+      logoUrl: item.logoUrl || item.logo_url || '',
       description: item.description || item.brand_description || '',
     }
   },
@@ -35,6 +37,8 @@ const brandMapper = {
     return {
       id: model.id,
       name: model.name,
+      origin: model.origin,
+      logoUrl: model.logoUrl,
       description: model.description,
     }
   },
@@ -47,5 +51,6 @@ const brandMapper = {
 }
 
 export default brandMapper
+
 
 

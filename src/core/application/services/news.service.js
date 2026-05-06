@@ -1,5 +1,5 @@
 import axiosInstance from '@infrastructure/api/axios'
-import { NEWS_ENDPOINTS } from '@/constants/endpoints/news.endpoint'
+import { NEWS_ENDPOINTS } from '@constants/endpoints/news.endpoint'
 
 const newsService = {
   async fetchNews(params) {
@@ -30,7 +30,7 @@ const newsService = {
   async uploadCover(file) {
     const formData = new FormData()
     formData.append('file', file)
-    const { data } = await axiosInstance.post('/api/v1/mediafile/news/upload', formData, {
+    const { data } = await axiosInstance.post('/api/v1/MediaFile/news/upload', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
     return data
@@ -38,5 +38,6 @@ const newsService = {
 }
 
 export default newsService
+
 
 

@@ -1,5 +1,5 @@
 import axiosInstance from '@infrastructure/api/axios'
-import { STATISTICS_ENDPOINTS } from '@/constants/endpoints/statistics.endpoint'
+import { STATISTICS_ENDPOINTS } from '@constants/endpoints/statistics.endpoint'
 
 const statisticsService = {
   async getAdminDashboardOverview() {
@@ -24,5 +24,6 @@ const statisticsService = {
 }
 
 export default statisticsService
+
 
 

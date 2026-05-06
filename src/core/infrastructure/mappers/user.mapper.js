@@ -26,6 +26,11 @@ const userMapper = {
       gender: model.gender || '',
       phoneNumber: model.phoneNumber || '',
       dateOfBirth: model.dateOfBirth || null,
+      email: model.email || '',
+      username: model.email || '', // Default to email if username not provided
+      status: model.status || 'Active',
+      roleNames: model.roleNames || [],
+      code: model.code || '',
     }
   },
 
@@ -101,5 +106,6 @@ const userMapper = {
 }
 
 export default userMapper
+
 
 

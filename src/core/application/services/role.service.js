@@ -1,5 +1,5 @@
 import axiosInstance from '@infrastructure/api/axios'
-import { ROLE_ENDPOINTS } from '@/constants/endpoints/role.endpoint'
+import { ROLE_ENDPOINTS } from '@constants/endpoints/role.endpoint'
 
 const roleService = {
   async fetchRoles(params) {
@@ -44,5 +44,6 @@ const roleService = {
 }
 
 export default roleService
+
 
 

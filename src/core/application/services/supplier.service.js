@@ -1,5 +1,5 @@
 import axiosInstance from '@infrastructure/api/axios'
-import { SUPPLIER_ENDPOINTS } from '@/constants/endpoints/supplier.endpoint'
+import { SUPPLIER_ENDPOINTS } from '@constants/endpoints/supplier.endpoint'
 
 const supplierService = {
   async fetchSuppliers(params) {
@@ -39,5 +39,6 @@ const supplierService = {
 }
 
 export default supplierService
+
 
 

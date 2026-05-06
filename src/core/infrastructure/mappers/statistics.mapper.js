@@ -197,3 +197,4 @@ const statisticsMapper = {
 export default statisticsMapper
 
 
+

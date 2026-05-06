@@ -1,5 +1,5 @@
 import axiosInstance from '@infrastructure/api/axios'
-import { SETTING_ENDPOINTS } from '@/constants/endpoints/setting.endpoint'
+import { SETTING_ENDPOINTS } from '@constants/endpoints/setting.endpoint'
 
 const settingService = {
   async fetchSettings() {
@@ -14,5 +14,6 @@ const settingService = {
 }
 
 export default settingService
+
 
 

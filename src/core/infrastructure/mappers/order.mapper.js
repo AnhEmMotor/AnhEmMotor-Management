@@ -1,4 +1,4 @@
-import { TEMP_ID_THRESHOLD } from '@/constants/common'
+import { TEMP_ID_THRESHOLD } from '@constants/common'
 
 const orderMapper = {
   toParams(uiFilters) {
@@ -63,5 +63,6 @@ const orderMapper = {
 }
 
 export default orderMapper
+
 
 
