@@ -1,12 +1,16 @@
 <script setup>
+import { ref, computed, watch } from 'vue'
 import SkeletonLoader from '@components/ui/SkeletonLoader.vue'
 import SmallNoBgButton from '@components/ui/button/SmallNoBgButton.vue'
 import IconEdit from '@/assets/icons/IconEdit.svg'
 import IconTrash from '@/assets/icons/IconTrash.svg'
+import IconChevronDown from '@/assets/icons/chevron-down.svg'
+import IconChevronRight from '@/assets/icons/chevron-right.svg'
 import { Permissions } from '@constants/permissions'
 import { usePermission } from '@composables/usePermission'
+import { buildTree } from '@application/utils/tree.util'
 
-defineProps({
+const props = defineProps({
   categories: {
     type: Array,
     default: () => [],
@@ -19,6 +23,47 @@ defineProps({
 
 const emit = defineEmits(['edit', 'delete'])
 const { hasPermission } = usePermission()
+
+const expandedIds = ref(new Set())
+
+watch(
+  () => props.categories,
+  (newVal) => {
+    if (newVal?.length > 0 && expandedIds.value.size === 0) {
+      newVal.forEach((c) => expandedIds.value.add(c.id))
+    }
+  },
+  { immediate: true },
+)
+
+const toggleExpand = (id) => {
+  if (expandedIds.value.has(id)) {
+    expandedIds.value.delete(id)
+  } else {
+    expandedIds.value.add(id)
+  }
+}
+
+const displayCategories = computed(() => {
+  const tree = buildTree(props.categories)
+  const flattened = []
+  const visited = new Set()
+
+  const traverse = (nodes, level = 0) => {
+    nodes.forEach((node) => {
+      if (visited.has(node.id)) return
+      visited.add(node.id)
+
+      flattened.push({ ...node, level })
+      if (expandedIds.value.has(node.id) && node.children?.length > 0) {
+        traverse(node.children, level + 1)
+      }
+    })
+  }
+
+  traverse(tree)
+  return flattened
+})
 </script>
 
 <template>
@@ -28,7 +73,6 @@ const { hasPermission } = usePermission()
         class="bg-gray-50/50 text-gray-500 uppercase tracking-wider text-[11px] font-bold border-b border-gray-100"
       >
         <tr>
-          <th class="py-4 px-6 text-left w-32">Mã Loại</th>
           <th class="py-4 px-6 text-left">Tên thể loại</th>
           <th class="py-4 px-6 text-center w-32">Sản phẩm</th>
           <th class="py-4 px-6 text-left">Mô tả</th>
@@ -49,17 +93,26 @@ const { hasPermission } = usePermission()
           </tr>
         </template>
         <tr
-          v-for="category in categories"
+          v-for="category in displayCategories"
           :key="category.id"
           class="border-b border-gray-100 hover:bg-gray-50/50 transition-colors duration-200"
+          :class="{ 'bg-gray-50/30': category.level > 0 }"
         >
           <td class="py-4 px-6 align-middle">
-            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold font-mono bg-slate-100 text-slate-700 border border-slate-200 shadow-sm whitespace-nowrap">
-              <span class="text-slate-400 mr-0.5">#</span>CAT-{{ String(category.id).padStart(4, '0') }}
-            </span>
-          </td>
-          <td class="py-4 px-6 align-middle">
-            <div class="font-bold text-gray-800 text-sm">{{ category.name }}</div>
+            <div class="flex items-center" :style="{ paddingLeft: `${category.level * 24}px` }">
+              <button
+                v-if="category.children?.length > 0"
+                @click="toggleExpand(category.id)"
+                class="p-1 mr-1 hover:bg-gray-200 rounded transition-colors"
+              >
+                <component
+                  :is="expandedIds.has(category.id) ? IconChevronDown : IconChevronRight"
+                  class="w-4 h-4 text-gray-500"
+                />
+              </button>
+              <div v-else class="w-6 mr-1"></div>
+              <div class="font-bold text-gray-800 text-sm">{{ category.name }}</div>
+            </div>
           </td>
           <td class="py-4 px-6 text-center align-middle">
             <span class="inline-flex items-center justify-center min-w-[24px] h-6 px-1.5 rounded-full bg-blue-50 text-blue-600 text-[11px] font-black border border-blue-100">

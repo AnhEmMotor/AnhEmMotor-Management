@@ -1,8 +1,11 @@
 <script setup>
-import { reactive, watch, ref } from 'vue'
+import { reactive, watch, ref, computed } from 'vue'
 import Button from '@components/ui/button/BaseButton.vue'
 import RoundBadge from '@components/ui/RoundBadge.vue'
 import { formatCurrency, parseCurrency } from '@/utils/currency'
+import { buildTree } from '@application/utils/tree.util'
+import IconChevronDown from '@/assets/icons/chevron-down.svg'
+const IconChevronRight = IconChevronDown
 
 
 const props = defineProps({
@@ -12,10 +15,6 @@ const props = defineProps({
   },
   categories: {
     type: Array,
-    required: true,
-  },
-  pagination: {
-    type: Object,
     required: true,
   },
   isSavingSettings: {
@@ -40,6 +39,15 @@ const emit = defineEmits(['saveDeposit', 'saveStock', 'saveCategoryLimit', 'upda
 
 const localSettings = reactive({ ...props.settings })
 const localCategories = ref([])
+const expandedIds = ref(new Set())
+
+const toggleExpand = (id) => {
+  if (expandedIds.value.has(id)) {
+    expandedIds.value.delete(id)
+  } else {
+    expandedIds.value.add(id)
+  }
+}
 
 watch(
   () => props.categories,
@@ -48,6 +56,23 @@ watch(
   },
   { immediate: true },
 )
+
+const displayCategories = computed(() => {
+  const tree = buildTree(localCategories.value)
+  const flattened = []
+
+  const traverse = (nodes, level = 0) => {
+    nodes.forEach((node) => {
+      flattened.push({ ...node, level })
+      if (expandedIds.value.has(node.id) && node.children?.length > 0) {
+        traverse(node.children, level + 1)
+      }
+    })
+  }
+
+  traverse(tree)
+  return flattened
+})
 
 watch(
   () => props.settings,
@@ -207,15 +232,29 @@ const handleSearchInput = (e) => {
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100 bg-white">
-            <template v-if="localCategories.length > 0">
+            <template v-if="displayCategories.length > 0">
               <tr
-                v-for="cat in localCategories"
+                v-for="cat in displayCategories"
                 :key="cat.id"
                 class="hover:bg-gray-50 transition-colors group"
+                :class="{ 'bg-gray-50/30': cat.level > 0 }"
               >
                 <td class="px-6 py-4">
-                  <div class="font-medium text-gray-900">{{ cat.name }}</div>
-                  <div v-if="cat.description" class="text-xs text-gray-400">
+                  <div class="flex items-center" :style="{ paddingLeft: `${cat.level * 24}px` }">
+                    <button
+                      v-if="cat.children?.length > 0"
+                      @click="toggleExpand(cat.id)"
+                      class="p-1 mr-1 hover:bg-gray-200 rounded transition-colors"
+                    >
+                      <component
+                        :is="expandedIds.has(cat.id) ? IconChevronDown : IconChevronRight"
+                        class="w-4 h-4 text-gray-500"
+                      />
+                    </button>
+                    <div v-else class="w-6 mr-1"></div>
+                    <div class="font-medium text-gray-900">{{ cat.name }}</div>
+                  </div>
+                  <div v-if="cat.description" class="text-xs text-gray-400" :style="{ paddingLeft: `${(cat.level * 24) + 28}px` }">
                     {{ cat.description }}
                   </div>
                 </td>
@@ -253,29 +292,6 @@ const handleSearchInput = (e) => {
           </tbody>
         </table>
 
-        <div
-          class="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-gray-50"
-        >
-          <span class="text-sm text-gray-500 font-medium">
-            Trang {{ pagination.currentPage.value }} / {{ pagination.totalPages.value }}
-          </span>
-          <div v-if="pagination.totalCount.value > 5" class="flex gap-2">
-            <button
-              @click="pagination.prevPage"
-              :disabled="pagination.isFirstPage.value"
-              class="px-3 py-1 border border-gray-300 rounded disabled:opacity-30 hover:bg-white text-sm"
-            >
-              Trước
-            </button>
-            <button
-              @click="pagination.nextPage"
-              :disabled="pagination.isLastPage.value"
-              class="px-3 py-1 border border-gray-300 rounded disabled:opacity-30 hover:bg-white text-sm"
-            >
-              Sau
-            </button>
-          </div>
-        </div>
       </div>
     </div>
 

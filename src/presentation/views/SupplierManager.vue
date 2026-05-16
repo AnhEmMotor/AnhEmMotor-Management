@@ -298,7 +298,8 @@ const handleImport = () => {
       <div
         class="hidden md:grid md:grid-cols-16 items-center gap-2 py-3 px-5 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 border-b border-gray-200"
       >
-        <div class="md:col-span-8">Tên nhà cung cấp</div>
+        <div class="md:col-span-6">Tên nhà cung cấp</div>
+        <div class="md:col-span-2">Loại đối tác</div>
         <div class="md:col-start-9 md:col-span-2">Điện thoại</div>
         <div class="md:col-start-11 md:col-span-2">Email</div>
         <div class="md:col-start-13 md:col-span-2 md:justify-self-end">Tổng đã mua (hoàn tất)</div>

@@ -42,7 +42,7 @@ const productMapper = {
     return {
       id: v.id,
       price: v.price || v.unitPrice || 0,
-      url: v.url || v.urlSlug || '',
+      url_slug: v.url_slug || v.url || v.urlSlug || '',
       cover_image_url: this.getFirstImageUrl(v.coverImageUrl || v.cover_image_url) || null,
       photo_collection: v.photoCollection || v.photo_collection || [],
       optionValues: v.optionValues || {},
@@ -55,6 +55,21 @@ const productMapper = {
       color_code: v.colorCode || v.color_code || '',
       colors: this.parseColors(v.colorName || v.color_name, v.colorCode || v.color_code, v.coverImageUrl || v.cover_image_url),
       sku: v.sku || '',
+      // --- OVERRIDABLE SPECS ---
+      weight: v.weight ?? null,
+      dimensions: v.dimensions || '',
+      wheelbase: v.wheelbase ?? null,
+      seat_height: v.seatHeight ?? v.seat_height ?? null,
+      ground_clearance: v.groundClearance ?? v.ground_clearance ?? null,
+      fuel_capacity: v.fuelCapacity ?? v.fuel_capacity ?? null,
+      tire_size: v.tireSize || v.tire_size || '',
+      front_brake: v.frontBrake || v.front_brake || '',
+      rear_brake: v.rearBrake || v.rear_brake || '',
+      front_suspension: v.frontSuspension || v.front_suspension || '',
+      rear_suspension: v.rearSuspension || v.rear_suspension || '',
+      engine_type: v.engineType || v.engine_type || '',
+      stock_quantity: v.stockQuantity ?? v.stock_quantity ?? null,
+      // -------------------------
     }
   },
 
@@ -124,6 +139,17 @@ const productMapper = {
       inventory_status: item.inventoryStatus || item.inventory_status || 'OutOfStock',
       cover_image_url: this.getFirstImageUrl(item.coverImageUrl || item.cover_image_url) || null,
       highlights: item.highlights || null,
+      // --- SPARE PARTS SPECS ---
+      material: item.material || '',
+      origin: item.origin || '',
+      warranty_period: item.warrantyPeriod || item.warranty_period || '',
+      unit: item.unit || '',
+      std_dot: !!(item.stdDot ?? item.std_dot),
+      std_ece: !!(item.stdEce ?? item.std_ece),
+      std_snell: !!(item.stdSnell ?? item.std_snell),
+      std_jis: !!(item.stdJis ?? item.std_jis),
+      other_standards: item.otherStandards || item.other_standards || '',
+      // -------------------------
       variants: (item.variants || []).map((v) => this.toVariantModel(v)),
     }
   },
@@ -173,12 +199,24 @@ const productMapper = {
       dashboard_type: model.dashboard_type || '',
       highlights: model.highlights || null,
       compatible_vehicle_model_ids: model.compatible_vehicle_model_ids || [],
-      statusId: model.status_id || 'for-sale',
+      status_id: model.status_id || 'for-sale',
+
+      // --- SPARE PARTS SPECS ---
+      material: model.material || '',
+      origin: model.origin || '',
+      warranty_period: model.warranty_period || '',
+      unit: model.unit || '',
+      std_dot: !!model.std_dot,
+      std_ece: !!model.std_ece,
+      std_snell: !!model.std_snell,
+      std_jis: !!model.std_jis,
+      other_standards: model.other_standards || '',
+      // -------------------------
 
       variants: (model.variants || []).map((v) => ({
         id: v.id || null,
         price: toNumOrNull(v.price),
-        url: v.url || '',
+        url_slug: v.url_slug || v.url || '',
         cover_image_url: this.formatColors(v.colors).image || null,
         photo_collection: v.photo_collection || [],
         optionValues: v.optionValues || {},
@@ -186,6 +224,21 @@ const productMapper = {
         color_name: this.formatColors(v.colors).name,
         color_code: this.formatColors(v.colors).code,
         sku: v.sku || '',
+        // --- OVERRIDABLE SPECS ---
+        weight: toNumOrNull(v.weight),
+        dimensions: v.dimensions || '',
+        wheelbase: toNumOrNull(v.wheelbase),
+        seat_height: toNumOrNull(v.seat_height),
+        ground_clearance: toNumOrNull(v.ground_clearance),
+        fuel_capacity: toNumOrNull(v.fuel_capacity),
+        tire_size: v.tire_size || '',
+        front_brake: v.front_brake || '',
+        rear_brake: v.rear_brake || '',
+        front_suspension: v.front_suspension || '',
+        rear_suspension: v.rear_suspension || '',
+        engine_type: v.engine_type || '',
+        stock_quantity: toNumOrNull(v.stock_quantity),
+        // -------------------------
       })),
     }
   },

@@ -103,6 +103,16 @@ export const useSupplierStore = defineStore('supplier', () => {
     }
   }
 
+  const fetchPartnerTypes = async () => {
+    error.value = null
+    try {
+      return await supplierService.fetchPartnerTypes()
+    } catch (err) {
+      error.value = err.message
+      throw err
+    }
+  }
+
   return {
     error,
     fetchSuppliers,
@@ -112,10 +122,6 @@ export const useSupplierStore = defineStore('supplier', () => {
     deleteSupplier,
     toggleSupplierStatus,
     fetchPurchaseHistory,
+    fetchPartnerTypes,
   }
 })
-
-
-
-
-

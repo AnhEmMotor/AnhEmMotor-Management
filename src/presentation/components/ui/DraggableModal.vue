@@ -44,7 +44,7 @@ const props = defineProps({
     default: '',
   },
 })
-const emit = defineEmits(['close', 'activate', 'refresh'])
+const emit = defineEmits(['close', 'activate', 'refresh', 'clear-error', 'clearError'])
 
 const hasRefreshListener = computed(() => !!props.onRefresh)
 

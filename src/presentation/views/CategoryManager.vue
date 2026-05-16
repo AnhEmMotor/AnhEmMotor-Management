@@ -1,8 +1,7 @@
 <script setup>
-import { ref } from 'vue'
-import { useQueryClient } from '@tanstack/vue-query'
+import { ref, computed } from 'vue'
+import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { useCategoryStore } from '@stores/category.store'
-import { usePaginatedQuery } from '@composables/usePaginatedQuery'
 import { showConfirmation } from '@composables/useConfirmationState'
 import { useToast } from 'vue-toastification'
 import { Permissions } from '@constants/permissions'
@@ -10,7 +9,7 @@ import { usePermission } from '@composables/usePermission'
 
 import Button from '@components/ui/button/BaseButton.vue'
 import LoadingOverlay from '@components/ui/LoadingOverlay.vue'
-import Pagination from '@components/ui/button/BasePagination.vue'
+
 import IconPlus from '@/assets/icons/IconPlus.svg'
 import IconFileImport from '@/assets/icons/IconFileImport.svg'
 import IconFileExport from '@/assets/icons/IconFileExport.svg'
@@ -33,17 +32,21 @@ const editableCategory = ref({ id: null, name: '', description: '', parentId: nu
 const isEditMode = ref(false)
 const formModalTitle = ref('')
 
-const {
-  data: categories,
-  isLoading,
-  isError,
-  pagination,
-  searchRefs,
-} = usePaginatedQuery({
-  queryKey: ['categoriesForManager'],
-  queryFn: (query) => categoryStore.fetchCategoriesForManager(query),
-  itemsPerPage: 10,
-  searchFields: [{ key: 'search', debounce: 400 }],
+const { data: rawCategories, isLoading, isError } = useQuery({
+  queryKey: ['categoriesAll'],
+  queryFn: () => categoryStore.getAllCategories(),
+})
+
+const searchRefs = ref({ search: '' })
+
+const filteredCategories = computed(() => {
+  if (!rawCategories.value) return []
+  const search = searchRefs.value.search.toLowerCase()
+  if (!search) return rawCategories.value
+  return rawCategories.value.filter(c => 
+    c.name.toLowerCase().includes(search) || 
+    c.description?.toLowerCase().includes(search)
+  )
 })
 
 const openAddModal = () => {
@@ -101,7 +104,7 @@ const handleSave = async (categoryData) => {
       toast.success('Thêm thể loại thành công')
     }
     isFormModalVisible.value = false
-    await queryClient.invalidateQueries({ queryKey: ['categoriesForManager'] })
+    await queryClient.invalidateQueries({ queryKey: ['categoriesAll'] })
   } catch (err) {
     toast.error(err.message || 'Lỗi khi lưu thể loại')
   } finally {
@@ -110,16 +113,22 @@ const handleSave = async (categoryData) => {
 }
 
 const promptDelete = async (category) => {
+  const hasChildren = rawCategories.value?.some(c => (c.parentId ?? c.parent_id) === category.id)
+  
+  const message = hasChildren 
+    ? `Thể loại "${category.name}" có chứa các thể loại con. Xóa thể loại này sẽ XÓA TẤT CẢ các thể loại con bên trong. Bạn có chắc chắn muốn tiếp tục?`
+    : `Bạn có chắc chắn muốn xoá thể loại "${category.name}"?`
+
   const confirmed = await showConfirmation(
-    'Xác nhận xóa',
-    `Bạn có chắc chắn muốn xoá thể loại "${category.name}"?`,
+    hasChildren ? 'Cảnh báo: Xóa phân cấp' : 'Xác nhận xóa',
+    message
   )
   if (!confirmed) return
 
   isOverlayVisible.value = true
   try {
     await categoryStore.deleteCategory(category.id)
-    queryClient.removeQueries({ queryKey: ['categoriesForManager', category.id] })
+    await queryClient.invalidateQueries({ queryKey: ['categoriesAll'] })
     await queryClient.invalidateQueries({ queryKey: ['categoriesForManager'] })
     toast.success('Xoá thể loại thành công')
   } catch (err) {
@@ -212,17 +221,10 @@ const exportExcel = () => {
     </div>
     <CategoryTable
       v-else
-      :categories="categories"
+      :categories="filteredCategories"
       :isLoading="isLoading"
       @edit="openEditModal"
       @delete="promptDelete"
-    />
-
-    <Pagination
-      :total-pages="pagination.totalPages.value"
-      :currentPage="pagination.currentPage.value"
-      @update:currentPage="pagination.changePage"
-      :loading="isLoading"
     />
   </div>
 

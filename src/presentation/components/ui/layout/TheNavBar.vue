@@ -135,49 +135,20 @@
                   <span>Thương hiệu</span>
                 </RouterLink>
               </li>
-              <li v-if="hasAnyPermission([Permissions.ProductCategoriesView])">
-                <button
-                  @click.stop="toggleSubGroup('genreSubGroup')"
-                  class="flex items-center justify-between space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium cursor-pointer text-gray-600 hover:bg-gray-50 hover:text-[#e31837]"
-                  :class="{ 'text-red-700': isSubGroupActive('genreSubGroup') }"
+              <li v-if="hasPermission(Permissions.ProductCategoriesView)">
+                <RouterLink
+                  to="/categories"
+                  class="flex items-center space-x-3 py-2 px-3 rounded-lg w-full text-sm font-medium"
+                  active-class="bg-red-50 text-red-700"
+                  :class="
+                    route.path === '/categories'
+                      ? 'bg-red-50 text-red-700'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-[#e31837]'
+                  "
+                  @click="closeMobileMenu"
                 >
-                  <div class="flex items-center space-x-3">
-                    <span>Thể loại</span>
-                  </div>
-                  <IconUpArrow :isOpen="openSubGroups.includes('genreSubGroup')" class="w-3 h-3" />
-                </button>
-                <ul v-if="openSubGroups.includes('genreSubGroup')" class="mt-1 space-y-1 pl-3 border-l border-gray-100 ml-2">
-                  <li v-if="hasPermission(Permissions.ProductCategoriesView)">
-                    <RouterLink
-                      to="/categories"
-                      class="flex items-center space-x-3 py-1.5 px-3 rounded-lg w-full text-xs font-medium"
-                      active-class="bg-red-50 text-red-700"
-                      :class="
-                        route.path === '/categories'
-                          ? 'bg-red-50 text-red-700'
-                          : 'text-gray-500 hover:bg-gray-50 hover:text-[#e31837]'
-                      "
-                      @click="closeMobileMenu"
-                    >
-                      <span>Loại sản phẩm</span>
-                    </RouterLink>
-                  </li>
-                  <li v-if="hasPermission(Permissions.ProductCategoriesView)">
-                    <RouterLink
-                      to="/vehicle-types"
-                      class="flex items-center space-x-3 py-1.5 px-3 rounded-lg w-full text-xs font-medium"
-                      active-class="bg-red-50 text-red-700"
-                      :class="
-                        route.path === '/vehicle-types'
-                          ? 'bg-red-50 text-red-700'
-                          : 'text-gray-500 hover:bg-gray-50 hover:text-red-600'
-                      "
-                      @click="closeMobileMenu"
-                    >
-                      <span>Loại xe</span>
-                    </RouterLink>
-                  </li>
-                </ul>
+                  <span>Thể loại sản phẩm</span>
+                </RouterLink>
               </li>
               <li v-if="hasPermission(Permissions.ProductsView)">
                 <RouterLink
@@ -436,15 +407,7 @@
             </ul>
           </li>
 
-          <li
-            v-if="
-              true ||
-              hasAnyPermission([
-                Permissions.ContactsView,
-                Permissions.BookingsView,
-              ])
-            "
-          >
+          <li v-if="true || hasAnyPermission([Permissions.ContactsView, Permissions.BookingsView])">
             <button
               @click="toggleGroup('crm')"
               class="flex items-center justify-between space-x-3 p-3 rounded-lg w-full font-medium cursor-pointer text-gray-600 hover:bg-gray-50 hover:text-red-600 border-l-4 border-transparent"
@@ -473,7 +436,9 @@
                 >
                   <div
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
-                    :class="route.path === '/leads' ? 'bg-red-100' : 'bg-gray-100 group-hover:bg-gray-200'"
+                    :class="
+                      route.path === '/leads' ? 'bg-red-100' : 'bg-gray-100 group-hover:bg-gray-200'
+                    "
                   >
                     <font-awesome-icon icon="users-rays" class="text-xs" />
                   </div>
@@ -492,7 +457,11 @@
                 >
                   <div
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
-                    :class="route.path === '/customers' ? 'bg-red-100' : 'bg-gray-100 group-hover:bg-gray-200'"
+                    :class="
+                      route.path === '/customers'
+                        ? 'bg-red-100'
+                        : 'bg-gray-100 group-hover:bg-gray-200'
+                    "
                   >
                     <font-awesome-icon icon="address-card" class="text-xs" />
                   </div>
@@ -513,7 +482,11 @@
                 >
                   <div
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
-                    :class="route.path === '/pipeline' ? 'bg-red-100' : 'bg-gray-100 group-hover:bg-gray-200'"
+                    :class="
+                      route.path === '/pipeline'
+                        ? 'bg-red-100'
+                        : 'bg-gray-100 group-hover:bg-gray-200'
+                    "
                   >
                     <font-awesome-icon icon="chart-line" class="text-xs" />
                   </div>
@@ -534,7 +507,11 @@
                 >
                   <div
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
-                    :class="route.path === '/vehicles' ? 'bg-red-100' : 'bg-gray-100 group-hover:bg-gray-200'"
+                    :class="
+                      route.path === '/vehicles'
+                        ? 'bg-red-100'
+                        : 'bg-gray-100 group-hover:bg-gray-200'
+                    "
                   >
                     <font-awesome-icon icon="car" class="text-xs" />
                   </div>
@@ -555,7 +532,11 @@
                 >
                   <div
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
-                    :class="route.path === '/loyalty' ? 'bg-red-100' : 'bg-gray-100 group-hover:bg-gray-200'"
+                    :class="
+                      route.path === '/loyalty'
+                        ? 'bg-red-100'
+                        : 'bg-gray-100 group-hover:bg-gray-200'
+                    "
                   >
                     <font-awesome-icon icon="gift" class="text-xs" />
                   </div>
@@ -576,7 +557,11 @@
                 >
                   <div
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
-                    :class="route.path === '/contacts' ? 'bg-red-100' : 'bg-gray-100 group-hover:bg-gray-200'"
+                    :class="
+                      route.path === '/contacts'
+                        ? 'bg-red-100'
+                        : 'bg-gray-100 group-hover:bg-gray-200'
+                    "
                   >
                     <font-awesome-icon icon="comment-dots" class="text-xs" />
                   </div>
@@ -597,7 +582,11 @@
                 >
                   <div
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
-                    :class="route.path === '/bookings' ? 'bg-red-100' : 'bg-gray-100 group-hover:bg-gray-200'"
+                    :class="
+                      route.path === '/bookings'
+                        ? 'bg-red-100'
+                        : 'bg-gray-100 group-hover:bg-gray-200'
+                    "
                   >
                     <font-awesome-icon icon="calendar-check" class="text-xs" />
                   </div>
@@ -851,7 +840,6 @@ const { hasPermission, hasAnyPermission } = usePermission()
 const apiUrl = import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:5000'
 
 const openGroups = ref([])
-const openSubGroups = ref([])
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
@@ -870,7 +858,7 @@ const handleLogout = async () => {
 }
 
 const groupRoutes = {
-  productGroup: ['/products', '/brands', '/categories', '/vehicle-types'],
+  productGroup: ['/products', '/brands', '/categories'],
   warehouse: ['/suppliers', '/inputs', '/price-management'],
   user: ['/users', '/permissions'],
   reports: ['/statistics-warehouse', '/statistics-revenue', '/statistics-product'],
@@ -879,9 +867,7 @@ const groupRoutes = {
   hr: ['/hr/employees', '/hr/commission-policy', '/hr/payroll', '/hr/kpi'],
 }
 
-const subGroupRoutes = {
-  genreSubGroup: ['/categories', '/vehicle-types'],
-}
+// Removed subGroupRoutes as it is no longer used
 
 const toggleGroup = (group) => {
   const index = openGroups.value.indexOf(group)
@@ -892,35 +878,19 @@ const toggleGroup = (group) => {
   }
 }
 
-const toggleSubGroup = (subGroup) => {
-  const index = openSubGroups.value.indexOf(subGroup)
-  if (index > -1) {
-    openSubGroups.value = []
-  } else {
-    openSubGroups.value = [subGroup]
-  }
-}
+// Removed toggleSubGroup as it is no longer used
 
 const isGroupActive = (group) => {
   return groupRoutes[group].some((path) => route.path.startsWith(path))
 }
 
-const isSubGroupActive = (subGroup) => {
-  return subGroupRoutes[subGroup].some((path) => route.path.startsWith(path))
-}
+// Removed isSubGroupActive as it is no longer used
 
 const openActiveGroup = (path) => {
   for (const groupName in groupRoutes) {
     if (groupRoutes[groupName].some((p) => path.startsWith(p))) {
       openGroups.value = [groupName]
-      
-      // Also check sub-groups
-      for (const subGroupName in subGroupRoutes) {
-        if (subGroupRoutes[subGroupName].some((p) => path.startsWith(p))) {
-          openSubGroups.value = [subGroupName]
-          break
-        }
-      }
+
       return
     }
   }
@@ -968,6 +938,3 @@ onUnmounted(() => {
   background: #d1d5db;
 }
 </style>
-
-
-

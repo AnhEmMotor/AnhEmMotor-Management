@@ -160,7 +160,7 @@ const getNewEmptyProduct = () => ({
       color_name: '',
       color_code: '#000000',
       sku: '',
-      url: '',
+      url_slug: '',
     },
   ],
 })
@@ -245,7 +245,7 @@ const handleSaveProduct = async (productData) => {
         fieldMappings: {
           categoryid: 'category_id',
           brandid: 'brand_id',
-          urlslug: 'url',
+          urlslug: 'url_slug',
           metatitle: 'meta_title',
           metadescription: 'meta_description',
           shortdescription: 'short_description',

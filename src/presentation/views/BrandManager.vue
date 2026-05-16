@@ -42,7 +42,7 @@ const {
 } = usePaginatedQuery({
   queryKey: ['brands'],
   queryFn: (query) => brandStore.fetchBrands(query),
-  itemsPerPage: 10,
+  itemsPerPage: 20,
   searchFields: [{ key: 'search', debounce: 400 }],
 })
 

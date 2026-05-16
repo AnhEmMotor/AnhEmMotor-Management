@@ -1,12 +1,11 @@
 <script setup>
+import { reactive, computed } from 'vue'
 import { useToast } from 'vue-toastification'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import { keepPreviousData } from '@tanstack/vue-query'
 import settingService from '@application/services/setting.service'
 import categoryService from '@application/services/category.service'
 import settingMapper from '@infrastructure/mappers/setting.mapper'
 import { useCategoryStore } from '@stores/category.store'
-import { usePaginatedQuery } from '@composables/usePaginatedQuery'
 import SettingsForm from '@components/settings/SettingsForm.vue'
 import SkeletonLoader from '@components/ui/SkeletonLoader.vue'
 import LoadingOverlay from '@components/ui/LoadingOverlay.vue'
@@ -23,18 +22,21 @@ const { isPending: isLoadingSettings, data: settings } = useQuery({
   },
 })
 
-const {
-  data: categories,
-  isFetching: isFetchingCategories,
-  searchRefs: categorySearchRefs,
-  pagination: categoryPagination,
-} = usePaginatedQuery({
-  queryKey: ['categories-limits-v3'],
-  queryFn: (query) => categoryStore.fetchCategories(query),
-  itemsPerPage: 5,
-  useLocalPagination: false,
-  searchFields: [{ key: 'search', debounce: 400 }],
-  queryOptions: { placeholderData: keepPreviousData },
+const { data: rawCategories, isPending: isFetchingCategories } = useQuery({
+  queryKey: ['categoriesAllSettings'],
+  queryFn: () => categoryStore.getAllCategories(),
+})
+
+const categorySearchRefs = reactive({ search: '' })
+
+const categories = computed(() => {
+  if (!rawCategories.value) return []
+  const search = categorySearchRefs.search.toLowerCase()
+  if (!search) return rawCategories.value
+  return rawCategories.value.filter(c => 
+    c.name.toLowerCase().includes(search) || 
+    c.description?.toLowerCase().includes(search)
+  )
 })
 
 const { isPending: isSavingSettings, mutate: saveSettings } = useMutation({
@@ -113,7 +115,6 @@ const handleSaveCategoryLimit = (category) => {
         :settings="settings"
         :categories="categories"
         :searchRefs="categorySearchRefs"
-        :pagination="categoryPagination"
         :isSavingSettings="isSavingSettings"
         :isSavingCategory="isSavingCategory"
         :isFetchingCategories="isFetchingCategories"

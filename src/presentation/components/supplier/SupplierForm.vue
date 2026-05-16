@@ -1,5 +1,7 @@
 <script setup>
 import { ref, watch } from 'vue'
+import { useQuery } from '@tanstack/vue-query'
+import { useSupplierStore } from '@stores/supplier.store'
 import Input from '@components/ui/input/BaseInput.vue'
 import Textarea from '@components/ui/input/BaseTextarea.vue'
 
@@ -15,6 +17,14 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue', 'clear-error'])
+
+const supplierStore = useSupplierStore()
+
+const { data: partnerTypes } = useQuery({
+  queryKey: ['partner-types'],
+  queryFn: () => supplierStore.fetchPartnerTypes(),
+  staleTime: Infinity,
+})
 
 const localSupplier = ref({})
 
@@ -60,9 +70,9 @@ watch(
             v-model="localSupplier.partnerTypeId"
             class="w-full py-2 px-3 border border-gray-300 rounded-md text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
           >
-            <option value="supplier">Nhà cung cấp hàng hóa</option>
-            <option value="financial">Đối tác tài chính</option>
-            <option value="insurance">Đối tác bảo hiểm</option>
+            <option v-for="type in partnerTypes" :key="type.key" :value="type.key">
+              {{ type.name }}
+            </option>
           </select>
         </div>
 

@@ -1,9 +1,10 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 import DraggableModal from '@components/ui/DraggableModal.vue'
 import Input from '@components/ui/input/BaseInput.vue'
 import Button from '@components/ui/button/BaseButton.vue'
 import { useCategoryStore } from '@stores/category.store'
+import { buildTree, flattenTree } from '@application/utils/tree.util'
 
 const props = defineProps({
   show: {
@@ -69,14 +70,19 @@ const generateSlug = (text) => {
 const fetchAllCategories = async () => {
   isLoadingCategories.value = true
   try {
-    const response = await categoryStore.fetchCategories({ pageSize: 1000 })
-    allCategories.value = response.items || []
+    const data = await categoryStore.getAllCategories()
+    allCategories.value = data || []
   } catch (error) {
     console.error('Error fetching categories:', error)
   } finally {
     isLoadingCategories.value = false
   }
 }
+
+const treeOptions = computed(() => {
+  const tree = buildTree(allCategories.value)
+  return flattenTree(tree)
+})
 
 onMounted(() => {
   fetchAllCategories()
@@ -116,7 +122,14 @@ const validate = () => {
 
 const handleSave = () => {
   if (!validate()) return
-  emit('save', editableCategory.value)
+  const pId = editableCategory.value.parentId ?? editableCategory.value.parent_id
+  const payload = {
+    ...editableCategory.value,
+    parentId: (pId && pId !== 'null' && pId !== '') 
+      ? parseInt(pId) 
+      : null,
+  }
+  emit('save', payload)
 }
 
 const handleClose = () => {
@@ -163,11 +176,11 @@ const handleClose = () => {
             >
               <option :value="null">Không có</option>
               <option
-                v-for="cat in allCategories.filter(c => c.id !== editableCategory.id)"
+                v-for="cat in treeOptions.filter(c => c.id !== editableCategory.id)"
                 :key="cat.id"
                 :value="cat.id"
               >
-                {{ cat.name }}
+                {{ '&nbsp;'.repeat(cat.level * 4) }}{{ cat.level > 0 ? '↳ ' : '' }}{{ cat.name }}
               </option>
             </select>
           </div>

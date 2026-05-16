@@ -13,6 +13,7 @@ export const supplierMapper = {
       notes: dto.notes,
       statusId: dto.statusId || dto.status_id,
       totalInput: dto.totalInput || dto.total_input || 0,
+      partnerTypeId: dto.partnerTypeId || dto.partner_type_id,
       createdAt: dto.createdAt || dto.created_at,
       updatedAt: dto.updatedAt || dto.updated_at,
     }
@@ -35,6 +36,7 @@ export const supplierMapper = {
       taxIdentificationNumber: model.taxIdentificationNumber,
       notes: model.notes,
       statusId: model.statusId,
+      partnerTypeId: model.partnerTypeId,
     }
   },
 

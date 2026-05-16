@@ -119,6 +119,10 @@ const productService = {
     const { data } = await axiosInstance.get('/api/v1/technologies')
     return data
   },
+  async getTechnologiesList() {
+    const { data } = await axiosInstance.get('/api/v1/technologies/list')
+    return data
+  },
 
   async createTechnology(payload) {
     const { data } = await axiosInstance.post('/api/v1/technologies', payload)

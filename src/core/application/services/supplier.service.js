@@ -36,6 +36,10 @@ const supplierService = {
     const { data } = await axiosInstance.get(SUPPLIER_ENDPOINTS.PURCHASE_HISTORY(id), { params })
     return data
   },
+  async fetchPartnerTypes() {
+    const { data } = await axiosInstance.get(SUPPLIER_ENDPOINTS.PARTNER_TYPES)
+    return data
+  },
 }
 
 export default supplierService

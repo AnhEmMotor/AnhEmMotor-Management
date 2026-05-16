@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
 import productService from '@application/services/product.service'
 import RoundBadge from '@components/ui/RoundBadge.vue'
@@ -42,6 +43,16 @@ const getVariantOptionsText = (variant) => {
 const getInventoryStatusLabel = (statusKey) =>
   props.inventoryStatusMap[statusKey] || statusKey || 'Không rõ'
 const getInventoryStatusColor = (statusKey) => props.inventoryStatusColorMap[statusKey] || 'gray'
+
+const hasHighlights = computed(() => {
+  if (!props.product.highlights || props.product.highlights === '[]') return false
+  try {
+    const parsed = JSON.parse(props.product.highlights)
+    return Array.isArray(parsed) && parsed.length > 0
+  } catch {
+    return false
+  }
+})
 </script>
 
 <template>
@@ -70,6 +81,7 @@ const getInventoryStatusColor = (statusKey) => props.inventoryStatusColorMap[sta
         Thông số kỹ thuật
       </button>
       <button
+        v-if="hasHighlights"
         class="py-1.5 text-sm transition-all duration-200"
         :class="
           activeTab === 'highlights'
@@ -217,14 +229,14 @@ const getInventoryStatusColor = (statusKey) => props.inventoryStatusColorMap[sta
       <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div v-for="(hl, idx) in JSON.parse(product.highlights)" :key="idx" class="flex gap-4 p-4 border rounded-xl bg-white shadow-sm">
           <div class="w-32 h-32 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100 border">
-            <img :src="getImageUrl(hl.image)" :alt="hl.title" class="w-full h-full object-cover" />
+            <img :src="getImageUrl(hl.custom_image_url || hl.image)" :alt="hl.custom_title || hl.title" class="w-full h-full object-cover" />
           </div>
           <div class="flex-1">
             <div class="flex items-center gap-2 mb-1">
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-red-100 text-red-700 uppercase tracking-tighter">{{ hl.tag }}</span>
-              <h4 class="font-bold text-gray-900">{{ hl.title }}</h4>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-red-100 text-red-700 uppercase tracking-tighter">{{ hl._categoryName || hl.tag }}</span>
+              <h4 class="font-bold text-gray-900">{{ hl.custom_title || hl.title }}</h4>
             </div>
-            <p class="text-sm text-gray-600 leading-snug">{{ hl.description }}</p>
+            <p class="text-sm text-gray-600 leading-snug">{{ hl.custom_description || hl.description }}</p>
           </div>
         </div>
       </div>

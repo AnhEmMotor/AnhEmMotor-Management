@@ -8,6 +8,16 @@ defineProps({
 })
 defineEmits(['toggle-detail'])
 
+const partnerTypeMap = {
+  supplier: 'Nhà cung cấp',
+  financial: 'Đối tác tài chính',
+  insurance: 'Đối tác bảo hiểm',
+}
+
+function getPartnerTypeName(key) {
+  return partnerTypeMap[key] || 'Khác'
+}
+
 function getStatusColor(statusId) {
   switch (statusId) {
     case 'active':
@@ -25,7 +35,10 @@ function getStatusColor(statusId) {
     <div
       class="hidden md:grid grid-cols-16 gap-2 items-center py-3 px-5 text-sm cursor-pointer transition duration-150"
     >
-      <div class="font-medium text-gray-800 truncate text-sm col-span-8">{{ itemData.name }}</div>
+      <div class="font-medium text-gray-800 truncate text-sm col-span-6">{{ itemData.name }}</div>
+      <div class="text-gray-500 text-xs col-span-2 italic">
+        {{ getPartnerTypeName(itemData.partnerTypeId) }}
+      </div>
       <div class="text-gray-600 text-xs col-span-2">{{ itemData.phone || '---' }}</div>
       <div class="text-gray-600 text-xs col-span-2">{{ itemData.email || 'Chưa có' }}</div>
       <div class="text-right text-sm font-semibold text-red-600 col-span-2 justify-self-end">

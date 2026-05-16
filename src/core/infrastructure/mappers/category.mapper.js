@@ -30,7 +30,7 @@ const categoryMapper = {
       imageUrl: item.imageUrl || '',
       isActive: item.isActive ?? true,
       sortOrder: item.sortOrder || 0,
-      parentId: item.parentId || null,
+      parentId: item.parentId ?? item.parent_id ?? null,
       productCount: item.productCount || 0,
       description: item.description || '',
       maxPurchaseQuantity: item.maxPurchaseQuantity || null,

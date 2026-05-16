@@ -39,7 +39,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['close', 'save'])
+const emit = defineEmits(['close', 'save', 'clear-error'])
 
 const localSupplier = ref({ ...props.supplier })
 
