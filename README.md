@@ -1,104 +1,189 @@
-<img  src="https://www.qiniu.lingchen.kim/github-cover-light6.webp" />
+# AnhEmMotor Management Dashboard Project
 
-<br />
-<h1 align="center">Art Design Pro</h1>
-<p align="center">A backend system template that combines design aesthetics with efficient development, helping you quickly build professional-grade applications</p>
-<div align="center">English | <a href="./README.zh-CN.md">简体中文</a></div>
+[English](#english) | [Tiếng Việt](#tiếng-việt) | [Rules (Quy chuẩn)](./RULES.md)
 
-<br />
-<div align="center">
+---
 
-[![license](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE) [![github stars](https://img.shields.io/github/stars/Daymychen/art-design-pro)](https://github.com/Daymychen/art-design-pro/stargazers) [![github forks](https://img.shields.io/github/forks/Daymychen/art-design-pro)](https://github.com/Daymychen/art-design-pro/network/members)
+<a name="english"></a>
 
-</div>
-<br />
+## English
 
-## What makes this project special?
+[Project Rules](./RULES.md)
 
-**Interface Design**: Modern UI design with smooth interactions, focusing on user experience and visual design
+**Copyright (C) 2026 Tran Thanh Binh, Nguyen Huynh Kim Ngan, Nguyen Trinh Anh Khoi, Trinh Minh Uyen.**
 
-**Quick Start**: Clean architecture + comprehensive documentation, easy for backend developers to use
+This project is licensed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file for details.
 
-**Rich Components**: Built-in high-quality components for data display, forms, and more to meet different business scenarios
+This project is the management system of AnhEmMotor (products, prices, orders, users, etc.).
 
-**Smooth Interactions**: Button clicks, theme switching, page transitions, chart animations - experience comparable to commercial products
+### Table of Contents
 
-**Efficient Development**: Built-in practical APIs like useTable and ArtForm to significantly improve development efficiency
+- [System Requirements](#system-requirements)
+- [Installation](#installation)
+- [Environment Configuration](#environment-configuration)
+- [Local Development](#local-development)
+- [Deployment & CI/CD](#deployment--cicd)
 
-**Clean Scripts**: Built-in one-click cleanup script to quickly remove demo data and get a ready-to-develop base project
+### System Requirements
 
-## Tech Stack
+- Node.js (v20 or higher)
+- Access to GitHub Repository
 
-Development Framework: Vue3, TypeScript, Vite, Element-Plus, Tailwind CSS
+### Installation
 
-Code Standards: Eslint, Prettier, Stylelint, Husky, Lint-staged, cz-git
-
-## Preview
-
-<kbd><img src="https://www.qiniu.lingchen.kim/github-c1.webp" alt="Light Theme"/></kbd>
-
-<kbd><img src="https://www.qiniu.lingchen.kim/github-c2.webp" alt="Light Theme"/></kbd>
-
-<kbd><img src="https://www.qiniu.lingchen.kim/github-c4.webp" alt="Dark Theme"/></kbd>
-
-<kbd><img src="https://www.qiniu.lingchen.kim/github-c5.webp" alt="Dark Theme"/></kbd>
-
-## Quick Access
-
-[Live Demo](https://www.artd.pro) | [Official Documentation](https://www.artd.pro/docs) | [Changelog](./CHANGELOG.en.md)
-
-## Installation & Setup
+Clone the repository and install dependencies:
 
 ```bash
-# Install dependencies
-pnpm install
-
-# If pnpm install fails, try using the command below
-pnpm install --ignore-scripts
-
-# Start local development environment
-pnpm dev
-
-# Build for production
-pnpm build
+git clone <repo-url>
+cd AnhEmMotor-Management
+npm install
 ```
 
-## Clean Version
+### Environment Configuration
 
-The project includes a cleanup script to quickly remove demo data and provide developers with a ready-to-develop base project
+Create a `.env` file from the template:
 
 ```bash
-pnpm clean:dev
+cp .env.template .env
 ```
 
-## Technical Support
+Update the information in `.env`:
 
-QQ Group: <a href="https://qm.qq.com/cgi-bin/qm/qr?k=Gg6yzZLFaNgmRhK0T5Qcjf7-XcAFWWXm&jump_from=webapi&authKey=YpRKVJQyFKYbGTiKw0GJ/YQXnNF+GdXNZC5beQQqnGZTvuLlXoMO7nw5fNXvmVhA">1038930070</a> (Click the link to join the group chat)
+```properties
+# Backend API URL (Production or Local)
+VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT=https://localhost:7001
+```
 
-## Browser Compatibility
+### Local Development
 
-Supports modern mainstream browsers including Chrome, Safari, Firefox, and more.
+```bash
+npm run dev
+```
 
-## Contributing
+The website will run at: `http://localhost:5173`
 
-We sincerely welcome and appreciate the support of every contributor! Whether you have new ideas, feature suggestions, or code optimizations, you can participate in the following ways:
+### Deployment & CI/CD
 
-Submit Pull Requests: Share your code and help the project grow.
+The project uses GitHub Actions for auto-deployments.
 
-Create GitHub Issues: Provide bug feedback or new feature suggestions to help us improve together.
+#### Required Secrets on GitHub Repo:
 
-Every contribution you make takes this project one step further! Come join our open source community!
+| Secret Name                         | Description                          |
+| ----------------------------------- | ------------------------------------ |
+| `PUBLIC_API_URL_FOR_BROWSER_CLIENT` | Backend API URL (Production)         |
+| `PRODUCTION_SERVER_IP`              | Production Server IP                 |
+| `PRODUCTION_SERVER_USERNAME`        | SSH Username (usually root)          |
+| `SERVER_REMOTE_ACCESS_PRIVATE_KEY`  | Private SSH Key to access the server |
+| `SSH_PORT_FOR_PRODUCTION_SERVER`    | SSH Port (default 22)                |
 
-## Continuous Optimization & Extension
+#### Workflow
 
-The project maintains active updates, supports the latest frontend tech stack, is compatible with mainstream frameworks, and ensures long-term stability and extensibility. Community-driven feedback mechanisms allow your needs to be quickly integrated into project iterations.
+1. Create a pull request.
+2. After the pull request is approved (if it meets quality standards), GitHub Action will automatically build the project.
+3. If the build is successful, the code will be deployed to the server.
 
-## Donation
+#### Troubleshooting: Port is already in use / Not run in port 5173
 
-If you feel this project has reduced your development costs and solved problems in your work/life, you can support us through the following ways:
+**Solution:**
 
-<img src="https://www.qiniu.lingchen.kim/%E7%BB%84%202%402x%202.png" alt="Donation QR Code"/>
+Check if any other projects are running on port 5173. If not, try running the following two commands in Command Prompt with administrator privileges:
 
-## Star History
+```
+sc stop winnat
+sc start winnat
+```
 
-[![Star History Chart](https://api.star-history.com/svg?repos=Daymychen/art-design-pro&type=Date)](https://www.star-history.com/#Daymychen/art-design-pro&Date)
+If it hasn't been successful yet, Restart your computer.
+
+---
+
+<a name="tieng-viet"></a>
+
+## Tiếng Việt
+
+[Quy chuẩn dự án](./RULES.md)
+
+**Copyright (C) 2026 Tran Thanh Binh, Nguyen Huynh Kim Ngan, Nguyen Trinh Anh Khoi, Trinh Minh Uyen.**
+
+Dự án này được cấp phép theo **Giấy phép Apache 2.0**. Xem tệp [LICENSE](LICENSE) để biết chi tiết.
+
+Dự án này là hệ thống quản trị của AnhEmMotor (sản phẩm, giá, đơn hàng, người dùng, ...)
+
+### Mục lục
+
+- [Yêu cầu hệ thống](#yêu-cầu-hệ-thống)
+- [Cài đặt](#cài-đặt)
+- [Cấu hình Môi trường](#cấu-hình-môi-trường)
+- [Chạy Local Development](#chạy-local-development)
+- [Deployment & CI/CD](#deployment--cicd-1)
+
+### Yêu cầu hệ thống
+
+- Node.js (v20 trở lên)
+- Access to GitHub Repository
+
+### Cài đặt
+
+Clone dự án và cài đặt dependencies:
+
+```bash
+git clone <repo-url>
+cd AnhEmMotor-Management
+npm install
+```
+
+### Cấu hình Môi trường
+
+Tạo file `.env` từ file mẫu:
+
+```bash
+cp .env.template .env
+```
+
+Cập nhật thông tin trong `.env`:
+
+```properties
+# URL của Backend API (Production hoặc Local)
+VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT=https://localhost:7001
+```
+
+### Chạy Local Development
+
+```bash
+npm run dev
+```
+
+Trang web có thể sẽ chạy tại: `http://localhost:5173`
+
+### Deployment & CI/CD
+
+Dự án sử dụng GitHub Actions để auto deploy.
+
+#### Secrets cần cấu hình trên GitHub Repo:
+
+| Secret Name                         | Mô tả                            |
+| ----------------------------------- | -------------------------------- |
+| `PUBLIC_API_URL_FOR_BROWSER_CLIENT` | URL của Backend API (Production) |
+| `PRODUCTION_SERVER_IP`              | IP của Server deploy             |
+| `PRODUCTION_SERVER_USERNAME`        | Username SSH (thường là root)    |
+| `SERVER_REMOTE_ACCESS_PRIVATE_KEY`  | Key SSH private để access server |
+| `SSH_PORT_FOR_PRODUCTION_SERVER`    | Port SSH (mặc định 22)           |
+
+#### Workflow
+
+1. Tạo pull request
+2. Sau khi được chấp nhận pull request (nếu đạt đủ chất lượng), GitHub Action sẽ tự động build.
+3. Nếu build thành công, code sẽ được deploy lên server.
+
+#### Khắc phục sự cố: Cổng đã được sử dụng / Không chạy trên cổng 5173
+
+**Giải pháp:**
+
+Hãy xem coi có dự án nào khác chạy trên cổng 5173 hay không. Nếu không có, hãy thử chạy 2 lệnh sau trong Command Prompt với quyền quản trị viên:
+
+```
+sc stop winnat
+sc start winnat
+```
+
+Nếu vẫn không thành công, hãy khởi động lại máy tính.
