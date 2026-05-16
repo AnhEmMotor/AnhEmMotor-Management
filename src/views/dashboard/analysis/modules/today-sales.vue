@@ -24,7 +24,9 @@
             <div class="max-sm:ml-4 mt-3.5 max-sm:mt-0 max-sm:text-end">
               <ArtCountTo class="text-2xl font-medium" :target="item.value" :duration="1500" />
               <p class="mt-2 text-base text-g-600 max-sm:mt-1">{{ item.label }}</p>
-              <small class="text-g-500 mt-1 max-sm:mt-0.5">{{ $t('admin.t43') }}<span
+              <small class="text-g-500 mt-1 max-sm:mt-0.5"
+                >{{ $t('admin.t43')
+                }}<span
                   class="font-medium"
                   :class="[item.change.indexOf('+') === -1 ? 'text-danger' : 'text-success']"
                   >{{ item.change }}</span

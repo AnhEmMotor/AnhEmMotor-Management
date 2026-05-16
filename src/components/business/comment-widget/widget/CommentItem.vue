@@ -16,7 +16,8 @@
         <div
           class="ml-5 text-xs text-g-700 c-p select-none hover:text-theme"
           @click="toggleReply(comment.id)"
-        >{{ $t('admin.t4') }}</div>
+          >{{ $t('admin.t4') }}</div
+        >
       </div>
     </div>
 

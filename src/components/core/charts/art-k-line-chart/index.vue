@@ -16,20 +16,17 @@
   defineOptions({ name: 'ArtKLineChart' })
 
   const props = withDefaults(defineProps<KLineChartProps>(), {
-    // Cơ bảnCauHinh
     height: useChartOps().chartHeight,
     loading: false,
     isEmpty: false,
     colors: () => useChartOps().colors,
 
-    // Dữ liệuCauHinh
     data: () => [],
     showDataZoom: false,
     dataZoomStart: 0,
     dataZoomEnd: 100
   })
 
-  // LấythựctếkhiếndùngcủaMàu sắc
   const getActualColors = () => {
     const defaultUpColor = '#4C87F3'
     const defaultDownColor = '#8BD8FC'
@@ -40,9 +37,7 @@
     }
   }
 
-  // khiếndùngmớicủaBiểu đồComponenttượng
   const {
-    chartRef,
     getAxisLineStyle,
     getAxisLabelStyle,
     getAxisTickStyle,

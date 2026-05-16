@@ -11,13 +11,11 @@
   defineOptions({ name: 'ArtDualBarCompareChart' })
 
   const props = withDefaults(defineProps<BidirectionalBarChartProps>(), {
-    // Cơ bảnCauHinh
     height: useChartOps().chartHeight,
     loading: false,
     isEmpty: false,
     colors: () => useChartOps().colors,
 
-    // Dữ liệuCauHinh
     positiveData: () => [],
     negativeData: () => [],
     xAxisData: () => [],
@@ -27,23 +25,19 @@
     yAxisMin: -100,
     yAxisMax: 100,
 
-    // Kiểu dángCauHinh
     showDataLabel: false,
     positiveBorderRadius: () => [10, 10, 0, 0],
     negativeBorderRadius: () => [0, 0, 10, 10],
 
-    // TrụcđườngHiển thịCauHinh
     showAxisLabel: true,
     showAxisLine: false,
     showSplitLine: false,
 
-    // nộpCauHinh
     showTooltip: true,
     showLegend: false,
     legendPosition: 'bottom'
   })
 
-  // xâyhệcộtCauHinhcủagiúpHàm
   const createSeriesConfig = (config: {
     name: string
     data: number[]
@@ -79,9 +73,7 @@
     }
   }
 
-  // khiếndùngBiểu đồComponenttượng
   const {
-    chartRef,
     getAxisLineStyle,
     getAxisLabelStyle,
     getAxisTickStyle,
@@ -108,15 +100,13 @@
       () => props.colors
     ],
     generateOptions: (): EChartsOption => {
-      // XuLyhướngDữ liệu，Đảm bảovìgiá trị
       const processedNegativeData = props.negativeData.map((val) => (val > 0 ? -val : val))
 
-      // TốihóacủaGridCauHinh
       const gridConfig = {
         top: props.showLegend ? 50 : 20,
         right: 0,
         left: 0,
-        bottom: 0, // ThêmthêmPhía dướigian
+        bottom: 0,
         containLabel: true
       }
 
@@ -127,18 +117,16 @@
         animationEasing: 'cubicOut',
         grid: getGridWithLegend(props.showLegend, props.legendPosition, gridConfig),
 
-        // TốihóacủaGợi ýKhungCauHinh
         tooltip: props.showTooltip
           ? {
               ...getTooltipStyle(),
               trigger: 'axis',
               axisPointer: {
-                type: 'none' // đichiathịđường
+                type: 'none'
               }
             }
           : undefined,
 
-        // ảnhví dụCauHinh
         legend: props.showLegend
           ? {
               ...getLegendStyle(props.legendPosition),
@@ -146,7 +134,6 @@
             }
           : undefined,
 
-        // XTrụcCauHinh
         xAxis: {
           type: 'category',
           data: props.xAxisData,
@@ -156,7 +143,6 @@
           boundaryGap: true
         },
 
-        // YTrụcCauHinh
         yAxis: {
           type: 'value',
           min: props.yAxisMin,
@@ -166,9 +152,7 @@
           splitLine: getSplitLineStyle(props.showSplitLine)
         },
 
-        // hệcộtCauHinh
         series: [
-          // hướngDữ liệuhệcột
           createSeriesConfig({
             name: props.negativeName,
             data: processedNegativeData,
@@ -178,7 +162,6 @@
             formatter: (params: unknown) =>
               String(Math.abs((params as Record<string, unknown>).value as number))
           }),
-          // đúnghướngDữ liệuhệcột
           createSeriesConfig({
             name: props.positiveName,
             data: props.positiveData,

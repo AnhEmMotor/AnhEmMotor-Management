@@ -1,12 +1,8 @@
 <template>
   <div class="page-content mb-5">
     <div class="mb-15 text-center">
-      <h1 class="my-4 text-2xl font-semibold leading-tight"
-        >{{ $t('admin.t228') }}</h1
-      >
-      <p class="m-0 text-base leading-relaxed text-g-700"
-        >{{ $t('admin.t229') }}</p
-      >
+      <h1 class="my-4 text-2xl font-semibold leading-tight">{{ $t('admin.t228') }}</h1>
+      <p class="m-0 text-base leading-relaxed text-g-700">{{ $t('admin.t229') }}</p>
     </div>
 
     <!-- Cơ bảndùngpháp -->

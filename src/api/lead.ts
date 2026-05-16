@@ -16,7 +16,6 @@ export interface Lead {
   createdAt: string
 }
 
-// Lấy danh sách khách hàng tiềm năng
 export function fetchGetLeadList(params?: any) {
   return request.get<Lead[]>({
     url: '/api/Lead',
@@ -24,7 +23,6 @@ export function fetchGetLeadList(params?: any) {
   })
 }
 
-// Lấy chi tiết khách hàng tiềm năng
 export function fetchGetLeadDetail(id: number) {
   return request.get<Lead>({
     url: `/api/Lead/${id}`

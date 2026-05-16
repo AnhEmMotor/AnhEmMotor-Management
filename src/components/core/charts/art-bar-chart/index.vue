@@ -12,31 +12,23 @@
   defineOptions({ name: 'ArtBarChart' })
 
   const props = withDefaults(defineProps<BarChartProps>(), {
-    // Cơ bảnCauHinh
     height: useChartOps().chartHeight,
     loading: false,
     isEmpty: false,
     colors: () => useChartOps().colors,
     borderRadius: 4,
-
-    // Dữ liệuCauHinh
     data: () => [0, 0, 0, 0, 0, 0, 0],
     xAxisData: () => [],
     barWidth: '40%',
     stack: false,
-
-    // TrụcđườngHiển thịCauHinh
     showAxisLabel: true,
     showAxisLine: true,
     showSplitLine: true,
-
-    // nộpCauHinh
     showTooltip: true,
     showLegend: false,
     legendPosition: 'bottom'
   })
 
-  // đoánlàphủvìđaDữ liệu
   const isMultipleData = computed(() => {
     return (
       Array.isArray(props.data) &&
@@ -46,7 +38,6 @@
     )
   })
 
-  // LấyMàu sắcCauHinh
   const getColor = (customColor?: string, index?: number) => {
     if (customColor) return customColor
 
@@ -54,7 +45,6 @@
       return props.colors![index % props.colors!.length]
     }
 
-    // MacDinhbiếnmàu
     return new graphic.LinearGradient(0, 0, 0, 1, [
       {
         offset: 0,
@@ -67,7 +57,6 @@
     ])
   }
 
-  // xâybiếnmàu
   const createGradientColor = (color: string) => {
     return new graphic.LinearGradient(0, 0, 0, 1, [
       {
@@ -81,7 +70,6 @@
     ])
   }
 
-  // LấyCơ bảnKiểu dángCauHinh
   const getBaseItemStyle = (
     color: string | InstanceType<typeof graphic.LinearGradient> | undefined
   ) => ({
@@ -89,7 +77,6 @@
     color: typeof color === 'string' ? createGradientColor(color) : color
   })
 
-  // xâyhệcộtCauHinh
   const createSeriesItem = (config: {
     name?: string
     data: number[]
@@ -110,7 +97,6 @@
     }
   }
 
-  // khiếndùngmớicủaBiểu đồComponenttượng
   const {
     chartRef,
     getAxisLineStyle,
@@ -124,13 +110,11 @@
   } = useChartComponent({
     props,
     checkEmpty: () => {
-      // TìmđơnDữ liệutình
       if (Array.isArray(props.data) && typeof props.data[0] === 'number') {
         const singleData = props.data as number[]
         return !singleData.length || singleData.every((val) => val === 0)
       }
 
-      // TìmđaDữ liệutình
       if (Array.isArray(props.data) && typeof props.data[0] === 'object') {
         const multiData = props.data as BarDataItem[]
         return (
@@ -165,12 +149,10 @@
         }
       }
 
-      // Thêm mớiảnhví dụCauHinh
       if (props.showLegend && isMultipleData.value) {
         options.legend = getLegendStyle(props.legendPosition)
       }
 
-      // sinhthànhhệcộtDữ liệu
       if (isMultipleData.value) {
         const multiData = props.data as BarDataItem[]
         options.series = multiData.map((item, index) => {
@@ -185,7 +167,6 @@
           })
         })
       } else {
-        // đơnDữ liệutình
         const singleData = props.data as number[]
         const computedColor = getColor()
 

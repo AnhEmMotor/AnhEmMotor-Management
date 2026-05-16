@@ -220,7 +220,9 @@ class VersionManager {
         this.performLogout()
       }
 
-      console.info(`[Upgrade] Nâng cấphoànthành: ${storedVersion} → ${StorageConfig.CURRENT_VERSION}`)
+      console.info(
+        `[Upgrade] Nâng cấphoànthành: ${storedVersion} → ${StorageConfig.CURRENT_VERSION}`
+      )
     } catch (error) {
       console.error('[Upgrade] HeThongNâng cấpXuLyThatBai:', error)
     }

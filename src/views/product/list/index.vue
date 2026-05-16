@@ -33,7 +33,10 @@
     </div>
 
     <!-- Category Tabs -->
-    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100" v-loading="loadingCategories">
+    <div
+      class="bg-white p-4 rounded-lg shadow-sm border border-gray-100"
+      v-loading="loadingCategories"
+    >
       <ElTabs v-model="activeCategory" class="product-tabs">
         <ElTabPane name="all">
           <template #label>
@@ -43,11 +46,7 @@
             </span>
           </template>
         </ElTabPane>
-        <ElTabPane 
-          v-for="cat in categories" 
-          :key="cat.id" 
-          :name="cat.id"
-        >
+        <ElTabPane v-for="cat in categories" :key="cat.id" :name="cat.id">
           <template #label>
             <span class="flex items-center gap-2">
               <ElIcon><CollectionTag /></ElIcon>
@@ -81,11 +80,7 @@
       </template>
 
       <!-- Table Header Tools -->
-      <ArtTableHeader
-        v-model:columns="columnChecks"
-        :loading="loading"
-        @refresh="refreshData"
-      >
+      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
           <ElButton type="primary" v-ripple @click="handleAdd">
             <ElIcon><Plus /></ElIcon> Thêm mới
@@ -108,7 +103,9 @@
       >
         <!-- Image Column -->
         <template #cover_image_url="{ row }">
-          <div class="flex-c h-12 w-12 bg-gray-50 rounded shadow-inner border border-gray-100 overflow-hidden mx-auto">
+          <div
+            class="flex-c h-12 w-12 bg-gray-50 rounded shadow-inner border border-gray-100 overflow-hidden mx-auto"
+          >
             <ElImage
               v-if="row.cover_image_url"
               :src="row.cover_image_url"
@@ -131,12 +128,7 @@
 
         <!-- Status Column -->
         <template #inventory_status="{ row }">
-          <ElTag 
-            :type="getStatusType(row.inventory_status)" 
-            size="small" 
-            effect="light"
-            round
-          >
+          <ElTag :type="getStatusType(row.inventory_status)" size="small" effect="light" round>
             {{ getStatusLabel(row.inventory_status) }}
           </ElTag>
         </template>
@@ -167,16 +159,26 @@
               <ElFormItem label="Tên sản phẩm" required class="col-span-2">
                 <ElInput v-model="formData.name" placeholder="Nhập tên sản phẩm..." />
               </ElFormItem>
-              
+
               <ElFormItem label="Thương hiệu" required>
                 <ElSelect v-model="formData.brand_id" placeholder="Chọn thương hiệu" class="w-full">
-                  <ElOption v-for="item in brands" :key="item.id" :label="item.name" :value="item.id" />
+                  <ElOption
+                    v-for="item in brands"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
+                  />
                 </ElSelect>
               </ElFormItem>
 
               <ElFormItem label="Thể loại" required>
                 <ElSelect v-model="formData.category_id" placeholder="Chọn thể loại" class="w-full">
-                  <ElOption v-for="item in categories" :key="item.id" :label="item.name" :value="item.id" />
+                  <ElOption
+                    v-for="item in categories"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
+                  />
                 </ElSelect>
               </ElFormItem>
 
@@ -201,7 +203,12 @@
               </ElFormItem>
 
               <ElFormItem label="Mô tả ngắn" class="col-span-2">
-                <ElInput v-model="formData.description" type="textarea" :rows="3" placeholder="Mô tả sơ lược về sản phẩm..." />
+                <ElInput
+                  v-model="formData.description"
+                  type="textarea"
+                  :rows="3"
+                  placeholder="Mô tả sơ lược về sản phẩm..."
+                />
               </ElFormItem>
             </div>
           </ElTabPane>
@@ -209,7 +216,9 @@
           <!-- Media Tab -->
           <ElTabPane label="Hình ảnh & Media">
             <div class="py-4 flex flex-col items-center">
-              <span class="text-sm font-medium text-gray-600 mb-4 self-start">Ảnh đại diện sản phẩm</span>
+              <span class="text-sm font-medium text-gray-600 mb-4 self-start"
+                >Ảnh đại diện sản phẩm</span
+              >
               <ElUpload
                 class="product-uploader"
                 action="#"
@@ -219,16 +228,23 @@
               >
                 <div v-if="formData.cover_image_url" class="relative group">
                   <img :src="formData.cover_image_url" class="product-preview" />
-                  <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-lg">
+                  <div
+                    class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-lg"
+                  >
                     <ElIcon class="text-white text-2xl"><Plus /></ElIcon>
                   </div>
                 </div>
-                <div v-else class="product-uploader-trigger flex flex-col items-center justify-center gap-3">
+                <div
+                  v-else
+                  class="product-uploader-trigger flex flex-col items-center justify-center gap-3"
+                >
                   <ElIcon class="text-gray-400 text-3xl"><Plus /></ElIcon>
                   <span class="text-sm text-gray-400 font-medium">Tải ảnh sản phẩm</span>
                 </div>
               </ElUpload>
-              <p class="text-xs text-gray-400 mt-4 italic">Khuyên dùng ảnh tỉ lệ 1:1, dung lượng không quá 5MB.</p>
+              <p class="text-xs text-gray-400 mt-4 italic"
+                >Khuyên dùng ảnh tỉ lệ 1:1, dung lượng không quá 5MB.</p
+              >
             </div>
           </ElTabPane>
 
@@ -236,10 +252,16 @@
           <ElTabPane label="Thông số kỹ thuật">
             <div class="grid grid-cols-2 gap-x-6 gap-y-2 py-2">
               <ElFormItem label="Động cơ">
-                <ElInput v-model="(formData as any).engine_type" placeholder="Ví dụ: PGM-FI, 125cc..." />
+                <ElInput
+                  v-model="(formData as any).engine_type"
+                  placeholder="Ví dụ: PGM-FI, 125cc..."
+                />
               </ElFormItem>
               <ElFormItem label="Công suất">
-                <ElInput v-model="(formData as any).max_power" placeholder="Ví dụ: 8.2 kW/8500 rpm..." />
+                <ElInput
+                  v-model="(formData as any).max_power"
+                  placeholder="Ví dụ: 8.2 kW/8500 rpm..."
+                />
               </ElFormItem>
               <ElFormItem label="Kích thước">
                 <ElInput v-model="(formData as any).dimensions" placeholder="D x R x C (mm)..." />
@@ -260,22 +282,21 @@
             <div class="py-2" v-loading="loadingTechs">
               <ElCheckboxGroup v-model="selectedTechIds" v-if="availableTechnologies.length > 0">
                 <div class="grid grid-cols-2 gap-4">
-                  <div 
-                    v-for="tech in availableTechnologies" 
+                  <div
+                    v-for="tech in availableTechnologies"
                     :key="tech.id"
                     class="flex items-center gap-3 p-3 border border-gray-100 rounded-lg hover:border-primary/30 transition-colors cursor-pointer"
                     @click="toggleTech(tech.id)"
                   >
-                    <ElCheckbox 
-                      :label="tech.id" 
-                      @click.stop
-                    >
+                    <ElCheckbox :label="tech.id" @click.stop>
                       <template #default>
                         <div class="flex items-center gap-3">
-                          <div class="w-10 h-10 bg-gray-50 rounded flex-c overflow-hidden border border-gray-50">
-                            <ElImage 
-                              v-if="tech.defaultImageUrl" 
-                              :src="tech.defaultImageUrl" 
+                          <div
+                            class="w-10 h-10 bg-gray-50 rounded flex-c overflow-hidden border border-gray-50"
+                          >
+                            <ElImage
+                              v-if="tech.defaultImageUrl"
+                              :src="tech.defaultImageUrl"
                               fit="cover"
                               class="w-full h-full"
                             />
@@ -283,7 +304,9 @@
                           </div>
                           <div class="flex flex-col">
                             <span class="font-medium text-gray-700 text-sm">{{ tech.name }}</span>
-                            <span class="text-[10px] text-gray-400 line-clamp-1">{{ tech.defaultTitle || 'Công nghệ hệ thống' }}</span>
+                            <span class="text-[10px] text-gray-400 line-clamp-1">{{
+                              tech.defaultTitle || 'Công nghệ hệ thống'
+                            }}</span>
                           </div>
                         </div>
                       </template>
@@ -291,7 +314,11 @@
                   </div>
                 </div>
               </ElCheckboxGroup>
-              <ElEmpty v-else description="Không có công nghệ gợi ý cho danh mục/thương hiệu này" :image-size="60" />
+              <ElEmpty
+                v-else
+                description="Không có công nghệ gợi ý cho danh mục/thương hiệu này"
+                :image-size="60"
+              />
             </div>
           </ElTabPane>
         </ElTabs>
@@ -382,19 +409,27 @@
 
   const getStatusType = (status: string) => {
     switch (status) {
-      case 'InStock': return 'success'
-      case 'LowStock': return 'warning'
-      case 'OutOfStock': return 'danger'
-      default: return 'info'
+      case 'InStock':
+        return 'success'
+      case 'LowStock':
+        return 'warning'
+      case 'OutOfStock':
+        return 'danger'
+      default:
+        return 'info'
     }
   }
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'InStock': return 'Còn hàng'
-      case 'LowStock': return 'Sắp hết'
-      case 'OutOfStock': return 'Hết hàng'
-      default: return status
+      case 'InStock':
+        return 'Còn hàng'
+      case 'LowStock':
+        return 'Sắp hết'
+      case 'OutOfStock':
+        return 'Hết hàng'
+      default:
+        return status
     }
   }
 </script>
@@ -402,17 +437,17 @@
 <style scoped>
   .art-table-card {
     border: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
     border-radius: 12px;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 3%);
   }
-  
+
   .bg-primary {
     background-color: var(--main-color);
   }
 
   :deep(.product-tabs .el-tabs__item.is-active) {
-    color: #ff4d4f !important;
     font-weight: bold;
+    color: #ff4d4f !important;
   }
 
   :deep(.product-tabs .el-tabs__active-bar) {
@@ -420,25 +455,25 @@
   }
 
   .form-tabs {
-    border-radius: 8px;
     overflow: hidden;
-    box-shadow: none !important;
     border: 1px solid #f0f0f0 !important;
+    border-radius: 8px;
+    box-shadow: none !important;
   }
 
   .product-uploader :deep(.el-upload) {
-    border: 2px dashed #e5e7eb;
-    border-radius: 16px;
-    cursor: pointer;
     position: relative;
     overflow: hidden;
-    transition: all 0.3s ease;
+    cursor: pointer;
     background-color: #f9fafb;
+    border: 2px dashed #e5e7eb;
+    border-radius: 16px;
+    transition: all 0.3s ease;
   }
 
   .product-uploader :deep(.el-upload:hover) {
-    border-color: #ff4d4f;
     background-color: #fff;
+    border-color: #ff4d4f;
   }
 
   .product-uploader-trigger {
@@ -447,9 +482,9 @@
   }
 
   .product-preview {
+    display: block;
     width: 200px;
     height: 200px;
-    display: block;
     object-fit: cover;
     border-radius: 16px;
   }

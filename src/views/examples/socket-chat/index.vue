@@ -142,7 +142,11 @@
               <div class="message-content">{{ message.content }}</div>
             </div>
 
-            <ElEmpty v-if="messageList.length === 0" description="TạmvôTinNhanGhi chép" :image-size="100" />
+            <ElEmpty
+              v-if="messageList.length === 0"
+              description="TạmvôTinNhanGhi chép"
+              :image-size="100"
+            />
           </div>
         </ElCard>
       </ElCol>

@@ -13,7 +13,9 @@
           class="!max-w-75"
         />
 
-        <ElButton type="primary" @click="handleUpdateTabTitle" :disabled="!newTabTitle.trim()">{{ $t('admin.t108') }}</ElButton>
+        <ElButton type="primary" @click="handleUpdateTabTitle" :disabled="!newTabTitle.trim()">{{
+          $t('admin.t108')
+        }}</ElButton>
         <ElButton @click="handleResetTabTitle">{{ $t('admin.t109') }}</ElButton>
       </div>
     </ElCard>
@@ -25,7 +27,9 @@
       </div>
       <ElRow :gutter="20">
         <ElCol :span="24">
-          <ElButton type="success" plain @click="handleGetCurrentTabTitle(routePath)">{{ $t('admin.t110') }}</ElButton>
+          <ElButton type="success" plain @click="handleGetCurrentTabTitle(routePath)">{{
+            $t('admin.t110')
+          }}</ElButton>
         </ElCol>
       </ElRow>
     </ElCard>
@@ -34,8 +38,12 @@
     <ElCard class="mb-7.5" header="đóngđóngThẻ Tab">
       <ElRow :gutter="20">
         <ElCol :span="24">
-          <ElButton type="danger" plain @click="handleCloseTab(routePath)">{{ $t('admin.t111') }}</ElButton>
-          <ElButton type="warning" plain @click="handleCloseOthersTab(routePath)">{{ $t('admin.t112') }}</ElButton>
+          <ElButton type="danger" plain @click="handleCloseTab(routePath)">{{
+            $t('admin.t111')
+          }}</ElButton>
+          <ElButton type="warning" plain @click="handleCloseOthersTab(routePath)">{{
+            $t('admin.t112')
+          }}</ElButton>
           <ElButton type="danger" plain @click="handleCloseAllTab">{{ $t('admin.t113') }}</ElButton>
         </ElCol>
       </ElRow>

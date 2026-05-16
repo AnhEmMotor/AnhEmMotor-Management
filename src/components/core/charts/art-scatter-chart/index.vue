@@ -18,30 +18,24 @@
   defineOptions({ name: 'ArtScatterChart' })
 
   const props = withDefaults(defineProps<ScatterChartProps>(), {
-    // Cơ bảnCauHinh
     height: useChartOps().chartHeight,
     loading: false,
     isEmpty: false,
     colors: () => useChartOps().colors,
 
-    // Dữ liệuCauHinh
     data: () => [{ value: [0, 0] }, { value: [0, 0] }],
     symbolSize: 14,
 
-    // TrụcđườngHiển thịCauHinh
     showAxisLabel: true,
     showAxisLine: true,
     showSplitLine: true,
 
-    // nộpCauHinh
     showTooltip: true,
     showLegend: false,
     legendPosition: 'bottom'
   })
 
-  // khiếndùngmớicủaBiểu đồComponenttượng
   const {
-    chartRef,
     isDark,
     getAxisLineStyle,
     getAxisLabelStyle,

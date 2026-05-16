@@ -156,8 +156,8 @@ export interface EnvConfig {
   VITE_PORT: string
   // Ứng dụngCơ bảnđường
   VITE_BASE_URL: string
-  // API DiaChi
-  VITE_API_URL: string
+  // API DiaChi cho Browser Client
+  VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT: string
   // làphủmởbật Mock
   VITE_USE_MOCK?: string
   // làphủmởbậtépthụt

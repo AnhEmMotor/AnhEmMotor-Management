@@ -30,18 +30,15 @@
     isEmpty: false
   })
 
-  // Định nghĩa emit
   const emit = defineEmits<{
     renderComplete: []
     regionClick: [region: { name: string; adcode: string; level: string }]
   }>()
 
-  // TìmlàphủvìkhôngDữ liệu
   const isEmpty = computed(() => {
     return props.isEmpty || (!props.mapData?.length && !chinaMapJson)
   })
 
-  // liệu geoJson Dữ liệuthuậnđặtđịaảnhDữ liệu
   const prepareMapData = (geoJson: {
     features: Array<{ properties: Record<string, unknown> }>
   }) => {
@@ -54,7 +51,6 @@
     }))
   }
 
-  // LấyChuDeđóngcủaKiểu dángCauHinh
   const getThemeStyles = () => ({
     borderColor: isDark.value ? 'rgba(255,255,255,0.6)' : 'rgba(147,235,248,1)',
     shadowColor: isDark.value ? 'rgba(0,0,0,0.8)' : 'rgba(128,217,248,1)',
@@ -62,12 +58,11 @@
     backgroundColor: isDark.value ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.9)'
   })
 
-  // cấu ECharts CauHinhmục
   const createChartOption = (mapData: Array<Record<string, unknown>>) => {
     const themeStyles = getThemeStyles()
 
     return {
-      animation: false, // đóngđóngHoatAnhHiệu quả，bớtthiểuChuộttiêuDiđộngcaosánggiờcủacảm
+      animation: false,
       tooltip: {
         show: true,
         backgroundColor: themeStyles.backgroundColor,
@@ -169,7 +164,6 @@
           },
           data: mapData
         },
-        // điểmtiêughiCauHinh（ví dụnếu：Thànhthịtiêughi）
         ...(props.showScatter
           ? [
               {
@@ -196,7 +190,6 @@
     }
   }
 
-  // ban đầuđầuhóađồng thờiRenderđịaảnh
   const initMap = async (): Promise<void> => {
     if (!chinaMapRef.value) return
 
@@ -208,13 +201,11 @@
 
     chartInstance.value.setOption(option)
 
-    // LiênđịnhSuKien
     chartInstance.value.on('click', handleMapClick)
 
     emit('renderComplete')
   }
 
-  // XuLyđịaảnhNhấnSuKien
   const handleMapClick = (params: Record<string, unknown>) => {
     if (params.componentType === 'series') {
       const data = params.data as Record<string, unknown> | undefined
@@ -226,7 +217,6 @@
 
       console.log(`vịtrongđồngTên: ${params.name}`, params)
 
-      // caosángvịtrongđồngTên
       chartInstance.value?.dispatchAction({
         type: 'select',
         seriesIndex: 0,
@@ -237,12 +227,10 @@
     }
   }
 
-  // sổdiện resize giờđiềuchỉnhBiểu đồKích thước
   const resizeChart = () => {
     chartInstance.value?.resize()
   }
 
-  // XuLyComponentHủy
   const cleanupChart = () => {
     if (chartInstance.value) {
       chartInstance.value.off('click', handleMapClick)
@@ -252,7 +240,6 @@
     window.removeEventListener('resize', resizeChart)
   }
 
-  // sinhmệnhtuầnkỳHook
   onMounted(() => {
     if (!isEmpty.value) {
       initMap().then(() => {
@@ -264,7 +251,6 @@
 
   onUnmounted(cleanupChart)
 
-  // Lắng ngheChuDebiếnhóa，trùngmớiban đầuđầuhóađịaảnh
   watch(isDark, (newVal, oldVal) => {
     if (newVal !== oldVal && chartInstance.value) {
       cleanupChart()
@@ -276,7 +262,6 @@
     }
   })
 
-  // Lắng ngheDữ liệubiếnhóa
   watch(
     () => props.mapData,
     () => {

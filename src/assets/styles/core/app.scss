@@ -4,7 +4,15 @@
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #333;
@@ -21,14 +29,12 @@ body {
   border-left-color: var(--theme-color) !important;
 }
 
-// lýDiđộngđầuThànhphầnhìnhHiệu
 @media screen and (max-width: 640px) {
   * {
     cursor: default !important;
   }
 }
 
-// NềncảnhLọckính
 *,
 ::before,
 ::after {
@@ -43,7 +49,6 @@ body {
   --tw-backdrop-sepia: ;
 }
 
-// tròMôthức
 .color-weak {
   filter: invert(80%);
   -webkit-filter: invert(80%);
@@ -53,14 +58,10 @@ body {
   display: none;
 }
 
-// ChuyểnđổiChọntrúngkiểuthức
 .langDropDownStyle {
-  // ChọntrúngmụcNềncảnhMàutrò
   .is-selected {
     background-color: var(--art-el-active-color) !important;
   }
-
-  // ChuyểnđổiMenumụckiểuthứctốiưu
   .lang-btn-item {
     .el-dropdown-menu__item {
       padding-left: 13px !important;
@@ -86,7 +87,6 @@ body {
   }
 }
 
-// ConmặcđịnhViềnkhung
 .page-content {
   border: 1px solid var(--art-card-border) !important;
 }
@@ -106,7 +106,6 @@ body {
   border: 1px solid var(--art-card-border);
 }
 
-// ConViềnkhung
 [data-box-mode='border-mode'] {
   .page-content,
   .art-table-card {
@@ -126,7 +125,6 @@ body {
   }
 }
 
-// Con
 [data-box-mode='shadow-mode'] {
   .page-content,
   .art-table-card {
@@ -163,7 +161,6 @@ body {
   }
 }
 
-// toànMàn
 .el-full-screen {
   position: fixed;
   top: 0;
@@ -180,7 +177,6 @@ body {
   flex-direction: column;
 }
 
-// biểucảthẻ
 .art-table-card {
   flex: 1;
   display: flex;
@@ -194,7 +190,6 @@ body {
   }
 }
 
-// hìnhchứatoànChiều
 .art-full-height {
   height: var(--art-full-height);
   display: flex;
@@ -205,7 +200,6 @@ body {
   }
 }
 
-// kiểuthức
 .art-badge {
   position: absolute;
   top: 0;
@@ -233,7 +227,6 @@ body {
   }
 }
 
-// bảnchữkiểuthức
 .art-text-badge {
   position: absolute;
   top: 0;
@@ -268,7 +261,6 @@ body {
   }
 }
 
-// lờiCơkiểu loading địnhvụHỏiđề
 .art-loading-fix {
   position: fixed !important;
   top: 0 !important;
@@ -289,7 +281,6 @@ body {
   transform: none !important;
 }
 
-// XóabỏDiđộngđầuĐiểmchuộtNềncảnhtrò
 @media screen and (max-width: 1180px) {
   * {
     -webkit-tap-highlight-color: transparent;

@@ -1,744 +1,724 @@
 export default {
-  "httpMsg": {
-    "unauthorized": "Unauthorized access, please login again",
-    "forbidden": "Access to this resource is forbidden",
-    "notFound": "The requested resource does not exist",
-    "methodNotAllowed": "Request method not allowed",
-    "requestTimeout": "Request timeout, please try again later",
-    "internalServerError": "Internal server error, please try again later",
-    "badGateway": "Bad gateway error, please try again later",
-    "serviceUnavailable": "Service temporarily unavailable, please try again later",
-    "gatewayTimeout": "Gateway timeout, please try again later",
-    "requestCancelled": "Request cancelled",
-    "networkError": "Network connection error, please check your connection",
-    "requestFailed": "Request failed",
-    "requestConfigError": "Request configuration error"
+  httpMsg: {
+    unauthorized: 'Unauthorized access, please login again',
+    forbidden: 'Access to this resource is forbidden',
+    notFound: 'The requested resource does not exist',
+    methodNotAllowed: 'Request method not allowed',
+    requestTimeout: 'Request timeout, please try again later',
+    internalServerError: 'Internal server error, please try again later',
+    badGateway: 'Bad gateway error, please try again later',
+    serviceUnavailable: 'Service temporarily unavailable, please try again later',
+    gatewayTimeout: 'Gateway timeout, please try again later',
+    requestCancelled: 'Request cancelled',
+    networkError: 'Network connection error, please check your connection',
+    requestFailed: 'Request failed',
+    requestConfigError: 'Request configuration error'
   },
-  "topBar": {
-    "search": {
-      "title": "Search"
+  topBar: {
+    search: {
+      title: 'Search'
     },
-    "user": {
-      "userCenter": "User center",
-      "docs": "Document",
-      "github": "Github",
-      "lockScreen": "Lock screen",
-      "logout": "Log out"
+    user: {
+      userCenter: 'User center',
+      docs: 'Document',
+      github: 'Github',
+      lockScreen: 'Lock screen',
+      logout: 'Log out'
     },
-    "guide": {
-      "title": "Click here to view",
-      "theme": "Theme style",
-      "menu": "Open top menu",
-      "description": "More configurations"
+    guide: {
+      title: 'Click here to view',
+      theme: 'Theme style',
+      menu: 'Open top menu',
+      description: 'More configurations'
     }
   },
-  "common": {
-    "tips": "records",
-    "cancel": "Cancel",
-    "confirm": "Confirm",
-    "logOutTips": "Do you want to log out?"
+  common: {
+    tips: 'records',
+    cancel: 'Cancel',
+    confirm: 'Confirm',
+    logOutTips: 'Do you want to log out?'
   },
-  "search": {
-    "placeholder": "Search page",
-    "historyTitle": "Search history",
-    "switchKeydown": "Navigate",
-    "selectKeydown": "Select",
-    "exitKeydown": "Close"
+  search: {
+    placeholder: 'Search page',
+    historyTitle: 'Search history',
+    switchKeydown: 'Navigate',
+    selectKeydown: 'Select',
+    exitKeydown: 'Close'
   },
-  "setting": {
-    "menuType": {
-      "title": "Menu Layout",
-      "list": [
-        "Vertical",
-        "Horizontal",
-        "Mixed",
-        "Dual"
-      ]
+  setting: {
+    menuType: {
+      title: 'Menu Layout',
+      list: ['Vertical', 'Horizontal', 'Mixed', 'Dual']
     },
-    "theme": {
-      "title": "Theme Style",
-      "list": [
-        "Light",
-        "Dark",
-        "System"
-      ]
+    theme: {
+      title: 'Theme Style',
+      list: ['Light', 'Dark', 'System']
     },
-    "menu": {
-      "title": "Menu Style"
+    menu: {
+      title: 'Menu Style'
     },
-    "color": {
-      "title": "Theme Color"
+    color: {
+      title: 'Theme Color'
     },
-    "box": {
-      "title": "Box Style",
-      "list": [
-        "Border",
-        "Shadow"
-      ]
+    box: {
+      title: 'Box Style',
+      list: ['Border', 'Shadow']
     },
-    "container": {
-      "title": "Container Width",
-      "list": [
-        "Full",
-        "Boxed"
-      ]
+    container: {
+      title: 'Container Width',
+      list: ['Full', 'Boxed']
     },
-    "basics": {
-      "title": "Basic Config",
-      "list": {
-        "multiTab": "Show work tab",
-        "accordion": "Sidebar opens accordion",
-        "collapseSidebar": "Show sidebar button",
-        "reloadPage": "Show reload page button",
-        "fastEnter": "Show fast enter",
-        "breadcrumb": "Show crumb navigation",
-        "language": "Show multilingual selection",
-        "progressBar": "Show top progress bar",
-        "weakMode": "Color Weakness Mode",
-        "watermark": "Global watermark",
-        "menuWidth": "Menu width",
-        "tabStyle": "Tab style",
-        "pageTransition": "Page animation",
-        "borderRadius": "Custom radius"
+    basics: {
+      title: 'Basic Config',
+      list: {
+        multiTab: 'Show work tab',
+        accordion: 'Sidebar opens accordion',
+        collapseSidebar: 'Show sidebar button',
+        reloadPage: 'Show reload page button',
+        fastEnter: 'Show fast enter',
+        breadcrumb: 'Show crumb navigation',
+        language: 'Show multilingual selection',
+        progressBar: 'Show top progress bar',
+        weakMode: 'Color Weakness Mode',
+        watermark: 'Global watermark',
+        menuWidth: 'Menu width',
+        tabStyle: 'Tab style',
+        pageTransition: 'Page animation',
+        borderRadius: 'Custom radius'
       }
     },
-    "tabStyle": {
-      "default": "Default",
-      "card": "Card",
-      "google": "Chrome"
+    tabStyle: {
+      default: 'Default',
+      card: 'Card',
+      google: 'Chrome'
     },
-    "transition": {
-      "list": {
-        "none": "None",
-        "fade": "Fade",
-        "slideLeft": "Slide Left",
-        "slideBottom": "Slide Bottom",
-        "slideTop": "Slide Top"
+    transition: {
+      list: {
+        none: 'None',
+        fade: 'Fade',
+        slideLeft: 'Slide Left',
+        slideBottom: 'Slide Bottom',
+        slideTop: 'Slide Top'
       }
     },
-    "actions": {
-      "resetConfig": "Reset Config",
-      "copyConfig": "Copy Config",
-      "copySuccess": "Configuration copied to clipboard, paste it into src/config/setting.ts file",
-      "copyFailed": "Copy failed, please try again",
-      "resetFailed": "Reset failed, please refresh the page and try again"
+    actions: {
+      resetConfig: 'Reset Config',
+      copyConfig: 'Copy Config',
+      copySuccess: 'Configuration copied to clipboard, paste it into src/config/setting.ts file',
+      copyFailed: 'Copy failed, please try again',
+      resetFailed: 'Reset failed, please refresh the page and try again'
     }
   },
-  "notice": {
-    "title": "Notice",
-    "btnRead": "Mark as read",
-    "bar": [
-      "Notice",
-      "Message",
-      "Todo"
-    ],
-    "text": [
-      "No"
-    ],
-    "viewAll": "View all"
+  notice: {
+    title: 'Notice',
+    btnRead: 'Mark as read',
+    bar: ['Notice', 'Message', 'Todo'],
+    text: ['No'],
+    viewAll: 'View all'
   },
-  "worktab": {
-    "btn": {
-      "refresh": "Refresh",
-      "fixed": "Fixed",
-      "unfixed": "Unfixed",
-      "closeLeft": "Close left",
-      "closeRight": "Close right",
-      "closeOther": "Close other",
-      "closeAll": "Close all"
+  worktab: {
+    btn: {
+      refresh: 'Refresh',
+      fixed: 'Fixed',
+      unfixed: 'Unfixed',
+      closeLeft: 'Close left',
+      closeRight: 'Close right',
+      closeOther: 'Close other',
+      closeAll: 'Close all'
     }
   },
-  "login": {
-    "leftView": {
-      "title": "A backend system of beauty and efficiency",
-      "subTitle": "A sleek and practical interface for a great user experience"
+  login: {
+    leftView: {
+      title: 'A backend system of beauty and efficiency',
+      subTitle: 'A sleek and practical interface for a great user experience'
     },
-    "title": "Welcome back",
-    "subTitle": "Please enter your account and password to login",
-    "roles": {
-      "super": "Super Admin",
-      "admin": "Admin",
-      "user": "User"
+    title: 'Welcome back',
+    subTitle: 'Please enter your account and password to login',
+    roles: {
+      super: 'Super Admin',
+      admin: 'Admin',
+      user: 'User'
     },
-    "placeholder": {
-      "username": "Please enter your account",
-      "password": "Please enter your password",
-      "slider": "Please slide to verify"
+    placeholder: {
+      username: 'Please enter your account',
+      password: 'Please enter your password',
+      slider: 'Please slide to verify'
     },
-    "sliderText": "Please slide to verify",
-    "sliderSuccessText": "Verification successful",
-    "rememberPwd": "Remember password",
-    "forgetPwd": "Forgot password",
-    "btnText": "Login",
-    "noAccount": "No account yet?",
-    "register": "Register",
-    "success": {
-      "title": "Login successful",
-      "message": "Welcome back"
+    sliderText: 'Please slide to verify',
+    sliderSuccessText: 'Verification successful',
+    rememberPwd: 'Remember password',
+    forgetPwd: 'Forgot password',
+    btnText: 'Login',
+    noAccount: 'No account yet?',
+    register: 'Register',
+    success: {
+      title: 'Login successful',
+      message: 'Welcome back'
     }
   },
-  "forgetPassword": {
-    "title": "Forgot password?",
-    "subTitle": "Enter your email to reset your password",
-    "placeholder": "Please enter your email",
-    "submitBtnText": "Submit",
-    "backBtnText": "Back"
+  forgetPassword: {
+    title: 'Forgot password?',
+    subTitle: 'Enter your email to reset your password',
+    placeholder: 'Please enter your email',
+    submitBtnText: 'Submit',
+    backBtnText: 'Back'
   },
-  "register": {
-    "title": "Create account",
-    "subTitle": "Welcome to join us, please fill in the following information to complete the registration",
-    "placeholder": {
-      "username": "Please enter your account",
-      "password": "Please enter your password",
-      "confirmPassword": "Please enter your password again"
+  register: {
+    title: 'Create account',
+    subTitle:
+      'Welcome to join us, please fill in the following information to complete the registration',
+    placeholder: {
+      username: 'Please enter your account',
+      password: 'Please enter your password',
+      confirmPassword: 'Please enter your password again'
     },
-    "rule": {
-      "confirmPasswordRequired": "Please enter your password again",
-      "passwordMismatch": "The two passwords are inconsistent!",
-      "usernameLength": "The length is 3 to 20 characters",
-      "passwordLength": "The password length cannot be less than 6 digits",
-      "agreementRequired": "Please agree to the privacy policy"
+    rule: {
+      confirmPasswordRequired: 'Please enter your password again',
+      passwordMismatch: 'The two passwords are inconsistent!',
+      usernameLength: 'The length is 3 to 20 characters',
+      passwordLength: 'The password length cannot be less than 6 digits',
+      agreementRequired: 'Please agree to the privacy policy'
     },
-    "agreeText": "I agree",
-    "privacyPolicy": "Privacy policy",
-    "submitBtnText": "Register",
-    "hasAccount": "Already have an account?",
-    "toLogin": "To login"
+    agreeText: 'I agree',
+    privacyPolicy: 'Privacy policy',
+    submitBtnText: 'Register',
+    hasAccount: 'Already have an account?',
+    toLogin: 'To login'
   },
-  "lockScreen": {
-    "pwdError": "Password error",
-    "lock": {
-      "inputPlaceholder": "Please input lock screen password",
-      "btnText": "Lock"
+  lockScreen: {
+    pwdError: 'Password error',
+    lock: {
+      inputPlaceholder: 'Please input lock screen password',
+      btnText: 'Lock'
     },
-    "unlock": {
-      "inputPlaceholder": "Please input unlock password",
-      "btnText": "Unlock",
-      "backBtnText": "Back to login"
+    unlock: {
+      inputPlaceholder: 'Please input unlock password',
+      btnText: 'Unlock',
+      backBtnText: 'Back to login'
     }
   },
-  "greeting": {
-    "dawn": "Good morning!",
-    "morning": "Good morning!",
-    "afternoon": "Good afternoon!",
-    "evening": "Good evening!"
+  greeting: {
+    dawn: 'Good morning!',
+    morning: 'Good morning!',
+    afternoon: 'Good afternoon!',
+    evening: 'Good evening!'
   },
-  "exceptionPage": {
-    "403": "Sorry, you do not have permission to access this page",
-    "404": "Sorry, the page you are trying to access does not exist",
-    "500": "Sorry, there was an error on the server",
-    "gohome": "Go Home"
+  exceptionPage: {
+    '403': 'Sorry, you do not have permission to access this page',
+    '404': 'Sorry, the page you are trying to access does not exist',
+    '500': 'Sorry, there was an error on the server',
+    gohome: 'Go Home'
   },
-  "menus": {
-    "login": {
-      "title": "Login"
+  menus: {
+    login: {
+      title: 'Login'
     },
-    "register": {
-      "title": "Register"
+    register: {
+      title: 'Register'
     },
-    "forgetPassword": {
-      "title": "Forget Password"
+    forgetPassword: {
+      title: 'Forget Password'
     },
-    "outside": {
-      "title": "Outside"
+    outside: {
+      title: 'Outside'
     },
-    "dashboard": {
-      "title": "Dashboard",
-      "console": "Console",
-      "analysis": "Analysis",
-      "ecommerce": "Ecommerce"
+    dashboard: {
+      title: 'Dashboard',
+      console: 'Console',
+      analysis: 'Analysis',
+      ecommerce: 'Ecommerce'
     },
-    "widgets": {
-      "title": "Components",
-      "icon": "Icon",
-      "imageCrop": "Image Crop",
-      "excel": "Excel Import Export",
-      "video": "Video Player",
-      "countTo": "Count To",
-      "wangEditor": "Wang Editor",
-      "watermark": "Watermark",
-      "contextMenu": "Context Menu",
-      "qrcode": "QR Code",
-      "drag": "Drag",
-      "textScroll": "Text Scroll",
-      "fireworks": "Fireworks",
-      "elementUI": "Component Overview"
+    widgets: {
+      title: 'Components',
+      icon: 'Icon',
+      imageCrop: 'Image Crop',
+      excel: 'Excel Import Export',
+      video: 'Video Player',
+      countTo: 'Count To',
+      wangEditor: 'Wang Editor',
+      watermark: 'Watermark',
+      contextMenu: 'Context Menu',
+      qrcode: 'QR Code',
+      drag: 'Drag',
+      textScroll: 'Text Scroll',
+      fireworks: 'Fireworks',
+      elementUI: 'Component Overview'
     },
-    "template": {
-      "title": "Template Center",
-      "chat": "Chat",
-      "cards": "Cards",
-      "banners": "Banners",
-      "charts": "Charts",
-      "map": "Map",
-      "calendar": "Calendar",
-      "pricing": "Pricing"
+    template: {
+      title: 'Template Center',
+      chat: 'Chat',
+      cards: 'Cards',
+      banners: 'Banners',
+      charts: 'Charts',
+      map: 'Map',
+      calendar: 'Calendar',
+      pricing: 'Pricing'
     },
-    "article": {
-      "title": "Article",
-      "articleList": "Article List",
-      "articleDetail": "Article Detail",
-      "comment": "Comment",
-      "articlePublish": "Article Publish"
+    article: {
+      title: 'Article',
+      articleList: 'Article List',
+      articleDetail: 'Article Detail',
+      comment: 'Comment',
+      articlePublish: 'Article Publish'
     },
-    "result": {
-      "title": "Result Page",
-      "success": "Success",
-      "fail": "Fail"
+    result: {
+      title: 'Result Page',
+      success: 'Success',
+      fail: 'Fail'
     },
-    "exception": {
-      "title": "Exception",
-      "forbidden": "403",
-      "notFound": "404",
-      "serverError": "500"
+    exception: {
+      title: 'Exception',
+      forbidden: '403',
+      notFound: '404',
+      serverError: '500'
     },
-    "examples": {
-      "title": "Feature Examples",
-      "tabs": "Tabs",
-      "tablesBasic": "Basic Tables",
-      "tables": "Advanced Tables",
-      "tablesTree": "Tree Table Layout",
-      "forms": "Forms",
-      "searchBar": "Search Form",
-      "socketChat": "Socket Connection",
-      "permission": {
-        "title": "Frontend Permission",
-        "switchRole": "Toggle Auth",
-        "buttonAuth": "Button Authority",
-        "pageVisibility": "Super Admin Visibility"
+    examples: {
+      title: 'Feature Examples',
+      tabs: 'Tabs',
+      tablesBasic: 'Basic Tables',
+      tables: 'Advanced Tables',
+      tablesTree: 'Tree Table Layout',
+      forms: 'Forms',
+      searchBar: 'Search Form',
+      socketChat: 'Socket Connection',
+      permission: {
+        title: 'Frontend Permission',
+        switchRole: 'Toggle Auth',
+        buttonAuth: 'Button Authority',
+        pageVisibility: 'Super Admin Visibility'
       }
     },
-    "system": {
-      "title": "System Settings",
-      "user": "User Manage",
-      "role": "Role Manage",
-      "userCenter": "User Center",
-      "menu": "Menu Manage",
-      "nested": "Nested Menu",
-      "menu1": "Menu 1",
-      "menu2": "Menu 2",
-      "menu21": "Menu 2-1",
-      "menu3": "Menu 3",
-      "menu31": "Menu 3-1",
-      "menu32": "Menu 3-2",
-      "menu321": "Menu 3-2-1"
+    system: {
+      title: 'System Settings',
+      user: 'User Manage',
+      role: 'Role Manage',
+      userCenter: 'User Center',
+      menu: 'Menu Manage',
+      nested: 'Nested Menu',
+      menu1: 'Menu 1',
+      menu2: 'Menu 2',
+      menu21: 'Menu 2-1',
+      menu3: 'Menu 3',
+      menu31: 'Menu 3-1',
+      menu32: 'Menu 3-2',
+      menu321: 'Menu 3-2-1'
     },
-    "safeguard": {
-      "title": "Safeguard",
-      "server": "Server"
+    safeguard: {
+      title: 'Safeguard',
+      server: 'Server'
     },
-    "plan": {
-      "title": "Version Plan",
-      "log": "Change Log"
+    plan: {
+      title: 'Version Plan',
+      log: 'Change Log'
     },
-    "help": {
-      "title": "Help Center",
-      "document": "Document",
-      "liteVersion": "Lite Version",
-      "oldVersion": "v2.6.1 Version"
+    help: {
+      title: 'Help Center',
+      document: 'Document',
+      liteVersion: 'Lite Version',
+      oldVersion: 'v2.6.1 Version'
     },
-    "product": {
-      "title": "Product Management",
-      "brand": {
-        "title": "Brand Management",
-        "records": "records"
+    product: {
+      title: 'Product Management',
+      brand: {
+        title: 'Brand Management',
+        records: 'records'
       },
-      "type": {
-        "title": "Type Management",
-        "stats": {
-          "total": "Total Categories",
-          "product": "Product Categories",
-          "vehicle": "Vehicle Models",
-          "new": "Newly Added"
+      type: {
+        title: 'Type Management',
+        stats: {
+          total: 'Total Categories',
+          product: 'Product Categories',
+          vehicle: 'Vehicle Models',
+          new: 'Newly Added'
         },
-        "tabs": {
-          "product": "Product",
-          "vehicle": "Vehicle"
+        tabs: {
+          product: 'Product',
+          vehicle: 'Vehicle'
         },
-        "table": {
-          "titleProduct": "Product Categories",
-          "titleVehicle": "Vehicle Types"
+        table: {
+          titleProduct: 'Product Categories',
+          titleVehicle: 'Vehicle Types'
         }
       },
-      "list": {
-        "title": "Product List",
-        "stats": {
-          "total": "Total Products",
-          "stock": "Total Stock",
-          "active": "In Business",
-          "outOfStock": "Out of Stock"
+      list: {
+        title: 'Product List',
+        stats: {
+          total: 'Total Products',
+          stock: 'Total Stock',
+          active: 'In Business',
+          outOfStock: 'Out of Stock'
         },
-        "tabs": {
-          "all": "All"
+        tabs: {
+          all: 'All'
         },
-        "table": {
-          "title": "Product inventory list"
+        table: {
+          title: 'Product inventory list'
         }
       }
     },
-    "customer": {
-      "title": "Customer Management",
-      "potential": "Potential customers",
-      "profile": "Customer profile",
-      "progress": "Progress",
-      "asset": "Asset",
-      "care": "Customer care",
-      "contact": "Contact",
-      "booking": "Booking"
+    customer: {
+      title: 'Customer Management',
+      potential: 'Potential customers',
+      profile: 'Customer profile',
+      progress: 'Progress',
+      asset: 'Asset',
+      care: 'Customer care',
+      contact: 'Contact',
+      booking: 'Booking'
     },
-    "marketing": {
-      "title": "Marketing",
-      "banner": "Banners",
-      "conversion": "Conversion tools"
+    marketing: {
+      title: 'Marketing',
+      banner: 'Banners',
+      conversion: 'Conversion tools'
     },
-    "hr": {
-      "title": "HR Management",
-      "employees": "Employees",
-      "commissionPolicy": "Commission Policy",
-      "payroll": "Payroll",
-      "kpi": "KPI Management"
+    hr: {
+      title: 'HR Management',
+      employees: 'Employees',
+      commissionPolicy: 'Commission Policy',
+      payroll: 'Payroll',
+      kpi: 'KPI Management'
     }
   },
-  "table": {
-    "form": {
-      "reset": "Reset",
-      "submit": "Submit"
+  table: {
+    form: {
+      reset: 'Reset',
+      submit: 'Submit'
     },
-    "searchBar": {
-      "reset": "Reset",
-      "search": "Search",
-      "expand": "Expand",
-      "collapse": "Collapse",
-      "searchInputPlaceholder": "Please enter",
-      "searchSelectPlaceholder": "Please select"
+    searchBar: {
+      reset: 'Reset',
+      search: 'Search',
+      expand: 'Expand',
+      collapse: 'Collapse',
+      searchInputPlaceholder: 'Please enter',
+      searchSelectPlaceholder: 'Please select'
     },
-    "selection": "Select",
-    "sizeOptions": {
-      "small": "Compact",
-      "default": "Default",
-      "large": "Loose"
+    selection: 'Select',
+    sizeOptions: {
+      small: 'Compact',
+      default: 'Default',
+      large: 'Loose'
     },
-    "column": {
-      "selection": "Select",
-      "expand": "Expand",
-      "index": "Index"
+    column: {
+      selection: 'Select',
+      expand: 'Expand',
+      index: 'Index'
     },
-    "zebra": "Zebra",
-    "border": "Border",
-    "headerBackground": "Header BG"
+    zebra: 'Zebra',
+    border: 'Border',
+    headerBackground: 'Header BG'
   },
-  "admin": {
-    "t1": "Đăng tải",
-    "t2": "bạncủadanhtên",
-    "t3": "Nói gì đó đơn giản...",
-    "t4": "TraLoi",
-    "t5": "Hủy",
-    "t6": "Đăng tải",
-    "t7": "bạncủadanhtên",
-    "t8": "Câu trả lời của bạn...",
-    "t9": "Xem thêm",
-    "t10": "Nhập file Excel",
-    "t11": "HeThong đã khóa",
-    "t12": "Phát hiện Developer Tools đang mở",
-    "t13": "Vì an toàn hệ thống, vui lòng đóng Developer Tools để tiếp tục sử dụng",
-    "t14": "Chọn ảnh",
-    "t15": "Nhấn vào tôi",
-    "t16": "Màu sắc tùy chỉnh",
-    "t17": "NoiDung thẻ",
-    "t18": "Chức năng Quản trị viên cấp cao",
-    "t19": "Chức năng Quản trị viên",
-    "t20": "*     NoiDung hiển thị cho tất cả người dùng đăng nhập\n *",
-    "t21": "Tường lời nhắn",
-    "t22": "Mỗi lời nhắn đều ghi lại ý tưởng của bạn và cung cấp cho chúng tôi những kỷ niệm quý giá",
-    "t23": "ChiTiet",
-    "t24": "Thêm bài viết mới",
-    "t25": "Chỉnh sửa",
-    "t26": "Nhập tiêu đề bài viết để tìm kiếm",
-    "t27": "CaiDat đăng tải",
-    "t28": "Nhấn để tải lên ảnh bìa",
-    "t29": "xâynghịthướctấc 16:9，jpg/png cáchkiểu",
-    "t30": "Vui lòng nhập tiêu đề bài viết (tối đa 100 ký tự)",
-    "t31": "Vui lòng chọn loại bài viết",
-    "t32": "Ảnh bìa",
-    "t33": "Hiển thị",
-    "t34": "TaiKhoan",
-    "t35": "NhatKy cập nhật",
-    "t36": "Cần đăng nhập lại",
-    "t37": "Độ hài lòng khách hàng",
-    "t38": "Phân bố doanh số toàn quốc",
-    "t39": "Mục tiêu và thực tế",
-    "t40": "Doanh số hôm nay",
-    "t41": "Tổng kết doanh số",
-    "t42": "Xuất file",
-    "t43": "So với hôm qua",
-    "t44": "SanPham hot",
-    "t45": "Tên sản phẩm",
-    "t46": "Lượng bán",
-    "t47": "Tổng thu nhập",
-    "t48": "PhanTich khách truy cập",
-    "t49": "Khối lượng công việc và mức độ dịch vụ",
-    "t50": "vềmụcmục",
-    "t51": "khiếndùngrồi Vue3、TypeScript、Vite、Element Plus bằngtrướcdọckỹthuật",
-    "t52": "TongQuan người dùng",
-    "t53": "So với tuần trước",
-    "t54": "Chúng tôi đã tạo nhiều tùy chọn cho bạn, có thể kết hợp chúng để tạo ra trang web hoàn hảo",
-    "t55": "So với tuần trước",
-    "t56": "Hoạt động",
-    "t57": "Thêm mới",
-    "t58": "NguoiDung mới",
-    "t59": "Tăng trưởng tháng này",
-    "t60": "Tháng này",
-    "t61": "Tháng trước",
-    "t62": "Năm nay",
-    "t63": "Avatar",
-    "t64": "Lượt truy cập",
-    "t65": "Tăng trưởng năm nay",
-    "t66": "đạilàmviệcmục",
-    "t67": "Chờ xử lý",
-    "t68": "Doanh thu hàng năm",
-    "t69": "ThongKe theo quý",
-    "t70": "Bán hàng trực tuyến",
-    "t71": "Bán hàng trực tiếp",
-    "t72": "Tỷ lệ chuyển đổi giỏ hàng",
-    "t73": "SanPham bán chạy",
-    "t74": "Xếp hạng doanh số tuần này",
-    "t75": "tácbánlượng",
-    "t76": "Giao dịch gần đây",
-    "t77": "Tăng trưởng",
-    "t78": "Ví dụ component biểu mẫu",
-    "t79": "Tôi là component được render từ slot",
-    "t80": "Ví dụ cơ bản (mặc định thu gọn)",
-    "t81": "Ví dụ đầy đủ (mặc định mở rộng)",
-    "t82": "Tôi là component được render từ slot",
-    "t83": "Trang này minh họa việc kiểm soát quyền ở cấp độ nút, các nút hiển thị sẽ khác nhau tùy theo vai trò người dùng.",
-    "t84": "ThongTin quyền của người dùng hiện tại",
-    "t85": "Trang này chỉ dành cho",
-    "t86": "Quản trị viên cấp cao",
-    "t87": "NguoiDungHiển thị，diễnthịtrangmặtcấptínhcủaQuyenHankhốngchế。 nếuquảbạnnăngxemđếnnàytrangmặt，Mô tảbạnômcóứngcủaTruy cậpQuyenHan。",
-    "t88": "Xác minh quyền thành công",
-    "t89": "Minh họa chuyển đổi quyền",
-    "t90": "Nhấn nút bên dưới để chuyển đổi vai trò người dùng, mô phỏng hiệu ứng đăng nhập khác nhau. Thay đổi này sẽ ảnh hưởng đến toàn bộ menu và quyền của nút.",
-    "t91": "NguoiDung hiện đang đăng nhập",
-    "t92": "WebSocket liềntiếpVí dụ",
-    "t93": "ở WebSocketClient củathựcgiờthôngnhắndiễnthị，chiếctrìliềntiếpQuản lý、TinNhanBộphátvàTrạng tháiGiámkhống",
-    "t94": "ThongKe tin nhắn",
-    "t95": "Số lượng tin nhắn nhận được",
-    "t96": "Trạng thái kết nối",
-    "t97": "Trạng thái kết nối WebSocket hiện tại",
-    "t98": "Số lần kết nối lại",
-    "t99": "Số lần thử tự động kết nối lại",
-    "t100": "CauHinh kết nối",
-    "t101": "Hiển thị đầy đủ năng lực của bảng nâng cao",
-    "t102": "Cache thông minh",
-    "t103": "TimKiem chống rung (debounce)",
-    "t104": "Nhiều kiểu làm mới",
-    "t105": "XuLy lỗi",
-    "t106": "Cây phân loại",
-    "t107": "ThaoTac thẻ tab",
-    "t108": "sửasửa",
-    "t109": "Đặt lại",
-    "t110": "Lấy thông tin thẻ tab hiện tại",
-    "t111": "Đóng thẻ hiện tại",
-    "t112": "Đóng các thẻ khác",
-    "t113": "Đóng tất cả thẻ",
-    "t114": "Vui lòng nhập tiêu đề thẻ tab mới",
-    "t115": "NoiDung bạn gửi có các lỗi sau:",
-    "t116": "TaiKhoan của bạn đã bị phong tỏa",
-    "t117": "TaiKhoan của bạn chưa đủ điều kiện đăng ký",
-    "t118": "GửiThatBai",
-    "t119": "Đã gửi yêu cầu, đang chờ phòng ban phê duyệt.",
-    "t120": "GửiThanhCong",
-    "t121": "Khởi động",
-    "t122": "Tắt máy",
-    "t123": "Khởi động lại",
-    "t124": "Thêm menu",
-    "t125": "Menu",
-    "t126": "Nút",
-    "t127": "Menu-1",
-    "t128": "Menu-2-1",
-    "t129": "Menu-3-1",
-    "t130": "Menu-3-2-1",
-    "t131": "Thêm vai trò mới",
-    "t132": "Hủy",
-    "t133": "Gửi",
-    "t134": "dialogType === 'add' ? 'Thêm vai trò mới' : 'Chỉnh sửaVaiTro'",
-    "t135": "Tên vai trò",
-    "t136": "Vui lòng nhập tên vai trò",
-    "t137": "Mã vai trò",
-    "t138": "Vui lòng nhập mã vai trò",
-    "t139": "Mô tả",
-    "t140": "Vui lòng nhập mô tả vai trò",
-    "t141": "Bật",
-    "t142": "QuyenHan menu",
-    "t143": "Thêm người dùng mới",
-    "t144": "Hủy",
-    "t145": "Gửi",
-    "t146": "dialogType === 'add' ? 'Thêm mớiNguoiDung' : 'Chỉnh sửaNguoiDung'",
-    "t147": "Tên người dùng",
-    "t148": "Vui lòng nhậpTên người dùng",
-    "t149": "Số điện thoại",
-    "t150": "Vui lòng nhậpSố điện thoại",
-    "t151": "GioiTinh",
-    "t152": "Nam",
-    "t153": "Nữ",
-    "t154": "VaiTro",
-    "t155": "Tập trung vào trải nghiệm người dùng và thiết kế trực quan",
-    "t156": "Chuyên gia tương tác",
-    "t157": "Thành phố Thâm Quyến, Quảng Đông",
-    "t158": "ByteDance - Phòng nền tảng - UED",
-    "t159": "Tag",
-    "t160": "CaiDat cơ bản",
-    "t161": "Đổi mật khẩu",
-    "t162": "Họ tên",
-    "t163": "GioiTinh",
-    "t164": "Biệt danh",
-    "t165": "Email",
-    "t166": "taymáy",
-    "t167": "DiaChi",
-    "t168": "Giới thiệu cá nhân",
-    "t169": "Mật khẩu hiện tại",
-    "t170": "Mật khẩu mới",
-    "t171": "Xác nhận mật khẩu mới",
-    "t172": "Cơ bản & Tùy chỉnhNút+Nềnmàu",
-    "t173": "Tùy chỉnhHình ảnh & khiếndùng slot Tùy chỉnhNoiDung",
-    "t174": "HeThong component thông minh",
-    "t175": "Trạng thái vận hành trung tâm dữ liệu",
-    "t176": "hoanchàokhiếndùng Art Design Pro",
-    "t177": "Khám phá kế hoạch vì sao",
-    "t178": "Thẻ thống kê (văn bản)",
-    "t179": "Thẻ thống kê (số cuộn)",
-    "t180": "Thẻ thống kê (kiểu tùy chỉnh)",
-    "t181": "Thẻ tiến trình",
-    "t182": "Thẻ tiến trình (biểu tượng)",
-    "t183": "Thẻ biểu đồ (nhỏ)",
-    "t184": "Thẻ biểu đồ (lớn)",
-    "t185": "Thẻ danh sách dữ liệu",
-    "t186": "Thẻ hình ảnh",
-    "t187": "NguoiDung mới",
-    "t188": "xemlượng",
-    "t189": "phấnsợisố",
-    "t190": "phấnsợilượng",
-    "t191": "NguoiDung mới",
-    "t192": "xemlượng",
-    "t193": "phấnsợisố",
-    "t194": "phấnsợilượng",
-    "t195": "Việc cần làmviệcmục",
-    "t196": "Hoạt động gần đây",
-    "t197": "Giao dịch gần đây",
-    "t198": "Biểu đồ",
-    "t199": "Biểu đồ cột (đơn lẻ)",
-    "t200": "Biểu đồ cột (nhiều nhóm)",
-    "t201": "Biểu đồ cột (chồng)",
-    "t202": "đườngảnh",
-    "t203": "Biểu đồ đường (nền gradient)",
-    "t204": "Biểu đồ đường (nền gradient)",
-    "t205": "Biểu đồ cột (ngang)",
-    "t206": "Biểu đồ cột (ngang)",
-    "t207": "Biểu đồ cột (ngang chồng)",
-    "t208": "Biểu đồ vòng",
-    "t209": "Biểu đồ vòng",
-    "t210": "Biểu đồ tròn",
-    "t211": "Biểu đồ phân tán",
-    "t212": "Biểu đồ radar",
-    "t213": "Biểu đồ nến (K-line)",
-    "t214": "Biểu đồ cột chồng hai chiều",
-    "t215": "SapXep theo",
-    "t216": "SapXep theo thời gian",
-    "t217": "SapXep theo tên",
-    "t218": "Đánh dấu tất cả đã đọc",
-    "t219": "TimKiem liên hệ",
-    "t220": "Đang tải...",
-    "t221": "siêuqua 53,476 vịnhắnlạicủamởphát",
-    "t222": "Và sự lựa chọn của nhiều tập đoàn công nghệ lớn",
-    "t223": "quyểnmụcmụcở MIT hiệpnghịmởnguồnmiễnphí，khitrướctrangmặtvìđịnhgiámôbản，chỉlàmdiễnthịdùngđường",
-    "t224": "Thương mại miễn phí",
-    "t225": "/ThanhToan một lần",
-    "t226": "Mua ngay",
-    "t227": "Kích hoạt menu chuột phải",
-    "t228": "ở VueUse useTransition của Count-To Component",
-    "t229": "caotínhnăngSốCuộnHoatAnhComponent，chiếctrìĐầy đủcủaHoatAnhkhốngchếvàSuKienLắng nghe",
-    "t230": "Cơ bảndùngpháp",
-    "t231": "Có tiền tố hậu tố",
-    "t232": "Dấu thập phân và dấu phân cách",
-    "t233": "So sánh hiệu ứng hoạt ảnh",
-    "t234": "Kích hoạt tất cả hoạt ảnh",
-    "t235": "Nút điều khiển",
-    "t236": "Bắt đầu",
-    "t237": "TamDung",
-    "t238": "Đặt lại",
-    "t239": "Cơ bảnVí dụ",
-    "t240": "✨ Bắn pháo hoa nhỏ",
-    "t241": "🎉 Mở bao lì xì may mắn",
-    "t242": "🎆 Show pháo hoa rực rỡ",
-    "t243": "❄️ Tuyết rơi nhẹ",
-    "t244": "❄️ Bão tuyết lãng mạn",
-    "t245": "Component hiệu ứng pháo hoa đã được đăng ký toàn cục, thời điểm kích hoạt do file cấu hình quyết định. Ngày trong cấu hình mặc định đã qua, sẽ không tự động kích hoạt lại.",
-    "t246": "MacDinhHiển thịHình họcảnhhình，Có thểlấyCauHinhHình ảnh，Hình ảnhcầncầngợitrướctại\r\n        src/components/core/layouts/art-fireworks-effect/index.vue vănphần tửTrướcĐịnh nghĩa",
-    "t247": "tại src/config/festival.ts vănphần tửtrong，Có thểlấyCauHinhtiếtngàyvàđốiứngcủaKiểu pháo hoa",
-    "t248": "command + shift + p hoặc ctrl + shift + p",
-    "t249": "Mô tả component pháo hoa",
-    "t250": "Hiển thịgiờmáy",
-    "t251": "Kiểu pháo hoa",
-    "t252": "File cấu hình",
-    "t253": "khoáinhanhphím",
-    "t254": "Icon",
-    "t255": "v.3.0 bảnquyểnIconThư việnNâng cấpvì iconify，Có thểtại",
-    "t256": "trongTimKiem，chiếctrìđaloạiIconThư viện，nếu Remix Icon, Solar, Tabler Icons bằng。",
-    "t257": "vìĐảm bảoHeThongIconPhong cáchthốngmột，mụcmụctoànbộthudùng Remix Icon IconThư viện，Có thểtại",
-    "t258": "hoặc",
-    "t259": "TrangChu Remix Icon",
-    "t260": "TimKiem để sử dụng.",
-    "t261": "Ví dụ sử dụng",
-    "t262": "Sử dụng cơ bản",
-    "t263": "Kích thước tùy chỉnh",
-    "t264": "Màu sắc tùy chỉnh",
-    "t265": "Sử dụng kết hợp",
-    "t266": "'Cắt ảnh'",
-    "t267": "Nhấn vào tôi",
-    "t268": "Truy cập tài liệu chính thức\"\r\n      showClose\r\n    />",
-    "t269": "Art Design Pro làmộtkhoảnkiêmdụng cụthiếtkếmỹhọcvớicaohiệumởphátcủasauchiếcHeThong <a target='_blank' href='https://www.artd.pro/docs/'>{{ $t('admin.t267') }}</a>{{ $t('admin.t268') }}<!-- khiếndùngKhôngcùngcủaloạikiểu -->\r\n    <ArtTextScroll type=",
-    "t270": "Đây là một thông báo cuộn loại thành công",
-    "t271": "Đây là một thông báo cuộn loại cảnh báo",
-    "t272": "Đây là một thông báo cuộn loại nguy hiểm",
-    "t273": "Đây là một thông báo cuộn loại thông tin",
-    "t274": "Đây là một thông báo cuộn có thể đóng",
-    "t275": "Đây là một thông báo cuộn tốc độ chậm, cuộn sang phải",
-    "t276": "Đây là thông báo chỉ cuộn khi văn bản tràn, nếu không sẽ giữ tĩnh",
-    "t277": "Đây là một thông báo cuộn lên trên",
-    "t278": "Đây là một thông báo cuộn xuống dưới",
-    "t279": "🛠️ Trình soạn thảo đầy đủ thanh công cụ",
-    "t280": "xóakhông",
-    "t281": "Lấy nội dung",
-    "t282": "CaiDat ví dụ"
+  admin: {
+    t1: 'Đăng tải',
+    t2: 'bạncủadanhtên',
+    t3: 'Nói gì đó đơn giản...',
+    t4: 'TraLoi',
+    t5: 'Hủy',
+    t6: 'Đăng tải',
+    t7: 'bạncủadanhtên',
+    t8: 'Câu trả lời của bạn...',
+    t9: 'Xem thêm',
+    t10: 'Nhập file Excel',
+    t11: 'HeThong đã khóa',
+    t12: 'Phát hiện Developer Tools đang mở',
+    t13: 'Vì an toàn hệ thống, vui lòng đóng Developer Tools để tiếp tục sử dụng',
+    t14: 'Chọn ảnh',
+    t15: 'Nhấn vào tôi',
+    t16: 'Màu sắc tùy chỉnh',
+    t17: 'NoiDung thẻ',
+    t18: 'Chức năng Quản trị viên cấp cao',
+    t19: 'Chức năng Quản trị viên',
+    t20: '*     NoiDung hiển thị cho tất cả người dùng đăng nhập\n *',
+    t21: 'Tường lời nhắn',
+    t22: 'Mỗi lời nhắn đều ghi lại ý tưởng của bạn và cung cấp cho chúng tôi những kỷ niệm quý giá',
+    t23: 'ChiTiet',
+    t24: 'Thêm bài viết mới',
+    t25: 'Chỉnh sửa',
+    t26: 'Nhập tiêu đề bài viết để tìm kiếm',
+    t27: 'CaiDat đăng tải',
+    t28: 'Nhấn để tải lên ảnh bìa',
+    t29: 'xâynghịthướctấc 16:9，jpg/png cáchkiểu',
+    t30: 'Vui lòng nhập tiêu đề bài viết (tối đa 100 ký tự)',
+    t31: 'Vui lòng chọn loại bài viết',
+    t32: 'Ảnh bìa',
+    t33: 'Hiển thị',
+    t34: 'TaiKhoan',
+    t35: 'NhatKy cập nhật',
+    t36: 'Cần đăng nhập lại',
+    t37: 'Độ hài lòng khách hàng',
+    t38: 'Phân bố doanh số toàn quốc',
+    t39: 'Mục tiêu và thực tế',
+    t40: 'Doanh số hôm nay',
+    t41: 'Tổng kết doanh số',
+    t42: 'Xuất file',
+    t43: 'So với hôm qua',
+    t44: 'SanPham hot',
+    t45: 'Tên sản phẩm',
+    t46: 'Lượng bán',
+    t47: 'Tổng thu nhập',
+    t48: 'PhanTich khách truy cập',
+    t49: 'Khối lượng công việc và mức độ dịch vụ',
+    t50: 'vềmụcmục',
+    t51: 'khiếndùngrồi Vue3、TypeScript、Vite、Element Plus bằngtrướcdọckỹthuật',
+    t52: 'TongQuan người dùng',
+    t53: 'So với tuần trước',
+    t54: 'Chúng tôi đã tạo nhiều tùy chọn cho bạn, có thể kết hợp chúng để tạo ra trang web hoàn hảo',
+    t55: 'So với tuần trước',
+    t56: 'Hoạt động',
+    t57: 'Thêm mới',
+    t58: 'NguoiDung mới',
+    t59: 'Tăng trưởng tháng này',
+    t60: 'Tháng này',
+    t61: 'Tháng trước',
+    t62: 'Năm nay',
+    t63: 'Avatar',
+    t64: 'Lượt truy cập',
+    t65: 'Tăng trưởng năm nay',
+    t66: 'đạilàmviệcmục',
+    t67: 'Chờ xử lý',
+    t68: 'Doanh thu hàng năm',
+    t69: 'ThongKe theo quý',
+    t70: 'Bán hàng trực tuyến',
+    t71: 'Bán hàng trực tiếp',
+    t72: 'Tỷ lệ chuyển đổi giỏ hàng',
+    t73: 'SanPham bán chạy',
+    t74: 'Xếp hạng doanh số tuần này',
+    t75: 'tácbánlượng',
+    t76: 'Giao dịch gần đây',
+    t77: 'Tăng trưởng',
+    t78: 'Ví dụ component biểu mẫu',
+    t79: 'Tôi là component được render từ slot',
+    t80: 'Ví dụ cơ bản (mặc định thu gọn)',
+    t81: 'Ví dụ đầy đủ (mặc định mở rộng)',
+    t82: 'Tôi là component được render từ slot',
+    t83: 'Trang này minh họa việc kiểm soát quyền ở cấp độ nút, các nút hiển thị sẽ khác nhau tùy theo vai trò người dùng.',
+    t84: 'ThongTin quyền của người dùng hiện tại',
+    t85: 'Trang này chỉ dành cho',
+    t86: 'Quản trị viên cấp cao',
+    t87: 'NguoiDungHiển thị，diễnthịtrangmặtcấptínhcủaQuyenHankhốngchế。 nếuquảbạnnăngxemđếnnàytrangmặt，Mô tảbạnômcóứngcủaTruy cậpQuyenHan。',
+    t88: 'Xác minh quyền thành công',
+    t89: 'Minh họa chuyển đổi quyền',
+    t90: 'Nhấn nút bên dưới để chuyển đổi vai trò người dùng, mô phỏng hiệu ứng đăng nhập khác nhau. Thay đổi này sẽ ảnh hưởng đến toàn bộ menu và quyền của nút.',
+    t91: 'NguoiDung hiện đang đăng nhập',
+    t92: 'WebSocket liềntiếpVí dụ',
+    t93: 'ở WebSocketClient củathựcgiờthôngnhắndiễnthị，chiếctrìliềntiếpQuản lý、TinNhanBộphátvàTrạng tháiGiámkhống',
+    t94: 'ThongKe tin nhắn',
+    t95: 'Số lượng tin nhắn nhận được',
+    t96: 'Trạng thái kết nối',
+    t97: 'Trạng thái kết nối WebSocket hiện tại',
+    t98: 'Số lần kết nối lại',
+    t99: 'Số lần thử tự động kết nối lại',
+    t100: 'CauHinh kết nối',
+    t101: 'Hiển thị đầy đủ năng lực của bảng nâng cao',
+    t102: 'Cache thông minh',
+    t103: 'TimKiem chống rung (debounce)',
+    t104: 'Nhiều kiểu làm mới',
+    t105: 'XuLy lỗi',
+    t106: 'Cây phân loại',
+    t107: 'ThaoTac thẻ tab',
+    t108: 'sửasửa',
+    t109: 'Đặt lại',
+    t110: 'Lấy thông tin thẻ tab hiện tại',
+    t111: 'Đóng thẻ hiện tại',
+    t112: 'Đóng các thẻ khác',
+    t113: 'Đóng tất cả thẻ',
+    t114: 'Vui lòng nhập tiêu đề thẻ tab mới',
+    t115: 'NoiDung bạn gửi có các lỗi sau:',
+    t116: 'TaiKhoan của bạn đã bị phong tỏa',
+    t117: 'TaiKhoan của bạn chưa đủ điều kiện đăng ký',
+    t118: 'GửiThatBai',
+    t119: 'Đã gửi yêu cầu, đang chờ phòng ban phê duyệt.',
+    t120: 'GửiThanhCong',
+    t121: 'Khởi động',
+    t122: 'Tắt máy',
+    t123: 'Khởi động lại',
+    t124: 'Thêm menu',
+    t125: 'Menu',
+    t126: 'Nút',
+    t127: 'Menu-1',
+    t128: 'Menu-2-1',
+    t129: 'Menu-3-1',
+    t130: 'Menu-3-2-1',
+    t131: 'Thêm vai trò mới',
+    t132: 'Hủy',
+    t133: 'Gửi',
+    t134: "dialogType === 'add' ? 'Thêm vai trò mới' : 'Chỉnh sửaVaiTro'",
+    t135: 'Tên vai trò',
+    t136: 'Vui lòng nhập tên vai trò',
+    t137: 'Mã vai trò',
+    t138: 'Vui lòng nhập mã vai trò',
+    t139: 'Mô tả',
+    t140: 'Vui lòng nhập mô tả vai trò',
+    t141: 'Bật',
+    t142: 'QuyenHan menu',
+    t143: 'Thêm người dùng mới',
+    t144: 'Hủy',
+    t145: 'Gửi',
+    t146: "dialogType === 'add' ? 'Thêm mớiNguoiDung' : 'Chỉnh sửaNguoiDung'",
+    t147: 'Tên người dùng',
+    t148: 'Vui lòng nhậpTên người dùng',
+    t149: 'Số điện thoại',
+    t150: 'Vui lòng nhậpSố điện thoại',
+    t151: 'GioiTinh',
+    t152: 'Nam',
+    t153: 'Nữ',
+    t154: 'VaiTro',
+    t155: 'Tập trung vào trải nghiệm người dùng và thiết kế trực quan',
+    t156: 'Chuyên gia tương tác',
+    t157: 'Thành phố Thâm Quyến, Quảng Đông',
+    t158: 'ByteDance - Phòng nền tảng - UED',
+    t159: 'Tag',
+    t160: 'CaiDat cơ bản',
+    t161: 'Đổi mật khẩu',
+    t162: 'Họ tên',
+    t163: 'GioiTinh',
+    t164: 'Biệt danh',
+    t165: 'Email',
+    t166: 'taymáy',
+    t167: 'DiaChi',
+    t168: 'Giới thiệu cá nhân',
+    t169: 'Mật khẩu hiện tại',
+    t170: 'Mật khẩu mới',
+    t171: 'Xác nhận mật khẩu mới',
+    t172: 'Cơ bản & Tùy chỉnhNút+Nềnmàu',
+    t173: 'Tùy chỉnhHình ảnh & khiếndùng slot Tùy chỉnhNoiDung',
+    t174: 'HeThong component thông minh',
+    t175: 'Trạng thái vận hành trung tâm dữ liệu',
+    t176: 'hoanchàokhiếndùng Art Design Pro',
+    t177: 'Khám phá kế hoạch vì sao',
+    t178: 'Thẻ thống kê (văn bản)',
+    t179: 'Thẻ thống kê (số cuộn)',
+    t180: 'Thẻ thống kê (kiểu tùy chỉnh)',
+    t181: 'Thẻ tiến trình',
+    t182: 'Thẻ tiến trình (biểu tượng)',
+    t183: 'Thẻ biểu đồ (nhỏ)',
+    t184: 'Thẻ biểu đồ (lớn)',
+    t185: 'Thẻ danh sách dữ liệu',
+    t186: 'Thẻ hình ảnh',
+    t187: 'NguoiDung mới',
+    t188: 'xemlượng',
+    t189: 'phấnsợisố',
+    t190: 'phấnsợilượng',
+    t191: 'NguoiDung mới',
+    t192: 'xemlượng',
+    t193: 'phấnsợisố',
+    t194: 'phấnsợilượng',
+    t195: 'Việc cần làmviệcmục',
+    t196: 'Hoạt động gần đây',
+    t197: 'Giao dịch gần đây',
+    t198: 'Biểu đồ',
+    t199: 'Biểu đồ cột (đơn lẻ)',
+    t200: 'Biểu đồ cột (nhiều nhóm)',
+    t201: 'Biểu đồ cột (chồng)',
+    t202: 'đườngảnh',
+    t203: 'Biểu đồ đường (nền gradient)',
+    t204: 'Biểu đồ đường (nền gradient)',
+    t205: 'Biểu đồ cột (ngang)',
+    t206: 'Biểu đồ cột (ngang)',
+    t207: 'Biểu đồ cột (ngang chồng)',
+    t208: 'Biểu đồ vòng',
+    t209: 'Biểu đồ vòng',
+    t210: 'Biểu đồ tròn',
+    t211: 'Biểu đồ phân tán',
+    t212: 'Biểu đồ radar',
+    t213: 'Biểu đồ nến (K-line)',
+    t214: 'Biểu đồ cột chồng hai chiều',
+    t215: 'SapXep theo',
+    t216: 'SapXep theo thời gian',
+    t217: 'SapXep theo tên',
+    t218: 'Đánh dấu tất cả đã đọc',
+    t219: 'TimKiem liên hệ',
+    t220: 'Đang tải...',
+    t221: 'siêuqua 53,476 vịnhắnlạicủamởphát',
+    t222: 'Và sự lựa chọn của nhiều tập đoàn công nghệ lớn',
+    t223: 'quyểnmụcmụcở MIT hiệpnghịmởnguồnmiễnphí，khitrướctrangmặtvìđịnhgiámôbản，chỉlàmdiễnthịdùngđường',
+    t224: 'Thương mại miễn phí',
+    t225: '/ThanhToan một lần',
+    t226: 'Mua ngay',
+    t227: 'Kích hoạt menu chuột phải',
+    t228: 'ở VueUse useTransition của Count-To Component',
+    t229: 'caotínhnăngSốCuộnHoatAnhComponent，chiếctrìĐầy đủcủaHoatAnhkhốngchếvàSuKienLắng nghe',
+    t230: 'Cơ bảndùngpháp',
+    t231: 'Có tiền tố hậu tố',
+    t232: 'Dấu thập phân và dấu phân cách',
+    t233: 'So sánh hiệu ứng hoạt ảnh',
+    t234: 'Kích hoạt tất cả hoạt ảnh',
+    t235: 'Nút điều khiển',
+    t236: 'Bắt đầu',
+    t237: 'TamDung',
+    t238: 'Đặt lại',
+    t239: 'Cơ bảnVí dụ',
+    t240: '✨ Bắn pháo hoa nhỏ',
+    t241: '🎉 Mở bao lì xì may mắn',
+    t242: '🎆 Show pháo hoa rực rỡ',
+    t243: '❄️ Tuyết rơi nhẹ',
+    t244: '❄️ Bão tuyết lãng mạn',
+    t245: 'Component hiệu ứng pháo hoa đã được đăng ký toàn cục, thời điểm kích hoạt do file cấu hình quyết định. Ngày trong cấu hình mặc định đã qua, sẽ không tự động kích hoạt lại.',
+    t246: 'MacDinhHiển thịHình họcảnhhình，Có thểlấyCauHinhHình ảnh，Hình ảnhcầncầngợitrướctại\r\n        src/components/core/layouts/art-fireworks-effect/index.vue vănphần tửTrướcĐịnh nghĩa',
+    t247: 'tại src/config/festival.ts vănphần tửtrong，Có thểlấyCauHinhtiếtngàyvàđốiứngcủaKiểu pháo hoa',
+    t248: 'command + shift + p hoặc ctrl + shift + p',
+    t249: 'Mô tả component pháo hoa',
+    t250: 'Hiển thịgiờmáy',
+    t251: 'Kiểu pháo hoa',
+    t252: 'File cấu hình',
+    t253: 'khoáinhanhphím',
+    t254: 'Icon',
+    t255: 'v.3.0 bảnquyểnIconThư việnNâng cấpvì iconify，Có thểtại',
+    t256: 'trongTimKiem，chiếctrìđaloạiIconThư viện，nếu Remix Icon, Solar, Tabler Icons bằng。',
+    t257: 'vìĐảm bảoHeThongIconPhong cáchthốngmột，mụcmụctoànbộthudùng Remix Icon IconThư viện，Có thểtại',
+    t258: 'hoặc',
+    t259: 'TrangChu Remix Icon',
+    t260: 'TimKiem để sử dụng.',
+    t261: 'Ví dụ sử dụng',
+    t262: 'Sử dụng cơ bản',
+    t263: 'Kích thước tùy chỉnh',
+    t264: 'Màu sắc tùy chỉnh',
+    t265: 'Sử dụng kết hợp',
+    t266: "'Cắt ảnh'",
+    t267: 'Nhấn vào tôi',
+    t268: 'Truy cập tài liệu chính thức"\r\n      showClose\r\n    />',
+    t269: "Art Design Pro làmộtkhoảnkiêmdụng cụthiếtkếmỹhọcvớicaohiệumởphátcủasauchiếcHeThong <a target='_blank' href='https://www.artd.pro/docs/'>{{ $t('admin.t267') }}</a>{{ $t('admin.t268') }}<!-- khiếndùngKhôngcùngcủaloạikiểu -->\r\n    <ArtTextScroll type=",
+    t270: 'Đây là một thông báo cuộn loại thành công',
+    t271: 'Đây là một thông báo cuộn loại cảnh báo',
+    t272: 'Đây là một thông báo cuộn loại nguy hiểm',
+    t273: 'Đây là một thông báo cuộn loại thông tin',
+    t274: 'Đây là một thông báo cuộn có thể đóng',
+    t275: 'Đây là một thông báo cuộn tốc độ chậm, cuộn sang phải',
+    t276: 'Đây là thông báo chỉ cuộn khi văn bản tràn, nếu không sẽ giữ tĩnh',
+    t277: 'Đây là một thông báo cuộn lên trên',
+    t278: 'Đây là một thông báo cuộn xuống dưới',
+    t279: '🛠️ Trình soạn thảo đầy đủ thanh công cụ',
+    t280: 'xóakhông',
+    t281: 'Lấy nội dung',
+    t282: 'CaiDat ví dụ'
   },
-  "dashboard": {
-    "ecommerce": {
-      "welcome": "Welcome back",
-      "todaySales": "Today's Sales",
-      "vsYesterday": "Vs Yesterday",
-      "salesTrend": "Sales Trend",
-      "monthlyComparison": "Monthly Comparison",
-      "salesClassification": "Sales Classification",
-      "byCategory": "By Category",
-      "totalIncome": "Total Income",
-      "growthThisMonth": "Growth this month",
-      "totalProducts": "Total Products",
-      "growth": "Growth",
-      "hotCommodity": "Hot Commodity",
-      "weeklyRanking": "Weekly Ranking",
-      "cartConversion": "Cart Conversion Rate",
-      "recentActivity": "Recent Activity",
-      "orderStatus": "Order Status",
-      "hotProducts": "Hot Products",
-      "monthlySales": "Monthly Sales",
-      "product": "Product",
-      "price": "Price",
-      "stock": "Stock",
-      "sales": "Sales",
-      "outOfStock": "Out of Stock",
-      "lowStock": "Low Stock",
-      "moderateStock": "Moderate",
-      "sufficientStock": "Sufficient"
+  dashboard: {
+    ecommerce: {
+      welcome: 'Welcome back',
+      todaySales: "Today's Sales",
+      vsYesterday: 'Vs Yesterday',
+      salesTrend: 'Sales Trend',
+      monthlyComparison: 'Monthly Comparison',
+      salesClassification: 'Sales Classification',
+      byCategory: 'By Category',
+      totalIncome: 'Total Income',
+      growthThisMonth: 'Growth this month',
+      totalProducts: 'Total Products',
+      growth: 'Growth',
+      hotCommodity: 'Hot Commodity',
+      weeklyRanking: 'Weekly Ranking',
+      cartConversion: 'Cart Conversion Rate',
+      recentActivity: 'Recent Activity',
+      orderStatus: 'Order Status',
+      hotProducts: 'Hot Products',
+      monthlySales: 'Monthly Sales',
+      product: 'Product',
+      price: 'Price',
+      stock: 'Stock',
+      sales: 'Sales',
+      outOfStock: 'Out of Stock',
+      lowStock: 'Low Stock',
+      moderateStock: 'Moderate',
+      sufficientStock: 'Sufficient'
     }
   }
-};
+}

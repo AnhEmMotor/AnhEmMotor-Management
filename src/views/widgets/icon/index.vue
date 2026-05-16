@@ -1,16 +1,25 @@
 <template>
   <div class="space-y-5 mb-5">
     <div class="text-2xl font-medium mt-5 max-sm:text-2xl max-sm:mt-3">{{ $t('admin.t254') }}</div>
-    <div class="text-g-800">{{ $t('admin.t255') }}<a href="https://icones.js.org/" target="_blank" class="text-theme hover:underline"
+    <div class="text-g-800"
+      >{{ $t('admin.t255')
+      }}<a href="https://icones.js.org/" target="_blank" class="text-theme hover:underline"
         >Iconify</a
-      >{{ $t('admin.t256') }}</div>
-    <div class="text-g-800">{{ $t('admin.t257') }}<a
+      >{{ $t('admin.t256') }}</div
+    >
+    <div class="text-g-800"
+      >{{ $t('admin.t257')
+      }}<a
         href="https://icones.js.org/collection/ri"
         target="_blank"
         class="text-theme hover:underline"
         >Iconify</a
-      >{{ $t('admin.t258') }}<a href="https://remixicon.com/" target="_blank" class="text-theme hover:underline">{{ $t('admin.t259') }}</a
-      >{{ $t('admin.t260') }}</div>
+      >{{ $t('admin.t258')
+      }}<a href="https://remixicon.com/" target="_blank" class="text-theme hover:underline">{{
+        $t('admin.t259')
+      }}</a
+      >{{ $t('admin.t260') }}</div
+    >
 
     <!-- Iconify Icon -->
     <div class="art-card-sm p-5">

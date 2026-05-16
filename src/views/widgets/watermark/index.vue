@@ -70,6 +70,8 @@
    */
   const handleWatermarkVisible = () => {
     useSettingStore().setWatermarkVisible(!settingStore.watermarkVisible)
-    ElMessage.success(settingStore.watermarkVisible ? 'ĐãHiển thịtoànbộWatermark' : 'ĐãẨntoànbộWatermark')
+    ElMessage.success(
+      settingStore.watermarkVisible ? 'ĐãHiển thịtoànbộWatermark' : 'ĐãẨntoànbộWatermark'
+    )
   }
 </script>

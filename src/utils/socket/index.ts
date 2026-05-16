@@ -339,7 +339,9 @@ export default class WebSocketClient {
 
     // TìmlàphủsiêuquanhấtđạiSố lần kết nối lại
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.error(`ĐãđếnnhấtđạiSố lần kết nối lại(${this.maxReconnectAttempts})，dừngthúctrùngliền`)
+      console.error(
+        `ĐãđếnnhấtđạiSố lần kết nối lại(${this.maxReconnectAttempts})，dừngthúctrùngliền`
+      )
       this.close(true)
       return
     }

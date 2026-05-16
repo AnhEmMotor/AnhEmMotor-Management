@@ -61,7 +61,9 @@
 
           <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">
             <div class="flex flex-col gap-2">
-              <ElButton type="primary" plain v-roles="'R_SUPER'"> siêucấpQuản lýviênHiển thị </ElButton>
+              <ElButton type="primary" plain v-roles="'R_SUPER'">
+                siêucấpQuản lýviênHiển thị
+              </ElButton>
               <div class="text-xs">
                 <code class="block p-1 px-2 mb-1 font-mono bg-g-200 border-full-d rounded"
                   >v-roles="'R_SUPER'"</code
@@ -119,7 +121,8 @@
             <code class="px- 1.5 py-0.5 font-mono text-xs text-theme bg-theme/10 rounded"
               >meta.authList</code
             >
-            CauHinhTìmQuyenHan。 QuyenHanDanh sáchđếnnguồnởRoutingnguyênDữ liệu，thíchdùngởQuyenHanCauHinhdosauđầuthốngmộtQuản lýcủatrườngcảnh。
+            CauHinhTìmQuyenHan。 QuyenHanDanh sáchđếnnguồnởRoutingnguyênDữ
+            liệu，thíchdùngởQuyenHanCauHinhdosauđầuthốngmộtQuản lýcủatrườngcảnh。
           </p>
 
           <div class="mb-5">
@@ -139,7 +142,9 @@
                 <code class="block p-1 px-2 mb-1 font-mono bg-g-200 border-full-d rounded"
                   >v-auth="'add'"</code
                 >
-                <span class="text-g-700">TìmRouting meta.authList tronglàphủtồntại authMark: 'add'</span>
+                <span class="text-g-700"
+                  >TìmRouting meta.authList tronglàphủtồntại authMark: 'add'</span
+                >
               </div>
             </div>
 
@@ -150,7 +155,9 @@
                 <code class="block p-1 px-2 mb-1 font-mono bg-g-200 border-full-d rounded"
                   >v-auth="'edit'"</code
                 >
-                <span class="text-g-700">TìmRouting meta.authList tronglàphủtồntại authMark: 'edit'</span>
+                <span class="text-g-700"
+                  >TìmRouting meta.authList tronglàphủtồntại authMark: 'edit'</span
+                >
               </div>
             </div>
 
@@ -161,7 +168,9 @@
                 <code class="block p-1 px-2 mb-1 font-mono bg-g-200 border-full-d rounded"
                   >v-auth="'delete'"</code
                 >
-                <span class="text-g-700">TìmRouting meta.authList tronglàphủtồntại authMark: 'delete'</span>
+                <span class="text-g-700"
+                  >TìmRouting meta.authList tronglàphủtồntại authMark: 'delete'</span
+                >
               </div>
             </div>
 
@@ -172,7 +181,9 @@
                 <code class="block p-1 px-2 mb-1 font-mono bg-g-200 border-full-d rounded"
                   >v-auth="'export'"</code
                 >
-                <span class="text-g-700">TìmRouting meta.authList tronglàphủtồntại authMark: 'export'</span>
+                <span class="text-g-700"
+                  >TìmRouting meta.authList tronglàphủtồntại authMark: 'export'</span
+                >
               </div>
             </div>
           </div>
@@ -212,11 +223,14 @@
             <code class="px- 1.5 py-0.5 font-mono text-xs text-theme bg-theme/10 rounded"
               >buttons</code
             >
-            chữđoạnTìmQuyenHan。 QuyenHanDanh sáchtồntrữtạiNguoiDungTrạng tháitrong，thíchdùngởQuyenHanhoàntoàndotrướcđầuQuản lýcủatrườngcảnh。
+            chữđoạnTìmQuyenHan。 QuyenHanDanh sáchtồntrữtạiNguoiDungTrạng
+            tháitrong，thíchdùngởQuyenHanhoàntoàndotrướcđầuQuản lýcủatrườngcảnh。
           </p>
 
           <div class="mb-5">
-            <h4 class="m-0 mb-2 text-sm font-semibold">khitrướcNguoiDungQuyenHanDanh sách（buttons chữđoạn）：</h4>
+            <h4 class="m-0 mb-2 text-sm font-semibold"
+              >khitrướcNguoiDungQuyenHanDanh sách（buttons chữđoạn）：</h4
+            >
             <div
               class="max-h-30 p-3 overflow-y-auto font-mono text-xs break-all whitespace-pre-wrap bg-g-200 border-full-d rounded"
             >
@@ -281,7 +295,9 @@
                 <code class="block p-1 px-2 mb-1 font-mono bg-g-200 border-full-d rounded"
                   >computed(() => hasAuth('edit') || hasAuth('delete'))</code
                 >
-                <span class="text-g-700">phụchợpQuyenHanTìm，TìmđachiếcQuyenHancủađồng thờitập</span>
+                <span class="text-g-700"
+                  >phụchợpQuyenHanTìm，TìmđachiếcQuyenHancủađồng thờitập</span
+                >
               </div>
             </div>
           </div>
@@ -308,7 +324,8 @@
             <code class="px- 1.5 py-0.5 font-mono text-xs text-theme bg-theme/10 rounded"
               >meta.authList</code
             >
-            CauHinhTìmQuyenHan。với v-auth lệnhkhiếndùngcùngcủaQuyenHanđếnnguồn，nhưnggợicungbiêntrìnhkiểucủaQuyenHanTìmnănglực。
+            CauHinhTìmQuyenHan。với v-auth
+            lệnhkhiếndùngcùngcủaQuyenHanđếnnguồn，nhưnggợicungbiêntrìnhkiểucủaQuyenHanTìmnănglực。
           </p>
 
           <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">

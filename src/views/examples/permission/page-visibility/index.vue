@@ -6,8 +6,11 @@
       <h2 class="m-0 mb-2 text-xl font-medium">{{
         $t('menus.examples.permission.pageVisibility')
       }}</h2>
-      <p class="m-0 text-sm leading-[1.6] text-g-700">{{ $t('admin.t85') }}<strong class="font-semibold text-warning">{{ $t('admin.t86') }}</strong
-        >{{ $t('admin.t87') }}</p>
+      <p class="m-0 text-sm leading-[1.6] text-g-700"
+        >{{ $t('admin.t85')
+        }}<strong class="font-semibold text-warning">{{ $t('admin.t86') }}</strong
+        >{{ $t('admin.t87') }}</p
+      >
     </div>
 
     <div class="mb-6">
@@ -48,11 +51,13 @@
               <ElCard>
                 <h4 class="m-0 mb-2 text-base font-semibold">ởVaiTrocủaQuyenHankhốngchế</h4>
                 <p class="m-0 mb-2 leading-[1.6] text-g-700">
-                  tạitrướcđầukhốngchếmôkiểudưới，trangmặtTruy cậpQuyenHandoRoutingCauHinhvănphần tửtrongcủa
+                  tạitrướcđầukhốngchếmôkiểudưới，trangmặtTruy cậpQuyenHandoRoutingCauHinhvănphần
+                  tửtrongcủa
                   <code class="px-1.5 py-0.5 font-mono text-xs text-theme bg-theme/12 rounded"
                     >meta.roles</code
                   >
-                  chữđoạnĐịnh nghĩa，trướcđầusẽliệuNguoiDungGiao diện (Interface)nênômcócủaVaiTrođốiRoutingvàMenuvàodòngqualọcvớikhốngchế
+                  chữđoạnĐịnh nghĩa，trướcđầusẽliệuNguoiDungGiao diện
+                  (Interface)nênômcócủaVaiTrođốiRoutingvàMenuvàodòngqualọcvớikhốngchế
                 </p>
                 <pre
                   class="p-4 mt-3 mb-0 overflow-x-auto font-mono text-xs leading-[1.5] bg-g-200 border-full-d rounded-md"
@@ -66,10 +71,13 @@
     keepAlive: true
   }
 }</code></pre>
-                <p class="m-0 mb-2 leading-[1.6] text-g-700"><strong>QuyenHannghiệmtínhchuyểntrình：</strong></p>
+                <p class="m-0 mb-2 leading-[1.6] text-g-700"
+                  ><strong>QuyenHannghiệmtínhchuyểntrình：</strong></p
+                >
                 <ul class="pl-5 my-2">
                   <li class="my-1 leading-[1.5] text-g-700"
-                    >NguoiDungDangNhapsau，Giao diện (Interface)Quay lạiNguoiDungVaiTroThongTin（nếu R_SUPER、R_ADMIN、R_USER）</li
+                    >NguoiDungDangNhapsau，Giao diện (Interface)Quay lạiNguoiDungVaiTroThongTin（nếu
+                    R_SUPER、R_ADMIN、R_USER）</li
                   >
                   <li class="my-1 leading-[1.5] text-g-700">
                     tại
@@ -83,18 +91,26 @@
                     CauHinh
                   </li>
                   <li class="my-1 leading-[1.5] text-g-700"
-                    >so sánhsoNguoiDungVaiTrolàphủBao gồmtạicho phéphứaTruy cậpcủaVaiTroDanh sáchtrong</li
+                    >so sánhsoNguoiDungVaiTrolàphủBao gồmtạicho phéphứaTruy cậpcủaVaiTroDanh
+                    sáchtrong</li
                   >
-                  <li class="my-1 leading-[1.5] text-g-700">QuyenHanKhôngđủgiờnhảychuyểnđến 403 Không đủ quyền Không đủ quyền Không đủ quyền Không đủ quyền Không đủ quyền trangmặt</li>
+                  <li class="my-1 leading-[1.5] text-g-700"
+                    >QuyenHanKhôngđủgiờnhảychuyểnđến 403 Không đủ quyền Không đủ quyền Không đủ
+                    quyền Không đủ quyền Không đủ quyền trangmặt</li
+                  >
                 </ul>
               </ElCard>
             </ElTimelineItem>
 
             <ElTimelineItem timestamp="sauđầukhốngchếmôkiểu" type="warning" size="large">
               <ElCard>
-                <h4 class="m-0 mb-2 text-base font-semibold">ởMenuGiao diện (Interface)củaQuyenHankhốngchế</h4>
+                <h4 class="m-0 mb-2 text-base font-semibold"
+                  >ởMenuGiao diện (Interface)củaQuyenHankhốngchế</h4
+                >
                 <p class="m-0 mb-2 leading-[1.6] text-g-700"
-                  >tạisauđầukhốngchếmôkiểudưới，trangmặtTruy cậpQuyenHandosauđầuthốngmộtQuản lý，trướcđầuthông quagiảiphânsauđầuGiao diện (Interface)Quay lạicủaMenuDanh sáchđếnsinhthànhCó thểTruy cậpcủaRouting，từmàthựchiệnQuyenHankhốngchế</p
+                  >tạisauđầukhốngchếmôkiểudưới，trangmặtTruy cậpQuyenHandosauđầuthốngmộtQuản
+                  lý，trướcđầuthông quagiảiphânsauđầuGiao diện (Interface)Quay lạicủaMenuDanh
+                  sáchđếnsinhthànhCó thểTruy cậpcủaRouting，từmàthựchiệnQuyenHankhốngchế</p
                 >
                 <p class="m-0 mb-2 leading-[1.6] text-g-700"
                   >Giao diện (Interface)DiaChi：src/api/menuApi.ts getMenuList</p
@@ -132,9 +148,16 @@
                 <p><strong>QuyenHannghiệmtínhchuyểntrình：</strong></p>
                 <ul>
                   <li>NguoiDungDangNhapThanhCongsauLấy Token</li>
-                  <li>trướcđầuđiềudùngMenuGiao diện (Interface)LấyNguoiDungCó thểTruy cậpcủaMenuDanh sách</li>
+                  <li
+                    >trướcđầuđiềudùngMenuGiao diện (Interface)LấyNguoiDungCó thểTruy cậpcủaMenuDanh
+                    sách</li
+                  >
                   <li>trướcđầuliệuMenuDanh sáchHoạt độngDangKyRouting</li>
-                  <li>MenutrongtồntạicủatrangmặtNguoiDungCó thểlấyBình thườngTruy cập，Khôngtồntạicủatrangmặtsẽnhảychuyểnđến 404 Không tìm thấy Không tìm thấy Không tìm thấy Không tìm thấy Không tìm thấy</li>
+                  <li
+                    >MenutrongtồntạicủatrangmặtNguoiDungCó thểlấyBình thườngTruy
+                    cập，Khôngtồntạicủatrangmặtsẽnhảychuyểnđến 404 Không tìm thấy Không tìm thấy
+                    Không tìm thấy Không tìm thấy Không tìm thấy</li
+                  >
                 </ul>
               </ElCard>
             </ElTimelineItem>
@@ -145,14 +168,25 @@
                 <p><strong>trướcđầukhốngchếmôkiểu：</strong></p>
                 <ul>
                   <li>cóQuyenHancủaNguoiDung：MenumụcBình thườngHiển thị，Có thểlấyNhấnTruy cập</li>
-                  <li>vôQuyenHancủaNguoiDung：MenumụcKhôngHiển thị，vôphápthông quaMenuĐiều hướngđếntrangmặt</li>
-                  <li>làkhiếnthông quathẳngtiếpNhậpURLthửthửTruy cập，cũngsẽbịRoutinggiữvệchặncắt</li>
+                  <li
+                    >vôQuyenHancủaNguoiDung：MenumụcKhôngHiển thị，vôphápthông quaMenuĐiều
+                    hướngđếntrangmặt</li
+                  >
+                  <li
+                    >làkhiếnthông quathẳngtiếpNhậpURLthửthửTruy cập，cũngsẽbịRoutinggiữvệchặncắt</li
+                  >
                 </ul>
                 <p><strong>sauđầukhốngchếmôkiểu：</strong></p>
                 <ul>
                   <li>Thanh bênMenuliệusauđầuQuay lạicủaMenuDanh sáchvàodòngRender</li>
-                  <li>sauđầuứngnênliệuNguoiDungQuyenHanqualọc，chỉQuay lạiNguoiDungcóQuyenHanTruy cậpcủaMenumục</li>
-                  <li>trướcđầuchỉHiển thịsauđầuQuay lạicủaMenu，Đảm bảoNguoiDungchỉnăngxemđếnvàTruy cậpcóQuyenHancủatrangmặt</li>
+                  <li
+                    >sauđầuứngnênliệuNguoiDungQuyenHanqualọc，chỉQuay lạiNguoiDungcóQuyenHanTruy
+                    cậpcủaMenumục</li
+                  >
+                  <li
+                    >trướcđầuchỉHiển thịsauđầuQuay lạicủaMenu，Đảm bảoNguoiDungchỉnăngxemđếnvàTruy
+                    cậpcóQuyenHancủatrangmặt</li
+                  >
                 </ul>
               </ElCard>
             </ElTimelineItem>
@@ -179,7 +213,9 @@
                 <div>
                   <h4>đatầngQuyenHannghiệmtính</h4>
                   <p class="text-g-700 text-sm"
-                    >tạitrướcđầuRouting、sauđầuGiao diện (Interface)、UIComponentbằngđachiếctầngmặtthựcthiQuyenHankhốngchế，Đảm bảoantoàntính。</p
+                    >tạitrướcđầuRouting、sauđầuGiao diện
+                    (Interface)、UIComponentbằngđachiếctầngmặtthựcthiQuyenHankhốngchế，Đảm
+                    bảoantoàntính。</p
                   >
                 </div>
               </div>
@@ -192,7 +228,8 @@
                 <div>
                   <h4>ởVaiTrocủaTruy cậpkhốngchế</h4>
                   <p class="text-g-700 text-sm"
-                    >thudùngRBACmôkiểu，thông quaVaiTrophầnPhânQuyenHan，rúthóaQuyenHanQuản lýphụctạpđộ。</p
+                    >thudùngRBACmôkiểu，thông quaVaiTrophầnPhânQuyenHan，rúthóaQuyenHanQuản
+                    lýphụctạpđộ。</p
                   >
                 </div>
               </div>
@@ -204,7 +241,9 @@
                 </div>
                 <div>
                   <h4>chi tiếthạtđộQuyenHankhốngchế</h4>
-                  <p class="text-g-700 text-sm">chiếctrìtrangmặtcấp、Nútcấp、Dữ liệucấpbằngđaloạihạtđộcủaQuyenHankhốngchế。</p>
+                  <p class="text-g-700 text-sm"
+                    >chiếctrìtrangmặtcấp、Nútcấp、Dữ liệucấpbằngđaloạihạtđộcủaQuyenHankhốngchế。</p
+                  >
                 </div>
               </div>
             </ElCol>
@@ -216,7 +255,8 @@
                 <div>
                   <h4>antoàntínhTốinguyên</h4>
                   <p class="text-g-700 text-sm"
-                    >đầucuốituântuầnnhấttiểuQuyenHannguyên，Đảm bảoNguoiDungchỉnăngTruy cậptấtcầncủacôngnăngvàDữ liệu。</p
+                    >đầucuốituântuầnnhấttiểuQuyenHannguyên，Đảm bảoNguoiDungchỉnăngTruy
+                    cậptấtcầncủacôngnăngvàDữ liệu。</p
                   >
                 </div>
               </div>

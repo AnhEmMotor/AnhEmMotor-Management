@@ -74,75 +74,45 @@
 
   defineOptions({ name: 'ArtBasicBanner' })
 
-  // chuyểnDoiTuongGiao diện (Interface)Định nghĩa
   interface Meteor {
-    /** chuyểncủaNgangViTri(phầnso sánh) */
     x: number
-    /** chuyểngạchquacủaTốc độ */
     speed: number
-    /** chuyểnrahiệncủaThoiGian */
     delay: number
   }
 
-  // NútCauHinhGiao diện (Interface)Định nghĩa
   interface ButtonConfig {
-    /** làphủBậtNút */
     show: boolean
-    /** Nútvănquyển */
     text: string
-    /** NútNềnmàu */
     color?: string
-    /** NútVanBanMàu sắc */
     textColor?: string
-    /** NútVaiKích thước */
     radius?: string
   }
 
-  // chuyểnHiệu quảCauHinhGiao diện (Interface)Định nghĩa
   interface MeteorConfig {
-    /** làphủBậtchuyểnHiệu quả */
     enabled: boolean
-    /** chuyểnSố lượng */
     count?: number
   }
 
-  // NềnHình ảnhCauHinhGiao diện (Interface)Định nghĩa
   interface ImageConfig {
-    /** Hình ảnhnguồnDiaChi */
     src: string
-    /** Hình ảnhChiều rộng */
     width?: string
-    /** Phía dướiKhoảng cách */
     bottom?: string
-    /** Bên phảiKhoảng cách */
-    right?: string // Bên phảiKhoảng cách
+    right?: string
   }
 
-  // ComponentThuocTinhGiao diện (Interface)Định nghĩa
   interface Props {
-    /** Chiều cao */
     height?: string
-    /** TieuDevănquyển */
     title?: string
-    /** TieuDevănquyển */
     subtitle?: string
-    /** tửKiểu dáng */
     boxStyle?: string
-    /** làphủHiển thịHiệu quả */
     decoration?: boolean
-    /** NútCauHinh */
     buttonConfig?: ButtonConfig
-    /** chuyểnCauHinh */
     meteorConfig?: MeteorConfig
-    /** Hình ảnhCauHinh */
     imageConfig?: ImageConfig
-    /** TieuDeMàu sắc */
     titleColor?: string
-    /** TieuDeMàu sắc */
     subtitleColor?: string
   }
 
-  // ComponentThuocTinhMacDinhgiá trịCaiDat
   const props = withDefaults(defineProps<Props>(), {
     height: '11rem',
     titleColor: 'white',
@@ -160,18 +130,15 @@
     imageConfig: () => ({ src: '', width: '12rem', bottom: '-3rem', right: '0' })
   })
 
-  // Định nghĩaComponentSuKien
   const emit = defineEmits<{
-    (e: 'click'): void // chỉnhthểNhấnSuKien
-    (e: 'buttonClick'): void // NútNhấnSuKien
+    (e: 'click'): void
+    (e: 'buttonClick'): void
   }>()
 
-  // kếNútKiểu dángThuocTinh
   const buttonColor = computed(() => props.buttonConfig?.color ?? '#fff')
   const buttonTextColor = computed(() => props.buttonConfig?.textColor ?? '#333')
   const buttonRadius = computed(() => props.buttonConfig?.radius ?? '6px')
 
-  // chuyểnDữ liệuban đầuđầuhóa
   const meteors = ref<Meteor[]>([])
   onMounted(() => {
     if (props.meteorConfig?.enabled) {
@@ -179,20 +146,11 @@
     }
   })
 
-  /**
-   * sinhthànhchuyểnDữ liệuMảng
-   * @param count chuyểnSố lượng
-   * @returns chuyểnDữ liệuMảng
-   */
   function generateMeteors(count: number): Meteor[] {
-    // kếmỗichiếcchuyểncủađồngTênChiều rộng
     const segmentWidth = 100 / count
     return Array.from({ length: count }, (_, index) => {
-      // kếchuyểnkhởiđầuViTri
       const segmentStart = index * segmentWidth
-      // tạiđồngTêntrongNgẫu nhiênsinhthànhxTọatiêu
       const x = segmentStart + Math.random() * segmentWidth
-      // Ngẫu nhiênđịnhchuyểnTốc độkhoáimạn
       const isSlow = Math.random() > 0.5
       return {
         x,

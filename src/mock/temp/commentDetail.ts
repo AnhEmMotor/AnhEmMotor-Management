@@ -22,7 +22,8 @@ export const commentList = ref<Comment[]>([
           {
             id: 201,
             author: 'quangmang',
-            content: 'hyvọngTốihóanăngtheotrên，KhôngnhiênnàygìhảocủahọamặtnếuquảthẻđốnthìCó thểtiếcrồi。',
+            content:
+              'hyvọngTốihóanăngtheotrên，KhôngnhiênnàygìhảocủahọamặtnếuquảthẻđốnthìCó thểtiếcrồi。',
             timestamp: '2024-09-04 09:30',
             replies: []
           }
@@ -33,7 +34,8 @@ export const commentList = ref<Comment[]>([
   {
     id: 2,
     author: 'nổisinh',
-    content: 'liệunóiđenthầnlờingộkhôngcầncầnrấtcaocủaCauHinh，KhôngbáođạotôicủađiệnnãonăngKhôngnăngchạykhởiđến。',
+    content:
+      'liệunóiđenthầnlờingộkhôngcầncầnrấtcaocủaCauHinh，KhôngbáođạotôicủađiệnnãonăngKhôngnăngchạykhởiđến。',
     timestamp: '2024-09-04 10:00',
     replies: [
       {

@@ -2,7 +2,9 @@
   <div class="art-card p-5 flex-b mb-5 max-sm:mb-4">
     <div>
       <h2 class="text-2xl font-medium">{{ $t('admin.t50') }}</h2>
-      <p class="text-g-700 mt-1">{{ systemName }} làmộtkhoảnkiêmdụng cụthiếtkếmỹhọcvớicaohiệumởphátcủasauchiếcHeThong</p>
+      <p class="text-g-700 mt-1"
+        >{{ systemName }} làmộtkhoảnkiêmdụng cụthiếtkếmỹhọcvớicaohiệumởphátcủasauchiếcHeThong</p
+      >
       <p class="text-g-700 mt-1">{{ $t('admin.t51') }}</p>
 
       <div class="flex flex-wrap gap-3.5 max-w-150 mt-9">

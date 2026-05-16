@@ -143,7 +143,11 @@
     phone: [
       { required: true, message: 'Vui lòng nhậpSố điện thoại', trigger: 'blur' },
       { min: 11, max: 11, message: 'Vui lòng nhập11vịSố điện thoại', trigger: 'blur' },
-      { pattern: /^1[3456789]\d{9}$/, message: 'Vui lòng nhậpđúngChínhcủaSố điện thoại', trigger: 'blur' }
+      {
+        pattern: /^1[3456789]\d{9}$/,
+        message: 'Vui lòng nhậpđúngChínhcủaSố điện thoại',
+        trigger: 'blur'
+      }
     ],
     level: [{ required: true, message: 'Vui lòng chọnbằngcấp', trigger: 'change' }],
     address: [{ required: true, message: 'Vui lòng nhậpDiaChi', trigger: 'blur' }]
@@ -622,7 +626,8 @@
       key: 'sg1',
       type: 'input',
       span: 12,
-      placeholder: 'Ví dụ：lướicách span=12 chiếmContainermộtnửaChiều rộng，span=24 chiếmđầyContainer'
+      placeholder:
+        'Ví dụ：lướicách span=12 chiếmContainermộtnửaChiều rộng，span=24 chiếmđầyContainer'
     }
   ])
 

@@ -47,11 +47,7 @@
         </div>
       </template>
 
-      <ArtTable
-        :loading="loading"
-        :data="employees"
-        :columns="columns"
-      >
+      <ArtTable :loading="loading" :data="employees" :columns="columns">
         <!-- Employee Info -->
         <template #fullName="{ row }">
           <div class="flex items-center gap-3">
@@ -77,7 +73,7 @@
 
         <!-- Status -->
         <template #status="{ row }">
-          <ElTag :type="row.isActive ? 'success' : 'info'" size="small" round effect="dot">
+          <ElTag :type="row.isActive ? 'success' : 'info'" size="small" round effect="light">
             {{ row.isActive ? 'Đang làm việc' : 'Đã nghỉ việc' }}
           </ElTag>
         </template>
@@ -93,11 +89,7 @@
     </ElCard>
 
     <!-- Dialog Form -->
-    <ElDialog
-      v-model="dialogVisible"
-      :title="dialogTitle"
-      width="650px"
-    >
+    <ElDialog v-model="dialogVisible" :title="dialogTitle" width="650px">
       <ElForm :model="formData" label-width="120px" class="mt-4">
         <div class="grid grid-cols-2 gap-x-6">
           <ElFormItem label="Họ và tên" required class="col-span-2">
@@ -128,7 +120,11 @@
           </ElFormItem>
 
           <ElFormItem label="Trạng thái">
-            <ElSwitch v-model="formData.isActive" active-text="Đang làm việc" inactive-text="Nghỉ việc" />
+            <ElSwitch
+              v-model="formData.isActive"
+              active-text="Đang làm việc"
+              inactive-text="Nghỉ việc"
+            />
           </ElFormItem>
         </div>
       </ElForm>
@@ -144,52 +140,28 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import { Plus } from '@element-plus/icons-vue'
-import { useHRStore } from '@/store/modules/hr'
-import { ElMessage, ElMessageBox } from 'element-plus'
+  import { ref, onMounted, computed } from 'vue'
+  import { Plus } from '@element-plus/icons-vue'
+  import { useHRStore } from '@/store/modules/hr'
+  import { ElMessage, ElMessageBox } from 'element-plus'
 
-defineOptions({ name: 'HREmployees' })
+  defineOptions({ name: 'HREmployees' })
 
-const hrStore = useHRStore()
-const loading = computed(() => hrStore.loading)
-const employees = computed(() => hrStore.employees)
+  const hrStore = useHRStore()
+  const loading = computed(() => hrStore.loading)
+  const employees = computed(() => hrStore.employees)
 
-const salesCount = computed(() => employees.value.filter((e: any) => e.employeeGroupId === 1).length)
-const techCount = computed(() => employees.value.filter((e: any) => e.employeeGroupId === 2).length)
+  const salesCount = computed(
+    () => employees.value.filter((e: any) => e.employeeGroupId === 1).length
+  )
+  const techCount = computed(
+    () => employees.value.filter((e: any) => e.employeeGroupId === 2).length
+  )
 
-const dialogVisible = ref(false)
-const dialogTitle = ref('Thêm nhân viên mới')
-const formData = ref({
-  id: null as number | null,
-  fullName: '',
-  employeeCode: '',
-  employeeGroupId: 1,
-  baseSalary: 0,
-  phoneNumber: '',
-  email: '',
-  isActive: true
-})
-
-const columns = [
-  { label: 'Họ tên', prop: 'fullName', slot: 'fullName', useSlot: true, minWidth: 200 },
-  { label: 'Nhóm', slot: 'group', width: 140, useSlot: true },
-  { label: 'Lương cơ bản', slot: 'salary', width: 140, useSlot: true },
-  { label: 'Trạng thái', slot: 'status', width: 130, useSlot: true },
-  { label: 'Thao tác', slot: 'operation', width: 120, align: 'center', useSlot: true }
-]
-
-const searchItems = [
-  { key: 'name', label: 'Tên nhân viên', type: 'input' },
-  { key: 'code', label: 'Mã nhân viên', type: 'input' }
-]
-
-const fetchData = () => hrStore.fetchEmployees()
-
-const handleAdd = () => {
-  dialogTitle.value = 'Thêm nhân viên mới'
-  formData.value = {
-    id: null,
+  const dialogVisible = ref(false)
+  const dialogTitle = ref('Thêm nhân viên mới')
+  const formData = ref({
+    id: null as number | null,
     fullName: '',
     employeeCode: '',
     employeeGroupId: 1,
@@ -197,49 +169,77 @@ const handleAdd = () => {
     phoneNumber: '',
     email: '',
     isActive: true
-  }
-  dialogVisible.value = true
-}
-
-const handleEdit = (row: any) => {
-  dialogTitle.value = 'Chỉnh sửa nhân viên'
-  formData.value = { ...row }
-  dialogVisible.value = true
-}
-
-const handleSave = async () => {
-  try {
-    await hrStore.saveEmployee(formData.value.id, formData.value)
-    ElMessage.success('Lưu thông tin nhân viên thành công')
-    dialogVisible.value = false
-  } catch (err: any) {
-    ElMessage.error('Lỗi khi lưu thông tin')
-  }
-}
-
-const handleDelete = (row: any) => {
-  ElMessageBox.confirm('Xóa nhân viên này khỏi danh sách?', 'Cảnh báo').then(async () => {
-    // await hrStore.deleteEmployee(row.id)
-    ElMessage.success('Đã xóa nhân viên')
   })
-}
 
-const formatCurrency = (val: number) => {
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val)
-}
+  const columns = [
+    { label: 'Họ tên', prop: 'fullName', slot: 'fullName', useSlot: true, minWidth: 200 },
+    { label: 'Nhóm', slot: 'group', width: 140, useSlot: true },
+    { label: 'Lương cơ bản', slot: 'salary', width: 140, useSlot: true },
+    { label: 'Trạng thái', slot: 'status', width: 130, useSlot: true },
+    { label: 'Thao tác', slot: 'operation', width: 120, align: 'center', useSlot: true }
+  ]
 
-const handleSearch = (q: any) => console.log(q)
-const handleReset = () => console.log('reset')
+  const searchItems = [
+    { key: 'name', label: 'Tên nhân viên', type: 'input' },
+    { key: 'code', label: 'Mã nhân viên', type: 'input' }
+  ]
 
-onMounted(() => {
-  fetchData()
-})
+  const fetchData = () => hrStore.fetchEmployees()
+
+  const handleAdd = () => {
+    dialogTitle.value = 'Thêm nhân viên mới'
+    formData.value = {
+      id: null,
+      fullName: '',
+      employeeCode: '',
+      employeeGroupId: 1,
+      baseSalary: 0,
+      phoneNumber: '',
+      email: '',
+      isActive: true
+    }
+    dialogVisible.value = true
+  }
+
+  const handleEdit = (row: any) => {
+    dialogTitle.value = 'Chỉnh sửa nhân viên'
+    formData.value = { ...row }
+    dialogVisible.value = true
+  }
+
+  const handleSave = async () => {
+    try {
+      await hrStore.saveEmployee(formData.value.id, formData.value)
+      ElMessage.success('Lưu thông tin nhân viên thành công')
+      dialogVisible.value = false
+    } catch (_err: any) {
+      ElMessage.error('Lỗi khi lưu thông tin')
+    }
+  }
+
+  const handleDelete = (_row: any) => {
+    ElMessageBox.confirm('Xóa nhân viên này khỏi danh sách?', 'Cảnh báo').then(async () => {
+      // await hrStore.deleteEmployee(_row.id)
+      ElMessage.success('Đã xóa nhân viên')
+    })
+  }
+
+  const formatCurrency = (val: number) => {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val)
+  }
+
+  const handleSearch = (q: any) => console.log(q)
+  const handleReset = () => console.log('reset')
+
+  onMounted(() => {
+    fetchData()
+  })
 </script>
 
 <style scoped>
-.art-table-card {
-  border-radius: 16px;
-  border: none;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-}
+  .art-table-card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgb(0 0 0 / 3%);
+  }
 </style>

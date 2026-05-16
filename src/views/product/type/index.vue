@@ -33,11 +33,15 @@
 
     <!-- Tabs Selection -->
     <div class="bg-white p-1 rounded-lg shadow-sm self-start flex gap-1 border border-gray-100">
-      <div 
-        v-for="tab in tabs" 
+      <div
+        v-for="tab in tabs"
         :key="tab.value"
         class="px-6 py-2 rounded-md cursor-pointer transition-all text-sm font-medium flex items-center gap-2"
-        :class="activeTab === tab.value ? 'bg-primary text-white shadow-md' : 'text-gray-500 hover:bg-gray-50'"
+        :class="
+          activeTab === tab.value
+            ? 'bg-primary text-white shadow-md'
+            : 'text-gray-500 hover:bg-gray-50'
+        "
         @click="activeTab = tab.value"
       >
         <ElIcon><component :is="tab.icon" /></ElIcon>
@@ -59,7 +63,11 @@
       <template #header>
         <div class="flex-cb">
           <div class="flex items-center gap-2">
-            <h4 class="m-0">{{ activeTab === 'product' ? $t('menus.product.type.table.titleProduct') : $t('menus.product.type.table.titleVehicle') }}</h4>
+            <h4 class="m-0">{{
+              activeTab === 'product'
+                ? $t('menus.product.type.table.titleProduct')
+                : $t('menus.product.type.table.titleVehicle')
+            }}</h4>
             <ElTag size="small" type="danger" v-if="!loading" effect="dark" round>
               {{ pagination.total }} {{ $t('menus.product.brand.records') }}
             </ElTag>
@@ -68,11 +76,7 @@
       </template>
 
       <!-- Table Header Tools -->
-      <ArtTableHeader
-        v-model:columns="columnChecks"
-        :loading="loading"
-        @refresh="refreshData"
-      >
+      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
           <ElButton type="primary" v-ripple @click="handleAdd">
             <ElIcon><Plus /></ElIcon> Thêm mới
@@ -95,7 +99,9 @@
       >
         <!-- Image Column -->
         <template #imageUrl="{ row }">
-          <div class="flex-c h-10 w-10 bg-gray-50 rounded shadow-inner border border-gray-100 overflow-hidden mx-auto">
+          <div
+            class="flex-c h-10 w-10 bg-gray-50 rounded shadow-inner border border-gray-100 overflow-hidden mx-auto"
+          >
             <ElImage
               v-if="row.imageUrl"
               :src="row.imageUrl"
@@ -145,7 +151,7 @@
         <ElFormItem label="Tên thể loại" required>
           <ElInput v-model="formData.name" placeholder="Nhập tên thể loại..." />
         </ElFormItem>
-        
+
         <ElFormItem label="Đường dẫn (Slug)">
           <ElInput v-model="formData.slug" placeholder="slug-ten-the-loai..." />
         </ElFormItem>
@@ -160,11 +166,16 @@
           >
             <div v-if="formData.imageUrl" class="relative group">
               <img :src="formData.imageUrl" class="category-preview" />
-              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-lg">
+              <div
+                class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-lg"
+              >
                 <ElIcon class="text-white text-xl"><Plus /></ElIcon>
               </div>
             </div>
-            <div v-else class="category-uploader-trigger flex flex-col items-center justify-center gap-2">
+            <div
+              v-else
+              class="category-uploader-trigger flex flex-col items-center justify-center gap-2"
+            >
               <ElIcon class="text-gray-400 text-2xl"><Plus /></ElIcon>
               <span class="text-xs text-gray-400">Tải ảnh</span>
             </div>
@@ -191,9 +202,7 @@
       <template #footer>
         <div class="flex justify-end gap-2">
           <ElButton @click="dialogVisible = false">Hủy</ElButton>
-          <ElButton type="primary" :loading="submitting" @click="submitForm">
-            Xác nhận
-          </ElButton>
+          <ElButton type="primary" :loading="submitting" @click="submitForm"> Xác nhận </ElButton>
         </div>
       </template>
     </ElDialog>
@@ -259,27 +268,27 @@
 <style scoped>
   .art-table-card {
     border: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
     border-radius: 12px;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 3%);
   }
-  
+
   .bg-primary {
     background-color: var(--main-color);
   }
 
   .category-uploader :deep(.el-upload) {
-    border: 1px dashed #d9d9d9;
-    border-radius: 12px;
-    cursor: pointer;
     position: relative;
     overflow: hidden;
-    transition: var(--el-transition-duration-fast);
+    cursor: pointer;
     background-color: #fafafa;
+    border: 1px dashed #d9d9d9;
+    border-radius: 12px;
+    transition: var(--el-transition-duration-fast);
   }
 
   .category-uploader :deep(.el-upload:hover) {
-    border-color: var(--main-color);
     background-color: #fff;
+    border-color: var(--main-color);
   }
 
   .category-uploader-trigger {
@@ -288,9 +297,9 @@
   }
 
   .category-preview {
+    display: block;
     width: 80px;
     height: 80px;
-    display: block;
     object-fit: cover;
     border-radius: 12px;
   }

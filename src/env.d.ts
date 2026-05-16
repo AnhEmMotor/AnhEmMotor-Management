@@ -1,5 +1,3 @@
-/// <reference types="vite/client" />
-
 declare module 'nprogress'
 
 declare module 'crypto-js'
@@ -30,5 +28,13 @@ declare module 'qrcode.vue' {
   export default QrcodeVue
 }
 
-// toànbộbiếnlượngâmminh
-declare const __APP_VERSION__: string // bảnquyểnsố
+declare const __APP_VERSION__: string
+
+interface ImportMetaEnv {
+  readonly VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT: string
+  readonly VITE_WITH_CREDENTIALS: string
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv
+}

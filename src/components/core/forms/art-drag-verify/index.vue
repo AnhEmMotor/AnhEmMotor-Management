@@ -43,44 +43,26 @@
 <script setup lang="ts">
   defineOptions({ name: 'ArtDragVerify' })
 
-  // SuKienĐịnh nghĩa
   const emit = defineEmits(['handlerMove', 'update:value', 'passCallback'])
 
-  // ComponentThuocTinhGiao diện (Interface)Định nghĩa
   interface PropsType {
-    /** làphủthông quanghiệmtính */
     value: boolean
-    /** ComponentChiều rộng */
     width?: number | string
-    /** ComponentChiều cao */
     height?: number
-    /** MacDinhGợi ývănquyển */
     text?: string
-    /** ThanhCongGợi ývănquyển */
     successText?: string
-    /** Nềnmàu */
     background?: string
-    /** Thanh tiến trìnhNềnmàu */
     progressBarBg?: string
-    /** hoànthànhTrạng tháiNềnmàu */
     completedBg?: string
-    /** làphủVai */
     circle?: boolean
-    /** VaiKích thước */
     radius?: string
-    /** Thanh trượtIcon */
     handlerIcon?: string
-    /** ThanhCongIcon */
     successIcon?: string
-    /** Thanh trượtNềnmàu */
     handlerBg?: string
-    /** vănquyểnKích thước */
     textSize?: string
-    /** vănquyểnMàu sắc */
     textColor?: string
   }
 
-  // ThuocTinhMacDinhgiá trịCaiDat
   const props = withDefaults(defineProps<PropsType>(), {
     value: false,
     width: '100%',
@@ -99,69 +81,51 @@
     textColor: '#333'
   })
 
-  // ComponentTrạng tháiGiao diện (Interface)Định nghĩa
   interface StateType {
-    isMoving: boolean // làphủĐangKéo thả
-    x: number // Kéo thảkhởiđầuViTri
-    isOk: boolean // làphủnghiệmtínhThanhCong
+    isMoving: boolean
+    x: number
+    isOk: boolean
   }
 
-  // ứngkiểuTrạng tháiĐịnh nghĩa
   const state = reactive(<StateType>{
     isMoving: false,
     x: 0,
     isOk: false
   })
 
-  // giảicấuứngkiểuTrạng thái
   const { isOk } = toRefs(state)
 
-  // DOM nguyêntốtríchdùng
   const dragVerify = ref()
   const messageRef = ref()
   const handler = ref()
   const progressBar = ref()
 
-  // SuKienbiếnlượng - dùngởcấmthúctrangmặttrượtđộng
   let startX: number, startY: number, moveX: number, moveY: number
 
-  /**
-   * Bắt đầuSuKienXuLy
-   * @param e SuKienDoiTuong
-   */
   const onTouchStart = (e: any) => {
     startX = e.targetTouches[0].pageX
     startY = e.targetTouches[0].pageY
   }
 
-  /**
-   * DiđộngSuKienXuLy - đoánlàphủvìhướngtrượtđộng，nếuquảlàtrởthúcMacDinhdòngvì
-   * @param e SuKienDoiTuong
-   */
   const onTouchMove = (e: any) => {
     moveX = e.targetTouches[0].pageX
     moveY = e.targetTouches[0].pageY
 
-    // nếuquảhướngDiđộngKhoảng cáchđạiởdọchướngDiđộngKhoảng cách，trởthúcMacDinhdòngvì（Phòngthúctrangmặttrượtđộng）
     if (Math.abs(moveX - startX) > Math.abs(moveY - startY)) {
       e.preventDefault()
     }
   }
 
-  // toànbộSuKienLắng nghethiết bịThêm mới
   document.addEventListener('touchstart', onTouchStart)
   document.addEventListener('touchmove', onTouchMove, { passive: false })
 
-  // Lấysốgiá trịhìnhkiểucủaChiều rộng
   const getNumericWidth = (): number => {
     if (typeof props.width === 'string') {
-      // nếuquảlàChuỗi，thửthửtừDOMnguyêntốLấythựctếChiều rộng
       return dragVerify.value?.offsetWidth || 260
     }
     return props.width
   }
 
-  // LấyKiểu dángChuỗihìnhkiểucủaChiều rộng
   const getStyleWidth = (): string => {
     if (typeof props.width === 'string') {
       return props.width
@@ -169,30 +133,22 @@
     return props.width + 'px'
   }
 
-  // ComponentMountsaucủaban đầuđầuhóa
   onMounted(() => {
-    // CaiDat CSS Tùy chỉnhThuocTinh
     dragVerify.value?.style.setProperty('--textColor', props.textColor)
-
-    // bằngđợiDOMCập nhậtsauCaiDatChiều rộngđóngThuocTinh
     nextTick(() => {
       const numericWidth = getNumericWidth()
       dragVerify.value?.style.setProperty('--width', Math.floor(numericWidth / 2) + 'px')
       dragVerify.value?.style.setProperty('--pwidth', -Math.floor(numericWidth / 2) + 'px')
     })
-
-    // trùngphụcThêm mớiSuKienLắng nghethiết bị（Đảm bảoSuKienLiênđịnh）
     document.addEventListener('touchstart', onTouchStart)
     document.addEventListener('touchmove', onTouchMove, { passive: false })
   })
 
-  // ComponentUnmounttrướcxóalýSuKienLắng nghethiết bị
   onBeforeUnmount(() => {
     document.removeEventListener('touchstart', onTouchStart)
     document.removeEventListener('touchmove', onTouchMove)
   })
 
-  // Thanh trượtKiểu dángkế
   const handlerStyle = {
     left: '0',
     width: props.height + 'px',
@@ -200,7 +156,6 @@
     background: props.handlerBg
   }
 
-  // chủContainerKiểu dángkế
   const dragVerifyStyle = computed(() => ({
     width: getStyleWidth(),
     height: props.height + 'px',
@@ -209,7 +164,6 @@
     borderRadius: props.circle ? props.height / 2 + 'px' : props.radius
   }))
 
-  // Thanh tiến trìnhKiểu dángkế
   const progressBarStyle = {
     background: props.progressBarBg,
     height: props.height + 'px',
@@ -218,47 +172,33 @@
       : props.radius
   }
 
-  // vănquyểnKiểu dángkế
   const textStyle = computed(() => ({
     fontSize: props.textSize
   }))
 
-  // Hiển thịTinNhankếThuocTinh
   const message = computed(() => {
     return props.value ? props.successText : props.text
   })
 
-  /**
-   * Kéo thảBắt đầuXuLyHàm
-   * @param e ChuộttiêuhoặcSuKienDoiTuong
-   */
   const dragStart = (e: any) => {
     if (!props.value) {
       state.isMoving = true
       handler.value.style.transition = 'none'
-      // kếKéo thảkhởiđầuViTri
       state.x =
         (e.pageX || e.touches[0].pageX) - parseInt(handler.value.style.left.replace('px', ''), 10)
     }
     emit('handlerMove')
   }
 
-  /**
-   * Kéo thảDiđộngXuLyHàm
-   * @param e ChuộttiêuhoặcSuKienDoiTuong
-   */
   const dragMoving = (e: any) => {
     if (state.isMoving && !props.value) {
       const numericWidth = getNumericWidth()
-      // kếkhitrướcViTri
       let _x = (e.pageX || e.touches[0].pageX) - state.x
 
-      // tạicóhiệuphạmvitrongDiđộng
       if (_x > 0 && _x <= numericWidth - props.height) {
         handler.value.style.left = _x + 'px'
         progressBar.value.style.width = _x + props.height / 2 + 'px'
       } else if (_x > numericWidth - props.height) {
-        // Kéo thảđếncuốiđầu，Kích hoạtnghiệmtínhThanhCong
         handler.value.style.left = numericWidth - props.height + 'px'
         progressBar.value.style.width = numericWidth - props.height / 2 + 'px'
         passVerify()
@@ -266,25 +206,18 @@
     }
   }
 
-  /**
-   * Kéo thảKếtthúcXuLyHàm
-   * @param e ChuộttiêuhoặcSuKienDoiTuong
-   */
   const dragFinish = (e: any) => {
     if (state.isMoving && !props.value) {
       const numericWidth = getNumericWidth()
-      // kếnhấtcuốiViTri
       let _x = (e.pageX || e.changedTouches[0].pageX) - state.x
 
       if (_x < numericWidth - props.height) {
-        // ChưaKéo thảđếncuốiđầu，Đặt lạiViTri
         state.isOk = true
         handler.value.style.left = '0'
         handler.value.style.transition = 'all 0.2s'
         progressBar.value.style.width = '0'
         state.isOk = false
       } else {
-        // Kéo thảđếncuốiđầu，Duy trìnghiệmtínhThanhCongTrạng thái
         handler.value.style.transition = 'none'
         handler.value.style.left = numericWidth - props.height + 'px'
         progressBar.value.style.width = numericWidth - props.height / 2 + 'px'
@@ -294,13 +227,9 @@
     }
   }
 
-  /**
-   * nghiệmtínhthông quaXuLyHàm
-   */
   const passVerify = () => {
     emit('update:value', true)
     state.isMoving = false
-    // Cập nhậtKiểu dángvìThanhCongTrạng thái
     progressBar.value.style.background = props.completedBg
     messageRef.value.style['-webkit-text-fill-color'] = 'unset'
     messageRef.value.style.animation = 'slidetounlock2 2s cubic-bezier(0, 0.2, 1, 1) infinite'
@@ -308,26 +237,19 @@
     emit('passCallback')
   }
 
-  /**
-   * Đặt lạinghiệmtínhTrạng tháiHàm
-   */
   const reset = () => {
-    // Đặt lạiThanh trượtViTri
     handler.value.style.left = '0'
     progressBar.value.style.width = '0'
     progressBar.value.style.background = props.progressBarBg
-    // Đặt lạivănquyểnKiểu dáng
     messageRef.value.style['-webkit-text-fill-color'] = 'transparent'
     messageRef.value.style.animation = 'slidetounlock 2s cubic-bezier(0, 0.2, 1, 1) infinite'
     messageRef.value.style.color = props.background
-    // Đặt lạiTrạng thái
     emit('update:value', false)
     state.isOk = false
     state.isMoving = false
     state.x = 0
   }
 
-  // lộlộĐặt lạiPhuongThucchochaComponent
   defineExpose({
     reset
   })

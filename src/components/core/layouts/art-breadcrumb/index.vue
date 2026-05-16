@@ -48,17 +48,14 @@
   const route = useRoute()
   const router = useRouter()
 
-  // khiếndùngcomputedthếđạiwatch，gợicaotínhnăng
   const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
     const { matched } = route
     const matchedLength = matched.length
 
-    // XuLyTrangChutình
     if (!matchedLength || isHomeRoute(matched[0])) {
       return []
     }
 
-    // XuLymộtcấpMenuvàphổthôngRouting
     const firstRoute = matched[0]
     const isFirstLevel = firstRoute.meta?.isFirstLevel
     const lastIndex = matchedLength - 1
@@ -69,12 +66,10 @@
       ? [createBreadcrumbItem(currentRoute)]
       : matched.map(createBreadcrumbItem)
 
-    // qualọcbaogóiContainer：nếuquảcóđachiếcmụcmụcvừathứmộtchiếclàContainerRouting（nếu /outside），Dichianó
     if (items.length > 1 && isWrapperContainer(items[0])) {
       items = items.slice(1)
     }
 
-    // IFrame trangmặtđặcthùXuLy：nếuquảqualọcsauchỉthừamộtchiếc iframe trangmặt，hoặcnêncómụcđềulàbaogóiContainer，chỉtriểnthịkhitrướctrang
     if (currentRouteMeta?.isIframe && (items.length === 1 || items.every(isWrapperContainer))) {
       return [createBreadcrumbItem(currentRoute)]
     }
@@ -82,30 +77,24 @@
     return items
   })
 
-  // giúpHàm：đoánlàphủvìbaogóiContainerRouting
   const isWrapperContainer = (item: BreadcrumbItem): boolean =>
     item.path === '/outside' && !!item.meta?.isIframe
 
-  // giúpHàm：xâyBreadcrumbmụcmục
   const createBreadcrumbItem = (route: RouteLocationMatched): BreadcrumbItem => ({
     path: route.path,
     meta: route.meta
   })
 
-  // giúpHàm：đoánlàphủvìTrangChu
   const isHomeRoute = (route: RouteLocationMatched): boolean => route.name === '/'
 
-  // giúpHàm：đoánlàphủvìnhấtsaumộtmục
   const isLastItem = (index: number): boolean => {
     const itemsLength = breadcrumbItems.value.length
     return index === itemsLength - 1
   }
 
-  // giúpHàm：đoánlàphủCó thểNhấn
   const isClickable = (item: BreadcrumbItem, index: number): boolean =>
     item.path !== '/outside' && !isLastItem(index)
 
-  // giúpHàm：TimKiemRoutingcủathứmộtchiếccóhiệutửRouting
   const findFirstValidChild = (route: RouteRecordRaw) =>
     route.children?.find((child) => !child.redirect && !child.meta?.isHide)
 

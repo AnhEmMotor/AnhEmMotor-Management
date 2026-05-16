@@ -9,14 +9,19 @@ import AutoImport from 'unplugin-auto-import/vite'
 import ElementPlus from 'unplugin-element-plus/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import tailwindcss from '@tailwindcss/vite'
-// import { visualizer } from 'rollup-plugin-visualizer'
 
 export default ({ mode }: { mode: string }) => {
   const root = process.cwd()
   const env = loadEnv(mode, root)
-  const { VITE_VERSION, VITE_PORT, VITE_BASE_URL, VITE_API_URL, VITE_API_PROXY_URL } = env
+  const {
+    VITE_VERSION,
+    VITE_PORT,
+    VITE_BASE_URL,
+    VITE_API_PROXY_URL,
+    VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT
+  } = env
 
-  console.log(`🚀 API_URL = ${VITE_API_URL}`)
+  console.log(`🚀 API_URL = ${VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT}`)
   console.log(`🚀 VERSION = ${VITE_VERSION}`)
 
   return defineConfig({
@@ -36,7 +41,6 @@ export default ({ mode }: { mode: string }) => {
       },
       host: true
     },
-    // 路径别名
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
@@ -55,9 +59,7 @@ export default ({ mode }: { mode: string }) => {
       minify: 'terser',
       terserOptions: {
         compress: {
-          // 生产环境去除 console
           drop_console: true,
-          // 生产环境去除 debugger
           drop_debugger: true
         }
       },
@@ -70,7 +72,6 @@ export default ({ mode }: { mode: string }) => {
     plugins: [
       vue(),
       tailwindcss(),
-      // 自动按需导入 API
       AutoImport({
         imports: ['vue', 'vue-router', 'pinia', '@vueuse/core'],
         dts: 'src/types/import/auto-imports.d.ts',
@@ -81,34 +82,23 @@ export default ({ mode }: { mode: string }) => {
           globalsPropValue: true
         }
       }),
-      // 自动按需导入组件
       Components({
         dts: 'src/types/import/components.d.ts',
         resolvers: [ElementPlusResolver()]
       }),
-      // 按需定制主题配置
       ElementPlus({
         useSource: true
       }),
-      // 压缩
       viteCompression({
-        verbose: false, // 是否在控制台输出压缩结果
-        disable: false, // 是否禁用
-        algorithm: 'gzip', // 压缩算法
-        ext: '.gz', // 压缩后的文件名后缀
-        threshold: 10240, // 只有大小大于该值的资源会被处理 10240B = 10KB
-        deleteOriginFile: false // 压缩后是否删除原文件
+        verbose: false,
+        disable: false,
+        algorithm: 'gzip',
+        ext: '.gz',
+        threshold: 10240,
+        deleteOriginFile: false
       }),
       vueDevTools()
-      // 打包分析
-      // visualizer({
-      //   open: true,
-      //   gzipSize: true,
-      //   brotliSize: true,
-      //   filename: 'dist/stats.html' // 分析图生成的文件名及路径
-      // }),
     ],
-    // 依赖预构建：避免运行时重复请求与转换，提升首次加载速度
     optimizeDeps: {
       include: [
         'echarts/core',
@@ -127,7 +117,6 @@ export default ({ mode }: { mode: string }) => {
     },
     css: {
       preprocessorOptions: {
-        // sass variable and mixin
         scss: {
           additionalData: `
             @use "@styles/core/el-light.scss" as *; 

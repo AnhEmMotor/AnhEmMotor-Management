@@ -2,21 +2,21 @@
   <div class="page-content">
     <div class="mb-5">
       <ElSpace wrap>
-        <ElButton :disabled="isLaunching" v-ripple @click="handleSingleLaunch"
-          >{{ $t('admin.t240') }}</ElButton
-        >
-        <ElButton :disabled="isLaunching" v-ripple @click="handleImageLaunch(bp)"
-          >{{ $t('admin.t241') }}</ElButton
-        >
-        <ElButton :disabled="isLaunching" v-ripple @click="handleMultipleLaunch('')"
-          >{{ $t('admin.t242') }}</ElButton
-        >
-        <ElButton :disabled="isLaunching" v-ripple @click="handleImageLaunch(sd)"
-          >{{ $t('admin.t243') }}</ElButton
-        >
-        <ElButton :disabled="isLaunching" v-ripple @click="handleMultipleLaunch(sd)"
-          >{{ $t('admin.t244') }}</ElButton
-        >
+        <ElButton :disabled="isLaunching" v-ripple @click="handleSingleLaunch">{{
+          $t('admin.t240')
+        }}</ElButton>
+        <ElButton :disabled="isLaunching" v-ripple @click="handleImageLaunch(bp)">{{
+          $t('admin.t241')
+        }}</ElButton>
+        <ElButton :disabled="isLaunching" v-ripple @click="handleMultipleLaunch('')">{{
+          $t('admin.t242')
+        }}</ElButton>
+        <ElButton :disabled="isLaunching" v-ripple @click="handleImageLaunch(sd)">{{
+          $t('admin.t243')
+        }}</ElButton>
+        <ElButton :disabled="isLaunching" v-ripple @click="handleMultipleLaunch(sd)">{{
+          $t('admin.t244')
+        }}</ElButton>
       </ElSpace>
     </div>
 

@@ -25,7 +25,15 @@
   /**
    * mộttuầncủaNgàyTag
    */
-  const weekDays = ref(['tuầnmột', 'tuầnhai', 'tuầnba', 'tuầnbốn', 'tuầnnăm', 'tuầnsáu', 'tuầnngày'])
+  const weekDays = ref([
+    'tuầnmột',
+    'tuầnhai',
+    'tuầnba',
+    'tuầnbốn',
+    'tuầnnăm',
+    'tuầnsáu',
+    'tuầnngày'
+  ])
 
   /**
    * tổngThu nhậpDữ liệu

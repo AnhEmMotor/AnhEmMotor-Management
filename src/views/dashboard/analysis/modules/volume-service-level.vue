@@ -30,7 +30,13 @@
    * phụcvụloạitínhDữ liệu
    * Khôngcùngsinhsản phẩmcủaPhân loạiTag
    */
-  const serviceCategories = ref(['sinhsản phẩmA', 'sinhsản phẩmB', 'sinhsản phẩmC', 'sinhsản phẩmD', 'sinhsản phẩmE'])
+  const serviceCategories = ref([
+    'sinhsản phẩmA',
+    'sinhsản phẩmB',
+    'sinhsản phẩmC',
+    'sinhsản phẩmD',
+    'sinhsản phẩmE'
+  ])
 
   /**
    * nghiệpvụlượngvớiphụcvụlượngDữ liệu

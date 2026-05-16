@@ -41,11 +41,7 @@
         </div>
       </template>
 
-      <ArtTableHeader
-        v-model:columns="columnChecks"
-        :loading="loading"
-        @refresh="refreshData"
-      >
+      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
           <ElButton type="primary" v-ripple @click="handleOpenWizard">
             <ElIcon class="mr-1"><Plus /></ElIcon> Nhập xe mới (Asset ID)
@@ -56,12 +52,7 @@
         </template>
       </ArtTableHeader>
 
-      <ArtTable
-        :loading="loading"
-        :data="data"
-        :columns="columns"
-        :pagination="pagination"
-      >
+      <ArtTable :loading="loading" :data="data" :columns="columns" :pagination="pagination">
         <template #status="{ row }">
           <ElTag :type="row.status === 'Finished' ? 'success' : 'warning'">
             {{ row.status === 'Finished' ? 'Hoàn tất' : 'Đang xử lý' }}
@@ -78,7 +69,10 @@
       append-to-body
       destroy-on-close
     >
-      <AssetIdentificationWizard @cancel="wizardVisible = false" @complete="wizardVisible = false" />
+      <AssetIdentificationWizard
+        @cancel="wizardVisible = false"
+        @complete="wizardVisible = false"
+      />
     </ElDialog>
   </div>
 </template>
@@ -100,24 +94,45 @@
   })
 
   const data = ref([
-    { id: 'PNK001', supplier: 'Honda Việt Nam', product: 'Vision 2024', quantity: 10, total: '350.000.000', status: 'Finished', time: '04/05/2026 08:30' },
-    { id: 'PNK002', supplier: 'Yamaha Motor', product: 'Exciter 155', quantity: 5, total: '225.000.000', status: 'Processing', time: '04/05/2026 09:15' }
+    {
+      id: 'PNK001',
+      supplier: 'Honda Việt Nam',
+      product: 'Vision 2024',
+      quantity: 10,
+      total: '350.000.000',
+      status: 'Finished',
+      time: '04/05/2026 08:30'
+    },
+    {
+      id: 'PNK002',
+      supplier: 'Yamaha Motor',
+      product: 'Exciter 155',
+      quantity: 5,
+      total: '225.000.000',
+      status: 'Processing',
+      time: '04/05/2026 09:15'
+    }
   ])
 
-  const columns = [
+  const columns = ref([
     { label: 'Mã phiếu', prop: 'id', width: 110, align: 'center' },
     { label: 'Thời gian', prop: 'time', width: 170 },
     { label: 'Nhà cung cấp', prop: 'supplier', minWidth: 200 },
     { label: 'Dòng xe', prop: 'product', minWidth: 150 },
     { label: 'Số lượng', prop: 'quantity', width: 100, align: 'center' },
     { label: 'Trạng thái', prop: 'status', width: 140, useSlot: true, align: 'center' }
-  ]
+  ])
 
-  const columnChecks = ref(columns.map(c => c.label))
+  const columnChecks = columns
 
   const searchItems = [
     { key: 'id', label: 'Mã phiếu', type: 'input', props: { placeholder: 'Nhập mã phiếu...' } },
-    { key: 'supplier', label: 'Nhà cung cấp', type: 'input', props: { placeholder: 'Tìm theo NCC...' } }
+    {
+      key: 'supplier',
+      label: 'Nhà cung cấp',
+      type: 'input',
+      props: { placeholder: 'Tìm theo NCC...' }
+    }
   ]
 
   const handleOpenWizard = () => {

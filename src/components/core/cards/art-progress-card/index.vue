@@ -76,7 +76,6 @@
     animateProgress()
   })
 
-  // khi percentage ThuocTinhbiếnhóagiờtrùngmớiThựcdòngHoatAnh
   watch(
     () => props.percentage,
     () => {

@@ -184,7 +184,10 @@
               <ElCol :span="12">
                 <h5>✅ Đầy đủThanh công cụBao gồm：</h5>
                 <ul>
-                  <li>vănquyểncáchkiểu：thêmđậm、nghiêngthể、dướigạchđường、Phông chữMàu sắc、Nềnmàu</li>
+                  <li
+                    >vănquyểncáchkiểu：thêmđậm、nghiêngthể、dướigạchđường、Phông chữMàu
+                    sắc、Nềnmàu</li
+                  >
                   <li>Đoạn văncáchkiểu：TieuDe、tríchdùng、đốicănphươngkiểu、thụtvào</li>
                   <li>Danh sách：cóthứDanh sách、vôthứDanh sách、Việc cần làmviệcmục</li>
                   <li>chènvào：liêntiếp、Hình ảnh、Bảng、phầncắtđường、bảngtình</li>
@@ -200,7 +203,9 @@
                   <li>chènvào：liêntiếp、Hình ảnh</li>
                   <li>HanhDong：hoàntác、trùnglàm</li>
                 </ul>
-                <p class="note">thíchdùngởrútđơncủavănquyểnChỉnh sửatrườngcảnh，giaomặthơnxóasảng。</p>
+                <p class="note"
+                  >thíchdùngởrútđơncủavănquyểnChỉnh sửatrườngcảnh，giaomặthơnxóasảng。</p
+                >
               </ElCol>
             </ElRow>
           </div>

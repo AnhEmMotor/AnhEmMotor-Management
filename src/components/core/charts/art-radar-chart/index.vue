@@ -16,24 +16,20 @@
   defineOptions({ name: 'ArtRadarChart' })
 
   const props = withDefaults(defineProps<RadarChartProps>(), {
-    // Cơ bảnCauHinh
     height: useChartOps().chartHeight,
     loading: false,
     isEmpty: false,
     colors: () => useChartOps().colors,
 
-    // Dữ liệuCauHinh
     indicator: () => [],
     data: () => [],
 
-    // nộpCauHinh
     showTooltip: true,
     showLegend: false,
     legendPosition: 'bottom'
   })
 
-  // khiếndùngmớicủaBiểu đồComponenttượng
-  const { chartRef, isDark, getAnimationConfig, getTooltipStyle } = useChartComponent({
+  const { isDark, getAnimationConfig, getTooltipStyle } = useChartComponent({
     props,
     checkEmpty: () => {
       return !props.data?.length || props.data.every((item) => item.value.every((val) => val === 0))

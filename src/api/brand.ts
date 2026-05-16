@@ -13,7 +13,6 @@ export interface BrandList {
   totalCount: number
 }
 
-// Lấy danh sách thương hiệu
 export function fetchGetBrandList(params: any) {
   const { current, size, ...rest } = params
   return request.get<BrandList>({
@@ -26,7 +25,6 @@ export function fetchGetBrandList(params: any) {
   })
 }
 
-// Lấy chi tiết thương hiệu
 export function fetchGetBrandDetail(id: number) {
   return request.get<Brand>({
     url: `/api/Brand/${id}`

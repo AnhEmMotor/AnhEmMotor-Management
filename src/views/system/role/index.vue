@@ -223,11 +223,15 @@
   }
 
   const deleteRole = (row: RoleListItem) => {
-    ElMessageBox.confirm(`ChínhđịnhXóaVaiTro"${row.roleName}"không？nàyHanhDongKhôngCó thểkhôiphục！`, 'XóaXác nhận', {
-      confirmButtonText: 'Xác định',
-      cancelButtonText: 'Hủy',
-      type: 'warning'
-    })
+    ElMessageBox.confirm(
+      `ChínhđịnhXóaVaiTro"${row.roleName}"không？nàyHanhDongKhôngCó thểkhôiphục！`,
+      'XóaXác nhận',
+      {
+        confirmButtonText: 'Xác định',
+        cancelButtonText: 'Hủy',
+        type: 'warning'
+      }
+    )
       .then(() => {
         // TODO: điềudùngXóaGiao diện (Interface)
         ElMessage.success('XóaThanhCong')

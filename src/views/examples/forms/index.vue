@@ -589,7 +589,8 @@
       key: 'sg1',
       type: 'input',
       span: 12,
-      placeholder: 'Ví dụ：lướicách span=12 chiếmContainermộtnửaChiều rộng，span=24 chiếmđầyContainer'
+      placeholder:
+        'Ví dụ：lướicách span=12 chiếmContainermộtnửaChiều rộng，span=24 chiếmđầyContainer'
     },
     // vănphần tửTải lênVí dụ - khiếndùng render HàmRender
     {

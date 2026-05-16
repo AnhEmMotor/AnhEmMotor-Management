@@ -46,11 +46,7 @@
       </template>
 
       <!-- Table Header Tools -->
-      <ArtTableHeader
-        v-model:columns="columnChecks"
-        :loading="loading"
-        @refresh="refreshData"
-      >
+      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
           <ElButton type="primary" v-ripple @click="handleAdd">
             <ElIcon><Plus /></ElIcon> Thêm thương hiệu
@@ -73,7 +69,9 @@
       >
         <!-- Logo Column -->
         <template #logoUrl="{ row }">
-          <div class="flex-c h-10 w-10 bg-gray-50 rounded shadow-inner border border-gray-100 overflow-hidden mx-auto">
+          <div
+            class="flex-c h-10 w-10 bg-gray-50 rounded shadow-inner border border-gray-100 overflow-hidden mx-auto"
+          >
             <ElImage
               v-if="row.logoUrl"
               :src="row.logoUrl"
@@ -139,11 +137,16 @@
           >
             <div v-if="formData.logoUrl" class="relative group">
               <img :src="formData.logoUrl" class="logo-preview" />
-              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex-c transition-opacity rounded-lg">
+              <div
+                class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex-c transition-opacity rounded-lg"
+              >
                 <ElIcon class="text-white text-xl"><Plus /></ElIcon>
               </div>
             </div>
-            <div v-else class="logo-uploader-trigger flex flex-col items-center justify-center gap-2">
+            <div
+              v-else
+              class="logo-uploader-trigger flex flex-col items-center justify-center gap-2"
+            >
               <ElIcon class="text-gray-400 text-2xl"><Plus /></ElIcon>
               <span class="text-xs text-gray-400">Tải ảnh lên</span>
             </div>
@@ -162,9 +165,7 @@
       <template #footer>
         <div class="flex justify-end gap-2">
           <ElButton @click="dialogVisible = false">Hủy</ElButton>
-          <ElButton type="primary" :loading="submitting" @click="submitForm">
-            Xác nhận
-          </ElButton>
+          <ElButton type="primary" :loading="submitting" @click="submitForm"> Xác nhận </ElButton>
         </div>
       </template>
     </ElDialog>
@@ -236,23 +237,23 @@
 
   .art-table-card {
     border: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
     border-radius: 12px;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 3%);
   }
 
   .logo-uploader :deep(.el-upload) {
-    border: 1px dashed #d9d9d9;
-    border-radius: 12px;
-    cursor: pointer;
     position: relative;
     overflow: hidden;
-    transition: var(--el-transition-duration-fast);
+    cursor: pointer;
     background-color: #fafafa;
+    border: 1px dashed #d9d9d9;
+    border-radius: 12px;
+    transition: var(--el-transition-duration-fast);
   }
 
   .logo-uploader :deep(.el-upload:hover) {
-    border-color: var(--main-color);
     background-color: #fff;
+    border-color: var(--main-color);
   }
 
   .logo-uploader-trigger {
@@ -261,11 +262,11 @@
   }
 
   .logo-preview {
+    display: block;
     width: 100px;
     height: 100px;
-    display: block;
-    object-fit: contain;
     padding: 8px;
+    object-fit: contain;
     border-radius: 12px;
   }
 </style>

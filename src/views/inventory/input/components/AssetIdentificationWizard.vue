@@ -13,14 +13,24 @@
         <div class="grid grid-cols-2 gap-8">
           <div class="space-y-4">
             <label class="block text-sm font-bold text-gray-700">1. Nhà cung cấp</label>
-            <ElSelect v-model="form.supplierId" placeholder="Tìm nhà cung cấp..." class="w-full" filterable>
+            <ElSelect
+              v-model="form.supplierId"
+              placeholder="Tìm nhà cung cấp..."
+              class="w-full"
+              filterable
+            >
               <ElOption label="Honda Việt Nam" :value="1" />
               <ElOption label="Yamaha Motor Việt Nam" :value="2" />
             </ElSelect>
           </div>
           <div class="space-y-4">
             <label class="block text-sm font-bold text-gray-700">2. Dòng xe nhập về</label>
-            <ElSelect v-model="form.productId" placeholder="Chọn mẫu xe..." class="w-full" filterable>
+            <ElSelect
+              v-model="form.productId"
+              placeholder="Chọn mẫu xe..."
+              class="w-full"
+              filterable
+            >
               <ElOption label="Honda Vision 2024" :value="101" />
               <ElOption label="Honda SH 125i" :value="102" />
               <ElOption label="Yamaha Exciter 155" :value="103" />
@@ -29,7 +39,13 @@
         </div>
         <div class="max-w-xs space-y-4">
           <label class="block text-sm font-bold text-gray-700">3. Đơn giá nhập (Giá vốn)</label>
-          <ElInputNumber v-model="form.costPrice" :min="0" class="!w-full" :controls="false" placeholder="VNĐ" />
+          <ElInputNumber
+            v-model="form.costPrice"
+            :min="0"
+            class="!w-full"
+            :controls="false"
+            placeholder="VNĐ"
+          />
         </div>
       </div>
 
@@ -48,24 +64,30 @@
           </ElTableColumn>
           <ElTableColumn label="Số Khung (Frame No)" min-width="180">
             <template #default="{ row, $index }">
-              <ElInput 
-                v-model="row.frameNo" 
-                placeholder="Quét mã QR..." 
-                :class="{'is-error': checkDuplicate(row.frameNo, 'frameNo', $index)}"
+              <ElInput
+                v-model="row.frameNo"
+                placeholder="Quét mã QR..."
+                :class="{ 'is-error': checkDuplicate(row.frameNo, 'frameNo', $index) }"
               />
-              <span v-if="checkDuplicate(row.frameNo, 'frameNo', $index)" class="text-[10px] text-red-500 font-bold italic">
+              <span
+                v-if="checkDuplicate(row.frameNo, 'frameNo', $index)"
+                class="text-[10px] text-red-500 font-bold italic"
+              >
                 ⚠️ Số khung bị trùng lặp!
               </span>
             </template>
           </ElTableColumn>
           <ElTableColumn label="Số Máy (Engine No)" min-width="180">
             <template #default="{ row, $index }">
-              <ElInput 
-                v-model="row.engineNo" 
+              <ElInput
+                v-model="row.engineNo"
                 placeholder="Quét mã QR..."
-                :class="{'is-error': checkDuplicate(row.engineNo, 'engineNo', $index)}"
+                :class="{ 'is-error': checkDuplicate(row.engineNo, 'engineNo', $index) }"
               />
-              <span v-if="checkDuplicate(row.engineNo, 'engineNo', $index)" class="text-[10px] text-red-500 font-bold italic">
+              <span
+                v-if="checkDuplicate(row.engineNo, 'engineNo', $index)"
+                class="text-[10px] text-red-500 font-bold italic"
+              >
                 ⚠️ Số máy bị trùng lặp!
               </span>
             </template>
@@ -80,7 +102,13 @@
           </ElTableColumn>
           <ElTableColumn label="Chìa khóa" width="100">
             <template #default="{ row }">
-              <ElInputNumber v-model="row.keyCount" :min="1" :max="4" controls-position="right" class="!w-full" />
+              <ElInputNumber
+                v-model="row.keyCount"
+                :min="1"
+                :max="4"
+                controls-position="right"
+                class="!w-full"
+              />
             </template>
           </ElTableColumn>
           <ElTableColumn width="50" align="center">
@@ -97,9 +125,15 @@
       <div v-if="activeStep === 2" class="space-y-4">
         <h4 class="mb-4">Phân bổ vị trí lưu kho</h4>
         <div class="grid grid-cols-1 gap-3">
-          <div v-for="(unit, index) in form.units" :key="index" class="flex items-center gap-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
+          <div
+            v-for="(unit, index) in form.units"
+            :key="index"
+            class="flex items-center gap-4 p-4 bg-gray-50 rounded-lg border border-gray-100"
+          >
             <div class="flex-1">
-              <div class="font-bold text-sm text-gray-800">{{ unit.frameNo || 'Chưa nhập số khung' }}</div>
+              <div class="font-bold text-sm text-gray-800">{{
+                unit.frameNo || 'Chưa nhập số khung'
+              }}</div>
               <div class="text-[11px] text-gray-400">Số máy: {{ unit.engineNo || '-' }}</div>
             </div>
             <div class="w-64">
@@ -119,15 +153,24 @@
           <ElIcon><WarningFilled /></ElIcon>
           <span>Xác nhận thông tin lần cuối trước khi chốt sổ nhập kho</span>
         </div>
-        
+
         <div class="grid grid-cols-2 gap-6">
           <div class="p-6 bg-primary/5 rounded-xl border border-primary/10">
-            <div class="text-xs text-gray-500 mb-1 uppercase tracking-wider">Tổng số lượng nhập</div>
-            <div class="text-3xl font-bold text-primary">{{ form.units.length }} <small class="text-sm font-normal">xe</small></div>
+            <div class="text-xs text-gray-500 mb-1 uppercase tracking-wider"
+              >Tổng số lượng nhập</div
+            >
+            <div class="text-3xl font-bold text-primary"
+              >{{ form.units.length }} <small class="text-sm font-normal">xe</small></div
+            >
           </div>
           <div class="p-6 bg-success/5 rounded-xl border border-success/10">
-            <div class="text-xs text-gray-500 mb-1 uppercase tracking-wider">Tổng giá trị đơn nhập</div>
-            <div class="text-3xl font-bold text-success">{{ (form.costPrice * form.units.length).toLocaleString() }} <small class="text-sm font-normal text-gray-400">VNĐ</small></div>
+            <div class="text-xs text-gray-500 mb-1 uppercase tracking-wider"
+              >Tổng giá trị đơn nhập</div
+            >
+            <div class="text-3xl font-bold text-success"
+              >{{ (form.costPrice * form.units.length).toLocaleString() }}
+              <small class="text-sm font-normal text-gray-400">VNĐ</small></div
+            >
           </div>
         </div>
 
@@ -145,7 +188,9 @@
       <div class="flex gap-2">
         <ElButton v-if="activeStep > 0" @click="activeStep--">Quay lại</ElButton>
         <ElButton v-if="activeStep < 3" type="primary" @click="activeStep++">Tiếp theo</ElButton>
-        <ElButton v-else type="danger" @click="handleComplete">Xác nhận & Hoàn tất nhập kho</ElButton>
+        <ElButton v-else type="danger" @click="handleComplete"
+          >Xác nhận & Hoàn tất nhập kho</ElButton
+        >
       </div>
     </div>
   </div>
@@ -163,13 +208,17 @@
     supplierId: null,
     productId: null,
     costPrice: 0,
-    units: [
-      { frameNo: '', engineNo: '', quality: 'new', keyCount: 2, location: 'showroom' }
-    ]
+    units: [{ frameNo: '', engineNo: '', quality: 'new', keyCount: 2, location: 'showroom' }]
   })
 
   const addUnit = () => {
-    form.units.push({ frameNo: '', engineNo: '', quality: 'new', keyCount: 2, location: 'showroom' })
+    form.units.push({
+      frameNo: '',
+      engineNo: '',
+      quality: 'new',
+      keyCount: 2,
+      location: 'showroom'
+    })
   }
 
   const checkDuplicate = (val: string, field: string, index: number) => {

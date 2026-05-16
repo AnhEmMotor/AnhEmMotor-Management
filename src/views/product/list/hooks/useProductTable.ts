@@ -45,8 +45,8 @@ export function useProductTable() {
         brand_id: formData.value.brand_id
       })
       availableTechnologies.value = res || []
-    } catch (err) {
-      console.error('Failed to fetch techs:', err)
+    } catch (_err) {
+      console.error('Failed to fetch techs:', _err)
     } finally {
       loadingTechs.value = false
     }
@@ -60,14 +60,14 @@ export function useProductTable() {
   const fetchCategories = async () => {
     loadingCategories.value = true
     try {
-      const res = await CategoryApi.getList({ 
-        current: 1, 
+      const res = await CategoryApi.getList({
+        current: 1,
         size: 100,
         Filters: 'CategoryGroup==Product' // Chỉ lấy thể loại sản phẩm, loại bỏ xe
       })
       categories.value = res.items || []
-    } catch (err) {
-      console.error('Failed to fetch categories:', err)
+    } catch (_err) {
+      console.error('Failed to fetch categories:', _err)
       categories.value = []
     } finally {
       loadingCategories.value = false
@@ -78,13 +78,13 @@ export function useProductTable() {
   const fetchBrands = async () => {
     loadingBrands.value = true
     try {
-      const res = await BrandApi.getList({ 
-        current: 1, 
+      const res = await BrandApi.getList({
+        current: 1,
         size: 100
       })
       brands.value = res.items || []
-    } catch (err) {
-      console.error('Failed to fetch brands:', err)
+    } catch (_err) {
+      console.error('Failed to fetch brands:', _err)
       brands.value = []
     } finally {
       loadingBrands.value = false
@@ -119,8 +119,21 @@ export function useProductTable() {
         { prop: 'category', label: 'Thể loại', width: 150 },
         { prop: 'origin', label: 'Xuất xứ', width: 120 },
         { prop: 'stock', label: 'Tồn kho', width: 100, align: 'center' },
-        { prop: 'inventory_status', label: 'Trạng thái', width: 120, align: 'center', useSlot: true },
-        { prop: 'operation', label: 'Hành động', width: 150, align: 'center', fixed: 'right', useSlot: true }
+        {
+          prop: 'inventory_status',
+          label: 'Trạng thái',
+          width: 120,
+          align: 'center',
+          useSlot: true
+        },
+        {
+          prop: 'operation',
+          label: 'Hành động',
+          width: 150,
+          align: 'center',
+          fixed: 'right',
+          useSlot: true
+        }
       ]
     }
   })
@@ -150,12 +163,14 @@ export function useProductTable() {
     try {
       const fullProduct = await ProductApi.getById(row.id)
       formData.value = { ...fullProduct }
-      
+
       // Populate selected technology IDs
-      selectedTechIds.value = (fullProduct.product_technologies || []).map((pt: any) => pt.technology_id)
-      
+      selectedTechIds.value = (fullProduct.product_technologies || []).map(
+        (pt: any) => pt.technology_id
+      )
+
       dialogVisible.value = true
-    } catch (err: any) {
+    } catch (_err: any) {
       ElMessage.error('Không thể lấy chi tiết sản phẩm')
     }
   }
@@ -174,8 +189,8 @@ export function useProductTable() {
         await ProductApi.delete(row.id)
         ElMessage.success('Xóa sản phẩm thành công')
         refreshData()
-      } catch (err: any) {
-        ElMessage.error(err.message || 'Xóa thất bại')
+      } catch (_err: any) {
+        ElMessage.error(_err.message || 'Xóa thất bại')
       }
     })
   }
@@ -184,7 +199,7 @@ export function useProductTable() {
     submitting.value = true
     try {
       // Map selected IDs
-      formData.value.product_technologies = selectedTechIds.value.map(id => ({
+      formData.value.product_technologies = selectedTechIds.value.map((id) => ({
         technology_id: id,
         display_order: 0
       }))
@@ -198,8 +213,8 @@ export function useProductTable() {
       }
       dialogVisible.value = false
       refreshData()
-    } catch (err: any) {
-      ElMessage.error(err.message || 'Thao tác thất bại')
+    } catch (_err: any) {
+      ElMessage.error(_err.message || 'Thao tác thất bại')
     } finally {
       submitting.value = false
     }
@@ -218,7 +233,7 @@ export function useProductTable() {
     const filters = []
     if (params.name) filters.push(`Name@=${params.name}`)
     if (params.brand) filters.push(`brand@=${params.brand}`)
-    
+
     // Maintain tab filter
     if (activeCategory.value !== 'all') {
       filters.push(`category_id==${activeCategory.value}`)
@@ -231,7 +246,8 @@ export function useProductTable() {
   }
 
   const handleReset = () => {
-    const defaultFilter = activeCategory.value === 'all' ? '' : `category_id==${activeCategory.value}`
+    const defaultFilter =
+      activeCategory.value === 'all' ? '' : `category_id==${activeCategory.value}`
     replaceSearchParams({
       Filters: defaultFilter
     })

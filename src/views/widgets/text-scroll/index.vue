@@ -1,8 +1,8 @@
 <template>
   <div class="page-content space-y-5">
     <!-- Cơ bảndùngpháp -->
-    <ArtTextScroll
-      :text="$t('admin.t269')"success" :text="$t('admin.t270')" />
+    <ArtTextScroll :text="$t('admin.t269')" />
+    <ArtTextScroll type="success" :text="$t('admin.t270')" />
 
     <ArtTextScroll type="warning" :text="$t('admin.t271')" />
 
@@ -14,18 +14,9 @@
     <ArtTextScroll :text="$t('admin.t274')" @close="handleClose" />
 
     <!-- Tùy chỉnhTốc độvàphươnghướng -->
-    <ArtTextScroll
-      type="warning"
-      :text="$t('admin.t275')"
-      :speed="30"
-      direction="right"
-    />
+    <ArtTextScroll type="warning" :text="$t('admin.t275')" :speed="30" direction="right" />
 
-    <ArtTextScroll
-      :text="$t('admin.t276')"
-      @close="handleClose"
-      :alwaysScroll="false"
-    />
+    <ArtTextScroll :text="$t('admin.t276')" @close="handleClose" :alwaysScroll="false" />
 
     <ArtTextScroll type="danger" direction="up" :speed="30" :text="$t('admin.t277')" />
 

@@ -38,17 +38,17 @@ interface ExtendedAxiosRequestConfig extends AxiosRequestConfig {
   showSuccessMessage?: boolean
 }
 
-const { VITE_API_URL, VITE_WITH_CREDENTIALS } = import.meta.env
+const { VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT, VITE_WITH_CREDENTIALS } = import.meta.env
 
 /** Axiosthựcví dụ */
 const axiosInstance = axios.create({
   timeout: REQUEST_TIMEOUT,
-  baseURL: VITE_API_URL,
+  baseURL: VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT,
   withCredentials: VITE_WITH_CREDENTIALS === 'true',
   validateStatus: (status) => status >= 200 && status < 300,
   transformResponse: [
     (data, headers) => {
-      const contentType = headers['content-type']
+      const contentType = headers['content-type'] as string
       if (contentType?.includes('application/json')) {
         try {
           return JSON.parse(data)
@@ -65,7 +65,8 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (request: InternalAxiosRequestConfig) => {
     const userStore = useUserStore()
-    if (userStore.accessToken) request.headers.set('Authorization', `Bearer ${userStore.accessToken}`)
+    if (userStore.accessToken)
+      request.headers.set('Authorization', `Bearer ${userStore.accessToken}`)
 
     if (request.data && !(request.data instanceof FormData) && !request.headers['Content-Type']) {
       request.headers.set('Content-Type', 'application/json')

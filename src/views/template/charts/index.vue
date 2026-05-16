@@ -63,7 +63,15 @@
           </div>
           <ArtLineChart
             :data="[58, 15, 82, 35, 120, 62, 45]"
-            :xAxisData="['mộttháng', 'haitháng', 'batháng', 'bốntháng', 'nămtháng', 'sáutháng', 'bảytháng']"
+            :xAxisData="[
+              'mộttháng',
+              'haitháng',
+              'batháng',
+              'bốntháng',
+              'nămtháng',
+              'sáutháng',
+              'bảytháng'
+            ]"
             symbol="none"
             :symbolSize="7"
           />
@@ -76,7 +84,15 @@
           </div>
           <ArtLineChart
             :data="[28, 45, 82, 35, 100, 32, 55]"
-            :xAxisData="['mộttháng', 'haitháng', 'batháng', 'bốntháng', 'nămtháng', 'sáutháng', 'bảytháng']"
+            :xAxisData="[
+              'mộttháng',
+              'haitháng',
+              'batháng',
+              'bốntháng',
+              'nămtháng',
+              'sáutháng',
+              'bảytháng'
+            ]"
             :showAreaColor="true"
           />
         </div>
@@ -101,7 +117,13 @@
           </div>
           <ArtHBarChart
             :data="[50, 80, 120, 90, 60]"
-            :xAxisData="['sinhsản phẩmA', 'sinhsản phẩmB', 'sinhsản phẩmC', 'sinhsản phẩmD', 'sinhsản phẩmE']"
+            :xAxisData="[
+              'sinhsản phẩmA',
+              'sinhsản phẩmB',
+              'sinhsản phẩmC',
+              'sinhsản phẩmD',
+              'sinhsản phẩmE'
+            ]"
           />
         </div>
       </ElCol>
@@ -321,7 +343,15 @@
    * đơnDữ liệutrạngảnhVí dụDữ liệu
    */
   const singleBarData = ref([120, 200, 150, 80, 70, 110, 130])
-  const xAxisData = ref(['tuầnmột', 'tuầnhai', 'tuầnba', 'tuầnbốn', 'tuầnnăm', 'tuầnsáu', 'tuầnngày'])
+  const xAxisData = ref([
+    'tuầnmột',
+    'tuầnhai',
+    'tuầnba',
+    'tuầnbốn',
+    'tuầnnăm',
+    'tuầnsáu',
+    'tuầnngày'
+  ])
 
   /**
    * đaDữ liệutrạngảnhVí dụDữ liệu
@@ -339,7 +369,13 @@
     { name: 'Q2', data: [30, 35, 40, 45, 50], stack: 'total' }
   ])
 
-  const stackXAxisData = ref(['sinhsản phẩmA', 'sinhsản phẩmB', 'sinhsản phẩmC', 'sinhsản phẩmD', 'sinhsản phẩmE'])
+  const stackXAxisData = ref([
+    'sinhsản phẩmA',
+    'sinhsản phẩmB',
+    'sinhsản phẩmC',
+    'sinhsản phẩmD',
+    'sinhsản phẩmE'
+  ])
 </script>
 
 <style scoped>

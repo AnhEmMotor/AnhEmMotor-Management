@@ -143,27 +143,28 @@
     }
 
     if (data.length > props.maxRows) {
-      throw new ExportError(`Dữ liệudòngsốsiêuquahạnchế（${props.maxRows}dòng）`, 'EXCEED_MAX_ROWS', {
-        currentRows: data.length,
-        maxRows: props.maxRows
-      })
+      throw new ExportError(
+        `Dữ liệudòngsốsiêuquahạnchế（${props.maxRows}dòng）`,
+        'EXCEED_MAX_ROWS',
+        {
+          currentRows: data.length,
+          maxRows: props.maxRows
+        }
+      )
     }
   }
 
-  /** cáchkiểuhóađơnnguyêncáchgiá trị */
   const formatCellValue = (
     value: ExportValue,
     key: string,
     row: ExportData,
     index: number
   ): string => {
-    // khiếndùngcộtCauHinhcủacáchkiểuhóaHàm
     const column = props.columns[key]
     if (column?.formatter) {
       return column.formatter(value, row, index)
     }
 
-    // XuLyđặcthùgiá trị
     if (value === null || value === undefined) {
       return ''
     }
@@ -179,27 +180,21 @@
     return String(value)
   }
 
-  /** XuLyDữ liệu */
   const processData = (data: ExportData[]): Record<string, string>[] => {
     const processedData = data.map((item, index) => {
       const processedItem: Record<string, string> = {}
 
-      // Thêm mớithứsốcột
       if (props.autoIndex) {
         processedItem[props.indexColumnTitle] = String(index + 1)
       }
 
-      // XuLyDữ liệucột
       Object.entries(item).forEach(([key, value]) => {
-        // LấycộtTieuDe
         let columnTitle = key
         if (props.columns[key]?.title) {
           columnTitle = props.columns[key].title
         } else if (props.headers[key]) {
           columnTitle = props.headers[key]
         }
-
-        // cáchkiểuhóagiá trị
         processedItem[columnTitle] = formatCellValue(value, key, item, index)
       })
 
@@ -209,34 +204,29 @@
     return processedData
   }
 
-  /** kếcộtChiều rộng */
   const calculateColumnWidths = (data: Record<string, string>[]): XLSX.ColInfo[] => {
     if (data.length === 0) return []
 
-    const sampleSize = Math.min(data.length, 100) // chỉHủytrước100dòngkếcộtRộng
+    const sampleSize = Math.min(data.length, 100)
     const columns = Object.keys(data[0])
 
     return columns.map((column) => {
-      // khiếndùngCauHinhcủacộtChiều rộng
       const configWidth = Object.values(props.columns).find((col) => col.title === column)?.width
 
       if (configWidth) {
         return { wch: configWidth }
       }
 
-      // từđộngkếcộtChiều rộng
       const maxLength = Math.max(
-        column.length, // TieuDetrườngđộ
+        column.length,
         ...data.slice(0, sampleSize).map((row) => String(row[column] || '').length)
       )
 
-      // hạnchếnhấttiểuvànhấtđạiChiều rộng
       const width = Math.min(Math.max(maxLength + 2, 8), 50)
       return { wch: width }
     })
   }
 
-  /** Xuất fileđến Excel */
   const exportToExcel = async (
     data: ExportData[],
     filename: string,
@@ -245,14 +235,11 @@
     try {
       emit('export-progress', 10)
 
-      // XuLyDữ liệu
       const processedData = processData(data)
       emit('export-progress', 30)
 
-      // xâycônglàmsổ
       const workbook = XLSX.utils.book_new()
 
-      // CaiDatcônglàmsổThuocTinh
       if (props.workbookOptions) {
         workbook.Props = {
           Title: filename,
@@ -270,34 +257,28 @@
 
       emit('export-progress', 50)
 
-      // xâycônglàmbảng
       const worksheet = XLSX.utils.json_to_sheet(processedData)
 
-      // CaiDatcộtChiều rộng
       worksheet['!cols'] = calculateColumnWidths(processedData)
 
       emit('export-progress', 70)
 
-      // Thêm mớicônglàmbảngđếncônglàmsổ
       XLSX.utils.book_append_sheet(workbook, worksheet, sheetName)
 
       emit('export-progress', 85)
 
-      // sinhthành Excel vănphần tử
       const excelBuffer = XLSX.write(workbook, {
         bookType: 'xlsx',
         type: 'array',
         compression: true
       })
 
-      // xây Blob đồng thờiTải xuống
       const blob = new Blob([excelBuffer], {
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       })
 
       emit('export-progress', 95)
 
-      // khiếndùngThoiGiandấuĐảm bảovănphần tửdanhduymột
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
       const finalFilename = `${filename}_${timestamp}.xlsx`
 
@@ -305,35 +286,32 @@
 
       emit('export-progress', 100)
 
-      // bằngđợiTải xuốngBắt đầu
       await nextTick()
 
       return Promise.resolve()
     } catch (error) {
-      throw new ExportError(`Excel Xuất fileThatBai: ${(error as Error).message}`, 'EXPORT_FAILED', error)
+      throw new ExportError(
+        `Excel Xuất fileThatBai: ${(error as Error).message}`,
+        'EXPORT_FAILED',
+        error
+      )
     }
   }
 
-  /** XuLyXuất file */
   const handleExport = useThrottleFn(async () => {
     if (isExporting.value) return
 
     isExporting.value = true
 
     try {
-      // nghiệmtínhDữ liệu
       validateData(props.data)
 
-      // Kích hoạtXuất filetrướcSuKien
       emit('before-export', props.data)
 
-      // ThựcdòngXuất file
       await exportToExcel(props.data, props.filename, props.sheetName)
 
-      // Kích hoạtThanhCongSuKien
       emit('export-success', props.filename, props.data.length)
 
-      // Hiển thịThanhCongTinNhan
       if (props.showSuccessMessage) {
         ElMessage.success({
           message: `ThanhCongXuất file ${props.data.length} điềuDữ liệu`,
@@ -346,10 +324,8 @@
           ? error
           : new ExportError(`Xuất fileThatBai: ${(error as Error).message}`, 'UNKNOWN_ERROR', error)
 
-      // Kích hoạtLỗiSuKien
       emit('export-error', exportError)
 
-      // Hiển thịLỗiTinNhan
       if (props.showErrorMessage) {
         ElMessage.error({
           message: exportError.message,
@@ -364,7 +340,6 @@
     }
   }, 1000)
 
-  // lộlộPhuongThuccungchaComponentđiềudùng
   defineExpose({
     exportData: handleExport,
     isExporting: readonly(isExporting),

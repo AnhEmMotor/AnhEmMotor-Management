@@ -33,7 +33,7 @@
 
   type InsertFnType = (url: string, alt: string, href: string) => void
 
-  const { VITE_API_URL } = import.meta.env
+  const { VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT } = import.meta.env
 
   // Props Định nghĩa
   interface Props {
@@ -81,32 +81,28 @@
     allowedFileTypes: ['image/*']
   } as const
 
-  // kếThuocTinh：Tải lênphụcvụthiết bịDiaChi
   const uploadServer = computed(
-    () => props.uploadConfig?.server || `${VITE_API_URL}/api/common/upload/wangeditor`
+    () =>
+      props.uploadConfig?.server ||
+      `${VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT}/api/common/upload/wangeditor`
   )
 
-  // hợpđồng thờiTải lênCauHinh
   const mergedUploadConfig = computed(() => ({
     ...DEFAULT_UPLOAD_CONFIG,
     ...props.uploadConfig
   }))
 
-  // Thanh công cụCauHinh
   const toolbarConfig = computed((): Partial<IToolbarConfig> => {
     const config: Partial<IToolbarConfig> = {}
 
-    // hoàntoànTùy chỉnhThanh công cụ
     if (props.toolbarKeys && props.toolbarKeys.length > 0) {
       config.toolbarKeys = props.toolbarKeys
     }
 
-    // chènvàomớiCông cụ
     if (props.insertKeys) {
       config.insertKeys = props.insertKeys
     }
 
-    // xếpchiaCông cụ
     if (props.excludeKeys && props.excludeKeys.length > 0) {
       config.excludeKeys = props.excludeKeys
     }
@@ -140,7 +136,10 @@
 
   // Tùy chỉnhTải lên
   if (props.uploadConfig?.isCustomUpload && props.uploadConfig?.server && editorConfig.MENU_CONF) {
-    editorConfig.MENU_CONF.uploadImage.customUpload = async (file: File, insertFn: InsertFnType) => {
+    editorConfig.MENU_CONF.uploadImage.customUpload = async (
+      file: File,
+      insertFn: InsertFnType
+    ) => {
       try {
         const formData = new FormData()
         formData.append(mergedUploadConfig.value.fieldName, file)
@@ -149,7 +148,7 @@
           url: props.uploadConfig?.server,
           data: formData,
           headers: {
-            'Content-Type':'multipart/form-data',
+            'Content-Type': 'multipart/form-data',
             Authorization: userStore.accessToken
           }
         })
@@ -169,20 +168,16 @@
     }
   }
 
-  // Trình biên tậpxâyvềđiều
   const onCreateEditor = (editor: IDomEditor) => {
     editorRef.value = editor
 
-    // Lắng ngheToàn màn hìnhSuKien
     editor.on('fullScreen', () => {
       console.log('Trình biên tậpvàovàoToàn màn hìnhmôkiểu')
     })
 
-    // Đảm bảotạiTrình biên tậpxâysauỨng dụngTùy chỉnhIcon
     applyCustomIcons()
   }
 
-  // Ứng dụngTùy chỉnhIcon（mangtrùngthửmáychế）
   const applyCustomIcons = () => {
     let retryCount = 0
     const maxRetries = 10
@@ -220,32 +215,25 @@
         retryCount++
         setTimeout(tryApplyIcons, retryDelay)
       } else {
-        console.warn('Thanh công cụRendersiêugiờ，vôphápỨng dụngTùy chỉnhIcon - Trình biên tậpthựcví dụ:', editor.id)
+        console.warn(
+          'Thanh công cụRendersiêugiờ，vôphápỨng dụngTùy chỉnhIcon - Trình biên tậpthựcví dụ:',
+          editor.id
+        )
       }
     }
 
-    // khiếndùng requestAnimationFrame Đảm bảotạidướimộtThựcdòng
     requestAnimationFrame(tryApplyIcons)
   }
 
-  // lộlộTrình biên tậpthựcví dụvàPhuongThuc
   defineExpose({
-    /** LấyTrình biên tậpthựcví dụ */
     getEditor: () => editorRef.value,
-    /** CaiDatTrình biên tậpNoiDung */
     setHtml: (html: string) => editorRef.value?.setHtml(html),
-    /** LấyTrình biên tậpNoiDung */
     getHtml: () => editorRef.value?.getHtml(),
-    /** xóakhôngTrình biên tập */
     clear: () => editorRef.value?.clear(),
-    /** tụtiêuTrình biên tập */
     focus: () => editorRef.value?.focus()
   })
 
-  // sinhmệnhtuầnkỳ
-  onMounted(() => {
-    // IconthếđổiĐãtại onCreateEditor trongXuLy
-  })
+  onMounted(() => {})
 
   onBeforeUnmount(() => {
     const editor = editorRef.value

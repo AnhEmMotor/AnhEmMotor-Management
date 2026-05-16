@@ -17,9 +17,11 @@
       </template>
       <div>
         <p class="m-0 mb-4 leading-[1.6] text-g-700">
-          tậpthànhTimKiem、Làm mới、Toàn màn hình、Kích thướckhốngchế、cộtHiển thịẨn、Kéo thảxếpthứ、BảngKiểu dángkhốngchế、đồng thờitrongđặt useTable
-          tổhợpkiểuHàm，gợicungcườngđạicủatổhợpkiểu API，tậpthànhDữ liệuLấy、trínăngCache（LRUpháp）、
-          đaloạiLàm mớisáchlượcbằngCốt lõicôngnăng，toànmặtgợilênBảngmởpháthiệusuất。
+          tậpthànhTimKiem、Làm mới、Toàn màn hình、Kích thướckhốngchế、cộtHiển thịẨn、Kéo
+          thảxếpthứ、BảngKiểu dángkhốngchế、đồng thờitrongđặt useTable
+          tổhợpkiểuHàm，gợicungcườngđạicủatổhợpkiểu API，tậpthànhDữ
+          liệuLấy、trínăngCache（LRUpháp）、 đaloạiLàm mớisáchlượcbằngCốt
+          lõicôngnăng，toànmặtgợilênBảngmởpháthiệusuất。
         </p>
 
         <!-- điềuthửBảng (Panel) -->
@@ -48,7 +50,9 @@
                   <ElButton size="small" @click="handleClearCache">xóakhôngCache</ElButton>
                   <ElButton size="small" @click="handleCleanExpiredCache">xóalýquakỳCache</ElButton>
                   <ElButton size="small" @click="handleTestCache">đothửCache</ElButton>
-                  <ElButton size="small" @click="forceRefreshCacheInfo">Làm mớiCacheThongTin</ElButton>
+                  <ElButton size="small" @click="forceRefreshCacheInfo"
+                    >Làm mớiCacheThongTin</ElButton
+                  >
                 </div>
               </div>
             </ElCollapseItem>
@@ -118,7 +122,9 @@
         <!-- côngnăngCông tắc -->
         <div class="flex flex-wrap gap-4 mt-4">
           <ElSwitch v-model="showDebugPanel" active-text="điềuthửBảng (Panel)" />
-          <ElText type="info" size="small"> 💡 CachecôngnăngĐãBật，Có thểthông quađiềuthửBảng (Panel)XemChiTietThongTin </ElText>
+          <ElText type="info" size="small">
+            💡 CachecôngnăngĐãBật，Có thểthông quađiềuthửBảng (Panel)XemChiTietThongTin
+          </ElText>
         </div>
       </div>
     </ElCard>
@@ -203,8 +209,12 @@
               <template #dropdown>
                 <ElDropdownMenu>
                   <ElDropdownItem command="addColumn">Thêm mớicột（GhiChucột）</ElDropdownItem>
-                  <ElDropdownItem command="batchAddColumns">lôlượngThêm mới（GhiChu、Tag）</ElDropdownItem>
-                  <ElDropdownItem command="toggleColumn">Chuyển đổicột（Số điện thoại）</ElDropdownItem>
+                  <ElDropdownItem command="batchAddColumns"
+                    >lôlượngThêm mới（GhiChu、Tag）</ElDropdownItem
+                  >
+                  <ElDropdownItem command="toggleColumn"
+                    >Chuyển đổicột（Số điện thoại）</ElDropdownItem
+                  >
                   <ElDropdownItem command="batchToggleColumns"
                     >lôlượngChuyển đổi（GioiTinh、Số điện thoại）</ElDropdownItem
                   >
@@ -212,14 +222,18 @@
                   <ElDropdownItem command="batchRemoveColumns"
                     >lôlượngXóa（Trạng thái、Đánh giá）</ElDropdownItem
                   >
-                  <ElDropdownItem command="updateColumn">Cập nhậtcột（Số điện thoại）</ElDropdownItem>
+                  <ElDropdownItem command="updateColumn"
+                    >Cập nhậtcột（Số điện thoại）</ElDropdownItem
+                  >
                   <ElDropdownItem command="batchUpdateColumns"
                     >lôlượngCập nhật（GioiTinh、Số điện thoại）</ElDropdownItem
                   >
                   <ElDropdownItem command="reorderColumns"
                     >nộpđổicộtViTri（GioiTinh、Số điện thoại）</ElDropdownItem
                   >
-                  <ElDropdownItem command="resetColumns" divided>Đặt lạinêncócộtCauHinh</ElDropdownItem>
+                  <ElDropdownItem command="resetColumns" divided
+                    >Đặt lạinêncócộtCauHinh</ElDropdownItem
+                  >
                 </ElDropdownMenu>
               </template>
             </ElDropdown>
@@ -496,7 +510,11 @@
     name: [{ required: true, message: 'Vui lòng nhậpTên người dùng', trigger: 'blur' }],
     phone: [
       { required: true, message: 'Vui lòng nhậpSố điện thoại', trigger: 'blur' },
-      { pattern: /^1[3456789]\d{9}$/, message: 'Vui lòng nhậpđúngChínhcủaSố điện thoại', trigger: 'blur' }
+      {
+        pattern: /^1[3456789]\d{9}$/,
+        message: 'Vui lòng nhậpđúngChínhcủaSố điện thoại',
+        trigger: 'blur'
+      }
     ]
   }
 
@@ -1279,8 +1297,14 @@
       case 'batchUpdateColumns': {
         // lôlượngCập nhậtđachiếccột（mớingônpháp）
         updateColumn?.([
-          { prop: 'userGender', updates: { width: 200, label: 'GioiTinh-ĐãCập nhật', sortable: false } },
-          { prop: 'userPhone', updates: { width: 200, label: 'Số điện thoại-ĐãCập nhật', sortable: false } }
+          {
+            prop: 'userGender',
+            updates: { width: 200, label: 'GioiTinh-ĐãCập nhật', sortable: false }
+          },
+          {
+            prop: 'userPhone',
+            updates: { width: 200, label: 'Số điện thoại-ĐãCập nhật', sortable: false }
+          }
         ])
         ElMessage.success('ĐãlôlượngCập nhậtGioiTinhvàSố điện thoạicột')
         break

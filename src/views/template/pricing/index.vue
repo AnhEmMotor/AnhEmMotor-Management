@@ -5,7 +5,9 @@
       <h2 class="mb-2.5 text-2xl font-normal text-g-600 max-sm:text-2xl">{{ $t('admin.t222') }}</h2>
       <div class="gap-2 flex-cc mt-2.5 max-sm:mt-3.5 max-sm:!block">
         <p class="text-sm italic text-g-600 max-sm:text-sm">{{ $t('admin.t223') }}</p>
-        <ElTag type="success" size="large" round class="max-sm:mt-3.5">{{ $t('admin.t224') }}</ElTag>
+        <ElTag type="success" size="large" round class="max-sm:mt-3.5">{{
+          $t('admin.t224')
+        }}</ElTag>
       </div>
     </div>
 
@@ -41,7 +43,9 @@
             </div>
 
             <div class="mt-auto text-center">
-              <ElButton type="primary" class="w-full h-10" v-ripple>{{ $t('admin.t226') }}</ElButton>
+              <ElButton type="primary" class="w-full h-10" v-ripple>{{
+                $t('admin.t226')
+              }}</ElButton>
             </div>
           </ElCard>
         </ElCol>

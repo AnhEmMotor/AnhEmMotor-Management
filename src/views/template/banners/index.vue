@@ -54,7 +54,9 @@
           }"
         >
           <template #title>
-            <h2 style="margin: 0; font-size: 1.6rem; color: #fff !important">{{ $t('admin.t174') }}</h2>
+            <h2 style="margin: 0; font-size: 1.6rem; color: #fff !important">{{
+              $t('admin.t174')
+            }}</h2>
           </template>
 
           <template #subtitle>
@@ -179,7 +181,8 @@
   const PresetBanners = {
     marketing: {
       title: 'hạngiờTốiưu đãisốngđộng',
-      subtitle: 'tinhvịthươngsản phẩm 48 tiểugiờchớpmua，nhấtcaochia sẻnhận 7 Tốiưu đãi，Số lượngcóhạn！',
+      subtitle:
+        'tinhvịthươngsản phẩm 48 tiểugiờchớpmua，nhấtcaochia sẻnhận 7 Tốiưu đãi，Số lượngcóhạn！',
       titleColor: 'var(--art-gray-900)',
       subtitleColor: 'var(--art-gray-900)',
       boxStyle: '!bg-success/15',
@@ -193,7 +196,8 @@
     },
     info: {
       title: 'phụcvụđếnkỳgợitỉnh',
-      subtitle: 'bạncủaNâng caophụcvụtươngtại 7 ngàysauđếnkỳ，Vui lòngvàgiờtiếpphílấytiếptiếpchia sẻnhậnĐầy đủcôngnăng。',
+      subtitle:
+        'bạncủaNâng caophụcvụtươngtại 7 ngàysauđếnkỳ，Vui lòngvàgiờtiếpphílấytiếptiếpchia sẻnhậnĐầy đủcôngnăng。',
       titleColor: 'var(--art-gray-900)',
       subtitleColor: 'var(--art-gray-900)',
       boxStyle: '!bg-theme/15',

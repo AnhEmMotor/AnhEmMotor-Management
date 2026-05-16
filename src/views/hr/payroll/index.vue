@@ -70,11 +70,7 @@
         </div>
       </template>
 
-      <ArtTable
-        :loading="loading"
-        :data="payrollData"
-        :columns="columns"
-      >
+      <ArtTable :loading="loading" :data="payrollData" :columns="columns">
         <!-- Employee Info -->
         <template #fullName="{ row }">
           <div class="flex items-center gap-3">
@@ -104,7 +100,9 @@
         <!-- Total Income -->
         <template #totalIncome="{ row }">
           <div class="flex flex-col items-end">
-            <span class="font-bold text-red-600 text-lg">{{ formatCurrency(row.baseSalary + row.confirmedCommission) }}</span>
+            <span class="font-bold text-red-600 text-lg">{{
+              formatCurrency(row.baseSalary + row.confirmedCommission)
+            }}</span>
             <span class="text-[10px] text-gray-400 italic">Dự kiến thực nhận</span>
           </div>
         </template>
@@ -119,101 +117,112 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import { Refresh, Wallet } from '@element-plus/icons-vue'
-import { useHRStore } from '@/store/modules/hr'
-import { ElMessage, ElMessageBox } from 'element-plus'
+  import { ref, onMounted, computed } from 'vue'
+  import { Refresh, Wallet } from '@element-plus/icons-vue'
+  import { useHRStore } from '@/store/modules/hr'
+  import { ElMessage, ElMessageBox } from 'element-plus'
 
-defineOptions({ name: 'HRPayroll' })
+  defineOptions({ name: 'HRPayroll' })
 
-const hrStore = useHRStore()
-const loading = computed(() => hrStore.loading)
-const selectedMonth = ref(new Date())
+  const hrStore = useHRStore()
+  const loading = computed(() => hrStore.loading)
+  const selectedMonth = ref(new Date())
 
-const payrollData = ref([])
-const totalPayroll = ref(0)
-const pendingCommission = ref(0)
-const confirmedCommission = ref(0)
+  const payrollData = ref([])
+  const totalPayroll = ref(0)
+  const pendingCommission = ref(0)
+  const confirmedCommission = ref(0)
 
-const currentMonthLabel = computed(() => {
-  return (selectedMonth.value.getMonth() + 1) + '/' + selectedMonth.value.getFullYear()
-})
-
-const columns = [
-  { label: 'Nhân viên', prop: 'fullName', slot: 'fullName', useSlot: true },
-  { label: 'Lương cơ bản', slot: 'baseSalary', width: 150, useSlot: true },
-  { label: 'Hoa hồng Tạm tính', slot: 'pendingCommission', width: 150, useSlot: true },
-  { label: 'Hoa hồng Đã chốt', slot: 'confirmedCommission', width: 150, useSlot: true },
-  { label: 'Tổng thu nhập', slot: 'totalIncome', width: 200, align: 'right', useSlot: true },
-  { label: 'Thao tác', slot: 'operation', width: 100, align: 'center', useSlot: true }
-]
-
-const fetchData = async () => {
-  const month = selectedMonth.value.getMonth() + 1
-  const year = selectedMonth.value.getFullYear()
-  try {
-    const res = await hrStore.fetchPayrollSummary(month, year)
-    payrollData.value = res.items
-    totalPayroll.value = res.totalPayroll
-    pendingCommission.value = res.totalPending
-    confirmedCommission.value = res.totalConfirmed
-  } catch (err: any) {
-    ElMessage.error('Lỗi khi tải dữ liệu bảng lương')
-  }
-}
-
-const handleApproveAll = () => {
-  ElMessageBox.confirm(
-    `Bạn có chắc chắn muốn Duyệt chi lương cho toàn bộ nhân viên trong tháng ${currentMonthLabel.value}? Sau khi duyệt, trạng thái hoa hồng sẽ chuyển sang 'Đã chi trả' và không thể hoàn tác.`,
-    'Xác nhận Duyệt chi',
-    {
-      confirmButtonText: 'Đồng ý Duyệt chi',
-      cancelButtonText: 'Hủy',
-      type: 'success',
-      confirmButtonClass: 'bg-success !border-success'
-    }
-  ).then(async () => {
-    try {
-      await hrStore.approvePayroll({
-        month: selectedMonth.value.getMonth() + 1,
-        year: selectedMonth.value.getFullYear()
-      })
-      ElMessage.success('Đã duyệt chi lương thành công!')
-      fetchData()
-    } catch (err: any) {
-      ElMessage.error(err.message || 'Lỗi khi duyệt chi')
-    }
+  const currentMonthLabel = computed(() => {
+    return selectedMonth.value.getMonth() + 1 + '/' + selectedMonth.value.getFullYear()
   })
-}
 
-const showDetail = (row: any) => {
-  console.log('Detail:', row)
-}
+  const columns = [
+    { label: 'Nhân viên', prop: 'fullName', slot: 'fullName', useSlot: true },
+    { label: 'Lương cơ bản', slot: 'baseSalary', width: 150, useSlot: true },
+    { label: 'Hoa hồng Tạm tính', slot: 'pendingCommission', width: 150, useSlot: true },
+    { label: 'Hoa hồng Đã chốt', slot: 'confirmedCommission', width: 150, useSlot: true },
+    { label: 'Tổng thu nhập', slot: 'totalIncome', width: 200, align: 'right', useSlot: true },
+    { label: 'Thao tác', slot: 'operation', width: 100, align: 'center', useSlot: true }
+  ]
 
-const formatCurrency = (val: number) => {
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val)
-}
+  const fetchData = async () => {
+    const month = selectedMonth.value.getMonth() + 1
+    const year = selectedMonth.value.getFullYear()
+    try {
+      const res = await hrStore.fetchPayrollSummary(month, year)
+      payrollData.value = res.items
+      totalPayroll.value = res.totalPayroll
+      pendingCommission.value = res.totalPending
+      confirmedCommission.value = res.totalConfirmed
+    } catch (_err: any) {
+      ElMessage.error('Lỗi khi tải dữ liệu bảng lương')
+    }
+  }
 
-onMounted(() => {
-  fetchData()
-})
+  const handleApproveAll = () => {
+    ElMessageBox.confirm(
+      `Bạn có chắc chắn muốn Duyệt chi lương cho toàn bộ nhân viên trong tháng ${currentMonthLabel.value}? Sau khi duyệt, trạng thái hoa hồng sẽ chuyển sang 'Đã chi trả' và không thể hoàn tác.`,
+      'Xác nhận Duyệt chi',
+      {
+        confirmButtonText: 'Đồng ý Duyệt chi',
+        cancelButtonText: 'Hủy',
+        type: 'success',
+        confirmButtonClass: 'bg-success !border-success'
+      }
+    ).then(async () => {
+      try {
+        await hrStore.approvePayroll({
+          month: selectedMonth.value.getMonth() + 1,
+          year: selectedMonth.value.getFullYear()
+        })
+        ElMessage.success('Đã duyệt chi lương thành công!')
+        fetchData()
+      } catch (_err: any) {
+        ElMessage.error(_err.message || 'Lỗi khi duyệt chi')
+      }
+    })
+  }
+
+  const showDetail = (row: any) => {
+    console.log('Detail:', row)
+  }
+
+  const formatCurrency = (val: number) => {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val)
+  }
+
+  onMounted(() => {
+    fetchData()
+  })
 </script>
 
 <style scoped>
-.filter-card {
-  border-radius: 12px;
-  border: none;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.03);
-}
+  .filter-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgb(0 0 0 / 3%);
+  }
 
-.art-table-card {
-  border-radius: 16px;
-  border: none;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-}
+  .art-table-card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgb(0 0 0 / 3%);
+  }
 
-.bg-primary { background-color: #409eff; }
-.bg-warning { background-color: #e6a23c; }
-.bg-success { background-color: #67c23a; }
-.bg-danger { background-color: #f56c6c; }
+  .bg-primary {
+    background-color: #409eff;
+  }
+
+  .bg-warning {
+    background-color: #e6a23c;
+  }
+
+  .bg-success {
+    background-color: #67c23a;
+  }
+
+  .bg-danger {
+    background-color: #f56c6c;
+  }
 </style>

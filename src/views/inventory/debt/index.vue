@@ -37,7 +37,7 @@
 
       <!-- Supplier Debt Table -->
       <div v-if="activeTab === 'suppliers'">
-        <ArtTable :data="supplierDebts" :columns="supplierColumns" :pagination="false">
+        <ArtTable :data="supplierDebts" :columns="supplierColumns">
           <template #balance="{ row }">
             <span class="font-bold" :class="row.balance > 0 ? 'text-red-500' : 'text-gray-400'">
               {{ row.balance.toLocaleString() }} VNĐ
@@ -53,7 +53,7 @@
 
       <!-- Bank Installment Table -->
       <div v-else>
-        <ArtTable :data="bankInstallments" :columns="bankColumns" :pagination="false">
+        <ArtTable :data="bankInstallments" :columns="bankColumns">
           <template #daysPending="{ row }">
             <span :class="row.daysPending > 7 ? 'text-danger font-bold' : ''">
               {{ row.daysPending }} ngày
@@ -65,9 +65,14 @@
             </ElButton>
           </template>
         </ArtTable>
-        <div class="mt-4 p-4 bg-info/5 rounded border border-info/10 text-xs text-info flex items-center gap-2">
+        <div
+          class="mt-4 p-4 bg-info/5 rounded border border-info/10 text-xs text-info flex items-center gap-2"
+        >
           <ElIcon><InfoFilled /></ElIcon>
-          <span>Nếu ngân hàng chậm giải ngân (> 7 ngày), Admin cần tra cứu đầu mối liên hệ tại mục 7.1 để thúc đẩy hồ sơ.</span>
+          <span
+            >Nếu ngân hàng chậm giải ngân (> 7 ngày), Admin cần tra cứu đầu mối liên hệ tại mục 7.1
+            để thúc đẩy hồ sơ.</span
+          >
         </div>
       </div>
     </ElCard>
@@ -83,20 +88,65 @@
   const activeTab = ref('suppliers')
 
   const supplierDebts = [
-    { name: 'Honda Việt Nam', total: 5000000000, paid: 3500000000, balance: 1500000000, deadline: '20/05/2026', status: 'Pending' },
-    { name: 'Yamaha Motor', total: 1200000000, paid: 1200000000, balance: 0, deadline: '-', status: 'Cleared' },
-    { name: 'Mạnh Quang Phụ Tùng', total: 150000000, paid: 50000000, balance: 100000000, deadline: '10/05/2026', status: 'Overdue' }
+    {
+      name: 'Honda Việt Nam',
+      total: 5000000000,
+      paid: 3500000000,
+      balance: 1500000000,
+      deadline: '20/05/2026',
+      status: 'Pending'
+    },
+    {
+      name: 'Yamaha Motor',
+      total: 1200000000,
+      paid: 1200000000,
+      balance: 0,
+      deadline: '-',
+      status: 'Cleared'
+    },
+    {
+      name: 'Mạnh Quang Phụ Tùng',
+      total: 150000000,
+      paid: 50000000,
+      balance: 100000000,
+      deadline: '10/05/2026',
+      status: 'Overdue'
+    }
   ]
 
   const bankInstallments = [
-    { customer: 'Nguyễn Văn A', bank: 'FE Credit', amount: 25000000, daysPending: 5, contact: 'Mr. Bình (0901234567)' },
-    { customer: 'Trần Thị B', bank: 'Home Credit', amount: 18000000, daysPending: 2, contact: 'Ms. Lan (0987654321)' },
-    { customer: 'Lê Văn C', bank: 'HD Saison', amount: 45000000, daysPending: 12, contact: 'Mr. Hùng (0912345678)' }
+    {
+      customer: 'Nguyễn Văn A',
+      bank: 'FE Credit',
+      amount: 25000000,
+      daysPending: 5,
+      contact: 'Mr. Bình (0901234567)'
+    },
+    {
+      customer: 'Trần Thị B',
+      bank: 'Home Credit',
+      amount: 18000000,
+      daysPending: 2,
+      contact: 'Ms. Lan (0987654321)'
+    },
+    {
+      customer: 'Lê Văn C',
+      bank: 'HD Saison',
+      amount: 45000000,
+      daysPending: 12,
+      contact: 'Mr. Hùng (0912345678)'
+    }
   ]
 
   const supplierColumns = [
     { label: 'Nhà cung cấp', prop: 'name', minWidth: 200 },
-    { label: 'Tổng nhập', prop: 'total', width: 150, align: 'right', formatter: (row: any, col: any, val: number) => val?.toLocaleString() },
+    {
+      label: 'Tổng nhập',
+      prop: 'total',
+      width: 150,
+      align: 'right',
+      formatter: (row: any) => row.total?.toLocaleString()
+    },
     { label: 'Còn nợ', prop: 'balance', width: 180, useSlot: true, align: 'right' },
     { label: 'Hạn thanh toán', prop: 'deadline', width: 140, align: 'center' },
     { label: 'Trạng thái', prop: 'status', width: 130, useSlot: true, align: 'center' }
@@ -105,10 +155,22 @@
   const bankColumns = [
     { label: 'Khách hàng', prop: 'customer', width: 160 },
     { label: 'Ngân hàng', prop: 'bank', width: 130 },
-    { label: 'Số tiền vay', prop: 'amount', width: 150, align: 'right', formatter: (row: any, col: any, val: number) => val?.toLocaleString() },
+    {
+      label: 'Số tiền vay',
+      prop: 'amount',
+      width: 150,
+      align: 'right',
+      formatter: (row: any) => row.amount?.toLocaleString()
+    },
     { label: 'Thời gian treo', prop: 'daysPending', width: 140, useSlot: true, align: 'center' },
     { label: 'Đầu mối liên hệ', prop: 'contact', minWidth: 200 },
-    { label: 'Thao tác', prop: 'operation', useSlot: true, width: 180, fixed: 'right' }
+    {
+      label: 'Thao tác',
+      prop: 'operation',
+      useSlot: true,
+      width: 180,
+      fixed: 'right' as const
+    }
   ]
 
   const handleContact = (row: any) => {

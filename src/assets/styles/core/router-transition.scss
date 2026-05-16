@@ -1,31 +1,21 @@
 @use 'sass:map';
 
-// === Biếnsốkhuvực ===
 $transition: (
-  // độnghọakhigian
   duration: 0.25s,
-  // TrượtđộngđộnghọaDiđộngNgoại
   distance: 15px,
-  // mặcđịnhBộđộngHàmDữ
   easing: cubic-bezier(0.25, 0.1, 0.25, 1),
-  // MờvàoMờdầndụngBộđộngHàmDữ
   fade-easing: cubic-bezier(0.4, 0, 0.6, 1)
 );
 
-// NgănHủyPhânđặttiềnHàmDữ，RútChiềulờidụngHiệu
 @function transition-config($key) {
   @return map.get($transition, $key);
 }
 
-// Biếnsố
 $duration: transition-config('duration');
 $distance: transition-config('distance');
 $easing: transition-config('easing');
 $fade-easing: transition-config('fade-easing');
 
-// === độnghọaLớp ===
-
-// MờvàoMờdầnđộnghọa
 .fade {
   &-enter-active,
   &-leave-active {
@@ -44,7 +34,6 @@ $fade-easing: transition-config('fade-easing');
   }
 }
 
-// TrượtđộngđộnghọaThôngdụngkiểuthức
 @mixin slide-transition($direction) {
   $distance-x: 0;
   $distance-y: 0;
@@ -89,7 +78,6 @@ $fade-easing: transition-config('fade-easing');
   }
 }
 
-// TrượtđộngđộnghọaphươngLớp
 .slide-left {
   @include slide-transition('left');
 }

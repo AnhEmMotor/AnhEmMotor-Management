@@ -31,7 +31,9 @@
     <template #footer>
       <ElButton @click="outputSelectedData" style="margin-left: 8px">LấyvịtrongDữ liệu</ElButton>
 
-      <ElButton @click="toggleExpandAll">{{ isExpandAll ? 'toànbộThu gọn' : 'toànbộMở rộng' }}</ElButton>
+      <ElButton @click="toggleExpandAll">{{
+        isExpandAll ? 'toànbộThu gọn' : 'toànbộMở rộng'
+      }}</ElButton>
       <ElButton @click="toggleSelectAll" style="margin-left: 8px">{{
         isSelectAll ? 'Hủytoànvị' : 'toànbộChọn'
       }}</ElButton>
@@ -249,6 +251,8 @@
     }
 
     console.log('=== vịtrongcủaQuyenHanDữ liệu ===', selectedData)
-    ElMessage.success(`ĐãnhậpravịtrongDữ liệuđếnBangDieuKhien，cộngvịtrong ${selectedData.totalChecked} chiếctiếtđiểm`)
+    ElMessage.success(
+      `ĐãnhậpravịtrongDữ liệuđếnBangDieuKhien，cộngvịtrong ${selectedData.totalChecked} chiếctiếtđiểm`
+    )
   }
 </script>

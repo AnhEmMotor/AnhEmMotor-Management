@@ -4,7 +4,7 @@ import { ElMessage } from 'element-plus'
 export function useCustomerProfile() {
   const activeTab = ref('timeline')
   const isVerified = ref(false)
-  
+
   // Dữ liệu khách hàng giả lập
   const customerInfo = reactive({
     id: 'AEM-2024-089',
@@ -21,8 +21,16 @@ export function useCustomerProfile() {
 
   // Danh sách Phường/Xã tại Biên Hòa
   const wardsInBienHoa = [
-    'Trảng Dài', 'Long Bình', 'Hố Nai', 'Tân Hiệp', 'Long Bình Tân', 
-    'Phước Tân', 'Tam Phước', 'Quang Vinh', 'Thanh Bình', 'Quyết Thắng'
+    'Trảng Dài',
+    'Long Bình',
+    'Hố Nai',
+    'Tân Hiệp',
+    'Long Bình Tân',
+    'Phước Tân',
+    'Tam Phước',
+    'Quang Vinh',
+    'Thanh Bình',
+    'Quyết Thắng'
   ]
 
   // Timeline tương tác

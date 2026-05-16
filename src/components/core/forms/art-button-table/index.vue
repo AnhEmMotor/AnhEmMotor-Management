@@ -34,7 +34,6 @@
     (e: 'click'): void
   }>()
 
-  // MacDinhNútCauHinh
   const defaultButtons = {
     add: { icon: 'ri:add-fill', class: 'bg-theme/12 text-theme' },
     edit: { icon: 'ri:pencil-line', class: 'bg-secondary/12 text-secondary' },
@@ -43,12 +42,10 @@
     more: { icon: 'ri:more-2-fill', class: '' }
   } as const
 
-  // LấyIconNoiDung
   const iconContent = computed(() => {
     return props.icon || (props.type ? defaultButtons[props.type]?.icon : '') || ''
   })
 
-  // LấyNútKiểu dángloại
   const buttonClass = computed(() => {
     return props.iconClass || (props.type ? defaultButtons[props.type]?.class : '') || ''
   })

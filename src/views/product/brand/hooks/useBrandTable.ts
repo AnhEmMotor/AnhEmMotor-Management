@@ -37,7 +37,14 @@ export function useBrandTable() {
         { prop: 'name', label: 'Thương hiệu', width: 220, useSlot: true },
         { prop: 'origin', label: 'Xuất xứ', width: 140, useSlot: true },
         { prop: 'description', label: 'Mô tả chi tiết', minWidth: 250, showOverflowTooltip: true },
-        { prop: 'operation', label: 'Thao tác', width: 150, useSlot: true, align: 'center', fixed: 'right' }
+        {
+          prop: 'operation',
+          label: 'Thao tác',
+          width: 150,
+          useSlot: true,
+          align: 'center',
+          fixed: 'right'
+        }
       ]
     }
   })
@@ -104,7 +111,7 @@ export function useBrandTable() {
     const filters = []
     if (params.name) filters.push(`Name@=${params.name}`)
     if (params.origin) filters.push(`Origin@=${params.origin}`)
-    
+
     replaceSearchParams({
       Filters: filters.join(',')
     })

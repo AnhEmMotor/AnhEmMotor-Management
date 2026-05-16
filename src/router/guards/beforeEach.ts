@@ -267,10 +267,7 @@ async function handleDynamicRoutes(
 
   try {
     // 1. Lấy NguoiDungThongTin và Menu cùng lúc để tăng tốc
-    const [_, menuList] = await Promise.all([
-      fetchUserInfo(),
-      menuProcessor.getMenuList()
-    ])
+    const [, menuList] = await Promise.all([fetchUserInfo(), menuProcessor.getMenuList()])
 
     // 3. nghiệmtínhMenuDữ liệu
     if (!menuProcessor.validateMenuList(menuList)) {
@@ -320,7 +317,9 @@ async function handleDynamicRoutes(
       closeLoading()
 
       // nhậpraCanhBaoThongTin
-      console.warn(`[RouteGuard] NguoiDungvôQuyenHanTruy cậpđường: ${to.path}，ĐãnhảychuyểnđếnTrangChu`)
+      console.warn(
+        `[RouteGuard] NguoiDungvôQuyenHanTruy cậpđường: ${to.path}，ĐãnhảychuyểnđếnTrangChu`
+      )
 
       // thẳngtiếpnhảychuyểnđếnTrangChu
       next({

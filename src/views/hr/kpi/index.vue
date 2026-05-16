@@ -49,10 +49,17 @@
             </ElSelect>
           </div>
         </template>
-        
+
         <div class="flex flex-col gap-4">
-          <div v-for="(item, index) in rankings" :key="item.id" class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors">
-            <div class="w-8 h-8 flex-c font-bold text-lg" :class="index < 3 ? 'text-yellow-500' : 'text-gray-300'">
+          <div
+            v-for="(item, index) in rankings"
+            :key="item.id"
+            class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors"
+          >
+            <div
+              class="w-8 h-8 flex-c font-bold text-lg"
+              :class="index < 3 ? 'text-yellow-500' : 'text-gray-300'"
+            >
               {{ index + 1 }}
             </div>
             <ElAvatar :size="40" :src="item.avatar">{{ item.name.charAt(0) }}</ElAvatar>
@@ -61,7 +68,12 @@
                 <span class="font-bold text-gray-800">{{ item.name }}</span>
                 <span class="font-bold text-primary">{{ item.progress }}%</span>
               </div>
-              <ElProgress :percentage="item.progress" :show-text="false" :stroke-width="8" :status="item.progress > 90 ? 'success' : ''" />
+              <ElProgress
+                :percentage="item.progress"
+                :show-text="false"
+                :stroke-width="8"
+                :status="item.progress > 90 ? 'success' : ''"
+              />
             </div>
           </div>
         </div>
@@ -72,23 +84,22 @@
         <template #header>
           <h4 class="m-0">Chi tiết định mức hoa hồng nhân viên</h4>
         </template>
-        
-        <ArtTable
-          :loading="loading"
-          :data="employeeKPIs"
-          :columns="columns"
-        >
+
+        <ArtTable :loading="loading" :data="employeeKPIs" :columns="columns">
           <template #name="{ row }">
             <span class="font-bold text-gray-700">{{ row.name }}</span>
           </template>
-          
+
           <template #performance="{ row }">
             <div class="flex flex-col gap-1">
               <div class="flex-cb text-[10px]">
                 <span>{{ formatCurrency(row.current) }}</span>
                 <span class="text-gray-400">/ {{ formatCurrency(row.target) }}</span>
               </div>
-              <ElProgress :percentage="Math.min(100, Math.round((row.current / row.target) * 100))" :stroke-width="4" />
+              <ElProgress
+                :percentage="Math.min(100, Math.round((row.current / row.target) * 100))"
+                :stroke-width="4"
+              />
             </div>
           </template>
 
@@ -102,55 +113,69 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+  import { ref, onMounted } from 'vue'
 
-defineOptions({ name: 'HRKPI' })
+  defineOptions({ name: 'HRKPI' })
 
-const loading = ref(false)
-const selectedMonth = ref(1)
+  const loading = ref(false)
+  const selectedMonth = ref(1)
 
-const rankings = ref([
-  { id: 1, name: 'Nguyễn Văn A', progress: 115, avatar: '' },
-  { id: 2, name: 'Trần Thị B', progress: 98, avatar: '' },
-  { id: 3, name: 'Lê Văn C', progress: 92, avatar: '' },
-  { id: 4, name: 'Phạm Minh D', progress: 85, avatar: '' },
-  { id: 5, name: 'Hoàng Anh E', progress: 78, avatar: '' }
-])
+  const rankings = ref([
+    { id: 1, name: 'Nguyễn Văn A', progress: 115, avatar: '' },
+    { id: 2, name: 'Trần Thị B', progress: 98, avatar: '' },
+    { id: 3, name: 'Lê Văn C', progress: 92, avatar: '' },
+    { id: 4, name: 'Phạm Minh D', progress: 85, avatar: '' },
+    { id: 5, name: 'Hoàng Anh E', progress: 78, avatar: '' }
+  ])
 
-const employeeKPIs = ref([
-  { id: 1, name: 'Nguyễn Văn A', target: 500000000, current: 575000000, commission: 12500000 },
-  { id: 2, name: 'Trần Thị B', target: 400000000, current: 392000000, commission: 8400000 },
-  { id: 3, name: 'Lê Văn C', target: 400000000, current: 368000000, commission: 7200000 },
-  { id: 4, name: 'Phạm Minh D', target: 300000000, current: 255000000, commission: 5100000 }
-])
+  const employeeKPIs = ref([
+    { id: 1, name: 'Nguyễn Văn A', target: 500000000, current: 575000000, commission: 12500000 },
+    { id: 2, name: 'Trần Thị B', target: 400000000, current: 392000000, commission: 8400000 },
+    { id: 3, name: 'Lê Văn C', target: 400000000, current: 368000000, commission: 7200000 },
+    { id: 4, name: 'Phạm Minh D', target: 300000000, current: 255000000, commission: 5100000 }
+  ])
 
-const columns = [
-  { label: 'Nhân viên', slot: 'name', useSlot: true },
-  { label: 'Doanh số thực tế', slot: 'performance', width: 200, useSlot: true },
-  { label: 'Hoa hồng nhận', slot: 'commission', width: 150, align: 'right', useSlot: true }
-]
+  const columns = [
+    { label: 'Nhân viên', slot: 'name', useSlot: true },
+    { label: 'Doanh số thực tế', slot: 'performance', width: 200, useSlot: true },
+    { label: 'Hoa hồng nhận', slot: 'commission', width: 150, align: 'right', useSlot: true }
+  ]
 
-const formatCurrency = (val: number) => {
-  if (val >= 1000000000) return (val / 1000000000).toFixed(1) + ' Tỷ'
-  if (val >= 1000000) return (val / 1000000).toFixed(1) + ' Tr'
-  return val.toLocaleString('vi-VN') + ' đ'
-}
+  const formatCurrency = (val: number) => {
+    if (val >= 1000000000) return (val / 1000000000).toFixed(1) + ' Tỷ'
+    if (val >= 1000000) return (val / 1000000).toFixed(1) + ' Tr'
+    return val.toLocaleString('vi-VN') + ' đ'
+  }
 
-onMounted(() => {
-  // Fetch real data
-})
+  onMounted(() => {
+    // Fetch real data
+  })
 </script>
 
 <style scoped>
-.art-table-card {
-  border-radius: 16px;
-  border: none;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-}
+  .art-table-card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgb(0 0 0 / 3%);
+  }
 
-.bg-primary { background-color: #409eff; }
-.bg-success { background-color: #67c23a; }
-.bg-info { background-color: #36cfc9; }
-.bg-warning { background-color: #e6a23c; }
-.bg-danger { background-color: #f56c6c; }
+  .bg-primary {
+    background-color: #409eff;
+  }
+
+  .bg-success {
+    background-color: #67c23a;
+  }
+
+  .bg-info {
+    background-color: #36cfc9;
+  }
+
+  .bg-warning {
+    background-color: #e6a23c;
+  }
+
+  .bg-danger {
+    background-color: #f56c6c;
+  }
 </style>

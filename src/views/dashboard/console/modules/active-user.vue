@@ -10,7 +10,9 @@
     />
     <div class="ml-1">
       <h3 class="mt-5 text-lg font-medium">{{ $t('admin.t52') }}</h3>
-      <p class="mt-1 text-sm">{{ $t('admin.t53') }}<span class="text-success font-medium">+23%</span></p>
+      <p class="mt-1 text-sm"
+        >{{ $t('admin.t53') }}<span class="text-success font-medium">+23%</span></p
+      >
       <p class="mt-1 text-sm">{{ $t('admin.t54') }}</p>
     </div>
     <div class="flex-b mt-2">
@@ -29,7 +31,17 @@
   }
 
   // nhấtcận9chiếctháng
-  const xAxisLabels = ['1tháng', '2tháng', '3tháng', '4tháng', '5tháng', '6tháng', '7tháng', '8tháng', '9tháng']
+  const xAxisLabels = [
+    '1tháng',
+    '2tháng',
+    '3tháng',
+    '4tháng',
+    '5tháng',
+    '6tháng',
+    '7tháng',
+    '8tháng',
+    '9tháng'
+  ]
 
   // mỗithángNguoiDung hoạt độngsố
   const chartData = [160, 100, 150, 80, 190, 100, 175, 120, 160]

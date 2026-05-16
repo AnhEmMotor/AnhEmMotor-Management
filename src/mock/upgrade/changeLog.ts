@@ -52,7 +52,8 @@ export const upgradeLogList = ref<UpgradeLog[]>([
   },
   {
     version: 'v3.0.0',
-    title: 'Sass trùngcấuvì Tailwind CSS，Iconfont thếđổivì Iconify，tínhnăng，mụclụcKếtcấu，vănphần tửtâmgiảitoànphươngvịTốihóa',
+    title:
+      'Sass trùngcấuvì Tailwind CSS，Iconfont thếđổivì Iconify，tínhnăng，mụclụcKếtcấu，vănphần tửtâmgiảitoànphươngvịTốihóa',
     date: '2025-11-9',
     requireReLogin: true,
     detail: [
@@ -312,7 +313,8 @@ export const upgradeLogList = ref<UpgradeLog[]>([
   },
   {
     version: 'v2.4.2.8',
-    title: 'sửaphục v2.4.2.7 bảnquyểnTruy cập / đườnggiờHiển thị 404 Không tìm thấy Không tìm thấy Không tìm thấy Không tìm thấy Không tìm thấy củahỏiđề',
+    title:
+      'sửaphục v2.4.2.7 bảnquyểnTruy cập / đườnggiờHiển thị 404 Không tìm thấy Không tìm thấy Không tìm thấy Không tìm thấy Không tìm thấy củahỏiđề',
     date: '2025-06-26'
   },
   {
@@ -379,13 +381,20 @@ export const upgradeLogList = ref<UpgradeLog[]>([
     version: 'v2.4.2.2',
     title: 'Componenttrùngcấu',
     date: '2025-06-16',
-    detail: ['Quay lạiPhía trênComponenttrùngcấu', 'IconBộ chọnComponenttrùngcấu', 'HeThongLogoComponentThuocTinhbiếnhơn']
+    detail: [
+      'Quay lạiPhía trênComponenttrùngcấu',
+      'IconBộ chọnComponenttrùngcấu',
+      'HeThongLogoComponentThuocTinhbiếnhơn'
+    ]
   },
   {
     version: 'v2.4.2.1',
     title: 'Componenttrùngcấu、Bugsửaphục',
     date: '2025-06-16',
-    detail: ['ComponenttrùngcấulấyvàTốihóa', 'sửaphụchỗnhợpMenudướithứmộtchiếcMenulànhúngbộMenunhảychuyểnbug']
+    detail: [
+      'ComponenttrùngcấulấyvàTốihóa',
+      'sửaphụchỗnhợpMenudướithứmộtchiếcMenulànhúngbộMenunhảychuyểnbug'
+    ]
   },
   {
     version: 'v2.4.2',

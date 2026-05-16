@@ -35,59 +35,40 @@
 </template>
 
 <script setup lang="ts">
-  // Nhập fileMacDinhIcon
   import defaultIcon from '@imgs/3d/icon1.webp'
 
   defineOptions({ name: 'ArtCardBanner' })
 
-  // Định nghĩaThẻComponentcủaThuocTinhGiao diện (Interface)
   interface CardBannerProps {
-    /** Chiều cao */
     height?: string
-    /** Hình ảnhđường */
     image?: string
-    /** TieuDevănquyển */
     title: string
-    /** Mô tảvănquyển */
     description: string
-    /** chủNútCauHinh */
     button?: {
-      /** làphủHiển thị */
       show?: boolean
-      /** Nútvănquyển */
       text?: string
-      /** NềnMàu sắc */
       color?: string
-      /** VanBanMàu sắc */
       textColor?: string
     }
-    /** HủyNútCauHinh */
     cancelButton?: {
-      /** làphủHiển thị */
       show?: boolean
-      /** Nútvănquyển */
       text?: string
-      /** NềnMàu sắc */
       color?: string
-      /** VanBanMàu sắc */
       textColor?: string
     }
   }
 
-  // Định nghĩaComponentThuocTinhMacDinhgiá trị
   withDefaults(defineProps<CardBannerProps>(), {
     height: '24rem',
     image: defaultIcon,
     title: '',
     description: '',
-    // chủNútMacDinhCauHinh
     button: () => ({
       show: true,
       text: 'XemChiTiet',
       color: 'var(--theme-color)',
       textColor: '#fff'
     }),
-    // HủyNútMacDinhCauHinh
     cancelButton: () => ({
       show: false,
       text: 'Hủy',
@@ -96,18 +77,15 @@
     })
   })
 
-  // Định nghĩaComponentSuKien
   const emit = defineEmits<{
-    (e: 'click'): void // chủNútNhấnSuKien
-    (e: 'cancel'): void // HủyNútNhấnSuKien
+    (e: 'click'): void
+    (e: 'cancel'): void
   }>()
 
-  // chủNútNhấnXuLyHàm
   const handleClick = () => {
     emit('click')
   }
 
-  // HủyNútNhấnXuLyHàm
   const handleCancel = () => {
     emit('cancel')
   }

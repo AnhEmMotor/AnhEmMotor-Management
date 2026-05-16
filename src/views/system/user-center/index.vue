@@ -211,7 +211,14 @@
   /**
    * NguoiDungTagDanh sách
    */
-  const lableList: Array<string> = ['Tập trungthiếtkế', 'rấtcómuốnpháp', 'cay~', 'đạitrườngchân', 'xuyênemtử', 'biểnnạpxuyên']
+  const lableList: Array<string> = [
+    'Tập trungthiếtkế',
+    'rấtcómuốnpháp',
+    'cay~',
+    'đạitrườngchân',
+    'xuyênemtử',
+    'biểnnạpxuyên'
+  ]
 
   onMounted(() => {
     getDate()

@@ -120,7 +120,9 @@ export class RouteValidator {
 
       // mộtcấpMenu：tấtphảiđịnh Layout，chiaphilàngoàiliênhoặc iframe
       if (parentPath === '' && !hasExternalLink && !isIframe) {
-        errors.push(`mộtcấpMenu(${routePath}) thiếuthiểu component，tấtphảihướng ${RoutesAlias.Layout}`)
+        errors.push(
+          `mộtcấpMenu(${routePath}) thiếuthiểu component，tấtphảihướng ${RoutesAlias.Layout}`
+        )
         return
       }
 

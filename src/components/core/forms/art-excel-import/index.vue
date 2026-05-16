@@ -20,7 +20,6 @@
 
   defineOptions({ name: 'ArtExcelImport' })
 
-  // Excel Nhập fileCông cụHàm
   async function importExcel(file: File): Promise<Array<Record<string, unknown>>> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
@@ -43,13 +42,11 @@
     })
   }
 
-  // Định nghĩa emits
   const emit = defineEmits<{
     'import-success': [data: Array<Record<string, unknown>>]
     'import-error': [error: Error]
   }>()
 
-  // XuLyvănphần tửNhập file
   const handleFileChange = async (uploadFile: UploadFile) => {
     try {
       if (!uploadFile.raw) return

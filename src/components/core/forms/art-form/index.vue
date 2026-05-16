@@ -123,24 +123,24 @@
   defineOptions({ name: 'ArtForm' })
 
   const componentMap = {
-    input: ElInput, // Ô nhập liệu
-    inputtag: ElInputTag, // TagÔ nhập liệu
-    number: ElInputNumber, // SốÔ nhập liệu
-    select: ElSelect, // Bộ chọn
-    switch: ElSwitch, // Công tắc
-    checkbox: ElCheckbox, // Ô chọn nhiều
-    checkboxgroup: ElCheckboxGroup, // Ô chọn nhiềutổ
-    radiogroup: ElRadioGroup, // Nút chọn mộttổ
-    date: ElDatePicker, // NgàyBộ chọn
-    daterange: ElDatePicker, // NgàyphạmviBộ chọn
-    datetime: ElDatePicker, // NgàyThoiGianBộ chọn
-    datetimerange: ElDatePicker, // NgàyThoiGianphạmviBộ chọn
-    rate: ElRate, // Đánh giá
-    slider: ElSlider, // Thanh trượt
-    cascader: ElCascader, // cấpliênBộ chọn
-    timepicker: ElTimePicker, // ThoiGianBộ chọn
-    timeselect: ElTimeSelect, // ThoiGianChọn
-    treeselect: ElTreeSelect // câyBộ chọn
+    input: ElInput,
+    inputtag: ElInputTag,
+    number: ElInputNumber,
+    select: ElSelect,
+    switch: ElSwitch,
+    checkbox: ElCheckbox,
+    checkboxgroup: ElCheckboxGroup,
+    radiogroup: ElRadioGroup,
+    date: ElDatePicker,
+    daterange: ElDatePicker,
+    datetime: ElDatePicker,
+    datetimerange: ElDatePicker,
+    rate: ElRate,
+    slider: ElSlider,
+    cascader: ElCascader,
+    timepicker: ElTimePicker,
+    timeselect: ElTimeSelect,
+    treeselect: ElTreeSelect
   }
 
   const { width } = useWindowSize()
@@ -149,69 +149,39 @@
 
   const formInstance = useTemplateRef<FormInstance>('formRef')
 
-  // FormmụcCauHinh
   export interface FormItem {
-    /** Formmụccủaduymộttiêu */
     key: string
-    /** FormmụccủaTagvănquyểnhoặcTùy chỉnhRenderHàm */
     label: string | (() => VNode) | Component
-    /** FormmụcTagcủaChiều rộng，sẽphủlấp Form của labelWidth */
     labelWidth?: string | number
-    /** Formmụcloạikiểu，chiếctrìtrướcĐịnh nghĩacủaComponentloạikiểu */
     type?: keyof typeof componentMap | string
-    /** Tùy chỉnhRenderHàmhoặcComponent，dùngởRenderTùy chỉnhComponent（Tốicấpcaoở type） */
     render?: (() => VNode) | Component
-    /** làphủẨnnênFormmục */
     hidden?: boolean
-    /** FormmụcchiếmliệucủacộtRộng，ở24cáchlướicáchHeThong */
     span?: number
-    /** vịmụcDữ liệu，dùngở select、checkbox-group、radio-group bằng */
     options?: Record<string, any>
-    /** truyềnchuyểnchoFormmụcComponentcủaThuocTinh */
     props?: Record<string, any>
-    /** FormmụccủachènkheCauHinh */
     slots?: Record<string, (() => any) | undefined>
-    /** Formmụccủachiếmvịkývănquyển */
     placeholder?: string
-    /** ThêmThuocTinhCauHinhVui lòngkhảo ElementPlus Chính thứcTaiLieu */
   }
 
-  // FormCauHinh
   interface FormProps {
-    /** FormDữ liệu */
     items: FormItem[]
-    /** mỗicộtcủaChiều rộng（ở 24 cáchBố cục） */
     span?: number
-    /** Formkhốngphần tửgiankhe */
     gutter?: number
-    /** FormTênTagcủaViTri */
     labelPosition?: 'left' | 'right' | 'top'
-    /** VanBanChiều rộng */
     labelWidth?: string | number
-    /** Núttựatráiđốicănhạnchế（Formmụctiểuởbằngởnêngiá trịgiờ） */
     buttonLeftLimit?: number
-    /** làphủHiển thịĐặt lạiNút */
     showReset?: boolean
-    /** làphủHiển thịGửiNút */
     showSubmit?: boolean
-    /** làphủTắtGửiNút */
     disabledSubmit?: boolean
-    /** Gửigiờlàphủxóarửakhônggiá trị */
     sanitizeOutput?: Partial<SanitizeOutputOptions>
   }
 
   interface SanitizeOutputOptions {
-    /** DichiakhôngChuỗi */
     removeEmptyString: boolean
-    /** DichiakhôngMảng */
     removeEmptyArray: boolean
-    /** DichiaxóarửasauvìkhôngcủaDoiTuong */
     removeEmptyObject: boolean
-    /** DichiakhôngphúvănquyểnchiếmvịNoiDung，nếu <p><br></p> */
     removeEmptyRichText: boolean
-    /** LưugiữSố 0 nàyloạicóhiệugiá trị */
     keepZero: boolean
-    /** Lưugiữ false nàyloạicóhiệugiá trị */
     keepFalse: boolean
   }
 
@@ -238,7 +208,6 @@
   const modelValue = defineModel<Record<string, any>>({ default: {} })
   const initialModelValue = ref<Record<string, any>>({})
 
-  // LưutồnComponentban đầuđầuhóagiờcủaFormkhoáichiếu，dùngở reset giờkhôiphụcMacDinhgiá trị。
   const cloneModelValue = (value: Record<string, any> | undefined) => {
     if (!value) return {}
 
@@ -264,7 +233,6 @@
   initialModelValue.value = cloneModelValue(modelValue.value)
 
   const rootProps = ['label', 'labelWidth', 'key', 'type', 'hidden', 'span', 'slots']
-  // nhậpragiờcủaxóarửasáchlượcMacDinhthiên“Giao diện (Interface)hữuhảo”，nhưngcho phéphứanghiệpvụphủlấp。
   const sanitizeOutputOptions = computed<SanitizeOutputOptions>(() => ({
     removeEmptyString: true,
     removeEmptyArray: true,
@@ -277,7 +245,6 @@
 
   const PATH_NUMBER_RE = /^\d+$/
 
-  // kiêmdung a.b、a.0.b nàyloạiđườngviếtpháp，SốđoạnsẽbịkhilàmMảngChỉ mụcXuLy。
   const parsePath = (path: string) => {
     return path
       .split('.')
@@ -292,7 +259,6 @@
     }, modelValue.value)
   }
 
-  // xóakhôngchữđoạngiờchỉXóađườngcủanhấtsaumộtđoạn，tránhmiễnsaixóacùngcấpDữ liệu。
   const deleteFieldValue = (path: string) => {
     const segments = parsePath(path)
     if (!segments.length) return
@@ -308,7 +274,6 @@
     }
   }
 
-  // FormxóakhôngNhậpgiờKhôngLưugiữkhôngChuỗi，cùnggiờđườngtừđộngbùcănGiữaDoiTuonghoặcMảng。
   const setFieldValue = (path: string, value: unknown) => {
     const normalizedValue = value === '' ? undefined : value
     const segments = parsePath(path)
@@ -350,7 +315,6 @@
       return false
     }
 
-    // điTrình biên tậplệthấychiếmvịTagsaulạiđoánlàphủcòncóthựctếNoiDung。
     return (
       value
         .replace(/&nbsp;/gi, '')
@@ -360,7 +324,6 @@
     )
   }
 
-  // GửigiờCauHinhxóarửakhônggiá trị，nhưngLưugiữ 0 và false nàyloạicóhiệugiá trị。
   const sanitizeOutputValue = (value: unknown): unknown => {
     const options = sanitizeOutputOptions.value
 
@@ -420,7 +383,6 @@
     return props
   }
 
-  // Lấychènkhe
   const getSlots = (item: FormItem) => {
     if (!item.slots) return {}
     const validSlots: Record<string, () => any> = {}
@@ -432,35 +394,22 @@
     return validSlots
   }
 
-  // Component
   const getComponent = (item: FormItem) => {
-    // Tốikhiếndùng render HàmhoặcComponentRenderTùy chỉnhComponent
     if (item.render) {
       return item.render
     }
-    // khiếndùng type LấytrướcĐịnh nghĩaComponent
     const { type } = item
     return componentMap[type as keyof typeof componentMap] || componentMap['input']
   }
 
-  /**
-   * LấycộtRộng span giá trị
-   * liệumàn hìnhmànthướctấctrínănggiảmcấp，tránhmiễntiểumàn hìnhmàntrênFormmụcbịépthụtquatiểu
-   */
   const getColSpan = (itemSpan: number | undefined, breakpoint: ResponsiveBreakpoint): number => {
     return calculateResponsiveSpan(itemSpan, span.value, breakpoint)
   }
 
-  /**
-   * Hiển thịcủaFormmục
-   */
   const visibleFormItems = computed(() => {
     return props.items.filter((item) => !item.hidden)
   })
 
-  /**
-   * HanhDongNútKiểu dáng
-   */
   const actionButtonsStyle = computed(() => ({
     'justify-content': isMobile.value
       ? 'flex-end'
@@ -469,28 +418,18 @@
         : 'flex-end'
   }))
 
-  /**
-   * XuLyĐặt lạiSuKien
-   */
   const handleReset = () => {
-    // Đặt lạiFormchữđoạn（UI tầng）
     formInstance.value?.resetFields()
 
-    // khôiphụcban đầuđầuFormgiá trị，LưugiữMacDinhgiá trịmàKhônglàrútđơnxóakhông。
     Object.keys(modelValue.value).forEach((key) => {
       delete modelValue.value[key]
     })
     Object.assign(modelValue.value, cloneModelValue(initialModelValue.value))
 
-    // Kích hoạt reset SuKien
     emit('reset')
   }
 
-  /**
-   * XuLyGửiSuKien
-   */
   const handleSubmit = () => {
-    // đốingoàichỉnémraxóarửasaucủaKetQua，tránhmiễnnghiệpvụtầngtrùngphụcqualọckhônggiá trị。
     emit('submit', getSanitizedOutput())
   }
 
@@ -498,10 +437,8 @@
     ref: formInstance,
     validate: (...args: any[]) => formInstance.value?.validate(...args),
     reset: handleReset,
-    // cho phéphứangoàibộtạiKhôngKích hoạtGửiSuKiengiờchủđộngLấyxóarửasaucủanhậpra。
     getOutput: getSanitizedOutput
   })
 
-  // giảicấu props lấytiệntạimôbảntrongthẳngtiếpkhiếndùng
   const { span, gutter, labelPosition, labelWidth } = toRefs(props)
 </script>

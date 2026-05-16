@@ -1,12 +1,19 @@
 <template>
   <div class="purchasing-pipeline-page flex flex-col h-screen bg-[#F8F9FA] overflow-hidden">
-    
     <!-- 1. Slim Header: Stats bar (Navy Theme) -->
-    <div class="slim-header bg-[#001529] px-6 py-2.5 flex items-center justify-between shadow-lg z-10">
+    <div
+      class="slim-header bg-[#001529] px-6 py-2.5 flex items-center justify-between shadow-lg z-10"
+    >
       <div class="flex items-center gap-6">
-        <div v-for="stat in pipelineStats" :key="stat.label" class="flex items-center gap-2 px-3 border-r border-white/10 last:border-none">
+        <div
+          v-for="stat in pipelineStats"
+          :key="stat.label"
+          class="flex items-center gap-2 px-3 border-r border-white/10 last:border-none"
+        >
           <div class="size-2 rounded-full" :class="stat.dotColor"></div>
-          <span class="text-[10px] font-bold text-white/50 uppercase tracking-widest">{{ stat.label }}</span>
+          <span class="text-[10px] font-bold text-white/50 uppercase tracking-widest">{{
+            stat.label
+          }}</span>
           <span class="text-sm font-black text-white">{{ stat.count }}</span>
         </div>
       </div>
@@ -14,7 +21,9 @@
         <div class="h-4 w-px bg-white/10"></div>
         <div class="live-indicator flex items-center gap-2">
           <div class="size-1.5 rounded-full bg-red-500 animate-pulse"></div>
-          <span class="text-[9px] font-black text-red-400 uppercase tracking-widest">Live Updates</span>
+          <span class="text-[9px] font-black text-red-400 uppercase tracking-widest"
+            >Live Updates</span
+          >
         </div>
       </div>
     </div>
@@ -22,16 +31,28 @@
     <div class="flex flex-1 overflow-hidden">
       <!-- 2. MAIN AREA (80% - Kanban Board) -->
       <div class="main-kanban-area flex-1 flex flex-col overflow-hidden">
-        
         <!-- Filter Bar (Glassmorphism) -->
-        <div class="p-4 px-6 flex items-center justify-between bg-white/40 border-b border-gray-100">
+        <div
+          class="p-4 px-6 flex items-center justify-between bg-white/40 border-b border-gray-100"
+        >
           <div class="flex items-center gap-6">
             <div class="flex items-center gap-2">
               <ArtSvgIcon icon="ri:filter-line" class="text-navy text-sm" />
               <span class="text-[10px] font-black text-gray-400 uppercase">Bộ lọc:</span>
             </div>
-            <ElSelect v-model="filterSale" placeholder="Theo nhân viên" class="slim-select w-44" clearable size="small">
-              <ElOption v-for="sale in salesList" :key="sale.id" :label="sale.name" :value="sale.id" />
+            <ElSelect
+              v-model="filterSale"
+              placeholder="Theo nhân viên"
+              class="slim-select w-44"
+              clearable
+              size="small"
+            >
+              <ElOption
+                v-for="sale in salesList"
+                :key="sale.id"
+                :label="sale.name"
+                :value="sale.id"
+              />
             </ElSelect>
             <ElButton type="primary" link size="small" class="font-bold text-[10px] uppercase">
               <ArtSvgIcon icon="ri:flashlight-fill" class="mr-1" /> Kèo kẹt hồ sơ
@@ -42,8 +63,8 @@
         <!-- Kanban Columns -->
         <div class="flex-1 overflow-x-auto p-6 kanban-board-wrapper custom-scrollbar">
           <div class="flex gap-4 h-full min-w-max">
-            <div 
-              v-for="column in boardColumns" 
+            <div
+              v-for="column in boardColumns"
               :key="column.id"
               class="kanban-column transition-all duration-500"
               :class="[
@@ -52,19 +73,30 @@
               ]"
             >
               <!-- Column Header -->
-              <div 
+              <div
                 class="column-header flex items-center justify-between mb-4 px-3 py-2 rounded-xl bg-white border border-gray-100 shadow-sm cursor-pointer hover:bg-gray-50"
                 @click="column.isCollapsed = !column.isCollapsed"
               >
                 <div class="flex items-center gap-2 overflow-hidden">
-                  <div class="size-2 rounded-full shrink-0" :style="{ backgroundColor: column.color }"></div>
-                  <h4 v-if="!column.isCollapsed" class="m-0 text-[11px] font-black text-gray-700 uppercase truncate">
+                  <div
+                    class="size-2 rounded-full shrink-0"
+                    :style="{ backgroundColor: column.color }"
+                  ></div>
+                  <h4
+                    v-if="!column.isCollapsed"
+                    class="m-0 text-[11px] font-black text-gray-700 uppercase truncate"
+                  >
                     {{ column.title }}
                   </h4>
                 </div>
                 <div class="flex items-center gap-2 shrink-0">
-                  <span class="text-[10px] font-black text-gray-300">{{ column.items.length }}</span>
-                  <ArtSvgIcon :icon="column.isCollapsed ? 'ri:arrow-right-s-line' : 'ri:arrow-left-s-line'" class="text-gray-300" />
+                  <span class="text-[10px] font-black text-gray-300">{{
+                    column.items.length
+                  }}</span>
+                  <ArtSvgIcon
+                    :icon="column.isCollapsed ? 'ri:arrow-right-s-line' : 'ri:arrow-left-s-line'"
+                    class="text-gray-300"
+                  />
                 </div>
               </div>
 
@@ -77,22 +109,42 @@
                 class="flex-1 overflow-y-auto flex flex-col gap-3 pr-2 custom-scrollbar"
                 @change="(e) => handleDragChange(e, column.id)"
               >
-                <div 
-                  v-for="deal in column.items" 
-                  :key="deal.id" 
+                <div
+                  v-for="deal in column.items"
+                  :key="deal.id"
                   class="minimal-deal-card group relative bg-white rounded-2xl p-4 shadow-sm transition-all hover:shadow-md border-[1.5px]"
-                  :style="{ borderColor: deal.priority === 'Urgent' ? '#ef4444' : (deal.priority === 'High' ? '#eab308' : '#f1f5f9') }"
+                  :style="{
+                    borderColor:
+                      deal.priority === 'Urgent'
+                        ? '#ef4444'
+                        : deal.priority === 'High'
+                          ? '#eab308'
+                          : '#f1f5f9'
+                  }"
                 >
                   <!-- Card Header: Name & ID Icon -->
                   <div class="flex justify-between items-start mb-2">
                     <div class="flex flex-col gap-0.5">
-                      <span class="text-sm font-black text-gray-800 tracking-tight leading-tight">{{ deal.customerName }}</span>
-                      <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{{ deal.vehicle }}</span>
+                      <span class="text-sm font-black text-gray-800 tracking-tight leading-tight">{{
+                        deal.customerName
+                      }}</span>
+                      <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{{
+                        deal.vehicle
+                      }}</span>
                     </div>
-                    
+
                     <!-- Admin Verification Icon -->
-                    <ElTooltip :content="deal.isVerified ? 'Hồ sơ đã xác thực' : 'Hồ sơ chưa chuẩn hóa'">
-                      <div class="size-6 rounded-lg flex-cc" :class="deal.isVerified ? 'bg-emerald-50 text-emerald-500' : 'bg-gray-100 text-gray-300 blink-warning'">
+                    <ElTooltip
+                      :content="deal.isVerified ? 'Hồ sơ đã xác thực' : 'Hồ sơ chưa chuẩn hóa'"
+                    >
+                      <div
+                        class="size-6 rounded-lg flex-cc"
+                        :class="
+                          deal.isVerified
+                            ? 'bg-emerald-50 text-emerald-500'
+                            : 'bg-gray-100 text-gray-300 blink-warning'
+                        "
+                      >
                         <ArtSvgIcon icon="ri:profile-line" class="text-xs" />
                       </div>
                     </ElTooltip>
@@ -102,19 +154,32 @@
                   <div class="flex flex-wrap gap-2 mt-3">
                     <div class="flex items-center gap-1 bg-gray-50 px-2 py-0.5 rounded-full">
                       <ArtSvgIcon icon="ri:time-line" class="text-[10px] text-gray-300" />
-                      <span class="text-[9px] font-bold" :class="isStale(deal) ? 'text-red-500' : 'text-gray-400'">{{ deal.timeInStage }}</span>
+                      <span
+                        class="text-[9px] font-bold"
+                        :class="isStale(deal) ? 'text-red-500' : 'text-gray-400'"
+                        >{{ deal.timeInStage }}</span
+                      >
                     </div>
-                    <div v-if="deal.subStatus" class="bg-blue-50 px-2 py-0.5 rounded-full">
-                      <span class="text-[9px] font-black text-blue-500 uppercase tracking-tighter">{{ deal.subStatus }}</span>
+                    <div v-if="(deal as any).subStatus" class="bg-blue-50 px-2 py-0.5 rounded-full">
+                      <span
+                        class="text-[9px] font-black text-blue-500 uppercase tracking-tighter"
+                        >{{ (deal as any).subStatus }}</span
+                      >
                     </div>
                   </div>
 
                   <!-- Hover Actions -->
-                  <div class="absolute bottom-3 right-3 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div class="size-7 bg-blue-600 text-white rounded-lg flex-cc shadow-lg cursor-pointer hover:scale-110">
+                  <div
+                    class="absolute bottom-3 right-3 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <div
+                      class="size-7 bg-blue-600 text-white rounded-lg flex-cc shadow-lg cursor-pointer hover:scale-110"
+                    >
                       <ArtSvgIcon icon="ri:chat-1-fill" class="text-xs" />
                     </div>
-                    <div class="size-7 bg-emerald-500 text-white rounded-lg flex-cc shadow-lg cursor-pointer hover:scale-110">
+                    <div
+                      class="size-7 bg-emerald-500 text-white rounded-lg flex-cc shadow-lg cursor-pointer hover:scale-110"
+                    >
                       <ArtSvgIcon icon="ri:phone-fill" class="text-xs" />
                     </div>
                   </div>
@@ -123,7 +188,9 @@
 
               <!-- Collapsed Content -->
               <div v-else class="h-full flex flex-cc">
-                <span class="rotate-90 whitespace-nowrap text-[10px] font-black text-gray-300 uppercase tracking-widest">
+                <span
+                  class="rotate-90 whitespace-nowrap text-[10px] font-black text-gray-300 uppercase tracking-widest"
+                >
                   {{ column.title }}
                 </span>
               </div>
@@ -135,35 +202,55 @@
       <!-- 3. ACTION SIDEBAR (20% - Alerts) -->
       <div class="action-sidebar w-[350px] bg-white border-l border-gray-100 flex flex-col">
         <div class="p-6 border-b border-gray-50 flex items-center justify-between">
-          <h4 class="m-0 text-xs font-black text-navy uppercase tracking-widest flex items-center gap-2">
+          <h4
+            class="m-0 text-xs font-black text-navy uppercase tracking-widest flex items-center gap-2"
+          >
             <ArtSvgIcon icon="ri:notification-badge-line" class="text-red-500" />
             Hành động ngay
           </h4>
-          <ElTag size="small" type="danger" effect="dark" round class="font-black border-none">5</ElTag>
+          <ElTag size="small" type="danger" effect="dark" round class="font-black border-none"
+            >5</ElTag
+          >
         </div>
-        
+
         <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 custom-scrollbar">
           <!-- Alert Item -->
-          <div v-for="alert in criticalAlerts" :key="alert.id" class="alert-item group bg-red-50/50 p-4 rounded-2xl border border-red-100 hover:bg-red-50 transition-all cursor-pointer relative">
+          <div
+            v-for="alert in criticalAlerts"
+            :key="alert.id"
+            class="alert-item group bg-red-50/50 p-4 rounded-2xl border border-red-100 hover:bg-red-50 transition-all cursor-pointer relative"
+          >
             <div class="flex gap-3">
-              <div class="size-8 bg-red-500 text-white rounded-xl flex-cc shrink-0 shadow-lg shadow-red-100">
+              <div
+                class="size-8 bg-red-500 text-white rounded-xl flex-cc shrink-0 shadow-lg shadow-red-100"
+              >
                 <ArtSvgIcon :icon="alert.icon" />
               </div>
               <div class="flex-1 flex flex-col gap-1">
                 <div class="flex justify-between items-start">
-                  <span class="text-[10px] font-black text-red-600 uppercase tracking-tighter">{{ alert.type }}</span>
+                  <span class="text-[10px] font-black text-red-600 uppercase tracking-tighter">{{
+                    alert.type
+                  }}</span>
                   <!-- Quick Nudge Sale Button -->
                   <ElTooltip :content="'Đôn đốc Sale: ' + alert.saleName">
-                    <div class="size-6 bg-white text-blue-600 rounded-lg flex-cc shadow-sm hover:bg-blue-600 hover:text-white transition-all">
+                    <div
+                      class="size-6 bg-white text-blue-600 rounded-lg flex-cc shadow-sm hover:bg-blue-600 hover:text-white transition-all"
+                    >
                       <ArtSvgIcon icon="ri:messenger-line" class="text-[10px]" />
                     </div>
                   </ElTooltip>
                 </div>
-                <p class="m-0 text-[11px] font-bold text-gray-700 leading-snug">{{ alert.content }}</p>
+                <p class="m-0 text-[11px] font-bold text-gray-700 leading-snug">{{
+                  alert.content
+                }}</p>
                 <div class="flex items-center gap-2 mt-2">
-                  <span class="text-[9px] font-black text-gray-400 uppercase">{{ alert.customer }}</span>
+                  <span class="text-[9px] font-black text-gray-400 uppercase">{{
+                    alert.customer
+                  }}</span>
                   <div class="size-1 rounded-full bg-gray-200"></div>
-                  <span class="text-[9px] font-black text-gray-400 uppercase">{{ alert.time }}</span>
+                  <span class="text-[9px] font-black text-gray-400 uppercase">{{
+                    alert.time
+                  }}</span>
                 </div>
               </div>
             </div>
@@ -171,7 +258,9 @@
         </div>
 
         <div class="p-4 bg-gray-50 border-t border-gray-100">
-          <ElButton class="w-full rounded-xl font-black text-[10px] uppercase h-10 border-none shadow-sm">
+          <ElButton
+            class="w-full rounded-xl font-black text-[10px] uppercase h-10 border-none shadow-sm"
+          >
             Xem báo cáo chi tiết
           </ElButton>
         </div>
@@ -181,7 +270,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, reactive } from 'vue'
+  import { ref } from 'vue'
   import { VueDraggable } from 'vue-draggable-plus'
   import { ElMessage, ElMessageBox } from 'element-plus'
 
@@ -210,8 +299,22 @@
       color: '#3b82f6',
       isCollapsed: false,
       items: [
-        { id: 101, customerName: 'Nguyễn Hoàng Long', vehicle: 'Winner X 2024', priority: 'High', timeInStage: '2 ngày', isVerified: true },
-        { id: 102, customerName: 'Trần Minh Tâm', vehicle: 'SH 125i', priority: 'Urgent', timeInStage: '5 giờ', isVerified: false }
+        {
+          id: 101,
+          customerName: 'Nguyễn Hoàng Long',
+          vehicle: 'Winner X 2024',
+          priority: 'High',
+          timeInStage: '2 ngày',
+          isVerified: true
+        },
+        {
+          id: 102,
+          customerName: 'Trần Minh Tâm',
+          vehicle: 'SH 125i',
+          priority: 'Urgent',
+          timeInStage: '5 giờ',
+          isVerified: false
+        }
       ]
     },
     {
@@ -220,7 +323,14 @@
       color: '#f97316',
       isCollapsed: false,
       items: [
-        { id: 104, customerName: 'Phạm Thị Nở', vehicle: 'Vision 2024', priority: 'Urgent', timeInStage: '1 ngày', isVerified: false }
+        {
+          id: 104,
+          customerName: 'Phạm Thị Nở',
+          vehicle: 'Vision 2024',
+          priority: 'Urgent',
+          timeInStage: '1 ngày',
+          isVerified: false
+        }
       ]
     },
     {
@@ -229,7 +339,15 @@
       color: '#a855f7',
       isCollapsed: false,
       items: [
-        { id: 105, customerName: 'Hoàng Xuân Vinh', vehicle: 'Winner X', priority: 'High', timeInStage: '4 ngày', isVerified: true, subStatus: 'Đã nộp thuế' }
+        {
+          id: 105,
+          customerName: 'Hoàng Xuân Vinh',
+          vehicle: 'Winner X',
+          priority: 'High',
+          timeInStage: '4 ngày',
+          isVerified: true,
+          subStatus: 'Đã nộp thuế'
+        }
       ]
     },
     {
@@ -238,16 +356,47 @@
       color: '#10b981',
       isCollapsed: true,
       items: [
-        { id: 106, customerName: 'Bùi Tiến Dũng', vehicle: 'SH Mode', priority: 'High', timeInStage: 'Vừa chốt', isVerified: true }
+        {
+          id: 106,
+          customerName: 'Bùi Tiến Dũng',
+          vehicle: 'SH Mode',
+          priority: 'High',
+          timeInStage: 'Vừa chốt',
+          isVerified: true
+        }
       ]
     }
   ])
 
   // 3. Action Sidebar Data
   const criticalAlerts = ref([
-    { id: 1, type: 'HỒ SƠ CHƯA CHUẨN', content: 'Khách ở Biên Hòa đã cọc 3 ngày nhưng chưa chọn Phường/Xã.', customer: 'Phạm Thị Nở', saleName: 'Sale A', time: '3h trước', icon: 'ri:alert-fill' },
-    { id: 2, type: 'SLA QUÁ HẠN', content: 'Khách chờ lái thử quá 48h chưa có nhân viên liên hệ.', customer: 'Trần Minh Tâm', saleName: 'Sale B', time: '1h trước', icon: 'ri:time-fill' },
-    { id: 3, type: 'CHỜ DUYỆT CỌC', content: 'Phiếu đặt cọc số #442 chưa được kế toán xác nhận.', customer: 'Nguyễn Hoàng Long', saleName: 'Admin', time: '5h trước', icon: 'ri:money-dollar-box-fill' }
+    {
+      id: 1,
+      type: 'HỒ SƠ CHƯA CHUẨN',
+      content: 'Khách ở Biên Hòa đã cọc 3 ngày nhưng chưa chọn Phường/Xã.',
+      customer: 'Phạm Thị Nở',
+      saleName: 'Sale A',
+      time: '3h trước',
+      icon: 'ri:alert-fill'
+    },
+    {
+      id: 2,
+      type: 'SLA QUÁ HẠN',
+      content: 'Khách chờ lái thử quá 48h chưa có nhân viên liên hệ.',
+      customer: 'Trần Minh Tâm',
+      saleName: 'Sale B',
+      time: '1h trước',
+      icon: 'ri:time-fill'
+    },
+    {
+      id: 3,
+      type: 'CHỜ DUYỆT CỌC',
+      content: 'Phiếu đặt cọc số #442 chưa được kế toán xác nhận.',
+      customer: 'Nguyễn Hoàng Long',
+      saleName: 'Admin',
+      time: '5h trước',
+      icon: 'ri:money-dollar-box-fill'
+    }
   ])
 
   // 4. Logic & Blocking
@@ -258,7 +407,7 @@
   const handleDragChange = (event: any, columnId: string) => {
     if (event.added) {
       const deal = event.added.element
-      
+
       // BLOCKING LOGIC: Cấm kéo sang "Chờ biển số" nếu hồ sơ chưa xác thực
       if (columnId === 'Processing' && !deal.isVerified) {
         ElMessageBox.alert(
@@ -282,13 +431,15 @@
 
 <style lang="scss" scoped>
   .purchasing-pipeline-page {
-    .text-navy { color: #001529; }
-    
+    .text-navy {
+      color: #001529;
+    }
+
     .slim-select {
       :deep(.el-input__wrapper) {
-        border-radius: 10px;
         background-color: white;
         border: 1px solid #e2e8f0;
+        border-radius: 10px;
         box-shadow: none;
       }
     }
@@ -301,9 +452,10 @@
 
     .minimal-deal-card {
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
       &:hover {
+        box-shadow: 0 10px 20px rgb(0 0 0 / 5%);
         transform: translateY(-4px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
       }
     }
 
@@ -312,15 +464,36 @@
     }
 
     @keyframes blink {
-      0% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(0.9); }
-      100% { opacity: 1; transform: scale(1); }
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.5;
+        transform: scale(0.9);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
     }
 
     .custom-scrollbar {
-      &::-webkit-scrollbar { width: 4px; height: 10px; }
-      &::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-      &::-webkit-scrollbar-track { background: transparent; }
+      &::-webkit-scrollbar {
+        width: 4px;
+        height: 10px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
     }
   }
 </style>

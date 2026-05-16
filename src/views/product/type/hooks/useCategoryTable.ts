@@ -31,9 +31,11 @@ export function useCategoryTable() {
   } = useTable({
     core: {
       apiFn: (params: any) => {
-        return activeTab.value === 'vehicle'
-          ? VehicleTypeApi.getList(params)
-          : CategoryApi.getList(params)
+        return (
+          activeTab.value === 'vehicle'
+            ? VehicleTypeApi.getList(params)
+            : CategoryApi.getList(params)
+        ) as Promise<Api.Common.PaginatedResponse<ProductCategory>>
       },
       apiParams: {
         current: 1,
@@ -46,7 +48,14 @@ export function useCategoryTable() {
         { prop: 'slug', label: 'Slug', width: 180 },
         { prop: 'productCount', label: 'Số sản phẩm', width: 120, align: 'center' },
         { prop: 'isActive', label: 'Trạng thái', width: 120, useSlot: true, align: 'center' },
-        { prop: 'operation', label: 'Thao tác', width: 150, useSlot: true, align: 'center', fixed: 'right' }
+        {
+          prop: 'operation',
+          label: 'Thao tác',
+          width: 150,
+          useSlot: true,
+          align: 'center',
+          fixed: 'right'
+        }
       ]
     }
   })
@@ -72,15 +81,11 @@ export function useCategoryTable() {
   }
 
   const handleDelete = (row: ProductCategory) => {
-    ElMessageBox.confirm(
-      `Bạn có chắc chắn muốn xóa "${row.name}" không?`,
-      'Xác nhận xóa',
-      {
-        confirmButtonText: 'Xóa',
-        cancelButtonText: 'Hủy',
-        type: 'warning'
-      }
-    ).then(async () => {
+    ElMessageBox.confirm(`Bạn có chắc chắn muốn xóa "${row.name}" không?`, 'Xác nhận xóa', {
+      confirmButtonText: 'Xóa',
+      cancelButtonText: 'Hủy',
+      type: 'warning'
+    }).then(async () => {
       try {
         if (activeTab.value === 'vehicle') {
           await VehicleTypeApi.delete(row.id)

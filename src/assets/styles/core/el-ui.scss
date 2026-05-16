@@ -1,20 +1,13 @@
-// tốiưu Element Plus Thànhphầnkhomặcđịnhkiểuthức
-
 :root {
-  // hệThốngChủtrò
   --main-color: var(--el-color-primary);
   --el-color-white: white !important;
   --el-color-black: white !important;
-  // XuấtvàokhungViềnkhungMàutrò
-  // --el-border-color: #E4E4E7 !important; // DCDFE6
-  // cao
   --el-font-weight-primary: 400 !important;
 
   --el-component-custom-height: 36px !important;
 
   --el-component-size: var(--el-component-custom-height) !important;
 
-  // Viềnkhung、TrònVai...
   --el-border-radius-base: calc(var(--custom-radius) / 3 + 2px) !important;
 
   --el-border-radius-small: calc(var(--custom-radius) / 3 + 4px) !important;
@@ -26,23 +19,19 @@
   }
 }
 
-// tốiưu el-form-item tượngtênChiềucao
 .el-form-item__label {
   height: var(--el-component-custom-height) !important;
   line-height: var(--el-component-custom-height) !important;
 }
 
-// NhậtthángChọnchọnchứa
 .el-date-range-picker {
   --el-datepicker-inrange-bg-color: var(--art-gray-200) !important;
 }
 
-// el-card NềncảnhtròhệThốngNềncảnhtròLưu
 html.dark .el-card {
   --el-card-bg-color: var(--default-box-color) !important;
 }
 
-// Sửa el-pagination LớnNhỏ
 .el-pagination--default {
   & {
     --el-pagination-button-width: 32px !important;
@@ -66,45 +55,35 @@ html.dark .el-card {
 
 .el-pager li {
   padding: 0 10px !important;
-  // border: 1px solid red !important;
 }
 
-// tốiưuMenumụcThugọnMởđộnghọa（Rútđộnghọachuyểncao）
 .el-menu.el-menu--inline {
   transition: max-height 0.26s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-// tốiưuMenumục item hover độnghọa（RútChuộttượngTay）
 .el-sub-menu__title,
 .el-menu-item {
   transition: background-color 0s !important;
 }
 
-// -------------------------------- Sửa el-size=default ThànhphầnmặcđịnhChiềucao start --------------------------------
-// Sửa el-button Chiềucao
 .el-button--default {
   height: var(--el-component-custom-height) !important;
 }
 
-// circle Rộngcaotốiưu
 .el-button--default.is-circle {
   width: var(--el-component-custom-height) !important;
 }
 
-// Sửa el-select Chiềucao
 .el-select--default {
   .el-select__wrapper {
     min-height: var(--el-component-custom-height) !important;
   }
 }
 
-// Sửa el-checkbox-button Chiềucao
 .el-checkbox-button--default .el-checkbox-button__inner,
-// Sửa el-radio-button Chiềucao
 .el-radio-button--default .el-radio-button__inner {
   padding: 10px 15px !important;
 }
-// -------------------------------- Sửa el-size=default ThànhphầnmặcđịnhChiềucao end --------------------------------
 
 .el-pagination.is-background .btn-next,
 .el-pagination.is-background .btn-prev,
@@ -131,14 +110,12 @@ html.dark .el-card {
 
 .el-dialog__body {
   padding: 25px 0 !important;
-  position: relative; // hình el-pagination kiểuthức，Càiđặt relative，Thành el-pagination kiểuthức， el-pagination__jump--small Thành，Xuất el-pagination__jump--small thứcĐiểmchuột，Chi URL_ADDRESS.com/element-plus/element-plus/issues/5684#issuecomment-1176299275;
+  position: relative;
 }
 
 .el-dialog.el-dialog-border {
   .el-dialog__body {
-    // TảiViềnkhung
     &::before,
-    // ThảViềnkhung
     &::after {
       content: '';
       position: absolute;
@@ -158,7 +135,6 @@ html.dark .el-card {
   }
 }
 
-// el-message kiểuthứctốiưu
 .el-message {
   background-color: var(--default-box-color) !important;
   border: 0 !important;
@@ -172,7 +148,6 @@ html.dark .el-card {
   }
 }
 
-// Sửa el-dropdown kiểuthức
 .el-dropdown-menu {
   padding: 6px !important;
   border-radius: 10px !important;
@@ -194,7 +169,6 @@ html.dark .el-card {
   }
 }
 
-// Ẩngiấu select、dropdown Vai
 .el-select__popper,
 .el-dropdown__popper {
   margin-top: -6px !important;
@@ -208,7 +182,6 @@ html.dark .el-card {
   outline: none !important;
 }
 
-// lýDiđộngđầuThànhphầnhìnhHiệu
 @media screen and (max-width: 640px) {
   .el-message-box,
   .el-dialog {
@@ -231,7 +204,6 @@ html.dark .el-card {
   }
 }
 
-// Sửael-buttonkiểuthức
 .el-button {
   &.el-button--text {
     background-color: transparent !important;
@@ -243,7 +215,6 @@ html.dark .el-card {
   }
 }
 
-// Sửael-tagkiểuthức
 .el-tag {
   font-weight: 500;
   transition: all 0s !important;
@@ -264,7 +235,6 @@ html.dark .el-card {
 }
 
 .el-radio--default {
-  // tốiưumụcChọnLớnNhỏ
   .el-radio__input {
     .el-radio__inner {
       width: 16px;
@@ -284,7 +254,6 @@ html.dark .el-card {
   }
 }
 
-// tốiưulờiChọnkhungkiểuthức
 .el-checkbox--default {
   .el-checkbox__inner {
     width: 16px !important;
@@ -320,7 +289,6 @@ html.dark .el-card {
   font-size: 22px !important;
 }
 
-// Sửa el-message-box kiểuthức
 .el-message-box__headerbtn .el-message-box__close,
 .el-dialog__headerbtn .el-dialog__close {
   top: 7px;
@@ -349,12 +317,10 @@ html.dark .el-card {
   margin: -3px 0 0 2px;
 }
 
-// Xóabỏ el-dropdown ChuộttượngTảiXóadầntiềnViềnkhung
 .el-tooltip__trigger:focus-visible {
   outline: unset;
 }
 
-// ipad biểumụcphảibêntốiưu
 @media screen and (max-width: 1180px) {
   .el-table-fixed-column--right {
     padding-right: 0 !important;
@@ -366,12 +332,10 @@ html.dark .el-card {
   border-radius: 10px !important;
 }
 
-// Sửa dialog độnghọa
 .dialog-fade-enter-active {
   .el-dialog:not(.is-draggable) {
     animation: dialog-open 0.3s cubic-bezier(0.32, 0.14, 0.15, 0.86);
 
-    // lời el-dialog độnghọaRộngcaoTựÁngHỏiđề
     .el-select__selected-item {
       display: inline-block;
     }
@@ -410,7 +374,6 @@ html.dark .el-card {
   }
 }
 
-// độnghọa
 @keyframes fade-out {
   0% {
     opacity: 1;
@@ -421,7 +384,6 @@ html.dark .el-card {
   }
 }
 
-// Sửa el-select kiểuthức
 .el-select__popper:not(.el-tree-select__popper) {
   .el-select-dropdown__list {
     padding: 5px !important;
@@ -450,7 +412,6 @@ html.dark .el-card {
   }
 }
 
-// Sửa el-tree-select kiểuthức
 .el-tree-select__popper {
   .el-select-dropdown__list {
     padding: 5px !important;
@@ -468,25 +429,21 @@ html.dark .el-card {
   }
 }
 
-// XáctiềnTrựcbảnchữThảmặtHiệuứng
 .el-button > span {
   position: relative;
   z-index: 10;
 }
 
-// tốiưuMàutròChọnchọnchứaTrònVai
 .el-color-picker__color {
   border-radius: 2px !important;
 }
 
-// tốiưuNhậtthángkhigianChọnchọnchứaPhòngTrònVai
 .el-picker-panel {
   .el-picker-panel__footer {
     border-radius: 0 0 var(--el-border-radius-base) var(--el-border-radius-base);
   }
 }
 
-// tốiưukiểuMenumụckiểuthức
 .el-tree-node__content {
   border-radius: 4px;
   margin-bottom: 4px;
@@ -503,14 +460,12 @@ html.dark .el-card {
   }
 }
 
-// ẨngiấuThugọnMenumụcCửasổ hover dầntiềnViềnkhung
 .menu-left-popper:focus-within,
 .horizontal-menu-popper:focus-within {
   box-shadow: none !important;
   outline: none !important;
 }
 
-// DữchữXuấtvàoThànhphầnphảibênChiềucaoTựđịnhnghĩaThànhphầnChiềucao
 .el-input-number--default.is-controls-right {
   .el-input-number__decrease,
   .el-input-number__increase {

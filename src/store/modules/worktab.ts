@@ -229,7 +229,9 @@ export const useWorktabStore = defineStore(
       const targetIndex = findTabIndex(path)
 
       if (targetIndex === -1) {
-        console.warn(`thửnghiệmquanđóngtráicạnhtiêunhãntrang，nhưngmụctiêutiêunhãntrangkhôngtồntại: ${path}`)
+        console.warn(
+          `thửnghiệmquanđóngtráicạnhtiêunhãntrang，nhưngmụctiêutiêunhãntrangkhôngtồntại: ${path}`
+        )
         return
       }
 
@@ -264,7 +266,9 @@ export const useWorktabStore = defineStore(
       const targetIndex = findTabIndex(path)
 
       if (targetIndex === -1) {
-        console.warn(`thửnghiệmquanđóngphảicạnhtiêunhãntrang，nhưngmụctiêutiêunhãntrangkhôngtồntại: ${path}`)
+        console.warn(
+          `thửnghiệmquanđóngphảicạnhtiêunhãntrang，nhưngmụctiêutiêunhãntrangkhôngtồntại: ${path}`
+        )
         return
       }
 
@@ -299,7 +303,9 @@ export const useWorktabStore = defineStore(
       const targetTab = getTab(path)
 
       if (!targetTab) {
-        console.warn(`thửnghiệmquanđóngkháckháctiêunhãntrang，nhưngmụctiêutiêunhãntrangkhôngtồntại: ${path}`)
+        console.warn(
+          `thửnghiệmquanđóngkháckháctiêunhãntrang，nhưngmụctiêutiêunhãntrangkhôngtồntại: ${path}`
+        )
         return
       }
 

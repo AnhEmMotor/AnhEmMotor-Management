@@ -9,7 +9,9 @@
       <div class="p-5 text-center select-none">
         <div class="mb-7.5 text-5xl">🔒</div>
         <h1 class="m-0 mb-5 text-3xl font-semibold text-danger">{{ $t('admin.t11') }}</h1>
-        <p class="max-w-125 m-0 text-lg leading-relaxed text-white">{{ $t('admin.t12') }}<br />{{ $t('admin.t13') }}</p>
+        <p class="max-w-125 m-0 text-lg leading-relaxed text-white"
+          >{{ $t('admin.t12') }}<br />{{ $t('admin.t13') }}</p
+        >
         <div class="mt-7.5 text-sm text-gray-400">Security Lock Activated</div>
       </div>
     </div>
@@ -56,7 +58,11 @@
     <!-- giảikhóagiaomặt -->
     <div v-else class="unlock-content">
       <div class="flex-c flex-col w-80">
-        <img class="w-16 h-16 mt-5 rounded-full" src="@imgs/user/avatar.webp" alt="NguoiDungAvatar" />
+        <img
+          class="w-16 h-16 mt-5 rounded-full"
+          src="@imgs/user/avatar.webp"
+          alt="NguoiDungAvatar"
+        />
         <div class="mt-3 mb-3.5 text-base font-medium">
           {{ userInfo.userName }}
         </div>

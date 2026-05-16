@@ -18,13 +18,11 @@
   defineOptions({ name: 'ArtLineChart' })
 
   const props = withDefaults(defineProps<LineChartProps>(), {
-    // Cơ bảnCauHinh
     height: useChartOps().chartHeight,
     loading: false,
     isEmpty: false,
     colors: () => useChartOps().colors,
 
-    // Dữ liệuCauHinh
     data: () => [0, 0, 0, 0, 0, 0, 0],
     xAxisData: () => [],
     lineWidth: 2.5,
@@ -34,29 +32,24 @@
     symbolSize: 6,
     animationDelay: 200,
 
-    // TrụcđườngHiển thịCauHinh
     showAxisLabel: true,
     showAxisLine: true,
     showSplitLine: true,
 
-    // nộpCauHinh
     showTooltip: true,
     showLegend: false,
     legendPosition: 'bottom'
   })
 
-  // HoatAnhTrạng tháiQuản lý
   const isAnimating = ref(false)
   const animationTimers = ref<number[]>([])
   const animatedData = ref<number[] | LineDataItem[]>([])
 
-  // xóalýnêncóđịnhgiờthiết bị
   const clearAnimationTimers = () => {
     animationTimers.value.forEach((timer) => clearTimeout(timer))
     animationTimers.value = []
   }
 
-  // đoánlàphủvìđaDữ liệu（khiếndùng VueUse của computedEager Tốihóa）
   const isMultipleData = computed(() => {
     return (
       Array.isArray(props.data) &&
@@ -66,7 +59,6 @@
     )
   })
 
-  // Cachekếcủanhấtđạigiá trị，tránhmiễntrùngphụckế
   const maxValue = computed(() => {
     if (isMultipleData.value) {
       const multiData = props.data as LineDataItem[]
@@ -83,7 +75,6 @@
     }
   })
 
-  // ban đầuđầuhóaHoatAnhDữ liệu（Tốihóa：bớtthiểuđiềuphần tửđoán）
   const initAnimationData = (): number[] | LineDataItem[] => {
     if (isMultipleData.value) {
       const multiData = props.data as LineDataItem[]
@@ -96,7 +87,6 @@
     return Array(singleData.length).fill(0)
   }
 
-  // phụcchếthậtthựcDữ liệu（Tốihóa：khiếndùngKếtcấuhóakhắc）
   const copyRealData = (): number[] | LineDataItem[] => {
     if (isMultipleData.value) {
       return (props.data as LineDataItem[]).map((item) => ({ ...item, data: [...item.data] }))
@@ -104,7 +94,6 @@
     return [...(props.data as number[])]
   }
 
-  // LấyMàu sắcCauHinh（Tốihóa：CacheChuDemàu）
   const primaryColor = computed(() => getCssVar('--el-color-primary'))
 
   const getColor = (customColor?: string, index?: number): string => {
@@ -113,9 +102,7 @@
     return primaryColor.value
   }
 
-  // sinhthànhđồngTênKiểu dáng
   const generateAreaStyle = (item: LineDataItem, color: string) => {
-    // nếuquảcó areaStyle CauHinh，hoặcHiểnkiểumởbậtrồiđồngTênMàu sắc，Hiển thịđồngTênKiểu dáng
     if (!item.areaStyle && !item.showAreaColor && !props.showAreaColor) return undefined
 
     const areaConfig = item.areaStyle || {}
@@ -135,7 +122,6 @@
     }
   }
 
-  // sinhthànhđơnDữ liệuđồngTênKiểu dáng
   const generateSingleAreaStyle = () => {
     if (!props.showAreaColor) return undefined
 
@@ -154,7 +140,6 @@
     }
   }
 
-  // xâyhệcộtCauHinh
   const createSeriesItem = (config: {
     name?: string
     data: number[]
@@ -187,7 +172,6 @@
     }
   }
 
-  // sinhthànhBiểu đồCauHinh
   const generateChartOptions = (isInitial = false): EChartsOption => {
     const options: EChartsOption = {
       animation: true,
@@ -217,12 +201,10 @@
       }
     }
 
-    // Thêm mớiảnhví dụCauHinh
     if (props.showLegend && isMultipleData.value) {
       options.legend = getLegendStyle(props.legendPosition)
     }
 
-    // sinhthànhhệcộtDữ liệu
     if (isMultipleData.value) {
       const multiData = animatedData.value as LineDataItem[]
       options.series = multiData.map((item, index) => {
@@ -240,7 +222,6 @@
         })
       })
     } else {
-      // đơnDữ liệutình
       const singleData = animatedData.value as number[]
       const computedColor = getColor(props.colors[0])
       const areaStyle = generateSingleAreaStyle()
@@ -257,22 +238,18 @@
     return options
   }
 
-  // Cập nhậtBiểu đồ
   const updateChartOptions = (options: EChartsOption) => {
     initChart(options)
   }
 
-  // ban đầuđầuhóaHoatAnhHàm（Tốihóa：thốngmộtđịnhgiờthiết bịQuản lý，bớtthiểutrongtồn）
   const initChartWithAnimation = () => {
     clearAnimationTimers()
     isAnimating.value = true
 
-    // ban đầuđầuhóavì0giá trịDữ liệu
     animatedData.value = initAnimationData()
     updateChartOptions(generateChartOptions(true))
 
     if (isMultipleData.value) {
-      // đaDữ liệukiểuHoatAnh
       const multiData = props.data as LineDataItem[]
       const currentAnimatedData = animatedData.value as LineDataItem[]
 
@@ -289,14 +266,12 @@
         animationTimers.value.push(timer)
       })
 
-      // tiêughiHoatAnhhoànthành
       const totalDelay = (multiData.length - 1) * props.animationDelay + 1500
       const finishTimer = window.setTimeout(() => {
         isAnimating.value = false
       }, totalDelay)
       animationTimers.value.push(finishTimer)
     } else {
-      // đơnDữ liệurútđơnHoatAnh - khiếndùng nextTick Đảm bảoban đầuđầuTrạng tháiĐãRender
       nextTick(() => {
         animatedData.value = copyRealData()
         updateChartOptions(generateChartOptions(false))
@@ -305,15 +280,12 @@
     }
   }
 
-  // khôngDữ liệuTìmHàm
   const checkIsEmpty = () => {
-    // TìmđơnDữ liệutình
     if (Array.isArray(props.data) && typeof props.data[0] === 'number') {
       const singleData = props.data as number[]
       return !singleData.length || singleData.every((val) => val === 0)
     }
 
-    // TìmđaDữ liệutình
     if (Array.isArray(props.data) && typeof props.data[0] === 'object') {
       const multiData = props.data as LineDataItem[]
       return (
@@ -325,9 +297,7 @@
     return true
   }
 
-  // khiếndùngmớicủaBiểu đồComponenttượng
   const {
-    chartRef,
     initChart,
     getAxisLineStyle,
     getAxisLabelStyle,
@@ -342,7 +312,6 @@
     checkEmpty: checkIsEmpty,
     watchSources: [() => props.data, () => props.xAxisData, () => props.colors],
     onVisible: () => {
-      // khiBiểu đồbiếnvìHiển thịgiờ，TìmlàphủvìkhôngDữ liệu
       if (!isEmpty.value) {
         initChartWithAnimation()
       }
@@ -350,17 +319,14 @@
     generateOptions: () => generateChartOptions(false)
   })
 
-  // Biểu đồRenderHàm（Tốihóa：PhòngthúcHoatAnhkỳgiantrùngphụcKích hoạt）
   const renderChart = () => {
     if (!isAnimating.value && !isEmpty.value) {
       initChartWithAnimation()
     }
   }
 
-  // khiếndùng VueUse của watchDebounced TốihóaDữ liệuLắng nghe（tránhmiễnphimCập nhật）
   watch([() => props.data, () => props.xAxisData, () => props.colors], renderChart, { deep: true })
 
-  // sinhmệnhtuầnkỳ
   onMounted(() => {
     renderChart()
   })

@@ -5,7 +5,7 @@ import { ElMessage } from 'element-plus'
 export function useLeadTable() {
   const data = ref<Lead[]>([])
   const loading = ref(false)
-  
+
   const pagination = reactive({
     current: 1,
     size: 10,
@@ -43,11 +43,11 @@ export function useLeadTable() {
     if (selectedIds.value.length === data.value.length) {
       selectedIds.value = []
     } else {
-      selectedIds.value = data.value.map(item => item.id)
+      selectedIds.value = data.value.map((item) => item.id)
     }
   }
 
-  const handleAssignBulk = (saleId: number) => {
+  const handleAssignBulk = (_saleId: number) => {
     ElMessage.success(`Đã giao ${selectedIds.value.length} khách hàng cho nhân viên mới`)
     selectedIds.value = []
   }
@@ -60,7 +60,7 @@ export function useLeadTable() {
     }
     // 2. Tiềm năng (High): Có chọn xe cụ thể -> Màu Cam
     if (lead.interestedVehicle) {
-      return { level: 2, label: 'TIỀM NĂNG', icon: 'ri:star-fill', color: '#f97316' }
+      return { level: 2, label: 'TIỀM NÁNG', icon: 'ri:star-fill', color: '#f97316' }
     }
     // 3. Theo dõi (Low): Mới hoặc không có xe cụ thể -> Màu Xanh/Xám
     return { level: 1, label: 'THEO DÕI', icon: 'ri:folder-user-fill', color: '#64748b' }
@@ -70,8 +70,8 @@ export function useLeadTable() {
     loading.value = true
     try {
       const res = await fetchGetLeadList()
-      let leads = Array.isArray(res) ? res : (res as any).items || []
-      
+      const leads = Array.isArray(res) ? res : (res as any).items || []
+
       // Sắp xếp thông minh: Cấp bách (3) -> Tiềm năng (2) -> Theo dõi (1)
       data.value = leads.sort((a: any, b: any) => {
         const pA = getPriority(a).level
@@ -80,8 +80,8 @@ export function useLeadTable() {
       })
 
       pagination.total = data.value.length
-    } catch (err: any) {
-      ElMessage.error('Lỗi khi lấy dữ liệu: ' + err.message)
+    } catch (_err: any) {
+      ElMessage.error('Lỗi khi lấy dữ liệu')
     } finally {
       loading.value = false
     }
@@ -97,8 +97,7 @@ export function useLeadTable() {
     refreshData()
   }
 
-  const handleSearch = (params: any) => {
-    console.log('Search:', params)
+  const handleSearch = (_params: any) => {
     refreshData()
   }
 

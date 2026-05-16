@@ -280,9 +280,7 @@ export interface MapChartProps extends BaseChartProps {
 
 // Biểu đồ cột chồng hai chiều Props Giao diện (Interface)（ngườidiệnvàngchữthápKiểu dáng）
 export interface BidirectionalBarChartProps
-  extends BaseChartProps,
-    AxisDisplayProps,
-    InteractionProps {
+  extends BaseChartProps, AxisDisplayProps, InteractionProps {
   /** đúnghướngDữ liệu（LênHiển thị） */
   positiveData: number[]
   /** hướngDữ liệu（XuốngHiển thị） */

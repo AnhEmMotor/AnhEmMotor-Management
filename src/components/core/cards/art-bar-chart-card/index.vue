@@ -59,7 +59,6 @@
     barWidth: '26%'
   })
 
-  // khiếndùngmớicủaBiểu đồComponenttượng
   const { chartRef } = useChartComponent({
     props: {
       height: `${props.height}rem`,

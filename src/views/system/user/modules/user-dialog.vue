@@ -1,10 +1,5 @@
 <template>
-  <ElDialog
-    v-model="dialogVisible"
-    ::title="$t('admin.t146')"
-    width="30%"
-    align-center
-  >
+  <ElDialog v-model="dialogVisible" ::title="$t('admin.t146')" width="30%" align-center>
     <ElForm ref="formRef" :model="formData" :rules="rules" label-width="80px">
       <ElFormItem :label="$t('admin.t147')" prop="username">
         <ElInput v-model="formData.username" :placeholder="$t('admin.t148')" />
@@ -86,7 +81,11 @@
     ],
     phone: [
       { required: true, message: 'Vui lòng nhậpSố điện thoại', trigger: 'blur' },
-      { pattern: /^1[3-9]\d{9}$/, message: 'Vui lòng nhậpđúngChínhcủaSố điện thoạicáchkiểu', trigger: 'blur' }
+      {
+        pattern: /^1[3-9]\d{9}$/,
+        message: 'Vui lòng nhậpđúngChínhcủaSố điện thoạicáchkiểu',
+        trigger: 'blur'
+      }
     ],
     gender: [{ required: true, message: 'Vui lòng chọnGioiTinh', trigger: 'blur' }],
     role: [{ required: true, message: 'Vui lòng chọnVaiTro', trigger: 'blur' }]

@@ -80,7 +80,9 @@
               <ArtSvgIcon icon="ri:image-line" class="mr-5 c-p text-g-600 text-lg" />
               <ArtSvgIcon icon="ri:emotion-happy-line" class="mr-5 c-p text-g-600 text-lg" />
             </div>
-            <ElButton type="primary" @click="sendMessage" v-ripple class="min-w-20">phátgửi</ElButton>
+            <ElButton type="primary" @click="sendMessage" v-ripple class="min-w-20"
+              >phátgửi</ElButton
+            >
           </div>
         </div>
       </div>
@@ -146,7 +148,8 @@
     {
       id: 3,
       sender: BOT_NAME,
-      content: 'hảocủa，tôiđếnvìbạngiớithiệuHeThongcủachủcầncôngnăng。đầu，bạnCó thểlấythông quaBên tráiMenuTruy cậpKhôngcùngcủacôngnăngmôkhối...',
+      content:
+        'hảocủa，tôiđếnvìbạngiớithiệuHeThongcủachủcầncôngnăng。đầu，bạnCó thểlấythông quaBên tráiMenuTruy cậpKhôngcùngcủacôngnăngmôkhối...',
       time: '10:02',
       isMe: false,
       avatar: aiAvatar
@@ -162,7 +165,8 @@
     {
       id: 5,
       sender: BOT_NAME,
-      content: 'khinhiênCó thểlấy。Dữ liệuphầnphânmôkhốiCó thểlấygiúpgiúpbạnthựcgiờGiámkhốngđóngphímtiêu，đồng thờisinhthànhChiTietcủabáobảng...',
+      content:
+        'khinhiênCó thểlấy。Dữ liệuphầnphânmôkhốiCó thểlấygiúpgiúpbạnthựcgiờGiámkhốngđóngphímtiêu，đồng thờisinhthànhChiTietcủabáobảng...',
       time: '10:06',
       isMe: false,
       avatar: aiAvatar
@@ -178,7 +182,8 @@
     {
       id: 7,
       sender: BOT_NAME,
-      content: 'bạnCó thểlấyxâymộtchiếcmụcmục，nhiênsautạimụcmụctrongThêm mớiđóngcủaDữ liệunguồn，HeThongsẽtừđộngvàodòngphầnphân。',
+      content:
+        'bạnCó thểlấyxâymộtchiếcmụcmục，nhiênsautạimụcmụctrongThêm mớiđóngcủaDữ liệunguồn，HeThongsẽtừđộngvàodòngphầnphân。',
       time: '10:09',
       isMe: false,
       avatar: aiAvatar

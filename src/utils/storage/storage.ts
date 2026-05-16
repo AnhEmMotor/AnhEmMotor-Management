@@ -101,7 +101,8 @@ class StorageCompatibilityManager {
       type: 'error',
       offset: 40,
       duration: 5000,
-      message: 'HeThongđođếnquyểnđịaDữ liệuBất thường，Vui lòngtrùngmớiDangNhapHeThongkhôiphụckhiếndùng！'
+      message:
+        'HeThongđođếnquyểnđịaDữ liệuBất thường，Vui lòngtrùngmớiDangNhapHeThongkhôiphụckhiếndùng！'
     })
   }
 

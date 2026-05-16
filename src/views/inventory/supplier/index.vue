@@ -40,19 +40,13 @@
         <div class="flex-cb">
           <div class="flex items-center gap-2">
             <h4 class="m-0">Danh mục Đối tác & Nhà cung cấp</h4>
-            <ElTag size="small" type="primary" effect="dark" round>
-              Mục 7.1 Workflow
-            </ElTag>
+            <ElTag size="small" type="primary" effect="dark" round> Mục 7.1 Workflow </ElTag>
           </div>
         </div>
       </template>
 
       <!-- Table Header Tools -->
-      <ArtTableHeader
-        v-model:columns="columnChecks"
-        :loading="loading"
-        @refresh="refreshData"
-      >
+      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
           <ElButton type="primary" v-ripple @click="handleAdd">
             <ElIcon><Plus /></ElIcon> Thêm đối tác mới
@@ -83,8 +77,12 @@
         <!-- Contact Column -->
         <template #contact="{ row }">
           <div class="flex flex-col text-xs">
-            <span><ElIcon class="mr-1"><Phone /></ElIcon>{{ row.phone || '-' }}</span>
-            <span class="text-gray-400"><ElIcon class="mr-1"><Message /></ElIcon>{{ row.email || '-' }}</span>
+            <span
+              ><ElIcon class="mr-1"><Phone /></ElIcon>{{ row.phone || '-' }}</span
+            >
+            <span class="text-gray-400"
+              ><ElIcon class="mr-1"><Message /></ElIcon>{{ row.email || '-' }}</span
+            >
           </div>
         </template>
 
@@ -108,7 +106,11 @@
     >
       <ElForm :model="formData" label-width="120px" class="mt-4">
         <ElFormItem label="Loại đối tác" required>
-          <ElSelect v-model="formData.partnerTypeId" placeholder="Chọn loại đối tác..." class="w-full">
+          <ElSelect
+            v-model="formData.partnerTypeId"
+            placeholder="Chọn loại đối tác..."
+            class="w-full"
+          >
             <ElOption label="Nhà cung cấp xe/phụ tùng" value="supplier" />
             <ElOption label="Đối tác tài chính (Trả góp)" value="financial" />
             <ElOption label="Đối tác bảo hiểm" value="insurance" />
@@ -166,9 +168,30 @@
   })
 
   const data = ref([
-    { id: 1, name: 'Honda Việt Nam', partnerTypeId: 'supplier', phone: '1800 1234', email: 'cr@honda.com.vn', taxIdentificationNumber: '0100100100' },
-    { id: 2, name: 'FE Credit', partnerTypeId: 'financial', phone: '1900 2345', email: 'contact@fecredit.com.vn', taxIdentificationNumber: '0300200200' },
-    { id: 3, name: 'Bảo hiểm PVI', partnerTypeId: 'insurance', phone: '1900 5454', email: 'pvi@pvi.com.vn', taxIdentificationNumber: '0100300300' }
+    {
+      id: 1,
+      name: 'Honda Việt Nam',
+      partnerTypeId: 'supplier',
+      phone: '1800 1234',
+      email: 'cr@honda.com.vn',
+      taxIdentificationNumber: '0100100100'
+    },
+    {
+      id: 2,
+      name: 'FE Credit',
+      partnerTypeId: 'financial',
+      phone: '1900 2345',
+      email: 'contact@fecredit.com.vn',
+      taxIdentificationNumber: '0300200200'
+    },
+    {
+      id: 3,
+      name: 'Bảo hiểm PVI',
+      partnerTypeId: 'insurance',
+      phone: '1900 5454',
+      email: 'pvi@pvi.com.vn',
+      taxIdentificationNumber: '0100300300'
+    }
   ])
 
   const formData = ref({
@@ -181,48 +204,76 @@
     notes: ''
   })
 
-  const columns = [
+  const columns = ref([
     { label: 'Tên đối tác', prop: 'name', minWidth: 220 },
     { label: 'Phân loại', prop: 'partnerTypeId', useSlot: true, width: 160, align: 'center' },
     { label: 'Liên hệ', prop: 'contact', useSlot: true, width: 220 },
     { label: 'Mã số thuế', prop: 'taxIdentificationNumber', width: 140, align: 'center' },
-    { label: 'Thao tác', prop: 'operation', useSlot: true, width: 120, fixed: 'right', align: 'center' }
-  ]
+    {
+      label: 'Thao tác',
+      prop: 'operation',
+      useSlot: true,
+      width: 120,
+      fixed: 'right' as const,
+      align: 'center'
+    }
+  ])
 
-  const columnChecks = ref(columns.map(c => c.label))
+  const columnChecks = columns
 
   const searchItems = [
     { key: 'name', label: 'Tên đối tác', type: 'input' },
-    { key: 'type', label: 'Loại', type: 'select', props: { 
-      options: [
-        { label: 'Nhà cung cấp', value: 'supplier' },
-        { label: 'Tài chính', value: 'financial' },
-        { label: 'Bảo hiểm', value: 'insurance' }
-      ] 
-    }}
+    {
+      key: 'type',
+      label: 'Loại',
+      type: 'select',
+      props: {
+        options: [
+          { label: 'Nhà cung cấp', value: 'supplier' },
+          { label: 'Tài chính', value: 'financial' },
+          { label: 'Bảo hiểm', value: 'insurance' }
+        ]
+      }
+    }
   ]
 
   const getPartnerTypeTag = (type: string) => {
     switch (type) {
-      case 'supplier': return 'primary'
-      case 'financial': return 'success'
-      case 'insurance': return 'warning'
-      default: return 'info'
+      case 'supplier':
+        return 'primary'
+      case 'financial':
+        return 'success'
+      case 'insurance':
+        return 'warning'
+      default:
+        return 'info'
     }
   }
 
   const getPartnerTypeName = (type: string) => {
     switch (type) {
-      case 'supplier': return 'Nhà cung cấp'
-      case 'financial': return 'Đối tác tài chính'
-      case 'insurance': return 'Đối tác bảo hiểm'
-      default: return 'Khác'
+      case 'supplier':
+        return 'Nhà cung cấp'
+      case 'financial':
+        return 'Đối tác tài chính'
+      case 'insurance':
+        return 'Đối tác bảo hiểm'
+      default:
+        return 'Khác'
     }
   }
 
   const handleAdd = () => {
     dialogTitle.value = 'Thêm đối tác mới'
-    formData.value = { name: '', partnerTypeId: 'supplier', phone: '', email: '', taxIdentificationNumber: '', address: '', notes: '' }
+    formData.value = {
+      name: '',
+      partnerTypeId: 'supplier',
+      phone: '',
+      email: '',
+      taxIdentificationNumber: '',
+      address: '',
+      notes: ''
+    }
     dialogVisible.value = true
   }
 

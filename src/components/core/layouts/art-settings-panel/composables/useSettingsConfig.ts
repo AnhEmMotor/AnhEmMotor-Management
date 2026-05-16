@@ -4,13 +4,9 @@ import { ContainerWidthEnum } from '@/enums/appEnum'
 import AppConfig from '@/config'
 import { headerBarConfig } from '@/config/modules/headerBar'
 
-/**
- * CaiDatmụcCauHinhvịmụcQuản lý
- */
 export function useSettingsConfig() {
   const { t } = useI18n()
 
-  // Thẻ TabPhong cáchvịmục
   const tabStyleOptions = computed(() => [
     {
       value: 'tab-default',
@@ -26,7 +22,6 @@ export function useSettingsConfig() {
     }
   ])
 
-  // trangmặtChuyển đổiHoatAnhvịmục
   const pageTransitionOptions = computed(() => [
     {
       value: '',
@@ -50,7 +45,6 @@ export function useSettingsConfig() {
     }
   ])
 
-  // VaiKích thướcvịmục
   const customRadiusOptions = [
     { value: '0', label: '0' },
     { value: '0.25', label: '0.25' },
@@ -59,7 +53,6 @@ export function useSettingsConfig() {
     { value: '1', label: '1' }
   ]
 
-  // ContainerChiều rộngvịmục
   const containerWidthOptions = computed(() => [
     {
       value: ContainerWidthEnum.FULL,
@@ -73,7 +66,6 @@ export function useSettingsConfig() {
     }
   ])
 
-  // tửKiểu dángvịmục
   const boxStyleOptions = computed(() => [
     {
       value: 'border-mode',
@@ -87,35 +79,27 @@ export function useSettingsConfig() {
     }
   ])
 
-  // từCauHinhvănphần tửLấycủavịmục
   const configOptions = {
-    // ChuDemàumàuvịmục
     mainColors: AppConfig.systemMainColor,
-
-    // ChuDePhong cáchvịmục
     themeList: AppConfig.settingThemeList,
-
-    // MenuBố cụcvịmục
     menuLayoutList: AppConfig.menuLayoutList
   }
 
-  // Cơ bảnCaiDatmụcCauHinh
   const basicSettingsConfig = computed(() => {
-    // Định nghĩanêncóCơ bảnCaiDatmục
     const allSettings = [
       {
         key: 'showWorkTab',
         label: t('setting.basics.list.multiTab'),
         type: 'switch' as const,
         handler: 'workTab',
-        headerBarKey: null // KhôngylạiheaderBarCauHinh
+        headerBarKey: null
       },
       {
         key: 'uniqueOpened',
         label: t('setting.basics.list.accordion'),
         type: 'switch' as const,
         handler: 'uniqueOpened',
-        headerBarKey: null // KhôngylạiheaderBarCauHinh
+        headerBarKey: null
       },
       {
         key: 'showMenuButton',
@@ -158,21 +142,21 @@ export function useSettingsConfig() {
         label: t('setting.basics.list.progressBar'),
         type: 'switch' as const,
         handler: 'nprogress',
-        headerBarKey: null // KhôngylạiheaderBarCauHinh
+        headerBarKey: null
       },
       {
         key: 'colorWeak',
         label: t('setting.basics.list.weakMode'),
         type: 'switch' as const,
         handler: 'colorWeak',
-        headerBarKey: null // KhôngylạiheaderBarCauHinh
+        headerBarKey: null
       },
       {
         key: 'watermarkVisible',
         label: t('setting.basics.list.watermark'),
         type: 'switch' as const,
         handler: 'watermark',
-        headerBarKey: null // KhôngylạiheaderBarCauHinh
+        headerBarKey: null
       },
       {
         key: 'menuOpenWidth',
@@ -184,7 +168,7 @@ export function useSettingsConfig() {
         step: 10,
         style: { width: '120px' },
         controlsPosition: 'right' as const,
-        headerBarKey: null // KhôngylạiheaderBarCauHinh
+        headerBarKey: null
       },
       {
         key: 'tabStyle',
@@ -193,7 +177,7 @@ export function useSettingsConfig() {
         handler: 'tabStyle',
         options: tabStyleOptions.value,
         style: { width: '120px' },
-        headerBarKey: null // KhôngylạiheaderBarCauHinh
+        headerBarKey: null
       },
       {
         key: 'pageTransition',
@@ -202,7 +186,7 @@ export function useSettingsConfig() {
         handler: 'pageTransition',
         options: pageTransitionOptions.value,
         style: { width: '120px' },
-        headerBarKey: null // KhôngylạiheaderBarCauHinh
+        headerBarKey: null
       },
       {
         key: 'customRadius',
@@ -211,38 +195,30 @@ export function useSettingsConfig() {
         handler: 'customRadius',
         options: customRadiusOptions,
         style: { width: '120px' },
-        headerBarKey: null // KhôngylạiheaderBarCauHinh
+        headerBarKey: null
       }
     ]
 
-    // liệu headerBarConfig qualọcCaiDatmục
-    return (
-      allSettings
-        .filter((setting) => {
-          // nếuquảCaiDatmụcKhôngylạiheaderBarCauHinh，đầucuốiHiển thị
-          if (setting.headerBarKey === null) {
-            return true
-          }
+    return allSettings
+      .filter((setting) => {
+        if (setting.headerBarKey === null) {
+          return true
+        }
 
-          // nếuquảylạiheaderBarCauHinh，TìmđốiứngcủacôngnănglàphủBật
-          const headerBarFeature = headerBarConfig[setting.headerBarKey]
-          return headerBarFeature?.enabled !== false
-        })
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .map(({ headerBarKey: _headerBarKey, ...setting }) => setting)
-    )
+        const headerBarFeature = headerBarConfig[setting.headerBarKey]
+        return headerBarFeature?.enabled !== false
+      })
+
+      .map(({ headerBarKey: _headerBarKey, ...setting }) => setting)
   })
 
   return {
-    // vịmụcCauHinh
     tabStyleOptions,
     pageTransitionOptions,
     customRadiusOptions,
     containerWidthOptions,
     boxStyleOptions,
     configOptions,
-
-    // CaiDatmụcCauHinh
     basicSettingsConfig
   }
 }

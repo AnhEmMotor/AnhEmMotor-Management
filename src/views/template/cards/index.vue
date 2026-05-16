@@ -162,7 +162,11 @@
     <h1 class="page-title">{{ $t('admin.t185') }}</h1>
     <ElRow :gutter="20">
       <ElCol :xs="24" :sm="12" :lg="8" class="mb-5">
-        <ArtDataListCard :list="dataList" :title="$t('admin.t195')" subtitle="nayngàyChờ xử lýnhiệmvụ" />
+        <ArtDataListCard
+          :list="dataList"
+          :title="$t('admin.t195')"
+          subtitle="nayngàyChờ xử lýnhiệmvụ"
+        />
       </ElCol>
       <ElCol :xs="24" :sm="12" :lg="8" class="mb-5">
         <ArtDataListCard
@@ -175,7 +179,11 @@
         />
       </ElCol>
       <ElCol :xs="24" :sm="12" :lg="8" class="mb-5">
-        <ArtTimelineListCard :list="timelineData" :title="$t('admin.t197')" subtitle="2024năm12tháng20ngày" />
+        <ArtTimelineListCard
+          :list="timelineData"
+          :title="$t('admin.t197')"
+          subtitle="2024năm12tháng20ngày"
+        />
       </ElCol>
     </ElRow>
 

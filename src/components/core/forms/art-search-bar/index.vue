@@ -130,24 +130,24 @@
   defineOptions({ name: 'ArtSearchBar' })
 
   const componentMap = {
-    input: ElInput, // Ô nhập liệu
-    inputTag: ElInputTag, // TagÔ nhập liệu
-    number: ElInputNumber, // SốÔ nhập liệu
-    select: ElSelect, // Bộ chọn
-    switch: ElSwitch, // Công tắc
-    checkbox: ElCheckbox, // Ô chọn nhiều
-    checkboxgroup: ElCheckboxGroup, // Ô chọn nhiềutổ
-    radiogroup: ElRadioGroup, // Nút chọn mộttổ
-    date: ElDatePicker, // NgàyBộ chọn
-    daterange: ElDatePicker, // NgàyphạmviBộ chọn
-    datetime: ElDatePicker, // NgàyThoiGianBộ chọn
-    datetimerange: ElDatePicker, // NgàyThoiGianphạmviBộ chọn
-    rate: ElRate, // Đánh giá
-    slider: ElSlider, // Thanh trượt
-    cascader: ElCascader, // cấpliênBộ chọn
-    timepicker: ElTimePicker, // ThoiGianBộ chọn
-    timeselect: ElTimeSelect, // ThoiGianChọn
-    treeselect: ElTreeSelect // câyBộ chọn
+    input: ElInput,
+    inputTag: ElInputTag,
+    number: ElInputNumber,
+    select: ElSelect,
+    switch: ElSwitch,
+    checkbox: ElCheckbox,
+    checkboxgroup: ElCheckboxGroup,
+    radiogroup: ElRadioGroup,
+    date: ElDatePicker,
+    daterange: ElDatePicker,
+    datetime: ElDatePicker,
+    datetimerange: ElDatePicker,
+    rate: ElRate,
+    slider: ElSlider,
+    cascader: ElCascader,
+    timepicker: ElTimePicker,
+    timeselect: ElTimeSelect,
+    treeselect: ElTreeSelect
   }
 
   const { width } = useWindowSize()
@@ -156,75 +156,42 @@
 
   const formInstance = useTemplateRef<FormInstance>('formRef')
 
-  // FormmụcCauHinh
   export interface SearchFormItem {
-    /** Formmụccủaduymộttiêu */
     key: string
-    /** FormmụccủaTagvănquyểnhoặcTùy chỉnhRenderHàm */
     label: string | (() => VNode) | Component
-    /** FormmụcTagcủaChiều rộng，sẽphủlấp Form của labelWidth */
     labelWidth?: string | number
-    /** Formmụcloạikiểu，chiếctrìtrướcĐịnh nghĩacủaComponentloạikiểu */
     type?: keyof typeof componentMap | string
-    /** Tùy chỉnhRenderHàmhoặcComponent，dùngởRenderTùy chỉnhComponent（Tốicấpcaoở type） */
     render?: (() => VNode) | Component
-    /** làphủẨnnênFormmục */
     hidden?: boolean
-    /** FormmụcchiếmliệucủacộtRộng，ở24cáchlướicáchHeThong */
     span?: number
-    /** vịmụcDữ liệu，dùngở select、checkbox-group、radio-group bằng */
     options?: Record<string, any>
-    /** truyềnchuyểnchoFormmụcComponentcủaThuocTinh */
     props?: Record<string, any>
-    /** FormmụccủachènkheCauHinh */
     slots?: Record<string, (() => any) | undefined>
-    /** Formmụccủachiếmvịkývănquyển */
     placeholder?: string
-    /** ThêmThuocTinhCauHinhVui lòngkhảo ElementPlus Chính thứcTaiLieu */
   }
 
-  // FormCauHinh
   interface SearchBarProps {
-    /** FormDữ liệu */
     items: SearchFormItem[]
-    /** mỗicộtcủaChiều rộng（ở 24 cáchBố cục） */
     span?: number
-    /** Formkhốngphần tửgiankhe */
     gutter?: number
-    /** Mở rộng/Thu gọn */
     isExpand?: boolean
-    /** MacDinhlàphủMở rộng（chỉtại showExpand vì true vừa isExpand vì false giờsinhhiệu） */
     defaultExpanded?: boolean
-    /** FormTênTagcủaViTri */
     labelPosition?: 'left' | 'right' | 'top'
-    /** VanBanChiều rộng */
     labelWidth?: string | number
-    /** làphủcầncầntriểnthị，Thu gọn */
     showExpand?: boolean
-    /** Núttựatráiđốicănhạnchế（Formmụctiểuởbằngởnêngiá trịgiờ） */
     buttonLeftLimit?: number
-    /** làphủHiển thịĐặt lạiNút */
     showReset?: boolean
-    /** làphủHiển thịTimKiemNút */
     showSearch?: boolean
-    /** làphủTắtTimKiemNút */
     disabledSearch?: boolean
-    /** TimKiemgiờlàphủxóarửakhônggiá trị */
     sanitizeOutput?: Partial<SanitizeOutputOptions>
   }
 
   interface SanitizeOutputOptions {
-    /** DichiakhôngChuỗi */
     removeEmptyString: boolean
-    /** DichiakhôngMảng */
     removeEmptyArray: boolean
-    /** DichiaxóarửasauvìkhôngcủaDoiTuong */
     removeEmptyObject: boolean
-    /** DichiakhôngphúvănquyểnchiếmvịNoiDung，nếu <p><br></p> */
     removeEmptyRichText: boolean
-    /** LưugiữSố 0 nàyloạicóhiệusàngvịgiá trị */
     keepZero: boolean
-    /** Lưugiữ false nàyloạicóhiệusàngvịgiá trị */
     keepFalse: boolean
   }
 
@@ -254,7 +221,6 @@
   const modelValue = defineModel<Record<string, any>>({ default: {} })
   const initialModelValue = ref<Record<string, any>>({})
 
-  // LưutồnComponentban đầuđầuhóagiờcủaFormkhoáichiếu，dùngở reset giờkhôiphụcMacDinhsàngvịđiềuphần tử。
   const cloneModelValue = (value: Record<string, any> | undefined) => {
     if (!value) return {}
 
@@ -279,13 +245,9 @@
 
   initialModelValue.value = cloneModelValue(modelValue.value)
 
-  /**
-   * làphủMở rộngTrạng thái
-   */
   const isExpanded = ref(props.defaultExpanded)
 
   const rootProps = ['label', 'labelWidth', 'key', 'type', 'hidden', 'span', 'slots']
-  // TimKiemTham sốMacDinhhơnkíchvàođịađikhônggiá trị，bớtthiểuvôhiệu query Tham số。
   const sanitizeOutputOptions = computed<SanitizeOutputOptions>(() => ({
     removeEmptyString: true,
     removeEmptyArray: true,
@@ -303,7 +265,6 @@
     return props
   }
 
-  // Lấychènkhe
   const getSlots = (item: SearchFormItem) => {
     if (!item.slots) return {}
     const validSlots: Record<string, () => any> = {}
@@ -346,7 +307,6 @@
       return false
     }
 
-    // điTrình biên tậplệthấychiếmvịTagsaulạiđoánlàphủcòncóthựctếNoiDung。
     return (
       value
         .replace(/&nbsp;/gi, '')

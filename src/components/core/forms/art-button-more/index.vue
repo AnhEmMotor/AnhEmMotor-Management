@@ -31,32 +31,22 @@
   const { hasAuth } = useAuth()
 
   export interface ButtonMoreItem {
-    /** Núttiêu，Có thểdùngởNhấnSuKien */
     key: string | number
-    /** Nútvănquyển */
     label: string
-    /** làphủTắt */
     disabled?: boolean
-    /** QuyenHantiêu */
     auth?: string
-    /** IconComponent */
     icon?: string
-    /** vănquyểnMàu sắc */
     color?: string
-    /** IconMàu sắc（Tốicấpcaoở color） */
     iconColor?: string
   }
 
   interface Props {
-    /** dướikéomụcDanh sách */
     list: ButtonMoreItem[]
-    /** chỉnhthểQuyenHankhốngchế */
     auth?: string
   }
 
   const props = withDefaults(defineProps<Props>(), {})
 
-  // TìmlàphủcónhiệmnàocóQuyenHancủa item
   const hasAnyAuthItem = computed(() => {
     return props.list.some((item) => !item.auth || hasAuth(item.auth))
   })

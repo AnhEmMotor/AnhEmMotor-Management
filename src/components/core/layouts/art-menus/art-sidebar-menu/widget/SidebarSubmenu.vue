@@ -26,7 +26,7 @@
 
     <ElMenuItem
       v-else
-      :index="item.path || item.name || item.meta.title"
+      :index="String(item.path || item.name || item.meta.title)"
       :level-item="level + 1"
       @click="goPage(item)"
     >
@@ -175,15 +175,6 @@
     // chuyểnvềTìmlàphủcóHiển thịcủatửMenu
     const filteredChildren = filterRoutes(item.children)
     return filteredChildren.length > 0
-  }
-
-  /**
-   * đoánlàphủvìngoàibộliêntiếp
-   * @param item MenumụcDữ liệu
-   * @returns làphủvìngoàibộliêntiếp
-   */
-  const isExternalLink = (item: AppRouteRecord): boolean => {
-    return !!(item.meta.link && !item.meta.isIframe)
   }
 
   /**

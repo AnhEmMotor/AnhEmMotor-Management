@@ -18,7 +18,11 @@
               {{ form.id ? 'CẬP NHẬT HỒ SƠ' : 'THÊM KHÁCH HÀNG' }}
             </h3>
             <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
-              {{ form.id ? 'Thay đổi thông tin khách hàng #' + form.id : 'Khởi tạo hồ sơ khách hàng mới' }}
+              {{
+                form.id
+                  ? 'Thay đổi thông tin khách hàng #' + form.id
+                  : 'Khởi tạo hồ sơ khách hàng mới'
+              }}
             </span>
           </div>
         </div>
@@ -30,10 +34,13 @@
 
     <div class="form-body p-2">
       <ElForm :model="form" label-position="top" class="grid grid-cols-2 gap-x-6 gap-y-4">
-        
         <!-- Thông tin cơ bản -->
         <ElFormItem label="Họ và tên khách hàng" class="col-span-2 is-required">
-          <ElInput v-model="form.fullName" placeholder="Nhập đầy đủ họ tên..." class="premium-input" />
+          <ElInput
+            v-model="form.fullName"
+            placeholder="Nhập đầy đủ họ tên..."
+            class="premium-input"
+          />
         </ElFormItem>
 
         <ElFormItem label="Số điện thoại" class="is-required">
@@ -73,19 +80,38 @@
         </ElFormItem>
 
         <ElFormItem label="Dòng xe quan tâm">
-          <ElInput v-model="form.interestedVehicle" placeholder="VD: Winner X, SH 125i..." class="premium-input" />
+          <ElInput
+            v-model="form.interestedVehicle"
+            placeholder="VD: Winner X, SH 125i..."
+            class="premium-input"
+          />
         </ElFormItem>
 
         <ElFormItem label="Ghi chú ban đầu" class="col-span-2">
-          <ElInput v-model="form.note" type="textarea" :rows="3" placeholder="Ghi chú nhanh về nhu cầu khách hàng..." class="premium-input" />
+          <ElInput
+            v-model="form.note"
+            type="textarea"
+            :rows="3"
+            placeholder="Ghi chú nhanh về nhu cầu khách hàng..."
+            class="premium-input"
+          />
         </ElFormItem>
       </ElForm>
     </div>
 
     <template #footer>
       <div class="flex gap-3 justify-end p-2">
-        <ElButton @click="visible = false" class="rounded-xl border-none bg-gray-100 text-gray-500 font-bold px-6">HỦY BỎ</ElButton>
-        <ElButton type="primary" @click="handleSubmit" class="rounded-xl px-8 font-black shadow-lg shadow-blue-100">LƯU HỒ SƠ</ElButton>
+        <ElButton
+          @click="visible = false"
+          class="rounded-xl border-none bg-gray-100 text-gray-500 font-bold px-6"
+          >HỦY BỎ</ElButton
+        >
+        <ElButton
+          type="primary"
+          @click="handleSubmit"
+          class="rounded-xl px-8 font-black shadow-lg shadow-blue-100"
+          >LƯU HỒ SƠ</ElButton
+        >
       </div>
     </template>
   </ElDialog>
@@ -96,14 +122,17 @@
   import { ElMessage } from 'element-plus'
 
   const props = defineProps<{
-    modelValue: boolean,
+    modelValue: boolean
     initialData?: any
   }>()
 
   const emit = defineEmits(['update:modelValue', 'success'])
 
   const visible = ref(props.modelValue)
-  watch(() => props.modelValue, (val) => visible.value = val)
+  watch(
+    () => props.modelValue,
+    (val) => (visible.value = val)
+  )
   watch(visible, (val) => emit('update:modelValue', val))
 
   const form = ref({
@@ -119,31 +148,37 @@
   })
 
   // Theo dõi dữ liệu ban đầu để đổ vào form khi sửa
-  watch(() => props.initialData, (newData) => {
-    if (newData) {
-      form.value = { ...newData }
-    } else {
-      form.value = {
-        id: null,
-        fullName: '',
-        phoneNumber: '',
-        email: '',
-        source: 'Store',
-        priority: 'High',
-        status: 'New',
-        interestedVehicle: '',
-        note: ''
+  watch(
+    () => props.initialData,
+    (newData) => {
+      if (newData) {
+        form.value = { ...newData }
+      } else {
+        form.value = {
+          id: null,
+          fullName: '',
+          phoneNumber: '',
+          email: '',
+          source: 'Store',
+          priority: 'High',
+          status: 'New',
+          interestedVehicle: '',
+          note: ''
+        }
       }
-    }
-  }, { immediate: true })
+    },
+    { immediate: true }
+  )
 
   const handleSubmit = () => {
     if (!form.value.fullName || !form.value.phoneNumber) {
       ElMessage.warning('Vui lòng nhập Tên và Số điện thoại')
       return
     }
-    
-    const message = form.value.id ? 'Đã cập nhật thông tin khách hàng!' : 'Đã thêm khách hàng mới vào hệ thống!'
+
+    const message = form.value.id
+      ? 'Đã cập nhật thông tin khách hàng!'
+      : 'Đã thêm khách hàng mới vào hệ thống!'
     ElMessage.success(message)
     emit('success', { ...form.value })
     visible.value = false
@@ -153,49 +188,50 @@
 <style lang="scss" scoped>
   .premium-dialog {
     :deep(.el-dialog) {
-      border-radius: 24px;
       overflow: hidden;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+      border-radius: 24px;
+      box-shadow: 0 25px 50px -12px rgb(0 0 0 / 15%);
     }
-    
+
     :deep(.el-dialog__header) {
-      margin-right: 0;
       padding: 24px;
+      margin-right: 0;
       border-bottom: 1px solid #f9fafb;
     }
 
     .premium-input {
-      :deep(.el-input__wrapper), :deep(.el-textarea__wrapper) {
-        border-radius: 12px;
-        background-color: #f9fafb;
-        box-shadow: none;
-        border: 1px solid #f3f4f6;
+      :deep(.el-input__wrapper),
+      :deep(.el-textarea__wrapper) {
         padding: 4px 12px;
-        
+        background-color: #f9fafb;
+        border: 1px solid #f3f4f6;
+        border-radius: 12px;
+        box-shadow: none;
+
         &.is-focus {
           background-color: white;
           border-color: #3b82f6;
-          box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+          box-shadow: 0 0 0 4px rgb(59 130 246 / 10%);
         }
       }
     }
 
     .premium-select {
       :deep(.el-input__wrapper) {
-        border-radius: 12px;
         background-color: #f9fafb;
-        box-shadow: none;
         border: 1px solid #f3f4f6;
+        border-radius: 12px;
+        box-shadow: none;
       }
     }
 
     :deep(.el-form-item__label) {
+      margin-bottom: 6px;
+      font-size: 11px;
       font-weight: 700;
       color: #374151;
-      font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      margin-bottom: 6px;
     }
   }
 </style>

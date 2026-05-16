@@ -33,7 +33,9 @@
                 <ElTag v-for="button in currentUser.buttons" :key="button" size="small" type="info">
                   {{ button }}
                 </ElTag>
-                <span v-if="!currentUser.buttons?.length" class="italic text-g-500">vôQuyenHanmã</span>
+                <span v-if="!currentUser.buttons?.length" class="italic text-g-500"
+                  >vôQuyenHanmã</span
+                >
               </div>
             </div>
           </div>
@@ -176,10 +178,10 @@
       switching.value = true
 
       // môphỏngDangNhapVui lòngcầu
-      const { token, refreshToken } = await fetchLogin({
+      const { token, refreshToken } = (await fetchLogin({
         userName: account.userName,
         password: account.password
-      })
+      } as any)) as any
 
       // nghiệmtínhtoken
       if (!token) {

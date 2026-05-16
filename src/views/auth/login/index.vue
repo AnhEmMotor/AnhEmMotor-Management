@@ -48,7 +48,6 @@
               />
             </ElFormItem>
 
-
             <div class="flex-cb mt-2 text-sm">
               <ElCheckbox v-model="formData.rememberPassword">{{
                 $t('login.rememberPwd')
@@ -90,12 +89,9 @@
   import { HttpError } from '@/utils/http/error'
   import { fetchLogin } from '@/api/auth'
   import { ElNotification, type FormInstance, type FormRules } from 'element-plus'
-  import { useSettingStore } from '@/store/modules/setting'
 
   defineOptions({ name: 'Login' })
 
-  const settingStore = useSettingStore()
-  const { isDark } = storeToRefs(settingStore)
   const { t, locale } = useI18n()
   const formKey = ref(0)
 
@@ -188,7 +184,6 @@
       // Formnghiệmtính
       const valid = await formRef.value.validate()
       if (!valid) return
-
 
       loading.value = true
 
