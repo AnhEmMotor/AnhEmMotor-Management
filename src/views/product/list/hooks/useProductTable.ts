@@ -56,7 +56,7 @@ export function useProductTable() {
       const res = await CategoryApi.getList({
         current: 1,
         size: 100,
-        Filters: 'CategoryGroup==Product' // Chỉ lấy thể loại sản phẩm, loại bỏ xe
+        Filters: 'CategoryGroup==Product'
       })
       categories.value = res.items || []
     } catch (_err) {

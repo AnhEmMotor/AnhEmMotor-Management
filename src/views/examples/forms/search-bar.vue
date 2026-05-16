@@ -553,7 +553,7 @@
       key: 'diaabled',
       type: 'input',
       placeholder: 'tôibịTắtrồi',
-      disabled: true // Tắt
+      disabled: true
     },
     {
       label: 'Thanh trượt',

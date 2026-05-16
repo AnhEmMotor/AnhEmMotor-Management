@@ -80,7 +80,7 @@
     disk: number
   }
 
-  const UPDATE_INTERVAL = 3000 // Cập nhậtKhoảng cáchThoiGian（milligiây）
+  const UPDATE_INTERVAL = 3000
 
   const serverList = reactive<ServerInfo[]>([
     {

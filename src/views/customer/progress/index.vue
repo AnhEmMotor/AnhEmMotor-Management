@@ -398,7 +398,7 @@
           { type: 'error', confirmButtonText: 'ĐÃ HIỂU' }
         )
 
-        refreshData() // Giả lập refresh để trả về vị trí cũ
+        refreshData()
         return
       }
 

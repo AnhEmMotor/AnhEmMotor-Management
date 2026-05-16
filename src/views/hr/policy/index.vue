@@ -356,10 +356,10 @@
   const handleApplyToChange = () => {
     if (applyTo.value === 'category') {
       formData.value.productId = null
-      formData.value.isPercentage = true // Mặc định cho danh mục (thường là phụ tùng) là %
+      formData.value.isPercentage = true
     } else {
       formData.value.categoryId = null
-      formData.value.isPercentage = false // Mặc định cho xe máy là số tiền cố định
+      formData.value.isPercentage = false
     }
   }
 

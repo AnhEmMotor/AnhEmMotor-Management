@@ -38,8 +38,8 @@ export const vRipple: RippleDirective = {
       )
       const isColoredButton = buttonTypes.some((type) => el.classList.contains(type))
       const defaultColor = isColoredButton
-        ? 'rgba(255, 255, 255, 0.25)' // cómàuNútkhiếndùngtrắngmàusóngvân
-        : 'var(--el-color-primary-light-7)' // MacDinhNútkhiếndùngChuDemàusóngvân
+        ? 'rgba(255, 255, 255, 0.25)'
+        : 'var(--el-color-primary-light-7)'
 
       ripple.style.backgroundColor = options.color || defaultColor
       ripple.style.transform = 'scale(0)'
@@ -55,7 +55,7 @@ export const vRipple: RippleDirective = {
 
       setTimeout(() => {
         ripple.remove()
-      }, animationDuration + 500) // Thêmthêm500msBộxungThoiGian
+      }, animationDuration + 500)
     })
   }
 }

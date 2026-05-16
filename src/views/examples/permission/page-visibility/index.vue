@@ -64,7 +64,7 @@
   component: '/examples/permission/page-visibility',
   meta: {
     title: 'menus.permission.pageVisibility',
-    roles: ['R_SUPER'], // chỉsiêucấpQuản lýviênCó thểTruy cập
+    roles: ['R_SUPER'],
     keepAlive: true
   }
 }</code></pre>

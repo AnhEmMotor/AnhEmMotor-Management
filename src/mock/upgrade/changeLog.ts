@@ -1,10 +1,10 @@
 interface UpgradeLog {
-  version: string // bảnquyểnsố
-  title: string // Cập nhậtTieuDe
-  date: string // Cập nhậtNgày
-  detail?: string[] // Cập nhậtNoiDung
-  requireReLogin?: boolean // làphủcầncầntrùngmớiDangNhap
-  remark?: string // GhiChu
+  version: string
+  title: string
+  date: string
+  detail?: string[]
+  requireReLogin?: boolean
+  remark?: string
 }
 
 export const upgradeLogList = ref<UpgradeLog[]>([

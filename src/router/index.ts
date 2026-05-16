@@ -7,13 +7,13 @@ import { setupAfterEachGuard } from './guards/afterEach'
 
 export const router = createRouter({
   history: createWebHashHistory(),
-  routes: staticRoutes // tĩnhtháiRouting
+  routes: staticRoutes
 })
 
 export function initRouter(app: App<Element>): void {
-  configureNProgress() // Phía trênThanh tiến trình
-  setupBeforeEachGuard(router) // Routingtrướcđặtgiữvệ
-  setupAfterEachGuard(router) // Routingsauđặtgiữvệ
+  configureNProgress()
+  setupBeforeEachGuard(router)
+  setupAfterEachGuard(router)
   app.use(router)
 }
 

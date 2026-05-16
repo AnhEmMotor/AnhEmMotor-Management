@@ -7,11 +7,11 @@ interface BreakpointConfig {
 }
 
 const BREAKPOINT_CONFIG: Record<ResponsiveBreakpoint, BreakpointConfig | null> = {
-  xs: { threshold: 12, fallback: 24 }, // taymáy：tiểuở 12 giờkhiếndùngđầyRộng
-  sm: { threshold: 12, fallback: 12 }, // bản：tiểuở 12 giờkhiếndùngnửaRộng
-  md: { threshold: 8, fallback: 8 }, // trongbằngmàn hìnhmàn：tiểuở 8 giờkhiếndùngbaphầncủamộtRộng
-  lg: null, // đạimàn hìnhmàn：thẳngtiếpkhiếndùngCaiDatcủa span
-  xl: null // siêuđạimàn hìnhmàn：thẳngtiếpkhiếndùngCaiDatcủa span
+  xs: { threshold: 12, fallback: 24 },
+  sm: { threshold: 12, fallback: 12 },
+  md: { threshold: 8, fallback: 8 },
+  lg: null,
+  xl: null
 }
 
 export function calculateResponsiveSpan(

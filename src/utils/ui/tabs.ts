@@ -20,5 +20,5 @@ export const TAB_CONFIG = {
 }
 
 export const getTabConfig = (style: string) => {
-  return TAB_CONFIG[style as keyof typeof TAB_CONFIG] || TAB_CONFIG['tab-card'] // MacDinhkhiếndùng tab-card CauHinh
+  return TAB_CONFIG[style as keyof typeof TAB_CONFIG] || TAB_CONFIG['tab-card']
 }

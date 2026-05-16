@@ -1,6 +1,6 @@
 export * from './response'
 
-export type Status = 0 | 1 // 0: Tắt, 1: Bật
+export type Status = 0 | 1
 
 export type Gender = 'male' | 'female' | 'unknown'
 

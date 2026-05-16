@@ -1,12 +1,12 @@
 interface WebSocketOptions {
   url?: string
   messageHandler: (event: MessageEvent) => void
-  reconnectInterval?: number // trùngliềnKhoảng cách(ms)
-  heartbeatInterval?: number // tâmnhảyđoKhoảng cách(ms)
-  pingInterval?: number // phátgửipingKhoảng cách(ms)
-  reconnectTimeout?: number // trùngliềnsiêugiờThoiGian(ms)
-  maxReconnectAttempts?: number // nhấtđạiSố lần kết nối lại
-  connectionTimeout?: number // liềntiếpxâylậpsiêugiờThoiGian(ms)
+  reconnectInterval?: number
+  heartbeatInterval?: number
+  pingInterval?: number
+  reconnectTimeout?: number
+  maxReconnectAttempts?: number
+  connectionTimeout?: number
 }
 
 export default class WebSocketClient {
@@ -20,7 +20,7 @@ export default class WebSocketClient {
   private reconnectTimeout: number
   private maxReconnectAttempts: number
   private connectionTimeout: number
-  private reconnectAttempts: number = 0 // khitrướcSố lần kết nối lại
+  private reconnectAttempts: number = 0
 
   private messageQueue: Array<string | ArrayBufferLike | Blob | ArrayBufferView> = []
 
@@ -28,22 +28,22 @@ export default class WebSocketClient {
   private timeoutTimer: NodeJS.Timeout | null = null
   private reconnectTimer: NodeJS.Timeout | null = null
   private pingTimer: NodeJS.Timeout | null = null
-  private connectionTimer: NodeJS.Timeout | null = null // liềntiếpsiêugiờđịnhgiờthiết bị
+  private connectionTimer: NodeJS.Timeout | null = null
 
   private isConnected: boolean = false
-  private isConnecting: boolean = false // làphủĐangliềntiếptrong
+  private isConnecting: boolean = false
   private stopReconnect: boolean = false
   private isReconnecting: boolean = false
 
   private constructor(options: WebSocketOptions) {
     this.url = options.url || (process.env.VUE_APP_LOGIN_WEBSOCKET as string)
     this.messageHandler = options.messageHandler
-    this.reconnectInterval = options.reconnectInterval ?? 20 * 1000 // MacDinh20giây
-    this.heartbeatInterval = options.heartbeatInterval ?? 5 * 1000 // MacDinh5giây
-    this.pingInterval = options.pingInterval ?? 10 * 1000 // MacDinh10giây
-    this.reconnectTimeout = options.reconnectTimeout ?? 30 * 1000 // MacDinh30giây
-    this.maxReconnectAttempts = options.maxReconnectAttempts ?? 10 // MacDinhnhấtđatrùngliền10lần
-    this.connectionTimeout = options.connectionTimeout ?? 10 * 1000 // liềntiếpsiêugiờ10giây
+    this.reconnectInterval = options.reconnectInterval ?? 20 * 1000
+    this.heartbeatInterval = options.heartbeatInterval ?? 5 * 1000
+    this.pingInterval = options.pingInterval ?? 10 * 1000
+    this.reconnectTimeout = options.reconnectTimeout ?? 30 * 1000
+    this.maxReconnectAttempts = options.maxReconnectAttempts ?? 10
+    this.connectionTimeout = options.connectionTimeout ?? 10 * 1000
   }
 
   static getInstance(options: WebSocketOptions): WebSocketClient {
@@ -73,7 +73,7 @@ export default class WebSocketClient {
 
     if (this.ws?.readyState === WebSocket.OPEN) {
       console.warn('WebSocketliềntiếpĐãtồntại')
-      this.flushMessageQueue() // Đảm bảođộicộttrongcủaTinNhanbịphátgửi
+      this.flushMessageQueue()
       return
     }
 
@@ -174,15 +174,15 @@ export default class WebSocketClient {
 
   private handleOpen(event: Event): void {
     console.log('WebSocketliềntiếpThanhCong', event)
-    this.clearTimer('connectionTimer') // xóachialiềntiếpsiêugiờđịnhgiờthiết bị
+    this.clearTimer('connectionTimer')
     this.isConnected = true
     this.isConnecting = false
     this.isReconnecting = false
     this.stopReconnect = false
-    this.reconnectAttempts = 0 // Đặt lạiSố lần kết nối lại
+    this.reconnectAttempts = 0
     this.startHeartbeat()
     this.startPing()
-    this.flushMessageQueue() // phátgửiđộicộttrongcủaTinNhan
+    this.flushMessageQueue()
   }
 
   private handleMessage(event: MessageEvent): void {
@@ -335,7 +335,7 @@ export default class WebSocketClient {
   }
 
   private calculateReconnectDelay(): number {
-    const jitter = Math.random() * 1000 // 0-1giâycủaNgẫu nhiên
+    const jitter = Math.random() * 1000
     const baseDelay = Math.min(
       this.reconnectInterval * Math.pow(1.5, this.reconnectAttempts - 1),
       this.reconnectInterval * 5

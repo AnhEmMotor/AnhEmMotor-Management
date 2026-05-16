@@ -1,8 +1,8 @@
 const EmojiText: { [key: string]: string } = {
-  '0': 'O_O', // không
-  '200': '^_^', // ThanhCong
-  '400': 'T_T', // LỗiVui lòngcầu
-  '500': 'X_X' // phụcvụthiết bịtrongbộLỗi，vôpháphoànthànhVui lòngcầu
+  '0': 'O_O',
+  '200': '^_^',
+  '400': 'T_T',
+  '500': 'X_X'
 }
 
 export default EmojiText

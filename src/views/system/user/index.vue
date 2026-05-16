@@ -98,8 +98,8 @@
       },
 
       columnsFactory: () => [
-        { type: 'selection' }, // mócvịcột
-        { type: 'index', width: 60, label: 'thứsố' }, // thứsố
+        { type: 'selection' },
+        { type: 'index', width: 60, label: 'thứsố' },
         {
           prop: 'userInfo',
           label: 'Tên người dùng',
@@ -145,7 +145,7 @@
           prop: 'operation',
           label: 'HanhDong',
           width: 120,
-          fixed: 'right', // cốđịnhcột
+          fixed: 'right',
           formatter: (row) =>
             h('div', [
               h(ArtButtonTable, {

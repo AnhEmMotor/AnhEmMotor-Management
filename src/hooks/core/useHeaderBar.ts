@@ -100,27 +100,27 @@ export function useHeaderBar() {
   return {
     headerBarConfig: headerBarConfigRef,
 
-    shouldShowMenuButton, // làphủHiển thịMenuNút
-    shouldShowRefreshButton, // làphủHiển thịLàm mớiNút
-    shouldShowFastEnter, // làphủHiển thịkhoáivàodiện
-    shouldShowBreadcrumb, // làphủHiển thịBreadcrumb
-    shouldShowGlobalSearch, // làphủHiển thịtoànbộTimKiem
-    shouldShowFullscreen, // làphủHiển thịToàn màn hìnhNút
-    shouldShowNotification, // làphủHiển thịThongBaoTrung tâm
-    shouldShowChat, // làphủHiển thịtròngàycôngnăng
-    shouldShowLanguage, // làphủHiển thịNgôn ngữChuyển đổi
-    shouldShowSettings, // làphủHiển thịCaiDatBảng (Panel)
-    shouldShowThemeToggle, // làphủHiển thịChuDeChuyển đổi
+    shouldShowMenuButton,
+    shouldShowRefreshButton,
+    shouldShowFastEnter,
+    shouldShowBreadcrumb,
+    shouldShowGlobalSearch,
+    shouldShowFullscreen,
+    shouldShowNotification,
+    shouldShowChat,
+    shouldShowLanguage,
+    shouldShowSettings,
+    shouldShowThemeToggle,
 
-    fastEnterMinWidth, // khoáivàodiệnnhấttiểuChiều rộng
+    fastEnterMinWidth,
 
-    isFeatureEnabled, // TìmcôngnănglàphủBật
-    isFeatureActive, // TìmcôngnănglàphủBật（tínhdanh）
-    getFeatureConfig, // LấycôngnăngCauHinh
-    getFeatureInfo, // LấycôngnăngCauHinh（tínhdanh）
-    getEnabledFeatures, // LấynêncóBậtcủacôngnăng
-    getDisabledFeatures, // LấynêncóTắtcủacôngnăng
-    getActiveFeatures, // LấynêncóBậtcủacôngnăng（tínhdanh）
-    getInactiveFeatures // LấynêncóTắtcủacôngnăng（tínhdanh）
+    isFeatureEnabled,
+    isFeatureActive,
+    getFeatureConfig,
+    getFeatureInfo,
+    getEnabledFeatures,
+    getDisabledFeatures,
+    getActiveFeatures,
+    getInactiveFeatures
   }
 }

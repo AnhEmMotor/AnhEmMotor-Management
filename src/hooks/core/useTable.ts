@@ -343,7 +343,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, 'TimKiemDữ liệu')
 
     try {
-      return await fetchData(params, false) // TimKiemgiờKhôngkhiếndùngCache
+      return await fetchData(params, false)
     } catch {
       return Promise.resolve()
     }
@@ -517,7 +517,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
 
         cacheUpdateTrigger.value++
       }
-    }, cacheTime / 2) // mỗinửachiếcCachetuầnkỳxóalýmộtlần
+    }, cacheTime / 2)
   }
 
   if (immediate) {

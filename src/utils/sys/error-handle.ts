@@ -52,7 +52,7 @@ export function scriptErrorHandler(
 
   console.error('[ScriptError]', { message, source, lineno, colno, error })
 
-  return true // trởthúcMacDinhBangDieuKhienbáoLỗi，Có thểliệucầncầusửa
+  return true
 }
 
 export function registerPromiseErrorHandler() {
@@ -79,7 +79,7 @@ export function registerResourceErrorHandler() {
         })
       }
     },
-    true // bắtđoạnmớinăngLắng ngheđếntàinguồnLỗi
+    true
   )
 }
 

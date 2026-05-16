@@ -276,11 +276,11 @@
 </table>
 
 <h2>💻 đạimãkhối</h2>
-<pre><code class="language-javascript">// Đầy đủTrình biên tậpchiếctrìđạimãcaosáng
+<pre><code class="language-javascript">
 function createEditor() {
   return new WangEditor({
     container: '#editor',
-    toolbar: 'full' // Đầy đủThanh công cụ
+    toolbar: 'full' 
   });
 }</code></pre>
 

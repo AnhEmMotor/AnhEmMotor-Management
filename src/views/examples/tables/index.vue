@@ -465,7 +465,7 @@
 
   const tableConfig = ref({
     height: '100%',
-    fixedHeight: false // Thêm mới：làphủcốđịnhChiều caocủaCông tắc
+    fixedHeight: false
   })
 
   const computedTableHeight = computed(() => {
@@ -591,47 +591,47 @@
   }
 
   const {
-    data, // BảngDữ liệu
-    loading, // Đang tảiTrạng thái
-    error, // Dữ liệuLoadingLỗiTrạng thái
-    hasData, // làphủcóDữ liệu
+    data,
+    loading,
+    error,
+    hasData,
 
-    pagination, // Phân trangThongTin
+    pagination,
 
-    handleSizeChange, // Phân trangKích thướcbiếnhóaXuLy
-    handleCurrentChange, // khitrướctrangbiếnhóaXuLy
+    handleSizeChange,
+    handleCurrentChange,
 
-    searchParams, // TimKiemTham số
-    replaceSearchParams, // thếđổiTimKiemTham số
-    resetSearchParams, // Đặt lạiTimKiemTham số
+    searchParams,
+    replaceSearchParams,
+    resetSearchParams,
 
-    getData, // LấyDữ liệu
-    getDataDebounced, // LấyDữ liệu（Phòngrung）
-    clearData, // xóakhôngDữ liệu
+    getData,
+    getDataDebounced,
+    clearData,
 
-    refreshData, // toànlượngLàm mới：xóakhôngnêncóCache，trùngmớiLấyDữ liệu（thíchdùngởtayđộngLàm mớiNút）
-    refreshSoft, // nhẹlượngLàm mới：chỉxóakhôngkhitrướcTimKiemđiềuphần tửcủaCache，Duy trìPhân trangTrạng thái（thíchdùngởđịnhgiờLàm mới）
-    refreshCreate, // Thêm mớisauLàm mới：vềđếnthứmộttrangđồng thờixóakhôngPhân trangCache（thíchdùngởThêm mớiDữ liệusau）
-    refreshUpdate, // Cập nhậtsauLàm mới：Duy trìkhitrướctrang，chỉxóakhôngkhitrướcTimKiemCache（thíchdùngởCập nhậtDữ liệusau）
-    refreshRemove, // XóasauLàm mới：trínăngXuLytrangmã，tránhmiễnkhôngtrangmặt（thíchdùngởXóaDữ liệusau）
+    refreshData,
+    refreshSoft,
+    refreshCreate,
+    refreshUpdate,
+    refreshRemove,
 
-    cacheInfo, // CachethốngkếThongTin
-    clearCache, // xóachiaCache，liệuKhôngcùngcủanghiệpvụtrườngcảnhChọntínhđịaxóalýCache
+    cacheInfo,
+    clearCache,
 
-    clearExpiredCache, // xóalýĐãquakỳcủaCache，giảiphóngtrongtồnkhônggian
+    clearExpiredCache,
 
-    cancelRequest, // HủykhitrướcVui lòngcầu
+    cancelRequest,
 
-    columns, // BảngcộtCauHinh
-    columnChecks, // cộtHiển thị、Kéo thảCauHinh
-    addColumn, // Thêm mớicột（chiếctrìđơnchiếchoặclôlượng）
-    removeColumn, // Xóacột（chiếctrìđơnchiếchoặclôlượng）
-    updateColumn, // Cập nhậtcột（chiếctrìđơnchiếchoặclôlượng）
-    toggleColumn, // Chuyển đổicộtHiển thịTrạng thái（chiếctrìđơnchiếchoặclôlượng）
-    resetColumns, // Đặt lạicộtCauHinh
-    reorderColumns, // trùngmớixếpthứcột
-    getColumnConfig, // LấycộtCauHinh
-    getAllColumns // LấynêncócộtCauHinh
+    columns,
+    columnChecks,
+    addColumn,
+    removeColumn,
+    updateColumn,
+    toggleColumn,
+    resetColumns,
+    reorderColumns,
+    getColumnConfig,
+    getAllColumns
   } = useTable({
     core: {
       apiFn: (params) => {
@@ -652,11 +652,11 @@
 
       excludeParams: ['daterange'],
 
-      immediate: true, // làphủlậplàLoadingDữ liệu
+      immediate: true,
       columnsFactory: () => [
         { type: 'selection', width: 50 },
 
-        { type: 'globalIndex', width: 60, label: 'thứsố' }, // toànbộthứsốcột
+        { type: 'globalIndex', width: 60, label: 'thứsố' },
         {
           prop: 'avatar',
           label: 'NguoiDungThongTin',
@@ -721,8 +721,8 @@
     },
 
     performance: {
-      enableCache: true, // mởbậtCache
-      cacheTime: 5 * 60 * 1000, // 5phầnchuông
+      enableCache: true,
+      cacheTime: 5 * 60 * 1000,
       debounceTime: 300,
       maxCacheSize: 100
     },
@@ -955,7 +955,7 @@
 
   const handleClearCache = () => {
     clearCache(CacheInvalidationStrategy.CLEAR_ALL, 'tayđộngxóakhông')
-    cacheKeys.value = [] // xóakhôngCachephímDanh sách
+    cacheKeys.value = []
     addCacheLog('🗑️ tayđộngxóakhôngnêncóCache')
     ElMessage.success('CacheĐãxóakhông')
   }
@@ -979,7 +979,7 @@
   }
 
   const handleTestCache = () => {
-    const testPages = [1, 2, 3, 2, 1] // đothửtrangmặtthứcột
+    const testPages = [1, 2, 3, 2, 1]
 
     ElMessage.info('Bắt đầuCacheđonghiệm...')
     addCacheLog('🧪 Bắt đầuCacheđothử')
@@ -1088,7 +1088,7 @@
             }
           ],
           5
-        ) // tạithứ5chiếcViTrichènvào
+        )
         ElMessage.success('ĐãlôlượngThêm mới"GhiChu"và"Tag"cột')
         break
       }

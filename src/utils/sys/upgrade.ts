@@ -30,7 +30,7 @@ class VersionManager {
 
   private findLegacyStorage(): { oldSysKey: string | null; oldVersionKeys: string[] } {
     const storageKeys = Object.keys(localStorage)
-    const currentVersionPrefix = StorageConfig.generateStorageKey('').slice(0, -1) // Dichiacuốiđuôicủa '-'
+    const currentVersionPrefix = StorageConfig.generateStorageKey('').slice(0, -1)
 
     const oldSysKey =
       storageKeys.find(

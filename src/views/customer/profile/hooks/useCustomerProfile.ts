@@ -9,7 +9,7 @@ export function useCustomerProfile() {
     id: 'AEM-2024-089',
     fullName: 'Nguyễn Hoàng Long',
     phone: '0988.123.456',
-    status: 'Purchasing', // Potential | Purchasing | Official
+    status: 'Purchasing',
     cccd: '',
     address: {
       province: 'Đồng Nai',
