@@ -1,6 +1,6 @@
 ---
 name: gitnexus-exploring
-description: "Use when the user asks how code works, wants to understand architecture, trace execution flows, or explore unfamiliar parts of the codebase. Examples: \"How does X work?\", \"What calls this function?\", \"Show me the auth flow\""
+description: 'Use when the user asks how code works, wants to understand architecture, trace execution flows, or explore unfamiliar parts of the codebase. Examples: "How does X work?", "What calls this function?", "Show me the auth flow"'
 ---
 
 # Exploring Codebases with GitNexus
@@ -38,12 +38,12 @@ description: "Use when the user asks how code works, wants to understand archite
 
 ## Resources
 
-| Resource                                | What you get                                            |
-| --------------------------------------- | ------------------------------------------------------- |
-| `gitnexus://repo/{name}/context`        | Stats, staleness warning (~150 tokens)                  |
-| `gitnexus://repo/{name}/clusters`       | All functional areas with cohesion scores (~300 tokens) |
-| `gitnexus://repo/{name}/cluster/{name}` | Area members with file paths (~500 tokens)              |
-| `gitnexus://repo/{name}/process/{name}` | Step-by-step execution trace (~200 tokens)              |
+| Resource | What you get |
+| --- | --- |
+| `gitnexus://repo/{name}/context` | Stats, staleness warning (~150 tokens) |
+| `gitnexus://repo/{name}/clusters` | All functional areas with cohesion scores (~300 tokens) |
+| `gitnexus://repo/{name}/cluster/{name}` | Area members with file paths (~500 tokens) |
+| `gitnexus://repo/{name}/process/{name}` | Step-by-step execution trace (~200 tokens) |
 
 ## Tools
 

@@ -1,4 +1,3 @@
-<!-- toànbộComponent -->
 <template>
   <component
     v-for="componentConfig in enabledComponents"

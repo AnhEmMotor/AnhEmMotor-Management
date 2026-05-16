@@ -7,9 +7,6 @@ export interface ChartOptions {
   [key: string]: any
 }
 
-/**
- * Cơ sở cấu hình biểu đồ
- */
 export const useChartOps = () => ({
   chartHeight: '16rem',
   fontSize: 13,
@@ -26,9 +23,6 @@ export const useChartOps = () => ({
   ]
 })
 
-/**
- * Logic lõi của biểu đồ
- */
 export function useChart(options: any = {}) {
   const { initOptions = {}, initDelay = 0, autoTheme = true } = options
   const isDark = useDark()
@@ -186,9 +180,6 @@ export function useChart(options: any = {}) {
   }
 }
 
-/**
- * Biểu đồ ComponenttượngHook
- */
 export function useChartComponent(config: any) {
   const { props, generateOptions, checkEmpty, watchSources = [], chartOptions = {} } = config
   const chartCore = useChart(chartOptions)
@@ -200,7 +191,6 @@ export function useChartComponent(config: any) {
     nextTick(() => {
       if (isEmpty.value) {
         chartCore.getChartInstance()?.clear()
-        // Có thểThêm mới TrốngTrạng tháiXuLy
       } else {
         initChart(generateOptions())
       }

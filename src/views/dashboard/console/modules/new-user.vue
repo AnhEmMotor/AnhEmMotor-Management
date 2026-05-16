@@ -75,10 +75,6 @@
 
   const radio2 = ref('Tháng này')
 
-  /**
-   * NguoiDung mớiBảngDữ liệu
-   * Bao gồmNguoiDungquyểnThongTinvàhoànthànhvàođộ
-   */
   const tableData = reactive<UserTableItem[]>([
     {
       username: 'trongtiểucá',
@@ -142,10 +138,6 @@
     }
   ])
 
-  /**
-   * Thêm mớiThanh tiến trìnhHoatAnhHiệu quả
-   * sautươngvàođộgiá trịtừ 0 Cập nhậtđếnmụctiêuphầnso sánh，Kích hoạtHoatAnh
-   */
   const addAnimation = (): void => {
     setTimeout(() => {
       tableData.forEach((item) => {

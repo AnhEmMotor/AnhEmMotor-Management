@@ -1,13 +1,10 @@
-<!-- Chuyển đổiQuyenHantrangmặt -->
 <template>
   <div class="py-2">
-    <!-- trangmặtđầubộ -->
     <div class="mb-6">
       <h2 class="m-0 mb-2 text-xl font-medium">{{ $t('admin.t89') }}</h2>
       <p class="m-0 leading-[1.6] text-g-700">{{ $t('admin.t90') }}</p>
     </div>
 
-    <!-- khitrướcNguoiDungThongTin -->
     <div class="mb-6">
       <ElCard class="art-card-xs">
         <template #header>
@@ -43,7 +40,6 @@
       </ElCard>
     </div>
 
-    <!-- NguoiDungVaiTroChuyển đổi -->
     <div class="mb-6">
       <ElCard class="art-card-xs">
         <template #header>
@@ -99,13 +95,10 @@
   const { t } = useI18n()
   const userStore = useUserStore()
 
-  // ứngkiểuDữ liệu
   const switching = ref(false)
 
-  // khitrướcNguoiDungThongTin
   const currentUser = computed(() => userStore.info)
 
-  // TaiKhoanDanh sách - vớiDangNhaptrangmặtDuy trìmộtđến
   const accounts = computed(() => [
     {
       key: 'super',
@@ -136,7 +129,6 @@
     }
   ])
 
-  // LấyVaiTroTagloạikiểu
   const getRoleTagType = (role?: string): 'info' | 'warning' | 'primary' | 'success' | 'danger' => {
     if (!role) return 'info'
     const roleMap: Record<string, 'info' | 'warning' | 'primary' | 'success' | 'danger'> = {
@@ -147,7 +139,6 @@
     return roleMap[role] || 'info'
   }
 
-  // LấyVaiTroHiển thịdanhtên
   const getRoleDisplayName = (role?: string): string => {
     if (!role) return 'ChưabáoVaiTro'
     const roleMap: Record<string, string> = {
@@ -158,9 +149,6 @@
     return roleMap[role] || 'ChưabáoVaiTro'
   }
 
-  /**
-   * TaiKhoanThongTinloạikiểu
-   */
   interface AccountInfo {
     userName: string
     password: string
@@ -169,31 +157,23 @@
     [key: string]: any
   }
 
-  /**
-   * Chuyển đổiVaiTro
-   * @param account TaiKhoanThongTin
-   */
   const switchRole = async (account: AccountInfo) => {
     try {
       switching.value = true
 
-      // môphỏngDangNhapVui lòngcầu
       const { token, refreshToken } = (await fetchLogin({
         userName: account.userName,
         password: account.password
       } as any)) as any
 
-      // nghiệmtínhtoken
       if (!token) {
         throw new Error('Login failed - no token received')
       }
 
-      // tồntrữtokenvàNguoiDungThongTin
       userStore.setToken(token, refreshToken)
       const userInfo = await fetchGetUserInfo()
       userStore.setUserInfo(userInfo)
 
-      // Làm mớitrangmặtlấyỨng dụngmớiQuyenHan
       setTimeout(() => {
         window.location.reload()
       }, 100)

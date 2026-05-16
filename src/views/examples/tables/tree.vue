@@ -1,4 +1,3 @@
-<!-- tráicâyphảibảngVí dụtrangmặt -->
 <template>
   <div class="art-full-height">
     <div class="box-border flex gap-4 h-full max-md:block max-md:gap-0 max-md:h-auto">
@@ -62,7 +61,6 @@
 
   const showButtons = ref(false)
 
-  // Cấu trúc câyDữ liệu - tổdệtgiácấuVí dụ
   const treeData = ref([
     {
       id: 1,
@@ -173,10 +171,8 @@
 
   const handleNodeClick = (data: any) => {
     console.log('vịtrongtiếtđiểm:', data)
-    // Có thểlấyliệuvịtrongcủatiếtđiểmCập nhậtBên phảiBảngDữ liệu
   }
 
-  // FormTimKiemban đầuđầugiá trị
   const defaultFilter = ref<Api.SystemManage.UserSearchParams>({
     userName: undefined,
     userGender: undefined,

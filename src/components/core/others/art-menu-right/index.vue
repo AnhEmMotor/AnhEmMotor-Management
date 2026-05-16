@@ -1,4 +1,3 @@
-<!-- phảiphímMenu -->
 <template>
   <div class="menu-right">
     <Transition name="context-menu" @before-enter="onBeforeEnter" @after-leave="onAfterLeave">
@@ -9,7 +8,6 @@
       >
         <ul class="menu-list m-0 list-none" :style="menuListStyle">
           <template v-for="item in menuItems" :key="item.key">
-            <!-- phổthôngMenumục -->
             <li
               v-if="!item.children"
               class="menu-item relative flex-c c-p select-none rounded text-xs transition-colors duration-150 hover:bg-g-200"
@@ -28,7 +26,6 @@
               >
             </li>
 
-            <!-- tửMenu -->
             <li
               v-else
               class="menu-item submenu relative flex-c c-p select-none rounded text-xs transition-colors duration-150 hover:bg-g-200"
@@ -86,38 +83,37 @@
   defineOptions({ name: 'ArtMenuRight' })
 
   export interface MenuItemType {
-    /** Menumụcduymộttiêu */
     key: string
-    /** MenumụcTag */
+
     label: string
-    /** MenumụcIcon */
+
     icon?: string
-    /** MenumụclàphủTắt */
+
     disabled?: boolean
-    /** MenumụclàphủHiển thịphầncắtđường */
+
     showLine?: boolean
-    /** tửMenu */
+
     children?: MenuItemType[]
     [key: string]: any
   }
 
   interface Props {
     menuItems: MenuItemType[]
-    /** MenuChiều rộng */
+
     menuWidth?: number
-    /** tửMenuChiều rộng */
+
     submenuWidth?: number
-    /** MenumụcChiều cao */
+
     itemHeight?: number
-    /** biêngiaoKhoảng cách */
+
     boundaryDistance?: number
-    /** MenutrongCăn lề */
+
     menuPadding?: number
-    /** MenumụcNgangtrongCăn lề */
+
     itemPaddingX?: number
-    /** MenuVai */
+
     borderRadius?: number
-    /** HoatAnhtrìtiếpThoiGian */
+
     animationDuration?: number
   }
 
@@ -282,13 +278,11 @@
     visible.value = false
     emit('hide')
 
-    // xóalýđịnhgiờthiết bị
     if (showTimer) {
       window.clearTimeout(showTimer)
       showTimer = null
     }
 
-    // DichiaSuKienLắng nghethiết bị
     removeEventListeners()
   }
 
@@ -298,14 +292,12 @@
     hide()
   }
 
-  // HoatAnhHookHàm
   const onBeforeEnter = (el: Element) => {
     const element = el as HTMLElement
     element.style.transformOrigin = 'top left'
   }
 
   const onAfterLeave = () => {
-    // Đảm bảoxóalýnêncótàinguồn
     removeEventListeners()
     if (showTimer) {
       window.clearTimeout(showTimer)
@@ -313,7 +305,6 @@
     }
   }
 
-  // ComponentUnmountgiờxóalýtàinguồn
   onUnmounted(() => {
     removeEventListeners()
     if (showTimer) {
@@ -322,7 +313,6 @@
     }
   })
 
-  // Xuất filePhuongThuccungchaComponentđiềudùng
   defineExpose({
     show,
     hide,
@@ -376,7 +366,6 @@
     transform: rotate(90deg);
   }
 
-  /* HoatAnhKiểu dáng */
   .context-menu-enter-active,
   .context-menu-leave-active {
     transition: all v-bind('props.animationDuration + "ms"') ease-out;

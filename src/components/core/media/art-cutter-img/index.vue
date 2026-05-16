@@ -1,4 +1,3 @@
-<!-- Cắt ảnhComponent github: https://github.com/acccccccb/vue-img-cutter/tree/master -->
 <template>
   <div class="cutter-container">
     <div class="cutter-component">
@@ -20,7 +19,6 @@
           <ElButton type="danger" plain v-ripple>xóachia</ElButton>
         </template>
         <template #confirm>
-          <!-- <ElButton type="primary" style="margin-left: 10px">Xác định</ElButton> -->
           <div></div>
         </template>
       </ImgCutter>

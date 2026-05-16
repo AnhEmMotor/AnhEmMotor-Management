@@ -7,7 +7,6 @@
       </h2>
     </div>
 
-    <!-- A. Khu vực Chỉ số (Stat Cards) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <ArtStatsCard
         title="Tổng khách tiềm năng"
@@ -41,7 +40,6 @@
       />
     </div>
 
-    <!-- B. Bộ lọc thông minh -->
     <div class="search-bar-wrapper bg-white rounded-xl shadow-sm border border-gray-100 p-2">
       <ArtSearchBar
         v-model="searchModel"
@@ -54,7 +52,6 @@
       />
     </div>
 
-    <!-- 2. Danh sách khách hàng -->
     <div class="content-section" v-loading="loading">
       <div v-if="data.length > 0" class="flex flex-col gap-4">
         <div
@@ -66,7 +63,6 @@
             'is-critical': isCriticalWait(lead)
           }"
         >
-          <!-- Bulk Checkbox -->
           <div class="px-5 flex-cc border-r border-gray-50 h-full min-h-[100px]">
             <ElCheckbox
               :model-value="selectedIds.includes(lead.id)"
@@ -76,7 +72,6 @@
           </div>
 
           <div class="flex flex-1 items-center p-5 gap-6">
-            <!-- Mức độ ưu tiên -->
             <div class="priority-column flex-shrink-0 relative">
               <div v-if="isNeglected(lead)" class="neglected-ribbon">Chăm sóc chậm</div>
               <div class="flex flex-col items-center gap-1.5">
@@ -104,7 +99,6 @@
               </div>
             </div>
 
-            <!-- Định danh -->
             <div class="identity-column flex-shrink-0 w-72">
               <div class="flex items-center gap-4">
                 <ElAvatar
@@ -137,7 +131,6 @@
               </div>
             </div>
 
-            <!-- Nội dung -->
             <div class="interest-column flex-1 px-4 border-l border-r border-gray-50">
               <div class="flex flex-col gap-2">
                 <div class="flex items-center gap-2">
@@ -161,7 +154,6 @@
               </div>
             </div>
 
-            <!-- Trạng thái -->
             <div class="status-column w-44 px-4 flex flex-col items-center justify-center">
               <ElTag
                 :type="getStatusType(lead.status)"
@@ -175,7 +167,6 @@
               </div>
             </div>
 
-            <!-- Sale phụ trách -->
             <div class="time-column w-48 text-right pr-4 border-l border-gray-50">
               <div class="flex flex-col gap-1.5 items-end">
                 <span class="text-[11px] text-gray-400 font-bold uppercase tracking-tighter"
@@ -198,7 +189,6 @@
               </div>
             </div>
 
-            <!-- Hành động -->
             <div class="action-column flex-shrink-0">
               <ElButton
                 type="danger"

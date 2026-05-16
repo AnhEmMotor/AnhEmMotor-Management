@@ -1,12 +1,3 @@
-/**
- * Routingnghiệmtínhthiết bị
- *
- * tráchnghiệmtínhRoutingCauHinhcủahợppháptính
- *
- * @module router/core/RouteValidator
- * @author Art Design Pro Team
- */
-
 import type { AppRouteRecord } from '@/types/router'
 import { RoutesAlias } from '../routesAlias'
 
@@ -17,23 +8,16 @@ export interface ValidationResult {
 }
 
 export class RouteValidator {
-  // dùngởGhi chépĐãquaGợi ýquacủaRouting，tránhmiễntrùngphụcGợi ý
   private warnedRoutes = new Set<string>()
 
-  /**
-   * nghiệmtínhRoutingCauHinh
-   */
   validate(routes: AppRouteRecord[]): ValidationResult {
     const errors: string[] = []
     const warnings: string[] = []
 
-    // đotrùngphụcRouting
     this.checkDuplicates(routes, errors, warnings)
 
-    // đoComponentCauHinh
     this.checkComponents(routes, errors, warnings)
 
-    // đonhúngbộMenucủa /index/index CauHinh
     this.checkNestedIndexComponent(routes)
 
     return {
@@ -43,9 +27,6 @@ export class RouteValidator {
     }
   }
 
-  /**
-   * đotrùngphụcRouting
-   */
   private checkDuplicates(
     routes: AppRouteRecord[],
     errors: string[],
@@ -60,7 +41,6 @@ export class RouteValidator {
         const currentPath = route.path || ''
         const fullPath = this.resolvePath(parentPath, currentPath)
 
-        // danhtêntrùngphụcđo
         if (route.name) {
           const routeName = String(route.name)
           if (routeNameMap.has(routeName)) {
@@ -70,7 +50,6 @@ export class RouteValidator {
           }
         }
 
-        // Componentđườngtrùngphụcđo
         if (route.component && typeof route.component === 'string') {
           const componentPath = route.component
           if (componentPath !== RoutesAlias.Layout) {
@@ -83,7 +62,6 @@ export class RouteValidator {
           }
         }
 
-        // chuyểnvềXuLytửRouting
         if (route.children?.length) {
           checkRoutes(route.children, fullPath)
         }
@@ -93,9 +71,6 @@ export class RouteValidator {
     checkRoutes(routes, parentPath)
   }
 
-  /**
-   * đoComponentCauHinh
-   */
   private checkComponents(
     routes: AppRouteRecord[],
     errors: string[],
@@ -108,9 +83,7 @@ export class RouteValidator {
       const routePath = route.path || '[ChưaĐịnh nghĩađường]'
       const isIframe = route.meta?.isIframe
 
-      // nếuquảCauHinhrồi component，vôcầnsoátnghiệm
       if (route.component) {
-        // chuyểnvềTìmtửRouting
         if (route.children?.length) {
           const fullPath = this.resolvePath(parentPath, route.path || '')
           this.checkComponents(route.children, errors, warnings, fullPath)
@@ -118,7 +91,6 @@ export class RouteValidator {
         return
       }
 
-      // mộtcấpMenu：tấtphảiđịnh Layout，chiaphilàngoàiliênhoặc iframe
       if (parentPath === '' && !hasExternalLink && !isIframe) {
         errors.push(
           `mộtcấpMenu(${routePath}) thiếuthiểu component，tấtphảihướng ${RoutesAlias.Layout}`
@@ -126,12 +98,10 @@ export class RouteValidator {
         return
       }
 
-      // phimộtcấpMenu：nếuquảđãKhônglàngoàiliên、iframe，cũngkhôngcótửRouting，tấtphảiCauHinh component
       if (!hasExternalLink && !isIframe && !hasChildren) {
         errors.push(`Routing(${routePath}) thiếuthiểu component CauHinh`)
       }
 
-      // chuyểnvềTìmtửRouting
       if (route.children?.length) {
         const fullPath = this.resolvePath(parentPath, route.path || '')
         this.checkComponents(route.children, errors, warnings, fullPath)
@@ -139,32 +109,22 @@ export class RouteValidator {
     })
   }
 
-  /**
-   * đonhúngbộMenucủa Layout ComponentCauHinh
-   * chỉcómộtcấpMenumớinăngkhiếndùng Layout，haicấpvàlấydướiMenuKhôngnăngkhiếndùng
-   */
   private checkNestedIndexComponent(routes: AppRouteRecord[], level = 1): void {
     routes.forEach((route) => {
-      // TìmhaicấpvàlấydướiMenulàphủLỗikhiếndùngrồi Layout
       if (level > 1 && route.component === RoutesAlias.Layout) {
         this.logLayoutError(route, level)
       }
 
-      // chuyểnvềTìmtửRouting
       if (route.children?.length) {
         this.checkNestedIndexComponent(route.children, level + 1)
       }
     })
   }
 
-  /**
-   * nhậpra Layout ComponentCauHinhLỗiNhatKy
-   */
   private logLayoutError(route: AppRouteRecord, level: number): void {
     const routeName = String(route.name || route.path || 'ChưabáoRouting')
     const routeKey = `${routeName}_${route.path}`
 
-    // tránhmiễntrùngphụcGợi ý
     if (this.warnedRoutes.has(routeKey)) return
     this.warnedRoutes.add(routeKey)
 
@@ -180,9 +140,6 @@ export class RouteValidator {
     )
   }
 
-  /**
-   * đườnggiảiphân
-   */
   private resolvePath(parent: string, child: string): string {
     return [parent.replace(/\/$/, ''), child.replace(/^\//, '')].filter(Boolean).join('/')
   }

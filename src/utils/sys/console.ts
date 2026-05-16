@@ -1,4 +1,3 @@
-// ANSI chuyểnnghĩamãsinhthànhmạngtrang  https://patorjk.com/software/taag/#p=display&f=Big&t=ABB%0A
 const asciiArt = `
 \x1b[32mhoanchàokhiếndùng Art Design Pro！
 \x1b[0m

@@ -53,16 +53,14 @@ export function useLeadTable() {
   }
 
   const getPriority = (lead: Lead) => {
-    // Logic phân loại:
-    // 1. Cấp bách (Urgent): Đang lái thử hoặc thương lượng -> Màu Đỏ
     if (lead.status === 'TestDrive' || lead.status === 'Negotiating') {
       return { level: 3, label: 'CẤP BÁCH', icon: 'ri:fire-fill', color: '#ef4444' }
     }
-    // 2. Tiềm năng (High): Có chọn xe cụ thể -> Màu Cam
+
     if (lead.interestedVehicle) {
       return { level: 2, label: 'TIỀM NÁNG', icon: 'ri:star-fill', color: '#f97316' }
     }
-    // 3. Theo dõi (Low): Mới hoặc không có xe cụ thể -> Màu Xanh/Xám
+
     return { level: 1, label: 'THEO DÕI', icon: 'ri:folder-user-fill', color: '#64748b' }
   }
 
@@ -72,7 +70,6 @@ export function useLeadTable() {
       const res = await fetchGetLeadList()
       const leads = Array.isArray(res) ? res : (res as any).items || []
 
-      // Sắp xếp thông minh: Cấp bách (3) -> Tiềm năng (2) -> Theo dõi (1)
       data.value = leads.sort((a: any, b: any) => {
         const pA = getPriority(a).level
         const pB = getPriority(b).level

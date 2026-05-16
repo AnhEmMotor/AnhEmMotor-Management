@@ -1,4 +1,3 @@
-<!-- Thương mại điện tửtrangmặt -->
 <template>
   <div class="ecommerce">
     <ElRow :gutter="20">

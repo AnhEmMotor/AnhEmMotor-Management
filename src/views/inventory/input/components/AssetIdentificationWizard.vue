@@ -8,7 +8,6 @@
     </ElSteps>
 
     <div class="wizard-content min-h-[400px] px-4">
-      <!-- Step 1: Reception -->
       <div v-if="activeStep === 0" class="space-y-6">
         <div class="grid grid-cols-2 gap-8">
           <div class="space-y-4">
@@ -49,7 +48,6 @@
         </div>
       </div>
 
-      <!-- Step 2: Identification -->
       <div v-if="activeStep === 1" class="space-y-4">
         <div class="flex-cb mb-4">
           <h4 class="m-0">Quét QR hoặc nhập tay định danh tài sản</h4>
@@ -121,7 +119,6 @@
         </ElTable>
       </div>
 
-      <!-- Step 3: Location -->
       <div v-if="activeStep === 2" class="space-y-4">
         <h4 class="mb-4">Phân bổ vị trí lưu kho</h4>
         <div class="grid grid-cols-1 gap-3">
@@ -147,7 +144,6 @@
         </div>
       </div>
 
-      <!-- Step 4: Summary -->
       <div v-if="activeStep === 3" class="space-y-6">
         <div class="flex items-center gap-2 text-warning font-bold">
           <ElIcon><WarningFilled /></ElIcon>

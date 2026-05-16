@@ -1,4 +1,3 @@
-<!-- toànbộTimKiemComponent -->
 <template>
   <div class="layout-search">
     <ElDialog

@@ -1,4 +1,3 @@
-<!-- Bố cụcContainer -->
 <template>
   <div class="app-layout">
     <aside id="app-sidebar">

@@ -153,31 +153,18 @@
 
   defineOptions({ name: 'TemplateBanners' })
 
-  /**
-   * XuLy sự kiện click banner
-   */
   const handleBannerClick = () => {
     console.log('banner clicked')
   }
 
-  /**
-   * XuLyXác nhậnNútNhấnSuKien
-   */
   const handleConfirm = () => {
     console.log('confirm clicked')
   }
 
-  /**
-   * XuLyHủyNútNhấnSuKien
-   */
   const handleCancel = () => {
     console.log('cancel clicked')
   }
 
-  /**
-   * trướcthiếtCauHinh
-   * gợicunglệdùngcủaKiểu dángCauHinh，Có thểthẳngtiếpthông qua v-bind khiếndùng
-   */
   const PresetBanners = {
     marketing: {
       title: 'hạngiờTốiưu đãisốngđộng',

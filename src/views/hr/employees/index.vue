@@ -1,6 +1,5 @@
 <template>
   <div class="flex flex-col gap-4 pb-5">
-    <!-- Header Stats -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <ArtStatsCard
         title="Tổng số nhân sự"
@@ -25,7 +24,6 @@
       />
     </div>
 
-    <!-- Search Bar -->
     <ArtSearchBar
       :items="searchItems"
       :label-width="110"
@@ -34,7 +32,6 @@
       @reset="handleReset"
     />
 
-    <!-- Main Table -->
     <ElCard class="art-table-card">
       <template #header>
         <div class="flex-cb">
@@ -48,7 +45,6 @@
       </template>
 
       <ArtTable :loading="loading" :data="employees" :columns="columns">
-        <!-- Employee Info -->
         <template #fullName="{ row }">
           <div class="flex items-center gap-3">
             <ElAvatar :size="40" :src="row.avatarUrl">{{ row.fullName.charAt(0) }}</ElAvatar>
@@ -59,26 +55,22 @@
           </div>
         </template>
 
-        <!-- Role/Group -->
         <template #group="{ row }">
           <ElTag :type="row.employeeGroupId === 1 ? 'primary' : 'warning'" size="small">
             {{ row.employeeGroupId === 1 ? 'Kinh doanh' : 'Kỹ thuật' }}
           </ElTag>
         </template>
 
-        <!-- Salary -->
         <template #salary="{ row }">
           <span class="font-medium">{{ formatCurrency(row.baseSalary) }}</span>
         </template>
 
-        <!-- Status -->
         <template #status="{ row }">
           <ElTag :type="row.isActive ? 'success' : 'info'" size="small" round effect="light">
             {{ row.isActive ? 'Đang làm việc' : 'Đã nghỉ việc' }}
           </ElTag>
         </template>
 
-        <!-- Operation -->
         <template #operation="{ row }">
           <div class="flex gap-2 justify-center">
             <ArtButtonTable type="edit" @click="handleEdit(row)" />
@@ -88,7 +80,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Dialog Form -->
     <ElDialog v-model="dialogVisible" :title="dialogTitle" width="650px">
       <ElForm :model="formData" label-width="120px" class="mt-4">
         <div class="grid grid-cols-2 gap-x-6">
@@ -219,7 +210,6 @@
 
   const handleDelete = (_row: any) => {
     ElMessageBox.confirm('Xóa nhân viên này khỏi danh sách?', 'Cảnh báo').then(async () => {
-      // await hrStore.deleteEmployee(_row.id)
       ElMessage.success('Đã xóa nhân viên')
     })
   }

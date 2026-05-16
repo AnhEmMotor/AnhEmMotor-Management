@@ -1,4 +1,3 @@
-<!-- VanBanCuộn -->
 <template>
   <div
     ref="containerRef"
@@ -17,13 +16,12 @@
       :style="contentStyle"
       @click="handleContentClick"
     >
-      <!-- nguyênđầuNoiDung -->
       <span ref="textRef" class="inline-block">
         <slot>
           <span v-html="text"></span>
         </slot>
       </span>
-      <!-- khắcNoiDungdùngởvôkheVòng lặp -->
+
       <span v-if="shouldClone" class="inline-block" :style="cloneSpacing">
         <slot>
           <span v-html="text"></span>
@@ -62,27 +60,23 @@
     | 'warning'
     | 'danger'
 
-  /**
-   * vănquyểnCuộnComponentThuocTinhGiao diện (Interface)
-   */
   export interface TextScrollProps {
-    /** CuộnvănquyểnNoiDung */
     text?: string
-    /** ChuDeloạikiểu */
+
     type?: ThemeType
-    /** Cuộnphươnghướng */
+
     direction?: 'left' | 'right' | 'up' | 'down'
-    /** CuộnTốc độ，đơnvị：tượngtố/giây */
+
     speed?: number
-    /** ContainerChiều rộng */
+
     width?: string
-    /** ContainerChiều cao */
+
     height?: string
-    /** ChuộttiêutreodừnggiờlàphủTamDungCuộn */
+
     pauseOnHover?: boolean
-    /** làphủHiển thịđóngđóngNút */
+
     showClose?: boolean
-    /** đầucuốiCuộn（làkhiếnVanBanChưatrànra） */
+
     alwaysScroll?: boolean
   }
 
@@ -122,22 +116,17 @@
   const isHorizontal = computed(() => props.direction === 'left' || props.direction === 'right')
   const isReverse = computed(() => props.direction === 'right' || props.direction === 'down')
 
-  // khiếndùng VueUse của useElementSize Lắng ngheContainerthướctấcbiếnhóa
   const { width: containerWidth, height: containerHeight } = useElementSize(containerRef)
 
-  // khiếndùng VueUse của useElementHover đoChuộttiêutreodừng
   const isHovered = useElementHover(containerRef)
 
-  // kếlàphủứngnênTamDungHoatAnh
   const isPaused = computed(() => {
-    // nếuquảChưaBật alwaysScroll，vừaVanBanChưasiêuraContainer，TamDungCuộn
     if (!props.alwaysScroll && textSize.value <= containerSize.value) {
       return true
     }
     return props.pauseOnHover && isHovered.value
   })
 
-  // ChuDeKiểu dángảnhxạ
   const themeClasses = computed(() => {
     const themeMap: Record<ThemeType, string> = {
       theme: 'text-theme/90 !border-theme/50',
@@ -152,7 +141,6 @@
     return themeMap[props.type] || themeMap.theme
   })
 
-  // Nềnmàu
   const bgColor = computed(
     () =>
       `color-mix(in oklch, var(--color-${props.type}) ${isDark.value ? '25' : '10'}%, var(--art-color))`
@@ -182,7 +170,6 @@
     }
   })
 
-  // khắcnguyêntốcủagian
   const cloneSpacing = computed(() => {
     const spacing = '2em'
     return isHorizontal.value ? { marginLeft: spacing } : { marginTop: spacing }
@@ -204,21 +191,17 @@
     const isOverflow = textSize.value > containerSize.value
     shouldClone.value = isOverflow
 
-    // cưtrongHiển thị
     currentPosition.value = (containerSize.value - textSize.value) / 2
 
-    // đolượnghoànthànhsaumớiHiển thịNoiDung
     if (!isReady.value) {
       isReady.value = true
     }
   }
 
-  // khiếndùng VueUse của useDebounceFn Phòngrungđolượng
   const debouncedMeasure = useDebounceFn(measureSizes, 150)
 
   let lastTimestamp = 0
 
-  // khiếndùng VueUse của useRafFn thếđạitayđộng requestAnimationFrame
   const { pause, resume } = useRafFn(
     ({ timestamp }) => {
       if (!lastTimestamp) lastTimestamp = timestamp
@@ -230,7 +213,6 @@
 
         currentPosition.value += isReverse.value ? distance : -distance
 
-        // Vòng lặpbiêngiaođo
         if (isReverse.value) {
           if (currentPosition.value > containerSize.value) {
             currentPosition.value = -(textSize.value + spacing)
@@ -254,12 +236,10 @@
     }
   }
 
-  // Lắng ngheContainerthướctấcbiếnhóa
   watch([containerWidth, containerHeight], () => {
     debouncedMeasure()
   })
 
-  // Lắng ngheThuocTinhbiếnhóa
   watch(
     () => [props.direction, props.speed, props.text],
     () => {
@@ -268,10 +248,9 @@
     }
   )
 
-  // khiếndùng VueUse của useTimeoutFn thếđại setTimeout
   const { start: startMeasure } = useTimeoutFn(() => {
     measureSizes()
-    // đolượnghoànthànhsaulậplàBắt đầuHoatAnh
+
     resume()
   }, 100)
 

@@ -1,6 +1,5 @@
 <template>
   <div class="purchasing-pipeline-page flex flex-col h-screen bg-[#F8F9FA] overflow-hidden">
-    <!-- 1. Slim Header: Stats bar (Navy Theme) -->
     <div
       class="slim-header bg-[#001529] px-6 py-2.5 flex items-center justify-between shadow-lg z-10"
     >
@@ -29,9 +28,7 @@
     </div>
 
     <div class="flex flex-1 overflow-hidden">
-      <!-- 2. MAIN AREA (80% - Kanban Board) -->
       <div class="main-kanban-area flex-1 flex flex-col overflow-hidden">
-        <!-- Filter Bar (Glassmorphism) -->
         <div
           class="p-4 px-6 flex items-center justify-between bg-white/40 border-b border-gray-100"
         >
@@ -60,7 +57,6 @@
           </div>
         </div>
 
-        <!-- Kanban Columns -->
         <div class="flex-1 overflow-x-auto p-6 kanban-board-wrapper custom-scrollbar">
           <div class="flex gap-4 h-full min-w-max">
             <div
@@ -72,7 +68,6 @@
                 { 'column-collapsed': column.isCollapsed }
               ]"
             >
-              <!-- Column Header -->
               <div
                 class="column-header flex items-center justify-between mb-4 px-3 py-2 rounded-xl bg-white border border-gray-100 shadow-sm cursor-pointer hover:bg-gray-50"
                 @click="column.isCollapsed = !column.isCollapsed"
@@ -100,7 +95,6 @@
                 </div>
               </div>
 
-              <!-- Draggable Area -->
               <VueDraggable
                 v-if="!column.isCollapsed"
                 v-model="column.items"
@@ -122,7 +116,6 @@
                           : '#f1f5f9'
                   }"
                 >
-                  <!-- Card Header: Name & ID Icon -->
                   <div class="flex justify-between items-start mb-2">
                     <div class="flex flex-col gap-0.5">
                       <span class="text-sm font-black text-gray-800 tracking-tight leading-tight">{{
@@ -133,7 +126,6 @@
                       }}</span>
                     </div>
 
-                    <!-- Admin Verification Icon -->
                     <ElTooltip
                       :content="deal.isVerified ? 'Hồ sơ đã xác thực' : 'Hồ sơ chưa chuẩn hóa'"
                     >
@@ -150,7 +142,6 @@
                     </ElTooltip>
                   </div>
 
-                  <!-- Quick Info Tags -->
                   <div class="flex flex-wrap gap-2 mt-3">
                     <div class="flex items-center gap-1 bg-gray-50 px-2 py-0.5 rounded-full">
                       <ArtSvgIcon icon="ri:time-line" class="text-[10px] text-gray-300" />
@@ -168,7 +159,6 @@
                     </div>
                   </div>
 
-                  <!-- Hover Actions -->
                   <div
                     class="absolute bottom-3 right-3 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
                   >
@@ -186,7 +176,6 @@
                 </div>
               </VueDraggable>
 
-              <!-- Collapsed Content -->
               <div v-else class="h-full flex flex-cc">
                 <span
                   class="rotate-90 whitespace-nowrap text-[10px] font-black text-gray-300 uppercase tracking-widest"
@@ -199,7 +188,6 @@
         </div>
       </div>
 
-      <!-- 3. ACTION SIDEBAR (20% - Alerts) -->
       <div class="action-sidebar w-[350px] bg-white border-l border-gray-100 flex flex-col">
         <div class="p-6 border-b border-gray-50 flex items-center justify-between">
           <h4
@@ -214,7 +202,6 @@
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 custom-scrollbar">
-          <!-- Alert Item -->
           <div
             v-for="alert in criticalAlerts"
             :key="alert.id"
@@ -231,7 +218,7 @@
                   <span class="text-[10px] font-black text-red-600 uppercase tracking-tighter">{{
                     alert.type
                   }}</span>
-                  <!-- Quick Nudge Sale Button -->
+
                   <ElTooltip :content="'Đôn đốc Sale: ' + alert.saleName">
                     <div
                       class="size-6 bg-white text-blue-600 rounded-lg flex-cc shadow-sm hover:bg-blue-600 hover:text-white transition-all"
@@ -276,7 +263,6 @@
 
   defineOptions({ name: 'PurchasingProgress' })
 
-  // 1. Slim Stats Data
   const pipelineStats = ref([
     { label: 'Tổng Deal', count: 42, dotColor: 'bg-blue-500' },
     { label: 'Đang tư vấn', count: 15, dotColor: 'bg-indigo-500' },
@@ -291,7 +277,6 @@
   ]
   const filterSale = ref('')
 
-  // 2. Kanban Board Columns
   const boardColumns = ref([
     {
       id: 'Consulting',
@@ -368,7 +353,6 @@
     }
   ])
 
-  // 3. Action Sidebar Data
   const criticalAlerts = ref([
     {
       id: 1,
@@ -399,7 +383,6 @@
     }
   ])
 
-  // 4. Logic & Blocking
   const isStale = (deal: any) => {
     return deal.timeInStage.includes('ngày') && parseInt(deal.timeInStage) >= 3
   }
@@ -408,14 +391,13 @@
     if (event.added) {
       const deal = event.added.element
 
-      // BLOCKING LOGIC: Cấm kéo sang "Chờ biển số" nếu hồ sơ chưa xác thực
       if (columnId === 'Processing' && !deal.isVerified) {
         ElMessageBox.alert(
           'Dữ liệu hồ sơ hành chính (CCCD, Địa chỉ Biên Hòa) chưa được XÁC THỰC. Vui lòng hoàn thiện hồ sơ trước khi làm thủ tục biển số.',
           'CHẶN QUY TRÌNH',
           { type: 'error', confirmButtonText: 'ĐÃ HIỂU' }
         )
-        // Rollback (Logic backend sẽ xử lý, ở đây demo revert local nếu cần)
+
         refreshData() // Giả lập refresh để trả về vị trí cũ
         return
       }

@@ -41,10 +41,6 @@
     valueBgClass: string
   }
 
-  /**
-   * quyểntuầnBán chạythươngsản phẩmDanh sách
-   * triểnthịLượng bánxếpdanhtrướcbacủathươngsản phẩmThongTin
-   */
   const weeklyList: WeeklyItem[] = [
     {
       icon: 'ri:money-cny-circle-line',

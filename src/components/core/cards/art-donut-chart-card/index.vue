@@ -1,4 +1,3 @@
-<!-- kiểuảnhThẻ -->
 <template>
   <div class="art-card overflow-hidden" :style="{ height: `${height}rem` }">
     <div class="flex box-border h-full p-5 pr-2">
@@ -45,25 +44,24 @@
   defineOptions({ name: 'ArtDonutChartCard' })
 
   interface Props {
-    /** sốgiá trị */
     value: number
-    /** TieuDe */
+
     title: string
-    /** phầnso sánh */
+
     percentage: number
-    /** phầnso sánhTag */
+
     percentageLabel?: string
-    /** khitrướcnăm */
+
     currentValue?: string
-    /** đinămnăm */
+
     previousValue?: string
-    /** Chiều cao */
+
     height?: number
-    /** Màu sắc */
+
     color?: string
-    /** nửa */
+
     radius?: [string, string]
-    /** Dữ liệu */
+
     data: [number, number]
   }
 

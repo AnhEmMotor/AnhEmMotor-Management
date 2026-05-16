@@ -1,11 +1,9 @@
-<!-- Bên tráiMenu hoặc đôicộtMenu -->
 <template>
   <div
     class="layout-sidebar"
     v-if="showLeftMenu || isDualMenu"
     :class="{ 'no-border': menuList.length === 0 }"
   >
-    <!-- đôicộtMenu（Bên trái） -->
     <div
       v-if="isDualMenu"
       class="dual-menu-left"
@@ -59,14 +57,12 @@
       />
     </div>
 
-    <!-- Bên tráiMenu || đôicộtMenu（Bên phải） -->
     <div
       v-show="menuList.length > 0"
       class="menu-left"
       :class="`menu-left-${getMenuTheme.theme} menu-left-${!menuOpen ? 'close' : 'open'}`"
       :style="{ background: getMenuTheme.background }"
     >
-      <!-- Logo、HeThongdanhtên -->
       <div
         class="header"
         @click="navigateToHome"
@@ -108,7 +104,6 @@
         </ElMenu>
       </ElScrollbar>
 
-      <!-- đôicộtMenuBên phảiNút -->
       <div class="dual-menu-collapse-btn" v-if="isDualMenu" @click="toggleMenuVisibility">
         <ArtSvgIcon
           class="text-g-500/70"

@@ -1,6 +1,5 @@
 <template>
   <div class="banner-management-page min-h-full bg-[#F8FAFC] font-inter text-[#0F172A] pb-10">
-    <!-- 1. HEADER & GLOBAL ACTIONS -->
     <div class="bg-white border-b border-slate-200 px-8 py-6 sticky top-0 z-[50] shadow-sm">
       <div
         class="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4"
@@ -41,7 +40,6 @@
       </div>
     </div>
 
-    <!-- 2. BANNER LIST (Combat Grid) -->
     <div class="p-8 max-w-[1400px] mx-auto">
       <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <div
@@ -50,7 +48,6 @@
           class="banner-card bg-white border border-slate-200 rounded-[32px] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 group relative"
           :class="{ 'opacity-60 grayscale-[0.5]': banner.status === 'Paused' }"
         >
-          <!-- Priority Badge -->
           <div class="absolute top-4 left-4 z-10 flex flex-col gap-2">
             <span
               class="px-3 py-1 bg-black/80 backdrop-blur-md text-white rounded-lg text-[9px] font-black uppercase tracking-widest shadow-lg"
@@ -65,14 +62,12 @@
             </span>
           </div>
 
-          <!-- Banner Preview Area (Responsive Toggle) -->
           <div class="aspect-[21/9] bg-slate-900 relative overflow-hidden group/img">
             <img
               :src="viewMode === 'Desktop' ? banner.desktopImg : banner.mobileImg"
               class="w-full h-full object-cover opacity-80 group-hover/img:scale-105 transition-transform duration-700"
             />
 
-            <!-- Preview Controls -->
             <div
               class="absolute top-4 right-4 flex bg-white/10 backdrop-blur-md p-1 rounded-xl border border-white/20"
             >
@@ -98,7 +93,6 @@
               >
             </div>
 
-            <!-- Info Overlay -->
             <div
               class="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/90 to-transparent"
             >
@@ -120,7 +114,6 @@
             </div>
           </div>
 
-          <!-- Quick Actions Footer -->
           <div class="px-8 py-5 flex justify-between items-center bg-slate-50/50">
             <div class="flex gap-4">
               <div class="flex flex-col">
@@ -168,7 +161,6 @@
       </div>
     </div>
 
-    <!-- 3. BANNER EDITOR DIALOG (Workflow Optimized) -->
     <ElDialog
       v-model="dialogVisible"
       :title="dialogTitle"
@@ -193,7 +185,6 @@
       </template>
 
       <div class="py-4 grid grid-cols-2 gap-8">
-        <!-- Left: Basic Info -->
         <div class="space-y-5">
           <div>
             <label
@@ -254,7 +245,6 @@
           </div>
         </div>
 
-        <!-- Right: Responsive Uploads -->
         <div class="space-y-6">
           <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
             <label class="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-3 block"

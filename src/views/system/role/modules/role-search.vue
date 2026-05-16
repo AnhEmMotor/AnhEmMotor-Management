@@ -30,30 +30,18 @@
 
   const searchBarRef = ref()
 
-  /**
-   * FormDữ liệuđôihướngLiênđịnh
-   */
   const formData = computed({
     get: () => props.modelValue,
     set: (val) => emit('update:modelValue', val)
   })
 
-  /**
-   * Formsoátnghiệmquy
-   */
   const rules = {}
 
-  /**
-   * VaiTroTrạng tháivịmục
-   */
   const statusOptions = ref([
     { label: 'Bật', value: true },
     { label: 'Tắt', value: false }
   ])
 
-  /**
-   * TimKiemFormCauHinhmục
-   */
   const formItems = computed(() => [
     {
       label: 'VaiTrodanhtên',
@@ -107,17 +95,10 @@
     }
   ])
 
-  /**
-   * XuLyĐặt lạiSuKien
-   */
   const handleReset = () => {
     emit('reset')
   }
 
-  /**
-   * XuLyTimKiemSuKien
-   * nghiệmtínhFormsauKích hoạtTimKiem
-   */
   const handleSearch = async (params: RoleSearchFormParams) => {
     await searchBarRef.value.validate()
     emit('search', params)

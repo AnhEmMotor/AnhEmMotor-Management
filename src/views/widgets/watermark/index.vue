@@ -1,6 +1,5 @@
 <template>
   <div class="page-content mb-5">
-    <!-- Cơ bảnVanBanWatermark -->
     <ElCard class="mb-7.5">
       <template #header>Cơ bảnVanBanWatermark</template>
       <ElWatermark content="Art Design Pro" :font="{ color: 'rgba(128, 128, 128, 0.2)' }">
@@ -8,7 +7,6 @@
       </ElWatermark>
     </ElCard>
 
-    <!-- đadòngVanBanWatermark -->
     <ElCard class="mb-7.5">
       <template #header>đadòngVanBanWatermark</template>
       <ElWatermark
@@ -19,7 +17,6 @@
       </ElWatermark>
     </ElCard>
 
-    <!-- Hình ảnhWatermark -->
     <ElCard class="mb-7.5">
       <template #header>Hình ảnhWatermark</template>
       <ElWatermark :image="watermarkImage" :opacity="0.2" :width="80" :height="20">
@@ -27,7 +24,6 @@
       </ElWatermark>
     </ElCard>
 
-    <!-- Tùy chỉnhKiểu dángWatermark -->
     <ElCard class="mb-7.5">
       <template #header>Tùy chỉnhKiểu dángWatermark</template>
       <ElWatermark
@@ -60,14 +56,8 @@
 
   const settingStore = useSettingStore()
 
-  /**
-   * WatermarkHình ảnh URL
-   */
   const watermarkImage = ref('https://element-plus.org/images/element-plus-logo.svg')
 
-  /**
-   * Chuyển đổitoànbộWatermarkHiển thịTrạng thái
-   */
   const handleWatermarkVisible = () => {
     useSettingStore().setWatermarkVisible(!settingStore.watermarkVisible)
     ElMessage.success(

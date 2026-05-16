@@ -4,9 +4,6 @@ import { BrandApi } from '@/api/product/brand.api'
 import type { Brand } from '@/domain/product/brand.types'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
-/**
- * Application Layer - Brand Table Logic
- */
 export function useBrandTable() {
   const dialogVisible = ref(false)
   const dialogTitle = ref('')
@@ -49,7 +46,6 @@ export function useBrandTable() {
     }
   })
 
-  // CRUD Operations
   const handleAdd = () => {
     dialogTitle.value = 'Thêm thương hiệu mới'
     formData.value = {
@@ -136,7 +132,7 @@ export function useBrandTable() {
     handleSearch,
     handleReset,
     refreshData,
-    // CRUD
+
     dialogVisible,
     dialogTitle,
     formData,

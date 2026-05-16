@@ -36,18 +36,12 @@
 <script setup lang="ts">
   defineOptions({ name: 'WidgetsExcel' })
 
-  /**
-   * BảngDữ liệuloạikiểuĐịnh nghĩa
-   */
   interface TableData {
     name: string
     age: number
     city: string
   }
 
-  /**
-   * BảngDữ liệu
-   */
   const tableData = ref<TableData[]>([
     { name: 'lýbốn', age: 20, city: 'Thượng Hải' },
     { name: 'tờba', age: 25, city: 'Bắc Kinh' },
@@ -61,20 +55,12 @@
     { name: 'trầnhai', age: 33, city: 'Tây An' }
   ])
 
-  /**
-   * bảngđầuảnhxạCauHinh
-   * dùngở Excel Nhập fileXuất filegiờcủachữđoạnảnhxạ
-   */
   const headers = {
     name: 'Họ tên',
     age: 'Tuổi',
     city: 'Thànhthị'
   }
 
-  /**
-   * cộtCauHinh
-   * dùngở Excel Xuất filegiờcủacộtRộngvàcáchkiểuhóa
-   */
   const columnConfig = {
     name: {
       title: 'Họ tên',
@@ -93,11 +79,6 @@
     }
   }
 
-  /**
-   * XuLy Excel Nhập fileThanhCong
-   * tươngNhập filecủaDữ liệuchuyểnđổivìBảngDữ liệucáchkiểu
-   * @param data Nhập filecủanguyênđầuDữ liệu
-   */
   const handleImportSuccess = (data: Array<Record<string, unknown>>) => {
     const formattedData: TableData[] = data.map((item) => ({
       name: String(item['Họ tên'] || ''),
@@ -108,42 +89,24 @@
     ElMessage.success(`ThanhCongNhập file ${formattedData.length} điềuDữ liệu`)
   }
 
-  /**
-   * XuLy Excel Nhập fileLỗi
-   * @param error LỗiDoiTuong
-   */
   const handleImportError = (error: Error) => {
     console.error('Nhập fileThatBai:', error)
     ElMessage.error(`Nhập fileThatBai: ${error.message}`)
   }
 
-  /**
-   * XuLy Excel Xuất fileThanhCong
-   */
   const handleExportSuccess = () => {
     console.log('Xuất fileThanhCong')
     ElMessage.success('Excel Xuất fileThanhCong')
   }
 
-  /**
-   * XuLy Excel Xuất fileLỗi
-   * @param error LỗiDoiTuong
-   */
   const handleExportError = (error: Error) => {
     ElMessage.error(`Xuất fileThatBai: ${error.message}`)
   }
 
-  /**
-   * XuLyXuất filevàođộ
-   * @param progress Xuất filevàođộphầnso sánh
-   */
   const handleProgress = (progress: number) => {
     console.log('Xuất filevàođộ:', progress)
   }
 
-  /**
-   * xóakhôngBảngDữ liệu
-   */
   const handleClear = () => {
     tableData.value = []
     ElMessage.info('ĐãxóakhôngDữ liệu')

@@ -1,4 +1,3 @@
-<!-- phụcvụthiết bịQuản lýtrangmặt -->
 <template>
   <div class="page-content mb-5">
     <div class="w-full">
@@ -83,10 +82,6 @@
 
   const UPDATE_INTERVAL = 3000 // Cập nhậtKhoảng cáchThoiGian（milligiây）
 
-  /**
-   * phụcvụthiết bịDanh sáchDữ liệu
-   * Bao gồmcácphụcvụthiết bịcủaquyểnThongTinvàtàinguồnkhiếndùngtình
-   */
   const serverList = reactive<ServerInfo[]>([
     {
       name: 'mởphátphụcvụthiết bị',
@@ -122,20 +117,10 @@
     }
   ])
 
-  /**
-   * sinhthànhđịnhphạmvitrongcủaNgẫu nhiênchỉnhsố
-   * @param min nhấttiểugiá trị（MacDinh 0）
-   * @param max nhấtđạigiá trị（MacDinh 100）
-   * @returns Ngẫu nhiênchỉnhsố
-   */
   const generateRandomValue = (min = 0, max = 100): number => {
     return Math.floor(Math.random() * (max - min + 1)) + min
   }
 
-  /**
-   * Cập nhậtnêncóphụcvụthiết bịcủatàinguồnkhiếndùngDữ liệu
-   * môphỏngphụcvụthiết bịtàinguồnkhiếndùngtìnhcủathựcgiờbiếnhóa
-   */
   const updateServerData = (): void => {
     serverList.forEach((server) => {
       server.cup = generateRandomValue()
@@ -147,18 +132,10 @@
 
   let timer: number | null = null
 
-  /**
-   * ComponentMountgiờbậtđộngđịnhgiờthiết bị
-   * mỗiđịnhThoiGiantừđộngCập nhậtphụcvụthiết bịDữ liệu
-   */
   onMounted(() => {
     timer = window.setInterval(updateServerData, UPDATE_INTERVAL)
   })
 
-  /**
-   * ComponentUnmountgiờxóalýđịnhgiờthiết bị
-   * Phòngthúctrongtồn
-   */
   onUnmounted(() => {
     if (timer !== null) {
       window.clearInterval(timer)

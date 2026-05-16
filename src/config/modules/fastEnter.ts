@@ -1,14 +1,9 @@
-/**
- * khoáivàodiệnCauHinh
- * Bao gồm：Ứng dụngDanh sách、khoáiliêntiếpbằngCauHinh
- */
 import { WEB_LINKS } from '@/utils/constants'
 import type { FastEnterConfig } from '@/types/config'
 
 const fastEnterConfig: FastEnterConfig = {
-  // Hiển thịđiềuphần tử（màn hìnhmànChiều rộng）
   minWidth: 1200,
-  // Ứng dụngDanh sách
+
   applications: [
     {
       name: 'Bàn làm việc',
@@ -83,7 +78,7 @@ const fastEnterConfig: FastEnterConfig = {
       link: WEB_LINKS.BILIBILI
     }
   ],
-  // khoáiliêntiếp
+
   quickLinks: [
     {
       name: 'DangNhap',

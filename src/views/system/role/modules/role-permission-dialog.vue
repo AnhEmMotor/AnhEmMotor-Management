@@ -70,17 +70,11 @@
   const isExpandAll = ref(true)
   const isSelectAll = ref(false)
 
-  /**
-   * PopupHiển thịTrạng tháiđôihướngLiênđịnh
-   */
   const visible = computed({
     get: () => props.modelValue,
     set: (value) => emit('update:modelValue', value)
   })
 
-  /**
-   * Menutiếtđiểmloạikiểu
-   */
   interface MenuNode {
     id?: string | number
     name?: string
@@ -97,15 +91,10 @@
     [key: string]: any
   }
 
-  /**
-   * XuLyMenuDữ liệu，tương authList chuyểnđổivìCấu trúc câytửtiếtđiểm
-   * chuyểnvềXuLyMenucây，tươngQuyenHanDanh sáchMở rộngvìCó thểChọncủatửtiếtđiểm
-   */
   const processedMenuList = computed(() => {
     const processNode = (node: MenuNode): MenuNode => {
       const processed = { ...node }
 
-      // nếuquảcó authList，tươngnóchuyểnđổivìtửtiếtđiểm
       if (node.meta?.authList?.length) {
         const authNodes = node.meta.authList.map((auth) => ({
           id: `${node.id}_${auth.authMark}`,
@@ -119,7 +108,6 @@
         processed.children = processed.children ? [...processed.children, ...authNodes] : authNodes
       }
 
-      // chuyểnvềXuLytửtiếtđiểm
       if (processed.children) {
         processed.children = processed.children.map(processNode)
       }
@@ -130,54 +118,37 @@
     return (menuList.value as any[]).map(processNode)
   })
 
-  /**
-   * Cấu trúc câyComponentCauHinh
-   */
   const defaultProps = {
     children: 'children',
     label: (data: any) => formatMenuTitle(data.meta?.title) || data.label || ''
   }
 
-  /**
-   * Lắng nghePopupmởmở，ban đầuđầuhóaQuyenHanDữ liệu
-   */
   watch(
     () => props.modelValue,
     (newVal) => {
       if (newVal && props.roleData) {
-        // TODO: liệuVaiTroLoadingđốiứngcủaQuyenHanDữ liệu
         console.log('CaiDatQuyenHan:', props.roleData)
       }
     }
   )
 
-  /**
-   * đóngđóngPopupđồng thờixóakhôngvịtrongTrạng thái
-   */
   const handleClose = () => {
     visible.value = false
     treeRef.value?.setCheckedKeys([])
   }
 
-  /**
-   * LưutồnQuyenHanCauHinh
-   */
   const savePermission = () => {
-    // TODO: điềudùngLưutồnQuyenHanGiao diện (Interface)
     ElMessage.success('QuyenHanLưutồnThanhCong')
     emit('success')
     handleClose()
   }
 
-  /**
-   * Chuyển đổitoànbộMở rộng/Thu gọnTrạng thái
-   */
   const toggleExpandAll = () => {
     const tree = treeRef.value
     if (!tree) return
 
     const nodes = tree.store.nodesMap
-    // nàytrongLưugiữ any，vìvì Element Plus củatrongbộtiếtđiểmloạikiểusophụctạp
+
     Object.values(nodes).forEach((node: any) => {
       node.expanded = !isExpandAll.value
     })
@@ -185,9 +156,6 @@
     isExpandAll.value = !isExpandAll.value
   }
 
-  /**
-   * Chuyển đổitoànvị/HủytoànvịTrạng thái
-   */
   const toggleSelectAll = () => {
     const tree = treeRef.value
     if (!tree) return
@@ -202,11 +170,6 @@
     isSelectAll.value = !isSelectAll.value
   }
 
-  /**
-   * chuyểnvềLấynêncótiếtđiểmcủa key
-   * @param nodes tiếtđiểmDanh sách
-   * @returns nêncótiếtđiểmcủa key Mảng
-   */
   const getAllNodeKeys = (nodes: MenuNode[]): string[] => {
     const keys: string[] = []
     const traverse = (nodeList: MenuNode[]): void => {
@@ -219,10 +182,6 @@
     return keys
   }
 
-  /**
-   * XuLycâytiếtđiểmvịtrongTrạng tháibiếnhóa
-   * cùngbướcCập nhậttoànvịNútTrạng thái
-   */
   const handleTreeCheck = () => {
     const tree = treeRef.value
     if (!tree) return
@@ -233,10 +192,6 @@
     isSelectAll.value = checkedKeys.length === allKeys.length && allKeys.length > 0
   }
 
-  /**
-   * nhậpravịtrongcủaQuyenHanDữ liệuđếnBangDieuKhien
-   * dùngởđiềuthửvàXemkhitrướcvịtrongcủaQuyenHanCauHinh
-   */
   const outputSelectedData = () => {
     const tree = treeRef.value
     if (!tree) return

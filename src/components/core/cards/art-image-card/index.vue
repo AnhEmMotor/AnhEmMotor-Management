@@ -1,4 +1,3 @@
-<!-- Hình ảnhThẻ -->
 <template>
   <div class="w-full c-p" @click="handleClick">
     <div class="art-card overflow-hidden">
@@ -53,19 +52,18 @@
   defineOptions({ name: 'ArtImageCard' })
 
   interface Props {
-    /** Hình ảnhDiaChi */
     imageUrl: string
-    /** TieuDe */
+
     title: string
-    /** Phân loại */
+
     category?: string
-    /** kýđọcThoiGian */
+
     readTime?: string
-    /** xemlượng */
+
     views?: number
-    /** BinhLuansố */
+
     comments?: number
-    /** Ngày */
+
     date?: string
   }
 

@@ -1,4 +1,3 @@
-<!-- Bài viếtTrang chi tiếtmặt -->
 <template>
   <div class="article-detail page-content">
     <div class="max-w-200 m-auto mt-15">

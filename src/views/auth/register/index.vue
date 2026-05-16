@@ -1,4 +1,3 @@
-<!-- DangKytrangmặt -->
 <template>
   <div class="flex w-full h-screen">
     <LoginLeftView />
@@ -110,7 +109,6 @@
   const loading = ref(false)
   const formKey = ref(0)
 
-  // Lắng ngheNgôn ngữChuyển đổi，Đặt lạiForm
   watch(locale, () => {
     formKey.value++
   })
@@ -122,10 +120,6 @@
     agreement: false
   })
 
-  /**
-   * nghiệmtínhMật khẩu
-   * khiMật khẩuNhậpsau，nếuquảXác nhậnMật khẩuĐãviết，Kích hoạtXác nhậnMật khẩucủanghiệmtính
-   */
   const validatePassword = (_rule: any, value: string, callback: (error?: Error) => void) => {
     if (!value) {
       callback(new Error(t('register.placeholder.password')))
@@ -139,10 +133,6 @@
     callback()
   }
 
-  /**
-   * nghiệmtínhXác nhậnMật khẩu
-   * TìmXác nhậnMật khẩulàphủvớiMật khẩumộtđến
-   */
   const validateConfirmPassword = (
     _rule: any,
     value: string,
@@ -161,10 +151,6 @@
     callback()
   }
 
-  /**
-   * nghiệmtínhNguoiDunghiệpnghị
-   * Đảm bảoNguoiDungĐãmócvịcùngýhiệpnghị
-   */
   const validateAgreement = (_rule: any, value: boolean, callback: (error?: Error) => void) => {
     if (!value) {
       callback(new Error(t('register.rule.agreementRequired')))
@@ -191,10 +177,6 @@
     agreement: [{ validator: validateAgreement, trigger: 'change' }]
   }))
 
-  /**
-   * DangKyNguoiDung
-   * nghiệmtínhFormsauGửiDangKyVui lòngcầu
-   */
   const register = async () => {
     if (!formRef.value) return
 
@@ -202,18 +184,6 @@
       await formRef.value.validate()
       loading.value = true
 
-      // TODO: thếđổivìthậtthực API điềudùng
-      // const params = {
-      //   username: formData.username,
-      //   password: formData.password
-      // }
-      // const res = await AuthService.register(params)
-      // if (res.code === ApiStatus.success) {
-      //   ElMessage.success('DangKyThanhCong')
-      //   toLogin()
-      // }
-
-      // môphỏngDangKyVui lòngcầu
       setTimeout(() => {
         loading.value = false
         ElMessage.success('DangKyThanhCong')
@@ -225,9 +195,6 @@
     }
   }
 
-  /**
-   * nhảychuyểnđếnDangNhaptrangmặt
-   */
   const toLogin = () => {
     setTimeout(() => {
       router.push({ name: 'Login' })

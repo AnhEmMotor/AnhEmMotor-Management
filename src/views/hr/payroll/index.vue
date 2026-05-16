@@ -1,6 +1,5 @@
 <template>
   <div class="flex flex-col gap-4 pb-5">
-    <!-- Header Stats -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
       <ArtStatsCard
         title="Tổng quỹ lương (Tạm tính)"
@@ -36,7 +35,6 @@
       />
     </div>
 
-    <!-- Filters & Actions -->
     <ElCard class="filter-card">
       <div class="flex flex-col md:flex-row justify-between items-center gap-4">
         <div class="flex items-center gap-4">
@@ -62,7 +60,6 @@
       </div>
     </ElCard>
 
-    <!-- Payroll Table -->
     <ElCard class="art-table-card">
       <template #header>
         <div class="flex items-center gap-2">
@@ -71,7 +68,6 @@
       </template>
 
       <ArtTable :loading="loading" :data="payrollData" :columns="columns">
-        <!-- Employee Info -->
         <template #fullName="{ row }">
           <div class="flex items-center gap-3">
             <ElAvatar :size="32" :src="row.avatarUrl">{{ row.fullName.charAt(0) }}</ElAvatar>
@@ -82,22 +78,18 @@
           </div>
         </template>
 
-        <!-- Base Salary -->
         <template #baseSalary="{ row }">
           <span class="font-medium text-gray-700">{{ formatCurrency(row.baseSalary) }}</span>
         </template>
 
-        <!-- Pending Commission -->
         <template #pendingCommission="{ row }">
           <span class="text-gray-400">{{ formatCurrency(row.pendingCommission) }}</span>
         </template>
 
-        <!-- Confirmed Commission -->
         <template #confirmedCommission="{ row }">
           <span class="font-bold text-blue-600">{{ formatCurrency(row.confirmedCommission) }}</span>
         </template>
 
-        <!-- Total Income -->
         <template #totalIncome="{ row }">
           <div class="flex flex-col items-end">
             <span class="font-bold text-red-600 text-lg">{{
@@ -107,7 +99,6 @@
           </div>
         </template>
 
-        <!-- Operation -->
         <template #operation="{ row }">
           <ElButton type="primary" link @click="showDetail(row)">Chi tiết</ElButton>
         </template>

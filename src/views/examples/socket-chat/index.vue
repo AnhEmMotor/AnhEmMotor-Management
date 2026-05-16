@@ -5,7 +5,6 @@
       <p class="m-0 text-base leading-relaxed text-g-700">{{ $t('admin.t93') }}</p>
     </div>
 
-    <!-- liềntiếpTrạng tháivàthốngkếThongTin -->
     <ElRow :gutter="20" class="mb-15">
       <ElCol :xs="24" :sm="12" :md="8">
         <ElCard class="h-full border-0" :body-style="{ padding: '20px' }">
@@ -38,7 +37,6 @@
       </ElCol>
     </ElRow>
 
-    <!-- liềntiếpCauHinhvàphátgửiTinNhan -->
     <ElRow :gutter="20" class="mb-15">
       <ElCol :xs="24" :md="12">
         <ElCard class="h-full border-0">
@@ -120,7 +118,6 @@
       </ElCol>
     </ElRow>
 
-    <!-- tiếpBộTinNhan - đơnđộcchiếmmộtdòng -->
     <ElRow class="mb-15">
       <ElCol :span="24">
         <ElCard class="border-0">
@@ -152,7 +149,6 @@
       </ElCol>
     </ElRow>
 
-    <!-- liềntiếpNhatKy -->
     <ElCard class="border-0">
       <template #header>
         <div class="flex items-center justify-between">
@@ -189,20 +185,16 @@
 
   defineOptions({ name: 'WidgetsSocketChat' })
 
-  // WebSocketkháchkhoảnđầuthựcví dụ
   const wsClient = ref<WebSocketClient | null>(null)
 
-  // liềntiếpTrạng thái
   const isConnecting = ref(false)
   const isConnected = ref(false)
   const reconnectCount = ref(0)
   const messageCount = ref(0)
 
-  // dùngởxóalý watch củaHàm
   let stopWatchConnection: (() => void) | null = null
   let stopWatchStatus: (() => void) | null = null
 
-  // FormDữ liệu
   const connectForm = ref({
     url: 'ws://localhost:8080/ws',
     autoReconnect: true,
@@ -214,7 +206,6 @@
     content: ''
   })
 
-  // TinNhanvàNhatKyDanh sách
   const messageList = ref<
     Array<{
       type: 'sent' | 'received'
@@ -231,16 +222,12 @@
     }>
   >([])
 
-  // kếThuocTinh
   const connectionTagType = computed(() => {
     if (isConnecting.value) return 'warning'
     if (isConnected.value) return 'success'
     return 'danger'
   })
 
-  /**
-   * Thêm mớiNhatKy
-   */
   const addLog = (type: 'info' | 'success' | 'warning' | 'error', message: string) => {
     logList.value.unshift({
       type,
@@ -248,15 +235,11 @@
       time: new Date().toLocaleTimeString()
     })
 
-    // hạnchếNhatKySố lượng
     if (logList.value.length > 100) {
       logList.value = logList.value.slice(0, 100)
     }
   }
 
-  /**
-   * Thêm mớiTinNhanGhi chép
-   */
   const addMessage = (type: 'sent' | 'received', content: string) => {
     messageList.value.unshift({
       type,
@@ -264,30 +247,22 @@
       time: new Date().toLocaleTimeString()
     })
 
-    // hạnchếTinNhanSố lượng
     if (messageList.value.length > 50) {
       messageList.value = messageList.value.slice(0, 50)
     }
   }
 
-  /**
-   * XuLyWebSocketTinNhan
-   */
   const handleSocketMessage = (event: MessageEvent) => {
     messageCount.value++
     addMessage('received', event.data)
     addLog('success', `BộđếnTinNhan: ${event.data}`)
   }
 
-  /**
-   * liềntiếpWebSocket
-   */
   const handleConnect = () => {
     if (isConnecting.value || isConnected.value) {
       return
     }
 
-    // xóalýcủatrướccủa watch
     if (stopWatchConnection) {
       stopWatchConnection()
       stopWatchConnection = null
@@ -311,7 +286,6 @@
 
       wsClient.value.init()
 
-      // Lắng ngheliềntiếpTrạng tháibiếnhóa
       stopWatchConnection = watch(
         () => wsClient.value?.isWebSocketConnected,
         (connected) => {
@@ -326,7 +300,6 @@
         { immediate: true }
       )
 
-      // Lắng ngheliềntiếpTrạng tháivănquyểnbiếnhóa
       stopWatchStatus = watch(
         () => wsClient.value?.connectionStatusText,
         (status) => {
@@ -344,16 +317,12 @@
     }
   }
 
-  /**
-   * đoánmởliềntiếp
-   */
   const handleDisconnect = () => {
     if (wsClient.value) {
       wsClient.value.close()
       addLog('info', 'tayđộngđoánmởWebSocketliềntiếp')
     }
 
-    // xóalý watch
     if (stopWatchConnection) {
       stopWatchConnection()
       stopWatchConnection = null
@@ -367,9 +336,6 @@
     isConnecting.value = false
   }
 
-  /**
-   * trùngmớiliềntiếp
-   */
   const handleReconnect = () => {
     handleDisconnect()
     setTimeout(() => {
@@ -377,9 +343,6 @@
     }, 1000)
   }
 
-  /**
-   * phátgửiTinNhan
-   */
   const handleSendMessage = () => {
     if (!isConnected.value || !wsClient.value) {
       ElMessage.warning('Vui lòngxâylậpWebSocketliềntiếp')
@@ -388,11 +351,9 @@
 
     let message = messageForm.value.content
 
-    // liệuTinNhanloạikiểuXuLyNoiDung
     switch (messageForm.value.type) {
       case 'json':
         try {
-          // nghiệmtínhlàphủvìcóhiệuJSON
           JSON.parse(message)
         } catch {
           ElMessage.error('Vui lòng nhậpcóhiệucủaJSONcáchkiểuDữ liệu')
@@ -416,37 +377,22 @@
     }
   }
 
-  /**
-   * xóakhôngTinNhanForm
-   */
   const clearMessageForm = () => {
     messageForm.value.content = ''
   }
 
-  /**
-   * xóakhôngTinNhanGhi chép
-   */
   const clearMessages = () => {
     messageList.value = []
   }
 
-  /**
-   * xóakhôngNhatKy
-   */
   const clearLogs = () => {
     logList.value = []
   }
 
-  /**
-   * trangmặtUnmountgiờxóalýliềntiếp
-   */
   onUnmounted(() => {
     handleDisconnect()
   })
 
-  /**
-   * Lắng nghetrangmặtHiển thịtínhbiếnhóa，trangmặtẨngiờđoánmởliềntiếp
-   */
   onMounted(() => {
     document.addEventListener('visibilitychange', () => {
       if (document.hidden && isConnected.value) {
@@ -483,7 +429,6 @@
     @apply max-h-64 overflow-y-auto;
   }
 
-  /* CuộnđiềuKiểu dáng */
   .message-container::-webkit-scrollbar,
   .log-container::-webkit-scrollbar {
     @apply w-4;

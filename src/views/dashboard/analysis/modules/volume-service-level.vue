@@ -26,10 +26,6 @@
     stack: string
   }
 
-  /**
-   * phụcvụloạitínhDữ liệu
-   * Khôngcùngsinhsản phẩmcủaPhân loạiTag
-   */
   const serviceCategories = ref([
     'sinhsản phẩmA',
     'sinhsản phẩmB',
@@ -38,10 +34,6 @@
     'sinhsản phẩmE'
   ])
 
-  /**
-   * nghiệpvụlượngvớiphụcvụlượngDữ liệu
-   * triểnthịcácsinhsản phẩmcủanghiệpvụlượngvàphụcvụlượngđốiso sánh，khiếndùngtrạngảnhtriểnthị
-   */
   const volumeServiceData = ref<VolumeServiceDataItem[]>([
     {
       name: 'nghiệpvụlượng',

@@ -1,7 +1,5 @@
-<!-- khóamàn hình -->
 <template>
   <div class="layout-lock-screen">
-    <!-- mởphátCông cụCanhBaophủlấptầng -->
     <div
       v-if="showDevToolsWarning"
       class="fixed top-0 left-0 z-[999999] flex-cc w-full h-full text-white bg-gradient-to-br from-[#1e1e1e] to-black animate-fade-in"
@@ -16,7 +14,6 @@
       </div>
     </div>
 
-    <!-- khóamàn hìnhPopup -->
     <div v-if="!isLock">
       <ElDialog v-model="visible" :width="370" :show-close="false" @open="handleDialogOpen">
         <div class="flex-c flex-col">
@@ -55,7 +52,6 @@
       </ElDialog>
     </div>
 
-    <!-- giảikhóagiaomặt -->
     <div v-else class="unlock-content">
       <div class="flex-c flex-col w-80">
         <img

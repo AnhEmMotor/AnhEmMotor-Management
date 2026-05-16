@@ -7,10 +7,6 @@
 <script setup lang="ts">
   defineOptions({ name: 'TemplateMap' })
 
-  /**
-   * khácbướcLoadingđịaảnhComponent
-   * bớtthiểuban đầuđầuLoadingthểtích
-   */
   const ArtMapChart = defineAsyncComponent(
     () => import('@/components/core/charts/art-map-chart/index.vue')
   )

@@ -5,10 +5,10 @@ import { setupRippleDirective, type RippleDirective } from './business/ripple'
 import { setupRolesDirective, type RolesDirective } from './core/roles'
 
 export function setupGlobDirectives(app: App) {
-  setupAuthDirective(app) // QuyenHanlệnh
-  setupRolesDirective(app) // VaiTroQuyenHanlệnh
-  setupHighlightDirective(app) // caosánglệnh
-  setupRippleDirective(app) // sóngvânlệnh
+  setupAuthDirective(app)
+  setupRolesDirective(app)
+  setupHighlightDirective(app)
+  setupRippleDirective(app)
 }
 
 export type { AuthDirective, HighlightDirective, RippleDirective, RolesDirective }

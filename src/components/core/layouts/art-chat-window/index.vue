@@ -1,4 +1,3 @@
-<!-- HeThongtròngàysổdiện -->
 <template>
   <div>
     <ElDrawer v-model="isDrawerVisible" :size="isMobile ? '100%' : '480px'" :with-header="false">
@@ -20,7 +19,6 @@
         </div>
       </div>
       <div class="flex h-[calc(100%-70px)] flex-col">
-        <!-- tròngàyTinNhanđồngTên -->
         <div
           class="flex-1 overflow-y-auto border-t-d px-4 py-7.5 [&::-webkit-scrollbar]:!w-1"
           ref="messageContainer"
@@ -57,7 +55,6 @@
           </template>
         </div>
 
-        <!-- tròngàyNhậpđồngTên -->
         <div class="px-4 pt-4">
           <ElInput
             v-model="messageText"

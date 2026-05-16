@@ -36,10 +36,6 @@
     { label: 'bililibilili', url: WEB_LINKS.BILIBILI }
   ]
 
-  /**
-   * tạimớiThẻ Tabtrongmởmởđịnh URL
-   * @param url cầnmởmởcủamạngtrangDiaChi
-   */
   const goPage = (url: string): void => {
     window.open(url, '_blank', 'noopener,noreferrer')
   }

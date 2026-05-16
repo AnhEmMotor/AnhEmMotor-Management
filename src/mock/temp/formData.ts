@@ -21,7 +21,6 @@ export interface User {
   avatar: string
 }
 
-// NguoiDungDanh sách
 export const ACCOUNT_TABLE_DATA: User[] = [
   {
     id: 1,
@@ -198,7 +197,6 @@ export interface Role {
   enable: boolean
 }
 
-// VaiTroDanh sách
 export const ROLE_LIST_DATA: Role[] = [
   {
     roleName: 'siêucấpQuản lýviên',

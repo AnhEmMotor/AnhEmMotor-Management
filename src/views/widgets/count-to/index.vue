@@ -5,7 +5,6 @@
       <p class="m-0 text-base leading-relaxed text-g-700">{{ $t('admin.t229') }}</p>
     </div>
 
-    <!-- Cơ bảndùngpháp -->
     <div class="mb-15">
       <h2 class="m-0 mb-6 text-xl font-medium">{{ $t('admin.t230') }}</h2>
       <div class="count">
@@ -13,7 +12,6 @@
       </div>
     </div>
 
-    <!-- Có tiền tố hậu tố -->
     <div class="mb-15">
       <h2 class="m-0 mb-6 text-xl font-medium">{{ $t('admin.t231') }}</h2>
       <div class="count">
@@ -21,7 +19,6 @@
       </div>
     </div>
 
-    <!-- Dấu thập phân và dấu phân cách -->
     <div class="mb-15">
       <h2 class="m-0 mb-6 text-xl font-medium">{{ $t('admin.t232') }}</h2>
       <div class="count">
@@ -29,7 +26,6 @@
       </div>
     </div>
 
-    <!-- So sánh hiệu ứng hoạt ảnh -->
     <div class="mb-15">
       <h2 class="m-0 mb-6 text-xl font-medium">{{ $t('admin.t233') }}</h2>
       <div class="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-6 mb-8">
@@ -45,7 +41,6 @@
       </div>
     </div>
 
-    <!-- Nút điều khiển -->
     <div class="mb-15">
       <h2 class="m-0 mb-6 text-xl font-medium">{{ $t('admin.t235') }}</h2>
       <div class="count">
@@ -78,9 +73,6 @@
   const countToRef = ref()
   const easingTarget = ref(0)
 
-  /**
-   * BộđộngHoatAnhloạikiểuCauHinh
-   */
   const easingTypes = [
     { name: 'Linear', type: 'linear' },
     { name: 'Ease Out Cubic', type: 'easeOutCubic' },
@@ -90,65 +82,37 @@
     { name: 'Ease In Quad', type: 'easeInQuad' }
   ] as const
 
-  /**
-   * Bắt đầukếsốHoatAnh
-   */
   const startCount = () => {
     const newTarget = 5000
     controlTarget.value = newTarget
     countToRef.value?.start(newTarget)
   }
 
-  /**
-   * TamDungkếsốHoatAnh
-   */
   const pauseCount = () => {
     countToRef.value?.pause()
   }
 
-  /**
-   * Đặt lạikếsốHoatAnh
-   */
   const resetCount = () => {
     countToRef.value?.reset()
     controlTarget.value = 0
   }
 
-  /**
-   * Kích hoạtBộđộngHiệu quảdiễnthị
-   * tại 0 và 1000 củagianChuyển đổi
-   */
   const triggerEasing = () => {
     easingTarget.value = easingTarget.value === 0 ? 1000 : 0
   }
 
-  /**
-   * HoatAnhBắt đầuvềđiều
-   * @param value mụctiêugiá trị
-   */
   const handleAnimationStarted = (value: number) => {
     console.log('HoatAnhBắt đầu，mụctiêugiá trị:', value)
   }
 
-  /**
-   * HoatAnhhoànthànhvềđiều
-   * @param value nhấtcuốigiá trị
-   */
   const handleAnimationFinished = (value: number) => {
     console.log('HoatAnhhoànthành，nhấtcuốigiá trị:', value)
   }
 
-  /**
-   * HoatAnhTamDungvềđiều
-   * @param value khitrướcgiá trị
-   */
   const handleAnimationPaused = (value: number) => {
     console.log('HoatAnhTamDung，khitrướcgiá trị:', value)
   }
 
-  /**
-   * HoatAnhĐặt lạivềđiều
-   */
   const handleAnimationReset = () => {
     console.log('HoatAnhĐãĐặt lại')
   }

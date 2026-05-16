@@ -18,15 +18,9 @@
 
   defineOptions({ name: 'WidgetsVideo' })
 
-  /**
-   * Videonguồn URL
-   */
   const videoUrl = ref(
     '//lf3-static.bytednsdoc.com/obj/eden-cn/nupenuvpxnuvo/xgplayer_doc/xgplayer-demo.mp4'
   )
 
-  /**
-   * VideoẢnh bìaHình ảnh URL
-   */
   const posterUrl = ref(lockImg)
 </script>

@@ -47,8 +47,7 @@
 
 # Kiến trúc & Quản lý State
 
-- Để tối ưu hóa tìm kiếm và phân tách trách nhiệm, mọi file trong các folder endpoints, services, store và mappers phải tuân thủ định dạng:
-  [name].[type].js (Ví dụ: brand.service.js, brand.mapper.js).
+- Để tối ưu hóa tìm kiếm và phân tách trách nhiệm, mọi file trong các folder endpoints, services, store và mappers phải tuân thủ định dạng: [name].[type].js (Ví dụ: brand.service.js, brand.mapper.js).
 
 - Mỗi tính năng sẽ cần phải chia ở các tầng khác nhau với từng chức năng nhiệm vụ khác nhau:
   - Endpoints (nằm trong src\constants\endpoints): Quản lý tập trung tất cả các "đường dẫn" (URLs). Mỗi module là một file riêng (Ví dụ: product.endpoint.js). Sử dụng hàm cho các URL có tham số: DETAIL: (id) => \/api/v1/product/${id}``. Tuyệt đối không hardcode URL trong Service hay Component.

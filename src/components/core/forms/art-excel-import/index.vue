@@ -1,4 +1,3 @@
-<!-- Nhập file Excel vănphần tử -->
 <template>
   <div class="inline-block">
     <ElUpload

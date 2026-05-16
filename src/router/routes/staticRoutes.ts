@@ -1,23 +1,6 @@
 import { AppRouteRecordRaw } from '@/utils/router'
 
-/**
- * tĩnhtháiRoutingCauHinh（KhôngcầncầnQuyenHanthìnăngTruy cậpcủaRouting）
- *
- * ThuocTinhMô tả：
- * isHideTab: true bảngthịKhôngtạiThẻ TabtrongHiển thị
- *
- * tâmýviệcmục：
- * 1、path、name KhôngcầnvàHoạt độngRoutingxungđột，Nếu khôngsẽXuấtđếnRoutingxungđộtvôphápTruy cập
- * 2、tĩnhtháiRoutingKhônglàphủDangNhapđềuCó thểlấyTruy cập
- */
 export const staticRoutes: AppRouteRecordRaw[] = [
-  // KhôngcầncầnDangNhapthìnăngTruy cậpcủaRoutingVí dụ
-  // {
-  //   path: '/welcome',
-  //   name: 'WelcomeStatic',
-  //   component: () => import('@views/dashboard/console/index.vue'),
-  //   meta: { title: 'menus.dashboard.title' }
-  // },
   {
     path: '/auth/login',
     name: 'Login',
@@ -60,7 +43,6 @@ export const staticRoutes: AppRouteRecordRaw[] = [
     name: 'Outside',
     meta: { title: 'menus.outside.title' },
     children: [
-      // iframe trongnhúngtrangmặt
       {
         path: '/outside/iframe/:path',
         name: 'Iframe',

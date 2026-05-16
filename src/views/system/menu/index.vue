@@ -1,7 +1,5 @@
-<!-- MenuQuản lýtrangmặt -->
 <template>
   <div class="menu-page art-full-height">
-    <!-- TimKiemlan -->
     <ArtSearchBar
       v-model="formFilters"
       :items="formItems"
@@ -11,7 +9,6 @@
     />
 
     <ElCard class="art-table-card">
-      <!-- Bảngđầubộ -->
       <ArtTableHeader
         :showZebra="false"
         :loading="loading"
@@ -37,7 +34,6 @@
         :default-expand-all="false"
       />
 
-      <!-- MenuPopup -->
       <MenuDialog
         v-model:visible="dialogVisible"
         :type="dialogType"
@@ -60,18 +56,15 @@
 
   defineOptions({ name: 'Menus' })
 
-  // Trạng tháiQuản lý
   const loading = ref(false)
   const isExpanded = ref(false)
   const tableRef = ref()
 
-  // Popupđóng
   const dialogVisible = ref(false)
   const dialogType = ref<'menu' | 'button'>('menu')
   const editData = ref<AppRouteRecord | any>(null)
   const lockMenuType = ref(false)
 
-  // TimKiemđóng
   const initialSearchState = {
     name: '',
     route: ''
@@ -99,9 +92,6 @@
     getMenuList()
   })
 
-  /**
-   * LấyMenuDanh sáchDữ liệu
-   */
   const getMenuList = async (): Promise<void> => {
     loading.value = true
 
@@ -115,11 +105,6 @@
     }
   }
 
-  /**
-   * LấyMenuloạikiểuTagMàu sắc
-   * @param row MenudòngDữ liệu
-   * @returns TagMàu sắcloạikiểu
-   */
   const getMenuTypeTag = (
     row: AppRouteRecord
   ): 'primary' | 'success' | 'warning' | 'info' | 'danger' => {
@@ -131,11 +116,6 @@
     return 'info'
   }
 
-  /**
-   * LấyMenuloạikiểuvănquyển
-   * @param row MenudòngDữ liệu
-   * @returns Menuloạikiểuvănquyển
-   */
   const getMenuTypeText = (row: AppRouteRecord): string => {
     if (row.meta?.isAuthButton) return 'Nút'
     if (row.children?.length) return 'mụclục'
@@ -145,7 +125,6 @@
     return 'Chưabáo'
   }
 
-  // BảngcộtCauHinh
   const { columnChecks, columns } = useTableColumns(() => [
     {
       prop: 'meta.title',
@@ -229,38 +208,23 @@
     }
   ])
 
-  // Dữ liệuđóng
   const tableData = ref<AppRouteRecord[]>([])
 
-  /**
-   * Đặt lạiTimKiemđiềuphần tử
-   */
   const handleReset = (): void => {
     Object.assign(formFilters, { ...initialSearchState })
     Object.assign(appliedFilters, { ...initialSearchState })
     getMenuList()
   }
 
-  /**
-   * ThựcdòngTimKiem
-   */
   const handleSearch = (): void => {
     Object.assign(appliedFilters, { ...formFilters })
     getMenuList()
   }
 
-  /**
-   * Làm mớiMenuDanh sách
-   */
   const handleRefresh = (): void => {
     getMenuList()
   }
 
-  /**
-   * thâmđộkhắcDoiTuong
-   * @param obj cầnkhắccủaDoiTuong
-   * @returns khắcsaucủaDoiTuong
-   */
   const deepClone = <T,>(obj: T): T => {
     if (obj === null || typeof obj !== 'object') return obj
     if (obj instanceof Date) return new Date(obj) as T
@@ -275,11 +239,6 @@
     return cloned
   }
 
-  /**
-   * tươngQuyenHanDanh sáchchuyểnđổivìtửtiếtđiểm
-   * @param items MenumụcMảng
-   * @returns chuyểnđổisaucủaMenumụcMảng
-   */
   const convertAuthListToChildren = (items: AppRouteRecord[]): AppRouteRecord[] => {
     return items.map((item) => {
       const clonedItem = deepClone(item)
@@ -311,11 +270,6 @@
     })
   }
 
-  /**
-   * TimKiemMenu
-   * @param items MenumụcMảng
-   * @returns TimKiemKetQuaMảng
-   */
   const searchMenu = (items: AppRouteRecord[]): AppRouteRecord[] => {
     const results: AppRouteRecord[] = []
 
@@ -345,15 +299,11 @@
     return results
   }
 
-  // qualọcsaucủaBảngDữ liệu
   const filteredTableData = computed(() => {
     const searchedData = searchMenu(tableData.value)
     return convertAuthListToChildren(searchedData)
   })
 
-  /**
-   * Thêm mớiMenu
-   */
   const handleAddMenu = (): void => {
     dialogType.value = 'menu'
     editData.value = null
@@ -361,9 +311,6 @@
     dialogVisible.value = true
   }
 
-  /**
-   * Thêm mớiQuyenHanNút
-   */
   const handleAddAuth = (): void => {
     dialogType.value = 'menu'
     editData.value = null
@@ -371,10 +318,6 @@
     dialogVisible.value = true
   }
 
-  /**
-   * Chỉnh sửaMenu
-   * @param row MenudòngDữ liệu
-   */
   const handleEditMenu = (row: AppRouteRecord): void => {
     dialogType.value = 'menu'
     editData.value = row
@@ -382,10 +325,6 @@
     dialogVisible.value = true
   }
 
-  /**
-   * Chỉnh sửaQuyenHanNút
-   * @param row QuyenHandòngDữ liệu
-   */
   const handleEditAuth = (row: AppRouteRecord): void => {
     dialogType.value = 'button'
     editData.value = {
@@ -396,9 +335,6 @@
     dialogVisible.value = true
   }
 
-  /**
-   * MenuFormDữ liệuloạikiểu
-   */
   interface MenuFormData {
     name: string
     path: string
@@ -409,19 +345,12 @@
     [key: string]: any
   }
 
-  /**
-   * GửiFormDữ liệu
-   * @param formData FormDữ liệu
-   */
   const handleSubmit = (formData: MenuFormData): void => {
     console.log('GửiDữ liệu:', formData)
-    // TODO: điềudùngAPILưutồnDữ liệu
+
     getMenuList()
   }
 
-  /**
-   * XóaMenu
-   */
   const handleDeleteMenu = async (): Promise<void> => {
     try {
       await ElMessageBox.confirm('Xác địnhcầnXóanênMenukhông？Xóasauvôphápkhôiphục', 'Gợi ý', {
@@ -438,9 +367,6 @@
     }
   }
 
-  /**
-   * XóaQuyenHanNút
-   */
   const handleDeleteAuth = async (): Promise<void> => {
     try {
       await ElMessageBox.confirm('Xác địnhcầnXóanênQuyenHankhông？Xóasauvôphápkhôiphục', 'Gợi ý', {
@@ -457,9 +383,6 @@
     }
   }
 
-  /**
-   * Chuyển đổiMở rộng/Thu gọnnêncóMenu
-   */
   const toggleExpand = (): void => {
     isExpanded.value = !isExpanded.value
     nextTick(() => {

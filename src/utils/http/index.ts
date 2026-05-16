@@ -1,19 +1,3 @@
-/**
- * HTTP Vui lòngcầuphongmôkhối
- * ở Axios phongcủa HTTP Yêucầucôngcụ，gợicungthốngmộtcủaYêucầu/ứnglý
- *
- * ## chủcầncôngnăng
- *
- * - Yêucầu/ứngchặncắtcụ（tựđộngThêm mới Token、thốngmộtXuLy lỗi）
- * - 401 Chưatraoquyềntừđộngđăngra（mangPhòngrungmáychế）
- * - Vui lòngcầuThatBaitừđộngtrùngthử（Có thểCauHinh）
- * - thốngmộtcủaThanhCong/LỗisaiTinNhanGợi ý
- * - chiếctrì GET/POST/PUT/DELETE bằnglệdùngPhuongThuc
- *
- * @module utils/http
- * @author Art Design Pro Team
- */
-
 import axios, { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import { useUserStore } from '@/store/modules/user'
 import { ApiStatus } from './status'
@@ -21,18 +5,15 @@ import { HttpError, handleError, showError, showSuccess } from './error'
 import { $t } from '@/i18n'
 import { BaseResponse } from '@/types'
 
-/** Vui lòngcầuCauHinhlệlượng */
 const REQUEST_TIMEOUT = 15000
 const LOGOUT_DELAY = 500
 const MAX_RETRIES = 0
 const RETRY_DELAY = 1000
 const UNAUTHORIZED_DEBOUNCE_TIME = 3000
 
-/** 401PhòngrungTrạng thái */
 let isUnauthorizedErrorShown = false
 let unauthorizedTimer: NodeJS.Timeout | null = null
 
-/** mởtriển AxiosRequestConfig */
 interface ExtendedAxiosRequestConfig extends AxiosRequestConfig {
   showErrorMessage?: boolean
   showSuccessMessage?: boolean
@@ -40,7 +21,6 @@ interface ExtendedAxiosRequestConfig extends AxiosRequestConfig {
 
 const { VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT, VITE_WITH_CREDENTIALS } = import.meta.env
 
-/** Axiosthựcví dụ */
 const axiosInstance = axios.create({
   timeout: REQUEST_TIMEOUT,
   baseURL: VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT,
@@ -61,7 +41,6 @@ const axiosInstance = axios.create({
   ]
 })
 
-/** Vui lòngcầuchặncắtthiết bị */
 axiosInstance.interceptors.request.use(
   (request: InternalAxiosRequestConfig) => {
     const userStore = useUserStore()
@@ -81,18 +60,16 @@ axiosInstance.interceptors.request.use(
   }
 )
 
-/** ứngchặncắtthiết bị */
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
     const { status, data } = response
-    // Nếu dữ liệu đã có code (từ mock hoặc api khác), dùng nó
+
     if (data && typeof data.code === 'number') {
       if (data.code === ApiStatus.success) return response
       if (data.code === ApiStatus.unauthorized) handleUnauthorizedError(data.msg)
       throw createHttpError(data.msg || $t('httpMsg.requestFailed'), data.code)
     }
 
-    // Nếu backend trả về dữ liệu thô (raw object), bọc lại để tương thích với template
     if (status >= 200 && status < 300) {
       response.data = {
         code: ApiStatus.success,
@@ -110,7 +87,6 @@ axiosInstance.interceptors.response.use(
       const { status, data } = response
       if (status === ApiStatus.unauthorized) handleUnauthorizedError()
 
-      // Lấy message từ backend (ưu tiên Message hoặc msg)
       const backendMsg = data?.Message || data?.msg || data?.message
       if (backendMsg) {
         return Promise.reject(createHttpError(backendMsg, status))
@@ -120,12 +96,10 @@ axiosInstance.interceptors.response.use(
   }
 )
 
-/** thốngmộtxâyHttpError */
 function createHttpError(message: string, code: number) {
   return new HttpError(message, code)
 }
 
-/** XuLy401Lỗi（mangPhòngrung） */
 function handleUnauthorizedError(message?: string): never {
   const error = createHttpError(message || $t('httpMsg.unauthorized'), ApiStatus.unauthorized)
 
@@ -142,21 +116,18 @@ function handleUnauthorizedError(message?: string): never {
   throw error
 }
 
-/** Đặt lại401PhòngrungTrạng thái */
 function resetUnauthorizedError() {
   isUnauthorizedErrorShown = false
   if (unauthorizedTimer) clearTimeout(unauthorizedTimer)
   unauthorizedTimer = null
 }
 
-/** Đăng xuấtHàm */
 function logOut() {
   setTimeout(() => {
     useUserStore().logOut()
   }, LOGOUT_DELAY)
 }
 
-/** làphủcầncầntrùngthử */
 function shouldRetry(statusCode: number) {
   return [
     ApiStatus.requestTimeout,
@@ -167,7 +138,6 @@ function shouldRetry(statusCode: number) {
   ].includes(statusCode)
 }
 
-/** Vui lòngcầutrùngthửLogic */
 async function retryRequest<T>(
   config: ExtendedAxiosRequestConfig,
   retries: number = MAX_RETRIES
@@ -183,14 +153,11 @@ async function retryRequest<T>(
   }
 }
 
-/** Hàm */
 function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-/** Vui lòngcầuHàm */
 async function request<T = any>(config: ExtendedAxiosRequestConfig): Promise<T> {
-  // POST | PUT Tham sốtừđộngĐiền vào
   if (
     ['POST', 'PUT'].includes(config.method?.toUpperCase() || '') &&
     config.params &&
@@ -203,7 +170,6 @@ async function request<T = any>(config: ExtendedAxiosRequestConfig): Promise<T> 
   try {
     const res = await axiosInstance.request<BaseResponse<T>>(config)
 
-    // Hiển thịThanhCongTinNhan
     if (config.showSuccessMessage && res.data.msg) {
       showSuccess(res.data.msg)
     }
@@ -218,7 +184,6 @@ async function request<T = any>(config: ExtendedAxiosRequestConfig): Promise<T> 
   }
 }
 
-/** APIPhuongThuctậphợp */
 const api = {
   get<T>(config: ExtendedAxiosRequestConfig) {
     return retryRequest<T>({ ...config, method: 'GET' })

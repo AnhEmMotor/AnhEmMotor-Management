@@ -1,7 +1,5 @@
-<!-- NútQuyenHanVí dụtrangmặt -->
 <template>
   <div class="w-full py-2">
-    <!-- trangmặtđầubộ -->
     <div class="mb-6">
       <h2 class="m-0 mb-2 text-xl font-medium">{{ $t('menus.examples.permission.buttonAuth') }}</h2>
       <p class="m-0 text-sm leading-[1.6] text-g-700">{{ $t('admin.t83') }}</p>
@@ -42,7 +40,6 @@
       </ElCard>
     </div>
 
-    <!-- ởVaiTrocủaQuyenHankhốngchếdiễnthị -->
     <div class="mb-6 last:mb-0">
       <ElCard class="art-card-xs">
         <template #header>
@@ -72,7 +69,6 @@
               </div>
             </div>
 
-            <!-- Quản lýviêncấptínhNút -->
             <div class="flex flex-col gap-2">
               <ElButton type="warning" plain v-roles="['R_SUPER', 'R_ADMIN']">
                 Quản lýviênHiển thị
@@ -85,7 +81,6 @@
               </div>
             </div>
 
-            <!-- nêncóĐãDangNhapNguoiDungHiển thị -->
             <div class="flex flex-col gap-2">
               <ElButton type="success" plain v-roles="['R_SUPER', 'R_ADMIN', 'R_USER']">
                 nêncóNguoiDungHiển thị
@@ -102,7 +97,6 @@
       </ElCard>
     </div>
 
-    <!-- sauđầumôkiểu：ởRoutingQuyenHanCauHinhcủakhốngchếdiễnthị -->
     <div class="mb-6 last:mb-0">
       <ElCard class="art-card-xs">
         <template #header>
@@ -135,7 +129,6 @@
           </div>
 
           <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">
-            <!-- Thêm mớiQuyenHan -->
             <div class="flex flex-col gap-2">
               <ElButton type="primary" plain v-auth="'add'"> Thêm mới </ElButton>
               <div class="text-xs">
@@ -148,7 +141,6 @@
               </div>
             </div>
 
-            <!-- Chỉnh sửaQuyenHan -->
             <div class="flex flex-col gap-2">
               <ElButton type="warning" plain v-auth="'edit'"> Chỉnh sửa </ElButton>
               <div class="text-xs">
@@ -161,7 +153,6 @@
               </div>
             </div>
 
-            <!-- XóaQuyenHan -->
             <div class="flex flex-col gap-2">
               <ElButton type="danger" plain v-auth="'delete'"> Xóa </ElButton>
               <div class="text-xs">
@@ -174,7 +165,6 @@
               </div>
             </div>
 
-            <!-- Xuất fileQuyenHan -->
             <div class="flex flex-col gap-2">
               <ElButton type="info" plain v-auth="'export'"> Xuất file </ElButton>
               <div class="text-xs">
@@ -204,7 +194,6 @@
       </ElCard>
     </div>
 
-    <!-- trướcđầumôkiểu：biêntrìnhkiểuQuyenHankhốngchếdiễnthị -->
     <div class="mb-6 last:mb-0">
       <ElCard class="art-card-xs">
         <template #header>
@@ -239,7 +228,6 @@
           </div>
 
           <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">
-            <!-- điềuphần tửRenderNút -->
             <div class="flex flex-col gap-2">
               <ElButton v-if="hasAuth('view')" type="primary"> XemChiTiet </ElButton>
               <ElButton v-else type="info" disabled> vôXemQuyenHan </ElButton>
@@ -251,7 +239,6 @@
               </div>
             </div>
 
-            <!-- Hoạt độngNútTrạng thái -->
             <div class="flex flex-col gap-2">
               <ElButton
                 :disabled="!hasAuth('publish')"
@@ -268,7 +255,6 @@
               </div>
             </div>
 
-            <!-- lôlượngHanhDongNút -->
             <div class="flex flex-col gap-2">
               <ElDropdown @command="handleBatchAction" :disabled="!hasBatchPermissions">
                 <ElButton :type="hasBatchPermissions ? 'warning' : 'info'">
@@ -305,7 +291,6 @@
       </ElCard>
     </div>
 
-    <!-- sauđầumôkiểu：biêntrìnhkiểuQuyenHankhốngchếdiễnthị -->
     <div class="mb-6 last:mb-0">
       <ElCard class="art-card-xs">
         <template #header>
@@ -329,7 +314,6 @@
           </p>
 
           <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">
-            <!-- Hoạt độngcôngnăngChuyển đổi -->
             <div class="flex flex-col gap-2">
               <ElSwitch
                 v-model="dynamicFeatureEnabled"
@@ -345,7 +329,6 @@
               </div>
             </div>
 
-            <!-- điềuphần tửHiển thịHanhDongđồngTên -->
             <div class="flex flex-col gap-2">
               <div v-if="hasAuth('manage')" class="flex gap-2 p-3 bg-g-200 border-full-d rounded">
                 <ElButton type="primary" size="small">Quản lýHanhDong</ElButton>
@@ -366,7 +349,6 @@
               </div>
             </div>
 
-            <!-- QuyenHanTrạng tháithịthiết bị -->
             <div class="flex flex-col gap-2">
               <div class="flex flex-wrap gap-3">
                 <ElBadge
@@ -400,7 +382,6 @@
       </ElCard>
     </div>
 
-    <!-- QuyenHanmôkiểuđốiso sánhMô tả -->
     <div class="mb-6 last:mb-0">
       <ElCard class="art-card-xs">
         <template #header>
@@ -438,36 +419,29 @@
   const userStore = useUserStore()
   const route = useRoute()
 
-  // Hoạt độngcôngnăngTrạng thái
   const dynamicFeatureEnabled = ref(false)
 
-  // khitrướcNguoiDungVaiTro
   const currentUserRole = computed(() => {
     return userStore.info?.roles?.[0] || ''
   })
 
-  // khitrướcNguoiDungQuyenHanmã
   const currentUserPermissions = computed(() => {
     return userStore.info?.buttons || []
   })
 
-  // trướcđầumôkiểuQuyenHanDanh sách（NguoiDungcủa buttons chữđoạn）
   const frontendAuthList = computed(() => {
     return userStore.info?.buttons || []
   })
 
-  // sauđầumôkiểuQuyenHanDanh sách（Routing meta.authList CauHinh）
   const backendAuthList = computed(() => {
     type AuthItem = NonNullable<AppRouteRecord['meta']['authList']>[number]
     return Array.isArray(route.meta.authList) ? (route.meta.authList as AuthItem[]) : []
   })
 
-  // làphủômcólôlượngHanhDongQuyenHan
   const hasBatchPermissions = computed(() => {
     return hasAuth('edit') || hasAuth('delete') || hasAuth('export')
   })
 
-  // QuyenHanđốiso sánhDữ liệu
   const comparisonData = computed(() => [
     {
       feature: 'QuyenHanđếnnguồn',
@@ -496,7 +470,6 @@
     }
   ])
 
-  // LấyVaiTroTagloạikiểu
   const getRoleTagType = (role: string): 'primary' | 'success' | 'info' | 'warning' | 'danger' => {
     const roleMap: Record<string, 'primary' | 'success' | 'info' | 'warning' | 'danger'> = {
       R_SUPER: 'warning',
@@ -506,7 +479,6 @@
     return roleMap[role] || 'info'
   }
 
-  // LấyVaiTroHiển thịdanhtên
   const getRoleDisplayName = (role: string) => {
     const roleMap: Record<string, string> = {
       R_SUPER: 'siêucấpQuản lýviên',
@@ -516,7 +488,6 @@
     return roleMap[role] || 'ChưabáoVaiTro'
   }
 
-  // XuLyĐăng tảiHanhDong
   const handlePublish = () => {
     if (hasAuth('publish')) {
       ElMessage.success('Đăng tảiThanhCong！')
@@ -525,7 +496,6 @@
     }
   }
 
-  // XuLylôlượngHanhDong
   const handleBatchAction = (command: string) => {
     const actions: Record<string, string> = {
       batchEdit: 'lôlượngChỉnh sửa',

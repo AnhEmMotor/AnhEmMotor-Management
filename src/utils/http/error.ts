@@ -1,59 +1,31 @@
-/**
- * HTTP XuLy lỗimôkhối
- *
- * gợicungthốngmộtcủa HTTP Vui lòngcầuXuLy lỗimáychế
- *
- * ## chủcầncôngnăng
- *
- * - Tùy chỉnh HttpError Lỗiloại，phongLỗiThongTin、Trạng tháimã、ThoiGiandấubằng
- * - Lỗichặncắtvàchuyểnđổi，tương Axios Lỗichuyểnđổivìtiêuthuậncủa HttpError
- * - LỗiTinNhanquốctếhóaXuLy，liệuTrạng tháimãQuay lạiđốiứngcủađaNgôn ngữLỗiGợi ý
- * - LỗiNhatKyGhi chép，tiệnởhỏiđềtruyvếtvàđiềuthử
- * - LỗivàThanhCongTinNhancủathốngmộttriểnthị
- * - loạikiểugiữvệHàm，dùngởđoánLỗiloạikiểu
- *
- * ## khiếndùngtrườngcảnh
- *
- * - HTTP Vui lòngcầuchặncắtthiết bịtrongthốngmộtXuLyLỗi
- * - nghiệpvụđạimãtrongbắtvàXuLyđặcđịnhLỗi
- * - LỗiNhatKyBộtậpvàtrênbáo
- *
- * @module utils/http/error
- * @author Art Design Pro Team
- */
 import { AxiosError } from 'axios'
 import { ApiStatus } from './status'
 import { $t } from '@/i18n'
 
-// LỗiứngGiao diện (Interface)
 export interface ErrorResponse {
-  /** LỗiTrạng tháimã */
   code: number
-  /** LỗiTinNhan */
+
   msg: string
-  /** LỗiđínhthêmDữ liệu */
+
   data?: unknown
 }
 
-// LỗiNhatKyDữ liệuGiao diện (Interface)
 export interface ErrorLogData {
-  /** LỗiTrạng tháimã */
   code: number
-  /** LỗiTinNhan */
+
   message: string
-  /** LỗiđínhthêmDữ liệu */
+
   data?: unknown
-  /** LỗiphátsinhThoiGiandấu */
+
   timestamp: string
-  /** Vui lòngcầu URL */
+
   url?: string
-  /** Vui lòngcầuPhuongThuc */
+
   method?: string
-  /** Lỗingăn xếpThongTin */
+
   stack?: string
 }
 
-// Tùy chỉnh HttpError loại
 export class HttpError extends Error {
   public readonly code: number
   public readonly data?: unknown
@@ -92,11 +64,6 @@ export class HttpError extends Error {
   }
 }
 
-/**
- * LấyLỗiTinNhan
- * @param status LỗiTrạng tháimã
- * @returns LỗiTinNhan
- */
 const getErrorMessage = (status: number): string => {
   const errorMap: Record<number, string> = {
     [ApiStatus.unauthorized]: 'httpMsg.unauthorized',
@@ -113,13 +80,7 @@ const getErrorMessage = (status: number): string => {
   return $t(errorMap[status] || 'httpMsg.internalServerError')
 }
 
-/**
- * XuLyLỗi
- * @param error LỗiDoiTuong
- * @returns LỗiDoiTuong
- */
 export function handleError(error: AxiosError<ErrorResponse>): never {
-  // XuLyHủycủaVui lòngcầu
   if (error.code === 'ERR_CANCELED') {
     console.warn('Request cancelled:', error.message)
     throw new HttpError($t('httpMsg.requestCancelled'), ApiStatus.error)
@@ -129,7 +90,6 @@ export function handleError(error: AxiosError<ErrorResponse>): never {
   const errorMessage = error.response?.data?.msg || error.message
   const requestConfig = error.config
 
-  // XuLymạnglạcLỗi
   if (!error.response) {
     throw new HttpError($t('httpMsg.networkError'), ApiStatus.error, {
       url: requestConfig?.url,
@@ -137,7 +97,6 @@ export function handleError(error: AxiosError<ErrorResponse>): never {
     })
   }
 
-  // XuLy HTTP Trạng tháimãLỗi
   const message = statusCode
     ? getErrorMessage(statusCode)
     : errorMessage || $t('httpMsg.requestFailed')
@@ -148,35 +107,20 @@ export function handleError(error: AxiosError<ErrorResponse>): never {
   })
 }
 
-/**
- * Hiển thịLỗiTinNhan
- * @param error LỗiDoiTuong
- * @param showMessage làphủHiển thịLỗiTinNhan
- */
 export function showError(error: HttpError, showMessage: boolean = true): void {
   if (showMessage) {
     ElMessage.error(error.message)
   }
-  // Ghi chépLỗiNhatKy
+
   console.error('[HTTP Error]', error.toLogData())
 }
 
-/**
- * Hiển thịThanhCongTinNhan
- * @param message ThanhCongTinNhan
- * @param showMessage làphủHiển thịTinNhan
- */
 export function showSuccess(message: string, showMessage: boolean = true): void {
   if (showMessage) {
     ElMessage.success(message)
   }
 }
 
-/**
- * đoánlàphủvì HttpError loạikiểu
- * @param error LỗiDoiTuong
- * @returns làphủvì HttpError loạikiểu
- */
 export const isHttpError = (error: unknown): error is HttpError => {
   return error instanceof HttpError
 }

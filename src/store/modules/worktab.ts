@@ -1,42 +1,3 @@
-/**
- * cônglàmThẻ TabTrạng tháiQuản lýmôkhối
- *
- * gợicungđaThẻ TabcôngnăngcủaĐầy đủTrạng tháiQuản lý
- *
- * ## chủcầncôngnăng
- *
- * - Thẻ Tabmởmởvàđóngđóng
- * - Thẻ TabcốđịnhvàHủycốđịnh
- * - lôlượngđóngđóng（Bên trái、Bên phải、nóanh ấy、toànbộ）
- * - Thẻ TabCacheQuản lý（KeepAlive）
- * - Thẻ TabTieuDeTùy chỉnh
- * - Thẻ TabRoutingnghiệmtính
- * - Hoạt độngRoutingTham sốXuLy
- *
- * ## khiếndùngtrườngcảnh
- *
- * - đaThẻ TabĐiều hướng
- * - trangmặtCachekhốngchế
- * - Thẻ TabphảiphímMenu
- * - cốđịnhlệdùngtrangmặt
- * - lôlượngđóngđóngTag
- *
- * ## Cốt lõiđặctính
- *
- * - trínăngThẻ Tabphụcdùng（cùngRoutingdanhtênphụcdùng）
- * - cốđịnhThẻ TabLưuhộ（KhôngCó thểđóngđóng）
- * - KeepAlive CachexếpchiaQuản lý
- * - Routingcóhiệutínhnghiệmtính
- * - TrangChutừđộngLưugiữ
- *
- * ## trìlâuhóa
- * - khiếndùng localStorage tồntrữ
- * - tồntrữphím：sys-v{version}-worktab
- * - Làm mớitrangmặtDuy trìTagTrạng thái
- *
- * @module store/modules/worktab
- * @author Art Design Pro Team
- */
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { router } from '@/router'
@@ -50,48 +11,31 @@ interface WorktabState {
   keepAliveExclude: string[]
 }
 
-/**
- * Bàn làm việcThẻ TabQuản lý Store
- */
 export const useWorktabStore = defineStore(
   'worktabStore',
   () => {
-    // Trạng tháiĐịnh nghĩa
     const current = ref<Partial<WorkTab>>({})
     const opened = ref<WorkTab[]>([])
     const keepAliveExclude = ref<string[]>([])
 
-    // kếThuocTinh
     const hasOpenedTabs = computed(() => opened.value.length > 0)
     const hasMultipleTabs = computed(() => opened.value.length > 1)
     const currentTabIndex = computed(() =>
       current.value.path ? opened.value.findIndex((tab) => tab.path === current.value.path) : -1
     )
 
-    /**
-     * TimKiemThẻ TabChỉ mục
-     */
     const findTabIndex = (path: string): number => {
       return opened.value.findIndex((tab) => tab.path === path)
     }
 
-    /**
-     * LấyThẻ Tab
-     */
     const getTab = (path: string): WorkTab | undefined => {
       return opened.value.find((tab) => tab.path === path)
     }
 
-    /**
-     * TìmThẻ TablàphủCó thểđóngđóng
-     */
     const isTabClosable = (tab: WorkTab): boolean => {
       return !tab.fixedTab
     }
 
-    /**
-     * antoàncủaRoutingnhảychuyển
-     */
     const safeRouterPush = (tab: Partial<WorkTab>): void => {
       if (!tab.path) {
         console.warn('thửthửnhảychuyểnđếnvôhiệuđườngcủaThẻ Tab')
@@ -108,21 +52,16 @@ export const useWorktabStore = defineStore(
       }
     }
 
-    /**
-     * mởmởhoặckíchsốngmộtchiếcvịmụcthẻ
-     */
     const openTab = (tab: WorkTab): void => {
       if (!tab.path) {
         console.warn('thửthửmởmởvôhiệucủaThẻ Tab')
         return
       }
 
-      // từ keepAlive xếpchiaDanh sáchtrongDichia
       if (tab.name) {
         removeKeepAliveExclude(tab.name)
       }
 
-      // liệuRoutingdanhtênTimKiem（ứngđốiHoạt độngRoutingTham sốXuấtđếncủađamởhỏiđề），tìmKhôngđếnlạiliệuđườngTimKiem
       let existingIndex = -1
       if (tab.name) {
         existingIndex = opened.value.findIndex((t) => t.name === tab.name)
@@ -132,7 +71,6 @@ export const useWorktabStore = defineStore(
       }
 
       if (existingIndex === -1) {
-        // Thêm mớiThẻ Tab
         const insertIndex = tab.fixedTab ? findFixedTabInsertIndex() : opened.value.length
         const newTab = { ...tab }
 
@@ -144,7 +82,6 @@ export const useWorktabStore = defineStore(
 
         current.value = newTab
       } else {
-        // Cập nhậthiệncóThẻ Tab（khiHoạt độngRoutingTham sốhoặcTìmhỏibiếnhơngiờ，phụcdùngcùngmộtTag）
         const existingTab = opened.value[existingIndex]
 
         opened.value[existingIndex] = {
@@ -163,9 +100,6 @@ export const useWorktabStore = defineStore(
       }
     }
 
-    /**
-     * TimKiemcốđịnhThẻ TabcủachènvàoViTri
-     */
     const findFixedTabInsertIndex = (): number => {
       let insertIndex = 0
       for (let i = 0; i < opened.value.length; i++) {
@@ -178,9 +112,6 @@ export const useWorktabStore = defineStore(
       return insertIndex
     }
 
-    /**
-     * đóngđóngđịnhcủavịmụcthẻ
-     */
     const removeTab = (path: string): void => {
       const targetTab = getTab(path)
       const targetIndex = findTabIndex(path)
@@ -195,17 +126,14 @@ export const useWorktabStore = defineStore(
         return
       }
 
-      // từThẻ TabDanh sáchtrongDichia
       opened.value.splice(targetIndex, 1)
 
-      // XuLyCachexếpchia
       if (targetTab?.name) {
         addKeepAliveExclude(targetTab)
       }
 
       const { homePath } = useCommon()
 
-      // nếuquảđóngđóngsauvôThẻ Tab，nhảychuyểnTrangChu
       if (!hasOpenedTabs.value) {
         if (path !== homePath.value) {
           current.value = {}
@@ -214,7 +142,6 @@ export const useWorktabStore = defineStore(
         return
       }
 
-      // nếuquảđóngđóngcủalàkhitrướckíchsốngTag，cầncầnkíchsốngnóanh ấyTag
       if (current.value.path === path) {
         const newIndex = targetIndex >= opened.value.length ? opened.value.length - 1 : targetIndex
         current.value = opened.value[newIndex]
@@ -222,9 +149,6 @@ export const useWorktabStore = defineStore(
       }
     }
 
-    /**
-     * đóngđóngBên tráivịmụcthẻ
-     */
     const removeLeft = (path: string): void => {
       const targetIndex = findTabIndex(path)
 
@@ -235,7 +159,6 @@ export const useWorktabStore = defineStore(
         return
       }
 
-      // LấyBên tráiCó thểđóngđóngcủaThẻ Tab
       const leftTabs = opened.value.slice(0, targetIndex)
       const closableLeftTabs = leftTabs.filter(isTabClosable)
 
@@ -244,24 +167,18 @@ export const useWorktabStore = defineStore(
         return
       }
 
-      // tiêughivìCachexếpchia
       markTabsToRemove(closableLeftTabs)
 
-      // DichiaBên tráiCó thểđóngđóngcủaThẻ Tab
       opened.value = opened.value.filter(
         (tab, index) => index >= targetIndex || !isTabClosable(tab)
       )
 
-      // Đảm bảokhitrướcTaglàkíchsốngTrạng thái
       const targetTab = getTab(path)
       if (targetTab) {
         current.value = targetTab
       }
     }
 
-    /**
-     * đóngđóngBên phảivịmụcthẻ
-     */
     const removeRight = (path: string): void => {
       const targetIndex = findTabIndex(path)
 
@@ -272,7 +189,6 @@ export const useWorktabStore = defineStore(
         return
       }
 
-      // LấyBên phảiCó thểđóngđóngcủaThẻ Tab
       const rightTabs = opened.value.slice(targetIndex + 1)
       const closableRightTabs = rightTabs.filter(isTabClosable)
 
@@ -281,24 +197,18 @@ export const useWorktabStore = defineStore(
         return
       }
 
-      // tiêughivìCachexếpchia
       markTabsToRemove(closableRightTabs)
 
-      // DichiaBên phảiCó thểđóngđóngcủaThẻ Tab
       opened.value = opened.value.filter(
         (tab, index) => index <= targetIndex || !isTabClosable(tab)
       )
 
-      // Đảm bảokhitrướcTaglàkíchsốngTrạng thái
       const targetTab = getTab(path)
       if (targetTab) {
         current.value = targetTab
       }
     }
 
-    /**
-     * đóngđóngnóanh ấyvịmụcthẻ
-     */
     const removeOthers = (path: string): void => {
       const targetTab = getTab(path)
 
@@ -309,7 +219,6 @@ export const useWorktabStore = defineStore(
         return
       }
 
-      // Lấynóanh ấyCó thểđóngđóngcủaThẻ Tab
       const otherTabs = opened.value.filter((tab) => tab.path !== path)
       const closableTabs = otherTabs.filter(isTabClosable)
 
@@ -318,27 +227,20 @@ export const useWorktabStore = defineStore(
         return
       }
 
-      // tiêughivìCachexếpchia
       markTabsToRemove(closableTabs)
 
-      // chỉLưugiữkhitrướcTagvàcốđịnhTag
       opened.value = opened.value.filter((tab) => tab.path === path || !isTabClosable(tab))
 
-      // Đảm bảokhitrướcTaglàkíchsốngTrạng thái
       current.value = targetTab
     }
 
-    /**
-     * đóngđóngnêncóCó thểđóngđóngcủaThẻ Tab
-     */
     const removeAll = (): void => {
       const { homePath } = useCommon()
       const hasFixedTabs = opened.value.some((tab) => tab.fixedTab)
 
-      // LấyCó thểđóngđóngcủaThẻ Tab
       const closableTabs = opened.value.filter((tab) => {
         if (!isTabClosable(tab)) return false
-        // nếuquảcócốđịnhTag，nêncóCó thểđóngđóngcủađềuCó thểlấyđóngđóng；Nếu khôngLưugiữTrangChu
+
         return hasFixedTabs || tab.path !== homePath.value
       })
 
@@ -347,22 +249,18 @@ export const useWorktabStore = defineStore(
         return
       }
 
-      // tiêughivìCachexếpchia
       markTabsToRemove(closableTabs)
 
-      // LưugiữKhôngCó thểđóngđóngcủaThẻ TabvàTrangChu（khikhôngcócốđịnhTaggiờ）
       opened.value = opened.value.filter((tab) => {
         return !isTabClosable(tab) || (!hasFixedTabs && tab.path === homePath.value)
       })
 
-      // XuLykíchsốngTrạng thái
       if (!hasOpenedTabs.value) {
         current.value = {}
         safeRouterPush({ path: homePath.value })
         return
       }
 
-      // ChọnkíchsốngcủaThẻ Tab：TốiTrangChu，nólầnthứmộtchiếcCó thểdùngTag
       const homeTab = opened.value.find((tab) => tab.path === homePath.value)
       const targetTab = homeTab || opened.value[0]
 
@@ -370,9 +268,6 @@ export const useWorktabStore = defineStore(
       safeRouterPush(targetTab)
     }
 
-    /**
-     * tươngđịnhvịmụcthẻThêm mớiđến keepAlive xếpchiaDanh sáchtrong
-     */
     const addKeepAliveExclude = (tab: WorkTab): void => {
       if (!tab.keepAlive || !tab.name) return
 
@@ -381,18 +276,12 @@ export const useWorktabStore = defineStore(
       }
     }
 
-    /**
-     * từ keepAlive xếpchiaDanh sáchtrongDichiađịnhComponentdanhtên
-     */
     const removeKeepAliveExclude = (name: string): void => {
       if (!name) return
 
       keepAliveExclude.value = keepAliveExclude.value.filter((item) => item !== name)
     }
 
-    /**
-     * tươngtruyềnvàocủamộttổvịmụcthẻcủaComponentdanhtêntiêughivìxếpchiaCache
-     */
     const markTabsToRemove = (tabs: WorkTab[]): void => {
       tabs.forEach((tab) => {
         if (tab.name) {
@@ -401,9 +290,6 @@ export const useWorktabStore = defineStore(
       })
     }
 
-    /**
-     * Chuyển đổiđịnhThẻ TabcủacốđịnhTrạng thái
-     */
     const toggleFixedTab = (path: string): void => {
       const targetIndex = findTabIndex(path)
 
@@ -415,32 +301,24 @@ export const useWorktabStore = defineStore(
       const tab = { ...opened.value[targetIndex] }
       tab.fixedTab = !tab.fixedTab
 
-      // DichianguyênViTri
       opened.value.splice(targetIndex, 1)
 
       if (tab.fixedTab) {
-        // cốđịnhTagchènvàođếnnêncócốđịnhTagcủacuốiđuôi
         const firstNonFixedIndex = opened.value.findIndex((t) => !t.fixedTab)
         const insertIndex = firstNonFixedIndex === -1 ? opened.value.length : firstNonFixedIndex
         opened.value.splice(insertIndex, 0, tab)
       } else {
-        // phicốđịnhTagchènvàođếnnêncócốđịnhTagsau
         const fixedCount = opened.value.filter((t) => t.fixedTab).length
         opened.value.splice(fixedCount, 0, tab)
       }
 
-      // Cập nhậtkhitrướcTagtríchdùng
       if (current.value.path === path) {
         current.value = tab
       }
     }
 
-    /**
-     * nghiệmtínhBàn làm việcThẻ TabcủaRoutingcóhiệutính
-     */
     const validateWorktabs = (routerInstance: Router): void => {
       try {
-        // Hoạt độngRoutingsoátnghiệm：TốikhiếndùngRouting name đoáncóhiệutính；Nếu khôngdùng resolve ngựaPhânTham sốhóađường
         const isTabRouteValid = (tab: Partial<WorkTab>): boolean => {
           try {
             if (tab.name) {
@@ -460,7 +338,6 @@ export const useWorktabStore = defineStore(
           }
         }
 
-        // qualọcracóhiệucủaThẻ Tab
         const validTabs = opened.value.filter((tab) => isTabRouteValid(tab))
 
         if (validTabs.length !== opened.value.length) {
@@ -468,7 +345,6 @@ export const useWorktabStore = defineStore(
           opened.value = validTabs
         }
 
-        // nghiệmtínhkhitrướckíchsốngTagcủacóhiệutính
         const isCurrentValid = current.value && isTabRouteValid(current.value)
 
         if (!isCurrentValid && validTabs.length > 0) {
@@ -482,18 +358,12 @@ export const useWorktabStore = defineStore(
       }
     }
 
-    /**
-     * xóakhôngnêncóTrạng thái（dùngởđăngrabằngtrườngcảnh）
-     */
     const clearAll = (): void => {
       current.value = {}
       opened.value = []
       keepAliveExclude.value = []
     }
 
-    /**
-     * LấyTrạng tháikhoáichiếu（dùngởtrìlâuhóatồntrữ）
-     */
     const getStateSnapshot = (): WorktabState => {
       return {
         current: { ...current.value },
@@ -502,17 +372,11 @@ export const useWorktabStore = defineStore(
       }
     }
 
-    /**
-     * LấyThẻ TabTieuDe
-     */
     const getTabTitle = (path: string): WorkTab | undefined => {
       const tab = getTab(path)
       return tab
     }
 
-    /**
-     * Cập nhậtThẻ TabTieuDe
-     */
     const updateTabTitle = (path: string, title: string): void => {
       const tab = getTab(path)
       if (tab) {
@@ -520,9 +384,6 @@ export const useWorktabStore = defineStore(
       }
     }
 
-    /**
-     * Đặt lạiThẻ TabTieuDe
-     */
     const resetTabTitle = (path: string): void => {
       const tab = getTab(path)
       if (tab) {
@@ -531,17 +392,14 @@ export const useWorktabStore = defineStore(
     }
 
     return {
-      // Trạng thái
       current,
       opened,
       keepAliveExclude,
 
-      // kếThuocTinh
       hasOpenedTabs,
       hasMultipleTabs,
       currentTabIndex,
 
-      // PhuongThuc
       openTab,
       removeTab,
       removeLeft,
@@ -553,7 +411,6 @@ export const useWorktabStore = defineStore(
       clearAll,
       getStateSnapshot,
 
-      // Công cụPhuongThuc
       findTabIndex,
       getTab,
       isTabClosable,

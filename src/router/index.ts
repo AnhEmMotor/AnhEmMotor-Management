@@ -5,13 +5,11 @@ import { configureNProgress } from '@/utils/router'
 import { setupBeforeEachGuard } from './guards/beforeEach'
 import { setupAfterEachGuard } from './guards/afterEach'
 
-// xâyRoutingthựcví dụ
 export const router = createRouter({
   history: createWebHashHistory(),
   routes: staticRoutes // tĩnhtháiRouting
 })
 
-// ban đầuđầuhóaRouting
 export function initRouter(app: App<Element>): void {
   configureNProgress() // Phía trênThanh tiến trình
   setupBeforeEachGuard(router) // Routingtrướcđặtgiữvệ
@@ -19,5 +17,4 @@ export function initRouter(app: App<Element>): void {
   app.use(router)
 }
 
-// chủtrangđường，MacDinhkhiếndùngMenuthứmộtchiếccóhiệuđường，CauHinhsaukhiếndùngnàyđường
 export const HOME_PAGE_PATH = ''

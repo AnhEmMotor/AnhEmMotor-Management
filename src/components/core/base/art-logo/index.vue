@@ -1,4 +1,3 @@
-<!-- HeThonglogo -->
 <template>
   <div class="flex-cc">
     <img :style="logoStyle" src="@imgs/common/logo.webp" alt="logo" class="w-full h-full" />
@@ -9,7 +8,6 @@
   defineOptions({ name: 'ArtLogo' })
 
   interface Props {
-    /** logo Kích thước */
     size?: number | string
   }
 

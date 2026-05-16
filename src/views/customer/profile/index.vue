@@ -10,7 +10,6 @@
       </ElButton>
     </div>
 
-    <!-- Smart Filter Bar -->
     <div class="search-bar-wrapper bg-white rounded-2xl shadow-sm border border-gray-100 p-2 mx-4">
       <ArtSearchBar
         v-model="searchModel"
@@ -23,7 +22,6 @@
       />
     </div>
 
-    <!-- Customer Database List -->
     <div class="content-section px-4" v-loading="loading">
       <div v-if="data.length > 0" class="flex flex-col gap-4">
         <div
@@ -31,7 +29,6 @@
           :key="customer.id"
           class="customer-row-container flex flex-col"
         >
-          <!-- Customer Row Card -->
           <div
             class="customer-row-card group bg-white rounded-2xl shadow-sm border border-gray-100 transition-all duration-300 flex items-center hover:border-blue-200 cursor-pointer overflow-hidden"
             :class="{
@@ -40,7 +37,6 @@
             @click="handleToggleExpand(customer.id)"
           >
             <div class="flex flex-1 items-center p-5 gap-6">
-              <!-- 1. Cột Mức độ ưu tiên (Priority) -->
               <div class="priority-column flex-shrink-0 w-24 flex flex-cc">
                 <div
                   class="priority-label flex flex-col items-center justify-center p-2 rounded-xl text-white w-20 h-14"
@@ -53,7 +49,6 @@
                 </div>
               </div>
 
-              <!-- 2. Cột Định danh & Nguồn (Identity & Source) -->
               <div class="identity-column flex-shrink-0 w-64 border-l border-gray-50 pl-4">
                 <div class="flex items-center gap-3">
                   <div class="flex flex-col">
@@ -63,7 +58,6 @@
                       {{ customer.fullName }}
                     </h4>
                     <div class="flex items-center gap-2 mt-1">
-                      <!-- Source Icons -->
                       <ElTooltip :content="'Nguồn: ' + customer.source">
                         <div
                           class="size-5 rounded-md flex-cc"
@@ -80,7 +74,6 @@
                 </div>
               </div>
 
-              <!-- 3. Cột Giai đoạn phễu (Pipeline Stage) -->
               <div
                 class="pipeline-column w-40 px-4 border-l border-gray-50 flex flex-col items-center justify-center"
               >
@@ -96,7 +89,6 @@
                 <span class="text-[10px] text-gray-400 mt-1 font-bold">ID: {{ customer.id }}</span>
               </div>
 
-              <!-- 4. Cột Ghi chú gần nhất (Last Note) -->
               <div class="note-column flex-1 px-4 border-l border-gray-50">
                 <div class="flex flex-col gap-1">
                   <span class="text-[10px] font-bold text-gray-300 uppercase tracking-widest"
@@ -108,7 +100,6 @@
                 </div>
               </div>
 
-              <!-- 5. Cột Người phụ trách (Assignee) -->
               <div class="assignee-column w-48 px-4 border-l border-gray-50">
                 <div class="flex flex-col gap-1.5" @click.stop>
                   <span class="text-[10px] text-gray-400 font-bold uppercase tracking-tighter"
@@ -130,7 +121,6 @@
                 </div>
               </div>
 
-              <!-- Quick Actions & Expand Indicator -->
               <div class="flex items-center gap-2 border-l border-gray-50 pl-6 pr-2">
                 <div class="flex gap-1" @click.stop>
                   <ElTooltip content="Chỉnh sửa hồ sơ">
@@ -159,14 +149,12 @@
             </div>
           </div>
 
-          <!-- Expanded 3-Column Dashboard -->
           <div v-if="expandedId === customer.id" class="expansion-container">
             <CustomerDetailExpansion :lead="customer" />
           </div>
         </div>
       </div>
 
-      <!-- Empty State -->
       <div
         v-else-if="!loading"
         class="empty-state p-20 flex flex-col items-center bg-white rounded-3xl border border-dashed border-gray-200 mx-4"
@@ -176,7 +164,6 @@
       </div>
     </div>
 
-    <!-- Customer Form Dialog -->
     <CustomerFormDialog
       v-model="addDialogVisible"
       :initial-data="editData"
@@ -200,7 +187,6 @@
 
   defineOptions({ name: 'CustomerProfileManagement' })
 
-  // Reusing useLeadTable logic for customer list
   const { data, loading, refreshData, handleSearch, handleReset, salesList, getPriority } =
     useLeadTable()
 
@@ -262,8 +248,6 @@
     }
   ]
 
-  // --- Helpers for the new columns ---
-
   const getSourceIcon = (source: string) => {
     if (source === 'Facebook') return 'ri:facebook-fill'
     if (source === 'Website') return 'ri:global-line'
@@ -296,7 +280,6 @@
   }
 
   const getLastNote = (customer: any) => {
-    // Mocking last notes based on some logic or hardcoded for demo
     const notes = [
       'Khách thích màu đỏ đen nhám',
       'Đang chờ duyệt hồ sơ trả góp',

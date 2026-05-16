@@ -1,4 +1,3 @@
-<!-- ThongBaoComponent -->
 <template>
   <div
     class="art-notification-panel art-card-sm !shadow-xl"
@@ -30,7 +29,6 @@
 
     <div class="w-full h-[calc(100%-95px)]">
       <div class="h-[calc(100%-60px)] overflow-y-scroll scrollbar-thin">
-        <!-- ThongBao -->
         <ul v-show="barActiveIndex === 0">
           <li
             v-for="(item, index) in noticeList"
@@ -50,7 +48,6 @@
           </li>
         </ul>
 
-        <!-- TinNhan -->
         <ul v-show="barActiveIndex === 1">
           <li
             v-for="(item, index) in msgList"
@@ -67,7 +64,6 @@
           </li>
         </ul>
 
-        <!-- Việc cần làm -->
         <ul v-show="barActiveIndex === 2">
           <li
             v-for="(item, index) in pendingList"
@@ -79,7 +75,6 @@
           </li>
         </ul>
 
-        <!-- khôngTrạng thái -->
         <div
           v-show="currentTabIsEmpty"
           class="relative top-25 h-full text-g-500 text-center !bg-transparent"
@@ -116,41 +111,36 @@
   defineOptions({ name: 'ArtNotification' })
 
   interface NoticeItem {
-    /** TieuDe */
     title: string
-    /** ThoiGian */
+
     time: string
-    /** loạikiểu */
+
     type: NoticeType
   }
 
   interface MessageItem {
-    /** TieuDe */
     title: string
-    /** ThoiGian */
+
     time: string
-    /** Avatar */
+
     avatar: string
   }
 
   interface PendingItem {
-    /** TieuDe */
     title: string
-    /** ThoiGian */
+
     time: string
   }
 
   interface BarItem {
-    /** danhtên */
     name: ComputedRef<string>
-    /** Số lượng */
+
     num: number
   }
 
   interface NoticeStyle {
-    /** Icon */
     icon: string
-    /** icon Kiểu dáng */
+
     iconClass: string
   }
 

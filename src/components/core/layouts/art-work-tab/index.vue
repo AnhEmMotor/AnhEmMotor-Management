@@ -1,4 +1,3 @@
-<!-- Thẻ Tab -->
 <template>
   <div
     v-if="showWorkTab"

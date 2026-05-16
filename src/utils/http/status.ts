@@ -1,6 +1,3 @@
-/**
- * Giao diện (Interface)Trạng tháimã
- */
 export enum ApiStatus {
   success = 200, // ThanhCong
   error = 400, // Lỗi

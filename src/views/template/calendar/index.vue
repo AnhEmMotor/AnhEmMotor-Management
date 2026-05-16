@@ -1,6 +1,5 @@
 <template>
   <div class="page-content mb-5">
-    <!-- ngàyLịchchủthể -->
     <ElCalendar v-model="currentDate">
       <template #date-cell="{ data }">
         <div
@@ -8,10 +7,8 @@
           :class="{ 'is-selected': data.isSelected }"
           @click="handleCellClick(data.day)"
         >
-          <!-- NgàyHiển thị -->
           <p class="absolute top-1 right-1 text-sm">{{ formatDate(data.day) }}</p>
 
-          <!-- SuKienDanh sách -->
           <div class="flex flex-col gap-1 w-full max-h-21 pr-1 mt-6 overflow-y-auto">
             <div
               v-for="event in getEvents(data.day)"
@@ -30,7 +27,6 @@
       </template>
     </ElCalendar>
 
-    <!-- SuKienChỉnh sửaPopup -->
     <ElDialog v-model="dialogVisible" :title="dialogTitle" width="600px" @closed="resetForm">
       <ElForm :model="eventForm" label-width="80px">
         <ElFormItem label="sốngđộngTieuDe" required>
@@ -80,9 +76,6 @@
 <script setup lang="ts">
   defineOptions({ name: 'TemplateCalendar' })
 
-  /**
-   * ngàyLịchSuKienloạikiểuĐịnh nghĩa
-   */
   interface CalendarEvent {
     date: string
     endDate?: string
@@ -92,9 +85,6 @@
     textClass?: string
   }
 
-  /**
-   * SuKienloạikiểuvịmục
-   */
   const eventTypes = [
     { label: 'quyển', value: 'primary' },
     { label: 'ThanhCong', value: 'success' },
@@ -107,9 +97,6 @@
   const dialogTitle = ref('Thêm mớiSuKien')
   const editingEventIndex = ref<number>(-1)
 
-  /**
-   * SuKienDanh sáchDữ liệu
-   */
   const events = ref<CalendarEvent[]>([
     { date: '2025-02-01', content: 'sinhsản phẩmcầncầuBìnhduyệt', type: 'primary' },
     {
@@ -127,9 +114,6 @@
     { date: '2025-02-28', content: 'Hàng thángtổngKếtsẽ', type: 'warning' }
   ])
 
-  /**
-   * SuKienFormDữ liệu
-   */
   const eventForm = ref<CalendarEvent>({
     date: '',
     endDate: '',
@@ -137,23 +121,10 @@
     type: 'primary'
   })
 
-  /**
-   * làphủởChỉnh sửamôkiểu
-   */
   const isEditing = computed(() => editingEventIndex.value >= 0)
 
-  /**
-   * cáchkiểuhóaNgày，chỉHiển thịngày
-   * @param date Đầy đủNgàyChuỗi
-   * @returns Ngàytrongcủangàybộphần
-   */
   const formatDate = (date: string) => date.split('-')[2]
 
-  /**
-   * LấySuKienloạikiểuđốiứngcủaKiểu dángloạidanh
-   * @param type SuKienloạikiểu
-   * @returns Bao gồmNềnvàVanBanMàu sắccủaloạidanhDoiTuong
-   */
   const getEventClasses = (type: CalendarEvent['type'] = 'primary') => {
     const classMap = {
       primary: { bgClass: 'bg-theme/12', textClass: 'text-theme' },
@@ -164,12 +135,6 @@
     return classMap[type]
   }
 
-  /**
-   * LấyđịnhNgàycủanêncóSuKien
-   * chiếctrìvượtNgàySuKiencủaHiển thị
-   * @param day NgàyChuỗi
-   * @returns nênNgàycủaSuKienDanh sách
-   */
   const getEvents = (day: string) => {
     return events.value
       .filter((event) => {
@@ -185,9 +150,6 @@
       })
   }
 
-  /**
-   * Đặt lạiFormDữ liệu
-   */
   const resetForm = () => {
     eventForm.value = {
       date: '',
@@ -198,11 +160,6 @@
     editingEventIndex.value = -1
   }
 
-  /**
-   * XuLyngàyLịchđơnnguyêncáchNhấnSuKien
-   * mởmởThêm mớiSuKienPopup
-   * @param day NhấncủaNgày
-   */
   const handleCellClick = (day: string) => {
     dialogTitle.value = 'Thêm mớiSuKien'
     eventForm.value = {
@@ -214,11 +171,6 @@
     dialogVisible.value = true
   }
 
-  /**
-   * XuLySuKienNhấn
-   * mởmởChỉnh sửaSuKienPopup
-   * @param event NhấncủaSuKienDoiTuong
-   */
   const handleEventClick = (event: CalendarEvent) => {
     dialogTitle.value = 'Chỉnh sửaSuKien'
     eventForm.value = { ...event }
@@ -228,10 +180,6 @@
     dialogVisible.value = true
   }
 
-  /**
-   * LưutồnSuKien
-   * liệuChỉnh sửamôkiểuđịnhlàThêm mớicònlàCập nhật
-   */
   const handleSaveEvent = () => {
     if (!eventForm.value.content || !eventForm.value.date) return
 
@@ -245,9 +193,6 @@
     resetForm()
   }
 
-  /**
-   * XóaSuKien
-   */
   const handleDeleteEvent = () => {
     if (isEditing.value) {
       events.value.splice(editingEventIndex.value, 1)

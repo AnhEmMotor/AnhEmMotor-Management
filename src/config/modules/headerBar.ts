@@ -1,18 +1,5 @@
-/**
- * Phía trênlancôngnăngCauHinh
- *
- * thốngmộtQuản lýPhía trênlancácchiếccôngnăngmôkhốicủaBậtTrạng thái。
- * thông quasửasửanàyCauHinhvănphần tửCó thểlấykhoáiBậthoặcTắtPhía trênlancủacôngnăngNút。
- *
- * @module config/headerBar
- * @author Art Design Pro Team
- */
-
 import { HeaderBarFeatureConfig } from '@/types'
 
-/**
- * Phía trênlancôngnăngCauHinhDoiTuong
- */
 export const headerBarConfig: HeaderBarFeatureConfig = {
   menuButton: {
     enabled: true,

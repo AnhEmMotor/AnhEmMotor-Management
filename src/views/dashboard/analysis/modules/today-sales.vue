@@ -49,10 +49,6 @@
     class: string
   }
 
-  /**
-   * Doanh số hôm nayDữ liệuthốngkế
-   * Bao gồmtácbántrán、Đơn hànglượng、sinhsản phẩmLượng bánvàmớikháchkhoảnsốbằngđóngphímtiêu
-   */
   const salesData = ref<SalesDataItem[]>([
     {
       label: 'tổngtácbántrán',

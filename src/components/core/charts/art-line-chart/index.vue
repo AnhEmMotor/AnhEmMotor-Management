@@ -1,4 +1,3 @@
-<!-- đườngảnh，chiếctrìđatổDữ liệu，chiếctrìkiểuHoatAnhHiệu quả -->
 <template>
   <div
     ref="chartRef"

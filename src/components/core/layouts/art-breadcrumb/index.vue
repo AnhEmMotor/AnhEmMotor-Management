@@ -1,4 +1,3 @@
-<!-- BreadcrumbĐiều hướng -->
 <template>
   <nav class="ml-2.5 max-lg:!hidden" aria-label="breadcrumb">
     <ul class="flex-c h-full">

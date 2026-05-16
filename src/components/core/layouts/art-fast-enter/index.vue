@@ -1,4 +1,3 @@
-<!-- Phía trênkhoáivàodiệnBảng (Panel) -->
 <template>
   <ElPopover
     ref="popoverRef"
@@ -22,7 +21,6 @@
     <div class="grid grid-cols-[2fr_0.8fr]">
       <div>
         <div class="grid grid-cols-2 gap-1.5">
-          <!-- Ứng dụngDanh sách -->
           <div
             v-for="application in enabledApplications"
             :key="application.name"

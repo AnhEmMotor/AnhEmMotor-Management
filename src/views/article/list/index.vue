@@ -1,6 +1,5 @@
 <template>
   <div class="article-list-page min-h-full bg-[#F8FAFC] font-inter text-[#0F172A] pb-10">
-    <!-- 1. COMPACT HEADER & SEARCH -->
     <div class="bg-white border-b border-slate-200 px-8 py-6 sticky top-0 z-[50] shadow-sm">
       <div
         class="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4"
@@ -48,7 +47,6 @@
       </div>
     </div>
 
-    <!-- 2. ARTICLE GRID WITH ANALYTICS -->
     <div class="p-8 max-w-[1400px] mx-auto">
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
         <div
@@ -56,7 +54,6 @@
           :key="item.id"
           class="article-card group bg-white border border-slate-200 rounded-[32px] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 relative"
         >
-          <!-- Status Badge -->
           <div class="absolute top-4 left-4 z-10">
             <span
               class="px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest shadow-lg border border-white/20"
@@ -66,7 +63,6 @@
             </span>
           </div>
 
-          <!-- Cover Image -->
           <div class="aspect-video overflow-hidden relative">
             <img
               :src="item.home_img"
@@ -90,7 +86,6 @@
             </div>
           </div>
 
-          <!-- Content Info -->
           <div class="p-6">
             <div class="flex justify-between items-start mb-3">
               <span class="text-[9px] font-black text-blue-500 uppercase tracking-widest">{{
@@ -124,7 +119,6 @@
             </div>
           </div>
 
-          <!-- Analytics Bar (Hover Only) -->
           <div class="h-1 bg-slate-100 absolute bottom-0 left-0 right-0 overflow-hidden">
             <div
               class="h-full bg-blue-500 transition-all duration-1000 ease-out"
@@ -134,14 +128,12 @@
         </div>
       </div>
 
-      <!-- Empty State -->
       <div v-if="showEmpty" class="py-40 flex-cc flex-col gap-4 opacity-30">
         <ArtSvgIcon icon="ri:article-line" class="text-6xl" />
         <p class="text-sm font-black uppercase tracking-widest">Chưa tìm thấy bài viết nào</p>
       </div>
     </div>
 
-    <!-- 3. PAGINATION -->
     <div class="flex justify-center mt-10">
       <ElPagination
         background
@@ -174,7 +166,6 @@
   const pageSize = ref(PAGE_SIZE)
   const total = ref(MockData.length)
 
-  // Add mock workflow data to the list
   const articleList = ref(
     MockData.map((item, idx) => ({
       ...item,
@@ -191,12 +182,8 @@
     return 'bg-emerald-500 text-white'
   }
 
-  const searchArticle = () => {
-    /* Filter logic */
-  }
-  const searchArticleByYear = () => {
-    /* Filter logic */
-  }
+  const searchArticle = () => {}
+  const searchArticleByYear = () => {}
   const handleCurrentChange = (val: number) => {
     currentPage.value = val
     useCommon().scrollToTop()

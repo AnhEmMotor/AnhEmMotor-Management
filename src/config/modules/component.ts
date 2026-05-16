@@ -1,25 +1,5 @@
-/**
- * toànbộComponentCauHinh
- *
- * thốngmộtQuản lýHeThongcấptoànbộComponentcủaDangKy。
- * nàyvàiComponentsẽtạiỨng dụngbậtđộnggiờtoànbộDangKy，Có thểtạinhiệmnàođịaphươngkhiếndùng。
- *
- * ## chủcầncôngnăng
- *
- * - ComponentCauHinh - tậptrongQuản lýtoànbộComponentcủaCauHinhThongTin
- * - khácbướcLoading - khiếndùng defineAsyncComponent thựchiệncầnLoading
- * - Công tắckhốngchế - chiếctrìthông qua enabled tựđoạnBật/TắtComponent
- * - CauHinhTìmhỏi - gợicungCông cụHàmkhoáiTìmhỏiComponentCauHinh
- *
- * @module config/component
- * @author Art Design Pro Team
- */
-
 import { defineAsyncComponent } from 'vue'
 
-/**
- * toànbộComponentCauHinhDanh sách
- */
 export const globalComponentsConfig: GlobalComponentConfig[] = [
   {
     name: 'CaiDatBảng (Panel)',
@@ -71,35 +51,22 @@ export const globalComponentsConfig: GlobalComponentConfig[] = [
   }
 ]
 
-/**
- * toànbộComponentCauHinhGiao diện (Interface)
- */
 export interface GlobalComponentConfig {
-  /** Componentdanhtên */
   name: string
-  /** Componenttiêu */
+
   key: string
-  /** Component */
+
   component: any
-  /** làphủBật */
+
   enabled?: boolean
-  /** ComponentMô tả */
+
   description?: string
 }
 
-/**
- * LấyBậtcủatoànbộComponent
- * @returns ĐãBậtcủaComponentCauHinhDanh sách
- */
 export const getEnabledGlobalComponents = () => {
   return globalComponentsConfig.filter((config) => config.enabled !== false)
 }
 
-/**
- * liệu key LấyComponentCauHinh
- * @param key Componenttiêu
- * @returns ComponentCauHinhDoiTuong
- */
 export const getGlobalComponentByKey = (key: string) => {
   return globalComponentsConfig.find((config) => config.key === key)
 }

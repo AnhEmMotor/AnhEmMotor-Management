@@ -1,4 +1,3 @@
-<!-- giữQuản lýtrangmặt -->
 <template>
   <div>
     <h1 class="text-4xl font-medium mt-5">{{ $t('admin.t21') }}</h1>
@@ -64,7 +63,6 @@
             </div>
           </div>
 
-          <!-- BinhLuanComponent -->
           <CommentWidget />
         </div>
       </template>
@@ -100,9 +98,6 @@
     color: COLOR_LIST[0]
   })
 
-  /**
-   * vìBinhLuanDanh sáchphầnPhânNgẫu nhiênMàu sắc
-   */
   const commentsWithColors = computed(() => {
     let lastColorIndex = -1
 
@@ -122,9 +117,6 @@
     })
   })
 
-  /**
-   * mởmởBinhLuanChiTietDrawer
-   */
   const openDrawer = (item: CommentItem) => {
     showDrawer.value = true
     clickItem.value = item

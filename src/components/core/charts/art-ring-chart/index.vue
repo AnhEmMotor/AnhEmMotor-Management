@@ -1,4 +1,3 @@
-<!-- Biểu đồ vòng -->
 <template>
   <div
     ref="chartRef"

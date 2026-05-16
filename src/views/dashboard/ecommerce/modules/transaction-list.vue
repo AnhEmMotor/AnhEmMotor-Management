@@ -19,10 +19,6 @@
     icon: string
   }
 
-  /**
-   * Hoạt động gần đâyDữ liệuDanh sách
-   * triểnthịĐơn hàngXuLy、lùikhoảnđơnVui lòng、gửikiệnXuLybằngnghiệpvụsốngđộngTrạng thái
-   */
   const dataList: TransactionItem[] = [
     {
       title: 'Đơn hàng mới #38291',
@@ -61,10 +57,5 @@
     }
   ]
 
-  /**
-   * XuLyXem thêmNútNhấnSuKien
-   */
-  const handleMore = (): void => {
-    // TODO: Thêm mớiXem thêmLogic
-  }
+  const handleMore = (): void => {}
 </script>

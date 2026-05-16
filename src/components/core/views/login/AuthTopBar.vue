@@ -1,4 +1,3 @@
-<!-- traoquyềntrangphảitrênVaiComponent -->
 <template>
   <div
     class="absolute w-full flex-cb top-4.5 z-10 flex-c !justify-end max-[1180px]:!justify-between"
@@ -89,7 +88,7 @@
   const { locale } = useI18n()
 
   const mainColors = AppConfig.systemMainColor
-  const color = systemThemeColor // css v-bind khiếndùng
+  const color = systemThemeColor
 
   const changeLanguage = (lang: LanguageEnum) => {
     if (locale.value === lang) return

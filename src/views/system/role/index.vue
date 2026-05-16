@@ -1,4 +1,3 @@
-<!-- VaiTroQuản lýtrangmặt -->
 <template>
   <div class="art-full-height">
     <RoleSearch
@@ -22,7 +21,6 @@
         </template>
       </ArtTableHeader>
 
-      <!-- Bảng -->
       <ArtTable
         :loading="loading"
         :data="data"
@@ -34,7 +32,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- VaiTroChỉnh sửaPopup -->
     <RoleEditDialog
       v-model="dialogVisible"
       :dialog-type="dialogType"
@@ -42,7 +39,6 @@
       @success="refreshData"
     />
 
-    <!-- MenuQuyenHanPopup -->
     <RolePermissionDialog
       v-model="permissionDialog"
       :role-data="currentRoleData"
@@ -68,7 +64,6 @@
     daterange?: string[]
   }
 
-  // TimKiemForm
   const searchForm = ref<RoleSearchFormParams>({
     roleName: undefined,
     roleCode: undefined,
@@ -96,14 +91,13 @@
     handleCurrentChange,
     refreshData
   } = useTable({
-    // Cốt lõiCauHinh
     core: {
       apiFn: fetchGetRoleList,
       apiParams: {
         current: 1,
         size: 20
       },
-      // xếpchia apiParams trongcủaThuocTinh
+
       excludeParams: ['daterange'],
       columnsFactory: () => [
         {
@@ -190,12 +184,7 @@
     currentRoleData.value = row
   }
 
-  /**
-   * TimKiemXuLy
-   * @param params TimKiemTham số
-   */
   const handleSearch = (params: RoleSearchFormParams) => {
-    // XuLyNgàyđồnggianTham số，chiếc daterange chuyểnđổivì startTime và endTime
     const { daterange, ...filtersParams } = params
     const [startTime, endTime] = Array.isArray(daterange) ? daterange : [null, null]
 
@@ -233,7 +222,6 @@
       }
     )
       .then(() => {
-        // TODO: điềudùngXóaGiao diện (Interface)
         ElMessage.success('XóaThanhCong')
         refreshData()
       })

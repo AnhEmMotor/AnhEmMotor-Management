@@ -72,9 +72,7 @@ AI Insight: Khối thông tin màu tím nổi bật, đúc kết 3 chỉ số qu
 
 Thông tin xe/Dịch vụ: Quản lý vòng đời sản phẩm khách đã mua, hiển thị chi tiết số khung và trạng thái biển số (Đã có biển).
 
-
-1. Cách tạo mã QR (Generation)
-Trong lập trình, mã QR thực chất là một chuỗi ký tự được mã hóa dưới dạng hình ảnh. Để đảm bảo tính toàn vẹn dữ liệu, bạn nên thực hiện theo các bước sau:
+1. Cách tạo mã QR (Generation) Trong lập trình, mã QR thực chất là một chuỗi ký tự được mã hóa dưới dạng hình ảnh. Để đảm bảo tính toàn vẹn dữ liệu, bạn nên thực hiện theo các bước sau:
 
 Tạo Mã Định Danh Duy Nhất (Unique ID): Mỗi khi một khách hàng mới được tạo (Lead), Backend sẽ tự động sinh ra một mã định danh theo quy tắc, ví dụ: AEM-2024-089 (như trong hình image_cf4140.png).
 
@@ -88,11 +86,9 @@ Frontend (Vue 3): Sử dụng các thư viện như qrcode.vue để render hìn
 
 Backend (.NET Core): Sử dụng thư viện QRCoder để tạo mã và lưu trữ dưới dạng file ảnh hoặc Base64 nếu bạn muốn in ra các tài liệu giấy sau này.
 
-2. Luồng xử lý sau khi đã có mã QR (Workflow)
-Sau khi mã QR đã hiện diện trong hồ sơ khách hàng, quy trình vận hành sẽ được tối ưu hóa qua 4 giai đoạn chính:
+2. Luồng xử lý sau khi đã có mã QR (Workflow) Sau khi mã QR đã hiện diện trong hồ sơ khách hàng, quy trình vận hành sẽ được tối ưu hóa qua 4 giai đoạn chính:
 
-Giai đoạn 1: Tiếp đón khách tại Showroom (Check-in)
-Khi khách hàng (ví dụ: anh Nguyễn Hoàng Long) đến trực tiếp showroom tại Biên Hòa:
+Giai đoạn 1: Tiếp đón khách tại Showroom (Check-in) Khi khách hàng (ví dụ: anh Nguyễn Hoàng Long) đến trực tiếp showroom tại Biên Hòa:
 
 Nhân viên Sale mở ứng dụng trên điện thoại/máy tính bảng.
 
@@ -100,22 +96,19 @@ Khách hàng đưa mã QR (nếu được gửi qua Zalo trước đó) hoặc S
 
 Hành động: Quét mã QR để xác nhận khách đã có mặt. Hệ thống tự động ghi nhận một "Dấu mốc" (Milestone) vào Dòng thời gian tương tác.
 
-Giai đoạn 2: Bàn giao và Tư vấn dựa trên "Insight"
-Khi Sale quét mã QR và mở hồ sơ:
+Giai đoạn 2: Bàn giao và Tư vấn dựa trên "Insight" Khi Sale quét mã QR và mở hồ sơ:
 
 Hệ thống hiển thị ngay khối AI Insight (Màu Đỏ Đen, Quan tâm trả góp).
 
 Sale không cần hỏi lại những điều khách đã chat với AI trước đó, tạo cảm giác chuyên nghiệp và thấu hiểu khách hàng ngay tức thì.
 
-Giai đoạn 3: Làm thủ tục Biển số (Administrative)
-Đây là giai đoạn cực kỳ quan trọng để đảm bảo toàn vẹn dữ liệu:
+Giai đoạn 3: Làm thủ tục Biển số (Administrative) Đây là giai đoạn cực kỳ quan trọng để đảm bảo toàn vẹn dữ liệu:
 
 Nhân viên làm hồ sơ quét mã QR để lấy dữ liệu từ mục Hồ sơ hành chính.
 
 Dữ liệu địa chỉ tại Biên Hòa và số CCCD đã được Xác thực trước đó sẽ được đổ trực tiếp vào mẫu khai thuế hoặc đăng ký xe, loại bỏ hoàn toàn việc nhập tay sai sót.
 
-Giai đoạn 4: Quản lý sau bán hàng (Post-Purchase)
-Khi khách hàng quay lại bảo dưỡng xe:
+Giai đoạn 4: Quản lý sau bán hàng (Post-Purchase) Khi khách hàng quay lại bảo dưỡng xe:
 
 Kỹ thuật viên quét mã QR gắn trên xe hoặc thẻ thành viên.
 

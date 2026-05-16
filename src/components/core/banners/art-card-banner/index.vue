@@ -1,4 +1,3 @@
-<!-- ThẻComponent -->
 <template>
   <div class="art-card-sm flex-c flex-col pb-6" :style="{ height: height }">
     <div class="flex-c flex-col gap-4 text-center">

@@ -1,4 +1,3 @@
-<!-- kđườngBiểu đồ -->
 <template>
   <div
     ref="chartRef"

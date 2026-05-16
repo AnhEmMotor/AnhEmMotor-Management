@@ -10,9 +10,6 @@ import type { Brand } from '@/domain/product/brand.types'
 import type { Technology } from '@/domain/product/technology.types'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
-/**
- * Business Logic Hook for Product List Table
- */
 export function useProductTable() {
   const activeCategory = ref<number | string>('all')
   const categories = ref<ProductCategory[]>([])
@@ -23,7 +20,6 @@ export function useProductTable() {
   const loadingBrands = ref(false)
   const loadingTechs = ref(false)
 
-  // Dialog State
   const dialogVisible = ref(false)
   const dialogTitle = ref('')
   const formData = ref<Partial<Product>>({
@@ -31,7 +27,6 @@ export function useProductTable() {
   })
   const submitting = ref(false)
 
-  // Fetch technologies based on context
   const fetchTechnologies = async () => {
     if (!formData.value.category_id && !formData.value.brand_id) {
       availableTechnologies.value = []
@@ -52,11 +47,9 @@ export function useProductTable() {
     }
   }
 
-  // Watch for changes in category or brand to update suggested technologies
   watch(() => formData.value.category_id, fetchTechnologies)
   watch(() => formData.value.brand_id, fetchTechnologies)
 
-  // Fetch categories for tabs and dropdowns
   const fetchCategories = async () => {
     loadingCategories.value = true
     try {
@@ -74,7 +67,6 @@ export function useProductTable() {
     }
   }
 
-  // Fetch brands for dropdown
   const fetchBrands = async () => {
     loadingBrands.value = true
     try {
@@ -91,7 +83,6 @@ export function useProductTable() {
     }
   }
 
-  // Table configuration using project's core useTable hook
   const {
     data,
     loading,
@@ -138,7 +129,6 @@ export function useProductTable() {
     }
   })
 
-  // CRUD Operations
   const handleAdd = () => {
     dialogTitle.value = 'Thêm sản phẩm mới'
     formData.value = {
@@ -159,12 +149,11 @@ export function useProductTable() {
 
   const handleEdit = async (row: Product) => {
     dialogTitle.value = 'Cập nhật sản phẩm'
-    // Fetch full detail if needed, but row usually has most fields
+
     try {
       const fullProduct = await ProductApi.getById(row.id)
       formData.value = { ...fullProduct }
 
-      // Populate selected technology IDs
       selectedTechIds.value = (fullProduct.product_technologies || []).map(
         (pt: any) => pt.technology_id
       )
@@ -198,7 +187,6 @@ export function useProductTable() {
   const submitForm = async () => {
     submitting.value = true
     try {
-      // Map selected IDs
       formData.value.product_technologies = selectedTechIds.value.map((id) => ({
         technology_id: id,
         display_order: 0
@@ -220,7 +208,6 @@ export function useProductTable() {
     }
   }
 
-  // Watch tab change to refresh table
   watch(activeCategory, (val) => {
     const filter = val === 'all' ? '' : `category_id==${val}`
     replaceSearchParams({
@@ -234,7 +221,6 @@ export function useProductTable() {
     if (params.name) filters.push(`Name@=${params.name}`)
     if (params.brand) filters.push(`brand@=${params.brand}`)
 
-    // Maintain tab filter
     if (activeCategory.value !== 'all') {
       filters.push(`category_id==${activeCategory.value}`)
     }
@@ -254,7 +240,6 @@ export function useProductTable() {
     getData()
   }
 
-  // Initialize data
   fetchCategories()
   fetchBrands()
 
@@ -276,7 +261,7 @@ export function useProductTable() {
     handleSearch,
     handleReset,
     refreshData,
-    // CRUD
+
     dialogVisible,
     dialogTitle,
     formData,

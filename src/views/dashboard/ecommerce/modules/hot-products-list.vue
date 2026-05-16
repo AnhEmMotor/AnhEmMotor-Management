@@ -83,10 +83,6 @@
     MEDIUM: 50
   } as const
 
-  /**
-   * Bán chạysinhsản phẩmBảngDữ liệu
-   * Bao gồmsinhsản phẩmThongTin、Thư việntồn、Lượng bánvàtácbánXu hướng
-   */
   const tableData = reactive<ProductItem[]>([
     {
       name: 'Đồng hồ thông minh Pro',
@@ -156,11 +152,6 @@
     }
   ])
 
-  /**
-   * liệuThư việntồnSố lượngLấyTrạng tháivănquyển
-   * @param stock Thư việntồnSố lượng
-   * @returns Thư việntồnTrạng tháivănquyển
-   */
   const getStockStatus = (stock: number): string => {
     if (stock === 0) return t('dashboard.ecommerce.outOfStock')
     if (stock < STOCK_THRESHOLD.LOW) return t('dashboard.ecommerce.lowStock')
@@ -168,11 +159,6 @@
     return t('dashboard.ecommerce.sufficientStock')
   }
 
-  /**
-   * liệuThư việntồnSố lượngLấyTrạng tháiKiểu dángloạidanh
-   * @param stock Thư việntồnSố lượng
-   * @returns CSS loạidanh
-   */
   const getStockClass = (stock: number): string => {
     if (stock === 0) return 'text-danger bg-danger/12'
     if (stock < STOCK_THRESHOLD.LOW) return 'text-warning bg-warning/12'
@@ -180,10 +166,6 @@
     return 'text-success bg-success/12'
   }
 
-  /**
-   * Thêm mớiThanh tiến trìnhHoatAnhHiệu quả
-   * sautươngvàođộgiá trịtừ 0 Cập nhậtđếnmụctiêuphầnso sánh，Kích hoạtHoatAnh
-   */
   const addAnimation = (): void => {
     setTimeout(() => {
       tableData.forEach((item) => {

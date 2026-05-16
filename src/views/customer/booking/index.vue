@@ -2,7 +2,6 @@
   <div
     class="customer-booking-page flex flex-col min-h-screen bg-[#F8FAFC] font-inter text-[#0F172A]"
   >
-    <!-- 1. HEADER SECTION -->
     <div class="bg-white border-b border-slate-200 px-8 py-5 shrink-0 shadow-sm relative z-20">
       <div class="flex justify-between items-center max-w-[1600px] mx-auto">
         <div class="flex items-center gap-5">
@@ -43,9 +42,7 @@
       </div>
     </div>
 
-    <!-- 2. MAIN CONTENT -->
     <div class="flex-1 flex overflow-hidden max-w-[1600px] mx-auto w-full p-6 gap-6">
-      <!-- LEFT: BOOKING CALENDAR (booking-calendar.vue context) -->
       <div
         class="flex-1 bg-white border border-slate-200 rounded-[32px] shadow-sm overflow-hidden flex flex-col"
       >
@@ -104,9 +101,7 @@
         </div>
       </div>
 
-      <!-- RIGHT: WORKFLOW ACTION PANEL -->
       <div class="w-80 flex flex-col gap-5 shrink-0">
-        <!-- PENDING QUEUE (Admin Action Required) -->
         <div
           class="flex-1 bg-white border border-slate-200 rounded-[32px] shadow-sm flex flex-col overflow-hidden border-t-4 border-t-red-500"
         >
@@ -142,7 +137,6 @@
                 >"{{ booking.content }}"</p
               >
 
-              <!-- Quick Confirm Action -->
               <button
                 @click.stop="confirmBooking(booking)"
                 class="mt-3 w-full h-8 bg-red-500 text-white rounded-lg font-black text-[9px] uppercase tracking-widest shadow-md hover:bg-red-600 transition-all opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0"
@@ -163,7 +157,6 @@
           </div>
         </div>
 
-        <!-- STATS -->
         <div
           class="bg-[#001529] p-5 rounded-[32px] text-white shadow-2xl relative overflow-hidden group"
         >
@@ -182,7 +175,6 @@
       </div>
     </div>
 
-    <!-- 3. BOOKING DIALOG (Workflow Integration) -->
     <ElDialog
       v-model="dialogVisible"
       width="550px"
@@ -289,7 +281,6 @@
           />
         </div>
 
-        <!-- ConfirmBookingCommand Simulation Alert -->
         <div
           v-if="bookingForm.status === 'Pending' && isEditing"
           class="p-3 bg-blue-50 rounded-2xl border border-blue-100 flex items-start gap-3"
@@ -318,7 +309,6 @@
               >Đóng</button
             >
 
-            <!-- THE WORKFLOW BUTTON -->
             <button
               v-if="bookingForm.status === 'Pending' && isEditing"
               @click="confirmBooking(activeBooking)"
@@ -440,7 +430,6 @@
     dialogVisible.value = true
   }
 
-  // THE WORKFLOW: ConfirmBookingCommand simulation
   const confirmBooking = (booking: any) => {
     if (!booking) return
 

@@ -1,7 +1,5 @@
-<!-- QuyenHantrangmặtHiển thịtrangmặt -->
 <template>
   <div class="w-full py-2">
-    <!-- trangmặtđầubộ -->
     <div class="mb-6">
       <h2 class="m-0 mb-2 text-xl font-medium">{{
         $t('menus.examples.permission.pageVisibility')
@@ -37,7 +35,6 @@
       </ElCard>
     </div>
 
-    <!-- trangmặtcấpQuyenHankhốngchếMô tả -->
     <div class="mb-6 last:mb-0">
       <ElCard class="art-card-xs">
         <template #header>
@@ -195,7 +192,6 @@
       </ElCard>
     </div>
 
-    <!-- QuyenHankhốngchếnhấttốtthựcthực -->
     <div class="best-practices">
       <ElCard class="art-card-xs">
         <template #header>
@@ -278,10 +274,8 @@
 
   const userStore = useUserStore()
 
-  // khitrướcNguoiDungThongTin
   const currentUser = computed(() => userStore.info)
 
-  // LấyVaiTroHiển thịdanhtên
   const getRoleDisplayName = (role: string) => {
     const roleMap: Record<string, string> = {
       R_SUPER: 'siêucấpQuản lýviên',

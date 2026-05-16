@@ -5,7 +5,6 @@ export function useCustomerProfile() {
   const activeTab = ref('timeline')
   const isVerified = ref(false)
 
-  // Dữ liệu khách hàng giả lập
   const customerInfo = reactive({
     id: 'AEM-2024-089',
     fullName: 'Nguyễn Hoàng Long',
@@ -19,7 +18,6 @@ export function useCustomerProfile() {
     }
   })
 
-  // Danh sách Phường/Xã tại Biên Hòa
   const wardsInBienHoa = [
     'Trảng Dài',
     'Long Bình',
@@ -33,7 +31,6 @@ export function useCustomerProfile() {
     'Quyết Thắng'
   ]
 
-  // Timeline tương tác
   const timelineEvents = ref([
     {
       id: 1,

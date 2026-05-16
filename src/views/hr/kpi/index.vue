@@ -1,6 +1,5 @@
 <template>
   <div class="flex flex-col gap-4 pb-5">
-    <!-- Header Stats -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
       <ArtStatsCard
         title="Tỉ lệ hoàn thành KPI"
@@ -36,9 +35,7 @@
       />
     </div>
 
-    <!-- KPI Rankings -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <!-- Leaderboard -->
       <ElCard class="art-table-card">
         <template #header>
           <div class="flex-cb">
@@ -79,7 +76,6 @@
         </div>
       </ElCard>
 
-      <!-- KPI Detail List -->
       <ElCard class="art-table-card">
         <template #header>
           <h4 class="m-0">Chi tiết định mức hoa hồng nhân viên</h4>
@@ -147,9 +143,7 @@
     return val.toLocaleString('vi-VN') + ' đ'
   }
 
-  onMounted(() => {
-    // Fetch real data
-  })
+  onMounted(() => {})
 </script>
 
 <style scoped>

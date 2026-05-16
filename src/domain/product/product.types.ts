@@ -1,6 +1,3 @@
-/**
- * Domain Model for Product
- */
 export interface Product {
   id: number
   name: string
@@ -25,9 +22,6 @@ export interface Product {
   product_technologies?: any[]
 }
 
-/**
- * API Response for Product List
- */
 export interface ProductList {
   items: Product[]
   totalCount: number

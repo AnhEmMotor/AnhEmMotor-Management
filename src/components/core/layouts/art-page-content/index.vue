@@ -1,11 +1,8 @@
-<!-- Bố cụcNoiDung -->
 <template>
   <div class="layout-content" :class="{ 'overflow-auto': isFullPage }" :style="containerStyle">
     <div id="app-content-header">
-      <!-- tiếtngàyCuộn -->
       <ArtFestivalTextScroll v-if="!isFullPage" />
 
-      <!-- RoutingThongTinđiềuthử -->
       <div
         v-if="isOpenRouteInfo === 'true'"
         class="px-2 py-1.5 mb-3 text-sm text-g-500 bg-g-200 border-full-d rounded-md"
@@ -15,7 +12,6 @@
     </div>
 
     <RouterView v-if="isRefresh" v-slot="{ Component, route }" :style="contentStyle">
-      <!-- CacheRoutingHoatAnh -->
       <Transition :name="showTransitionMask ? '' : actualTransition" mode="out-in" appear>
         <KeepAlive :max="10" :exclude="keepAliveExclude">
           <component
@@ -27,7 +23,6 @@
         </KeepAlive>
       </Transition>
 
-      <!-- phiCacheRoutingHoatAnh -->
       <Transition :name="showTransitionMask ? '' : actualTransition" mode="out-in" appear>
         <component
           class="art-page-view"
@@ -38,7 +33,6 @@
       </Transition>
     </RouterView>
 
-    <!-- Toàn màn hìnhtrangmặtChuyển đổiquađộchephủ（dùngởgợilêntrangmặtChuyển đổiTrực quanthểnghiệm） -->
     <Teleport to="body">
       <div
         v-show="showTransitionMask"

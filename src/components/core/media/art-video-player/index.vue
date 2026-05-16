@@ -1,4 +1,3 @@
-<!-- VideophátphóngcụComponent：https://h5player.bytedance.com/-->
 <template>
   <div :id="playerId" />
 </template>
@@ -10,21 +9,20 @@
   defineOptions({ name: 'ArtVideoPlayer' })
 
   interface Props {
-    /** phátphóngthiết bịContainer ID */
     playerId: string
-    /** VideonguồnURL */
+
     videoUrl: string
-    /** VideoẢnh bìaảnhURL */
+
     posterUrl: string
-    /** làphủtừđộngphátphóng */
+
     autoplay?: boolean
-    /** âmlượngKích thước(0-1) */
+
     volume?: number
-    /** Có thểvịcủaphátphóngsuất */
+
     playbackRates?: number[]
-    /** làphủVòng lặpphátphóng */
+
     loop?: boolean
-    /** làphủtĩnhâm */
+
     muted?: boolean
     commonStyle?: VideoPlayerStyle
   }

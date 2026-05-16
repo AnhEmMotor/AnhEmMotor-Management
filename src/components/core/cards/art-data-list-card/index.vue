@@ -1,4 +1,3 @@
-<!-- Dữ liệuDanh sáchThẻ -->
 <template>
   <div class="art-card p-5">
     <div class="pb-3.5">
@@ -31,28 +30,26 @@
   defineOptions({ name: 'ArtDataListCard' })
 
   interface Props {
-    /** Dữ liệuDanh sách */
     list: Activity[]
-    /** TieuDe */
+
     title: string
-    /** TieuDe */
+
     subtitle?: string
-    /** nhấtđạiHiển thịSố lượng */
+
     maxCount?: number
-    /** làphủHiển thịThêmNút */
+
     showMoreButton?: boolean
   }
 
   interface Activity {
-    /** TieuDe */
     title: string
-    /** Trạng thái */
+
     status: string
-    /** ThoiGian */
+
     time: string
-    /** Kiểu dángloạidanh */
+
     class: string
-    /** Icon */
+
     icon: string
   }
 
@@ -66,7 +63,6 @@
   const maxHeight = computed(() => `${ITEM_HEIGHT * props.maxCount}px`)
 
   const emit = defineEmits<{
-    /** NhấnThêmNútSuKien */
     (e: 'more'): void
   }>()
 

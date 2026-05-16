@@ -1,8 +1,6 @@
-<!-- Cơ bảnBảng -->
 <template>
   <div class="user-page art-full-height">
     <ElCard class="art-table-card" style="margin-top: 0">
-      <!-- Bảng -->
       <ArtTable
         rowKey="id"
         :show-table-header="false"

@@ -1,6 +1,5 @@
 <template>
   <div class="customer-contact-page min-h-full bg-[#F8FAFC] font-inter text-[#0F172A] pb-10">
-    <!-- 1. COMPACT HEADER -->
     <div class="bg-white border-b border-slate-200 px-6 py-4 shrink-0 shadow-sm relative z-10">
       <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-4">
         <div class="flex items-center gap-4">
@@ -36,7 +35,6 @@
         </div>
       </div>
 
-      <!-- Compact Filters -->
       <div class="flex flex-wrap items-center gap-3">
         <div class="relative flex-1 min-w-[250px]">
           <ArtSvgIcon
@@ -75,7 +73,6 @@
       </div>
     </div>
 
-    <!-- 2. HIGH-DENSITY CONTACTS FEED -->
     <div class="p-6">
       <div class="max-w-6xl mx-auto flex flex-col gap-4">
         <div
@@ -83,14 +80,12 @@
           :key="contact.id"
           class="contact-card bg-white border border-slate-200 rounded-[24px] shadow-sm hover:shadow-lg transition-all duration-300 group relative overflow-hidden"
         >
-          <!-- Status Line Gradient (Slimmer) -->
           <div
             class="absolute left-0 top-0 bottom-0 w-1"
             :class="getStatusLineBg(contact.status)"
           ></div>
 
           <div class="flex flex-col md:flex-row items-stretch">
-            <!-- Part 1: Info Sidebar (Slimmer) -->
             <div
               class="w-full md:w-44 p-5 flex flex-col justify-between bg-slate-50/30 border-b md:border-b-0 md:border-r border-slate-100 shrink-0"
             >
@@ -114,7 +109,6 @@
               </div>
             </div>
 
-            <!-- Part 2: Main Content (Compact) -->
             <div class="flex-1 p-5 flex flex-col">
               <div class="flex justify-between items-start mb-3">
                 <div class="flex flex-col gap-1">
@@ -146,14 +140,12 @@
                 </div>
               </div>
 
-              <!-- Message Box (Slimmer padding) -->
               <div
                 class="bg-slate-50/60 p-3.5 rounded-xl border border-slate-100 mb-4 italic text-slate-600 leading-relaxed text-[13px]"
               >
                 "{{ contact.content }}"
               </div>
 
-              <!-- Internal Note (Compact Widget) -->
               <div
                 class="flex items-center gap-3 p-2.5 bg-indigo-50/40 rounded-xl border border-indigo-100/50 group/note transition-all hover:bg-indigo-50"
               >
@@ -180,7 +172,6 @@
               </div>
             </div>
 
-            <!-- Part 3: Action Sidebar (Slimmer) -->
             <div
               class="w-full md:w-44 p-5 flex flex-col gap-2 justify-center bg-slate-50/10 border-t md:border-t-0 md:border-l border-slate-100 shrink-0"
             >
@@ -207,7 +198,6 @@
       </div>
     </div>
 
-    <!-- 3. DIALOGS -->
     <ElDialog
       v-model="replyDialogVisible"
       width="600px"

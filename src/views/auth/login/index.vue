@@ -1,4 +1,3 @@
-<!-- DangNhaptrangmặt -->
 <template>
   <div class="flex w-full h-screen">
     <LoginLeftView />
@@ -95,7 +94,6 @@
   const { t, locale } = useI18n()
   const formKey = ref(0)
 
-  // Lắng ngheNgôn ngữChuyển đổi，Đặt lạiForm
   watch(locale, () => {
     formKey.value++
   })
@@ -156,7 +154,6 @@
   const loading = ref(false)
 
   onMounted(() => {
-    // Kiểm tra thông tin đã lưu
     const savedAccount = localStorage.getItem('remember_account')
     if (savedAccount) {
       const { username, password } = JSON.parse(savedAccount)
@@ -168,7 +165,6 @@
     }
   })
 
-  // CaiDatTaiKhoan
   const setupAccount = (key: AccountKey) => {
     const selectedAccount = accounts.value.find((account: Account) => account.key === key)
     formData.account = key
@@ -176,18 +172,15 @@
     formData.password = selectedAccount?.password ?? ''
   }
 
-  // DangNhap
   const handleSubmit = async () => {
     if (!formRef.value) return
 
     try {
-      // Formnghiệmtính
       const valid = await formRef.value.validate()
       if (!valid) return
 
       loading.value = true
 
-      // DangNhapVui lòngcầu
       const { username, password, rememberPassword } = formData
 
       const { accessToken, refreshToken } = await fetchLogin({
@@ -195,32 +188,25 @@
         password
       })
 
-      // nghiệmtínhtoken
       if (!accessToken) {
         throw new Error('Login failed - no token received')
       }
 
-      // Lưu hoặc xóa thông tin đăng nhập
       if (rememberPassword) {
         localStorage.setItem('remember_account', JSON.stringify({ username, password }))
       } else {
         localStorage.removeItem('remember_account')
       }
 
-      // tồntrữ token vàDangNhapTrạng thái
       userStore.setToken(accessToken, refreshToken)
       userStore.setLoginStatus(true)
 
-      // DangNhapThanhCongXuLy
       showLoginSuccessNotice()
 
-      // Lấy redirect Tham số，nếuquảtồntạinhảychuyểnđếnđịnhtrangmặt，Nếu khôngnhảychuyểnđếnTrangChu
       const redirect = route.query.redirect as string
       router.push(redirect || '/')
     } catch (error) {
-      if (error instanceof HttpError) {
-        // console.log(error.code)
-      } else {
+      if (!(error instanceof HttpError)) {
         console.error('[Login] Unexpected error:', error)
       }
     } finally {
@@ -228,7 +214,6 @@
     }
   }
 
-  // DangNhapThanhCongGợi ý
   const showLoginSuccessNotice = () => {
     setTimeout(() => {
       ElNotification({

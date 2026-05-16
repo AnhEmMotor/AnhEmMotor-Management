@@ -20,13 +20,12 @@
   const userStore = useUserStore()
 
   interface ExceptionData {
-    /** TieuDe */
     title: string
-    /** Mô tả */
+
     desc: string
-    /** Nútvănquyển */
+
     btnText: string
-    /** Hình ảnhDiaChi */
+
     imgUrl: string
   }
 

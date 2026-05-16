@@ -1,4 +1,3 @@
-<!-- tròngàytrang -->
 <template>
   <div class="page-content flex !p-0 max-md:flex-col" :style="{ height: containerMinHeight }">
     <ElRow>
@@ -94,7 +93,6 @@
         </div>
       </div>
       <div class="flex flex-col h-[calc(100%-85px)]">
-        <!-- tròngàyTinNhanđồngTên -->
         <div
           class="flex-1 py-7.5 px-4 overflow-y-auto border-t-d [&::-webkit-scrollbar]:!w-1"
           ref="messageContainer"
@@ -128,7 +126,6 @@
           </template>
         </div>
 
-        <!-- tròngàyNhậpđồngTên -->
         <div class="p-4">
           <ElInput
             v-model="messageText"
@@ -181,9 +178,6 @@
 
   const { containerMinHeight } = useAutoLayoutHeight()
 
-  /**
-   * liênhệngườiloạikiểuĐịnh nghĩa
-   */
   interface Person {
     id: number
     name: string
@@ -203,9 +197,6 @@
   const userAvatar = ref(meAvatar)
   const messageContainer = ref<HTMLElement | null>(null)
 
-  /**
-   * liênhệngườiDanh sáchDữ liệu
-   */
   const personList = ref<Person[]>([
     {
       id: 1,
@@ -326,17 +317,10 @@
     }
   ])
 
-  /**
-   * Chọnliênhệngười
-   * @param person liênhệngườiDoiTuong
-   */
   const selectPerson = (person: Person) => {
     selectedPerson.value = person
   }
 
-  /**
-   * TinNhanDanh sáchDữ liệu
-   */
   const messages = ref([
     {
       id: 1,
@@ -415,10 +399,6 @@
     }
   ])
 
-  /**
-   * phátgửiTinNhan
-   * Thêm mớimớiTinNhanđếnTinNhanDanh sáchđồng thờiCuộnđếnPhía dưới
-   */
   const sendMessage = () => {
     const text = messageText.value.trim()
     if (!text) return
@@ -436,9 +416,6 @@
     scrollToBottom()
   }
 
-  /**
-   * CuộnđếnTinNhanDanh sáchPhía dưới
-   */
   const scrollToBottom = () => {
     setTimeout(() => {
       if (messageContainer.value) {
@@ -447,9 +424,6 @@
     }, 100)
   }
 
-  /**
-   * mởmởtròngàysổdiện
-   */
   const openChat = () => {
     isDrawerVisible.value = true
   }

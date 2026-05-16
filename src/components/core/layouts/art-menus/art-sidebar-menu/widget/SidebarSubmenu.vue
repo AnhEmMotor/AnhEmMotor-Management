@@ -68,20 +68,18 @@
   }
 
   interface Props {
-    /** MenuTieuDe */
     title?: string
-    /** MenuDanh sách */
+
     list?: AppRouteRecord[]
-    /** ChuDeCauHinh */
+
     theme?: MenuTheme
-    /** làphủvìDiđộngđầumôkiểu */
+
     isMobile?: boolean
-    /** Menutầngcấp */
+
     level?: number
   }
 
   interface Emits {
-    /** đóngđóngMenuSuKien */
     (e: 'close'): void
   }
 
@@ -99,32 +97,17 @@
 
   const { menuOpen } = storeToRefs(settingStore)
 
-  /**
-   * qualọcsaucủaMenumụcDanh sách
-   * chỉHiển thịChưaẨncủaMenumục
-   */
   const filteredMenuItems = computed(() => filterRoutes(props.list))
 
-  /**
-   * nhảychuyểnđếnđịnhtrangmặt
-   * @param item MenumụcDữ liệu
-   */
   const goPage = (item: AppRouteRecord): void => {
     closeMenu()
     handleMenuJump(item)
   }
 
-  /**
-   * đóngđóngMenu
-   * Kích hoạtchaComponentcủađóngđóngSuKien
-   */
   const closeMenu = (): void => {
     emit('close')
   }
 
-  /**
-   * đoánMenumụcquyểnthânlàphủCó thểlấylàmvìCó thểNhấntrangmặtLưugiữtạiMenutrong
-   */
   const isNavigableRoute = (item: AppRouteRecord): boolean => {
     return !!(
       !item.meta.isHide &&

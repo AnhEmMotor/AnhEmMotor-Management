@@ -22,9 +22,6 @@
     data: number[]
   }
 
-  /**
-   * mộttuầncủaNgàyTag
-   */
   const weekDays = ref([
     'tuầnmột',
     'tuầnhai',
@@ -35,10 +32,6 @@
     'tuầnngày'
   ])
 
-  /**
-   * tổngThu nhậpDữ liệu
-   * đốiso sánhđườngtrênvàBán hàng trực tiếpcủamộttuầnThu nhậptình
-   */
   const revenueData = ref<RevenueDataItem[]>([
     {
       name: 'Bán hàng trực tuyến',

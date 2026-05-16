@@ -35,7 +35,6 @@
         </div>
       </template>
 
-      <!-- Supplier Debt Table -->
       <div v-if="activeTab === 'suppliers'">
         <ArtTable :data="supplierDebts" :columns="supplierColumns">
           <template #balance="{ row }">
@@ -51,7 +50,6 @@
         </ArtTable>
       </div>
 
-      <!-- Bank Installment Table -->
       <div v-else>
         <ArtTable :data="bankInstallments" :columns="bankColumns">
           <template #daysPending="{ row }">

@@ -1,5 +1,3 @@
-<!-- MởsẻtạiTìmCáBàiliệuChuỗithực ---- KiểmTìmviên----  -->
-<!-- bảnBàiliệuTrựcGiaoXóasạch -->
 <!doctype html>
 <html lang="en">
   <head>
@@ -12,33 +10,26 @@
     <button id="executeButton">MởtạoThựchàng</button>
 
     <script>
-      document
-        .getElementById("executeButton")
-        .addEventListener("click", function () {
-          // tâmSửathànhjsđịnh moduleXuấtratypeScriptThànhBáoLỗi
-          import("./en.js").then(({ default: en }) => {
-            import("./zh.js").then(({ default: zh }) => {
-              const enKeys = Object.keys(en);
-              const zhKeys = Object.keys(zh);
-              const differentKeys = enKeys
-                .filter((key) => !zhKeys.includes(key))
-                .concat(zhKeys.filter((key) => !enKeys.includes(key)));
-              const enDifferent = Object.fromEntries(
-                Object.entries(en).filter(([key]) =>
-                  differentKeys.includes(key),
-                ),
-              );
-              const zhDifferent = Object.fromEntries(
-                Object.entries(zh).filter(([key]) =>
-                  differentKeys.includes(key),
-                ),
-              );
+      document.getElementById('executeButton').addEventListener('click', function () {
+        import('./en.js').then(({ default: en }) => {
+          import('./zh.js').then(({ default: zh }) => {
+            const enKeys = Object.keys(en)
+            const zhKeys = Object.keys(zh)
+            const differentKeys = enKeys
+              .filter((key) => !zhKeys.includes(key))
+              .concat(zhKeys.filter((key) => !enKeys.includes(key)))
+            const enDifferent = Object.fromEntries(
+              Object.entries(en).filter(([key]) => differentKeys.includes(key))
+            )
+            const zhDifferent = Object.fromEntries(
+              Object.entries(zh).filter(([key]) => differentKeys.includes(key))
+            )
 
-              console.log("enDifferent:", enDifferent); // en.js ĐốiKếtquảĐồngDự
-              console.log("zhDifferent:", zhDifferent); // zh.js ĐốiKếtquảĐồngDự
-            });
-          });
-        });
+            console.log('enDifferent:', enDifferent) // en.js ĐốiKếtquảĐồngDự
+            console.log('zhDifferent:', zhDifferent) // zh.js ĐốiKếtquảĐồngDự
+          })
+        })
+      })
     </script>
   </body>
 </html>

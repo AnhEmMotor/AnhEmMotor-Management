@@ -67,10 +67,6 @@
     VERY_HIGH: '#FE8F0E'
   } as const
 
-  /**
-   * SanPham hotDanh sáchDữ liệu
-   * Bao gồmTên sản phẩm、nóngđộvàLượng bánThongTin
-   */
   const products = computed<Product[]>(() => [
     { name: 'trínăngtaymáy', popularity: 10, sales: '100' },
     { name: 'bútghiquyểnđiệnnão', popularity: 29, sales: '100' },
@@ -80,11 +76,6 @@
     { name: 'trínăngâmhộp', popularity: 41, sales: '100' }
   ])
 
-  /**
-   * liệunóngđộphầnso sánhLấyđốiứngcủaMàu sắc
-   * @param percentage nóngđộphầnso sánh (0-100)
-   * @returns đốiứngcủaMàu sắcgiá trị
-   */
   const getColor = (percentage: number): string => {
     if (percentage < COLOR_THRESHOLDS.LOW) return POPULARITY_COLORS.LOW
     if (percentage < COLOR_THRESHOLDS.MEDIUM) return POPULARITY_COLORS.MEDIUM

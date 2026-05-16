@@ -1,6 +1,3 @@
-<!-- BảngTimKiemComponent -->
-<!-- chiếctrìlệdùngFormComponent、Tùy chỉnhComponent、chènkhe、soátnghiệm、ẨnFormmục -->
-<!-- viếtphápcùng ElementPlus Chính thứcTaiLieuComponent，chiếcThuocTinhviếttại props trongmặtthìCó thểlấyrồi -->
 <template>
   <section class="art-search-bar art-card-xs" :class="{ 'is-expanded': isExpanded }">
     <ElForm
@@ -34,7 +31,6 @@
                 @update:model-value="setFieldValue(item.key, $event)"
                 v-bind="getProps(item)"
               >
-                <!-- dướikéoChọn -->
                 <template v-if="item.type === 'select' && getProps(item)?.options">
                   <ElOption
                     v-for="option in getProps(item).options"
@@ -43,7 +39,6 @@
                   />
                 </template>
 
-                <!-- Ô chọn nhiềutổ -->
                 <template v-if="item.type === 'checkboxgroup' && getProps(item)?.options">
                   <ElCheckbox
                     v-for="option in getProps(item).options"
@@ -52,7 +47,6 @@
                   />
                 </template>
 
-                <!-- Nút chọn mộttổ -->
                 <template v-if="item.type === 'radiogroup' && getProps(item)?.options">
                   <ElRadio
                     v-for="option in getProps(item).options"
@@ -61,7 +55,6 @@
                   />
                 </template>
 
-                <!-- Hoạt độngchènkhechiếctrì -->
                 <template v-for="(slotFn, slotName) in getSlots(item)" :key="slotName" #[slotName]>
                   <component :is="slotFn" />
                 </template>

@@ -25,16 +25,8 @@
     endOpacity: 0
   } as const
 
-  /**
-   * X TrụcDữ liệuCauHinh
-   * bảngthịmộttuầncủangàysố（tuầnmộtđếntuầnngày）
-   */
   const xAxisData = ['1', '2', '3', '4', '5', '6', '7']
 
-  /**
-   * Độ hài lòng khách hàngBiểu đồDữ liệu
-   * đốiso sánhtrênchiếcthángvàTháng nàycủađầyýđộXu hướng
-   */
   const chartData = computed<LineDataItem[]>(() => [
     {
       name: 'trênchiếctháng',

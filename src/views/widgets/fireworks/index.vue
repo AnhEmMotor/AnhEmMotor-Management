@@ -45,13 +45,7 @@
   const timerRef = ref<ReturnType<typeof setInterval> | null>(null)
   const isLaunching = ref(false)
 
-  /**
-   * Kích hoạtliềntiếplễhoaHiệu quả
-   * @param count phátxạlầnsố
-   * @param src Hình ảnhtàinguồnđường
-   */
   const triggerFireworks = (count: number, src: string) => {
-    // xóachiacủatrướccủađịnhgiờthiết bị
     if (timerRef.value) {
       clearInterval(timerRef.value)
       timerRef.value = null
@@ -72,32 +66,18 @@
     }, 1000)
   }
 
-  /**
-   * phátxạđơnchiếclễhoa
-   */
   const handleSingleLaunch = () => {
     mittBus.emit('triggerFireworks')
   }
 
-  /**
-   * phátxạđachiếclễhoa
-   * @param src Hình ảnhtàinguồnđường
-   */
   const handleMultipleLaunch = (src: string) => {
     triggerFireworks(10, src)
   }
 
-  /**
-   * phátxạmangHình ảnhcủalễhoa
-   * @param src Hình ảnhtàinguồnđường
-   */
   const handleImageLaunch = (src: string) => {
     mittBus.emit('triggerFireworks', src)
   }
 
-  /**
-   * ComponentUnmountgiờxóalýđịnhgiờthiết bị
-   */
   onUnmounted(() => {
     if (timerRef.value) {
       clearInterval(timerRef.value)

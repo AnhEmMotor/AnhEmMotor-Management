@@ -1,4 +1,3 @@
-<!-- SốCuộn -->
 <template>
   <span
     class="text-g-900 tabular-nums"
@@ -12,27 +11,25 @@
   import { computed, watch, nextTick, onUnmounted, shallowRef } from 'vue'
   import { useTransition, TransitionPresets } from '@vueuse/core'
 
-  // loạikiểuĐịnh nghĩa
   interface CountToProps {
-    /** mụctiêugiá trị */
     target: number
-    /** HoatAnhtrìtiếpThoiGian（milligiây） */
+
     duration?: number
-    /** làphủtừđộngBắt đầu */
+
     autoStart?: boolean
-    /** tiểusốvịsố */
+
     decimals?: number
-    /** tiểusốđiểmkýsố */
+
     decimal?: string
-    /** nghìnphầnvịphầnký */
+
     separator?: string
-    /** trướchậu tố */
+
     prefix?: string
-    /** sauhậu tố */
+
     suffix?: string
-    /** BộđộngHàm */
+
     easing?: keyof typeof TransitionPresets
-    /** làphủTắtHoatAnh */
+
     disabled?: boolean
   }
 
@@ -56,7 +53,6 @@
     readonly progress: number
   }
 
-  // lệlượngĐịnh nghĩa
   const EPSILON = Number.EPSILON
   const MIN_DURATION = 100
   const MAX_DURATION = 60000
@@ -79,7 +75,6 @@
 
   const emit = defineEmits<CountToEmits>()
 
-  // Công cụHàm
   const validateNumber = (value: number, name: string, defaultValue: number): number => {
     if (!Number.isFinite(value)) {
       console.warn(`[CountTo] Invalid ${name} value:`, value)
@@ -100,12 +95,10 @@
   ): string => {
     let result = decimals > 0 ? value.toFixed(decimals) : Math.floor(value).toString()
 
-    // XuLytiểusốđiểmkýsố
     if (decimal !== '.' && result.includes('.')) {
       result = result.replace('.', decimal)
     }
 
-    // XuLynghìnphầnvịphầnký
     if (separator) {
       const parts = result.split(decimal)
       parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, separator)
@@ -115,7 +108,6 @@
     return result
   }
 
-  // antoànkếgiá trị
   const safeTarget = computed(() => validateNumber(props.target, 'target', 0))
   const safeDuration = computed(() =>
     clamp(validateNumber(props.duration, 'duration', DEFAULT_DURATION), MIN_DURATION, MAX_DURATION)
@@ -132,14 +124,12 @@
     return easing
   })
 
-  // Trạng tháiQuản lý
   const currentValue = shallowRef(0)
   const targetValue = shallowRef(safeTarget.value)
   const isRunning = shallowRef(false)
   const isPaused = shallowRef(false)
   const pausedValue = shallowRef(0)
 
-  // HoatAnhkhốngchế
   const transitionValue = useTransition(currentValue, {
     duration: safeDuration,
     transition: computed(() => TransitionPresets[safeEasing.value]),
@@ -155,7 +145,6 @@
     }
   })
 
-  // cáchkiểuhóaHiển thịgiá trị
   const formattedValue = computed(() => {
     const value = isPaused.value ? pausedValue.value : transitionValue.value
 
@@ -167,7 +156,6 @@
     return `${props.prefix}${formattedNumber}${props.suffix}`
   })
 
-  // tưcóPhuongThuc
   const shouldSkipAnimation = (target: number): boolean => {
     const current = isPaused.value ? pausedValue.value : transitionValue.value
     return Math.abs(current - target) < EPSILON
@@ -178,7 +166,6 @@
     pausedValue.value = 0
   }
 
-  // côngcộngPhuongThuc
   const start = (target?: number): void => {
     if (props.disabled) {
       console.warn('[CountTo] Animation is disabled')
@@ -198,7 +185,6 @@
       return
     }
 
-    // từTamDunggiá trịBắt đầu（nếuquảtồntại）
     if (isPaused.value) {
       currentValue.value = pausedValue.value
       resetPauseState()
@@ -252,7 +238,6 @@
     }
   }
 
-  // Lắng nghethiết bị
   watch(
     safeTarget,
     (newTarget) => {
@@ -274,14 +259,12 @@
     }
   )
 
-  // xóalý
   onUnmounted(() => {
     if (isRunning.value) {
       stop()
     }
   })
 
-  // lộlộ API
   defineExpose<CountToExpose>({
     start,
     pause,

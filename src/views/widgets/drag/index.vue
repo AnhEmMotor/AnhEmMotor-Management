@@ -1,4 +1,3 @@
-<!-- https://vue-draggable-plus.pages.dev/ -->
 <template>
   <div class="page-content mb-5">
     <ElRow>
@@ -77,10 +76,6 @@
 
   defineOptions({ name: 'TemplateDrag' })
 
-  /**
-   * NguoiDungDanh sáchDữ liệu
-   * dùngởdiễnthịKéo thảxếpthứcôngnăng
-   */
   const userList = ref([
     { name: 'cháungộkhông', role: 'đấuchiếnthắngphật' },
     { name: 'lợntámgiới', role: 'tịnhđànkhiến' },

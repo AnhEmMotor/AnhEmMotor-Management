@@ -1,9 +1,7 @@
-<!-- Thẻ TabVí dụtrangmặt -->
 <template>
   <div class="page-content">
     <h3 class="mb-5 text-xl font-normal">{{ $t('admin.t107') }}</h3>
 
-    <!-- sửasửaTagTieuDemôkhối -->
     <ElCard class="mb-7.5" header="sửasửaTagTieuDe">
       <div class="flex gap-2">
         <ElInput
@@ -20,7 +18,6 @@
       </div>
     </ElCard>
 
-    <!-- LấyThẻ Tabmôkhối -->
     <ElCard class="mb-7.5" header="LấyThẻ TabThongTin">
       <div class="mb-4">
         <p class="m-0 mb-2 text-sm text-g-600"> khitrướcThẻ TabThongTin：{{ currentTab }} </p>
@@ -34,7 +31,6 @@
       </ElRow>
     </ElCard>
 
-    <!-- đóngđóngThẻ Tabmôkhối -->
     <ElCard class="mb-7.5" header="đóngđóngThẻ Tab">
       <ElRow :gutter="20">
         <ElCol :span="24">
@@ -62,10 +58,6 @@
   const newTabTitle = ref('')
   const routePath = '/examples/tabs'
 
-  /**
-   * Cập nhậtkhitrướcThẻ TabTieuDe
-   * nghiệmtínhNhậpNoiDungsauđiềudùng store PhuongThucCập nhậtTieuDe
-   */
   const handleUpdateTabTitle = (): void => {
     const trimmedTitle = newTabTitle.value.trim()
     if (trimmedTitle) {
@@ -74,20 +66,12 @@
     }
   }
 
-  /**
-   * Đặt lạiThẻ TabTieuDe
-   * tươngTieuDeĐặt lạivìMacDinhgiá trịđồng thờixóakhôngÔ nhập liệu
-   */
   const handleResetTabTitle = (): void => {
     worktabStore.resetTabTitle(routePath)
     newTabTitle.value = ''
     ElMessage.success('Thẻ TabTieuDeĐãĐặt lại')
   }
 
-  /**
-   * LấyđịnhđườngcủaThẻ TabThongTin
-   * @param path Thẻ Tabđường
-   */
   const handleGetCurrentTabTitle = (path: string): void => {
     const tab = worktabStore.getTabTitle(path)
     if (tab) {
@@ -98,25 +82,14 @@
     }
   }
 
-  /**
-   * đóngđóngđịnhđườngcủaThẻ Tab
-   * @param path cầnđóngđóngcủaThẻ Tabđường
-   */
   const handleCloseTab = (path: string): void => {
     worktabStore.removeTab(path)
   }
 
-  /**
-   * đóngđóngchiađịnhđườngngoàicủanóanh ấynêncóThẻ Tab
-   * @param path cầnLưugiữcủaThẻ Tabđường
-   */
   const handleCloseOthersTab = (path: string): void => {
     worktabStore.removeOthers(path)
   }
 
-  /**
-   * Đóng tất cả thẻtrang
-   */
   const handleCloseAllTab = (): void => {
     worktabStore.removeAll()
   }

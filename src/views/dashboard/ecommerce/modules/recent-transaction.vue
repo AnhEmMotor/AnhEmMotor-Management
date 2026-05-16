@@ -15,10 +15,6 @@
     code?: string
   }
 
-  /**
-   * Giao dịch gần đâyThoiGianđườngDữ liệu
-   * Ghi chépnayngàyĐơn hàngXuLy、thươngsản phẩmtrêngiá、chiếctrảbằngđóngphímsốngđộng
-   */
   const timelineData: TimelineItem[] = [
     {
       time: 'trêntrưa 09:30',

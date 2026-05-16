@@ -51,15 +51,7 @@
 
   const userStore = useUserStore()
 
-  /**
-   * LấykhitrướcNguoiDungThongTin
-   */
   const userInfo = computed(() => userStore.getUserInfo)
 
-  /**
-   * XuLy sự kiện click banner
-   */
-  const handleBannerClick = (): void => {
-    // TODO: Thêm mớiNhấnXuLyLogic
-  }
+  const handleBannerClick = (): void => {}
 </script>

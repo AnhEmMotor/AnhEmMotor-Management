@@ -1,6 +1,5 @@
 <template>
   <div class="flex flex-col gap-4 pb-5">
-    <!-- Header: Workflow Visualization -->
     <ElCard class="workflow-card">
       <div class="flex flex-col lg:flex-row justify-between items-center gap-6 py-2">
         <div class="min-w-[200px]">
@@ -43,7 +42,6 @@
       </div>
     </ElCard>
 
-    <!-- Search Bar -->
     <ArtSearchBar
       :items="searchItems"
       :label-width="110"
@@ -52,7 +50,6 @@
       @reset="handleReset"
     />
 
-    <!-- Main Table -->
     <ElCard class="art-table-card">
       <template #header>
         <div class="flex-cb">
@@ -71,7 +68,6 @@
       </template>
 
       <ArtTable :loading="loading" :data="policies" :columns="columns">
-        <!-- Policy Info -->
         <template #policyName="{ row }">
           <div class="flex flex-col">
             <span class="font-bold text-gray-800">{{ row.policyName }}</span>
@@ -79,14 +75,12 @@
           </div>
         </template>
 
-        <!-- Scope -->
         <template #scope="{ row }">
           <ElTag v-if="row.productId" type="success" size="small">Sản phẩm</ElTag>
           <ElTag v-else-if="row.categoryId" type="warning" size="small">Danh mục</ElTag>
           <ElTag v-else type="info" size="small">Nhóm nhân viên</ElTag>
         </template>
 
-        <!-- Amount -->
         <template #amount="{ row }">
           <div class="flex items-center gap-1 font-bold text-red-600">
             <span v-if="row.isPercentage">{{ row.commissionAmount }}%</span>
@@ -94,7 +88,6 @@
           </div>
         </template>
 
-        <!-- Operation -->
         <template #operation="{ row }">
           <div class="flex gap-2 justify-center">
             <ArtButtonTable type="edit" @click="handleEdit(row)" />
@@ -109,7 +102,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Dialog Form -->
     <ElDialog v-model="dialogVisible" :title="dialogTitle" width="600px" append-to-body>
       <ElForm :model="formData" label-width="130px" class="mt-4" label-position="left">
         <ElFormItem label="Tên chính sách" required>
@@ -231,7 +223,6 @@
       </template>
     </ElDialog>
 
-    <!-- History Modal -->
     <ElDialog v-model="historyVisible" title="Lịch sử thay đổi chính sách" width="700px">
       <div v-loading="loadingLogs" class="min-h-[300px]">
         <ElTimeline v-if="auditLogs.length > 0">
@@ -391,7 +382,6 @@
     })
   }
 
-  // History logic
   const historyVisible = ref(false)
   const auditLogs = ref<any[]>([])
   const loadingLogs = ref(false)

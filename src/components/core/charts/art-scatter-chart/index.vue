@@ -1,4 +1,3 @@
-<!-- Biểu đồ phân tán -->
 <template>
   <div
     ref="chartRef"

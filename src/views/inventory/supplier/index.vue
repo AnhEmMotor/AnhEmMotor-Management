@@ -1,6 +1,5 @@
 <template>
   <div class="flex flex-col gap-4 pb-5">
-    <!-- Header Stats -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <ArtStatsCard
         title="Tổng đối tác"
@@ -25,7 +24,6 @@
       />
     </div>
 
-    <!-- Search Bar -->
     <ArtSearchBar
       :items="searchItems"
       :label-width="100"
@@ -34,7 +32,6 @@
       @reset="handleReset"
     />
 
-    <!-- Table Card -->
     <ElCard class="flex-1 art-table-card">
       <template #header>
         <div class="flex-cb">
@@ -45,7 +42,6 @@
         </div>
       </template>
 
-      <!-- Table Header Tools -->
       <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
           <ElButton type="primary" v-ripple @click="handleAdd">
@@ -57,7 +53,6 @@
         </template>
       </ArtTableHeader>
 
-      <!-- Data Table -->
       <ArtTable
         ref="tableRef"
         :loading="loading"
@@ -67,14 +62,12 @@
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
-        <!-- Type Column -->
         <template #partnerTypeId="{ row }">
           <ElTag :type="getPartnerTypeTag(row.partnerTypeId)" size="small">
             {{ getPartnerTypeName(row.partnerTypeId) }}
           </ElTag>
         </template>
 
-        <!-- Contact Column -->
         <template #contact="{ row }">
           <div class="flex flex-col text-xs">
             <span
@@ -86,7 +79,6 @@
           </div>
         </template>
 
-        <!-- Operation Column -->
         <template #operation="{ row }">
           <div class="flex gap-2 justify-center">
             <ArtButtonTable type="edit" @click="handleEdit(row)" />
@@ -96,7 +88,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Add/Edit Dialog -->
     <ElDialog
       v-model="dialogVisible"
       :title="dialogTitle"
@@ -155,7 +146,6 @@
 
   defineOptions({ name: 'InventorySupplier' })
 
-  // Mock Data & Logic for Demo
   const loading = ref(false)
   const dialogVisible = ref(false)
   const dialogTitle = ref('Thêm đối tác')

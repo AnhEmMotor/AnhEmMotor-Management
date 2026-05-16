@@ -5,11 +5,6 @@ import { ref, watch } from 'vue'
 import type { ProductCategory } from '@/domain/product/category.types'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
-/**
- * Application Layer - Product Category Table Logic
- * Tab "product" → gọi CategoryApi (bảng ProductCategory)
- * Tab "vehicle" → gọi VehicleTypeApi (bảng VehicleType)
- */
 export function useCategoryTable() {
   const activeTab = ref('product')
   const dialogVisible = ref(false)
@@ -60,7 +55,6 @@ export function useCategoryTable() {
     }
   })
 
-  // CRUD Operations
   const handleAdd = () => {
     dialogTitle.value = activeTab.value === 'vehicle' ? 'Thêm loại xe mới' : 'Thêm danh mục mới'
     formData.value = {
@@ -120,7 +114,6 @@ export function useCategoryTable() {
     }
   }
 
-  // Watch tab change: khi chuyển tab thì gọi lại API từ bảng tương ứng
   watch(activeTab, () => {
     replaceSearchParams({})
     getData()
@@ -152,7 +145,7 @@ export function useCategoryTable() {
     handleSearch,
     handleReset,
     refreshData,
-    // CRUD
+
     dialogVisible,
     dialogTitle,
     formData,

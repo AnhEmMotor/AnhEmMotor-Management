@@ -1,4 +1,3 @@
-<!-- Phía trênlan -->
 <template>
   <div
     class="w-full bg-[var(--default-bg-color)]"
@@ -15,7 +14,6 @@
       ]"
     >
       <div class="flex-c flex-1 min-w-0 leading-15" style="display: flex">
-        <!-- HeThongThongTin  -->
         <div class="flex-c c-p" @click="toHome" v-if="isTopMenu">
           <ArtLogo class="pl-4.5" />
           <p v-if="width >= 1400" class="my-0 mx-2 ml-2 text-lg">{{ AppConfig.systemInfo.name }}</p>
@@ -26,7 +24,6 @@
           @click="toHome"
         />
 
-        <!-- MenuNút -->
         <ArtIconButton
           v-if="isLeftMenu && shouldShowMenuButton"
           icon="ri:menu-2-fill"
@@ -34,7 +31,6 @@
           @click="visibleMenu"
         />
 
-        <!-- Làm mớiNút -->
         <ArtIconButton
           v-if="shouldShowRefreshButton"
           icon="ri:refresh-line"
@@ -43,25 +39,20 @@
           @click="reload"
         />
 
-        <!-- khoáivàodiện -->
         <ArtFastEnter v-if="shouldShowFastEnter && width >= headerBarFastEnterMinWidth">
           <ArtIconButton icon="ri:function-line" class="ml-3" />
         </ArtFastEnter>
 
-        <!-- Breadcrumb -->
         <ArtBreadcrumb
           v-if="(shouldShowBreadcrumb && isLeftMenu) || (shouldShowBreadcrumb && isDualMenu)"
         />
 
-        <!-- Phía trênMenu -->
         <ArtHorizontalMenu v-if="isTopMenu" :list="menuList" />
 
-        <!-- hỗnhợpMenu-Phía trên -->
         <ArtMixedMenu v-if="isTopLeftMenu" :list="menuList" />
       </div>
 
       <div class="flex-c gap-2.5">
-        <!-- TimKiem -->
         <div
           v-if="shouldShowGlobalSearch"
           class="flex-cb w-40 h-9 px-2.5 c-p border border-g-400 rounded-custom-sm max-md:!hidden"
@@ -78,7 +69,6 @@
           </div>
         </div>
 
-        <!-- Toàn màn hìnhNút -->
         <ArtIconButton
           v-if="shouldShowFullscreen"
           :icon="isFullscreen ? 'ri:fullscreen-exit-line' : 'ri:fullscreen-fill'"
@@ -87,7 +77,6 @@
           @click="toggleFullScreen"
         />
 
-        <!-- quốctếhóaNút -->
         <ElDropdown
           @command="changeLanguage"
           popper-class="langDropDownStyle"
@@ -109,7 +98,6 @@
           </template>
         </ElDropdown>
 
-        <!-- ThongBaoNút -->
         <ArtIconButton
           v-if="shouldShowNotification"
           icon="ri:notification-2-line"
@@ -119,7 +107,6 @@
           <div class="absolute top-2 right-2 size-1.5 !bg-danger rounded-full"></div>
         </ArtIconButton>
 
-        <!-- tròngàyNút -->
         <ArtIconButton
           v-if="shouldShowChat"
           icon="ri:message-3-line"
@@ -129,7 +116,6 @@
           <div class="breathing-dot absolute top-2 right-2 size-1.5 !bg-success rounded-full"></div>
         </ArtIconButton>
 
-        <!-- CaiDatNút -->
         <div v-if="shouldShowSettings">
           <ElPopover :visible="showSettingGuide" placement="bottom-start" :width="190" :offset="0">
             <template #reference>
@@ -148,22 +134,18 @@
           </ElPopover>
         </div>
 
-        <!-- ChuDeChuyển đổiNút -->
         <ArtIconButton
           v-if="shouldShowThemeToggle"
           @click="themeAnimation"
           :icon="isDark ? 'ri:sun-fill' : 'ri:moon-line'"
         />
 
-        <!-- NguoiDungAvatar、Menu -->
         <ArtUserMenu />
       </div>
     </div>
 
-    <!-- Thẻ Tab -->
     <ArtWorkTab />
 
-    <!-- ThongBao -->
     <ArtNotification v-model:value="showNotice" ref="notice" />
   </div>
 </template>
@@ -235,16 +217,10 @@
     document.removeEventListener('click', bodyCloseNotice)
   })
 
-  /**
-   * Chuyển đổiToàn màn hìnhTrạng thái
-   */
   const toggleFullScreen = (): void => {
     toggleFullscreen()
   }
 
-  /**
-   * Chuyển đổiMenuHiển thị/ẨnTrạng thái
-   */
   const visibleMenu = (): void => {
     settingStore.setMenuOpen(!menuOpen.value)
   }
@@ -252,34 +228,20 @@
   const { homePath } = useCommon()
   const { refresh } = useCommon()
 
-  /**
-   * nhảychuyểnđếnTrangChu
-   */
   const toHome = (): void => {
     router.push(homePath.value)
   }
 
-  /**
-   * Làm mớitrangmặt
-   * @param {number} time - ThoiGian，MacDinhvì0milligiây
-   */
   const reload = (time: number = 0): void => {
     setTimeout(() => {
       refresh()
     }, time)
   }
 
-  /**
-   * ban đầuđầuhóaNgôn ngữCaiDat
-   */
   const initLanguage = (): void => {
     locale.value = language.value
   }
 
-  /**
-   * Chuyển đổiHeThongNgôn ngữ
-   * @param {LanguageEnum} lang - mụctiêuNgôn ngữloạikiểu
-   */
   const changeLanguage = (lang: LanguageEnum): void => {
     if (locale.value === lang) return
     locale.value = lang
@@ -441,12 +403,10 @@
     animation: shake 0.5s ease-in-out;
   }
 
-  /* Breathing animation for chat dot */
   .breathing-dot {
     animation: breathing 1.5s ease-in-out infinite;
   }
 
-  /* iPad breakpoint adjustments */
   @media screen and (width <= 768px) {
     .logo2 {
       display: block !important;

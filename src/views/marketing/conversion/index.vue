@@ -1,6 +1,5 @@
 <template>
   <div class="conversion-tools-page min-h-full bg-[#F8FAFC] font-inter text-[#0F172A] pb-10">
-    <!-- 1. HEADER -->
     <div class="bg-white border-b border-slate-200 px-8 py-6 shadow-sm">
       <div class="max-w-[1400px] mx-auto flex justify-between items-center">
         <div class="flex items-center gap-4">
@@ -45,7 +44,6 @@
     </div>
 
     <div class="p-8 max-w-[1400px] mx-auto">
-      <!-- TAB 1: POP-UP MANAGEMENT -->
       <div v-if="activeTab === 'popup'" class="space-y-6 animate-fade-in">
         <div class="flex justify-between items-center">
           <h3 class="m-0 text-xs font-black uppercase tracking-widest text-slate-400"
@@ -121,7 +119,6 @@
         </div>
       </div>
 
-      <!-- TAB 2: LANDING PAGE BUILDER -->
       <div v-if="activeTab === 'landing'" class="space-y-6 animate-fade-in">
         <div class="flex justify-between items-center">
           <h3 class="m-0 text-xs font-black uppercase tracking-widest text-slate-400"
@@ -203,7 +200,6 @@
       </div>
     </div>
 
-    <!-- Dialog Placeholder -->
     <ElDialog
       v-model="dialogVisible"
       :title="dialogTitle"

@@ -213,9 +213,6 @@
 
   defineOptions({ name: 'TemplateCards' })
 
-  /**
-   * thốngkếThẻDữ liệuCauHinh
-   */
   const statsCards = [
     {
       id: 1,
@@ -419,16 +416,10 @@
     }
   ]
 
-  /**
-   * XuLyXem thêmNútNhấn
-   */
   const handleMore = () => {
     ElMessage.info('Xem thêm')
   }
 
-  /**
-   * Hình ảnhThẻloạikiểuĐịnh nghĩa
-   */
   interface ImageCard {
     id: number
     imageUrl: string
@@ -440,10 +431,6 @@
     date: string
   }
 
-  /**
-   * XuLyHình ảnhThẻNhấnSuKien
-   * @param card ThẻDữ liệu
-   */
   const handleImageCardClick = (card: ImageCard) => {
     console.log('NhấnThẻ:', card)
   }

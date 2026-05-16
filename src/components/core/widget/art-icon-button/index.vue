@@ -1,4 +1,3 @@
-<!-- NútComponent -->
 <template>
   <div
     class="size-8.5 inline-flex flex-cc c-p text-g-600 dark:text-g-800 text-xl rounded tad-300 hover:bg-hover-color"
@@ -13,9 +12,8 @@
   defineOptions({ name: 'ArtIconButton' })
 
   interface Props {
-    /** Icondanhtên */
     icon: string
-    /** VaiNút */
+
     circle?: boolean
   }
 

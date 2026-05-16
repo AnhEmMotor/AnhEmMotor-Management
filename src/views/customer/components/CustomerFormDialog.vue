@@ -34,7 +34,6 @@
 
     <div class="form-body p-2">
       <ElForm :model="form" label-position="top" class="grid grid-cols-2 gap-x-6 gap-y-4">
-        <!-- Thông tin cơ bản -->
         <ElFormItem label="Họ và tên khách hàng" class="col-span-2 is-required">
           <ElInput
             v-model="form.fullName"
@@ -53,7 +52,6 @@
 
         <div class="col-span-2 h-px bg-gray-100 my-2"></div>
 
-        <!-- Phân loại -->
         <ElFormItem label="Nguồn khách hàng">
           <ElSelect v-model="form.source" class="w-full premium-select">
             <ElOption label="Facebook" value="Facebook" />
@@ -147,7 +145,6 @@
     note: ''
   })
 
-  // Theo dõi dữ liệu ban đầu để đổ vào form khi sửa
   watch(
     () => props.initialData,
     (newData) => {

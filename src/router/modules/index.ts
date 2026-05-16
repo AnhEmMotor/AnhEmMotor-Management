@@ -15,9 +15,6 @@ import { hrRoutes } from './hr'
 import { helpRoutes } from './help'
 import { inventoryRoutes } from './inventory'
 
-/**
- * Xuất filenêncómôkhốihóaRouting
- */
 export const routeModules: AppRouteRecord[] = [
   dashboardRoutes,
   productRoutes,

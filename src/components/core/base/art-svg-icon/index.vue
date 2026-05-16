@@ -1,4 +1,3 @@
-<!-- IconComponent -->
 <template>
   <Icon v-if="icon" :icon="icon" v-bind="bindAttrs" class="art-svg-icon inline" />
 </template>
@@ -9,7 +8,6 @@
   defineOptions({ name: 'ArtSvgIcon', inheritAttrs: false })
 
   interface Props {
-    /** Iconify icon name */
     icon?: string
   }
 

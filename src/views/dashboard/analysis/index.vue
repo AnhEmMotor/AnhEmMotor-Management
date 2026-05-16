@@ -1,4 +1,3 @@
-<!-- Trang phân tíchtrangmặt -->
 <template>
   <div>
     <ElRow :gutter="20">

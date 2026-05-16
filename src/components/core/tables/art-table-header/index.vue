@@ -1,4 +1,3 @@
-<!-- Bảngđầubộ，Bao gồmBảngKích thước、Làm mới、Toàn màn hình、cộtCaiDat、nóanh ấyCaiDat -->
 <template>
   <div class="flex-cb max-md:!block" id="art-table-header">
     <div class="flex-wrap">
@@ -53,7 +52,6 @@
         <ArtSvgIcon :icon="isFullScreen ? 'ri:fullscreen-exit-line' : 'ri:fullscreen-line'" />
       </div>
 
-      <!-- cộtCaiDat -->
       <ElPopover v-if="shouldShow('columns')" placement="bottom" trigger="click">
         <template #reference>
           <div class="button">
@@ -98,7 +96,7 @@
           </ElScrollbar>
         </div>
       </ElPopover>
-      <!-- nóanh ấyCaiDat -->
+
       <ElPopover v-if="shouldShow('settings')" placement="bottom" trigger="click">
         <template #reference>
           <div class="button">
@@ -137,19 +135,18 @@
   const { t } = useI18n()
 
   interface Props {
-    /** vằnngựavân */
     showZebra?: boolean
-    /** Viền */
+
     showBorder?: boolean
-    /** bảngđầuNền */
+
     showHeaderBackground?: boolean
-    /** Toàn màn hình class */
+
     fullClass?: string
-    /** ComponentBố cục，tửComponentdanhdùngphẩysốphần */
+
     layout?: string
-    /** Đang tải */
+
     loading?: boolean
-    /** TimKiemlanHiển thịTrạng thái */
+
     showSearchBar?: boolean
   }
 
@@ -173,10 +170,6 @@
     (e: 'update:showSearchBar', value: boolean): void
   }>()
 
-  /**
-   * LấycộtcủaHiển thịTrạng thái
-   * Tốikhiếndùng visible chữđoạn，nếuquảKhôngtồntạikhiếndùng checked chữđoạn
-   */
   const getColumnVisibility = (col: ColumnOption): boolean => {
     if (col.visible !== undefined) {
       return col.visible
@@ -184,17 +177,12 @@
     return col.checked ?? true
   }
 
-  /**
-   * Cập nhậtcộtcủaHiển thịTrạng thái
-   * cùnggiờCập nhật checked và visible chữđoạnlấyDuy trìkiêmdungtính
-   */
   const updateColumnVisibility = (col: ColumnOption, value: boolean | string | number): void => {
     const boolValue = !!value
     col.checked = boolValue
     col.visible = boolValue
   }
 
-  /** BảngKích thướcvịmụcCauHinh */
   const tableSizeOptions = [
     { value: TableSizeEnum.SMALL, label: t('table.sizeOptions.small') },
     { value: TableSizeEnum.DEFAULT, label: t('table.sizeOptions.default') },
@@ -204,69 +192,43 @@
   const tableStore = useTableStore()
   const { tableSize, isZebra, isBorder, isHeaderBackground } = storeToRefs(tableStore)
 
-  /** giảiphân layout ThuocTinh，chuyểnđổivìMảng */
   const layoutItems = computed(() => {
     return props.layout.split(',').map((item) => item.trim())
   })
 
-  /**
-   * TìmComponentlàphủứngnênHiển thị
-   * @param componentName Componentdanhtên
-   * @returns làphủHiển thị
-   */
   const shouldShow = (componentName: string) => {
     return layoutItems.value.includes(componentName)
   }
 
-  /**
-   * Kéo thảDiđộngSuKienXuLy - PhòngthúccốđịnhcộtViTrisửabiến
-   * @param evt moveSuKienDoiTuong
-   * @returns làphủcho phéphứaDiđộng
-   */
   const checkColumnMove = (event: any) => {
-    // Kéo thảvàovàocủamụctiêu DOM nguyêntố
     const toElement = event.related as HTMLElement
-    // nếuquảmụctiêuViTrilà fixed cột，Khôngcho phéphứaDiđộng
+
     if (toElement && toElement.classList.contains('fixed-column')) {
       return false
     }
     return true
   }
 
-  /** TimKiemSuKienXuLy */
   const search = () => {
-    // Chuyển đổiTimKiemlanHiển thịTrạng thái
     emit('update:showSearchBar', !props.showSearchBar)
     emit('search')
   }
 
-  /** Làm mớiSuKienXuLy */
   const refresh = () => {
     isManualRefresh.value = true
     emit('refresh')
   }
 
-  /**
-   * BảngKích thướcbiếnhóaXuLy
-   * @param command BảngKích thướcchiếcBáogiá trị
-   */
   const handleTableSizeChange = (command: TableSizeEnum) => {
     useTableStore().setTableSize(command)
   }
 
-  /** làphủtayđộngNhấnLàm mới */
   const isManualRefresh = ref(false)
 
-  /** Đang tải */
   const isFullScreen = ref(false)
 
-  /** Lưutồnnguyênđầucủa overflow Kiểu dáng，dùngởlùiraToàn màn hìnhgiờkhôiphục */
   const originalOverflow = ref('')
 
-  /**
-   * Chuyển đổiToàn màn hìnhTrạng thái
-   * vàovàoToàn màn hìnhgiờsẽẨntrangmặtCuộnđiều，lùiragiờkhôiphụcnguyênTrạng thái
-   */
   const toggleFullScreen = () => {
     const el = document.querySelector(`.${props.fullClass}`)
     if (!el) return
@@ -274,40 +236,30 @@
     isFullScreen.value = !isFullScreen.value
 
     if (isFullScreen.value) {
-      // vàovàoToàn màn hình：LưutồnnguyênđầuKiểu dángđồng thờiẨnCuộnđiều
       originalOverflow.value = document.body.style.overflow
       document.body.style.overflow = 'hidden'
       el.classList.add('el-full-screen')
       tableStore.setIsFullScreen(true)
     } else {
-      // lùiraToàn màn hình：khôiphụcnguyênđầuKiểu dáng
       document.body.style.overflow = originalOverflow.value
       el.classList.remove('el-full-screen')
       tableStore.setIsFullScreen(false)
     }
   }
 
-  /**
-   * ESCphímlùiraToàn màn hìnhcủaSuKienXuLythiết bị
-   * cầncầnLưutồntríchdùnglấytiệntạiComponentUnmountgiờđúngChínhDichiaLắng nghethiết bị
-   */
   const handleEscapeKey = (e: KeyboardEvent) => {
     if (e.key === 'Escape' && isFullScreen.value) {
       toggleFullScreen()
     }
   }
 
-  /** ComponentMountgiờDangKytoànbộSuKienLắng nghethiết bị */
   onMounted(() => {
     document.addEventListener('keydown', handleEscapeKey)
   })
 
-  /** ComponentUnmountgiờxóalýtàinguồn */
   onUnmounted(() => {
-    // DichiaSuKienLắng nghethiết bị
     document.removeEventListener('keydown', handleEscapeKey)
 
-    // nếuquảComponenttạiToàn màn hìnhTrạng tháidướibịUnmount，khôiphụctrangmặtCuộnTrạng thái
     if (isFullScreen.value) {
       document.body.style.overflow = originalOverflow.value
       const el = document.querySelector(`.${props.fullClass}`)

@@ -30,7 +30,6 @@
     num: string
   }
 
-  // nhấtcận9chiếctháng
   const xAxisLabels = [
     '1tháng',
     '2tháng',
@@ -43,13 +42,8 @@
     '9tháng'
   ]
 
-  // mỗithángNguoiDung hoạt độngsố
   const chartData = [160, 100, 150, 80, 190, 100, 175, 120, 160]
 
-  /**
-   * NguoiDungthốngkếDữ liệuDanh sách
-   * Bao gồmtổngNguoiDunglượng、tổngLượt truy cập、ngàyLượt truy cậpvàtuầncùngso sánhbằngđóngphímtiêu
-   */
   const list: UserStatItem[] = [
     { name: 'tổngNguoiDunglượng', num: '32k' },
     { name: 'tổngLượt truy cập', num: '128k' },

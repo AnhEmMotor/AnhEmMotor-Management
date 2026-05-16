@@ -2,7 +2,6 @@
   <div class="page-content">
     <ElButton @contextmenu.prevent="showMenu">{{ $t('admin.t227') }}</ElButton>
 
-    <!-- phảiphímMenuComponent -->
     <ArtMenuRight
       ref="menuRef"
       :menu-items="menuItems"
@@ -26,9 +25,6 @@
   const menuRef = ref<InstanceType<typeof ArtMenuRight>>()
   const lastAction = ref('')
 
-  /**
-   * phảiphímMenuvịmụcCauHinh
-   */
   const menuItems = computed((): MenuItemType[] => [
     {
       key: 'copy',
@@ -97,20 +93,12 @@
     }
   ])
 
-  /**
-   * XuLyMenumụcChọn
-   * @param item vịtrongcủaMenumục
-   */
   const handleSelect = (item: MenuItemType) => {
     lastAction.value = `${item.label} (${item.key})`
     ElMessage.success(`ThựcdòngHanhDong: ${item.label}`)
     console.log('ChọnrồiMenumục:', item)
   }
 
-  /**
-   * Hiển thịphảiphímMenu
-   * @param e ChuộttiêuSuKien
-   */
   const showMenu = (e: MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
@@ -120,16 +108,10 @@
     })
   }
 
-  /**
-   * MenuHiển thịvềđiều
-   */
   const onMenuShow = () => {
     console.log('MenuHiển thị')
   }
 
-  /**
-   * MenuẨnvềđiều
-   */
   const onMenuHide = () => {
     console.log('MenuẨn')
   }

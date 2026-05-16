@@ -12,7 +12,6 @@
     background-color: var(--default-box-color) !important;
   }
 
-  // Loading Quáđộđộnghọa - BiếnmấtkhiMờdần
   .loading-fade-leave-active {
     transition: opacity 0.3s ease-out;
   }
@@ -21,7 +20,6 @@
     opacity: 0;
   }
 
-  // TrốngtháiphỏngChiềudọcCăntrúng
   &.is-empty {
     :deep(.el-scrollbar__wrap) {
       display: flex;
@@ -36,7 +34,6 @@
       width: 102px !important;
     }
 
-    // PhântrangCănlềphươngthức
     &.left {
       justify-content: flex-start;
     }
@@ -49,7 +46,6 @@
       justify-content: flex-end;
     }
 
-    // TựđịnhnghĩaPhântrangThànhphầnkiểuthức
     &.custom-pagination {
       :deep(.el-pagination) {
         .btn-prev,
@@ -87,7 +83,6 @@
   }
 }
 
-// DiđộngđầuPhântrang
 @media (width <= 640px) {
   :deep(.el-pagination) {
     display: flex;

@@ -39,9 +39,6 @@
     data: number[]
   }
 
-  /**
-   * mộttuầncủaNgàyTag
-   */
   const weekDays = ref([
     'tuầnmột',
     'tuầnhai',
@@ -52,10 +49,6 @@
     'tuầnngày'
   ])
 
-  /**
-   * Mục tiêu và thực tếtácbánDữ liệu
-   * triểnthịmộttuầntrongcủaBán hàng trực tuyếntình
-   */
   const revenueData = ref<RevenueDataItem[]>([
     {
       name: 'Bán hàng trực tuyến',
@@ -63,9 +56,6 @@
     }
   ])
 
-  /**
-   * thốngkếmụcDữ liệu
-   */
   const totalItems = [
     {
       icon: 'ri:shopping-bag-line',

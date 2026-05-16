@@ -1,6 +1,5 @@
 <template>
   <div class="purchasing-pipeline-page flex flex-col gap-6 pb-10 h-screen">
-    <!-- 1. Header: Quick Stats (Mini Cards) -->
     <div class="grid grid-cols-5 gap-4 px-4 pt-4">
       <div
         v-for="stat in pipelineStats"
@@ -24,7 +23,6 @@
       </div>
     </div>
 
-    <!-- 2. Smart Filters -->
     <div class="px-4 flex items-center justify-between">
       <div class="flex gap-3">
         <ElSelect
@@ -52,7 +50,6 @@
       </div>
     </div>
 
-    <!-- 3. Kanban Board -->
     <div class="flex-1 overflow-x-auto px-4 pb-4">
       <div class="flex gap-5 h-full min-w-max">
         <div
@@ -60,7 +57,6 @@
           :key="column.id"
           class="kanban-column flex flex-col w-[320px] bg-gray-100/50 rounded-3xl border border-gray-100 p-3"
         >
-          <!-- Column Header -->
           <div class="flex items-center justify-between px-3 py-4">
             <div class="flex items-center gap-2">
               <div class="size-2 rounded-full" :style="{ backgroundColor: column.color }"></div>
@@ -73,7 +69,6 @@
             }}</ElTag>
           </div>
 
-          <!-- Draggable Area -->
           <VueDraggable
             v-model="column.items"
             group="pipeline"
@@ -88,7 +83,6 @@
               class="deal-card bg-white p-4 rounded-2xl shadow-sm border border-gray-100 hover:border-blue-400 transition-all cursor-grab active:cursor-grabbing relative group"
               :class="{ 'is-stale': isStale(deal) }"
             >
-              <!-- Priority Indicator -->
               <div
                 class="absolute top-0 left-4 w-6 h-1 rounded-b-full"
                 :class="deal.priority === 'Urgent' ? 'bg-red-500' : 'bg-orange-400'"
@@ -117,7 +111,6 @@
                 </div>
               </div>
 
-              <!-- Footer: SLA & Sale -->
               <div class="flex justify-between items-end mt-4 pt-3 border-t border-gray-50">
                 <div class="flex items-center gap-1.5">
                   <ArtSvgIcon icon="ri:history-line" class="text-gray-300" />
@@ -154,7 +147,6 @@
 
   defineOptions({ name: 'PurchasingPipeline' })
 
-  // 1. Stats Data
   const pipelineStats = ref([
     {
       label: 'Tổng Deal',
@@ -181,7 +173,6 @@
     }
   ])
 
-  // 2. Filters
   const filterSale = ref('')
   const filterVehicle = ref('')
   const salesList = [
@@ -189,7 +180,6 @@
     { id: 2, name: 'Sale Trần Thị B' }
   ]
 
-  // 3. Kanban Data
   const boardColumns = ref([
     {
       id: 'Consulting',
@@ -276,7 +266,6 @@
     }
   ])
 
-  // 4. Logic & Handlers
   const isStale = (deal: any) => {
     return deal.timeInStage.includes('ngày') && parseInt(deal.timeInStage) >= 3
   }
@@ -306,7 +295,6 @@
 
   const triggerSuccessCelebration = () => {
     console.log('FIREWORKS EFFECT!')
-    // Logic for fireworks would go here (e.g. canvas-confetti)
   }
 </script>
 

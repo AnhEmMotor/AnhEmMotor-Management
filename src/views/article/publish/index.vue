@@ -1,6 +1,5 @@
 <template>
   <div class="article-publish-page min-h-screen bg-[#F8FAFC] font-inter text-[#0F172A] pb-10">
-    <!-- 1. TOP ACTION BAR -->
     <div
       class="bg-white border-b border-slate-200 px-8 py-4 sticky top-0 z-[100] shadow-sm flex justify-between items-center"
     >
@@ -41,9 +40,7 @@
     </div>
 
     <div class="max-w-[1600px] mx-auto p-8 flex gap-8 items-start">
-      <!-- 2. LEFT COLUMN: CONTENT EDITOR (70%) -->
       <div class="flex-1 flex flex-col gap-6">
-        <!-- Title & Category Card -->
         <div class="bg-white border border-slate-200 rounded-[32px] p-8 shadow-sm">
           <div class="grid grid-cols-12 gap-6">
             <div class="col-span-9">
@@ -80,7 +77,6 @@
           </div>
         </div>
 
-        <!-- Rich Text Editor -->
         <div
           class="bg-white border border-slate-200 rounded-[32px] shadow-sm overflow-hidden min-h-[600px] flex flex-col"
         >
@@ -107,9 +103,7 @@
         </div>
       </div>
 
-      <!-- 3. RIGHT COLUMN: MARKETING PANEL (30%) -->
       <div class="w-96 flex flex-col gap-6 sticky top-28 shrink-0">
-        <!-- Workflow & Scheduling Card -->
         <div class="bg-[#001529] rounded-[32px] p-6 text-white shadow-2xl relative overflow-hidden">
           <ArtSvgIcon icon="ri:time-line" class="absolute -right-4 -top-4 text-8xl opacity-10" />
           <h3
@@ -141,7 +135,6 @@
           </div>
         </div>
 
-        <!-- Related Products Card (Virtual Expert Logic) -->
         <div class="bg-white border border-slate-200 rounded-[32px] p-6 shadow-sm">
           <div class="flex justify-between items-center mb-4">
             <h3 class="m-0 text-xs font-black uppercase tracking-widest text-slate-800"
@@ -188,7 +181,6 @@
           >
         </div>
 
-        <!-- Social Metadata (OpenGraph) -->
         <div class="bg-white border border-slate-200 rounded-[32px] p-6 shadow-sm">
           <h3
             class="m-0 text-xs font-black uppercase tracking-widest text-slate-800 mb-4 flex items-center gap-2"
@@ -229,7 +221,6 @@
       </div>
     </div>
 
-    <!-- Product Selector Dialog -->
     <ElDialog
       v-model="productDialogVisible"
       title="Chọn sản phẩm tư vấn"
@@ -334,7 +325,6 @@
     (selectedProducts.value = selectedProducts.value.filter((p) => p.id !== id))
 
   const triggerImageUpload = () => {
-    // Logic upload thực tế sẽ ở đây
     ogImage.value = 'https://picsum.photos/1200/630'
     ElMessage.success('Đã tải lên ảnh bìa Social Metadata')
   }

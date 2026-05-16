@@ -1,6 +1,5 @@
 <template>
   <div class="flex flex-col gap-4 pb-5">
-    <!-- Header Stats -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
       <ArtStatsCard
         :title="$t('menus.product.list.stats.total')"
@@ -32,7 +31,6 @@
       />
     </div>
 
-    <!-- Category Tabs -->
     <div
       class="bg-white p-4 rounded-lg shadow-sm border border-gray-100"
       v-loading="loadingCategories"
@@ -57,7 +55,6 @@
       </ElTabs>
     </div>
 
-    <!-- Search Bar -->
     <ArtSearchBar
       :items="searchItems"
       :label-width="100"
@@ -66,7 +63,6 @@
       @reset="handleReset"
     />
 
-    <!-- Table Card -->
     <ElCard class="flex-1 art-table-card">
       <template #header>
         <div class="flex-cb">
@@ -79,7 +75,6 @@
         </div>
       </template>
 
-      <!-- Table Header Tools -->
       <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
           <ElButton type="primary" v-ripple @click="handleAdd">
@@ -91,7 +86,6 @@
         </template>
       </ArtTableHeader>
 
-      <!-- Data Table -->
       <ArtTable
         ref="tableRef"
         :loading="loading"
@@ -101,7 +95,6 @@
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
-        <!-- Image Column -->
         <template #cover_image_url="{ row }">
           <div
             class="flex-c h-12 w-12 bg-gray-50 rounded shadow-inner border border-gray-100 overflow-hidden mx-auto"
@@ -118,7 +111,6 @@
           </div>
         </template>
 
-        <!-- Name Column -->
         <template #name="{ row }">
           <div class="flex flex-col">
             <span class="font-bold text-gray-800 leading-tight">{{ row.name }}</span>
@@ -126,14 +118,12 @@
           </div>
         </template>
 
-        <!-- Status Column -->
         <template #inventory_status="{ row }">
           <ElTag :type="getStatusType(row.inventory_status)" size="small" effect="light" round>
             {{ getStatusLabel(row.inventory_status) }}
           </ElTag>
         </template>
 
-        <!-- Operation Column -->
         <template #operation="{ row }">
           <div class="flex gap-2 justify-center">
             <ArtButtonTable type="edit" @click="handleEdit(row)" />
@@ -143,7 +133,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Product Form Dialog -->
     <ElDialog
       v-model="dialogVisible"
       :title="dialogTitle"
@@ -153,7 +142,6 @@
     >
       <ElForm :model="formData" label-width="120px" class="mt-2 pr-4">
         <ElTabs type="border-card" class="form-tabs">
-          <!-- General Info Tab -->
           <ElTabPane label="Thông tin chung">
             <div class="grid grid-cols-2 gap-x-6 gap-y-2 py-2">
               <ElFormItem label="Tên sản phẩm" required class="col-span-2">
@@ -213,7 +201,6 @@
             </div>
           </ElTabPane>
 
-          <!-- Media Tab -->
           <ElTabPane label="Hình ảnh & Media">
             <div class="py-4 flex flex-col items-center">
               <span class="text-sm font-medium text-gray-600 mb-4 self-start"
@@ -248,7 +235,6 @@
             </div>
           </ElTabPane>
 
-          <!-- Specs Tab -->
           <ElTabPane label="Thông số kỹ thuật">
             <div class="grid grid-cols-2 gap-x-6 gap-y-2 py-2">
               <ElFormItem label="Động cơ">
@@ -361,7 +347,7 @@
     availableTechnologies,
     selectedTechIds,
     loadingTechs,
-    // CRUD
+
     dialogVisible,
     dialogTitle,
     formData,
@@ -381,7 +367,6 @@
     }
   }
 
-  // Image Upload Logic
   const handleUpload = async (options: any) => {
     try {
       const res = await FileApi.uploadProductImage(options.file)

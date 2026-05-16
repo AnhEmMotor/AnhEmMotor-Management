@@ -1,6 +1,5 @@
 <template>
   <div class="page-content space-y-5">
-    <!-- Cơ bảndùngpháp -->
     <ArtTextScroll :text="$t('admin.t269')" />
     <ArtTextScroll type="success" :text="$t('admin.t270')" />
 
@@ -10,10 +9,8 @@
 
     <ArtTextScroll type="info" :text="$t('admin.t273')" />
 
-    <!-- Có thểđóngđóng -->
     <ArtTextScroll :text="$t('admin.t274')" @close="handleClose" />
 
-    <!-- Tùy chỉnhTốc độvàphươnghướng -->
     <ArtTextScroll type="warning" :text="$t('admin.t275')" :speed="30" direction="right" />
 
     <ArtTextScroll :text="$t('admin.t276')" @close="handleClose" :alwaysScroll="false" />
@@ -27,9 +24,6 @@
 <script setup lang="ts">
   defineOptions({ name: 'WidgetsTextScroll' })
 
-  /**
-   * XuLyđóngđóngSuKien
-   */
   const handleClose = () => {
     console.log('vănquyểnCuộnComponentĐãđóngđóng')
     ElMessage.info('Đãđóngđóng')

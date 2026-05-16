@@ -1,12 +1,6 @@
 import request from '@/utils/http'
 
-/**
- * Infrastructure Layer - Vehicle Type API
- */
 export const VehicleTypeApi = {
-  /**
-   * Get list of vehicle types
-   */
   getList(params: any) {
     const { current, size, ...rest } = params
     return request.get<any>({
@@ -19,18 +13,12 @@ export const VehicleTypeApi = {
     })
   },
 
-  /**
-   * Get vehicle type by ID
-   */
   getById(id: number) {
     return request.get<any>({
       url: `/api/VehicleType/${id}`
     })
   },
 
-  /**
-   * Create new vehicle type
-   */
   create(data: any) {
     return request.post<any>({
       url: '/api/VehicleType',
@@ -38,9 +26,6 @@ export const VehicleTypeApi = {
     })
   },
 
-  /**
-   * Update vehicle type
-   */
   update(id: number, data: any) {
     return request.put<any>({
       url: `/api/VehicleType/${id}`,
@@ -48,9 +33,6 @@ export const VehicleTypeApi = {
     })
   },
 
-  /**
-   * Delete vehicle type
-   */
   delete(id: number) {
     return request.del({
       url: `/api/VehicleType/${id}`

@@ -1,4 +1,3 @@
-<!-- trạngảnhThẻ -->
 <template>
   <div class="art-card relative overflow-hidden" :style="{ height: `${height}rem` }">
     <div class="mb-5 flex-b items-start px-5 pt-5">
@@ -34,23 +33,22 @@
   defineOptions({ name: 'ArtBarChartCard' })
 
   interface Props {
-    /** sốgiá trị */
     value: number
-    /** Tag */
+
     label: string
-    /** phầnso sánh +（xanh lámàu）-（đỏmàu） */
+
     percentage: number
-    /** Ngày */
+
     date?: string
-    /** Chiều cao */
+
     height?: number
-    /** Màu sắc */
+
     color?: string
-    /** Biểu đồDữ liệu */
+
     chartData: number[]
-    /** trạngảnhChiều rộng */
+
     barWidth?: string
-    /** làphủvìbạnBiểu đồ */
+
     isMiniChart?: boolean
   }
 

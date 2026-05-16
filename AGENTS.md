@@ -1,4 +1,5 @@
 <!-- gitnexus:start -->
+
 # GitNexus — Code Intelligence
 
 This project is indexed by GitNexus as **AnhEmMotor-Management** (10895 symbols, 16932 relationships, 248 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
@@ -23,7 +24,7 @@ This project is indexed by GitNexus as **AnhEmMotor-Management** (10895 symbols,
 ## Resources
 
 | Resource | Use for |
-|----------|---------|
+| --- | --- |
 | `gitnexus://repo/AnhEmMotor-Management/context` | Codebase overview, check index freshness |
 | `gitnexus://repo/AnhEmMotor-Management/clusters` | All functional areas |
 | `gitnexus://repo/AnhEmMotor-Management/processes` | All execution flows |
@@ -32,7 +33,7 @@ This project is indexed by GitNexus as **AnhEmMotor-Management** (10895 symbols,
 ## CLI
 
 | Task | Read this skill file |
-|------|---------------------|
+| --- | --- |
 | Understand architecture / "How does X work?" | `.claude/skills/gitnexus/gitnexus-exploring/SKILL.md` |
 | Blast radius / "What breaks if I change X?" | `.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md` |
 | Trace bugs / "Why is X failing?" | `.claude/skills/gitnexus/gitnexus-debugging/SKILL.md` |

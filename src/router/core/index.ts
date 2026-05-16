@@ -1,10 +1,3 @@
-/**
- * RoutingCốt lõimôkhốiXuất file
- *
- * @module router/core
- * @author Art Design Pro Team
- */
-
 export { RouteRegistry } from './RouteRegistry'
 export { ComponentLoader } from './ComponentLoader'
 export { RouteValidator } from './RouteValidator'

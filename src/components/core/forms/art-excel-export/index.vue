@@ -1,4 +1,3 @@
-<!-- Xuất file Excel vănphần tử -->
 <template>
   <ElButton
     :type="type"
@@ -28,64 +27,58 @@
 
   defineOptions({ name: 'ArtExcelExport' })
 
-  /** Xuất fileDữ liệuloạikiểu */
   type ExportValue = string | number | boolean | null | undefined | Date
 
   interface ExportData {
     [key: string]: ExportValue
   }
 
-  /** cộtCauHinh */
   interface ColumnConfig {
-    /** cộtTieuDe */
     title: string
-    /** cộtChiều rộng */
+
     width?: number
-    /** Dữ liệucáchkiểuhóaHàm */
+
     formatter?: (value: ExportValue, row: ExportData, index: number) => string
   }
 
-  /** Xuất fileCauHinhvịmục */
   interface ExportOptions {
-    /** Dữ liệunguồn */
     data: ExportData[]
-    /** vănphần tửdanh（Khônghàmmởtriểndanh） */
+
     filename?: string
-    /** cônglàmbảngdanhtên */
+
     sheetName?: string
-    /** Nútloạikiểu */
+
     type?: ButtonType
-    /** Nútthướctấc */
+
     size?: 'large' | 'default' | 'small'
-    /** làphủTắt */
+
     disabled?: boolean
-    /** Nútvănquyển */
+
     buttonText?: string
-    /** Đang tảivănquyển */
+
     loadingText?: string
-    /** làphủtừđộngThêm mớithứsốcột */
+
     autoIndex?: boolean
-    /** thứsốcộtTieuDe */
+
     indexColumnTitle?: string
-    /** cộtCauHinhảnhxạ */
+
     columns?: Record<string, ColumnConfig>
-    /** bảngđầuảnhxạ（rúthóabảnquyển，hướngsaukiêmdung） */
+
     headers?: Record<string, string>
-    /** nhấtđạiXuất filedòngsố */
+
     maxRows?: number
-    /** làphủHiển thịThanhCongTinNhan */
+
     showSuccessMessage?: boolean
-    /** làphủHiển thịLỗiTinNhan */
+
     showErrorMessage?: boolean
-    /** cônglàmsổCauHinh */
+
     workbookOptions?: {
-      /** xây */
       creator?: string
-      /** nhấtsausửasửa */
+
       lastModifiedBy?: string
-      /** ThoiGian tạo */
+
       created?: Date
-      /** ThoiGian sửa */
+
       modified?: Date
     }
   }
@@ -115,7 +108,6 @@
     'export-progress': [progress: number]
   }>()
 
-  /** Xuất fileLỗiloạikiểu */
   class ExportError extends Error {
     constructor(
       message: string,
@@ -129,10 +121,8 @@
 
   const isExporting = ref(false)
 
-  /** làphủcóDữ liệuCó thểXuất file */
   const hasData = computed(() => Array.isArray(props.data) && props.data.length > 0)
 
-  /** nghiệmtínhXuất fileDữ liệu */
   const validateData = (data: ExportData[]): void => {
     if (!Array.isArray(data)) {
       throw new ExportError('Dữ liệutấtphảilàMảngcáchkiểu', 'INVALID_DATA_TYPE')

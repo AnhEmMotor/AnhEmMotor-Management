@@ -1,6 +1,3 @@
-/**
- * Product Category Domain Model
- */
 export interface ProductCategory {
   id: number
   name: string
@@ -14,17 +11,11 @@ export interface ProductCategory {
   categoryGroup?: string
 }
 
-/**
- * Category List Response
- */
 export interface ProductCategoryList {
   items: ProductCategory[]
   totalCount: number
 }
 
-/**
- * Tab Types
- */
 export enum CategoryTab {
   PRODUCT = 'product',
   VEHICLE = 'vehicle'

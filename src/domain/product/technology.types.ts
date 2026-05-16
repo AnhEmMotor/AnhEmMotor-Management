@@ -1,6 +1,3 @@
-/**
- * Technology Domain Model
- */
 export interface Technology {
   id: number
   name: string

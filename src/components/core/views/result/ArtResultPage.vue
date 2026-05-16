@@ -24,13 +24,12 @@
   defineOptions({ name: 'ArtResultPage' })
 
   interface ResultPageProps {
-    /** ThanhCong/ThatBai */
     type: 'success' | 'fail'
-    /** TieuDe */
+
     title: string
-    /** TinNhan */
+
     message: string
-    /** Icon */
+
     iconCode: string
   }
 

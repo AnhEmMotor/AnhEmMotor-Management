@@ -1,4 +1,3 @@
-<!-- Quay lạiPhía trênNút -->
 <template>
   <Transition
     enter-active-class="tad-300 ease-out"

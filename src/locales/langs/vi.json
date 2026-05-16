@@ -48,20 +48,11 @@
   "setting": {
     "menuType": {
       "title": "Bố cục menu",
-      "list": [
-        "Dọc",
-        "Ngang",
-        "Hỗn hợp",
-        "Cột kép"
-      ]
+      "list": ["Dọc", "Ngang", "Hỗn hợp", "Cột kép"]
     },
     "theme": {
       "title": "Giao diện",
-      "list": [
-        "Sáng",
-        "Tối",
-        "HeThong"
-      ]
+      "list": ["Sáng", "Tối", "HeThong"]
     },
     "menu": {
       "title": "Kiểu menu"
@@ -71,17 +62,11 @@
     },
     "box": {
       "title": "Kiểu khung",
-      "list": [
-        "Viền",
-        "Bóng đổ"
-      ]
+      "list": ["Viền", "Bóng đổ"]
     },
     "container": {
       "title": "Chiều rộng",
-      "list": [
-        "Đầy đủ",
-        "Cố định"
-      ]
+      "list": ["Đầy đủ", "Cố định"]
     },
     "basics": {
       "title": "CauHinh cơ bản",
@@ -127,14 +112,8 @@
   "notice": {
     "title": "ThongBao",
     "btnRead": "Đánh dấu đã đọc",
-    "bar": [
-      "ThongBao",
-      "TinNhan",
-      "Việc cần làm"
-    ],
-    "text": [
-      "Không có"
-    ],
+    "bar": ["ThongBao", "TinNhan", "Việc cần làm"],
+    "text": ["Không có"],
     "viewAll": "Xem tất cả"
   },
   "worktab": {
@@ -364,7 +343,7 @@
       "commissionPolicy": "Chính sách hoa hồng",
       "payroll": "Bảng Lương",
       "kpi": "Quản lý KPI"
-    },
+    }
   },
   "table": {
     "form": {

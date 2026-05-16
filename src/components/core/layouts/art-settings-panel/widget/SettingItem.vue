@@ -2,10 +2,8 @@
   <div class="flex-cb mb-4 last:mb-2" :class="{ 'mobile-hide': config.mobileHide }">
     <span class="text-sm">{{ config.label }}</span>
 
-    <!-- Công tắcloạikiểu -->
     <ElSwitch v-if="config.type === 'switch'" :model-value="modelValue" @change="handleChange" />
 
-    <!-- SốNhậploạikiểu -->
     <ElInputNumber
       v-else-if="config.type === 'input-number'"
       :model-value="modelValue"
@@ -17,7 +15,6 @@
       @change="handleChange"
     />
 
-    <!-- Bộ chọnloạikiểu -->
     <ElSelect
       v-else-if="config.type === 'select'"
       :model-value="modelValue"

@@ -1,4 +1,3 @@
-<!-- Bàn làm việctrangmặt -->
 <template>
   <div>
     <CardList></CardList>

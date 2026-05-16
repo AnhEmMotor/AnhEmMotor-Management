@@ -1,12 +1,3 @@
-/**
- * RoutingDangKyCốt lõiloại
- *
- * tráchHoạt độngRoutingcủaDangKy、nghiệmtínhvàQuản lý
- *
- * @module router/core/RouteRegistry
- * @author Art Design Pro Team
- */
-
 import type { Router, RouteRecordRaw } from 'vue-router'
 import type { AppRouteRecord } from '@/types/router'
 import { ComponentLoader } from './ComponentLoader'
@@ -28,22 +19,17 @@ export class RouteRegistry {
     this.transformer = new RouteTransformer(this.componentLoader)
   }
 
-  /**
-   * DangKyHoạt độngRouting
-   */
   register(menuList: AppRouteRecord[]): void {
     if (this.registered) {
       console.warn('[RouteRegistry] RoutingĐãDangKy，nhảyquatrùngphụcDangKy')
       return
     }
 
-    // nghiệmtínhRoutingCauHinh
     const validationResult = this.validator.validate(menuList)
     if (!validationResult.valid) {
       throw new Error(`RoutingCauHinhnghiệmtínhThatBai: ${validationResult.errors.join(', ')}`)
     }
 
-    // chuyểnđổiđồng thờiDangKyRouting
     const removeRouteFns: (() => void)[] = []
 
     menuList.forEach((route) => {
@@ -58,32 +44,20 @@ export class RouteRegistry {
     this.registered = true
   }
 
-  /**
-   * DichianêncóHoạt độngRouting
-   */
   unregister(): void {
     this.removeRouteFns.forEach((fn) => fn())
     this.removeRouteFns = []
     this.registered = false
   }
 
-  /**
-   * TìmlàphủĐãDangKy
-   */
   isRegistered(): boolean {
     return this.registered
   }
 
-  /**
-   * LấyDichiaHàmDanh sách（dùngở store Quản lý）
-   */
   getRemoveRouteFns(): (() => void)[] {
     return this.removeRouteFns
   }
 
-  /**
-   * tiêughivìĐãDangKy（dùngởXuLy lỗitrườngcảnh，tránhmiễntrùngphụcVui lòngcầu）
-   */
   markAsRegistered(): void {
     this.registered = true
   }

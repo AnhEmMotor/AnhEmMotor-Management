@@ -30,10 +30,6 @@
     target: string
   }
 
-  /**
-   * NguoiDungHoạt độngDanh sách
-   * Ghi chépNguoiDungcủađóngtâm、phátvăn、gợihỏi、đổiđổibằngcácloạisốngđộng
-   */
   const list = reactive<DynamicItem[]>([
     {
       username: 'trongtiểucá',

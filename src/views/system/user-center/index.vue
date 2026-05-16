@@ -1,4 +1,3 @@
-<!-- Trung tâm cá nhântrangmặt -->
 <template>
   <div class="w-full h-full p-0 bg-transparent border-none shadow-none">
     <div class="relative flex-b mt-2.5 max-md:block max-md:mt-1">
@@ -160,9 +159,6 @@
   const date = ref('')
   const ruleFormRef = ref<FormInstance>()
 
-  /**
-   * NguoiDungThongTinForm
-   */
   const form = reactive({
     realName: 'John Snow',
     nikeName: 'dathẻđồi',
@@ -173,18 +169,12 @@
     des: 'Art Design Pro làmộtkhoảnkiêmdụng cụthiếtkếmỹhọcvớicaohiệumởphátcủasauchiếcHeThong.'
   })
 
-  /**
-   * Mật khẩusửasửaForm
-   */
   const pwdForm = reactive({
     password: '123456',
     newPassword: '123456',
     confirmPassword: '123456'
   })
 
-  /**
-   * Formnghiệmtínhquy
-   */
   const rules = reactive<FormRules>({
     realName: [
       { required: true, message: 'Vui lòng nhậpHọ tên', trigger: 'blur' },
@@ -200,17 +190,11 @@
     sex: [{ required: true, message: 'Vui lòng chọnGioiTinh', trigger: 'blur' }]
   })
 
-  /**
-   * GioiTinhvịmục
-   */
   const options = [
     { value: '1', label: 'Nam' },
     { value: '2', label: 'Nữ' }
   ]
 
-  /**
-   * NguoiDungTagDanh sách
-   */
   const lableList: Array<string> = [
     'Tập trungthiếtkế',
     'rấtcómuốnpháp',
@@ -224,9 +208,6 @@
     getDate()
   })
 
-  /**
-   * liệukhitrướcThoiGianLấyhỏiđợingôn
-   */
   const getDate = () => {
     const h = new Date().getHours()
 
@@ -238,16 +219,10 @@
     else date.value = 'rấttốirồi，sángđiểmngủ'
   }
 
-  /**
-   * Chuyển đổiNguoiDungThongTinChỉnh sửaTrạng thái
-   */
   const edit = () => {
     isEdit.value = !isEdit.value
   }
 
-  /**
-   * Chuyển đổiMật khẩuChỉnh sửaTrạng thái
-   */
   const editPwd = () => {
     isEditPwd.value = !isEditPwd.value
   }

@@ -1,6 +1,6 @@
 ---
 name: gitnexus-cli
-description: "Use when the user needs to run GitNexus CLI commands like analyze/index a repo, check status, clean the index, generate a wiki, or list indexed repos. Examples: \"Index this repo\", \"Reanalyze the codebase\", \"Generate a wiki\""
+description: 'Use when the user needs to run GitNexus CLI commands like analyze/index a repo, check status, clean the index, generate a wiki, or list indexed repos. Examples: "Index this repo", "Reanalyze the codebase", "Generate a wiki"'
 ---
 
 # GitNexus CLI Commands
@@ -17,9 +17,9 @@ npx gitnexus analyze
 
 Run from the project root. This parses all source files, builds the knowledge graph, writes it to `.gitnexus/`, and generates CLAUDE.md / AGENTS.md context files.
 
-| Flag           | Effect                                                           |
-| -------------- | ---------------------------------------------------------------- |
-| `--force`      | Force full re-index even if up to date                           |
+| Flag | Effect |
+| --- | --- |
+| `--force` | Force full re-index even if up to date |
 | `--embeddings` | Enable embedding generation for semantic search (off by default) |
 | `--drop-embeddings` | Drop existing embeddings on rebuild. By default, an `analyze` without `--embeddings` preserves them. |
 

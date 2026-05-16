@@ -33,10 +33,6 @@
     change: string
   }
 
-  /**
-   * ThẻthốngkếDữ liệuDanh sách
-   * triểnthịtổngTruy cậplầnsố、tạiđườngtruy cậpkháchsố、NhấnlượngvàNguoiDung mớibằngCốt lõiDữ liệutiêu
-   */
   const dataList = reactive<CardDataItem[]>([
     {
       des: 'tổngTruy cậplầnsố',

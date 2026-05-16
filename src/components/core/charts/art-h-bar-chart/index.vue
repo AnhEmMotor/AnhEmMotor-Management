@@ -1,4 +1,3 @@
-<!-- Ngangtrạngảnh -->
 <template>
   <div
     ref="chartRef"

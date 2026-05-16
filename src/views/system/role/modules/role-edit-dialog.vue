@@ -58,17 +58,11 @@
 
   const formRef = ref<FormInstance>()
 
-  /**
-   * PopupHiển thịTrạng tháiđôihướngLiênđịnh
-   */
   const visible = computed({
     get: () => props.modelValue,
     set: (value) => emit('update:modelValue', value)
   })
 
-  /**
-   * Formnghiệmtínhquy
-   */
   const rules = reactive<FormRules>({
     roleName: [
       { required: true, message: 'Vui lòng nhậpVaiTrodanhtên', trigger: 'blur' },
@@ -81,9 +75,6 @@
     description: [{ required: true, message: 'Vui lòng nhậpVaiTroMô tả', trigger: 'blur' }]
   })
 
-  /**
-   * FormDữ liệu
-   */
   const form = reactive<RoleListItem>({
     roleId: 0,
     roleName: '',
@@ -93,9 +84,6 @@
     enabled: true
   })
 
-  /**
-   * Lắng nghePopupmởmở，ban đầuđầuhóaFormDữ liệu
-   */
   watch(
     () => props.modelValue,
     (newVal) => {
@@ -103,9 +91,6 @@
     }
   )
 
-  /**
-   * Lắng ngheVaiTroDữ liệubiếnhóa，Cập nhậtForm
-   */
   watch(
     () => props.roleData,
     (newData) => {
@@ -114,10 +99,6 @@
     { deep: true }
   )
 
-  /**
-   * ban đầuđầuhóaFormDữ liệu
-   * liệuPopuploạikiểuĐiền vàoFormhoặcĐặt lạiForm
-   */
   const initForm = () => {
     if (props.dialogType === 'edit' && props.roleData) {
       Object.assign(form, props.roleData)
@@ -133,24 +114,17 @@
     }
   }
 
-  /**
-   * đóngđóngPopupđồng thờiĐặt lạiForm
-   */
   const handleClose = () => {
     visible.value = false
     formRef.value?.resetFields()
   }
 
-  /**
-   * GửiForm
-   * nghiệmtínhthông quasauđiềudùngGiao diện (Interface)LưutồnDữ liệu
-   */
   const handleSubmit = async () => {
     if (!formRef.value) return
 
     try {
       await formRef.value.validate()
-      // TODO: điềudùngThêm mới/Chỉnh sửaGiao diện (Interface)
+
       const message = props.dialogType === 'add' ? 'Thêm mớiThanhCong' : 'sửasửaThanhCong'
       ElMessage.success(message)
       emit('success')

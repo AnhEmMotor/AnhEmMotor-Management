@@ -21,7 +21,6 @@
       >{{ $t('admin.t260') }}</div
     >
 
-    <!-- Iconify Icon -->
     <div class="art-card-sm p-5">
       <div class="text-lg font-semibold mb-4">Iconify</div>
       <div class="flex items-center gap-6">
@@ -36,7 +35,6 @@
       </div>
     </div>
 
-    <!-- Svg Icons -->
     <div class="art-card-sm p-5">
       <div class="text-lg font-semibold mb-4">Svg Icons</div>
       <div class="flex items-center gap-6">
@@ -51,7 +49,6 @@
       </div>
     </div>
 
-    <!-- Svg Icons -->
     <div class="art-card-sm p-5">
       <div class="text-lg font-semibold mb-4">Material Line Icons</div>
       <div class="flex items-center gap-6">
@@ -70,7 +67,6 @@
       </div>
     </div>
 
-    <!-- Ví dụ sử dụng -->
     <div class="art-card-sm p-5">
       <div class="text-lg font-semibold mb-4">{{ $t('admin.t261') }}</div>
       <div class="space-y-4">

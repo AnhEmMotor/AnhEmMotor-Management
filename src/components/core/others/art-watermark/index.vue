@@ -1,4 +1,3 @@
-<!-- WatermarkComponent -->
 <template>
   <div
     v-if="watermarkVisible"
@@ -27,25 +26,24 @@
   const { watermarkVisible } = storeToRefs(settingStore)
 
   interface WatermarkProps {
-    /** WatermarkNoiDung */
     content?: string
-    /** WatermarklàphủHiển thị */
+
     visible?: boolean
-    /** WatermarkPhông chữKích thước */
+
     fontSize?: number
-    /** WatermarkPhông chữMàu sắc */
+
     fontColor?: string
-    /** WatermarkXoayGóc */
+
     rotate?: number
-    /** WatermarkgianX */
+
     gapX?: number
-    /** WatermarkgianY */
+
     gapY?: number
-    /** WatermarkthiênDiX */
+
     offsetX?: number
-    /** WatermarkthiênDiY */
+
     offsetY?: number
-    /** Watermarktầngcấp */
+
     zIndex?: number
   }
 

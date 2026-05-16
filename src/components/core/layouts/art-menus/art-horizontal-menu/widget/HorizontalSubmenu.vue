@@ -9,7 +9,6 @@
       </div>
     </template>
 
-    <!-- chuyểnvềđiềudùngtừthânXuLytửMenu -->
     <HorizontalSubmenu
       v-for="child in filteredChildren"
       :key="child.path"

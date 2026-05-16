@@ -1,24 +1,22 @@
-<!-- CaiDatBảng (Panel) -->
 <template>
   <div class="layout-settings">
     <SettingDrawer v-model="showDrawer" @open="handleOpen" @close="handleClose">
-      <!-- đầubộđóngđóngNút -->
       <SettingHeader @close="closeDrawer" />
-      <!-- ChuDePhong cách -->
+
       <ThemeSettings />
-      <!-- MenuBố cục -->
+
       <MenuLayoutSettings />
-      <!-- MenuPhong cách -->
+
       <MenuStyleSettings />
-      <!-- HeThongChuDemàu -->
+
       <ColorSettings />
-      <!-- tửKiểu dáng -->
+
       <BoxStyleSettings />
-      <!-- ContainerChiều rộng -->
+
       <ContainerSettings />
-      <!-- Cơ bảnCauHinh -->
+
       <BasicSettings />
-      <!-- HanhDongNút -->
+
       <SettingActions />
     </SettingDrawer>
   </div>
@@ -41,7 +39,6 @@
   defineOptions({ name: 'ArtSettingsPanel' })
 
   interface Props {
-    /** làphủmởmở */
     open?: boolean
   }
 

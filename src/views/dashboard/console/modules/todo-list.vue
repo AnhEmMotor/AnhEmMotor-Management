@@ -32,10 +32,6 @@
     complate: boolean
   }
 
-  /**
-   * Việc cần làmviệcmụcDanh sách
-   * Ghi chépmỗingàycônglàmnhiệmvụvàhoànthànhTrạng thái
-   */
   const list = reactive<TodoItem[]>([
     {
       username: 'XemnayngàycônglàmNoiDung',

@@ -17,15 +17,8 @@
 </template>
 
 <script setup lang="ts">
-  /**
-   * toànnămLượt truy cậpDữ liệu
-   * Ghi chépmỗithángcủaLượt truy cậpthốngkế
-   */
   const data = [50, 25, 40, 20, 70, 35, 65, 30, 35, 20, 40, 44]
 
-  /**
-   * X TrụcthángTag
-   */
   const xAxisData = [
     '1tháng',
     '2tháng',

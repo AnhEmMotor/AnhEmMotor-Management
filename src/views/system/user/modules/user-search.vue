@@ -22,22 +22,16 @@
   const props = defineProps<Props>()
   const emit = defineEmits<Emits>()
 
-  // FormDữ liệuđôihướngLiênđịnh
   const searchBarRef = ref()
   const formData = computed({
     get: () => props.modelValue,
     set: (val) => emit('update:modelValue', val)
   })
 
-  // soátnghiệmquy
-  const rules = {
-    // userName: [{ required: true, message: 'Vui lòng nhậpTên người dùng', trigger: 'blur' }]
-  }
+  const rules = {}
 
-  // Hoạt động options
   const statusOptions = ref<{ label: string; value: string; disabled?: boolean }[]>([])
 
-  // môphỏngGiao diện (Interface)Quay lạiTrạng tháiDữ liệu
   function fetchStatusOptions(): Promise<typeof statusOptions.value> {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -55,7 +49,6 @@
     statusOptions.value = await fetchStatusOptions()
   })
 
-  // FormCauHinh
   const formItems = computed(() => [
     {
       label: 'Tên người dùng',
@@ -98,7 +91,6 @@
     }
   ])
 
-  // SuKien
   function handleReset() {
     console.log('Đặt lạiForm')
     emit('reset')

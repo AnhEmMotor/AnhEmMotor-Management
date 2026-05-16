@@ -1,6 +1,5 @@
 <template>
   <div class="customer-asset-page flex flex-col h-screen bg-[#F8F9FA] overflow-hidden">
-    <!-- Header: Global Search & Stats -->
     <div
       class="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 shrink-0 shadow-sm z-10"
     >
@@ -40,7 +39,6 @@
     </div>
 
     <div class="flex flex-1 overflow-hidden">
-      <!-- 1. LEFT SIDEBAR (30% - Master List) -->
       <div class="w-[380px] bg-white border-r border-gray-100 flex flex-col shrink-0">
         <div class="p-4 border-b border-gray-50 flex items-center justify-between">
           <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest"
@@ -72,7 +70,7 @@
                   <span class="text-sm font-black text-gray-800 leading-tight">{{
                     asset.model
                   }}</span>
-                  <!-- Maintenance Reminder Bell -->
+
                   <div v-if="asset.needsService" class="maintenance-bell">
                     <ElTooltip content="Đến hạn bảo trì (Thay nhớt)">
                       <ArtSvgIcon
@@ -98,9 +96,7 @@
         </div>
       </div>
 
-      <!-- 2. RIGHT CONTENT (70% - Detail) -->
       <div v-if="selectedAsset" class="flex-1 overflow-y-auto bg-[#F8F9FA] p-8 custom-scrollbar">
-        <!-- Section 1: Specs & Identity -->
         <div class="flex justify-between items-start mb-8">
           <div class="flex flex-col gap-2">
             <h1 class="m-0 text-3xl font-black text-gray-800 tracking-tight">{{
@@ -134,7 +130,6 @@
           </div>
         </div>
 
-        <!-- Grid Cards for Specs (Updated with Registration Expiry) -->
         <div class="grid grid-cols-5 gap-4 mb-10">
           <div
             v-for="spec in assetSpecs"
@@ -153,7 +148,6 @@
           </div>
         </div>
 
-        <!-- Section 2: Digital Vault (With Quick Preview) -->
         <div class="mb-12">
           <div class="flex items-center gap-2 mb-6">
             <div class="w-1 h-4 bg-navy rounded-full"></div>
@@ -167,7 +161,6 @@
               :key="folder.title"
               class="vault-folder relative overflow-hidden bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-lg transition-all cursor-pointer group"
             >
-              <!-- Blurred Thumbnail Background -->
               <img
                 :src="folder.preview"
                 class="absolute right-[-20px] top-[-20px] size-24 object-cover opacity-10 blur-[2px] group-hover:scale-125 transition-transform"
@@ -193,7 +186,6 @@
           </div>
         </div>
 
-        <!-- Section 3: Maintenance Timeline (With Next Service Alert) -->
         <div>
           <div class="flex items-center justify-between mb-8">
             <div class="flex items-center gap-2">
@@ -224,7 +216,6 @@
             class="timeline-container relative pl-8 border-l-2 border-gray-100 ml-4 flex flex-col gap-10"
           >
             <div v-for="event in maintenanceHistory" :key="event.id" class="timeline-item relative">
-              <!-- Timeline Dot -->
               <div
                 class="absolute -left-[41px] top-0 size-5 rounded-full border-4 border-[#F8F9FA] bg-emerald-500 shadow-sm shadow-emerald-200"
               ></div>
@@ -257,7 +248,6 @@
         </div>
       </div>
 
-      <!-- Empty State -->
       <div v-else class="flex-1 flex flex-cc flex-col gap-4 text-gray-300">
         <ArtSvgIcon icon="ri:car-washing-line" class="text-6xl opacity-20" />
         <span class="text-sm font-bold uppercase tracking-widest"
@@ -368,10 +358,11 @@
     }
 
     .custom-scrollbar {
-      scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none; /* IE and Edge */
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+
       &::-webkit-scrollbar {
-        display: none; /* Chrome, Safari, Opera */
+        display: none;
         width: 0;
         height: 0;
       }

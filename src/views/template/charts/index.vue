@@ -1,16 +1,3 @@
-<!--
- * bộphầnThuocTinhCauHinh：
- * Biểu đồChiều cao： height="12rem" | height="300px"
- * trạngảnhChiều rộng： barWidth="26%"
- * VaiKích thước： :borderRadius="4" | :borderRadius="[6, 6, 0, 0]"
- * Màu sắcCauHinh： :colors=['#409eff', '#95E0FB']
- * làphủHiển thịảnhví dụ： :showLegend="true"
- * ảnhví dụViTri： legendPosition="bottom" | "top" | "left" | "right"
- * làphủHiển thịGợi ýKhung： :showTooltip="true"
- * ： :stack="true"
- * Dữ liệuđiểmKích thước： :symbolSize="7"
- * Dữ liệuđiểmloạikiểu： symbol="circle" | "rect" | "roundRect" | "triangle" | "diamond" | "pin" | "arrow" | "none"
--->
 <template>
   <div class="pt-5">
     <h1 class="page-title">{{ $t('admin.t198') }}</h1>
@@ -317,9 +304,6 @@
 
   defineOptions({ name: 'TemplateCharts' })
 
-  /**
-   * đatổDữ liệuđườngảnhVí dụDữ liệu
-   */
   const multiLineData: LineDataItem[] = [
     {
       name: 'tácbántrán',
@@ -339,9 +323,6 @@
     }
   ]
 
-  /**
-   * đơnDữ liệutrạngảnhVí dụDữ liệu
-   */
   const singleBarData = ref([120, 200, 150, 80, 70, 110, 130])
   const xAxisData = ref([
     'tuầnmột',
@@ -353,17 +334,11 @@
     'tuầnngày'
   ])
 
-  /**
-   * đaDữ liệutrạngảnhVí dụDữ liệu
-   */
   const multiBarData = ref([
     { name: 'tácbántrán', data: [120, 200, 150, 80, 70, 110, 130] },
     { name: 'Lợi nhuận', data: [20, 50, 30, 15, 10, 25, 35] }
   ])
 
-  /**
-   * trạngảnhVí dụDữ liệu
-   */
   const stackBarData = ref([
     { name: 'Q1', data: [20, 25, 30, 35, 40], stack: 'total' },
     { name: 'Q2', data: [30, 35, 40, 45, 50], stack: 'total' }

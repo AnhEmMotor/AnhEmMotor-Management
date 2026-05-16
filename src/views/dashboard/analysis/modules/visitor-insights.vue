@@ -20,16 +20,8 @@
 <script setup lang="ts">
   import type { LineDataItem } from '@/types/component/chart'
 
-  /**
-   * X TrụcDữ liệuCauHinh
-   * bảngthịmộtnămcủatháng（1-12tháng）
-   */
   const xAxisData = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
 
-  /**
-   * PhanTich khách truy cậpBiểu đồDữ liệu
-   * đốiso sánhgiàkháchkhoảnvàmớikháchkhoảncủatoànnămTruy cậpXu hướng
-   */
   const chartData = computed<LineDataItem[]>(() => [
     {
       name: 'giàkháchkhoản',

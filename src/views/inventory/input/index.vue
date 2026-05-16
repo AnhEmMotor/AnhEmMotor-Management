@@ -61,7 +61,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Asset ID Wizard Dialog -->
     <ElDialog
       v-model="wizardVisible"
       title="Nhập xe mới & Định danh tài sản"

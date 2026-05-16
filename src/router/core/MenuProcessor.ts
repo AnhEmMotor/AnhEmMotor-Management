@@ -1,12 +1,3 @@
-/**
- * MenuXuLythiết bị
- *
- * tráchMenuDữ liệucủaLấy、qualọcvàXuLy
- *
- * @module router/core/MenuProcessor
- * @author Art Design Pro Team
- */
-
 import type { AppRouteRecord } from '@/types/router'
 import { useUserStore } from '@/store/modules/user'
 import { useAppMode } from '@/hooks/core/useAppMode'
@@ -16,9 +7,6 @@ import { RoutesAlias } from '../routesAlias'
 import { formatMenuTitle } from '@/utils'
 
 export class MenuProcessor {
-  /**
-   * LấyMenuDữ liệu
-   */
   async getMenuList(): Promise<AppRouteRecord[]> {
     const { isFrontendMode } = useAppMode()
 
@@ -29,23 +17,17 @@ export class MenuProcessor {
       menuList = await this.processBackendMenu()
     }
 
-    // tạiquyphạmhóađườngcủatrước，nghiệmtínhnguyênđầuđườngCauHinh
     this.validateMenuPaths(menuList)
 
-    // quyphạmhóađường（tươngđốiđườngchuyểnđổivìĐầy đủđường）
     return this.normalizeMenuPaths(menuList)
   }
 
-  /**
-   * XuLytrướcđầukhốngchếmôkiểucủaMenu
-   */
   private async processFrontendMenu(): Promise<AppRouteRecord[]> {
     const userStore = useUserStore()
     const roles = userStore.info?.roles
 
     let menuList = [...asyncRoutes]
 
-    // liệuVaiTroqualọcMenu
     if (roles && roles.length > 0) {
       menuList = this.filterMenuByRoles(menuList, roles)
     }
@@ -53,17 +35,11 @@ export class MenuProcessor {
     return this.filterEmptyMenus(menuList)
   }
 
-  /**
-   * XuLysauđầukhốngchếmôkiểucủaMenu
-   */
   private async processBackendMenu(): Promise<AppRouteRecord[]> {
     const list = await fetchGetMenuList()
     return this.filterEmptyMenus(list)
   }
 
-  /**
-   * liệuVaiTroqualọcMenu
-   */
   private filterMenuByRoles(menu: AppRouteRecord[], roles: string[]): AppRouteRecord[] {
     return menu.reduce((acc: AppRouteRecord[], item) => {
       const itemRoles = item.meta?.roles
@@ -81,13 +57,9 @@ export class MenuProcessor {
     }, [])
   }
 
-  /**
-   * chuyểnvềqualọckhôngMenumục
-   */
   private filterEmptyMenus(menuList: AppRouteRecord[]): AppRouteRecord[] {
     return menuList
       .map((item) => {
-        // nếuquảcótửMenu，chuyểnvềqualọctửMenu
         if (item.children && item.children.length > 0) {
           const filteredChildren = this.filterEmptyMenus(item.children)
           return {
@@ -98,43 +70,30 @@ export class MenuProcessor {
         return item
       })
       .filter((item) => {
-        // nếuquảĐịnh nghĩarồi children ThuocTinh（làkhiếnlàkhôngMảng），Mô tảnàylàmộtchiếcmụclụcMenu，ứngnênLưugiữ
         if ('children' in item) {
           return true
         }
 
-        // nếuquảcóngoàiliênhoặc iframe，Lưugiữ
         if (item.meta?.isIframe === true || item.meta?.link) {
           return true
         }
 
-        // nếuquảcócóhiệucủa component，Lưugiữ
         if (item.component && item.component !== '' && item.component !== RoutesAlias.Layout) {
           return true
         }
 
-        // nóanh ấytìnhqualọc
         return false
       })
   }
 
-  /**
-   * nghiệmtínhMenuDanh sáchlàphủcóhiệu
-   */
   validateMenuList(menuList: AppRouteRecord[]): boolean {
     return Array.isArray(menuList) && menuList.length > 0
   }
 
-  /**
-   * quyphạmhóaMenuđường
-   * tươngđốiđườngchuyểnđổivìĐầy đủđường，Đảm bảoMenunhảychuyểnđúngChính
-   */
   private normalizeMenuPaths(menuList: AppRouteRecord[], parentPath = ''): AppRouteRecord[] {
     return menuList.map((item) => {
-      // cấuxâyĐầy đủđường
       const fullPath = this.buildFullPath(item.path || '', parentPath)
 
-      // chuyểnvềXuLytửMenu
       const children = item.children?.length
         ? this.normalizeMenuPaths(item.children, fullPath)
         : item.children
@@ -150,9 +109,6 @@ export class MenuProcessor {
     })
   }
 
-  /**
-   * vìmụclụckiểuMenuđẩyXuấtMacDinhnhảychuyểnDiaChi
-   */
   private resolveDefaultRedirect(children?: AppRouteRecord[]): string | undefined {
     if (!children?.length) {
       return undefined
@@ -172,9 +128,6 @@ export class MenuProcessor {
     return undefined
   }
 
-  /**
-   * đoántửRoutinglàphủCó thểlấylàmvìMacDinhrơiđiểm
-   */
   private isNavigableRoute(route: AppRouteRecord): boolean {
     return Boolean(
       route.path &&
@@ -186,14 +139,6 @@ export class MenuProcessor {
     )
   }
 
-  /**
-   * nghiệmtínhMenuđườngCauHinh
-   * đophimộtcấpMenulàphủLỗikhiếndùngrồi / mởđầucủađường
-   */
-  /**
-   * nghiệmtínhMenuđườngCauHinh
-   * đophimộtcấpMenulàphủLỗikhiếndùngrồi / mởđầucủađường
-   */
   private validateMenuPaths(menuList: AppRouteRecord[], level = 1): void {
     menuList.forEach((route) => {
       if (!route.children?.length) return
@@ -203,23 +148,17 @@ export class MenuProcessor {
       route.children.forEach((child) => {
         const childPath = child.path || ''
 
-        // nhảyquahợpphápcủatuyệtđốiđường：ngoàibộliêntiếpvà iframe Routing
         if (this.isValidAbsolutePath(childPath)) return
 
-        // đophiphápcủatuyệtđốiđường
         if (childPath.startsWith('/')) {
           this.logPathError(child, childPath, parentName, level)
         }
       })
 
-      // chuyểnvềTìmhơnthâmtầngcấpcủatửRouting
       this.validateMenuPaths(route.children, level + 1)
     })
   }
 
-  /**
-   * đoánlàphủvìhợpphápcủatuyệtđốiđường
-   */
   private isValidAbsolutePath(path: string): boolean {
     return (
       path.startsWith('http://') ||
@@ -228,9 +167,6 @@ export class MenuProcessor {
     )
   }
 
-  /**
-   * nhậprađườngCauHinhLỗiNhatKy
-   */
   private logPathError(
     route: AppRouteRecord,
     path: string,
@@ -250,31 +186,23 @@ export class MenuProcessor {
     )
   }
 
-  /**
-   * cấuxâyĐầy đủđường
-   */
   private buildFullPath(path: string, parentPath: string): string {
     if (!path) return ''
 
-    // ngoàibộliêntiếpthẳngtiếpQuay lại
     if (path.startsWith('http://') || path.startsWith('https://')) {
       return path
     }
 
-    // nếuquảĐãqualàtuyệtđốiđường，thẳngtiếpQuay lại
     if (path.startsWith('/')) {
       return path
     }
 
-    // ghéptiếpchađườngvàkhitrướcđường
     if (parentPath) {
-      // Dichiachađườngcuốiđuôicủanghiêngthanh，Dichiatửđườngmởđầucủanghiêngthanh，nhiênsaughéptiếp
       const cleanParent = parentPath.replace(/\/$/, '')
       const cleanChild = path.replace(/^\//, '')
       return `${cleanParent}/${cleanChild}`
     }
 
-    // khôngcóchađường，Thêm mớitrướcXuấtnghiêngthanh
     return `/${path}`
   }
 }

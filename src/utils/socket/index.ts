@@ -22,17 +22,14 @@ export default class WebSocketClient {
   private connectionTimeout: number
   private reconnectAttempts: number = 0 // khitrướcSố lần kết nối lại
 
-  // TinNhanđộicột - CacheliềntiếpxâylậptrướccủaTinNhan
   private messageQueue: Array<string | ArrayBufferLike | Blob | ArrayBufferView> = []
 
-  // địnhgiờthiết bị
   private detectionTimer: NodeJS.Timeout | null = null
   private timeoutTimer: NodeJS.Timeout | null = null
   private reconnectTimer: NodeJS.Timeout | null = null
   private pingTimer: NodeJS.Timeout | null = null
   private connectionTimer: NodeJS.Timeout | null = null // liềntiếpsiêugiờđịnhgiờthiết bị
 
-  // Trạng tháitiêu
   private isConnected: boolean = false
   private isConnecting: boolean = false // làphủĐangliềntiếptrong
   private stopReconnect: boolean = false
@@ -49,14 +46,12 @@ export default class WebSocketClient {
     this.connectionTimeout = options.connectionTimeout ?? 10 * 1000 // liềntiếpsiêugiờ10giây
   }
 
-  // đơnví dụmôkiểuLấythựcví dụ
   static getInstance(options: WebSocketOptions): WebSocketClient {
     if (!WebSocketClient.instance) {
       WebSocketClient.instance = new WebSocketClient(options)
     } else {
-      // Cập nhậtTinNhanXuLythiết bị
       WebSocketClient.instance.messageHandler = options.messageHandler
-      // nếuquảgợicungrồimớicủaURL，Cập nhậtđồng thờitrùngmớiliềntiếp
+
       if (options.url && WebSocketClient.instance.url !== options.url) {
         WebSocketClient.instance.url = options.url
         WebSocketClient.instance.reconnectAttempts = 0
@@ -66,19 +61,16 @@ export default class WebSocketClient {
     return WebSocketClient.instance
   }
 
-  // ban đầuđầuhóaliềntiếp
   init(): void {
     this.connect(true)
   }
 
   private connect(resetReconnectAttempts: boolean = false): void {
-    // nếuquảĐangliềntiếptrong，Khôngtrùngphụcliềntiếp
     if (this.isConnecting) {
       console.log('ĐangxâylậpWebSocketliềntiếptrong...')
       return
     }
 
-    // nếuquảĐãliềntiếp，Khôngtrùngphụcliềntiếp
     if (this.ws?.readyState === WebSocket.OPEN) {
       console.warn('WebSocketliềntiếpĐãtồntại')
       this.flushMessageQueue() // Đảm bảođộicộttrongcủaTinNhanbịphátgửi
@@ -95,7 +87,6 @@ export default class WebSocketClient {
       }
       this.ws = new WebSocket(this.url)
 
-      // CaiDatliềntiếpsiêugiờđo
       this.clearTimer('connectionTimer')
       this.connectionTimer = setTimeout(() => {
         console.error(`WebSocketliềntiếpsiêugiờ (${this.connectionTimeout}ms)：${this.url}`)
@@ -113,7 +104,6 @@ export default class WebSocketClient {
     }
   }
 
-  // XuLyliềntiếpsiêugiờ
   private handleConnectionTimeout(): void {
     if (this.ws?.readyState !== WebSocket.OPEN) {
       console.error('WebSocketliềntiếpsiêugiờ，cườngchếđóngđóngliềntiếp')
@@ -123,7 +113,6 @@ export default class WebSocketClient {
     }
   }
 
-  // đóngđóngliềntiếp
   close(force?: boolean): void {
     this.clearAllTimers()
     this.stopReconnect = true
@@ -131,7 +120,6 @@ export default class WebSocketClient {
     this.isConnecting = false
 
     if (this.ws) {
-      // 1000 bảngthịBình thườngđóngđóng
       this.ws.close(force ? 1001 : 1000, force ? 'Force closed' : 'Normal close')
       this.ws = null
     }
@@ -139,19 +127,16 @@ export default class WebSocketClient {
     this.isConnected = false
   }
 
-  // phátgửiTinNhan - ThêmthêmTinNhanđộicột
   send(data: string | ArrayBufferLike | Blob | ArrayBufferView, immediate: boolean = false): void {
-    // nếuquảcầncầulậplàphátgửivừaChưaliềntiếp，thẳngtiếpbáoLỗi
     if (immediate && (!this.ws || this.ws.readyState !== WebSocket.OPEN)) {
       console.error('WebSocketChưaliềntiếp，vôpháplậplàphátgửiTinNhan')
       return
     }
 
-    // nếuquảChưaliềntiếpvừaKhôngcầncầulậplàphátgửi，thêmvàoTinNhanđộicột
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
       console.log('WebSocketChưaliềntiếp，TinNhanĐãthêmvàođộicộtbằngđợiphátgửi')
       this.messageQueue.push(data)
-      // nếuquảChưatạitrùngliềntrong，thửthửtrùngliền
+
       if (!this.isConnecting && !this.stopReconnect) {
         this.init()
       }
@@ -162,13 +147,12 @@ export default class WebSocketClient {
       this.ws.send(data)
     } catch (error) {
       console.error('WebSocketphátgửiTinNhanThatBai:', error)
-      // phátgửiThatBaigiờtươngTinNhanthêmvàođộicột，bằngđợitrùngliềnsautrùngthử
+
       this.messageQueue.push(data)
       this.reconnect()
     }
   }
 
-  // phátgửiđộicộttrongcủaTinNhan
   private flushMessageQueue(): void {
     if (this.messageQueue.length > 0 && this.ws?.readyState === WebSocket.OPEN) {
       console.log(`phátgửiđộicộttrongcủa${this.messageQueue.length}điềuTinNhan`)
@@ -179,7 +163,7 @@ export default class WebSocketClient {
             this.ws?.send(data)
           } catch (error) {
             console.error('phátgửiđộicộtTinNhanThatBai:', error)
-            // nếuquảphátgửiThatBai，tươngTinNhanphóngvềđộicộtđầubộ
+
             if (data) this.messageQueue.unshift(data)
             break
           }
@@ -188,7 +172,6 @@ export default class WebSocketClient {
     }
   }
 
-  // XuLyliềntiếpmởmở
   private handleOpen(event: Event): void {
     console.log('WebSocketliềntiếpThanhCong', event)
     this.clearTimer('connectionTimer') // xóachialiềntiếpsiêugiờđịnhgiờthiết bị
@@ -202,20 +185,17 @@ export default class WebSocketClient {
     this.flushMessageQueue() // phátgửiđộicộttrongcủaTinNhan
   }
 
-  // XuLyBộđếncủaTinNhan
   private handleMessage(event: MessageEvent): void {
     console.log('BộđếnWebSocketTinNhan:', event)
     this.resetHeartbeat()
     this.messageHandler(event)
   }
 
-  // XuLyliềntiếpđóngđóng
   private handleClose(event: CloseEvent): void {
     console.log(
       `WebSocketđoánmở: đạimã=${event.code}, nguyênvì=${event.reason}, khôtịnhđóngđóng=${event.wasClean}`
     )
 
-    // 1000 làBình thườngđóngđóngđạimã
     const isNormalClose = event.code === 1000
 
     this.isConnected = false
@@ -228,7 +208,6 @@ export default class WebSocketClient {
     }
   }
 
-  // XuLyLỗi - ThêmthêmChiTietLỗiThongTin
   private handleError(event: Event): void {
     console.error('WebSocketliềntiếpLỗi:')
     console.error('LỗiSuKien:', event)
@@ -240,7 +219,6 @@ export default class WebSocketClient {
     this.isConnected = false
     this.isConnecting = false
 
-    // chỉcótạiChưadừngthúctrùngliềncủatìnhdướimớithửthửtrùngliền
     if (!this.stopReconnect) {
       this.reconnect()
     }
@@ -265,7 +243,6 @@ export default class WebSocketClient {
     }
   }
 
-  // chuyểnđổiliềntiếpTrạng tháivìvănquyểnMô tả
   private getReadyStateText(state: number): string {
     switch (state) {
       case WebSocket.CONNECTING:
@@ -281,7 +258,6 @@ export default class WebSocketClient {
     }
   }
 
-  // Bắt đầutâmnhảyđo
   private startHeartbeat(): void {
     this.clearTimer('detectionTimer')
     this.clearTimer('timeoutTimer')
@@ -301,14 +277,12 @@ export default class WebSocketClient {
     }, this.heartbeatInterval)
   }
 
-  // Đặt lạitâmnhảyđo
   private resetHeartbeat(): void {
     this.clearTimer('detectionTimer')
     this.clearTimer('timeoutTimer')
     this.startHeartbeat()
   }
 
-  // Bắt đầuphátgửipingTinNhan
   private startPing(): void {
     this.clearTimer('pingTimer')
 
@@ -331,13 +305,11 @@ export default class WebSocketClient {
     }, this.pingInterval)
   }
 
-  // trùngliền - ThêmthêmSố lần kết nối lạihạnchế
   private reconnect(): void {
     if (this.stopReconnect || this.isConnecting || this.reconnectInterval <= 0) {
       return
     }
 
-    // TìmlàphủsiêuquanhấtđạiSố lần kết nối lại
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
       console.error(
         `ĐãđếnnhấtđạiSố lần kết nối lại(${this.maxReconnectAttempts})，dừngthúctrùngliền`
@@ -362,9 +334,7 @@ export default class WebSocketClient {
     }, delay)
   }
 
-  // kếtrùngliền - sốlùitránhsáchlược
   private calculateReconnectDelay(): number {
-    // Cơ bản + Ngẫu nhiêngiá trị，tránhmiễnđachiếckháchkhoảnđầucùnggiờtrùngliền
     const jitter = Math.random() * 1000 // 0-1giâycủaNgẫu nhiên
     const baseDelay = Math.min(
       this.reconnectInterval * Math.pow(1.5, this.reconnectAttempts - 1),
@@ -373,7 +343,6 @@ export default class WebSocketClient {
     return baseDelay + jitter
   }
 
-  // xóachiađịnhđịnhgiờthiết bị
   private clearTimer(
     timerName:
       | 'detectionTimer'
@@ -388,7 +357,6 @@ export default class WebSocketClient {
     }
   }
 
-  // xóachianêncóđịnhgiờthiết bị
   private clearAllTimers(): void {
     this.clearConnectionTimers()
     this.clearTimer('reconnectTimer')
@@ -401,12 +369,10 @@ export default class WebSocketClient {
     this.clearTimer('connectionTimer')
   }
 
-  // LấykhitrướcliềntiếpTrạng thái
   get isWebSocketConnected(): boolean {
     return this.isConnected
   }
 
-  // LấykhitrướcliềntiếpTrạng tháivănquyển
   get connectionStatusText(): string {
     if (this.isConnecting) return 'Đangliềntiếp'
     if (this.isConnected) return 'Đãliềntiếp'
@@ -415,7 +381,6 @@ export default class WebSocketClient {
     return 'Đãđoánmở'
   }
 
-  // Hủythựcví dụ
   static destroyInstance(): void {
     if (WebSocketClient.instance) {
       WebSocketClient.instance.close()

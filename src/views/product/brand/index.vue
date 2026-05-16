@@ -1,6 +1,5 @@
 <template>
   <div class="flex flex-col gap-4 pb-5">
-    <!-- Header Stats -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <ArtStatsCard
         title="Tổng thương hiệu"
@@ -23,7 +22,6 @@
       />
     </div>
 
-    <!-- Search Bar -->
     <ArtSearchBar
       :items="searchItems"
       :label-width="120"
@@ -32,7 +30,6 @@
       @reset="handleReset"
     />
 
-    <!-- Table Card -->
     <ElCard class="flex-1 art-table-card">
       <template #header>
         <div class="flex-cb">
@@ -45,7 +42,6 @@
         </div>
       </template>
 
-      <!-- Table Header Tools -->
       <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
           <ElButton type="primary" v-ripple @click="handleAdd">
@@ -57,7 +53,6 @@
         </template>
       </ArtTableHeader>
 
-      <!-- Data Table -->
       <ArtTable
         ref="tableRef"
         :loading="loading"
@@ -67,7 +62,6 @@
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
-        <!-- Logo Column -->
         <template #logoUrl="{ row }">
           <div
             class="flex-c h-10 w-10 bg-gray-50 rounded shadow-inner border border-gray-100 overflow-hidden mx-auto"
@@ -84,7 +78,6 @@
           </div>
         </template>
 
-        <!-- Name Column -->
         <template #name="{ row }">
           <div class="flex flex-col">
             <span class="font-bold text-gray-800">{{ row.name }}</span>
@@ -92,7 +85,6 @@
           </div>
         </template>
 
-        <!-- Origin Column -->
         <template #origin="{ row }">
           <div class="flex items-center gap-1">
             <ElTag v-if="row.origin" size="small" effect="plain" type="info" round>
@@ -102,7 +94,6 @@
           </div>
         </template>
 
-        <!-- Operation Column -->
         <template #operation="{ row }">
           <div class="flex gap-2 justify-center">
             <ArtButtonTable type="edit" @click="handleEdit(row)" />
@@ -112,7 +103,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Add/Edit Dialog -->
     <ElDialog
       v-model="dialogVisible"
       :title="dialogTitle"
@@ -191,7 +181,7 @@
     handleSearch,
     handleReset,
     refreshData,
-    // CRUD
+
     dialogVisible,
     dialogTitle,
     formData,
@@ -202,7 +192,6 @@
     submitForm
   } = useBrandTable()
 
-  // Handle Image Upload
   const handleUpload = async (options: any) => {
     try {
       const res = await FileApi.uploadProductImage(options.file)

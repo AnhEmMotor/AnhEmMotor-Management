@@ -1,4 +1,3 @@
-<!-- BảngNút -->
 <template>
   <div
     :class="[
@@ -16,15 +15,14 @@
   defineOptions({ name: 'ArtButtonTable' })
 
   interface Props {
-    /** Nútloạikiểu */
     type?: 'add' | 'edit' | 'delete' | 'more' | 'view'
-    /** NútIcon */
+
     icon?: string
-    /** NútKiểu dángloại */
+
     iconClass?: string
-    /** icon Màu sắc */
+
     iconColor?: string
-    /** NútNềnmàu */
+
     buttonBgColor?: string
   }
 

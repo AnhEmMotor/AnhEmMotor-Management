@@ -1,5 +1,3 @@
-<!-- mộtchiếcđể SVG Hình ảnhtheoChuDecủaComponent，chỉđốiđặcđịnh svg Hình ảnhsinhhiệu，Khôngxâynghịmởphátkhiếndùng -->
-<!-- Hình ảnhDiaChi https://iconpark.oceanengine.com/illustrations/13 -->
 <template>
   <div class="theme-svg" :style="sizeStyle">
     <div v-if="src" class="svg-container" v-html="svgContent"></div>
@@ -22,7 +20,6 @@
 
   const svgContent = ref('')
 
-  // kếKiểu dáng
   const sizeStyle = computed(() => {
     const sizeValue = typeof props.size === 'number' ? `${props.size}px` : props.size
     return {
@@ -31,7 +28,6 @@
     }
   })
 
-  // Màu sắcảnhxạCauHinh
   const COLOR_MAPPINGS = {
     '#C7DEFF': 'var(--el-color-primary-light-6)',
     '#071F4D': 'var(--el-color-primary-dark-2)',
@@ -42,7 +38,6 @@
     '#DEEBFC': 'var(--el-color-primary-light-7)'
   } as const
 
-  // tươngChuDemàuỨng dụngđến SVG NoiDung
   const applyThemeToSvg = (content: string): string => {
     return Object.entries(COLOR_MAPPINGS).reduce(
       (processedContent, [originalColor, themeColor]) => {
@@ -57,7 +52,6 @@
     )
   }
 
-  // Loading SVG vănphần tửNoiDung
   const loadSvgContent = async () => {
     if (!props.src) {
       svgContent.value = ''

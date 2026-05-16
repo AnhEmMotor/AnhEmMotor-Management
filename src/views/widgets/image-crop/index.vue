@@ -26,32 +26,17 @@
 
   defineOptions({ name: 'WidgetsImageCrop' })
 
-  /**
-   * Hình ảnh URL
-   */
   const imageUrl = ref(lockImg)
 
-  /**
-   * XuLyCắtLỗi
-   * @param error LỗiDoiTuong
-   */
   const handleError = (error: Error) => {
     console.error('CắtLỗi:', error)
     ElMessage.error('Cắt ảnhThatBai')
   }
 
-  /**
-   * XuLyHình ảnhLoadinghoànthành
-   * @param result LoadingKetQua
-   */
   const handleLoadComplete = (result: { url: string; width: number; height: number }) => {
     console.log('Hình ảnhLoadinghoànthành:', result)
   }
 
-  /**
-   * XuLyHình ảnhLoadingLỗi
-   * @param error LỗiDoiTuong
-   */
   const handleLoadError = (error: Error) => {
     console.error('Hình ảnhLoadingThatBai:', error)
     ElMessage.error('Hình ảnhLoadingThatBai')

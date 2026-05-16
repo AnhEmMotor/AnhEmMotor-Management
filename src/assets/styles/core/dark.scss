@@ -1,11 +1,5 @@
-/*
-* tròChủđề
-* mụctrangmặtDibỏtròChủđề document.getElementsByTagName("html")[0].removeAttribute('class')
-*/
-
 $font-color: rgba(#ffffff, 0.85);
 
-/* element-plusmặcđịnhtròNềncảnhtrò */
 html.dark {
   --el-bg-color: var(--default-box-color);
   --el-text-color-regular: #{$font-color};
@@ -56,7 +50,6 @@ html.dark {
     text-shadow: none !important;
   }
 
-  /* dụng */
   .w-e-text-container [data-slate-editor] blockquote {
     border-left: 4px solid var(--default-border-dashed) !important;
     background-color: var(--art-color);

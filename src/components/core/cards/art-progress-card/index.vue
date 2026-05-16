@@ -1,4 +1,3 @@
-<!-- Thanh tiến trìnhThẻ -->
 <template>
   <div class="art-card h-32 flex flex-col justify-center px-5">
     <div class="mb-3.5 flex-c" :style="{ justifyContent: icon ? 'space-between' : 'flex-start' }">
@@ -30,17 +29,16 @@
   defineOptions({ name: 'ArtProgressCard' })
 
   interface Props {
-    /** vàođộphầnso sánh */
     percentage: number
-    /** TieuDe */
+
     title: string
-    /** Màu sắc */
+
     color?: string
-    /** Icon */
+
     icon?: string
-    /** IconKiểu dáng */
+
     iconStyle?: string
-    /** Thanh tiến trìnhChiều rộng */
+
     strokeWidth?: number
   }
 

@@ -48,12 +48,6 @@
 
   const { width } = useWindowSize()
 
-  /**
-   * xâymang tooltip củaFormTag
-   * @param label Tagvănquyển
-   * @param tooltip Gợi ývănquyển
-   * @returns RenderHàm
-   */
   const createLabelTooltip = (label: string, tooltip: string) => {
     return () =>
       h('span', { class: 'flex items-center' }, [
@@ -158,13 +152,9 @@
     authLabel: [{ required: true, message: 'Vui lòng nhậpQuyenHantiêu', trigger: 'blur' }]
   })
 
-  /**
-   * FormmụcCauHinh
-   */
   const formItems = computed<FormItem[]>(() => {
     const baseItems: FormItem[] = [{ label: 'Menuloạikiểu', key: 'menuType', span: 24 }]
 
-    // Switch Componentcủa span：tiểumàn hìnhmàn 12，đạimàn hìnhmàn 6
     const switchSpan = width.value < 640 ? 12 : 6
 
     if (form.menuType === 'menu') {
@@ -266,26 +256,17 @@
     return isEdit.value ? `Chỉnh sửa${type}` : `mớixây${type}`
   })
 
-  /**
-   * làphủTắtMenuloạikiểuChuyển đổi
-   */
   const disableMenuType = computed(() => {
     if (isEdit.value) return true
     if (!isEdit.value && form.menuType === 'menu' && props.lockType) return true
     return false
   })
 
-  /**
-   * Đặt lạiFormDữ liệu
-   */
   const resetForm = (): void => {
     formRef.value?.reset()
     form.menuType = 'menu'
   }
 
-  /**
-   * LoadingFormDữ liệu（Chỉnh sửamôkiểu）
-   */
   const loadFormData = (): void => {
     if (!props.editData) return
 
@@ -322,9 +303,6 @@
     }
   }
 
-  /**
-   * GửiForm
-   */
   const handleSubmit = async (): Promise<void> => {
     if (!formRef.value) return
 
@@ -338,24 +316,15 @@
     }
   }
 
-  /**
-   * HủyHanhDong
-   */
   const handleCancel = (): void => {
     emit('update:visible', false)
   }
 
-  /**
-   * Hộp thoạiđóngđóngsaucủavềđiều
-   */
   const handleClosed = (): void => {
     resetForm()
     isEdit.value = false
   }
 
-  /**
-   * Lắng ngheHộp thoạiHiển thịTrạng thái
-   */
   watch(
     () => props.visible,
     (newVal) => {
@@ -370,9 +339,6 @@
     }
   )
 
-  /**
-   * Lắng ngheMenuloạikiểubiếnhóa
-   */
   watch(
     () => props.type,
     (newType) => {

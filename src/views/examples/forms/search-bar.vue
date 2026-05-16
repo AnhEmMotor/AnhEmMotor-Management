@@ -1,4 +1,3 @@
-<!-- BảngTimKiemlanVí dụ -->
 <template>
   <div class="pb-5">
     <h2 class="mb-1 text-lg font-medium">{{ $t('admin.t80') }}</h2>
@@ -103,9 +102,6 @@
   const searchBarBasicRef = ref()
   const searchBarAdvancedRef = ref()
 
-  /**
-   * Cơ bảnVí dụFormDữ liệu
-   */
   const formDataBasic = ref<BasicFormData>({
     name: undefined,
     phone: undefined,
@@ -116,9 +112,6 @@
     status: undefined
   })
 
-  /**
-   * Đầy đủVí dụFormDữ liệu
-   */
   const formDataAdvanced = ref<AdvancedFormData>({
     name: undefined,
     phone: undefined,
@@ -135,9 +128,6 @@
     systemName: undefined
   })
 
-  /**
-   * Đầy đủVí dụsoátnghiệmquy
-   */
   const rulesAdvanced = {
     name: [{ required: true, message: 'Vui lòng nhậpTên người dùng', trigger: 'blur' }],
     phone: [
@@ -160,9 +150,6 @@
 
   const levelOptions = ref<OptionItem[]>([])
 
-  /**
-   * NguoiDungbằngcấpvịmục
-   */
   const LEVEL_OPTIONS: OptionItem[] = [
     { label: 'phổthôngNguoiDung', value: 'normal' },
     { label: 'VIPNguoiDung', value: 'vip' },
@@ -170,27 +157,17 @@
     { label: 'xínghiệpNguoiDung', value: 'enterprise', disabled: true }
   ]
 
-  /**
-   * GioiTinhvịmục
-   */
   const GENDER_OPTIONS: OptionItem[] = [
     { label: 'Nam', value: '1' },
     { label: 'Nữ', value: '2' }
   ]
 
-  /**
-   * Ngàykhoáinhanhvịmục
-   */
   const DATE_SHORTCUTS = [
     { text: 'nayngày', value: new Date() },
     { text: 'quangày', value: () => new Date(Date.now() - 86400000) },
     { text: 'mộttuầntrước', value: () => new Date(Date.now() - 604800000) }
   ]
 
-  /**
-   * môphỏngGiao diện (Interface)LấyNguoiDungbằngcấpDữ liệu
-   * @returns NguoiDungbằngcấpvịmụcDanh sách
-   */
   const fetchLevelOptions = (): Promise<OptionItem[]> => {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -199,9 +176,6 @@
     })
   }
 
-  /**
-   * LấyNguoiDungbằngcấpDữ liệu
-   */
   const getLevelOptions = async (): Promise<void> => {
     levelOptions.value = await fetchLevelOptions()
     if (levelOptions.value.length) {
@@ -209,9 +183,6 @@
     }
   }
 
-  /**
-   * FormmụcCauHinhloạikiểu
-   */
   interface FormItemConfig {
     label: string
     key: string
@@ -222,12 +193,8 @@
     [key: string]: any
   }
 
-  /**
-   * xâyFormmụccủacôngxưởngHàm
-   */
   const createFormItem = (config: FormItemConfig) => config
 
-  // Cơ bảnFormmụcCauHinh
   const baseFormItems = {
     username: createFormItem({
       label: 'Tên người dùng',
@@ -279,7 +246,6 @@
     })
   }
 
-  // FormCauHinh
   const formItemsBasic = computed(() => [
     baseFormItems.username,
     {
@@ -309,16 +275,12 @@
     }
   })
 
-  // khốngchếTên người dùngchữđoạnlàphủHiển thị
   const showUserName = ref(true)
 
-  // Hoạt độngFormmụcDanh sách
   const dynamicFormItems = ref<SearchFormItem[]>([])
 
-  // Hoạt độngFormmụckếsốthiết bị（dùngởsinhthànhduymột key）
   let dynamicItemCounter = 0
 
-  // cấpliênBộ chọnDữ liệu
   const cascaderOptions = [
     {
       value: 'guide',
@@ -353,7 +315,6 @@
     }
   ]
 
-  // câyBộ chọnDữ liệu
   const treeSelectData = [
     {
       value: '1',
@@ -384,7 +345,6 @@
     }
   ]
 
-  // Ô chọn nhiềuvịmục
   const checkboxOptions = [
     { label: 'vịmục1', value: 'option1' },
     { label: 'vịmục2', value: 'option2' },
@@ -393,10 +353,9 @@
     { label: 'vịmục5（disabled）', value: 'option5', disabled: true }
   ]
 
-  // Đầy đủVí dụFormCauHinh
   const formItemsAdvanced = computed(() => [
     ...(showUserName.value ? [userItem.value] : []),
-    // Hoạt độngFormmục
+
     ...dynamicFormItems.value,
     {
       ...baseFormItems.phone
@@ -407,7 +366,7 @@
     },
     baseFormItems.address,
     baseFormItems.date,
-    // NgàyThoiGian
+
     {
       label: 'NgàyThoiGian',
       key: 'datetime',
@@ -431,7 +390,7 @@
         endPlaceholder: 'KếtthúcNgày'
       }
     },
-    // NgàyThoiGianphạmvi
+
     {
       label: 'NgàyThoiGianphạmvi',
       key: 'datetimerange',
@@ -444,7 +403,7 @@
         endPlaceholder: 'KếtthúcNgàyThoiGian'
       }
     },
-    // ThoiGianChọn
+
     {
       label: 'ThoiGianChọn',
       key: 'timeselect',
@@ -455,7 +414,7 @@
         valueFormat: 'HH:mm:ss'
       }
     },
-    // ThoiGianBộ chọn
+
     {
       label: 'ThoiGianBộ chọn',
       key: 'timepicker',
@@ -467,7 +426,7 @@
         valueFormat: 'HH:mm:ss'
       }
     },
-    // cấpliênChọn
+
     {
       label: 'cấpliênChọn',
       key: 'cascader',
@@ -482,7 +441,7 @@
         options: cascaderOptions
       }
     },
-    // câykiểuBộ chọn
+
     {
       label: 'câykiểuBộ chọn',
       key: 'treeSelect',
@@ -560,8 +519,7 @@
         placeholder: 'NhậpNoiDungKích hoạtSuKien，BangDieuKhienXem',
         clearable: true,
         prefixIcon: 'Search',
-        // prefix: () => h('span', {}, '123'),
-        // SuKientấtphảilấy on mởđầu，nhiênsaulạc đàđỉnhkiểumệnhdanhghéptiếp ElementPlus SuKiendanh
+
         onInput(val: string) {
           console.log('NhậpSuKien', val)
         },
@@ -601,10 +559,6 @@
       label: 'Thanh trượt',
       key: 'slider',
       type: 'slider'
-      // props: {
-      //   step: 10,
-      //   showStops: true
-      // }
     },
 
     {
@@ -613,7 +567,7 @@
       type: 'input',
       hidden: true
     },
-    // liệuđiềuphần tửẨn
+
     {
       label: 'liệuđiềuphần tửẨn',
       key: 'systemName',
@@ -631,12 +585,6 @@
     }
   ])
 
-  /**
-   * xâythốngmộtcủaFormXuLyHàm
-   * @param ref Formtríchdùng
-   * @param formData FormDữ liệu
-   * @param type FormloạikiểuMô tả
-   */
   const createFormHandler = (ref: Ref<any>, formData: Record<string, any>, type: string) => ({
     reset: () => {
       console.log(`Đặt lại${type}Form`)
@@ -650,53 +598,26 @@
     validate: () => ref.value.validate()
   })
 
-  /**
-   * Cơ bảnFormXuLythiết bị
-   */
   const basicFormHandler = computed(() =>
     createFormHandler(searchBarBasicRef, formDataBasic, 'Cơ bản')
   )
 
-  /**
-   * Đầy đủFormXuLythiết bị
-   */
   const advancedFormHandler = computed(() =>
     createFormHandler(searchBarAdvancedRef, formDataAdvanced, 'Đầy đủ')
   )
 
-  /**
-   * XuLyCơ bảnFormĐặt lạiSuKien
-   */
   const handleBasicReset = () => basicFormHandler.value.reset()
 
-  /**
-   * XuLyCơ bảnFormTimKiemSuKien
-   */
   const handleBasicSearch = () => basicFormHandler.value.search()
 
-  /**
-   * XuLyĐầy đủFormĐặt lạiSuKien
-   */
   const handleAdvancedReset = () => advancedFormHandler.value.reset()
 
-  /**
-   * XuLyĐầy đủFormTimKiemSuKien
-   */
   const handleAdvancedSearch = () => advancedFormHandler.value.search()
 
-  /**
-   * soátnghiệmĐầy đủForm
-   */
   const advancedValidate = () => advancedFormHandler.value.validate()
 
-  /**
-   * Đặt lạiĐầy đủForm
-   */
   const advancedReset = () => searchBarAdvancedRef.value.reset()
 
-  /**
-   * Cập nhậtTên người dùngchữđoạnCauHinh
-   */
   const updateUserName = (): void => {
     userItem.value = {
       ...userItem.value,
@@ -707,17 +628,11 @@
     }
   }
 
-  /**
-   * XóaTên người dùngchữđoạn
-   */
   const deleteUserName = (): void => {
     showUserName.value = false
     formDataAdvanced.value.name = undefined
   }
 
-  /**
-   * Thêm mớiFormmục
-   */
   const addFormItem = (): void => {
     dynamicItemCounter++
     const newItem: SearchFormItem = {
@@ -733,9 +648,6 @@
     ElMessage.success(`ĐãThêm mớiFormmục：${newItem.label}`)
   }
 
-  /**
-   * sửasửaFormmục（sửasửanhấtsaumộtchiếcHoạt độngFormmục）
-   */
   const updateFormItem = (): void => {
     if (dynamicFormItems.value.length === 0) {
       ElMessage.warning('khôngcóCó thểsửasửacủaHoạt độngFormmục，Vui lòngThêm mới')
@@ -745,7 +657,6 @@
     const lastIndex = dynamicFormItems.value.length - 1
     const lastItem = dynamicFormItems.value[lastIndex]
 
-    // sửasửanhấtsaumộtchiếcFormmụccủaCauHinh
     dynamicFormItems.value[lastIndex] = {
       ...lastItem,
       label: `Đãsửasửa`,
@@ -763,9 +674,6 @@
     ElMessage.success(`ĐãsửasửaFormmục：${lastItem.label}`)
   }
 
-  /**
-   * XóaFormmục（XóanhấtsaumộtchiếcHoạt độngFormmục）
-   */
   const deleteFormItem = (): void => {
     if (dynamicFormItems.value.length === 0) {
       ElMessage.warning('khôngcóCó thểXóacủaHoạt độngFormmục')
@@ -774,15 +682,11 @@
 
     const deletedItem = dynamicFormItems.value.pop()
     if (deletedItem) {
-      // xóachiađốiứngcủaFormDữ liệu
       delete formDataAdvanced.value[deletedItem.key as keyof AdvancedFormData]
       ElMessage.success(`ĐãXóaFormmục：${deletedItem.label}`)
     }
   }
 
-  /**
-   * lôlượngThêm mớiFormmục
-   */
   const batchAddFormItems = (): void => {
     const batchItems: SearchFormItem[] = [
       {
@@ -824,16 +728,12 @@
     ElMessage.success(`ĐãlôlượngThêm mới ${batchItems.length} chiếcFormmục`)
   }
 
-  /**
-   * Đặt lạiHoạt độngFormmục
-   */
   const resetDynamicItems = (): void => {
     if (dynamicFormItems.value.length === 0) {
       ElMessage.info('khitrướckhôngcóHoạt độngFormmục')
       return
     }
 
-    // xóachianêncóHoạt độngFormmụccủaDữ liệu
     dynamicFormItems.value.forEach((item) => {
       delete formDataAdvanced.value[item.key as keyof AdvancedFormData]
     })

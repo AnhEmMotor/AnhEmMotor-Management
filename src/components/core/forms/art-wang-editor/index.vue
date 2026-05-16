@@ -1,4 +1,3 @@
-<!-- WangEditor phúvănquyểnTrình biên tập chènphần tửDiaChi：https://www.wangeditor.com/ -->
 <template>
   <div class="editor-wrapper">
     <Toolbar

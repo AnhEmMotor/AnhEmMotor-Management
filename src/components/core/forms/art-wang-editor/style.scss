@@ -24,12 +24,10 @@ $box-radius: calc(var(--custom-radius) / 3 + 2px);
     }
   }
 
-  /* Côngcụthanh */
   .editor-toolbar {
     border-bottom: 1px solid var(--default-border);
   }
 
-  /* ThảxuốngChọnchọnkhungPhânđặt */
   .w-e-select-list {
     min-width: 140px;
     padding: 5px 10px 10px;
@@ -37,38 +35,27 @@ $box-radius: calc(var(--custom-radius) / 3 + 2px);
     border-radius: $box-radius;
   }
 
-  /* ThảxuốngChọnchọnkhungPhânđặt */
   .w-e-select-list ul li {
     margin-top: 5px;
     font-size: 15px !important;
     border-radius: $box-radius;
   }
 
-  /* ThảxuốngChọnchọnkhung VănbảnbảnchữLớnNhỏĐiềuchỉnh */
   .w-e-select-list ul li:last-of-type {
     font-size: 16px !important;
   }
 
-  /* ThảxuốngChọnchọnkhung hover kiểuthứcĐiềuchỉnh */
   .w-e-select-list ul li:hover {
     background-color: var(--art-gray-200);
   }
 
   :root {
-    /* KíchhoạtMàutrò */
     --w-e-toolbar-active-bg-color: var(--art-gray-200);
-
-    /* toolbar BiểutượngbảnchữMàutrò */
     --w-e-toolbar-color: #000;
-
-    /* biểucảChọntrúngkhiViềnkhungMàutrò */
     --w-e-textarea-selected-border-color: #ddd;
-
-    /* biểucảtênNềncảnhMàutrò */
     --w-e-textarea-slight-bg-color: var(--art-gray-200);
   }
 
-  /* Côngcụthanhkiểuthức */
   .w-e-bar-item svg {
     fill: var(--art-gray-800);
   }
@@ -78,19 +65,16 @@ $box-radius: calc(var(--custom-radius) / 3 + 2px);
     border-radius: $box-radius;
   }
 
-  /* Côngcụthanh hover NềncảnhMàutrò */
   .w-e-bar-item button:hover {
     background-color: var(--art-gray-200);
   }
 
-  /* CôngcụthanhPhântuyến */
   .w-e-bar-divider {
     height: 20px;
     margin-top: 10px;
     background-color: #ccc;
   }
 
-  /* CôngcụthanhMenumục */
   .w-e-bar-item-group .w-e-bar-item-menus-container {
     min-width: 120px;
     padding: 10px 0;
@@ -105,14 +89,12 @@ $box-radius: calc(var(--custom-radius) / 3 + 2px);
     }
   }
 
-  /* mã */
   .w-e-text-container [data-slate-editor] pre > code {
     padding: 0.6rem 1rem;
     background-color: var(--art-gray-50);
     border-radius: $box-radius;
   }
 
-  /* Cửadầnkhung */
   .w-e-drop-panel {
     border: 0;
     border-radius: $box-radius;
@@ -197,7 +179,6 @@ $box-radius: calc(var(--custom-radius) / 3 + 2px);
     }
   }
 
-  /* biểucảkiểuthứctốiưu */
   .w-e-text-container [data-slate-editor] .table-container th {
     border-right: none;
   }
@@ -206,24 +187,20 @@ $box-radius: calc(var(--custom-radius) / 3 + 2px);
     border-right: 1px solid #ccc !important;
   }
 
-  /* dụng */
   .w-e-text-container [data-slate-editor] blockquote {
     background-color: var(--art-gray-200);
     border-left: 4px solid var(--art-gray-300);
   }
 
-  /* XuấtvàokhuvựcCửadần bar  */
   .w-e-hover-bar {
     border-radius: $box-radius;
   }
 
-  /* ChuỗiGiaoCửasổ */
   .w-e-modal {
     border: none;
     border-radius: $box-radius;
   }
 
-  /* BiểukiểuthứcĐiềuchỉnh */
   .w-e-text-container [data-slate-editor] .w-e-selected-image-container {
     overflow: inherit;
 

@@ -1,15 +1,8 @@
-<!-- NguoiDungQuản lýtrangmặt -->
-<!-- art-full-height từđộngkếratrangmặtthừathừaChiều cao -->
-<!-- art-table-card mộtchiếckýhợpHeThongKiểu dángcủa class，cùnggiờtừđộngchốngđầythừathừaChiều cao -->
-<!-- Thêm useTable Ví dụ sử dụngVui lòngDibướcđến côngnăngVí dụ dướimặtcủaNâng caoBảngVí dụhoặcXemChính thứcTaiLieu -->
-<!-- useTable TaiLieu：https://www.artd.pro/docs/zh/guide/hooks/use-table.html -->
 <template>
   <div class="user-page art-full-height">
-    <!-- TimKiemlan -->
     <UserSearch v-model="searchForm" @search="handleSearch" @reset="resetSearchParams"></UserSearch>
 
     <ElCard class="art-table-card">
-      <!-- Bảngđầubộ -->
       <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
           <ElSpace wrap>
@@ -18,7 +11,6 @@
         </template>
       </ArtTableHeader>
 
-      <!-- Bảng -->
       <ArtTable
         :loading="loading"
         :data="data"
@@ -30,7 +22,6 @@
       >
       </ArtTable>
 
-      <!-- NguoiDungPopup -->
       <UserDialog
         v-model:visible="dialogVisible"
         :type="dialogType"
@@ -55,15 +46,12 @@
 
   type UserListItem = Api.SystemManage.UserListItem
 
-  // Popupđóng
   const dialogType = ref<DialogType>('add')
   const dialogVisible = ref(false)
   const currentUserData = ref<Partial<UserListItem>>({})
 
-  // vịtrongdòng
   const selectedRows = ref<UserListItem[]>([])
 
-  // TimKiemForm
   const searchForm = ref({
     userName: undefined,
     userGender: undefined,
@@ -72,7 +60,6 @@
     status: '1'
   })
 
-  // NguoiDungTrạng tháiCauHinh
   const USER_STATUS_CONFIG = {
     '1': { type: 'success' as const, text: 'tạiđường' },
     '2': { type: 'info' as const, text: 'Ngoạiđường' },
@@ -80,9 +67,6 @@
     '4': { type: 'danger' as const, text: 'tâmtác' }
   } as const
 
-  /**
-   * LấyNguoiDungTrạng tháiCauHinh
-   */
   const getUserStatusConfig = (status: string) => {
     return (
       USER_STATUS_CONFIG[status as keyof typeof USER_STATUS_CONFIG] || {
@@ -105,7 +89,6 @@
     handleCurrentChange,
     refreshData
   } = useTable({
-    // Cốt lõiCauHinh
     core: {
       apiFn: fetchGetUserList,
       apiParams: {
@@ -113,11 +96,7 @@
         size: 20,
         ...searchForm.value
       },
-      // Tùy chỉnhPhân trangchữđoạnảnhxạ，ChưaCaiDatgiờtươngkhiếndùngtoànbộCauHinh tableConfig.ts trongcủa paginationKey
-      // paginationKey: {
-      //   current: 'pageNum',
-      //   size: 'pageSize'
-      // },
+
       columnsFactory: () => [
         { type: 'selection' }, // mócvịcột
         { type: 'index', width: 60, label: 'thứsố' }, // thứsố
@@ -125,14 +104,14 @@
           prop: 'userInfo',
           label: 'Tên người dùng',
           width: 280,
-          // visible: false, // MacDinhlàphủHiển thịcột
+
           formatter: (row) => {
             return h('div', { class: 'user flex-c' }, [
               h(ElImage, {
                 class: 'size-9.5 rounded-md',
                 src: row.avatar,
                 previewSrcList: [row.avatar],
-                // Hình ảnhXem trướclàphủchènvàođến body nguyêntốtrên，dùngởgiảiBảngtrongbộHình ảnhXem trướcKiểu dángBất thường
+
                 previewTeleported: true
               }),
               h('div', { class: 'ml-2' }, [
@@ -181,17 +160,14 @@
         }
       ]
     },
-    // Dữ liệuXuLy
+
     transform: {
-      // Dữ liệuchuyểnđổithiết bị - thếđổiAvatar
       dataTransformer: (records) => {
-        // loạikiểugiữvệTìm
         if (!Array.isArray(records)) {
           console.warn('Dữ liệuchuyểnđổithiết bị: kỳvọngMảngloạikiểu，thựctếBộđến:', typeof records)
           return []
         }
 
-        // khiếndùngquyểnđịaAvatarthếđổiGiao diện (Interface)Quay lạicủaAvatar
         return records.map((item, index: number) => {
           return {
             ...item,
@@ -202,18 +178,11 @@
     }
   })
 
-  /**
-   * TimKiemXuLy
-   * @param params Tham số
-   */
   const handleSearch = (params: Api.SystemManage.UserSearchParams) => {
     replaceSearchParams(params)
     getData()
   }
 
-  /**
-   * Hiển thịNguoiDungPopup
-   */
   const showDialog = (type: DialogType, row?: UserListItem): void => {
     console.log('mởmởPopup:', { type, row })
     dialogType.value = type
@@ -223,9 +192,6 @@
     })
   }
 
-  /**
-   * XóaNguoiDung
-   */
   const deleteUser = (row: UserListItem): void => {
     console.log('XóaNguoiDung:', row)
     ElMessageBox.confirm(`Xác địnhcầntâmtácnênNguoiDungkhông？`, 'tâmtácNguoiDung', {
@@ -237,9 +203,6 @@
     })
   }
 
-  /**
-   * XuLyPopupGửiSuKien
-   */
   const handleDialogSubmit = async () => {
     try {
       dialogVisible.value = false
@@ -249,9 +212,6 @@
     }
   }
 
-  /**
-   * XuLyBảngdòngChọnbiếnhóa
-   */
   const handleSelectionChange = (selection: UserListItem[]): void => {
     selectedRows.value = selection
     console.log('vịtrongdòngDữ liệu:', selectedRows.value)

@@ -1,4 +1,3 @@
-<!-- 403 Không đủ quyềntrangmặt -->
 <template>
   <ArtException
     :data="{

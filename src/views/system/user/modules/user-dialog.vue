@@ -51,10 +51,8 @@
   const props = defineProps<Props>()
   const emit = defineEmits<Emits>()
 
-  // VaiTroDanh sáchDữ liệu
   const roleList = ref(ROLE_LIST_DATA)
 
-  // Hộp thoạiHiển thịkhốngchế
   const dialogVisible = computed({
     get: () => props.visible,
     set: (value) => emit('update:visible', value)
@@ -62,10 +60,8 @@
 
   const dialogType = computed(() => props.type)
 
-  // Formthựcví dụ
   const formRef = ref<FormInstance>()
 
-  // FormDữ liệu
   const formData = reactive({
     username: '',
     phone: '',
@@ -73,7 +69,6 @@
     role: [] as string[]
   })
 
-  // Formnghiệmtínhquy
   const rules: FormRules = {
     username: [
       { required: true, message: 'Vui lòng nhậpTên người dùng', trigger: 'blur' },
@@ -91,10 +86,6 @@
     role: [{ required: true, message: 'Vui lòng chọnVaiTro', trigger: 'blur' }]
   }
 
-  /**
-   * ban đầuđầuhóaFormDữ liệu
-   * liệuHộp thoạiloạikiểu（Thêm mới/Chỉnh sửa）Điền vàoForm
-   */
   const initFormData = () => {
     const isEdit = props.type === 'edit' && props.userData
     const row = props.userData
@@ -107,10 +98,6 @@
     })
   }
 
-  /**
-   * Lắng ngheHộp thoạiTrạng tháibiếnhóa
-   * khiHộp thoạimởmởgiờban đầuđầuhóaFormDữ liệuđồng thờixóachianghiệmtínhTrạng thái
-   */
   watch(
     () => [props.visible, props.type, props.userData],
     ([visible]) => {
@@ -124,10 +111,6 @@
     { immediate: true }
   )
 
-  /**
-   * GửiForm
-   * nghiệmtínhthông quasauKích hoạtGửiSuKien
-   */
   const handleSubmit = async () => {
     if (!formRef.value) return
 

@@ -364,14 +364,8 @@
     }
   }
 
-  /** khóihoaHeThongthựcví dụ */
   const fireworkSystem = new FireworkSystem()
 
-  /**
-   * XuLyphímkhoáinhanhphím
-   * Lắng nghe Ctrl+Shift+P hoặc Cmd+Shift+P tổhợpphímKích hoạtkhóihoa
-   * @param event phímSuKienDoiTuong
-   */
   const handleKeyPress = (event: KeyboardEvent): void => {
     const isFireworkShortcut =
       (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'p') ||
@@ -383,10 +377,6 @@
     }
   }
 
-  /**
-   * điềuchỉnhCanvasCanvasKích thước
-   * ứngsổdiệnKích thướcbiếnhóa，Đảm bảoCanvasđầucuốiphủlấpchỉnhchiếcthịdiện
-   */
   const resizeCanvas = (): void => {
     if (!canvasRef.value) return
 

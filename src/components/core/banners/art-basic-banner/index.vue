@@ -1,4 +1,3 @@
-<!-- Cơ bảnComponent -->
 <template>
   <div
     class="art-card basic-banner"
@@ -6,7 +5,6 @@
     :style="{ height }"
     @click="emit('click')"
   >
-    <!-- chuyểnHiệu quả -->
     <div v-if="meteorConfig?.enabled && isDark" class="basic-banner__meteors">
       <span
         v-for="(meteor, index) in meteors"
@@ -22,19 +20,16 @@
     </div>
 
     <div class="basic-banner__content">
-      <!-- title slot -->
       <slot name="title">
         <p v-if="title" class="basic-banner__title" :style="{ color: titleColor }">{{ title }}</p>
       </slot>
 
-      <!-- subtitle slot -->
       <slot name="subtitle">
         <p v-if="subtitle" class="basic-banner__subtitle" :style="{ color: subtitleColor }">{{
           subtitle
         }}</p>
       </slot>
 
-      <!-- button slot -->
       <slot name="button">
         <div
           v-if="buttonConfig?.show"
@@ -50,10 +45,8 @@
         </div>
       </slot>
 
-      <!-- default slot -->
       <slot></slot>
 
-      <!-- background image -->
       <img
         v-if="imageConfig.src"
         class="basic-banner__background-image"

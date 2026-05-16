@@ -1,34 +1,3 @@
-/**
- * HeThongtoànbộCauHinh
- *
- * nàylàHeThongcủaCốt lõiCauHinhvănphần tử，tậptrongQuản lýnêncótoànbộCauHinhmục。
- * Bao gồmHeThongThongTin、ChuDeKiểu dáng、MenuBố cục、Màu sắcphươngánbằngnêncóCó thểCauHinhmục。
- *
- * ## chủcầncôngnăng
- *
- * - HeThongThongTin - HeThongdanhtênbằngCơ bảnThongTin
- * - ChuDeCauHinh - sángtrò/ámtrò/tựđộngChuDecủaKiểu dángCauHinh
- * - MenuCauHinh - MenuBố cục、ChuDe、Chiều rộngbằngCauHinh
- * - Màu sắcphươngán - HeThongchủmàuvàtrướcthiếtMàu sắcDanh sách
- * - khoáivàodiện - khoáivàodiệnỨng dụngvàliêntiếpCauHinh
- * - Phía trênlanCauHinh - Phía trênlancôngnăngmôkhốiCauHinh
- *
- * ## CauHinhmụcMô tả
- *
- * - systemInfo: HeThongCơ bảnThongTin（danhtênbằng）
- * - systemThemeStyles: HeThongChuDeKiểu dángảnhxạ
- * - settingThemeList: Có thểvịcủaHeThongChuDeDanh sách
- * - menuLayoutList: Có thểvịcủaMenuBố cụcDanh sách
- * - themeList: MenuChuDeKiểu dángDanh sách
- * - darkMenuStyles: Chế độ tốidướicủaMenuKiểu dáng
- * - systemMainColor: trướcthiếtcủaHeThongchủmàuDanh sách
- * - fastEnter: khoáivàodiệnCauHinh
- * - headerBar: Phía trênlancôngnăngCauHinh
- *
- * @module config
- * @author Art Design Pro Team
- */
-
 import { MenuThemeEnum, MenuTypeEnum, SystemThemeEnum } from '@/enums/appEnum'
 import { SystemConfig } from '@/types/config'
 import { configImages } from './assets/images'
@@ -36,16 +5,15 @@ import fastEnterConfig from './modules/fastEnter'
 import { headerBarConfig } from './modules/headerBar'
 
 const appConfig: SystemConfig = {
-  // HeThongThongTin
   systemInfo: {
-    name: 'Art Design Pro' // HeThongdanhtên
+    name: 'Art Design Pro'
   },
-  // HeThongChuDe
+
   systemThemeStyles: {
     [SystemThemeEnum.LIGHT]: { className: '' },
     [SystemThemeEnum.DARK]: { className: SystemThemeEnum.DARK }
   },
-  // HeThongChuDeDanh sách
+
   settingThemeList: [
     {
       name: 'Light',
@@ -72,14 +40,14 @@ const appConfig: SystemConfig = {
       img: configImages.themeStyles.system
     }
   ],
-  // MenuBố cụcDanh sách
+
   menuLayoutList: [
     { name: 'Left', value: MenuTypeEnum.LEFT, img: configImages.menuLayouts.vertical },
     { name: 'Top', value: MenuTypeEnum.TOP, img: configImages.menuLayouts.horizontal },
     { name: 'Mixed', value: MenuTypeEnum.TOP_LEFT, img: configImages.menuLayouts.mixed },
     { name: 'Dual Column', value: MenuTypeEnum.DUAL_MENU, img: configImages.menuLayouts.dualColumn }
   ],
-  // MenuChuDeDanh sách
+
   themeList: [
     {
       theme: MenuThemeEnum.DESIGN,
@@ -106,7 +74,7 @@ const appConfig: SystemConfig = {
       img: configImages.menuStyles.light
     }
   ],
-  // Chế độ tốiMenuKiểu dáng
+
   darkMenuStyles: [
     {
       theme: MenuThemeEnum.DARK,
@@ -116,7 +84,7 @@ const appConfig: SystemConfig = {
       textColor: 'rgba(#FFFFFF, 0.7)'
     }
   ],
-  // HeThongchủmàu
+
   systemMainColor: [
     '#5D87FF',
     '#B48DF3',
@@ -126,9 +94,9 @@ const appConfig: SystemConfig = {
     '#F9901F',
     '#FF80C8'
   ] as const,
-  // khoáivàodiệnCauHinh
+
   fastEnter: fastEnterConfig,
-  // Phía trênlancôngnăngCauHinh
+
   headerBar: headerBarConfig
 }
 

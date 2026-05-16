@@ -1,6 +1,5 @@
 <template>
   <div class="page-content mb-5">
-    <!-- Đầy đủThanh công cụTrình biên tập -->
     <ElCard class="editor-card">
       <template #header>
         <div class="card-header">
@@ -22,7 +21,6 @@
       />
     </ElCard>
 
-    <!-- rúthóaThanh công cụTrình biên tập -->
     <ElCard class="editor-card">
       <template #header>
         <div class="card-header">
@@ -44,7 +42,6 @@
       />
     </ElCard>
 
-    <!-- NoiDungđốiso sánhXem trước -->
     <ElCard class="preview-card">
       <template #header>
         <span>📖 NoiDungXem trướcđốiso sánh</span>
@@ -89,7 +86,6 @@
       </ElRow>
     </ElCard>
 
-    <!-- khiếndùngMô tả -->
     <ElCard class="usage-card">
       <template #header>
         <span>📚 khiếndùngMô tả</span>
@@ -224,10 +220,6 @@
   const simpleActiveTab = ref('preview')
   const activeCollapse = ref(['basic'])
 
-  /**
-   * rúthóaThanh công cụCauHinh
-   * chỉBao gồmCơ bảncủaChỉnh sửacôngnăng
-   */
   const simpleToolbarKeys = [
     'bold',
     'italic',
@@ -243,7 +235,6 @@
     'redo'
   ]
 
-  // Đầy đủTrình biên tậpNoiDung
   const fullEditorHtml = ref(`<h1>🎨 Đầy đủThanh công cụTrình biên tậpthịví dụ</h1>
 <p>nàychiếcTrình biên tậpBao gồmnêncócôngnăng，bạnCó thểlấythểnghiệmphongphúcủacáchkiểuChỉnh sửacôngnăng。</p>
 
@@ -295,7 +286,6 @@ function createEditor() {
 
 <p>🔗 <a href="https://www.wangeditor.com/" target="_blank">Truy cậpTrangChurồigiảiThêm</a></p>`)
 
-  // rúthóaTrình biên tậpNoiDung
   const simpleEditorHtml = ref(`<h1>✨ rúthóaThanh công cụTrình biên tậpVí dụ</h1>
 <p>nàychiếcTrình biên tậpchỉBao gồmCơ bảncủaChỉnh sửacôngnăng，giaomặthơnthêmrútkhiết。</p>
 
@@ -320,26 +310,17 @@ function createEditor() {
 
 <p>rúthóabảnTrình biên tậpTập trungởCơ bảncôngnăng，thíchhợprútđơncủaNoiDungChỉnh sửacầncầu。</p>`)
 
-  /**
-   * xóakhôngĐầy đủTrình biên tậpNoiDung
-   */
   const clearFullEditor = () => {
     fullEditorRef.value?.clear()
     ElMessage.success('Đầy đủTrình biên tậpĐãxóakhông')
   }
 
-  /**
-   * LấyĐầy đủTrình biên tậpNoiDung
-   */
   const getFullEditorContent = () => {
     const content = fullEditorRef.value?.getHtml()
     console.log('Đầy đủTrình biên tậpNoiDung:', content)
     ElMessage.success('Đầy đủTrình biên tậpNoiDungĐãnhậprađếnBangDieuKhien')
   }
 
-  /**
-   * CaiDatĐầy đủTrình biên tậpdiễnthịNoiDung
-   */
   const setFullEditorDemo = () => {
     const demoContent = `<h2>🎉 Đầy đủTrình biên tậpdiễnthịNoiDung</h2>
 <p>nàylàthông quaPhuongThucCaiDatcủadiễnthịNoiDung，triểnthịĐầy đủTrình biên tậpcủamạnhđạicôngnăng。</p>
@@ -358,26 +339,17 @@ function createEditor() {
     ElMessage.success('ĐãCaiDatĐầy đủTrình biên tậpdiễnthịNoiDung')
   }
 
-  /**
-   * xóakhôngrúthóaTrình biên tậpNoiDung
-   */
   const clearSimpleEditor = () => {
     simpleEditorRef.value?.clear()
     ElMessage.success('rúthóaTrình biên tậpĐãxóakhông')
   }
 
-  /**
-   * LấyrúthóaTrình biên tậpNoiDung
-   */
   const getSimpleEditorContent = () => {
     const content = simpleEditorRef.value?.getHtml()
     console.log('rúthóaTrình biên tậpNoiDung:', content)
     ElMessage.success('rúthóaTrình biên tậpNoiDungĐãnhậprađếnBangDieuKhien')
   }
 
-  /**
-   * CaiDatrúthóaTrình biên tậpdiễnthịNoiDung
-   */
   const setSimpleEditorDemo = () => {
     const demoContent = `<h2>⚡ rúthóaTrình biên tậpdiễnthịNoiDung</h2>
 <p>nàylàthông quaPhuongThucCaiDatcủadiễnthịNoiDung，triểnthịrúthóaTrình biên tậpcủaCốt lõicôngnăng。</p>

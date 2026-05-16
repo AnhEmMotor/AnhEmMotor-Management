@@ -1,4 +1,3 @@
-<!-- tiếtngàyvănquyểnCuộn -->
 <template>
   <div
     class="overflow-hidden transition-[height] duration-600 ease-in-out"

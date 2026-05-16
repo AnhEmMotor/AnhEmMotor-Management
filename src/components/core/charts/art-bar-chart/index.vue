@@ -1,4 +1,3 @@
-<!-- trạngảnh -->
 <template>
   <div ref="chartRef" :style="{ height: props.height }" v-loading="props.loading"> </div>
 </template>

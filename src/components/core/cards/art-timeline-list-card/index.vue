@@ -1,4 +1,3 @@
-<!-- ThoiGianTrụcDanh sáchThẻ -->
 <template>
   <div class="art-card p-5">
     <div class="pb-3.5">

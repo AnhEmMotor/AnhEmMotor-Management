@@ -1,4 +1,3 @@
-<!-- thốngkếThẻ -->
 <template>
   <div
     class="art-card h-32 flex-c px-5 transition-transform duration-200 hover:-translate-y-0.5"
@@ -41,25 +40,24 @@
   defineOptions({ name: 'ArtStatsCard' })
 
   interface StatsCardProps {
-    /** tửKiểu dáng */
     boxStyle?: string
-    /** Icon */
+
     icon?: string
-    /** IconKiểu dáng */
+
     iconStyle?: string
-    /** TieuDe */
+
     title?: string
-    /** sốgiá trị */
+
     count?: string | number
-    /** tiểusốvị */
+
     decimals?: number
-    /** phầnký */
+
     separator?: string
-    /** Mô tả */
+
     description?: string
-    /** vănquyểnMàu sắc */
+
     textColor?: string
-    /** làphủHiển thịđầu */
+
     showArrow?: boolean
   }
 

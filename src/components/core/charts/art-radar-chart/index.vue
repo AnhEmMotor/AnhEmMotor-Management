@@ -1,4 +1,3 @@
-<!-- Biểu đồ radar -->
 <template>
   <div
     ref="chartRef"

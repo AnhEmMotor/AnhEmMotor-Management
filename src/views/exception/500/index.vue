@@ -1,4 +1,3 @@
-<!-- 500 Lỗi máy chủtrangmặt -->
 <template>
   <ArtException
     :data="{

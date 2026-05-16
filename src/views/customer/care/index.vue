@@ -1,8 +1,6 @@
 <template>
   <div class="customer-care-page p-8 bg-[#F8FAFC] min-h-full font-inter">
-    <!-- LIST VIEW: STANDARD TABLE -->
     <div v-if="!isDetailView">
-      <!-- 1. PAGE HEADER -->
       <div class="flex justify-between items-center mb-8">
         <div>
           <h1 class="m-0 text-2xl font-black tracking-tight text-slate-900 uppercase"
@@ -22,7 +20,6 @@
         </div>
       </div>
 
-      <!-- 2. SEARCH & FILTERS -->
       <div class="bg-white border border-slate-200 rounded-[32px] p-6 mb-8 shadow-sm">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div class="col-span-2">
@@ -57,7 +54,6 @@
         </div>
       </div>
 
-      <!-- 3. MAIN DATA TABLE -->
       <div class="bg-white border border-slate-200 rounded-[40px] shadow-sm overflow-hidden">
         <ElTable :data="customers" style="width: 100%" class="combat-table">
           <ElTableColumn label="Khách hàng" min-width="240">
@@ -110,9 +106,7 @@
       </div>
     </div>
 
-    <!-- DETAIL VIEW: CENTERED FULL-SCREEN OVERLAY -->
     <div v-else class="animate-fade-in">
-      <!-- Detail Header -->
       <div class="flex justify-between items-center mb-8">
         <div class="flex items-center gap-6">
           <button
@@ -145,11 +139,8 @@
         </div>
       </div>
 
-      <!-- 360 Profile Content -->
       <div class="grid grid-cols-12 gap-8">
-        <!-- Column 1: Core Stats (Left) -->
         <div class="col-span-12 lg:col-span-4 space-y-6">
-          <!-- Identity Card -->
           <div
             class="bg-slate-900 rounded-[40px] p-8 text-white shadow-2xl relative overflow-hidden"
           >
@@ -183,7 +174,6 @@
             </div>
           </div>
 
-          <!-- Needs Card -->
           <div class="bg-white border border-slate-200 rounded-[40px] p-8 shadow-sm">
             <h3 class="m-0 text-xs font-black uppercase tracking-widest text-slate-800 mb-6"
               >Nhu cầu & Sở thích</h3
@@ -209,7 +199,6 @@
           </div>
         </div>
 
-        <!-- Column 2: Histories (Center/Right) -->
         <div class="col-span-12 lg:col-span-8 space-y-8">
           <div class="bg-white border border-slate-200 rounded-[40px] shadow-sm overflow-hidden">
             <ElTabs v-model="activeTab" class="combat-tabs-large">
@@ -255,7 +244,6 @@
               </ElTabPane>
               <ElTabPane label="LỊCH SỬ MUA XE & DỊCH VỤ" name="purchase">
                 <div class="p-10 space-y-10">
-                  <!-- Bike Cards -->
                   <div class="grid grid-cols-2 gap-6">
                     <div
                       v-for="bike in activeCustomer?.bikes"
@@ -289,7 +277,6 @@
                     </div>
                   </div>
 
-                  <!-- Service Mini List -->
                   <div class="pt-8 border-t border-slate-100">
                     <h3 class="m-0 text-xs font-black uppercase tracking-widest text-slate-800 mb-6"
                       >Nhật ký bảo dưỡng & Sửa chữa</h3

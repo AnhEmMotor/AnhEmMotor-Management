@@ -1,4 +1,3 @@
-<!-- địaảnhBiểu đồ -->
 <template>
   <div class="relative w-full" :style="{ height: 'calc(100vh - 120px)' }">
     <div v-if="isEmpty" class="h-full flex-cc">

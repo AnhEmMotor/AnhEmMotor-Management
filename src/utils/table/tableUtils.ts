@@ -1,60 +1,16 @@
-/**
- * BảngCông cụHàmmôkhối
- *
- * gợicungBảngDữ liệuXuLyvàVui lòngcầuQuản lýcủaCốt lõiCông cụHàm
- *
- * ## chủcầncôngnăng
- *
- * - đacáchkiểu API ứngtừđộngthíchPhânvàtiêuthuậnhóa
- * - BảngDữ liệugợiHủyvàchuyểnđổi
- * - Phân trangThongTintừđộngCập nhậtvàsoátnghiệm
- * - trínăngPhòngrungHàm（chiếctrìHủyvàlậplàThựcdòng）
- * - thốngmộtcủaXuLy lỗimáychế
- * - nhúngbộDữ liệuKếtcấugiảiphân
- *
- * ## khiếndùngtrườngcảnh
- *
- * - useTable tổhợpkiểuHàmcủatầngCông cụ
- * - thíchPhâncácloạisauđầuGiao diện (Interface)ứngcáchkiểu
- * - BảngDữ liệucủatiêuthuậnhóaXuLy
- * - Vui lòngcầuPhòngrungvàtínhnăngTốihóa
- * - LỗithốngmộtXuLyvàNhatKyGhi chép
- *
- * ## chiếctrìcủaứngcáchkiểu
- *
- * 1. thẳngtiếpMảng: [item1, item2, ...]
- * 2. tiêuthuậnDoiTuong: { records: [], total: 100 }
- * 3. nhúngbộdata: { data: { list: [], total: 100 } }
- * 4. đaloạichữđoạndanh: list/data/records/items/result/rows
- *
- * ## Cốt lõicôngnăng
- *
- * - defaultResponseAdapter: trínăngtínhvàchuyểnđổiứngcáchkiểu
- * - extractTableData: gợiHủyBảngDữ liệuMảng
- * - updatePaginationFromResponse: Cập nhậtPhân trangThongTin
- * - createSmartDebounce: xâyCó thểkhốngcủaPhòngrungHàm
- * - createErrorHandler: sinhthànhXuLy lỗithiết bị
- *
- * @module utils/table/tableUtils
- * @author Art Design Pro Team
- */
-
 import type { ApiResponse } from './tableCache'
 import { tableConfig } from './tableConfig'
 
-// Vui lòngcầuTham sốCơ bảnGiao diện (Interface)，mởtriểnPhân trangTham số
 export interface BaseRequestParams extends Api.Common.PaginationParams {
   [key: string]: unknown
 }
 
-// XuLy lỗiGiao diện (Interface)
 export interface TableError {
   code: string
   message: string
   details?: unknown
 }
 
-// giúpHàm：từDoiTuongtronggợiHủyGhi chépMảng
 function extractRecords<T>(obj: Record<string, unknown>, fields: string[]): T[] {
   for (const field of fields) {
     if (field in obj && Array.isArray(obj[field])) {
@@ -64,7 +20,6 @@ function extractRecords<T>(obj: Record<string, unknown>, fields: string[]): T[] 
   return []
 }
 
-// giúpHàm：từDoiTuongtronggợiHủytổngsố
 function extractTotal(obj: Record<string, unknown>, records: unknown[], fields: string[]): number {
   for (const field of fields) {
     if (field in obj && typeof obj[field] === 'number') {
@@ -74,7 +29,6 @@ function extractTotal(obj: Record<string, unknown>, records: unknown[], fields: 
   return records.length
 }
 
-// giúpHàm：gợiHủyPhân trangTham số
 function extractPagination(
   obj: Record<string, unknown>,
   data?: Record<string, unknown>
@@ -108,11 +62,7 @@ function extractPagination(
   return result
 }
 
-/**
- * MacDinhứngthíchPhânthiết bị - chiếctrìđaloạilệthấycủaAPIứngcáchkiểu
- */
 export const defaultResponseAdapter = <T>(response: unknown): ApiResponse<T> => {
-  // Định nghĩachiếctrìcủachữđoạn
   const recordFields = tableConfig.recordFields
 
   if (!response) {
@@ -138,12 +88,10 @@ export const defaultResponseAdapter = <T>(response: unknown): ApiResponse<T> => 
   let total = 0
   let pagination: Pick<ApiResponse<unknown>, 'current' | 'size'> | undefined
 
-  // XuLytiêuthuậncáchkiểuhoặcthẳngtiếpDanh sách
   records = extractRecords(res, recordFields)
   total = extractTotal(res, records, tableConfig.totalFields)
   pagination = extractPagination(res)
 
-  // nếuquảkhôngcótìmđến，Tìmnhúngbộdata
   if (records.length === 0 && 'data' in res && typeof res.data === 'object') {
     const data = res.data as Record<string, unknown>
     records = extractRecords(data, ['list', 'records', 'items'])
@@ -169,17 +117,11 @@ export const defaultResponseAdapter = <T>(response: unknown): ApiResponse<T> => 
   return result
 }
 
-/**
- * từtiêuthuậnhóacủaAPIứngtronggợiHủyBảngDữ liệu
- */
 export const extractTableData = <T>(response: ApiResponse<T>): T[] => {
   const data = response.records || response.data || []
   return Array.isArray(data) ? data : []
 }
 
-/**
- * liệuAPIứngCập nhậtPhân trangThongTin
- */
 export const updatePaginationFromResponse = <T>(
   pagination: Api.Common.PaginationParams,
   response: ApiResponse<T>
@@ -196,9 +138,6 @@ export const updatePaginationFromResponse = <T>(
   }
 }
 
-/**
- * xâytrínăngPhòngrungHàm - chiếctrìHủyvàlậplàThựcdòng
- */
 export const createSmartDebounce = <T extends (...args: any[]) => Promise<any>>(
   fn: T,
   delay: number
@@ -263,9 +202,6 @@ export const createSmartDebounce = <T extends (...args: any[]) => Promise<any>>(
   return debouncedFn as any
 }
 
-/**
- * sinhthànhXuLy lỗiHàm
- */
 export const createErrorHandler = (
   onError?: (error: TableError) => void,
   enableLog: boolean = false

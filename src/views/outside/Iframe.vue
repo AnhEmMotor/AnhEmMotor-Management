@@ -20,10 +20,6 @@
   const iframeUrl = ref('')
   const iframeRef = ref<HTMLIFrameElement | null>(null)
 
-  /**
-   * ban đầuđầuhóa iframe URL
-   * từRoutingCauHinhtrongLấyđốiứngcủangoàibộliêntiếpDiaChi
-   */
   onMounted(() => {
     const iframeRoute = IframeRouteManager.getInstance().findByPath(route.path)
 
@@ -32,10 +28,6 @@
     }
   })
 
-  /**
-   * XuLy iframe LoadinghoànthànhSuKien
-   * ẨnLoadingTrạng thái
-   */
   const handleIframeLoad = (): void => {
     isLoading.value = false
   }

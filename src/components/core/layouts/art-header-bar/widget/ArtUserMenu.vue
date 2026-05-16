@@ -1,4 +1,3 @@
-<!-- Menu người dùng -->
 <template>
   <ElPopover
     ref="userMenuPopover"
@@ -76,38 +75,22 @@
   const { getUserInfo: userInfo } = storeToRefs(userStore)
   const userMenuPopover = ref()
 
-  /**
-   * Chuyển hướng trang
-   * @param {string} path - DuongDan đích
-   */
   const goPage = (path: string): void => {
     router.push(path)
   }
 
-  /**
-   * Mở trang tài liệu
-   */
   const toDocs = (): void => {
     window.open(WEB_LINKS.DOCS)
   }
 
-  /**
-   * Mở trang GitHub
-   */
   const toGithub = (): void => {
     window.open(WEB_LINKS.GITHUB)
   }
 
-  /**
-   * Mở chức năng khóa màn hình
-   */
   const lockScreen = (): void => {
     mittBus.emit('openLockScreen')
   }
 
-  /**
-   * Xác nhận đăng xuất người dùng
-   */
   const loginOut = (): void => {
     closeUserMenu()
     setTimeout(() => {
@@ -121,9 +104,6 @@
     }, 200)
   }
 
-  /**
-   * Đóng menu người dùng (ẩn popover)
-   */
   const closeUserMenu = (): void => {
     setTimeout(() => {
       userMenuPopover.value.hide()

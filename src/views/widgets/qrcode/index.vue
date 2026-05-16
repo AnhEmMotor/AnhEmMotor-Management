@@ -31,15 +31,9 @@
 
   defineOptions({ name: 'WidgetsQrcode' })
 
-  /**
-   * Mã QRNoiDung
-   */
   const qrValue = ref('https://www.artd.pro')
   const isShowLogo = ref(false)
 
-  /**
-   * trướcthiếtMã QRKiểu dángCauHinh
-   */
   const qrcodePresets = [
     {
       title: 'Renderthành svg Tag',
@@ -93,9 +87,6 @@
     }
   ]
 
-  /**
-   * Mã QRCauHinh
-   */
   const qrcodeConfig = reactive({
     size: 160,
     level: 'H' as Level,
@@ -111,10 +102,6 @@
     } as ImageSettings
   })
 
-  /**
-   * Lắng nghelàphủHiển thị logo
-   * liệuTrạng tháiHoạt độngCaiDatMã QRTrung tâmcủa logo Hình ảnh
-   */
   watch(isShowLogo, (val) => {
     if (!val) {
       qrcodeConfig.imageSettings = {} as ImageSettings

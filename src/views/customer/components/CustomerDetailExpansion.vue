@@ -1,10 +1,7 @@
 <template>
   <div class="lead-detail-expansion bg-gray-50/50 p-6 border-t border-gray-100 shadow-inner">
-    <!-- Main Dashboard Layout (3-Columns) -->
     <div class="grid grid-cols-12 gap-6">
-      <!-- CỘT TRÁI (25%): Hồ sơ định danh & Pháp lý -->
       <div class="col-span-12 lg:col-span-3 flex flex-col gap-6">
-        <!-- QR & ID Card -->
         <div
           class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col items-center text-center"
         >
@@ -23,7 +20,6 @@
           <h3 class="m-0 text-base font-black text-gray-700 tracking-tighter">{{ lead.id }}</h3>
         </div>
 
-        <!-- Administrative Form -->
         <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
           <div class="flex items-center gap-2 mb-6">
             <div class="size-8 bg-blue-50 text-blue-500 rounded-lg flex-cc">
@@ -91,7 +87,6 @@
         </div>
       </div>
 
-      <!-- CỘT GIỮA (50%): Dòng thời gian tương tác -->
       <div class="col-span-12 lg:col-span-6 flex flex-col gap-6">
         <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex-1 flex flex-col">
           <div class="flex items-center justify-between mb-8">
@@ -159,9 +154,7 @@
         </div>
       </div>
 
-      <!-- CỘT PHẢI (25%): AI Insight & Thông tin xe -->
       <div class="col-span-12 lg:col-span-3 flex flex-col gap-6">
-        <!-- AI Insight Card -->
         <div
           class="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-3xl p-6 shadow-lg text-white"
         >
@@ -188,7 +181,6 @@
           </div>
         </div>
 
-        <!-- Vehicle Portfolio -->
         <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
           <div class="flex items-center gap-2 mb-6">
             <div class="size-8 bg-red-50 text-red-500 rounded-lg flex-cc">

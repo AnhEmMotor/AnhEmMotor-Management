@@ -1,4 +1,3 @@
-<!-- Kéo thảnghiệmtínhComponent -->
 <template>
   <div
     ref="dragVerify"
@@ -10,7 +9,6 @@
     @touchmove="dragMoving"
     @touchend="dragFinish"
   >
-    <!-- Thanh tiến trình -->
     <div
       class="dv_progress_bar"
       :class="{ goFirst2: isOk }"
@@ -19,14 +17,12 @@
     >
     </div>
 
-    <!-- Gợi ývănquyển -->
     <div class="dv_text" :style="textStyle" ref="messageRef">
       <slot name="textBefore" v-if="$slots.textBefore"></slot>
       {{ message }}
       <slot name="textAfter" v-if="$slots.textAfter"></slot>
     </div>
 
-    <!-- Thanh trượtXuLythiết bị -->
     <div
       class="dv_handler dv_handler_bg"
       :class="{ goFirst: isOk }"

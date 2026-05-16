@@ -1,13 +1,6 @@
 import request from '@/utils/http'
 
-/**
- * Infrastructure Layer - File API
- */
 export const FileApi = {
-  /**
-   * Upload product image
-   * @param file File object
-   */
   uploadProductImage(file: File) {
     const formData = new FormData()
     formData.append('file', file)
@@ -21,9 +14,6 @@ export const FileApi = {
     })
   },
 
-  /**
-   * Upload news image
-   */
   uploadNewsImage(file: File) {
     const formData = new FormData()
     formData.append('file', file)
