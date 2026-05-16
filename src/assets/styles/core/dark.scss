@@ -1,0 +1,93 @@
+/*
+* tròChủđề
+* mụctrangmặtDibỏtròChủđề document.getElementsByTagName("html")[0].removeAttribute('class')
+*/
+
+$font-color: rgba(#ffffff, 0.85);
+
+/* element-plusmặcđịnhtròNềncảnhtrò */
+html.dark {
+  // element-plus
+  --el-bg-color: var(--default-box-color);
+  --el-text-color-regular: #{$font-color};
+
+  // bảnbảnTrìnhbiênchứa
+  // CôngcụthanhNềncảnhMàutrò
+  --w-e-toolbar-bg-color: #18191c;
+  // XuấtvàokhuvựcNềncảnhMàutrò
+  --w-e-textarea-bg-color: #090909;
+  // CôngcụthanhbảnchữMàutrò
+  --w-e-toolbar-color: var(--art-gray-600);
+  // ChọntrúngMenumụcMàutrò
+  --w-e-toolbar-active-bg-color: #25262b;
+  // CửasổViềnkhungMàutrò
+  --w-e-toolbar-border-color: var(--default-border-dashed);
+  // PhântuyếnMàutrò
+  --w-e-textarea-border-color: var(--default-border-dashed);
+  // ChuỗiGiaoXuấtvàokhungViềnkhungMàutrò
+  --w-e-modal-button-border-color: var(--default-border-dashed);
+  // biểucảtênMàutrò
+  --w-e-textarea-slight-bg-color: #090909;
+  // NềncảnhMàutrò
+  --w-e-modal-button-bg-color: #090909;
+  // hover toolbar NềncảnhMàutrò
+  --w-e-toolbar-active-color: var(--art-gray-800);
+}
+
+.dark {
+  .page-content .article-list .item .left .outer > div {
+    border-right-color: var(--dark-border-color) !important;
+  }
+
+  // bảnbảnTrìnhbiênchứa
+  .editor-wrapper {
+    *:not(pre code *) {
+      color: inherit !important;
+    }
+  }
+  // Phântuyến
+  .w-e-bar-divider {
+    background-color: var(--art-gray-300) !important;
+  }
+
+  .w-e-select-list,
+  .w-e-drop-panel,
+  .w-e-bar-item-group .w-e-bar-item-menus-container,
+  .w-e-text-container [data-slate-editor] pre > code {
+    border: 1px solid var(--default-border) !important;
+  }
+
+  // ThảxuốngChọnchọnkhung
+  .w-e-select-list {
+    background-color: var(--default-box-color) !important;
+  }
+
+  /* ThảxuốngChọnchọnkhung hover kiểuthứcĐiềuchỉnh */
+  .w-e-select-list ul li:hover,
+    /* Côngcụthanh hover NềncảnhMàutrò */
+    .w-e-bar-item button:hover {
+    background-color: #090909 !important;
+  }
+
+  /* mã */
+  .w-e-text-container [data-slate-editor] pre > code {
+    background-color: #25262b !important;
+    text-shadow: none !important;
+  }
+
+  /* dụng */
+  .w-e-text-container [data-slate-editor] blockquote {
+    border-left: 4px solid var(--default-border-dashed) !important;
+    background-color: var(--art-color);
+  }
+
+  .editor-wrapper {
+    .w-e-text-container [data-slate-editor] .table-container th:last-of-type {
+      border-right: 1px solid var(--default-border-dashed) !important;
+    }
+
+    .w-e-modal {
+      background-color: var(--art-color);
+    }
+  }
+}

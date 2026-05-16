@@ -1,0 +1,242 @@
+export const commentList = reactive([
+  {
+    id: 1,
+    date: '2024-9-3',
+    content: 'pháthiệnrồimộtchiếcsiêucấphảodùngcủaCông cụ，mởtâm',
+    collection: 5,
+    comment: 8,
+    userName: 'ẩndanh'
+  },
+  {
+    id: 2,
+    date: '2024-9-3',
+    content: 'nayngàycủađạimãviếtđượcrấtthuậnlợi！',
+    collection: 3,
+    comment: 2,
+    userName: 'Coder123'
+  },
+  {
+    id: 3,
+    date: '2024-9-4',
+    content: 'gặpđếnchiếcbug，điềuthửrồimộtchỉnhngày',
+    collection: 7,
+    comment: 10,
+    userName: 'DebugMaster'
+  },
+  {
+    id: 4,
+    date: '2024-9-4',
+    content: 'họcNodethậtcủalàmộtphần tửrấtcóthúcủaviệc',
+    collection: 9,
+    comment: 4,
+    userName: 'NodeLover'
+  },
+  {
+    id: 5,
+    date: '2024-9-5',
+    content: 'nayngàycủavàođộcóđiểmmạn，cầncầnthêmchiếcmạnhrồi',
+    collection: 2,
+    comment: 3,
+    userName: 'nỗlựctrongcủatiểutrắng'
+  },
+  {
+    id: 6,
+    date: '2024-9-5',
+    content: 'quáhảorồi，cuốiởgiảirồimộtchiếcnanđề！',
+    collection: 11,
+    comment: 5,
+    userName: 'ẩndanh'
+  },
+  {
+    id: 7,
+    date: '2024-9-6',
+    content: 'họcsẽrồimớicủaNodekỹkhéo，mởtâm！',
+    collection: 4,
+    comment: 7,
+    userName: 'mởtâmmỗimộtngày'
+  },
+  {
+    id: 8,
+    date: '2024-9-6',
+    content: 'đạimãTốihóathậtcủalàmộtchiếcchi tiếtđếnsống',
+    collection: 6,
+    comment: 4,
+    userName: 'tinhíchcầutinh'
+  },
+  {
+    id: 9,
+    date: '2024-9-7',
+    content: 'nayngàycủacônglàmquáthuậnlợirồi，hoànmỹ！',
+    collection: 10,
+    comment: 9,
+    userName: 'hoànmỹchủ nghĩa'
+  },
+  {
+    id: 10,
+    date: '2024-9-7',
+    content: 'cầncầnđaluyệntập，mớinăngnắmgiữThêmkỹnăng',
+    collection: 5,
+    comment: 6,
+    userName: 'ẩndanh'
+  },
+  {
+    id: 11,
+    date: '2024-9-8',
+    content: 'mỗingàyvàobướcmộtđiểmđiểm，cuốisẽThanhCong',
+    collection: 8,
+    comment: 7,
+    userName: 'dầnmộng'
+  },
+  {
+    id: 12,
+    date: '2024-9-8',
+    content: 'vớinóômoán，Khôngnếunỗlựcsửabiến',
+    collection: 12,
+    comment: 10,
+    userName: 'sửabiếnmệnhvận'
+  },
+  {
+    id: 13,
+    date: '2024-9-9',
+    content: 'nayngàythửthửrồimớicủaThư viện，cảmgiácKhôngLỗi',
+    collection: 9,
+    comment: 8,
+    userName: 'mớitaythửthử'
+  },
+  {
+    id: 14,
+    date: '2024-9-9',
+    content: 'viếtđạimãcũngcầncầnlinhcảm，nayngàylinhcảmKhôngLỗi',
+    collection: 6,
+    comment: 5,
+    userName: 'linhcảmnguồnsuối'
+  },
+  {
+    id: 15,
+    date: '2024-9-10',
+    content: 'cảmtạxãđồngcủagiúpgiúp，đểtôigiảirồihỏiđề',
+    collection: 7,
+    comment: 4,
+    userName: 'nhậníchphỉthiển'
+  },
+  {
+    id: 16,
+    date: '2024-9-10',
+    content: 'họctậpcủađườngtrêncầnDuy trìbềntâmvàhằngtâm',
+    collection: 3,
+    comment: 2,
+    userName: 'ẩndanh'
+  },
+  {
+    id: 17,
+    date: '2024-9-11',
+    content: 'nayngàyhọctậprồikhácbướcbiêntrìnhcủabáo，nhậníchphỉthiển',
+    collection: 10,
+    comment: 9,
+    userName: 'khácbướchọctập'
+  },
+  {
+    id: 18,
+    date: '2024-9-11',
+    content: 'nayngàycủađạimãchấtlượnggợilênrồiKhôngthiểu',
+    collection: 11,
+    comment: 6,
+    userName: 'đạimãthợngười'
+  },
+  {
+    id: 19,
+    date: '2024-9-12',
+    content: 'cảmgiáchọctậpbiêntrìnhthậtcủarấtcóthànhthìcảm',
+    collection: 8,
+    comment: 7,
+    userName: 'thànhthìcảmđầyđầy'
+  },
+  {
+    id: 20,
+    date: '2024-9-12',
+    content: 'cầnthêmgấpnỗlực，mớinăngsiêuvượtquangàycủatừmình',
+    collection: 5,
+    comment: 4,
+    userName: 'nỗlựcsiêuvượt'
+  },
+  {
+    id: 21,
+    date: '2024-9-13',
+    content: 'nayngàycủađạimãviếtđượcrấtthuậntay，tiếptiếpDuy trì',
+    collection: 9,
+    comment: 8,
+    userName: 'thuậnthuận'
+  },
+  {
+    id: 22,
+    date: '2024-9-13',
+    content: 'viếtđạimãcũngcầncầný，nayngàyrấtcóý',
+    collection: 7,
+    comment: 5,
+    userName: 'ývôhạn'
+  },
+  {
+    id: 23,
+    date: '2024-9-14',
+    content: 'gặpđếncủananđềgiảirồi，cảmgiácrấtcóthànhthìcảm',
+    collection: 10,
+    comment: 9,
+    userName: 'ẩndanh'
+  },
+  {
+    id: 24,
+    date: '2024-9-14',
+    content: 'nayngàycủabiêntrìnhluyệntậprấtcóBộ',
+    collection: 8,
+    comment: 7,
+    userName: 'Bộđầyđầy'
+  },
+  {
+    id: 25,
+    date: '2024-9-15',
+    content: 'họctậpbiêntrìnhcủađườngtrên，cókhổcóngọt',
+    collection: 6,
+    comment: 4,
+    userName: 'khổlạcbiêntrình'
+  },
+  {
+    id: 26,
+    date: '2024-9-15',
+    content: 'nayngàycủađạimãviếtđượcđặctínhchuyểnthông，mởtâm！',
+    collection: 11,
+    comment: 6,
+    userName: 'chuyểnthôngbiêntrình'
+  },
+  {
+    id: 27,
+    date: '2024-9-16',
+    content: 'nayngàycủabiêntrìnhluyệntậpđểtôihơncónhắntâm',
+    collection: 9,
+    comment: 8,
+    userName: 'nhắntâmđầyđầy'
+  },
+  {
+    id: 28,
+    date: '2024-9-16',
+    content: 'nayngàycủabiêntrìnhhọctậpđểtôiBộrấtđa',
+    collection: 7,
+    comment: 5,
+    userName: 'ẩndanh'
+  },
+  {
+    id: 29,
+    date: '2024-9-17',
+    content: 'biêntrìnhlàmộtcửanghệthuật，nayngàythểsẽđếnrồi',
+    collection: 12,
+    comment: 10,
+    userName: 'biêntrìnhnghệthuậtgia'
+  },
+  {
+    id: 30,
+    date: '2024-9-17',
+    content: 'nayngàycủađạimãviếtđượcrấtthuậnlợi，tiếptiếpthêmdầu！',
+    collection: 10,
+    comment: 9,
+    userName: 'ẩndanh'
+  }
+])

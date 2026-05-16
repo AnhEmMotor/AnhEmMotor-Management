@@ -1,0 +1,23 @@
+// Đặtđặtmặcđịnhkiểuthức
+@use './core/reset.scss';
+
+// Ángdụngtoàncụckiểuthức
+@use './core/app.scss';
+
+// Element Plus kiểuthứctốiưu
+@use './core/el-ui.scss';
+
+// Element Plus TốimàuChủđề
+@use './core/el-dark.scss';
+
+// TốimàuChủđềkiểuthứctốiưu
+@use './core/dark.scss';
+
+// ĐườngdẫnChuyểnđổiđộnghọa
+@use './core/router-transition';
+
+// ChủđềChuyểnđổiQuáđộtốiưu
+@use './core/theme-change.scss';
+
+// ChủđềChuyểnđổiTròndángKhuếchtánđộnghọa
+@use './core/theme-animation.scss';

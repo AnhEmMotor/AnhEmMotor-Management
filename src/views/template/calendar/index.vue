@@ -1,0 +1,288 @@
+<template>
+  <div class="page-content mb-5">
+    <!-- ngàyLịchchủthể -->
+    <ElCalendar v-model="currentDate">
+      <template #date-cell="{ data }">
+        <div
+          class="relative flex flex-col h-full min-h-30 max-h-30 p-1 overflow-hidden c-p"
+          :class="{ 'is-selected': data.isSelected }"
+          @click="handleCellClick(data.day)"
+        >
+          <!-- NgàyHiển thị -->
+          <p class="absolute top-1 right-1 text-sm">{{ formatDate(data.day) }}</p>
+
+          <!-- SuKienDanh sách -->
+          <div class="flex flex-col gap-1 w-full max-h-21 pr-1 mt-6 overflow-y-auto">
+            <div
+              v-for="event in getEvents(data.day)"
+              :key="`${event.date}-${event.content}`"
+              @click.stop="handleEventClick(event)"
+            >
+              <div
+                class="min-w-25 px-3 py-1.5 overflow-hidden text-xs/6 font-medium text-ellipsis whitespace-nowrap rounded hover:opacity-80"
+                :class="[event.bgClass, event.textClass]"
+              >
+                {{ event.content }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </ElCalendar>
+
+    <!-- SuKienChỉnh sửaPopup -->
+    <ElDialog v-model="dialogVisible" :title="dialogTitle" width="600px" @closed="resetForm">
+      <ElForm :model="eventForm" label-width="80px">
+        <ElFormItem label="sốngđộngTieuDe" required>
+          <ElInput v-model="eventForm.content" placeholder="Vui lòng nhậpsốngđộngTieuDe" />
+        </ElFormItem>
+        <ElFormItem label="SuKienMàu sắc">
+          <ElRadioGroup v-model="eventForm.type">
+            <ElRadio v-for="type in eventTypes" :key="type.value" :value="type.value">
+              {{ type.label }}
+            </ElRadio>
+          </ElRadioGroup>
+        </ElFormItem>
+        <ElFormItem label="Bắt đầuNgày" required>
+          <ElDatePicker
+            style="width: 100%"
+            v-model="eventForm.date"
+            type="date"
+            placeholder="ChọnNgày"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+          />
+        </ElFormItem>
+        <ElFormItem label="KếtthúcNgày">
+          <ElDatePicker
+            style="width: 100%"
+            v-model="eventForm.endDate"
+            type="date"
+            placeholder="ChọnKếtthúcNgày"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            :min-date="eventForm.date"
+          />
+        </ElFormItem>
+      </ElForm>
+      <template #footer>
+        <span class="dialog-footer">
+          <ElButton v-if="isEditing" type="danger" @click="handleDeleteEvent"> Xóa </ElButton>
+          <ElButton type="primary" @click="handleSaveEvent">
+            {{ isEditing ? 'Cập nhật' : 'Thêm mới' }}
+          </ElButton>
+        </span>
+      </template>
+    </ElDialog>
+  </div>
+</template>
+
+<script setup lang="ts">
+  defineOptions({ name: 'TemplateCalendar' })
+
+  /**
+   * ngàyLịchSuKienloạikiểuĐịnh nghĩa
+   */
+  interface CalendarEvent {
+    date: string
+    endDate?: string
+    content: string
+    type?: 'primary' | 'success' | 'warning' | 'danger'
+    bgClass?: string
+    textClass?: string
+  }
+
+  /**
+   * SuKienloạikiểuvịmục
+   */
+  const eventTypes = [
+    { label: 'quyển', value: 'primary' },
+    { label: 'ThanhCong', value: 'success' },
+    { label: 'CanhBao', value: 'warning' },
+    { label: 'Nguy hiểm', value: 'danger' }
+  ] as const
+
+  const currentDate = ref(new Date('2025-02-07'))
+  const dialogVisible = ref(false)
+  const dialogTitle = ref('Thêm mớiSuKien')
+  const editingEventIndex = ref<number>(-1)
+
+  /**
+   * SuKienDanh sáchDữ liệu
+   */
+  const events = ref<CalendarEvent[]>([
+    { date: '2025-02-01', content: 'sinhsản phẩmcầncầuBìnhduyệt', type: 'primary' },
+    {
+      date: '2025-02-03',
+      endDate: '2025-02-05',
+      content: 'mụcmụctuầnbáosẽnghị（vượtNgày）',
+      type: 'primary'
+    },
+    { date: '2025-02-10', content: 'dugiàkhóatrình', type: 'success' },
+    { date: '2025-02-15', content: 'đoànđộixâythiếtsốngđộng', type: 'primary' },
+    { date: '2025-02-20', content: 'khỏethânhuấnluyện', type: 'success' },
+    { date: '2025-02-20', content: 'đạimãBìnhduyệt', type: 'danger' },
+    { date: '2025-02-20', content: 'đoànđộitrưabữa', type: 'primary' },
+    { date: '2025-02-20', content: 'mụcmụcvàođộhợpbáo', type: 'warning' },
+    { date: '2025-02-28', content: 'Hàng thángtổngKếtsẽ', type: 'warning' }
+  ])
+
+  /**
+   * SuKienFormDữ liệu
+   */
+  const eventForm = ref<CalendarEvent>({
+    date: '',
+    endDate: '',
+    content: '',
+    type: 'primary'
+  })
+
+  /**
+   * làphủởChỉnh sửamôkiểu
+   */
+  const isEditing = computed(() => editingEventIndex.value >= 0)
+
+  /**
+   * cáchkiểuhóaNgày，chỉHiển thịngày
+   * @param date Đầy đủNgàyChuỗi
+   * @returns Ngàytrongcủangàybộphần
+   */
+  const formatDate = (date: string) => date.split('-')[2]
+
+  /**
+   * LấySuKienloạikiểuđốiứngcủaKiểu dángloạidanh
+   * @param type SuKienloạikiểu
+   * @returns Bao gồmNềnvàVanBanMàu sắccủaloạidanhDoiTuong
+   */
+  const getEventClasses = (type: CalendarEvent['type'] = 'primary') => {
+    const classMap = {
+      primary: { bgClass: 'bg-theme/12', textClass: 'text-theme' },
+      success: { bgClass: 'bg-success/12', textClass: 'text-success' },
+      warning: { bgClass: 'bg-warning/12', textClass: 'text-warning' },
+      danger: { bgClass: 'bg-danger/12', textClass: 'text-danger' }
+    }
+    return classMap[type]
+  }
+
+  /**
+   * LấyđịnhNgàycủanêncóSuKien
+   * chiếctrìvượtNgàySuKiencủaHiển thị
+   * @param day NgàyChuỗi
+   * @returns nênNgàycủaSuKienDanh sách
+   */
+  const getEvents = (day: string) => {
+    return events.value
+      .filter((event) => {
+        const eventDate = new Date(event.date)
+        const currentDate = new Date(day)
+        const endDate = event.endDate ? new Date(event.endDate) : new Date(event.date)
+
+        return currentDate >= eventDate && currentDate <= endDate
+      })
+      .map((event) => {
+        const { bgClass, textClass } = getEventClasses(event.type)
+        return { ...event, bgClass, textClass }
+      })
+  }
+
+  /**
+   * Đặt lạiFormDữ liệu
+   */
+  const resetForm = () => {
+    eventForm.value = {
+      date: '',
+      endDate: '',
+      content: '',
+      type: 'primary'
+    }
+    editingEventIndex.value = -1
+  }
+
+  /**
+   * XuLyngàyLịchđơnnguyêncáchNhấnSuKien
+   * mởmởThêm mớiSuKienPopup
+   * @param day NhấncủaNgày
+   */
+  const handleCellClick = (day: string) => {
+    dialogTitle.value = 'Thêm mớiSuKien'
+    eventForm.value = {
+      date: day,
+      content: '',
+      type: 'primary'
+    }
+    editingEventIndex.value = -1
+    dialogVisible.value = true
+  }
+
+  /**
+   * XuLySuKienNhấn
+   * mởmởChỉnh sửaSuKienPopup
+   * @param event NhấncủaSuKienDoiTuong
+   */
+  const handleEventClick = (event: CalendarEvent) => {
+    dialogTitle.value = 'Chỉnh sửaSuKien'
+    eventForm.value = { ...event }
+    editingEventIndex.value = events.value.findIndex(
+      (e) => e.date === event.date && e.content === event.content
+    )
+    dialogVisible.value = true
+  }
+
+  /**
+   * LưutồnSuKien
+   * liệuChỉnh sửamôkiểuđịnhlàThêm mớicònlàCập nhật
+   */
+  const handleSaveEvent = () => {
+    if (!eventForm.value.content || !eventForm.value.date) return
+
+    if (isEditing.value) {
+      events.value[editingEventIndex.value] = { ...eventForm.value }
+    } else {
+      events.value.push({ ...eventForm.value })
+    }
+
+    dialogVisible.value = false
+    resetForm()
+  }
+
+  /**
+   * XóaSuKien
+   */
+  const handleDeleteEvent = () => {
+    if (isEditing.value) {
+      events.value.splice(editingEventIndex.value, 1)
+      dialogVisible.value = false
+      resetForm()
+    }
+  }
+</script>
+
+<style scoped>
+  :deep(.el-calendar) {
+    height: 100%;
+  }
+
+  :deep(.el-calendar__body) {
+    height: calc(100% - 70px);
+  }
+
+  :deep(.el-calendar-table) {
+    height: 100%;
+  }
+
+  :deep(.is-selected) {
+    background-color: var(--el-color-warning-light-9) !important;
+  }
+
+  :deep(.el-calendar-day) {
+    height: 100%;
+  }
+
+  :deep(.el-calendar-day:hover) {
+    background-color: transparent !important;
+  }
+
+  :deep(.el-dialog__body) {
+    padding-top: 20px;
+  }
+</style>

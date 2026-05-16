@@ -1,0 +1,260 @@
+<!-- WangEditor phúvănquyểnTrình biên tập chènphần tửDiaChi：https://www.wangeditor.com/ -->
+<template>
+  <div class="editor-wrapper">
+    <Toolbar
+      class="editor-toolbar"
+      :editor="editorRef"
+      :mode="mode"
+      :defaultConfig="toolbarConfig"
+    />
+    <Editor
+      :style="{ height: height, overflowY: 'hidden' }"
+      v-model="modelValue"
+      :mode="mode"
+      :defaultConfig="editorConfig"
+      @onCreated="onCreateEditor"
+    />
+  </div>
+</template>
+
+<script setup lang="ts">
+  import '@wangeditor/editor/dist/css/style.css'
+  import { onBeforeUnmount, onMounted, shallowRef, computed } from 'vue'
+  import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
+  import { useUserStore } from '@/store/modules/user'
+  import EmojiText from '@/utils/ui/emojo'
+  import { i18nChangeLanguage, IDomEditor, IToolbarConfig, IEditorConfig } from '@wangeditor/editor'
+  import request from '@/utils/http'
+
+  // Chuyển đổi ngôn ngữ sang tiếng Anh (hoặc 'vi' nếu thư viện hỗ trợ, mặc định dùng 'en' để tránh tiếng Hoa)
+  i18nChangeLanguage('en')
+
+  defineOptions({ name: 'ArtWangEditor' })
+
+  type InsertFnType = (url: string, alt: string, href: string) => void
+
+  const { VITE_API_URL } = import.meta.env
+
+  // Props Định nghĩa
+  interface Props {
+    /** Trình biên tậpChiều cao */
+    height?: string
+    /** Tùy chỉnhThanh công cụCauHinh */
+    toolbarKeys?: string[]
+    /** chènvàomớiCông cụđếnđịnhViTri */
+    insertKeys?: { index: number; keys: string[] }
+    /** xếpchiacủaThanh công cụmục */
+    excludeKeys?: string[]
+    /** Trình biên tậpmôkiểu */
+    mode?: 'default' | 'simple'
+    /** chiếmvịkývănquyển */
+    placeholder?: string
+    /** Tải lênCauHinh */
+    uploadConfig?: {
+      maxFileSize?: number
+      maxNumberOfFiles?: number
+      server?: string
+      // làphủmởbậtTùy chỉnhTải lên
+      isCustomUpload?: boolean
+    }
+  }
+
+  const props = withDefaults(defineProps<Props>(), {
+    height: '500px',
+    mode: 'default',
+    placeholder: 'Bắt đầu viết nội dung tư vấn tại đây...',
+    excludeKeys: () => ['fontFamily'],
+    isCustomUpload: false
+  })
+
+  const modelValue = defineModel<string>({ required: true })
+
+  // Trình biên tậpthựcví dụ
+  const editorRef = shallowRef<IDomEditor>()
+  const userStore = useUserStore()
+
+  // lệlượngCauHinh
+  const DEFAULT_UPLOAD_CONFIG = {
+    maxFileSize: 3 * 1024 * 1024, // 3MB
+    maxNumberOfFiles: 10,
+    fieldName: 'file',
+    allowedFileTypes: ['image/*']
+  } as const
+
+  // kếThuocTinh：Tải lênphụcvụthiết bịDiaChi
+  const uploadServer = computed(
+    () => props.uploadConfig?.server || `${VITE_API_URL}/api/common/upload/wangeditor`
+  )
+
+  // hợpđồng thờiTải lênCauHinh
+  const mergedUploadConfig = computed(() => ({
+    ...DEFAULT_UPLOAD_CONFIG,
+    ...props.uploadConfig
+  }))
+
+  // Thanh công cụCauHinh
+  const toolbarConfig = computed((): Partial<IToolbarConfig> => {
+    const config: Partial<IToolbarConfig> = {}
+
+    // hoàntoànTùy chỉnhThanh công cụ
+    if (props.toolbarKeys && props.toolbarKeys.length > 0) {
+      config.toolbarKeys = props.toolbarKeys
+    }
+
+    // chènvàomớiCông cụ
+    if (props.insertKeys) {
+      config.insertKeys = props.insertKeys
+    }
+
+    // xếpchiaCông cụ
+    if (props.excludeKeys && props.excludeKeys.length > 0) {
+      config.excludeKeys = props.excludeKeys
+    }
+
+    return config
+  })
+
+  // Trình biên tậpCauHinh
+  const editorConfig: Partial<IEditorConfig> = {
+    placeholder: props.placeholder,
+    MENU_CONF: {
+      uploadImage: {
+        fieldName: mergedUploadConfig.value.fieldName,
+        maxFileSize: mergedUploadConfig.value.maxFileSize,
+        maxNumberOfFiles: mergedUploadConfig.value.maxNumberOfFiles,
+        allowedFileTypes: mergedUploadConfig.value.allowedFileTypes,
+        server: uploadServer.value,
+        headers: {
+          Authorization: userStore.accessToken
+        },
+        onSuccess() {
+          ElMessage.success(`Hình ảnhTải lênThanhCong ${EmojiText[200]}`)
+        },
+        onError(file: File, err: any, res: any) {
+          console.error('Hình ảnhTải lênThatBai:', err, res)
+          ElMessage.error(`Hình ảnhTải lênThatBai ${EmojiText[500]}`)
+        }
+      }
+    }
+  }
+
+  // Tùy chỉnhTải lên
+  if (props.uploadConfig?.isCustomUpload && props.uploadConfig?.server && editorConfig.MENU_CONF) {
+    editorConfig.MENU_CONF.uploadImage.customUpload = async (file: File, insertFn: InsertFnType) => {
+      try {
+        const formData = new FormData()
+        formData.append(mergedUploadConfig.value.fieldName, file)
+
+        const response = await request.post<{ url: string; alt: string; href: string }>({
+          url: props.uploadConfig?.server,
+          data: formData,
+          headers: {
+            'Content-Type':'multipart/form-data',
+            Authorization: userStore.accessToken
+          }
+        })
+
+        const { url, alt, href } = response
+
+        if (!url) {
+          throw new Error('Tải lênThatBai，Vui lòngTìmphụcvụđầuCauHinh')
+        }
+
+        insertFn(url, alt, href)
+        ElMessage.success(`đồphiếnTải lênThanhCong ${EmojiText[200]}`)
+      } catch (error) {
+        console.error('Hình ảnhTải lênThatBai:', error)
+        ElMessage.error(`Hình ảnhTải lênThatBai ${EmojiText[500]}`)
+      }
+    }
+  }
+
+  // Trình biên tậpxâyvềđiều
+  const onCreateEditor = (editor: IDomEditor) => {
+    editorRef.value = editor
+
+    // Lắng ngheToàn màn hìnhSuKien
+    editor.on('fullScreen', () => {
+      console.log('Trình biên tậpvàovàoToàn màn hìnhmôkiểu')
+    })
+
+    // Đảm bảotạiTrình biên tậpxâysauỨng dụngTùy chỉnhIcon
+    applyCustomIcons()
+  }
+
+  // Ứng dụngTùy chỉnhIcon（mangtrùngthửmáychế）
+  const applyCustomIcons = () => {
+    let retryCount = 0
+    const maxRetries = 10
+    const retryDelay = 100
+
+    const tryApplyIcons = () => {
+      const editor = editorRef.value
+      if (!editor) {
+        if (retryCount < maxRetries) {
+          retryCount++
+          setTimeout(tryApplyIcons, retryDelay)
+        }
+        return
+      }
+
+      // LấykhitrướcTrình biên tậpcủaThanh công cụContainer
+      const editorContainer = editor.getEditableContainer().closest('.editor-wrapper')
+      if (!editorContainer) {
+        if (retryCount < maxRetries) {
+          retryCount++
+          setTimeout(tryApplyIcons, retryDelay)
+        }
+        return
+      }
+
+      const toolbar = editorContainer.querySelector('.w-e-toolbar')
+      const toolbarButtons = editorContainer.querySelectorAll('.w-e-bar-item button[data-menu-key]')
+
+      if (toolbar && toolbarButtons.length > 0) {
+        return
+      }
+
+      // nếuquảThanh công cụcònkhôngRenderhoànthành，tiếptiếptrùngthử
+      if (retryCount < maxRetries) {
+        retryCount++
+        setTimeout(tryApplyIcons, retryDelay)
+      } else {
+        console.warn('Thanh công cụRendersiêugiờ，vôphápỨng dụngTùy chỉnhIcon - Trình biên tậpthựcví dụ:', editor.id)
+      }
+    }
+
+    // khiếndùng requestAnimationFrame Đảm bảotạidướimộtThựcdòng
+    requestAnimationFrame(tryApplyIcons)
+  }
+
+  // lộlộTrình biên tậpthựcví dụvàPhuongThuc
+  defineExpose({
+    /** LấyTrình biên tậpthựcví dụ */
+    getEditor: () => editorRef.value,
+    /** CaiDatTrình biên tậpNoiDung */
+    setHtml: (html: string) => editorRef.value?.setHtml(html),
+    /** LấyTrình biên tậpNoiDung */
+    getHtml: () => editorRef.value?.getHtml(),
+    /** xóakhôngTrình biên tập */
+    clear: () => editorRef.value?.clear(),
+    /** tụtiêuTrình biên tập */
+    focus: () => editorRef.value?.focus()
+  })
+
+  // sinhmệnhtuầnkỳ
+  onMounted(() => {
+    // IconthếđổiĐãtại onCreateEditor trongXuLy
+  })
+
+  onBeforeUnmount(() => {
+    const editor = editorRef.value
+    if (editor) {
+      editor.destroy()
+    }
+  })
+</script>
+
+<style lang="scss">
+  @use './style';
+</style>
