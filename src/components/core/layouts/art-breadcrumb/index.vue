@@ -98,18 +98,14 @@
   const findFirstValidChild = (route: RouteRecordRaw) =>
     route.children?.find((child) => !child.redirect && !child.meta?.isHide)
 
-  // giúpHàm：cấuxâyĐầy đủđường
   const buildFullPath = (childPath: string): string => `/${childPath}`.replace('//', '/')
 
-  // XuLyBreadcrumbNhấnSuKien
   async function handleBreadcrumbClick(item: BreadcrumbItem, index: number): Promise<void> {
-    // nếuquảlànhấtsaumộtmụchoặcngoàibộliêntiếp，KhôngXuLy
     if (isLastItem(index) || item.path === '/outside') {
       return
     }
 
     try {
-      // CacheRoutingbảngTimKiemKetQua
       const routes = router.getRoutes()
       const targetRoute = routes.find((route) => route.path === item.path)
 

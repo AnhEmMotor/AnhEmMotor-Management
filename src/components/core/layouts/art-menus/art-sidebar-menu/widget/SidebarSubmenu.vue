@@ -133,28 +133,18 @@
     )
   }
 
-  /**
-   * chuyểnvềqualọcMenuRouting，DichiaẨncủaMenumục
-   * nhưngnếuquảchaMenuquyểnthânthìlàCó thểTruy cậptrangmặt，làkhiếntửMenuđềubịẨncũngứngnênLưugiữ
-   * @param items MenumụcMảng
-   * @returns qualọcsaucủaMenumụcMảng
-   */
   const filterRoutes = (items: AppRouteRecord[]): AppRouteRecord[] => {
     return items
       .filter((item) => {
-        // nếuquảkhitrướcmụcbịẨn，thẳngtiếpqualọc
         if (item.meta.isHide) {
           return false
         }
 
-        // nếuquảcótửMenu，chuyểnvềqualọctửMenu
         if (item.children && item.children.length > 0) {
           const filteredChildren = filterRoutes(item.children)
-          // mụclụcMenucầncầucóHiển thịtửMenu；trangmặtMenucho phéphứachỉLưugiữtừthân
           return filteredChildren.length > 0 || isNavigableRoute(item)
         }
 
-        // diệptửtiếtđiểmvừaChưabịẨn，Lưugiữ
         return isNavigableRoute(item)
       })
       .map((item) => ({
@@ -163,27 +153,14 @@
       }))
   }
 
-  /**
-   * đoánMenumụclàphủBao gồmHiển thịcủatửMenu
-   * @param item MenumụcDữ liệu
-   * @returns làphủBao gồmHiển thịcủatửMenu
-   */
   const hasChildren = (item: AppRouteRecord): boolean => {
     if (!item.children || item.children.length === 0) {
       return false
     }
-    // chuyểnvềTìmlàphủcóHiển thịcủatửMenu
     const filteredChildren = filterRoutes(item.children)
     return filteredChildren.length > 0
   }
 
-  /**
-   * sinhthànhduymộtcủa key
-   * khiếndùng path、title và index tổhợpĐảm bảoduymộttính
-   * @param item MenumụcDữ liệu
-   * @param index Chỉ mục
-   * @returns duymộtcủa key
-   */
   const getUniqueKey = (item: AppRouteRecord, index: number): string => {
     return `${item.path || item.meta.title || 'menu'}-${props.level}-${index}`
   }

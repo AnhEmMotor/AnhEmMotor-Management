@@ -276,15 +276,10 @@
     return validSlots
   }
 
-  /**
-   * LấycộtRộng span giá trị
-   * liệumàn hìnhmànthướctấctrínănggiảmcấp，tránhmiễntiểumàn hìnhmàntrênFormmụcbịépthụtquatiểu
-   */
   const getColSpan = (itemSpan: number | undefined, breakpoint: ResponsiveBreakpoint): number => {
     return calculateResponsiveSpan(itemSpan, span.value, breakpoint)
   }
 
-  // TimKiemFormxóakhôngNhậpgiờKhôngLưugiữkhôngChuỗi，tránhmiễnsautiếpVui lòngcầumangmangkhôngchữđoạn。
   const normalizeFieldValue = (value: unknown) => {
     return value === '' ? undefined : value
   }
@@ -316,7 +311,6 @@
     )
   }
 
-  // TimKiemgiờCauHinhxóarửakhônggiá trị，nhưngLưugiữ 0 và false nàyloạicóhiệusàngvịđiềuphần tử。
   const sanitizeOutputValue = (value: unknown): unknown => {
     const options = sanitizeOutputOptions.value
 
@@ -369,20 +363,14 @@
     return (sanitizeOutputValue(cloneModelValue(modelValue.value)) || {}) as Record<string, any>
   }
 
-  // Component
   const getComponent = (item: SearchFormItem) => {
-    // Tốikhiếndùng render HàmhoặcComponentRenderTùy chỉnhComponent
     if (item.render) {
       return item.render
     }
-    // khiếndùng type LấytrướcĐịnh nghĩaComponent
     const { type } = item
     return componentMap[type as keyof typeof componentMap] || componentMap['input']
   }
 
-  /**
-   * Hiển thịcủaFormmục
-   */
   const visibleFormItems = computed(() => {
     const filteredItems = props.items.filter((item) => !item.hidden)
     const shouldShowLess = !props.isExpand && !isExpanded.value
@@ -393,9 +381,6 @@
     return filteredItems
   })
 
-  /**
-   * làphủứngnênHiển thịMở rộng/Thu gọnNút
-   */
   const shouldShowExpandToggle = computed(() => {
     const filteredItems = props.items.filter((item) => !item.hidden)
     return (
@@ -403,16 +388,10 @@
     )
   })
 
-  /**
-   * Mở rộng/Thu gọnNútvănquyển
-   */
   const expandToggleText = computed(() => {
     return isExpanded.value ? t('table.searchBar.collapse') : t('table.searchBar.expand')
   })
 
-  /**
-   * HanhDongNútKiểu dáng
-   */
   const actionButtonsStyle = computed(() => ({
     'justify-content': isMobile.value
       ? 'flex-end'
@@ -421,35 +400,22 @@
         : 'flex-end'
   }))
 
-  /**
-   * Chuyển đổiMở rộng/Thu gọnTrạng thái
-   */
   const toggleExpand = () => {
     isExpanded.value = !isExpanded.value
   }
 
-  /**
-   * XuLyĐặt lạiSuKien
-   */
   const handleReset = () => {
-    // Đặt lạiFormchữđoạn（UI tầng）
     formInstance.value?.resetFields()
 
-    // khôiphụcban đầuđầuFormgiá trị，LưugiữMacDinhTimKiemđiềuphần tửmàKhônglàrútđơnxóakhông。
     Object.keys(modelValue.value).forEach((key) => {
       delete modelValue.value[key]
     })
     Object.assign(modelValue.value, cloneModelValue(initialModelValue.value))
 
-    // Kích hoạt reset SuKien
     emit('reset')
   }
 
-  /**
-   * XuLyTimKiemSuKien
-   */
   const handleSearch = () => {
-    // đốingoàichỉnémraxóarửasaucủaTìmhỏiTham số，tránhmiễnGiao diện (Interface)BộđếnkhôngMảng/khôngChuỗi。
     emit('search', getSanitizedOutput())
   }
 
@@ -457,11 +423,9 @@
     ref: formInstance,
     validate: (...args: any[]) => formInstance.value?.validate(...args),
     reset: handleReset,
-    // cho phéphứangoàibộtạitayđộngtổVui lòngcầutrướcthẳngtiếpđọcHủyxóarửasaucủaTham số。
     getOutput: getSanitizedOutput
   })
 
-  // giảicấu props lấytiệntạimôbảntrongthẳngtiếpkhiếndùng
   const { span, gutter, labelPosition, labelWidth } = toRefs(props)
 </script>
 
@@ -515,7 +479,6 @@
     }
   }
 
-  // ứngkiểuTốihóa
   @media (width <= 768px) {
     .art-search-bar {
       padding: 16px 16px 0;

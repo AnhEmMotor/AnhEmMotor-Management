@@ -23,7 +23,6 @@
   const { basicSettingsConfig } = useSettingsConfig()
   const { basicHandlers } = useSettingsHandlers()
 
-  // LấystorecủaứngkiểuTrạng thái
   const {
     uniqueOpened,
     showMenuButton,
@@ -41,7 +40,6 @@
     customRadius
   } = storeToRefs(settingStore)
 
-  // xâyCaiDatgiá trịảnhxạ
   const settingValueMap = {
     uniqueOpened,
     showMenuButton,
@@ -59,13 +57,11 @@
     customRadius
   }
 
-  // LấyCaiDatgiá trịcủaPhuongThuc
   const getSettingValue = (key: string) => {
     const settingRef = settingValueMap[key as keyof typeof settingValueMap]
     return settingRef?.value ?? null
   }
 
-  // thốngmộtcủaCaiDatbiếnhơnXuLy
   const handleSettingChange = (handlerName: string, value: any) => {
     const handler = (basicHandlers as any)[handlerName]
     if (typeof handler === 'function') {

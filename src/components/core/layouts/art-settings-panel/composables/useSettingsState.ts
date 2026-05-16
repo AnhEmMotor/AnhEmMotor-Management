@@ -1,13 +1,9 @@
 import { useSettingStore } from '@/store/modules/setting'
 import { MenuThemeEnum, MenuTypeEnum } from '@/enums/appEnum'
 
-/**
- * CaiDatTrạng tháiQuản lý
- */
 export function useSettingsState() {
   const settingStore = useSettingStore()
 
-  // màunhượcmôkiểuban đầuđầuhóa
   const initColorWeak = () => {
     if (settingStore.colorWeak) {
       const el = document.getElementsByTagName('html')[0]
@@ -17,7 +13,6 @@ export function useSettingsState() {
     }
   }
 
-  // MenuBố cụcChuyển đổi
   const switchMenuLayouts = (type: MenuTypeEnum) => {
     if (type === MenuTypeEnum.LEFT || type === MenuTypeEnum.TOP_LEFT) {
       settingStore.setMenuOpen(true)
@@ -30,7 +25,6 @@ export function useSettingsState() {
   }
 
   return {
-    // PhuongThuc
     initColorWeak,
     switchMenuLayouts
   }

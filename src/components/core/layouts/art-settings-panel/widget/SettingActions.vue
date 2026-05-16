@@ -1,4 +1,3 @@
-<!-- CaiDatHanhDongNút -->
 <template>
   <div
     class="mt-10 flex gap-8 border-t border-[var(--default-border)] bg-[var(--art-bg-color)] pt-5"
@@ -28,7 +27,6 @@
   const { copy, copied } = useClipboard()
   const { switchThemeStyles } = useTheme()
 
-  /** chiếcBáoảnhxạbảng */
   const ENUM_MAPS = {
     menuType: {
       left: 'MenuTypeEnum.LEFT',
@@ -52,7 +50,6 @@
     }
   } as const
 
-  /** CauHinhmụcĐịnh nghĩa */
   interface ConfigItem {
     comment: string
     key: keyof typeof settingStore
@@ -92,28 +89,20 @@
     { comment: 'tiếtngàyNgày', key: 'festivalDate', forceValue: '' }
   ]
 
-  /**
-   * tươnggiá trịchuyểnđổivìđạimãChuỗi
-   */
   const valueToCode = (value: any, enumMap?: Record<string, string>): string => {
     if (value === null) return 'null'
     if (value === undefined) return 'undefined'
 
-    // TốiTimKiemchiếcBáoảnhxạ
     if (enumMap && typeof value === 'string' && enumMap[value]) {
       return enumMap[value]
     }
 
-    // nóanh ấyloạikiểuXuLy
     if (typeof value === 'string') return `'${value}'`
     if (typeof value === 'boolean' || typeof value === 'number') return String(value)
 
     return JSON.stringify(value)
   }
 
-  /**
-   * sinhthànhCauHinhđạimã
-   */
   const generateConfigCode = (): string => {
     const lines = ['export const SETTING_DEFAULT_CONFIG = {']
 
@@ -127,9 +116,6 @@
     return lines.join('\n')
   }
 
-  /**
-   * phụcchếCauHinhđếncắtdánbản
-   */
   const handleCopyConfig = async () => {
     try {
       const configText = generateConfigCode()
@@ -147,9 +133,6 @@
     }
   }
 
-  /**
-   * Chuyển đổiBooleangiá trịCauHinh（nếuquảkhitrướcgiá trịvớiMacDinhgiá trịKhôngcùng）
-   */
   const toggleIfDifferent = (
     currentValue: boolean,
     defaultValue: boolean,
@@ -160,30 +143,23 @@
     }
   }
 
-  /**
-   * Đặt lạiCauHinhvìMacDinhgiá trị
-   */
   const handleResetConfig = async () => {
     try {
       const config = SETTING_DEFAULT_CONFIG
 
-      // Menuđóng
       settingStore.switchMenuLayouts(config.menuType)
       settingStore.setMenuOpenWidth(config.menuOpenWidth)
       settingStore.setMenuOpen(config.menuOpen)
       settingStore.setDualMenuShowText(config.dualMenuShowText)
 
-      // ChuDeđóng - khiếndùng switchThemeStyles Đảm bảođúngChínhXuLy AUTO môkiểu
       switchThemeStyles(config.systemThemeMode)
 
-      // bằngđợiChuDeChuyển đổihoànthànhsau，liệuthựctếỨng dụngcủaChuDeCaiDatMenuChuDe
       await nextTick()
       const menuTheme = settingStore.isDark ? MenuThemeEnum.DARK : config.menuThemeType
       settingStore.switchMenuStyles(menuTheme)
 
       settingStore.setElementTheme(config.systemThemeColor)
 
-      // giaomặtHiển thị（Chuyển đổiloạiPhuongThuc）
       toggleIfDifferent(settingStore.showMenuButton, config.showMenuButton, () =>
         settingStore.setButton()
       )
@@ -201,19 +177,16 @@
         settingStore.setNprogress()
       )
 
-      // giaomặtHiển thị（thẳngtiếpCaiDatloạiPhuongThuc）
       settingStore.setWorkTab(config.showWorkTab)
       settingStore.setShowFestivalText(config.showFestivalText)
       settingStore.setWatermarkVisible(config.watermarkVisible)
 
-      // côngnăngCaiDat
       toggleIfDifferent(settingStore.autoClose, config.autoClose, () => settingStore.setAutoClose())
       toggleIfDifferent(settingStore.uniqueOpened, config.uniqueOpened, () =>
         settingStore.setUniqueOpened()
       )
       toggleIfDifferent(settingStore.colorWeak, config.colorWeak, () => settingStore.setColorWeak())
 
-      // Kiểu dángCaiDat
       toggleIfDifferent(settingStore.boxBorderMode, config.boxBorderMode, () =>
         settingStore.setBorderMode()
       )
@@ -222,7 +195,6 @@
       settingStore.setCustomRadius(config.customRadius)
       settingStore.setContainerWidth(config.containerWidth)
 
-      // tiếtngàyđóng
       settingStore.setFestivalDate(config.festivalDate)
       settingStore.setholidayFireworksLoaded(config.holidayFireworksLoaded)
 

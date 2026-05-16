@@ -65,25 +65,20 @@
   const isOpenRouteInfo = import.meta.env.VITE_OPEN_ROUTE_INFO
   const showTransitionMask = ref(false)
 
-  // tiêughilàphủlàđầulầnLoading（xemthiết bịLàm mới）
   const isFirstLoad = ref(true)
 
-  // TìmkhitrướcRoutinglàphủcầncầnkhiếndùngvôCơ bảnBố cụcmôkiểu
   const isFullPage = computed(() => route.matched.some((r) => r.meta?.isFullPage))
   const prevIsFullPage = ref(isFullPage.value)
 
-  // Chuyển đổiHoatAnhdanhtên：đầulầnLoading、từToàn màn hìnhQuay lạigiờKhôngkhiếndùngHoatAnh
   const actualTransition = computed(() => {
     if (isFirstLoad.value) return ''
     if (prevIsFullPage.value && !isFullPage.value) return ''
     return pageTransition.value
   })
 
-  // Lắng ngheToàn màn hìnhTrạng tháibiếnhóa，Hiển thịquađộchephủ
   watch(isFullPage, (val, oldVal) => {
     if (val !== oldVal) {
       showTransitionMask.value = true
-      // Ẩnchephủ，chođủThoiGianđểtrangmặthoànthànhChuyển đổi
       setTimeout(() => {
         showTransitionMask.value = false
       }, 50)
@@ -126,9 +121,7 @@
 
   watch(refresh, reload, { flush: 'post' })
 
-  // ComponentMountsautiêughiđầulầnLoadinghoànthành
   onMounted(() => {
-    // một，Đảm bảođầulầnRenderhoànthành
     nextTick(() => {
       isFirstLoad.value = false
     })

@@ -11,27 +11,20 @@ import { useCeremony } from '@/hooks/core/useCeremony'
 import { useSettingsState } from './useSettingsState'
 import { useSettingsHandlers } from './useSettingsHandlers'
 
-/**
- * CaiDatBảng (Panel)Cốt lõiLogicQuản lý
- */
 export function useSettingsPanel() {
   const settingStore = useSettingStore()
   const { systemThemeType, systemThemeMode, menuType } = storeToRefs(settingStore)
 
-  // Composables
   const { openFestival, cleanup } = useCeremony()
   const { setSystemTheme, setSystemAutoTheme } = useTheme()
   const { initColorWeak } = useSettingsState()
   const { domOperations } = useSettingsHandlers()
 
-  // ứngkiểuTrạng thái
   const showDrawer = ref(false)
 
-  // khiếndùng VueUse breakpoints Tốihóatínhnăng
   const breakpoints = useBreakpoints({ tablet: 1000 })
   const isMobile = breakpoints.smaller('tablet')
 
-  // Ghi chépsổdiệnChiều rộngbiếnhóatrướccủaMenuloạikiểu
   const getStoredDesktopMenuType = (): MenuTypeEnum | undefined => {
     const storedMenuType = localStorage.getItem(StorageConfig.RESPONSIVE_MENU_TYPE_KEY)
     return Object.values(MenuTypeEnum).includes(storedMenuType as MenuTypeEnum)
@@ -51,12 +44,9 @@ export function useSettingsPanel() {
   const beforeMenuType = ref<MenuTypeEnum | undefined>(storedDesktopMenuType)
   const hasChangedMenu = ref(Boolean(storedDesktopMenuType))
 
-  // kếThuocTinh
   const systemThemeColor = computed(() => settingStore.systemThemeColor as string)
 
-  // ChuDeđóngXuLy
   const useThemeHandlers = () => {
-    // ban đầuđầuhóaHeThongMàu sắc
     const initSystemColor = () => {
       if (!AppConfig.systemMainColor.includes(systemThemeColor.value)) {
         settingStore.setElementTheme(AppConfig.systemMainColor[0])
@@ -64,7 +54,6 @@ export function useSettingsPanel() {
       }
     }
 
-    // ban đầuđầuhóaHeThongChuDe
     const initSystemTheme = () => {
       if (systemThemeMode.value === SystemThemeEnum.AUTO) {
         setSystemAutoTheme()
@@ -73,7 +62,6 @@ export function useSettingsPanel() {
       }
     }
 
-    // Lắng ngheHeThongChuDebiếnhóa
     const listenerSystemTheme = () => {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
       mediaQuery.addEventListener('change', initSystemTheme)
@@ -89,14 +77,11 @@ export function useSettingsPanel() {
     }
   }
 
-  // ứngkiểuBố cụcXuLy
   const useResponsiveLayout = () => {
-    // khiếndùng watch Lắng ngheđoánđiểmbiếnhóa，tínhnănghơnTối
     const stopWatch = watch(
       isMobile,
       (mobile: boolean) => {
         if (mobile) {
-          // Chuyển đổiđếnDiđộngđầuBố cục
           if (!hasChangedMenu.value) {
             beforeMenuType.value = menuType.value
             if (menuType.value !== MenuTypeEnum.LEFT) {
@@ -108,7 +93,6 @@ export function useSettingsPanel() {
 
           settingStore.setMenuOpen(false)
         } else {
-          // khôiphụcbànmặtđầuBố cục
           if (hasChangedMenu.value && beforeMenuType.value) {
             if (menuType.value === MenuTypeEnum.LEFT) {
               useSettingsState().switchMenuLayouts(beforeMenuType.value)
@@ -127,41 +111,31 @@ export function useSettingsPanel() {
     return { stopWatch }
   }
 
-  // Drawerkhốngchế
   const useDrawerControl = () => {
-    // dùngởtồntrữ setTimeout của ID，lấytiệntạicầncầngiờxóachia
     let themeChangeTimer: ReturnType<typeof setTimeout> | null = null
 
-    // mởmởDrawer
     const handleOpen = () => {
-      // xóachiaCó thểnăngtồntạicủacũđịnhgiờthiết bị
       if (themeChangeTimer) {
         clearTimeout(themeChangeTimer)
       }
-      // Thêm mới theme-change class，tránhmiễnDrawermởmởHoatAnhnhậnảnh
       themeChangeTimer = setTimeout(() => {
         domOperations.setBodyClass('theme-change', true)
         themeChangeTimer = null
       }, 500)
     }
 
-    // đóngđóngDrawer
     const handleClose = () => {
-      // xóachiaChưaThựcdòngcủađịnhgiờthiết bị，PhòngthúcđóngđóngsaumớiThêm mới class
       if (themeChangeTimer) {
         clearTimeout(themeChangeTimer)
         themeChangeTimer = null
       }
-      // lậplàDichia theme-change class
       domOperations.setBodyClass('theme-change', false)
     }
 
-    // mởmởCaiDat
     const openSetting = () => {
       showDrawer.value = true
     }
 
-    // đóngđóngCaiDat
     const closeDrawer = () => {
       showDrawer.value = false
     }
@@ -174,7 +148,6 @@ export function useSettingsPanel() {
     }
   }
 
-  // Props biếnhóaLắng nghe
   const usePropsWatcher = (props: { open?: boolean }) => {
     watch(
       () => props.open,
@@ -186,7 +159,6 @@ export function useSettingsPanel() {
     )
   }
 
-  // ban đầuđầuhóaCaiDat
   const useSettingsInitializer = () => {
     const themeHandlers = useThemeHandlers()
     const { openSetting } = useDrawerControl()
@@ -199,7 +171,6 @@ export function useSettingsPanel() {
       themeCleanup = themeHandlers.listenerSystemTheme()
       initColorWeak()
 
-      // CaiDattửmôkiểu
       const boxMode = settingStore.boxBorderMode ? 'border-mode' : 'shadow-mode'
       domOperations.setRootAttribute('data-box-mode', boxMode)
 
@@ -220,10 +191,7 @@ export function useSettingsPanel() {
   }
 
   return {
-    // Trạng thái
     showDrawer,
-
-    // PhuongThuctổhợp
     useThemeHandlers,
     useResponsiveLayout,
     useDrawerControl,

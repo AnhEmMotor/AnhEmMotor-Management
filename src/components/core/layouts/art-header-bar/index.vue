@@ -186,7 +186,6 @@
 
   defineOptions({ name: 'ArtHeaderBar' })
 
-  // đoHanhDongHeThongloạikiểu
   const isWindows = navigator.userAgent.includes('Windows')
 
   const router = useRouter()
@@ -197,7 +196,6 @@
   const userStore = useUserStore()
   const menuStore = useMenuStore()
 
-  // Phía trênlancôngnăngCauHinh
   const {
     shouldShowMenuButton,
     shouldShowRefreshButton,
@@ -220,9 +218,7 @@
   const { menuList } = storeToRefs(menuStore)
 
   const showNotice = ref(false)
-  const notice = ref(null)
 
-  // Menuloạikiểuđoán
   const isLeftMenu = computed(() => menuType.value === MenuTypeEnum.LEFT)
   const isDualMenu = computed(() => menuType.value === MenuTypeEnum.DUAL_MENU)
   const isTopMenu = computed(() => menuType.value === MenuTypeEnum.TOP)
@@ -291,35 +287,23 @@
     reload(50)
   }
 
-  /**
-   * mởmởCaiDatBảng (Panel)
-   */
   const openSetting = (): void => {
     mittBus.emit('openSetting')
 
-    // ẨnCaiDattríchXuấtGợi ý
     if (showSettingGuide.value) {
       settingStore.hideSettingGuide()
     }
   }
 
-  /**
-   * mởmởtoànbộTimKiemHộp thoại
-   */
   const openSearchDialog = (): void => {
     mittBus.emit('openSearchDialog')
   }
 
-  /**
-   * Nhấntrangmặtnóanh ấyđồngTênđóngđóngThongBaoBảng (Panel)
-   * @param {Event} e - NhấnSuKienDoiTuong
-   */
   const bodyCloseNotice = (e: any): void => {
     if (!showNotice.value) return
 
     const target = e.target as HTMLElement
 
-    // TìmlàphủNhấnrồiThongBaoNúthoặcThongBaoBảng (Panel)trongbộ
     const isNoticeButton = target.closest('.notice-button')
     const isNoticePanel = target.closest('.art-notification-panel')
 
@@ -328,23 +312,16 @@
     }
   }
 
-  /**
-   * Chuyển đổiThongBaoBảng (Panel)Hiển thịTrạng thái
-   */
   const visibleNotice = (): void => {
     showNotice.value = !showNotice.value
   }
 
-  /**
-   * mởmởtròngàysổdiện
-   */
   const openChat = (): void => {
     mittBus.emit('openChat')
   }
 </script>
 
 <style lang="scss" scoped>
-  /* Custom animations */
   @keyframes rotate180 {
     0% {
       transform: rotate(0);
@@ -436,7 +413,6 @@
     }
   }
 
-  /* Hover animation classes */
   .refresh-btn:hover :deep(.art-svg-icon) {
     animation: rotate180 0.5s;
   }

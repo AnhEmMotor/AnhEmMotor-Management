@@ -9,7 +9,6 @@
     border-right: none !important;
   }
 
-  // TựđịnhnghĩaThanhđộngdọcRộngcao
   :deep(.el-scrollbar__bar.is-vertical) {
     width: 4px;
   }
@@ -170,7 +169,6 @@
 
   .el-menu {
     box-sizing: border-box;
-    // PhòngthúcMenumụcNộiThanhđộngchỉnhCátrangmặtThanhđộng
     overscroll-behavior: contain;
     border-right: 0;
     scrollbar-width: none;
@@ -203,7 +201,6 @@
       width: 0;
     }
 
-    // ThugọntháiphỏngThảheaderkiểuthức
     .menu-left-close .header {
       .logo {
         display: none;

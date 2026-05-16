@@ -26,7 +26,6 @@
   import { i18nChangeLanguage, IDomEditor, IToolbarConfig, IEditorConfig } from '@wangeditor/editor'
   import request from '@/utils/http'
 
-  // Chuyển đổi ngôn ngữ sang tiếng Anh (hoặc 'vi' nếu thư viện hỗ trợ, mặc định dùng 'en' để tránh tiếng Hoa)
   i18nChangeLanguage('en')
 
   defineOptions({ name: 'ArtWangEditor' })
@@ -35,26 +34,17 @@
 
   const { VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT } = import.meta.env
 
-  // Props Định nghĩa
   interface Props {
-    /** Trình biên tậpChiều cao */
     height?: string
-    /** Tùy chỉnhThanh công cụCauHinh */
     toolbarKeys?: string[]
-    /** chènvàomớiCông cụđếnđịnhViTri */
     insertKeys?: { index: number; keys: string[] }
-    /** xếpchiacủaThanh công cụmục */
     excludeKeys?: string[]
-    /** Trình biên tậpmôkiểu */
     mode?: 'default' | 'simple'
-    /** chiếmvịkývănquyển */
     placeholder?: string
-    /** Tải lênCauHinh */
     uploadConfig?: {
       maxFileSize?: number
       maxNumberOfFiles?: number
       server?: string
-      // làphủmởbậtTùy chỉnhTải lên
       isCustomUpload?: boolean
     }
   }
@@ -69,13 +59,11 @@
 
   const modelValue = defineModel<string>({ required: true })
 
-  // Trình biên tậpthựcví dụ
   const editorRef = shallowRef<IDomEditor>()
   const userStore = useUserStore()
 
-  // lệlượngCauHinh
   const DEFAULT_UPLOAD_CONFIG = {
-    maxFileSize: 3 * 1024 * 1024, // 3MB
+    maxFileSize: 3 * 1024 * 1024,
     maxNumberOfFiles: 10,
     fieldName: 'file',
     allowedFileTypes: ['image/*']
@@ -110,7 +98,6 @@
     return config
   })
 
-  // Trình biên tậpCauHinh
   const editorConfig: Partial<IEditorConfig> = {
     placeholder: props.placeholder,
     MENU_CONF: {
@@ -134,7 +121,6 @@
     }
   }
 
-  // Tùy chỉnhTải lên
   if (props.uploadConfig?.isCustomUpload && props.uploadConfig?.server && editorConfig.MENU_CONF) {
     editorConfig.MENU_CONF.uploadImage.customUpload = async (
       file: File,
@@ -193,7 +179,6 @@
         return
       }
 
-      // LấykhitrướcTrình biên tậpcủaThanh công cụContainer
       const editorContainer = editor.getEditableContainer().closest('.editor-wrapper')
       if (!editorContainer) {
         if (retryCount < maxRetries) {
@@ -210,7 +195,6 @@
         return
       }
 
-      // nếuquảThanh công cụcònkhôngRenderhoànthành，tiếptiếptrùngthử
       if (retryCount < maxRetries) {
         retryCount++
         setTimeout(tryApplyIcons, retryDelay)

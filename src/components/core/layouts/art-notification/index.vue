@@ -106,7 +106,6 @@
   import { computed, ref, watch, type Ref, type ComputedRef } from 'vue'
   import { useI18n } from 'vue-i18n'
 
-  // Nhập fileAvatarHình ảnh
   import avatar1 from '@/assets/images/avatar/avatar1.webp'
   import avatar2 from '@/assets/images/avatar/avatar2.webp'
   import avatar3 from '@/assets/images/avatar/avatar3.webp'
@@ -172,7 +171,6 @@
   const barActiveIndex = ref(0)
 
   const useNotificationData = () => {
-    // ThongBaoDữ liệu
     const noticeList = ref<NoticeItem[]>([
       {
         title: 'Thêm mớiquốctếhóa',
@@ -206,7 +204,6 @@
       }
     ])
 
-    // TinNhanDữ liệu
     const msgList = ref<MessageItem[]>([
       {
         title: 'aoKhôngbéo đóngtâmrồibạn',
@@ -240,10 +237,8 @@
       }
     ])
 
-    // Việc cần làmDữ liệu
     const pendingList = ref<PendingItem[]>([])
 
-    // TaglanDữ liệu
     const barList = computed<BarItem[]>(() => [
       {
         name: computed(() => t('notice.bar[0]')),
@@ -267,7 +262,6 @@
     }
   }
 
-  // Kiểu dángQuản lý
   const useNotificationStyles = () => {
     const noticeStyleMap: Record<NoticeType, NoticeStyle> = {
       email: {
@@ -306,7 +300,6 @@
     }
   }
 
-  // HoatAnhQuản lý
   const useNotificationAnimation = () => {
     const showNotice = (open: boolean) => {
       if (open) {
@@ -327,7 +320,6 @@
     }
   }
 
-  // Thẻ TabQuản lý
   const useTabManagement = (
     noticeList: Ref<NoticeItem[]>,
     msgList: Ref<MessageItem[]>,
@@ -342,7 +334,6 @@
       barActiveIndex.value = index
     }
 
-    // TìmkhitrướcThẻ Tablàphủvìkhông
     const currentTabIsEmpty = computed(() => {
       const tabDataMap = [noticeList.value, msgList.value, pendingList.value]
 
@@ -351,7 +342,6 @@
     })
 
     const handleViewAll = () => {
-      // XemtoànbộXuLythiết bịảnhxạ
       const viewAllHandlers: Record<number, () => void> = {
         0: businessHandlers.handleNoticeAll,
         1: businessHandlers.handleMsgAll,
@@ -361,7 +351,6 @@
       const handler = viewAllHandlers[barActiveIndex.value]
       handler?.()
 
-      // đóngđóngThongBaoBảng (Panel)
       emit('update:value', false)
     }
 
@@ -372,20 +361,16 @@
     }
   }
 
-  // nghiệpvụLogicXuLy
   const useBusinessLogic = () => {
     const handleNoticeAll = () => {
-      // XuLyXemtoànbộThongBao
       console.log('XemtoànbộThongBao')
     }
 
     const handleMsgAll = () => {
-      // XuLyXemtoànbộTinNhan
       console.log('XemtoànbộTinNhan')
     }
 
     const handlePendingAll = () => {
-      // XuLyXemtoànbộViệc cần làm
       console.log('XemtoànbộViệc cần làm')
     }
 
@@ -396,7 +381,6 @@
     }
   }
 
-  // tổhợpnêncóLogic
   const { noticeList, msgList, pendingList, barList } = useNotificationData()
   const { getNoticeStyle } = useNotificationStyles()
   const { showNotice } = useNotificationAnimation()
@@ -408,7 +392,6 @@
     { handleNoticeAll, handleMsgAll, handlePendingAll }
   )
 
-  // Lắng ngheThuocTinhbiếnhóa
   watch(
     () => props.value,
     (newValue) => {

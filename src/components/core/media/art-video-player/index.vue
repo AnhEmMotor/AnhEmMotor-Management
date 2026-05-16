@@ -39,21 +39,16 @@
     muted: false
   })
 
-  // CaiDatThuocTinhMacDinhgiá trị
-
-  // phátphóngthiết bịthựcví dụtríchdùng
   const playerInstance = ref<Player | null>(null)
 
-  // phátphóngthiết bịKiểu dángGiao diện (Interface)Định nghĩa
   interface VideoPlayerStyle {
-    progressColor?: string // Thanh tiến trìnhNềnmàu
-    playedColor?: string // ĐãphátphóngbộphầnMàu sắc
-    cachedColor?: string // CachebộphầnMàu sắc
-    sliderBtnStyle?: Record<string, string> // Thanh trượtNútKiểu dáng
-    volumeColor?: string // âmlượngkhốngchếthiết bịMàu sắc
+    progressColor?: string
+    playedColor?: string
+    cachedColor?: string
+    sliderBtnStyle?: Record<string, string>
+    volumeColor?: string
   }
 
-  // MacDinhKiểu dángCauHinh
   const defaultStyle: VideoPlayerStyle = {
     progressColor: 'rgba(255, 255, 255, 0.3)',
     playedColor: '#00AEED',
@@ -66,17 +61,16 @@
     volumeColor: '#00AEED'
   }
 
-  // ComponentMountgiờban đầuđầuhóaphátphóngthiết bị
   onMounted(() => {
     playerInstance.value = new Player({
       id: props.playerId,
-      lang: 'zh', // CaiDatgiaomặtNgôn ngữvìtrongvăn
+      lang: 'zh',
       volume: props.volume,
       autoplay: props.autoplay,
-      screenShot: true, // Bậtcắtảnhcôngnăng
+      screenShot: true,
       url: props.videoUrl,
       poster: props.posterUrl,
-      fluid: true, // BậtchuyểnkiểuBố cục，từthíchứngContainerKích thước
+      fluid: true,
       playbackRate: props.playbackRates,
       loop: props.loop,
       muted: props.muted,
@@ -86,23 +80,19 @@
       }
     })
 
-    // phátphóngSuKienLắng nghethiết bị
     playerInstance.value.on('play', () => {
       console.log('Video is playing')
     })
 
-    // TamDungSuKienLắng nghethiết bị
     playerInstance.value.on('pause', () => {
       console.log('Video is paused')
     })
 
-    // LỗiSuKienLắng nghethiết bị
     playerInstance.value.on('error', (error) => {
       console.error('Error occurred:', error)
     })
   })
 
-  // ComponentUnmounttrướcxóalýphátphóngthiết bịthựcví dụ
   onBeforeUnmount(() => {
     if (playerInstance.value) {
       playerInstance.value.destroy()

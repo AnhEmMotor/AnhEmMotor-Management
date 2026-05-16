@@ -1,6 +1,5 @@
 @use '@styles/core/mixin.scss' as *;
 
-// MenumụckiểuthứcBiếnsố
 $menu-height: 42px;
 $menu-icon-size: 20px;
 $menu-font-size: 14px;
@@ -10,7 +9,6 @@ $popup-menu-padding: 8px;
 $popup-menu-margin: 5px;
 $popup-menu-radius: 6px;
 
-// ThôngdụngMenumụcmụckiểuthức
 @mixin menu-item-base {
   width: calc(100% - 16px);
   margin-left: 8px;
@@ -21,7 +19,6 @@ $popup-menu-radius: 6px;
   }
 }
 
-// Thôngdụng hover kiểuthức
 @mixin menu-hover($bg-color) {
   .el-sub-menu__title:hover,
   .el-menu-item:not(.is-active):hover {
@@ -29,7 +26,6 @@ $popup-menu-radius: 6px;
   }
 }
 
-// ThôngdụngChọntrúngkiểuthức
 @mixin menu-active($color, $bg-color, $icon-color: var(--theme-color)) {
   .el-menu-item.is-active {
     color: $color !important;
@@ -43,7 +39,6 @@ $popup-menu-radius: 6px;
   }
 }
 
-// CửasổMenumụcmụckiểuthức
 @mixin popup-menu-item {
   height: $popup-menu-height;
   margin-bottom: $popup-menu-margin;
@@ -58,7 +53,6 @@ $popup-menu-radius: 6px;
   }
 }
 
-// ChủđềMenumụcThôngdụngkiểuthức（Hợpnhất design  dark ChủđềChungĐồngbiên）
 @mixin theme-menu-base {
   .el-sub-menu__title,
   .el-menu-item {
@@ -66,7 +60,6 @@ $popup-menu-radius: 6px;
   }
 }
 
-// CửasổMenumụcThôngdụngkiểuthức
 @mixin popup-menu-base($hover-bg, $active-color, $active-bg) {
   .el-menu--popup {
     padding: $popup-menu-padding;
@@ -100,9 +93,6 @@ $popup-menu-radius: 6px;
 }
 
 .layout-sidebar {
-  // ---------------------- Modify default style ----------------------
-
-  // MenumụcThugọnkiểuthức
   .menu-left-close {
     .header {
       .logo {
@@ -111,13 +101,11 @@ $popup-menu-radius: 6px;
     }
   }
 
-  // MenumụcBiểutượng
   .menu-icon {
     margin-right: 8px;
     font-size: $menu-icon-size;
   }
 
-  // MenumụcChiềucao
   .el-sub-menu__title,
   .el-menu-item {
     height: $menu-height !important;
@@ -131,19 +119,16 @@ $popup-menu-radius: 6px;
     }
   }
 
-  // phảibênMũitên
   .el-sub-menu__icon-arrow {
     width: 13px !important;
     font-size: 13px !important;
   }
 
-  // MenumụcThugọn
   .el-menu--collapse {
     .el-sub-menu.is-active {
       .el-sub-menu__title {
         .menu-icon {
           .art-svg-icon {
-            // ChọntrúngMenumụcBiểutượngMàutrò
             color: var(--theme-color) !important;
           }
         }
@@ -151,7 +136,6 @@ $popup-menu-radius: 6px;
     }
   }
 
-  // ---------------------- Design theme menu ----------------------
   .el-menu-design {
     @include theme-menu-base;
     @include menu-active(var(--theme-color), var(--el-color-primary-light-9));
@@ -162,7 +146,6 @@ $popup-menu-radius: 6px;
     }
   }
 
-  // ---------------------- Dark theme menu ----------------------
   .el-menu-dark {
     @include theme-menu-base;
     @include menu-active(#fff, #27282d, #fff);
@@ -173,7 +156,6 @@ $popup-menu-radius: 6px;
     }
   }
 
-  // ---------------------- Light theme menu ----------------------
   .el-menu-light {
     .el-sub-menu__title,
     .el-menu-item {
@@ -222,13 +204,11 @@ $popup-menu-radius: 6px;
   }
 }
 
-// MenumụcThugọn hover Cửasổkiểuthức（tròChủđề）
 .el-menu--vertical,
 .el-menu--popup-container {
   @include popup-menu-base(var(--art-gray-200), var(--art-gray-900), var(--art-gray-200));
 }
 
-// TốimàuMôthứcMenumụckiểuthức
 .dark {
   .el-menu--vertical,
   .el-menu--popup-container {
@@ -236,13 +216,11 @@ $popup-menu-radius: 6px;
   }
 
   .layout-sidebar {
-    // BiểutượngMàutrò、bảnchữMàutrò
     .menu-icon .art-svg-icon,
     .menu-name {
       color: var(--art-gray-800) !important;
     }
 
-    // ChọntrúngbảnchữMàutròBiểutượngMàutrò
     .el-menu-item.is-active {
       span,
       .menu-icon .art-svg-icon {
@@ -250,7 +228,6 @@ $popup-menu-radius: 6px;
       }
     }
 
-    // phảibênMũitênMàutrò
     .el-sub-menu__icon-arrow {
       color: #fff;
     }

@@ -50,65 +50,29 @@
   defineOptions({ name: 'ArtCutterImg' })
 
   interface CutterProps {
-    // Cơ bảnCauHinh
-    /** làphủmôtháiKhung */
     isModal?: boolean
-    /** làphủHiển thịThanh công cụ */
     tool?: boolean
-    /** Thanh công cụNềnmàu */
     toolBgc?: string
-    /** TieuDe */
     title?: string
-    /** Xem trướcTieuDe */
     previewTitle?: string
-    /** làphủHiển thịXem trước */
     showPreview?: boolean
-
-    // thướctấcđóng
-    /** ContainerChiều rộng */
     boxWidth?: number
-    /** ContainerChiều cao */
     boxHeight?: number
-    /** CắtChiều rộng */
     cutWidth?: number
-    /** CắtChiều cao */
     cutHeight?: number
-    /** làphủcho phéphứaKích thướcđiềuchỉnh */
     sizeChange?: boolean
-
-    // DiđộngvàThu phóng
-    /** làphủcho phéphứaDiđộng */
     moveAble?: boolean
-    /** làphủcho phéphứaHình ảnhDiđộng */
     imgMove?: boolean
-    /** làphủcho phéphứaThu phóng */
     scaleAble?: boolean
-
-    // Hình ảnhđóng
-    /** làphủHiển thịnguyênđầuHình ảnh */
     originalGraph?: boolean
-    /** làphủcho phéphứavượtTên */
     crossOrigin?: boolean
-    /** vănphần tửloạikiểu */
     fileType?: 'png' | 'jpeg' | 'webp'
-    /** chấtlượng */
     quality?: number
-
-    // Watermark
-    /** Watermarkvănquyển */
     watermarkText?: string
-    /** WatermarkPhông chữKích thước */
     watermarkFontSize?: number
-    /** WatermarkMàu sắc */
     watermarkColor?: string
-
-    // nóanh ấycôngnăng
-    /** làphủLưutồnCắtViTri */
     saveCutPosition?: boolean
-    /** làphủXem trướcmôkiểu */
     previewMode?: boolean
-
-    // NhậpHình ảnh
     imgUrl?: string
   }
 
@@ -120,38 +84,27 @@
   }
 
   const props = withDefaults(defineProps<CutterProps>(), {
-    // Cơ bảnCauHinhMacDinhgiá trị
     isModal: false,
     tool: true,
     toolBgc: '#fff',
     title: '',
     previewTitle: '',
     showPreview: true,
-
-    // thướctấcđóngMacDinhgiá trị
     boxWidth: 700,
     boxHeight: 458,
     cutWidth: 470,
     cutHeight: 270,
     sizeChange: true,
-
-    // DiđộngvàThu phóngMacDinhgiá trị
     moveAble: true,
     imgMove: true,
     scaleAble: true,
-
-    // Hình ảnhđóngMacDinhgiá trị
     originalGraph: true,
     crossOrigin: true,
     fileType: 'png',
     quality: 0.9,
-
-    // WatermarkMacDinhgiá trị
     watermarkText: '',
     watermarkFontSize: 20,
     watermarkColor: '#ffffff',
-
-    // nóanh ấycôngnăngMacDinhgiá trị
     saveCutPosition: true,
     previewMode: true
   })
@@ -161,7 +114,6 @@
   const temImgPath = ref('')
   const imgCutterModal = ref()
 
-  // kếThuocTinh：chỉnhhợpnêncóImgCuttercủaprops
   const cutterProps = computed(() => ({
     ...props,
     WatermarkText: props.watermarkText,
@@ -169,7 +121,6 @@
     WatermarkColor: props.watermarkColor
   }))
 
-  // Hình ảnhtrướcLoading
   function preloadImage(url: string): Promise<void> {
     return new Promise((resolve, reject) => {
       const img = new Image()
@@ -180,7 +131,6 @@
     })
   }
 
-  // ban đầuđầuhóaCắtthiết bị
   async function initImgCutter() {
     if (props.imgUrl) {
       try {
@@ -196,7 +146,6 @@
     }
   }
 
-  // sinhmệnhtuầnkỳHook
   onMounted(() => {
     if (props.imgUrl) {
       temImgPath.value = props.imgUrl
@@ -204,7 +153,6 @@
     }
   })
 
-  // Lắng ngheHình ảnhURLbiếnhóa
   watch(
     () => props.imgUrl,
     (newVal) => {
@@ -215,33 +163,27 @@
     }
   )
 
-  // thựcgiờXem trước
   function cutterPrintImg(result: { dataURL: string }) {
     temImgPath.value = result.dataURL
   }
 
-  // Cắthoànthành
   function cutDownImg(result: CutterResult) {
     emit('update:imgUrl', result.dataURL)
   }
 
-  // Hình ảnhLoadinghoànthành
   function handleImageLoadComplete(result: any) {
     emit('imageLoadComplete', result)
   }
 
-  // Hình ảnhLoadingThatBai
   function handleImageLoadError(error: any) {
     emit('error', error)
     emit('imageLoadError', error)
   }
 
-  // xóachianêncó
   function handleClearAll() {
     temImgPath.value = ''
   }
 
-  // Tải xuốngHình ảnh
   function downloadImg() {
     console.log('Tải xuốngHình ảnh')
     const a = document.createElement('a')

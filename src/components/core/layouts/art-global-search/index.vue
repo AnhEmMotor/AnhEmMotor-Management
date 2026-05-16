@@ -119,9 +119,7 @@
   const highlightedIndex = ref(0)
   const historyHIndex = ref(0)
   const searchResultScrollbar = ref<ScrollbarInstance>()
-  const isKeyboardNavigating = ref(false) // Thêm mớiTrạng thái：làphủĐangkhiếndùngphímĐiều hướng
-
-  // sinhmệnhtuầnkỳHook
+  const isKeyboardNavigating = ref(false)
   onMounted(() => {
     mittBus.on('openSearchDialog', openSearchDialog)
     document.addEventListener('keydown', handleKeydown)
@@ -131,7 +129,6 @@
     document.removeEventListener('keydown', handleKeydown)
   })
 
-  // phímkhoáinhanhphímXuLy
   const handleKeydown = (event: KeyboardEvent) => {
     const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0
     const isCommandKey = isMac ? event.metaKey : event.ctrlKey
@@ -142,7 +139,6 @@
       focusInput()
     }
 
-    // khiTimKiemHộp thoạimởmởgiờ，XuLyphươnghướngphímvàvềxephím
     if (showSearchDialog.value) {
       if (event.key === 'ArrowUp') {
         event.preventDefault()
@@ -166,7 +162,6 @@
     }, 100)
   }
 
-  // TimKiemLogic
   const search = (val: string) => {
     if (val) {
       searchResult.value = flattenAndFilterMenuItems(menuList.value, val)
@@ -201,7 +196,6 @@
     return result
   }
 
-  // caosángkhốngchếđồng thờithựchiệnCuộnđiềutheo
   const highlightPrevious = () => {
     isKeyboardNavigating.value = true
     if (searchVal.value) {
@@ -213,7 +207,6 @@
         (historyHIndex.value - 1 + historyResult.value.length) % historyResult.value.length
       scrollToHighlightedHistoryItem()
     }
-    // Đặt lạiphímĐiều hướngTrạng thái，Phòngthúclậplàbị hover phủlấp
     setTimeout(() => {
       isKeyboardNavigating.value = false
     }, 100)
@@ -307,7 +300,6 @@
     searchResult.value = []
   }
 
-  // LịchsửGhi chépQuản lý
   const updateHistory = () => {
     if (Array.isArray(historyResult.value)) {
       userStore.setSearchHistory(historyResult.value)
@@ -339,7 +331,6 @@
     updateHistory()
   }
 
-  // Hộp thoạikhốngchế
   const openSearchDialog = () => {
     showSearchDialog.value = true
     focusInput()
@@ -352,7 +343,6 @@
     historyHIndex.value = 0
   }
 
-  // sửasửa hover caosángLogic，chỉcótạiphiphímĐiều hướnggiờmớisinhhiệu
   const highlightOnHover = (index: number) => {
     if (!isKeyboardNavigating.value && searchVal.value) {
       highlightedIndex.value = index

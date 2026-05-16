@@ -1,14 +1,11 @@
-<!-- hỗnhợpMenu -->
 <template>
   <div class="relative box-border flex-c w-full overflow-hidden">
-    <!-- Bên tráiCuộnNút -->
     <div v-show="showLeftArrow" class="button-arrow" @click="scroll('left')">
       <ElIcon>
         <ArrowLeft />
       </ElIcon>
     </div>
 
-    <!-- CuộnContainer -->
     <ElScrollbar
       ref="scrollbarRef"
       wrap-class="scrollbar-wrapper"
@@ -43,7 +40,6 @@
       </div>
     </ElScrollbar>
 
-    <!-- Bên phảiCuộnNút -->
     <div v-show="showRightArrow" class="button-arrow right-2" @click="scroll('right')">
       <ElIcon>
         <ArrowRight />
@@ -63,7 +59,6 @@
   defineOptions({ name: 'ArtMixedMenu' })
 
   interface Props {
-    /** MenuDanh sáchDữ liệu */
     list: AppRouteRecord[]
   }
 
@@ -84,36 +79,20 @@
   const showLeftArrow = ref(false)
   const showRightArrow = ref(false)
 
-  /** CuộnCauHinh */
   const SCROLL_CONFIG = {
-    /** NhấnNútgiờcủaCuộnKhoảng cách */
     BUTTON_SCROLL_DISTANCE: 200,
-    /** ChuộttiêucuộnvòngkhoáiCuộngiờcủaBước nhảy */
     WHEEL_FAST_STEP: 35,
-    /** ChuộttiêucuộnvòngmạnCuộngiờcủaBước nhảy */
     WHEEL_SLOW_STEP: 30,
-    /** đồngphầnkhoáimạnCuộncủaNgưỡng */
     WHEEL_FAST_THRESHOLD: 100
   }
 
-  /**
-   * Lấykhitrướckíchsốngđường
-   * khiếndùngcomputedCache，tránhmiễntrùngphụckế
-   */
   const currentActivePath = computed(() => {
     return String(route.meta.activePath || route.path)
   })
 
-  /**
-   * đoánMenumụclàphủvìkíchsốngTrạng thái
-   * chuyểnvềTìmtửMenutronglàphủBao gồmkhitrướcđường
-   * @param item MenumụcDữ liệu
-   * @returns làphủvìkíchsốngTrạng thái
-   */
   const isMenuItemActive = (item: AppRouteRecord): boolean => {
     const activePath = currentActivePath.value
 
-    // nếuquảcótửMenu，chuyểnvềTìmtửMenu
     if (item.children?.length) {
       return item.children.some((child) => {
         if (child.children?.length) {
@@ -123,14 +102,9 @@
       })
     }
 
-    // thẳngtiếpso sánhsođường
     return item.path === activePath
   }
 
-  /**
-   * trướcXuLyMenuDanh sách
-   * CachemỗichiếcMenumụccủakíchsốngTrạng tháivàcáchkiểuhóaTieuDe
-   */
   const processedMenuList = computed<ProcessedMenuItem[]>(() => {
     return props.list.map((item) => ({
       ...item,
@@ -139,32 +113,18 @@
     }))
   })
 
-  /**
-   * XuLyCuộnSuKiencủaCốt lõiLogic
-   * liệuCuộnViTriHiển thị/ẨnCuộnNút
-   */
   const handleScrollCore = (): void => {
     if (!scrollbarRef.value?.wrapRef) return
 
     const { scrollLeft, scrollWidth, clientWidth } = scrollbarRef.value.wrapRef
 
-    // đoánlàphủHiển thịBên tráiCuộnNút
     showLeftArrow.value = scrollLeft > 0
 
-    // đoánlàphủHiển thịBên phảiCuộnNút
     showRightArrow.value = scrollLeft + clientWidth < scrollWidth
   }
 
-  /**
-   * tiếtchuyểnsaucủaCuộnSuKienXuLyHàm
-   * điềuchỉnhtiếtchuyểnKhoảng cáchvì16ms，hẹnbằngở60fps
-   */
   const handleScroll = useThrottleFn(handleScrollCore, 16)
 
-  /**
-   * CuộnMenuContainer
-   * @param direction Cuộnphươnghướng，left hoặc right
-   */
   const scroll = (direction: ScrollDirection): void => {
     if (!scrollbarRef.value?.wrapRef) return
 
@@ -174,30 +134,21 @@
         ? currentScroll - SCROLL_CONFIG.BUTTON_SCROLL_DISTANCE
         : currentScroll + SCROLL_CONFIG.BUTTON_SCROLL_DISTANCE
 
-    // trượtCuộnđếnmụctiêuViTri
     scrollbarRef.value.wrapRef.scrollTo({
       left: targetScroll,
       behavior: 'smooth'
     })
   }
 
-  /**
-   * XuLyChuộttiêucuộnvòngSuKien
-   * Tốihóacuộnvòngứngtínhnăng
-   * @param event cuộnvòngSuKien
-   */
   const handleWheel = (event: WheelEvent): void => {
-    // lậplàtrởthúcMacDinhCuộndòngvìvàSuKienmạobóng，tránhmiễntrangmặtCuộn
     event.preventDefault()
     event.stopPropagation()
 
-    // thẳngtiếpXuLyCuộn，gợilênứngtính
     if (!scrollbarRef.value?.wrapRef) return
 
     const { wrapRef } = scrollbarRef.value
     const { scrollLeft, scrollWidth, clientWidth } = wrapRef
 
-    // khiếndùnghơntiểucủaCuộnBước nhảy，đểCuộnhơntrượt
     const scrollStep =
       Math.abs(event.deltaY) > SCROLL_CONFIG.WHEEL_FAST_THRESHOLD
         ? SCROLL_CONFIG.WHEEL_FAST_STEP
@@ -205,16 +156,11 @@
     const scrollDelta = event.deltaY > 0 ? scrollStep : -scrollStep
     const targetScroll = Math.max(0, Math.min(scrollLeft + scrollDelta, scrollWidth - clientWidth))
 
-    // lậplàCuộn，vôHoatAnh
     wrapRef.scrollLeft = targetScroll
 
-    // Cập nhậtCuộnNútTrạng thái
     handleScrollCore()
   }
 
-  /**
-   * ban đầuđầuhóaCuộnTrạng thái
-   */
   const initScrollState = (): void => {
     nextTick(() => {
       handleScrollCore()

@@ -1,4 +1,3 @@
-<!-- NgangMenu -->
 <template>
   <div class="flex-1 overflow-hidden">
     <ElMenu
@@ -35,7 +34,6 @@
   const { isDark } = storeToRefs(settingStore)
 
   interface Props {
-    /** MenuDanh sáchDữ liệu */
     list: AppRouteRecord[]
   }
 
@@ -45,42 +43,24 @@
     list: () => []
   })
 
-  /**
-   * qualọcsaucủaMenumụcDanh sách
-   * chỉHiển thịChưaẨncủaMenumục
-   */
   const filteredMenuItems = computed(() => {
     return filterMenuItems(props.list)
   })
 
-  /**
-   * khitrướckíchsốngcủaRoutingđường
-   * dùngởMenucaosángHiển thị
-   */
   const routerPath = computed(() => String(route.meta.activePath || route.path))
 
-  /**
-   * chuyểnvềqualọcMenumục，DichiaẨncủaMenu
-   * nếuquảmộtchiếcchaMenucủanêncótửMenuđềubịẨn，chaMenucũngsẽbịẨn
-   * @param items MenumụcMảng
-   * @returns qualọcsaucủaMenumụcMảng
-   */
   const filterMenuItems = (items: AppRouteRecord[]): AppRouteRecord[] => {
     return items
       .filter((item) => {
-        // nếuquảkhitrướcmụcbịẨn，thẳngtiếpqualọc
         if (item.meta.isHide) {
           return false
         }
 
-        // nếuquảcótửMenu，chuyểnvềqualọctửMenu
         if (item.children && item.children.length > 0) {
           const filteredChildren = filterMenuItems(item.children)
-          // nếuquảnêncótửMenuđềubịqualọcrồi，ẨnchaMenu
           return filteredChildren.length > 0
         }
 
-        // diệptửtiếtđiểmvừaChưabịẨn，Lưugiữ
         return true
       })
       .map((item) => ({
@@ -91,18 +71,15 @@
 </script>
 
 <style scoped>
-  /* Remove el-menu bottom border */
   :deep(.el-menu) {
     border-bottom: none !important;
   }
 
-  /* Remove default styles for first-level menu items */
   :deep(.el-menu-item[tabindex='0']) {
     background-color: transparent !important;
     border: none !important;
   }
 
-  /* Remove bottom border from submenu titles */
   :deep(.el-menu--horizontal .el-sub-menu__title) {
     padding: 0 30px 0 10px !important;
     border: 0 !important;

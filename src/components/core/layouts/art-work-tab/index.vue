@@ -99,7 +99,6 @@
 
   defineOptions({ name: 'ArtWorkTab' })
 
-  // loạikiểuĐịnh nghĩa
   interface ScrollState {
     translateX: number
     transition: string
@@ -112,7 +111,6 @@
 
   type TabCloseType = 'current' | 'left' | 'right' | 'other' | 'all'
 
-  // Cơ bảnCaiDat
   const { t } = useI18n()
   const store = useWorktabStore()
   const userStore = useUserStore()
@@ -122,12 +120,10 @@
   const settingStore = useSettingStore()
   const { tabStyle, showWorkTab } = storeToRefs(settingStore)
 
-  // DOM tríchdùng
   const scrollRef = ref<HTMLElement | null>(null)
   const tabsRef = ref<HTMLElement | null>(null)
   const menuRef = ref()
 
-  // Trạng tháiQuản lý
   const scrollState = ref<ScrollState>({
     translateX: 0,
     transition: ''
@@ -140,12 +136,10 @@
 
   const clickedPath = ref('')
 
-  // kếThuocTinh
   const list = computed(() => store.opened)
   const activeTab = computed(() => currentRoute.value.path)
   const activeTabIndex = computed(() => list.value.findIndex((tab) => tab.path === activeTab.value))
 
-  // phảiphímMenuLogic
   const useContextMenu = () => {
     const getClickedTabInfo = () => {
       const clickedIndex = list.value.findIndex((tab) => tab.path === clickedPath.value)
@@ -160,7 +154,6 @@
       }
     }
 
-    // TìmThẻ Tablàphủcốđịnh
     const checkTabsFixedStatus = (clickedIndex: number) => {
       const leftTabs = list.value.slice(0, clickedIndex)
       const rightTabs = list.value.slice(clickedIndex + 1)
@@ -174,7 +167,6 @@
       }
     }
 
-    // phảiphímMenuvịmục
     const menuItems = computed(() => {
       const { clickedIndex, currentTab, isLastTab, isOneTab, isCurrentTab } = getClickedTabInfo()
       const fixedStatus = checkTabsFixedStatus(clickedIndex)
@@ -223,7 +215,6 @@
     return { menuItems }
   }
 
-  // CuộnLogic
   const useScrolling = () => {
     const setTransition = () => {
       scrollState.value.transition = 'transform 0.5s cubic-bezier(0.15, 0, 0.15, 1)'
@@ -300,7 +291,6 @@
     }
   }
 
-  // SuKienXuLyLogic
   const useEventHandlers = () => {
     const { setTransition, adjustPositionAfterClose } = useScrolling()
 
@@ -368,7 +358,6 @@
     }
   }
 
-  // Thẻ TabHanhDongLogic
   const useTabOperations = (adjustPositionAfterClose: () => void) => {
     const clickTab = (item: WorkTab) => {
       router.push({
@@ -441,7 +430,6 @@
     }
   }
 
-  // tổhợpnêncóLogic
   const { menuItems } = useContextMenu()
   const { setTransition, autoPositionTab } = useScrolling()
   const { setupEventListeners, cleanupEventListeners, adjustPositionAfterClose } =
@@ -449,7 +437,6 @@
   const { clickTab, closeWorktab, showMenu, handleSelect } =
     useTabOperations(adjustPositionAfterClose)
 
-  // sinhmệnhtuầnkỳ
   onMounted(() => {
     setupEventListeners()
     autoPositionTab()
@@ -459,7 +446,6 @@
     cleanupEventListeners()
   })
 
-  // Lắng nghethiết bị
   watch(
     () => currentRoute.value,
     () => {

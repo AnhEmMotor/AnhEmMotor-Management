@@ -65,17 +65,14 @@
   const props = defineProps<Props>()
   const emit = defineEmits<Emits>()
 
-  // tiêuthuậnhóavịmục，XuLycomputedvàphổthôngMảng
   const normalizedOptions = computed(() => {
     if (!props.config.options) return []
 
     try {
-      // nếuquảlà ComputedRef，Quay lạinógiá trị
       if (typeof props.config.options === 'object' && 'value' in props.config.options) {
         return props.config.options.value || []
       }
 
-      // nếuquảlàphổthôngMảng，thẳngtiếpQuay lại
       return Array.isArray(props.config.options) ? props.config.options : []
     } catch (error) {
       console.warn('Error processing options for config:', props.config.key, error)

@@ -152,33 +152,26 @@
   const { getMenuOpenWidth, menuType, uniqueOpened, dualMenuShowText, menuOpen, getMenuTheme } =
     storeToRefs(settingStore)
 
-  // ComponenttrongbộTrạng thái
   const defaultOpenedMenus = ref<string[]>([])
   const isMobileMode = ref(false)
   const showMobileModal = ref(false)
 
-  // khiếndùng VueUse củasổdiệnthướctấcLắng nghe
   const { width } = useWindowSize()
 
-  // MenuChiều rộngđóng
   const menuopenwidth = computed(() => getMenuOpenWidth.value)
   const menuclosewidth = computed(() => MENU_CLOSE_WIDTH)
 
-  // Menuloạikiểuđoán
   const isTopLeftMenu = computed(() => menuType.value === MenuTypeEnum.TOP_LEFT)
   const showLeftMenu = computed(
     () => menuType.value === MenuTypeEnum.LEFT || menuType.value === MenuTypeEnum.TOP_LEFT
   )
   const isDualMenu = computed(() => menuType.value === MenuTypeEnum.DUAL_MENU)
 
-  // Diđộngđầumàn hìnhmànđoán（khiếndùng computed tránhmiễntrùngphụckế）
   const isMobileScreen = computed(() => width.value < MOBILE_BREAKPOINT)
 
-  // Routingđóng
   const firstLevelMenuPath = computed(() => route.matched[0]?.path)
   const routerPath = computed(() => String(route.meta.activePath || route.path))
 
-  // MenuDữ liệu
   const firstLevelMenus = computed(() => {
     return useMenuStore().menuList.filter((menu) => !menu.meta.isHide)
   })
@@ -187,28 +180,23 @@
     const menuStore = useMenuStore()
     const allMenus = menuStore.menuList
 
-    // nếuquảKhônglàPhía trênBên tráiMenuhoặcđôicộtMenu，thẳngtiếpQuay lạiĐầy đủMenuDanh sách
     if (!isTopLeftMenu.value && !isDualMenu.value) {
       return allMenus
     }
 
-    // XuLy iframe đường
     if (isIframe(route.path)) {
       return findIframeMenuList(route.path, allMenus)
     }
 
-    // XuLymộtcấpMenu
     if (route.meta.isFirstLevel) {
       return []
     }
 
-    // Quay lạikhitrướccấpđườngđốiứngcủatửMenu
     const currentTopPath = `/${route.path.split('/')[1]}`
     const currentMenu = allMenus.find((menu) => menu.path === currentTopPath)
     return currentMenu?.children ?? []
   })
 
-  // đôicộtMenuThu gọngiờcủaCuộnđiềuKiểu dáng
   const scrollbarStyle = computed(() => {
     const isCollapsed = isDualMenu.value && !menuOpen.value
     return {
@@ -218,9 +206,6 @@
     }
   })
 
-  /**
-   * ẨnDiđộngđầumôtháiKhung（khiếndùng VueUse của useTimeoutFn）
-   */
   const { start: delayHideMobileModal } = useTimeoutFn(
     () => {
       showMobileModal.value = false
@@ -229,11 +214,7 @@
     { immediate: false }
   )
 
-  /**
-   * TimKiem iframe đốiứngcủahaicấpMenuDanh sách
-   */
   const findIframeMenuList = (currentPath: string, menuList: any[]) => {
-    // chuyểnvềTimKiemBao gồmkhitrướcđườngcủaMenumục
     const hasPath = (items: any[]): boolean => {
       for (const item of items) {
         if (item.path === currentPath) {
@@ -246,7 +227,6 @@
       return false
     }
 
-    // khắpLịchmộtcấpMenuTimKiemngựaPhâncủatửMenu
     for (const menu of menuList) {
       if (menu.children && hasPath(menu.children)) {
         return menu.children
@@ -257,34 +237,22 @@
 
   const { homePath } = useCommon()
 
-  /**
-   * Điều hướngđếnTrangChu
-   */
   const navigateToHome = (): void => {
     router.push(homePath.value)
   }
 
-  /**
-   * chuyểnđổiMenuHiểnthị/ẩngiấu
-   */
   const toggleMenuVisibility = (): void => {
     settingStore.setMenuOpen(!menuOpen.value)
 
-    // DiđộngđầumôtháiKhungkhốngchếLogic
     if (isMobileScreen.value) {
       if (!menuOpen.value) {
-        // Menulàtươngmởmở，lậplàHiển thịmôtháiKhung
         showMobileModal.value = true
       } else {
-        // Menulàtươngđóngđóng，ẨnmôtháiKhungĐảm bảoHoatAnhhoànthành
         delayHideMobileModal()
       }
     }
   }
 
-  /**
-   * XuLyMenuđóngđóng（đếntừtửComponent）
-   */
   const handleMenuClose = (): void => {
     if (isMobileScreen.value) {
       settingStore.setMenuOpen(false)
@@ -292,16 +260,10 @@
     }
   }
 
-  /**
-   * Chuyển đổiđôicộtMenumôkiểu
-   */
   const toggleDualMenuMode = (): void => {
     settingStore.setDualMenuShowText(!dualMenuShowText.value)
   }
 
-  /**
-   * Lắng nghesổdiệnthướctấcbiếnhóa，từđộngXuLyDiđộngđầuMenu
-   */
   watch(width, (newWidth) => {
     if (newWidth < MOBILE_BREAKPOINT) {
       settingStore.setMenuOpen(false)
@@ -313,20 +275,13 @@
     }
   })
 
-  /**
-   * Lắng ngheMenuCông tắcTrạng tháibiếnhóa
-   */
   watch(menuOpen, (isMenuOpen: boolean) => {
     if (!isMobileScreen.value) {
-      // đạimàn hìnhmànthiếtđặttrên，môtháiKhungđầucuốiẨn
       showMobileModal.value = false
     } else {
-      // tiểumàn hìnhmànthiếtđặttrên，liệuMenuTrạng tháikhốngchếmôtháiKhung
       if (isMenuOpen) {
-        // MenumởmởgiờlậplàHiển thịmôtháiKhung
         showMobileModal.value = true
       } else {
-        // MenuđóngđónggiờẨnmôtháiKhung，Đảm bảoHoatAnhhoànthành
         delayHideMobileModal()
       }
     }
@@ -341,12 +296,10 @@
   @use './theme';
 
   .layout-sidebar {
-    // Mở rộngcủaChiều rộng
     .el-menu:not(.el-menu--collapse) {
       width: v-bind(menuopenwidth);
     }
 
-    // sauChiều rộng
     .el-menu--collapse {
       width: v-bind(menuclosewidth);
     }

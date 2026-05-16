@@ -141,11 +141,9 @@
   const visible = ref(false)
   const position = ref({ x: 0, y: 0 })
 
-  // dùngởxóalýđịnhgiờthiết bịvàSuKienLắng nghethiết bị
   let showTimer: number | null = null
   let eventListenersAdded = false
 
-  // kếMenuKiểu dáng
   const menuStyle = computed(
     (): CSSProperties => ({
       position: 'fixed' as const,
@@ -156,14 +154,12 @@
     })
   )
 
-  // kếMenuDanh sáchKiểu dáng
   const menuListStyle = computed(
     (): CSSProperties => ({
       padding: `${props.menuPadding}px`
     })
   )
 
-  // kếMenumụcKiểu dáng
   const menuItemStyle = computed(
     (): CSSProperties => ({
       height: `${props.itemHeight}px`,
@@ -172,7 +168,6 @@
     })
   )
 
-  // kếtửMenuDanh sáchKiểu dáng
   const submenuListStyle = computed(
     (): CSSProperties => ({
       minWidth: `${props.submenuWidth}px`,
@@ -181,21 +176,19 @@
     })
   )
 
-  // kếMenuChiều cao（dùngởbiêngiaođo）
   const calculateMenuHeight = (): number => {
-    let totalHeight = props.menuPadding * 2 // trêndướitrongCăn lề
+    let totalHeight = props.menuPadding * 2
 
     props.menuItems.forEach((item) => {
       totalHeight += props.itemHeight
       if (item.showLine) {
-        totalHeight += 10 // phầncắtđườngtránngoàiChiều cao
+        totalHeight += 10
       }
     })
 
     return totalHeight
   }
 
-  // TốihóacủaViTrikếHàm
   const calculatePosition = (e: MouseEvent) => {
     const screenWidth = window.innerWidth
     const screenHeight = window.innerHeight
@@ -204,17 +197,14 @@
     let x = e.clientX
     let y = e.clientY
 
-    // Tìmphảibiêngiao - TốiHiển thịtạiChuộttiêuBên phải，nếuquảkhônggianKhôngđủHiển thịtạiBên trái
     if (x + props.menuWidth > screenWidth - props.boundaryDistance) {
       x = Math.max(props.boundaryDistance, x - props.menuWidth)
     }
 
-    // Tìmdướibiêngiao - TốiHiển thịtạiChuộttiêudướiphương，nếuquảkhônggianKhôngđủLênđiềuchỉnh
     if (y + menuHeight > screenHeight - props.boundaryDistance) {
       y = Math.max(props.boundaryDistance, screenHeight - menuHeight - props.boundaryDistance)
     }
 
-    // Đảm bảoKhôngsẽsiêurabiêngiao
     x = Math.max(
       props.boundaryDistance,
       Math.min(x, screenWidth - props.menuWidth - props.boundaryDistance)
@@ -227,7 +217,6 @@
     return { x, y }
   }
 
-  // Thêm mớiSuKienLắng nghethiết bị
   const addEventListeners = () => {
     if (eventListenersAdded) return
 
@@ -237,7 +226,6 @@
     eventListenersAdded = true
   }
 
-  // DichiaSuKienLắng nghethiết bị
   const removeEventListeners = () => {
     if (!eventListenersAdded) return
 
@@ -247,9 +235,7 @@
     eventListenersAdded = false
   }
 
-  // XuLyTaiLieuNhấnSuKien
   const handleDocumentClick = (e: Event) => {
-    // TìmNhấnlàphủtạiMenutrongbộ
     const target = e.target as Element
     const menuElement = document.querySelector('.context-menu')
     if (menuElement && menuElement.contains(target)) {
@@ -258,12 +244,10 @@
     hide()
   }
 
-  // XuLyTaiLieuphảiphímSuKien
   const handleDocumentContextmenu = () => {
     hide()
   }
 
-  // XuLyphímSuKien
   const handleKeydown = (e: KeyboardEvent) => {
     if (e.key === 'Escape') {
       hide()
@@ -274,25 +258,22 @@
     e.preventDefault()
     e.stopPropagation()
 
-    // xóalýcủatrướccủađịnhgiờthiết bị
     if (showTimer) {
       window.clearTimeout(showTimer)
       showTimer = null
     }
 
-    // kếViTri
     position.value = calculatePosition(e)
     visible.value = true
 
     emit('show')
 
-    // Thêm mớiSuKienLắng nghethiết bị，tránhmiễnlậplàKích hoạtđóngđóng
     showTimer = window.setTimeout(() => {
       if (visible.value) {
         addEventListeners()
       }
       showTimer = null
-    }, 50) // bớtthiểuThoiGian，gợilênứngtính
+    }, 50)
   }
 
   const hide = () => {

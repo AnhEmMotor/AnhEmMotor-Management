@@ -1,11 +1,9 @@
 @use '@styles/core/mixin.scss' as *;
 
-// CàiđặtNgănkéoMôphỏngkhungkiểuthức
 .setting-modal {
   background: transparent !important;
 
   .el-drawer {
-    // NềncảnhLọckínhHiệuứng
     background: rgba($color: #fff, $alpha: 50%) !important;
     box-shadow: 0 0 30px rgb(0 0 0 / 10%) !important;
 
@@ -59,7 +57,6 @@
     }
   }
 
-  // XóabỏThanhđộngdọc
   .el-drawer__body::-webkit-scrollbar {
     width: 0 !important;
   }
@@ -79,12 +76,10 @@
   }
 }
 
-// XóabỏHỏahồTrìnhduyệtchứaThanhđộngdọc
 :deep(.el-drawer__body) {
   scrollbar-width: none;
 }
 
-// DiđộngđầuẨngiấu
 @media screen and (width <= 800px) {
   .mobile-hide {
     display: none !important;

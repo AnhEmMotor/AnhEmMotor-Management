@@ -68,12 +68,10 @@
 
   const emit = defineEmits(['close'])
 
-  // qualọcsaucủatửMenumục（KhôngBao gồmẨncủa）
   const filteredChildren = computed(() => {
     return props.item.children?.filter((child) => !child.meta.isHide) || []
   })
 
-  // chaMenunếuquảquyểnthânthìlàtrangmặt，làkhiếnkhôngcóHiển thịtửMenucũngứngnênLưugiữvìMenumục。
   const isNavigableRoute = computed(() => {
     return !!(
       !props.item.meta.isHide &&
@@ -84,7 +82,6 @@
     )
   })
 
-  // kếkhitrướcmụclàphủcóHiển thịcủatửMenu
   const hasChildren = computed(() => {
     return filteredChildren.value.length > 0
   })

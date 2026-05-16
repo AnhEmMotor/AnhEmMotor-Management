@@ -31,7 +31,6 @@
   const { boxStyleOptions } = useSettingsConfig()
   const { boxStyleHandlers } = useSettingsHandlers()
 
-  // đoánkhitrướcvịmụclàphủkíchsống
   const isActive = (type: 'border-mode' | 'shadow-mode') => {
     return type === 'border-mode' ? boxBorderMode.value : !boxBorderMode.value
   }

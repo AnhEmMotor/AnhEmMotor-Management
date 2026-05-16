@@ -117,23 +117,18 @@
   import { useUserStore } from '@/store/modules/user'
   import { mittBus } from '@/utils/sys'
 
-  // quốctếhóa
   const { t } = useI18n()
 
-  // cảnhbiếnlượng
   const ENCRYPT_KEY = import.meta.env.VITE_LOCK_ENCRYPT_KEY
 
-  // Store
   const userStore = useUserStore()
   const { info: userInfo, lockPassword, isLock } = storeToRefs(userStore)
 
-  // ứngkiểuDữ liệu
   const visible = ref<boolean>(false)
   const lockInputRef = ref<any>(null)
   const unlockInputRef = ref<any>(null)
   const showDevToolsWarning = ref<boolean>(false)
 
-  // Formđóng
   const formRef = ref<FormInstance>()
   const unlockFormRef = ref<FormInstance>()
 
@@ -145,7 +140,6 @@
     password: ''
   })
 
-  // Formnghiệmtínhquy
   const rules = computed<FormRules>(() => ({
     password: [
       {
@@ -156,16 +150,13 @@
     ]
   }))
 
-  // đolàphủvìDiđộngthiếtđặt
   const isMobile = () => {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       navigator.userAgent
     )
   }
 
-  // Thêm mớiTắtBangDieuKhiencủaHàm
   const disableDevTools = () => {
-    // TắtphảiphímMenu
     const handleContextMenu = (e: Event) => {
       if (isLock.value) {
         e.preventDefault()
@@ -175,18 +166,15 @@
     }
     document.addEventListener('contextmenu', handleContextMenu, true)
 
-    // TắtmởphátCông cụđóngkhoáinhanhphím
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isLock.value) return
 
-      // Tắt F12
       if (e.key === 'F12') {
         e.preventDefault()
         e.stopPropagation()
         return false
       }
 
-      // Tắt Ctrl+Shift+I/J/C/K (mởphátCông cụ)
       if (e.ctrlKey && e.shiftKey) {
         const key = e.key.toLowerCase()
         if (['i', 'j', 'c', 'k'].includes(key)) {
@@ -196,70 +184,60 @@
         }
       }
 
-      // Tắt Ctrl+U (Xemnguồnđạimã)
       if (e.ctrlKey && e.key.toLowerCase() === 'u') {
         e.preventDefault()
         e.stopPropagation()
         return false
       }
 
-      // Tắt Ctrl+S (Lưutồntrangmặt)
       if (e.ctrlKey && e.key.toLowerCase() === 's') {
         e.preventDefault()
         e.stopPropagation()
         return false
       }
 
-      // Tắt Ctrl+A (toànvị)
       if (e.ctrlKey && e.key.toLowerCase() === 'a') {
         e.preventDefault()
         e.stopPropagation()
         return false
       }
 
-      // Tắt Ctrl+P (In ấn)
       if (e.ctrlKey && e.key.toLowerCase() === 'p') {
         e.preventDefault()
         e.stopPropagation()
         return false
       }
 
-      // Tắt Ctrl+F (TimKiem)
       if (e.ctrlKey && e.key.toLowerCase() === 'f') {
         e.preventDefault()
         e.stopPropagation()
         return false
       }
 
-      // Tắt Alt+Tab (Chuyển đổisổdiện)
       if (e.altKey && e.key === 'Tab') {
         e.preventDefault()
         e.stopPropagation()
         return false
       }
 
-      // Tắt Ctrl+Tab (Chuyển đổiThẻ Tab)
       if (e.ctrlKey && e.key === 'Tab') {
         e.preventDefault()
         e.stopPropagation()
         return false
       }
 
-      // Tắt Ctrl+W (đóngđóngThẻ Tab)
       if (e.ctrlKey && e.key.toLowerCase() === 'w') {
         e.preventDefault()
         e.stopPropagation()
         return false
       }
 
-      // Tắt Ctrl+R và F5 (Làm mớitrangmặt)
       if ((e.ctrlKey && e.key.toLowerCase() === 'r') || e.key === 'F5') {
         e.preventDefault()
         e.stopPropagation()
         return false
       }
 
-      // Tắt Ctrl+Shift+R (cườngchếLàm mới)
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'r') {
         e.preventDefault()
         e.stopPropagation()
@@ -268,7 +246,6 @@
     }
     document.addEventListener('keydown', handleKeyDown, true)
 
-    // TắtChọnvănquyển
     const handleSelectStart = (e: Event) => {
       if (isLock.value) {
         e.preventDefault()
@@ -277,7 +254,6 @@
     }
     document.addEventListener('selectstart', handleSelectStart, true)
 
-    // TắtKéo thả
     const handleDragStart = (e: Event) => {
       if (isLock.value) {
         e.preventDefault()
@@ -286,7 +262,6 @@
     }
     document.addEventListener('dragstart', handleDragStart, true)
 
-    // Lắng nghemởphátCông cụmởmởTrạng thái（chỉtạibànmặtđầuBật）
     let devtools = { open: false }
     const threshold = 160
     let devToolsInterval: ReturnType<typeof setInterval> | null = null
@@ -307,12 +282,10 @@
       }
     }
 
-    // chỉtạibànmặtđầuBậtmởphátCông cụđo
     if (!isMobile()) {
       devToolsInterval = setInterval(checkDevTools, 500)
     }
 
-    // Quay lạixóalýHàm
     return () => {
       document.removeEventListener('contextmenu', handleContextMenu, true)
       document.removeEventListener('keydown', handleKeyDown, true)
@@ -324,7 +297,6 @@
     }
   }
 
-  // Công cụHàm
   const verifyPassword = (inputPassword: string, storedPassword: string): boolean => {
     try {
       const decryptedPassword = CryptoJS.AES.decrypt(storedPassword, ENCRYPT_KEY).toString(
@@ -337,7 +309,6 @@
     }
   }
 
-  // SuKienXuLyHàm
   const handleKeydown = (event: KeyboardEvent) => {
     if (event.altKey && event.key.toLowerCase() === '¬') {
       event.preventDefault()
@@ -385,7 +356,6 @@
             console.error('Cập nhậtstoreThatBai:', error)
           }
         } else {
-          // Kích hoạtrungđộngHoatAnh
           const inputElement = unlockInputRef.value?.$el
           if (inputElement) {
             inputElement.classList.add('shake-animation')
@@ -410,7 +380,6 @@
     visible.value = true
   }
 
-  // Lắng nghekhóamàn hìnhTrạng tháibiếnhóa
   watch(isLock, (newValue) => {
     if (newValue) {
       document.body.style.overflow = 'hidden'
@@ -423,10 +392,8 @@
     }
   })
 
-  // tồntrữxóalýHàm
   let cleanupDevTools: (() => void) | null = null
 
-  // sinhmệnhtuầnkỳHook
   onMounted(() => {
     mittBus.on('openLockScreen', openLockScreen)
     document.addEventListener('keydown', handleKeydown)
@@ -438,14 +405,12 @@
       }, 100)
     }
 
-    // ban đầuđầuhóaTắtmởphátCông cụcôngnăng
     cleanupDevTools = disableDevTools()
   })
 
   onUnmounted(() => {
     document.removeEventListener('keydown', handleKeydown)
     document.body.style.overflow = 'auto'
-    // xóalýTắtmởphátCông cụcủaSuKienLắng nghethiết bị
     if (cleanupDevTools) {
       cleanupDevTools()
       cleanupDevTools = null

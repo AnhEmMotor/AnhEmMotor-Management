@@ -70,14 +70,8 @@
   const router = useRouter()
   const popoverRef = ref()
 
-  // khiếndùngkhoáivàodiệnCauHinh
   const { enabledApplications, enabledQuickLinks } = useFastEnter()
 
-  /**
-   * XuLyĐiều hướngnhảychuyển
-   * @param routeName Routingdanhtên
-   * @param link ngoàibộliêntiếp
-   */
   const handleNavigate = (routeName?: string, link?: string): void => {
     const targetPath = routeName || link
 
@@ -95,18 +89,10 @@
     popoverRef.value?.hide()
   }
 
-  /**
-   * XuLyỨng dụngmụcNhấn
-   * @param application Ứng dụngCauHinhDoiTuong
-   */
   const handleApplicationClick = (application: FastEnterApplication): void => {
     handleNavigate(application.routeName, application.link)
   }
 
-  /**
-   * XuLykhoáiliêntiếpNhấn
-   * @param quickLink khoáiliêntiếpCauHinhDoiTuong
-   */
   const handleQuickLinkClick = (quickLink: FastEnterQuickLink): void => {
     handleNavigate(quickLink.routeName, quickLink.link)
   }

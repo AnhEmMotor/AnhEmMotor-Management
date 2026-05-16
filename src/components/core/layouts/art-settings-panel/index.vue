@@ -47,15 +47,12 @@
 
   const props = defineProps<Props>()
 
-  // khiếndùngCaiDatBảng (Panel)Logic
   const settingsPanel = useSettingsPanel()
   const { showDrawer } = settingsPanel
 
-  // LấycácloạiXuLythiết bị
   const { handleOpen, handleClose, closeDrawer } = settingsPanel.useDrawerControl()
   const { initializeSettings, cleanupSettings } = settingsPanel.useSettingsInitializer()
 
-  // Lắng nghe props biếnhóa
   settingsPanel.usePropsWatcher(props)
 
   onMounted(() => {

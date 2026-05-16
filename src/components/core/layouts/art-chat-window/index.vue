@@ -98,7 +98,6 @@
 
   defineOptions({ name: 'ArtChatWindow' })
 
-  // loạikiểuĐịnh nghĩa
   interface ChatMessage {
     id: number
     sender: string
@@ -108,26 +107,21 @@
     avatar: string
   }
 
-  // lệlượngĐịnh nghĩa
   const MOBILE_BREAKPOINT = 640
   const SCROLL_DELAY = 100
   const BOT_NAME = 'Art Bot'
   const USER_NAME = 'Ricky'
 
-  // ứngkiểuBố cục
   const { width } = useWindowSize()
   const isMobile = computed(() => width.value < MOBILE_BREAKPOINT)
 
-  // ComponentTrạng thái
   const isDrawerVisible = ref(false)
   const isOnline = ref(true)
 
-  // TinNhanđóngTrạng thái
   const messageText = ref('')
   const messageId = ref(10)
   const messageContainer = ref<HTMLElement | null>(null)
 
-  // ban đầuđầuhóatròngàyTinNhanDữ liệu
   const initializeMessages = (): ChatMessage[] => [
     {
       id: 1,
@@ -208,7 +202,6 @@
 
   const messages = ref<ChatMessage[]>(initializeMessages())
 
-  // Công cụHàm
   const formatCurrentTime = (): string => {
     return new Date().toLocaleTimeString([], {
       hour: '2-digit',
@@ -226,7 +219,6 @@
     })
   }
 
-  // TinNhanXuLyPhuongThuc
   const sendMessage = (): void => {
     const text = messageText.value.trim()
     if (!text) return
@@ -245,7 +237,6 @@
     scrollToBottom()
   }
 
-  // tròngàysổdiệnkhốngchếPhuongThuc
   const openChat = (): void => {
     isDrawerVisible.value = true
     scrollToBottom()
@@ -255,7 +246,6 @@
     isDrawerVisible.value = false
   }
 
-  // sinhmệnhtuầnkỳ
   onMounted(() => {
     scrollToBottom()
     mittBus.on('openChat', openChat)
