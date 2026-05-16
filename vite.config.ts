@@ -13,16 +13,7 @@ import tailwindcss from '@tailwindcss/vite'
 export default ({ mode }: { mode: string }) => {
   const root = process.cwd()
   const env = loadEnv(mode, root)
-  const {
-    VITE_VERSION,
-    VITE_PORT,
-    VITE_BASE_URL,
-    VITE_API_PROXY_URL,
-    VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT
-  } = env
-
-  console.log(`🚀 API_URL = ${VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT}`)
-  console.log(`🚀 VERSION = ${VITE_VERSION}`)
+  const { VITE_VERSION, VITE_PORT, VITE_BASE_URL, VITE_API_PROXY_URL } = env
 
   return defineConfig({
     define: {
@@ -55,7 +46,7 @@ export default ({ mode }: { mode: string }) => {
     build: {
       target: 'es2015',
       outDir: 'dist',
-      chunkSizeWarningLimit: 2000,
+      chunkSizeWarningLimit: 1500,
       minify: 'terser',
       terserOptions: {
         compress: {
@@ -67,6 +58,30 @@ export default ({ mode }: { mode: string }) => {
         warnOnError: true,
         exclude: [],
         include: ['src/views/**/*.vue']
+      },
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('echarts')) {
+                return 'echarts'
+              }
+              if (id.includes('@wangeditor')) {
+                return 'wangeditor'
+              }
+              if (id.includes('element-plus')) {
+                return 'element-plus'
+              }
+              if (id.includes('xlsx')) {
+                return 'xlsx'
+              }
+              if (id.includes('xgplayer')) {
+                return 'xgplayer'
+              }
+              return 'vendors'
+            }
+          }
+        }
       }
     },
     plugins: [

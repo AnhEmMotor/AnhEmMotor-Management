@@ -22,7 +22,7 @@ export default class WebSocketClient {
   private connectionTimeout: number
   private reconnectAttempts: number = 0
 
-  private messageQueue: Array<string | ArrayBufferLike | Blob | ArrayBufferView> = []
+  private messageQueue: Array<string | Blob | BufferSource> = []
 
   private detectionTimer: NodeJS.Timeout | null = null
   private timeoutTimer: NodeJS.Timeout | null = null
@@ -127,7 +127,7 @@ export default class WebSocketClient {
     this.isConnected = false
   }
 
-  send(data: string | ArrayBufferLike | Blob | ArrayBufferView, immediate: boolean = false): void {
+  send(data: string | Blob | BufferSource, immediate: boolean = false): void {
     if (immediate && (!this.ws || this.ws.readyState !== WebSocket.OPEN)) {
       console.error('WebSocketChưaliềntiếp，vôpháplậplàphátgửiTinNhan')
       return

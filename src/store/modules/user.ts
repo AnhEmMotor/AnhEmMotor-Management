@@ -9,6 +9,7 @@ import { setPageTitle } from '@/utils/router'
 import { resetRouterState } from '@/router/guards/beforeEach'
 import { useMenuStore } from './menu'
 import { StorageConfig } from '@/utils/storage/storage-config'
+import i18n from '@/i18n'
 
 export const useUserStore = defineStore(
   'userStore',
@@ -43,11 +44,9 @@ export const useUserStore = defineStore(
       isLogin.value = status
     }
 
-    const setLanguage = async (lang: LanguageEnum) => {
+    const setLanguage = (lang: LanguageEnum) => {
       setPageTitle(router.currentRoute.value)
       language.value = lang
-
-      const i18n = (await import('@/i18n')).default
       i18n.global.locale.value = lang
     }
 
