@@ -1,5 +1,5 @@
 <template>
-  <div class="art-full-height">
+  <div class="art-full-height animate__animated animate__fadeIn">
     <RoleSearch
       v-show="showSearchBar"
       v-model="searchForm"
@@ -16,7 +16,7 @@
       >
         <template #left>
           <ElSpace wrap>
-            <ElButton @click="showDialog('add')" v-ripple>{{ $t('admin.t131') }}</ElButton>
+            <ElButton type="primary" @click="showDialog('add')" v-ripple>Thêm vai trò mới</ElButton>
           </ElSpace>
         </template>
       </ArtTableHeader>
@@ -50,33 +50,28 @@
 <script setup lang="ts">
   import { ButtonMoreItem } from '@/components/core/forms/art-button-more/index.vue'
   import { useTable } from '@/hooks/core/useTable'
-  import { fetchGetRoleList } from '@/api/system-manage'
+  import { fetchGetRoleList, fetchDeleteRole } from '@/api/system-manage'
   import ArtButtonMore from '@/components/core/forms/art-button-more/index.vue'
   import RoleSearch from './modules/role-search.vue'
   import RoleEditDialog from './modules/role-edit-dialog.vue'
   import RolePermissionDialog from './modules/role-permission-dialog.vue'
-  import { ElTag, ElMessageBox } from 'element-plus'
-
+  import { ElMessageBox } from 'element-plus'
   defineOptions({ name: 'Role' })
 
-  type RoleListItem = Api.SystemManage.RoleListItem
-  type RoleSearchFormParams = Api.SystemManage.RoleSearchParams & {
-    daterange?: string[]
+  type RoleSearchFormParams = {
+    roleName?: string
+    description?: string
   }
 
   const searchForm = ref<RoleSearchFormParams>({
     roleName: undefined,
-    roleCode: undefined,
-    description: undefined,
-    enabled: undefined,
-    daterange: undefined
+    description: undefined
   })
 
   const showSearchBar = ref(false)
-
   const dialogVisible = ref(false)
   const permissionDialog = ref(false)
-  const currentRoleData = ref<RoleListItem | undefined>(undefined)
+  const currentRoleData = ref<any>(undefined)
 
   const {
     columns,
@@ -93,58 +88,29 @@
   } = useTable({
     core: {
       apiFn: fetchGetRoleList,
-      apiParams: {
-        current: 1,
-        size: 20
+      paginationKey: {
+        current: 'Page',
+        size: 'PageSize'
       },
-
-      excludeParams: ['daterange'],
+      apiParams: {
+        Page: 1,
+        PageSize: 20
+      },
       columnsFactory: () => [
         {
-          prop: 'roleId',
-          label: 'VaiTroID',
-          width: 100
-        },
-        {
-          prop: 'roleName',
-          label: 'VaiTrodanhtên',
-          minWidth: 120
-        },
-        {
-          prop: 'roleCode',
-          label: 'VaiTrobiênmã',
-          minWidth: 120
+          prop: 'name',
+          label: 'Tên vai trò',
+          minWidth: 150
         },
         {
           prop: 'description',
-          label: 'VaiTroMô tả',
-          minWidth: 150,
+          label: 'Mô tả',
+          minWidth: 250,
           showOverflowTooltip: true
         },
         {
-          prop: 'enabled',
-          label: 'VaiTroTrạng thái',
-          width: 100,
-          formatter: (row) => {
-            const statusConfig = row.enabled
-              ? { type: 'success', text: 'Bật' }
-              : { type: 'warning', text: 'Tắt' }
-            return h(
-              ElTag,
-              { type: statusConfig.type as 'success' | 'warning' },
-              () => statusConfig.text
-            )
-          }
-        },
-        {
-          prop: 'createTime',
-          label: 'xâyNgày',
-          width: 180,
-          sortable: true
-        },
-        {
           prop: 'operation',
-          label: 'HanhDong',
+          label: 'Hành động',
           width: 80,
           fixed: 'right',
           formatter: (row) =>
@@ -153,17 +119,17 @@
                 list: [
                   {
                     key: 'permission',
-                    label: 'MenuQuyenHan',
-                    icon: 'ri:user-3-line'
+                    label: 'Phân quyền hạn',
+                    icon: 'ri:shield-keyhole-line'
                   },
                   {
                     key: 'edit',
-                    label: 'Chỉnh sửaVaiTro',
+                    label: 'Chỉnh sửa vai trò',
                     icon: 'ri:edit-2-line'
                   },
                   {
                     key: 'delete',
-                    label: 'XóaVaiTro',
+                    label: 'Xóa vai trò',
                     icon: 'ri:delete-bin-4-line',
                     color: '#f56c6c'
                   }
@@ -178,21 +144,27 @@
 
   const dialogType = ref<'add' | 'edit'>('add')
 
-  const showDialog = (type: 'add' | 'edit', row?: RoleListItem) => {
+  const showDialog = (type: 'add' | 'edit', row?: any) => {
     dialogVisible.value = true
     dialogType.value = type
     currentRoleData.value = row
   }
 
   const handleSearch = (params: RoleSearchFormParams) => {
-    const { daterange, ...filtersParams } = params
-    const [startTime, endTime] = Array.isArray(daterange) ? daterange : [null, null]
-
-    replaceSearchParams({ ...filtersParams, startTime, endTime })
+    const filters: string[] = []
+    if (params.roleName) {
+      filters.push(`Name@=${params.roleName}`)
+    }
+    if (params.description) {
+      filters.push(`Description@=${params.description}`)
+    }
+    replaceSearchParams({
+      Filters: filters.join(',') || undefined
+    })
     getData()
   }
 
-  const buttonMoreClick = (item: ButtonMoreItem, row: RoleListItem) => {
+  const buttonMoreClick = (item: ButtonMoreItem, row: any) => {
     switch (item.key) {
       case 'permission':
         showPermissionDialog(row)
@@ -206,27 +178,28 @@
     }
   }
 
-  const showPermissionDialog = (row?: RoleListItem) => {
+  const showPermissionDialog = (row?: any) => {
     permissionDialog.value = true
     currentRoleData.value = row
   }
 
-  const deleteRole = (row: RoleListItem) => {
+  const deleteRole = (row: any) => {
     ElMessageBox.confirm(
-      `ChínhđịnhXóaVaiTro"${row.roleName}"không？nàyHanhDongKhôngCó thểkhôiphục！`,
-      'XóaXác nhận',
+      `Bạn chắc chắn muốn xóa vai trò "${row.name}"? Hành động này không thể khôi phục!`,
+      'Xác nhận xóa vai trò',
       {
         confirmButtonText: 'Xác định',
         cancelButtonText: 'Hủy',
         type: 'warning'
       }
     )
-      .then(() => {
-        ElMessage.success('XóaThanhCong')
+      .then(async () => {
+        await fetchDeleteRole(row.id)
+        ElMessage.success('Xóa vai trò thành công')
         refreshData()
       })
       .catch(() => {
-        ElMessage.info('ĐãHủyXóa')
+        ElMessage.info('Đã hủy thao tác xóa')
       })
   }
 </script>

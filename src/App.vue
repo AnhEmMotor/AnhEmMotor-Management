@@ -8,6 +8,7 @@
     }"
   >
     <RouterView></RouterView>
+    <VueQueryDevtools />
   </ElConfigProvider>
 </template>
 
@@ -19,6 +20,7 @@
   import { toggleTransition } from './utils/ui/animation'
   import { checkStorageCompatibility } from './utils/storage'
   import { initializeTheme } from './hooks/core/useTheme'
+  import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
 
   const userStore = useUserStore()
   const { language } = storeToRefs(userStore)

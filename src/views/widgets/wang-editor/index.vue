@@ -318,7 +318,7 @@ function createEditor() {
   const getFullEditorContent = () => {
     const content = fullEditorRef.value?.getHtml()
     console.log('Đầy đủTrình biên tậpNoiDung:', content)
-    ElMessage.success('Đầy đủTrình biên tậpNoiDungĐãnhậprađếnBangDieuKhien')
+    ElMessage.success('Đầy đủTrình biên tậpNoiDungĐãnhậprađếnBảng tổng quan')
   }
 
   const setFullEditorDemo = () => {
@@ -347,7 +347,7 @@ function createEditor() {
   const getSimpleEditorContent = () => {
     const content = simpleEditorRef.value?.getHtml()
     console.log('rúthóaTrình biên tậpNoiDung:', content)
-    ElMessage.success('rúthóaTrình biên tậpNoiDungĐãnhậprađếnBangDieuKhien')
+    ElMessage.success('rúthóaTrình biên tậpNoiDungĐãnhậprađếnBảng tổng quan')
   }
 
   const setSimpleEditorDemo = () => {

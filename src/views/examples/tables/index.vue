@@ -855,7 +855,7 @@
     }
 
     console.log('BảngThongTin:', info)
-    ElMessage.info(`BảngThongTinĐãnhậprađếnBangDieuKhien，khitrước ${info.dataCount} điềuDữ liệu`)
+    ElMessage.info(`BảngThongTinĐãnhậprađếnBảng tổng quan，khitrước ${info.dataCount} điềuDữ liệu`)
   }
 
   const handleSearch = async () => {

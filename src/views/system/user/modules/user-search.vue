@@ -11,14 +11,25 @@
 </template>
 
 <script setup lang="ts">
-  interface Props {
-    modelValue: Api.SystemManage.UserSearchParams
+  type UserSearchFormParams = {
+    userName?: string
+    fullName?: string
+    userPhone?: string
+    userEmail?: string
+    status?: string
+    userGender?: string
   }
+
+  interface Props {
+    modelValue: UserSearchFormParams
+  }
+
   interface Emits {
-    (e: 'update:modelValue', value: Api.SystemManage.UserSearchParams): void
-    (e: 'search', params: Api.SystemManage.UserSearchParams): void
+    (e: 'update:modelValue', value: UserSearchFormParams): void
+    (e: 'search', params: UserSearchFormParams): void
     (e: 'reset'): void
   }
+
   const props = defineProps<Props>()
   const emit = defineEmits<Emits>()
 
@@ -30,75 +41,70 @@
 
   const rules = {}
 
-  const statusOptions = ref<{ label: string; value: string; disabled?: boolean }[]>([])
-
-  function fetchStatusOptions(): Promise<typeof statusOptions.value> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve([
-          { label: 'tạiđường', value: '1' },
-          { label: 'Ngoạiđường', value: '2' },
-          { label: 'Bất thường', value: '3' },
-          { label: 'tâmtác', value: '4' }
-        ])
-      }, 1000)
-    })
-  }
-
-  onMounted(async () => {
-    statusOptions.value = await fetchStatusOptions()
-  })
+  const statusOptions = ref([
+    { label: 'Hoạt động', value: 'Active' },
+    { label: 'Bị khóa', value: 'Banned' }
+  ])
 
   const formItems = computed(() => [
     {
-      label: 'Tên người dùng',
+      label: '',
       key: 'userName',
       type: 'input',
-      placeholder: 'Vui lòng nhậpTên người dùng',
+      placeholder: 'Nhập tên đăng nhập...',
       clearable: true
     },
     {
-      label: 'Số điện thoại',
+      label: '',
+      key: 'fullName',
+      type: 'input',
+      placeholder: 'Nhập tên đầy đủ...',
+      clearable: true
+    },
+    {
+      label: '',
       key: 'userPhone',
       type: 'input',
-      props: { placeholder: 'Vui lòng nhậpSố điện thoại', maxlength: '11' }
+      props: { placeholder: 'Nhập số điện thoại...', maxlength: '11', clearable: true }
     },
     {
-      label: 'Email',
+      label: '',
       key: 'userEmail',
       type: 'input',
-      props: { placeholder: 'Vui lòng nhậpEmail' }
+      props: { placeholder: 'Nhập địa chỉ email...', clearable: true }
     },
     {
-      label: 'Trạng thái',
+      label: '',
       key: 'status',
       type: 'select',
       props: {
-        placeholder: 'Vui lòng chọnTrạng thái',
-        options: statusOptions.value
+        placeholder: 'Chọn trạng thái...',
+        options: statusOptions.value,
+        clearable: true
       }
     },
     {
-      label: 'GioiTinh',
+      label: '',
       key: 'userGender',
-      type: 'radiogroup',
+      type: 'select',
       props: {
+        placeholder: 'Chọn giới tính...',
         options: [
-          { label: 'Nam', value: '1' },
-          { label: 'Nữ', value: '2' }
-        ]
+          { label: 'Nam', value: 'Male' },
+          { label: 'Nữ', value: 'Female' },
+          { label: 'Khác', value: 'Other' }
+        ],
+        clearable: true
       }
     }
   ])
 
   function handleReset() {
-    console.log('Đặt lạiForm')
     emit('reset')
   }
 
-  async function handleSearch(params: Api.SystemManage.UserSearchParams) {
+  async function handleSearch(params: UserSearchFormParams) {
     await searchBarRef.value.validate()
     emit('search', params)
-    console.log('FormDữ liệu', params)
   }
 </script>

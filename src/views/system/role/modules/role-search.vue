@@ -11,8 +11,9 @@
 </template>
 
 <script setup lang="ts">
-  type RoleSearchFormParams = Api.SystemManage.RoleSearchParams & {
-    daterange?: string[]
+  type RoleSearchFormParams = {
+    roleName?: string
+    description?: string
   }
 
   interface Props {
@@ -37,61 +38,20 @@
 
   const rules = {}
 
-  const statusOptions = ref([
-    { label: 'Bật', value: true },
-    { label: 'Tắt', value: false }
-  ])
-
   const formItems = computed(() => [
     {
-      label: 'VaiTrodanhtên',
+      label: '',
       key: 'roleName',
       type: 'input',
-      placeholder: 'Vui lòng nhậpVaiTrodanhtên',
+      placeholder: 'Nhập tên vai trò cần tìm...',
       clearable: true
     },
     {
-      label: 'VaiTrobiênmã',
-      key: 'roleCode',
-      type: 'input',
-      placeholder: 'Vui lòng nhậpVaiTrobiênmã',
-      clearable: true
-    },
-    {
-      label: 'VaiTroMô tả',
+      label: '',
       key: 'description',
       type: 'input',
-      placeholder: 'Vui lòng nhậpVaiTroMô tả',
+      placeholder: 'Nhập mô tả vai trò...',
       clearable: true
-    },
-    {
-      label: 'VaiTroTrạng thái',
-      key: 'enabled',
-      type: 'select',
-      props: {
-        placeholder: 'Vui lòng chọnTrạng thái',
-        options: statusOptions.value,
-        clearable: true
-      }
-    },
-    {
-      label: 'xâyNgày',
-      key: 'daterange',
-      type: 'datetime',
-      props: {
-        style: { width: '100%' },
-        placeholder: 'Vui lòng chọnNgàyphạmvi',
-        type: 'daterange',
-        rangeSeparator: 'đến',
-        startPlaceholder: 'Bắt đầuNgày',
-        endPlaceholder: 'KếtthúcNgày',
-        valueFormat: 'YYYY-MM-DD',
-        shortcuts: [
-          { text: 'nayngày', value: [new Date(), new Date()] },
-          { text: 'nhấtcậnmộttuần', value: [new Date(Date.now() - 604800000), new Date()] },
-          { text: 'nhấtcậnmộtchiếctháng', value: [new Date(Date.now() - 2592000000), new Date()] }
-        ]
-      }
     }
   ])
 

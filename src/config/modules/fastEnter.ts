@@ -6,7 +6,7 @@ const fastEnterConfig: FastEnterConfig = {
 
   applications: [
     {
-      name: 'Bàn làm việc',
+      name: 'Tổng quan hệ thống',
       description: 'HeThongkháixemvớiDữ liệuthốngkế',
       icon: 'ri:pie-chart-line',
       iconColor: '#377dff',
@@ -81,7 +81,7 @@ const fastEnterConfig: FastEnterConfig = {
 
   quickLinks: [
     {
-      name: 'DangNhap',
+      name: 'Đăng nhập',
       enabled: true,
       order: 1,
       routeName: 'Login'

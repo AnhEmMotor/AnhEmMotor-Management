@@ -34,7 +34,9 @@ export default [
     languageOptions: {
       globals: {
         ...autoImportConfig.globals,
-        Api: 'readonly'
+        Api: 'readonly',
+        ElMessage: 'readonly',
+        ElNotification: 'readonly'
       }
     },
     rules: {

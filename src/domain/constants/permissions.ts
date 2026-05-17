@@ -71,3 +71,5 @@ export const Permissions = {
   PayrollConfigure: 'Permissions.Payroll.Configure',
   PayrollApprove: 'Permissions.Payroll.Approve'
 }
+
+export const ALL_PERMISSIONS: string[] = Object.values(Permissions)

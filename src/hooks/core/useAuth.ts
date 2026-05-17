@@ -13,16 +13,14 @@ export const useAuth = () => {
   const { isFrontendMode } = useAppMode()
   const { info } = storeToRefs(userStore)
 
-  const frontendAuthList = info.value?.buttons ?? []
-
-  const backendAuthList: AuthItem[] = Array.isArray(route.meta.authList)
-    ? (route.meta.authList as AuthItem[])
-    : []
-
   const hasAuth = (auth: string): boolean => {
     if (isFrontendMode.value) {
-      return frontendAuthList.includes(auth)
+      return (info.value?.buttons ?? []).includes(auth)
     }
+
+    const backendAuthList: AuthItem[] = Array.isArray(route.meta.authList)
+      ? (route.meta.authList as AuthItem[])
+      : []
 
     return backendAuthList.some((item) => item?.authMark === auth)
   }

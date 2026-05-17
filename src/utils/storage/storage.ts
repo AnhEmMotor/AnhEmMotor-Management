@@ -46,7 +46,7 @@ class StorageCompatibilityManager {
       offset: 40,
       duration: 5000,
       message:
-        'HeThongđođếnquyểnđịaDữ liệuBất thường，Vui lòngtrùngmớiDangNhapHeThongkhôiphụckhiếndùng！'
+        'HeThongđođếnquyểnđịaDữ liệuBất thường，Vui lòngtrùngmớiĐăng nhậpHeThongkhôiphụckhiếndùng！'
     })
   }
 
@@ -81,7 +81,7 @@ class StorageCompatibilityManager {
       const legacyData = this.getLegacyStorageData()
       if (Object.keys(legacyData).length === 0) {
         if (requireAuth) {
-          console.warn('[Storage] ChưapháthiệnnhiệmnàotồntrữDữ liệu，cầncầntrùngmớiDangNhap')
+          console.warn('[Storage] ChưapháthiệnnhiệmnàotồntrữDữ liệu，cầncầntrùngmớiĐăng nhập')
           this.performSystemLogout()
           return false
         }

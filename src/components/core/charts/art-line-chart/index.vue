@@ -45,7 +45,7 @@
   const animatedData = ref<number[] | LineDataItem[]>([])
 
   const clearAnimationTimers = () => {
-    animationTimers.value.forEach((timer) => clearTimeout(timer))
+    animationTimers.value.forEach((timer: number) => clearTimeout(timer))
     animationTimers.value = []
   }
 

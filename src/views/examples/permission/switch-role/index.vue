@@ -16,7 +16,7 @@
           <div>
             <div class="flex items-start mb-3 last:mb-0">
               <span class="min-w-30 font-semibold">Tên người dùng：</span>
-              <span>{{ currentUser.userName || 'ChưaDangNhap' }}</span>
+              <span>{{ currentUser.userName || 'ChưaĐăng nhập' }}</span>
             </div>
             <div class="flex items-start mb-3 last:mb-0">
               <span class="min-w-30 font-semibold">VaiTro：</span>

@@ -24,13 +24,12 @@ export class MenuProcessor {
 
   private async processFrontendMenu(): Promise<AppRouteRecord[]> {
     const userStore = useUserStore()
-    const roles = userStore.info?.roles
+    const roles = userStore.info?.roles ?? []
+    const permissions = userStore.info?.buttons ?? []
 
     let menuList = [...asyncRoutes]
 
-    if (roles && roles.length > 0) {
-      menuList = this.filterMenuByRoles(menuList, roles)
-    }
+    menuList = this.filterMenuByPermissionsAndRoles(menuList, permissions, roles)
 
     return this.filterEmptyMenus(menuList)
   }
@@ -40,15 +39,34 @@ export class MenuProcessor {
     return this.filterEmptyMenus(list)
   }
 
-  private filterMenuByRoles(menu: AppRouteRecord[], roles: string[]): AppRouteRecord[] {
+  private filterMenuByPermissionsAndRoles(
+    menu: AppRouteRecord[],
+    permissions: string[],
+    roles: string[]
+  ): AppRouteRecord[] {
     return menu.reduce((acc: AppRouteRecord[], item) => {
       const itemRoles = item.meta?.roles
-      const hasPermission = !itemRoles || itemRoles.some((role) => roles?.includes(role))
+      const hasRolePermission =
+        roles.length === 0 || !itemRoles || itemRoles.some((role) => roles?.includes(role))
 
-      if (hasPermission) {
+      const itemPermissions = item.meta?.permissions as string[] | undefined
+      const itemPermission = item.meta?.permission as string | undefined
+
+      let hasGranularPermission = true
+      if (itemPermissions && Array.isArray(itemPermissions)) {
+        hasGranularPermission = itemPermissions.some((p) => permissions.includes(p))
+      } else if (itemPermission) {
+        hasGranularPermission = permissions.includes(itemPermission)
+      }
+
+      if (hasRolePermission && hasGranularPermission) {
         const filteredItem = { ...item }
         if (filteredItem.children?.length) {
-          filteredItem.children = this.filterMenuByRoles(filteredItem.children, roles)
+          filteredItem.children = this.filterMenuByPermissionsAndRoles(
+            filteredItem.children,
+            permissions,
+            roles
+          )
         }
         acc.push(filteredItem)
       }

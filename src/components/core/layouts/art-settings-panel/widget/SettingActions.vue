@@ -70,7 +70,7 @@
     { comment: 'làphủHiển thịkhoáivàodiện', key: 'showFastEnter' },
     { comment: 'làphủHiển thịLàm mớiNút', key: 'showRefreshButton' },
     { comment: 'làphủHiển thịBreadcrumb', key: 'showCrumbs' },
-    { comment: 'làphủHiển thịBàn làm việcTag', key: 'showWorkTab' },
+    { comment: 'làphủHiển thịTổng quan hệ thốngTag', key: 'showWorkTab' },
     { comment: 'làphủHiển thịNgôn ngữChuyển đổi', key: 'showLanguage' },
     { comment: 'làphủHiển thịThanh tiến trình', key: 'showNprogress' },
     { comment: 'làphủHiển thịCaiDattríchXuất', key: 'showSettingGuide' },

@@ -1,4 +1,4 @@
-import type { Router, RouteLocationNormalized, NavigationGuardNext } from 'vue-router'
+import type { Router, RouteLocationNormalized } from 'vue-router'
 import { nextTick } from 'vue'
 import NProgress from 'nprogress'
 import { useSettingStore } from '@/store/modules/setting'
@@ -46,21 +46,34 @@ export function resetRouteInitState(): void {
 export function setupBeforeEachGuard(router: Router): void {
   routeRegistry = new RouteRegistry(router)
 
-  router.beforeEach(
-    async (
-      to: RouteLocationNormalized,
-      from: RouteLocationNormalized,
-      next: NavigationGuardNext
-    ) => {
-      try {
-        await handleRouteGuard(to, from, next, router)
-      } catch (error) {
-        console.error('[RouteGuard] RoutinggiữvệXuLyThatBai:', error)
-        closeLoading()
-        next({ name: 'Exception500' })
+  window.addEventListener('auth:permissions-changed', async () => {
+    try {
+      const menuList = await menuProcessor.getMenuList()
+      const menuStore = useMenuStore()
+      menuStore.setMenuList(menuList)
+
+      const currentRoute = router.currentRoute.value
+      if (currentRoute.matched.length > 0) {
+        const hasAccess = RoutePermissionValidator.hasPermission(currentRoute.path, menuList)
+        if (!hasAccess) {
+          const { homePath } = useCommon()
+          router.push(homePath.value || '/')
+        }
       }
+    } catch (err) {
+      console.error('Failed to regenerate menus on permission change:', err)
     }
-  )
+  })
+
+  router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
+    try {
+      return await handleRouteGuard(to, from, router)
+    } catch (error) {
+      console.error('[RouteGuard] RoutinggiữvệXuLyThatBai:', error)
+      closeLoading()
+      return { name: 'Exception500' }
+    }
+  })
 }
 
 function closeLoading(): void {
@@ -75,9 +88,8 @@ function closeLoading(): void {
 async function handleRouteGuard(
   to: RouteLocationNormalized,
   from: RouteLocationNormalized,
-  next: NavigationGuardNext,
   router: Router
-): Promise<void> {
+): Promise<any> {
   const settingStore = useSettingStore()
   const userStore = useUserStore()
 
@@ -85,57 +97,53 @@ async function handleRouteGuard(
     NProgress.start()
   }
 
-  if (!handleLoginStatus(to, userStore, next)) {
-    return
+  const loginRedirect = handleLoginStatus(to, userStore)
+  if (loginRedirect) {
+    return loginRedirect
   }
 
   if (routeInitFailed) {
     if (to.matched.length > 0) {
-      next()
+      return true
     } else {
-      next({ name: 'Exception500', replace: true })
+      return { name: 'Exception500', replace: true }
     }
-    return
   }
 
   if (!routeRegistry?.isRegistered() && userStore.isLogin) {
     if (routeInitInProgress) {
-      next(false)
-      return
+      return false
     }
-    await handleDynamicRoutes(to, next, router)
-    return
+    return await handleDynamicRoutes(to, router)
   }
 
-  if (handleRootPathRedirect(to, next)) {
-    return
+  const rootRedirect = handleRootPathRedirect(to)
+  if (rootRedirect) {
+    return rootRedirect
   }
 
   if (to.matched.length > 0) {
     setWorktab(to)
     setPageTitle(to)
-    next()
-    return
+    return true
   }
 
-  next({ name: 'Exception404' })
+  return { name: 'Exception404' }
 }
 
 function handleLoginStatus(
   to: RouteLocationNormalized,
-  userStore: ReturnType<typeof useUserStore>,
-  next: NavigationGuardNext
-): boolean {
+  userStore: ReturnType<typeof useUserStore>
+): any {
   if (userStore.isLogin || to.path === RoutesAlias.Login || isStaticRoute(to.path)) {
-    return true
+    return null
   }
 
   userStore.logOut()
-  next({
+  return {
     name: 'Login',
     query: { redirect: to.fullPath }
-  })
-  return false
+  }
 }
 
 function isStaticRoute(path: string): boolean {
@@ -162,11 +170,7 @@ function isStaticRoute(path: string): boolean {
   return checkRoute(staticRoutes, path)
 }
 
-async function handleDynamicRoutes(
-  to: RouteLocationNormalized,
-  next: NavigationGuardNext,
-  router: Router
-): Promise<void> {
+async function handleDynamicRoutes(to: RouteLocationNormalized, router: Router): Promise<any> {
   routeInitInProgress = true
 
   pendingLoading = true
@@ -176,7 +180,7 @@ async function handleDynamicRoutes(
     const [, menuList] = await Promise.all([fetchUserInfo(), menuProcessor.getMenuList()])
 
     if (!menuProcessor.validateMenuList(menuList)) {
-      throw new Error('LấyMenuDanh sáchThatBai，Vui lòngtrùngmớiDangNhap')
+      throw new Error('LấyMenuDanh sáchThatBai，Vui lòngtrùngmớiĐăng nhập')
     }
 
     routeRegistry?.register(menuList)
@@ -191,13 +195,12 @@ async function handleDynamicRoutes(
 
     if (isStaticRoute(to.path)) {
       routeInitInProgress = false
-      next({
+      return {
         path: to.path,
         query: to.query,
         hash: to.hash,
         replace: true
-      })
-      return
+      }
     }
 
     const { homePath } = useCommon()
@@ -216,17 +219,17 @@ async function handleDynamicRoutes(
         `[RouteGuard] NguoiDungvôQuyenHanTruy cậpđường: ${to.path}，ĐãnhảychuyểnđếnTrangChu`
       )
 
-      next({
+      return {
         path: validatedPath,
         replace: true
-      })
+      }
     } else {
-      next({
+      return {
         path: to.path,
         query: to.query,
         hash: to.hash,
         replace: true
-      })
+      }
     }
   } catch (error) {
     console.error('[RouteGuard] Hoạt độngRoutingDangKyThatBai:', error)
@@ -235,8 +238,7 @@ async function handleDynamicRoutes(
 
     if (isUnauthorizedError(error)) {
       routeInitInProgress = false
-      next(false)
-      return
+      return false
     }
 
     routeInitFailed = true
@@ -246,7 +248,7 @@ async function handleDynamicRoutes(
       console.error(`[RouteGuard] Lỗimã: ${error.code}, TinNhan: ${error.message}`)
     }
 
-    next({ name: 'Exception500', replace: true })
+    return { name: 'Exception500', replace: true }
   }
 }
 
@@ -256,15 +258,10 @@ async function fetchUserInfo(): Promise<void> {
 
   const userInfo: Api.Auth.UserInfo = {
     userId: data.id || '',
-    userName: data.userName || '',
+    userName: data.fullName || data.nickName || data.userName || '',
     email: data.email || '',
     avatar: data.avatarUrl || '',
-    roles: (data.roles || []).map((r: string) => {
-      const lower = r.toLowerCase()
-      if (lower.includes('super')) return 'R_SUPER'
-      if (lower.includes('admin')) return 'R_ADMIN'
-      return r
-    }),
+    roles: data.roles || [],
     buttons: data.permissions || []
   }
 
@@ -286,18 +283,17 @@ export function resetRouterState(delay: number): void {
   }, delay)
 }
 
-function handleRootPathRedirect(to: RouteLocationNormalized, next: NavigationGuardNext): boolean {
+function handleRootPathRedirect(to: RouteLocationNormalized): any {
   if (to.path !== '/') {
-    return false
+    return null
   }
 
   const { homePath } = useCommon()
   if (homePath.value && homePath.value !== '/') {
-    next({ path: homePath.value, replace: true })
-    return true
+    return { path: homePath.value, replace: true }
   }
 
-  return false
+  return null
 }
 
 function isUnauthorizedError(error: unknown): boolean {

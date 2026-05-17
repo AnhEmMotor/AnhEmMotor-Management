@@ -11,6 +11,28 @@ import { SETTING_DEFAULT_CONFIG } from '@/config/setting'
 export const useSettingStore = defineStore(
   'settingStore',
   () => {
+    // One-time migration of old localStorage defaults to new defaults
+    try {
+      const stored = localStorage.getItem('setting')
+      if (stored) {
+        const parsed = JSON.parse(stored)
+        let changed = false
+        if (parsed.menuOpenWidth === 230) {
+          parsed.menuOpenWidth = 260
+          changed = true
+        }
+        if (parsed.systemThemeColor === '#5D87FF') {
+          parsed.systemThemeColor = '#E84A4A'
+          changed = true
+        }
+        if (changed) {
+          localStorage.setItem('setting', JSON.stringify(parsed))
+        }
+      }
+    } catch (e) {
+      console.error('Failed to migrate local storage settings:', e)
+    }
+
     const menuType = ref(SETTING_DEFAULT_CONFIG.menuType)
 
     const menuOpenWidth = ref(SETTING_DEFAULT_CONFIG.menuOpenWidth)

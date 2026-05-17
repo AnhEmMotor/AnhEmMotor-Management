@@ -15,28 +15,17 @@
             :rules="rules"
             :key="formKey"
             @keyup.enter="handleSubmit"
-            style="margin-top: 25px"
+            style="margin-top: 40px"
+            class="login-form-container"
           >
-            <ElFormItem prop="account">
-              <ElSelect v-model="formData.account" @change="setupAccount">
-                <ElOption
-                  v-for="account in accounts"
-                  :key="account.key"
-                  :label="account.label"
-                  :value="account.key"
-                >
-                  <span>{{ account.label }}</span>
-                </ElOption>
-              </ElSelect>
-            </ElFormItem>
-            <ElFormItem prop="username">
+            <ElFormItem prop="username" class="mb-6">
               <ElInput
                 class="custom-height"
                 :placeholder="$t('login.placeholder.username')"
                 v-model.trim="formData.username"
               />
             </ElFormItem>
-            <ElFormItem prop="password">
+            <ElFormItem prop="password" class="mb-8">
               <ElInput
                 class="custom-height"
                 :placeholder="$t('login.placeholder.password')"
@@ -46,15 +35,6 @@
                 show-password
               />
             </ElFormItem>
-
-            <div class="flex-cb mt-2 text-sm">
-              <ElCheckbox v-model="formData.rememberPassword">{{
-                $t('login.rememberPwd')
-              }}</ElCheckbox>
-              <RouterLink class="text-theme" :to="{ name: 'ForgetPassword' }">{{
-                $t('login.forgetPwd')
-              }}</RouterLink>
-            </div>
 
             <div style="margin-top: 30px">
               <ElButton
@@ -68,11 +48,20 @@
               </ElButton>
             </div>
 
-            <div class="mt-5 text-sm text-gray-600">
-              <span>{{ $t('login.noAccount') }}</span>
-              <RouterLink class="text-theme" :to="{ name: 'Register' }">{{
-                $t('login.register')
-              }}</RouterLink>
+            <div class="social-login-wrap">
+              <div class="divider">
+                <span>Hoặc đăng nhập bằng</span>
+              </div>
+              <div class="social-btns">
+                <ElButton class="social-btn google" @click="handleGoogleLogin">
+                  <Icon icon="logos:google-icon" class="mr-2" />
+                  Google
+                </ElButton>
+                <ElButton class="social-btn facebook" @click="handleFacebookLogin">
+                  <Icon icon="logos:facebook" class="mr-2" />
+                  Facebook
+                </ElButton>
+              </div>
             </div>
           </ElForm>
         </div>
@@ -82,12 +71,11 @@
 </template>
 
 <script setup lang="ts">
-  import AppConfig from '@/config'
   import { useUserStore } from '@/store/modules/user'
   import { useI18n } from 'vue-i18n'
-  import { HttpError } from '@/utils/http/error'
   import { fetchLogin } from '@/api/auth'
   import { ElNotification, type FormInstance, type FormRules } from 'element-plus'
+  import { Icon } from '@iconify/vue'
 
   defineOptions({ name: 'Login' })
 
@@ -98,78 +86,64 @@
     formKey.value++
   })
 
-  type AccountKey = 'super' | 'admin' | 'user'
-
-  export interface Account {
-    key: AccountKey
-    label: string
-    userName: string
-    password: string
-    roles: string[]
-  }
-
-  const accounts = computed<Account[]>(() => [
-    {
-      key: 'super',
-      label: t('login.roles.super'),
-      userName: 'Super',
-      password: '123456',
-      roles: ['R_SUPER']
-    },
-    {
-      key: 'admin',
-      label: t('login.roles.admin'),
-      userName: 'Admin',
-      password: '123456',
-      roles: ['R_ADMIN']
-    },
-    {
-      key: 'user',
-      label: t('login.roles.user'),
-      userName: 'User',
-      password: '123456',
-      roles: ['R_USER']
-    }
-  ])
+  import { useSocialLogin } from './composables/useSocialLogin'
 
   const userStore = useUserStore()
   const router = useRouter()
   const route = useRoute()
 
-  const systemName = AppConfig.systemInfo.name
   const formRef = ref<FormInstance>()
 
   const formData = reactive({
-    account: '',
     username: '',
-    password: '',
-    rememberPassword: true
+    password: ''
   })
 
   const rules = computed<FormRules>(() => ({
-    username: [{ required: true, message: t('login.placeholder.username'), trigger: 'blur' }],
-    password: [{ required: true, message: t('login.placeholder.password'), trigger: 'blur' }]
+    username: [{ required: true, message: t('login.rules.usernameRequired'), trigger: 'blur' }],
+    password: [{ required: true, message: t('login.rules.passwordRequired'), trigger: 'blur' }]
   }))
 
   const loading = ref(false)
+  const { initSocial, loginWithGoogle, loginWithFacebook } = useSocialLogin()
 
   onMounted(() => {
-    const savedAccount = localStorage.getItem('remember_account')
-    if (savedAccount) {
-      const { username, password } = JSON.parse(savedAccount)
-      formData.username = username
-      formData.password = password
-      formData.rememberPassword = true
-    } else {
-      setupAccount('super')
-    }
+    // Không tự động điền tài khoản
+    initSocial()
   })
 
-  const setupAccount = (key: AccountKey) => {
-    const selectedAccount = accounts.value.find((account: Account) => account.key === key)
-    formData.account = key
-    formData.username = selectedAccount?.userName ?? ''
-    formData.password = selectedAccount?.password ?? ''
+  const handleSocialLoginSuccess = () => {
+    showLoginSuccessNotice()
+    const redirect = route.query.redirect as string
+    router.push(redirect || '/')
+  }
+
+  const handleGoogleLogin = () => {
+    ;(async () => {
+      try {
+        loading.value = true
+        const success = await loginWithGoogle()
+        if (success) {
+          handleSocialLoginSuccess()
+        }
+      } finally {
+        loading.value = false
+      }
+    })()
+  }
+
+  const handleFacebookLogin = () => {
+    ;(async () => {
+      try {
+        loading.value = true
+        const success = await loginWithFacebook()
+        if (success) {
+          handleSocialLoginSuccess()
+        }
+      } finally {
+        loading.value = false
+      }
+    })()
   }
 
   const handleSubmit = async () => {
@@ -181,7 +155,7 @@
 
       loading.value = true
 
-      const { username, password, rememberPassword } = formData
+      const { username, password } = formData
 
       const { accessToken, refreshToken } = await fetchLogin({
         usernameOrEmail: username,
@@ -192,12 +166,6 @@
         throw new Error('Login failed - no token received')
       }
 
-      if (rememberPassword) {
-        localStorage.setItem('remember_account', JSON.stringify({ username, password }))
-      } else {
-        localStorage.removeItem('remember_account')
-      }
-
       userStore.setToken(accessToken, refreshToken)
       userStore.setLoginStatus(true)
 
@@ -205,9 +173,11 @@
 
       const redirect = route.query.redirect as string
       router.push(redirect || '/')
-    } catch (error) {
-      if (!(error instanceof HttpError)) {
-        console.error('[Login] Unexpected error:', error)
+    } catch {
+      try {
+        useUserStore().logOut()
+      } catch {
+        // Ignore error during logout
       }
     } finally {
       loading.value = false
@@ -216,13 +186,37 @@
 
   const showLoginSuccessNotice = () => {
     setTimeout(() => {
-      ElNotification({
-        title: t('login.success.title'),
-        type: 'success',
-        duration: 2500,
-        zIndex: 10000,
-        message: `${t('login.success.message')}, ${systemName}!`
-      })
+      const showNotice = (userName: string) => {
+        ElNotification({
+          title: t('login.success.title'),
+          type: 'success',
+          duration: 2500,
+          zIndex: 10000,
+          message: `${t('login.success.message')}, ${userName}!`,
+          position: 'bottom-right'
+        })
+      }
+
+      if (userStore.info.userName) {
+        showNotice(userStore.info.userName)
+      } else {
+        const unwatch = watch(
+          () => userStore.info.userName,
+          (newVal) => {
+            if (newVal) {
+              showNotice(newVal)
+              unwatch()
+            }
+          }
+        )
+        // Fallback timeout in case it takes too long or fails
+        setTimeout(() => {
+          unwatch()
+          if (!userStore.info.userName) {
+            showNotice(t('login.success.defaultUser'))
+          }
+        }, 4000)
+      }
     }, 1000)
   }
 </script>
@@ -232,7 +226,108 @@
 </style>
 
 <style lang="scss" scoped>
-  :deep(.el-select__wrapper) {
-    height: 40px !important;
+  .auth-right-wrap {
+    .form {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .title {
+      font-size: 2.25rem;
+      font-weight: 700;
+      color: #1f2937;
+      letter-spacing: -0.025em;
+    }
+
+    .sub-title {
+      margin-top: 12px;
+      font-size: 1rem;
+      color: #6b7280;
+    }
+
+    .custom-height {
+      height: 50px !important;
+      font-size: 1rem;
+
+      :deep(.el-input__wrapper) {
+        border-color: #f3f4f6;
+        border-radius: 0.75rem;
+        box-shadow: 0 1px 2px 0 rgb(0 0 0 / 5%);
+      }
+    }
+
+    .login-form-container {
+      :deep(.el-form-item__content) {
+        margin-bottom: 8px;
+      }
+    }
+  }
+
+  .social-login-wrap {
+    width: 100%;
+    padding: 0 5px;
+    margin-top: 40px;
+
+    .divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 25px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #9ca3af;
+
+      &::before,
+      &::after {
+        flex-grow: 1;
+        height: 1px;
+        content: '';
+        background-color: #f3f4f6;
+      }
+
+      span {
+        padding: 0 15px;
+        white-space: nowrap;
+      }
+    }
+
+    .social-btns {
+      display: flex;
+      gap: 16px;
+      width: 100%;
+
+      .social-btn {
+        display: flex;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+        height: 50px !important;
+        margin: 0 !important;
+        font-weight: 500;
+        color: #374151;
+        cursor: pointer;
+        background-color: #fff;
+        border: 1px solid #e5e7eb !important;
+        border-radius: 12px !important;
+
+        &:hover {
+          background-color: #f9fafb;
+        }
+
+        .icon {
+          margin-right: 10px;
+          font-size: 20px;
+        }
+
+        &.google:hover {
+          border-color: #60a5fa !important;
+        }
+
+        &.facebook:hover {
+          border-color: #1d4ed8 !important;
+        }
+      }
+    }
   }
 </style>

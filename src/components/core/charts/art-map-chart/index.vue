@@ -250,7 +250,7 @@
 
   onUnmounted(cleanupChart)
 
-  watch(isDark, (newVal, oldVal) => {
+  watch(isDark, (newVal: boolean, oldVal: boolean) => {
     if (newVal !== oldVal && chartInstance.value) {
       cleanupChart()
       nextTick(() => {

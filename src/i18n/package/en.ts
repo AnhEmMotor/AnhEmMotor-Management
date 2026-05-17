@@ -153,7 +153,12 @@ export default {
     register: 'Register',
     success: {
       title: 'Login successful',
-      message: 'Welcome back'
+      message: 'Welcome back',
+      defaultUser: 'User'
+    },
+    rules: {
+      usernameRequired: 'Please enter your username or email',
+      passwordRequired: 'Please enter your password'
     }
   },
   forgetPassword: {
@@ -302,6 +307,11 @@ export default {
       menu31: 'Menu 3-1',
       menu32: 'Menu 3-2',
       menu321: 'Menu 3-2-1'
+    },
+    auth: {
+      title: 'Authorization',
+      user: 'Users & Roles',
+      role: 'Role Permissions'
     },
     safeguard: {
       title: 'Safeguard',
@@ -455,7 +465,7 @@ export default {
     t45: 'Tên sản phẩm',
     t46: 'Lượng bán',
     t47: 'Tổng thu nhập',
-    t48: 'PhanTich khách truy cập',
+    t48: 'Phân tích dữ liệu khách truy cập',
     t49: 'Khối lượng công việc và mức độ dịch vụ',
     t50: 'vềmụcmục',
     t51: 'khiếndùngrồi Vue3、TypeScript、Vite、Element Plus bằngtrướcdọckỹthuật',

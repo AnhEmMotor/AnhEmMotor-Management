@@ -73,8 +73,8 @@
                 >
                 <ul class="pl-5 my-2">
                   <li class="my-1 leading-[1.5] text-g-700"
-                    >NguoiDungDangNhapsau，Giao diện (Interface)Quay lạiNguoiDungVaiTroThongTin（nếu
-                    R_SUPER、R_ADMIN、R_USER）</li
+                    >NguoiDungĐăng nhậpsau，Giao diện (Interface)Quay
+                    lạiNguoiDungVaiTroThongTin（nếu R_SUPER、R_ADMIN、R_USER）</li
                   >
                   <li class="my-1 leading-[1.5] text-g-700">
                     tại
@@ -144,7 +144,7 @@
 }</code></pre>
                 <p><strong>QuyenHannghiệmtínhchuyểntrình：</strong></p>
                 <ul>
-                  <li>NguoiDungDangNhapThanhCongsauLấy Token</li>
+                  <li>NguoiDungĐăng nhậpThanhCongsauLấy Token</li>
                   <li
                     >trướcđầuđiềudùngMenuGiao diện (Interface)LấyNguoiDungCó thểTruy cậpcủaMenuDanh
                     sách</li

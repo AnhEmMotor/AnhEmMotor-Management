@@ -36,7 +36,7 @@
           <div class="flex items-center gap-2">
             <h4 class="m-0">Danh sách thương hiệu</h4>
             <ElTag size="small" type="danger" v-if="!loading" effect="dark" round>
-              {{ pagination.total }} bản ghi
+              {{ pagination.total }} Xác nhận đăng xuất?
             </ElTag>
           </div>
         </div>
@@ -44,7 +44,7 @@
 
       <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
-          <ElButton type="primary" v-ripple @click="handleAdd">
+          <ElButton v-auth="'Permissions.Brands.Create'" type="primary" v-ripple @click="handleAdd">
             <ElIcon><Plus /></ElIcon> Thêm thương hiệu
           </ElButton>
           <ElButton v-ripple>
@@ -96,8 +96,16 @@
 
         <template #operation="{ row }">
           <div class="flex gap-2 justify-center">
-            <ArtButtonTable type="edit" @click="handleEdit(row)" />
-            <ArtButtonTable type="delete" @click="handleDelete(row)" />
+            <ArtButtonTable
+              v-auth="'Permissions.Brands.Edit'"
+              type="edit"
+              @click="handleEdit(row)"
+            />
+            <ArtButtonTable
+              v-auth="'Permissions.Brands.Delete'"
+              type="delete"
+              @click="handleDelete(row)"
+            />
           </div>
         </template>
       </ArtTable>
