@@ -119,7 +119,7 @@
 
   const visible = computed({
     get: () => props.modelValue,
-    set: (value) => emit('update:modelValue', value)
+    set: (value: boolean) => emit('update:modelValue', value)
   })
 
   const rules = reactive<FormRules>({
@@ -176,7 +176,7 @@
 
   watch(
     () => props.modelValue,
-    async (newVal) => {
+    async (newVal: boolean) => {
       if (newVal) {
         initForm()
         if (props.dialogType === 'add') {
@@ -259,7 +259,7 @@
       // Helper to recursively add dependencies
       const addDependencies = (key: string) => {
         const deps = permissionDependencies.value[key] || []
-        deps.forEach((dep) => {
+        deps.forEach((dep: string) => {
           if (!checkedKeys.includes(dep) && !keysToAdd.has(dep)) {
             keysToAdd.add(dep)
             addDependencies(dep) // Recursively add dependencies
@@ -280,7 +280,7 @@
 
       allToCheck.forEach((key) => {
         const conflicts = permissionConflicts.value[key] || []
-        conflicts.forEach((conflictKey) => {
+        conflicts.forEach((conflictKey: string) => {
           if (activeChecked.has(conflictKey) && !keysToRemove.has(conflictKey)) {
             keysToRemove.add(conflictKey)
           }
@@ -290,23 +290,25 @@
 
     // 2. Identify newly unchecked keys (plus any keys marked for removal due to conflicts!)
     const newlyUnchecked = [
-      ...prevChecked.filter((k) => !checkedKeys.includes(k)),
+      ...prevChecked.filter((k: string) => !checkedKeys.includes(k)),
       ...Array.from(keysToRemove)
     ]
 
     if (newlyUnchecked.length > 0) {
       const removeDependents = (key: string) => {
         // Find all keys that depend on 'key'
-        Object.entries(permissionDependencies.value).forEach(([dependentKey, deps]) => {
-          if (
-            deps.includes(key) &&
-            (checkedKeys.includes(dependentKey) || newlyChecked.includes(dependentKey)) &&
-            !keysToRemove.has(dependentKey)
-          ) {
-            keysToRemove.add(dependentKey)
-            removeDependents(dependentKey) // Recursively remove dependents
+        ;(Object.entries(permissionDependencies.value) as [string, string[]][]).forEach(
+          ([dependentKey, deps]) => {
+            if (
+              deps.includes(key) &&
+              (checkedKeys.includes(dependentKey) || newlyChecked.includes(dependentKey)) &&
+              !keysToRemove.has(dependentKey)
+            ) {
+              keysToRemove.add(dependentKey)
+              removeDependents(dependentKey) // Recursively remove dependents
+            }
           }
-        })
+        )
       }
       newlyUnchecked.forEach(removeDependents)
     }

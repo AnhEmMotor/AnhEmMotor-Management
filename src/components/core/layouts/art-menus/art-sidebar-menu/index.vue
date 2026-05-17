@@ -259,7 +259,7 @@
     settingStore.setDualMenuShowText(!dualMenuShowText.value)
   }
 
-  watch(width, (newWidth) => {
+  watch(width, (newWidth: number) => {
     if (newWidth < MOBILE_BREAKPOINT) {
       settingStore.setMenuOpen(false)
       if (!menuOpen.value) {
