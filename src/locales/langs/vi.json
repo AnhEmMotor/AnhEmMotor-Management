@@ -16,7 +16,7 @@
   },
   "topBar": {
     "search": {
-      "title": "TimKiem"
+      "title": "Tìm kiếm"
     },
     "user": {
       "userCenter": "Trung tâm cá nhân",
@@ -39,7 +39,7 @@
     "logOutTips": "Bạn có chắc chắn muốn đăng xuất không?"
   },
   "search": {
-    "placeholder": "TimKiem trang",
+    "placeholder": "Tìm kiếm trang",
     "historyTitle": "LichSu tìm kiếm",
     "switchKeydown": "Chuyển đổi",
     "selectKeydown": "Chọn",
@@ -352,7 +352,7 @@
     },
     "searchBar": {
       "reset": "Làm lại",
-      "search": "TimKiem",
+      "search": "Tìm kiếm",
       "expand": "Mở rộng",
       "collapse": "Thu gọn",
       "searchInputPlaceholder": "Vui lòng nhập",

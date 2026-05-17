@@ -14,7 +14,7 @@
       </template>
       <div>
         <p class="m-0 mb-4 leading-[1.6] text-g-700">
-          tậpthànhTimKiem、Làm mới、Toàn màn hình、Kích thướckhốngchế、cộtHiển thịẨn、Kéo
+          tậpthànhTìm kiếm、Làm mới、Toàn màn hình、Kích thướckhốngchế、cộtHiển thịẨn、Kéo
           thảxếpthứ、BảngKiểu dángkhốngchế、đồng thờitrongđặt useTable
           tổhợpkiểuHàm，gợicungcườngđạicủatổhợpkiểu API，tậpthànhDữ
           liệuLấy、trínăngCache（LRUpháp）、 đaloạiLàm mớisáchlượcbằngCốt
@@ -303,7 +303,7 @@
             </template>
             <ElInput
               v-model="phoneSearch"
-              placeholder="TimKiemSố điện thoại"
+              placeholder="Tìm kiếmSố điện thoại"
               size="small"
               @input="handlePhoneSearch"
             >
@@ -861,13 +861,13 @@
   const handleSearch = async () => {
     await searchBarRef.value.validate()
 
-    console.log('TimKiemTham số:', searchFormState.value)
+    console.log('Tìm kiếmTham số:', searchFormState.value)
     replaceSearchParams(buildSearchParams(searchFormState.value))
     getData()
   }
 
   const handleReset = () => {
-    addCacheLog('🔄 Đặt lạiTimKiem')
+    addCacheLog('🔄 Đặt lạiTìm kiếm')
 
     resetSearchParams()
   }
@@ -876,7 +876,7 @@
     searchFormState.value.phone = value
     replaceSearchParams(buildSearchParams(searchFormState.value))
     requestParams.value = { ...searchParams }
-    addCacheLog(`📱 Số điện thoạiTimKiem: ${value}`)
+    addCacheLog(`📱 Số điện thoạiTìm kiếm: ${value}`)
     getDataDebounced()
   }
 

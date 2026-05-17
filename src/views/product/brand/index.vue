@@ -31,17 +31,6 @@
     />
 
     <ElCard class="flex-1 art-table-card">
-      <template #header>
-        <div class="flex-cb">
-          <div class="flex items-center gap-2">
-            <h4 class="m-0">Danh sách thương hiệu</h4>
-            <ElTag size="small" type="danger" v-if="!loading" effect="dark" round>
-              {{ pagination.total }} Xác nhận đăng xuất?
-            </ElTag>
-          </div>
-        </div>
-      </template>
-
       <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
           <ElButton v-auth="'Permissions.Brands.Create'" type="primary" v-ripple @click="handleAdd">
