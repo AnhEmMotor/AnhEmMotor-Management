@@ -228,30 +228,38 @@
 <style lang="scss" scoped>
   .auth-right-wrap {
     .form {
-      @apply flex flex-col justify-center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     .title {
-      @apply text-4xl font-bold text-gray-800 tracking-tight;
+      font-size: 2.25rem;
+      font-weight: 700;
+      color: #1f2937;
+      letter-spacing: -0.025em;
     }
 
     .sub-title {
-      @apply mt-3 text-gray-500 text-base;
+      margin-top: 12px;
+      font-size: 1rem;
+      color: #6b7280;
     }
 
     .custom-height {
-      @apply h-[50px] text-base;
-
       height: 50px !important;
+      font-size: 1rem;
 
       :deep(.el-input__wrapper) {
-        @apply rounded-xl shadow-sm border-gray-100;
+        border-color: #f3f4f6;
+        border-radius: 0.75rem;
+        box-shadow: 0 1px 2px 0 rgb(0 0 0 / 5%);
       }
     }
 
     .login-form-container {
       :deep(.el-form-item__content) {
-        @apply mb-2;
+        margin-bottom: 8px;
       }
     }
   }

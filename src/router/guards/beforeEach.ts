@@ -46,6 +46,25 @@ export function resetRouteInitState(): void {
 export function setupBeforeEachGuard(router: Router): void {
   routeRegistry = new RouteRegistry(router)
 
+  window.addEventListener('auth:permissions-changed', async () => {
+    try {
+      const menuList = await menuProcessor.getMenuList()
+      const menuStore = useMenuStore()
+      menuStore.setMenuList(menuList)
+
+      const currentRoute = router.currentRoute.value
+      if (currentRoute.matched.length > 0) {
+        const hasAccess = RoutePermissionValidator.hasPermission(currentRoute.path, menuList)
+        if (!hasAccess) {
+          const { homePath } = useCommon()
+          router.push(homePath.value || '/')
+        }
+      }
+    } catch (err) {
+      console.error('Failed to regenerate menus on permission change:', err)
+    }
+  })
+
   router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
     try {
       return await handleRouteGuard(to, from, router)

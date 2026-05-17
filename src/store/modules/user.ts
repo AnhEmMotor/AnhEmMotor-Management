@@ -269,33 +269,12 @@ export const useUserStore = defineStore(
     // Watch for real-time permissions/roles changes via SSE to reload menus and validate access
     watch(
       () => [info.value?.buttons, info.value?.roles],
-      async (newVal, oldVal) => {
+      (newVal, oldVal) => {
         if (!isLogin.value) return
 
         if (oldVal && JSON.stringify(newVal) === JSON.stringify(oldVal)) return
 
-        try {
-          const { MenuProcessor } = await import('@/router/core/MenuProcessor')
-          const menuProcessor = new MenuProcessor()
-          const menuList = await menuProcessor.getMenuList()
-
-          const menuStore = useMenuStore()
-          menuStore.setMenuList(menuList)
-
-          const currentRoute = router.currentRoute.value
-          if (currentRoute.matched.length > 0) {
-            const { RoutePermissionValidator } =
-              await import('@/router/core/RoutePermissionValidator')
-            const hasAccess = RoutePermissionValidator.hasPermission(currentRoute.path, menuList)
-            if (!hasAccess) {
-              const { useCommon } = await import('@/hooks/core/useCommon')
-              const { homePath } = useCommon()
-              router.push(homePath.value || '/')
-            }
-          }
-        } catch (err) {
-          console.error('Failed to regenerate menus on permission change:', err)
-        }
+        window.dispatchEvent(new CustomEvent('auth:permissions-changed'))
       },
       { deep: true }
     )
