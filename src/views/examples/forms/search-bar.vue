@@ -516,7 +516,7 @@
       key: 'event',
       type: 'input',
       props: {
-        placeholder: 'NhậpNoiDungKích hoạtSuKien，BangDieuKhienXem',
+        placeholder: 'NhậpNoiDungKích hoạtSuKien，Bảng tổng quanXem',
         clearable: true,
         prefixIcon: 'Search',
 

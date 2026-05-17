@@ -1,3 +1,4 @@
+import { ElNotification } from 'element-plus'
 import { AxiosError } from 'axios'
 import { ApiStatus } from './status'
 import { $t } from '@/i18n'
@@ -109,7 +110,12 @@ export function handleError(error: AxiosError<ErrorResponse>): never {
 
 export function showError(error: HttpError, showMessage: boolean = true): void {
   if (showMessage) {
-    ElMessage.error(error.message)
+    ElNotification({
+      title: $t('common.tips'),
+      message: error.message,
+      type: 'error',
+      position: 'bottom-right'
+    })
   }
 
   console.error('[HTTP Error]', error.toLogData())
@@ -117,7 +123,12 @@ export function showError(error: HttpError, showMessage: boolean = true): void {
 
 export function showSuccess(message: string, showMessage: boolean = true): void {
   if (showMessage) {
-    ElMessage.success(message)
+    ElNotification({
+      title: $t('common.tips'),
+      message: message,
+      type: 'success',
+      position: 'bottom-right'
+    })
   }
 }
 

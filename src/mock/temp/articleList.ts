@@ -138,7 +138,7 @@ export const ArticleList = [
     create_time: '2023-04-03T00:00:00.000Z',
     home_img: cover4,
     brief:
-      'giớithiệuquyểnchươngsẽdạybạntạithậtthựcmụcmụctrongnếunàoxâyxây VueRouter、Vuex、pinia、axios、ChuDeChuyển đổibằng，bạnsẽthấytínhmộtchiếcsauchiếcQuản lýHeThongcủaChiTietxâyxâyquatrình。Hiệu quảảnh：côngnăng：sauchiếcQuản lýHeThonglệdùngmôkhốiDangNhapthêmmậtđaThẻ TabtoànbộBreadcrumbquốctếhóaBất thườngXuLyUtilsCông cụbaoCó thểCauHinhcủaMenulanHuy hiệu (Badge)sángmàu / ámmàu Thanh bênthiểnmàuChuDe / ámđenChuDephongphúcủachiếctínhhóaCauHinhCó thểThanh bênchiếctrìtrongnhúngtrangmặttrùngtảikhitrướctrangmặtHoạt độngRoutingchiếctrìtừđộngtrùngtảichiếctrìđacấpRoutingnhúngbộvàMenulannhúngbộphầnNgoạiđường',
+      'giớithiệuquyểnchươngsẽdạybạntạithậtthựcmụcmụctrongnếunàoxâyxây VueRouter、Vuex、pinia、axios、ChuDeChuyển đổibằng，bạnsẽthấytínhmộtchiếcsauchiếcQuản lýHeThongcủaChiTietxâyxâyquatrình。Hiệu quảảnh：côngnăng：sauchiếcQuản lýHeThonglệdùngmôkhốiĐăng nhậpthêmmậtđaThẻ TabtoànbộBreadcrumbquốctếhóaBất thườngXuLyUtilsCông cụbaoCó thểCauHinhcủaMenulanHuy hiệu (Badge)sángmàu / ámmàu Thanh bênthiểnmàuChuDe / ámđenChuDephongphúcủachiếctínhhóaCauHinhCó thểThanh bênchiếctrìtrongnhúngtrangmặttrùngtảikhitrướctrangmặtHoạt độngRoutingchiếctrìtừđộngtrùngtảichiếctrìđacấpRoutingnhúngbộvàMenulannhúngbộphầnNgoạiđường',
     type_name: 'Vue',
     html_content: ''
   },

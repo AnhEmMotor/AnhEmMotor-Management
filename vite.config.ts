@@ -13,7 +13,7 @@ import tailwindcss from '@tailwindcss/vite'
 export default ({ mode }: { mode: string }) => {
   const root = process.cwd()
   const env = loadEnv(mode, root)
-  const { VITE_VERSION, VITE_PORT, VITE_BASE_URL, VITE_API_PROXY_URL } = env
+  const { VITE_VERSION, VITE_PORT, VITE_BASE_URL } = env
 
   return defineConfig({
     define: {
@@ -23,14 +23,7 @@ export default ({ mode }: { mode: string }) => {
     server: {
       port: Number(VITE_PORT),
       strictPort: true,
-      proxy: {
-        '/api': {
-          target: VITE_API_PROXY_URL,
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, '/api/v1')
-        }
-      },
-      host: true
+      host: false
     },
     resolve: {
       alias: {
@@ -112,7 +105,9 @@ export default ({ mode }: { mode: string }) => {
         threshold: 10240,
         deleteOriginFile: false
       }),
-      vueDevTools()
+      vueDevTools({
+        autoOpen: false
+      })
     ],
     optimizeDeps: {
       include: [

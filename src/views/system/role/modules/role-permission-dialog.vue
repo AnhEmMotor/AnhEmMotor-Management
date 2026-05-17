@@ -207,7 +207,7 @@
 
     console.log('=== vịtrongcủaQuyenHanDữ liệu ===', selectedData)
     ElMessage.success(
-      `ĐãnhậpravịtrongDữ liệuđếnBangDieuKhien，cộngvịtrong ${selectedData.totalChecked} chiếctiếtđiểm`
+      `ĐãnhậpravịtrongDữ liệuđếnBảng tổng quan，cộngvịtrong ${selectedData.totalChecked} chiếctiếtđiểm`
     )
   }
 </script>

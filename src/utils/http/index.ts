@@ -24,7 +24,7 @@ const { VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT, VITE_WITH_CREDENTIALS } = import
 const axiosInstance = axios.create({
   timeout: REQUEST_TIMEOUT,
   baseURL: VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT,
-  withCredentials: VITE_WITH_CREDENTIALS === 'true',
+  withCredentials: VITE_WITH_CREDENTIALS !== 'false',
   validateStatus: (status) => status >= 200 && status < 300,
   transformResponse: [
     (data, headers) => {
@@ -43,6 +43,11 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (request: InternalAxiosRequestConfig) => {
+    // Tự động thêm /v1 vào đường dẫn nếu bắt đầu bằng /api để khớp với Backend
+    if (request.url?.startsWith('/api/')) {
+      request.url = request.url.replace(/^\/api\//, '/api/v1/')
+    }
+
     const userStore = useUserStore()
     if (userStore.accessToken)
       request.headers.set('Authorization', `Bearer ${userStore.accessToken}`)

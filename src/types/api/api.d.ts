@@ -39,6 +39,19 @@ declare namespace Api {
       email: string
       avatar?: string
     }
+
+    interface GoogleLoginParams {
+      idToken: string
+    }
+
+    interface FacebookLoginParams {
+      accessToken: string
+    }
+
+    interface ExternalAuthConfigResponse {
+      googleClientId: string
+      facebookAppId: string
+    }
   }
 
   namespace SystemManage {

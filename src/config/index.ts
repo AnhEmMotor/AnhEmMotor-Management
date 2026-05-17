@@ -6,7 +6,7 @@ import { headerBarConfig } from './modules/headerBar'
 
 const appConfig: SystemConfig = {
   systemInfo: {
-    name: 'Art Design Pro'
+    name: 'Anh Em Motor'
   },
 
   systemThemeStyles: {
@@ -86,6 +86,7 @@ const appConfig: SystemConfig = {
   ],
 
   systemMainColor: [
+    '#E84A4A',
     '#5D87FF',
     '#B48DF3',
     '#1D84FF',

@@ -1,10 +1,9 @@
-import { upgradeLogList } from '@/mock/upgrade/changeLog'
-import { ElNotification } from 'element-plus'
 import { useUserStore } from '@/store/modules/user'
 import { StorageConfig } from '@/utils/storage/storage-config'
 
 class VersionManager {
-  private normalizeVersion(version: string): string {
+  private normalizeVersion(version: string | undefined): string {
+    if (!version) return '0.0.0'
     return version.replace(/^v/, '')
   }
 
@@ -48,82 +47,34 @@ class VersionManager {
     return { oldSysKey, oldVersionKeys }
   }
 
-  private shouldRequireReLogin(storedVersion: string): boolean {
-    const normalizedCurrent = this.normalizeVersion(StorageConfig.CURRENT_VERSION)
-    const normalizedStored = this.normalizeVersion(storedVersion)
-
-    return upgradeLogList.value.some((item) => {
-      const itemVersion = this.normalizeVersion(item.version)
-      return (
-        item.requireReLogin && itemVersion > normalizedStored && itemVersion <= normalizedCurrent
-      )
-    })
-  }
-
-  private buildUpgradeMessage(requireReLogin: boolean): string {
-    const { title: content } = upgradeLogList.value[0]
-
-    const messageParts = [
-      `<p style="color: var(--art-gray-800) !important; padding-bottom: 5px;">`,
-      `HeThongĐãNâng cấpđến ${StorageConfig.CURRENT_VERSION} bảnquyển，nàylầnCập nhậtmangđếnrồilấydướisửavào：`,
-      `</p>`,
-      content
-    ]
-
-    if (requireReLogin) {
-      messageParts.push(
-        `<p style="color: var(--theme-color); padding-top: 5px;">Nâng cấphoànthành，Vui lòngtrùngmớiDangNhapsautiếptiếpkhiếndùng。</p>`
-      )
-    }
-
-    return messageParts.join('')
-  }
-
-  private showUpgradeNotification(message: string): void {
-    ElNotification({
-      title: 'HeThongNâng cấpcôngbáo',
-      message,
-      duration: 0,
-      type: 'success',
-      dangerouslyUseHTMLString: true
-    })
+  private shouldRequireReLogin(): boolean {
+    return false
   }
 
   private cleanupLegacyData(oldSysKey: string | null, oldVersionKeys: string[]): void {
     if (oldSysKey) {
       localStorage.removeItem(oldSysKey)
-      console.info(`[Upgrade] Đãxóalýcũtồntrữ: ${oldSysKey}`)
     }
 
     oldVersionKeys.forEach((key) => {
       localStorage.removeItem(key)
-      console.info(`[Upgrade] Đãxóalýcũtồntrữ: ${key}`)
     })
   }
 
   private performLogout(): void {
     try {
       useUserStore().logOut()
-      console.info('[Upgrade] ĐãThựcdòngNâng cấpsauđăngra')
-    } catch (error) {
-      console.error('[Upgrade] Nâng cấpsauđăngraThatBai:', error)
+    } catch {
+      // Ignore error during logout
     }
   }
 
   private async executeUpgrade(
-    storedVersion: string,
+    _storedVersion: string,
     legacyStorage: ReturnType<typeof this.findLegacyStorage>
   ): Promise<void> {
     try {
-      if (!upgradeLogList.value.length) {
-        console.warn('[Upgrade] Nâng cấpNhatKyDanh sáchvìkhông')
-        return
-      }
-
-      const requireReLogin = this.shouldRequireReLogin(storedVersion)
-      const message = this.buildUpgradeMessage(requireReLogin)
-
-      this.showUpgradeNotification(message)
+      const requireReLogin = this.shouldRequireReLogin()
 
       this.setStoredVersion(StorageConfig.CURRENT_VERSION)
 
@@ -132,18 +83,13 @@ class VersionManager {
       if (requireReLogin) {
         this.performLogout()
       }
-
-      console.info(
-        `[Upgrade] Nâng cấphoànthành: ${storedVersion} → ${StorageConfig.CURRENT_VERSION}`
-      )
-    } catch (error) {
-      console.error('[Upgrade] HeThongNâng cấpXuLyThatBai:', error)
+    } catch {
+      // Ignore upgrade errors
     }
   }
 
   async processUpgrade(): Promise<void> {
     if (this.shouldSkipUpgrade()) {
-      console.debug('[Upgrade] nhảyquabảnquyểnNâng cấpTìm')
       return
     }
 
@@ -162,7 +108,6 @@ class VersionManager {
     const legacyStorage = this.findLegacyStorage()
     if (!legacyStorage.oldSysKey && legacyStorage.oldVersionKeys.length === 0) {
       this.setStoredVersion(StorageConfig.CURRENT_VERSION)
-      console.info('[Upgrade] vôcũDữ liệu，ĐãCập nhậtbảnquyểnsố')
       return
     }
 

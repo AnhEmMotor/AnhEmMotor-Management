@@ -129,30 +129,30 @@
   },
   "login": {
     "leftView": {
-      "title": "HeThong quản lý thẩm mỹ và hiệu quả",
-      "subTitle": "Giao diện đẹp và thực tế, tối ưu trải nghiệm người dùng"
+      "title": "Hệ thống quản lý một cửa hàng bán xe máy vừa và nhỏ Anh Em Motor",
+      "subTitle": "Hệ thống hỗ trợ quản lý thông tin xe máy và quy trình bán hàng cho một cửa hàng vừa và nhỏ"
     },
     "title": "Chào mừng trở lại",
-    "subTitle": "Nhập tài khoản và mật khẩu của bạn để đăng nhập",
+    "subTitle": "Vui lòng nhập thông tin đăng nhập",
     "roles": {
       "super": "Quản trị viên cấp cao",
       "admin": "Quản trị viên",
       "user": "NguoiDung thường"
     },
     "placeholder": {
-      "username": "Vui lòng nhập tài khoản",
-      "password": "Vui lòng nhập mật khẩu",
+      "username": "Tên đăng nhập/email",
+      "password": "Mật khẩu",
       "slider": "Kéo thanh trượt để xác minh"
     },
     "sliderText": "Giữ và kéo thanh trượt",
     "sliderSuccessText": "Xác minh thành công",
     "rememberPwd": "Nhớ mật khẩu",
     "forgetPwd": "Quên mật khẩu",
-    "btnText": "DangNhap",
+    "btnText": "Đăng nhập",
     "noAccount": "Chưa có tài khoản?",
     "register": "DangKy",
     "success": {
-      "title": "DangNhap thành công",
+      "title": "Đăng nhập thành công",
       "message": "Chào mừng trở lại"
     }
   },
@@ -167,8 +167,8 @@
     "title": "Tạo tài khoản",
     "subTitle": "Chào mừng gia nhập, vui lòng điền thông tin bên dưới",
     "placeholder": {
-      "username": "Vui lòng nhập tài khoản",
-      "password": "Vui lòng nhập mật khẩu",
+      "username": "Tên đăng nhập/email",
+      "password": "Mật khẩu",
       "confirmPassword": "Nhập lại mật khẩu"
     },
     "rule": {
@@ -182,7 +182,7 @@
     "privacyPolicy": "《Chính sách bảo mật》",
     "submitBtnText": "DangKy",
     "hasAccount": "Đã có tài khoản?",
-    "toLogin": "DangNhap"
+    "toLogin": "Đăng nhập"
   },
   "lockScreen": {
     "pwdError": "Sai mật khẩu",
@@ -210,7 +210,7 @@
   },
   "menus": {
     "login": {
-      "title": "DangNhap"
+      "title": "Đăng nhập"
     },
     "register": {
       "title": "DangKy"
@@ -222,10 +222,10 @@
       "title": "Trang nhúng"
     },
     "dashboard": {
-      "title": "BangDieuKhien",
-      "console": "Bàn làm việc",
-      "analysis": "PhanTich",
-      "ecommerce": "Thương mại điện tử"
+      "title": "Bảng tổng quan",
+      "console": "Tổng quan hệ thống",
+      "analysis": "Phân tích dữ liệu",
+      "ecommerce": "Tổng quan kinh doanh"
     },
     "widgets": {
       "title": "Trung tâm Component",
@@ -357,7 +357,7 @@
     "t9": "Tên sản phẩm",
     "t10": "Lượng bán",
     "t11": "Tổng doanh thu",
-    "t12": "PhanTich khách truy cập",
+    "t12": "Phân tích dữ liệu khách truy cập",
     "t13": "Khối lượng công việc & Dịch vụ",
     "t14": "Về dự án",
     "t15": "Sử dụng công nghệ mới nhất như Vue3, TypeScript, Vite, Element Plus",

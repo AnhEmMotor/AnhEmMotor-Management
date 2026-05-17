@@ -4,7 +4,7 @@ import { SystemThemeEnum, MenuThemeEnum, MenuTypeEnum, ContainerWidthEnum } from
 export const SETTING_DEFAULT_CONFIG = {
   menuType: MenuTypeEnum.LEFT,
 
-  menuOpenWidth: 230,
+  menuOpenWidth: 260,
 
   menuOpen: true,
 

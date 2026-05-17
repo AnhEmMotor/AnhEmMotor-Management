@@ -33,7 +33,7 @@ export default {
     }
   },
   common: {
-    tips: 'bản ghi',
+    tips: 'Xác nhận đăng xuất?',
     cancel: 'Hủy',
     confirm: 'Xác nhận',
     logOutTips: 'Bạn có chắc chắn muốn đăng xuất không?'
@@ -130,31 +130,37 @@ export default {
   },
   login: {
     leftView: {
-      title: 'HeThong quản lý thẩm mỹ và hiệu quả',
-      subTitle: 'Giao diện đẹp và thực tế, tối ưu trải nghiệm người dùng'
+      title: 'Hệ thống quản lý một cửa hàng bán xe máy vừa và nhỏ Anh Em Motor',
+      subTitle:
+        'Hệ thống hỗ trợ quản lý thông tin xe máy và quy trình bán hàng cho một cửa hàng vừa và nhỏ'
     },
     title: 'Chào mừng trở lại',
-    subTitle: 'Nhập tài khoản và mật khẩu của bạn để đăng nhập',
+    subTitle: 'Vui lòng nhập thông tin đăng nhập',
     roles: {
       super: 'Quản trị viên cấp cao',
       admin: 'Quản trị viên',
       user: 'NguoiDung thường'
     },
     placeholder: {
-      username: 'Vui lòng nhập tài khoản',
-      password: 'Vui lòng nhập mật khẩu',
+      username: 'Tên đăng nhập/email',
+      password: 'Mật khẩu',
       slider: 'Kéo thanh trượt để xác minh'
     },
     sliderText: 'Giữ và kéo thanh trượt',
     sliderSuccessText: 'Xác minh thành công',
     rememberPwd: 'Nhớ mật khẩu',
     forgetPwd: 'Quên mật khẩu',
-    btnText: 'DangNhap',
+    btnText: 'Đăng nhập',
     noAccount: 'Chưa có tài khoản?',
     register: 'DangKy',
     success: {
-      title: 'DangNhap thành công',
-      message: 'Chào mừng trở lại'
+      title: 'Đăng nhập thành công',
+      message: 'Chào mừng trở lại',
+      defaultUser: 'Người dùng'
+    },
+    rules: {
+      usernameRequired: 'Vui lòng nhập tên đăng nhập hoặc email',
+      passwordRequired: 'Vui lòng nhập mật khẩu'
     }
   },
   forgetPassword: {
@@ -168,8 +174,8 @@ export default {
     title: 'Tạo tài khoản',
     subTitle: 'Chào mừng gia nhập, vui lòng điền thông tin bên dưới',
     placeholder: {
-      username: 'Vui lòng nhập tài khoản',
-      password: 'Vui lòng nhập mật khẩu',
+      username: 'Tên đăng nhập/email',
+      password: 'Mật khẩu',
       confirmPassword: 'Nhập lại mật khẩu'
     },
     rule: {
@@ -183,7 +189,7 @@ export default {
     privacyPolicy: '《Chính sách bảo mật》',
     submitBtnText: 'DangKy',
     hasAccount: 'Đã có tài khoản?',
-    toLogin: 'DangNhap'
+    toLogin: 'Đăng nhập'
   },
   lockScreen: {
     pwdError: 'Sai mật khẩu',
@@ -211,7 +217,7 @@ export default {
   },
   menus: {
     login: {
-      title: 'DangNhap'
+      title: 'Đăng nhập'
     },
     register: {
       title: 'DangKy'
@@ -223,10 +229,10 @@ export default {
       title: 'Trang nhúng'
     },
     dashboard: {
-      title: 'BangDieuKhien',
-      console: 'Bàn làm việc',
-      analysis: 'PhanTich',
-      ecommerce: 'Thương mại điện tử'
+      title: 'Bảng tổng quan',
+      console: 'Tổng quan hệ thống',
+      analysis: 'Phân tích dữ liệu',
+      ecommerce: 'Tổng quan kinh doanh'
     },
     widgets: {
       title: 'Trung tâm Component',
@@ -321,7 +327,7 @@ export default {
       title: 'Quản lý sản phẩm',
       brand: {
         title: 'Quản lý Thương hiệu',
-        records: 'bản ghi'
+        records: 'Xác nhận đăng xuất?'
       },
       type: {
         title: 'Quản lý Thể loại',
@@ -455,7 +461,7 @@ export default {
     t45: 'Tên sản phẩm',
     t46: 'Lượng bán',
     t47: 'Tổng thu nhập',
-    t48: 'PhanTich khách truy cập',
+    t48: 'Phân tích dữ liệu khách truy cập',
     t49: 'Khối lượng công việc và mức độ dịch vụ',
     t50: 'vềmụcmục',
     t51: 'Sử dụng các công nghệ tiên tiến như Vue3, TypeScript, Vite, Element Plus',

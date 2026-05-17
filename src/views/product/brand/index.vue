@@ -36,7 +36,7 @@
           <div class="flex items-center gap-2">
             <h4 class="m-0">Danh sách thương hiệu</h4>
             <ElTag size="small" type="danger" v-if="!loading" effect="dark" round>
-              {{ pagination.total }} bản ghi
+              {{ pagination.total }} Xác nhận đăng xuất?
             </ElTag>
           </div>
         </div>

@@ -89,7 +89,7 @@
                 <code class="block p-1 px-2 mb-1 font-mono bg-g-200 border-full-d rounded"
                   >v-roles="['R_SUPER', 'R_ADMIN', 'R_USER']"</code
                 >
-                <span class="text-g-700">nêncóĐãDangNhapNguoiDungHiển thị</span>
+                <span class="text-g-700">nêncóĐãĐăng nhậpNguoiDungHiển thị</span>
               </div>
             </div>
           </div>

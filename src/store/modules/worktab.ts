@@ -354,7 +354,7 @@ export const useWorktabStore = defineStore(
           current.value = {}
         }
       } catch (error) {
-        console.error('nghiệmtínhBàn làm việcThẻ TabThatBai:', error)
+        console.error('nghiệmtínhTổng quan hệ thốngThẻ TabThatBai:', error)
       }
     }
 
