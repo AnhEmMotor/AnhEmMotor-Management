@@ -392,11 +392,11 @@ export default {
   },
   table: {
     form: {
-      reset: 'Làm lại',
+      reset: 'Xóa bộ lọc',
       submit: 'Gửi'
     },
     searchBar: {
-      reset: 'Làm lại',
+      reset: 'Xóa bộ lọc',
       search: 'Tìm kiếm',
       expand: 'Mở rộng',
       collapse: 'Thu gọn',

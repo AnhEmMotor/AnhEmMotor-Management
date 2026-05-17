@@ -38,5 +38,19 @@ export const BrandApi = {
     return request.del({
       url: `/api/Brand/${id}`
     })
+  },
+
+  getStatistics() {
+    return request.get<any>({
+      url: '/api/Brand/statistics'
+    })
+  },
+
+  export(params: any) {
+    return request.get<Blob>({
+      url: '/api/Brand/export',
+      params,
+      responseType: 'blob'
+    })
   }
 }

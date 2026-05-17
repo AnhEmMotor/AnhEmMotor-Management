@@ -131,7 +131,7 @@
     border: undefined,
     size: undefined,
     emptyHeight: '100%',
-    emptyText: 'TạmvôDữ liệu',
+    emptyText: 'Không có dữ liệu. Vui lòng thử lại sau!',
     showTableHeader: true
   })
   const instance = getCurrentInstance()

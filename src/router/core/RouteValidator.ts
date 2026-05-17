@@ -44,7 +44,7 @@ export class RouteValidator {
         if (route.name) {
           const routeName = String(route.name)
           if (routeNameMap.has(routeName)) {
-            warnings.push(`Routingthựctênlàm lạilời: "${routeName}" (${fullPath})`)
+            warnings.push(`RoutingthựctênXóa bộ lọclời: "${routeName}" (${fullPath})`)
           } else {
             routeNameMap.set(routeName, fullPath)
           }
@@ -55,7 +55,7 @@ export class RouteValidator {
           if (componentPath !== RoutesAlias.Layout) {
             const componentKey = `${parentPath}:${componentPath}`
             if (componentPathMap.has(componentKey)) {
-              warnings.push(`Componentđườnglàm lạilời: "${componentPath}" (${fullPath})`)
+              warnings.push(`ComponentđườngXóa bộ lọclời: "${componentPath}" (${fullPath})`)
             } else {
               componentPathMap.set(componentKey, fullPath)
             }
