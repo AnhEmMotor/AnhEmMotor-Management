@@ -308,6 +308,11 @@ export default {
       menu32: 'Menu 3-2',
       menu321: 'Menu 3-2-1'
     },
+    auth: {
+      title: 'Authorization',
+      user: 'Users & Roles',
+      role: 'Role Permissions'
+    },
     safeguard: {
       title: 'Safeguard',
       server: 'Server'

@@ -11,28 +11,6 @@ export const systemRoutes: AppRouteRecord = {
   },
   children: [
     {
-      path: 'user',
-      name: 'User',
-      component: '/system/user',
-      meta: {
-        title: 'menus.system.user',
-        icon: 'ri:user-line',
-        keepAlive: true,
-        roles: ['R_SUPER', 'R_ADMIN']
-      }
-    },
-    {
-      path: 'role',
-      name: 'Role',
-      component: '/system/role',
-      meta: {
-        title: 'menus.system.role',
-        icon: 'ri:user-settings-line',
-        keepAlive: true,
-        roles: ['R_SUPER']
-      }
-    },
-    {
       path: 'user-center',
       name: 'UserCenter',
       component: '/system/user-center',

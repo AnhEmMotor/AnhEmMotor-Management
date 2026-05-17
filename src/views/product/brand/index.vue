@@ -44,7 +44,7 @@
 
       <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
-          <ElButton type="primary" v-ripple @click="handleAdd">
+          <ElButton v-auth="'Permissions.Brands.Create'" type="primary" v-ripple @click="handleAdd">
             <ElIcon><Plus /></ElIcon> Thêm thương hiệu
           </ElButton>
           <ElButton v-ripple>
@@ -96,8 +96,16 @@
 
         <template #operation="{ row }">
           <div class="flex gap-2 justify-center">
-            <ArtButtonTable type="edit" @click="handleEdit(row)" />
-            <ArtButtonTable type="delete" @click="handleDelete(row)" />
+            <ArtButtonTable
+              v-auth="'Permissions.Brands.Edit'"
+              type="edit"
+              @click="handleEdit(row)"
+            />
+            <ArtButtonTable
+              v-auth="'Permissions.Brands.Delete'"
+              type="delete"
+              @click="handleDelete(row)"
+            />
           </div>
         </template>
       </ArtTable>

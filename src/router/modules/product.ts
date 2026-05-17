@@ -16,7 +16,8 @@ export const productRoutes: AppRouteRecord = {
       component: '/product/brand/index',
       meta: {
         title: 'menus.product.brand.title',
-        icon: 'ri:medal-line'
+        icon: 'ri:medal-line',
+        permissions: ['Permissions.Brands.View']
       }
     },
     {

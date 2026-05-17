@@ -309,6 +309,11 @@ export default {
       menu32: 'Menu 3-2',
       menu321: 'Menu 3-2-1'
     },
+    auth: {
+      title: 'Quản lý phân quyền',
+      user: 'Người dùng & Vai trò',
+      role: 'Quyền hạn vai trò'
+    },
     safeguard: {
       title: 'Quản lý Vận hành',
       server: 'MayChu'

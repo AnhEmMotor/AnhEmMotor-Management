@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
+import { fetchEventSource } from '@microsoft/fetch-event-source'
 import { LanguageEnum } from '@/enums/appEnum'
 import { router } from '@/router'
 import { useSettingStore } from './setting'
@@ -120,6 +121,185 @@ export const useUserStore = defineStore(
       localStorage.removeItem(StorageConfig.LAST_USER_ID_KEY)
     }
 
+    const mapUserInfo = (data: any): Api.Auth.UserInfo => {
+      return {
+        userId: data.id || info.value.userId || '',
+        userName: data.fullName || data.nickName || data.userName || info.value.userName || '',
+        email: data.email || info.value.email || '',
+        avatar: data.avatarUrl || info.value.avatar || '',
+        roles: data.roles || info.value.roles || [],
+        buttons: data.permissions || info.value.buttons || []
+      }
+    }
+
+    let abortController: AbortController | null = null
+    let retryTimeout: any = null
+    let retryDelay = 1000
+    const sseStatus = ref<'disconnected' | 'connecting' | 'connected' | 'error'>('disconnected')
+
+    const connectSSE = async (retryCount = 0) => {
+      if (abortController || !isLogin.value) return
+
+      const token = accessToken.value
+      if (!token) return
+
+      abortController = new AbortController()
+      const baseUrl =
+        import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:5000'
+      const sseUrl = `${baseUrl}/api/v1/user/me`
+
+      sseStatus.value = 'connecting'
+
+      try {
+        await fetchEventSource(sseUrl, {
+          method: 'GET',
+          signal: abortController.signal,
+          openWhenHidden: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'text/event-stream'
+          },
+          async onopen(response) {
+            if (
+              response.ok &&
+              response.headers.get('content-type')?.includes('text/event-stream')
+            ) {
+              sseStatus.value = 'connected'
+              retryDelay = 1000
+              return
+            }
+
+            if (response.status === 401) {
+              throw new Error('SSE_AUTH_ERROR')
+            }
+
+            if (response.status >= 400 && response.status < 500 && response.status !== 429) {
+              sseStatus.value = 'error'
+              throw new Error(`Fatal SSE error: ${response.status}`)
+            }
+            throw new Error(`SSE Connection failed: ${response.status}`)
+          },
+          onmessage(msg) {
+            if (!msg.data || msg.data === 'heartbeat') return
+            try {
+              const data = JSON.parse(msg.data)
+              if (data && (data.userName || data.id)) {
+                info.value = mapUserInfo(data)
+              }
+            } catch (e) {
+              console.error('Failed to parse SSE message data:', e)
+            }
+          },
+          onclose() {
+            sseStatus.value = 'disconnected'
+            abortController = null
+            if (isLogin.value) {
+              const delay = Math.min(retryDelay, 30000)
+              retryDelay = Math.min(delay * 2, 30000)
+              retryTimeout = setTimeout(() => connectSSE(), delay)
+            }
+          },
+          onerror(err) {
+            sseStatus.value = 'error'
+            if (err.message === 'SSE_AUTH_ERROR') {
+              if (abortController) {
+                abortController.abort()
+                abortController = null
+              }
+              if (retryCount < 3) {
+                logOut()
+              } else {
+                logOut()
+              }
+              throw err
+            }
+
+            if (err.message.includes('Fatal')) {
+              if (abortController) {
+                abortController.abort()
+                abortController = null
+              }
+              throw err
+            }
+          }
+        })
+      } catch (err: any) {
+        if (err.message !== 'SSE_AUTH_ERROR') {
+          sseStatus.value = 'error'
+          abortController = null
+          if (isLogin.value && !err.message?.includes('Fatal')) {
+            const delay = Math.min(retryDelay, 30000)
+            retryDelay = Math.min(delay * 2, 30000)
+            retryTimeout = setTimeout(() => connectSSE(), delay)
+          }
+        }
+      }
+    }
+
+    const closeSSE = () => {
+      if (retryTimeout) {
+        clearTimeout(retryTimeout)
+        retryTimeout = null
+      }
+      if (abortController) {
+        abortController.abort()
+        abortController = null
+        sseStatus.value = 'disconnected'
+      }
+      retryDelay = 1000
+    }
+
+    const reconnectSSE = () => {
+      closeSSE()
+      connectSSE()
+    }
+
+    watch(
+      () => isLogin.value,
+      (loggedIn) => {
+        if (loggedIn) {
+          connectSSE()
+        } else {
+          closeSSE()
+        }
+      },
+      { immediate: true }
+    )
+
+    // Watch for real-time permissions/roles changes via SSE to reload menus and validate access
+    watch(
+      () => [info.value?.buttons, info.value?.roles],
+      async (newVal, oldVal) => {
+        if (!isLogin.value) return
+
+        if (oldVal && JSON.stringify(newVal) === JSON.stringify(oldVal)) return
+
+        try {
+          const { MenuProcessor } = await import('@/router/core/MenuProcessor')
+          const menuProcessor = new MenuProcessor()
+          const menuList = await menuProcessor.getMenuList()
+
+          const menuStore = useMenuStore()
+          menuStore.setMenuList(menuList)
+
+          const currentRoute = router.currentRoute.value
+          if (currentRoute.matched.length > 0) {
+            const { RoutePermissionValidator } =
+              await import('@/router/core/RoutePermissionValidator')
+            const hasAccess = RoutePermissionValidator.hasPermission(currentRoute.path, menuList)
+            if (!hasAccess) {
+              const { useCommon } = await import('@/hooks/core/useCommon')
+              const { homePath } = useCommon()
+              router.push(homePath.value || '/')
+            }
+          }
+        } catch (err) {
+          console.error('Failed to regenerate menus on permission change:', err)
+        }
+      },
+      { deep: true }
+    )
+
     return {
       language,
       isLogin,
@@ -140,7 +320,11 @@ export const useUserStore = defineStore(
       setLockPassword,
       setToken,
       logOut,
-      checkAndClearWorktabs
+      checkAndClearWorktabs,
+      sseStatus,
+      connectSSE,
+      closeSSE,
+      reconnectSSE
     }
   },
   {

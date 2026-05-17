@@ -192,7 +192,7 @@
     handleCurrentChange
   } = useTable({
     core: {
-      apiFn: fetchGetUserList,
+      apiFn: fetchGetUserList as any,
       apiParams: {
         current: 1,
         size: 20,
@@ -213,7 +213,7 @@
           prop: 'userGender',
           label: 'GioiTinh',
           sortable: true,
-          formatter: (row) => row.userGender || 'Chưabáo'
+          formatter: (row: any) => row.userGender || 'Chưabáo'
         },
         {
           prop: 'userPhone',

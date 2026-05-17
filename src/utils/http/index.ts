@@ -92,9 +92,19 @@ axiosInstance.interceptors.response.use(
       const { status, data } = response
       if (status === ApiStatus.unauthorized) handleUnauthorizedError()
 
-      const backendMsg = data?.Message || data?.msg || data?.message
+      let backendMsg = data?.Message || data?.msg || data?.message
+      if (!backendMsg && data?.errors) {
+        if (Array.isArray(data.errors)) {
+          backendMsg = data.errors
+            .map((e: any) => e.message || e.Message || JSON.stringify(e))
+            .join(', ')
+        } else if (typeof data.errors === 'object') {
+          backendMsg = Object.values(data.errors).flat().join(', ')
+        }
+      }
+
       if (backendMsg) {
-        return Promise.reject(createHttpError(backendMsg, status))
+        return Promise.reject(new HttpError(backendMsg, status, { data }))
       }
     }
     return Promise.reject(handleError(error))

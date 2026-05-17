@@ -54,7 +54,10 @@
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
     "@iconify/vue": "^5.0.1",
+    "@microsoft/fetch-event-source": "^2.0.1",
     "@tailwindcss/vite": "^4.3.0",
+    "@tanstack/vue-query": "^5.100.10",
+    "@tanstack/vue-query-devtools": "^6.1.29",
     "@vue/reactivity": "^3.5.34",
     "@vueuse/core": "^14.3.0",
     "@wangeditor/editor": "^5.1.23",

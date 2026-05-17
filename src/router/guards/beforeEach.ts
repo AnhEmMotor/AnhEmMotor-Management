@@ -242,12 +242,7 @@ async function fetchUserInfo(): Promise<void> {
     userName: data.fullName || data.nickName || data.userName || '',
     email: data.email || '',
     avatar: data.avatarUrl || '',
-    roles: (data.roles || []).map((r: string) => {
-      const lower = r.toLowerCase()
-      if (lower.includes('super')) return 'R_SUPER'
-      if (lower.includes('admin')) return 'R_ADMIN'
-      return r
-    }),
+    roles: data.roles || [],
     buttons: data.permissions || []
   }
 

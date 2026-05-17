@@ -67,6 +67,7 @@ export class HttpError extends Error {
 
 const getErrorMessage = (status: number): string => {
   const errorMap: Record<number, string> = {
+    [ApiStatus.error]: 'httpMsg.requestFailed',
     [ApiStatus.unauthorized]: 'httpMsg.unauthorized',
     [ApiStatus.forbidden]: 'httpMsg.forbidden',
     [ApiStatus.notFound]: 'httpMsg.notFound',
@@ -111,7 +112,8 @@ export function handleError(error: AxiosError<ErrorResponse>): never {
 export function showError(error: HttpError, showMessage: boolean = true): void {
   if (showMessage) {
     ElNotification({
-      title: $t('common.tips'),
+      title:
+        error.code === ApiStatus.unauthorized ? $t('common.tips') : $t('httpMsg.requestFailed'),
       message: error.message,
       type: 'error',
       position: 'bottom-right'
