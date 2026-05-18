@@ -1,61 +1,23 @@
 <template>
   <div class="flex flex-col gap-4 pb-5">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <ArtStatsCard
         :title="$t('menus.product.type.stats.total')"
         :count="stats.totalCategories"
-        description="Tổng số thể loại hiện có"
         icon="ri:folders-line"
         iconStyle="bg-primary"
       />
       <ArtStatsCard
-        :title="$t('menus.product.type.stats.product')"
-        :count="stats.productCategoriesCount"
-        description="Số lượng danh mục sản phẩm"
-        icon="ri:shopping-bag-3-line"
-        iconStyle="bg-success"
-      />
-      <ArtStatsCard
-        :title="$t('menus.product.type.stats.vehicle')"
-        :count="stats.vehicleTypesCount"
-        description="Số lượng dòng xe"
-        icon="ri:motorbike-line"
+        :title="$t('menus.product.type.stats.new')"
+        :count="stats.latestUpdatedCategoryName || 'Chưa có'"
+        :description="
+          stats.latestUpdatedAt
+            ? 'Thời gian cập nhật: ' + formatDateTime(stats.latestUpdatedAt)
+            : 'Chưa có cập nhật mới'
+        "
+        icon="ri:time-line"
         iconStyle="bg-info"
       />
-      <ArtStatsCard
-        :title="$t('menus.product.type.stats.new')"
-        :count="
-          activeTab === 'vehicle' ? stats.newVehicleTypesCount : stats.newProductCategoriesCount
-        "
-        :description="
-          activeTab === 'vehicle'
-            ? stats.newVehicleTypeName
-              ? stats.newVehicleTypeName + ' - Mới thêm'
-              : 'Chưa có dòng xe mới'
-            : stats.newProductCategoryName
-              ? stats.newProductCategoryName + ' - Mới thêm'
-              : 'Chưa có danh mục mới'
-        "
-        icon="ri:add-circle-line"
-        iconStyle="bg-warning"
-      />
-    </div>
-
-    <div class="bg-white p-1 rounded-lg shadow-sm self-start flex gap-1 border border-gray-100">
-      <div
-        v-for="tab in tabs"
-        :key="tab.value"
-        class="px-6 py-2 rounded-md cursor-pointer transition-all text-sm font-medium flex items-center gap-2"
-        :class="
-          activeTab === tab.value
-            ? 'bg-primary text-white shadow-md'
-            : 'text-gray-500 hover:bg-gray-50'
-        "
-        @click="activeTab = tab.value"
-      >
-        <ElIcon><component :is="tab.icon" /></ElIcon>
-        {{ $t('menus.' + tab.label) }}
-      </div>
     </div>
 
     <ArtSearchBar
@@ -72,7 +34,7 @@
           <ElButton type="primary" v-ripple @click="handleAdd">
             <ElIcon><Plus /></ElIcon> Thêm mới
           </ElButton>
-          <ElButton v-ripple>
+          <ElButton :loading="exporting" v-ripple @click="handleExport">
             <ElIcon><Download /></ElIcon> Xuất file
           </ElButton>
         </template>
@@ -83,7 +45,6 @@
         :loading="loading"
         :data="tableData"
         :columns="columns"
-        :pagination="activeTab === 'vehicle' ? pagination : undefined"
         row-key="id"
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
@@ -91,7 +52,6 @@
         <template #imageUrl="{ row }">
           <span
             class="inline-flex items-center justify-center h-10 w-10 bg-gray-50 rounded shadow-inner border border-gray-100 overflow-hidden align-middle"
-            :class="activeTab === 'vehicle' ? 'mx-auto' : ''"
           >
             <ElImage
               v-if="row.imageUrl"
@@ -138,16 +98,16 @@
     <ElDialog
       v-model="dialogVisible"
       :title="dialogTitle"
-      width="550px"
+      width="650px"
       append-to-body
       destroy-on-close
     >
-      <ElForm :model="formData" label-width="110px" class="mt-4 pr-4">
+      <ElForm :model="formData" label-width="140px" class="mt-4 pr-4">
         <ElFormItem label="Tên thể loại" required>
           <ElInput v-model="formData.name" placeholder="Nhập tên thể loại..." />
         </ElFormItem>
 
-        <ElFormItem v-if="activeTab === 'product'" label="Thể loại cha">
+        <ElFormItem label="Thể loại cha">
           <ElSelect
             v-model="formData.parentId"
             placeholder="Chọn thể loại cha (nếu có)..."
@@ -194,10 +154,6 @@
           </ElUpload>
         </ElFormItem>
 
-        <ElFormItem label="Thứ tự">
-          <ElInputNumber v-model="formData.sortOrder" :min="0" />
-        </ElFormItem>
-
         <ElFormItem label="Trạng thái">
           <ElSwitch v-model="formData.isActive" active-text="Hoạt động" inactive-text="Tạm dừng" />
         </ElFormItem>
@@ -220,21 +176,23 @@
     </ElDialog>
   </div>
 </template>
+
 <script setup lang="ts">
-  import { Plus, Picture, Download, Box, Bicycle } from '@element-plus/icons-vue'
+  import { ref, watch, nextTick } from 'vue'
+  import { Plus, Picture, Download } from '@element-plus/icons-vue'
   import { useCategoryTable } from './hooks/useCategoryTable'
   import { FileApi } from '@/api/file.api'
   import { ElMessage } from 'element-plus'
 
   defineOptions({ name: 'ProductType' })
 
+  const tableRef = ref()
+
   const {
-    activeTab,
     tableData,
     stats,
     parentCategories,
     loading,
-    pagination,
     columns,
     columnChecks,
     handleSizeChange,
@@ -242,6 +200,7 @@
     handleSearch,
     handleReset,
     refreshData,
+    isSearching,
 
     dialogVisible,
     dialogTitle,
@@ -250,8 +209,37 @@
     handleAdd,
     handleEdit,
     handleDelete,
-    submitForm
+    submitForm,
+    exporting,
+    handleExport
   } = useCategoryTable()
+
+  watch(
+    () => tableData.value,
+    (newData) => {
+      if (isSearching.value && newData?.length) {
+        nextTick(() => {
+          if (tableRef.value?.elTableRef) {
+            const expandRows = (rows: any[]) => {
+              rows.forEach((row) => {
+                if (row.children?.length) {
+                  tableRef.value.elTableRef.toggleRowExpansion(row, true)
+                  expandRows(row.children)
+                }
+              })
+            }
+            expandRows(newData)
+          }
+        })
+      }
+    },
+    { deep: true }
+  )
+
+  const formatDateTime = (val: string | null | undefined) => {
+    if (!val) return 'Chưa có cập nhật'
+    return new Date(val).toLocaleString('vi-VN')
+  }
 
   const handleUpload = async (options: any) => {
     try {
@@ -262,11 +250,6 @@
       ElMessage.error(err.message || 'Tải ảnh thất bại')
     }
   }
-
-  const tabs = [
-    { label: 'product.type.tabs.product', value: 'product', icon: Box },
-    { label: 'product.type.tabs.vehicle', value: 'vehicle', icon: Bicycle }
-  ]
 
   const searchItems = [
     {

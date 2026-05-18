@@ -5,6 +5,7 @@
       :model="modelValue"
       :label-position="labelPosition"
       v-bind="{ ...$attrs }"
+      @submit.prevent="handleSearch"
     >
       <ElRow :gutter="gutter">
         <ElCol
@@ -72,7 +73,7 @@
                 v-if="showSearch"
                 type="primary"
                 class="search-button"
-                @click="handleSearch"
+                native-type="submit"
                 v-ripple
                 :disabled="disabledSearch"
               >

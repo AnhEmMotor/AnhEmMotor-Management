@@ -337,10 +337,10 @@ export default {
       type: {
         title: 'Quản lý Thể loại',
         stats: {
-          total: 'Tổng thể loại',
+          total: 'Tổng số lượng thể loại',
           product: 'Danh mục Sản phẩm',
           vehicle: 'Dòng xe',
-          new: 'Mới thêm'
+          new: 'Mới cập nhật'
         },
         tabs: {
           product: 'Sản phẩm',
