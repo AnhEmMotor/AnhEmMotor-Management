@@ -3,28 +3,39 @@
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
       <ArtStatsCard
         :title="$t('menus.product.type.stats.total')"
-        :count="pagination.total"
+        :count="stats.totalCategories"
         description="Tổng số thể loại hiện có"
         icon="ri:folders-line"
         iconStyle="bg-primary"
       />
       <ArtStatsCard
         :title="$t('menus.product.type.stats.product')"
-        :count="12"
+        :count="stats.productCategoriesCount"
         description="Số lượng danh mục sản phẩm"
         icon="ri:shopping-bag-3-line"
         iconStyle="bg-success"
       />
       <ArtStatsCard
         :title="$t('menus.product.type.stats.vehicle')"
-        :count="8"
+        :count="stats.vehicleTypesCount"
         description="Số lượng dòng xe"
         icon="ri:motorbike-line"
         iconStyle="bg-info"
       />
       <ArtStatsCard
         :title="$t('menus.product.type.stats.new')"
-        description="Tay côn - Mới thêm"
+        :count="
+          activeTab === 'vehicle' ? stats.newVehicleTypesCount : stats.newProductCategoriesCount
+        "
+        :description="
+          activeTab === 'vehicle'
+            ? stats.newVehicleTypeName
+              ? stats.newVehicleTypeName + ' - Mới thêm'
+              : 'Chưa có dòng xe mới'
+            : stats.newProductCategoryName
+              ? stats.newProductCategoryName + ' - Mới thêm'
+              : 'Chưa có danh mục mới'
+        "
         icon="ri:add-circle-line"
         iconStyle="bg-warning"
       />
@@ -56,21 +67,6 @@
     />
 
     <ElCard class="flex-1 art-table-card">
-      <template #header>
-        <div class="flex-cb">
-          <div class="flex items-center gap-2">
-            <h4 class="m-0">{{
-              activeTab === 'product'
-                ? $t('menus.product.type.table.titleProduct')
-                : $t('menus.product.type.table.titleVehicle')
-            }}</h4>
-            <ElTag size="small" type="danger" v-if="!loading" effect="dark" round>
-              {{ pagination.total }} {{ $t('menus.product.brand.records') }}
-            </ElTag>
-          </div>
-        </div>
-      </template>
-
       <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
           <ElButton type="primary" v-ripple @click="handleAdd">
@@ -85,15 +81,17 @@
       <ArtTable
         ref="tableRef"
         :loading="loading"
-        :data="data"
+        :data="tableData"
         :columns="columns"
-        :pagination="pagination"
+        :pagination="activeTab === 'vehicle' ? pagination : undefined"
+        row-key="id"
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
         <template #imageUrl="{ row }">
-          <div
-            class="flex-c h-10 w-10 bg-gray-50 rounded shadow-inner border border-gray-100 overflow-hidden mx-auto"
+          <span
+            class="inline-flex items-center justify-center h-10 w-10 bg-gray-50 rounded shadow-inner border border-gray-100 overflow-hidden align-middle"
+            :class="activeTab === 'vehicle' ? 'mx-auto' : ''"
           >
             <ElImage
               v-if="row.imageUrl"
@@ -104,13 +102,21 @@
               preview-teleported
             />
             <ElIcon v-else class="text-gray-300"><Picture /></ElIcon>
-          </div>
+          </span>
         </template>
 
         <template #name="{ row }">
-          <div class="flex flex-col">
-            <span class="font-bold text-gray-800">{{ row.name }}</span>
-            <span class="text-[11px] text-gray-400">ID: {{ row.id }}</span>
+          <div class="flex flex-col text-left">
+            <span
+              :class="
+                row.parentId
+                  ? 'text-gray-600 font-medium text-sm'
+                  : 'text-gray-900 font-bold text-sm'
+              "
+            >
+              {{ row.name }}
+            </span>
+            <span class="text-[10px] text-gray-400">ID: {{ row.id }}</span>
           </div>
         </template>
 
@@ -139,6 +145,23 @@
       <ElForm :model="formData" label-width="110px" class="mt-4 pr-4">
         <ElFormItem label="Tên thể loại" required>
           <ElInput v-model="formData.name" placeholder="Nhập tên thể loại..." />
+        </ElFormItem>
+
+        <ElFormItem v-if="activeTab === 'product'" label="Thể loại cha">
+          <ElSelect
+            v-model="formData.parentId"
+            placeholder="Chọn thể loại cha (nếu có)..."
+            clearable
+            filterable
+            class="w-full"
+          >
+            <ElOption
+              v-for="cat in parentCategories"
+              :key="cat.id"
+              :label="cat.name"
+              :value="cat.id"
+            />
+          </ElSelect>
         </ElFormItem>
 
         <ElFormItem label="Đường dẫn (Slug)">
@@ -207,7 +230,9 @@
 
   const {
     activeTab,
-    data,
+    tableData,
+    stats,
+    parentCategories,
     loading,
     pagination,
     columns,
@@ -290,5 +315,16 @@
     height: 80px;
     object-fit: cover;
     border-radius: 12px;
+  }
+
+  /* Custom tree table styles for premium visual depth */
+  :deep(.el-table__row--level-1) {
+    background-color: #fafafa !important;
+  }
+
+  :deep(.el-table__expand-icon) {
+    margin-right: 8px !important;
+    font-weight: bold;
+    color: var(--main-color) !important;
   }
 </style>
