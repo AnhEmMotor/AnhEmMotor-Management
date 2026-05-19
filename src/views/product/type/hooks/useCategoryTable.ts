@@ -1,16 +1,60 @@
 import { useTable } from '@/hooks/core/useTable'
 import { CategoryApi } from '@/api/product/category.api'
-import { VehicleTypeApi } from '@/api/product/vehicleType.api'
-import { ref, watch } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import type { ProductCategory } from '@/domain/product/category.types'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { buildTree } from '@/utils'
 
 export function useCategoryTable() {
-  const activeTab = ref('product')
   const dialogVisible = ref(false)
   const dialogTitle = ref('')
   const formData = ref<Partial<ProductCategory>>({})
+
+  const generateSlug = (text: string) => {
+    return text
+      .toString()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[đĐ]/g, 'd')
+      .replace(/([^0-9a-z-\s])/g, '')
+      .replace(/(\s+)/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-+|-+$/g, '')
+  }
+
+  watch(
+    () => formData.value.name,
+    (newName) => {
+      if (dialogTitle.value.includes('Thêm') && newName) {
+        formData.value.slug = generateSlug(newName)
+      }
+    }
+  )
   const submitting = ref(false)
+
+  const stats = ref({
+    totalCategories: 0,
+    productCategoriesCount: 0,
+    latestUpdatedCategoryName: '',
+    latestUpdatedAt: ''
+  })
+
+  const fetchStats = async () => {
+    try {
+      const res = await CategoryApi.getStats()
+      if (res) {
+        stats.value = {
+          totalCategories: res.totalCategories || 0,
+          productCategoriesCount: res.productCategoriesCount || 0,
+          latestUpdatedCategoryName: res.latestUpdatedCategoryName || '',
+          latestUpdatedAt: res.latestUpdatedAt || ''
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch category stats:', err)
+    }
+  }
 
   const {
     data,
@@ -22,24 +66,23 @@ export function useCategoryTable() {
     handleCurrentChange,
     getData,
     refreshData,
-    replaceSearchParams
+    replaceSearchParams,
+    searchParams
   } = useTable({
     core: {
       apiFn: (params: any) => {
-        return (
-          activeTab.value === 'vehicle'
-            ? VehicleTypeApi.getList(params)
-            : CategoryApi.getList(params)
-        ) as Promise<Api.Common.PaginatedResponse<ProductCategory>>
+        return CategoryApi.getList({
+          ...params,
+          size: 1000 // Get all categories to build tree properly
+        }) as unknown as Promise<Api.Common.PaginatedResponse<ProductCategory>>
       },
       apiParams: {
         current: 1,
         size: 10
       },
       columnsFactory: () => [
-        { type: 'index', label: 'STT', width: 70, align: 'center' },
-        { prop: 'imageUrl', label: 'Hình ảnh', width: 100, useSlot: true, align: 'center' },
-        { prop: 'name', label: 'Tên thể loại', minWidth: 200, useSlot: true },
+        { prop: 'imageUrl', label: 'Hình ảnh', width: 120, useSlot: true, align: 'left' },
+        { prop: 'name', label: 'Tên thể loại', minWidth: 220, useSlot: true },
         { prop: 'slug', label: 'Slug', width: 180 },
         { prop: 'productCount', label: 'Số sản phẩm', width: 120, align: 'center' },
         { prop: 'isActive', label: 'Trạng thái', width: 120, useSlot: true, align: 'center' },
@@ -55,21 +98,31 @@ export function useCategoryTable() {
     }
   })
 
+  const tableData = computed<any[]>(() => {
+    return buildTree(data.value as ProductCategory[])
+  })
+
+  const parentCategories = computed<ProductCategory[]>(() => {
+    return (data.value as ProductCategory[]).filter(
+      (c) => !c.parentId && c.id !== formData.value.id
+    )
+  })
+
   const handleAdd = () => {
-    dialogTitle.value = activeTab.value === 'vehicle' ? 'Thêm loại xe mới' : 'Thêm danh mục mới'
+    dialogTitle.value = 'Thêm danh mục mới'
     formData.value = {
       name: '',
       slug: '',
       imageUrl: '',
       description: '',
       isActive: true,
-      sortOrder: 0
+      parentId: null
     }
     dialogVisible.value = true
   }
 
   const handleEdit = (row: ProductCategory) => {
-    dialogTitle.value = activeTab.value === 'vehicle' ? 'Cập nhật loại xe' : 'Cập nhật danh mục'
+    dialogTitle.value = 'Cập nhật danh mục'
     formData.value = { ...row }
     dialogVisible.value = true
   }
@@ -81,13 +134,10 @@ export function useCategoryTable() {
       type: 'warning'
     }).then(async () => {
       try {
-        if (activeTab.value === 'vehicle') {
-          await VehicleTypeApi.delete(row.id)
-        } else {
-          await CategoryApi.delete(row.id)
-        }
+        await CategoryApi.delete(row.id)
         ElMessage.success('Xóa thành công')
-        refreshData()
+        await refreshData()
+        await fetchStats()
       } catch (err: any) {
         ElMessage.error(err.message || 'Xóa thất bại')
       }
@@ -97,16 +147,16 @@ export function useCategoryTable() {
   const submitForm = async () => {
     submitting.value = true
     try {
-      const api = activeTab.value === 'vehicle' ? VehicleTypeApi : CategoryApi
       if (formData.value.id) {
-        await api.update(formData.value.id, formData.value)
+        await CategoryApi.update(formData.value.id, formData.value)
         ElMessage.success('Cập nhật thành công')
       } else {
-        await api.create(formData.value)
+        await CategoryApi.create(formData.value)
         ElMessage.success('Thêm mới thành công')
       }
       dialogVisible.value = false
-      refreshData()
+      await refreshData()
+      await fetchStats()
     } catch (err: any) {
       ElMessage.error(err.message || 'Thao tác thất bại')
     } finally {
@@ -114,14 +164,16 @@ export function useCategoryTable() {
     }
   }
 
-  watch(activeTab, () => {
-    replaceSearchParams({})
-    getData()
-  })
+  const isSearching = ref(false)
 
   const handleSearch = (params: any) => {
     const filters: string[] = []
-    if (params.name) filters.push(`Name@=${params.name}`)
+    if (params.name) {
+      filters.push(`Name@=${params.name}`)
+      isSearching.value = true
+    } else {
+      isSearching.value = false
+    }
     replaceSearchParams({
       Filters: filters.join(',')
     })
@@ -129,13 +181,51 @@ export function useCategoryTable() {
   }
 
   const handleReset = () => {
+    isSearching.value = false
     replaceSearchParams({})
     getData()
   }
 
+  const handleRefresh = async () => {
+    await refreshData()
+    await fetchStats()
+  }
+
+  const exporting = ref(false)
+
+  const handleExport = async () => {
+    exporting.value = true
+    try {
+      const filters = (searchParams as any).Filters
+      const resBlob = await CategoryApi.export({ Filters: filters })
+
+      const url = window.URL.createObjectURL(new Blob([resBlob]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', 'Danh_sach_the_loai.xlsx')
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+
+      ElMessage.success('Xuất file Excel thành công')
+    } catch (err: any) {
+      console.error(err)
+      ElMessage.error(err.message || 'Xuất file Excel thất bại')
+    } finally {
+      exporting.value = false
+    }
+  }
+
+  onMounted(() => {
+    fetchStats()
+  })
+
   return {
-    activeTab,
     data,
+    tableData,
+    stats,
+    parentCategories,
     loading,
     pagination,
     columns,
@@ -144,7 +234,8 @@ export function useCategoryTable() {
     handleCurrentChange,
     handleSearch,
     handleReset,
-    refreshData,
+    refreshData: handleRefresh,
+    isSearching,
 
     dialogVisible,
     dialogTitle,
@@ -153,6 +244,9 @@ export function useCategoryTable() {
     handleAdd,
     handleEdit,
     handleDelete,
-    submitForm
+    submitForm,
+
+    exporting,
+    handleExport
   }
 }

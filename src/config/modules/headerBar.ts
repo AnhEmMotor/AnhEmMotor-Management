@@ -19,7 +19,7 @@ export const headerBarConfig: HeaderBarFeatureConfig = {
   },
   globalSearch: {
     enabled: true,
-    description: 'toànbộTimKiemcôngnăng，chiếctrìkhoáinhanhphím Ctrl+K hoặc Cmd+K'
+    description: 'toànbộTìm kiếmcôngnăng，chiếctrìkhoáinhanhphím Ctrl+K hoặc Cmd+K'
   },
   fullscreen: {
     enabled: true,

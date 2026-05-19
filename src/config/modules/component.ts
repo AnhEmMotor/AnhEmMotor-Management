@@ -10,7 +10,7 @@ export const globalComponentsConfig: GlobalComponentConfig[] = [
     enabled: true
   },
   {
-    name: 'toànbộTimKiem',
+    name: 'toànbộTìm kiếm',
     key: 'global-search',
     component: defineAsyncComponent(
       () => import('@/components/core/layouts/art-global-search/index.vue')

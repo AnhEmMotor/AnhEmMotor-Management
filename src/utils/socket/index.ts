@@ -377,7 +377,7 @@ export default class WebSocketClient {
     if (this.isConnecting) return 'Đangliềntiếp'
     if (this.isConnected) return 'Đãliềntiếp'
     if (this.isReconnecting && this.reconnectAttempts > 0)
-      return `làm lạiliềntrong（${this.reconnectAttempts}/${this.maxReconnectAttempts}）`
+      return `Xóa bộ lọcliềntrong（${this.reconnectAttempts}/${this.maxReconnectAttempts}）`
     return 'Đãđoánmở'
   }
 

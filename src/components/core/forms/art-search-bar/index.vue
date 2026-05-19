@@ -5,6 +5,7 @@
       :model="modelValue"
       :label-position="labelPosition"
       v-bind="{ ...$attrs }"
+      @submit.prevent="handleSearch"
     >
       <ElRow :gutter="gutter">
         <ElCol
@@ -72,7 +73,7 @@
                 v-if="showSearch"
                 type="primary"
                 class="search-button"
-                @click="handleSearch"
+                native-type="submit"
                 v-ripple
                 :disabled="disabledSearch"
               >
@@ -283,11 +284,16 @@
     const normalizedValue = normalizeFieldValue(value)
 
     if (normalizedValue === undefined) {
-      delete modelValue.value[key]
+      const copy = { ...modelValue.value }
+      delete copy[key]
+      modelValue.value = copy
       return
     }
 
-    modelValue.value[key] = normalizedValue
+    modelValue.value = {
+      ...modelValue.value,
+      [key]: normalizedValue
+    }
   }
 
   const isRichTextEmpty = (value: string) => {
@@ -400,10 +406,7 @@
   const handleReset = () => {
     formInstance.value?.resetFields()
 
-    Object.keys(modelValue.value).forEach((key) => {
-      delete modelValue.value[key]
-    })
-    Object.assign(modelValue.value, cloneModelValue(initialModelValue.value))
+    modelValue.value = cloneModelValue(initialModelValue.value)
 
     emit('reset')
   }

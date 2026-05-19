@@ -114,7 +114,7 @@ export const ArticleList = [
     create_time: '2023-05-22T00:00:00.000Z',
     home_img: cover9,
     brief:
-      'mụctrướcvìthúcnhấthảodùngcủaChatGPTmạngtrang，chiếctrì6loạiAImôkiểuvàmỗingàymộtlầnGPT4củakhiếndùngmáysẽ，cómạngtrangbảnvàiosỨng dụngtrìnhthứ，Có thểlấykhiếndùngEmailvàSố điện thoạibằngphươngkiểuDangKy，trongquốcđạilụcCó thểphóngtâmkhiếndùng（cầncầnkhoahọctrênmạng），dướimặtthìgiớithiệumộtdướinếunàokhiếndùngthôi。mạngtrangDiaChi：https://poe.com/vàođicủasauCó thểlấyChọnEmailhoặcSố điện thoạibằngnóanh ấyphươngkiểuDangKy。chiarồimạngtrangbản，bạncònCó thểlấyđếnAppStoreTimKiempoeTải xuốngioskháchkhoảnđầu',
+      'mụctrướcvìthúcnhấthảodùngcủaChatGPTmạngtrang，chiếctrì6loạiAImôkiểuvàmỗingàymộtlầnGPT4củakhiếndùngmáysẽ，cómạngtrangbảnvàiosỨng dụngtrìnhthứ，Có thểlấykhiếndùngEmailvàSố điện thoạibằngphươngkiểuDangKy，trongquốcđạilụcCó thểphóngtâmkhiếndùng（cầncầnkhoahọctrênmạng），dướimặtthìgiớithiệumộtdướinếunàokhiếndùngthôi。mạngtrangDiaChi：https://poe.com/vàođicủasauCó thểlấyChọnEmailhoặcSố điện thoạibằngnóanh ấyphươngkiểuDangKy。chiarồimạngtrangbản，bạncònCó thểlấyđếnAppStoreTìm kiếmpoeTải xuốngioskháchkhoảnđầu',
     type_name: 'GPT',
     html_content: ''
   },

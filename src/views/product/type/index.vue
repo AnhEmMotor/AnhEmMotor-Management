@@ -1,50 +1,23 @@
 <template>
   <div class="flex flex-col gap-4 pb-5">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <ArtStatsCard
         :title="$t('menus.product.type.stats.total')"
-        :count="pagination.total"
-        description="Tổng số thể loại hiện có"
+        :count="stats.totalCategories"
         icon="ri:folders-line"
         iconStyle="bg-primary"
       />
       <ArtStatsCard
-        :title="$t('menus.product.type.stats.product')"
-        :count="12"
-        description="Số lượng danh mục sản phẩm"
-        icon="ri:shopping-bag-3-line"
-        iconStyle="bg-success"
-      />
-      <ArtStatsCard
-        :title="$t('menus.product.type.stats.vehicle')"
-        :count="8"
-        description="Số lượng dòng xe"
-        icon="ri:motorbike-line"
+        :title="$t('menus.product.type.stats.new')"
+        :count="stats.latestUpdatedCategoryName || 'Chưa có'"
+        :description="
+          stats.latestUpdatedAt
+            ? 'Thời gian cập nhật: ' + formatDateTime(stats.latestUpdatedAt)
+            : 'Chưa có cập nhật mới'
+        "
+        icon="ri:time-line"
         iconStyle="bg-info"
       />
-      <ArtStatsCard
-        :title="$t('menus.product.type.stats.new')"
-        description="Tay côn - Mới thêm"
-        icon="ri:add-circle-line"
-        iconStyle="bg-warning"
-      />
-    </div>
-
-    <div class="bg-white p-1 rounded-lg shadow-sm self-start flex gap-1 border border-gray-100">
-      <div
-        v-for="tab in tabs"
-        :key="tab.value"
-        class="px-6 py-2 rounded-md cursor-pointer transition-all text-sm font-medium flex items-center gap-2"
-        :class="
-          activeTab === tab.value
-            ? 'bg-primary text-white shadow-md'
-            : 'text-gray-500 hover:bg-gray-50'
-        "
-        @click="activeTab = tab.value"
-      >
-        <ElIcon><component :is="tab.icon" /></ElIcon>
-        {{ $t('menus.' + tab.label) }}
-      </div>
     </div>
 
     <ArtSearchBar
@@ -56,27 +29,12 @@
     />
 
     <ElCard class="flex-1 art-table-card">
-      <template #header>
-        <div class="flex-cb">
-          <div class="flex items-center gap-2">
-            <h4 class="m-0">{{
-              activeTab === 'product'
-                ? $t('menus.product.type.table.titleProduct')
-                : $t('menus.product.type.table.titleVehicle')
-            }}</h4>
-            <ElTag size="small" type="danger" v-if="!loading" effect="dark" round>
-              {{ pagination.total }} {{ $t('menus.product.brand.records') }}
-            </ElTag>
-          </div>
-        </div>
-      </template>
-
       <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
           <ElButton type="primary" v-ripple @click="handleAdd">
             <ElIcon><Plus /></ElIcon> Thêm mới
           </ElButton>
-          <ElButton v-ripple>
+          <ElButton :loading="exporting" v-ripple @click="handleExport">
             <ElIcon><Download /></ElIcon> Xuất file
           </ElButton>
         </template>
@@ -85,15 +43,15 @@
       <ArtTable
         ref="tableRef"
         :loading="loading"
-        :data="data"
+        :data="tableData"
         :columns="columns"
-        :pagination="pagination"
+        row-key="id"
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
         <template #imageUrl="{ row }">
-          <div
-            class="flex-c h-10 w-10 bg-gray-50 rounded shadow-inner border border-gray-100 overflow-hidden mx-auto"
+          <span
+            class="inline-flex items-center justify-center h-10 w-10 bg-gray-50 rounded shadow-inner border border-gray-100 overflow-hidden align-middle"
           >
             <ElImage
               v-if="row.imageUrl"
@@ -104,13 +62,21 @@
               preview-teleported
             />
             <ElIcon v-else class="text-gray-300"><Picture /></ElIcon>
-          </div>
+          </span>
         </template>
 
         <template #name="{ row }">
-          <div class="flex flex-col">
-            <span class="font-bold text-gray-800">{{ row.name }}</span>
-            <span class="text-[11px] text-gray-400">ID: {{ row.id }}</span>
+          <div class="flex flex-col text-left">
+            <span
+              :class="
+                row.parentId
+                  ? 'text-gray-600 font-medium text-sm'
+                  : 'text-gray-900 font-bold text-sm'
+              "
+            >
+              {{ row.name }}
+            </span>
+            <span class="text-[10px] text-gray-400">ID: {{ row.id }}</span>
           </div>
         </template>
 
@@ -132,13 +98,30 @@
     <ElDialog
       v-model="dialogVisible"
       :title="dialogTitle"
-      width="550px"
+      width="650px"
       append-to-body
       destroy-on-close
     >
-      <ElForm :model="formData" label-width="110px" class="mt-4 pr-4">
+      <ElForm :model="formData" label-width="140px" class="mt-4 pr-4">
         <ElFormItem label="Tên thể loại" required>
           <ElInput v-model="formData.name" placeholder="Nhập tên thể loại..." />
+        </ElFormItem>
+
+        <ElFormItem label="Thể loại cha">
+          <ElSelect
+            v-model="formData.parentId"
+            placeholder="Chọn thể loại cha (nếu có)..."
+            clearable
+            filterable
+            class="w-full"
+          >
+            <ElOption
+              v-for="cat in parentCategories"
+              :key="cat.id"
+              :label="cat.name"
+              :value="cat.id"
+            />
+          </ElSelect>
         </ElFormItem>
 
         <ElFormItem label="Đường dẫn (Slug)">
@@ -171,10 +154,6 @@
           </ElUpload>
         </ElFormItem>
 
-        <ElFormItem label="Thứ tự">
-          <ElInputNumber v-model="formData.sortOrder" :min="0" />
-        </ElFormItem>
-
         <ElFormItem label="Trạng thái">
           <ElSwitch v-model="formData.isActive" active-text="Hoạt động" inactive-text="Tạm dừng" />
         </ElFormItem>
@@ -197,19 +176,23 @@
     </ElDialog>
   </div>
 </template>
+
 <script setup lang="ts">
-  import { Plus, Picture, Download, Box, Bicycle } from '@element-plus/icons-vue'
+  import { ref, watch, nextTick } from 'vue'
+  import { Plus, Picture, Download } from '@element-plus/icons-vue'
   import { useCategoryTable } from './hooks/useCategoryTable'
   import { FileApi } from '@/api/file.api'
   import { ElMessage } from 'element-plus'
 
   defineOptions({ name: 'ProductType' })
 
+  const tableRef = ref()
+
   const {
-    activeTab,
-    data,
+    tableData,
+    stats,
+    parentCategories,
     loading,
-    pagination,
     columns,
     columnChecks,
     handleSizeChange,
@@ -217,6 +200,7 @@
     handleSearch,
     handleReset,
     refreshData,
+    isSearching,
 
     dialogVisible,
     dialogTitle,
@@ -225,8 +209,37 @@
     handleAdd,
     handleEdit,
     handleDelete,
-    submitForm
+    submitForm,
+    exporting,
+    handleExport
   } = useCategoryTable()
+
+  watch(
+    () => tableData.value,
+    (newData) => {
+      if (isSearching.value && newData?.length) {
+        nextTick(() => {
+          if (tableRef.value?.elTableRef) {
+            const expandRows = (rows: any[]) => {
+              rows.forEach((row) => {
+                if (row.children?.length) {
+                  tableRef.value.elTableRef.toggleRowExpansion(row, true)
+                  expandRows(row.children)
+                }
+              })
+            }
+            expandRows(newData)
+          }
+        })
+      }
+    },
+    { deep: true }
+  )
+
+  const formatDateTime = (val: string | null | undefined) => {
+    if (!val) return 'Chưa có cập nhật'
+    return new Date(val).toLocaleString('vi-VN')
+  }
 
   const handleUpload = async (options: any) => {
     try {
@@ -237,11 +250,6 @@
       ElMessage.error(err.message || 'Tải ảnh thất bại')
     }
   }
-
-  const tabs = [
-    { label: 'product.type.tabs.product', value: 'product', icon: Box },
-    { label: 'product.type.tabs.vehicle', value: 'vehicle', icon: Bicycle }
-  ]
 
   const searchItems = [
     {
@@ -290,5 +298,16 @@
     height: 80px;
     object-fit: cover;
     border-radius: 12px;
+  }
+
+  /* Custom tree table styles for premium visual depth */
+  :deep(.el-table__row--level-1) {
+    background-color: #fafafa !important;
+  }
+
+  :deep(.el-table__expand-icon) {
+    margin-right: 8px !important;
+    font-weight: bold;
+    color: var(--main-color) !important;
   }
 </style>

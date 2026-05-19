@@ -16,7 +16,7 @@ export default {
   },
   topBar: {
     search: {
-      title: 'TimKiem'
+      title: 'Tìm kiếm'
     },
     user: {
       userCenter: 'Trung tâm cá nhân',
@@ -39,7 +39,7 @@ export default {
     logOutTips: 'Bạn có chắc chắn muốn đăng xuất không?'
   },
   search: {
-    placeholder: 'TimKiem trang',
+    placeholder: 'Tìm kiếm trang',
     historyTitle: 'LichSu tìm kiếm',
     switchKeydown: 'Chuyển đổi',
     selectKeydown: 'Chọn',
@@ -216,6 +216,12 @@ export default {
     gohome: 'Về trang chủ'
   },
   menus: {
+    inventory: {
+      title: 'Nhà cung cấp & kho',
+      supplier: 'Quản lý đối tác',
+      input: 'Quản lý phiếu nhập',
+      debt: 'Quản lý công nợ'
+    },
     login: {
       title: 'Đăng nhập'
     },
@@ -337,10 +343,10 @@ export default {
       type: {
         title: 'Quản lý Thể loại',
         stats: {
-          total: 'Tổng thể loại',
+          total: 'Tổng số lượng thể loại',
           product: 'Danh mục Sản phẩm',
           vehicle: 'Dòng xe',
-          new: 'Mới thêm'
+          new: 'Mới cập nhật'
         },
         tabs: {
           product: 'Sản phẩm',
@@ -392,12 +398,12 @@ export default {
   },
   table: {
     form: {
-      reset: 'Làm lại',
+      reset: 'Xóa bộ lọc',
       submit: 'Gửi'
     },
     searchBar: {
-      reset: 'Làm lại',
-      search: 'TimKiem',
+      reset: 'Xóa bộ lọc',
+      search: 'Tìm kiếm',
       expand: 'Mở rộng',
       collapse: 'Thu gọn',
       searchInputPlaceholder: 'Vui lòng nhập',
@@ -521,7 +527,7 @@ export default {
     t100: 'CauHinh kết nối',
     t101: 'Hiển thị đầy đủ năng lực của bảng nâng cao',
     t102: 'Cache thông minh',
-    t103: 'TimKiem chống rung (debounce)',
+    t103: 'Tìm kiếm chống rung (debounce)',
     t104: 'Nhiều kiểu làm mới',
     t105: 'XuLy lỗi',
     t106: 'Cây phân loại',
@@ -637,7 +643,7 @@ export default {
     t216: 'SapXep theo thời gian',
     t217: 'SapXep theo tên',
     t218: 'Đánh dấu tất cả đã đọc',
-    t219: 'TimKiem liên hệ',
+    t219: 'Tìm kiếm liên hệ',
     t220: 'Đang tải...',
     t221: 'Hơn 53,476 nhà phát triển tin dùng',
     t222: 'Và sự lựa chọn của nhiều tập đoàn công nghệ lớn',
@@ -678,7 +684,7 @@ export default {
     t257: 'Để đảm bảo phong cách biểu tượng đồng nhất, dự án sử dụng bộ Remix Icon, có thể tìm tại',
     t258: 'hoặc',
     t259: 'TrangChu Remix Icon',
-    t260: 'TimKiem để sử dụng.',
+    t260: 'Tìm kiếm để sử dụng.',
     t261: 'Ví dụ sử dụng',
     t262: 'Sử dụng cơ bản',
     t263: 'Kích thước tùy chỉnh',

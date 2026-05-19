@@ -197,7 +197,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
 
       case CacheInvalidationStrategy.CLEAR_CURRENT:
         clearedCount = cache.clearCurrentSearch(searchParams)
-        logger.log(`xóakhôngkhitrướcTimKiemCache ${clearedCount} điều - ${context || ''}`)
+        logger.log(`xóakhôngkhitrướcTìm kiếmCache ${clearedCount} điều - ${context || ''}`)
         break
 
       case CacheInvalidationStrategy.CLEAR_PAGINATION:
@@ -340,7 +340,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     pagination.current = 1
     ;(searchParams as Record<string, unknown>)[pageKey] = 1
 
-    clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, 'TimKiemDữ liệu')
+    clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, 'Tìm kiếmDữ liệu')
 
     try {
       return await fetchData(params, false)
@@ -371,7 +371,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
 
     error.value = null
 
-    clearCache(CacheInvalidationStrategy.CLEAR_ALL, 'Đặt lạiTimKiem')
+    clearCache(CacheInvalidationStrategy.CLEAR_ALL, 'Đặt lạiTìm kiếm')
 
     await getData()
 

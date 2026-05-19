@@ -4,7 +4,6 @@ export interface ProductCategory {
   slug: string
   imageUrl: string
   isActive: boolean
-  sortOrder: number
   parentId: number | null
   description: string
   productCount: number

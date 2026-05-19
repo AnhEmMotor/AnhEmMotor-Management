@@ -38,5 +38,19 @@ export const CategoryApi = {
     return request.del({
       url: `/api/ProductCategory/${id}`
     })
+  },
+
+  getStats() {
+    return request.get<any>({
+      url: '/api/ProductCategory/stats'
+    })
+  },
+
+  export(params: any) {
+    return request.get<Blob>({
+      url: '/api/ProductCategory/export',
+      params,
+      responseType: 'blob'
+    })
   }
 }

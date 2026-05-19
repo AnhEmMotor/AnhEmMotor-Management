@@ -2,27 +2,35 @@
   <div class="flex flex-col gap-4 pb-5">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <ArtStatsCard
-        title="Tổng thương hiệu"
-        :count="pagination.total"
-        description="Thống kê số lượng nhãn hiệu"
+        title="Tổng số lượng thương hiệu"
+        :count="statistics.totalBrands"
         icon="ri:medal-line"
         iconStyle="bg-primary"
       />
       <ArtStatsCard
         title="Xuất xứ phổ biến"
-        description="Nhật Bản - Top 1"
+        :count="statistics.popularOrigin ? statistics.popularOrigin + '' : 'Chưa có dữ liệu'"
+        :description="
+          statistics.popularOriginCount ? `Số lượng: ${statistics.popularOriginCount}` : '0'
+        "
         icon="ri:global-line"
         iconStyle="bg-success"
       />
       <ArtStatsCard
         title="Mới cập nhật"
-        description="Honda - Vừa xong"
+        :count="statistics.latestUpdatedBrandName || 'Chưa có'"
+        :description="
+          statistics.latestUpdatedAt
+            ? 'Thời gian cập nhật: ' + formatDateTime(statistics.latestUpdatedAt)
+            : 'Chưa có cập nhật mới'
+        "
         icon="ri:time-line"
         iconStyle="bg-info"
       />
     </div>
 
     <ArtSearchBar
+      v-model="searchForm"
       :items="searchItems"
       :label-width="120"
       :span="8"
@@ -31,23 +39,12 @@
     />
 
     <ElCard class="flex-1 art-table-card">
-      <template #header>
-        <div class="flex-cb">
-          <div class="flex items-center gap-2">
-            <h4 class="m-0">Danh sách thương hiệu</h4>
-            <ElTag size="small" type="danger" v-if="!loading" effect="dark" round>
-              {{ pagination.total }} Xác nhận đăng xuất?
-            </ElTag>
-          </div>
-        </div>
-      </template>
-
       <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
           <ElButton v-auth="'Permissions.Brands.Create'" type="primary" v-ripple @click="handleAdd">
             <ElIcon><Plus /></ElIcon> Thêm thương hiệu
           </ElButton>
-          <ElButton v-ripple>
+          <ElButton :loading="exporting" v-ripple @click="handleExport">
             <ElIcon><Download /></ElIcon> Xuất Excel
           </ElButton>
         </template>
@@ -171,12 +168,15 @@
 </template>
 
 <script setup lang="ts">
+  import { ref } from 'vue'
   import { Plus, Picture, Download } from '@element-plus/icons-vue'
   import { useBrandTable } from './hooks/useBrandTable'
   import { FileApi } from '@/api/file.api'
   import { ElMessage } from 'element-plus'
 
   defineOptions({ name: 'ProductBrand' })
+
+  const searchForm = ref({})
 
   const {
     data,
@@ -189,6 +189,7 @@
     handleSearch,
     handleReset,
     refreshData,
+    statistics,
 
     dialogVisible,
     dialogTitle,
@@ -197,8 +198,16 @@
     handleAdd,
     handleEdit,
     handleDelete,
-    submitForm
+    submitForm,
+
+    exporting,
+    handleExport
   } = useBrandTable()
+
+  const formatDateTime = (val: string | null | undefined) => {
+    if (!val) return 'Chưa có cập nhật'
+    return new Date(val).toLocaleString('vi-VN')
+  }
 
   const handleUpload = async (options: any) => {
     try {

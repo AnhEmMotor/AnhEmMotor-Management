@@ -10,6 +10,31 @@ export function useBrandTable() {
   const formData = ref<Partial<Brand>>({})
   const submitting = ref(false)
 
+  const statistics = ref({
+    totalBrands: 0,
+    popularOrigin: '',
+    popularOriginCount: 0,
+    latestUpdatedBrandName: '',
+    latestUpdatedAt: null as string | null
+  })
+
+  const fetchStatistics = async () => {
+    try {
+      const res = await BrandApi.getStatistics()
+      statistics.value = {
+        totalBrands: res.totalBrands ?? 0,
+        popularOrigin: res.popularOrigin ?? '',
+        popularOriginCount: res.popularOriginCount ?? 0,
+        latestUpdatedBrandName: res.latestUpdatedBrandName ?? '',
+        latestUpdatedAt: res.latestUpdatedAt ?? null
+      }
+    } catch (err) {
+      console.error('Failed to fetch brand statistics:', err)
+    }
+  }
+
+  fetchStatistics()
+
   const {
     data,
     loading,
@@ -20,7 +45,8 @@ export function useBrandTable() {
     handleCurrentChange,
     getData,
     refreshData,
-    replaceSearchParams
+    replaceSearchParams,
+    searchParams
   } = useTable({
     core: {
       apiFn: BrandApi.getList,
@@ -77,7 +103,7 @@ export function useBrandTable() {
       try {
         await BrandApi.delete(row.id)
         ElMessage.success('Xóa thương hiệu thành công')
-        refreshData()
+        refreshAll()
       } catch (err: any) {
         ElMessage.error(err.message || 'Xóa thất bại')
       }
@@ -95,7 +121,7 @@ export function useBrandTable() {
         ElMessage.success('Thêm thương hiệu thành công')
       }
       dialogVisible.value = false
-      refreshData()
+      refreshAll()
     } catch (err: any) {
       ElMessage.error(err.message || 'Thao tác thất bại')
     } finally {
@@ -121,6 +147,37 @@ export function useBrandTable() {
     getData()
   }
 
+  const refreshAll = () => {
+    refreshData()
+    fetchStatistics()
+  }
+
+  const exporting = ref(false)
+
+  const handleExport = async () => {
+    exporting.value = true
+    try {
+      const filters = (searchParams as any).Filters
+      const resBlob = await BrandApi.export({ Filters: filters })
+
+      const url = window.URL.createObjectURL(new Blob([resBlob]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', 'Danh_sach_thuong_hieu.xlsx')
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+
+      ElMessage.success('Xuất file Excel thành công')
+    } catch (err: any) {
+      console.error(err)
+      ElMessage.error(err.message || 'Xuất file Excel thất bại')
+    } finally {
+      exporting.value = false
+    }
+  }
+
   return {
     data,
     loading,
@@ -131,7 +188,9 @@ export function useBrandTable() {
     handleCurrentChange,
     handleSearch,
     handleReset,
-    refreshData,
+    refreshData: refreshAll,
+    statistics,
+    fetchStatistics,
 
     dialogVisible,
     dialogTitle,
@@ -140,6 +199,9 @@ export function useBrandTable() {
     handleAdd,
     handleEdit,
     handleDelete,
-    submitForm
+    submitForm,
+
+    exporting,
+    handleExport
   }
 }

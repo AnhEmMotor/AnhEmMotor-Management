@@ -15,3 +15,5 @@ export * from './http'
 export * from './form'
 
 export * from './socket'
+
+export * from './tree'
