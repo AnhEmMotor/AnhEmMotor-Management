@@ -197,7 +197,7 @@
       label: 'Loại',
       type: 'select',
       props: {
-        options: [],
+        options: [] as { label: string; value: string }[],
         multiple: true,
         collapseTags: true,
         placeholder: 'Chọn loại đối tác...'
