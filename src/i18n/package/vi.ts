@@ -216,6 +216,12 @@ export default {
     gohome: 'Về trang chủ'
   },
   menus: {
+    inventory: {
+      title: 'Nhà cung cấp & kho',
+      supplier: 'Quản lý đối tác',
+      input: 'Quản lý phiếu nhập',
+      debt: 'Quản lý công nợ'
+    },
     login: {
       title: 'Đăng nhập'
     },
