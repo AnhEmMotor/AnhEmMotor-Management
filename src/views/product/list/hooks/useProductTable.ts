@@ -30,51 +30,12 @@ export function useProductTable() {
   })
   const submitting = ref(false)
 
-  const isVehicle = computed(() => {
-    const catId = formData.value.category_id
-    if (!catId) return false
-
-    const findCategoryRecursive = (id: number): boolean => {
-      const cat = categories.value.find((c) => c.id === id)
-      if (!cat) return false
-
-      const currentName = cat.name.toLowerCase()
-      const vehicleKeywords = [
-        'xe máy',
-        'xe',
-        'vehicle',
-        'motor',
-        'mô tô',
-        'scooter',
-        'tay ga',
-        'tay côn'
-      ]
-      if (vehicleKeywords.some((kw) => currentName.includes(kw))) {
-        return true
-      }
-
-      if (cat.parentId) {
-        return findCategoryRecursive(cat.parentId)
-      }
-
-      return false
-    }
-
-    return findCategoryRecursive(Number(catId))
-  })
+  const technologyCategories = ref<any[]>([])
 
   const fetchTechnologies = async () => {
-    if (!formData.value.category_id && !formData.value.brand_id) {
-      availableTechnologies.value = []
-      return
-    }
-
     loadingTechs.value = true
     try {
-      const res = await TechnologyApi.getList({
-        category_id: formData.value.category_id,
-        brand_id: formData.value.brand_id
-      })
+      const res = await TechnologyApi.getList()
       availableTechnologies.value = res || []
     } catch (_err) {
       console.error('Failed to fetch techs:', _err)
@@ -83,8 +44,74 @@ export function useProductTable() {
     }
   }
 
-  watch(() => formData.value.category_id, fetchTechnologies)
-  watch(() => formData.value.brand_id, fetchTechnologies)
+  const fetchTechnologyCategories = async () => {
+    try {
+      const res = await TechnologyApi.getCategories()
+      technologyCategories.value = res || []
+    } catch (_err) {
+      console.error('Failed to fetch tech categories:', _err)
+    }
+  }
+
+  const createTechnology = async (techData: {
+    name: string
+    categoryId?: number
+    brandId?: number
+    defaultTitle?: string
+    defaultDescription?: string
+    defaultImageUrl?: string
+  }) => {
+    try {
+      const newTech = await TechnologyApi.create(techData)
+      ElMessage.success('Tạo công nghệ mới thành công')
+      await fetchTechnologies()
+      return newTech
+    } catch (err: any) {
+      ElMessage.error(err.message || 'Tạo công nghệ thất bại')
+      throw err
+    }
+  }
+
+  const createTechnologyCategory = async (name: string) => {
+    try {
+      const newCat = await TechnologyApi.createCategory({ name })
+      ElMessage.success('Tạo nhóm công nghệ thành công')
+      await fetchTechnologyCategories()
+      return newCat
+    } catch (err: any) {
+      ElMessage.error(err.message || 'Tạo nhóm công nghệ thất bại')
+      throw err
+    }
+  }
+
+  const updateTechnology = async (id: number, techData: any) => {
+    try {
+      const updatedTech = await TechnologyApi.update(id, techData)
+      ElMessage.success('Cập nhật công nghệ thành công')
+      await fetchTechnologies()
+      return updatedTech
+    } catch (err: any) {
+      ElMessage.error(err.message || 'Cập nhật công nghệ thất bại')
+      throw err
+    }
+  }
+
+  const deleteTechnology = async (id: number) => {
+    try {
+      await TechnologyApi.delete(id)
+      ElMessage.success('Xóa công nghệ thành công')
+      await fetchTechnologies()
+      selectedTechIds.value = selectedTechIds.value.filter((tid) => tid !== id)
+      if (formData.value.highlights_list) {
+        formData.value.highlights_list = formData.value.highlights_list.filter(
+          (h: any) => Number(h.technologyId || h.technology_id) !== id
+        )
+      }
+    } catch (err: any) {
+      ElMessage.error(err.message || 'Xóa công nghệ thất bại')
+      throw err
+    }
+  }
 
   const fetchCategories = async () => {
     loadingCategories.value = true
@@ -129,10 +156,36 @@ export function useProductTable() {
     handleCurrentChange,
     getData,
     refreshData,
-    replaceSearchParams
+    replaceSearchParams,
+    searchParams
   } = useTable({
     core: {
-      apiFn: ProductApi.getList,
+      apiFn: async (params: any) => {
+        const res = await ProductApi.getList(params)
+        if (res && res.items) {
+          res.items = res.items.map((product: any) => {
+            const children = (product.variants || []).map((variant: any, idx: number) => {
+              return {
+                id: `variant-${variant.id || idx}-${product.id}`,
+                name: variant.version_name || `Biến thể ${idx + 1}`,
+                cover_image_url: variant.cover_image_url || '',
+                brand: '',
+                category: '',
+                origin: '',
+                stock: variant.stock || 0,
+                inventory_status: variant.inventory_status || 'InStock',
+                sku: variant.sku || '',
+                isVariant: true
+              }
+            })
+            return {
+              ...product,
+              children: children.length > 0 ? children : undefined
+            }
+          })
+        }
+        return res
+      },
       apiParams: {
         current: 1,
         size: 10,
@@ -140,8 +193,8 @@ export function useProductTable() {
       },
       immediate: true,
       columnsFactory: () => [
+        { prop: 'cover_image_url', label: 'Hình ảnh', width: 120, align: 'left', useSlot: true },
         { prop: 'name', label: 'Sản phẩm', minWidth: 250, useSlot: true },
-        { prop: 'cover_image_url', label: 'Hình ảnh', width: 100, align: 'center', useSlot: true },
         { prop: 'brand', label: 'Thương hiệu', width: 150 },
         { prop: 'category', label: 'Thể loại', width: 150 },
         { prop: 'origin', label: 'Xuất xứ', width: 120 },
@@ -226,7 +279,7 @@ export function useProductTable() {
           colors: [{ name: '', code: '#000000', image: '' }],
           sku: '',
           photo_collection: [],
-          url_slug: '',
+          url: '',
           stock_quantity: 0,
           weight: null,
           dimensions: '',
@@ -346,7 +399,7 @@ export function useProductTable() {
             colors: [{ name: '', code: '#000000', image: '' }],
             sku: '',
             photo_collection: [],
-            url_slug: '',
+            url: '',
             stock_quantity: 0,
             weight: null,
             dimensions: '',
@@ -453,7 +506,7 @@ export function useProductTable() {
       colors: [{ name: '', code: '#000000', image: '' }],
       sku: '',
       photo_collection: [],
-      url_slug: '',
+      url: '',
       stock_quantity: 0,
       weight: null,
       dimensions: '',
@@ -645,6 +698,44 @@ export function useProductTable() {
 
   fetchCategories()
   fetchBrands()
+  fetchTechnologies()
+  fetchTechnologyCategories()
+
+  // Export to Excel
+  const exporting = ref(false)
+
+  const exportToExcel = async () => {
+    exporting.value = true
+    try {
+      // Build export params from current search filters
+      const exportParams: any = {}
+      const filters = (searchParams as any)?.Filters
+      if (filters) {
+        exportParams.Filters = filters
+      }
+
+      const resBlob: any = await ProductApi.exportProducts(exportParams)
+
+      const url = window.URL.createObjectURL(new Blob([resBlob]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute(
+        'download',
+        `Danh_sach_san_pham_${new Date().toISOString().slice(0, 10)}.xlsx`
+      )
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+
+      ElMessage.success('Xuất file Excel thành công')
+    } catch (err: any) {
+      console.error(err)
+      ElMessage.error(err.message || 'Xuất file Excel thất bại')
+    } finally {
+      exporting.value = false
+    }
+  }
 
   return {
     categories,
@@ -669,7 +760,6 @@ export function useProductTable() {
     dialogTitle,
     formData,
     submitting,
-    isVehicle,
     handleAdd,
     handleEdit,
     handleDelete,
@@ -686,6 +776,16 @@ export function useProductTable() {
     addCompatibleVehicle,
     removeCompatibleVehicle,
     toggleTechnology,
-    isTechnologySelected
+    isTechnologySelected,
+
+    technologyCategories,
+    createTechnology,
+    createTechnologyCategory,
+    updateTechnology,
+    deleteTechnology,
+    fetchTechnologies,
+
+    exporting,
+    exportToExcel
   }
 }

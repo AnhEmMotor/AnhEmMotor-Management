@@ -14,6 +14,14 @@ export const ProductApi = {
     })
   },
 
+  exportProducts(params: any) {
+    return request.get({
+      url: '/api/Product/export',
+      params,
+      responseType: 'blob' as const
+    })
+  },
+
   getById(id: number) {
     return request.get<Product>({
       url: `/api/Product/${id}/for-manager`

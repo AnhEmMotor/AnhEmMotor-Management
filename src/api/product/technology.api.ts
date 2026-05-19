@@ -13,5 +13,50 @@ export const TechnologyApi = {
     return request.get<any[]>({
       url: '/api/Technologies/categories'
     })
+  },
+
+  create: (data: {
+    name: string
+    categoryId?: number
+    brandId?: number
+    defaultTitle?: string
+    defaultDescription?: string
+    defaultImageUrl?: string
+  }) => {
+    return request.post<Technology>({
+      url: '/api/Technologies',
+      data
+    })
+  },
+
+  createCategory: (data: { name: string }) => {
+    return request.post<any>({
+      url: '/api/Technologies/categories',
+      data
+    })
+  },
+
+  update: (
+    id: number,
+    data: {
+      id: number
+      name: string
+      categoryId?: number
+      brandId?: number
+      defaultTitle?: string
+      defaultDescription?: string
+      defaultImageUrl?: string
+    }
+  ) => {
+    return request.put<Technology>({
+      url: `/api/Technologies/${id}`,
+      data
+    })
+  },
+
+  delete: (id: number) => {
+    return request.del({
+      url: `/api/Technologies/${id}`
+    })
   }
 }

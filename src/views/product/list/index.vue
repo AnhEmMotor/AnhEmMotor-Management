@@ -45,14 +45,15 @@
           <ElButton type="primary" v-ripple @click="handleAdd">
             <ElIcon><Plus /></ElIcon> Thêm mới
           </ElButton>
-          <ElButton v-ripple>
-            <ElIcon><Download /></ElIcon> Xuất file
+          <ElButton v-ripple @click="exportToExcel">
+            <ElIcon><Download /></ElIcon> Xuất Excel
           </ElButton>
         </template>
       </ArtTableHeader>
 
       <ArtTable
         ref="tableRef"
+        row-key="id"
         :loading="loading"
         :data="data"
         :columns="columns"
@@ -62,7 +63,7 @@
       >
         <template #cover_image_url="{ row }">
           <div
-            class="flex-c h-12 w-12 bg-gray-50 rounded shadow-inner border border-gray-100 overflow-hidden mx-auto"
+            class="inline-flex items-center justify-center h-12 w-12 bg-gray-50 rounded shadow-inner border border-gray-100 overflow-hidden align-middle"
           >
             <ElImage
               v-if="row.cover_image_url"
@@ -78,8 +79,15 @@
 
         <template #name="{ row }">
           <div class="flex flex-col">
-            <span class="font-bold text-gray-800 leading-tight text-left">{{ row.name }}</span>
-            <span class="text-[11px] text-gray-400 mt-1 text-left">ID: #{{ row.id }}</span>
+            <span
+              class="font-bold text-gray-800 leading-tight text-left"
+              :class="{ 'text-xs text-gray-600 font-normal': row.isVariant }"
+              >{{ row.name }}</span
+            >
+            <span class="text-[11px] text-gray-400 mt-1 text-left">
+              <span v-if="row.isVariant">SKU: {{ row.sku }}</span>
+              <span v-else>ID: #{{ row.id }}</span>
+            </span>
           </div>
         </template>
 
@@ -90,7 +98,7 @@
         </template>
 
         <template #operation="{ row }">
-          <div class="flex gap-2 justify-center">
+          <div v-if="!row.isVariant" class="flex gap-2 justify-center">
             <ArtButtonTable type="edit" @click="handleEdit(row)" />
             <ArtButtonTable type="delete" @click="handleDelete(row)" />
           </div>
@@ -112,7 +120,7 @@
           <!-- TAB 1: THÔNG TIN CHUNG -->
           <ElTabPane name="common" label="Thông tin chung">
             <div class="tab-scroll-container">
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-5 py-2">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-5 py-2">
                 <!-- Cột 1: Thông tin cơ bản -->
                 <div
                   class="bg-gray-50/50 p-4 border border-gray-150 rounded-xl space-y-4 shadow-sm flex flex-col justify-start"
@@ -164,7 +172,7 @@
                     <label
                       class="el-form-item__label !text-xs !font-semibold !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
                     >
-                      {{ isVehicle ? 'Tên xe máy' : 'Tên Phụ Tùng / Phụ Kiện' }}
+                      Tên sản phẩm
                       <span class="text-red-500">*</span>
                     </label>
                     <ElInput v-model="formData.name" placeholder="Nhập tên sản phẩm..." />
@@ -214,45 +222,9 @@
                   </div>
                 </div>
 
-                <!-- Cột 3: Hình ảnh đại diện -->
-                <div
-                  class="bg-gray-50/50 p-4 border border-gray-150 rounded-xl flex flex-col items-center shadow-sm"
-                >
-                  <div
-                    class="text-[11px] font-bold text-gray-400 uppercase tracking-wider self-start mb-4"
-                    >Ảnh đại diện sản phẩm</div
-                  >
-                  <ElUpload
-                    class="product-uploader"
-                    action="#"
-                    :show-file-list="false"
-                    :auto-upload="true"
-                    :http-request="handleUpload"
-                  >
-                    <div v-if="formData.cover_image_url" class="relative group">
-                      <img :src="formData.cover_image_url" class="product-preview shadow-md" />
-                      <div
-                        class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-lg"
-                      >
-                        <ElIcon class="text-white text-2xl"><Plus /></ElIcon>
-                      </div>
-                    </div>
-                    <div
-                      v-else
-                      class="product-uploader-trigger flex flex-col items-center justify-center gap-3 border border-dashed border-gray-300 rounded-2xl w-[160px] h-[160px]"
-                    >
-                      <ElIcon class="text-gray-400 text-2xl"><Plus /></ElIcon>
-                      <span class="text-xs text-gray-400 font-medium">Tải ảnh sản phẩm</span>
-                    </div>
-                  </ElUpload>
-                  <p class="text-[10px] text-gray-400 mt-3 text-center italic leading-normal px-2">
-                    Khuyên dùng ảnh tỉ lệ 1:1, dung lượng không quá 5MB.
-                  </p>
-                </div>
-
                 <!-- Mô tả chi tiết (Full Width) -->
                 <div
-                  class="md:col-span-3 mt-2 bg-gray-50/50 p-4 border border-gray-150 rounded-xl shadow-sm"
+                  class="md:col-span-2 mt-2 bg-gray-50/50 p-4 border border-gray-150 rounded-xl shadow-sm"
                 >
                   <label
                     class="el-form-item__label !text-xs !font-bold !text-gray-700 !h-auto !leading-none !pb-2 block"
@@ -273,7 +245,7 @@
           <!-- TAB 2: THÔNG SỐ & ĐẶC TÍNH KỸ THUẬT -->
           <ElTabPane name="specs" label="Thông số & Đặc tính">
             <div class="tab-scroll-container space-y-4">
-              <!-- Đặc tính kỹ thuật (Phụ tùng) -->
+              <!-- Đặc tính kỹ thuật & Kích thước, Trọng lượng -->
               <div
                 class="border border-gray-150 rounded-xl bg-white shadow-sm overflow-hidden transition-all duration-300"
               >
@@ -284,7 +256,7 @@
                   <div class="flex items-center gap-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span>
                     <span class="font-bold text-gray-800 text-sm"
-                      >Đặc tính kỹ thuật (Phụ tùng / Chi tiết)</span
+                      >Đặc tính kỹ thuật & Kích thước, Trọng lượng</span
                     >
                   </div>
                   <ElIcon
@@ -297,7 +269,7 @@
 
                 <div
                   v-show="activeSpecGroup === 'part_specs'"
-                  class="p-4 border-t border-gray-100 bg-white grid grid-cols-1 md:grid-cols-3 gap-4"
+                  class="p-4 border-t border-gray-100 bg-white grid grid-cols-2 md:grid-cols-3 gap-4"
                 >
                   <div>
                     <label
@@ -349,76 +321,29 @@
                   <div>
                     <label
                       class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
-                      >Trọng lượng (kg)</label
-                    >
-                    <br />
-                    <ElInputNumber
-                      v-model="formData.weight"
-                      :min="0"
-                      class="w-full"
-                      placeholder="0"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
                       >Kích cỡ lốp (Vỏ)</label
                     >
                     <ElInput v-model="formData.tire_size" placeholder="Ví dụ: 90/80-17" />
                   </div>
-                  <div class="md:col-span-3">
-                    <label
-                      class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
-                      >Kích thước (D x R x C)</label
-                    >
-                    <ElInput
-                      v-model="formData.dimensions"
-                      placeholder="Ví dụ: 300 x 200 x 150 mm"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <!-- Nhóm 1: Kích thước & Trọng lượng -->
-              <div
-                class="border border-gray-150 rounded-xl bg-white shadow-sm overflow-hidden transition-all duration-300"
-              >
-                <div
-                  class="flex items-center justify-between p-4 bg-gray-50/50 hover:bg-gray-100/50 cursor-pointer select-none transition-colors"
-                  @click="toggleSpecGroup('size_specs')"
-                >
-                  <div class="flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-                    <span class="font-bold text-gray-800 text-sm"
-                      >Thông số Xe - Kích thước & Trọng lượng</span
-                    >
-                  </div>
-                  <ElIcon
-                    class="text-gray-400 transition-transform duration-300"
-                    :class="{ 'rotate-180': activeSpecGroup === 'size_specs' }"
-                  >
-                    <ArrowDown />
-                  </ElIcon>
-                </div>
-
-                <div
-                  v-show="activeSpecGroup === 'size_specs'"
-                  class="p-4 border-t border-gray-100 bg-white grid grid-cols-2 md:grid-cols-3 gap-4"
-                >
                   <div>
                     <label
                       class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
-                      >Kích thước gốc (D x R x C)</label
+                      >Dung tích bình xăng (lít)</label
                     >
-                    <ElInput
-                      v-model="formData.dimensions"
-                      placeholder="Ví dụ: 1888 x 678 x 1111 mm"
+                    <br />
+                    <ElInputNumber
+                      v-model="formData.fuel_capacity"
+                      :min="0"
+                      :precision="1"
+                      :step="0.1"
+                      class="w-full"
+                      placeholder="0.0"
                     />
                   </div>
                   <div>
                     <label
                       class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
-                      >Trọng lượng bản thân (kg)</label
+                      >Trọng lượng (kg)</label
                     >
                     <br />
                     <ElInputNumber
@@ -467,19 +392,14 @@
                       placeholder="0"
                     />
                   </div>
-                  <div>
+                  <div class="md:col-span-2 col-span-2">
                     <label
                       class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
-                      >Dung tích bình xăng (lít)</label
+                      >Kích thước (D x R x C)</label
                     >
-                    <br />
-                    <ElInputNumber
-                      v-model="formData.fuel_capacity"
-                      :min="0"
-                      :precision="1"
-                      :step="0.1"
-                      class="w-full"
-                      placeholder="0.0"
+                    <ElInput
+                      v-model="formData.dimensions"
+                      placeholder="Ví dụ: 1888 x 678 x 1111 mm hoặc 300 x 200 x 150 mm"
                     />
                   </div>
                 </div>
@@ -811,11 +731,22 @@
                   class="p-4 border-t border-gray-100 bg-white space-y-6"
                 >
                   <div>
-                    <label
-                      class="el-form-item__label !text-sm !font-semibold !text-gray-700 !h-auto !leading-none !pb-3 !mb-0 block"
-                    >
-                      Chọn các công nghệ được trang bị trên sản phẩm
-                    </label>
+                    <div class="flex items-center justify-between pb-3">
+                      <label
+                        class="el-form-item__label !text-sm !font-semibold !text-gray-700 !h-auto !leading-none !pb-0 !mb-0 block"
+                      >
+                        Chọn các công nghệ được trang bị trên sản phẩm
+                      </label>
+                      <ElButton
+                        type="primary"
+                        plain
+                        size="small"
+                        :icon="Plus"
+                        @click="openNewTechDialog"
+                      >
+                        Tạo công nghệ mới
+                      </ElButton>
+                    </div>
 
                     <div v-if="loadingTechs" class="text-center py-6 text-gray-400">
                       Đang tải danh sách công nghệ...
@@ -841,20 +772,46 @@
                           <div
                             v-for="tech in techs"
                             :key="tech.id"
-                            class="flex items-center gap-2.5 p-3 border border-gray-150 rounded-lg hover:border-primary/20 hover:bg-gray-50/50 transition-all cursor-pointer select-none"
+                            class="group relative flex items-center justify-between p-3 border border-gray-150 rounded-lg hover:border-primary/20 hover:bg-gray-50/50 transition-all cursor-pointer select-none"
                             :class="{
                               'border-primary/30 bg-red-50/10': isTechnologySelected(tech.id)
                             }"
                             @click="toggleTechnology(tech)"
                           >
-                            <ElCheckbox
-                              :model-value="isTechnologySelected(tech.id)"
-                              @click.stop
-                              @change="toggleTechnology(tech)"
-                            />
-                            <span class="text-sm font-medium text-gray-700 truncate">{{
-                              tech.name
-                            }}</span>
+                            <div class="flex items-center gap-2.5 overflow-hidden flex-1 mr-2">
+                              <ElCheckbox
+                                :model-value="isTechnologySelected(tech.id)"
+                                @click.stop
+                                @change="toggleTechnology(tech)"
+                              />
+                              <span class="text-sm font-medium text-gray-700 truncate">{{
+                                tech.name
+                              }}</span>
+                            </div>
+
+                            <!-- Action buttons -->
+                            <div
+                              class="opacity-0 group-hover:opacity-100 flex items-center gap-1 transition-opacity"
+                            >
+                              <ElButton
+                                type="primary"
+                                link
+                                size="small"
+                                class="!p-1"
+                                @click.stop="openEditTechDialog(tech)"
+                              >
+                                <ElIcon :size="14"><Edit /></ElIcon>
+                              </ElButton>
+                              <ElButton
+                                type="danger"
+                                link
+                                size="small"
+                                class="!p-1"
+                                @click.stop="handleDeleteTech(tech)"
+                              >
+                                <ElIcon :size="14"><Delete /></ElIcon>
+                              </ElButton>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -1092,7 +1049,7 @@
                         {{ index + 1 }}
                       </span>
                       <span class="font-bold text-gray-800 text-sm">
-                        {{ isVehicle ? 'Phiên bản' : 'Biến thể' }} #{{ index + 1 }}
+                        Biến thể #{{ index + 1 }}
                         <span v-if="variant.version_name" class="text-gray-500 font-normal"
                           >({{ variant.version_name }})</span
                         >
@@ -1108,7 +1065,7 @@
                         :icon="Delete"
                         @click="removeVariant(index)"
                       >
-                        {{ isVehicle ? 'Xóa phiên bản' : 'Xóa biến thể' }}
+                        Xóa biến thể
                       </ElButton>
                       <ElIcon
                         class="text-gray-400 transition-transform duration-300"
@@ -1127,14 +1084,12 @@
                         <label
                           class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
                         >
-                          {{ isVehicle ? 'Tên phiên bản' : 'Kích thước / Loại' }}
+                          Kích thước / Loại
                           <span class="text-red-500">*</span>
                         </label>
                         <ElInput
                           v-model="variant.version_name"
-                          :placeholder="
-                            isVehicle ? 'Tiêu chuẩn, Đặc biệt, Thể thao...' : 'Size L, Đen bóng...'
-                          "
+                          :placeholder="'Size L, Đen bóng...'"
                         />
                       </div>
                       <div>
@@ -1280,7 +1235,7 @@
                       <span
                         class="text-[11px] block mb-3 uppercase tracking-wider text-gray-400 font-semibold"
                       >
-                        Màu sắc & Hình ảnh của {{ isVehicle ? 'phiên bản' : 'biến thể' }}
+                        Màu sắc & Hình ảnh của biến thể
                       </span>
 
                       <div class="space-y-4">
@@ -1408,36 +1363,20 @@
                       </div>
                     </div>
 
-                    <!-- URL Slug and initial stock -->
-                    <div class="grid grid-cols-2 gap-4 mt-4 border-t border-gray-100 pt-4">
-                      <div>
-                        <label
-                          class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
-                        >
-                          URL Slug (SEO) <span class="text-red-500">*</span>
-                        </label>
-                        <ElInput v-model="variant.url_slug" placeholder="Nhập URL Slug..." />
-                      </div>
-                      <div>
-                        <label
-                          class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
-                        >
-                          Số lượng tồn kho (Khởi tạo)
-                        </label>
-                        <br />
-                        <ElInputNumber
-                          v-model="variant.stock_quantity"
-                          :min="0"
-                          class="w-full"
-                          placeholder="0"
-                        />
-                      </div>
+                    <!-- URL Slug -->
+                    <div class="mt-4 border-t border-gray-100 pt-4">
+                      <label
+                        class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
+                      >
+                        URL Slug (SEO) <span class="text-red-500">*</span>
+                      </label>
+                      <ElInput v-model="variant.url" placeholder="Nhập URL Slug..." />
                     </div>
                   </div>
                 </div>
 
                 <ElButton type="success" class="w-full py-3" :icon="Plus" @click="handleAddVariant">
-                  {{ isVehicle ? 'Thêm phiên bản mới' : 'Thêm biến thể mới' }}
+                  Thêm biến thể mới
                 </ElButton>
               </div>
             </div>
@@ -1537,11 +1476,175 @@
         </div>
       </template>
     </ElDialog>
+
+    <!-- Dialog Tạo Công Nghệ Mới -->
+    <ElDialog
+      v-model="newTechDialogVisible"
+      title="Tạo Công Nghệ Mới"
+      width="450px"
+      append-to-body
+      class="premium-dialog-nested"
+    >
+      <ElForm :model="newTechForm" label-position="top">
+        <ElFormItem label="Tên công nghệ" required>
+          <ElInput v-model="newTechForm.name" placeholder="Ví dụ: Phanh ABS, Động cơ eSP+..." />
+        </ElFormItem>
+
+        <ElFormItem label="Nhóm công nghệ">
+          <div class="flex gap-2 w-full">
+            <ElSelect
+              v-model="newTechForm.categoryId"
+              placeholder="Chọn nhóm công nghệ"
+              class="flex-1"
+              clearable
+            >
+              <ElOption
+                v-for="cat in technologyCategories"
+                :key="cat.id"
+                :label="cat.name"
+                :value="cat.id"
+              />
+            </ElSelect>
+            <ElButton type="primary" plain :icon="Plus" @click="openNewTechCatDialog">
+              Nhóm mới
+            </ElButton>
+          </div>
+        </ElFormItem>
+
+        <ElFormItem label="Thương hiệu liên kết (Không bắt buộc)">
+          <ElSelect
+            v-model="newTechForm.brandId"
+            placeholder="Để trống nếu là công nghệ chung"
+            class="w-full"
+            clearable
+          >
+            <ElOption
+              v-for="brand in brands"
+              :key="brand.id"
+              :label="brand.name"
+              :value="brand.id"
+            />
+          </ElSelect>
+        </ElFormItem>
+
+        <ElFormItem label="Tiêu đề hiển thị mặc định (Không bắt buộc)">
+          <ElInput v-model="newTechForm.defaultTitle" placeholder="Tiêu đề hiển thị trên web..." />
+        </ElFormItem>
+
+        <ElFormItem label="Mô tả mặc định (Không bắt buộc)">
+          <ElInput
+            v-model="newTechForm.defaultDescription"
+            type="textarea"
+            :rows="3"
+            placeholder="Mô tả chi tiết công nghệ..."
+          />
+        </ElFormItem>
+      </ElForm>
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <ElButton @click="newTechDialogVisible = false">Hủy</ElButton>
+          <ElButton type="primary" :loading="creatingTech" @click="submitNewTech">Tạo mới</ElButton>
+        </div>
+      </template>
+    </ElDialog>
+
+    <!-- Dialog Tạo Nhóm Công Nghệ Mới -->
+    <ElDialog
+      v-model="newTechCatDialogVisible"
+      title="Tạo Nhóm Công Nghệ Mới"
+      width="360px"
+      append-to-body
+    >
+      <ElForm :model="newTechCatForm" label-position="top">
+        <ElFormItem label="Tên nhóm công nghệ" required>
+          <ElInput v-model="newTechCatForm.name" placeholder="Ví dụ: Động cơ, Phanh, Tiện ích..." />
+        </ElFormItem>
+      </ElForm>
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <ElButton @click="newTechCatDialogVisible = false">Hủy</ElButton>
+          <ElButton type="primary" :loading="creatingTechCat" @click="submitNewTechCat"
+            >Tạo mới</ElButton
+          >
+        </div>
+      </template>
+    </ElDialog>
+
+    <!-- Dialog Chỉnh Sửa Công Nghệ -->
+    <ElDialog
+      v-model="editTechDialogVisible"
+      title="Chỉnh Sửa Công Nghệ"
+      width="450px"
+      append-to-body
+      class="premium-dialog-nested"
+    >
+      <ElForm :model="editTechForm" label-position="top">
+        <ElFormItem label="Tên công nghệ" required>
+          <ElInput v-model="editTechForm.name" placeholder="Ví dụ: Phanh ABS, Động cơ eSP+..." />
+        </ElFormItem>
+
+        <ElFormItem label="Nhóm công nghệ">
+          <div class="flex gap-2 w-full">
+            <ElSelect
+              v-model="editTechForm.categoryId"
+              placeholder="Chọn nhóm công nghệ"
+              class="flex-1"
+              clearable
+            >
+              <ElOption
+                v-for="cat in technologyCategories"
+                :key="cat.id"
+                :label="cat.name"
+                :value="cat.id"
+              />
+            </ElSelect>
+            <ElButton type="primary" plain :icon="Plus" @click="openNewTechCatDialog">
+              Nhóm mới
+            </ElButton>
+          </div>
+        </ElFormItem>
+
+        <ElFormItem label="Thương hiệu liên kết (Không bắt buộc)">
+          <ElSelect
+            v-model="editTechForm.brandId"
+            placeholder="Để trống nếu là công nghệ chung"
+            class="w-full"
+            clearable
+          >
+            <ElOption
+              v-for="brand in brands"
+              :key="brand.id"
+              :label="brand.name"
+              :value="brand.id"
+            />
+          </ElSelect>
+        </ElFormItem>
+
+        <ElFormItem label="Tiêu đề hiển thị mặc định (Không bắt buộc)">
+          <ElInput v-model="editTechForm.defaultTitle" placeholder="Tiêu đề hiển thị trên web..." />
+        </ElFormItem>
+
+        <ElFormItem label="Mô tả mặc định (Không bắt buộc)">
+          <ElInput
+            v-model="editTechForm.defaultDescription"
+            type="textarea"
+            :rows="3"
+            placeholder="Mô tả chi tiết công nghệ..."
+          />
+        </ElFormItem>
+      </ElForm>
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <ElButton @click="editTechDialogVisible = false">Hủy</ElButton>
+          <ElButton type="primary" :loading="updatingTech" @click="submitEditTech">Lưu</ElButton>
+        </div>
+      </template>
+    </ElDialog>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, watch } from 'vue'
+  import { ref, computed } from 'vue'
   import {
     Plus,
     Picture,
@@ -1550,11 +1653,12 @@
     Search,
     InfoFilled,
     ArrowDown,
-    ArrowUp
+    ArrowUp,
+    Edit
   } from '@element-plus/icons-vue'
   import { useProductTable } from './hooks/useProductTable'
   import { FileApi } from '@/api/file.api'
-  import { ElMessage } from 'element-plus'
+  import { ElMessage, ElMessageBox } from 'element-plus'
 
   defineOptions({ name: 'ProductList' })
 
@@ -1605,7 +1709,6 @@
     dialogTitle,
     formData,
     submitting,
-    isVehicle,
     handleAdd,
     handleEdit,
     handleDelete,
@@ -1623,24 +1726,15 @@
     toggleTechnology,
     isTechnologySelected,
     availableTechnologies,
-    loadingTechs
+    loadingTechs,
+    technologyCategories,
+    createTechnology,
+    createTechnologyCategory,
+    updateTechnology,
+    deleteTechnology,
+
+    exportToExcel
   } = useProductTable()
-
-  // Reset activeTab if switching profiles to avoid out-of-context tabs
-  watch(isVehicle, (val) => {
-    activeTab.value = 'common'
-    activeSpecGroup.value = val ? 'size_specs' : 'part_specs'
-    activeVariantIndex.value = 0
-  })
-
-  // Reset tab to default whenever the dialog is opened
-  watch(dialogVisible, (visible) => {
-    if (visible) {
-      activeTab.value = 'common'
-      activeSpecGroup.value = isVehicle.value ? 'size_specs' : 'part_specs'
-      activeVariantIndex.value = 0
-    }
-  })
 
   const groupedTechnologies = computed(() => {
     const groups: Record<string, any[]> = {}
@@ -1654,13 +1748,148 @@
     return groups
   })
 
-  const handleUpload = async (options: any) => {
+  // Dialog and form states for new technology & category
+  const newTechDialogVisible = ref(false)
+  const newTechForm = ref({
+    name: '',
+    categoryId: undefined as number | undefined,
+    brandId: undefined as number | undefined,
+    defaultTitle: '',
+    defaultDescription: '',
+    defaultImageUrl: ''
+  })
+  const creatingTech = ref(false)
+
+  const openNewTechDialog = () => {
+    newTechForm.value = {
+      name: '',
+      categoryId: undefined,
+      brandId: formData.value.brand_id ? Number(formData.value.brand_id) : undefined,
+      defaultTitle: '',
+      defaultDescription: '',
+      defaultImageUrl: ''
+    }
+    newTechDialogVisible.value = true
+  }
+
+  const submitNewTech = async () => {
+    if (!newTechForm.value.name.trim()) {
+      ElMessage.warning('Vui lòng nhập tên công nghệ')
+      return
+    }
+    creatingTech.value = true
     try {
-      const res = await FileApi.uploadProductImage(options.file)
-      formData.value.cover_image_url = res.publicUrl
-      ElMessage.success('Tải ảnh lên thành công')
-    } catch (err: any) {
-      ElMessage.error(err.message || 'Tải ảnh thất bại')
+      await createTechnology({
+        name: newTechForm.value.name.trim(),
+        categoryId: newTechForm.value.categoryId,
+        brandId: newTechForm.value.brandId,
+        defaultTitle: newTechForm.value.defaultTitle.trim() || undefined,
+        defaultDescription: newTechForm.value.defaultDescription.trim() || undefined,
+        defaultImageUrl: newTechForm.value.defaultImageUrl.trim() || undefined
+      })
+      newTechDialogVisible.value = false
+    } catch (_err) {
+      // Error message is already handled in createTechnology
+    } finally {
+      creatingTech.value = false
+    }
+  }
+
+  const newTechCatDialogVisible = ref(false)
+  const newTechCatForm = ref({
+    name: ''
+  })
+  const creatingTechCat = ref(false)
+
+  const openNewTechCatDialog = () => {
+    newTechCatForm.value = {
+      name: ''
+    }
+    newTechCatDialogVisible.value = true
+  }
+
+  const submitNewTechCat = async () => {
+    if (!newTechCatForm.value.name.trim()) {
+      ElMessage.warning('Vui lòng nhập tên nhóm công nghệ')
+      return
+    }
+    creatingTechCat.value = true
+    try {
+      const newCat = await createTechnologyCategory(newTechCatForm.value.name.trim())
+      newTechForm.value.categoryId = newCat.id
+      newTechCatDialogVisible.value = false
+    } catch (_err) {
+      // Error message is already handled in createTechnologyCategory
+    } finally {
+      creatingTechCat.value = false
+    }
+  }
+
+  // Dialog and form states for editing technology
+  const editTechDialogVisible = ref(false)
+  const editTechForm = ref({
+    id: 0,
+    name: '',
+    categoryId: undefined as number | undefined,
+    brandId: undefined as number | undefined,
+    defaultTitle: '',
+    defaultDescription: '',
+    defaultImageUrl: ''
+  })
+  const updatingTech = ref(false)
+
+  const openEditTechDialog = (tech: any) => {
+    editTechForm.value = {
+      id: tech.id,
+      name: tech.name,
+      categoryId: tech.categoryId || undefined,
+      brandId: tech.brandId || undefined,
+      defaultTitle: tech.defaultTitle || '',
+      defaultDescription: tech.defaultDescription || '',
+      defaultImageUrl: tech.defaultImageUrl || ''
+    }
+    editTechDialogVisible.value = true
+  }
+
+  const submitEditTech = async () => {
+    if (!editTechForm.value.name.trim()) {
+      ElMessage.warning('Vui lòng nhập tên công nghệ')
+      return
+    }
+    updatingTech.value = true
+    try {
+      await updateTechnology(editTechForm.value.id, {
+        id: editTechForm.value.id,
+        name: editTechForm.value.name.trim(),
+        categoryId: editTechForm.value.categoryId,
+        brandId: editTechForm.value.brandId,
+        defaultTitle: editTechForm.value.defaultTitle.trim() || undefined,
+        defaultDescription: editTechForm.value.defaultDescription.trim() || undefined,
+        defaultImageUrl: editTechForm.value.defaultImageUrl.trim() || undefined
+      })
+      editTechDialogVisible.value = false
+    } catch (_err) {
+      // Error message is handled in updateTechnology
+    } finally {
+      updatingTech.value = false
+    }
+  }
+
+  // Delete technology confirmation
+  const handleDeleteTech = async (tech: any) => {
+    try {
+      await ElMessageBox.confirm(
+        `Bạn có chắc chắn muốn xóa công nghệ "${tech.name}"? Hành động này không thể hoàn tác và sẽ xóa khỏi tất cả sản phẩm đang dùng.`,
+        'Xác nhận xóa',
+        {
+          confirmButtonText: 'Xóa',
+          cancelButtonText: 'Hủy',
+          type: 'warning'
+        }
+      )
+      await deleteTechnology(tech.id)
+    } catch (_err) {
+      // Cancelled or error
     }
   }
 
@@ -1726,9 +1955,10 @@
         data: categoryTree.value,
         props: {
           label: 'name',
-          children: 'children',
-          value: 'id'
+          children: 'children'
         },
+        'node-key': 'id',
+        nodeKey: 'id',
         placeholder: 'Chọn thể loại...',
         clearable: true,
         multiple: true,
@@ -1822,6 +2052,17 @@
     height: 160px;
     object-fit: cover;
     border-radius: 16px;
+  }
+
+  /* Custom tree table styles for premium visual depth */
+  :deep(.el-table__row--level-1) {
+    background-color: #fafafa !important;
+  }
+
+  :deep(.el-table__expand-icon) {
+    margin-right: 8px !important;
+    font-weight: bold;
+    color: var(--main-color) !important;
   }
 </style>
 
