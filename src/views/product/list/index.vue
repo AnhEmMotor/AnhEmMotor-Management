@@ -155,18 +155,24 @@
                     >
                       Thương Hiệu
                     </label>
-                    <ElSelect
-                      v-model="formData.brand_id"
-                      placeholder="Chọn thương hiệu"
-                      class="w-full"
-                    >
-                      <ElOption
-                        v-for="item in brands"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id"
-                      />
-                    </ElSelect>
+                    <div class="flex items-center gap-2">
+                      <div
+                        class="flex-1 flex items-center justify-between border border-gray-200 rounded-lg px-3 py-2 bg-white shadow-sm hover:border-primary/30 transition-all cursor-pointer min-h-[38px]"
+                        @click="openBrandSelector((brand) => (formData.brand_id = brand.id))"
+                      >
+                        <div class="flex items-center gap-2">
+                          <ElIcon class="text-gray-400"><InfoFilled /></ElIcon>
+                          <span
+                            v-if="formData.brand_id"
+                            class="text-sm font-semibold text-gray-800"
+                          >
+                            {{ getBrandNameById(formData.brand_id) }}
+                          </span>
+                          <span v-else class="text-sm text-gray-400">Chọn thương hiệu...</span>
+                        </div>
+                        <ElIcon class="text-gray-400"><ArrowDown /></ElIcon>
+                      </div>
+                    </div>
                   </div>
                   <div>
                     <label
@@ -843,9 +849,8 @@
                           </span>
                           <span class="text-sm font-bold text-gray-800">
                             {{
-                              availableTechnologies.find(
-                                (t) => t.id === hl.technologyId || t.id === hl.technology_id
-                              )?.name || 'Công nghệ'
+                              availableTechnologies.find((t) => t.id === hl.technology_id)?.name ||
+                              'Công nghệ'
                             }}
                           </span>
                         </div>
@@ -857,9 +862,8 @@
                             Tiêu đề tùy chỉnh
                           </label>
                           <ElInput
-                            v-model="hl.customTitle"
+                            v-model="hl.custom_title"
                             :placeholder="hl._defaultTitle || 'Nhập tiêu đề...'"
-                            @input="hl.custom_title = hl.customTitle"
                           />
                         </div>
 
@@ -870,11 +874,10 @@
                             Mô tả tùy chỉnh
                           </label>
                           <ElInput
-                            v-model="hl.customDescription"
+                            v-model="hl.custom_description"
                             type="textarea"
                             :rows="2"
                             :placeholder="hl._defaultDescription || 'Nhập mô tả chi tiết...'"
-                            @input="hl.custom_description = hl.customDescription"
                           />
                         </div>
                       </div>
@@ -889,9 +892,9 @@
                           :auto-upload="true"
                           :http-request="(opt) => handleHighlightImageUpload(opt, hl)"
                         >
-                          <div v-if="hl.customImageUrl" class="relative group">
+                          <div v-if="hl.custom_image_url" class="relative group">
                             <img
-                              :src="hl.customImageUrl"
+                              :src="hl.custom_image_url"
                               class="w-24 h-24 object-cover rounded-lg border border-gray-200"
                             />
                             <div
@@ -1370,7 +1373,7 @@
                       >
                         URL Slug (SEO) <span class="text-red-500">*</span>
                       </label>
-                      <ElInput v-model="variant.url" placeholder="Nhập URL Slug..." />
+                      <ElInput v-model="variant.url_slug" placeholder="Nhập URL Slug..." />
                     </div>
                   </div>
                 </div>
@@ -1512,19 +1515,31 @@
         </ElFormItem>
 
         <ElFormItem label="Thương hiệu liên kết (Không bắt buộc)">
-          <ElSelect
-            v-model="newTechForm.brandId"
-            placeholder="Để trống nếu là công nghệ chung"
-            class="w-full"
-            clearable
-          >
-            <ElOption
-              v-for="brand in brands"
-              :key="brand.id"
-              :label="brand.name"
-              :value="brand.id"
-            />
-          </ElSelect>
+          <div class="flex items-center gap-2 w-full">
+            <div
+              class="flex-1 flex items-center justify-between border border-gray-200 rounded-lg px-3 py-2 bg-white shadow-sm hover:border-primary/30 transition-all cursor-pointer min-h-[38px]"
+              @click="openBrandSelector((brand) => (newTechForm.brandId = brand.id))"
+            >
+              <div class="flex items-center gap-2">
+                <ElIcon class="text-gray-400"><InfoFilled /></ElIcon>
+                <span v-if="newTechForm.brandId" class="text-sm font-semibold text-gray-800">
+                  {{ getBrandNameById(newTechForm.brandId) }}
+                </span>
+                <span v-else class="text-sm text-gray-400">Chọn thương hiệu liên kết...</span>
+              </div>
+              <ElIcon class="text-gray-400"><ArrowDown /></ElIcon>
+            </div>
+            <ElButton
+              v-if="newTechForm.brandId"
+              type="danger"
+              plain
+              size="default"
+              class="!px-3"
+              @click="newTechForm.brandId = undefined"
+            >
+              Xóa
+            </ElButton>
+          </div>
         </ElFormItem>
 
         <ElFormItem label="Tiêu đề hiển thị mặc định (Không bắt buộc)">
@@ -1605,19 +1620,31 @@
         </ElFormItem>
 
         <ElFormItem label="Thương hiệu liên kết (Không bắt buộc)">
-          <ElSelect
-            v-model="editTechForm.brandId"
-            placeholder="Để trống nếu là công nghệ chung"
-            class="w-full"
-            clearable
-          >
-            <ElOption
-              v-for="brand in brands"
-              :key="brand.id"
-              :label="brand.name"
-              :value="brand.id"
-            />
-          </ElSelect>
+          <div class="flex items-center gap-2 w-full">
+            <div
+              class="flex-1 flex items-center justify-between border border-gray-200 rounded-lg px-3 py-2 bg-white shadow-sm hover:border-primary/30 transition-all cursor-pointer min-h-[38px]"
+              @click="openBrandSelector((brand) => (editTechForm.brandId = brand.id))"
+            >
+              <div class="flex items-center gap-2">
+                <ElIcon class="text-gray-400"><InfoFilled /></ElIcon>
+                <span v-if="editTechForm.brandId" class="text-sm font-semibold text-gray-800">
+                  {{ getBrandNameById(editTechForm.brandId) }}
+                </span>
+                <span v-else class="text-sm text-gray-400">Chọn thương hiệu liên kết...</span>
+              </div>
+              <ElIcon class="text-gray-400"><ArrowDown /></ElIcon>
+            </div>
+            <ElButton
+              v-if="editTechForm.brandId"
+              type="danger"
+              plain
+              size="default"
+              class="!px-3"
+              @click="editTechForm.brandId = undefined"
+            >
+              Xóa
+            </ElButton>
+          </div>
         </ElFormItem>
 
         <ElFormItem label="Tiêu đề hiển thị mặc định (Không bắt buộc)">
@@ -1639,6 +1666,81 @@
           <ElButton type="primary" :loading="updatingTech" @click="submitEditTech">Lưu</ElButton>
         </div>
       </template>
+    </ElDialog>
+
+    <!-- Brand Selector Dialog -->
+    <ElDialog
+      v-model="brandSelectorVisible"
+      title="Chọn Thương Hiệu"
+      width="680px"
+      append-to-body
+      align-center
+    >
+      <div class="space-y-4">
+        <!-- Search input -->
+        <ElInput
+          v-model="brandSelectorQuery"
+          placeholder="Nhập tên thương hiệu để tìm kiếm..."
+          clearable
+          @input="handleSelectorSearch"
+        >
+          <template #prefix>
+            <ElIcon><Search /></ElIcon>
+          </template>
+        </ElInput>
+
+        <!-- Brand items grid -->
+        <div v-loading="brandSelectorLoading" class="min-h-[300px] mt-4">
+          <div
+            v-if="brandSelectorItems.length === 0"
+            class="flex flex-col items-center justify-center py-12 text-gray-400"
+          >
+            <ElIcon size="48"><InfoFilled /></ElIcon>
+            <span class="mt-2 text-sm">Không tìm thấy thương hiệu nào</span>
+          </div>
+          <div v-else class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div
+              v-for="brand in brandSelectorItems"
+              :key="brand.id"
+              class="flex flex-col items-center p-3 border border-gray-150 rounded-xl hover:border-primary hover:bg-gray-50 cursor-pointer transition-all shadow-sm"
+              @click="selectBrand(brand)"
+            >
+              <div
+                class="h-14 w-14 flex items-center justify-center bg-gray-50 rounded-lg overflow-hidden border border-gray-100 shadow-inner"
+              >
+                <ElImage
+                  v-if="brand.logoUrl"
+                  :src="brand.logoUrl"
+                  class="w-full h-full"
+                  fit="contain"
+                />
+                <span v-else class="text-xs font-bold text-gray-400">{{
+                  brand.name.substring(0, 2).toUpperCase()
+                }}</span>
+              </div>
+              <span class="mt-2 text-sm font-semibold text-gray-800 text-center truncate w-full">{{
+                brand.name
+              }}</span>
+              <span class="text-[11px] text-gray-400 text-center truncate w-full">{{
+                brand.origin || 'Không rõ xuất xứ'
+              }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination at bottom -->
+        <div class="flex justify-end pt-3 mt-4 border-t border-gray-100">
+          <ElPagination
+            v-model:current-page="brandSelectorPage"
+            :page-size="brandSelectorPageSize"
+            :total="brandSelectorTotal"
+            layout="prev, pager, next"
+            small
+            background
+            @current-change="fetchSelectorBrands"
+          />
+        </div>
+      </div>
     </ElDialog>
   </div>
 </template>
@@ -1693,7 +1795,19 @@
 
   const {
     categoryTree,
-    brands,
+    brandSelectorVisible,
+    brandSelectorLoading,
+    brandSelectorQuery,
+    brandSelectorPage,
+    brandSelectorPageSize,
+    brandSelectorTotal,
+    brandSelectorItems,
+    openBrandSelector,
+    selectBrand,
+    handleSelectorSearch,
+    ensureBrandLoaded,
+    getBrandNameById,
+    fetchSelectorBrands,
     data,
     loading,
     pagination,
@@ -1848,6 +1962,9 @@
       defaultDescription: tech.defaultDescription || '',
       defaultImageUrl: tech.defaultImageUrl || ''
     }
+    if (editTechForm.value.brandId) {
+      ensureBrandLoaded(Number(editTechForm.value.brandId))
+    }
     editTechDialogVisible.value = true
   }
 
@@ -1925,9 +2042,7 @@
   const handleHighlightImageUpload = async (options: any, highlightObj: any) => {
     try {
       const res = await FileApi.uploadProductImage(options.file)
-      highlightObj.customImageUrl = res.publicUrl
       highlightObj.custom_image_url = res.publicUrl
-      highlightObj.image = res.publicUrl
       ElMessage.success('Tải ảnh công nghệ tùy chỉnh lên thành công')
     } catch (err: any) {
       ElMessage.error(err.message || 'Tải ảnh thất bại')

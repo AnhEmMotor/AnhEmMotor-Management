@@ -13,7 +13,7 @@ export interface ProductVariant {
   colors: VariantColor[]
   sku: string
   photo_collection: string[]
-  url?: string
+  url_slug?: string
   stock_quantity?: number
 
   // --- Spec Overrides for Vehicle Variants ---

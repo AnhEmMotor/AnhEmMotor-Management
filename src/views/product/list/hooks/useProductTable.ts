@@ -1,4 +1,5 @@
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, reactive } from 'vue'
+import { useDebounceFn } from '@vueuse/core'
 import { ProductApi } from '@/api/product/product.api'
 import { CategoryApi } from '@/api/product/category.api'
 import { BrandApi } from '@/api/product/brand.api'
@@ -16,12 +17,55 @@ export function useProductTable() {
   const categoryTree = computed(() => {
     return buildTree(categories.value)
   })
-  const brands = ref<Brand[]>([])
   const availableTechnologies = ref<Technology[]>([])
   const selectedTechIds = ref<number[]>([])
   const loadingCategories = ref(false)
-  const loadingBrands = ref(false)
   const loadingTechs = ref(false)
+
+  // Brand cache
+  const brandCache = reactive(new Map<number, Brand>())
+
+  // Helper to add brands to cache
+  const cacheBrands = (items: Brand[]) => {
+    items.forEach((item) => {
+      if (item && item.id) {
+        brandCache.set(item.id, item)
+      }
+    })
+  }
+
+  // Ensure brand by ID is loaded in cache
+  const ensureBrandLoaded = async (id?: number) => {
+    if (!id) return
+    const numId = Number(id)
+    if (isNaN(numId)) return
+    if (brandCache.has(numId)) return
+
+    try {
+      const brand = await BrandApi.getById(numId)
+      if (brand) {
+        brandCache.set(numId, brand)
+      }
+    } catch (err) {
+      console.error(`Failed to load brand ${numId}:`, err)
+    }
+  }
+
+  const getBrandNameById = (id?: number) => {
+    if (!id) return ''
+    const numId = Number(id)
+    return brandCache.get(numId)?.name || `Thương hiệu #${numId}`
+  }
+
+  // Brand Selector Dialog states
+  const brandSelectorVisible = ref(false)
+  const brandSelectorLoading = ref(false)
+  const brandSelectorQuery = ref('')
+  const brandSelectorPage = ref(1)
+  const brandSelectorPageSize = ref(12)
+  const brandSelectorTotal = ref(0)
+  const brandSelectorItems = ref<Brand[]>([])
+  const brandSelectorCallback = ref<((brand: Brand) => void) | null>(null)
 
   const dialogVisible = ref(false)
   const dialogTitle = ref('')
@@ -104,7 +148,7 @@ export function useProductTable() {
       selectedTechIds.value = selectedTechIds.value.filter((tid) => tid !== id)
       if (formData.value.highlights_list) {
         formData.value.highlights_list = formData.value.highlights_list.filter(
-          (h: any) => Number(h.technologyId || h.technology_id) !== id
+          (h: any) => Number(h.technology_id) !== id
         )
       }
     } catch (err: any) {
@@ -130,21 +174,51 @@ export function useProductTable() {
     }
   }
 
-  const fetchBrands = async () => {
-    loadingBrands.value = true
+  const fetchSelectorBrands = async () => {
+    brandSelectorLoading.value = true
     try {
+      const filters = []
+      if (brandSelectorQuery.value.trim()) {
+        filters.push(`Name@=${brandSelectorQuery.value.trim()}`)
+      }
+
       const res = await BrandApi.getList({
-        current: 1,
-        size: 100
+        current: brandSelectorPage.value,
+        size: brandSelectorPageSize.value,
+        Filters: filters.join(',')
       })
-      brands.value = res.items || []
-    } catch (_err) {
-      console.error('Failed to fetch brands:', _err)
-      brands.value = []
+
+      brandSelectorItems.value = res.items || []
+      brandSelectorTotal.value = res.totalCount || 0
+      cacheBrands(res.items || [])
+    } catch (err) {
+      console.error('Failed to fetch selector brands:', err)
     } finally {
-      loadingBrands.value = false
+      brandSelectorLoading.value = false
     }
   }
+
+  const openBrandSelector = (onSelect: (brand: Brand) => void) => {
+    brandSelectorQuery.value = ''
+    brandSelectorPage.value = 1
+    brandSelectorCallback.value = onSelect
+    brandSelectorVisible.value = true
+    fetchSelectorBrands()
+  }
+
+  const selectBrand = (brand: Brand) => {
+    brandCache.set(brand.id, brand)
+    if (brandSelectorCallback.value) {
+      brandSelectorCallback.value(brand)
+    }
+    brandSelectorVisible.value = false
+  }
+
+  const handleSelectorSearch = useDebounceFn(async (query: string) => {
+    brandSelectorQuery.value = query
+    brandSelectorPage.value = 1
+    await fetchSelectorBrands()
+  }, 300)
 
   const {
     data,
@@ -279,7 +353,7 @@ export function useProductTable() {
           colors: [{ name: '', code: '#000000', image: '' }],
           sku: '',
           photo_collection: [],
-          url: '',
+          url_slug: '',
           stock_quantity: 0,
           weight: null,
           dimensions: '',
@@ -345,10 +419,27 @@ export function useProductTable() {
       fullProduct.lighting_system = fullProduct.lighting_system || ''
       fullProduct.dashboard_type = fullProduct.dashboard_type || ''
 
-      // Parse custom highlights
+      // Parse custom highlights and normalize to snake_case
       if (fullProduct.highlights && typeof fullProduct.highlights === 'string') {
         try {
-          fullProduct.highlights_list = JSON.parse(fullProduct.highlights)
+          const rawHighlights = JSON.parse(fullProduct.highlights)
+          fullProduct.highlights_list = (rawHighlights || []).map((h: any) => {
+            const techId = Number(h.technology_id || h.technologyId)
+            const tech = availableTechnologies.value.find((t) => t.id === techId)
+            return {
+              technology_id: techId,
+              custom_title:
+                h.custom_title ?? h.customTitle ?? tech?.defaultTitle ?? tech?.name ?? '',
+              custom_description:
+                h.custom_description ?? h.customDescription ?? tech?.defaultDescription ?? '',
+              custom_image_url:
+                h.custom_image_url ?? h.customImageUrl ?? tech?.defaultImageUrl ?? '',
+              _defaultTitle: tech?.defaultTitle,
+              _defaultDescription: tech?.defaultDescription,
+              _defaultImageUrl: tech?.defaultImageUrl,
+              _categoryName: tech?.categoryName || 'TECHNOLOGY'
+            }
+          })
         } catch (_e) {
           console.error('Failed to parse highlights', _e)
           fullProduct.highlights_list = []
@@ -399,7 +490,7 @@ export function useProductTable() {
             colors: [{ name: '', code: '#000000', image: '' }],
             sku: '',
             photo_collection: [],
-            url: '',
+            url_slug: '',
             stock_quantity: 0,
             weight: null,
             dimensions: '',
@@ -414,6 +505,18 @@ export function useProductTable() {
       }
 
       formData.value = { ...fullProduct }
+      if (formData.value.brand_id) {
+        if (fullProduct.brand) {
+          brandCache.set(Number(formData.value.brand_id), {
+            id: Number(formData.value.brand_id),
+            name: fullProduct.brand,
+            origin: '',
+            logoUrl: '',
+            description: ''
+          })
+        }
+        ensureBrandLoaded(Number(formData.value.brand_id))
+      }
 
       selectedTechIds.value = (fullProduct.product_technologies || []).map(
         (pt: any) => pt.technology_id
@@ -453,9 +556,15 @@ export function useProductTable() {
         display_order: 0
       }))
 
-      // Serialize highlights list to JSON string
+      // Serialize highlights list to JSON string (keeping only clean snake_case fields)
       if (formData.value.highlights_list) {
-        formData.value.highlights = JSON.stringify(formData.value.highlights_list)
+        const cleanedHighlights = formData.value.highlights_list.map((h: any) => ({
+          technology_id: Number(h.technology_id),
+          custom_title: h.custom_title || '',
+          custom_description: h.custom_description || '',
+          custom_image_url: h.custom_image_url || ''
+        }))
+        formData.value.highlights = JSON.stringify(cleanedHighlights)
       } else {
         formData.value.highlights = '[]'
       }
@@ -506,7 +615,7 @@ export function useProductTable() {
       colors: [{ name: '', code: '#000000', image: '' }],
       sku: '',
       photo_collection: [],
-      url: '',
+      url_slug: '',
       stock_quantity: 0,
       weight: null,
       dimensions: '',
@@ -659,7 +768,7 @@ export function useProductTable() {
 
     const techId = Number(tech.id)
     const existingIndex = formData.value.highlights_list.findIndex(
-      (h: any) => Number(h.technologyId || h.technology_id) === techId
+      (h: any) => Number(h.technology_id) === techId
     )
 
     if (existingIndex >= 0) {
@@ -667,17 +776,10 @@ export function useProductTable() {
       selectedTechIds.value = selectedTechIds.value.filter((id) => Number(id) !== techId)
     } else {
       formData.value.highlights_list.push({
-        technologyId: tech.id,
         technology_id: tech.id,
-        customTitle: tech.defaultTitle || tech.name,
         custom_title: tech.defaultTitle || tech.name,
-        customDescription: tech.defaultDescription || '',
         custom_description: tech.defaultDescription || '',
-        customImageUrl: tech.defaultImageUrl || '',
         custom_image_url: tech.defaultImageUrl || '',
-        title: tech.defaultTitle || tech.name,
-        description: tech.defaultDescription || '',
-        image: tech.defaultImageUrl || '',
         _defaultTitle: tech.defaultTitle,
         _defaultDescription: tech.defaultDescription,
         _defaultImageUrl: tech.defaultImageUrl,
@@ -692,12 +794,11 @@ export function useProductTable() {
   const isTechnologySelected = (techId: number) => {
     if (!formData.value.highlights_list) return false
     return formData.value.highlights_list.some(
-      (h: any) => Number(h.technologyId || h.technology_id) === Number(techId)
+      (h: any) => Number(h.technology_id) === Number(techId)
     )
   }
 
   fetchCategories()
-  fetchBrands()
   fetchTechnologies()
   fetchTechnologyCategories()
 
@@ -740,7 +841,19 @@ export function useProductTable() {
   return {
     categories,
     categoryTree,
-    brands,
+    brandSelectorVisible,
+    brandSelectorLoading,
+    brandSelectorQuery,
+    brandSelectorPage,
+    brandSelectorPageSize,
+    brandSelectorTotal,
+    brandSelectorItems,
+    openBrandSelector,
+    selectBrand,
+    handleSelectorSearch,
+    ensureBrandLoaded,
+    getBrandNameById,
+    fetchSelectorBrands,
     loadingCategories,
     availableTechnologies,
     selectedTechIds,
