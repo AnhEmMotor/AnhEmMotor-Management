@@ -101,3 +101,17 @@ export interface ProductList {
   items: Product[]
   totalCount: number
 }
+
+export interface ProductVariantLiteForInput {
+  id: number
+  productId: number
+  displayName: string
+  coverImageUrl: string
+  price: number
+  categoryId: number
+}
+
+export interface ProductVariantLiteForInputList {
+  items: ProductVariantLiteForInput[]
+  totalCount: number
+}

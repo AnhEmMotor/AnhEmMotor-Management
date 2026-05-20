@@ -158,7 +158,7 @@
                   <ElOption
                     v-for="prod in productsList"
                     :key="prod.id"
-                    :label="`${prod.name} (${prod.sku || 'N/A'})`"
+                    :label="prod.displayName"
                     :value="prod.id"
                   />
                 </ElSelect>
@@ -374,7 +374,7 @@
   import { Permissions } from '@/domain/constants/permissions'
   import type { InventoryReceipt, InputInfo } from '@/domain/inventory/receipt.types'
   import type { Supplier } from '@/domain/supplier/supplier.types'
-  import type { Product } from '@/domain/product/product.types'
+  import type { ProductVariantLiteForInput } from '@/domain/product/product.types'
 
   defineOptions({ name: 'InventoryInput' })
 
@@ -400,7 +400,7 @@
 
   // Dropdown Lists
   const suppliersList = ref<Supplier[]>([])
-  const productsList = ref<Product[]>([])
+  const productsList = ref<ProductVariantLiteForInput[]>([])
   const statuses = ref<Record<string, string>>({})
 
   // Form Data
@@ -560,7 +560,7 @@
 
   const loadProducts = async () => {
     try {
-      const res = await ProductApi.getList({ current: 1, size: 1000 })
+      const res = await ProductApi.getVariantsForInput({ current: 1, size: 1000 })
       productsList.value = res.items || []
     } catch (error) {
       console.error('Failed to load products:', error)

@@ -1,5 +1,9 @@
 import request from '@/utils/http'
-import type { Product, ProductList } from '@/domain/product/product.types'
+import type {
+  Product,
+  ProductList,
+  ProductVariantLiteForInputList
+} from '@/domain/product/product.types'
 
 export const ProductApi = {
   getList(params: any) {
@@ -45,6 +49,18 @@ export const ProductApi = {
   delete(id: number) {
     return request.del({
       url: `/api/Product/${id}`
+    })
+  },
+
+  getVariantsForInput(params: any) {
+    const { current, size, ...rest } = params
+    return request.get<ProductVariantLiteForInputList>({
+      url: '/api/Product/variants-lite/for-input',
+      params: {
+        Page: current,
+        PageSize: size,
+        ...rest
+      }
     })
   }
 }
