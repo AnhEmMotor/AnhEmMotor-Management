@@ -227,12 +227,21 @@
             <ElButton type="warning" :loading="submitting" @click="submitForm('working')">
               Lưu nháp
             </ElButton>
-            <ElButton type="success" :loading="submitting" @click="submitForm('finished')">
-              Hoàn thành
-            </ElButton>
-            <ElButton type="danger" :loading="submitting" @click="submitForm('cancelled')">
-              Hủy phiếu
-            </ElButton>
+            <ElDropdown trigger="hover" @command="submitForm">
+              <ElButton type="primary" :loading="submitting">
+                Xử lý phiếu <ElIcon class="el-icon--right"><ArrowDown /></ElIcon>
+              </ElButton>
+              <template #dropdown>
+                <ElDropdownMenu>
+                  <ElDropdownItem command="finished" class="!text-green-600 font-medium">
+                    <ElIcon class="mr-1 text-green-600"><Check /></ElIcon> Hoàn thành
+                  </ElDropdownItem>
+                  <ElDropdownItem command="cancelled" class="!text-red-600 font-medium">
+                    <ElIcon class="mr-1 text-red-600"><Close /></ElIcon> Hủy phiếu
+                  </ElDropdownItem>
+                </ElDropdownMenu>
+              </template>
+            </ElDropdown>
           </template>
 
           <template v-else>
@@ -335,20 +344,21 @@
               >
                 Lưu tạm
               </ElButton>
-              <ElButton
-                type="success"
-                :loading="detailSubmitting"
-                @click="handleUpdateDetailStatus('finished')"
-              >
-                Hoàn thành
-              </ElButton>
-              <ElButton
-                type="danger"
-                :loading="detailSubmitting"
-                @click="handleUpdateDetailStatus('cancelled')"
-              >
-                Hủy phiếu
-              </ElButton>
+              <ElDropdown trigger="hover" @command="handleUpdateDetailStatus">
+                <ElButton type="primary" :loading="detailSubmitting">
+                  Xử lý phiếu <ElIcon class="el-icon--right"><ArrowDown /></ElIcon>
+                </ElButton>
+                <template #dropdown>
+                  <ElDropdownMenu>
+                    <ElDropdownItem command="finished" class="!text-green-600 font-medium">
+                      <ElIcon class="mr-1 text-green-600"><Check /></ElIcon> Hoàn thành
+                    </ElDropdownItem>
+                    <ElDropdownItem command="cancelled" class="!text-red-600 font-medium">
+                      <ElIcon class="mr-1 text-red-600"><Close /></ElIcon> Hủy phiếu
+                    </ElDropdownItem>
+                  </ElDropdownMenu>
+                </template>
+              </ElDropdown>
             </template>
 
             <!-- If receipt is finished or cancelled, status changes are blocked, only save notes -->
@@ -366,7 +376,7 @@
 
 <script setup lang="ts">
   import { ref, reactive, computed, onMounted } from 'vue'
-  import { Plus, Edit, Delete, View } from '@element-plus/icons-vue'
+  import { Plus, Edit, Delete, View, ArrowDown, Check, Close } from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { InventoryReceiptApi } from '@/api/inventory-receipt.api'
   import { SupplierApi } from '@/api/supplier.api'
@@ -725,6 +735,37 @@
   // Details dialog actions
   const handleUpdateDetailStatus = async (statusId: string) => {
     if (!detailData.value) return
+
+    if (statusId === 'finished') {
+      try {
+        await ElMessageBox.confirm(
+          'Bạn có chắc chắn muốn hoàn thành phiếu nhập này không? Sau khi hoàn thành, số lượng sản phẩm sẽ được cộng vào kho và không thể chỉnh sửa thông tin phiếu nhập nữa.',
+          'Xác nhận hoàn thành',
+          {
+            confirmButtonText: 'Hoàn thành',
+            cancelButtonText: 'Hủy',
+            type: 'success'
+          }
+        )
+      } catch {
+        return
+      }
+    } else if (statusId === 'cancelled') {
+      try {
+        await ElMessageBox.confirm(
+          'Bạn có chắc chắn muốn hủy phiếu nhập này không? Sau khi hủy, phiếu nhập sẽ ở trạng thái đã hủy và không thể khôi phục hoặc chỉnh sửa.',
+          'Xác nhận hủy phiếu',
+          {
+            confirmButtonText: 'Hủy phiếu',
+            cancelButtonText: 'Đóng',
+            type: 'warning'
+          }
+        )
+      } catch {
+        return
+      }
+    }
+
     detailSubmitting.value = true
     try {
       // 1. Update notes
@@ -789,6 +830,36 @@
     if (validProducts.length === 0) {
       ElMessage.warning('Vui lòng thêm ít nhất một sản phẩm hợp lệ')
       return
+    }
+
+    if (statusId === 'finished') {
+      try {
+        await ElMessageBox.confirm(
+          'Bạn có chắc chắn muốn hoàn thành phiếu nhập này không? Sau khi hoàn thành, số lượng sản phẩm sẽ được cộng vào kho và không thể chỉnh sửa thông tin phiếu nhập nữa.',
+          'Xác nhận hoàn thành',
+          {
+            confirmButtonText: 'Hoàn thành',
+            cancelButtonText: 'Hủy',
+            type: 'success'
+          }
+        )
+      } catch {
+        return
+      }
+    } else if (statusId === 'cancelled') {
+      try {
+        await ElMessageBox.confirm(
+          'Bạn có chắc chắn muốn hủy phiếu nhập này không? Sau khi hủy, phiếu nhập sẽ ở trạng thái đã hủy và không thể khôi phục hoặc chỉnh sửa.',
+          'Xác nhận hủy phiếu',
+          {
+            confirmButtonText: 'Hủy phiếu',
+            cancelButtonText: 'Đóng',
+            type: 'warning'
+          }
+        )
+      } catch {
+        return
+      }
     }
 
     submitting.value = true
