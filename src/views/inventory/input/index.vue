@@ -113,19 +113,16 @@
       <ElForm :model="formData" label-width="120px" class="mt-4" ref="formRef">
         <div class="grid grid-cols-2 gap-4">
           <ElFormItem label="Nhà cung cấp" required class="col-span-2">
-            <ElSelect
-              v-model="formData.supplierId"
-              placeholder="Chọn nhà cung cấp..."
-              class="w-full"
-              filterable
+            <div
+              class="w-full border border-gray-300 rounded-md px-3 py-2 bg-white flex items-center justify-between cursor-pointer hover:border-primary transition duration-200"
+              @click="openSupplierSelector"
             >
-              <ElOption
-                v-for="sup in suppliersList"
-                :key="sup.id"
-                :label="sup.name"
-                :value="sup.id"
-              />
-            </ElSelect>
+              <span v-if="formData.supplierId" class="text-gray-800 font-medium">
+                {{ getSupplierNameById(formData.supplierId) }}
+              </span>
+              <span v-else class="text-gray-400">Chọn nhà cung cấp...</span>
+              <ElIcon class="text-gray-400"><ArrowDown /></ElIcon>
+            </div>
           </ElFormItem>
         </div>
 
@@ -148,20 +145,17 @@
 
           <ElTable :data="formData.products" border size="small" class="w-full">
             <ElTableColumn label="Sản phẩm" required>
-              <template #default="{ row }">
-                <ElSelect
-                  v-model="row.productId"
-                  placeholder="Chọn sản phẩm..."
-                  filterable
-                  class="w-full"
+              <template #default="{ row, $index }">
+                <div
+                  class="w-full border border-gray-300 rounded px-2 py-1 bg-white flex items-center justify-between cursor-pointer hover:border-primary transition duration-200 min-h-[32px]"
+                  @click="openProductSelector($index)"
                 >
-                  <ElOption
-                    v-for="prod in productsList"
-                    :key="prod.id"
-                    :label="prod.displayName"
-                    :value="prod.id"
-                  />
-                </ElSelect>
+                  <span v-if="row.productId" class="text-gray-800 text-xs font-medium">
+                    {{ getProductNameById(row.productId) }}
+                  </span>
+                  <span v-else class="text-gray-400 text-xs">Chọn sản phẩm...</span>
+                  <ElIcon class="text-gray-400 text-xs"><ArrowDown /></ElIcon>
+                </div>
               </template>
             </ElTableColumn>
 
@@ -371,20 +365,226 @@
         </div>
       </template>
     </ElDialog>
+
+    <!-- Supplier Selector Dialog -->
+    <ElDialog
+      v-model="supplierSelectorVisible"
+      title="Chọn nhà cung cấp"
+      width="750px"
+      append-to-body
+      destroy-on-close
+      class="rounded-xl overflow-hidden"
+    >
+      <div class="space-y-4">
+        <!-- Search bar -->
+        <ElInput
+          placeholder="Tìm theo tên nhà cung cấp hoặc số điện thoại..."
+          clearable
+          prefix-icon="Search"
+          @input="handleSupplierSelectorSearch"
+        />
+
+        <!-- Grid of Suppliers -->
+        <div
+          v-loading="supplierSelectorLoading"
+          class="grid grid-cols-1 md:grid-cols-2 gap-3 min-h-[300px] max-h-[450px] overflow-y-auto pr-1"
+        >
+          <div
+            v-for="sup in supplierSelectorItems"
+            :key="sup.id"
+            class="p-3 border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition duration-200 cursor-pointer flex flex-col justify-between"
+            @click="selectSupplier(sup)"
+          >
+            <div class="font-semibold text-gray-800 text-sm mb-1">{{ sup.name }}</div>
+            <div class="text-xs text-gray-500 space-y-0.5">
+              <div v-if="sup.phone" class="flex items-center gap-1">
+                <span class="font-medium text-gray-400">SĐT:</span> {{ sup.phone }}
+              </div>
+              <div v-if="sup.email" class="flex items-center gap-1">
+                <span class="font-medium text-gray-400">Email:</span> {{ sup.email }}
+              </div>
+              <div v-if="sup.address" class="flex items-center gap-1 line-clamp-1">
+                <span class="font-medium text-gray-400">Địa chỉ:</span> {{ sup.address }}
+              </div>
+            </div>
+          </div>
+          <div
+            v-if="!supplierSelectorLoading && supplierSelectorItems.length === 0"
+            class="col-span-full flex flex-col items-center justify-center py-10 text-gray-400"
+          >
+            <ElIcon size="32"><InfoFilled /></ElIcon>
+            <span class="mt-2 text-sm">Không tìm thấy nhà cung cấp nào</span>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-end pt-2 border-t">
+          <ElPagination
+            v-model:current-page="supplierSelectorPage"
+            v-model:page-size="supplierSelectorPageSize"
+            :total="supplierSelectorTotal"
+            layout="prev, pager, next, total"
+            background
+            size="small"
+            @current-change="fetchSelectorSuppliers"
+          />
+        </div>
+      </div>
+    </ElDialog>
+
+    <!-- Product Selector Dialog -->
+    <ElDialog
+      v-model="productSelectorVisible"
+      title="Chọn sản phẩm & biến thể"
+      width="900px"
+      append-to-body
+      destroy-on-close
+      class="rounded-xl overflow-hidden"
+    >
+      <div class="space-y-4">
+        <!-- Search bar -->
+        <ElInput
+          placeholder="Tìm sản phẩm theo tên..."
+          clearable
+          prefix-icon="Search"
+          @input="handleProductSelectorSearch"
+        />
+
+        <!-- Products List with Variants -->
+        <div
+          v-loading="productSelectorLoading"
+          class="space-y-3 min-h-[350px] max-h-[500px] overflow-y-auto pr-1"
+        >
+          <div
+            v-for="product in productSelectorItems"
+            :key="product.id"
+            class="border border-gray-200 rounded-lg p-4 bg-gray-50 hover:shadow-sm transition-all duration-200"
+          >
+            <!-- Product Header -->
+            <div class="flex items-center justify-between border-b pb-2 mb-3">
+              <div>
+                <span class="text-sm font-semibold text-gray-800">{{ product.name }}</span>
+                <div class="flex gap-2 mt-1">
+                  <ElTag size="small" type="info" effect="plain">{{
+                    product.brand || 'No Brand'
+                  }}</ElTag>
+                  <ElTag size="small" type="success" effect="plain">{{
+                    product.category || 'No Category'
+                  }}</ElTag>
+                </div>
+              </div>
+              <span class="text-xs text-gray-400">ID: #{{ product.id }}</span>
+            </div>
+
+            <!-- Variants Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <div
+                v-for="(variant, idx) in product.variants"
+                :key="variant.id ?? idx"
+                class="bg-white border border-gray-150 rounded p-2 flex items-center justify-between hover:border-primary transition-colors"
+              >
+                <div class="flex items-center gap-3">
+                  <!-- Variant Image -->
+                  <ElImage
+                    :src="
+                      (variant.photo_collection && variant.photo_collection[0]) ||
+                      product.cover_image_url ||
+                      ''
+                    "
+                    class="w-10 h-10 rounded object-cover border border-gray-100 flex-shrink-0"
+                    fit="cover"
+                  >
+                    <template #error>
+                      <div
+                        class="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400"
+                      >
+                        <ElIcon><InfoFilled /></ElIcon>
+                      </div>
+                    </template>
+                  </ElImage>
+
+                  <!-- Variant details -->
+                  <div class="flex flex-col">
+                    <span class="text-xs font-semibold text-gray-700">
+                      {{ getVariantDisplayName('', variant) }}
+                    </span>
+                    <span class="text-[10px] text-gray-400 mt-0.5 font-mono"
+                      >SKU: {{ variant.sku || 'N/A' }}</span
+                    >
+                    <span class="text-xs text-primary font-bold mt-0.5">
+                      {{ formatCurrency(variant.price ?? undefined) }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Action Button -->
+                <ElButton
+                  type="primary"
+                  size="small"
+                  plain
+                  @click="selectProductVariant(product.name, variant)"
+                >
+                  Chọn
+                </ElButton>
+              </div>
+            </div>
+
+            <!-- No variants fallback -->
+            <div
+              v-if="!product.variants || product.variants.length === 0"
+              class="text-xs text-gray-400 text-center py-2"
+            >
+              Không có phiên bản/biến thể nào cho sản phẩm này
+            </div>
+          </div>
+
+          <div
+            v-if="!productSelectorLoading && productSelectorItems.length === 0"
+            class="flex flex-col items-center justify-center py-10 text-gray-400"
+          >
+            <ElIcon size="32"><InfoFilled /></ElIcon>
+            <span class="mt-2 text-sm">Không tìm thấy sản phẩm nào</span>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-end pt-2 border-t">
+          <ElPagination
+            v-model:current-page="productSelectorPage"
+            v-model:page-size="productSelectorPageSize"
+            :total="productSelectorTotal"
+            layout="prev, pager, next, total"
+            background
+            size="small"
+            @current-change="fetchSelectorProducts"
+          />
+        </div>
+      </div>
+    </ElDialog>
   </div>
 </template>
 
 <script setup lang="ts">
   import { ref, reactive, computed, onMounted } from 'vue'
-  import { Plus, Edit, Delete, View, ArrowDown, Check, Close } from '@element-plus/icons-vue'
+  import {
+    Plus,
+    Edit,
+    Delete,
+    View,
+    ArrowDown,
+    Check,
+    Close,
+    InfoFilled
+  } from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
+  import { useDebounceFn } from '@vueuse/core'
   import { InventoryReceiptApi } from '@/api/inventory-receipt.api'
   import { SupplierApi } from '@/api/supplier.api'
   import { ProductApi } from '@/api/product/product.api'
   import { Permissions } from '@/domain/constants/permissions'
   import type { InventoryReceipt, InputInfo } from '@/domain/inventory/receipt.types'
   import type { Supplier } from '@/domain/supplier/supplier.types'
-  import type { ProductVariantLiteForInput } from '@/domain/product/product.types'
+  import type { Product } from '@/domain/product/product.types'
 
   defineOptions({ name: 'InventoryInput' })
 
@@ -408,10 +608,164 @@
     totalValue: 0
   })
 
-  // Dropdown Lists
-  const suppliersList = ref<Supplier[]>([])
-  const productsList = ref<ProductVariantLiteForInput[]>([])
+  // Dropdown Lists (Deprecated/Empty)
   const statuses = ref<Record<string, string>>({})
+
+  // Caches for display names
+  const supplierCache = reactive(new Map<number, string>())
+  const productCache = reactive(new Map<number, { displayName: string; price?: number }>())
+
+  const getSupplierNameById = (id?: number) => {
+    if (!id) return ''
+    return supplierCache.get(Number(id)) || `Nhà cung cấp #${id}`
+  }
+
+  const getProductNameById = (id?: number) => {
+    if (!id) return ''
+    return productCache.get(Number(id))?.displayName || `Sản phẩm #${id}`
+  }
+
+  const getVariantDisplayName = (productName: string, variant: any) => {
+    const parts = []
+    if (variant.versionName) parts.push(variant.versionName)
+    if (variant.colorName) parts.push(variant.colorName)
+    if (parts.length > 0) {
+      return `${productName} (${parts.join(' - ')})`
+    }
+    return productName
+  }
+
+  // Supplier Selector Dialog States
+  const supplierSelectorVisible = ref(false)
+  const supplierSelectorLoading = ref(false)
+  const supplierSelectorQuery = ref('')
+  const supplierSelectorPage = ref(1)
+  const supplierSelectorPageSize = ref(12)
+  const supplierSelectorTotal = ref(0)
+  const supplierSelectorItems = ref<Supplier[]>([])
+
+  const fetchSelectorSuppliers = async () => {
+    supplierSelectorLoading.value = true
+    try {
+      const filters = []
+      if (supplierSelectorQuery.value.trim()) {
+        filters.push(`Name@=${supplierSelectorQuery.value.trim()}`)
+      }
+      const res = await SupplierApi.getList({
+        current: supplierSelectorPage.value,
+        size: supplierSelectorPageSize.value,
+        Filters: filters.join(',')
+      })
+      supplierSelectorItems.value = res.items || []
+      supplierSelectorTotal.value = res.totalCount || 0
+
+      // Cache the loaded suppliers
+      res.items?.forEach((sup) => {
+        if (sup.id) supplierCache.set(sup.id, sup.name)
+      })
+    } catch (err) {
+      console.error('Failed to fetch selector suppliers:', err)
+    } finally {
+      supplierSelectorLoading.value = false
+    }
+  }
+
+  const openSupplierSelector = () => {
+    supplierSelectorQuery.value = ''
+    supplierSelectorPage.value = 1
+    supplierSelectorVisible.value = true
+    fetchSelectorSuppliers()
+  }
+
+  const selectSupplier = (sup: Supplier) => {
+    if (sup.id) {
+      formData.value.supplierId = sup.id
+      supplierCache.set(sup.id, sup.name)
+    }
+    supplierSelectorVisible.value = false
+  }
+
+  const handleSupplierSelectorSearch = useDebounceFn(async (query: string) => {
+    supplierSelectorQuery.value = query
+    supplierSelectorPage.value = 1
+    await fetchSelectorSuppliers()
+  }, 300)
+
+  // Product Selector Dialog States
+  const productSelectorVisible = ref(false)
+  const productSelectorLoading = ref(false)
+  const productSelectorQuery = ref('')
+  const productSelectorPage = ref(1)
+  const productSelectorPageSize = ref(10) // 10 products per page as requested
+  const productSelectorTotal = ref(0)
+  const productSelectorItems = ref<Product[]>([])
+  const productSelectorActiveRowIndex = ref<number | null>(null)
+
+  const fetchSelectorProducts = async () => {
+    productSelectorLoading.value = true
+    try {
+      const filters = []
+      if (productSelectorQuery.value.trim()) {
+        filters.push(`Name@=${productSelectorQuery.value.trim()}`)
+      }
+      const res = await ProductApi.getList({
+        current: productSelectorPage.value,
+        size: productSelectorPageSize.value,
+        Filters: filters.join(',')
+      })
+      productSelectorItems.value = res.items || []
+      productSelectorTotal.value = res.totalCount || 0
+    } catch (err) {
+      console.error('Failed to fetch selector products:', err)
+    } finally {
+      productSelectorLoading.value = false
+    }
+  }
+
+  const openProductSelector = (rowIndex?: number) => {
+    productSelectorActiveRowIndex.value = rowIndex !== undefined ? rowIndex : null
+    productSelectorQuery.value = ''
+    productSelectorPage.value = 1
+    productSelectorVisible.value = true
+    fetchSelectorProducts()
+  }
+
+  const selectProductVariant = (productName: string, variant: any) => {
+    if (!variant.id) return
+
+    const displayName = getVariantDisplayName(productName, variant)
+    productCache.set(variant.id, { displayName, price: variant.price || 0 })
+
+    if (productSelectorActiveRowIndex.value !== null) {
+      // Update existing row
+      const idx = productSelectorActiveRowIndex.value
+      if (formData.value.products[idx]) {
+        formData.value.products[idx].productId = variant.id
+        formData.value.products[idx].inputPrice = variant.price || 0
+      }
+    } else {
+      // Add new row (check if last row is empty first to reuse it)
+      const products = formData.value.products
+      const lastRow = products[products.length - 1]
+      if (lastRow && lastRow.productId === undefined) {
+        lastRow.productId = variant.id
+        lastRow.inputPrice = variant.price || 0
+      } else {
+        products.push({
+          productId: variant.id,
+          count: 1,
+          inputPrice: variant.price || 0
+        })
+      }
+    }
+    productSelectorVisible.value = false
+  }
+
+  const handleProductSelectorSearch = useDebounceFn(async (query: string) => {
+    productSelectorQuery.value = query
+    productSelectorPage.value = 1
+    await fetchSelectorProducts()
+  }, 300)
 
   // Form Data
   const formData = ref<{
@@ -559,24 +913,6 @@
     }
   }
 
-  const loadSuppliers = async () => {
-    try {
-      const res = await SupplierApi.getList({ current: 1, size: 200 })
-      suppliersList.value = res.items || []
-    } catch (error) {
-      console.error('Failed to load suppliers:', error)
-    }
-  }
-
-  const loadProducts = async () => {
-    try {
-      const res = await ProductApi.getVariantsForInput({ current: 1, size: 1000 })
-      productsList.value = res.items || []
-    } catch (error) {
-      console.error('Failed to load products:', error)
-    }
-  }
-
   const loadStats = async () => {
     try {
       const res = await InventoryReceiptApi.getStats()
@@ -679,7 +1015,6 @@
       statusId: 'working',
       products: []
     }
-    handleAddProductRow()
     dialogVisible.value = true
   }
 
@@ -689,6 +1024,20 @@
       const receipt = await InventoryReceiptApi.getById(row.id)
       isEdit.value = true
       dialogTitle.value = 'Cập nhật phiếu nhập'
+
+      // Cache supplier name
+      if (receipt.supplierId && receipt.supplierName) {
+        supplierCache.set(receipt.supplierId, receipt.supplierName)
+      }
+
+      // Cache product names
+      ;(receipt.products || []).forEach((p) => {
+        productCache.set(p.productId, {
+          displayName: p.name || `Sản phẩm #${p.productId}`,
+          price: p.importPrice
+        })
+      })
+
       formData.value = {
         id: receipt.id,
         supplierId: receipt.supplierId,
@@ -801,11 +1150,7 @@
 
   // Row products table handlers
   const handleAddProductRow = () => {
-    formData.value.products.push({
-      productId: undefined,
-      count: 1,
-      inputPrice: 0
-    })
+    openProductSelector()
   }
 
   const handleRemoveProductRow = (index: number) => {
@@ -907,7 +1252,7 @@
   // Lifecycle
   onMounted(async () => {
     loading.value = true
-    await Promise.all([loadStatuses(), loadSuppliers(), loadProducts()])
+    await Promise.all([loadStatuses()])
     await loadData()
   })
 </script>
