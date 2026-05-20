@@ -1053,8 +1053,8 @@
                       </span>
                       <span class="font-bold text-gray-800 text-sm">
                         Biến thể #{{ index + 1 }}
-                        <span v-if="variant.version_name" class="text-gray-500 font-normal"
-                          >({{ variant.version_name }})</span
+                        <span v-if="variant.variant_name" class="text-gray-500 font-normal"
+                          >({{ variant.variant_name }})</span
                         >
                       </span>
                     </div>
@@ -1091,7 +1091,7 @@
                           <span class="text-red-500">*</span>
                         </label>
                         <ElInput
-                          v-model="variant.version_name"
+                          v-model="variant.variant_name"
                           :placeholder="'Size L, Đen bóng...'"
                         />
                       </div>

@@ -7,7 +7,7 @@ export interface VariantColor {
 export interface ProductVariant {
   id: number | null
   price: number | null
-  version_name: string
+  variant_name: string
   color_name: string
   color_code: string
   colors: VariantColor[]
