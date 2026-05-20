@@ -432,17 +432,33 @@
 
   // Search items definition (Removed Mã phiếu filter)
   const searchForm = ref({
-    supplierName: ''
+    supplierName: '',
+    statusId: [] as string[]
   })
 
-  const searchItems = [
+  const searchItems = computed(() => [
     {
       key: 'supplierName',
       label: 'Nhà cung cấp',
       type: 'input',
       props: { placeholder: 'Tìm theo tên nhà cung cấp...' }
+    },
+    {
+      key: 'statusId',
+      label: 'Trạng thái',
+      type: 'select',
+      props: {
+        placeholder: 'Tất cả trạng thái',
+        clearable: true,
+        multiple: true,
+        collapseTags: true,
+        options: Object.entries(statuses.value).map(([key, value]) => ({
+          label: value,
+          value: key
+        }))
+      }
     }
-  ]
+  ])
 
   // Columns definition (Removed Mã phiếu, added STT)
   const columns = ref([
@@ -574,6 +590,13 @@
       const sieveFilters = []
       if (filters?.supplierName) {
         sieveFilters.push(`SupplierName@=${filters.supplierName}`)
+      }
+      if (filters?.statusId && filters.statusId.length > 0) {
+        if (Array.isArray(filters.statusId)) {
+          sieveFilters.push(`StatusId==${filters.statusId.join('|')}`)
+        } else {
+          sieveFilters.push(`StatusId==${filters.statusId}`)
+        }
       }
 
       const params = {
