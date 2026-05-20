@@ -31,6 +31,12 @@ export const InventoryReceiptApi = {
     })
   },
 
+  getStats() {
+    return request.get<{ totalVehicles: number; processingReceipts: number; totalValue: number }>({
+      url: '/api/InventoryReceipts/statistics'
+    })
+  },
+
   create(data: CreateInventoryReceipt) {
     return request.post<InventoryReceipt>({
       url: '/api/InventoryReceipts',

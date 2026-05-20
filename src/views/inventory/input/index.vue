@@ -4,21 +4,18 @@
       <ArtStatsCard
         title="Tổng xe nhập tháng"
         :count="stats.totalVehicles"
-        description="Số lượng xe máy đã định danh"
         icon="ri:motorbike-line"
         iconStyle="bg-primary"
       />
       <ArtStatsCard
         title="Đang xử lý"
         :count="stats.processingReceipts"
-        description="Phiếu nhập ở trạng thái nháp/tạm"
         icon="ri:time-line"
         iconStyle="bg-warning"
       />
       <ArtStatsCard
         title="Giá trị nhập kho"
         :count="formatCurrency(stats.totalValue)"
-        description="Tổng giá vốn nhập hàng"
         icon="ri:money-dollar-circle-line"
         iconStyle="bg-info"
       />
@@ -554,27 +551,16 @@
     }
   }
 
-  const loadStats = () => {
-    let totalVal = 0
-    let workingCount = 0
-    let vehicleQty = 0
-
-    data.value.forEach((receipt) => {
-      totalVal += receipt.totalPayable || 0
-      if (receipt.statusId === 'working') {
-        workingCount++
+  const loadStats = async () => {
+    try {
+      const res = await InventoryReceiptApi.getStats()
+      stats.value = {
+        totalVehicles: res.totalVehicles || 0,
+        processingReceipts: res.processingReceipts || 0,
+        totalValue: res.totalValue || 0
       }
-      if (receipt.products) {
-        receipt.products.forEach((p) => {
-          vehicleQty += p.quantity || 0
-        })
-      }
-    })
-
-    stats.value = {
-      totalVehicles: vehicleQty,
-      processingReceipts: workingCount,
-      totalValue: totalVal
+    } catch (error) {
+      console.error('Failed to load stats:', error)
     }
   }
 
@@ -600,7 +586,7 @@
       const res = await InventoryReceiptApi.getList(params)
       data.value = res.items || []
       pagination.total = res.totalCount || 0
-      loadStats()
+      await loadStats()
     } catch (error) {
       console.error('Failed to load inventory receipts:', error)
       ElMessage.error('Không thể tải danh sách phiếu nhập kho')
