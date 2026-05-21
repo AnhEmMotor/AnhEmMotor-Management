@@ -9,6 +9,7 @@ export function useCategoryTable() {
   const dialogVisible = ref(false)
   const dialogTitle = ref('')
   const formData = ref<Partial<ProductCategory>>({})
+  const managementTypes = ref<{ label: string; value: string }[]>([])
 
   const generateSlug = (text: string) => {
     return text
@@ -56,6 +57,18 @@ export function useCategoryTable() {
     }
   }
 
+  const fetchManagementTypes = async () => {
+    try {
+      const res = await CategoryApi.getManagementTypes()
+      managementTypes.value = (res || []).map((item) => ({
+        label: item.text,
+        value: item.value
+      }))
+    } catch (err) {
+      console.error('Failed to fetch management types:', err)
+    }
+  }
+
   const {
     data,
     loading,
@@ -84,6 +97,7 @@ export function useCategoryTable() {
         { prop: 'imageUrl', label: 'Hình ảnh', width: 120, useSlot: true, align: 'left' },
         { prop: 'name', label: 'Tên thể loại', minWidth: 220, useSlot: true },
         { prop: 'slug', label: 'Slug', width: 180 },
+        { prop: 'managementType', label: 'Loại quản lý', width: 180, useSlot: true },
         { prop: 'productCount', label: 'Số sản phẩm', width: 120, align: 'center' },
         { prop: 'isActive', label: 'Trạng thái', width: 120, useSlot: true, align: 'center' },
         {
@@ -115,6 +129,8 @@ export function useCategoryTable() {
       slug: '',
       imageUrl: '',
       description: '',
+      managementType: managementTypes.value[0]?.value || 'sku',
+      maxPurchaseQuantity: null,
       isActive: true,
       parentId: null
     }
@@ -170,10 +186,11 @@ export function useCategoryTable() {
     const filters: string[] = []
     if (params.name) {
       filters.push(`Name@=${params.name}`)
-      isSearching.value = true
-    } else {
-      isSearching.value = false
     }
+    if (params.managementType) {
+      filters.push(`managementType==${params.managementType}`)
+    }
+    isSearching.value = filters.length > 0
     replaceSearchParams({
       Filters: filters.join(',')
     })
@@ -219,12 +236,14 @@ export function useCategoryTable() {
 
   onMounted(() => {
     fetchStats()
+    fetchManagementTypes()
   })
 
   return {
     data,
     tableData,
     stats,
+    managementTypes,
     parentCategories,
     loading,
     pagination,

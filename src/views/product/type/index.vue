@@ -86,6 +86,12 @@
           </ElTag>
         </template>
 
+        <template #managementType="{ row }">
+          <ElTag size="small" effect="light">
+            {{ getManagementTypeLabel(row.managementType) }}
+          </ElTag>
+        </template>
+
         <template #operation="{ row }">
           <div class="flex gap-2 justify-center">
             <ArtButtonTable type="edit" @click="handleEdit(row)" />
@@ -126,6 +132,22 @@
 
         <ElFormItem label="Đường dẫn (Slug)">
           <ElInput v-model="formData.slug" placeholder="slug-ten-the-loai..." />
+        </ElFormItem>
+
+        <ElFormItem label="Loại quản lý" required>
+          <ElSelect
+            v-model="formData.managementType"
+            placeholder="Chọn loại quản lý..."
+            filterable
+            class="w-full"
+          >
+            <ElOption
+              v-for="item in managementTypes"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </ElSelect>
         </ElFormItem>
 
         <ElFormItem label="Hình ảnh">
@@ -178,7 +200,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, watch, nextTick } from 'vue'
+  import { computed, ref, watch, nextTick } from 'vue'
   import { Plus, Picture, Download } from '@element-plus/icons-vue'
   import { useCategoryTable } from './hooks/useCategoryTable'
   import { FileApi } from '@/api/file.api'
@@ -191,6 +213,7 @@
   const {
     tableData,
     stats,
+    managementTypes,
     parentCategories,
     loading,
     columns,
@@ -251,14 +274,29 @@
     }
   }
 
-  const searchItems = [
+  const getManagementTypeLabel = (value?: string) => {
+    return managementTypes.value.find((item) => item.value === value)?.label || value || 'Chưa chọn'
+  }
+
+  const searchItems = computed(() => [
     {
       key: 'name',
       label: 'Tên thể loại',
       type: 'input',
       props: { placeholder: 'Tìm kiếm tên...' }
+    },
+    {
+      key: 'managementType',
+      label: 'Loại quản lý',
+      type: 'select',
+      props: {
+        placeholder: 'Chọn loại quản lý...',
+        clearable: true,
+        filterable: true,
+        options: managementTypes.value
+      }
     }
-  ]
+  ])
 </script>
 
 <style scoped>

@@ -1,4 +1,5 @@
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, reactive } from 'vue'
+import { useDebounceFn } from '@vueuse/core'
 import { ProductApi } from '@/api/product/product.api'
 import { CategoryApi } from '@/api/product/category.api'
 import { BrandApi } from '@/api/product/brand.api'
@@ -16,12 +17,65 @@ export function useProductTable() {
   const categoryTree = computed(() => {
     return buildTree(categories.value)
   })
-  const brands = ref<Brand[]>([])
   const availableTechnologies = ref<Technology[]>([])
   const selectedTechIds = ref<number[]>([])
   const loadingCategories = ref(false)
-  const loadingBrands = ref(false)
   const loadingTechs = ref(false)
+  const predefinedOptions = ref<Record<string, string>>({})
+  const availablePredefinedOptions = computed(() =>
+    Object.entries(predefinedOptions.value)
+      .filter(
+        ([key, value]) =>
+          !['color', 'màu sắc'].includes(key.trim().toLowerCase()) &&
+          !['color', 'màu sắc'].includes(value.trim().toLowerCase())
+      )
+      .map(([key, label]) => ({ key, label }))
+  )
+
+  // Brand cache
+  const brandCache = reactive(new Map<number, Brand>())
+
+  // Helper to add brands to cache
+  const cacheBrands = (items: Brand[]) => {
+    items.forEach((item) => {
+      if (item && item.id) {
+        brandCache.set(item.id, item)
+      }
+    })
+  }
+
+  // Ensure brand by ID is loaded in cache
+  const ensureBrandLoaded = async (id?: number) => {
+    if (!id) return
+    const numId = Number(id)
+    if (isNaN(numId)) return
+    if (brandCache.has(numId)) return
+
+    try {
+      const brand = await BrandApi.getById(numId)
+      if (brand) {
+        brandCache.set(numId, brand)
+      }
+    } catch (err) {
+      console.error(`Failed to load brand ${numId}:`, err)
+    }
+  }
+
+  const getBrandNameById = (id?: number) => {
+    if (!id) return ''
+    const numId = Number(id)
+    return brandCache.get(numId)?.name || `Thương hiệu #${numId}`
+  }
+
+  // Brand Selector Dialog states
+  const brandSelectorVisible = ref(false)
+  const brandSelectorLoading = ref(false)
+  const brandSelectorQuery = ref('')
+  const brandSelectorPage = ref(1)
+  const brandSelectorPageSize = ref(12)
+  const brandSelectorTotal = ref(0)
+  const brandSelectorItems = ref<Brand[]>([])
+  const brandSelectorCallback = ref<((brand: Brand) => void) | null>(null)
 
   const dialogVisible = ref(false)
   const dialogTitle = ref('')
@@ -50,6 +104,15 @@ export function useProductTable() {
       technologyCategories.value = res || []
     } catch (_err) {
       console.error('Failed to fetch tech categories:', _err)
+    }
+  }
+
+  const fetchPredefinedOptions = async () => {
+    try {
+      predefinedOptions.value = await ProductApi.getPredefinedOptions()
+    } catch (err) {
+      console.error('Failed to fetch predefined options:', err)
+      predefinedOptions.value = {}
     }
   }
 
@@ -104,7 +167,7 @@ export function useProductTable() {
       selectedTechIds.value = selectedTechIds.value.filter((tid) => tid !== id)
       if (formData.value.highlights_list) {
         formData.value.highlights_list = formData.value.highlights_list.filter(
-          (h: any) => Number(h.technologyId || h.technology_id) !== id
+          (h: any) => Number(h.technology_id) !== id
         )
       }
     } catch (err: any) {
@@ -130,21 +193,51 @@ export function useProductTable() {
     }
   }
 
-  const fetchBrands = async () => {
-    loadingBrands.value = true
+  const fetchSelectorBrands = async () => {
+    brandSelectorLoading.value = true
     try {
+      const filters = []
+      if (brandSelectorQuery.value.trim()) {
+        filters.push(`Name@=${brandSelectorQuery.value.trim()}`)
+      }
+
       const res = await BrandApi.getList({
-        current: 1,
-        size: 100
+        current: brandSelectorPage.value,
+        size: brandSelectorPageSize.value,
+        Filters: filters.join(',')
       })
-      brands.value = res.items || []
-    } catch (_err) {
-      console.error('Failed to fetch brands:', _err)
-      brands.value = []
+
+      brandSelectorItems.value = res.items || []
+      brandSelectorTotal.value = res.totalCount || 0
+      cacheBrands(res.items || [])
+    } catch (err) {
+      console.error('Failed to fetch selector brands:', err)
     } finally {
-      loadingBrands.value = false
+      brandSelectorLoading.value = false
     }
   }
+
+  const openBrandSelector = (onSelect: (brand: Brand) => void) => {
+    brandSelectorQuery.value = ''
+    brandSelectorPage.value = 1
+    brandSelectorCallback.value = onSelect
+    brandSelectorVisible.value = true
+    fetchSelectorBrands()
+  }
+
+  const selectBrand = (brand: Brand) => {
+    brandCache.set(brand.id, brand)
+    if (brandSelectorCallback.value) {
+      brandSelectorCallback.value(brand)
+    }
+    brandSelectorVisible.value = false
+  }
+
+  const handleSelectorSearch = useDebounceFn(async (query: string) => {
+    brandSelectorQuery.value = query
+    brandSelectorPage.value = 1
+    await fetchSelectorBrands()
+  }, 300)
 
   const {
     data,
@@ -167,7 +260,7 @@ export function useProductTable() {
             const children = (product.variants || []).map((variant: any, idx: number) => {
               return {
                 id: `variant-${variant.id || idx}-${product.id}`,
-                name: variant.version_name || `Biến thể ${idx + 1}`,
+                name: variant.variant_name || `Biến thể ${idx + 1}`,
                 cover_image_url: variant.cover_image_url || '',
                 brand: '',
                 category: '',
@@ -273,13 +366,16 @@ export function useProductTable() {
         {
           id: null,
           price: null,
-          version_name: '',
+          variant_name: '',
+          cover_image_url: '',
           color_name: '',
           color_code: '#000000',
-          colors: [{ name: '', code: '#000000', image: '' }],
+          colors: [],
           sku: '',
           photo_collection: [],
-          url: '',
+          optionValues: {},
+          option_rows: [],
+          url_slug: '',
           stock_quantity: 0,
           weight: null,
           dimensions: '',
@@ -345,10 +441,27 @@ export function useProductTable() {
       fullProduct.lighting_system = fullProduct.lighting_system || ''
       fullProduct.dashboard_type = fullProduct.dashboard_type || ''
 
-      // Parse custom highlights
+      // Parse custom highlights and normalize to snake_case
       if (fullProduct.highlights && typeof fullProduct.highlights === 'string') {
         try {
-          fullProduct.highlights_list = JSON.parse(fullProduct.highlights)
+          const rawHighlights = JSON.parse(fullProduct.highlights)
+          fullProduct.highlights_list = (rawHighlights || []).map((h: any) => {
+            const techId = Number(h.technology_id || h.technologyId)
+            const tech = availableTechnologies.value.find((t) => t.id === techId)
+            return {
+              technology_id: techId,
+              custom_title:
+                h.custom_title ?? h.customTitle ?? tech?.defaultTitle ?? tech?.name ?? '',
+              custom_description:
+                h.custom_description ?? h.customDescription ?? tech?.defaultDescription ?? '',
+              custom_image_url:
+                h.custom_image_url ?? h.customImageUrl ?? tech?.defaultImageUrl ?? '',
+              _defaultTitle: tech?.defaultTitle,
+              _defaultDescription: tech?.defaultDescription,
+              _defaultImageUrl: tech?.defaultImageUrl,
+              _categoryName: tech?.categoryName || 'TECHNOLOGY'
+            }
+          })
         } catch (_e) {
           console.error('Failed to parse highlights', _e)
           fullProduct.highlights_list = []
@@ -362,16 +475,30 @@ export function useProductTable() {
       // Parse variants colors and overrides
       if (fullProduct.variants) {
         fullProduct.variants.forEach((v: any) => {
-          if (!v.colors) {
+          if (!v.colors || v.colors.length === 0) {
             const names = (v.color_name || '').split(',')
             const codes = (v.color_code || '').split(',')
-            const images = (v.cover_image_url || '').split(',')
-            v.colors = names.map((name: string, i: number) => ({
-              name: name.trim(),
-              code: codes[i]?.trim() || '#000000',
-              image: images[i]?.trim() || ''
+            const images = (v.color_cover_image_url || v.cover_image_url || '').split(',')
+            v.colors = names
+              .map((name: string, i: number) => ({
+                id: undefined,
+                name: name.trim(),
+                code: codes[i]?.trim() || '#000000',
+                image: images[i]?.trim() || images[0]?.trim() || ''
+              }))
+              .filter((color: any) => color.name)
+          } else {
+            v.colors = v.colors.map((color: any) => ({
+              id: color.id,
+              name: color.name ?? color.color_name ?? '',
+              code: color.code ?? color.color_code ?? '#000000',
+              image: color.image ?? color.cover_image_url ?? ''
             }))
           }
+          v.optionValues = v.optionValues || {}
+          v.option_rows = Object.entries(v.optionValues)
+            .filter(([key]) => !['color', 'màu sắc'].includes(String(key).trim().toLowerCase()))
+            .map(([key, value]) => ({ key, value: String(value || '') }))
           if (!v.photo_collection) {
             v.photo_collection = []
           }
@@ -393,13 +520,16 @@ export function useProductTable() {
           {
             id: null,
             price: null,
-            version_name: '',
+            variant_name: '',
+            cover_image_url: '',
             color_name: '',
             color_code: '#000000',
-            colors: [{ name: '', code: '#000000', image: '' }],
+            colors: [],
             sku: '',
             photo_collection: [],
-            url: '',
+            optionValues: {},
+            option_rows: [],
+            url_slug: '',
             stock_quantity: 0,
             weight: null,
             dimensions: '',
@@ -414,6 +544,18 @@ export function useProductTable() {
       }
 
       formData.value = { ...fullProduct }
+      if (formData.value.brand_id) {
+        if (fullProduct.brand) {
+          brandCache.set(Number(formData.value.brand_id), {
+            id: Number(formData.value.brand_id),
+            name: fullProduct.brand,
+            origin: '',
+            logoUrl: '',
+            description: ''
+          })
+        }
+        ensureBrandLoaded(Number(formData.value.brand_id))
+      }
 
       selectedTechIds.value = (fullProduct.product_technologies || []).map(
         (pt: any) => pt.technology_id
@@ -445,6 +587,17 @@ export function useProductTable() {
     })
   }
 
+  const getVariantDefaultCover = (variant: any) => {
+    return (variant.cover_image_url || '')
+      .split(',')
+      .map((image: string) => image.trim())
+      .find(Boolean)
+  }
+
+  const getColorName = (color: any) => (color.color_name ?? color.name ?? '').trim()
+  const getColorCode = (color: any) => (color.color_code ?? color.code ?? '').trim()
+  const getColorImage = (color: any) => (color.cover_image_url ?? color.image ?? '').trim()
+
   const submitForm = async () => {
     submitting.value = true
     try {
@@ -453,35 +606,93 @@ export function useProductTable() {
         display_order: 0
       }))
 
-      // Serialize highlights list to JSON string
+      // Serialize highlights list to JSON string (keeping only clean snake_case fields)
       if (formData.value.highlights_list) {
-        formData.value.highlights = JSON.stringify(formData.value.highlights_list)
+        const cleanedHighlights = formData.value.highlights_list.map((h: any) => ({
+          technology_id: Number(h.technology_id),
+          custom_title: h.custom_title || '',
+          custom_description: h.custom_description || '',
+          custom_image_url: h.custom_image_url || ''
+        }))
+        formData.value.highlights = JSON.stringify(cleanedHighlights)
       } else {
         formData.value.highlights = '[]'
       }
 
-      // Format variants colors into comma-separated strings for backend compatibility
+      const payload: any = { ...formData.value }
+
+      // Format variants into the backend command shape.
       if (formData.value.variants) {
-        formData.value.variants = formData.value.variants.map((v: any) => {
+        const serializedVariants = formData.value.variants.map((v: any) => {
           const colors = v.colors || []
-          const color_name = colors.map((c: any) => (c.name || '').trim()).join(',')
-          const color_code = colors.map((c: any) => (c.code || '').trim()).join(',')
-          const cover_image_url = colors.map((c: any) => (c.image || '').trim()).join(',')
+          const optionValues = (v.option_rows || []).reduce(
+            (acc: Record<string, string>, row: any) => {
+              const key = (row.key || '').trim()
+              const value = (row.value || '').trim()
+              if (key && value) {
+                acc[key] = value
+              }
+              return acc
+            },
+            {}
+          )
+          const hasColors = colors.length > 0
+          if (
+            hasColors &&
+            colors.some(
+              (color: any) => !getColorName(color) || !getColorCode(color) || !getColorImage(color)
+            )
+          ) {
+            throw new Error('Mỗi màu sắc của biến thể phải có đủ tên màu, mã màu và hình ảnh.')
+          }
+          const colorImages = colors.map(getColorImage).filter(Boolean)
+          const photoCollection = (v.photo_collection || []).filter(
+            (image: string) => !colorImages.includes((image || '').trim())
+          )
+          const cover_image_url = hasColors ? '' : getVariantDefaultCover(v) || ''
+          const serializedColors = colors.map((color: any) => ({
+            id: color.id,
+            color_name: getColorName(color),
+            color_code: getColorCode(color),
+            cover_image_url: getColorImage(color)
+          }))
 
           return {
-            ...v,
-            color_name,
-            color_code,
-            cover_image_url
+            id: v.id,
+            price: v.price,
+            url_slug: v.url_slug,
+            cover_image_url,
+            photo_collection: photoCollection,
+            optionValues,
+            variant_name: v.variant_name,
+            colors: serializedColors,
+            sku: v.sku,
+            weight: v.weight,
+            dimensions: v.dimensions,
+            wheelbase: v.wheelbase,
+            seat_height: v.seat_height,
+            ground_clearance: v.ground_clearance,
+            fuel_capacity: v.fuel_capacity,
+            tire_size: v.tire_size,
+            front_brake: v.front_brake,
+            rear_brake: v.rear_brake,
+            front_suspension: v.front_suspension,
+            rear_suspension: v.rear_suspension,
+            engine_type: v.engine_type
           }
         })
+
+        payload.variants = serializedVariants
+        payload.cover_image_url =
+          serializedVariants.map(getVariantDefaultCover).find(Boolean) ||
+          formData.value.cover_image_url
       }
 
       if (formData.value.id) {
-        await ProductApi.update(formData.value.id, formData.value)
+        await ProductApi.update(formData.value.id, payload)
         ElMessage.success('Cập nhật sản phẩm thành công')
       } else {
-        await ProductApi.create(formData.value)
+        await ProductApi.create(payload)
         ElMessage.success('Thêm sản phẩm thành công')
       }
       dialogVisible.value = false
@@ -500,13 +711,16 @@ export function useProductTable() {
     formData.value.variants.push({
       id: null,
       price: null,
-      version_name: '',
+      variant_name: '',
+      cover_image_url: '',
       color_name: '',
       color_code: '#000000',
-      colors: [{ name: '', code: '#000000', image: '' }],
+      colors: [],
       sku: '',
       photo_collection: [],
-      url: '',
+      optionValues: {},
+      option_rows: [],
+      url_slug: '',
       stock_quantity: 0,
       weight: null,
       dimensions: '',
@@ -532,15 +746,26 @@ export function useProductTable() {
     if (!variant.colors) {
       variant.colors = []
     }
+    variant.cover_image_url = ''
     variant.colors.push({ name: '', code: '#000000', image: '' })
   }
 
   const removeColor = (variant: any, index: number) => {
     if (variant.colors) {
       variant.colors.splice(index, 1)
-      if (variant.colors.length === 0) {
-        addColor(variant)
-      }
+    }
+  }
+
+  const addVariantOptionValue = (variant: any) => {
+    if (!variant.option_rows) {
+      variant.option_rows = []
+    }
+    variant.option_rows.push({ key: '', value: '' })
+  }
+
+  const removeVariantOptionValue = (variant: any, index: number) => {
+    if (variant.option_rows) {
+      variant.option_rows.splice(index, 1)
     }
   }
 
@@ -659,7 +884,7 @@ export function useProductTable() {
 
     const techId = Number(tech.id)
     const existingIndex = formData.value.highlights_list.findIndex(
-      (h: any) => Number(h.technologyId || h.technology_id) === techId
+      (h: any) => Number(h.technology_id) === techId
     )
 
     if (existingIndex >= 0) {
@@ -667,17 +892,10 @@ export function useProductTable() {
       selectedTechIds.value = selectedTechIds.value.filter((id) => Number(id) !== techId)
     } else {
       formData.value.highlights_list.push({
-        technologyId: tech.id,
         technology_id: tech.id,
-        customTitle: tech.defaultTitle || tech.name,
         custom_title: tech.defaultTitle || tech.name,
-        customDescription: tech.defaultDescription || '',
         custom_description: tech.defaultDescription || '',
-        customImageUrl: tech.defaultImageUrl || '',
         custom_image_url: tech.defaultImageUrl || '',
-        title: tech.defaultTitle || tech.name,
-        description: tech.defaultDescription || '',
-        image: tech.defaultImageUrl || '',
         _defaultTitle: tech.defaultTitle,
         _defaultDescription: tech.defaultDescription,
         _defaultImageUrl: tech.defaultImageUrl,
@@ -692,14 +910,14 @@ export function useProductTable() {
   const isTechnologySelected = (techId: number) => {
     if (!formData.value.highlights_list) return false
     return formData.value.highlights_list.some(
-      (h: any) => Number(h.technologyId || h.technology_id) === Number(techId)
+      (h: any) => Number(h.technology_id) === Number(techId)
     )
   }
 
   fetchCategories()
-  fetchBrands()
   fetchTechnologies()
   fetchTechnologyCategories()
+  fetchPredefinedOptions()
 
   // Export to Excel
   const exporting = ref(false)
@@ -740,9 +958,22 @@ export function useProductTable() {
   return {
     categories,
     categoryTree,
-    brands,
+    brandSelectorVisible,
+    brandSelectorLoading,
+    brandSelectorQuery,
+    brandSelectorPage,
+    brandSelectorPageSize,
+    brandSelectorTotal,
+    brandSelectorItems,
+    openBrandSelector,
+    selectBrand,
+    handleSelectorSearch,
+    ensureBrandLoaded,
+    getBrandNameById,
+    fetchSelectorBrands,
     loadingCategories,
     availableTechnologies,
+    availablePredefinedOptions,
     selectedTechIds,
     loadingTechs,
     data,
@@ -768,6 +999,8 @@ export function useProductTable() {
     removeVariant,
     addColor,
     removeColor,
+    addVariantOptionValue,
+    removeVariantOptionValue,
 
     vehicleSearch,
     filteredVehicles,

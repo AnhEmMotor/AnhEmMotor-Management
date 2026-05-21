@@ -1,19 +1,26 @@
 export interface VariantColor {
-  name: string
-  code: string
-  image: string
+  id?: number
+  name?: string
+  code?: string
+  image?: string
+  color_name?: string
+  color_code?: string
+  cover_image_url?: string
 }
 
 export interface ProductVariant {
   id: number | null
   price: number | null
-  version_name: string
+  variant_name: string
+  cover_image_url?: string
   color_name: string
   color_code: string
   colors: VariantColor[]
   sku: string
   photo_collection: string[]
-  url?: string
+  optionValues?: Record<string, string>
+  option_rows?: Array<{ key: string; value: string }>
+  url_slug?: string
   stock_quantity?: number
 
   // --- Spec Overrides for Vehicle Variants ---
@@ -99,5 +106,25 @@ export interface Product {
 
 export interface ProductList {
   items: Product[]
+  totalCount: number
+}
+
+export interface ProductVariantLiteForInput {
+  id: number
+  productId: number
+  displayName: string
+  coverImageUrl: string
+  price: number
+  categoryId: number
+  colors?: Array<{
+    id: number
+    colorName?: string
+    colorCode?: string
+    coverImageUrl?: string
+  }>
+}
+
+export interface ProductVariantLiteForInputList {
+  items: ProductVariantLiteForInput[]
   totalCount: number
 }
