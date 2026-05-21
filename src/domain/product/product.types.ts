@@ -116,6 +116,12 @@ export interface ProductVariantLiteForInput {
   coverImageUrl: string
   price: number
   categoryId: number
+  colors?: Array<{
+    id: number
+    colorName?: string
+    colorCode?: string
+    coverImageUrl?: string
+  }>
 }
 
 export interface ProductVariantLiteForInputList {

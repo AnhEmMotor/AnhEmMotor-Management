@@ -64,6 +64,18 @@ export const ProductApi = {
     })
   },
 
+  getVariantsForOutput(params: any) {
+    const { current, size, ...rest } = params
+    return request.get<ProductVariantLiteForInputList>({
+      url: '/api/Product/variants-lite/for-output',
+      params: {
+        Page: current,
+        PageSize: size,
+        ...rest
+      }
+    })
+  },
+
   getPredefinedOptions() {
     return request.get<Record<string, string>>({
       url: '/api/Product/predefined-options'

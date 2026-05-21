@@ -150,8 +150,8 @@
                   class="w-full border border-gray-300 rounded px-2 py-1 bg-white flex items-center justify-between cursor-pointer hover:border-primary transition duration-200 min-h-[32px]"
                   @click="openProductSelector($index)"
                 >
-                  <span v-if="row.productId" class="text-gray-800 text-xs font-medium">
-                    {{ getProductNameById(row.productId) }}
+                  <span v-if="row.productVarientId" class="text-gray-800 text-xs font-medium">
+                    {{ getProductNameById(row.productVarientId) }}
                   </span>
                   <span v-else class="text-gray-400 text-xs">Chọn sản phẩm...</span>
                   <ElIcon class="text-gray-400 text-xs"><ArrowDown /></ElIcon>
@@ -450,91 +450,64 @@
           @input="handleProductSelectorSearch"
         />
 
-        <!-- Products List with Variants -->
+        <!-- Variant List -->
         <div
           v-loading="productSelectorLoading"
           class="space-y-3 min-h-[350px] max-h-[500px] overflow-y-auto pr-1"
         >
           <div
-            v-for="product in productSelectorItems"
-            :key="product.id"
-            class="border border-gray-200 rounded-lg p-4 bg-gray-50 hover:shadow-sm transition-all duration-200"
+            v-for="variant in productSelectorItems"
+            :key="variant.id"
+            class="border border-gray-200 rounded-lg p-4 bg-white hover:shadow-sm transition-all duration-200"
           >
-            <!-- Product Header -->
-            <div class="flex items-center justify-between border-b pb-2 mb-3">
-              <div>
-                <span class="text-sm font-semibold text-gray-800">{{ product.name }}</span>
-                <div class="flex gap-2 mt-1">
-                  <ElTag size="small" type="info" effect="plain">{{
-                    product.brand || 'No Brand'
-                  }}</ElTag>
-                  <ElTag size="small" type="success" effect="plain">{{
-                    product.category || 'No Category'
-                  }}</ElTag>
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <ElImage
+                  :src="variant.coverImageUrl || ''"
+                  class="w-12 h-12 rounded object-cover border border-gray-100 flex-shrink-0"
+                  fit="cover"
+                >
+                  <template #error>
+                    <div
+                      class="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400"
+                    >
+                      <ElIcon><InfoFilled /></ElIcon>
+                    </div>
+                  </template>
+                </ElImage>
+
+                <div class="flex flex-col min-w-0">
+                  <span class="text-sm font-semibold text-gray-800 truncate">
+                    {{ variant.displayName }}
+                  </span>
+                  <span class="text-[11px] text-gray-400 mt-0.5 font-mono">
+                    Variant ID: #{{ variant.id }}
+                  </span>
+                  <span class="text-xs text-primary font-bold mt-0.5">
+                    {{ formatCurrency(variant.price ?? undefined) }}
+                  </span>
                 </div>
               </div>
-              <span class="text-xs text-gray-400">ID: #{{ product.id }}</span>
-            </div>
 
-            <!-- Variants Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <div
-                v-for="(variant, idx) in product.variants"
-                :key="variant.id ?? idx"
-                class="bg-white border border-gray-150 rounded p-2 flex items-center justify-between hover:border-primary transition-colors"
-              >
-                <div class="flex items-center gap-3">
-                  <!-- Variant Image -->
-                  <ElImage
-                    :src="
-                      (variant.photo_collection && variant.photo_collection[0]) ||
-                      product.cover_image_url ||
-                      ''
-                    "
-                    class="w-10 h-10 rounded object-cover border border-gray-100 flex-shrink-0"
-                    fit="cover"
-                  >
-                    <template #error>
-                      <div
-                        class="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400"
-                      >
-                        <ElIcon><InfoFilled /></ElIcon>
-                      </div>
-                    </template>
-                  </ElImage>
-
-                  <!-- Variant details -->
-                  <div class="flex flex-col">
-                    <span class="text-xs font-semibold text-gray-700">
-                      {{ getVariantDisplayName('', variant) }}
-                    </span>
-                    <span class="text-[10px] text-gray-400 mt-0.5 font-mono"
-                      >SKU: {{ variant.sku || 'N/A' }}</span
-                    >
-                    <span class="text-xs text-primary font-bold mt-0.5">
-                      {{ formatCurrency(variant.price ?? undefined) }}
-                    </span>
-                  </div>
-                </div>
-
-                <!-- Action Button -->
-                <ElButton
-                  type="primary"
+              <div class="flex flex-col gap-2 items-end">
+                <ElSelect
+                  v-if="variant.colors?.length"
+                  v-model="selectedVariantColors[variant.id]"
+                  placeholder="Chọn màu"
                   size="small"
-                  plain
-                  @click="selectProductVariant(product.name, variant)"
+                  style="width: 150px"
                 >
+                  <ElOption
+                    v-for="color in variant.colors"
+                    :key="color.id"
+                    :label="color.colorName || `Màu #${color.id}`"
+                    :value="color.id"
+                  />
+                </ElSelect>
+                <ElButton type="primary" size="small" plain @click="selectProductVariant(variant)">
                   Chọn
                 </ElButton>
               </div>
-            </div>
-
-            <!-- No variants fallback -->
-            <div
-              v-if="!product.variants || product.variants.length === 0"
-              class="text-xs text-gray-400 text-center py-2"
-            >
-              Không có phiên bản/biến thể nào cho sản phẩm này
             </div>
           </div>
 
@@ -584,7 +557,7 @@
   import { Permissions } from '@/domain/constants/permissions'
   import type { InventoryReceipt, InputInfo } from '@/domain/inventory/receipt.types'
   import type { Supplier } from '@/domain/supplier/supplier.types'
-  import type { Product } from '@/domain/product/product.types'
+  import type { ProductVariantLiteForInput } from '@/domain/product/product.types'
 
   defineOptions({ name: 'InventoryInput' })
 
@@ -623,16 +596,6 @@
   const getProductNameById = (id?: number) => {
     if (!id) return ''
     return productCache.get(Number(id))?.displayName || `Sản phẩm #${id}`
-  }
-
-  const getVariantDisplayName = (productName: string, variant: any) => {
-    const parts = []
-    if (variant.versionName) parts.push(variant.versionName)
-    if (variant.colorName) parts.push(variant.colorName)
-    if (parts.length > 0) {
-      return `${productName} (${parts.join(' - ')})`
-    }
-    return productName
   }
 
   // Supplier Selector Dialog States
@@ -698,7 +661,8 @@
   const productSelectorPage = ref(1)
   const productSelectorPageSize = ref(10) // 10 products per page as requested
   const productSelectorTotal = ref(0)
-  const productSelectorItems = ref<Product[]>([])
+  const productSelectorItems = ref<ProductVariantLiteForInput[]>([])
+  const selectedVariantColors = reactive<Record<number, number | undefined>>({})
   const productSelectorActiveRowIndex = ref<number | null>(null)
 
   const fetchSelectorProducts = async () => {
@@ -706,9 +670,9 @@
     try {
       const filters = []
       if (productSelectorQuery.value.trim()) {
-        filters.push(`Name@=${productSelectorQuery.value.trim()}`)
+        filters.push(`search@=${productSelectorQuery.value.trim()}`)
       }
-      const res = await ProductApi.getList({
+      const res = await ProductApi.getVariantsForInput({
         current: productSelectorPage.value,
         size: productSelectorPageSize.value,
         Filters: filters.join(',')
@@ -730,29 +694,37 @@
     fetchSelectorProducts()
   }
 
-  const selectProductVariant = (productName: string, variant: any) => {
+  const selectProductVariant = (variant: ProductVariantLiteForInput) => {
     if (!variant.id) return
+    const productVarientColorId = selectedVariantColors[variant.id]
+    if (variant.colors?.length && !productVarientColorId) {
+      ElMessage.warning('Vui lòng chọn màu cho biến thể sản phẩm này')
+      return
+    }
 
-    const displayName = getVariantDisplayName(productName, variant)
+    const displayName = variant.displayName || `Sản phẩm #${variant.id}`
     productCache.set(variant.id, { displayName, price: variant.price || 0 })
 
     if (productSelectorActiveRowIndex.value !== null) {
       // Update existing row
       const idx = productSelectorActiveRowIndex.value
       if (formData.value.products[idx]) {
-        formData.value.products[idx].productId = variant.id
+        formData.value.products[idx].productVarientId = variant.id
+        formData.value.products[idx].productVarientColorId = productVarientColorId
         formData.value.products[idx].inputPrice = variant.price || 0
       }
     } else {
       // Add new row (check if last row is empty first to reuse it)
       const products = formData.value.products
       const lastRow = products[products.length - 1]
-      if (lastRow && lastRow.productId === undefined) {
-        lastRow.productId = variant.id
+      if (lastRow && lastRow.productVarientId === undefined) {
+        lastRow.productVarientId = variant.id
+        lastRow.productVarientColorId = productVarientColorId
         lastRow.inputPrice = variant.price || 0
       } else {
         products.push({
-          productId: variant.id,
+          productVarientId: variant.id,
+          productVarientColorId,
           count: 1,
           inputPrice: variant.price || 0
         })
@@ -775,7 +747,8 @@
     statusId: string
     products: Array<{
       id?: number
-      productId: number | undefined
+      productVarientId: number | undefined
+      productVarientColorId?: number
       count: number
       inputPrice: number
     }>
@@ -1032,8 +1005,8 @@
 
       // Cache product names
       ;(receipt.products || []).forEach((p) => {
-        productCache.set(p.productId, {
-          displayName: p.name || `Sản phẩm #${p.productId}`,
+        productCache.set(p.productVarientId, {
+          displayName: p.name || `Sản phẩm #${p.productVarientId}`,
           price: p.importPrice
         })
       })
@@ -1045,7 +1018,8 @@
         statusId: receipt.statusId,
         products: (receipt.products || []).map((p) => ({
           id: p.id,
-          productId: p.productId,
+          productVarientId: p.productVarientId,
+          productVarientColorId: p.productVarientColorId,
           count: p.quantity || 1,
           inputPrice: p.importPrice || 0
         }))
@@ -1169,7 +1143,7 @@
     }
 
     const validProducts = formData.value.products.filter(
-      (p) => p.productId !== undefined && p.productId !== null
+      (p) => p.productVarientId !== undefined && p.productVarientId !== null
     )
 
     if (validProducts.length === 0) {
@@ -1211,7 +1185,8 @@
     try {
       const payloadProducts = validProducts.map((p) => ({
         id: p.id,
-        productId: p.productId!,
+        productVarientId: p.productVarientId!,
+        productVarientColorId: p.productVarientColorId,
         count: p.count,
         inputPrice: p.inputPrice
       }))
@@ -1230,11 +1205,14 @@
           notes: formData.value.notes,
           statusId: 'working', // Initial creation status is always working
           supplierId: formData.value.supplierId,
-          products: payloadProducts.map(({ productId, count, inputPrice }) => ({
-            productId,
-            count,
-            inputPrice
-          }))
+          products: payloadProducts.map(
+            ({ productVarientId, productVarientColorId, count, inputPrice }) => ({
+              productVarientId,
+              productVarientColorId,
+              count,
+              inputPrice
+            })
+          )
         }
         await InventoryReceiptApi.create(payload)
         ElMessage.success('Tạo phiếu nhập thành công')
