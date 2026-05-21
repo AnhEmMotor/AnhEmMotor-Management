@@ -129,7 +129,7 @@ export function useCategoryTable() {
       slug: '',
       imageUrl: '',
       description: '',
-      managementType: managementTypes.value[0]?.value || 'chassis_number',
+      managementType: managementTypes.value[0]?.value || 'sku',
       maxPurchaseQuantity: null,
       isActive: true,
       parentId: null
