@@ -153,7 +153,7 @@
                     <label
                       class="el-form-item__label !text-xs !font-semibold !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
                     >
-                      Thương Hiệu
+                      Thương Hiệu <span class="text-red-500">*</span>
                     </label>
                     <div class="flex items-center gap-2">
                       <div
@@ -354,7 +354,7 @@
                     <br />
                     <ElInputNumber
                       v-model="formData.weight"
-                      :min="0"
+                      :min="1"
                       class="w-full"
                       placeholder="0"
                     />
@@ -1112,10 +1112,84 @@
                         <br />
                         <ElInputNumber
                           v-model="variant.price"
-                          :min="0"
+                          :min="1"
                           class="w-full"
                           placeholder="0"
                         />
+                      </div>
+                    </div>
+
+                    <div
+                      v-if="!variant.colors || variant.colors.length === 0"
+                      class="mt-4 border-t border-gray-100 pt-4"
+                    >
+                      <label
+                        class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
+                      >
+                        Cover mặc định của biến thể
+                      </label>
+                      <ElUpload
+                        class="variant-uploader"
+                        action="#"
+                        :show-file-list="false"
+                        :auto-upload="true"
+                        :http-request="(opt) => handleVariantCoverUpload(opt, variant)"
+                      >
+                        <div
+                          class="w-28 h-28 rounded-lg border border-dashed border-gray-300 hover:border-primary/50 flex items-center justify-center text-gray-400 cursor-pointer overflow-hidden bg-gray-50"
+                        >
+                          <img
+                            v-if="variant.cover_image_url"
+                            :src="variant.cover_image_url"
+                            class="w-full h-full object-cover"
+                          />
+                          <ElIcon v-else><Plus /></ElIcon>
+                        </div>
+                      </ElUpload>
+                    </div>
+
+                    <div class="mt-4 border-t border-gray-100 pt-4">
+                      <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                          Thuộc tính tùy chọn
+                        </span>
+                        <ElButton
+                          type="primary"
+                          plain
+                          size="small"
+                          :icon="Plus"
+                          @click="addVariantOptionValue(variant)"
+                        >
+                          Thêm thuộc tính
+                        </ElButton>
+                      </div>
+
+                      <div v-if="variant.option_rows?.length" class="space-y-3">
+                        <div
+                          v-for="(optionRow, optionIdx) in variant.option_rows"
+                          :key="optionIdx"
+                          class="grid grid-cols-[1fr_1fr_auto] gap-3 items-center"
+                        >
+                          <ElSelect
+                            v-model="optionRow.key"
+                            filterable
+                            placeholder="Chọn thuộc tính"
+                          >
+                            <ElOption
+                              v-for="option in availablePredefinedOptions"
+                              :key="option.key"
+                              :label="option.label"
+                              :value="option.key"
+                            />
+                          </ElSelect>
+                          <ElInput v-model="optionRow.value" placeholder="Giá trị thuộc tính" />
+                          <ElButton
+                            type="danger"
+                            plain
+                            :icon="Delete"
+                            @click="removeVariantOptionValue(variant, optionIdx)"
+                          />
+                        </div>
                       </div>
                     </div>
 
@@ -1260,7 +1334,7 @@
                               <label
                                 class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
                               >
-                                Mã màu
+                                Mã màu <span class="text-red-500">*</span>
                               </label>
                               <div class="flex gap-2 items-center w-full">
                                 <ElColorPicker v-model="color.code" />
@@ -1831,6 +1905,8 @@
     removeVariant,
     addColor,
     removeColor,
+    addVariantOptionValue,
+    removeVariantOptionValue,
 
     vehicleSearch,
     filteredVehicles,
@@ -1840,6 +1916,7 @@
     toggleTechnology,
     isTechnologySelected,
     availableTechnologies,
+    availablePredefinedOptions,
     loadingTechs,
     technologyCategories,
     createTechnology,
@@ -2015,6 +2092,16 @@
       const res = await FileApi.uploadProductImage(options.file)
       colorObj.image = res.publicUrl
       ElMessage.success('Tải ảnh biến thể lên thành công')
+    } catch (err: any) {
+      ElMessage.error(err.message || 'Tải ảnh thất bại')
+    }
+  }
+
+  const handleVariantCoverUpload = async (options: any, variantObj: any) => {
+    try {
+      const res = await FileApi.uploadProductImage(options.file)
+      variantObj.cover_image_url = res.publicUrl
+      ElMessage.success('Tải cover biến thể lên thành công')
     } catch (err: any) {
       ElMessage.error(err.message || 'Tải ảnh thất bại')
     }

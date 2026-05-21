@@ -1,18 +1,25 @@
 export interface VariantColor {
-  name: string
-  code: string
-  image: string
+  id?: number
+  name?: string
+  code?: string
+  image?: string
+  color_name?: string
+  color_code?: string
+  cover_image_url?: string
 }
 
 export interface ProductVariant {
   id: number | null
   price: number | null
   variant_name: string
+  cover_image_url?: string
   color_name: string
   color_code: string
   colors: VariantColor[]
   sku: string
   photo_collection: string[]
+  optionValues?: Record<string, string>
+  option_rows?: Array<{ key: string; value: string }>
   url_slug?: string
   stock_quantity?: number
 

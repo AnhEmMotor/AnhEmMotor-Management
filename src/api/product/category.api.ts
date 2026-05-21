@@ -1,5 +1,9 @@
 import request from '@/utils/http'
-import type { ProductCategory, ProductCategoryList } from '@/domain/product/category.types'
+import type {
+  ProductCategory,
+  ProductCategoryList,
+  ProductManagementType
+} from '@/domain/product/category.types'
 
 export const CategoryApi = {
   getList(params: any) {
@@ -43,6 +47,12 @@ export const CategoryApi = {
   getStats() {
     return request.get<any>({
       url: '/api/ProductCategory/stats'
+    })
+  },
+
+  getManagementTypes() {
+    return request.get<ProductManagementType[]>({
+      url: '/api/ProductCategory/management-types'
     })
   },
 

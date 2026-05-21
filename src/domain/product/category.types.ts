@@ -8,11 +8,18 @@ export interface ProductCategory {
   description: string
   productCount: number
   categoryGroup?: string
+  managementType?: string
+  maxPurchaseQuantity?: number | null
 }
 
 export interface ProductCategoryList {
   items: ProductCategory[]
   totalCount: number
+}
+
+export interface ProductManagementType {
+  value: string
+  text: string
 }
 
 export enum CategoryTab {

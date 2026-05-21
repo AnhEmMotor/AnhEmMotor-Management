@@ -21,6 +21,16 @@ export function useProductTable() {
   const selectedTechIds = ref<number[]>([])
   const loadingCategories = ref(false)
   const loadingTechs = ref(false)
+  const predefinedOptions = ref<Record<string, string>>({})
+  const availablePredefinedOptions = computed(() =>
+    Object.entries(predefinedOptions.value)
+      .filter(
+        ([key, value]) =>
+          !['color', 'màu sắc'].includes(key.trim().toLowerCase()) &&
+          !['color', 'màu sắc'].includes(value.trim().toLowerCase())
+      )
+      .map(([key, label]) => ({ key, label }))
+  )
 
   // Brand cache
   const brandCache = reactive(new Map<number, Brand>())
@@ -94,6 +104,15 @@ export function useProductTable() {
       technologyCategories.value = res || []
     } catch (_err) {
       console.error('Failed to fetch tech categories:', _err)
+    }
+  }
+
+  const fetchPredefinedOptions = async () => {
+    try {
+      predefinedOptions.value = await ProductApi.getPredefinedOptions()
+    } catch (err) {
+      console.error('Failed to fetch predefined options:', err)
+      predefinedOptions.value = {}
     }
   }
 
@@ -241,7 +260,7 @@ export function useProductTable() {
             const children = (product.variants || []).map((variant: any, idx: number) => {
               return {
                 id: `variant-${variant.id || idx}-${product.id}`,
-                name: variant.version_name || `Biến thể ${idx + 1}`,
+                name: variant.variant_name || `Biến thể ${idx + 1}`,
                 cover_image_url: variant.cover_image_url || '',
                 brand: '',
                 category: '',
@@ -347,12 +366,15 @@ export function useProductTable() {
         {
           id: null,
           price: null,
-          version_name: '',
+          variant_name: '',
+          cover_image_url: '',
           color_name: '',
           color_code: '#000000',
-          colors: [{ name: '', code: '#000000', image: '' }],
+          colors: [],
           sku: '',
           photo_collection: [],
+          optionValues: {},
+          option_rows: [],
           url_slug: '',
           stock_quantity: 0,
           weight: null,
@@ -453,16 +475,30 @@ export function useProductTable() {
       // Parse variants colors and overrides
       if (fullProduct.variants) {
         fullProduct.variants.forEach((v: any) => {
-          if (!v.colors) {
+          if (!v.colors || v.colors.length === 0) {
             const names = (v.color_name || '').split(',')
             const codes = (v.color_code || '').split(',')
-            const images = (v.cover_image_url || '').split(',')
-            v.colors = names.map((name: string, i: number) => ({
-              name: name.trim(),
-              code: codes[i]?.trim() || '#000000',
-              image: images[i]?.trim() || ''
+            const images = (v.color_cover_image_url || v.cover_image_url || '').split(',')
+            v.colors = names
+              .map((name: string, i: number) => ({
+                id: undefined,
+                name: name.trim(),
+                code: codes[i]?.trim() || '#000000',
+                image: images[i]?.trim() || images[0]?.trim() || ''
+              }))
+              .filter((color: any) => color.name)
+          } else {
+            v.colors = v.colors.map((color: any) => ({
+              id: color.id,
+              name: color.name ?? color.color_name ?? '',
+              code: color.code ?? color.color_code ?? '#000000',
+              image: color.image ?? color.cover_image_url ?? ''
             }))
           }
+          v.optionValues = v.optionValues || {}
+          v.option_rows = Object.entries(v.optionValues)
+            .filter(([key]) => !['color', 'màu sắc'].includes(String(key).trim().toLowerCase()))
+            .map(([key, value]) => ({ key, value: String(value || '') }))
           if (!v.photo_collection) {
             v.photo_collection = []
           }
@@ -484,12 +520,15 @@ export function useProductTable() {
           {
             id: null,
             price: null,
-            version_name: '',
+            variant_name: '',
+            cover_image_url: '',
             color_name: '',
             color_code: '#000000',
-            colors: [{ name: '', code: '#000000', image: '' }],
+            colors: [],
             sku: '',
             photo_collection: [],
+            optionValues: {},
+            option_rows: [],
             url_slug: '',
             stock_quantity: 0,
             weight: null,
@@ -548,6 +587,17 @@ export function useProductTable() {
     })
   }
 
+  const getVariantDefaultCover = (variant: any) => {
+    return (variant.cover_image_url || '')
+      .split(',')
+      .map((image: string) => image.trim())
+      .find(Boolean)
+  }
+
+  const getColorName = (color: any) => (color.color_name ?? color.name ?? '').trim()
+  const getColorCode = (color: any) => (color.color_code ?? color.code ?? '').trim()
+  const getColorImage = (color: any) => (color.cover_image_url ?? color.image ?? '').trim()
+
   const submitForm = async () => {
     submitting.value = true
     try {
@@ -569,28 +619,80 @@ export function useProductTable() {
         formData.value.highlights = '[]'
       }
 
-      // Format variants colors into comma-separated strings for backend compatibility
+      const payload: any = { ...formData.value }
+
+      // Format variants into the backend command shape.
       if (formData.value.variants) {
-        formData.value.variants = formData.value.variants.map((v: any) => {
+        const serializedVariants = formData.value.variants.map((v: any) => {
           const colors = v.colors || []
-          const color_name = colors.map((c: any) => (c.name || '').trim()).join(',')
-          const color_code = colors.map((c: any) => (c.code || '').trim()).join(',')
-          const cover_image_url = colors.map((c: any) => (c.image || '').trim()).join(',')
+          const optionValues = (v.option_rows || []).reduce(
+            (acc: Record<string, string>, row: any) => {
+              const key = (row.key || '').trim()
+              const value = (row.value || '').trim()
+              if (key && value) {
+                acc[key] = value
+              }
+              return acc
+            },
+            {}
+          )
+          const hasColors = colors.length > 0
+          if (
+            hasColors &&
+            colors.some(
+              (color: any) => !getColorName(color) || !getColorCode(color) || !getColorImage(color)
+            )
+          ) {
+            throw new Error('Mỗi màu sắc của biến thể phải có đủ tên màu, mã màu và hình ảnh.')
+          }
+          const colorImages = colors.map(getColorImage).filter(Boolean)
+          const photoCollection = (v.photo_collection || []).filter(
+            (image: string) => !colorImages.includes((image || '').trim())
+          )
+          const cover_image_url = hasColors ? '' : getVariantDefaultCover(v) || ''
+          const serializedColors = colors.map((color: any) => ({
+            id: color.id,
+            color_name: getColorName(color),
+            color_code: getColorCode(color),
+            cover_image_url: getColorImage(color)
+          }))
 
           return {
-            ...v,
-            color_name,
-            color_code,
-            cover_image_url
+            id: v.id,
+            price: v.price,
+            url_slug: v.url_slug,
+            cover_image_url,
+            photo_collection: photoCollection,
+            optionValues,
+            variant_name: v.variant_name,
+            colors: serializedColors,
+            sku: v.sku,
+            weight: v.weight,
+            dimensions: v.dimensions,
+            wheelbase: v.wheelbase,
+            seat_height: v.seat_height,
+            ground_clearance: v.ground_clearance,
+            fuel_capacity: v.fuel_capacity,
+            tire_size: v.tire_size,
+            front_brake: v.front_brake,
+            rear_brake: v.rear_brake,
+            front_suspension: v.front_suspension,
+            rear_suspension: v.rear_suspension,
+            engine_type: v.engine_type
           }
         })
+
+        payload.variants = serializedVariants
+        payload.cover_image_url =
+          serializedVariants.map(getVariantDefaultCover).find(Boolean) ||
+          formData.value.cover_image_url
       }
 
       if (formData.value.id) {
-        await ProductApi.update(formData.value.id, formData.value)
+        await ProductApi.update(formData.value.id, payload)
         ElMessage.success('Cập nhật sản phẩm thành công')
       } else {
-        await ProductApi.create(formData.value)
+        await ProductApi.create(payload)
         ElMessage.success('Thêm sản phẩm thành công')
       }
       dialogVisible.value = false
@@ -609,12 +711,15 @@ export function useProductTable() {
     formData.value.variants.push({
       id: null,
       price: null,
-      version_name: '',
+      variant_name: '',
+      cover_image_url: '',
       color_name: '',
       color_code: '#000000',
-      colors: [{ name: '', code: '#000000', image: '' }],
+      colors: [],
       sku: '',
       photo_collection: [],
+      optionValues: {},
+      option_rows: [],
       url_slug: '',
       stock_quantity: 0,
       weight: null,
@@ -641,15 +746,26 @@ export function useProductTable() {
     if (!variant.colors) {
       variant.colors = []
     }
+    variant.cover_image_url = ''
     variant.colors.push({ name: '', code: '#000000', image: '' })
   }
 
   const removeColor = (variant: any, index: number) => {
     if (variant.colors) {
       variant.colors.splice(index, 1)
-      if (variant.colors.length === 0) {
-        addColor(variant)
-      }
+    }
+  }
+
+  const addVariantOptionValue = (variant: any) => {
+    if (!variant.option_rows) {
+      variant.option_rows = []
+    }
+    variant.option_rows.push({ key: '', value: '' })
+  }
+
+  const removeVariantOptionValue = (variant: any, index: number) => {
+    if (variant.option_rows) {
+      variant.option_rows.splice(index, 1)
     }
   }
 
@@ -801,6 +917,7 @@ export function useProductTable() {
   fetchCategories()
   fetchTechnologies()
   fetchTechnologyCategories()
+  fetchPredefinedOptions()
 
   // Export to Excel
   const exporting = ref(false)
@@ -856,6 +973,7 @@ export function useProductTable() {
     fetchSelectorBrands,
     loadingCategories,
     availableTechnologies,
+    availablePredefinedOptions,
     selectedTechIds,
     loadingTechs,
     data,
@@ -881,6 +999,8 @@ export function useProductTable() {
     removeVariant,
     addColor,
     removeColor,
+    addVariantOptionValue,
+    removeVariantOptionValue,
 
     vehicleSearch,
     filteredVehicles,
