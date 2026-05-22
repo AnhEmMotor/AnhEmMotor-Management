@@ -26,11 +26,9 @@ export const buildTree = <
   const roots: T[] = []
   const reachedIds = new Set<number>()
 
-  // 1. Legitimate roots (no parent in list)
   items.forEach((item) => {
     if (!childIds.has(item.id)) {
       roots.push(map[item.id] as T)
-      // Mark all reachable items
       const stack = [map[item.id]]
       while (stack.length > 0) {
         const node = stack.pop()
@@ -42,13 +40,10 @@ export const buildTree = <
     }
   })
 
-  // 2. Handle Cycles: If some items were never reached, they are part of a cycle
   items.forEach((item) => {
     if (!reachedIds.has(item.id)) {
-      // This item is part of a cycle. Force it to be a root.
       roots.push(map[item.id] as T)
 
-      // Mark it and its descendants as reached to avoid duplicates
       const stack = [map[item.id]]
       while (stack.length > 0) {
         const node = stack.pop()
@@ -60,7 +55,6 @@ export const buildTree = <
     }
   })
 
-  // Sort function
   const sortFn = (a: any, b: any) => (a.sortOrder || 0) - (b.sortOrder || 0)
   roots.sort(sortFn)
   Object.values(map).forEach((node) => {

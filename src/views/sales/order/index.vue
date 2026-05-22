@@ -733,12 +733,10 @@
       if (requirements.requiresVehicleAssignment) {
         vehicleRequirements.value = requirements
 
-        // Xóa các lựa chọn cũ
         Object.keys(selectedVehicleIdsByOutputInfo).forEach((key) => {
           delete selectedVehicleIdsByOutputInfo[Number(key)]
         })
 
-        // Điền trước danh sách các xe đã được gán sẵn
         requirements.items.forEach((item) => {
           selectedVehicleIdsByOutputInfo[item.outputInfoId] =
             item.assignedVehicles?.map((v) => v.id) || []

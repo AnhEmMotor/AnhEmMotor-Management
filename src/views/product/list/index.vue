@@ -117,11 +117,9 @@
     >
       <ElForm :model="formData" label-width="120px" class="space-y-0">
         <ElTabs v-model="activeTab" type="border-card" class="form-tabs">
-          <!-- TAB 1: THÔNG TIN CHUNG -->
           <ElTabPane name="common" label="Thông tin chung">
             <div class="tab-scroll-container">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-5 py-2">
-                <!-- Cột 1: Thông tin cơ bản -->
                 <div
                   class="bg-gray-50/50 p-4 border border-gray-150 rounded-xl space-y-4 shadow-sm flex flex-col justify-start"
                 >
@@ -185,7 +183,6 @@
                   </div>
                 </div>
 
-                <!-- Cột 2: Cấu hình SEO & Mô tả ngắn -->
                 <div
                   class="bg-gray-50/50 p-4 border border-gray-150 rounded-xl space-y-4 shadow-sm flex flex-col justify-start"
                 >
@@ -228,7 +225,6 @@
                   </div>
                 </div>
 
-                <!-- Mô tả chi tiết (Full Width) -->
                 <div
                   class="md:col-span-2 mt-2 bg-gray-50/50 p-4 border border-gray-150 rounded-xl shadow-sm"
                 >
@@ -248,10 +244,8 @@
             </div>
           </ElTabPane>
 
-          <!-- TAB 2: THÔNG SỐ & ĐẶC TÍNH KỸ THUẬT -->
           <ElTabPane name="specs" label="Thông số & Đặc tính">
             <div class="tab-scroll-container space-y-4">
-              <!-- Đặc tính kỹ thuật & Kích thước, Trọng lượng -->
               <div
                 class="border border-gray-150 rounded-xl bg-white shadow-sm overflow-hidden transition-all duration-300"
               >
@@ -411,7 +405,6 @@
                 </div>
               </div>
 
-              <!-- Nhóm 2: Động cơ & Truyền động -->
               <div
                 class="border border-gray-150 rounded-xl bg-white shadow-sm overflow-hidden transition-all duration-300"
               >
@@ -554,7 +547,6 @@
                 </div>
               </div>
 
-              <!-- Nhóm 3: Khung xe, Giảm xóc & Phanh -->
               <div
                 class="border border-gray-150 rounded-xl bg-white shadow-sm overflow-hidden transition-all duration-300"
               >
@@ -653,7 +645,6 @@
                 </div>
               </div>
 
-              <!-- Nhóm 4: Hệ thống điện -->
               <div
                 class="border border-gray-150 rounded-xl bg-white shadow-sm overflow-hidden transition-all duration-300"
               >
@@ -712,7 +703,6 @@
                 </div>
               </div>
 
-              <!-- Nhóm 5: Công nghệ & Tiện ích -->
               <div
                 class="border border-gray-150 rounded-xl bg-white shadow-sm overflow-hidden transition-all duration-300"
               >
@@ -795,7 +785,6 @@
                               }}</span>
                             </div>
 
-                            <!-- Action buttons -->
                             <div
                               class="opacity-0 group-hover:opacity-100 flex items-center gap-1 transition-opacity"
                             >
@@ -824,7 +813,6 @@
                     </div>
                   </div>
 
-                  <!-- Highlights Custom Overrides -->
                   <div
                     v-if="formData.highlights_list && formData.highlights_list.length > 0"
                     class="space-y-4 pt-4 border-t border-gray-100"
@@ -928,7 +916,6 @@
                 </div>
               </div>
 
-              <!-- Nhóm 6: Tiêu chuẩn chất lượng -->
               <div
                 class="border border-gray-150 rounded-xl bg-white shadow-sm overflow-hidden transition-all duration-300"
               >
@@ -1031,7 +1018,6 @@
             </div>
           </ElTabPane>
 
-          <!-- TAB 4: BIẾN THỂ -->
           <ElTabPane name="variants" label="Biến thể">
             <div class="tab-scroll-container">
               <div class="space-y-4 py-2">
@@ -1040,7 +1026,6 @@
                   :key="index"
                   class="border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden transition-all duration-300"
                 >
-                  <!-- Clickable Accordion Header -->
                   <div
                     class="flex items-center justify-between p-4 bg-gray-50/50 hover:bg-gray-100/50 cursor-pointer select-none transition-colors border-b border-gray-100"
                     @click="toggleVariantAccordion(index)"
@@ -1080,7 +1065,6 @@
                     </div>
                   </div>
 
-                  <!-- Collapsible Accordion Body -->
                   <div v-show="activeVariantIndex === index" class="p-5 space-y-4 bg-white">
                     <div class="grid grid-cols-3 gap-4 mb-4">
                       <div>
@@ -1193,7 +1177,6 @@
                       </div>
                     </div>
 
-                    <!-- Spec Overriding Block -->
                     <div class="mt-4 border-t border-gray-100 pt-4">
                       <div class="flex items-center justify-between mb-3">
                         <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">
@@ -1307,7 +1290,6 @@
                       </div>
                     </div>
 
-                    <!-- Color settings -->
                     <div class="pt-2">
                       <span
                         class="text-[11px] block mb-3 uppercase tracking-wider text-gray-400 font-semibold"
@@ -1396,7 +1378,6 @@
                       </ElButton>
                     </div>
 
-                    <!-- Variant Gallery -->
                     <div class="mt-4 border-t border-gray-100 pt-4">
                       <label
                         class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
@@ -1440,7 +1421,6 @@
                       </div>
                     </div>
 
-                    <!-- URL Slug -->
                     <div class="mt-4 border-t border-gray-100 pt-4">
                       <label
                         class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
@@ -1459,7 +1439,6 @@
             </div>
           </ElTabPane>
 
-          <!-- TAB 4: TƯƠNG THÍCH -->
           <ElTabPane name="compatibility" label="Tương thích">
             <div class="tab-scroll-container">
               <div class="space-y-6 py-4">
@@ -1487,7 +1466,6 @@
                       clearable
                     />
 
-                    <!-- Search results dropdown -->
                     <div
                       v-if="vehicleSearch && filteredVehicles.length > 0"
                       class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl max-h-48 overflow-y-auto custom-scrollbar"
@@ -1509,7 +1487,6 @@
                     </div>
                   </div>
 
-                  <!-- Selected vehicles list -->
                   <div>
                     <label
                       class="el-form-item__label !text-sm !font-semibold !text-gray-700 !h-auto !leading-none !pb-2 block"
@@ -1554,7 +1531,6 @@
       </template>
     </ElDialog>
 
-    <!-- Dialog Tạo Công Nghệ Mới -->
     <ElDialog
       v-model="newTechDialogVisible"
       title="Tạo Công Nghệ Mới"
@@ -1637,7 +1613,6 @@
       </template>
     </ElDialog>
 
-    <!-- Dialog Tạo Nhóm Công Nghệ Mới -->
     <ElDialog
       v-model="newTechCatDialogVisible"
       title="Tạo Nhóm Công Nghệ Mới"
@@ -1659,7 +1634,6 @@
       </template>
     </ElDialog>
 
-    <!-- Dialog Chỉnh Sửa Công Nghệ -->
     <ElDialog
       v-model="editTechDialogVisible"
       title="Chỉnh Sửa Công Nghệ"
@@ -1742,7 +1716,6 @@
       </template>
     </ElDialog>
 
-    <!-- Brand Selector Dialog -->
     <ElDialog
       v-model="brandSelectorVisible"
       title="Chọn Thương Hiệu"
@@ -1751,7 +1724,6 @@
       align-center
     >
       <div class="space-y-4">
-        <!-- Search input -->
         <ElInput
           v-model="brandSelectorQuery"
           placeholder="Nhập tên thương hiệu để tìm kiếm..."
@@ -1763,7 +1735,6 @@
           </template>
         </ElInput>
 
-        <!-- Brand items grid -->
         <div v-loading="brandSelectorLoading" class="min-h-[300px] mt-4">
           <div
             v-if="brandSelectorItems.length === 0"
@@ -1802,7 +1773,6 @@
           </div>
         </div>
 
-        <!-- Pagination at bottom -->
         <div class="flex justify-end pt-3 mt-4 border-t border-gray-100">
           <ElPagination
             v-model:current-page="brandSelectorPage"
@@ -1859,7 +1829,6 @@
 
   const handleAddVariant = () => {
     addVariant()
-    // Open the newly added variant index dynamically
     setTimeout(() => {
       if (formData.value && formData.value.variants) {
         activeVariantIndex.value = formData.value.variants.length - 1
@@ -1939,7 +1908,6 @@
     return groups
   })
 
-  // Dialog and form states for new technology & category
   const newTechDialogVisible = ref(false)
   const newTechForm = ref({
     name: '',
@@ -2010,13 +1978,12 @@
       newTechForm.value.categoryId = newCat.id
       newTechCatDialogVisible.value = false
     } catch (_err) {
-      // Error message is already handled in createTechnologyCategory
+      // Test
     } finally {
       creatingTechCat.value = false
     }
   }
 
-  // Dialog and form states for editing technology
   const editTechDialogVisible = ref(false)
   const editTechForm = ref({
     id: 0,
@@ -2069,7 +2036,6 @@
     }
   }
 
-  // Delete technology confirmation
   const handleDeleteTech = async (tech: any) => {
     try {
       await ElMessageBox.confirm(
@@ -2256,7 +2222,6 @@
     border-radius: 16px;
   }
 
-  /* Custom tree table styles for premium visual depth */
   :deep(.el-table__row--level-1) {
     background-color: #fafafa !important;
   }
@@ -2269,12 +2234,11 @@
 </style>
 
 <style>
-  /* Global overrides for the Teleported Element Plus Dialog to maintain premium styling, zero size-jumping, and perfect centering */
   .premium-dialog {
     display: flex !important;
     flex-direction: column !important;
     height: 85vh !important;
-    margin: auto !important; /* Perfect vertical and horizontal centering inside the teleported overlay */
+    margin: auto !important;
     overflow: hidden !important;
     border-radius: 16px !important;
   }

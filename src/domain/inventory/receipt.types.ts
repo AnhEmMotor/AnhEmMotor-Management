@@ -4,9 +4,9 @@ export interface InputInfo {
   productVariantColorId?: number
   productVariantColorName?: string
   name?: string
-  quantity: number // backend uses Quantity for response, Count for request
+  quantity: number
   unitPrice?: number
-  importPrice: number // backend uses ImportPrice for response, InputPrice for request
+  importPrice: number
   discount?: number
   total?: number
   remainingCount?: number
@@ -20,7 +20,7 @@ export interface InputInfo {
 export interface InventoryReceipt {
   id: number
   notes?: string
-  statusId: string // 'working', 'finished', 'cancelled'
+  statusId: string
   supplierId: number
   supplierName?: string
   supplierPhone?: string

@@ -23,8 +23,6 @@ export interface ProductVariant {
   option_rows?: Array<{ key: string; value: string }>
   url_slug?: string
   stock_quantity?: number
-
-  // --- Spec Overrides for Vehicle Variants ---
   weight?: number | null
   dimensions?: string
   wheelbase?: number | null
@@ -56,26 +54,18 @@ export interface Product {
   children?: any[]
   isVariant?: boolean
   sku?: string
-
-  // --- SEO Fields ---
   meta_title?: string
   meta_description?: string
   short_description?: string
-
-  // --- Spare Parts Technical Specifications ---
   material?: string
   warranty_period?: string
   compatible_vehicle_model_ids?: number[]
   tire_size?: string
-
-  // --- Quality Standards ---
   std_dot?: boolean
   std_ece?: boolean
   std_snell?: boolean
   std_jis?: boolean
   other_standards?: string
-
-  // --- Vehicle Specific Specifications ---
   engine_type?: string
   max_power?: string
   fuel_capacity?: number

@@ -11,7 +11,6 @@ import { SETTING_DEFAULT_CONFIG } from '@/config/setting'
 export const useSettingStore = defineStore(
   'settingStore',
   () => {
-    // One-time migration of old localStorage defaults to new defaults
     try {
       const stored = localStorage.getItem('setting')
       if (stored) {

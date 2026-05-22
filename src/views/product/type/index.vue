@@ -338,7 +338,6 @@
     border-radius: 12px;
   }
 
-  /* Custom tree table styles for premium visual depth */
   :deep(.el-table__row--level-1) {
     background-color: #fafafa !important;
   }

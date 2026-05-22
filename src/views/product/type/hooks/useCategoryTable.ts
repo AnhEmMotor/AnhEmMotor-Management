@@ -86,7 +86,7 @@ export function useCategoryTable() {
       apiFn: (params: any) => {
         return CategoryApi.getList({
           ...params,
-          size: 1000 // Get all categories to build tree properly
+          size: 1000
         }) as unknown as Promise<Api.Common.PaginatedResponse<ProductCategory>>
       },
       apiParams: {

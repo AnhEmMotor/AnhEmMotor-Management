@@ -101,7 +101,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Dialog Thêm/Sửa Phiếu Nhập -->
     <ElDialog
       v-model="dialogVisible"
       :title="dialogTitle"
@@ -268,7 +267,6 @@
       </template>
     </ElDialog>
 
-    <!-- Dialog Nhập Định Danh VIN -->
     <ElDialog
       v-model="vinDialogVisible"
       title="Nhập định danh xe"
@@ -317,7 +315,6 @@
       </template>
     </ElDialog>
 
-    <!-- Dialog Chi Tiết Phiếu Nhập -->
     <ElDialog
       v-model="detailDialogVisible"
       title="Chi tiết phiếu nhập kho"
@@ -423,7 +420,6 @@
           <ElButton @click="detailDialogVisible = false">Đóng</ElButton>
 
           <template v-if="detailData">
-            <!-- If receipt is working, we can update notes and change status -->
             <template v-if="isEditable(detailData.statusId)">
               <ElButton
                 type="warning"
@@ -449,7 +445,6 @@
               </ElDropdown>
             </template>
 
-            <!-- If receipt is finished or cancelled, status changes are blocked, only save notes -->
             <template v-else>
               <ElButton type="primary" :loading="detailSubmitting" @click="handleUpdateDetailNotes">
                 Cập nhật ghi chú
@@ -460,7 +455,6 @@
       </template>
     </ElDialog>
 
-    <!-- Supplier Selector Dialog -->
     <ElDialog
       v-model="supplierSelectorVisible"
       title="Chọn nhà cung cấp"
@@ -470,7 +464,6 @@
       class="rounded-xl overflow-hidden"
     >
       <div class="space-y-4">
-        <!-- Search bar -->
         <ElInput
           placeholder="Tìm theo tên nhà cung cấp hoặc số điện thoại..."
           clearable
@@ -478,7 +471,6 @@
           @input="handleSupplierSelectorSearch"
         />
 
-        <!-- Grid of Suppliers -->
         <div
           v-loading="supplierSelectorLoading"
           class="grid grid-cols-1 md:grid-cols-2 gap-3 min-h-[300px] max-h-[450px] overflow-y-auto pr-1"
@@ -511,7 +503,6 @@
           </div>
         </div>
 
-        <!-- Pagination -->
         <div class="flex justify-end pt-2 border-t">
           <ElPagination
             v-model:current-page="supplierSelectorPage"
@@ -526,7 +517,6 @@
       </div>
     </ElDialog>
 
-    <!-- Product Selector Dialog -->
     <ElDialog
       v-model="productSelectorVisible"
       title="Chọn sản phẩm & biến thể"
@@ -536,7 +526,6 @@
       class="rounded-xl overflow-hidden"
     >
       <div class="space-y-4">
-        <!-- Search bar -->
         <ElInput
           placeholder="Tìm sản phẩm theo tên..."
           clearable
@@ -544,7 +533,6 @@
           @input="handleProductSelectorSearch"
         />
 
-        <!-- Variant List -->
         <div
           v-loading="productSelectorLoading"
           class="space-y-3 min-h-[350px] max-h-[500px] overflow-y-auto pr-1"
@@ -641,7 +629,6 @@
           </div>
         </div>
 
-        <!-- Pagination -->
         <div class="flex justify-end pt-2 border-t">
           <ElPagination
             v-model:current-page="productSelectorPage"
@@ -701,7 +688,6 @@
 
   const VIN_MANAGEMENT_TYPE = 'vin_number'
 
-  // States
   const loading = ref(false)
   const dialogVisible = ref(false)
   const dialogTitle = ref('Tạo phiếu nhập mới')
@@ -714,23 +700,19 @@
     return formData.value.products[vinDialogRowIndex.value] ?? null
   })
 
-  // Details dialog states
   const detailDialogVisible = ref(false)
   const detailData = ref<InventoryReceipt | null>(null)
   const detailNotes = ref('')
   const detailSubmitting = ref(false)
 
-  // Static/Calculated dashboard metrics
   const stats = ref({
     totalVehicles: 0,
     processingReceipts: 0,
     totalValue: 0
   })
 
-  // Dropdown Lists (Deprecated/Empty)
   const statuses = ref<Record<string, string>>({})
 
-  // Caches for display names
   const supplierCache = reactive(new Map<number, string>())
   const productCache = reactive(
     new Map<
@@ -825,7 +807,6 @@
     vinDialogVisible.value = true
   }
 
-  // Supplier Selector Dialog States
   const supplierSelectorVisible = ref(false)
   const supplierSelectorLoading = ref(false)
   const supplierSelectorQuery = ref('')
@@ -849,7 +830,6 @@
       supplierSelectorItems.value = res.items || []
       supplierSelectorTotal.value = res.totalCount || 0
 
-      // Cache the loaded suppliers
       res.items?.forEach((sup) => {
         if (sup.id) supplierCache.set(sup.id, sup.name)
       })
@@ -881,12 +861,11 @@
     await fetchSelectorSuppliers()
   }, 300)
 
-  // Product Selector Dialog States
   const productSelectorVisible = ref(false)
   const productSelectorLoading = ref(false)
   const productSelectorQuery = ref('')
   const productSelectorPage = ref(1)
-  const productSelectorPageSize = ref(10) // 10 products per page as requested
+  const productSelectorPageSize = ref(10)
   const productSelectorTotal = ref(0)
   const productSelectorItems = ref<ProductVariantLiteForInput[]>([])
   const selectedVariantColors = reactive<Record<string, number | undefined>>({})
@@ -950,7 +929,6 @@
     })
 
     if (productSelectorActiveRowIndex.value !== null) {
-      // Update existing row
       const idx = productSelectorActiveRowIndex.value
       if (formData.value.products[idx]) {
         const row = formData.value.products[idx]
@@ -962,7 +940,6 @@
         syncVehicleRows(row)
       }
     } else {
-      // Add new row (check if last row is empty first to reuse it)
       const products = formData.value.products
       const lastRow = products[products.length - 1]
       if (lastRow && lastRow.productVariantId === undefined) {
@@ -994,7 +971,6 @@
     await fetchSelectorProducts()
   }, 300)
 
-  // Form Data
   const formData = ref<{
     id?: number
     supplierId: number | undefined
@@ -1008,7 +984,6 @@
     products: []
   })
 
-  // Table Data & Paging
   const data = ref<InventoryReceipt[]>([])
   const pagination = reactive({
     current: 1,
@@ -1016,7 +991,6 @@
     total: 0
   })
 
-  // Search items definition (Removed Mã phiếu filter)
   const searchForm = ref({
     supplierName: '',
     statusId: [] as string[]
@@ -1046,7 +1020,6 @@
     }
   ])
 
-  // Columns definition (Removed Mã phiếu, added STT)
   const columns = ref([
     { label: 'STT', type: 'index' as const, width: 70, align: 'center' },
     { label: 'Thời gian tạo', prop: 'createdAt', useSlot: true, width: 170 },
@@ -1066,7 +1039,6 @@
 
   const columnChecks = columns
 
-  // Computed total payable for form
   const totalAmount = computed(() => {
     return formData.value.products.reduce(
       (sum, row) => sum + (row.count || 0) * (row.inputPrice || 0),
@@ -1074,12 +1046,10 @@
     )
   })
 
-  // Editable rule
   const isEditable = (statusId?: string) => {
     return statusId === 'working'
   }
 
-  // Formatting helpers
   const formatDateTime = (dateStr?: string) => {
     if (!dateStr) return '-'
     const date = new Date(dateStr)
@@ -1121,7 +1091,6 @@
     return products.map((p) => `${p.name} (SL: ${p.quantity})`).join(', ')
   }
 
-  // Load backend configuration & list data
   const loadStatuses = async () => {
     try {
       statuses.value = await InventoryReceiptApi.getStatuses()
@@ -1186,7 +1155,6 @@
     }
   }
 
-  // Handlers
   const handleSearch = (filters: any) => {
     pagination.current = 1
     loadDataWithFilters(filters)
@@ -1212,7 +1180,6 @@
     loadData()
   }
 
-  // Row actions
   const handleViewDetail = async (row: InventoryReceipt) => {
     try {
       loading.value = true
@@ -1247,12 +1214,10 @@
       isEdit.value = true
       dialogTitle.value = 'Cập nhật phiếu nhập'
 
-      // Cache supplier name
       if (receipt.supplierId && receipt.supplierName) {
         supplierCache.set(receipt.supplierId, receipt.supplierName)
       }
 
-      // Cache product names
       ;(receipt.products || []).forEach((p) => {
         productCache.set(p.productVariantId, {
           displayName: p.name || `Sản phẩm #${p.productVariantId}`,
@@ -1313,7 +1278,6 @@
     }
   }
 
-  // Details dialog actions
   const handleUpdateDetailStatus = async (statusId: string) => {
     if (!detailData.value) return
 
@@ -1349,9 +1313,7 @@
 
     detailSubmitting.value = true
     try {
-      // 1. Update notes
       await InventoryReceiptApi.updateNotes(detailData.value.id, detailNotes.value)
-      // 2. Update status
       await InventoryReceiptApi.updateStatus(detailData.value.id, statusId)
       ElMessage.success('Cập nhật phiếu nhập thành công')
       detailDialogVisible.value = false
@@ -1380,7 +1342,6 @@
     }
   }
 
-  // Row products table handlers
   const handleAddProductRow = () => {
     openProductSelector()
   }
@@ -1393,7 +1354,6 @@
     formData.value.products.splice(index, 1)
   }
 
-  // Submit
   const submitForm = async (statusId: string) => {
     if (!formData.value.supplierId) {
       ElMessage.warning('Vui lòng chọn nhà cung cấp')
@@ -1498,7 +1458,7 @@
       } else {
         const payload = {
           notes: formData.value.notes,
-          statusId: 'working', // Initial creation status is always working
+          statusId: 'working',
           supplierId: formData.value.supplierId,
           products: payloadProducts.map(
             ({ productVariantId, productVariantColorId, count, inputPrice, vehicles }) => ({
@@ -1523,7 +1483,6 @@
     }
   }
 
-  // Lifecycle
   onMounted(async () => {
     loading.value = true
     await Promise.all([loadStatuses()])
