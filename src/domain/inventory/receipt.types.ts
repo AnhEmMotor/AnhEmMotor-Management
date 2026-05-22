@@ -44,7 +44,6 @@ export interface CreateInventoryReceipt {
     vehicles?: Array<{
       vinNumber: string
       engineNumber: string
-      licensePlate?: string
     }>
   }>
 }

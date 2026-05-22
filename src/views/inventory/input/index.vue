@@ -204,7 +204,7 @@
               <template #default="{ row, $index }">
                 <ElTooltip
                   v-if="isVinManagedProduct(row)"
-                  content="Nhập số khung, số máy, biển số"
+                  content="Nhập số khung, số máy"
                   placement="top"
                 >
                   <ElButton circle type="warning" size="small" plain @click="openVinDialog($index)">
@@ -300,15 +300,6 @@
             <ElTableColumn label="Số máy" min-width="210">
               <template #default="{ row: vehicle }">
                 <ElInput v-model="vehicle.engineNumber" placeholder="Nhập số máy" clearable />
-              </template>
-            </ElTableColumn>
-            <ElTableColumn label="Biển số" min-width="180">
-              <template #default="{ row: vehicle }">
-                <ElInput
-                  v-model="vehicle.licensePlate"
-                  placeholder="Chưa có thì để trống"
-                  clearable
-                />
               </template>
             </ElTableColumn>
           </ElTable>
@@ -667,7 +658,6 @@
   type VehicleIdentification = {
     vinNumber: string
     engineNumber: string
-    licensePlate: string
   }
 
   type ReceiptProductRow = {
@@ -755,8 +745,7 @@
 
   const createEmptyVehicle = (): VehicleIdentification => ({
     vinNumber: '',
-    engineNumber: '',
-    licensePlate: ''
+    engineNumber: ''
   })
 
   const syncVehicleRows = (row: ReceiptProductRow) => {
@@ -1439,8 +1428,7 @@
         vehicles: isVinManagedProduct(p)
           ? p.vehicles?.map((vehicle) => ({
               vinNumber: vehicle.vinNumber.trim(),
-              engineNumber: vehicle.engineNumber.trim(),
-              licensePlate: vehicle.licensePlate?.trim() || undefined
+              engineNumber: vehicle.engineNumber.trim()
             }))
           : undefined
       }))
