@@ -3,7 +3,8 @@ import type {
   CreateSalesOrderByManager,
   SalesOrder,
   SalesOrderList,
-  UpdateSalesOrderForManager
+  UpdateSalesOrderForManager,
+  VehicleAssignmentRequirement
 } from '@/domain/order/order.types'
 
 export const SalesOrderApi = {
@@ -46,6 +47,19 @@ export const SalesOrderApi = {
   getLockedStatuses() {
     return request.get({
       url: '/api/SalesOrders/locked-statuses'
+    })
+  },
+
+  getVehicleAssignmentStatuses() {
+    return request.get<string[]>({
+      url: '/api/SalesOrders/vehicle-assignment-statuses'
+    })
+  },
+
+  getVehicleAssignmentRequirements(id: number, targetStatusId: string) {
+    return request.get<VehicleAssignmentRequirement>({
+      url: `/api/SalesOrders/${id}/vehicle-assignment-requirements`,
+      params: { targetStatusId }
     })
   },
 

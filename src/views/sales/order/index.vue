@@ -76,7 +76,7 @@
         </template>
         <template #operation="{ row }">
           <div class="flex gap-2 justify-center">
-            <ElTooltip content="Xem / chỉnh sửa" placement="top">
+            <ElTooltip v-if="canEditRow(row)" content="Xem / chỉnh sửa" placement="top">
               <ElButton
                 circle
                 size="small"
@@ -87,7 +87,18 @@
                 <ElIcon><Edit /></ElIcon>
               </ElButton>
             </ElTooltip>
-            <ElTooltip content="Xóa phiếu" placement="top">
+            <ElTooltip v-if="canChangeStatusRow(row)" content="Đổi trạng thái" placement="top">
+              <ElButton
+                circle
+                size="small"
+                type="warning"
+                @click="handleOpenStatusDialog(row)"
+                v-auth="Permissions.OutputsChangeStatus"
+              >
+                <ElIcon><Switch /></ElIcon>
+              </ElButton>
+            </ElTooltip>
+            <ElTooltip v-if="canDeleteRow(row)" content="Xóa phiếu" placement="top">
               <ElButton
                 circle
                 size="small"
@@ -164,19 +175,6 @@
             </ElFormItem>
           </ElCol>
 
-          <ElCol :span="24" :md="12" v-if="editingOrder">
-            <ElFormItem label="Trạng thái">
-              <ElSelect v-model="formData.statusId" class="w-full">
-                <ElOption
-                  v-for="status in allowedStatusOptions"
-                  :key="status.id"
-                  :label="status.name"
-                  :value="status.id"
-                />
-              </ElSelect>
-            </ElFormItem>
-          </ElCol>
-
           <ElCol :span="24" :md="12">
             <ElFormItem label="Tỷ lệ đặt cọc">
               <ElInputNumber
@@ -211,12 +209,12 @@
             size="small"
             class="w-full"
             max-height="320"
-            style="width: 100vw"
+            style="width: 100%"
           >
             <ElTableColumn label="Sản phẩm" min-width="280">
               <template #default="{ row }">
                 <ElSelect
-                  v-model="row.productVarientId"
+                  v-model="row.productVariantId"
                   filterable
                   remote
                   :remote-method="searchProducts"
@@ -245,7 +243,7 @@
             <ElTableColumn label="Màu" width="180">
               <template #default="{ row }">
                 <ElSelect
-                  v-model="row.productVarientColorId"
+                  v-model="row.productVariantColorId"
                   clearable
                   placeholder="Không chọn"
                   class="w-full"
@@ -283,6 +281,21 @@
                 <span class="font-medium">{{
                   formatCurrency((row.count || 0) * (row.price || 0))
                 }}</span>
+              </template>
+            </ElTableColumn>
+            <ElTableColumn label="VIN đã gán" min-width="220">
+              <template #default="{ row }">
+                <div v-if="row.assignedVehicles?.length" class="flex flex-wrap gap-1">
+                  <ElTag
+                    v-for="vehicle in row.assignedVehicles"
+                    :key="vehicle.id"
+                    size="small"
+                    type="info"
+                  >
+                    {{ vehicle.vinNumber }}
+                  </ElTag>
+                </div>
+                <span v-else class="text-xs text-gray-400">---</span>
               </template>
             </ElTableColumn>
             <ElTableColumn label="Thao tác" width="100" align="center">
@@ -339,18 +352,114 @@
         </div>
       </template>
     </ElDialog>
+
+    <ElDialog
+      v-model="statusDialogVisible"
+      title="Đổi trạng thái phiếu bán"
+      width="520px"
+      append-to-body
+      destroy-on-close
+    >
+      <ElForm label-width="120px">
+        <ElFormItem label="Trạng thái mới" required>
+          <ElSelect v-model="targetStatusId" class="w-full" placeholder="Chọn trạng thái">
+            <ElOption
+              v-for="status in statusChangeOptions"
+              :key="status.id"
+              :label="getStatusLabel(status.id)"
+              :value="status.id"
+            />
+          </ElSelect>
+        </ElFormItem>
+      </ElForm>
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <ElButton @click="statusDialogVisible = false">Hủy</ElButton>
+          <ElButton type="primary" :loading="statusSaving" @click="handlePrepareStatusChange">
+            Tiếp tục
+          </ElButton>
+        </div>
+      </template>
+    </ElDialog>
+
+    <ElDialog
+      v-model="vinDialogVisible"
+      title="Chọn VIN xuất bán"
+      width="860px"
+      append-to-body
+      destroy-on-close
+    >
+      <div v-if="vehicleRequirements" class="flex flex-col gap-4">
+        <ElAlert
+          v-if="vehicleRequirements.items.some((item) => !item.canFulfill)"
+          title="Một số sản phẩm chưa đủ VIN hợp lệ trong kho, không thể đổi trạng thái."
+          type="error"
+          show-icon
+          :closable="false"
+        />
+        <ElTable :data="vehicleRequirements.items" border size="small" style="width: 100%">
+          <ElTableColumn label="Sản phẩm" min-width="240">
+            <template #default="{ row }">
+              <div class="flex flex-col">
+                <span class="font-medium">{{ row.productName || '---' }}</span>
+                <span class="text-xs text-gray-500">
+                  {{ [row.productVariantName, row.colorName].filter(Boolean).join(' - ') || '---' }}
+                </span>
+              </div>
+            </template>
+          </ElTableColumn>
+          <ElTableColumn label="Cần chọn" width="100" align="center">
+            <template #default="{ row }">{{ row.requiredCount }}</template>
+          </ElTableColumn>
+          <ElTableColumn label="VIN" min-width="320">
+            <template #default="{ row }">
+              <ElSelect
+                v-model="selectedVehicleIdsByOutputInfo[row.outputInfoId]"
+                multiple
+                filterable
+                collapse-tags
+                collapse-tags-tooltip
+                class="w-full"
+                :disabled="!row.canFulfill"
+                :placeholder="`Chọn ${row.requiredCount} VIN`"
+              >
+                <ElOption
+                  v-for="vehicle in getVehicleOptions(row)"
+                  :key="vehicle.id"
+                  :label="`${vehicle.vinNumber} - ${vehicle.engineNumber}`"
+                  :value="vehicle.id"
+                />
+              </ElSelect>
+            </template>
+          </ElTableColumn>
+        </ElTable>
+      </div>
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <ElButton @click="vinDialogVisible = false">Hủy</ElButton>
+          <ElButton type="primary" :loading="statusSaving" @click="handleSubmitVinStatusChange">
+            Cập nhật trạng thái
+          </ElButton>
+        </div>
+      </template>
+    </ElDialog>
   </div>
 </template>
 
 <script setup lang="ts">
   import { computed, onMounted, reactive, ref } from 'vue'
-  import { Delete, Edit, Plus } from '@element-plus/icons-vue'
+  import { Delete, Edit, Plus, Switch } from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { SalesOrderApi } from '@/api/sales-order.api'
   import { ProductApi } from '@/api/product/product.api'
   import { fetchGetUserList } from '@/api/system-manage'
   import { Permissions } from '@/domain/constants/permissions'
-  import type { SalesOrder } from '@/domain/order/order.types'
+  import type {
+    SalesOrder,
+    VehicleAssignmentOption,
+    VehicleAssignmentRequirement,
+    VehicleAssignmentRequirementItem
+  } from '@/domain/order/order.types'
   import type { ProductVariantLiteForInput } from '@/domain/product/product.types'
   import type { ColumnOption } from '@/types/component'
 
@@ -365,12 +474,13 @@
   }
   type OrderFormProduct = {
     id?: number
-    productVarientId?: number
-    productVarientColorId?: number
+    productVariantId?: number
+    productVariantColorId?: number
     productName?: string
     count: number
     price?: number
     coverImageUrl?: string
+    assignedVehicles?: VehicleAssignmentOption[]
   }
 
   const loading = ref(false)
@@ -387,6 +497,13 @@
   const dialogVisible = ref(false)
   const editingOrder = ref<SalesOrder | null>(null)
   const originalStatusId = ref<string>('')
+  const statusDialogVisible = ref(false)
+  const vinDialogVisible = ref(false)
+  const statusSaving = ref(false)
+  const statusOrder = ref<SalesOrder | null>(null)
+  const targetStatusId = ref('')
+  const vehicleRequirements = ref<VehicleAssignmentRequirement | null>(null)
+  const selectedVehicleIdsByOutputInfo = reactive<Record<number, number[]>>({})
 
   const searchForm = reactive({
     search: '',
@@ -424,19 +541,25 @@
       props: {
         clearable: true,
         placeholder: 'Tất cả',
-        options: statusMap.value.map((item) => ({ label: item.name, value: item.id }))
+        options: statusMap.value.map((item) => ({ label: getStatusLabel(item.id), value: item.id }))
       }
     }
   ])
 
   const columnChecks = ref<ColumnOption[]>([
-    { prop: 'id', label: 'Mã phiếu', width: 90, checked: true },
-    { prop: 'createdAt', label: 'Thời gian', width: 170, checked: true },
-    { prop: 'customer', label: 'Khách hàng', minWidth: 220, checked: true },
+    { prop: 'createdAt', label: 'Thời gian', width: 170, checked: true, useSlot: true },
+    { prop: 'customer', label: 'Khách hàng', minWidth: 220, checked: true, useSlot: true },
     { prop: 'notes', label: 'Ghi chú', minWidth: 220, checked: true },
-    { prop: 'statusId', label: 'Trạng thái', width: 170, checked: true },
-    { prop: 'total', label: 'Tổng tiền', width: 160, checked: true },
-    { prop: 'operation', label: 'Thao tác', width: 130, fixed: 'right' as const, checked: true }
+    { prop: 'statusId', label: 'Trạng thái', width: 170, checked: true, useSlot: true },
+    { prop: 'total', label: 'Tổng tiền', width: 160, checked: true, useSlot: true },
+    {
+      prop: 'operation',
+      label: 'Thao tác',
+      width: 130,
+      fixed: 'right' as const,
+      checked: true,
+      useSlot: true
+    }
   ])
 
   const columns = computed(() => columnChecks.value.filter((item) => item.checked))
@@ -479,11 +602,10 @@
       return ''
     return `Phiếu đang ở trạng thái ${getStatusLabel(originalStatusId.value)}, một số trường đã bị khóa theo backend.`
   })
-  const allowedStatusOptions = computed(() => {
-    if (!editingOrder.value) return statusMap.value
-    const current = originalStatusId.value
+  const statusChangeOptions = computed(() => {
+    const current = statusOrder.value?.statusId || ''
     const allowed = transitionMap.value[current] || []
-    return statusMap.value.filter((item) => item.id === current || allowed.includes(item.id))
+    return statusMap.value.filter((item) => allowed.includes(item.id))
   })
 
   onMounted(async () => {
@@ -564,10 +686,115 @@
   }
 
   async function handleDelete(row: SalesOrder) {
-    await ElMessageBox.confirm(`Xóa phiếu bán #${row.id}?`, 'Xác nhận', { type: 'warning' })
+    await ElMessageBox.confirm(
+      `Xóa phiếu bán của ${row.customerName || row.buyerName || 'khách hàng này'}?`,
+      'Xác nhận',
+      { type: 'warning' }
+    )
     await SalesOrderApi.delete(row.id)
     ElMessage.success('Đã xóa phiếu bán')
     fetchOrders()
+  }
+
+  function canEditRow(row: SalesOrder) {
+    const statusId = row.statusId || ''
+    return !(
+      getLockedList('buyerAndProducts').includes(statusId) &&
+      getLockedList('deliveryInfo').includes(statusId) &&
+      getLockedList('notes').includes(statusId)
+    )
+  }
+
+  function canDeleteRow(row: SalesOrder) {
+    return !['completed', 'refunded', 'cancelled'].includes(row.statusId || '')
+  }
+
+  function canChangeStatusRow(row: SalesOrder) {
+    return (transitionMap.value[row.statusId || ''] || []).length > 0
+  }
+
+  function handleOpenStatusDialog(row: SalesOrder) {
+    statusOrder.value = row
+    targetStatusId.value = ''
+    vehicleRequirements.value = null
+    statusDialogVisible.value = true
+  }
+
+  async function handlePrepareStatusChange() {
+    if (!statusOrder.value || !targetStatusId.value) {
+      return ElMessage.warning('Vui lòng chọn trạng thái mới')
+    }
+    statusSaving.value = true
+    try {
+      const requirements = await SalesOrderApi.getVehicleAssignmentRequirements(
+        statusOrder.value.id,
+        targetStatusId.value
+      )
+      if (requirements.requiresVehicleAssignment) {
+        vehicleRequirements.value = requirements
+
+        // Xóa các lựa chọn cũ
+        Object.keys(selectedVehicleIdsByOutputInfo).forEach((key) => {
+          delete selectedVehicleIdsByOutputInfo[Number(key)]
+        })
+
+        // Điền trước danh sách các xe đã được gán sẵn
+        requirements.items.forEach((item) => {
+          selectedVehicleIdsByOutputInfo[item.outputInfoId] =
+            item.assignedVehicles?.map((v) => v.id) || []
+        })
+
+        statusDialogVisible.value = false
+        vinDialogVisible.value = true
+      } else {
+        await SalesOrderApi.updateStatus(statusOrder.value.id, targetStatusId.value)
+        statusDialogVisible.value = false
+        ElMessage.success('Đã cập nhật trạng thái')
+        fetchOrders()
+      }
+    } catch (error: any) {
+      console.error(error)
+      const msg = error.response?.data?.errors?.[0]?.message || 'Lỗi hệ thống khi đổi trạng thái'
+      ElMessage.error(msg)
+    } finally {
+      statusSaving.value = false
+    }
+  }
+
+  function getVehicleOptions(item: VehicleAssignmentRequirementItem) {
+    const map = new Map<number, VehicleAssignmentOption>()
+    for (const vehicle of [...item.assignedVehicles, ...item.availableVehicles]) {
+      map.set(vehicle.id, vehicle)
+    }
+    return Array.from(map.values())
+  }
+
+  async function handleSubmitVinStatusChange() {
+    if (!statusOrder.value || !targetStatusId.value || !vehicleRequirements.value) return
+    if (vehicleRequirements.value.items.some((item) => !item.canFulfill)) {
+      return ElMessage.error('Không đủ VIN hợp lệ để cập nhật trạng thái')
+    }
+    const invalidItem = vehicleRequirements.value.items.find(
+      (item) =>
+        (selectedVehicleIdsByOutputInfo[item.outputInfoId] || []).length !== item.requiredCount
+    )
+    if (invalidItem) {
+      return ElMessage.warning(
+        `Vui lòng chọn đủ ${invalidItem.requiredCount} VIN cho ${invalidItem.productName}`
+      )
+    }
+    const selectedIds = vehicleRequirements.value.items.flatMap(
+      (item) => selectedVehicleIdsByOutputInfo[item.outputInfoId] || []
+    )
+    statusSaving.value = true
+    try {
+      await SalesOrderApi.updateStatus(statusOrder.value.id, targetStatusId.value, selectedIds)
+      ElMessage.success('Đã cập nhật trạng thái')
+      vinDialogVisible.value = false
+      fetchOrders()
+    } finally {
+      statusSaving.value = false
+    }
   }
 
   async function handleSubmit() {
@@ -577,7 +804,7 @@
     }
     if (!formData.products.length)
       return ElMessage.warning('Phiếu bán phải có ít nhất một sản phẩm')
-    if (formData.products.some((item) => !item.productVarientId || !item.count)) {
+    if (formData.products.some((item) => !item.productVariantId || !item.count)) {
       return ElMessage.warning('Vui lòng chọn sản phẩm và số lượng hợp lệ')
     }
 
@@ -591,8 +818,8 @@
       depositRatio: formData.depositRatio,
       products: formData.products.map((item) => ({
         id: editingOrder.value ? item.id : undefined,
-        productVarientId: item.productVarientId!,
-        productVarientColorId: item.productVarientColorId || undefined,
+        productVariantId: item.productVariantId!,
+        productVariantColorId: item.productVariantColorId || undefined,
         count: item.count
       }))
     }
@@ -639,7 +866,7 @@
       const res = await ProductApi.getVariantsForOutput({
         current: 1,
         size: 20,
-        Search: keyword || undefined
+        Filters: keyword ? `search@=${keyword}` : undefined
       })
       productOptions.value = res.items || []
     } finally {
@@ -661,11 +888,11 @@
     row.productName = product.displayName
     row.price = product.price || 0
     row.coverImageUrl = product.coverImageUrl
-    row.productVarientColorId = undefined
+    row.productVariantColorId = undefined
   }
 
   function addProductRow() {
-    formData.products.push({ productVarientId: undefined, count: 1, price: 0 })
+    formData.products.push({ productVariantId: undefined, count: 1, price: 0 })
   }
 
   function removeProductRow(index: number) {
@@ -694,12 +921,13 @@
     formData.notes = order.notes || ''
     formData.products = products.map((item) => ({
       id: item.id,
-      productVarientId: item.productVarientId,
-      productVarientColorId: item.productVarientColorId,
+      productVariantId: item.productVariantId,
+      productVariantColorId: item.productVariantColorId,
       productName: item.productName,
       count: item.count || 1,
       price: item.price || 0,
-      coverImageUrl: item.coverImageUrl
+      coverImageUrl: item.coverImageUrl,
+      assignedVehicles: item.assignedVehicles || []
     }))
     if (order.buyerId && !customerOptions.value.some((item) => item.id === order.buyerId)) {
       customerOptions.value.push({
@@ -711,13 +939,13 @@
     }
     for (const product of formData.products) {
       if (
-        product.productVarientId &&
-        !productOptions.value.some((item) => item.id === product.productVarientId)
+        product.productVariantId &&
+        !productOptions.value.some((item) => item.id === product.productVariantId)
       ) {
         productOptions.value.push({
-          id: product.productVarientId,
-          productId: product.productVarientId,
-          displayName: product.productName || `Sản phẩm #${product.productVarientId}`,
+          id: product.productVariantId,
+          productId: product.productVariantId,
+          displayName: product.productName || `Sản phẩm #${product.productVariantId}`,
           coverImageUrl: product.coverImageUrl || '',
           price: product.price || 0,
           categoryId: 0,
@@ -728,7 +956,7 @@
   }
 
   function getProductColors(row: OrderFormProduct) {
-    return productOptions.value.find((item) => item.id === row.productVarientId)?.colors || []
+    return productOptions.value.find((item) => item.id === row.productVariantId)?.colors || []
   }
 
   function getLockedList(key: string): string[] {
@@ -783,12 +1011,10 @@
 
   function formatDateTime(value?: string) {
     if (!value) return '---'
-    return new Date(value).toLocaleString('vi-VN', {
-      hour: '2-digit',
-      minute: '2-digit',
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    })
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return '---'
+
+    const pad = (num: number) => String(num).padStart(2, '0')
+    return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`
   }
 </script>

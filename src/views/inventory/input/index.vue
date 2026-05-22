@@ -150,8 +150,8 @@
                   class="w-full border border-gray-300 rounded px-2 py-1 bg-white flex items-center justify-between cursor-pointer hover:border-primary transition duration-200 min-h-[32px]"
                   @click="openProductSelector($index)"
                 >
-                  <span v-if="row.productVarientId" class="text-gray-800 text-xs font-medium">
-                    {{ getProductNameById(row.productVarientId) }}
+                  <span v-if="row.productVariantId" class="text-gray-800 text-xs font-medium">
+                    {{ getProductNameById(row.productVariantId) }}
                   </span>
                   <span v-else class="text-gray-400 text-xs">Chọn sản phẩm...</span>
                   <ElIcon class="text-gray-400 text-xs"><ArrowDown /></ElIcon>
@@ -282,7 +282,7 @@
         <div class="flex flex-wrap items-center justify-between gap-2 rounded-md bg-gray-50 p-3">
           <div class="min-w-0">
             <div class="text-sm font-semibold text-gray-800 truncate">
-              {{ getProductNameById(activeVinRow.productVarientId) }}
+              {{ getProductNameById(activeVinRow.productVariantId) }}
             </div>
             <div class="text-xs text-gray-500">
               Số lượng: {{ activeVinRow.count || 0 }} xe · Đã nhập:
@@ -374,8 +374,8 @@
               <template #default="{ row }">
                 <div class="flex flex-col gap-1">
                   <span class="font-medium text-gray-800">{{ row.name }}</span>
-                  <ElTag v-if="row.productVarientColorName" size="small" type="info" class="w-fit">
-                    Màu: {{ row.productVarientColorName }}
+                  <ElTag v-if="row.productVariantColorName" size="small" type="info" class="w-fit">
+                    Màu: {{ row.productVariantColorName }}
                   </ElTag>
                 </div>
               </template>
@@ -690,9 +690,9 @@
 
   type ReceiptProductRow = {
     id?: number
-    productVarientId: number | undefined
-    productVarientColorId?: number
-    productVarientColorName?: string
+    productVariantId: number | undefined
+    productVariantColorId?: number
+    productVariantColorName?: string
     count: number
     inputPrice: number
     managementType?: string
@@ -751,7 +751,7 @@
 
   const getProductColorName = (row: ReceiptProductRow) => {
     return (
-      row.productVarientColorName || productCache.get(Number(row.productVarientId))?.colorName || ''
+      row.productVariantColorName || productCache.get(Number(row.productVariantId))?.colorName || ''
     )
   }
 
@@ -934,8 +934,8 @@
 
   const selectProductVariant = (variant: ProductVariantLiteForInput) => {
     if (!variant.id) return
-    const productVarientColorId = selectedVariantColors[getVariantColorKey(variant)]
-    if (variant.colors?.length && !productVarientColorId) {
+    const productVariantColorId = selectedVariantColors[getVariantColorKey(variant)]
+    if (variant.colors?.length && !productVariantColorId) {
       ElMessage.warning('Vui lòng chọn màu cho biến thể sản phẩm này')
       return
     }
@@ -954,9 +954,9 @@
       const idx = productSelectorActiveRowIndex.value
       if (formData.value.products[idx]) {
         const row = formData.value.products[idx]
-        row.productVarientId = variant.id
-        row.productVarientColorId = productVarientColorId
-        row.productVarientColorName = selectedColor?.colorName
+        row.productVariantId = variant.id
+        row.productVariantColorId = productVariantColorId
+        row.productVariantColorName = selectedColor?.colorName
         row.inputPrice = variant.price || 0
         row.managementType = variant.managementType
         syncVehicleRows(row)
@@ -965,18 +965,18 @@
       // Add new row (check if last row is empty first to reuse it)
       const products = formData.value.products
       const lastRow = products[products.length - 1]
-      if (lastRow && lastRow.productVarientId === undefined) {
-        lastRow.productVarientId = variant.id
-        lastRow.productVarientColorId = productVarientColorId
-        lastRow.productVarientColorName = selectedColor?.colorName
+      if (lastRow && lastRow.productVariantId === undefined) {
+        lastRow.productVariantId = variant.id
+        lastRow.productVariantColorId = productVariantColorId
+        lastRow.productVariantColorName = selectedColor?.colorName
         lastRow.inputPrice = variant.price || 0
         lastRow.managementType = variant.managementType
         syncVehicleRows(lastRow)
       } else {
         const newRow: ReceiptProductRow = {
-          productVarientId: variant.id,
-          productVarientColorId,
-          productVarientColorName: selectedColor?.colorName,
+          productVariantId: variant.id,
+          productVariantColorId,
+          productVariantColorName: selectedColor?.colorName,
           count: 1,
           inputPrice: variant.price || 0,
           managementType: variant.managementType
@@ -1254,11 +1254,11 @@
 
       // Cache product names
       ;(receipt.products || []).forEach((p) => {
-        productCache.set(p.productVarientId, {
-          displayName: p.name || `Sản phẩm #${p.productVarientId}`,
+        productCache.set(p.productVariantId, {
+          displayName: p.name || `Sản phẩm #${p.productVariantId}`,
           price: p.importPrice,
           managementType: p.vehicles?.length ? VIN_MANAGEMENT_TYPE : undefined,
-          colorName: p.productVarientColorName
+          colorName: p.productVariantColorName
         })
       })
 
@@ -1269,9 +1269,9 @@
         statusId: receipt.statusId,
         products: (receipt.products || []).map((p) => ({
           id: p.id,
-          productVarientId: p.productVarientId,
-          productVarientColorId: p.productVarientColorId,
-          productVarientColorName: p.productVarientColorName,
+          productVariantId: p.productVariantId,
+          productVariantColorId: p.productVariantColorId,
+          productVariantColorName: p.productVariantColorName,
           count: p.quantity || 1,
           inputPrice: p.importPrice || 0,
           managementType: p.vehicles?.length ? VIN_MANAGEMENT_TYPE : undefined,
@@ -1401,7 +1401,7 @@
     }
 
     const validProducts = formData.value.products.filter(
-      (p) => p.productVarientId !== undefined && p.productVarientId !== null
+      (p) => p.productVariantId !== undefined && p.productVariantId !== null
     )
 
     if (validProducts.length === 0) {
@@ -1473,8 +1473,8 @@
     try {
       const payloadProducts = validProducts.map((p) => ({
         id: p.id,
-        productVarientId: p.productVarientId!,
-        productVarientColorId: p.productVarientColorId,
+        productVariantId: p.productVariantId!,
+        productVariantColorId: p.productVariantColorId,
         count: p.count,
         inputPrice: p.inputPrice,
         vehicles: isVinManagedProduct(p)
@@ -1501,9 +1501,9 @@
           statusId: 'working', // Initial creation status is always working
           supplierId: formData.value.supplierId,
           products: payloadProducts.map(
-            ({ productVarientId, productVarientColorId, count, inputPrice, vehicles }) => ({
-              productVarientId,
-              productVarientColorId,
+            ({ productVariantId, productVariantColorId, count, inputPrice, vehicles }) => ({
+              productVariantId,
+              productVariantColorId,
               count,
               inputPrice,
               vehicles

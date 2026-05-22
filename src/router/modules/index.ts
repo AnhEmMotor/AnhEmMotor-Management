@@ -17,7 +17,7 @@ import { helpRoutes } from './help'
 import { inventoryRoutes } from './inventory'
 import { salesRoutes } from './sales'
 
-export const routeModules: AppRouteRecord[] = [
+const coreRoutes: AppRouteRecord[] = [
   dashboardRoutes,
   productRoutes,
   inventoryRoutes,
@@ -26,7 +26,10 @@ export const routeModules: AppRouteRecord[] = [
   hrRoutes,
   customerRoutes,
   articleRoutes,
-  marketingRoutes,
+  marketingRoutes
+]
+
+const developmentRoutes: AppRouteRecord[] = [
   templateRoutes,
   widgetsRoutes,
   examplesRoutes,
@@ -35,4 +38,9 @@ export const routeModules: AppRouteRecord[] = [
   exceptionRoutes,
   safeguardRoutes,
   ...helpRoutes
+]
+
+export const routeModules: AppRouteRecord[] = [
+  ...coreRoutes,
+  ...(import.meta.env.DEV ? developmentRoutes : [])
 ]
