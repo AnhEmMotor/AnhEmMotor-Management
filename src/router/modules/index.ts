@@ -15,11 +15,13 @@ import { marketingRoutes } from './marketing'
 import { hrRoutes } from './hr'
 import { helpRoutes } from './help'
 import { inventoryRoutes } from './inventory'
+import { salesRoutes } from './sales'
 
 export const routeModules: AppRouteRecord[] = [
   dashboardRoutes,
   productRoutes,
   inventoryRoutes,
+  salesRoutes,
   authorizationRoutes,
   hrRoutes,
   customerRoutes,

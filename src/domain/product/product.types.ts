@@ -3,6 +3,9 @@ export interface VariantColor {
   name?: string
   code?: string
   image?: string
+  colorName?: string
+  colorCode?: string
+  coverImageUrl?: string
   color_name?: string
   color_code?: string
   cover_image_url?: string
@@ -13,8 +16,6 @@ export interface ProductVariant {
   price: number | null
   variant_name: string
   cover_image_url?: string
-  color_name: string
-  color_code: string
   colors: VariantColor[]
   sku: string
   photo_collection: string[]
@@ -116,6 +117,7 @@ export interface ProductVariantLiteForInput {
   coverImageUrl: string
   price: number
   categoryId: number
+  managementType?: string
   colors?: Array<{
     id: number
     colorName?: string

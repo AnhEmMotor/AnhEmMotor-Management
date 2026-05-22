@@ -2,7 +2,9 @@ export interface OrderProduct {
   id?: number
   productVarientId: number
   productVarientColorId?: number
+  productId?: number
   productName?: string
+  productVariantName?: string
   count: number
   price?: number
   costPrice?: number
@@ -24,6 +26,7 @@ export interface SalesOrder {
   depositRatio?: number
   depositAmount?: number
   remainingAmount?: number
+  shippingFee?: number
   total?: number
   createdAt?: string
   products: OrderProduct[]

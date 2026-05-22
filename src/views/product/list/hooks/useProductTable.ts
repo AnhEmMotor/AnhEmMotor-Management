@@ -368,8 +368,6 @@ export function useProductTable() {
           price: null,
           variant_name: '',
           cover_image_url: '',
-          color_name: '',
-          color_code: '#000000',
           colors: [],
           sku: '',
           photo_collection: [],
@@ -475,26 +473,12 @@ export function useProductTable() {
       // Parse variants colors and overrides
       if (fullProduct.variants) {
         fullProduct.variants.forEach((v: any) => {
-          if (!v.colors || v.colors.length === 0) {
-            const names = (v.color_name || '').split(',')
-            const codes = (v.color_code || '').split(',')
-            const images = (v.color_cover_image_url || v.cover_image_url || '').split(',')
-            v.colors = names
-              .map((name: string, i: number) => ({
-                id: undefined,
-                name: name.trim(),
-                code: codes[i]?.trim() || '#000000',
-                image: images[i]?.trim() || images[0]?.trim() || ''
-              }))
-              .filter((color: any) => color.name)
-          } else {
-            v.colors = v.colors.map((color: any) => ({
-              id: color.id,
-              name: color.name ?? color.color_name ?? '',
-              code: color.code ?? color.color_code ?? '#000000',
-              image: color.image ?? color.cover_image_url ?? ''
-            }))
-          }
+          v.colors = (v.colors || []).map((color: any) => ({
+            id: color.id,
+            name: color.name ?? color.colorName ?? color.color_name ?? '',
+            code: color.code ?? color.colorCode ?? color.color_code ?? '#000000',
+            image: color.image ?? color.coverImageUrl ?? color.cover_image_url ?? ''
+          }))
           v.optionValues = v.optionValues || {}
           v.option_rows = Object.entries(v.optionValues)
             .filter(([key]) => !['color', 'màu sắc'].includes(String(key).trim().toLowerCase()))
@@ -522,8 +506,6 @@ export function useProductTable() {
             price: null,
             variant_name: '',
             cover_image_url: '',
-            color_name: '',
-            color_code: '#000000',
             colors: [],
             sku: '',
             photo_collection: [],
@@ -594,9 +576,12 @@ export function useProductTable() {
       .find(Boolean)
   }
 
-  const getColorName = (color: any) => (color.color_name ?? color.name ?? '').trim()
-  const getColorCode = (color: any) => (color.color_code ?? color.code ?? '').trim()
-  const getColorImage = (color: any) => (color.cover_image_url ?? color.image ?? '').trim()
+  const getColorName = (color: any) =>
+    (color.color_name ?? color.colorName ?? color.name ?? '').trim()
+  const getColorCode = (color: any) =>
+    (color.color_code ?? color.colorCode ?? color.code ?? '').trim()
+  const getColorImage = (color: any) =>
+    (color.cover_image_url ?? color.coverImageUrl ?? color.image ?? '').trim()
 
   const submitForm = async () => {
     submitting.value = true
@@ -713,8 +698,6 @@ export function useProductTable() {
       price: null,
       variant_name: '',
       cover_image_url: '',
-      color_name: '',
-      color_code: '#000000',
       colors: [],
       sku: '',
       photo_collection: [],
