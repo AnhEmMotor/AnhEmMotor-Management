@@ -32,10 +32,8 @@ export function useProductTable() {
       .map(([key, label]) => ({ key, label }))
   )
 
-  // Brand cache
   const brandCache = reactive(new Map<number, Brand>())
 
-  // Helper to add brands to cache
   const cacheBrands = (items: Brand[]) => {
     items.forEach((item) => {
       if (item && item.id) {
@@ -44,7 +42,6 @@ export function useProductTable() {
     })
   }
 
-  // Ensure brand by ID is loaded in cache
   const ensureBrandLoaded = async (id?: number) => {
     if (!id) return
     const numId = Number(id)
@@ -67,7 +64,6 @@ export function useProductTable() {
     return brandCache.get(numId)?.name || `Thương hiệu #${numId}`
   }
 
-  // Brand Selector Dialog states
   const brandSelectorVisible = ref(false)
   const brandSelectorLoading = ref(false)
   const brandSelectorQuery = ref('')
@@ -368,8 +364,6 @@ export function useProductTable() {
           price: null,
           variant_name: '',
           cover_image_url: '',
-          color_name: '',
-          color_code: '#000000',
           colors: [],
           sku: '',
           photo_collection: [],
@@ -398,7 +392,6 @@ export function useProductTable() {
     try {
       const fullProduct = await ProductApi.getById(row.id)
 
-      // Ensure all fields are initialized to support reactivity
       fullProduct.meta_title = fullProduct.meta_title || ''
       fullProduct.meta_description = fullProduct.meta_description || ''
       fullProduct.short_description = fullProduct.short_description || ''
@@ -414,7 +407,6 @@ export function useProductTable() {
       fullProduct.other_standards = fullProduct.other_standards || ''
       fullProduct.compatible_vehicle_model_ids = fullProduct.compatible_vehicle_model_ids || []
 
-      // Initialize all vehicle specific root specs
       fullProduct.engine_type = fullProduct.engine_type || ''
       fullProduct.max_power = fullProduct.max_power || ''
       fullProduct.fuel_capacity = fullProduct.fuel_capacity || undefined
@@ -441,7 +433,6 @@ export function useProductTable() {
       fullProduct.lighting_system = fullProduct.lighting_system || ''
       fullProduct.dashboard_type = fullProduct.dashboard_type || ''
 
-      // Parse custom highlights and normalize to snake_case
       if (fullProduct.highlights && typeof fullProduct.highlights === 'string') {
         try {
           const rawHighlights = JSON.parse(fullProduct.highlights)
@@ -472,29 +463,14 @@ export function useProductTable() {
         fullProduct.highlights_list = []
       }
 
-      // Parse variants colors and overrides
       if (fullProduct.variants) {
         fullProduct.variants.forEach((v: any) => {
-          if (!v.colors || v.colors.length === 0) {
-            const names = (v.color_name || '').split(',')
-            const codes = (v.color_code || '').split(',')
-            const images = (v.color_cover_image_url || v.cover_image_url || '').split(',')
-            v.colors = names
-              .map((name: string, i: number) => ({
-                id: undefined,
-                name: name.trim(),
-                code: codes[i]?.trim() || '#000000',
-                image: images[i]?.trim() || images[0]?.trim() || ''
-              }))
-              .filter((color: any) => color.name)
-          } else {
-            v.colors = v.colors.map((color: any) => ({
-              id: color.id,
-              name: color.name ?? color.color_name ?? '',
-              code: color.code ?? color.color_code ?? '#000000',
-              image: color.image ?? color.cover_image_url ?? ''
-            }))
-          }
+          v.colors = (v.colors || []).map((color: any) => ({
+            id: color.id,
+            name: color.name ?? color.colorName ?? color.color_name ?? '',
+            code: color.code ?? color.colorCode ?? color.color_code ?? '#000000',
+            image: color.image ?? color.coverImageUrl ?? color.cover_image_url ?? ''
+          }))
           v.optionValues = v.optionValues || {}
           v.option_rows = Object.entries(v.optionValues)
             .filter(([key]) => !['color', 'màu sắc'].includes(String(key).trim().toLowerCase()))
@@ -505,7 +481,6 @@ export function useProductTable() {
           v.url_slug = v.url_slug || ''
           v.stock_quantity = v.stock_quantity ?? 0
 
-          // Variant specs overrides
           v.weight = v.weight || null
           v.dimensions = v.dimensions || ''
           v.wheelbase = v.wheelbase || null
@@ -522,8 +497,6 @@ export function useProductTable() {
             price: null,
             variant_name: '',
             cover_image_url: '',
-            color_name: '',
-            color_code: '#000000',
             colors: [],
             sku: '',
             photo_collection: [],
@@ -594,9 +567,12 @@ export function useProductTable() {
       .find(Boolean)
   }
 
-  const getColorName = (color: any) => (color.color_name ?? color.name ?? '').trim()
-  const getColorCode = (color: any) => (color.color_code ?? color.code ?? '').trim()
-  const getColorImage = (color: any) => (color.cover_image_url ?? color.image ?? '').trim()
+  const getColorName = (color: any) =>
+    (color.color_name ?? color.colorName ?? color.name ?? '').trim()
+  const getColorCode = (color: any) =>
+    (color.color_code ?? color.colorCode ?? color.code ?? '').trim()
+  const getColorImage = (color: any) =>
+    (color.cover_image_url ?? color.coverImageUrl ?? color.image ?? '').trim()
 
   const submitForm = async () => {
     submitting.value = true
@@ -606,7 +582,6 @@ export function useProductTable() {
         display_order: 0
       }))
 
-      // Serialize highlights list to JSON string (keeping only clean snake_case fields)
       if (formData.value.highlights_list) {
         const cleanedHighlights = formData.value.highlights_list.map((h: any) => ({
           technology_id: Number(h.technology_id),
@@ -621,7 +596,6 @@ export function useProductTable() {
 
       const payload: any = { ...formData.value }
 
-      // Format variants into the backend command shape.
       if (formData.value.variants) {
         const serializedVariants = formData.value.variants.map((v: any) => {
           const colors = v.colors || []
@@ -713,8 +687,6 @@ export function useProductTable() {
       price: null,
       variant_name: '',
       cover_image_url: '',
-      color_name: '',
-      color_code: '#000000',
       colors: [],
       sku: '',
       photo_collection: [],
@@ -796,7 +768,6 @@ export function useProductTable() {
     getData()
   }
 
-  // --- Compatible Vehicles Fetching & Search Logic ---
   const allVehicles = ref<any[]>([])
   const isVehiclesLoading = ref(false)
 
@@ -919,13 +890,11 @@ export function useProductTable() {
   fetchTechnologyCategories()
   fetchPredefinedOptions()
 
-  // Export to Excel
   const exporting = ref(false)
 
   const exportToExcel = async () => {
     exporting.value = true
     try {
-      // Build export params from current search filters
       const exportParams: any = {}
       const filters = (searchParams as any)?.Filters
       if (filters) {

@@ -3,6 +3,9 @@ export interface VariantColor {
   name?: string
   code?: string
   image?: string
+  colorName?: string
+  colorCode?: string
+  coverImageUrl?: string
   color_name?: string
   color_code?: string
   cover_image_url?: string
@@ -13,8 +16,6 @@ export interface ProductVariant {
   price: number | null
   variant_name: string
   cover_image_url?: string
-  color_name: string
-  color_code: string
   colors: VariantColor[]
   sku: string
   photo_collection: string[]
@@ -22,8 +23,6 @@ export interface ProductVariant {
   option_rows?: Array<{ key: string; value: string }>
   url_slug?: string
   stock_quantity?: number
-
-  // --- Spec Overrides for Vehicle Variants ---
   weight?: number | null
   dimensions?: string
   wheelbase?: number | null
@@ -55,26 +54,18 @@ export interface Product {
   children?: any[]
   isVariant?: boolean
   sku?: string
-
-  // --- SEO Fields ---
   meta_title?: string
   meta_description?: string
   short_description?: string
-
-  // --- Spare Parts Technical Specifications ---
   material?: string
   warranty_period?: string
   compatible_vehicle_model_ids?: number[]
   tire_size?: string
-
-  // --- Quality Standards ---
   std_dot?: boolean
   std_ece?: boolean
   std_snell?: boolean
   std_jis?: boolean
   other_standards?: string
-
-  // --- Vehicle Specific Specifications ---
   engine_type?: string
   max_power?: string
   fuel_capacity?: number
@@ -116,6 +107,7 @@ export interface ProductVariantLiteForInput {
   coverImageUrl: string
   price: number
   categoryId: number
+  managementType?: string
   colors?: Array<{
     id: number
     colorName?: string

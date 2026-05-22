@@ -1,12 +1,15 @@
 export interface OrderProduct {
   id?: number
-  productVarientId: number
-  productVarientColorId?: number
+  productVariantId: number
+  productVariantColorId?: number
+  productId?: number
   productName?: string
+  productVariantName?: string
   count: number
   price?: number
   costPrice?: number
   coverImageUrl?: string
+  assignedVehicles?: VehicleAssignmentOption[]
 }
 
 export interface SalesOrder {
@@ -24,6 +27,7 @@ export interface SalesOrder {
   depositRatio?: number
   depositAmount?: number
   remainingAmount?: number
+  shippingFee?: number
   total?: number
   createdAt?: string
   products: OrderProduct[]
@@ -46,8 +50,8 @@ export interface CreateSalesOrderByManager {
   statusId?: string
   depositRatio?: number
   products: Array<{
-    productVarientId: number
-    productVarientColorId?: number
+    productVariantId: number
+    productVariantColorId?: number
     count: number
   }>
 }
@@ -55,8 +59,37 @@ export interface CreateSalesOrderByManager {
 export interface UpdateSalesOrderForManager extends CreateSalesOrderByManager {
   products: Array<{
     id?: number
-    productVarientId: number
-    productVarientColorId?: number
+    productVariantId: number
+    productVariantColorId?: number
     count: number
   }>
+}
+
+export interface VehicleAssignmentOption {
+  id: number
+  vinNumber: string
+  engineNumber: string
+  status: string
+}
+
+export interface VehicleAssignmentRequirementItem {
+  outputInfoId: number
+  productId?: number
+  productName?: string
+  productVariantId?: number
+  productVariantName?: string
+  productVariantColorId?: number
+  colorName?: string
+  requiredCount: number
+  assignedVehicles: VehicleAssignmentOption[]
+  availableVehicles: VehicleAssignmentOption[]
+  availableCount: number
+  canFulfill: boolean
+}
+
+export interface VehicleAssignmentRequirement {
+  orderId: number
+  targetStatusId: string
+  requiresVehicleAssignment: boolean
+  items: VehicleAssignmentRequirementItem[]
 }

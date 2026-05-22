@@ -11,7 +11,6 @@ export function useSocialLogin() {
       const data = await fetchExternalAuthConfig()
       externalConfig.value = data
 
-      // Initialize Facebook SDK
       if (data.facebookAppId) {
         const initFB = () => {
           if ((window as any).FB && data.facebookAppId && !(window as any).__fb_initialized) {

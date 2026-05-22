@@ -236,7 +236,6 @@
 
   const handleReset = () => {
     pagination.current = 1
-    // The searchForm values are reset by ArtSearchBar. We trigger loadDataWithFilters with empty filters.
     loadDataWithFilters()
   }
 

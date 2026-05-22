@@ -1,20 +1,26 @@
 export interface InputInfo {
   id?: number
-  productVarientId: number
-  productVarientColorId?: number
+  productVariantId: number
+  productVariantColorId?: number
+  productVariantColorName?: string
   name?: string
-  quantity: number // backend uses Quantity for response, Count for request
+  quantity: number
   unitPrice?: number
-  importPrice: number // backend uses ImportPrice for response, InputPrice for request
+  importPrice: number
   discount?: number
   total?: number
   remainingCount?: number
+  vehicles?: Array<{
+    id?: number
+    vinNumber: string
+    engineNumber: string
+  }>
 }
 
 export interface InventoryReceipt {
   id: number
   notes?: string
-  statusId: string // 'working', 'finished', 'cancelled'
+  statusId: string
   supplierId: number
   supplierName?: string
   supplierPhone?: string
@@ -37,14 +43,14 @@ export interface CreateInventoryReceipt {
   statusId?: string
   supplierId?: number
   products: Array<{
-    productVarientId: number
-    productVarientColorId?: number
+    productVariantId: number
+    productVariantColorId?: number
     count: number
     inputPrice: number
     vehicles?: Array<{
+      id?: number
       vinNumber: string
       engineNumber: string
-      licensePlate?: string
     }>
   }>
 }
@@ -55,9 +61,14 @@ export interface UpdateInventoryReceipt {
   notes?: string
   products: Array<{
     id?: number
-    productVarientId: number
-    productVarientColorId?: number
+    productVariantId: number
+    productVariantColorId?: number
     count: number
     inputPrice: number
+    vehicles?: Array<{
+      id?: number
+      vinNumber: string
+      engineNumber: string
+    }>
   }>
 }

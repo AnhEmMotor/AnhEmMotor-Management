@@ -108,7 +108,6 @@
   const { initSocial, loginWithGoogle, loginWithFacebook } = useSocialLogin()
 
   onMounted(() => {
-    // Không tự động điền tài khoản
     initSocial()
   })
 
@@ -209,7 +208,6 @@
             }
           }
         )
-        // Fallback timeout in case it takes too long or fails
         setTimeout(() => {
           unwatch()
           if (!userStore.info.userName) {

@@ -43,7 +43,6 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (request: InternalAxiosRequestConfig) => {
-    // Tự động thêm /v1 vào đường dẫn nếu bắt đầu bằng /api để khớp với Backend
     if (request.url?.startsWith('/api/')) {
       request.url = request.url.replace(/^\/api\//, '/api/v1/')
     }

@@ -101,7 +101,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Dialog Thêm/Sửa Phiếu Nhập -->
     <ElDialog
       v-model="dialogVisible"
       :title="dialogTitle"
@@ -150,11 +149,22 @@
                   class="w-full border border-gray-300 rounded px-2 py-1 bg-white flex items-center justify-between cursor-pointer hover:border-primary transition duration-200 min-h-[32px]"
                   @click="openProductSelector($index)"
                 >
-                  <span v-if="row.productVarientId" class="text-gray-800 text-xs font-medium">
-                    {{ getProductNameById(row.productVarientId) }}
+                  <span v-if="row.productVariantId" class="text-gray-800 text-xs font-medium">
+                    {{ getProductNameById(row.productVariantId) }}
                   </span>
                   <span v-else class="text-gray-400 text-xs">Chọn sản phẩm...</span>
                   <ElIcon class="text-gray-400 text-xs"><ArrowDown /></ElIcon>
+                </div>
+                <ElTag v-if="getProductColorName(row)" size="small" type="info" class="mt-1 w-fit">
+                  Màu: {{ getProductColorName(row) }}
+                </ElTag>
+                <div v-if="isVinManagedProduct(row)" class="flex items-center gap-2 mt-1">
+                  <ElTag size="small" type="warning">
+                    VIN {{ getVehicleIdentityProgress(row) }}
+                  </ElTag>
+                  <ElButton link type="primary" size="small" @click="openVinDialog($index)">
+                    Nhập VIN
+                  </ElButton>
                 </div>
               </template>
             </ElTableColumn>
@@ -167,6 +177,7 @@
                   :precision="0"
                   class="w-full"
                   controls-position="right"
+                  @change="handleProductCountChange(row)"
                 />
               </template>
             </ElTableColumn>
@@ -191,8 +202,17 @@
               </template>
             </ElTableColumn>
 
-            <ElTableColumn label="Thao tác" width="80" align="center">
-              <template #default="{ $index }">
+            <ElTableColumn label="Thao tác" width="120" align="center">
+              <template #default="{ row, $index }">
+                <ElTooltip
+                  v-if="isVinManagedProduct(row)"
+                  content="Nhập số khung, số máy"
+                  placement="top"
+                >
+                  <ElButton circle type="warning" size="small" plain @click="openVinDialog($index)">
+                    VIN
+                  </ElButton>
+                </ElTooltip>
                 <ElButton
                   circle
                   type="danger"
@@ -247,7 +267,54 @@
       </template>
     </ElDialog>
 
-    <!-- Dialog Chi Tiết Phiếu Nhập -->
+    <ElDialog
+      v-model="vinDialogVisible"
+      title="Nhập định danh xe"
+      width="860px"
+      append-to-body
+      destroy-on-close
+      class="vin-identification-dialog"
+      top="2vh"
+    >
+      <div v-if="activeVinRow" class="flex flex-col gap-3">
+        <div class="flex flex-wrap items-center justify-between gap-2 rounded-md bg-gray-50 p-3">
+          <div class="min-w-0">
+            <div class="text-sm font-semibold text-gray-800 truncate">
+              {{ getProductNameById(activeVinRow.productVariantId) }}
+            </div>
+            <div class="text-xs text-gray-500">
+              Số lượng: {{ activeVinRow.count || 0 }} xe · Đã nhập:
+              {{ getCompletedVehicleIdentityCount(activeVinRow) }}/{{ activeVinRow.count || 0 }}
+            </div>
+          </div>
+          <ElTag type="warning">Quản lý theo VIN</ElTag>
+        </div>
+
+        <div class="vin-dialog-table">
+          <ElTable :data="activeVinRow.vehicles" border size="small" class="w-full">
+            <ElTableColumn label="#" type="index" width="56" align="center" />
+            <ElTableColumn label="Số khung (VIN)" min-width="210">
+              <template #default="{ row: vehicle }">
+                <ElInput v-model="vehicle.vinNumber" placeholder="Nhập số khung" clearable />
+              </template>
+            </ElTableColumn>
+            <ElTableColumn label="Số máy" min-width="210">
+              <template #default="{ row: vehicle }">
+                <ElInput v-model="vehicle.engineNumber" placeholder="Nhập số máy" clearable />
+              </template>
+            </ElTableColumn>
+          </ElTable>
+        </div>
+      </div>
+
+      <template #footer>
+        <div class="flex justify-end gap-2 border-t border-gray-50 pt-3">
+          <ElButton @click="vinDialogVisible = false">Đóng</ElButton>
+          <ElButton type="primary" @click="vinDialogVisible = false">Xong</ElButton>
+        </div>
+      </template>
+    </ElDialog>
+
     <ElDialog
       v-model="detailDialogVisible"
       title="Chi tiết phiếu nhập kho"
@@ -300,8 +367,32 @@
           <h4 class="text-sm font-semibold text-gray-700 mb-2">Danh sách sản phẩm nhập</h4>
           <ElTable :data="detailData.products" border size="small" class="w-full">
             <ElTableColumn type="index" label="STT" width="55" align="center" />
-            <ElTableColumn prop="name" label="Tên sản phẩm" minWidth="200" />
+            <ElTableColumn label="Tên sản phẩm" minWidth="220">
+              <template #default="{ row }">
+                <div class="flex flex-col gap-1">
+                  <span class="font-medium text-gray-800">{{ row.name }}</span>
+                  <ElTag v-if="row.productVariantColorName" size="small" type="info" class="w-fit">
+                    Màu: {{ row.productVariantColorName }}
+                  </ElTag>
+                </div>
+              </template>
+            </ElTableColumn>
             <ElTableColumn prop="quantity" label="Số lượng" width="100" align="center" />
+            <ElTableColumn label="Định danh xe" minWidth="220">
+              <template #default="{ row }">
+                <div v-if="row.vehicles?.length" class="flex flex-col gap-1 text-xs text-gray-600">
+                  <div
+                    v-for="vehicle in row.vehicles"
+                    :key="vehicle.id || `${vehicle.vinNumber}-${vehicle.engineNumber}`"
+                    class="rounded border border-gray-100 bg-gray-50 px-2 py-1"
+                  >
+                    <div><span class="text-gray-400">VIN:</span> {{ vehicle.vinNumber }}</div>
+                    <div><span class="text-gray-400">Số máy:</span> {{ vehicle.engineNumber }}</div>
+                  </div>
+                </div>
+                <span v-else class="text-gray-400">--</span>
+              </template>
+            </ElTableColumn>
             <ElTableColumn prop="importPrice" label="Đơn giá nhập" width="160" align="right">
               <template #default="{ row }">
                 <span>{{ formatCurrency(row.importPrice) }}</span>
@@ -329,7 +420,6 @@
           <ElButton @click="detailDialogVisible = false">Đóng</ElButton>
 
           <template v-if="detailData">
-            <!-- If receipt is working, we can update notes and change status -->
             <template v-if="isEditable(detailData.statusId)">
               <ElButton
                 type="warning"
@@ -355,7 +445,6 @@
               </ElDropdown>
             </template>
 
-            <!-- If receipt is finished or cancelled, status changes are blocked, only save notes -->
             <template v-else>
               <ElButton type="primary" :loading="detailSubmitting" @click="handleUpdateDetailNotes">
                 Cập nhật ghi chú
@@ -366,7 +455,6 @@
       </template>
     </ElDialog>
 
-    <!-- Supplier Selector Dialog -->
     <ElDialog
       v-model="supplierSelectorVisible"
       title="Chọn nhà cung cấp"
@@ -376,7 +464,6 @@
       class="rounded-xl overflow-hidden"
     >
       <div class="space-y-4">
-        <!-- Search bar -->
         <ElInput
           placeholder="Tìm theo tên nhà cung cấp hoặc số điện thoại..."
           clearable
@@ -384,7 +471,6 @@
           @input="handleSupplierSelectorSearch"
         />
 
-        <!-- Grid of Suppliers -->
         <div
           v-loading="supplierSelectorLoading"
           class="grid grid-cols-1 md:grid-cols-2 gap-3 min-h-[300px] max-h-[450px] overflow-y-auto pr-1"
@@ -417,7 +503,6 @@
           </div>
         </div>
 
-        <!-- Pagination -->
         <div class="flex justify-end pt-2 border-t">
           <ElPagination
             v-model:current-page="supplierSelectorPage"
@@ -432,7 +517,6 @@
       </div>
     </ElDialog>
 
-    <!-- Product Selector Dialog -->
     <ElDialog
       v-model="productSelectorVisible"
       title="Chọn sản phẩm & biến thể"
@@ -442,7 +526,6 @@
       class="rounded-xl overflow-hidden"
     >
       <div class="space-y-4">
-        <!-- Search bar -->
         <ElInput
           placeholder="Tìm sản phẩm theo tên..."
           clearable
@@ -450,7 +533,6 @@
           @input="handleProductSelectorSearch"
         />
 
-        <!-- Variant List -->
         <div
           v-loading="productSelectorLoading"
           class="space-y-3 min-h-[350px] max-h-[500px] overflow-y-auto pr-1"
@@ -483,6 +565,14 @@
                   <span class="text-[11px] text-gray-400 mt-0.5 font-mono">
                     Variant ID: #{{ variant.id }}
                   </span>
+                  <ElTag
+                    v-if="isVinManagedVariant(variant)"
+                    size="small"
+                    type="warning"
+                    class="mt-1 w-fit"
+                  >
+                    Quản lý theo VIN
+                  </ElTag>
                   <span class="text-xs text-primary font-bold mt-0.5">
                     {{ formatCurrency(variant.price ?? undefined) }}
                   </span>
@@ -492,17 +582,36 @@
               <div class="flex flex-col gap-2 items-end">
                 <ElSelect
                   v-if="variant.colors?.length"
-                  v-model="selectedVariantColors[variant.id]"
+                  v-model="selectedVariantColors[getVariantColorKey(variant)]"
                   placeholder="Chọn màu"
                   size="small"
+                  class="variant-color-select"
                   style="width: 150px"
+                  @click.stop
                 >
+                  <template #prefix>
+                    <span
+                      v-if="getSelectedVariantColor(variant)"
+                      class="inline-block w-4 h-4 rounded border border-gray-200 flex-shrink-0"
+                      :style="{
+                        backgroundColor: getSelectedVariantColor(variant)?.colorCode || '#ffffff'
+                      }"
+                    ></span>
+                  </template>
                   <ElOption
                     v-for="color in variant.colors"
                     :key="color.id"
-                    :label="color.colorName || `Màu #${color.id}`"
+                    :label="getVariantColorLabel(color)"
                     :value="color.id"
-                  />
+                  >
+                    <div class="flex items-center gap-2">
+                      <span
+                        class="inline-block w-4 h-4 rounded border border-gray-200 flex-shrink-0"
+                        :style="{ backgroundColor: color.colorCode || '#ffffff' }"
+                      ></span>
+                      <span>{{ color.colorName || `Màu #${color.id}` }}</span>
+                    </div>
+                  </ElOption>
                 </ElSelect>
                 <ElButton type="primary" size="small" plain @click="selectProductVariant(variant)">
                   Chọn
@@ -520,7 +629,6 @@
           </div>
         </div>
 
-        <!-- Pagination -->
         <div class="flex justify-end pt-2 border-t">
           <ElPagination
             v-model:current-page="productSelectorPage"
@@ -561,32 +669,57 @@
 
   defineOptions({ name: 'InventoryInput' })
 
-  // States
+  type VehicleIdentification = {
+    id?: number
+    vinNumber: string
+    engineNumber: string
+  }
+
+  type ReceiptProductRow = {
+    id?: number
+    productVariantId: number | undefined
+    productVariantColorId?: number
+    productVariantColorName?: string
+    count: number
+    inputPrice: number
+    managementType?: string
+    vehicles?: VehicleIdentification[]
+  }
+
+  const VIN_MANAGEMENT_TYPE = 'vin_number'
+
   const loading = ref(false)
   const dialogVisible = ref(false)
   const dialogTitle = ref('Tạo phiếu nhập mới')
   const submitting = ref(false)
   const isEdit = ref(false)
+  const vinDialogVisible = ref(false)
+  const vinDialogRowIndex = ref<number | null>(null)
+  const activeVinRow = computed(() => {
+    if (vinDialogRowIndex.value === null) return null
+    return formData.value.products[vinDialogRowIndex.value] ?? null
+  })
 
-  // Details dialog states
   const detailDialogVisible = ref(false)
   const detailData = ref<InventoryReceipt | null>(null)
   const detailNotes = ref('')
   const detailSubmitting = ref(false)
 
-  // Static/Calculated dashboard metrics
   const stats = ref({
     totalVehicles: 0,
     processingReceipts: 0,
     totalValue: 0
   })
 
-  // Dropdown Lists (Deprecated/Empty)
   const statuses = ref<Record<string, string>>({})
 
-  // Caches for display names
   const supplierCache = reactive(new Map<number, string>())
-  const productCache = reactive(new Map<number, { displayName: string; price?: number }>())
+  const productCache = reactive(
+    new Map<
+      number,
+      { displayName: string; price?: number; managementType?: string; colorName?: string }
+    >()
+  )
 
   const getSupplierNameById = (id?: number) => {
     if (!id) return ''
@@ -598,7 +731,82 @@
     return productCache.get(Number(id))?.displayName || `Sản phẩm #${id}`
   }
 
-  // Supplier Selector Dialog States
+  const getProductColorName = (row: ReceiptProductRow) => {
+    return (
+      row.productVariantColorName || productCache.get(Number(row.productVariantId))?.colorName || ''
+    )
+  }
+
+  const isVinManagedVariant = (variant: ProductVariantLiteForInput) => {
+    return variant.managementType?.toLowerCase() === VIN_MANAGEMENT_TYPE
+  }
+
+  const getVariantColorLabel = (
+    color: NonNullable<ProductVariantLiteForInput['colors']>[number]
+  ) => {
+    return color.colorName || `Màu #${color.id}`
+  }
+
+  const getSelectedVariantColor = (variant: ProductVariantLiteForInput) => {
+    const selectedColorId = selectedVariantColors[getVariantColorKey(variant)]
+    return variant.colors?.find((color) => color.id === selectedColorId)
+  }
+
+  const getVariantDisplayNameWithColor = (variant: ProductVariantLiteForInput) => {
+    const displayName = variant.displayName || `Sản phẩm #${variant.id}`
+    const selectedColor = getSelectedVariantColor(variant)
+    if (!selectedColor) return displayName
+    return `${displayName} - ${getVariantColorLabel(selectedColor)}`
+  }
+
+  const isVinManagedProduct = (row: ReceiptProductRow) => {
+    return row.managementType?.toLowerCase() === VIN_MANAGEMENT_TYPE
+  }
+
+  const createEmptyVehicle = (): VehicleIdentification => ({
+    vinNumber: '',
+    engineNumber: ''
+  })
+
+  const syncVehicleRows = (row: ReceiptProductRow) => {
+    if (!isVinManagedProduct(row)) {
+      row.vehicles = undefined
+      return
+    }
+
+    const targetCount = Math.max(Number(row.count) || 0, 0)
+    const vehicles = row.vehicles ?? []
+    while (vehicles.length < targetCount) {
+      vehicles.push(createEmptyVehicle())
+    }
+    if (vehicles.length > targetCount) {
+      vehicles.splice(targetCount)
+    }
+    row.vehicles = vehicles
+  }
+
+  const handleProductCountChange = (row: ReceiptProductRow) => {
+    syncVehicleRows(row)
+  }
+
+  const getCompletedVehicleIdentityCount = (row: ReceiptProductRow) => {
+    return (row.vehicles ?? []).filter(
+      (vehicle) => vehicle.vinNumber?.trim() && vehicle.engineNumber?.trim()
+    ).length
+  }
+
+  const getVehicleIdentityProgress = (row: ReceiptProductRow) => {
+    return `${getCompletedVehicleIdentityCount(row)}/${row.count || 0}`
+  }
+
+  const openVinDialog = (rowIndex: number) => {
+    const row = formData.value.products[rowIndex]
+    if (!row || !isVinManagedProduct(row)) return
+    syncVehicleRows(row)
+    vinDialogRowIndex.value = rowIndex
+    vinDialogVisible.value = true
+  }
+
   const supplierSelectorVisible = ref(false)
   const supplierSelectorLoading = ref(false)
   const supplierSelectorQuery = ref('')
@@ -622,7 +830,6 @@
       supplierSelectorItems.value = res.items || []
       supplierSelectorTotal.value = res.totalCount || 0
 
-      // Cache the loaded suppliers
       res.items?.forEach((sup) => {
         if (sup.id) supplierCache.set(sup.id, sup.name)
       })
@@ -654,16 +861,25 @@
     await fetchSelectorSuppliers()
   }, 300)
 
-  // Product Selector Dialog States
   const productSelectorVisible = ref(false)
   const productSelectorLoading = ref(false)
   const productSelectorQuery = ref('')
   const productSelectorPage = ref(1)
-  const productSelectorPageSize = ref(10) // 10 products per page as requested
+  const productSelectorPageSize = ref(10)
   const productSelectorTotal = ref(0)
   const productSelectorItems = ref<ProductVariantLiteForInput[]>([])
-  const selectedVariantColors = reactive<Record<number, number | undefined>>({})
+  const selectedVariantColors = reactive<Record<string, number | undefined>>({})
   const productSelectorActiveRowIndex = ref<number | null>(null)
+
+  const getVariantColorKey = (variant: ProductVariantLiteForInput) => String(variant.id)
+
+  const initializeVariantColorSelection = (variants: ProductVariantLiteForInput[]) => {
+    variants.forEach((variant) => {
+      const key = getVariantColorKey(variant)
+      if (selectedVariantColors[key] || !variant.colors?.length) return
+      selectedVariantColors[key] = variant.colors[0].id
+    })
+  }
 
   const fetchSelectorProducts = async () => {
     productSelectorLoading.value = true
@@ -678,6 +894,7 @@
         Filters: filters.join(',')
       })
       productSelectorItems.value = res.items || []
+      initializeVariantColorSelection(productSelectorItems.value)
       productSelectorTotal.value = res.totalCount || 0
     } catch (err) {
       console.error('Failed to fetch selector products:', err)
@@ -696,38 +913,53 @@
 
   const selectProductVariant = (variant: ProductVariantLiteForInput) => {
     if (!variant.id) return
-    const productVarientColorId = selectedVariantColors[variant.id]
-    if (variant.colors?.length && !productVarientColorId) {
+    const productVariantColorId = selectedVariantColors[getVariantColorKey(variant)]
+    if (variant.colors?.length && !productVariantColorId) {
       ElMessage.warning('Vui lòng chọn màu cho biến thể sản phẩm này')
       return
     }
 
-    const displayName = variant.displayName || `Sản phẩm #${variant.id}`
-    productCache.set(variant.id, { displayName, price: variant.price || 0 })
+    const displayName = getVariantDisplayNameWithColor(variant)
+    const selectedColor = getSelectedVariantColor(variant)
+    productCache.set(variant.id, {
+      displayName,
+      price: variant.price || 0,
+      managementType: variant.managementType,
+      colorName: selectedColor?.colorName
+    })
 
     if (productSelectorActiveRowIndex.value !== null) {
-      // Update existing row
       const idx = productSelectorActiveRowIndex.value
       if (formData.value.products[idx]) {
-        formData.value.products[idx].productVarientId = variant.id
-        formData.value.products[idx].productVarientColorId = productVarientColorId
-        formData.value.products[idx].inputPrice = variant.price || 0
+        const row = formData.value.products[idx]
+        row.productVariantId = variant.id
+        row.productVariantColorId = productVariantColorId
+        row.productVariantColorName = selectedColor?.colorName
+        row.inputPrice = variant.price || 0
+        row.managementType = variant.managementType
+        syncVehicleRows(row)
       }
     } else {
-      // Add new row (check if last row is empty first to reuse it)
       const products = formData.value.products
       const lastRow = products[products.length - 1]
-      if (lastRow && lastRow.productVarientId === undefined) {
-        lastRow.productVarientId = variant.id
-        lastRow.productVarientColorId = productVarientColorId
+      if (lastRow && lastRow.productVariantId === undefined) {
+        lastRow.productVariantId = variant.id
+        lastRow.productVariantColorId = productVariantColorId
+        lastRow.productVariantColorName = selectedColor?.colorName
         lastRow.inputPrice = variant.price || 0
+        lastRow.managementType = variant.managementType
+        syncVehicleRows(lastRow)
       } else {
-        products.push({
-          productVarientId: variant.id,
-          productVarientColorId,
+        const newRow: ReceiptProductRow = {
+          productVariantId: variant.id,
+          productVariantColorId,
+          productVariantColorName: selectedColor?.colorName,
           count: 1,
-          inputPrice: variant.price || 0
-        })
+          inputPrice: variant.price || 0,
+          managementType: variant.managementType
+        }
+        syncVehicleRows(newRow)
+        products.push(newRow)
       }
     }
     productSelectorVisible.value = false
@@ -739,19 +971,12 @@
     await fetchSelectorProducts()
   }, 300)
 
-  // Form Data
   const formData = ref<{
     id?: number
     supplierId: number | undefined
     notes: string
     statusId: string
-    products: Array<{
-      id?: number
-      productVarientId: number | undefined
-      productVarientColorId?: number
-      count: number
-      inputPrice: number
-    }>
+    products: ReceiptProductRow[]
   }>({
     supplierId: undefined,
     notes: '',
@@ -759,7 +984,6 @@
     products: []
   })
 
-  // Table Data & Paging
   const data = ref<InventoryReceipt[]>([])
   const pagination = reactive({
     current: 1,
@@ -767,7 +991,6 @@
     total: 0
   })
 
-  // Search items definition (Removed Mã phiếu filter)
   const searchForm = ref({
     supplierName: '',
     statusId: [] as string[]
@@ -797,7 +1020,6 @@
     }
   ])
 
-  // Columns definition (Removed Mã phiếu, added STT)
   const columns = ref([
     { label: 'STT', type: 'index' as const, width: 70, align: 'center' },
     { label: 'Thời gian tạo', prop: 'createdAt', useSlot: true, width: 170 },
@@ -817,7 +1039,6 @@
 
   const columnChecks = columns
 
-  // Computed total payable for form
   const totalAmount = computed(() => {
     return formData.value.products.reduce(
       (sum, row) => sum + (row.count || 0) * (row.inputPrice || 0),
@@ -825,12 +1046,10 @@
     )
   })
 
-  // Editable rule
   const isEditable = (statusId?: string) => {
     return statusId === 'working'
   }
 
-  // Formatting helpers
   const formatDateTime = (dateStr?: string) => {
     if (!dateStr) return '-'
     const date = new Date(dateStr)
@@ -872,7 +1091,6 @@
     return products.map((p) => `${p.name} (SL: ${p.quantity})`).join(', ')
   }
 
-  // Load backend configuration & list data
   const loadStatuses = async () => {
     try {
       statuses.value = await InventoryReceiptApi.getStatuses()
@@ -937,7 +1155,6 @@
     }
   }
 
-  // Handlers
   const handleSearch = (filters: any) => {
     pagination.current = 1
     loadDataWithFilters(filters)
@@ -963,7 +1180,6 @@
     loadData()
   }
 
-  // Row actions
   const handleViewDetail = async (row: InventoryReceipt) => {
     try {
       loading.value = true
@@ -998,16 +1214,16 @@
       isEdit.value = true
       dialogTitle.value = 'Cập nhật phiếu nhập'
 
-      // Cache supplier name
       if (receipt.supplierId && receipt.supplierName) {
         supplierCache.set(receipt.supplierId, receipt.supplierName)
       }
 
-      // Cache product names
       ;(receipt.products || []).forEach((p) => {
-        productCache.set(p.productVarientId, {
-          displayName: p.name || `Sản phẩm #${p.productVarientId}`,
-          price: p.importPrice
+        productCache.set(p.productVariantId, {
+          displayName: p.name || `Sản phẩm #${p.productVariantId}`,
+          price: p.importPrice,
+          managementType: p.vehicles?.length ? VIN_MANAGEMENT_TYPE : undefined,
+          colorName: p.productVariantColorName
         })
       })
 
@@ -1018,10 +1234,17 @@
         statusId: receipt.statusId,
         products: (receipt.products || []).map((p) => ({
           id: p.id,
-          productVarientId: p.productVarientId,
-          productVarientColorId: p.productVarientColorId,
+          productVariantId: p.productVariantId,
+          productVariantColorId: p.productVariantColorId,
+          productVariantColorName: p.productVariantColorName,
           count: p.quantity || 1,
-          inputPrice: p.importPrice || 0
+          inputPrice: p.importPrice || 0,
+          managementType: p.vehicles?.length ? VIN_MANAGEMENT_TYPE : undefined,
+          vehicles: (p.vehicles || []).map((vehicle) => ({
+            id: vehicle.id,
+            vinNumber: vehicle.vinNumber || '',
+            engineNumber: vehicle.engineNumber || ''
+          }))
         }))
       }
       dialogVisible.value = true
@@ -1055,7 +1278,6 @@
     }
   }
 
-  // Details dialog actions
   const handleUpdateDetailStatus = async (statusId: string) => {
     if (!detailData.value) return
 
@@ -1091,9 +1313,7 @@
 
     detailSubmitting.value = true
     try {
-      // 1. Update notes
       await InventoryReceiptApi.updateNotes(detailData.value.id, detailNotes.value)
-      // 2. Update status
       await InventoryReceiptApi.updateStatus(detailData.value.id, statusId)
       ElMessage.success('Cập nhật phiếu nhập thành công')
       detailDialogVisible.value = false
@@ -1122,7 +1342,6 @@
     }
   }
 
-  // Row products table handlers
   const handleAddProductRow = () => {
     openProductSelector()
   }
@@ -1135,7 +1354,6 @@
     formData.value.products.splice(index, 1)
   }
 
-  // Submit
   const submitForm = async (statusId: string) => {
     if (!formData.value.supplierId) {
       ElMessage.warning('Vui lòng chọn nhà cung cấp')
@@ -1143,12 +1361,42 @@
     }
 
     const validProducts = formData.value.products.filter(
-      (p) => p.productVarientId !== undefined && p.productVarientId !== null
+      (p) => p.productVariantId !== undefined && p.productVariantId !== null
     )
 
     if (validProducts.length === 0) {
       ElMessage.warning('Vui lòng thêm ít nhất một sản phẩm hợp lệ')
       return
+    }
+
+    for (const product of validProducts) {
+      if (!isVinManagedProduct(product)) continue
+
+      syncVehicleRows(product)
+      const vehicles = product.vehicles ?? []
+      if (vehicles.length !== product.count) {
+        ElMessage.warning('Số dòng định danh xe phải đúng bằng số lượng nhập')
+        return
+      }
+
+      const hasMissingRequiredCode = vehicles.some(
+        (vehicle) => !vehicle.vinNumber?.trim() || !vehicle.engineNumber?.trim()
+      )
+      if (hasMissingRequiredCode) {
+        ElMessage.warning('Vui lòng nhập đủ số khung (VIN) và số máy cho sản phẩm quản lý theo VIN')
+        return
+      }
+
+      const normalizedVins = vehicles.map((vehicle) => vehicle.vinNumber.trim().toLowerCase())
+      const normalizedEngines = vehicles.map((vehicle) => vehicle.engineNumber.trim().toLowerCase())
+      if (new Set(normalizedVins).size !== normalizedVins.length) {
+        ElMessage.warning('Số khung (VIN) bị trùng trong cùng dòng sản phẩm')
+        return
+      }
+      if (new Set(normalizedEngines).size !== normalizedEngines.length) {
+        ElMessage.warning('Số máy bị trùng trong cùng dòng sản phẩm')
+        return
+      }
     }
 
     if (statusId === 'finished') {
@@ -1185,10 +1433,17 @@
     try {
       const payloadProducts = validProducts.map((p) => ({
         id: p.id,
-        productVarientId: p.productVarientId!,
-        productVarientColorId: p.productVarientColorId,
+        productVariantId: p.productVariantId!,
+        productVariantColorId: p.productVariantColorId,
         count: p.count,
-        inputPrice: p.inputPrice
+        inputPrice: p.inputPrice,
+        vehicles: isVinManagedProduct(p)
+          ? p.vehicles?.map((vehicle) => ({
+              id: vehicle.id,
+              vinNumber: vehicle.vinNumber.trim(),
+              engineNumber: vehicle.engineNumber.trim()
+            }))
+          : undefined
       }))
 
       if (isEdit.value && formData.value.id) {
@@ -1203,14 +1458,15 @@
       } else {
         const payload = {
           notes: formData.value.notes,
-          statusId: 'working', // Initial creation status is always working
+          statusId: 'working',
           supplierId: formData.value.supplierId,
           products: payloadProducts.map(
-            ({ productVarientId, productVarientColorId, count, inputPrice }) => ({
-              productVarientId,
-              productVarientColorId,
+            ({ productVariantId, productVariantColorId, count, inputPrice, vehicles }) => ({
+              productVariantId,
+              productVariantColorId,
               count,
-              inputPrice
+              inputPrice,
+              vehicles
             })
           )
         }
@@ -1227,7 +1483,6 @@
     }
   }
 
-  // Lifecycle
   onMounted(async () => {
     loading.value = true
     await Promise.all([loadStatuses()])
@@ -1238,5 +1493,30 @@
 <style scoped>
   :deep(.el-table) {
     --el-table-header-bg-color: var(--el-fill-color-light);
+  }
+
+  :deep(.vin-identification-dialog) {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 4vh);
+    margin-bottom: 2vh;
+    overflow: hidden;
+  }
+
+  :deep(.vin-identification-dialog .el-dialog__body) {
+    flex: 1;
+    min-height: 0;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    overflow: hidden;
+  }
+
+  :deep(.vin-identification-dialog .el-dialog__footer) {
+    flex-shrink: 0;
+  }
+
+  .vin-dialog-table {
+    max-height: calc(100vh - 250px);
+    overflow: auto;
   }
 </style>

@@ -266,7 +266,6 @@ export const useUserStore = defineStore(
       { immediate: true }
     )
 
-    // Watch for real-time permissions/roles changes via SSE to reload menus and validate access
     watch(
       () => [info.value?.buttons, info.value?.roles],
       (newVal, oldVal) => {

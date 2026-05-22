@@ -170,7 +170,6 @@
     return baseRules
   })
 
-  // Load available roles to populate dropdown
   const loadRoles = async () => {
     try {
       const res = await fetchGetRoleList({ Page: 1, PageSize: 100 })
@@ -184,7 +183,6 @@
     const isEdit = props.type === 'edit' && props.userData
     const row = props.userData
 
-    // Map role IDs in row.roles to their corresponding names case-insensitively
     const mappedRoleNames: string[] = []
     if (isEdit && row && Array.isArray(row.roles)) {
       row.roles.forEach((roleId: string) => {
@@ -227,7 +225,6 @@
     { immediate: true }
   )
 
-  // Automatically clear specific form errors when field values change
   watch(
     () => ({ ...formData }),
     (newVal, oldVal) => {
@@ -249,7 +246,6 @@
       submitting.value = true
 
       if (dialogType.value === 'add') {
-        // Create new user
         await fetchCreateUser({
           username: formData.username,
           email: formData.email,
@@ -262,14 +258,12 @@
         })
         ElMessage.success('Thêm mới người dùng thành công!')
       } else {
-        // Update existing user details
         await fetchUpdateUser(formData.id, {
           fullName: formData.fullName,
           gender: formData.gender,
           phoneNumber: formData.phone
         })
 
-        // Match selected role names to their IDs
         const selectedRoleIds = formData.roles
           .map((name) => {
             const matched = availableRoles.value.find((r) => r.name === name)
@@ -277,7 +271,6 @@
           })
           .filter(Boolean) as string[]
 
-        // Assign selected roles to the user
         await fetchAssignUserRoles(formData.id, selectedRoleIds)
 
         ElMessage.success('Cập nhật người dùng thành công!')

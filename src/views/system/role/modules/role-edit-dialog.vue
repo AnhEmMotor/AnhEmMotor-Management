@@ -20,7 +20,6 @@
           />
         </ElFormItem>
 
-        <!-- Permissions Section: Only visible in Add Mode -->
         <div v-if="dialogType === 'add'" class="mt-6 pt-4 border-t border-gray-100">
           <div class="flex justify-between items-center mb-3">
             <div class="section-title mb-0">Quyền hạn gán cho vai trò</div>
@@ -135,7 +134,6 @@
     description: ''
   })
 
-  // Load permission structure from Backend
   const loadPermissionStructure = async () => {
     if (treeData.value.length > 0) return
     loadingStructure.value = true
@@ -249,32 +247,27 @@
     let checkedKeys = (state.checkedKeys || []) as string[]
     const prevChecked = lastCheckedKeys.value
 
-    // 1. Identify newly checked keys
     const newlyChecked = checkedKeys.filter((k) => !prevChecked.includes(k))
     const keysToRemove = new Set<string>()
 
     if (newlyChecked.length > 0) {
       const keysToAdd = new Set<string>()
 
-      // Helper to recursively add dependencies
       const addDependencies = (key: string) => {
         const deps = permissionDependencies.value[key] || []
         deps.forEach((dep: string) => {
           if (!checkedKeys.includes(dep) && !keysToAdd.has(dep)) {
             keysToAdd.add(dep)
-            addDependencies(dep) // Recursively add dependencies
+            addDependencies(dep)
           }
         })
       }
       newlyChecked.forEach(addDependencies)
 
-      // If we added dependencies, include them in our current working checkedKeys
       if (keysToAdd.size > 0) {
         checkedKeys = [...checkedKeys, ...Array.from(keysToAdd)]
       }
 
-      // --- CONFLICT RESOLUTION ---
-      // For any newly checked or newly added dependency keys, check if they conflict with other keys
       const activeChecked = new Set(checkedKeys)
       const allToCheck = [...newlyChecked, ...Array.from(keysToAdd)]
 
@@ -288,7 +281,6 @@
       })
     }
 
-    // 2. Identify newly unchecked keys (plus any keys marked for removal due to conflicts!)
     const newlyUnchecked = [
       ...prevChecked.filter((k: string) => !checkedKeys.includes(k)),
       ...Array.from(keysToRemove)
@@ -296,7 +288,6 @@
 
     if (newlyUnchecked.length > 0) {
       const removeDependents = (key: string) => {
-        // Find all keys that depend on 'key'
         ;(Object.entries(permissionDependencies.value) as [string, string[]][]).forEach(
           ([dependentKey, deps]) => {
             if (
@@ -305,7 +296,7 @@
               !keysToRemove.has(dependentKey)
             ) {
               keysToRemove.add(dependentKey)
-              removeDependents(dependentKey) // Recursively remove dependents
+              removeDependents(dependentKey)
             }
           }
         )
@@ -317,11 +308,9 @@
       checkedKeys = checkedKeys.filter((k) => !keysToRemove.has(k))
     }
 
-    // Update tree checked state and local state
     treeRef.value?.setCheckedKeys(checkedKeys)
     lastCheckedKeys.value = treeRef.value?.getCheckedKeys() || []
 
-    // Recalculate select all state
     const allKeys = getAllNodeKeys(treeData.value)
     const currentChecked = treeRef.value?.getCheckedKeys() || []
     isSelectAll.value = currentChecked.length === allKeys.length && allKeys.length > 0
@@ -335,7 +324,6 @@
       submitting.value = true
 
       if (props.dialogType === 'add') {
-        // Get all checked leaf nodes (which are the actual permission IDs)
         const checkedKeys = (treeRef.value?.getCheckedKeys(true) || []) as string[]
         const realPermissions = checkedKeys.filter((id) => id.includes('.'))
 
@@ -346,7 +334,6 @@
         })
         ElMessage.success('Thêm mới vai trò thành công!')
       } else {
-        // Fetch current permissions first to ensure we do not overwrite them with empty list
         let currentPermissions: string[] = []
         try {
           currentPermissions = await fetchGetRolePermissions(form.id)

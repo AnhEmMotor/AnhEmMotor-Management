@@ -102,7 +102,6 @@
     set: (value) => emit('update:modelValue', value)
   })
 
-  // Load permission structure from Backend
   const loadPermissionStructure = async () => {
     if (treeData.value.length > 0) return
     loadingStructure.value = true
@@ -141,7 +140,6 @@
     }
   }
 
-  // Load active checked permissions for this role
   const loadRolePermissions = async () => {
     if (!props.roleData?.id) return
     loadingCurrent.value = true
@@ -150,7 +148,6 @@
       nextTick(() => {
         treeRef.value?.setCheckedKeys(permissions || [])
         lastCheckedKeys.value = treeRef.value?.getCheckedKeys() || []
-        // Recalculate select all state
         const allKeys = getAllNodeKeys(treeData.value)
         isSelectAll.value = (permissions || []).length === allKeys.length && allKeys.length > 0
       })
@@ -182,10 +179,8 @@
     if (!props.roleData) return
     saving.value = true
     try {
-      // Get all checked leaf nodes (which are the actual permission IDs)
       const checkedKeys = (treeRef.value?.getCheckedKeys(true) || []) as string[]
 
-      // Real permissions contain a dot (e.g. Permissions.Users.View)
       const realPermissions = checkedKeys.filter((id) => id.includes('.'))
 
       await fetchUpdateRole(props.roleData.id, {
@@ -244,32 +239,27 @@
     let checkedKeys = (state.checkedKeys || []) as string[]
     const prevChecked = lastCheckedKeys.value
 
-    // 1. Identify newly checked keys
     const newlyChecked = checkedKeys.filter((k) => !prevChecked.includes(k))
     const keysToRemove = new Set<string>()
 
     if (newlyChecked.length > 0) {
       const keysToAdd = new Set<string>()
 
-      // Helper to recursively add dependencies
       const addDependencies = (key: string) => {
         const deps = permissionDependencies.value[key] || []
         deps.forEach((dep) => {
           if (!checkedKeys.includes(dep) && !keysToAdd.has(dep)) {
             keysToAdd.add(dep)
-            addDependencies(dep) // Recursively add dependencies
+            addDependencies(dep)
           }
         })
       }
       newlyChecked.forEach(addDependencies)
 
-      // If we added dependencies, include them in our current working checkedKeys
       if (keysToAdd.size > 0) {
         checkedKeys = [...checkedKeys, ...Array.from(keysToAdd)]
       }
 
-      // --- CONFLICT RESOLUTION ---
-      // For any newly checked or newly added dependency keys, check if they conflict with other keys
       const activeChecked = new Set(checkedKeys)
       const allToCheck = [...newlyChecked, ...Array.from(keysToAdd)]
 
@@ -283,7 +273,6 @@
       })
     }
 
-    // 2. Identify newly unchecked keys (plus any keys marked for removal due to conflicts!)
     const newlyUnchecked = [
       ...prevChecked.filter((k) => !checkedKeys.includes(k)),
       ...Array.from(keysToRemove)
@@ -291,7 +280,6 @@
 
     if (newlyUnchecked.length > 0) {
       const removeDependents = (key: string) => {
-        // Find all keys that depend on 'key'
         Object.entries(permissionDependencies.value).forEach(([dependentKey, deps]) => {
           if (
             deps.includes(key) &&
@@ -299,7 +287,7 @@
             !keysToRemove.has(dependentKey)
           ) {
             keysToRemove.add(dependentKey)
-            removeDependents(dependentKey) // Recursively remove dependents
+            removeDependents(dependentKey)
           }
         })
       }
@@ -310,11 +298,9 @@
       checkedKeys = checkedKeys.filter((k) => !keysToRemove.has(k))
     }
 
-    // Update tree checked state and local state
     treeRef.value?.setCheckedKeys(checkedKeys)
     lastCheckedKeys.value = treeRef.value?.getCheckedKeys() || []
 
-    // Recalculate select all state
     const allKeys = getAllNodeKeys(treeData.value)
     const currentChecked = treeRef.value?.getCheckedKeys() || []
     isSelectAll.value = currentChecked.length === allKeys.length && allKeys.length > 0

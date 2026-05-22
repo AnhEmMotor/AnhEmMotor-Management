@@ -73,7 +73,6 @@
     return map
   })
 
-  // Watch for roleMap changes (when roles finish loading) to force table columns to re-draw
   watch(
     () => roleMap.value,
     (newMap) => {
