@@ -111,7 +111,7 @@
       destroy-on-close
       class="rounded-xl overflow-hidden"
     >
-      <ElForm ref="formRef" :model="formData" label-width="130px" class="mt-3">
+      <ElForm ref="formRef" :model="formData" label-width="auto" class="mt-3">
         <ElAlert
           v-if="lockedHint"
           :title="lockedHint"
@@ -121,60 +121,75 @@
           class="mb-4"
         />
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
-          <ElFormItem label="Khách hàng" required class="md:col-span-2">
-            <ElSelect
-              v-model="formData.buyerId"
-              filterable
-              remote
-              clearable
-              :remote-method="searchCustomers"
-              :loading="customerLoading"
-              placeholder="Tìm theo tên, email hoặc số điện thoại"
-              class="w-full"
-              :disabled="isBuyerProductLocked"
-              @change="handleCustomerChange"
-            >
-              <ElOption
-                v-for="item in customerOptions"
-                :key="item.id"
-                :label="getCustomerLabel(item)"
-                :value="item.id"
-              />
-            </ElSelect>
-          </ElFormItem>
+        <ElRow :gutter="20">
+          <ElCol :span="24">
+            <ElFormItem label="Khách hàng" required>
+              <ElSelect
+                v-model="formData.buyerId"
+                filterable
+                remote
+                clearable
+                :remote-method="searchCustomers"
+                :loading="customerLoading"
+                placeholder="Tìm theo tên, email hoặc số điện thoại"
+                class="w-full"
+                :disabled="isBuyerProductLocked"
+                @change="handleCustomerChange"
+              >
+                <ElOption
+                  v-for="item in customerOptions"
+                  :key="item.id"
+                  :label="getCustomerLabel(item)"
+                  :value="item.id"
+                />
+              </ElSelect>
+            </ElFormItem>
+          </ElCol>
 
-          <ElFormItem label="Người nhận" required>
-            <ElInput v-model="formData.customerName" :disabled="isDeliveryInfoLocked" />
-          </ElFormItem>
-          <ElFormItem label="Số điện thoại" required>
-            <ElInput v-model="formData.customerPhone" :disabled="isDeliveryInfoLocked" />
-          </ElFormItem>
-          <ElFormItem label="Địa chỉ giao hàng" required class="md:col-span-2">
-            <ElInput v-model="formData.customerAddress" :disabled="isDeliveryInfoLocked" />
-          </ElFormItem>
+          <ElCol :span="24" :md="12">
+            <ElFormItem label="Người nhận" required>
+              <ElInput v-model="formData.customerName" :disabled="isDeliveryInfoLocked" />
+            </ElFormItem>
+          </ElCol>
 
-          <ElFormItem v-if="editingOrder" label="Trạng thái">
-            <ElSelect v-model="formData.statusId" class="w-full">
-              <ElOption
-                v-for="status in allowedStatusOptions"
-                :key="status.id"
-                :label="status.name"
-                :value="status.id"
+          <ElCol :span="24" :md="12">
+            <ElFormItem label="Số điện thoại" required>
+              <ElInput v-model="formData.customerPhone" :disabled="isDeliveryInfoLocked" />
+            </ElFormItem>
+          </ElCol>
+
+          <ElCol :span="24">
+            <ElFormItem label="Địa chỉ giao hàng" required>
+              <ElInput v-model="formData.customerAddress" :disabled="isDeliveryInfoLocked" />
+            </ElFormItem>
+          </ElCol>
+
+          <ElCol :span="24" :md="12" v-if="editingOrder">
+            <ElFormItem label="Trạng thái">
+              <ElSelect v-model="formData.statusId" class="w-full">
+                <ElOption
+                  v-for="status in allowedStatusOptions"
+                  :key="status.id"
+                  :label="status.name"
+                  :value="status.id"
+                />
+              </ElSelect>
+            </ElFormItem>
+          </ElCol>
+
+          <ElCol :span="24" :md="12">
+            <ElFormItem label="Tỷ lệ đặt cọc">
+              <ElInputNumber
+                v-model="formData.depositRatio"
+                :min="0"
+                :max="100"
+                :precision="0"
+                class="w-full"
+                :disabled="isDepositRatioLocked"
               />
-            </ElSelect>
-          </ElFormItem>
-          <ElFormItem label="Tỷ lệ đặt cọc">
-            <ElInputNumber
-              v-model="formData.depositRatio"
-              :min="0"
-              :max="100"
-              :precision="0"
-              class="w-full"
-              :disabled="isDepositRatioLocked"
-            />
-          </ElFormItem>
-        </div>
+            </ElFormItem>
+          </ElCol>
+        </ElRow>
 
         <div class="border-t border-gray-100 pt-4 mt-2">
           <div class="flex justify-between items-center mb-3">
@@ -190,8 +205,15 @@
             </ElButton>
           </div>
 
-          <ElTable :data="formData.products" border size="small" class="w-full">
-            <ElTableColumn label="Sản phẩm">
+          <ElTable
+            :data="formData.products"
+            border
+            size="small"
+            class="w-full"
+            max-height="320"
+            style="width: 100vw"
+          >
+            <ElTableColumn label="Sản phẩm" min-width="280">
               <template #default="{ row }">
                 <ElSelect
                   v-model="row.productVarientId"
@@ -238,7 +260,7 @@
                 </ElSelect>
               </template>
             </ElTableColumn>
-            <ElTableColumn label="SL" width="130" align="center">
+            <ElTableColumn label="SL" width="150" align="center">
               <template #default="{ row }">
                 <ElInputNumber
                   v-model="row.count"
@@ -247,6 +269,7 @@
                   controls-position="right"
                   class="w-full"
                   :disabled="isBuyerProductLocked"
+                  style="width: 120px"
                 />
               </template>
             </ElTableColumn>

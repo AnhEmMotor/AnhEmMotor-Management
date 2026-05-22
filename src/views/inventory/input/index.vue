@@ -156,6 +156,9 @@
                   <span v-else class="text-gray-400 text-xs">Chọn sản phẩm...</span>
                   <ElIcon class="text-gray-400 text-xs"><ArrowDown /></ElIcon>
                 </div>
+                <ElTag v-if="getProductColorName(row)" size="small" type="info" class="mt-1 w-fit">
+                  Màu: {{ getProductColorName(row) }}
+                </ElTag>
                 <div v-if="isVinManagedProduct(row)" class="flex items-center gap-2 mt-1">
                   <ElTag size="small" type="warning">
                     VIN {{ getVehicleIdentityProgress(row) }}
@@ -367,8 +370,32 @@
           <h4 class="text-sm font-semibold text-gray-700 mb-2">Danh sách sản phẩm nhập</h4>
           <ElTable :data="detailData.products" border size="small" class="w-full">
             <ElTableColumn type="index" label="STT" width="55" align="center" />
-            <ElTableColumn prop="name" label="Tên sản phẩm" minWidth="200" />
+            <ElTableColumn label="Tên sản phẩm" minWidth="220">
+              <template #default="{ row }">
+                <div class="flex flex-col gap-1">
+                  <span class="font-medium text-gray-800">{{ row.name }}</span>
+                  <ElTag v-if="row.productVarientColorName" size="small" type="info" class="w-fit">
+                    Màu: {{ row.productVarientColorName }}
+                  </ElTag>
+                </div>
+              </template>
+            </ElTableColumn>
             <ElTableColumn prop="quantity" label="Số lượng" width="100" align="center" />
+            <ElTableColumn label="Định danh xe" minWidth="220">
+              <template #default="{ row }">
+                <div v-if="row.vehicles?.length" class="flex flex-col gap-1 text-xs text-gray-600">
+                  <div
+                    v-for="vehicle in row.vehicles"
+                    :key="vehicle.id || `${vehicle.vinNumber}-${vehicle.engineNumber}`"
+                    class="rounded border border-gray-100 bg-gray-50 px-2 py-1"
+                  >
+                    <div><span class="text-gray-400">VIN:</span> {{ vehicle.vinNumber }}</div>
+                    <div><span class="text-gray-400">Số máy:</span> {{ vehicle.engineNumber }}</div>
+                  </div>
+                </div>
+                <span v-else class="text-gray-400">--</span>
+              </template>
+            </ElTableColumn>
             <ElTableColumn prop="importPrice" label="Đơn giá nhập" width="160" align="right">
               <template #default="{ row }">
                 <span>{{ formatCurrency(row.importPrice) }}</span>
@@ -656,6 +683,7 @@
   defineOptions({ name: 'InventoryInput' })
 
   type VehicleIdentification = {
+    id?: number
     vinNumber: string
     engineNumber: string
   }
@@ -664,6 +692,7 @@
     id?: number
     productVarientId: number | undefined
     productVarientColorId?: number
+    productVarientColorName?: string
     count: number
     inputPrice: number
     managementType?: string
@@ -704,7 +733,10 @@
   // Caches for display names
   const supplierCache = reactive(new Map<number, string>())
   const productCache = reactive(
-    new Map<number, { displayName: string; price?: number; managementType?: string }>()
+    new Map<
+      number,
+      { displayName: string; price?: number; managementType?: string; colorName?: string }
+    >()
   )
 
   const getSupplierNameById = (id?: number) => {
@@ -715,6 +747,12 @@
   const getProductNameById = (id?: number) => {
     if (!id) return ''
     return productCache.get(Number(id))?.displayName || `Sản phẩm #${id}`
+  }
+
+  const getProductColorName = (row: ReceiptProductRow) => {
+    return (
+      row.productVarientColorName || productCache.get(Number(row.productVarientId))?.colorName || ''
+    )
   }
 
   const isVinManagedVariant = (variant: ProductVariantLiteForInput) => {
@@ -903,10 +941,12 @@
     }
 
     const displayName = getVariantDisplayNameWithColor(variant)
+    const selectedColor = getSelectedVariantColor(variant)
     productCache.set(variant.id, {
       displayName,
       price: variant.price || 0,
-      managementType: variant.managementType
+      managementType: variant.managementType,
+      colorName: selectedColor?.colorName
     })
 
     if (productSelectorActiveRowIndex.value !== null) {
@@ -916,6 +956,7 @@
         const row = formData.value.products[idx]
         row.productVarientId = variant.id
         row.productVarientColorId = productVarientColorId
+        row.productVarientColorName = selectedColor?.colorName
         row.inputPrice = variant.price || 0
         row.managementType = variant.managementType
         syncVehicleRows(row)
@@ -927,6 +968,7 @@
       if (lastRow && lastRow.productVarientId === undefined) {
         lastRow.productVarientId = variant.id
         lastRow.productVarientColorId = productVarientColorId
+        lastRow.productVarientColorName = selectedColor?.colorName
         lastRow.inputPrice = variant.price || 0
         lastRow.managementType = variant.managementType
         syncVehicleRows(lastRow)
@@ -934,6 +976,7 @@
         const newRow: ReceiptProductRow = {
           productVarientId: variant.id,
           productVarientColorId,
+          productVarientColorName: selectedColor?.colorName,
           count: 1,
           inputPrice: variant.price || 0,
           managementType: variant.managementType
@@ -1213,7 +1256,9 @@
       ;(receipt.products || []).forEach((p) => {
         productCache.set(p.productVarientId, {
           displayName: p.name || `Sản phẩm #${p.productVarientId}`,
-          price: p.importPrice
+          price: p.importPrice,
+          managementType: p.vehicles?.length ? VIN_MANAGEMENT_TYPE : undefined,
+          colorName: p.productVarientColorName
         })
       })
 
@@ -1226,8 +1271,15 @@
           id: p.id,
           productVarientId: p.productVarientId,
           productVarientColorId: p.productVarientColorId,
+          productVarientColorName: p.productVarientColorName,
           count: p.quantity || 1,
-          inputPrice: p.importPrice || 0
+          inputPrice: p.importPrice || 0,
+          managementType: p.vehicles?.length ? VIN_MANAGEMENT_TYPE : undefined,
+          vehicles: (p.vehicles || []).map((vehicle) => ({
+            id: vehicle.id,
+            vinNumber: vehicle.vinNumber || '',
+            engineNumber: vehicle.engineNumber || ''
+          }))
         }))
       }
       dialogVisible.value = true
@@ -1427,6 +1479,7 @@
         inputPrice: p.inputPrice,
         vehicles: isVinManagedProduct(p)
           ? p.vehicles?.map((vehicle) => ({
+              id: vehicle.id,
               vinNumber: vehicle.vinNumber.trim(),
               engineNumber: vehicle.engineNumber.trim()
             }))

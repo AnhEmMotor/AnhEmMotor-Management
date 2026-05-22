@@ -2,6 +2,7 @@ export interface InputInfo {
   id?: number
   productVarientId: number
   productVarientColorId?: number
+  productVarientColorName?: string
   name?: string
   quantity: number // backend uses Quantity for response, Count for request
   unitPrice?: number
@@ -9,6 +10,11 @@ export interface InputInfo {
   discount?: number
   total?: number
   remainingCount?: number
+  vehicles?: Array<{
+    id?: number
+    vinNumber: string
+    engineNumber: string
+  }>
 }
 
 export interface InventoryReceipt {
@@ -42,6 +48,7 @@ export interface CreateInventoryReceipt {
     count: number
     inputPrice: number
     vehicles?: Array<{
+      id?: number
       vinNumber: string
       engineNumber: string
     }>
@@ -58,5 +65,10 @@ export interface UpdateInventoryReceipt {
     productVarientColorId?: number
     count: number
     inputPrice: number
+    vehicles?: Array<{
+      id?: number
+      vinNumber: string
+      engineNumber: string
+    }>
   }>
 }
