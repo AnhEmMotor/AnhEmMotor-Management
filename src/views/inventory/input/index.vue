@@ -177,6 +177,7 @@
                   :precision="0"
                   class="w-full"
                   controls-position="right"
+                  style="width: 120px"
                   @change="handleProductCountChange(row)"
                 />
               </template>
@@ -1021,7 +1022,6 @@
   ])
 
   const columns = ref([
-    { label: 'STT', type: 'index' as const, width: 70, align: 'center' },
     { label: 'Thời gian tạo', prop: 'createdAt', useSlot: true, width: 170 },
     { label: 'Nhà cung cấp', prop: 'supplierName', minWidth: 180 },
     { label: 'Tóm tắt SP', prop: 'productSummary', useSlot: true, minWidth: 200 },

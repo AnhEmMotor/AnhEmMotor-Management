@@ -160,7 +160,7 @@
         {
           prop: 'userName',
           label: 'Tên đăng nhập',
-          minWidth: 120
+          minWidth: 150
         },
         {
           prop: 'gender',

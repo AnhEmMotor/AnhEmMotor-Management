@@ -285,7 +285,7 @@ export function useProductTable() {
         { prop: 'cover_image_url', label: 'Hình ảnh', width: 120, align: 'left', useSlot: true },
         { prop: 'name', label: 'Sản phẩm', minWidth: 250, useSlot: true },
         { prop: 'brand', label: 'Thương hiệu', width: 150 },
-        { prop: 'category', label: 'Thể loại', width: 150 },
+        { prop: 'category', label: 'Thể loại', width: 180 },
         { prop: 'origin', label: 'Xuất xứ', width: 120 },
         { prop: 'stock', label: 'Tồn kho', width: 100, align: 'center' },
         {

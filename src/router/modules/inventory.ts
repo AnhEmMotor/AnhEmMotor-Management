@@ -20,11 +20,29 @@ export const inventoryRoutes: AppRouteRecord = {
       }
     },
     {
+      path: 'quotation',
+      name: 'InventoryQuotation',
+      component: '/inventory/quotation/index',
+      meta: {
+        title: 'menus.inventory.quotation',
+        icon: 'ri:file-text-line'
+      }
+    },
+    {
       path: 'input',
       name: 'InventoryInput',
       component: '/inventory/input/index',
       meta: {
         title: 'menus.inventory.input',
+        icon: 'ri:file-list-3-line'
+      }
+    },
+    {
+      path: 'input-new',
+      name: 'InventoryInputNew',
+      component: '/inventory/input-new/index',
+      meta: {
+        title: 'Phiếu nhập mới (Demo)',
         icon: 'ri:file-list-3-line'
       }
     },
@@ -35,6 +53,24 @@ export const inventoryRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.inventory.debt',
         icon: 'ri:money-cny-box-line'
+      }
+    },
+    {
+      path: 'in-out-stock',
+      name: 'InventoryInOutStock',
+      component: '/inventory/in-out-stock/index',
+      meta: {
+        title: 'menus.inventory.inOutStock',
+        icon: 'ri:line-chart-line'
+      }
+    },
+    {
+      path: 'ledger',
+      name: 'InventoryLedger',
+      component: '/inventory/ledger/index',
+      meta: {
+        title: 'menus.inventory.ledger',
+        icon: 'ri:book-3-line'
       }
     }
   ]

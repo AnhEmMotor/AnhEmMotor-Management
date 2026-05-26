@@ -96,7 +96,7 @@ export function useCategoryTable() {
       columnsFactory: () => [
         { prop: 'imageUrl', label: 'Hình ảnh', width: 120, useSlot: true, align: 'left' },
         { prop: 'name', label: 'Tên thể loại', minWidth: 220, useSlot: true },
-        { prop: 'slug', label: 'Slug', width: 180 },
+        { prop: 'slug', label: 'Slug', width: 300 },
         { prop: 'managementType', label: 'Loại quản lý', width: 180, useSlot: true },
         { prop: 'productCount', label: 'Số sản phẩm', width: 120, align: 'center' },
         { prop: 'isActive', label: 'Trạng thái', width: 120, useSlot: true, align: 'center' },

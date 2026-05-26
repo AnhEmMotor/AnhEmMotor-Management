@@ -5,25 +5,17 @@ import { $t } from '@/i18n'
 
 export interface ErrorResponse {
   code: number
-
   msg: string
-
   data?: unknown
 }
 
 export interface ErrorLogData {
   code: number
-
   message: string
-
   data?: unknown
-
   timestamp: string
-
   url?: string
-
   method?: string
-
   stack?: string
 }
 
@@ -119,8 +111,6 @@ export function showError(error: HttpError, showMessage: boolean = true): void {
       position: 'bottom-right'
     })
   }
-
-  console.error('[HTTP Error]', error.toLogData())
 }
 
 export function showSuccess(message: string, showMessage: boolean = true): void {

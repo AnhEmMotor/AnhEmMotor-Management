@@ -1,43 +1,45 @@
 <template>
   <div class="art-table" :class="{ 'is-empty': isEmpty }" :style="containerHeight">
     <ElTable ref="elTableRef" v-loading="!!loading" v-bind="mergedTableProps">
-      <template v-for="col in columns" :key="col.prop || col.type">
-        <ElTableColumn v-if="col.type === 'globalIndex'" v-bind="{ ...col }">
-          <template #default="{ $index }">
-            <span>{{ getGlobalIndex($index) }}</span>
-          </template>
-        </ElTableColumn>
+      <template #default>
+        <template v-for="col in columns" :key="col.prop || col.type">
+          <ElTableColumn v-if="col.type === 'globalIndex'" v-bind="{ ...col }">
+            <template #default="{ $index }">
+              <span>{{ getGlobalIndex($index) }}</span>
+            </template>
+          </ElTableColumn>
 
-        <ElTableColumn v-else-if="col.type === 'expand'" v-bind="cleanColumnProps(col)">
-          <template #default="{ row }">
-            <component :is="col.formatter ? col.formatter(row) : null" />
-          </template>
-        </ElTableColumn>
+          <ElTableColumn v-else-if="col.type === 'expand'" v-bind="cleanColumnProps(col)">
+            <template #default="{ row }">
+              <component :is="col.formatter ? col.formatter(row) : null" />
+            </template>
+          </ElTableColumn>
 
-        <ElTableColumn v-else v-bind="cleanColumnProps(col)">
-          <template v-if="col.useHeaderSlot && col.prop" #header="headerScope">
-            <slot
-              :name="col.headerSlotName || `${col.prop}-header`"
-              v-bind="{ ...headerScope, prop: col.prop, label: col.label }"
-            >
-              {{ col.label }}
-            </slot>
-          </template>
-          <template v-if="col.useSlot && col.prop" #default="slotScope">
-            <slot
-              v-if="shouldRenderSlotScope(slotScope)"
-              :name="col.slotName || col.prop"
-              v-bind="{
-                ...slotScope,
-                prop: col.prop,
-                value: col.prop ? slotScope.row[col.prop] : undefined
-              }"
-            />
-          </template>
-        </ElTableColumn>
+          <ElTableColumn v-else v-bind="cleanColumnProps(col)">
+            <template v-if="col.useHeaderSlot && col.prop" #header="headerScope">
+              <slot
+                :name="col.headerSlotName || `${col.prop}-header`"
+                v-bind="{ ...headerScope, prop: col.prop, label: col.label }"
+              >
+                {{ col.label }}
+              </slot>
+            </template>
+            <template v-if="col.useSlot && col.prop" #default="slotScope">
+              <slot
+                v-if="shouldRenderSlotScope(slotScope)"
+                :name="col.slotName || col.prop"
+                v-bind="{
+                  ...slotScope,
+                  prop: col.prop,
+                  value: col.prop ? slotScope.row[col.prop] : undefined
+                }"
+              />
+            </template>
+          </ElTableColumn>
+        </template>
+
+        <slot v-if="$slots.default" />
       </template>
-
-      <template v-if="$slots.default" #default><slot /></template>
 
       <template #empty>
         <div v-if="loading"></div>

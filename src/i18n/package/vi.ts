@@ -33,7 +33,7 @@ export default {
     }
   },
   common: {
-    tips: 'Xác nhận đăng xuất?',
+    tips: 'Có lỗi xảy ra',
     cancel: 'Hủy',
     confirm: 'Xác nhận',
     logOutTips: 'Bạn có chắc chắn muốn đăng xuất không?'
@@ -217,10 +217,13 @@ export default {
   },
   menus: {
     inventory: {
-      title: 'Nhà cung cấp & kho',
-      supplier: 'Quản lý đối tác',
-      input: 'Quản lý phiếu nhập',
-      debt: 'Quản lý công nợ'
+      title: 'Quản lý kho hàng',
+      supplier: 'Đối tác',
+      input: 'Phiếu nhập',
+      debt: 'Công nợ',
+      quotation: 'Báo giá',
+      inOutStock: 'Xuất - nhập - tồn',
+      ledger: 'Sổ cái tồn kho'
     },
     login: {
       title: 'Đăng nhập'
