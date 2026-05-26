@@ -221,7 +221,9 @@ export default {
       supplier: 'Đối tác',
       input: 'Phiếu nhập',
       debt: 'Công nợ',
-      quotation: 'Báo giá'
+      quotation: 'Báo giá',
+      inOutStock: 'Xuất - nhập - tồn',
+      ledger: 'Sổ cái tồn kho'
     },
     login: {
       title: 'Đăng nhập'

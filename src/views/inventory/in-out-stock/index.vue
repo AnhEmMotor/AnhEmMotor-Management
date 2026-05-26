@@ -49,8 +49,6 @@
         <template #left>
           <div class="flex items-center gap-2">
             <h4 class="m-0 font-bold text-gray-800 text-lg">Báo cáo Xuất - Nhập - Tồn</h4>
-            <ElTag size="small" type="info" effect="plain" round>Tĩnh & Demo</ElTag>
-            <!-- Export Button -->
             <ElButton type="primary" :loading="exporting" @click="handleExport" class="ml-4">
               <ElIcon class="mr-1"><Download /></ElIcon> Xuất báo cáo
             </ElButton>
@@ -72,25 +70,6 @@
         <!-- Custom slot for product/variant/color name with indentation support and icon indicators -->
         <template #name="{ row }">
           <span class="inline-flex items-center gap-2 text-left align-middle">
-            <span
-              v-if="row.level === 0"
-              class="inline-flex items-center justify-center p-1 rounded bg-primary/10 text-primary"
-            >
-              <ElIcon size="14"><i class="ri-motorbike-line"></i></ElIcon>
-            </span>
-            <span
-              v-else-if="row.level === 1"
-              class="inline-flex items-center justify-center p-1 rounded bg-success/10 text-success"
-            >
-              <ElIcon size="14"><i class="ri-settings-4-line"></i></ElIcon>
-            </span>
-            <span
-              v-else
-              class="inline-flex items-center justify-center p-1 rounded bg-info/10 text-info"
-            >
-              <ElIcon size="14"><i class="ri-palette-line"></i></ElIcon>
-            </span>
-
             <span :class="getNameClass(row)">{{ row.name }}</span>
           </span>
         </template>

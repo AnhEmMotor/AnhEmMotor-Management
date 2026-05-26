@@ -214,7 +214,9 @@
       "supplier": "Nhà cung cấp",
       "input": "Nhập Kho",
       "debt": "Công nợ",
-      "quotation": "Quản lý báo giá"
+      "quotation": "Quản lý báo giá",
+      "inOutStock": "Báo cáo xuất - nhập - tồn",
+      "ledger": "Sổ cái tồn kho"
     },
     "login": {
       "title": "Đăng nhập"

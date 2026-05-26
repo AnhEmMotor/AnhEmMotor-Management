@@ -38,12 +38,39 @@ export const inventoryRoutes: AppRouteRecord = {
       }
     },
     {
+      path: 'input-new',
+      name: 'InventoryInputNew',
+      component: '/inventory/input-new/index',
+      meta: {
+        title: 'Phiếu nhập mới (Demo)',
+        icon: 'ri:file-list-3-line'
+      }
+    },
+    {
       path: 'debt',
       name: 'InventoryDebt',
       component: '/inventory/debt/index',
       meta: {
         title: 'menus.inventory.debt',
         icon: 'ri:money-cny-box-line'
+      }
+    },
+    {
+      path: 'in-out-stock',
+      name: 'InventoryInOutStock',
+      component: '/inventory/in-out-stock/index',
+      meta: {
+        title: 'menus.inventory.inOutStock',
+        icon: 'ri:line-chart-line'
+      }
+    },
+    {
+      path: 'ledger',
+      name: 'InventoryLedger',
+      component: '/inventory/ledger/index',
+      meta: {
+        title: 'menus.inventory.ledger',
+        icon: 'ri:book-3-line'
       }
     }
   ]

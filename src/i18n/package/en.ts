@@ -215,6 +215,15 @@ export default {
     gohome: 'Go Home'
   },
   menus: {
+    inventory: {
+      title: 'Inventory Management',
+      supplier: 'Suppliers',
+      input: 'Goods Receipts',
+      debt: 'Debts',
+      quotation: 'Quotations',
+      inOutStock: 'Import-Export-Inventory',
+      ledger: 'Stock Ledger'
+    },
     login: {
       title: 'Login'
     },
