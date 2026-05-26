@@ -33,7 +33,7 @@ export default {
     }
   },
   common: {
-    tips: 'Xác nhận đăng xuất?',
+    tips: 'Có lỗi xảy ra',
     cancel: 'Hủy',
     confirm: 'Xác nhận',
     logOutTips: 'Bạn có chắc chắn muốn đăng xuất không?'

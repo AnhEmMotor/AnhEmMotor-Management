@@ -54,6 +54,9 @@ export function setupBeforeEachGuard(router: Router): void {
 
       const currentRoute = router.currentRoute.value
       if (currentRoute.matched.length > 0) {
+        if (isStaticRoute(currentRoute.path)) {
+          return
+        }
         const hasAccess = RoutePermissionValidator.hasPermission(currentRoute.path, menuList)
         if (!hasAccess) {
           const { homePath } = useCommon()
@@ -140,9 +143,41 @@ function handleLoginStatus(
   }
 
   userStore.logOut()
+
+  if (to.path === '/') {
+    return {
+      name: 'Login'
+    }
+  }
+
+  let redirectUrl = to.fullPath
+  if (to.query && to.query.redirect) {
+    let target = to.query.redirect as string
+    while (target.includes('/login') || target.includes('redirect=')) {
+      const match = target.match(/[?&]redirect=([^&]+)/)
+      if (match && match[1]) {
+        target = decodeURIComponent(match[1])
+      } else {
+        target = '/'
+        break
+      }
+    }
+    redirectUrl = target
+  }
+
+  if (
+    redirectUrl === '/' ||
+    redirectUrl.includes('/login') ||
+    redirectUrl.includes(RoutesAlias.Login)
+  ) {
+    return {
+      name: 'Login'
+    }
+  }
+
   return {
     name: 'Login',
-    query: { redirect: to.fullPath }
+    query: { redirect: redirectUrl }
   }
 }
 
@@ -177,10 +212,11 @@ async function handleDynamicRoutes(to: RouteLocationNormalized, router: Router):
   loadingService.showLoading()
 
   try {
-    const [, menuList] = await Promise.all([fetchUserInfo(), menuProcessor.getMenuList()])
+    await fetchUserInfo()
+    const menuList = await menuProcessor.getMenuList()
 
     if (!menuProcessor.validateMenuList(menuList)) {
-      throw new Error('LấyMenuDanh sáchThatBai，Vui lòngtrùngmớiĐăng nhập')
+      throw new Error('Lấy danh sách menu thất bại, vui lòng đăng nhập lại')
     }
 
     routeRegistry?.register(menuList)
