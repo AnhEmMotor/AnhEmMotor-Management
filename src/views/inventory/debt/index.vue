@@ -27,7 +27,7 @@
     <ElCard class="flex-1 art-table-card">
       <template #header>
         <div class="flex items-center gap-4">
-          <h4 class="m-0">Quản lý Công nợ & Cam kết (Mục 7.3)</h4>
+          <h4 class="m-0">Quản lý Công nợ & Cam kết</h4>
           <ElRadioGroup v-model="activeTab" size="small">
             <ElRadioButton label="suppliers">Công nợ NCC</ElRadioButton>
             <ElRadioButton label="banks">Đối tác Ngân hàng</ElRadioButton>

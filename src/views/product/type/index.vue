@@ -76,7 +76,6 @@
             >
               {{ row.name }}
             </span>
-            <span class="text-[10px] text-gray-400">ID: {{ row.id }}</span>
           </div>
         </template>
 

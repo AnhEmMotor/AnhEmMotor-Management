@@ -20,6 +20,15 @@ export const inventoryRoutes: AppRouteRecord = {
       }
     },
     {
+      path: 'quotation',
+      name: 'InventoryQuotation',
+      component: '/inventory/quotation/index',
+      meta: {
+        title: 'menus.inventory.quotation',
+        icon: 'ri:file-text-line'
+      }
+    },
+    {
       path: 'input',
       name: 'InventoryInput',
       component: '/inventory/input/index',

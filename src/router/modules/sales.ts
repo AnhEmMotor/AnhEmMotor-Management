@@ -11,6 +11,16 @@ export const salesRoutes: AppRouteRecord = {
   },
   children: [
     {
+      path: 'draft-orders',
+      name: 'DraftSalesOrders',
+      component: '/sales/draft/index',
+      meta: {
+        title: 'Phiếu tạm',
+        icon: 'ri:file-list-3-line',
+        keepAlive: true
+      }
+    },
+    {
       path: 'orders',
       name: 'SalesOrders',
       component: '/sales/order/index',

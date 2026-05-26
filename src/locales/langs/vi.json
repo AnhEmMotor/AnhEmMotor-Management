@@ -213,7 +213,8 @@
       "title": "Quản lý kho",
       "supplier": "Nhà cung cấp",
       "input": "Nhập Kho",
-      "debt": "Công nợ"
+      "debt": "Công nợ",
+      "quotation": "Quản lý báo giá"
     },
     "login": {
       "title": "Đăng nhập"

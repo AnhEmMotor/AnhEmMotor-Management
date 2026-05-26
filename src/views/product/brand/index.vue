@@ -78,7 +78,6 @@
         <template #name="{ row }">
           <div class="flex flex-col">
             <span class="font-bold text-gray-800">{{ row.name }}</span>
-            <span class="text-[11px] text-gray-400">ID: {{ row.id }}</span>
           </div>
         </template>
 

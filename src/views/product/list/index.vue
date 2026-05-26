@@ -86,7 +86,6 @@
             >
             <span class="text-[11px] text-gray-400 mt-1 text-left">
               <span v-if="row.isVariant">SKU: {{ row.sku }}</span>
-              <span v-else>ID: #{{ row.id }}</span>
             </span>
           </div>
         </template>

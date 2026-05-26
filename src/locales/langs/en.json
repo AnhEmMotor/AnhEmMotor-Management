@@ -213,7 +213,8 @@
       "title": "Inventory Management",
       "supplier": "Suppliers",
       "input": "Inventory Input",
-      "debt": "Debt Management"
+      "debt": "Debt Management",
+      "quotation": "Quotation"
     },
     "login": {
       "title": "Login"

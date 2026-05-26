@@ -217,10 +217,11 @@ export default {
   },
   menus: {
     inventory: {
-      title: 'Nhà cung cấp & kho',
-      supplier: 'Quản lý đối tác',
-      input: 'Quản lý phiếu nhập',
-      debt: 'Quản lý công nợ'
+      title: 'Quản lý kho hàng',
+      supplier: 'Đối tác',
+      input: 'Phiếu nhập',
+      debt: 'Công nợ',
+      quotation: 'Báo giá'
     },
     login: {
       title: 'Đăng nhập'
