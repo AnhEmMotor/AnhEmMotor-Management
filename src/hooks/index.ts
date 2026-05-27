@@ -19,3 +19,5 @@ export { useHeaderBar } from './core/useHeaderBar'
 export { useChart, useChartComponent, useChartOps } from './core/useChart'
 
 export { useLayoutHeight, useAutoLayoutHeight } from './core/useLayoutHeight'
+
+export { usePermission } from './core/usePermission'

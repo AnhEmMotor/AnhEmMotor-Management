@@ -122,14 +122,15 @@
                 <ElIcon><Close /></ElIcon>
               </ElButton>
             </ElTooltip>
-            <ElTooltip content="Xóa" placement="top">
-              <ElButton
-                circle
-                size="small"
-                type="danger"
-                v-auth="Permissions.QuotationsDelete"
-                @click="handleDelete(row)"
-              >
+            <ElTooltip
+              v-if="
+                hasPermission(Permissions.QuotationsDelete) &&
+                (row.status !== 'approved' || hasPermission(Permissions.QuotationsApprove))
+              "
+              content="Xóa"
+              placement="top"
+            >
+              <ElButton circle size="small" type="danger" @click="handleDelete(row)">
                 <ElIcon><Delete /></ElIcon>
               </ElButton>
             </ElTooltip>
@@ -610,12 +611,11 @@
     QuotationSummaryResponse
   } from '@/domain/inventory/quotation.types'
   import { Permissions } from '@/domain/constants/permissions'
-  import { useUserStore } from '@/store/modules/user'
+  import { usePermission } from '@/hooks'
 
   defineOptions({ name: 'InventoryQuotation' })
 
-  const userStore = useUserStore()
-  const hasPermission = (permission: string) => userStore.info?.buttons?.includes(permission)
+  const { hasPermission } = usePermission()
 
   interface QuotationProductRow {
     id?: number
@@ -1010,7 +1010,6 @@
         const command = {
           id: formData.value.id,
           supplierId: formData.value.supplierId,
-          status: formData.value.status,
           notes: formData.value.note,
           products: formData.value.quotationItems.map((item: any) => ({
             id: item.id,
@@ -1026,7 +1025,6 @@
       } else {
         const command = {
           supplierId: formData.value.supplierId,
-          status: formData.value.status,
           notes: formData.value.note,
           products: formData.value.quotationItems.map((item: any) => ({
             productVariantId: String(item.productVariantId),

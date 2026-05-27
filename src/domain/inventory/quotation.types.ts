@@ -48,7 +48,6 @@ export interface QuotationListResponse {
 
 export interface CreateQuotationCommand {
   supplierId?: number
-  status?: string
   notes?: string
   products: QuotationItemRequest[]
 }
@@ -56,7 +55,6 @@ export interface CreateQuotationCommand {
 export interface UpdateQuotationCommand {
   id?: number
   supplierId?: number
-  status?: string
   notes?: string
   products: UpdateQuotationItemRequest[]
 }
