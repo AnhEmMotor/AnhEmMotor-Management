@@ -6,7 +6,7 @@ export const FileApi = {
     formData.append('file', file)
 
     return request.post<any>({
-      url: '/api/MediaFile/product/upload',
+      url: '/api/v1/MediaFile/product/upload',
       data: formData,
       headers: {
         'Content-Type': 'multipart/form-data'
@@ -19,7 +19,7 @@ export const FileApi = {
     formData.append('file', file)
 
     return request.post<any>({
-      url: '/api/MediaFile/news/upload',
+      url: '/api/v1/MediaFile/news/upload',
       data: formData,
       headers: {
         'Content-Type': 'multipart/form-data'

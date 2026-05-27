@@ -1,5 +1,5 @@
 import { useTable } from '@/hooks/core/useTable'
-import { CategoryApi } from '@/api/product/category.api'
+import { CategoryApi } from '@/api/category.api'
 import { ref, computed, onMounted, watch } from 'vue'
 import type { ProductCategory } from '@/domain/product/category.types'
 import { ElMessage, ElMessageBox } from 'element-plus'

@@ -9,7 +9,7 @@ export const ProductApi = {
   getList(params: any) {
     const { current, size, ...rest } = params
     return request.get<ProductList>({
-      url: '/api/Product/for-manager',
+      url: '/api/v1/Product/for-manager',
       params: {
         Page: current,
         PageSize: size,
@@ -20,7 +20,7 @@ export const ProductApi = {
 
   exportProducts(params: any) {
     return request.get({
-      url: '/api/Product/export',
+      url: '/api/v1/Product/export',
       params,
       responseType: 'blob' as const
     })
@@ -28,34 +28,34 @@ export const ProductApi = {
 
   getById(id: number) {
     return request.get<Product>({
-      url: `/api/Product/${id}/for-manager`
+      url: `/api/v1/Product/${id}/for-manager`
     })
   },
 
   create(data: Partial<Product>) {
     return request.post<Product>({
-      url: '/api/Product',
+      url: '/api/v1/Product',
       data
     })
   },
 
   update(id: number, data: Partial<Product>) {
     return request.put<Product>({
-      url: `/api/Product/${id}`,
+      url: `/api/v1/Product/${id}`,
       data
     })
   },
 
   delete(id: number) {
     return request.del({
-      url: `/api/Product/${id}`
+      url: `/api/v1/Product/${id}`
     })
   },
 
   getVariantsForInput(params: any) {
     const { current, size, ...rest } = params
     return request.get<ProductVariantLiteForInputList>({
-      url: '/api/Product/variants-lite/for-input',
+      url: '/api/v1/Product/variants-lite/for-input',
       params: {
         Page: current,
         PageSize: size,
@@ -67,7 +67,7 @@ export const ProductApi = {
   getVariantsForOutput(params: any) {
     const { current, size, ...rest } = params
     return request.get<ProductVariantLiteForInputList>({
-      url: '/api/Product/variants-lite/for-output',
+      url: '/api/v1/Product/variants-lite/for-output',
       params: {
         Page: current,
         PageSize: size,
@@ -78,7 +78,7 @@ export const ProductApi = {
 
   getPredefinedOptions() {
     return request.get<Record<string, string>>({
-      url: '/api/Product/predefined-options'
+      url: '/api/v1/Product/predefined-options'
     })
   }
 }

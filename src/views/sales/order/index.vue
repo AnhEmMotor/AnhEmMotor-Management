@@ -451,7 +451,7 @@
   import { Delete, Edit, Plus, Switch } from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { SalesOrderApi } from '@/api/sales-order.api'
-  import { ProductApi } from '@/api/product/product.api'
+  import { ProductApi } from '@/api/product.api'
   import { fetchGetUserList } from '@/api/system-manage'
   import { Permissions } from '@/domain/constants/permissions'
   import type {

@@ -43,10 +43,6 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (request: InternalAxiosRequestConfig) => {
-    if (request.url?.startsWith('/api/')) {
-      request.url = request.url.replace(/^\/api\//, '/api/v1/')
-    }
-
     const userStore = useUserStore()
     if (userStore.accessToken)
       request.headers.set('Authorization', `Bearer ${userStore.accessToken}`)

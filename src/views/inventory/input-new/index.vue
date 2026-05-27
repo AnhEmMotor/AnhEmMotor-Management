@@ -588,7 +588,7 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useDebounceFn } from '@vueuse/core'
   import { SupplierApi } from '@/api/supplier.api'
-  import { ProductApi } from '@/api/product/product.api'
+  import { ProductApi } from '@/api/product.api'
   import type { ProductVariantLiteForInput } from '@/domain/product/product.types'
 
   defineOptions({ name: 'InventoryInputNew' })
