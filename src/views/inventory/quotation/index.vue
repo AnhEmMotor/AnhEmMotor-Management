@@ -375,10 +375,7 @@
               hasPermission(Permissions.QuotationsSend)
             "
             type="primary"
-            @click="
-              handleSend(detailData)
-              detailDialogVisible = false
-            "
+            @click="handleSendAndClose(detailData)"
           >
             Gửi báo giá
           </ElButton>
@@ -389,10 +386,7 @@
               hasPermission(Permissions.QuotationsApprove)
             "
             type="success"
-            @click="
-              handleApprove(detailData)
-              detailDialogVisible = false
-            "
+            @click="handleApproveAndClose(detailData)"
           >
             Xác nhận
           </ElButton>
@@ -403,10 +397,7 @@
               hasPermission(Permissions.QuotationsApprove)
             "
             type="danger"
-            @click="
-              handleReject(detailData)
-              detailDialogVisible = false
-            "
+            @click="handleRejectAndClose(detailData)"
           >
             Từ chối / Hủy
           </ElButton>
@@ -1010,6 +1001,21 @@
       console.error('Failed to load quotation detail', err)
       ElMessage.error('Không thể tải chi tiết báo giá')
     }
+  }
+
+  const handleSendAndClose = (row: QuotationDetailResponse) => {
+    handleSend(row)
+    detailDialogVisible.value = false
+  }
+
+  const handleApproveAndClose = (row: QuotationDetailResponse) => {
+    handleApprove(row)
+    detailDialogVisible.value = false
+  }
+
+  const handleRejectAndClose = (row: QuotationDetailResponse) => {
+    handleReject(row)
+    detailDialogVisible.value = false
   }
 
   const submitForm = async () => {
