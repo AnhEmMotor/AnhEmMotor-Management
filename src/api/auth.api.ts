@@ -2,33 +2,33 @@ import request from '@/utils/http'
 
 export function fetchLogin(params: Api.Auth.LoginParams) {
   return request.post<Api.Auth.LoginResponse>({
-    url: '/api/auth/login/for-manager',
+    url: '/api/v1/auth/login/for-manager',
     params
   })
 }
 
 export function fetchGoogleLogin(params: Api.Auth.GoogleLoginParams) {
   return request.post<Api.Auth.LoginResponse>({
-    url: '/api/auth/google',
+    url: '/api/v1/auth/google',
     params
   })
 }
 
 export function fetchFacebookLogin(params: Api.Auth.FacebookLoginParams) {
   return request.post<Api.Auth.LoginResponse>({
-    url: '/api/auth/facebook',
+    url: '/api/v1/auth/facebook',
     params
   })
 }
 
 export function fetchExternalAuthConfig() {
   return request.get<Api.Auth.ExternalAuthConfigResponse>({
-    url: '/api/auth/external-config'
+    url: '/api/v1/auth/external-config'
   })
 }
 
 export function fetchGetUserInfo() {
   return request.get<any>({
-    url: '/api/user/me'
+    url: '/api/v1/user/me'
   })
 }

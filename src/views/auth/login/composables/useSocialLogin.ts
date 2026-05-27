@@ -1,4 +1,4 @@
-import { fetchExternalAuthConfig, fetchGoogleLogin, fetchFacebookLogin } from '@/api/auth'
+import { fetchExternalAuthConfig, fetchGoogleLogin, fetchFacebookLogin } from '@/api/auth.api'
 import { useUserStore } from '@/store/modules/user'
 import { ElMessage } from 'element-plus'
 

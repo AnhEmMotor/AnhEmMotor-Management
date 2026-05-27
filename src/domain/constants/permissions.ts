@@ -69,7 +69,13 @@ export const Permissions = {
   HRDelete: 'Permissions.HR.Delete',
   PayrollView: 'Permissions.Payroll.View',
   PayrollConfigure: 'Permissions.Payroll.Configure',
-  PayrollApprove: 'Permissions.Payroll.Approve'
+  PayrollApprove: 'Permissions.Payroll.Approve',
+  QuotationsView: 'Permissions.Quotations.View',
+  QuotationsCreate: 'Permissions.Quotations.Create',
+  QuotationsEdit: 'Permissions.Quotations.Edit',
+  QuotationsDelete: 'Permissions.Quotations.Delete',
+  QuotationsSend: 'Permissions.Quotations.Send',
+  QuotationsApprove: 'Permissions.Quotations.Approve'
 }
 
 export const ALL_PERMISSIONS: string[] = Object.values(Permissions)

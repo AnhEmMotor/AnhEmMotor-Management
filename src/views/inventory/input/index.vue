@@ -662,7 +662,7 @@
   import { useDebounceFn } from '@vueuse/core'
   import { InventoryReceiptApi } from '@/api/inventory-receipt.api'
   import { SupplierApi } from '@/api/supplier.api'
-  import { ProductApi } from '@/api/product/product.api'
+  import { ProductApi } from '@/api/product.api'
   import { Permissions } from '@/domain/constants/permissions'
   import type { InventoryReceipt, InputInfo } from '@/domain/inventory/receipt.types'
   import type { Supplier } from '@/domain/supplier/supplier.types'

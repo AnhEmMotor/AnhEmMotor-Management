@@ -30,7 +30,12 @@
     <ElCard class="flex-1 p-4 art-table-card">
       <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
-          <ElButton type="primary" v-ripple @click="handleAdd">
+          <ElButton
+            type="primary"
+            v-ripple
+            v-auth="Permissions.QuotationsCreate"
+            @click="handleAdd"
+          >
             <ElIcon class="mr-1"><Plus /></ElIcon> Tạo báo giá mới
           </ElButton>
         </template>
@@ -38,14 +43,14 @@
 
       <ArtTable
         :loading="loading"
-        :data="filteredData"
+        :data="data"
         :columns="columns"
         :pagination="pagination"
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
         <template #createdAt="{ row }">
-          <span>{{ formatDateTime(row.createdAt) }}</span>
+          <span>{{ formatDateTime(row.lastUpdatedAt) }}</span>
         </template>
 
         <template #supplierName="{ row }">
@@ -57,7 +62,7 @@
         </template>
 
         <template #productCount="{ row }">
-          <span>{{ row.products?.length || 0 }} sản phẩm</span>
+          <span>{{ row.productCount || 0 }} sản phẩm</span>
         </template>
 
         <template #status="{ row }">
@@ -74,12 +79,57 @@
               </ElButton>
             </ElTooltip>
             <ElTooltip content="Chỉnh sửa" placement="top">
-              <ElButton circle size="small" type="primary" @click="handleEdit(row)">
+              <ElButton
+                circle
+                size="small"
+                type="primary"
+                v-auth="Permissions.QuotationsEdit"
+                @click="handleEdit(row)"
+              >
                 <ElIcon><Edit /></ElIcon>
               </ElButton>
             </ElTooltip>
+            <ElTooltip v-if="row.status === 'draft'" content="Gửi báo giá" placement="top">
+              <ElButton
+                circle
+                size="small"
+                type="success"
+                v-auth="Permissions.QuotationsSend"
+                @click="handleSend(row)"
+              >
+                <ElIcon><Promotion /></ElIcon>
+              </ElButton>
+            </ElTooltip>
+            <ElTooltip v-if="row.status === 'sent'" content="Xác nhận" placement="top">
+              <ElButton
+                circle
+                size="small"
+                type="success"
+                v-auth="Permissions.QuotationsApprove"
+                @click="handleApprove(row)"
+              >
+                <ElIcon><Check /></ElIcon>
+              </ElButton>
+            </ElTooltip>
+            <ElTooltip v-if="row.status === 'sent'" content="Từ chối / Hủy" placement="top">
+              <ElButton
+                circle
+                size="small"
+                type="warning"
+                v-auth="Permissions.QuotationsApprove"
+                @click="handleReject(row)"
+              >
+                <ElIcon><Close /></ElIcon>
+              </ElButton>
+            </ElTooltip>
             <ElTooltip content="Xóa" placement="top">
-              <ElButton circle size="small" type="danger" @click="handleDelete(row)">
+              <ElButton
+                circle
+                size="small"
+                type="danger"
+                v-auth="Permissions.QuotationsDelete"
+                @click="handleDelete(row)"
+              >
                 <ElIcon><Delete /></ElIcon>
               </ElButton>
             </ElTooltip>
@@ -101,8 +151,17 @@
         <div class="grid grid-cols-2 gap-4">
           <ElFormItem label="Nhà cung cấp" required class="col-span-2">
             <div
-              class="w-full border border-gray-300 rounded-md px-3 py-2 bg-white flex items-center justify-between cursor-pointer hover:border-primary transition duration-200"
-              @click="openSupplierSelector"
+              class="w-full border border-gray-300 rounded-md px-3 py-2 bg-white flex items-center justify-between transition duration-200"
+              :class="
+                formData.status === 'approved' || formData.status === 'rejected'
+                  ? 'bg-gray-100 cursor-not-allowed opacity-75'
+                  : 'cursor-pointer hover:border-primary'
+              "
+              @click="
+                formData.status !== 'approved' &&
+                formData.status !== 'rejected' &&
+                openSupplierSelector()
+              "
             >
               <span v-if="formData.supplierId" class="text-gray-800 font-medium">
                 {{ formData.supplierName || 'Nhà cung cấp đã chọn' }}
@@ -115,18 +174,15 @@
 
         <div class="grid grid-cols-2 gap-4">
           <ElFormItem label="Trạng thái">
-            <ElSelect v-model="formData.status" class="w-full">
-              <ElOption label="Nháp" value="draft" />
-              <ElOption label="Đã gửi" value="sent" />
-              <ElOption label="Đã duyệt" value="approved" />
-              <ElOption label="Đã từ chối" value="rejected" />
-            </ElSelect>
+            <ElTag :type="getStatusTagType(formData.status)" size="default" class="font-medium">
+              {{ getStatusLabel(formData.status) }}
+            </ElTag>
           </ElFormItem>
         </div>
 
         <ElFormItem label="Ghi chú">
           <ElInput
-            v-model="formData.notes"
+            v-model="formData.note"
             type="textarea"
             :rows="2"
             placeholder="Nhập ghi chú hoặc điều khoản báo giá..."
@@ -140,28 +196,43 @@
               type="success"
               size="small"
               plain
-              :disabled="!formData.supplierId"
+              :disabled="
+                !formData.supplierId ||
+                formData.status === 'approved' ||
+                formData.status === 'rejected'
+              "
               @click="handleAddProductRow"
             >
               <ElIcon class="mr-1"><Plus /></ElIcon> Thêm sản phẩm
             </ElButton>
           </div>
 
-          <ElTable :data="formData.products" border size="small" class="w-full">
+          <ElTable :data="formData.quotationItems" border size="small" class="w-full">
             <ElTableColumn label="Sản phẩm" required>
               <template #default="{ row, $index }">
                 <div
-                  class="w-full border border-gray-300 rounded px-2 py-1 bg-white flex items-center justify-between cursor-pointer hover:border-primary transition duration-200 min-h-[32px]"
-                  @click="openProductSelector($index)"
+                  class="w-full border border-gray-300 rounded px-2 py-1 bg-white flex items-center justify-between transition duration-200 min-h-[32px]"
+                  :class="
+                    formData.status === 'approved' || formData.status === 'rejected'
+                      ? 'bg-gray-100 cursor-not-allowed opacity-75'
+                      : 'cursor-pointer hover:border-primary'
+                  "
+                  @click="
+                    formData.status !== 'approved' &&
+                    formData.status !== 'rejected' &&
+                    openProductSelector($index)
+                  "
                 >
                   <span v-if="row.productVariantId" class="text-gray-800 text-xs font-medium">
-                    {{ row.displayName }}
+                    {{ row.productVariantDisplayName || `Biến thể #${row.productVariantId}` }}
                   </span>
                   <span v-else class="text-gray-400 text-xs">Chọn sản phẩm...</span>
                   <ElIcon class="text-gray-400 text-xs"><ArrowDown /></ElIcon>
                 </div>
-                <div v-if="row.colorName" class="mt-1">
-                  <ElTag size="small" type="info">Màu: {{ row.colorName }}</ElTag>
+                <div v-if="row.ProductVariantColorDisplayName" class="mt-1">
+                  <ElTag size="small" type="info"
+                    >Màu: {{ row.ProductVariantColorDisplayName }}</ElTag
+                  >
                 </div>
               </template>
             </ElTableColumn>
@@ -174,6 +245,7 @@
                   :step="100000"
                   class="w-full"
                   controls-position="right"
+                  :disabled="formData.status === 'approved' || formData.status === 'rejected'"
                 />
               </template>
             </ElTableColumn>
@@ -185,6 +257,7 @@
                   type="danger"
                   size="small"
                   plain
+                  :disabled="formData.status === 'approved' || formData.status === 'rejected'"
                   @click="handleRemoveProductRow($index)"
                 >
                   <ElIcon><Delete /></ElIcon>
@@ -226,8 +299,8 @@
           <div>
             <span class="text-gray-500">Trạng thái:</span>
             <span class="ml-2">
-              <ElTag :type="getStatusTagType(detailData.status)" size="small">
-                {{ getStatusLabel(detailData.status) }}
+              <ElTag :type="getStatusTagType(detailData.status || '')" size="small">
+                {{ getStatusLabel(detailData.status || '') }}
               </ElTag>
             </span>
           </div>
@@ -237,26 +310,33 @@
           </div>
           <div>
             <span class="text-gray-500">Thời gian tạo:</span>
-            <span class="ml-2 text-gray-700">{{ formatDateTime(detailData.createdAt) }}</span>
+            <span class="ml-2 text-gray-700">{{
+              formatDateTime(detailData.lastUpdatedAt || '')
+            }}</span>
           </div>
           <div class="col-span-2 border-t border-gray-200 pt-2 mt-1">
             <span class="text-gray-500 font-medium">Ghi chú / Điều khoản:</span>
             <div class="mt-1 text-gray-700 whitespace-pre-line">{{
-              detailData.notes || 'Không có ghi chú'
+              detailData.note || 'Không có ghi chú'
             }}</div>
           </div>
         </div>
 
         <div class="mt-2">
           <h4 class="text-sm font-semibold text-gray-700 mb-2">Danh sách sản phẩm báo giá</h4>
-          <ElTable :data="detailData.products" border size="small" class="w-full">
+          <ElTable :data="detailData.quotationItems" border size="small" class="w-full">
             <ElTableColumn type="index" label="STT" width="55" align="center" />
             <ElTableColumn label="Tên sản phẩm" minWidth="220">
               <template #default="{ row }">
                 <div class="flex flex-col gap-1">
-                  <span class="font-medium text-gray-800">{{ row.displayName }}</span>
-                  <ElTag v-if="row.colorName" size="small" type="info" class="w-fit">
-                    Màu: {{ row.colorName }}
+                  <span class="font-medium text-gray-800">{{ row.productVariantDisplayName }}</span>
+                  <ElTag
+                    v-if="row.productVariantColorDisplayName"
+                    size="small"
+                    type="info"
+                    class="w-fit"
+                  >
+                    Màu: {{ row.productVariantColorDisplayName }}
                   </ElTag>
                 </div>
               </template>
@@ -271,6 +351,48 @@
       </div>
       <template #footer>
         <div class="flex justify-end gap-2 border-t border-gray-50 pt-3">
+          <ElButton
+            v-if="
+              detailData &&
+              detailData.status === 'draft' &&
+              hasPermission(Permissions.QuotationsSend)
+            "
+            type="primary"
+            @click="
+              handleSend(detailData)
+              detailDialogVisible = false
+            "
+          >
+            Gửi báo giá
+          </ElButton>
+          <ElButton
+            v-if="
+              detailData &&
+              detailData.status === 'sent' &&
+              hasPermission(Permissions.QuotationsApprove)
+            "
+            type="success"
+            @click="
+              handleApprove(detailData)
+              detailDialogVisible = false
+            "
+          >
+            Xác nhận
+          </ElButton>
+          <ElButton
+            v-if="
+              detailData &&
+              detailData.status === 'sent' &&
+              hasPermission(Permissions.QuotationsApprove)
+            "
+            type="danger"
+            @click="
+              handleReject(detailData)
+              detailDialogVisible = false
+            "
+          >
+            Từ chối / Hủy
+          </ElButton>
           <ElButton @click="detailDialogVisible = false">Đóng</ElButton>
         </div>
       </template>
@@ -465,33 +587,43 @@
 
 <script setup lang="ts">
   import { ref, reactive, computed, onMounted } from 'vue'
-  import { Plus, Edit, Delete, View, ArrowDown, InfoFilled } from '@element-plus/icons-vue'
+  import {
+    Plus,
+    Edit,
+    Delete,
+    View,
+    ArrowDown,
+    InfoFilled,
+    Check,
+    Close,
+    Promotion
+  } from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useDebounceFn } from '@vueuse/core'
   import { SupplierApi } from '@/api/supplier.api'
-  import { ProductApi } from '@/api/product/product.api'
+  import { ProductApi } from '@/api/product.api'
+  import { QuotationApi } from '@/api/quotation.api'
   import type { Supplier } from '@/domain/supplier/supplier.types'
   import type { ProductVariantLiteForInput } from '@/domain/product/product.types'
+  import type {
+    QuotationDetailResponse,
+    QuotationSummaryResponse
+  } from '@/domain/inventory/quotation.types'
+  import { Permissions } from '@/domain/constants/permissions'
+  import { useUserStore } from '@/store/modules/user'
 
   defineOptions({ name: 'InventoryQuotation' })
 
-  interface QuotationProductRow {
-    productVariantId: number
-    displayName: string
-    colorId?: number
-    colorName?: string
-    quotePrice: number
-  }
+  const userStore = useUserStore()
+  const hasPermission = (permission: string) => userStore.info?.buttons?.includes(permission)
 
-  interface Quotation {
-    id: string
-    code: string
-    supplierId: number
-    supplierName: string
-    status: 'draft' | 'sent' | 'approved' | 'rejected'
-    notes?: string
-    products: QuotationProductRow[]
-    createdAt: string
+  interface QuotationProductRow {
+    id?: number
+    productVariantId: number
+    productVariantDisplayName: string
+    productVariantColorId?: number
+    ProductVariantColorDisplayName?: string
+    quotePrice: number
   }
 
   const loading = ref(false)
@@ -501,10 +633,10 @@
   const isEdit = ref(false)
 
   const detailDialogVisible = ref(false)
-  const detailData = ref<Quotation | null>(null)
+  const detailData = ref<QuotationDetailResponse | null>(null)
 
-  // Local Storage Data State
-  const data = ref<Quotation[]>([])
+  // Remote Data State
+  const data = ref<QuotationSummaryResponse[]>([])
 
   const searchForm = ref({
     supplierName: '',
@@ -546,7 +678,7 @@
       width: 160,
       align: 'center'
     },
-    { label: 'Ngày tạo', prop: 'createdAt', useSlot: true, width: 160, align: 'center' },
+    { label: 'Ngày cập nhật', prop: 'createdAt', useSlot: true, width: 160, align: 'center' },
     { label: 'Trạng thái', prop: 'status', useSlot: true, width: 120, align: 'center' },
     {
       label: 'Thao tác',
@@ -561,50 +693,32 @@
   const columnChecks = columns
 
   // Form State
-  const formData = ref<Partial<Quotation>>({
+  const formData = ref<{
+    id?: number
+    supplierId?: number
+    supplierName?: string
+    status: string
+    note?: string
+    quotationItems: QuotationProductRow[]
+  }>({
     supplierId: undefined,
     supplierName: '',
     status: 'draft',
-    notes: '',
-    products: []
+    note: '',
+    quotationItems: []
   })
 
   const formTotalAmount = computed(() => {
-    return (formData.value.products || []).reduce((sum, item) => {
+    return (formData.value.quotationItems || []).reduce((sum, item) => {
       return sum + (item.quotePrice || 0)
     }, 0)
   })
 
   // Statistics
-  const stats = computed(() => {
-    const total = data.value.length
-    const approved = data.value.filter((q) => q.status === 'approved').length
-    return {
-      totalQuotations: total,
-      approvedQuotations: approved
-    }
+  const stats = ref({
+    totalQuotations: 0,
+    approvedQuotations: 0
   })
-
-  // Filtering Logic
-  const filteredData = computed(() => {
-    let result = [...data.value]
-    if (searchForm.value.supplierName) {
-      const query = searchForm.value.supplierName.toLowerCase()
-      result = result.filter((item) => item.supplierName.toLowerCase().includes(query))
-    }
-    if (searchForm.value.status && searchForm.value.status.length > 0) {
-      result = result.filter((item) => searchForm.value.status.includes(item.status))
-    }
-    return result
-  })
-
-  watch(
-    () => filteredData.value.length,
-    (newTotal) => {
-      pagination.total = newTotal
-    },
-    { immediate: true }
-  )
 
   // Supplier Selector State
   const supplierSelectorVisible = ref(false)
@@ -674,71 +788,46 @@
     return variant.colors?.find((c) => c.id === colorId) || null
   }
 
-  // Lifecycle & Storage
+  // Lifecycle
   onMounted(() => {
     loadQuotations()
   })
 
-  const loadQuotations = () => {
-    const raw = localStorage.getItem('inventory_quotations')
-    if (raw) {
-      try {
-        data.value = JSON.parse(raw)
-      } catch (err) {
-        console.error('Failed to parse quotations from localStorage', err)
-        data.value = []
+  const loadQuotations = async () => {
+    loading.value = true
+    try {
+      const sieveFilters = []
+      if (searchForm.value.supplierName) {
+        sieveFilters.push(`SupplierName@=${searchForm.value.supplierName}`)
       }
-    } else {
-      // Mock data for beautiful UI look initially
-      data.value = [
-        {
-          id: '1',
-          code: 'BG-2026052601',
-          supplierId: 1,
-          supplierName: 'Honda Việt Nam',
-          status: 'approved',
-          notes: 'Đơn giá đã chiết khấu 2% cho đại lý cấp 1.',
-          createdAt: new Date().toISOString(),
-          products: [
-            {
-              productVariantId: 101,
-              displayName: 'Honda SH 150i ABS 2026',
-              colorId: 1,
-              colorName: 'Đỏ Đen',
-              quotePrice: 92250000
-            }
-          ]
-        },
-        {
-          id: '2',
-          code: 'BG-2026052602',
-          supplierId: 2,
-          supplierName: 'Yamaha Motor Vietnam',
-          status: 'draft',
-          notes: 'Đơn giá đề xuất tháng 5.',
-          createdAt: new Date().toISOString(),
-          products: [
-            {
-              productVariantId: 102,
-              displayName: 'Yamaha Exciter 155 VVA',
-              colorId: 2,
-              colorName: 'Xanh GP',
-              quotePrice: 48500000
-            }
-          ]
-        }
-      ]
-      saveQuotations()
-    }
-  }
+      if (searchForm.value.status && searchForm.value.status.length > 0) {
+        sieveFilters.push(`Status==${searchForm.value.status.join('|')}`)
+      }
+      const params = {
+        current: pagination.current,
+        size: pagination.size,
+        Filters: sieveFilters.join(',') || undefined
+      }
+      const res = await QuotationApi.getList(params)
+      data.value = res.items || []
+      pagination.total = res.totalCount || 0
 
-  const saveQuotations = () => {
-    localStorage.setItem('inventory_quotations', JSON.stringify(data.value))
+      stats.value.totalQuotations = res.totalCount || 0
+      stats.value.approvedQuotations = (res.items || []).filter(
+        (q) => q.status === 'approved'
+      ).length
+    } catch (err) {
+      console.error('Failed to load quotations', err)
+      ElMessage.error('Không thể tải danh sách báo giá')
+    } finally {
+      loading.value = false
+    }
   }
 
   // Data Loading handlers
   const handleSearch = () => {
     pagination.current = 1
+    loadQuotations()
   }
 
   const handleReset = () => {
@@ -747,23 +836,22 @@
       status: []
     }
     pagination.current = 1
+    loadQuotations()
   }
 
   const refreshData = () => {
-    loading.value = true
-    setTimeout(() => {
-      loadQuotations()
-      loading.value = false
-    }, 300)
+    loadQuotations()
   }
 
   const handleSizeChange = (size: number) => {
     pagination.size = size
     pagination.current = 1
+    loadQuotations()
   }
 
   const handleCurrentChange = (page: number) => {
     pagination.current = page
+    loadQuotations()
   }
 
   // Add / Edit / Delete handlers
@@ -774,98 +862,204 @@
       supplierId: undefined,
       supplierName: '',
       status: 'draft',
-      notes: '',
-      products: []
+      note: '',
+      quotationItems: []
     }
     dialogVisible.value = true
   }
 
-  const handleEdit = (row: Quotation) => {
+  const handleEdit = async (row: QuotationSummaryResponse) => {
     isEdit.value = true
     dialogTitle.value = 'Chỉnh sửa báo giá'
-    // Deep clone row data
-    formData.value = JSON.parse(JSON.stringify(row))
-    dialogVisible.value = true
+    try {
+      const detail = await QuotationApi.getById(row.id!)
+      formData.value = {
+        id: detail.id,
+        supplierId: detail.supplierId,
+        supplierName: detail.supplierName,
+        status: detail.status || 'draft',
+        note: detail.note,
+        quotationItems: (detail.quotationItems || []).map((item: any) => ({
+          id: item.id,
+          productVariantId: item.productVariantId,
+          productVariantDisplayName: item.productVariantDisplayName,
+          productVariantColorId: item.productVariantColorId,
+          ProductVariantColorDisplayName: item.productVariantColorDisplayName,
+          quotePrice: item.quotePrice
+        }))
+      }
+      dialogVisible.value = true
+    } catch (err) {
+      console.error('Failed to load quotation detail for editing', err)
+      ElMessage.error('Không thể tải chi tiết báo giá')
+    }
   }
 
-  const handleDelete = (row: Quotation) => {
-    ElMessageBox.confirm(`Bạn có chắc chắn muốn xóa báo giá ${row.code}?`, 'Xác nhận xóa', {
+  const handleDelete = (row: QuotationSummaryResponse) => {
+    ElMessageBox.confirm(`Bạn có chắc chắn muốn xóa báo giá này?`, 'Xác nhận xóa', {
       confirmButtonText: 'Xóa',
       cancelButtonText: 'Hủy',
       type: 'warning'
     })
-      .then(() => {
-        data.value = data.value.filter((q) => q.id !== row.id)
-        saveQuotations()
-        ElMessage.success('Xóa báo giá thành công')
+      .then(async () => {
+        try {
+          await QuotationApi.delete(row.id!)
+          ElMessage.success('Xóa báo giá thành công')
+          loadQuotations()
+        } catch (err) {
+          console.error('Failed to delete quotation', err)
+          ElMessage.error('Không thể xóa báo giá')
+        }
       })
       .catch(() => {})
   }
 
-  const handleViewDetail = (row: Quotation) => {
-    detailData.value = row
-    detailDialogVisible.value = true
+  const handleSend = (row: QuotationSummaryResponse | QuotationDetailResponse) => {
+    ElMessageBox.confirm(
+      'Bạn có chắc chắn muốn gửi báo giá này không? Thao tác này không thể hoàn tác.',
+      'Xác nhận gửi',
+      {
+        confirmButtonText: 'Gửi',
+        cancelButtonText: 'Hủy',
+        type: 'info'
+      }
+    )
+      .then(async () => {
+        try {
+          await QuotationApi.send(row.id!)
+          ElMessage.success('Gửi báo giá thành công')
+          loadQuotations()
+        } catch (err) {
+          console.error('Failed to send quotation', err)
+          ElMessage.error('Không thể gửi báo giá')
+        }
+      })
+      .catch(() => {})
   }
 
-  const submitForm = () => {
+  const handleApprove = (row: QuotationSummaryResponse | QuotationDetailResponse) => {
+    ElMessageBox.confirm(
+      'Bạn có chắc chắn muốn xác nhận báo giá này không? Thao tác này không thể hoàn tác.',
+      'Xác nhận duyệt',
+      {
+        confirmButtonText: 'Xác nhận',
+        cancelButtonText: 'Hủy',
+        type: 'success'
+      }
+    )
+      .then(async () => {
+        try {
+          await QuotationApi.approve(row.id!)
+          ElMessage.success('Xác nhận báo giá thành công')
+          loadQuotations()
+        } catch (err) {
+          console.error('Failed to approve quotation', err)
+          ElMessage.error('Không thể xác nhận báo giá')
+        }
+      })
+      .catch(() => {})
+  }
+
+  const handleReject = (row: QuotationSummaryResponse | QuotationDetailResponse) => {
+    ElMessageBox.confirm(
+      'Bạn có chắc chắn muốn hủy báo giá này không? Thao tác này không thể hoàn tác.',
+      'Xác nhận hủy',
+      {
+        confirmButtonText: 'Hủy báo giá',
+        cancelButtonText: 'Hủy',
+        type: 'warning'
+      }
+    )
+      .then(async () => {
+        try {
+          await QuotationApi.reject(row.id!)
+          ElMessage.success('Hủy báo giá thành công')
+          loadQuotations()
+        } catch (err) {
+          console.error('Failed to reject quotation', err)
+          ElMessage.error('Không thể hủy báo giá')
+        }
+      })
+      .catch(() => {})
+  }
+
+  const handleViewDetail = async (row: QuotationSummaryResponse) => {
+    try {
+      const detail = await QuotationApi.getById(row.id!)
+      detailData.value = detail
+      detailDialogVisible.value = true
+    } catch (err) {
+      console.error('Failed to load quotation detail', err)
+      ElMessage.error('Không thể tải chi tiết báo giá')
+    }
+  }
+
+  const submitForm = async () => {
     if (!formData.value.supplierId) {
       ElMessage.warning('Vui lòng chọn nhà cung cấp')
       return
     }
-    if (!formData.value.products || formData.value.products.length === 0) {
+    if (!formData.value.quotationItems || formData.value.quotationItems.length === 0) {
       ElMessage.warning('Vui lòng thêm ít nhất một sản phẩm')
       return
     }
 
     submitting.value = true
-
-    setTimeout(() => {
+    try {
       if (isEdit.value && formData.value.id) {
-        const idx = data.value.findIndex((q) => q.id === formData.value.id)
-        if (idx !== -1) {
-          data.value[idx] = {
-            ...data.value[idx],
-            supplierId: formData.value.supplierId!,
-            supplierName: formData.value.supplierName!,
-            status: formData.value.status || 'draft',
-            notes: formData.value.notes,
-            products: formData.value.products || []
-          }
+        const command = {
+          id: formData.value.id,
+          supplierId: formData.value.supplierId,
+          status: formData.value.status,
+          notes: formData.value.note,
+          products: formData.value.quotationItems.map((item: any) => ({
+            id: item.id,
+            productVariantId: String(item.productVariantId),
+            productVarientColorId: item.productVariantColorId
+              ? String(item.productVariantColorId)
+              : undefined,
+            quotePrice: item.quotePrice
+          }))
         }
+        await QuotationApi.update(formData.value.id, command)
         ElMessage.success('Cập nhật báo giá thành công')
       } else {
-        const codeNum = Date.now().toString().slice(-8)
-        const newQuote: Quotation = {
-          id: Date.now().toString(),
-          code: `BG-${codeNum}`,
-          supplierId: formData.value.supplierId!,
-          supplierName: formData.value.supplierName!,
-          status: formData.value.status || 'draft',
-          notes: formData.value.notes,
-          products: (formData.value.products || []) as QuotationProductRow[],
-          createdAt: new Date().toISOString()
+        const command = {
+          supplierId: formData.value.supplierId,
+          status: formData.value.status,
+          notes: formData.value.note,
+          products: formData.value.quotationItems.map((item: any) => ({
+            productVariantId: String(item.productVariantId),
+            productVarientColorId: item.productVariantColorId
+              ? String(item.productVariantColorId)
+              : undefined,
+            quotePrice: item.quotePrice
+          }))
         }
-        data.value.unshift(newQuote)
+        await QuotationApi.create(command)
         ElMessage.success('Tạo báo giá thành công')
       }
-
-      saveQuotations()
       dialogVisible.value = false
+      loadQuotations()
+    } catch (err) {
+      console.error('Failed to submit quotation', err)
+      ElMessage.error('Có lỗi xảy ra khi lưu báo giá')
+    } finally {
       submitting.value = false
-    }, 500)
+    }
   }
 
   // Products List Manipulation inside Form
   const handleAddProductRow = () => {
-    formData.value.products?.push({
+    formData.value.quotationItems?.push({
       productVariantId: 0,
-      displayName: '',
+      productVariantDisplayName: '',
       quotePrice: 0
     })
   }
 
   const handleRemoveProductRow = (index: number) => {
-    formData.value.products?.splice(index, 1)
+    formData.value.quotationItems?.splice(index, 1)
   }
 
   // --- Supplier Selector Logic ---
@@ -908,7 +1102,7 @@
     formData.value.supplierId = sup.id
     formData.value.supplierName = sup.name
     // Clear products list if supplier changes to avoid mixed quote items
-    formData.value.products = []
+    formData.value.quotationItems = []
     supplierSelectorVisible.value = false
   }
 
@@ -957,24 +1151,25 @@
   }, 300)
 
   const selectProductVariant = (variant: ProductVariantLiteForInput) => {
-    if (activeProductRowIndex.value === null || !formData.value.products) return
+    if (activeProductRowIndex.value === null || !formData.value.quotationItems) return
 
-    const targetRow = formData.value.products[activeProductRowIndex.value]
+    const targetRow = formData.value.quotationItems[activeProductRowIndex.value]
     if (targetRow) {
       const selectedColorId = selectedVariantColors[variant.id]
       const selectedColor = variant.colors?.find((c) => c.id === selectedColorId)
 
       targetRow.productVariantId = variant.id
-      targetRow.displayName = variant.displayName || `Sản phẩm #${variant.id}`
+      targetRow.productVariantDisplayName = variant.displayName || `Sản phẩm #${variant.id}`
       targetRow.quotePrice = variant.price || 0
 
       if (selectedColor) {
-        targetRow.colorId = selectedColor.id
-        targetRow.colorName = selectedColor.colorName || `Màu #${selectedColor.id}`
-        targetRow.displayName += ` (${targetRow.colorName})`
+        targetRow.productVariantColorId = selectedColor.id
+        targetRow.ProductVariantColorDisplayName =
+          selectedColor.colorName || `Màu #${selectedColor.id}`
+        targetRow.productVariantDisplayName += ` (${targetRow.ProductVariantColorDisplayName})`
       } else {
-        targetRow.colorId = undefined
-        targetRow.colorName = undefined
+        targetRow.productVariantColorId = undefined
+        targetRow.ProductVariantColorDisplayName = undefined
       }
     }
 

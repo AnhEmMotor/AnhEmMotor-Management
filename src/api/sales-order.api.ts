@@ -22,71 +22,71 @@ export const SalesOrderApi = {
 
   getById(id: number) {
     return request.get<SalesOrder>({
-      url: `/api/SalesOrders/${id}`
+      url: `/api/v1/SalesOrders/${id}`
     })
   },
 
   getStatuses() {
     return request.get<Record<string, string>>({
-      url: '/api/SalesOrders/status'
+      url: '/api/v1/SalesOrders/status'
     })
   },
 
   getStatusMap() {
     return request.get<Array<{ id: string; name: string }>>({
-      url: '/api/SalesOrders/status-map'
+      url: '/api/v1/SalesOrders/status-map'
     })
   },
 
   getTransitionMap() {
     return request.get<Record<string, string[]>>({
-      url: '/api/SalesOrders/transition-map'
+      url: '/api/v1/SalesOrders/transition-map'
     })
   },
 
   getLockedStatuses() {
     return request.get({
-      url: '/api/SalesOrders/locked-statuses'
+      url: '/api/v1/SalesOrders/locked-statuses'
     })
   },
 
   getVehicleAssignmentStatuses() {
     return request.get<string[]>({
-      url: '/api/SalesOrders/vehicle-assignment-statuses'
+      url: '/api/v1/SalesOrders/vehicle-assignment-statuses'
     })
   },
 
   getVehicleAssignmentRequirements(id: number, targetStatusId: string) {
     return request.get<VehicleAssignmentRequirement>({
-      url: `/api/SalesOrders/${id}/vehicle-assignment-requirements`,
+      url: `/api/v1/SalesOrders/${id}/vehicle-assignment-requirements`,
       params: { targetStatusId }
     })
   },
 
   createByManager(data: CreateSalesOrderByManager) {
     return request.post<SalesOrder>({
-      url: '/api/SalesOrders/by-manager',
+      url: '/api/v1/SalesOrders/by-manager',
       data
     })
   },
 
   updateForManager(id: number, data: UpdateSalesOrderForManager) {
     return request.put<SalesOrder>({
-      url: `/api/SalesOrders/for-manager/${id}`,
+      url: `/api/v1/SalesOrders/for-manager/${id}`,
       data
     })
   },
 
   updateStatus(id: number, statusId: string, selectedVehicleIds?: number[]) {
     return request.patch<SalesOrder>({
-      url: `/api/SalesOrders/${id}/status`,
+      url: `/api/v1/SalesOrders/${id}/status`,
       data: { statusId, selectedVehicleIds }
     })
   },
 
   delete(id: number) {
     return request.del({
-      url: `/api/SalesOrders/${id}`
+      url: `/api/v1/SalesOrders/${id}`
     })
   }
 }

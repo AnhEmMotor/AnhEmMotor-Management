@@ -18,13 +18,13 @@ export interface Lead {
 
 export function fetchGetLeadList(params?: any) {
   return request.get<Lead[]>({
-    url: '/api/Lead',
+    url: '/api/v1/Lead',
     params
   })
 }
 
 export function fetchGetLeadDetail(id: number) {
   return request.get<Lead>({
-    url: `/api/Lead/${id}`
+    url: `/api/v1/Lead/${id}`
   })
 }

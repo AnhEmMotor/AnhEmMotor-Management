@@ -5,7 +5,7 @@ export const BrandApi = {
   getList(params: any) {
     const { current, size, ...rest } = params
     return request.get<BrandList>({
-      url: '/api/Brand',
+      url: '/api/v1/Brand',
       params: {
         Page: current,
         PageSize: size,
@@ -16,39 +16,39 @@ export const BrandApi = {
 
   getById(id: number) {
     return request.get<Brand>({
-      url: `/api/Brand/${id}`
+      url: `/api/v1/Brand/${id}`
     })
   },
 
   create(data: Partial<Brand>) {
     return request.post<Brand>({
-      url: '/api/Brand',
+      url: '/api/v1/Brand',
       data
     })
   },
 
   update(id: number, data: Partial<Brand>) {
     return request.put<Brand>({
-      url: `/api/Brand/${id}`,
+      url: `/api/v1/Brand/${id}`,
       data
     })
   },
 
   delete(id: number) {
     return request.del({
-      url: `/api/Brand/${id}`
+      url: `/api/v1/Brand/${id}`
     })
   },
 
   getStatistics() {
     return request.get<any>({
-      url: '/api/Brand/statistics'
+      url: '/api/v1/Brand/statistics'
     })
   },
 
   export(params: any) {
     return request.get<Blob>({
-      url: '/api/Brand/export',
+      url: '/api/v1/Brand/export',
       params,
       responseType: 'blob'
     })

@@ -4,14 +4,14 @@ import type { Technology } from '@/domain/product/technology.types'
 export const TechnologyApi = {
   getList: (params?: { category_id?: number; brand_id?: number }) => {
     return request.get<Technology[]>({
-      url: '/api/Technologies',
+      url: '/api/v1/Technologies',
       params
     })
   },
 
   getCategories: () => {
     return request.get<any[]>({
-      url: '/api/Technologies/categories'
+      url: '/api/v1/Technologies/categories'
     })
   },
 
@@ -24,14 +24,14 @@ export const TechnologyApi = {
     defaultImageUrl?: string
   }) => {
     return request.post<Technology>({
-      url: '/api/Technologies',
+      url: '/api/v1/Technologies',
       data
     })
   },
 
   createCategory: (data: { name: string }) => {
     return request.post<any>({
-      url: '/api/Technologies/categories',
+      url: '/api/v1/Technologies/categories',
       data
     })
   },
@@ -49,14 +49,14 @@ export const TechnologyApi = {
     }
   ) => {
     return request.put<Technology>({
-      url: `/api/Technologies/${id}`,
+      url: `/api/v1/Technologies/${id}`,
       data
     })
   },
 
   delete: (id: number) => {
     return request.del({
-      url: `/api/Technologies/${id}`
+      url: `/api/v1/Technologies/${id}`
     })
   }
 }
