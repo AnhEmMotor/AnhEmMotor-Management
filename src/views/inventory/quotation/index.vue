@@ -173,14 +173,6 @@
           </ElFormItem>
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
-          <ElFormItem label="Trạng thái">
-            <ElTag :type="getStatusTagType(formData.status)" size="default" class="font-medium">
-              {{ getStatusLabel(formData.status) }}
-            </ElTag>
-          </ElFormItem>
-        </div>
-
         <ElFormItem label="Ghi chú">
           <ElInput
             v-model="formData.note"
