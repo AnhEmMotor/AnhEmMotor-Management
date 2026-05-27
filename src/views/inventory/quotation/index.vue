@@ -251,6 +251,17 @@
               </template>
             </ElTableColumn>
 
+            <ElTableColumn label="Ghi chú dòng" minWidth="150">
+              <template #default="{ row }">
+                <ElInput
+                  v-model="row.note"
+                  placeholder="Nhập ghi chú dòng..."
+                  :disabled="formData.status === 'approved' || formData.status === 'rejected'"
+                  clearable
+                />
+              </template>
+            </ElTableColumn>
+
             <ElTableColumn label="Thao tác" width="80" align="center">
               <template #default="{ $index }">
                 <ElButton
@@ -345,6 +356,11 @@
             <ElTableColumn label="Đơn giá báo" width="160" align="right">
               <template #default="{ row }">
                 <span>{{ formatCurrency(row.quotePrice) }}</span>
+              </template>
+            </ElTableColumn>
+            <ElTableColumn label="Ghi chú dòng" minWidth="150">
+              <template #default="{ row }">
+                <span class="text-gray-600 text-xs">{{ row.note || '-' }}</span>
               </template>
             </ElTableColumn>
           </ElTable>
@@ -624,6 +640,7 @@
     productVariantColorId?: number
     ProductVariantColorDisplayName?: string
     quotePrice: number
+    note?: string
   }
 
   const loading = ref(false)
@@ -885,7 +902,8 @@
           productVariantDisplayName: item.productVariantDisplayName,
           productVariantColorId: item.productVariantColorId,
           ProductVariantColorDisplayName: item.productVariantColorDisplayName,
-          quotePrice: item.quotePrice
+          quotePrice: item.quotePrice,
+          note: item.note
         }))
       }
       dialogVisible.value = true
@@ -1017,7 +1035,8 @@
             productVarientColorId: item.productVariantColorId
               ? String(item.productVariantColorId)
               : undefined,
-            quotePrice: item.quotePrice
+            quotePrice: item.quotePrice,
+            note: item.note
           }))
         }
         await QuotationApi.update(formData.value.id, command)
@@ -1031,7 +1050,8 @@
             productVarientColorId: item.productVariantColorId
               ? String(item.productVariantColorId)
               : undefined,
-            quotePrice: item.quotePrice
+            quotePrice: item.quotePrice,
+            note: item.note
           }))
         }
         await QuotationApi.create(command)
@@ -1052,7 +1072,8 @@
     formData.value.quotationItems?.push({
       productVariantId: 0,
       productVariantDisplayName: '',
-      quotePrice: 0
+      quotePrice: 0,
+      note: ''
     })
   }
 

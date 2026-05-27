@@ -2,6 +2,7 @@ export interface QuotationItemRequest {
   productVariantId: string
   productVarientColorId?: string
   quotePrice?: number
+  note?: string
 }
 
 export interface UpdateQuotationItemRequest {
@@ -9,6 +10,7 @@ export interface UpdateQuotationItemRequest {
   productVariantId: string
   productVarientColorId?: string
   quotePrice?: number
+  note?: string
 }
 
 export interface QuotationItemResponse {
@@ -17,6 +19,7 @@ export interface QuotationItemResponse {
   productVariantColorId?: number
   productVariantColorDisplayName?: string
   quotePrice?: number
+  note?: string
 }
 
 export interface QuotationDetailResponse {
