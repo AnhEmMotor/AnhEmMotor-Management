@@ -78,7 +78,7 @@ export const ProductApi = {
 
   getPredefinedOptions() {
     return request.get<Record<string, string>>({
-      url: '/api/v1/Product/predefined-options'
+      url: '/api/v1/Option/predefined'
     })
   }
 }
