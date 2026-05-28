@@ -684,7 +684,7 @@
       label: 'Thao tác',
       prop: 'operation',
       useSlot: true,
-      width: 140,
+      width: 180,
       fixed: 'right' as const,
       align: 'center'
     }
