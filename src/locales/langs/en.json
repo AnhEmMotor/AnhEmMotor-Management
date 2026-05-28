@@ -1,0 +1,466 @@
+{
+  "httpMsg": {
+    "unauthorized": "Unauthorized access, please login again",
+    "forbidden": "Access to this resource is forbidden",
+    "notFound": "The requested resource does not exist",
+    "methodNotAllowed": "Request method not allowed",
+    "requestTimeout": "Request timeout, please try again later",
+    "internalServerError": "Internal server error, please try again later",
+    "badGateway": "Bad gateway error, please try again later",
+    "serviceUnavailable": "Service temporarily unavailable, please try again later",
+    "gatewayTimeout": "Gateway timeout, please try again later",
+    "requestCancelled": "Request cancelled",
+    "networkError": "Network connection error, please check your connection",
+    "requestFailed": "Request failed",
+    "requestConfigError": "Request configuration error"
+  },
+  "topBar": {
+    "search": {
+      "title": "Search"
+    },
+    "user": {
+      "userCenter": "User center",
+      "docs": "Document",
+      "github": "Github",
+      "lockScreen": "Lock screen",
+      "logout": "Log out"
+    },
+    "guide": {
+      "title": "Click here to view",
+      "theme": "Theme style",
+      "menu": "Open top menu",
+      "description": "More configurations"
+    }
+  },
+  "common": {
+    "tips": "Prompt",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "logOutTips": "Do you want to log out?"
+  },
+  "search": {
+    "placeholder": "Search page",
+    "historyTitle": "Search history",
+    "switchKeydown": "Navigate",
+    "selectKeydown": "Select",
+    "exitKeydown": "Close"
+  },
+  "setting": {
+    "menuType": {
+      "title": "Menu Layout",
+      "list": ["Vertical", "Horizontal", "Mixed", "Dual"]
+    },
+    "theme": {
+      "title": "Theme Style",
+      "list": ["Light", "Dark", "System"]
+    },
+    "menu": {
+      "title": "Menu Style"
+    },
+    "color": {
+      "title": "Theme Color"
+    },
+    "box": {
+      "title": "Box Style",
+      "list": ["Border", "Shadow"]
+    },
+    "container": {
+      "title": "Container Width",
+      "list": ["Full", "Boxed"]
+    },
+    "basics": {
+      "title": "Basic Config",
+      "list": {
+        "multiTab": "Show work tab",
+        "accordion": "Sidebar opens accordion",
+        "collapseSidebar": "Show sidebar button",
+        "reloadPage": "Show reload page button",
+        "fastEnter": "Show fast enter",
+        "breadcrumb": "Show crumb navigation",
+        "language": "Show multilingual selection",
+        "progressBar": "Show top progress bar",
+        "weakMode": "Color Weakness Mode",
+        "watermark": "Global watermark",
+        "menuWidth": "Menu width",
+        "tabStyle": "Tab style",
+        "pageTransition": "Page animation",
+        "borderRadius": "Custom radius"
+      }
+    },
+    "tabStyle": {
+      "default": "Default",
+      "card": "Card",
+      "google": "Chrome"
+    },
+    "transition": {
+      "list": {
+        "none": "None",
+        "fade": "Fade",
+        "slideLeft": "Slide Left",
+        "slideBottom": "Slide Bottom",
+        "slideTop": "Slide Top"
+      }
+    },
+    "actions": {
+      "resetConfig": "Reset Config",
+      "copyConfig": "Copy Config",
+      "copySuccess": "Configuration copied to clipboard, paste it into src/config/setting.ts file",
+      "copyFailed": "Copy failed, please try again",
+      "resetFailed": "Reset failed, please refresh the page and try again"
+    }
+  },
+  "notice": {
+    "title": "Notice",
+    "btnRead": "Mark as read",
+    "bar": ["Notice", "Message", "Todo"],
+    "text": ["No"],
+    "viewAll": "View all"
+  },
+  "worktab": {
+    "btn": {
+      "refresh": "Refresh",
+      "fixed": "Fixed",
+      "unfixed": "Unfixed",
+      "closeLeft": "Close left",
+      "closeRight": "Close right",
+      "closeOther": "Close other",
+      "closeAll": "Close all"
+    }
+  },
+  "login": {
+    "leftView": {
+      "title": "A backend system of beauty and efficiency",
+      "subTitle": "A sleek and practical interface for a great user experience"
+    },
+    "title": "Welcome back",
+    "subTitle": "Please enter your account and password to login",
+    "roles": {
+      "super": "Super Admin",
+      "admin": "Admin",
+      "user": "User"
+    },
+    "placeholder": {
+      "username": "Please enter your account",
+      "password": "Please enter your password",
+      "slider": "Please slide to verify"
+    },
+    "sliderText": "Please slide to verify",
+    "sliderSuccessText": "Verification successful",
+    "rememberPwd": "Remember password",
+    "forgetPwd": "Forgot password",
+    "btnText": "Login",
+    "noAccount": "No account yet?",
+    "register": "Register",
+    "success": {
+      "title": "Login successful",
+      "message": "Welcome back"
+    }
+  },
+  "forgetPassword": {
+    "title": "Forgot password?",
+    "subTitle": "Enter your email to reset your password",
+    "placeholder": "Please enter your email",
+    "submitBtnText": "Submit",
+    "backBtnText": "Back"
+  },
+  "register": {
+    "title": "Create account",
+    "subTitle": "Welcome to join us, please fill in the following information to complete the registration",
+    "placeholder": {
+      "username": "Please enter your account",
+      "password": "Please enter your password",
+      "confirmPassword": "Please enter your password again"
+    },
+    "rule": {
+      "confirmPasswordRequired": "Please enter your password again",
+      "passwordMismatch": "The two passwords are inconsistent!",
+      "usernameLength": "The length is 3 to 20 characters",
+      "passwordLength": "The password length cannot be less than 6 digits",
+      "agreementRequired": "Please agree to the privacy policy"
+    },
+    "agreeText": "I agree",
+    "privacyPolicy": "Privacy policy",
+    "submitBtnText": "Register",
+    "hasAccount": "Already have an account?",
+    "toLogin": "To login"
+  },
+  "lockScreen": {
+    "pwdError": "Password error",
+    "lock": {
+      "inputPlaceholder": "Please input lock screen password",
+      "btnText": "Lock"
+    },
+    "unlock": {
+      "inputPlaceholder": "Please input unlock password",
+      "btnText": "Unlock",
+      "backBtnText": "Back to login"
+    }
+  },
+  "greeting": {
+    "dawn": "Good morning!",
+    "morning": "Good morning!",
+    "afternoon": "Good afternoon!",
+    "evening": "Good evening!"
+  },
+  "exceptionPage": {
+    "403": "Sorry, you do not have permission to access this page",
+    "404": "Sorry, the page you are trying to access does not exist",
+    "500": "Sorry, there was an error on the server",
+    "gohome": "Go Home"
+  },
+  "menus": {
+    "inventory": {
+      "title": "Inventory Management",
+      "supplier": "Suppliers",
+      "input": "Inventory Input",
+      "debt": "Debt Management",
+      "quotation": "Quotation",
+      "inOutStock": "Stock In-Out Report",
+      "ledger": "Stock Ledger"
+    },
+    "login": {
+      "title": "Login"
+    },
+    "register": {
+      "title": "Register"
+    },
+    "forgetPassword": {
+      "title": "Forget Password"
+    },
+    "outside": {
+      "title": "Outside"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "console": "Console",
+      "analysis": "Analysis",
+      "ecommerce": "Ecommerce"
+    },
+    "widgets": {
+      "title": "Components",
+      "icon": "Icon",
+      "imageCrop": "Image Crop",
+      "excel": "Excel Import Export",
+      "video": "Video Player",
+      "countTo": "Count To",
+      "wangEditor": "Wang Editor",
+      "watermark": "Watermark",
+      "contextMenu": "Context Menu",
+      "qrcode": "QR Code",
+      "drag": "Drag",
+      "textScroll": "Text Scroll",
+      "fireworks": "Fireworks",
+      "elementUI": "Component Overview"
+    },
+    "template": {
+      "title": "Template Center",
+      "chat": "Chat",
+      "cards": "Cards",
+      "banners": "Banners",
+      "charts": "Charts",
+      "map": "Map",
+      "calendar": "Calendar",
+      "pricing": "Pricing"
+    },
+    "article": {
+      "title": "Article",
+      "articleList": "Article List",
+      "articleDetail": "Article Detail",
+      "comment": "Comment",
+      "articlePublish": "Article Publish"
+    },
+    "result": {
+      "title": "Result Page",
+      "success": "Success",
+      "fail": "Fail"
+    },
+    "exception": {
+      "title": "Exception",
+      "forbidden": "403",
+      "notFound": "404",
+      "serverError": "500"
+    },
+    "examples": {
+      "title": "Feature Examples",
+      "tabs": "Tabs",
+      "tablesBasic": "Basic Tables",
+      "tables": "Advanced Tables",
+      "tablesTree": "Tree Table Layout",
+      "forms": "Forms",
+      "searchBar": "Search Form",
+      "socketChat": "Socket Connection",
+      "permission": {
+        "title": "Frontend Permission",
+        "switchRole": "Toggle Auth",
+        "buttonAuth": "Button Authority",
+        "pageVisibility": "Super Admin Visibility"
+      }
+    },
+    "system": {
+      "title": "System Settings",
+      "user": "User Manage",
+      "role": "Role Manage",
+      "userCenter": "User Center",
+      "menu": "Menu Manage",
+      "nested": "Nested Menu",
+      "menu1": "Menu 1",
+      "menu2": "Menu 2",
+      "menu21": "Menu 2-1",
+      "menu3": "Menu 3",
+      "menu31": "Menu 3-1",
+      "menu32": "Menu 3-2",
+      "menu321": "Menu 3-2-1"
+    },
+    "safeguard": {
+      "title": "Safeguard",
+      "server": "Server"
+    },
+    "plan": {
+      "title": "Version Plan",
+      "log": "Change Log"
+    },
+    "help": {
+      "title": "Help Center",
+      "document": "Document",
+      "liteVersion": "Lite Version",
+      "oldVersion": "v2.6.1 Version"
+    },
+    "customer": {
+      "title": "Customer Management",
+      "potential": "Potential customers",
+      "profile": "Customer profile",
+      "progress": "Progress",
+      "asset": "Asset",
+      "care": "Customer care",
+      "contact": "Contact",
+      "booking": "Booking"
+    },
+    "hr": {
+      "title": "Human Resources",
+      "employees": "Employee Profiles",
+      "commissionPolicy": "Commission Policy",
+      "payroll": "Payroll",
+      "kpi": "KPI Management"
+    }
+  },
+  "table": {
+    "form": {
+      "reset": "Reset",
+      "submit": "Submit"
+    },
+    "searchBar": {
+      "reset": "Reset",
+      "search": "Search",
+      "expand": "Expand",
+      "collapse": "Collapse",
+      "searchInputPlaceholder": "Please enter",
+      "searchSelectPlaceholder": "Please select"
+    },
+    "selection": "Select",
+    "sizeOptions": {
+      "small": "Compact",
+      "default": "Default",
+      "large": "Loose"
+    },
+    "column": {
+      "selection": "Select",
+      "expand": "Expand",
+      "index": "Index"
+    },
+    "zebra": "Zebra",
+    "border": "Border",
+    "headerBackground": "Header BG"
+  },
+  "admin": {
+    "t1": "Độ hài lòng của khách hàng",
+    "t2": "Phân bố doanh số toàn quốc",
+    "t3": "Mục tiêu và thực tế",
+    "t4": "Doanh số hôm nay",
+    "t5": "Tổng kết doanh số",
+    "t6": "Xuất",
+    "t7": "So với hôm qua",
+    "t8": "SanPham nổi bật",
+    "t9": "Tên sản phẩm",
+    "t10": "Lượng bán",
+    "t11": "Tổng doanh thu",
+    "t12": "Phân tích dữ liệu khách truy cập",
+    "t13": "Khối lượng công việc & Dịch vụ",
+    "t14": "Về dự án",
+    "t15": "Sử dụng công nghệ mới nhất như Vue3, TypeScript, Vite, Element Plus",
+    "t16": "TongQuan người dùng",
+    "t17": "So với tuần trước",
+    "t18": "Chúng tôi cung cấp nhiều tùy chọn có thể kết hợp và tùy chỉnh để tạo trang hoàn hảo",
+    "t19": "So với tuần trước",
+    "t20": "Hoạt động",
+    "t21": "Thêm mới",
+    "t22": "NguoiDung mới",
+    "t23": "Tăng trưởng tháng này",
+    "t24": "Tháng này",
+    "t25": "Tháng này",
+    "t26": "Tháng trước",
+    "t27": "Tháng trước",
+    "t28": "Năm nay",
+    "t29": "Năm nay",
+    "t30": "Ảnh đại diện",
+    "t31": "Lượt truy cập",
+    "t32": "Tăng trưởng năm nay",
+    "t33": "Việc cần làm",
+    "t34": "Đang chờ xử lý",
+    "t35": "Doanh số hàng năm",
+    "t36": "ThongKe theo quý",
+    "t37": "Bán hàng trực tuyến",
+    "t38": "Bán hàng trực tiếp",
+    "t39": "Doanh số hôm nay",
+    "t40": "So với hôm qua",
+    "t41": "Tỷ lệ chuyển đổi giỏ hàng",
+    "t42": "SanPham bán chạy",
+    "t43": "Xếp hạng doanh số tuần này",
+    "t44": "SanPham hot",
+    "t45": "Tình hình bán hàng tháng này",
+    "t46": "SanPham",
+    "t47": "Doanh số",
+    "t48": "Giao dịch gần đây",
+    "t49": "Đơn hàng hôm nay",
+    "t50": "Phân loại doanh số",
+    "t51": "Theo danh mục sản phẩm",
+    "t52": "Tổng doanh thu",
+    "t53": "Lợi nhuận ròng",
+    "t54": "Tăng trưởng",
+    "t55": "Xu hướng bán hàng",
+    "t56": "So sánh doanh số hàng tháng",
+    "t57": "Tăng trưởng tháng này",
+    "t58": "Tổng số sản phẩm",
+    "t59": "Hoạt động gần đây",
+    "t60": "Trạng thái xử lý đơn hàng"
+  },
+  "dashboard": {
+    "ecommerce": {
+      "welcome": "Welcome back",
+      "todaySales": "Today's Sales",
+      "vsYesterday": "Vs Yesterday",
+      "salesTrend": "Sales Trend",
+      "monthlyComparison": "Monthly Comparison",
+      "salesClassification": "Sales Classification",
+      "byCategory": "By Category",
+      "totalIncome": "Total Income",
+      "growthThisMonth": "Growth this month",
+      "totalProducts": "Total Products",
+      "growth": "Growth",
+      "hotCommodity": "Hot Commodity",
+      "weeklyRanking": "Weekly Ranking",
+      "cartConversion": "Cart Conversion Rate",
+      "recentActivity": "Recent Activity",
+      "orderStatus": "Order Status",
+      "hotProducts": "Hot Products",
+      "monthlySales": "Monthly Sales",
+      "product": "Product",
+      "price": "Price",
+      "stock": "Stock",
+      "sales": "Sales",
+      "outOfStock": "Out of Stock",
+      "lowStock": "Low Stock",
+      "moderateStock": "Moderate",
+      "sufficientStock": "Sufficient"
+    }
+  }
+}

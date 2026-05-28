@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Execute Code</title>
+  </head>
+
+  <body>
+    <button id="executeButton">MởtạoThựchàng</button>
+
+    <script>
+      document.getElementById('executeButton').addEventListener('click', function () {
+        import('./en.js').then(({ default: en }) => {
+          import('./zh.js').then(({ default: zh }) => {
+            const enKeys = Object.keys(en)
+            const zhKeys = Object.keys(zh)
+            const differentKeys = enKeys
+              .filter((key) => !zhKeys.includes(key))
+              .concat(zhKeys.filter((key) => !enKeys.includes(key)))
+            const enDifferent = Object.fromEntries(
+              Object.entries(en).filter(([key]) => differentKeys.includes(key))
+            )
+            const zhDifferent = Object.fromEntries(
+              Object.entries(zh).filter(([key]) => differentKeys.includes(key))
+            )
+
+            console.log('enDifferent:', enDifferent)
+            console.log('zhDifferent:', zhDifferent)
+          })
+        })
+      })
+    </script>
+  </body>
+</html>

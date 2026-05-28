@@ -1,0 +1,744 @@
+export default {
+  httpMsg: {
+    unauthorized: 'Truy cập không được phép, vui lòng đăng nhập lại',
+    forbidden: 'Cấm truy cập vào tài nguyên này',
+    notFound: 'Tài nguyên được yêu cầu không tồn tại',
+    methodNotAllowed: 'PhuongThuc yêu cầu không được phép',
+    requestTimeout: 'Yêu cầu quá thời gian, vui lòng thử lại sau',
+    internalServerError: 'Lỗi máy chủ nội bộ, vui lòng thử lại sau',
+    badGateway: 'Lỗi cổng kết nối, vui lòng thử lại sau',
+    serviceUnavailable: 'Dịch vụ tạm thời không khả dụng, vui lòng thử lại sau',
+    gatewayTimeout: 'Cổng kết nối quá thời gian, vui lòng thử lại sau',
+    requestCancelled: 'Yêu cầu đã bị hủy',
+    networkError: 'Lỗi kết nối mạng, vui lòng kiểm tra kết nối mạng của bạn',
+    requestFailed: 'Yêu cầu thất bại',
+    requestConfigError: 'Lỗi cấu hình yêu cầu'
+  },
+  topBar: {
+    search: {
+      title: 'Tìm kiếm'
+    },
+    user: {
+      userCenter: 'Trung tâm cá nhân',
+      docs: 'TaiLieu hướng dẫn',
+      github: 'Github',
+      lockScreen: 'Khóa màn hình',
+      logout: 'Đăng xuất'
+    },
+    guide: {
+      title: 'Nhấn vào đây để xem',
+      theme: 'Giao diện',
+      menu: 'Mở menu trên cùng',
+      description: 'và các cấu hình khác'
+    }
+  },
+  common: {
+    tips: 'Có lỗi xảy ra',
+    cancel: 'Hủy',
+    confirm: 'Xác nhận',
+    logOutTips: 'Bạn có chắc chắn muốn đăng xuất không?'
+  },
+  search: {
+    placeholder: 'Tìm kiếm trang',
+    historyTitle: 'LichSu tìm kiếm',
+    switchKeydown: 'Chuyển đổi',
+    selectKeydown: 'Chọn',
+    exitKeydown: 'Đóng'
+  },
+  setting: {
+    menuType: {
+      title: 'Bố cục menu',
+      list: ['Dọc', 'Ngang', 'Hỗn hợp', 'Cột kép']
+    },
+    theme: {
+      title: 'Giao diện',
+      list: ['Sáng', 'Tối', 'HeThong']
+    },
+    menu: {
+      title: 'Kiểu menu'
+    },
+    color: {
+      title: 'Màu chủ đạo'
+    },
+    box: {
+      title: 'Kiểu khung',
+      list: ['Viền', 'Bóng đổ']
+    },
+    container: {
+      title: 'Chiều rộng',
+      list: ['Đầy đủ', 'Cố định']
+    },
+    basics: {
+      title: 'CauHinh cơ bản',
+      list: {
+        multiTab: 'Bật thanh tab',
+        accordion: 'Thanh bên dạng accordion',
+        collapseSidebar: 'Hiện nút thu gọn thanh bên',
+        fastEnter: 'Hiện truy cập nhanh',
+        reloadPage: 'Hiện nút tải lại trang',
+        breadcrumb: 'Hiện thanh điều hướng (breadcrumb)',
+        language: 'Hiện lựa chọn ngôn ngữ',
+        progressBar: 'Hiện thanh tiến trình',
+        weakMode: 'Chế độ mù màu',
+        watermark: 'Hình mờ toàn cục',
+        menuWidth: 'Độ rộng menu',
+        tabStyle: 'Kiểu tab',
+        pageTransition: 'HieuUng chuyển trang',
+        borderRadius: 'Bo góc tùy chỉnh'
+      }
+    },
+    tabStyle: {
+      default: 'MacDinh',
+      card: 'Thẻ',
+      google: 'Google'
+    },
+    transition: {
+      list: {
+        none: 'Không',
+        fade: 'Mờ dần',
+        slideLeft: 'Trượt sang trái',
+        slideBottom: 'Trượt từ dưới',
+        slideTop: 'Trượt từ trên'
+      }
+    },
+    actions: {
+      resetConfig: 'Đặt lại',
+      copyConfig: 'Sao chép cấu hình',
+      copySuccess:
+        'Đã sao chép cấu hình vào khay nhớ tạm, có thể dán vào file src/config/setting.ts',
+      copyFailed: 'Sao chép thất bại, vui lòng thử lại',
+      resetFailed: 'Đặt lại thất bại, vui lòng làm mới trang và thử lại'
+    }
+  },
+  notice: {
+    title: 'ThongBao',
+    btnRead: 'Đánh dấu đã đọc',
+    bar: ['ThongBao', 'TinNhan', 'Việc cần làm'],
+    text: ['Không có'],
+    viewAll: 'Xem tất cả'
+  },
+  worktab: {
+    btn: {
+      refresh: 'Làm mới',
+      fixed: 'Cố định',
+      unfixed: 'Bỏ cố định',
+      closeLeft: 'Đóng bên trái',
+      closeRight: 'Đóng bên phải',
+      closeOther: 'Đóng các tab khác',
+      closeAll: 'Đóng tất cả'
+    }
+  },
+  login: {
+    leftView: {
+      title: 'Hệ thống quản lý một cửa hàng bán xe máy vừa và nhỏ Anh Em Motor',
+      subTitle:
+        'Hệ thống hỗ trợ quản lý thông tin xe máy và quy trình bán hàng cho một cửa hàng vừa và nhỏ'
+    },
+    title: 'Chào mừng trở lại',
+    subTitle: 'Vui lòng nhập thông tin đăng nhập',
+    roles: {
+      super: 'Quản trị viên cấp cao',
+      admin: 'Quản trị viên',
+      user: 'NguoiDung thường'
+    },
+    placeholder: {
+      username: 'Tên đăng nhập/email',
+      password: 'Mật khẩu',
+      slider: 'Kéo thanh trượt để xác minh'
+    },
+    sliderText: 'Giữ và kéo thanh trượt',
+    sliderSuccessText: 'Xác minh thành công',
+    rememberPwd: 'Nhớ mật khẩu',
+    forgetPwd: 'Quên mật khẩu',
+    btnText: 'Đăng nhập',
+    noAccount: 'Chưa có tài khoản?',
+    register: 'DangKy',
+    success: {
+      title: 'Đăng nhập thành công',
+      message: 'Chào mừng trở lại',
+      defaultUser: 'Người dùng'
+    },
+    rules: {
+      usernameRequired: 'Vui lòng nhập tên đăng nhập hoặc email',
+      passwordRequired: 'Vui lòng nhập mật khẩu'
+    }
+  },
+  forgetPassword: {
+    title: 'Quên mật khẩu?',
+    subTitle: 'Nhập email của bạn để lấy lại mật khẩu',
+    placeholder: 'Vui lòng nhập email',
+    submitBtnText: 'Gửi',
+    backBtnText: 'Quay lại'
+  },
+  register: {
+    title: 'Tạo tài khoản',
+    subTitle: 'Chào mừng gia nhập, vui lòng điền thông tin bên dưới',
+    placeholder: {
+      username: 'Tên đăng nhập/email',
+      password: 'Mật khẩu',
+      confirmPassword: 'Nhập lại mật khẩu'
+    },
+    rule: {
+      confirmPasswordRequired: 'Vui lòng nhập lại mật khẩu',
+      passwordMismatch: 'Mật khẩu không khớp!',
+      usernameLength: 'Độ dài từ 3 đến 20 ký tự',
+      passwordLength: 'Mật khẩu không được ít hơn 6 ký tự',
+      agreementRequired: 'Vui lòng đồng ý với chính sách bảo mật'
+    },
+    agreeText: 'Tôi đồng ý',
+    privacyPolicy: '《Chính sách bảo mật》',
+    submitBtnText: 'DangKy',
+    hasAccount: 'Đã có tài khoản?',
+    toLogin: 'Đăng nhập'
+  },
+  lockScreen: {
+    pwdError: 'Sai mật khẩu',
+    lock: {
+      inputPlaceholder: 'Nhập mật khẩu khóa màn hình',
+      btnText: 'Khóa'
+    },
+    unlock: {
+      inputPlaceholder: 'Nhập mật khẩu mở khóa',
+      btnText: 'Mở khóa',
+      backBtnText: 'Quay lại đăng nhập'
+    }
+  },
+  greeting: {
+    dawn: 'Trời đã khuya!',
+    morning: 'Chào buổi sáng!',
+    afternoon: 'Chào buổi chiều!',
+    evening: 'Chào buổi tối!'
+  },
+  exceptionPage: {
+    '403': 'Xin lỗi, bạn không có quyền truy cập trang này',
+    '404': 'Xin lỗi, trang bạn truy cập không tồn tại',
+    '500': 'Xin lỗi, có lỗi từ máy chủ',
+    gohome: 'Về trang chủ'
+  },
+  menus: {
+    inventory: {
+      title: 'Quản lý kho hàng',
+      supplier: 'Đối tác',
+      input: 'Phiếu nhập',
+      debt: 'Công nợ',
+      quotation: 'Báo giá',
+      inOutStock: 'Xuất - nhập - tồn',
+      ledger: 'Sổ cái tồn kho'
+    },
+    login: {
+      title: 'Đăng nhập'
+    },
+    register: {
+      title: 'DangKy'
+    },
+    forgetPassword: {
+      title: 'Quên mật khẩu'
+    },
+    outside: {
+      title: 'Trang nhúng'
+    },
+    dashboard: {
+      title: 'Bảng tổng quan',
+      console: 'Tổng quan hệ thống',
+      analysis: 'Phân tích dữ liệu',
+      ecommerce: 'Tổng quan kinh doanh'
+    },
+    widgets: {
+      title: 'Trung tâm Component',
+      icon: 'Biểu tượng',
+      imageCrop: 'Cắt ảnh',
+      excel: 'Nhập xuất Excel',
+      video: 'Trình phát Video',
+      countTo: 'Cuộn số',
+      wangEditor: 'Trình soạn thảo (Wang Editor)',
+      watermark: 'Hình mờ (Watermark)',
+      contextMenu: 'Menu chuột phải',
+      qrcode: 'Mã QR',
+      drag: 'Kéo thả',
+      textScroll: 'Cuộn văn bản',
+      fireworks: 'Pháo hoa',
+      elementUI: 'TongQuan Component'
+    },
+    template: {
+      title: 'Trung tâm Mẫu',
+      chat: 'Trò chuyện',
+      cards: 'Thẻ',
+      banners: 'Băng rôn (Banner)',
+      charts: 'Biểu đồ',
+      map: 'Bản đồ',
+      calendar: 'Lịch',
+      pricing: 'Bảng giá'
+    },
+    article: {
+      title: 'Quản lý Bài viết',
+      articleList: 'Danh sách',
+      articleDetail: 'ChiTiet',
+      comment: 'BinhLuan',
+      articlePublish: 'Đăng bài'
+    },
+    result: {
+      title: 'Trang kết quả',
+      success: 'ThanhCong',
+      fail: 'ThatBai'
+    },
+    exception: {
+      title: 'Trang lỗi',
+      forbidden: '403',
+      notFound: '404',
+      serverError: '500'
+    },
+    examples: {
+      title: 'Ví dụ chức năng',
+      tabs: 'Thẻ tab',
+      tablesBasic: 'Bảng cơ bản',
+      tables: 'Bảng nâng cao',
+      tablesTree: 'Bảng cây',
+      forms: 'Biểu mẫu',
+      searchBar: 'Thanh tìm kiếm',
+      socketChat: 'Kết nối Socket',
+      permission: {
+        title: 'Quyền Front-end',
+        switchRole: 'Đổi quyền',
+        buttonAuth: 'Quyền của nút',
+        pageVisibility: 'Quản trị viên hiển thị'
+      }
+    },
+    system: {
+      title: 'CaiDat hệ thống',
+      user: 'Quản lý NguoiDung',
+      role: 'Quản lý VaiTro',
+      userCenter: 'Trung tâm cá nhân',
+      menu: 'Quản lý Menu',
+      nested: 'Menu lồng nhau',
+      menu1: 'Menu 1',
+      menu2: 'Menu 2',
+      menu21: 'Menu 2-1',
+      menu3: 'Menu 3',
+      menu31: 'Menu 3-1',
+      menu32: 'Menu 3-2',
+      menu321: 'Menu 3-2-1'
+    },
+    auth: {
+      title: 'Quản lý phân quyền',
+      user: 'Người dùng & Vai trò',
+      role: 'Quyền hạn vai trò'
+    },
+    safeguard: {
+      title: 'Quản lý Vận hành',
+      server: 'MayChu'
+    },
+    plan: {
+      title: 'KeHoach phiên bản',
+      log: 'NhatKy cập nhật'
+    },
+    help: {
+      title: 'Trung tâm trợ giúp',
+      document: 'TaiLieu',
+      liteVersion: 'Phiên bản rút gọn',
+      oldVersion: 'Phiên bản v2.6.1'
+    },
+    product: {
+      title: 'Quản lý sản phẩm',
+      brand: {
+        title: 'Quản lý Thương hiệu',
+        records: 'Xác nhận đăng xuất?'
+      },
+      type: {
+        title: 'Quản lý Thể loại',
+        stats: {
+          total: 'Tổng số lượng thể loại',
+          product: 'Danh mục Sản phẩm',
+          vehicle: 'Dòng xe',
+          new: 'Mới cập nhật'
+        },
+        tabs: {
+          product: 'Sản phẩm',
+          vehicle: 'Xe'
+        },
+        table: {
+          titleProduct: 'Danh mục sản phẩm',
+          titleVehicle: 'Phân loại xe'
+        }
+      },
+      list: {
+        title: 'Danh sách Sản phẩm',
+        stats: {
+          total: 'Tổng sản phẩm',
+          stock: 'Tổng tồn kho',
+          active: 'Đang kinh doanh',
+          outOfStock: 'Hết hàng'
+        },
+        tabs: {
+          all: 'Tất cả'
+        },
+        table: {
+          title: 'Danh sách sản phẩm'
+        }
+      }
+    },
+    customer: {
+      title: 'Quản lý khách hàng',
+      potential: 'Khách hàng tiềm năng',
+      profile: 'Hồ sơ khách hàng',
+      progress: 'Tiến độ mua hàng',
+      asset: 'Quản lý tài sản',
+      care: 'Chăm sóc & Ưu đãi',
+      contact: 'Quản lý liên hệ',
+      booking: 'Đặt Lịch & lái Thử'
+    },
+    marketing: {
+      title: 'Quản lý Banner',
+      banner: 'Danh sách Banner',
+      conversion: 'Công cụ chuyển đổi'
+    },
+    hr: {
+      title: 'Quản lý Nhân sự',
+      employees: 'Hồ sơ nhân viên',
+      commissionPolicy: 'Chính sách hoa hồng',
+      payroll: 'Bảng Lương',
+      kpi: 'Quản lý KPI'
+    }
+  },
+  table: {
+    form: {
+      reset: 'Xóa bộ lọc',
+      submit: 'Gửi'
+    },
+    searchBar: {
+      reset: 'Xóa bộ lọc',
+      search: 'Tìm kiếm',
+      expand: 'Mở rộng',
+      collapse: 'Thu gọn',
+      searchInputPlaceholder: 'Vui lòng nhập',
+      searchSelectPlaceholder: 'Vui lòng chọn'
+    },
+    selection: 'Chọn',
+    sizeOptions: {
+      small: 'Nhỏ',
+      default: 'MacDinh',
+      large: 'Lớn'
+    },
+    column: {
+      selection: 'Đánh dấu',
+      expand: 'Mở rộng',
+      index: 'STT'
+    },
+    zebra: 'Sọc vằn',
+    border: 'Viền',
+    headerBackground: 'Nền tiêu đề'
+  },
+  admin: {
+    t1: 'Đăng tải',
+    t2: 'bạncủadanhtên',
+    t3: 'Nói gì đó đơn giản...',
+    t4: 'TraLoi',
+    t5: 'Hủy',
+    t6: 'Đăng tải',
+    t7: 'bạncủadanhtên',
+    t8: 'Câu trả lời của bạn...',
+    t9: 'Xem thêm',
+    t10: 'Nhập Excel',
+    t11: 'HeThong đã khóa',
+    t12: 'Phát hiện Developer Tools đang mở',
+    t13: 'Vì an toàn hệ thống, vui lòng đóng Developer Tools để tiếp tục sử dụng',
+    t14: 'Chọn ảnh',
+    t15: 'Nhấn vào tôi',
+    t16: 'Màu sắc tùy chỉnh',
+    t17: 'NoiDung thẻ',
+    t18: 'Chức năng Quản trị viên cấp cao',
+    t19: 'Chức năng Quản trị viên',
+    t20: '*     NoiDung hiển thị cho tất cả người dùng đăng nhập\n *',
+    t21: 'Tường lời nhắn',
+    t22: 'Mỗi lời nhắn đều ghi lại ý tưởng của bạn và cung cấp cho chúng tôi những kỷ niệm quý giá',
+    t23: 'ChiTiet',
+    t24: 'Thêm bài viết mới',
+    t25: 'Chỉnh sửa',
+    t26: 'Nhập tiêu đề bài viết để tìm kiếm',
+    t27: 'CaiDat đăng tải',
+    t28: 'Nhấn để tải lên ảnh bìa',
+    t29: 'Kích thước khuyên dùng 16:9, định dạng jpg/png',
+    t30: 'Vui lòng nhập tiêu đề bài viết (tối đa 100 ký tự)',
+    t31: 'Vui lòng chọn loại bài viết',
+    t32: 'Ảnh bìa',
+    t33: 'Hiển thị',
+    t34: 'TaiKhoan',
+    t35: 'NhatKy cập nhật',
+    t36: 'Cần đăng nhập lại',
+    t37: 'Độ hài lòng khách hàng',
+    t38: 'Phân bố doanh số toàn quốc',
+    t39: 'Mục tiêu và thực tế',
+    t40: 'Doanh số hôm nay',
+    t41: 'Tổng kết doanh số',
+    t42: 'Xuất file',
+    t43: 'So với hôm qua',
+    t44: 'SanPham hot',
+    t45: 'Tên sản phẩm',
+    t46: 'Lượng bán',
+    t47: 'Tổng thu nhập',
+    t48: 'Phân tích dữ liệu khách truy cập',
+    t49: 'Khối lượng công việc và mức độ dịch vụ',
+    t50: 'vềmụcmục',
+    t51: 'Sử dụng các công nghệ tiên tiến như Vue3, TypeScript, Vite, Element Plus',
+    t52: 'TongQuan người dùng',
+    t53: 'So với tuần trước',
+    t54: 'Chúng tôi đã tạo nhiều tùy chọn cho bạn, có thể kết hợp chúng để tạo ra trang web hoàn hảo',
+    t55: 'So với tuần trước',
+    t56: 'Hoạt động',
+    t57: 'Thêm mới',
+    t58: 'NguoiDung mới',
+    t59: 'Tăng trưởng tháng này',
+    t60: 'Tháng này',
+    t61: 'Tháng trước',
+    t62: 'Năm nay',
+    t63: 'Avatar',
+    t64: 'Lượt truy cập',
+    t65: 'Tăng trưởng năm nay',
+    t66: 'đạilàmviệcmục',
+    t67: 'Chờ xử lý',
+    t68: 'Doanh thu hàng năm',
+    t69: 'ThongKe theo quý',
+    t70: 'Bán hàng trực tuyến',
+    t71: 'Bán hàng trực tiếp',
+    t72: 'Tỷ lệ chuyển đổi giỏ hàng',
+    t73: 'SanPham bán chạy',
+    t74: 'Xếp hạng doanh số tuần này',
+    t75: 'tácbánlượng',
+    t76: 'Giao dịch gần đây',
+    t77: 'Tăng trưởng',
+    t78: 'Ví dụ component biểu mẫu',
+    t79: 'Tôi là component được render từ slot',
+    t80: 'Ví dụ cơ bản (mặc định thu gọn)',
+    t81: 'Ví dụ đầy đủ (mặc định mở rộng)',
+    t82: 'Tôi là component được render từ slot',
+    t83: 'Trang này minh họa việc kiểm soát quyền ở cấp độ nút, các nút hiển thị sẽ khác nhau tùy theo vai trò người dùng.',
+    t84: 'ThongTin quyền của người dùng hiện tại',
+    t85: 'Trang này chỉ dành cho',
+    t86: 'Quản trị viên cấp cao',
+    t87: 'người dùng hiển thị, minh họa việc kiểm soát quyền ở cấp độ trang. Nếu bạn thấy trang này, nghĩa là bạn có quyền truy cập tương ứng.',
+    t88: 'Xác minh quyền thành công',
+    t89: 'Minh họa chuyển đổi quyền',
+    t90: 'Nhấn nút bên dưới để chuyển đổi vai trò người dùng, mô phỏng hiệu ứng đăng nhập khác nhau. Thay đổi này sẽ ảnh hưởng đến toàn bộ menu và quyền của nút.',
+    t91: 'NguoiDung hiện đang đăng nhập',
+    t92: 'Ví dụ kết nối WebSocket',
+    t93: 'Minh họa giao tiếp thời gian thực dựa trên WebSocketClient, hỗ trợ quản lý kết nối, gửi nhận tin nhắn và theo dõi trạng thái',
+    t94: 'ThongKe tin nhắn',
+    t95: 'Số lượng tin nhắn nhận được',
+    t96: 'Trạng thái kết nối',
+    t97: 'Trạng thái kết nối WebSocket hiện tại',
+    t98: 'Số lần kết nối lại',
+    t99: 'Số lần thử tự động kết nối lại',
+    t100: 'CauHinh kết nối',
+    t101: 'Hiển thị đầy đủ năng lực của bảng nâng cao',
+    t102: 'Cache thông minh',
+    t103: 'Tìm kiếm chống rung (debounce)',
+    t104: 'Nhiều kiểu làm mới',
+    t105: 'XuLy lỗi',
+    t106: 'Cây phân loại',
+    t107: 'ThaoTac thẻ tab',
+    t108: 'sửasửa',
+    t109: 'Đặt lại',
+    t110: 'Lấy thông tin thẻ tab hiện tại',
+    t111: 'Đóng thẻ hiện tại',
+    t112: 'Đóng các thẻ khác',
+    t113: 'Đóng tất cả thẻ',
+    t114: 'Vui lòng nhập tiêu đề thẻ tab mới',
+    t115: 'NoiDung bạn gửi có các lỗi sau:',
+    t116: 'TaiKhoan của bạn đã bị phong tỏa',
+    t117: 'TaiKhoan của bạn chưa đủ điều kiện đăng ký',
+    t118: 'GửiThatBai',
+    t119: 'Đã gửi yêu cầu, đang chờ phòng ban phê duyệt.',
+    t120: 'GửiThanhCong',
+    t121: 'Khởi động',
+    t122: 'Tắt máy',
+    t123: 'Khởi động lại',
+    t124: 'Thêm menu',
+    t125: 'Menu',
+    t126: 'Nút',
+    t127: 'Menu-1',
+    t128: 'Menu-2-1',
+    t129: 'Menu-3-1',
+    t130: 'Menu-3-2-1',
+    t131: 'Thêm vai trò mới',
+    t132: 'Hủy',
+    t133: 'Gửi',
+    t134: "dialogType === 'add' ? 'Thêm vai trò mới' : 'Chỉnh sửaVaiTro'",
+    t135: 'Tên vai trò',
+    t136: 'Vui lòng nhập tên vai trò',
+    t137: 'Mã vai trò',
+    t138: 'Vui lòng nhập mã vai trò',
+    t139: 'Mô tả',
+    t140: 'Vui lòng nhập mô tả vai trò',
+    t141: 'Bật',
+    t142: 'QuyenHan menu',
+    t143: 'Thêm người dùng mới',
+    t144: 'Hủy',
+    t145: 'Gửi',
+    t146: "dialogType === 'add' ? 'Thêm mớiNguoiDung' : 'Chỉnh sửaNguoiDung'",
+    t147: 'Tên người dùng',
+    t148: 'Vui lòng nhậpTên người dùng',
+    t149: 'Số điện thoại',
+    t150: 'Vui lòng nhậpSố điện thoại',
+    t151: 'GioiTinh',
+    t152: 'Nam',
+    t153: 'Nữ',
+    t154: 'VaiTro',
+    t155: 'Tập trung vào trải nghiệm người dùng và thiết kế trực quan',
+    t156: 'Chuyên gia tương tác',
+    t157: 'Thành phố Thâm Quyến, Quảng Đông',
+    t158: 'ByteDance - Phòng nền tảng - UED',
+    t159: 'Tag',
+    t160: 'CaiDat cơ bản',
+    t161: 'Đổi mật khẩu',
+    t162: 'Họ tên',
+    t163: 'GioiTinh',
+    t164: 'Biệt danh',
+    t165: 'Email',
+    t166: 'taymáy',
+    t167: 'DiaChi',
+    t168: 'Giới thiệu cá nhân',
+    t169: 'Mật khẩu hiện tại',
+    t170: 'Mật khẩu mới',
+    t171: 'Xác nhận mật khẩu mới',
+    t172: 'Cơ bản & Nút tùy chỉnh + Màu nền',
+    t173: 'Ảnh tùy chỉnh & Sử dụng slot cho nội dung tùy chỉnh',
+    t174: 'HeThong component thông minh',
+    t175: 'Trạng thái vận hành trung tâm dữ liệu',
+    t176: 'Chào mừng sử dụng Art Design Pro',
+    t177: 'Khám phá kế hoạch vì sao',
+    t178: 'Thẻ thống kê (văn bản)',
+    t179: 'Thẻ thống kê (số cuộn)',
+    t180: 'Thẻ thống kê (kiểu tùy chỉnh)',
+    t181: 'Thẻ tiến trình',
+    t182: 'Thẻ tiến trình (biểu tượng)',
+    t183: 'Thẻ biểu đồ (nhỏ)',
+    t184: 'Thẻ biểu đồ (lớn)',
+    t185: 'Thẻ danh sách dữ liệu',
+    t186: 'Thẻ hình ảnh',
+    t187: 'NguoiDung mới',
+    t188: 'xemlượng',
+    t189: 'phấnsợisố',
+    t190: 'phấnsợilượng',
+    t191: 'NguoiDung mới',
+    t192: 'xemlượng',
+    t193: 'phấnsợisố',
+    t194: 'phấnsợilượng',
+    t195: 'Việc cần làmviệcmục',
+    t196: 'Hoạt động gần đây',
+    t197: 'Giao dịch gần đây',
+    t198: 'Biểu đồ',
+    t199: 'Biểu đồ cột (đơn lẻ)',
+    t200: 'Biểu đồ cột (nhiều nhóm)',
+    t201: 'Biểu đồ cột (chồng)',
+    t202: 'đườngảnh',
+    t203: 'Biểu đồ đường (nền gradient)',
+    t204: 'Biểu đồ đường (nền gradient)',
+    t205: 'Biểu đồ cột (ngang)',
+    t206: 'Biểu đồ cột (ngang)',
+    t207: 'Biểu đồ cột (ngang chồng)',
+    t208: 'Biểu đồ vòng',
+    t209: 'Biểu đồ vòng',
+    t210: 'Biểu đồ tròn',
+    t211: 'Biểu đồ phân tán',
+    t212: 'Biểu đồ radar',
+    t213: 'Biểu đồ nến (K-line)',
+    t214: 'Biểu đồ cột chồng hai chiều',
+    t215: 'SapXep theo',
+    t216: 'SapXep theo thời gian',
+    t217: 'SapXep theo tên',
+    t218: 'Đánh dấu tất cả đã đọc',
+    t219: 'Tìm kiếm liên hệ',
+    t220: 'Đang tải...',
+    t221: 'Hơn 53,476 nhà phát triển tin dùng',
+    t222: 'Và sự lựa chọn của nhiều tập đoàn công nghệ lớn',
+    t223: 'DuAn này mã nguồn mở miễn phí theo giấy phép MIT, trang này là mẫu bảng giá, chỉ dùng để minh họa',
+    t224: 'Thương mại miễn phí',
+    t225: '/ThanhToan một lần',
+    t226: 'Mua ngay',
+    t227: 'Kích hoạt menu chuột phải',
+    t228: 'Component Count-To dựa trên VueUse useTransition',
+    t229: 'caotínhnăngSốCuộnHoatAnhComponent，chiếctrìĐầy đủcủaHoatAnhkhốngchếvàSuKienLắng nghe',
+    t230: 'Cơ bảndùngpháp',
+    t231: 'Có tiền tố hậu tố',
+    t232: 'Dấu thập phân và dấu phân cách',
+    t233: 'So sánh hiệu ứng hoạt ảnh',
+    t234: 'Kích hoạt tất cả hoạt ảnh',
+    t235: 'Nút điều khiển',
+    t236: 'Bắt đầu',
+    t237: 'TamDung',
+    t238: 'Đặt lại',
+    t239: 'Cơ bảnVí dụ',
+    t240: '✨ Bắn pháo hoa nhỏ',
+    t241: '🎉 Mở bao lì xì may mắn',
+    t242: '🎆 Show pháo hoa rực rỡ',
+    t243: '❄️ Tuyết rơi nhẹ',
+    t244: '❄️ Bão tuyết lãng mạn',
+    t245: 'Component hiệu ứng pháo hoa đã được đăng ký toàn cục, thời điểm kích hoạt do file cấu hình quyết định. Ngày trong cấu hình mặc định đã qua, sẽ không tự động kích hoạt lại.',
+    t246: 'MacDinhHiển thịHình họcảnhhình，Có thểlấyCauHinhHình ảnh，Hình ảnhcầncầngợitrướctại\r\n        src/components/core/layouts/art-fireworks-effect/index.vue vănphần tửTrướcĐịnh nghĩa',
+    t247: 'Trong file src/config/festival.ts, bạn có thể cấu hình ngày lễ và kiểu pháo hoa tương ứng',
+    t248: 'command + shift + p hoặc ctrl + shift + p',
+    t249: 'Mô tả component pháo hoa',
+    t250: 'Hiển thịgiờmáy',
+    t251: 'Kiểu pháo hoa',
+    t252: 'File cấu hình',
+    t253: 'khoáinhanhphím',
+    t254: 'Icon',
+    t255: 'Phiên bản v.3.0 kho biểu tượng nâng cấp lên iconify, có thể tìm tại',
+    t256: 'Hỗ trợ nhiều bộ biểu tượng như Remix Icon, Solar, Tabler Icons...',
+    t257: 'Để đảm bảo phong cách biểu tượng đồng nhất, dự án sử dụng bộ Remix Icon, có thể tìm tại',
+    t258: 'hoặc',
+    t259: 'TrangChu Remix Icon',
+    t260: 'Tìm kiếm để sử dụng.',
+    t261: 'Ví dụ sử dụng',
+    t262: 'Sử dụng cơ bản',
+    t263: 'Kích thước tùy chỉnh',
+    t264: 'Màu sắc tùy chỉnh',
+    t265: 'Sử dụng kết hợp',
+    t266: "'Cắt ảnh'",
+    t267: 'Nhấn vào tôi',
+    t268: 'Truy cập tài liệu chính thức"\r\n      showClose\r\n    />',
+    t269: "Art Design Pro làmộtkhoảnkiêmdụng cụthiếtkếmỹhọcvớicaohiệumởphátcủasauchiếcHeThong <a target='_blank' href='https://www.artd.pro/docs/'>{{ $t('admin.t267') }}</a>{{ $t('admin.t268') }}<!-- khiếndùngKhôngcùngcủaloạikiểu -->\r\n    <ArtTextScroll type=",
+    t270: 'Đây là một thông báo cuộn loại thành công',
+    t271: 'Đây là một thông báo cuộn loại cảnh báo',
+    t272: 'Đây là một thông báo cuộn loại nguy hiểm',
+    t273: 'Đây là một thông báo cuộn loại thông tin',
+    t274: 'Đây là một thông báo cuộn có thể đóng',
+    t275: 'Đây là một thông báo cuộn tốc độ chậm, cuộn sang phải',
+    t276: 'Đây là thông báo chỉ cuộn khi văn bản tràn, nếu không sẽ giữ tĩnh',
+    t277: 'Đây là một thông báo cuộn lên trên',
+    t278: 'Đây là một thông báo cuộn xuống dưới',
+    t279: '🛠️ Trình soạn thảo đầy đủ thanh công cụ',
+    t280: 'xóakhông',
+    t281: 'Lấy nội dung',
+    t282: 'CaiDat ví dụ'
+  },
+  dashboard: {
+    ecommerce: {
+      welcome: 'Chào mừng trở lại',
+      todaySales: 'Doanh số hôm nay',
+      vsYesterday: 'So với hôm qua',
+      salesTrend: 'Xu hướng bán hàng',
+      monthlyComparison: 'So sánh hàng tháng',
+      salesClassification: 'Phân loại doanh số',
+      byCategory: 'Theo danh mục',
+      totalIncome: 'Tổng doanh thu',
+      growthThisMonth: 'Tăng trưởng tháng này',
+      totalProducts: 'Tổng sản phẩm',
+      growth: 'Tăng trưởng',
+      hotCommodity: 'SanPham bán chạy',
+      weeklyRanking: 'Xếp hạng tuần',
+      cartConversion: 'Tỷ lệ chuyển đổi giỏ hàng',
+      recentActivity: 'Hoạt động gần đây',
+      orderStatus: 'Trạng thái xử lý',
+      hotProducts: 'SanPham bán chạy',
+      monthlySales: 'Tình hình bán hàng tháng này',
+      product: 'SanPham',
+      price: 'Giá',
+      stock: 'Kho',
+      sales: 'Doanh số',
+      outOfStock: 'Hết hàng',
+      lowStock: 'Sắp hết',
+      moderateStock: 'Trung bình',
+      sufficientStock: 'Đầy đủ'
+    }
+  }
+}

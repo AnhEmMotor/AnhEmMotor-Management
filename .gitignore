@@ -2,10 +2,6 @@
 logs
 *.log
 npm-debug.log*
-Logs
-
-logs
-.log
 npm-debug.log
 yarn-debug.log*
 yarn-error.log*
@@ -18,6 +14,12 @@ dist
 dist-ssr
 coverage
 *.local
+.cursorrules
+
+# Auto-generated files
+src/types/import/auto-imports.d.ts
+src/types/import/components.d.ts
+.auto-import.json
 
 /cypress/videos/
 /cypress/screenshots/
