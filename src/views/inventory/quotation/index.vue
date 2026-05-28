@@ -78,14 +78,15 @@
                 <ElIcon><View /></ElIcon>
               </ElButton>
             </ElTooltip>
-            <ElTooltip content="Chỉnh sửa" placement="top">
-              <ElButton
-                circle
-                size="small"
-                type="primary"
-                v-auth="Permissions.QuotationsEdit"
-                @click="handleEdit(row)"
-              >
+            <ElTooltip
+              v-if="
+                hasPermission(Permissions.QuotationsEdit) &&
+                (row.status !== 'sent' || hasPermission(Permissions.QuotationsApprove))
+              "
+              content="Chỉnh sửa"
+              placement="top"
+            >
+              <ElButton circle size="small" type="primary" @click="handleEdit(row)">
                 <ElIcon><Edit /></ElIcon>
               </ElButton>
             </ElTooltip>
@@ -125,7 +126,8 @@
             <ElTooltip
               v-if="
                 hasPermission(Permissions.QuotationsDelete) &&
-                (row.status !== 'approved' || hasPermission(Permissions.QuotationsApprove))
+                ((row.status !== 'approved' && row.status !== 'sent') ||
+                  hasPermission(Permissions.QuotationsApprove))
               "
               content="Xóa"
               placement="top"
