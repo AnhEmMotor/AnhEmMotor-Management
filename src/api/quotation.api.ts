@@ -45,21 +45,22 @@ export const QuotationApi = {
     })
   },
 
-  approve(id: number) {
-    return request.patch<QuotationDetailResponse>({
-      url: `/api/v1/Quotations/${id}/approve`
-    })
-  },
-
-  reject(id: number) {
-    return request.patch<QuotationDetailResponse>({
-      url: `/api/v1/Quotations/${id}/reject`
+  approveReject(id: number, status: string) {
+    return request.patch<void>({
+      url: `/api/v1/Quotations/${id}/status`,
+      data: { status }
     })
   },
 
   delete(id: number) {
     return request.del({
       url: `/api/v1/Quotations/${id}`
+    })
+  },
+
+  getStatuses() {
+    return request.get<Record<string, string>>({
+      url: '/api/v1/Quotations/status'
     })
   }
 }

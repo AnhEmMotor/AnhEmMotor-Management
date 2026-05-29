@@ -177,7 +177,7 @@
 
         <ElFormItem label="Ghi chú">
           <ElInput
-            v-model="formData.note"
+            v-model="formData.notes"
             type="textarea"
             :rows="2"
             placeholder="Nhập ghi chú hoặc điều khoản báo giá..."
@@ -271,13 +271,6 @@
               </template>
             </ElTableColumn>
           </ElTable>
-
-          <div class="flex justify-end items-center mt-4 gap-2 text-right">
-            <span class="text-gray-500 text-sm">Tổng cộng tiền hàng:</span>
-            <span class="text-lg font-bold text-primary">{{
-              formatCurrency(formTotalAmount)
-            }}</span>
-          </div>
         </div>
       </ElForm>
 
@@ -323,7 +316,7 @@
           <div class="col-span-2 border-t border-gray-200 pt-2 mt-1">
             <span class="text-gray-500 font-medium">Ghi chú / Điều khoản:</span>
             <div class="mt-1 text-gray-700 whitespace-pre-line">{{
-              detailData.note || 'Không có ghi chú'
+              detailData.notes || 'Không có ghi chú'
             }}</div>
           </div>
         </div>
@@ -609,7 +602,9 @@
   import type { ProductVariantLiteForInput } from '@/domain/product/product.types'
   import type {
     QuotationDetailResponse,
-    QuotationSummaryResponse
+    QuotationSummaryResponse,
+    CreateQuotationCommand,
+    UpdateQuotationCommand
   } from '@/domain/inventory/quotation.types'
   import { Permissions } from '@/domain/constants/permissions'
   import { usePermission } from '@/hooks'
@@ -617,16 +612,6 @@
   defineOptions({ name: 'InventoryQuotation' })
 
   const { hasPermission } = usePermission()
-
-  interface QuotationProductRow {
-    id?: number
-    productVariantId: number
-    productVariantDisplayName: string
-    productVariantColorId?: number
-    ProductVariantColorDisplayName?: string
-    quotePrice: number
-    note?: string
-  }
 
   const loading = ref(false)
   const dialogVisible = ref(false)
@@ -645,19 +630,28 @@
     status: [] as string[]
   })
 
-  const searchItems = ref([
+  const statusMap = ref<Record<string, string>>({})
+
+  const fetchStatuses = async () => {
+    try {
+      const res = await QuotationApi.getStatuses()
+      statusMap.value = res || {}
+    } catch (e) {
+      console.error('Failed to load quotation statuses', e)
+    }
+  }
+
+  const searchItems = computed(() => [
     { key: 'supplierName', label: 'Tên nhà cung cấp', type: 'input' },
     {
       key: 'status',
       label: 'Trạng thái',
       type: 'select',
       props: {
-        options: [
-          { label: 'Nháp', value: 'draft' },
-          { label: 'Đã gửi', value: 'sent' },
-          { label: 'Đã duyệt', value: 'approved' },
-          { label: 'Đã từ chối', value: 'rejected' }
-        ],
+        options: Object.entries(statusMap.value).map(([key, label]) => ({
+          label,
+          value: key
+        })),
         multiple: true,
         collapseTags: true,
         placeholder: 'Chọn trạng thái...'
@@ -686,7 +680,7 @@
       label: 'Thao tác',
       prop: 'operation',
       useSlot: true,
-      width: 180,
+      width: 200,
       fixed: 'right' as const,
       align: 'center'
     }
@@ -694,26 +688,30 @@
 
   const columnChecks = columns
 
-  // Form State
-  const formData = ref<{
+  interface FormData {
     id?: number
     supplierId?: number
     supplierName?: string
-    status: string
-    note?: string
-    quotationItems: QuotationProductRow[]
-  }>({
+    status?: string
+    notes?: string
+    quotationItems: Array<{
+      id?: number
+      productVariantId: number
+      productVariantDisplayName?: string
+      productVariantColorId?: number
+      ProductVariantColorDisplayName?: string
+      quotePrice?: number
+      note?: string
+    }>
+  }
+
+  // Form State
+  const formData = ref<FormData>({
     supplierId: undefined,
     supplierName: '',
     status: 'draft',
-    note: '',
+    notes: '',
     quotationItems: []
-  })
-
-  const formTotalAmount = computed(() => {
-    return (formData.value.quotationItems || []).reduce((sum, item) => {
-      return sum + (item.quotePrice || 0)
-    }, 0)
   })
 
   // Statistics
@@ -756,22 +754,12 @@
   }
 
   const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'draft':
-        return 'Nháp'
-      case 'sent':
-        return 'Đã gửi'
-      case 'approved':
-        return 'Đã duyệt'
-      case 'rejected':
-        return 'Từ chối'
-      default:
-        return status
-    }
+    if (!status) return ''
+    return statusMap.value[status.toLowerCase()] || status
   }
 
   const getStatusTagType = (status: string) => {
-    switch (status) {
+    switch (status?.toLowerCase()) {
       case 'draft':
         return 'info'
       case 'sent':
@@ -791,7 +779,8 @@
   }
 
   // Lifecycle
-  onMounted(() => {
+  onMounted(async () => {
+    await fetchStatuses()
     loadQuotations()
   })
 
@@ -864,7 +853,7 @@
       supplierId: undefined,
       supplierName: '',
       status: 'draft',
-      note: '',
+      notes: '',
       quotationItems: []
     }
     dialogVisible.value = true
@@ -880,7 +869,7 @@
         supplierId: detail.supplierId,
         supplierName: detail.supplierName,
         status: detail.status || 'draft',
-        note: detail.note,
+        notes: detail.notes,
         quotationItems: (detail.quotationItems || []).map((item: any) => ({
           id: item.id,
           productVariantId: item.productVariantId,
@@ -952,7 +941,7 @@
     )
       .then(async () => {
         try {
-          await QuotationApi.approve(row.id!)
+          await QuotationApi.approveReject(row.id!, 'approved')
           ElMessage.success('Xác nhận báo giá thành công')
           loadQuotations()
         } catch (err) {
@@ -975,7 +964,7 @@
     )
       .then(async () => {
         try {
-          await QuotationApi.reject(row.id!)
+          await QuotationApi.approveReject(row.id!, 'rejected')
           ElMessage.success('Hủy báo giá thành công')
           loadQuotations()
         } catch (err) {
@@ -1025,10 +1014,10 @@
     submitting.value = true
     try {
       if (isEdit.value && formData.value.id) {
-        const command = {
+        const command: UpdateQuotationCommand = {
           id: formData.value.id,
           supplierId: formData.value.supplierId,
-          notes: formData.value.note,
+          notes: formData.value.notes,
           products: formData.value.quotationItems.map((item: any) => ({
             id: item.id,
             productVariantId: String(item.productVariantId),
@@ -1042,9 +1031,9 @@
         await QuotationApi.update(formData.value.id, command)
         ElMessage.success('Cập nhật báo giá thành công')
       } else {
-        const command = {
+        const command: CreateQuotationCommand = {
           supplierId: formData.value.supplierId,
-          notes: formData.value.note,
+          notes: formData.value.notes,
           products: formData.value.quotationItems.map((item: any) => ({
             productVariantId: String(item.productVariantId),
             productVarientColorId: item.productVariantColorId
