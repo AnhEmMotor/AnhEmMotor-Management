@@ -23,6 +23,8 @@ export const Permissions = {
   InputsDelete: 'Permissions.Inputs.Delete',
   InputsChangeStatus: 'Permissions.Inputs.ChangeStatus',
   OutputsView: 'Permissions.Outputs.View',
+  OutputsViewConfirmed: 'Permissions.Outputs.ViewConfirmed',
+  OutputsViewUnconfirmed: 'Permissions.Outputs.ViewUnconfirmed',
   OutputsCreate: 'Permissions.Outputs.Create',
   OutputsEdit: 'Permissions.Outputs.Edit',
   OutputsDelete: 'Permissions.Outputs.Delete',

@@ -7,17 +7,25 @@ import type {
   VehicleAssignmentRequirement
 } from '@/domain/order/order.types'
 
+function getPagedList(url: string, params: any) {
+  const { current, size, ...rest } = params
+  return request.get<SalesOrderList>({
+    url,
+    params: {
+      Page: current,
+      PageSize: size,
+      ...rest
+    }
+  })
+}
+
 export const SalesOrderApi = {
-  getList(params: any) {
-    const { current, size, ...rest } = params
-    return request.get<SalesOrderList>({
-      url: '/api/SalesOrders',
-      params: {
-        Page: current,
-        PageSize: size,
-        ...rest
-      }
-    })
+  getConfirmedList(params: any) {
+    return getPagedList('/api/v1/SalesOrders/confirmed', params)
+  },
+
+  getUnconfirmedList(params: any) {
+    return getPagedList('/api/v1/SalesOrders/unconfirmed', params)
   },
 
   getById(id: number) {
