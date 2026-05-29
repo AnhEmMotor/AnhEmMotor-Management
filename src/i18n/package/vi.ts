@@ -11,7 +11,7 @@ export default {
     gatewayTimeout: 'Cổng kết nối quá thời gian, vui lòng thử lại sau',
     requestCancelled: 'Yêu cầu đã bị hủy',
     networkError: 'Lỗi kết nối mạng, vui lòng kiểm tra kết nối mạng của bạn',
-    requestFailed: 'Yêu cầu thất bại',
+    requestFailed: 'Có lỗi từ hệ thống',
     requestConfigError: 'Lỗi cấu hình yêu cầu'
   },
   topBar: {
