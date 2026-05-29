@@ -33,7 +33,12 @@
     <ElCard class="flex-1 art-table-card">
       <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
-          <ElButton type="primary" v-ripple @click="handleAdd" v-auth="Permissions.InputsCreate">
+          <ElButton
+            type="primary"
+            v-ripple
+            @click="handleAdd"
+            v-auth="Permissions.InventoryReceiptsCreate"
+          >
             <ElIcon class="mr-1"><Plus /></ElIcon> Tạo phiếu nhập
           </ElButton>
         </template>
@@ -80,7 +85,7 @@
                 size="small"
                 type="primary"
                 @click="handleEdit(row)"
-                v-auth="Permissions.InputsEdit"
+                v-auth="Permissions.InventoryReceiptsCreate"
               >
                 <ElIcon><Edit /></ElIcon>
               </ElButton>
@@ -91,7 +96,7 @@
                 size="small"
                 type="danger"
                 @click="handleDelete(row)"
-                v-auth="Permissions.InputsDelete"
+                v-auth="Permissions.InventoryReceiptsDelete"
               >
                 <ElIcon><Delete /></ElIcon>
               </ElButton>
@@ -109,18 +114,29 @@
       destroy-on-close
       class="rounded-xl overflow-hidden"
     >
-      <ElForm :model="formData" label-width="120px" class="mt-4" ref="formRef">
+      <ElForm :model="formData" label-width="150px" class="mt-4" ref="formRef">
         <div class="grid grid-cols-2 gap-4">
-          <ElFormItem label="Nhà cung cấp" required class="col-span-2">
-            <div
-              class="w-full border border-gray-300 rounded-md px-3 py-2 bg-white flex items-center justify-between cursor-pointer hover:border-primary transition duration-200"
-              @click="openSupplierSelector"
-            >
-              <span v-if="formData.supplierId" class="text-gray-800 font-medium">
-                {{ getSupplierNameById(formData.supplierId) }}
-              </span>
-              <span v-else class="text-gray-400">Chọn nhà cung cấp...</span>
-              <ElIcon class="text-gray-400"><ArrowDown /></ElIcon>
+          <!-- Purchase Request Selector -->
+          <ElFormItem label="Yêu cầu mua hàng" required class="col-span-2">
+            <div class="flex gap-2 w-full">
+              <div
+                class="flex-1 border border-gray-300 rounded-md px-3 py-2 bg-white flex items-center justify-between cursor-pointer hover:border-primary transition duration-200"
+                @click="openPrSelector"
+              >
+                <span v-if="formData.purchaseRequestId" class="text-gray-800 font-medium">
+                  Yêu cầu mua hàng #{{ formData.purchaseRequestId }}
+                </span>
+                <span v-else class="text-gray-400">Chọn Yêu cầu mua hàng...</span>
+                <ElIcon class="text-gray-400"><ArrowDown /></ElIcon>
+              </div>
+              <ElButton
+                v-if="formData.purchaseRequestId"
+                type="danger"
+                plain
+                @click="clearPrSelection"
+              >
+                Bỏ chọn PR
+              </ElButton>
             </div>
           </ElFormItem>
         </div>
@@ -137,23 +153,13 @@
         <div class="border-t border-gray-100 pt-4 mt-4">
           <div class="flex justify-between items-center mb-3">
             <span class="text-sm font-semibold text-gray-700">Chi tiết sản phẩm nhập kho</span>
-            <ElButton type="success" size="small" plain @click="handleAddProductRow">
-              <ElIcon class="mr-1"><Plus /></ElIcon> Thêm dòng sản phẩm
-            </ElButton>
           </div>
 
           <ElTable :data="formData.products" border size="small" class="w-full">
-            <ElTableColumn label="Sản phẩm" required>
+            <ElTableColumn label="Sản phẩm" min-width="260" required>
               <template #default="{ row, $index }">
-                <div
-                  class="w-full border border-gray-300 rounded px-2 py-1 bg-white flex items-center justify-between cursor-pointer hover:border-primary transition duration-200 min-h-[32px]"
-                  @click="openProductSelector($index)"
-                >
-                  <span v-if="row.productVariantId" class="text-gray-800 text-xs font-medium">
-                    {{ getProductNameById(row.productVariantId) }}
-                  </span>
-                  <span v-else class="text-gray-400 text-xs">Chọn sản phẩm...</span>
-                  <ElIcon class="text-gray-400 text-xs"><ArrowDown /></ElIcon>
+                <div class="text-xs font-semibold text-gray-800 py-1">
+                  {{ getProductNameById(row.productVariantId) }}
                 </div>
                 <ElTag v-if="getProductColorName(row)" size="small" type="info" class="mt-1 w-fit">
                   Màu: {{ getProductColorName(row) }}
@@ -169,17 +175,22 @@
               </template>
             </ElTableColumn>
 
-            <ElTableColumn label="Số lượng" width="150" align="center">
+            <ElTableColumn label="Báo giá / Nhà cung cấp" min-width="250" required>
               <template #default="{ row }">
-                <ElInputNumber
-                  v-model="row.count"
-                  :min="1"
-                  :precision="0"
+                <ElSelect
+                  v-model="row.selectedQuoteKey"
+                  placeholder="Chọn báo giá..."
+                  size="small"
                   class="w-full"
-                  controls-position="right"
-                  style="width: 120px"
-                  @change="handleProductCountChange(row)"
-                />
+                  @change="(val) => handleQuoteChange(row, val)"
+                >
+                  <ElOption
+                    v-for="q in getMatchingQuotes(row)"
+                    :key="`${q.supplierId}-${q.quotePrice}`"
+                    :label="`${q.supplierName} - ${formatCurrency(q.quotePrice)}`"
+                    :value="`${q.supplierId}-${q.quotePrice}`"
+                  />
+                </ElSelect>
               </template>
             </ElTableColumn>
 
@@ -191,6 +202,20 @@
                   :step="100000"
                   class="w-full"
                   controls-position="right"
+                />
+              </template>
+            </ElTableColumn>
+
+            <ElTableColumn label="Số lượng nhập" width="150" align="center">
+              <template #default="{ row }">
+                <ElInputNumber
+                  v-model="row.count"
+                  :min="1"
+                  :precision="0"
+                  class="w-full"
+                  controls-position="right"
+                  style="width: 120px"
+                  @change="handleProductCountChange(row)"
                 />
               </template>
             </ElTableColumn>
@@ -643,6 +668,76 @@
         </div>
       </div>
     </ElDialog>
+
+    <!-- Purchase Request Selector Dialog -->
+    <ElDialog
+      v-model="prSelectorVisible"
+      title="Chọn Yêu cầu mua hàng (PR)"
+      width="580px"
+      append-to-body
+      destroy-on-close
+      class="rounded-xl overflow-hidden"
+    >
+      <div class="space-y-4">
+        <ElInput
+          placeholder="Tìm kiếm theo mã PR..."
+          clearable
+          prefix-icon="Search"
+          v-model="prSelectorQuery"
+          @input="handlePrSelectorSearch"
+        />
+
+        <div
+          v-loading="prSelectorLoading"
+          class="grid grid-cols-1 gap-3 min-h-[300px] max-h-[450px] overflow-y-auto pr-1"
+        >
+          <div
+            v-for="pr in prSelectorItems"
+            :key="pr.id"
+            class="p-4 border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition duration-200 cursor-pointer flex flex-col justify-between"
+            @click="selectPurchaseRequest(pr)"
+          >
+            <div class="text-xs text-gray-500 space-y-1">
+              <div
+                ><span class="font-medium text-gray-400">Ghi chú:</span>
+                {{ pr.note || 'Không có ghi chú' }}</div
+              >
+              <div
+                ><span class="font-medium text-gray-400">Người tạo:</span>
+                {{ pr.createdByName }}</div
+              >
+              <div
+                ><span class="font-medium text-gray-400">Thời gian tạo:</span>
+                {{ formatDateTime(pr.createdAt) }}</div
+              >
+              <div
+                ><span class="font-medium text-gray-400">Số lượng mặt hàng:</span>
+                {{ pr.totalItems }}</div
+              >
+            </div>
+          </div>
+          <div
+            v-if="!prSelectorLoading && prSelectorItems.length === 0"
+            class="flex flex-col items-center justify-center py-10 text-gray-400"
+          >
+            <ElIcon size="32"><InfoFilled /></ElIcon>
+            <span class="mt-2 text-sm">Không tìm thấy yêu cầu mua hàng hợp lệ nào</span>
+          </div>
+        </div>
+
+        <div class="flex justify-end pt-2 border-t">
+          <ElPagination
+            v-model:current-page="prSelectorPage"
+            v-model:page-size="prSelectorPageSize"
+            :total="prSelectorTotal"
+            layout="prev, pager, next, total"
+            background
+            size="small"
+            @current-change="fetchSelectorPrs"
+          />
+        </div>
+      </div>
+    </ElDialog>
   </div>
 </template>
 
@@ -663,6 +758,8 @@
   import { InventoryReceiptApi } from '@/api/inventory-receipt.api'
   import { SupplierApi } from '@/api/supplier.api'
   import { ProductApi } from '@/api/product.api'
+  import { PurchaseRequestApi } from '@/api/purchase-request.api'
+  import { QuotationApi } from '@/api/quotation.api'
   import { Permissions } from '@/domain/constants/permissions'
   import type { InventoryReceipt, InputInfo } from '@/domain/inventory/receipt.types'
   import type { Supplier } from '@/domain/supplier/supplier.types'
@@ -685,6 +782,9 @@
     inputPrice: number
     managementType?: string
     vehicles?: VehicleIdentification[]
+    purchaseRequestItemId?: number
+    quotationProductRowId?: number
+    selectedQuoteKey?: string
   }
 
   const VIN_MANAGEMENT_TYPE = 'vin_number'
@@ -713,6 +813,41 @@
   })
 
   const statuses = ref<Record<string, string>>({})
+  const allQuotedPrices = ref<any[]>([])
+  const qRowMap = ref(new Map<string, number>())
+
+  const getMatchingQuotes = (row: ReceiptProductRow) => {
+    const rowColor = row.productVariantColorId ? Number(row.productVariantColorId) : null
+    const matches = allQuotedPrices.value.filter((q) => {
+      const qColor = q.productVariantColorId ? Number(q.productVariantColorId) : null
+      return Number(q.productVariantId) === Number(row.productVariantId) && qColor === rowColor
+    })
+    console.log('getMatchingQuotes matching result:', {
+      rowVariantId: row.productVariantId,
+      rowColorId: row.productVariantColorId,
+      rowColorNormalized: rowColor,
+      quotesAvailable: allQuotedPrices.value,
+      matches
+    })
+    return matches
+  }
+
+  const handleQuoteChange = (row: ReceiptProductRow, val: string) => {
+    if (!val) {
+      row.quotationProductRowId = undefined
+      row.inputPrice = 0
+      return
+    }
+    const [supplierIdStr, priceStr] = val.split('-')
+    const supplierId = Number(supplierIdStr)
+    const price = Number(priceStr)
+
+    row.inputPrice = price
+
+    // Resolve the quotationProductRowId from the map
+    const mapKey = `${supplierId}-${row.productVariantId}-${row.productVariantColorId || 0}`
+    row.quotationProductRowId = qRowMap.value.get(mapKey)
+  }
 
   const supplierCache = reactive(new Map<number, string>())
   const productCache = reactive(
@@ -721,11 +856,6 @@
       { displayName: string; price?: number; managementType?: string; colorName?: string }
     >()
   )
-
-  const getSupplierNameById = (id?: number) => {
-    if (!id) return ''
-    return supplierCache.get(Number(id)) || `Nhà cung cấp #${id}`
-  }
 
   const getProductNameById = (id?: number) => {
     if (!id) return ''
@@ -841,19 +971,74 @@
     }
   }
 
-  const openSupplierSelector = () => {
-    supplierSelectorQuery.value = ''
-    supplierSelectorPage.value = 1
-    supplierSelectorVisible.value = true
-    fetchSelectorSuppliers()
-  }
-
-  const selectSupplier = (sup: Supplier) => {
-    if (sup.id) {
-      formData.value.supplierId = sup.id
-      supplierCache.set(sup.id, sup.name)
-    }
+  const selectSupplier = async (sup: Supplier) => {
+    if (!sup.id) return
+    formData.value.supplierId = sup.id
+    supplierCache.set(sup.id, sup.name)
     supplierSelectorVisible.value = false
+
+    if (formData.value.purchaseRequestId) {
+      try {
+        loading.value = true
+        // Fetch approved quotations for this supplier to resolve QuotationProductRowId
+        const qRes = await QuotationApi.getList({
+          size: 999,
+          Filters: `SupplierId==${sup.id},Status==Approved`
+        })
+
+        const qRowMap = new Map<string, { rowId: number; quotePrice: number }>()
+        for (const q of qRes.items || []) {
+          if (!q.id) continue
+          const qDetail = await QuotationApi.getById(q.id)
+          ;(qDetail.quotationItems || []).forEach((item) => {
+            if (item.productVariantId && item.id) {
+              const key = `${item.productVariantId}-${item.productVariantColorId || 0}`
+              qRowMap.set(key, { rowId: item.id, quotePrice: item.quotePrice || 0 })
+            }
+          })
+        }
+
+        // Fetch the PR details to load products
+        const prDetail = await PurchaseRequestApi.getById(formData.value.purchaseRequestId)
+        formData.value.products = []
+
+        prDetail.items.forEach((item) => {
+          if (item.unimportedQuantity <= 0) return
+
+          const key = `${item.productVariantId}-${item.productVariantColorId || 0}`
+          const qInfo = qRowMap.get(key)
+
+          const newRow: ReceiptProductRow = {
+            productVariantId: item.productVariantId,
+            productVariantColorId: item.productVariantColorId,
+            productVariantColorName: item.productVariantColorName,
+            count: item.unimportedQuantity,
+            inputPrice: qInfo ? qInfo.quotePrice : 0,
+            purchaseRequestItemId: item.id,
+            quotationProductRowId: qInfo ? qInfo.rowId : undefined
+          }
+
+          productCache.set(item.productVariantId, {
+            displayName: item.productName || `Sản phẩm #${item.productVariantId}`,
+            price: newRow.inputPrice,
+            colorName: item.productVariantColorName
+          })
+
+          formData.value.products.push(newRow)
+        })
+
+        if (formData.value.products.length === 0) {
+          ElMessage.warning(
+            'Yêu cầu mua hàng này không có mặt hàng nào chưa nhập từ nhà cung cấp này!'
+          )
+        }
+      } catch (err) {
+        console.error(err)
+        ElMessage.error('Không thể tự động nạp sản phẩm từ Yêu cầu mua hàng')
+      } finally {
+        loading.value = false
+      }
+    }
   }
 
   const handleSupplierSelectorSearch = useDebounceFn(async (query: string) => {
@@ -902,14 +1087,6 @@
     } finally {
       productSelectorLoading.value = false
     }
-  }
-
-  const openProductSelector = (rowIndex?: number) => {
-    productSelectorActiveRowIndex.value = rowIndex !== undefined ? rowIndex : null
-    productSelectorQuery.value = ''
-    productSelectorPage.value = 1
-    productSelectorVisible.value = true
-    fetchSelectorProducts()
   }
 
   const selectProductVariant = (variant: ProductVariantLiteForInput) => {
@@ -974,16 +1151,164 @@
 
   const formData = ref<{
     id?: number
+    purchaseRequestId: number | undefined
     supplierId: number | undefined
     notes: string
     statusId: string
     products: ReceiptProductRow[]
   }>({
+    purchaseRequestId: undefined,
     supplierId: undefined,
     notes: '',
     statusId: 'working',
     products: []
   })
+
+  const prSelectorVisible = ref(false)
+  const prSelectorLoading = ref(false)
+  const prSelectorItems = ref<any[]>([])
+  const prSelectorPage = ref(1)
+  const prSelectorPageSize = ref(10)
+  const prSelectorTotal = ref(0)
+  const prSelectorQuery = ref('')
+
+  const prItemsMap = reactive(
+    new Map<number, { productName: string; unimportedQuantity: number }>()
+  )
+
+  const fetchSelectorPrs = async () => {
+    prSelectorLoading.value = true
+    try {
+      const filters = ['Status==Approved']
+      if (prSelectorQuery.value.trim()) {
+        filters.push(`Id==${prSelectorQuery.value.trim()}`)
+      }
+      const res = await InventoryReceiptApi.getListPurchaseRequestOrdered({
+        current: prSelectorPage.value,
+        size: prSelectorPageSize.value,
+        Filters: filters.join(',')
+      })
+      prSelectorItems.value = res.items || []
+      prSelectorTotal.value = res.totalCount || 0
+    } catch (err) {
+      console.error('Failed to fetch selector PRs:', err)
+    } finally {
+      prSelectorLoading.value = false
+    }
+  }
+
+  const openPrSelector = () => {
+    prSelectorQuery.value = ''
+    prSelectorPage.value = 1
+    prSelectorVisible.value = true
+    fetchSelectorPrs()
+  }
+
+  const handlePrSelectorSearch = useDebounceFn(async () => {
+    prSelectorPage.value = 1
+    await fetchSelectorPrs()
+  }, 300)
+
+  const clearPrSelection = () => {
+    formData.value.purchaseRequestId = undefined
+    formData.value.products = []
+    prItemsMap.clear()
+  }
+
+  const selectPurchaseRequest = async (pr: any) => {
+    try {
+      loading.value = true
+      prSelectorVisible.value = false
+      formData.value.purchaseRequestId = pr.id
+      formData.value.products = []
+      prItemsMap.clear()
+
+      const detail = await PurchaseRequestApi.getById(pr.id)
+      const quotes = await PurchaseRequestApi.getQuotedPrices(pr.id)
+      allQuotedPrices.value = quotes
+
+      // Fetch quotations map for unique suppliers
+      const uniqueSupplierIds = Array.from(new Set(quotes.map((q) => q.supplierId)))
+      qRowMap.value.clear()
+      for (const supId of uniqueSupplierIds) {
+        try {
+          const qRes = await QuotationApi.getList({
+            size: 999,
+            Filters: `SupplierId==${supId},Status==Approved`
+          })
+          for (const q of qRes.items || []) {
+            if (!q.id) continue
+            const qDetail = await QuotationApi.getById(q.id)
+            ;(qDetail.quotationItems || []).forEach((item) => {
+              if (item.productVariantId && item.id) {
+                const key = `${supId}-${item.productVariantId}-${item.productVariantColorId || 0}`
+                qRowMap.value.set(key, item.id)
+              }
+            })
+          }
+        } catch (err) {
+          console.error(`Failed to fetch quotations for supplier ${supId}:`, err)
+        }
+      }
+
+      detail.items.forEach((item) => {
+        if (item.unimportedQuantity <= 0) return
+
+        prItemsMap.set(item.id, {
+          productName: item.productName || `Sản phẩm #${item.productVariantId}`,
+          unimportedQuantity: item.unimportedQuantity
+        })
+
+        const itemColor = item.productVariantColorId ? Number(item.productVariantColorId) : null
+        const matchedQuotes = quotes.filter((q) => {
+          const qColor = q.productVariantColorId ? Number(q.productVariantColorId) : null
+          return (
+            Number(q.productVariantId) === Number(item.productVariantId) && qColor === itemColor
+          )
+        })
+
+        const defaultQuote = matchedQuotes[0]
+        let quotationProductRowId = undefined
+        let inputPrice = 0
+        let selectedQuoteKey = ''
+
+        if (defaultQuote) {
+          const mapKey = `${defaultQuote.supplierId}-${item.productVariantId}-${item.productVariantColorId || 0}`
+          quotationProductRowId = qRowMap.value.get(mapKey)
+          inputPrice = defaultQuote.quotePrice
+          selectedQuoteKey = `${defaultQuote.supplierId}-${defaultQuote.quotePrice}`
+        }
+
+        const newRow: ReceiptProductRow = {
+          productVariantId: item.productVariantId,
+          productVariantColorId: item.productVariantColorId,
+          productVariantColorName: item.productVariantColorName,
+          count: item.unimportedQuantity,
+          inputPrice,
+          purchaseRequestItemId: item.id,
+          quotationProductRowId,
+          selectedQuoteKey
+        }
+
+        productCache.set(item.productVariantId, {
+          displayName: item.productName || `Sản phẩm #${item.productVariantId}`,
+          price: newRow.inputPrice,
+          colorName: item.productVariantColorName
+        })
+
+        formData.value.products.push(newRow)
+      })
+
+      ElMessage.success(
+        `Đã tự động nạp ${formData.value.products.length} sản phẩm từ Yêu cầu mua hàng!`
+      )
+    } catch (err) {
+      console.error(err)
+      ElMessage.error('Không thể nạp thông tin Yêu cầu mua hàng')
+    } finally {
+      loading.value = false
+    }
+  }
 
   const data = ref<InventoryReceipt[]>([])
   const pagination = reactive({
@@ -1199,6 +1524,7 @@
     isEdit.value = false
     dialogTitle.value = 'Tạo phiếu nhập mới'
     formData.value = {
+      purchaseRequestId: undefined,
       supplierId: undefined,
       notes: '',
       statusId: 'working',
@@ -1214,8 +1540,34 @@
       isEdit.value = true
       dialogTitle.value = 'Cập nhật phiếu nhập'
 
-      if (receipt.supplierId && receipt.supplierName) {
-        supplierCache.set(receipt.supplierId, receipt.supplierName)
+      allQuotedPrices.value = []
+      qRowMap.value.clear()
+
+      if (receipt.purchaseRequestId) {
+        const quotes = await PurchaseRequestApi.getQuotedPrices(receipt.purchaseRequestId)
+        allQuotedPrices.value = quotes
+
+        const uniqueSupplierIds = Array.from(new Set(quotes.map((q) => q.supplierId)))
+        for (const supId of uniqueSupplierIds) {
+          try {
+            const qRes = await QuotationApi.getList({
+              size: 999,
+              Filters: `SupplierId==${supId},Status==Approved`
+            })
+            for (const q of qRes.items || []) {
+              if (!q.id) continue
+              const qDetail = await QuotationApi.getById(q.id)
+              ;(qDetail.quotationItems || []).forEach((item) => {
+                if (item.productVariantId && item.id) {
+                  const key = `${supId}-${item.productVariantId}-${item.productVariantColorId || 0}`
+                  qRowMap.value.set(key, item.id)
+                }
+              })
+            }
+          } catch (err) {
+            console.error(err)
+          }
+        }
       }
 
       ;(receipt.products || []).forEach((p) => {
@@ -1229,6 +1581,7 @@
 
       formData.value = {
         id: receipt.id,
+        purchaseRequestId: receipt.purchaseRequestId,
         supplierId: receipt.supplierId,
         notes: receipt.notes || '',
         statusId: receipt.statusId,
@@ -1240,6 +1593,9 @@
           count: p.quantity || 1,
           inputPrice: p.importPrice || 0,
           managementType: p.vehicles?.length ? VIN_MANAGEMENT_TYPE : undefined,
+          purchaseRequestItemId: p.purchaseRequestItemId,
+          quotationProductRowId: p.quotationProductRowId,
+          selectedQuoteKey: p.supplierId ? `${p.supplierId}-${p.importPrice}` : '',
           vehicles: (p.vehicles || []).map((vehicle) => ({
             id: vehicle.id,
             vinNumber: vehicle.vinNumber || '',
@@ -1342,10 +1698,6 @@
     }
   }
 
-  const handleAddProductRow = () => {
-    openProductSelector()
-  }
-
   const handleRemoveProductRow = (index: number) => {
     if (formData.value.products.length <= 1) {
       ElMessage.warning('Phiếu nhập phải chứa ít nhất một sản phẩm')
@@ -1355,8 +1707,8 @@
   }
 
   const submitForm = async (statusId: string) => {
-    if (!formData.value.supplierId) {
-      ElMessage.warning('Vui lòng chọn nhà cung cấp')
+    if (!formData.value.purchaseRequestId) {
+      ElMessage.warning('Vui lòng chọn yêu cầu mua hàng')
       return
     }
 
@@ -1370,6 +1722,11 @@
     }
 
     for (const product of validProducts) {
+      if (!product.quotationProductRowId) {
+        ElMessage.warning('Vui lòng chọn báo giá/nhà cung cấp cho tất cả sản phẩm')
+        return
+      }
+
       if (!isVinManagedProduct(product)) continue
 
       syncVehicleRows(product)
@@ -1429,10 +1786,27 @@
       }
     }
 
+    // Validate quantity against PR unimported quantity if it's imported via PR
+    if (formData.value.purchaseRequestId) {
+      for (const product of validProducts) {
+        if (product.purchaseRequestItemId) {
+          const prItem = prItemsMap.get(product.purchaseRequestItemId)
+          if (prItem && (product.count || 0) > prItem.unimportedQuantity) {
+            ElMessage.warning(
+              `Số lượng nhập cho "${prItem.productName}" không được vượt quá số lượng chưa nhập trong PR (${prItem.unimportedQuantity})`
+            )
+            return
+          }
+        }
+      }
+    }
+
     submitting.value = true
     try {
       const payloadProducts = validProducts.map((p) => ({
         id: p.id,
+        purchaseRequestItemId: p.purchaseRequestItemId,
+        quotationProductRowId: p.quotationProductRowId,
         productVariantId: p.productVariantId!,
         productVariantColorId: p.productVariantColorId,
         count: p.count,
@@ -1450,7 +1824,7 @@
         const payload = {
           notes: formData.value.notes,
           statusId: statusId,
-          supplierId: formData.value.supplierId,
+          purchaseRequestId: formData.value.purchaseRequestId,
           products: payloadProducts
         }
         await InventoryReceiptApi.update(formData.value.id, payload)
@@ -1459,9 +1833,19 @@
         const payload = {
           notes: formData.value.notes,
           statusId: 'working',
-          supplierId: formData.value.supplierId,
+          purchaseRequestId: formData.value.purchaseRequestId,
           products: payloadProducts.map(
-            ({ productVariantId, productVariantColorId, count, inputPrice, vehicles }) => ({
+            ({
+              purchaseRequestItemId,
+              quotationProductRowId,
+              productVariantId,
+              productVariantColorId,
+              count,
+              inputPrice,
+              vehicles
+            }) => ({
+              purchaseRequestItemId,
+              quotationProductRowId,
               productVariantId,
               productVariantColorId,
               count,
