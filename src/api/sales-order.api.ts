@@ -20,10 +20,6 @@ function getPagedList(url: string, params: any) {
 }
 
 export const SalesOrderApi = {
-  getList(params: any) {
-    return getPagedList('/api/v1/SalesOrders', params)
-  },
-
   getConfirmedList(params: any) {
     return getPagedList('/api/v1/SalesOrders/confirmed', params)
   },
