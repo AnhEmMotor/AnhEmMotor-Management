@@ -55,7 +55,7 @@ export const ProductApi = {
   getVariantsForInput(params: any) {
     const { current, size, ...rest } = params
     return request.get<ProductVariantLiteForInputList>({
-      url: '/api/v1/Product/variants-lite/for-input',
+      url: '/api/v1/Product/variants-lite/for-InventoryReceipt',
       params: {
         Page: current,
         PageSize: size,
