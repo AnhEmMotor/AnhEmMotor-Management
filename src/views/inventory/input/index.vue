@@ -79,25 +79,52 @@
                 <ElIcon><View /></ElIcon>
               </ElButton>
             </ElTooltip>
-            <ElTooltip v-if="isEditable(row.statusId)" content="Chỉnh sửa" placement="top">
-              <ElButton
-                circle
-                size="small"
-                type="primary"
-                @click="handleEdit(row)"
-                v-auth="Permissions.InventoryReceiptsCreate"
-              >
+            <ElTooltip v-if="canEdit(row)" content="Chỉnh sửa" placement="top">
+              <ElButton circle size="small" type="primary" @click="handleEdit(row)">
                 <ElIcon><Edit /></ElIcon>
               </ElButton>
             </ElTooltip>
-            <ElTooltip v-if="isEditable(row.statusId)" content="Xóa" placement="top">
-              <ElButton
-                circle
-                size="small"
-                type="danger"
-                @click="handleDelete(row)"
-                v-auth="Permissions.InventoryReceiptsDelete"
-              >
+            <ElTooltip
+              v-if="
+                row.statusId?.toLowerCase() === 'draft' &&
+                hasAuth(Permissions.InventoryReceiptsSend)
+              "
+              content="Gửi phiếu"
+              placement="top"
+            >
+              <ElButton circle size="small" type="warning" @click="handleSendReceipt(row.id)">
+                <ElIcon><Promotion /></ElIcon>
+              </ElButton>
+            </ElTooltip>
+            <template
+              v-if="
+                row.statusId?.toLowerCase() === 'sent' &&
+                hasAuth(Permissions.InventoryReceiptsApproveReject)
+              "
+            >
+              <ElTooltip content="Phê duyệt" placement="top">
+                <ElButton
+                  circle
+                  size="small"
+                  type="success"
+                  @click="handleApproveRejectReceipt(row.id, 'approve')"
+                >
+                  <ElIcon><Check /></ElIcon>
+                </ElButton>
+              </ElTooltip>
+              <ElTooltip content="Từ chối" placement="top">
+                <ElButton
+                  circle
+                  size="small"
+                  type="danger"
+                  @click="handleApproveRejectReceipt(row.id, 'reject')"
+                >
+                  <ElIcon><Close /></ElIcon>
+                </ElButton>
+              </ElTooltip>
+            </template>
+            <ElTooltip v-if="canDelete(row)" content="Xóa" placement="top">
+              <ElButton circle size="small" type="danger" @click="handleDelete(row)">
                 <ElIcon><Delete /></ElIcon>
               </ElButton>
             </ElTooltip>
@@ -176,33 +203,37 @@
             </ElTableColumn>
 
             <ElTableColumn label="Báo giá / Nhà cung cấp" min-width="250" required>
-              <template #default="{ row }">
-                <ElSelect
-                  v-model="row.selectedQuoteKey"
-                  placeholder="Chọn báo giá..."
-                  size="small"
-                  class="w-full"
-                  @change="(val) => handleQuoteChange(row, val)"
-                >
-                  <ElOption
-                    v-for="q in getMatchingQuotes(row)"
-                    :key="`${q.supplierId}-${q.quotePrice}`"
-                    :label="`${q.supplierName} - ${formatCurrency(q.quotePrice)}`"
-                    :value="`${q.supplierId}-${q.quotePrice}`"
-                  />
-                </ElSelect>
+              <template #default="{ row, $index }">
+                <div class="flex items-center justify-between gap-2 py-1">
+                  <div class="flex flex-col min-w-0">
+                    <span
+                      v-if="row.selectedQuoteKey"
+                      class="text-xs font-semibold text-gray-800 truncate"
+                    >
+                      {{ row.selectedQuoteText || row.selectedQuoteKey }}
+                    </span>
+                    <span v-else class="text-xs text-gray-400 italic">Chưa chọn báo giá</span>
+                  </div>
+                  <ElButton
+                    type="primary"
+                    size="small"
+                    link
+                    @click="openQuoteSelector(row, $index)"
+                  >
+                    {{ row.selectedQuoteKey ? 'Thay đổi' : 'Chọn báo giá' }}
+                  </ElButton>
+                </div>
               </template>
             </ElTableColumn>
 
             <ElTableColumn label="Đơn giá nhập" width="180" align="center">
               <template #default="{ row }">
-                <ElInputNumber
-                  v-model="row.inputPrice"
-                  :min="0"
-                  :step="100000"
-                  class="w-full"
-                  controls-position="right"
-                />
+                <span
+                  v-if="row.selectedQuoteKey"
+                  class="text-xs font-semibold text-gray-800 truncate"
+                >
+                  {{ formatCurrency(row.inputPrice) }}
+                </span>
               </template>
             </ElTableColumn>
 
@@ -210,7 +241,7 @@
               <template #default="{ row }">
                 <ElInputNumber
                   v-model="row.count"
-                  :min="1"
+                  :min="0"
                   :precision="0"
                   class="w-full"
                   controls-position="right"
@@ -262,33 +293,9 @@
       <template #footer>
         <div class="flex justify-end gap-2 border-t border-gray-50 pt-3">
           <ElButton @click="dialogVisible = false">Hủy</ElButton>
-
-          <template v-if="isEdit">
-            <ElButton type="warning" :loading="submitting" @click="submitForm('working')">
-              Lưu nháp
-            </ElButton>
-            <ElDropdown trigger="hover" @command="submitForm">
-              <ElButton type="primary" :loading="submitting">
-                Xử lý phiếu <ElIcon class="el-icon--right"><ArrowDown /></ElIcon>
-              </ElButton>
-              <template #dropdown>
-                <ElDropdownMenu>
-                  <ElDropdownItem command="finished" class="!text-green-600 font-medium">
-                    <ElIcon class="mr-1 text-green-600"><Check /></ElIcon> Hoàn thành
-                  </ElDropdownItem>
-                  <ElDropdownItem command="cancelled" class="!text-red-600 font-medium">
-                    <ElIcon class="mr-1 text-red-600"><Close /></ElIcon> Hủy phiếu
-                  </ElDropdownItem>
-                </ElDropdownMenu>
-              </template>
-            </ElDropdown>
-          </template>
-
-          <template v-else>
-            <ElButton type="primary" :loading="submitting" @click="submitForm('working')">
-              Lưu phiếu
-            </ElButton>
-          </template>
+          <ElButton type="primary" :loading="submitting" @click="submitForm">
+            {{ isEdit ? 'Cập nhật' : 'Lưu phiếu' }}
+          </ElButton>
         </div>
       </template>
     </ElDialog>
@@ -362,12 +369,6 @@
           <div>
             <span class="text-gray-500">Thời gian tạo:</span>
             <span class="ml-2 text-gray-700">{{ formatDateTime(detailData.createdAt) }}</span>
-          </div>
-          <div class="col-span-2">
-            <span class="text-gray-500">Nhà cung cấp:</span>
-            <span class="ml-2 font-medium text-gray-800">{{
-              detailData.supplierName || 'N/A'
-            }}</span>
           </div>
           <div v-if="detailData.supplierPhone">
             <span class="text-gray-500">Điện thoại NCC:</span>
@@ -446,36 +447,39 @@
           <ElButton @click="detailDialogVisible = false">Đóng</ElButton>
 
           <template v-if="detailData">
-            <template v-if="isEditable(detailData.statusId)">
-              <ElButton
-                type="warning"
-                :loading="detailSubmitting"
-                @click="handleUpdateDetailStatus('working')"
-              >
-                Lưu tạm
-              </ElButton>
-              <ElDropdown trigger="hover" @command="handleUpdateDetailStatus">
-                <ElButton type="primary" :loading="detailSubmitting">
-                  Xử lý phiếu <ElIcon class="el-icon--right"><ArrowDown /></ElIcon>
-                </ElButton>
-                <template #dropdown>
-                  <ElDropdownMenu>
-                    <ElDropdownItem command="finished" class="!text-green-600 font-medium">
-                      <ElIcon class="mr-1 text-green-600"><Check /></ElIcon> Hoàn thành
-                    </ElDropdownItem>
-                    <ElDropdownItem command="cancelled" class="!text-red-600 font-medium">
-                      <ElIcon class="mr-1 text-red-600"><Close /></ElIcon> Hủy phiếu
-                    </ElDropdownItem>
-                  </ElDropdownMenu>
-                </template>
-              </ElDropdown>
-            </template>
-
-            <template v-else>
-              <ElButton type="primary" :loading="detailSubmitting" @click="handleUpdateDetailNotes">
-                Cập nhật ghi chú
-              </ElButton>
-            </template>
+            <ElButton
+              v-if="
+                detailData.statusId?.toLowerCase() === 'draft' &&
+                hasAuth(Permissions.InventoryReceiptsSend)
+              "
+              type="primary"
+              :loading="detailSubmitting"
+              @click="handleSendReceipt(detailData.id)"
+            >
+              Gửi phiếu
+            </ElButton>
+            <ElButton
+              v-if="
+                detailData.statusId?.toLowerCase() === 'sent' &&
+                hasAuth(Permissions.InventoryReceiptsApproveReject)
+              "
+              type="success"
+              :loading="detailSubmitting"
+              @click="handleApproveRejectReceipt(detailData.id, 'approve')"
+            >
+              Phê duyệt
+            </ElButton>
+            <ElButton
+              v-if="
+                detailData.statusId?.toLowerCase() === 'sent' &&
+                hasAuth(Permissions.InventoryReceiptsApproveReject)
+              "
+              type="danger"
+              :loading="detailSubmitting"
+              @click="handleApproveRejectReceipt(detailData.id, 'reject')"
+            >
+              Từ chối
+            </ElButton>
           </template>
         </div>
       </template>
@@ -695,9 +699,9 @@
             v-for="pr in prSelectorItems"
             :key="pr.id"
             class="p-4 border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition duration-200 cursor-pointer flex flex-col justify-between"
-            @click="selectPurchaseRequest(pr)"
           >
-            <div class="text-xs text-gray-500 space-y-1">
+            <div class="text-xs text-gray-500 space-y-1" @click="selectPurchaseRequest(pr)">
+              <div><span class="font-medium text-gray-400">Mã PR:</span> #{{ pr.id }}</div>
               <div
                 ><span class="font-medium text-gray-400">Ghi chú:</span>
                 {{ pr.note || 'Không có ghi chú' }}</div
@@ -714,6 +718,14 @@
                 ><span class="font-medium text-gray-400">Số lượng mặt hàng:</span>
                 {{ pr.totalItems }}</div
               >
+            </div>
+            <div class="mt-3 flex justify-end gap-2 border-t pt-2">
+              <ElButton size="small" type="info" plain @click.stop="openPrDetailDialog(pr)">
+                Chi tiết
+              </ElButton>
+              <ElButton size="small" type="primary" @click.stop="selectPurchaseRequest(pr)">
+                Chọn
+              </ElButton>
             </div>
           </div>
           <div
@@ -738,11 +750,127 @@
         </div>
       </div>
     </ElDialog>
+
+    <!-- Purchase Request Details Sub-dialog -->
+    <ElDialog
+      v-model="prDetailDialogVisible"
+      title="Chi tiết Yêu cầu mua hàng (PR)"
+      width="680px"
+      append-to-body
+      destroy-on-close
+      class="rounded-xl overflow-hidden"
+    >
+      <div v-if="selectedPrForDetail" v-loading="prDetailLoading" class="space-y-4">
+        <div class="bg-gray-50 p-4 rounded-lg grid grid-cols-2 gap-y-2 text-xs text-gray-600">
+          <div
+            ><span class="font-semibold text-gray-500">Mã PR:</span> #{{
+              selectedPrForDetail.id
+            }}</div
+          >
+          <div
+            ><span class="font-semibold text-gray-500">Thời gian tạo:</span>
+            {{ formatDateTime(selectedPrForDetail.createdAt) }}</div
+          >
+          <div
+            ><span class="font-semibold text-gray-500">Người tạo:</span>
+            {{ selectedPrForDetail.createdByName }}</div
+          >
+          <div
+            ><span class="font-semibold text-gray-500">Người duyệt:</span>
+            {{ selectedPrForDetail.approvedByName || '--' }}</div
+          >
+          <div class="col-span-2"
+            ><span class="font-semibold text-gray-500">Ghi chú:</span>
+            {{ selectedPrForDetail.note || 'Không có ghi chú' }}</div
+          >
+        </div>
+
+        <div class="font-semibold text-sm text-gray-700">Danh sách mặt hàng yêu cầu</div>
+        <ElTable :data="selectedPrForDetail.items" border size="small" class="w-full">
+          <ElTableColumn type="index" label="STT" width="55" align="center" />
+          <ElTableColumn prop="productName" label="Sản phẩm" min-width="220" />
+          <ElTableColumn label="Màu sắc" min-width="120">
+            <template #default="{ row }">
+              {{ row.productVariantColorName || '--' }}
+            </template>
+          </ElTableColumn>
+          <ElTableColumn
+            prop="unimportedQuantity"
+            label="Số lượng chưa nhập"
+            width="140"
+            align="center"
+          />
+          <ElTableColumn label="Cần mã VIN" width="110" align="center">
+            <template #default="{ row }">
+              <ElTag :type="row.needVin ? 'warning' : 'info'" size="small">
+                {{ row.needVin ? 'Có' : 'Không' }}
+              </ElTag>
+            </template>
+          </ElTableColumn>
+        </ElTable>
+
+        <div class="flex justify-end gap-2 pt-3 border-t">
+          <ElButton @click="prDetailDialogVisible = false">Đóng</ElButton>
+          <ElButton type="primary" @click="selectPurchaseRequest(selectedPrForDetail)">
+            Chọn phiếu này
+          </ElButton>
+        </div>
+      </div>
+    </ElDialog>
+
+    <!-- Quote Selector Dialog -->
+    <ElDialog
+      v-model="quoteSelectorVisible"
+      title="Chọn Báo giá / Nhà cung cấp"
+      width="680px"
+      append-to-body
+      destroy-on-close
+      class="rounded-xl overflow-hidden"
+    >
+      <div v-loading="quoteSelectorLoading" class="space-y-4">
+        <div class="text-sm text-gray-600 mb-2">
+          Danh sách các báo giá đã được phê duyệt của sản phẩm trong Yêu cầu mua hàng này:
+        </div>
+        <ElTable :data="quoteSelectorItems" border size="small" class="w-full">
+          <ElTableColumn type="index" label="STT" width="55" align="center" />
+          <ElTableColumn prop="supplierName" label="Nhà cung cấp" min-width="220" />
+          <ElTableColumn label="Ghi chú" min-width="200">
+            <template #default="{ row }">
+              {{ row.note || '--' }}
+            </template>
+          </ElTableColumn>
+          <ElTableColumn label="Giá báo giá" width="160" align="right">
+            <template #default="{ row }">
+              <span class="font-semibold text-primary">{{ formatCurrency(row.quotePrice) }}</span>
+            </template>
+          </ElTableColumn>
+          <ElTableColumn label="Thao tác" width="100" align="center">
+            <template #default="{ row }">
+              <ElButton type="primary" size="small" plain @click="selectQuote(row)">
+                Chọn
+              </ElButton>
+            </template>
+          </ElTableColumn>
+        </ElTable>
+        <div
+          v-if="!quoteSelectorLoading && quoteSelectorItems.length === 0"
+          class="text-center py-8 text-gray-400"
+        >
+          Không tìm thấy báo giá nào được duyệt cho sản phẩm này.
+        </div>
+        <div class="flex justify-end pt-3 border-t">
+          <ElButton @click="quoteSelectorVisible = false">Đóng</ElButton>
+        </div>
+      </div>
+    </ElDialog>
   </div>
 </template>
 
 <script setup lang="ts">
   import { ref, reactive, computed, onMounted } from 'vue'
+  import { useAuth } from '@/hooks/core/useAuth'
+  import { useUserStore } from '@/store/modules/user'
+  import { useRouter } from 'vue-router'
   import {
     Plus,
     Edit,
@@ -751,6 +879,7 @@
     ArrowDown,
     Check,
     Close,
+    Promotion,
     InfoFilled
   } from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
@@ -785,6 +914,9 @@
     purchaseRequestItemId?: number
     quotationProductRowId?: number
     selectedQuoteKey?: string
+    selectedQuoteText?: string
+    maxUnimportedQuantity?: number
+    needVin?: boolean
   }
 
   const VIN_MANAGEMENT_TYPE = 'vin_number'
@@ -806,6 +938,108 @@
   const detailNotes = ref('')
   const detailSubmitting = ref(false)
 
+  const router = useRouter()
+  const userStore = useUserStore()
+  const { hasAuth: standardHasAuth } = useAuth()
+
+  const hasAuth = (auth: string): boolean => {
+    const buttons = userStore.info?.buttons ?? []
+    if (buttons.includes(auth)) return true
+
+    const authList =
+      (router.currentRoute.value?.meta?.authList as Array<{ authMark: string }>) || []
+    if (authList.some((item) => item?.authMark === auth)) return true
+
+    return standardHasAuth(auth)
+  }
+
+  const canEdit = (row?: InventoryReceipt | null) => {
+    if (!row) return false
+    const status = (row.statusId || '').toLowerCase()
+    if (status === 'approve' || status === 'reject') return false
+    if (status === 'sent') return hasAuth(Permissions.InventoryReceiptsApproveReject)
+    return (
+      hasAuth(Permissions.InventoryReceiptsEdit) ||
+      hasAuth(Permissions.InventoryReceiptsApproveReject)
+    )
+  }
+
+  const canDelete = (row?: InventoryReceipt | null) => {
+    if (!row) return false
+    const status = (row.statusId || '').toLowerCase()
+    if (status === 'approve' || status === 'reject') return false
+    if (status === 'sent') return hasAuth(Permissions.InventoryReceiptsApproveReject)
+    return (
+      hasAuth(Permissions.InventoryReceiptsDelete) ||
+      hasAuth(Permissions.InventoryReceiptsApproveReject)
+    )
+  }
+
+  const handleSendReceipt = async (id: number) => {
+    try {
+      await ElMessageBox.confirm(
+        'Bạn có chắc chắn muốn gửi phiếu nhập này? Sau khi gửi, bạn sẽ không thể tự chỉnh sửa hoặc xóa nữa (trừ người có quyền phê duyệt).',
+        'Xác nhận gửi',
+        {
+          confirmButtonText: 'Gửi',
+          cancelButtonText: 'Hủy',
+          type: 'info'
+        }
+      )
+      detailSubmitting.value = true
+      await InventoryReceiptApi.send(id)
+      ElMessage.success('Gửi phiếu nhập thành công')
+      detailDialogVisible.value = false
+      loadData()
+    } catch (error: any) {
+      if (error !== 'cancel') {
+        console.error('Failed to send receipt:', error)
+        ElMessage.error(error.message || 'Gửi thất bại')
+      }
+    } finally {
+      detailSubmitting.value = false
+    }
+  }
+
+  const handleApproveRejectReceipt = async (id: number, action: 'approve' | 'reject') => {
+    const isApprove = action === 'approve'
+    const title = isApprove ? 'Xác nhận phê duyệt' : 'Xác nhận từ chối'
+    const message = isApprove
+      ? 'Bạn có chắc chắn muốn phê duyệt phiếu nhập này? Số lượng sản phẩm sẽ được cộng vào kho.'
+      : 'Bạn có chắc chắn muốn từ chối phê duyệt phiếu nhập này?'
+
+    try {
+      await ElMessageBox.confirm(message, title, {
+        confirmButtonText: isApprove ? 'Duyệt' : 'Từ chối',
+        cancelButtonText: 'Hủy',
+        type: isApprove ? 'success' : 'warning'
+      })
+      detailSubmitting.value = true
+      await InventoryReceiptApi.updateStatus(id, action)
+      ElMessage.success(
+        isApprove ? 'Phê duyệt phiếu nhập thành công' : 'Từ chối phiếu nhập thành công'
+      )
+      detailDialogVisible.value = false
+      loadData()
+    } catch (error: any) {
+      if (error !== 'cancel') {
+        console.error(`Failed to ${action} receipt:`, error)
+        ElMessage.error(error.message || 'Thao tác thất bại')
+      }
+    } finally {
+      detailSubmitting.value = false
+    }
+  }
+
+  const prDetailDialogVisible = ref(false)
+  const prDetailLoading = ref(false)
+  const selectedPrForDetail = ref<any>(null)
+
+  const quoteSelectorVisible = ref(false)
+  const quoteSelectorLoading = ref(false)
+  const quoteSelectorItems = ref<any[]>([])
+  const quoteSelectorActiveRowIndex = ref<number | null>(null)
+
   const stats = ref({
     totalVehicles: 0,
     processingReceipts: 0,
@@ -815,39 +1049,6 @@
   const statuses = ref<Record<string, string>>({})
   const allQuotedPrices = ref<any[]>([])
   const qRowMap = ref(new Map<string, number>())
-
-  const getMatchingQuotes = (row: ReceiptProductRow) => {
-    const rowColor = row.productVariantColorId ? Number(row.productVariantColorId) : null
-    const matches = allQuotedPrices.value.filter((q) => {
-      const qColor = q.productVariantColorId ? Number(q.productVariantColorId) : null
-      return Number(q.productVariantId) === Number(row.productVariantId) && qColor === rowColor
-    })
-    console.log('getMatchingQuotes matching result:', {
-      rowVariantId: row.productVariantId,
-      rowColorId: row.productVariantColorId,
-      rowColorNormalized: rowColor,
-      quotesAvailable: allQuotedPrices.value,
-      matches
-    })
-    return matches
-  }
-
-  const handleQuoteChange = (row: ReceiptProductRow, val: string) => {
-    if (!val) {
-      row.quotationProductRowId = undefined
-      row.inputPrice = 0
-      return
-    }
-    const [supplierIdStr, priceStr] = val.split('-')
-    const supplierId = Number(supplierIdStr)
-    const price = Number(priceStr)
-
-    row.inputPrice = price
-
-    // Resolve the quotationProductRowId from the map
-    const mapKey = `${supplierId}-${row.productVariantId}-${row.productVariantColorId || 0}`
-    row.quotationProductRowId = qRowMap.value.get(mapKey)
-  }
 
   const supplierCache = reactive(new Map<number, string>())
   const productCache = reactive(
@@ -1173,7 +1374,7 @@
   const prSelectorQuery = ref('')
 
   const prItemsMap = reactive(
-    new Map<number, { productName: string; unimportedQuantity: number }>()
+    new Map<number, { productName: string; unimportedQuantity: number; needVin?: boolean }>()
   )
 
   const fetchSelectorPrs = async () => {
@@ -1215,93 +1416,138 @@
     prItemsMap.clear()
   }
 
+  const openPrDetailDialog = async (pr: any) => {
+    selectedPrForDetail.value = {
+      id: pr.id,
+      createdAt: pr.createdAt,
+      createdByName: pr.createdByName,
+      note: pr.note,
+      items: []
+    }
+    prDetailDialogVisible.value = true
+    prDetailLoading.value = true
+    try {
+      const detail = await PurchaseRequestApi.getApprovedById(pr.id)
+      selectedPrForDetail.value = detail
+    } catch (err) {
+      console.error(err)
+      ElMessage.error('Không thể tải chi tiết yêu cầu mua hàng')
+    } finally {
+      prDetailLoading.value = false
+    }
+  }
+
+  const openQuoteSelector = async (row: ReceiptProductRow, index: number) => {
+    if (row.productVariantId === undefined || row.productVariantId === null) {
+      ElMessage.warning('Không tìm thấy mã sản phẩm biến thể')
+      return
+    }
+    quoteSelectorActiveRowIndex.value = index
+    quoteSelectorVisible.value = true
+    quoteSelectorLoading.value = true
+    try {
+      const quotes = await QuotationApi.getApprovedPrices(
+        row.productVariantId,
+        row.productVariantColorId
+      )
+      quoteSelectorItems.value = quotes
+    } catch (err) {
+      console.error(err)
+      ElMessage.error('Không thể tải danh sách báo giá')
+    } finally {
+      quoteSelectorLoading.value = false
+    }
+  }
+
+  const selectQuote = async (quote: any) => {
+    const idx = quoteSelectorActiveRowIndex.value
+    if (idx === null || !formData.value.products[idx]) return
+
+    const row = formData.value.products[idx]
+    row.inputPrice = quote.quotePrice
+    row.selectedQuoteKey = `${quote.supplierId}-${quote.quotePrice}`
+    row.selectedQuoteText = `${quote.supplierName} - ${formatCurrency(quote.quotePrice)}`
+
+    try {
+      loading.value = true
+      const qRes = await QuotationApi.getList({
+        size: 999,
+        Filters: `SupplierId==${quote.supplierId},Status==Approved`
+      })
+      let resolvedRowId = undefined
+      for (const q of qRes.items || []) {
+        if (!q.id) continue
+        const qDetail = await QuotationApi.getById(q.id)
+        const match = (qDetail.quotationItems || []).find((item) => {
+          return (
+            Number(item.productVariantId) === Number(row.productVariantId) &&
+            (row.productVariantColorId
+              ? Number(item.productVariantColorId) === Number(row.productVariantColorId)
+              : !item.productVariantColorId)
+          )
+        })
+        if (match && match.id) {
+          resolvedRowId = match.id
+          break
+        }
+      }
+      row.quotationProductRowId = resolvedRowId
+    } catch (err) {
+      console.error('Failed to resolve quotation product row ID:', err)
+    } finally {
+      loading.value = false
+    }
+
+    row.count = row.maxUnimportedQuantity || 0
+    syncVehicleRows(row)
+
+    quoteSelectorVisible.value = false
+  }
+
   const selectPurchaseRequest = async (pr: any) => {
     try {
       loading.value = true
       prSelectorVisible.value = false
+      prDetailDialogVisible.value = false
       formData.value.purchaseRequestId = pr.id
       formData.value.products = []
       prItemsMap.clear()
 
-      const detail = await PurchaseRequestApi.getById(pr.id)
-      const quotes = await PurchaseRequestApi.getQuotedPrices(pr.id)
-      allQuotedPrices.value = quotes
-
-      // Fetch quotations map for unique suppliers
-      const uniqueSupplierIds = Array.from(new Set(quotes.map((q) => q.supplierId)))
-      qRowMap.value.clear()
-      for (const supId of uniqueSupplierIds) {
-        try {
-          const qRes = await QuotationApi.getList({
-            size: 999,
-            Filters: `SupplierId==${supId},Status==Approved`
-          })
-          for (const q of qRes.items || []) {
-            if (!q.id) continue
-            const qDetail = await QuotationApi.getById(q.id)
-            ;(qDetail.quotationItems || []).forEach((item) => {
-              if (item.productVariantId && item.id) {
-                const key = `${supId}-${item.productVariantId}-${item.productVariantColorId || 0}`
-                qRowMap.value.set(key, item.id)
-              }
-            })
-          }
-        } catch (err) {
-          console.error(`Failed to fetch quotations for supplier ${supId}:`, err)
-        }
-      }
+      const detail = await PurchaseRequestApi.getApprovedById(pr.id)
 
       detail.items.forEach((item) => {
         if (item.unimportedQuantity <= 0) return
 
         prItemsMap.set(item.id, {
           productName: item.productName || `Sản phẩm #${item.productVariantId}`,
-          unimportedQuantity: item.unimportedQuantity
+          unimportedQuantity: item.unimportedQuantity,
+          needVin: item.needVin
         })
-
-        const itemColor = item.productVariantColorId ? Number(item.productVariantColorId) : null
-        const matchedQuotes = quotes.filter((q) => {
-          const qColor = q.productVariantColorId ? Number(q.productVariantColorId) : null
-          return (
-            Number(q.productVariantId) === Number(item.productVariantId) && qColor === itemColor
-          )
-        })
-
-        const defaultQuote = matchedQuotes[0]
-        let quotationProductRowId = undefined
-        let inputPrice = 0
-        let selectedQuoteKey = ''
-
-        if (defaultQuote) {
-          const mapKey = `${defaultQuote.supplierId}-${item.productVariantId}-${item.productVariantColorId || 0}`
-          quotationProductRowId = qRowMap.value.get(mapKey)
-          inputPrice = defaultQuote.quotePrice
-          selectedQuoteKey = `${defaultQuote.supplierId}-${defaultQuote.quotePrice}`
-        }
 
         const newRow: ReceiptProductRow = {
           productVariantId: item.productVariantId,
           productVariantColorId: item.productVariantColorId,
           productVariantColorName: item.productVariantColorName,
-          count: item.unimportedQuantity,
-          inputPrice,
+          count: 0,
+          inputPrice: 0,
           purchaseRequestItemId: item.id,
-          quotationProductRowId,
-          selectedQuoteKey
+          maxUnimportedQuantity: item.unimportedQuantity,
+          needVin: item.needVin,
+          managementType: item.needVin ? VIN_MANAGEMENT_TYPE : 'sku',
+          quotationProductRowId: undefined,
+          selectedQuoteKey: '',
+          selectedQuoteText: ''
         }
 
         productCache.set(item.productVariantId, {
           displayName: item.productName || `Sản phẩm #${item.productVariantId}`,
-          price: newRow.inputPrice,
+          price: 0,
+          managementType: item.needVin ? VIN_MANAGEMENT_TYPE : 'sku',
           colorName: item.productVariantColorName
         })
 
         formData.value.products.push(newRow)
       })
-
-      ElMessage.success(
-        `Đã tự động nạp ${formData.value.products.length} sản phẩm từ Yêu cầu mua hàng!`
-      )
     } catch (err) {
       console.error(err)
       ElMessage.error('Không thể nạp thông tin Yêu cầu mua hàng')
@@ -1348,7 +1594,6 @@
 
   const columns = ref([
     { label: 'Thời gian tạo', prop: 'createdAt', useSlot: true, width: 170 },
-    { label: 'Nhà cung cấp', prop: 'supplierName', minWidth: 180 },
     { label: 'Tóm tắt SP', prop: 'productSummary', useSlot: true, minWidth: 200 },
     { label: 'Tổng tiền', prop: 'totalPayable', useSlot: true, width: 150, align: 'right' },
     { label: 'Trạng thái', prop: 'statusId', useSlot: true, width: 130, align: 'center' },
@@ -1356,7 +1601,7 @@
       label: 'Thao tác',
       prop: 'operation',
       useSlot: true,
-      width: 140,
+      width: 180,
       fixed: 'right' as const,
       align: 'center'
     }
@@ -1370,10 +1615,6 @@
       0
     )
   })
-
-  const isEditable = (statusId?: string) => {
-    return statusId === 'working'
-  }
 
   const formatDateTime = (dateStr?: string) => {
     if (!dateStr) return '-'
@@ -1400,11 +1641,13 @@
   const getStatusTagType = (statusId?: string) => {
     if (!statusId) return 'info'
     switch (statusId.toLowerCase()) {
-      case 'working':
+      case 'draft':
+        return 'info'
+      case 'sent':
         return 'warning'
-      case 'finished':
+      case 'approve':
         return 'success'
-      case 'cancelled':
+      case 'reject':
         return 'danger'
       default:
         return 'info'
@@ -1422,9 +1665,10 @@
     } catch (error) {
       console.error('Failed to load statuses:', error)
       statuses.value = {
-        working: 'Phiếu tạm',
-        finished: 'Hoàn thành',
-        cancelled: 'Đã hủy'
+        draft: 'Phiếu tạm',
+        sent: 'Đã gửi',
+        approve: 'Đã duyệt',
+        reject: 'Đã từ chối'
       }
     }
   }
@@ -1542,39 +1786,67 @@
 
       allQuotedPrices.value = []
       qRowMap.value.clear()
+      prItemsMap.clear()
 
       if (receipt.purchaseRequestId) {
-        const quotes = await PurchaseRequestApi.getQuotedPrices(receipt.purchaseRequestId)
-        allQuotedPrices.value = quotes
-
-        const uniqueSupplierIds = Array.from(new Set(quotes.map((q) => q.supplierId)))
-        for (const supId of uniqueSupplierIds) {
-          try {
-            const qRes = await QuotationApi.getList({
-              size: 999,
-              Filters: `SupplierId==${supId},Status==Approved`
+        try {
+          const prDetail = await PurchaseRequestApi.getApprovedById(receipt.purchaseRequestId)
+          prDetail.items.forEach((item) => {
+            prItemsMap.set(item.id, {
+              productName: item.productName || `Sản phẩm #${item.productVariantId}`,
+              unimportedQuantity: item.unimportedQuantity,
+              needVin: item.needVin
             })
-            for (const q of qRes.items || []) {
-              if (!q.id) continue
-              const qDetail = await QuotationApi.getById(q.id)
-              ;(qDetail.quotationItems || []).forEach((item) => {
-                if (item.productVariantId && item.id) {
-                  const key = `${supId}-${item.productVariantId}-${item.productVariantColorId || 0}`
-                  qRowMap.value.set(key, item.id)
-                }
+          })
+
+          const quotePromises = prDetail.items.map((item) =>
+            QuotationApi.getApprovedPrices(item.productVariantId, item.productVariantColorId).catch(
+              (err) => {
+                console.error(err)
+                return []
+              }
+            )
+          )
+          const quotesList = await Promise.all(quotePromises)
+          const quotes = quotesList.flat()
+          allQuotedPrices.value = quotes
+
+          const uniqueSupplierIds = Array.from(new Set(quotes.map((q: any) => q.supplierId)))
+          for (const supId of uniqueSupplierIds) {
+            try {
+              const qRes = await QuotationApi.getList({
+                size: 999,
+                Filters: `SupplierId==${supId},Status==Approved`
               })
+              for (const q of qRes.items || []) {
+                if (!q.id) continue
+                const qDetail = await QuotationApi.getById(q.id)
+                ;(qDetail.quotationItems || []).forEach((item: any) => {
+                  if (item.productVariantId && item.id) {
+                    const key = `${supId}-${item.productVariantId}-${item.productVariantColorId || 0}`
+                    qRowMap.value.set(key, item.id)
+                  }
+                })
+              }
+            } catch (err) {
+              console.error(err)
             }
-          } catch (err) {
-            console.error(err)
           }
+        } catch (err) {
+          console.error('Failed to load approved purchase request details for editing:', err)
         }
       }
 
       ;(receipt.products || []).forEach((p) => {
+        const prItem = p.purchaseRequestItemId ? prItemsMap.get(p.purchaseRequestItemId) : null
         productCache.set(p.productVariantId, {
           displayName: p.name || `Sản phẩm #${p.productVariantId}`,
           price: p.importPrice,
-          managementType: p.vehicles?.length ? VIN_MANAGEMENT_TYPE : undefined,
+          managementType: prItem?.needVin
+            ? VIN_MANAGEMENT_TYPE
+            : p.vehicles?.length
+              ? VIN_MANAGEMENT_TYPE
+              : undefined,
           colorName: p.productVariantColorName
         })
       })
@@ -1585,23 +1857,49 @@
         supplierId: receipt.supplierId,
         notes: receipt.notes || '',
         statusId: receipt.statusId,
-        products: (receipt.products || []).map((p) => ({
-          id: p.id,
-          productVariantId: p.productVariantId,
-          productVariantColorId: p.productVariantColorId,
-          productVariantColorName: p.productVariantColorName,
-          count: p.quantity || 1,
-          inputPrice: p.importPrice || 0,
-          managementType: p.vehicles?.length ? VIN_MANAGEMENT_TYPE : undefined,
-          purchaseRequestItemId: p.purchaseRequestItemId,
-          quotationProductRowId: p.quotationProductRowId,
-          selectedQuoteKey: p.supplierId ? `${p.supplierId}-${p.importPrice}` : '',
-          vehicles: (p.vehicles || []).map((vehicle) => ({
-            id: vehicle.id,
-            vinNumber: vehicle.vinNumber || '',
-            engineNumber: vehicle.engineNumber || ''
-          }))
-        }))
+        products: (receipt.products || []).map((p) => {
+          const prItem = p.purchaseRequestItemId ? prItemsMap.get(p.purchaseRequestItemId) : null
+          const matchQuote = allQuotedPrices.value.find((q) => {
+            const qColor = q.productVariantColorId ? Number(q.productVariantColorId) : null
+            const pColor = p.productVariantColorId ? Number(p.productVariantColorId) : null
+            return (
+              Number(q.productVariantId) === Number(p.productVariantId) &&
+              qColor === pColor &&
+              q.quotePrice === p.importPrice
+            )
+          })
+          const isVin = prItem?.needVin || (p.vehicles && p.vehicles.length > 0)
+          return {
+            id: p.id,
+            productVariantId: p.productVariantId,
+            productVariantColorId: p.productVariantColorId,
+            productVariantColorName: p.productVariantColorName,
+            count: p.quantity || 0,
+            inputPrice: p.importPrice || 0,
+            managementType: isVin ? VIN_MANAGEMENT_TYPE : undefined,
+            needVin: isVin,
+            purchaseRequestItemId: p.purchaseRequestItemId,
+            quotationProductRowId: p.quotationProductRowId,
+            selectedQuoteKey: p.supplierId
+              ? `${p.supplierId}-${p.importPrice}`
+              : matchQuote
+                ? `${matchQuote.supplierId}-${matchQuote.quotePrice}`
+                : '',
+            selectedQuoteText: matchQuote
+              ? `${matchQuote.supplierName} - ${formatCurrency(matchQuote.quotePrice)}`
+              : p.supplierName
+                ? `${p.supplierName} - ${formatCurrency(p.importPrice)}`
+                : p.supplierId
+                  ? `${p.supplierId} - ${formatCurrency(p.importPrice)}`
+                  : '',
+            maxUnimportedQuantity: prItem ? prItem.unimportedQuantity : undefined,
+            vehicles: (p.vehicles || []).map((vehicle) => ({
+              id: vehicle.id,
+              vinNumber: vehicle.vinNumber || '',
+              engineNumber: vehicle.engineNumber || ''
+            }))
+          }
+        })
       }
       dialogVisible.value = true
     } catch (error) {
@@ -1634,70 +1932,6 @@
     }
   }
 
-  const handleUpdateDetailStatus = async (statusId: string) => {
-    if (!detailData.value) return
-
-    if (statusId === 'finished') {
-      try {
-        await ElMessageBox.confirm(
-          'Bạn có chắc chắn muốn hoàn thành phiếu nhập này không? Sau khi hoàn thành, số lượng sản phẩm sẽ được cộng vào kho và không thể chỉnh sửa thông tin phiếu nhập nữa.',
-          'Xác nhận hoàn thành',
-          {
-            confirmButtonText: 'Hoàn thành',
-            cancelButtonText: 'Hủy',
-            type: 'success'
-          }
-        )
-      } catch {
-        return
-      }
-    } else if (statusId === 'cancelled') {
-      try {
-        await ElMessageBox.confirm(
-          'Bạn có chắc chắn muốn hủy phiếu nhập này không? Sau khi hủy, phiếu nhập sẽ ở trạng thái đã hủy và không thể khôi phục hoặc chỉnh sửa.',
-          'Xác nhận hủy phiếu',
-          {
-            confirmButtonText: 'Hủy phiếu',
-            cancelButtonText: 'Đóng',
-            type: 'warning'
-          }
-        )
-      } catch {
-        return
-      }
-    }
-
-    detailSubmitting.value = true
-    try {
-      await InventoryReceiptApi.updateNotes(detailData.value.id, detailNotes.value)
-      await InventoryReceiptApi.updateStatus(detailData.value.id, statusId)
-      ElMessage.success('Cập nhật phiếu nhập thành công')
-      detailDialogVisible.value = false
-      loadData()
-    } catch (error: any) {
-      console.error('Failed to update details status:', error)
-      ElMessage.error(error.message || 'Cập nhật thất bại')
-    } finally {
-      detailSubmitting.value = false
-    }
-  }
-
-  const handleUpdateDetailNotes = async () => {
-    if (!detailData.value) return
-    detailSubmitting.value = true
-    try {
-      await InventoryReceiptApi.updateNotes(detailData.value.id, detailNotes.value)
-      ElMessage.success('Cập nhật ghi chú thành công')
-      detailDialogVisible.value = false
-      loadData()
-    } catch (error: any) {
-      console.error('Failed to update notes:', error)
-      ElMessage.error(error.message || 'Cập nhật thất bại')
-    } finally {
-      detailSubmitting.value = false
-    }
-  }
-
   const handleRemoveProductRow = (index: number) => {
     if (formData.value.products.length <= 1) {
       ElMessage.warning('Phiếu nhập phải chứa ít nhất một sản phẩm')
@@ -1706,27 +1940,59 @@
     formData.value.products.splice(index, 1)
   }
 
-  const submitForm = async (statusId: string) => {
+  const submitForm = async () => {
     if (!formData.value.purchaseRequestId) {
       ElMessage.warning('Vui lòng chọn yêu cầu mua hàng')
       return
     }
 
-    const validProducts = formData.value.products.filter(
-      (p) => p.productVariantId !== undefined && p.productVariantId !== null
+    // Identify discardable and invalid products:
+    // - discardable: count is 0 AND selectedQuoteKey is empty
+    // - invalid: (count is 0 AND selectedQuoteKey is NOT empty) OR (count > 0 AND selectedQuoteKey is empty)
+    const discardable = formData.value.products.filter(
+      (p) => (p.count || 0) === 0 && !p.selectedQuoteKey
     )
 
-    if (validProducts.length === 0) {
-      ElMessage.warning('Vui lòng thêm ít nhất một sản phẩm hợp lệ')
+    const invalid = formData.value.products.filter(
+      (p) =>
+        ((p.count || 0) === 0 && p.selectedQuoteKey) || ((p.count || 0) > 0 && !p.selectedQuoteKey)
+    )
+
+    if (invalid.length > 0) {
+      ElMessage.error(
+        'Báo lỗi: Có sản phẩm có số lượng = 0 nhưng đã chọn báo giá, hoặc có số lượng > 0 nhưng chưa chọn báo giá. Vui lòng kiểm tra lại!'
+      )
       return
     }
 
-    for (const product of validProducts) {
-      if (!product.quotationProductRowId) {
-        ElMessage.warning('Vui lòng chọn báo giá/nhà cung cấp cho tất cả sản phẩm')
-        return
-      }
+    let finalProducts = formData.value.products.filter(
+      (p) => !((p.count || 0) === 0 && !p.selectedQuoteKey)
+    )
 
+    if (discardable.length > 0) {
+      try {
+        await ElMessageBox.confirm(
+          `Có ${discardable.length} dòng sản phẩm có số lượng bằng 0 và chưa chọn báo giá. Những dòng này sẽ bị xoá khỏi phiếu nhập khi lưu. Bạn có muốn tiếp tục lưu không?`,
+          'Cảnh báo dòng trống',
+          {
+            confirmButtonText: 'Có, tiếp tục lưu',
+            cancelButtonText: 'Hủy để chỉnh sửa',
+            type: 'warning'
+          }
+        )
+      } catch {
+        return // User cancelled
+      }
+    }
+
+    if (finalProducts.length === 0) {
+      ElMessage.warning(
+        'Phiếu nhập phải chứa ít nhất một sản phẩm có số lượng lớn hơn 0 và đã chọn báo giá!'
+      )
+      return
+    }
+
+    for (const product of finalProducts) {
       if (!isVinManagedProduct(product)) continue
 
       syncVehicleRows(product)
@@ -1756,39 +2022,9 @@
       }
     }
 
-    if (statusId === 'finished') {
-      try {
-        await ElMessageBox.confirm(
-          'Bạn có chắc chắn muốn hoàn thành phiếu nhập này không? Sau khi hoàn thành, số lượng sản phẩm sẽ được cộng vào kho và không thể chỉnh sửa thông tin phiếu nhập nữa.',
-          'Xác nhận hoàn thành',
-          {
-            confirmButtonText: 'Hoàn thành',
-            cancelButtonText: 'Hủy',
-            type: 'success'
-          }
-        )
-      } catch {
-        return
-      }
-    } else if (statusId === 'cancelled') {
-      try {
-        await ElMessageBox.confirm(
-          'Bạn có chắc chắn muốn hủy phiếu nhập này không? Sau khi hủy, phiếu nhập sẽ ở trạng thái đã hủy và không thể khôi phục hoặc chỉnh sửa.',
-          'Xác nhận hủy phiếu',
-          {
-            confirmButtonText: 'Hủy phiếu',
-            cancelButtonText: 'Đóng',
-            type: 'warning'
-          }
-        )
-      } catch {
-        return
-      }
-    }
-
     // Validate quantity against PR unimported quantity if it's imported via PR
     if (formData.value.purchaseRequestId) {
-      for (const product of validProducts) {
+      for (const product of finalProducts) {
         if (product.purchaseRequestItemId) {
           const prItem = prItemsMap.get(product.purchaseRequestItemId)
           if (prItem && (product.count || 0) > prItem.unimportedQuantity) {
@@ -1803,7 +2039,7 @@
 
     submitting.value = true
     try {
-      const payloadProducts = validProducts.map((p) => ({
+      const payloadProducts = finalProducts.map((p) => ({
         id: p.id,
         purchaseRequestItemId: p.purchaseRequestItemId,
         quotationProductRowId: p.quotationProductRowId,
@@ -1823,7 +2059,6 @@
       if (isEdit.value && formData.value.id) {
         const payload = {
           notes: formData.value.notes,
-          statusId: statusId,
           purchaseRequestId: formData.value.purchaseRequestId,
           products: payloadProducts
         }
@@ -1832,7 +2067,6 @@
       } else {
         const payload = {
           notes: formData.value.notes,
-          statusId: 'working',
           purchaseRequestId: formData.value.purchaseRequestId,
           products: payloadProducts.map(
             ({

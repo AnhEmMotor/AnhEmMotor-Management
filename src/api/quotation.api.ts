@@ -5,6 +5,7 @@ import type {
   CreateQuotationCommand,
   UpdateQuotationCommand
 } from '@/domain/inventory/quotation.types'
+import type { PurchaseRequestQuotedPriceResponse } from '@/domain/purchase-request/request.types'
 
 export const QuotationApi = {
   getList(params: any) {
@@ -61,6 +62,16 @@ export const QuotationApi = {
   getStatuses() {
     return request.get<Record<string, string>>({
       url: '/api/v1/Quotations/status'
+    })
+  },
+
+  getApprovedPrices(variantId: number, colorId?: number) {
+    return request.get<PurchaseRequestQuotedPriceResponse[]>({
+      url: '/api/v1/Quotations/approved-prices',
+      params: {
+        variantId,
+        colorId
+      }
     })
   }
 }

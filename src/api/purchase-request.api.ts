@@ -4,7 +4,7 @@ import type {
   PurchaseRequestList,
   CreatePurchaseRequest,
   UpdatePurchaseRequest,
-  PurchaseRequestQuotedPriceResponse
+  ApprovedPurchaseRequestDetailResponse
 } from '@/domain/purchase-request/request.types'
 
 export const PurchaseRequestApi = {
@@ -23,6 +23,12 @@ export const PurchaseRequestApi = {
   getById(id: number) {
     return request.get<PurchaseRequestDetailResponse>({
       url: `/api/v1/purchase-requests/${id}`
+    })
+  },
+
+  getApprovedById(id: number) {
+    return request.get<ApprovedPurchaseRequestDetailResponse>({
+      url: `/api/v1/purchase-requests/approved/${id}`
     })
   },
 
@@ -56,12 +62,6 @@ export const PurchaseRequestApi = {
     return request.patch<void>({
       url: `/api/v1/purchase-requests/${id}/status`,
       data: { status }
-    })
-  },
-
-  getQuotedPrices(id: number) {
-    return request.get<PurchaseRequestQuotedPriceResponse[]>({
-      url: `/api/v1/purchase-requests/${id}/quoted-prices`
     })
   },
 

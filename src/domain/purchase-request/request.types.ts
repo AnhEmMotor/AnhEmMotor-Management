@@ -68,3 +68,24 @@ export interface PurchaseRequestQuotedPriceResponse {
   quotePrice: number
   note?: string
 }
+
+export interface ApprovedPurchaseRequestItemResponse {
+  id: number
+  productVariantId: number
+  productName?: string
+  productVariantColorId?: number
+  productVariantColorName?: string
+  unimportedQuantity: number
+  needVin: boolean
+}
+
+export interface ApprovedPurchaseRequestDetailResponse {
+  id: number
+  note?: string
+  createdBy?: string
+  createdByName?: string
+  approvedBy?: string
+  approvedByName?: string
+  createdAt?: string
+  items: ApprovedPurchaseRequestItemResponse[]
+}

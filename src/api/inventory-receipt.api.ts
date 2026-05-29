@@ -70,6 +70,12 @@ export const InventoryReceiptApi = {
     })
   },
 
+  send(id: number) {
+    return request.post<InventoryReceipt>({
+      url: `/api/v1/InventoryReceipts/${id}/send`
+    })
+  },
+
   updateStatus(id: number, statusId: string) {
     return request.patch<InventoryReceipt>({
       url: `/api/v1/InventoryReceipts/${id}/status`,
