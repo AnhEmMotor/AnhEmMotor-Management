@@ -44,7 +44,7 @@
     />
 
     <!-- Table Card -->
-    <ElCard class="flex-1 art-table-card">
+    <ElCard class="flex-1 art-table-card" v-loading="loading">
       <ArtTableHeader :showColumns="false" @refresh="refreshData">
         <template #left>
           <div class="flex items-center gap-2">
@@ -190,9 +190,10 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed } from 'vue'
+  import { ref, computed, onMounted } from 'vue'
   import { Download, Printer } from '@element-plus/icons-vue'
   import { ElMessage } from 'element-plus'
+  import { InventoryReportApi } from '@/api/inventory-report.api'
 
   defineOptions({ name: 'InventoryLedger' })
 
@@ -226,6 +227,7 @@
     dateRange: null
   })
 
+  const loading = ref(false)
   const exporting = ref(false)
   const dialogVisible = ref(false)
   const selectedVoucher = ref<LedgerEntry | null>(null)
@@ -235,163 +237,49 @@
     return val.toLocaleString('vi-VN') + ' VNĐ'
   }
 
-  // Generate consistent static ledger mock data (sorted chronologically)
-  const generateMockLedgerData = (): LedgerEntry[] => {
-    return [
-      {
-        id: 'L01',
-        date: '2026-05-01 09:15',
-        voucherCode: 'PN2605001',
-        type: 'IMPORT',
-        productName: 'Honda Vision 2026',
-        variantName: 'Vision Cao cấp (Smartkey)',
-        colorName: 'Xanh dương',
-        partner: 'Honda Việt Nam Co., Ltd',
-        importQty: 50,
-        exportQty: 0,
-        unitPrice: 32500000,
-        totalAmount: 1625000000,
-        balance: 50
-      },
-      {
-        id: 'L02',
-        date: '2026-05-02 14:30',
-        voucherCode: 'PN2605002',
-        type: 'IMPORT',
-        productName: 'Yamaha Exciter 155 VVA',
-        variantName: 'Exciter 155 Cao cấp ABS',
-        colorName: 'Xanh GP',
-        partner: 'Yamaha Motor Việt Nam',
-        importQty: 30,
-        exportQty: 0,
-        unitPrice: 47800000,
-        totalAmount: 1434000000,
-        balance: 30
-      },
-      {
-        id: 'L03',
-        date: '2026-05-04 10:20',
-        voucherCode: 'PX2605001',
-        type: 'EXPORT',
-        productName: 'Honda Vision 2026',
-        variantName: 'Vision Cao cấp (Smartkey)',
-        colorName: 'Xanh dương',
-        partner: 'Đại lý Xe Máy Sơn Tùng',
-        importQty: 0,
-        exportQty: 10,
-        unitPrice: 35500000,
-        totalAmount: 355000000,
-        balance: 40
-      },
-      {
-        id: 'L04',
-        date: '2026-05-05 16:45',
-        voucherCode: 'PX2605002',
-        type: 'EXPORT',
-        productName: 'Yamaha Exciter 155 VVA',
-        variantName: 'Exciter 155 Cao cấp ABS',
-        colorName: 'Xanh GP',
-        partner: 'Khách hàng Nguyễn Văn Tuấn',
-        importQty: 0,
-        exportQty: 1,
-        unitPrice: 51200000,
-        totalAmount: 51200000,
-        balance: 29
-      },
-      {
-        id: 'L05',
-        date: '2026-05-10 11:00',
-        voucherCode: 'PN2605003',
-        type: 'IMPORT',
-        productName: 'Honda SH 160i 2026',
-        variantName: 'SH 160i Thể thao ABS',
-        colorName: 'Xám đen',
-        partner: 'Công ty Honda Việt Nam',
-        importQty: 15,
-        exportQty: 0,
-        unitPrice: 96000000,
-        totalAmount: 1440000000,
-        balance: 15
-      },
-      {
-        id: 'L06',
-        date: '2026-05-12 15:30',
-        voucherCode: 'PX2605003',
-        type: 'EXPORT',
-        productName: 'Honda SH 160i 2026',
-        variantName: 'SH 160i Thể thao ABS',
-        colorName: 'Xám đen',
-        partner: 'Khách hàng Trần Minh Hoàng',
-        importQty: 0,
-        exportQty: 2,
-        unitPrice: 104500000,
-        totalAmount: 209000000,
-        balance: 13
-      },
-      {
-        id: 'L07',
-        date: '2026-05-15 08:25',
-        voucherCode: 'PN2605004',
-        type: 'IMPORT',
-        productName: 'Suzuki Raider R150',
-        variantName: 'Raider R150 Thể thao',
-        colorName: undefined,
-        partner: 'Suzuki Việt Nam',
-        importQty: 25,
-        exportQty: 0,
-        unitPrice: 45000000,
-        totalAmount: 1125000000,
-        balance: 25
-      },
-      {
-        id: 'L08',
-        date: '2026-05-18 10:10',
-        voucherCode: 'PX2605004',
-        type: 'EXPORT',
-        productName: 'Suzuki Raider R150',
-        variantName: 'Raider R150 Thể thao',
-        colorName: undefined,
-        partner: 'Đại lý Xe Máy Hùng Phát',
-        importQty: 0,
-        exportQty: 8,
-        unitPrice: 48500000,
-        totalAmount: 388000000,
-        balance: 17
-      },
-      {
-        id: 'L09',
-        date: '2026-05-20 14:00',
-        voucherCode: 'PX2605005',
-        type: 'EXPORT',
-        productName: 'Honda Vision 2026',
-        variantName: 'Vision Cao cấp (Smartkey)',
-        colorName: 'Xanh dương',
-        partner: 'Khách hàng Lê Thị Thủy',
-        importQty: 0,
-        exportQty: 1,
-        unitPrice: 38000000,
-        totalAmount: 38000000,
-        balance: 39
-      },
-      {
-        id: 'L10',
-        date: '2026-05-25 11:30',
-        voucherCode: 'PN2605005',
-        type: 'IMPORT',
-        productName: 'Honda Vision 2026',
-        variantName: 'Vision Cao cấp (Smartkey)',
-        colorName: 'Xanh dương',
-        partner: 'Honda Việt Nam Co., Ltd',
-        importQty: 20,
-        exportQty: 0,
-        unitPrice: 32700000,
-        totalAmount: 654000004,
-        balance: 59
+  const tableData = ref<LedgerEntry[]>([])
+
+  const fetchLedgerData = async () => {
+    loading.value = true
+    try {
+      const params: any = {}
+      if (filters.value.searchQuery) {
+        params.searchQuery = filters.value.searchQuery
       }
-    ]
+      if (filters.value.type && filters.value.type !== 'ALL') {
+        params.type = filters.value.type
+      }
+      if (filters.value.dateRange && filters.value.dateRange.length === 2) {
+        params.startDate = filters.value.dateRange[0]
+        params.endDate = filters.value.dateRange[1]
+      }
+      const response = await InventoryReportApi.getLedger(params)
+      tableData.value = (response || []).map((x: any) => ({
+        id: x.id.toString(),
+        date: x.date ? new Date(x.date).toLocaleString('vi-VN').replace(/:\d{2}$/, '') : '',
+        voucherCode: x.voucherCode,
+        type: x.type,
+        productName: x.productName,
+        variantName: x.variantName,
+        colorName: x.colorName,
+        partner: x.partner || '—',
+        importQty: x.importQty,
+        exportQty: x.exportQty,
+        unitPrice: x.unitPrice,
+        totalAmount: x.totalAmount,
+        balance: x.balance
+      }))
+    } catch (error) {
+      console.error(error)
+      ElMessage.error('Không thể tải dữ liệu sổ cái tồn kho')
+    } finally {
+      loading.value = false
+    }
   }
 
-  const tableData = ref<LedgerEntry[]>(generateMockLedgerData())
+  onMounted(() => {
+    fetchLedgerData()
+  })
 
   // Columns definition for Sổ cái tồn kho
   const columns = [
@@ -518,6 +406,7 @@
       type: form.type || 'ALL',
       dateRange: form.dateRange || null
     }
+    fetchLedgerData()
   }
 
   const handleReset = () => {
@@ -526,11 +415,13 @@
       type: 'ALL',
       dateRange: null
     }
+    fetchLedgerData()
   }
 
   const refreshData = () => {
-    tableData.value = generateMockLedgerData()
-    ElMessage.success('Đã làm mới sổ cái tồn kho!')
+    fetchLedgerData().then(() => {
+      ElMessage.success('Đã làm mới sổ cái tồn kho!')
+    })
   }
 
   const handleExport = () => {

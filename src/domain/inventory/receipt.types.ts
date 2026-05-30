@@ -7,6 +7,7 @@ export interface InputInfo {
   quantity: number
   unitPrice?: number
   importPrice: number
+  paidAmount?: number
   discount?: number
   total?: number
   remainingCount?: number
@@ -30,6 +31,7 @@ export interface InventoryReceipt {
   supplierPhone?: string
   supplierEmail?: string
   createdAt?: string
+  paidAmount?: number
   totalPayable?: number
   purchaseRequestId?: number
   products: InputInfo[]
@@ -55,6 +57,7 @@ export interface CreateInventoryReceipt {
     productVariantColorId?: number
     count: number
     inputPrice: number
+    paidAmount?: number
     vehicles?: Array<{
       id?: number
       vinNumber: string
@@ -76,6 +79,7 @@ export interface UpdateInventoryReceipt {
     productVariantColorId?: number
     count: number
     inputPrice: number
+    paidAmount?: number
     vehicles?: Array<{
       id?: number
       vinNumber: string

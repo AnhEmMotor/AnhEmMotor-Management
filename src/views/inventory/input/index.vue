@@ -60,6 +60,16 @@
           <span class="font-medium text-gray-700">{{ formatCurrency(row.totalPayable) }}</span>
         </template>
 
+        <template #paidAmount="{ row }">
+          <span class="font-medium text-success">{{ formatCurrency(row.paidAmount || 0) }}</span>
+        </template>
+
+        <template #remainingDebt="{ row }">
+          <span class="font-bold text-danger">{{
+            formatCurrency(Math.max(0, (row.totalPayable || 0) - (row.paidAmount || 0)))
+          }}</span>
+        </template>
+
         <template #productSummary="{ row }">
           <div class="text-xs text-gray-500 max-w-[300px] truncate">
             {{ getProductSummaryText(row.products) }}
@@ -251,6 +261,21 @@
               </template>
             </ElTableColumn>
 
+            <ElTableColumn label="Đã trả NCC" width="150" align="center">
+              <template #default="{ row }">
+                <ElInputNumber
+                  v-model="row.paidAmount"
+                  :min="0"
+                  :max="(row.count || 0) * (row.inputPrice || 0)"
+                  :precision="0"
+                  class="w-full"
+                  :controls="false"
+                  placeholder="Số tiền đã trả"
+                  style="width: 120px"
+                />
+              </template>
+            </ElTableColumn>
+
             <ElTableColumn label="Thành tiền" width="160" align="right">
               <template #default="{ row }">
                 <span class="font-medium text-gray-700">
@@ -425,6 +450,11 @@
                 <span>{{ formatCurrency(row.importPrice) }}</span>
               </template>
             </ElTableColumn>
+            <ElTableColumn prop="paidAmount" label="Đã trả" width="160" align="right">
+              <template #default="{ row }">
+                <span>{{ formatCurrency(row.paidAmount) }}</span>
+              </template>
+            </ElTableColumn>
             <ElTableColumn label="Thành tiền" width="180" align="right">
               <template #default="{ row }">
                 <span class="font-medium text-gray-800">
@@ -435,11 +465,40 @@
           </ElTable>
         </div>
 
-        <div class="flex justify-end items-center gap-2 text-right mt-2">
-          <span class="text-gray-500 text-sm">Tổng cộng tiền thanh toán:</span>
-          <span class="text-xl font-bold text-primary">{{
-            formatCurrency(detailData.totalPayable)
-          }}</span>
+        <div
+          class="border-t border-dashed border-gray-200 pt-3 flex flex-col gap-2 text-right mt-2"
+        >
+          <div class="flex justify-end items-center gap-2">
+            <span class="text-gray-500 text-sm">Tổng tiền thanh toán:</span>
+            <span class="text-base font-semibold text-gray-800">{{
+              formatCurrency(detailData.totalPayable)
+            }}</span>
+          </div>
+          <div class="flex justify-end items-center gap-2">
+            <span class="text-gray-500 text-sm">Đã trả NCC:</span>
+            <span class="text-base font-semibold text-success">{{
+              formatCurrency(detailData.paidAmount || 0)
+            }}</span>
+          </div>
+          <div class="flex justify-end items-center gap-2">
+            <span class="text-gray-500 text-sm">Còn nợ NCC:</span>
+            <span class="text-xl font-bold text-danger">{{
+              formatCurrency(
+                Math.max(0, (detailData.totalPayable || 0) - (detailData.paidAmount || 0))
+              )
+            }}</span>
+          </div>
+          <div
+            v-if="
+              Math.max(0, (detailData.totalPayable || 0) - (detailData.paidAmount || 0)) > 0 &&
+              detailData.statusId === 'approve'
+            "
+            class="flex justify-end mt-1"
+          >
+            <ElButton type="success" size="small" @click="openPaymentForm(detailData)">
+              Ghi nhận thanh toán nợ
+            </ElButton>
+          </div>
         </div>
       </div>
       <template #footer>
@@ -863,6 +922,58 @@
         </div>
       </div>
     </ElDialog>
+
+    <!-- Dialog thực hiện thanh toán nợ -->
+    <ElDialog
+      v-model="paymentFormVisible"
+      :title="`Thanh toán nợ phiếu IR-${selectedReceiptForPay?.id}`"
+      width="450px"
+      append-to-body
+    >
+      <div v-if="selectedReceiptForPay" class="space-y-4">
+        <div class="bg-gray-50 p-4 rounded-lg text-sm space-y-2">
+          <div class="flex justify-between">
+            <span class="text-gray-500">Mã đơn nhập:</span>
+            <span class="font-bold">IR-{{ selectedReceiptForPay.id }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-500">Tổng số tiền nợ:</span>
+            <span class="font-bold text-red-500">{{
+              formatCurrency(
+                Math.max(
+                  0,
+                  (selectedReceiptForPay.totalPayable || 0) -
+                    (selectedReceiptForPay.paidAmount || 0)
+                )
+              )
+            }}</span>
+          </div>
+        </div>
+        <ElForm label-position="top">
+          <ElFormItem label="Số tiền thanh toán (VNĐ)">
+            <ElInputNumber
+              v-model="paymentAmount"
+              :min="1"
+              :max="
+                Math.max(
+                  0,
+                  (selectedReceiptForPay.totalPayable || 0) -
+                    (selectedReceiptForPay.paidAmount || 0)
+                )
+              "
+              class="w-full"
+              :controls="false"
+            />
+          </ElFormItem>
+        </ElForm>
+      </div>
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <ElButton @click="paymentFormVisible = false">Hủy</ElButton>
+          <ElButton type="primary" :loading="paying" @click="submitPayment">Xác nhận</ElButton>
+        </div>
+      </template>
+    </ElDialog>
   </div>
 </template>
 
@@ -889,6 +1000,7 @@
   import { ProductApi } from '@/api/product.api'
   import { PurchaseRequestApi } from '@/api/purchase-request.api'
   import { QuotationApi } from '@/api/quotation.api'
+  import { DebtApi } from '@/api/debt.api'
   import { Permissions } from '@/domain/constants/permissions'
   import type { InventoryReceipt, InputInfo } from '@/domain/inventory/receipt.types'
   import type { Supplier } from '@/domain/supplier/supplier.types'
@@ -909,6 +1021,7 @@
     productVariantColorName?: string
     count: number
     inputPrice: number
+    paidAmount?: number
     managementType?: string
     vehicles?: VehicleIdentification[]
     purchaseRequestItemId?: number
@@ -1595,8 +1708,10 @@
   const columns = ref([
     { label: 'Thời gian tạo', prop: 'createdAt', useSlot: true, width: 170 },
     { label: 'Tóm tắt SP', prop: 'productSummary', useSlot: true, minWidth: 200 },
-    { label: 'Tổng tiền', prop: 'totalPayable', useSlot: true, width: 150, align: 'right' },
-    { label: 'Trạng thái', prop: 'statusId', useSlot: true, width: 130, align: 'center' },
+    { label: 'Tổng tiền', prop: 'totalPayable', useSlot: true, width: 140, align: 'right' },
+    { label: 'Đã trả', prop: 'paidAmount', useSlot: true, width: 130, align: 'right' },
+    { label: 'Còn nợ', prop: 'remainingDebt', useSlot: true, width: 140, align: 'right' },
+    { label: 'Trạng thái', prop: 'statusId', useSlot: true, width: 120, align: 'center' },
     {
       label: 'Thao tác',
       prop: 'operation',
@@ -1764,6 +1879,37 @@
     }
   }
 
+  // --- Payment Dialog Logic ---
+  const paymentFormVisible = ref(false)
+  const paying = ref(false)
+  const selectedReceiptForPay = ref<any | null>(null)
+  const paymentAmount = ref<number>(0)
+
+  const openPaymentForm = (receipt: any) => {
+    selectedReceiptForPay.value = receipt
+    paymentAmount.value = Math.max(0, (receipt.totalPayable || 0) - (receipt.paidAmount || 0))
+    paymentFormVisible.value = true
+  }
+
+  const submitPayment = async () => {
+    if (!selectedReceiptForPay.value) return
+    paying.value = true
+    try {
+      await DebtApi.payDebt(selectedReceiptForPay.value.id, paymentAmount.value)
+      ElMessage.success('Thanh toán công nợ thành công!')
+      paymentFormVisible.value = false
+      // Refresh details dialog
+      await handleViewDetail(selectedReceiptForPay.value)
+      // Refresh list
+      loadData()
+    } catch (err: any) {
+      console.error(err)
+      ElMessage.error(err.response?.data?.Message || 'Thanh toán thất bại')
+    } finally {
+      paying.value = false
+    }
+  }
+
   const handleAdd = () => {
     isEdit.value = false
     dialogTitle.value = 'Tạo phiếu nhập mới'
@@ -1876,6 +2022,7 @@
             productVariantColorName: p.productVariantColorName,
             count: p.quantity || 0,
             inputPrice: p.importPrice || 0,
+            paidAmount: p.paidAmount || 0,
             managementType: isVin ? VIN_MANAGEMENT_TYPE : undefined,
             needVin: isVin,
             purchaseRequestItemId: p.purchaseRequestItemId,
@@ -2047,6 +2194,7 @@
         productVariantColorId: p.productVariantColorId,
         count: p.count,
         inputPrice: p.inputPrice,
+        paidAmount: p.paidAmount || 0,
         vehicles: isVinManagedProduct(p)
           ? p.vehicles?.map((vehicle) => ({
               id: vehicle.id,
@@ -2076,6 +2224,7 @@
               productVariantColorId,
               count,
               inputPrice,
+              paidAmount,
               vehicles
             }) => ({
               purchaseRequestItemId,
@@ -2084,6 +2233,7 @@
               productVariantColorId,
               count,
               inputPrice,
+              paidAmount,
               vehicles
             })
           )

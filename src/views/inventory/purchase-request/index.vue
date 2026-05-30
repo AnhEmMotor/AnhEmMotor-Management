@@ -303,6 +303,7 @@
     >
       <div class="space-y-4">
         <ElInput
+          v-model="productSelectorQuery"
           placeholder="Tìm sản phẩm theo tên..."
           clearable
           prefix-icon="Search"

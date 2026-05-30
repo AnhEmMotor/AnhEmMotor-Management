@@ -53,6 +53,7 @@ export interface PurchaseRequestListResponse {
   createdByName?: string
   createdAt?: string
   totalItems: number
+  paidAmount: number
 }
 
 export interface PurchaseRequestList {

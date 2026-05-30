@@ -62,10 +62,14 @@
 
       <ArtTable
         ref="tableRef"
+        :loading="loadingData"
         :data="filteredTableData"
         :columns="columns"
         row-key="id"
         default-expand-all
+        :pagination="paginationState"
+        @pagination:size-change="handleSizeChange"
+        @pagination:current-change="handleCurrentChange"
       >
         <!-- Custom slot for product/variant/color name with indentation support and icon indicators -->
         <template #name="{ row }">
@@ -171,9 +175,10 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, nextTick } from 'vue'
+  import { ref, computed, nextTick, onMounted } from 'vue'
   import { Download, Memo } from '@element-plus/icons-vue'
   import { ElMessage } from 'element-plus'
+  import { InventoryReportApi } from '@/api/inventory-report.api'
 
   defineOptions({ name: 'InventoryInOutStock' })
 
@@ -187,6 +192,8 @@
     inStock: number
     ordered: number
     remaining: number
+    variantId?: number
+    colorId?: number
     children?: StockItem[]
   }
 
@@ -210,6 +217,14 @@
   const searchQuery = ref('')
   const tableRef = ref()
   const exporting = ref(false)
+  const loadingData = ref(false)
+
+  // Pagination state
+  const paginationState = ref({
+    current: 1,
+    size: 10,
+    total: 0
+  })
 
   // Dialog & Detail viewing state
   const dialogVisible = ref(false)
@@ -219,192 +234,86 @@
   const mockReceipts = ref<MockReceipt[]>([])
   const mockInvoices = ref<MockInvoice[]>([])
 
-  // Generate consistent static mock data
-  const generateMockData = (): StockItem[] => {
-    const rawData = [
-      {
-        id: 'p1',
-        name: 'Honda Vision 2026',
-        variants: [
-          {
-            id: 'p1-v1',
-            name: 'Vision Tiêu chuẩn (Khóa cơ)',
-            colors: [] // No color variants
-          },
-          {
-            id: 'p1-v2',
-            name: 'Vision Cao cấp (Smartkey)',
-            colors: [
-              { id: 'p1-v2-c1', name: 'Đỏ đậm' },
-              { id: 'p1-v2-c2', name: 'Xanh dương' }
-            ]
-          },
-          {
-            id: 'p1-v3',
-            name: 'Vision Thể thao',
-            colors: [
-              { id: 'p1-v3-c1', name: 'Xám xi măng' },
-              { id: 'p1-v3-c2', name: 'Đen nhám' }
-            ]
-          }
-        ]
-      },
-      {
-        id: 'p2',
-        name: 'Yamaha Exciter 155 VVA',
-        variants: [
-          {
-            id: 'p2-v1',
-            name: 'Exciter 155 Tiêu chuẩn',
-            colors: [
-              { id: 'p2-v1-c1', name: 'Đỏ nhám' },
-              { id: 'p2-v1-c2', name: 'Đen bóng' },
-              { id: 'p2-v1-c3', name: 'Trắng đỏ' }
-            ]
-          },
-          {
-            id: 'p2-v2',
-            name: 'Exciter 155 Cao cấp ABS',
-            colors: [
-              { id: 'p2-v2-c1', name: 'Xanh GP' },
-              { id: 'p2-v2-c2', name: 'Vàng Xám' }
-            ]
-          },
-          {
-            id: 'p2-v3',
-            name: 'Exciter 155 Bản Giới hạn',
-            colors: [] // No color variants
-          }
-        ]
-      },
-      {
-        id: 'p3',
-        name: 'Honda SH 160i 2026',
-        variants: [
-          {
-            id: 'p3-v1',
-            name: 'SH 160i Tiêu chuẩn CBS',
-            colors: [
-              { id: 'p3-v1-c1', name: 'Trắng' },
-              { id: 'p3-v1-c2', name: 'Đỏ' },
-              { id: 'p3-v1-c3', name: 'Đen' }
-            ]
-          },
-          {
-            id: 'p3-v2',
-            name: 'SH 160i Thể thao ABS',
-            colors: [
-              { id: 'p3-v2-c1', name: 'Xám đen' },
-              { id: 'p3-v2-c2', name: 'Đỏ đen' }
-            ]
-          }
-        ]
-      },
-      {
-        id: 'p4',
-        name: 'Suzuki Raider R150',
-        variants: [
-          {
-            id: 'p4-v1',
-            name: 'Raider R150 Thể thao',
-            colors: [] // No color variants
-          }
-        ]
-      }
-    ]
+  const tableData = ref<StockItem[]>([])
 
-    // Simple pseudo-random helper for consistent static values
-    let seed = 42
-    const random = (min: number, max: number) => {
-      const x = Math.sin(seed++) * 10000
-      return Math.floor((x - Math.floor(x)) * (max - min + 1)) + min
-    }
-
-    return rawData.map((p) => {
-      const variantsList = p.variants.map((v) => {
-        if (v.colors && v.colors.length > 0) {
-          const colorsList = v.colors.map((c) => {
-            const imported = random(40, 150)
-            const exported = random(20, imported - 10)
-            const inStock = imported - exported
-            const ordered = random(0, Math.max(0, inStock - 5))
-            const remaining = inStock - ordered
+  // API mapper function
+  const mapToStockItems = (apiItems: any[]): StockItem[] => {
+    if (!apiItems) return []
+    return apiItems.map((prod: any) => {
+      const variants = prod.variants
+        ? prod.variants.map((v: any) => {
+            const colors = v.variantColors
+              ? v.variantColors.map((c: any) => {
+                  return {
+                    id: `c-${c.colorId}`,
+                    name: c.colorName,
+                    level: 2,
+                    imported: c.importedQty,
+                    exported: c.exportedQty,
+                    inStock: c.inventoryQty,
+                    ordered: c.orderedQty,
+                    remaining: c.remainingQty,
+                    variantId: v.variantId,
+                    colorId: c.colorId
+                  } as StockItem
+                })
+              : undefined
 
             return {
-              id: c.id,
-              name: c.name,
-              level: 2,
-              imported,
-              exported,
-              inStock,
-              ordered,
-              remaining
+              id: `v-${v.variantId}`,
+              name: v.variantName,
+              level: 1,
+              imported: v.importedQty,
+              exported: v.exportedQty,
+              inStock: v.inventoryQty,
+              ordered: v.orderedQty,
+              remaining: v.remainingQty,
+              variantId: v.variantId,
+              children: colors && colors.length > 0 ? colors : undefined
             } as StockItem
           })
-
-          // Calculate parent variant values from colors
-          const imported = colorsList.reduce((acc, curr) => acc + curr.imported, 0)
-          const exported = colorsList.reduce((acc, curr) => acc + curr.exported, 0)
-          const inStock = colorsList.reduce((acc, curr) => acc + curr.inStock, 0)
-          const ordered = colorsList.reduce((acc, curr) => acc + curr.ordered, 0)
-          const remaining = colorsList.reduce((acc, curr) => acc + curr.remaining, 0)
-
-          return {
-            id: v.id,
-            name: v.name,
-            level: 1,
-            imported,
-            exported,
-            inStock,
-            ordered,
-            remaining,
-            children: colorsList
-          } as StockItem
-        } else {
-          // No colors, generate direct values
-          const imported = random(50, 180)
-          const exported = random(20, imported - 15)
-          const inStock = imported - exported
-          const ordered = random(0, Math.max(0, inStock - 8))
-          const remaining = inStock - ordered
-
-          return {
-            id: v.id,
-            name: v.name,
-            level: 1,
-            imported,
-            exported,
-            inStock,
-            ordered,
-            remaining
-          } as StockItem
-        }
-      })
-
-      // Calculate product values from variants
-      const imported = variantsList.reduce((acc, curr) => acc + curr.imported, 0)
-      const exported = variantsList.reduce((acc, curr) => acc + curr.exported, 0)
-      const inStock = variantsList.reduce((acc, curr) => acc + curr.inStock, 0)
-      const ordered = variantsList.reduce((acc, curr) => acc + curr.ordered, 0)
-      const remaining = variantsList.reduce((acc, curr) => acc + curr.remaining, 0)
+        : []
 
       return {
-        id: p.id,
-        name: p.name,
+        id: `p-${prod.productId}`,
+        name: prod.productName,
         level: 0,
-        imported,
-        exported,
-        inStock,
-        ordered,
-        remaining,
-        children: variantsList
+        imported: prod.importedQty,
+        exported: prod.exportedQty,
+        inStock: prod.inventoryQty,
+        ordered: prod.orderedQty,
+        remaining: prod.remainingQty,
+        children: variants.length > 0 ? variants : undefined
       } as StockItem
     })
   }
 
-  const tableData = ref<StockItem[]>(generateMockData())
+  // Fetch data from API
+  const fetchData = async () => {
+    loadingData.value = true
+    try {
+      const res = await InventoryReportApi.getSummary({
+        pageNumber: paginationState.value.current,
+        pageSize: paginationState.value.size,
+        searchTerm: searchQuery.value || undefined
+      })
+      if (res) {
+        tableData.value = mapToStockItems(res.items || [])
+        paginationState.value.total = res.totalCount || 0
+      }
+    } catch (err) {
+      console.error(err)
+      ElMessage.error('Không thể tải báo cáo xuất nhập tồn!')
+    } finally {
+      loadingData.value = false
+    }
+  }
 
-  // Compute overall stats for the cards
+  onMounted(() => {
+    fetchData()
+  })
+
+  // Compute overall stats for the cards based on current page table data
   const totalStats = computed(() => {
     return tableData.value.reduce(
       (acc, p) => {
@@ -441,8 +350,6 @@
   ])
 
   // Helper: check if leaf node
-  // - If level is 2 (Color variant), it's a leaf node.
-  // - If level is 1 (Product Variant) AND has no children (no color variants), it's a leaf node.
   const isLeafNode = (row: StockItem): boolean => {
     return row.level === 2 || (row.level === 1 && (!row.children || row.children.length === 0))
   }
@@ -450,45 +357,34 @@
   // Search handlers
   const handleSearch = (form: Record<string, any>) => {
     searchQuery.value = form.name || ''
+    paginationState.value.current = 1
+    fetchData()
   }
 
   const handleReset = () => {
     searchQuery.value = ''
+    paginationState.value.current = 1
+    fetchData()
   }
 
   const refreshData = () => {
-    tableData.value = generateMockData()
+    fetchData()
   }
 
-  // Filter tree recursively based on query
+  const handleSizeChange = (val: number) => {
+    paginationState.value.size = val
+    paginationState.value.current = 1
+    fetchData()
+  }
+
+  const handleCurrentChange = (val: number) => {
+    paginationState.value.current = val
+    fetchData()
+  }
+
+  // Filter tree recursively (just return tableData since filtered at backend)
   const filteredTableData = computed(() => {
-    if (!searchQuery.value) return tableData.value
-
-    const query = searchQuery.value.toLowerCase().trim()
-
-    const filterNode = (node: StockItem): StockItem | null => {
-      const matchesName = node.name.toLowerCase().includes(query)
-      let filteredChildren: StockItem[] = []
-
-      if (node.children) {
-        filteredChildren = node.children
-          .map((child) => filterNode(child))
-          .filter((child): child is StockItem => child !== null)
-      }
-
-      if (matchesName || filteredChildren.length > 0) {
-        return {
-          ...node,
-          children: filteredChildren.length > 0 ? filteredChildren : undefined
-        }
-      }
-
-      return null
-    }
-
     return tableData.value
-      .map((node) => filterNode(node))
-      .filter((node): node is StockItem => node !== null)
   })
 
   // Table row styling helpers
@@ -505,72 +401,62 @@
   }
 
   // Export report button action
-  const handleExport = () => {
+  const handleExport = async () => {
     exporting.value = true
-    setTimeout(() => {
+    try {
+      const resBlob = await InventoryReportApi.export({
+        searchTerm: searchQuery.value || undefined
+      })
+      const url = window.URL.createObjectURL(new Blob([resBlob]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', 'Bao_cao_ton_kho.xlsx')
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+      ElMessage.success('Đã xuất báo cáo Xuất - Nhập - Tồn thành công!')
+    } catch (err) {
+      console.error(err)
+      ElMessage.error('Không thể xuất báo cáo!')
+    } finally {
       exporting.value = false
-      ElMessage.success('Đã xuất báo cáo Xuất - Nhập - Tồn thành công (file Excel/PDF giả lập)!')
-    }, 1200)
+    }
   }
 
   // Show transactional history for leaf node variant/color
-  const handleViewHistory = (row: StockItem) => {
+  const handleViewHistory = async (row: StockItem) => {
+    if (row.variantId === undefined) return
     selectedRow.value = row
     selectedRowName.value = row.name
     activeTab.value = 'receipts'
+    mockReceipts.value = []
+    mockInvoices.value = []
 
-    // Mock receipts to match total row.imported
-    const suppliers = [
-      'Honda Việt Nam',
-      'Yamaha Motor Việt Nam',
-      'Tập đoàn Suzuki',
-      'Nhà Nhập Khẩu Quang Mạnh'
-    ]
-    const receiptCount = Math.min(3, Math.max(1, Math.ceil(row.imported / 40)))
-    const receipts: MockReceipt[] = []
-    let remainingImported = row.imported
+    try {
+      const details = await InventoryReportApi.getDetail(row.variantId, row.colorId)
+      if (details) {
+        mockReceipts.value = (details.imports || []).map((imp: any, idx: number) => ({
+          code: `PN-${idx + 1}`,
+          supplier: imp.partnerName || 'Nhà cung cấp',
+          quantity: imp.qty || 0,
+          price: imp.price || 0,
+          date: imp.date ? new Date(imp.date).toLocaleDateString('vi-VN') : '-'
+        }))
 
-    for (let i = 0; i < receiptCount; i++) {
-      const isLast = i === receiptCount - 1
-      const qty = isLast ? remainingImported : Math.floor(row.imported / receiptCount)
-      remainingImported -= qty
-
-      if (qty > 0) {
-        receipts.push({
-          code: `PN202605${10 + i}`,
-          supplier: suppliers[i % suppliers.length],
-          quantity: qty,
-          price: row.level === 2 ? 32000000 : 45000000,
-          date: `2026-05-${10 + i * 3}`
-        })
+        mockInvoices.value = (details.exports || []).map((exp: any, idx: number) => ({
+          code: `PX-${idx + 1}`,
+          customer: exp.partnerName || 'Khách hàng',
+          quantity: exp.qty || 0,
+          price: exp.price || 0,
+          date: exp.date ? new Date(exp.date).toLocaleDateString('vi-VN') : '-'
+        }))
       }
+      dialogVisible.value = true
+    } catch (err) {
+      console.error(err)
+      ElMessage.error('Không thể tải lịch sử giao dịch!')
     }
-    mockReceipts.value = receipts
-
-    // Mock invoices to match total row.exported
-    const customers = ['Nguyễn Văn Bình', 'Trần Thị Thúy', 'Lê Hữu Hoàng', 'Hoàng Minh Tuấn']
-    const invoiceCount = Math.min(3, Math.max(1, Math.ceil(row.exported / 30)))
-    const invoices: MockInvoice[] = []
-    let remainingExported = row.exported
-
-    for (let i = 0; i < invoiceCount; i++) {
-      const isLast = i === invoiceCount - 1
-      const qty = isLast ? remainingExported : Math.floor(row.exported / invoiceCount)
-      remainingExported -= qty
-
-      if (qty > 0) {
-        invoices.push({
-          code: `HD2605${20 + i}`,
-          customer: customers[i % customers.length],
-          quantity: qty,
-          price: row.level === 2 ? 38500000 : 52000000,
-          date: `2026-05-${12 + i * 4}`
-        })
-      }
-    }
-    mockInvoices.value = invoices
-
-    dialogVisible.value = true
   }
 
   // Expand / Collapse actions
