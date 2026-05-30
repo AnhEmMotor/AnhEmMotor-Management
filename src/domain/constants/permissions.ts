@@ -24,6 +24,8 @@ export const Permissions = {
   InventoryReceiptsSend: 'Permissions.InventoryReceipts.Send',
   InventoryReceiptsApproveReject: 'Permissions.InventoryReceipts.ApproveReject',
   OutputsView: 'Permissions.Outputs.View',
+  OutputsViewConfirmed: 'Permissions.Outputs.ViewConfirmed',
+  OutputsViewUnconfirmed: 'Permissions.Outputs.ViewUnconfirmed',
   OutputsCreate: 'Permissions.Outputs.Create',
   OutputsEdit: 'Permissions.Outputs.Edit',
   OutputsDelete: 'Permissions.Outputs.Delete',

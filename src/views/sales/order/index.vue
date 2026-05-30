@@ -630,7 +630,7 @@
     try {
       const filters: string[] = []
       if (searchForm.statusId) filters.push(`StatusId==${searchForm.statusId}`)
-      const res = await SalesOrderApi.getList({
+      const res = await SalesOrderApi.getConfirmedList({
         current: pagination.current,
         size: pagination.size,
         Filters: filters.join('|') || undefined,
