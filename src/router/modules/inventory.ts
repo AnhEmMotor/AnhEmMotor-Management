@@ -29,20 +29,20 @@ export const inventoryRoutes: AppRouteRecord = {
       }
     },
     {
+      path: 'purchase-request',
+      name: 'PurchaseRequest',
+      component: '/inventory/purchase-request/index',
+      meta: {
+        title: 'Yêu cầu mua hàng',
+        icon: 'ri:git-pull-request-line'
+      }
+    },
+    {
       path: 'input',
       name: 'InventoryInput',
       component: '/inventory/input/index',
       meta: {
         title: 'menus.inventory.input',
-        icon: 'ri:file-list-3-line'
-      }
-    },
-    {
-      path: 'input-new',
-      name: 'InventoryInputNew',
-      component: '/inventory/input-new/index',
-      meta: {
-        title: 'Phiếu nhập mới (Demo)',
         icon: 'ri:file-list-3-line'
       }
     },

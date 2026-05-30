@@ -268,7 +268,7 @@ async function handleDynamicRoutes(to: RouteLocationNormalized, router: Router):
       }
     }
   } catch (error) {
-    console.error('[RouteGuard] Hoạt độngRoutingDangKyThatBai:', error)
+    console.error('[RouteGuard] Có lỗi xảy ra:', error)
 
     closeLoading()
 

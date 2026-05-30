@@ -356,7 +356,6 @@ export function useProductTable() {
       battery_type: '',
       lighting_system: '',
       dashboard_type: '',
-      highlights: '[]',
       highlights_list: [],
       variants: [
         {
@@ -433,32 +432,22 @@ export function useProductTable() {
       fullProduct.lighting_system = fullProduct.lighting_system || ''
       fullProduct.dashboard_type = fullProduct.dashboard_type || ''
 
-      if (fullProduct.highlights && typeof fullProduct.highlights === 'string') {
-        try {
-          const rawHighlights = JSON.parse(fullProduct.highlights)
-          fullProduct.highlights_list = (rawHighlights || []).map((h: any) => {
-            const techId = Number(h.technology_id || h.technologyId)
-            const tech = availableTechnologies.value.find((t) => t.id === techId)
-            return {
-              technology_id: techId,
-              custom_title:
-                h.custom_title ?? h.customTitle ?? tech?.defaultTitle ?? tech?.name ?? '',
-              custom_description:
-                h.custom_description ?? h.customDescription ?? tech?.defaultDescription ?? '',
-              custom_image_url:
-                h.custom_image_url ?? h.customImageUrl ?? tech?.defaultImageUrl ?? '',
-              _defaultTitle: tech?.defaultTitle,
-              _defaultDescription: tech?.defaultDescription,
-              _defaultImageUrl: tech?.defaultImageUrl,
-              _categoryName: tech?.categoryName || 'TECHNOLOGY'
-            }
-          })
-        } catch (_e) {
-          console.error('Failed to parse highlights', _e)
-          fullProduct.highlights_list = []
-        }
-      } else if (Array.isArray(fullProduct.highlights_list)) {
-        // Already parsed
+      if (fullProduct.product_technologies && Array.isArray(fullProduct.product_technologies)) {
+        fullProduct.highlights_list = fullProduct.product_technologies.map((pt: any) => {
+          const techId = Number(pt.technology_id)
+          const tech = availableTechnologies.value.find((t) => t.id === techId)
+          return {
+            technology_id: techId,
+            custom_title: pt.custom_title ?? pt.title ?? tech?.defaultTitle ?? tech?.name ?? '',
+            custom_description:
+              pt.custom_description ?? pt.description ?? tech?.defaultDescription ?? '',
+            custom_image_url: pt.custom_image_url ?? pt.image_url ?? tech?.defaultImageUrl ?? '',
+            _defaultTitle: tech?.defaultTitle ?? pt._default_title,
+            _defaultDescription: tech?.defaultDescription ?? pt._default_description,
+            _defaultImageUrl: tech?.defaultImageUrl ?? pt._default_image_url,
+            _categoryName: (tech?.categoryName ?? pt._category_name) || 'TECHNOLOGY'
+          }
+        })
       } else {
         fullProduct.highlights_list = []
       }
@@ -577,24 +566,23 @@ export function useProductTable() {
   const submitForm = async () => {
     submitting.value = true
     try {
-      formData.value.product_technologies = selectedTechIds.value.map((id) => ({
-        technology_id: id,
-        display_order: 0
-      }))
-
       if (formData.value.highlights_list) {
-        const cleanedHighlights = formData.value.highlights_list.map((h: any) => ({
-          technology_id: Number(h.technology_id),
-          custom_title: h.custom_title || '',
-          custom_description: h.custom_description || '',
-          custom_image_url: h.custom_image_url || ''
-        }))
-        formData.value.highlights = JSON.stringify(cleanedHighlights)
+        formData.value.product_technologies = formData.value.highlights_list.map(
+          (h: any, idx: number) => ({
+            technology_id: Number(h.technology_id),
+            custom_title: h.custom_title || '',
+            custom_description: h.custom_description || '',
+            custom_image_url: h.custom_image_url || '',
+            display_order: idx + 1
+          })
+        )
       } else {
-        formData.value.highlights = '[]'
+        formData.value.product_technologies = []
       }
 
       const payload: any = { ...formData.value }
+      delete payload.highlights
+      delete payload.highlights_list
 
       if (formData.value.variants) {
         const serializedVariants = formData.value.variants.map((v: any) => {

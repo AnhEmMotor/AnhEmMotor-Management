@@ -1,4 +1,4 @@
-export interface QuotationItemRequest {
+export interface CreateQuotationItemRequest {
   productVariantId: string
   productVarientColorId?: string
   quotePrice?: number
@@ -14,6 +14,7 @@ export interface UpdateQuotationItemRequest {
 }
 
 export interface QuotationItemResponse {
+  id?: number
   productVariantId?: number
   productVariantDisplayName?: string
   productVariantColorId?: number
@@ -27,7 +28,7 @@ export interface QuotationDetailResponse {
   supplierId?: number
   supplierName?: string
   status?: string
-  note?: string
+  notes?: string
   quotationItems?: QuotationItemResponse[]
   lastUpdatedAt?: string
 }
@@ -52,7 +53,7 @@ export interface QuotationListResponse {
 export interface CreateQuotationCommand {
   supplierId?: number
   notes?: string
-  products: QuotationItemRequest[]
+  products: CreateQuotationItemRequest[]
 }
 
 export interface UpdateQuotationCommand {

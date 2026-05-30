@@ -737,7 +737,7 @@
       },
       onError: (error) => {
         console.error('❌ Dữ liệuLoadingThatBai:', error)
-        addCacheLog(`❌ Yêu cầu thất bại: ${error.message}`)
+        addCacheLog(`❌ Có lỗi từ hệ thống: ${error.message}`)
         ElMessage.error(error.message)
       },
       onCacheHit: (data, response) => {
