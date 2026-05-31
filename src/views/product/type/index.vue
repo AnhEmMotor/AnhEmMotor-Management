@@ -147,9 +147,20 @@
               :value="item.value"
             />
           </ElSelect>
-        </ElFormItem>
+          </ElFormItem>
 
-        <ElFormItem label="Hình ảnh">
+          <ElFormItem label="Số lượng mua tối đa">
+ <ElInputNumber
+ v-model="formData.maxPurchaseQuantity"
+ :min="1"
+ :max="999"
+ placeholder="Không giới hạn nếu để trống"
+ class="w-full"
+ controls-position="right"
+ />
+ </ElFormItem>
+
+ <ElFormItem label="Hình ảnh">
           <ElUpload
             class="category-uploader"
             action="#"
