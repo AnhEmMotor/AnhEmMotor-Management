@@ -8,88 +8,39 @@
         icon="ri:money-cny-box-line"
         iconStyle="bg-danger"
       />
-      <ArtStatsCard
-        title="Hồ sơ treo Ngân hàng"
-        :count="15"
-        description="Đang chờ giải ngân trả góp (Giả lập)"
-        icon="ri:timer-flash-line"
-        iconStyle="bg-warning"
-      />
-      <ArtStatsCard
-        title="Giá trị cam kết"
-        count="450 triệu"
-        description="Tiền đang kẹt tại Bank (Giả lập)"
-        icon="ri:safe-2-line"
-        iconStyle="bg-primary"
-      />
     </div>
 
     <ElCard class="flex-1 art-table-card">
       <template #header>
         <div class="flex items-center gap-4 justify-between">
           <div class="flex items-center gap-4">
-            <h4 class="m-0 font-bold text-gray-800 text-lg">Quản lý Công nợ</h4>
-            <ElRadioGroup v-model="activeTab" size="small">
-              <ElRadioButton label="suppliers">Công nợ NCC</ElRadioButton>
-              <ElRadioButton label="banks">Đối tác Ngân hàng (Giả lập)</ElRadioButton>
-            </ElRadioGroup>
+            <h4 class="m-0 font-bold text-gray-800 text-lg">Quản lý Công nợ nhà cung cấp</h4>
           </div>
-          <ElButton
-            v-if="activeTab === 'suppliers'"
-            type="primary"
-            size="small"
-            @click="fetchSupplierDebts"
-          >
+          <ElButton type="primary" size="small" @click="fetchSupplierDebts">
             <ElIcon class="mr-1"><Refresh /></ElIcon> Làm mới
           </ElButton>
         </div>
       </template>
 
-      <div v-if="activeTab === 'suppliers'">
-        <ArtTable :data="supplierDebts" :columns="supplierColumns" v-loading="loading">
-          <template #totalDebt="{ row }">
-            <span class="font-bold text-red-500">
-              {{ formatCurrency(row.totalDebt) }}
-            </span>
-          </template>
-          <template #operation="{ row }">
-            <ElButton type="primary" size="small" link @click="handleViewReceipts(row)">
-              Chi tiết đơn nợ
-            </ElButton>
-          </template>
-        </ArtTable>
-      </div>
-
-      <div v-else>
-        <ArtTable :data="bankInstallments" :columns="bankColumns">
-          <template #daysPending="{ row }">
-            <span :class="row.daysPending > 7 ? 'text-danger font-bold' : ''">
-              {{ row.daysPending }} ngày
-            </span>
-          </template>
-          <template #operation="{ row }">
-            <ElButton type="primary" link size="small" @click="handleContact(row)">
-              Liên hệ đầu mối (Mục 7.1)
-            </ElButton>
-          </template>
-        </ArtTable>
-        <div
-          class="mt-4 p-4 bg-info/5 rounded border border-info/10 text-xs text-info flex items-center gap-2"
-        >
-          <ElIcon><InfoFilled /></ElIcon>
-          <span
-            >Nếu ngân hàng chậm giải ngân (> 7 ngày), Admin cần tra cứu đầu mối liên hệ tại mục 7.1
-            để thúc đẩy hồ sơ.</span
-          >
-        </div>
-      </div>
+      <ArtTable :data="supplierDebts" :columns="supplierColumns" v-loading="loading">
+        <template #totalDebt="{ row }">
+          <span class="font-bold text-red-500">
+            {{ formatCurrency(row.totalDebt) }}
+          </span>
+        </template>
+        <template #operation="{ row }">
+          <ElButton type="primary" size="small" link @click="handleViewReceipts(row)">
+            Chi tiết đơn nợ
+          </ElButton>
+        </template>
+      </ArtTable>
     </ElCard>
 
     <!-- Dialog xem danh sách phiếu nhập nợ của nhà cung cấp -->
     <ElDialog
       v-model="receiptsDialogVisible"
       :title="`Danh sách phiếu nhập còn nợ - ${selectedSupplier?.name}`"
-      width="900px"
+      width="950px"
       append-to-body
       destroy-on-close
     >
@@ -97,18 +48,20 @@
         <ElTable :data="receipts" border stripe style="width: 100%">
           <ElTableColumn label="Mã phiếu" width="120" align="center">
             <template #default="{ row }">
-              <span class="font-mono font-bold text-primary">IR-{{ row.id }}</span>
+              <span class="font-mono font-bold text-primary">IR-{{ row.inventoryReceiptId }}</span>
             </template>
           </ElTableColumn>
-          <ElTableColumn label="Ngày lập" width="160" align="center">
+          <ElTableColumn label="Sản phẩm" min-width="280">
             <template #default="{ row }">
-              {{ formatDate(row.createdAt) }}
+              <div class="font-medium text-gray-900">{{ row.productVariantName }}</div>
+              <div v-if="row.colorName" class="text-xs text-gray-500"
+                >Phân loại: {{ row.colorName }}</div
+              >
             </template>
           </ElTableColumn>
-          <ElTableColumn prop="notes" label="Ghi chú" min-width="180" show-overflow-tooltip />
           <ElTableColumn label="Tổng tiền" width="150" align="right">
             <template #default="{ row }">
-              {{ formatCurrency(row.totalPayable) }}
+              {{ formatCurrency(row.totalAmount) }}
             </template>
           </ElTableColumn>
           <ElTableColumn label="Đã trả" width="140" align="right">
@@ -142,7 +95,7 @@
     <!-- Dialog thực hiện thanh toán nợ -->
     <ElDialog
       v-model="paymentFormVisible"
-      :title="`Thanh toán nợ phiếu IR-${selectedReceipt?.id}`"
+      :title="`Thanh toán nợ phiếu IR-${selectedReceipt?.inventoryReceiptId}`"
       width="450px"
       append-to-body
     >
@@ -150,7 +103,16 @@
         <div class="bg-gray-50 p-4 rounded-lg text-sm space-y-2">
           <div class="flex justify-between">
             <span class="text-gray-500">Mã đơn nhập:</span>
-            <span class="font-bold">IR-{{ selectedReceipt.id }}</span>
+            <span class="font-bold">IR-{{ selectedReceipt.inventoryReceiptId }}</span>
+          </div>
+          <div class="flex flex-col gap-1 border-t border-b border-gray-100 py-2 my-2">
+            <span class="text-gray-500 text-xs">Sản phẩm:</span>
+            <span class="font-medium text-gray-800 text-xs">{{
+              selectedReceipt.productVariantName
+            }}</span>
+            <span v-if="selectedReceipt.colorName" class="text-gray-500 text-xs"
+              >Phân loại: {{ selectedReceipt.colorName }}</span
+            >
           </div>
           <div class="flex justify-between">
             <span class="text-gray-500">Tổng số tiền nợ:</span>
@@ -183,14 +145,12 @@
 
 <script setup lang="ts">
   import { ref, onMounted, computed } from 'vue'
-  import { InfoFilled, Refresh } from '@element-plus/icons-vue'
+  import { Refresh } from '@element-plus/icons-vue'
   import { ElMessage } from 'element-plus'
   import { DebtApi } from '@/api/debt.api'
-  import dayjs from 'dayjs'
 
   defineOptions({ name: 'InventoryDebt' })
 
-  const activeTab = ref('suppliers')
   const loading = ref(false)
   const supplierDebts = ref<any[]>([])
 
@@ -204,15 +164,9 @@
     return (val || 0).toLocaleString('vi-VN') + ' VNĐ'
   }
 
-  // Format date helper
-  const formatDate = (dateStr: string): string => {
-    if (!dateStr) return '-'
-    return dayjs(dateStr).format('DD/MM/YYYY HH:mm')
-  }
-
   // Calculate remaining debt of a receipt
   const getRemainingDebt = (receipt: any): number => {
-    const total = receipt.totalPayable || 0
+    const total = receipt.totalAmount || 0
     const paid = receipt.paidAmount || 0
     return Math.max(0, total - paid)
   }
@@ -251,56 +205,6 @@
       fixed: 'right' as const
     }
   ]
-
-  // Mock data for bank installment
-  const bankInstallments = [
-    {
-      customer: 'Nguyễn Văn A',
-      bank: 'FE Credit',
-      amount: 25000000,
-      daysPending: 5,
-      contact: 'Mr. Bình (0901234567)'
-    },
-    {
-      customer: 'Trần Thị B',
-      bank: 'Home Credit',
-      amount: 18000000,
-      daysPending: 2,
-      contact: 'Ms. Lan (0987654321)'
-    },
-    {
-      customer: 'Lê Văn C',
-      bank: 'HD Saison',
-      amount: 45000000,
-      daysPending: 12,
-      contact: 'Mr. Hùng (0912345678)'
-    }
-  ]
-
-  const bankColumns = [
-    { label: 'Khách hàng', prop: 'customer', width: 160 },
-    { label: 'Ngân hàng', prop: 'bank', width: 130 },
-    {
-      label: 'Số tiền vay',
-      prop: 'amount',
-      width: 150,
-      align: 'right',
-      formatter: (row: any) => row.amount?.toLocaleString()
-    },
-    { label: 'Thời gian treo', prop: 'daysPending', width: 140, useSlot: true, align: 'center' },
-    { label: 'Đầu mối liên hệ', prop: 'contact', minWidth: 200 },
-    {
-      label: 'Thao tác',
-      prop: 'operation',
-      useSlot: true,
-      width: 180,
-      fixed: 'right' as const
-    }
-  ]
-
-  const handleContact = (row: any) => {
-    console.log('Contact', row)
-  }
 
   // --- Receipts Dialog Handling ---
   const receiptsDialogVisible = ref(false)

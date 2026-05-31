@@ -260,9 +260,6 @@ export function useProductTable() {
                 cover_image_url: variant.cover_image_url || '',
                 brand: '',
                 category: '',
-                origin: '',
-                stock: variant.stock || 0,
-                inventory_status: variant.inventory_status || 'InStock',
                 sku: variant.sku || '',
                 isVariant: true
               }
@@ -287,14 +284,6 @@ export function useProductTable() {
         { prop: 'brand', label: 'Thương hiệu', width: 150 },
         { prop: 'category', label: 'Thể loại', width: 180 },
         { prop: 'origin', label: 'Xuất xứ', width: 120 },
-        { prop: 'stock', label: 'Tồn kho', width: 100, align: 'center' },
-        {
-          prop: 'inventory_status',
-          label: 'Trạng thái',
-          width: 120,
-          align: 'center',
-          useSlot: true
-        },
         {
           prop: 'operation',
           label: 'Hành động',
@@ -328,8 +317,6 @@ export function useProductTable() {
       other_standards: '',
       compatible_vehicle_model_ids: [],
       cover_image_url: '',
-      stock: 0,
-      inventory_status: 'InStock',
       product_technologies: [],
       engine_type: '',
       max_power: '',

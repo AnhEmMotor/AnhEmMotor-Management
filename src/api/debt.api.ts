@@ -13,9 +13,9 @@ export const DebtApi = {
     })
   },
 
-  payDebt(receiptId: number, amount: number) {
+  payDebt(lineId: number, amount: number) {
     return request.post<any>({
-      url: `/api/v1/DebtPayments/receipts/${receiptId}/pay`,
+      url: `/api/v1/DebtPayments/lines/${lineId}/pay`,
       data: { amount }
     })
   }

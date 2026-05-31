@@ -179,9 +179,7 @@
       </div>
       <template #footer>
         <div class="flex justify-between">
-          <ElButton type="warning" @click="handlePrintVoucher">
-            <ElIcon class="mr-1"><Printer /></ElIcon> In chứng từ (Demo)
-          </ElButton>
+          <span></span>
           <ElButton @click="dialogVisible = false">Đóng</ElButton>
         </div>
       </template>
@@ -191,7 +189,7 @@
 
 <script setup lang="ts">
   import { ref, computed, onMounted } from 'vue'
-  import { Download, Printer } from '@element-plus/icons-vue'
+  import { Download } from '@element-plus/icons-vue'
   import { ElMessage } from 'element-plus'
   import { InventoryReportApi } from '@/api/inventory-report.api'
 
@@ -461,10 +459,6 @@
     ]
 
     dialogVisible.value = true
-  }
-
-  const handlePrintVoucher = () => {
-    ElMessage.success('Đang khởi tạo lệnh in ấn chứng từ (giả lập)...')
   }
 </script>
 

@@ -46,8 +46,6 @@ export interface Product {
   origin: string
   unit: string
   cover_image_url: string
-  stock: number
-  inventory_status: string
   status_id: string
   variants: ProductVariant[]
   product_technologies?: any[]
