@@ -215,11 +215,29 @@
               detailData.createdByName || 'N/A'
             }}</span>
           </div>
-          <div>
+          <div v-if="detailData.sentByName">
+            <span class="text-gray-500">Người gửi:</span>
+            <span class="ml-2 text-gray-800 font-medium">{{ detailData.sentByName }}</span>
+          </div>
+          <div
+            v-if="
+              (detailData.status?.toLowerCase() === 'approve' ||
+                detailData.status?.toLowerCase() === 'approved') &&
+              detailData.approvedByName
+            "
+          >
             <span class="text-gray-500">Người duyệt:</span>
-            <span class="ml-2 text-gray-800 font-medium">{{
-              detailData.approvedByName || 'Chưa duyệt'
-            }}</span>
+            <span class="ml-2 text-gray-800 font-medium">{{ detailData.approvedByName }}</span>
+          </div>
+          <div
+            v-if="
+              (detailData.status?.toLowerCase() === 'reject' ||
+                detailData.status?.toLowerCase() === 'rejected') &&
+              detailData.rejectedByName
+            "
+          >
+            <span class="text-gray-500">Người từ chối:</span>
+            <span class="ml-2 text-gray-800 font-medium">{{ detailData.rejectedByName }}</span>
           </div>
           <div class="col-span-2 border-t border-gray-200 pt-2 mt-1">
             <span class="text-gray-500 font-medium">Ghi chú:</span>
