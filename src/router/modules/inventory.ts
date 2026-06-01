@@ -38,6 +38,15 @@ export const inventoryRoutes: AppRouteRecord = {
       }
     },
     {
+      path: 'purchase-order',
+      name: 'PurchaseOrder',
+      component: '/inventory/purchase-order/index',
+      meta: {
+        title: 'Đơn mua hàng',
+        icon: 'ri:shopping-bag-3-line'
+      }
+    },
+    {
       path: 'input',
       name: 'InventoryInput',
       component: '/inventory/input/index',
