@@ -47,6 +47,15 @@ export const inventoryRoutes: AppRouteRecord = {
       }
     },
     {
+      path: 'purchase-invoice',
+      name: 'PurchaseInvoice',
+      component: '/inventory/purchase-invoice/index',
+      meta: {
+        title: 'Hóa đơn mua hàng',
+        icon: 'ri:bill-line'
+      }
+    },
+    {
       path: 'input',
       name: 'InventoryInput',
       component: '/inventory/input/index',
