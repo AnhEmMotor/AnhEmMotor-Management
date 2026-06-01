@@ -5,14 +5,8 @@ export interface InputInfo {
   productVariantColorName?: string
   name?: string
   quantity: number
-  unitPrice?: number
-  importPrice: number
-  paidAmount?: number
-  discount?: number
-  total?: number
   remainingCount?: number
-  purchaseRequestItemId?: number
-  quotationProductRowId?: number
+  purchaseOrderItemId?: number
   supplierId?: number
   supplierName?: string
   vehicles?: Array<{
@@ -28,12 +22,8 @@ export interface InventoryReceipt {
   statusId: string
   supplierId: number
   supplierName?: string
-  supplierPhone?: string
-  supplierEmail?: string
   createdAt?: string
-  paidAmount?: number
-  totalPayable?: number
-  purchaseRequestId?: number
+  purchaseOrderId?: number
   products: InputInfo[]
 }
 
@@ -49,15 +39,12 @@ export interface CreateInventoryReceipt {
   notes?: string
   statusId?: string
   supplierId?: number
-  purchaseRequestId?: number
+  purchaseOrderId?: number
   products: Array<{
-    purchaseRequestItemId?: number
-    quotationProductRowId?: number
+    purchaseOrderItemId?: number
     productVariantId: number
     productVariantColorId?: number
     count: number
-    inputPrice: number
-    paidAmount?: number
     vehicles?: Array<{
       id?: number
       vinNumber: string
@@ -69,17 +56,14 @@ export interface CreateInventoryReceipt {
 export interface UpdateInventoryReceipt {
   statusId?: string
   supplierId?: number
-  purchaseRequestId?: number
+  purchaseOrderId?: number
   notes?: string
   products: Array<{
     id?: number
-    purchaseRequestItemId?: number
-    quotationProductRowId?: number
+    purchaseOrderItemId?: number
     productVariantId: number
     productVariantColorId?: number
     count: number
-    inputPrice: number
-    paidAmount?: number
     vehicles?: Array<{
       id?: number
       vinNumber: string

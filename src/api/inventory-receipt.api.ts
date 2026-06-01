@@ -5,7 +5,6 @@ import type {
   CreateInventoryReceipt,
   UpdateInventoryReceipt
 } from '@/domain/inventory/receipt.types'
-import { PurchaseRequestList } from '@/domain/purchase-request/request.types'
 
 export const InventoryReceiptApi = {
   getList(params: any) {
@@ -20,13 +19,14 @@ export const InventoryReceiptApi = {
     })
   },
 
-  getListPurchaseRequestOrdered(params: any) {
+  getListPurchaseOrderApproved(params: any) {
     const { current, size, ...rest } = params
-    return request.get<PurchaseRequestList>({
-      url: '/api/v1/purchase-requests/approved',
+    return request.get<any>({
+      url: '/api/v1/purchase-orders',
       params: {
         Page: current,
         PageSize: size,
+        Filters: 'Status==Approved',
         ...rest
       }
     })
