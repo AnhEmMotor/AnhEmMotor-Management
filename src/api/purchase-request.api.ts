@@ -20,6 +20,18 @@ export const PurchaseRequestApi = {
     })
   },
 
+  getApprovedList(params: any) {
+    const { current, size, ...rest } = params
+    return request.get<PurchaseRequestList>({
+      url: '/api/v1/purchase-requests/approved',
+      params: {
+        Page: current,
+        PageSize: size,
+        ...rest
+      }
+    })
+  },
+
   getById(id: number) {
     return request.get<PurchaseRequestDetailResponse>({
       url: `/api/v1/purchase-requests/${id}`

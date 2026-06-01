@@ -12,7 +12,7 @@
 
     <!-- Main Table Card -->
     <ElCard
-      class="flex-1 art-table-card shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl border border-gray-100 bg-white/80 backdrop-blur-md"
+      class="flex-1 art-table-card shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl border border-gray-100 bg-white/80 backdrop-blur-md p-4"
     >
       <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
@@ -23,7 +23,7 @@
             v-ripple
             @click="handleAdd"
           >
-            <ElIcon class="mr-1"><Plus /></ElIcon> Tạo đơn mua hàng (PO)
+            <ElIcon class="mr-1"><Plus /></ElIcon> Tạo Phiếu đặt hàng (PO)
           </ElButton>
         </template>
       </ArtTableHeader>
@@ -271,6 +271,7 @@
                   :precision="0"
                   class="w-full"
                   controls-position="right"
+                  style="width: 120px"
                 />
               </template>
             </ElTableColumn>
@@ -311,14 +312,6 @@
               </template>
             </ElTableColumn>
           </ElTable>
-
-          <!-- Total summary inside form -->
-          <div class="flex justify-end items-center gap-4 mt-4 bg-gray-50 p-4 rounded-xl">
-            <span class="text-gray-600 text-sm">Tổng cộng đơn mua:</span>
-            <span class="text-xl font-bold text-primary">{{
-              formatCurrency(totalFormAmount)
-            }}</span>
-          </div>
         </div>
       </ElForm>
 
@@ -335,7 +328,7 @@
     <!-- Detail Dialog -->
     <ElDialog
       v-model="detailDialogVisible"
-      title="Chi tiết Đơn mua hàng (PO)"
+      title="Chi tiết Phiếu đặt hàng (PO)"
       width="900px"
       append-to-body
       destroy-on-close
@@ -461,7 +454,7 @@
           <!-- Total price in Detail -->
           <div class="flex justify-end items-center gap-4 mt-4 bg-gray-50 p-4 rounded-xl">
             <span class="text-gray-600 font-medium text-sm">Tổng cộng đơn mua (PO):</span>
-            <span class="text-2xl font-black text-primary">{{
+            <span class="text-2xl font-black text-blue-600 dark:text-blue-400">{{
               formatCurrency(totalDetailAmount)
             }}</span>
           </div>
@@ -671,7 +664,7 @@
 
   const loading = ref(false)
   const dialogVisible = ref(false)
-  const dialogTitle = ref('Tạo đơn mua hàng (PO) mới')
+  const dialogTitle = ref('Tạo Phiếu đặt hàng (PO) mới')
   const submitting = ref(false)
   const isEdit = ref(false)
 
@@ -830,13 +823,6 @@
     supplierId: undefined,
     note: '',
     items: []
-  })
-
-  const totalFormAmount = computed(() => {
-    return formData.value.items.reduce(
-      (sum, item) => sum + (item.orderedQuantity || 0) * (item.unitPrice || 0),
-      0
-    )
   })
 
   const totalDetailAmount = computed(() => {
@@ -1004,7 +990,7 @@
       pagination.total = res.totalCount || 0
     } catch (error) {
       console.error(error)
-      ElMessage.error('Không thể tải danh sách Đơn mua hàng (PO)')
+      ElMessage.error('Không thể tải danh sách Phiếu đặt hàng (PO)')
     } finally {
       loading.value = false
     }
@@ -1021,7 +1007,7 @@
 
   const loadApprovedPRs = async () => {
     try {
-      const res = await PurchaseRequestApi.getList({
+      const res = await PurchaseRequestApi.getApprovedList({
         current: 1,
         size: 100,
         Filters: 'Status==approve'
@@ -1084,7 +1070,7 @@
 
   const handleAdd = () => {
     isEdit.value = false
-    dialogTitle.value = 'Tạo đơn mua hàng (PO) mới'
+    dialogTitle.value = 'Tạo Phiếu đặt hàng (PO) mới'
     formData.value = {
       supplierId: undefined,
       purchaseRequestId: undefined,
@@ -1100,7 +1086,7 @@
       loading.value = true
       const detail = await PurchaseOrderApi.getById(row.id)
       isEdit.value = true
-      dialogTitle.value = `Chỉnh sửa Đơn mua hàng PO #${detail.id}`
+      dialogTitle.value = `Chỉnh sửa Phiếu đặt hàng PO #${detail.id}`
 
       detail.items.forEach((item) => {
         productCache.set(item.productVariantId, {
@@ -1137,7 +1123,7 @@
   const handleDelete = async (row: PurchaseOrderListResponse) => {
     try {
       await ElMessageBox.confirm(
-        `Bạn có chắc chắn muốn xóa đơn mua hàng PO #${row.id}?`,
+        `Bạn có chắc chắn muốn xóa Phiếu đặt hàng PO #${row.id}?`,
         'Xác nhận xóa đơn hàng',
         {
           confirmButtonText: 'Xóa đơn',
@@ -1253,6 +1239,7 @@
           ? new Date(formData.value.orderDate).toISOString()
           : undefined,
         items: formData.value.items.map((item) => ({
+          id: item.id,
           productVariantId: item.productVariantId,
           productVariantColorId: item.productVariantColorId,
           orderedQuantity: item.orderedQuantity,
