@@ -220,6 +220,17 @@
         </div>
 
         <div class="border-t border-gray-100 pt-4">
+          <ElAlert
+            v-if="
+              createFormData.purchaseRequestId &&
+              createFormData.items.some((item) => !item.purchaseRequestItemId)
+            "
+            title="Lưu ý: Đơn hàng chứa sản phẩm ngoài PR. Khi lưu, các mặt hàng này sẽ được tự động tách thành một phiếu PO nháp riêng biệt."
+            type="warning"
+            show-icon
+            :closable="false"
+            class="mb-3 !rounded-xl"
+          />
           <div class="flex justify-between items-center mb-3">
             <span class="text-sm font-bold text-gray-800">Danh sách sản phẩm mua hàng</span>
             <ElButton
@@ -239,6 +250,30 @@
             size="small"
             class="w-full rounded-xl overflow-hidden"
           >
+            <ElTableColumn label="Nguồn sản phẩm" width="130" align="center">
+              <template #default="{ row }">
+                <ElTag
+                  v-if="createFormData.purchaseRequestId && !row.purchaseRequestItemId"
+                  type="warning"
+                  size="small"
+                  effect="plain"
+                  class="!rounded-md"
+                >
+                  Ngoài PR (Sẽ tách)
+                </ElTag>
+                <ElTag
+                  v-else-if="createFormData.purchaseRequestId"
+                  type="success"
+                  size="small"
+                  effect="light"
+                  class="!rounded-md"
+                >
+                  Từ PR
+                </ElTag>
+                <ElTag v-else type="info" size="small" class="!rounded-md"> Mua trực tiếp </ElTag>
+              </template>
+            </ElTableColumn>
+
             <ElTableColumn label="Sản phẩm" required minWidth="180">
               <template #default="{ row, $index }">
                 <div
@@ -296,6 +331,27 @@
                       : 'Vui lòng chọn báo giá để kết nối với nhà cung cấp'
                   }}
                 </span>
+                <ElSelect
+                  v-else
+                  v-model="row.supplierId"
+                  placeholder="Chọn nhà cung cấp"
+                  filterable
+                  size="small"
+                  class="w-full"
+                  @change="
+                    (val) => {
+                      const s = suppliers.find((x) => x.id === val)
+                      row.supplierName = s ? s.name : ''
+                    }
+                  "
+                >
+                  <ElOption
+                    v-for="sup in suppliers"
+                    :key="sup.id"
+                    :label="sup.name"
+                    :value="sup.id"
+                  />
+                </ElSelect>
               </template>
             </ElTableColumn>
 
@@ -428,6 +484,17 @@
         </div>
 
         <div class="border-t border-gray-100 pt-4">
+          <ElAlert
+            v-if="
+              editFormData.purchaseRequestId &&
+              editFormData.items.some((item) => !item.id && !item.purchaseRequestItemId)
+            "
+            title="Lưu ý: Đơn hàng chứa sản phẩm ngoài PR. Khi lưu, các mặt hàng này sẽ được tự động tách thành một phiếu PO nháp riêng biệt."
+            type="warning"
+            show-icon
+            :closable="false"
+            class="mb-3 !rounded-xl"
+          />
           <div class="flex justify-between items-center mb-3">
             <span class="text-sm font-bold text-gray-800">Danh sách sản phẩm mua hàng</span>
             <ElButton
@@ -447,6 +514,30 @@
             size="small"
             class="w-full rounded-xl overflow-hidden"
           >
+            <ElTableColumn label="Nguồn sản phẩm" width="130" align="center">
+              <template #default="{ row }">
+                <ElTag
+                  v-if="editFormData.purchaseRequestId && !row.id && !row.purchaseRequestItemId"
+                  type="warning"
+                  size="small"
+                  effect="plain"
+                  class="!rounded-md"
+                >
+                  Ngoài PR (Sẽ tách)
+                </ElTag>
+                <ElTag
+                  v-else-if="editFormData.purchaseRequestId"
+                  type="success"
+                  size="small"
+                  effect="light"
+                  class="!rounded-md"
+                >
+                  Từ PR
+                </ElTag>
+                <ElTag v-else type="info" size="small" class="!rounded-md"> Mua trực tiếp </ElTag>
+              </template>
+            </ElTableColumn>
+
             <ElTableColumn label="Sản phẩm" required minWidth="200">
               <template #default="{ row, $index }">
                 <div
@@ -1211,6 +1302,11 @@
         const idx = productSelectorActiveRowIndex.value
         if (createFormData.value.items[idx]) {
           const row = createFormData.value.items[idx]
+          if (createFormData.value.purchaseRequestId && row.purchaseRequestItemId) {
+            ElMessage.warning(
+              'Bạn đã thay đổi sản phẩm. Dòng này sẽ được coi là sản phẩm ngoài PR.'
+            )
+          }
           row.productVariantId = variant.id
           row.productVariantColorId = productVariantColorId
           row.productVariantColorName = selectedColor?.colorName
@@ -1218,6 +1314,8 @@
           row.supplierName = ''
           row.unitPrice = 0
           row.quotationIndex = undefined
+          row.purchaseRequestItemId = undefined
+          row.quotationProductRowId = undefined
         }
       } else {
         const items = createFormData.value.items
@@ -1230,7 +1328,14 @@
           lastRow.supplierName = ''
           lastRow.unitPrice = 0
           lastRow.quotationIndex = undefined
+          lastRow.purchaseRequestItemId = undefined
+          lastRow.quotationProductRowId = undefined
         } else {
+          if (createFormData.value.purchaseRequestId) {
+            ElMessage.warning(
+              'Sản phẩm ngoài PR đã được thêm. Sản phẩm này sẽ tự động tách thành PO nháp riêng.'
+            )
+          }
           items.push({
             productVariantId: variant.id,
             productVariantColorId,
@@ -1247,9 +1352,17 @@
         const idx = productSelectorActiveRowIndex.value
         if (editFormData.value.items[idx]) {
           const row = editFormData.value.items[idx]
+          if (editFormData.value.purchaseRequestId && row.purchaseRequestItemId) {
+            ElMessage.warning(
+              'Bạn đã thay đổi sản phẩm. Dòng này sẽ được coi là sản phẩm ngoài PR.'
+            )
+          }
           row.productVariantId = variant.id
           row.productVariantColorId = productVariantColorId
           row.productVariantColorName = selectedColor?.colorName
+          row.purchaseRequestItemId = undefined
+          row.quotationProductRowId = undefined
+          row.quotationIndex = undefined
         }
       } else {
         const items = editFormData.value.items
@@ -1258,7 +1371,15 @@
           lastRow.productVariantId = variant.id
           lastRow.productVariantColorId = productVariantColorId
           lastRow.productVariantColorName = selectedColor?.colorName
+          lastRow.purchaseRequestItemId = undefined
+          lastRow.quotationProductRowId = undefined
+          lastRow.quotationIndex = undefined
         } else {
+          if (editFormData.value.purchaseRequestId) {
+            ElMessage.warning(
+              'Sản phẩm ngoài PR đã được thêm. Sản phẩm này sẽ tự động tách thành PO nháp riêng khi lưu.'
+            )
+          }
           items.push({
             productVariantId: variant.id,
             productVariantColorId,
@@ -1694,7 +1815,7 @@
     }
 
     const invalidItem = createFormData.value.items.find(
-      (item) => !item.productVariantId || item.orderedQuantity <= 0 || !item.supplierId
+      (item) => !item.productVariantId || item.orderedQuantity <= 0
     )
     if (invalidItem) {
       ElMessage.warning('Vui lòng kiểm tra đầy đủ sản phẩm, báo giá và số lượng mua')
