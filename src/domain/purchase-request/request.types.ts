@@ -68,6 +68,7 @@ export interface PurchaseRequestQuotedPriceResponse {
   supplierName: string
   quotePrice: number
   note?: string
+  quotationProductRowId: number
 }
 
 export interface ApprovedPurchaseRequestItemResponse {

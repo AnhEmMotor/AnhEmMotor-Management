@@ -290,30 +290,12 @@
             <ElTableColumn label="Nhà cung cấp" minWidth="200" required>
               <template #default="{ row }">
                 <span v-if="row.quotationIndex !== undefined" class="font-medium text-gray-700">
-                  {{ row.supplierName }}
+                  {{
+                    row.supplierName
+                      ? row.supplierName
+                      : 'Vui lòng chọn báo giá để kết nối với nhà cung cấp'
+                  }}
                 </span>
-                <ElSelect
-                  v-else
-                  v-model="row.supplierId"
-                  placeholder="Chọn nhà cung cấp"
-                  filterable
-                  clearable
-                  size="small"
-                  class="w-full"
-                  @change="
-                    (val) => {
-                      const sup = suppliers.find((s) => s.id === val)
-                      row.supplierName = sup ? sup.name : ''
-                    }
-                  "
-                >
-                  <ElOption
-                    v-for="sup in suppliers"
-                    :key="sup.id"
-                    :label="sup.name"
-                    :value="sup.id"
-                  />
-                </ElSelect>
               </template>
             </ElTableColumn>
 
@@ -742,6 +724,14 @@
                 </div>
               </template>
             </ElTableColumn>
+            <ElTableColumn label="Báo giá liên kết" minWidth="150">
+              <template #default="{ row }">
+                <span v-if="row.quotationName" class="text-xs font-semibold text-gray-700">
+                  {{ row.quotationName }}
+                </span>
+                <span v-else class="text-xs text-gray-400">-</span>
+              </template>
+            </ElTableColumn>
             <ElTableColumn prop="orderedQuantity" label="S/L đặt mua" width="110" align="center" />
             <ElTableColumn prop="unitPrice" label="Đơn giá" width="140" align="right">
               <template #default="{ row }">
@@ -990,6 +980,7 @@
       supplierId?: number
       supplierName?: string
       quotationIndex?: number
+      quotationProductRowId?: number
     }>
   }>({
     purchaseRequestId: undefined,
@@ -1015,6 +1006,7 @@
       unitPrice: number
       purchaseRequestItemId?: number
       quotationIndex?: number
+      quotationProductRowId?: number
     }>
   }>({
     supplierId: undefined,
@@ -1080,12 +1072,14 @@
         row.supplierName = quote.supplierName
         row.unitPrice = quote.quotePrice
         row.quotationIndex = 0
+        row.quotationProductRowId = quote.quotationProductRowId
       }
     } else {
       const row = editFormData.value.items[idx]
       if (row) {
         row.unitPrice = quote.quotePrice
         row.quotationIndex = 0
+        row.quotationProductRowId = quote.quotationProductRowId
       }
     }
     quoteSelectorVisible.value = false
@@ -1099,11 +1093,13 @@
         row.supplierId = undefined
         row.supplierName = ''
         row.unitPrice = 0
+        row.quotationProductRowId = undefined
       }
     } else {
       const row = editFormData.value.items[index]
       if (row) {
         row.quotationIndex = undefined
+        row.quotationProductRowId = undefined
       }
     }
   }
@@ -1582,7 +1578,9 @@
           productVariantColorName: item.productVariantColorName,
           orderedQuantity: item.orderedQuantity,
           unitPrice: item.unitPrice,
-          purchaseRequestItemId: item.purchaseRequestItemId
+          purchaseRequestItemId: item.purchaseRequestItemId,
+          quotationProductRowId: item.quotationProductRowId,
+          quotationIndex: item.quotationProductRowId ? 0 : undefined
         }))
       }
       editDialogVisible.value = true
@@ -1717,7 +1715,8 @@
           orderedQuantity: item.orderedQuantity,
           unitPrice: item.unitPrice,
           purchaseRequestItemId: item.purchaseRequestItemId,
-          supplierId: item.supplierId
+          supplierId: item.supplierId,
+          quotationProductRowId: item.quotationProductRowId
         }))
       }
 
@@ -1766,7 +1765,8 @@
           productVariantColorId: item.productVariantColorId,
           orderedQuantity: item.orderedQuantity,
           unitPrice: item.unitPrice,
-          purchaseRequestItemId: item.purchaseRequestItemId
+          purchaseRequestItemId: item.purchaseRequestItemId,
+          quotationProductRowId: item.quotationProductRowId
         }))
       }
 

@@ -5,6 +5,7 @@ export interface CreatePurchaseOrderItemRequest {
   unitPrice?: number
   purchaseRequestItemId?: number
   supplierId?: number
+  quotationProductRowId?: number
 }
 
 export interface CreatePurchaseOrder {
@@ -21,6 +22,7 @@ export interface UpdatePurchaseOrderItemRequest {
   orderedQuantity?: number
   unitPrice?: number
   purchaseRequestItemId?: number
+  quotationProductRowId?: number
 }
 
 export interface UpdatePurchaseOrder {
@@ -42,6 +44,9 @@ export interface PurchaseOrderItemResponse {
   unitPrice: number
   purchaseRequestItemId?: number
   importedQuantity?: number
+  quotationProductRowId?: number
+  quotationId?: number
+  quotationName?: string
 }
 
 export interface PurchaseOrderDetailResponse {
