@@ -26,7 +26,7 @@ export const PurchaseOrderApi = {
   },
 
   create(data: CreatePurchaseOrder) {
-    return request.post<PurchaseOrderDetailResponse>({
+    return request.post<PurchaseOrderDetailResponse[]>({
       url: '/api/v1/purchase-orders',
       data
     })

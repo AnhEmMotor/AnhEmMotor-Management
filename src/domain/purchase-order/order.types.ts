@@ -4,11 +4,12 @@ export interface CreatePurchaseOrderItemRequest {
   orderedQuantity?: number
   unitPrice?: number
   purchaseRequestItemId?: number
+  supplierId?: number
 }
 
 export interface CreatePurchaseOrder {
   purchaseRequestId?: number
-  supplierId: number
+  supplierId?: number
   note?: string
   items: CreatePurchaseOrderItemRequest[]
 }

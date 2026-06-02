@@ -164,31 +164,25 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Create/Edit Form Dialog -->
+    <!-- Create Form Dialog -->
     <ElDialog
-      v-model="dialogVisible"
-      :title="dialogTitle"
-      width="950px"
+      v-model="createDialogVisible"
+      title="Tạo Phiếu đặt hàng (PO) mới"
+      width="1100px"
       append-to-body
       destroy-on-close
       class="!rounded-2xl overflow-hidden shadow-2xl border border-gray-100"
     >
-      <ElForm :model="formData" label-width="120px" class="mt-4 space-y-4" ref="formRef">
+      <ElForm
+        :model="createFormData"
+        label-width="120px"
+        class="mt-4 space-y-4"
+        ref="createFormRef"
+      >
         <div class="grid grid-cols-2 gap-4">
-          <ElFormItem label="Nhà cung cấp" required>
-            <ElSelect
-              v-model="formData.supplierId"
-              placeholder="Chọn nhà cung cấp"
-              filterable
-              class="w-full"
-            >
-              <ElOption v-for="sup in suppliers" :key="sup.id" :label="sup.name" :value="sup.id" />
-            </ElSelect>
-          </ElFormItem>
-
           <ElFormItem label="Ngày đặt hàng">
             <ElDatePicker
-              v-model="formData.orderDate"
+              v-model="createFormData.orderDate"
               type="date"
               placeholder="Chọn ngày đặt hàng"
               class="!w-full"
@@ -199,7 +193,7 @@
 
           <ElFormItem label="Nguồn Yêu cầu" class="col-span-2">
             <ElSelect
-              v-model="formData.purchaseRequestId"
+              v-model="createFormData.purchaseRequestId"
               placeholder="Liên kết với phiếu Yêu cầu mua hàng (Không bắt buộc)"
               clearable
               filterable
@@ -217,7 +211,7 @@
 
           <ElFormItem label="Ghi chú đơn" class="col-span-2">
             <ElInput
-              v-model="formData.note"
+              v-model="createFormData.note"
               type="textarea"
               :rows="3"
               placeholder="Nhập ghi chú hoặc yêu cầu mua hàng..."
@@ -240,7 +234,233 @@
           </div>
 
           <ElTable
-            :data="formData.items"
+            :data="createFormData.items"
+            border
+            size="small"
+            class="w-full rounded-xl overflow-hidden"
+          >
+            <ElTableColumn label="Sản phẩm" required minWidth="180">
+              <template #default="{ row, $index }">
+                <div
+                  class="w-full border border-gray-300 rounded-lg px-3 py-1.5 bg-white flex items-center justify-between cursor-pointer hover:border-primary transition duration-200 min-h-[36px]"
+                  @click="openProductSelector($index)"
+                >
+                  <span v-if="row.productVariantId" class="text-gray-800 text-xs font-semibold">
+                    {{ getProductNameById(row.productVariantId) }}
+                  </span>
+                  <span v-else class="text-gray-400 text-xs">Bấm để chọn sản phẩm...</span>
+                  <ElIcon class="text-gray-400 text-xs"><ArrowDown /></ElIcon>
+                </div>
+                <ElTag v-if="getProductColorName(row)" size="small" type="info" class="mt-1">
+                  Màu: {{ getProductColorName(row) }}
+                </ElTag>
+              </template>
+            </ElTableColumn>
+
+            <ElTableColumn label="Báo giá đã duyệt" minWidth="220">
+              <template #default="{ row, $index }">
+                <div class="flex items-center gap-2">
+                  <div
+                    class="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 bg-white flex items-center justify-between cursor-pointer hover:border-primary transition duration-200 min-h-[36px]"
+                    @click="openQuoteSelector($index, 'create')"
+                  >
+                    <span
+                      v-if="row.quotationIndex !== undefined"
+                      class="text-gray-800 text-xs font-semibold"
+                    >
+                      Giá: {{ formatCurrency(row.unitPrice) }}
+                    </span>
+                    <span v-else class="text-gray-400 text-xs">Bấm để chọn báo giá...</span>
+                    <ElIcon class="text-gray-400 text-xs"><ArrowDown /></ElIcon>
+                  </div>
+                  <ElButton
+                    v-if="row.quotationIndex !== undefined"
+                    circle
+                    type="info"
+                    size="small"
+                    plain
+                    @click.stop="clearRowQuotation($index, 'create')"
+                  >
+                    <ElIcon><Close /></ElIcon>
+                  </ElButton>
+                </div>
+              </template>
+            </ElTableColumn>
+
+            <ElTableColumn label="Nhà cung cấp" minWidth="200" required>
+              <template #default="{ row }">
+                <span v-if="row.quotationIndex !== undefined" class="font-medium text-gray-700">
+                  {{ row.supplierName }}
+                </span>
+                <ElSelect
+                  v-else
+                  v-model="row.supplierId"
+                  placeholder="Chọn nhà cung cấp"
+                  filterable
+                  clearable
+                  size="small"
+                  class="w-full"
+                  @change="
+                    (val) => {
+                      const sup = suppliers.find((s) => s.id === val)
+                      row.supplierName = sup ? sup.name : ''
+                    }
+                  "
+                >
+                  <ElOption
+                    v-for="sup in suppliers"
+                    :key="sup.id"
+                    :label="sup.name"
+                    :value="sup.id"
+                  />
+                </ElSelect>
+              </template>
+            </ElTableColumn>
+
+            <ElTableColumn label="Số lượng đặt" width="100" align="center">
+              <template #default="{ row }">
+                <ElInputNumber
+                  v-model="row.orderedQuantity"
+                  :min="1"
+                  :precision="0"
+                  class="w-full"
+                  controls-position="right"
+                />
+              </template>
+            </ElTableColumn>
+
+            <ElTableColumn label="Đơn giá mua" width="140" align="right">
+              <template #default="{ row }">
+                <ElInputNumber
+                  v-model="row.unitPrice"
+                  :min="0"
+                  :precision="2"
+                  class="w-full"
+                  controls-position="right"
+                  placeholder="Nhập giá"
+                  :disabled="row.quotationIndex !== undefined"
+                />
+              </template>
+            </ElTableColumn>
+
+            <ElTableColumn label="Thành tiền" width="130" align="right">
+              <template #default="{ row }">
+                <span class="font-bold text-gray-800">
+                  {{ formatCurrency((row.orderedQuantity || 0) * (row.unitPrice || 0)) }}
+                </span>
+              </template>
+            </ElTableColumn>
+
+            <ElTableColumn label="Thao tác" width="70" align="center">
+              <template #default="{ $index }">
+                <ElButton
+                  circle
+                  type="danger"
+                  size="small"
+                  plain
+                  class="hover:scale-110 transition-transform duration-200"
+                  @click="handleRemoveCreateProductRow($index)"
+                >
+                  <ElIcon><Delete /></ElIcon>
+                </ElButton>
+              </template>
+            </ElTableColumn>
+          </ElTable>
+        </div>
+      </ElForm>
+
+      <template #footer>
+        <div class="flex justify-end gap-2 border-t border-gray-50 pt-3">
+          <ElButton class="!rounded-lg" @click="createDialogVisible = false">Hủy bỏ</ElButton>
+          <ElButton
+            type="primary"
+            class="!rounded-lg"
+            :loading="createSubmitting"
+            @click="submitCreateForm"
+          >
+            Lưu đơn mua (PO)
+          </ElButton>
+        </div>
+      </template>
+    </ElDialog>
+
+    <!-- Edit Form Dialog -->
+    <ElDialog
+      v-model="editDialogVisible"
+      :title="dialogTitle"
+      width="1000px"
+      append-to-body
+      destroy-on-close
+      class="!rounded-2xl overflow-hidden shadow-2xl border border-gray-100"
+    >
+      <ElForm :model="editFormData" label-width="120px" class="mt-4 space-y-4" ref="editFormRef">
+        <div class="grid grid-cols-2 gap-4">
+          <ElFormItem label="Nhà cung cấp" required>
+            <ElSelect
+              v-model="editFormData.supplierId"
+              placeholder="Chọn nhà cung cấp"
+              filterable
+              class="w-full"
+            >
+              <ElOption v-for="sup in suppliers" :key="sup.id" :label="sup.name" :value="sup.id" />
+            </ElSelect>
+          </ElFormItem>
+
+          <ElFormItem label="Ngày đặt hàng">
+            <ElDatePicker
+              v-model="editFormData.orderDate"
+              type="date"
+              placeholder="Chọn ngày đặt hàng"
+              class="!w-full"
+              format="YYYY-MM-DD"
+              value-format="YYYY-MM-DD"
+            />
+          </ElFormItem>
+
+          <ElFormItem label="Nguồn Yêu cầu" class="col-span-2">
+            <ElSelect
+              v-model="editFormData.purchaseRequestId"
+              placeholder="Liên kết với phiếu Yêu cầu mua hàng (Không bắt buộc)"
+              clearable
+              filterable
+              class="w-full"
+              @change="handlePurchaseRequestChange"
+            >
+              <ElOption
+                v-for="pr in approvedPRs"
+                :key="pr.id"
+                :label="`Yêu cầu #${pr.id} - Tạo bởi: ${pr.createdByName || 'N/A'} (${formatDate(pr.createdAt)})`"
+                :value="pr.id"
+              />
+            </ElSelect>
+          </ElFormItem>
+
+          <ElFormItem label="Ghi chú đơn" class="col-span-2">
+            <ElInput
+              v-model="editFormData.note"
+              type="textarea"
+              :rows="3"
+              placeholder="Nhập ghi chú hoặc yêu cầu mua hàng..."
+            />
+          </ElFormItem>
+        </div>
+
+        <div class="border-t border-gray-100 pt-4">
+          <div class="flex justify-between items-center mb-3">
+            <span class="text-sm font-bold text-gray-800">Danh sách sản phẩm mua hàng</span>
+            <ElButton
+              type="success"
+              size="small"
+              plain
+              class="!rounded-lg"
+              @click="openProductSelector()"
+            >
+              <ElIcon class="mr-1"><Plus /></ElIcon> Thêm sản phẩm
+            </ElButton>
+          </div>
+
+          <ElTable
+            :data="editFormData.items"
             border
             size="small"
             class="w-full rounded-xl overflow-hidden"
@@ -263,7 +483,37 @@
               </template>
             </ElTableColumn>
 
-            <ElTableColumn label="Số lượng đặt" width="140" align="center">
+            <ElTableColumn label="Báo giá đã duyệt" minWidth="220">
+              <template #default="{ row, $index }">
+                <div class="flex items-center gap-2">
+                  <div
+                    class="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 bg-white flex items-center justify-between cursor-pointer hover:border-primary transition duration-200 min-h-[36px]"
+                    @click="openQuoteSelector($index, 'edit')"
+                  >
+                    <span
+                      v-if="row.quotationIndex !== undefined"
+                      class="text-gray-800 text-xs font-semibold"
+                    >
+                      Báo giá liên kết: {{ formatCurrency(row.unitPrice) }}
+                    </span>
+                    <span v-else class="text-gray-400 text-xs">Bấm để liên kết báo giá...</span>
+                    <ElIcon class="text-gray-400 text-xs"><ArrowDown /></ElIcon>
+                  </div>
+                  <ElButton
+                    v-if="row.quotationIndex !== undefined"
+                    circle
+                    type="info"
+                    size="small"
+                    plain
+                    @click.stop="clearRowQuotation($index, 'edit')"
+                  >
+                    <ElIcon><Close /></ElIcon>
+                  </ElButton>
+                </div>
+              </template>
+            </ElTableColumn>
+
+            <ElTableColumn label="Số lượng đặt" width="120" align="center">
               <template #default="{ row }">
                 <ElInputNumber
                   v-model="row.orderedQuantity"
@@ -271,12 +521,11 @@
                   :precision="0"
                   class="w-full"
                   controls-position="right"
-                  style="width: 120px"
                 />
               </template>
             </ElTableColumn>
 
-            <ElTableColumn label="Đơn giá mua" width="180" align="center">
+            <ElTableColumn label="Đơn giá mua" width="150" align="center">
               <template #default="{ row }">
                 <ElInputNumber
                   v-model="row.unitPrice"
@@ -285,11 +534,12 @@
                   class="w-full"
                   controls-position="right"
                   placeholder="Nhập giá"
+                  :disabled="row.quotationIndex !== undefined"
                 />
               </template>
             </ElTableColumn>
 
-            <ElTableColumn label="Thành tiền" width="160" align="right">
+            <ElTableColumn label="Thành tiền" width="140" align="right">
               <template #default="{ row }">
                 <span class="font-bold text-gray-800">
                   {{ formatCurrency((row.orderedQuantity || 0) * (row.unitPrice || 0)) }}
@@ -297,7 +547,7 @@
               </template>
             </ElTableColumn>
 
-            <ElTableColumn label="Thao tác" width="90" align="center">
+            <ElTableColumn label="Thao tác" width="70" align="center">
               <template #default="{ $index }">
                 <ElButton
                   circle
@@ -305,7 +555,7 @@
                   size="small"
                   plain
                   class="hover:scale-110 transition-transform duration-200"
-                  @click="handleRemoveProductRow($index)"
+                  @click="handleRemoveEditProductRow($index)"
                 >
                   <ElIcon><Delete /></ElIcon>
                 </ElButton>
@@ -317,12 +567,68 @@
 
       <template #footer>
         <div class="flex justify-end gap-2 border-t border-gray-50 pt-3">
-          <ElButton class="!rounded-lg" @click="dialogVisible = false">Hủy bỏ</ElButton>
-          <ElButton type="primary" class="!rounded-lg" :loading="submitting" @click="submitForm">
+          <ElButton class="!rounded-lg" @click="editDialogVisible = false">Hủy bỏ</ElButton>
+          <ElButton
+            type="primary"
+            class="!rounded-lg"
+            :loading="editSubmitting"
+            @click="submitEditForm"
+          >
             Lưu đơn mua (PO)
           </ElButton>
         </div>
       </template>
+    </ElDialog>
+
+    <!-- Quotation Selector Dialog -->
+    <ElDialog
+      v-model="quoteSelectorVisible"
+      title="Chọn báo giá đã duyệt"
+      width="750px"
+      append-to-body
+      destroy-on-close
+      class="!rounded-2xl overflow-hidden shadow-2xl border border-gray-100"
+    >
+      <div class="space-y-4">
+        <ElTable
+          :data="paginatedRowQuotes"
+          border
+          size="small"
+          class="w-full rounded-xl overflow-hidden"
+        >
+          <ElTableColumn label="Nhà cung cấp" prop="supplierName" minWidth="200" />
+          <ElTableColumn label="Đơn giá báo" prop="quotePrice" width="160" align="right">
+            <template #default="{ row }">
+              <span class="font-bold text-gray-800">{{ formatCurrency(row.quotePrice) }}</span>
+            </template>
+          </ElTableColumn>
+          <ElTableColumn label="Ghi chú" prop="note" minWidth="180" />
+          <ElTableColumn label="Thao tác" width="110" align="center">
+            <template #default="{ row }">
+              <ElButton
+                type="primary"
+                size="small"
+                plain
+                class="!rounded-lg"
+                @click="selectQuote(row)"
+              >
+                Chọn
+              </ElButton>
+            </template>
+          </ElTableColumn>
+        </ElTable>
+
+        <div class="flex justify-end pt-2 border-t">
+          <ElPagination
+            v-model:current-page="quotePage"
+            v-model:page-size="quotePageSize"
+            :total="allRowQuotes.length"
+            layout="prev, pager, next, total"
+            background
+            size="small"
+          />
+        </div>
+      </div>
     </ElDialog>
 
     <!-- Detail Dialog -->
@@ -651,22 +957,156 @@
   import { PurchaseRequestApi } from '@/api/purchase-request.api'
   import { SupplierApi } from '@/api/supplier.api'
   import { ProductApi } from '@/api/product.api'
+  import { QuotationApi } from '@/api/quotation.api'
   import type {
     PurchaseOrderListResponse,
     PurchaseOrderDetailResponse
   } from '@/domain/purchase-order/order.types'
   import type { ProductVariantLiteForInput } from '@/domain/product/product.types'
   import type { Supplier } from '@/domain/supplier/supplier.types'
+  import type { PurchaseRequestQuotedPriceResponse } from '@/domain/purchase-request/request.types'
 
   defineOptions({ name: 'PurchaseOrder' })
 
   const { hasPermission } = usePermission()
 
   const loading = ref(false)
-  const dialogVisible = ref(false)
   const dialogTitle = ref('Tạo Phiếu đặt hàng (PO) mới')
-  const submitting = ref(false)
-  const isEdit = ref(false)
+
+  // Create PO State & Dialog Variables
+  const createDialogVisible = ref(false)
+  const createSubmitting = ref(false)
+  const createFormData = ref<{
+    purchaseRequestId?: number
+    orderDate?: string
+    note: string
+    items: Array<{
+      productVariantId: number | undefined
+      productVariantColorId?: number
+      productVariantColorName?: string
+      orderedQuantity: number
+      unitPrice: number
+      purchaseRequestItemId?: number
+      supplierId?: number
+      supplierName?: string
+      quotationIndex?: number
+    }>
+  }>({
+    purchaseRequestId: undefined,
+    note: '',
+    items: []
+  })
+
+  // Edit PO State & Dialog Variables
+  const editDialogVisible = ref(false)
+  const editSubmitting = ref(false)
+  const editFormData = ref<{
+    id?: number
+    supplierId: number | undefined
+    purchaseRequestId?: number
+    orderDate?: string
+    note: string
+    items: Array<{
+      id?: number
+      productVariantId: number | undefined
+      productVariantColorId?: number
+      productVariantColorName?: string
+      orderedQuantity: number
+      unitPrice: number
+      purchaseRequestItemId?: number
+      quotationIndex?: number
+    }>
+  }>({
+    supplierId: undefined,
+    purchaseRequestId: undefined,
+    note: '',
+    items: []
+  })
+
+  // Quotation Selector Dialog states
+  const quoteSelectorVisible = ref(false)
+  const activeQuoteRowIndex = ref<number | null>(null)
+  const activeQuoteDialogFormType = ref<'create' | 'edit'>('create')
+  const quotePage = ref(1)
+  const quotePageSize = ref(5)
+  const allRowQuotes = ref<PurchaseRequestQuotedPriceResponse[]>([])
+
+  const paginatedRowQuotes = computed(() => {
+    return allRowQuotes.value.slice(
+      (quotePage.value - 1) * quotePageSize.value,
+      quotePage.value * quotePageSize.value
+    )
+  })
+
+  const openQuoteSelector = async (index: number, formType: 'create' | 'edit') => {
+    activeQuoteRowIndex.value = index
+    activeQuoteDialogFormType.value = formType
+    quotePage.value = 1
+
+    const row =
+      formType === 'create' ? createFormData.value.items[index] : editFormData.value.items[index]
+
+    if (!row || !row.productVariantId) {
+      ElMessage.warning('Vui lòng chọn sản phẩm trước')
+      return
+    }
+
+    try {
+      loading.value = true
+      let prices = await QuotationApi.getApprovedPrices(
+        row.productVariantId,
+        row.productVariantColorId
+      )
+      if (formType === 'edit' && editFormData.value.supplierId) {
+        prices = prices.filter((p) => p.supplierId === editFormData.value.supplierId)
+      }
+      allRowQuotes.value = prices || []
+      quoteSelectorVisible.value = true
+    } catch (err) {
+      console.error(err)
+      ElMessage.error('Không thể tải danh sách báo giá')
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const selectQuote = (quote: PurchaseRequestQuotedPriceResponse) => {
+    if (activeQuoteRowIndex.value === null) return
+    const idx = activeQuoteRowIndex.value
+    if (activeQuoteDialogFormType.value === 'create') {
+      const row = createFormData.value.items[idx]
+      if (row) {
+        row.supplierId = quote.supplierId
+        row.supplierName = quote.supplierName
+        row.unitPrice = quote.quotePrice
+        row.quotationIndex = 0
+      }
+    } else {
+      const row = editFormData.value.items[idx]
+      if (row) {
+        row.unitPrice = quote.quotePrice
+        row.quotationIndex = 0
+      }
+    }
+    quoteSelectorVisible.value = false
+  }
+
+  const clearRowQuotation = (index: number, formType: 'create' | 'edit') => {
+    if (formType === 'create') {
+      const row = createFormData.value.items[index]
+      if (row) {
+        row.quotationIndex = undefined
+        row.supplierId = undefined
+        row.supplierName = ''
+        row.unitPrice = 0
+      }
+    } else {
+      const row = editFormData.value.items[index]
+      if (row) {
+        row.quotationIndex = undefined
+      }
+    }
+  }
 
   const detailDialogVisible = ref(false)
   const detailData = ref<PurchaseOrderDetailResponse | null>(null)
@@ -770,29 +1210,67 @@
       colorName: selectedColor?.colorName
     })
 
-    if (productSelectorActiveRowIndex.value !== null) {
-      const idx = productSelectorActiveRowIndex.value
-      if (formData.value.items[idx]) {
-        const row = formData.value.items[idx]
-        row.productVariantId = variant.id
-        row.productVariantColorId = productVariantColorId
-        row.productVariantColorName = selectedColor?.colorName
-      }
-    } else {
-      const items = formData.value.items
-      const lastRow = items[items.length - 1]
-      if (lastRow && lastRow.productVariantId === undefined) {
-        lastRow.productVariantId = variant.id
-        lastRow.productVariantColorId = productVariantColorId
-        lastRow.productVariantColorName = selectedColor?.colorName
+    if (createDialogVisible.value) {
+      if (productSelectorActiveRowIndex.value !== null) {
+        const idx = productSelectorActiveRowIndex.value
+        if (createFormData.value.items[idx]) {
+          const row = createFormData.value.items[idx]
+          row.productVariantId = variant.id
+          row.productVariantColorId = productVariantColorId
+          row.productVariantColorName = selectedColor?.colorName
+          row.supplierId = undefined
+          row.supplierName = ''
+          row.unitPrice = 0
+          row.quotationIndex = undefined
+        }
       } else {
-        items.push({
-          productVariantId: variant.id,
-          productVariantColorId,
-          productVariantColorName: selectedColor?.colorName,
-          orderedQuantity: 1,
-          unitPrice: 0
-        })
+        const items = createFormData.value.items
+        const lastRow = items[items.length - 1]
+        if (lastRow && lastRow.productVariantId === undefined) {
+          lastRow.productVariantId = variant.id
+          lastRow.productVariantColorId = productVariantColorId
+          lastRow.productVariantColorName = selectedColor?.colorName
+          lastRow.supplierId = undefined
+          lastRow.supplierName = ''
+          lastRow.unitPrice = 0
+          lastRow.quotationIndex = undefined
+        } else {
+          items.push({
+            productVariantId: variant.id,
+            productVariantColorId,
+            productVariantColorName: selectedColor?.colorName,
+            orderedQuantity: 1,
+            unitPrice: 0,
+            supplierId: undefined,
+            supplierName: ''
+          })
+        }
+      }
+    } else if (editDialogVisible.value) {
+      if (productSelectorActiveRowIndex.value !== null) {
+        const idx = productSelectorActiveRowIndex.value
+        if (editFormData.value.items[idx]) {
+          const row = editFormData.value.items[idx]
+          row.productVariantId = variant.id
+          row.productVariantColorId = productVariantColorId
+          row.productVariantColorName = selectedColor?.colorName
+        }
+      } else {
+        const items = editFormData.value.items
+        const lastRow = items[items.length - 1]
+        if (lastRow && lastRow.productVariantId === undefined) {
+          lastRow.productVariantId = variant.id
+          lastRow.productVariantColorId = productVariantColorId
+          lastRow.productVariantColorName = selectedColor?.colorName
+        } else {
+          items.push({
+            productVariantId: variant.id,
+            productVariantColorId,
+            productVariantColorName: selectedColor?.colorName,
+            orderedQuantity: 1,
+            unitPrice: 0
+          })
+        }
       }
     }
     productSelectorVisible.value = false
@@ -803,27 +1281,6 @@
     productSelectorPage.value = 1
     await fetchSelectorProducts()
   }, 300)
-
-  const formData = ref<{
-    id?: number
-    supplierId: number | undefined
-    purchaseRequestId?: number
-    orderDate?: string
-    note: string
-    items: Array<{
-      id?: number
-      productVariantId: number | undefined
-      productVariantColorId?: number
-      productVariantColorName?: string
-      orderedQuantity: number
-      unitPrice: number
-      purchaseRequestItemId?: number
-    }>
-  }>({
-    supplierId: undefined,
-    note: '',
-    items: []
-  })
 
   const totalDetailAmount = computed(() => {
     if (!detailData.value) return 0
@@ -1024,20 +1481,40 @@
       loading.value = true
       const prDetail = await PurchaseRequestApi.getApprovedById(prId)
       // Map PR items to PO items
-      formData.value.items = prDetail.items.map((item) => {
-        productCache.set(item.productVariantId, {
-          displayName: item.productName || `Biến thể #${item.productVariantId}`,
-          colorName: item.productVariantColorName
+      if (createDialogVisible.value) {
+        createFormData.value.items = prDetail.items.map((item, _) => {
+          productCache.set(item.productVariantId, {
+            displayName: item.productName || `Biến thể #${item.productVariantId}`,
+            colorName: item.productVariantColorName
+          })
+          return {
+            productVariantId: item.productVariantId,
+            productVariantColorId: item.productVariantColorId,
+            productVariantColorName: item.productVariantColorName,
+            orderedQuantity: item.unimportedQuantity || 1,
+            unitPrice: 0,
+            purchaseRequestItemId: item.id,
+            supplierId: undefined,
+            supplierName: '',
+            quotationIndex: undefined
+          }
         })
-        return {
-          productVariantId: item.productVariantId,
-          productVariantColorId: item.productVariantColorId,
-          productVariantColorName: item.productVariantColorName,
-          orderedQuantity: item.unimportedQuantity || 1,
-          unitPrice: 0,
-          purchaseRequestItemId: item.id
-        }
-      })
+      } else if (editDialogVisible.value) {
+        editFormData.value.items = prDetail.items.map((item) => {
+          productCache.set(item.productVariantId, {
+            displayName: item.productName || `Biến thể #${item.productVariantId}`,
+            colorName: item.productVariantColorName
+          })
+          return {
+            productVariantId: item.productVariantId,
+            productVariantColorId: item.productVariantColorId,
+            productVariantColorName: item.productVariantColorName,
+            orderedQuantity: item.unimportedQuantity || 1,
+            unitPrice: 0,
+            purchaseRequestItemId: item.id
+          }
+        })
+      }
     } catch {
       ElMessage.error('Không thể tải sản phẩm từ yêu cầu mua hàng')
     } finally {
@@ -1069,23 +1546,20 @@
   }
 
   const handleAdd = () => {
-    isEdit.value = false
     dialogTitle.value = 'Tạo Phiếu đặt hàng (PO) mới'
-    formData.value = {
-      supplierId: undefined,
+    createFormData.value = {
       purchaseRequestId: undefined,
       orderDate: new Date().toISOString().substring(0, 10),
       note: '',
       items: []
     }
-    dialogVisible.value = true
+    createDialogVisible.value = true
   }
 
   const handleEdit = async (row: PurchaseOrderListResponse) => {
     try {
       loading.value = true
       const detail = await PurchaseOrderApi.getById(row.id)
-      isEdit.value = true
       dialogTitle.value = `Chỉnh sửa Phiếu đặt hàng PO #${detail.id}`
 
       detail.items.forEach((item) => {
@@ -1095,7 +1569,7 @@
         })
       })
 
-      formData.value = {
+      editFormData.value = {
         id: detail.id,
         supplierId: detail.supplierId,
         purchaseRequestId: detail.purchaseRequestId,
@@ -1111,7 +1585,7 @@
           purchaseRequestItemId: item.purchaseRequestItemId
         }))
       }
-      dialogVisible.value = true
+      editDialogVisible.value = true
     } catch (e) {
       console.error(e)
       ElMessage.error('Không thể tải chi tiết đơn hàng')
@@ -1207,21 +1681,69 @@
     }
   }
 
-  const handleRemoveProductRow = (index: number) => {
-    formData.value.items.splice(index, 1)
+  const handleRemoveCreateProductRow = (index: number) => {
+    createFormData.value.items.splice(index, 1)
   }
 
-  const submitForm = async () => {
-    if (!formData.value.supplierId) {
-      ElMessage.warning('Vui lòng chọn nhà cung cấp')
-      return
-    }
-    if (formData.value.items.length === 0) {
+  const handleRemoveEditProductRow = (index: number) => {
+    editFormData.value.items.splice(index, 1)
+  }
+
+  const submitCreateForm = async () => {
+    if (createFormData.value.items.length === 0) {
       ElMessage.warning('Vui lòng thêm ít nhất một mặt hàng cần đặt mua')
       return
     }
 
-    const invalidItem = formData.value.items.find(
+    const invalidItem = createFormData.value.items.find(
+      (item) => !item.productVariantId || item.orderedQuantity <= 0 || !item.supplierId
+    )
+    if (invalidItem) {
+      ElMessage.warning('Vui lòng kiểm tra đầy đủ sản phẩm, báo giá và số lượng mua')
+      return
+    }
+
+    createSubmitting.value = true
+    try {
+      const dataPayload = {
+        purchaseRequestId: createFormData.value.purchaseRequestId || undefined,
+        note: createFormData.value.note,
+        orderDate: createFormData.value.orderDate
+          ? new Date(createFormData.value.orderDate).toISOString()
+          : undefined,
+        items: createFormData.value.items.map((item) => ({
+          productVariantId: item.productVariantId,
+          productVariantColorId: item.productVariantColorId,
+          orderedQuantity: item.orderedQuantity,
+          unitPrice: item.unitPrice,
+          purchaseRequestItemId: item.purchaseRequestItemId,
+          supplierId: item.supplierId
+        }))
+      }
+
+      await PurchaseOrderApi.create(dataPayload)
+      ElMessage.success('Tạo đơn hàng thành công')
+      createDialogVisible.value = false
+      loadData()
+    } catch (e) {
+      console.error(e)
+      ElMessage.error('Không thể lưu thông tin đơn hàng')
+    } finally {
+      createSubmitting.value = false
+    }
+  }
+
+  const submitEditForm = async () => {
+    if (!editFormData.value.supplierId) {
+      ElMessage.warning('Vui lòng chọn nhà cung cấp')
+      return
+    }
+    if (editFormData.value.items.length === 0) {
+      ElMessage.warning('Vui lòng thêm ít nhất một mặt hàng cần đặt mua')
+      return
+    }
+
+    const invalidItem = editFormData.value.items.find(
       (item) => !item.productVariantId || item.orderedQuantity <= 0
     )
     if (invalidItem) {
@@ -1229,16 +1751,16 @@
       return
     }
 
-    submitting.value = true
+    editSubmitting.value = true
     try {
       const dataPayload = {
-        supplierId: formData.value.supplierId,
-        purchaseRequestId: formData.value.purchaseRequestId || undefined,
-        note: formData.value.note,
-        orderDate: formData.value.orderDate
-          ? new Date(formData.value.orderDate).toISOString()
+        supplierId: editFormData.value.supplierId,
+        purchaseRequestId: editFormData.value.purchaseRequestId || undefined,
+        note: editFormData.value.note,
+        orderDate: editFormData.value.orderDate
+          ? new Date(editFormData.value.orderDate).toISOString()
           : undefined,
-        items: formData.value.items.map((item) => ({
+        items: editFormData.value.items.map((item) => ({
           id: item.id,
           productVariantId: item.productVariantId,
           productVariantColorId: item.productVariantColorId,
@@ -1248,20 +1770,17 @@
         }))
       }
 
-      if (isEdit.value && formData.value.id) {
-        await PurchaseOrderApi.update(formData.value.id, dataPayload)
+      if (editFormData.value.id) {
+        await PurchaseOrderApi.update(editFormData.value.id, dataPayload)
         ElMessage.success('Cập nhật đơn hàng thành công')
-      } else {
-        await PurchaseOrderApi.create(dataPayload)
-        ElMessage.success('Tạo đơn hàng thành công')
       }
-      dialogVisible.value = false
+      editDialogVisible.value = false
       loadData()
     } catch (e) {
       console.error(e)
       ElMessage.error('Không thể lưu thông tin đơn hàng')
     } finally {
-      submitting.value = false
+      editSubmitting.value = false
     }
   }
 
