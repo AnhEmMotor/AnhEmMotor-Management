@@ -255,81 +255,6 @@
             size="small"
             class="w-full rounded-xl overflow-hidden"
           >
-            <ElTableColumn label="Nguồn sản phẩm" width="130" align="center">
-              <template #default="{ row }">
-                <ElTag
-                  v-if="createFormData.purchaseRequestId && !row.purchaseRequestItemId"
-                  type="warning"
-                  size="small"
-                  effect="plain"
-                  class="!rounded-md"
-                >
-                  Ngoài PR (Sẽ tách)
-                </ElTag>
-                <ElTag
-                  v-else-if="createFormData.purchaseRequestId"
-                  type="success"
-                  size="small"
-                  effect="light"
-                  class="!rounded-md"
-                >
-                  Từ PR
-                </ElTag>
-                <ElTag v-else type="info" size="small" class="!rounded-md"> Mua trực tiếp </ElTag>
-              </template>
-            </ElTableColumn>
-
-            <ElTableColumn
-              v-if="createFormData.purchaseRequestId"
-              label="Tình trạng PR"
-              min-width="150"
-              align="center"
-            >
-              <template #default="{ row }">
-                <div v-if="row.purchaseRequestItemId" class="flex flex-col gap-1 items-center">
-                  <div class="flex gap-2">
-                    <ElTooltip content="Số lượng gốc trong PR">
-                      <ElTag size="small" type="info" effect="plain" class="!rounded-md">
-                        PR: {{ row.originalQuantity }}
-                      </ElTag>
-                    </ElTooltip>
-                    <ElTooltip content="Số lượng đang trong các PO nháp/đã gửi">
-                      <ElTag size="small" type="warning" effect="plain" class="!rounded-md">
-                        Đang tạo: {{ row.poCreatingQuantity }}
-                      </ElTag>
-                    </ElTooltip>
-                  </div>
-                  <div class="flex gap-2">
-                    <ElTooltip content="Số lượng đã được duyệt mua">
-                      <ElTag size="small" type="success" effect="plain" class="!rounded-md">
-                        Đã duyệt: {{ row.poApprovedQuantity }}
-                      </ElTag>
-                    </ElTooltip>
-                    <ElTooltip content="Số lượng còn lại có thể gán PR">
-                      <ElTag
-                        size="small"
-                        :type="row.poRemainingQuantity > 0 ? 'primary' : 'danger'"
-                        class="!rounded-md"
-                      >
-                        Còn lại: {{ row.poRemainingQuantity }}
-                      </ElTag>
-                    </ElTooltip>
-                  </div>
-                  <div v-if="row.orderedQuantity > row.poRemainingQuantity" class="mt-1">
-                    <ElTag
-                      size="small"
-                      type="danger"
-                      effect="dark"
-                      class="!rounded-md animate-pulse"
-                    >
-                      Vượt PR (Sẽ tách {{ row.orderedQuantity - row.poRemainingQuantity }})
-                    </ElTag>
-                  </div>
-                </div>
-                <span v-else class="text-gray-400 text-xs">- Ngoài PR -</span>
-              </template>
-            </ElTableColumn>
-
             <ElTableColumn label="Sản phẩm" required minWidth="180">
               <template #default="{ row, $index }">
                 <div
@@ -419,6 +344,7 @@
                   :precision="0"
                   class="w-full"
                   controls-position="right"
+                  style="width: 80px"
                 />
                 <div
                   v-if="
@@ -443,6 +369,7 @@
                   class="w-full"
                   controls-position="right"
                   placeholder="Nhập giá"
+                  style="width: 120px"
                   :disabled="row.quotationIndex !== undefined"
                 />
               </template>
@@ -587,94 +514,6 @@
             size="small"
             class="w-full rounded-xl overflow-hidden"
           >
-            <ElTableColumn label="Nguồn sản phẩm" width="130" align="center">
-              <template #default="{ row }">
-                <ElTag
-                  v-if="editFormData.purchaseRequestId && !row.id && !row.purchaseRequestItemId"
-                  type="warning"
-                  size="small"
-                  effect="plain"
-                  class="!rounded-md"
-                >
-                  Ngoài PR (Sẽ tách)
-                </ElTag>
-                <ElTag
-                  v-else-if="editFormData.purchaseRequestId"
-                  type="success"
-                  size="small"
-                  effect="light"
-                  class="!rounded-md"
-                >
-                  Từ PR
-                </ElTag>
-                <ElTag v-else type="info" size="small" class="!rounded-md"> Mua trực tiếp </ElTag>
-              </template>
-            </ElTableColumn>
-
-            <ElTableColumn
-              v-if="editFormData.purchaseRequestId"
-              label="Tình trạng PR"
-              min-width="150"
-              align="center"
-            >
-              <template #default="{ row }">
-                <div v-if="row.purchaseRequestItemId" class="flex flex-col gap-1 items-center">
-                  <div class="flex gap-2">
-                    <ElTooltip content="Số lượng gốc trong PR">
-                      <ElTag size="small" type="info" effect="plain" class="!rounded-md">
-                        PR: {{ row.originalQuantity }}
-                      </ElTag>
-                    </ElTooltip>
-                    <ElTooltip content="Số lượng đang trong các PO nháp/đã gửi">
-                      <ElTag size="small" type="warning" effect="plain" class="!rounded-md">
-                        Đang tạo: {{ row.poCreatingQuantity - (row.originalPoQuantity || 0) }}
-                      </ElTag>
-                    </ElTooltip>
-                  </div>
-                  <div class="flex gap-2">
-                    <ElTooltip content="Số lượng đã được duyệt mua">
-                      <ElTag size="small" type="success" effect="plain" class="!rounded-md">
-                        Đã duyệt: {{ row.poApprovedQuantity }}
-                      </ElTag>
-                    </ElTooltip>
-                    <ElTooltip content="Số lượng còn lại có thể gán PR">
-                      <ElTag
-                        size="small"
-                        :type="
-                          row.poRemainingQuantity + (row.originalPoQuantity || 0) > 0
-                            ? 'primary'
-                            : 'danger'
-                        "
-                        class="!rounded-md"
-                      >
-                        Còn lại: {{ row.poRemainingQuantity + (row.originalPoQuantity || 0) }}
-                      </ElTag>
-                    </ElTooltip>
-                  </div>
-                  <div
-                    v-if="
-                      row.orderedQuantity > row.poRemainingQuantity + (row.originalPoQuantity || 0)
-                    "
-                    class="mt-1"
-                  >
-                    <ElTag
-                      size="small"
-                      type="danger"
-                      effect="dark"
-                      class="!rounded-md animate-pulse"
-                    >
-                      Vượt PR (Sẽ tách
-                      {{
-                        row.orderedQuantity -
-                        (row.poRemainingQuantity + (row.originalPoQuantity || 0))
-                      }})
-                    </ElTag>
-                  </div>
-                </div>
-                <span v-else class="text-gray-400 text-xs">- Ngoài PR -</span>
-              </template>
-            </ElTableColumn>
-
             <ElTableColumn label="Sản phẩm" required minWidth="200">
               <template #default="{ row, $index }">
                 <div
@@ -730,6 +569,7 @@
                   :min="1"
                   :precision="0"
                   class="w-full"
+                  style="width: 80px"
                   controls-position="right"
                 />
                 <div
@@ -759,6 +599,7 @@
                   class="w-full"
                   controls-position="right"
                   placeholder="Nhập giá"
+                  style="width: 120px"
                   :disabled="row.quotationIndex !== undefined"
                 />
               </template>
@@ -1259,6 +1100,7 @@
       poCreatingQuantity?: number
       poApprovedQuantity?: number
       originalQuantity?: number
+      originalPoQuantity?: number
     }>
   }>({
     supplierId: undefined,
