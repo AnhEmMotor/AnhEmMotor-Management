@@ -223,9 +223,14 @@
           <ElAlert
             v-if="
               createFormData.purchaseRequestId &&
-              createFormData.items.some((item) => !item.purchaseRequestItemId)
+              createFormData.items.some(
+                (item) =>
+                  !item.purchaseRequestItemId ||
+                  (item.poRemainingQuantity !== undefined &&
+                    item.orderedQuantity > item.poRemainingQuantity)
+              )
             "
-            title="Lưu ý: Đơn hàng chứa sản phẩm ngoài PR. Khi lưu, các mặt hàng này sẽ được tự động tách thành một phiếu PO nháp riêng biệt."
+            title="Lưu ý: Đơn hàng chứa sản phẩm ngoài PR hoặc vượt quá số lượng PR. Khi lưu, các phần dư sẽ được tự động tách thành một phiếu PO nháp riêng biệt."
             type="warning"
             show-icon
             :closable="false"
@@ -271,6 +276,57 @@
                   Từ PR
                 </ElTag>
                 <ElTag v-else type="info" size="small" class="!rounded-md"> Mua trực tiếp </ElTag>
+              </template>
+            </ElTableColumn>
+
+            <ElTableColumn
+              v-if="createFormData.purchaseRequestId"
+              label="Tình trạng PR"
+              min-width="150"
+              align="center"
+            >
+              <template #default="{ row }">
+                <div v-if="row.purchaseRequestItemId" class="flex flex-col gap-1 items-center">
+                  <div class="flex gap-2">
+                    <ElTooltip content="Số lượng gốc trong PR">
+                      <ElTag size="small" type="info" effect="plain" class="!rounded-md">
+                        PR: {{ row.originalQuantity }}
+                      </ElTag>
+                    </ElTooltip>
+                    <ElTooltip content="Số lượng đang trong các PO nháp/đã gửi">
+                      <ElTag size="small" type="warning" effect="plain" class="!rounded-md">
+                        Đang tạo: {{ row.poCreatingQuantity }}
+                      </ElTag>
+                    </ElTooltip>
+                  </div>
+                  <div class="flex gap-2">
+                    <ElTooltip content="Số lượng đã được duyệt mua">
+                      <ElTag size="small" type="success" effect="plain" class="!rounded-md">
+                        Đã duyệt: {{ row.poApprovedQuantity }}
+                      </ElTag>
+                    </ElTooltip>
+                    <ElTooltip content="Số lượng còn lại có thể gán PR">
+                      <ElTag
+                        size="small"
+                        :type="row.poRemainingQuantity > 0 ? 'primary' : 'danger'"
+                        class="!rounded-md"
+                      >
+                        Còn lại: {{ row.poRemainingQuantity }}
+                      </ElTag>
+                    </ElTooltip>
+                  </div>
+                  <div v-if="row.orderedQuantity > row.poRemainingQuantity" class="mt-1">
+                    <ElTag
+                      size="small"
+                      type="danger"
+                      effect="dark"
+                      class="!rounded-md animate-pulse"
+                    >
+                      Vượt PR (Sẽ tách {{ row.orderedQuantity - row.poRemainingQuantity }})
+                    </ElTag>
+                  </div>
+                </div>
+                <span v-else class="text-gray-400 text-xs">- Ngoài PR -</span>
               </template>
             </ElTableColumn>
 
@@ -364,6 +420,17 @@
                   class="w-full"
                   controls-position="right"
                 />
+                <div
+                  v-if="
+                    createFormData.purchaseRequestId &&
+                    row.purchaseRequestItemId &&
+                    row.poRemainingQuantity !== undefined &&
+                    row.orderedQuantity > row.poRemainingQuantity
+                  "
+                  class="text-[10px] text-danger mt-1 font-semibold leading-tight animate-pulse"
+                >
+                  ⚠️ Vượt PR (Phần dư {{ row.orderedQuantity - row.poRemainingQuantity }} sẽ tách)
+                </div>
               </template>
             </ElTableColumn>
 
@@ -487,9 +554,15 @@
           <ElAlert
             v-if="
               editFormData.purchaseRequestId &&
-              editFormData.items.some((item) => !item.id && !item.purchaseRequestItemId)
+              editFormData.items.some(
+                (item) =>
+                  (!item.id && !item.purchaseRequestItemId) ||
+                  (item.poRemainingQuantity !== undefined &&
+                    item.orderedQuantity >
+                      item.poRemainingQuantity + (item.originalPoQuantity || 0))
+              )
             "
-            title="Lưu ý: Đơn hàng chứa sản phẩm ngoài PR. Khi lưu, các mặt hàng này sẽ được tự động tách thành một phiếu PO nháp riêng biệt."
+            title="Lưu ý: Đơn hàng chứa sản phẩm ngoài PR hoặc vượt quá số lượng PR. Khi lưu, các phần dư sẽ được tự động tách thành một phiếu PO nháp riêng biệt."
             type="warning"
             show-icon
             :closable="false"
@@ -535,6 +608,70 @@
                   Từ PR
                 </ElTag>
                 <ElTag v-else type="info" size="small" class="!rounded-md"> Mua trực tiếp </ElTag>
+              </template>
+            </ElTableColumn>
+
+            <ElTableColumn
+              v-if="editFormData.purchaseRequestId"
+              label="Tình trạng PR"
+              min-width="150"
+              align="center"
+            >
+              <template #default="{ row }">
+                <div v-if="row.purchaseRequestItemId" class="flex flex-col gap-1 items-center">
+                  <div class="flex gap-2">
+                    <ElTooltip content="Số lượng gốc trong PR">
+                      <ElTag size="small" type="info" effect="plain" class="!rounded-md">
+                        PR: {{ row.originalQuantity }}
+                      </ElTag>
+                    </ElTooltip>
+                    <ElTooltip content="Số lượng đang trong các PO nháp/đã gửi">
+                      <ElTag size="small" type="warning" effect="plain" class="!rounded-md">
+                        Đang tạo: {{ row.poCreatingQuantity - (row.originalPoQuantity || 0) }}
+                      </ElTag>
+                    </ElTooltip>
+                  </div>
+                  <div class="flex gap-2">
+                    <ElTooltip content="Số lượng đã được duyệt mua">
+                      <ElTag size="small" type="success" effect="plain" class="!rounded-md">
+                        Đã duyệt: {{ row.poApprovedQuantity }}
+                      </ElTag>
+                    </ElTooltip>
+                    <ElTooltip content="Số lượng còn lại có thể gán PR">
+                      <ElTag
+                        size="small"
+                        :type="
+                          row.poRemainingQuantity + (row.originalPoQuantity || 0) > 0
+                            ? 'primary'
+                            : 'danger'
+                        "
+                        class="!rounded-md"
+                      >
+                        Còn lại: {{ row.poRemainingQuantity + (row.originalPoQuantity || 0) }}
+                      </ElTag>
+                    </ElTooltip>
+                  </div>
+                  <div
+                    v-if="
+                      row.orderedQuantity > row.poRemainingQuantity + (row.originalPoQuantity || 0)
+                    "
+                    class="mt-1"
+                  >
+                    <ElTag
+                      size="small"
+                      type="danger"
+                      effect="dark"
+                      class="!rounded-md animate-pulse"
+                    >
+                      Vượt PR (Sẽ tách
+                      {{
+                        row.orderedQuantity -
+                        (row.poRemainingQuantity + (row.originalPoQuantity || 0))
+                      }})
+                    </ElTag>
+                  </div>
+                </div>
+                <span v-else class="text-gray-400 text-xs">- Ngoài PR -</span>
               </template>
             </ElTableColumn>
 
@@ -595,6 +732,21 @@
                   class="w-full"
                   controls-position="right"
                 />
+                <div
+                  v-if="
+                    editFormData.purchaseRequestId &&
+                    row.purchaseRequestItemId &&
+                    row.poRemainingQuantity !== undefined &&
+                    row.orderedQuantity > row.poRemainingQuantity + (row.originalPoQuantity || 0)
+                  "
+                  class="text-[10px] text-danger mt-1 font-semibold leading-tight animate-pulse"
+                >
+                  ⚠️ Vượt PR (Phần dư
+                  {{
+                    row.orderedQuantity - (row.poRemainingQuantity + (row.originalPoQuantity || 0))
+                  }}
+                  sẽ tách)
+                </div>
               </template>
             </ElTableColumn>
 
@@ -1043,6 +1195,7 @@
     PurchaseOrderListResponse,
     PurchaseOrderDetailResponse
   } from '@/domain/purchase-order/order.types'
+  import type { ApprovedPurchaseRequestItemResponse } from '@/domain/purchase-request/request.types'
   import type { ProductVariantLiteForInput } from '@/domain/product/product.types'
   import type { Supplier } from '@/domain/supplier/supplier.types'
   import type { PurchaseRequestQuotedPriceResponse } from '@/domain/purchase-request/request.types'
@@ -1072,6 +1225,10 @@
       supplierName?: string
       quotationIndex?: number
       quotationProductRowId?: number
+      poRemainingQuantity?: number
+      poCreatingQuantity?: number
+      poApprovedQuantity?: number
+      originalQuantity?: number
     }>
   }>({
     purchaseRequestId: undefined,
@@ -1098,6 +1255,10 @@
       purchaseRequestItemId?: number
       quotationIndex?: number
       quotationProductRowId?: number
+      poRemainingQuantity?: number
+      poCreatingQuantity?: number
+      poApprovedQuantity?: number
+      originalQuantity?: number
     }>
   }>({
     supplierId: undefined,
@@ -1200,6 +1361,7 @@
 
   const suppliers = ref<Supplier[]>([])
   const approvedPRs = ref<any[]>([])
+  const prItemsMap = ref<Record<number, ApprovedPurchaseRequestItemResponse>>({})
 
   const productCache = reactive(new Map<number, { displayName: string; colorName?: string }>())
 
@@ -1654,10 +1816,20 @@
   }
 
   const handlePurchaseRequestChange = async (prId?: number) => {
-    if (!prId) return
+    if (!prId) {
+      prItemsMap.value = {}
+      return
+    }
     try {
       loading.value = true
       const prDetail = await PurchaseRequestApi.getApprovedById(prId)
+
+      // Store PR items for quantity tracking
+      prItemsMap.value = {}
+      prDetail.items.forEach((item) => {
+        prItemsMap.value[item.id] = item
+      })
+
       // Map PR items to PO items
       if (createDialogVisible.value) {
         createFormData.value.items = prDetail.items.map((item, _) => {
@@ -1669,12 +1841,16 @@
             productVariantId: item.productVariantId,
             productVariantColorId: item.productVariantColorId,
             productVariantColorName: item.productVariantColorName,
-            orderedQuantity: item.unimportedQuantity || 1,
+            orderedQuantity: item.poRemainingQuantity > 0 ? item.poRemainingQuantity : 0,
             unitPrice: 0,
             purchaseRequestItemId: item.id,
             supplierId: undefined,
             supplierName: '',
-            quotationIndex: undefined
+            quotationIndex: undefined,
+            poRemainingQuantity: item.poRemainingQuantity,
+            poCreatingQuantity: item.poCreatingQuantity,
+            poApprovedQuantity: item.poApprovedQuantity,
+            originalQuantity: item.quantity
           }
         })
       } else if (editDialogVisible.value) {
@@ -1687,9 +1863,13 @@
             productVariantId: item.productVariantId,
             productVariantColorId: item.productVariantColorId,
             productVariantColorName: item.productVariantColorName,
-            orderedQuantity: item.unimportedQuantity || 1,
+            orderedQuantity: item.poRemainingQuantity > 0 ? item.poRemainingQuantity : 0,
             unitPrice: 0,
-            purchaseRequestItemId: item.id
+            purchaseRequestItemId: item.id,
+            poRemainingQuantity: item.poRemainingQuantity,
+            poCreatingQuantity: item.poCreatingQuantity,
+            poApprovedQuantity: item.poApprovedQuantity,
+            originalQuantity: item.quantity
           }
         })
       }
@@ -1747,24 +1927,49 @@
         })
       })
 
+      // If linked to PR, load PR items for quantity tracking
+      if (detail.purchaseRequestId) {
+        const prDetail = await PurchaseRequestApi.getApprovedById(
+          detail.purchaseRequestId,
+          detail.id // Pass current PO ID to exclude its quantities from "Remaining"
+        )
+        prItemsMap.value = {}
+        prDetail.items.forEach((item) => {
+          prItemsMap.value[item.id] = item
+        })
+      } else {
+        prItemsMap.value = {}
+      }
+
       editFormData.value = {
         id: detail.id,
         supplierId: detail.supplierId,
         purchaseRequestId: detail.purchaseRequestId,
         orderDate: detail.orderDate?.substring(0, 10),
         note: detail.note || '',
-        items: detail.items.map((item) => ({
-          id: item.id,
-          productVariantId: item.productVariantId,
-          productVariantColorId: item.productVariantColorId,
-          productVariantColorName: item.productVariantColorName,
-          orderedQuantity: item.orderedQuantity,
-          unitPrice: item.unitPrice,
-          purchaseRequestItemId: item.purchaseRequestItemId,
-          quotationProductRowId: item.quotationProductRowId,
-          quotationIndex: item.quotationProductRowId ? 0 : undefined
-        }))
+        items: detail.items.map((item) => {
+          const prItem = item.purchaseRequestItemId
+            ? prItemsMap.value[item.purchaseRequestItemId]
+            : null
+          return {
+            id: item.id,
+            productVariantId: item.productVariantId,
+            productVariantColorId: item.productVariantColorId,
+            productVariantColorName: item.productVariantColorName,
+            orderedQuantity: item.orderedQuantity,
+            unitPrice: item.unitPrice,
+            purchaseRequestItemId: item.purchaseRequestItemId,
+            quotationProductRowId: item.quotationProductRowId,
+            quotationIndex: item.quotationProductRowId ? 0 : undefined,
+            poRemainingQuantity: prItem?.poRemainingQuantity, // Now already adjusted by backend
+            poCreatingQuantity: prItem?.poCreatingQuantity,
+            poApprovedQuantity: prItem?.poApprovedQuantity,
+            originalQuantity: prItem?.quantity,
+            originalPoQuantity: item.orderedQuantity
+          }
+        })
       }
+
       editDialogVisible.value = true
     } catch (e) {
       console.error(e)

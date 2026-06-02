@@ -259,10 +259,41 @@
                 </div>
               </template>
             </ElTableColumn>
-            <ElTableColumn prop="quantity" label="Số lượng y/c" width="105" align="center" />
-            <ElTableColumn prop="importedQuantity" label="Đã nhập" width="100" align="center">
+            <ElTableColumn prop="quantity" label="S/L yêu cầu" width="95" align="center" />
+            <ElTableColumn prop="poCreatingQuantity" label="Đang tạo PO" width="100" align="center">
               <template #default="{ row }">
-                <span class="text-success font-medium">{{ row.importedQuantity }}</span>
+                <span
+                  :class="row.poCreatingQuantity > 0 ? 'text-warning font-medium' : 'text-gray-400'"
+                >
+                  {{ row.poCreatingQuantity }}
+                </span>
+              </template>
+            </ElTableColumn>
+            <ElTableColumn prop="poApprovedQuantity" label="Đã duyệt PO" width="100" align="center">
+              <template #default="{ row }">
+                <span
+                  :class="row.poApprovedQuantity > 0 ? 'text-success font-medium' : 'text-gray-400'"
+                >
+                  {{ row.poApprovedQuantity }}
+                </span>
+              </template>
+            </ElTableColumn>
+            <ElTableColumn prop="poRemainingQuantity" label="Còn lại PO" width="100" align="center">
+              <template #default="{ row }">
+                <span
+                  :class="row.poRemainingQuantity > 0 ? 'text-primary font-bold' : 'text-gray-400'"
+                >
+                  {{ row.poRemainingQuantity }}
+                </span>
+              </template>
+            </ElTableColumn>
+            <ElTableColumn prop="importedQuantity" label="Đã nhập kho" width="105" align="center">
+              <template #default="{ row }">
+                <span
+                  :class="row.importedQuantity > 0 ? 'text-success font-bold' : 'text-gray-400'"
+                >
+                  {{ row.importedQuantity }}
+                </span>
               </template>
             </ElTableColumn>
             <ElTableColumn prop="pendingQuantity" label="Đang chờ" width="100" align="center">

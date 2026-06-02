@@ -38,9 +38,10 @@ export const PurchaseRequestApi = {
     })
   },
 
-  getApprovedById(id: number) {
+  getApprovedById(id: number, excludePurchaseOrderId?: number) {
     return request.get<ApprovedPurchaseRequestDetailResponse>({
-      url: `/api/v1/purchase-requests/approved/${id}`
+      url: `/api/v1/purchase-requests/approved/${id}`,
+      params: { excludePurchaseOrderId }
     })
   },
 
