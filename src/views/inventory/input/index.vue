@@ -771,7 +771,7 @@
       if (poSelectorQuery.value.trim()) {
         filters.push(`Id==${poSelectorQuery.value.trim()}`)
       }
-      const res = await InventoryReceiptApi.getListPurchaseOrderApproved({
+      const res = await PurchaseOrderApi.getApprovedForInputList({
         current: poSelectorPage.value,
         size: poSelectorPageSize.value,
         Filters: filters.join(',')
@@ -816,13 +816,13 @@
       formData.value.purchaseOrderId = po.id
       formData.value.supplierId = po.supplierId
       formData.value.products = []
-      const detail = await PurchaseOrderApi.getById(po.id)
+      const detail = await PurchaseOrderApi.getApprovedForInputById(po.id)
 
       detail.items.forEach((item: any) => {
         const remainingQty = item.orderedQuantity - (item.importedQuantity || 0)
         if (remainingQty <= 0) return
 
-        const isVin = item.productName?.toLowerCase().includes('xe') || false
+        const isVin = item.needVin || false
 
         const newRow: ReceiptProductRow = {
           productVariantId: item.productVariantId,

@@ -87,3 +87,39 @@ export interface PurchaseOrderList {
   items: PurchaseOrderListResponse[]
   totalCount: number
 }
+
+export interface PurchaseOrderItemForInputResponse {
+  id: number
+  productVariantId: number
+  productName?: string
+  productVariantColorId?: number
+  productVariantColorName?: string
+  orderedQuantity: number
+  unitPrice: number
+  needVin: boolean
+  quotationProductRowId?: number
+  purchaseRequestItemId?: number
+  quotationId?: number
+  quotationName?: string
+}
+
+export interface PurchaseOrderDetailForInputResponse {
+  id: number
+  purchaseRequestId?: number
+  supplierId: number
+  supplierName?: string
+  status: string
+  orderDate: string
+  note?: string
+  createdBy?: string
+  createdByName?: string
+  sentBy?: string
+  sentByName?: string
+  approvedBy?: string
+  approvedByName?: string
+  rejectedBy?: string
+  rejectedByName?: string
+  createdAt?: string
+  items: PurchaseOrderItemForInputResponse[]
+  totalAmount: number
+}

@@ -3,7 +3,8 @@ import type {
   PurchaseOrderDetailResponse,
   PurchaseOrderList,
   CreatePurchaseOrder,
-  UpdatePurchaseOrder
+  UpdatePurchaseOrder,
+  PurchaseOrderDetailForInputResponse
 } from '@/domain/purchase-order/order.types'
 
 export const PurchaseOrderApi = {
@@ -61,6 +62,24 @@ export const PurchaseOrderApi = {
   getStatuses() {
     return request.get<Record<string, string>>({
       url: '/api/v1/purchase-orders/status'
+    })
+  },
+
+  getApprovedForInputList(params: any) {
+    const { current, size, ...rest } = params
+    return request.get<PurchaseOrderList>({
+      url: '/api/v1/purchase-orders/approved/for-input',
+      params: {
+        Page: current,
+        PageSize: size,
+        ...rest
+      }
+    })
+  },
+
+  getApprovedForInputById(id: number) {
+    return request.get<PurchaseOrderDetailForInputResponse>({
+      url: `/api/v1/purchase-orders/approved/for-input/${id}`
     })
   }
 }
