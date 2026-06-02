@@ -42,6 +42,8 @@ export interface PurchaseRequestDetailResponse {
   createdByName?: string
   approvedBy?: string
   approvedByName?: string
+  sentByName?: string
+  rejectedByName?: string
   createdAt?: string
   items: PurchaseRequestItemResponse[]
 }

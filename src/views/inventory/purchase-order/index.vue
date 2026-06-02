@@ -1302,49 +1302,80 @@
         const idx = productSelectorActiveRowIndex.value
         if (createFormData.value.items[idx]) {
           const row = createFormData.value.items[idx]
-          if (createFormData.value.purchaseRequestId && row.purchaseRequestItemId) {
-            ElMessage.warning(
-              'Bạn đã thay đổi sản phẩm. Dòng này sẽ được coi là sản phẩm ngoài PR.'
-            )
+
+          // Check if this product variant and color already exists in another row
+          const existsIdx = createFormData.value.items.findIndex(
+            (item, i) =>
+              i !== idx &&
+              item.productVariantId === variant.id &&
+              item.productVariantColorId === productVariantColorId
+          )
+
+          if (existsIdx > -1) {
+            createFormData.value.items[existsIdx].orderedQuantity =
+              (createFormData.value.items[existsIdx].orderedQuantity || 0) +
+              (row.orderedQuantity || 1)
+            createFormData.value.items.splice(idx, 1)
+            ElMessage.success('Sản phẩm đã tồn tại trong đơn hàng. Đã gộp và cộng dồn số lượng.')
+          } else {
+            if (createFormData.value.purchaseRequestId && row.purchaseRequestItemId) {
+              ElMessage.warning(
+                'Bạn đã thay đổi sản phẩm. Dòng này sẽ được coi là sản phẩm ngoài PR.'
+              )
+            }
+            row.productVariantId = variant.id
+            row.productVariantColorId = productVariantColorId
+            row.productVariantColorName = selectedColor?.colorName
+            row.supplierId = undefined
+            row.supplierName = ''
+            row.unitPrice = 0
+            row.quotationIndex = undefined
+            row.purchaseRequestItemId = undefined
+            row.quotationProductRowId = undefined
           }
-          row.productVariantId = variant.id
-          row.productVariantColorId = productVariantColorId
-          row.productVariantColorName = selectedColor?.colorName
-          row.supplierId = undefined
-          row.supplierName = ''
-          row.unitPrice = 0
-          row.quotationIndex = undefined
-          row.purchaseRequestItemId = undefined
-          row.quotationProductRowId = undefined
         }
       } else {
         const items = createFormData.value.items
         const lastRow = items[items.length - 1]
-        if (lastRow && lastRow.productVariantId === undefined) {
-          lastRow.productVariantId = variant.id
-          lastRow.productVariantColorId = productVariantColorId
-          lastRow.productVariantColorName = selectedColor?.colorName
-          lastRow.supplierId = undefined
-          lastRow.supplierName = ''
-          lastRow.unitPrice = 0
-          lastRow.quotationIndex = undefined
-          lastRow.purchaseRequestItemId = undefined
-          lastRow.quotationProductRowId = undefined
-        } else {
-          if (createFormData.value.purchaseRequestId) {
-            ElMessage.warning(
-              'Sản phẩm ngoài PR đã được thêm. Sản phẩm này sẽ tự động tách thành PO nháp riêng.'
-            )
+
+        const existsIdx = items.findIndex(
+          (item) =>
+            item.productVariantId === variant.id &&
+            item.productVariantColorId === productVariantColorId
+        )
+
+        if (existsIdx > -1) {
+          items[existsIdx].orderedQuantity = (items[existsIdx].orderedQuantity || 0) + 1
+          if (lastRow && lastRow.productVariantId === undefined) {
+            items.splice(items.length - 1, 1)
           }
-          items.push({
-            productVariantId: variant.id,
-            productVariantColorId,
-            productVariantColorName: selectedColor?.colorName,
-            orderedQuantity: 1,
-            unitPrice: 0,
-            supplierId: undefined,
-            supplierName: ''
-          })
+        } else {
+          if (lastRow && lastRow.productVariantId === undefined) {
+            lastRow.productVariantId = variant.id
+            lastRow.productVariantColorId = productVariantColorId
+            lastRow.productVariantColorName = selectedColor?.colorName
+            lastRow.supplierId = undefined
+            lastRow.supplierName = ''
+            lastRow.unitPrice = 0
+            lastRow.quotationIndex = undefined
+            lastRow.purchaseRequestItemId = undefined
+            lastRow.quotationProductRowId = undefined
+          } else {
+            if (createFormData.value.purchaseRequestId) {
+              ElMessage.warning(
+                'Sản phẩm ngoài PR đã được thêm. Sản phẩm này sẽ tự động tách thành PO nháp riêng.'
+              )
+            }
+            items.push({
+              productVariantId: variant.id,
+              productVariantColorId,
+              productVariantColorName: selectedColor?.colorName,
+              orderedQuantity: 1,
+              unitPrice: 0,
+              supplierId: undefined,
+              supplierName: ''
+            })
+          }
         }
       }
     } else if (editDialogVisible.value) {
@@ -1352,41 +1383,71 @@
         const idx = productSelectorActiveRowIndex.value
         if (editFormData.value.items[idx]) {
           const row = editFormData.value.items[idx]
-          if (editFormData.value.purchaseRequestId && row.purchaseRequestItemId) {
-            ElMessage.warning(
-              'Bạn đã thay đổi sản phẩm. Dòng này sẽ được coi là sản phẩm ngoài PR.'
-            )
+
+          const existsIdx = editFormData.value.items.findIndex(
+            (item, i) =>
+              i !== idx &&
+              item.productVariantId === variant.id &&
+              item.productVariantColorId === productVariantColorId
+          )
+
+          if (existsIdx > -1) {
+            editFormData.value.items[existsIdx].orderedQuantity =
+              (editFormData.value.items[existsIdx].orderedQuantity || 0) +
+              (row.orderedQuantity || 1)
+            editFormData.value.items.splice(idx, 1)
+            ElMessage.success('Sản phẩm đã tồn tại trong đơn hàng. Đã gộp và cộng dồn số lượng.')
+          } else {
+            if (editFormData.value.purchaseRequestId && row.purchaseRequestItemId) {
+              ElMessage.warning(
+                'Bạn đã thay đổi sản phẩm. Dòng này sẽ được coi là sản phẩm ngoài PR.'
+              )
+            }
+            row.productVariantId = variant.id
+            row.productVariantColorId = productVariantColorId
+            row.productVariantColorName = selectedColor?.colorName
+            row.purchaseRequestItemId = undefined
+            row.quotationProductRowId = undefined
+            row.quotationIndex = undefined
           }
-          row.productVariantId = variant.id
-          row.productVariantColorId = productVariantColorId
-          row.productVariantColorName = selectedColor?.colorName
-          row.purchaseRequestItemId = undefined
-          row.quotationProductRowId = undefined
-          row.quotationIndex = undefined
         }
       } else {
         const items = editFormData.value.items
         const lastRow = items[items.length - 1]
-        if (lastRow && lastRow.productVariantId === undefined) {
-          lastRow.productVariantId = variant.id
-          lastRow.productVariantColorId = productVariantColorId
-          lastRow.productVariantColorName = selectedColor?.colorName
-          lastRow.purchaseRequestItemId = undefined
-          lastRow.quotationProductRowId = undefined
-          lastRow.quotationIndex = undefined
-        } else {
-          if (editFormData.value.purchaseRequestId) {
-            ElMessage.warning(
-              'Sản phẩm ngoài PR đã được thêm. Sản phẩm này sẽ tự động tách thành PO nháp riêng khi lưu.'
-            )
+
+        const existsIdx = items.findIndex(
+          (item) =>
+            item.productVariantId === variant.id &&
+            item.productVariantColorId === productVariantColorId
+        )
+
+        if (existsIdx > -1) {
+          items[existsIdx].orderedQuantity = (items[existsIdx].orderedQuantity || 0) + 1
+          if (lastRow && lastRow.productVariantId === undefined) {
+            items.splice(items.length - 1, 1)
           }
-          items.push({
-            productVariantId: variant.id,
-            productVariantColorId,
-            productVariantColorName: selectedColor?.colorName,
-            orderedQuantity: 1,
-            unitPrice: 0
-          })
+        } else {
+          if (lastRow && lastRow.productVariantId === undefined) {
+            lastRow.productVariantId = variant.id
+            lastRow.productVariantColorId = productVariantColorId
+            lastRow.productVariantColorName = selectedColor?.colorName
+            lastRow.purchaseRequestItemId = undefined
+            lastRow.quotationProductRowId = undefined
+            lastRow.quotationIndex = undefined
+          } else {
+            if (editFormData.value.purchaseRequestId) {
+              ElMessage.warning(
+                'Sản phẩm ngoài PR đã được thêm. Sản phẩm này sẽ tự động tách thành PO nháp riêng khi lưu.'
+              )
+            }
+            items.push({
+              productVariantId: variant.id,
+              productVariantColorId,
+              productVariantColorName: selectedColor?.colorName,
+              orderedQuantity: 1,
+              unitPrice: 0
+            })
+          }
         }
       }
     }

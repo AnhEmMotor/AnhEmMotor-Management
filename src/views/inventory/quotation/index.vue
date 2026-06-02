@@ -1184,6 +1184,20 @@
       const selectedColorId = selectedVariantColors[variant.id]
       const selectedColor = variant.colors?.find((c) => c.id === selectedColorId)
 
+      // Check if product variant with same color already exists in other rows
+      const duplicateIndex = formData.value.quotationItems.findIndex(
+        (item, idx) =>
+          idx !== activeProductRowIndex.value &&
+          item.productVariantId === variant.id &&
+          item.productVariantColorId === selectedColorId
+      )
+
+      if (duplicateIndex > -1) {
+        formData.value.quotationItems.splice(activeProductRowIndex.value, 1)
+        productSelectorVisible.value = false
+        return
+      }
+
       targetRow.productVariantId = variant.id
       targetRow.productVariantDisplayName = variant.displayName || `Sản phẩm #${variant.id}`
       targetRow.quotePrice = variant.price || 0

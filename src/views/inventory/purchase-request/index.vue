@@ -562,24 +562,54 @@
       const idx = productSelectorActiveRowIndex.value
       if (formData.value.items[idx]) {
         const row = formData.value.items[idx]
-        row.productVariantId = variant.id
-        row.productVariantColorId = productVariantColorId
-        row.productVariantColorName = selectedColor?.colorName
+
+        // Check if this product variant and color already exists in another row
+        const existsIdx = formData.value.items.findIndex(
+          (item, i) =>
+            i !== idx &&
+            item.productVariantId === variant.id &&
+            item.productVariantColorId === productVariantColorId
+        )
+
+        if (existsIdx > -1) {
+          formData.value.items[existsIdx].quantity =
+            (formData.value.items[existsIdx].quantity || 0) + (row.quantity || 1)
+          formData.value.items.splice(idx, 1)
+          ElMessage.success('Sản phẩm đã tồn tại trong yêu cầu. Đã gộp và cộng dồn số lượng.')
+        } else {
+          row.productVariantId = variant.id
+          row.productVariantColorId = productVariantColorId
+          row.productVariantColorName = selectedColor?.colorName
+        }
       }
     } else {
       const items = formData.value.items
       const lastRow = items[items.length - 1]
-      if (lastRow && lastRow.productVariantId === undefined) {
-        lastRow.productVariantId = variant.id
-        lastRow.productVariantColorId = productVariantColorId
-        lastRow.productVariantColorName = selectedColor?.colorName
+
+      const existsIdx = items.findIndex(
+        (item) =>
+          item.productVariantId === variant.id &&
+          item.productVariantColorId === productVariantColorId
+      )
+
+      if (existsIdx > -1) {
+        items[existsIdx].quantity = (items[existsIdx].quantity || 0) + 1
+        if (lastRow && lastRow.productVariantId === undefined) {
+          items.splice(items.length - 1, 1)
+        }
       } else {
-        items.push({
-          productVariantId: variant.id,
-          productVariantColorId,
-          productVariantColorName: selectedColor?.colorName,
-          quantity: 1
-        })
+        if (lastRow && lastRow.productVariantId === undefined) {
+          lastRow.productVariantId = variant.id
+          lastRow.productVariantColorId = productVariantColorId
+          lastRow.productVariantColorName = selectedColor?.colorName
+        } else {
+          items.push({
+            productVariantId: variant.id,
+            productVariantColorId,
+            productVariantColorName: selectedColor?.colorName,
+            quantity: 1
+          })
+        }
       }
     }
     productSelectorVisible.value = false

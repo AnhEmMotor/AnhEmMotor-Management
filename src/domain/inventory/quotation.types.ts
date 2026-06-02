@@ -30,6 +30,10 @@ export interface QuotationDetailResponse {
   status?: string
   notes?: string
   quotationItems?: QuotationItemResponse[]
+  createdByName?: string
+  sentByName?: string
+  approvedByName?: string
+  rejectedByName?: string
   lastUpdatedAt?: string
 }
 
