@@ -165,7 +165,7 @@
       destroy-on-close
       class="!rounded-2xl overflow-hidden shadow-2xl border border-gray-100"
     >
-      <ElForm :model="formData" label-width="140px" class="mt-4 space-y-4" ref="formRef">
+      <ElForm :model="formData" label-width="160px" class="mt-4 space-y-4" ref="formRef">
         <div class="grid grid-cols-2 gap-4">
           <ElFormItem label="Đơn mua hàng (PO)" required>
             <ElSelect
@@ -236,13 +236,21 @@
             class="w-full rounded-xl overflow-hidden"
           >
             <ElTableColumn label="Sản phẩm" minWidth="200">
-              <template #default="{ row }">
+              <template #default="{ row, $index }">
                 <span class="text-gray-800 text-xs font-semibold block">
                   {{ getProductName(row) }}
                 </span>
                 <ElTag v-if="row.colorName" size="small" type="info" class="mt-1">
                   Màu: {{ row.colorName }}
                 </ElTag>
+                <div v-if="row.needVin" class="flex items-center gap-2 mt-1">
+                  <ElTag size="small" type="warning">
+                    VIN {{ getVehicleIdentityProgress(row) }}
+                  </ElTag>
+                  <ElButton link type="primary" size="small" @click="openVinDialog($index)">
+                    Nhập VIN
+                  </ElButton>
+                </div>
               </template>
             </ElTableColumn>
 
@@ -251,10 +259,19 @@
                 <ElInputNumber
                   v-model="row.invoicedQuantity"
                   :min="1"
+                  :max="row.remainingQuantity"
                   :precision="0"
                   class="w-full"
                   controls-position="right"
+                  style="width: 100px"
+                  @change="handleInvoicedQuantityChange(row)"
                 />
+                <span
+                  v-if="row.remainingQuantity !== undefined"
+                  class="text-[10px] text-gray-500 block mt-1"
+                >
+                  Còn lại: {{ row.remainingQuantity || 0 }} / {{ row.orderedQuantity || 0 }}
+                </span>
               </template>
             </ElTableColumn>
 
@@ -279,6 +296,7 @@
                   :max="100"
                   :precision="0"
                   class="w-full"
+                  style="width: 100px"
                   controls-position="right"
                 />
               </template>
@@ -295,6 +313,22 @@
                     )
                   }}
                 </span>
+              </template>
+            </ElTableColumn>
+
+            <ElTableColumn label="Thao tác" width="80" align="center">
+              <template #default="{ $index }">
+                <ElTooltip content="Xóa dòng sản phẩm" placement="top">
+                  <ElButton
+                    circle
+                    size="small"
+                    type="danger"
+                    :disabled="formData.items.length <= 1"
+                    @click="handleRemoveItem($index)"
+                  >
+                    <ElIcon><Delete /></ElIcon>
+                  </ElButton>
+                </ElTooltip>
               </template>
             </ElTableColumn>
           </ElTable>
@@ -329,6 +363,82 @@
           <ElButton type="primary" class="!rounded-lg" :loading="submitting" @click="submitForm">
             Lưu hóa đơn
           </ElButton>
+        </div>
+      </template>
+    </ElDialog>
+
+    <!-- VIN Input Dialog for Invoice Items -->
+    <ElDialog
+      v-model="vinDialogVisible"
+      title="Nhập định danh xe trên Hóa đơn"
+      width="860px"
+      append-to-body
+      destroy-on-close
+      class="vin-identification-dialog"
+      top="2vh"
+    >
+      <div v-if="activeVinRow" class="flex flex-col gap-3">
+        <div class="flex flex-wrap items-center justify-between gap-2 rounded-md bg-gray-50 p-3">
+          <div class="min-w-0">
+            <div class="text-sm font-semibold text-gray-800 truncate">
+              {{ getProductName(activeVinRow) }}
+            </div>
+            <div class="text-xs text-gray-500">
+              Số lượng: {{ activeVinRow.invoicedQuantity || 0 }} xe · Đã nhập:
+              {{ getCompletedVehicleIdentityCount(activeVinRow) }}/{{
+                activeVinRow.invoicedQuantity || 0
+              }}
+            </div>
+          </div>
+          <ElTag type="warning">Quản lý theo VIN</ElTag>
+        </div>
+
+        <div class="vin-dialog-table">
+          <ElTable :data="activeVinRow.vehicles" border size="small" class="w-full">
+            <ElTableColumn label="#" type="index" width="56" align="center" />
+            <ElTableColumn label="Số khung (VIN)" min-width="210">
+              <template #default="{ row: vehicle }">
+                <ElInput
+                  v-model="vehicle.vinNumber"
+                  placeholder="Nhập số khung"
+                  :disabled="
+                    vehicle.isLocked ||
+                    !!(vehicle.inventoryReceiptInfoId || vehicle.inventoryReceiptItemId)
+                  "
+                />
+              </template>
+            </ElTableColumn>
+            <ElTableColumn label="Số máy" min-width="210">
+              <template #default="{ row: vehicle }">
+                <ElInput
+                  v-model="vehicle.engineNumber"
+                  placeholder="Nhập số máy"
+                  :disabled="
+                    vehicle.isLocked ||
+                    !!(vehicle.inventoryReceiptInfoId || vehicle.inventoryReceiptItemId)
+                  "
+                />
+              </template>
+            </ElTableColumn>
+            <ElTableColumn label="Giá nhập (VNĐ)" min-width="180">
+              <template #default="{ row: vehicle }">
+                <ElInputNumber
+                  v-model="vehicle.importPrice"
+                  :min="0"
+                  :controls="false"
+                  placeholder="Nhập giá nhập..."
+                  class="w-full"
+                />
+              </template>
+            </ElTableColumn>
+          </ElTable>
+        </div>
+      </div>
+
+      <template #footer>
+        <div class="flex justify-end gap-2 border-t border-gray-50 pt-3">
+          <ElButton @click="vinDialogVisible = false">Đóng</ElButton>
+          <ElButton type="primary" @click="vinDialogVisible = false">Xong</ElButton>
         </div>
       </template>
     </ElDialog>
@@ -438,6 +548,31 @@
                   <ElTag size="small" type="info" class="!rounded-md"
                     >Màu: {{ row.colorName }}</ElTag
                   >
+                </div>
+                <div
+                  v-if="row.vehicles?.length"
+                  class="flex flex-col gap-1 text-xs text-gray-600 mt-2"
+                >
+                  <div
+                    v-for="vehicle in row.vehicles"
+                    :key="vehicle.id || `${vehicle.vinNumber}-${vehicle.engineNumber}`"
+                    class="rounded border border-gray-100 bg-gray-50 px-2.5 py-1"
+                  >
+                    <div
+                      ><span class="text-gray-400">VIN:</span>
+                      <span class="font-mono font-medium">{{ vehicle.vinNumber }}</span></div
+                    >
+                    <div
+                      ><span class="text-gray-400">Số máy:</span>
+                      <span class="font-mono font-medium">{{ vehicle.engineNumber }}</span></div
+                    >
+                    <div
+                      ><span class="text-gray-400">Giá nhập:</span>
+                      <span class="font-semibold text-gray-800">{{
+                        formatCurrency(vehicle.importPrice)
+                      }}</span></div
+                    >
+                  </div>
                 </div>
               </template>
             </ElTableColumn>
@@ -652,6 +787,117 @@
     return row.productVariantName || row.productName || `Biến thể #${row.productVariantId}`
   }
 
+  type VehicleIdentification = {
+    id?: number
+    vinNumber: string
+    engineNumber: string
+    importPrice?: number
+    inventoryReceiptInfoId?: number
+    inventoryReceiptItemId?: number
+  }
+
+  const vinDialogVisible = ref(false)
+  const vinDialogRowIndex = ref<number | null>(null)
+  const activeVinRow = computed(() => {
+    if (vinDialogRowIndex.value === null) return null
+    return formData.value.items[vinDialogRowIndex.value] ?? null
+  })
+
+  const createEmptyVehicle = (defaultPrice = 0): VehicleIdentification => ({
+    vinNumber: '',
+    engineNumber: '',
+    importPrice: defaultPrice
+  })
+
+  const syncVehicleRows = (row: any) => {
+    if (!row.needVin) {
+      row.vehicles = undefined
+      return
+    }
+
+    const targetCount = Math.max(Number(row.invoicedQuantity) || 0, 0)
+    const currentVehicles = row.vehicles ?? []
+
+    // Separate imported vs invoice-only
+    const currentImported = currentVehicles.filter(
+      (v: any) => v.inventoryReceiptInfoId != null || v.inventoryReceiptItemId != null
+    )
+    const currentInvoiceOnly = currentVehicles.filter(
+      (v: any) => v.inventoryReceiptInfoId == null && v.inventoryReceiptItemId == null
+    )
+
+    const importedList = row.importedVehicles || []
+
+    const newVehicles: any[] = []
+
+    // 1. First populate from importedList up to targetCount
+    for (let i = 0; i < importedList.length && newVehicles.length < targetCount; i++) {
+      const imp = importedList[i]
+      // Check if we already have this vehicle in currentImported to preserve its state/price
+      const existing = currentImported.find(
+        (v: any) =>
+          v.inventoryReceiptInfoId === imp.inventoryReceiptInfoId || v.vinNumber === imp.vinNumber
+      )
+      newVehicles.push({
+        id: existing?.id || imp.id || undefined,
+        vinNumber: imp.vinNumber,
+        engineNumber: imp.engineNumber,
+        importPrice:
+          existing !== undefined ? existing.importPrice : imp.importPrice || row.unitPrice || 0,
+        inventoryReceiptInfoId: imp.inventoryReceiptInfoId || imp.id,
+        inventoryReceiptItemId: imp.inventoryReceiptInfoId || imp.id,
+        isLocked: imp.isLocked || existing?.isLocked || false
+      })
+    }
+
+    // 2. If targetCount is not reached, populate with existing invoice-only vehicles
+    for (let i = 0; i < currentInvoiceOnly.length && newVehicles.length < targetCount; i++) {
+      newVehicles.push(currentInvoiceOnly[i])
+    }
+
+    // 3. If targetCount is still not reached, populate with new empty vehicles
+    while (newVehicles.length < targetCount) {
+      newVehicles.push(createEmptyVehicle(row.unitPrice || 0))
+    }
+
+    // 4. Trim if we have too many
+    if (newVehicles.length > targetCount) {
+      newVehicles.splice(targetCount)
+    }
+
+    row.vehicles = newVehicles
+  }
+
+  const handleInvoicedQuantityChange = (row: any) => {
+    syncVehicleRows(row)
+  }
+
+  const getCompletedVehicleIdentityCount = (row: any) => {
+    return (row.vehicles ?? []).filter(
+      (vehicle: any) => vehicle.vinNumber?.trim() && vehicle.engineNumber?.trim()
+    ).length
+  }
+
+  const getVehicleIdentityProgress = (row: any) => {
+    return `${getCompletedVehicleIdentityCount(row)}/${row.invoicedQuantity || 0}`
+  }
+
+  const openVinDialog = (rowIndex: number) => {
+    const row = formData.value.items[rowIndex]
+    if (!row || !row.needVin) return
+    syncVehicleRows(row)
+    vinDialogRowIndex.value = rowIndex
+    vinDialogVisible.value = true
+  }
+
+  const handleRemoveItem = (index: number) => {
+    if (formData.value.items.length <= 1) {
+      ElMessage.warning('Hóa đơn phải có ít nhất một sản phẩm')
+      return
+    }
+    formData.value.items.splice(index, 1)
+  }
+
   const formData = ref<{
     id?: number
     purchaseOrderId: number | undefined
@@ -723,10 +969,9 @@
 
   const loadApprovedPOs = async () => {
     try {
-      const res = await PurchaseOrderApi.getList({
+      const res = await PurchaseOrderApi.getApprovedForInvoiceList({
         current: 1,
-        size: 100,
-        Filters: 'Status==approved'
+        size: 100
       })
       approvedPOs.value = res.items || []
     } catch (e) {
@@ -738,18 +983,26 @@
     if (!poId) return
     try {
       loading.value = true
-      const poDetail = await PurchaseOrderApi.getById(poId)
-      // Auto populate invoice items from PO items
-      formData.value.items = poDetail.items.map((item) => ({
-        purchaseOrderItemId: item.id,
-        productVariantId: item.productVariantId,
-        productVariantName: item.productName || `Biến thể sản phẩm #${item.productVariantId}`,
-        colorName: item.productVariantColorName || '',
-        productVariantColorId: item.productVariantColorId,
-        invoicedQuantity: item.orderedQuantity || 0,
-        unitPrice: item.unitPrice || 0,
-        taxRate: 0 // Default tax rate
-      }))
+      const poDetail = await PurchaseOrderApi.getApprovedForInvoiceById(poId, formData.value.id)
+      formData.value.items = poDetail.items.map((item) => {
+        const row = {
+          purchaseOrderItemId: item.id,
+          productVariantId: item.productVariantId,
+          productVariantName: item.productName || `Biến thể sản phẩm #${item.productVariantId}`,
+          colorName: item.productVariantColorName || '',
+          productVariantColorId: item.productVariantColorId,
+          invoicedQuantity: item.remainingQuantity || 0,
+          unitPrice: item.unitPrice || 0,
+          taxRate: 0, // Default tax rate
+          needVin: item.needVin || false,
+          remainingQuantity: item.remainingQuantity || 0,
+          orderedQuantity: item.orderedQuantity || 0,
+          importedVehicles: item.importedVehicles || [],
+          vehicles: [] as any[]
+        }
+        syncVehicleRows(row)
+        return row
+      })
     } catch {
       ElMessage.error('Không thể tải sản phẩm từ Đơn mua hàng (PO)')
     } finally {
@@ -800,6 +1053,20 @@
       const detail = await PurchaseInvoiceApi.getById(row.id)
       isEdit.value = true
       dialogTitle.value = 'Chỉnh sửa hóa đơn mua hàng'
+
+      let poDetail: any = null
+      if (detail.purchaseOrderId) {
+        try {
+          poDetail = await PurchaseOrderApi.getApprovedForInvoiceById(
+            detail.purchaseOrderId,
+            detail.id
+          )
+        } catch (e) {
+          console.error('Cannot load PO details for editing', e)
+        }
+      }
+      const poItemsMap = poDetail ? new Map(poDetail.items.map((i: any) => [i.id, i])) : new Map()
+
       formData.value = {
         id: detail.id,
         purchaseOrderId: detail.purchaseOrderId,
@@ -809,18 +1076,35 @@
           ? new Date(detail.dueDate).toISOString().substring(0, 10)
           : undefined,
         note: detail.note || '',
-        items: detail.items.map((i) => ({
-          id: i.id,
-          purchaseOrderItemId: i.purchaseOrderItemId,
-          inventoryReceiptItemId: i.inventoryReceiptItemId,
-          productVariantId: i.productVariantId,
-          productVariantName: i.productVariantName,
-          colorName: i.colorName,
-          productVariantColorId: i.productVariantColorId,
-          invoicedQuantity: i.invoicedQuantity,
-          unitPrice: i.unitPrice,
-          taxRate: i.taxRate
-        }))
+        items: detail.items.map((i) => {
+          const poItem: any = poItemsMap.get(i.purchaseOrderItemId)
+          return {
+            id: i.id,
+            purchaseOrderItemId: i.purchaseOrderItemId,
+            inventoryReceiptItemId: i.inventoryReceiptItemId,
+            productVariantId: i.productVariantId,
+            productVariantName: i.productVariantName,
+            colorName: i.colorName,
+            productVariantColorId: i.productVariantColorId,
+            invoicedQuantity: i.invoicedQuantity,
+            unitPrice: i.unitPrice,
+            taxRate: i.taxRate,
+            needVin: i.needVin || false,
+            remainingQuantity: poItem ? poItem.remainingQuantity : i.invoicedQuantity,
+            orderedQuantity: poItem ? poItem.orderedQuantity : i.invoicedQuantity,
+            importedVehicles: poItem ? poItem.importedVehicles || [] : [],
+            vehicles: i.vehicles
+              ? i.vehicles.map((v: any) => ({
+                  id: v.id,
+                  vinNumber: v.vinNumber || '',
+                  engineNumber: v.engineNumber || '',
+                  importPrice: v.importPrice || 0,
+                  inventoryReceiptInfoId: v.inventoryReceiptInfoId || v.inventoryReceiptItemId,
+                  isLocked: v.isLocked || false
+                }))
+              : []
+          }
+        })
       }
       dialogVisible.value = true
     } catch {
@@ -922,6 +1206,25 @@
       return
     }
 
+    for (const item of formData.value.items) {
+      if (!item.needVin) continue
+
+      syncVehicleRows(item)
+      const vehicles = item.vehicles ?? []
+      if (vehicles.length !== item.invoicedQuantity) {
+        ElMessage.warning('Số dòng định danh xe phải đúng bằng số lượng hóa đơn')
+        return
+      }
+
+      const hasMissingRequiredCode = vehicles.some(
+        (vehicle: any) => !vehicle.vinNumber?.trim() || !vehicle.engineNumber?.trim()
+      )
+      if (hasMissingRequiredCode) {
+        ElMessage.warning('Vui lòng nhập đủ số khung (VIN) và số máy cho sản phẩm quản lý theo VIN')
+        return
+      }
+    }
+
     submitting.value = true
     try {
       if (isEdit.value && formData.value.id) {
@@ -938,7 +1241,15 @@
             productVariantColorId: i.productVariantColorId,
             invoicedQuantity: i.invoicedQuantity,
             unitPrice: i.unitPrice,
-            taxRate: i.taxRate
+            taxRate: i.taxRate,
+            vehicles: i.needVin
+              ? i.vehicles?.map((v: any) => ({
+                  id: v.id,
+                  vinNumber: v.vinNumber.trim(),
+                  engineNumber: v.engineNumber.trim(),
+                  importPrice: v.importPrice || 0
+                }))
+              : undefined
           }))
         })
         ElMessage.success('Cập nhật hóa đơn mua hàng thành công')
@@ -956,7 +1267,14 @@
             productVariantColorId: i.productVariantColorId,
             invoicedQuantity: i.invoicedQuantity,
             unitPrice: i.unitPrice,
-            taxRate: i.taxRate
+            taxRate: i.taxRate,
+            vehicles: i.needVin
+              ? i.vehicles?.map((v: any) => ({
+                  vinNumber: v.vinNumber.trim(),
+                  engineNumber: v.engineNumber.trim(),
+                  importPrice: v.importPrice || 0
+                }))
+              : undefined
           }))
         })
         ElMessage.success('Lập hóa đơn mua hàng thành công')

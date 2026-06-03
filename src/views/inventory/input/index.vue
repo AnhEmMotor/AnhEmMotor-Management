@@ -540,6 +540,7 @@
     id?: number
     vinNumber: string
     engineNumber: string
+    importPrice?: number
   }
 
   type ReceiptProductRow = {
@@ -548,6 +549,7 @@
     productVariantColorId?: number
     productVariantColorName?: string
     count: number
+    unitPrice?: number
     managementType?: string
     vehicles?: VehicleIdentification[]
     purchaseOrderItemId?: number
@@ -696,26 +698,55 @@
     return row.managementType?.toLowerCase() === VIN_MANAGEMENT_TYPE
   }
 
-  const createEmptyVehicle = (): VehicleIdentification => ({
+  const createEmptyVehicle = (defaultPrice = 0): VehicleIdentification => ({
     vinNumber: '',
-    engineNumber: ''
+    engineNumber: '',
+    importPrice: defaultPrice
   })
 
-  const syncVehicleRows = (row: ReceiptProductRow) => {
+  const syncVehicleRows = (row: any) => {
     if (!isVinManagedProduct(row)) {
       row.vehicles = undefined
       return
     }
 
     const targetCount = Math.max(Number(row.count) || 0, 0)
-    const vehicles = row.vehicles ?? []
-    while (vehicles.length < targetCount) {
-      vehicles.push(createEmptyVehicle())
+    const currentVehicles = row.vehicles ?? []
+    const invoicedList = row.invoicedVehicles || []
+
+    const newVehicles: any[] = []
+
+    // 1. First populate from invoicedList up to targetCount
+    for (let i = 0; i < invoicedList.length && newVehicles.length < targetCount; i++) {
+      const inv = invoicedList[i]
+      const existing = currentVehicles.find((v: any) => v.vinNumber === inv.vinNumber)
+      newVehicles.push({
+        id: existing?.id || undefined,
+        vinNumber: inv.vinNumber,
+        engineNumber: inv.engineNumber,
+        importPrice: existing?.importPrice || inv.importPrice || row.unitPrice || 0
+      })
     }
-    if (vehicles.length > targetCount) {
-      vehicles.splice(targetCount)
+
+    // 2. If targetCount is not reached, populate with existing custom entered vehicles
+    for (let i = 0; i < currentVehicles.length && newVehicles.length < targetCount; i++) {
+      const curr = currentVehicles[i]
+      // skip if it was already added from invoiced list
+      if (newVehicles.some((v) => v.vinNumber === curr.vinNumber && curr.vinNumber !== '')) continue
+      newVehicles.push(curr)
     }
-    row.vehicles = vehicles
+
+    // 3. Fill up to targetCount with empty vehicles
+    while (newVehicles.length < targetCount) {
+      newVehicles.push(createEmptyVehicle(row.unitPrice || 0))
+    }
+
+    // 4. Trim if we have too many
+    if (newVehicles.length > targetCount) {
+      newVehicles.splice(targetCount)
+    }
+
+    row.vehicles = newVehicles
   }
 
   const handleProductCountChange = (row: ReceiptProductRow) => {
@@ -824,15 +855,17 @@
 
         const isVin = item.needVin || false
 
-        const newRow: ReceiptProductRow = {
+        const newRow: ReceiptProductRow & { invoicedVehicles?: any[] } = {
           productVariantId: item.productVariantId,
           productVariantColorId: item.productVariantColorId,
           productVariantColorName: item.productVariantColorName,
           count: remainingQty,
+          unitPrice: item.unitPrice || 0,
           purchaseOrderItemId: item.id,
           maxUnimportedQuantity: remainingQty,
           needVin: isVin,
-          managementType: isVin ? VIN_MANAGEMENT_TYPE : 'sku'
+          managementType: isVin ? VIN_MANAGEMENT_TYPE : 'sku',
+          invoicedVehicles: item.invoicedVehicles || []
         }
 
         productCache.set(item.productVariantId, {
@@ -841,6 +874,7 @@
           colorName: item.productVariantColorName
         })
 
+        syncVehicleRows(newRow)
         formData.value.products.push(newRow)
       })
     } catch (err) {
@@ -1069,6 +1103,16 @@
         supplierCache.set(receipt.supplierId || 0, receipt.supplierName || '')
       }
 
+      let poDetail: any = null
+      if (receipt.purchaseOrderId) {
+        try {
+          poDetail = await PurchaseOrderApi.getApprovedForInputById(receipt.purchaseOrderId)
+        } catch (e) {
+          console.error('Cannot load PO details for editing receipt', e)
+        }
+      }
+      const poItemsMap = poDetail ? new Map(poDetail.items.map((i: any) => [i.id, i])) : new Map()
+
       formData.value = {
         id: receipt.id,
         purchaseOrderId: receipt.purchaseOrderId,
@@ -1077,6 +1121,7 @@
         statusId: receipt.statusId || 'working',
         products: (receipt.products || []).map((p: any) => {
           const isVin = p.vehicles && p.vehicles.length > 0
+          const poItem: any = poItemsMap.get(p.purchaseOrderItemId)
           productCache.set(p.productVariantId, {
             displayName: p.name || `Sản phẩm #${p.productVariantId}`,
             colorName: p.productVariantColorName
@@ -1088,14 +1133,17 @@
             productVariantColorId: p.productVariantColorId,
             productVariantColorName: p.productVariantColorName,
             count: p.quantity || 0,
+            unitPrice: p.unitPrice || 0,
             managementType: isVin ? VIN_MANAGEMENT_TYPE : undefined,
             needVin: isVin,
             purchaseOrderItemId: p.purchaseOrderItemId,
             maxUnimportedQuantity: p.maxAllowedQuantity ?? (p.quantity || 0),
+            invoicedVehicles: poItem ? poItem.invoicedVehicles || [] : [],
             vehicles: (p.vehicles || []).map((vehicle: any) => ({
               id: vehicle.id,
               vinNumber: vehicle.vinNumber || '',
-              engineNumber: vehicle.engineNumber || ''
+              engineNumber: vehicle.engineNumber || '',
+              importPrice: vehicle.importPrice || 0
             }))
           }
         })
@@ -1193,7 +1241,8 @@
           ? p.vehicles?.map((vehicle) => ({
               id: vehicle.id,
               vinNumber: vehicle.vinNumber.trim(),
-              engineNumber: vehicle.engineNumber.trim()
+              engineNumber: vehicle.engineNumber.trim(),
+              importPrice: vehicle.importPrice || 0
             }))
           : undefined
       }))

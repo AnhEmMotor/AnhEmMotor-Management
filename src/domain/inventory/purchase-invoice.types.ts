@@ -14,6 +14,8 @@ export interface PurchaseInvoiceItem {
   totalPrice?: number
   taxAmount?: number
   totalAmount?: number
+  needVin?: boolean
+  vehicles?: any[]
 }
 
 export interface PurchaseInvoice {

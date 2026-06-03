@@ -4,7 +4,8 @@ import type {
   PurchaseOrderList,
   CreatePurchaseOrder,
   UpdatePurchaseOrder,
-  PurchaseOrderDetailForInputResponse
+  PurchaseOrderDetailForInputResponse,
+  PurchaseOrderDetailForInvoiceResponse
 } from '@/domain/purchase-order/order.types'
 
 export const PurchaseOrderApi = {
@@ -80,6 +81,27 @@ export const PurchaseOrderApi = {
   getApprovedForInputById(id: number) {
     return request.get<PurchaseOrderDetailForInputResponse>({
       url: `/api/v1/purchase-orders/approved/for-input/${id}`
+    })
+  },
+
+  getApprovedForInvoiceList(params: any) {
+    const { current, size, ...rest } = params
+    return request.get<PurchaseOrderList>({
+      url: '/api/v1/purchase-orders/approved/for-purchase-invoiced',
+      params: {
+        Page: current,
+        PageSize: size,
+        ...rest
+      }
+    })
+  },
+
+  getApprovedForInvoiceById(id: number, excludeInvoiceId?: number) {
+    return request.get<PurchaseOrderDetailForInvoiceResponse>({
+      url: `/api/v1/purchase-orders/approved/for-purchase-invoiced/${id}`,
+      params: {
+        excludeInvoiceId
+      }
     })
   }
 }
