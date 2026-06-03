@@ -819,7 +819,7 @@
       const detail = await PurchaseOrderApi.getApprovedForInputById(po.id)
 
       detail.items.forEach((item: any) => {
-        const remainingQty = item.orderedQuantity - (item.importedQuantity || 0)
+        const remainingQty = item.remainingQuantity || 0
         if (remainingQty <= 0) return
 
         const isVin = item.needVin || false
@@ -1091,7 +1091,7 @@
             managementType: isVin ? VIN_MANAGEMENT_TYPE : undefined,
             needVin: isVin,
             purchaseOrderItemId: p.purchaseOrderItemId,
-            maxUnimportedQuantity: p.quantity || 0,
+            maxUnimportedQuantity: p.maxAllowedQuantity ?? (p.quantity || 0),
             vehicles: (p.vehicles || []).map((vehicle: any) => ({
               id: vehicle.id,
               vinNumber: vehicle.vinNumber || '',
