@@ -1,219 +1,217 @@
 <template>
-  <div class="flex flex-col gap-4 pb-5">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <ArtStatsCard
-        title="Tổng quỹ lương (Tạm tính)"
-        :count="totalPayroll"
-        unit="VNĐ"
-        description="Tổng thu nhập dự kiến tháng này"
-        icon="ri:money-dollar-circle-line"
-        iconStyle="bg-primary"
-      />
-      <ArtStatsCard
-        title="Hoa hồng Chờ xử lý"
-        :count="pendingCommission"
-        unit="VNĐ"
-        description="Từ các đơn hàng đang giao/xử lý"
-        icon="ri:time-line"
-        iconStyle="bg-warning"
-      />
-      <ArtStatsCard
-        title="Hoa hồng Đã chốt"
-        :count="confirmedCommission"
-        unit="VNĐ"
-        description="Từ các đơn hàng đã hoàn tất"
-        icon="ri:checkbox-circle-line"
-        iconStyle="bg-success"
-      />
-      <ArtStatsCard
-        title="Nhân viên xuất sắc"
-        :count="5"
-        unit="Người"
-        description="Đạt trên 100% KPI tháng"
-        icon="ri:vip-crown-line"
-        iconStyle="bg-danger"
-      />
-    </div>
-
-    <ElCard class="filter-card">
-      <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-        <div class="flex items-center gap-4">
-          <div class="flex items-center gap-2">
-            <span class="text-sm font-medium text-gray-600">Tháng:</span>
-            <ElDatePicker
-              v-model="selectedMonth"
-              type="month"
-              placeholder="Chọn tháng"
-              class="!w-40"
-              @change="fetchData"
-            />
-          </div>
-          <ElButton type="info" plain @click="fetchData">
-            <ElIcon><Refresh /></ElIcon> Làm mới dữ liệu
-          </ElButton>
-        </div>
-        <div class="flex items-center gap-3">
-          <ElButton type="success" size="large" v-ripple @click="handleApproveAll">
-            <ElIcon class="mr-1"><Wallet /></ElIcon> Duyệt chi lương & Hoa hồng
-          </ElButton>
-        </div>
-      </div>
-    </ElCard>
-
-    <ElCard class="art-table-card">
+  <div class="hr-payroll-container">
+    <el-card shadow="never">
       <template #header>
-        <div class="flex items-center gap-2">
-          <h4 class="m-0">Bảng tổng hợp thu nhập - Tháng {{ currentMonthLabel }}</h4>
+        <div class="card-header">
+          <span>{{ $t('menus.hr.payroll') }}</span>
         </div>
       </template>
 
-      <ArtTable :loading="loading" :data="payrollData" :columns="columns">
-        <template #fullName="{ row }">
-          <div class="flex items-center gap-3">
-            <ElAvatar :size="32" :src="row.avatarUrl">{{ row.fullName.charAt(0) }}</ElAvatar>
-            <div class="flex flex-col">
-              <span class="font-bold text-gray-800">{{ row.fullName }}</span>
-              <span class="text-[10px] text-gray-400">{{ row.employeeCode }}</span>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+        <ArtStatsCard
+          title="Tổng quỹ lương"
+          :count="stats.totalPayroll"
+          icon="ri:money-dollar-circle-line"
+          iconStyle="bg-primary"
+        />
+        <ArtStatsCard
+          title="Đã thanh toán"
+          :count="stats.paid"
+          icon="ri:checkbox-circle-line"
+          iconStyle="bg-success"
+        />
+        <ArtStatsCard
+          title="Chờ thanh toán"
+          :count="stats.pending"
+          icon="ri:time-line"
+          iconStyle="bg-warning"
+        />
+        <ArtStatsCard
+          title="Nhân viên"
+          :count="stats.employeeCount"
+          icon="ri:group-line"
+          iconStyle="bg-info"
+        />
+      </div>
+
+      <ArtSearchBar
+        v-model="searchForm"
+        :items="searchItems"
+        :label-width="120"
+        :span="8"
+        @search="handleSearch"
+        @reset="handleReset"
+      />
+
+      <ElCard class="flex-1 art-table-card mt-4">
+        <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="loadData">
+          <template #left>
+            <ElButton type="primary" v-ripple @click="handleAdd">
+              <ElIcon><Plus /></ElIcon> Tạo bảng lương
+            </ElButton>
+          </template>
+        </ArtTableHeader>
+
+        <ArtTable
+          ref="tableRef"
+          :loading="loading"
+          :data="data"
+          :columns="columns"
+          :pagination="pagination"
+          @pagination:size-change="handleSizeChange"
+          @pagination:current-change="handleCurrentChange"
+        >
+          <template #employeeName="{ row }">
+            <span>{{ row.employeeName || '-' }}</span>
+          </template>
+          <template #totalSalary="{ row }">
+            <span class="font-medium">{{ formatCurrency(row.totalSalary) }}</span>
+          </template>
+          <template #status="{ row }">
+            <ElTag :type="getStatusType(row.status)" size="small">{{
+              getStatusLabel(row.status)
+            }}</ElTag>
+          </template>
+          <template #operation="{ row }">
+            <div class="flex gap-2 justify-center">
+              <ArtButtonTable type="view" @click="handleView(row)" />
+              <ElButton v-ripple size="small" type="primary" @click="handleEdit(row)">Sửa</ElButton>
             </div>
-          </div>
-        </template>
-
-        <template #baseSalary="{ row }">
-          <span class="font-medium text-gray-700">{{ formatCurrency(row.baseSalary) }}</span>
-        </template>
-
-        <template #pendingCommission="{ row }">
-          <span class="text-gray-400">{{ formatCurrency(row.pendingCommission) }}</span>
-        </template>
-
-        <template #confirmedCommission="{ row }">
-          <span class="font-bold text-blue-600">{{ formatCurrency(row.confirmedCommission) }}</span>
-        </template>
-
-        <template #totalIncome="{ row }">
-          <div class="flex flex-col items-end">
-            <span class="font-bold text-red-600 text-lg">{{
-              formatCurrency(row.baseSalary + row.confirmedCommission)
-            }}</span>
-            <span class="text-[10px] text-gray-400 italic">Dự kiến thực nhận</span>
-          </div>
-        </template>
-
-        <template #operation="{ row }">
-          <ElButton type="primary" link @click="showDetail(row)">Chi tiết</ElButton>
-        </template>
-      </ArtTable>
-    </ElCard>
+          </template>
+        </ArtTable>
+      </ElCard>
+    </el-card>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted, computed } from 'vue'
-  import { Refresh, Wallet } from '@element-plus/icons-vue'
-  import { useHRStore } from '@/store/modules/hr'
+  import { Plus } from '@element-plus/icons-vue'
+  import { ref, reactive, onMounted } from 'vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
+  import type { ColumnOption } from '@/types/component'
 
   defineOptions({ name: 'HRPayroll' })
 
-  const hrStore = useHRStore()
-  const loading = computed(() => hrStore.loading)
-  const selectedMonth = ref(new Date())
+  const loading = ref(false)
+  const dialogVisible = ref(false)
+  const submitting = ref(false)
+  const dialogTitle = ref('Tạo bảng lương')
+  const formRef = ref()
 
-  const payrollData = ref([])
-  const totalPayroll = ref(0)
-  const pendingCommission = ref(0)
-  const confirmedCommission = ref(0)
+  const stats = reactive({ totalPayroll: 0, paid: 0, pending: 0, employeeCount: 0 })
 
-  const currentMonthLabel = computed(() => {
-    return selectedMonth.value.getMonth() + 1 + '/' + selectedMonth.value.getFullYear()
-  })
+  const pagination = reactive({ current: 1, size: 10, total: 0 })
+  const data = ref<any[]>([])
 
-  const columns = [
-    { label: 'Nhân viên', prop: 'fullName', slot: 'fullName', useSlot: true },
-    { label: 'Lương cơ bản', slot: 'baseSalary', width: 150, useSlot: true },
-    { label: 'Hoa hồng Tạm tính', slot: 'pendingCommission', width: 150, useSlot: true },
-    { label: 'Hoa hồng Đã chốt', slot: 'confirmedCommission', width: 150, useSlot: true },
-    { label: 'Tổng thu nhập', slot: 'totalIncome', width: 200, align: 'right', useSlot: true },
-    { label: 'Thao tác', slot: 'operation', width: 100, align: 'center', useSlot: true }
-  ]
+  const formData = ref({ month: '', employeeId: '', baseSalary: 0, bonus: 0, deduction: 0 })
 
-  const fetchData = async () => {
-    const month = selectedMonth.value.getMonth() + 1
-    const year = selectedMonth.value.getFullYear()
+  const searchForm = ref({ month: '', employeeName: '', status: '' })
+  const searchItems = ref([
+    { key: 'month', label: 'Tháng', type: 'input' },
+    { key: 'employeeName', label: 'Nhân viên', type: 'input' },
+    {
+      key: 'status',
+      label: 'Trạng thái',
+      type: 'select',
+      props: {
+        options: [
+          { label: 'Chờ thanh toán', value: 'Pending' },
+          { label: 'Đã thanh toán', value: 'Paid' },
+          { label: 'Đã hủy', value: 'Cancelled' },
+        ],
+      },
+    },
+  ])
+
+  const columns = ref<ColumnOption[]>([
+    { label: 'Nhân viên', prop: 'employeeName', minWidth: 180, useSlot: true },
+    { label: 'Tháng', prop: 'month', width: 100, align: 'center' },
+    { label: 'Lương cơ bản', prop: 'baseSalary', width: 140, align: 'right' },
+    { label: 'Thưởng', prop: 'bonus', width: 120, align: 'right' },
+    { label: 'Khấu trừ', prop: 'deduction', width: 120, align: 'right' },
+    { label: 'Tổng lương', prop: 'totalSalary', width: 160, align: 'right', useSlot: true },
+    { label: 'Trạng thái', prop: 'status', width: 130, align: 'center', useSlot: true },
+    {
+      label: 'Thao tác',
+      prop: 'operation',
+      width: 160,
+      fixed: 'right' as const,
+      align: 'center',
+      useSlot: true,
+    },
+  ])
+  const columnChecks = columns
+
+  const getStatusType = (status: string) => {
+    switch (status) {
+      case 'Paid':
+        return 'success'
+      case 'Pending':
+        return 'warning'
+      case 'Cancelled':
+        return 'danger'
+      default:
+        return 'info'
+    }
+  }
+  const getStatusLabel = (status: string) =>
+    ({ Paid: 'Đã thanh toán', Pending: 'Chờ thanh toán', Cancelled: 'Đã hủy' })[status] || status
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
+
+  const loadData = async () => {
+    loading.value = true
     try {
-      const res = await hrStore.fetchPayrollSummary(month, year)
-      payrollData.value = res.items
-      totalPayroll.value = res.totalPayroll
-      pendingCommission.value = res.totalPending
-      confirmedCommission.value = res.totalConfirmed
-    } catch (_err: any) {
-      ElMessage.error('Lỗi khi tải dữ liệu bảng lương')
+      data.value = []
+      pagination.total = 0
+      stats.totalPayroll = 0
+      stats.paid = 0
+      stats.pending = 0
+      stats.employeeCount = 0
+    } catch (error) {
+      console.error('Failed to load payroll:', error)
+      ElMessage.error('Không thể tải danh sách bảng lương')
+    } finally {
+      loading.value = false
     }
   }
 
-  const handleApproveAll = () => {
-    ElMessageBox.confirm(
-      `Bạn có chắc chắn muốn Duyệt chi lương cho toàn bộ nhân viên trong tháng ${currentMonthLabel.value}? Sau khi duyệt, trạng thái hoa hồng sẽ chuyển sang 'Đã chi trả' và không thể hoàn tác.`,
-      'Xác nhận Duyệt chi',
-      {
-        confirmButtonText: 'Đồng ý Duyệt chi',
-        cancelButtonText: 'Hủy',
-        type: 'success',
-        confirmButtonClass: 'bg-success !border-success'
-      }
-    ).then(async () => {
-      try {
-        await hrStore.approvePayroll({
-          month: selectedMonth.value.getMonth() + 1,
-          year: selectedMonth.value.getFullYear()
-        })
-        ElMessage.success('Đã duyệt chi lương thành công!')
-        fetchData()
-      } catch (_err: any) {
-        ElMessage.error(_err.message || 'Lỗi khi duyệt chi')
-      }
-    })
+  const handleReset = () => {
+    pagination.current = 1
+    loadData()
   }
-
-  const showDetail = (row: any) => {
-    console.log('Detail:', row)
+  const handleAdd = () => {
+    dialogVisible.value = true
+    dialogTitle.value = 'Tạo bảng lương'
   }
-
-  const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val)
+  const handleEdit = (row: any) => {
+    dialogVisible.value = true
+    dialogTitle.value = 'Cập nhật bảng lương'
+  }
+  const handleView = (row: any) => {
+    ElMessage.info(`Xem chi tiết: ${row.month}`)
+  }
+  const handleSizeChange = (size: number) => {
+    pagination.size = size
+    pagination.current = 1
+    loadData()
+  }
+  const handleCurrentChange = (page: number) => {
+    pagination.current = page
+    loadData()
+  }
+  const handleSearch = () => {
+    pagination.current = 1
+    loadData()
   }
 
   onMounted(() => {
-    fetchData()
+    loadData()
   })
 </script>
 
-<style scoped>
-  .filter-card {
-    border: none;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgb(0 0 0 / 3%);
-  }
-
-  .art-table-card {
-    border: none;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgb(0 0 0 / 3%);
-  }
-
-  .bg-primary {
-    background-color: #409eff;
-  }
-
-  .bg-warning {
-    background-color: #e6a23c;
-  }
-
-  .bg-success {
-    background-color: #67c23a;
-  }
-
-  .bg-danger {
-    background-color: #f56c6c;
+<style scoped lang="scss">
+  .hr-payroll-container {
+    padding: 16px;
   }
 </style>

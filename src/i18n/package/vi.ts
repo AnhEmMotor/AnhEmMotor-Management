@@ -12,61 +12,61 @@ export default {
     requestCancelled: 'Yêu cầu đã bị hủy',
     networkError: 'Lỗi kết nối mạng, vui lòng kiểm tra kết nối mạng của bạn',
     requestFailed: 'Yêu cầu thất bại',
-    requestConfigError: 'Lỗi cấu hình yêu cầu'
+    requestConfigError: 'Lỗi cấu hình yêu cầu',
   },
   topBar: {
     search: {
-      title: 'Tìm kiếm'
+      title: 'Tìm kiếm',
     },
     user: {
       userCenter: 'Trung tâm cá nhân',
       docs: 'TaiLieu hướng dẫn',
       github: 'Github',
       lockScreen: 'Khóa màn hình',
-      logout: 'Đăng xuất'
+      logout: 'Đăng xuất',
     },
     guide: {
       title: 'Nhấn vào đây để xem',
       theme: 'Giao diện',
       menu: 'Mở menu trên cùng',
-      description: 'và các cấu hình khác'
-    }
+      description: 'và các cấu hình khác',
+    },
   },
   common: {
     tips: 'Xác nhận đăng xuất?',
     cancel: 'Hủy',
     confirm: 'Xác nhận',
-    logOutTips: 'Bạn có chắc chắn muốn đăng xuất không?'
+    logOutTips: 'Bạn có chắc chắn muốn đăng xuất không?',
   },
   search: {
     placeholder: 'Tìm kiếm trang',
     historyTitle: 'LichSu tìm kiếm',
     switchKeydown: 'Chuyển đổi',
     selectKeydown: 'Chọn',
-    exitKeydown: 'Đóng'
+    exitKeydown: 'Đóng',
   },
   setting: {
     menuType: {
       title: 'Bố cục menu',
-      list: ['Dọc', 'Ngang', 'Hỗn hợp', 'Cột kép']
+      list: ['Dọc', 'Ngang', 'Hỗn hợp', 'Cột kép'],
     },
     theme: {
       title: 'Giao diện',
-      list: ['Sáng', 'Tối', 'HeThong']
+      list: ['Sáng', 'Tối', 'HeThong'],
     },
     menu: {
-      title: 'Kiểu menu'
+      title: 'Kiểu menu',
     },
     color: {
-      title: 'Màu chủ đạo'
+      title: 'Màu chủ đạo',
     },
     box: {
       title: 'Kiểu khung',
-      list: ['Viền', 'Bóng đổ']
+      list: ['Viền', 'Bóng đổ'],
     },
     container: {
       title: 'Chiều rộng',
-      list: ['Đầy đủ', 'Cố định']
+      list: ['Đầy đủ', 'Cố định'],
     },
     basics: {
       title: 'CauHinh cơ bản',
@@ -84,13 +84,13 @@ export default {
         menuWidth: 'Độ rộng menu',
         tabStyle: 'Kiểu tab',
         pageTransition: 'HieuUng chuyển trang',
-        borderRadius: 'Bo góc tùy chỉnh'
-      }
+        borderRadius: 'Bo góc tùy chỉnh',
+      },
     },
     tabStyle: {
       default: 'MacDinh',
       card: 'Thẻ',
-      google: 'Google'
+      google: 'Google',
     },
     transition: {
       list: {
@@ -98,8 +98,8 @@ export default {
         fade: 'Mờ dần',
         slideLeft: 'Trượt sang trái',
         slideBottom: 'Trượt từ dưới',
-        slideTop: 'Trượt từ trên'
-      }
+        slideTop: 'Trượt từ trên',
+      },
     },
     actions: {
       resetConfig: 'Đặt lại',
@@ -107,15 +107,15 @@ export default {
       copySuccess:
         'Đã sao chép cấu hình vào khay nhớ tạm, có thể dán vào file src/config/setting.ts',
       copyFailed: 'Sao chép thất bại, vui lòng thử lại',
-      resetFailed: 'Đặt lại thất bại, vui lòng làm mới trang và thử lại'
-    }
+      resetFailed: 'Đặt lại thất bại, vui lòng làm mới trang và thử lại',
+    },
   },
   notice: {
     title: 'ThongBao',
     btnRead: 'Đánh dấu đã đọc',
     bar: ['ThongBao', 'TinNhan', 'Việc cần làm'],
     text: ['Không có'],
-    viewAll: 'Xem tất cả'
+    viewAll: 'Xem tất cả',
   },
   worktab: {
     btn: {
@@ -125,26 +125,26 @@ export default {
       closeLeft: 'Đóng bên trái',
       closeRight: 'Đóng bên phải',
       closeOther: 'Đóng các tab khác',
-      closeAll: 'Đóng tất cả'
-    }
+      closeAll: 'Đóng tất cả',
+    },
   },
   login: {
     leftView: {
       title: 'Hệ thống quản lý một cửa hàng bán xe máy vừa và nhỏ Anh Em Motor',
       subTitle:
-        'Hệ thống hỗ trợ quản lý thông tin xe máy và quy trình bán hàng cho một cửa hàng vừa và nhỏ'
+        'Hệ thống hỗ trợ quản lý thông tin xe máy và quy trình bán hàng cho một cửa hàng vừa và nhỏ',
     },
     title: 'Chào mừng trở lại',
     subTitle: 'Vui lòng nhập thông tin đăng nhập',
     roles: {
       super: 'Quản trị viên cấp cao',
       admin: 'Quản trị viên',
-      user: 'NguoiDung thường'
+      user: 'NguoiDung thường',
     },
     placeholder: {
       username: 'Tên đăng nhập/email',
       password: 'Mật khẩu',
-      slider: 'Kéo thanh trượt để xác minh'
+      slider: 'Kéo thanh trượt để xác minh',
     },
     sliderText: 'Giữ và kéo thanh trượt',
     sliderSuccessText: 'Xác minh thành công',
@@ -156,19 +156,19 @@ export default {
     success: {
       title: 'Đăng nhập thành công',
       message: 'Chào mừng trở lại',
-      defaultUser: 'Người dùng'
+      defaultUser: 'Người dùng',
     },
     rules: {
       usernameRequired: 'Vui lòng nhập tên đăng nhập hoặc email',
-      passwordRequired: 'Vui lòng nhập mật khẩu'
-    }
+      passwordRequired: 'Vui lòng nhập mật khẩu',
+    },
   },
   forgetPassword: {
     title: 'Quên mật khẩu?',
     subTitle: 'Nhập email của bạn để lấy lại mật khẩu',
     placeholder: 'Vui lòng nhập email',
     submitBtnText: 'Gửi',
-    backBtnText: 'Quay lại'
+    backBtnText: 'Quay lại',
   },
   register: {
     title: 'Tạo tài khoản',
@@ -176,69 +176,70 @@ export default {
     placeholder: {
       username: 'Tên đăng nhập/email',
       password: 'Mật khẩu',
-      confirmPassword: 'Nhập lại mật khẩu'
+      confirmPassword: 'Nhập lại mật khẩu',
     },
     rule: {
       confirmPasswordRequired: 'Vui lòng nhập lại mật khẩu',
       passwordMismatch: 'Mật khẩu không khớp!',
       usernameLength: 'Độ dài từ 3 đến 20 ký tự',
       passwordLength: 'Mật khẩu không được ít hơn 6 ký tự',
-      agreementRequired: 'Vui lòng đồng ý với chính sách bảo mật'
+      agreementRequired: 'Vui lòng đồng ý với chính sách bảo mật',
     },
     agreeText: 'Tôi đồng ý',
     privacyPolicy: '《Chính sách bảo mật》',
     submitBtnText: 'DangKy',
     hasAccount: 'Đã có tài khoản?',
-    toLogin: 'Đăng nhập'
+    toLogin: 'Đăng nhập',
   },
   lockScreen: {
     pwdError: 'Sai mật khẩu',
     lock: {
       inputPlaceholder: 'Nhập mật khẩu khóa màn hình',
-      btnText: 'Khóa'
+      btnText: 'Khóa',
     },
     unlock: {
       inputPlaceholder: 'Nhập mật khẩu mở khóa',
       btnText: 'Mở khóa',
-      backBtnText: 'Quay lại đăng nhập'
-    }
+      backBtnText: 'Quay lại đăng nhập',
+    },
   },
   greeting: {
     dawn: 'Trời đã khuya!',
     morning: 'Chào buổi sáng!',
     afternoon: 'Chào buổi chiều!',
-    evening: 'Chào buổi tối!'
+    evening: 'Chào buổi tối!',
   },
   exceptionPage: {
     '403': 'Xin lỗi, bạn không có quyền truy cập trang này',
     '404': 'Xin lỗi, trang bạn truy cập không tồn tại',
     '500': 'Xin lỗi, có lỗi từ máy chủ',
-    gohome: 'Về trang chủ'
+    gohome: 'Về trang chủ',
   },
   menus: {
     inventory: {
       title: 'Nhà cung cấp & kho',
       supplier: 'Quản lý đối tác',
       input: 'Quản lý phiếu nhập',
-      debt: 'Quản lý công nợ'
+      debt: 'Quản lý công nợ',
     },
     login: {
-      title: 'Đăng nhập'
+      title: 'Đăng nhập',
     },
     register: {
-      title: 'DangKy'
+      title: 'DangKy',
     },
     forgetPassword: {
-      title: 'Quên mật khẩu'
+      title: 'Quên mật khẩu',
     },
     outside: {
-      title: 'Trang nhúng'
+      title: 'Trang nhúng',
     },
     dashboard: {
       title: 'Bảng tổng quan',
       console: 'Tổng quan hệ thống',
       analysis: 'Phân tích dữ liệu',
-      ecommerce: 'Tổng quan kinh doanh'
+      analytics: 'Phân tích & Báo cáo',
+      ecommerce: 'Tổng quan kinh doanh',
     },
     widgets: {
       title: 'Trung tâm Component',
@@ -254,7 +255,7 @@ export default {
       drag: 'Kéo thả',
       textScroll: 'Cuộn văn bản',
       fireworks: 'Pháo hoa',
-      elementUI: 'TongQuan Component'
+      elementUI: 'TongQuan Component',
     },
     template: {
       title: 'Trung tâm Mẫu',
@@ -264,25 +265,25 @@ export default {
       charts: 'Biểu đồ',
       map: 'Bản đồ',
       calendar: 'Lịch',
-      pricing: 'Bảng giá'
+      pricing: 'Bảng giá',
     },
     article: {
       title: 'Quản lý Bài viết',
       articleList: 'Danh sách',
       articleDetail: 'ChiTiet',
       comment: 'BinhLuan',
-      articlePublish: 'Đăng bài'
+      articlePublish: 'Đăng bài',
     },
     result: {
       title: 'Trang kết quả',
       success: 'ThanhCong',
-      fail: 'ThatBai'
+      fail: 'ThatBai',
     },
     exception: {
       title: 'Trang lỗi',
       forbidden: '403',
       notFound: '404',
-      serverError: '500'
+      serverError: '500',
     },
     examples: {
       title: 'Ví dụ chức năng',
@@ -297,8 +298,8 @@ export default {
         title: 'Quyền Front-end',
         switchRole: 'Đổi quyền',
         buttonAuth: 'Quyền của nút',
-        pageVisibility: 'Quản trị viên hiển thị'
-      }
+        pageVisibility: 'Quản trị viên hiển thị',
+      },
     },
     system: {
       title: 'CaiDat hệ thống',
@@ -313,32 +314,32 @@ export default {
       menu3: 'Menu 3',
       menu31: 'Menu 3-1',
       menu32: 'Menu 3-2',
-      menu321: 'Menu 3-2-1'
+      menu321: 'Menu 3-2-1',
     },
     auth: {
       title: 'Quản lý phân quyền',
       user: 'Người dùng & Vai trò',
-      role: 'Quyền hạn vai trò'
+      role: 'Quyền hạn vai trò',
     },
     safeguard: {
       title: 'Quản lý Vận hành',
-      server: 'MayChu'
+      server: 'MayChu',
     },
     plan: {
       title: 'KeHoach phiên bản',
-      log: 'NhatKy cập nhật'
+      log: 'NhatKy cập nhật',
     },
     help: {
       title: 'Trung tâm trợ giúp',
       document: 'TaiLieu',
       liteVersion: 'Phiên bản rút gọn',
-      oldVersion: 'Phiên bản v2.6.1'
+      oldVersion: 'Phiên bản v2.6.1',
     },
     product: {
       title: 'Quản lý sản phẩm',
       brand: {
         title: 'Quản lý Thương hiệu',
-        records: 'Xác nhận đăng xuất?'
+        records: 'Xác nhận đăng xuất?',
       },
       type: {
         title: 'Quản lý Thể loại',
@@ -346,16 +347,16 @@ export default {
           total: 'Tổng số lượng thể loại',
           product: 'Danh mục Sản phẩm',
           vehicle: 'Dòng xe',
-          new: 'Mới cập nhật'
+          new: 'Mới cập nhật',
         },
         tabs: {
           product: 'Sản phẩm',
-          vehicle: 'Xe'
+          vehicle: 'Xe',
         },
         table: {
           titleProduct: 'Danh mục sản phẩm',
-          titleVehicle: 'Phân loại xe'
-        }
+          titleVehicle: 'Phân loại xe',
+        },
       },
       list: {
         title: 'Danh sách Sản phẩm',
@@ -363,15 +364,22 @@ export default {
           total: 'Tổng sản phẩm',
           stock: 'Tổng tồn kho',
           active: 'Đang kinh doanh',
-          outOfStock: 'Hết hàng'
+          outOfStock: 'Hết hàng',
         },
         tabs: {
-          all: 'Tất cả'
+          all: 'Tất cả',
         },
         table: {
-          title: 'Danh sách sản phẩm'
-        }
-      }
+          title: 'Danh sách sản phẩm',
+        },
+      },
+    },
+    contract: {
+      title: 'Quản lý Hợp đồng',
+      sales: 'Hợp đồng Mua bán Xe',
+      finance: 'Hợp đồng Tài chính Trả góp',
+      supplier: 'Hợp đồng Nhà cung cấp',
+      templates: 'Mẫu Hợp đồng',
     },
     customer: {
       title: 'Quản lý khách hàng',
@@ -381,25 +389,51 @@ export default {
       asset: 'Quản lý tài sản',
       care: 'Chăm sóc & Ưu đãi',
       contact: 'Quản lý liên hệ',
-      booking: 'Đặt Lịch & lái Thử'
     },
     marketing: {
       title: 'Quản lý Banner',
       banner: 'Danh sách Banner',
-      conversion: 'Công cụ chuyển đổi'
+      conversion: 'Công cụ chuyển đổi',
     },
     hr: {
       title: 'Quản lý Nhân sự',
       employees: 'Hồ sơ nhân viên',
       commissionPolicy: 'Chính sách hoa hồng',
       payroll: 'Bảng Lương',
-      kpi: 'Quản lý KPI'
-    }
+      kpi: 'Quản lý KPI',
+    },
+    service: {
+      title: 'Quản lý dịch vụ',
+      workshop: {
+        title: 'Quản lý xưởng dịch vụ',
+        dashboard: 'Dashboard xưởng',
+        repairOrders: 'Phiếu sửa chữa',
+        historyByVin: ' Tra cứu hồ sơ xe',
+        maintenance: 'Bảo trì',
+        evaluation: 'Đánh giá dịch vụ',
+      },
+      administrative: {
+        title: 'Dịch vụ hành chính & biển số',
+        registration: 'Hồ sơ đăng ký biển số',
+        cashFlow: 'Dòng tiền thu hộ - chi hộ',
+        registrationFeeConfig: 'Cấu hình phí trước bạ tự động',
+      },
+      booking: {
+        title: 'Đặt lịch hẹn & lái thử',
+        list: 'Danh sách lịch hẹn',
+        calendar: 'Lịch điều phối trực quan',
+      },
+      warrantyAndComplaints: {
+        title: 'Bảo hành & khiếu nại hậu mãi',
+        warrantyRequests: 'Yêu cầu bảo hành kỹ thuật',
+        complaints: 'Đánh giá & khiếu nại từ khách',
+      },
+    },
   },
   table: {
     form: {
       reset: 'Xóa bộ lọc',
-      submit: 'Gửi'
+      submit: 'Gửi',
     },
     searchBar: {
       reset: 'Xóa bộ lọc',
@@ -407,22 +441,22 @@ export default {
       expand: 'Mở rộng',
       collapse: 'Thu gọn',
       searchInputPlaceholder: 'Vui lòng nhập',
-      searchSelectPlaceholder: 'Vui lòng chọn'
+      searchSelectPlaceholder: 'Vui lòng chọn',
     },
     selection: 'Chọn',
     sizeOptions: {
       small: 'Nhỏ',
       default: 'MacDinh',
-      large: 'Lớn'
+      large: 'Lớn',
     },
     column: {
       selection: 'Đánh dấu',
       expand: 'Mở rộng',
-      index: 'STT'
+      index: 'STT',
     },
     zebra: 'Sọc vằn',
     border: 'Viền',
-    headerBackground: 'Nền tiêu đề'
+    headerBackground: 'Nền tiêu đề',
   },
   admin: {
     t1: 'Đăng tải',
@@ -706,7 +740,7 @@ export default {
     t279: '🛠️ Trình soạn thảo đầy đủ thanh công cụ',
     t280: 'xóakhông',
     t281: 'Lấy nội dung',
-    t282: 'CaiDat ví dụ'
+    t282: 'CaiDat ví dụ',
   },
   dashboard: {
     ecommerce: {
@@ -735,7 +769,7 @@ export default {
       outOfStock: 'Hết hàng',
       lowStock: 'Sắp hết',
       moderateStock: 'Trung bình',
-      sufficientStock: 'Đầy đủ'
-    }
-  }
+      sufficientStock: 'Đầy đủ',
+    },
+  },
 }

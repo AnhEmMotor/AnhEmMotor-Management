@@ -209,6 +209,59 @@
     "gohome": "Go Home"
   },
   "menus": {
+    "contract": {
+      "title": "Contract Management",
+      "sales": "Sales Contract",
+      "finance": "Finance Contract (Installment)",
+      "supplier": "Supplier Contract",
+      "templates": "Contract Templates",
+      "templateList": "Contract Templates List",
+      "templateEditor": "Contract Template Editor",
+      "templateName": "Template Name",
+      "templateCode": "Template Code",
+      "templateType": "Type",
+      "templateVersion": "Version",
+      "templateStatus": "Status",
+      "templateContent": "Template Content",
+      "templateDynamicFields": "Dynamic Placeholders",
+      "templateCreate": "Create New Template",
+      "templateEdit": "Edit Template",
+      "templateClone": "Clone to New Version",
+      "templateDelete": "Delete Template",
+      "templateSave": "Save Template",
+      "templatePreview": "Preview Print",
+      "templateSearchPlaceholder": "Search by name or code...",
+      "typeSales": "Sales Contract",
+      "typeFinance": "Finance Contract (Installment)",
+      "typeSupplier": "Supplier Contract",
+      "typeAppendix": "Appendix",
+      "statusActive": "Active",
+      "statusInactive": "Inactive",
+      "statusDeprecated": "Deprecated",
+      "placeholderCustomerName": "Customer Name",
+      "placeholderCustomerIdCard": "ID Card",
+      "placeholderCustomerAddress": "Address",
+      "placeholderVehicleName": "Vehicle Name",
+      "placeholderChassisNumber": "Chassis Number",
+      "placeholderEngineNumber": "Engine Number",
+      "placeholderVehiclePrice": "Unit Price",
+      "placeholderDepositAmount": "Deposit Amount",
+      "placeholderRemainingAmount": "Remaining Amount",
+      "validateSyntaxError": "Invalid dynamic placeholder syntax. Please check your bracket characters {{ }}.",
+      "cannotUpdateUsedTemplate": "This template has already been used to generate contracts. Use 'Clone to New Version' instead.",
+      "confirmDeleteTemplate": "Are you sure you want to delete this template? This action cannot be undone.",
+      "cloneSuccess": "Cloned successfully! New version is now active.",
+      "saveSuccess": "Template saved successfully!",
+      "deleteSuccess": "Template deleted successfully!",
+      "emptyContentWarning": "Template content must not be empty.",
+      "usedBadge": "Used",
+      "versionBadge": "Version",
+      "filterAll": "All",
+      "filterActive": "Active",
+      "filterInactive": "Inactive",
+      "filterDeprecated": "Deprecated"
+    },
+    },
     "inventory": {
       "title": "Inventory Management",
       "supplier": "Suppliers",
@@ -326,11 +379,12 @@
       "title": "Customer Management",
       "potential": "Potential customers",
       "profile": "Customer profile",
-      "progress": "Progress",
+      "progress": "Plate Dossiers",
       "asset": "Asset",
       "care": "Customer care",
       "contact": "Contact",
-      "booking": "Booking"
+      "booking": "Booking",
+      "workshop": "Workshop"
     },
     "hr": {
       "title": "Human Resources",
@@ -338,6 +392,46 @@
       "commissionPolicy": "Commission Policy",
       "payroll": "Payroll",
       "kpi": "KPI Management"
+    },
+    "service": {
+      "title": "Service Management",
+      "workshop": {
+        "title": "Workshop Management",
+        "dashboard": "Workshop Dashboard",
+        "repairOrders": "Repair & Maintenance",
+        "maintenance": "Maintenance & Repair History",
+        "warrantyRequests": "Warranty Requests",
+        "historyByVin": "History Lookup",
+        "evaluation": "Service Evaluation"
+      },
+      "warrantyAndComplaints": {
+        "title": "Warranty & Complaints",
+        "warrantyRequests": "Warranty Requests",
+        "complaints": "Complaints"
+      },
+      "administrative": {
+        "title": "Administrative Services",
+        "registration_plate": "Registration Plate Dossiers"
+      },
+      "list": {
+        "title": "Service List",
+        "stats": {
+          "total": "Total Services",
+          "active": "Active",
+          "inactive": "Inactive"
+        }
+      }
+    }
+  },
+  "components": {
+    "richText": {
+      "placeholder": "Please enter content"
+    },
+    "imageCrop": {
+      "selectImage": "Select Image",
+      "cropImage": "Crop Image",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
     }
   },
   "table": {

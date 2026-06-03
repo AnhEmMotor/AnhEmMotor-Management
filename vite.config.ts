@@ -17,13 +17,21 @@ export default ({ mode }: { mode: string }) => {
 
   return defineConfig({
     define: {
-      __APP_VERSION__: JSON.stringify(VITE_VERSION)
+      __APP_VERSION__: JSON.stringify(VITE_VERSION),
     },
     base: VITE_BASE_URL,
     server: {
       port: Number(VITE_PORT),
       strictPort: true,
-      host: false
+      host: false,
+      proxy: {
+        '/api': {
+          target: 'http://localhost:5000',
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path) => path.replace(/^\/api/, '/api'), // Đảm bảo giữ nguyên /api cho Backend
+        },
+      },
     },
     resolve: {
       alias: {
@@ -33,8 +41,8 @@ export default ({ mode }: { mode: string }) => {
         '@icons': resolvePath('src/assets/icons'),
         '@utils': resolvePath('src/utils'),
         '@stores': resolvePath('src/store'),
-        '@styles': resolvePath('src/assets/styles')
-      }
+        '@styles': resolvePath('src/assets/styles'),
+      },
     },
     build: {
       target: 'es2015',
@@ -44,13 +52,13 @@ export default ({ mode }: { mode: string }) => {
       terserOptions: {
         compress: {
           drop_console: true,
-          drop_debugger: true
-        }
+          drop_debugger: true,
+        },
       },
       dynamicImportVarsOptions: {
         warnOnError: true,
         exclude: [],
-        include: ['src/views/**/*.vue']
+        include: ['src/views/**/*.vue'],
       },
       rollupOptions: {
         output: {
@@ -73,9 +81,9 @@ export default ({ mode }: { mode: string }) => {
               }
               return 'vendors'
             }
-          }
-        }
-      }
+          },
+        },
+      },
     },
     plugins: [
       vue(),
@@ -87,15 +95,15 @@ export default ({ mode }: { mode: string }) => {
         eslintrc: {
           enabled: true,
           filepath: './.auto-import.json',
-          globalsPropValue: true
-        }
+          globalsPropValue: true,
+        },
       }),
       Components({
         dts: 'src/types/import/components.d.ts',
-        resolvers: [ElementPlusResolver()]
+        resolvers: [ElementPlusResolver()],
       }),
       ElementPlus({
-        useSource: true
+        useSource: true,
       }),
       viteCompression({
         verbose: false,
@@ -103,11 +111,11 @@ export default ({ mode }: { mode: string }) => {
         algorithm: 'gzip',
         ext: '.gz',
         threshold: 10240,
-        deleteOriginFile: false
+        deleteOriginFile: false,
       }),
       vueDevTools({
-        autoOpen: false
-      })
+        autoOpen: false,
+      }),
     ],
     optimizeDeps: {
       include: [
@@ -122,8 +130,8 @@ export default ({ mode }: { mode: string }) => {
         'vue-img-cutter',
         'element-plus/es',
         'element-plus/es/components/*/style/css',
-        'element-plus/es/components/*/style/index'
-      ]
+        'element-plus/es/components/*/style/index',
+      ],
     },
     css: {
       preprocessorOptions: {
@@ -131,8 +139,8 @@ export default ({ mode }: { mode: string }) => {
           additionalData: `
             @use "@styles/core/el-light.scss" as *; 
             @use "@styles/core/mixin.scss" as *;
-          `
-        }
+          `,
+        },
       },
       postcss: {
         plugins: [
@@ -143,12 +151,12 @@ export default ({ mode }: { mode: string }) => {
                 if (atRule.name === 'charset') {
                   atRule.remove()
                 }
-              }
-            }
-          }
-        ]
-      }
-    }
+              },
+            },
+          },
+        ],
+      },
+    },
   })
 }
 

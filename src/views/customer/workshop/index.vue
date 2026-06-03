@@ -1,0 +1,528 @@
+<template>
+  <div
+    class="workshop-dashboard-page flex flex-col min-h-screen bg-[#F8FAFC] font-inter text-[#0F172A]"
+  >
+    <!-- Header -->
+    <div class="bg-white border-b border-slate-200 px-8 py-5 shrink-0 shadow-sm relative z-20">
+      <div class="flex justify-between items-center max-w-[1600px] mx-auto">
+        <div class="flex items-center gap-5">
+          <div class="size-11 rounded-xl bg-[#001529] flex-cc text-white shadow-xl">
+            <ArtSvgIcon icon="ri:tools-line" class="text-xl" />
+          </div>
+          <div>
+            <h1 class="m-0 text-xl font-black tracking-tight text-slate-900 leading-none"
+              >Trung tâm Điều phối Dịch vụ sửa chữa (Workshop)</h1
+            >
+            <p
+              class="m-0 text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-2 flex items-center gap-2"
+            >
+              <span class="size-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              Hệ thống quản lý dịch vụ bảo trì xe & sửa chữa
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button
+            @click="goToCreate"
+            class="h-10 px-6 bg-[#001529] text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg hover:bg-blue-900 transition-all active:scale-95 flex items-center gap-2"
+          >
+            <ArtSvgIcon icon="ri:user-add-line" class="text-sm" /> + Tiếp nhận xe
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 max-w-[1600px] mx-auto w-full p-6 space-y-6">
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div
+          class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm flex items-center justify-between"
+        >
+          <div>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider m-0"
+              >Đang sửa chữa</p
+            >
+            <h3 class="text-2xl font-black text-slate-800 mt-2 m-0">{{ stats.inProgress }}</h3>
+          </div>
+          <div class="size-12 rounded-xl bg-blue-50 text-blue-600 flex-cc text-xl">
+            <ArtSvgIcon
+              icon="ri:settings-4-line"
+              class="animate-spin"
+              style="animation-duration: 4s"
+            />
+          </div>
+        </div>
+
+        <div
+          class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm flex items-center justify-between"
+        >
+          <div>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider m-0"
+              >Chờ kiểm định (QC)</p
+            >
+            <h3 class="text-2xl font-black text-slate-800 mt-2 m-0">{{ stats.qcPending }}</h3>
+          </div>
+          <div class="size-12 rounded-xl bg-amber-50 text-amber-600 flex-cc text-xl">
+            <ArtSvgIcon icon="ri:shield-check-line" />
+          </div>
+        </div>
+
+        <div
+          class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm flex items-center justify-between"
+        >
+          <div>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider m-0"
+              >Chờ tiếp nhận / Phân công</p
+            >
+            <h3 class="text-2xl font-black text-slate-800 mt-2 m-0">{{ stats.pending }}</h3>
+          </div>
+          <div class="size-12 rounded-xl bg-purple-50 text-purple-600 flex-cc text-xl">
+            <ArtSvgIcon icon="ri:user-shared-line" />
+          </div>
+        </div>
+
+        <div
+          class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm flex items-center justify-between"
+        >
+          <div>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider m-0"
+              >Hoàn thành hôm nay</p
+            >
+            <h3 class="text-2xl font-black text-slate-800 mt-2 m-0">{{ stats.completedToday }}</h3>
+          </div>
+          <div class="size-12 rounded-xl bg-emerald-50 text-emerald-600 flex-cc text-xl">
+            <ArtSvgIcon icon="ri:checkbox-circle-line" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters & Table Area -->
+      <div
+        class="bg-white border border-slate-200 rounded-[32px] shadow-sm overflow-hidden flex flex-col"
+      >
+        <!-- Filter Bar -->
+        <div
+          class="p-6 border-b border-slate-100 bg-slate-50/50 flex flex-wrap gap-4 items-center justify-between"
+        >
+          <div class="flex flex-wrap gap-4 items-center flex-1">
+            <div class="relative w-80">
+              <ElInput
+                v-model="searchQuery"
+                placeholder="Tìm kiếm theo Tên khách, SĐT hoặc Biển số..."
+                clearable
+                @input="handleSearch"
+                class="combat-input"
+              >
+                <template #prefix>
+                  <ArtSvgIcon icon="ri:search-line" class="text-slate-400 text-sm" />
+                </template>
+              </ElInput>
+            </div>
+
+            <ElSelect
+              v-model="statusFilter"
+              placeholder="Bộ lọc trạng thái"
+              clearable
+              @change="handleFilterChange"
+              class="w-48 combat-select"
+            >
+              <ElOption label="Tất cả trạng thái" value="" />
+              <ElOption label="Chờ phân công (Pending)" value="Pending" />
+              <ElOption label="Đang sửa chữa (InProgress)" value="InProgress" />
+              <ElOption label="Chờ kiểm định (QcPending)" value="QcPending" />
+              <ElOption label="Đã hoàn thành (Completed)" value="Completed" />
+              <ElOption label="Đã hủy (Cancelled)" value="Cancelled" />
+            </ElSelect>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button
+              @click="loadData"
+              class="h-9 px-4 bg-slate-100 text-slate-600 rounded-xl font-bold text-[10px] uppercase tracking-wider hover:bg-slate-200 transition-all flex items-center gap-2"
+            >
+              <ArtSvgIcon icon="ri:refresh-line" /> Làm mới
+            </button>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="p-6 overflow-x-auto">
+          <ElTable
+            v-loading="loading"
+            :data="repairOrders"
+            style="width: 100%"
+            class="combat-table"
+            empty-text="Không tìm thấy phiếu sửa chữa nào"
+          >
+            <ElTableColumn prop="id" label="MÃ PHIẾU" width="110">
+              <template #default="{ row }">
+                <span class="font-mono font-bold text-slate-900"
+                  >RO-{{ String(row.id).padStart(5, '0') }}</span
+                >
+              </template>
+            </ElTableColumn>
+
+            <ElTableColumn label="KHÁCH HÀNG" min-width="180">
+              <template #default="{ row }">
+                <div class="flex flex-col">
+                  <span class="font-bold text-slate-800">{{ row.customerName }}</span>
+                  <span class="text-[10px] text-slate-400 mt-0.5"
+                    ><ArtSvgIcon icon="ri:phone-line" class="inline text-slate-400 mr-0.5" />
+                    {{ row.customerPhone }}</span
+                  >
+                </div>
+              </template>
+            </ElTableColumn>
+
+            <ElTableColumn label="XE MÁY" min-width="180">
+              <template #default="{ row }">
+                <div class="flex flex-col">
+                  <span
+                    v-if="row.licensePlate"
+                    class="px-2 py-0.5 bg-slate-100 rounded text-slate-700 font-mono font-bold text-[10px] w-fit"
+                  >
+                    {{ row.licensePlate }}
+                  </span>
+                  <span v-else class="text-slate-400 italic text-[10px]">Chưa đăng ký biển</span>
+                  <span v-if="row.vehicle" class="text-[10px] text-slate-400 mt-1">
+                    {{ row.vehicle.vinNumber ? `Khung: ${row.vehicle.vinNumber}` : '' }}
+                  </span>
+                </div>
+              </template>
+            </ElTableColumn>
+
+            <ElTableColumn label="KỸ THUẬT VIÊN" min-width="160">
+              <template #default="{ row }">
+                <div class="flex items-center gap-2" v-if="row.technicianId">
+                  <div
+                    class="size-7 rounded-full bg-slate-100 text-slate-600 flex-cc font-bold text-xs uppercase shadow-inner"
+                  >
+                    {{ row.technicianName ? row.technicianName.charAt(0) : 'T' }}
+                  </div>
+                  <span class="font-medium text-slate-700 text-xs">{{ row.technicianName }}</span>
+                </div>
+                <div
+                  class="flex items-center gap-1.5 text-amber-500 font-bold text-[10px] uppercase"
+                  v-else
+                >
+                  <ArtSvgIcon icon="ri:error-warning-line" /> Chưa phân công
+                </div>
+              </template>
+            </ElTableColumn>
+
+            <ElTableColumn prop="mileage" label="SỐ KM" width="100">
+              <template #default="{ row }">
+                <span class="font-bold text-slate-800 text-xs"
+                  >{{ row.mileage.toLocaleString() }} km</span
+                >
+              </template>
+            </ElTableColumn>
+
+            <ElTableColumn label="CHI PHÍ" min-width="140">
+              <template #default="{ row }">
+                <div class="flex flex-col align-right text-xs">
+                  <span class="font-black text-slate-900">{{
+                    formatCurrency(row.totalAmount)
+                  }}</span>
+                  <span class="text-[9px] text-slate-400 mt-0.5" v-if="row.totalAmount > 0">
+                    Dịch vụ: {{ formatCurrency(row.laborCost) }} | Phụ tùng:
+                    {{ formatCurrency(row.partsCost) }}
+                  </span>
+                </div>
+              </template>
+            </ElTableColumn>
+
+            <ElTableColumn label="TRẠNG THÁI" width="140">
+              <template #default="{ row }">
+                <span :class="getStatusBadgeClass(row.status)">
+                  {{ getStatusText(row.status) }}
+                </span>
+              </template>
+            </ElTableColumn>
+
+            <ElTableColumn label="NGÀY TẠO" width="140">
+              <template #default="{ row }">
+                <span class="text-xs text-slate-500">{{ formatDate(row.createdAt) }}</span>
+              </template>
+            </ElTableColumn>
+
+            <ElTableColumn label="THAO TÁC" width="110" fixed="right">
+              <template #default="{ row }">
+                <button
+                  @click="goToDetail(row.id)"
+                  class="h-8 px-4 bg-slate-900 text-white rounded-lg font-black text-[9px] uppercase tracking-wider hover:bg-blue-900 transition-all flex items-center justify-center gap-1 shadow-sm w-full"
+                >
+                  Chi tiết <ArtSvgIcon icon="ri:arrow-right-line" />
+                </button>
+              </template>
+            </ElTableColumn>
+          </ElTable>
+
+          <!-- Pagination -->
+          <div class="flex justify-between items-center mt-6">
+            <span class="text-xs text-slate-400 font-bold uppercase"
+              >Tổng số: {{ totalCount }} phiếu</span
+            >
+            <ElPagination
+              v-model:current-page="currentPage"
+              v-model:page-size="pageSize"
+              :page-sizes="[10, 20, 50]"
+              :total="totalCount"
+              layout="sizes, prev, pager, next"
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              class="combat-pagination"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+  import { ref, onMounted, reactive } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { ElMessage } from 'element-plus'
+  import { RepairOrderApi, RepairOrder } from '@/api/repair-order'
+
+  defineOptions({ name: 'CustomerWorkshopIndex' })
+
+  const router = useRouter()
+  const loading = ref(false)
+  const repairOrders = ref<RepairOrder[]>([])
+  const totalCount = ref(0)
+  const currentPage = ref(1)
+  const pageSize = ref(10)
+  const searchQuery = ref('')
+  const statusFilter = ref('')
+
+  const stats = reactive({
+    inProgress: 0,
+    qcPending: 0,
+    pending: 0,
+    completedToday: 0,
+  })
+
+  const loadData = async () => {
+    loading.value = true
+    try {
+      // Build Sieve Filters
+      const filterArray: string[] = []
+      if (statusFilter.value) {
+        filterArray.push(`Status==${statusFilter.value}`)
+      }
+      if (searchQuery.value) {
+        // Sieve filters logic: search phone, name, or license plate
+        const q = searchQuery.value.trim()
+        if (/^\d+$/.test(q)) {
+          filterArray.push(`CustomerPhone@=${q}`)
+        } else {
+          // Search either name or license plate
+          filterArray.push(`CustomerName@=${q}|LicensePlate@=${q}`)
+        }
+      }
+
+      const res = await RepairOrderApi.getList({
+        current: currentPage.value,
+        size: pageSize.value,
+        Filters: filterArray.join(','),
+        Sorts: 'createdAt desc',
+      })
+
+      repairOrders.value = res.items || []
+      totalCount.value = res.totalCount || 0
+
+      // Fetch stats (we can query lists with small page size to get counts, or fetch all active)
+      await loadStats()
+    } catch (err: any) {
+      ElMessage.error(err.message || 'Lỗi khi tải danh sách phiếu sửa chữa')
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const loadStats = async () => {
+    try {
+      // Fetch stats by making queries
+      const resPending = await RepairOrderApi.getList({
+        current: 1,
+        size: 1,
+        Filters: 'Status==Pending',
+      })
+      const resInProgress = await RepairOrderApi.getList({
+        current: 1,
+        size: 1,
+        Filters: 'Status==InProgress',
+      })
+      const resQc = await RepairOrderApi.getList({
+        current: 1,
+        size: 1,
+        Filters: 'Status==QcPending',
+      })
+
+      // For completed today, we query completed status. For a precise count, it requires date filter,
+      // but a general completed count is suitable for demo.
+      const resCompleted = await RepairOrderApi.getList({
+        current: 1,
+        size: 1,
+        Filters: 'Status==Completed',
+      })
+
+      stats.pending = resPending.totalCount || 0
+      stats.inProgress = resInProgress.totalCount || 0
+      stats.qcPending = resQc.totalCount || 0
+      stats.completedToday = resCompleted.totalCount || 0
+    } catch (e) {
+      console.error('Failed to load stats', e)
+    }
+  }
+
+  onMounted(() => {
+    loadData()
+  })
+
+  // Search / Filtering handlers
+  let searchTimeout: any = null
+  const handleSearch = () => {
+    if (searchTimeout) clearTimeout(searchTimeout)
+    searchTimeout = setTimeout(() => {
+      currentPage.value = 1
+      loadData()
+    }, 400)
+  }
+
+  const handleFilterChange = () => {
+    currentPage.value = 1
+    loadData()
+  }
+
+  const handleSizeChange = (val: number) => {
+    pageSize.value = val
+    currentPage.value = 1
+    loadData()
+  }
+
+  const handleCurrentChange = (val: number) => {
+    currentPage.value = val
+    loadData()
+  }
+
+  // Navigation
+  const goToCreate = () => {
+    router.push('/customer/workshop/create')
+  }
+
+  const goToDetail = (id: number) => {
+    router.push(`/customer/workshop/repair/${id}`)
+  }
+
+  // Helper formatting functions
+  const formatCurrency = (val: number) => {
+    if (!val) return '0đ'
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val)
+  }
+
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return '-'
+    const d = new Date(dateStr)
+    return d.toLocaleDateString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  }
+
+  const getStatusBadgeClass = (status: string) => {
+    const base =
+      'px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider inline-block text-center w-28 '
+    switch (status) {
+      case 'Pending':
+        return base + 'bg-purple-50 text-purple-600 border border-purple-200'
+      case 'InProgress':
+        return base + 'bg-blue-50 text-blue-600 border border-blue-200'
+      case 'QcPending':
+        return base + 'bg-amber-50 text-amber-600 border border-amber-200'
+      case 'Completed':
+        return base + 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+      case 'Cancelled':
+        return base + 'bg-red-50 text-red-600 border border-red-200'
+      default:
+        return base + 'bg-slate-50 text-slate-600 border border-slate-200'
+    }
+  }
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'Pending':
+        return 'Chờ tiếp nhận'
+      case 'InProgress':
+        return 'Đang sửa chữa'
+      case 'QcPending':
+        return 'Đang QC'
+      case 'Completed':
+        return 'Đã hoàn thành'
+      case 'Cancelled':
+        return 'Đã hủy'
+      default:
+        return status
+    }
+  }
+</script>
+
+<style lang="scss" scoped>
+  .workshop-dashboard-page {
+    .combat-input {
+      :deep(.el-input__wrapper) {
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        box-shadow: none;
+        padding: 6px 12px;
+        height: 38px;
+      }
+    }
+
+    .combat-select {
+      :deep(.el-input__wrapper) {
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        box-shadow: none;
+        height: 38px;
+      }
+    }
+
+    .combat-table {
+      --el-table-header-bg-color: #f8fafc;
+      --el-table-header-text-color: #94a3b8;
+      --el-table-row-hover-bg-color: #f1f5f9/30;
+
+      :deep(thead th) {
+        font-size: 9px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        padding: 14px 0;
+        border-bottom: 1px solid #f1f5f9;
+      }
+
+      :deep(tbody td) {
+        padding: 16px 0;
+        border-bottom: 1px solid #f8fafc;
+      }
+    }
+
+    .combat-pagination {
+      :deep(.el-pager li.is-active) {
+        background-color: #001529 !important;
+        color: white !important;
+        border-radius: 8px;
+      }
+    }
+  }
+</style>

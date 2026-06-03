@@ -331,15 +331,16 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed } from 'vue'
+  import { ref, computed, onMounted } from 'vue'
   import { ElMessage, ElLoading } from 'element-plus'
+  import { BookingApi, Booking } from '@/api/booking'
 
   defineOptions({ name: 'BookingCalendar' })
 
   const currentDate = ref(new Date())
   const dialogVisible = ref(false)
   const dialogTitle = ref('Đặt lịch mới')
-  const editingBookingId = ref<string | null>(null)
+  const editingBookingId = ref<number | null>(null)
   const activeBooking = ref<any>(null)
 
   const bookingForm = ref({
@@ -349,49 +350,51 @@
     date: '',
     type: 'TestDrive',
     content: '',
-    status: 'Pending'
+    status: 'Pending',
   })
 
-  const bookings = ref([
-    {
-      id: 'BK001',
-      customerName: 'Nguyễn Hoàng Long',
-      phone: '0908123456',
-      date: '2025-02-07',
-      time: '10:30',
-      type: 'TestDrive',
-      typeLabel: 'Lái thử',
-      content: 'SH 160i Sporty',
-      status: 'Pending'
-    },
-    {
-      id: 'BK002',
-      customerName: 'Trần Minh Tâm',
-      phone: '0912888999',
-      date: '2025-02-07',
-      time: '14:00',
-      type: 'Maintenance',
-      typeLabel: 'Bảo trì',
-      content: 'Thay nhớt & kiểm tra nồi',
-      status: 'Confirmed'
-    },
-    {
-      id: 'BK003',
-      customerName: 'Lê Văn Tám',
-      phone: '0944555666',
-      date: '2025-02-10',
-      time: '09:00',
-      type: 'Consult',
-      typeLabel: 'Tư vấn',
-      content: 'Thủ tục trả góp',
-      status: 'Pending'
+  const bookings = ref<any[]>([])
+
+  const fetchBookings = async () => {
+    try {
+      const res = await BookingApi.getList()
+      bookings.value = (res || []).map((b: Booking) => {
+        const dt = new Date(b.preferredDate)
+        const yyyy = dt.getFullYear()
+        const mm = String(dt.getMonth() + 1).padStart(2, '0')
+        const dd = String(dt.getDate()).padStart(2, '0')
+        const dateStr = `${yyyy}-${mm}-${dd}`
+        const timeStr = `${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}`
+
+        return {
+          ...b,
+          customerName: b.fullName,
+          phone: b.phoneNumber,
+          date: dateStr,
+          time: timeStr,
+          type: b.bookingType,
+          typeLabel:
+            b.bookingType === 'TestDrive'
+              ? 'Lái thử'
+              : b.bookingType === 'Maintenance'
+                ? 'Bảo trì'
+                : 'Tư vấn',
+          content: b.note || '',
+        }
+      })
+    } catch (err: any) {
+      ElMessage.error(err.message || 'Lỗi khi tải danh sách đặt lịch')
     }
-  ])
+  }
+
+  onMounted(() => {
+    fetchBookings()
+  })
 
   const pendingBookings = computed(() =>
     bookings.value
       .filter((b) => b.status === 'Pending')
-      .sort((a, b) => a.time.localeCompare(b.time))
+      .sort((a, b) => a.time.localeCompare(b.time)),
   )
   const isEditing = computed(() => !!editingBookingId.value)
 
@@ -415,7 +418,7 @@
       date: day,
       type: 'TestDrive',
       content: '',
-      status: 'Pending'
+      status: 'Pending',
     }
     dialogVisible.value = true
   }
@@ -430,56 +433,63 @@
     dialogVisible.value = true
   }
 
-  const confirmBooking = (booking: any) => {
+  const confirmBooking = async (booking: any) => {
     if (!booking) return
 
     const loading = ElLoading.service({
       lock: true,
       text: 'Đang thực thi ConfirmBookingCommand: Đang gửi Mail & SMS thông báo...',
-      background: 'rgba(0, 0, 0, 0.7)'
+      background: 'rgba(0, 0, 0, 0.7)',
     })
 
-    setTimeout(() => {
-      const idx = bookings.value.findIndex((b) => b.id === booking.id)
-      if (idx !== -1) {
-        bookings.value[idx].status = 'Confirmed'
-        ElMessage({
-          message: `Xác nhận thành công! Đã gửi thông báo tới ${booking.customerName}`,
-          type: 'success',
-          duration: 4000
-        })
-      }
-      loading.close()
+    try {
+      await BookingApi.confirm(booking.id)
+      ElMessage({
+        message: `Xác nhận thành công! Đã gửi thông báo tới ${booking.customerName}`,
+        type: 'success',
+        duration: 4000,
+      })
+      await fetchBookings()
       dialogVisible.value = false
-    }, 2000)
+    } catch (err: any) {
+      ElMessage.error(err.message || 'Lỗi khi xác nhận lịch hẹn')
+    } finally {
+      loading.close()
+    }
   }
 
-  const handleSaveBooking = () => {
+  const handleSaveBooking = async () => {
     if (!bookingForm.value.customerName) return
+    if (!bookingForm.value.phone) return
+
     if (isEditing.value) {
-      const idx = bookings.value.findIndex((b) => b.id === editingBookingId.value)
-      if (idx !== -1)
-        bookings.value[idx] = {
-          ...bookingForm.value,
-          id: editingBookingId.value as string,
-          typeLabel: bookings.value[idx].typeLabel
-        }
-      ElMessage.success('Đã cập nhật')
-    } else {
-      bookings.value.push({
-        ...bookingForm.value,
-        id: `BK${Math.random().toString(36).substr(2, 5)}`,
-        typeLabel: 'Mới'
+      ElMessage.warning(
+        'Hệ thống không hỗ trợ chỉnh sửa trực tiếp, vui lòng xác nhận hoặc liên hệ quản trị viên.',
+      )
+      return
+    }
+
+    try {
+      const dt = new Date(`${bookingForm.value.date}T${bookingForm.value.time}`)
+      await BookingApi.create({
+        fullName: bookingForm.value.customerName,
+        phoneNumber: bookingForm.value.phone,
+        email: '',
+        preferredDate: dt.toISOString(),
+        note: bookingForm.value.content,
+        bookingType: bookingForm.value.type,
+        location: 'Showroom',
       })
       ElMessage.success('Đã tạo lịch mới')
+      await fetchBookings()
+      dialogVisible.value = false
+    } catch (err: any) {
+      ElMessage.error(err.message || 'Lỗi khi tạo lịch hẹn mới')
     }
-    dialogVisible.value = false
   }
 
   const handleDeleteBooking = () => {
-    bookings.value = bookings.value.filter((b) => b.id !== editingBookingId.value)
-    ElMessage.success('Đã xóa')
-    dialogVisible.value = false
+    ElMessage.warning('Hệ thống không hỗ trợ xóa trực tiếp lịch hẹn.')
   }
 </script>
 

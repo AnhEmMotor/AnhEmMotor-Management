@@ -12,61 +12,61 @@ export default {
     requestCancelled: 'Request cancelled',
     networkError: 'Network connection error, please check your connection',
     requestFailed: 'Request failed',
-    requestConfigError: 'Request configuration error'
+    requestConfigError: 'Request configuration error',
   },
   topBar: {
     search: {
-      title: 'Search'
+      title: 'Search',
     },
     user: {
       userCenter: 'User center',
       docs: 'Document',
       github: 'Github',
       lockScreen: 'Lock screen',
-      logout: 'Log out'
+      logout: 'Log out',
     },
     guide: {
       title: 'Click here to view',
       theme: 'Theme style',
       menu: 'Open top menu',
-      description: 'More configurations'
-    }
+      description: 'More configurations',
+    },
   },
   common: {
     tips: 'records',
     cancel: 'Cancel',
     confirm: 'Confirm',
-    logOutTips: 'Do you want to log out?'
+    logOutTips: 'Do you want to log out?',
   },
   search: {
     placeholder: 'Search page',
     historyTitle: 'Search history',
     switchKeydown: 'Navigate',
     selectKeydown: 'Select',
-    exitKeydown: 'Close'
+    exitKeydown: 'Close',
   },
   setting: {
     menuType: {
       title: 'Menu Layout',
-      list: ['Vertical', 'Horizontal', 'Mixed', 'Dual']
+      list: ['Vertical', 'Horizontal', 'Mixed', 'Dual'],
     },
     theme: {
       title: 'Theme Style',
-      list: ['Light', 'Dark', 'System']
+      list: ['Light', 'Dark', 'System'],
     },
     menu: {
-      title: 'Menu Style'
+      title: 'Menu Style',
     },
     color: {
-      title: 'Theme Color'
+      title: 'Theme Color',
     },
     box: {
       title: 'Box Style',
-      list: ['Border', 'Shadow']
+      list: ['Border', 'Shadow'],
     },
     container: {
       title: 'Container Width',
-      list: ['Full', 'Boxed']
+      list: ['Full', 'Boxed'],
     },
     basics: {
       title: 'Basic Config',
@@ -84,13 +84,13 @@ export default {
         menuWidth: 'Menu width',
         tabStyle: 'Tab style',
         pageTransition: 'Page animation',
-        borderRadius: 'Custom radius'
-      }
+        borderRadius: 'Custom radius',
+      },
     },
     tabStyle: {
       default: 'Default',
       card: 'Card',
-      google: 'Chrome'
+      google: 'Chrome',
     },
     transition: {
       list: {
@@ -98,23 +98,23 @@ export default {
         fade: 'Fade',
         slideLeft: 'Slide Left',
         slideBottom: 'Slide Bottom',
-        slideTop: 'Slide Top'
-      }
+        slideTop: 'Slide Top',
+      },
     },
     actions: {
       resetConfig: 'Reset Config',
       copyConfig: 'Copy Config',
       copySuccess: 'Configuration copied to clipboard, paste it into src/config/setting.ts file',
       copyFailed: 'Copy failed, please try again',
-      resetFailed: 'Reset failed, please refresh the page and try again'
-    }
+      resetFailed: 'Reset failed, please refresh the page and try again',
+    },
   },
   notice: {
     title: 'Notice',
     btnRead: 'Mark as read',
     bar: ['Notice', 'Message', 'Todo'],
     text: ['No'],
-    viewAll: 'View all'
+    viewAll: 'View all',
   },
   worktab: {
     btn: {
@@ -124,25 +124,25 @@ export default {
       closeLeft: 'Close left',
       closeRight: 'Close right',
       closeOther: 'Close other',
-      closeAll: 'Close all'
-    }
+      closeAll: 'Close all',
+    },
   },
   login: {
     leftView: {
       title: 'A backend system of beauty and efficiency',
-      subTitle: 'A sleek and practical interface for a great user experience'
+      subTitle: 'A sleek and practical interface for a great user experience',
     },
     title: 'Welcome back',
     subTitle: 'Please enter your account and password to login',
     roles: {
       super: 'Super Admin',
       admin: 'Admin',
-      user: 'User'
+      user: 'User',
     },
     placeholder: {
       username: 'Please enter your account',
       password: 'Please enter your password',
-      slider: 'Please slide to verify'
+      slider: 'Please slide to verify',
     },
     sliderText: 'Please slide to verify',
     sliderSuccessText: 'Verification successful',
@@ -154,19 +154,19 @@ export default {
     success: {
       title: 'Login successful',
       message: 'Welcome back',
-      defaultUser: 'User'
+      defaultUser: 'User',
     },
     rules: {
       usernameRequired: 'Please enter your username or email',
-      passwordRequired: 'Please enter your password'
-    }
+      passwordRequired: 'Please enter your password',
+    },
   },
   forgetPassword: {
     title: 'Forgot password?',
     subTitle: 'Enter your email to reset your password',
     placeholder: 'Please enter your email',
     submitBtnText: 'Submit',
-    backBtnText: 'Back'
+    backBtnText: 'Back',
   },
   register: {
     title: 'Create account',
@@ -175,63 +175,64 @@ export default {
     placeholder: {
       username: 'Please enter your account',
       password: 'Please enter your password',
-      confirmPassword: 'Please enter your password again'
+      confirmPassword: 'Please enter your password again',
     },
     rule: {
       confirmPasswordRequired: 'Please enter your password again',
       passwordMismatch: 'The two passwords are inconsistent!',
       usernameLength: 'The length is 3 to 20 characters',
       passwordLength: 'The password length cannot be less than 6 digits',
-      agreementRequired: 'Please agree to the privacy policy'
+      agreementRequired: 'Please agree to the privacy policy',
     },
     agreeText: 'I agree',
     privacyPolicy: 'Privacy policy',
     submitBtnText: 'Register',
     hasAccount: 'Already have an account?',
-    toLogin: 'To login'
+    toLogin: 'To login',
   },
   lockScreen: {
     pwdError: 'Password error',
     lock: {
       inputPlaceholder: 'Please input lock screen password',
-      btnText: 'Lock'
+      btnText: 'Lock',
     },
     unlock: {
       inputPlaceholder: 'Please input unlock password',
       btnText: 'Unlock',
-      backBtnText: 'Back to login'
-    }
+      backBtnText: 'Back to login',
+    },
   },
   greeting: {
     dawn: 'Good morning!',
     morning: 'Good morning!',
     afternoon: 'Good afternoon!',
-    evening: 'Good evening!'
+    evening: 'Good evening!',
   },
   exceptionPage: {
     '403': 'Sorry, you do not have permission to access this page',
     '404': 'Sorry, the page you are trying to access does not exist',
     '500': 'Sorry, there was an error on the server',
-    gohome: 'Go Home'
+    gohome: 'Go Home',
   },
   menus: {
     login: {
-      title: 'Login'
+      title: 'Login',
     },
     register: {
-      title: 'Register'
+      title: 'Register',
     },
     forgetPassword: {
-      title: 'Forget Password'
+      title: 'Forget Password',
     },
     outside: {
-      title: 'Outside'
+      title: 'Outside',
     },
     dashboard: {
       title: 'Dashboard',
       console: 'Console',
       analysis: 'Analysis',
-      ecommerce: 'Ecommerce'
+      analytics: 'Analytics & Reporting',
+      ecommerce: 'Ecommerce',
     },
     widgets: {
       title: 'Components',
@@ -247,7 +248,7 @@ export default {
       drag: 'Drag',
       textScroll: 'Text Scroll',
       fireworks: 'Fireworks',
-      elementUI: 'Component Overview'
+      elementUI: 'Component Overview',
     },
     template: {
       title: 'Template Center',
@@ -257,25 +258,25 @@ export default {
       charts: 'Charts',
       map: 'Map',
       calendar: 'Calendar',
-      pricing: 'Pricing'
+      pricing: 'Pricing',
     },
     article: {
       title: 'Article',
       articleList: 'Article List',
       articleDetail: 'Article Detail',
       comment: 'Comment',
-      articlePublish: 'Article Publish'
+      articlePublish: 'Article Publish',
     },
     result: {
       title: 'Result Page',
       success: 'Success',
-      fail: 'Fail'
+      fail: 'Fail',
     },
     exception: {
       title: 'Exception',
       forbidden: '403',
       notFound: '404',
-      serverError: '500'
+      serverError: '500',
     },
     examples: {
       title: 'Feature Examples',
@@ -290,8 +291,8 @@ export default {
         title: 'Frontend Permission',
         switchRole: 'Toggle Auth',
         buttonAuth: 'Button Authority',
-        pageVisibility: 'Super Admin Visibility'
-      }
+        pageVisibility: 'Super Admin Visibility',
+      },
     },
     system: {
       title: 'System Settings',
@@ -306,32 +307,32 @@ export default {
       menu3: 'Menu 3',
       menu31: 'Menu 3-1',
       menu32: 'Menu 3-2',
-      menu321: 'Menu 3-2-1'
+      menu321: 'Menu 3-2-1',
     },
     auth: {
       title: 'Authorization',
       user: 'Users & Roles',
-      role: 'Role Permissions'
+      role: 'Role Permissions',
     },
     safeguard: {
       title: 'Safeguard',
-      server: 'Server'
+      server: 'Server',
     },
     plan: {
       title: 'Version Plan',
-      log: 'Change Log'
+      log: 'Change Log',
     },
     help: {
       title: 'Help Center',
       document: 'Document',
       liteVersion: 'Lite Version',
-      oldVersion: 'v2.6.1 Version'
+      oldVersion: 'v2.6.1 Version',
     },
     product: {
       title: 'Product Management',
       brand: {
         title: 'Brand Management',
-        records: 'records'
+        records: 'records',
       },
       type: {
         title: 'Type Management',
@@ -339,16 +340,16 @@ export default {
           total: 'Total Categories',
           product: 'Product Categories',
           vehicle: 'Vehicle Models',
-          new: 'Newly Added'
+          new: 'Newly Added',
         },
         tabs: {
           product: 'Product',
-          vehicle: 'Vehicle'
+          vehicle: 'Vehicle',
         },
         table: {
           titleProduct: 'Product Categories',
-          titleVehicle: 'Vehicle Types'
-        }
+          titleVehicle: 'Vehicle Types',
+        },
       },
       list: {
         title: 'Product List',
@@ -356,15 +357,22 @@ export default {
           total: 'Total Products',
           stock: 'Total Stock',
           active: 'In Business',
-          outOfStock: 'Out of Stock'
+          outOfStock: 'Out of Stock',
         },
         tabs: {
-          all: 'All'
+          all: 'All',
         },
         table: {
-          title: 'Product inventory list'
-        }
-      }
+          title: 'Product inventory list',
+        },
+      },
+    },
+    contract: {
+      title: 'Contract Management',
+      sales: 'Sales Contract',
+      finance: 'Finance Contract (Installment)',
+      supplier: 'Supplier Contract',
+      templates: 'Contract Templates',
     },
     customer: {
       title: 'Customer Management',
@@ -374,25 +382,51 @@ export default {
       asset: 'Asset',
       care: 'Customer care',
       contact: 'Contact',
-      booking: 'Booking'
     },
     marketing: {
       title: 'Marketing',
       banner: 'Banners',
-      conversion: 'Conversion tools'
+      conversion: 'Conversion tools',
     },
     hr: {
       title: 'HR Management',
       employees: 'Employees',
       commissionPolicy: 'Commission Policy',
       payroll: 'Payroll',
-      kpi: 'KPI Management'
-    }
+      kpi: 'KPI Management',
+    },
+    service: {
+      title: 'Service Management',
+      workshop: {
+        title: 'Workshop Management',
+        dashboard: 'Workshop Dashboard',
+        repairOrders: 'Repair Orders',
+        historyByVin: 'History lookup by VIN',
+        maintenance: 'Maintenance',
+        evaluation: 'Service Evaluation',
+      },
+      administrative: {
+        title: 'Administrative & License Plates',
+        registration: 'License plate registration',
+        cashFlow: 'Collection & payment cash flow',
+        registrationFeeConfig: 'Auto registration fee config',
+      },
+      booking: {
+        title: 'Booking & Test Drive',
+        list: 'Booking List',
+        calendar: 'Visual Coordination Calendar',
+      },
+      warrantyAndComplaints: {
+        title: 'Warranty & After-sales Complaints',
+        warrantyRequests: 'Technical Warranty Requests',
+        complaints: 'Customer Reviews & Complaints',
+      },
+    },
   },
   table: {
     form: {
       reset: 'Reset',
-      submit: 'Submit'
+      submit: 'Submit',
     },
     searchBar: {
       reset: 'Reset',
@@ -400,22 +434,22 @@ export default {
       expand: 'Expand',
       collapse: 'Collapse',
       searchInputPlaceholder: 'Please enter',
-      searchSelectPlaceholder: 'Please select'
+      searchSelectPlaceholder: 'Please select',
     },
     selection: 'Select',
     sizeOptions: {
       small: 'Compact',
       default: 'Default',
-      large: 'Loose'
+      large: 'Loose',
     },
     column: {
       selection: 'Select',
       expand: 'Expand',
-      index: 'Index'
+      index: 'Index',
     },
     zebra: 'Zebra',
     border: 'Border',
-    headerBackground: 'Header BG'
+    headerBackground: 'Header BG',
   },
   admin: {
     t1: 'Đăng tải',
@@ -699,7 +733,7 @@ export default {
     t279: '🛠️ Trình soạn thảo đầy đủ thanh công cụ',
     t280: 'xóakhông',
     t281: 'Lấy nội dung',
-    t282: 'CaiDat ví dụ'
+    t282: 'CaiDat ví dụ',
   },
   dashboard: {
     ecommerce: {
@@ -728,7 +762,7 @@ export default {
       outOfStock: 'Out of Stock',
       lowStock: 'Low Stock',
       moderateStock: 'Moderate',
-      sufficientStock: 'Sufficient'
-    }
-  }
+      sufficientStock: 'Sufficient',
+    },
+  },
 }

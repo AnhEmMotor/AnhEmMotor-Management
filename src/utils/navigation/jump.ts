@@ -13,7 +13,8 @@ export const handleMenuJump = (item: AppRouteRecord, jumpToFirst: boolean = fals
   }
 
   if (!jumpToFirst || !item.children?.length) {
-    return router.push(item.path)
+    const targetPath = item.path.startsWith('/') ? item.path : `/reporting/${item.path}`
+    return router.push(targetPath)
   }
 
   const findFirstLeafMenu = (items: AppRouteRecord[]): AppRouteRecord | undefined => {
@@ -35,5 +36,8 @@ export const handleMenuJump = (item: AppRouteRecord, jumpToFirst: boolean = fals
     return openExternalLink(firstChild.meta.link)
   }
 
-  router.push(firstChild.path)
+  const targetFirstPath = firstChild.path.startsWith('/')
+    ? firstChild.path
+    : `/reporting/${firstChild.path}`
+  router.push(targetFirstPath)
 }

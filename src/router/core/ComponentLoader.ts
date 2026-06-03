@@ -7,21 +7,29 @@ export class ComponentLoader {
     this.modules = import.meta.glob('../../views/**/*.vue')
   }
 
-  load(componentPath: string): () => Promise<any> {
+  load(componentPath: any): () => Promise<any> {
     if (!componentPath) {
       return this.createEmptyComponent()
     }
 
-    const fullPath = `../../views${componentPath}.vue`
-    const fullPathWithIndex = `../../views${componentPath}/index.vue`
+    // Nếu componentPath đã là một hàm import động, trả về nó luôn
+    if (typeof componentPath === 'function') {
+      return componentPath as () => Promise<any>
+    }
+
+    const pathStr = String(componentPath)
+      .replace(/^@\/views\//, '/')
+      .replace(/\.vue$/, '')
+    const fullPath = `../../views${pathStr}.vue`
+    const fullPathWithIndex = `../../views${pathStr}/index.vue`
 
     const module = this.modules[fullPath] || this.modules[fullPathWithIndex]
 
     if (!module) {
       console.error(
-        `[ComponentLoader] ChưatìmđếnComponent: ${componentPath}，thửthửquacủađường: ${fullPath} và ${fullPathWithIndex}`
+        `[ComponentLoader] ChưatìmđếnComponent: ${pathStr}，thửthửquacủađường: ${fullPath} và ${fullPathWithIndex}`,
       )
-      return this.createErrorComponent(componentPath)
+      return this.createErrorComponent(pathStr)
     }
 
     return module
@@ -40,7 +48,7 @@ export class ComponentLoader {
       Promise.resolve({
         render() {
           return h('div', {})
-        }
+        },
       })
   }
 
@@ -49,7 +57,7 @@ export class ComponentLoader {
       Promise.resolve({
         render() {
           return h('div', { class: 'route-error' }, `ComponentChưatìmđến: ${componentPath}`)
-        }
+        },
       })
   }
 }

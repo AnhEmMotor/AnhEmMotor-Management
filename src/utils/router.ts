@@ -13,7 +13,7 @@ export const configureNProgress = () => {
     easing: 'ease',
     speed: 300,
     showSpinner: false,
-    parent: 'body'
+    parent: 'body',
   })
 }
 
@@ -27,8 +27,9 @@ export const setPageTitle = (to: RouteLocationNormalized): void => {
 export const formatMenuTitle = (title: string): string => {
   if (title) {
     if (title.startsWith('menus.')) {
-      if (i18n.global.te(title)) {
-        return $t(title)
+      const translated = $t(title)
+      if (translated !== title) {
+        return translated
       } else {
         return title.split('.').pop() || title
       }

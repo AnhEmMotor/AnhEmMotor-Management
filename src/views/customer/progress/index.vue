@@ -65,7 +65,7 @@
               class="kanban-column transition-all duration-500"
               :class="[
                 column.isCollapsed ? 'w-[60px]' : 'w-[320px]',
-                { 'column-collapsed': column.isCollapsed }
+                { 'column-collapsed': column.isCollapsed },
               ]"
             >
               <div
@@ -113,7 +113,7 @@
                         ? '#ef4444'
                         : deal.priority === 'High'
                           ? '#eab308'
-                          : '#f1f5f9'
+                          : '#f1f5f9',
                   }"
                 >
                   <div class="flex justify-between items-start mb-2">
@@ -257,157 +257,191 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue'
+  import { ref, computed, onMounted } from 'vue'
   import { VueDraggable } from 'vue-draggable-plus'
   import { ElMessage, ElMessageBox } from 'element-plus'
+  import { PlateDossierApi, PlateDossier } from '@/api/plate-dossier'
 
   defineOptions({ name: 'PurchasingProgress' })
 
-  const pipelineStats = ref([
-    { label: 'Tổng Deal', count: 42, dotColor: 'bg-blue-500' },
-    { label: 'Đang tư vấn', count: 15, dotColor: 'bg-indigo-500' },
-    { label: 'Đã đặt cọc', count: 8, dotColor: 'bg-orange-500' },
-    { label: 'Chờ biển số', count: 12, dotColor: 'bg-purple-500' },
-    { label: 'Đã giao xe', count: 7, dotColor: 'bg-emerald-500' }
-  ])
-
   const salesList = [
     { id: 1, name: 'Sale Nguyễn Văn A' },
-    { id: 2, name: 'Sale Trần Thị B' }
+    { id: 2, name: 'Sale Trần Thị B' },
   ]
   const filterSale = ref('')
 
   const boardColumns = ref([
     {
-      id: 'Consulting',
-      title: 'Đang tư vấn',
+      id: 'Prepare',
+      title: 'Chuẩn bị hồ sơ',
+      color: '#64748b',
+      isCollapsed: false,
+      items: [] as any[],
+    },
+    {
+      id: 'TaxPaid',
+      title: 'Đã nộp thuế',
+      color: '#eab308',
+      isCollapsed: false,
+      items: [] as any[],
+    },
+    {
+      id: 'PlateAssigned',
+      title: 'Đã bấm biển',
       color: '#3b82f6',
       isCollapsed: false,
-      items: [
-        {
-          id: 101,
-          customerName: 'Nguyễn Hoàng Long',
-          vehicle: 'Winner X 2024',
-          priority: 'High',
-          timeInStage: '2 ngày',
-          isVerified: true
-        },
-        {
-          id: 102,
-          customerName: 'Trần Minh Tâm',
-          vehicle: 'SH 125i',
-          priority: 'Urgent',
-          timeInStage: '5 giờ',
-          isVerified: false
-        }
-      ]
+      items: [] as any[],
     },
     {
-      id: 'Deposit',
-      title: 'Đã đặt cọc',
-      color: '#f97316',
-      isCollapsed: false,
-      items: [
-        {
-          id: 104,
-          customerName: 'Phạm Thị Nở',
-          vehicle: 'Vision 2024',
-          priority: 'Urgent',
-          timeInStage: '1 ngày',
-          isVerified: false
-        }
-      ]
-    },
-    {
-      id: 'Processing',
-      title: 'Chờ biển số',
+      id: 'WaitingCard',
+      title: 'Chờ cà-vẹt',
       color: '#a855f7',
       isCollapsed: false,
-      items: [
-        {
-          id: 105,
-          customerName: 'Hoàng Xuân Vinh',
-          vehicle: 'Winner X',
-          priority: 'High',
-          timeInStage: '4 ngày',
-          isVerified: true,
-          subStatus: 'Đã nộp thuế'
-        }
-      ]
+      items: [] as any[],
     },
     {
-      id: 'Delivered',
-      title: 'Đã giao xe',
+      id: 'Completed',
+      title: 'Hoàn thành',
       color: '#10b981',
-      isCollapsed: true,
-      items: [
-        {
-          id: 106,
-          customerName: 'Bùi Tiến Dũng',
-          vehicle: 'SH Mode',
-          priority: 'High',
-          timeInStage: 'Vừa chốt',
-          isVerified: true
-        }
-      ]
-    }
+      isCollapsed: false,
+      items: [] as any[],
+    },
   ])
 
-  const criticalAlerts = ref([
-    {
-      id: 1,
-      type: 'HỒ SƠ CHƯA CHUẨN',
-      content: 'Khách ở Biên Hòa đã cọc 3 ngày nhưng chưa chọn Phường/Xã.',
-      customer: 'Phạm Thị Nở',
-      saleName: 'Sale A',
-      time: '3h trước',
-      icon: 'ri:alert-fill'
-    },
-    {
-      id: 2,
-      type: 'SLA QUÁ HẠN',
-      content: 'Khách chờ lái thử quá 48h chưa có nhân viên liên hệ.',
-      customer: 'Trần Minh Tâm',
-      saleName: 'Sale B',
-      time: '1h trước',
-      icon: 'ri:time-fill'
-    },
-    {
-      id: 3,
-      type: 'CHỜ DUYỆT CỌC',
-      content: 'Phiếu đặt cọc số #442 chưa được kế toán xác nhận.',
-      customer: 'Nguyễn Hoàng Long',
-      saleName: 'Admin',
-      time: '5h trước',
-      icon: 'ri:money-dollar-box-fill'
+  const pipelineStats = computed(() => {
+    let total = 0
+    const stats = boardColumns.value.map((col) => {
+      total += col.items.length
+      return {
+        label: col.title,
+        count: col.items.length,
+        dotColor:
+          col.id === 'Prepare'
+            ? 'bg-slate-400'
+            : col.id === 'TaxPaid'
+              ? 'bg-amber-500'
+              : col.id === 'PlateAssigned'
+                ? 'bg-blue-500'
+                : col.id === 'WaitingCard'
+                  ? 'bg-purple-500'
+                  : 'bg-emerald-500',
+      }
+    })
+    return [{ label: 'Tổng Hồ Sơ', count: total, dotColor: 'bg-[#001529]' }, ...stats]
+  })
+
+  const criticalAlerts = ref<any[]>([])
+
+  const fetchDossiers = async () => {
+    try {
+      const res = await PlateDossierApi.getList({ current: 1, size: 100 })
+      const dossiers: PlateDossier[] = res.items || []
+
+      // reset columns
+      boardColumns.value.forEach((col) => {
+        col.items = []
+      })
+
+      // fill columns
+      dossiers.forEach((d: PlateDossier) => {
+        const item = {
+          id: d.id,
+          customerName: d.customerName || 'Khách hàng ẩn danh',
+          vehicle: d.vehicleName || 'Xe máy',
+          priority: d.status === 'Prepare' ? 'High' : 'Normal',
+          timeInStage: getFormattedTime(d.createdAt),
+          isVerified: d.status !== 'Prepare',
+          subStatus: d.licensePlate || undefined,
+          licensePlate: d.licensePlate,
+          registrationFee: d.registrationFee,
+          actualCost: d.actualCost,
+          serviceFee: d.serviceFee,
+          notes: d.notes,
+          rawCreatedAt: d.createdAt,
+        }
+
+        const col = boardColumns.value.find((c) => c.id === d.status)
+        if (col) {
+          col.items.push(item)
+        }
+      })
+
+      // Generate critical alerts from Prepare status dossiers that are older than 1 day
+      criticalAlerts.value = dossiers
+        .filter((d: PlateDossier) => d.status === 'Prepare')
+        .map((d: PlateDossier) => ({
+          id: d.id,
+          type: 'HỒ SƠ MỚI',
+          content: `Đơn xuất hàng #${d.outputId} đang chờ nộp thuế trước bạ & bấm biển.`,
+          customer: d.customerName || 'N/A',
+          saleName: 'Admin',
+          time: getFormattedTime(d.createdAt),
+          icon: 'ri:alert-fill',
+        }))
+    } catch (err: any) {
+      ElMessage.error(err.message || 'Lỗi khi tải hồ sơ biển số')
     }
-  ])
+  }
+
+  const getFormattedTime = (dateStr: string) => {
+    const created = new Date(dateStr)
+    const diffMs = new Date().getTime() - created.getTime()
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+    if (diffHours < 1) return 'Vừa tạo'
+    if (diffHours < 24) return `${diffHours} giờ trước`
+    const diffDays = Math.floor(diffHours / 24)
+    return `${diffDays} ngày trước`
+  }
+
+  onMounted(() => {
+    fetchDossiers()
+  })
 
   const isStale = (deal: any) => {
     return deal.timeInStage.includes('ngày') && parseInt(deal.timeInStage) >= 3
   }
 
-  const handleDragChange = (event: any, columnId: string) => {
+  const handleDragChange = async (event: any, columnId: string) => {
     if (event.added) {
       const deal = event.added.element
-
-      if (columnId === 'Processing' && !deal.isVerified) {
-        ElMessageBox.alert(
-          'Dữ liệu hồ sơ hành chính (CCCD, Địa chỉ Biên Hòa) chưa được XÁC THỰC. Vui lòng hoàn thiện hồ sơ trước khi làm thủ tục biển số.',
-          'CHẶN QUY TRÌNH',
-          { type: 'error', confirmButtonText: 'ĐÃ HIỂU' }
-        )
-
-        refreshData()
-        return
+      const payload: any = {
+        id: deal.id,
+        status: columnId,
       }
 
-      ElMessage.success(`Đã chuyển ${deal.customerName} sang ${columnId}`)
+      if (columnId === 'PlateAssigned' && !deal.licensePlate) {
+        try {
+          const { value: plate } = await ElMessageBox.prompt(
+            'Vui lòng nhập biển số xe đã được cấp:',
+            'Cấp biển số xe',
+            {
+              confirmButtonText: 'Xác nhận',
+              cancelButtonText: 'Hủy bỏ',
+              inputPattern: /^[0-9]{2}-[A-Z0-9]{1,2}\s?[0-9]{3,5}(\.[0-9]{2})?$/,
+              inputErrorMessage: 'Định dạng biển số không đúng (VD: 60-B1 123.45)',
+            },
+          )
+          payload.licensePlate = plate
+        } catch {
+          // user cancelled, revert
+          await fetchDossiers()
+          return
+        }
+      }
+
+      try {
+        await PlateDossierApi.updateStatus(payload)
+        ElMessage.success(`Cập nhật trạng thái thành công`)
+        await fetchDossiers()
+      } catch (err: any) {
+        ElMessage.error(err.message || 'Lỗi khi cập nhật trạng thái')
+        await fetchDossiers()
+      }
     }
   }
 
   const refreshData = () => {
-    console.log('Refreshing data...')
+    fetchDossiers()
   }
 </script>
 

@@ -209,6 +209,58 @@
     "gohome": "Về trang chủ"
   },
   "menus": {
+    "contract": {
+      "title": "Quản lý Hợp đồng",
+      "sales": "Hợp đồng Mua bán Xe",
+      "finance": "Hợp đồng Tài chính Trả góp",
+      "supplier": "Hợp đồng Nhà cung cấp",
+      "templates": "Mẫu Hợp đồng",
+      "templateList": "Danh sách mẫu hợp đồng",
+      "templateEditor": "Biên tập mẫu hợp đồng",
+      "templateName": "Tên mẫu hợp đồng",
+      "templateCode": "Mã định danh",
+      "templateType": "Phân loại",
+      "templateVersion": "Phiên bản",
+      "templateStatus": "Trạng thái",
+      "templateContent": "Nội dung mẫu",
+      "templateDynamicFields": "Từ điển biến động",
+      "templateCreate": "Tạo mẫu hợp đồng mới",
+      "templateEdit": "Chỉnh sửa mẫu hợp đồng",
+      "templateClone": "Nhân bản tạo phiên bản mới",
+      "templateDelete": "Xóa mẫu hợp đồng",
+      "templateSave": "Lưu mẫu",
+      "templatePreview": "Xem thử bản in",
+      "templateSearchPlaceholder": "Tìm kiếm tên hoặc mã mẫu...",
+      "typeSales": "Hợp đồng Mua bán",
+      "typeFinance": "Hợp đồng Trả góp",
+      "typeSupplier": "Hợp đồng Nhà cung cấp",
+      "typeAppendix": "Phụ lục",
+      "statusActive": "Kích hoạt",
+      "statusInactive": "Tạm dừng",
+      "statusDeprecated": "Ngừng áp dụng",
+      "placeholderCustomerName": "Tên khách hàng",
+      "placeholderCustomerIdCard": "Số CCCD",
+      "placeholderCustomerAddress": "Địa chỉ",
+      "placeholderVehicleName": "Tên xe",
+      "placeholderChassisNumber": "Số khung",
+      "placeholderEngineNumber": "Số máy",
+      "placeholderVehiclePrice": "Đơn giá",
+      "placeholderDepositAmount": "Tiền cọc",
+      "placeholderRemainingAmount": "Tiền còn lại",
+      "validateSyntaxError": "Sai cú pháp từ khóa động. Vui lòng kiểm tra lại ký tự đóng mở ngoặc {{ }}.",
+      "cannotUpdateUsedTemplate": "Mẫu hợp đồng đã phát sinh hợp đồng thực tế không thể sửa trực tiếp. Vui lòng sử dụng chức năng 'Nhân bản tạo phiên bản mới'.",
+      "confirmDeleteTemplate": "Bạn có chắc muốn xóa mẫu hợp đồng này? Hành động này không thể hoàn tác.",
+      "cloneSuccess": "Nhân bản thành công! Mẫu mới đã được kích hoạt.",
+      "saveSuccess": "Lưu mẫu hợp đồng thành công!",
+      "deleteSuccess": "Xóa mẫu hợp đồng thành công!",
+      "emptyContentWarning": "Nội dung mẫu không được để trống.",
+      "usedBadge": "Đã sử dụng",
+      "versionBadge": "Phiên bản",
+      "filterAll": "Tất cả",
+      "filterActive": "Đang áp dụng",
+      "filterInactive": "Tạm dừng",
+      "filterDeprecated": "Ngừng áp dụng"
+    },
     "inventory": {
       "title": "Quản lý kho",
       "supplier": "Nhà cung cấp",
@@ -231,7 +283,8 @@
       "title": "Bảng tổng quan",
       "console": "Tổng quan hệ thống",
       "analysis": "Phân tích dữ liệu",
-      "ecommerce": "Tổng quan kinh doanh"
+      "ecommerce": "Tổng quan kinh doanh",
+      "analytics": "Trung tâm thống kê & Báo cáo"
     },
     "widgets": {
       "title": "Trung tâm Component",
@@ -326,11 +379,12 @@
       "title": "Quản lý khách hàng",
       "potential": "Khách hàng tiềm năng",
       "profile": "Hồ sơ khách hàng",
-      "progress": "Tiến độ mua hàng",
+      "progress": "Hồ sơ biển số",
       "asset": "Quản lý tài sản",
       "care": "Chăm sóc & Ưu đãi",
       "contact": "Quản lý liên hệ",
-      "booking": "Đặt Lịch & lái Thử"
+      "booking": "Đặt Lịch & lái Thử",
+      "workshop": "Xưởng dịch vụ"
     },
     "marketing": {
       "title": "Quản lý Banner",
@@ -343,6 +397,35 @@
       "commissionPolicy": "Chính sách hoa hồng",
       "payroll": "Bảng Lương",
       "kpi": "Quản lý KPI"
+    },
+    "service": {
+      "title": "Quản lý dịch vụ",
+      "workshop": {
+        "title": "Quản lý xưởng sửa chữa",
+        "dashboard": "Dashboard Xưởng",
+        "repairOrders": "Sửa Chữa & Bảo Dưỡng",
+        "maintenance": "Lịch Sử Bảo Dưỡng & Sửa Chữa",
+        "warrantyRequests": "Yêu Cầu Bảo Hành",
+        "historyByVin": "Tra cứu lịch sử",
+        "evaluation": "Đánh giá dịch vụ"
+      },
+      "warrantyAndComplaints": {
+        "title": "Bảo hành & Khiếu nại",
+        "warrantyRequests": "Yêu cầu bảo hành",
+        "complaints": "Khiếu nại"
+      },
+      "administrative": {
+        "title": "Dịch vụ hành chính",
+        "registration_plate": "Hồ sơ đăng ký biển số"
+      },
+      "list": {
+        "title": "Danh sách dịch vụ",
+        "stats": {
+          "total": "Tổng số dịch vụ",
+          "active": "Đang hoạt động",
+          "inactive": "Tạm ngừng"
+        }
+      }
     }
   },
   "table": {

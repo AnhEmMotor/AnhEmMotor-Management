@@ -4,7 +4,7 @@ import { SystemThemeEnum, MenuThemeEnum, MenuTypeEnum, ContainerWidthEnum } from
 export const SETTING_DEFAULT_CONFIG = {
   menuType: MenuTypeEnum.LEFT,
 
-  menuOpenWidth: 260,
+  menuOpenWidth: 300,
 
   menuOpen: true,
 
@@ -58,7 +58,7 @@ export const SETTING_DEFAULT_CONFIG = {
 
   containerWidth: ContainerWidthEnum.FULL,
 
-  festivalDate: ''
+  festivalDate: '',
 }
 
 export function getSettingDefaults() {

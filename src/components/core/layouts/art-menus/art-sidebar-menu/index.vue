@@ -7,7 +7,7 @@
     <div
       v-if="isDualMenu"
       class="dual-menu-left"
-      :style="{ width: dualMenuShowText ? '80px' : '64px', background: getMenuTheme.background }"
+      :style="{ width: dualMenuShowText ? '92px' : '76px', background: getMenuTheme.background }"
     >
       <ArtLogo class="logo" @click="navigateToHome" />
 
@@ -27,17 +27,17 @@
                 :class="{
                   'is-active': menu.meta.isFirstLevel
                     ? menu.path === route.path
-                    : menu.path === firstLevelMenuPath
+                    : menu.path === firstLevelMenuPath,
                 }"
                 :style="{
-                  height: dualMenuShowText ? '60px' : '46px'
+                  height: dualMenuShowText ? '60px' : '46px',
                 }"
               >
                 <ArtSvgIcon
                   class="menu-icon text-g-700 dark:text-g-800"
                   :icon="menu.meta.icon"
                   :style="{
-                    marginBottom: dualMenuShowText ? '5px' : '0'
+                    marginBottom: dualMenuShowText ? '5px' : '0',
                   }"
                 />
                 <span v-if="dualMenuShowText" class="text-md text-g-700">
@@ -67,7 +67,7 @@
         class="header"
         @click="navigateToHome"
         :style="{
-          background: getMenuTheme.background
+          background: getMenuTheme.background,
         }"
       >
         <ArtLogo v-if="!isDualMenu" class="logo" />
@@ -76,7 +76,7 @@
           :class="{ 'is-dual-menu-name': isDualMenu }"
           :style="{
             color: getMenuTheme.systemNameColor,
-            opacity: !menuOpen ? 0 : 1
+            opacity: !menuOpen ? 0 : 1,
           }"
         >
           {{ AppConfig.systemInfo.name }}
@@ -116,7 +116,7 @@
         @click="toggleMenuVisibility"
         :style="{
           opacity: !menuOpen ? 0 : 1,
-          transform: showMobileModal ? 'scale(1)' : 'scale(0)'
+          transform: showMobileModal ? 'scale(1)' : 'scale(0)',
         }"
       />
     </div>
@@ -158,7 +158,7 @@
 
   const isTopLeftMenu = computed(() => menuType.value === MenuTypeEnum.TOP_LEFT)
   const showLeftMenu = computed(
-    () => menuType.value === MenuTypeEnum.LEFT || menuType.value === MenuTypeEnum.TOP_LEFT
+    () => menuType.value === MenuTypeEnum.LEFT || menuType.value === MenuTypeEnum.TOP_LEFT,
   )
   const isDualMenu = computed(() => menuType.value === MenuTypeEnum.DUAL_MENU)
 
@@ -197,7 +197,7 @@
     return {
       transform: isCollapsed ? 'translateY(-50px)' : 'translateY(0)',
       height: isCollapsed ? 'calc(100% + 50px)' : 'calc(100% - 60px)',
-      transition: 'transform 0.3s ease'
+      transition: 'transform 0.3s ease',
     }
   })
 
@@ -206,7 +206,7 @@
       showMobileModal.value = false
     },
     ANIMATION_DELAY,
-    { immediate: false }
+    { immediate: false },
   )
 
   const findIframeMenuList = (currentPath: string, menuList: any[]) => {

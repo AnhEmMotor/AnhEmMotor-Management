@@ -259,51 +259,90 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed } from 'vue'
+  import { ref, computed, onMounted, watch } from 'vue'
+  import { ElMessage } from 'element-plus'
+  import { VehicleApi } from '@/api/vehicle'
+  import { RepairOrderApi } from '@/api/repair-order'
 
   defineOptions({ name: 'CustomerAsset' })
 
-  const selectedAssetId = ref(1)
+  const selectedAssetId = ref<number | null>(null)
+  const rawVehicles = ref<any[]>([])
+  const assets = ref<any[]>([])
+  const maintenanceHistory = ref<any[]>([])
 
-  const assets = ref([
-    {
-      id: 1,
-      model: 'Honda Winner X 2024',
-      plate: '60-B1 123.45',
-      owner: 'Nguyễn Hoàng Long',
-      image:
-        'https://images.unsplash.com/photo-1611311025708-659a84495574?auto=format&fit=crop&q=80&w=200',
-      needsService: true
-    },
-    {
-      id: 2,
-      model: 'Honda SH 125i',
-      plate: '60-A1 555.55',
-      owner: 'Trần Minh Tâm',
-      image:
-        'https://images.unsplash.com/photo-1558981403-c5f91cbba527?auto=format&fit=crop&q=80&w=200',
-      needsService: false
-    },
-    {
-      id: 3,
-      model: 'Yamaha Exciter 155',
-      plate: '60-F1 888.88',
-      owner: 'Lê Văn Tám',
-      image:
-        'https://images.unsplash.com/photo-1622185135505-2d795003994a?auto=format&fit=crop&q=80&w=200',
-      needsService: false
+  const fetchVehicles = async () => {
+    try {
+      const res = await VehicleApi.getList({ current: 1, size: 100 })
+      rawVehicles.value = res.items || []
+      assets.value = rawVehicles.value.map((v: any) => ({
+        id: v.id,
+        model: v.vehicleName || `Xe máy #${v.id}`,
+        plate: v.licensePlate || 'Chưa cấp biển',
+        owner: v.fullName || 'Ẩn danh',
+        image:
+          'https://images.unsplash.com/photo-1611311025708-659a84495574?auto=format&fit=crop&q=80&w=200',
+        needsService: false,
+      }))
+
+      if (assets.value.length > 0) {
+        selectedAssetId.value = assets.value[0].id
+      }
+    } catch (err: any) {
+      ElMessage.error(err.message || 'Lỗi khi tải danh sách phương tiện')
     }
-  ])
+  }
+
+  const fetchMaintenanceHistory = async (vehicleId: number) => {
+    try {
+      const res = await RepairOrderApi.getList({
+        current: 1,
+        size: 50,
+        Filters: `VehicleId==${vehicleId}`,
+      })
+      maintenanceHistory.value = (res.items || []).map((ro: any) => ({
+        id: ro.id,
+        date: ro.completedDate
+          ? new Date(ro.completedDate).toLocaleDateString('vi-VN')
+          : new Date(ro.createdAt).toLocaleDateString('vi-VN'),
+        km: ro.mileage || 0,
+        title: ro.description || 'Bảo trì sửa chữa',
+        note: `Chi phí: ${ro.totalAmount.toLocaleString('vi-VN')} VND. Thợ phụ trách: ${ro.technicianName || 'Chưa phân công'}. Trạng thái: ${ro.status}. ${ro.notes || ''}`,
+      }))
+    } catch (err: any) {
+      ElMessage.error(err.message || 'Lỗi khi tải lịch sử bảo trì')
+    }
+  }
 
   const selectedAsset = computed(() => assets.value.find((a) => a.id === selectedAssetId.value))
 
-  const assetSpecs = [
-    { label: 'Số khung', value: 'RLCH12345XXXXX', icon: 'ri:barcode-line' },
-    { label: 'Số máy', value: 'JF63E-1234567', icon: 'ri:settings-line' },
-    { label: 'Ngày mua', value: '15/02/2024', icon: 'ri:calendar-line' },
-    { label: 'Đăng kiểm/Phí', value: '15/02/2025', icon: 'ri:shield-line' },
-    { label: 'Bảo hành đến', value: '15/02/2027', icon: 'ri:verified-badge-line' }
-  ]
+  const selectedRawVehicle = computed(() =>
+    rawVehicles.value.find((v) => v.id === selectedAssetId.value),
+  )
+
+  const assetSpecs = computed(() => {
+    const v = selectedRawVehicle.value
+    if (!v) return []
+    return [
+      { label: 'Số khung', value: v.vinNumber || 'N/A', icon: 'ri:barcode-line' },
+      { label: 'Số máy', value: v.engineNumber || 'N/A', icon: 'ri:settings-line' },
+      {
+        label: 'Ngày mua',
+        value: v.purchaseDate ? new Date(v.purchaseDate).toLocaleDateString('vi-VN') : 'N/A',
+        icon: 'ri:calendar-line',
+      },
+      { label: 'Đăng kiểm/Phí', value: 'Không bắt buộc', icon: 'ri:shield-line' },
+      {
+        label: 'Bảo hành đến',
+        value: v.purchaseDate
+          ? new Date(
+              new Date(v.purchaseDate).setFullYear(new Date(v.purchaseDate).getFullYear() + 3),
+            ).toLocaleDateString('vi-VN')
+          : '3 năm kể từ ngày mua',
+        icon: 'ri:verified-badge-line',
+      },
+    ]
+  })
 
   const vaultFolders = [
     {
@@ -311,40 +350,33 @@
       icon: 'ri:file-list-line',
       count: '2',
       preview:
-        'https://images.unsplash.com/photo-1589330694653-9ecf794ff8a3?auto=format&fit=crop&q=80&w=200'
+        'https://images.unsplash.com/photo-1589330694653-9ecf794ff8a3?auto=format&fit=crop&q=80&w=200',
     },
     {
       title: 'Bảo hiểm dân sự',
       icon: 'ri:shield-user-line',
       count: '1',
       preview:
-        'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=200'
+        'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=200',
     },
     {
       title: 'Hóa đơn mua hàng',
       icon: 'ri:bill-line',
       count: '3',
       preview:
-        'https://images.unsplash.com/photo-1554224155-1696413565d3?auto=format&fit=crop&q=80&w=200'
-    }
+        'https://images.unsplash.com/photo-1554224155-1696413565d3?auto=format&fit=crop&q=80&w=200',
+    },
   ]
 
-  const maintenanceHistory = [
-    {
-      id: 1,
-      date: '10/04/2024',
-      km: '5,200',
-      title: 'Bảo trì định kỳ cấp 2',
-      note: 'Thay nhớt máy, vệ sinh nồi, kiểm tra hệ thống phanh và thay lọc gió.'
-    },
-    {
-      id: 2,
-      date: '15/02/2024',
-      km: '0',
-      title: 'Bàn giao xe mới',
-      note: 'Kiểm tra PDI trước khi giao, hoàn thiện hồ sơ đăng ký biển số Biên Hòa.'
+  watch(selectedAssetId, (newVal) => {
+    if (newVal) {
+      fetchMaintenanceHistory(newVal)
     }
-  ]
+  })
+
+  onMounted(() => {
+    fetchVehicles()
+  })
 </script>
 
 <style lang="scss" scoped>

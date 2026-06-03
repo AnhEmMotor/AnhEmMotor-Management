@@ -1,175 +1,156 @@
 <template>
-  <div class="flex flex-col gap-4 pb-5">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <ArtStatsCard
-        title="Tỉ lệ hoàn thành KPI"
-        :count="85"
-        unit="%"
-        description="Trung bình toàn bộ hệ thống"
-        icon="ri:line-chart-line"
-        iconStyle="bg-primary"
-      />
-      <ArtStatsCard
-        title="Doanh số tháng này"
-        :count="1.2"
-        unit="Tỷ"
-        description="Tổng doanh số toàn chi nhánh"
-        icon="ri:money-cny-circle-line"
-        iconStyle="bg-success"
-      />
-      <ArtStatsCard
-        title="Hoa hồng thực nhận"
-        :count="45.5"
-        unit="Tr"
-        description="Trung bình mỗi nhân viên"
-        icon="ri:hand-coin-line"
-        iconStyle="bg-info"
-      />
-      <ArtStatsCard
-        title="Đơn hàng thành công"
-        :count="128"
-        unit="Đơn"
-        description="Số lượng giao dịch trong tháng"
-        icon="ri:shopping-bag-line"
-        iconStyle="bg-warning"
-      />
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <ElCard class="art-table-card">
-        <template #header>
-          <div class="flex-cb">
-            <h4 class="m-0">Bảng xếp hạng hiệu suất</h4>
-            <ElSelect v-model="selectedMonth" size="small" class="!w-32">
-              <ElOption label="Tháng này" :value="1" />
-              <ElOption label="Tháng trước" :value="2" />
-            </ElSelect>
-          </div>
-        </template>
-
-        <div class="flex flex-col gap-4">
-          <div
-            v-for="(item, index) in rankings"
-            :key="item.id"
-            class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors"
-          >
-            <div
-              class="w-8 h-8 flex-c font-bold text-lg"
-              :class="index < 3 ? 'text-yellow-500' : 'text-gray-300'"
-            >
-              {{ index + 1 }}
-            </div>
-            <ElAvatar :size="40" :src="item.avatar">{{ item.name.charAt(0) }}</ElAvatar>
-            <div class="flex-1">
-              <div class="flex justify-between mb-1">
-                <span class="font-bold text-gray-800">{{ item.name }}</span>
-                <span class="font-bold text-primary">{{ item.progress }}%</span>
-              </div>
-              <ElProgress
-                :percentage="item.progress"
-                :show-text="false"
-                :stroke-width="8"
-                :status="item.progress > 90 ? 'success' : ''"
-              />
-            </div>
-          </div>
+  <div class="hr-kpi-container">
+    <el-card shadow="never">
+      <template #header>
+        <div class="card-header">
+          <span>{{ $t('menus.hr.kpi') }}</span>
         </div>
-      </ElCard>
+      </template>
 
-      <ElCard class="art-table-card">
-        <template #header>
-          <h4 class="m-0">Chi tiết định mức hoa hồng nhân viên</h4>
-        </template>
+      <ArtSearchBar
+        v-model="searchForm"
+        :items="searchItems"
+        :label-width="120"
+        :span="8"
+        @search="handleSearch"
+        @reset="handleReset"
+      />
 
-        <ArtTable :loading="loading" :data="employeeKPIs" :columns="columns">
-          <template #name="{ row }">
-            <span class="font-bold text-gray-700">{{ row.name }}</span>
+      <ElCard class="flex-1 art-table-card mt-4">
+        <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="loadData">
+          <template #left>
+            <ElButton type="primary" v-ripple @click="handleAdd">
+              <ElIcon><Plus /></ElIcon> Thêm KPI
+            </ElButton>
           </template>
+        </ArtTableHeader>
 
-          <template #performance="{ row }">
-            <div class="flex flex-col gap-1">
-              <div class="flex-cb text-[10px]">
-                <span>{{ formatCurrency(row.current) }}</span>
-                <span class="text-gray-400">/ {{ formatCurrency(row.target) }}</span>
-              </div>
-              <ElProgress
-                :percentage="Math.min(100, Math.round((row.current / row.target) * 100))"
-                :stroke-width="4"
-              />
+        <ArtTable
+          ref="tableRef"
+          :loading="loading"
+          :data="data"
+          :columns="columns"
+          :pagination="pagination"
+          @pagination:size-change="handleSizeChange"
+          @pagination:current-change="handleCurrentChange"
+        >
+          <template #employeeName="{ row }">
+            <span>{{ row.employeeName || '-' }}</span>
+          </template>
+          <template #score="{ row }">
+            <ElTag :type="getScoreType(row.score)" size="small">{{ row.score }}/100</ElTag>
+          </template>
+          <template #operation="{ row }">
+            <div class="flex gap-2 justify-center">
+              <ArtButtonTable type="view" @click="handleView(row)" />
+              <ElButton v-ripple size="small" type="primary" @click="handleEdit(row)">Sửa</ElButton>
             </div>
-          </template>
-
-          <template #commission="{ row }">
-            <span class="font-bold text-red-600">{{ formatCurrency(row.commission) }}</span>
           </template>
         </ArtTable>
       </ElCard>
-    </div>
+    </el-card>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted } from 'vue'
+  import { Plus } from '@element-plus/icons-vue'
+  import { ref, reactive, onMounted } from 'vue'
+  import { ElMessage, ElMessageBox } from 'element-plus'
+  import type { ColumnOption } from '@/types/component'
 
   defineOptions({ name: 'HRKPI' })
 
   const loading = ref(false)
-  const selectedMonth = ref(1)
+  const dialogVisible = ref(false)
+  const submitting = ref(false)
+  const dialogTitle = ref('Thêm KPI')
+  const formRef = ref()
 
-  const rankings = ref([
-    { id: 1, name: 'Nguyễn Văn A', progress: 115, avatar: '' },
-    { id: 2, name: 'Trần Thị B', progress: 98, avatar: '' },
-    { id: 3, name: 'Lê Văn C', progress: 92, avatar: '' },
-    { id: 4, name: 'Phạm Minh D', progress: 85, avatar: '' },
-    { id: 5, name: 'Hoàng Anh E', progress: 78, avatar: '' }
+  const pagination = reactive({ current: 1, size: 10, total: 0 })
+  const data = ref<any[]>([])
+
+  const formData = ref({ employeeId: '', period: '', kpiName: '', target: '', score: 0, note: '' })
+
+  const searchForm = ref({ employeeName: '', period: '', kpiName: '' })
+  const searchItems = ref([
+    { key: 'employeeName', label: 'Nhân viên', type: 'input' },
+    { key: 'period', label: 'Kỳ đánh giá', type: 'input' },
+    { key: 'kpiName', label: 'Tên KPI', type: 'input' },
   ])
 
-  const employeeKPIs = ref([
-    { id: 1, name: 'Nguyễn Văn A', target: 500000000, current: 575000000, commission: 12500000 },
-    { id: 2, name: 'Trần Thị B', target: 400000000, current: 392000000, commission: 8400000 },
-    { id: 3, name: 'Lê Văn C', target: 400000000, current: 368000000, commission: 7200000 },
-    { id: 4, name: 'Phạm Minh D', target: 300000000, current: 255000000, commission: 5100000 }
+  const columns = ref<ColumnOption[]>([
+    { label: 'Nhân viên', prop: 'employeeName', minWidth: 180, useSlot: true },
+    { label: 'Kỳ đánh giá', prop: 'period', width: 130, align: 'center' },
+    { label: 'Tên KPI', prop: 'kpiName', minWidth: 200 },
+    { label: 'Mục tiêu', prop: 'target', minWidth: 200 },
+    { label: 'Điểm', prop: 'score', width: 100, align: 'center', useSlot: true },
+    { label: 'Ngày đánh giá', prop: 'evaluatedAt', width: 130, align: 'center' },
+    {
+      label: 'Thao tác',
+      prop: 'operation',
+      width: 160,
+      fixed: 'right' as const,
+      align: 'center',
+      useSlot: true,
+    },
   ])
+  const columnChecks = columns
 
-  const columns = [
-    { label: 'Nhân viên', slot: 'name', useSlot: true },
-    { label: 'Doanh số thực tế', slot: 'performance', width: 200, useSlot: true },
-    { label: 'Hoa hồng nhận', slot: 'commission', width: 150, align: 'right', useSlot: true }
-  ]
-
-  const formatCurrency = (val: number) => {
-    if (val >= 1000000000) return (val / 1000000000).toFixed(1) + ' Tỷ'
-    if (val >= 1000000) return (val / 1000000).toFixed(1) + ' Tr'
-    return val.toLocaleString('vi-VN') + ' đ'
+  const getScoreType = (score: number) => {
+    if (score >= 80) return 'success'
+    if (score >= 60) return 'warning'
+    return 'danger'
   }
 
-  onMounted(() => {})
+  const loadData = async () => {
+    loading.value = true
+    try {
+      data.value = []
+      pagination.total = 0
+    } catch (error) {
+      console.error('Failed to load KPIs:', error)
+      ElMessage.error('Không thể tải danh sách KPI')
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const handleReset = () => {
+    pagination.current = 1
+    loadData()
+  }
+  const handleAdd = () => {
+    dialogVisible.value = true
+    dialogTitle.value = 'Thêm KPI'
+  }
+  const handleEdit = (row: any) => {
+    dialogVisible.value = true
+    dialogTitle.value = 'Cập nhật KPI'
+  }
+  const handleView = (row: any) => {
+    ElMessage.info(`Xem chi tiết: ${row.kpiName}`)
+  }
+  const handleSizeChange = (size: number) => {
+    pagination.size = size
+    pagination.current = 1
+    loadData()
+  }
+  const handleCurrentChange = (page: number) => {
+    pagination.current = page
+    loadData()
+  }
+  const handleSearch = () => {
+    pagination.current = 1
+    loadData()
+  }
+
+  onMounted(() => {
+    loadData()
+  })
 </script>
 
-<style scoped>
-  .art-table-card {
-    border: none;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgb(0 0 0 / 3%);
-  }
-
-  .bg-primary {
-    background-color: #409eff;
-  }
-
-  .bg-success {
-    background-color: #67c23a;
-  }
-
-  .bg-info {
-    background-color: #36cfc9;
-  }
-
-  .bg-warning {
-    background-color: #e6a23c;
-  }
-
-  .bg-danger {
-    background-color: #f56c6c;
+<style scoped lang="scss">
+  .hr-kpi-container {
+    padding: 16px;
   }
 </style>

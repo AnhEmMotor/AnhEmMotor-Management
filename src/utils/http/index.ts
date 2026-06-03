@@ -23,7 +23,6 @@ const { VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT, VITE_WITH_CREDENTIALS } = import
 
 const axiosInstance = axios.create({
   timeout: REQUEST_TIMEOUT,
-  baseURL: VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT,
   withCredentials: VITE_WITH_CREDENTIALS !== 'false',
   validateStatus: (status) => status >= 200 && status < 300,
   transformResponse: [
@@ -37,15 +36,17 @@ const axiosInstance = axios.create({
         }
       }
       return data
-    }
-  ]
+    },
+  ],
 })
 
 axiosInstance.interceptors.request.use(
   (request: InternalAxiosRequestConfig) => {
-    // Tự động thêm /v1 vào đường dẫn nếu bắt đầu bằng /api để khớp với Backend
-    if (request.url?.startsWith('/api/')) {
-      request.url = request.url.replace(/^\/api\//, '/api/v1/')
+    if (request.url?.startsWith('/api/') && !request.url.includes('/api/v1/')) {
+      // Chỉ thêm /v1/ nếu KHÔNG PHẢI là API Analytics
+      if (!request.url.startsWith('/api/analytics/')) {
+        request.url = request.url.replace(/^\/api\//, '/api/v1/')
+      }
     }
 
     const userStore = useUserStore()
@@ -62,7 +63,7 @@ axiosInstance.interceptors.request.use(
   (error) => {
     showError(createHttpError($t('httpMsg.requestConfigError'), ApiStatus.error))
     return Promise.reject(error)
-  }
+  },
 )
 
 axiosInstance.interceptors.response.use(
@@ -79,7 +80,7 @@ axiosInstance.interceptors.response.use(
       response.data = {
         code: ApiStatus.success,
         msg: 'success',
-        data: data
+        data: data,
       }
       return response
     }
@@ -108,7 +109,7 @@ axiosInstance.interceptors.response.use(
       }
     }
     return Promise.reject(handleError(error))
-  }
+  },
 )
 
 function createHttpError(message: string, code: number) {
@@ -149,13 +150,13 @@ function shouldRetry(statusCode: number) {
     ApiStatus.internalServerError,
     ApiStatus.badGateway,
     ApiStatus.serviceUnavailable,
-    ApiStatus.gatewayTimeout
+    ApiStatus.gatewayTimeout,
   ].includes(statusCode)
 }
 
 async function retryRequest<T>(
   config: ExtendedAxiosRequestConfig,
-  retries: number = MAX_RETRIES
+  retries: number = MAX_RETRIES,
 ): Promise<T> {
   try {
     return await request<T>(config)
@@ -217,7 +218,7 @@ const api = {
   },
   request<T>(config: ExtendedAxiosRequestConfig) {
     return retryRequest<T>(config)
-  }
+  },
 }
 
 export default api

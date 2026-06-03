@@ -11,18 +11,23 @@ import { exceptionRoutes } from './exception'
 import { safeguardRoutes } from './safeguard'
 import { productRoutes } from './product'
 import { customerRoutes } from './customer'
+import { contractRoutes } from './contract'
 import { marketingRoutes } from './marketing'
 import { hrRoutes } from './hr'
 import { helpRoutes } from './help'
 import { inventoryRoutes } from './inventory'
+import { serviceRoutes } from './service'
+import { reportingRoutes } from './reporting'
 
 export const routeModules: AppRouteRecord[] = [
   dashboardRoutes,
   productRoutes,
+  serviceRoutes,
   inventoryRoutes,
   authorizationRoutes,
   hrRoutes,
   customerRoutes,
+  contractRoutes,
   articleRoutes,
   marketingRoutes,
   templateRoutes,
@@ -32,5 +37,6 @@ export const routeModules: AppRouteRecord[] = [
   resultRoutes,
   exceptionRoutes,
   safeguardRoutes,
-  ...helpRoutes
+  reportingRoutes,
+  ...helpRoutes,
 ]

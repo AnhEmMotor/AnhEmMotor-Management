@@ -1,4 +1,4 @@
-import type { Router, RouteLocationNormalized } from 'vue-router'
+﻿import type { Router, RouteLocationNormalized } from 'vue-router'
 import { nextTick } from 'vue'
 import NProgress from 'nprogress'
 import { useSettingStore } from '@/store/modules/setting'
@@ -69,7 +69,7 @@ export function setupBeforeEachGuard(router: Router): void {
     try {
       return await handleRouteGuard(to, from, router)
     } catch (error) {
-      console.error('[RouteGuard] RoutinggiữvệXuLyThatBai:', error)
+      console.error('[RouteGuard] Routing error:', error)
       closeLoading()
       return { name: 'Exception500' }
     }
@@ -88,7 +88,7 @@ function closeLoading(): void {
 async function handleRouteGuard(
   to: RouteLocationNormalized,
   from: RouteLocationNormalized,
-  router: Router
+  router: Router,
 ): Promise<any> {
   const settingStore = useSettingStore()
   const userStore = useUserStore()
@@ -133,7 +133,7 @@ async function handleRouteGuard(
 
 function handleLoginStatus(
   to: RouteLocationNormalized,
-  userStore: ReturnType<typeof useUserStore>
+  userStore: ReturnType<typeof useUserStore>,
 ): any {
   if (userStore.isLogin || to.path === RoutesAlias.Login || isStaticRoute(to.path)) {
     return null
@@ -142,7 +142,7 @@ function handleLoginStatus(
   userStore.logOut()
   return {
     name: 'Login',
-    query: { redirect: to.fullPath }
+    query: { redirect: to.fullPath },
   }
 }
 
@@ -177,10 +177,106 @@ async function handleDynamicRoutes(to: RouteLocationNormalized, router: Router):
   loadingService.showLoading()
 
   try {
-    const [, menuList] = await Promise.all([fetchUserInfo(), menuProcessor.getMenuList()])
+    const [, menuListRaw] = await Promise.all([fetchUserInfo(), menuProcessor.getMenuList()])
+
+    let menuList = (() => {
+      try {
+        if (!Array.isArray(menuListRaw)) return menuListRaw as any
+
+        const ensureReporting = (items: any[]): any[] => {
+          if (!Array.isArray(items)) return items
+
+          const hasReporting = items.some(
+            (x) =>
+              x?.path === '/reporting' || x?.children?.some((c: any) => c?.path === '/reporting'),
+          )
+
+          if (hasReporting) return items
+
+          const injectedNode = {
+            path: '/reporting',
+            name: 'Reporting',
+            component: '@/views/index/index.vue',
+            meta: {
+              title: 'menus.dashboard.analytics',
+              icon: 'trend-charts',
+              permission: 'Reporting.View',
+            },
+            children: [
+              {
+                path: 'dashboard',
+                name: 'ReportingDashboard',
+                component: () => import('@/views/analytics-reporting/dashboard/index.vue'),
+                meta: {
+                  title: 'Dashboard Tổng quan',
+                  icon: 'ri:dashboard-line',
+                  permission: 'Reporting.Dashboard',
+                },
+              },
+              {
+                path: 'expense',
+                name: 'ExpenseManagement',
+                component: () => import('@/views/analytics-reporting/expense/index.vue'),
+                meta: {
+                  title: 'Chi phí vận hành',
+                  icon: 'ri:money-dollar-circle-line',
+                  permission: 'Reporting.Expense',
+                },
+              },
+              {
+                path: 'pnl',
+                name: 'PnLReport',
+                component: () => import('@/views/analytics-reporting/pnl/index.vue'),
+                meta: {
+                  title: 'Báo cáo P&L',
+                  icon: 'ri:file-chart-line',
+                  permission: 'Reporting.PnL',
+                },
+              },
+              {
+                path: 'employee',
+                name: 'EmployeeReport',
+                component: () => import('@/views/analytics-reporting/employee/index.vue'),
+                meta: {
+                  title: 'Thống kê nhân viên',
+                  icon: 'ri:team-line',
+                  permission: 'Reporting.Employee',
+                },
+              },
+            ],
+          }
+
+          return [...items, injectedNode]
+        }
+
+        return ensureReporting(menuListRaw as any[])
+      } catch {
+        return menuListRaw as any
+      }
+    })()
+
+    const fixReportingParentIcon = (items: any[]): any[] => {
+      return items.map((item) => {
+        if (item.path === '/reporting' && item.meta) {
+          return {
+            ...item,
+            meta: {
+              ...item.meta,
+              icon: item.meta.icon === 'trend-charts' ? 'ri:pie-chart-line' : item.meta.icon,
+            },
+          }
+        }
+        if (item.children && item.children.length > 0) {
+          return { ...item, children: fixReportingParentIcon(item.children) }
+        }
+        return item
+      })
+    }
+
+    menuList = fixReportingParentIcon(menuList as any)
 
     if (!menuProcessor.validateMenuList(menuList)) {
-      throw new Error('LấyMenuDanh sáchThatBai，Vui lòngtrùngmớiĐăng nhập')
+      throw new Error('Lấy Menu list that bai, vui long refresh login')
     }
 
     routeRegistry?.register(menuList)
@@ -199,7 +295,7 @@ async function handleDynamicRoutes(to: RouteLocationNormalized, router: Router):
         path: to.path,
         query: to.query,
         hash: to.hash,
-        replace: true
+        replace: true,
       }
     }
 
@@ -207,7 +303,7 @@ async function handleDynamicRoutes(to: RouteLocationNormalized, router: Router):
     const { path: validatedPath, hasPermission } = RoutePermissionValidator.validatePath(
       to.path,
       menuList,
-      homePath.value || '/'
+      homePath.value || '/',
     )
 
     routeInitInProgress = false
@@ -216,23 +312,23 @@ async function handleDynamicRoutes(to: RouteLocationNormalized, router: Router):
       closeLoading()
 
       console.warn(
-        `[RouteGuard] NguoiDungvôQuyenHanTruy cậpđường: ${to.path}，ĐãnhảychuyểnđếnTrangChu`
+        `[RouteGuard] User khong co quyen truy cap duong: ${to.path}, da chuyen den Trang Chu`,
       )
 
       return {
         path: validatedPath,
-        replace: true
+        replace: true,
       }
     } else {
       return {
         path: to.path,
         query: to.query,
         hash: to.hash,
-        replace: true
+        replace: true,
       }
     }
   } catch (error) {
-    console.error('[RouteGuard] Hoạt độngRoutingDangKyThatBai:', error)
+    console.error('[RouteGuard] Route registration failed:', error)
 
     closeLoading()
 
@@ -245,7 +341,7 @@ async function handleDynamicRoutes(to: RouteLocationNormalized, router: Router):
     routeInitInProgress = false
 
     if (isHttpError(error)) {
-      console.error(`[RouteGuard] Lỗimã: ${error.code}, TinNhan: ${error.message}`)
+      console.error(`[RouteGuard] Error code: ${error.code}, Message: ${error.message}`)
     }
 
     return { name: 'Exception500', replace: true }
@@ -262,7 +358,7 @@ async function fetchUserInfo(): Promise<void> {
     email: data.email || '',
     avatar: data.avatarUrl || '',
     roles: data.roles || [],
-    buttons: data.permissions || []
+    buttons: data.permissions || [],
   }
 
   userStore.setUserInfo(userInfo)

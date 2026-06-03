@@ -62,7 +62,7 @@ export interface InteractionProps {
 export interface BarDataItem {
   name: string
 
-  data: number[]
+  data: any[]
 
   barWidth?: string | number
 
@@ -70,7 +70,7 @@ export interface BarDataItem {
 }
 
 export interface BarChartProps extends BaseChartProps, AxisDisplayProps, InteractionProps {
-  data: number[] | BarDataItem[]
+  data: any[] | BarDataItem[]
 
   xAxisData?: string[]
 

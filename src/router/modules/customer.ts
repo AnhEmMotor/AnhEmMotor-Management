@@ -7,7 +7,7 @@ export const customerRoutes: AppRouteRecord = {
   meta: {
     title: 'menus.customer.title',
     icon: 'ri:user-heart-line',
-    roles: ['R_SUPER', 'R_ADMIN']
+    roles: ['R_SUPER', 'R_ADMIN'],
   },
   children: [
     {
@@ -16,8 +16,8 @@ export const customerRoutes: AppRouteRecord = {
       component: '/customer/potential/index',
       meta: {
         title: 'menus.customer.potential',
-        icon: 'ri:user-search-line'
-      }
+        icon: 'ri:user-search-line',
+      },
     },
     {
       path: 'profile',
@@ -25,8 +25,8 @@ export const customerRoutes: AppRouteRecord = {
       component: '/customer/profile/index',
       meta: {
         title: 'menus.customer.profile',
-        icon: 'ri:profile-line'
-      }
+        icon: 'ri:profile-line',
+      },
     },
     {
       path: 'asset',
@@ -34,8 +34,8 @@ export const customerRoutes: AppRouteRecord = {
       component: '/customer/asset/index',
       meta: {
         title: 'menus.customer.asset',
-        icon: 'ri:car-line'
-      }
+        icon: 'ri:car-line',
+      },
     },
     {
       path: 'care',
@@ -43,8 +43,8 @@ export const customerRoutes: AppRouteRecord = {
       component: '/customer/care/index',
       meta: {
         title: 'menus.customer.care',
-        icon: 'ri:gift-line'
-      }
+        icon: 'ri:gift-line',
+      },
     },
     {
       path: 'contact',
@@ -52,17 +52,17 @@ export const customerRoutes: AppRouteRecord = {
       component: '/customer/contact/index',
       meta: {
         title: 'menus.customer.contact',
-        icon: 'ri:message-2-line'
-      }
+        icon: 'ri:message-2-line',
+      },
     },
     {
-      path: 'booking',
-      name: 'CustomerBooking',
-      component: '/customer/booking/index',
+      path: 'progress',
+      name: 'CustomerProgress',
+      component: '/customer/progress/index',
       meta: {
-        title: 'menus.customer.booking',
-        icon: 'ri:calendar-todo-line'
-      }
-    }
-  ]
+        title: 'menus.customer.progress',
+        icon: 'ri:git-commit-line',
+      },
+    },
+  ],
 }
