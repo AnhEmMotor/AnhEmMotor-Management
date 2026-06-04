@@ -283,6 +283,13 @@
                 <ElInput v-model="vehicle.engineNumber" placeholder="Nhập số máy" clearable />
               </template>
             </ElTableColumn>
+            <ElTableColumn label="Thao tác" width="80" align="center">
+              <template #default="{ $index }">
+                <ElButton link type="danger" @click="removeVehicleRow($index)">
+                  <ElIcon><Delete /></ElIcon>
+                </ElButton>
+              </template>
+            </ElTableColumn>
           </ElTable>
         </div>
       </div>
@@ -714,43 +721,60 @@
     const currentVehicles = row.vehicles ?? []
     const invoicedList = row.invoicedVehicles || []
 
-    const newVehicles: any[] = []
+    if (currentVehicles.length > targetCount) {
+      row.vehicles = currentVehicles.slice(0, targetCount)
+      return
+    }
 
-    // 1. First populate from invoicedList up to targetCount
+    const newVehicles = [...currentVehicles]
+
+    // 1. Try to populate from invoicedList for any VINs that are not yet in newVehicles
     for (let i = 0; i < invoicedList.length && newVehicles.length < targetCount; i++) {
       const inv = invoicedList[i]
-      const existing = currentVehicles.find((v: any) => v.vinNumber === inv.vinNumber)
-      newVehicles.push({
-        id: existing?.id || undefined,
-        vinNumber: inv.vinNumber,
-        engineNumber: inv.engineNumber,
-        importPrice: existing?.importPrice || inv.importPrice || row.unitPrice || 0
-      })
+      const alreadyInList = newVehicles.some(
+        (v: any) => v.vinNumber === inv.vinNumber && inv.vinNumber !== ''
+      )
+      if (!alreadyInList) {
+        newVehicles.push({
+          id: inv.id,
+          vinNumber: inv.vinNumber,
+          engineNumber: inv.engineNumber,
+          importPrice: inv.importPrice || row.unitPrice || 0
+        })
+      }
     }
 
-    // 2. If targetCount is not reached, populate with existing custom entered vehicles
-    for (let i = 0; i < currentVehicles.length && newVehicles.length < targetCount; i++) {
-      const curr = currentVehicles[i]
-      // skip if it was already added from invoiced list
-      if (newVehicles.some((v) => v.vinNumber === curr.vinNumber && curr.vinNumber !== '')) continue
-      newVehicles.push(curr)
-    }
-
-    // 3. Fill up to targetCount with empty vehicles
+    // 2. Fill up to targetCount with empty vehicles
     while (newVehicles.length < targetCount) {
       newVehicles.push(createEmptyVehicle(row.unitPrice || 0))
-    }
-
-    // 4. Trim if we have too many
-    if (newVehicles.length > targetCount) {
-      newVehicles.splice(targetCount)
     }
 
     row.vehicles = newVehicles
   }
 
   const handleProductCountChange = (row: ReceiptProductRow) => {
+    const newCount = Number(row.count) || 0
+    const currentVehicles = row.vehicles || []
+
+    if (newCount < currentVehicles.length) {
+      const removedVehicles = currentVehicles.slice(newCount)
+      const hasData = removedVehicles.some((v) => v.vinNumber?.trim() || v.engineNumber?.trim())
+      if (hasData) {
+        ElMessage.warning(
+          'Số lượng giảm ảnh hưởng đến thông tin số khung/số máy đã nhập. Vui lòng mở hộp thoại Nhập VIN và xóa trực tiếp dòng xe mong muốn.'
+        )
+        row.count = currentVehicles.length // Revert the input value
+        return
+      }
+    }
     syncVehicleRows(row)
+  }
+
+  const removeVehicleRow = (index: number) => {
+    const row = activeVinRow.value
+    if (!row || !row.vehicles) return
+    row.vehicles.splice(index, 1)
+    row.count = row.vehicles.length
   }
 
   const getCompletedVehicleIdentityCount = (row: ReceiptProductRow) => {

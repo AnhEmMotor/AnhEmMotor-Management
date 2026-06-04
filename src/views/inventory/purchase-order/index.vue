@@ -433,6 +433,7 @@
               placeholder="Chọn nhà cung cấp"
               filterable
               class="w-full"
+              @change="handleEditSupplierChange"
             >
               <ElOption v-for="sup in suppliers" :key="sup.id" :label="sup.name" :value="sup.id" />
             </ElSelect>
@@ -656,6 +657,14 @@
       class="!rounded-2xl overflow-hidden shadow-2xl border border-gray-100"
     >
       <div class="space-y-4">
+        <ElAlert
+          v-if="activeQuoteDialogFormType === 'edit'"
+          title="Lưu ý: Chỉ hiển thị các báo giá đã phê duyệt thuộc về nhà cung cấp đã chọn cho đơn mua hàng (PO) này."
+          type="info"
+          show-icon
+          :closable="false"
+          class="!rounded-xl"
+        />
         <ElTable
           :data="paginatedRowQuotes"
           border
@@ -1139,13 +1148,12 @@
 
     try {
       loading.value = true
+      const supplierId = formType === 'edit' ? editFormData.value.supplierId : undefined
       let prices = await QuotationApi.getApprovedPrices(
         row.productVariantId,
-        row.productVariantColorId
+        row.productVariantColorId,
+        supplierId
       )
-      if (formType === 'edit' && editFormData.value.supplierId) {
-        prices = prices.filter((p) => p.supplierId === editFormData.value.supplierId)
-      }
       allRowQuotes.value = prices || []
       quoteSelectorVisible.value = true
     } catch (err) {
@@ -1194,8 +1202,17 @@
       if (row) {
         row.quotationIndex = undefined
         row.quotationProductRowId = undefined
+        row.unitPrice = 0
       }
     }
+  }
+
+  const handleEditSupplierChange = () => {
+    editFormData.value.items.forEach((item) => {
+      item.quotationIndex = undefined
+      item.quotationProductRowId = undefined
+      item.unitPrice = 0
+    })
   }
 
   const detailDialogVisible = ref(false)

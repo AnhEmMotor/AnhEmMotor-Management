@@ -431,6 +431,13 @@
                 />
               </template>
             </ElTableColumn>
+            <ElTableColumn label="Thao tác" width="80" align="center">
+              <template #default="{ $index }">
+                <ElButton link type="danger" @click="removeVehicleRow($index)">
+                  <ElIcon><Delete /></ElIcon>
+                </ElButton>
+              </template>
+            </ElTableColumn>
           </ElTable>
         </div>
       </div>
@@ -818,58 +825,64 @@
     const targetCount = Math.max(Number(row.invoicedQuantity) || 0, 0)
     const currentVehicles = row.vehicles ?? []
 
-    // Separate imported vs invoice-only
-    const currentImported = currentVehicles.filter(
-      (v: any) => v.inventoryReceiptInfoId != null || v.inventoryReceiptItemId != null
-    )
-    const currentInvoiceOnly = currentVehicles.filter(
-      (v: any) => v.inventoryReceiptInfoId == null && v.inventoryReceiptItemId == null
-    )
+    if (currentVehicles.length > targetCount) {
+      row.vehicles = currentVehicles.slice(0, targetCount)
+      return
+    }
 
+    const newVehicles = [...currentVehicles]
     const importedList = row.importedVehicles || []
 
-    const newVehicles: any[] = []
-
-    // 1. First populate from importedList up to targetCount
+    // 1. Try to populate from importedList for any VINs that are not yet in newVehicles
     for (let i = 0; i < importedList.length && newVehicles.length < targetCount; i++) {
       const imp = importedList[i]
-      // Check if we already have this vehicle in currentImported to preserve its state/price
-      const existing = currentImported.find(
-        (v: any) =>
-          v.inventoryReceiptInfoId === imp.inventoryReceiptInfoId || v.vinNumber === imp.vinNumber
+      const alreadyInList = newVehicles.some(
+        (v: any) => v.vinNumber === imp.vinNumber && imp.vinNumber !== ''
       )
-      newVehicles.push({
-        id: existing?.id || imp.id || undefined,
-        vinNumber: imp.vinNumber,
-        engineNumber: imp.engineNumber,
-        importPrice:
-          existing !== undefined ? existing.importPrice : imp.importPrice || row.unitPrice || 0,
-        inventoryReceiptInfoId: imp.inventoryReceiptInfoId || imp.id,
-        inventoryReceiptItemId: imp.inventoryReceiptInfoId || imp.id,
-        isLocked: imp.isLocked || existing?.isLocked || false
-      })
+      if (!alreadyInList) {
+        newVehicles.push({
+          id: imp.id || undefined,
+          vinNumber: imp.vinNumber,
+          engineNumber: imp.engineNumber,
+          importPrice: imp.importPrice || row.unitPrice || 0,
+          inventoryReceiptInfoId: imp.inventoryReceiptInfoId || imp.id,
+          inventoryReceiptItemId: imp.inventoryReceiptInfoId || imp.id,
+          isLocked: imp.isLocked || false
+        })
+      }
     }
 
-    // 2. If targetCount is not reached, populate with existing invoice-only vehicles
-    for (let i = 0; i < currentInvoiceOnly.length && newVehicles.length < targetCount; i++) {
-      newVehicles.push(currentInvoiceOnly[i])
-    }
-
-    // 3. If targetCount is still not reached, populate with new empty vehicles
+    // 2. Fill up to targetCount with empty vehicles
     while (newVehicles.length < targetCount) {
       newVehicles.push(createEmptyVehicle(row.unitPrice || 0))
-    }
-
-    // 4. Trim if we have too many
-    if (newVehicles.length > targetCount) {
-      newVehicles.splice(targetCount)
     }
 
     row.vehicles = newVehicles
   }
 
   const handleInvoicedQuantityChange = (row: any) => {
+    const newCount = Number(row.invoicedQuantity) || 0
+    const currentVehicles = row.vehicles || []
+
+    if (newCount < currentVehicles.length) {
+      const removedVehicles = currentVehicles.slice(newCount)
+      const hasData = removedVehicles.some((v) => v.vinNumber?.trim() || v.engineNumber?.trim())
+      if (hasData) {
+        ElMessage.warning(
+          'Số lượng giảm ảnh hưởng đến thông tin số khung/số máy đã nhập. Vui lòng mở hộp thoại Nhập VIN và xóa trực tiếp dòng xe mong muốn.'
+        )
+        row.invoicedQuantity = currentVehicles.length // Revert the input value
+        return
+      }
+    }
     syncVehicleRows(row)
+  }
+
+  const removeVehicleRow = (index: number) => {
+    const row = activeVinRow.value
+    if (!row || !row.vehicles) return
+    row.vehicles.splice(index, 1)
+    row.invoicedQuantity = row.vehicles.length
   }
 
   const getCompletedVehicleIdentityCount = (row: any) => {
@@ -1094,14 +1107,23 @@
             orderedQuantity: poItem ? poItem.orderedQuantity : i.invoicedQuantity,
             importedVehicles: poItem ? poItem.importedVehicles || [] : [],
             vehicles: i.vehicles
-              ? i.vehicles.map((v: any) => ({
-                  id: v.id,
-                  vinNumber: v.vinNumber || '',
-                  engineNumber: v.engineNumber || '',
-                  importPrice: v.importPrice || 0,
-                  inventoryReceiptInfoId: v.inventoryReceiptInfoId || v.inventoryReceiptItemId,
-                  isLocked: v.isLocked || false
-                }))
+              ? i.vehicles.map((v: any) => {
+                  const matchedImported = poItem?.importedVehicles?.find(
+                    (imp: any) => imp.vinNumber === v.vinNumber && v.vinNumber !== ''
+                  )
+                  return {
+                    id: v.id,
+                    vinNumber: v.vinNumber || '',
+                    engineNumber: v.engineNumber || '',
+                    importPrice: v.importPrice || 0,
+                    inventoryReceiptInfoId:
+                      v.inventoryReceiptInfoId ||
+                      v.inventoryReceiptItemId ||
+                      matchedImported?.inventoryReceiptInfoId ||
+                      matchedImported?.id,
+                    isLocked: v.isLocked || matchedImported?.isLocked || false
+                  }
+                })
               : []
           }
         })
