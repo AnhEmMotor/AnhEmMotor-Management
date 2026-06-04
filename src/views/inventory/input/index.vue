@@ -1106,7 +1106,10 @@
       let poDetail: any = null
       if (receipt.purchaseOrderId) {
         try {
-          poDetail = await PurchaseOrderApi.getApprovedForInputById(receipt.purchaseOrderId)
+          poDetail = await PurchaseOrderApi.getApprovedForInputById(
+            receipt.purchaseOrderId,
+            receipt.id
+          )
         } catch (e) {
           console.error('Cannot load PO details for editing receipt', e)
         }
@@ -1120,8 +1123,8 @@
         notes: receipt.notes || '',
         statusId: receipt.statusId || 'working',
         products: (receipt.products || []).map((p: any) => {
-          const isVin = p.vehicles && p.vehicles.length > 0
           const poItem: any = poItemsMap.get(p.purchaseOrderItemId)
+          const isVin = (p.vehicles && p.vehicles.length > 0) || (poItem && poItem.needVin) || false
           productCache.set(p.productVariantId, {
             displayName: p.name || `Sản phẩm #${p.productVariantId}`,
             colorName: p.productVariantColorName
@@ -1134,7 +1137,7 @@
             productVariantColorName: p.productVariantColorName,
             count: p.quantity || 0,
             unitPrice: p.unitPrice || 0,
-            managementType: isVin ? VIN_MANAGEMENT_TYPE : undefined,
+            managementType: isVin ? VIN_MANAGEMENT_TYPE : 'sku',
             needVin: isVin,
             purchaseOrderItemId: p.purchaseOrderItemId,
             maxUnimportedQuantity: p.maxAllowedQuantity ?? (p.quantity || 0),

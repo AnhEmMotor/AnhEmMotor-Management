@@ -78,9 +78,12 @@ export const PurchaseOrderApi = {
     })
   },
 
-  getApprovedForInputById(id: number) {
+  getApprovedForInputById(id: number, excludeReceiptId?: number) {
     return request.get<PurchaseOrderDetailForInputResponse>({
-      url: `/api/v1/purchase-orders/approved/for-input/${id}`
+      url: `/api/v1/purchase-orders/approved/for-input/${id}`,
+      params: {
+        excludeReceiptId
+      }
     })
   },
 
