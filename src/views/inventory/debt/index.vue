@@ -45,13 +45,19 @@
       destroy-on-close
     >
       <div v-loading="receiptsLoading">
-        <ElTable :data="receipts" border stripe style="width: 100%">
+        <ElTabs v-model="activeTab" class="mb-4">
+          <ElTabPane name="overdue" :label="`Quá hạn thanh toán (${overdueDebts.length})`" />
+          <ElTabPane name="not_due" :label="`Chưa đến hạn (${notDueDebts.length})`" />
+          <ElTabPane name="fully_paid" :label="`Đã trả hết (${fullyPaidDebts.length})`" />
+        </ElTabs>
+
+        <ElTable :data="filteredReceipts" border stripe style="width: 100%">
           <ElTableColumn label="Mã phiếu" width="120" align="center">
             <template #default="{ row }">
               <span class="font-mono font-bold text-primary">IR-{{ row.inventoryReceiptId }}</span>
             </template>
           </ElTableColumn>
-          <ElTableColumn label="Sản phẩm" min-width="280">
+          <ElTableColumn label="Sản phẩm" min-width="200">
             <template #default="{ row }">
               <div class="font-medium text-gray-900">{{ row.productVariantName }}</div>
               <div v-if="row.colorName" class="text-xs text-gray-500"
@@ -59,24 +65,33 @@
               >
             </template>
           </ElTableColumn>
-          <ElTableColumn label="Tổng tiền" width="150" align="right">
+          <ElTableColumn label="Hạn thanh toán" width="140" align="center">
+            <template #default="{ row }">
+              <span
+                :class="{ 'text-red-500 font-bold': isOverdue(row) && getRemainingDebt(row) > 0 }"
+              >
+                {{ row.dueDate ? new Date(row.dueDate).toLocaleDateString('vi-VN') : '-' }}
+              </span>
+            </template>
+          </ElTableColumn>
+          <ElTableColumn label="Tổng tiền" width="140" align="right">
             <template #default="{ row }">
               {{ formatCurrency(row.totalAmount) }}
             </template>
           </ElTableColumn>
-          <ElTableColumn label="Đã trả" width="140" align="right">
+          <ElTableColumn label="Đã trả" width="130" align="right">
             <template #default="{ row }">
               <span class="text-success font-medium">{{
                 formatCurrency(row.paidAmount || 0)
               }}</span>
             </template>
           </ElTableColumn>
-          <ElTableColumn label="Còn nợ" width="150" align="right">
+          <ElTableColumn label="Còn nợ" width="140" align="right">
             <template #default="{ row }">
               <span class="text-danger font-bold">{{ formatCurrency(getRemainingDebt(row)) }}</span>
             </template>
           </ElTableColumn>
-          <ElTableColumn label="Thao tác" width="120" align="center" fixed="right">
+          <ElTableColumn label="Thao tác" width="110" align="center" fixed="right">
             <template #default="{ row }">
               <ElButton
                 type="success"
@@ -211,6 +226,37 @@
   const receiptsLoading = ref(false)
   const selectedSupplier = ref<any | null>(null)
   const receipts = ref<any[]>([])
+  const activeTab = ref('overdue')
+
+  const isOverdue = (row: any): boolean => {
+    if (!row.dueDate) return false
+    return new Date(row.dueDate).getTime() < Date.now()
+  }
+
+  const overdueDebts = computed(() => {
+    return receipts.value.filter((row) => getRemainingDebt(row) > 0 && isOverdue(row))
+  })
+
+  const notDueDebts = computed(() => {
+    return receipts.value.filter((row) => getRemainingDebt(row) > 0 && !isOverdue(row))
+  })
+
+  const fullyPaidDebts = computed(() => {
+    return receipts.value.filter((row) => getRemainingDebt(row) === 0)
+  })
+
+  const filteredReceipts = computed(() => {
+    if (activeTab.value === 'overdue') {
+      return overdueDebts.value
+    }
+    if (activeTab.value === 'not_due') {
+      return notDueDebts.value
+    }
+    if (activeTab.value === 'fully_paid') {
+      return fullyPaidDebts.value
+    }
+    return []
+  })
 
   const handleViewReceipts = async (supplier: any) => {
     selectedSupplier.value = supplier

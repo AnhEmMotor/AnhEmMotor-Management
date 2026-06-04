@@ -15,7 +15,7 @@ export const DebtApi = {
 
   payDebt(lineId: number, amount: number) {
     return request.post<any>({
-      url: `/api/v1/DebtPayments/lines/${lineId}/pay`,
+      url: `/api/v1/DebtPayments/${lineId}/pay`,
       data: { amount }
     })
   }
