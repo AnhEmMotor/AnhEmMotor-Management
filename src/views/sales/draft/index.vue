@@ -98,6 +98,21 @@
                 <ElIcon><Switch /></ElIcon>
               </ElButton>
             </ElTooltip>
+            <ElTooltip
+              v-if="canCopyPaymentLink(row)"
+              content="Copy link thanh toán"
+              placement="top"
+            >
+              <ElButton
+                circle
+                size="small"
+                type="success"
+                @click="handleCopyPaymentLink(row)"
+                v-auth="Permissions.OutputsEdit"
+              >
+                <ElIcon><Link /></ElIcon>
+              </ElButton>
+            </ElTooltip>
             <ElTooltip v-if="canDeleteRow(row)" content="Xóa phiếu" placement="top">
               <ElButton
                 circle
@@ -203,14 +218,7 @@
             </ElButton>
           </div>
 
-          <ElTable
-            :data="formData.products"
-            border
-            size="small"
-            class="w-full"
-            max-height="320"
-            style="width: 100%"
-          >
+          <ElTable :data="formData.products" border size="small" class="w-full" max-height="320">
             <ElTableColumn label="Sản phẩm" min-width="280">
               <template #default="{ row }">
                 <ElSelect
@@ -267,7 +275,6 @@
                   controls-position="right"
                   class="w-full"
                   :disabled="isBuyerProductLocked"
-                  style="width: 120px"
                 />
               </template>
             </ElTableColumn>
@@ -397,7 +404,7 @@
           show-icon
           :closable="false"
         />
-        <ElTable :data="vehicleRequirements.items" border size="small" style="width: 100%">
+        <ElTable :data="vehicleRequirements.items" border size="small" class="w-full">
           <ElTableColumn label="Sản phẩm" min-width="240">
             <template #default="{ row }">
               <div class="flex flex-col">
@@ -448,7 +455,7 @@
 
 <script setup lang="ts">
   import { computed, onMounted, reactive, ref } from 'vue'
-  import { Delete, Edit, Plus, Switch } from '@element-plus/icons-vue'
+  import { Delete, Edit, Link, Plus, Switch } from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { SalesOrderApi } from '@/api/sales-order.api'
   import { ProductApi } from '@/api/product.api'
@@ -555,7 +562,7 @@
     {
       prop: 'operation',
       label: 'Thao tác',
-      width: 130,
+      width: 170,
       fixed: 'right' as const,
       checked: true,
       useSlot: true
@@ -707,6 +714,32 @@
 
   function canDeleteRow(row: SalesOrder) {
     return !['completed', 'refunded', 'cancelled'].includes(row.statusId || '')
+  }
+
+  function canCopyPaymentLink(row: SalesOrder) {
+    const paymentMethod = String(row.paymentMethod || '').toLowerCase()
+    return (
+      ['vnpay', 'payos'].includes(paymentMethod) &&
+      ['pending', 'waiting_deposit'].includes(row.statusId || '')
+    )
+  }
+
+  async function handleCopyPaymentLink(row: SalesOrder) {
+    try {
+      const res = await SalesOrderApi.getPaymentLink(row.id)
+      const url = res.url
+      if (!url) {
+        return ElMessage.warning('Đơn hàng này chưa có link thanh toán')
+      }
+      try {
+        await navigator.clipboard.writeText(url)
+        ElMessage.success('Đã copy link thanh toán vào clipboard')
+      } catch {
+        ElMessage.info(`Link: ${url}`)
+      }
+    } catch {
+      ElMessage.error('Không thể lấy link thanh toán')
+    }
   }
 
   function canChangeStatusRow(row: SalesOrder) {
