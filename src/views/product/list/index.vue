@@ -1518,6 +1518,65 @@
               </div>
             </div>
           </ElTabPane>
+
+          <ElTabPane name="supplier-prices" label="Báo giá nhà cung cấp" v-if="formData.id">
+            <div class="tab-scroll-container">
+              <div class="flex justify-between items-center mb-4 py-2">
+                <span class="text-sm font-semibold text-gray-700"
+                  >Bảng giá sản phẩm từ các nhà cung cấp</span
+                >
+                <ElButton type="primary" size="small" @click="openAddSupplierPrice">
+                  <ElIcon class="mr-1"><Plus /></ElIcon> Thêm giá nhà cung cấp
+                </ElButton>
+              </div>
+
+              <ElTable
+                v-loading="loadingSupplierPrices"
+                :data="supplierPrices"
+                border
+                size="small"
+                class="w-full"
+              >
+                <ElTableColumn prop="variantName" label="Biến thể" min-width="180" />
+                <ElTableColumn prop="colorName" label="Màu sắc" width="150" align="center">
+                  <template #default="{ row }">
+                    <ElTag size="small" type="info">{{ row.colorName || 'Mặc định' }}</ElTag>
+                  </template>
+                </ElTableColumn>
+                <ElTableColumn prop="supplierName" label="Nhà cung cấp" min-width="220" />
+                <ElTableColumn prop="quotePrice" label="Giá nhập (VND)" width="160" align="right">
+                  <template #default="{ row }">
+                    <span class="font-bold text-gray-800">{{
+                      formatCurrency(row.quotePrice)
+                    }}</span>
+                  </template>
+                </ElTableColumn>
+                <ElTableColumn prop="note" label="Ghi chú" min-width="200" show-overflow-tooltip />
+                <ElTableColumn label="Thao tác" width="120" align="center" fixed="right">
+                  <template #default="{ row }">
+                    <div class="flex gap-2 justify-center">
+                      <ElButton
+                        circle
+                        size="small"
+                        type="primary"
+                        @click="handleEditSupplierPrice(row)"
+                      >
+                        <ElIcon><Edit /></ElIcon>
+                      </ElButton>
+                      <ElButton
+                        circle
+                        size="small"
+                        type="danger"
+                        @click="handleDeleteSupplierPrice(row)"
+                      >
+                        <ElIcon><Delete /></ElIcon>
+                      </ElButton>
+                    </div>
+                  </template>
+                </ElTableColumn>
+              </ElTable>
+            </div>
+          </ElTabPane>
         </ElTabs>
       </ElForm>
       <template #footer>
@@ -1526,6 +1585,92 @@
           <ElButton type="primary" :loading="submitting" @click="submitForm" class="px-8">
             Lưu sản phẩm
           </ElButton>
+        </div>
+      </template>
+    </ElDialog>
+
+    <!-- Add/Edit Supplier Price Dialog -->
+    <ElDialog
+      v-model="supplierPriceDialogVisible"
+      title="Thiết lập giá nhà cung cấp"
+      width="480px"
+      append-to-body
+      destroy-on-close
+      class="premium-dialog-nested"
+    >
+      <ElForm :model="supplierPriceForm" label-position="top">
+        <ElFormItem label="Biến thể sản phẩm" required>
+          <ElSelect
+            v-model="supplierPriceForm.productVariantId"
+            placeholder="Chọn biến thể"
+            class="w-full"
+          >
+            <ElOption
+              v-for="v in formData.variants"
+              :key="v.id ?? 0"
+              :label="v.variant_name || 'Biến thể chính'"
+              :value="v.id ?? 0"
+            />
+          </ElSelect>
+        </ElFormItem>
+
+        <ElFormItem label="Màu sắc" v-if="selectedVariantColorsList.length > 0">
+          <ElSelect
+            v-model="supplierPriceForm.productVariantColorId"
+            placeholder="Chọn màu sắc (nếu có)"
+            class="w-full"
+            clearable
+          >
+            <ElOption
+              v-for="c in selectedVariantColorsList"
+              :key="c.id ?? 0"
+              :label="c.name"
+              :value="c.id ?? 0"
+            />
+          </ElSelect>
+        </ElFormItem>
+
+        <ElFormItem label="Nhà cung cấp" required>
+          <ElSelect
+            v-model="supplierPriceForm.supplierId"
+            placeholder="Chọn nhà cung cấp"
+            class="w-full"
+            filterable
+          >
+            <ElOption
+              v-for="sup in suppliersList"
+              :key="sup.id"
+              :label="sup.name"
+              :value="sup.id"
+            />
+          </ElSelect>
+        </ElFormItem>
+
+        <ElFormItem label="Giá báo (VND)" required>
+          <ElInputNumber
+            v-model="supplierPriceForm.quotePrice"
+            :min="0"
+            :step="10000"
+            controls-position="right"
+            class="w-full"
+          />
+        </ElFormItem>
+
+        <ElFormItem label="Ghi chú">
+          <ElInput
+            v-model="supplierPriceForm.note"
+            type="textarea"
+            :rows="2"
+            placeholder="Ghi chú thêm..."
+          />
+        </ElFormItem>
+      </ElForm>
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <ElButton @click="supplierPriceDialogVisible = false">Hủy</ElButton>
+          <ElButton type="primary" :loading="savingSupplierPrice" @click="submitSupplierPriceForm"
+            >Lưu</ElButton
+          >
         </div>
       </template>
     </ElDialog>
@@ -1789,7 +1934,9 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed } from 'vue'
+  import { ref, computed, watch, onMounted } from 'vue'
+  import { SupplierApi } from '@/api/supplier.api'
+  import { QuotationApi } from '@/api/quotation.api'
   import {
     Plus,
     Picture,
@@ -2164,6 +2311,164 @@
         return status
     }
   }
+
+  // --- Supplier Prices (Quotation) Management ---
+  const supplierPrices = ref<any[]>([])
+  const loadingSupplierPrices = ref(false)
+  const suppliersList = ref<any[]>([])
+
+  const supplierPriceDialogVisible = ref(false)
+  const savingSupplierPrice = ref(false)
+  const supplierPriceForm = ref({
+    productVariantId: undefined as number | undefined,
+    productVariantColorId: undefined as number | undefined,
+    supplierId: undefined as number | undefined,
+    quotePrice: 0,
+    note: ''
+  })
+
+  const selectedVariantColorsList = computed(() => {
+    if (!supplierPriceForm.value.productVariantId || !formData.value.variants) return []
+    const selectedVar = formData.value.variants.find(
+      (v: any) => v.id === supplierPriceForm.value.productVariantId
+    )
+    return selectedVar?.colors || []
+  })
+
+  const formatCurrency = (val?: number) => {
+    if (val === undefined || val === null) return '0 đ'
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val)
+  }
+
+  const loadSuppliers = async () => {
+    try {
+      const res = await SupplierApi.getList({ current: 1, size: 1000 })
+      suppliersList.value = res.items || []
+    } catch (e) {
+      console.error('Failed to load suppliers:', e)
+    }
+  }
+
+  const fetchSupplierPrices = async () => {
+    if (!formData.value.id || !formData.value.variants) return
+    loadingSupplierPrices.value = true
+    try {
+      const allPrices: any[] = []
+      await Promise.all(
+        formData.value.variants.map(async (v: any) => {
+          if (!v.id) return
+          const res = await QuotationApi.getApprovedPrices(v.id)
+          if (res) {
+            res.forEach((priceItem: any) => {
+              allPrices.push({
+                ...priceItem,
+                variantName: v.variant_name || `Biến thể chính`,
+                colorName:
+                  v.colors?.find((c: any) => c.id === priceItem.productVariantColorId)?.name ||
+                  'Mặc định'
+              })
+            })
+          }
+        })
+      )
+      supplierPrices.value = allPrices
+    } catch (err) {
+      console.error('Failed to fetch supplier prices:', err)
+      ElMessage.error('Không thể tải giá nhà cung cấp')
+    } finally {
+      loadingSupplierPrices.value = false
+    }
+  }
+
+  watch(activeTab, (newTab) => {
+    if (newTab === 'supplier-prices') {
+      fetchSupplierPrices()
+    }
+  })
+
+  const openAddSupplierPrice = () => {
+    supplierPriceForm.value = {
+      productVariantId: formData.value.variants?.[0]?.id || undefined,
+      productVariantColorId: undefined,
+      supplierId: undefined,
+      quotePrice: 0,
+      note: ''
+    }
+    supplierPriceDialogVisible.value = true
+  }
+
+  const handleEditSupplierPrice = (row: any) => {
+    supplierPriceForm.value = {
+      productVariantId: row.productVariantId,
+      productVariantColorId: row.productVariantColorId || undefined,
+      supplierId: row.supplierId,
+      quotePrice: row.quotePrice,
+      note: row.note || ''
+    }
+    supplierPriceDialogVisible.value = true
+  }
+
+  const handleDeleteSupplierPrice = async (row: any) => {
+    try {
+      await ElMessageBox.confirm(
+        `Bạn có chắc chắn muốn xóa giá của nhà cung cấp "${row.supplierName}" cho biến thể này?`,
+        'Xác nhận xóa',
+        {
+          confirmButtonText: 'Xóa',
+          cancelButtonText: 'Hủy',
+          type: 'warning'
+        }
+      )
+      await QuotationApi.deleteApprovedPrice({
+        variantId: row.productVariantId,
+        colorId: row.productVariantColorId || undefined,
+        supplierId: row.supplierId
+      })
+      ElMessage.success('Xóa giá nhà cung cấp thành công')
+      fetchSupplierPrices()
+    } catch (error) {
+      if (error !== 'cancel') {
+        ElMessage.error('Xóa giá nhà cung cấp thất bại')
+      }
+    }
+  }
+
+  const submitSupplierPriceForm = async () => {
+    if (!supplierPriceForm.value.productVariantId) {
+      ElMessage.warning('Vui lòng chọn biến thể')
+      return
+    }
+    if (!supplierPriceForm.value.supplierId) {
+      ElMessage.warning('Vui lòng chọn nhà cung cấp')
+      return
+    }
+    if (supplierPriceForm.value.quotePrice <= 0) {
+      ElMessage.warning('Giá báo phải lớn hơn 0')
+      return
+    }
+
+    savingSupplierPrice.value = true
+    try {
+      await QuotationApi.saveApprovedPrice({
+        productVariantId: supplierPriceForm.value.productVariantId,
+        productVariantColorId: supplierPriceForm.value.productVariantColorId || undefined,
+        supplierId: supplierPriceForm.value.supplierId,
+        quotePrice: supplierPriceForm.value.quotePrice,
+        note: supplierPriceForm.value.note
+      })
+      ElMessage.success('Lưu giá nhà cung cấp thành công')
+      supplierPriceDialogVisible.value = false
+      fetchSupplierPrices()
+    } catch (err: any) {
+      ElMessage.error(err.message || 'Lưu giá nhà cung cấp thất bại')
+    } finally {
+      savingSupplierPrice.value = false
+    }
+  }
+
+  onMounted(() => {
+    loadSuppliers()
+  })
 </script>
 
 <style scoped>

@@ -6,9 +6,10 @@ export interface InputInfo {
   name?: string
   quantity: number
   remainingCount?: number
-  purchaseOrderItemId?: number
+  purchaseRequestItemId?: number
   supplierId?: number
   supplierName?: string
+  unitPrice?: number
   vehicles?: Array<{
     id?: number
     vinNumber: string
@@ -20,10 +21,10 @@ export interface InventoryReceipt {
   id: number
   notes?: string
   statusId: string
-  supplierId: number
+  supplierId?: number
   supplierName?: string
   createdAt?: string
-  purchaseOrderId?: number
+  purchaseRequestId?: number
   products: InputInfo[]
 }
 
@@ -39,11 +40,11 @@ export interface CreateInventoryReceipt {
   notes?: string
   statusId?: string
   supplierId?: number
-  purchaseOrderId?: number
+  purchaseRequestId?: number
   products: Array<{
-    purchaseOrderItemId?: number
-    productVariantId: number
-    productVariantColorId?: number
+    purchaseRequestItemId?: number
+    supplierId?: number
+    unitPrice?: number
     count: number
     vehicles?: Array<{
       id?: number
@@ -56,13 +57,13 @@ export interface CreateInventoryReceipt {
 export interface UpdateInventoryReceipt {
   statusId?: string
   supplierId?: number
-  purchaseOrderId?: number
+  purchaseRequestId?: number
   notes?: string
   products: Array<{
     id?: number
-    purchaseOrderItemId?: number
-    productVariantId: number
-    productVariantColorId?: number
+    purchaseRequestItemId?: number
+    supplierId?: number
+    unitPrice?: number
     count: number
     vehicles?: Array<{
       id?: number

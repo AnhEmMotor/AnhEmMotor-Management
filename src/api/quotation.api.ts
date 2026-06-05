@@ -74,5 +74,25 @@ export const QuotationApi = {
         supplierId
       }
     })
+  },
+
+  saveApprovedPrice(data: {
+    productVariantId: number
+    productVariantColorId?: number
+    supplierId: number
+    quotePrice: number
+    note?: string
+  }) {
+    return request.post<boolean>({
+      url: '/api/v1/Quotations/approved-prices',
+      data
+    })
+  },
+
+  deleteApprovedPrice(params: { variantId: number; colorId?: number; supplierId: number }) {
+    return request.del<boolean>({
+      url: '/api/v1/Quotations/approved-prices',
+      params
+    })
   }
 }
