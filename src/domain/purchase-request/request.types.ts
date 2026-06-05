@@ -29,12 +29,10 @@ export interface PurchaseRequestItemResponse {
   productVariantColorId?: number
   productVariantColorName?: string
   quantity: number
-  poCreatingQuantity: number
-  poApprovedQuantity: number
-  poRemainingQuantity: number
-  importedQuantity: number
-  pendingQuantity: number
-  unimportedQuantity: number
+
+  importedQuantity?: number | null
+  pendingQuantity?: number | null
+  unimportedQuantity?: number | null
 }
 
 export interface PurchaseRequestDetailResponse {
@@ -83,9 +81,7 @@ export interface ApprovedPurchaseRequestItemResponse {
   productVariantColorId?: number
   productVariantColorName?: string
   quantity: number
-  poCreatingQuantity: number
-  poApprovedQuantity: number
-  poRemainingQuantity: number
+
   unimportedQuantity: number
   needVin: boolean
 }
