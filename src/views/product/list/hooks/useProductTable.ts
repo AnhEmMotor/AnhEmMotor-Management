@@ -3,6 +3,7 @@ import { useDebounceFn } from '@vueuse/core'
 import { ProductApi } from '@/api/product.api'
 import { CategoryApi } from '@/api/category.api'
 import { BrandApi } from '@/api/brand.api'
+import { SupplierApi } from '@/api/supplier.api'
 import { TechnologyApi } from '@/api/technology.api'
 import { useTable } from '@/hooks/core/useTable'
 import type { Product } from '@/domain/product/product.types'
@@ -31,6 +32,7 @@ export function useProductTable() {
       )
       .map(([key, label]) => ({ key, label }))
   )
+  const suppliersList = ref<any[]>([])
 
   const brandCache = reactive(new Map<number, Brand>())
 
@@ -351,6 +353,7 @@ export function useProductTable() {
           variant_name: '',
           cover_image_url: '',
           colors: [],
+          supplier_prices: [],
           sku: '',
           photo_collection: [],
           optionValues: {},
@@ -445,7 +448,17 @@ export function useProductTable() {
             id: color.id,
             name: color.name ?? color.colorName ?? color.color_name ?? '',
             code: color.code ?? color.colorCode ?? color.color_code ?? '#000000',
-            image: color.image ?? color.coverImageUrl ?? color.cover_image_url ?? ''
+            image: color.image ?? color.coverImageUrl ?? color.cover_image_url ?? '',
+            showSupplierPrices: false,
+            supplier_prices: (color.supplier_prices || color.supplierPrices || []).map(
+              (price: any) => ({
+                supplier_id: price.supplier_id ?? price.supplierId,
+                product_variant_color_id:
+                  price.product_variant_color_id ?? price.productVariantColorId ?? color.id,
+                quote_price: price.quote_price ?? price.quotePrice,
+                note: price.note || ''
+              })
+            )
           }))
           v.optionValues = v.optionValues || {}
           v.option_rows = Object.entries(v.optionValues)
@@ -465,6 +478,13 @@ export function useProductTable() {
           v.fuel_capacity = v.fuel_capacity || null
           v.tire_size = v.tire_size || ''
           v.showSpecs = !!v.showSpecs
+          v.showSupplierPrices = false
+          v.supplier_prices = (v.supplier_prices || v.supplierPrices || []).map((price: any) => ({
+            supplier_id: price.supplier_id ?? price.supplierId,
+            product_variant_color_id: price.product_variant_color_id ?? price.productVariantColorId,
+            quote_price: price.quote_price ?? price.quotePrice,
+            note: price.note || ''
+          }))
         })
       } else {
         fullProduct.variants = [
@@ -474,6 +494,8 @@ export function useProductTable() {
             variant_name: '',
             cover_image_url: '',
             colors: [],
+            supplier_prices: [],
+            showSupplierPrices: false,
             sku: '',
             photo_collection: [],
             optionValues: {},
@@ -488,7 +510,7 @@ export function useProductTable() {
             fuel_capacity: null,
             tire_size: '',
             showSpecs: false
-          }
+          } as any
         ]
       }
 
@@ -572,6 +594,13 @@ export function useProductTable() {
       delete payload.highlights_list
 
       if (formData.value.variants) {
+        formData.value.variants.forEach((variant: any) => {
+          validateUniqueSupplierPrices(variant.supplier_prices || [], 'Báo giá của biến thể')
+          ;(variant.colors || []).forEach((color: any) => {
+            validateUniqueSupplierPrices(color.supplier_prices || [], 'Báo giá của màu')
+          })
+        })
+
         const serializedVariants = formData.value.variants.map((v: any) => {
           const colors = v.colors || []
           const optionValues = (v.option_rows || []).reduce(
@@ -603,7 +632,17 @@ export function useProductTable() {
             id: color.id,
             color_name: getColorName(color),
             color_code: getColorCode(color),
-            cover_image_url: getColorImage(color)
+            cover_image_url: getColorImage(color),
+            supplier_prices: (color.supplier_prices || [])
+              .filter((price: any) => price.supplier_id && Number(price.supplier_id) > 0)
+              .map((price: any) => ({
+                supplier_id: Number(price.supplier_id),
+                quote_price:
+                  price.quote_price === '' || price.quote_price === null
+                    ? undefined
+                    : Number(price.quote_price),
+                note: price.note || ''
+              }))
           }))
 
           return {
@@ -627,7 +666,18 @@ export function useProductTable() {
             rear_brake: v.rear_brake,
             front_suspension: v.front_suspension,
             rear_suspension: v.rear_suspension,
-            engine_type: v.engine_type
+            engine_type: v.engine_type,
+            showSupplierPrices: undefined,
+            supplier_prices: (v.supplier_prices || [])
+              .filter((price: any) => price.supplier_id && Number(price.supplier_id) > 0)
+              .map((price: any) => ({
+                supplier_id: Number(price.supplier_id),
+                quote_price:
+                  price.quote_price === '' || price.quote_price === null
+                    ? undefined
+                    : Number(price.quote_price),
+                note: price.note || ''
+              }))
           }
         })
 
@@ -663,6 +713,8 @@ export function useProductTable() {
       variant_name: '',
       cover_image_url: '',
       colors: [],
+      supplier_prices: [],
+      showSupplierPrices: false,
       sku: '',
       photo_collection: [],
       optionValues: {},
@@ -677,7 +729,7 @@ export function useProductTable() {
       fuel_capacity: null,
       tire_size: '',
       showSpecs: false
-    })
+    } as any)
   }
 
   const removeVariant = (index: number) => {
@@ -694,7 +746,23 @@ export function useProductTable() {
       variant.colors = []
     }
     variant.cover_image_url = ''
-    variant.colors.push({ name: '', code: '#000000', image: '' })
+    variant.colors.push({
+      name: '',
+      code: '#000000',
+      image: '',
+      supplier_prices: [],
+      showSupplierPrices: false
+    })
+  }
+
+  const loadSuppliers = async () => {
+    try {
+      const res = await SupplierApi.getList({ current: 1, size: 1000 })
+      suppliersList.value = res.items || []
+    } catch (err) {
+      console.error('Failed to load suppliers:', err)
+      suppliersList.value = []
+    }
   }
 
   const removeColor = (variant: any, index: number) => {
@@ -708,6 +776,65 @@ export function useProductTable() {
       variant.option_rows = []
     }
     variant.option_rows.push({ key: '', value: '' })
+  }
+
+  const addVariantSupplierPrice = (variant: any) => {
+    if (!variant.supplier_prices) {
+      variant.supplier_prices = []
+    }
+    variant.showSupplierPrices = true
+    variant.supplier_prices.push({ supplier_id: undefined, quote_price: 0, note: '' })
+  }
+
+  const removeVariantSupplierPrice = (variant: any, index: number) => {
+    if (variant.supplier_prices) {
+      variant.supplier_prices.splice(index, 1)
+    }
+  }
+
+  const addColorSupplierPrice = (color: any) => {
+    if (!color.supplier_prices) {
+      color.supplier_prices = []
+    }
+    color.showSupplierPrices = true
+    color.supplier_prices.push({ supplier_id: undefined, quote_price: 0, note: '' })
+  }
+
+  const removeColorSupplierPrice = (color: any, index: number) => {
+    if (color.supplier_prices) {
+      color.supplier_prices.splice(index, 1)
+    }
+  }
+
+  const toggleVariantSupplierPrices = (variant: any) => {
+    variant.showSupplierPrices = !variant.showSupplierPrices
+  }
+
+  const toggleColorSupplierPrices = (color: any) => {
+    color.showSupplierPrices = !color.showSupplierPrices
+  }
+
+  const isSupplierUsedInRows = (
+    rows: any[],
+    supplierId: number | undefined,
+    currentIndex: number
+  ) => {
+    if (!supplierId) return false
+    return rows.some(
+      (row, idx) => idx !== currentIndex && Number(row?.supplier_id) === Number(supplierId)
+    )
+  }
+
+  const validateUniqueSupplierPrices = (rows: any[], scopeLabel: string) => {
+    const seen = new Set<number>()
+    for (const row of rows || []) {
+      const supplierId = Number(row?.supplier_id)
+      if (!supplierId) continue
+      if (seen.has(supplierId)) {
+        throw new Error(`${scopeLabel} chỉ được chọn mỗi nhà cung cấp một lần.`)
+      }
+      seen.add(supplierId)
+    }
   }
 
   const removeVariantOptionValue = (variant: any, index: number) => {
@@ -864,6 +991,7 @@ export function useProductTable() {
   fetchTechnologies()
   fetchTechnologyCategories()
   fetchPredefinedOptions()
+  loadSuppliers()
 
   const exporting = ref(false)
 
@@ -918,6 +1046,7 @@ export function useProductTable() {
     loadingCategories,
     availableTechnologies,
     availablePredefinedOptions,
+    suppliersList,
     selectedTechIds,
     loadingTechs,
     data,
@@ -945,6 +1074,14 @@ export function useProductTable() {
     removeColor,
     addVariantOptionValue,
     removeVariantOptionValue,
+    addVariantSupplierPrice,
+    removeVariantSupplierPrice,
+    addColorSupplierPrice,
+    removeColorSupplierPrice,
+    toggleVariantSupplierPrices,
+    toggleColorSupplierPrices,
+    isSupplierUsedInRows,
+    validateUniqueSupplierPrices,
 
     vehicleSearch,
     filteredVehicles,

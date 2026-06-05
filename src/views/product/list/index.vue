@@ -1050,7 +1050,7 @@
                         size="small"
                         plain
                         :icon="Delete"
-                        @click="removeVariant(index)"
+                        @click="handleRemoveVariant(index)"
                       >
                         Xóa biến thể
                       </ElButton>
@@ -1300,57 +1300,59 @@
                         <div
                           v-for="(color, cIdx) in variant.colors"
                           :key="cIdx"
-                          class="border border-gray-100 rounded-lg p-4 bg-white shadow-sm flex items-start gap-4 relative mb-2"
+                          class="border border-gray-100 rounded-lg p-4 bg-white shadow-sm flex flex-col gap-4 relative mb-2"
                         >
-                          <div class="flex-1 grid grid-cols-2 gap-4">
-                            <div>
-                              <label
-                                class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
-                              >
-                                Tên màu <span class="text-red-500">*</span>
-                              </label>
-                              <ElInput v-model="color.name" placeholder="Đỏ nhám, Đen bóng..." />
-                            </div>
-                            <div>
-                              <label
-                                class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
-                              >
-                                Mã màu <span class="text-red-500">*</span>
-                              </label>
-                              <div class="flex gap-2 items-center w-full">
-                                <ElColorPicker v-model="color.code" />
-                                <ElInput
-                                  v-model="color.code"
-                                  placeholder="#000000"
-                                  class="flex-1"
-                                />
+                          <div class="flex items-start gap-4 w-full">
+                            <div class="flex-1 grid grid-cols-2 gap-4">
+                              <div>
+                                <label
+                                  class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
+                                >
+                                  Tên màu <span class="text-red-500">*</span>
+                                </label>
+                                <ElInput v-model="color.name" placeholder="Đỏ nhám, Đen bóng..." />
+                              </div>
+                              <div>
+                                <label
+                                  class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
+                                >
+                                  Mã màu <span class="text-red-500">*</span>
+                                </label>
+                                <div class="flex gap-2 items-center w-full">
+                                  <ElColorPicker v-model="color.code" />
+                                  <ElInput
+                                    v-model="color.code"
+                                    placeholder="#000000"
+                                    class="flex-1"
+                                  />
+                                </div>
                               </div>
                             </div>
-                          </div>
 
-                          <div class="w-20 flex flex-col items-center">
-                            <span class="text-[10px] text-gray-400 mb-1"
-                              >Ảnh <span class="text-red-500">*</span></span
-                            >
-                            <ElUpload
-                              class="variant-uploader"
-                              action="#"
-                              :show-file-list="false"
-                              :auto-upload="true"
-                              :http-request="(opt) => handleColorImageUpload(opt, color)"
-                            >
-                              <img
-                                v-if="color.image"
-                                :src="color.image"
-                                class="w-12 h-12 object-cover rounded border border-gray-100"
-                              />
-                              <div
-                                v-else
-                                class="w-12 h-12 rounded border border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:border-primary/50 cursor-pointer"
+                            <div class="w-20 flex flex-col items-center shrink-0">
+                              <span class="text-[10px] text-gray-400 mb-1"
+                                >Ảnh <span class="text-red-500">*</span></span
                               >
-                                <ElIcon><Plus /></ElIcon>
-                              </div>
-                            </ElUpload>
+                              <ElUpload
+                                class="variant-uploader"
+                                action="#"
+                                :show-file-list="false"
+                                :auto-upload="true"
+                                :http-request="(opt) => handleColorImageUpload(opt, color)"
+                              >
+                                <img
+                                  v-if="color.image"
+                                  :src="color.image"
+                                  class="w-12 h-12 object-cover rounded border border-gray-100"
+                                />
+                                <div
+                                  v-else
+                                  class="w-12 h-12 rounded border border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:border-primary/50 cursor-pointer"
+                                >
+                                  <ElIcon><Plus /></ElIcon>
+                                </div>
+                              </ElUpload>
+                            </div>
                           </div>
 
                           <ElButton
@@ -1360,7 +1362,7 @@
                             size="small"
                             :icon="Delete"
                             class="absolute -top-2 -right-2 shadow"
-                            @click="removeColor(variant, Number(cIdx))"
+                            @click="handleRemoveColor(variant, Number(cIdx))"
                           />
                         </div>
                       </div>
@@ -1435,6 +1437,209 @@
                   Thêm biến thể mới
                 </ElButton>
               </div>
+            </div>
+          </ElTabPane>
+
+          <ElTabPane name="pricing" label="Báo giá">
+            <div class="tab-scroll-container py-2">
+              <ElCollapse v-model="activePricingPanels" class="space-y-3">
+                <ElCollapseItem
+                  v-for="(variant, vIdx) in formData.variants || []"
+                  :key="variant.id ?? vIdx"
+                  :name="String(vIdx)"
+                  class="border border-gray-150 rounded-xl bg-white shadow-sm overflow-hidden"
+                >
+                  <template #title>
+                    <div class="flex items-center justify-between w-full p-4">
+                      <div class="flex flex-col">
+                        <span class="font-bold text-gray-800 text-sm">
+                          {{ variant.variant_name || `Biến thể ${vIdx + 1}` }}
+                        </span>
+                        <span class="text-[11px] text-gray-500">
+                          {{
+                            (variant.colors || []).length
+                              ? 'Báo giá theo màu'
+                              : 'Báo giá theo biến thể'
+                          }}
+                        </span>
+                      </div>
+                      <ElTag size="small" effect="light">
+                        {{
+                          (variant.colors || []).length
+                            ? `${(variant.colors || []).length} màu`
+                            : ''
+                        }}
+                      </ElTag>
+                    </div>
+                  </template>
+
+                  <div class="p-4 space-y-4">
+                    <div v-if="!(variant.colors || []).length" class="space-y-3">
+                      <div
+                        class="flex items-center justify-between cursor-pointer select-none"
+                        @click="variant.showSupplierPrices = !variant.showSupplierPrices"
+                      >
+                        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                          Báo giá biến thể
+                        </span>
+                        <div class="flex items-center gap-2">
+                          <ElButton
+                            type="primary"
+                            plain
+                            size="small"
+                            :icon="Plus"
+                            @click.stop="addVariantSupplierPrice(variant)"
+                          >
+                            Thêm giá
+                          </ElButton>
+                          <ElIcon
+                            class="transition-transform duration-300"
+                            :class="{ 'rotate-180': variant.showSupplierPrices }"
+                          >
+                            <ArrowDown />
+                          </ElIcon>
+                        </div>
+                      </div>
+
+                      <ElCollapseTransition>
+                        <div v-show="variant.showSupplierPrices">
+                          <div v-if="variant.supplier_prices?.length" class="space-y-3 pt-3">
+                            <div
+                              v-for="(priceRow, pIdx) in variant.supplier_prices"
+                              :key="pIdx"
+                              class="grid grid-cols-[1.1fr_0.9fr_1.2fr_auto] gap-3 items-start"
+                            >
+                              <ElSelect
+                                v-model="priceRow.supplier_id"
+                                filterable
+                                placeholder="Nhà cung cấp"
+                              >
+                                <ElOption
+                                  v-for="sup in suppliersList"
+                                  :key="sup.id"
+                                  :label="sup.name"
+                                  :value="sup.id"
+                                  :disabled="
+                                    isSupplierUsedInRows(
+                                      variant.supplier_prices || [],
+                                      sup.id,
+                                      pIdx
+                                    )
+                                  "
+                                />
+                              </ElSelect>
+                              <ElInputNumber
+                                v-model="priceRow.quote_price"
+                                :min="0"
+                                :step="10000"
+                                controls-position="right"
+                                placeholder="Giá"
+                              />
+                              <ElInput v-model="priceRow.note" placeholder="Ghi chú" />
+                              <ElButton
+                                type="danger"
+                                plain
+                                :icon="Delete"
+                                @click="removeVariantSupplierPrice(variant, pIdx)"
+                              />
+                            </div>
+                          </div>
+                          <div v-else class="text-xs text-gray-400 italic pt-3">
+                            Chưa có báo giá nào cho biến thể này.
+                          </div>
+                        </div>
+                      </ElCollapseTransition>
+                    </div>
+
+                    <div v-else class="space-y-3">
+                      <div
+                        v-for="(color, cIdx) in variant.colors"
+                        :key="color.id ?? cIdx"
+                        class="border border-gray-100 rounded-lg p-4"
+                      >
+                        <div
+                          class="flex items-center justify-between cursor-pointer select-none"
+                          :class="{ 'mb-3': color.showSupplierPrices }"
+                          @click="color.showSupplierPrices = !color.showSupplierPrices"
+                        >
+                          <div class="flex flex-col">
+                            <span class="font-semibold text-gray-800 text-sm">
+                              {{ color.name || `Màu ${cIdx + 1}` }}
+                            </span>
+                            <span class="text-[11px] text-gray-500">{{ color.code || '' }}</span>
+                          </div>
+                          <div class="flex items-center gap-2">
+                            <ElButton
+                              type="primary"
+                              plain
+                              size="small"
+                              :icon="Plus"
+                              @click.stop="addColorSupplierPrice(color)"
+                            >
+                              Thêm giá
+                            </ElButton>
+                            <ElIcon
+                              class="transition-transform duration-300"
+                              :class="{ 'rotate-180': color.showSupplierPrices }"
+                            >
+                              <ArrowDown />
+                            </ElIcon>
+                          </div>
+                        </div>
+
+                        <ElCollapseTransition>
+                          <div v-show="color.showSupplierPrices">
+                            <div v-if="color.supplier_prices?.length" class="space-y-2">
+                              <div
+                                v-for="(priceRow, pIdx) in color.supplier_prices"
+                                :key="pIdx"
+                                class="grid grid-cols-[1.1fr_0.9fr_1.2fr_auto] gap-3 items-start"
+                              >
+                                <ElSelect
+                                  v-model="priceRow.supplier_id"
+                                  filterable
+                                  placeholder="Nhà cung cấp"
+                                >
+                                  <ElOption
+                                    v-for="sup in suppliersList"
+                                    :key="sup.id"
+                                    :label="sup.name"
+                                    :value="sup.id"
+                                    :disabled="
+                                      isSupplierUsedInRows(
+                                        color.supplier_prices || [],
+                                        sup.id,
+                                        pIdx
+                                      )
+                                    "
+                                  />
+                                </ElSelect>
+                                <ElInputNumber
+                                  v-model="priceRow.quote_price"
+                                  :min="0"
+                                  :step="10000"
+                                  controls-position="right"
+                                  placeholder="Giá"
+                                />
+                                <ElInput v-model="priceRow.note" placeholder="Ghi chú" />
+                                <ElButton
+                                  type="danger"
+                                  plain
+                                  :icon="Delete"
+                                  @click="removeColorSupplierPrice(color, pIdx)"
+                                />
+                              </div>
+                            </div>
+                            <div v-else class="text-xs text-gray-400 italic">
+                              Chưa có báo giá màu này.
+                            </div>
+                          </div>
+                        </ElCollapseTransition>
+                      </div>
+                    </div>
+                  </div>
+                </ElCollapseItem>
+              </ElCollapse>
             </div>
           </ElTabPane>
 
@@ -1518,65 +1723,6 @@
               </div>
             </div>
           </ElTabPane>
-
-          <ElTabPane name="supplier-prices" label="Báo giá nhà cung cấp" v-if="formData.id">
-            <div class="tab-scroll-container">
-              <div class="flex justify-between items-center mb-4 py-2">
-                <span class="text-sm font-semibold text-gray-700"
-                  >Bảng giá sản phẩm từ các nhà cung cấp</span
-                >
-                <ElButton type="primary" size="small" @click="openAddSupplierPrice">
-                  <ElIcon class="mr-1"><Plus /></ElIcon> Thêm giá nhà cung cấp
-                </ElButton>
-              </div>
-
-              <ElTable
-                v-loading="loadingSupplierPrices"
-                :data="supplierPrices"
-                border
-                size="small"
-                class="w-full"
-              >
-                <ElTableColumn prop="variantName" label="Biến thể" min-width="180" />
-                <ElTableColumn prop="colorName" label="Màu sắc" width="150" align="center">
-                  <template #default="{ row }">
-                    <ElTag size="small" type="info">{{ row.colorName || 'Mặc định' }}</ElTag>
-                  </template>
-                </ElTableColumn>
-                <ElTableColumn prop="supplierName" label="Nhà cung cấp" min-width="220" />
-                <ElTableColumn prop="quotePrice" label="Giá nhập (VND)" width="160" align="right">
-                  <template #default="{ row }">
-                    <span class="font-bold text-gray-800">{{
-                      formatCurrency(row.quotePrice)
-                    }}</span>
-                  </template>
-                </ElTableColumn>
-                <ElTableColumn prop="note" label="Ghi chú" min-width="200" show-overflow-tooltip />
-                <ElTableColumn label="Thao tác" width="120" align="center" fixed="right">
-                  <template #default="{ row }">
-                    <div class="flex gap-2 justify-center">
-                      <ElButton
-                        circle
-                        size="small"
-                        type="primary"
-                        @click="handleEditSupplierPrice(row)"
-                      >
-                        <ElIcon><Edit /></ElIcon>
-                      </ElButton>
-                      <ElButton
-                        circle
-                        size="small"
-                        type="danger"
-                        @click="handleDeleteSupplierPrice(row)"
-                      >
-                        <ElIcon><Delete /></ElIcon>
-                      </ElButton>
-                    </div>
-                  </template>
-                </ElTableColumn>
-              </ElTable>
-            </div>
-          </ElTabPane>
         </ElTabs>
       </ElForm>
       <template #footer>
@@ -1585,92 +1731,6 @@
           <ElButton type="primary" :loading="submitting" @click="submitForm" class="px-8">
             Lưu sản phẩm
           </ElButton>
-        </div>
-      </template>
-    </ElDialog>
-
-    <!-- Add/Edit Supplier Price Dialog -->
-    <ElDialog
-      v-model="supplierPriceDialogVisible"
-      title="Thiết lập giá nhà cung cấp"
-      width="480px"
-      append-to-body
-      destroy-on-close
-      class="premium-dialog-nested"
-    >
-      <ElForm :model="supplierPriceForm" label-position="top">
-        <ElFormItem label="Biến thể sản phẩm" required>
-          <ElSelect
-            v-model="supplierPriceForm.productVariantId"
-            placeholder="Chọn biến thể"
-            class="w-full"
-          >
-            <ElOption
-              v-for="v in formData.variants"
-              :key="v.id ?? 0"
-              :label="v.variant_name || 'Biến thể chính'"
-              :value="v.id ?? 0"
-            />
-          </ElSelect>
-        </ElFormItem>
-
-        <ElFormItem label="Màu sắc" v-if="selectedVariantColorsList.length > 0">
-          <ElSelect
-            v-model="supplierPriceForm.productVariantColorId"
-            placeholder="Chọn màu sắc (nếu có)"
-            class="w-full"
-            clearable
-          >
-            <ElOption
-              v-for="c in selectedVariantColorsList"
-              :key="c.id ?? 0"
-              :label="c.name"
-              :value="c.id ?? 0"
-            />
-          </ElSelect>
-        </ElFormItem>
-
-        <ElFormItem label="Nhà cung cấp" required>
-          <ElSelect
-            v-model="supplierPriceForm.supplierId"
-            placeholder="Chọn nhà cung cấp"
-            class="w-full"
-            filterable
-          >
-            <ElOption
-              v-for="sup in suppliersList"
-              :key="sup.id"
-              :label="sup.name"
-              :value="sup.id"
-            />
-          </ElSelect>
-        </ElFormItem>
-
-        <ElFormItem label="Giá báo (VND)" required>
-          <ElInputNumber
-            v-model="supplierPriceForm.quotePrice"
-            :min="0"
-            :step="10000"
-            controls-position="right"
-            class="w-full"
-          />
-        </ElFormItem>
-
-        <ElFormItem label="Ghi chú">
-          <ElInput
-            v-model="supplierPriceForm.note"
-            type="textarea"
-            :rows="2"
-            placeholder="Ghi chú thêm..."
-          />
-        </ElFormItem>
-      </ElForm>
-      <template #footer>
-        <div class="flex justify-end gap-2">
-          <ElButton @click="supplierPriceDialogVisible = false">Hủy</ElButton>
-          <ElButton type="primary" :loading="savingSupplierPrice" @click="submitSupplierPriceForm"
-            >Lưu</ElButton
-          >
         </div>
       </template>
     </ElDialog>
@@ -1935,8 +1995,6 @@
 
 <script setup lang="ts">
   import { ref, computed, watch, onMounted } from 'vue'
-  import { SupplierApi } from '@/api/supplier.api'
-  import { QuotationApi } from '@/api/quotation.api'
   import {
     Plus,
     Picture,
@@ -1955,6 +2013,7 @@
   defineOptions({ name: 'ProductList' })
 
   const activeTab = ref('common')
+  const activePricingPanels = ref<string[]>([])
   const activeSpecGroup = ref<string | null>('part_specs')
   const toggleSpecGroup = (groupName: string) => {
     if (activeSpecGroup.value === groupName) {
@@ -1978,8 +2037,13 @@
     setTimeout(() => {
       if (formData.value && formData.value.variants) {
         activeVariantIndex.value = formData.value.variants.length - 1
+        activePricingPanels.value = [String(formData.value.variants.length - 1)]
       }
     }, 50)
+  }
+
+  const syncPricingPanels = () => {
+    activePricingPanels.value = []
   }
 
   const {
@@ -2022,6 +2086,11 @@
     removeColor,
     addVariantOptionValue,
     removeVariantOptionValue,
+    addVariantSupplierPrice,
+    removeVariantSupplierPrice,
+    addColorSupplierPrice,
+    removeColorSupplierPrice,
+    isSupplierUsedInRows,
 
     vehicleSearch,
     filteredVehicles,
@@ -2032,6 +2101,7 @@
     isTechnologySelected,
     availableTechnologies,
     availablePredefinedOptions,
+    suppliersList,
     loadingTechs,
     technologyCategories,
     createTechnology,
@@ -2041,6 +2111,16 @@
 
     exportToExcel
   } = useProductTable()
+
+  const handleRemoveVariant = (index: number) => {
+    removeVariant(index)
+    syncPricingPanels()
+  }
+
+  const handleRemoveColor = (variant: any, index: number) => {
+    removeColor(variant, index)
+    syncPricingPanels()
+  }
 
   const groupedTechnologies = computed(() => {
     const groups: Record<string, any[]> = {}
@@ -2312,163 +2392,14 @@
     }
   }
 
-  // --- Supplier Prices (Quotation) Management ---
-  const supplierPrices = ref<any[]>([])
-  const loadingSupplierPrices = ref(false)
-  const suppliersList = ref<any[]>([])
-
-  const supplierPriceDialogVisible = ref(false)
-  const savingSupplierPrice = ref(false)
-  const supplierPriceForm = ref({
-    productVariantId: undefined as number | undefined,
-    productVariantColorId: undefined as number | undefined,
-    supplierId: undefined as number | undefined,
-    quotePrice: 0,
-    note: ''
-  })
-
-  const selectedVariantColorsList = computed(() => {
-    if (!supplierPriceForm.value.productVariantId || !formData.value.variants) return []
-    const selectedVar = formData.value.variants.find(
-      (v: any) => v.id === supplierPriceForm.value.productVariantId
-    )
-    return selectedVar?.colors || []
-  })
-
-  const formatCurrency = (val?: number) => {
-    if (val === undefined || val === null) return '0 đ'
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val)
-  }
-
-  const loadSuppliers = async () => {
-    try {
-      const res = await SupplierApi.getList({ current: 1, size: 1000 })
-      suppliersList.value = res.items || []
-    } catch (e) {
-      console.error('Failed to load suppliers:', e)
+  watch(
+    () => formData.value.variants?.length,
+    () => {
+      syncPricingPanels()
     }
-  }
+  )
 
-  const fetchSupplierPrices = async () => {
-    if (!formData.value.id || !formData.value.variants) return
-    loadingSupplierPrices.value = true
-    try {
-      const allPrices: any[] = []
-      await Promise.all(
-        formData.value.variants.map(async (v: any) => {
-          if (!v.id) return
-          const res = await QuotationApi.getApprovedPrices(v.id)
-          if (res) {
-            res.forEach((priceItem: any) => {
-              allPrices.push({
-                ...priceItem,
-                variantName: v.variant_name || `Biến thể chính`,
-                colorName:
-                  v.colors?.find((c: any) => c.id === priceItem.productVariantColorId)?.name ||
-                  'Mặc định'
-              })
-            })
-          }
-        })
-      )
-      supplierPrices.value = allPrices
-    } catch (err) {
-      console.error('Failed to fetch supplier prices:', err)
-      ElMessage.error('Không thể tải giá nhà cung cấp')
-    } finally {
-      loadingSupplierPrices.value = false
-    }
-  }
-
-  watch(activeTab, (newTab) => {
-    if (newTab === 'supplier-prices') {
-      fetchSupplierPrices()
-    }
-  })
-
-  const openAddSupplierPrice = () => {
-    supplierPriceForm.value = {
-      productVariantId: formData.value.variants?.[0]?.id || undefined,
-      productVariantColorId: undefined,
-      supplierId: undefined,
-      quotePrice: 0,
-      note: ''
-    }
-    supplierPriceDialogVisible.value = true
-  }
-
-  const handleEditSupplierPrice = (row: any) => {
-    supplierPriceForm.value = {
-      productVariantId: row.productVariantId,
-      productVariantColorId: row.productVariantColorId || undefined,
-      supplierId: row.supplierId,
-      quotePrice: row.quotePrice,
-      note: row.note || ''
-    }
-    supplierPriceDialogVisible.value = true
-  }
-
-  const handleDeleteSupplierPrice = async (row: any) => {
-    try {
-      await ElMessageBox.confirm(
-        `Bạn có chắc chắn muốn xóa giá của nhà cung cấp "${row.supplierName}" cho biến thể này?`,
-        'Xác nhận xóa',
-        {
-          confirmButtonText: 'Xóa',
-          cancelButtonText: 'Hủy',
-          type: 'warning'
-        }
-      )
-      await QuotationApi.deleteApprovedPrice({
-        variantId: row.productVariantId,
-        colorId: row.productVariantColorId || undefined,
-        supplierId: row.supplierId
-      })
-      ElMessage.success('Xóa giá nhà cung cấp thành công')
-      fetchSupplierPrices()
-    } catch (error) {
-      if (error !== 'cancel') {
-        ElMessage.error('Xóa giá nhà cung cấp thất bại')
-      }
-    }
-  }
-
-  const submitSupplierPriceForm = async () => {
-    if (!supplierPriceForm.value.productVariantId) {
-      ElMessage.warning('Vui lòng chọn biến thể')
-      return
-    }
-    if (!supplierPriceForm.value.supplierId) {
-      ElMessage.warning('Vui lòng chọn nhà cung cấp')
-      return
-    }
-    if (supplierPriceForm.value.quotePrice <= 0) {
-      ElMessage.warning('Giá báo phải lớn hơn 0')
-      return
-    }
-
-    savingSupplierPrice.value = true
-    try {
-      await QuotationApi.saveApprovedPrice({
-        productVariantId: supplierPriceForm.value.productVariantId,
-        productVariantColorId: supplierPriceForm.value.productVariantColorId || undefined,
-        supplierId: supplierPriceForm.value.supplierId,
-        quotePrice: supplierPriceForm.value.quotePrice,
-        note: supplierPriceForm.value.note
-      })
-      ElMessage.success('Lưu giá nhà cung cấp thành công')
-      supplierPriceDialogVisible.value = false
-      fetchSupplierPrices()
-    } catch (err: any) {
-      ElMessage.error(err.message || 'Lưu giá nhà cung cấp thất bại')
-    } finally {
-      savingSupplierPrice.value = false
-    }
-  }
-
-  onMounted(() => {
-    loadSuppliers()
-  })
+  onMounted(() => {})
 </script>
 
 <style scoped>

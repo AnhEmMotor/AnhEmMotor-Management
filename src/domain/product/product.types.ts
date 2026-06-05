@@ -9,6 +9,13 @@ export interface VariantColor {
   color_name?: string
   color_code?: string
   cover_image_url?: string
+  supplier_prices?: Array<{
+    supplier_id?: number
+    product_variant_color_id?: number
+    quote_price?: number
+    note?: string
+  }>
+  showSupplierPrices?: boolean
 }
 
 export interface ProductVariant {
@@ -31,6 +38,13 @@ export interface ProductVariant {
   fuel_capacity?: number | null
   tire_size?: string
   showSpecs?: boolean
+  supplier_prices?: Array<{
+    supplier_id?: number
+    product_variant_color_id?: number
+    quote_price?: number
+    note?: string
+  }>
+  showSupplierPrices?: boolean
 }
 
 export interface Product {
