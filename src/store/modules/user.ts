@@ -98,7 +98,7 @@ export const useUserStore = defineStore(
       const redirect = currentRoute.path !== '/login' ? currentRoute.fullPath : undefined
       router.push({
         name: 'Login',
-        query: redirect ? { redirect } : undefined
+        query: redirect ? { redirect } : undefined,
       })
     }
 
@@ -128,7 +128,7 @@ export const useUserStore = defineStore(
         email: data.email || info.value.email || '',
         avatar: data.avatarUrl || info.value.avatar || '',
         roles: data.roles || info.value.roles || [],
-        buttons: data.permissions || info.value.buttons || []
+        buttons: data.permissions || info.value.buttons || [],
       }
     }
 
@@ -157,7 +157,7 @@ export const useUserStore = defineStore(
           openWhenHidden: true,
           headers: {
             Authorization: `Bearer ${token}`,
-            Accept: 'text/event-stream'
+            Accept: 'text/event-stream',
           },
           async onopen(response) {
             if (
@@ -221,7 +221,7 @@ export const useUserStore = defineStore(
               }
               throw err
             }
-          }
+          },
         })
       } catch (err: any) {
         if (err.message !== 'SSE_AUTH_ERROR') {
@@ -263,7 +263,7 @@ export const useUserStore = defineStore(
           closeSSE()
         }
       },
-      { immediate: true }
+      { immediate: true },
     )
 
     // Watch for real-time permissions/roles changes via SSE to reload menus and validate access
@@ -276,7 +276,7 @@ export const useUserStore = defineStore(
 
         window.dispatchEvent(new CustomEvent('auth:permissions-changed'))
       },
-      { deep: true }
+      { deep: true },
     )
 
     return {
@@ -303,13 +303,13 @@ export const useUserStore = defineStore(
       sseStatus,
       connectSSE,
       closeSSE,
-      reconnectSSE
+      reconnectSSE,
     }
   },
   {
     persist: {
       key: 'user',
-      storage: localStorage
-    }
-  }
+      storage: localStorage,
+    },
+  },
 )

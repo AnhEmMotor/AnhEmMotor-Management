@@ -232,7 +232,7 @@
     'insertImage',
     '|',
     'undo',
-    'redo'
+    'redo',
   ]
 
   const fullEditorHtml = ref(`<h1>🎨 Đầy đủThanh công cụTrình biên tậpthịví dụ</h1>

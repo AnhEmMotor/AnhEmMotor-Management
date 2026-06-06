@@ -89,7 +89,7 @@
       cup: 85,
       memory: 65,
       swap: 45,
-      disk: 92
+      disk: 92,
     },
     {
       name: 'đothửphụcvụthiết bị',
@@ -97,7 +97,7 @@
       cup: 32,
       memory: 78,
       swap: 90,
-      disk: 45
+      disk: 45,
     },
     {
       name: 'trướcĐăng tảiphụcvụthiết bị',
@@ -105,7 +105,7 @@
       cup: 95,
       memory: 42,
       swap: 67,
-      disk: 88
+      disk: 88,
     },
     {
       name: 'đườngtrênphụcvụthiết bị',
@@ -113,8 +113,8 @@
       cup: 58,
       memory: 93,
       swap: 25,
-      disk: 73
-    }
+      disk: 73,
+    },
   ])
 
   const generateRandomValue = (min = 0, max = 100): number => {

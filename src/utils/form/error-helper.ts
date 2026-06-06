@@ -8,7 +8,7 @@ export interface NormalizeOptions {
  */
 export function normalizeBackendErrors(
   err: any,
-  options: NormalizeOptions = {}
+  options: NormalizeOptions = {},
 ): Record<string, string> {
   const normalized: Record<string, string> = {}
 

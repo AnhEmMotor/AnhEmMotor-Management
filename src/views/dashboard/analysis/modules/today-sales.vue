@@ -55,28 +55,28 @@
       value: 999,
       change: '+10%',
       icon: 'ri:bar-chart-box-ai-line',
-      class: 'bg-theme'
+      class: 'bg-theme',
     },
     {
       label: 'tổngĐơn hànglượng',
       value: 300,
       change: '+15%',
       icon: 'ri:bar-chart-grouped-line',
-      class: 'bg-warning'
+      class: 'bg-warning',
     },
     {
       label: 'sinhsản phẩmtácbánlượng',
       value: 56,
       change: '-5%',
       icon: 'ri:bar-chart-2-line',
-      class: 'bg-error'
+      class: 'bg-error',
     },
     {
       label: 'mớikháchkhoảnsố',
       value: 68,
       change: '+8%',
       icon: 'ri:user-add-line',
-      class: 'bg-success'
-    }
+      class: 'bg-success',
+    },
   ])
 </script>

@@ -31,19 +31,19 @@
     'sinhsản phẩmB',
     'sinhsản phẩmC',
     'sinhsản phẩmD',
-    'sinhsản phẩmE'
+    'sinhsản phẩmE',
   ])
 
   const volumeServiceData = ref<VolumeServiceDataItem[]>([
     {
       name: 'nghiệpvụlượng',
       data: [20, 25, 30, 35, 40],
-      stack: 'total'
+      stack: 'total',
     },
     {
       name: 'phụcvụlượng',
       data: [30, 35, 40, 45, 50],
-      stack: 'total'
-    }
+      stack: 'total',
+    },
   ])
 </script>

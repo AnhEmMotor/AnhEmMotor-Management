@@ -193,7 +193,7 @@ export default class WebSocketClient {
 
   private handleClose(event: CloseEvent): void {
     console.log(
-      `WebSocketđoánmở: đạimã=${event.code}, nguyênvì=${event.reason}, khôtịnhđóngđóng=${event.wasClean}`
+      `WebSocketđoánmở: đạimã=${event.code}, nguyênvì=${event.reason}, khôtịnhđóngđóng=${event.wasClean}`,
     )
 
     const isNormalClose = event.code === 1000
@@ -213,7 +213,7 @@ export default class WebSocketClient {
     console.error('LỗiSuKien:', event)
     console.error(
       'khitrướcliềntiếpTrạng thái:',
-      this.ws?.readyState ? this.getReadyStateText(this.ws.readyState) : 'Chưaban đầuđầuhóa'
+      this.ws?.readyState ? this.getReadyStateText(this.ws.readyState) : 'Chưaban đầuđầuhóa',
     )
 
     this.isConnected = false
@@ -312,7 +312,7 @@ export default class WebSocketClient {
 
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
       console.error(
-        `ĐãđếnnhấtđạiSố lần kết nối lại(${this.maxReconnectAttempts})，dừngthúctrùngliền`
+        `ĐãđếnnhấtđạiSố lần kết nối lại(${this.maxReconnectAttempts})，dừngthúctrùngliền`,
       )
       this.close(true)
       return
@@ -324,7 +324,7 @@ export default class WebSocketClient {
 
     const delay = this.calculateReconnectDelay()
     console.log(
-      `tươngtại${delay / 1000}giâysauthửthửtrùngmớiliềntiếp（thứ${this.reconnectAttempts}/${this.maxReconnectAttempts}lần）`
+      `tươngtại${delay / 1000}giâysauthửthửtrùngmớiliềntiếp（thứ${this.reconnectAttempts}/${this.maxReconnectAttempts}lần）`,
     )
 
     this.clearTimer('reconnectTimer')
@@ -338,7 +338,7 @@ export default class WebSocketClient {
     const jitter = Math.random() * 1000
     const baseDelay = Math.min(
       this.reconnectInterval * Math.pow(1.5, this.reconnectAttempts - 1),
-      this.reconnectInterval * 5
+      this.reconnectInterval * 5,
     )
     return baseDelay + jitter
   }
@@ -349,7 +349,7 @@ export default class WebSocketClient {
       | 'timeoutTimer'
       | 'reconnectTimer'
       | 'pingTimer'
-      | 'connectionTimer'
+      | 'connectionTimer',
   ): void {
     if (this[timerName]) {
       clearTimeout(this[timerName] as NodeJS.Timeout)

@@ -84,7 +84,7 @@
       percentage: 60,
       pro: 0,
       color: 'var(--art-primary)',
-      avatar: avatar1
+      avatar: avatar1,
     },
     {
       username: 'nàotiểusen',
@@ -94,7 +94,7 @@
       percentage: 20,
       pro: 0,
       color: 'var(--art-secondary)',
-      avatar: avatar2
+      avatar: avatar2,
     },
     {
       username: '',
@@ -104,7 +104,7 @@
       percentage: 60,
       pro: 0,
       color: 'var(--art-warning)',
-      avatar: avatar3
+      avatar: avatar3,
     },
     {
       username: 'phátngốccỏ',
@@ -114,7 +114,7 @@
       percentage: 50,
       pro: 0,
       color: 'var(--art-info)',
-      avatar: avatar4
+      avatar: avatar4,
     },
     {
       username: 'ngọtống',
@@ -124,7 +124,7 @@
       percentage: 70,
       pro: 0,
       color: 'var(--art-error)',
-      avatar: avatar5
+      avatar: avatar5,
     },
     {
       username: 'lạnhthángngốcngốc',
@@ -134,8 +134,8 @@
       percentage: 90,
       pro: 0,
       color: 'var(--art-success)',
-      avatar: avatar6
-    }
+      avatar: avatar6,
+    },
   ])
 
   const addAnimation = (): void => {

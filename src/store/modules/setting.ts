@@ -299,13 +299,13 @@ export const useSettingStore = defineStore(
       setholidayFireworksLoaded,
       setShowFestivalText,
       setFestivalDate,
-      setDualMenuShowText
+      setDualMenuShowText,
     }
   },
   {
     persist: {
       key: 'setting',
-      storage: localStorage
-    }
-  }
+      storage: localStorage,
+    },
+  },
 )

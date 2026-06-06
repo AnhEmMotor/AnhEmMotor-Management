@@ -7,7 +7,7 @@ export const dashboardRoutes: AppRouteRecord = {
   meta: {
     title: 'menus.dashboard.title',
     icon: 'ri:pie-chart-line',
-    roles: ['R_SUPER', 'R_ADMIN']
+    roles: ['R_SUPER', 'R_ADMIN'],
   },
   children: [
     {
@@ -18,8 +18,8 @@ export const dashboardRoutes: AppRouteRecord = {
         title: 'menus.dashboard.console',
         icon: 'ri:home-smile-2-line',
         keepAlive: false,
-        fixedTab: true
-      }
+        fixedTab: true,
+      },
     },
     {
       path: 'analysis',
@@ -28,8 +28,8 @@ export const dashboardRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.dashboard.analysis',
         icon: 'ri:align-item-bottom-line',
-        keepAlive: false
-      }
+        keepAlive: false,
+      },
     },
     {
       path: 'ecommerce',
@@ -38,8 +38,8 @@ export const dashboardRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.dashboard.ecommerce',
         icon: 'ri:bar-chart-box-line',
-        keepAlive: false
-      }
-    }
-  ]
+        keepAlive: false,
+      },
+    },
+  ],
 }

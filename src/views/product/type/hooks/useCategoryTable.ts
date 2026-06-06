@@ -30,7 +30,7 @@ export function useCategoryTable() {
       if (dialogTitle.value.includes('Thêm') && newName) {
         formData.value.slug = generateSlug(newName)
       }
-    }
+    },
   )
   const submitting = ref(false)
 
@@ -38,7 +38,7 @@ export function useCategoryTable() {
     totalCategories: 0,
     productCategoriesCount: 0,
     latestUpdatedCategoryName: '',
-    latestUpdatedAt: ''
+    latestUpdatedAt: '',
   })
 
   const fetchStats = async () => {
@@ -49,7 +49,7 @@ export function useCategoryTable() {
           totalCategories: res.totalCategories || 0,
           productCategoriesCount: res.productCategoriesCount || 0,
           latestUpdatedCategoryName: res.latestUpdatedCategoryName || '',
-          latestUpdatedAt: res.latestUpdatedAt || ''
+          latestUpdatedAt: res.latestUpdatedAt || '',
         }
       }
     } catch (err) {
@@ -62,7 +62,7 @@ export function useCategoryTable() {
       const res = await CategoryApi.getManagementTypes()
       managementTypes.value = (res || []).map((item) => ({
         label: item.text,
-        value: item.value
+        value: item.value,
       }))
     } catch (err) {
       console.error('Failed to fetch management types:', err)
@@ -80,18 +80,18 @@ export function useCategoryTable() {
     getData,
     refreshData,
     replaceSearchParams,
-    searchParams
+    searchParams,
   } = useTable({
     core: {
       apiFn: (params: any) => {
         return CategoryApi.getList({
           ...params,
-          size: 1000 // Get all categories to build tree properly
+          size: 1000, // Get all categories to build tree properly
         }) as unknown as Promise<Api.Common.PaginatedResponse<ProductCategory>>
       },
       apiParams: {
         current: 1,
-        size: 10
+        size: 10,
       },
       columnsFactory: () => [
         { prop: 'imageUrl', label: 'Hình ảnh', width: 120, useSlot: true, align: 'left' },
@@ -106,10 +106,10 @@ export function useCategoryTable() {
           width: 150,
           useSlot: true,
           align: 'center',
-          fixed: 'right'
-        }
-      ]
-    }
+          fixed: 'right',
+        },
+      ],
+    },
   })
 
   const tableData = computed<any[]>(() => {
@@ -118,7 +118,7 @@ export function useCategoryTable() {
 
   const parentCategories = computed<ProductCategory[]>(() => {
     return (data.value as ProductCategory[]).filter(
-      (c) => !c.parentId && c.id !== formData.value.id
+      (c) => !c.parentId && c.id !== formData.value.id,
     )
   })
 
@@ -132,7 +132,7 @@ export function useCategoryTable() {
       managementType: managementTypes.value[0]?.value || 'sku',
       maxPurchaseQuantity: null,
       isActive: true,
-      parentId: null
+      parentId: null,
     }
     dialogVisible.value = true
   }
@@ -147,7 +147,7 @@ export function useCategoryTable() {
     ElMessageBox.confirm(`Bạn có chắc chắn muốn xóa "${row.name}" không?`, 'Xác nhận xóa', {
       confirmButtonText: 'Xóa',
       cancelButtonText: 'Hủy',
-      type: 'warning'
+      type: 'warning',
     }).then(async () => {
       try {
         await CategoryApi.delete(row.id)
@@ -192,7 +192,7 @@ export function useCategoryTable() {
     }
     isSearching.value = filters.length > 0
     replaceSearchParams({
-      Filters: filters.join(',')
+      Filters: filters.join(','),
     })
     getData()
   }
@@ -266,6 +266,6 @@ export function useCategoryTable() {
     submitForm,
 
     exporting,
-    handleExport
+    handleExport,
   }
 }

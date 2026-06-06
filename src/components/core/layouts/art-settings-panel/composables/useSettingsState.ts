@@ -26,6 +26,6 @@ export function useSettingsState() {
 
   return {
     initColorWeak,
-    switchMenuLayouts
+    switchMenuLayouts,
   }
 }

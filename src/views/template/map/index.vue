@@ -8,6 +8,6 @@
   defineOptions({ name: 'TemplateMap' })
 
   const ArtMapChart = defineAsyncComponent(
-    () => import('@/components/core/charts/art-map-chart/index.vue')
+    () => import('@/components/core/charts/art-map-chart/index.vue'),
   )
 </script>

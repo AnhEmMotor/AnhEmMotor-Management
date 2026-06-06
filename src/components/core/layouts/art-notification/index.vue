@@ -3,7 +3,7 @@
     class="art-notification-panel art-card-sm !shadow-xl"
     :style="{
       transform: show ? 'scaleY(1)' : 'scaleY(0.9)',
-      opacity: show ? 1 : 0
+      opacity: show ? 1 : 0,
     }"
     v-show="visible"
     @click.stop
@@ -165,66 +165,66 @@
       {
         title: 'Thêm mớiquốctếhóa',
         time: '2024-6-13 0:10',
-        type: 'notice'
+        type: 'notice',
       },
       {
         title: 'lạnhthángngốcngốcchobạnphátrồimộtđiềuTinNhan',
         time: '2024-4-21 8:05',
-        type: 'message'
+        type: 'message',
       },
       {
         title: 'tiểubéolợnđóngtâmrồibạn',
         time: '2020-3-17 21:12',
-        type: 'collection'
+        type: 'collection',
       },
       {
         title: 'Thêm mớikhiếndùngTaiLieu',
         time: '2024-02-14 0:20',
-        type: 'notice'
+        type: 'notice',
       },
       {
         title: 'tiểubéolợnchobạnphátrồimộtphongbưuphần tử',
         time: '2024-1-20 0:15',
-        type: 'email'
+        type: 'email',
       },
       {
         title: 'MenumockquyểnđịathậtthựcDữ liệu',
         time: '2024-1-17 22:06',
-        type: 'notice'
-      }
+        type: 'notice',
+      },
     ])
 
     const msgList = ref<MessageItem[]>([
       {
         title: 'aoKhôngbéo đóngtâmrồibạn',
         time: '2021-2-26 23:50',
-        avatar: avatar1
+        avatar: avatar1,
       },
       {
         title: 'đườngKhôngkhổ đóngtâmrồibạn',
         time: '2021-2-21 8:05',
-        avatar: avatar2
+        avatar: avatar2,
       },
       {
         title: 'trongtiểucá đóngtâmrồibạn',
         time: '2020-1-17 21:12',
-        avatar: avatar3
+        avatar: avatar3,
       },
       {
         title: 'nàotiểusen đóngtâmrồibạn',
         time: '2021-01-14 0:20',
-        avatar: avatar4
+        avatar: avatar4,
       },
       {
         title: ' đóngtâmrồibạn',
         time: '2020-12-20 0:15',
-        avatar: avatar5
+        avatar: avatar5,
       },
       {
         title: 'lạnhthángngốcngốc đóngtâmrồibạn',
         time: '2020-12-17 22:06',
-        avatar: avatar6
-      }
+        avatar: avatar6,
+      },
     ])
 
     const pendingList = ref<PendingItem[]>([])
@@ -232,23 +232,23 @@
     const barList = computed<BarItem[]>(() => [
       {
         name: computed(() => t('notice.bar[0]')),
-        num: noticeList.value.length
+        num: noticeList.value.length,
       },
       {
         name: computed(() => t('notice.bar[1]')),
-        num: msgList.value.length
+        num: msgList.value.length,
       },
       {
         name: computed(() => t('notice.bar[2]')),
-        num: pendingList.value.length
-      }
+        num: pendingList.value.length,
+      },
     ])
 
     return {
       noticeList,
       msgList,
       pendingList,
-      barList
+      barList,
     }
   }
 
@@ -256,37 +256,37 @@
     const noticeStyleMap: Record<NoticeType, NoticeStyle> = {
       email: {
         icon: 'ri:mail-line',
-        iconClass: 'bg-warning/12 text-warning'
+        iconClass: 'bg-warning/12 text-warning',
       },
       message: {
         icon: 'ri:volume-down-line',
-        iconClass: 'bg-success/12 text-success'
+        iconClass: 'bg-success/12 text-success',
       },
       collection: {
         icon: 'ri:heart-3-line',
-        iconClass: 'bg-danger/12 text-danger'
+        iconClass: 'bg-danger/12 text-danger',
       },
       user: {
         icon: 'ri:volume-down-line',
-        iconClass: 'bg-info/12 text-info'
+        iconClass: 'bg-info/12 text-info',
       },
       notice: {
         icon: 'ri:notification-3-line',
-        iconClass: 'bg-theme/12 text-theme'
-      }
+        iconClass: 'bg-theme/12 text-theme',
+      },
     }
 
     const getNoticeStyle = (type: NoticeType): NoticeStyle => {
       const defaultStyle: NoticeStyle = {
         icon: 'ri:arrow-right-circle-line',
-        iconClass: 'bg-theme/12 text-theme'
+        iconClass: 'bg-theme/12 text-theme',
       }
 
       return noticeStyleMap[type] || defaultStyle
     }
 
     return {
-      getNoticeStyle
+      getNoticeStyle,
     }
   }
 
@@ -306,7 +306,7 @@
     }
 
     return {
-      showNotice
+      showNotice,
     }
   }
 
@@ -318,7 +318,7 @@
       handleNoticeAll: () => void
       handleMsgAll: () => void
       handlePendingAll: () => void
-    }
+    },
   ) => {
     const changeBar = (index: number) => {
       barActiveIndex.value = index
@@ -335,7 +335,7 @@
       const viewAllHandlers: Record<number, () => void> = {
         0: businessHandlers.handleNoticeAll,
         1: businessHandlers.handleMsgAll,
-        2: businessHandlers.handlePendingAll
+        2: businessHandlers.handlePendingAll,
       }
 
       const handler = viewAllHandlers[barActiveIndex.value]
@@ -347,7 +347,7 @@
     return {
       changeBar,
       currentTabIsEmpty,
-      handleViewAll
+      handleViewAll,
     }
   }
 
@@ -367,7 +367,7 @@
     return {
       handleNoticeAll,
       handleMsgAll,
-      handlePendingAll
+      handlePendingAll,
     }
   }
 
@@ -379,14 +379,14 @@
     noticeList,
     msgList,
     pendingList,
-    { handleNoticeAll, handleMsgAll, handlePendingAll }
+    { handleNoticeAll, handleMsgAll, handlePendingAll },
   )
 
   watch(
     () => props.value,
     (newValue) => {
       showNotice(newValue)
-    }
+    },
   )
 </script>
 

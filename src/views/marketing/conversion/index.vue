@@ -236,7 +236,7 @@
       active: true,
       views: 4502,
       clicks: 312,
-      img: 'https://picsum.photos/200/200?random=1'
+      img: 'https://picsum.photos/200/200?random=1',
     },
     {
       id: 2,
@@ -247,8 +247,8 @@
       active: false,
       views: 1205,
       clicks: 89,
-      img: 'https://picsum.photos/200/200?random=2'
-    }
+      img: 'https://picsum.photos/200/200?random=2',
+    },
   ])
 
   const landingPages = ref([
@@ -260,7 +260,7 @@
       leads: 42,
       clicks: 1560,
       preview:
-        'https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?auto=format&fit=crop&q=80&w=800'
+        'https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?auto=format&fit=crop&q=80&w=800',
     },
     {
       id: 102,
@@ -269,7 +269,7 @@
       status: 'Scheduled',
       leads: 0,
       clicks: 0,
-      preview: 'https://picsum.photos/800/450?random=3'
+      preview: 'https://picsum.photos/800/450?random=3',
     },
     {
       id: 103,
@@ -279,8 +279,8 @@
       leads: 12,
       clicks: 850,
       preview:
-        'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=800'
-    }
+        'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=800',
+    },
   ])
 
   const handleAddPopup = () => {

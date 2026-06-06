@@ -67,7 +67,7 @@
 
   const initialSearchState = {
     name: '',
-    route: ''
+    route: '',
   }
 
   const formFilters = reactive({ ...initialSearchState })
@@ -78,14 +78,14 @@
       label: 'Menudanhtên',
       key: 'name',
       type: 'input',
-      props: { clearable: true }
+      props: { clearable: true },
     },
     {
       label: 'RoutingDiaChi',
       key: 'route',
       type: 'input',
-      props: { clearable: true }
-    }
+      props: { clearable: true },
+    },
   ])
 
   onMounted(() => {
@@ -106,7 +106,7 @@
   }
 
   const getMenuTypeTag = (
-    row: AppRouteRecord
+    row: AppRouteRecord,
   ): 'primary' | 'success' | 'warning' | 'info' | 'danger' => {
     if (row.meta?.isAuthButton) return 'danger'
     if (row.children?.length) return 'info'
@@ -130,14 +130,14 @@
       prop: 'meta.title',
       label: 'Menudanhtên',
       minWidth: 120,
-      formatter: (row: AppRouteRecord) => formatMenuTitle(row.meta?.title)
+      formatter: (row: AppRouteRecord) => formatMenuTitle(row.meta?.title),
     },
     {
       prop: 'type',
       label: 'Menuloạikiểu',
       formatter: (row: AppRouteRecord) => {
         return h(ElTag, { type: getMenuTypeTag(row) }, () => getMenuTypeText(row))
-      }
+      },
     },
     {
       prop: 'path',
@@ -145,7 +145,7 @@
       formatter: (row: AppRouteRecord) => {
         if (row.meta?.isAuthButton) return ''
         return row.meta?.link || row.path || ''
-      }
+      },
     },
     {
       prop: 'meta.authList',
@@ -156,17 +156,17 @@
         }
         if (!row.meta?.authList?.length) return ''
         return `${row.meta.authList.length} chiếcQuyenHantiêu`
-      }
+      },
     },
     {
       prop: 'date',
       label: 'Chỉnh sửaThoiGian',
-      formatter: () => '2022-3-12 12:00:00'
+      formatter: () => '2022-3-12 12:00:00',
     },
     {
       prop: 'status',
       label: 'Trạng thái',
-      formatter: () => h(ElTag, { type: 'success' }, () => 'Bật')
+      formatter: () => h(ElTag, { type: 'success' }, () => 'Bật'),
     },
     {
       prop: 'operation',
@@ -180,12 +180,12 @@
           return h('div', buttonStyle, [
             h(ArtButtonTable, {
               type: 'edit',
-              onClick: () => handleEditAuth(row)
+              onClick: () => handleEditAuth(row),
             }),
             h(ArtButtonTable, {
               type: 'delete',
-              onClick: () => handleDeleteAuth()
-            })
+              onClick: () => handleDeleteAuth(),
+            }),
           ])
         }
 
@@ -193,19 +193,19 @@
           h(ArtButtonTable, {
             type: 'add',
             onClick: () => handleAddAuth(),
-            title: 'Thêm mớiQuyenHan'
+            title: 'Thêm mớiQuyenHan',
           }),
           h(ArtButtonTable, {
             type: 'edit',
-            onClick: () => handleEditMenu(row)
+            onClick: () => handleEditMenu(row),
           }),
           h(ArtButtonTable, {
             type: 'delete',
-            onClick: () => handleDeleteMenu()
-          })
+            onClick: () => handleDeleteMenu(),
+          }),
         ])
-      }
-    }
+      },
+    },
   ])
 
   const tableData = ref<AppRouteRecord[]>([])
@@ -256,9 +256,9 @@
               title: auth.title,
               authMark: auth.authMark,
               isAuthButton: true,
-              parentPath: item.path
-            }
-          })
+              parentPath: item.path,
+            },
+          }),
         )
 
         clonedItem.children = clonedItem.children?.length
@@ -329,7 +329,7 @@
     dialogType.value = 'button'
     editData.value = {
       title: row.meta?.title,
-      authMark: row.meta?.authMark
+      authMark: row.meta?.authMark,
     }
     lockMenuType.value = false
     dialogVisible.value = true
@@ -356,7 +356,7 @@
       await ElMessageBox.confirm('Xác địnhcầnXóanênMenukhông？Xóasauvôphápkhôiphục', 'Gợi ý', {
         confirmButtonText: 'Xác định',
         cancelButtonText: 'Hủy',
-        type: 'warning'
+        type: 'warning',
       })
       ElMessage.success('XóaThanhCong')
       getMenuList()
@@ -372,7 +372,7 @@
       await ElMessageBox.confirm('Xác địnhcầnXóanênQuyenHankhông？Xóasauvôphápkhôiphục', 'Gợi ý', {
         confirmButtonText: 'Xác định',
         cancelButtonText: 'Hủy',
-        type: 'warning'
+        type: 'warning',
       })
       ElMessage.success('XóaThanhCong')
       getMenuList()

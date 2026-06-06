@@ -80,7 +80,7 @@
   const ANIMATION_DELAY = 100
   const STOCK_THRESHOLD = {
     LOW: 20,
-    MEDIUM: 50
+    MEDIUM: 50,
   } as const
 
   const tableData = reactive<ProductItem[]>([
@@ -93,7 +93,7 @@
       percentage: 75,
       pro: 0,
       color: 'var(--art-primary)',
-      image: product1
+      image: product1,
     },
     {
       name: 'Tai nghe Bluetooth không dây',
@@ -104,7 +104,7 @@
       percentage: 85,
       pro: 0,
       color: 'var(--art-success)',
-      image: product2
+      image: product2,
     },
     {
       name: 'Bàn phím cơ',
@@ -115,7 +115,7 @@
       percentage: 45,
       pro: 0,
       color: 'var(--art-warning)',
-      image: product3
+      image: product3,
     },
     {
       name: 'Laptop siêu mỏng',
@@ -126,7 +126,7 @@
       percentage: 30,
       pro: 0,
       color: 'var(--art-error)',
-      image: product4
+      image: product4,
     },
     {
       name: 'Loa thông minh',
@@ -137,7 +137,7 @@
       percentage: 60,
       pro: 0,
       color: 'var(--art-info)',
-      image: product5
+      image: product5,
     },
     {
       name: 'Tay cầm chơi game',
@@ -148,8 +148,8 @@
       percentage: 70,
       pro: 0,
       color: 'var(--art-secondary)',
-      image: product6
-    }
+      image: product6,
+    },
   ])
 
   const getStockStatus = (stock: number): string => {

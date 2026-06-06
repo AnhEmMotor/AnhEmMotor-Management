@@ -170,8 +170,8 @@
     MockData.map((item, idx) => ({
       ...item,
       status: idx === 0 ? 'Scheduled' : idx === 1 ? 'Draft' : 'Published',
-      statusLabel: idx === 0 ? 'Hẹn giờ' : idx === 1 ? 'Bản nháp' : 'Đã xuất bản'
-    }))
+      statusLabel: idx === 0 ? 'Hẹn giờ' : idx === 1 ? 'Bản nháp' : 'Đã xuất bản',
+    })),
   )
 
   const showEmpty = computed(() => articleList.value.length === 0)

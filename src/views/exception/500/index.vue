@@ -4,7 +4,7 @@
       title: '500',
       desc: $t('exceptionPage.500'),
       btnText: $t('exceptionPage.gohome'),
-      imgUrl
+      imgUrl,
     }"
   />
 </template>

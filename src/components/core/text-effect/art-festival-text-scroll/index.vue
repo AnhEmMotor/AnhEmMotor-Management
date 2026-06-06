@@ -2,7 +2,7 @@
   <div
     class="overflow-hidden transition-[height] duration-600 ease-in-out"
     :style="{
-      height: showFestivalText ? '48px' : '0'
+      height: showFestivalText ? '48px' : '0',
     }"
   >
     <ArtTextScroll

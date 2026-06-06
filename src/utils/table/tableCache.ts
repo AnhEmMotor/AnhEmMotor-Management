@@ -7,7 +7,7 @@ export enum CacheInvalidationStrategy {
 
   CLEAR_PAGINATION = 'clear_pagination',
 
-  KEEP_ALL = 'keep_all'
+  KEEP_ALL = 'keep_all',
 }
 
 export interface ApiResponse<T = unknown> {
@@ -62,7 +62,7 @@ export class TableCache<T> {
         !['current', 'size', 'total'].includes(key) &&
         params[key] !== undefined &&
         params[key] !== '' &&
-        params[key] !== null
+        params[key] !== null,
     )
 
     if (searchKeys.length > 0) {
@@ -117,7 +117,7 @@ export class TableCache<T> {
       params: key,
       tags,
       accessCount: 1,
-      lastAccessTime: now
+      lastAccessTime: now,
     })
   }
 
@@ -143,7 +143,7 @@ export class TableCache<T> {
 
     for (const [key, item] of this.cache.entries()) {
       const hasMatchingTag = tags.some((tag) =>
-        Array.from(item.tags).some((itemTag) => itemTag.includes(tag))
+        Array.from(item.tags).some((itemTag) => itemTag.includes(tag)),
       )
 
       if (hasMatchingTag) {
@@ -185,7 +185,7 @@ export class TableCache<T> {
     return {
       total,
       size: `${sizeInKB}KB`,
-      hitRate: `${avgHits} avg hits`
+      hitRate: `${avgHits} avg hits`,
     }
   }
 

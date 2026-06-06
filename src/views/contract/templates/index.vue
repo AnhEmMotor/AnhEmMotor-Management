@@ -15,7 +15,7 @@
             class="m-0 text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1.5 flex items-center gap-2"
           >
             <span class="size-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            {{ t('menus.contract.templateList') }}
+            DANH SÁCH MẪU HỢP ĐỒNG
           </p>
         </div>
       </div>
@@ -54,11 +54,10 @@
             class="!w-44"
             @change="handleFilterChange"
           >
-            <el-option label="Tất cả" value="" />
+            <el-option :label="t('menus.contract.filterAll')" value="" />
             <el-option :label="t('menus.contract.typeSales')" value="Sales" />
             <el-option :label="t('menus.contract.typeFinance')" value="Finance" />
             <el-option :label="t('menus.contract.typeSupplier')" value="Supplier" />
-            <el-option :label="t('menus.contract.typeAppendix')" value="Appendix" />
           </el-select>
           <el-select
             v-model="filterStatus"
@@ -68,163 +67,95 @@
             @change="handleFilterChange"
           >
             <el-option :label="t('menus.contract.filterAll')" value="" />
-            <el-option :label="t('menus.contract.statusActive')" :value="1" />
-            <el-option :label="t('menus.contract.statusInactive')" :value="2" />
-            <el-option :label="t('menus.contract.statusDeprecated')" :value="3" />
+            <el-option :label="t('menus.contract.filterActive')" :value="1" />
+            <el-option :label="t('menus.contract.filterArchived')" :value="2" />
           </el-select>
         </div>
       </div>
 
-      <div class="bg-white border border-slate-200 rounded-[24px] shadow-sm overflow-hidden">
-        <el-table
-          :data="tableData"
-          style="width: 100%"
-          :header-cell-style="headerCellStyle"
-          :cell-style="cellStyle"
-          stripe
-          class="contract-templates-table"
-        >
-          <el-table-column prop="name" :label="t('menus.contract.templateName')" min-width="220">
-            <template #default="{ row }">
-              <div class="flex items-center gap-3">
-                <div
-                  class="size-9 rounded-lg flex-cc text-white font-black text-xs shrink-0"
-                  :class="getTypeColor(row.type)"
-                >
-                  {{ getTypeAbbr(row.type) }}
-                </div>
-                <div class="overflow-hidden">
-                  <div class="font-bold text-slate-800 truncate text-[13px]">{{ row.name }}</div>
-                  <div class="text-[10px] font-mono text-slate-400">{{ row.code }}</div>
-                </div>
-              </div>
-            </template>
-          </el-table-column>
+      <div class="mb-4 text-slate-500 text-[13px] italic font-medium flex items-center gap-2">
+        <ArtSvgIcon icon="ri:information-line" />
+        Tìm thấy {{ totalCount }} mẫu hợp đồng phù hợp dựa trên bộ lọc
+      </div>
 
-          <el-table-column
-            prop="type"
-            :label="t('menus.contract.templateType')"
-            width="140"
-            align="center"
-          >
-            <template #default="{ row }">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+        <div
+          v-for="row in tableData"
+          :key="row.id"
+          class="bg-white border border-slate-200 rounded-[20px] shadow-sm hover:shadow-md transition-shadow flex flex-col"
+        >
+          <!-- Card Header -->
+          <div class="p-5 flex items-start gap-4">
+            <div class="size-12 rounded-xl flex-cc text-white shrink-0 shadow-inner" :class="getTypeColor(row.type)">
+              <ArtSvgIcon icon="ri:file-text-line" class="text-2xl" />
+            </div>
+            <div class="flex-1 min-w-0">
+              <h3 class="m-0 text-[15px] font-black text-slate-800 leading-tight mb-2 truncate" :title="row.name">
+                {{ row.name }}
+              </h3>
               <el-tag
                 :type="getTypeTagType(row.type)"
                 size="small"
-                effect="plain"
+                effect="light"
                 class="!rounded-lg !font-bold"
               >
                 {{ getTypeLabel(row.type) }}
               </el-tag>
-            </template>
-          </el-table-column>
+            </div>
+          </div>
 
-          <el-table-column
-            prop="version"
-            :label="t('menus.contract.templateVersion')"
-            width="100"
-            align="center"
-          >
-            <template #default="{ row }">
-              <span class="font-mono font-bold text-slate-600">v{{ row.version }}</span>
-            </template>
-          </el-table-column>
-
-          <el-table-column
-            prop="status"
-            :label="t('menus.contract.templateStatus')"
-            width="130"
-            align="center"
-          >
-            <template #default="{ row }">
-              <el-tag
-                :type="getStatusTagType(row.status)"
-                size="small"
-                effect="dark"
-                class="!rounded-lg !font-black !text-[10px] !uppercase !tracking-wider"
-              >
-                {{ getStatusLabel(row.status) }}
-              </el-tag>
-            </template>
-          </el-table-column>
-
-          <el-table-column prop="isUsed" label="" width="80" align="center">
-            <template #default="{ row }">
-              <el-tooltip
-                v-if="row.isUsed"
-                :content="t('menus.contract.usedBadge')"
-                placement="top"
-              >
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 text-amber-600 rounded-lg text-[10px] font-black uppercase border border-amber-200"
-                >
-                  <ArtSvgIcon icon="ri:lock-line" class="text-xs" />
-                  {{ t('menus.contract.usedBadge') }}
-                </span>
-              </el-tooltip>
-              <span v-else class="text-emerald-500">
-                <ArtSvgIcon icon="ri:checkbox-circle-line" class="text-lg" />
-              </span>
-            </template>
-          </el-table-column>
-
-          <el-table-column prop="createdAt" label="Ngày tạo" width="120" align="center">
-            <template #default="{ row }">
-              <span class="text-[11px] font-medium text-slate-500">{{
-                formatDate(row.createdAt)
-              }}</span>
-            </template>
-          </el-table-column>
-
-          <el-table-column label="" width="200" align="center" fixed="right">
-            <template #default="{ row }">
-              <div class="flex items-center justify-center gap-2">
-                <el-tooltip :content="t('menus.contract.templateEdit')" placement="top">
-                  <el-button
-                    size="small"
-                    type="primary"
-                    circle
-                    plain
-                    @click="handleEdit(row)"
-                    :disabled="row.isUsed"
-                    class="!w-8 !h-8"
-                  >
-                    <ArtSvgIcon icon="ri:edit-2-line" class="text-sm" />
-                  </el-button>
-                </el-tooltip>
-                <el-tooltip :content="t('menus.contract.templateClone')" placement="top">
-                  <el-button
-                    size="small"
-                    type="success"
-                    circle
-                    plain
-                    @click="handleClone(row)"
-                    class="!w-8 !h-8"
-                  >
-                    <ArtSvgIcon icon="ri:file-copy-line" class="text-sm" />
-                  </el-button>
-                </el-tooltip>
-                <el-tooltip :content="t('menus.contract.templateDelete')" placement="top">
-                  <el-button
-                    size="small"
-                    type="danger"
-                    circle
-                    plain
-                    @click="handleDelete(row)"
-                    :disabled="row.isUsed"
-                    class="!w-8 !h-8"
-                  >
-                    <ArtSvgIcon icon="ri:delete-bin-line" class="text-sm" />
-                  </el-button>
-                </el-tooltip>
+          <!-- Card Body -->
+          <div class="px-5 pb-5 flex-1">
+            <div class="border-y border-slate-100 py-4 grid grid-cols-2 gap-y-3 gap-x-4">
+              <div class="flex items-center gap-2 text-[12px] text-slate-500">
+                <ArtSvgIcon icon="ri:git-branch-line" class="text-slate-400" />
+                Phiên bản: <span class="font-bold text-slate-700">v{{ row.version }}</span>
               </div>
-            </template>
-          </el-table-column>
-        </el-table>
+              <div class="flex items-center gap-2 text-[12px] text-slate-500">
+                <ArtSvgIcon icon="ri:checkbox-circle-line" class="text-slate-400" />
+                Trạng thái: 
+                <span class="font-bold" :class="row.status === 1 ? 'text-emerald-500' : 'text-slate-400'">
+                  {{ row.status === 1 ? 'Đang áp dụng' : 'Đã lưu trữ' }}
+                </span>
+              </div>
+              <div class="flex items-center gap-2 text-[12px] text-slate-500">
+                <ArtSvgIcon icon="ri:brackets-line" class="text-slate-400" />
+                Biến số: <span class="font-bold text-slate-700">{{ row.variableCount || 14 }} trường</span>
+              </div>
+              <div class="flex items-center gap-2 text-[12px] text-slate-500">
+                <ArtSvgIcon icon="ri:calendar-line" class="text-slate-400" />
+                Cập nhật: <span class="font-bold text-slate-700">{{ formatDate(row.createdAt) }}</span>
+              </div>
+            </div>
+          </div>
 
-        <div
-          class="border-t border-slate-100 px-6 py-4 flex justify-between items-center bg-slate-50/50"
-        >
+          <!-- Card Footer -->
+          <div class="flex items-center border-t border-slate-100 bg-slate-50/50 rounded-b-[20px]">
+            <button
+              @click="handlePreview(row)"
+              class="flex-1 py-3.5 text-[13px] font-bold text-slate-600 hover:text-blue-600 hover:bg-blue-50/80 transition-colors flex-cc gap-2 border-r border-slate-100 rounded-bl-[20px]"
+            >
+              <ArtSvgIcon icon="ri:eye-line" /> Xem trước
+            </button>
+            <button
+              @click="handleEdit(row)"
+              :disabled="row.isUsed"
+              class="flex-1 py-3.5 text-[13px] font-bold transition-colors flex-cc gap-2 border-r border-slate-100"
+              :class="row.isUsed ? 'text-slate-400 cursor-not-allowed opacity-60' : 'text-slate-600 hover:text-emerald-600 hover:bg-emerald-50/80'"
+            >
+              <ArtSvgIcon icon="ri:edit-2-line" /> Sửa
+            </button>
+            <button
+              @click="handleVariables(row)"
+              class="flex-1 py-3.5 text-[13px] font-bold text-slate-600 hover:text-amber-600 hover:bg-amber-50/80 transition-colors flex-cc gap-2 rounded-br-[20px]"
+            >
+              <ArtSvgIcon icon="ri:brackets-line" /> Gắn biến
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-[20px] shadow-sm px-6 py-4 flex justify-between items-center">
           <span class="text-[11px] font-bold text-slate-400">
             Hiển thị {{ tableData.length }} / {{ totalCount }} mẫu
           </span>
@@ -239,7 +170,6 @@
             class="!font-bold"
           />
         </div>
-      </div>
     </div>
   </div>
 </template>
@@ -382,6 +312,30 @@
       return
     }
     router.push({ name: 'EditContractTemplate', params: { id: row.id } })
+  }
+
+  const handlePreview = (row: any) => {
+    ElMessage.info('Chức năng xem trước mẫu hợp đồng đang được phát triển')
+  }
+
+  const handleVariables = (row: any) => {
+    // Navigate to variables mapping or open modal
+    ElMessage.info('Chức năng cấu hình biến số đang được phát triển')
+  }
+
+  const handleArchive = async (row: any) => {
+    try {
+      await ElMessageBox.confirm('Bạn có chắc muốn lưu trữ mẫu hợp đồng này?', 'Lưu trữ mẫu', {
+        confirmButtonText: 'Lưu trữ',
+        cancelButtonText: 'Hủy',
+        type: 'warning',
+      })
+      // Call mock or real API here, e.g. await archiveContractTemplate(row.id)
+      ElMessage.success('Lưu trữ mẫu hợp đồng thành công!')
+      fetchTemplates()
+    } catch (e) {
+      // User cancelled
+    }
   }
 
   const handleClone = async (row: any) => {

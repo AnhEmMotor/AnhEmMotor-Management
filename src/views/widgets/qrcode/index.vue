@@ -43,8 +43,8 @@
         renderAs: 'svg' as RenderAs,
         margin: 0,
         background: '#ffffff',
-        foreground: '#000000'
-      }
+        foreground: '#000000',
+      },
     },
     {
       title: 'Renderthành canvas Tag',
@@ -54,8 +54,8 @@
         renderAs: 'canvas' as RenderAs,
         margin: 0,
         background: '#ffffff',
-        foreground: '#000000'
-      }
+        foreground: '#000000',
+      },
     },
     {
       title: 'Màu sắc tùy chỉnh',
@@ -65,8 +65,8 @@
         renderAs: 'canvas' as RenderAs,
         margin: 0,
         background: '#f0f0f0',
-        foreground: '#4080ff'
-      }
+        foreground: '#4080ff',
+      },
     },
     {
       title: 'mangcóLogo',
@@ -81,10 +81,10 @@
           src: 'https://www.artd.pro/assets/draw1-Ce1WF34i.png',
           width: 40,
           height: 40,
-          excavate: true
-        }
-      }
-    }
+          excavate: true,
+        },
+      },
+    },
   ]
 
   const qrcodeConfig = reactive({
@@ -98,8 +98,8 @@
       src: 'https://www.artd.pro/assets/draw1-Ce1WF34i.png',
       width: 40,
       height: 40,
-      excavate: true
-    } as ImageSettings
+      excavate: true,
+    } as ImageSettings,
   })
 
   watch(isShowLogo, (val) => {
@@ -110,7 +110,7 @@
         src: 'https://www.artd.pro/assets/draw1-Ce1WF34i.png',
         width: 40,
         height: 40,
-        excavate: true
+        excavate: true,
       }
     }
   })

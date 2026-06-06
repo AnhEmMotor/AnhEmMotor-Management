@@ -153,7 +153,7 @@
       count: 42,
       icon: 'ri:exchange-funds-line',
       bg: 'bg-blue-600',
-      value: '+12% mtd'
+      value: '+12% mtd',
     },
     { label: 'Đang tư vấn', count: 15, icon: 'ri:customer-service-2-line', bg: 'bg-indigo-500' },
     {
@@ -161,7 +161,7 @@
       count: 8,
       icon: 'ri:money-dollar-circle-line',
       bg: 'bg-orange-500',
-      value: '420tr'
+      value: '420tr',
     },
     { label: 'Chờ biển số', count: 12, icon: 'ri:government-line', bg: 'bg-purple-500' },
     {
@@ -169,15 +169,15 @@
       count: 7,
       icon: 'ri:checkbox-circle-line',
       bg: 'bg-emerald-500',
-      value: 'Goal 85%'
-    }
+      value: 'Goal 85%',
+    },
   ])
 
   const filterSale = ref('')
   const filterVehicle = ref('')
   const salesList = [
     { id: 1, name: 'Sale Nguyễn Văn A' },
-    { id: 2, name: 'Sale Trần Thị B' }
+    { id: 2, name: 'Sale Trần Thị B' },
   ]
 
   const boardColumns = ref([
@@ -192,7 +192,7 @@
           vehicle: 'Winner X 2024',
           priority: 'High',
           timeInStage: '2 ngày',
-          saleName: 'Admin'
+          saleName: 'Admin',
         },
         {
           id: 102,
@@ -200,9 +200,9 @@
           vehicle: 'SH 125i',
           priority: 'Urgent',
           timeInStage: '5 giờ',
-          saleName: 'Sale A'
-        }
-      ]
+          saleName: 'Sale A',
+        },
+      ],
     },
     {
       id: 'TestDrive',
@@ -215,9 +215,9 @@
           vehicle: 'Air Blade 160',
           priority: 'High',
           timeInStage: '3 ngày',
-          saleName: 'Sale B'
-        }
-      ]
+          saleName: 'Sale B',
+        },
+      ],
     },
     {
       id: 'Deposit',
@@ -230,9 +230,9 @@
           vehicle: 'Vision 2024',
           priority: 'Urgent',
           timeInStage: '1 ngày',
-          saleName: 'Admin'
-        }
-      ]
+          saleName: 'Admin',
+        },
+      ],
     },
     {
       id: 'Processing',
@@ -245,9 +245,9 @@
           vehicle: 'Winner X',
           priority: 'High',
           timeInStage: '4 ngày',
-          saleName: 'Sale A'
-        }
-      ]
+          saleName: 'Sale A',
+        },
+      ],
     },
     {
       id: 'Delivered',
@@ -260,10 +260,10 @@
           vehicle: 'SH Mode',
           priority: 'High',
           timeInStage: 'Vừa chốt',
-          saleName: 'Sale B'
-        }
-      ]
-    }
+          saleName: 'Sale B',
+        },
+      ],
+    },
   ])
 
   const isStale = (deal: any) => {
@@ -282,7 +282,7 @@
       if (columnId === 'Processing') {
         ElMessage({
           message: 'Hệ thống đã gửi thông báo cho bộ phận hành chính Biên Hòa.',
-          type: 'info'
+          type: 'info',
         })
       }
     }

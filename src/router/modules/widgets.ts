@@ -6,7 +6,7 @@ export const widgetsRoutes: AppRouteRecord = {
   component: '/index/index',
   meta: {
     title: 'menus.widgets.title',
-    icon: 'ri:apps-2-add-line'
+    icon: 'ri:apps-2-add-line',
   },
   children: [
     {
@@ -16,8 +16,8 @@ export const widgetsRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.widgets.icon',
         icon: 'ri:palette-line',
-        keepAlive: true
-      }
+        keepAlive: true,
+      },
     },
     {
       path: 'image-crop',
@@ -26,8 +26,8 @@ export const widgetsRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.widgets.imageCrop',
         icon: 'ri:screenshot-line',
-        keepAlive: true
-      }
+        keepAlive: true,
+      },
     },
     {
       path: 'excel',
@@ -36,8 +36,8 @@ export const widgetsRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.widgets.excel',
         icon: 'ri:download-2-line',
-        keepAlive: true
-      }
+        keepAlive: true,
+      },
     },
     {
       path: 'video',
@@ -46,8 +46,8 @@ export const widgetsRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.widgets.video',
         icon: 'ri:vidicon-line',
-        keepAlive: true
-      }
+        keepAlive: true,
+      },
     },
     {
       path: 'count-to',
@@ -56,8 +56,8 @@ export const widgetsRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.widgets.countTo',
         icon: 'ri:anthropic-line',
-        keepAlive: false
-      }
+        keepAlive: false,
+      },
     },
     {
       path: 'wang-editor',
@@ -66,8 +66,8 @@ export const widgetsRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.widgets.wangEditor',
         icon: 'ri:t-box-line',
-        keepAlive: true
-      }
+        keepAlive: true,
+      },
     },
     {
       path: 'watermark',
@@ -76,8 +76,8 @@ export const widgetsRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.widgets.watermark',
         icon: 'ri:water-flash-line',
-        keepAlive: true
-      }
+        keepAlive: true,
+      },
     },
     {
       path: 'context-menu',
@@ -86,8 +86,8 @@ export const widgetsRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.widgets.contextMenu',
         icon: 'ri:menu-2-line',
-        keepAlive: true
-      }
+        keepAlive: true,
+      },
     },
     {
       path: 'qrcode',
@@ -96,8 +96,8 @@ export const widgetsRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.widgets.qrcode',
         icon: 'ri:qr-code-line',
-        keepAlive: true
-      }
+        keepAlive: true,
+      },
     },
     {
       path: 'drag',
@@ -106,8 +106,8 @@ export const widgetsRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.widgets.drag',
         icon: 'ri:drag-move-fill',
-        keepAlive: true
-      }
+        keepAlive: true,
+      },
     },
     {
       path: 'text-scroll',
@@ -116,8 +116,8 @@ export const widgetsRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.widgets.textScroll',
         icon: 'ri:input-method-line',
-        keepAlive: true
-      }
+        keepAlive: true,
+      },
     },
     {
       path: 'fireworks',
@@ -127,8 +127,8 @@ export const widgetsRoutes: AppRouteRecord = {
         title: 'menus.widgets.fireworks',
         icon: 'ri:magic-line',
         keepAlive: true,
-        showTextBadge: 'Hot'
-      }
+        showTextBadge: 'Hot',
+      },
     },
     {
       path: '/outside/iframe/elementui',
@@ -139,8 +139,8 @@ export const widgetsRoutes: AppRouteRecord = {
         icon: 'ri:apps-2-line',
         keepAlive: false,
         link: 'https://element-plus.org/zh-CN/component/overview.html',
-        isIframe: true
-      }
-    }
-  ]
+        isIframe: true,
+      },
+    },
+  ],
 }

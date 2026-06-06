@@ -4,7 +4,7 @@
     class="box-border flex-b w-full px-5 mb-3 select-none max-sm:px-[15px]"
     :class="[
       tabStyle === 'tab-card' ? 'py-1 border-b border-[var(--art-card-border)]' : '',
-      tabStyle === 'tab-google' ? 'pt-1 pb-0 border-b border-[var(--art-card-border)]' : ''
+      tabStyle === 'tab-google' ? 'pt-1 pb-0 border-b border-[var(--art-card-border)]' : '',
     ]"
   >
     <div class="w-full overflow-hidden" ref="scrollRef">
@@ -14,21 +14,21 @@
         ref="tabsRef"
         :style="{
           transform: `translateX(${scrollState.translateX}px)`,
-          transition: `${scrollState.transition}`
+          transition: `${scrollState.transition}`,
         }"
       >
         <li
           class="art-card-xs inline-flex flex-cc h-8 mr-1.5 text-xs c-p hover:text-theme group"
           :class="[
             item.path === activeTab ? 'activ-tab !text-theme' : 'text-g-600 dark:text-g-800',
-            tabStyle === 'tab-google' ? 'google-tab relative !h-8 !leading-8 !border-none' : ''
+            tabStyle === 'tab-google' ? 'google-tab relative !h-8 !leading-8 !border-none' : '',
           ]"
           :style="{
             padding: item.fixedTab ? '0 10px' : '0 8px 0 12px',
             borderRadius:
               tabStyle === 'tab-google'
                 ? 'calc(var(--custom-radius) / 2.5 + 4px) !important'
-                : 'calc(var(--custom-radius) / 2.5 + 2px) !important'
+                : 'calc(var(--custom-radius) / 2.5 + 2px) !important',
           }"
           v-for="(item, index) in list"
           :key="item.path"
@@ -64,7 +64,7 @@
         class="flex-cc art-card-xs relative top-0 size-8 leading-8 text-center c-p tad-200 hover:!bg-hover-color"
         :style="{
           borderRadius: 'calc(var(--custom-radius) / 2.5 + 0px)',
-          marginTop: tabStyle === 'tab-google' ? '-2px' : ''
+          marginTop: tabStyle === 'tab-google' ? '-2px' : '',
         }"
         @click="(e: MouseEvent) => showMenu(e, activeTab)"
       >
@@ -125,12 +125,12 @@
 
   const scrollState = ref<ScrollState>({
     translateX: 0,
-    transition: ''
+    transition: '',
   })
 
   const touchState = ref<TouchState>({
     startX: 0,
-    currentX: 0
+    currentX: 0,
   })
 
   const clickedPath = ref('')
@@ -149,7 +149,7 @@
         currentTab,
         isLastTab: clickedIndex === list.value.length - 1,
         isOneTab: list.value.length === 1,
-        isCurrentTab: clickedPath.value === activeTab.value
+        isCurrentTab: clickedPath.value === activeTab.value,
       }
     }
 
@@ -162,7 +162,7 @@
         areAllLeftTabsFixed: leftTabs.length > 0 && leftTabs.every((tab) => tab.fixedTab),
         areAllRightTabsFixed: rightTabs.length > 0 && rightTabs.every((tab) => tab.fixedTab),
         areAllOtherTabsFixed: otherTabs.length > 0 && otherTabs.every((tab) => tab.fixedTab),
-        areAllTabsFixed: list.value.every((tab) => tab.fixedTab)
+        areAllTabsFixed: list.value.every((tab) => tab.fixedTab),
       }
     }
 
@@ -175,39 +175,39 @@
           key: 'refresh',
           label: t('worktab.btn.refresh'),
           icon: 'ri:refresh-line',
-          disabled: !isCurrentTab
+          disabled: !isCurrentTab,
         },
         {
           key: 'fixed',
           label: currentTab?.fixedTab ? t('worktab.btn.unfixed') : t('worktab.btn.fixed'),
           icon: 'ri:pushpin-2-line',
           disabled: false,
-          showLine: true
+          showLine: true,
         },
         {
           key: 'left',
           label: t('worktab.btn.closeLeft'),
           icon: 'ri:arrow-left-s-line',
-          disabled: clickedIndex === 0 || fixedStatus.areAllLeftTabsFixed
+          disabled: clickedIndex === 0 || fixedStatus.areAllLeftTabsFixed,
         },
         {
           key: 'right',
           label: t('worktab.btn.closeRight'),
           icon: 'ri:arrow-right-s-line',
-          disabled: isLastTab || fixedStatus.areAllRightTabsFixed
+          disabled: isLastTab || fixedStatus.areAllRightTabsFixed,
         },
         {
           key: 'other',
           label: t('worktab.btn.closeOther'),
           icon: 'ri:close-fill',
-          disabled: isOneTab || fixedStatus.areAllOtherTabsFixed
+          disabled: isOneTab || fixedStatus.areAllOtherTabsFixed,
         },
         {
           key: 'all',
           label: t('worktab.btn.closeAll'),
           icon: 'ri:close-circle-line',
-          disabled: isOneTab || fixedStatus.areAllTabsFixed
-        }
+          disabled: isOneTab || fixedStatus.areAllTabsFixed,
+        },
       ]
     })
 
@@ -245,7 +245,7 @@
         offsetLeft,
         clientWidth,
         curTabRight,
-        targetLeft
+        targetLeft,
       }
     }
 
@@ -286,7 +286,7 @@
     return {
       setTransition,
       autoPositionTab,
-      adjustPositionAfterClose
+      adjustPositionAfterClose,
     }
   }
 
@@ -306,7 +306,7 @@
 
       scrollState.value.translateX = Math.min(
         Math.max(scrollState.value.translateX - delta, xMin),
-        xMax
+        xMax,
       )
     }
 
@@ -323,7 +323,7 @@
 
       scrollState.value.translateX = Math.min(
         Math.max(scrollState.value.translateX + deltaX, xMin),
-        0
+        0,
       )
       touchState.value.startX = touchState.value.currentX
     }
@@ -353,7 +353,7 @@
     return {
       setupEventListeners,
       cleanupEventListeners,
-      adjustPositionAfterClose
+      adjustPositionAfterClose,
     }
   }
 
@@ -361,7 +361,7 @@
     const clickTab = (item: WorkTab) => {
       router.push({
         path: item.path,
-        query: item.query as LocationQueryRaw
+        query: item.query as LocationQueryRaw,
       })
     }
 
@@ -373,7 +373,7 @@
         left: () => store.removeLeft(path),
         right: () => store.removeRight(path),
         other: () => store.removeOthers(path),
-        all: () => store.removeAll()
+        all: () => store.removeAll(),
       }
 
       closeActions[type]?.()
@@ -409,7 +409,7 @@
       const navigationRules = {
         left: activeIndex < clickedIndex,
         right: activeIndex > clickedIndex,
-        other: true
+        other: true,
       } as const
 
       const shouldNavigate = navigationRules[key as keyof typeof navigationRules]
@@ -425,7 +425,7 @@
       clickTab,
       closeWorktab,
       showMenu,
-      handleSelect
+      handleSelect,
     }
   }
 
@@ -450,7 +450,7 @@
     () => {
       setTransition()
       autoPositionTab()
-    }
+    },
   )
 
   watch(
@@ -460,7 +460,7 @@
       nextTick(() => {
         autoPositionTab()
       })
-    }
+    },
   )
 </script>
 

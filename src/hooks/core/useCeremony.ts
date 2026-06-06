@@ -12,7 +12,7 @@ const FESTIVAL_CONFIG = {
 
   TEXT_DELAY: 2000,
 
-  DEFAULT_FIREWORKS_COUNT: 3
+  DEFAULT_FIREWORKS_COUNT: 3,
 } as const
 
 export function useCeremony() {
@@ -24,7 +24,7 @@ export function useCeremony() {
   const isDateInRange = (
     currentDate: string,
     festivalDate: string,
-    festivalEndDate?: string
+    festivalEndDate?: string,
   ): boolean => {
     if (!festivalEndDate) {
       return currentDate === festivalDate
@@ -100,6 +100,6 @@ export function useCeremony() {
     cleanup,
     holidayFireworksLoaded,
     currentFestivalData,
-    isShowFireworks
+    isShowFireworks,
   }
 }

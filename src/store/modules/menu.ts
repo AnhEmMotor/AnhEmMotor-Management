@@ -46,6 +46,6 @@ export const useMenuStore = defineStore('menuStore', () => {
     setHomePath,
     addRemoveRouteFns,
     removeAllDynamicRoutes,
-    clearRemoveRouteFns
+    clearRemoveRouteFns,
   }
 })

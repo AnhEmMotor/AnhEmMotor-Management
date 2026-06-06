@@ -73,7 +73,7 @@ export function useSettingsPanel() {
     return {
       initSystemColor,
       initSystemTheme,
-      listenerSystemTheme
+      listenerSystemTheme,
     }
   }
 
@@ -105,7 +105,7 @@ export function useSettingsPanel() {
           settingStore.setMenuOpen(true)
         }
       },
-      { immediate: true }
+      { immediate: true },
     )
 
     return { stopWatch }
@@ -144,7 +144,7 @@ export function useSettingsPanel() {
       handleOpen,
       handleClose,
       openSetting,
-      closeDrawer
+      closeDrawer,
     }
   }
 
@@ -155,7 +155,7 @@ export function useSettingsPanel() {
         if (val !== undefined) {
           showDrawer.value = val
         }
-      }
+      },
     )
   }
 
@@ -186,7 +186,7 @@ export function useSettingsPanel() {
 
     return {
       initializeSettings,
-      cleanupSettings
+      cleanupSettings,
     }
   }
 
@@ -196,6 +196,6 @@ export function useSettingsPanel() {
     useResponsiveLayout,
     useDrawerControl,
     usePropsWatcher,
-    useSettingsInitializer
+    useSettingsInitializer,
   }
 }

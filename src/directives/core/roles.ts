@@ -29,7 +29,7 @@ function removeElement(el: HTMLElement): void {
 
 const rolesDirective: RolesDirective = {
   mounted: checkRolePermission,
-  updated: checkRolePermission
+  updated: checkRolePermission,
 }
 
 export function setupRolesDirective(app: App): void {

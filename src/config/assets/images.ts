@@ -15,7 +15,7 @@ export const configImages = {
 
     dark: darkTheme,
 
-    system: systemTheme
+    system: systemTheme,
   },
 
   menuLayouts: {
@@ -25,7 +25,7 @@ export const configImages = {
 
     mixed: mixedLayout,
 
-    dualColumn: dualColumnLayout
+    dualColumn: dualColumnLayout,
   },
 
   menuStyles: {
@@ -33,6 +33,6 @@ export const configImages = {
 
     dark: darkStyle,
 
-    light: lightStyle
-  }
+    light: lightStyle,
+  },
 }

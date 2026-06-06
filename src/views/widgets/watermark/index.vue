@@ -31,7 +31,7 @@
         :font="{
           fontSize: 20,
           fontFamily: 'Arial',
-          color: 'rgba(255, 0, 0, 0.3)'
+          color: 'rgba(255, 0, 0, 0.3)',
         }"
         :rotate="-22"
         :gap="[100, 100]"
@@ -61,7 +61,7 @@
   const handleWatermarkVisible = () => {
     useSettingStore().setWatermarkVisible(!settingStore.watermarkVisible)
     ElMessage.success(
-      settingStore.watermarkVisible ? 'ĐãHiển thịtoànbộWatermark' : 'ĐãẨntoànbộWatermark'
+      settingStore.watermarkVisible ? 'ĐãHiển thịtoànbộWatermark' : 'ĐãẨntoànbộWatermark',
     )
   }
 </script>

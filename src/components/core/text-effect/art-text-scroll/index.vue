@@ -46,7 +46,7 @@
     useRafFn,
     useElementHover,
     useDebounceFn,
-    useTimeoutFn
+    useTimeoutFn,
   } from '@vueuse/core'
   import { useSettingStore } from '@/store/modules/setting'
 
@@ -89,7 +89,7 @@
     pauseOnHover: true,
     type: 'theme',
     showClose: false,
-    alwaysScroll: true
+    alwaysScroll: true,
   })
 
   const emit = defineEmits<{
@@ -136,20 +136,20 @@
       info: 'text-info/90 !border-info/50',
       success: 'text-success/90 !border-success/50',
       warning: 'text-warning/90 !border-warning/50',
-      danger: 'text-danger/90 !border-danger/50'
+      danger: 'text-danger/90 !border-danger/50',
     }
     return themeMap[props.type] || themeMap.theme
   })
 
   const bgColor = computed(
     () =>
-      `color-mix(in oklch, var(--color-${props.type}) ${isDark.value ? '25' : '10'}%, var(--art-color))`
+      `color-mix(in oklch, var(--color-${props.type}) ${isDark.value ? '25' : '10'}%, var(--art-color))`,
   )
 
   const containerStyle = computed(() => ({
     width: props.width,
     height: props.height,
-    backgroundColor: bgColor.value
+    backgroundColor: bgColor.value,
   }))
 
   const contentClass = computed(() => {
@@ -166,7 +166,7 @@
 
     return {
       transform,
-      willChange: 'transform'
+      willChange: 'transform',
     }
   })
 
@@ -226,7 +226,7 @@
 
       lastTimestamp = timestamp
     },
-    { immediate: false }
+    { immediate: false },
   )
 
   const handleContentClick = (e: MouseEvent) => {
@@ -245,7 +245,7 @@
     () => {
       measureSizes()
       lastTimestamp = 0
-    }
+    },
   )
 
   const { start: startMeasure } = useTimeoutFn(() => {

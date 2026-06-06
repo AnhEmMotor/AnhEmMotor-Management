@@ -547,7 +547,7 @@
     ArrowDown,
     Check,
     Close,
-    InfoFilled
+    InfoFilled,
   } from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useDebounceFn } from '@vueuse/core'
@@ -578,7 +578,7 @@
   const stats = ref({
     totalVehicles: 0,
     processingReceipts: 0,
-    totalValue: 0
+    totalValue: 0,
   })
 
   // Dropdown Lists (Deprecated/Empty)
@@ -617,7 +617,7 @@
       const res = await SupplierApi.getList({
         current: supplierSelectorPage.value,
         size: supplierSelectorPageSize.value,
-        Filters: filters.join(',')
+        Filters: filters.join(','),
       })
       supplierSelectorItems.value = res.items || []
       supplierSelectorTotal.value = res.totalCount || 0
@@ -675,7 +675,7 @@
       const res = await ProductApi.getVariantsForInput({
         current: productSelectorPage.value,
         size: productSelectorPageSize.value,
-        Filters: filters.join(',')
+        Filters: filters.join(','),
       })
       productSelectorItems.value = res.items || []
       productSelectorTotal.value = res.totalCount || 0
@@ -726,7 +726,7 @@
           productVarientId: variant.id,
           productVarientColorId,
           count: 1,
-          inputPrice: variant.price || 0
+          inputPrice: variant.price || 0,
         })
       }
     }
@@ -756,7 +756,7 @@
     supplierId: undefined,
     notes: '',
     statusId: 'working',
-    products: []
+    products: [],
   })
 
   // Table Data & Paging
@@ -764,13 +764,13 @@
   const pagination = reactive({
     current: 1,
     size: 10,
-    total: 0
+    total: 0,
   })
 
   // Search items definition (Removed Mã phiếu filter)
   const searchForm = ref({
     supplierName: '',
-    statusId: [] as string[]
+    statusId: [] as string[],
   })
 
   const searchItems = computed(() => [
@@ -778,7 +778,7 @@
       key: 'supplierName',
       label: 'Nhà cung cấp',
       type: 'input',
-      props: { placeholder: 'Tìm theo tên nhà cung cấp...' }
+      props: { placeholder: 'Tìm theo tên nhà cung cấp...' },
     },
     {
       key: 'statusId',
@@ -791,10 +791,10 @@
         collapseTags: true,
         options: Object.entries(statuses.value).map(([key, value]) => ({
           label: value,
-          value: key
-        }))
-      }
-    }
+          value: key,
+        })),
+      },
+    },
   ])
 
   // Columns definition (Removed Mã phiếu, added STT)
@@ -811,8 +811,8 @@
       useSlot: true,
       width: 140,
       fixed: 'right' as const,
-      align: 'center'
-    }
+      align: 'center',
+    },
   ])
 
   const columnChecks = columns
@@ -821,7 +821,7 @@
   const totalAmount = computed(() => {
     return formData.value.products.reduce(
       (sum, row) => sum + (row.count || 0) * (row.inputPrice || 0),
-      0
+      0,
     )
   })
 
@@ -839,7 +839,7 @@
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })
   }
 
@@ -881,7 +881,7 @@
       statuses.value = {
         working: 'Phiếu tạm',
         finished: 'Hoàn thành',
-        cancelled: 'Đã hủy'
+        cancelled: 'Đã hủy',
       }
     }
   }
@@ -892,7 +892,7 @@
       stats.value = {
         totalVehicles: res.totalVehicles || 0,
         processingReceipts: res.processingReceipts || 0,
-        totalValue: res.totalValue || 0
+        totalValue: res.totalValue || 0,
       }
     } catch (error) {
       console.error('Failed to load stats:', error)
@@ -922,7 +922,7 @@
         current: pagination.current,
         size: pagination.size,
         Filters: sieveFilters.join(',') || undefined,
-        Sorts: '-createdAt'
+        Sorts: '-createdAt',
       }
 
       const res = await InventoryReceiptApi.getList(params)
@@ -986,7 +986,7 @@
       supplierId: undefined,
       notes: '',
       statusId: 'working',
-      products: []
+      products: [],
     }
     dialogVisible.value = true
   }
@@ -1007,7 +1007,7 @@
       ;(receipt.products || []).forEach((p) => {
         productCache.set(p.productVarientId, {
           displayName: p.name || `Sản phẩm #${p.productVarientId}`,
-          price: p.importPrice
+          price: p.importPrice,
         })
       })
 
@@ -1021,8 +1021,8 @@
           productVarientId: p.productVarientId,
           productVarientColorId: p.productVarientColorId,
           count: p.quantity || 1,
-          inputPrice: p.importPrice || 0
-        }))
+          inputPrice: p.importPrice || 0,
+        })),
       }
       dialogVisible.value = true
     } catch (error) {
@@ -1041,8 +1041,8 @@
         {
           confirmButtonText: 'Xóa',
           cancelButtonText: 'Hủy',
-          type: 'warning'
-        }
+          type: 'warning',
+        },
       )
       await InventoryReceiptApi.delete(row.id)
       ElMessage.success('Xóa phiếu nhập thành công')
@@ -1067,8 +1067,8 @@
           {
             confirmButtonText: 'Hoàn thành',
             cancelButtonText: 'Hủy',
-            type: 'success'
-          }
+            type: 'success',
+          },
         )
       } catch {
         return
@@ -1081,8 +1081,8 @@
           {
             confirmButtonText: 'Hủy phiếu',
             cancelButtonText: 'Đóng',
-            type: 'warning'
-          }
+            type: 'warning',
+          },
         )
       } catch {
         return
@@ -1143,7 +1143,7 @@
     }
 
     const validProducts = formData.value.products.filter(
-      (p) => p.productVarientId !== undefined && p.productVarientId !== null
+      (p) => p.productVarientId !== undefined && p.productVarientId !== null,
     )
 
     if (validProducts.length === 0) {
@@ -1159,8 +1159,8 @@
           {
             confirmButtonText: 'Hoàn thành',
             cancelButtonText: 'Hủy',
-            type: 'success'
-          }
+            type: 'success',
+          },
         )
       } catch {
         return
@@ -1173,8 +1173,8 @@
           {
             confirmButtonText: 'Hủy phiếu',
             cancelButtonText: 'Đóng',
-            type: 'warning'
-          }
+            type: 'warning',
+          },
         )
       } catch {
         return
@@ -1188,7 +1188,7 @@
         productVarientId: p.productVarientId!,
         productVarientColorId: p.productVarientColorId,
         count: p.count,
-        inputPrice: p.inputPrice
+        inputPrice: p.inputPrice,
       }))
 
       if (isEdit.value && formData.value.id) {
@@ -1196,7 +1196,7 @@
           notes: formData.value.notes,
           statusId: statusId,
           supplierId: formData.value.supplierId,
-          products: payloadProducts
+          products: payloadProducts,
         }
         await InventoryReceiptApi.update(formData.value.id, payload)
         ElMessage.success('Cập nhật phiếu nhập thành công')
@@ -1210,9 +1210,9 @@
               productVarientId,
               productVarientColorId,
               count,
-              inputPrice
-            })
-          )
+              inputPrice,
+            }),
+          ),
         }
         await InventoryReceiptApi.create(payload)
         ElMessage.success('Tạo phiếu nhập thành công')

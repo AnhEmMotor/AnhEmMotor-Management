@@ -88,7 +88,7 @@
     list: () => [],
     theme: () => ({}),
     isMobile: false,
-    level: 0
+    level: 0,
   })
 
   const emit = defineEmits<Emits>()
@@ -132,7 +132,7 @@
       })
       .map((item) => ({
         ...item,
-        children: item.children ? filterRoutes(item.children) : undefined
+        children: item.children ? filterRoutes(item.children) : undefined,
       }))
   }
 

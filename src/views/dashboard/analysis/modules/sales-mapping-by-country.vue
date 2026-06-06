@@ -10,7 +10,7 @@
       :data="[
         { value: 30, name: 'Bắc Kinh' },
         { value: 25, name: 'Thượng Hải' },
-        { value: 45, name: 'Quảng Châu' }
+        { value: 45, name: 'Quảng Châu' },
       ]"
       :color="['#4C87F3', '#93F1B4', '#8BD8FC']"
       :radius="['46%', '60%']"

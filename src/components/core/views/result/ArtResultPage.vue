@@ -37,6 +37,6 @@
     type: 'success',
     title: '',
     message: '',
-    iconCode: ''
+    iconCode: '',
   })
 </script>

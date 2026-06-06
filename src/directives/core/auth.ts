@@ -41,7 +41,7 @@ const authDirective: AuthDirective = {
       () => {
         updateElementAuth(el, binding)
       },
-      { deep: true }
+      { deep: true },
     )
   },
   unmounted(el: CustomHTMLElement) {
@@ -49,7 +49,7 @@ const authDirective: AuthDirective = {
       el.__authWatcher__()
       delete el.__authWatcher__
     }
-  }
+  },
 }
 
 export function setupAuthDirective(app: App): void {

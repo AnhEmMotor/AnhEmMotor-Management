@@ -42,7 +42,7 @@
     fetchGetUserList,
     fetchDeleteUser,
     fetchChangeUserStatus,
-    fetchGetRoleList
+    fetchGetRoleList,
   } from '@/api/system-manage'
   import { useQuery } from '@tanstack/vue-query'
   import ArtButtonMore from '@/components/core/forms/art-button-more/index.vue'
@@ -59,7 +59,7 @@
 
   const { data: roleListRes } = useQuery({
     queryKey: ['roles-list-all'],
-    queryFn: () => fetchGetRoleList({ Page: 1, PageSize: 100 })
+    queryFn: () => fetchGetRoleList({ Page: 1, PageSize: 100 }),
   })
 
   const roleMap = computed(() => {
@@ -81,7 +81,7 @@
         resetColumns?.()
       }
     },
-    { deep: true, immediate: true }
+    { deep: true, immediate: true },
   )
 
   const searchForm = ref({
@@ -90,19 +90,19 @@
     userPhone: undefined,
     userEmail: undefined,
     status: undefined,
-    userGender: undefined
+    userGender: undefined,
   })
 
   const USER_STATUS_CONFIG = {
     Active: { type: 'success' as const, text: 'Hoạt động' },
-    Banned: { type: 'danger' as const, text: 'Bị khóa' }
+    Banned: { type: 'danger' as const, text: 'Bị khóa' },
   } as const
 
   const getUserStatusConfig = (status: string) => {
     return (
       USER_STATUS_CONFIG[status as keyof typeof USER_STATUS_CONFIG] || {
         type: 'info' as const,
-        text: status || 'Không rõ'
+        text: status || 'Không rõ',
       }
     )
   }
@@ -119,17 +119,17 @@
     handleSizeChange,
     handleCurrentChange,
     resetColumns,
-    refreshData
+    refreshData,
   } = useTable({
     core: {
       apiFn: fetchGetUserList,
       paginationKey: {
         current: 'Page',
-        size: 'PageSize'
+        size: 'PageSize',
       },
       apiParams: {
         Page: 1,
-        PageSize: 20
+        PageSize: 20,
       },
       columnsFactory: () => [
         {
@@ -145,23 +145,23 @@
                 src: avatarUrl,
                 previewSrcList: [avatarUrl],
                 previewTeleported: true,
-                fit: 'cover'
+                fit: 'cover',
               }),
               h('div', { class: 'flex flex-col gap-0.5' }, [
                 h(
                   'span',
                   { class: 'font-semibold text-gray-800 text-sm' },
-                  row.fullName || 'Chưa đặt tên'
+                  row.fullName || 'Chưa đặt tên',
                 ),
-                h('span', { class: 'text-xs text-gray-500' }, row.email || row.userName)
-              ])
+                h('span', { class: 'text-xs text-gray-500' }, row.email || row.userName),
+              ]),
             ])
-          }
+          },
         },
         {
           prop: 'userName',
           label: 'Tên đăng nhập',
-          minWidth: 120
+          minWidth: 120,
         },
         {
           prop: 'gender',
@@ -171,15 +171,15 @@
             const genderMap = {
               Male: 'Nam',
               Female: 'Nữ',
-              Other: 'Khác'
+              Other: 'Khác',
             }
             return genderMap[row.gender as keyof typeof genderMap] || row.gender || 'Chưa rõ'
-          }
+          },
         },
         {
           prop: 'phoneNumber',
           label: 'Số điện thoại',
-          minWidth: 120
+          minWidth: 120,
         },
         {
           prop: 'roles',
@@ -198,11 +198,11 @@
                 return h(
                   ElTag,
                   { size: 'small', effect: 'light', type: 'info', class: 'm-0.5' },
-                  () => roleName
+                  () => roleName,
                 )
-              })
+              }),
             )
-          }
+          },
         },
         {
           prop: 'status',
@@ -211,7 +211,7 @@
           formatter: (row) => {
             const statusConfig = getUserStatusConfig(row.status)
             return h(ElTag, { type: statusConfig.type, effect: 'dark' }, () => statusConfig.text)
-          }
+          },
         },
         {
           prop: 'operation',
@@ -226,34 +226,34 @@
                   {
                     key: 'edit',
                     label: 'Chỉnh sửa',
-                    icon: 'ri:edit-2-line'
+                    icon: 'ri:edit-2-line',
                   },
                   {
                     key: 'change-password',
                     label: 'Đổi mật khẩu',
                     icon: 'ri:key-line',
-                    color: '#409eff'
+                    color: '#409eff',
                   },
                   {
                     key: 'toggle-status',
                     label: isBanned ? 'Kích hoạt tài khoản' : 'Khóa tài khoản',
                     icon: isBanned ? 'ri:lock-unlock-line' : 'ri:lock-line',
-                    color: isBanned ? '#67c23a' : '#e6a23c'
+                    color: isBanned ? '#67c23a' : '#e6a23c',
                   },
                   {
                     key: 'delete',
                     label: 'Xóa tài khoản',
                     icon: 'ri:delete-bin-4-line',
-                    color: '#f56c6c'
-                  }
+                    color: '#f56c6c',
+                  },
                 ],
-                onClick: (item: ButtonMoreItem) => buttonMoreClick(item, row)
-              })
+                onClick: (item: ButtonMoreItem) => buttonMoreClick(item, row),
+              }),
             ])
-          }
-        }
-      ]
-    }
+          },
+        },
+      ],
+    },
   })
 
   const handleSearch = (params: any) => {
@@ -277,7 +277,7 @@
       filters.push(`Gender==${params.userGender}`)
     }
     replaceSearchParams({
-      Filters: filters.join(',') || undefined
+      Filters: filters.join(',') || undefined,
     })
     getData()
   }
@@ -325,8 +325,8 @@
       {
         confirmButtonText: 'Xác định',
         cancelButtonText: 'Hủy',
-        type: isBanned ? 'success' : 'warning'
-      }
+        type: isBanned ? 'success' : 'warning',
+      },
     )
       .then(async () => {
         await fetchChangeUserStatus(row.id, newStatus)
@@ -343,8 +343,8 @@
       {
         confirmButtonText: 'Xác định',
         cancelButtonText: 'Hủy',
-        type: 'error'
-      }
+        type: 'error',
+      },
     )
       .then(async () => {
         await fetchDeleteUser(row.id)

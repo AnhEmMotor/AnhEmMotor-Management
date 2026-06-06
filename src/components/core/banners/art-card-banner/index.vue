@@ -14,7 +14,7 @@
           class="inline-block h-9 px-3 text-sm/9 c-p select-none rounded-md border border-g-300"
           :style="{
             backgroundColor: cancelButton?.color,
-            color: cancelButton?.textColor
+            color: cancelButton?.textColor,
           }"
           @click="handleCancel"
         >
@@ -66,14 +66,14 @@
       show: true,
       text: 'XemChiTiet',
       color: 'var(--theme-color)',
-      textColor: '#fff'
+      textColor: '#fff',
     }),
     cancelButton: () => ({
       show: false,
       text: 'Hủy',
       color: '#f5f5f5',
-      textColor: '#666'
-    })
+      textColor: '#666',
+    }),
   })
 
   const emit = defineEmits<{

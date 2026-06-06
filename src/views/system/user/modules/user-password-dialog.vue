@@ -47,7 +47,7 @@
 
   const props = withDefaults(defineProps<Props>(), {
     modelValue: false,
-    userData: undefined
+    userData: undefined,
   })
 
   const emit = defineEmits<Emits>()
@@ -57,12 +57,12 @@
 
   const form = reactive({
     newPassword: '',
-    confirmPassword: ''
+    confirmPassword: '',
   })
 
   const visible = computed({
     get: () => props.modelValue,
-    set: (value) => emit('update:modelValue', value)
+    set: (value) => emit('update:modelValue', value),
   })
 
   const validateConfirmPassword = (rule: any, value: any, callback: any) => {
@@ -78,9 +78,9 @@
   const rules = reactive<FormRules>({
     newPassword: [
       { required: true, message: 'Vui lòng nhập mật khẩu mới', trigger: 'blur' },
-      { min: 6, max: 32, message: 'Độ dài mật khẩu từ 6 đến 32 ký tự', trigger: 'blur' }
+      { min: 6, max: 32, message: 'Độ dài mật khẩu từ 6 đến 32 ký tự', trigger: 'blur' },
     ],
-    confirmPassword: [{ required: true, validator: validateConfirmPassword, trigger: 'blur' }]
+    confirmPassword: [{ required: true, validator: validateConfirmPassword, trigger: 'blur' }],
   })
 
   const handleClose = () => {

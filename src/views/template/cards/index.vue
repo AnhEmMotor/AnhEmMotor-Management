@@ -224,7 +224,7 @@
       customIconStyle: '!text-theme !text-3xl',
       iconStyle: 'bg-info',
       textColor: 'var(--theme-color)',
-      showArrow: false
+      showArrow: false,
     },
     {
       id: 2,
@@ -236,7 +236,7 @@
       customIconStyle: '!text-warning !text-3xl',
       iconStyle: 'bg-warning',
       textColor: 'var(--art-warning)',
-      showArrow: false
+      showArrow: false,
     },
     {
       id: 3,
@@ -248,7 +248,7 @@
       customIconStyle: '!text-secondary !text-3xl',
       iconStyle: 'bg-secondary',
       textColor: 'var(--art-secondary)',
-      showArrow: false
+      showArrow: false,
     },
     {
       id: 4,
@@ -260,8 +260,8 @@
       customIconStyle: '!text-error !text-3xl',
       iconStyle: 'bg-error',
       textColor: 'var(--art-error)',
-      showArrow: false
-    }
+      showArrow: false,
+    },
   ]
 
   const progressCards = [
@@ -271,7 +271,7 @@
       percentage: 75,
       color: 'var(--art-success)',
       icon: 'ri:arrow-up-circle-line',
-      iconStyle: 'bg-success/12 text-success'
+      iconStyle: 'bg-success/12 text-success',
     },
     {
       id: 2,
@@ -279,7 +279,7 @@
       percentage: 65,
       color: 'var(--theme-color)',
       icon: 'ri:twitch-line',
-      iconStyle: 'bg-theme/12 text-theme'
+      iconStyle: 'bg-theme/12 text-theme',
     },
     {
       id: 3,
@@ -287,7 +287,7 @@
       percentage: 45,
       color: 'var(--art-error)',
       icon: 'ri:game-line',
-      iconStyle: '!bg-error/12 text-error'
+      iconStyle: '!bg-error/12 text-error',
     },
     {
       id: 4,
@@ -295,8 +295,8 @@
       percentage: 90,
       color: 'var(--art-secondary)',
       icon: 'ri:flag-2-line',
-      iconStyle: 'bg-secondary/12 text-secondary'
-    }
+      iconStyle: 'bg-secondary/12 text-secondary',
+    },
   ]
 
   const imageCards = [
@@ -308,7 +308,7 @@
       readTime: '2phầnchuông',
       views: 9125,
       comments: 3,
-      date: '12tháng19ngày tuầnmột'
+      date: '12tháng19ngày tuầnmột',
     },
     {
       id: 2,
@@ -318,7 +318,7 @@
       readTime: '3phầnchuông',
       views: 7234,
       comments: 5,
-      date: '12tháng20ngày tuầnhai'
+      date: '12tháng20ngày tuầnhai',
     },
     {
       id: 3,
@@ -328,7 +328,7 @@
       readTime: '4phầnchuông',
       views: 5678,
       comments: 8,
-      date: '12tháng21ngày tuầnba'
+      date: '12tháng21ngày tuầnba',
     },
     {
       id: 4,
@@ -338,8 +338,8 @@
       readTime: '5phầnchuông',
       views: 4321,
       comments: 6,
-      date: '12tháng22ngày tuầnbốn'
-    }
+      date: '12tháng22ngày tuầnbốn',
+    },
   ]
 
   const dataList = [
@@ -348,72 +348,72 @@
       status: 'vàodòngtrong',
       time: '5phầnchuông',
       class: 'bg-theme/12 text-theme',
-      icon: 'ri:camera-4-line'
+      icon: 'ri:camera-4-line',
     },
     {
       title: 'vềtài liệuDữ liệu',
       status: 'vàodòngtrong',
       time: '10phầnchuông',
       class: 'bg-secondary/12 text-secondary',
-      icon: 'ri:bar-chart-box-line'
+      icon: 'ri:bar-chart-box-line',
     },
     {
       title: 'kháchkhoảnsẽnghị',
       status: 'Chờ xử lý',
       time: '15phầnchuông',
       class: 'bg-warning/12 text-warning',
-      icon: 'ri:user-3-line'
+      icon: 'ri:user-3-line',
     },
     {
       title: 'sàngvịnhiệmvụđoànđội',
       status: 'vàodòngtrong',
       time: '20phầnchuông',
       class: 'bg-error/12 text-error',
-      icon: 'ri:account-circle-line'
+      icon: 'ri:account-circle-line',
     },
     {
       title: 'phátgửinhắnphongchotiểuvương',
       status: 'Đã hoàn thành',
       time: '20phầnchuông',
       class: 'bg-success/12 text-success',
-      icon: 'ri:message-3-line'
-    }
+      icon: 'ri:message-3-line',
+    },
   ]
 
   const timelineData = [
     {
       time: 'trêntrưa 09:30',
       status: 'rgb(73, 190, 255)',
-      content: 'Bộđến John Doe chiếctrảcủa 385.90 mỹnguyên'
+      content: 'Bộđến John Doe chiếctrảcủa 385.90 mỹnguyên',
     },
     {
       time: 'trêntrưa 10:00',
       status: 'rgb(54, 158, 255)',
       content: 'mớitácbánGhi chép',
-      code: 'ML-3467'
+      code: 'ML-3467',
     },
     {
       time: 'trêntrưa 12:00',
       status: 'rgb(103, 232, 207)',
-      content: 'hướng Michael chiếctrảrồi 64.95 mỹnguyên'
+      content: 'hướng Michael chiếctrảrồi 64.95 mỹnguyên',
     },
     {
       time: 'dướitrưa 14:30',
       status: 'rgb(255, 193, 7)',
       content: 'HeThongduyhộThongBao',
-      code: 'MT-2023'
+      code: 'MT-2023',
     },
     {
       time: 'dướitrưa 15:45',
       status: 'rgb(255, 105, 105)',
       content: 'chặtgấpĐơn hàngHủygợitỉnh',
-      code: 'OR-9876'
+      code: 'OR-9876',
     },
     {
       time: 'dướitrưa 17:00',
       status: 'rgb(103, 232, 207)',
-      content: 'hoànthànhmỗingàytácbánbáobảng'
-    }
+      content: 'hoànthànhmỗingàytácbánbáobảng',
+    },
   ]
 
   const handleMore = () => {

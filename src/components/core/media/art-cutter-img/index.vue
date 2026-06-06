@@ -30,7 +30,7 @@
         class="preview-box"
         :style="{
           width: `${cutterProps.cutWidth}px`,
-          height: `${cutterProps.cutHeight}px`
+          height: `${cutterProps.cutHeight}px`,
         }"
       >
         <img class="preview-img" :src="temImgPath" alt="Xem trướcảnh" v-if="temImgPath" />
@@ -104,7 +104,7 @@
     watermarkFontSize: 20,
     watermarkColor: '#ffffff',
     saveCutPosition: true,
-    previewMode: true
+    previewMode: true,
   })
 
   const emit = defineEmits(['update:imgUrl', 'error', 'imageLoadComplete', 'imageLoadError'])
@@ -116,7 +116,7 @@
     ...props,
     WatermarkText: props.watermarkText,
     WatermarkFontSize: props.watermarkFontSize,
-    WatermarkColor: props.watermarkColor
+    WatermarkColor: props.watermarkColor,
   }))
 
   function preloadImage(url: string): Promise<void> {
@@ -135,7 +135,7 @@
         await preloadImage(props.imgUrl)
         imgCutterModal.value?.handleOpen({
           name: 'Ảnh bìaHình ảnh',
-          src: props.imgUrl
+          src: props.imgUrl,
         })
       } catch (error) {
         emit('error', error)
@@ -158,7 +158,7 @@
         temImgPath.value = newVal
         initImgCutter()
       }
-    }
+    },
   )
 
   function cutterPrintImg(result: { dataURL: string }) {

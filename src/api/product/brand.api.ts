@@ -9,40 +9,40 @@ export const BrandApi = {
       params: {
         Page: current,
         PageSize: size,
-        ...rest
-      }
+        ...rest,
+      },
     })
   },
 
   getById(id: number) {
     return request.get<Brand>({
-      url: `/api/Brand/${id}`
+      url: `/api/Brand/${id}`,
     })
   },
 
   create(data: Partial<Brand>) {
     return request.post<Brand>({
       url: '/api/Brand',
-      data
+      data,
     })
   },
 
   update(id: number, data: Partial<Brand>) {
     return request.put<Brand>({
       url: `/api/Brand/${id}`,
-      data
+      data,
     })
   },
 
   delete(id: number) {
     return request.del({
-      url: `/api/Brand/${id}`
+      url: `/api/Brand/${id}`,
     })
   },
 
   getStatistics() {
     return request.get<any>({
-      url: '/api/Brand/statistics'
+      url: '/api/Brand/statistics',
     })
   },
 
@@ -50,7 +50,7 @@ export const BrandApi = {
     return request.get<Blob>({
       url: '/api/Brand/export',
       params,
-      responseType: 'blob'
+      responseType: 'blob',
     })
-  }
+  },
 }

@@ -52,38 +52,38 @@
     { name: 'ngôchín', age: 27, city: 'Vũ Hán' },
     { name: 'trịnhmười', age: 40, city: 'Nam Kinh' },
     { name: 'lưumột', age: 22, city: 'trùngmừng' },
-    { name: 'trầnhai', age: 33, city: 'Tây An' }
+    { name: 'trầnhai', age: 33, city: 'Tây An' },
   ])
 
   const headers = {
     name: 'Họ tên',
     age: 'Tuổi',
-    city: 'Thànhthị'
+    city: 'Thànhthị',
   }
 
   const columnConfig = {
     name: {
       title: 'Họ tên',
       width: 20,
-      formatter: (value: unknown) => (value ? String(value) : 'Chưabáo')
+      formatter: (value: unknown) => (value ? String(value) : 'Chưabáo'),
     },
     age: {
       title: 'Tuổi',
       width: 10,
-      formatter: (value: unknown) => (value ? `${value}tuổi` : '0tuổi')
+      formatter: (value: unknown) => (value ? `${value}tuổi` : '0tuổi'),
     },
     city: {
       title: 'Thànhthị',
       width: 12,
-      formatter: (value: unknown) => (value ? `${value}thị` : 'Chưabáo')
-    }
+      formatter: (value: unknown) => (value ? `${value}thị` : 'Chưabáo'),
+    },
   }
 
   const handleImportSuccess = (data: Array<Record<string, unknown>>) => {
     const formattedData: TableData[] = data.map((item) => ({
       name: String(item['Họ tên'] || ''),
       age: Number(item['Tuổi']) || 0,
-      city: String(item['Thànhthị'] || '')
+      city: String(item['Thànhthị'] || ''),
     }))
     tableData.value = formattedData
     ElMessage.success(`ThanhCongNhập file ${formattedData.length} điềuDữ liệu`)

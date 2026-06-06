@@ -23,7 +23,7 @@ export class RouteValidator {
     return {
       valid: errors.length === 0,
       errors,
-      warnings
+      warnings,
     }
   }
 
@@ -31,7 +31,7 @@ export class RouteValidator {
     routes: AppRouteRecord[],
     errors: string[],
     warnings: string[],
-    parentPath = ''
+    parentPath = '',
   ): void {
     const routeNameMap = new Map<string, string>()
     const componentPathMap = new Map<string, string>()
@@ -75,7 +75,7 @@ export class RouteValidator {
     routes: AppRouteRecord[],
     errors: string[],
     warnings: string[],
-    parentPath = ''
+    parentPath = '',
   ): void {
     routes.forEach((route) => {
       const hasExternalLink = !!route.meta?.link?.trim()
@@ -93,7 +93,7 @@ export class RouteValidator {
 
       if (parentPath === '' && !hasExternalLink && !isIframe) {
         errors.push(
-          `mộtcấpMenu(${routePath}) thiếuthiểu component，tấtphảihướng ${RoutesAlias.Layout}`
+          `mộtcấpMenu(${routePath}) thiếuthiểu component，tấtphảihướng ${RoutesAlias.Layout}`,
         )
         return
       }
@@ -136,7 +136,7 @@ export class RouteValidator {
         `  hỏiđề: ${level}cấpMenuKhôngnăngkhiếndùng ${RoutesAlias.Layout} làmvì component\n` +
         `  Mô tả: chỉcómộtcấpMenumớinăngkhiếndùng ${RoutesAlias.Layout}，haicấpvàlấydướiMenuứngnênhướngcụthểcủaComponentđường\n` +
         `  khitrướcCauHinh: component: '${RoutesAlias.Layout}'\n` +
-        `  ứngnênsửavì: component: '/your/component/path' hoặcgiữkhông ''（nếuquảlàmụclụcMenu）`
+        `  ứngnênsửavì: component: '/your/component/path' hoặcgiữkhông ''（nếuquảlàmụclụcMenu）`,
     )
   }
 

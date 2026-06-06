@@ -35,13 +35,13 @@ export const useTableStore = defineStore(
       setIsBorder,
       setIsHeaderBackground,
       isFullScreen,
-      setIsFullScreen
+      setIsFullScreen,
     }
   },
   {
     persist: {
       key: 'table',
-      storage: localStorage
-    }
-  }
+      storage: localStorage,
+    },
+  },
 )

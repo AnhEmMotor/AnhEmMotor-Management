@@ -140,7 +140,7 @@
                       node-key="id"
                       :props="{
                         label: 'name',
-                        children: 'children'
+                        children: 'children',
                       }"
                       placeholder="Chọn thể loại"
                       clearable
@@ -780,7 +780,7 @@
                             :key="tech.id"
                             class="group relative flex items-center justify-between p-3 border border-gray-150 rounded-lg hover:border-primary/20 hover:bg-gray-50/50 transition-all cursor-pointer select-none"
                             :class="{
-                              'border-primary/30 bg-red-50/10': isTechnologySelected(tech.id)
+                              'border-primary/30 bg-red-50/10': isTechnologySelected(tech.id),
                             }"
                             @click="toggleTechnology(tech)"
                           >
@@ -1830,7 +1830,7 @@
     InfoFilled,
     ArrowDown,
     ArrowUp,
-    Edit
+    Edit,
   } from '@element-plus/icons-vue'
   import { useProductTable } from './hooks/useProductTable'
   import { FileApi } from '@/api/file.api'
@@ -1924,7 +1924,7 @@
     updateTechnology,
     deleteTechnology,
 
-    exportToExcel
+    exportToExcel,
   } = useProductTable()
 
   const groupedTechnologies = computed(() => {
@@ -1947,7 +1947,7 @@
     brandId: undefined as number | undefined,
     defaultTitle: '',
     defaultDescription: '',
-    defaultImageUrl: ''
+    defaultImageUrl: '',
   })
   const creatingTech = ref(false)
 
@@ -1958,7 +1958,7 @@
       brandId: formData.value.brand_id ? Number(formData.value.brand_id) : undefined,
       defaultTitle: '',
       defaultDescription: '',
-      defaultImageUrl: ''
+      defaultImageUrl: '',
     }
     newTechDialogVisible.value = true
   }
@@ -1976,7 +1976,7 @@
         brandId: newTechForm.value.brandId,
         defaultTitle: newTechForm.value.defaultTitle.trim() || undefined,
         defaultDescription: newTechForm.value.defaultDescription.trim() || undefined,
-        defaultImageUrl: newTechForm.value.defaultImageUrl.trim() || undefined
+        defaultImageUrl: newTechForm.value.defaultImageUrl.trim() || undefined,
       })
       newTechDialogVisible.value = false
     } catch (_err) {
@@ -1988,13 +1988,13 @@
 
   const newTechCatDialogVisible = ref(false)
   const newTechCatForm = ref({
-    name: ''
+    name: '',
   })
   const creatingTechCat = ref(false)
 
   const openNewTechCatDialog = () => {
     newTechCatForm.value = {
-      name: ''
+      name: '',
     }
     newTechCatDialogVisible.value = true
   }
@@ -2025,7 +2025,7 @@
     brandId: undefined as number | undefined,
     defaultTitle: '',
     defaultDescription: '',
-    defaultImageUrl: ''
+    defaultImageUrl: '',
   })
   const updatingTech = ref(false)
 
@@ -2037,7 +2037,7 @@
       brandId: tech.brandId || undefined,
       defaultTitle: tech.defaultTitle || '',
       defaultDescription: tech.defaultDescription || '',
-      defaultImageUrl: tech.defaultImageUrl || ''
+      defaultImageUrl: tech.defaultImageUrl || '',
     }
     if (editTechForm.value.brandId) {
       ensureBrandLoaded(Number(editTechForm.value.brandId))
@@ -2059,7 +2059,7 @@
         brandId: editTechForm.value.brandId,
         defaultTitle: editTechForm.value.defaultTitle.trim() || undefined,
         defaultDescription: editTechForm.value.defaultDescription.trim() || undefined,
-        defaultImageUrl: editTechForm.value.defaultImageUrl.trim() || undefined
+        defaultImageUrl: editTechForm.value.defaultImageUrl.trim() || undefined,
       })
       editTechDialogVisible.value = false
     } catch (_err) {
@@ -2078,8 +2078,8 @@
         {
           confirmButtonText: 'Xóa',
           cancelButtonText: 'Hủy',
-          type: 'warning'
-        }
+          type: 'warning',
+        },
       )
       await deleteTechnology(tech.id)
     } catch (_err) {
@@ -2141,13 +2141,13 @@
       key: 'name',
       label: 'Tên sản phẩm',
       type: 'input',
-      props: { placeholder: 'Tìm kiếm tên...' }
+      props: { placeholder: 'Tìm kiếm tên...' },
     },
     {
       key: 'brand',
       label: 'Thương hiệu',
       type: 'input',
-      props: { placeholder: 'Nhập tên hãng...' }
+      props: { placeholder: 'Nhập tên hãng...' },
     },
     {
       key: 'category_id',
@@ -2157,7 +2157,7 @@
         data: categoryTree.value,
         props: {
           label: 'name',
-          children: 'children'
+          children: 'children',
         },
         'node-key': 'id',
         nodeKey: 'id',
@@ -2169,9 +2169,9 @@
         'collapse-tags-tooltip': true,
         checkStrictly: true,
         'default-expand-all': true,
-        class: 'w-full'
-      }
-    }
+        class: 'w-full',
+      },
+    },
   ])
 
   const getStatusType = (status: string) => {

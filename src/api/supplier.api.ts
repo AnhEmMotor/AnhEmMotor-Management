@@ -3,7 +3,7 @@ import type {
   Supplier,
   SupplierList,
   PartnerType,
-  SupplierStatistics
+  SupplierStatistics,
 } from '@/domain/supplier/supplier.types'
 
 export const SupplierApi = {
@@ -14,74 +14,74 @@ export const SupplierApi = {
       params: {
         Page: current,
         PageSize: size,
-        ...rest
-      }
+        ...rest,
+      },
     })
   },
 
   getById(id: number) {
     return request.get<Supplier>({
-      url: `/api/Supplier/${id}`
+      url: `/api/Supplier/${id}`,
     })
   },
 
   create(data: Partial<Supplier>) {
     return request.post<Supplier>({
       url: '/api/Supplier',
-      data
+      data,
     })
   },
 
   update(id: number, data: Partial<Supplier>) {
     return request.put<Supplier>({
       url: `/api/Supplier/${id}`,
-      data
+      data,
     })
   },
 
   delete(id: number) {
     return request.del({
-      url: `/api/Supplier/${id}`
+      url: `/api/Supplier/${id}`,
     })
   },
 
   restore(id: number) {
     return request.post<Supplier>({
-      url: `/api/Supplier/restore/${id}`
+      url: `/api/Supplier/restore/${id}`,
     })
   },
 
   deleteMany(ids: number[]) {
     return request.del({
       url: '/api/Supplier/delete-many',
-      data: { ids }
+      data: { ids },
     })
   },
 
   restoreMany(ids: number[]) {
     return request.post({
       url: '/api/Supplier/restore-many',
-      data: { ids }
+      data: { ids },
     })
   },
 
   updateStatus(id: number, status: boolean) {
     return request.patch<Supplier>({
       url: `/api/Supplier/${id}/status`,
-      data: { status }
+      data: { status },
     })
   },
 
   updateStatusMany(items: Array<{ id: number; status: boolean }>) {
     return request.patch({
       url: '/api/Supplier/update-status-many',
-      data: { items }
+      data: { items },
     })
   },
 
   getPartnerTypes() {
     return request.get<PartnerType[]>({
-      url: '/api/Supplier/partner-types'
+      url: '/api/Supplier/partner-types',
     })
   },
 
@@ -92,14 +92,14 @@ export const SupplierApi = {
       params: {
         Page: current,
         PageSize: size,
-        ...rest
-      }
+        ...rest,
+      },
     })
   },
 
   getStatistics() {
     return request.get<SupplierStatistics>({
-      url: '/api/Supplier/statistics'
+      url: '/api/Supplier/statistics',
     })
   },
 
@@ -107,7 +107,7 @@ export const SupplierApi = {
     return request.get<Blob>({
       url: '/api/Supplier/export',
       params,
-      responseType: 'blob'
+      responseType: 'blob',
     })
-  }
+  },
 }

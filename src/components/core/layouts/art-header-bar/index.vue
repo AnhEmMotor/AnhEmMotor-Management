@@ -2,7 +2,7 @@
   <div
     class="w-full bg-[var(--default-bg-color)]"
     :class="[
-      tabStyle === 'tab-card' || tabStyle === 'tab-google' ? 'mb-5 max-sm:mb-3 !bg-box' : ''
+      tabStyle === 'tab-card' || tabStyle === 'tab-google' ? 'mb-5 max-sm:mb-3 !bg-box' : '',
     ]"
   >
     <div
@@ -10,7 +10,7 @@
       :class="[
         tabStyle === 'tab-card' || tabStyle === 'tab-google'
           ? 'border-b border-[var(--art-card-border)]'
-          : ''
+          : '',
       ]"
     >
       <div class="flex-c flex-1 min-w-0 leading-15" style="display: flex">
@@ -178,7 +178,7 @@
     shouldShowLanguage,
     shouldShowSettings,
     shouldShowThemeToggle,
-    fastEnterMinWidth: headerBarFastEnterMinWidth
+    fastEnterMinWidth: headerBarFastEnterMinWidth,
   } = useHeaderBar()
 
   const { menuOpen, showSettingGuide, menuType, isDark, tabStyle } = storeToRefs(settingStore)

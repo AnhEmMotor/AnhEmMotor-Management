@@ -53,7 +53,7 @@
     mode: 'default',
     placeholder: 'Bắt đầu viết nội dung tư vấn tại đây...',
     excludeKeys: () => ['fontFamily'],
-    isCustomUpload: false
+    isCustomUpload: false,
   })
 
   const modelValue = defineModel<string>({ required: true })
@@ -65,18 +65,18 @@
     maxFileSize: 3 * 1024 * 1024,
     maxNumberOfFiles: 10,
     fieldName: 'file',
-    allowedFileTypes: ['image/*']
+    allowedFileTypes: ['image/*'],
   } as const
 
   const uploadServer = computed(
     () =>
       props.uploadConfig?.server ||
-      `${VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT}/api/common/upload/wangeditor`
+      `${VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT}/api/common/upload/wangeditor`,
   )
 
   const mergedUploadConfig = computed(() => ({
     ...DEFAULT_UPLOAD_CONFIG,
-    ...props.uploadConfig
+    ...props.uploadConfig,
   }))
 
   const toolbarConfig = computed((): Partial<IToolbarConfig> => {
@@ -107,7 +107,7 @@
         allowedFileTypes: mergedUploadConfig.value.allowedFileTypes,
         server: uploadServer.value,
         headers: {
-          Authorization: userStore.accessToken
+          Authorization: userStore.accessToken,
         },
         onSuccess() {
           ElMessage.success(`Hình ảnhTải lênThanhCong ${EmojiText[200]}`)
@@ -115,15 +115,15 @@
         onError(file: File, err: any, res: any) {
           console.error('Hình ảnhTải lênThatBai:', err, res)
           ElMessage.error(`Hình ảnhTải lênThatBai ${EmojiText[500]}`)
-        }
-      }
-    }
+        },
+      },
+    },
   }
 
   if (props.uploadConfig?.isCustomUpload && props.uploadConfig?.server && editorConfig.MENU_CONF) {
     editorConfig.MENU_CONF.uploadImage.customUpload = async (
       file: File,
-      insertFn: InsertFnType
+      insertFn: InsertFnType,
     ) => {
       try {
         const formData = new FormData()
@@ -134,8 +134,8 @@
           data: formData,
           headers: {
             'Content-Type': 'multipart/form-data',
-            Authorization: userStore.accessToken
-          }
+            Authorization: userStore.accessToken,
+          },
         })
 
         const { url, alt, href } = response
@@ -200,7 +200,7 @@
       } else {
         console.warn(
           'Thanh công cụRendersiêugiờ，vôphápỨng dụngTùy chỉnhIcon - Trình biên tậpthựcví dụ:',
-          editor.id
+          editor.id,
         )
       }
     }
@@ -213,7 +213,7 @@
     setHtml: (html: string) => editorRef.value?.setHtml(html),
     getHtml: () => editorRef.value?.getHtml(),
     clear: () => editorRef.value?.clear(),
-    focus: () => editorRef.value?.focus()
+    focus: () => editorRef.value?.focus(),
   })
 
   onMounted(() => {})

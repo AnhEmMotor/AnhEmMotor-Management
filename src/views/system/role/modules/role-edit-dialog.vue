@@ -71,7 +71,7 @@
     fetchCreateRole,
     fetchUpdateRole,
     fetchGetRolePermissions,
-    fetchGetPermissionStructure
+    fetchGetPermissionStructure,
   } from '@/api/system-manage'
 
   interface Props {
@@ -88,7 +88,7 @@
   const props = withDefaults(defineProps<Props>(), {
     modelValue: false,
     dialogType: 'add',
-    roleData: undefined
+    roleData: undefined,
   })
 
   const emit = defineEmits<Emits>()
@@ -114,25 +114,25 @@
 
   const defaultProps = {
     children: 'children',
-    label: 'label'
+    label: 'label',
   }
 
   const visible = computed({
     get: () => props.modelValue,
-    set: (value: boolean) => emit('update:modelValue', value)
+    set: (value: boolean) => emit('update:modelValue', value),
   })
 
   const rules = reactive<FormRules>({
     name: [
       { required: true, message: 'Vui lòng nhập tên vai trò', trigger: 'blur' },
-      { min: 2, max: 50, message: 'Độ dài từ 2 đến 50 ký tự', trigger: 'blur' }
-    ]
+      { min: 2, max: 50, message: 'Độ dài từ 2 đến 50 ký tự', trigger: 'blur' },
+    ],
   })
 
   const form = reactive({
     id: '',
     name: '',
-    description: ''
+    description: '',
   })
 
   // Load permission structure from Backend
@@ -154,7 +154,7 @@
             return {
               id: meta.id,
               label: meta.name || meta.id,
-              description: meta.description
+              description: meta.description,
             }
           })
           .filter(Boolean) as TreePermissionNode[]
@@ -162,7 +162,7 @@
         return {
           id: groupName,
           label: `Nhóm ${groupName}`,
-          children
+          children,
         }
       })
       treeData.value = nodes
@@ -188,7 +188,7 @@
           })
         }
       }
-    }
+    },
   )
 
   const initForm = () => {
@@ -291,7 +291,7 @@
     // 2. Identify newly unchecked keys (plus any keys marked for removal due to conflicts!)
     const newlyUnchecked = [
       ...prevChecked.filter((k: string) => !checkedKeys.includes(k)),
-      ...Array.from(keysToRemove)
+      ...Array.from(keysToRemove),
     ]
 
     if (newlyUnchecked.length > 0) {
@@ -307,7 +307,7 @@
               keysToRemove.add(dependentKey)
               removeDependents(dependentKey) // Recursively remove dependents
             }
-          }
+          },
         )
       }
       newlyUnchecked.forEach(removeDependents)
@@ -342,7 +342,7 @@
         await fetchCreateRole({
           roleName: form.name,
           description: form.description,
-          permissions: realPermissions
+          permissions: realPermissions,
         })
         ElMessage.success('Thêm mới vai trò thành công!')
       } else {
@@ -357,7 +357,7 @@
         await fetchUpdateRole(form.id, {
           roleName: form.name,
           description: form.description,
-          permissions: currentPermissions || []
+          permissions: currentPermissions || [],
         })
         ElMessage.success('Cập nhật thông tin vai trò thành công!')
       }

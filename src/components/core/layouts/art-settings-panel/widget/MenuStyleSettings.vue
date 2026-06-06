@@ -11,7 +11,7 @@
         class="box"
         :class="{ 'is-active': item.theme === menuThemeType }"
         :style="{
-          cursor: disabled ? 'no-drop' : 'pointer'
+          cursor: disabled ? 'no-drop' : 'pointer',
         }"
       >
         <img :src="item.img" />

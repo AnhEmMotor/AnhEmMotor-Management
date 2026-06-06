@@ -30,32 +30,32 @@
         size: 20,
         userName: '',
         userPhone: '',
-        userEmail: ''
+        userEmail: '',
       },
       columnsFactory: () => [
         {
           prop: 'id',
-          label: 'ID'
+          label: 'ID',
         },
         {
           prop: 'nickName',
-          label: 'Biệt danh'
+          label: 'Biệt danh',
         },
         {
           prop: 'userGender',
           label: 'GioiTinh',
           sortable: true,
-          formatter: (row: any) => row.userGender || 'Chưabáo'
+          formatter: (row: any) => row.userGender || 'Chưabáo',
         },
         {
           prop: 'userPhone',
-          label: 'Số điện thoại'
+          label: 'Số điện thoại',
         },
         {
           prop: 'userEmail',
-          label: 'Email'
-        }
-      ]
-    }
+          label: 'Email',
+        },
+      ],
+    },
   })
 </script>

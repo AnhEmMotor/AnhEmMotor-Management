@@ -79,7 +79,7 @@
     { name: 'Ease Out Expo', type: 'easeOutExpo' },
     { name: 'Ease Out Sine', type: 'easeOutSine' },
     { name: 'Ease In Out', type: 'easeInOutCubic' },
-    { name: 'Ease In Quad', type: 'easeInQuad' }
+    { name: 'Ease In Quad', type: 'easeInQuad' },
   ] as const
 
   const startCount = () => {

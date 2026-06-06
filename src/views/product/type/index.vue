@@ -234,7 +234,7 @@
     handleDelete,
     submitForm,
     exporting,
-    handleExport
+    handleExport,
   } = useCategoryTable()
 
   watch(
@@ -256,7 +256,7 @@
         })
       }
     },
-    { deep: true }
+    { deep: true },
   )
 
   const formatDateTime = (val: string | null | undefined) => {
@@ -283,7 +283,7 @@
       key: 'name',
       label: 'Tên thể loại',
       type: 'input',
-      props: { placeholder: 'Tìm kiếm tên...' }
+      props: { placeholder: 'Tìm kiếm tên...' },
     },
     {
       key: 'managementType',
@@ -293,9 +293,9 @@
         placeholder: 'Chọn loại quản lý...',
         clearable: true,
         filterable: true,
-        options: managementTypes.value
-      }
-    }
+        options: managementTypes.value,
+      },
+    },
   ])
 </script>
 

@@ -65,7 +65,7 @@
 
   const searchForm = ref<RoleSearchFormParams>({
     roleName: undefined,
-    description: undefined
+    description: undefined,
   })
 
   const showSearchBar = ref(false)
@@ -84,29 +84,29 @@
     resetSearchParams,
     handleSizeChange,
     handleCurrentChange,
-    refreshData
+    refreshData,
   } = useTable({
     core: {
       apiFn: fetchGetRoleList,
       paginationKey: {
         current: 'Page',
-        size: 'PageSize'
+        size: 'PageSize',
       },
       apiParams: {
         Page: 1,
-        PageSize: 20
+        PageSize: 20,
       },
       columnsFactory: () => [
         {
           prop: 'name',
           label: 'Tên vai trò',
-          minWidth: 150
+          minWidth: 150,
         },
         {
           prop: 'description',
           label: 'Mô tả',
           minWidth: 250,
-          showOverflowTooltip: true
+          showOverflowTooltip: true,
         },
         {
           prop: 'operation',
@@ -120,26 +120,26 @@
                   {
                     key: 'permission',
                     label: 'Phân quyền hạn',
-                    icon: 'ri:shield-keyhole-line'
+                    icon: 'ri:shield-keyhole-line',
                   },
                   {
                     key: 'edit',
                     label: 'Chỉnh sửa vai trò',
-                    icon: 'ri:edit-2-line'
+                    icon: 'ri:edit-2-line',
                   },
                   {
                     key: 'delete',
                     label: 'Xóa vai trò',
                     icon: 'ri:delete-bin-4-line',
-                    color: '#f56c6c'
-                  }
+                    color: '#f56c6c',
+                  },
                 ],
-                onClick: (item: ButtonMoreItem) => buttonMoreClick(item, row)
-              })
-            ])
-        }
-      ]
-    }
+                onClick: (item: ButtonMoreItem) => buttonMoreClick(item, row),
+              }),
+            ]),
+        },
+      ],
+    },
   })
 
   const dialogType = ref<'add' | 'edit'>('add')
@@ -159,7 +159,7 @@
       filters.push(`Description@=${params.description}`)
     }
     replaceSearchParams({
-      Filters: filters.join(',') || undefined
+      Filters: filters.join(',') || undefined,
     })
     getData()
   }
@@ -190,8 +190,8 @@
       {
         confirmButtonText: 'Xác định',
         cancelButtonText: 'Hủy',
-        type: 'warning'
-      }
+        type: 'warning',
+      },
     )
       .then(async () => {
         await fetchDeleteRole(row.id)

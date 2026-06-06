@@ -21,7 +21,7 @@ export const useWorktabStore = defineStore(
     const hasOpenedTabs = computed(() => opened.value.length > 0)
     const hasMultipleTabs = computed(() => opened.value.length > 1)
     const currentTabIndex = computed(() =>
-      current.value.path ? opened.value.findIndex((tab) => tab.path === current.value.path) : -1
+      current.value.path ? opened.value.findIndex((tab) => tab.path === current.value.path) : -1,
     )
 
     const findTabIndex = (path: string): number => {
@@ -45,7 +45,7 @@ export const useWorktabStore = defineStore(
       try {
         router.push({
           path: tab.path,
-          query: tab.query as LocationQueryRaw
+          query: tab.query as LocationQueryRaw,
         })
       } catch (error) {
         console.error('RoutingnhảychuyểnThatBai:', error)
@@ -93,7 +93,7 @@ export const useWorktabStore = defineStore(
           fixedTab: tab.fixedTab ?? existingTab.fixedTab,
           keepAlive: tab.keepAlive ?? existingTab.keepAlive,
           name: tab.name || existingTab.name,
-          icon: tab.icon || existingTab.icon
+          icon: tab.icon || existingTab.icon,
         }
 
         current.value = opened.value[existingIndex]
@@ -154,7 +154,7 @@ export const useWorktabStore = defineStore(
 
       if (targetIndex === -1) {
         console.warn(
-          `thửnghiệmquanđóngtráicạnhtiêunhãntrang，nhưngmụctiêutiêunhãntrangkhôngtồntại: ${path}`
+          `thửnghiệmquanđóngtráicạnhtiêunhãntrang，nhưngmụctiêutiêunhãntrangkhôngtồntại: ${path}`,
         )
         return
       }
@@ -170,7 +170,7 @@ export const useWorktabStore = defineStore(
       markTabsToRemove(closableLeftTabs)
 
       opened.value = opened.value.filter(
-        (tab, index) => index >= targetIndex || !isTabClosable(tab)
+        (tab, index) => index >= targetIndex || !isTabClosable(tab),
       )
 
       const targetTab = getTab(path)
@@ -184,7 +184,7 @@ export const useWorktabStore = defineStore(
 
       if (targetIndex === -1) {
         console.warn(
-          `thửnghiệmquanđóngphảicạnhtiêunhãntrang，nhưngmụctiêutiêunhãntrangkhôngtồntại: ${path}`
+          `thửnghiệmquanđóngphảicạnhtiêunhãntrang，nhưngmụctiêutiêunhãntrangkhôngtồntại: ${path}`,
         )
         return
       }
@@ -200,7 +200,7 @@ export const useWorktabStore = defineStore(
       markTabsToRemove(closableRightTabs)
 
       opened.value = opened.value.filter(
-        (tab, index) => index <= targetIndex || !isTabClosable(tab)
+        (tab, index) => index <= targetIndex || !isTabClosable(tab),
       )
 
       const targetTab = getTab(path)
@@ -214,7 +214,7 @@ export const useWorktabStore = defineStore(
 
       if (!targetTab) {
         console.warn(
-          `thửnghiệmquanđóngkháckháctiêunhãntrang，nhưngmụctiêutiêunhãntrangkhôngtồntại: ${path}`
+          `thửnghiệmquanđóngkháckháctiêunhãntrang，nhưngmụctiêutiêunhãntrangkhôngtồntại: ${path}`,
         )
         return
       }
@@ -328,7 +328,7 @@ export const useWorktabStore = defineStore(
             if (tab.path) {
               const resolved = routerInstance.resolve({
                 path: tab.path,
-                query: (tab.query as LocationQueryRaw) || undefined
+                query: (tab.query as LocationQueryRaw) || undefined,
               })
               return resolved.matched.length > 0
             }
@@ -368,7 +368,7 @@ export const useWorktabStore = defineStore(
       return {
         current: { ...current.value },
         opened: [...opened.value],
-        keepAliveExclude: [...keepAliveExclude.value]
+        keepAliveExclude: [...keepAliveExclude.value],
       }
     }
 
@@ -419,13 +419,13 @@ export const useWorktabStore = defineStore(
       markTabsToRemove,
       getTabTitle,
       updateTabTitle,
-      resetTabTitle
+      resetTabTitle,
     }
   },
   {
     persist: {
       key: 'worktab',
-      storage: localStorage
-    }
-  }
+      storage: localStorage,
+    },
+  },
 )

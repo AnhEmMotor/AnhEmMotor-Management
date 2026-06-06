@@ -48,7 +48,7 @@
 
   const newComment = ref<Partial<Comment>>({
     author: '',
-    content: ''
+    content: '',
   })
 
   const showReplyForm = ref<number | null>(null)
@@ -64,7 +64,7 @@
       author: newComment.value.author.trim(),
       content: newComment.value.content.trim(),
       timestamp: new Date().toISOString(),
-      replies: []
+      replies: [],
     })
 
     newComment.value.author = ''
@@ -85,7 +85,7 @@
         author: replyAuthor.trim(),
         content: replyContent.trim(),
         timestamp: new Date().toISOString(),
-        replies: []
+        replies: [],
       })
       showReplyForm.value = null
       ElMessage.success('TraLoiĐăng tảiThanhCong')

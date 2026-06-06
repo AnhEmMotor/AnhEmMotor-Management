@@ -60,7 +60,7 @@
           class="lead-row-card group bg-white rounded-2xl shadow-sm border border-gray-100 transition-all duration-300 flex items-center hover:border-red-200"
           :class="{
             'is-selected': selectedIds.includes(lead.id),
-            'is-critical': isCriticalWait(lead)
+            'is-critical': isCriticalWait(lead),
           }"
         >
           <div class="px-5 flex-cc border-r border-gray-50 h-full min-h-[100px]">
@@ -227,7 +227,7 @@
     selectedIds,
     salesList,
     toggleSelect,
-    getPriority
+    getPriority,
   } = useLeadTable()
 
   const searchModel = ref({})
@@ -251,7 +251,7 @@
       key: 'fullName',
       label: 'Tìm kiếm nhanh',
       type: 'input',
-      props: { placeholder: 'Họ tên, SĐT...', clearable: true }
+      props: { placeholder: 'Họ tên, SĐT...', clearable: true },
     },
     {
       key: 'source',
@@ -262,10 +262,10 @@
         clearable: true,
         options: [
           { label: 'Facebook', value: 'Facebook' },
-          { label: 'Website', value: 'Website' }
-        ]
-      }
-    }
+          { label: 'Website', value: 'Website' },
+        ],
+      },
+    },
   ]
 
   const getStatusType = (status: string) => {

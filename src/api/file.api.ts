@@ -9,8 +9,8 @@ export const FileApi = {
       url: '/api/MediaFile/product/upload',
       data: formData,
       headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+        'Content-Type': 'multipart/form-data',
+      },
     })
   },
 
@@ -22,8 +22,8 @@ export const FileApi = {
       url: '/api/MediaFile/news/upload',
       data: formData,
       headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+        'Content-Type': 'multipart/form-data',
+      },
     })
-  }
+  },
 }

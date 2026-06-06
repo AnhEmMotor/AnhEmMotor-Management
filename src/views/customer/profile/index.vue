@@ -32,7 +32,7 @@
           <div
             class="customer-row-card group bg-white rounded-2xl shadow-sm border border-gray-100 transition-all duration-300 flex items-center hover:border-blue-200 cursor-pointer overflow-hidden"
             :class="{
-              'is-expanded': expandedId === customer.id
+              'is-expanded': expandedId === customer.id,
             }"
             @click="handleToggleExpand(customer.id)"
           >
@@ -217,8 +217,8 @@
         confirmButtonText: 'XÓA NGAY',
         cancelButtonText: 'HỦY',
         type: 'warning',
-        confirmButtonClass: 'el-button--danger'
-      }
+        confirmButtonClass: 'el-button--danger',
+      },
     ).then(() => {
       ElMessage.success('Đã xóa hồ sơ khách hàng thành công')
       refreshData()
@@ -230,7 +230,7 @@
       key: 'fullName',
       label: 'Tên khách hàng',
       type: 'input',
-      props: { placeholder: 'Nhập tên hoặc SĐT...', clearable: true }
+      props: { placeholder: 'Nhập tên hoặc SĐT...', clearable: true },
     },
     {
       key: 'status',
@@ -242,10 +242,10 @@
         options: [
           { label: 'Chính thức', value: 'Official' },
           { label: 'Đang mua', value: 'Purchasing' },
-          { label: 'Tiềm năng', value: 'Potential' }
-        ]
-      }
-    }
+          { label: 'Tiềm năng', value: 'Potential' },
+        ],
+      },
+    },
   ]
 
   const getSourceIcon = (source: string) => {
@@ -267,7 +267,7 @@
       Negotiating: 'Thương lượng',
       Consulting: 'Đang tư vấn',
       Won: 'Đã chốt đơn',
-      Official: 'Khách chính thức'
+      Official: 'Khách chính thức',
     }
     return map[status] || 'Đang tư vấn'
   }
@@ -285,7 +285,7 @@
       'Đang chờ duyệt hồ sơ trả góp',
       'Đã gửi báo giá lăn bánh chi tiết',
       'Hẹn xem xe vào sáng Thứ 7',
-      'Quan tâm đến chính sách bảo hành 3 năm'
+      'Quan tâm đến chính sách bảo hành 3 năm',
     ]
     return notes[customer.id % notes.length]
   }

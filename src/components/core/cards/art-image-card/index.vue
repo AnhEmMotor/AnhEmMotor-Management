@@ -74,7 +74,7 @@
     readTime: '',
     views: 0,
     comments: 0,
-    date: ''
+    date: '',
   })
 
   const emit = defineEmits<{

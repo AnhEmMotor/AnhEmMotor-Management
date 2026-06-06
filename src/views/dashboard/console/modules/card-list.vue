@@ -40,7 +40,7 @@
       startVal: 0,
       duration: 1000,
       num: 9120,
-      change: '+20%'
+      change: '+20%',
     },
     {
       des: 'tạiđườngtruy cậpkháchsố',
@@ -48,7 +48,7 @@
       startVal: 0,
       duration: 1000,
       num: 182,
-      change: '+10%'
+      change: '+10%',
     },
     {
       des: 'Nhấnlượng',
@@ -56,7 +56,7 @@
       startVal: 0,
       duration: 1000,
       num: 9520,
-      change: '-12%'
+      change: '-12%',
     },
     {
       des: 'NguoiDung mới',
@@ -64,7 +64,7 @@
       startVal: 0,
       duration: 1000,
       num: 156,
-      change: '+30%'
-    }
+      change: '+30%',
+    },
   ])
 </script>

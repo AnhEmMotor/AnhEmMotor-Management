@@ -6,12 +6,12 @@ import { headerBarConfig } from './modules/headerBar'
 
 const appConfig: SystemConfig = {
   systemInfo: {
-    name: 'Anh Em Motor'
+    name: 'Anh Em Motor',
   },
 
   systemThemeStyles: {
     [SystemThemeEnum.LIGHT]: { className: '' },
-    [SystemThemeEnum.DARK]: { className: SystemThemeEnum.DARK }
+    [SystemThemeEnum.DARK]: { className: SystemThemeEnum.DARK },
   },
 
   settingThemeList: [
@@ -21,7 +21,7 @@ const appConfig: SystemConfig = {
       color: ['#fff', '#fff'],
       leftLineColor: '#EDEEF0',
       rightLineColor: '#EDEEF0',
-      img: configImages.themeStyles.light
+      img: configImages.themeStyles.light,
     },
     {
       name: 'Dark',
@@ -29,7 +29,7 @@ const appConfig: SystemConfig = {
       color: ['#22252A'],
       leftLineColor: '#3F4257',
       rightLineColor: '#3F4257',
-      img: configImages.themeStyles.dark
+      img: configImages.themeStyles.dark,
     },
     {
       name: 'System',
@@ -37,15 +37,19 @@ const appConfig: SystemConfig = {
       color: ['#fff', '#22252A'],
       leftLineColor: '#EDEEF0',
       rightLineColor: '#3F4257',
-      img: configImages.themeStyles.system
-    }
+      img: configImages.themeStyles.system,
+    },
   ],
 
   menuLayoutList: [
     { name: 'Left', value: MenuTypeEnum.LEFT, img: configImages.menuLayouts.vertical },
     { name: 'Top', value: MenuTypeEnum.TOP, img: configImages.menuLayouts.horizontal },
     { name: 'Mixed', value: MenuTypeEnum.TOP_LEFT, img: configImages.menuLayouts.mixed },
-    { name: 'Dual Column', value: MenuTypeEnum.DUAL_MENU, img: configImages.menuLayouts.dualColumn }
+    {
+      name: 'Dual Column',
+      value: MenuTypeEnum.DUAL_MENU,
+      img: configImages.menuLayouts.dualColumn,
+    },
   ],
 
   themeList: [
@@ -55,7 +59,7 @@ const appConfig: SystemConfig = {
       systemNameColor: 'var(--art-gray-800)',
       iconColor: '#6B6B6B',
       textColor: '#29343D',
-      img: configImages.menuStyles.design
+      img: configImages.menuStyles.design,
     },
     {
       theme: MenuThemeEnum.DARK,
@@ -63,7 +67,7 @@ const appConfig: SystemConfig = {
       systemNameColor: '#D9DADB',
       iconColor: '#BABBBD',
       textColor: '#BABBBD',
-      img: configImages.menuStyles.dark
+      img: configImages.menuStyles.dark,
     },
     {
       theme: MenuThemeEnum.LIGHT,
@@ -71,8 +75,8 @@ const appConfig: SystemConfig = {
       systemNameColor: 'var(--art-gray-800)',
       iconColor: '#6B6B6B',
       textColor: '#29343D',
-      img: configImages.menuStyles.light
-    }
+      img: configImages.menuStyles.light,
+    },
   ],
 
   darkMenuStyles: [
@@ -81,8 +85,8 @@ const appConfig: SystemConfig = {
       background: 'var(--default-box-color)',
       systemNameColor: '#DDDDDD',
       iconColor: '#BABBBD',
-      textColor: 'rgba(#FFFFFF, 0.7)'
-    }
+      textColor: 'rgba(#FFFFFF, 0.7)',
+    },
   ],
 
   systemMainColor: [
@@ -93,12 +97,12 @@ const appConfig: SystemConfig = {
     '#60C041',
     '#38C0FC',
     '#F9901F',
-    '#FF80C8'
+    '#FF80C8',
   ] as const,
 
   fastEnter: fastEnterConfig,
 
-  headerBar: headerBarConfig
+  headerBar: headerBarConfig,
 }
 
 export default Object.freeze(appConfig)

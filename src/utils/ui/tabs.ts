@@ -3,20 +3,20 @@ export const TAB_CONFIG = {
     openTop: 106,
     closeTop: 60,
     openHeight: 121,
-    closeHeight: 75
+    closeHeight: 75,
   },
   'tab-card': {
     openTop: 122,
     closeTop: 78,
     openHeight: 139,
-    closeHeight: 95
+    closeHeight: 95,
   },
   'tab-google': {
     openTop: 122,
     closeTop: 78,
     openHeight: 139,
-    closeHeight: 95
-  }
+    closeHeight: 95,
+  },
 }
 
 export const getTabConfig = (style: string) => {

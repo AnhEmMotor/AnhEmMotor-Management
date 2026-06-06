@@ -27,7 +27,7 @@
             <div
               :class="[
                 'mb-7.5 flex w-full items-start gap-2',
-                message.isMe ? 'flex-row-reverse' : 'flex-row'
+                message.isMe ? 'flex-row-reverse' : 'flex-row',
               ]"
             >
               <ElAvatar :size="32" :src="message.avatar" class="shrink-0" />
@@ -37,7 +37,7 @@
                 <div
                   :class="[
                     'mb-1 flex gap-2 text-xs',
-                    message.isMe ? 'flex-row-reverse' : 'flex-row'
+                    message.isMe ? 'flex-row-reverse' : 'flex-row',
                   ]"
                 >
                   <span class="font-medium">{{ message.sender }}</span>
@@ -46,7 +46,7 @@
                 <div
                   :class="[
                     'rounded-md px-3.5 py-2.5 text-sm leading-[1.4] text-g-900',
-                    message.isMe ? 'message-right bg-theme/15' : 'message-left bg-g-300/50'
+                    message.isMe ? 'message-right bg-theme/15' : 'message-left bg-g-300/50',
                   ]"
                   >{{ message.content }}</div
                 >
@@ -126,7 +126,7 @@
       content: 'bạnhảo！tôilàbạncủaAIgiúptay，cógìgìtôiCó thểlấygiúpbạncủakhông？',
       time: '10:00',
       isMe: false,
-      avatar: aiAvatar
+      avatar: aiAvatar,
     },
     {
       id: 2,
@@ -134,7 +134,7 @@
       content: 'tôimuốnrồigiảimộtdướiHeThongcủakhiếndùngPhuongThuc。',
       time: '10:01',
       isMe: true,
-      avatar: meAvatar
+      avatar: meAvatar,
     },
     {
       id: 3,
@@ -143,7 +143,7 @@
         'hảocủa，tôiđếnvìbạngiớithiệuHeThongcủachủcầncôngnăng。đầu，bạnCó thểlấythông quaBên tráiMenuTruy cậpKhôngcùngcủacôngnăngmôkhối...',
       time: '10:02',
       isMe: false,
-      avatar: aiAvatar
+      avatar: aiAvatar,
     },
     {
       id: 4,
@@ -151,7 +151,7 @@
       content: 'nghekhởiđếnrấtKhôngLỗi，năngdụng cụthểnóinóiDữ liệuphầnphânbộphầnkhông？',
       time: '10:05',
       isMe: true,
-      avatar: meAvatar
+      avatar: meAvatar,
     },
     {
       id: 5,
@@ -160,7 +160,7 @@
         'khinhiênCó thểlấy。Dữ liệuphầnphânmôkhốiCó thểlấygiúpgiúpbạnthựcgiờGiámkhốngđóngphímtiêu，đồng thờisinhthànhChiTietcủabáobảng...',
       time: '10:06',
       isMe: false,
-      avatar: aiAvatar
+      avatar: aiAvatar,
     },
     {
       id: 6,
@@ -168,7 +168,7 @@
       content: 'quáhảorồi，kiatôinếunàoBắt đầukhiếndùngnhỉ？',
       time: '10:08',
       isMe: true,
-      avatar: meAvatar
+      avatar: meAvatar,
     },
     {
       id: 7,
@@ -177,7 +177,7 @@
         'bạnCó thểlấyxâymộtchiếcmụcmục，nhiênsautạimụcmụctrongThêm mớiđóngcủaDữ liệunguồn，HeThongsẽtừđộngvàodòngphầnphân。',
       time: '10:09',
       isMe: false,
-      avatar: aiAvatar
+      avatar: aiAvatar,
     },
     {
       id: 8,
@@ -185,7 +185,7 @@
       content: 'minhtrắngrồi，tạtạbạncủagiúpgiúp！',
       time: '10:10',
       isMe: true,
-      avatar: meAvatar
+      avatar: meAvatar,
     },
     {
       id: 9,
@@ -193,8 +193,8 @@
       content: 'Khôngkháchkhí，cónhiệmnàohỏiđềgiờliênhệtôi。',
       time: '10:11',
       isMe: false,
-      avatar: aiAvatar
-    }
+      avatar: aiAvatar,
+    },
   ]
 
   const messages = ref<ChatMessage[]>(initializeMessages())
@@ -202,7 +202,7 @@
   const formatCurrentTime = (): string => {
     return new Date().toLocaleTimeString([], {
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })
   }
 
@@ -226,7 +226,7 @@
       content: text,
       time: formatCurrentTime(),
       isMe: true,
-      avatar: meAvatar
+      avatar: meAvatar,
     }
 
     messages.value.push(newMessage)

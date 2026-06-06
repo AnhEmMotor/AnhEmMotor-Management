@@ -34,7 +34,7 @@
                 border: '1px solid',
                 padding: '3px 6px',
                 borderRadius: '4px',
-                fontSize: '12px'
+                fontSize: '12px',
               }"
               >{{ scope.row.sales }}</span
             >
@@ -57,14 +57,14 @@
   const COLOR_THRESHOLDS = {
     LOW: 25,
     MEDIUM: 50,
-    HIGH: 75
+    HIGH: 75,
   } as const
 
   const POPULARITY_COLORS = {
     LOW: '#00E096',
     MEDIUM: '#0095FF',
     HIGH: '#884CFF',
-    VERY_HIGH: '#FE8F0E'
+    VERY_HIGH: '#FE8F0E',
   } as const
 
   const products = computed<Product[]>(() => [
@@ -73,7 +73,7 @@
     { name: 'bảnđiệnnão', popularity: 65, sales: '100' },
     { name: 'trínăngtaybảng', popularity: 32, sales: '100' },
     { name: 'vôđườngtaimáy', popularity: 78, sales: '100' },
-    { name: 'trínăngâmhộp', popularity: 41, sales: '100' }
+    { name: 'trínăngâmhộp', popularity: 41, sales: '100' },
   ])
 
   const getColor = (percentage: number): string => {

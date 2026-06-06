@@ -19,7 +19,7 @@
   defineOptions({ name: 'WidgetsVideo' })
 
   const videoUrl = ref(
-    '//lf3-static.bytednsdoc.com/obj/eden-cn/nupenuvpxnuvo/xgplayer_doc/xgplayer-demo.mp4'
+    '//lf3-static.bytednsdoc.com/obj/eden-cn/nupenuvpxnuvo/xgplayer_doc/xgplayer-demo.mp4',
   )
 
   const posterUrl = ref(lockImg)

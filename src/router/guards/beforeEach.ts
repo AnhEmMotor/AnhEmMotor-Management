@@ -150,7 +150,7 @@ function isStaticRoute(path: string): boolean {
   const checkRoute = (routes: any[], targetPath: string): boolean => {
     return routes.some((route) => {
       if (route.name === 'Exception404') {
-        return false
+        return true
       }
 
       const routePath = route.path
@@ -334,7 +334,7 @@ async function handleDynamicRoutes(to: RouteLocationNormalized, router: Router):
 
     if (isUnauthorizedError(error)) {
       routeInitInProgress = false
-      return false
+        return { name: 'Login', query: { redirect: to.fullPath }, replace: true }
     }
 
     routeInitFailed = true

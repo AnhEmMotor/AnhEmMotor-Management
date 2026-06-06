@@ -9,7 +9,7 @@ export function useLeadTable() {
   const pagination = reactive({
     current: 1,
     size: 10,
-    total: 0
+    total: 0,
   })
 
   const columns = [
@@ -20,14 +20,14 @@ export function useLeadTable() {
     { title: 'Điểm số', dataIndex: 'score', slot: 'score' },
     { title: 'Trạng thái', dataIndex: 'status', slot: 'status' },
     { title: 'Ngày tạo', dataIndex: 'createdAt', slot: 'createdAt' },
-    { title: 'Thao tác', dataIndex: 'operation', slot: 'operation', width: 120 }
+    { title: 'Thao tác', dataIndex: 'operation', slot: 'operation', width: 120 },
   ]
 
   const selectedIds = ref<number[]>([])
   const salesList = ref([
     { id: 1, name: 'Admin', color: '#ff4d4f' },
     { id: 2, name: 'Sale Nguyễn Văn A', color: '#1890ff' },
-    { id: 3, name: 'Sale Trần Thị B', color: '#52c41a' }
+    { id: 3, name: 'Sale Trần Thị B', color: '#52c41a' },
   ])
 
   const toggleSelect = (id: number) => {
@@ -121,6 +121,6 @@ export function useLeadTable() {
     toggleSelectAll,
     handleAssignBulk,
     refreshData,
-    getPriority
+    getPriority,
   }
 }

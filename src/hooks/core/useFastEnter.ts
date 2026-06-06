@@ -29,6 +29,6 @@ export function useFastEnter() {
     fastEnterConfig,
     enabledApplications,
     enabledQuickLinks,
-    minWidth
+    minWidth,
   }
 }

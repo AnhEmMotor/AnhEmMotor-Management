@@ -27,7 +27,7 @@ export function useSettingsHandlers() {
       } else {
         el.classList.remove(className)
       }
-    }
+    },
   }
 
   const createToggleHandler = (storeMethod: () => void, callback?: () => void) => {
@@ -39,7 +39,7 @@ export function useSettingsHandlers() {
 
   const createValueHandler = <T>(
     storeMethod: (value: T) => void,
-    callback?: (value: T) => void
+    callback?: (value: T) => void,
   ) => {
     return (value: T) => {
       if (value !== undefined && value !== null) {
@@ -70,26 +70,26 @@ export function useSettingsHandlers() {
       () => settingStore.setColorWeak(),
       () => {
         domOperations.setHtmlClass('color-weak', settingStore.colorWeak)
-      }
+      },
     ),
 
     watermark: createToggleHandler(() =>
-      settingStore.setWatermarkVisible(!settingStore.watermarkVisible)
+      settingStore.setWatermarkVisible(!settingStore.watermarkVisible),
     ),
 
     menuOpenWidth: createValueHandler<number>((width: number) =>
-      settingStore.setMenuOpenWidth(width)
+      settingStore.setMenuOpenWidth(width),
     ),
 
     tabStyle: createValueHandler<string>((style: string) => settingStore.setTabStyle(style)),
 
     pageTransition: createValueHandler<string>((transition: string) =>
-      settingStore.setPageTransition(transition)
+      settingStore.setPageTransition(transition),
     ),
 
     customRadius: createValueHandler<string>((radius: string) =>
-      settingStore.setCustomRadius(radius)
-    )
+      settingStore.setCustomRadius(radius),
+    ),
   }
 
   const boxStyleHandlers = {
@@ -107,21 +107,21 @@ export function useSettingsHandlers() {
         domOperations.setRootAttribute('data-box-mode', type)
         settingStore.setBorderMode()
       }, 50)
-    }
+    },
   }
 
   const colorHandlers = {
     selectColor: (theme: string) => {
       settingStore.setElementTheme(theme)
       settingStore.reload()
-    }
+    },
   }
 
   const containerHandlers = {
     setWidth: (type: ContainerWidthEnum) => {
       settingStore.setContainerWidth(type)
       settingStore.reload()
-    }
+    },
   }
 
   return {
@@ -131,6 +131,6 @@ export function useSettingsHandlers() {
     colorHandlers,
     containerHandlers,
     createToggleHandler,
-    createValueHandler
+    createValueHandler,
   }
 }

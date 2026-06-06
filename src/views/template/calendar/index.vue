@@ -89,7 +89,7 @@
     { label: 'quyển', value: 'primary' },
     { label: 'ThanhCong', value: 'success' },
     { label: 'CanhBao', value: 'warning' },
-    { label: 'Nguy hiểm', value: 'danger' }
+    { label: 'Nguy hiểm', value: 'danger' },
   ] as const
 
   const currentDate = ref(new Date('2025-02-07'))
@@ -103,7 +103,7 @@
       date: '2025-02-03',
       endDate: '2025-02-05',
       content: 'mụcmụctuầnbáosẽnghị（vượtNgày）',
-      type: 'primary'
+      type: 'primary',
     },
     { date: '2025-02-10', content: 'dugiàkhóatrình', type: 'success' },
     { date: '2025-02-15', content: 'đoànđộixâythiếtsốngđộng', type: 'primary' },
@@ -111,14 +111,14 @@
     { date: '2025-02-20', content: 'đạimãBìnhduyệt', type: 'danger' },
     { date: '2025-02-20', content: 'đoànđộitrưabữa', type: 'primary' },
     { date: '2025-02-20', content: 'mụcmụcvàođộhợpbáo', type: 'warning' },
-    { date: '2025-02-28', content: 'Hàng thángtổngKếtsẽ', type: 'warning' }
+    { date: '2025-02-28', content: 'Hàng thángtổngKếtsẽ', type: 'warning' },
   ])
 
   const eventForm = ref<CalendarEvent>({
     date: '',
     endDate: '',
     content: '',
-    type: 'primary'
+    type: 'primary',
   })
 
   const isEditing = computed(() => editingEventIndex.value >= 0)
@@ -130,7 +130,7 @@
       primary: { bgClass: 'bg-theme/12', textClass: 'text-theme' },
       success: { bgClass: 'bg-success/12', textClass: 'text-success' },
       warning: { bgClass: 'bg-warning/12', textClass: 'text-warning' },
-      danger: { bgClass: 'bg-danger/12', textClass: 'text-danger' }
+      danger: { bgClass: 'bg-danger/12', textClass: 'text-danger' },
     }
     return classMap[type]
   }
@@ -155,7 +155,7 @@
       date: '',
       endDate: '',
       content: '',
-      type: 'primary'
+      type: 'primary',
     }
     editingEventIndex.value = -1
   }
@@ -165,7 +165,7 @@
     eventForm.value = {
       date: day,
       content: '',
-      type: 'primary'
+      type: 'primary',
     }
     editingEventIndex.value = -1
     dialogVisible.value = true
@@ -175,7 +175,7 @@
     dialogTitle.value = 'Chỉnh sửaSuKien'
     eventForm.value = { ...event }
     editingEventIndex.value = events.value.findIndex(
-      (e) => e.date === event.date && e.content === event.content
+      (e) => e.date === event.date && e.content === event.content,
     )
     dialogVisible.value = true
   }

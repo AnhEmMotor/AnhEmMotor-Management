@@ -32,22 +32,22 @@
       left: 'MenuTypeEnum.LEFT',
       top: 'MenuTypeEnum.TOP',
       'top-left': 'MenuTypeEnum.TOP_LEFT',
-      'dual-menu': 'MenuTypeEnum.DUAL_MENU'
+      'dual-menu': 'MenuTypeEnum.DUAL_MENU',
     },
     systemTheme: {
       auto: 'SystemThemeEnum.AUTO',
       light: 'SystemThemeEnum.LIGHT',
-      dark: 'SystemThemeEnum.DARK'
+      dark: 'SystemThemeEnum.DARK',
     },
     menuTheme: {
       design: 'MenuThemeEnum.DESIGN',
       light: 'MenuThemeEnum.LIGHT',
-      dark: 'MenuThemeEnum.DARK'
+      dark: 'MenuThemeEnum.DARK',
     },
     containerWidth: {
       '100%': 'ContainerWidthEnum.FULL',
-      '1200px': 'ContainerWidthEnum.BOXED'
-    }
+      '1200px': 'ContainerWidthEnum.BOXED',
+    },
   } as const
 
   interface ConfigItem {
@@ -86,7 +86,7 @@
     { comment: 'Thẻ TabKiểu dáng', key: 'tabStyle' },
     { comment: 'Tùy chỉnhVai', key: 'customRadius' },
     { comment: 'ContainerChiều rộng', key: 'containerWidth', enumMap: ENUM_MAPS.containerWidth },
-    { comment: 'tiếtngàyNgày', key: 'festivalDate', forceValue: '' }
+    { comment: 'tiếtngàyNgày', key: 'festivalDate', forceValue: '' },
   ]
 
   const valueToCode = (value: any, enumMap?: Record<string, string>): string => {
@@ -124,7 +124,7 @@
       if (copied.value) {
         ElMessage.success({
           message: t('setting.actions.copySuccess'),
-          duration: 3000
+          duration: 3000,
         })
       }
     } catch (error) {
@@ -136,7 +136,7 @@
   const toggleIfDifferent = (
     currentValue: boolean,
     defaultValue: boolean,
-    toggleFn: () => void
+    toggleFn: () => void,
   ) => {
     if (currentValue !== defaultValue) {
       toggleFn()
@@ -161,20 +161,20 @@
       settingStore.setElementTheme(config.systemThemeColor)
 
       toggleIfDifferent(settingStore.showMenuButton, config.showMenuButton, () =>
-        settingStore.setButton()
+        settingStore.setButton(),
       )
       toggleIfDifferent(settingStore.showFastEnter, config.showFastEnter, () =>
-        settingStore.setFastEnter()
+        settingStore.setFastEnter(),
       )
       toggleIfDifferent(settingStore.showRefreshButton, config.showRefreshButton, () =>
-        settingStore.setShowRefreshButton()
+        settingStore.setShowRefreshButton(),
       )
       toggleIfDifferent(settingStore.showCrumbs, config.showCrumbs, () => settingStore.setCrumbs())
       toggleIfDifferent(settingStore.showLanguage, config.showLanguage, () =>
-        settingStore.setLanguage()
+        settingStore.setLanguage(),
       )
       toggleIfDifferent(settingStore.showNprogress, config.showNprogress, () =>
-        settingStore.setNprogress()
+        settingStore.setNprogress(),
       )
 
       settingStore.setWorkTab(config.showWorkTab)
@@ -183,12 +183,12 @@
 
       toggleIfDifferent(settingStore.autoClose, config.autoClose, () => settingStore.setAutoClose())
       toggleIfDifferent(settingStore.uniqueOpened, config.uniqueOpened, () =>
-        settingStore.setUniqueOpened()
+        settingStore.setUniqueOpened(),
       )
       toggleIfDifferent(settingStore.colorWeak, config.colorWeak, () => settingStore.setColorWeak())
 
       toggleIfDifferent(settingStore.boxBorderMode, config.boxBorderMode, () =>
-        settingStore.setBorderMode()
+        settingStore.setBorderMode(),
       )
       settingStore.setPageTransition(config.pageTransition)
       settingStore.setTabStyle(config.tabStyle)

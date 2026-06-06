@@ -1,10 +1,10 @@
 export enum PageModeEnum {
   Add,
-  Edit
+  Edit,
 }
 
 export enum TableSizeEnum {
   DEFAULT = 'default',
   SMALL = 'small',
-  LARGE = 'large'
+  LARGE = 'large',
 }

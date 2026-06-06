@@ -117,7 +117,7 @@
     ElTimePicker,
     ElTimeSelect,
     ElTreeSelect,
-    type FormInstance
+    type FormInstance,
   } from 'element-plus'
   import { calculateResponsiveSpan, type ResponsiveBreakpoint } from '@/utils/form/responsive'
 
@@ -141,7 +141,7 @@
     cascader: ElCascader,
     timepicker: ElTimePicker,
     timeselect: ElTimeSelect,
-    treeselect: ElTreeSelect
+    treeselect: ElTreeSelect,
   }
 
   const { width } = useWindowSize()
@@ -202,7 +202,7 @@
     showReset: true,
     showSearch: true,
     disabledSearch: false,
-    sanitizeOutput: () => ({})
+    sanitizeOutput: () => ({}),
   })
 
   interface SearchBarEmits {
@@ -249,7 +249,7 @@
     removeEmptyRichText: true,
     keepZero: true,
     keepFalse: true,
-    ...props.sanitizeOutput
+    ...props.sanitizeOutput,
   }))
 
   const getProps = (item: SearchFormItem) => {
@@ -292,7 +292,7 @@
 
     modelValue.value = {
       ...modelValue.value,
-      [key]: normalizedValue
+      [key]: normalizedValue,
     }
   }
 
@@ -330,7 +330,7 @@
           }
           return accumulator
         },
-        {}
+        {},
       )
       return Object.keys(sanitizedObject).length === 0 && options.removeEmptyObject
         ? undefined
@@ -396,7 +396,7 @@
       ? 'flex-end'
       : props.items.filter((item) => !item.hidden).length <= props.buttonLeftLimit
         ? 'flex-start'
-        : 'flex-end'
+        : 'flex-end',
   }))
 
   const toggleExpand = () => {
@@ -419,7 +419,7 @@
     ref: formInstance,
     validate: (...args: any[]) => formInstance.value?.validate(...args),
     reset: handleReset,
-    getOutput: getSanitizedOutput
+    getOutput: getSanitizedOutput,
   })
 
   const { span, gutter, labelPosition, labelWidth } = toRefs(props)

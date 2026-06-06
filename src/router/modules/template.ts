@@ -6,7 +6,7 @@ export const templateRoutes: AppRouteRecord = {
   component: '/index/index',
   meta: {
     title: 'menus.template.title',
-    icon: 'ri:apps-2-line'
+    icon: 'ri:apps-2-line',
   },
   children: [
     {
@@ -16,8 +16,8 @@ export const templateRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.template.cards',
         icon: 'ri:wallet-line',
-        keepAlive: false
-      }
+        keepAlive: false,
+      },
     },
     {
       path: 'banners',
@@ -26,8 +26,8 @@ export const templateRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.template.banners',
         icon: 'ri:rectangle-line',
-        keepAlive: false
-      }
+        keepAlive: false,
+      },
     },
     {
       path: 'charts',
@@ -36,8 +36,8 @@ export const templateRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.template.charts',
         icon: 'ri:bar-chart-box-line',
-        keepAlive: false
-      }
+        keepAlive: false,
+      },
     },
     {
       path: 'map',
@@ -46,8 +46,8 @@ export const templateRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.template.map',
         icon: 'ri:map-pin-line',
-        keepAlive: true
-      }
+        keepAlive: true,
+      },
     },
     {
       path: 'chat',
@@ -56,8 +56,8 @@ export const templateRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.template.chat',
         icon: 'ri:message-3-line',
-        keepAlive: true
-      }
+        keepAlive: true,
+      },
     },
     {
       path: 'calendar',
@@ -66,8 +66,8 @@ export const templateRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.template.calendar',
         icon: 'ri:calendar-2-line',
-        keepAlive: true
-      }
+        keepAlive: true,
+      },
     },
     {
       path: 'pricing',
@@ -77,8 +77,8 @@ export const templateRoutes: AppRouteRecord = {
         title: 'menus.template.pricing',
         icon: 'ri:money-cny-box-line',
         keepAlive: true,
-        isFullPage: true
-      }
-    }
-  ]
+        isFullPage: true,
+      },
+    },
+  ],
 }

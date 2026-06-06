@@ -204,7 +204,7 @@
     supplierId: null,
     productId: null,
     costPrice: 0,
-    units: [{ frameNo: '', engineNo: '', quality: 'new', keyCount: 2, location: 'showroom' }]
+    units: [{ frameNo: '', engineNo: '', quality: 'new', keyCount: 2, location: 'showroom' }],
   })
 
   const addUnit = () => {
@@ -213,7 +213,7 @@
       engineNo: '',
       quality: 'new',
       keyCount: 2,
-      location: 'showroom'
+      location: 'showroom',
     })
   }
 

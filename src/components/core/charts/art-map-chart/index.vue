@@ -26,7 +26,7 @@
     selectedRegion: '',
     showLabels: true,
     showScatter: true,
-    isEmpty: false
+    isEmpty: false,
   })
 
   const emit = defineEmits<{
@@ -46,7 +46,7 @@
       value: Math.round(Math.random() * 1000),
       adcode: feature.properties.adcode as string,
       level: feature.properties.level as string,
-      selected: false
+      selected: false,
     }))
   }
 
@@ -54,7 +54,7 @@
     borderColor: isDark.value ? 'rgba(255,255,255,0.6)' : 'rgba(147,235,248,1)',
     shadowColor: isDark.value ? 'rgba(0,0,0,0.8)' : 'rgba(128,217,248,1)',
     labelColor: isDark.value ? '#fff' : '#333',
-    backgroundColor: isDark.value ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.9)'
+    backgroundColor: isDark.value ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.9)',
   })
 
   const createChartOption = (mapData: Array<Record<string, unknown>>) => {
@@ -68,7 +68,7 @@
         borderColor: isDark.value ? '#333' : '#ddd',
         borderWidth: 1,
         textStyle: {
-          color: themeStyles.labelColor
+          color: themeStyles.labelColor,
         },
         formatter: ({ data }: { data?: Record<string, unknown> }) => {
           const { name, adcode, level } = data || {}
@@ -79,7 +79,7 @@
               <div><strong>cấptính:</strong> ${level || 'Tạmvô'}</div>
             </div>
           `
-        }
+        },
       },
       geo: {
         map: 'china',
@@ -88,7 +88,7 @@
         roam: false,
         scaleLimit: {
           min: 0.8,
-          max: 3
+          max: 3,
         },
         layoutSize: '100%',
         emphasis: {
@@ -96,8 +96,8 @@
           itemStyle: {
             areaColor: 'rgba(82,180,255,0.9)',
             borderColor: '#fff',
-            borderWidth: 3
-          }
+            borderWidth: 3,
+          },
         },
         itemStyle: {
           borderColor: themeStyles.borderColor,
@@ -105,8 +105,8 @@
           shadowColor: themeStyles.shadowColor,
           shadowOffsetX: 2,
           shadowOffsetY: 15,
-          shadowBlur: 15
-        }
+          shadowBlur: 15,
+        },
       },
       series: [
         {
@@ -117,7 +117,7 @@
           label: {
             show: props.showLabels,
             color: '#fff',
-            fontSize: 10
+            fontSize: 10,
           },
           itemStyle: {
             borderColor: 'rgba(147,235,248,0.8)',
@@ -130,38 +130,38 @@
               y2: 1,
               colorStops: [
                 { offset: 0, color: 'rgba(147,235,248,0.3)' },
-                { offset: 1, color: 'rgba(32,120,207,0.9)' }
-              ]
+                { offset: 1, color: 'rgba(32,120,207,0.9)' },
+              ],
             },
             shadowColor: 'rgba(32,120,207,1)',
             shadowOffsetY: 15,
-            shadowBlur: 20
+            shadowBlur: 20,
           },
           emphasis: {
             label: {
               show: true,
               color: '#fff',
-              fontSize: 12
+              fontSize: 12,
             },
             itemStyle: {
               areaColor: 'rgba(82,180,255,0.9)',
               borderColor: '#fff',
-              borderWidth: 3
-            }
+              borderWidth: 3,
+            },
           },
           select: {
             label: {
               show: true,
               color: '#fff',
-              fontWeight: 'bold'
+              fontWeight: 'bold',
             },
             itemStyle: {
               areaColor: '#4FAEFB',
               borderColor: '#fff',
-              borderWidth: 2
-            }
+              borderWidth: 2,
+            },
           },
-          data: mapData
+          data: mapData,
         },
         ...(props.showScatter
           ? [
@@ -175,17 +175,17 @@
                 itemStyle: {
                   color: '#F99020',
                   shadowBlur: 10,
-                  shadowColor: '#333'
+                  shadowColor: '#333',
                 },
                 data: [
                   { name: 'Bắc Kinh', value: [116.405285, 39.904989, 100] },
                   { name: 'Thượng Hải', value: [121.472644, 31.231706, 100] },
-                  { name: 'Thâm Quyến', value: [114.085947, 22.547, 100] }
-                ]
-              }
+                  { name: 'Thâm Quyến', value: [114.085947, 22.547, 100] },
+                ],
+              },
             ]
-          : [])
-      ]
+          : []),
+      ],
     }
   }
 
@@ -211,7 +211,7 @@
       const regionData = {
         name: params.name as string,
         adcode: (data?.adcode as string) || '',
-        level: (data?.level as string) || ''
+        level: (data?.level as string) || '',
       }
 
       console.log(`vịtrongđồngTên: ${params.name}`, params)
@@ -219,7 +219,7 @@
       chartInstance.value?.dispatchAction({
         type: 'select',
         seriesIndex: 0,
-        dataIndex: params.dataIndex as number
+        dataIndex: params.dataIndex as number,
       })
 
       emit('regionClick', regionData)
@@ -270,6 +270,6 @@
         chartInstance.value.setOption(option)
       }
     },
-    { deep: true }
+    { deep: true },
   )
 </script>

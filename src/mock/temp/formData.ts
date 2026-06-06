@@ -31,7 +31,7 @@ export const ACCOUNT_TABLE_DATA: User[] = [
     dep: 'nghiênphátbộ',
     status: '1',
     create_time: '2020-09-09 10:01:10',
-    avatar: avatar1
+    avatar: avatar1,
   },
   {
     id: 2,
@@ -42,7 +42,7 @@ export const ACCOUNT_TABLE_DATA: User[] = [
     dep: 'điệnthươngbộ',
     status: '1',
     create_time: '2020-10-10 13:01:12',
-    avatar: avatar2
+    avatar: avatar2,
   },
   {
     id: 3,
@@ -53,7 +53,7 @@ export const ACCOUNT_TABLE_DATA: User[] = [
     dep: 'ngườiviệcbộ',
     status: '1',
     create_time: '2020-11-14 12:01:45',
-    avatar: avatar3
+    avatar: avatar3,
   },
   {
     id: 4,
@@ -64,7 +64,7 @@ export const ACCOUNT_TABLE_DATA: User[] = [
     dep: 'sinhsản phẩmbộ',
     status: '1',
     create_time: '2020-11-14 09:01:20',
-    avatar: avatar4
+    avatar: avatar4,
   },
   {
     id: 5,
@@ -75,7 +75,7 @@ export const ACCOUNT_TABLE_DATA: User[] = [
     dep: 'tàivụbộ',
     status: '1',
     create_time: '2020-11-13 11:01:05',
-    avatar: avatar5
+    avatar: avatar5,
   },
   {
     id: 6,
@@ -86,7 +86,7 @@ export const ACCOUNT_TABLE_DATA: User[] = [
     dep: 'vậndoanhbộ',
     status: '1',
     create_time: '2020-10-11 13:10:26',
-    avatar: avatar6
+    avatar: avatar6,
   },
   {
     id: 7,
@@ -97,7 +97,7 @@ export const ACCOUNT_TABLE_DATA: User[] = [
     dep: 'kháchphụcbộ',
     status: '2',
     create_time: '2020-05-14 12:05:10',
-    avatar: avatar7
+    avatar: avatar7,
   },
   {
     id: 8,
@@ -108,7 +108,7 @@ export const ACCOUNT_TABLE_DATA: User[] = [
     dep: 'tổngqualàm',
     status: '3',
     create_time: '2020-11-12 07:22:25',
-    avatar: avatar8
+    avatar: avatar8,
   },
   {
     id: 9,
@@ -119,7 +119,7 @@ export const ACCOUNT_TABLE_DATA: User[] = [
     dep: 'nghiênphátbộ',
     status: '4',
     create_time: '2020-06-12 05:04:20',
-    avatar: avatar9
+    avatar: avatar9,
   },
   {
     id: 10,
@@ -130,7 +130,7 @@ export const ACCOUNT_TABLE_DATA: User[] = [
     dep: 'nghiênphátbộ',
     status: '1',
     create_time: '2020-11-12 16:01:10',
-    avatar: avatar10
+    avatar: avatar10,
   },
   {
     id: 11,
@@ -141,7 +141,7 @@ export const ACCOUNT_TABLE_DATA: User[] = [
     dep: 'nghiênphátbộ',
     status: '1',
     create_time: '2020-11-14 12:01:20',
-    avatar: avatar6
+    avatar: avatar6,
   },
   {
     id: 12,
@@ -152,7 +152,7 @@ export const ACCOUNT_TABLE_DATA: User[] = [
     dep: 'nghiênphátbộ',
     status: '1',
     create_time: '2020-11-14 12:01:20',
-    avatar: avatar7
+    avatar: avatar7,
   },
   {
     id: 13,
@@ -163,7 +163,7 @@ export const ACCOUNT_TABLE_DATA: User[] = [
     dep: 'nghiênphátbộ',
     status: '1',
     create_time: '2020-11-14 12:01:20',
-    avatar: avatar8
+    avatar: avatar8,
   },
   {
     id: 14,
@@ -174,7 +174,7 @@ export const ACCOUNT_TABLE_DATA: User[] = [
     dep: 'nghiênphátbộ',
     status: '1',
     create_time: '2020-11-14 12:01:20',
-    avatar: avatar9
+    avatar: avatar9,
   },
   {
     id: 15,
@@ -185,8 +185,8 @@ export const ACCOUNT_TABLE_DATA: User[] = [
     dep: 'nghiênphátbộ',
     status: '1',
     create_time: '2020-11-14 12:01:20',
-    avatar: avatar10
-  }
+    avatar: avatar10,
+  },
 ]
 
 export interface Role {
@@ -203,69 +203,69 @@ export const ROLE_LIST_DATA: Role[] = [
     roleCode: 'R_SUPER',
     des: 'ômcóHeThongtoànbộQuyenHan',
     date: '2025-05-15 12:30:45',
-    enable: true
+    enable: true,
   },
   {
     roleName: 'Quản lýviên',
     roleCode: 'R_ADMIN',
     des: 'ômcóHeThongQuản lýQuyenHan',
     date: '2025-05-15 12:30:45',
-    enable: true
+    enable: true,
   },
   {
     roleName: 'phổthôngNguoiDung',
     roleCode: 'R_USER',
     des: 'ômcóHeThongphổthôngQuyenHan',
     date: '2025-05-15 12:30:45',
-    enable: true
+    enable: true,
   },
   {
     roleName: 'tàivụQuản lýviên',
     roleCode: 'R_FINANCE',
     des: 'Quản lýtàivụđóngQuyenHan',
     date: '2025-05-16 09:15:30',
-    enable: true
+    enable: true,
   },
   {
     roleName: 'Dữ liệuphầnphânsư',
     roleCode: 'R_ANALYST',
     des: 'ômcóDữ liệuphầnphânQuyenHan',
     date: '2025-05-16 11:45:00',
-    enable: false
+    enable: false,
   },
   {
     roleName: 'kháchphụcchuyênviên',
     roleCode: 'R_SUPPORT',
     des: 'XuLykháchkhoảnchiếctrìVui lòngcầu',
     date: '2025-05-17 14:30:22',
-    enable: true
+    enable: true,
   },
   {
     roleName: 'doanhtácqualý',
     roleCode: 'R_MARKETING',
     des: 'Quản lýdoanhtácsốngđộngQuyenHan',
     date: '2025-05-17 15:10:50',
-    enable: true
+    enable: true,
   },
   {
     roleName: 'truy cậpkháchNguoiDung',
     roleCode: 'R_GUEST',
     des: 'chỉhạnxemQuyenHan',
     date: '2025-05-18 08:25:40',
-    enable: false
+    enable: false,
   },
   {
     roleName: 'HeThongduyhộviên',
     roleCode: 'R_MAINTAINER',
     des: 'tráchHeThongduyhộvàCập nhật',
     date: '2025-05-18 09:50:12',
-    enable: true
+    enable: true,
   },
   {
     roleName: 'mụcmụcqualý',
     roleCode: 'R_PM',
     des: 'Quản lýmụcmụcđóngQuyenHan',
     date: '2025-05-19 13:40:35',
-    enable: true
-  }
+    enable: true,
+  },
 ]

@@ -19,7 +19,7 @@ export function useSocialLogin() {
               appId: data.facebookAppId,
               cookie: true,
               xfbml: true,
-              version: 'v22.0'
+              version: 'v22.0',
             })
             ;(window as any).__fb_initialized = true
           }
@@ -54,7 +54,7 @@ export function useSocialLogin() {
           ;(async () => {
             try {
               const { accessToken, refreshToken } = await fetchGoogleLogin({
-                idToken: response.credential
+                idToken: response.credential,
               })
 
               if (accessToken) {
@@ -67,7 +67,7 @@ export function useSocialLogin() {
               resolve(false)
             }
           })()
-        }
+        },
       })
       ;(window as any).google.accounts.id.prompt()
     })
@@ -96,7 +96,7 @@ export function useSocialLogin() {
             ;(async () => {
               try {
                 const { accessToken, refreshToken } = await fetchFacebookLogin({
-                  accessToken: response.authResponse.accessToken
+                  accessToken: response.authResponse.accessToken,
                 })
 
                 if (accessToken) {
@@ -114,7 +114,7 @@ export function useSocialLogin() {
             resolve(false)
           }
         },
-        { scope: 'public_profile,email' }
+        { scope: 'public_profile,email' },
       )
     })
   }
@@ -122,6 +122,6 @@ export function useSocialLogin() {
   return {
     initSocial,
     loginWithGoogle: loginWithGoogleIdToken,
-    loginWithFacebook
+    loginWithFacebook,
   }
 }

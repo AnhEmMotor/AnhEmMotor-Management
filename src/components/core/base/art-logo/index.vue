@@ -12,7 +12,7 @@
   }
 
   const props = withDefaults(defineProps<Props>(), {
-    size: 36
+    size: 36,
   })
 
   const logoStyle = computed(() => ({ width: `${props.size}px` }))

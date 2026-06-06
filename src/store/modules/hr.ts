@@ -12,7 +12,7 @@ export const useHRStore = defineStore('hr', {
         baseSalary: 8500000,
         email: 'vana@anhemmotor.com',
         isActive: true,
-        avatarUrl: ''
+        avatarUrl: '',
       },
       {
         id: 2,
@@ -22,7 +22,7 @@ export const useHRStore = defineStore('hr', {
         baseSalary: 7200000,
         email: 'thib@anhemmotor.com',
         isActive: true,
-        avatarUrl: ''
+        avatarUrl: '',
       },
       {
         id: 3,
@@ -32,7 +32,7 @@ export const useHRStore = defineStore('hr', {
         baseSalary: 9500000,
         email: 'vanc@anhemmotor.com',
         isActive: true,
-        avatarUrl: ''
+        avatarUrl: '',
       },
       {
         id: 4,
@@ -42,7 +42,7 @@ export const useHRStore = defineStore('hr', {
         baseSalary: 8000000,
         email: 'thid@anhemmotor.com',
         isActive: true,
-        avatarUrl: ''
+        avatarUrl: '',
       },
       {
         id: 5,
@@ -52,8 +52,8 @@ export const useHRStore = defineStore('hr', {
         baseSalary: 9000000,
         email: 'vane@anhemmotor.com',
         isActive: true,
-        avatarUrl: ''
-      }
+        avatarUrl: '',
+      },
     ] as any[],
     policies: [
       {
@@ -64,7 +64,7 @@ export const useHRStore = defineStore('hr', {
         productId: 101,
         commissionAmount: 500000,
         isPercentage: false,
-        description: 'Áp dụng cho dòng Winner X mới 2024'
+        description: 'Áp dụng cho dòng Winner X mới 2024',
       },
       {
         id: 2,
@@ -74,7 +74,7 @@ export const useHRStore = defineStore('hr', {
         categoryId: 2,
         commissionAmount: 5.5,
         isPercentage: true,
-        description: 'Áp dụng cho tất cả phụ kiện'
+        description: 'Áp dụng cho tất cả phụ kiện',
       },
       {
         id: 3,
@@ -84,7 +84,7 @@ export const useHRStore = defineStore('hr', {
         productId: 102,
         commissionAmount: 350000,
         isPercentage: false,
-        description: 'Chương trình khuyến mãi hè'
+        description: 'Chương trình khuyến mãi hè',
       },
       {
         id: 4,
@@ -94,7 +94,7 @@ export const useHRStore = defineStore('hr', {
         categoryId: 3,
         commissionAmount: 3.0,
         isPercentage: true,
-        description: 'Thưởng cho kỹ thuật viên'
+        description: 'Thưởng cho kỹ thuật viên',
       },
       {
         id: 5,
@@ -104,7 +104,7 @@ export const useHRStore = defineStore('hr', {
         productId: 103,
         commissionAmount: 200000,
         isPercentage: false,
-        description: 'Dòng xe phổ thông'
+        description: 'Dòng xe phổ thông',
       },
       {
         id: 6,
@@ -114,12 +114,12 @@ export const useHRStore = defineStore('hr', {
         categoryId: 4,
         commissionAmount: 50000,
         isPercentage: false,
-        description: 'Thưởng theo gói combo'
-      }
+        description: 'Thưởng theo gói combo',
+      },
     ] as any[],
     commissions: [] as any[],
     loading: false,
-    error: null as string | null
+    error: null as string | null,
   }),
 
   actions: {
@@ -205,7 +205,7 @@ export const useHRStore = defineStore('hr', {
       try {
         const data = await api.get<any>({
           url: '/api/hr/commissions/payroll-summary',
-          params: { month, year }
+          params: { month, year },
         })
         return data
       } catch (err: any) {
@@ -237,6 +237,6 @@ export const useHRStore = defineStore('hr', {
       } finally {
         this.loading = false
       }
-    }
-  }
+    },
+  },
 })

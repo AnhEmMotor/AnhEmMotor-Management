@@ -27,9 +27,9 @@ export function useProductTable() {
       .filter(
         ([key, value]) =>
           !['color', 'màu sắc'].includes(key.trim().toLowerCase()) &&
-          !['color', 'màu sắc'].includes(value.trim().toLowerCase())
+          !['color', 'màu sắc'].includes(value.trim().toLowerCase()),
       )
-      .map(([key, label]) => ({ key, label }))
+      .map(([key, label]) => ({ key, label })),
   )
 
   // Brand cache
@@ -80,7 +80,7 @@ export function useProductTable() {
   const dialogVisible = ref(false)
   const dialogTitle = ref('')
   const formData = ref<Partial<Product>>({
-    product_technologies: []
+    product_technologies: [],
   })
   const submitting = ref(false)
 
@@ -167,7 +167,7 @@ export function useProductTable() {
       selectedTechIds.value = selectedTechIds.value.filter((tid) => tid !== id)
       if (formData.value.highlights_list) {
         formData.value.highlights_list = formData.value.highlights_list.filter(
-          (h: any) => Number(h.technology_id) !== id
+          (h: any) => Number(h.technology_id) !== id,
         )
       }
     } catch (err: any) {
@@ -182,7 +182,7 @@ export function useProductTable() {
       const res = await CategoryApi.getList({
         current: 1,
         size: 1000,
-        Filters: 'CategoryGroup==Product'
+        Filters: 'CategoryGroup==Product',
       })
       categories.value = res.items || []
     } catch (_err) {
@@ -204,7 +204,7 @@ export function useProductTable() {
       const res = await BrandApi.getList({
         current: brandSelectorPage.value,
         size: brandSelectorPageSize.value,
-        Filters: filters.join(',')
+        Filters: filters.join(','),
       })
 
       brandSelectorItems.value = res.items || []
@@ -250,7 +250,7 @@ export function useProductTable() {
     getData,
     refreshData,
     replaceSearchParams,
-    searchParams
+    searchParams,
   } = useTable({
     core: {
       apiFn: async (params: any) => {
@@ -268,12 +268,12 @@ export function useProductTable() {
                 stock: variant.stock || 0,
                 inventory_status: variant.inventory_status || 'InStock',
                 sku: variant.sku || '',
-                isVariant: true
+                isVariant: true,
               }
             })
             return {
               ...product,
-              children: children.length > 0 ? children : undefined
+              children: children.length > 0 ? children : undefined,
             }
           })
         }
@@ -282,7 +282,7 @@ export function useProductTable() {
       apiParams: {
         current: 1,
         size: 10,
-        Filters: ''
+        Filters: '',
       },
       immediate: true,
       columnsFactory: () => [
@@ -297,7 +297,7 @@ export function useProductTable() {
           label: 'Trạng thái',
           width: 120,
           align: 'center',
-          useSlot: true
+          useSlot: true,
         },
         {
           prop: 'operation',
@@ -305,10 +305,10 @@ export function useProductTable() {
           width: 150,
           align: 'center',
           fixed: 'right',
-          useSlot: true
-        }
-      ]
-    }
+          useSlot: true,
+        },
+      ],
+    },
   })
 
   const handleAdd = () => {
@@ -384,9 +384,9 @@ export function useProductTable() {
           ground_clearance: null,
           fuel_capacity: null,
           tire_size: '',
-          showSpecs: false
-        }
-      ]
+          showSpecs: false,
+        },
+      ],
     }
     selectedTechIds.value = []
     dialogVisible.value = true
@@ -459,7 +459,7 @@ export function useProductTable() {
               _defaultTitle: tech?.defaultTitle,
               _defaultDescription: tech?.defaultDescription,
               _defaultImageUrl: tech?.defaultImageUrl,
-              _categoryName: tech?.categoryName || 'TECHNOLOGY'
+              _categoryName: tech?.categoryName || 'TECHNOLOGY',
             }
           })
         } catch (_e) {
@@ -484,7 +484,7 @@ export function useProductTable() {
                 id: undefined,
                 name: name.trim(),
                 code: codes[i]?.trim() || '#000000',
-                image: images[i]?.trim() || images[0]?.trim() || ''
+                image: images[i]?.trim() || images[0]?.trim() || '',
               }))
               .filter((color: any) => color.name)
           } else {
@@ -492,7 +492,7 @@ export function useProductTable() {
               id: color.id,
               name: color.name ?? color.color_name ?? '',
               code: color.code ?? color.color_code ?? '#000000',
-              image: color.image ?? color.cover_image_url ?? ''
+              image: color.image ?? color.cover_image_url ?? '',
             }))
           }
           v.optionValues = v.optionValues || {}
@@ -538,8 +538,8 @@ export function useProductTable() {
             ground_clearance: null,
             fuel_capacity: null,
             tire_size: '',
-            showSpecs: false
-          }
+            showSpecs: false,
+          },
         ]
       }
 
@@ -551,14 +551,14 @@ export function useProductTable() {
             name: fullProduct.brand,
             origin: '',
             logoUrl: '',
-            description: ''
+            description: '',
           })
         }
         ensureBrandLoaded(Number(formData.value.brand_id))
       }
 
       selectedTechIds.value = (fullProduct.product_technologies || []).map(
-        (pt: any) => pt.technology_id
+        (pt: any) => pt.technology_id,
       )
 
       dialogVisible.value = true
@@ -574,8 +574,8 @@ export function useProductTable() {
       {
         confirmButtonText: 'Xóa',
         cancelButtonText: 'Hủy',
-        type: 'warning'
-      }
+        type: 'warning',
+      },
     ).then(async () => {
       try {
         await ProductApi.delete(row.id)
@@ -603,7 +603,7 @@ export function useProductTable() {
     try {
       formData.value.product_technologies = selectedTechIds.value.map((id) => ({
         technology_id: id,
-        display_order: 0
+        display_order: 0,
       }))
 
       // Serialize highlights list to JSON string (keeping only clean snake_case fields)
@@ -612,7 +612,7 @@ export function useProductTable() {
           technology_id: Number(h.technology_id),
           custom_title: h.custom_title || '',
           custom_description: h.custom_description || '',
-          custom_image_url: h.custom_image_url || ''
+          custom_image_url: h.custom_image_url || '',
         }))
         formData.value.highlights = JSON.stringify(cleanedHighlights)
       } else {
@@ -634,27 +634,27 @@ export function useProductTable() {
               }
               return acc
             },
-            {}
+            {},
           )
           const hasColors = colors.length > 0
           if (
             hasColors &&
             colors.some(
-              (color: any) => !getColorName(color) || !getColorCode(color) || !getColorImage(color)
+              (color: any) => !getColorName(color) || !getColorCode(color) || !getColorImage(color),
             )
           ) {
             throw new Error('Mỗi màu sắc của biến thể phải có đủ tên màu, mã màu và hình ảnh.')
           }
           const colorImages = colors.map(getColorImage).filter(Boolean)
           const photoCollection = (v.photo_collection || []).filter(
-            (image: string) => !colorImages.includes((image || '').trim())
+            (image: string) => !colorImages.includes((image || '').trim()),
           )
           const cover_image_url = hasColors ? '' : getVariantDefaultCover(v) || ''
           const serializedColors = colors.map((color: any) => ({
             id: color.id,
             color_name: getColorName(color),
             color_code: getColorCode(color),
-            cover_image_url: getColorImage(color)
+            cover_image_url: getColorImage(color),
           }))
 
           return {
@@ -678,7 +678,7 @@ export function useProductTable() {
             rear_brake: v.rear_brake,
             front_suspension: v.front_suspension,
             rear_suspension: v.rear_suspension,
-            engine_type: v.engine_type
+            engine_type: v.engine_type,
           }
         })
 
@@ -729,7 +729,7 @@ export function useProductTable() {
       ground_clearance: null,
       fuel_capacity: null,
       tire_size: '',
-      showSpecs: false
+      showSpecs: false,
     })
   }
 
@@ -784,14 +784,14 @@ export function useProductTable() {
     }
 
     replaceSearchParams({
-      Filters: filters.join(',')
+      Filters: filters.join(','),
     })
     getData()
   }
 
   const handleReset = () => {
     replaceSearchParams({
-      Filters: ''
+      Filters: '',
     })
     getData()
   }
@@ -815,7 +815,7 @@ export function useProductTable() {
             'mô tô',
             'scooter',
             'tay ga',
-            'tay côn'
+            'tay côn',
           ]
           if (vehicleKeywords.some((kw) => currentName.includes(kw))) return true
           if (c.parentId) return findCategoryRecursive(c.parentId)
@@ -831,7 +831,7 @@ export function useProductTable() {
     try {
       const res = await ProductApi.getList({
         current: 1,
-        size: 1000
+        size: 1000,
       })
       const ids = vehicleCategoryIds.value
       allVehicles.value = (res.items || []).filter((p: any) => ids.includes(p.category_id))
@@ -884,7 +884,7 @@ export function useProductTable() {
 
     const techId = Number(tech.id)
     const existingIndex = formData.value.highlights_list.findIndex(
-      (h: any) => Number(h.technology_id) === techId
+      (h: any) => Number(h.technology_id) === techId,
     )
 
     if (existingIndex >= 0) {
@@ -899,7 +899,7 @@ export function useProductTable() {
         _defaultTitle: tech.defaultTitle,
         _defaultDescription: tech.defaultDescription,
         _defaultImageUrl: tech.defaultImageUrl,
-        _categoryName: tech.categoryName || 'TECHNOLOGY'
+        _categoryName: tech.categoryName || 'TECHNOLOGY',
       })
       if (!selectedTechIds.value.includes(techId)) {
         selectedTechIds.value.push(techId)
@@ -910,7 +910,7 @@ export function useProductTable() {
   const isTechnologySelected = (techId: number) => {
     if (!formData.value.highlights_list) return false
     return formData.value.highlights_list.some(
-      (h: any) => Number(h.technology_id) === Number(techId)
+      (h: any) => Number(h.technology_id) === Number(techId),
     )
   }
 
@@ -939,7 +939,7 @@ export function useProductTable() {
       link.href = url
       link.setAttribute(
         'download',
-        `Danh_sach_san_pham_${new Date().toISOString().slice(0, 10)}.xlsx`
+        `Danh_sach_san_pham_${new Date().toISOString().slice(0, 10)}.xlsx`,
       )
       document.body.appendChild(link)
       link.click()
@@ -1019,6 +1019,6 @@ export function useProductTable() {
     fetchTechnologies,
 
     exporting,
-    exportToExcel
+    exportToExcel,
   }
 }

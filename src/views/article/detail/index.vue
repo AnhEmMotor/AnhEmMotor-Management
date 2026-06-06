@@ -39,7 +39,7 @@
 
     try {
       const { data } = await axios.get<ArticleResponse>(
-        'https://www.qiniu.lingchen.kim/blog_detail.json'
+        'https://www.qiniu.lingchen.kim/blog_detail.json',
       )
 
       if (data.code === 200) {

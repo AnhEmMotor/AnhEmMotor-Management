@@ -68,17 +68,17 @@
       CIRCLE: { SIZE: 12 },
       TRIANGLE: { SIZE: 10 },
       OVAL: { WIDTH: 24, HEIGHT: 12 },
-      IMAGE: { WIDTH: 30, HEIGHT: 30 }
+      IMAGE: { WIDTH: 30, HEIGHT: 30 },
     },
     ROTATION: {
       BASE_SPEED: 2,
       RANDOM_SPEED: 3,
-      DECAY: 0.98
+      DECAY: 0.98,
     },
     PHYSICS: {
       GRAVITY: 0.525,
       VELOCITY_THRESHOLD: 10,
-      OPACITY_DECAY: 0.02
+      OPACITY_DECAY: 0.02,
     },
     COLORS: [
       'rgba(255, 68, 68, 1)',
@@ -93,7 +93,7 @@
       'rgba(68, 255, 255, 0.7)',
       'rgba(255, 136, 68, 0.7)',
       'rgba(68, 136, 255, 1)',
-      'rgba(250, 198, 122, 0.8)'
+      'rgba(250, 198, 122, 0.8)',
     ],
     SHAPES: [
       'rectangle',
@@ -105,8 +105,8 @@
       'rectangle',
       'circle',
       'triangle',
-      'oval'
-    ]
+      'oval',
+    ],
   } as const
   const canvasRef = ref<HTMLCanvasElement>()
   const ctx = ref<CanvasRenderingContext2D | null>(null)
@@ -141,7 +141,7 @@
         scale: 1,
         shape: 'circle',
         opacity: 1,
-        active: false
+        active: false,
       }
     }
 
@@ -276,7 +276,7 @@
             -SIZES.RECTANGLE.WIDTH / 2,
             -SIZES.RECTANGLE.HEIGHT / 2,
             SIZES.RECTANGLE.WIDTH,
-            SIZES.RECTANGLE.HEIGHT
+            SIZES.RECTANGLE.HEIGHT,
           )
           break
 
@@ -285,7 +285,7 @@
             -SIZES.SQUARE.SIZE / 2,
             -SIZES.SQUARE.SIZE / 2,
             SIZES.SQUARE.SIZE,
-            SIZES.SQUARE.SIZE
+            SIZES.SQUARE.SIZE,
           )
           break
 

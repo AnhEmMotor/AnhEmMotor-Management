@@ -68,7 +68,7 @@
   const props = withDefaults(defineProps<Props>(), {
     height: 9,
     radius: () => ['70%', '90%'],
-    data: () => [0, 0]
+    data: () => [0, 0],
   })
 
   const formatNumber = (num: number) => {
@@ -79,7 +79,7 @@
     props: {
       height: `${props.height}rem`,
       loading: false,
-      isEmpty: props.data.every((val) => val === 0)
+      isEmpty: props.data.every((val) => val === 0),
     },
     checkEmpty: () => props.data.every((val) => val === 0),
     watchSources: [
@@ -87,7 +87,7 @@
       () => props.color,
       () => props.radius,
       () => props.currentValue,
-      () => props.previousValue
+      () => props.previousValue,
     ],
     generateOptions: (): EChartsOption => {
       const computedColor = props.color || useChartOps().themeColor
@@ -99,23 +99,23 @@
             radius: props.radius,
             avoidLabelOverlap: false,
             label: {
-              show: false
+              show: false,
             },
             data: [
               {
                 value: props.data[0],
                 name: props.currentValue,
-                itemStyle: { color: computedColor }
+                itemStyle: { color: computedColor },
               },
               {
                 value: props.data[1],
                 name: props.previousValue,
-                itemStyle: { color: '#e6e8f7' }
-              }
-            ]
-          }
-        ]
+                itemStyle: { color: '#e6e8f7' },
+              },
+            ],
+          },
+        ],
       }
-    }
+    },
   })
 </script>

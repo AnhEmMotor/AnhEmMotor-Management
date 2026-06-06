@@ -34,7 +34,7 @@ export const vRipple: RippleDirective = {
       ripple.style.pointerEvents = 'none'
 
       const buttonTypes = ['primary', 'info', 'warning', 'danger', 'success'].map(
-        (type) => `el-button--${type}`
+        (type) => `el-button--${type}`,
       )
       const isColoredButton = buttonTypes.some((type) => el.classList.contains(type))
       const defaultColor = isColoredButton
@@ -57,7 +57,7 @@ export const vRipple: RippleDirective = {
         ripple.remove()
       }, animationDuration + 500)
     })
-  }
+  },
 }
 
 export function setupRippleDirective(app: App) {

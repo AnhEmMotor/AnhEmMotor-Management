@@ -79,13 +79,13 @@ export function useHeaderBar() {
 
   const getEnabledFeatures = (): (keyof HeaderBarFeatureConfig)[] => {
     return Object.keys(headerBarConfigRef.value).filter(
-      (key) => headerBarConfigRef.value[key as keyof HeaderBarFeatureConfig]?.enabled
+      (key) => headerBarConfigRef.value[key as keyof HeaderBarFeatureConfig]?.enabled,
     ) as (keyof HeaderBarFeatureConfig)[]
   }
 
   const getDisabledFeatures = (): (keyof HeaderBarFeatureConfig)[] => {
     return Object.keys(headerBarConfigRef.value).filter(
-      (key) => !headerBarConfigRef.value[key as keyof HeaderBarFeatureConfig]?.enabled
+      (key) => !headerBarConfigRef.value[key as keyof HeaderBarFeatureConfig]?.enabled,
     ) as (keyof HeaderBarFeatureConfig)[]
   }
 
@@ -121,6 +121,6 @@ export function useHeaderBar() {
     getEnabledFeatures,
     getDisabledFeatures,
     getActiveFeatures,
-    getInactiveFeatures
+    getInactiveFeatures,
   }
 }

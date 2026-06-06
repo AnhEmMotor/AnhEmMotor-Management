@@ -92,7 +92,7 @@
     fetchGetRoleList,
     fetchCreateUser,
     fetchUpdateUser,
-    fetchAssignUserRoles
+    fetchAssignUserRoles,
   } from '@/api/system-manage'
   import { normalizeBackendErrors } from '@/utils/form/error-helper'
 
@@ -116,7 +116,7 @@
 
   const dialogVisible = computed({
     get: () => props.visible,
-    set: (value) => emit('update:visible', value)
+    set: (value) => emit('update:visible', value),
   })
 
   const dialogType = computed(() => props.type)
@@ -131,7 +131,7 @@
     phone: '',
     gender: '',
     roles: [] as string[],
-    status: 'Active'
+    status: 'Active',
   })
 
   const validatePhone = (rule: any, value: any, callback: any) => {
@@ -149,21 +149,21 @@
     const baseRules: FormRules = {
       fullName: [{ required: true, message: 'Vui lòng nhập tên đầy đủ', trigger: 'blur' }],
       phone: [{ validator: validatePhone, trigger: 'blur' }],
-      roles: [{ required: true, message: 'Vui lòng chọn ít nhất một vai trò', trigger: 'change' }]
+      roles: [{ required: true, message: 'Vui lòng chọn ít nhất một vai trò', trigger: 'change' }],
     }
 
     if (isAdd) {
       baseRules.username = [
         { required: true, message: 'Vui lòng nhập tên đăng nhập', trigger: 'blur' },
-        { min: 2, max: 20, message: 'Độ dài từ 2 đến 20 ký tự', trigger: 'blur' }
+        { min: 2, max: 20, message: 'Độ dài từ 2 đến 20 ký tự', trigger: 'blur' },
       ]
       baseRules.email = [
         { required: true, message: 'Vui lòng nhập email', trigger: 'blur' },
-        { type: 'email', message: 'Email không hợp lệ', trigger: 'blur' }
+        { type: 'email', message: 'Email không hợp lệ', trigger: 'blur' },
       ]
       baseRules.password = [
         { required: true, message: 'Vui lòng nhập mật khẩu', trigger: 'blur' },
-        { min: 6, message: 'Mật khẩu phải từ 6 ký tự trở lên', trigger: 'blur' }
+        { min: 6, message: 'Mật khẩu phải từ 6 ký tự trở lên', trigger: 'blur' },
       ]
     }
 
@@ -189,7 +189,7 @@
     if (isEdit && row && Array.isArray(row.roles)) {
       row.roles.forEach((roleId: string) => {
         const matched = availableRoles.value.find(
-          (r) => r.id && r.id.toLowerCase() === roleId.toLowerCase()
+          (r) => r.id && r.id.toLowerCase() === roleId.toLowerCase(),
         )
         if (matched) {
           mappedRoleNames.push(matched.name)
@@ -208,7 +208,7 @@
       phone: isEdit && row ? row.phoneNumber || '' : '',
       gender: isEdit && row ? row.gender || '' : '',
       roles: mappedRoleNames,
-      status: isEdit && row ? row.status || 'Active' : 'Active'
+      status: isEdit && row ? row.status || 'Active' : 'Active',
     })
   }
 
@@ -224,7 +224,7 @@
         })
       }
     },
-    { immediate: true }
+    { immediate: true },
   )
 
   // Automatically clear specific form errors when field values change
@@ -237,7 +237,7 @@
         }
       }
     },
-    { deep: true }
+    { deep: true },
   )
 
   const handleSubmit = async () => {
@@ -258,7 +258,7 @@
           phoneNumber: formData.phone,
           gender: formData.gender,
           roleNames: formData.roles,
-          status: formData.status
+          status: formData.status,
         })
         ElMessage.success('Thêm mới người dùng thành công!')
       } else {
@@ -266,7 +266,7 @@
         await fetchUpdateUser(formData.id, {
           fullName: formData.fullName,
           gender: formData.gender,
-          phoneNumber: formData.phone
+          phoneNumber: formData.phone,
         })
 
         // Match selected role names to their IDs
@@ -294,8 +294,8 @@
           username: 'username',
           email: 'email',
           gender: 'gender',
-          roles: 'roles'
-        }
+          roles: 'roles',
+        },
       })
     } finally {
       submitting.value = false

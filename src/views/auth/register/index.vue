@@ -117,7 +117,7 @@
     username: '',
     password: '',
     confirmPassword: '',
-    agreement: false
+    agreement: false,
   })
 
   const validatePassword = (_rule: any, value: string, callback: (error?: Error) => void) => {
@@ -136,7 +136,7 @@
   const validateConfirmPassword = (
     _rule: any,
     value: string,
-    callback: (error?: Error) => void
+    callback: (error?: Error) => void,
   ) => {
     if (!value) {
       callback(new Error(t('register.rule.confirmPasswordRequired')))
@@ -166,15 +166,15 @@
         min: USERNAME_MIN_LENGTH,
         max: USERNAME_MAX_LENGTH,
         message: t('register.rule.usernameLength'),
-        trigger: 'blur'
-      }
+        trigger: 'blur',
+      },
     ],
     password: [
       { required: true, validator: validatePassword, trigger: 'blur' },
-      { min: PASSWORD_MIN_LENGTH, message: t('register.rule.passwordLength'), trigger: 'blur' }
+      { min: PASSWORD_MIN_LENGTH, message: t('register.rule.passwordLength'), trigger: 'blur' },
     ],
     confirmPassword: [{ required: true, validator: validateConfirmPassword, trigger: 'blur' }],
-    agreement: [{ validator: validateAgreement, trigger: 'change' }]
+    agreement: [{ validator: validateAgreement, trigger: 'change' }],
   }))
 
   const register = async () => {

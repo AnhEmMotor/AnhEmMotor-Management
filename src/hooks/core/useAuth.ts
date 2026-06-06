@@ -26,6 +26,6 @@ export const useAuth = () => {
   }
 
   return {
-    hasAuth
+    hasAuth,
   }
 }

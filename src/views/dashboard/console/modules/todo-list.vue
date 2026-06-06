@@ -36,32 +36,32 @@
     {
       username: 'XemnayngàycônglàmNoiDung',
       date: 'trêntrưa 09:30',
-      complate: true
+      complate: true,
     },
     {
       username: 'TraLoibưuphần tử',
       date: 'trêntrưa 10:30',
-      complate: true
+      complate: true,
     },
     {
       username: 'cônglàmhợpbáochỉnhlý',
       date: 'trêntrưa 11:00',
-      complate: true
+      complate: true,
     },
     {
       username: 'sinhsản phẩmcầncầusẽnghị',
       date: 'dướitrưa 02:00',
-      complate: false
+      complate: false,
     },
     {
       username: 'chỉnhlýsẽnghịNoiDung',
       date: 'dướitrưa 03:30',
-      complate: false
+      complate: false,
     },
     {
       username: 'minhngàycônglàmkếgạch',
       date: 'dướitrưa 06:30',
-      complate: false
-    }
+      complate: false,
+    },
   ])
 </script>

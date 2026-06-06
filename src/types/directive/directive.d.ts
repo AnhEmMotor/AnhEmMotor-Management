@@ -2,7 +2,7 @@ import type {
   AuthDirective,
   RolesDirective,
   RippleDirective,
-  HighlightDirective
+  HighlightDirective,
 } from '@/directives'
 
 declare module 'vue' {

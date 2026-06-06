@@ -5,7 +5,7 @@ import type { ColumnOption } from '@/types/component'
 import {
   TableCache,
   CacheInvalidationStrategy,
-  type ApiResponse
+  type ApiResponse,
 } from '../../utils/table/tableCache'
 import {
   type TableError,
@@ -13,7 +13,7 @@ import {
   extractTableData,
   updatePaginationFromResponse,
   createSmartDebounce,
-  createErrorHandler
+  createErrorHandler,
 } from '../../utils/table/tableUtils'
 import { tableConfig } from '../../utils/table/tableConfig'
 
@@ -25,7 +25,7 @@ export interface UseTableConfig<
   TApiFn extends (params: any) => Promise<any> = (params: any) => Promise<any>,
   TRecord = InferRecordType<InferApiResponse<TApiFn>>,
   TParams = InferApiParams<TApiFn>,
-  TResponse = InferApiResponse<TApiFn>
+  TResponse = InferApiResponse<TApiFn>,
 > {
   core: {
     apiFn: TApiFn
@@ -81,13 +81,13 @@ export interface UseTableConfig<
 }
 
 export function useTable<TApiFn extends (params: any) => Promise<any>>(
-  config: UseTableConfig<TApiFn>
+  config: UseTableConfig<TApiFn>,
 ) {
   return useTableImpl(config)
 }
 
 function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
-  config: UseTableConfig<TApiFn>
+  config: UseTableConfig<TApiFn>,
 ) {
   type TRecord = InferRecordType<InferApiResponse<TApiFn>>
   type TParams = InferApiParams<TApiFn>
@@ -98,17 +98,17 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
       excludeParams = [],
       immediate = true,
       columnsFactory,
-      paginationKey
+      paginationKey,
     },
     transform: { dataTransformer, responseAdapter = defaultResponseAdapter } = {},
     performance: {
       enableCache = false,
       cacheTime = 5 * 60 * 1000,
       debounceTime = 300,
-      maxCacheSize = 50
+      maxCacheSize = 50,
     } = {},
     hooks: { onSuccess, onError, onCacheHit, resetFormCallback } = {},
-    debug: { enableLog = false } = {}
+    debug: { enableLog = false } = {},
   } = config
 
   const pageKey = paginationKey?.current || tableConfig.paginationKey.current
@@ -131,7 +131,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
       if (enableLog) {
         console.error(`[useTable] ${message}`, ...args)
       }
-    }
+    },
   }
 
   const cache = enableCache ? new TableCache<TRecord>(cacheTime, maxCacheSize, enableLog) : null
@@ -152,22 +152,22 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     Object.assign(
       {
         [pageKey]: 1,
-        [sizeKey]: 10
+        [sizeKey]: 10,
       },
-      apiParams || {}
-    ) as TParams
+      apiParams || {},
+    ) as TParams,
   )
 
   const pagination = reactive<Api.Common.PaginationParams>({
     current: ((searchParams as Record<string, unknown>)[pageKey] as number) || 1,
     size: ((searchParams as Record<string, unknown>)[sizeKey] as number) || 10,
-    total: 0
+    total: 0,
   })
 
   const { width } = useWindowSize()
   const mobilePagination = computed(() => ({
     ...pagination,
-    small: width.value < 768
+    small: width.value < 768,
   }))
 
   const columnConfig = columnsFactory ? useTableColumns<TRecord>(columnsFactory) : null
@@ -216,7 +216,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
 
   const fetchData = async (
     params?: Partial<TParams>,
-    useCache = enableCache
+    useCache = enableCache,
   ): Promise<ApiResponse<TRecord>> => {
     if (abortController) {
       abortController.abort()
@@ -234,9 +234,9 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
         searchParams,
         {
           [pageKey]: pagination.current,
-          [sizeKey]: pagination.size
+          [sizeKey]: pagination.size,
         },
-        params || {}
+        params || {},
       ) as TParams
 
       if (excludeParams.length > 0) {
@@ -357,7 +357,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     const paramsRecord = searchParams as Record<string, unknown>
     const defaultPagination = {
       [pageKey]: 1,
-      [sizeKey]: (paramsRecord[sizeKey] as number) || 10
+      [sizeKey]: (paramsRecord[sizeKey] as number) || 10,
     }
 
     Object.keys(searchParams).forEach((key) => {
@@ -395,9 +395,9 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
       searchParams,
       {
         [pageKey]: 1,
-        [sizeKey]: currentSize
+        [sizeKey]: currentSize,
       },
-      params || {}
+      params || {},
     )
 
     pagination.current = 1
@@ -608,8 +608,8 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
 
       getAllColumns: columnConfig.getAllColumns,
 
-      resetColumns: columnConfig.resetColumns
-    })
+      resetColumns: columnConfig.resetColumns,
+    }),
   }
 }
 

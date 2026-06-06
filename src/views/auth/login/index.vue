@@ -96,12 +96,12 @@
 
   const formData = reactive({
     username: '',
-    password: ''
+    password: '',
   })
 
   const rules = computed<FormRules>(() => ({
     username: [{ required: true, message: t('login.rules.usernameRequired'), trigger: 'blur' }],
-    password: [{ required: true, message: t('login.rules.passwordRequired'), trigger: 'blur' }]
+    password: [{ required: true, message: t('login.rules.passwordRequired'), trigger: 'blur' }],
   }))
 
   const loading = ref(false)
@@ -159,7 +159,7 @@
 
       const { accessToken, refreshToken } = await fetchLogin({
         usernameOrEmail: username,
-        password
+        password,
       })
 
       if (!accessToken) {
@@ -193,7 +193,7 @@
           duration: 2500,
           zIndex: 10000,
           message: `${t('login.success.message')}, ${userName}!`,
-          position: 'bottom-right'
+          position: 'bottom-right',
         })
       }
 
@@ -207,7 +207,7 @@
               showNotice(newVal)
               unwatch()
             }
-          }
+          },
         )
         // Fallback timeout in case it takes too long or fails
         setTimeout(() => {

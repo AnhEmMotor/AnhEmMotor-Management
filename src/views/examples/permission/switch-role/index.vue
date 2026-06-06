@@ -53,7 +53,7 @@
             :key="account.key"
             class="p-5 border border-g-400 rounded-lg tad-300"
             :class="{
-              'bg-theme/12 !border-theme': currentUser.userName === account.userName
+              'bg-theme/12 !border-theme': currentUser.userName === account.userName,
             }"
           >
             <div class="mb-4">
@@ -107,7 +107,7 @@
       password: '123456',
       roles: ['R_SUPER'],
       color: '#E6A23C',
-      description: 'ômcóHeThongnhấtcaoQuyenHan，Có thểlấyTruy cậpnêncócôngnăngmôkhối'
+      description: 'ômcóHeThongnhấtcaoQuyenHan，Có thểlấyTruy cậpnêncócôngnăngmôkhối',
     },
     {
       key: 'admin',
@@ -116,7 +116,7 @@
       password: '123456',
       roles: ['R_ADMIN'],
       color: '#409EFF',
-      description: 'ômcóQuản lýQuyenHan，Có thểlấyQuản lýNguoiDungvàbộphầnHeThongCaiDat'
+      description: 'ômcóQuản lýQuyenHan，Có thểlấyQuản lýNguoiDungvàbộphầnHeThongCaiDat',
     },
     {
       key: 'user',
@@ -125,8 +125,8 @@
       password: '123456',
       roles: ['R_USER'],
       color: '#67C23A',
-      description: 'phổthôngNguoiDungQuyenHan，chỉnăngTruy cậpCơ bảncôngnăngmôkhối'
-    }
+      description: 'phổthôngNguoiDungQuyenHan，chỉnăngTruy cậpCơ bảncôngnăngmôkhối',
+    },
   ])
 
   const getRoleTagType = (role?: string): 'info' | 'warning' | 'primary' | 'success' | 'danger' => {
@@ -134,7 +134,7 @@
     const roleMap: Record<string, 'info' | 'warning' | 'primary' | 'success' | 'danger'> = {
       R_SUPER: 'warning',
       R_ADMIN: 'primary',
-      R_USER: 'success'
+      R_USER: 'success',
     }
     return roleMap[role] || 'info'
   }
@@ -144,7 +144,7 @@
     const roleMap: Record<string, string> = {
       R_SUPER: 'siêucấpQuản lýviên',
       R_ADMIN: 'Quản lýviên',
-      R_USER: 'phổthôngNguoiDung'
+      R_USER: 'phổthôngNguoiDung',
     }
     return roleMap[role] || 'ChưabáoVaiTro'
   }
@@ -163,7 +163,7 @@
 
       const { token, refreshToken } = (await fetchLogin({
         userName: account.userName,
-        password: account.password
+        password: account.password,
       } as any)) as any
 
       if (!token) {

@@ -5,7 +5,7 @@ import type { ColumnOption } from '@/types/component'
 const SPECIAL_COLUMNS: Record<string, { prop: string; label: string }> = {
   selection: { prop: '__selection__', label: $t('table.column.selection') },
   expand: { prop: '__expand__', label: $t('table.column.expand') },
-  index: { prop: '__index__', label: $t('table.column.index') }
+  index: { prop: '__index__', label: $t('table.column.index') },
 }
 
 export const getColumnKey = <T>(col: ColumnOption<T>) =>
@@ -39,7 +39,7 @@ export interface DynamicColumnConfig<T = any> {
 
   updateColumn: (
     prop: string | Array<{ prop: string; updates: Partial<ColumnOption<T>> }>,
-    updates?: Partial<ColumnOption<T>>
+    updates?: Partial<ColumnOption<T>>,
   ) => void
 
   batchUpdateColumns: (updates: Array<{ prop: string; updates: Partial<ColumnOption<T>> }>) => void
@@ -54,7 +54,7 @@ export interface DynamicColumnConfig<T = any> {
 }
 
 export function useTableColumns<T = any>(
-  columnsFactory: () => ColumnOption<T>[]
+  columnsFactory: () => ColumnOption<T>[],
 ): {
   columns: any
   columnChecks: any
@@ -66,7 +66,7 @@ export function useTableColumns<T = any>(
     dynamicColumns,
     (newCols) => {
       const visibilityMap = new Map(
-        columnChecks.value.map((c) => [getColumnKey(c), getColumnVisibility(c)])
+        columnChecks.value.map((c) => [getColumnKey(c), getColumnVisibility(c)]),
       )
       const newChecks = getColumnChecks(newCols).map((c) => {
         const key = getColumnKey(c)
@@ -74,12 +74,12 @@ export function useTableColumns<T = any>(
         return {
           ...c,
           checked: visibility,
-          visible: visibility
+          visible: visibility,
         }
       })
       columnChecks.value = newChecks
     },
-    { deep: true }
+    { deep: true },
   )
 
   const columns = computed(() => {
@@ -119,7 +119,7 @@ export function useTableColumns<T = any>(
 
     updateColumn: (
       prop: string | Array<{ prop: string; updates: Partial<ColumnOption<T>> }>,
-      updates?: Partial<ColumnOption<T>>
+      updates?: Partial<ColumnOption<T>>,
     ) => {
       if (Array.isArray(prop)) {
         setDynamicColumns((cols) => {
@@ -132,7 +132,7 @@ export function useTableColumns<T = any>(
         })
       } else if (updates) {
         setDynamicColumns((cols) =>
-          cols.map((c) => (getColumnKey(c) === prop ? { ...c, ...updates } : c))
+          cols.map((c) => (getColumnKey(c) === prop ? { ...c, ...updates } : c)),
         )
       }
     },
@@ -187,6 +187,6 @@ export function useTableColumns<T = any>(
 
     getColumnConfig: (prop: string) => dynamicColumns.value.find((c) => getColumnKey(c) === prop),
 
-    getAllColumns: () => [...dynamicColumns.value]
+    getAllColumns: () => [...dynamicColumns.value],
   }
 }

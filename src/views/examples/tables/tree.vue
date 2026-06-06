@@ -72,8 +72,8 @@
           children: [
             { id: 111, label: 'React đoànđội' },
             { id: 112, label: 'Vue đoànđội' },
-            { id: 113, label: 'Diđộngđầuđoànđội' }
-          ]
+            { id: 113, label: 'Diđộngđầuđoànđội' },
+          ],
         },
         {
           id: 12,
@@ -81,8 +81,8 @@
           children: [
             { id: 121, label: 'Java đoànđội' },
             { id: 122, label: 'Node.js đoànđội' },
-            { id: 123, label: 'Python đoànđội' }
-          ]
+            { id: 123, label: 'Python đoànđội' },
+          ],
         },
         {
           id: 13,
@@ -90,18 +90,18 @@
           children: [
             { id: 131, label: 'côngnăngđothử' },
             { id: 132, label: 'từđộnghóađothử' },
-            { id: 133, label: 'tínhnăngđothử' }
-          ]
+            { id: 133, label: 'tínhnăngđothử' },
+          ],
         },
         {
           id: 14,
           label: 'vậnduytổ',
           children: [
             { id: 141, label: 'HeThongvậnduy' },
-            { id: 142, label: 'DevOps' }
-          ]
-        }
-      ]
+            { id: 142, label: 'DevOps' },
+          ],
+        },
+      ],
     },
     {
       id: 2,
@@ -113,8 +113,8 @@
           children: [
             { id: 211, label: 'UI thiếtkế' },
             { id: 212, label: 'UX thiếtkế' },
-            { id: 213, label: 'nộpthiếtkế' }
-          ]
+            { id: 213, label: 'nộpthiếtkế' },
+          ],
         },
         {
           id: 22,
@@ -122,11 +122,11 @@
           children: [
             { id: 221, label: 'NguoiDungvậndoanh' },
             { id: 222, label: 'NoiDungvậndoanh' },
-            { id: 223, label: 'sốngđộngvậndoanh' }
-          ]
+            { id: 223, label: 'sốngđộngvậndoanh' },
+          ],
         },
-        { id: 23, label: 'Dữ liệuphầnphântổ' }
-      ]
+        { id: 23, label: 'Dữ liệuphầnphântổ' },
+      ],
     },
     {
       id: 3,
@@ -139,10 +139,10 @@
           label: 'tácbántổ',
           children: [
             { id: 331, label: 'xínghiệpkháchkhoản' },
-            { id: 332, label: 'CaNhankháchkhoản' }
-          ]
-        }
-      ]
+            { id: 332, label: 'CaNhankháchkhoản' },
+          ],
+        },
+      ],
     },
     {
       id: 4,
@@ -150,8 +150,8 @@
       children: [
         { id: 41, label: 'ngườilựctàinguồntổ' },
         { id: 42, label: 'tàivụtổ' },
-        { id: 43, label: 'dòngchínhsaucầntổ' }
-      ]
+        { id: 43, label: 'dòngchínhsaucầntổ' },
+      ],
     },
     {
       id: 5,
@@ -159,14 +159,14 @@
       children: [
         { id: 51, label: 'bántrướctưhỏi' },
         { id: 52, label: 'bánsauchiếctrì' },
-        { id: 53, label: 'kháchkhoảnThanhCong' }
-      ]
-    }
+        { id: 53, label: 'kháchkhoảnThanhCong' },
+      ],
+    },
   ])
 
   const treeProps = {
     children: 'children',
-    label: 'label'
+    label: 'label',
   }
 
   const handleNodeClick = (data: any) => {
@@ -178,7 +178,7 @@
     userGender: undefined,
     userPhone: undefined,
     userEmail: undefined,
-    status: undefined
+    status: undefined,
   })
 
   const {
@@ -189,7 +189,7 @@
     pagination,
     refreshData,
     handleSizeChange,
-    handleCurrentChange
+    handleCurrentChange,
   } = useTable({
     core: {
       apiFn: fetchGetUserList as any,
@@ -198,33 +198,33 @@
         size: 20,
         userName: '',
         userPhone: '',
-        userEmail: ''
+        userEmail: '',
       },
       columnsFactory: () => [
         {
           prop: 'id',
-          label: 'ID'
+          label: 'ID',
         },
         {
           prop: 'nickName',
-          label: 'Biệt danh'
+          label: 'Biệt danh',
         },
         {
           prop: 'userGender',
           label: 'GioiTinh',
           sortable: true,
-          formatter: (row: any) => row.userGender || 'Chưabáo'
+          formatter: (row: any) => row.userGender || 'Chưabáo',
         },
         {
           prop: 'userPhone',
-          label: 'Số điện thoại'
+          label: 'Số điện thoại',
         },
         {
           prop: 'userEmail',
-          label: 'Email'
-        }
-      ]
-    }
+          label: 'Email',
+        },
+      ],
+    },
   })
 </script>
 

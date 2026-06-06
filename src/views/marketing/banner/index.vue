@@ -342,7 +342,7 @@
       desktopImg:
         'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=800',
       mobileImg:
-        'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=400'
+        'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=400',
     },
     {
       id: 2,
@@ -357,8 +357,8 @@
       desktopImg:
         'https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?auto=format&fit=crop&q=80&w=800',
       mobileImg:
-        'https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?auto=format&fit=crop&q=80&w=400'
-    }
+        'https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?auto=format&fit=crop&q=80&w=400',
+    },
   ])
 
   const bannerForm = ref({
@@ -369,7 +369,7 @@
     dateRange: [],
     desktopImg: '',
     mobileImg: '',
-    status: 'Active'
+    status: 'Active',
   })
 
   const handleAddBanner = () => {
@@ -383,7 +383,7 @@
       dateRange: [],
       desktopImg: '',
       mobileImg: '',
-      status: 'Active'
+      status: 'Active',
     }
     dialogVisible.value = true
   }
@@ -411,7 +411,7 @@
 
   const handleDelete = (_banner: any) => {
     ElMessage.warning(
-      'Chức năng xóa đã được bảo mật. Vui lòng tạm dừng chiến dịch nếu không muốn hiển thị.'
+      'Chức năng xóa đã được bảo mật. Vui lòng tạm dừng chiến dịch nếu không muốn hiển thị.',
     )
   }
 </script>

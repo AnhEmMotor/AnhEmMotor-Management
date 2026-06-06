@@ -19,12 +19,12 @@ export interface Lead {
 export function fetchGetLeadList(params?: any) {
   return request.get<Lead[]>({
     url: '/api/Lead',
-    params
+    params,
   })
 }
 
 export function fetchGetLeadDetail(id: number) {
   return request.get<Lead>({
-    url: `/api/Lead/${id}`
+    url: `/api/Lead/${id}`,
   })
 }

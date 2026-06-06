@@ -93,17 +93,17 @@
             width: '100%',
             height: '100vh',
             zIndex: 2500,
-            background: 'var(--default-bg-color)'
+            background: 'var(--default-bg-color)',
           }
         : {
-            maxWidth: containerWidth.value
-          }
+            maxWidth: containerWidth.value,
+          },
   )
 
   const contentStyle = computed(
     (): CSSProperties => ({
-      minHeight: containerMinHeight.value
-    })
+      minHeight: containerMinHeight.value,
+    }),
   )
 
   const reload = () => {

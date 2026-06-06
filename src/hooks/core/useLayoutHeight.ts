@@ -31,7 +31,7 @@ export function useLayoutHeight(options: LayoutHeightOptions = {}) {
           document.documentElement.style.setProperty(cssVarName, newHeight)
         })
       },
-      { immediate: true }
+      { immediate: true },
     )
   }
 
@@ -44,13 +44,13 @@ export function useLayoutHeight(options: LayoutHeightOptions = {}) {
 
     headerHeight,
 
-    contentHeaderHeight
+    contentHeaderHeight,
   }
 }
 
 export function useAutoLayoutHeight(
   headerIds: string[] = ['app-header', 'app-content-header'],
-  options: LayoutHeightOptions = {}
+  options: LayoutHeightOptions = {},
 ) {
   const { extraSpacing = 15, updateCssVar = true, cssVarName = '--art-full-height' } = options
 
@@ -73,7 +73,7 @@ export function useAutoLayoutHeight(
           document.documentElement.style.setProperty(cssVarName, newHeight)
         })
       },
-      { immediate: true }
+      { immediate: true },
     )
   }
 
@@ -102,6 +102,6 @@ export function useAutoLayoutHeight(
 
     headerHeight,
 
-    contentHeaderHeight
+    contentHeaderHeight,
   }
 }

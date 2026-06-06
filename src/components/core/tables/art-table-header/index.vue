@@ -156,12 +156,12 @@
     showHeaderBackground: true,
     fullClass: 'art-page-view',
     layout: 'search,refresh,size,fullscreen,columns,settings',
-    showSearchBar: undefined
+    showSearchBar: undefined,
   })
 
   const columns = defineModel<ColumnOption[]>('columns', {
     required: false,
-    default: () => []
+    default: () => [],
   })
 
   const emit = defineEmits<{
@@ -186,7 +186,7 @@
   const tableSizeOptions = [
     { value: TableSizeEnum.SMALL, label: t('table.sizeOptions.small') },
     { value: TableSizeEnum.DEFAULT, label: t('table.sizeOptions.default') },
-    { value: TableSizeEnum.LARGE, label: t('table.sizeOptions.large') }
+    { value: TableSizeEnum.LARGE, label: t('table.sizeOptions.large') },
   ]
 
   const tableStore = useTableStore()

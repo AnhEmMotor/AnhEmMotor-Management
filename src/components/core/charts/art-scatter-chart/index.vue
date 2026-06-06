@@ -31,7 +31,7 @@
 
     showTooltip: true,
     showLegend: false,
-    legendPosition: 'bottom'
+    legendPosition: 'bottom',
   })
 
   const {
@@ -41,7 +41,7 @@
     getAxisTickStyle,
     getSplitLineStyle,
     getAnimationConfig,
-    getTooltipStyle
+    getTooltipStyle,
   } = useChartComponent({
     props,
     checkEmpty: () => {
@@ -57,14 +57,14 @@
           right: 20,
           bottom: 20,
           left: 20,
-          containLabel: true
+          containLabel: true,
         },
         tooltip: props.showTooltip
           ? getTooltipStyle('item', {
               formatter: (params: { value: [number, number] }) => {
                 const [x, y] = params.value
                 return `X: ${x}<br/>Y: ${y}`
-              }
+              },
             })
           : undefined,
         xAxis: {
@@ -72,14 +72,14 @@
           axisLabel: getAxisLabelStyle(props.showAxisLabel),
           axisLine: getAxisLineStyle(props.showAxisLine),
           axisTick: getAxisTickStyle(),
-          splitLine: getSplitLineStyle(props.showSplitLine)
+          splitLine: getSplitLineStyle(props.showSplitLine),
         },
         yAxis: {
           type: 'value',
           axisLabel: getAxisLabelStyle(props.showAxisLabel),
           axisLine: getAxisLineStyle(props.showAxisLine),
           axisTick: getAxisTickStyle(),
-          splitLine: getSplitLineStyle(props.showSplitLine)
+          splitLine: getSplitLineStyle(props.showSplitLine),
         },
         series: [
           {
@@ -90,19 +90,19 @@
               color: computedColor,
               shadowBlur: 6,
               shadowColor: isDark.value ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
-              shadowOffsetY: 2
+              shadowOffsetY: 2,
             },
             emphasis: {
               itemStyle: {
                 shadowBlur: 12,
-                shadowColor: isDark.value ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)'
+                shadowColor: isDark.value ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)',
               },
-              scale: true
+              scale: true,
             },
-            ...getAnimationConfig()
-          }
-        ]
+            ...getAnimationConfig(),
+          },
+        ],
       }
-    }
+    },
   })
 </script>

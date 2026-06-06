@@ -20,7 +20,7 @@
             text: 'Bắt đầuthămtra',
             color: 'var(--art-success)',
             textColor: '#fff',
-            radius: '6px'
+            radius: '6px',
           }"
           @buttonClick="handleBannerClick"
         />
@@ -39,10 +39,10 @@
             show: true,
             text: 'lậplàvới',
             color: '#FF5A89',
-            textColor: '#fff'
+            textColor: '#fff',
           }"
           :imageConfig="{
-            src: icon3
+            src: icon3,
           }"
         />
       </ElCol>
@@ -50,7 +50,7 @@
         <ArtBasicBanner
           boxStyle="!bg-[#70B1FF]"
           :imageConfig="{
-            src: icon5
+            src: icon5,
           }"
         >
           <template #title>
@@ -103,7 +103,7 @@
             show: true,
             text: 'XemChiTiet',
             color: 'var(--art-warning)',
-            textColor: '#fff'
+            textColor: '#fff',
           }"
         />
       </ElCol>
@@ -116,7 +116,7 @@
             show: true,
             text: 'Tải xuốngbáobáo',
             color: 'var(--art-error)',
-            textColor: '#fff'
+            textColor: '#fff',
           }"
         />
       </ElCol>
@@ -129,13 +129,13 @@
             show: true,
             text: 'lậplàCập nhật',
             color: 'var(--theme-color)',
-            textColor: '#fff'
+            textColor: '#fff',
           }"
           :cancelButton="{
             show: true,
             text: 'chútsaugợitỉnh',
             color: '#eee',
-            textColor: '#333'
+            textColor: '#333',
           }"
           @click="handleConfirm"
           @cancel="handleCancel"
@@ -178,8 +178,8 @@
         show: true,
         text: 'lậplàcướpmua',
         color: 'var(--art-success)',
-        textColor: '#fff'
-      }
+        textColor: '#fff',
+      },
     },
     info: {
       title: 'phụcvụđếnkỳgợitỉnh',
@@ -193,9 +193,9 @@
         show: true,
         text: 'lậplàtiếpphí',
         color: 'var(--art-secondary)',
-        textColor: '#fff'
-      }
-    }
+        textColor: '#fff',
+      },
+    },
   } as const
 </script>
 

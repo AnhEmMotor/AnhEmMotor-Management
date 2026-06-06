@@ -34,7 +34,7 @@
     autoplay: false,
     volume: 1,
     loop: false,
-    muted: false
+    muted: false,
   })
 
   const playerInstance = ref<Player | null>(null)
@@ -54,9 +54,9 @@
     sliderBtnStyle: {
       width: '10px',
       height: '10px',
-      backgroundColor: '#00AEED'
+      backgroundColor: '#00AEED',
     },
-    volumeColor: '#00AEED'
+    volumeColor: '#00AEED',
   }
 
   onMounted(() => {
@@ -74,8 +74,8 @@
       muted: props.muted,
       commonStyle: {
         ...defaultStyle,
-        ...props.commonStyle
-      }
+        ...props.commonStyle,
+      },
     })
 
     playerInstance.value.on('play', () => {

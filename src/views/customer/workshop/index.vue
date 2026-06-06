@@ -147,124 +147,132 @@
           </div>
         </div>
 
-        <!-- Table -->
-        <div class="p-6 overflow-x-auto">
-          <ElTable
-            v-loading="loading"
-            :data="repairOrders"
-            style="width: 100%"
-            class="combat-table"
-            empty-text="Không tìm thấy phiếu sửa chữa nào"
-          >
-            <ElTableColumn prop="id" label="MÃ PHIẾU" width="110">
-              <template #default="{ row }">
-                <span class="font-mono font-bold text-slate-900"
-                  >RO-{{ String(row.id).padStart(5, '0') }}</span
-                >
-              </template>
-            </ElTableColumn>
+        <!-- Card Grid Layout (Replaced Table) -->
+        <div class="p-6 bg-slate-50/30">
+          <div class="mb-4 text-slate-500 text-[13px] italic font-medium flex items-center gap-2" v-if="searchQuery || statusFilter">
+            <ArtSvgIcon icon="ri:information-line" />
+            Tìm thấy {{ totalCount }} phiếu sửa chữa phù hợp dựa trên bộ lọc
+          </div>
 
-            <ElTableColumn label="KHÁCH HÀNG" min-width="180">
-              <template #default="{ row }">
-                <div class="flex flex-col">
-                  <span class="font-bold text-slate-800">{{ row.customerName }}</span>
-                  <span class="text-[10px] text-slate-400 mt-0.5"
-                    ><ArtSvgIcon icon="ri:phone-line" class="inline text-slate-400 mr-0.5" />
-                    {{ row.customerPhone }}</span
-                  >
-                </div>
-              </template>
-            </ElTableColumn>
+          <div v-if="repairOrders.length === 0 && !loading" class="py-12 flex-cc flex-col gap-3 text-slate-400">
+            <ArtSvgIcon icon="ri:inbox-2-line" class="text-4xl" />
+            <p class="text-sm font-medium">Không tìm thấy phiếu sửa chữa nào</p>
+          </div>
 
-            <ElTableColumn label="XE MÁY" min-width="180">
-              <template #default="{ row }">
-                <div class="flex flex-col">
-                  <span
-                    v-if="row.licensePlate"
-                    class="px-2 py-0.5 bg-slate-100 rounded text-slate-700 font-mono font-bold text-[10px] w-fit"
-                  >
-                    {{ row.licensePlate }}
-                  </span>
-                  <span v-else class="text-slate-400 italic text-[10px]">Chưa đăng ký biển</span>
-                  <span v-if="row.vehicle" class="text-[10px] text-slate-400 mt-1">
-                    {{ row.vehicle.vinNumber ? `Khung: ${row.vehicle.vinNumber}` : '' }}
-                  </span>
-                </div>
-              </template>
-            </ElTableColumn>
-
-            <ElTableColumn label="KỸ THUẬT VIÊN" min-width="160">
-              <template #default="{ row }">
-                <div class="flex items-center gap-2" v-if="row.technicianId">
-                  <div
-                    class="size-7 rounded-full bg-slate-100 text-slate-600 flex-cc font-bold text-xs uppercase shadow-inner"
-                  >
-                    {{ row.technicianName ? row.technicianName.charAt(0) : 'T' }}
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" v-loading="loading">
+            <div
+              v-for="row in repairOrders"
+              :key="row.id"
+              class="bg-white border border-slate-200 rounded-[20px] shadow-sm hover:shadow-md transition-shadow flex flex-col relative overflow-hidden"
+            >
+              <!-- Card Header -->
+              <div class="p-5 border-b border-slate-100 flex items-start justify-between bg-white">
+                <div class="flex items-center gap-3">
+                  <div class="size-11 rounded-xl bg-[#001529] flex-cc text-white shadow-md shrink-0">
+                    <ArtSvgIcon icon="ri:tools-line" class="text-xl" />
                   </div>
-                  <span class="font-medium text-slate-700 text-xs">{{ row.technicianName }}</span>
+                  <div class="flex flex-col min-w-0">
+                    <span class="font-black text-slate-800 text-[15px] truncate pr-2" :title="row.customerName">
+                      {{ row.customerName }}
+                    </span>
+                    <span class="font-mono font-bold text-slate-400 text-[11px] mt-0.5">
+                      RO-{{ String(row.id).padStart(5, '0') }}
+                    </span>
+                  </div>
                 </div>
-                <div
-                  class="flex items-center gap-1.5 text-amber-500 font-bold text-[10px] uppercase"
-                  v-else
-                >
-                  <ArtSvgIcon icon="ri:error-warning-line" /> Chưa phân công
-                </div>
-              </template>
-            </ElTableColumn>
-
-            <ElTableColumn prop="mileage" label="SỐ KM" width="100">
-              <template #default="{ row }">
-                <span class="font-bold text-slate-800 text-xs"
-                  >{{ row.mileage.toLocaleString() }} km</span
-                >
-              </template>
-            </ElTableColumn>
-
-            <ElTableColumn label="CHI PHÍ" min-width="140">
-              <template #default="{ row }">
-                <div class="flex flex-col align-right text-xs">
-                  <span class="font-black text-slate-900">{{
-                    formatCurrency(row.totalAmount)
-                  }}</span>
-                  <span class="text-[9px] text-slate-400 mt-0.5" v-if="row.totalAmount > 0">
-                    Dịch vụ: {{ formatCurrency(row.laborCost) }} | Phụ tùng:
-                    {{ formatCurrency(row.partsCost) }}
+                <div class="shrink-0 text-right">
+                  <span :class="getStatusBadgeClass(row.status) + ' !w-auto !px-3 !py-1.5'">
+                    {{ getStatusText(row.status) }}
                   </span>
                 </div>
-              </template>
-            </ElTableColumn>
+              </div>
 
-            <ElTableColumn label="TRẠNG THÁI" width="140">
-              <template #default="{ row }">
-                <span :class="getStatusBadgeClass(row.status)">
-                  {{ getStatusText(row.status) }}
-                </span>
-              </template>
-            </ElTableColumn>
+              <!-- Card Body -->
+              <div class="p-5 flex-1 flex flex-col">
+                <div class="grid grid-cols-2 gap-y-4 gap-x-4 mb-4 flex-1">
+                  <!-- Biển số & Số khung -->
+                  <div class="flex flex-col">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                      <ArtSvgIcon icon="ri:motorbike-line" /> Xe máy
+                    </span>
+                    <div class="mt-1.5">
+                      <span v-if="row.licensePlate" class="px-2 py-1 bg-slate-100 rounded-md text-slate-700 font-mono font-bold text-[11px] border border-slate-200">
+                        {{ row.licensePlate }}
+                      </span>
+                      <span v-else class="text-slate-400 italic text-[11px] block mt-0.5">Chưa đăng ký biển</span>
+                      <div v-if="row.vehicle && row.vehicle.vinNumber" class="text-[9px] text-slate-400 mt-1.5 font-mono">
+                        Khung: {{ row.vehicle.vinNumber }}
+                      </div>
+                    </div>
+                  </div>
 
-            <ElTableColumn label="NGÀY TẠO" width="140">
-              <template #default="{ row }">
-                <span class="text-xs text-slate-500">{{ formatDate(row.createdAt) }}</span>
-              </template>
-            </ElTableColumn>
+                  <!-- Liên hệ -->
+                  <div class="flex flex-col">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                      <ArtSvgIcon icon="ri:phone-line" /> Liên hệ
+                    </span>
+                    <span class="font-bold text-slate-700 text-[13px] mt-1.5">{{ row.customerPhone }}</span>
+                  </div>
 
-            <ElTableColumn label="THAO TÁC" width="110" fixed="right">
-              <template #default="{ row }">
+                  <!-- Kỹ thuật viên -->
+                  <div class="flex flex-col">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                      <ArtSvgIcon icon="ri:user-settings-line" /> Kỹ thuật viên
+                    </span>
+                    <div class="flex items-center gap-1.5 mt-1.5" v-if="row.technicianId">
+                      <div class="size-5 rounded-full bg-slate-100 text-slate-600 flex-cc font-bold text-[9px] uppercase shadow-inner shrink-0">
+                        {{ row.technicianName ? row.technicianName.charAt(0) : 'T' }}
+                      </div>
+                      <span class="font-bold text-slate-700 text-[12px] truncate" :title="row.technicianName">
+                        {{ row.technicianName }}
+                      </span>
+                    </div>
+                    <span v-else class="text-amber-500 font-bold text-[10px] mt-1.5 uppercase flex items-center gap-1">
+                      <ArtSvgIcon icon="ri:error-warning-line" /> Chưa phân công
+                    </span>
+                  </div>
+
+                  <!-- Chi phí -->
+                  <div class="flex flex-col">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                      <ArtSvgIcon icon="ri:money-dollar-circle-line" /> Chi phí
+                    </span>
+                    <span class="font-black text-slate-800 text-[14px] mt-1">{{ formatCurrency(row.totalAmount) }}</span>
+                    <span class="text-[9px] text-slate-400 mt-0.5 leading-tight" v-if="row.totalAmount > 0">
+                      DV: {{ formatCurrency(row.laborCost) }} <br/>
+                      PT: {{ formatCurrency(row.partsCost) }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Footer Stats -->
+                <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+                  <div class="flex items-center gap-1.5 text-[11px] text-slate-500 font-medium">
+                    <ArtSvgIcon icon="ri:calendar-line" /> {{ formatDate(row.createdAt) }}
+                  </div>
+                  <div class="flex items-center gap-1.5 text-[11px] text-slate-500 font-medium">
+                    <ArtSvgIcon icon="ri:dashboard-3-line" /> {{ row.mileage.toLocaleString() }} km
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card Footer Action -->
+              <div class="border-t border-slate-100 bg-slate-50/50 flex">
                 <button
                   @click="goToDetail(row.id)"
-                  class="h-8 px-4 bg-slate-900 text-white rounded-lg font-black text-[9px] uppercase tracking-wider hover:bg-blue-900 transition-all flex items-center justify-center gap-1 shadow-sm w-full"
+                  class="flex-1 py-3.5 text-[12px] font-black text-slate-600 uppercase tracking-wider hover:text-[#001529] hover:bg-slate-100 transition-colors flex-cc gap-2"
                 >
-                  Chi tiết <ArtSvgIcon icon="ri:arrow-right-line" />
+                  Xem chi tiết <ArtSvgIcon icon="ri:arrow-right-line" />
                 </button>
-              </template>
-            </ElTableColumn>
-          </ElTable>
+              </div>
+            </div>
+          </div>
 
           <!-- Pagination -->
-          <div class="flex justify-between items-center mt-6">
-            <span class="text-xs text-slate-400 font-bold uppercase"
-              >Tổng số: {{ totalCount }} phiếu</span
-            >
+          <div class="flex justify-between items-center mt-6 bg-white border border-slate-200 rounded-[20px] shadow-sm px-6 py-4">
+            <span class="text-[11px] text-slate-400 font-bold uppercase">
+              Hiển thị {{ repairOrders.length }} / {{ totalCount }} phiếu
+            </span>
             <ElPagination
               v-model:current-page="currentPage"
               v-model:page-size="pageSize"
@@ -273,7 +281,7 @@
               layout="sizes, prev, pager, next"
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
-              class="combat-pagination"
+              class="combat-pagination !font-bold"
             />
           </div>
         </div>

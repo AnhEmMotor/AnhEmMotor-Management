@@ -7,7 +7,7 @@ import { setupAfterEachGuard } from './guards/afterEach'
 
 export const router = createRouter({
   history: createWebHistory(),
-  routes: staticRoutes
+  routes: staticRoutes,
 })
 
 export function initRouter(app: App<Element>): void {

@@ -57,7 +57,7 @@
               'bốntháng',
               'nămtháng',
               'sáutháng',
-              'bảytháng'
+              'bảytháng',
             ]"
             symbol="none"
             :symbolSize="7"
@@ -78,7 +78,7 @@
               'bốntháng',
               'nămtháng',
               'sáutháng',
-              'bảytháng'
+              'bảytháng',
             ]"
             :showAreaColor="true"
           />
@@ -109,7 +109,7 @@
               'sinhsản phẩmB',
               'sinhsản phẩmC',
               'sinhsản phẩmD',
-              'sinhsản phẩmE'
+              'sinhsản phẩmE',
             ]"
           />
         </div>
@@ -123,7 +123,7 @@
           <ArtHBarChart
             :data="[
               { name: 'hệcột1', data: [10, 20, 30] },
-              { name: 'hệcột2', data: [15, 25, 35] }
+              { name: 'hệcột2', data: [15, 25, 35] },
             ]"
             :xAxisData="['loạimục1', 'loạimục2', 'loạimục3']"
             :showLegend="true"
@@ -139,7 +139,7 @@
           <ArtHBarChart
             :data="[
               { name: 'hệcột1', data: [10, 20, 30] },
-              { name: 'hệcột2', data: [15, 25, 35] }
+              { name: 'hệcột2', data: [15, 25, 35] },
             ]"
             :xAxisData="['loạimục1', 'loạimục2', 'loạimục3']"
             :showLegend="true"
@@ -158,7 +158,7 @@
             :data="[
               { value: 35, name: 'Phân loạiA' },
               { value: 28, name: 'Phân loạiB' },
-              { value: 42, name: 'Phân loạiC' }
+              { value: 42, name: 'Phân loạiC' },
             ]"
             :radius="['54%', '70%']"
             legendPosition="bottom"
@@ -178,7 +178,7 @@
               { value: 42, name: 'Phân loạiC' },
               { value: 32, name: 'Phân loạiD' },
               { value: 26, name: 'Phân loạiE' },
-              { value: 37, name: 'Phân loạiF' }
+              { value: 37, name: 'Phân loạiF' },
             ]"
             :radius="['54%', '70%']"
             :borderRadius="0"
@@ -197,7 +197,7 @@
             :data="[
               { value: 30, name: 'Phân loạiA' },
               { value: 25, name: 'Phân loạiB' },
-              { value: 45, name: 'Phân loạiC' }
+              { value: 45, name: 'Phân loạiC' },
             ]"
             :radius="['0%', '70%']"
             :showLegend="true"
@@ -223,7 +223,7 @@
               { value: [9, 8] },
               { value: [10, 6] },
               { value: [11, 7] },
-              { value: [12, 8] }
+              { value: [12, 8] },
             ]"
           />
         </div>
@@ -240,17 +240,17 @@
               { name: 'Quản lý', max: 100 },
               { name: 'kỹthuật', max: 100 },
               { name: 'kháchphục', max: 100 },
-              { name: 'mởphát', max: 100 }
+              { name: 'mởphát', max: 100 },
             ]"
             :data="[
               {
                 name: 'trướcphầnPhân',
-                value: [80, 70, 90, 85, 75]
+                value: [80, 70, 90, 85, 75],
               },
               {
                 name: 'thựctếmởtác',
-                value: [70, 75, 85, 80, 70]
-              }
+                value: [70, 75, 85, 80, 70],
+              },
             ]"
           />
         </div>
@@ -264,7 +264,7 @@
             :data="[
               { time: '2024-01-01', open: 20, close: 23, high: 25, low: 18 },
               { time: '2024-01-02', open: 23, close: 21, high: 24, low: 20 },
-              { time: '2024-01-03', open: 21, close: 25, high: 26, low: 21 }
+              { time: '2024-01-03', open: 21, close: 25, high: 26, low: 21 },
             ]"
             :showDataZoom="false"
             :dataZoomStart="0"
@@ -288,7 +288,7 @@
               '35-44tuổi',
               '45-54tuổi',
               '55-64tuổi',
-              '65tuổilấytrên'
+              '65tuổilấytrên',
             ]"
             positiveName="NamtínhTuổiPhân bố"
             negativeName="NữtínhTuổiPhân bố"
@@ -310,17 +310,17 @@
       data: [120, 132, 101, 134, 90, 130],
       areaStyle: {
         startOpacity: 0.1,
-        endOpacity: 0
-      }
+        endOpacity: 0,
+      },
     },
     {
       name: 'Lợi nhuận',
       data: [80, 92, 71, 94, 60, 80],
       areaStyle: {
         startOpacity: 0.1,
-        endOpacity: 0
-      }
-    }
+        endOpacity: 0,
+      },
+    },
   ]
 
   const singleBarData = ref([120, 200, 150, 80, 70, 110, 130])
@@ -331,17 +331,17 @@
     'tuầnbốn',
     'tuầnnăm',
     'tuầnsáu',
-    'tuầnngày'
+    'tuầnngày',
   ])
 
   const multiBarData = ref([
     { name: 'tácbántrán', data: [120, 200, 150, 80, 70, 110, 130] },
-    { name: 'Lợi nhuận', data: [20, 50, 30, 15, 10, 25, 35] }
+    { name: 'Lợi nhuận', data: [20, 50, 30, 15, 10, 25, 35] },
   ])
 
   const stackBarData = ref([
     { name: 'Q1', data: [20, 25, 30, 35, 40], stack: 'total' },
-    { name: 'Q2', data: [30, 35, 40, 45, 50], stack: 'total' }
+    { name: 'Q2', data: [30, 35, 40, 45, 50], stack: 'total' },
   ])
 
   const stackXAxisData = ref([
@@ -349,7 +349,7 @@
     'sinhsản phẩmB',
     'sinhsản phẩmC',
     'sinhsản phẩmD',
-    'sinhsản phẩmE'
+    'sinhsản phẩmE',
   ])
 </script>
 

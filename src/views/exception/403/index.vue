@@ -4,7 +4,7 @@
       title: '403',
       desc: $t('exceptionPage.403'),
       btnText: $t('exceptionPage.gohome'),
-      imgUrl
+      imgUrl,
     }"
   />
 </template>

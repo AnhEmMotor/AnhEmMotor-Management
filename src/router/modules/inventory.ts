@@ -7,7 +7,7 @@ export const inventoryRoutes: AppRouteRecord = {
   meta: {
     title: 'menus.inventory.title',
     icon: 'ri:archive-line',
-    roles: ['R_SUPER', 'R_ADMIN']
+    roles: ['R_SUPER', 'R_ADMIN'],
   },
   children: [
     {
@@ -16,8 +16,8 @@ export const inventoryRoutes: AppRouteRecord = {
       component: '/inventory/supplier/index',
       meta: {
         title: 'menus.inventory.supplier',
-        icon: 'ri:team-line'
-      }
+        icon: 'ri:team-line',
+      },
     },
     {
       path: 'input',
@@ -25,8 +25,8 @@ export const inventoryRoutes: AppRouteRecord = {
       component: '/inventory/input/index',
       meta: {
         title: 'menus.inventory.input',
-        icon: 'ri:file-list-3-line'
-      }
+        icon: 'ri:file-list-3-line',
+      },
     },
     {
       path: 'debt',
@@ -34,8 +34,8 @@ export const inventoryRoutes: AppRouteRecord = {
       component: '/inventory/debt/index',
       meta: {
         title: 'menus.inventory.debt',
-        icon: 'ri:money-cny-box-line'
-      }
-    }
-  ]
+        icon: 'ri:money-cny-box-line',
+      },
+    },
+  ],
 }

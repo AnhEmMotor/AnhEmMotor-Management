@@ -15,5 +15,5 @@ export const WEB_LINKS = {
 
   BILIBILI: 'https://space.bilibili.com/425500936?spm_id_from=333.1007.0.0',
 
-  INTRODUCE: 'https://www.artd.pro/docs/zh/guide/introduce.html'
+  INTRODUCE: 'https://www.artd.pro/docs/zh/guide/introduce.html',
 }

@@ -20,7 +20,7 @@ export const ArticleList = [
     brief:
       'quyểnchươngtươnggiớithiệu Node.js khiếndùng Docker 、Webhook từđộnghóabộthủ、xanhxanh lábộthủ、mụcmụcđếnphụcvụthiết bị。1、Mac os an Docker kháchkhoảnđầu OrbStacktôinàytrongkhiếndùngcủalàthứbaphươngkháchkhoảnđầu，so sánhởChính thứccủa，sonhẹlượng，bậtđộngTốc độkhoáiOrbStack làmộtloạikhoái、nhẹtiệnvừarútđơncủavậndòng Docker Containervà Linux củaPhuongThuc。khiếndùngtôichúngcủa Docker Desktop thếđạiphươngánlấyquangvàodòngmởphát。Tải xuốngDiaChi： http',
     type_name: 'Node.js',
-    html_content: ''
+    html_content: '',
   },
   {
     id: 451,
@@ -32,7 +32,7 @@ export const ArticleList = [
     brief:
       'kháiniệmHTTP（hypertext transport protocol）hiệpnghị；trongvăngọisiêuvănquyểntruyềnnhậphiệpnghịlàmộtloạiởTCP/IPcủaỨng dụngtầngthôngnhắnhiệpnghịnàychiếchiệpnghịChiTietquyđịnhrồi xemthiết bị vàvạnduymạng phụcvụthiết bị củagianthôngnhắncủaquy。hiệpnghịtrongchủcầnquyđịnhrồihaichiếcphươngmặtcủaNoiDungkháchkhoảnđầu：dùngđếnhướngphụcvụthiết bịphátgửiDữ liệu，Có thểlấybịtêncủavìVui lòngcầubáovănphụcvụđầu：hướngkháchkhoảnđầuQuay lạiDữ liệu，Có thểlấybịtêncủavìứngbáovănbáovăn：Có thểlấyrútđơnlýgiảivìthìlàmộtChuỗiVui lòngcầubáovăncủatổthànhVui lòngcầudòngVui lòngcầuđầukhôngdòngVui lòngcầuthểH',
     type_name: 'xemthiết bị',
-    html_content: ''
+    html_content: '',
   },
   {
     id: 450,
@@ -44,7 +44,7 @@ export const ArticleList = [
     brief:
       'rútgiớiMongodb làgìgìMongoDB làmộtchiếcởPhân bốkiểuvănphần tửtồntrữcủaDữ liệuThư viện，Chính thứcDiaChi https://www.mongodb.com/ Dữ liệuThư việnlàgìgìDữ liệuThư viện（DataBase）làchiếuDữ liệuKếtcấuđếntổdệt、tồntrữvàQuản lýDữ liệucủa Ứng dụngtrìnhthứDữ liệuThư việncủalàmdùngDữ liệuThư việncủachủcầnlàmdùngthìlà Quản lýDữ liệu ，đốiDữ liệuvàodòng Thêm（c）、xóa（d）、sửa（u）、Tìm（r）Dữ liệuThư việnQuản lýDữ liệucủađặcđiểmso sánhởthuầnvănphần tửQuản lýDữ liệu，Dữ liệuThư việnQuản lýDữ liệucónếudướiđặcđiểm：1. Tốc độhơnkhoái',
     type_name: 'MongoDB',
-    html_content: ''
+    html_content: '',
   },
   {
     id: 449,
@@ -56,7 +56,7 @@ export const ArticleList = [
     brief:
       'Tải xuốngMongoDBanbaoTrangChuTải xuốngDiaChi：https://www.mongodb.com/try/download/community?tck=docs_serveranMongoDB# tươngépthụtbaogiảiépđến /usr/local/mụclụcdưới\nsudo tar -zxvf mongodb-macos-x86_64-5.0.24.tgz -C /usr/local\n\n# trùngmệnhdanh\nsudo mv mongodb-o',
     type_name: 'MongoDB',
-    html_content: ''
+    html_content: '',
   },
   {
     id: 448,
@@ -68,7 +68,7 @@ export const ArticleList = [
     brief:
       'CaiDatgươngtượngnguồn#1,đàobảogươngtượngnguồn\nnpm config set registry https://registry.npmmirror.com\nnpm config set registry https://registry.npm.taobao.org\n\n#2,đằngtinvângươngtượngnguồn\nnpm config set registry http://mirrors.cloud.tencent.com/npm/\n\n#',
     type_name: 'Node.js',
-    html_content: ''
+    html_content: '',
   },
   {
     id: 447,
@@ -80,7 +80,7 @@ export const ArticleList = [
     brief:
       'giớithiệubaolàgìgì『bao』anhvănđơntừlà package ，đạibảngrồimộttổđặcđịnhcôngnăngcủanguồnmãtậphợpbaoQuản lýCông cụQuản lý『bao』củaỨng dụngmềmphần tử，Có thểlấyđối「bao」vàodòng Tải xuốngan ， Cập nhật ， Xóa ， Tải lên bằngHanhDongmượngiúpbaoQuản lýCông cụ，Có thểlấykhoáimởphátmụcmục，gợilênmởpháthiệusuấtbaoQuản lýCông cụlàmộtchiếcthôngdùngcủakháiniệm，rấtđabiêntrìnhNgôn ngữđềucóbaoQuản lýCông cụ，nênlấy nắmgiữhảobaoQuản lýCông cụphilệtrùngcầnlệdùngcủabaoQuản lýCông cụdướimặtcộtBáorồitrướcđầulệdùngcủabaoQuản lýCông cụnpmyarncnpmnpmnpm toàntên Node',
     type_name: 'Node.js',
-    html_content: ''
+    html_content: '',
   },
   {
     id: 446,
@@ -92,7 +92,7 @@ export const ArticleList = [
     brief:
       'giớithiệugìgìlàmôkhốihóavớimôkhối ?tươngmộtchiếcphụctạpcủatrìnhthứvănphần tửyliệumộtđịnhquy（quyphạm）táchphầnthànhđachiếcvănphần tửcủaquatrìnhtêncủavìnótrongtáchphầnracủa mỗichiếcvănphần tửthìlàmộtchiếcmôkhối ，môkhốicủatrongbộDữ liệulàtưcócủa，KhôngquamôkhốiCó thểlấylộlộtrongbộDữ liệulấytiệnnóanh ấymôkhốikhiếndùnggìgìlàmôkhốihóamụcmục ?biênmãgiờlàchiếumôkhốimộtchiếcmộtchiếcbiênmãcủa， chỉnhchiếcmụcmụcthìlàmộtchiếcmôkhốihóacủamụcmụcmôkhốihóahảodướimặtlàmôkhốihóacủamộtvàihảo：1.Phòngthúcmệnhdanhxungđột2.caophụcdùngtính3.caoduyhộtínhmôkhốilộlộDữ liệumôkhốiban đầuthểnghiệmCó thểlấythông quadướimặtcủaHanhDongbướcbước，khoái',
     type_name: 'Node.js',
-    html_content: ''
+    html_content: '',
   },
   {
     id: 445,
@@ -104,7 +104,7 @@ export const ArticleList = [
     brief:
       'fs môkhốifs toàntênvì file system ，têncủavì vănphần tửHeThong ，là Node.js trongcủa trongđặtmôkhối ，Có thểlấyđốikếmáytrongcủatừvàodòngHanhDong。ví dụnếuvănphần tửcủaxây、Xóa、sửasửaDiđộng，vănphần tửNoiDungcủaviếtvào、đọcHủy，lấyvàvănphần tửkẹpcủađóngHanhDong// 1 ------------------------------------------------------\n/**\n * cầncầu\n * mớixâymộtchiếcvănphần tử，viếtvàoNoiDung\n */\n\n// 1',
     type_name: 'Node.js',
-    html_content: ''
+    html_content: '',
   },
   {
     id: 444,
@@ -116,7 +116,7 @@ export const ArticleList = [
     brief:
       'mụctrướcvìthúcnhấthảodùngcủaChatGPTmạngtrang，chiếctrì6loạiAImôkiểuvàmỗingàymộtlầnGPT4củakhiếndùngmáysẽ，cómạngtrangbảnvàiosỨng dụngtrìnhthứ，Có thểlấykhiếndùngEmailvàSố điện thoạibằngphươngkiểuDangKy，trongquốcđạilụcCó thểphóngtâmkhiếndùng（cầncầnkhoahọctrênmạng），dướimặtthìgiớithiệumộtdướinếunàokhiếndùngthôi。mạngtrangDiaChi：https://poe.com/vàođicủasauCó thểlấyChọnEmailhoặcSố điện thoạibằngnóanh ấyphươngkiểuDangKy。chiarồimạngtrangbản，bạncònCó thểlấyđếnAppStoreTìm kiếmpoeTải xuốngioskháchkhoảnđầu',
     type_name: 'GPT',
-    html_content: ''
+    html_content: '',
   },
   {
     id: 443,
@@ -128,7 +128,7 @@ export const ArticleList = [
     brief:
       'trướcrobots và sitemap vănphần tử，trướccủalàmdùnglàbớtthiểuđộnhệnnhệntạitrangtrongcủavôgọileoHủy，sauThêmthêmđộnhệnnhệntạitrangtrongcủacóhiệuleoHủy，đốiđộBộlụcvàtừmìnhmạngtrangcủaSEOđẩyquảngđềumườiphầntrùngcần。robotschỉcómộtchiếc：robot.txt，nàylàmộtchiếcvănquyểnvănphần tử，chủcầnlợidùngAllow（cho phéphứa）vàDisAllow（cấmthúc）haichiếcmệnhlệnh，（nàyhaichiếctrùngcầncủalàcấmthúc），cấmthúcđộnhệnnhệnleoHủymộtvàivôgọicủavănphần tửvàvănphần tửkẹp，ThêmthêmđộtìmlụcTốc độ。dụng cụthểnguyênlývàviếtphápmạngtrênđitìm，chếlàmrútđơn',
     type_name: 'Nuxt',
-    html_content: ''
+    html_content: '',
   },
   {
     id: 442,
@@ -140,7 +140,7 @@ export const ArticleList = [
     brief:
       'giớithiệuquyểnchươngsẽdạybạntạithậtthựcmụcmụctrongnếunàoxâyxây VueRouter、Vuex、pinia、axios、ChuDeChuyển đổibằng，bạnsẽthấytínhmộtchiếcsauchiếcQuản lýHeThongcủaChiTietxâyxâyquatrình。Hiệu quảảnh：côngnăng：sauchiếcQuản lýHeThonglệdùngmôkhốiĐăng nhậpthêmmậtđaThẻ TabtoànbộBreadcrumbquốctếhóaBất thườngXuLyUtilsCông cụbaoCó thểCauHinhcủaMenulanHuy hiệu (Badge)sángmàu / ámmàu Thanh bênthiểnmàuChuDe / ámđenChuDephongphúcủachiếctínhhóaCauHinhCó thểThanh bênchiếctrìtrongnhúngtrangmặttrùngtảikhitrướctrangmặtHoạt độngRoutingchiếctrìtừđộngtrùngtảichiếctrìđacấpRoutingnhúngbộvàMenulannhúngbộphầnNgoạiđường',
     type_name: 'Vue',
-    html_content: ''
+    html_content: '',
   },
   {
     id: 441,
@@ -152,7 +152,7 @@ export const ArticleList = [
     brief:
       'nguyênlýlàsửabiến css biếnlượng + window.matchMedia đếnLắng ngheHeThongChuDebiến，từmàthựchiệnNhấnsửabiếnChuDevàLắng ngheHeThongChuDebiếnhóa1、đầuĐịnh nghĩa css toànbộbiếnlượngxây variables.scss vănphần tửlight color（thiểnmàumôkiểu）Định nghĩathiểnmàumôkiểudưới css ChuDebiếnlượngdark color（thâmmàumôkiểu）Định nghĩathâmmàumôkiểudưới css ChuDebiếnlượng// csstoànbộbiếnlượng\n:root {\n  // VanBanKích thước\n  --art-fo',
     type_name: 'CSS',
-    html_content: ''
+    html_content: '',
   },
   {
     id: 440,
@@ -164,7 +164,7 @@ export const ArticleList = [
     brief:
       'thông quanàybàiBài viếtbạnCó thểlấyrồigiảiđếncùngnguồnsáchlược、vượttrangchânquyểncôngchuột（xss）、vượtTênVui lòngcầugiả（CSRF）lấyvàantoàncáthộpđóngbáo；lấydướilàquyểnvăncủanghĩduyXuấtảnh：（taymáyđầuCó thểnăngxemKhôngxóa）Lấycaoxóa PDF，Vui lòngtạivinhắncôngchúngsố【tiểusưtửtrướcđầu】TraLoi【xemthiết bịantoàn】cùngnguồnsáchlượcgìgìlàcùngnguồnsáchlượcnếuquảhaichiếc URL củahiệpnghị、Têndanhvàđầudiệnđềucùng，tôichúngthìtênnàyhaichiếc URL cùngnguồn。haichiếcKhôngcùngcủanguồncủagiannếumuốncầnTruy cậptàinguồnhoặcHanhDong DOM，kiagìsẽcómộtbộCơ bảncủaantoànsáchlượccủachếhẹn，tôichúngchiếcnày',
     type_name: 'xemthiết bị',
-    html_content: ''
+    html_content: '',
   },
   {
     id: 439,
@@ -176,7 +176,7 @@ export const ArticleList = [
     brief:
       "Routingmôkiểucấuxây router.tsimport { createRouter, createWebHistory, createWebHashHistory, createMemoryHistory, createRouterMatcher } from 'vue-router'\nimport Home from '../views/home/index.vue'\nimport Login from",
     type_name: 'Vue',
-    html_content: ''
+    html_content: '',
   },
   {
     id: 438,
@@ -188,6 +188,6 @@ export const ArticleList = [
     brief:
       'jslàđơnđườngtrìnhcủa，mộtlầnchỉnăngThựcdòngmộtđoạnđạimã。đơnđườngtrìnhsẽXuấtđếnrấtđanhiệmvụcầncầnxếpđội，mộtchiếcchiếcđiThựcdòng，nếuquảnàygiờnào đóchiếcnhiệmvụThựcdòngThoiGianquátrường，thìsẽrahiệntrởnghẽn，đểgiảinàychiếchỏiđề，jstríchvàorồiSuKienVòng lặpmáychế。vìgìgìcầnđồngphầnhùngnhiệmvụvàvinhiệmvụ？jslàđơnđườngtrìnhcủa，nhưnglàphầncùngbướckhácbướcvinhiệmvụvàhùngnhiệmvụđềuvìkhácbướcnhiệmvụ，nóchúngđềuThuộcởmộtchiếcđộicộthùngnhiệmvụ：script（chỉnhthểđạimã）、setTimeout、setInterval、I/O、UI、 renderingsetImme',
     type_name: 'JavaScript',
-    html_content: ''
-  }
+    html_content: '',
+  },
 ]

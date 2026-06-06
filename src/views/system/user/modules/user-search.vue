@@ -36,14 +36,14 @@
   const searchBarRef = ref()
   const formData = computed({
     get: () => props.modelValue,
-    set: (val) => emit('update:modelValue', val)
+    set: (val) => emit('update:modelValue', val),
   })
 
   const rules = {}
 
   const statusOptions = ref([
     { label: 'Hoạt động', value: 'Active' },
-    { label: 'Bị khóa', value: 'Banned' }
+    { label: 'Bị khóa', value: 'Banned' },
   ])
 
   const formItems = computed(() => [
@@ -52,26 +52,26 @@
       key: 'userName',
       type: 'input',
       placeholder: 'Nhập tên đăng nhập...',
-      clearable: true
+      clearable: true,
     },
     {
       label: '',
       key: 'fullName',
       type: 'input',
       placeholder: 'Nhập tên đầy đủ...',
-      clearable: true
+      clearable: true,
     },
     {
       label: '',
       key: 'userPhone',
       type: 'input',
-      props: { placeholder: 'Nhập số điện thoại...', maxlength: '11', clearable: true }
+      props: { placeholder: 'Nhập số điện thoại...', maxlength: '11', clearable: true },
     },
     {
       label: '',
       key: 'userEmail',
       type: 'input',
-      props: { placeholder: 'Nhập địa chỉ email...', clearable: true }
+      props: { placeholder: 'Nhập địa chỉ email...', clearable: true },
     },
     {
       label: '',
@@ -80,8 +80,8 @@
       props: {
         placeholder: 'Chọn trạng thái...',
         options: statusOptions.value,
-        clearable: true
-      }
+        clearable: true,
+      },
     },
     {
       label: '',
@@ -92,11 +92,11 @@
         options: [
           { label: 'Nam', value: 'Male' },
           { label: 'Nữ', value: 'Female' },
-          { label: 'Khác', value: 'Other' }
+          { label: 'Khác', value: 'Other' },
         ],
-        clearable: true
-      }
-    }
+        clearable: true,
+      },
+    },
   ])
 
   function handleReset() {

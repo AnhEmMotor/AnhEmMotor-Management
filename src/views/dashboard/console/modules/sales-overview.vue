@@ -31,6 +31,6 @@
     '9tháng',
     '10tháng',
     '11tháng',
-    '12tháng'
+    '12tháng',
   ]
 </script>

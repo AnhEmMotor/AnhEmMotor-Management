@@ -122,11 +122,11 @@
     fileUpload: [],
     imageUpload: [],
     multipleFiles: [],
-    richTextContent: ''
+    richTextContent: '',
   })
 
   const formRules = {
-    name: [{ required: true, message: 'Vui lòng nhậpTên người dùng', trigger: 'blur' }]
+    name: [{ required: true, message: 'Vui lòng nhậpTên người dùng', trigger: 'blur' }],
   }
 
   const labelWidth = ref(100)
@@ -140,18 +140,18 @@
     { label: 'phổthôngNguoiDung', value: 'normal' },
     { label: 'VIPNguoiDung', value: 'vip' },
     { label: 'Nâng caoVIP', value: 'svip' },
-    { label: 'xínghiệpNguoiDung', value: 'enterprise', disabled: true }
+    { label: 'xínghiệpNguoiDung', value: 'enterprise', disabled: true },
   ]
 
   const GENDER_OPTIONS: OptionItem[] = [
     { label: 'Nam', value: '1' },
-    { label: 'Nữ', value: '2' }
+    { label: 'Nữ', value: '2' },
   ]
 
   const DATE_SHORTCUTS = [
     { text: 'nayngày', value: new Date() },
     { text: 'quangày', value: () => new Date(Date.now() - 86400000) },
-    { text: 'mộttuầntrước', value: () => new Date(Date.now() - 604800000) }
+    { text: 'mộttuầntrước', value: () => new Date(Date.now() - 604800000) },
   ]
 
   const fetchLevelOptions = (): Promise<OptionItem[]> => {
@@ -186,13 +186,13 @@
       key: 'name',
       type: 'input',
       placeholder: 'Vui lòng nhậpTên người dùng',
-      clearable: true
+      clearable: true,
     }),
     phone: createFormItem({
       label: 'Số điện thoại',
       key: 'phone',
       type: 'input',
-      props: { placeholder: 'Vui lòng nhậpSố điện thoại', maxlength: '11' }
+      props: { placeholder: 'Vui lòng nhậpSố điện thoại', maxlength: '11' },
     }),
     level: createFormItem({
       label: 'NguoiDungbằngcấp',
@@ -200,14 +200,14 @@
       type: 'select',
       props: {
         placeholder: 'Vui lòng chọnbằngcấp',
-        options: LEVEL_OPTIONS
-      }
+        options: LEVEL_OPTIONS,
+      },
     }),
     address: createFormItem({
       label: 'DiaChi',
       key: 'address',
       type: 'input',
-      placeholder: 'Vui lòng nhậpDiaChi'
+      placeholder: 'Vui lòng nhậpDiaChi',
     }),
     date: createFormItem({
       label: 'Ngày',
@@ -218,17 +218,17 @@
         placeholder: 'Vui lòng chọnNgày',
         type: 'date',
         valueFormat: 'YYYY-MM-DD',
-        shortcuts: DATE_SHORTCUTS
-      }
+        shortcuts: DATE_SHORTCUTS,
+      },
     }),
     gender: createFormItem({
       label: 'GioiTinh',
       key: 'userGender',
       type: 'radiogroup',
       props: {
-        options: GENDER_OPTIONS
-      }
-    })
+        options: GENDER_OPTIONS,
+      },
+    }),
   }
 
   const userItem = ref<SearchFormItem>({
@@ -237,8 +237,8 @@
     type: 'input',
     props: {
       placeholder: 'Vui lòng nhậpTên người dùng',
-      clearable: true
-    }
+      clearable: true,
+    },
   })
 
   const showUserName = ref(true)
@@ -259,10 +259,10 @@
             { value: 'consistency', label: 'mộtđếntính' },
             { value: 'feedback', label: 'ngượchồi' },
             { value: 'efficiency', label: 'hiệusuất' },
-            { value: 'controllability', label: 'Có thểkhốngtính' }
-          ]
-        }
-      ]
+            { value: 'controllability', label: 'Có thểkhốngtính' },
+          ],
+        },
+      ],
     },
     {
       value: 'components',
@@ -274,11 +274,11 @@
           children: [
             { value: 'button', label: 'Nút' },
             { value: 'form', label: 'Form' },
-            { value: 'table', label: 'Bảng' }
-          ]
-        }
-      ]
-    }
+            { value: 'table', label: 'Bảng' },
+          ],
+        },
+      ],
+    },
   ]
 
   const treeSelectData = [
@@ -289,9 +289,9 @@
         {
           value: '1-1',
           label: 'haicấp 1-1',
-          children: [{ value: '1-1-1', label: 'bacấp 1-1-1' }]
-        }
-      ]
+          children: [{ value: '1-1-1', label: 'bacấp 1-1-1' }],
+        },
+      ],
     },
     {
       value: '2',
@@ -300,15 +300,15 @@
         {
           value: '2-1',
           label: 'haicấp 2-1',
-          children: [{ value: '2-1-1', label: 'bacấp 2-1-1' }]
+          children: [{ value: '2-1-1', label: 'bacấp 2-1-1' }],
         },
         {
           value: '2-2',
           label: 'haicấp 2-2',
-          children: [{ value: '2-2-1', label: 'bacấp 2-2-1' }]
-        }
-      ]
-    }
+          children: [{ value: '2-2-1', label: 'bacấp 2-2-1' }],
+        },
+      ],
+    },
   ]
 
   const checkboxOptions = [
@@ -316,7 +316,7 @@
     { label: 'vịmục2', value: 'option2' },
     { label: 'vịmục3', value: 'option3' },
     { label: 'vịmục4', value: 'option4' },
-    { label: 'vịmục5（disabled）', value: 'option5', disabled: true }
+    { label: 'vịmục5（disabled）', value: 'option5', disabled: true },
   ]
 
   const formItems = computed(() => [
@@ -324,11 +324,11 @@
 
     ...dynamicFormItems.value,
     {
-      ...baseFormItems.phone
+      ...baseFormItems.phone,
     },
     {
       ...baseFormItems.level,
-      props: { placeholder: 'Vui lòng chọnbằngcấp', options: levelOptions.value }
+      props: { placeholder: 'Vui lòng chọnbằngcấp', options: levelOptions.value },
     },
     baseFormItems.address,
     baseFormItems.date,
@@ -341,8 +341,8 @@
         style: { width: '100%' },
         placeholder: 'Vui lòng chọnNgàyThoiGian',
         type: 'datetime',
-        valueFormat: 'YYYY-MM-DD HH:mm:ss'
-      }
+        valueFormat: 'YYYY-MM-DD HH:mm:ss',
+      },
     },
     {
       label: 'Ngàyphạmvi',
@@ -353,8 +353,8 @@
         valueFormat: 'YYYY-MM-DD',
         rangeSeparator: 'đến',
         startPlaceholder: 'Bắt đầuNgày',
-        endPlaceholder: 'KếtthúcNgày'
-      }
+        endPlaceholder: 'KếtthúcNgày',
+      },
     },
 
     {
@@ -366,8 +366,8 @@
         valueFormat: 'YYYY-MM-DD HH:mm:ss',
         rangeSeparator: 'đến',
         startPlaceholder: 'Bắt đầuNgàyThoiGian',
-        endPlaceholder: 'KếtthúcNgàyThoiGian'
-      }
+        endPlaceholder: 'KếtthúcNgàyThoiGian',
+      },
     },
 
     {
@@ -377,8 +377,8 @@
       props: {
         placeholder: 'Vui lòng chọnThoiGian',
         type: 'time',
-        valueFormat: 'HH:mm:ss'
-      }
+        valueFormat: 'HH:mm:ss',
+      },
     },
 
     {
@@ -389,8 +389,8 @@
         style: { width: '100%' },
         placeholder: 'Vui lòng chọnThoiGian',
         type: 'time',
-        valueFormat: 'HH:mm:ss'
-      }
+        valueFormat: 'HH:mm:ss',
+      },
     },
 
     {
@@ -404,8 +404,8 @@
         collapseTags: true,
         maxCollapseTags: 1,
         props: { multiple: true },
-        options: cascaderOptions
-      }
+        options: cascaderOptions,
+      },
     },
 
     {
@@ -416,14 +416,14 @@
         showCheckbox: true,
         multiple: true,
         clearable: true,
-        data: treeSelectData
-      }
+        data: treeSelectData,
+      },
     },
     { label: 'chènkhe', key: 'slots', type: 'input', placeholder: 'Vui lòng nhậpEmail' },
     {
       label: 'RenderComponent',
       key: 'iconSelector',
-      render: () => h(ElInput, { placeholder: 'RenderTùy chỉnh input' })
+      render: () => h(ElInput, { placeholder: 'RenderTùy chỉnh input' }),
     },
     {
       label: 'Tùy chỉnhComponent',
@@ -433,10 +433,10 @@
           'div',
           {
             style:
-              'color: var(--art-gray-600); border: 1px solid var(--default-border-dashed); padding: 0px 15px; border-radius: 6px'
+              'color: var(--art-gray-600); border: 1px solid var(--default-border-dashed); padding: 0px 15px; border-radius: 6px',
           },
-          'tôilàmộtchiếcTùy chỉnhComponent'
-        )
+          'tôilàmộtchiếcTùy chỉnhComponent',
+        ),
     },
     {
       label: 'Ô chọn nhiều',
@@ -444,11 +444,11 @@
       type: 'checkboxgroup',
       span: 12,
       props: {
-        options: checkboxOptions
-      }
+        options: checkboxOptions,
+      },
     },
     {
-      ...baseFormItems.gender
+      ...baseFormItems.gender,
     },
 
     {
@@ -456,16 +456,16 @@
       key: 'isEnabled',
       type: 'switch',
       props: {
-        placeholder: 'Vui lòng chọnlàphủBật'
-      }
+        placeholder: 'Vui lòng chọnlàphủBật',
+      },
     },
     {
       label: 'Tuổi',
       key: 'age',
       type: 'number',
       slots: {
-        suffix: () => h('span', { style: 'color: #909399; font-size: 12px' }, 'tuổi')
-      }
+        suffix: () => h('span', { style: 'color: #909399; font-size: 12px' }, 'tuổi'),
+      },
     },
     {
       label: 'mạngtrangDiaChi',
@@ -474,8 +474,8 @@
       placeholder: 'Vui lòng nhậpmạngtrangdanhtên',
       slots: {
         prepend: () => h('span', 'https://'),
-        append: () => h('span', '.com')
-      }
+        append: () => h('span', '.com'),
+      },
     },
     {
       label: 'SuKiendiễnthị',
@@ -491,8 +491,8 @@
         },
         onClear() {
           console.log('xóakhôngSuKien')
-        }
-      }
+        },
+      },
     },
 
     {
@@ -502,8 +502,8 @@
       props: {
         placeholder: 'Vui lòng nhậpGhiChu',
         type: 'textarea',
-        rows: 2
-      }
+        rows: 2,
+      },
     },
     {
       label: 'Đánh giá',
@@ -511,27 +511,27 @@
       type: 'rate',
       props: {
         size: 'large',
-        placeholder: 'Vui lòng chọnĐánh giá'
-      }
+        placeholder: 'Vui lòng chọnĐánh giá',
+      },
     },
     {
       label: 'Tắt',
       key: 'diaabled',
       type: 'input',
       placeholder: 'tôibịTắtrồi',
-      disabled: true
+      disabled: true,
     },
     {
       label: 'Thanh trượt',
       key: 'slider',
-      type: 'slider'
+      type: 'slider',
     },
 
     {
       label: 'Ẩn',
       key: 'email',
       type: 'input',
-      hidden: true
+      hidden: true,
     },
 
     {
@@ -539,7 +539,7 @@
       key: 'systemName',
       type: 'input',
       hidden: formData.value.systemName === 'mac',
-      placeholder: 'Nhập mac ComponentẨn'
+      placeholder: 'Nhập mac ComponentẨn',
     },
     {
       label: 'lướicáchBố cục',
@@ -547,7 +547,7 @@
       type: 'input',
       span: 12,
       placeholder:
-        'Ví dụ：lướicách span=12 chiếmContainermộtnửaChiều rộng，span=24 chiếmđầyContainer'
+        'Ví dụ：lướicách span=12 chiếmContainermộtnửaChiều rộng，span=24 chiếmđầyContainer',
     },
 
     {
@@ -578,14 +578,14 @@
             },
             onExceed: (files: File[], fileList: UploadUserFile[]) => {
               ElMessage.warning(
-                `nhấtđachỉnăngTải lên 5 chiếcvănphần tử，khitrướcChọnrồi ${files.length + fileList.length} chiếcvănphần tử`
+                `nhấtđachỉnăngTải lên 5 chiếcvănphần tử，khitrướcChọnrồi ${files.length + fileList.length} chiếcvănphần tử`,
               )
-            }
+            },
           },
           {
-            default: () => [h(ElButton, { type: 'primary' }, () => 'NhấnTải lên')]
-          }
-        )
+            default: () => [h(ElButton, { type: 'primary' }, () => 'NhấnTải lên')],
+          },
+        ),
     },
 
     {
@@ -626,12 +626,12 @@
             onPreview: (file: UploadFile) => {
               dialogImageUrl.value = file.url || ''
               dialogVisible.value = true
-            }
+            },
           },
           {
-            default: () => [h(ElIcon, { type: 'primary' }, () => h(Plus))]
-          }
-        )
+            default: () => [h(ElIcon, { type: 'primary' }, () => h(Plus))],
+          },
+        ),
     },
 
     {
@@ -660,10 +660,10 @@
             'insertImage',
             '|',
             'undo',
-            'redo'
-          ]
-        })
-    }
+            'redo',
+          ],
+        }),
+    },
   ])
 
   const handleReset = (): void => {
@@ -686,8 +686,8 @@
       ...userItem.value,
       label: 'Biệt danh',
       props: {
-        placeholder: 'Vui lòng nhậpBiệt danh'
-      }
+        placeholder: 'Vui lòng nhậpBiệt danh',
+      },
     }
   }
 
@@ -704,8 +704,8 @@
       type: 'input',
       props: {
         placeholder: `Vui lòng nhậpHoạt độngchữđoạn${dynamicItemCounter}`,
-        clearable: true
-      }
+        clearable: true,
+      },
     }
     dynamicFormItems.value.push(newItem)
     ElMessage.success(`ĐãThêm mớiFormmục：${newItem.label}`)
@@ -729,9 +729,9 @@
         options: [
           { label: 'vịmụcA', value: 'a' },
           { label: 'vịmụcB', value: 'b' },
-          { label: 'vịmụcC', value: 'c' }
-        ]
-      }
+          { label: 'vịmụcC', value: 'c' },
+        ],
+      },
     }
 
     ElMessage.success(`ĐãsửasửaFormmục：${lastItem.label}`)
@@ -758,8 +758,8 @@
         type: 'input',
         props: {
           placeholder: 'Vui lòng nhậpcôngtydanhtên',
-          clearable: true
-        }
+          clearable: true,
+        },
       },
       {
         label: 'bộcửa',
@@ -770,9 +770,9 @@
           options: [
             { label: 'kỹthuậtbộ', value: 'tech' },
             { label: 'sinhsản phẩmbộ', value: 'product' },
-            { label: 'vậndoanhbộ', value: 'operation' }
-          ]
-        }
+            { label: 'vậndoanhbộ', value: 'operation' },
+          ],
+        },
       },
       {
         label: 'vàochứcNgày',
@@ -782,9 +782,9 @@
           style: { width: '100%' },
           placeholder: 'Vui lòng chọnvàochứcNgày',
           type: 'date',
-          valueFormat: 'YYYY-MM-DD'
-        }
-      }
+          valueFormat: 'YYYY-MM-DD',
+        },
+      },
     ]
 
     dynamicFormItems.value.push(...batchItems)

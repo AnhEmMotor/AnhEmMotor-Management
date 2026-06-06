@@ -25,11 +25,11 @@ export const commentList = ref<Comment[]>([
             content:
               'hyvọngTốihóanăngtheotrên，KhôngnhiênnàygìhảocủahọamặtnếuquảthẻđốnthìCó thểtiếcrồi。',
             timestamp: '2024-09-04 09:30',
-            replies: []
-          }
-        ]
-      }
-    ]
+            replies: [],
+          },
+        ],
+      },
+    ],
   },
   {
     id: 2,
@@ -49,11 +49,11 @@ export const commentList = ref<Comment[]>([
             author: 'chuyểnquang',
             content: 'tôilàmởNâng cấpCauHinh，bằngnàykhoảnduhíthìlàrồi。',
             timestamp: '2024-09-04 10:40',
-            replies: []
-          }
-        ]
-      }
-    ]
+            replies: [],
+          },
+        ],
+      },
+    ],
   },
   {
     id: 3,
@@ -72,10 +72,10 @@ export const commentList = ref<Comment[]>([
             author: 'mộngcảnh',
             content: 'hyvọngphátbánsaunăngTốihóamộtdướianbaothểtích。',
             timestamp: '2024-09-04 11:30',
-            replies: []
-          }
-        ]
-      }
-    ]
-  }
+            replies: [],
+          },
+        ],
+      },
+    ],
+  },
 ])

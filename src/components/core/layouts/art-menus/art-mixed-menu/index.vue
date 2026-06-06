@@ -19,7 +19,7 @@
             v-if="!item.meta.isHide"
             class="menu-item relative flex-shrink-0 h-10 px-3 text-sm flex-c c-p hover:text-theme"
             :class="{
-              'menu-item-active text-theme': item.isActive
+              'menu-item-active text-theme': item.isActive,
             }"
             @click="handleMenuJump(item, true)"
           >
@@ -72,7 +72,7 @@
   const route = useRoute()
 
   const props = withDefaults(defineProps<Props>(), {
-    list: () => []
+    list: () => [],
   })
 
   const scrollbarRef = ref<any>()
@@ -83,7 +83,7 @@
     BUTTON_SCROLL_DISTANCE: 200,
     WHEEL_FAST_STEP: 35,
     WHEEL_SLOW_STEP: 30,
-    WHEEL_FAST_THRESHOLD: 100
+    WHEEL_FAST_THRESHOLD: 100,
   }
 
   const currentActivePath = computed(() => {
@@ -109,7 +109,7 @@
     return props.list.map((item) => ({
       ...item,
       isActive: isMenuItemActive(item),
-      formattedTitle: formatMenuTitle(item.meta.title)
+      formattedTitle: formatMenuTitle(item.meta.title),
     }))
   })
 
@@ -136,7 +136,7 @@
 
     scrollbarRef.value.wrapRef.scrollTo({
       left: targetScroll,
-      behavior: 'smooth'
+      behavior: 'smooth',
     })
   }
 

@@ -44,7 +44,7 @@ export function useTheme() {
     for (let i = 1; i <= 9; i++) {
       document.documentElement.style.setProperty(
         `--el-color-primary-light-${i}`,
-        isDark ? `${getDarkColor(primary, i / 10)}` : `${getLightColor(primary, i / 10)}`
+        isDark ? `${getDarkColor(primary, i / 10)}` : `${getLightColor(primary, i / 10)}`,
       )
     }
 
@@ -76,7 +76,7 @@ export function useTheme() {
     setSystemTheme,
     setSystemAutoTheme,
     switchThemeStyles,
-    prefersDark
+    prefersDark,
   }
 }
 
@@ -114,7 +114,7 @@ export function initializeTheme() {
           applyThemeByMode()
         }
       },
-      { immediate: false }
+      { immediate: false },
     )
   }
 }

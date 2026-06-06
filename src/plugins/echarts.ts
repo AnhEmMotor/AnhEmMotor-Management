@@ -7,7 +7,7 @@ import {
   ScatterChart,
   RadarChart,
   MapChart,
-  CandlestickChart
+  CandlestickChart,
 } from 'echarts/charts'
 
 import {
@@ -21,7 +21,7 @@ import {
   ToolboxComponent,
   BrushComponent,
   GeoComponent,
-  VisualMapComponent
+  VisualMapComponent,
 } from 'echarts/components'
 
 import { CanvasRenderer } from 'echarts/renderers'
@@ -47,7 +47,7 @@ echarts.use([
   GeoComponent,
   VisualMapComponent,
 
-  CanvasRenderer
+  CanvasRenderer,
 ])
 
 export { echarts }

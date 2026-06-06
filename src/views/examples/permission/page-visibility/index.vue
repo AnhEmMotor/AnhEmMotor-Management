@@ -280,7 +280,7 @@
     const roleMap: Record<string, string> = {
       R_SUPER: 'siêucấpQuản lýviên',
       R_ADMIN: 'Quản lýviên',
-      R_USER: 'phổthôngNguoiDung'
+      R_USER: 'phổthôngNguoiDung',
     }
     return roleMap[role] || 'ChưabáoVaiTro'
   }

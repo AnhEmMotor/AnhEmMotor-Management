@@ -24,7 +24,7 @@ export function useCommon() {
     if (scrollContainer) {
       scrollContainer.scrollTo({
         top: 0,
-        behavior: 'smooth'
+        behavior: 'smooth',
       })
     }
   }
@@ -34,7 +34,7 @@ export function useCommon() {
     if (scrollContainer) {
       scrollContainer.scrollTo({
         top,
-        behavior: smooth ? 'smooth' : 'auto'
+        behavior: smooth ? 'smooth' : 'auto',
       })
     }
   }
@@ -44,6 +44,6 @@ export function useCommon() {
     refresh,
     scrollTo,
     scrollToTop,
-    smoothScrollToTop
+    smoothScrollToTop,
   }
 }

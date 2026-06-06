@@ -11,7 +11,7 @@
       :data="[
         { value: 30, name: 'Điện tử' },
         { value: 55, name: 'Thời trang' },
-        { value: 36, name: 'Gia dụng' }
+        { value: 36, name: 'Gia dụng' },
       ]"
       :color="['#4C87F3', '#EDF2FF', '#8BD8FC']"
       :radius="['70%', '80%']"

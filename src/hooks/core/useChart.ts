@@ -19,8 +19,8 @@ export const useChartOps = () => ({
     '#14DEBA',
     '#FFAF20',
     '#FA8A6C',
-    '#FFAF20'
-  ]
+    '#FFAF20',
+  ],
 })
 
 export function useChart(options: any = {}) {
@@ -63,7 +63,7 @@ export function useChart(options: any = {}) {
   const getAnimationConfig = (delay = 50, duration = 1500) => ({
     animationDelay: (idx: number) => idx * delay + 200,
     animationDuration: (idx: number) => duration - 50 * idx,
-    animationEasing: 'exponentialOut' as const
+    animationEasing: 'exponentialOut' as const,
   })
 
   const getTooltipStyle = (trigger: 'axis' | 'item' | 'none' = 'axis', extra = {}) => ({
@@ -72,24 +72,24 @@ export function useChart(options: any = {}) {
     borderColor: isDark.value ? '#333' : '#ddd',
     borderWidth: 1,
     textStyle: {
-      color: isDark.value ? '#fff' : '#333'
+      color: isDark.value ? '#fff' : '#333',
     },
-    ...extra
+    ...extra,
   })
 
   const getAxisLineStyle = (show = true) => ({
     show,
     lineStyle: {
-      color: isDark.value ? '#444' : '#EDEDED'
-    }
+      color: isDark.value ? '#444' : '#EDEDED',
+    },
   })
 
   const getSplitLineStyle = (show = true) => ({
     show,
     lineStyle: {
       color: isDark.value ? '#444' : '#EDEDED',
-      type: 'dashed' as const
-    }
+      type: 'dashed' as const,
+    },
   })
 
   const getAxisLabelStyle = (show = true) => {
@@ -97,7 +97,7 @@ export function useChart(options: any = {}) {
     return {
       show,
       color: fontColor,
-      fontSize
+      fontSize,
     }
   }
 
@@ -107,14 +107,14 @@ export function useChart(options: any = {}) {
       itemWidth: 12,
       itemHeight: 12,
       itemGap: 20,
-      ...extra
+      ...extra,
     }
 
     const posMap: any = {
       bottom: { bottom: 0, left: 'center', orient: 'horizontal' },
       top: { top: 0, left: 'center', orient: 'horizontal' },
       left: { left: 0, top: 'center', orient: 'vertical' },
-      right: { right: 0, top: 'center', orient: 'vertical' }
+      right: { right: 0, top: 'center', orient: 'vertical' },
     }
 
     return { ...base, ...posMap[position], icon: 'roundRect' }
@@ -127,7 +127,7 @@ export function useChart(options: any = {}) {
       bottom: 8,
       left: 0,
       containLabel: true,
-      ...baseGrid
+      ...baseGrid,
     }
 
     if (!showLegend) return grid
@@ -136,7 +136,7 @@ export function useChart(options: any = {}) {
       bottom: { bottom: 40 },
       top: { top: 40 },
       left: { left: 120 },
-      right: { right: 120 }
+      right: { right: 120 },
     }
 
     return { ...grid, ...offsetMap[position] }
@@ -176,7 +176,7 @@ export function useChart(options: any = {}) {
     getAxisTickStyle: () => ({ show: false }),
     getLegendStyle,
     getGridWithLegend,
-    getChartInstance: () => chartInstance
+    getChartInstance: () => chartInstance,
   }
 }
 
@@ -205,6 +205,6 @@ export function useChartComponent(config: any) {
   return {
     ...chartCore,
     isEmpty,
-    updateChart
+    updateChart,
   }
 }

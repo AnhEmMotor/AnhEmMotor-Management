@@ -34,14 +34,14 @@ class VersionManager {
     const oldSysKey =
       storageKeys.find(
         (key) =>
-          StorageConfig.isVersionedKey(key) && key !== currentVersionPrefix && !key.includes('-')
+          StorageConfig.isVersionedKey(key) && key !== currentVersionPrefix && !key.includes('-'),
       ) || null
 
     const oldVersionKeys = storageKeys.filter(
       (key) =>
         StorageConfig.isVersionedKey(key) &&
         !StorageConfig.isCurrentVersionKey(key) &&
-        key.includes('-')
+        key.includes('-'),
     )
 
     return { oldSysKey, oldVersionKeys }
@@ -71,7 +71,7 @@ class VersionManager {
 
   private async executeUpgrade(
     _storedVersion: string,
-    legacyStorage: ReturnType<typeof this.findLegacyStorage>
+    legacyStorage: ReturnType<typeof this.findLegacyStorage>,
   ): Promise<void> {
     try {
       const requireReLogin = this.shouldRequireReLogin()

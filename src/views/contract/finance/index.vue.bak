@@ -1,0 +1,390 @@
+<template>
+  <div class="flex flex-col gap-4 pb-5">
+    <!-- 1. Hàng thẻ chỉ số vĩ mô (Finance Overview Cards) -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <ArtStatsCard
+        title="Hồ sơ chờ phê duyệt"
+        :count="12"
+        description="Đang gửi thẩm định"
+        icon="ri:file-list-3-line"
+        iconStyle="bg-primary"
+      />
+      <ArtStatsCard
+        title="Chờ ngân hàng giải ngân"
+        :count="8"
+        description="Đã duyệt, đợi tiền về"
+        icon="ri:bank-card-line"
+        iconStyle="bg-warning"
+      />
+      <ArtStatsCard
+        title="Cảnh báo chậm giải ngân"
+        :count="3"
+        description="Quá 1-3 ngày làm việc"
+        icon="ri:alarm-warning-line"
+        iconStyle="bg-danger"
+      />
+      <ArtStatsCard
+        title="Cavet đang giữ hộ"
+        :count="45"
+        description="Đang quản lý vật lý"
+        icon="ri:car-line"
+        iconStyle="bg-info"
+      />
+    </div>
+
+    <!-- 2. Thanh bộ lọc ngang (Horizontal Power Filters) -->
+    <ArtSearchBar
+      :items="searchItems"
+      :label-width="120"
+      :span="6"
+      @search="handleSearch"
+      @reset="resetSearch"
+    />
+
+    <!-- 3. Cấu trúc bảng dữ liệu quản trị (Operational Data Table) -->
+    <ElCard class="flex-1 art-table-card">
+      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
+        <template #left>
+          <ElButton type="success" v-ripple @click="goToDemo(null)">
+            <ElIcon><Plus /></ElIcon> Tạo hồ sơ mới
+          </ElButton>
+          <ElButton v-ripple @click="exportToExcel">
+            <ElIcon><Download /></ElIcon> Xuất Excel
+          </ElButton>
+        </template>
+      </ArtTableHeader>
+
+      <ArtTable
+        ref="tableRef"
+        row-key="id"
+        :loading="loading"
+        :data="tableData"
+        :columns="columns"
+        :pagination="pagination"
+        @pagination:size-change="handleSizeChange"
+        @pagination:current-change="handleCurrentChange"
+      >
+        <template #loanInfo="{ row }">
+          <div class="flex flex-col">
+            <span class="font-bold text-gray-800">{{ row.loanAmount }}</span>
+            <span class="text-xs text-gray-500">({{ row.term }})</span>
+          </div>
+        </template>
+
+        <template #expectedDate="{ row }">
+          <div :class="{ 'text-red-500 font-bold': row.lateDisbursement }">
+            {{ row.expectedDate }}
+            <div v-if="row.lateDisbursement" class="text-[11px] mt-1">
+              (Trễ {{ row.lateDays }} ngày)
+            </div>
+          </div>
+        </template>
+
+        <template #cavetLocation="{ row }">
+          <div class="flex flex-col items-start gap-1">
+            <ElTag :type="getCavetTagType(row.cavetLocation)" size="small" effect="light" round>
+              {{ row.cavetLocation }}
+            </ElTag>
+            <ElBadge v-if="row.cavetActionRequired" is-dot class="item" type="danger">
+              <span class="text-[11px] text-red-500 font-bold blink-text">Cần thu hồi/trả</span>
+            </ElBadge>
+          </div>
+        </template>
+
+        <template #status="{ row }">
+          <ElTag :type="getStatusTagType(row.status)" effect="light" round>
+            {{ row.status }}
+          </ElTag>
+        </template>
+        
+        <!-- 4. Các "Quy trình thép" tích hợp thẳng vào UI Thao tác -->
+        <template #operation="{ row }">
+          <div class="flex flex-wrap items-center justify-center gap-2">
+            <ElButton 
+              v-if="row.status === 'Chờ giải ngân' && !row.lateDisbursement" 
+              size="small" 
+              type="primary" 
+              @click="openDisbursementModal(row)"
+            >
+              Cập nhật giải ngân
+            </ElButton>
+            
+            <ElButton 
+              v-if="row.lateDisbursement" 
+              size="small" 
+              type="danger" 
+              @click="handleContact(row)"
+            >
+              <ElIcon class="mr-1"><Warning /></ElIcon> Tra cứu đầu mối
+            </ElButton>
+
+            <ArtButtonTable type="view" @click="goToPreview(row.id)" />
+            <ArtButtonTable type="edit" @click="goToPreview(row.id)" />
+          </div>
+        </template>
+      </ArtTable>
+    </ElCard>
+
+    <!-- Modal Cập nhật chứng từ thực tế (Mục 15.2) -->
+    <ElDialog
+      v-model="disbursementModalVisible"
+      title="Xác nhận đã giải ngân"
+      width="500px"
+      align-center
+      destroy-on-close
+    >
+      <div v-if="selectedRow" class="mb-4 text-sm bg-gray-50 p-3 rounded-lg border border-gray-100">
+        <p class="mb-1"><strong class="text-gray-600">Số HĐ:</strong> {{ selectedRow.contractNumber }}</p>
+        <p class="mb-1"><strong class="text-gray-600">Khách hàng:</strong> {{ selectedRow.customer }}</p>
+        <p><strong class="text-gray-600">Số tiền dự kiến:</strong> <span class="font-bold text-green-600">{{ selectedRow.loanAmount }}</span></p>
+      </div>
+
+      <ElForm :model="disbursementForm" label-position="top">
+        <ElFormItem label="Ngày giải ngân thực tế" required>
+          <ElDatePicker v-model="disbursementForm.actualDate" type="date" placeholder="Chọn ngày" class="w-full" />
+        </ElFormItem>
+        <ElFormItem label="Chứng từ đối soát chuyển khoản" required>
+          <ElUpload
+            class="upload-demo w-full"
+            drag
+            action="#"
+            :auto-upload="false"
+          >
+            <ElIcon class="el-icon--upload"><UploadFilled /></ElIcon>
+            <div class="el-upload__text">
+              Kéo thả file hoặc <em>bấm vào đây</em> để tải lên minh chứng
+            </div>
+          </ElUpload>
+        </ElFormItem>
+      </ElForm>
+      <template #footer>
+        <span class="dialog-footer">
+          <ElButton @click="disbursementModalVisible = false">Hủy</ElButton>
+          <ElButton type="success" @click="submitDisbursement">
+            Xác nhận giải ngân
+          </ElButton>
+        </span>
+      </template>
+    </ElDialog>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, reactive, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import { Plus, Download, Warning, UploadFilled } from '@element-plus/icons-vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+
+const router = useRouter()
+const { t: $t } = useI18n()
+
+const loading = ref(false)
+
+const searchItems = computed(() => [
+  {
+    key: 'keyword',
+    label: 'Từ khóa',
+    type: 'input',
+    props: { placeholder: 'Số HĐ, Tên KH, CCCD...' },
+  },
+  {
+    key: 'partner',
+    label: 'Đối tác',
+    type: 'select',
+    options: [
+      { label: 'FE Credit', value: 'fe_credit' },
+      { label: 'Home Credit', value: 'home_credit' },
+      { label: 'HD Saison', value: 'hd_saison' },
+      { label: 'Mirae Asset', value: 'mirae_asset' }
+    ]
+  },
+  {
+    key: 'disbursementStatus',
+    label: 'Trạng thái',
+    type: 'select',
+    options: [
+      { label: 'Chờ giải ngân', value: 'pending' },
+      { label: 'Chậm giải ngân', value: 'late' },
+      { label: 'Đã giải ngân', value: 'disbursed' }
+    ]
+  },
+  {
+    key: 'cavetLocation',
+    label: 'Vị trí Cavet',
+    type: 'select',
+    options: [
+      { label: 'Công ty TC giữ', value: 'FinancialCompanyHolds' },
+      { label: 'Cửa hàng giữ hộ', value: 'StoreHoldsOnBehalf' },
+      { label: 'Đã giao khách', value: 'DeliveredToCustomer' }
+    ]
+  }
+])
+
+const filterForm = reactive({
+  keyword: '',
+  partner: '',
+  disbursementStatus: '',
+  cavetLocation: ''
+})
+
+const handleSearch = (params: any) => {
+  Object.assign(filterForm, params)
+  loading.value = true
+  setTimeout(() => { loading.value = false }, 500)
+}
+
+const resetSearch = () => {
+  Object.keys(filterForm).forEach(key => (filterForm as any)[key] = '')
+  handleSearch({})
+}
+
+const refreshData = () => {
+  handleSearch(filterForm)
+}
+
+const exportToExcel = () => {
+  ElMessage.success('Bắt đầu xuất dữ liệu ra Excel...')
+}
+
+const columns = ref([
+  { prop: 'contractNumber', label: 'Số HĐ Tài Chính', width: 140 },
+  { prop: 'orderId', label: 'Mã Đơn Hàng', width: 150 },
+  { prop: 'customer', label: 'Khách Hàng', minWidth: 160 },
+  { prop: 'partner', label: 'Đối Tác', width: 120 },
+  { prop: 'loanInfo', label: 'Giá Trị Vay', width: 150, useSlot: true },
+  { prop: 'expectedDate', label: 'Dự kiến GN', width: 140, useSlot: true },
+  { prop: 'cavetLocation', label: 'Vị Trí Cavet', width: 150, useSlot: true },
+  { prop: 'status', label: 'Trạng Thái', width: 140, useSlot: true },
+  { prop: 'operation', label: 'Thao Tác', minWidth: 260, fixed: 'right', useSlot: true, align: 'center' }
+])
+
+const columnChecks = ref(columns.value.map(c => c.prop))
+
+const pagination = reactive({
+  current: 1,
+  size: 10,
+  total: 50
+})
+
+const handleSizeChange = (val: number) => {
+  pagination.size = val
+  refreshData()
+}
+
+const handleCurrentChange = (val: number) => {
+  pagination.current = val
+  refreshData()
+}
+
+// Dummy data based on additional.md requirement
+const tableData = ref([
+  {
+    id: '1',
+    contractNumber: 'HDTC-FE-001',
+    orderId: 'ORD-20260530-01',
+    customer: 'Trần Thị B',
+    partner: 'FE Credit',
+    loanAmount: '45.000.000đ',
+    term: '24 tháng',
+    expectedDate: '05/06/2026',
+    lateDisbursement: false,
+    lateDays: 0,
+    cavetLocation: 'Công ty TC giữ',
+    cavetActionRequired: false,
+    status: 'Chờ giải ngân'
+  },
+  {
+    id: '2',
+    contractNumber: 'HDTC-HC-042',
+    orderId: 'ORD-20260520-42',
+    customer: 'Nguyễn Văn A',
+    partner: 'Home Credit',
+    loanAmount: '30.000.000đ',
+    term: '12 tháng',
+    expectedDate: '01/06/2026',
+    lateDisbursement: true,
+    lateDays: 3,
+    cavetLocation: 'Cửa hàng giữ hộ',
+    cavetActionRequired: false,
+    status: 'Chậm giải ngân'
+  },
+  {
+    id: '3',
+    contractNumber: 'HDTC-HD-088',
+    orderId: 'ORD-20260415-11',
+    customer: 'Lê Văn C',
+    partner: 'HD Saison',
+    loanAmount: '20.000.000đ',
+    term: '6 tháng',
+    expectedDate: '15/04/2026',
+    lateDisbursement: false,
+    lateDays: 0,
+    cavetLocation: 'Cửa hàng giữ hộ',
+    cavetActionRequired: true, // Thể hiện badge nhấp nháy cho việc thu hồi/trả cavet
+    status: 'Đã tất toán'
+  }
+])
+
+const getCavetTagType = (location: string) => {
+  if (location === 'Công ty TC giữ') return 'info'
+  if (location === 'Cửa hàng giữ hộ') return 'warning'
+  return 'success'
+}
+
+const getStatusTagType = (status: string) => {
+  if (status === 'Chờ giải ngân') return 'warning'
+  if (status === 'Chậm giải ngân') return 'danger'
+  if (status === 'Đã tất toán') return 'success'
+  return 'info'
+}
+
+const goToPreview = (id: string | null) => {
+  router.push({ name: 'FinanceContractPreview', params: id ? { id } : {} as any })
+}
+
+// Modal Cập nhật giải ngân
+const disbursementModalVisible = ref(false)
+const selectedRow = ref<any>(null)
+const disbursementForm = reactive({
+  actualDate: ''
+})
+
+const openDisbursementModal = (row: any) => {
+  selectedRow.value = row
+  disbursementForm.actualDate = ''
+  disbursementModalVisible.value = true
+}
+
+const submitDisbursement = () => {
+  if (!disbursementForm.actualDate) {
+    ElMessage.warning('Vui lòng chọn ngày giải ngân thực tế')
+    return
+  }
+  ElMessage.success('Đã cập nhật chứng từ giải ngân thành công')
+  disbursementModalVisible.value = false
+}
+
+const handleContact = (row: any) => {
+  ElMessageBox.alert(
+    `<strong>Nhân viên phụ trách:</strong> Nguyễn Văn Tín (Home Credit)<br/><strong>Số điện thoại:</strong> <a href="tel:0901234567" class="text-blue-500 font-bold">090 123 4567</a><br/><strong>Email:</strong> tin.nguyen@homecredit.vn`,
+    'Tra cứu đầu mối liên hệ',
+    {
+      dangerouslyUseHTMLString: true,
+      confirmButtonText: 'Đóng',
+    }
+  )
+}
+</script>
+
+<style scoped lang="scss">
+.blink-text {
+  animation: blinker 1.5s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
+</style>

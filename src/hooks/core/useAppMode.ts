@@ -12,6 +12,6 @@ export function useAppMode() {
   return {
     isFrontendMode,
     isBackendMode,
-    currentMode
+    currentMode,
   }
 }

@@ -125,7 +125,7 @@
     menuPadding: 5,
     itemPaddingX: 6,
     borderRadius: 6,
-    animationDuration: 100
+    animationDuration: 100,
   })
 
   const emit = defineEmits<{
@@ -146,30 +146,30 @@
       left: `${position.value.x}px`,
       top: `${position.value.y}px`,
       zIndex: 2000,
-      width: `${props.menuWidth}px`
-    })
+      width: `${props.menuWidth}px`,
+    }),
   )
 
   const menuListStyle = computed(
     (): CSSProperties => ({
-      padding: `${props.menuPadding}px`
-    })
+      padding: `${props.menuPadding}px`,
+    }),
   )
 
   const menuItemStyle = computed(
     (): CSSProperties => ({
       height: `${props.itemHeight}px`,
       padding: `0 ${props.itemPaddingX}px`,
-      borderRadius: '4px'
-    })
+      borderRadius: '4px',
+    }),
   )
 
   const submenuListStyle = computed(
     (): CSSProperties => ({
       minWidth: `${props.submenuWidth}px`,
       padding: `${props.menuPadding}px 0`,
-      borderRadius: `${props.borderRadius}px`
-    })
+      borderRadius: `${props.borderRadius}px`,
+    }),
   )
 
   const calculateMenuHeight = (): number => {
@@ -203,11 +203,11 @@
 
     x = Math.max(
       props.boundaryDistance,
-      Math.min(x, screenWidth - props.menuWidth - props.boundaryDistance)
+      Math.min(x, screenWidth - props.menuWidth - props.boundaryDistance),
     )
     y = Math.max(
       props.boundaryDistance,
-      Math.min(y, screenHeight - menuHeight - props.boundaryDistance)
+      Math.min(y, screenHeight - menuHeight - props.boundaryDistance),
     )
 
     return { x, y }
@@ -316,7 +316,7 @@
   defineExpose({
     show,
     hide,
-    visible: computed(() => visible.value)
+    visible: computed(() => visible.value),
   })
 </script>
 

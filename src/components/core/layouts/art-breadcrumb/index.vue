@@ -81,7 +81,7 @@
 
   const createBreadcrumbItem = (route: RouteLocationMatched): BreadcrumbItem => ({
     path: route.path,
-    meta: route.meta
+    meta: route.meta,
   })
 
   const isHomeRoute = (route: RouteLocationMatched): boolean => route.name === '/'

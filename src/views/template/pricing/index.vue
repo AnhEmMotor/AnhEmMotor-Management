@@ -85,8 +85,8 @@
         { text: 'SaaSỨng dụngtraoquyền', available: false },
         { text: 'đơnchiếcmụcmụckhiếndùng', available: true },
         { text: 'mộtnămkỹthuậtchiếctrì', available: true },
-        { text: 'mộtnămmiễnphíCập nhật', available: true }
-      ]
+        { text: 'mộtnămmiễnphíCập nhật', available: true },
+      ],
     },
     {
       type: 'multiple',
@@ -99,8 +99,8 @@
         { text: 'SaaSỨng dụngtraoquyền', available: false },
         { text: 'vôhạnmụcmụckhiếndùng', available: true },
         { text: 'mộtnămkỹthuậtchiếctrì', available: true },
-        { text: 'mộtnămmiễnphíCập nhật', available: true }
-      ]
+        { text: 'mộtnămmiễnphíCập nhật', available: true },
+      ],
     },
     {
       type: 'extended',
@@ -113,8 +113,8 @@
         { text: 'SaaSỨng dụngtraoquyền', available: true },
         { text: 'đơnchiếcmụcmụckhiếndùng', available: true },
         { text: 'mộtnămkỹthuậtchiếctrì', available: true },
-        { text: 'mộtnămmiễnphíCập nhật', available: true }
-      ]
+        { text: 'mộtnămmiễnphíCập nhật', available: true },
+      ],
     },
     {
       type: 'unlimited',
@@ -127,8 +127,8 @@
         { text: 'SaaSỨng dụngtraoquyền', available: true },
         { text: 'vôhạnmụcmụckhiếndùng', available: true },
         { text: 'mộtnămkỹthuậtchiếctrì', available: true },
-        { text: 'mộtnămmiễnphíCập nhật', available: true }
-      ]
-    }
+        { text: 'mộtnămmiễnphíCập nhật', available: true },
+      ],
+    },
   ])
 </script>

@@ -11,13 +11,13 @@ const BREAKPOINT_CONFIG: Record<ResponsiveBreakpoint, BreakpointConfig | null> =
   sm: { threshold: 12, fallback: 12 },
   md: { threshold: 8, fallback: 8 },
   lg: null,
-  xl: null
+  xl: null,
 }
 
 export function calculateResponsiveSpan(
   itemSpan: number | undefined,
   defaultSpan: number,
-  breakpoint: ResponsiveBreakpoint
+  breakpoint: ResponsiveBreakpoint,
 ): number {
   const finalSpan = itemSpan ?? defaultSpan
   const config = BREAKPOINT_CONFIG[breakpoint]

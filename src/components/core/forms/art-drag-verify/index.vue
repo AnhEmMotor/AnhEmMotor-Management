@@ -74,7 +74,7 @@
     successIcon: 'ri:check-fill',
     handlerBg: '#fff',
     textSize: '13px',
-    textColor: '#333'
+    textColor: '#333',
   })
 
   interface StateType {
@@ -86,7 +86,7 @@
   const state = reactive(<StateType>{
     isMoving: false,
     x: 0,
-    isOk: false
+    isOk: false,
   })
 
   const { isOk } = toRefs(state)
@@ -149,7 +149,7 @@
     left: '0',
     width: props.height + 'px',
     height: props.height + 'px',
-    background: props.handlerBg
+    background: props.handlerBg,
   }
 
   const dragVerifyStyle = computed(() => ({
@@ -157,7 +157,7 @@
     height: props.height + 'px',
     lineHeight: props.height + 'px',
     background: props.background,
-    borderRadius: props.circle ? props.height / 2 + 'px' : props.radius
+    borderRadius: props.circle ? props.height / 2 + 'px' : props.radius,
   }))
 
   const progressBarStyle = {
@@ -165,11 +165,11 @@
     height: props.height + 'px',
     borderRadius: props.circle
       ? props.height / 2 + 'px 0 0 ' + props.height / 2 + 'px'
-      : props.radius
+      : props.radius,
   }
 
   const textStyle = computed(() => ({
-    fontSize: props.textSize
+    fontSize: props.textSize,
   }))
 
   const message = computed(() => {
@@ -247,7 +247,7 @@
   }
 
   defineExpose({
-    reset
+    reset,
   })
 </script>
 

@@ -7,7 +7,7 @@ export const hrRoutes: AppRouteRecord = {
   meta: {
     title: 'menus.hr.title',
     icon: 'ri:user-star-line',
-    roles: ['R_SUPER', 'R_ADMIN']
+    roles: ['R_SUPER', 'R_ADMIN'],
   },
   children: [
     {
@@ -16,8 +16,8 @@ export const hrRoutes: AppRouteRecord = {
       component: '/hr/employees/index',
       meta: {
         title: 'menus.hr.employees',
-        icon: 'ri:group-line'
-      }
+        icon: 'ri:group-line',
+      },
     },
     {
       path: 'commission-policy',
@@ -25,8 +25,8 @@ export const hrRoutes: AppRouteRecord = {
       component: '/hr/policy/index',
       meta: {
         title: 'menus.hr.commissionPolicy',
-        icon: 'ri:percent-line'
-      }
+        icon: 'ri:percent-line',
+      },
     },
     {
       path: 'payroll',
@@ -34,8 +34,8 @@ export const hrRoutes: AppRouteRecord = {
       component: '/hr/payroll/index',
       meta: {
         title: 'menus.hr.payroll',
-        icon: 'ri:bank-card-line'
-      }
+        icon: 'ri:bank-card-line',
+      },
     },
     {
       path: 'kpi',
@@ -43,8 +43,8 @@ export const hrRoutes: AppRouteRecord = {
       component: '/hr/kpi/index',
       meta: {
         title: 'menus.hr.kpi',
-        icon: 'ri:bar-chart-box-line'
-      }
-    }
-  ]
+        icon: 'ri:bar-chart-box-line',
+      },
+    },
+  ],
 }

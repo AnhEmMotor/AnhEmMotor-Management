@@ -5,7 +5,7 @@ export const commentList = reactive([
     content: 'pháthiệnrồimộtchiếcsiêucấphảodùngcủaCông cụ，mởtâm',
     collection: 5,
     comment: 8,
-    userName: 'ẩndanh'
+    userName: 'ẩndanh',
   },
   {
     id: 2,
@@ -13,7 +13,7 @@ export const commentList = reactive([
     content: 'nayngàycủađạimãviếtđượcrấtthuậnlợi！',
     collection: 3,
     comment: 2,
-    userName: 'Coder123'
+    userName: 'Coder123',
   },
   {
     id: 3,
@@ -21,7 +21,7 @@ export const commentList = reactive([
     content: 'gặpđếnchiếcbug，điềuthửrồimộtchỉnhngày',
     collection: 7,
     comment: 10,
-    userName: 'DebugMaster'
+    userName: 'DebugMaster',
   },
   {
     id: 4,
@@ -29,7 +29,7 @@ export const commentList = reactive([
     content: 'họcNodethậtcủalàmộtphần tửrấtcóthúcủaviệc',
     collection: 9,
     comment: 4,
-    userName: 'NodeLover'
+    userName: 'NodeLover',
   },
   {
     id: 5,
@@ -37,7 +37,7 @@ export const commentList = reactive([
     content: 'nayngàycủavàođộcóđiểmmạn，cầncầnthêmchiếcmạnhrồi',
     collection: 2,
     comment: 3,
-    userName: 'nỗlựctrongcủatiểutrắng'
+    userName: 'nỗlựctrongcủatiểutrắng',
   },
   {
     id: 6,
@@ -45,7 +45,7 @@ export const commentList = reactive([
     content: 'quáhảorồi，cuốiởgiảirồimộtchiếcnanđề！',
     collection: 11,
     comment: 5,
-    userName: 'ẩndanh'
+    userName: 'ẩndanh',
   },
   {
     id: 7,
@@ -53,7 +53,7 @@ export const commentList = reactive([
     content: 'họcsẽrồimớicủaNodekỹkhéo，mởtâm！',
     collection: 4,
     comment: 7,
-    userName: 'mởtâmmỗimộtngày'
+    userName: 'mởtâmmỗimộtngày',
   },
   {
     id: 8,
@@ -61,7 +61,7 @@ export const commentList = reactive([
     content: 'đạimãTốihóathậtcủalàmộtchiếcchi tiếtđếnsống',
     collection: 6,
     comment: 4,
-    userName: 'tinhíchcầutinh'
+    userName: 'tinhíchcầutinh',
   },
   {
     id: 9,
@@ -69,7 +69,7 @@ export const commentList = reactive([
     content: 'nayngàycủacônglàmquáthuậnlợirồi，hoànmỹ！',
     collection: 10,
     comment: 9,
-    userName: 'hoànmỹchủ nghĩa'
+    userName: 'hoànmỹchủ nghĩa',
   },
   {
     id: 10,
@@ -77,7 +77,7 @@ export const commentList = reactive([
     content: 'cầncầnđaluyệntập，mớinăngnắmgiữThêmkỹnăng',
     collection: 5,
     comment: 6,
-    userName: 'ẩndanh'
+    userName: 'ẩndanh',
   },
   {
     id: 11,
@@ -85,7 +85,7 @@ export const commentList = reactive([
     content: 'mỗingàyvàobướcmộtđiểmđiểm，cuốisẽThanhCong',
     collection: 8,
     comment: 7,
-    userName: 'dầnmộng'
+    userName: 'dầnmộng',
   },
   {
     id: 12,
@@ -93,7 +93,7 @@ export const commentList = reactive([
     content: 'vớinóômoán，Khôngnếunỗlựcsửabiến',
     collection: 12,
     comment: 10,
-    userName: 'sửabiếnmệnhvận'
+    userName: 'sửabiếnmệnhvận',
   },
   {
     id: 13,
@@ -101,7 +101,7 @@ export const commentList = reactive([
     content: 'nayngàythửthửrồimớicủaThư viện，cảmgiácKhôngLỗi',
     collection: 9,
     comment: 8,
-    userName: 'mớitaythửthử'
+    userName: 'mớitaythửthử',
   },
   {
     id: 14,
@@ -109,7 +109,7 @@ export const commentList = reactive([
     content: 'viếtđạimãcũngcầncầnlinhcảm，nayngàylinhcảmKhôngLỗi',
     collection: 6,
     comment: 5,
-    userName: 'linhcảmnguồnsuối'
+    userName: 'linhcảmnguồnsuối',
   },
   {
     id: 15,
@@ -117,7 +117,7 @@ export const commentList = reactive([
     content: 'cảmtạxãđồngcủagiúpgiúp，đểtôigiảirồihỏiđề',
     collection: 7,
     comment: 4,
-    userName: 'nhậníchphỉthiển'
+    userName: 'nhậníchphỉthiển',
   },
   {
     id: 16,
@@ -125,7 +125,7 @@ export const commentList = reactive([
     content: 'họctậpcủađườngtrêncầnDuy trìbềntâmvàhằngtâm',
     collection: 3,
     comment: 2,
-    userName: 'ẩndanh'
+    userName: 'ẩndanh',
   },
   {
     id: 17,
@@ -133,7 +133,7 @@ export const commentList = reactive([
     content: 'nayngàyhọctậprồikhácbướcbiêntrìnhcủabáo，nhậníchphỉthiển',
     collection: 10,
     comment: 9,
-    userName: 'khácbướchọctập'
+    userName: 'khácbướchọctập',
   },
   {
     id: 18,
@@ -141,7 +141,7 @@ export const commentList = reactive([
     content: 'nayngàycủađạimãchấtlượnggợilênrồiKhôngthiểu',
     collection: 11,
     comment: 6,
-    userName: 'đạimãthợngười'
+    userName: 'đạimãthợngười',
   },
   {
     id: 19,
@@ -149,7 +149,7 @@ export const commentList = reactive([
     content: 'cảmgiáchọctậpbiêntrìnhthậtcủarấtcóthànhthìcảm',
     collection: 8,
     comment: 7,
-    userName: 'thànhthìcảmđầyđầy'
+    userName: 'thànhthìcảmđầyđầy',
   },
   {
     id: 20,
@@ -157,7 +157,7 @@ export const commentList = reactive([
     content: 'cầnthêmgấpnỗlực，mớinăngsiêuvượtquangàycủatừmình',
     collection: 5,
     comment: 4,
-    userName: 'nỗlựcsiêuvượt'
+    userName: 'nỗlựcsiêuvượt',
   },
   {
     id: 21,
@@ -165,7 +165,7 @@ export const commentList = reactive([
     content: 'nayngàycủađạimãviếtđượcrấtthuậntay，tiếptiếpDuy trì',
     collection: 9,
     comment: 8,
-    userName: 'thuậnthuận'
+    userName: 'thuậnthuận',
   },
   {
     id: 22,
@@ -173,7 +173,7 @@ export const commentList = reactive([
     content: 'viếtđạimãcũngcầncầný，nayngàyrấtcóý',
     collection: 7,
     comment: 5,
-    userName: 'ývôhạn'
+    userName: 'ývôhạn',
   },
   {
     id: 23,
@@ -181,7 +181,7 @@ export const commentList = reactive([
     content: 'gặpđếncủananđềgiảirồi，cảmgiácrấtcóthànhthìcảm',
     collection: 10,
     comment: 9,
-    userName: 'ẩndanh'
+    userName: 'ẩndanh',
   },
   {
     id: 24,
@@ -189,7 +189,7 @@ export const commentList = reactive([
     content: 'nayngàycủabiêntrìnhluyệntậprấtcóBộ',
     collection: 8,
     comment: 7,
-    userName: 'Bộđầyđầy'
+    userName: 'Bộđầyđầy',
   },
   {
     id: 25,
@@ -197,7 +197,7 @@ export const commentList = reactive([
     content: 'họctậpbiêntrìnhcủađườngtrên，cókhổcóngọt',
     collection: 6,
     comment: 4,
-    userName: 'khổlạcbiêntrình'
+    userName: 'khổlạcbiêntrình',
   },
   {
     id: 26,
@@ -205,7 +205,7 @@ export const commentList = reactive([
     content: 'nayngàycủađạimãviếtđượcđặctínhchuyểnthông，mởtâm！',
     collection: 11,
     comment: 6,
-    userName: 'chuyểnthôngbiêntrình'
+    userName: 'chuyểnthôngbiêntrình',
   },
   {
     id: 27,
@@ -213,7 +213,7 @@ export const commentList = reactive([
     content: 'nayngàycủabiêntrìnhluyệntậpđểtôihơncónhắntâm',
     collection: 9,
     comment: 8,
-    userName: 'nhắntâmđầyđầy'
+    userName: 'nhắntâmđầyđầy',
   },
   {
     id: 28,
@@ -221,7 +221,7 @@ export const commentList = reactive([
     content: 'nayngàycủabiêntrìnhhọctậpđểtôiBộrấtđa',
     collection: 7,
     comment: 5,
-    userName: 'ẩndanh'
+    userName: 'ẩndanh',
   },
   {
     id: 29,
@@ -229,7 +229,7 @@ export const commentList = reactive([
     content: 'biêntrìnhlàmộtcửanghệthuật，nayngàythểsẽđếnrồi',
     collection: 12,
     comment: 10,
-    userName: 'biêntrìnhnghệthuậtgia'
+    userName: 'biêntrìnhnghệthuậtgia',
   },
   {
     id: 30,
@@ -237,6 +237,6 @@ export const commentList = reactive([
     content: 'nayngàycủađạimãviếtđượcrấtthuậnlợi，tiếptiếpthêmdầu！',
     collection: 10,
     comment: 9,
-    userName: 'ẩndanh'
-  }
+    userName: 'ẩndanh',
+  },
 ])

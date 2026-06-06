@@ -52,17 +52,17 @@
   const props = defineProps({
     item: {
       type: Object as PropType<AppRouteRecord>,
-      required: true
+      required: true,
     },
     theme: {
       type: Object,
-      default: () => ({})
+      default: () => ({}),
     },
     isMobile: Boolean,
     level: {
       type: Number,
-      default: 0
-    }
+      default: 0,
+    },
   })
 
   const emit = defineEmits(['close'])

@@ -34,42 +34,42 @@
     {
       username: 'trongtiểucá',
       type: 'đóngtâmrồi',
-      target: ''
+      target: '',
     },
     {
       username: 'nàotiểusen',
       type: 'phátbảngBài viết',
-      target: 'Vue3 + Typescript + Vite mụcmụcthựcchiếnbútghi'
+      target: 'Vue3 + Typescript + Vite mụcmụcthựcchiếnbútghi',
     },
     {
       username: 'trongtiểucá',
       type: 'đóngtâmrồi',
-      target: ''
+      target: '',
     },
     {
       username: 'nàotiểusen',
       type: 'phátbảngBài viết',
-      target: 'Vue3 + Typescript + Vite mụcmụcthựcchiếnbútghi'
+      target: 'Vue3 + Typescript + Vite mụcmụcthựcchiếnbútghi',
     },
     {
       username: '',
       type: 'gợirahỏiđề',
-      target: 'ChuDeCó thểlấyCauHinhkhông'
+      target: 'ChuDeCó thểlấyCauHinhkhông',
     },
     {
       username: 'phátngốccỏ',
       type: 'đổiđổirồivậtsản phẩm',
-      target: '《kỳđặccủamộtsinh》'
+      target: '《kỳđặccủamộtsinh》',
     },
     {
       username: 'ngọtống',
       type: 'đóngđóngrồihỏiđề',
-      target: 'phátngốccỏ'
+      target: 'phátngốccỏ',
     },
     {
       username: 'lạnhthángngốcngốc',
       type: 'đổiđổirồivậtsản phẩm',
-      target: '《caohiệungườisĩcủabảychiếctậpquen》'
-    }
+      target: '《caohiệungườisĩcủabảychiếctậpquen》',
+    },
   ])
 </script>

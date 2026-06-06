@@ -29,18 +29,18 @@
     {
       key: 'copy',
       label: 'phụcchế',
-      icon: 'ri:file-copy-line'
+      icon: 'ri:file-copy-line',
     },
     {
       key: 'paste',
       label: 'dínhdán',
-      icon: 'ri:capsule-line'
+      icon: 'ri:capsule-line',
     },
     {
       key: 'cut',
       label: 'cắtchuyển',
       icon: 'ri:clipboard-line',
-      showLine: true
+      showLine: true,
     },
     {
       key: 'export',
@@ -50,14 +50,14 @@
         {
           key: 'exportExcel',
           label: 'Xuất file Excel',
-          icon: 'ri:file-excel-2-line'
+          icon: 'ri:file-excel-2-line',
         },
         {
           key: 'exportPdf',
           label: 'Xuất file PDF',
-          icon: 'ri:file-pdf-2-line'
-        }
-      ]
+          icon: 'ri:file-pdf-2-line',
+        },
+      ],
     },
     {
       key: 'edit',
@@ -66,31 +66,31 @@
       children: [
         {
           key: 'rename',
-          label: 'trùngmệnhdanh'
+          label: 'trùngmệnhdanh',
         },
         {
           key: 'duplicate',
-          label: 'phụcchếquyển'
-        }
-      ]
+          label: 'phụcchếquyển',
+        },
+      ],
     },
     {
       key: 'share',
       label: 'phầnchia sẻ',
       icon: 'ri:share-forward-line',
-      showLine: true
+      showLine: true,
     },
     {
       key: 'delete',
       label: 'Xóa',
-      icon: 'ri:delete-bin-line'
+      icon: 'ri:delete-bin-line',
     },
     {
       key: 'disabled',
       label: 'Tắtvịmục',
       icon: 'ri:close-circle-line',
-      disabled: true
-    }
+      disabled: true,
+    },
   ])
 
   const handleSelect = (item: MenuItemType) => {

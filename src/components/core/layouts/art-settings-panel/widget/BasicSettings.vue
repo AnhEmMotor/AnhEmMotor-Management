@@ -37,7 +37,7 @@
     menuOpenWidth,
     tabStyle,
     pageTransition,
-    customRadius
+    customRadius,
   } = storeToRefs(settingStore)
 
   const settingValueMap = {
@@ -54,7 +54,7 @@
     menuOpenWidth,
     tabStyle,
     pageTransition,
-    customRadius
+    customRadius,
   }
 
   const getSettingValue = (key: string) => {

@@ -350,7 +350,7 @@
           price: '102.500.000đ',
           deliveryDate: '12/12/2023',
           img: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=800',
-          payment: 'Trả thẳng'
+          payment: 'Trả thẳng',
         },
         {
           id: 2,
@@ -358,9 +358,9 @@
           price: '32.000.000đ',
           deliveryDate: '15/05/2022',
           img: 'https://images.unsplash.com/photo-1449495169669-7b118f960237?auto=format&fit=crop&q=80&w=400',
-          payment: 'Trả góp 0%'
-        }
-      ]
+          payment: 'Trả góp 0%',
+        },
+      ],
     },
     {
       id: 2,
@@ -382,10 +382,10 @@
           price: '34.500.000đ',
           deliveryDate: '10/10/2023',
           img: 'https://images.unsplash.com/photo-1449495169669-7b118f960237?auto=format&fit=crop&q=80&w=400',
-          payment: 'Tiền mặt'
-        }
-      ]
-    }
+          payment: 'Tiền mặt',
+        },
+      ],
+    },
   ])
 
   const timeline = ref([
@@ -396,7 +396,7 @@
       staff: 'Sale: Minh Tuấn',
       category: 'Tư vấn đổi xe',
       content:
-        'Khách hàng có nhu cầu đổi từ Vision lên SH 160i. Đã báo giá sơ bộ và hẹn lái thử vào cuối tuần này. Khách đang cân nhắc giữa màu Đen mờ và Đỏ đô.'
+        'Khách hàng có nhu cầu đổi từ Vision lên SH 160i. Đã báo giá sơ bộ và hẹn lái thử vào cuối tuần này. Khách đang cân nhắc giữa màu Đen mờ và Đỏ đô.',
     },
     {
       id: 2,
@@ -405,7 +405,7 @@
       staff: 'Admin: Lan Anh',
       category: 'Hậu mãi',
       content:
-        'Gửi tin nhắn Zalo chúc mừng sinh nhật khách hàng kèm Voucher giảm giá 20% thay nhớt tại showroom.'
+        'Gửi tin nhắn Zalo chúc mừng sinh nhật khách hàng kèm Voucher giảm giá 20% thay nhớt tại showroom.',
     },
     {
       id: 3,
@@ -414,8 +414,8 @@
       staff: 'Kỹ thuật: Hoàng',
       category: 'Nhắc bảo dưỡng',
       content:
-        'Nhắc khách bảo dưỡng lần 3 theo lịch hẹn. Khách báo đang đi công tác, sẽ ghé vào tuần sau.'
-    }
+        'Nhắc khách bảo dưỡng lần 3 theo lịch hẹn. Khách báo đang đi công tác, sẽ ghé vào tuần sau.',
+    },
   ])
 
   const getTypeClasses = (type: string) => {

@@ -53,7 +53,7 @@
   import {
     fetchGetPermissionStructure,
     fetchGetRolePermissions,
-    fetchUpdateRole
+    fetchUpdateRole,
   } from '@/api/system-manage'
 
   interface Props {
@@ -68,7 +68,7 @@
 
   const props = withDefaults(defineProps<Props>(), {
     modelValue: false,
-    roleData: undefined
+    roleData: undefined,
   })
 
   const emit = defineEmits<Emits>()
@@ -94,12 +94,12 @@
 
   const defaultProps = {
     children: 'children',
-    label: 'label'
+    label: 'label',
   }
 
   const visible = computed({
     get: () => props.modelValue,
-    set: (value) => emit('update:modelValue', value)
+    set: (value) => emit('update:modelValue', value),
   })
 
   // Load permission structure from Backend
@@ -121,7 +121,7 @@
             return {
               id: meta.id,
               label: meta.name || meta.id,
-              description: meta.description
+              description: meta.description,
             }
           })
           .filter(Boolean) as TreePermissionNode[]
@@ -129,7 +129,7 @@
         return {
           id: groupName,
           label: `Nhóm ${groupName}`,
-          children
+          children,
         }
       })
       treeData.value = nodes
@@ -169,7 +169,7 @@
         await loadPermissionStructure()
         await loadRolePermissions()
       }
-    }
+    },
   )
 
   const handleClose = () => {
@@ -191,7 +191,7 @@
       await fetchUpdateRole(props.roleData.id, {
         roleName: props.roleData.name,
         description: props.roleData.description || '',
-        permissions: realPermissions
+        permissions: realPermissions,
       })
 
       ElMessage.success('Cập nhật quyền hạn vai trò thành công!')
@@ -286,7 +286,7 @@
     // 2. Identify newly unchecked keys (plus any keys marked for removal due to conflicts!)
     const newlyUnchecked = [
       ...prevChecked.filter((k) => !checkedKeys.includes(k)),
-      ...Array.from(keysToRemove)
+      ...Array.from(keysToRemove),
     ]
 
     if (newlyUnchecked.length > 0) {

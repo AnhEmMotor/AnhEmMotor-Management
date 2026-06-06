@@ -10,6 +10,6 @@ export const tableConfig = {
   paginationKey: {
     current: 'current',
 
-    size: 'size'
-  }
+    size: 'size',
+  },
 }

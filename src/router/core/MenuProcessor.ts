@@ -42,7 +42,7 @@ export class MenuProcessor {
   private filterMenuByPermissionsAndRoles(
     menu: AppRouteRecord[],
     permissions: string[],
-    roles: string[]
+    roles: string[],
   ): AppRouteRecord[] {
     return menu.reduce((acc: AppRouteRecord[], item) => {
       const itemRoles = item.meta?.roles
@@ -65,7 +65,7 @@ export class MenuProcessor {
           filteredItem.children = this.filterMenuByPermissionsAndRoles(
             filteredItem.children,
             permissions,
-            roles
+            roles,
           )
         }
         acc.push(filteredItem)
@@ -82,7 +82,7 @@ export class MenuProcessor {
           const filteredChildren = this.filterEmptyMenus(item.children)
           return {
             ...item,
-            children: filteredChildren
+            children: filteredChildren,
           }
         }
         return item
@@ -122,7 +122,7 @@ export class MenuProcessor {
         ...item,
         path: fullPath,
         redirect,
-        children
+        children,
       }
     })
   }
@@ -153,7 +153,7 @@ export class MenuProcessor {
       !route.meta?.link &&
       route.meta?.isIframe !== true &&
       route.component &&
-      route.component !== ''
+      route.component !== '',
     )
   }
 
@@ -189,7 +189,7 @@ export class MenuProcessor {
     route: AppRouteRecord,
     path: string,
     parentName: string,
-    level: number
+    level: number,
   ): void {
     const routeName = String(route.name || path || 'ChưabáoRouting')
     const menuTitle = route.meta?.title || routeName
@@ -200,7 +200,7 @@ export class MenuProcessor {
         `  ViTri: ${parentName} > ${routeName}\n` +
         `  hỏiđề: ${level + 1}cấpMenucủa path Khôngnănglấy / mởđầu\n` +
         `  khitrướcCauHinh: path: '${path}'\n` +
-        `  ứngnênsửavì: path: '${suggestedPath}'`
+        `  ứngnênsửavì: path: '${suggestedPath}'`,
     )
   }
 

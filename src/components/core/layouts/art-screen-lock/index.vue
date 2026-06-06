@@ -129,11 +129,11 @@
   const unlockFormRef = ref<FormInstance>()
 
   const formData = reactive({
-    password: ''
+    password: '',
   })
 
   const unlockForm = reactive({
-    password: ''
+    password: '',
   })
 
   const rules = computed<FormRules>(() => ({
@@ -141,14 +141,14 @@
       {
         required: true,
         message: t('lockScreen.lock.inputPlaceholder'),
-        trigger: 'blur'
-      }
-    ]
+        trigger: 'blur',
+      },
+    ],
   }))
 
   const isMobile = () => {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
+      navigator.userAgent,
     )
   }
 
@@ -296,7 +296,7 @@
   const verifyPassword = (inputPassword: string, storedPassword: string): boolean => {
     try {
       const decryptedPassword = CryptoJS.AES.decrypt(storedPassword, ENCRYPT_KEY).toString(
-        CryptoJS.enc.Utf8
+        CryptoJS.enc.Utf8,
       )
       return inputPassword === decryptedPassword
     } catch (error) {

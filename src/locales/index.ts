@@ -11,12 +11,12 @@ const storageKeyManager = new StorageKeyManager()
 
 const messages = {
   [LanguageEnum.EN]: enMessages,
-  [LanguageEnum.VI]: viMessages
+  [LanguageEnum.VI]: viMessages,
 }
 
 export const languageOptions = [
   { value: LanguageEnum.VI, label: 'Tiếng Việt' },
-  { value: LanguageEnum.EN, label: 'English' }
+  { value: LanguageEnum.EN, label: 'English' },
 ]
 
 const getDefaultLanguage = (): LanguageEnum => {
@@ -54,7 +54,7 @@ const i18nOptions: I18nOptions = {
   legacy: false,
   globalInjection: true,
   fallbackLocale: LanguageEnum.VI,
-  messages
+  messages,
 }
 
 const i18n: I18n = createI18n(i18nOptions)

@@ -2,7 +2,7 @@ import request from '@/utils/http'
 import type {
   Product,
   ProductList,
-  ProductVariantLiteForInputList
+  ProductVariantLiteForInputList,
 } from '@/domain/product/product.types'
 
 export const ProductApi = {
@@ -13,8 +13,8 @@ export const ProductApi = {
       params: {
         Page: current,
         PageSize: size,
-        ...rest
-      }
+        ...rest,
+      },
     })
   },
 
@@ -22,33 +22,33 @@ export const ProductApi = {
     return request.get({
       url: '/api/Product/export',
       params,
-      responseType: 'blob' as const
+      responseType: 'blob' as const,
     })
   },
 
   getById(id: number) {
     return request.get<Product>({
-      url: `/api/Product/${id}/for-manager`
+      url: `/api/Product/${id}/for-manager`,
     })
   },
 
   create(data: Partial<Product>) {
     return request.post<Product>({
       url: '/api/Product',
-      data
+      data,
     })
   },
 
   update(id: number, data: Partial<Product>) {
     return request.put<Product>({
       url: `/api/Product/${id}`,
-      data
+      data,
     })
   },
 
   delete(id: number) {
     return request.del({
-      url: `/api/Product/${id}`
+      url: `/api/Product/${id}`,
     })
   },
 
@@ -59,8 +59,8 @@ export const ProductApi = {
       params: {
         Page: current,
         PageSize: size,
-        ...rest
-      }
+        ...rest,
+      },
     })
   },
 
@@ -71,14 +71,14 @@ export const ProductApi = {
       params: {
         Page: current,
         PageSize: size,
-        ...rest
-      }
+        ...rest,
+      },
     })
   },
 
   getPredefinedOptions() {
     return request.get<Record<string, string>>({
-      url: '/api/Product/predefined-options'
+      url: '/api/Product/predefined-options',
     })
-  }
+  },
 }

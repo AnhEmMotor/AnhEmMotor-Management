@@ -33,7 +33,7 @@
     { label: 'mụcmụcTrangChu', url: WEB_LINKS.DOCS },
     { label: 'TaiLieu', url: WEB_LINKS.INTRODUCE },
     { label: 'Github', url: WEB_LINKS.GITHUB_HOME },
-    { label: 'bililibilili', url: WEB_LINKS.BILIBILI }
+    { label: 'bililibilili', url: WEB_LINKS.BILIBILI },
   ]
 
   const goPage = (url: string): void => {

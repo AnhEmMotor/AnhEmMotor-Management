@@ -54,14 +54,14 @@
 
   const props = withDefaults(defineProps<Props>(), {
     height: 11,
-    barWidth: '26%'
+    barWidth: '26%',
   })
 
   const { chartRef } = useChartComponent({
     props: {
       height: `${props.height}rem`,
       loading: false,
-      isEmpty: !props.chartData?.length || props.chartData.every((val) => val === 0)
+      isEmpty: !props.chartData?.length || props.chartData.every((val) => val === 0),
     },
     checkEmpty: () => !props.chartData?.length || props.chartData.every((val) => val === 0),
     watchSources: [() => props.chartData, () => props.color, () => props.barWidth],
@@ -73,15 +73,15 @@
           top: 0,
           right: 0,
           bottom: 15,
-          left: 0
+          left: 0,
         },
         xAxis: {
           type: 'category',
-          show: false
+          show: false,
         },
         yAxis: {
           type: 'value',
-          show: false
+          show: false,
         },
         series: [
           {
@@ -90,11 +90,11 @@
             barWidth: props.barWidth,
             itemStyle: {
               color: computedColor,
-              borderRadius: 2
-            }
-          }
-        ]
+              borderRadius: 2,
+            },
+          },
+        ],
       }
-    }
+    },
   })
 </script>

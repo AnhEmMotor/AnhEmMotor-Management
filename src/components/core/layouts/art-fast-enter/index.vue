@@ -9,7 +9,7 @@
     popper-class="fast-enter-popover"
     :popper-style="{
       border: '1px solid var(--default-border)',
-      borderRadius: 'calc(var(--custom-radius) / 2 + 4px)'
+      borderRadius: 'calc(var(--custom-radius) / 2 + 4px)',
     }"
   >
     <template #reference>

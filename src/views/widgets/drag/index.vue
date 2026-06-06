@@ -80,7 +80,7 @@
     { name: 'cháungộkhông', role: 'đấuchiếnthắngphật' },
     { name: 'lợntámgiới', role: 'tịnhđànkhiến' },
     { name: 'cáttăng', role: 'vàngthânlahán' },
-    { name: 'đườngtăng', role: 'chiênđàncôngđứcphật' }
+    { name: 'đườngtăng', role: 'chiênđàncôngđứcphật' },
   ])
 </script>
 

@@ -7,7 +7,7 @@ export const marketingRoutes: AppRouteRecord = {
   meta: {
     title: 'Quản lý Banner',
     icon: 'ri:advertisement-line',
-    roles: ['R_SUPER', 'R_ADMIN']
+    roles: ['R_SUPER', 'R_ADMIN'],
   },
   children: [
     {
@@ -18,8 +18,8 @@ export const marketingRoutes: AppRouteRecord = {
         title: 'Danh sách Banner',
         icon: 'ri:image-line',
         keepAlive: true,
-        roles: ['R_SUPER', 'R_ADMIN']
-      }
+        roles: ['R_SUPER', 'R_ADMIN'],
+      },
     },
     {
       path: 'conversion',
@@ -29,8 +29,8 @@ export const marketingRoutes: AppRouteRecord = {
         title: 'Công cụ chuyển đổi',
         icon: 'ri:magic-line',
         keepAlive: true,
-        roles: ['R_SUPER', 'R_ADMIN']
-      }
-    }
-  ]
+        roles: ['R_SUPER', 'R_ADMIN'],
+      },
+    },
+  ],
 }

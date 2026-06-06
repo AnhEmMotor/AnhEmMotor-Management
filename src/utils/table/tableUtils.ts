@@ -31,7 +31,7 @@ function extractTotal(obj: Record<string, unknown>, records: unknown[], fields: 
 
 function extractPagination(
   obj: Record<string, unknown>,
-  data?: Record<string, unknown>
+  data?: Record<string, unknown>,
 ): Pick<ApiResponse<unknown>, 'current' | 'size'> | undefined {
   const result: Partial<Pick<ApiResponse<unknown>, 'current' | 'size'>> = {}
   const sources = [obj, data ?? {}]
@@ -78,7 +78,7 @@ export const defaultResponseAdapter = <T>(response: unknown): ApiResponse<T> => 
       '[tableUtils] vôpháptínhcủaứngcáchkiểu，chiếctrìcủacáchkiểubaobao: Mảng、Bao gồm' +
         recordFields.join('/') +
         'chữđoạncủaDoiTuong、nhúngbộdataDoiTuong。khitrướccáchkiểu:',
-      response
+      response,
     )
     return { records: [], total: 0 }
   }
@@ -124,7 +124,7 @@ export const extractTableData = <T>(response: ApiResponse<T>): T[] => {
 
 export const updatePaginationFromResponse = <T>(
   pagination: Api.Common.PaginationParams,
-  response: ApiResponse<T>
+  response: ApiResponse<T>,
 ): void => {
   pagination.total = response.total ?? pagination.total ?? 0
 
@@ -140,7 +140,7 @@ export const updatePaginationFromResponse = <T>(
 
 export const createSmartDebounce = <T extends (...args: any[]) => Promise<any>>(
   fn: T,
-  delay: number
+  delay: number,
 ): T & { cancel: () => void; flush: () => Promise<any> } => {
   let timeoutId: NodeJS.Timeout | null = null
   let lastArgs: Parameters<T> | null = null
@@ -204,19 +204,19 @@ export const createSmartDebounce = <T extends (...args: any[]) => Promise<any>>(
 
 export const createErrorHandler = (
   onError?: (error: TableError) => void,
-  enableLog: boolean = false
+  enableLog: boolean = false,
 ) => {
   const logger = {
     error: (message: string, ...args: any[]) => {
       if (enableLog) console.error(`[useTable] ${message}`, ...args)
-    }
+    },
   }
 
   return (err: unknown, context: string): TableError => {
     const tableError: TableError = {
       code: 'UNKNOWN_ERROR',
       message: 'ChưabáoLỗi',
-      details: err
+      details: err,
     }
 
     if (err instanceof Error) {

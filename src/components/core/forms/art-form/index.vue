@@ -109,7 +109,7 @@
     ElTimePicker,
     ElTimeSelect,
     ElTreeSelect,
-    type FormInstance
+    type FormInstance,
   } from 'element-plus'
   import { calculateResponsiveSpan, type ResponsiveBreakpoint } from '@/utils/form/responsive'
 
@@ -133,7 +133,7 @@
     cascader: ElCascader,
     timepicker: ElTimePicker,
     timeselect: ElTimeSelect,
-    treeselect: ElTreeSelect
+    treeselect: ElTreeSelect,
   }
 
   const { width } = useWindowSize()
@@ -188,7 +188,7 @@
     showReset: true,
     showSubmit: true,
     disabledSubmit: false,
-    sanitizeOutput: () => ({})
+    sanitizeOutput: () => ({}),
   })
 
   interface FormEmits {
@@ -233,7 +233,7 @@
     removeEmptyRichText: true,
     keepZero: true,
     keepFalse: true,
-    ...props.sanitizeOutput
+    ...props.sanitizeOutput,
   }))
 
   const PATH_NUMBER_RE = /^\d+$/
@@ -337,7 +337,7 @@
           }
           return accumulator
         },
-        {}
+        {},
       )
       return Object.keys(sanitizedObject).length === 0 && options.removeEmptyObject
         ? undefined
@@ -408,7 +408,7 @@
       ? 'flex-end'
       : props.items.filter((item) => !item.hidden).length <= props.buttonLeftLimit
         ? 'flex-start'
-        : 'flex-end'
+        : 'flex-end',
   }))
 
   const handleReset = () => {
@@ -430,7 +430,7 @@
     ref: formInstance,
     validate: (...args: any[]) => formInstance.value?.validate(...args),
     reset: handleReset,
-    getOutput: getSanitizedOutput
+    getOutput: getSanitizedOutput,
   })
 
   const { span, gutter, labelPosition, labelWidth } = toRefs(props)

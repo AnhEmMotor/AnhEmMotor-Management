@@ -98,7 +98,7 @@
     maxRows: 100000,
     showSuccessMessage: true,
     showErrorMessage: true,
-    workbookOptions: () => ({})
+    workbookOptions: () => ({}),
   })
 
   const emit = defineEmits<{
@@ -112,7 +112,7 @@
     constructor(
       message: string,
       public code: string,
-      public details?: any
+      public details?: any,
     ) {
       super(message)
       this.name = 'ExportError'
@@ -138,8 +138,8 @@
         'EXCEED_MAX_ROWS',
         {
           currentRows: data.length,
-          maxRows: props.maxRows
-        }
+          maxRows: props.maxRows,
+        },
       )
     }
   }
@@ -148,7 +148,7 @@
     value: ExportValue,
     key: string,
     row: ExportData,
-    index: number
+    index: number,
   ): string => {
     const column = props.columns[key]
     if (column?.formatter) {
@@ -209,7 +209,7 @@
 
       const maxLength = Math.max(
         column.length,
-        ...data.slice(0, sampleSize).map((row) => String(row[column] || '').length)
+        ...data.slice(0, sampleSize).map((row) => String(row[column] || '').length),
       )
 
       const width = Math.min(Math.max(maxLength + 2, 8), 50)
@@ -220,7 +220,7 @@
   const exportToExcel = async (
     data: ExportData[],
     filename: string,
-    sheetName: string
+    sheetName: string,
   ): Promise<void> => {
     try {
       emit('export-progress', 10)
@@ -241,7 +241,7 @@
           Keywords: 'excel,export,data',
           Comments: 'doHeThongtừđộngsinhthành',
           CreatedDate: props.workbookOptions.created || new Date(),
-          ModifiedDate: props.workbookOptions.modified || new Date()
+          ModifiedDate: props.workbookOptions.modified || new Date(),
         }
       }
 
@@ -260,11 +260,11 @@
       const excelBuffer = XLSX.write(workbook, {
         bookType: 'xlsx',
         type: 'array',
-        compression: true
+        compression: true,
       })
 
       const blob = new Blob([excelBuffer], {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       })
 
       emit('export-progress', 95)
@@ -283,7 +283,7 @@
       throw new ExportError(
         `Excel Xuất fileThatBai: ${(error as Error).message}`,
         'EXPORT_FAILED',
-        error
+        error,
       )
     }
   }
@@ -305,7 +305,7 @@
       if (props.showSuccessMessage) {
         ElMessage.success({
           message: `ThanhCongXuất file ${props.data.length} điềuDữ liệu`,
-          duration: 3000
+          duration: 3000,
         })
       }
     } catch (error) {
@@ -319,7 +319,7 @@
       if (props.showErrorMessage) {
         ElMessage.error({
           message: exportError.message,
-          duration: 5000
+          duration: 5000,
         })
       }
 
@@ -333,7 +333,7 @@
   defineExpose({
     exportData: handleExport,
     isExporting: readonly(isExporting),
-    hasData
+    hasData,
   })
 </script>
 

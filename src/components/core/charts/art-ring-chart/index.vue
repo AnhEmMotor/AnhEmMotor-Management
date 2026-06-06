@@ -29,7 +29,7 @@
 
     showTooltip: true,
     showLegend: false,
-    legendPosition: 'right'
+    legendPosition: 'right',
   })
 
   const { isDark, getAnimationConfig, getTooltipStyle, getLegendStyle } = useChartComponent({
@@ -59,7 +59,7 @@
       const option: EChartsOption = {
         tooltip: props.showTooltip
           ? getTooltipStyle('item', {
-              formatter: '{b}: {c} ({d}%)'
+              formatter: '{b}: {c} ({d}%)',
             })
           : undefined,
         legend: props.showLegend ? getLegendStyle(props.legendPosition) : undefined,
@@ -73,34 +73,34 @@
             itemStyle: {
               borderRadius: props.borderRadius,
               borderColor: isDark.value ? '#2c2c2c' : '#fff',
-              borderWidth: 0
+              borderWidth: 0,
             },
             label: {
               show: props.showLabel,
               formatter: '{b}\n{d}%',
               position: 'outside',
               color: isDark.value ? '#ccc' : '#999',
-              fontSize: 12
+              fontSize: 12,
             },
             emphasis: {
               label: {
                 show: false,
                 fontSize: 14,
-                fontWeight: 'bold'
-              }
+                fontWeight: 'bold',
+              },
             },
             labelLine: {
               show: props.showLabel,
               length: 15,
               length2: 25,
-              smooth: true
+              smooth: true,
             },
             data: props.data,
             color: props.colors,
             ...getAnimationConfig(),
-            animationType: 'expansion'
-          }
-        ]
+            animationType: 'expansion',
+          },
+        ],
       }
 
       if (props.centerText) {
@@ -114,12 +114,12 @@
           textStyle: {
             fontSize: 18,
             fontWeight: 500,
-            color: isDark.value ? '#999' : '#ADB0BC'
-          }
+            color: isDark.value ? '#999' : '#ADB0BC',
+          },
         }
       }
 
       return option
-    }
+    },
   })
 </script>

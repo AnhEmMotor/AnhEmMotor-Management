@@ -34,7 +34,7 @@
 
     showTooltip: true,
     showLegend: false,
-    legendPosition: 'bottom'
+    legendPosition: 'bottom',
   })
 
   const createSeriesConfig = (config: {
@@ -57,7 +57,7 @@
       data: config.data,
       itemStyle: {
         borderRadius: config.borderRadius,
-        color: props.colors[config.colorIndex]
+        color: props.colors[config.colorIndex],
       },
       label: {
         show: props.showDataLabel,
@@ -66,9 +66,9 @@
           config.formatter ||
           ((params: unknown) => String((params as Record<string, unknown>).value)),
         color: fontColor,
-        fontSize: 12
+        fontSize: 12,
       },
-      ...animationConfig
+      ...animationConfig,
     }
   }
 
@@ -80,7 +80,7 @@
     getAnimationConfig,
     getTooltipStyle,
     getLegendStyle,
-    getGridWithLegend
+    getGridWithLegend,
   } = useChartComponent({
     props,
     checkEmpty: () => {
@@ -96,7 +96,7 @@
       () => props.positiveData,
       () => props.negativeData,
       () => props.xAxisData,
-      () => props.colors
+      () => props.colors,
     ],
     generateOptions: (): EChartsOption => {
       const processedNegativeData = props.negativeData.map((val) => (val > 0 ? -val : val))
@@ -106,7 +106,7 @@
         right: 0,
         left: 0,
         bottom: 0,
-        containLabel: true
+        containLabel: true,
       }
 
       const options: EChartsOption = {
@@ -121,15 +121,15 @@
               ...getTooltipStyle(),
               trigger: 'axis',
               axisPointer: {
-                type: 'none'
-              }
+                type: 'none',
+              },
             }
           : undefined,
 
         legend: props.showLegend
           ? {
               ...getLegendStyle(props.legendPosition),
-              data: [props.negativeName, props.positiveName]
+              data: [props.negativeName, props.positiveName],
             }
           : undefined,
 
@@ -139,7 +139,7 @@
           axisTick: getAxisTickStyle(),
           axisLine: getAxisLineStyle(props.showAxisLine),
           axisLabel: getAxisLabelStyle(props.showAxisLabel),
-          boundaryGap: true
+          boundaryGap: true,
         },
 
         yAxis: {
@@ -148,7 +148,7 @@
           max: props.yAxisMax,
           axisLabel: getAxisLabelStyle(props.showAxisLabel),
           axisLine: getAxisLineStyle(props.showAxisLine),
-          splitLine: getSplitLineStyle(props.showSplitLine)
+          splitLine: getSplitLineStyle(props.showSplitLine),
         },
 
         series: [
@@ -159,19 +159,19 @@
             labelPosition: 'bottom',
             colorIndex: 1,
             formatter: (params: unknown) =>
-              String(Math.abs((params as Record<string, unknown>).value as number))
+              String(Math.abs((params as Record<string, unknown>).value as number)),
           }),
           createSeriesConfig({
             name: props.positiveName,
             data: props.positiveData,
             borderRadius: props.positiveBorderRadius,
             labelPosition: 'top',
-            colorIndex: 0
-          })
-        ]
+            colorIndex: 0,
+          }),
+        ],
       }
 
       return options
-    }
+    },
   })
 </script>

@@ -33,7 +33,7 @@
     defineProps<{
       data: ExceptionData
     }>(),
-    {}
+    {},
   )
 
   const { homePath } = useCommon()
@@ -44,7 +44,7 @@
     if (!userStore.isLogin) {
       router.push({
         name: 'Login',
-        query: { redirect: targetHomePath }
+        query: { redirect: targetHomePath },
       })
       return
     }

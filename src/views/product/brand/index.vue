@@ -201,7 +201,7 @@
     submitForm,
 
     exporting,
-    handleExport
+    handleExport,
   } = useBrandTable()
 
   const formatDateTime = (val: string | null | undefined) => {
@@ -224,14 +224,14 @@
       key: 'name',
       label: 'Tên thương hiệu',
       type: 'input',
-      props: { placeholder: 'Ví dụ: Honda, Yamaha...' }
+      props: { placeholder: 'Ví dụ: Honda, Yamaha...' },
     },
     {
       key: 'origin',
       label: 'Xuất xứ',
       type: 'input',
-      props: { placeholder: 'Ví dụ: Nhật Bản, Ý...' }
-    }
+      props: { placeholder: 'Ví dụ: Nhật Bản, Ý...' },
+    },
   ]
 </script>
 

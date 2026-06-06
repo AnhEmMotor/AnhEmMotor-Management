@@ -3,5 +3,5 @@ import vi from './vi'
 
 export default {
   en,
-  vi
+  vi,
 }

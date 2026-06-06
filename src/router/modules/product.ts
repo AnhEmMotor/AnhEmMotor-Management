@@ -7,7 +7,7 @@ export const productRoutes: AppRouteRecord = {
   meta: {
     title: 'menus.product.title',
     icon: 'ri:shopping-bag-3-line',
-    roles: ['R_SUPER', 'R_ADMIN']
+    roles: ['R_SUPER', 'R_ADMIN'],
   },
   children: [
     {
@@ -17,8 +17,8 @@ export const productRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.product.brand.title',
         icon: 'ri:medal-line',
-        permissions: ['Permissions.Brands.View']
-      }
+        permissions: ['Permissions.Brands.View'],
+      },
     },
     {
       path: 'type',
@@ -26,8 +26,8 @@ export const productRoutes: AppRouteRecord = {
       component: '/product/type/index',
       meta: {
         title: 'menus.product.type.title',
-        icon: 'ri:apps-2-line'
-      }
+        icon: 'ri:apps-2-line',
+      },
     },
     {
       path: 'list',
@@ -35,8 +35,8 @@ export const productRoutes: AppRouteRecord = {
       component: '/product/list/index',
       meta: {
         title: 'menus.product.list.title',
-        icon: 'ri:list-unordered'
-      }
-    }
-  ]
+        icon: 'ri:list-unordered',
+      },
+    },
+  ],
 }

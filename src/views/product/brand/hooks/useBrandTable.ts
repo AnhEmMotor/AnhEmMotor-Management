@@ -15,7 +15,7 @@ export function useBrandTable() {
     popularOrigin: '',
     popularOriginCount: 0,
     latestUpdatedBrandName: '',
-    latestUpdatedAt: null as string | null
+    latestUpdatedAt: null as string | null,
   })
 
   const fetchStatistics = async () => {
@@ -26,7 +26,7 @@ export function useBrandTable() {
         popularOrigin: res.popularOrigin ?? '',
         popularOriginCount: res.popularOriginCount ?? 0,
         latestUpdatedBrandName: res.latestUpdatedBrandName ?? '',
-        latestUpdatedAt: res.latestUpdatedAt ?? null
+        latestUpdatedAt: res.latestUpdatedAt ?? null,
       }
     } catch (err) {
       console.error('Failed to fetch brand statistics:', err)
@@ -46,13 +46,13 @@ export function useBrandTable() {
     getData,
     refreshData,
     replaceSearchParams,
-    searchParams
+    searchParams,
   } = useTable({
     core: {
       apiFn: BrandApi.getList,
       apiParams: {
         current: 1,
-        size: 10
+        size: 10,
       },
       columnsFactory: () => [
         { type: 'index', label: 'STT', width: 70, align: 'center' },
@@ -66,10 +66,10 @@ export function useBrandTable() {
           width: 150,
           useSlot: true,
           align: 'center',
-          fixed: 'right'
-        }
-      ]
-    }
+          fixed: 'right',
+        },
+      ],
+    },
   })
 
   const handleAdd = () => {
@@ -78,7 +78,7 @@ export function useBrandTable() {
       name: '',
       origin: '',
       logoUrl: '',
-      description: ''
+      description: '',
     }
     dialogVisible.value = true
   }
@@ -97,8 +97,8 @@ export function useBrandTable() {
         confirmButtonText: 'Xóa',
         cancelButtonText: 'Hủy',
         type: 'warning',
-        buttonSize: 'default'
-      }
+        buttonSize: 'default',
+      },
     ).then(async () => {
       try {
         await BrandApi.delete(row.id)
@@ -135,14 +135,14 @@ export function useBrandTable() {
     if (params.origin) filters.push(`Origin@=${params.origin}`)
 
     replaceSearchParams({
-      Filters: filters.join(',')
+      Filters: filters.join(','),
     })
     getData()
   }
 
   const handleReset = () => {
     replaceSearchParams({
-      Filters: ''
+      Filters: '',
     })
     getData()
   }
@@ -202,6 +202,6 @@ export function useBrandTable() {
     submitForm,
 
     exporting,
-    handleExport
+    handleExport,
   }
 }

@@ -40,7 +40,7 @@
   const route = useRoute()
 
   const props = withDefaults(defineProps<Props>(), {
-    list: () => []
+    list: () => [],
   })
 
   const filteredMenuItems = computed(() => {
@@ -65,7 +65,7 @@
       })
       .map((item) => ({
         ...item,
-        children: item.children ? filterMenuItems(item.children) : undefined
+        children: item.children ? filterMenuItems(item.children) : undefined,
       }))
   }
 </script>

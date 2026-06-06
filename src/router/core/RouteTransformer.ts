@@ -23,7 +23,7 @@ export class RouteTransformer {
 
     const converted: ConvertedRoute = {
       ...routeConfig,
-      component: undefined
+      component: undefined,
     }
 
     if (route.meta.isIframe) {
@@ -48,7 +48,7 @@ export class RouteTransformer {
   private handleIframeRoute(
     targetRoute: ConvertedRoute,
     sourceRoute: AppRouteRecord,
-    depth: number
+    depth: number,
   ): void {
     if (depth === 0) {
       targetRoute.component = this.componentLoader.loadLayout()
@@ -58,8 +58,8 @@ export class RouteTransformer {
       targetRoute.children = [
         {
           ...sourceRoute,
-          component: this.componentLoader.loadIframe()
-        } as ConvertedRoute
+          component: this.componentLoader.loadIframe(),
+        } as ConvertedRoute,
       ]
     } else {
       targetRoute.component = this.componentLoader.loadIframe()
@@ -71,7 +71,7 @@ export class RouteTransformer {
   private handleFirstLevelRoute(
     converted: ConvertedRoute,
     route: AppRouteRecord,
-    component: string | undefined
+    component: string | undefined,
   ): void {
     converted.component = this.componentLoader.loadLayout()
     converted.path = this.extractFirstSegment(route.path || '')
@@ -81,8 +81,8 @@ export class RouteTransformer {
     converted.children = [
       {
         ...route,
-        component: component ? this.componentLoader.load(component) : undefined
-      } as ConvertedRoute
+        component: component ? this.componentLoader.load(component) : undefined,
+      } as ConvertedRoute,
     ]
   }
 

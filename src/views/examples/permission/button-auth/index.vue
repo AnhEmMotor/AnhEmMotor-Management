@@ -446,35 +446,35 @@
     {
       feature: 'QuyenHanđếnnguồn',
       frontend: 'NguoiDungTrạng tháitrongcủa buttons chữđoạn',
-      backend: 'RoutingCauHinhtrongcủa meta.authList'
+      backend: 'RoutingCauHinhtrongcủa meta.authList',
     },
     {
       feature: 'v-auth lệnh',
       frontend: 'KhôngCó thểdùng（trướcđầumôkiểudướilệnhvôhiệu）',
-      backend: 'Có thểdùng（liệuRoutingQuyenHanCauHinhTìm）'
+      backend: 'Có thểdùng（liệuRoutingQuyenHanCauHinhTìm）',
     },
     {
       feature: 'hasAuth PhuongThuc',
       frontend: 'Có thểdùng（Tìm buttons Mảng）',
-      backend: 'Có thểdùng（Tìm meta.authList）'
+      backend: 'Có thểdùng（Tìm meta.authList）',
     },
     {
       feature: 'QuyenHanQuản lý',
       frontend: 'hoàntoàndotrướcđầukhốngchế，linhsốngđộcao',
-      backend: 'sauđầuthốngmộtQuản lý，antoàntínhhơncao'
+      backend: 'sauđầuthốngmộtQuản lý，antoàntínhhơncao',
     },
     {
       feature: 'thíchdùngtrườngcảnh',
       frontend: 'khoáinguyênkiểu、rútđơnỨng dụng',
-      backend: 'xínghiệpcấpỨng dụng、phụctạpQuyenHanthểhệ'
-    }
+      backend: 'xínghiệpcấpỨng dụng、phụctạpQuyenHanthểhệ',
+    },
   ])
 
   const getRoleTagType = (role: string): 'primary' | 'success' | 'info' | 'warning' | 'danger' => {
     const roleMap: Record<string, 'primary' | 'success' | 'info' | 'warning' | 'danger'> = {
       R_SUPER: 'warning',
       R_ADMIN: 'primary',
-      R_USER: 'success'
+      R_USER: 'success',
     }
     return roleMap[role] || 'info'
   }
@@ -483,7 +483,7 @@
     const roleMap: Record<string, string> = {
       R_SUPER: 'siêucấpQuản lýviên',
       R_ADMIN: 'Quản lýviên',
-      R_USER: 'phổthôngNguoiDung'
+      R_USER: 'phổthôngNguoiDung',
     }
     return roleMap[role] || 'ChưabáoVaiTro'
   }
@@ -500,7 +500,7 @@
     const actions: Record<string, string> = {
       batchEdit: 'lôlượngChỉnh sửa',
       batchDelete: 'lôlượngXóa',
-      batchExport: 'lôlượngXuất file'
+      batchExport: 'lôlượngXuất file',
     }
 
     const permission = command.replace('batch', '').toLowerCase()

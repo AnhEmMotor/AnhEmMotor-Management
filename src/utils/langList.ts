@@ -2,11 +2,11 @@ export const langList = [
   {
     category: 'vi',
     lang: 'Tiếng Việt',
-    el_lang: 'vi'
+    el_lang: 'vi',
   },
   {
     category: 'en',
     lang: 'English',
-    el_lang: 'en'
-  }
+    el_lang: 'en',
+  },
 ]

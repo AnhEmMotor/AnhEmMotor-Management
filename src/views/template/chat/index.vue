@@ -101,7 +101,7 @@
             <div
               :class="[
                 'flex gap-2 items-start w-full mb-7.5',
-                message.isMe ? 'flex-row-reverse' : 'flex-row justify-start'
+                message.isMe ? 'flex-row-reverse' : 'flex-row justify-start',
               ]"
             >
               <ElAvatar :size="32" :src="message.avatar" class="flex-shrink-0" />
@@ -205,7 +205,7 @@
       avatar: meAvatar,
       online: true,
       lastTime: '20tiểugiờtrước',
-      unread: 0
+      unread: 0,
     },
     {
       id: 2,
@@ -214,7 +214,7 @@
       avatar: avatar2,
       online: true,
       lastTime: '2tuầntrước',
-      unread: 6
+      unread: 6,
     },
     {
       id: 3,
@@ -223,7 +223,7 @@
       avatar: avatar3,
       online: false,
       lastTime: '5tiểugiờtrước',
-      unread: 5
+      unread: 5,
     },
     {
       id: 4,
@@ -232,7 +232,7 @@
       avatar: avatar4,
       online: true,
       lastTime: '1tiểugiờtrước',
-      unread: 2
+      unread: 2,
     },
     {
       id: 5,
@@ -241,7 +241,7 @@
       avatar: avatar5,
       online: false,
       lastTime: '3ngàytrước',
-      unread: 1
+      unread: 1,
     },
     {
       id: 6,
@@ -250,7 +250,7 @@
       avatar: avatar6,
       online: true,
       lastTime: '10phầnchuôngtrước',
-      unread: 0
+      unread: 0,
     },
     {
       id: 7,
@@ -259,7 +259,7 @@
       avatar: avatar7,
       online: true,
       lastTime: '15phầnchuôngtrước',
-      unread: 3
+      unread: 3,
     },
     {
       id: 8,
@@ -268,7 +268,7 @@
       avatar: avatar8,
       online: true,
       lastTime: '5phầnchuôngtrước',
-      unread: 0
+      unread: 0,
     },
     {
       id: 9,
@@ -277,7 +277,7 @@
       avatar: avatar9,
       online: false,
       lastTime: '1ngàytrước',
-      unread: 4
+      unread: 4,
     },
     {
       id: 10,
@@ -286,7 +286,7 @@
       avatar: avatar10,
       online: true,
       lastTime: '2tiểugiờtrước',
-      unread: 1
+      unread: 1,
     },
     {
       id: 11,
@@ -295,7 +295,7 @@
       avatar: avatar3,
       online: true,
       lastTime: '30phầnchuôngtrước',
-      unread: 2
+      unread: 2,
     },
     {
       id: 12,
@@ -304,7 +304,7 @@
       avatar: avatar5,
       online: false,
       lastTime: '3ngàytrước',
-      unread: 0
+      unread: 0,
     },
     {
       id: 13,
@@ -313,8 +313,8 @@
       avatar: avatar6,
       online: true,
       lastTime: '10phầnchuôngtrước',
-      unread: 5
-    }
+      unread: 5,
+    },
   ])
 
   const selectPerson = (person: Person) => {
@@ -328,7 +328,7 @@
       content: 'bạnhảo！tôilàbạncủaAIgiúptay，cógìgìtôiCó thểlấygiúpbạncủakhông？',
       time: '10:00',
       isMe: false,
-      avatar: aiAvatar
+      avatar: aiAvatar,
     },
     {
       id: 2,
@@ -336,7 +336,7 @@
       content: 'tôimuốnrồigiảimộtdướiHeThongcủakhiếndùngPhuongThuc。',
       time: '10:01',
       isMe: true,
-      avatar: meAvatar
+      avatar: meAvatar,
     },
     {
       id: 3,
@@ -345,7 +345,7 @@
         'hảocủa，tôiđếnvìbạngiớithiệuHeThongcủachủcầncôngnăng。đầu，bạnCó thểlấythông quaBên tráiMenuTruy cậpKhôngcùngcủacôngnăngmôkhối...',
       time: '10:02',
       isMe: false,
-      avatar: aiAvatar
+      avatar: aiAvatar,
     },
     {
       id: 4,
@@ -353,7 +353,7 @@
       content: 'nghekhởiđếnrấtKhôngLỗi，năngdụng cụthểnóinóiDữ liệuphầnphânbộphầnkhông？',
       time: '10:05',
       isMe: true,
-      avatar: meAvatar
+      avatar: meAvatar,
     },
     {
       id: 5,
@@ -362,7 +362,7 @@
         'khinhiênCó thểlấy。Dữ liệuphầnphânmôkhốiCó thểlấygiúpgiúpbạnthựcgiờGiámkhốngđóngphímtiêu，đồng thờisinhthànhChiTietcủabáobảng...',
       time: '10:06',
       isMe: false,
-      avatar: aiAvatar
+      avatar: aiAvatar,
     },
     {
       id: 6,
@@ -370,7 +370,7 @@
       content: 'quáhảorồi，kiatôinếunàoBắt đầukhiếndùngnhỉ？',
       time: '10:08',
       isMe: true,
-      avatar: meAvatar
+      avatar: meAvatar,
     },
     {
       id: 7,
@@ -379,7 +379,7 @@
         'bạnCó thểlấyxâymộtchiếcmụcmục，nhiênsautạimụcmụctrongThêm mớiđóngcủaDữ liệunguồn，HeThongsẽtừđộngvàodòngphầnphân。',
       time: '10:09',
       isMe: false,
-      avatar: aiAvatar
+      avatar: aiAvatar,
     },
     {
       id: 8,
@@ -387,7 +387,7 @@
       content: 'minhtrắngrồi，tạtạbạncủagiúpgiúp！',
       time: '10:10',
       isMe: true,
-      avatar: meAvatar
+      avatar: meAvatar,
     },
     {
       id: 9,
@@ -395,8 +395,8 @@
       content: 'Khôngkháchkhí，cónhiệmnàohỏiđềgiờliênhệtôi。',
       time: '10:11',
       isMe: false,
-      avatar: aiAvatar
-    }
+      avatar: aiAvatar,
+    },
   ])
 
   const sendMessage = () => {
@@ -409,7 +409,7 @@
       content: text,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       isMe: true,
-      avatar: userAvatar.value
+      avatar: userAvatar.value,
     })
 
     messageText.value = ''

@@ -118,6 +118,7 @@ export default ({ mode }: { mode: string }) => {
       }),
     ],
     optimizeDeps: {
+  exclude: ['mammoth'],
       include: [
         'echarts/core',
         'echarts/charts',

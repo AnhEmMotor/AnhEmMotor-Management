@@ -37,7 +37,7 @@
 
     showTooltip: true,
     showLegend: false,
-    legendPosition: 'bottom'
+    legendPosition: 'bottom',
   })
 
   const isAnimating = ref(false)
@@ -79,7 +79,7 @@
       const multiData = props.data as LineDataItem[]
       return multiData.map((item) => ({
         ...item,
-        data: Array(item.data.length).fill(0)
+        data: Array(item.data.length).fill(0),
       }))
     }
     const singleData = props.data as number[]
@@ -111,13 +111,13 @@
       color: new graphic.LinearGradient(0, 0, 0, 1, [
         {
           offset: 0,
-          color: hexToRgba(color, areaConfig.startOpacity || 0.2).rgba
+          color: hexToRgba(color, areaConfig.startOpacity || 0.2).rgba,
         },
         {
           offset: 1,
-          color: hexToRgba(color, areaConfig.endOpacity || 0.02).rgba
-        }
-      ])
+          color: hexToRgba(color, areaConfig.endOpacity || 0.02).rgba,
+        },
+      ]),
     }
   }
 
@@ -129,13 +129,13 @@
       color: new graphic.LinearGradient(0, 0, 0, 1, [
         {
           offset: 0,
-          color: hexToRgba(color, 0.2).rgba
+          color: hexToRgba(color, 0.2).rgba,
         },
         {
           offset: 1,
-          color: hexToRgba(color, 0.02).rgba
-        }
-      ])
+          color: hexToRgba(color, 0.02).rgba,
+        },
+      ]),
     }
   }
 
@@ -159,15 +159,15 @@
       symbolSize: config.symbolSize ?? props.symbolSize,
       lineStyle: {
         width: config.lineWidth ?? props.lineWidth,
-        color: config.color
+        color: config.color,
       },
       areaStyle: config.areaStyle,
       emphasis: {
         focus: 'series' as const,
         lineStyle: {
-          width: (config.lineWidth ?? props.lineWidth) + 1
-        }
-      }
+          width: (config.lineWidth ?? props.lineWidth) + 1,
+        },
+      },
     }
   }
 
@@ -179,7 +179,7 @@
       grid: getGridWithLegend(props.showLegend && isMultipleData.value, props.legendPosition, {
         top: 15,
         right: 15,
-        left: 0
+        left: 0,
       }),
       tooltip: props.showTooltip ? getTooltipStyle() : undefined,
       xAxis: {
@@ -188,7 +188,7 @@
         data: props.xAxisData,
         axisTick: getAxisTickStyle(),
         axisLine: getAxisLineStyle(props.showAxisLine),
-        axisLabel: getAxisLabelStyle(props.showAxisLabel)
+        axisLabel: getAxisLabelStyle(props.showAxisLabel),
       },
       yAxis: {
         type: 'value',
@@ -196,8 +196,8 @@
         max: maxValue.value,
         axisLabel: getAxisLabelStyle(props.showAxisLabel),
         axisLine: getAxisLineStyle(props.showAxisLine),
-        splitLine: getSplitLineStyle(props.showSplitLine)
-      }
+        splitLine: getSplitLineStyle(props.showSplitLine),
+      },
     }
 
     if (props.showLegend && isMultipleData.value) {
@@ -217,7 +217,7 @@
           smooth: item.smooth,
           symbol: item.symbol,
           lineWidth: item.lineWidth,
-          areaStyle
+          areaStyle,
         })
       })
     } else {
@@ -229,8 +229,8 @@
         createSeriesItem({
           data: singleData,
           color: computedColor,
-          areaStyle
-        })
+          areaStyle,
+        }),
       ]
     }
 
@@ -259,7 +259,7 @@
             animatedData.value = [...currentAnimatedData]
             updateChartOptions(generateChartOptions(false))
           },
-          index * props.animationDelay + 100
+          index * props.animationDelay + 100,
         )
 
         animationTimers.value.push(timer)
@@ -305,7 +305,7 @@
     getTooltipStyle,
     getLegendStyle,
     getGridWithLegend,
-    isEmpty
+    isEmpty,
   } = useChartComponent({
     props,
     checkEmpty: checkIsEmpty,
@@ -315,7 +315,7 @@
         initChartWithAnimation()
       }
     },
-    generateOptions: () => generateChartOptions(false)
+    generateOptions: () => generateChartOptions(false),
   })
 
   const renderChart = () => {

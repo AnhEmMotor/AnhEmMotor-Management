@@ -12,7 +12,7 @@ const DEFAULT_LOADING_CONFIG = {
   },
   svg: fourDotsSpinnerSvg,
   svgViewBox: '0 0 40 40',
-  customClass: 'art-loading-fix'
+  customClass: 'art-loading-fix',
 } as const
 
 interface LoadingInstance {
@@ -26,7 +26,7 @@ export const loadingService = {
     if (!loadingInstance) {
       const config = {
         ...DEFAULT_LOADING_CONFIG,
-        background: getLoadingBackground()
+        background: getLoadingBackground(),
       }
       loadingInstance = ElLoading.service(config)
     }
@@ -38,5 +38,5 @@ export const loadingService = {
       loadingInstance.close()
       loadingInstance = null
     }
-  }
+  },
 }

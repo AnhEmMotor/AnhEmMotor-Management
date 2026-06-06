@@ -48,7 +48,7 @@
       subtitle: 'điệntửsinhsản phẩm',
       value: '1,286phần tử',
       iconBgClass: 'bg-theme/12 text-theme',
-      valueBgClass: 'bg-theme/12 text-theme'
+      valueBgClass: 'bg-theme/12 text-theme',
     },
     {
       icon: 'ri:money-cny-circle-line',
@@ -56,7 +56,7 @@
       subtitle: 'Nữphục',
       value: '892phần tử',
       iconBgClass: 'bg-success/12 text-success',
-      valueBgClass: 'bg-success/12 text-success'
+      valueBgClass: 'bg-success/12 text-success',
     },
     {
       icon: 'ri:money-cny-circle-line',
@@ -64,7 +64,7 @@
       subtitle: 'giacưdùngsản phẩm',
       value: '756phần tử',
       iconBgClass: 'bg-error/12 text-error',
-      valueBgClass: 'bg-error/12 text-error'
-    }
+      valueBgClass: 'bg-error/12 text-error',
+    },
   ]
 </script>

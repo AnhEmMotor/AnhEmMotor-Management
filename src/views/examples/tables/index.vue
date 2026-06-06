@@ -66,7 +66,7 @@
                       :class="{
                         'bg-[rgba(103,194,58,0.1)] !border-l-success': log.includes('✅'),
                         'bg-[rgba(64,158,255,0.1)] !border-l-theme': log.includes('🎯'),
-                        'bg-[rgba(245,108,108,0.1)] !border-l-danger': log.includes('❌')
+                        'bg-[rgba(245,108,108,0.1)] !border-l-danger': log.includes('❌'),
                       }"
                     >
                       {{ log }}
@@ -426,7 +426,7 @@
     Search,
     Refresh,
     QuestionFilled,
-    ArrowDown
+    ArrowDown,
   } from '@element-plus/icons-vue'
   import { ElMessageBox } from 'element-plus'
   import { useTable, CacheInvalidationStrategy } from '@/hooks/core/useTable'
@@ -453,7 +453,7 @@
     phone: '',
     status: '',
     department: '',
-    daterange: undefined
+    daterange: undefined,
   })
 
   const cacheKeys = ref<string[]>([])
@@ -465,7 +465,7 @@
 
   const tableConfig = ref({
     height: '100%',
-    fixedHeight: false
+    fixedHeight: false,
   })
 
   const computedTableHeight = computed(() => {
@@ -481,9 +481,9 @@
       {
         pattern: /^1[3456789]\d{9}$/,
         message: 'Vui lòng nhậpđúngChínhcủaSố điện thoại',
-        trigger: 'blur'
-      }
-    ]
+        trigger: 'blur',
+      },
+    ],
   }
 
   const searchFormState = ref({
@@ -491,14 +491,14 @@
     phone: '',
     status: '1',
     department: '',
-    daterange: ['2025-01-01', '2025-02-10']
+    daterange: ['2025-01-01', '2025-02-10'],
   })
 
   const USER_STATUS_CONFIG = {
     '1': { type: 'success' as const, text: 'tạiđường' },
     '2': { type: 'info' as const, text: 'Ngoạiđường' },
     '3': { type: 'warning' as const, text: 'Bất thường' },
-    '4': { type: 'danger' as const, text: 'tâmtác' }
+    '4': { type: 'danger' as const, text: 'tâmtác' },
   } as const
 
   const searchItems = computed(() => [
@@ -507,8 +507,8 @@
       label: 'Tên người dùng',
       type: 'input',
       props: {
-        placeholder: 'Vui lòng nhậpTên người dùng'
-      }
+        placeholder: 'Vui lòng nhậpTên người dùng',
+      },
     },
     {
       key: 'phone',
@@ -516,8 +516,8 @@
       type: 'input',
       props: {
         placeholder: 'Vui lòng nhậpSố điện thoại',
-        maxlength: '11'
-      }
+        maxlength: '11',
+      },
     },
     {
       key: 'status',
@@ -528,8 +528,8 @@
         { label: 'tạiđường', value: '1' },
         { label: 'Ngoạiđường', value: '2' },
         { label: 'Bất thường', value: '3' },
-        { label: 'tâmtác', value: '4' }
-      ]
+        { label: 'tâmtác', value: '4' },
+      ],
     },
     {
       key: 'department',
@@ -541,8 +541,8 @@
         { label: 'sinhsản phẩmbộ', value: 'sinhsản phẩmbộ' },
         { label: 'vậndoanhbộ', value: 'vậndoanhbộ' },
         { label: 'thịtrườngbộ', value: 'thịtrườngbộ' },
-        { label: 'thiếtkếbộ', value: 'thiếtkếbộ' }
-      ]
+        { label: 'thiếtkếbộ', value: 'thiếtkếbộ' },
+      ],
     },
     {
       key: 'daterange',
@@ -552,9 +552,9 @@
         type: 'daterange',
         startPlaceholder: 'Bắt đầuNgày',
         endPlaceholder: 'KếtthúcNgày',
-        valueFormat: 'YYYY-MM-DD'
-      }
-    }
+        valueFormat: 'YYYY-MM-DD',
+      },
+    },
   ])
 
   const exportColumns = computed(() => ({
@@ -566,15 +566,15 @@
     status: {
       title: 'Trạng thái',
       width: 10,
-      formatter: (value: string) => getUserStatusConfig(value).text
-    }
+      formatter: (value: string) => getUserStatusConfig(value).text,
+    },
   }))
 
   const getUserStatusConfig = (status: string) => {
     return (
       USER_STATUS_CONFIG[status as keyof typeof USER_STATUS_CONFIG] || {
         type: 'info' as const,
-        text: 'Chưabáo'
+        text: 'Chưabáo',
       }
     )
   }
@@ -586,7 +586,7 @@
     return {
       ...filtersParams,
       startTime,
-      endTime
+      endTime,
     }
   }
 
@@ -631,7 +631,7 @@
     resetColumns,
     reorderColumns,
     getColumnConfig,
-    getAllColumns
+    getAllColumns,
   } = useTable({
     core: {
       apiFn: (params) => {
@@ -647,7 +647,7 @@
       apiParams: {
         current: 1,
         size: 20,
-        ...searchFormState.value
+        ...searchFormState.value,
       },
 
       excludeParams: ['daterange'],
@@ -663,45 +663,45 @@
           minWidth: 200,
           useSlot: true,
           useHeaderSlot: true,
-          sortable: false
+          sortable: false,
         },
         {
           prop: 'userGender',
           label: 'GioiTinh',
           sortable: true,
-          formatter: (row) => row.userGender || 'Chưabáo'
+          formatter: (row) => row.userGender || 'Chưabáo',
         },
         {
           prop: 'userPhone',
           label: 'Số điện thoại',
           useHeaderSlot: true,
-          sortable: true
+          sortable: true,
         },
         {
           prop: 'department',
           label: 'bộcửa',
-          sortable: true
+          sortable: true,
         },
         {
           prop: 'score',
           label: 'Đánh giá',
           useSlot: true,
-          sortable: true
+          sortable: true,
         },
         {
           prop: 'status',
           label: 'Trạng thái',
           useSlot: true,
-          sortable: true
+          sortable: true,
         },
         {
           prop: 'operation',
           label: 'HanhDong',
           width: 190,
           useSlot: true,
-          fixed: 'right'
-        }
-      ]
+          fixed: 'right',
+        },
+      ],
     },
 
     transform: {
@@ -715,16 +715,16 @@
             Math.floor(Math.random() * 5)
           ],
           score: Math.floor(Math.random() * 5) + 1,
-          status: ['1', '2', '3', '4'][Math.floor(Math.random() * 4)]
+          status: ['1', '2', '3', '4'][Math.floor(Math.random() * 4)],
         }))
-      }
+      },
     },
 
     performance: {
       enableCache: true,
       cacheTime: 5 * 60 * 1000,
       debounceTime: 300,
-      maxCacheSize: 100
+      maxCacheSize: 100,
     },
 
     hooks: {
@@ -732,7 +732,7 @@
         console.log('📊 ứngChiTiet:', response)
         addCacheLog(`✅ mạnglạcVui lòngcầuThanhCong: ${data.length} điềuDữ liệu`)
         addCacheLog(
-          `📝 ứngThongTin: total=${response.total}, current=${response.current}, size=${response.size}`
+          `📝 ứngThongTin: total=${response.total}, current=${response.current}, size=${response.size}`,
         )
       },
       onError: (error) => {
@@ -744,20 +744,20 @@
         console.log('🎯 Cachemệnhtrong:', data.length, 'điều')
         console.log('🔑 Cacheđếnnguồn:', response)
         addCacheLog(
-          `🎯 Cachemệnhtrong: ${data.length} điềuDữ liệu (current=${response.current}, size=${response.size})`
+          `🎯 Cachemệnhtrong: ${data.length} điềuDữ liệu (current=${response.current}, size=${response.size})`,
         )
         ElMessage.info('Dữ liệuđếntừCache')
       },
       resetFormCallback: () => {
         console.log('🔄 FormĐãĐặt lại')
         addCacheLog('🔄 FormĐãĐặt lại')
-      }
+      },
     },
 
     debug: {
       enableLog: true,
-      logLevel: 'info'
-    }
+      logLevel: 'info',
+    },
   })
 
   const handleSelectionChange = (selection: UserListItem[]) => {
@@ -807,7 +807,7 @@
       đơnnguyêncáchđôichuột: 'success',
       bảngđầuNhấn: 'primary',
       Chọnbiếnhơn: 'warning',
-      xếpthứbiếnhơn: 'success'
+      xếpthứbiếnhơn: 'success',
     }
     return typeMap[type] || 'info'
   }
@@ -851,7 +851,7 @@
       columnCount: columns?.value?.length ?? 0,
       currentPage: pagination.current,
       pageSize: pagination.size,
-      totalCount: pagination.total
+      totalCount: pagination.total,
     }
 
     console.log('BảngThongTin:', info)
@@ -902,7 +902,7 @@
       await ElMessageBox.confirm(`Xác địnhcầnXóaNguoiDung ${row.userName} không？`, 'CanhBao', {
         confirmButtonText: 'Xác định',
         cancelButtonText: 'Hủy',
-        type: 'warning'
+        type: 'warning',
       })
 
       ElMessage.success('XóaThanhCong')
@@ -926,8 +926,8 @@
         {
           confirmButtonText: 'Xác định',
           cancelButtonText: 'Hủy',
-          type: 'warning'
-        }
+          type: 'warning',
+        },
       )
 
       ElMessage.success(`lôlượngXóa ${selectedRows.value.length} chiếcNguoiDungThanhCong`)
@@ -1052,10 +1052,10 @@
       requestParams.value = {
         ...(search as any),
         current,
-        size
+        size,
       }
     },
-    { deep: true, immediate: true }
+    { deep: true, immediate: true },
   )
 
   const handleColumnCommand = (command: string): void => {
@@ -1065,7 +1065,7 @@
           prop: 'remark',
           label: 'GhiChu',
           width: 150,
-          formatter: () => h('span', { style: 'color: #999' }, 'TạmvôGhiChu')
+          formatter: () => h('span', { style: 'color: #999' }, 'TạmvôGhiChu'),
         })
         ElMessage.success('ĐãThêm mới"GhiChu"cột')
         break
@@ -1078,16 +1078,16 @@
               prop: 'remark',
               label: 'GhiChu',
               width: 150,
-              formatter: () => h('span', { style: 'color: #999' }, 'TạmvôGhiChu')
+              formatter: () => h('span', { style: 'color: #999' }, 'TạmvôGhiChu'),
             },
             {
               prop: 'tags',
               label: 'Tag',
               width: 120,
-              formatter: () => h('span', { style: 'color: #67c23a' }, 'NguoiDung mới')
-            }
+              formatter: () => h('span', { style: 'color: #67c23a' }, 'NguoiDung mới'),
+            },
           ],
-          5
+          5,
         )
         ElMessage.success('ĐãlôlượngThêm mới"GhiChu"và"Tag"cột')
         break
@@ -1122,7 +1122,7 @@
       case 'updateColumn': {
         updateColumn?.('userPhone', {
           label: 'liênhệđiệnlời',
-          width: 140
+          width: 140,
         })
         ElMessage.success('Số điện thoạicộtĐãCập nhậtvì"liênhệđiệnlời"')
         break
@@ -1132,12 +1132,12 @@
         updateColumn?.([
           {
             prop: 'userGender',
-            updates: { width: 200, label: 'GioiTinh-ĐãCập nhật', sortable: false }
+            updates: { width: 200, label: 'GioiTinh-ĐãCập nhật', sortable: false },
           },
           {
             prop: 'userPhone',
-            updates: { width: 200, label: 'Số điện thoại-ĐãCập nhật', sortable: false }
-          }
+            updates: { width: 200, label: 'Số điện thoại-ĐãCập nhật', sortable: false },
+          },
         ])
         ElMessage.success('ĐãlôlượngCập nhậtGioiTinhvàSố điện thoạicột')
         break

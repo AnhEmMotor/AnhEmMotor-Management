@@ -130,14 +130,14 @@ export function handleElementThemeColor(theme: string, isDark: boolean = false):
   for (let i = 1; i <= 9; i++) {
     document.documentElement.style.setProperty(
       `--el-color-primary-light-${i}`,
-      getLightColor(theme, i / 10, isDark)
+      getLightColor(theme, i / 10, isDark),
     )
   }
 
   for (let i = 1; i <= 9; i++) {
     document.documentElement.style.setProperty(
       `--el-color-primary-dark-${i}`,
-      getDarkColor(theme, i / 10)
+      getDarkColor(theme, i / 10),
     )
   }
 }

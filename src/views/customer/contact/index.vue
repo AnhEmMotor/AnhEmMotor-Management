@@ -311,7 +311,7 @@
       createdAt: '10:30 - Hôm nay',
       content:
         'Tôi mới lấy xe SH 160i được 3 ngày nhưng phần nồi sau kêu rất to khi lên ga. Yêu cầu kiểm tra gấp!',
-      internalNote: 'Khách rất kỹ tính về âm thanh máy, thích được phục vụ tại chỗ.'
+      internalNote: 'Khách rất kỹ tính về âm thanh máy, thích được phục vụ tại chỗ.',
     },
     {
       id: '3488',
@@ -325,7 +325,7 @@
       statusLabel: 'Đã xong',
       createdAt: 'Hôm qua',
       content: 'Nhân viên tư vấn nhiệt tình, showroom sạch sẽ. Xe chạy rất mướt sau khi thay nhớt.',
-      internalNote: 'Khách quen, hay dùng xe SH Mode màu đỏ.'
+      internalNote: 'Khách quen, hay dùng xe SH Mode màu đỏ.',
     },
     {
       id: '3485',
@@ -338,8 +338,8 @@
       statusLabel: 'Đang xử lý',
       createdAt: '02/05/2024',
       content: 'Bảo vệ không dắt xe giúp khách, thái độ thờ ơ khi trời đang mưa to.',
-      internalNote: 'Đã nhắc nhở đội bảo vệ ca sáng.'
-    }
+      internalNote: 'Đã nhắc nhở đội bảo vệ ca sáng.',
+    },
   ])
 
   const filteredContacts = computed(() => {

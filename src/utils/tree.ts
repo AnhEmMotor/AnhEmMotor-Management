@@ -5,9 +5,9 @@ export const buildTree = <
     parent_id?: number | null
     sortOrder?: number
     children?: T[]
-  }
+  },
 >(
-  items: T[]
+  items: T[],
 ): T[] => {
   const map: Record<number, T & { children: T[] }> = {}
   items.forEach((item) => {

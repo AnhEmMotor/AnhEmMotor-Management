@@ -44,7 +44,7 @@
 
   const props = withDefaults(defineProps<Props>(), {
     strokeWidth: 5,
-    color: '#67C23A'
+    color: '#67C23A',
   })
 
   const animationDuration = 500
@@ -78,6 +78,6 @@
     () => props.percentage,
     () => {
       animateProgress()
-    }
+    },
   )
 </script>

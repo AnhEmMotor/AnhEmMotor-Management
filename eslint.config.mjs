@@ -15,15 +15,15 @@ const autoImportConfig = fs.existsSync(autoImportPath)
 
 export default [
   {
-    files: ['**/*.{js,mjs,cjs,ts,tsx,vue}']
+    files: ['**/*.{js,mjs,cjs,ts,tsx,vue}'],
   },
   {
     languageOptions: {
       globals: {
         ...globals.browser,
-        ...globals.node
-      }
-    }
+        ...globals.node,
+      },
+    },
   },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
@@ -36,8 +36,8 @@ export default [
         ...autoImportConfig.globals,
         Api: 'readonly',
         ElMessage: 'readonly',
-        ElNotification: 'readonly'
-      }
+        ElNotification: 'readonly',
+      },
     },
     rules: {
       quotes: ['error', 'single'],
@@ -53,16 +53,16 @@ export default [
         {
           argsIgnorePattern: '^_',
           varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_'
-        }
-      ]
-    }
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+    },
   },
   {
     files: ['**/*.vue'],
     languageOptions: {
-      parserOptions: { parser: tseslint.parser }
-    }
+      parserOptions: { parser: tseslint.parser },
+    },
   },
   {
     ignores: [
@@ -72,8 +72,8 @@ export default [
       '.vscode/**',
       'src/assets/**',
       'src/utils/console.ts',
-      'scratch/**'
-    ]
+      'scratch/**',
+    ],
   },
-  eslintPluginPrettierRecommended
+  eslintPluginPrettierRecommended,
 ]

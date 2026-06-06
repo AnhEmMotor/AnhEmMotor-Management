@@ -129,7 +129,7 @@
   const visible = ref(props.modelValue)
   watch(
     () => props.modelValue,
-    (val) => (visible.value = val)
+    (val) => (visible.value = val),
   )
   watch(visible, (val) => emit('update:modelValue', val))
 
@@ -142,7 +142,7 @@
     priority: 'High',
     status: 'New',
     interestedVehicle: '',
-    note: ''
+    note: '',
   })
 
   watch(
@@ -160,11 +160,11 @@
           priority: 'High',
           status: 'New',
           interestedVehicle: '',
-          note: ''
+          note: '',
         }
       }
     },
-    { immediate: true }
+    { immediate: true },
   )
 
   const handleSubmit = () => {

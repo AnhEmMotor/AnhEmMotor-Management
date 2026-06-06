@@ -34,7 +34,7 @@
 
   const visible = computed({
     get: () => props.modelValue,
-    set: (value: boolean) => emit('update:modelValue', value)
+    set: (value: boolean) => emit('update:modelValue', value),
   })
 
   const handleOpen = () => {

@@ -11,7 +11,7 @@
         class="text-sm font-medium"
         :class="[
           percentage > 0 ? 'text-success' : 'text-danger',
-          isMiniChart ? 'absolute bottom-5' : ''
+          isMiniChart ? 'absolute bottom-5' : '',
         ]"
       >
         {{ percentage > 0 ? '+' : '' }}{{ percentage }}%
@@ -57,14 +57,14 @@
   }
 
   const props = withDefaults(defineProps<Props>(), {
-    height: 11
+    height: 11,
   })
 
   const { chartRef } = useChartComponent({
     props: {
       height: `${props.height}rem`,
       loading: false,
-      isEmpty: !props.chartData?.length || props.chartData.every((val) => val === 0)
+      isEmpty: !props.chartData?.length || props.chartData.every((val) => val === 0),
     },
     checkEmpty: () => !props.chartData?.length || props.chartData.every((val) => val === 0),
     watchSources: [() => props.chartData, () => props.color, () => props.showAreaColor],
@@ -76,16 +76,16 @@
           top: 0,
           right: 0,
           bottom: 0,
-          left: 0
+          left: 0,
         },
         xAxis: {
           type: 'category',
           show: false,
-          boundaryGap: false
+          boundaryGap: false,
         },
         yAxis: {
           type: 'value',
-          show: false
+          show: false,
         },
         series: [
           {
@@ -95,7 +95,7 @@
             showSymbol: false,
             lineStyle: {
               width: 3,
-              color: computedColor
+              color: computedColor,
             },
             areaStyle: props.showAreaColor
               ? {
@@ -104,20 +104,20 @@
                       offset: 0,
                       color: props.color
                         ? hexToRgba(props.color, 0.2).rgba
-                        : hexToRgba(getCssVar('--el-color-primary'), 0.2).rgba
+                        : hexToRgba(getCssVar('--el-color-primary'), 0.2).rgba,
                     },
                     {
                       offset: 1,
                       color: props.color
                         ? hexToRgba(props.color, 0.01).rgba
-                        : hexToRgba(getCssVar('--el-color-primary'), 0.01).rgba
-                    }
-                  ])
+                        : hexToRgba(getCssVar('--el-color-primary'), 0.01).rgba,
+                    },
+                  ]),
                 }
-              : undefined
-          }
-        ]
+              : undefined,
+          },
+        ],
       }
-    }
+    },
   })
 </script>

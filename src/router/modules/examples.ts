@@ -6,7 +6,7 @@ export const examplesRoutes: AppRouteRecord = {
   component: '/index/index',
   meta: {
     title: 'menus.examples.title',
-    icon: 'ri:sparkling-line'
+    icon: 'ri:sparkling-line',
   },
   children: [
     {
@@ -15,7 +15,7 @@ export const examplesRoutes: AppRouteRecord = {
       component: '',
       meta: {
         title: 'menus.examples.permission.title',
-        icon: 'ri:fingerprint-line'
+        icon: 'ri:fingerprint-line',
       },
       children: [
         {
@@ -25,8 +25,8 @@ export const examplesRoutes: AppRouteRecord = {
           meta: {
             title: 'menus.examples.permission.switchRole',
             icon: 'ri:contacts-line',
-            keepAlive: true
-          }
+            keepAlive: true,
+          },
         },
         {
           path: 'button-auth',
@@ -44,9 +44,9 @@ export const examplesRoutes: AppRouteRecord = {
               { title: 'Xem', authMark: 'view' },
               { title: 'Đăng tải', authMark: 'publish' },
               { title: 'CauHinh', authMark: 'config' },
-              { title: 'Quản lý', authMark: 'manage' }
-            ]
-          }
+              { title: 'Quản lý', authMark: 'manage' },
+            ],
+          },
         },
         {
           path: 'page-visibility',
@@ -56,10 +56,10 @@ export const examplesRoutes: AppRouteRecord = {
             title: 'menus.examples.permission.pageVisibility',
             icon: 'ri:user-3-line',
             keepAlive: true,
-            roles: ['R_SUPER']
-          }
-        }
-      ]
+            roles: ['R_SUPER'],
+          },
+        },
+      ],
     },
     {
       path: 'tabs',
@@ -67,8 +67,8 @@ export const examplesRoutes: AppRouteRecord = {
       component: '/examples/tabs',
       meta: {
         title: 'menus.examples.tabs',
-        icon: 'ri:price-tag-line'
-      }
+        icon: 'ri:price-tag-line',
+      },
     },
     {
       path: 'tables/basic',
@@ -77,8 +77,8 @@ export const examplesRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.examples.tablesBasic',
         icon: 'ri:layout-grid-line',
-        keepAlive: true
-      }
+        keepAlive: true,
+      },
     },
     {
       path: 'tables',
@@ -87,8 +87,8 @@ export const examplesRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.examples.tables',
         icon: 'ri:table-3',
-        keepAlive: true
-      }
+        keepAlive: true,
+      },
     },
     {
       path: 'forms',
@@ -97,8 +97,8 @@ export const examplesRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.examples.forms',
         icon: 'ri:table-view',
-        keepAlive: true
-      }
+        keepAlive: true,
+      },
     },
     {
       path: 'form/search-bar',
@@ -107,8 +107,8 @@ export const examplesRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.examples.searchBar',
         icon: 'ri:table-line',
-        keepAlive: true
-      }
+        keepAlive: true,
+      },
     },
     {
       path: 'tables/tree',
@@ -117,8 +117,8 @@ export const examplesRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.examples.tablesTree',
         icon: 'ri:layout-2-line',
-        keepAlive: true
-      }
+        keepAlive: true,
+      },
     },
     {
       path: 'socket-chat',
@@ -127,8 +127,8 @@ export const examplesRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.examples.socketChat',
         icon: 'ri:shake-hands-line',
-        keepAlive: true
-      }
-    }
-  ]
+        keepAlive: true,
+      },
+    },
+  ],
 }

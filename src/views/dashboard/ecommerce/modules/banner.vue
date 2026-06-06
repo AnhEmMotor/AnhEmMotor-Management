@@ -7,16 +7,16 @@
     :decoration="false"
     :meteorConfig="{
       enabled: true,
-      count: 10
+      count: 10,
     }"
     :buttonConfig="{
       show: false,
-      text: ''
+      text: '',
     }"
     :imageConfig="{
       src: bannerCover,
       width: '18rem',
-      bottom: '-7.5rem'
+      bottom: '-7.5rem',
     }"
     @click="handleBannerClick"
   >

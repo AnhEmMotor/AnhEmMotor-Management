@@ -198,12 +198,12 @@
   const connectForm = ref({
     url: 'ws://localhost:8080/ws',
     autoReconnect: true,
-    heartbeat: true
+    heartbeat: true,
   })
 
   const messageForm = ref({
     type: 'text',
-    content: ''
+    content: '',
   })
 
   const messageList = ref<
@@ -232,7 +232,7 @@
     logList.value.unshift({
       type,
       message,
-      time: new Date().toLocaleTimeString()
+      time: new Date().toLocaleTimeString(),
     })
 
     if (logList.value.length > 100) {
@@ -244,7 +244,7 @@
     messageList.value.unshift({
       type,
       content,
-      time: new Date().toLocaleTimeString()
+      time: new Date().toLocaleTimeString(),
     })
 
     if (messageList.value.length > 50) {
@@ -281,7 +281,7 @@
         messageHandler: handleSocketMessage,
         reconnectInterval: connectForm.value.autoReconnect ? 5000 : 0,
         heartbeatInterval: connectForm.value.heartbeat ? 10000 : 0,
-        maxReconnectAttempts: 5
+        maxReconnectAttempts: 5,
       })
 
       wsClient.value.init()
@@ -297,7 +297,7 @@
             reconnectCount.value = 0
           }
         },
-        { immediate: true }
+        { immediate: true },
       )
 
       stopWatchStatus = watch(
@@ -307,7 +307,7 @@
             reconnectCount.value++
             addLog('warning', `từđộngtrùngliềntrong (thứ${reconnectCount.value}lần)`)
           }
-        }
+        },
       )
     } catch (error) {
       isConnecting.value = false

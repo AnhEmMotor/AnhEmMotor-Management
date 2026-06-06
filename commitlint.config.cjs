@@ -16,13 +16,13 @@ module.exports = {
         'ci',
         'revert',
         'chore',
-        'wip'
-      ]
+        'wip',
+      ],
     ],
     'subject-case': [0],
     'header-max-length': [0],
     'subject-max-length': [0],
-    'body-max-line-length': [0]
+    'body-max-line-length': [0],
   },
 
   prompt: {
@@ -38,7 +38,7 @@ module.exports = {
       footer: '列举关联issue (可选) 例如: #31, #I3244 :\n',
       generatingByAI: '正在通过 AI 生成你的提交简短描述...',
       generatedSelectByAI: '选择一个 AI 生成的简短描述:',
-      confirmCommit: '是否提交或修改commit ?'
+      confirmCommit: '是否提交或修改commit ?',
     },
     types: [
       { value: 'feat', name: 'feat:     新增功能' },
@@ -50,11 +50,14 @@ module.exports = {
       { value: 'test', name: 'test:     添加疏漏测试或已有测试改动' },
       {
         value: 'build',
-        name: 'build:    构建流程、外部依赖变更（如升级 npm 包、修改 vite 配置等）'
+        name: 'build:    构建流程、外部依赖变更（如升级 npm 包、修改 vite 配置等）',
       },
       { value: 'ci', name: 'ci:       修改 CI 配置、脚本' },
       { value: 'revert', name: 'revert:   回滚 commit' },
-      { value: 'chore', name: 'chore:    对构建过程或辅助工具和库的更改（不影响源文件、测试用例）' }
+      {
+        value: 'chore',
+        name: 'chore:    对构建过程或辅助工具和库的更改（不影响源文件、测试用例）',
+      },
     ],
     useEmoji: true,
     emojiAlign: 'center',
@@ -87,6 +90,6 @@ module.exports = {
     defaultBody: '',
     defaultIssues: '',
     defaultScope: '',
-    defaultSubject: ''
-  }
+    defaultSubject: '',
+  },
 }

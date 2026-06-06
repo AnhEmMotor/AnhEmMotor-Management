@@ -15,7 +15,7 @@
 
   const props = withDefaults(defineProps<Props>(), {
     size: 500,
-    themeColor: 'var(--el-color-primary)'
+    themeColor: 'var(--el-color-primary)',
   })
 
   const svgContent = ref('')
@@ -24,7 +24,7 @@
     const sizeValue = typeof props.size === 'number' ? `${props.size}px` : props.size
     return {
       width: sizeValue,
-      height: sizeValue
+      height: sizeValue,
     }
   })
 
@@ -35,7 +35,7 @@
     '#006EFF': 'var(--el-color-primary)',
     '#fff': 'var(--default-box-color)',
     '#ffffff': 'var(--default-box-color)',
-    '#DEEBFC': 'var(--el-color-primary-light-7)'
+    '#DEEBFC': 'var(--el-color-primary-light-7)',
   } as const
 
   const applyThemeToSvg = (content: string): string => {
@@ -48,7 +48,7 @@
           .replace(fillRegex, `fill="${themeColor}"`)
           .replace(strokeRegex, `stroke="${themeColor}"`)
       },
-      content
+      content,
     )
   }
 

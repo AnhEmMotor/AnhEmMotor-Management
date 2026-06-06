@@ -19,7 +19,7 @@ class StorageCompatibilityManager {
     const currentVersionPattern = StorageConfig.createCurrentVersionPattern()
 
     return storageKeys.some(
-      (key) => currentVersionPattern.test(key) && localStorage.getItem(key) !== null
+      (key) => currentVersionPattern.test(key) && localStorage.getItem(key) !== null,
     )
   }
 
@@ -46,7 +46,7 @@ class StorageCompatibilityManager {
       offset: 40,
       duration: 5000,
       message:
-        'HeThongđođếnquyểnđịaDữ liệuBất thường，Vui lòngtrùngmớiĐăng nhậpHeThongkhôiphụckhiếndùng！'
+        'HeThongđođếnquyểnđịaDữ liệuBất thường，Vui lòngtrùngmớiĐăng nhậpHeThongkhôiphụckhiếndùng！',
     })
   }
 

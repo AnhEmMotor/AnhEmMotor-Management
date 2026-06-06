@@ -95,7 +95,7 @@
     collection: 5,
     comment: 8,
     userName: 'ẩndanh',
-    color: COLOR_LIST[0]
+    color: COLOR_LIST[0],
   })
 
   const commentsWithColors = computed(() => {
@@ -112,7 +112,7 @@
 
       return {
         ...item,
-        color: COLOR_LIST[newIndex]
+        color: COLOR_LIST[newIndex],
       }
     })
   })

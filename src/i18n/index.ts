@@ -35,12 +35,12 @@ const i18n = createI18n({
   legacy: false,
   globalInjection: true,
   allowComposition: true,
-  messages
+  messages,
 })
 
 export const languageOptions = langList.map((item) => ({
   value: item.category,
-  label: item.lang
+  label: item.lang,
 }))
 
 export const $t = i18n.global.t

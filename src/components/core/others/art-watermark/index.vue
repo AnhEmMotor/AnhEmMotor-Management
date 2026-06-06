@@ -57,6 +57,6 @@
     gapY: 100,
     offsetX: 50,
     offsetY: 50,
-    zIndex: 3100
+    zIndex: 3100,
   })
 </script>

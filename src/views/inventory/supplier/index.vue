@@ -146,13 +146,13 @@
   const stats = ref<SupplierStatistics>({
     totalSuppliers: 0,
     financialSuppliers: 0,
-    creditSuppliers: 0
+    creditSuppliers: 0,
   })
 
   const pagination = reactive({
     current: 1,
     size: 10,
-    total: 0
+    total: 0,
   })
 
   const data = ref<Supplier[]>([])
@@ -165,7 +165,7 @@
     taxIdentificationNumber: '',
     address: '',
     notes: '',
-    status: true
+    status: true,
   })
 
   const columns = ref([
@@ -179,15 +179,15 @@
       useSlot: true,
       width: 120,
       fixed: 'right' as const,
-      align: 'center'
-    }
+      align: 'center',
+    },
   ])
 
   const columnChecks = columns
 
   const searchForm = ref({
     name: '',
-    type: [] as string[]
+    type: [] as string[],
   })
 
   const searchItems = ref([
@@ -200,9 +200,9 @@
         options: [] as { label: string; value: string }[],
         multiple: true,
         collapseTags: true,
-        placeholder: 'Chọn loại đối tác...'
-      }
-    }
+        placeholder: 'Chọn loại đối tác...',
+      },
+    },
   ])
 
   const getPartnerTypeTag = (type: string) => {
@@ -222,7 +222,7 @@
       if (searchItems.value[1].props) {
         searchItems.value[1].props.options = partnerTypes.value.map((pt) => ({
           label: pt.name,
-          value: pt.key
+          value: pt.key,
         }))
       }
     } catch (error) {
@@ -250,7 +250,7 @@
       taxIdentificationNumber: '',
       address: '',
       notes: '',
-      status: true
+      status: true,
     }
     dialogVisible.value = true
   }
@@ -269,8 +269,8 @@
         {
           confirmButtonText: 'Xóa',
           cancelButtonText: 'Hủy',
-          type: 'warning'
-        }
+          type: 'warning',
+        },
       )
       await SupplierApi.delete(row.id)
       ElMessage.success('Xóa thành công')
@@ -331,7 +331,7 @@
       const params: any = {
         current: pagination.current,
         size: pagination.size,
-        Filters: sieveFilters.join(',') || undefined
+        Filters: sieveFilters.join(',') || undefined,
       }
 
       const res = await SupplierApi.getList(params)
@@ -394,7 +394,7 @@
 
       const resBlob = await SupplierApi.exportExcel({
         Filters: sieveFilters.join(',') || undefined,
-        Sorts: 'Id desc'
+        Sorts: 'Id desc',
       })
 
       const url = window.URL.createObjectURL(new Blob([resBlob]))

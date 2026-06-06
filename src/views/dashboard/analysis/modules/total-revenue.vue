@@ -29,17 +29,17 @@
     'tuầnbốn',
     'tuầnnăm',
     'tuầnsáu',
-    'tuầnngày'
+    'tuầnngày',
   ])
 
   const revenueData = ref<RevenueDataItem[]>([
     {
       name: 'Bán hàng trực tuyến',
-      data: [12, 13, 5, 15, 10, 15, 18]
+      data: [12, 13, 5, 15, 10, 15, 18],
     },
     {
       name: 'Bán hàng trực tiếp',
-      data: [10, 11, 20, 5, 11, 13, 10]
-    }
+      data: [10, 11, 20, 5, 11, 13, 10],
+    },
   ])
 </script>

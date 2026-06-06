@@ -33,7 +33,7 @@
 
   const formData = computed({
     get: () => props.modelValue,
-    set: (val) => emit('update:modelValue', val)
+    set: (val) => emit('update:modelValue', val),
   })
 
   const rules = {}
@@ -44,15 +44,15 @@
       key: 'roleName',
       type: 'input',
       placeholder: 'Nhập tên vai trò cần tìm...',
-      clearable: true
+      clearable: true,
     },
     {
       label: '',
       key: 'description',
       type: 'input',
       placeholder: 'Nhập mô tả vai trò...',
-      clearable: true
-    }
+      clearable: true,
+    },
   ])
 
   const handleReset = () => {

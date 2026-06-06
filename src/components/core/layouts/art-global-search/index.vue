@@ -309,7 +309,7 @@
     const itemKey = item.path || String(item.meta.link || '')
     const hasItemIndex = historyResult.value.findIndex(
       (historyItem: AppRouteRecord) =>
-        (historyItem.path || String(historyItem.meta.link || '')) === itemKey
+        (historyItem.path || String(historyItem.meta.link || '')) === itemKey,
     )
 
     if (hasItemIndex !== -1) {

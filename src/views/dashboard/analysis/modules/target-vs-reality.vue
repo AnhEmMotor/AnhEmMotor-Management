@@ -46,14 +46,14 @@
     'tuầnbốn',
     'tuầnnăm',
     'tuầnsáu',
-    'tuầnngày'
+    'tuầnngày',
   ])
 
   const revenueData = ref<RevenueDataItem[]>([
     {
       name: 'Bán hàng trực tuyến',
-      data: [12, 13, 5, 15, 10, 15, 18]
-    }
+      data: [12, 13, 5, 15, 10, 15, 18],
+    },
   ])
 
   const totalItems = [
@@ -63,7 +63,7 @@
       label: 'thựctếtácbántrán',
       subLabel: 'toàncầu',
       value: '8,823',
-      valueClass: 'text-theme'
+      valueClass: 'text-theme',
     },
     {
       icon: 'ri:money-dollar-circle-line',
@@ -71,7 +71,7 @@
       label: 'mụctiêutácbántrán',
       subLabel: 'thươngnghiệp',
       value: '12,122',
-      valueClass: 'text-theme'
-    }
+      valueClass: 'text-theme',
+    },
   ]
 </script>

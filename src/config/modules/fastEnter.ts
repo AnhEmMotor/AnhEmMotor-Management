@@ -12,7 +12,7 @@ const fastEnterConfig: FastEnterConfig = {
       iconColor: '#377dff',
       enabled: true,
       order: 1,
-      routeName: 'Console'
+      routeName: 'Console',
     },
     {
       name: 'Trang phân tích',
@@ -21,7 +21,7 @@ const fastEnterConfig: FastEnterConfig = {
       iconColor: '#ff3b30',
       enabled: true,
       order: 2,
-      routeName: 'Analysis'
+      routeName: 'Analysis',
     },
     {
       name: 'lễhoaHiệu quả',
@@ -30,7 +30,7 @@ const fastEnterConfig: FastEnterConfig = {
       iconColor: '#7A7FFF',
       enabled: true,
       order: 3,
-      routeName: 'Fireworks'
+      routeName: 'Fireworks',
     },
     {
       name: 'tròngày',
@@ -39,7 +39,7 @@ const fastEnterConfig: FastEnterConfig = {
       iconColor: '#13DEB9',
       enabled: true,
       order: 4,
-      routeName: 'Chat'
+      routeName: 'Chat',
     },
     {
       name: 'Chính thứcTaiLieu',
@@ -48,7 +48,7 @@ const fastEnterConfig: FastEnterConfig = {
       iconColor: '#ffb100',
       enabled: true,
       order: 5,
-      link: WEB_LINKS.DOCS
+      link: WEB_LINKS.DOCS,
     },
     {
       name: 'kỹthuậtchiếctrì',
@@ -57,7 +57,7 @@ const fastEnterConfig: FastEnterConfig = {
       iconColor: '#ff6b6b',
       enabled: true,
       order: 6,
-      link: WEB_LINKS.COMMUNITY
+      link: WEB_LINKS.COMMUNITY,
     },
     {
       name: 'NhatKy cập nhật',
@@ -66,7 +66,7 @@ const fastEnterConfig: FastEnterConfig = {
       iconColor: '#38C0FC',
       enabled: true,
       order: 7,
-      routeName: 'ChangeLog'
+      routeName: 'ChangeLog',
     },
     {
       name: 'bililibilili',
@@ -75,8 +75,8 @@ const fastEnterConfig: FastEnterConfig = {
       iconColor: '#FB7299',
       enabled: true,
       order: 8,
-      link: WEB_LINKS.BILIBILI
-    }
+      link: WEB_LINKS.BILIBILI,
+    },
   ],
 
   quickLinks: [
@@ -84,39 +84,39 @@ const fastEnterConfig: FastEnterConfig = {
       name: 'Đăng nhập',
       enabled: true,
       order: 1,
-      routeName: 'Login'
+      routeName: 'Login',
     },
     {
       name: 'DangKy',
       enabled: true,
       order: 2,
-      routeName: 'Register'
+      routeName: 'Register',
     },
     {
       name: 'quênghiMật khẩu',
       enabled: true,
       order: 3,
-      routeName: 'ForgetPassword'
+      routeName: 'ForgetPassword',
     },
     {
       name: 'địnhgiá',
       enabled: true,
       order: 4,
-      routeName: 'Pricing'
+      routeName: 'Pricing',
     },
     {
       name: 'Trung tâm cá nhân',
       enabled: true,
       order: 5,
-      routeName: 'UserCenter'
+      routeName: 'UserCenter',
     },
     {
       name: 'giữQuản lý',
       enabled: true,
       order: 6,
-      routeName: 'ArticleComment'
-    }
-  ]
+      routeName: 'ArticleComment',
+    },
+  ],
 }
 
 export default Object.freeze(fastEnterConfig)

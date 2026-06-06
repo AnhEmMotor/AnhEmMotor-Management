@@ -20,13 +20,13 @@ export function fetchGetBrandList(params: any) {
     params: {
       Page: current,
       PageSize: size,
-      ...rest
-    }
+      ...rest,
+    },
   })
 }
 
 export function fetchGetBrandDetail(id: number) {
   return request.get<Brand>({
-    url: `/api/Brand/${id}`
+    url: `/api/Brand/${id}`,
   })
 }

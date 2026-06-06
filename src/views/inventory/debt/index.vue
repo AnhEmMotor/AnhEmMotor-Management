@@ -92,7 +92,7 @@
       paid: 3500000000,
       balance: 1500000000,
       deadline: '20/05/2026',
-      status: 'Pending'
+      status: 'Pending',
     },
     {
       name: 'Yamaha Motor',
@@ -100,7 +100,7 @@
       paid: 1200000000,
       balance: 0,
       deadline: '-',
-      status: 'Cleared'
+      status: 'Cleared',
     },
     {
       name: 'Mạnh Quang Phụ Tùng',
@@ -108,8 +108,8 @@
       paid: 50000000,
       balance: 100000000,
       deadline: '10/05/2026',
-      status: 'Overdue'
-    }
+      status: 'Overdue',
+    },
   ]
 
   const bankInstallments = [
@@ -118,22 +118,22 @@
       bank: 'FE Credit',
       amount: 25000000,
       daysPending: 5,
-      contact: 'Mr. Bình (0901234567)'
+      contact: 'Mr. Bình (0901234567)',
     },
     {
       customer: 'Trần Thị B',
       bank: 'Home Credit',
       amount: 18000000,
       daysPending: 2,
-      contact: 'Ms. Lan (0987654321)'
+      contact: 'Ms. Lan (0987654321)',
     },
     {
       customer: 'Lê Văn C',
       bank: 'HD Saison',
       amount: 45000000,
       daysPending: 12,
-      contact: 'Mr. Hùng (0912345678)'
-    }
+      contact: 'Mr. Hùng (0912345678)',
+    },
   ]
 
   const supplierColumns = [
@@ -143,11 +143,11 @@
       prop: 'total',
       width: 150,
       align: 'right',
-      formatter: (row: any) => row.total?.toLocaleString()
+      formatter: (row: any) => row.total?.toLocaleString(),
     },
     { label: 'Còn nợ', prop: 'balance', width: 180, useSlot: true, align: 'right' },
     { label: 'Hạn thanh toán', prop: 'deadline', width: 140, align: 'center' },
-    { label: 'Trạng thái', prop: 'status', width: 130, useSlot: true, align: 'center' }
+    { label: 'Trạng thái', prop: 'status', width: 130, useSlot: true, align: 'center' },
   ]
 
   const bankColumns = [
@@ -158,7 +158,7 @@
       prop: 'amount',
       width: 150,
       align: 'right',
-      formatter: (row: any) => row.amount?.toLocaleString()
+      formatter: (row: any) => row.amount?.toLocaleString(),
     },
     { label: 'Thời gian treo', prop: 'daysPending', width: 140, useSlot: true, align: 'center' },
     { label: 'Đầu mối liên hệ', prop: 'contact', minWidth: 200 },
@@ -167,8 +167,8 @@
       prop: 'operation',
       useSlot: true,
       width: 180,
-      fixed: 'right' as const
-    }
+      fixed: 'right' as const,
+    },
   ]
 
   const handleContact = (row: any) => {

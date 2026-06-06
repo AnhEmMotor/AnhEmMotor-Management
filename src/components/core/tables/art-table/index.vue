@@ -30,7 +30,7 @@
               v-bind="{
                 ...slotScope,
                 prop: col.prop,
-                value: col.prop ? slotScope.row[col.prop] : undefined
+                value: col.prop ? slotScope.row[col.prop] : undefined,
               }"
             />
           </template>
@@ -132,7 +132,7 @@
     size: undefined,
     emptyHeight: '100%',
     emptyText: 'Không có dữ liệu. Vui lòng thử lại sau!',
-    showTableHeader: true
+    showTableHeader: true,
   })
   const instance = getCurrentInstance()
   const attrs = useAttrs()
@@ -140,7 +140,7 @@
   const LAYOUT = {
     MOBILE: 'prev, pager, next, sizes, jumper, total',
     IPAD: 'prev, pager, next, jumper, total',
-    DESKTOP: 'total, prev, pager, next, sizes, jumper'
+    DESKTOP: 'total, prev, pager, next, sizes, jumper',
   }
 
   const layout = computed(() => {
@@ -160,12 +160,12 @@
     layout: layout.value,
     hideOnSinglePage: false,
     size: 'default',
-    pagerCount: width.value > 1200 ? 7 : 5
+    pagerCount: width.value > 1200 ? 7 : 5,
   }
 
   const mergedPaginationOptions = computed(() => ({
     ...DEFAULT_PAGINATION_OPTIONS,
-    ...props.paginationOptions
+    ...props.paginationOptions,
   }))
 
   const border = computed(() => props.border ?? isBorder.value)
@@ -203,7 +203,7 @@
     showTableHeader: computed(() => props.showTableHeader),
     paginationHeight,
     tableHeaderHeight,
-    paginationSpacing: PAGINATION_SPACING
+    paginationSpacing: PAGINATION_SPACING,
   })
 
   const height = computed(() => {
@@ -220,7 +220,7 @@
     background: isHeaderBackground.value
       ? 'var(--el-fill-color-lighter)'
       : 'var(--default-box-color)',
-    ...(props.headerCellStyle || {})
+    ...(props.headerCellStyle || {}),
   }))
 
   const hasExplicitTableProp = (propName: string): boolean => {
@@ -240,7 +240,7 @@
 
     selectOnIndeterminate: hasExplicitTableProp('selectOnIndeterminate')
       ? props.selectOnIndeterminate
-      : undefined
+      : undefined,
   }))
 
   const showPagination = computed(() => props.pagination && !isEmpty.value)
@@ -315,12 +315,12 @@
         tableHeaderRef.value = undefined
       }
     },
-    { flush: 'post' }
+    { flush: 'post' },
   )
 
   defineExpose({
     scrollToTop,
-    elTableRef
+    elTableRef,
   })
 </script>
 

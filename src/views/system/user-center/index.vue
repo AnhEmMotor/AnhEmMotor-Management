@@ -166,33 +166,33 @@
     mobile: '18888888888',
     address: 'Thành phố Thâm Quyến, Quảng Đôngbảoanđồngtâyquêphốđạo101tòa201',
     sex: '2',
-    des: 'Art Design Pro làmộtkhoảnkiêmdụng cụthiếtkếmỹhọcvớicaohiệumởphátcủasauchiếcHeThong.'
+    des: 'Art Design Pro làmộtkhoảnkiêmdụng cụthiếtkếmỹhọcvớicaohiệumởphátcủasauchiếcHeThong.',
   })
 
   const pwdForm = reactive({
     password: '123456',
     newPassword: '123456',
-    confirmPassword: '123456'
+    confirmPassword: '123456',
   })
 
   const rules = reactive<FormRules>({
     realName: [
       { required: true, message: 'Vui lòng nhậpHọ tên', trigger: 'blur' },
-      { min: 2, max: 50, message: 'trườngđộtại 2 đến 50 chiếcchữký', trigger: 'blur' }
+      { min: 2, max: 50, message: 'trườngđộtại 2 đến 50 chiếcchữký', trigger: 'blur' },
     ],
     nikeName: [
       { required: true, message: 'Vui lòng nhậpBiệt danh', trigger: 'blur' },
-      { min: 2, max: 50, message: 'trườngđộtại 2 đến 50 chiếcchữký', trigger: 'blur' }
+      { min: 2, max: 50, message: 'trườngđộtại 2 đến 50 chiếcchữký', trigger: 'blur' },
     ],
     email: [{ required: true, message: 'Vui lòng nhậpEmail', trigger: 'blur' }],
     mobile: [{ required: true, message: 'Vui lòng nhậpSố điện thoạimã', trigger: 'blur' }],
     address: [{ required: true, message: 'Vui lòng nhậpDiaChi', trigger: 'blur' }],
-    sex: [{ required: true, message: 'Vui lòng chọnGioiTinh', trigger: 'blur' }]
+    sex: [{ required: true, message: 'Vui lòng chọnGioiTinh', trigger: 'blur' }],
   })
 
   const options = [
     { value: '1', label: 'Nam' },
-    { value: '2', label: 'Nữ' }
+    { value: '2', label: 'Nữ' },
   ]
 
   const lableList: Array<string> = [
@@ -201,7 +201,7 @@
     'cay~',
     'đạitrườngchân',
     'xuyênemtử',
-    'biểnnạpxuyên'
+    'biểnnạpxuyên',
   ]
 
   onMounted(() => {

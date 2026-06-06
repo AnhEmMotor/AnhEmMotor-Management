@@ -65,6 +65,6 @@
     iconSize: 30,
     iconBgRadius: 50,
     decimals: 0,
-    separator: ','
+    separator: ',',
   })
 </script>

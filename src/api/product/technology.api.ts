@@ -5,13 +5,13 @@ export const TechnologyApi = {
   getList: (params?: { category_id?: number; brand_id?: number }) => {
     return request.get<Technology[]>({
       url: '/api/Technologies',
-      params
+      params,
     })
   },
 
   getCategories: () => {
     return request.get<any[]>({
-      url: '/api/Technologies/categories'
+      url: '/api/Technologies/categories',
     })
   },
 
@@ -25,14 +25,14 @@ export const TechnologyApi = {
   }) => {
     return request.post<Technology>({
       url: '/api/Technologies',
-      data
+      data,
     })
   },
 
   createCategory: (data: { name: string }) => {
     return request.post<any>({
       url: '/api/Technologies/categories',
-      data
+      data,
     })
   },
 
@@ -46,17 +46,17 @@ export const TechnologyApi = {
       defaultTitle?: string
       defaultDescription?: string
       defaultImageUrl?: string
-    }
+    },
   ) => {
     return request.put<Technology>({
       url: `/api/Technologies/${id}`,
-      data
+      data,
     })
   },
 
   delete: (id: number) => {
     return request.del({
-      url: `/api/Technologies/${id}`
+      url: `/api/Technologies/${id}`,
     })
-  }
+  },
 }

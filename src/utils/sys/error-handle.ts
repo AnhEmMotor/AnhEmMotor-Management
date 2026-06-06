@@ -2,7 +2,16 @@ import type { App } from 'vue'
 
 const IGNORABLE_SCRIPT_ERRORS = [
   'ResizeObserver loop completed with undelivered notifications.',
-  'ResizeObserver loop limit exceeded'
+  'ResizeObserver loop limit exceeded',
+]
+
+const CHROME_EXTENSION_ERROR_PATTERNS = [
+  /chrome runtime error/i,
+  /a listener indicated an asynchronous response by returning true/i,
+  /the message channel closed before a response was received/i,
+  /could not establish connection.*receiving end does not exist/i,
+  /unchecked runtime\.lasterror/i,
+  /cleanup timeout/i,
 ]
 
 function normalizeErrorMessage(message: Event | string): string {
@@ -32,6 +41,10 @@ function isIgnorableScriptError(message: Event | string, source?: string): boole
     return true
   }
 
+  if (CHROME_EXTENSION_ERROR_PATTERNS.some((pattern) => pattern.test(normalizedMessage))) {
+    return true
+  }
+
   return false
 }
 
@@ -44,7 +57,7 @@ export function scriptErrorHandler(
   source?: string,
   lineno?: number,
   colno?: number,
-  error?: Error
+  error?: Error,
 ): boolean {
   if (isIgnorableScriptError(message, source)) {
     return true
@@ -57,6 +70,11 @@ export function scriptErrorHandler(
 
 export function registerPromiseErrorHandler() {
   window.addEventListener('unhandledrejection', (event) => {
+    const reason = event.reason
+    const message = typeof reason === 'string' ? reason : reason?.message || ''
+    if (CHROME_EXTENSION_ERROR_PATTERNS.some((pattern) => pattern.test(message))) {
+      return
+    }
     console.error('[PromiseError]', event.reason)
   })
 }
@@ -75,11 +93,11 @@ export function registerResourceErrorHandler() {
           src:
             (target as HTMLImageElement).src ||
             (target as HTMLScriptElement).src ||
-            (target as HTMLLinkElement).href
+            (target as HTMLLinkElement).href,
         })
       }
     },
-    true
+    true,
   )
 }
 

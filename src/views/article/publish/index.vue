@@ -278,7 +278,7 @@
     { id: 1, name: 'Tư vấn mua xe' },
     { id: 2, name: 'Kinh nghiệm bảo dưỡng' },
     { id: 3, name: 'Tin tức showroom' },
-    { id: 4, name: 'So sánh xe' }
+    { id: 4, name: 'So sánh xe' },
   ])
 
   const mockProducts = [
@@ -286,20 +286,20 @@
       id: 101,
       name: 'Honda Winner X 2024',
       price: '46.000.000đ',
-      img: 'https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?auto=format&fit=crop&q=80&w=400'
+      img: 'https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?auto=format&fit=crop&q=80&w=400',
     },
     {
       id: 102,
       name: 'Honda SH 160i Sporty',
       price: '102.000.000đ',
-      img: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=400'
+      img: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=400',
     },
     {
       id: 103,
       name: 'Yamaha Exciter 155 VVA',
       price: '48.500.000đ',
-      img: 'https://yamaha-motor.com.vn/wp-content/uploads/2023/09/Exciter-155-VVA-GP.jpg'
-    }
+      img: 'https://yamaha-motor.com.vn/wp-content/uploads/2023/09/Exciter-155-VVA-GP.jpg',
+    },
   ]
 
   const insertCTA = (type: string) => {

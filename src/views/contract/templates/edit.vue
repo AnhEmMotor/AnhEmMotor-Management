@@ -9,7 +9,7 @@
           circle
           plain
           @click="goBack"
-          class="!w-10 !h-10 !border-slate-200 hover:!border-slate-800"
+          class="!w-10 !h-10 !border-red-200 hover:!border-red-600 !mr-6 text-red-500 transition-colors"
         >
           <ArtSvgIcon icon="ri:arrow-left-line" class="text-lg" />
         </el-button>
@@ -47,6 +47,14 @@
       </div>
 
       <div class="flex items-center gap-3">
+        <el-button
+          @click="() => fileInput?.click()"
+          class="!h-10 !px-5 !rounded-xl !border-2 !border-slate-200 !text-slate-600 !font-black !text-[10px] !uppercase !tracking-widest hover:!border-slate-800 transition-all"
+        >
+          <ArtSvgIcon icon="ri:folder-upload-line" class="mr-1" />
+          Nhập từ File (.docx)
+        </el-button>
+        <input type="file" ref="fileInput" accept=".docx" class="hidden" @change="handleImportFile" />
         <el-button
           @click="handlePreview"
           class="!h-10 !px-5 !rounded-xl !border-2 !border-slate-200 !text-slate-600 !font-black !text-[10px] !uppercase !tracking-widest hover:!border-slate-800 transition-all"
@@ -107,16 +115,10 @@
             >
               {{ t('menus.contract.templateVersion') }}
             </label>
-            <el-input
-              v-model="form.version"
-              disabled
-              class="!rounded-xl !bg-slate-50"
-              size="default"
-            >
-              <template #suffix>
-                <span class="text-[10px] font-black text-slate-400">v{{ form.version }}</span>
-              </template>
-            </el-input>
+            <div class="h-[34px] flex items-center gap-2 mt-1">
+              <span class="text-[14px] font-black text-slate-700 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200">v{{ form.version }}.0</span>
+              <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider bg-slate-100 px-2 py-1 rounded-md">Hệ thống sinh</span>
+            </div>
           </div>
           <div class="col-span-2">
             <label
@@ -192,9 +194,7 @@
                   <span class="size-5 rounded-md bg-blue-100 flex-cc text-blue-600">
                     <ArtSvgIcon icon="ri:user-line" class="text-xs" />
                   </span>
-                  <span class="text-[10px] font-black text-blue-700 uppercase tracking-wider"
-                    >Khách hàng</span
-                  >
+                  <span class="text-[10px] font-black text-blue-700 uppercase tracking-wider">Khách hàng</span>
                 </div>
                 <div class="flex flex-wrap gap-2">
                   <button
@@ -214,9 +214,7 @@
                   <span class="size-5 rounded-md bg-emerald-100 flex-cc text-emerald-600">
                     <ArtSvgIcon icon="ri:motorbike-line" class="text-xs" />
                   </span>
-                  <span class="text-[10px] font-black text-emerald-700 uppercase tracking-wider"
-                    >Xe máy</span
-                  >
+                  <span class="text-[10px] font-black text-emerald-700 uppercase tracking-wider">Xe máy</span>
                 </div>
                 <div class="flex flex-wrap gap-2">
                   <button
@@ -236,9 +234,7 @@
                   <span class="size-5 rounded-md bg-violet-100 flex-cc text-violet-600">
                     <ArtSvgIcon icon="ri:money-dollar-circle-line" class="text-xs" />
                   </span>
-                  <span class="text-[10px] font-black text-violet-700 uppercase tracking-wider"
-                    >Tài chính</span
-                  >
+                  <span class="text-[10px] font-black text-violet-700 uppercase tracking-wider">Tài chính</span>
                 </div>
                 <div class="flex flex-wrap gap-2">
                   <button
@@ -246,6 +242,26 @@
                     :key="token.key"
                     @click="insertToken(token.key)"
                     class="px-3 py-1.5 bg-violet-50 hover:bg-violet-600 text-violet-700 hover:text-white border border-violet-200 hover:border-violet-600 rounded-lg text-[11px] font-mono font-bold transition-all active:scale-95"
+                  >
+                    {{ token.key }}
+                  </button>
+                </div>
+              </div>
+
+              <!-- Supplier Group -->
+              <div>
+                <div class="flex items-center gap-2 mb-2 px-1">
+                  <span class="size-5 rounded-md bg-orange-100 flex-cc text-orange-600">
+                    <ArtSvgIcon icon="ri:building-4-line" class="text-xs" />
+                  </span>
+                  <span class="text-[10px] font-black text-orange-700 uppercase tracking-wider">Nhà cung cấp / Đối tác</span>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  <button
+                    v-for="token in filteredSupplierTokens"
+                    :key="token.key"
+                    @click="insertToken(token.key)"
+                    class="px-3 py-1.5 bg-orange-50 hover:bg-orange-600 text-orange-700 hover:text-white border border-orange-200 hover:border-orange-600 rounded-lg text-[11px] font-mono font-bold transition-all active:scale-95"
                   >
                     {{ token.key }}
                   </button>
@@ -357,6 +373,7 @@
   const previewHtml = ref('')
   const editorHtml = ref('')
   const editorHeight = ref('600px')
+  const fileInput = ref<HTMLInputElement | null>(null)
   const templateData = reactive({
     isUsed: false,
     id: '' as string | undefined,
@@ -395,6 +412,13 @@
     { key: '{{ContractDate}}', label: 'Ngày ký', group: 'finance' },
   ]
 
+  const supplierTokens = [
+    { key: '{{SupplierName}}', label: 'Tên NCC', group: 'supplier' },
+    { key: '{{CreditLimit}}', label: 'Hạn mức tín dụng', group: 'supplier' },
+    { key: '{{DiscountPolicy}}', label: 'Chính sách chiết khấu', group: 'supplier' },
+    { key: '{{TargetVolume}}', label: 'Sản lượng cam kết', group: 'supplier' },
+  ]
+
   const filteredCustomerTokens = computed(() =>
     tokenSearch.value
       ? customerTokens.filter(
@@ -424,6 +448,48 @@
         )
       : financeTokens,
   )
+
+  const filteredSupplierTokens = computed(() =>
+    tokenSearch.value
+      ? supplierTokens.filter(
+          (t) =>
+            t.key.toLowerCase().includes(tokenSearch.value.toLowerCase()) ||
+            t.label.toLowerCase().includes(tokenSearch.value.toLowerCase()),
+        )
+      : supplierTokens,
+  )
+
+  const handleImportFile = async (event: Event) => {
+    const target = event.target as HTMLInputElement
+    const file = target.files?.[0]
+    if (!file) return
+
+    try {
+      let mammoth: any
+      try {
+            // @vite-ignore
+            mammoth = await import('mammoth')
+      } catch (e) {
+        ElMessage.warning('Vui lòng cài đặt thư viện mammoth (pnpm add mammoth) để sử dụng tính năng này')
+        return
+      }
+      
+      const arrayBuffer = await file.arrayBuffer()
+      const result = await mammoth.convertToHtml({ arrayBuffer })
+      
+      if (result.value) {
+        editorHtml.value = result.value
+        ElMessage.success('Nhập file thành công!')
+      }
+    } catch (error) {
+      console.error(error)
+      ElMessage.error('Lỗi khi đọc file Word')
+    } finally {
+      if (fileInput.value) {
+        fileInput.value.value = ''
+      }
+    }
+  }
 
   const validateSyntax = async () => {
     if (!editorHtml.value) {
@@ -593,6 +659,7 @@
           customer: customerTokens,
           vehicle: vehicleTokens,
           finance: financeTokens,
+          supplier: supplierTokens,
         }),
         isActive: form.status === 1,
       }

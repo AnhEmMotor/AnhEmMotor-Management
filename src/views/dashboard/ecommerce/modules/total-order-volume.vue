@@ -11,7 +11,7 @@
       :data="[
         { value: 30, name: 'Đã hoàn thành' },
         { value: 25, name: 'Đang xử lý' },
-        { value: 45, name: 'đợipháthàng' }
+        { value: 45, name: 'đợipháthàng' },
       ]"
       :color="['#4C87F3', '#93F1B4', '#8BD8FC']"
       :radius="['56%', '76%']"

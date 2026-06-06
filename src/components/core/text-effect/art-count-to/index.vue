@@ -70,7 +70,7 @@
     prefix: '',
     suffix: '',
     easing: DEFAULT_EASING,
-    disabled: false
+    disabled: false,
   })
 
   const emit = defineEmits<CountToEmits>()
@@ -91,7 +91,7 @@
     value: number,
     decimals: number,
     decimal: string,
-    separator: string
+    separator: string,
   ): string => {
     let result = decimals > 0 ? value.toFixed(decimals) : Math.floor(value).toString()
 
@@ -110,10 +110,10 @@
 
   const safeTarget = computed(() => validateNumber(props.target, 'target', 0))
   const safeDuration = computed(() =>
-    clamp(validateNumber(props.duration, 'duration', DEFAULT_DURATION), MIN_DURATION, MAX_DURATION)
+    clamp(validateNumber(props.duration, 'duration', DEFAULT_DURATION), MIN_DURATION, MAX_DURATION),
   )
   const safeDecimals = computed(() =>
-    clamp(validateNumber(props.decimals, 'decimals', 0), 0, MAX_DECIMALS)
+    clamp(validateNumber(props.decimals, 'decimals', 0), 0, MAX_DECIMALS),
   )
   const safeEasing = computed(() => {
     const easing = props.easing
@@ -142,7 +142,7 @@
       isRunning.value = false
       isPaused.value = false
       emit('finished', targetValue.value)
-    }
+    },
   })
 
   const formattedValue = computed(() => {
@@ -247,7 +247,7 @@
         targetValue.value = newTarget
       }
     },
-    { immediate: props.autoStart && !props.disabled }
+    { immediate: props.autoStart && !props.disabled },
   )
 
   watch(
@@ -256,7 +256,7 @@
       if (disabled && isRunning.value) {
         stop()
       }
-    }
+    },
   )
 
   onUnmounted(() => {
@@ -288,6 +288,6 @@
       const target = targetValue.value
       if (target === 0) return current === 0 ? 1 : 0
       return Math.abs(current / target)
-    }
+    },
   })
 </script>

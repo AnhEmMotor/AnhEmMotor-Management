@@ -522,6 +522,14 @@
 <style scoped>
   .dashboard-workshop {
     /* Dọn dẹp/ẩn các icon lạ (widget thả nổi) đè lên viền */
+    & :deep([id*='waifu']),
+    & :deep([class*='waifu']),
+    & :deep([id*='live2d']),
+    & :deep([class*='live2d']),
+    & :deep(.lonely-island-widget),
+    & :deep(#island-god) {
+      display: none !important;
+    }
   }
   :deep(.el-card) {
     overflow: hidden !important;

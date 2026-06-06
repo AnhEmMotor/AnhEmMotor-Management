@@ -14,7 +14,7 @@
           top: '-60px',
           left: `${meteor.x}%`,
           animationDuration: `${meteor.speed}s`,
-          animationDelay: `${meteor.delay}s`
+          animationDelay: `${meteor.delay}s`,
         }"
       ></span>
     </div>
@@ -37,7 +37,7 @@
           :style="{
             backgroundColor: buttonColor,
             color: buttonTextColor,
-            borderRadius: buttonRadius
+            borderRadius: buttonRadius,
           }"
           @click.stop="emit('buttonClick')"
         >
@@ -117,10 +117,10 @@
       text: 'Xem',
       color: '#fff',
       textColor: '#333',
-      radius: '6px'
+      radius: '6px',
     }),
     meteorConfig: () => ({ enabled: false, count: 10 }),
-    imageConfig: () => ({ src: '', width: '12rem', bottom: '-3rem', right: '0' })
+    imageConfig: () => ({ src: '', width: '12rem', bottom: '-3rem', right: '0' }),
   })
 
   const emit = defineEmits<{
@@ -148,7 +148,7 @@
       return {
         x,
         speed: isSlow ? 5 + Math.random() * 3 : 2 + Math.random() * 2,
-        delay: Math.random() * 5
+        delay: Math.random() * 5,
       }
     })
   }

@@ -14,8 +14,8 @@ export function useCustomerProfile() {
     address: {
       province: 'Đồng Nai',
       city: 'Biên Hòa',
-      ward: ''
-    }
+      ward: '',
+    },
   })
 
   const wardsInBienHoa = [
@@ -28,7 +28,7 @@ export function useCustomerProfile() {
     'Tam Phước',
     'Quang Vinh',
     'Thanh Bình',
-    'Quyết Thắng'
+    'Quyết Thắng',
   ]
 
   const timelineEvents = ref([
@@ -38,7 +38,7 @@ export function useCustomerProfile() {
       content: 'Khách hỏi về mức tiêu hao xăng của Winner X',
       time: '10:30 - 02/05/2024',
       icon: 'ri:robot-line',
-      color: '#6366f1'
+      color: '#6366f1',
     },
     {
       id: 2,
@@ -46,7 +46,7 @@ export function useCustomerProfile() {
       content: 'Đã tư vấn qua điện thoại: Khách thích màu Đỏ Đen, đang cân nhắc trả góp 0%',
       time: '14:20 - 02/05/2024',
       icon: 'ri:user-voice-line',
-      color: '#f59e0b'
+      color: '#f59e0b',
     },
     {
       id: 3,
@@ -54,8 +54,8 @@ export function useCustomerProfile() {
       content: 'Đã đến Showroom xem xe trực tiếp',
       time: '09:00 - 03/05/2024',
       icon: 'ri:map-pin-line',
-      color: '#ef4444'
-    }
+      color: '#ef4444',
+    },
   ])
 
   const handleVerify = () => {
@@ -76,7 +76,7 @@ export function useCustomerProfile() {
       content: note,
       time: 'Vừa xong',
       icon: 'ri:edit-line',
-      color: '#f59e0b'
+      color: '#f59e0b',
     })
   }
 
@@ -87,6 +87,6 @@ export function useCustomerProfile() {
     wardsInBienHoa,
     timelineEvents,
     handleVerify,
-    addNote
+    addNote,
   }
 }

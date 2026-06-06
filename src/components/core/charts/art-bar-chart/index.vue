@@ -25,7 +25,7 @@
     showSplitLine: true,
     showTooltip: true,
     showLegend: false,
-    legendPosition: 'bottom'
+    legendPosition: 'bottom',
   })
 
   const isMultipleData = computed(() => {
@@ -47,12 +47,12 @@
     return new graphic.LinearGradient(0, 0, 0, 1, [
       {
         offset: 0,
-        color: getCssVar('--el-color-primary-light-4')
+        color: getCssVar('--el-color-primary-light-4'),
       },
       {
         offset: 1,
-        color: getCssVar('--el-color-primary')
-      }
+        color: getCssVar('--el-color-primary'),
+      },
     ])
   }
 
@@ -60,20 +60,20 @@
     return new graphic.LinearGradient(0, 0, 0, 1, [
       {
         offset: 0,
-        color: color
+        color: color,
       },
       {
         offset: 1,
-        color: color
-      }
+        color: color,
+      },
     ])
   }
 
   const getBaseItemStyle = (
-    color: string | InstanceType<typeof graphic.LinearGradient> | undefined
+    color: string | InstanceType<typeof graphic.LinearGradient> | undefined,
   ) => ({
     borderRadius: props.borderRadius,
-    color: typeof color === 'string' ? createGradientColor(color) : color
+    color: typeof color === 'string' ? createGradientColor(color) : color,
   })
 
   const createSeriesItem = (config: {
@@ -92,7 +92,7 @@
       stack: config.stack,
       itemStyle: getBaseItemStyle(config.color),
       barWidth: config.barWidth || props.barWidth,
-      ...animationConfig
+      ...animationConfig,
     }
   }
 
@@ -105,7 +105,7 @@
     getAnimationConfig,
     getTooltipStyle,
     getLegendStyle,
-    getGridWithLegend
+    getGridWithLegend,
   } = useChartComponent({
     props,
     checkEmpty: () => {
@@ -130,7 +130,7 @@
         grid: getGridWithLegend(props.showLegend && isMultipleData.value, props.legendPosition, {
           top: 15,
           right: 0,
-          left: 0
+          left: 0,
         }),
         tooltip: props.showTooltip ? getTooltipStyle() : undefined,
         xAxis: {
@@ -138,14 +138,14 @@
           data: props.xAxisData,
           axisTick: getAxisTickStyle(),
           axisLine: getAxisLineStyle(props.showAxisLine),
-          axisLabel: getAxisLabelStyle(props.showAxisLabel)
+          axisLabel: getAxisLabelStyle(props.showAxisLabel),
         },
         yAxis: {
           type: 'value',
           axisLabel: getAxisLabelStyle(props.showAxisLabel),
           axisLine: getAxisLineStyle(props.showAxisLine),
-          splitLine: getSplitLineStyle(props.showSplitLine)
-        }
+          splitLine: getSplitLineStyle(props.showSplitLine),
+        },
       }
 
       if (props.showLegend && isMultipleData.value) {
@@ -162,7 +162,7 @@
             data: item.data,
             color: computedColor,
             barWidth: item.barWidth,
-            stack: props.stack ? item.stack || 'total' : undefined
+            stack: props.stack ? item.stack || 'total' : undefined,
           })
         })
       } else {
@@ -172,12 +172,12 @@
         options.series = [
           createSeriesItem({
             data: singleData,
-            color: computedColor
-          })
+            color: computedColor,
+          }),
         ]
       }
 
       return options
-    }
+    },
   })
 </script>

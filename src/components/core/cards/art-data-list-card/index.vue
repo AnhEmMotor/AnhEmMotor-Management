@@ -57,7 +57,7 @@
   const DEFAULT_MAX_COUNT = 5
 
   const props = withDefaults(defineProps<Props>(), {
-    maxCount: DEFAULT_MAX_COUNT
+    maxCount: DEFAULT_MAX_COUNT,
   })
 
   const maxHeight = computed(() => `${ITEM_HEIGHT * props.maxCount}px`)

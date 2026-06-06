@@ -4,17 +4,17 @@ module.exports = {
     'stylelint-config-recommended-scss',
     'stylelint-config-recommended-vue/scss',
     'stylelint-config-html/vue',
-    'stylelint-config-recess-order'
+    'stylelint-config-recess-order',
   ],
   overrides: [
     {
       files: ['**/*.{vue,html}'],
-      customSyntax: 'postcss-html'
+      customSyntax: 'postcss-html',
     },
     {
       files: ['**/*.{css,scss}'],
-      customSyntax: 'postcss-scss'
-    }
+      customSyntax: 'postcss-scss',
+    },
   ],
   rules: {
     'import-notation': 'string',
@@ -27,14 +27,14 @@ module.exports = {
     'selector-pseudo-class-no-unknown': [
       true,
       {
-        ignorePseudoClasses: ['global', 'export', 'deep']
-      }
+        ignorePseudoClasses: ['global', 'export', 'deep'],
+      },
     ],
     'property-no-unknown': [
       true,
       {
-        ignoreProperties: []
-      }
+        ignoreProperties: [],
+      },
     ],
     'at-rule-no-unknown': [
       true,
@@ -50,9 +50,9 @@ module.exports = {
           'else',
           'for',
           'while',
-          'reference'
-        ]
-      }
+          'reference',
+        ],
+      },
     ],
     'scss/at-rule-no-unknown': [
       true,
@@ -68,9 +68,9 @@ module.exports = {
           'else',
           'for',
           'while',
-          'reference'
-        ]
-      }
-    ]
-  }
+          'reference',
+        ],
+      },
+    ],
+  },
 }

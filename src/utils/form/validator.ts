@@ -1,7 +1,7 @@
 export enum PasswordStrength {
   WEAK = 'nhược',
   MEDIUM = 'trong',
-  STRONG = 'cường'
+  STRONG = 'cường',
 }
 
 export function trimSpaces(value: string): string {

@@ -25,7 +25,7 @@
 
     showTooltip: true,
     showLegend: false,
-    legendPosition: 'bottom'
+    legendPosition: 'bottom',
   })
 
   const { isDark, getAnimationConfig, getTooltipStyle } = useChartComponent({
@@ -43,26 +43,26 @@
           radius: '70%',
           axisName: {
             color: isDark.value ? '#ccc' : '#666',
-            fontSize: 12
+            fontSize: 12,
           },
           splitLine: {
             lineStyle: {
-              color: isDark.value ? '#444' : '#e6e6e6'
-            }
+              color: isDark.value ? '#444' : '#e6e6e6',
+            },
           },
           axisLine: {
             lineStyle: {
-              color: isDark.value ? '#444' : '#e6e6e6'
-            }
+              color: isDark.value ? '#444' : '#e6e6e6',
+            },
           },
           splitArea: {
             show: true,
             areaStyle: {
               color: isDark.value
                 ? ['rgba(255, 255, 255, 0.02)', 'rgba(255, 255, 255, 0.05)']
-                : ['rgba(0, 0, 0, 0.02)', 'rgba(0, 0, 0, 0.05)']
-            }
-          }
+                : ['rgba(0, 0, 0, 0.02)', 'rgba(0, 0, 0, 0.05)'],
+            },
+          },
         },
         series: [
           {
@@ -73,28 +73,28 @@
               symbolSize: 4,
               lineStyle: {
                 width: 2,
-                color: props.colors[index % props.colors.length]
+                color: props.colors[index % props.colors.length],
               },
               itemStyle: {
-                color: props.colors[index % props.colors.length]
+                color: props.colors[index % props.colors.length],
               },
               areaStyle: {
                 color: props.colors[index % props.colors.length],
-                opacity: 0.1
+                opacity: 0.1,
               },
               emphasis: {
                 areaStyle: {
-                  opacity: 0.25
+                  opacity: 0.25,
                 },
                 lineStyle: {
-                  width: 3
-                }
-              }
+                  width: 3,
+                },
+              },
             })),
-            ...getAnimationConfig(200, 1800)
-          }
-        ]
+            ...getAnimationConfig(200, 1800),
+          },
+        ],
       }
-    }
+    },
   })
 </script>

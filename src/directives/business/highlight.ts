@@ -111,7 +111,7 @@ function retryProcessing(el: HTMLElement, maxRetries: number = 3, delay: number 
     processAllCodeBlocks(el)
 
     const remainingBlocks = Array.from(el.querySelectorAll<HTMLElement>('pre code')).filter(
-      (block) => !isBlockProcessed(block)
+      (block) => !isBlockProcessed(block),
     )
 
     if (remainingBlocks.length > 0 && retryCount < maxRetries) {
@@ -157,7 +157,7 @@ const highlightDirective: HighlightDirective = {
 
     observer.observe(el, {
       childList: true,
-      subtree: true
+      subtree: true,
     })
     ;(el as any)._highlightObserver = observer
   },
@@ -174,7 +174,7 @@ const highlightDirective: HighlightDirective = {
       observer.disconnect()
       delete (el as any)._highlightObserver
     }
-  }
+  },
 }
 
 export function setupHighlightDirective(app: App) {
