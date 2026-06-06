@@ -209,6 +209,24 @@
                     :value="sup.id"
                   />
                 </ElSelect>
+                <div v-if="row.quotes && row.quotes.length" class="mt-1">
+                  <ElDropdown trigger="click" @command="(quote) => applyQuote(row, quote)">
+                    <ElButton link type="primary" size="small">
+                      Chọn báo giá <ElIcon class="el-icon--right"><ArrowDown /></ElIcon>
+                    </ElButton>
+                    <template #dropdown>
+                      <ElDropdownMenu>
+                        <ElDropdownItem
+                          v-for="q in row.quotes"
+                          :key="q.quotationProductRowId"
+                          :command="q"
+                        >
+                          {{ q.supplierName }} - {{ formatCurrency(q.quotePrice) }}
+                        </ElDropdownItem>
+                      </ElDropdownMenu>
+                    </template>
+                  </ElDropdown>
+                </div>
               </template>
             </ElTableColumn>
 
@@ -580,6 +598,7 @@
   import { InventoryReceiptApi } from '@/api/inventory-receipt.api'
   import { PurchaseRequestApi } from '@/api/purchase-request.api'
   import { SupplierApi } from '@/api/supplier.api'
+  import { QuotationApi } from '@/api/quotation.api'
   import { Permissions } from '@/domain/constants/permissions'
   import type { InventoryReceipt, InputInfo } from '@/domain/inventory/receipt.types'
 
@@ -605,6 +624,7 @@
     purchaseRequestItemId?: number
     maxUnimportedQuantity?: number
     needVin?: boolean
+    quotes?: any[]
   }
 
   const VIN_MANAGEMENT_TYPE = 'vin_number'
@@ -803,6 +823,13 @@
     }
   }
 
+  const applyQuote = (row: ReceiptProductRow, quote: any) => {
+    row.supplierId = quote.supplierId
+    row.unitPrice = quote.quotePrice
+    syncVehiclePrices(row)
+    ElMessage.success('Đã áp dụng báo giá')
+  }
+
   const handleProductCountChange = (row: ReceiptProductRow) => {
     const newCount = Number(row.count) || 0
     const currentVehicles = row.vehicles || []
@@ -914,11 +941,21 @@
       formData.value.products = []
       const detail = await PurchaseRequestApi.getApprovedById(pr.id)
 
-      detail.items.forEach((item: any) => {
+      const productPromises = detail.items.map(async (item: any) => {
         const remainingQty = item.unimportedQuantity || 0
-        if (remainingQty <= 0) return
+        if (remainingQty <= 0) return null
 
         const isVin = item.needVin || false
+
+        let quotes: any[] = []
+        try {
+          quotes = await QuotationApi.getApprovedPrices(
+            item.productVariantId,
+            item.productVariantColorId
+          )
+        } catch (e) {
+          console.error('Cannot load quotes', e)
+        }
 
         const newRow: ReceiptProductRow = {
           productVariantId: item.productVariantId,
@@ -931,7 +968,8 @@
           maxUnimportedQuantity: remainingQty,
           needVin: isVin,
           managementType: isVin ? VIN_MANAGEMENT_TYPE : 'sku',
-          vehicles: []
+          vehicles: [],
+          quotes
         }
 
         productCache.set(item.productVariantId, {
@@ -941,8 +979,11 @@
         })
 
         syncVehicleRows(newRow)
-        formData.value.products.push(newRow)
+        return newRow
       })
+
+      const rows = await Promise.all(productPromises)
+      formData.value.products = rows.filter((r) => r !== null) as ReceiptProductRow[]
     } catch (err) {
       console.error(err)
       ElMessage.error('Không thể nạp thông tin Yêu cầu mua hàng')
@@ -1194,35 +1235,45 @@
         purchaseRequestId: receipt.purchaseRequestId,
         notes: receipt.notes || '',
         statusId: receipt.statusId || 'working',
-        products: (receipt.products || []).map((p: any) => {
-          const prItem: any = prItemsMap.get(p.purchaseRequestItemId)
-          const isVin = (p.vehicles && p.vehicles.length > 0) || (prItem && prItem.needVin) || false
-          productCache.set(p.productVariantId, {
-            displayName: p.name || `Sản phẩm #${p.productVariantId}`,
-            colorName: p.productVariantColorName
-          })
+        products: await Promise.all(
+          (receipt.products || []).map(async (p: any) => {
+            const prItem: any = prItemsMap.get(p.purchaseRequestItemId)
+            const isVin =
+              (p.vehicles && p.vehicles.length > 0) || (prItem && prItem.needVin) || false
+            productCache.set(p.productVariantId, {
+              displayName: p.name || `Sản phẩm #${p.productVariantId}`,
+              colorName: p.productVariantColorName
+            })
 
-          return {
-            id: p.id,
-            productVariantId: p.productVariantId,
-            productVariantColorId: p.productVariantColorId,
-            productVariantColorName: p.productVariantColorName,
-            count: p.quantity || 0,
-            unitPrice: p.unitPrice || 0,
-            supplierId: p.supplierId,
-            managementType: isVin ? VIN_MANAGEMENT_TYPE : 'sku',
-            needVin: isVin,
-            purchaseRequestItemId: p.purchaseRequestItemId,
-            maxUnimportedQuantity: p.maxAllowedQuantity ?? (p.quantity || 0),
-            invoicedVehicles: prItem ? prItem.invoicedVehicles || [] : [],
-            vehicles: (p.vehicles || []).map((vehicle: any) => ({
-              id: vehicle.id,
-              vinNumber: vehicle.vinNumber || '',
-              engineNumber: vehicle.engineNumber || '',
-              importPrice: vehicle.importPrice || 0
-            }))
-          }
-        })
+            let quotes: any[] = []
+            quotes = await QuotationApi.getApprovedPrices(
+              p.productVariantId,
+              p.productVariantColorId
+            )
+
+            return {
+              id: p.id,
+              productVariantId: p.productVariantId,
+              productVariantColorId: p.productVariantColorId,
+              productVariantColorName: p.productVariantColorName,
+              count: p.quantity || 0,
+              unitPrice: p.unitPrice || 0,
+              supplierId: p.supplierId,
+              managementType: isVin ? VIN_MANAGEMENT_TYPE : 'sku',
+              needVin: isVin,
+              purchaseRequestItemId: p.purchaseRequestItemId,
+              maxUnimportedQuantity: p.maxAllowedQuantity ?? (p.quantity || 0),
+              invoicedVehicles: prItem ? prItem.invoicedVehicles || [] : [],
+              quotes,
+              vehicles: (p.vehicles || []).map((vehicle: any) => ({
+                id: vehicle.id,
+                vinNumber: vehicle.vinNumber || '',
+                engineNumber: vehicle.engineNumber || '',
+                importPrice: vehicle.importPrice || 0
+              }))
+            }
+          })
+        )
       }
       dialogVisible.value = true
     } catch (error) {

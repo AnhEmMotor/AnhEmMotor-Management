@@ -65,13 +65,11 @@ export const QuotationApi = {
     })
   },
 
-  getApprovedPrices(variantId: number, colorId?: number, supplierId?: number) {
+  getApprovedPrices(variantId: number, colorId?: number) {
     return request.get<PurchaseRequestQuotedPriceResponse[]>({
-      url: '/api/v1/Quotations/approved-prices',
+      url: `/api/v1/Product/variant/${variantId}/supplier-prices`,
       params: {
-        variantId,
-        colorId,
-        supplierId
+        colorId
       }
     })
   },
