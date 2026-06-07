@@ -1463,13 +1463,6 @@
                           }}
                         </span>
                       </div>
-                      <ElTag size="small" effect="light">
-                        {{
-                          (variant.colors || []).length
-                            ? `${(variant.colors || []).length} màu`
-                            : ''
-                        }}
-                      </ElTag>
                     </div>
                   </template>
 

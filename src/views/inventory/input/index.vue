@@ -210,22 +210,9 @@
                   />
                 </ElSelect>
                 <div v-if="row.quotes && row.quotes.length" class="mt-1">
-                  <ElDropdown trigger="click" @command="(quote) => applyQuote(row, quote)">
-                    <ElButton link type="primary" size="small">
-                      Chọn báo giá <ElIcon class="el-icon--right"><ArrowDown /></ElIcon>
-                    </ElButton>
-                    <template #dropdown>
-                      <ElDropdownMenu>
-                        <ElDropdownItem
-                          v-for="q in row.quotes"
-                          :key="q.quotationProductRowId"
-                          :command="q"
-                        >
-                          {{ q.supplierName }} - {{ formatCurrency(q.quotePrice) }}
-                        </ElDropdownItem>
-                      </ElDropdownMenu>
-                    </template>
-                  </ElDropdown>
+                  <ElButton link type="primary" size="small" @click="openQuoteDialog(row)">
+                    Chọn báo giá <ElIcon class="el-icon--right"><ArrowDown /></ElIcon>
+                  </ElButton>
                 </div>
               </template>
             </ElTableColumn>
@@ -507,6 +494,50 @@
           </template>
         </div>
       </template>
+    </ElDialog>
+
+    <!-- Quotation Selector Dialog -->
+    <ElDialog
+      v-model="quoteDialogVisible"
+      title="Chọn báo giá"
+      width="600px"
+      append-to-body
+      destroy-on-close
+      class="rounded-xl overflow-hidden"
+    >
+      <div class="space-y-4">
+        <ElTable :data="paginatedQuotes" border size="small" class="w-full">
+          <ElTableColumn label="Nhà cung cấp" prop="supplierName" min-width="200" />
+          <ElTableColumn label="Đơn giá" width="150" align="right">
+            <template #default="{ row }">
+              {{ formatCurrency(row.quotePrice) }}
+            </template>
+          </ElTableColumn>
+          <ElTableColumn label="Ghi chú" prop="note" min-width="150">
+            <template #default="{ row }">
+              {{ row.note || '--' }}
+            </template>
+          </ElTableColumn>
+          <ElTableColumn label="Thao tác" width="100" align="center">
+            <template #default="{ row }">
+              <ElButton type="primary" size="small" plain @click="applyQuoteFromDialog(row)">
+                Chọn
+              </ElButton>
+            </template>
+          </ElTableColumn>
+        </ElTable>
+
+        <div class="flex justify-end pt-2 border-t">
+          <ElPagination
+            v-model:current-page="quotePage"
+            v-model:page-size="quotePageSize"
+            :total="quoteTotal"
+            layout="prev, pager, next, total"
+            background
+            size="small"
+          />
+        </div>
+      </div>
     </ElDialog>
 
     <!-- Purchase Request Selector Dialog -->
@@ -886,6 +917,34 @@
     products: []
   })
 
+  // --- Quote Selector Dialog ---
+  const quoteDialogVisible = ref(false)
+  const activeQuoteRow = ref<ReceiptProductRow | null>(null)
+  const quotePage = ref(1)
+  const quotePageSize = ref(5)
+  const quoteTotal = ref(0)
+
+  const paginatedQuotes = computed(() => {
+    if (!activeQuoteRow.value || !activeQuoteRow.value.quotes) return []
+    const start = (quotePage.value - 1) * quotePageSize.value
+    const end = start + quotePageSize.value
+    return activeQuoteRow.value.quotes.slice(start, end)
+  })
+
+  const openQuoteDialog = (row: ReceiptProductRow) => {
+    activeQuoteRow.value = row
+    quotePage.value = 1
+    quoteTotal.value = row.quotes?.length || 0
+    quoteDialogVisible.value = true
+  }
+
+  const applyQuoteFromDialog = (quote: any) => {
+    if (activeQuoteRow.value) {
+      applyQuote(activeQuoteRow.value, quote)
+      quoteDialogVisible.value = false
+    }
+  }
+
   // --- Purchase Request Selector Dialog ---
   const prSelectorVisible = ref(false)
   const prSelectorLoading = ref(false)
@@ -1029,7 +1088,6 @@
   ])
 
   const columns = ref([
-    { label: 'Mã phiếu', prop: 'id', width: 100, align: 'center' },
     { label: 'Thời gian tạo', prop: 'createdAt', useSlot: true, width: 170 },
     { label: 'Tóm tắt SP', prop: 'productSummary', useSlot: true, minWidth: 320 },
     { label: 'Trạng thái', prop: 'statusId', useSlot: true, width: 150, align: 'center' },
