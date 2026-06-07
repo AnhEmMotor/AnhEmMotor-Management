@@ -52,7 +52,7 @@
                 v-model="articleName"
                 type="text"
                 placeholder="Ví dụ: So sánh SH 160i và SH Mode: Lựa chọn nào cho phái đẹp?"
-                class="w-full h-14 bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 text-lg font-black text-slate-800 focus:border-blue-500 focus:bg-white transition-all outline-none"
+                class="w-full h-10 bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 text-lg font-black text-slate-800 focus:border-blue-500 focus:bg-white transition-all outline-none"
               />
             </div>
             <div class="col-span-3">
@@ -63,7 +63,7 @@
               <ElSelect
                 v-model="articleType"
                 placeholder="Chọn loại bài..."
-                class="w-full premium-select-large h-14"
+                class="w-full premium-select-large"
                 size="large"
               >
                 <ElOption
@@ -104,6 +104,30 @@
       </div>
 
       <div class="w-96 flex flex-col gap-6 sticky top-28 shrink-0">
+        <div class="bg-white border border-slate-200 rounded-[32px] p-6 shadow-sm">
+          <h3
+            class="m-0 text-xs font-black uppercase tracking-widest text-slate-800 mb-4 flex items-center gap-2"
+          >
+            <ArtSvgIcon icon="ri:share-forward-line" class="text-blue-500" /> Upload ảnh bìa
+          </h3>
+          <div class="space-y-4">
+            <div
+              class="aspect-video bg-slate-100 rounded-2xl border border-slate-200 overflow-hidden relative group cursor-pointer"
+              @click="triggerImageUpload"
+            >
+              <img
+                v-if="ogImage"
+                :src="ogImage"
+                class="w-full h-full object-cover transition-transform group-hover:scale-105"
+              />
+              <div v-else class="w-full h-full flex-cc flex-col gap-2 text-slate-400">
+                <ArtSvgIcon icon="ri:image-add-line" class="text-3xl" />
+                <span class="text-[9px] font-black uppercase">Tải ảnh bìa Social</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="bg-[#001529] rounded-[32px] p-6 text-white shadow-2xl relative overflow-hidden">
           <ArtSvgIcon icon="ri:time-line" class="absolute -right-4 -top-4 text-8xl opacity-10" />
           <h3
@@ -180,44 +204,6 @@
             trên.</p
           >
         </div>
-
-        <div class="bg-white border border-slate-200 rounded-[32px] p-6 shadow-sm">
-          <h3
-            class="m-0 text-xs font-black uppercase tracking-widest text-slate-800 mb-4 flex items-center gap-2"
-          >
-            <ArtSvgIcon icon="ri:share-forward-line" class="text-blue-500" /> Facebook/Zalo Preview
-          </h3>
-          <div class="space-y-4">
-            <div
-              class="aspect-video bg-slate-100 rounded-2xl border border-slate-200 overflow-hidden relative group cursor-pointer"
-              @click="triggerImageUpload"
-            >
-              <img
-                v-if="ogImage"
-                :src="ogImage"
-                class="w-full h-full object-cover transition-transform group-hover:scale-105"
-              />
-              <div v-else class="w-full h-full flex-cc flex-col gap-2 text-slate-400">
-                <ArtSvgIcon icon="ri:image-add-line" class="text-3xl" />
-                <span class="text-[9px] font-black uppercase">Tải ảnh bìa Social</span>
-              </div>
-              <div
-                class="absolute bottom-3 left-3 right-3 bg-black/60 backdrop-blur-md p-2 rounded-lg"
-              >
-                <p class="m-0 text-[10px] font-black text-white truncate">{{
-                  articleName || 'Tiêu đề bài viết...'
-                }}</p>
-                <p class="m-0 text-[8px] font-bold text-white/60 truncate"
-                  >AnhEmMotor - Showroom xe máy uy tín tại Biên Hòa</p
-                >
-              </div>
-            </div>
-            <p class="m-0 text-[9px] font-bold text-slate-400 leading-relaxed italic"
-              >Ảnh bìa Social (OG Image) giúp link chia sẻ bắt mắt hơn, kích thích lượt Click từ
-              khách tiềm năng.</p
-            >
-          </div>
-        </div>
       </div>
     </div>
 
@@ -229,7 +215,7 @@
     >
       <div class="p-4 space-y-3 max-h-96 overflow-y-auto custom-scrollbar">
         <div
-          v-for="p in mockProducts"
+          v-for="p in availableProducts"
           :key="p.id"
           @click="toggleProduct(p)"
           class="p-3 rounded-xl border border-slate-100 flex items-center gap-3 cursor-pointer transition-all"
@@ -260,6 +246,7 @@
   import { ElMessage } from 'element-plus'
   import { PageModeEnum } from '@/enums/formEnum'
   import { useCommon } from '@/hooks/core/useCommon'
+  import { NewsApi } from '@/api/news.api'
 
   defineOptions({ name: 'ArticlePublishWorkflow' })
 
@@ -281,26 +268,19 @@
     { id: 4, name: 'So sánh xe' }
   ])
 
-  const mockProducts = [
-    {
-      id: 101,
-      name: 'Honda Winner X 2024',
-      price: '46.000.000đ',
-      img: 'https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?auto=format&fit=crop&q=80&w=400'
-    },
-    {
-      id: 102,
-      name: 'Honda SH 160i Sporty',
-      price: '102.000.000đ',
-      img: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=400'
-    },
-    {
-      id: 103,
-      name: 'Yamaha Exciter 155 VVA',
-      price: '48.500.000đ',
-      img: 'https://yamaha-motor.com.vn/wp-content/uploads/2023/09/Exciter-155-VVA-GP.jpg'
+  const availableProducts = ref<any[]>([])
+
+  const loadProducts = async () => {
+    try {
+      const res = await NewsApi.getProductsForSelection()
+      if (res && res.data) {
+        availableProducts.value = res.data
+      }
+    } catch (error) {
+      console.error('Failed to load products', error)
+      ElMessage.error('Không thể tải danh sách sản phẩm')
     }
-  ]
+  }
 
   const insertCTA = (type: string) => {
     const ctaHtml =
@@ -325,16 +305,43 @@
     (selectedProducts.value = selectedProducts.value.filter((p) => p.id !== id))
 
   const triggerImageUpload = () => {
-    ogImage.value = 'https://picsum.photos/1200/630'
-    ElMessage.success('Đã tải lên ảnh bìa Social Metadata')
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = 'image/*'
+    input.onchange = async (e: any) => {
+      const file = e.target.files[0]
+      if (!file) return
+
+      const formData = new FormData()
+      formData.append('file', file)
+
+      try {
+        const res = await NewsApi.uploadCoverImage(formData)
+        if (res && res.url) {
+          ogImage.value = res.url
+          ElMessage.success('Đã tải lên ảnh bìa thành công')
+        }
+      } catch (error) {
+        console.error('Upload failed', error)
+        ElMessage.error('Tải lên ảnh bìa thất bại')
+      }
+    }
+    input.click()
   }
 
   const handlePreview = () => ElMessage.info('Đang mở trang xem trước bài viết...')
   const handleSaveDraft = () => ElMessage.success('Đã lưu bản nháp')
-  const submit = () => ElMessage.success('Bài viết đã được xuất bản thành công!')
+  const submit = () => {
+    if (!ogImage.value) {
+      ElMessage.warning('Vui lòng tải lên ảnh bìa cho bài viết!')
+      return
+    }
+    ElMessage.success('Bài viết đã được xuất bản thành công!')
+  }
 
   onMounted(() => {
     useCommon().scrollToTop()
+    loadProducts()
   })
 </script>
 

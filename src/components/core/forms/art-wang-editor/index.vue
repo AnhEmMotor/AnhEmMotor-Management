@@ -71,7 +71,7 @@
   const uploadServer = computed(
     () =>
       props.uploadConfig?.server ||
-      `${VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT}/api/common/upload/wangeditor`
+      `${VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT}/api/v1/news/images/content`
   )
 
   const mergedUploadConfig = computed(() => ({

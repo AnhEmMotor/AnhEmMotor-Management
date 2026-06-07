@@ -52,5 +52,21 @@ export const NewsApi = {
       url: `/api/v1/news/${id}/status`,
       data
     })
+  },
+
+  getProductsForSelection() {
+    return request.get<any>({
+      url: '/api/v1/news/products-for-selection'
+    })
+  },
+
+  uploadCoverImage(data: FormData) {
+    return request.post<any>({
+      url: '/api/v1/news/images/cover',
+      data,
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
   }
 }
