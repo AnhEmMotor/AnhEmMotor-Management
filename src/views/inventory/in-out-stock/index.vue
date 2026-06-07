@@ -139,6 +139,13 @@
                   <ElTag type="success" size="small">Đã nhập kho</ElTag>
                 </template>
               </ElTableColumn>
+              <ElTableColumn label="Thao tác" width="100" align="center" fixed="right">
+                <template #default="{ row }">
+                  <ElButton link type="primary" size="small" @click="viewReceiptDetail(row.id)">
+                    Xem phiếu
+                  </ElButton>
+                </template>
+              </ElTableColumn>
             </ElTable>
           </ElTabPane>
 
@@ -171,6 +178,78 @@
         </div>
       </template>
     </ElDialog>
+
+    <!-- Dialog for viewing full receipt details -->
+    <ElDialog
+      v-model="receiptDetailVisible"
+      title="Chi tiết phiếu nhập kho"
+      width="800px"
+      append-to-body
+      destroy-on-close
+    >
+      <div v-if="receiptDetailData" class="flex flex-col gap-4">
+        <!-- Summary Alert -->
+        <div
+          class="p-3 bg-gray-50 border border-gray-100 rounded grid grid-cols-2 gap-2 text-sm text-gray-700"
+        >
+          <div><strong>Mã phiếu:</strong> #{{ receiptDetailData.id }}</div>
+          <div
+            ><strong>Trạng thái:</strong>
+            <ElTag type="success" size="small">Đã nhập kho</ElTag></div
+          >
+          <div
+            ><strong>Ngày tạo:</strong>
+            {{
+              receiptDetailData.createdAt
+                ? new Date(receiptDetailData.createdAt).toLocaleDateString('vi-VN')
+                : '--'
+            }}</div
+          >
+          <div><strong>Ghi chú:</strong> {{ receiptDetailData.notes || 'Không có ghi chú' }}</div>
+        </div>
+
+        <div>
+          <h4 class="text-sm font-semibold text-gray-700 mb-2"
+            >Danh sách sản phẩm trong phiếu này</h4
+          >
+          <ElTable
+            :data="receiptDetailData.products"
+            border
+            stripe
+            size="small"
+            style="width: 100%"
+          >
+            <ElTableColumn type="index" label="STT" width="55" align="center" />
+            <ElTableColumn label="Tên sản phẩm" min-width="200">
+              <template #default="{ row }">
+                <div class="flex flex-col gap-1">
+                  <span class="font-medium text-gray-800">{{ row.name }}</span>
+                  <ElTag v-if="row.productVariantColorName" size="small" type="info" class="w-fit">
+                    Màu: {{ row.productVariantColorName }}
+                  </ElTag>
+                </div>
+              </template>
+            </ElTableColumn>
+            <ElTableColumn label="Nhà cung cấp" width="160">
+              <template #default="{ row }">
+                <span>{{ row.supplierName || 'N/A' }}</span>
+              </template>
+            </ElTableColumn>
+            <ElTableColumn label="Đơn giá" width="130" align="right">
+              <template #default="{ row }">
+                <span>{{ row.unitPrice ? row.unitPrice.toLocaleString() : '0' }} VNĐ</span>
+              </template>
+            </ElTableColumn>
+            <ElTableColumn prop="quantity" label="Số lượng" width="90" align="center" />
+          </ElTable>
+        </div>
+      </div>
+      <template #footer>
+        <div class="flex justify-end">
+          <ElButton @click="receiptDetailVisible = false">Đóng</ElButton>
+        </div>
+      </template>
+    </ElDialog>
   </div>
 </template>
 
@@ -179,6 +258,7 @@
   import { Download, Memo } from '@element-plus/icons-vue'
   import { ElMessage } from 'element-plus'
   import { InventoryReportApi } from '@/api/inventory-report.api'
+  import { InventoryReceiptApi } from '@/api/inventory-receipt.api'
 
   defineOptions({ name: 'InventoryInOutStock' })
 
@@ -198,6 +278,7 @@
   }
 
   interface MockReceipt {
+    id?: number
     code: string
     supplier: string
     quantity: number
@@ -206,6 +287,7 @@
   }
 
   interface MockInvoice {
+    id?: number
     code: string
     customer: string
     quantity: number
@@ -234,7 +316,26 @@
   const mockReceipts = ref<MockReceipt[]>([])
   const mockInvoices = ref<MockInvoice[]>([])
 
+  // Receipt full detail dialog state
+  const receiptDetailVisible = ref(false)
+  const receiptDetailData = ref<any>(null)
+
   const tableData = ref<StockItem[]>([])
+
+  // Fetch full receipt details
+  const viewReceiptDetail = async (id?: number) => {
+    if (!id) return
+    try {
+      const res = await InventoryReceiptApi.getById(id)
+      if (res) {
+        receiptDetailData.value = res
+        receiptDetailVisible.value = true
+      }
+    } catch (err) {
+      console.error(err)
+      ElMessage.error('Không thể tải chi tiết phiếu nhập!')
+    }
+  }
 
   // API mapper function
   const mapToStockItems = (apiItems: any[]): StockItem[] => {
@@ -437,7 +538,8 @@
       const details = await InventoryReportApi.getDetail(row.variantId, row.colorId)
       if (details) {
         mockReceipts.value = (details.imports || []).map((imp: any, idx: number) => ({
-          code: `PN-${idx + 1}`,
+          id: imp.id,
+          code: imp.code || `PN-${idx + 1}`,
           supplier: imp.partnerName || 'Nhà cung cấp',
           quantity: imp.qty || 0,
           price: imp.price || 0,
@@ -445,7 +547,8 @@
         }))
 
         mockInvoices.value = (details.exports || []).map((exp: any, idx: number) => ({
-          code: `PX-${idx + 1}`,
+          id: exp.id,
+          code: exp.code || `PX-${idx + 1}`,
           customer: exp.partnerName || 'Khách hàng',
           quantity: exp.qty || 0,
           price: exp.price || 0,
