@@ -9,7 +9,7 @@
         </div>
         <div>
           <h1 class="m-0 text-lg font-black tracking-tight text-slate-900 leading-none"
-            >Chuyên gia tư vấn ảo</h1
+            >Chỉnh sửa bài viết</h1
           >
           <p
             class="m-0 text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1.5 flex items-center gap-2"
@@ -46,7 +46,7 @@
             <div class="col-span-9">
               <label
                 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
-                >Tiêu đề bài viết (Virtual Expert Title)</label
+                >Tiêu đề bài viết</label
               >
               <input
                 v-model="articleName"
@@ -63,7 +63,7 @@
               <ElSelect
                 v-model="articleType"
                 placeholder="Chọn loại bài..."
-                class="w-full premium-select-large"
+                class="w-full premium-select-large h-14"
                 size="large"
               >
                 <ElOption
