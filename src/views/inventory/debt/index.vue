@@ -46,9 +46,8 @@
     >
       <div v-loading="receiptsLoading">
         <ElTabs v-model="activeTab" class="mb-4">
-          <ElTabPane name="overdue" :label="`Quá hạn thanh toán (${overdueDebts.length})`" />
-          <ElTabPane name="not_due" :label="`Chưa đến hạn (${notDueDebts.length})`" />
-          <ElTabPane name="fully_paid" :label="`Đã trả hết (${fullyPaidDebts.length})`" />
+          <ElTabPane name="unpaid" :label="`Chưa thanh toán hoàn tất (${unpaidDebts.length})`" />
+          <ElTabPane name="fully_paid" :label="`Đã thanh toán (${fullyPaidDebts.length})`" />
         </ElTabs>
 
         <ElTable :data="filteredReceipts" border stripe style="width: 100%">
@@ -226,19 +225,15 @@
   const receiptsLoading = ref(false)
   const selectedSupplier = ref<any | null>(null)
   const receipts = ref<any[]>([])
-  const activeTab = ref('overdue')
+  const activeTab = ref('unpaid')
 
   const isOverdue = (row: any): boolean => {
     if (!row.dueDate) return false
     return new Date(row.dueDate).getTime() < Date.now()
   }
 
-  const overdueDebts = computed(() => {
-    return receipts.value.filter((row) => getRemainingDebt(row) > 0 && isOverdue(row))
-  })
-
-  const notDueDebts = computed(() => {
-    return receipts.value.filter((row) => getRemainingDebt(row) > 0 && !isOverdue(row))
+  const unpaidDebts = computed(() => {
+    return receipts.value.filter((row) => getRemainingDebt(row) > 0)
   })
 
   const fullyPaidDebts = computed(() => {
@@ -246,11 +241,8 @@
   })
 
   const filteredReceipts = computed(() => {
-    if (activeTab.value === 'overdue') {
-      return overdueDebts.value
-    }
-    if (activeTab.value === 'not_due') {
-      return notDueDebts.value
+    if (activeTab.value === 'unpaid') {
+      return unpaidDebts.value
     }
     if (activeTab.value === 'fully_paid') {
       return fullyPaidDebts.value
