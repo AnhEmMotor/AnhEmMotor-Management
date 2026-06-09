@@ -149,12 +149,18 @@
 
         <!-- Card Grid Layout (Replaced Table) -->
         <div class="p-6 bg-slate-50/30">
-          <div class="mb-4 text-slate-500 text-[13px] italic font-medium flex items-center gap-2" v-if="searchQuery || statusFilter">
+          <div
+            class="mb-4 text-slate-500 text-[13px] italic font-medium flex items-center gap-2"
+            v-if="searchQuery || statusFilter"
+          >
             <ArtSvgIcon icon="ri:information-line" />
             Tìm thấy {{ totalCount }} phiếu sửa chữa phù hợp dựa trên bộ lọc
           </div>
 
-          <div v-if="repairOrders.length === 0 && !loading" class="py-12 flex-cc flex-col gap-3 text-slate-400">
+          <div
+            v-if="repairOrders.length === 0 && !loading"
+            class="py-12 flex-cc flex-col gap-3 text-slate-400"
+          >
             <ArtSvgIcon icon="ri:inbox-2-line" class="text-4xl" />
             <p class="text-sm font-medium">Không tìm thấy phiếu sửa chữa nào</p>
           </div>
@@ -168,11 +174,16 @@
               <!-- Card Header -->
               <div class="p-5 border-b border-slate-100 flex items-start justify-between bg-white">
                 <div class="flex items-center gap-3">
-                  <div class="size-11 rounded-xl bg-[#001529] flex-cc text-white shadow-md shrink-0">
+                  <div
+                    class="size-11 rounded-xl bg-[#001529] flex-cc text-white shadow-md shrink-0"
+                  >
                     <ArtSvgIcon icon="ri:tools-line" class="text-xl" />
                   </div>
                   <div class="flex flex-col min-w-0">
-                    <span class="font-black text-slate-800 text-[15px] truncate pr-2" :title="row.customerName">
+                    <span
+                      class="font-black text-slate-800 text-[15px] truncate pr-2"
+                      :title="row.customerName"
+                    >
                       {{ row.customerName }}
                     </span>
                     <span class="font-mono font-bold text-slate-400 text-[11px] mt-0.5">
@@ -192,15 +203,25 @@
                 <div class="grid grid-cols-2 gap-y-4 gap-x-4 mb-4 flex-1">
                   <!-- Biển số & Số khung -->
                   <div class="flex flex-col">
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                    <span
+                      class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1"
+                    >
                       <ArtSvgIcon icon="ri:motorbike-line" /> Xe máy
                     </span>
                     <div class="mt-1.5">
-                      <span v-if="row.licensePlate" class="px-2 py-1 bg-slate-100 rounded-md text-slate-700 font-mono font-bold text-[11px] border border-slate-200">
+                      <span
+                        v-if="row.licensePlate"
+                        class="px-2 py-1 bg-slate-100 rounded-md text-slate-700 font-mono font-bold text-[11px] border border-slate-200"
+                      >
                         {{ row.licensePlate }}
                       </span>
-                      <span v-else class="text-slate-400 italic text-[11px] block mt-0.5">Chưa đăng ký biển</span>
-                      <div v-if="row.vehicle && row.vehicle.vinNumber" class="text-[9px] text-slate-400 mt-1.5 font-mono">
+                      <span v-else class="text-slate-400 italic text-[11px] block mt-0.5"
+                        >Chưa đăng ký biển</span
+                      >
+                      <div
+                        v-if="row.vehicle && row.vehicle.vinNumber"
+                        class="text-[9px] text-slate-400 mt-1.5 font-mono"
+                      >
                         Khung: {{ row.vehicle.vinNumber }}
                       </div>
                     </div>
@@ -208,38 +229,59 @@
 
                   <!-- Liên hệ -->
                   <div class="flex flex-col">
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                    <span
+                      class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1"
+                    >
                       <ArtSvgIcon icon="ri:phone-line" /> Liên hệ
                     </span>
-                    <span class="font-bold text-slate-700 text-[13px] mt-1.5">{{ row.customerPhone }}</span>
+                    <span class="font-bold text-slate-700 text-[13px] mt-1.5">{{
+                      row.customerPhone
+                    }}</span>
                   </div>
 
                   <!-- Kỹ thuật viên -->
                   <div class="flex flex-col">
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                    <span
+                      class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1"
+                    >
                       <ArtSvgIcon icon="ri:user-settings-line" /> Kỹ thuật viên
                     </span>
                     <div class="flex items-center gap-1.5 mt-1.5" v-if="row.technicianId">
-                      <div class="size-5 rounded-full bg-slate-100 text-slate-600 flex-cc font-bold text-[9px] uppercase shadow-inner shrink-0">
+                      <div
+                        class="size-5 rounded-full bg-slate-100 text-slate-600 flex-cc font-bold text-[9px] uppercase shadow-inner shrink-0"
+                      >
                         {{ row.technicianName ? row.technicianName.charAt(0) : 'T' }}
                       </div>
-                      <span class="font-bold text-slate-700 text-[12px] truncate" :title="row.technicianName">
+                      <span
+                        class="font-bold text-slate-700 text-[12px] truncate"
+                        :title="row.technicianName"
+                      >
                         {{ row.technicianName }}
                       </span>
                     </div>
-                    <span v-else class="text-amber-500 font-bold text-[10px] mt-1.5 uppercase flex items-center gap-1">
+                    <span
+                      v-else
+                      class="text-amber-500 font-bold text-[10px] mt-1.5 uppercase flex items-center gap-1"
+                    >
                       <ArtSvgIcon icon="ri:error-warning-line" /> Chưa phân công
                     </span>
                   </div>
 
                   <!-- Chi phí -->
                   <div class="flex flex-col">
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                    <span
+                      class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1"
+                    >
                       <ArtSvgIcon icon="ri:money-dollar-circle-line" /> Chi phí
                     </span>
-                    <span class="font-black text-slate-800 text-[14px] mt-1">{{ formatCurrency(row.totalAmount) }}</span>
-                    <span class="text-[9px] text-slate-400 mt-0.5 leading-tight" v-if="row.totalAmount > 0">
-                      DV: {{ formatCurrency(row.laborCost) }} <br/>
+                    <span class="font-black text-slate-800 text-[14px] mt-1">{{
+                      formatCurrency(row.totalAmount)
+                    }}</span>
+                    <span
+                      class="text-[9px] text-slate-400 mt-0.5 leading-tight"
+                      v-if="row.totalAmount > 0"
+                    >
+                      DV: {{ formatCurrency(row.laborCost) }} <br />
                       PT: {{ formatCurrency(row.partsCost) }}
                     </span>
                   </div>
@@ -269,7 +311,9 @@
           </div>
 
           <!-- Pagination -->
-          <div class="flex justify-between items-center mt-6 bg-white border border-slate-200 rounded-[20px] shadow-sm px-6 py-4">
+          <div
+            class="flex justify-between items-center mt-6 bg-white border border-slate-200 rounded-[20px] shadow-sm px-6 py-4"
+          >
             <span class="text-[11px] text-slate-400 font-bold uppercase">
               Hiển thị {{ repairOrders.length }} / {{ totalCount }} phiếu
             </span>
@@ -486,22 +530,22 @@
   .workshop-dashboard-page {
     .combat-input {
       :deep(.el-input__wrapper) {
+        height: 38px;
+        padding: 6px 12px;
         background-color: #f8fafc;
         border: 1px solid #e2e8f0;
         border-radius: 12px;
         box-shadow: none;
-        padding: 6px 12px;
-        height: 38px;
       }
     }
 
     .combat-select {
       :deep(.el-input__wrapper) {
+        height: 38px;
         background-color: #f8fafc;
         border: 1px solid #e2e8f0;
         border-radius: 12px;
         box-shadow: none;
-        height: 38px;
       }
     }
 
@@ -511,11 +555,11 @@
       --el-table-row-hover-bg-color: #f1f5f9/30;
 
       :deep(thead th) {
+        padding: 14px 0;
         font-size: 9px;
         font-weight: 900;
         text-transform: uppercase;
         letter-spacing: 0.1em;
-        padding: 14px 0;
         border-bottom: 1px solid #f1f5f9;
       }
 
@@ -527,8 +571,8 @@
 
     .combat-pagination {
       :deep(.el-pager li.is-active) {
-        background-color: #001529 !important;
         color: white !important;
+        background-color: #001529 !important;
         border-radius: 8px;
       }
     }

@@ -54,7 +54,13 @@
           <ArtSvgIcon icon="ri:folder-upload-line" class="mr-1" />
           Nhập từ File (.docx)
         </el-button>
-        <input type="file" ref="fileInput" accept=".docx" class="hidden" @change="handleImportFile" />
+        <input
+          type="file"
+          ref="fileInput"
+          accept=".docx"
+          class="hidden"
+          @change="handleImportFile"
+        />
         <el-button
           @click="handlePreview"
           class="!h-10 !px-5 !rounded-xl !border-2 !border-slate-200 !text-slate-600 !font-black !text-[10px] !uppercase !tracking-widest hover:!border-slate-800 transition-all"
@@ -116,8 +122,14 @@
               {{ t('menus.contract.templateVersion') }}
             </label>
             <div class="h-[34px] flex items-center gap-2 mt-1">
-              <span class="text-[14px] font-black text-slate-700 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200">v{{ form.version }}.0</span>
-              <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider bg-slate-100 px-2 py-1 rounded-md">Hệ thống sinh</span>
+              <span
+                class="text-[14px] font-black text-slate-700 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200"
+                >v{{ form.version }}.0</span
+              >
+              <span
+                class="text-[9px] font-bold text-slate-400 uppercase tracking-wider bg-slate-100 px-2 py-1 rounded-md"
+                >Hệ thống sinh</span
+              >
             </div>
           </div>
           <div class="col-span-2">
@@ -194,7 +206,9 @@
                   <span class="size-5 rounded-md bg-blue-100 flex-cc text-blue-600">
                     <ArtSvgIcon icon="ri:user-line" class="text-xs" />
                   </span>
-                  <span class="text-[10px] font-black text-blue-700 uppercase tracking-wider">Khách hàng</span>
+                  <span class="text-[10px] font-black text-blue-700 uppercase tracking-wider"
+                    >Khách hàng</span
+                  >
                 </div>
                 <div class="flex flex-wrap gap-2">
                   <button
@@ -214,7 +228,9 @@
                   <span class="size-5 rounded-md bg-emerald-100 flex-cc text-emerald-600">
                     <ArtSvgIcon icon="ri:motorbike-line" class="text-xs" />
                   </span>
-                  <span class="text-[10px] font-black text-emerald-700 uppercase tracking-wider">Xe máy</span>
+                  <span class="text-[10px] font-black text-emerald-700 uppercase tracking-wider"
+                    >Xe máy</span
+                  >
                 </div>
                 <div class="flex flex-wrap gap-2">
                   <button
@@ -234,7 +250,9 @@
                   <span class="size-5 rounded-md bg-violet-100 flex-cc text-violet-600">
                     <ArtSvgIcon icon="ri:money-dollar-circle-line" class="text-xs" />
                   </span>
-                  <span class="text-[10px] font-black text-violet-700 uppercase tracking-wider">Tài chính</span>
+                  <span class="text-[10px] font-black text-violet-700 uppercase tracking-wider"
+                    >Tài chính</span
+                  >
                 </div>
                 <div class="flex flex-wrap gap-2">
                   <button
@@ -254,7 +272,9 @@
                   <span class="size-5 rounded-md bg-orange-100 flex-cc text-orange-600">
                     <ArtSvgIcon icon="ri:building-4-line" class="text-xs" />
                   </span>
-                  <span class="text-[10px] font-black text-orange-700 uppercase tracking-wider">Nhà cung cấp / Đối tác</span>
+                  <span class="text-[10px] font-black text-orange-700 uppercase tracking-wider"
+                    >Nhà cung cấp / Đối tác</span
+                  >
                 </div>
                 <div class="flex flex-wrap gap-2">
                   <button
@@ -346,9 +366,9 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, reactive, computed, onMounted, nextTick } from 'vue'
+  import { ref, reactive, computed, onMounted } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
-  import { ElMessage, ElMessageBox } from 'element-plus'
+  import { ElMessage } from 'element-plus'
   import { useI18n } from 'vue-i18n'
   import {
     getContractTemplateById,
@@ -467,16 +487,18 @@
     try {
       let mammoth: any
       try {
-            // @vite-ignore
-            mammoth = await import('mammoth')
-      } catch (e) {
-        ElMessage.warning('Vui lòng cài đặt thư viện mammoth (pnpm add mammoth) để sử dụng tính năng này')
+        // @vite-ignore
+        mammoth = await import('mammoth')
+      } catch (_e) {
+        ElMessage.warning(
+          'Vui lòng cài đặt thư viện mammoth (pnpm add mammoth) để sử dụng tính năng này',
+        )
         return
       }
-      
+
       const arrayBuffer = await file.arrayBuffer()
       const result = await mammoth.convertToHtml({ arrayBuffer })
-      
+
       if (result.value) {
         editorHtml.value = result.value
         ElMessage.success('Nhập file thành công!')
@@ -515,7 +537,7 @@
 
     // Access WangEditor via exposed ref
     const artWangEditor = document.querySelector('.contract-editor')
-    const editorInstance = (artWangEditor as any)?.__vueParentComponent?.ctx?.$refs?.artWangEditor
+    const _editorInstance = (artWangEditor as any)?.__vueParentComponent?.ctx?.$refs?.artWangEditor
 
     // WangEditor exposes insertHtml method - use DOM Range API as fallback
     const selection = window.getSelection()
@@ -550,7 +572,7 @@
   }
 
   const handlePreview = () => {
-    const sampleData = (previewHtml.value = getPreviewContent(editorHtml.value))
+    const _sampleData = (previewHtml.value = getPreviewContent(editorHtml.value))
     previewVisible.value = true
   }
 
@@ -714,34 +736,34 @@
 
   .a4-preview {
     max-height: 80vh;
+    padding: 20px;
     overflow-y: auto;
     background: #525659;
-    padding: 20px;
     border-radius: 12px;
   }
 
   .a4-page {
-    background: white;
     max-width: 210mm;
     min-height: 297mm;
-    margin: 0 auto;
     padding: 20mm;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    margin: 0 auto;
+    background: white;
     border-radius: 2px;
+    box-shadow: 0 4px 20px rgb(0 0 0 / 30%);
   }
 
   :deep(.contract-preview-dialog) {
-    border-radius: 24px;
     overflow: hidden;
+    border-radius: 24px;
 
     .el-dialog__header {
       padding: 20px 24px;
-      border-bottom: 1px solid #f1f5f9;
       background: #f8fafc;
+      border-bottom: 1px solid #f1f5f9;
 
       .el-dialog__title {
-        font-weight: 900;
         font-size: 14px;
+        font-weight: 900;
         text-transform: uppercase;
         letter-spacing: 0.05em;
       }
@@ -753,12 +775,12 @@
 
     .el-dialog__footer {
       padding: 16px 24px;
-      border-top: 1px solid #f1f5f9;
       background: #f8fafc;
+      border-top: 1px solid #f1f5f9;
     }
   }
 
-  @media (max-width: 1024px) {
+  @media (width <= 1024px) {
     .contract-editor-page {
       :deep(.max-w-\[1600px\]) {
         max-width: 100%;

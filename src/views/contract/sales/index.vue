@@ -49,17 +49,31 @@
             class="w-full"
             @input="debouncedSearch"
           />
-          <el-select v-model="statusFilter" placeholder="Trạng thái" clearable class="w-full" @change="fetchData">
+          <el-select
+            v-model="statusFilter"
+            placeholder="Trạng thái"
+            clearable
+            class="w-full"
+            @change="fetchData"
+          >
             <el-option label="Nháp (Draft)" value="Draft" />
             <el-option label="Đã ký (Signed)" value="Signed" />
             <el-option label="Hoàn tất (Fulfilled)" value="Fulfilled" />
           </el-select>
-          <el-select v-model="vehicleFilter" placeholder="Dòng xe" clearable class="w-full" @change="fetchData">
+          <el-select
+            v-model="vehicleFilter"
+            placeholder="Dòng xe"
+            clearable
+            class="w-full"
+            @change="fetchData"
+          >
             <el-option label="Honda SH" value="SH" />
             <el-option label="Honda Vision" value="Vision" />
             <el-option label="Yamaha Exciter" value="Exciter" />
           </el-select>
-          <el-button type="primary" :icon="Search" class="w-full md:w-auto" @click="fetchData">Tìm kiếm</el-button>
+          <el-button type="primary" :icon="Search" class="w-full md:w-auto" @click="fetchData"
+            >Tìm kiếm</el-button
+          >
         </div>
 
         <el-table :data="tableData" border style="width: 100%" v-loading="loading">
@@ -173,170 +187,174 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import {
-  View,
-  Search,
-  Document,
-  Warning,
-  Money,
-  Edit,
-  UploadFilled,
-  DocumentAdd,
-  WarningFilled,
-  WarnTriangleFilled,
-  ArrowDown,
-} from '@element-plus/icons-vue'
+  import { ref, reactive, onMounted } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { useI18n } from 'vue-i18n'
+  import {
+    View,
+    Search,
+    Document,
+    Warning,
+    Money,
+    Edit,
+    UploadFilled,
+    DocumentAdd,
+    WarningFilled,
+    WarnTriangleFilled,
+    ArrowDown,
+  } from '@element-plus/icons-vue'
 
-import dayjs from 'dayjs'
-import { ElMessage } from 'element-plus'
-import { SalesContractApi } from '@/infrastructure/api/sales-contract.api'
+  import dayjs from 'dayjs'
+  import { ElMessage } from 'element-plus'
+  import { SalesContractApi } from '@/infrastructure/api/sales-contract.api'
 
-const { t: $t } = useI18n()
-const router = useRouter()
+  const { t: $t } = useI18n()
+  const router = useRouter()
 
-const loading = ref(false)
-const searchQuery = ref('')
-const statusFilter = ref('')
-const vehicleFilter = ref('')
+  const loading = ref(false)
+  const searchQuery = ref('')
+  const statusFilter = ref('')
+  const vehicleFilter = ref('')
 
-const tableData = ref<any[]>([])
-const statistics = reactive({
-  draftCount: 0,
-  overdueCount: 0,
-  signedCount: 0,
-})
+  const tableData = ref<any[]>([])
+  const statistics = reactive({
+    draftCount: 0,
+    overdueCount: 0,
+    signedCount: 0,
+  })
 
-const pagination = reactive({
-  current: 1,
-  size: 10,
-  total: 0,
-})
+  const pagination = reactive({
+    current: 1,
+    size: 10,
+    total: 0,
+  })
 
-let searchTimer: ReturnType<typeof setTimeout> | null = null
-const debouncedSearch = () => {
-  if (searchTimer) clearTimeout(searchTimer)
-  searchTimer = setTimeout(() => {
-    pagination.current = 1
-    fetchData()
-  }, 400)
-}
+  let searchTimer: ReturnType<typeof setTimeout> | null = null
+  const debouncedSearch = () => {
+    if (searchTimer) clearTimeout(searchTimer)
+    searchTimer = setTimeout(() => {
+      pagination.current = 1
+      fetchData()
+    }, 400)
+  }
 
-const fetchData = async () => {
-  loading.value = true
-  try {
-    const params: Record<string, any> = {
-      current: pagination.current,
-      size: pagination.size,
+  const fetchData = async () => {
+    loading.value = true
+    try {
+      const params: Record<string, any> = {
+        current: pagination.current,
+        size: pagination.size,
+      }
+      if (searchQuery.value) params.keyword = searchQuery.value
+      if (statusFilter.value) params.status = statusFilter.value
+      if (vehicleFilter.value) params.vehicleModel = vehicleFilter.value
+
+      const res = await SalesContractApi.getList(params)
+      tableData.value = res.items.map((c: any) => ({
+        ...c,
+        progress:
+          c.status === 'Fulfilled' ? 'delivered' : c.status === 'Signed' ? 'paid' : 'deposit',
+      }))
+      pagination.total = res.total
+    } catch (_e) {
+      ElMessage.error('Không tải được danh sách hợp đồng.')
+    } finally {
+      loading.value = false
     }
-    if (searchQuery.value) params.keyword = searchQuery.value
-    if (statusFilter.value) params.status = statusFilter.value
-    if (vehicleFilter.value) params.vehicleModel = vehicleFilter.value
-
-    const res = await SalesContractApi.getList(params)
-    tableData.value = res.items.map((c: any) => ({
-      ...c,
-      progress: c.status === 'Fulfilled' ? 'delivered'
-        : c.status === 'Signed' ? 'paid'
-        : 'deposit',
-    }))
-    pagination.total = res.total
-  } catch (_e) {
-    ElMessage.error('Không tải được danh sách hợp đồng.')
-  } finally {
-    loading.value = false
   }
-}
 
-const loadStatistics = async () => {
-  try {
-    const stats = await SalesContractApi.getStatistics()
-    statistics.draftCount = stats.draftCount
-    statistics.overdueCount = stats.overdueCount
-    statistics.signedCount = stats.signedCount
-  } catch (_e) {
-    // silent fail for stats
+  const loadStatistics = async () => {
+    try {
+      const stats = await SalesContractApi.getStatistics()
+      statistics.draftCount = stats.draftCount
+      statistics.overdueCount = stats.overdueCount
+      statistics.signedCount = stats.signedCount
+    } catch (_e) {
+      // silent fail for stats
+    }
   }
-}
 
-onMounted(() => {
-  fetchData()
-  loadStatistics()
-})
+  onMounted(() => {
+    fetchData()
+    loadStatistics()
+  })
 
-const getStatusType = (status: string) => {
-  switch (status) {
-    case 'Draft':
-      return 'warning'
-    case 'Signed':
-      return 'primary'
-    case 'Fulfilled':
-      return 'success'
-    default:
-      return 'info'
+  const getStatusType = (status: string) => {
+    switch (status) {
+      case 'Draft':
+        return 'warning'
+      case 'Signed':
+        return 'primary'
+      case 'Fulfilled':
+        return 'success'
+      default:
+        return 'info'
+    }
   }
-}
 
-const getStatusLabel = (status: string) => {
-  const map: Record<string, string> = {
-    Draft: 'Nháp (Draft)',
-    Signed: 'Đã ký (Signed)',
-    Fulfilled: 'Hoàn tất (Fulfilled)',
+  const getStatusLabel = (status: string) => {
+    const map: Record<string, string> = {
+      Draft: 'Nháp (Draft)',
+      Signed: 'Đã ký (Signed)',
+      Fulfilled: 'Hoàn tất (Fulfilled)',
+    }
+    return map[status] || status
   }
-  return map[status] || status
-}
 
-const getProgressActive = (progress: string) => {
-  switch (progress) {
-    case 'deposit':
-      return 1
-    case 'paid':
-      return 2
-    case 'delivered':
-      return 3
-    default:
-      return 0
+  const getProgressActive = (progress: string) => {
+    switch (progress) {
+      case 'deposit':
+        return 1
+      case 'paid':
+        return 2
+      case 'delivered':
+        return 3
+      default:
+        return 0
+    }
   }
-}
 
-const isOverdue = (dateStr: string) => {
-  if (!dateStr) return false
-  return dayjs(dateStr).isBefore(dayjs(), 'day')
-}
+  const isOverdue = (dateStr: string) => {
+    if (!dateStr) return false
+    return dayjs(dateStr).isBefore(dayjs(), 'day')
+  }
 
-const formatDate = (dateStr: string) => {
-  if (!dateStr) return ''
-  return dayjs(dateStr).format('DD/MM/YYYY')
-}
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return ''
+    return dayjs(dateStr).format('DD/MM/YYYY')
+  }
 
-const goToPreview = (id?: string) => {
-  router.push({ name: 'SalesContractPreview', params: { id: id || '' } })
-}
+  const goToPreview = (id?: string) => {
+    router.push({ name: 'SalesContractPreview', params: { id: id || '' } })
+  }
 </script>
 
 <style scoped lang="scss">
-.contract-sales-container {
-  padding: 16px;
-}
-.kpi-card {
-  border-radius: 8px;
-}
-.mini-steps {
-  padding: 4px 8px !important;
-  background: transparent !important;
-  :deep(.el-step__title) {
-    font-size: 12px;
-    line-height: 1;
-    white-space: nowrap;
+  .contract-sales-container {
+    padding: 16px;
   }
-  :deep(.el-step__head) {
-    display: none;
+
+  .kpi-card {
+    border-radius: 8px;
   }
-  :deep(.el-step) {
-    flex-basis: auto !important;
-    min-width: 60px;
+
+  .mini-steps {
+    padding: 4px 8px !important;
+    background: transparent !important;
+
+    :deep(.el-step__title) {
+      font-size: 12px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    :deep(.el-step__head) {
+      display: none;
+    }
+
+    :deep(.el-step) {
+      flex-basis: auto !important;
+      min-width: 60px;
+    }
   }
-}
 </style>

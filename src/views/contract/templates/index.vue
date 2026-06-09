@@ -86,11 +86,17 @@
         >
           <!-- Card Header -->
           <div class="p-5 flex items-start gap-4">
-            <div class="size-12 rounded-xl flex-cc text-white shrink-0 shadow-inner" :class="getTypeColor(row.type)">
+            <div
+              class="size-12 rounded-xl flex-cc text-white shrink-0 shadow-inner"
+              :class="getTypeColor(row.type)"
+            >
               <ArtSvgIcon icon="ri:file-text-line" class="text-2xl" />
             </div>
             <div class="flex-1 min-w-0">
-              <h3 class="m-0 text-[15px] font-black text-slate-800 leading-tight mb-2 truncate" :title="row.name">
+              <h3
+                class="m-0 text-[15px] font-black text-slate-800 leading-tight mb-2 truncate"
+                :title="row.name"
+              >
                 {{ row.name }}
               </h3>
               <el-tag
@@ -113,18 +119,23 @@
               </div>
               <div class="flex items-center gap-2 text-[12px] text-slate-500">
                 <ArtSvgIcon icon="ri:checkbox-circle-line" class="text-slate-400" />
-                Trạng thái: 
-                <span class="font-bold" :class="row.status === 1 ? 'text-emerald-500' : 'text-slate-400'">
+                Trạng thái:
+                <span
+                  class="font-bold"
+                  :class="row.status === 1 ? 'text-emerald-500' : 'text-slate-400'"
+                >
                   {{ row.status === 1 ? 'Đang áp dụng' : 'Đã lưu trữ' }}
                 </span>
               </div>
               <div class="flex items-center gap-2 text-[12px] text-slate-500">
                 <ArtSvgIcon icon="ri:brackets-line" class="text-slate-400" />
-                Biến số: <span class="font-bold text-slate-700">{{ row.variableCount || 14 }} trường</span>
+                Biến số:
+                <span class="font-bold text-slate-700">{{ row.variableCount || 14 }} trường</span>
               </div>
               <div class="flex items-center gap-2 text-[12px] text-slate-500">
                 <ArtSvgIcon icon="ri:calendar-line" class="text-slate-400" />
-                Cập nhật: <span class="font-bold text-slate-700">{{ formatDate(row.createdAt) }}</span>
+                Cập nhật:
+                <span class="font-bold text-slate-700">{{ formatDate(row.createdAt) }}</span>
               </div>
             </div>
           </div>
@@ -141,7 +152,11 @@
               @click="handleEdit(row)"
               :disabled="row.isUsed"
               class="flex-1 py-3.5 text-[13px] font-bold transition-colors flex-cc gap-2 border-r border-slate-100"
-              :class="row.isUsed ? 'text-slate-400 cursor-not-allowed opacity-60' : 'text-slate-600 hover:text-emerald-600 hover:bg-emerald-50/80'"
+              :class="
+                row.isUsed
+                  ? 'text-slate-400 cursor-not-allowed opacity-60'
+                  : 'text-slate-600 hover:text-emerald-600 hover:bg-emerald-50/80'
+              "
             >
               <ArtSvgIcon icon="ri:edit-2-line" /> Sửa
             </button>
@@ -155,21 +170,23 @@
         </div>
       </div>
 
-      <div class="bg-white border border-slate-200 rounded-[20px] shadow-sm px-6 py-4 flex justify-between items-center">
-          <span class="text-[11px] font-bold text-slate-400">
-            Hiển thị {{ tableData.length }} / {{ totalCount }} mẫu
-          </span>
-          <el-pagination
-            v-model:current-page="currentPage"
-            v-model:page-size="pageSize"
-            :page-sizes="[10, 20, 50]"
-            :total="totalCount"
-            layout="total, sizes, prev, pager, next"
-            @current-change="fetchTemplates"
-            @size-change="fetchTemplates"
-            class="!font-bold"
-          />
-        </div>
+      <div
+        class="bg-white border border-slate-200 rounded-[20px] shadow-sm px-6 py-4 flex justify-between items-center"
+      >
+        <span class="text-[11px] font-bold text-slate-400">
+          Hiển thị {{ tableData.length }} / {{ totalCount }} mẫu
+        </span>
+        <el-pagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :page-sizes="[10, 20, 50]"
+          :total="totalCount"
+          layout="total, sizes, prev, pager, next"
+          @current-change="fetchTemplates"
+          @size-change="fetchTemplates"
+          class="!font-bold"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -199,7 +216,7 @@
   const totalCount = ref(0)
   const tableData = ref<any[]>([])
 
-  const headerCellStyle = () => ({
+  const _headerCellStyle = () => ({
     background: '#f8fafc',
     color: '#64748b',
     fontWeight: 800,
@@ -209,12 +226,12 @@
     borderBottom: '2px solid #e2e8f0',
   })
 
-  const cellStyle = () => ({
+  const _cellStyle = () => ({
     padding: '12px 16px',
     borderBottom: '1px solid #f1f5f9',
   })
 
-  const getTypeAbbr = (type: string) => {
+  const _getTypeAbbr = (type: string) => {
     const map: Record<string, string> = {
       Sales: 'MB',
       Finance: 'TG',
@@ -249,12 +266,12 @@
     return t(key) || type
   }
 
-  const getStatusTagType = (status: number) => {
+  const _getStatusTagType = (status: number) => {
     const map: Record<number, string> = { 1: 'success', 2: 'info', 3: 'danger' }
     return map[status] || 'info'
   }
 
-  const getStatusLabel = (status: number) => {
+  const _getStatusLabel = (status: number) => {
     const key = `menus.contract.status${status === 1 ? 'Active' : status === 2 ? 'Inactive' : 'Deprecated'}`
     return t(key) || String(status)
   }
@@ -287,7 +304,7 @@
         createdAt: item.createdAt || new Date().toISOString(),
       }))
       totalCount.value = res.data.totalCount
-    } catch (err) {
+    } catch (_err) {
       ElMessage.error('Không thể tải danh sách mẫu hợp đồng')
     }
   }
@@ -314,16 +331,16 @@
     router.push({ name: 'EditContractTemplate', params: { id: row.id } })
   }
 
-  const handlePreview = (row: any) => {
+  const handlePreview = (_row: any) => {
     ElMessage.info('Chức năng xem trước mẫu hợp đồng đang được phát triển')
   }
 
-  const handleVariables = (row: any) => {
+  const handleVariables = (_row: any) => {
     // Navigate to variables mapping or open modal
     ElMessage.info('Chức năng cấu hình biến số đang được phát triển')
   }
 
-  const handleArchive = async (row: any) => {
+  const _handleArchive = async (_row: any) => {
     try {
       await ElMessageBox.confirm('Bạn có chắc muốn lưu trữ mẫu hợp đồng này?', 'Lưu trữ mẫu', {
         confirmButtonText: 'Lưu trữ',
@@ -333,12 +350,12 @@
       // Call mock or real API here, e.g. await archiveContractTemplate(row.id)
       ElMessage.success('Lưu trữ mẫu hợp đồng thành công!')
       fetchTemplates()
-    } catch (e) {
+    } catch (_e) {
       // User cancelled
     }
   }
 
-  const handleClone = async (row: any) => {
+  const _handleClone = async (row: any) => {
     try {
       await ElMessageBox.confirm(
         `Nhân bản mẫu "${row.name}" thành phiên bản mới? Mẫu mới sẽ có version v${parseFloat(String(row.version)) + 0.1} và được kích hoạt ngay.`,
@@ -348,12 +365,12 @@
       await cloneContractTemplate(row.id)
       ElMessage.success(t('menus.contract.cloneSuccess'))
       fetchTemplates()
-    } catch (e) {
+    } catch (_e) {
       // User cancelled
     }
   }
 
-  const handleDelete = async (row: any) => {
+  const _handleDelete = async (row: any) => {
     try {
       await ElMessageBox.confirm(t('menus.contract.confirmDeleteTemplate'), 'Xóa Mẫu Hợp đồng', {
         confirmButtonText: 'Xóa',
@@ -363,7 +380,7 @@
       await deleteContractTemplate(row.id)
       ElMessage.success(t('menus.contract.deleteSuccess'))
       fetchTemplates()
-    } catch (e) {
+    } catch (_e) {
       // User cancelled
     }
   }
@@ -391,9 +408,9 @@
 
   :deep(.el-pagination) {
     .el-pager li {
+      margin: 0 2px;
       font-weight: 700;
       border-radius: 8px;
-      margin: 0 2px;
     }
   }
 </style>

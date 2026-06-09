@@ -507,7 +507,10 @@
 
   import { RepairOrderApi, type RepairOrder } from '@/infrastructure/api/repair-order'
   import { ProductApi } from '@/infrastructure/api/product/product.api'
-  import { ServiceCategoryApi, type ServiceCategoryResponse } from '@/infrastructure/api/service-category.api'
+  import {
+    ServiceCategoryApi,
+    type ServiceCategoryResponse,
+  } from '@/infrastructure/api/service-category.api'
 
   defineOptions({ name: 'ServiceWorkshopRepairOrders' })
 

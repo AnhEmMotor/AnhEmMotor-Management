@@ -4,28 +4,37 @@
       <div class="flex items-center w-full">
         <div class="w-3/4 pr-8">
           <div class="text-sm text-gray-500 mb-4 font-medium">Trạng thái vòng đời giải ngân</div>
-          
+
           <div class="relative flex w-full">
             <div class="absolute top-4 left-[12.5%] right-[12.5%] h-0.5 bg-gray-200 z-0"></div>
-            <div 
+            <div
               class="absolute top-4 left-[12.5%] h-0.5 bg-blue-500 z-0 transition-all duration-300"
               :style="{ width: `${Math.min(Math.max(pipelineActiveStep, 0), 3) * 25}%` }"
             ></div>
-            
-            <div v-for="(step, index) in ['Đang gửi thẩm định', 'Chờ phê duyệt', 'Chờ giải ngân', 'Đã giải ngân']" :key="index" class="flex-1 flex flex-col items-center relative z-10">
-              <div 
+
+            <div
+              v-for="(step, index) in [
+                'Đang gửi thẩm định',
+                'Chờ phê duyệt',
+                'Chờ giải ngân',
+                'Đã giải ngân',
+              ]"
+              :key="index"
+              class="flex-1 flex flex-col items-center relative z-10"
+            >
+              <div
                 class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 bg-white transition-colors duration-300"
                 :class="[
                   pipelineActiveStep > index ? 'border-blue-500 text-blue-500' : '',
                   pipelineActiveStep === index ? 'border-blue-500 bg-blue-500 text-white' : '',
-                  pipelineActiveStep < index ? 'border-gray-300 text-gray-400' : ''
+                  pipelineActiveStep < index ? 'border-gray-300 text-gray-400' : '',
                 ]"
               >
                 <el-icon v-if="pipelineActiveStep > index"><Check /></el-icon>
                 <span v-else>{{ index + 1 }}</span>
               </div>
-              <div 
-                class="mt-2 text-center text-sm px-1 w-full break-words" 
+              <div
+                class="mt-2 text-center text-sm px-1 w-full break-words"
                 :class="pipelineActiveStep >= index ? 'text-gray-900 font-medium' : 'text-gray-400'"
               >
                 {{ step }}
@@ -224,7 +233,7 @@
           <div class="a4-preview-container p-6" style="height: calc(100% - 44px); overflow-y: auto">
             <div
               class="a4-paper bg-white shadow-lg p-8 mx-auto"
-              style="width: 210mm; min-height: 297mm; max-width: 100%"
+              style="width: 210mm; max-width: 100%; min-height: 297mm"
             >
               <h2 class="text-center font-bold text-xl mb-4">HỢP ĐỒNG TÀI CHÍNH TRẢ GÓP</h2>
               <p class="text-right italic mb-6">Số: {{ contract.contractNumber || '-' }}</p>
@@ -349,7 +358,7 @@
     storageLocation: '',
   })
 
-  const contractStatusType = computed(() => {
+  const _contractStatusType = computed(() => {
     const st = contract.value.status as FinanceContractStatus
     if (st === 'Draft') return 'info'
     if (st === 'Approved') return 'success'
@@ -427,15 +436,22 @@
     }
   }
 
-  const getStatusLabel = (st: string) => {
+  const _getStatusLabel = (st: string) => {
     switch (st) {
-      case 'Draft': return 'Bản nháp'
-      case 'Submitted': return 'Đã gửi duyệt'
-      case 'Approved': return 'Đã duyệt'
-      case 'PendingDisbursement': return 'Chờ giải ngân'
-      case 'Disbursed': return 'Đã giải ngân'
-      case 'Settled': return 'Đã tất toán'
-      default: return st
+      case 'Draft':
+        return 'Bản nháp'
+      case 'Submitted':
+        return 'Đã gửi duyệt'
+      case 'Approved':
+        return 'Đã duyệt'
+      case 'PendingDisbursement':
+        return 'Chờ giải ngân'
+      case 'Disbursed':
+        return 'Đã giải ngân'
+      case 'Settled':
+        return 'Đã tất toán'
+      default:
+        return st
     }
   }
 
@@ -528,25 +544,25 @@
           customer360: {
             fullName: id === '1' ? 'Trần Thị B' : id === '2' ? 'Nguyễn Văn A' : 'Lê Văn C',
             cccd: '079123456789',
-            address: 'TP.HCM'
+            address: 'TP.HCM',
           },
           financialPartner: {
             name: id === '1' ? 'FE Credit' : id === '2' ? 'Home Credit' : 'HD Saison',
-            contactPhone: '0901234567'
+            contactPhone: '0901234567',
           },
           creditPackage: {
             termMonths: id === '1' ? 24 : id === '2' ? 12 : 6,
             interestRateRange: '1.2% - 1.5%',
-            monthlyPaymentAmount: 2500000
+            monthlyPaymentAmount: 2500000,
           },
           disbursement: {
             expectedDate: id === '1' ? '2026-06-05' : id === '2' ? '2026-06-01' : '2026-04-15',
             expectedAmount: id === '1' ? 45000000 : id === '2' ? 30000000 : 20000000,
-          }
-        } as any;
-        cavetForm.state = id === '1' ? 'FinancialCompanyHolds' : 'StoreHoldsOnBehalf';
+          },
+        } as any
+        cavetForm.state = id === '1' ? 'FinancialCompanyHolds' : 'StoreHoldsOnBehalf'
       } else {
-        throw error;
+        throw error
       }
     }
   }
@@ -564,7 +580,7 @@
   .is-invalid {
     :deep(.el-input__wrapper) {
       border-color: #f5222d !important;
-      box-shadow: 0 0 0 2px rgba(245, 34, 45, 0.1) !important;
+      box-shadow: 0 0 0 2px rgb(245 34 45 / 10%) !important;
     }
   }
 
