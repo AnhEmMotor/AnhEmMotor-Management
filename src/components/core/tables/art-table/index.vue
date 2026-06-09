@@ -69,7 +69,7 @@
   import type { ElTable, TableProps } from 'element-plus'
   import { storeToRefs } from 'pinia'
   import { ColumnOption } from '@/types'
-  import { useTableStore } from '@/store/modules/table'
+  import { useTableStore } from '@/application/store/table'
   import { useCommon } from '@/hooks/core/useCommon'
   import { useTableHeight } from '@/hooks/core/useTableHeight'
   import { useResizeObserver, useWindowSize } from '@vueuse/core'

@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { useTable } from '@/hooks/core/useTable'
-import { BrandApi } from '@/api/product/brand.api'
+import { BrandApi } from '@/infrastructure/api/product/brand.api'
 import type { Brand } from '@/domain/product/brand.types'
 import { ElMessage, ElMessageBox } from 'element-plus'
 

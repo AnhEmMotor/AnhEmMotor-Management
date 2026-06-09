@@ -166,7 +166,7 @@
                 <ElOption
                   v-for="tech in technicians"
                   :key="tech.id"
-                  :label="tech.fullName + ' (' + tech.jobTitle + ')"
+                  :label="`${tech.fullName} (${tech.jobTitle})`"
                   :value="tech.id"
                 />
               </ElSelect>

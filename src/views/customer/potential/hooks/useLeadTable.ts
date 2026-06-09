@@ -1,5 +1,5 @@
 import { ref, onMounted, reactive } from 'vue'
-import { fetchGetLeadList, Lead } from '@/api/lead'
+import { fetchGetLeadList, Lead } from '@/infrastructure/api/lead'
 import { ElMessage } from 'element-plus'
 
 export function useLeadTable() {

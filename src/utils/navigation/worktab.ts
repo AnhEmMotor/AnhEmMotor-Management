@@ -1,7 +1,7 @@
-import { useWorktabStore } from '@/store/modules/worktab'
+import { useWorktabStore } from '@/application/store/worktab'
 import { RouteLocationNormalized } from 'vue-router'
 import { isIframe } from './route'
-import { useSettingStore } from '@/store/modules/setting'
+import { useSettingStore } from '@/application/store/setting'
 import { IframeRouteManager } from '@/router/core'
 import { useCommon } from '@/hooks/core/useCommon'
 

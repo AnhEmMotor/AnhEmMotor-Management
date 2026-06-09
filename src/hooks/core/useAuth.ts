@@ -1,6 +1,6 @@
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { useUserStore } from '@/store/modules/user'
+import { useUserStore } from '@/application/store/user'
 import { useAppMode } from '@/hooks/core/useAppMode'
 import type { AppRouteRecord } from '@/types/router'
 

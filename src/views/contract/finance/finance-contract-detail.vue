@@ -321,7 +321,7 @@
     FinanceContractApi,
     type FinanceContractDetailDto,
     type FinanceContractStatus,
-  } from '@/api/finance-contract.api'
+  } from '@/infrastructure/api/finance-contract.api'
 
   const route = useRoute()
 

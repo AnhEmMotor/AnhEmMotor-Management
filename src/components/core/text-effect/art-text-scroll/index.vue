@@ -48,7 +48,7 @@
     useDebounceFn,
     useTimeoutFn,
   } from '@vueuse/core'
-  import { useSettingStore } from '@/store/modules/setting'
+  import { useSettingStore } from '@/application/store/setting'
 
   type ThemeType =
     | 'theme'

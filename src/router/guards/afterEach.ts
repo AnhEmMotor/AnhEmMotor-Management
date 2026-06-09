@@ -1,5 +1,5 @@
 import { nextTick } from 'vue'
-import { useSettingStore } from '@/store/modules/setting'
+import { useSettingStore } from '@/application/store/setting'
 import { Router } from 'vue-router'
 import NProgress from 'nprogress'
 import { useCommon } from '@/hooks/core/useCommon'

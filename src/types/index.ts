@@ -7,3 +7,5 @@ export * from './store'
 export * from './router'
 
 export * from './config'
+
+export * from './contact'

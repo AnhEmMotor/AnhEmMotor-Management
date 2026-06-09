@@ -169,7 +169,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { UploadFilled, Lock } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { SalesContractApi, type SalesContractStatus } from '@/api/sales-contract.api'
+import { SalesContractApi, type SalesContractStatus } from '@/infrastructure/api/sales-contract.api'
 
 const route = useRoute()
 

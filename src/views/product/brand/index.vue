@@ -171,7 +171,7 @@
   import { ref } from 'vue'
   import { Plus, Picture, Download } from '@element-plus/icons-vue'
   import { useBrandTable } from './hooks/useBrandTable'
-  import { FileApi } from '@/api/file.api'
+  import { FileApi } from '@/infrastructure/api/file.api'
   import { ElMessage } from 'element-plus'
 
   defineOptions({ name: 'ProductBrand' })

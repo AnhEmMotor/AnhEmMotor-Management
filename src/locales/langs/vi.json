@@ -48,11 +48,20 @@
   "setting": {
     "menuType": {
       "title": "Bố cục menu",
-      "list": ["Dọc", "Ngang", "Hỗn hợp", "Cột kép"]
+      "list": [
+        "Dọc",
+        "Ngang",
+        "Hỗn hợp",
+        "Cột kép"
+      ]
     },
     "theme": {
       "title": "Giao diện",
-      "list": ["Sáng", "Tối", "HeThong"]
+      "list": [
+        "Sáng",
+        "Tối",
+        "HeThong"
+      ]
     },
     "menu": {
       "title": "Kiểu menu"
@@ -62,11 +71,17 @@
     },
     "box": {
       "title": "Kiểu khung",
-      "list": ["Viền", "Bóng đổ"]
+      "list": [
+        "Viền",
+        "Bóng đổ"
+      ]
     },
     "container": {
       "title": "Chiều rộng",
-      "list": ["Đầy đủ", "Cố định"]
+      "list": [
+        "Đầy đủ",
+        "Cố định"
+      ]
     },
     "basics": {
       "title": "CauHinh cơ bản",
@@ -112,8 +127,14 @@
   "notice": {
     "title": "ThongBao",
     "btnRead": "Đánh dấu đã đọc",
-    "bar": ["ThongBao", "TinNhan", "Việc cần làm"],
-    "text": ["Không có"],
+    "bar": [
+      "ThongBao",
+      "TinNhan",
+      "Việc cần làm"
+    ],
+    "text": [
+      "Không có"
+    ],
     "viewAll": "Xem tất cả"
   },
   "worktab": {
@@ -386,6 +407,10 @@
       "booking": "Đặt Lịch & lái Thử",
       "workshop": "Xưởng dịch vụ"
     },
+    "contact": {
+      "title": "Quản lý liên hệ",
+      "index": "Danh sách liên hệ"
+    },
     "marketing": {
       "title": "Quản lý Banner",
       "banner": "Danh sách Banner",
@@ -546,6 +571,87 @@
       "lowStock": "Sắp hết",
       "moderateStock": "Trung bình",
       "sufficientStock": "Đầy đủ"
+    }
+  },
+  "contact": {
+    "title": "Quản lý Tương tác & Liên hệ",
+    "subtitle": "Quản lý yêu cầu hỗ trợ, ý kiến đóng góp của khách hàng và hồ sơ ứng viên",
+    "unreadBadge": "Chưa đọc",
+    "tabSupport": "Yêu cầu hỗ trợ",
+    "tabFeedback": "Đóng góp ý kiến",
+    "tabCandidate": "Hồ sơ ứng viên",
+    "searchPlaceholder": "Tìm kiếm...",
+    "allStatus": "Tất cả trạng thái",
+    "totalCount": "Tổng số: {count}",
+    "noDetail": "Chọn một mục từ danh sách bên trái để xem nội dung chi tiết",
+    "columnId": "Mã số",
+    "columnIdCustomer": "Mã số / Khách hàng",
+    "columnSubject": "Tiêu đề",
+    "columnCategory": "Danh mục",
+    "columnStatus": "Trạng thái",
+    "columnCreatedAt": "Thời gian",
+    "columnRating": "Đánh giá",
+    "columnCustomer": "Khách hàng / Họ tên",
+    "columnContent": "Nội dung",
+    "columnPosition": "Vị trí ứng tuyển",
+    "actionNote": "Ghi chú nội bộ",
+    "actionReply": "Phản hồi",
+    "actionAssign": "Phân công",
+    "actionViewCv": "Xem CV",
+    "statusClosed": "Đóng",
+    "statusInProgress": "Đang xử lý",
+    "statusNew": "Mới",
+    "statusResolved": "Đã giải quyết",
+    "statusRead": "Đã đọc",
+    "statusPending": "Chờ xử lý",
+    "statusOffer": "Nhận việc (Offer)",
+    "statusInterview": "Hẹn phỏng vấn",
+    "statusRejected": "Từ chối",
+    "supportStatus": {
+      "New": "Mới",
+      "InProgress": "Đang xử lý",
+      "Closed": "Đã đóng"
+    },
+    "feedbackStatus": {
+      "Pending": "Chờ xử lý",
+      "Read": "Đã đọc",
+      "Resolved": "Đã giải quyết"
+    },
+    "candidateStatus": {
+      "New": "Mới",
+      "Interview": "Hẹn phỏng vấn",
+      "Offer": "Nhận việc",
+      "Rejected": "Từ chối"
+    },
+    "category": {
+      "Quality": "Chất lượng xe",
+      "Service": "Thái độ phục vụ",
+      "Rating": "Đánh giá",
+      "General": "Chung",
+      "Sales": "Bán hàng",
+      "AfterSales": "Bảo hành/Hậu mãi",
+      "Other": "Khác"
+    },
+    "noteDialog": {
+      "title": "Ghi chú nội bộ",
+      "placeholder": "Nhập ghi chú nội bộ...",
+      "saveBtn": "Lưu ghi chú"
+    },
+    "replyDialog": {
+      "contentPlaceholder": "Nhập nội dung phản hồi cho khách hàng...",
+      "sendBtn": "Gửi phản hồi cho khách"
+    },
+    "cvViewer": {
+      "title": "Xem tệp tin CV",
+      "noFile": "Không có tệp CV",
+      "download": "Tải CV"
+    },
+    "assignDialog": {
+      "title": "Phân công xử lý",
+      "selectUser": "Chọn nhân viên..."
+    },
+    "createDialog": {
+      "submit": "Tạo mới"
     }
   }
 }

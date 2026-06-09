@@ -271,8 +271,8 @@
   import { ref, reactive } from 'vue'
   import { useRouter } from 'vue-router'
   import { ElMessage } from 'element-plus'
-  import { VehicleApi, Vehicle } from '@/api/vehicle'
-  import { RepairOrderApi } from '@/api/repair-order'
+  import { VehicleApi, Vehicle } from '@/infrastructure/api/vehicle'
+  import { RepairOrderApi } from '@/infrastructure/api/repair-order'
 
   defineOptions({ name: 'CustomerWorkshopCreate' })
 

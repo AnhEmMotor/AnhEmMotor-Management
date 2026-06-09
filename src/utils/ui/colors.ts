@@ -1,4 +1,4 @@
-import { useSettingStore } from '@/store/modules/setting'
+import { useSettingStore } from '@/application/store/setting'
 
 interface RgbaResult {
   red: number

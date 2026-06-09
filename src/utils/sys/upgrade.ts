@@ -1,4 +1,4 @@
-import { useUserStore } from '@/store/modules/user'
+import { useUserStore } from '@/application/store/user'
 import { StorageConfig } from '@/utils/storage/storage-config'
 
 class VersionManager {

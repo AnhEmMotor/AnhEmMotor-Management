@@ -407,7 +407,7 @@
   import { computed, ref } from 'vue'
   import { ArrowDown, Lock } from '@element-plus/icons-vue'
   import { useAuth } from '@/hooks/core/useAuth'
-  import { useUserStore } from '@/store/modules/user'
+  import { useUserStore } from '@/application/store/user'
   import { useAppMode } from '@/hooks/core/useAppMode'
   import { useRoute } from 'vue-router'
   import type { AppRouteRecord } from '@/types/router'

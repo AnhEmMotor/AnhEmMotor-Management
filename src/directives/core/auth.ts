@@ -1,6 +1,6 @@
 import { router } from '@/router'
 import { App, Directive, DirectiveBinding, watch } from 'vue'
-import { useUserStore } from '@/store/modules/user'
+import { useUserStore } from '@/application/store/user'
 import { useAppMode } from '@/hooks/core/useAppMode'
 
 export type AuthDirective = Directive<HTMLElement, string>

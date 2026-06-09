@@ -61,7 +61,7 @@
 
 <script setup lang="ts">
   import { onMounted, ref, computed } from 'vue'
-  import { useSettingStore } from '@/store/modules/setting'
+  import { useSettingStore } from '@/application/store/setting'
   const settingStore = useSettingStore()
   const { isDark } = storeToRefs(settingStore)
 

@@ -93,11 +93,11 @@
 </template>
 
 <script lang="ts" setup>
-  import { useUserStore } from '@/store/modules/user'
+  import { useUserStore } from '@/application/store/user'
   import { AppRouteRecord } from '@/types/router'
   import { Search } from '@element-plus/icons-vue'
   import { mittBus } from '@/utils/sys'
-  import { useMenuStore } from '@/store/modules/menu'
+  import { useMenuStore } from '@/application/store/menu'
   import { formatMenuTitle } from '@/utils/router'
   import { handleMenuJump } from '@/utils/navigation'
   import { type ScrollbarInstance } from 'element-plus'

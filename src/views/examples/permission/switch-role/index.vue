@@ -86,9 +86,9 @@
 
 <script setup lang="ts">
   import { computed, ref } from 'vue'
-  import { useUserStore } from '@/store/modules/user'
+  import { useUserStore } from '@/application/store/user'
   import { useI18n } from 'vue-i18n'
-  import { fetchLogin, fetchGetUserInfo } from '@/api/auth'
+  import { fetchLogin, fetchGetUserInfo } from '@/infrastructure/api/auth'
 
   defineOptions({ name: 'PermissionSwitchRole' })
 

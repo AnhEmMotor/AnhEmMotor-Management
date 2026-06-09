@@ -203,7 +203,7 @@
   import { computed, ref, watch, nextTick } from 'vue'
   import { Plus, Picture, Download } from '@element-plus/icons-vue'
   import { useCategoryTable } from './hooks/useCategoryTable'
-  import { FileApi } from '@/api/file.api'
+  import { FileApi } from '@/infrastructure/api/file.api'
   import { ElMessage } from 'element-plus'
 
   defineOptions({ name: 'ProductType' })

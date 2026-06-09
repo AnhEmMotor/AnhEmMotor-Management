@@ -268,7 +268,7 @@
   import { computed } from 'vue'
 
   import { Lock, User, Key, View } from '@element-plus/icons-vue'
-  import { useUserStore } from '@/store/modules/user'
+  import { useUserStore } from '@/application/store/user'
 
   defineOptions({ name: 'PermissionPageVisibility' })
 

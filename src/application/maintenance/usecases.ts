@@ -5,7 +5,7 @@ import {
   MaintenanceWorkflowStatus,
 } from '@/domain/maintenance/types'
 
-import { RepairOrderApi, type RepairOrderDetail } from '@/api/repair-order'
+import { RepairOrderApi, type RepairOrderDetail } from '@/infrastructure/api/repair-order'
 
 export type MaintenanceWorkflowPayload = {
   status: MaintenanceWorkflowStatus

@@ -1,4 +1,4 @@
-import { useUserStore } from '@/store/modules/user'
+import { useUserStore } from '@/application/store/user'
 import { App, Directive, DirectiveBinding } from 'vue'
 
 export type RolesDirective = Directive<HTMLElement, string | string[]>

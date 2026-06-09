@@ -174,7 +174,7 @@
   import { Plus } from '@element-plus/icons-vue'
   import { ElMessage } from 'element-plus'
   import { useServiceTable } from './hooks/useServiceTable'
-  import { ServiceApi } from '@/api/service'
+  import { ServiceApi } from '@/infrastructure/api/service'
 
   defineOptions({ name: 'ServiceList' })
 

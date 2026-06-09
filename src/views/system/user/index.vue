@@ -43,7 +43,7 @@
     fetchDeleteUser,
     fetchChangeUserStatus,
     fetchGetRoleList,
-  } from '@/api/system-manage'
+  } from '@/infrastructure/api/system-manage'
   import { useQuery } from '@tanstack/vue-query'
   import ArtButtonMore from '@/components/core/forms/art-button-more/index.vue'
   import UserSearch from './modules/user-search.vue'

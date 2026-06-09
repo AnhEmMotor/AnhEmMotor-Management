@@ -16,7 +16,7 @@ import type {
   UpdateInternalNotesPayload,
 } from '@/domain/evaluation/types'
 
-import { ServiceEvaluationApi } from '@/api/service-evaluation.api'
+import { ServiceEvaluationApi } from '@/infrastructure/api/service-evaluation.api'
 
 function toCriteriaText(c: EvaluationCriteria) {
   return c === 'QualityOfCar' ? 'Chất lượng xe' : 'Thái độ phục vụ'

@@ -1,5 +1,5 @@
-import { fetchExternalAuthConfig, fetchGoogleLogin, fetchFacebookLogin } from '@/api/auth'
-import { useUserStore } from '@/store/modules/user'
+import { fetchExternalAuthConfig, fetchGoogleLogin, fetchFacebookLogin } from '@/infrastructure/api/auth'
+import { useUserStore } from '@/application/store/user'
 import { ElMessage } from 'element-plus'
 
 export function useSocialLogin() {

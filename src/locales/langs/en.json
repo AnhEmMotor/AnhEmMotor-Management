@@ -48,11 +48,20 @@
   "setting": {
     "menuType": {
       "title": "Menu Layout",
-      "list": ["Vertical", "Horizontal", "Mixed", "Dual"]
+      "list": [
+        "Vertical",
+        "Horizontal",
+        "Mixed",
+        "Dual"
+      ]
     },
     "theme": {
       "title": "Theme Style",
-      "list": ["Light", "Dark", "System"]
+      "list": [
+        "Light",
+        "Dark",
+        "System"
+      ]
     },
     "menu": {
       "title": "Menu Style"
@@ -62,11 +71,17 @@
     },
     "box": {
       "title": "Box Style",
-      "list": ["Border", "Shadow"]
+      "list": [
+        "Border",
+        "Shadow"
+      ]
     },
     "container": {
       "title": "Container Width",
-      "list": ["Full", "Boxed"]
+      "list": [
+        "Full",
+        "Boxed"
+      ]
     },
     "basics": {
       "title": "Basic Config",
@@ -112,8 +127,14 @@
   "notice": {
     "title": "Notice",
     "btnRead": "Mark as read",
-    "bar": ["Notice", "Message", "Todo"],
-    "text": ["No"],
+    "bar": [
+      "Notice",
+      "Message",
+      "Todo"
+    ],
+    "text": [
+      "No"
+    ],
     "viewAll": "View all"
   },
   "worktab": {
@@ -261,7 +282,6 @@
       "filterInactive": "Inactive",
       "filterDeprecated": "Deprecated"
     },
-    },
     "inventory": {
       "title": "Inventory Management",
       "supplier": "Suppliers",
@@ -382,9 +402,108 @@
       "progress": "Plate Dossiers",
       "asset": "Asset",
       "care": "Customer care",
-      "contact": "Contact",
+      "contact": "Contact Management and Interaction",
       "booking": "Booking",
       "workshop": "Workshop"
+    },
+    "contact": {
+      "title": "Contact Management and Interaction",
+      "subtitle": "Manage support requests, customer feedback, and candidate applications",
+      "unreadBadge": "Unread",
+      "tabSupport": "Support Requests",
+      "tabFeedback": "Feedback and Suggestions",
+      "tabCandidate": "Candidate Applications",
+      "searchPlaceholder": "Search...",
+      "allStatus": "All statuses",
+      "totalCount": "Total: {count}",
+      "noDetail": "Select an item from the list to view details",
+      "columnId": "ID",
+      "columnIdCustomer": "ID / Customer",
+      "columnSubject": "Subject",
+      "columnCategory": "Category",
+      "columnStatus": "Status",
+      "columnCreatedAt": "Created",
+      "columnRating": "Rating",
+      "columnCustomer": "Customer / Name",
+      "columnContent": "Content",
+      "columnPosition": "Position",
+      "columnCvFile": "CV File",
+      "actionNote": "Internal note",
+      "actionReply": "Reply",
+      "actionAssign": "Assign",
+      "actionViewCv": "View CV",
+      "statusClosed": "Closed",
+      "statusInProgress": "In Progress",
+      "statusNew": "New",
+      "statusResolved": "Resolved",
+      "statusRead": "Read",
+      "statusPending": "Pending",
+      "statusOffer": "Offer Accepted",
+      "statusInterview": "Interview Scheduled",
+      "statusRejected": "Rejected",
+      "supportStatus": {
+        "New": "New",
+        "InProgress": "In Progress",
+        "Closed": "Closed"
+      },
+      "feedbackStatus": {
+        "Pending": "Pending",
+        "Read": "Read",
+        "Resolved": "Resolved"
+      },
+      "candidateStatus": {
+        "New": "New",
+        "Interview": "Interview",
+        "Offer": "Offer",
+        "Rejected": "Rejected"
+      },
+      "category": {
+        "Quality": "Quality",
+        "Service": "Service",
+        "Rating": "Rating",
+        "General": "General",
+        "Sales": "Sales",
+        "AfterSales": "After-Sales",
+        "Other": "Other"
+      },
+      "noteDialog": {
+        "title": "Internal Note",
+        "placeholder": "Enter internal note...",
+        "saveBtn": "Save"
+      },
+      "replyDialog": {
+        "contentPlaceholder": "Enter your reply to the customer...",
+        "sendBtn": "Send Reply"
+      },
+      "cvViewer": {
+        "title": "CV Preview",
+        "noFile": "No CV uploaded",
+        "download": "Download CV"
+      },
+      "assignDialog": {
+        "title": "Assign Handler",
+        "selectUser": "Select staff..."
+      },
+      "detailHeader": {
+        "requestContent": "Request Content",
+        "replyDraft": "Draft Reply",
+        "internalNote": "Internal Note",
+        "internalNoteHint": "Only visible to staff",
+        "processActions": "Processing Actions",
+        "closeRequest": "Close Request",
+        "processing": "Processing",
+        "reopen": "Reopen (New)",
+        "sendReply": "Send Reply",
+        "scheduleInterview": "Schedule Interview",
+        "acceptOffer": "Accept (Offer)",
+        "reject": "Reject",
+        "candidateProfile": "Candidate Profile (CV)",
+        "coverLetter": "Cover Letter",
+        "noCoverLetter": "No cover letter provided."
+      },
+      "createDialog": {
+        "submit": "Create"
+      }
     },
     "hr": {
       "title": "Human Resources",
@@ -552,6 +671,105 @@
       "lowStock": "Low Stock",
       "moderateStock": "Moderate",
       "sufficientStock": "Sufficient"
+    }
+  },
+  "contact": {
+    "title": "Contact Management and Interaction",
+    "subtitle": "Manage support requests, customer feedback, and candidate applications",
+    "unreadBadge": "Unread",
+    "tabSupport": "Support Requests",
+    "tabFeedback": "Feedback and Suggestions",
+    "tabCandidate": "Candidate Applications",
+    "searchPlaceholder": "Search...",
+    "allStatus": "All statuses",
+    "totalCount": "Total: {count}",
+    "noDetail": "Select an item from the list to view details",
+    "columnId": "ID",
+    "columnIdCustomer": "ID / Customer",
+    "columnSubject": "Subject",
+    "columnCategory": "Category",
+    "columnStatus": "Status",
+    "columnCreatedAt": "Created",
+    "columnRating": "Rating",
+    "columnCustomer": "Customer / Name",
+    "columnContent": "Content",
+    "columnPosition": "Position",
+    "columnCvFile": "CV File",
+    "actionNote": "Internal note",
+    "actionReply": "Reply",
+    "actionAssign": "Assign",
+    "actionViewCv": "View CV",
+    "statusClosed": "Closed",
+    "statusInProgress": "In Progress",
+    "statusNew": "New",
+    "statusResolved": "Resolved",
+    "statusRead": "Read",
+    "statusPending": "Pending",
+    "statusOffer": "Offer Accepted",
+    "statusInterview": "Interview Scheduled",
+    "statusRejected": "Rejected",
+    "supportStatus": {
+      "New": "New",
+      "InProgress": "In Progress",
+      "Closed": "Closed"
+    },
+    "feedbackStatus": {
+      "Pending": "Pending",
+      "Read": "Read",
+      "Resolved": "Resolved"
+    },
+    "candidateStatus": {
+      "New": "New",
+      "Interview": "Interview",
+      "Offer": "Offer",
+      "Rejected": "Rejected"
+    },
+    "category": {
+      "Quality": "Quality",
+      "Service": "Service",
+      "Rating": "Rating",
+      "General": "General",
+      "Sales": "Sales",
+      "AfterSales": "After-Sales",
+      "Other": "Other"
+    },
+    "noteDialog": {
+      "title": "Internal Note",
+      "placeholder": "Enter internal note...",
+      "saveBtn": "Save"
+    },
+    "replyDialog": {
+      "contentPlaceholder": "Enter your reply to the customer...",
+      "sendBtn": "Send Reply"
+    },
+    "cvViewer": {
+      "title": "CV Preview",
+      "noFile": "No CV uploaded",
+      "download": "Download CV"
+    },
+    "assignDialog": {
+      "title": "Assign Handler",
+      "selectUser": "Select staff..."
+    },
+    "detailHeader": {
+      "requestContent": "Request Content",
+      "replyDraft": "Draft Reply",
+      "internalNote": "Internal Note",
+      "internalNoteHint": "Only visible to staff",
+      "processActions": "Processing Actions",
+      "closeRequest": "Close Request",
+      "processing": "Processing",
+      "reopen": "Reopen (New)",
+      "sendReply": "Send Reply",
+      "scheduleInterview": "Schedule Interview",
+      "acceptOffer": "Accept (Offer)",
+      "reject": "Reject",
+      "candidateProfile": "Candidate Profile (CV)",
+      "coverLetter": "Cover Letter",
+      "noCoverLetter": "No cover letter provided."
+    },
+    "createDialog": {
+      "submit": "Create"
     }
   }
 }

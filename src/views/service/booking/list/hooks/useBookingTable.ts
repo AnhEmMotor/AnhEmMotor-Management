@@ -1,6 +1,6 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { BookingApi, type Booking } from '@/api/booking'
+import { BookingApi, type Booking } from '@/infrastructure/api/booking'
 
 export function useBookingTable() {
   const data = ref<Booking[]>([])

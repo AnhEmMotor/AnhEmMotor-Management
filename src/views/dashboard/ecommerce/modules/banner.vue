@@ -47,7 +47,7 @@
 
 <script setup lang="ts">
   import bannerCover from '@imgs/login/lf_icon2.webp'
-  import { useUserStore } from '@/store/modules/user'
+  import { useUserStore } from '@/application/store/user'
 
   const userStore = useUserStore()
 

@@ -71,8 +71,8 @@
 
 <script setup lang="ts">
   import { useI18n } from 'vue-i18n'
-  import { useSettingStore } from '@/store/modules/setting'
-  import { useUserStore } from '@/store/modules/user'
+  import { useSettingStore } from '@/application/store/setting'
+  import { useUserStore } from '@/application/store/user'
   import { useHeaderBar } from '@/hooks/core/useHeaderBar'
   import { themeAnimation } from '@/utils/ui/animation'
   import { languageOptions } from '@/i18n'

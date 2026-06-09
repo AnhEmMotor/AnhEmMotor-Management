@@ -47,15 +47,6 @@ export const customerRoutes: AppRouteRecord = {
       },
     },
     {
-      path: 'contact',
-      name: 'CustomerContact',
-      component: '/customer/contact/index',
-      meta: {
-        title: 'menus.customer.contact',
-        icon: 'ri:message-2-line',
-      },
-    },
-    {
       path: 'progress',
       name: 'CustomerProgress',
       component: '/customer/progress/index',

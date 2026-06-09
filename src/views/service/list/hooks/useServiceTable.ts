@@ -1,10 +1,10 @@
 import { ref, computed } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
-import { ServiceApi } from '@/api/service'
-import { ServiceCategoryApi } from '@/api/service-category.api'
+import { ServiceApi } from '@/infrastructure/api/service'
+import { ServiceCategoryApi } from '@/infrastructure/api/service-category.api'
 import { useTable } from '@/hooks/core/useTable'
-import type { ServiceResponse } from '@/api/service'
-import type { ServiceCategoryResponse } from '@/api/service-category.api'
+import type { ServiceResponse } from '@/infrastructure/api/service'
+import type { ServiceCategoryResponse } from '@/infrastructure/api/service-category.api'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 export function useServiceTable() {

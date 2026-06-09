@@ -13,6 +13,12 @@ export const staticRoutes: AppRouteRecordRaw[] = [
     meta: { title: 'menus.login.title', isHideTab: true },
   },
   {
+    path: '/auth/portal',
+    name: 'WorkspacePortal',
+    component: () => import('@views/auth/WorkspacePortal.vue'),
+    meta: { title: 'Workspace Portal', isHideTab: true },
+  },
+  {
     path: '/auth/register',
     name: 'Register',
     component: () => import('@views/auth/register/index.vue'),

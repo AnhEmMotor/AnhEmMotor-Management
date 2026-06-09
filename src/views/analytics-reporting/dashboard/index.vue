@@ -205,7 +205,7 @@
     StaffPerformance,
     TransactionLog,
   } from '@/services/analytics.types'
-  import { useUserStore } from '@/store/modules/user'
+  import { useUserStore } from '@/application/store/user'
 
   const currentPeriod = ref('today')
   const customStart = ref('')

@@ -71,9 +71,9 @@
 </template>
 
 <script setup lang="ts">
-  import { useUserStore } from '@/store/modules/user'
+  import { useUserStore } from '@/application/store/user'
   import { useI18n } from 'vue-i18n'
-  import { fetchLogin } from '@/api/auth'
+  import { fetchLogin } from '@/infrastructure/api/auth'
   import { ElNotification, type FormInstance, type FormRules } from 'element-plus'
   import { Icon } from '@iconify/vue'
 

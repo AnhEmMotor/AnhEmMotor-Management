@@ -744,10 +744,10 @@
   import { ref, onMounted, computed } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import { ElMessage, ElMessageBox } from 'element-plus'
-  import { RepairOrderApi, RepairOrder, RepairOrderDetail } from '@/api/repair-order'
-  import { EmployeeApi, EmployeeResponse } from '@/api/employee'
-  import { ServiceApi, ServiceResponse } from '@/api/service'
-  import { ProductApi } from '@/api/product/product.api'
+  import { RepairOrderApi, RepairOrder, RepairOrderDetail } from '@/infrastructure/api/repair-order'
+  import { EmployeeApi, EmployeeResponse } from '@/infrastructure/api/employee'
+  import { ServiceApi, ServiceResponse } from '@/infrastructure/api/service'
+  import { ProductApi } from '@/infrastructure/api/product/product.api'
 
   defineOptions({ name: 'CustomerWorkshopDetail' })
 

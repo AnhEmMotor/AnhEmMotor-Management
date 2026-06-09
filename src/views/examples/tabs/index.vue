@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-  import { useWorktabStore } from '@/store/modules/worktab'
+  import { useWorktabStore } from '@/application/store/worktab'
   import { WorkTab } from '@/types'
 
   defineOptions({ name: 'TabsExample' })

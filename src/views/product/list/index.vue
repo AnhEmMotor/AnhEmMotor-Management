@@ -1833,7 +1833,7 @@
     Edit,
   } from '@element-plus/icons-vue'
   import { useProductTable } from './hooks/useProductTable'
-  import { FileApi } from '@/api/file.api'
+  import { FileApi } from '@/infrastructure/api/file.api'
   import { ElMessage, ElMessageBox } from 'element-plus'
 
   defineOptions({ name: 'ProductList' })

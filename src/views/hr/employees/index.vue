@@ -88,7 +88,7 @@
   import { ref, reactive, onMounted } from 'vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import type { ColumnOption } from '@/types/component'
-  import { EmployeeApi, type EmployeeResponse } from '@/api/employee'
+  import { EmployeeApi, type EmployeeResponse } from '@/infrastructure/api/employee'
 
   defineOptions({ name: 'HREmployees' })
 

@@ -93,7 +93,7 @@
     fetchCreateUser,
     fetchUpdateUser,
     fetchAssignUserRoles,
-  } from '@/api/system-manage'
+  } from '@/infrastructure/api/system-manage'
   import { normalizeBackendErrors } from '@/utils/form/error-helper'
 
   interface Props {

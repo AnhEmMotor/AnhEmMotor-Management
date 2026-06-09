@@ -505,9 +505,9 @@
   import { Refresh, Plus, Delete as TrashBin } from '@element-plus/icons-vue'
   import { ElMessage } from 'element-plus'
 
-  import { RepairOrderApi, type RepairOrder } from '@/api/repair-order'
-  import { ProductApi } from '@/api/product/product.api'
-  import { ServiceCategoryApi, type ServiceCategoryResponse } from '@/api/service-category.api'
+  import { RepairOrderApi, type RepairOrder } from '@/infrastructure/api/repair-order'
+  import { ProductApi } from '@/infrastructure/api/product/product.api'
+  import { ServiceCategoryApi, type ServiceCategoryResponse } from '@/infrastructure/api/service-category.api'
 
   defineOptions({ name: 'ServiceWorkshopRepairOrders' })
 

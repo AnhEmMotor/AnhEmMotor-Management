@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-  import { useUserStore } from './store/modules/user'
+  import { useUserStore } from './application/store/user'
   import vi from 'element-plus/es/locale/lang/vi'
   import en from 'element-plus/es/locale/lang/en'
   import { systemUpgrade } from './utils/sys'

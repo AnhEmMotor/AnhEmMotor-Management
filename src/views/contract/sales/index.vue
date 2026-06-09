@@ -192,7 +192,7 @@ import {
 
 import dayjs from 'dayjs'
 import { ElMessage } from 'element-plus'
-import { SalesContractApi } from '@/api/sales-contract.api'
+import { SalesContractApi } from '@/infrastructure/api/sales-contract.api'
 
 const { t: $t } = useI18n()
 const router = useRouter()

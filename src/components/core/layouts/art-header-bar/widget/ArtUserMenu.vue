@@ -54,7 +54,7 @@
   import { useI18n } from 'vue-i18n'
   import { useRouter } from 'vue-router'
   import { ElMessageBox } from 'element-plus'
-  import { useUserStore } from '@/store/modules/user'
+  import { useUserStore } from '@/application/store/user'
   import { mittBus } from '@/utils/sys'
 
   defineOptions({ name: 'ArtUserMenu' })

@@ -183,7 +183,7 @@
     getContractTemplates,
     deleteContractTemplate,
     cloneContractTemplate,
-  } from '@/api/contract-template.api'
+  } from '@/infrastructure/api/contract-template.api'
   import { useCommon } from '@/hooks/core/useCommon'
 
   defineOptions({ name: 'ContractTemplateList' })

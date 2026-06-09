@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
   import { echarts } from '@/plugins/echarts'
-  import { useSettingStore } from '@/store/modules/setting'
+  import { useSettingStore } from '@/application/store/setting'
   import chinaMapJson from '@/mock/json/chinaMap.json'
   import type { MapChartProps } from '@/types/component/chart'
 

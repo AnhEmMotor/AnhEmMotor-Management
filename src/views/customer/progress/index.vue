@@ -260,7 +260,7 @@
   import { ref, computed, onMounted } from 'vue'
   import { VueDraggable } from 'vue-draggable-plus'
   import { ElMessage, ElMessageBox } from 'element-plus'
-  import { PlateDossierApi, PlateDossier } from '@/api/plate-dossier'
+  import { PlateDossierApi, PlateDossier } from '@/infrastructure/api/plate-dossier'
 
   defineOptions({ name: 'PurchasingProgress' })
 

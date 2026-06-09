@@ -72,7 +72,7 @@
     fetchUpdateRole,
     fetchGetRolePermissions,
     fetchGetPermissionStructure,
-  } from '@/api/system-manage'
+  } from '@/infrastructure/api/system-manage'
 
   interface Props {
     modelValue: boolean

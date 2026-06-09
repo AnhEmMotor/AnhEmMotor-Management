@@ -1,4 +1,4 @@
-import { useSettingStore } from '@/store/modules/setting'
+import { useSettingStore } from '@/application/store/setting'
 import { SystemThemeEnum } from '@/enums/appEnum'
 import AppConfig from '@/config'
 import { SystemThemeTypes } from '@/types/store'
