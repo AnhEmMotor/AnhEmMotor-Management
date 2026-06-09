@@ -51,7 +51,7 @@
   const props = withDefaults(defineProps<Props>(), {
     height: '500px',
     mode: 'default',
-    placeholder: 'Bắt đầu viết nội dung tư vấn tại đây...',
+    placeholder: 'Bắt đầu viết nội dung bài viết tại đây...',
     excludeKeys: () => ['fontFamily'],
     isCustomUpload: false
   })

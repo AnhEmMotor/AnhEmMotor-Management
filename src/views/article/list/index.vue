@@ -58,14 +58,14 @@
             >
               <div class="flex gap-2 w-full">
                 <button
-                  @click.stop="toDetail(item)"
-                  class="flex-1 h-9 bg-white/20 backdrop-blur-md text-white rounded-lg font-black text-[9px] uppercase tracking-widest hover:bg-white hover:text-slate-900 transition-all"
-                  >Xem trước</button
-                >
-                <button
                   @click.stop="toEdit(item)"
                   class="flex-1 h-9 bg-blue-600 text-white rounded-lg font-black text-[9px] uppercase tracking-widest hover:bg-blue-700 transition-all"
                   >Chỉnh sửa</button
+                >
+                <button
+                  @click.stop="toDelete(item)"
+                  class="flex-1 h-9 bg-red-600 text-white rounded-lg font-black text-[9px] uppercase tracking-widest hover:bg-red-700 transition-all"
+                  >Xoá</button
                 >
               </div>
             </div>
@@ -74,14 +74,8 @@
           <div class="p-6">
             <div class="flex justify-between items-start mb-3">
               <span class="text-[9px] font-black text-blue-500 uppercase tracking-widest">{{
-                item.category?.name || 'Chưa phân loại'
+                item.categoryName || item.category?.name || 'Chưa phân loại'
               }}</span>
-              <div
-                class="flex items-center gap-1.5 text-slate-400 group-hover:text-blue-500 transition-colors"
-              >
-                <ArtSvgIcon icon="ri:eye-line" class="text-sm" />
-                <span class="text-[11px] font-black">{{ item.viewCount || 0 }}</span>
-              </div>
             </div>
             <h2
               class="m-0 text-base font-black text-slate-800 leading-tight line-clamp-2 min-h-[3rem] group-hover:text-blue-600 transition-colors"
@@ -94,12 +88,6 @@
                 <span class="text-[10px] font-bold">{{
                   useDateFormat(item.publishedDate || item.createdAt, 'DD/MM/YYYY').value
                 }}</span>
-              </div>
-              <div class="flex -space-x-2">
-                <div
-                  class="size-6 rounded-full border-2 border-white bg-slate-200 flex-cc text-[8px] font-black"
-                  >{{ item.authorName || 'Admin' }}</div
-                >
               </div>
             </div>
           </div>
@@ -134,12 +122,12 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, onMounted } from 'vue'
+  import { ref, computed, onMounted, onActivated } from 'vue'
   import { useDateFormat } from '@vueuse/core'
   import { router } from '@/router'
   import { NewsApi } from '@/api/news.api'
   import { useCommon } from '@/hooks/core/useCommon'
-  import { ElMessage } from 'element-plus'
+  import { ElMessage, ElMessageBox } from 'element-plus'
 
   defineOptions({ name: 'ArticleListAnalytics' })
 
@@ -198,12 +186,34 @@
     fetchList()
   }
 
-  const toDetail = (item: any) => router.push({ name: 'ArticleDetail', params: { id: item.id } })
-  const toEdit = (item: any) => router.push({ name: 'ArticlePublish', query: { id: item.id } })
+  const toEdit = (item: any) =>
+    router.push({ name: 'ArticlePublish', query: { id: item.id, slug: item.slug } })
   const toAddArticle = () => router.push({ name: 'ArticlePublish' })
+
+  const toDelete = (item: any) => {
+    ElMessageBox.confirm('Bạn có chắc chắn muốn xóa bài viết này không?', 'Xác nhận xóa', {
+      confirmButtonText: 'Xóa',
+      cancelButtonText: 'Hủy',
+      type: 'warning'
+    })
+      .then(async () => {
+        try {
+          await NewsApi.delete(item.id)
+          ElMessage.success('Xóa bài viết thành công')
+          fetchList()
+        } catch {
+          ElMessage.error('Không thể xóa bài viết')
+        }
+      })
+      .catch(() => {})
+  }
 
   onMounted(() => {
     useCommon().scrollToTop()
+    fetchList()
+  })
+
+  onActivated(() => {
     fetchList()
   })
 </script>

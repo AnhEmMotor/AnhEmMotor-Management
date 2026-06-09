@@ -8,23 +8,18 @@
           <ArtSvgIcon icon="ri:edit-box-line" class="text-xl" />
         </div>
         <div>
-          <h1 class="m-0 text-lg font-black tracking-tight text-slate-900 leading-none"
-            >Chỉnh sửa bài viết</h1
-          >
-          <p
-            class="m-0 text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1.5 flex items-center gap-2"
-          >
-            <span class="size-1.5 rounded-full bg-blue-500 animate-pulse"></span>
-            Soạn thảo nội dung tiếp thị tối ưu
-          </p>
+          <h1
+            class="m-0 text-lg font-black tracking-tight text-slate-900 leading-none flex items-center gap-3"
+            >Chỉnh sửa bài viết
+            <span
+              class="px-2 py-0.5 rounded text-[9px] font-black uppercase text-white shadow-sm"
+              :class="isPublished ? 'bg-blue-500' : 'bg-slate-400'"
+              >{{ isPublished ? 'Đã xuất bản' : 'Bản nháp' }}</span
+            >
+          </h1>
         </div>
       </div>
       <div class="flex items-center gap-3">
-        <button
-          @click="handlePreview"
-          class="h-10 px-6 text-slate-400 font-black text-[10px] uppercase tracking-widest hover:text-slate-600 transition-all"
-          >Xem trước (Preview)</button
-        >
         <button
           @click="handleSaveDraft"
           class="h-10 px-6 border-2 border-slate-200 text-slate-600 rounded-xl font-black text-[10px] uppercase tracking-widest hover:border-slate-800 transition-all"
@@ -43,7 +38,7 @@
       <div class="flex-1 flex flex-col gap-6">
         <div class="bg-white border border-slate-200 rounded-[32px] p-8 shadow-sm">
           <div class="grid grid-cols-12 gap-6">
-            <div class="col-span-9">
+            <div class="col-span-12">
               <label
                 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
                 >Tiêu đề bài viết</label
@@ -53,6 +48,18 @@
                 type="text"
                 placeholder="Ví dụ: So sánh SH 160i và SH Mode: Lựa chọn nào cho phái đẹp?"
                 class="w-full h-10 bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 text-lg font-black text-slate-800 focus:border-blue-500 focus:bg-white transition-all outline-none"
+              />
+            </div>
+            <div class="col-span-9">
+              <label
+                class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
+                >Đường dẫn tĩnh (Slug)</label
+              >
+              <input
+                v-model="articleSlug"
+                type="text"
+                placeholder="Ví dụ: so-sanh-sh-160i-va-sh-mode"
+                class="w-full h-10 bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 text-base font-medium text-slate-600 focus:border-blue-500 focus:bg-white transition-all outline-none"
               />
             </div>
             <div class="col-span-3">
@@ -86,18 +93,6 @@
             <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
               >Nội dung bài viết & Tư vấn</span
             >
-            <div class="flex gap-2">
-              <button
-                @click="insertCTA('test-drive')"
-                class="px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-[9px] font-black uppercase border border-red-100 hover:bg-red-500 hover:text-white transition-all"
-                >Nhúng CTA Lái thử</button
-              >
-              <button
-                @click="insertCTA('lead-form')"
-                class="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-[9px] font-black uppercase border border-blue-100 hover:bg-blue-600 hover:text-white transition-all"
-                >Nhúng Lead Form</button
-              >
-            </div>
           </div>
           <ArtWangEditor v-model="editorHtml" class="flex-1" />
         </div>
@@ -124,37 +119,6 @@
                 <ArtSvgIcon icon="ri:image-add-line" class="text-3xl" />
                 <span class="text-[9px] font-black uppercase">Tải ảnh bìa Social</span>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-[#001529] rounded-[32px] p-6 text-white shadow-2xl relative overflow-hidden">
-          <ArtSvgIcon icon="ri:time-line" class="absolute -right-4 -top-4 text-8xl opacity-10" />
-          <h3
-            class="m-0 text-xs font-black uppercase tracking-widest text-blue-400 mb-4 flex items-center gap-2"
-          >
-            <ArtSvgIcon icon="ri:settings-3-line" /> Workflow & Lập lịch
-          </h3>
-          <div class="space-y-4">
-            <div
-              class="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10"
-            >
-              <span class="text-[11px] font-bold opacity-60">Trạng thái hiện tại:</span>
-              <span class="px-2 py-0.5 bg-blue-500 rounded text-[9px] font-black uppercase">{{
-                isPublished ? 'Đã xuất bản' : 'Bản nháp'
-              }}</span>
-            </div>
-            <div>
-              <label class="text-[10px] font-black opacity-40 uppercase tracking-widest mb-2 block"
-                >Hẹn giờ xuất bản / Ẩn bài</label
-              >
-              <ElDatePicker
-                v-model="scheduleDate"
-                type="datetime"
-                placeholder="Chọn thời điểm..."
-                class="combat-dark-picker w-full"
-                popper-class="combat-dark-popper"
-              />
             </div>
           </div>
         </div>
@@ -209,31 +173,114 @@
 
     <ElDialog
       v-model="productDialogVisible"
-      title="Chọn sản phẩm tư vấn"
-      width="450px"
-      custom-class="combat-dialog"
+      title="Chọn sản phẩm & màu sắc"
+      width="900px"
+      append-to-body
+      destroy-on-close
+      class="rounded-xl overflow-hidden"
     >
-      <div class="p-4 space-y-3 max-h-96 overflow-y-auto custom-scrollbar">
+      <div class="space-y-4">
+        <ElInput
+          v-model="productQuery"
+          placeholder="Tìm sản phẩm theo tên..."
+          clearable
+          prefix-icon="Search"
+          @input="handleProductSearch"
+        />
+
         <div
-          v-for="p in availableProducts"
-          :key="p.id"
-          @click="toggleProduct(p)"
-          class="p-3 rounded-xl border border-slate-100 flex items-center gap-3 cursor-pointer transition-all"
-          :class="
-            isProductSelected(p.id)
-              ? 'bg-blue-50 border-blue-200 ring-2 ring-blue-100'
-              : 'hover:bg-slate-50'
-          "
+          v-loading="productLoading"
+          class="space-y-3 min-h-[350px] max-h-[500px] overflow-y-auto pr-1"
         >
-          <img :src="p.img" class="size-12 rounded-lg object-cover" />
-          <div class="flex-1">
-            <h4 class="m-0 text-sm font-black text-slate-800">{{ p.name }}</h4>
-            <span class="text-[10px] font-bold text-slate-400">{{ p.price }}</span>
+          <div
+            v-for="variant in availableProducts"
+            :key="variant.id"
+            class="border border-gray-200 rounded-lg p-4 bg-white hover:shadow-sm transition-all duration-200"
+          >
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <ElImage
+                  :src="variant.coverImageUrl || ''"
+                  class="w-12 h-12 rounded object-cover border border-gray-100 flex-shrink-0"
+                  fit="cover"
+                >
+                  <template #error>
+                    <div
+                      class="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400"
+                    >
+                      <ElIcon><InfoFilled /></ElIcon>
+                    </div>
+                  </template>
+                </ElImage>
+
+                <div class="flex flex-col min-w-0">
+                  <span class="text-sm font-semibold text-gray-800 truncate">
+                    {{ variant.displayName }}
+                  </span>
+                  <span class="text-[11px] text-gray-400 mt-0.5 font-mono">
+                    Variant ID: #{{ variant.id }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="flex flex-col gap-2 items-end">
+                <ElSelect
+                  v-if="variant.colors?.length"
+                  v-model="selectedVariantColors[String(variant.id)]"
+                  placeholder="Chọn màu"
+                  size="small"
+                  style="width: 150px"
+                  @click.stop
+                >
+                  <template #prefix>
+                    <span
+                      v-if="getSelectedVariantColor(variant)"
+                      class="inline-block w-4 h-4 rounded border border-gray-200 flex-shrink-0"
+                      :style="{
+                        backgroundColor: getSelectedVariantColor(variant)?.colorCode || '#ffffff'
+                      }"
+                    ></span>
+                  </template>
+                  <ElOption
+                    v-for="color in variant.colors"
+                    :key="color.id"
+                    :label="color.colorName || `Màu #${color.id}`"
+                    :value="color.id"
+                  >
+                    <div class="flex items-center gap-2">
+                      <span
+                        class="inline-block w-4 h-4 rounded border border-gray-200 flex-shrink-0"
+                        :style="{ backgroundColor: color.colorCode || '#ffffff' }"
+                      ></span>
+                      <span>{{ color.colorName || `Màu #${color.id}` }}</span>
+                    </div>
+                  </ElOption>
+                </ElSelect>
+                <ElButton type="primary" size="small" plain @click="selectProductVariant(variant)">
+                  Chọn
+                </ElButton>
+              </div>
+            </div>
           </div>
-          <ArtSvgIcon
-            v-if="isProductSelected(p.id)"
-            icon="ri:checkbox-circle-fill"
-            class="text-blue-500 text-xl"
+
+          <div
+            v-if="!productLoading && availableProducts.length === 0"
+            class="flex flex-col items-center justify-center py-10 text-gray-400"
+          >
+            <ElIcon size="32"><InfoFilled /></ElIcon>
+            <span class="mt-2 text-sm">Không tìm thấy sản phẩm nào</span>
+          </div>
+        </div>
+
+        <div class="flex justify-end pt-2 border-t">
+          <ElPagination
+            v-model:current-page="productCurrentPage"
+            v-model:page-size="productPageSize"
+            :total="productTotal"
+            layout="prev, pager, next, total"
+            background
+            size="small"
+            @current-change="loadProducts"
           />
         </div>
       </div>
@@ -242,66 +289,149 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted } from 'vue'
+  import { ref, reactive, onMounted } from 'vue'
+  import { useRouter, useRoute } from 'vue-router'
+  import { InfoFilled } from '@element-plus/icons-vue'
   import { ElMessage } from 'element-plus'
+  import { useDebounceFn } from '@vueuse/core'
   import { PageModeEnum } from '@/enums/formEnum'
   import { useCommon } from '@/hooks/core/useCommon'
   import { NewsApi } from '@/api/news.api'
+  import { ProductApi } from '@/api/product.api'
+  import type { ProductVariantLiteForInput } from '@/domain/product/product.types'
 
   defineOptions({ name: 'ArticlePublishWorkflow' })
 
+  const router = useRouter()
+  const route = useRoute()
+
   const articleName = ref('')
+  const articleSlug = ref('')
   const articleType = ref<number>()
   const editorHtml = ref('')
-  const scheduleDate = ref('')
   const ogImage = ref('')
   const isPublished = ref(false)
   const pageMode = ref(PageModeEnum.Add)
 
+  const resetForm = () => {
+    articleName.value = ''
+    articleSlug.value = ''
+    articleType.value = undefined
+    editorHtml.value = ''
+    ogImage.value = ''
+    isPublished.value = false
+    pageMode.value = PageModeEnum.Add
+    selectedProducts.value = []
+  }
+
   const selectedProducts = ref<any[]>([])
   const productDialogVisible = ref(false)
 
-  const articleTypes = ref([
-    { id: 1, name: 'Tư vấn mua xe' },
-    { id: 2, name: 'Kinh nghiệm bảo dưỡng' },
-    { id: 3, name: 'Tin tức showroom' },
-    { id: 4, name: 'So sánh xe' }
-  ])
+  const articleTypes = ref<any[]>([])
 
-  const availableProducts = ref<any[]>([])
+  const loadArticleTypes = async () => {
+    try {
+      const res = await NewsApi.getCategories({ size: 100 })
+      if (res && res.items) {
+        articleTypes.value = res.items
+      }
+    } catch (error) {
+      console.error('Failed to load article types', error)
+      ElMessage.error('Không thể tải danh sách danh mục')
+    }
+  }
+
+  const availableProducts = ref<ProductVariantLiteForInput[]>([])
+  const productCurrentPage = ref(1)
+  const productPageSize = ref(10)
+  const productTotal = ref(0)
+  const productQuery = ref('')
+  const productLoading = ref(false)
+  const selectedVariantColors = reactive<Record<string, number | undefined>>({})
+
+  const getVariantColorKey = (variant: ProductVariantLiteForInput) => String(variant.id)
+
+  const getSelectedVariantColor = (variant: ProductVariantLiteForInput) => {
+    const selectedColorId = selectedVariantColors[getVariantColorKey(variant)]
+    return variant.colors?.find((color) => color.id === selectedColorId)
+  }
+
+  const initializeVariantColorSelection = (variants: ProductVariantLiteForInput[]) => {
+    variants.forEach((variant) => {
+      const key = getVariantColorKey(variant)
+      if (selectedVariantColors[key] || !variant.colors?.length) return
+      selectedVariantColors[key] = variant.colors[0].id
+    })
+  }
 
   const loadProducts = async () => {
+    productLoading.value = true
     try {
-      const res = await NewsApi.getProductsForSelection()
-      if (res && res.data) {
-        availableProducts.value = res.data
+      const filters = []
+      if (productQuery.value.trim()) {
+        filters.push(`search@=${productQuery.value.trim()}`)
+      }
+      const res = await ProductApi.getVariantsForInput({
+        current: productCurrentPage.value,
+        size: productPageSize.value,
+        Filters: filters.join(',')
+      })
+      if (res && res.items) {
+        availableProducts.value = res.items
+        initializeVariantColorSelection(availableProducts.value)
+        productTotal.value = res.totalCount || 0
       }
     } catch (error) {
       console.error('Failed to load products', error)
       ElMessage.error('Không thể tải danh sách sản phẩm')
+    } finally {
+      productLoading.value = false
     }
   }
 
-  const insertCTA = (type: string) => {
-    const ctaHtml =
-      type === 'test-drive'
-        ? '<div style="margin: 20px 0; padding: 20px; border: 2px solid #ef4444; border-radius: 16px; background: #fef2f2; text-align: center;"><h4 style="margin-bottom: 10px; color: #b91c1c;">Bạn muốn cảm nhận dòng xe này?</h4><button style="padding: 10px 30px; background: #ef4444; color: white; border-radius: 8px; border: none; font-weight: 900; cursor: pointer;">ĐĂNG KÝ LÁI THỬ NGAY</button></div>'
-        : '<div style="margin: 20px 0; padding: 20px; border: 2px solid #3b82f6; border-radius: 16px; background: #eff6ff; text-align: center;"><h4 style="margin-bottom: 10px; color: #1d4ed8;">Bạn cần báo giá chính xác kèm khuyến mãi?</h4><div style="display: flex; gap: 10px; justify-content: center;"><input type="text" placeholder="SĐT của bạn" style="padding: 10px; border-radius: 8px; border: 1px solid #bfdbfe;"><button style="padding: 10px 20px; background: #3b82f6; color: white; border-radius: 8px; border: none; font-weight: 900;">NHẬN BÁO GIÁ</button></div></div>'
+  const handleProductSearch = useDebounceFn(async (query: string) => {
+    productQuery.value = query
+    productCurrentPage.value = 1
+    await loadProducts()
+  }, 300)
 
-    editorHtml.value += ctaHtml
-    ElMessage.success('Đã nhúng CTA Marketing vào bài viết')
+  const openProductSelector = async () => {
+    productQuery.value = ''
+    productCurrentPage.value = 1
+    await loadProducts()
+    productDialogVisible.value = true
   }
 
-  const openProductSelector = () => (productDialogVisible.value = true)
-  const isProductSelected = (id: number) => selectedProducts.value.some((p) => p.id === id)
-  const toggleProduct = (p: any) => {
-    if (isProductSelected(p.id)) {
-      selectedProducts.value = selectedProducts.value.filter((item) => item.id !== p.id)
-    } else {
-      selectedProducts.value.push(p)
+  const selectProductVariant = (variant: ProductVariantLiteForInput) => {
+    if (!variant.id) return
+    const productVariantColorId = selectedVariantColors[getVariantColorKey(variant)]
+    if (variant.colors?.length && !productVariantColorId) {
+      ElMessage.warning('Vui lòng chọn màu cho biến thể sản phẩm này')
+      return
     }
+
+    const selectedColor = getSelectedVariantColor(variant)
+    const displayName = variant.displayName || `Sản phẩm #${variant.id}`
+    const colorName = selectedColor?.colorName ? ` - ${selectedColor.colorName}` : ''
+
+    const uniqueId = `${variant.id}_${productVariantColorId || 'none'}`
+
+    if (selectedProducts.value.some((p) => p.id === uniqueId)) {
+      ElMessage.warning('Sản phẩm này đã được chọn!')
+      return
+    }
+
+    selectedProducts.value.push({
+      id: uniqueId,
+      name: `${displayName}${colorName}`,
+      price: 'Liên hệ',
+      img: variant.coverImageUrl || ''
+    })
+
+    productDialogVisible.value = false
+    ElMessage.success('Đã thêm sản phẩm liên kết')
   }
-  const removeProduct = (id: number) =>
+  const removeProduct = (id: any) =>
     (selectedProducts.value = selectedProducts.value.filter((p) => p.id !== id))
 
   const triggerImageUpload = () => {
@@ -329,20 +459,113 @@
     input.click()
   }
 
-  const handlePreview = () => ElMessage.info('Đang mở trang xem trước bài viết...')
-  const handleSaveDraft = () => ElMessage.success('Đã lưu bản nháp')
-  const submit = () => {
+  const getPayload = (publishStatus: boolean) => ({
+    title: articleName.value,
+    slug: articleSlug.value,
+    category_id: articleType.value,
+    content: editorHtml.value,
+    cover_image_url: ogImage.value,
+    is_published: publishStatus,
+    linked_products: selectedProducts.value.map((p) => ({
+      id: p.id,
+      name: p.name,
+      price: p.price,
+      img: p.img
+    }))
+  })
+
+  const handleSaveDraft = async () => {
+    if (!articleName.value) {
+      ElMessage.warning('Vui lòng nhập tiêu đề bài viết!')
+      return
+    }
+    try {
+      const payload = getPayload(false)
+      if (pageMode.value === PageModeEnum.Edit) {
+        await NewsApi.update(Number(route.query.id), payload)
+      } else {
+        await NewsApi.create(payload)
+      }
+      ElMessage.success('Đã lưu bản nháp thành công')
+      router.push('/content/article')
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const submit = async () => {
+    if (!articleName.value) {
+      ElMessage.warning('Vui lòng nhập tiêu đề bài viết!')
+      return
+    }
     if (!ogImage.value) {
       ElMessage.warning('Vui lòng tải lên ảnh bìa cho bài viết!')
       return
     }
-    ElMessage.success('Bài viết đã được xuất bản thành công!')
+    try {
+      const payload = getPayload(true)
+      if (pageMode.value === PageModeEnum.Edit) {
+        await NewsApi.update(Number(route.query.id), payload)
+      } else {
+        await NewsApi.create(payload)
+      }
+      ElMessage.success('Bài viết đã được xuất bản thành công!')
+      router.push('/content/article')
+    } catch (error) {
+      console.error(error)
+    }
   }
 
-  onMounted(() => {
+  const initData = async () => {
     useCommon().scrollToTop()
-    loadProducts()
+    await loadArticleTypes()
+    const id = route.query.id || route.params.id
+    if (id) {
+      pageMode.value = PageModeEnum.Edit
+      try {
+        const res = await NewsApi.getById(Number(id))
+        if (res) {
+          articleName.value = res.title
+          articleSlug.value = res.slug
+          articleType.value = res.categoryId
+          editorHtml.value = res.content
+          ogImage.value = res.coverImageUrl
+          isPublished.value = res.isPublished
+
+          if (res.linkedProducts && res.linkedProducts.length > 0) {
+            selectedProducts.value = res.linkedProducts.map((p: any) => {
+              const colorSuffix = p.colorName ? ` - ${p.colorName}` : ''
+              return {
+                name: `${p.variantName}${colorSuffix}`,
+                price: p.price,
+                img: p.img
+              }
+            })
+          }
+        }
+      } catch {
+        ElMessage.error('Không thể tải dữ liệu bài viết')
+      }
+    } else {
+      resetForm()
+    }
+  }
+
+  import { watch } from 'vue'
+
+  onMounted(() => {
+    // Initial load will be handled by watch if we set immediate: true
   })
+
+  watch(
+    () => [route.query.id, route.params.id],
+    () => {
+      if (route.name === 'ArticlePublish' || route.name === 'ArticleEdit') {
+        initData()
+      }
+    },
+    { immediate: true }
+  )
 </script>
 
 <style lang="scss" scoped>

@@ -21,9 +21,10 @@ export const NewsApi = {
     })
   },
 
-  getBySlug(slug: string) {
+  getCategories(params?: any) {
     return request.get<any>({
-      url: `/api/v1/news/${slug}`
+      url: '/api/v1/news/categories',
+      params
     })
   },
 
@@ -54,9 +55,15 @@ export const NewsApi = {
     })
   },
 
-  getProductsForSelection() {
+  getProductsForSelection(params: any) {
+    const { current, size, ...rest } = params
     return request.get<any>({
-      url: '/api/v1/news/products-for-selection'
+      url: '/api/v1/news/products-for-selection',
+      params: {
+        Page: current,
+        PageSize: size,
+        ...rest
+      }
     })
   },
 

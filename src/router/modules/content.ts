@@ -31,6 +31,7 @@ export const contentRoutes: AppRouteRecord = {
       meta: {
         title: 'Đăng bài',
         isHide: true,
+        isHideTab: true,
         keepAlive: true,
         activePath: '/content/article',
         authList: [{ title: 'Đăng tải', authMark: 'add' }]
@@ -43,6 +44,7 @@ export const contentRoutes: AppRouteRecord = {
       meta: {
         title: 'Sửa bài viết',
         isHide: true,
+        isHideTab: true,
         keepAlive: true,
         activePath: '/content/article',
         authList: [{ title: 'Sửa', authMark: 'edit' }]
