@@ -91,7 +91,7 @@
             class="p-6 border-b border-slate-100 bg-slate-50/30 flex justify-between items-center"
           >
             <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
-              >Nội dung bài viết & Tư vấn</span
+              >Nội dung bài viết</span
             >
           </div>
           <ArtWangEditor v-model="editorHtml" class="flex-1" />
@@ -474,11 +474,33 @@
     }))
   })
 
-  const handleSaveDraft = async () => {
-    if (!articleName.value) {
+  const validateForm = () => {
+    if (!articleName.value || !articleName.value.trim()) {
       ElMessage.warning('Vui lòng nhập tiêu đề bài viết!')
-      return
+      return false
     }
+    if (!articleSlug.value || !articleSlug.value.trim()) {
+      ElMessage.warning('Vui lòng nhập đường dẫn tĩnh!')
+      return false
+    }
+    if (!articleType.value) {
+      ElMessage.warning('Vui lòng chọn danh mục bài viết!')
+      return false
+    }
+    if (!ogImage.value) {
+      ElMessage.warning('Vui lòng tải lên ảnh bìa cho bài viết!')
+      return false
+    }
+    const htmlContent = editorHtml.value ? editorHtml.value.replace(/<[^>]*>/g, '').trim() : ''
+    if (!htmlContent && !(editorHtml.value && editorHtml.value.includes('<img'))) {
+      ElMessage.warning('Vui lòng nhập nội dung bài viết!')
+      return false
+    }
+    return true
+  }
+
+  const handleSaveDraft = async () => {
+    if (!validateForm()) return
     try {
       const payload = getPayload(false)
       if (pageMode.value === PageModeEnum.Edit) {
@@ -494,14 +516,7 @@
   }
 
   const submit = async () => {
-    if (!articleName.value) {
-      ElMessage.warning('Vui lòng nhập tiêu đề bài viết!')
-      return
-    }
-    if (!ogImage.value) {
-      ElMessage.warning('Vui lòng tải lên ảnh bìa cho bài viết!')
-      return
-    }
+    if (!validateForm()) return
     try {
       const payload = getPayload(true)
       if (pageMode.value === PageModeEnum.Edit) {

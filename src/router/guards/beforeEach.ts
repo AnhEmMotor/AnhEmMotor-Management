@@ -138,6 +138,10 @@ function handleLoginStatus(
   to: RouteLocationNormalized,
   userStore: ReturnType<typeof useUserStore>
 ): any {
+  if (userStore.isLogin && (to.path === RoutesAlias.Login || to.path.includes('/login'))) {
+    return { path: '/' }
+  }
+
   if (userStore.isLogin || to.path === RoutesAlias.Login || isStaticRoute(to.path)) {
     return null
   }
