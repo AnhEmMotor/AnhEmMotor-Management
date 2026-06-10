@@ -33,7 +33,13 @@
           :key="banner.id"
           class="banner-card bg-white border border-slate-200 rounded-[32px] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 group relative"
         >
-          <div class="absolute top-4 left-4 z-10 flex flex-col gap-2"> </div>
+          <div class="absolute top-4 left-4 z-10 flex flex-col gap-2">
+            <span
+              class="px-3 py-1 bg-blue-600/90 text-white text-[10px] font-black uppercase rounded-lg shadow-sm backdrop-blur-md"
+            >
+              {{ getPlacementLabel(banner.placement) }}
+            </span>
+          </div>
 
           <div class="aspect-[21/9] bg-slate-900 relative overflow-hidden group/img">
             <img
@@ -123,6 +129,25 @@
               placeholder="VD: Ưu đãi lễ 30/4 - Giảm giá xe cực sốc"
               class="combat-input"
             />
+          </div>
+
+          <div>
+            <label
+              class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
+              >Vị trí hiển thị (Placement)</label
+            >
+            <ElSelect
+              v-model="bannerForm.placement"
+              placeholder="Chọn vị trí"
+              class="w-full combat-input"
+            >
+              <ElOption
+                v-for="p in placementOptions"
+                :key="p.value"
+                :label="p.label"
+                :value="p.value"
+              />
+            </ElSelect>
           </div>
 
           <div>
@@ -264,6 +289,12 @@
   const isEditing = ref(false)
 
   const banners = ref<any[]>([])
+  const placementOptions = ref<any[]>([])
+
+  const getPlacementLabel = (value: string) => {
+    const opt = placementOptions.value.find((o) => o.value === value)
+    return opt ? opt.label : value
+  }
 
   const bannerForm = ref({
     id: 0,
@@ -272,7 +303,8 @@
     ctaLabel: 'Xem ngay',
     ctaLink: '',
     desktopImageUrl: '',
-    mobileImageUrl: ''
+    mobileImageUrl: '',
+    placement: 'Home'
   })
 
   const fetchBanners = async () => {
@@ -284,7 +316,17 @@
     }
   }
 
+  const fetchPlacements = async () => {
+    try {
+      const res: any = await BannerApi.getPlacements()
+      placementOptions.value = res.data || res || []
+    } catch {
+      ElMessage.error('Lỗi khi tải danh sách vị trí')
+    }
+  }
+
   onMounted(() => {
+    fetchPlacements()
     fetchBanners()
   })
 
@@ -318,7 +360,8 @@
       ctaLabel: 'Xem ngay',
       ctaLink: '',
       desktopImageUrl: '',
-      mobileImageUrl: ''
+      mobileImageUrl: '',
+      placement: 'Home'
     }
     dialogVisible.value = true
   }
@@ -327,7 +370,8 @@
     isEditing.value = true
     dialogTitle.value = 'Chỉnh sửa banner'
     bannerForm.value = {
-      ...banner
+      ...banner,
+      placement: banner.placement || 'Home'
     }
     dialogVisible.value = true
   }

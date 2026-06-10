@@ -40,10 +40,9 @@ export const BannerApi = {
     })
   },
 
-  changeStatus(id: number, status: boolean) {
-    return request.patch<void>({
-      url: `/api/v1/banners/${id}/status`,
-      data: { isActive: status }
+  getPlacements() {
+    return request.get<any>({
+      url: '/api/v1/banners/placements'
     })
   }
 }
