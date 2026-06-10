@@ -381,6 +381,26 @@
       ElMessage.warning('Vui lòng nhập tiêu đề banner')
       return
     }
+    if (!bannerForm.value.placement) {
+      ElMessage.warning('Vui lòng chọn vị trí hiển thị')
+      return
+    }
+    if (!bannerForm.value.description) {
+      ElMessage.warning('Vui lòng nhập mô tả banner')
+      return
+    }
+    if (!bannerForm.value.ctaLabel) {
+      ElMessage.warning('Vui lòng nhập nhãn nút bấm (CTA Label)')
+      return
+    }
+    if (!bannerForm.value.ctaLink) {
+      ElMessage.warning('Vui lòng nhập đường dẫn đích (CTA Link)')
+      return
+    }
+    if (!bannerForm.value.desktopImageUrl && !bannerForm.value.mobileImageUrl) {
+      ElMessage.warning('Vui lòng tải lên ít nhất 1 ảnh (Desktop hoặc Mobile)')
+      return
+    }
     try {
       const payload = {
         ...bannerForm.value
