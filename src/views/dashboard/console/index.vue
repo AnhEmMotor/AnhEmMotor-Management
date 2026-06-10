@@ -1,33 +1,40 @@
 <template>
   <div>
-    <CardList></CardList>
+    <template v-if="hasStatsPermission">
+      <CardList></CardList>
 
-    <ElRow :gutter="20">
-      <ElCol :sm="24" :md="12" :lg="10">
-        <ActiveUser />
-      </ElCol>
-      <ElCol :sm="24" :md="12" :lg="14">
-        <SalesOverview />
-      </ElCol>
-    </ElRow>
+      <ElRow :gutter="20">
+        <ElCol :sm="24" :md="12" :lg="10">
+          <ActiveUser />
+        </ElCol>
+        <ElCol :sm="24" :md="12" :lg="14">
+          <SalesOverview />
+        </ElCol>
+      </ElRow>
 
-    <ElRow :gutter="20">
-      <ElCol :sm="24" :md="24" :lg="12">
-        <NewUser />
-      </ElCol>
-      <ElCol :sm="24" :md="12" :lg="6">
-        <Dynamic />
-      </ElCol>
-      <ElCol :sm="24" :md="12" :lg="6">
-        <TodoList />
-      </ElCol>
-    </ElRow>
+      <ElRow :gutter="20">
+        <ElCol :sm="24" :md="24" :lg="12">
+          <NewUser />
+        </ElCol>
+        <ElCol :sm="24" :md="12" :lg="6">
+          <Dynamic />
+        </ElCol>
+        <ElCol :sm="24" :md="12" :lg="6">
+          <TodoList />
+        </ElCol>
+      </ElRow>
 
-    <AboutProject />
+      <AboutProject />
+    </template>
+    <template v-else>
+      <HomeNavigation />
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
+  import { computed } from 'vue'
+  import { usePermission } from '@/hooks/core/usePermission'
   import CardList from './modules/card-list.vue'
   import ActiveUser from './modules/active-user.vue'
   import SalesOverview from './modules/sales-overview.vue'
@@ -37,4 +44,7 @@
   import AboutProject from './modules/about-project.vue'
 
   defineOptions({ name: 'Console' })
+
+  const { hasPermission } = usePermission()
+  const hasStatsPermission = computed(() => hasPermission('Permissions.Statistical.View'))
 </script>
