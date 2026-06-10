@@ -73,38 +73,15 @@ export const contentRoutes: AppRouteRecord = {
       }
     },
     {
-      path: 'marketing',
-      name: 'Marketing',
-      component: '',
+      path: 'banner',
+      name: 'MarketingBanner',
+      component: '/marketing/banner',
       meta: {
-        title: 'Quản lý Banner',
+        title: 'Banner',
         icon: 'ri:advertisement-line',
-        keepAlive: true
-      },
-      children: [
-        {
-          path: 'banner',
-          name: 'MarketingBanner',
-          component: '/marketing/banner',
-          meta: {
-            title: 'Danh sách Banner',
-            icon: 'ri:image-line',
-            keepAlive: true,
-            roles: ['R_SUPER', 'R_ADMIN']
-          }
-        },
-        {
-          path: 'conversion',
-          name: 'MarketingConversion',
-          component: '/marketing/conversion',
-          meta: {
-            title: 'Công cụ chuyển đổi',
-            icon: 'ri:magic-line',
-            keepAlive: true,
-            roles: ['R_SUPER', 'R_ADMIN']
-          }
-        }
-      ]
+        keepAlive: true,
+        roles: ['R_SUPER', 'R_ADMIN']
+      }
     }
   ]
 }

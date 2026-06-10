@@ -10,26 +10,12 @@
           </div>
           <div>
             <h1 class="m-0 text-xl font-black tracking-tight text-slate-900 leading-none"
-              >Quản lý Banner & Chiến dịch</h1
+              >Quản lý Banner</h1
             >
-            <p
-              class="m-0 text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2 flex items-center gap-2"
-            >
-              <span class="size-1.5 rounded-full bg-blue-500 animate-pulse"></span>
-              Biến Banner thành "Đường dẫn chốt sale" hiệu quả
-            </p>
           </div>
         </div>
 
         <div class="flex items-center gap-3">
-          <div
-            class="bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-100 flex items-center gap-2"
-          >
-            <span class="text-[9px] font-black text-emerald-400 uppercase tracking-tighter"
-              >Chiến dịch đang chạy:</span
-            >
-            <span class="text-base font-black text-emerald-600 leading-none">05</span>
-          </div>
           <button
             @click="handleAddBanner"
             class="h-11 px-8 bg-[#001529] text-white rounded-xl font-black text-[11px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95 flex items-center gap-2"
@@ -46,25 +32,12 @@
           v-for="banner in banners"
           :key="banner.id"
           class="banner-card bg-white border border-slate-200 rounded-[32px] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 group relative"
-          :class="{ 'opacity-60 grayscale-[0.5]': banner.status === 'Paused' }"
         >
-          <div class="absolute top-4 left-4 z-10 flex flex-col gap-2">
-            <span
-              class="px-3 py-1 bg-black/80 backdrop-blur-md text-white rounded-lg text-[9px] font-black uppercase tracking-widest shadow-lg"
-            >
-              Ưu tiên: #{{ banner.priority }}
-            </span>
-            <span
-              v-if="banner.status === 'Paused'"
-              class="px-3 py-1 bg-amber-500 text-white rounded-lg text-[9px] font-black uppercase tracking-widest shadow-lg"
-            >
-              Đang tạm dừng
-            </span>
-          </div>
+          <div class="absolute top-4 left-4 z-10 flex flex-col gap-2"> </div>
 
           <div class="aspect-[21/9] bg-slate-900 relative overflow-hidden group/img">
             <img
-              :src="viewMode === 'Desktop' ? banner.desktopImg : banner.mobileImg"
+              :src="viewMode === 'Desktop' ? banner.desktopImageUrl : banner.mobileImageUrl"
               class="w-full h-full object-cover opacity-80 group-hover/img:scale-105 transition-transform duration-700"
             />
 
@@ -100,10 +73,6 @@
                 banner.title
               }}</h2>
               <div class="flex items-center gap-4">
-                <div class="flex items-center gap-1.5 text-white/60 text-[10px] font-bold">
-                  <ArtSvgIcon icon="ri:calendar-event-line" />
-                  {{ banner.startDate }} → {{ banner.endDate }}
-                </div>
                 <div
                   class="flex items-center gap-1.5 text-blue-400 text-[10px] font-black uppercase tracking-widest"
                 >
@@ -115,35 +84,8 @@
           </div>
 
           <div class="px-8 py-5 flex justify-between items-center bg-slate-50/50">
-            <div class="flex gap-4">
-              <div class="flex flex-col">
-                <span class="text-[8px] font-black text-slate-300 uppercase tracking-widest"
-                  >Lượt click</span
-                >
-                <span class="text-sm font-black text-slate-700">{{ banner.clicks }}</span>
-              </div>
-              <div class="flex flex-col">
-                <span class="text-[8px] font-black text-slate-300 uppercase tracking-widest"
-                  >CTR</span
-                >
-                <span class="text-sm font-black text-blue-600">{{ banner.ctr }}%</span>
-              </div>
-            </div>
+            <div class="flex gap-4"></div>
             <div class="flex gap-2">
-              <button
-                @click="toggleStatus(banner)"
-                class="size-10 rounded-xl flex-cc border-2 transition-all"
-                :class="
-                  banner.status === 'Active'
-                    ? 'bg-amber-50 border-amber-100 text-amber-600 hover:bg-amber-600 hover:text-white'
-                    : 'bg-emerald-50 border-emerald-100 text-emerald-600 hover:bg-emerald-600 hover:text-white'
-                "
-              >
-                <ArtSvgIcon
-                  :icon="banner.status === 'Active' ? 'ri:pause-fill' : 'ri:play-fill'"
-                  class="text-xl"
-                />
-              </button>
               <button
                 @click="handleEdit(banner)"
                 class="h-10 px-6 bg-white border-2 border-slate-200 rounded-xl font-black text-[10px] uppercase tracking-widest hover:border-slate-800 transition-all"
@@ -177,9 +119,6 @@
             <h3 class="m-0 font-black uppercase text-xs tracking-[0.2em] text-slate-800">{{
               dialogTitle
             }}</h3>
-            <p class="m-0 text-[9px] font-bold text-slate-400 uppercase mt-1"
-              >Cấu hình Banner theo tiêu chuẩn Responsive & SEO</p
-            >
           </div>
         </div>
       </template>
@@ -198,14 +137,21 @@
             />
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label
-                class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
-                >Trọng số (Priority)</label
-              >
-              <ElInputNumber v-model="bannerForm.priority" :min="1" class="w-full combat-number" />
-            </div>
+          <div>
+            <label
+              class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
+              >Mô tả chiến dịch</label
+            >
+            <ElInput
+              v-model="bannerForm.description"
+              type="textarea"
+              :rows="2"
+              placeholder="VD: Nhập mã KHUYENMAI để được giảm 5 triệu..."
+              class="combat-input"
+            />
+          </div>
+
+          <div class="grid grid-cols-1 gap-4">
             <div>
               <label
                 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
@@ -228,21 +174,6 @@
               <template #prefix><ArtSvgIcon icon="ri:links-line" /></template>
             </ElInput>
           </div>
-
-          <div>
-            <label
-              class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
-              >Thời gian áp dụng (Bắt buộc)</label
-            >
-            <ElDatePicker
-              v-model="bannerForm.dateRange"
-              type="daterange"
-              range-separator="→"
-              start-placeholder="Ngày bắt đầu"
-              end-placeholder="Ngày kết thúc"
-              class="w-full combat-range"
-            />
-          </div>
         </div>
 
         <div class="space-y-6">
@@ -254,8 +185,8 @@
               class="aspect-[21/9] bg-white border-2 border-dashed border-slate-200 rounded-xl flex-cc flex-col gap-2 cursor-pointer hover:border-blue-400 transition-all overflow-hidden relative"
             >
               <img
-                v-if="bannerForm.desktopImg"
-                :src="bannerForm.desktopImg"
+                v-if="bannerForm.desktopImageUrl"
+                :src="bannerForm.desktopImageUrl"
                 class="w-full h-full object-cover"
               />
               <template v-else>
@@ -274,8 +205,8 @@
               class="aspect-[4/5] h-40 bg-white border-2 border-dashed border-slate-200 rounded-xl flex-cc flex-col gap-2 cursor-pointer hover:border-emerald-400 transition-all mx-auto overflow-hidden relative"
             >
               <img
-                v-if="bannerForm.mobileImg"
-                :src="bannerForm.mobileImg"
+                v-if="bannerForm.mobileImageUrl"
+                :src="bannerForm.mobileImageUrl"
                 class="w-full h-full object-cover"
               />
               <template v-else>
@@ -289,15 +220,7 @@
 
       <template #footer>
         <div class="flex justify-between items-center">
-          <div class="flex items-center gap-2">
-            <ElSwitch v-model="bannerForm.status" active-value="Active" inactive-value="Paused" />
-            <span
-              class="text-[10px] font-black uppercase tracking-widest"
-              :class="bannerForm.status === 'Active' ? 'text-emerald-500' : 'text-amber-500'"
-            >
-              {{ bannerForm.status === 'Active' ? 'Hiển thị ngay' : 'Đang tạm dừng' }}
-            </span>
-          </div>
+          <div class="flex items-center gap-2"></div>
           <div class="flex gap-3">
             <button
               @click="dialogVisible = false"
@@ -318,8 +241,9 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue'
-  import { ElMessage } from 'element-plus'
+  import { ref, onMounted } from 'vue'
+  import { ElMessage, ElMessageBox } from 'element-plus'
+  import { BannerApi } from '@/api/banner.api'
 
   defineOptions({ name: 'MarketingBannerManagement' })
 
@@ -328,62 +252,48 @@
   const dialogTitle = ref('Tạo banner mới')
   const isEditing = ref(false)
 
-  const banners = ref([
-    {
-      id: 1,
-      title: 'Chào hè rực rỡ - Ưu đãi SH 160i lên đến 5 triệu đồng',
-      priority: 1,
-      clicks: 1240,
-      ctr: 4.8,
-      status: 'Active',
-      startDate: '01/05/2024',
-      endDate: '31/05/2024',
-      ctaLabel: 'Xem chi tiết ưu đãi',
-      desktopImg:
-        'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=800',
-      mobileImg:
-        'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=400'
-    },
-    {
-      id: 2,
-      title: 'Winner X mới - Trả góp 0% lãi suất tại Anh Em Motor',
-      priority: 2,
-      clicks: 856,
-      ctr: 3.2,
-      status: 'Active',
-      startDate: '15/04/2024',
-      endDate: '15/05/2024',
-      ctaLabel: 'Đăng ký lái thử',
-      desktopImg:
-        'https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?auto=format&fit=crop&q=80&w=800',
-      mobileImg:
-        'https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?auto=format&fit=crop&q=80&w=400'
-    }
-  ])
+  const banners = ref<any[]>([])
 
   const bannerForm = ref({
+    id: 0,
     title: '',
+    description: '',
     priority: 1,
     ctaLabel: 'Xem ngay',
     ctaLink: '',
     dateRange: [],
-    desktopImg: '',
-    mobileImg: '',
-    status: 'Active'
+    desktopImageUrl: '',
+    mobileImageUrl: '',
+    isActive: true
+  })
+
+  const fetchBanners = async () => {
+    try {
+      const res = await BannerApi.getList({ size: 100 })
+      banners.value = res.items || []
+    } catch {
+      ElMessage.error('Lỗi khi tải danh sách banner')
+    }
+  }
+
+  onMounted(() => {
+    fetchBanners()
   })
 
   const handleAddBanner = () => {
     isEditing.value = false
-    dialogTitle.value = 'Tạo banner chiến dịch mới'
+    dialogTitle.value = 'Tạo banner mới'
     bannerForm.value = {
+      id: 0,
       title: '',
+      description: '',
       priority: 1,
       ctaLabel: 'Xem ngay',
       ctaLink: '',
       dateRange: [],
-      desktopImg: '',
-      mobileImg: '',
-      status: 'Active'
+      desktopImageUrl: '',
+      mobileImageUrl: '',
+      isActive: true
     }
     dialogVisible.value = true
   }
@@ -391,28 +301,55 @@
   const handleEdit = (banner: any) => {
     isEditing.value = true
     dialogTitle.value = 'Chỉnh sửa chiến dịch'
-    bannerForm.value = { ...banner, dateRange: [banner.startDate, banner.endDate] }
+    bannerForm.value = {
+      ...banner,
+      dateRange: banner.startDate && banner.endDate ? [banner.startDate, banner.endDate] : []
+    }
     dialogVisible.value = true
   }
 
-  const toggleStatus = (banner: any) => {
-    banner.status = banner.status === 'Active' ? 'Paused' : 'Active'
-    ElMessage.success(`Đã ${banner.status === 'Active' ? 'kích hoạt' : 'tạm dừng'} chiến dịch`)
-  }
-
-  const saveBanner = () => {
+  const saveBanner = async () => {
     if (!bannerForm.value.title) {
       ElMessage.warning('Vui lòng nhập tiêu đề chiến dịch')
       return
     }
-    ElMessage.success('Đã lưu cấu hình chiến dịch banner thành công')
-    dialogVisible.value = false
+    try {
+      const payload = {
+        ...bannerForm.value,
+        startDate: bannerForm.value.dateRange?.[0] || null,
+        endDate: bannerForm.value.dateRange?.[1] || null
+      }
+
+      if (isEditing.value && bannerForm.value.id) {
+        await BannerApi.update(bannerForm.value.id, payload)
+        ElMessage.success('Cập nhật chiến dịch thành công')
+      } else {
+        await BannerApi.create(payload)
+        ElMessage.success('Tạo chiến dịch thành công')
+      }
+      dialogVisible.value = false
+      fetchBanners()
+    } catch {
+      ElMessage.error('Có lỗi xảy ra khi lưu chiến dịch')
+    }
   }
 
-  const handleDelete = (_banner: any) => {
-    ElMessage.warning(
-      'Chức năng xóa đã được bảo mật. Vui lòng tạm dừng chiến dịch nếu không muốn hiển thị.'
-    )
+  const handleDelete = (banner: any) => {
+    ElMessageBox.confirm('Bạn có chắc chắn muốn xóa banner này?', 'Cảnh báo', {
+      confirmButtonText: 'Xóa',
+      cancelButtonText: 'Hủy',
+      type: 'warning'
+    })
+      .then(async () => {
+        try {
+          await BannerApi.delete(banner.id)
+          ElMessage.success('Xóa banner thành công')
+          fetchBanners()
+        } catch {
+          ElMessage.error('Lỗi khi xóa banner')
+        }
+      })
+      .catch(() => {})
   }
 </script>
 
