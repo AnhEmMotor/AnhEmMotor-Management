@@ -14,9 +14,13 @@
       ]"
     >
       <div class="flex-c flex-1 min-w-0 leading-15" style="display: flex">
-        <div class="flex-c c-p" @click="toHome" v-if="isTopMenu">
+        <div class="flex-c c-p" @click="toHome" v-if="isTopMenu || isPortal">
           <ArtLogo class="pl-4.5" />
-          <p v-if="width >= 1400" class="my-0 mx-2 ml-2 text-lg">{{ AppConfig.systemInfo.name }}</p>
+          <p
+            v-if="width >= 1400 || isPortal"
+            class="my-0 mx-2 ml-2 text-lg text-[var(--el-text-color-primary)]"
+            >{{ AppConfig.systemInfo.name }}</p
+          >
         </div>
 
         <ArtLogo
@@ -25,31 +29,36 @@
         />
 
         <ArtIconButton
-          v-if="isLeftMenu && shouldShowMenuButton"
+          v-if="isLeftMenu && shouldShowMenuButton && !isPortal"
           icon="ri:menu-2-fill"
           class="ml-3 max-sm:ml-[7px]"
           @click="visibleMenu"
         />
 
         <ArtIconButton
-          v-if="shouldShowRefreshButton"
+          v-if="shouldShowRefreshButton && !isPortal"
           icon="ri:refresh-line"
           class="!ml-3 refresh-btn max-sm:!hidden"
           :style="{ marginLeft: !isLeftMenu ? '10px' : '0' }"
           @click="reload"
         />
 
-        <ArtFastEnter v-if="shouldShowFastEnter && width >= headerBarFastEnterMinWidth">
+        <ArtFastEnter
+          v-if="shouldShowFastEnter && width >= headerBarFastEnterMinWidth && !isPortal"
+        >
           <ArtIconButton icon="ri:function-line" class="ml-3" />
         </ArtFastEnter>
 
         <ArtBreadcrumb
-          v-if="(shouldShowBreadcrumb && isLeftMenu) || (shouldShowBreadcrumb && isDualMenu)"
+          v-if="
+            (shouldShowBreadcrumb && isLeftMenu && !isPortal) ||
+            (shouldShowBreadcrumb && isDualMenu && !isPortal)
+          "
         />
 
-        <ArtHorizontalMenu v-if="isTopMenu" :list="menuList" />
+        <ArtHorizontalMenu v-if="isTopMenu && !isPortal" :list="menuList" />
 
-        <ArtMixedMenu v-if="isTopLeftMenu" :list="menuList" />
+        <ArtMixedMenu v-if="isTopLeftMenu && !isPortal" :list="menuList" />
       </div>
 
       <div class="flex-c gap-2.5">
@@ -132,13 +141,19 @@
       </div>
     </div>
 
-    <ArtWorkTab />
+    <ArtWorkTab v-if="!isPortal" />
 
     <ArtNotification v-model:value="showNotice" ref="notice" />
   </div>
 </template>
 
 <script setup lang="ts">
+  defineProps({
+    isPortal: {
+      type: Boolean,
+      default: false
+    }
+  })
   import { useI18n } from 'vue-i18n'
   import { useRouter } from 'vue-router'
   import { useFullscreen, useWindowSize } from '@vueuse/core'

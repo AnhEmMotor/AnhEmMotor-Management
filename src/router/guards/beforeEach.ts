@@ -138,11 +138,14 @@ function handleLoginStatus(
   to: RouteLocationNormalized,
   userStore: ReturnType<typeof useUserStore>
 ): any {
-  if (userStore.isLogin && (to.path === RoutesAlias.Login || to.path.includes('/login'))) {
-    return { path: '/' }
+  if (userStore.isLogin) {
+    if (to.path === RoutesAlias.Login || to.path === '/auth/login') {
+      return { path: '/workspace', replace: true }
+    }
+    return null
   }
 
-  if (userStore.isLogin || to.path === RoutesAlias.Login || isStaticRoute(to.path)) {
+  if (to.path === RoutesAlias.Login || to.path === '/auth/login' || isStaticRoute(to.path)) {
     return null
   }
 
@@ -324,13 +327,8 @@ export function resetRouterState(delay: number): void {
 }
 
 function handleRootPathRedirect(to: RouteLocationNormalized): any {
-  if (to.path !== '/') {
-    return null
-  }
-
-  const { homePath } = useCommon()
-  if (homePath.value && homePath.value !== '/') {
-    return { path: homePath.value, replace: true }
+  if (to.path === '/') {
+    return { path: '/workspace', replace: true }
   }
 
   return null
