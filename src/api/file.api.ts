@@ -25,5 +25,18 @@ export const FileApi = {
         'Content-Type': 'multipart/form-data'
       }
     })
+  },
+
+  uploadBannerImage(file: File) {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    return request.post<any>({
+      url: '/api/v1/MediaFile/banner/upload',
+      data: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
   }
 }

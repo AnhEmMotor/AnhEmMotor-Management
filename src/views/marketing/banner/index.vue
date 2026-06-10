@@ -20,7 +20,7 @@
             @click="handleAddBanner"
             class="h-11 px-8 bg-[#001529] text-white rounded-xl font-black text-[11px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95 flex items-center gap-2"
           >
-            <ArtSvgIcon icon="ri:add-fill" /> Tạo banner chiến dịch
+            <ArtSvgIcon icon="ri:add-fill" /> Tạo banner
           </button>
         </div>
       </div>
@@ -67,36 +67,24 @@
             </div>
 
             <div
-              class="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/90 to-transparent"
+              class="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/90 via-black/50 to-transparent flex justify-between items-center gap-4"
             >
-              <h2 class="m-0 text-lg font-black text-white leading-tight mb-2">{{
+              <h2 class="m-0 text-lg font-black text-white leading-tight truncate">{{
                 banner.title
               }}</h2>
-              <div class="flex items-center gap-4">
-                <div
-                  class="flex items-center gap-1.5 text-blue-400 text-[10px] font-black uppercase tracking-widest"
+              <div class="flex gap-2 shrink-0">
+                <button
+                  @click.stop="handleEdit(banner)"
+                  class="h-10 px-6 bg-slate-900/90 backdrop-blur-md text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg"
+                  >Sửa banner</button
                 >
-                  <ArtSvgIcon icon="ri:links-line" />
-                  {{ banner.ctaLabel || 'Chưa gắn link' }}
-                </div>
+                <button
+                  @click.stop="handleDelete(banner)"
+                  class="size-10 rounded-xl flex-cc bg-red-600/90 backdrop-blur-md text-white hover:bg-red-700 transition-all shadow-lg"
+                >
+                  <ArtSvgIcon icon="ri:delete-bin-line" />
+                </button>
               </div>
-            </div>
-          </div>
-
-          <div class="px-8 py-5 flex justify-between items-center bg-slate-50/50">
-            <div class="flex gap-4"></div>
-            <div class="flex gap-2">
-              <button
-                @click="handleEdit(banner)"
-                class="h-10 px-6 bg-white border-2 border-slate-200 rounded-xl font-black text-[10px] uppercase tracking-widest hover:border-slate-800 transition-all"
-                >Sửa chiến dịch</button
-              >
-              <button
-                @click="handleDelete(banner)"
-                class="size-10 rounded-xl flex-cc bg-red-50 border-2 border-red-100 text-red-500 hover:bg-red-500 hover:text-white transition-all"
-              >
-                <ArtSvgIcon icon="ri:delete-bin-line" />
-              </button>
             </div>
           </div>
         </div>
@@ -128,7 +116,7 @@
           <div>
             <label
               class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
-              >Tiêu đề chiến dịch</label
+              >Tiêu đề banner</label
             >
             <ElInput
               v-model="bannerForm.title"
@@ -140,7 +128,7 @@
           <div>
             <label
               class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
-              >Mô tả chiến dịch</label
+              >Mô tả banner</label
             >
             <ElInput
               v-model="bannerForm.description"
@@ -181,19 +169,30 @@
             <label class="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-3 block"
               >Ảnh Desktop (Tỷ lệ 21:9)</label
             >
-            <div
-              class="aspect-[21/9] bg-white border-2 border-dashed border-slate-200 rounded-xl flex-cc flex-col gap-2 cursor-pointer hover:border-blue-400 transition-all overflow-hidden relative"
+            <ElUpload
+              class="w-full block combat-banner-upload"
+              action="#"
+              :show-file-list="false"
+              :auto-upload="true"
+              :http-request="handleUploadDesktop"
+              accept="image/*"
             >
-              <img
-                v-if="bannerForm.desktopImageUrl"
-                :src="bannerForm.desktopImageUrl"
-                class="w-full h-full object-cover"
-              />
-              <template v-else>
-                <ArtSvgIcon icon="ri:computer-line" class="text-2xl text-slate-300" />
-                <span class="text-[9px] font-black uppercase text-slate-400">Chọn ảnh Desktop</span>
-              </template>
-            </div>
+              <div
+                class="aspect-[21/9] w-full bg-white border-2 border-dashed border-slate-200 rounded-xl flex-cc flex-col gap-2 cursor-pointer hover:border-blue-400 transition-all overflow-hidden relative"
+              >
+                <img
+                  v-if="bannerForm.desktopImageUrl"
+                  :src="bannerForm.desktopImageUrl"
+                  class="w-full h-full object-cover"
+                />
+                <template v-else>
+                  <ArtSvgIcon icon="ri:computer-line" class="text-2xl text-slate-300" />
+                  <span class="text-[9px] font-black uppercase text-slate-400"
+                    >Chọn ảnh Desktop</span
+                  >
+                </template>
+              </div>
+            </ElUpload>
           </div>
 
           <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
@@ -201,19 +200,30 @@
               class="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-3 block"
               >Ảnh Mobile (Tỷ lệ 4:5 hoặc 1:1)</label
             >
-            <div
-              class="aspect-[4/5] h-40 bg-white border-2 border-dashed border-slate-200 rounded-xl flex-cc flex-col gap-2 cursor-pointer hover:border-emerald-400 transition-all mx-auto overflow-hidden relative"
+            <ElUpload
+              class="w-full block combat-banner-upload"
+              action="#"
+              :show-file-list="false"
+              :auto-upload="true"
+              :http-request="handleUploadMobile"
+              accept="image/*"
             >
-              <img
-                v-if="bannerForm.mobileImageUrl"
-                :src="bannerForm.mobileImageUrl"
-                class="w-full h-full object-cover"
-              />
-              <template v-else>
-                <ArtSvgIcon icon="ri:smartphone-line" class="text-2xl text-slate-300" />
-                <span class="text-[9px] font-black uppercase text-slate-400">Chọn ảnh Mobile</span>
-              </template>
-            </div>
+              <div
+                class="aspect-[4/5] h-40 bg-white border-2 border-dashed border-slate-200 rounded-xl flex-cc flex-col gap-2 cursor-pointer hover:border-emerald-400 transition-all mx-auto overflow-hidden relative"
+              >
+                <img
+                  v-if="bannerForm.mobileImageUrl"
+                  :src="bannerForm.mobileImageUrl"
+                  class="w-full h-full object-cover"
+                />
+                <template v-else>
+                  <ArtSvgIcon icon="ri:smartphone-line" class="text-2xl text-slate-300" />
+                  <span class="text-[9px] font-black uppercase text-slate-400"
+                    >Chọn ảnh Mobile</span
+                  >
+                </template>
+              </div>
+            </ElUpload>
           </div>
         </div>
       </div>
@@ -231,7 +241,7 @@
               @click="saveBanner"
               class="h-11 px-8 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95"
             >
-              {{ isEditing ? 'Lưu thay đổi' : 'Tạo chiến dịch' }}
+              {{ isEditing ? 'Lưu thay đổi' : 'Tạo banner' }}
             </button>
           </div>
         </div>
@@ -244,6 +254,7 @@
   import { ref, onMounted } from 'vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { BannerApi } from '@/api/banner.api'
+  import { FileApi } from '@/api/file.api'
 
   defineOptions({ name: 'MarketingBannerManagement' })
 
@@ -258,13 +269,10 @@
     id: 0,
     title: '',
     description: '',
-    priority: 1,
     ctaLabel: 'Xem ngay',
     ctaLink: '',
-    dateRange: [],
     desktopImageUrl: '',
-    mobileImageUrl: '',
-    isActive: true
+    mobileImageUrl: ''
   })
 
   const fetchBanners = async () => {
@@ -280,6 +288,26 @@
     fetchBanners()
   })
 
+  const handleUploadDesktop = async (options: any) => {
+    try {
+      const res = await FileApi.uploadBannerImage(options.file)
+      bannerForm.value.desktopImageUrl = res.publicUrl
+      ElMessage.success('Tải ảnh Desktop lên thành công')
+    } catch (err: any) {
+      ElMessage.error(err.message || 'Tải ảnh thất bại')
+    }
+  }
+
+  const handleUploadMobile = async (options: any) => {
+    try {
+      const res = await FileApi.uploadBannerImage(options.file)
+      bannerForm.value.mobileImageUrl = res.publicUrl
+      ElMessage.success('Tải ảnh Mobile lên thành công')
+    } catch (err: any) {
+      ElMessage.error(err.message || 'Tải ảnh thất bại')
+    }
+  }
+
   const handleAddBanner = () => {
     isEditing.value = false
     dialogTitle.value = 'Tạo banner mới'
@@ -287,50 +315,44 @@
       id: 0,
       title: '',
       description: '',
-      priority: 1,
       ctaLabel: 'Xem ngay',
       ctaLink: '',
-      dateRange: [],
       desktopImageUrl: '',
-      mobileImageUrl: '',
-      isActive: true
+      mobileImageUrl: ''
     }
     dialogVisible.value = true
   }
 
   const handleEdit = (banner: any) => {
     isEditing.value = true
-    dialogTitle.value = 'Chỉnh sửa chiến dịch'
+    dialogTitle.value = 'Chỉnh sửa banner'
     bannerForm.value = {
-      ...banner,
-      dateRange: banner.startDate && banner.endDate ? [banner.startDate, banner.endDate] : []
+      ...banner
     }
     dialogVisible.value = true
   }
 
   const saveBanner = async () => {
     if (!bannerForm.value.title) {
-      ElMessage.warning('Vui lòng nhập tiêu đề chiến dịch')
+      ElMessage.warning('Vui lòng nhập tiêu đề banner')
       return
     }
     try {
       const payload = {
-        ...bannerForm.value,
-        startDate: bannerForm.value.dateRange?.[0] || null,
-        endDate: bannerForm.value.dateRange?.[1] || null
+        ...bannerForm.value
       }
 
       if (isEditing.value && bannerForm.value.id) {
         await BannerApi.update(bannerForm.value.id, payload)
-        ElMessage.success('Cập nhật chiến dịch thành công')
+        ElMessage.success('Cập nhật banner thành công')
       } else {
         await BannerApi.create(payload)
-        ElMessage.success('Tạo chiến dịch thành công')
+        ElMessage.success('Tạo banner thành công')
       }
       dialogVisible.value = false
       fetchBanners()
     } catch {
-      ElMessage.error('Có lỗi xảy ra khi lưu chiến dịch')
+      ElMessage.error('Có lỗi xảy ra khi lưu banner')
     }
   }
 
@@ -378,6 +400,13 @@
       border: 1px solid #e2e8f0;
       border-radius: 12px;
       box-shadow: none;
+    }
+
+    .combat-banner-upload {
+      :deep(.el-upload) {
+        display: block;
+        width: 100%;
+      }
     }
   }
 
