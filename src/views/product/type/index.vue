@@ -51,7 +51,7 @@
       >
         <template #imageUrl="{ row }">
           <span
-            class="inline-flex items-center justify-center h-10 w-10 bg-gray-50 rounded shadow-inner border border-gray-100 overflow-hidden align-middle"
+            class="category-image-cell inline-flex items-center justify-center h-10 w-10 rounded shadow-inner overflow-hidden align-middle"
           >
             <ElImage
               v-if="row.imageUrl"
@@ -61,19 +61,13 @@
               :preview-src-list="[row.imageUrl]"
               preview-teleported
             />
-            <ElIcon v-else class="text-gray-300"><Picture /></ElIcon>
+            <ElIcon v-else class="category-image-placeholder"><Picture /></ElIcon>
           </span>
         </template>
 
         <template #name="{ row }">
           <div class="flex flex-col text-left">
-            <span
-              :class="
-                row.parentId
-                  ? 'text-gray-600 font-medium text-sm'
-                  : 'text-gray-900 font-bold text-sm'
-              "
-            >
+            <span :class="row.parentId ? 'category-name-child' : 'category-name-root'">
               {{ row.name }}
             </span>
           </div>
@@ -147,20 +141,20 @@
               :value="item.value"
             />
           </ElSelect>
-          </ElFormItem>
+        </ElFormItem>
 
-          <ElFormItem label="Số lượng mua tối đa">
- <ElInputNumber
- v-model="formData.maxPurchaseQuantity"
- :min="1"
- :max="999"
- placeholder="Không giới hạn nếu để trống"
- class="w-full"
- controls-position="right"
- />
- </ElFormItem>
+        <ElFormItem label="Số lượng mua tối đa">
+          <ElInputNumber
+            v-model="formData.maxPurchaseQuantity"
+            :min="1"
+            :max="999"
+            placeholder="Không giới hạn nếu để trống"
+            class="w-full"
+            controls-position="right"
+          />
+        </ElFormItem>
 
- <ElFormItem label="Hình ảnh">
+        <ElFormItem label="Hình ảnh">
           <ElUpload
             class="category-uploader"
             action="#"
@@ -180,8 +174,8 @@
               v-else
               class="category-uploader-trigger flex flex-col items-center justify-center gap-2"
             >
-              <ElIcon class="text-gray-400 text-2xl"><Plus /></ElIcon>
-              <span class="text-xs text-gray-400">Tải ảnh</span>
+              <ElIcon class="category-uploader-icon text-2xl"><Plus /></ElIcon>
+              <span class="category-uploader-text text-xs">Tải ảnh</span>
             </div>
           </ElUpload>
         </ElFormItem>
@@ -324,14 +318,14 @@
     position: relative;
     overflow: hidden;
     cursor: pointer;
-    background-color: #fafafa;
-    border: 1px dashed #d9d9d9;
+    background-color: var(--el-fill-color-lighter);
+    border: 1px dashed var(--el-border-color-light);
     border-radius: 12px;
     transition: var(--el-transition-duration-fast);
   }
 
   .category-uploader :deep(.el-upload:hover) {
-    background-color: #fff;
+    background-color: var(--el-fill-color);
     border-color: var(--main-color);
   }
 
@@ -348,8 +342,34 @@
     border-radius: 12px;
   }
 
+  .category-image-cell {
+    background-color: var(--el-fill-color-lighter);
+    border: 1px solid var(--el-border-color-lighter);
+  }
+
+  .category-image-placeholder {
+    color: var(--el-text-color-placeholder);
+  }
+
+  .category-name-root {
+    color: var(--el-text-color-primary);
+    font-weight: 700;
+    font-size: 0.875rem;
+  }
+
+  .category-name-child {
+    color: var(--el-text-color-regular);
+    font-weight: 500;
+    font-size: 0.875rem;
+  }
+
+  .category-uploader-icon,
+  .category-uploader-text {
+    color: var(--el-text-color-placeholder);
+  }
+
   :deep(.el-table__row--level-1) {
-    background-color: #fafafa !important;
+    background-color: var(--el-fill-color-lighter) !important;
   }
 
   :deep(.el-table__expand-icon) {
