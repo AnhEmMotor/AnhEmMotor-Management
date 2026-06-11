@@ -2,8 +2,8 @@
   <div class="art-card h-128 p-5 mb-5 max-sm:mb-4">
     <div class="art-card-header">
       <div class="title">
-        <h4>{{ $t('admin.t66') }}</h4>
-        <p>{{ $t('admin.t67') }}<span class="text-danger">3</span></p>
+        <h4>Cảnh báo hệ thống</h4>
+        <p>Cần xử lý gấp: <span class="text-danger">5</span></p>
       </div>
     </div>
 
@@ -14,11 +14,16 @@
           v-for="(item, index) in list"
           :key="index"
         >
-          <div>
-            <p class="text-sm">{{ item.username }}</p>
-            <p class="text-g-500 mt-1">{{ item.date }}</p>
+          <div class="w-[calc(100%-40px)] pr-2">
+            <p
+              class="text-sm font-medium text-g-800 whitespace-nowrap overflow-hidden text-ellipsis"
+              >{{ item.title }}</p
+            >
+            <p class="text-g-500 mt-1 whitespace-nowrap overflow-hidden text-ellipsis">{{
+              item.desc
+            }}</p>
           </div>
-          <ElCheckbox v-model="item.complate" />
+          <span class="text-theme cursor-pointer font-medium whitespace-nowrap">Xử lý</span>
         </div>
       </ElScrollbar>
     </div>
@@ -26,42 +31,38 @@
 </template>
 
 <script setup lang="ts">
-  interface TodoItem {
-    username: string
-    date: string
-    complate: boolean
+  import { reactive } from 'vue'
+  import { ElScrollbar } from 'element-plus'
+
+  interface AlertItem {
+    title: string
+    desc: string
   }
 
-  const list = reactive<TodoItem[]>([
+  const list = reactive<AlertItem[]>([
     {
-      username: 'XemnayngàycônglàmNoiDung',
-      date: 'trêntrưa 09:30',
-      complate: true,
+      title: 'Hóa đơn lỗi chưa xử lý',
+      desc: 'HĐ HD-092 bị từ chối do sai MST',
     },
     {
-      username: 'TraLoibưuphần tử',
-      date: 'trêntrưa 10:30',
-      complate: true,
+      title: 'Phiếu sửa chữa quá hạn',
+      desc: 'Xe SH vào xưởng > 4h chưa xong',
     },
     {
-      username: 'cônglàmhợpbáochỉnhlý',
-      date: 'trêntrưa 11:00',
-      complate: true,
+      title: 'Hợp đồng sắp hết hạn',
+      desc: 'HĐ NCC Honda VN hết sau 30 ngày',
     },
     {
-      username: 'sinhsản phẩmcầncầusẽnghị',
-      date: 'dướitrưa 02:00',
-      complate: false,
+      title: 'Tồn kho phụ tùng thấp',
+      desc: 'Nhớt Castrol Power1 dưới định mức',
     },
     {
-      username: 'chỉnhlýsẽnghịNoiDung',
-      date: 'dướitrưa 03:30',
-      complate: false,
+      title: 'Trễ hạn bàn giao xe',
+      desc: 'Đơn DH-2026-902 trễ hẹn 1 ngày',
     },
     {
-      username: 'minhngàycônglàmkếgạch',
-      date: 'dướitrưa 06:30',
-      complate: false,
+      title: 'Cảnh báo doanh thu',
+      desc: 'Doanh thu hôm nay < 50% mục tiêu',
     },
   ])
 </script>

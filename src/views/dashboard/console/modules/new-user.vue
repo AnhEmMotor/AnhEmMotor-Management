@@ -2,160 +2,75 @@
   <div class="art-card p-5 h-128 overflow-hidden mb-5 max-sm:mb-4">
     <div class="art-card-header">
       <div class="title">
-        <h4>{{ $t('admin.t58') }}</h4>
-        <p>{{ $t('admin.t59') }}<span class="text-success">+20%</span></p>
+        <h4>Dashboard Thuế (E-Invoice & VAT)</h4>
+        <p>Tổng quan phát hành hóa đơn điện tử</p>
       </div>
-      <ElRadioGroup v-model="radio2">
-        <ElRadioButton value="Tháng này" :label="$t('admin.t60')"></ElRadioButton>
-        <ElRadioButton value="Tháng trước" :label="$t('admin.t61')"></ElRadioButton>
-        <ElRadioButton value="Năm nay" :label="$t('admin.t62')"></ElRadioButton>
-      </ElRadioGroup>
+      <ElButton type="primary" size="small" plain>Xuất báo cáo (XML)</ElButton>
     </div>
-    <ArtTable
-      class="w-full"
-      :data="tableData"
-      style="width: 100%"
-      size="large"
-      :border="false"
-      :stripe="false"
-      :header-cell-style="{ background: 'transparent' }"
-    >
-      <template #default>
-        <ElTableColumn :label="$t('admin.t63')" prop="avatar" width="150px">
-          <template #default="scope">
-            <div style="display: flex; align-items: center">
-              <img class="size-9 rounded-lg" :src="scope.row.avatar" alt="avatar" />
-              <span class="ml-2">{{ scope.row.username }}</span>
-            </div>
-          </template>
-        </ElTableColumn>
-        <ElTableColumn label="địađồng" prop="province" />
-        <ElTableColumn label="GioiTinh" prop="avatar">
-          <template #default="scope">
-            <div style="display: flex; align-items: center">
-              <span style="margin-left: 10px">{{ scope.row.sex === 1 ? 'Nam' : 'Nữ' }}</span>
-            </div>
-          </template>
-        </ElTableColumn>
-        <ElTableColumn label="vàođộ" width="240">
-          <template #default="scope">
-            <ElProgress
-              :percentage="scope.row.pro"
-              :color="scope.row.color"
-              :stroke-width="4"
-              :aria-label="`${scope.row.username}củahoànthànhvàođộ: ${scope.row.pro}%`"
-            />
-          </template>
-        </ElTableColumn>
-      </template>
-    </ArtTable>
+
+    <ElRow :gutter="20" class="mt-4 mb-6">
+      <ElCol :span="12">
+        <div class="bg-theme/10 p-4 rounded-lg h-full">
+          <p class="text-xs text-g-600 font-medium uppercase">Doanh thu chịu thuế</p>
+          <p class="text-2xl font-medium text-theme mt-2"
+            >1.250.000.000 <span class="text-sm">đ</span></p
+          >
+        </div>
+      </ElCol>
+      <ElCol :span="12">
+        <div class="bg-danger/10 p-4 rounded-lg h-full">
+          <p class="text-xs text-g-600 font-medium uppercase">VAT Đầu ra phải nộp</p>
+          <p class="text-2xl font-medium text-danger mt-2"
+            >125.000.000 <span class="text-sm">đ</span></p
+          >
+        </div>
+      </ElCol>
+    </ElRow>
+
+    <div class="h-[calc(100%-140px)] overflow-hidden">
+      <h5 class="text-sm font-medium text-g-800 mb-4">Trạng thái Hóa đơn Điện tử</h5>
+
+      <div class="space-y-4">
+        <div class="flex-cb">
+          <div class="flex-c">
+            <span class="w-2.5 h-2.5 rounded-full bg-success"></span>
+            <span class="text-sm text-g-700 ml-2">Đã phát hành (Issued)</span>
+          </div>
+          <span class="text-sm font-medium text-g-900">145</span>
+        </div>
+        <ElProgress :percentage="85" color="var(--art-success)" :show-text="false" />
+
+        <div class="flex-cb mt-2">
+          <div class="flex-c">
+            <span class="w-2.5 h-2.5 rounded-full bg-warning"></span>
+            <span class="text-sm text-g-700 ml-2">Đã điều chỉnh (Adjusted)</span>
+          </div>
+          <span class="text-sm font-medium text-g-900">12</span>
+        </div>
+        <ElProgress :percentage="7" color="var(--art-warning)" :show-text="false" />
+
+        <div class="flex-cb mt-2">
+          <div class="flex-c">
+            <span class="w-2.5 h-2.5 rounded-full bg-info"></span>
+            <span class="text-sm text-g-700 ml-2">Đã hủy (Cancelled)</span>
+          </div>
+          <span class="text-sm font-medium text-g-900">8</span>
+        </div>
+        <ElProgress :percentage="5" color="var(--art-info)" :show-text="false" />
+
+        <div class="flex-cb mt-2">
+          <div class="flex-c">
+            <span class="w-2.5 h-2.5 rounded-full bg-danger"></span>
+            <span class="text-sm text-g-700 ml-2">Lỗi gửi CQT (Error)</span>
+          </div>
+          <span class="text-sm font-medium text-danger">5</span>
+        </div>
+        <ElProgress :percentage="3" color="var(--art-danger)" :show-text="false" />
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import avatar1 from '@/assets/images/avatar/avatar1.webp'
-  import avatar2 from '@/assets/images/avatar/avatar2.webp'
-  import avatar3 from '@/assets/images/avatar/avatar3.webp'
-  import avatar4 from '@/assets/images/avatar/avatar4.webp'
-  import avatar5 from '@/assets/images/avatar/avatar5.webp'
-  import avatar6 from '@/assets/images/avatar/avatar6.webp'
-
-  interface UserTableItem {
-    username: string
-    province: string
-    sex: 0 | 1
-    age: number
-    percentage: number
-    pro: number
-    color: string
-    avatar: string
-  }
-
-  const ANIMATION_DELAY = 100
-
-  const radio2 = ref('Tháng này')
-
-  const tableData = reactive<UserTableItem[]>([
-    {
-      username: 'trongtiểucá',
-      province: 'Bắc Kinh',
-      sex: 0,
-      age: 22,
-      percentage: 60,
-      pro: 0,
-      color: 'var(--art-primary)',
-      avatar: avatar1,
-    },
-    {
-      username: 'nàotiểusen',
-      province: 'Thâm Quyến',
-      sex: 1,
-      age: 21,
-      percentage: 20,
-      pro: 0,
-      color: 'var(--art-secondary)',
-      avatar: avatar2,
-    },
-    {
-      username: '',
-      province: 'Thượng Hải',
-      sex: 1,
-      age: 23,
-      percentage: 60,
-      pro: 0,
-      color: 'var(--art-warning)',
-      avatar: avatar3,
-    },
-    {
-      username: 'phátngốccỏ',
-      province: 'trườngcát',
-      sex: 0,
-      age: 28,
-      percentage: 50,
-      pro: 0,
-      color: 'var(--art-info)',
-      avatar: avatar4,
-    },
-    {
-      username: 'ngọtống',
-      province: 'chiếtgiang',
-      sex: 1,
-      age: 26,
-      percentage: 70,
-      pro: 0,
-      color: 'var(--art-error)',
-      avatar: avatar5,
-    },
-    {
-      username: 'lạnhthángngốcngốc',
-      province: 'hồbắc',
-      sex: 1,
-      age: 25,
-      percentage: 90,
-      pro: 0,
-      color: 'var(--art-success)',
-      avatar: avatar6,
-    },
-  ])
-
-  const addAnimation = (): void => {
-    setTimeout(() => {
-      tableData.forEach((item) => {
-        item.pro = item.percentage
-      })
-    }, ANIMATION_DELAY)
-  }
-
-  onMounted(() => {
-    addAnimation()
-  })
+  import { ElRow, ElCol, ElProgress, ElButton } from 'element-plus'
 </script>
-
-<style lang="scss" scoped>
-  .art-card {
-    :deep(.el-radio-button__original-radio:checked + .el-radio-button__inner) {
-      color: var(--el-color-primary) !important;
-      background: transparent !important;
-    }
-  }
-</style>
