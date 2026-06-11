@@ -695,7 +695,7 @@ export default {
     t266: "'Cắt ảnh'",
     t267: 'Nhấn vào tôi',
     t268: 'Truy cập tài liệu chính thức"\r\n      showClose\r\n    />',
-    t269: "Art Design Pro làmộtkhoảnkiêmdụng cụthiếtkếmỹhọcvớicaohiệumởphátcủasauchiếcHeThong <a target='_blank' href='https://www.artd.pro/docs/'>{{ $t('admin.t267') }}</a>{{ $t('admin.t268') }}<!-- khiếndùngKhôngcùngcủaloạikiểu -->\r\n    <ArtTextScroll type=",
+    t269: "Art Design Pro làmộtkhoảnkiêmdụng cụthiếtkếmỹhọcvớicaohiệumởphátcủasauchiếcHeThong <a target='_blank' href='https://www.artd.pro/docs/'>{{ $t('admin.t267') }}</a>{{ $t('admin.t268') }}\r\n    <ArtTextScroll type=",
     t270: 'Đây là một thông báo cuộn loại thành công',
     t271: 'Đây là một thông báo cuộn loại cảnh báo',
     t272: 'Đây là một thông báo cuộn loại nguy hiểm',

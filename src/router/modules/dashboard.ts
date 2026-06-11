@@ -6,8 +6,7 @@ export const dashboardRoutes: AppRouteRecord = {
   component: '/index/index',
   meta: {
     title: 'menus.dashboard.title',
-    icon: 'ri:pie-chart-line',
-    roles: ['R_SUPER', 'R_ADMIN']
+    icon: 'ri:pie-chart-line'
   },
   children: [
     {
@@ -28,7 +27,8 @@ export const dashboardRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.dashboard.analysis',
         icon: 'ri:align-item-bottom-line',
-        keepAlive: false
+        keepAlive: false,
+        permission: 'Permissions.Statistical.View'
       }
     },
     {
@@ -38,7 +38,8 @@ export const dashboardRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.dashboard.ecommerce',
         icon: 'ri:bar-chart-box-line',
-        keepAlive: false
+        keepAlive: false,
+        permission: 'Permissions.Statistical.View'
       }
     }
   ]

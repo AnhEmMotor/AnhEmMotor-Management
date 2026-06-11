@@ -1,6 +1,5 @@
 <template>
   <div class="flex flex-col gap-4 pb-5">
-    <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
       <ArtStatsCard
         title="Tổng giao dịch"
@@ -34,7 +33,6 @@
       />
     </div>
 
-    <!-- Search Bar & Filters -->
     <ArtSearchBar
       :items="searchItems"
       :label-width="160"
@@ -43,8 +41,7 @@
       @reset="handleReset"
     />
 
-    <!-- Table Card -->
-    <ElCard class="flex-1 art-table-card">
+    <ElCard class="flex-1 art-table-card" v-loading="loading">
       <ArtTableHeader :showColumns="false" @refresh="refreshData">
         <template #left>
           <div class="flex items-center gap-2">
@@ -64,21 +61,18 @@
       </ArtTableHeader>
 
       <ArtTable :data="filteredLedgerData" :columns="columns" row-key="id" stripe>
-        <!-- Custom slot for Voucher Code styled as interactive link -->
         <template #voucherCode="{ row }">
           <ElButton type="primary" link class="font-mono font-bold" @click="handleViewVoucher(row)">
             {{ row.voucherCode }}
           </ElButton>
         </template>
 
-        <!-- Custom slot for Transaction Type with badge -->
         <template #type="{ row }">
           <ElTag :type="getTypeTagType(row.type)" size="small">
             {{ getTypeName(row.type) }}
           </ElTag>
         </template>
 
-        <!-- Custom slot for Import Qty -->
         <template #importQty="{ row }">
           <span v-if="row.importQty > 0" class="text-success font-semibold">
             +{{ row.importQty }}
@@ -86,7 +80,6 @@
           <span v-else class="text-gray-300">-</span>
         </template>
 
-        <!-- Custom slot for Export Qty -->
         <template #exportQty="{ row }">
           <span v-if="row.exportQty > 0" class="text-danger font-semibold">
             -{{ row.exportQty }}
@@ -94,21 +87,18 @@
           <span v-else class="text-gray-300">-</span>
         </template>
 
-        <!-- Custom slot for Unit Price -->
         <template #unitPrice="{ row }">
           <span class="font-medium text-gray-700">
             {{ formatCurrency(row.unitPrice) }}
           </span>
         </template>
 
-        <!-- Custom slot for Total Amount -->
         <template #totalAmount="{ row }">
           <span :class="row.type === 'IMPORT' ? 'text-success font-bold' : 'text-danger font-bold'">
             {{ formatCurrency(row.totalAmount) }}
           </span>
         </template>
 
-        <!-- Custom slot for Running Balance -->
         <template #balance="{ row }">
           <ElTag type="info" class="font-bold text-gray-800" effect="light">
             {{ row.balance }} xe
@@ -117,7 +107,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Dialog for viewing voucher details -->
     <ElDialog
       v-model="dialogVisible"
       :title="`Chi tiết Chứng từ: ${selectedVoucher?.voucherCode}`"
@@ -126,7 +115,6 @@
       destroy-on-close
     >
       <div v-if="selectedVoucher" class="flex flex-col gap-4">
-        <!-- Voucher Info Section -->
         <div
           class="grid grid-cols-2 gap-4 p-4 bg-gray-50 border border-gray-100 rounded-lg text-sm text-gray-700"
         >
@@ -139,7 +127,6 @@
           >
         </div>
 
-        <!-- Voucher Details Table -->
         <h5 class="font-bold text-gray-800 text-sm mt-2 mb-1">Chi tiết hàng hóa biến động</h5>
         <ElTable :data="voucherDetails" border stripe style="width: 100%">
           <ElTableColumn prop="name" label="Sản phẩm / Biến thể / Màu sắc" min-width="250" />
@@ -179,9 +166,7 @@
       </div>
       <template #footer>
         <div class="flex justify-between">
-          <ElButton type="warning" @click="handlePrintVoucher">
-            <ElIcon class="mr-1"><Printer /></ElIcon> In chứng từ (Demo)
-          </ElButton>
+          <span></span>
           <ElButton @click="dialogVisible = false">Đóng</ElButton>
         </div>
       </template>
@@ -190,13 +175,13 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed } from 'vue'
-  import { Download, Printer } from '@element-plus/icons-vue'
+  import { ref, computed, onMounted } from 'vue'
+  import { Download } from '@element-plus/icons-vue'
   import { ElMessage } from 'element-plus'
+  import { InventoryReportApi } from '@/api/inventory-report.api'
 
   defineOptions({ name: 'InventoryLedger' })
 
-  // Define interfaces
   interface LedgerEntry {
     id: string
     date: string
@@ -219,181 +204,65 @@
     dateRange: [string, string] | null
   }
 
-  // Current filters state
   const filters = ref<SearchForm>({
     searchQuery: '',
     type: 'ALL',
     dateRange: null
   })
 
+  const loading = ref(false)
   const exporting = ref(false)
   const dialogVisible = ref(false)
   const selectedVoucher = ref<LedgerEntry | null>(null)
 
-  // Format currency helper
   const formatCurrency = (val: number): string => {
     return val.toLocaleString('vi-VN') + ' VNĐ'
   }
 
-  // Generate consistent static ledger mock data (sorted chronologically)
-  const generateMockLedgerData = (): LedgerEntry[] => {
-    return [
-      {
-        id: 'L01',
-        date: '2026-05-01 09:15',
-        voucherCode: 'PN2605001',
-        type: 'IMPORT',
-        productName: 'Honda Vision 2026',
-        variantName: 'Vision Cao cấp (Smartkey)',
-        colorName: 'Xanh dương',
-        partner: 'Honda Việt Nam Co., Ltd',
-        importQty: 50,
-        exportQty: 0,
-        unitPrice: 32500000,
-        totalAmount: 1625000000,
-        balance: 50
-      },
-      {
-        id: 'L02',
-        date: '2026-05-02 14:30',
-        voucherCode: 'PN2605002',
-        type: 'IMPORT',
-        productName: 'Yamaha Exciter 155 VVA',
-        variantName: 'Exciter 155 Cao cấp ABS',
-        colorName: 'Xanh GP',
-        partner: 'Yamaha Motor Việt Nam',
-        importQty: 30,
-        exportQty: 0,
-        unitPrice: 47800000,
-        totalAmount: 1434000000,
-        balance: 30
-      },
-      {
-        id: 'L03',
-        date: '2026-05-04 10:20',
-        voucherCode: 'PX2605001',
-        type: 'EXPORT',
-        productName: 'Honda Vision 2026',
-        variantName: 'Vision Cao cấp (Smartkey)',
-        colorName: 'Xanh dương',
-        partner: 'Đại lý Xe Máy Sơn Tùng',
-        importQty: 0,
-        exportQty: 10,
-        unitPrice: 35500000,
-        totalAmount: 355000000,
-        balance: 40
-      },
-      {
-        id: 'L04',
-        date: '2026-05-05 16:45',
-        voucherCode: 'PX2605002',
-        type: 'EXPORT',
-        productName: 'Yamaha Exciter 155 VVA',
-        variantName: 'Exciter 155 Cao cấp ABS',
-        colorName: 'Xanh GP',
-        partner: 'Khách hàng Nguyễn Văn Tuấn',
-        importQty: 0,
-        exportQty: 1,
-        unitPrice: 51200000,
-        totalAmount: 51200000,
-        balance: 29
-      },
-      {
-        id: 'L05',
-        date: '2026-05-10 11:00',
-        voucherCode: 'PN2605003',
-        type: 'IMPORT',
-        productName: 'Honda SH 160i 2026',
-        variantName: 'SH 160i Thể thao ABS',
-        colorName: 'Xám đen',
-        partner: 'Công ty Honda Việt Nam',
-        importQty: 15,
-        exportQty: 0,
-        unitPrice: 96000000,
-        totalAmount: 1440000000,
-        balance: 15
-      },
-      {
-        id: 'L06',
-        date: '2026-05-12 15:30',
-        voucherCode: 'PX2605003',
-        type: 'EXPORT',
-        productName: 'Honda SH 160i 2026',
-        variantName: 'SH 160i Thể thao ABS',
-        colorName: 'Xám đen',
-        partner: 'Khách hàng Trần Minh Hoàng',
-        importQty: 0,
-        exportQty: 2,
-        unitPrice: 104500000,
-        totalAmount: 209000000,
-        balance: 13
-      },
-      {
-        id: 'L07',
-        date: '2026-05-15 08:25',
-        voucherCode: 'PN2605004',
-        type: 'IMPORT',
-        productName: 'Suzuki Raider R150',
-        variantName: 'Raider R150 Thể thao',
-        colorName: undefined,
-        partner: 'Suzuki Việt Nam',
-        importQty: 25,
-        exportQty: 0,
-        unitPrice: 45000000,
-        totalAmount: 1125000000,
-        balance: 25
-      },
-      {
-        id: 'L08',
-        date: '2026-05-18 10:10',
-        voucherCode: 'PX2605004',
-        type: 'EXPORT',
-        productName: 'Suzuki Raider R150',
-        variantName: 'Raider R150 Thể thao',
-        colorName: undefined,
-        partner: 'Đại lý Xe Máy Hùng Phát',
-        importQty: 0,
-        exportQty: 8,
-        unitPrice: 48500000,
-        totalAmount: 388000000,
-        balance: 17
-      },
-      {
-        id: 'L09',
-        date: '2026-05-20 14:00',
-        voucherCode: 'PX2605005',
-        type: 'EXPORT',
-        productName: 'Honda Vision 2026',
-        variantName: 'Vision Cao cấp (Smartkey)',
-        colorName: 'Xanh dương',
-        partner: 'Khách hàng Lê Thị Thủy',
-        importQty: 0,
-        exportQty: 1,
-        unitPrice: 38000000,
-        totalAmount: 38000000,
-        balance: 39
-      },
-      {
-        id: 'L10',
-        date: '2026-05-25 11:30',
-        voucherCode: 'PN2605005',
-        type: 'IMPORT',
-        productName: 'Honda Vision 2026',
-        variantName: 'Vision Cao cấp (Smartkey)',
-        colorName: 'Xanh dương',
-        partner: 'Honda Việt Nam Co., Ltd',
-        importQty: 20,
-        exportQty: 0,
-        unitPrice: 32700000,
-        totalAmount: 654000004,
-        balance: 59
+  const tableData = ref<LedgerEntry[]>([])
+
+  const fetchLedgerData = async () => {
+    loading.value = true
+    try {
+      const params: any = {}
+      if (filters.value.searchQuery) {
+        params.searchQuery = filters.value.searchQuery
       }
-    ]
+      if (filters.value.type && filters.value.type !== 'ALL') {
+        params.type = filters.value.type
+      }
+      if (filters.value.dateRange && filters.value.dateRange.length === 2) {
+        params.startDate = filters.value.dateRange[0]
+        params.endDate = filters.value.dateRange[1]
+      }
+      const response = await InventoryReportApi.getLedger(params)
+      tableData.value = (response || []).map((x: any) => ({
+        id: x.id.toString(),
+        date: x.date ? new Date(x.date).toLocaleString('vi-VN').replace(/:\d{2}$/, '') : '',
+        voucherCode: x.voucherCode,
+        type: x.type,
+        productName: x.productName,
+        variantName: x.variantName,
+        colorName: x.colorName,
+        partner: x.partner || '—',
+        importQty: x.importQty,
+        exportQty: x.exportQty,
+        unitPrice: x.unitPrice,
+        totalAmount: x.totalAmount,
+        balance: x.balance
+      }))
+    } catch (error) {
+      console.error(error)
+      ElMessage.error('Không thể tải dữ liệu sổ cái tồn kho')
+    } finally {
+      loading.value = false
+    }
   }
 
-  const tableData = ref<LedgerEntry[]>(generateMockLedgerData())
+  onMounted(() => {
+    fetchLedgerData()
+  })
 
-  // Columns definition for Sổ cái tồn kho
   const columns = [
     { label: 'Ngày giao dịch', prop: 'date', width: 180, align: 'center' },
     { label: 'Mã chứng từ', prop: 'voucherCode', width: 130, align: 'center', useSlot: true },
@@ -414,7 +283,6 @@
     { label: 'Tồn sau GD', prop: 'balance', width: 110, align: 'right', useSlot: true }
   ]
 
-  // Form search definition for ArtSearchBar
   const searchItems = computed(() => [
     {
       key: 'searchQuery',
@@ -447,7 +315,6 @@
     }
   ])
 
-  // Summary computed statistics
   const ledgerStats = computed(() => {
     let totalTransactions = tableData.value.length
     let totalImportQty = 0
@@ -474,10 +341,8 @@
     }
   })
 
-  // Filtered dataset
   const filteredLedgerData = computed(() => {
     return tableData.value.filter((entry) => {
-      // 1. Text Search Filter
       if (filters.value.searchQuery) {
         const query = filters.value.searchQuery.toLowerCase().trim()
         const matchCode = entry.voucherCode.toLowerCase().includes(query)
@@ -490,18 +355,16 @@
         }
       }
 
-      // 2. Transaction Type Filter
       if (filters.value.type && filters.value.type !== 'ALL') {
         if (entry.type !== filters.value.type) {
           return false
         }
       }
 
-      // 3. Date Range Filter
       if (filters.value.dateRange && filters.value.dateRange.length === 2) {
         const startDate = filters.value.dateRange[0]
         const endDate = filters.value.dateRange[1]
-        const entryDate = entry.date.substring(0, 10) // Format: 'YYYY-MM-DD'
+        const entryDate = entry.date.substring(0, 10)
         if (entryDate < startDate || entryDate > endDate) {
           return false
         }
@@ -511,13 +374,13 @@
     })
   })
 
-  // Handlers
   const handleSearch = (form: Record<string, any>) => {
     filters.value = {
       searchQuery: form.searchQuery || '',
       type: form.type || 'ALL',
       dateRange: form.dateRange || null
     }
+    fetchLedgerData()
   }
 
   const handleReset = () => {
@@ -526,11 +389,13 @@
       type: 'ALL',
       dateRange: null
     }
+    fetchLedgerData()
   }
 
   const refreshData = () => {
-    tableData.value = generateMockLedgerData()
-    ElMessage.success('Đã làm mới sổ cái tồn kho!')
+    fetchLedgerData().then(() => {
+      ElMessage.success('Đã làm mới sổ cái tồn kho!')
+    })
   }
 
   const handleExport = () => {
@@ -541,7 +406,6 @@
     }, 1500)
   }
 
-  // Type helper functions
   const getTypeName = (type: string) => {
     if (type === 'IMPORT') return 'Nhập kho'
     if (type === 'EXPORT') return 'Xuất kho'
@@ -554,13 +418,11 @@
     return 'warning'
   }
 
-  // Detail Modal popup simulation
   const voucherDetails = ref<Array<{ name: string; qty: number; price: number }>>([])
 
   const handleViewVoucher = (row: LedgerEntry) => {
     selectedVoucher.value = row
 
-    // Create details table contents matching the selected voucher
     voucherDetails.value = [
       {
         name: `${row.productName} - ${row.variantName}${row.colorName ? ` (${row.colorName})` : ''}`,
@@ -570,10 +432,6 @@
     ]
 
     dialogVisible.value = true
-  }
-
-  const handlePrintVoucher = () => {
-    ElMessage.success('Đang khởi tạo lệnh in ấn chứng từ (giả lập)...')
   }
 </script>
 

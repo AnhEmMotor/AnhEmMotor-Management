@@ -61,6 +61,25 @@ export class MenuProcessor {
 
       if (hasRolePermission && hasGranularPermission) {
         const filteredItem = { ...item }
+
+        if (filteredItem.name === 'Dashboard') {
+          const hasStatsPerm = permissions.includes('Permissions.Statistical.View')
+          if (!hasStatsPerm) {
+            if (!filteredItem.meta) {
+              filteredItem.meta = {} as any
+            }
+            filteredItem.meta.title = 'menus.dashboard.console'
+            if (filteredItem.children) {
+              filteredItem.children = filteredItem.children.map((c) => {
+                const newChild = { ...c }
+                if (!newChild.meta) newChild.meta = {} as any
+                newChild.meta.isHide = true
+                return newChild
+              })
+            }
+          }
+        }
+
         if (filteredItem.children?.length) {
           filteredItem.children = this.filterMenuByPermissionsAndRoles(
             filteredItem.children,

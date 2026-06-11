@@ -1,6 +1,5 @@
 <template>
   <div class="flex flex-col gap-4 pb-5">
-    <!-- Search/Filters -->
     <ArtSearchBar
       v-model="searchForm"
       :items="searchItems"
@@ -10,7 +9,6 @@
       @reset="handleReset"
     />
 
-    <!-- Main Table Card -->
     <ElCard class="flex-1 art-table-card">
       <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
@@ -101,7 +99,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Create/Edit Form Dialog -->
     <ElDialog
       v-model="dialogVisible"
       :title="dialogTitle"
@@ -186,7 +183,6 @@
       </template>
     </ElDialog>
 
-    <!-- Detail Dialog -->
     <ElDialog
       v-model="detailDialogVisible"
       title="Chi tiết Yêu cầu mua hàng"
@@ -215,11 +211,29 @@
               detailData.createdByName || 'N/A'
             }}</span>
           </div>
-          <div>
+          <div v-if="detailData.sentByName">
+            <span class="text-gray-500">Người gửi:</span>
+            <span class="ml-2 text-gray-800 font-medium">{{ detailData.sentByName }}</span>
+          </div>
+          <div
+            v-if="
+              (detailData.status?.toLowerCase() === 'approve' ||
+                detailData.status?.toLowerCase() === 'approved') &&
+              detailData.approvedByName
+            "
+          >
             <span class="text-gray-500">Người duyệt:</span>
-            <span class="ml-2 text-gray-800 font-medium">{{
-              detailData.approvedByName || 'Chưa duyệt'
-            }}</span>
+            <span class="ml-2 text-gray-800 font-medium">{{ detailData.approvedByName }}</span>
+          </div>
+          <div
+            v-if="
+              (detailData.status?.toLowerCase() === 'reject' ||
+                detailData.status?.toLowerCase() === 'rejected') &&
+              detailData.rejectedByName
+            "
+          >
+            <span class="text-gray-500">Người từ chối:</span>
+            <span class="ml-2 text-gray-800 font-medium">{{ detailData.rejectedByName }}</span>
           </div>
           <div class="col-span-2 border-t border-gray-200 pt-2 mt-1">
             <span class="text-gray-500 font-medium">Ghi chú:</span>
@@ -241,18 +255,45 @@
                 </div>
               </template>
             </ElTableColumn>
-            <ElTableColumn prop="quantity" label="Số lượng y/c" width="105" align="center" />
-            <ElTableColumn prop="importedQuantity" label="Đã nhập" width="100" align="center">
+            <ElTableColumn prop="quantity" label="S/L yêu cầu" width="95" align="center" />
+
+            <ElTableColumn
+              v-if="
+                detailData?.status?.toLowerCase() === 'approve' ||
+                detailData?.status?.toLowerCase() === 'approved'
+              "
+              prop="importedQuantity"
+              label="Đã nhập kho"
+              width="105"
+              align="center"
+            >
               <template #default="{ row }">
-                <span class="text-success font-medium">{{ row.importedQuantity }}</span>
+                <span
+                  :class="row.importedQuantity > 0 ? 'text-success font-bold' : 'text-gray-400'"
+                >
+                  {{ row.importedQuantity }}
+                </span>
               </template>
             </ElTableColumn>
-            <ElTableColumn prop="pendingQuantity" label="Đang chờ" width="100" align="center">
+            <ElTableColumn
+              v-if="
+                detailData?.status?.toLowerCase() === 'approve' ||
+                detailData?.status?.toLowerCase() === 'approved'
+              "
+              prop="pendingQuantity"
+              label="Đang chờ"
+              width="100"
+              align="center"
+            >
               <template #default="{ row }">
                 <span class="text-warning font-medium">{{ row.pendingQuantity }}</span>
               </template>
             </ElTableColumn>
             <ElTableColumn
+              v-if="
+                detailData?.status?.toLowerCase() === 'approve' ||
+                detailData?.status?.toLowerCase() === 'approved'
+              "
               prop="unimportedQuantity"
               label="Còn lại chưa nhập"
               width="135"
@@ -271,7 +312,6 @@
           <ElButton @click="detailDialogVisible = false">Đóng</ElButton>
 
           <template v-if="detailData">
-            <!-- Approve/Reject buttons for Sent status -->
             <template v-if="detailData.status?.toLowerCase() === 'sent'">
               <ElButton type="danger" @click="handleApproveRejectStatus(detailData.id, 'reject')">
                 Từ chối duyệt
@@ -281,7 +321,6 @@
               </ElButton>
             </template>
 
-            <!-- Send button for Draft status -->
             <template v-if="detailData.status?.toLowerCase() === 'draft'">
               <ElButton type="success" @click="handleSendRequest(detailData)">
                 Gửi phê duyệt
@@ -292,7 +331,6 @@
       </template>
     </ElDialog>
 
-    <!-- Product & Variant Selector Dialog -->
     <ElDialog
       v-model="productSelectorVisible"
       title="Chọn sản phẩm & màu sắc"
@@ -303,6 +341,7 @@
     >
       <div class="space-y-4">
         <ElInput
+          v-model="productSelectorQuery"
           placeholder="Tìm sản phẩm theo tên..."
           clearable
           prefix-icon="Search"
@@ -543,24 +582,53 @@
       const idx = productSelectorActiveRowIndex.value
       if (formData.value.items[idx]) {
         const row = formData.value.items[idx]
-        row.productVariantId = variant.id
-        row.productVariantColorId = productVariantColorId
-        row.productVariantColorName = selectedColor?.colorName
+
+        const existsIdx = formData.value.items.findIndex(
+          (item, i) =>
+            i !== idx &&
+            item.productVariantId === variant.id &&
+            item.productVariantColorId === productVariantColorId
+        )
+
+        if (existsIdx > -1) {
+          formData.value.items[existsIdx].quantity =
+            (formData.value.items[existsIdx].quantity || 0) + (row.quantity || 1)
+          formData.value.items.splice(idx, 1)
+          ElMessage.success('Sản phẩm đã tồn tại trong yêu cầu. Đã gộp và cộng dồn số lượng.')
+        } else {
+          row.productVariantId = variant.id
+          row.productVariantColorId = productVariantColorId
+          row.productVariantColorName = selectedColor?.colorName
+        }
       }
     } else {
       const items = formData.value.items
       const lastRow = items[items.length - 1]
-      if (lastRow && lastRow.productVariantId === undefined) {
-        lastRow.productVariantId = variant.id
-        lastRow.productVariantColorId = productVariantColorId
-        lastRow.productVariantColorName = selectedColor?.colorName
+
+      const existsIdx = items.findIndex(
+        (item) =>
+          item.productVariantId === variant.id &&
+          item.productVariantColorId === productVariantColorId
+      )
+
+      if (existsIdx > -1) {
+        items[existsIdx].quantity = (items[existsIdx].quantity || 0) + 1
+        if (lastRow && lastRow.productVariantId === undefined) {
+          items.splice(items.length - 1, 1)
+        }
       } else {
-        items.push({
-          productVariantId: variant.id,
-          productVariantColorId,
-          productVariantColorName: selectedColor?.colorName,
-          quantity: 1
-        })
+        if (lastRow && lastRow.productVariantId === undefined) {
+          lastRow.productVariantId = variant.id
+          lastRow.productVariantColorId = productVariantColorId
+          lastRow.productVariantColorName = selectedColor?.colorName
+        } else {
+          items.push({
+            productVariantId: variant.id,
+            productVariantColorId,
+            productVariantColorName: selectedColor?.colorName,
+            quantity: 1
+          })
+        }
       }
     }
     productSelectorVisible.value = false

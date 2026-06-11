@@ -1,6 +1,5 @@
 <template>
   <div class="flex flex-col gap-4 pb-5">
-    <!-- Stats Cards -->
     <div class="grid grid-cols-5 gap-4">
       <ArtStatsCard
         title="Tổng đã nhập"
@@ -34,7 +33,6 @@
       />
     </div>
 
-    <!-- Search Bar -->
     <ArtSearchBar
       :items="searchItems"
       :label-width="150"
@@ -43,7 +41,6 @@
       @reset="handleReset"
     />
 
-    <!-- Table Card -->
     <ElCard class="flex-1 art-table-card">
       <ArtTableHeader :showColumns="false" @refresh="refreshData">
         <template #left>
@@ -62,26 +59,27 @@
 
       <ArtTable
         ref="tableRef"
+        :loading="loadingData"
         :data="filteredTableData"
         :columns="columns"
         row-key="id"
         default-expand-all
+        :pagination="paginationState"
+        @pagination:size-change="handleSizeChange"
+        @pagination:current-change="handleCurrentChange"
       >
-        <!-- Custom slot for product/variant/color name with indentation support and icon indicators -->
         <template #name="{ row }">
           <span class="inline-flex items-center gap-2 text-left align-middle">
             <span :class="getNameClass(row)">{{ row.name }}</span>
           </span>
         </template>
 
-        <!-- Custom slot for showing remaining with custom warning colors if low -->
         <template #remaining="{ row }">
           <span :class="getRemainingClass(row)">
             {{ row.remaining }}
           </span>
         </template>
 
-        <!-- Custom slot for operation (only leaf nodes can click) -->
         <template #operation="{ row }">
           <ElButton
             v-if="isLeafNode(row)"
@@ -97,7 +95,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Dialog for viewing transactions list (Goods Receipts & Sales Invoices) -->
     <ElDialog
       v-model="dialogVisible"
       :title="`Lịch sử giao dịch biến động kho: ${selectedRowName}`"
@@ -106,7 +103,6 @@
       destroy-on-close
     >
       <div v-if="selectedRow" class="flex flex-col gap-4">
-        <!-- Summary Alert -->
         <div class="p-3 bg-gray-50 border border-gray-100 rounded flex gap-4 text-sm text-gray-600">
           <div><strong>Tồn kho hiện tại:</strong> {{ selectedRow.inStock }} xe</div>
           <div><strong>Đã nhập:</strong> {{ selectedRow.imported }} xe</div>
@@ -114,9 +110,7 @@
           <div><strong>Đã đặt trước:</strong> {{ selectedRow.ordered }} xe</div>
         </div>
 
-        <!-- Tabs for Goods Receipts vs Sales Invoices -->
         <ElTabs v-model="activeTab" class="pl-4 pr-2">
-          <!-- Goods Receipts Tab -->
           <ElTabPane name="receipts">
             <template #label>
               <span class="flex items-center gap-1">
@@ -135,10 +129,16 @@
                   <ElTag type="success" size="small">Đã nhập kho</ElTag>
                 </template>
               </ElTableColumn>
+              <ElTableColumn label="Thao tác" width="100" align="center" fixed="right">
+                <template #default="{ row }">
+                  <ElButton link type="primary" size="small" @click="viewReceiptDetail(row.id)">
+                    Xem phiếu
+                  </ElButton>
+                </template>
+              </ElTableColumn>
             </ElTable>
           </ElTabPane>
 
-          <!-- Sales Invoices Tab -->
           <ElTabPane name="invoices">
             <template #label>
               <span class="flex items-center gap-1">
@@ -167,30 +167,104 @@
         </div>
       </template>
     </ElDialog>
+
+    <ElDialog
+      v-model="receiptDetailVisible"
+      title="Chi tiết phiếu nhập kho"
+      width="800px"
+      append-to-body
+      destroy-on-close
+    >
+      <div v-if="receiptDetailData" class="flex flex-col gap-4">
+        <div
+          class="p-3 bg-gray-50 border border-gray-100 rounded grid grid-cols-2 gap-2 text-sm text-gray-700"
+        >
+          <div><strong>Mã phiếu:</strong> #{{ receiptDetailData.id }}</div>
+          <div
+            ><strong>Trạng thái:</strong>
+            <ElTag type="success" size="small">Đã nhập kho</ElTag></div
+          >
+          <div
+            ><strong>Ngày tạo:</strong>
+            {{
+              receiptDetailData.createdAt
+                ? new Date(receiptDetailData.createdAt).toLocaleDateString('vi-VN')
+                : '--'
+            }}</div
+          >
+          <div><strong>Ghi chú:</strong> {{ receiptDetailData.notes || 'Không có ghi chú' }}</div>
+        </div>
+
+        <div>
+          <h4 class="text-sm font-semibold text-gray-700 mb-2"
+            >Danh sách sản phẩm trong phiếu này</h4
+          >
+          <ElTable
+            :data="receiptDetailData.products"
+            border
+            stripe
+            size="small"
+            style="width: 100%"
+          >
+            <ElTableColumn type="index" label="STT" width="55" align="center" />
+            <ElTableColumn label="Tên sản phẩm" min-width="200">
+              <template #default="{ row }">
+                <div class="flex flex-col gap-1">
+                  <span class="font-medium text-gray-800">{{ row.name }}</span>
+                  <ElTag v-if="row.productVariantColorName" size="small" type="info" class="w-fit">
+                    Màu: {{ row.productVariantColorName }}
+                  </ElTag>
+                </div>
+              </template>
+            </ElTableColumn>
+            <ElTableColumn label="Nhà cung cấp" width="160">
+              <template #default="{ row }">
+                <span>{{ row.supplierName || 'N/A' }}</span>
+              </template>
+            </ElTableColumn>
+            <ElTableColumn label="Đơn giá" width="130" align="right">
+              <template #default="{ row }">
+                <span>{{ row.unitPrice ? row.unitPrice.toLocaleString() : '0' }} VNĐ</span>
+              </template>
+            </ElTableColumn>
+            <ElTableColumn prop="quantity" label="Số lượng" width="90" align="center" />
+          </ElTable>
+        </div>
+      </div>
+      <template #footer>
+        <div class="flex justify-end">
+          <ElButton @click="receiptDetailVisible = false">Đóng</ElButton>
+        </div>
+      </template>
+    </ElDialog>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, nextTick } from 'vue'
+  import { ref, computed, nextTick, onMounted } from 'vue'
   import { Download, Memo } from '@element-plus/icons-vue'
   import { ElMessage } from 'element-plus'
+  import { InventoryReportApi } from '@/api/inventory-report.api'
+  import { InventoryReceiptApi } from '@/api/inventory-receipt.api'
 
   defineOptions({ name: 'InventoryInOutStock' })
 
-  // Define interfaces
   interface StockItem {
     id: string
     name: string
-    level: number // 0: Product, 1: Variant, 2: Color
+    level: number
     imported: number
     exported: number
     inStock: number
     ordered: number
     remaining: number
+    variantId?: number
+    colorId?: number
     children?: StockItem[]
   }
 
   interface MockReceipt {
+    id?: number
     code: string
     supplier: string
     quantity: number
@@ -199,6 +273,7 @@
   }
 
   interface MockInvoice {
+    id?: number
     code: string
     customer: string
     quantity: number
@@ -206,10 +281,17 @@
     date: string
   }
 
-  // State variables
   const searchQuery = ref('')
   const tableRef = ref()
   const exporting = ref(false)
+  const loadingData = ref(false)
+
+  // Pagination state
+  const paginationState = ref({
+    current: 1,
+    size: 10,
+    total: 0
+  })
 
   // Dialog & Detail viewing state
   const dialogVisible = ref(false)
@@ -219,192 +301,105 @@
   const mockReceipts = ref<MockReceipt[]>([])
   const mockInvoices = ref<MockInvoice[]>([])
 
-  // Generate consistent static mock data
-  const generateMockData = (): StockItem[] => {
-    const rawData = [
-      {
-        id: 'p1',
-        name: 'Honda Vision 2026',
-        variants: [
-          {
-            id: 'p1-v1',
-            name: 'Vision Tiêu chuẩn (Khóa cơ)',
-            colors: [] // No color variants
-          },
-          {
-            id: 'p1-v2',
-            name: 'Vision Cao cấp (Smartkey)',
-            colors: [
-              { id: 'p1-v2-c1', name: 'Đỏ đậm' },
-              { id: 'p1-v2-c2', name: 'Xanh dương' }
-            ]
-          },
-          {
-            id: 'p1-v3',
-            name: 'Vision Thể thao',
-            colors: [
-              { id: 'p1-v3-c1', name: 'Xám xi măng' },
-              { id: 'p1-v3-c2', name: 'Đen nhám' }
-            ]
-          }
-        ]
-      },
-      {
-        id: 'p2',
-        name: 'Yamaha Exciter 155 VVA',
-        variants: [
-          {
-            id: 'p2-v1',
-            name: 'Exciter 155 Tiêu chuẩn',
-            colors: [
-              { id: 'p2-v1-c1', name: 'Đỏ nhám' },
-              { id: 'p2-v1-c2', name: 'Đen bóng' },
-              { id: 'p2-v1-c3', name: 'Trắng đỏ' }
-            ]
-          },
-          {
-            id: 'p2-v2',
-            name: 'Exciter 155 Cao cấp ABS',
-            colors: [
-              { id: 'p2-v2-c1', name: 'Xanh GP' },
-              { id: 'p2-v2-c2', name: 'Vàng Xám' }
-            ]
-          },
-          {
-            id: 'p2-v3',
-            name: 'Exciter 155 Bản Giới hạn',
-            colors: [] // No color variants
-          }
-        ]
-      },
-      {
-        id: 'p3',
-        name: 'Honda SH 160i 2026',
-        variants: [
-          {
-            id: 'p3-v1',
-            name: 'SH 160i Tiêu chuẩn CBS',
-            colors: [
-              { id: 'p3-v1-c1', name: 'Trắng' },
-              { id: 'p3-v1-c2', name: 'Đỏ' },
-              { id: 'p3-v1-c3', name: 'Đen' }
-            ]
-          },
-          {
-            id: 'p3-v2',
-            name: 'SH 160i Thể thao ABS',
-            colors: [
-              { id: 'p3-v2-c1', name: 'Xám đen' },
-              { id: 'p3-v2-c2', name: 'Đỏ đen' }
-            ]
-          }
-        ]
-      },
-      {
-        id: 'p4',
-        name: 'Suzuki Raider R150',
-        variants: [
-          {
-            id: 'p4-v1',
-            name: 'Raider R150 Thể thao',
-            colors: [] // No color variants
-          }
-        ]
+  // Receipt full detail dialog state
+  const receiptDetailVisible = ref(false)
+  const receiptDetailData = ref<any>(null)
+
+  const tableData = ref<StockItem[]>([])
+
+  // Fetch full receipt details
+  const viewReceiptDetail = async (id?: number) => {
+    if (!id) return
+    try {
+      const res = await InventoryReceiptApi.getById(id)
+      if (res) {
+        receiptDetailData.value = res
+        receiptDetailVisible.value = true
       }
-    ]
-
-    // Simple pseudo-random helper for consistent static values
-    let seed = 42
-    const random = (min: number, max: number) => {
-      const x = Math.sin(seed++) * 10000
-      return Math.floor((x - Math.floor(x)) * (max - min + 1)) + min
+    } catch (err) {
+      console.error(err)
+      ElMessage.error('Không thể tải chi tiết phiếu nhập!')
     }
+  }
 
-    return rawData.map((p) => {
-      const variantsList = p.variants.map((v) => {
-        if (v.colors && v.colors.length > 0) {
-          const colorsList = v.colors.map((c) => {
-            const imported = random(40, 150)
-            const exported = random(20, imported - 10)
-            const inStock = imported - exported
-            const ordered = random(0, Math.max(0, inStock - 5))
-            const remaining = inStock - ordered
+  // API mapper function
+  const mapToStockItems = (apiItems: any[]): StockItem[] => {
+    if (!apiItems) return []
+    return apiItems.map((prod: any) => {
+      const variants = prod.variants
+        ? prod.variants.map((v: any) => {
+            const colors = v.variantColors
+              ? v.variantColors.map((c: any) => {
+                  return {
+                    id: `c-${c.colorId}`,
+                    name: c.colorName,
+                    level: 2,
+                    imported: c.importedQty,
+                    exported: c.exportedQty,
+                    inStock: c.inventoryQty,
+                    ordered: c.orderedQty,
+                    remaining: c.remainingQty,
+                    variantId: v.variantId,
+                    colorId: c.colorId
+                  } as StockItem
+                })
+              : undefined
 
             return {
-              id: c.id,
-              name: c.name,
-              level: 2,
-              imported,
-              exported,
-              inStock,
-              ordered,
-              remaining
+              id: `v-${v.variantId}`,
+              name: v.variantName,
+              level: 1,
+              imported: v.importedQty,
+              exported: v.exportedQty,
+              inStock: v.inventoryQty,
+              ordered: v.orderedQty,
+              remaining: v.remainingQty,
+              variantId: v.variantId,
+              children: colors && colors.length > 0 ? colors : undefined
             } as StockItem
           })
-
-          // Calculate parent variant values from colors
-          const imported = colorsList.reduce((acc, curr) => acc + curr.imported, 0)
-          const exported = colorsList.reduce((acc, curr) => acc + curr.exported, 0)
-          const inStock = colorsList.reduce((acc, curr) => acc + curr.inStock, 0)
-          const ordered = colorsList.reduce((acc, curr) => acc + curr.ordered, 0)
-          const remaining = colorsList.reduce((acc, curr) => acc + curr.remaining, 0)
-
-          return {
-            id: v.id,
-            name: v.name,
-            level: 1,
-            imported,
-            exported,
-            inStock,
-            ordered,
-            remaining,
-            children: colorsList
-          } as StockItem
-        } else {
-          // No colors, generate direct values
-          const imported = random(50, 180)
-          const exported = random(20, imported - 15)
-          const inStock = imported - exported
-          const ordered = random(0, Math.max(0, inStock - 8))
-          const remaining = inStock - ordered
-
-          return {
-            id: v.id,
-            name: v.name,
-            level: 1,
-            imported,
-            exported,
-            inStock,
-            ordered,
-            remaining
-          } as StockItem
-        }
-      })
-
-      // Calculate product values from variants
-      const imported = variantsList.reduce((acc, curr) => acc + curr.imported, 0)
-      const exported = variantsList.reduce((acc, curr) => acc + curr.exported, 0)
-      const inStock = variantsList.reduce((acc, curr) => acc + curr.inStock, 0)
-      const ordered = variantsList.reduce((acc, curr) => acc + curr.ordered, 0)
-      const remaining = variantsList.reduce((acc, curr) => acc + curr.remaining, 0)
+        : []
 
       return {
-        id: p.id,
-        name: p.name,
+        id: `p-${prod.productId}`,
+        name: prod.productName,
         level: 0,
-        imported,
-        exported,
-        inStock,
-        ordered,
-        remaining,
-        children: variantsList
+        imported: prod.importedQty,
+        exported: prod.exportedQty,
+        inStock: prod.inventoryQty,
+        ordered: prod.orderedQty,
+        remaining: prod.remainingQty,
+        children: variants.length > 0 ? variants : undefined
       } as StockItem
     })
   }
 
-  const tableData = ref<StockItem[]>(generateMockData())
+  // Fetch data from API
+  const fetchData = async () => {
+    loadingData.value = true
+    try {
+      const res = await InventoryReportApi.getSummary({
+        pageNumber: paginationState.value.current,
+        pageSize: paginationState.value.size,
+        searchTerm: searchQuery.value || undefined
+      })
+      if (res) {
+        tableData.value = mapToStockItems(res.items || [])
+        paginationState.value.total = res.totalCount || 0
+      }
+    } catch (err) {
+      console.error(err)
+      ElMessage.error('Không thể tải báo cáo xuất nhập tồn!')
+    } finally {
+      loadingData.value = false
+    }
+  }
 
-  // Compute overall stats for the cards
+  onMounted(() => {
+    fetchData()
+  })
+
+  // Compute overall stats for the cards based on current page table data
   const totalStats = computed(() => {
     return tableData.value.reduce(
       (acc, p) => {
@@ -430,7 +425,6 @@
     { label: 'Thao tác', prop: 'operation', width: 150, align: 'center', useSlot: true }
   ]
 
-  // Search definition
   const searchItems = computed(() => [
     {
       key: 'name',
@@ -440,55 +434,40 @@
     }
   ])
 
-  // Helper: check if leaf node
-  // - If level is 2 (Color variant), it's a leaf node.
-  // - If level is 1 (Product Variant) AND has no children (no color variants), it's a leaf node.
   const isLeafNode = (row: StockItem): boolean => {
     return row.level === 2 || (row.level === 1 && (!row.children || row.children.length === 0))
   }
 
-  // Search handlers
   const handleSearch = (form: Record<string, any>) => {
     searchQuery.value = form.name || ''
+    paginationState.value.current = 1
+    fetchData()
   }
 
   const handleReset = () => {
     searchQuery.value = ''
+    paginationState.value.current = 1
+    fetchData()
   }
 
   const refreshData = () => {
-    tableData.value = generateMockData()
+    fetchData()
   }
 
-  // Filter tree recursively based on query
+  const handleSizeChange = (val: number) => {
+    paginationState.value.size = val
+    paginationState.value.current = 1
+    fetchData()
+  }
+
+  const handleCurrentChange = (val: number) => {
+    paginationState.value.current = val
+    fetchData()
+  }
+
+  // Filter tree recursively (just return tableData since filtered at backend)
   const filteredTableData = computed(() => {
-    if (!searchQuery.value) return tableData.value
-
-    const query = searchQuery.value.toLowerCase().trim()
-
-    const filterNode = (node: StockItem): StockItem | null => {
-      const matchesName = node.name.toLowerCase().includes(query)
-      let filteredChildren: StockItem[] = []
-
-      if (node.children) {
-        filteredChildren = node.children
-          .map((child) => filterNode(child))
-          .filter((child): child is StockItem => child !== null)
-      }
-
-      if (matchesName || filteredChildren.length > 0) {
-        return {
-          ...node,
-          children: filteredChildren.length > 0 ? filteredChildren : undefined
-        }
-      }
-
-      return null
-    }
-
     return tableData.value
-      .map((node) => filterNode(node))
-      .filter((node): node is StockItem => node !== null)
   })
 
   // Table row styling helpers
@@ -504,76 +483,65 @@
     return 'text-success font-semibold'
   }
 
-  // Export report button action
-  const handleExport = () => {
+  const handleExport = async () => {
     exporting.value = true
-    setTimeout(() => {
+    try {
+      const resBlob = await InventoryReportApi.export({
+        searchTerm: searchQuery.value || undefined
+      })
+      const url = window.URL.createObjectURL(new Blob([resBlob]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', 'Bao_cao_ton_kho.xlsx')
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+      ElMessage.success('Đã xuất báo cáo Xuất - Nhập - Tồn thành công!')
+    } catch (err) {
+      console.error(err)
+      ElMessage.error('Không thể xuất báo cáo!')
+    } finally {
       exporting.value = false
-      ElMessage.success('Đã xuất báo cáo Xuất - Nhập - Tồn thành công (file Excel/PDF giả lập)!')
-    }, 1200)
+    }
   }
 
-  // Show transactional history for leaf node variant/color
-  const handleViewHistory = (row: StockItem) => {
+  const handleViewHistory = async (row: StockItem) => {
+    if (row.variantId === undefined) return
     selectedRow.value = row
     selectedRowName.value = row.name
     activeTab.value = 'receipts'
+    mockReceipts.value = []
+    mockInvoices.value = []
 
-    // Mock receipts to match total row.imported
-    const suppliers = [
-      'Honda Việt Nam',
-      'Yamaha Motor Việt Nam',
-      'Tập đoàn Suzuki',
-      'Nhà Nhập Khẩu Quang Mạnh'
-    ]
-    const receiptCount = Math.min(3, Math.max(1, Math.ceil(row.imported / 40)))
-    const receipts: MockReceipt[] = []
-    let remainingImported = row.imported
+    try {
+      const details = await InventoryReportApi.getDetail(row.variantId, row.colorId)
+      if (details) {
+        mockReceipts.value = (details.imports || []).map((imp: any, idx: number) => ({
+          id: imp.id,
+          code: imp.code || `PN-${idx + 1}`,
+          supplier: imp.partnerName || 'Nhà cung cấp',
+          quantity: imp.qty || 0,
+          price: imp.price || 0,
+          date: imp.date ? new Date(imp.date).toLocaleDateString('vi-VN') : '-'
+        }))
 
-    for (let i = 0; i < receiptCount; i++) {
-      const isLast = i === receiptCount - 1
-      const qty = isLast ? remainingImported : Math.floor(row.imported / receiptCount)
-      remainingImported -= qty
-
-      if (qty > 0) {
-        receipts.push({
-          code: `PN202605${10 + i}`,
-          supplier: suppliers[i % suppliers.length],
-          quantity: qty,
-          price: row.level === 2 ? 32000000 : 45000000,
-          date: `2026-05-${10 + i * 3}`
-        })
+        mockInvoices.value = (details.exports || []).map((exp: any, idx: number) => ({
+          id: exp.id,
+          code: exp.code || `PX-${idx + 1}`,
+          customer: exp.partnerName || 'Khách hàng',
+          quantity: exp.qty || 0,
+          price: exp.price || 0,
+          date: exp.date ? new Date(exp.date).toLocaleDateString('vi-VN') : '-'
+        }))
       }
+      dialogVisible.value = true
+    } catch (err) {
+      console.error(err)
+      ElMessage.error('Không thể tải lịch sử giao dịch!')
     }
-    mockReceipts.value = receipts
-
-    // Mock invoices to match total row.exported
-    const customers = ['Nguyễn Văn Bình', 'Trần Thị Thúy', 'Lê Hữu Hoàng', 'Hoàng Minh Tuấn']
-    const invoiceCount = Math.min(3, Math.max(1, Math.ceil(row.exported / 30)))
-    const invoices: MockInvoice[] = []
-    let remainingExported = row.exported
-
-    for (let i = 0; i < invoiceCount; i++) {
-      const isLast = i === invoiceCount - 1
-      const qty = isLast ? remainingExported : Math.floor(row.exported / invoiceCount)
-      remainingExported -= qty
-
-      if (qty > 0) {
-        invoices.push({
-          code: `HD2605${20 + i}`,
-          customer: customers[i % customers.length],
-          quantity: qty,
-          price: row.level === 2 ? 38500000 : 52000000,
-          date: `2026-05-${12 + i * 4}`
-        })
-      }
-    }
-    mockInvoices.value = invoices
-
-    dialogVisible.value = true
   }
 
-  // Expand / Collapse actions
   const expandAll = () => {
     nextTick(() => {
       if (tableRef.value?.elTableRef) {
@@ -618,7 +586,6 @@
     background-color: var(--main-color);
   }
 
-  /* Custom tree table row styles for premium hierarchy feel */
   :deep(.el-table__row--level-0) {
     background-color: var(--default-box-color) !important;
   }

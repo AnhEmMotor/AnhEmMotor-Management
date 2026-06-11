@@ -13,30 +13,14 @@
             <input
               v-model="searchVal"
               type="text"
-              placeholder="Tìm bài viết, chuyên gia tư vấn..."
+              placeholder="Tìm kiếm theo tiêu đề bài viết...."
               class="w-full h-11 pl-12 pr-4 bg-slate-50 border-2 border-slate-100 rounded-xl text-sm font-bold focus:border-blue-500 focus:bg-white transition-all outline-none"
               @keyup.enter="searchArticle"
-            />
-          </div>
-          <div class="hidden lg:block">
-            <ElSegmented
-              v-model="yearVal"
-              :options="YEAR_OPTIONS"
-              @change="searchArticleByYear"
-              class="combat-segmented"
             />
           </div>
         </div>
 
         <div class="flex items-center gap-3 shrink-0">
-          <div
-            class="bg-blue-50 px-4 py-2 rounded-xl border border-blue-100 flex items-center gap-2"
-          >
-            <span class="text-[9px] font-black text-blue-400 uppercase tracking-tighter"
-              >Tổng lượt xem:</span
-            >
-            <span class="text-base font-black text-blue-600 leading-none">12.8K</span>
-          </div>
           <button
             @click="toAddArticle"
             class="h-11 px-8 bg-[#001529] text-white rounded-xl font-black text-[11px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95 flex items-center gap-2"
@@ -52,7 +36,8 @@
         <div
           v-for="item in articleList"
           :key="item.id"
-          class="article-card group bg-white border border-slate-200 rounded-[32px] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 relative"
+          @click="toEdit(item)"
+          class="article-card cursor-pointer group bg-white border border-slate-200 rounded-[32px] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 relative"
         >
           <div class="absolute top-4 left-4 z-10">
             <span
@@ -65,7 +50,7 @@
 
           <div class="aspect-video overflow-hidden relative">
             <img
-              :src="item.home_img"
+              :src="item.coverImageUrl || '/assets/image/placeholder.png'"
               class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
             <div
@@ -73,14 +58,14 @@
             >
               <div class="flex gap-2 w-full">
                 <button
-                  @click.stop="toDetail(item)"
-                  class="flex-1 h-9 bg-white/20 backdrop-blur-md text-white rounded-lg font-black text-[9px] uppercase tracking-widest hover:bg-white hover:text-slate-900 transition-all"
-                  >Xem trước</button
-                >
-                <button
                   @click.stop="toEdit(item)"
                   class="flex-1 h-9 bg-blue-600 text-white rounded-lg font-black text-[9px] uppercase tracking-widest hover:bg-blue-700 transition-all"
                   >Chỉnh sửa</button
+                >
+                <button
+                  @click.stop="toDelete(item)"
+                  class="flex-1 h-9 bg-red-600 text-white rounded-lg font-black text-[9px] uppercase tracking-widest hover:bg-red-700 transition-all"
+                  >Xoá</button
                 >
               </div>
             </div>
@@ -89,14 +74,8 @@
           <div class="p-6">
             <div class="flex justify-between items-start mb-3">
               <span class="text-[9px] font-black text-blue-500 uppercase tracking-widest">{{
-                item.type_name
+                item.categoryName || item.category?.name || 'Chưa phân loại'
               }}</span>
-              <div
-                class="flex items-center gap-1.5 text-slate-400 group-hover:text-blue-500 transition-colors"
-              >
-                <ArtSvgIcon icon="ri:eye-line" class="text-sm" />
-                <span class="text-[11px] font-black">{{ item.count }}</span>
-              </div>
             </div>
             <h2
               class="m-0 text-base font-black text-slate-800 leading-tight line-clamp-2 min-h-[3rem] group-hover:text-blue-600 transition-colors"
@@ -107,14 +86,8 @@
               <div class="flex items-center gap-2 text-slate-400">
                 <ArtSvgIcon icon="ri:calendar-line" class="text-xs" />
                 <span class="text-[10px] font-bold">{{
-                  useDateFormat(item.create_time, 'DD/MM/YYYY').value
+                  useDateFormat(item.publishedDate || item.createdAt, 'DD/MM/YYYY').value
                 }}</span>
-              </div>
-              <div class="flex -space-x-2">
-                <div
-                  class="size-6 rounded-full border-2 border-white bg-slate-200 flex-cc text-[8px] font-black"
-                  >Admin</div
-                >
               </div>
             </div>
           </div>
@@ -122,7 +95,7 @@
           <div class="h-1 bg-slate-100 absolute bottom-0 left-0 right-0 overflow-hidden">
             <div
               class="h-full bg-blue-500 transition-all duration-1000 ease-out"
-              :style="{ width: (item.count / 1000) * 100 + '%' }"
+              :style="{ width: ((item.viewCount || 0) / 1000) * 100 + '%' }"
             ></div>
           </div>
         </div>
@@ -149,32 +122,26 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, onMounted } from 'vue'
+  import { ref, computed, onMounted, onActivated } from 'vue'
   import { useDateFormat } from '@vueuse/core'
   import { router } from '@/router'
-  import { ArticleList as MockData } from '@/mock/temp/articleList'
+  import { NewsApi } from '@/api/news.api'
   import { useCommon } from '@/hooks/core/useCommon'
+  import { ElMessage, ElMessageBox } from 'element-plus'
 
   defineOptions({ name: 'ArticleListAnalytics' })
 
-  const YEAR_OPTIONS = ['Tất cả', '2025', '2024', '2023']
   const PAGE_SIZE = 12
 
-  const yearVal = ref('Tất cả')
   const searchVal = ref('')
   const currentPage = ref(1)
   const pageSize = ref(PAGE_SIZE)
-  const total = ref(MockData.length)
+  const total = ref(0)
+  const loading = ref(false)
 
-  const articleList = ref(
-    MockData.map((item, idx) => ({
-      ...item,
-      status: idx === 0 ? 'Scheduled' : idx === 1 ? 'Draft' : 'Published',
-      statusLabel: idx === 0 ? 'Hẹn giờ' : idx === 1 ? 'Bản nháp' : 'Đã xuất bản'
-    }))
-  )
+  const articleList = ref<any[]>([])
 
-  const showEmpty = computed(() => articleList.value.length === 0)
+  const showEmpty = computed(() => articleList.value.length === 0 && !loading.value)
 
   const getStatusClasses = (status: string) => {
     if (status === 'Draft') return 'bg-slate-500 text-white'
@@ -182,19 +149,72 @@
     return 'bg-emerald-500 text-white'
   }
 
-  const searchArticle = () => {}
-  const searchArticleByYear = () => {}
+  const fetchList = async () => {
+    try {
+      loading.value = true
+      let filters = ''
+      if (searchVal.value) {
+        filters = `Title@=*${searchVal.value}`
+      }
+      const res = await NewsApi.getList({
+        current: currentPage.value,
+        size: pageSize.value,
+        Filters: filters
+      })
+      articleList.value = res?.items || res || []
+      // Simulate status since backend just uses IsPublished boolean
+      articleList.value = articleList.value.map((item) => ({
+        ...item,
+        status: item.isPublished ? 'Published' : 'Draft',
+        statusLabel: item.isPublished ? 'Đã xuất bản' : 'Bản nháp'
+      }))
+      total.value = res?.totalCount || articleList.value.length
+    } catch {
+      ElMessage.error('Không thể lấy danh sách bài viết')
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const searchArticle = () => {
+    currentPage.value = 1
+    fetchList()
+  }
   const handleCurrentChange = (val: number) => {
     currentPage.value = val
     useCommon().scrollToTop()
+    fetchList()
   }
 
-  const toDetail = (item: any) => router.push({ name: 'ArticleDetail', params: { id: item.id } })
-  const toEdit = (item: any) => router.push({ name: 'ArticlePublish', query: { id: item.id } })
+  const toEdit = (item: any) =>
+    router.push({ name: 'ArticlePublish', query: { id: item.id, slug: item.slug } })
   const toAddArticle = () => router.push({ name: 'ArticlePublish' })
+
+  const toDelete = (item: any) => {
+    ElMessageBox.confirm('Bạn có chắc chắn muốn xóa bài viết này không?', 'Xác nhận xóa', {
+      confirmButtonText: 'Xóa',
+      cancelButtonText: 'Hủy',
+      type: 'warning'
+    })
+      .then(async () => {
+        try {
+          await NewsApi.delete(item.id)
+          ElMessage.success('Xóa bài viết thành công')
+          fetchList()
+        } catch {
+          ElMessage.error('Không thể xóa bài viết')
+        }
+      })
+      .catch(() => {})
+  }
 
   onMounted(() => {
     useCommon().scrollToTop()
+    fetchList()
+  })
+
+  onActivated(() => {
+    fetchList()
   })
 </script>
 

@@ -20,6 +20,12 @@ export const staticRoutes: AppRouteRecordRaw[] = [
     meta: { title: 'menus.forgetPassword.title', isHideTab: true }
   },
   {
+    path: '/workspace',
+    name: 'WorkspacePortal',
+    component: () => import('@views/auth/WorkspacePortal.vue'),
+    meta: { title: 'Workspace', isHideTab: true }
+  },
+  {
     path: '/403',
     name: 'Exception403',
     component: () => import('@views/exception/403/index.vue'),

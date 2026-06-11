@@ -67,11 +67,30 @@ export const QuotationApi = {
 
   getApprovedPrices(variantId: number, colorId?: number) {
     return request.get<PurchaseRequestQuotedPriceResponse[]>({
-      url: '/api/v1/Quotations/approved-prices',
+      url: `/api/v1/Product/variant/${variantId}/supplier-prices`,
       params: {
-        variantId,
         colorId
       }
+    })
+  },
+
+  saveApprovedPrice(data: {
+    productVariantId: number
+    productVariantColorId?: number
+    supplierId: number
+    quotePrice: number
+    note?: string
+  }) {
+    return request.post<boolean>({
+      url: '/api/v1/Quotations/approved-prices',
+      data
+    })
+  },
+
+  deleteApprovedPrice(params: { variantId: number; colorId?: number; supplierId: number }) {
+    return request.del<boolean>({
+      url: '/api/v1/Quotations/approved-prices',
+      params
     })
   }
 }

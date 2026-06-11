@@ -5,13 +5,12 @@ import { widgetsRoutes } from './widgets'
 import { examplesRoutes } from './examples'
 import { systemRoutes } from './system'
 import { authorizationRoutes } from './authorization'
-import { articleRoutes } from './article'
+import { contentRoutes } from './content'
 import { resultRoutes } from './result'
 import { exceptionRoutes } from './exception'
 import { safeguardRoutes } from './safeguard'
 import { productRoutes } from './product'
 import { customerRoutes } from './customer'
-import { marketingRoutes } from './marketing'
 import { hrRoutes } from './hr'
 import { helpRoutes } from './help'
 import { inventoryRoutes } from './inventory'
@@ -25,8 +24,7 @@ const coreRoutes: AppRouteRecord[] = [
   authorizationRoutes,
   hrRoutes,
   customerRoutes,
-  articleRoutes,
-  marketingRoutes
+  contentRoutes
 ]
 
 const developmentRoutes: AppRouteRecord[] = [

@@ -29,9 +29,10 @@ export interface PurchaseRequestItemResponse {
   productVariantColorId?: number
   productVariantColorName?: string
   quantity: number
-  importedQuantity: number
-  pendingQuantity: number
-  unimportedQuantity: number
+
+  importedQuantity?: number | null
+  pendingQuantity?: number | null
+  unimportedQuantity?: number | null
 }
 
 export interface PurchaseRequestDetailResponse {
@@ -42,6 +43,8 @@ export interface PurchaseRequestDetailResponse {
   createdByName?: string
   approvedBy?: string
   approvedByName?: string
+  sentByName?: string
+  rejectedByName?: string
   createdAt?: string
   items: PurchaseRequestItemResponse[]
 }
@@ -53,6 +56,7 @@ export interface PurchaseRequestListResponse {
   createdByName?: string
   createdAt?: string
   totalItems: number
+  paidAmount: number
 }
 
 export interface PurchaseRequestList {
@@ -67,6 +71,7 @@ export interface PurchaseRequestQuotedPriceResponse {
   supplierName: string
   quotePrice: number
   note?: string
+  quotationProductRowId: number
 }
 
 export interface ApprovedPurchaseRequestItemResponse {
@@ -75,6 +80,8 @@ export interface ApprovedPurchaseRequestItemResponse {
   productName?: string
   productVariantColorId?: number
   productVariantColorName?: string
+  quantity: number
+
   unimportedQuantity: number
   needVin: boolean
 }

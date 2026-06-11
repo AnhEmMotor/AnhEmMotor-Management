@@ -10,31 +10,17 @@
           </div>
           <div>
             <h1 class="m-0 text-xl font-black tracking-tight text-slate-900 leading-none"
-              >Quản lý Banner & Chiến dịch</h1
+              >Quản lý Banner</h1
             >
-            <p
-              class="m-0 text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2 flex items-center gap-2"
-            >
-              <span class="size-1.5 rounded-full bg-blue-500 animate-pulse"></span>
-              Biến Banner thành "Đường dẫn chốt sale" hiệu quả
-            </p>
           </div>
         </div>
 
         <div class="flex items-center gap-3">
-          <div
-            class="bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-100 flex items-center gap-2"
-          >
-            <span class="text-[9px] font-black text-emerald-400 uppercase tracking-tighter"
-              >Chiến dịch đang chạy:</span
-            >
-            <span class="text-base font-black text-emerald-600 leading-none">05</span>
-          </div>
           <button
             @click="handleAddBanner"
             class="h-11 px-8 bg-[#001529] text-white rounded-xl font-black text-[11px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95 flex items-center gap-2"
           >
-            <ArtSvgIcon icon="ri:add-fill" /> Tạo banner chiến dịch
+            <ArtSvgIcon icon="ri:add-fill" /> Tạo banner
           </button>
         </div>
       </div>
@@ -46,25 +32,18 @@
           v-for="banner in banners"
           :key="banner.id"
           class="banner-card bg-white border border-slate-200 rounded-[32px] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 group relative"
-          :class="{ 'opacity-60 grayscale-[0.5]': banner.status === 'Paused' }"
         >
           <div class="absolute top-4 left-4 z-10 flex flex-col gap-2">
             <span
-              class="px-3 py-1 bg-black/80 backdrop-blur-md text-white rounded-lg text-[9px] font-black uppercase tracking-widest shadow-lg"
+              class="px-3 py-1 bg-blue-600/90 text-white text-[10px] font-black uppercase rounded-lg shadow-sm backdrop-blur-md"
             >
-              Ưu tiên: #{{ banner.priority }}
-            </span>
-            <span
-              v-if="banner.status === 'Paused'"
-              class="px-3 py-1 bg-amber-500 text-white rounded-lg text-[9px] font-black uppercase tracking-widest shadow-lg"
-            >
-              Đang tạm dừng
+              {{ getPlacementLabel(banner.placement) }}
             </span>
           </div>
 
           <div class="aspect-[21/9] bg-slate-900 relative overflow-hidden group/img">
             <img
-              :src="viewMode === 'Desktop' ? banner.desktopImg : banner.mobileImg"
+              :src="viewMode === 'Desktop' ? banner.desktopImageUrl : banner.mobileImageUrl"
               class="w-full h-full object-cover opacity-80 group-hover/img:scale-105 transition-transform duration-700"
             />
 
@@ -94,67 +73,24 @@
             </div>
 
             <div
-              class="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/90 to-transparent"
+              class="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/90 via-black/50 to-transparent flex justify-between items-center gap-4"
             >
-              <h2 class="m-0 text-lg font-black text-white leading-tight mb-2">{{
+              <h2 class="m-0 text-lg font-black text-white leading-tight truncate">{{
                 banner.title
               }}</h2>
-              <div class="flex items-center gap-4">
-                <div class="flex items-center gap-1.5 text-white/60 text-[10px] font-bold">
-                  <ArtSvgIcon icon="ri:calendar-event-line" />
-                  {{ banner.startDate }} → {{ banner.endDate }}
-                </div>
-                <div
-                  class="flex items-center gap-1.5 text-blue-400 text-[10px] font-black uppercase tracking-widest"
+              <div class="flex gap-2 shrink-0">
+                <button
+                  @click.stop="handleEdit(banner)"
+                  class="h-10 px-6 bg-slate-900/90 backdrop-blur-md text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg"
+                  >Sửa banner</button
                 >
-                  <ArtSvgIcon icon="ri:links-line" />
-                  {{ banner.ctaLabel || 'Chưa gắn link' }}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="px-8 py-5 flex justify-between items-center bg-slate-50/50">
-            <div class="flex gap-4">
-              <div class="flex flex-col">
-                <span class="text-[8px] font-black text-slate-300 uppercase tracking-widest"
-                  >Lượt click</span
+                <button
+                  @click.stop="handleDelete(banner)"
+                  class="size-10 rounded-xl flex-cc bg-red-600/90 backdrop-blur-md text-white hover:bg-red-700 transition-all shadow-lg"
                 >
-                <span class="text-sm font-black text-slate-700">{{ banner.clicks }}</span>
+                  <ArtSvgIcon icon="ri:delete-bin-line" />
+                </button>
               </div>
-              <div class="flex flex-col">
-                <span class="text-[8px] font-black text-slate-300 uppercase tracking-widest"
-                  >CTR</span
-                >
-                <span class="text-sm font-black text-blue-600">{{ banner.ctr }}%</span>
-              </div>
-            </div>
-            <div class="flex gap-2">
-              <button
-                @click="toggleStatus(banner)"
-                class="size-10 rounded-xl flex-cc border-2 transition-all"
-                :class="
-                  banner.status === 'Active'
-                    ? 'bg-amber-50 border-amber-100 text-amber-600 hover:bg-amber-600 hover:text-white'
-                    : 'bg-emerald-50 border-emerald-100 text-emerald-600 hover:bg-emerald-600 hover:text-white'
-                "
-              >
-                <ArtSvgIcon
-                  :icon="banner.status === 'Active' ? 'ri:pause-fill' : 'ri:play-fill'"
-                  class="text-xl"
-                />
-              </button>
-              <button
-                @click="handleEdit(banner)"
-                class="h-10 px-6 bg-white border-2 border-slate-200 rounded-xl font-black text-[10px] uppercase tracking-widest hover:border-slate-800 transition-all"
-                >Sửa chiến dịch</button
-              >
-              <button
-                @click="handleDelete(banner)"
-                class="size-10 rounded-xl flex-cc bg-red-50 border-2 border-red-100 text-red-500 hover:bg-red-500 hover:text-white transition-all"
-              >
-                <ArtSvgIcon icon="ri:delete-bin-line" />
-              </button>
             </div>
           </div>
         </div>
@@ -177,9 +113,6 @@
             <h3 class="m-0 font-black uppercase text-xs tracking-[0.2em] text-slate-800">{{
               dialogTitle
             }}</h3>
-            <p class="m-0 text-[9px] font-bold text-slate-400 uppercase mt-1"
-              >Cấu hình Banner theo tiêu chuẩn Responsive & SEO</p
-            >
           </div>
         </div>
       </template>
@@ -189,7 +122,7 @@
           <div>
             <label
               class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
-              >Tiêu đề chiến dịch</label
+              >Tiêu đề banner</label
             >
             <ElInput
               v-model="bannerForm.title"
@@ -198,14 +131,40 @@
             />
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label
-                class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
-                >Trọng số (Priority)</label
-              >
-              <ElInputNumber v-model="bannerForm.priority" :min="1" class="w-full combat-number" />
-            </div>
+          <div>
+            <label
+              class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
+              >Vị trí hiển thị (Placement)</label
+            >
+            <ElSelect
+              v-model="bannerForm.placement"
+              placeholder="Chọn vị trí"
+              class="w-full combat-input"
+            >
+              <ElOption
+                v-for="p in placementOptions"
+                :key="p.value"
+                :label="p.label"
+                :value="p.value"
+              />
+            </ElSelect>
+          </div>
+
+          <div>
+            <label
+              class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
+              >Mô tả banner</label
+            >
+            <ElInput
+              v-model="bannerForm.description"
+              type="textarea"
+              :rows="2"
+              placeholder="VD: Nhập mã KHUYENMAI để được giảm 5 triệu..."
+              class="combat-input"
+            />
+          </div>
+
+          <div class="grid grid-cols-1 gap-4">
             <div>
               <label
                 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
@@ -228,21 +187,6 @@
               <template #prefix><ArtSvgIcon icon="ri:links-line" /></template>
             </ElInput>
           </div>
-
-          <div>
-            <label
-              class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
-              >Thời gian áp dụng (Bắt buộc)</label
-            >
-            <ElDatePicker
-              v-model="bannerForm.dateRange"
-              type="daterange"
-              range-separator="→"
-              start-placeholder="Ngày bắt đầu"
-              end-placeholder="Ngày kết thúc"
-              class="w-full combat-range"
-            />
-          </div>
         </div>
 
         <div class="space-y-6">
@@ -250,19 +194,30 @@
             <label class="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-3 block"
               >Ảnh Desktop (Tỷ lệ 21:9)</label
             >
-            <div
-              class="aspect-[21/9] bg-white border-2 border-dashed border-slate-200 rounded-xl flex-cc flex-col gap-2 cursor-pointer hover:border-blue-400 transition-all overflow-hidden relative"
+            <ElUpload
+              class="w-full block combat-banner-upload"
+              action="#"
+              :show-file-list="false"
+              :auto-upload="true"
+              :http-request="handleUploadDesktop"
+              accept="image/*"
             >
-              <img
-                v-if="bannerForm.desktopImg"
-                :src="bannerForm.desktopImg"
-                class="w-full h-full object-cover"
-              />
-              <template v-else>
-                <ArtSvgIcon icon="ri:computer-line" class="text-2xl text-slate-300" />
-                <span class="text-[9px] font-black uppercase text-slate-400">Chọn ảnh Desktop</span>
-              </template>
-            </div>
+              <div
+                class="aspect-[21/9] w-full bg-white border-2 border-dashed border-slate-200 rounded-xl flex-cc flex-col gap-2 cursor-pointer hover:border-blue-400 transition-all overflow-hidden relative"
+              >
+                <img
+                  v-if="bannerForm.desktopImageUrl"
+                  :src="bannerForm.desktopImageUrl"
+                  class="w-full h-full object-cover"
+                />
+                <template v-else>
+                  <ArtSvgIcon icon="ri:computer-line" class="text-2xl text-slate-300" />
+                  <span class="text-[9px] font-black uppercase text-slate-400"
+                    >Chọn ảnh Desktop</span
+                  >
+                </template>
+              </div>
+            </ElUpload>
           </div>
 
           <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
@@ -270,34 +225,37 @@
               class="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-3 block"
               >Ảnh Mobile (Tỷ lệ 4:5 hoặc 1:1)</label
             >
-            <div
-              class="aspect-[4/5] h-40 bg-white border-2 border-dashed border-slate-200 rounded-xl flex-cc flex-col gap-2 cursor-pointer hover:border-emerald-400 transition-all mx-auto overflow-hidden relative"
+            <ElUpload
+              class="w-full block combat-banner-upload"
+              action="#"
+              :show-file-list="false"
+              :auto-upload="true"
+              :http-request="handleUploadMobile"
+              accept="image/*"
             >
-              <img
-                v-if="bannerForm.mobileImg"
-                :src="bannerForm.mobileImg"
-                class="w-full h-full object-cover"
-              />
-              <template v-else>
-                <ArtSvgIcon icon="ri:smartphone-line" class="text-2xl text-slate-300" />
-                <span class="text-[9px] font-black uppercase text-slate-400">Chọn ảnh Mobile</span>
-              </template>
-            </div>
+              <div
+                class="aspect-[4/5] h-40 bg-white border-2 border-dashed border-slate-200 rounded-xl flex-cc flex-col gap-2 cursor-pointer hover:border-emerald-400 transition-all mx-auto overflow-hidden relative"
+              >
+                <img
+                  v-if="bannerForm.mobileImageUrl"
+                  :src="bannerForm.mobileImageUrl"
+                  class="w-full h-full object-cover"
+                />
+                <template v-else>
+                  <ArtSvgIcon icon="ri:smartphone-line" class="text-2xl text-slate-300" />
+                  <span class="text-[9px] font-black uppercase text-slate-400"
+                    >Chọn ảnh Mobile</span
+                  >
+                </template>
+              </div>
+            </ElUpload>
           </div>
         </div>
       </div>
 
       <template #footer>
         <div class="flex justify-between items-center">
-          <div class="flex items-center gap-2">
-            <ElSwitch v-model="bannerForm.status" active-value="Active" inactive-value="Paused" />
-            <span
-              class="text-[10px] font-black uppercase tracking-widest"
-              :class="bannerForm.status === 'Active' ? 'text-emerald-500' : 'text-amber-500'"
-            >
-              {{ bannerForm.status === 'Active' ? 'Hiển thị ngay' : 'Đang tạm dừng' }}
-            </span>
-          </div>
+          <div class="flex items-center gap-2"></div>
           <div class="flex gap-3">
             <button
               @click="dialogVisible = false"
@@ -308,7 +266,7 @@
               @click="saveBanner"
               class="h-11 px-8 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95"
             >
-              {{ isEditing ? 'Lưu thay đổi' : 'Tạo chiến dịch' }}
+              {{ isEditing ? 'Lưu thay đổi' : 'Tạo banner' }}
             </button>
           </div>
         </div>
@@ -318,8 +276,10 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue'
-  import { ElMessage } from 'element-plus'
+  import { ref, onMounted } from 'vue'
+  import { ElMessage, ElMessageBox } from 'element-plus'
+  import { BannerApi } from '@/api/banner.api'
+  import { FileApi } from '@/api/file.api'
 
   defineOptions({ name: 'MarketingBannerManagement' })
 
@@ -328,91 +288,154 @@
   const dialogTitle = ref('Tạo banner mới')
   const isEditing = ref(false)
 
-  const banners = ref([
-    {
-      id: 1,
-      title: 'Chào hè rực rỡ - Ưu đãi SH 160i lên đến 5 triệu đồng',
-      priority: 1,
-      clicks: 1240,
-      ctr: 4.8,
-      status: 'Active',
-      startDate: '01/05/2024',
-      endDate: '31/05/2024',
-      ctaLabel: 'Xem chi tiết ưu đãi',
-      desktopImg:
-        'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=800',
-      mobileImg:
-        'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=400'
-    },
-    {
-      id: 2,
-      title: 'Winner X mới - Trả góp 0% lãi suất tại Anh Em Motor',
-      priority: 2,
-      clicks: 856,
-      ctr: 3.2,
-      status: 'Active',
-      startDate: '15/04/2024',
-      endDate: '15/05/2024',
-      ctaLabel: 'Đăng ký lái thử',
-      desktopImg:
-        'https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?auto=format&fit=crop&q=80&w=800',
-      mobileImg:
-        'https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?auto=format&fit=crop&q=80&w=400'
-    }
-  ])
+  const banners = ref<any[]>([])
+  const placementOptions = ref<any[]>([])
+
+  const getPlacementLabel = (value: string) => {
+    const opt = placementOptions.value.find((o) => o.value === value)
+    return opt ? opt.label : value
+  }
 
   const bannerForm = ref({
+    id: 0,
     title: '',
-    priority: 1,
+    description: '',
     ctaLabel: 'Xem ngay',
     ctaLink: '',
-    dateRange: [],
-    desktopImg: '',
-    mobileImg: '',
-    status: 'Active'
+    desktopImageUrl: '',
+    mobileImageUrl: '',
+    placement: 'Home'
   })
+
+  const fetchBanners = async () => {
+    try {
+      const res = await BannerApi.getList({ size: 100 })
+      banners.value = res.items || []
+    } catch {
+      ElMessage.error('Lỗi khi tải danh sách banner')
+    }
+  }
+
+  const fetchPlacements = async () => {
+    try {
+      const res: any = await BannerApi.getPlacements()
+      placementOptions.value = res.data || res || []
+    } catch {
+      ElMessage.error('Lỗi khi tải danh sách vị trí')
+    }
+  }
+
+  onMounted(() => {
+    fetchPlacements()
+    fetchBanners()
+  })
+
+  const handleUploadDesktop = async (options: any) => {
+    try {
+      const res = await FileApi.uploadBannerImage(options.file)
+      bannerForm.value.desktopImageUrl = res.publicUrl
+      ElMessage.success('Tải ảnh Desktop lên thành công')
+    } catch (err: any) {
+      ElMessage.error(err.message || 'Tải ảnh thất bại')
+    }
+  }
+
+  const handleUploadMobile = async (options: any) => {
+    try {
+      const res = await FileApi.uploadBannerImage(options.file)
+      bannerForm.value.mobileImageUrl = res.publicUrl
+      ElMessage.success('Tải ảnh Mobile lên thành công')
+    } catch (err: any) {
+      ElMessage.error(err.message || 'Tải ảnh thất bại')
+    }
+  }
 
   const handleAddBanner = () => {
     isEditing.value = false
-    dialogTitle.value = 'Tạo banner chiến dịch mới'
+    dialogTitle.value = 'Tạo banner mới'
     bannerForm.value = {
+      id: 0,
       title: '',
-      priority: 1,
+      description: '',
       ctaLabel: 'Xem ngay',
       ctaLink: '',
-      dateRange: [],
-      desktopImg: '',
-      mobileImg: '',
-      status: 'Active'
+      desktopImageUrl: '',
+      mobileImageUrl: '',
+      placement: 'Home'
     }
     dialogVisible.value = true
   }
 
   const handleEdit = (banner: any) => {
     isEditing.value = true
-    dialogTitle.value = 'Chỉnh sửa chiến dịch'
-    bannerForm.value = { ...banner, dateRange: [banner.startDate, banner.endDate] }
+    dialogTitle.value = 'Chỉnh sửa banner'
+    bannerForm.value = {
+      ...banner,
+      placement: banner.placement || 'Home'
+    }
     dialogVisible.value = true
   }
 
-  const toggleStatus = (banner: any) => {
-    banner.status = banner.status === 'Active' ? 'Paused' : 'Active'
-    ElMessage.success(`Đã ${banner.status === 'Active' ? 'kích hoạt' : 'tạm dừng'} chiến dịch`)
-  }
-
-  const saveBanner = () => {
+  const saveBanner = async () => {
     if (!bannerForm.value.title) {
-      ElMessage.warning('Vui lòng nhập tiêu đề chiến dịch')
+      ElMessage.warning('Vui lòng nhập tiêu đề banner')
       return
     }
-    ElMessage.success('Đã lưu cấu hình chiến dịch banner thành công')
-    dialogVisible.value = false
+    if (!bannerForm.value.placement) {
+      ElMessage.warning('Vui lòng chọn vị trí hiển thị')
+      return
+    }
+    if (!bannerForm.value.description) {
+      ElMessage.warning('Vui lòng nhập mô tả banner')
+      return
+    }
+    if (!bannerForm.value.ctaLabel) {
+      ElMessage.warning('Vui lòng nhập nhãn nút bấm (CTA Label)')
+      return
+    }
+    if (!bannerForm.value.ctaLink) {
+      ElMessage.warning('Vui lòng nhập đường dẫn đích (CTA Link)')
+      return
+    }
+    if (!bannerForm.value.desktopImageUrl && !bannerForm.value.mobileImageUrl) {
+      ElMessage.warning('Vui lòng tải lên ít nhất 1 ảnh (Desktop hoặc Mobile)')
+      return
+    }
+    try {
+      const payload = {
+        ...bannerForm.value
+      }
+
+      if (isEditing.value && bannerForm.value.id) {
+        await BannerApi.update(bannerForm.value.id, payload)
+        ElMessage.success('Cập nhật banner thành công')
+      } else {
+        await BannerApi.create(payload)
+        ElMessage.success('Tạo banner thành công')
+      }
+      dialogVisible.value = false
+      fetchBanners()
+    } catch {
+      ElMessage.error('Có lỗi xảy ra khi lưu banner')
+    }
   }
 
-  const handleDelete = (_banner: any) => {
-    ElMessage.warning(
-      'Chức năng xóa đã được bảo mật. Vui lòng tạm dừng chiến dịch nếu không muốn hiển thị.'
-    )
+  const handleDelete = (banner: any) => {
+    ElMessageBox.confirm('Bạn có chắc chắn muốn xóa banner này?', 'Cảnh báo', {
+      confirmButtonText: 'Xóa',
+      cancelButtonText: 'Hủy',
+      type: 'warning'
+    })
+      .then(async () => {
+        try {
+          await BannerApi.delete(banner.id)
+          ElMessage.success('Xóa banner thành công')
+          fetchBanners()
+        } catch {
+          ElMessage.error('Lỗi khi xóa banner')
+        }
+      })
+      .catch(() => {})
   }
 </script>
 
@@ -441,6 +464,13 @@
       border: 1px solid #e2e8f0;
       border-radius: 12px;
       box-shadow: none;
+    }
+
+    .combat-banner-upload {
+      :deep(.el-upload) {
+        display: block;
+        width: 100%;
+      }
     }
   }
 

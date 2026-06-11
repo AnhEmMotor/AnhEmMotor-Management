@@ -12,17 +12,11 @@
   import '@/assets/styles/core/md.scss'
   import '@/assets/styles/custom/one-dark-pro.scss'
   import { useCommon } from '@/hooks/core/useCommon'
-  import axios from 'axios'
+  import { useRoute } from 'vue-router'
+  import { ref, shallowRef, computed, onMounted } from 'vue'
+  import { NewsApi } from '@/api/news.api'
 
   defineOptions({ name: 'ArticleDetail' })
-
-  interface ArticleResponse {
-    code: number
-    data: {
-      title: string
-      html_content: string
-    }
-  }
 
   const route = useRoute()
   const articleId = computed(() => Number(route.params.id))
@@ -32,23 +26,22 @@
   const error = ref<string | null>(null)
 
   const getArticleDetail = async () => {
-    if (!articleId.value) return
+    const id = articleId.value
+    if (!id) return
 
     loading.value = true
     error.value = null
 
     try {
-      const { data } = await axios.get<ArticleResponse>(
-        'https://www.qiniu.lingchen.kim/blog_detail.json'
-      )
+      const res = await NewsApi.getById(id)
 
-      if (data.code === 200) {
-        articleTitle.value = data.data.title
-        articleHtml.value = data.data.html_content
+      if (res) {
+        articleTitle.value = res.title
+        articleHtml.value = res.content || ''
       }
     } catch (err) {
-      error.value = 'Bài viếtLoadingThatBai'
-      console.error('LấyBài viếtChiTietThatBai:', err)
+      error.value = 'Tải bài viết thất bại'
+      console.error('Lỗi khi tải chi tiết bài viết:', err)
     } finally {
       loading.value = false
     }

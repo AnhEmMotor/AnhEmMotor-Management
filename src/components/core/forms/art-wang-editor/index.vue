@@ -51,7 +51,7 @@
   const props = withDefaults(defineProps<Props>(), {
     height: '500px',
     mode: 'default',
-    placeholder: 'Bắt đầu viết nội dung tư vấn tại đây...',
+    placeholder: 'Bắt đầu viết nội dung bài viết tại đây...',
     excludeKeys: () => ['fontFamily'],
     isCustomUpload: false
   })
@@ -71,7 +71,7 @@
   const uploadServer = computed(
     () =>
       props.uploadConfig?.server ||
-      `${VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT}/api/common/upload/wangeditor`
+      `${VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT}/api/v1/news/images/content`
   )
 
   const mergedUploadConfig = computed(() => ({
@@ -159,6 +159,16 @@
     editor.on('fullScreen', () => {
       console.log('Trình biên tậpvàovàoToàn màn hìnhmôkiểu')
     })
+
+    const editable = editor.getEditableContainer()
+    if (editable) {
+      editable.setAttribute('spellcheck', 'false')
+      editable.setAttribute('data-gramm', 'false')
+      editable.setAttribute('data-gramm_editor', 'false')
+      editable.setAttribute('data-enable-grammarly', 'false')
+      editable.setAttribute('translate', 'no')
+      editable.classList.add('notranslate')
+    }
 
     applyCustomIcons()
   }
