@@ -160,8 +160,6 @@
       console.log('Trình biên tậpvàovàoToàn màn hìnhmôkiểu')
     })
 
-    // Disable extensions that modify DOM (Grammarly, Translate, SpellCheck)
-    // to prevent "Cannot resolve a Slate node from DOM node" error
     const editable = editor.getEditableContainer()
     if (editable) {
       editable.setAttribute('spellcheck', 'false')

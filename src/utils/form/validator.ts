@@ -157,11 +157,6 @@ export function validateURL(value: string): boolean {
   }
 }
 
-/**
- * nghiệmtínhthântínhsốmã（trongquốcđạilục）
- * @param value thântínhsốmãChuỗi
- * @returns Quay lạinghiệmtínhKetQua，truebảngthịcáchkiểuđúngChính
- */
 export function validateChineseIDCard(value: string): boolean {
   if (!value || typeof value !== 'string') {
     return false
@@ -188,11 +183,6 @@ export function validateChineseIDCard(value: string): boolean {
   return trimmedValue[17].toUpperCase() === checkCode
 }
 
-/**
- * nghiệmtínhbạcdòngthẻsố
- * @param value bạcdòngthẻsốChuỗi
- * @returns Quay lạinghiệmtínhKetQua，truebảngthịcáchkiểuđúngChính
- */
 export function validateBankCard(value: string): boolean {
   if (!value || typeof value !== 'string') {
     return false

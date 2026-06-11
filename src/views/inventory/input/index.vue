@@ -133,7 +133,6 @@
     >
       <ElForm :model="formData" label-width="150px" class="mt-4" ref="formRef">
         <div class="grid grid-cols-2 gap-4">
-          <!-- Purchase Request Selector -->
           <ElFormItem label="Yêu cầu mua hàng" required class="col-span-2">
             <div class="flex gap-2 w-full">
               <div
@@ -192,7 +191,6 @@
               </template>
             </ElTableColumn>
 
-            <!-- Supplier column -->
             <ElTableColumn label="Nhà cung cấp" width="220" required>
               <template #default="{ row }">
                 <ElSelect
@@ -217,7 +215,6 @@
               </template>
             </ElTableColumn>
 
-            <!-- Unit Price column -->
             <ElTableColumn label="Đơn giá nhập" width="160" required>
               <template #default="{ row }">
                 <ElInputNumber
@@ -496,7 +493,6 @@
       </template>
     </ElDialog>
 
-    <!-- Quotation Selector Dialog -->
     <ElDialog
       v-model="quoteDialogVisible"
       title="Chọn báo giá"
@@ -540,7 +536,6 @@
       </div>
     </ElDialog>
 
-    <!-- Purchase Request Selector Dialog -->
     <ElDialog
       v-model="prSelectorVisible"
       title="Chọn Yêu cầu mua hàng (PR)"
@@ -917,7 +912,6 @@
     products: []
   })
 
-  // --- Quote Selector Dialog ---
   const quoteDialogVisible = ref(false)
   const activeQuoteRow = ref<ReceiptProductRow | null>(null)
   const quotePage = ref(1)
@@ -945,7 +939,6 @@
     }
   }
 
-  // --- Purchase Request Selector Dialog ---
   const prSelectorVisible = ref(false)
   const prSelectorLoading = ref(false)
   const prSelectorItems = ref<any[]>([])

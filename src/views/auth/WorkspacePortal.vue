@@ -1,6 +1,5 @@
 <template>
   <div class="portal-layout relative overflow-y-auto overflow-x-hidden">
-    <!-- App Header for user operations -->
     <div
       id="app-header"
       class="w-full sticky top-0 z-50 shadow-sm"
@@ -9,7 +8,6 @@
       <ArtHeaderBar :isPortal="true" />
     </div>
 
-    <!-- Realistic Speed/Car Background -->
     <div class="portal-bg-overlay"></div>
     <div class="portal-header relative z-10"> </div>
 
@@ -28,7 +26,6 @@
           shadow="never"
           @click="handleWorkspaceClick(workspace)"
         >
-          <!-- Absolute Dot Indicator for critical alerts (e.g. Card 1) -->
           <div
             v-if="workspace.hasAccess && workspace.badge && workspace.badge.isDot"
             class="absolute top-0 right-0 -mt-2 -mr-2 flex h-4 w-4 z-20"
@@ -61,7 +58,6 @@
               </el-tag>
             </div>
 
-            <!-- Pill Badge for counting metrics (e.g. Card 2) -->
             <div
               v-if="workspace.hasAccess && workspace.badge && !workspace.badge.isDot"
               class="realtime-badge"
@@ -90,7 +86,6 @@
       </div>
     </div>
 
-    <!-- Global Components (Settings, Search, etc.) -->
     <div id="app-global">
       <ArtGlobalComponent />
     </div>
@@ -112,13 +107,12 @@
     }
   }
 
-  // Mock data based on menu.md and additional.md
   const workspaces = ref([
     {
       title: 'Ban Điều Hành & Chủ Showroom',
       subtitle: 'Executive Overview',
       icon: DataAnalysis,
-      color: '#e11d48', // Rose/Red for Executive
+      color: '#e11d48',
       shadowColor: 'rgba(225, 29, 72, 0.25)',
       hasAccess: true,
       badge: { isDot: true, type: 'danger' }
@@ -127,7 +121,7 @@
       title: 'Marketing & SEO',
       subtitle: 'Marketing & SEO Workspace',
       icon: UserFilled,
-      color: '#059669', // Emerald/Mint Green for Sales
+      color: '#059669',
       shadowColor: 'rgba(5, 150, 105, 0.25)',
       hasAccess: true,
       badge: { isDot: false, value: 5, label: 'đơn mới', type: 'warning' }
@@ -136,7 +130,7 @@
       title: 'Quản Lý Kho & Hậu Cần',
       subtitle: 'Inventory & Asset Logistics',
       icon: Box,
-      color: '#d97706', // Amber/Yellow for Inventory
+      color: '#d97706',
       shadowColor: 'rgba(217, 119, 6, 0.15)',
       hasAccess: true
     },
@@ -144,7 +138,7 @@
       title: 'Dịch Vụ & Xưởng Sửa Chữa',
       subtitle: 'Workshop Operations',
       icon: Service,
-      color: '#2563eb', // Blue for Service
+      color: '#2563eb',
       shadowColor: 'rgba(37, 99, 235, 0.15)',
       hasAccess: true
     },
@@ -152,7 +146,7 @@
       title: 'Kế Toán, Lương & Thuế',
       subtitle: 'Financial & Compliance',
       icon: Wallet,
-      color: '#7c3aed', // Violet/Purple for Finance
+      color: '#7c3aed',
       shadowColor: 'rgba(124, 58, 237, 0.15)',
       hasAccess: true
     },
@@ -160,7 +154,7 @@
       title: 'Đơn hàng & Vận chuyển',
       subtitle: 'Order & Transer Workspace',
       icon: Wallet,
-      color: '#7c3aed', // Violet/Purple for Finance
+      color: '#7c3aed',
       shadowColor: 'rgba(124, 58, 237, 0.15)',
       hasAccess: true
     }
@@ -168,7 +162,6 @@
 </script>
 
 <style lang="scss" scoped>
-  /* Keyframes for entrance animations */
   @keyframes fadeInUp {
     from {
       opacity: 0;
@@ -207,8 +200,6 @@
     display: flex;
     flex-direction: column;
     height: 100vh;
-
-    /* High-quality Unsplash image of a speeding motorcycle (xe máy/moto) */
     background-image: url('https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=1920');
     background-attachment: fixed;
     background-position: center;
@@ -218,12 +209,10 @@
       position: fixed;
       inset: 0;
       z-index: 0;
-
-      /* Tints the image with the system's background color (dark or light) */
       background-color: var(--el-bg-color-page);
-      opacity: 0.45; /* Reduced from 0.75 so the image is clearer */
+      opacity: 0.45;
       -webkit-backdrop-filter: blur(3px);
-      backdrop-filter: blur(3px); /* Slightly reduced blur for sharper image */
+      backdrop-filter: blur(3px);
     }
 
     .portal-header {
@@ -268,8 +257,6 @@
           line-height: 1.2;
           color: var(--el-text-color-primary);
           letter-spacing: -1px;
-
-          /* Create a glowing shadow matching the background to ensure readability */
           text-shadow:
             0 2px 15px var(--el-bg-color),
             0 0 30px var(--el-bg-color);

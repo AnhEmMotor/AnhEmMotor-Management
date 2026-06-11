@@ -36,7 +36,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Dialog xem danh sách phiếu nhập nợ của nhà cung cấp -->
     <ElDialog
       v-model="receiptsDialogVisible"
       :title="`Danh sách phiếu nhập còn nợ - ${selectedSupplier?.name}`"
@@ -106,7 +105,6 @@
       </div>
     </ElDialog>
 
-    <!-- Dialog thực hiện thanh toán nợ -->
     <ElDialog
       v-model="paymentFormVisible"
       :title="`Thanh toán nợ phiếu IR-${selectedReceipt?.inventoryReceiptId}`"
@@ -168,24 +166,20 @@
   const loading = ref(false)
   const supplierDebts = ref<any[]>([])
 
-  // Calculate total debt of all suppliers
   const totalSuppliersDebt = computed(() => {
     return supplierDebts.value.reduce((sum, item) => sum + (item.totalDebt || 0), 0)
   })
 
-  // Format currency helper
   const formatCurrency = (val: number): string => {
     return (val || 0).toLocaleString('vi-VN') + ' VNĐ'
   }
 
-  // Calculate remaining debt of a receipt
   const getRemainingDebt = (receipt: any): number => {
     const total = receipt.totalAmount || 0
     const paid = receipt.paidAmount || 0
     return Math.max(0, total - paid)
   }
 
-  // Fetch supplier list with debt
   const fetchSupplierDebts = async () => {
     loading.value = true
     try {
@@ -199,7 +193,6 @@
     }
   }
 
-  // Supplier columns
   const supplierColumns = [
     { label: 'Nhà cung cấp', prop: 'name', minWidth: 200 },
     {
@@ -220,7 +213,6 @@
     }
   ]
 
-  // --- Receipts Dialog Handling ---
   const receiptsDialogVisible = ref(false)
   const receiptsLoading = ref(false)
   const selectedSupplier = ref<any | null>(null)
@@ -265,7 +257,6 @@
     }
   }
 
-  // --- Payment Form Handling ---
   const paymentFormVisible = ref(false)
   const paying = ref(false)
   const selectedReceipt = ref<any | null>(null)
@@ -285,12 +276,11 @@
       ElMessage.success('Thanh toán công nợ thành công!')
       paymentFormVisible.value = false
 
-      // Reload receipts list
       if (selectedSupplier.value) {
         const res = await DebtApi.getReceiptsWithDebt(selectedSupplier.value.id)
         receipts.value = res || []
       }
-      // Reload supplier list
+
       fetchSupplierDebts()
     } catch (err: any) {
       console.error(err)

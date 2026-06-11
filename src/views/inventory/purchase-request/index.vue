@@ -1,6 +1,5 @@
 <template>
   <div class="flex flex-col gap-4 pb-5">
-    <!-- Search/Filters -->
     <ArtSearchBar
       v-model="searchForm"
       :items="searchItems"
@@ -10,7 +9,6 @@
       @reset="handleReset"
     />
 
-    <!-- Main Table Card -->
     <ElCard class="flex-1 art-table-card">
       <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
@@ -101,7 +99,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Create/Edit Form Dialog -->
     <ElDialog
       v-model="dialogVisible"
       :title="dialogTitle"
@@ -186,7 +183,6 @@
       </template>
     </ElDialog>
 
-    <!-- Detail Dialog -->
     <ElDialog
       v-model="detailDialogVisible"
       title="Chi tiết Yêu cầu mua hàng"
@@ -316,7 +312,6 @@
           <ElButton @click="detailDialogVisible = false">Đóng</ElButton>
 
           <template v-if="detailData">
-            <!-- Approve/Reject buttons for Sent status -->
             <template v-if="detailData.status?.toLowerCase() === 'sent'">
               <ElButton type="danger" @click="handleApproveRejectStatus(detailData.id, 'reject')">
                 Từ chối duyệt
@@ -326,7 +321,6 @@
               </ElButton>
             </template>
 
-            <!-- Send button for Draft status -->
             <template v-if="detailData.status?.toLowerCase() === 'draft'">
               <ElButton type="success" @click="handleSendRequest(detailData)">
                 Gửi phê duyệt
@@ -337,7 +331,6 @@
       </template>
     </ElDialog>
 
-    <!-- Product & Variant Selector Dialog -->
     <ElDialog
       v-model="productSelectorVisible"
       title="Chọn sản phẩm & màu sắc"
@@ -590,7 +583,6 @@
       if (formData.value.items[idx]) {
         const row = formData.value.items[idx]
 
-        // Check if this product variant and color already exists in another row
         const existsIdx = formData.value.items.findIndex(
           (item, i) =>
             i !== idx &&

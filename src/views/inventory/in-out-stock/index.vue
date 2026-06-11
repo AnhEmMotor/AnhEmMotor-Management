@@ -1,6 +1,5 @@
 <template>
   <div class="flex flex-col gap-4 pb-5">
-    <!-- Stats Cards -->
     <div class="grid grid-cols-5 gap-4">
       <ArtStatsCard
         title="Tổng đã nhập"
@@ -34,7 +33,6 @@
       />
     </div>
 
-    <!-- Search Bar -->
     <ArtSearchBar
       :items="searchItems"
       :label-width="150"
@@ -43,7 +41,6 @@
       @reset="handleReset"
     />
 
-    <!-- Table Card -->
     <ElCard class="flex-1 art-table-card">
       <ArtTableHeader :showColumns="false" @refresh="refreshData">
         <template #left>
@@ -71,21 +68,18 @@
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
-        <!-- Custom slot for product/variant/color name with indentation support and icon indicators -->
         <template #name="{ row }">
           <span class="inline-flex items-center gap-2 text-left align-middle">
             <span :class="getNameClass(row)">{{ row.name }}</span>
           </span>
         </template>
 
-        <!-- Custom slot for showing remaining with custom warning colors if low -->
         <template #remaining="{ row }">
           <span :class="getRemainingClass(row)">
             {{ row.remaining }}
           </span>
         </template>
 
-        <!-- Custom slot for operation (only leaf nodes can click) -->
         <template #operation="{ row }">
           <ElButton
             v-if="isLeafNode(row)"
@@ -101,7 +95,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Dialog for viewing transactions list (Goods Receipts & Sales Invoices) -->
     <ElDialog
       v-model="dialogVisible"
       :title="`Lịch sử giao dịch biến động kho: ${selectedRowName}`"
@@ -110,7 +103,6 @@
       destroy-on-close
     >
       <div v-if="selectedRow" class="flex flex-col gap-4">
-        <!-- Summary Alert -->
         <div class="p-3 bg-gray-50 border border-gray-100 rounded flex gap-4 text-sm text-gray-600">
           <div><strong>Tồn kho hiện tại:</strong> {{ selectedRow.inStock }} xe</div>
           <div><strong>Đã nhập:</strong> {{ selectedRow.imported }} xe</div>
@@ -118,9 +110,7 @@
           <div><strong>Đã đặt trước:</strong> {{ selectedRow.ordered }} xe</div>
         </div>
 
-        <!-- Tabs for Goods Receipts vs Sales Invoices -->
         <ElTabs v-model="activeTab" class="pl-4 pr-2">
-          <!-- Goods Receipts Tab -->
           <ElTabPane name="receipts">
             <template #label>
               <span class="flex items-center gap-1">
@@ -149,7 +139,6 @@
             </ElTable>
           </ElTabPane>
 
-          <!-- Sales Invoices Tab -->
           <ElTabPane name="invoices">
             <template #label>
               <span class="flex items-center gap-1">
@@ -179,7 +168,6 @@
       </template>
     </ElDialog>
 
-    <!-- Dialog for viewing full receipt details -->
     <ElDialog
       v-model="receiptDetailVisible"
       title="Chi tiết phiếu nhập kho"
@@ -188,7 +176,6 @@
       destroy-on-close
     >
       <div v-if="receiptDetailData" class="flex flex-col gap-4">
-        <!-- Summary Alert -->
         <div
           class="p-3 bg-gray-50 border border-gray-100 rounded grid grid-cols-2 gap-2 text-sm text-gray-700"
         >
@@ -262,11 +249,10 @@
 
   defineOptions({ name: 'InventoryInOutStock' })
 
-  // Define interfaces
   interface StockItem {
     id: string
     name: string
-    level: number // 0: Product, 1: Variant, 2: Color
+    level: number
     imported: number
     exported: number
     inStock: number
@@ -295,7 +281,6 @@
     date: string
   }
 
-  // State variables
   const searchQuery = ref('')
   const tableRef = ref()
   const exporting = ref(false)
@@ -440,7 +425,6 @@
     { label: 'Thao tác', prop: 'operation', width: 150, align: 'center', useSlot: true }
   ]
 
-  // Search definition
   const searchItems = computed(() => [
     {
       key: 'name',
@@ -450,12 +434,10 @@
     }
   ])
 
-  // Helper: check if leaf node
   const isLeafNode = (row: StockItem): boolean => {
     return row.level === 2 || (row.level === 1 && (!row.children || row.children.length === 0))
   }
 
-  // Search handlers
   const handleSearch = (form: Record<string, any>) => {
     searchQuery.value = form.name || ''
     paginationState.value.current = 1
@@ -501,7 +483,6 @@
     return 'text-success font-semibold'
   }
 
-  // Export report button action
   const handleExport = async () => {
     exporting.value = true
     try {
@@ -525,7 +506,6 @@
     }
   }
 
-  // Show transactional history for leaf node variant/color
   const handleViewHistory = async (row: StockItem) => {
     if (row.variantId === undefined) return
     selectedRow.value = row
@@ -562,7 +542,6 @@
     }
   }
 
-  // Expand / Collapse actions
   const expandAll = () => {
     nextTick(() => {
       if (tableRef.value?.elTableRef) {
@@ -607,7 +586,6 @@
     background-color: var(--main-color);
   }
 
-  /* Custom tree table row styles for premium hierarchy feel */
   :deep(.el-table__row--level-0) {
     background-color: var(--default-box-color) !important;
   }

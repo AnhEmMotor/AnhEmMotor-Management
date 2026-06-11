@@ -1,6 +1,5 @@
 <template>
   <div class="flex flex-col gap-4 pb-5">
-    <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
       <ArtStatsCard
         title="Tổng giao dịch"
@@ -34,7 +33,6 @@
       />
     </div>
 
-    <!-- Search Bar & Filters -->
     <ArtSearchBar
       :items="searchItems"
       :label-width="160"
@@ -43,7 +41,6 @@
       @reset="handleReset"
     />
 
-    <!-- Table Card -->
     <ElCard class="flex-1 art-table-card" v-loading="loading">
       <ArtTableHeader :showColumns="false" @refresh="refreshData">
         <template #left>
@@ -64,21 +61,18 @@
       </ArtTableHeader>
 
       <ArtTable :data="filteredLedgerData" :columns="columns" row-key="id" stripe>
-        <!-- Custom slot for Voucher Code styled as interactive link -->
         <template #voucherCode="{ row }">
           <ElButton type="primary" link class="font-mono font-bold" @click="handleViewVoucher(row)">
             {{ row.voucherCode }}
           </ElButton>
         </template>
 
-        <!-- Custom slot for Transaction Type with badge -->
         <template #type="{ row }">
           <ElTag :type="getTypeTagType(row.type)" size="small">
             {{ getTypeName(row.type) }}
           </ElTag>
         </template>
 
-        <!-- Custom slot for Import Qty -->
         <template #importQty="{ row }">
           <span v-if="row.importQty > 0" class="text-success font-semibold">
             +{{ row.importQty }}
@@ -86,7 +80,6 @@
           <span v-else class="text-gray-300">-</span>
         </template>
 
-        <!-- Custom slot for Export Qty -->
         <template #exportQty="{ row }">
           <span v-if="row.exportQty > 0" class="text-danger font-semibold">
             -{{ row.exportQty }}
@@ -94,21 +87,18 @@
           <span v-else class="text-gray-300">-</span>
         </template>
 
-        <!-- Custom slot for Unit Price -->
         <template #unitPrice="{ row }">
           <span class="font-medium text-gray-700">
             {{ formatCurrency(row.unitPrice) }}
           </span>
         </template>
 
-        <!-- Custom slot for Total Amount -->
         <template #totalAmount="{ row }">
           <span :class="row.type === 'IMPORT' ? 'text-success font-bold' : 'text-danger font-bold'">
             {{ formatCurrency(row.totalAmount) }}
           </span>
         </template>
 
-        <!-- Custom slot for Running Balance -->
         <template #balance="{ row }">
           <ElTag type="info" class="font-bold text-gray-800" effect="light">
             {{ row.balance }} xe
@@ -117,7 +107,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Dialog for viewing voucher details -->
     <ElDialog
       v-model="dialogVisible"
       :title="`Chi tiết Chứng từ: ${selectedVoucher?.voucherCode}`"
@@ -126,7 +115,6 @@
       destroy-on-close
     >
       <div v-if="selectedVoucher" class="flex flex-col gap-4">
-        <!-- Voucher Info Section -->
         <div
           class="grid grid-cols-2 gap-4 p-4 bg-gray-50 border border-gray-100 rounded-lg text-sm text-gray-700"
         >
@@ -139,7 +127,6 @@
           >
         </div>
 
-        <!-- Voucher Details Table -->
         <h5 class="font-bold text-gray-800 text-sm mt-2 mb-1">Chi tiết hàng hóa biến động</h5>
         <ElTable :data="voucherDetails" border stripe style="width: 100%">
           <ElTableColumn prop="name" label="Sản phẩm / Biến thể / Màu sắc" min-width="250" />
@@ -195,7 +182,6 @@
 
   defineOptions({ name: 'InventoryLedger' })
 
-  // Define interfaces
   interface LedgerEntry {
     id: string
     date: string
@@ -218,7 +204,6 @@
     dateRange: [string, string] | null
   }
 
-  // Current filters state
   const filters = ref<SearchForm>({
     searchQuery: '',
     type: 'ALL',
@@ -230,7 +215,6 @@
   const dialogVisible = ref(false)
   const selectedVoucher = ref<LedgerEntry | null>(null)
 
-  // Format currency helper
   const formatCurrency = (val: number): string => {
     return val.toLocaleString('vi-VN') + ' VNĐ'
   }
@@ -279,7 +263,6 @@
     fetchLedgerData()
   })
 
-  // Columns definition for Sổ cái tồn kho
   const columns = [
     { label: 'Ngày giao dịch', prop: 'date', width: 180, align: 'center' },
     { label: 'Mã chứng từ', prop: 'voucherCode', width: 130, align: 'center', useSlot: true },
@@ -300,7 +283,6 @@
     { label: 'Tồn sau GD', prop: 'balance', width: 110, align: 'right', useSlot: true }
   ]
 
-  // Form search definition for ArtSearchBar
   const searchItems = computed(() => [
     {
       key: 'searchQuery',
@@ -333,7 +315,6 @@
     }
   ])
 
-  // Summary computed statistics
   const ledgerStats = computed(() => {
     let totalTransactions = tableData.value.length
     let totalImportQty = 0
@@ -360,10 +341,8 @@
     }
   })
 
-  // Filtered dataset
   const filteredLedgerData = computed(() => {
     return tableData.value.filter((entry) => {
-      // 1. Text Search Filter
       if (filters.value.searchQuery) {
         const query = filters.value.searchQuery.toLowerCase().trim()
         const matchCode = entry.voucherCode.toLowerCase().includes(query)
@@ -376,18 +355,16 @@
         }
       }
 
-      // 2. Transaction Type Filter
       if (filters.value.type && filters.value.type !== 'ALL') {
         if (entry.type !== filters.value.type) {
           return false
         }
       }
 
-      // 3. Date Range Filter
       if (filters.value.dateRange && filters.value.dateRange.length === 2) {
         const startDate = filters.value.dateRange[0]
         const endDate = filters.value.dateRange[1]
-        const entryDate = entry.date.substring(0, 10) // Format: 'YYYY-MM-DD'
+        const entryDate = entry.date.substring(0, 10)
         if (entryDate < startDate || entryDate > endDate) {
           return false
         }
@@ -397,7 +374,6 @@
     })
   })
 
-  // Handlers
   const handleSearch = (form: Record<string, any>) => {
     filters.value = {
       searchQuery: form.searchQuery || '',
@@ -430,7 +406,6 @@
     }, 1500)
   }
 
-  // Type helper functions
   const getTypeName = (type: string) => {
     if (type === 'IMPORT') return 'Nhập kho'
     if (type === 'EXPORT') return 'Xuất kho'
@@ -443,13 +418,11 @@
     return 'warning'
   }
 
-  // Detail Modal popup simulation
   const voucherDetails = ref<Array<{ name: string; qty: number; price: number }>>([])
 
   const handleViewVoucher = (row: LedgerEntry) => {
     selectedVoucher.value = row
 
-    // Create details table contents matching the selected voucher
     voucherDetails.value = [
       {
         name: `${row.productName} - ${row.variantName}${row.colorName ? ` (${row.colorName})` : ''}`,

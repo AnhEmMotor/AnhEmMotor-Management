@@ -2256,20 +2256,16 @@
   }
 
   const handleDeleteTech = async (tech: any) => {
-    try {
-      await ElMessageBox.confirm(
-        `Bạn có chắc chắn muốn xóa công nghệ "${tech.name}"? Hành động này không thể hoàn tác và sẽ xóa khỏi tất cả sản phẩm đang dùng.`,
-        'Xác nhận xóa',
-        {
-          confirmButtonText: 'Xóa',
-          cancelButtonText: 'Hủy',
-          type: 'warning'
-        }
-      )
-      await deleteTechnology(tech.id)
-    } catch (_err) {
-      // Cancelled or error
-    }
+    await ElMessageBox.confirm(
+      `Bạn có chắc chắn muốn xóa công nghệ "${tech.name}"? Hành động này không thể hoàn tác và sẽ xóa khỏi tất cả sản phẩm đang dùng.`,
+      'Xác nhận xóa',
+      {
+        confirmButtonText: 'Xóa',
+        cancelButtonText: 'Hủy',
+        type: 'warning'
+      }
+    )
+    await deleteTechnology(tech.id)
   }
 
   const handleColorImageUpload = async (options: any, colorObj: any) => {

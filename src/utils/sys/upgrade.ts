@@ -62,29 +62,21 @@ class VersionManager {
   }
 
   private performLogout(): void {
-    try {
-      useUserStore().logOut()
-    } catch {
-      // Ignore error during logout
-    }
+    useUserStore().logOut()
   }
 
   private async executeUpgrade(
     _storedVersion: string,
     legacyStorage: ReturnType<typeof this.findLegacyStorage>
   ): Promise<void> {
-    try {
-      const requireReLogin = this.shouldRequireReLogin()
+    const requireReLogin = this.shouldRequireReLogin()
 
-      this.setStoredVersion(StorageConfig.CURRENT_VERSION)
+    this.setStoredVersion(StorageConfig.CURRENT_VERSION)
 
-      this.cleanupLegacyData(legacyStorage.oldSysKey, legacyStorage.oldVersionKeys)
+    this.cleanupLegacyData(legacyStorage.oldSysKey, legacyStorage.oldVersionKeys)
 
-      if (requireReLogin) {
-        this.performLogout()
-      }
-    } catch {
-      // Ignore upgrade errors
+    if (requireReLogin) {
+      this.performLogout()
     }
   }
 

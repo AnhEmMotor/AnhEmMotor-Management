@@ -568,9 +568,7 @@
 
   import { watch } from 'vue'
 
-  onMounted(() => {
-    // Initial load will be handled by watch if we set immediate: true
-  })
+  onMounted(() => {})
 
   watch(
     () => [route.query.id, route.params.id],

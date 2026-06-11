@@ -173,11 +173,7 @@
       const redirect = route.query.redirect as string
       router.push(redirect && redirect !== '/' ? redirect : '/workspace')
     } catch {
-      try {
-        useUserStore().logOut()
-      } catch {
-        // Ignore error during logout
-      }
+      useUserStore().logOut()
     } finally {
       loading.value = false
     }
