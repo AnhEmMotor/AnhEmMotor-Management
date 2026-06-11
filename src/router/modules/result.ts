@@ -7,6 +7,7 @@ export const resultRoutes: AppRouteRecord = {
   meta: {
     title: 'menus.result.title',
     icon: 'ri:checkbox-circle-line',
+    isHide: true,
   },
   children: [
     {

@@ -118,9 +118,8 @@ export function showError(error: HttpError, showMessage: boolean = true): void {
       type: 'error',
       position: 'bottom-right',
     })
+    console.error('[HTTP Error]', error.toLogData())
   }
-
-  console.error('[HTTP Error]', error.toLogData())
 }
 
 export function showSuccess(message: string, showMessage: boolean = true): void {

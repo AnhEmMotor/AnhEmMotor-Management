@@ -68,3 +68,4 @@ export const $t = i18n.global.t as Translation
 export default i18n
 
 // Force HMR
+//

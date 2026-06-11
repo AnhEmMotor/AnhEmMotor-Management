@@ -7,6 +7,7 @@ export const exceptionRoutes: AppRouteRecord = {
   meta: {
     title: 'menus.exception.title',
     icon: 'ri:error-warning-line',
+    isHide: true,
   },
   children: [
     {

@@ -48,20 +48,11 @@
   "setting": {
     "menuType": {
       "title": "Menu Layout",
-      "list": [
-        "Vertical",
-        "Horizontal",
-        "Mixed",
-        "Dual"
-      ]
+      "list": ["Vertical", "Horizontal", "Mixed", "Dual"]
     },
     "theme": {
       "title": "Theme Style",
-      "list": [
-        "Light",
-        "Dark",
-        "System"
-      ]
+      "list": ["Light", "Dark", "System"]
     },
     "menu": {
       "title": "Menu Style"
@@ -71,17 +62,11 @@
     },
     "box": {
       "title": "Box Style",
-      "list": [
-        "Border",
-        "Shadow"
-      ]
+      "list": ["Border", "Shadow"]
     },
     "container": {
       "title": "Container Width",
-      "list": [
-        "Full",
-        "Boxed"
-      ]
+      "list": ["Full", "Boxed"]
     },
     "basics": {
       "title": "Basic Config",
@@ -127,14 +112,8 @@
   "notice": {
     "title": "Notice",
     "btnRead": "Mark as read",
-    "bar": [
-      "Notice",
-      "Message",
-      "Todo"
-    ],
-    "text": [
-      "No"
-    ],
+    "bar": ["Notice", "Message", "Todo"],
+    "text": ["No"],
     "viewAll": "View all"
   },
   "worktab": {
@@ -281,6 +260,14 @@
       "filterActive": "Active",
       "filterInactive": "Inactive",
       "filterDeprecated": "Deprecated"
+    },
+    "logistics": {
+      "title": "Shipping Management",
+      "dashboard": "Logistics Dashboard",
+      "fulfillment": "Parcel Fulfillment",
+      "tracking": "Shipment Tracking",
+      "returns": "Reverse Logistics",
+      "carrierSettings": "Carrier Settings"
     },
     "inventory": {
       "title": "Inventory Management",
@@ -770,6 +757,35 @@
     },
     "createDialog": {
       "submit": "Create"
+    }
+  },
+  "logistics": {
+    "dashboard": {
+      "today": "Today",
+      "thisMonth": "This Month",
+      "thisYear": "This Year",
+      "fulfillmentWorkload": "Fulfillment Workload",
+      "pendingCod": "Pending COD Pipeline",
+      "otifRate": "OTIF Rate",
+      "returnsClaimsRatio": "Returns & Claims Ratio",
+      "fulfillmentFunnel": "Fulfillment Funnel",
+      "funnelPlaceholder": "Doughnut chart placeholder (API data: fulfillmentFunnel)",
+      "productionShippingCost": "Production & Shipping Cost",
+      "costPlaceholder": "Combo bar+line chart placeholder (API data: trends)",
+      "carrierScorecard": "Carrier Scorecard",
+      "refresh": "Refresh",
+      "carrier": "Carrier",
+      "deliveredCount": "Delivered",
+      "avgDeliveryDays": "Avg Delivery (days)",
+      "avgShippingCostPerOrder": "Avg Cost/Order",
+      "returnsRatio": "Returns Ratio",
+      "exceptionsLog": "Logistics Exceptions",
+      "items": "items",
+      "noExceptions": "No urgent exceptions.",
+      "type": "Type",
+      "tracking": "Tracking No.",
+      "message": "Message",
+      "createdAt": "Created At"
     }
   }
 }

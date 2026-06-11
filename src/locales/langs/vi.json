@@ -3,7 +3,7 @@
     "unauthorized": "Truy cập không được phép, vui lòng đăng nhập lại",
     "forbidden": "Cấm truy cập vào tài nguyên này",
     "notFound": "Tài nguyên được yêu cầu không tồn tại",
-    "methodNotAllowed": "PhuongThuc yêu cầu không được phép",
+    "methodNotAllowed": "Phương thức yêu cầu không được phép",
     "requestTimeout": "Yêu cầu quá thời gian, vui lòng thử lại sau",
     "internalServerError": "Lỗi máy chủ nội bộ, vui lòng thử lại sau",
     "badGateway": "Lỗi cổng kết nối, vui lòng thử lại sau",
@@ -48,20 +48,11 @@
   "setting": {
     "menuType": {
       "title": "Bố cục menu",
-      "list": [
-        "Dọc",
-        "Ngang",
-        "Hỗn hợp",
-        "Cột kép"
-      ]
+      "list": ["Dọc", "Ngang", "Hỗn hợp", "Cột kép"]
     },
     "theme": {
       "title": "Giao diện",
-      "list": [
-        "Sáng",
-        "Tối",
-        "HeThong"
-      ]
+      "list": ["Sáng", "Tối", "HeThong"]
     },
     "menu": {
       "title": "Kiểu menu"
@@ -71,17 +62,11 @@
     },
     "box": {
       "title": "Kiểu khung",
-      "list": [
-        "Viền",
-        "Bóng đổ"
-      ]
+      "list": ["Viền", "Bóng đổ"]
     },
     "container": {
       "title": "Chiều rộng",
-      "list": [
-        "Đầy đủ",
-        "Cố định"
-      ]
+      "list": ["Đầy đủ", "Cố định"]
     },
     "basics": {
       "title": "CauHinh cơ bản",
@@ -127,14 +112,8 @@
   "notice": {
     "title": "ThongBao",
     "btnRead": "Đánh dấu đã đọc",
-    "bar": [
-      "ThongBao",
-      "TinNhan",
-      "Việc cần làm"
-    ],
-    "text": [
-      "Không có"
-    ],
+    "bar": ["ThongBao", "TinNhan", "Việc cần làm"],
+    "text": ["Không có"],
     "viewAll": "Xem tất cả"
   },
   "worktab": {
@@ -281,6 +260,14 @@
       "filterActive": "Đang áp dụng",
       "filterInactive": "Tạm dừng",
       "filterDeprecated": "Ngừng áp dụng"
+    },
+    "logistics": {
+      "title": "Quản lý vận chuyển",
+      "dashboard": "Dashboard Vận Chuyển",
+      "fulfillment": "Xử Lý Đơn Giao",
+      "tracking": "Tra Cứu Hành Trình",
+      "returns": "Hàng Hoàn",
+      "carrierSettings": "Đối tác vận chuyển"
     },
     "inventory": {
       "title": "Quản lý kho",
@@ -497,7 +484,7 @@
     "t13": "Khối lượng công việc & Dịch vụ",
     "t14": "Về dự án",
     "t15": "Sử dụng công nghệ mới nhất như Vue3, TypeScript, Vite, Element Plus",
-    "t16": "TongQuan người dùng",
+    "t16": "Tổng quan người dùng",
     "t17": "So với tuần trước",
     "t18": "Chúng tôi cung cấp nhiều tùy chọn có thể kết hợp và tùy chỉnh để tạo trang hoàn hảo",
     "t19": "So với tuần trước",
@@ -652,6 +639,35 @@
     },
     "createDialog": {
       "submit": "Tạo mới"
+    }
+  },
+  "logistics": {
+    "dashboard": {
+      "today": "Hôm nay",
+      "thisMonth": "Tháng này",
+      "thisYear": "Năm nay",
+      "fulfillmentWorkload": "Khối lượng công việc hôm nay",
+      "pendingCod": "Dòng tiền COD chưa đối soát",
+      "otifRate": "Tỷ lệ giao hàng đúng hạn",
+      "returnsClaimsRatio": "Tỷ lệ bom hàng/Chuyển hoàn",
+      "fulfillmentFunnel": "Phễu trạng thái vận chuyển",
+      "funnelPlaceholder": "Dữ liệu biểu đồ Doughnut (API: fulfillmentFunnel)",
+      "productionShippingCost": "Xu hướng sản lượng & Chi phí",
+      "costPlaceholder": "Dữ liệu biểu đồ cột & đường (API: trends)",
+      "carrierScorecard": "Bảng hiệu suất đối tác vận chuyển",
+      "refresh": "Làm mới",
+      "carrier": "Đơn vị vận chuyển",
+      "deliveredCount": "Số đơn đã giao",
+      "avgDeliveryDays": "Thời gian giao TB (ngày)",
+      "avgShippingCostPerOrder": "Phí ship TB/Đơn",
+      "returnsRatio": "Tỷ lệ bom hàng",
+      "exceptionsLog": "Cảnh báo sự cố khẩn cấp",
+      "items": "mục",
+      "noExceptions": "Không có sự cố khẩn cấp nào.",
+      "type": "Loại",
+      "tracking": "Mã vận đơn",
+      "message": "Tin nhắn",
+      "createdAt": "Tạo lúc"
     }
   }
 }

@@ -19,6 +19,7 @@ import { helpRoutes } from './help'
 import { inventoryRoutes } from './inventory'
 import { serviceRoutes } from './service'
 import { reportingRoutes } from './reporting'
+import { logisticsRoutes } from './logistics'
 
 export const routeModules: AppRouteRecord[] = [
   dashboardRoutes,
@@ -40,5 +41,6 @@ export const routeModules: AppRouteRecord[] = [
   exceptionRoutes,
   safeguardRoutes,
   reportingRoutes,
+  logisticsRoutes,
   ...helpRoutes,
 ]
