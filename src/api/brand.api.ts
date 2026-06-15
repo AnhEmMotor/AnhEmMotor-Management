@@ -1,5 +1,5 @@
 import request from '@/utils/http'
-import type { Brand, BrandList } from '@/domain/product/brand.types'
+import type { Brand, BrandList, ImportBrandResult } from '@/domain/product/brand.types'
 
 export const BrandApi = {
   getList(params: any) {
@@ -51,6 +51,58 @@ export const BrandApi = {
       url: '/api/v1/Brand/export',
       params,
       responseType: 'blob'
+    })
+  },
+
+  importExcel(file: File) {
+    const formData = new FormData()
+    formData.append('file', file)
+    return request.post<ImportBrandResult>({
+      url: '/api/v1/Brand/import',
+      data: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+  },
+
+  getImportTemplate() {
+    return request.get<Blob>({
+      url: '/api/v1/Brand/import-template',
+      responseType: 'blob'
+    })
+  },
+
+  cloneMany(ids: number[]) {
+    return request.post({
+      url: '/api/v1/Brand/clone-many',
+      data: { ids }
+    })
+  },
+
+  deleteMany(ids: number[]) {
+    return request.del({
+      url: '/api/v1/Brand/delete-many',
+      data: { ids }
+    })
+  },
+
+  restoreMany(ids: number[]) {
+    return request.post({
+      url: '/api/v1/Brand/restore-many',
+      data: { ids }
+    })
+  },
+
+  getDeletedList(params: any) {
+    const { current, size, ...rest } = params
+    return request.get<BrandList>({
+      url: '/api/v1/Brand/deleted',
+      params: {
+        Page: current,
+        PageSize: size,
+        ...rest
+      }
     })
   }
 }

@@ -232,10 +232,13 @@
                   >
                     Mô Tả Chi Tiết Sản Phẩm
                   </label>
-                  <ElInput
+                  <ArtWangEditor
                     v-model="formData.description"
-                    type="textarea"
-                    :rows="4"
+                    height="400px"
+                    :upload-config="{
+                      server: `${VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT}/api/v1/product/images/content`,
+                      isCustomUpload: true
+                    }"
                     placeholder="Nhập mô tả chi tiết..."
                   />
                 </div>
@@ -2004,6 +2007,8 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
 
   defineOptions({ name: 'ProductList' })
+
+  const { VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT } = import.meta.env
 
   const activeTab = ref('common')
   const activePricingPanels = ref<string[]>([])

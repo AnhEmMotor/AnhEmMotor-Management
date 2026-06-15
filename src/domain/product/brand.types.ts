@@ -4,6 +4,7 @@ export interface Brand {
   origin: string
   logoUrl: string
   description: string
+  deletedAt?: string
 }
 
 export interface BrandList {
@@ -14,4 +15,18 @@ export interface BrandList {
 export interface BrandFilters {
   name?: string
   origin?: string
+}
+
+export interface BrandStatisticsResponse {
+  totalBrands: number
+  activeBrandsCount: number
+  inactiveBrandsCount: number
+  deletedBrandsCount: number
+}
+
+export interface ImportBrandResult {
+  successCount: number
+  failedCount: number
+  errorFileUrl?: string
+  errorFileWithReasonUrl?: string
 }

@@ -41,12 +41,89 @@
     <ElCard class="flex-1 art-table-card">
       <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
-          <ElButton v-auth="'Permissions.Brands.Create'" type="primary" v-ripple @click="handleAdd">
-            <ElIcon><Plus /></ElIcon> Thêm thương hiệu
-          </ElButton>
-          <ElButton :loading="exporting" v-ripple @click="handleExport">
-            <ElIcon><Download /></ElIcon> Xuất Excel
-          </ElButton>
+          <div class="flex items-center gap-3">
+            <ElButton
+              v-auth="'Permissions.Brands.Create'"
+              type="primary"
+              v-ripple
+              :disabled="importing"
+              @click="handleAdd"
+              style="margin-left: 0"
+            >
+              <ElIcon><Plus /></ElIcon> Thêm thương hiệu
+            </ElButton>
+
+            <ElButton
+              :loading="exporting"
+              :disabled="importing"
+              v-ripple
+              @click="handleExport"
+              style="margin-left: 0"
+            >
+              <ElIcon><Download /></ElIcon> Xuất Excel
+            </ElButton>
+
+            <ElDropdown trigger="click" style="margin-left: 0" :disabled="importing">
+              <ElButton v-ripple :loading="importing" :disabled="importing">
+                <ElIcon><Upload /></ElIcon> {{ importing ? 'Đang nhập...' : 'Nhập Excel' }}
+                <ElIcon class="el-icon--right"><ArrowDown /></ElIcon>
+              </ElButton>
+              <template #dropdown>
+                <ElDropdownMenu>
+                  <ElDropdownItem @click="handleDownloadTemplate">
+                    <div class="flex items-center gap-2">
+                      <ElIcon><Download /></ElIcon> Tải mẫu Excel
+                    </div>
+                  </ElDropdownItem>
+                  <ElDropdownItem>
+                    <ElUpload
+                      action="#"
+                      :show-file-list="false"
+                      :auto-upload="false"
+                      :on-change="(file) => file.raw && handleImport(file.raw)"
+                      accept=".xlsx, .xls"
+                    >
+                      <div class="flex items-center gap-2 w-full">
+                        <ElIcon><Upload /></ElIcon> Nhập dữ liệu vào
+                      </div>
+                    </ElUpload>
+                  </ElDropdownItem>
+                </ElDropdownMenu>
+              </template>
+            </ElDropdown>
+
+            <ElButton
+              v-if="selectedRows.length > 0"
+              type="warning"
+              v-ripple
+              :disabled="importing"
+              @click="handleCloneMany"
+              style="margin-left: 0"
+            >
+              <ElIcon><DocumentCopy /></ElIcon> Nhân bản ({{ selectedRows.length }})
+            </ElButton>
+            <ElButton
+              v-if="selectedRows.length > 0"
+              type="danger"
+              v-ripple
+              :disabled="importing"
+              @click="handleDeleteMany"
+              style="margin-left: 0"
+            >
+              <ElIcon><Delete /></ElIcon> Xóa ({{ selectedRows.length }})
+            </ElButton>
+
+            <ElButton
+              v-if="statistics.deletedBrandsCount > 0"
+              type="info"
+              v-ripple
+              :disabled="importing"
+              @click="openRestoreDialog"
+              style="margin-left: 0"
+            >
+              <ElIcon><RefreshLeft /></ElIcon> Khôi phục ({{ statistics.deletedBrandsCount }})
+            </ElButton>
+          </div>
         </template>
       </ArtTableHeader>
 
@@ -56,6 +133,7 @@
         :data="data"
         :columns="columns"
         :pagination="pagination"
+        @selection-change="handleSelectionChange"
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
@@ -163,15 +241,119 @@
         </div>
       </template>
     </ElDialog>
+
+    <ElDialog
+      v-model="importResultDialogVisible"
+      title="Kết quả nhập dữ liệu Excel"
+      width="600px"
+      append-to-body
+    >
+      <div v-if="importResultData" class="space-y-4">
+        <div class="flex items-center gap-2 text-lg">
+          <ElIcon class="text-success text-2xl"><SuccessFilled /></ElIcon>
+          <span
+            >Đã nhập thành công <strong>{{ importResultData.successCount }}</strong> dòng.</span
+          >
+        </div>
+
+        <div
+          v-if="importResultData.failedCount > 0"
+          class="flex items-center gap-2 text-lg text-danger"
+        >
+          <ElIcon class="text-2xl"><WarningFilled /></ElIcon>
+          <span
+            >Thất bại <strong>{{ importResultData.failedCount }}</strong> dòng.</span
+          >
+        </div>
+
+        <div v-if="importResultData.failedCount > 0" class="mt-4 p-4 bg-gray-50 rounded-lg">
+          <p class="mb-3 text-gray-600"
+            >Bạn có thể tải xuống danh sách các dòng bị lỗi để kiểm tra và sửa lại:</p
+          >
+          <div class="flex gap-3">
+            <ElButton type="primary" plain tag="a" :href="apiUrl + importResultData.errorFileUrl">
+              <ElIcon class="mr-1"><Download /></ElIcon> Tải danh sách lỗi
+            </ElButton>
+            <ElButton
+              type="danger"
+              plain
+              tag="a"
+              :href="apiUrl + importResultData.errorFileWithReasonUrl"
+            >
+              <ElIcon class="mr-1"><Download /></ElIcon> Tải danh sách lỗi (kèm lý do)
+            </ElButton>
+          </div>
+        </div>
+      </div>
+      <template #footer>
+        <ElButton @click="importResultDialogVisible = false">Đóng</ElButton>
+      </template>
+    </ElDialog>
+    <ElDialog
+      v-model="restoreDialogVisible"
+      title="Khôi phục thương hiệu đã xóa"
+      width="800px"
+      append-to-body
+    >
+      <div class="mb-4 text-gray-500 text-sm">
+        Chọn các thương hiệu bạn muốn khôi phục từ danh sách bên dưới.
+      </div>
+      <ElTable
+        v-loading="deletedBrandsLoading"
+        :data="deletedBrandsData"
+        border
+        max-height="400"
+        @selection-change="handleDeletedSelectionChange"
+      >
+        <ElTableColumn type="selection" width="50" align="center" />
+        <ElTableColumn prop="name" label="Tên thương hiệu" width="200" />
+        <ElTableColumn prop="description" label="Miêu tả" min-width="250" show-overflow-tooltip />
+        <ElTableColumn prop="deletedAt" label="Thời gian xóa" width="160">
+          <template #default="{ row }">
+            {{ formatDateTime(row.deletedAt) }}
+          </template>
+        </ElTableColumn>
+      </ElTable>
+      <template #footer>
+        <div class="flex justify-between items-center w-full">
+          <span></span>
+          <div class="flex gap-2">
+            <ElButton @click="restoreDialogVisible = false">Đóng</ElButton>
+            <ElButton
+              type="success"
+              :disabled="selectedDeletedBrands.length === 0"
+              @click="handleRestoreMany"
+            >
+              <ElIcon class="mr-1"><RefreshRight /></ElIcon>
+              Khôi phục đã chọn
+            </ElButton>
+          </div>
+        </div>
+      </template>
+    </ElDialog>
   </div>
 </template>
 
 <script setup lang="ts">
   import { ref } from 'vue'
-  import { Plus, Picture, Download } from '@element-plus/icons-vue'
+  import {
+    Plus,
+    Picture,
+    Download,
+    Upload,
+    DocumentCopy,
+    Delete,
+    RefreshRight,
+    RefreshLeft,
+    ArrowDown,
+    SuccessFilled,
+    WarningFilled
+  } from '@element-plus/icons-vue'
   import { useBrandTable } from './hooks/useBrandTable'
   import { FileApi } from '@/api/file.api'
   import { ElMessage } from 'element-plus'
+
+  const apiUrl = import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || ''
 
   defineOptions({ name: 'ProductBrand' })
 
@@ -189,6 +371,25 @@
     handleReset,
     refreshData,
     statistics,
+
+    selectedRows,
+    handleSelectionChange,
+    handleDeleteMany,
+    handleCloneMany,
+
+    restoreDialogVisible,
+    deletedBrandsData,
+    deletedBrandsLoading,
+    selectedDeletedBrands,
+    handleDeletedSelectionChange,
+    openRestoreDialog,
+    handleRestoreMany,
+
+    importing,
+    importResultData,
+    importResultDialogVisible,
+    handleImport,
+    handleDownloadTemplate,
 
     dialogVisible,
     dialogTitle,

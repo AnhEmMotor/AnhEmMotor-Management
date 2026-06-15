@@ -56,7 +56,7 @@
     isCustomUpload: false
   })
 
-  const modelValue = defineModel<string>({ required: true })
+  const modelValue = defineModel<string | undefined>()
 
   const editorRef = shallowRef<IDomEditor>()
   const userStore = useUserStore()
@@ -138,7 +138,8 @@
           }
         })
 
-        const { url, alt, href } = response
+        const resData = (response as any).data || response
+        const { url, alt, href } = resData
 
         if (!url) {
           throw new Error('Tải lênThatBai，Vui lòngTìmphụcvụđầuCauHinh')
