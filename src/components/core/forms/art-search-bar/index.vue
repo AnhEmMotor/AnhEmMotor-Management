@@ -19,7 +19,7 @@
         >
           <ElFormItem
             :prop="item.key"
-            :label-width="item.label ? item.labelWidth || labelWidth : undefined"
+            :label-width="item.label ? item.labelWidth || props.labelWidth : undefined"
           >
             <template #label v-if="item.label">
               <component v-if="typeof item.label !== 'string'" :is="item.label" />
@@ -100,7 +100,7 @@
   import { ArrowUpBold, ArrowDownBold } from '@element-plus/icons-vue'
   import { useWindowSize } from '@vueuse/core'
   import { useI18n } from 'vue-i18n'
-  import { toRaw, type Component } from 'vue'
+  import { toRaw, type Component, nextTick } from 'vue'
   import {
     ElCascader,
     ElCheckbox,
@@ -408,7 +408,9 @@
 
     modelValue.value = cloneModelValue(initialModelValue.value)
 
-    emit('reset')
+    nextTick(() => {
+      emit('reset')
+    })
   }
 
   const handleSearch = () => {
@@ -422,7 +424,7 @@
     getOutput: getSanitizedOutput,
   })
 
-  const { span, gutter, labelPosition, labelWidth } = toRefs(props)
+  const { span, gutter, labelPosition } = toRefs(props)
 </script>
 
 <style lang="scss" scoped>

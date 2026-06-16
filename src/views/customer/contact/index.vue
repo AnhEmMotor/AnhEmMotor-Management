@@ -488,7 +488,7 @@
                       type="primary"
                       link
                       size="small"
-                      @click.stop="openCvViewer(row)"
+                      @click.stop="openCvViewer(row as Contact.JobApplication)"
                     >
                       <ArtSvgIcon icon="ri:file-pdf-2-fill" class="text-red-500 mr-1" />CV
                     </ElButton>

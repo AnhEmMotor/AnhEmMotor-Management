@@ -327,3 +327,261 @@
     ></div
   >
 </template>
+
+<script setup lang="ts">
+  import { onMounted, reactive, ref } from 'vue'
+  import { useRoute, useRouter } from 'vue-router'
+  import { ElMessage } from 'element-plus'
+
+  import {
+    RepairOrderApi,
+    type IssuePartsPayload,
+    type RepairOrder,
+  } from '@/infrastructure/api/repair-order'
+  import { EmployeeApi, type EmployeeResponse } from '@/infrastructure/api/employee'
+
+  defineOptions({ name: 'ServiceWorkshopRepairOrderForm' })
+
+  const route = useRoute()
+  const router = useRouter()
+
+  const routeId = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
+  const orderId = Number(routeId)
+
+  const loading = ref(false)
+  const submitting = ref(false)
+  const order = ref<RepairOrder | null>(null)
+  const technicians = ref<EmployeeResponse[]>([])
+  const selectedTechId = ref<number | null>(null)
+
+  const form = reactive({
+    customerPhone: '',
+    mileage: 0,
+    description: '',
+  })
+
+  const steps = [
+    {
+      status: 'Pending',
+      title: 'Tiep nhan xe',
+      description: 'Ghi nhan thong tin xe va yeu cau sua chua ban dau.',
+    },
+    {
+      status: 'InProgress',
+      title: 'Sua chua',
+      description: 'Phan cong ky thuat vien va thuc hien sua chua.',
+    },
+    {
+      status: 'QcPending',
+      title: 'Kiem dinh QC',
+      description: 'Kiem tra chat luong sau sua chua.',
+    },
+    {
+      status: 'Completed',
+      title: 'Hoan tat',
+      description: 'Thanh toan va ban giao xe.',
+    },
+  ]
+
+  const statusOrder = ['Pending', 'InProgress', 'QcPending', 'Completed']
+
+  const syncForm = (value: RepairOrder) => {
+    form.customerPhone = value.customerPhone || ''
+    form.mileage = value.mileage || 0
+    form.description = value.description || ''
+    selectedTechId.value = value.technicianId || null
+  }
+
+  const loadOrder = async () => {
+    if (!Number.isFinite(orderId)) {
+      ElMessage.error('Ma phieu sua chua khong hop le')
+      return
+    }
+
+    loading.value = true
+    try {
+      const res = await RepairOrderApi.getDetail(orderId)
+      order.value = res
+      syncForm(res)
+    } catch (err: any) {
+      ElMessage.error(err?.message || 'Khong the tai thong tin phieu sua chua')
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const loadTechnicians = async () => {
+    try {
+      technicians.value = await EmployeeApi.getList()
+    } catch (err) {
+      console.error('Failed to load technicians', err)
+    }
+  }
+
+  const buildIssuePartsPayload = (status: 'InProgress' | 'QcPending'): IssuePartsPayload => {
+    const details = order.value?.details || []
+
+    return {
+      repairOrderId: orderId,
+      parts: details
+        .filter((detail) => detail.type === 'Part' && detail.productVariantId)
+        .map((detail) => ({
+          productVariantId: detail.productVariantId as number,
+          count: detail.count,
+          price: detail.price,
+          notes: detail.notes || undefined,
+        })),
+      services: details
+        .filter((detail) => detail.type === 'Service' && detail.serviceId)
+        .map((detail) => ({
+          serviceId: detail.serviceId as number,
+          laborCost: detail.laborCost,
+          notes: detail.notes || undefined,
+        })),
+      status,
+    }
+  }
+
+  const handleSubmitPending = () => {
+    ElMessage.warning('Backend chua co endpoint cap nhat thong tin tiep nhan cua phieu sua chua')
+  }
+
+  const handleStartRepair = async () => {
+    submitting.value = true
+    try {
+      if (selectedTechId.value) {
+        await RepairOrderApi.assignTechnician({
+          repairOrderId: orderId,
+          technicianId: selectedTechId.value,
+        })
+      } else {
+        await RepairOrderApi.issueParts(buildIssuePartsPayload('InProgress'))
+      }
+
+      ElMessage.success('Da chuyen phieu sang trang thai dang sua chua')
+      await loadOrder()
+    } catch (err: any) {
+      ElMessage.error(err?.message || 'Khong the bat dau sua chua')
+    } finally {
+      submitting.value = false
+    }
+  }
+
+  const assignTechnician = async () => {
+    if (!selectedTechId.value) {
+      ElMessage.warning('Vui long chon ky thuat vien')
+      return
+    }
+
+    submitting.value = true
+    try {
+      await RepairOrderApi.assignTechnician({
+        repairOrderId: orderId,
+        technicianId: selectedTechId.value,
+      })
+      ElMessage.success('Da phan cong ky thuat vien')
+      await loadOrder()
+    } catch (err: any) {
+      ElMessage.error(err?.message || 'Phan cong ky thuat vien that bai')
+    } finally {
+      submitting.value = false
+    }
+  }
+
+  const openIssuePartsDialog = () => {
+    ElMessage.info('Man hinh nay chua co dialog cap phat; hay dung man chi tiet de sua hang muc')
+  }
+
+  const openPrintReceipt = () => {
+    window.print()
+  }
+
+  const goBack = () => {
+    router.push('/service/workshop/repair-orders')
+  }
+
+  const formatCurrency = (value: number) => {
+    if (!value) return '0 d'
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
+  }
+
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return '-'
+    return new Date(dateStr).toLocaleDateString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  }
+
+  const isStepActive = (status: string) => {
+    if (!order.value) return false
+    return statusOrder.indexOf(status) <= statusOrder.indexOf(order.value.status)
+  }
+
+  const getStepDotClass = (status: string) => {
+    if (!order.value) return 'border-slate-200 bg-white text-slate-300'
+
+    const currentIndex = statusOrder.indexOf(order.value.status)
+    const stepIndex = statusOrder.indexOf(status)
+
+    if (stepIndex < currentIndex) return 'border-emerald-500 bg-emerald-500 text-white'
+    if (stepIndex === currentIndex) return 'border-blue-600 bg-white text-blue-600'
+    return 'border-slate-200 bg-white text-slate-300'
+  }
+
+  const getStepInnerDotClass = (status: string) => {
+    if (!order.value) return 'bg-slate-200'
+
+    const currentIndex = statusOrder.indexOf(order.value.status)
+    const stepIndex = statusOrder.indexOf(status)
+
+    if (stepIndex < currentIndex) return 'bg-white'
+    if (stepIndex === currentIndex) return 'bg-blue-600'
+    return 'bg-slate-200'
+  }
+
+  const getStatusBadgeClass = (status: string) => {
+    const base =
+      'px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider inline-block text-center w-28 '
+
+    switch (status) {
+      case 'Pending':
+        return `${base}bg-purple-50 text-purple-600 border border-purple-200`
+      case 'InProgress':
+        return `${base}bg-blue-50 text-blue-600 border border-blue-200`
+      case 'QcPending':
+        return `${base}bg-amber-50 text-amber-600 border border-amber-200`
+      case 'Completed':
+        return `${base}bg-emerald-50 text-emerald-600 border border-emerald-200`
+      case 'Cancelled':
+        return `${base}bg-red-50 text-red-600 border border-red-200`
+      default:
+        return `${base}bg-slate-50 text-slate-600 border border-slate-200`
+    }
+  }
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'Pending':
+        return 'Cho tiep nhan'
+      case 'InProgress':
+        return 'Dang sua chua'
+      case 'QcPending':
+        return 'Dang QC'
+      case 'Completed':
+        return 'Da hoan thanh'
+      case 'Cancelled':
+        return 'Da huy'
+      default:
+        return status || '-'
+    }
+  }
+
+  onMounted(() => {
+    loadOrder()
+    loadTechnicians()
+  })
+</script>

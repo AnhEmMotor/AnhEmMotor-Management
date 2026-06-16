@@ -1,51 +1,116 @@
 <template>
   <div class="contract-preview-container">
-    <!-- Thanh Tiến Độ Đầu Trang (Progress Pipeline) -->
-    <el-card shadow="never" class="mb-4">
-      <el-steps :active="activeStep" finish-status="success" align-center>
-        <el-step title="Đặt cọc" description="Đã nhận cọc và khởi tạo hợp đồng" />
-        <el-step title="Thanh toán đủ" description="Khách hàng hoàn tất nghĩa vụ tài chính" />
-        <el-step description="Hoàn thành hợp đồng (Fulfilled)">
-          <template #title>
-            <el-tooltip
-              v-if="contractData.status === 'Draft'"
-              content="Chặn bàn giao: Hợp đồng cần phải được ký kết và tải lên bản quét chứng từ thực tế."
-              placement="top"
-            >
-              <span class="flex items-center justify-center cursor-help">
-                Bàn giao xe <el-icon class="ml-1 text-gray-400"><Lock /></el-icon>
-              </span>
-            </el-tooltip>
-            <span v-else>Bàn giao xe</span>
-          </template>
-        </el-step>
-      </el-steps>
+    <!-- Modern Page Header -->
+    <ReportPageHeader
+      title="Mẫu Hợp Đồng Mua Bán Xe Máy"
+      description="Trình xem trước và quản lý hợp đồng bán hàng — theo dõi vòng đời đặt cọc, ký kết và bàn giao xe."
+      icon="ri:file-contract-line"
+    >
+      <template #actions>
+        <el-button @click="handlePrint">
+          <el-icon><Printer /></el-icon>&nbsp;In Hợp Đồng
+        </el-button>
+        <el-button v-if="contractData.status === 'Draft'" type="primary" @click="handleSaveDraft">
+          <el-icon><Document /></el-icon>&nbsp;Lưu Bản Nháp
+        </el-button>
+        <el-button
+          v-if="contractData.status === 'Signed'"
+          type="warning"
+          @click="handleCreateAddendum"
+        >
+          <el-icon><DocumentCopy /></el-icon>&nbsp;Tạo Phụ Lục
+        </el-button>
+        <el-button
+          v-if="contractData.status === 'Signed' && activeStep >= 1"
+          type="success"
+          @click="handleHandover"
+        >
+          <el-icon><CircleCheck /></el-icon>&nbsp;Xác Nhận Bàn Giao
+        </el-button>
+      </template>
+    </ReportPageHeader>
 
-      <div class="flex justify-between items-center mt-4">
-        <div>
-          <span class="text-gray-500 mr-2">Trạng thái Pháp lý:</span>
-          <el-tag :type="contractStatusType">{{ contractData.status }}</el-tag>
-        </div>
-        <div>
-          <el-button @click="handlePrint">In Hợp Đồng</el-button>
-          <el-button v-if="contractData.status === 'Draft'" type="primary" @click="handleSaveDraft">
-            Lưu Bản Nháp
-          </el-button>
-          <el-button
-            v-if="contractData.status === 'Signed'"
-            type="warning"
-            @click="handleCreateAddendum"
+    <!-- KPI Cards Row -->
+    <div class="reporting-kpi-grid mb-4">
+      <ArtStatsCard
+        title="Số hợp đồng"
+        :count="contractData.contractNumber || '-'"
+        description="Mã hợp đồng đang xem"
+        icon="ri:hashtag"
+        icon-style="bg-report-red"
+      />
+      <ArtStatsCard
+        title="Đơn giá bán"
+        :count="formatCurrency(contractData.actualSalePrice)"
+        description="Giá trị hợp đồng cuối cùng"
+        icon="ri:money-dollar-circle-line"
+        icon-style="bg-report-red-light"
+      />
+      <ArtStatsCard
+        title="Còn lại"
+        :count="formatCurrency(contractData.remainingAmount)"
+        description="Số tiền cần thanh toán"
+        icon="ri:wallet-3-line"
+        icon-style="bg-report-red-dark"
+      />
+      <ArtStatsCard
+        title="Trạng thái pháp lý"
+        :count="getStatusLabel(contractData.status)"
+        description="Theo dõi vòng đời hợp đồng"
+        icon="ri:shield-check-line"
+        icon-style="bg-report-gray"
+      />
+    </div>
+
+    <!-- Progress Pipeline -->
+    <el-card shadow="never" class="mb-4 pipeline-card">
+      <div class="text-sm text-gray-500 mb-4 font-medium">Trạng thái vòng đời hợp đồng</div>
+
+      <div class="relative flex w-full">
+        <div class="absolute top-4 left-[12.5%] right-[12.5%] h-0.5 bg-gray-200 z-0"></div>
+        <div
+          class="absolute top-4 left-[12.5%] h-0.5 bg-report-red z-0 transition-all duration-300"
+          :style="{ width: `${Math.min(Math.max(activeStep, 0), 2) * 37.5}%` }"
+        ></div>
+
+        <div
+          v-for="(step, index) in [
+            { label: 'Đặt cọc', desc: 'Đã nhận cọc và khởi tạo' },
+            { label: 'Thanh toán đủ', desc: 'Hoàn tất nghĩa vụ tài chính' },
+            { label: 'Bàn giao xe', desc: 'Hoàn thành hợp đồng' },
+          ]"
+          :key="index"
+          class="flex-1 flex flex-col items-center relative z-10"
+        >
+          <div
+            class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 bg-white transition-colors duration-300"
+            :class="[
+              activeStep > index ? 'border-report-red text-report-red' : '',
+              activeStep === index ? 'border-report-red bg-report-red text-white' : '',
+              activeStep < index ? 'border-gray-300 text-gray-400' : '',
+            ]"
           >
-            Tạo Phụ Lục Hợp Đồng
-          </el-button>
-          <el-button
-            v-if="contractData.status === 'Signed' && activeStep >= 1"
-            type="success"
-            @click="handleHandover"
+            <el-icon v-if="activeStep > index"><Check /></el-icon>
+            <span v-else>{{ index + 1 }}</span>
+          </div>
+          <div
+            class="mt-2 text-center text-sm px-1 w-full wrap-break-word"
+            :class="activeStep >= index ? 'text-gray-900 font-medium' : 'text-gray-400'"
           >
-            Xác Nhận Bàn Giao (Fulfilled)
-          </el-button>
+            {{ step.label }}
+          </div>
+          <div class="text-xs text-gray-400 mt-1 text-center px-2 w-full">{{ step.desc }}</div>
         </div>
+      </div>
+
+      <div v-if="contractData.status === 'Draft'" class="mt-4">
+        <el-alert
+          type="warning"
+          :closable="false"
+          show-icon
+          title="Hợp đồng đang ở trạng thái Nháp"
+          description="Cần ký kết và tải lên bản scan chứng từ thực tế để chuyển sang trạng thái Đã ký."
+        />
       </div>
     </el-card>
 
@@ -53,9 +118,16 @@
     <el-row :gutter="20">
       <!-- Cột bên trái: Form nhập liệu & upload -->
       <el-col :span="10">
-        <el-card shadow="never" class="form-card" body-style="height: 600px; overflow-y: auto;">
+        <el-card
+          shadow="never"
+          class="form-card reporting-card"
+          body-style="height: 600px; overflow-y: auto;"
+        >
           <template #header>
-            <div class="card-header font-bold">Thông tin Hợp đồng & Phụ lục</div>
+            <div class="card-header font-bold flex items-center gap-2">
+              <el-icon class="text-report-red"><EditPen /></el-icon>
+              Thông tin Hợp đồng & Phụ lục
+            </div>
           </template>
 
           <el-form label-position="top" :disabled="isContractSigned">
@@ -99,7 +171,10 @@
             class="upload-zone mt-4"
             :class="{ 'highlight-upload': isHighlightUpload }"
           >
-            <h4 class="mb-2 font-bold">Bản quét Chứng từ Thực tế</h4>
+            <div class="flex items-center gap-2 mb-2">
+              <el-icon class="text-report-red text-lg"><UploadFilled /></el-icon>
+              <h4 class="font-bold m-0">Bản quét Chứng từ Thực tế</h4>
+            </div>
             <p class="text-xs text-gray-500 mb-2"
               >Tải lên bản gốc có chữ ký/dấu vân tay để xác nhận hợp đồng có hiệu lực (Signed).</p
             >
@@ -107,7 +182,7 @@
               class="upload-demo"
               drag
               :http-request="customUploadRequest"
-              :disabled="contractData.status !== 'Draft'"
+              :disabled="true"
             >
               <el-icon class="el-icon--upload"><upload-filled /></el-icon>
               <div class="el-upload__text"> Kéo thả file hoặc <em>Bấm vào đây</em> để tải lên </div>
@@ -126,11 +201,15 @@
       <el-col :span="14">
         <el-card
           shadow="never"
-          class="preview-card"
+          class="preview-card reporting-card"
           body-style="padding: 0; background-color: #f3f4f6; height: 650px;"
         >
-          <div class="preview-toolbar p-2 bg-gray-200 border-b flex justify-between">
-            <span class="text-sm font-bold text-gray-600">Trình Xem Trước Bản In (A4)</span>
+          <div class="preview-toolbar p-2 bg-gray-200 border-b flex justify-between items-center">
+            <span class="text-sm font-bold text-gray-600 flex items-center gap-2">
+              <el-icon class="text-report-red"><Document /></el-icon>
+              Trình Xem Trước Bản In (A4)
+            </span>
+            <el-tag size="small" type="info">{{ contractData.contractNumber }}</el-tag>
           </div>
 
           <div class="a4-preview-container p-6" style="height: calc(100% - 40px); overflow-y: auto">
@@ -236,12 +315,20 @@
 <script setup lang="ts">
   import { ref, computed, onMounted } from 'vue'
   import { useRoute } from 'vue-router'
-  import { UploadFilled, Lock } from '@element-plus/icons-vue'
-  import { ElMessage, ElMessageBox } from 'element-plus'
   import {
-    SalesContractApi,
-    type SalesContractStatus,
-  } from '@/infrastructure/api/sales-contract.api'
+    UploadFilled,
+    Document,
+    DocumentCopy,
+    EditPen,
+    Printer,
+    CircleCheck,
+    Check,
+  } from '@element-plus/icons-vue'
+  import { ElMessage, ElMessageBox } from 'element-plus'
+  import { SalesContractApi } from '@/infrastructure/api/sales-contract.api'
+  import type { SalesContractStatus } from '@/domain/sales/contract.types'
+  import ReportPageHeader from '@/views/analytics-reporting/components/ReportPageHeader.vue'
+  import ArtStatsCard from '@/components/core/cards/art-stats-card/index.vue'
 
   const route = useRoute()
 
@@ -291,7 +378,7 @@
 
   const isContractSigned = computed(() => contractData.value.status !== 'Draft')
 
-  const contractStatusType = computed(() => {
+  const _contractStatusType = computed(() => {
     switch (contractData.value.status) {
       case 'Draft':
         return 'info'
@@ -303,6 +390,19 @@
         return 'info'
     }
   })
+
+  const getStatusLabel = (status: SalesContractStatus): string => {
+    switch (status) {
+      case 'Draft':
+        return 'Nháp'
+      case 'Signed':
+        return 'Đã ký'
+      case 'Fulfilled':
+        return 'Hoàn tất'
+      default:
+        return status
+    }
+  }
 
   const loadData = async () => {
     const contractId = route.params?.id as string | undefined
@@ -426,6 +526,102 @@
     height: calc(100vh - 100px);
     padding: 16px;
     overflow-y: auto;
+    color: #f8fafc;
+
+    :deep(.el-card) {
+      background-color: #151619;
+      border-color: #2c2f36;
+      box-shadow: none;
+    }
+
+    :deep(.el-card__header),
+    :deep(.el-card__body),
+    :deep(.el-form-item__label),
+    :deep(.el-step__title),
+    :deep(.el-step__description),
+    :deep(.el-textarea__inner),
+    :deep(.el-input__inner),
+    :deep(.el-select__selected-item),
+    :deep(.el-descriptions__label),
+    :deep(.el-descriptions__content),
+    :deep(.el-upload__text),
+    :deep(.el-upload__tip) {
+      color: #f8fafc !important;
+    }
+
+    :deep(.el-input__wrapper),
+    :deep(.el-select__wrapper),
+    :deep(.el-textarea__inner),
+    :deep(.el-upload-dragger) {
+      background-color: #101114;
+      border-color: #333741;
+      box-shadow: 0 0 0 1px #333741 inset;
+    }
+
+    :deep(.el-input__inner::placeholder),
+    :deep(.el-textarea__inner::placeholder) {
+      color: #cbd5e1;
+    }
+
+    :deep(.el-descriptions__cell),
+    :deep(.el-descriptions__label),
+    :deep(.el-descriptions__content) {
+      background-color: #151619 !important;
+      border-color: #2c2f36 !important;
+    }
+
+    :deep(.text-gray-400),
+    :deep(.text-gray-500),
+    :deep(.text-gray-600),
+    :deep(.text-gray-700),
+    :deep(.text-gray-800),
+    :deep(.text-gray-900) {
+      color: #f8fafc !important;
+    }
+
+    :deep(.bg-gray-50),
+    :deep(.bg-gray-100),
+    :deep(.bg-gray-200),
+    :deep(.bg-white) {
+      background-color: #151619 !important;
+    }
+
+    :deep(.border-gray-100),
+    :deep(.border-gray-200),
+    :deep(.border-b) {
+      border-color: #2c2f36 !important;
+    }
+
+    :deep(.a4-paper),
+    :deep(.a4-paper *) {
+      color: #111827 !important;
+      background-color: #fff !important;
+    }
+
+    :deep(.a4-paper .border-b),
+    :deep(.a4-paper .border-gray-200) {
+      border-color: #e5e7eb !important;
+    }
+  }
+
+  .pipeline-card :deep(.el-card__body) {
+    padding: 18px 20px;
+  }
+
+  .bg-report-red {
+    background-color: #e84a4a !important;
+  }
+
+  .text-report-red {
+    color: #ff6b6b !important;
+  }
+
+  .border-report-red {
+    border-color: #e84a4a !important;
+  }
+
+  .bg-report-gray {
+    background-color: #2d2d2d !important;
   }
 
   .a4-preview-container {
@@ -448,16 +644,16 @@
   .upload-zone {
     padding: 20px;
     text-align: center;
-    background-color: #fafafa;
-    border: 1px dashed #d9d9d9;
+    background-color: #151619;
+    border: 1px dashed #333741;
     border-radius: 6px;
     transition: all 0.5s ease;
   }
 
   .highlight-upload {
-    background-color: #ecf5ff;
-    border-color: #409eff;
-    box-shadow: 0 0 15px rgb(64 158 255 / 40%);
+    background-color: rgb(232 74 74 / 14%);
+    border-color: #e84a4a;
+    box-shadow: 0 0 15px rgb(232 74 74 / 40%);
     transform: scale(1.02);
   }
 </style>

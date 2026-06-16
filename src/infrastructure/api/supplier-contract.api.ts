@@ -74,10 +74,10 @@ export interface SupplierContractListParams {
   size: number
   Filters?: string
   Sorts?: string
-  [name]?: string
-  [contractNumber]?: string
-  [status]?: string[]
-  [supplierId]?: string
+  name?: string
+  contractNumber?: string
+  status?: string[]
+  supplierId?: string
 }
 
 export interface SupplierContractStatisticsResponse {

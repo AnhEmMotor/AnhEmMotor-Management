@@ -48,20 +48,11 @@
   "setting": {
     "menuType": {
       "title": "Menu Layout",
-      "list": [
-        "Vertical",
-        "Horizontal",
-        "Mixed",
-        "Dual"
-      ]
+      "list": ["Vertical", "Horizontal", "Mixed", "Dual"]
     },
     "theme": {
       "title": "Theme Style",
-      "list": [
-        "Light",
-        "Dark",
-        "System"
-      ]
+      "list": ["Light", "Dark", "System"]
     },
     "menu": {
       "title": "Menu Style"
@@ -71,17 +62,11 @@
     },
     "box": {
       "title": "Box Style",
-      "list": [
-        "Border",
-        "Shadow"
-      ]
+      "list": ["Border", "Shadow"]
     },
     "container": {
       "title": "Container Width",
-      "list": [
-        "Full",
-        "Boxed"
-      ]
+      "list": ["Full", "Boxed"]
     },
     "basics": {
       "title": "Basic Config",
@@ -127,14 +112,8 @@
   "notice": {
     "title": "Notice",
     "btnRead": "Mark as read",
-    "bar": [
-      "Notice",
-      "Message",
-      "Todo"
-    ],
-    "text": [
-      "No"
-    ],
+    "bar": ["Notice", "Message", "Todo"],
+    "text": ["No"],
     "viewAll": "View all"
   },
   "worktab": {
@@ -237,7 +216,11 @@
       "supplier": "Supplier Contract",
       "templates": "Contract Templates",
       "templateList": "Contract Templates List",
+      "templateEditTitle": "Edit Contract Template",
+      "templateCreateTitle": "Create New Contract Template",
       "templateEditor": "Contract Template Editor",
+      "templateEditorDescription": "Configure information and edit dynamic contract template content",
+      "templateImport": "Import from Word",
       "templateName": "Template Name",
       "templateCode": "Template Code",
       "templateType": "Type",
@@ -280,7 +263,86 @@
       "filterAll": "All",
       "filterActive": "Active",
       "filterInactive": "Inactive",
-      "filterDeprecated": "Deprecated"
+      "filterDeprecated": "Deprecated",
+      "tokenSearchPlaceholder": "Search placeholders...",
+      "tokens": {
+        "customer": {
+          "ShowroomName": "Showroom Name",
+          "ShowroomAddress": "Showroom Address",
+          "ShowroomPhone": "Showroom Phone",
+          "ShowroomTaxCode": "Tax Code",
+          "ShowroomRepresentative": "Showroom Representative",
+          "ShowroomRepresentativeTitle": "Representative Title",
+          "ShowroomRepresentativeIdCard": "Representative ID Card",
+          "ShowroomRepresentativeIdIssuedDate": "ID Issued Date",
+          "ShowroomRepresentativeIdIssuedPlace": "ID Issued Place",
+          "ShowroomFax": "Fax",
+          "ShowroomBankAccount": "Bank Account",
+          "ShowroomBankName": "Bank Name",
+          "CustomerName": "Customer Name",
+          "CustomerIdCard": "ID Card",
+          "CustomerAddress": "Address",
+          "CustomerPhone": "Phone",
+          "CustomerEmail": "Email",
+          "CustomerRepresentativeTitle": "Representative Title",
+          "CustomerIdIssuedDate": "ID Issued Date",
+          "CustomerIdIssuedPlace": "ID Issued Place",
+          "CustomerFax": "Fax",
+          "CustomerBankAccount": "Bank Account",
+          "CustomerBankName": "Bank Name"
+        },
+        "vehicle": {
+          "VehicleName": "Vehicle Name",
+          "ChassisNumber": "Chassis Number",
+          "EngineNumber": "Engine Number",
+          "VehiclePrice": "Price",
+          "VehiclePriceInWords": "Price in Words",
+          "VehicleColor": "Color",
+          "LicensePlate": "License Plate",
+          "PaymentDueDate": "Due Date",
+          "PaymentMethod": "Payment Method",
+          "DeliveryDate": "Delivery Date",
+          "DeliveryLocation": "Delivery Location",
+          "TransportationResponsibleParty": "Transportation Party",
+          "StorageFeePerDay": "Storage Fee/Day",
+          "InspectionAgency": "Inspection Agency",
+          "ComplaintDeadlineDays": "Complaint Deadline (Days)",
+          "SellerResponseDays": "Seller Response Days",
+          "WarrantyProductName": "Warranty Item",
+          "WarrantyMonths": "Warranty (Months)",
+          "PenaltyPercent": "Penalty %",
+          "ContractCopies": "Contract Copies",
+          "EachPartyCopies": "Copies per Party"
+        },
+        "finance": {
+          "DepositAmount": "Deposit",
+          "RemainingAmount": "Remaining Amount",
+          "FinancialPartner": "Finance Partner",
+          "FinancialPartnerContact": "Finance Contact",
+          "FinanceContractNumber": "Finance Contract No.",
+          "LoanAmount": "Loan Amount",
+          "TermMonths": "Term (Months)",
+          "InterestRate": "Interest Rate",
+          "MonthlyPayment": "Monthly Payment",
+          "ExpectedDisbursementDate": "Expected Disbursement Date",
+          "ActualDisbursementDate": "Actual Disbursement Date",
+          "ExpectedDisbursementAmount": "Expected Disbursement Amount",
+          "ActualDisbursementAmount": "Actual Disbursement Amount",
+          "CavetStatus": "Cavet Status",
+          "ContractDate": "Contract Date"
+        },
+        "supplier": {
+          "SupplierName": "Supplier Name",
+          "SupplierContact": "Contact Person",
+          "CreditLimit": "Credit Limit",
+          "DiscountPolicy": "Discount Policy",
+          "TargetVolume": "Target Volume",
+          "EffectiveDate": "Effective Date",
+          "ExpiryDate": "Expiry Date",
+          "ParentContractNumber": "Parent Contract No.",
+          "AppendixChangeContent": "Appendix Content"
+        }
+      }
     },
     "inventory": {
       "title": "Inventory Management",

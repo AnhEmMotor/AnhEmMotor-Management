@@ -562,3 +562,329 @@
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+  import { computed, onMounted, ref } from 'vue'
+  import { useRoute, useRouter } from 'vue-router'
+  import { ElMessage } from 'element-plus'
+
+  import {
+    RepairOrderApi,
+    type RepairOrder,
+    type RepairOrderDetail,
+  } from '@/infrastructure/api/repair-order'
+  import { EmployeeApi, type EmployeeResponse } from '@/infrastructure/api/employee'
+
+  defineOptions({ name: 'ServiceWorkshopRepairOrderDetail' })
+
+  interface LocalServiceItem {
+    serviceId: number
+    serviceName?: string
+    laborCost: number
+    notes: string
+  }
+
+  interface LocalPartItem {
+    productVariantId: number
+    variantName?: string
+    price: number
+    count: number
+    notes: string
+  }
+
+  const route = useRoute()
+  const router = useRouter()
+
+  const routeId = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
+  const orderId = Number(routeId)
+
+  const loading = ref(false)
+  const submitting = ref(false)
+  const order = ref<RepairOrder | null>(null)
+
+  const technicians = ref<EmployeeResponse[]>([])
+  const selectedTechId = ref<number | null>(null)
+
+  const localServices = ref<LocalServiceItem[]>([])
+  const localParts = ref<LocalPartItem[]>([])
+
+  const paymentMethod = ref('Cash')
+  const paymentStatus = ref('Paid')
+  const checkoutNotes = ref('')
+
+  const steps = [
+    {
+      status: 'Pending',
+      title: 'Tiep nhan xe',
+      description: 'Da lap phieu check-in va cho phan cong ky thuat vien.',
+    },
+    {
+      status: 'InProgress',
+      title: 'Sua chua',
+      description: 'Dang khao sat, lap du toan dich vu va lap phu tung thay the.',
+    },
+    {
+      status: 'QcPending',
+      title: 'Kiem dinh QC',
+      description: 'Kiem tra chat luong ky thuat xe sau sua chua.',
+    },
+    {
+      status: 'Completed',
+      title: 'Hoan tat & Ban giao',
+      description: 'Thanh toan hoa don va ban giao xe cho khach hang.',
+    },
+  ]
+
+  const totalLaborCost = computed(() =>
+    localServices.value.reduce((total, item) => total + (item.laborCost || 0), 0),
+  )
+
+  const totalPartsCost = computed(() =>
+    localParts.value.reduce((total, item) => total + (item.price || 0) * (item.count || 0), 0),
+  )
+
+  const totalAmount = computed(() => totalLaborCost.value + totalPartsCost.value)
+
+  const syncLocalItems = (details: RepairOrderDetail[]) => {
+    localServices.value = details
+      .filter((detail) => detail.type === 'Service' && detail.serviceId)
+      .map((detail) => ({
+        serviceId: detail.serviceId as number,
+        serviceName: detail.serviceName,
+        laborCost: detail.laborCost || 0,
+        notes: detail.notes || '',
+      }))
+
+    localParts.value = details
+      .filter((detail) => detail.type === 'Part' && detail.productVariantId)
+      .map((detail) => ({
+        productVariantId: detail.productVariantId as number,
+        variantName: detail.variantName,
+        price: detail.price || 0,
+        count: detail.count || 1,
+        notes: detail.notes || '',
+      }))
+  }
+
+  const loadOrderDetail = async () => {
+    if (!Number.isFinite(orderId)) {
+      ElMessage.error('Ma phieu sua chua khong hop le')
+      return
+    }
+
+    loading.value = true
+    try {
+      const res = await RepairOrderApi.getDetail(orderId)
+      order.value = res
+      selectedTechId.value = res.technicianId || null
+      checkoutNotes.value = res.notes || ''
+      paymentMethod.value = res.paymentMethod || 'Cash'
+      paymentStatus.value = res.paymentStatus || 'Paid'
+      syncLocalItems(res.details || [])
+    } catch (err: any) {
+      ElMessage.error(err?.message || 'Khong the tai thong tin phieu sua chua')
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const loadCatalogs = async () => {
+    try {
+      const employeeRes = await EmployeeApi.getList()
+      technicians.value = employeeRes || []
+    } catch (err) {
+      console.error('Failed to load repair-order catalogs', err)
+    }
+  }
+
+  const assignTechnician = async () => {
+    if (!selectedTechId.value) {
+      ElMessage.warning('Vui long chon ky thuat vien')
+      return
+    }
+
+    submitting.value = true
+    try {
+      await RepairOrderApi.assignTechnician({
+        repairOrderId: orderId,
+        technicianId: selectedTechId.value,
+      })
+      ElMessage.success('Da phan cong ky thuat vien')
+      await loadOrderDetail()
+    } catch (err: any) {
+      ElMessage.error(err?.message || 'Phan cong ky thuat vien that bai')
+    } finally {
+      submitting.value = false
+    }
+  }
+
+  const openServiceDialog = () => {
+    ElMessage.info('Man hinh nay chua co dialog them dich vu')
+  }
+
+  const removeService = (index: number) => {
+    localServices.value.splice(index, 1)
+  }
+
+  const openPartsDialog = () => {
+    ElMessage.info('Man hinh nay chua co dialog them phu tung')
+  }
+
+  const removePart = (index: number) => {
+    localParts.value.splice(index, 1)
+  }
+
+  const saveIssueParts = async (targetStatus: 'InProgress' | 'QcPending') => {
+    submitting.value = true
+    try {
+      await RepairOrderApi.issueParts({
+        repairOrderId: orderId,
+        parts: localParts.value.map((part) => ({
+          productVariantId: part.productVariantId,
+          count: part.count,
+          price: part.price,
+          notes: part.notes || undefined,
+        })),
+        services: localServices.value.map((service) => ({
+          serviceId: service.serviceId,
+          laborCost: service.laborCost,
+          notes: service.notes || undefined,
+        })),
+        status: targetStatus,
+      })
+
+      ElMessage.success('Da cap nhat hang muc sua chua')
+      await loadOrderDetail()
+    } catch (err: any) {
+      ElMessage.error(err?.message || 'Cap nhat hang muc sua chua that bai')
+    } finally {
+      submitting.value = false
+    }
+  }
+
+  const completeRepairOrder = async () => {
+    submitting.value = true
+    try {
+      await RepairOrderApi.complete({
+        repairOrderId: orderId,
+        paymentMethod: paymentMethod.value,
+        paymentStatus: paymentStatus.value,
+        notes: checkoutNotes.value || undefined,
+      })
+      ElMessage.success('Da hoan tat phieu sua chua')
+      await loadOrderDetail()
+    } catch (err: any) {
+      ElMessage.error(err?.message || 'Hoan tat phieu sua chua that bai')
+    } finally {
+      submitting.value = false
+    }
+  }
+
+  const openPrintInvoice = () => {
+    window.print()
+  }
+
+  const goBack = () => {
+    router.push('/service/workshop/repair-orders')
+  }
+
+  const formatCurrency = (value: number) => {
+    if (!value) return '0 d'
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
+  }
+
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return '-'
+    return new Date(dateStr).toLocaleDateString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  }
+
+  const statusOrder = ['Pending', 'InProgress', 'QcPending', 'Completed']
+
+  const isStepActive = (status: string) => {
+    if (!order.value) return false
+    return statusOrder.indexOf(status) <= statusOrder.indexOf(order.value.status)
+  }
+
+  const getStepDotClass = (status: string) => {
+    if (!order.value) return 'border-slate-200 bg-white text-slate-300'
+
+    const currentIndex = statusOrder.indexOf(order.value.status)
+    const stepIndex = statusOrder.indexOf(status)
+
+    if (stepIndex < currentIndex) return 'border-emerald-500 bg-emerald-500 text-white'
+    if (stepIndex === currentIndex) return 'border-blue-600 bg-white text-blue-600'
+    return 'border-slate-200 bg-white text-slate-300'
+  }
+
+  const getStepInnerDotClass = (status: string) => {
+    if (!order.value) return 'bg-slate-200'
+
+    const currentIndex = statusOrder.indexOf(order.value.status)
+    const stepIndex = statusOrder.indexOf(status)
+
+    if (stepIndex < currentIndex) return 'bg-white'
+    if (stepIndex === currentIndex) return 'bg-blue-600'
+    return 'bg-slate-200'
+  }
+
+  const getStatusBadgeClass = (status: string) => {
+    const base =
+      'px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider inline-block text-center w-28 '
+
+    switch (status) {
+      case 'Pending':
+        return `${base}bg-purple-50 text-purple-600 border border-purple-200`
+      case 'InProgress':
+        return `${base}bg-blue-50 text-blue-600 border border-blue-200`
+      case 'QcPending':
+        return `${base}bg-amber-50 text-amber-600 border border-amber-200`
+      case 'Completed':
+        return `${base}bg-emerald-50 text-emerald-600 border border-emerald-200`
+      case 'Cancelled':
+        return `${base}bg-red-50 text-red-600 border border-red-200`
+      default:
+        return `${base}bg-slate-50 text-slate-600 border border-slate-200`
+    }
+  }
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'Pending':
+        return 'Cho tiep nhan'
+      case 'InProgress':
+        return 'Dang sua chua'
+      case 'QcPending':
+        return 'Dang QC'
+      case 'Completed':
+        return 'Da hoan thanh'
+      case 'Cancelled':
+        return 'Da huy'
+      default:
+        return status || '-'
+    }
+  }
+
+  const getPaymentMethodText = (method?: string) => {
+    switch (method) {
+      case 'Cash':
+        return 'Tien mat'
+      case 'BankTransfer':
+        return 'Chuyen khoan'
+      case 'Card':
+        return 'The'
+      default:
+        return method || '-'
+    }
+  }
+
+  onMounted(() => {
+    loadOrderDetail()
+    loadCatalogs()
+  })
+</script>

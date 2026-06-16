@@ -18,7 +18,7 @@ import type {
 
 import { ServiceEvaluationApi } from '@/infrastructure/api/service-evaluation.api'
 
-function toCriteriaText(c: EvaluationCriteria) {
+function _toCriteriaText(c: EvaluationCriteria) {
   return c === 'QualityOfCar' ? 'Chất lượng xe' : 'Thái độ phục vụ'
 }
 
@@ -34,15 +34,14 @@ class RealGetServiceEvaluationsUseCase implements GetServiceEvaluationsUseCase {
       size: query.size ?? 20,
     })
 
-    // Handle Result<T> wrapper from Backend
-    return res.value || { items: [], totalCount: 0 }
+    return res || { items: [], totalCount: 0 }
   }
 }
 
 class RealGetEvaluationDetailUseCase implements GetEvaluationDetailUseCase {
   async execute(evaluationId: number): Promise<EvaluationDetail> {
     const res = await ServiceEvaluationApi.getDetail(evaluationId)
-    return res.value || null
+    return res
   }
 }
 

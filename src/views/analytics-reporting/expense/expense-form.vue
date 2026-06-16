@@ -1,73 +1,66 @@
 <template>
-  <div class="space-y-4">
-    <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Tên khoản chi</label>
-      <input
-        v-model="form.name"
-        placeholder="VD: Thuê mặt bằng, Marketing..."
-        class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-      />
-    </div>
+  <ElForm label-position="top" class="expense-form">
+    <ElFormItem label="Tên khoản chi" required>
+      <ElInput v-model="form.name" placeholder="VD: Thuê mặt bằng, Marketing..." />
+    </ElFormItem>
 
-    <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Phân loại</label>
-      <select
-        v-model="form.category"
-        class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-      >
-        <option :value="0">Chi phí cố định (Mặt bằng, lương cơ bản...)</option>
-        <option :value="1">Chi phí biến đổi (Hoa hồng, điện nước, vật tư...)</option>
-      </select>
-    </div>
+    <ElFormItem label="Phân loại" required>
+      <ElSelect v-model="form.category" popper-class="reporting-select-popper" class="w-full">
+        <ElOption label="Chi phí cố định (mặt bằng, lương cơ bản...)" :value="0" />
+        <ElOption label="Chi phí biến đổi (hoa hồng, điện nước, vật tư...)" :value="1" />
+      </ElSelect>
+    </ElFormItem>
 
-    <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Số tiền (VNĐ)</label>
-      <input
-        type="number"
+    <ElFormItem label="Số tiền (VNĐ)" required>
+      <ElInputNumber
         v-model.number="form.amount"
-        class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+        :min="0"
+        :step="100000"
+        controls-position="right"
+        class="w-full"
       />
-    </div>
+    </ElFormItem>
 
-    <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Ngày ghi nhận</label>
-      <input
-        type="date"
+    <ElFormItem label="Ngày ghi nhận" required>
+      <ElDatePicker
         v-model="form.expenseDate"
-        class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+        type="date"
+        value-format="YYYY-MM-DD"
+        placeholder="Chọn ngày"
+        popper-class="reporting-date-popper"
+        class="w-full"
       />
-    </div>
+    </ElFormItem>
 
-    <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Ghi chú</label>
-      <textarea
-        v-model="form.note"
-        rows="3"
-        class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-      ></textarea>
-    </div>
+    <ElFormItem label="Ghi chú">
+      <ElInput v-model="form.note" type="textarea" :rows="3" placeholder="Ghi chú nội bộ nếu có" />
+    </ElFormItem>
 
     <div class="flex justify-end gap-3 mt-6">
-      <button
-        @click="$emit('close')"
-        class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition"
-        >Hủy</button
-      >
-      <button
-        @click="submitForm"
-        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium"
-        >Lưu chi phí</button
-      >
+      <ElButton @click="emit('close')">Hủy</ElButton>
+      <ElButton type="primary" @click="submitForm">Lưu chi phí</ElButton>
     </div>
-  </div>
+  </ElForm>
 </template>
 
 <script setup lang="ts">
   import { reactive } from 'vue'
+  import { ElMessage } from 'element-plus'
 
-  const emit = defineEmits(['close', 'submit'])
+  type ExpenseFormData = {
+    name: string
+    category: number
+    amount: number
+    expenseDate: string
+    note?: string
+  }
 
-  const form = reactive({
+  const emit = defineEmits<{
+    close: []
+    submit: [value: ExpenseFormData]
+  }>()
+
+  const form = reactive<ExpenseFormData>({
     name: '',
     category: 0, // 0: Fixed, 1: Variable
     amount: 0,
@@ -77,7 +70,7 @@
 
   const submitForm = () => {
     if (!form.name || form.amount <= 0) {
-      alert('Vui lòng nhập tên và số tiền hợp lệ')
+      ElMessage.warning('Vui lòng nhập tên khoản chi và số tiền hợp lệ.')
       return
     }
     emit('submit', { ...form })

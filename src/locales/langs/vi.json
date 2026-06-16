@@ -48,20 +48,11 @@
   "setting": {
     "menuType": {
       "title": "Bố cục menu",
-      "list": [
-        "Dọc",
-        "Ngang",
-        "Hỗn hợp",
-        "Cột kép"
-      ]
+      "list": ["Dọc", "Ngang", "Hỗn hợp", "Cột kép"]
     },
     "theme": {
       "title": "Giao diện",
-      "list": [
-        "Sáng",
-        "Tối",
-        "HeThong"
-      ]
+      "list": ["Sáng", "Tối", "HeThong"]
     },
     "menu": {
       "title": "Kiểu menu"
@@ -71,17 +62,11 @@
     },
     "box": {
       "title": "Kiểu khung",
-      "list": [
-        "Viền",
-        "Bóng đổ"
-      ]
+      "list": ["Viền", "Bóng đổ"]
     },
     "container": {
       "title": "Chiều rộng",
-      "list": [
-        "Đầy đủ",
-        "Cố định"
-      ]
+      "list": ["Đầy đủ", "Cố định"]
     },
     "basics": {
       "title": "CauHinh cơ bản",
@@ -127,14 +112,8 @@
   "notice": {
     "title": "ThongBao",
     "btnRead": "Đánh dấu đã đọc",
-    "bar": [
-      "ThongBao",
-      "TinNhan",
-      "Việc cần làm"
-    ],
-    "text": [
-      "Không có"
-    ],
+    "bar": ["ThongBao", "TinNhan", "Việc cần làm"],
+    "text": ["Không có"],
     "viewAll": "Xem tất cả"
   },
   "worktab": {
@@ -237,9 +216,14 @@
       "supplier": "Hợp đồng Nhà cung cấp",
       "templates": "Mẫu Hợp đồng",
       "templateList": "Danh sách mẫu hợp đồng",
+      "templateEditTitle": "Chỉnh sửa mẫu hợp đồng",
+      "templateCreateTitle": "Tạo mẫu hợp đồng mới",
       "templateEditor": "Biên tập mẫu hợp đồng",
+      "templateEditorDescription": "Thiết lập thông tin và biên tập nội dung mẫu hợp đồng động",
+      "templateImport": "Nhập từ Word",
       "templateName": "Tên mẫu hợp đồng",
       "templateCode": "Mã định danh",
+      "templateCodePlaceholder": "VD: CONTRACT_SALES_DEFAULT",
       "templateType": "Phân loại",
       "templateVersion": "Phiên bản",
       "templateStatus": "Trạng thái",
@@ -280,7 +264,86 @@
       "filterAll": "Tất cả",
       "filterActive": "Đang áp dụng",
       "filterInactive": "Tạm dừng",
-      "filterDeprecated": "Ngừng áp dụng"
+      "filterDeprecated": "Ngừng áp dụng",
+      "tokenSearchPlaceholder": "Tìm kiếm biến động...",
+      "tokens": {
+        "customer": {
+          "ShowroomName": "Đơn vị bán",
+          "ShowroomAddress": "Địa chỉ showroom",
+          "ShowroomPhone": "SĐT showroom",
+          "ShowroomTaxCode": "MST showroom",
+          "ShowroomRepresentative": "Người đại diện showroom",
+          "ShowroomRepresentativeTitle": "Chức danh đại diện showroom",
+          "ShowroomRepresentativeIdCard": "CCCD đại diện showroom",
+          "ShowroomRepresentativeIdIssuedDate": "Ngày cấp CCCD đại diện",
+          "ShowroomRepresentativeIdIssuedPlace": "Nơi cấp CCCD đại diện",
+          "ShowroomFax": "Fax showroom",
+          "ShowroomBankAccount": "Tài khoản showroom",
+          "ShowroomBankName": "Ngân hàng showroom",
+          "CustomerName": "Tên khách hàng",
+          "CustomerIdCard": "Số CCCD",
+          "CustomerAddress": "Địa chỉ",
+          "CustomerPhone": "Số điện thoại",
+          "CustomerEmail": "Email",
+          "CustomerRepresentativeTitle": "Chức danh bên mua",
+          "CustomerIdIssuedDate": "Ngày cấp CCCD bên mua",
+          "CustomerIdIssuedPlace": "Nơi cấp CCCD bên mua",
+          "CustomerFax": "Fax bên mua",
+          "CustomerBankAccount": "Tài khoản bên mua",
+          "CustomerBankName": "Ngân hàng bên mua"
+        },
+        "vehicle": {
+          "VehicleName": "Tên xe",
+          "ChassisNumber": "Số khung",
+          "EngineNumber": "Số máy",
+          "VehiclePrice": "Đơn giá",
+          "VehiclePriceInWords": "Giá bằng chữ",
+          "VehicleColor": "Màu xe",
+          "LicensePlate": "Biển số",
+          "PaymentDueDate": "Ngày thanh toán",
+          "PaymentMethod": "Hình thức thanh toán",
+          "DeliveryDate": "Thời gian giao hàng",
+          "DeliveryLocation": "Địa điểm giao hàng",
+          "TransportationResponsibleParty": "Bên chịu vận chuyển",
+          "StorageFeePerDay": "Phí lưu kho/ngày",
+          "InspectionAgency": "Đơn vị kiểm tra",
+          "ComplaintDeadlineDays": "Hạn khiếu nại",
+          "SellerResponseDays": "Hạn phản hồi bên bán",
+          "WarrantyProductName": "Hàng hóa bảo hành",
+          "WarrantyMonths": "Tháng bảo hành",
+          "PenaltyPercent": "Tỷ lệ phạt",
+          "ContractCopies": "Số bản hợp đồng",
+          "EachPartyCopies": "Số bản mỗi bên giữ"
+        },
+        "finance": {
+          "DepositAmount": "Tiền cọc",
+          "RemainingAmount": "Tiền còn lại",
+          "FinancialPartner": "Đối tác tài chính",
+          "FinancialPartnerContact": "Liên hệ tài chính",
+          "FinanceContractNumber": "Số HĐ tài chính",
+          "LoanAmount": "Số tiền vay",
+          "TermMonths": "Kỳ hạn",
+          "InterestRate": "Lãi suất",
+          "MonthlyPayment": "Trả góp/tháng",
+          "ExpectedDisbursementDate": "Ngày GN dự kiến",
+          "ActualDisbursementDate": "Ngày GN thực tế",
+          "ExpectedDisbursementAmount": "Tiền GN dự kiến",
+          "ActualDisbursementAmount": "Tiền GN thực tế",
+          "CavetStatus": "Trạng thái cavet",
+          "ContractDate": "Ngày ký"
+        },
+        "supplier": {
+          "SupplierName": "Tên NCC",
+          "SupplierContact": "Đầu mối liên hệ",
+          "CreditLimit": "Hạn mức tín dụng",
+          "DiscountPolicy": "Chính sách chiết khấu",
+          "TargetVolume": "Sản lượng cam kết",
+          "EffectiveDate": "Ngày hiệu lực",
+          "ExpiryDate": "Ngày hết hạn",
+          "ParentContractNumber": "Số HĐ gốc",
+          "AppendixChangeContent": "Nội dung phụ lục"
+        }
+      }
     },
     "inventory": {
       "title": "Quản lý kho",

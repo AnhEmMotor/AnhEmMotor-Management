@@ -294,7 +294,12 @@
     </el-row>
 
     <!-- Status Update Dialog -->
-    <ElDialog v-model="showStatusDialog" title="Cập nhật trạng thái hợp đồng" width="400px">
+    <ElDialog
+      v-model="showStatusDialog"
+      title="Cập nhật trạng thái hợp đồng"
+      width="400px"
+      class="supplier-contract-preview-dialog"
+    >
       <ElForm label-position="top">
         <ElFormItem label="Trạng thái mới">
           <ElSelect v-model="newStatus" class="w-full" :disabled="isLocked">
@@ -572,15 +577,124 @@
 <style scoped lang="scss">
   .supplier-contract-detail {
     padding: 16px;
+    color: #f8fafc;
+
+    :deep(.el-card) {
+      background-color: #151619;
+      border-color: #2c2f36;
+      box-shadow: none;
+    }
+
+    :deep(.el-card__header),
+    :deep(.el-card__body),
+    :deep(.el-form-item__label),
+    :deep(.el-descriptions__label),
+    :deep(.el-descriptions__content),
+    :deep(.el-table),
+    :deep(.el-table__cell),
+    :deep(.el-table .cell),
+    :deep(.el-input__inner),
+    :deep(.el-select__selected-item),
+    :deep(.el-progress__text),
+    :deep(.el-upload__text),
+    :deep(.el-upload__tip) {
+      color: #f8fafc !important;
+    }
+
+    :deep(.el-descriptions__cell),
+    :deep(.el-descriptions__label),
+    :deep(.el-descriptions__content),
+    :deep(.el-table th.el-table__cell),
+    :deep(.el-table tr),
+    :deep(.el-table td.el-table__cell) {
+      background-color: #151619 !important;
+      border-color: #2c2f36 !important;
+    }
+
+    :deep(.el-table) {
+      --el-table-border-color: #2c2f36;
+      --el-table-header-bg-color: #111214;
+      --el-table-row-hover-bg-color: #202227;
+      --el-table-tr-bg-color: #151619;
+    }
+
+    :deep(.el-input__wrapper),
+    :deep(.el-select__wrapper),
+    :deep(.el-upload-dragger) {
+      background-color: #101114;
+      border-color: #333741;
+      box-shadow: 0 0 0 1px #333741 inset;
+    }
+
+    :deep(.el-input__inner::placeholder) {
+      color: #cbd5e1;
+    }
+
+    :deep(.text-gray-300),
+    :deep(.text-gray-400),
+    :deep(.text-gray-500),
+    :deep(.text-gray-600),
+    :deep(.text-gray-700),
+    :deep(.text-gray-800),
+    :deep(.text-gray-900) {
+      color: #f8fafc !important;
+    }
+
+    :deep(.bg-gray-50),
+    :deep(.bg-gray-100),
+    :deep(.bg-gray-200),
+    :deep(.bg-white) {
+      background-color: #151619 !important;
+    }
+
+    :deep(.border-gray-100),
+    :deep(.border-gray-200),
+    :deep(.border-b) {
+      border-color: #2c2f36 !important;
+    }
+
+    :deep(.el-alert) {
+      background-color: rgb(245 158 11 / 12%);
+      border: 1px solid rgb(245 158 11 / 35%);
+    }
+
+    :deep(.el-alert__title),
+    :deep(.el-alert__description),
+    :deep(.el-alert__content),
+    :deep(.el-alert p) {
+      color: #f8fafc !important;
+    }
   }
 
   .card-header {
-    font-weight: 600;
     font-size: 14px;
-    color: #303133;
+    font-weight: 600;
+    color: #f8fafc;
   }
 
   .max-h-300 {
     max-height: 300px;
+  }
+</style>
+
+<style lang="scss">
+  .supplier-contract-preview-dialog {
+    background: #151619;
+    border: 1px solid #2c2f36;
+
+    .el-dialog__title,
+    .el-dialog__body,
+    .el-form-item__label,
+    .el-select__selected-item,
+    .el-input__inner {
+      color: #f8fafc !important;
+    }
+
+    .el-input__wrapper,
+    .el-select__wrapper {
+      background-color: #101114;
+      border-color: #333741;
+      box-shadow: 0 0 0 1px #333741 inset;
+    }
   }
 </style>

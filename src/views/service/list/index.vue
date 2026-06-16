@@ -52,12 +52,7 @@
         @pagination:current-change="handleCurrentChange"
       >
         <template #isActive="{ row }">
-          <ElSwitch
-            v-model="row.isActive"
-            :active-value="true"
-            :inactive-value="false"
-            @change="toggleActive(row)"
-          />
+          <ElSwitch v-model="row.isActive" @change="toggleActive(row)" />
         </template>
 
         <template #operation="{ row }">
@@ -153,7 +148,7 @@
         </div>
 
         <div class="flex items-center gap-2">
-          <ElCheckbox v-model="formData.isActive" :true-label="true" :false-label="false" />
+          <ElCheckbox v-model="formData.isActive" />
           <span class="text-sm text-gray-700">Kích hoạt dịch vụ</span>
         </div>
       </ElForm>
@@ -170,7 +165,7 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, ref } from 'vue'
+  import { computed } from 'vue'
   import { Plus } from '@element-plus/icons-vue'
   import { ElMessage } from 'element-plus'
   import { useServiceTable } from './hooks/useServiceTable'
@@ -204,18 +199,21 @@
   const searchItems = [
     {
       label: 'Tên dịch vụ',
+      key: 'name',
       prop: 'name',
       type: 'text',
       placeholder: 'Nhập tên dịch vụ...',
     },
     {
       label: 'Danh mục',
+      key: 'categoryId',
       prop: 'categoryId',
       type: 'select',
       options: categories.value.map((c) => ({ label: c.name, value: c.id })),
     },
     {
       label: 'Trạng thái',
+      key: 'isActive',
       prop: 'isActive',
       type: 'select',
       options: [

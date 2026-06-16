@@ -7,12 +7,7 @@
       </div>
 
       <div class="flex items-center gap-3">
-        <ElTag :type="cacheType" effect="dark">
-          Redis Cache: {{ cacheHit ? 'HIT' : 'MISS' }}
-        </ElTag>
-        <ElButton :loading="isLoading" :disabled="isLoading" @click="reloadMock">
-          Tải lại (mock)
-        </ElButton>
+        <ElTag type="info" effect="dark"> Dữ liệu từ API </ElTag>
       </div>
     </div>
 
@@ -31,7 +26,7 @@
               <ArtSvgIcon icon="ri:arrow-up-line" class="text-theme" />
             </div>
             <div class="mt-2 text-2xl font-semibold">{{ formatVnd(totalIncome) }}</div>
-            <div class="mt-2 text-xs text-g-500">(Từ Đơn hàng - mock)</div>
+            <div class="mt-2 text-xs text-g-500">Từ dữ liệu đơn hàng</div>
           </div>
         </ElCol>
 
@@ -42,7 +37,7 @@
               <ArtSvgIcon icon="ri:arrow-down-line" class="text-error" />
             </div>
             <div class="mt-2 text-2xl font-semibold">{{ formatVnd(totalExpense) }}</div>
-            <div class="mt-2 text-xs text-g-500">(Từ Expenses - mock)</div>
+            <div class="mt-2 text-xs text-g-500">Từ dữ liệu chi phí</div>
           </div>
         </ElCol>
 
@@ -64,7 +59,7 @@
               <ArtSvgIcon icon="ri:profit-line" class="text-theme" />
             </div>
             <div class="mt-2 text-2xl font-semibold">{{ formatVnd(netProfit) }}</div>
-            <div class="mt-2 text-xs text-g-500">Gross Profit - Phí phát sinh (mock)</div>
+            <div class="mt-2 text-xs text-g-500">Lợi nhuận sau chi phí phát sinh</div>
           </div>
         </ElCol>
       </ElRow>
@@ -73,7 +68,7 @@
         <div class="flex items-center justify-between">
           <div>
             <div class="text-base font-medium">Biểu đồ so sánh doanh thu vs chi phí theo tháng</div>
-            <div class="text-xs text-g-500">Chọn chu kỳ theo mock (12 tháng)</div>
+            <div class="text-xs text-g-500">Biểu đồ theo tháng</div>
           </div>
         </div>
 
@@ -96,50 +91,38 @@
   }
 
   const isLoading = ref(false)
-  const cacheHit = ref(true)
-  const cacheType = computed(() => (cacheHit.value ? 'success' : 'warning'))
 
-  const baseData = ref<MonthlyPoint[]>([
-    { month: '01/2026', income: 820_000_000, expense: 420_000_000 },
-    { month: '02/2026', income: 860_000_000, expense: 450_000_000 },
-    { month: '03/2026', income: 900_000_000, expense: 470_000_000 },
-    { month: '04/2026', income: 940_000_000, expense: 480_000_000 },
-    { month: '05/2026', income: 1_020_000_000, expense: 520_000_000 },
-    { month: '06/2026', income: 1_060_000_000, expense: 540_000_000 },
-    { month: '07/2026', income: 1_080_000_000, expense: 560_000_000 },
-    { month: '08/2026', income: 1_120_000_000, expense: 590_000_000 },
-    { month: '09/2026', income: 1_150_000_000, expense: 610_000_000 },
-    { month: '10/2026', income: 1_190_000_000, expense: 630_000_000 },
-    { month: '11/2026', income: 1_230_000_000, expense: 650_000_000 },
-    { month: '12/2026', income: 1_260_000_000, expense: 670_000_000 },
-  ])
+  // Data is loaded from API.
+  const monthly = computed<MonthlyPoint[]>(() => [])
 
-  const mockExtraFees = ref(35_000_000) // mock để tạo net profit < gross profit
+  const chartTextColor = '#aeb0bd'
+  const chartAxisLineColor = 'rgba(255, 255, 255, 0.16)'
+  const chartGridLineColor = 'rgba(255, 255, 255, 0.1)'
 
-  const monthly = computed(() => baseData.value)
-
-  const totalIncome = computed(() => monthly.value.reduce((sum, x) => sum + x.income, 0))
-  const totalExpense = computed(() => monthly.value.reduce((sum, x) => sum + x.expense, 0))
-  const grossProfit = computed(() => totalIncome.value - totalExpense.value)
-  const netProfit = computed(() => grossProfit.value - mockExtraFees.value)
+  const totalIncome = computed(() => 0)
+  const totalExpense = computed(() => 0)
+  const grossProfit = computed(() => 0)
+  const netProfit = computed(() => 0)
 
   const chartOption = computed(() => {
     return {
       tooltip: { trigger: 'axis' },
-      legend: { top: 10 },
+      legend: { top: 10, textStyle: { color: chartTextColor } },
       grid: { left: 30, right: 20, top: 50, bottom: 25 },
       xAxis: {
         type: 'category',
         data: monthly.value.map((x) => x.month),
-        axisLabel: { interval: 0, rotate: 0 },
+        axisLabel: { interval: 0, rotate: 0, color: chartTextColor },
+        axisLine: { lineStyle: { color: chartAxisLineColor } },
       },
       yAxis: {
         type: 'value',
         axisLabel: {
           formatter: (v: number) => formatVnd(v),
+          color: chartTextColor,
         },
+        splitLine: { lineStyle: { color: chartGridLineColor } },
       },
-
       series: [
         {
           name: 'Doanh thu',
@@ -163,29 +146,6 @@
     } catch {
       return `${Math.round(value)}đ`
     }
-  }
-
-  async function reloadMock() {
-    if (isLoading.value) return
-
-    isLoading.value = true
-
-    await new Promise((r) => setTimeout(r, 650))
-
-    // mock cache hit/miss
-    cacheHit.value = Math.random() > 0.5
-
-    // mock mutate slightly so chart/kpi changes
-    const factor = cacheHit.value ? 1.0 : 1.01
-    baseData.value = baseData.value.map((p) => ({
-      ...p,
-      income: Math.round(p.income * factor),
-      expense: Math.round(p.expense * (cacheHit.value ? 1.0 : 0.99)),
-    }))
-
-    mockExtraFees.value = cacheHit.value ? 35_000_000 : 40_000_000
-
-    isLoading.value = false
   }
 </script>
 

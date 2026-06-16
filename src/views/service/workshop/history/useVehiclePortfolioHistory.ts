@@ -1,6 +1,6 @@
-import { computed, ref, type ComputedRef } from 'vue'
+import { computed, ref, type ComputedRef, type Ref } from 'vue'
 
-import { RepairOrderApi, type RepairOrder } from '@/infrastructure/api/repair-order'
+import type { RepairOrder } from '@/infrastructure/api/repair-order'
 import { VehicleApi, type Vehicle } from '@/infrastructure/api/vehicle'
 
 export type QueryType = 'auto' | 'vin' | 'licensePlate' | 'phone'
@@ -20,15 +20,15 @@ type AlertItem = {
 }
 
 type UseVehiclePortfolioHistoryResult = {
-  loading: ReturnType<typeof ref<boolean>>
-  error: ReturnType<typeof ref<string>>
+  loading: Ref<boolean>
+  error: Ref<string>
 
-  queryType: ReturnType<typeof ref<QueryType>>
+  queryType: Ref<QueryType>
 
-  vehicle: ReturnType<typeof ref<Vehicle | null>>
-  timeline: ReturnType<typeof ref<RepairOrder[]>>
+  vehicle: Ref<Vehicle | null>
+  timeline: Ref<RepairOrder[]>
 
-  pagination: ReturnType<typeof ref<{ current: number; size: number; total: number }>>
+  pagination: Ref<{ current: number; size: number; total: number }>
 
   latestOrder: ComputedRef<RepairOrder | undefined>
   alerts: ComputedRef<AlertItem[]>
@@ -105,13 +105,14 @@ export function useVehiclePortfolioHistory(): UseVehiclePortfolioHistoryResult {
 
     loading.value = true
     try {
-      queryType.value = payload.queryType
+      const resolvedQueryType = normalizeQueryType(q, payload.queryType)
+      queryType.value = resolvedQueryType
       pagination.value.current = payload.page
       pagination.value.size = payload.pageSize
 
       const res = await VehicleApi.getPortfolio({
         query: q,
-        queryType: payload.queryType,
+        queryType: resolvedQueryType,
         page: payload.page,
         pageSize: payload.pageSize,
       })
