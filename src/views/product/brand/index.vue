@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-4 pb-5">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div id="tour-stats" class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <ArtStatsCard
         title="Tổng số lượng thương hiệu"
         :count="statistics.totalBrands"
@@ -30,6 +30,7 @@
     </div>
 
     <ArtSearchBar
+      id="tour-search"
       v-model="searchForm"
       :items="searchItems"
       :label-width="120"
@@ -39,10 +40,17 @@
     />
 
     <ElCard class="flex-1 art-table-card">
-      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
+      <ArtTableHeader
+        v-model:columns="columnChecks"
+        :loading="loading"
+        layout="search,refresh,size,fullscreen,columns,settings,guide"
+        @refresh="refreshData"
+        @guide="startTour"
+      >
         <template #left>
           <div class="flex items-center gap-3">
             <ElButton
+              id="tour-add-btn"
               v-auth="'Permissions.Brands.Create'"
               type="primary"
               v-ripple
@@ -128,6 +136,7 @@
       </ArtTableHeader>
 
       <ArtTable
+        id="tour-table"
         ref="tableRef"
         :loading="loading"
         :data="data"
@@ -185,21 +194,28 @@
       </ArtTable>
     </ElCard>
 
-    <ElDialog
-      v-model="dialogVisible"
-      :title="dialogTitle"
-      width="500px"
-      append-to-body
-      destroy-on-close
-    >
+    <ElDialog v-model="dialogVisible" width="500px" append-to-body destroy-on-close>
+      <template #header>
+        <div class="flex items-center justify-between pr-2">
+          <span class="text-lg font-medium">{{ dialogTitle }}</span>
+          <button
+            id="tour-dialog-help"
+            class="text-gray-400 hover:text-blue-500 transition-colors bg-transparent border-none cursor-pointer flex items-center justify-center text-[20px]"
+            @click.prevent="startDialogTour"
+            title="Hướng dẫn"
+          >
+            <ElIcon><Help /></ElIcon>
+          </button>
+        </div>
+      </template>
       <ElForm :model="formData" label-width="100px" class="mt-4">
-        <ElFormItem label="Tên hiệu" required>
+        <ElFormItem label="Tên hiệu" required id="tour-form-name">
           <ElInput v-model="formData.name" placeholder="Nhập tên thương hiệu..." />
         </ElFormItem>
-        <ElFormItem label="Xuất xứ">
+        <ElFormItem label="Xuất xứ" id="tour-form-origin">
           <ElInput v-model="formData.origin" placeholder="Ví dụ: Nhật Bản, Ý..." />
         </ElFormItem>
-        <ElFormItem label="Logo">
+        <ElFormItem label="Logo" id="tour-form-logo">
           <ElUpload
             class="logo-uploader"
             action="#"
@@ -225,7 +241,7 @@
           </ElUpload>
           <div class="mt-1 text-[11px] text-gray-400">Định dạng JPG, PNG. Tối đa 2MB.</div>
         </ElFormItem>
-        <ElFormItem label="Mô tả">
+        <ElFormItem label="Mô tả" id="tour-form-desc">
           <ElInput
             v-model="formData.description"
             type="textarea"
@@ -235,7 +251,7 @@
         </ElFormItem>
       </ElForm>
       <template #footer>
-        <div class="flex justify-end gap-2">
+        <div class="flex justify-end gap-2" id="tour-form-actions">
           <ElButton @click="dialogVisible = false">Hủy</ElButton>
           <ElButton type="primary" :loading="submitting" @click="submitForm"> Xác nhận </ElButton>
         </div>
@@ -289,16 +305,25 @@
         <ElButton @click="importResultDialogVisible = false">Đóng</ElButton>
       </template>
     </ElDialog>
-    <ElDialog
-      v-model="restoreDialogVisible"
-      title="Khôi phục thương hiệu đã xóa"
-      width="800px"
-      append-to-body
-    >
-      <div class="mb-4 text-gray-500 text-sm">
+    <ElDialog v-model="restoreDialogVisible" width="800px" append-to-body>
+      <template #header>
+        <div class="flex items-center justify-between pr-2">
+          <span class="text-lg font-medium">Khôi phục thương hiệu đã xóa</span>
+          <button
+            id="tour-restore-help"
+            class="text-gray-400 hover:text-blue-500 transition-colors bg-transparent border-none cursor-pointer flex items-center justify-center text-[20px]"
+            @click.prevent="startRestoreTour"
+            title="Hướng dẫn"
+          >
+            <ElIcon><Help /></ElIcon>
+          </button>
+        </div>
+      </template>
+      <div class="mb-4 text-gray-500 text-sm" id="tour-restore-desc">
         Chọn các thương hiệu bạn muốn khôi phục từ danh sách bên dưới.
       </div>
       <ElTable
+        id="tour-restore-table"
         v-loading="deletedBrandsLoading"
         :data="deletedBrandsData"
         border
@@ -317,7 +342,7 @@
       <template #footer>
         <div class="flex justify-between items-center w-full">
           <span></span>
-          <div class="flex gap-2">
+          <div class="flex gap-2" id="tour-restore-actions">
             <ElButton @click="restoreDialogVisible = false">Đóng</ElButton>
             <ElButton
               type="success"
@@ -347,17 +372,181 @@
     RefreshLeft,
     ArrowDown,
     SuccessFilled,
-    WarningFilled
+    WarningFilled,
+    Help
   } from '@element-plus/icons-vue'
   import { useBrandTable } from './hooks/useBrandTable'
   import { FileApi } from '@/api/file.api'
   import { ElMessage } from 'element-plus'
+  import { driver } from 'driver.js'
+  import 'driver.js/dist/driver.css'
 
   const apiUrl = import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || ''
 
   defineOptions({ name: 'ProductBrand' })
 
   const searchForm = ref({})
+
+  const startTour = () => {
+    const driverObj = driver({
+      showProgress: true,
+      animate: true,
+      nextBtnText: 'Tiếp theo',
+      prevBtnText: 'Quay lại',
+      doneBtnText: 'Hoàn thành',
+      steps: [
+        {
+          element: '#tour-stats',
+          popover: {
+            title: 'Thống kê tổng quan',
+            description:
+              'Khu vực này hiển thị các thông tin thống kê chung về thương hiệu như tổng số lượng, xuất xứ phổ biến và thời gian cập nhật mới nhất.',
+            side: 'bottom',
+            align: 'start'
+          }
+        },
+        {
+          element: '#tour-search',
+          popover: {
+            title: 'Tìm kiếm',
+            description:
+              'Sử dụng thanh tìm kiếm để nhanh chóng lọc các thương hiệu theo tên hoặc xuất xứ.',
+            side: 'bottom',
+            align: 'start'
+          }
+        },
+        {
+          element: '#tour-add-btn',
+          popover: {
+            title: 'Thêm mới',
+            description: 'Nhấn vào đây để tạo một thương hiệu mới trên hệ thống.',
+            side: 'bottom',
+            align: 'start'
+          }
+        },
+        {
+          element: '#tour-guide-btn',
+          popover: {
+            title: 'Hướng dẫn sử dụng',
+            description:
+              'Bạn có thể xem lại hướng dẫn này bất cứ lúc nào bằng cách nhấn vào nút này.',
+            side: 'bottom',
+            align: 'start'
+          }
+        },
+        {
+          element: '#tour-table',
+          popover: {
+            title: 'Danh sách thương hiệu',
+            description:
+              'Bảng hiển thị chi tiết các thương hiệu. Bạn có thể xem logo, tên, xuất xứ và thực hiện các thao tác sửa/xóa tại đây.',
+            side: 'top',
+            align: 'start'
+          }
+        }
+      ]
+    })
+    driverObj.drive()
+  }
+
+  const startDialogTour = () => {
+    const driverObj = driver({
+      showProgress: true,
+      animate: true,
+      nextBtnText: 'Tiếp theo',
+      prevBtnText: 'Quay lại',
+      doneBtnText: 'Hoàn thành',
+      steps: [
+        {
+          element: '#tour-form-name',
+          popover: {
+            title: 'Tên thương hiệu',
+            description: 'Nhập tên của thương hiệu (bắt buộc).',
+            side: 'right',
+            align: 'start'
+          }
+        },
+        {
+          element: '#tour-form-origin',
+          popover: {
+            title: 'Xuất xứ',
+            description: 'Nhập nơi xuất xứ của thương hiệu.',
+            side: 'right',
+            align: 'start'
+          }
+        },
+        {
+          element: '#tour-form-logo',
+          popover: {
+            title: 'Logo',
+            description:
+              'Tải lên hình ảnh logo của thương hiệu. Hỗ trợ định dạng JPG, PNG tối đa 2MB.',
+            side: 'right',
+            align: 'start'
+          }
+        },
+        {
+          element: '#tour-form-desc',
+          popover: {
+            title: 'Mô tả',
+            description: 'Thêm mô tả ngắn gọn về thương hiệu.',
+            side: 'right',
+            align: 'start'
+          }
+        },
+        {
+          element: '#tour-form-actions',
+          popover: {
+            title: 'Thao tác',
+            description: 'Nhấn Xác nhận để lưu thay đổi hoặc Hủy để đóng.',
+            side: 'top',
+            align: 'end'
+          }
+        }
+      ]
+    })
+    driverObj.drive()
+  }
+
+  const startRestoreTour = () => {
+    const driverObj = driver({
+      showProgress: true,
+      animate: true,
+      nextBtnText: 'Tiếp theo',
+      prevBtnText: 'Quay lại',
+      doneBtnText: 'Hoàn thành',
+      steps: [
+        {
+          element: '#tour-restore-desc',
+          popover: {
+            title: 'Hướng dẫn khôi phục',
+            description: 'Danh sách các thương hiệu đã xóa sẽ hiển thị tại đây.',
+            side: 'bottom',
+            align: 'start'
+          }
+        },
+        {
+          element: '#tour-restore-table',
+          popover: {
+            title: 'Chọn thương hiệu',
+            description: 'Tích chọn vào các thương hiệu mà bạn muốn khôi phục lại.',
+            side: 'top',
+            align: 'start'
+          }
+        },
+        {
+          element: '#tour-restore-actions',
+          popover: {
+            title: 'Thực hiện khôi phục',
+            description: 'Sau khi chọn, nhấn nút "Khôi phục đã chọn" để hoàn tất.',
+            side: 'top',
+            align: 'end'
+          }
+        }
+      ]
+    })
+    driverObj.drive()
+  }
 
   const {
     data,
