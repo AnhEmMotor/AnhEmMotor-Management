@@ -18,7 +18,7 @@
         >
           <ElFormItem
             :prop="item.key"
-            :label-width="item.label ? item.labelWidth || labelWidth : undefined"
+            :label-width="item.label ? item.labelWidth || props.labelWidth : undefined"
           >
             <template #label v-if="item.label">
               <component v-if="typeof item.label !== 'string'" :is="item.label" />
@@ -433,5 +433,5 @@
     getOutput: getSanitizedOutput,
   })
 
-  const { span, gutter, labelPosition, labelWidth } = toRefs(props)
+  const { span, gutter, labelPosition } = toRefs(props)
 </script>

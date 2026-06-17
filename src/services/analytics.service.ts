@@ -5,7 +5,7 @@ import type {
   StaffPerformance,
   Expense,
   TransactionLog,
-} from './types'
+} from './analytics.types'
 
 const API_BASE = '/api'
 

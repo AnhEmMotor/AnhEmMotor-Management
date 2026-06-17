@@ -1,12 +1,7 @@
 import request from '@/utils/http'
+import type { PagedResult } from '@/types/api'
 
-export type FinanceContractStatus =
-  | 'Draft'
-  | 'Submitted'
-  | 'Approved'
-  | 'PendingDisbursement'
-  | 'Disbursed'
-  | 'Settled'
+export type FinanceContractStatus = 'Pending' | 'Disbursed'
 
 export interface FinanceContractDisbursementEvidenceUploadRequest {
   financeContractId: string
@@ -62,13 +57,48 @@ export interface FinanceContractDetailDto {
   }
 }
 
+export interface FinanceContractListParams {
+  current: number
+  size: number
+  keyword?: string
+  disbursementStatus?: string
+  partner?: string
+  cavetLocation?: string
+}
+
 export const FinanceContractApi = {
   getFinanceContractDetail(financeContractId: string) {
     return request.get<FinanceContractDetailDto>({
       url: `/api/FinanceContracts/${financeContractId}`,
     })
   },
+  getFinanceContractList(params: FinanceContractListParams) {
+    const { current, size, keyword, disbursementStatus, partner, cavetLocation } = params
+    const filters: string[] = []
 
+    if (keyword) filters.push(`Keyword@=${keyword}`)
+    if (disbursementStatus) filters.push(`DisbursementStatus==${disbursementStatus}`)
+    if (partner) filters.push(`BankName@=${partner}`)
+    if (cavetLocation) {
+      const entityValue =
+        cavetLocation === 'FinancialCompanyHolds'
+          ? 'Bank'
+          : cavetLocation === 'StoreHoldsOnBehalf'
+            ? 'Store'
+            : cavetLocation === 'DeliveredToCustomer'
+              ? 'Customer'
+              : cavetLocation
+      filters.push(`CavetLocation==${entityValue}`)
+    }
+
+    const query: Record<string, string | number> = { Page: current, PageSize: size }
+    if (filters.length > 0) query.Filters = filters.join(',')
+
+    return request.get<PagedResult<FinanceContractDetailDto>>({
+      url: `/api/FinanceContracts`,
+      params: query,
+    })
+  },
   uploadDisbursementEvidence(payload: FinanceContractDisbursementEvidenceUploadRequest) {
     const formData = new FormData()
     formData.append('file', payload.file)

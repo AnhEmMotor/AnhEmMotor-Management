@@ -204,7 +204,6 @@
     ArrowDown,
   } from '@element-plus/icons-vue'
 
-  import dayjs from 'dayjs'
   import { ElMessage } from 'element-plus'
   import { SalesContractApi } from '@/infrastructure/api/sales-contract.api'
 
@@ -241,7 +240,13 @@
   const fetchData = async () => {
     loading.value = true
     try {
-      const params: Record<string, any> = {
+      const params: {
+        current: number
+        size: number
+        keyword?: string
+        status?: string
+        vehicleModel?: string
+      } = {
         current: pagination.current,
         size: pagination.size,
       }
@@ -316,12 +321,12 @@
 
   const isOverdue = (dateStr: string) => {
     if (!dateStr) return false
-    return dayjs(dateStr).isBefore(dayjs(), 'day')
+    return new Date(dateStr) < new Date()
   }
 
   const formatDate = (dateStr: string) => {
     if (!dateStr) return ''
-    return dayjs(dateStr).format('DD/MM/YYYY')
+    return new Date(dateStr).toLocaleDateString('vi-VN')
   }
 
   const goToPreview = (id?: string) => {
@@ -332,6 +337,48 @@
 <style scoped lang="scss">
   .contract-sales-container {
     padding: 16px;
+    color: #f8fafc;
+  }
+
+  .contract-sales-container :deep(.el-card) {
+    color: #f8fafc;
+    background: #161618;
+    border-color: rgb(255 255 255 / 9%);
+  }
+
+  .contract-sales-container :deep(.el-card__header),
+  .contract-sales-container :deep(.el-table),
+  .contract-sales-container :deep(.el-table .cell),
+  .contract-sales-container :deep(.el-table th.el-table__cell),
+  .contract-sales-container :deep(.el-table td.el-table__cell),
+  .contract-sales-container :deep(.el-pagination),
+  .contract-sales-container :deep(.el-pagination *) {
+    color: #f8fafc !important;
+  }
+
+  .contract-sales-container :deep(.el-table th.el-table__cell) {
+    background: #111214;
+  }
+
+  .contract-sales-container :deep(.el-input__wrapper),
+  .contract-sales-container :deep(.el-select__wrapper) {
+    background: #101114;
+    border: 1px solid rgb(255 255 255 / 14%);
+    box-shadow: none;
+  }
+
+  .contract-sales-container :deep(.el-input__inner),
+  .contract-sales-container :deep(.el-select__placeholder),
+  .contract-sales-container :deep(.el-select__selected-item) {
+    color: #f8fafc;
+  }
+
+  .contract-sales-container .text-gray-400,
+  .contract-sales-container .text-gray-500,
+  .contract-sales-container .text-gray-600,
+  .contract-sales-container .text-gray-800,
+  .contract-sales-container .text-gray-900 {
+    color: #f8fafc !important;
   }
 
   .kpi-card {

@@ -66,7 +66,7 @@
 
 <script setup lang="ts">
   import { ref, computed, nextTick, watchEffect, getCurrentInstance, useAttrs } from 'vue'
-  import type { ElTable, TableProps } from 'element-plus'
+  import type { TableProps } from 'element-plus'
   import { storeToRefs } from 'pinia'
   import { ColumnOption } from '@/types'
   import { useTableStore } from '@/application/store/table'
@@ -77,7 +77,7 @@
   defineOptions({ name: 'ArtTable' })
 
   const { width } = useWindowSize()
-  const elTableRef = ref<InstanceType<typeof ElTable> | null>(null)
+  const elTableRef = ref<{ setScrollTop: (top: number) => void } | null>(null)
   const paginationRef = ref<HTMLElement>()
   const tableHeaderRef = ref<HTMLElement>()
   const tableStore = useTableStore()

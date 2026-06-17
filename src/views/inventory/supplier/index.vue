@@ -191,15 +191,22 @@
   })
 
   const searchItems = ref([
-    { key: 'name', label: 'Tên đối tác', type: 'input' },
+    {
+      key: 'name',
+      label: 'Từ khóa',
+      type: 'input',
+      placeholder: 'Tìm theo tên, SĐT, CCCD, địa chỉ...',
+    },
     {
       key: 'type',
-      label: 'Loại',
+      label: 'Đối tác',
       type: 'select',
       props: {
         options: [] as { label: string; value: string }[],
         multiple: true,
         collapseTags: true,
+        filterable: true,
+        clearable: true,
         placeholder: 'Chọn loại đối tác...',
       },
     },
@@ -316,8 +323,11 @@
     loading.value = true
     try {
       const sieveFilters = []
-      if (filters?.name) {
-        sieveFilters.push(`Name@=${filters.name}`)
+      const keyword = filters?.name?.trim()
+      if (keyword) {
+        sieveFilters.push(
+          `Name@=${keyword}|Phone@=${keyword}|TaxIdentificationNumber@=${keyword}|Address@=${keyword}`,
+        )
       }
       if (filters?.type && filters.type.length > 0) {
         if (Array.isArray(filters.type)) {
@@ -380,8 +390,11 @@
     exporting.value = true
     try {
       const sieveFilters = []
-      if (searchForm.value.name) {
-        sieveFilters.push(`Name@=${searchForm.value.name}`)
+      const keyword = searchForm.value.name?.trim()
+      if (keyword) {
+        sieveFilters.push(
+          `Name@=${keyword}|Phone@=${keyword}|TaxIdentificationNumber@=${keyword}|Address@=${keyword}`,
+        )
       }
       if (searchForm.value.type && searchForm.value.type.length > 0) {
         if (Array.isArray(searchForm.value.type)) {

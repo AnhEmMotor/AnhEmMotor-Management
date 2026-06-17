@@ -128,7 +128,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
-              class="el-form-item__label !text-xs !font-semibold !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
+              class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
             >
               Số điện thoại <span class="text-red-500">*</span>
             </label>
@@ -141,7 +141,7 @@
 
           <div>
             <label
-              class="el-form-item__label !text-xs !font-semibold !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
+              class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
             >
               Tên khách
             </label>
@@ -164,7 +164,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
-              class="el-form-item__label !text-xs !font-semibold !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
+              class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
             >
               VIN / Số khung xe máy
               <span class="text-red-500" v-if="createForm.isNewCustomer">*</span>
@@ -178,7 +178,7 @@
 
           <div>
             <label
-              class="el-form-item__label !text-xs !font-semibold !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
+              class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
             >
               Biển số xe
               <span class="text-red-500" v-if="createForm.isNewCustomer">*</span>
@@ -194,7 +194,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
-              class="el-form-item__label !text-xs !font-semibold !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
+              class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
             >
               Tên xe / Phiên bản
               <span class="text-red-500" v-if="createForm.isNewCustomer">*</span>
@@ -208,7 +208,7 @@
 
           <div>
             <label
-              class="el-form-item__label !text-xs !font-semibold !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
+              class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
             >
               Màu sắc
               <span class="text-red-500" v-if="createForm.isNewCustomer">*</span>
@@ -225,7 +225,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
-              class="el-form-item__label !text-xs !font-semibold !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
+              class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
             >
               Thợ kỹ thuật (Tên)
             </label>
@@ -239,7 +239,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
-              class="el-form-item__label !text-xs !font-semibold !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
+              class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
             >
               Mileage (km) <span class="text-red-500">*</span>
             </label>
@@ -248,7 +248,7 @@
 
           <div>
             <label
-              class="el-form-item__label !text-xs !font-semibold !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
+              class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
             >
               Mô tả tình trạng
             </label>
@@ -283,7 +283,7 @@
       <ElForm :model="assignForm" label-width="140px" class="space-y-4" :disabled="submitting">
         <div>
           <label
-            class="el-form-item__label !text-xs !font-semibold !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
+            class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
           >
             Technician ID <span class="text-red-500">*</span>
           </label>
@@ -337,7 +337,7 @@
         <div>
           <div class="flex items-center justify-between mb-2">
             <label
-              class="el-form-item__label !text-xs !font-semibold !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
+              class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
             >
               Linh kiện
             </label>
@@ -391,7 +391,7 @@
         <div>
           <div class="flex items-center justify-between mb-2">
             <label
-              class="el-form-item__label !text-xs !font-semibold !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
+              class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
             >
               Dịch vụ
             </label>
@@ -464,7 +464,7 @@
 
         <div>
           <label
-            class="el-form-item__label !text-xs !font-semibold !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
+            class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
           >
             Payment Method <span class="text-red-500">*</span>
           </label>
@@ -480,7 +480,7 @@
 
         <div>
           <label
-            class="el-form-item__label !text-xs !font-semibold !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
+            class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
           >
             Notes
           </label>
@@ -711,6 +711,7 @@
       licensePlate: '',
       vehicleName: '',
       vehicleColor: '',
+      technicianName: '',
     }
   }
 

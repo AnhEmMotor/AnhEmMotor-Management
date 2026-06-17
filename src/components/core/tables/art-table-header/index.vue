@@ -1,15 +1,15 @@
 <template>
-  <div class="flex-cb max-md:!block" id="art-table-header">
+  <div class="flex-cb max-md:block!" id="art-table-header">
     <div class="flex-wrap">
       <slot name="left"></slot>
     </div>
 
-    <div class="flex-c md:justify-end max-md:mt-3 max-sm:!hidden">
+    <div class="flex-c md:justify-end max-md:mt-3 max-sm:hidden!">
       <div
         v-if="showSearchBar != null"
         class="button"
         @click="search"
-        :class="showSearchBar ? 'active !bg-theme hover:!bg-theme/80' : ''"
+        :class="showSearchBar ? 'active bg-theme! hover:bg-theme/80!' : ''"
       >
         <ArtSvgIcon icon="ri:search-line" :class="showSearchBar ? 'text-white' : 'text-g-700'" />
       </div>
@@ -34,12 +34,12 @@
             <div
               v-for="item in tableSizeOptions"
               :key="item.value"
-              class="table-size-btn-item [&_.el-dropdown-menu__item]:!mb-[3px] last:[&_.el-dropdown-menu__item]:!mb-0"
+              class="table-size-btn-item [&_.el-dropdown-menu__item]:mb-[3px]! last:[&_.el-dropdown-menu__item]:mb-0!"
             >
               <ElDropdownItem
                 :key="item.value"
                 :command="item.value"
-                :class="tableSize === item.value ? '!bg-g-300/55' : ''"
+                :class="tableSize === item.value ? 'bg-g-300/55!' : ''"
               >
                 {{ item.label }}
               </ElDropdownItem>

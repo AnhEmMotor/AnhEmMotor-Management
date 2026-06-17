@@ -37,7 +37,7 @@
             @click="handleToggleExpand(customer.id)"
           >
             <div class="flex flex-1 items-center p-5 gap-6">
-              <div class="priority-column flex-shrink-0 w-24 flex flex-cc">
+              <div class="priority-column shrink-0 w-24 flex flex-cc">
                 <div
                   class="priority-label flex flex-col items-center justify-center p-2 rounded-xl text-white w-20 h-14"
                   :style="{ backgroundColor: getPriority(customer).color }"
@@ -49,7 +49,7 @@
                 </div>
               </div>
 
-              <div class="identity-column flex-shrink-0 w-64 border-l border-gray-50 pl-4">
+              <div class="identity-column shrink-0 w-64 border-l border-gray-50 pl-4">
                 <div class="flex items-center gap-3">
                   <div class="flex flex-col">
                     <h4

@@ -1,188 +1,96 @@
 <template>
-  <div class="analytics-dashboard p-6">
-    <h1 class="text-2xl font-bold mb-6">📊 Dashboard Tổng Quan</h1>
+  <div class="reporting-page">
+    <ReportPageHeader
+      title="Tổng quan điều hành"
+      description="Theo dõi doanh thu, lợi nhuận, đơn hàng và cảnh báo tồn kho trong cùng một màn hình."
+      icon="ri:dashboard-3-line"
+    >
+      <template #actions>
+        <ReportPeriodSwitcher
+          v-model="currentPeriod"
+          v-model:start-date="periodStart"
+          v-model:end-date="periodEnd"
+          @update:modelValue="onPeriodChange"
+        />
+      </template>
+    </ReportPageHeader>
 
-    <!-- Bộ Điều Hướng Chu Kỳ -->
-    <div class="flex justify-end gap-2 mb-6">
-      <button
-        @click="setPeriod('today')"
-        :class="[
-          'px-4 py-2 rounded',
-          currentPeriod === 'today' ? 'bg-blue-600 text-white' : 'bg-gray-200',
-        ]"
-        >Hôm nay</button
-      >
-      <button
-        @click="setPeriod('month')"
-        :class="[
-          'px-4 py-2 rounded',
-          currentPeriod === 'month' ? 'bg-blue-600 text-white' : 'bg-gray-200',
-        ]"
-        >Tháng này</button
-      >
-      <button
-        @click="setPeriod('year')"
-        :class="[
-          'px-4 py-2 rounded',
-          currentPeriod === 'year' ? 'bg-blue-600 text-white' : 'bg-gray-200',
-        ]"
-        >Năm này</button
-      >
-      <input
-        type="date"
-        v-model="customStart"
-        @change="setPeriod('custom')"
-        class="border rounded px-2 py-1"
+    <div class="reporting-kpi-grid">
+      <ArtStatsCard
+        title="Doanh thu thực tế"
+        :count="formatCurrency(summary.todayRevenue)"
+        :description="`${summary.revenueChangePercentage >= 0 ? 'Tăng' : 'Giảm'} ${Math.abs(summary.revenueChangePercentage).toFixed(1)}% so với hôm qua`"
+        icon="ri:money-dollar-circle-line"
+        :icon-style="summary.revenueChangePercentage < 0 ? 'bg-report-red-dark' : 'bg-report-red'"
       />
-      <input
-        type="date"
-        v-model="customEnd"
-        @change="setPeriod('custom')"
-        class="border rounded px-2 py-1"
+      <ArtStatsCard
+        title="Lợi nhuận ròng"
+        :count="formatCurrency(summary.todayProfit)"
+        :description="`Tháng này: ${formatCurrency(summary.monthlyProfit)}`"
+        icon="ri:line-chart-line"
+        icon-style="bg-report-red-light"
+      />
+      <ArtStatsCard
+        title="Đơn hàng chờ xử lý"
+        :count="summary.pendingOrdersCount"
+        :description="`Quá hạn: ${summary.overdueOrdersCount}`"
+        icon="ri:timer-line"
+        icon-style="bg-report-red-dark"
+      />
+      <ArtStatsCard
+        title="Cảnh báo tồn kho"
+        :count="summary.lowStockCount"
+        description="Sản phẩm cần kiểm tra tồn kho"
+        icon="ri:alarm-warning-line"
+        :icon-style="summary.lowStockCount > 0 ? 'bg-report-red-dark' : 'bg-report-gray'"
       />
     </div>
 
     <!-- KPI Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-      <!-- Card 1 -->
       <div
         :class="[
-          'p-4 rounded-lg shadow border-l-4 flex flex-col justify-between',
+          'p-4 rounded-lg shadow border-l-4',
           summary.isRevenueAlert ? 'bg-red-50 border-red-500' : 'bg-white border-blue-500',
         ]"
       >
-        <div>
-          <div class="text-gray-500 text-sm font-semibold uppercase tracking-wider"
-            >DOANH THU THỰC TẾ</div
-          >
-          <div class="text-3xl font-bold my-2">{{ formatCurrency(summary.totalRevenue) }}</div>
-        </div>
-        <div>
-          <div
-            class="text-sm font-medium"
-            :class="summary.revenueVsYesterdayPercentage >= 0 ? 'text-green-600' : 'text-red-600'"
-          >
-            {{ summary.revenueVsYesterdayPercentage >= 0 ? '▲ +' : '▼ '
-            }}{{ summary.revenueVsYesterdayPercentage }}% so với hôm qua
-          </div>
-          <div class="text-sm text-gray-500 mt-1"
-            >Mục tiêu ngày: {{ formatCurrency(summary.dailyTarget) }}</div
-          >
-          <div class="w-full bg-gray-200 rounded-full h-2 mt-2 flex items-center gap-2">
-            <div
-              class="bg-blue-600 h-2 rounded-full"
-              :style="{
-                width:
-                  Math.min((summary.totalRevenue / (summary.dailyTarget || 1)) * 100, 100) + '%',
-              }"
-            ></div>
-            <span class="text-xs font-bold"
-              >{{ Math.round((summary.totalRevenue / (summary.dailyTarget || 1)) * 100) }}%</span
-            >
-          </div>
-          <div
-            v-if="summary.isRevenueAlert"
-            class="text-red-600 text-xs mt-2 font-bold flex items-center gap-1"
-          >
-            <i class="ri-alert-fill"></i> Cảnh báo: Thấp hơn 50% mục tiêu lúc 15h
-          </div>
-        </div>
+        <div class="text-gray-500 text-sm">Doanh thu thực tế</div>
+        <div class="text-2xl font-bold">{{ formatCurrency(summary.totalRevenue) }}</div>
+        <div v-if="summary.isRevenueAlert" class="text-red-600 text-xs mt-1 font-medium"
+          >⚠️ Cảnh báo: Thấp hơn 50% mục tiêu ngày</div
+        >
       </div>
 
-      <!-- Card 2 -->
-      <div
-        class="p-4 rounded-lg shadow border-l-4 bg-white border-green-500 flex flex-col justify-between"
-      >
-        <div>
-          <div class="text-gray-500 text-sm font-semibold uppercase tracking-wider"
-            >LỢI NHUẬN RÒNG</div
-          >
-          <div class="text-3xl font-bold my-2">{{ formatCurrency(summary.netProfit) }}</div>
-        </div>
-        <div>
-          <div class="text-sm font-medium text-gray-700"
-            >Biên lợi nhuận: {{ summary.profitMargin }}%</div
-          >
-          <div
-            class="text-sm font-medium mt-1"
-            :class="summary.profitVsYesterdayPercentage >= 0 ? 'text-green-600' : 'text-red-600'"
-          >
-            {{ summary.profitVsYesterdayPercentage >= 0 ? '▲ +' : '▼ '
-            }}{{ summary.profitVsYesterdayPercentage }}% so với hôm qua
-          </div>
-        </div>
+      <div class="p-4 rounded-lg shadow border-l-4 bg-white border-green-500">
+        <div class="text-gray-500 text-sm">Lợi nhuận ròng</div>
+        <div class="text-2xl font-bold">{{ formatCurrency(summary.netProfit) }}</div>
+        <div class="text-green-600 text-xs mt-1">Tự động tính từ Doanh thu - Vốn - Chi phí</div>
       </div>
 
-      <!-- Card 3 -->
       <div
         :class="[
-          'p-4 rounded-lg shadow border-l-4 flex flex-col justify-between',
+          'p-4 rounded-lg shadow border-l-4',
           summary.isPendingAlert ? 'bg-yellow-50 border-yellow-500' : 'bg-white border-orange-500',
         ]"
       >
-        <div>
-          <div class="text-gray-500 text-sm font-semibold uppercase tracking-wider"
-            >TIỀN ĐANG TREO</div
-          >
-          <div class="text-3xl font-bold my-2">{{ formatCurrency(summary.pendingAmount) }}</div>
-        </div>
-        <div class="text-sm text-gray-600 space-y-1">
-          <div class="flex justify-between items-center">
-            <span>• Cọc giữ xe:</span>
-            <span class="font-medium">{{ formatCurrency(summary.depositAmount) }}</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span>• Chờ NH giải ngân trả góp:</span>
-            <span class="font-medium">{{ formatCurrency(summary.loanWaitAmount) }}</span>
-          </div>
-          <div
-            v-if="summary.isPendingAlert"
-            class="text-yellow-600 text-xs mt-2 font-bold flex items-center gap-1"
-          >
-            <i class="ri-error-warning-fill"></i> Cảnh báo: Trả góp > 48h chưa giải ngân
-          </div>
-        </div>
+        <div class="text-gray-500 text-sm">Tiền đang treo (Pending)</div>
+        <div class="text-2xl font-bold">{{ formatCurrency(summary.pendingAmount) }}</div>
+        <div v-if="summary.isPendingAlert" class="text-yellow-600 text-xs mt-1 font-medium"
+          >⚠️ Cảnh báo: Trả góp > 48h chưa giải ngân</div
+        >
       </div>
 
-      <!-- Card 4 -->
       <div
-        class="p-4 rounded-lg shadow border-l-4 bg-white border-gray-500 flex flex-col justify-between"
+        :class="[
+          'p-4 rounded-lg shadow border-l-4',
+          summary.isStockAlert ? 'bg-yellow-50 border-yellow-500' : 'bg-white border-gray-500',
+        ]"
       >
-        <div>
-          <div class="text-gray-500 text-sm font-semibold uppercase tracking-wider">CẦN XỬ LÝ</div>
-        </div>
-        <div class="mt-2 space-y-2">
-          <div
-            class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded transition"
-          >
-            <div class="w-3 h-3 rounded-full bg-red-500"></div>
-            <span class="text-sm font-medium">{{ summary.newComplaintsCount }} Khiếu nại mới</span>
-          </div>
-          <div
-            class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded transition"
-          >
-            <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
-            <span class="text-sm font-medium"
-              >{{ summary.delayedLoansCount }} NH chậm giải ngân</span
-            >
-          </div>
-          <div
-            class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded transition"
-          >
-            <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
-            <span class="text-sm font-medium"
-              >{{ summary.lowStockVehiclesCount }} Xe sắp hết hàng</span
-            >
-          </div>
-          <div
-            class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded transition"
-          >
-            <div class="w-3 h-3 rounded-full bg-green-500"></div>
-            <span class="text-sm font-medium"
-              >{{ summary.missedAppointmentsCount }} Lịch hẹn bị bỏ lỡ</span
-            >
-          </div>
-        </div>
+        <div class="text-gray-500 text-sm">Cảnh báo cần xử lý</div>
+        <div class="text-2xl font-bold">{{ summary.alertsCount }}</div>
+        <div v-if="summary.isStockAlert" class="text-yellow-600 text-xs mt-1 font-medium"
+          >⚠️ Cảnh báo: Tồn kho xe < 2 chiếc</div
+        >
       </div>
     </div>
 
@@ -199,19 +107,17 @@
             <span class="text-gray-500">Đã đạt:</span>
             <span class="font-bold">{{ formatCurrency(summary.monthAchieved) }}</span>
           </div>
-          <div class="flex justify-between">
-            <span class="text-gray-500">Cần thêm:</span>
-            <span class="font-bold text-red-500">{{ formatCurrency(summary.monthRemaining) }}</span>
+          <div class="flex justify-between gap-4">
+            <span class="reporting-muted">Tháng trước:</span>
+            <strong>{{ formatCurrency(summary.lastMonthRevenue) }}</strong>
           </div>
-          <div class="flex justify-between border-t pt-2">
-            <span class="font-medium">Dự báo cuối tháng:</span>
-            <span class="font-bold text-blue-600">{{ formatCurrency(summary.monthForecast) }}</span>
+          <div class="flex justify-between gap-4 border-t border-slate-100 pt-3">
+            <span>Xe bán tháng này:</span>
+            <strong class="text-primary">{{ summary.monthlyVehiclesSold }}</strong>
           </div>
-          <div class="w-full bg-gray-200 rounded-full h-2.5">
-            <div
-              class="bg-blue-600 h-2.5 rounded-full"
-              :style="{ width: (summary.monthAchieved / summary.monthTarget) * 100 + '%' }"
-            ></div>
+          <div class="flex justify-between gap-4">
+            <span class="reporting-muted">Tổng SKU:</span>
+            <strong>{{ summary.totalSKUCount }}</strong>
           </div>
         </div>
       </div>
@@ -219,187 +125,114 @@
 
     <!-- Phân tích song song -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-      <!-- Nguồn doanh thu -->
       <div class="bg-white p-4 rounded-lg shadow">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="font-bold uppercase tracking-wider text-sm text-gray-700"
-            >NGUỒN DOANH THU — Hôm nay</h3
-          >
-        </div>
-        <div class="space-y-4">
-          <div v-for="source in sources" :key="source.name" class="flex items-center gap-3">
-            <span class="text-sm font-medium w-28">{{ source.name }}</span>
-            <div
-              class="flex-1 bg-gray-100 rounded-sm h-5 overflow-hidden flex items-center relative"
-            >
-              <div
-                class="bg-gray-800 h-full transition-all duration-500"
-                :style="{ width: source.percent + '%' }"
-              ></div>
-              <div
-                class="bg-gray-300 h-full transition-all duration-500 opacity-50"
-                :style="{ width: 100 - source.percent + '%' }"
-              ></div>
+        <h3 class="font-bold mb-4">Phân tích nguồn doanh thu</h3>
+        <div class="space-y-3">
+          <div v-for="source in sources" :key="source.name" class="flex items-center gap-2">
+            <span class="text-xs w-24">{{ source.name }}</span>
+            <div class="flex-1 bg-gray-100 rounded-full h-4 overflow-hidden">
+              <div class="bg-indigo-500 h-full" :style="{ width: source.percent + '%' }"></div>
             </div>
-            <span class="text-sm text-gray-600 w-24 text-right">{{
-              formatCurrency(source.amount).replace('₫', '')
-            }}</span>
+            <span class="text-xs font-bold">{{ source.percent }}%</span>
           </div>
-        </div>
-        <div class="mt-4 text-center">
-          <a href="#" class="text-blue-600 text-sm hover:underline">[Xem chi tiết từng loại]</a>
         </div>
       </div>
-
-      <!-- Hiệu suất nhân viên -->
       <div class="bg-white p-4 rounded-lg shadow">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="font-bold uppercase tracking-wider text-sm text-gray-700"
-            >HIỆU SUẤT SALE — Tháng này</h3
-          >
-        </div>
-        <div class="space-y-4">
-          <div
-            v-for="(staff, index) in topStaff"
-            :key="staff.employeeName"
-            class="flex items-center gap-3"
-          >
-            <span class="text-sm font-medium w-28 truncate"
-              >#{{ index + 1 }} {{ staff.employeeName }}</span
-            >
-            <div
-              class="flex-1 bg-gray-100 rounded-sm h-5 overflow-hidden flex items-center relative"
-            >
-              <div
-                class="bg-gray-800 h-full transition-all duration-500"
-                :style="{
-                  width: Math.min((staff.totalSales / (staff.targetSales || 1)) * 100, 100) + '%',
-                }"
-              ></div>
-              <div
-                class="bg-gray-300 h-full transition-all duration-500 opacity-50"
-                :style="{
-                  width:
-                    Math.max(100 - (staff.totalSales / (staff.targetSales || 1)) * 100, 0) + '%',
-                }"
-              ></div>
-            </div>
-            <span class="text-sm text-gray-600 w-24 text-right">{{
-              formatCurrency(staff.totalSales).replace('₫', '')
-            }}</span>
-            <span class="text-xs font-bold w-24 text-right flex items-center justify-end gap-1">
-              <span v-if="staff.isTopSeller">⭐ Vượt KPI</span>
-              <span v-else-if="staff.kpiStatus === 'Đạt'">✓ Đạt</span>
-              <span v-else class="text-yellow-600">⚠️ Cần cải thiện</span>
-            </span>
-          </div>
-        </div>
-        <div class="mt-6 pt-4 border-t">
-          <div class="flex items-center gap-3">
-            <span class="text-sm font-bold w-28">Tổng team:</span>
-            <div class="flex-1 flex flex-col gap-1">
-              <div class="text-sm font-medium"
-                >{{ formatCurrency(teamSales) }} / {{ formatCurrency(teamTarget) }}</div
-              >
-              <div
-                class="w-full bg-gray-100 rounded-sm h-5 overflow-hidden flex items-center relative"
-              >
-                <div
-                  class="bg-gray-800 h-full transition-all duration-500"
-                  :style="{ width: Math.min((teamSales / (teamTarget || 1)) * 100, 100) + '%' }"
-                ></div>
-                <div
-                  class="bg-gray-300 h-full transition-all duration-500 opacity-50"
-                  :style="{ width: Math.max(100 - (teamSales / (teamTarget || 1)) * 100, 0) + '%' }"
-                ></div>
-                <span class="absolute right-2 text-xs font-bold text-gray-500 mix-blend-difference"
-                  >{{ Math.round((teamSales / (teamTarget || 1)) * 100) }}% mục tiêu</span
-                >
-              </div>
-            </div>
-          </div>
-        </div>
+        <h3 class="font-bold mb-4">Hiệu suất Sale (Top Ranking)</h3>
+        <table class="w-full text-left text-sm">
+          <thead>
+            <tr class="border-b text-gray-500">
+              <th class="pb-2">Nhân viên</th>
+              <th class="pb-2">Doanh số</th>
+              <th class="pb-2">KPI</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="staff in topStaff" :key="staff.employeeName" class="border-b last:border-0">
+              <td class="py-2 font-medium">{{ staff.employeeName }}</td>
+              <td class="py-2">{{ formatCurrency(staff.totalSales) }}</td>
+              <td class="py-2">
+                <span :class="['px-2 py-1 rounded-full text-xs', getKpiClass(staff.kpiStatus)]">
+                  {{ staff.kpiStatus }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
     <!-- Dòng giao dịch thời gian thực -->
     <div class="bg-white p-4 rounded-lg shadow">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="font-bold uppercase tracking-wider text-sm text-gray-700">GIAO DỊCH GẦN NHẤT</h3>
-        <a href="#" class="text-blue-600 text-sm hover:underline">[Xem tất cả]</a>
-      </div>
+      <h3 class="font-bold mb-4">Luồng nhật ký giao dịch (Real-time)</h3>
       <div class="overflow-x-auto">
         <table class="w-full text-left text-sm">
+          <thead>
+            <tr class="border-b text-gray-500">
+              <th class="pb-2">Mốc giờ</th>
+              <th class="pb-2">Khách hàng</th>
+              <th class="pb-2">Sản phẩm</th>
+              <th class="pb-2">Số tiền</th>
+              <th class="pb-2">Sale phụ trách</th>
+            </tr>
+          </thead>
           <tbody>
             <tr
               v-for="tx in transactions"
               :key="tx.timestamp"
               class="border-b last:border-0 hover:bg-gray-50"
             >
-              <td class="py-3 text-gray-500 border-r pr-4 w-20 text-center">{{
-                formatTime(tx.timestamp)
-              }}</td>
-              <td class="py-3 px-4 font-medium">{{ tx.customerName }} — {{ tx.productName }}</td>
-              <td
-                class="py-3 px-4 font-bold border-l border-r w-32"
-                :class="tx.isRevenue ? 'text-green-600' : 'text-red-600'"
-              >
-                {{ tx.isRevenue ? '+' : '-' }}{{ formatCurrencyShort(tx.amount) }}
-                <span v-if="tx.status === 'Pending'" class="ml-1" title="Tiền đang treo">⏳</span>
-                <span v-else-if="tx.status === 'Refund'" class="ml-1 text-red-500" title="Cần chú ý"
-                  >🔴</span
-                >
+              <td class="py-2 text-gray-400">{{ formatTime(tx.timestamp) }}</td>
+              <td class="py-2 font-medium">{{ tx.customerName }}</td>
+              <td class="py-2">{{ tx.productName }}</td>
+              <td class="py-2 font-bold" :class="tx.isRevenue ? 'text-green-600' : 'text-red-600'">
+                {{ tx.isRevenue ? '+' : '-' }} {{ formatCurrency(tx.amount) }}
               </td>
-              <td class="py-3 px-4 w-40 text-gray-700">{{ tx.staffName }}</td>
+              <td class="py-2">{{ tx.staffName }}</td>
             </tr>
           </tbody>
         </table>
       </div>
-      <div class="mt-4 text-xs text-gray-500 flex gap-4">
-        <div class="flex items-center gap-1"><span>⏳</span> — Tiền đang treo, chưa chắc chắn</div>
-        <div class="flex items-center gap-1"
-          ><span class="text-red-500">🔴</span> — Hoàn tiền / giao dịch âm — cần chú ý</div
-        >
-        <div class="flex items-center gap-1"
-          ><span class="text-green-600 font-bold">Màu xanh</span> — thu vào,
-          <span class="text-red-600 font-bold">màu đỏ</span> — chi ra hoặc hoàn trả</div
-        >
-      </div>
     </div>
+
+    <ElCard class="reporting-card mt-4">
+      <template #header>Đơn hàng gần đây</template>
+      <ElTable :data="recentOrders" class="reporting-table" empty-text="Chưa có dữ liệu">
+        <ElTableColumn label="Mã đơn" min-width="120">
+          <template #default="{ row }">{{ row.orderCode || `#${row.id}` }}</template>
+        </ElTableColumn>
+        <ElTableColumn prop="buyerName" label="Khách hàng" min-width="180" />
+        <ElTableColumn prop="totalAmount" label="Số tiền" min-width="150" align="right">
+          <template #default="{ row }">{{ formatCurrency(row.totalAmount) }}</template>
+        </ElTableColumn>
+        <ElTableColumn prop="statusId" label="Trạng thái" min-width="130">
+          <template #default="{ row }">
+            <ElTag size="small" effect="light" round>{{ row.statusId || '-' }}</ElTag>
+          </template>
+        </ElTableColumn>
+        <ElTableColumn prop="createdAt" label="Thời gian" min-width="170">
+          <template #default="{ row }">{{ formatDateTime(row.createdAt) }}</template>
+        </ElTableColumn>
+      </ElTable>
+    </ElCard>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted, computed } from 'vue'
+  import { ref, onMounted, computed, nextTick, watch, onUnmounted } from 'vue'
   import * as echarts from 'echarts'
-  import { fetchEventSource } from '@microsoft/fetch-event-source'
-  import { AnalyticsService } from '@/services/analytics.service'
-  import type {
-    DashboardSummary,
-    StaffPerformance,
-    TransactionLog,
-  } from '@/services/analytics.types'
-  import { useUserStore } from '@/application/store/user'
+  import ArtStatsCard from '@/components/core/cards/art-stats-card/index.vue'
+  import { statisticsApi } from '@/infrastructure/api/statistics.api'
+  import type * as Statistical from '@/types/api/statistical'
+  import ReportPageHeader from '../components/ReportPageHeader.vue'
+  import ReportPeriodSwitcher from '../components/ReportPeriodSwitcher.vue'
 
-  const currentPeriod = ref('today')
-  const customStart = ref('')
-  const customEnd = ref('')
   const revenueChartRef = ref<HTMLElement | null>(null)
   const summary = ref<DashboardSummary>({
     totalRevenue: 0,
-    revenueVsYesterdayPercentage: 0,
-    dailyTarget: 0,
     netProfit: 0,
-    profitMargin: 0,
-    profitVsYesterdayPercentage: 0,
     pendingAmount: 0,
-    depositAmount: 0,
-    loanWaitAmount: 0,
     alertsCount: 0,
-    newComplaintsCount: 0,
-    delayedLoansCount: 0,
-    lowStockVehiclesCount: 0,
-    missedAppointmentsCount: 0,
     monthTarget: 0,
     monthAchieved: 0,
     monthRemaining: 0,
@@ -411,93 +244,85 @@
   const topStaff = ref<StaffPerformance[]>([])
   const transactions = ref<TransactionLog[]>([])
 
-  const teamSales = computed(() => topStaff.value.reduce((acc, curr) => acc + curr.totalSales, 0))
-  const teamTarget = computed(() =>
-    topStaff.value.reduce((acc, curr) => acc + (curr.targetSales || 1), 0),
-  )
-
-  import type { RevenueSource } from '@/services/analytics.types'
-  const sources = ref<RevenueSource[]>([
-    { name: 'Xe máy', percent: 79.5, amount: 68000000 },
-    { name: 'Phụ tùng', percent: 14.0, amount: 12000000 },
-    { name: 'Phụ kiện', percent: 4.1, amount: 3500000 },
-    { name: 'Dịch vụ GTGT', percent: 2.3, amount: 2000000 },
-  ])
+  const sources = [
+    { name: 'Xe máy', percent: 70 },
+    { name: 'Phụ tùng', percent: 15 },
+    { name: 'Phụ kiện', percent: 10 },
+    { name: 'Dịch vụ GTGT', percent: 5 },
+  ]
 
   async function loadData() {
-    let start, end
-    if (currentPeriod.value === 'today') {
-      start = new Date().toISOString().split('T')[0]
-      end = start
-    } else if (currentPeriod.value === 'month') {
-      start = new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-        .toISOString()
-        .split('T')[0]
-      end = new Date().toISOString().split('T')[0]
-    } else if (currentPeriod.value === 'year') {
-      start = new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0]
-      end = new Date().toISOString().split('T')[0]
-    } else {
-      start = customStart.value
-      end = customEnd.value
+    try {
+      const res = await statisticsApi.getDashboardOverview()
+      summary.value = res.summary
+      recentOrders.value = res.recentOrders.slice(0, 10)
+      dailyRevenue.value = res.dailyRevenue
+      updateCharts()
+    } catch (e) {
+      console.error('Failed to load dashboard overview:', e)
     }
-
-    summary.value = await AnalyticsService.getDashboardSummary(start, end)
-    topStaff.value = await AnalyticsService.getStaffPerformance(start, end)
-    transactions.value = await AnalyticsService.getRecentTransactions()
-
-    updateChart()
   }
 
-  function setPeriod(p: string) {
-    currentPeriod.value = p
-    loadData()
-  }
-
-  function updateChart() {
-    if (!revenueChartRef.value) return
-
-    const chart = echarts.init(revenueChartRef.value)
-
-    // Giả lập dữ liệu cho biểu đồ dựa trên chu kỳ hiện tại
-    const option = {
-      tooltip: { trigger: 'axis' },
-      grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-      xAxis: {
-        type: 'category',
-        data:
-          currentPeriod.value === 'today'
-            ? ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00']
-            : currentPeriod.value === 'month'
-              ? Array.from({ length: 30 }, (_, i) => `${i + 1}`)
-              : ['Q1', 'Q2', 'Q3', 'Q4'],
-        axisTick: { alignWithLabel: true },
-      },
-      yAxis: { type: 'value' },
-      series: [
-        {
-          name: 'Doanh thu',
-          type: 'line',
-          smooth: true,
-          data: Array.from(
-            {
-              length:
-                currentPeriod.value === 'today' ? 7 : currentPeriod.value === 'month' ? 30 : 4,
-            },
-            () => Math.floor(Math.random() * 100000000) + 10000000,
-          ),
-          itemStyle: { color: '#2563eb' },
-          areaStyle: {
-            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: 'rgba(37, 99, 235, 0.3)' },
-              { offset: 1, color: 'rgba(37, 99, 235, 0)' },
-            ]),
-          },
+  function updateCharts() {
+    if (revenueChartRef.value) {
+      if (!revenueChart) revenueChart = echarts.init(revenueChartRef.value)
+      const data = dailyRevenue.value
+      revenueChart.setOption({
+        backgroundColor: 'transparent',
+        textStyle: { color: chartTextColor },
+        tooltip: { trigger: 'axis' },
+        grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+        xAxis: {
+          type: 'category',
+          data: data.map((d) => d.reportDay),
+          axisTick: { alignWithLabel: true },
+          axisLabel: { color: chartTextColor },
+          axisLine: { lineStyle: { color: chartAxisLineColor } },
         },
-      ],
+        yAxis: {
+          type: 'value',
+          axisLabel: { color: chartTextColor },
+          splitLine: { lineStyle: { color: chartGridLineColor } },
+        },
+        series: [
+          {
+            name: 'Doanh thu',
+            type: 'line',
+            smooth: true,
+            data: data.map((d) => d.totalRevenue),
+            itemStyle: { color: '#e84a4a' },
+            lineStyle: { color: '#e84a4a' },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: 'rgba(232, 74, 74, 0.32)' },
+                { offset: 1, color: 'rgba(232, 74, 74, 0)' },
+              ]),
+            },
+          },
+        ],
+      })
     }
-
-    chart.setOption(option)
+    if (brandChartRef.value) {
+      if (!brandChart) brandChart = echarts.init(brandChartRef.value)
+      const data = (summary.value.brandRevenueDistribution || []).slice(0, 6)
+      brandChart.setOption({
+        backgroundColor: 'transparent',
+        color: ['#e84a4a', '#ff6b6b', '#f97316', '#22c55e', '#3b82f6', '#a855f7'],
+        textStyle: { color: chartTextColor },
+        tooltip: { trigger: 'item' },
+        legend: { bottom: 0, textStyle: { color: chartTextColor } },
+        series: [
+          {
+            type: 'pie',
+            radius: ['40%', '70%'],
+            data: data.map((d) => ({ name: d.brandName || 'Khác', value: d.revenue })),
+            emphasis: {
+              itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' },
+            },
+          },
+        ],
+      })
+    }
   }
 
   function formatCurrency(value: number) {
@@ -505,47 +330,30 @@
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
   }
 
-  function formatCurrencyShort(value: number) {
-    if (value >= 1000000) {
-      return (value / 1000000).toFixed(0) + 'tr'
-    }
-    if (value >= 1000) {
-      return (value / 1000).toFixed(0) + 'k'
-    }
-    return value + 'đ'
-  }
-
   function formatTime(ts: string) {
     return new Date(ts).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
   }
 
+  function getKpiClass(status: string) {
+    switch (status) {
+      case 'Vượt KPI':
+        return 'bg-green-100 text-green-700'
+      case 'Đạt':
+        return 'bg-blue-100 text-blue-700'
+      case 'Cần cải thiện':
+        return 'bg-red-100 text-red-700'
+      default:
+        return 'bg-gray-100 text-gray-700'
+    }
+  }
+
   onMounted(() => {
     loadData()
-    updateChart()
-
-    const userStore = useUserStore()
-    const token = userStore.accessToken
-    if (token) {
-      fetchEventSource('/api/analytics/stream/transactions', {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'text/event-stream',
-        },
-        onmessage(msg) {
-          if (!msg.data) return
-          try {
-            const newTx = JSON.parse(msg.data)
-            transactions.value.unshift(newTx)
-            if (transactions.value.length > 50) transactions.value.pop()
-          } catch (e) {
-            console.error('Failed to parse SSE message:', e)
-          }
-        },
-        onerror() {
-          console.error('SSE connection error for transaction stream')
-        },
-      })
-    }
+    window.addEventListener('resize', handleResize)
+  })
+  onUnmounted(() => {
+    window.removeEventListener('resize', handleResize)
+    revenueChart?.dispose()
+    brandChart?.dispose()
   })
 </script>

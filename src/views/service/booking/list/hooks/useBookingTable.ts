@@ -1,11 +1,12 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { BookingApi, type Booking } from '@/infrastructure/api/booking'
+import type { ColumnOption } from '@/types'
 
 export function useBookingTable() {
   const data = ref<Booking[]>([])
   const loading = ref(false)
-  const columns = ref([
+  const columns = ref<ColumnOption[]>([
     { prop: 'id', label: 'ID', width: '80', sortable: true },
     { prop: 'fullName', label: 'Tên Khách Hàng', minWidth: '160' },
     { prop: 'phoneNumber', label: 'SĐT', minWidth: '120' },
@@ -14,8 +15,8 @@ export function useBookingTable() {
     { prop: 'status', label: 'Trạng Thái', width: '140', slot: 'status' },
     { prop: 'operation', label: 'Thao tác', fixed: 'right', width: '120', slot: 'operation' },
   ])
-  const columnChecks = ref(columns.value.map((c) => c.label))
-  const pagination = reactive({ currentPage: 1, pageSize: 10, total: 0 })
+  const columnChecks = ref<ColumnOption[]>(columns.value)
+  const pagination = reactive({ current: 1, size: 10, total: 0 })
 
   const dialogVisible = ref(false)
   const dialogTitle = ref('')
@@ -115,8 +116,13 @@ export function useBookingTable() {
     handleConfirm,
     submitForm,
     refreshData: loadData,
-    handleSizeChange: () => {},
-    handleCurrentChange: () => {},
+    handleSizeChange: (size: number) => {
+      pagination.size = size
+      pagination.current = 1
+    },
+    handleCurrentChange: (current: number) => {
+      pagination.current = current
+    },
     handleSearch: () => {},
     handleReset: () => {},
   }

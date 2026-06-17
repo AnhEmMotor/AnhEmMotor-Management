@@ -1,11 +1,13 @@
 ﻿import type { Router, RouteLocationNormalized } from 'vue-router'
 import { nextTick } from 'vue'
 import NProgress from 'nprogress'
+import type { NavigationGuardReturn } from 'vue-router'
 import { useSettingStore } from '@/application/store/setting'
 import { useUserStore } from '@/application/store/user'
 import { useMenuStore } from '@/application/store/menu'
 import { setWorktab } from '@/utils/navigation'
 import { setPageTitle } from '@/utils/router'
+import type { AppRouteRecordRaw } from '@/utils/router'
 import { RoutesAlias } from '../routesAlias'
 import { staticRoutes } from '../routes/staticRoutes'
 import { loadingService } from '@/utils/ui'
@@ -89,7 +91,7 @@ async function handleRouteGuard(
   to: RouteLocationNormalized,
   from: RouteLocationNormalized,
   router: Router,
-): Promise<any> {
+): Promise<NavigationGuardReturn> {
   const settingStore = useSettingStore()
   const userStore = useUserStore()
 
@@ -134,7 +136,7 @@ async function handleRouteGuard(
 function handleLoginStatus(
   to: RouteLocationNormalized,
   userStore: ReturnType<typeof useUserStore>,
-): any {
+): NavigationGuardReturn | null {
   if (userStore.isLogin || to.path === RoutesAlias.Login || isStaticRoute(to.path)) {
     return null
   }
@@ -147,7 +149,7 @@ function handleLoginStatus(
 }
 
 function isStaticRoute(path: string): boolean {
-  const checkRoute = (routes: any[], targetPath: string): boolean => {
+  const checkRoute = (routes: AppRouteRecordRaw[], targetPath: string): boolean => {
     return routes.some((route) => {
       if (route.name === 'Exception404') {
         return true
@@ -160,8 +162,8 @@ function isStaticRoute(path: string): boolean {
       if (regex.test(targetPath)) {
         return true
       }
-      if (route.children && route.children.length > 0) {
-        return checkRoute(route.children, targetPath)
+      if ('children' in route && route.children && route.children.length > 0) {
+        return checkRoute(route.children as AppRouteRecordRaw[], targetPath)
       }
       return false
     })
@@ -170,110 +172,18 @@ function isStaticRoute(path: string): boolean {
   return checkRoute(staticRoutes, path)
 }
 
-async function handleDynamicRoutes(to: RouteLocationNormalized, router: Router): Promise<any> {
+async function handleDynamicRoutes(
+  to: RouteLocationNormalized,
+  router: Router,
+): Promise<NavigationGuardReturn> {
   routeInitInProgress = true
 
   pendingLoading = true
   loadingService.showLoading()
 
   try {
-    const [, menuListRaw] = await Promise.all([fetchUserInfo(), menuProcessor.getMenuList()])
-
-    let menuList = (() => {
-      try {
-        if (!Array.isArray(menuListRaw)) return menuListRaw as any
-
-        const ensureReporting = (items: any[]): any[] => {
-          if (!Array.isArray(items)) return items
-
-          const hasReporting = items.some(
-            (x) =>
-              x?.path === '/reporting' || x?.children?.some((c: any) => c?.path === '/reporting'),
-          )
-
-          if (hasReporting) return items
-
-          const injectedNode = {
-            path: '/reporting',
-            name: 'Reporting',
-            component: '@/views/index/index.vue',
-            meta: {
-              title: 'menus.dashboard.analytics',
-              icon: 'trend-charts',
-              permission: 'Reporting.View',
-            },
-            children: [
-              {
-                path: 'dashboard',
-                name: 'ReportingDashboard',
-                component: () => import('@/views/analytics-reporting/dashboard/index.vue'),
-                meta: {
-                  title: 'Dashboard Tổng quan',
-                  icon: 'ri:dashboard-line',
-                  permission: 'Reporting.Dashboard',
-                },
-              },
-              {
-                path: 'expense',
-                name: 'ExpenseManagement',
-                component: () => import('@/views/analytics-reporting/expense/index.vue'),
-                meta: {
-                  title: 'Chi phí vận hành',
-                  icon: 'ri:money-dollar-circle-line',
-                  permission: 'Reporting.Expense',
-                },
-              },
-              {
-                path: 'pnl',
-                name: 'PnLReport',
-                component: () => import('@/views/analytics-reporting/pnl/index.vue'),
-                meta: {
-                  title: 'Báo cáo P&L',
-                  icon: 'ri:file-chart-line',
-                  permission: 'Reporting.PnL',
-                },
-              },
-              {
-                path: 'employee',
-                name: 'EmployeeReport',
-                component: () => import('@/views/analytics-reporting/employee/index.vue'),
-                meta: {
-                  title: 'Thống kê nhân viên',
-                  icon: 'ri:team-line',
-                  permission: 'Reporting.Employee',
-                },
-              },
-            ],
-          }
-
-          return [...items, injectedNode]
-        }
-
-        return ensureReporting(menuListRaw as any[])
-      } catch {
-        return menuListRaw as any
-      }
-    })()
-
-    const fixReportingParentIcon = (items: any[]): any[] => {
-      return items.map((item) => {
-        if (item.path === '/reporting' && item.meta) {
-          return {
-            ...item,
-            meta: {
-              ...item.meta,
-              icon: item.meta.icon === 'trend-charts' ? 'ri:pie-chart-line' : item.meta.icon,
-            },
-          }
-        }
-        if (item.children && item.children.length > 0) {
-          return { ...item, children: fixReportingParentIcon(item.children) }
-        }
-        return item
-      })
-    }
-
-    menuList = fixReportingParentIcon(menuList as any)
+    await fetchUserInfo()
+    const menuList = await menuProcessor.getMenuList()
 
     if (!menuProcessor.validateMenuList(menuList)) {
       throw new Error('Lấy Menu list that bai, vui long refresh login')
@@ -334,7 +244,7 @@ async function handleDynamicRoutes(to: RouteLocationNormalized, router: Router):
 
     if (isUnauthorizedError(error)) {
       routeInitInProgress = false
-        return { name: 'Login', query: { redirect: to.fullPath }, replace: true }
+      return { name: 'Login', query: { redirect: to.fullPath }, replace: true }
     }
 
     routeInitFailed = true
@@ -379,7 +289,7 @@ export function resetRouterState(delay: number): void {
   }, delay)
 }
 
-function handleRootPathRedirect(to: RouteLocationNormalized): any {
+function handleRootPathRedirect(to: RouteLocationNormalized): NavigationGuardReturn | null {
   if (to.path !== '/') {
     return null
   }
