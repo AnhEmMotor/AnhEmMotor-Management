@@ -1159,6 +1159,37 @@
       min-height: 0;
     }
   }
+
+  // Additional dark mode overrides
+  .contract-supplier-container {
+    min-height: 100vh;
+    background: #050506;
+  }
+
+  .supplier-table-card :deep(.art-table-card) {
+    background: #161618 !important;
+    border-color: rgb(255 255 255 / 9%) !important;
+  }
+
+  .supplier-table-card :deep(.el-pagination),
+  .supplier-table-card :deep(.el-pagination *) {
+    color: #f8fafc;
+  }
+
+  .supplier-table-card :deep(.el-pagination .el-pager li) {
+    background: #101114;
+    border: 1px solid rgb(255 255 255 / 10%);
+  }
+
+  .supplier-table-card :deep(.el-pagination .el-pager li.is-active) {
+    background: #e84a4a;
+    border-color: #e84a4a;
+  }
+
+  .contract-supplier-container :deep(.el-tag) {
+    color: #fff;
+    border-color: transparent;
+  }
 </style>
 
 <style lang="scss">
