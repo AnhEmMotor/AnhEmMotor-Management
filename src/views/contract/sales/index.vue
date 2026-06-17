@@ -337,47 +337,92 @@
 <style scoped lang="scss">
   .contract-sales-container {
     padding: 16px;
-    color: #f8fafc;
   }
 
-  .contract-sales-container :deep(.el-card) {
+  html.dark .contract-sales-container {
+    min-height: 100vh;
+    color: #f8fafc;
+    background: #050506;
+  }
+
+  html.dark .contract-sales-container :deep(.el-card) {
     color: #f8fafc;
     background: #161618;
     border-color: rgb(255 255 255 / 9%);
   }
 
-  .contract-sales-container :deep(.el-card__header),
-  .contract-sales-container :deep(.el-table),
-  .contract-sales-container :deep(.el-table .cell),
-  .contract-sales-container :deep(.el-table th.el-table__cell),
-  .contract-sales-container :deep(.el-table td.el-table__cell),
-  .contract-sales-container :deep(.el-pagination),
-  .contract-sales-container :deep(.el-pagination *) {
+  html.dark .contract-sales-container :deep(.el-card__header),
+  html.dark .contract-sales-container :deep(.el-table),
+  html.dark .contract-sales-container :deep(.el-table .cell),
+  html.dark .contract-sales-container :deep(.el-table th.el-table__cell),
+  html.dark .contract-sales-container :deep(.el-table td.el-table__cell),
+  html.dark .contract-sales-container :deep(.el-pagination),
+  html.dark .contract-sales-container :deep(.el-pagination *) {
     color: #f8fafc !important;
   }
 
-  .contract-sales-container :deep(.el-table th.el-table__cell) {
+  html.dark .contract-sales-container :deep(.el-pagination .el-pager li) {
+    background: #101114;
+    border: 1px solid rgb(255 255 255 / 10%);
+  }
+
+  html.dark .contract-sales-container :deep(.el-pagination .el-pager li.is-active) {
+    background: #e84a4a;
+    border-color: #e84a4a;
+  }
+
+  html.dark .contract-sales-container :deep(.el-tag) {
+    color: #fff;
+    border-color: transparent;
+  }
+
+  html.dark .contract-sales-container :deep(.kpi-card) {
+    background: #161618 !important;
+    border-color: rgb(255 255 255 / 9%) !important;
+  }
+
+  html.dark .contract-sales-container :deep(.kpi-card .text-gray-400),
+  html.dark .contract-sales-container :deep(.kpi-card .text-gray-500) {
+    color: #f8fafc !important;
+  }
+
+  html.dark .contract-sales-container :deep(.el-card) {
+    background: #161618 !important;
+    border-color: rgb(255 255 255 / 9%) !important;
+  }
+
+  html.dark .contract-sales-container :deep(.el-card__body) {
+    background: transparent !important;
+  }
+
+  html.dark .contract-sales-container :deep(.el-table) {
+    --el-table-bg-color: #161618;
+    --el-table-tr-bg-color: #161618;
+    --el-table-header-bg-color: #111214;
+  }
+
+  html.dark .contract-sales-container :deep(.el-table th.el-table__cell) {
     background: #111214;
   }
 
-  .contract-sales-container :deep(.el-input__wrapper),
-  .contract-sales-container :deep(.el-select__wrapper) {
+  html.dark .contract-sales-container :deep(.el-input__wrapper),
+  html.dark .contract-sales-container :deep(.el-select__wrapper) {
     background: #101114;
     border: 1px solid rgb(255 255 255 / 14%);
     box-shadow: none;
   }
 
-  .contract-sales-container :deep(.el-input__inner),
-  .contract-sales-container :deep(.el-select__placeholder),
-  .contract-sales-container :deep(.el-select__selected-item) {
+  html.dark .contract-sales-container :deep(.el-input__inner),
+  html.dark .contract-sales-container :deep(.el-select__placeholder),
+  html.dark .contract-sales-container :deep(.el-select__selected-item) {
     color: #f8fafc;
   }
 
-  .contract-sales-container .text-gray-400,
-  .contract-sales-container .text-gray-500,
-  .contract-sales-container .text-gray-600,
-  .contract-sales-container .text-gray-800,
-  .contract-sales-container .text-gray-900 {
+  html.dark .contract-sales-container .text-gray-400,
+  html.dark .contract-sales-container .text-gray-500,
+  html.dark .contract-sales-container .text-gray-600,
+  html.dark .contract-sales-container .text-gray-800,
+  html.dark .contract-sales-container .text-gray-900 {
     color: #f8fafc !important;
   }
 

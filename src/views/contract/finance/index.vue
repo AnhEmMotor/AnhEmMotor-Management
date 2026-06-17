@@ -573,55 +573,57 @@
 </script>
 
 <style scoped lang="scss">
-  .finance-contract-page {
+  html.dark .finance-contract-page {
+    min-height: 100vh;
     color: #f8fafc;
+    background: #050506;
   }
 
-  .finance-contract-page :deep(.finance-stat-card) {
+  html.dark .finance-contract-page :deep(.finance-stat-card) {
     color: #f8fafc;
     background: #161618 !important;
     border-color: rgb(255 255 255 / 9%) !important;
   }
 
-  .finance-contract-page :deep(.finance-stat-card .text-g-900),
-  .finance-contract-page :deep(.finance-stat-card .text-g-800),
-  .finance-contract-page :deep(.finance-stat-card .text-g-700),
-  .finance-contract-page :deep(.finance-stat-card .text-g-600),
-  .finance-contract-page :deep(.finance-stat-card .text-g-500),
-  .finance-contract-page :deep(.finance-stat-card .text-2xl),
-  .finance-contract-page :deep(.finance-stat-card p) {
+  html.dark .finance-contract-page :deep(.finance-stat-card .text-g-900),
+  html.dark .finance-contract-page :deep(.finance-stat-card .text-g-800),
+  html.dark .finance-contract-page :deep(.finance-stat-card .text-g-700),
+  html.dark .finance-contract-page :deep(.finance-stat-card .text-g-600),
+  html.dark .finance-contract-page :deep(.finance-stat-card .text-g-500),
+  html.dark .finance-contract-page :deep(.finance-stat-card .text-2xl),
+  html.dark .finance-contract-page :deep(.finance-stat-card p) {
     color: #f8fafc !important;
     opacity: 1 !important;
   }
 
-  .finance-contract-page :deep(.art-search-bar) {
+  html.dark .finance-contract-page :deep(.art-search-bar) {
     color: #f8fafc;
     background: #161618;
     border-color: rgb(255 255 255 / 9%) !important;
   }
 
-  .finance-contract-page :deep(.art-search-bar .el-form-item__label),
-  .finance-contract-page :deep(.art-search-bar .el-input__inner),
-  .finance-contract-page :deep(.art-search-bar .el-select__placeholder),
-  .finance-contract-page :deep(.art-search-bar .el-select__selected-item),
-  .finance-contract-page :deep(.art-search-bar .el-button) {
+  html.dark .finance-contract-page :deep(.art-search-bar .el-form-item__label),
+  html.dark .finance-contract-page :deep(.art-search-bar .el-input__inner),
+  html.dark .finance-contract-page :deep(.art-search-bar .el-select__placeholder),
+  html.dark .finance-contract-page :deep(.art-search-bar .el-select__selected-item),
+  html.dark .finance-contract-page :deep(.art-search-bar .el-button) {
     color: #f8fafc;
   }
 
-  .finance-contract-page :deep(.art-search-bar .el-input__wrapper),
-  .finance-contract-page :deep(.art-search-bar .el-select__wrapper) {
+  html.dark .finance-contract-page :deep(.art-search-bar .el-input__wrapper),
+  html.dark .finance-contract-page :deep(.art-search-bar .el-select__wrapper) {
     background: #101114;
     border: 1px solid rgb(255 255 255 / 14%);
     box-shadow: none;
   }
 
-  .finance-contract-page :deep(.art-table-card) {
+  html.dark .finance-contract-page :deep(.art-table-card) {
     color: #f8fafc;
     background: #161618;
     border-color: rgb(255 255 255 / 9%) !important;
   }
 
-  .finance-contract-page :deep(.art-table .el-table) {
+  html.dark .finance-contract-page :deep(.art-table .el-table) {
     --el-table-text-color: #f8fafc;
     --el-table-header-text-color: #f8fafc;
     --el-text-color-regular: #f8fafc;
@@ -631,26 +633,28 @@
     background: #161618;
   }
 
-  .finance-contract-page :deep(.art-table .el-table .cell),
-  .finance-contract-page :deep(.art-table .el-table td.el-table__cell),
-  .finance-contract-page :deep(.art-table .el-table th.el-table__cell) {
+  html.dark .finance-contract-page :deep(.art-table .el-table .cell),
+  html.dark .finance-contract-page :deep(.art-table .el-table td.el-table__cell),
+  html.dark .finance-contract-page :deep(.art-table .el-table th.el-table__cell) {
     color: #f8fafc !important;
   }
 
-  .finance-contract-page :deep(.art-table .el-table th.el-table__cell) {
+  html.dark .finance-contract-page :deep(.art-table .el-table th.el-table__cell) {
     background: #111214;
   }
 
-  .finance-contract-page :deep(.art-table .el-pagination),
-  .finance-contract-page :deep(.art-table .el-pagination *) {
+  html.dark .finance-contract-page :deep(.art-table .el-pagination),
+  html.dark .finance-contract-page :deep(.art-table .el-pagination *) {
     color: #f8fafc;
   }
 
-  .finance-contract-page :deep(.el-tag) {
+  html.dark .finance-contract-page :deep(.el-tag) {
     font-weight: 700;
+    color: #fff;
+    border-color: transparent;
   }
 
-  .finance-contract-page :deep(.el-tag--info.el-tag--light) {
+  html.dark .finance-contract-page :deep(.el-tag--info.el-tag--light) {
     color: #f8fafc;
     background: rgb(148 163 184 / 18%);
     border-color: rgb(148 163 184 / 30%);

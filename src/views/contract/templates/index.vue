@@ -817,7 +817,7 @@
 </script>
 
 <style scoped lang="scss">
-  .contract-templates-page {
+  html.dark .contract-templates-page {
     min-height: 100vh;
     color: #f8fafc;
     background: #050506;
