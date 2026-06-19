@@ -451,47 +451,60 @@
         </div>
       </div>
       <template #footer>
-        <div class="flex justify-end gap-2 border-t border-gray-50 pt-3">
-          <ElButton @click="detailDialogVisible = false">Đóng</ElButton>
+        <div class="flex justify-between items-center border-t border-gray-50 pt-3">
+          <div>
+            <ElButton v-if="detailData?.id" type="primary" plain @click="auditTrailVisible = true">
+              <ElIcon class="mr-1"><Clock /></ElIcon> Lịch sử chỉnh sửa
+            </ElButton>
+          </div>
+          <div class="flex gap-2">
+            <ElButton @click="detailDialogVisible = false">Đóng</ElButton>
 
-          <template v-if="detailData">
-            <ElButton
-              v-if="
-                detailData.statusId?.toLowerCase() === 'draft' &&
-                hasAuth(Permissions.InventoryReceiptsSend)
-              "
-              type="primary"
-              :loading="detailSubmitting"
-              @click="handleSendReceipt(detailData.id)"
-            >
-              Gửi phiếu
-            </ElButton>
-            <ElButton
-              v-if="
-                detailData.statusId?.toLowerCase() === 'sent' &&
-                hasAuth(Permissions.InventoryReceiptsApproveReject)
-              "
-              type="success"
-              :loading="detailSubmitting"
-              @click="handleApproveRejectReceipt(detailData.id, 'approve')"
-            >
-              Phê duyệt
-            </ElButton>
-            <ElButton
-              v-if="
-                detailData.statusId?.toLowerCase() === 'sent' &&
-                hasAuth(Permissions.InventoryReceiptsApproveReject)
-              "
-              type="danger"
-              :loading="detailSubmitting"
-              @click="handleApproveRejectReceipt(detailData.id, 'reject')"
-            >
-              Từ chối
-            </ElButton>
-          </template>
+            <template v-if="detailData">
+              <ElButton
+                v-if="
+                  detailData.statusId?.toLowerCase() === 'draft' &&
+                  hasAuth(Permissions.InventoryReceiptsSend)
+                "
+                type="primary"
+                :loading="detailSubmitting"
+                @click="handleSendReceipt(detailData.id)"
+              >
+                Gửi phiếu
+              </ElButton>
+              <ElButton
+                v-if="
+                  detailData.statusId?.toLowerCase() === 'sent' &&
+                  hasAuth(Permissions.InventoryReceiptsApproveReject)
+                "
+                type="success"
+                :loading="detailSubmitting"
+                @click="handleApproveRejectReceipt(detailData.id, 'approve')"
+              >
+                Phê duyệt
+              </ElButton>
+              <ElButton
+                v-if="
+                  detailData.statusId?.toLowerCase() === 'sent' &&
+                  hasAuth(Permissions.InventoryReceiptsApproveReject)
+                "
+                type="danger"
+                :loading="detailSubmitting"
+                @click="handleApproveRejectReceipt(detailData.id, 'reject')"
+              >
+                Từ chối
+              </ElButton>
+            </template>
+          </div>
         </div>
       </template>
     </ElDialog>
+
+    <AuditTrailModal
+      v-model:visible="auditTrailVisible"
+      :record-id="detailData?.id"
+      type="inventory-receipt"
+    />
 
     <ElDialog
       v-model="quoteDialogVisible"
@@ -617,7 +630,8 @@
     Check,
     Close,
     Promotion,
-    InfoFilled
+    InfoFilled,
+    Clock
   } from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useDebounceFn } from '@vueuse/core'
@@ -627,8 +641,11 @@
   import { QuotationApi } from '@/api/quotation.api'
   import { Permissions } from '@/domain/constants/permissions'
   import type { InventoryReceipt, InputInfo } from '@/domain/inventory/receipt.types'
+  import AuditTrailModal from '@/components/business/audit-trail-modal/index.vue'
 
-  defineOptions({ name: 'InventoryInput' })
+  defineOptions({ name: 'InventoryReceipt' })
+
+  const auditTrailVisible = ref(false)
 
   type VehicleIdentification = {
     id?: number
@@ -784,13 +801,13 @@
     return productCache.get(Number(id))?.displayName || `Sản phẩm #${id}`
   }
 
-  const getProductColorName = (row: ReceiptProductRow) => {
+  const getProductColorName = (row: any) => {
     return (
       row.productVariantColorName || productCache.get(Number(row.productVariantId))?.colorName || ''
     )
   }
 
-  const isVinManagedProduct = (row: ReceiptProductRow) => {
+  const isVinManagedProduct = (row: any) => {
     return row.managementType?.toLowerCase() === VIN_MANAGEMENT_TYPE
   }
 
@@ -849,20 +866,22 @@
     }
   }
 
-  const applyQuote = (row: ReceiptProductRow, quote: any) => {
+  const applyQuote = (row: any, quote: any) => {
     row.supplierId = quote.supplierId
     row.unitPrice = quote.quotePrice
     syncVehiclePrices(row)
     ElMessage.success('Đã áp dụng báo giá')
   }
 
-  const handleProductCountChange = (row: ReceiptProductRow) => {
+  const handleProductCountChange = (row: any) => {
     const newCount = Number(row.count) || 0
     const currentVehicles = row.vehicles || []
 
     if (newCount < currentVehicles.length) {
       const removedVehicles = currentVehicles.slice(newCount)
-      const hasData = removedVehicles.some((v) => v.vinNumber?.trim() || v.engineNumber?.trim())
+      const hasData = removedVehicles.some(
+        (v: any) => v.vinNumber?.trim() || v.engineNumber?.trim()
+      )
       if (hasData) {
         ElMessage.warning(
           'Số lượng giảm ảnh hưởng đến thông tin số khung/số máy đã nhập. Vui lòng mở hộp thoại Nhập VIN và xóa trực tiếp dòng xe mong muốn.'
@@ -881,13 +900,13 @@
     row.count = row.vehicles.length
   }
 
-  const getCompletedVehicleIdentityCount = (row: ReceiptProductRow) => {
+  const getCompletedVehicleIdentityCount = (row: any) => {
     return (row.vehicles ?? []).filter(
-      (vehicle) => vehicle.vinNumber?.trim() && vehicle.engineNumber?.trim()
+      (vehicle: any) => vehicle.vinNumber?.trim() && vehicle.engineNumber?.trim()
     ).length
   }
 
-  const getVehicleIdentityProgress = (row: ReceiptProductRow) => {
+  const getVehicleIdentityProgress = (row: any) => {
     return `${getCompletedVehicleIdentityCount(row)}/${row.count || 0}`
   }
 
@@ -925,7 +944,7 @@
     return activeQuoteRow.value.quotes.slice(start, end)
   })
 
-  const openQuoteDialog = (row: ReceiptProductRow) => {
+  const openQuoteDialog = (row: any) => {
     activeQuoteRow.value = row
     quotePage.value = 1
     quoteTotal.value = row.quotes?.length || 0

@@ -25,6 +25,10 @@ export interface InventoryReceipt {
   supplierName?: string
   createdAt?: string
   purchaseRequestId?: number
+  createdByName?: string
+  sentByName?: string
+  approvedByName?: string
+  rejectedByName?: string
   products: InputInfo[]
 }
 

@@ -82,5 +82,11 @@ export const PurchaseRequestApi = {
     return request.get<Record<string, string>>({
       url: '/api/v1/purchase-requests/status'
     })
+  },
+
+  getAuditLogs(id: number) {
+    return request.get<any[]>({
+      url: `/api/v1/purchase-requests/${id}/audit-logs`
+    })
   }
 }

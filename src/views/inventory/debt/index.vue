@@ -89,16 +89,27 @@
               <span class="text-danger font-bold">{{ formatCurrency(getRemainingDebt(row)) }}</span>
             </template>
           </ElTableColumn>
-          <ElTableColumn label="Thao tác" width="110" align="center" fixed="right">
+          <ElTableColumn label="Thao tác" width="130" align="center" fixed="right">
             <template #default="{ row }">
-              <ElButton
-                type="success"
-                size="small"
-                :disabled="getRemainingDebt(row) <= 0"
-                @click="openPaymentForm(row)"
-              >
-                Trả nợ
-              </ElButton>
+              <div class="flex gap-1 justify-center">
+                <ElButton
+                  type="success"
+                  size="small"
+                  :disabled="getRemainingDebt(row) <= 0"
+                  @click="openPaymentForm(row)"
+                  title="Trả nợ"
+                >
+                  Trả nợ
+                </ElButton>
+                <ElButton
+                  type="info"
+                  size="small"
+                  @click="openAuditTrail(row)"
+                  title="Lịch sử chỉnh sửa"
+                >
+                  <ElIcon><Clock /></ElIcon>
+                </ElButton>
+              </div>
             </template>
           </ElTableColumn>
         </ElTable>
@@ -152,14 +163,21 @@
         </div>
       </template>
     </ElDialog>
+
+    <AuditTrailModal
+      v-model:visible="auditTrailVisible"
+      :record-id="auditRecordId"
+      type="supplier-debt-settlement"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
   import { ref, onMounted, computed } from 'vue'
-  import { Refresh } from '@element-plus/icons-vue'
+  import { Refresh, Clock } from '@element-plus/icons-vue'
   import { ElMessage } from 'element-plus'
   import { DebtApi } from '@/api/debt.api'
+  import AuditTrailModal from '@/components/business/audit-trail-modal/index.vue'
 
   defineOptions({ name: 'InventoryDebt' })
 
@@ -261,6 +279,14 @@
   const paying = ref(false)
   const selectedReceipt = ref<any | null>(null)
   const paymentAmount = ref<number>(0)
+
+  const auditTrailVisible = ref(false)
+  const auditRecordId = ref<number | null>(null)
+
+  const openAuditTrail = (row: any) => {
+    auditRecordId.value = row.id
+    auditTrailVisible.value = true
+  }
 
   const openPaymentForm = (receipt: any) => {
     selectedReceipt.value = receipt

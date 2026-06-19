@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
+import fs from 'fs'
 import { fileURLToPath } from 'url'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import viteCompression from 'vite-plugin-compression'
@@ -14,6 +15,20 @@ export default ({ mode }: { mode: string }) => {
   const root = process.cwd()
   const env = loadEnv(mode, root)
   const { VITE_VERSION, VITE_PORT, VITE_BASE_URL } = env
+
+  const optimizeElementPlus = []
+  const epPath = path.resolve(root, 'node_modules/element-plus/es/components')
+  if (fs.existsSync(epPath)) {
+    const dirs = fs.readdirSync(epPath)
+    for (const dir of dirs) {
+      if (fs.existsSync(path.join(epPath, dir, 'style/css.mjs'))) {
+        optimizeElementPlus.push(`element-plus/es/components/${dir}/style/css`)
+      }
+      if (fs.existsSync(path.join(epPath, dir, 'style/index.mjs'))) {
+        optimizeElementPlus.push(`element-plus/es/components/${dir}/style/index`)
+      }
+    }
+  }
 
   return defineConfig({
     define: {
@@ -53,6 +68,12 @@ export default ({ mode }: { mode: string }) => {
         include: ['src/views/**/*.vue']
       },
       rollupOptions: {
+        onwarn(warning, defaultWarn) {
+          if (warning.code === 'INVALID_ANNOTATION') {
+            return
+          }
+          defaultWarn(warning)
+        },
         output: {
           manualChunks(id) {
             if (id.includes('node_modules')) {
@@ -105,12 +126,11 @@ export default ({ mode }: { mode: string }) => {
         threshold: 10240,
         deleteOriginFile: false
       }),
-      vueDevTools({
-        autoOpen: false
-      })
+      vueDevTools()
     ],
     optimizeDeps: {
       include: [
+        'echarts',
         'echarts/core',
         'echarts/charts',
         'echarts/components',
@@ -121,8 +141,7 @@ export default ({ mode }: { mode: string }) => {
         'file-saver',
         'vue-img-cutter',
         'element-plus/es',
-        'element-plus/es/components/*/style/css',
-        'element-plus/es/components/*/style/index'
+        ...optimizeElementPlus
       ]
     },
     css: {

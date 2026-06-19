@@ -222,7 +222,7 @@
                   placeholder="Tìm sản phẩm"
                   class="w-full"
                   :disabled="isBuyerProductLocked"
-                  @change="(id: number) => handleProductChange(row, id)"
+                  @change="(id: number) => handleProductChange(row as any, id)"
                 >
                   <ElOption
                     v-for="item in productOptions"
@@ -424,7 +424,7 @@
                 :placeholder="`Chọn ${row.requiredCount} VIN`"
               >
                 <ElOption
-                  v-for="vehicle in getVehicleOptions(row)"
+                  v-for="vehicle in getVehicleOptions(row as any)"
                   :key="vehicle.id"
                   :label="`${vehicle.vinNumber} - ${vehicle.engineNumber}`"
                   :value="vehicle.id"
@@ -880,7 +880,7 @@
     formData.customerAddress = customer.address || formData.customerAddress
   }
 
-  function handleProductChange(row: OrderFormProduct, id: number) {
+  function handleProductChange(row: any, id: number) {
     const product = productOptions.value.find((item) => item.id === id)
     if (!product) return
     row.productName = product.displayName
@@ -953,7 +953,7 @@
     }
   }
 
-  function getProductColors(row: OrderFormProduct) {
+  function getProductColors(row: any) {
     return productOptions.value.find((item) => item.id === row.productVariantId)?.colors || []
   }
 

@@ -308,28 +308,44 @@
       </div>
 
       <template #footer>
-        <div class="flex justify-end gap-2 border-t border-gray-50 pt-3">
-          <ElButton @click="detailDialogVisible = false">Đóng</ElButton>
+        <div class="flex justify-between items-center border-t border-gray-50 pt-3">
+          <div>
+            <ElButton v-if="detailData?.id" type="primary" plain @click="auditTrailVisible = true">
+              <ElIcon class="mr-1"><Clock /></ElIcon> Lịch sử chỉnh sửa
+            </ElButton>
+          </div>
+          <div class="flex gap-2">
+            <ElButton @click="detailDialogVisible = false">Đóng</ElButton>
 
-          <template v-if="detailData">
-            <template v-if="detailData.status?.toLowerCase() === 'sent'">
-              <ElButton type="danger" @click="handleApproveRejectStatus(detailData.id, 'reject')">
-                Từ chối duyệt
-              </ElButton>
-              <ElButton type="success" @click="handleApproveRejectStatus(detailData.id, 'approve')">
-                Duyệt yêu cầu
-              </ElButton>
-            </template>
+            <template v-if="detailData">
+              <template v-if="detailData.status?.toLowerCase() === 'sent'">
+                <ElButton type="danger" @click="handleApproveRejectStatus(detailData.id, 'reject')">
+                  Từ chối duyệt
+                </ElButton>
+                <ElButton
+                  type="success"
+                  @click="handleApproveRejectStatus(detailData.id, 'approve')"
+                >
+                  Duyệt yêu cầu
+                </ElButton>
+              </template>
 
-            <template v-if="detailData.status?.toLowerCase() === 'draft'">
-              <ElButton type="success" @click="handleSendRequest(detailData)">
-                Gửi phê duyệt
-              </ElButton>
+              <template v-if="detailData.status?.toLowerCase() === 'draft'">
+                <ElButton type="success" @click="handleSendRequest(detailData)">
+                  Gửi phê duyệt
+                </ElButton>
+              </template>
             </template>
-          </template>
+          </div>
         </div>
       </template>
     </ElDialog>
+
+    <AuditTrailModal
+      v-model:visible="auditTrailVisible"
+      :record-id="detailData?.id"
+      type="purchase-request"
+    />
 
     <ElDialog
       v-model="productSelectorVisible"
@@ -459,7 +475,8 @@
     InfoFilled,
     Promotion,
     Check,
-    Close
+    Close,
+    Clock
   } from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useDebounceFn } from '@vueuse/core'
@@ -470,8 +487,11 @@
     PurchaseRequestDetailResponse
   } from '@/domain/purchase-request/request.types'
   import type { ProductVariantLiteForInput } from '@/domain/product/product.types'
+  import AuditTrailModal from '@/components/business/audit-trail-modal/index.vue'
 
   defineOptions({ name: 'PurchaseRequest' })
+
+  const auditTrailVisible = ref(false)
 
   const loading = ref(false)
   const dialogVisible = ref(false)
