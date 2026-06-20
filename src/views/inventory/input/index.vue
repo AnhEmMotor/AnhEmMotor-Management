@@ -191,27 +191,6 @@
               </template>
             </ElTableColumn>
 
-            <ElTableColumn label="Nhà cung cấp" width="220" required>
-              <template #default="{ row }">
-                <span class="font-medium text-gray-800">
-                  {{ getSupplierNameById(row.supplierId) }}
-                </span>
-              </template>
-            </ElTableColumn>
-
-            <ElTableColumn label="Đơn giá nhập" width="160" required>
-              <template #default="{ row }">
-                <ElInputNumber
-                  v-model="row.unitPrice"
-                  :min="0"
-                  :step="10000"
-                  controls-position="right"
-                  class="w-full"
-                  @change="syncVehiclePrices(row)"
-                />
-              </template>
-            </ElTableColumn>
-
             <ElTableColumn label="Số lượng nhập" width="130" align="center">
               <template #default="{ row }">
                 <ElInputNumber
@@ -491,49 +470,6 @@
     />
 
     <ElDialog
-      v-model="quoteDialogVisible"
-      title="Chọn báo giá"
-      width="600px"
-      append-to-body
-      destroy-on-close
-      class="rounded-xl overflow-hidden"
-    >
-      <div class="space-y-4">
-        <ElTable :data="paginatedQuotes" border size="small" class="w-full">
-          <ElTableColumn label="Nhà cung cấp" prop="supplierName" min-width="200" />
-          <ElTableColumn label="Đơn giá" width="150" align="right">
-            <template #default="{ row }">
-              {{ formatCurrency(row.quotePrice) }}
-            </template>
-          </ElTableColumn>
-          <ElTableColumn label="Ghi chú" prop="note" min-width="150">
-            <template #default="{ row }">
-              {{ row.note || '--' }}
-            </template>
-          </ElTableColumn>
-          <ElTableColumn label="Thao tác" width="100" align="center">
-            <template #default="{ row }">
-              <ElButton type="primary" size="small" plain @click="applyQuoteFromDialog(row)">
-                Chọn
-              </ElButton>
-            </template>
-          </ElTableColumn>
-        </ElTable>
-
-        <div class="flex justify-end pt-2 border-t">
-          <ElPagination
-            v-model:current-page="quotePage"
-            v-model:page-size="quotePageSize"
-            :total="quoteTotal"
-            layout="prev, pager, next, total"
-            background
-            size="small"
-          />
-        </div>
-      </div>
-    </ElDialog>
-
-    <ElDialog
       v-model="prSelectorVisible"
       title="Chọn Yêu cầu mua hàng (PR)"
       width="680px"
@@ -621,8 +557,6 @@
   import { useDebounceFn } from '@vueuse/core'
   import { InventoryReceiptApi } from '@/api/inventory-receipt.api'
   import { PurchaseRequestApi } from '@/api/purchase-request.api'
-  import { SupplierApi } from '@/api/supplier.api'
-  import { QuotationApi } from '@/api/quotation.api'
   import { Permissions } from '@/domain/constants/permissions'
   import type { InventoryReceipt, InputInfo } from '@/domain/inventory/receipt.types'
   import AuditTrailModal from '@/components/business/audit-trail-modal/index.vue'
@@ -644,14 +578,11 @@
     productVariantColorId?: number
     productVariantColorName?: string
     count: number
-    unitPrice?: number
-    supplierId?: number
     managementType?: string
     vehicles?: VehicleIdentification[]
     purchaseRequestItemId?: number
     maxUnimportedQuantity?: number
     needVin?: boolean
-    quotes?: any[]
   }
 
   const VIN_MANAGEMENT_TYPE = 'vin_number'
@@ -772,7 +703,6 @@
   })
 
   const statuses = ref<Record<string, string>>({})
-  const suppliersList = ref<any[]>([])
   const productCache = reactive(
     new Map<
       number,
@@ -783,12 +713,6 @@
   const getProductNameById = (id?: number) => {
     if (!id) return ''
     return productCache.get(Number(id))?.displayName || `Sản phẩm #${id}`
-  }
-
-  const getSupplierNameById = (id?: number) => {
-    if (!id) return 'Chưa xác định'
-    const sup = suppliersList.value.find((s) => s.id === id)
-    return sup ? sup.name : 'Chưa xác định'
   }
 
   const getProductColorName = (row: any) => {
@@ -848,21 +772,6 @@
     row.vehicles = newVehicles
   }
 
-  const syncVehiclePrices = (row: any) => {
-    if (row.vehicles) {
-      row.vehicles.forEach((v: any) => {
-        v.importPrice = row.unitPrice || 0
-      })
-    }
-  }
-
-  const applyQuote = (row: any, quote: any) => {
-    row.supplierId = quote.supplierId
-    row.unitPrice = quote.quotePrice
-    syncVehiclePrices(row)
-    ElMessage.success('Đã áp dụng báo giá')
-  }
-
   const handleProductCountChange = (row: any) => {
     const newCount = Number(row.count) || 0
     const currentVehicles = row.vehicles || []
@@ -920,26 +829,6 @@
     statusId: 'working',
     products: []
   })
-
-  const quoteDialogVisible = ref(false)
-  const activeQuoteRow = ref<ReceiptProductRow | null>(null)
-  const quotePage = ref(1)
-  const quotePageSize = ref(5)
-  const quoteTotal = ref(0)
-
-  const paginatedQuotes = computed(() => {
-    if (!activeQuoteRow.value || !activeQuoteRow.value.quotes) return []
-    const start = (quotePage.value - 1) * quotePageSize.value
-    const end = start + quotePageSize.value
-    return activeQuoteRow.value.quotes.slice(start, end)
-  })
-
-  const applyQuoteFromDialog = (quote: any) => {
-    if (activeQuoteRow.value) {
-      applyQuote(activeQuoteRow.value, quote)
-      quoteDialogVisible.value = false
-    }
-  }
 
   const prSelectorVisible = ref(false)
   const prSelectorLoading = ref(false)
@@ -1001,37 +890,16 @@
 
         const isVin = item.needVin || false
 
-        let quotes: any[] = []
-        try {
-          quotes = await QuotationApi.getApprovedPrices(
-            item.productVariantId,
-            item.productVariantColorId
-          )
-        } catch (e) {
-          console.error('Cannot load quotes', e)
-        }
-
-        let autoMatchedPrice = 0
-        if (item.supplierId) {
-          const matchedQuote = quotes.find((q: any) => q.supplierId === item.supplierId)
-          if (matchedQuote) {
-            autoMatchedPrice = matchedQuote.quotePrice || 0
-          }
-        }
-
         const newRow: ReceiptProductRow = {
           productVariantId: item.productVariantId,
           productVariantColorId: item.productVariantColorId,
           productVariantColorName: item.productVariantColorName,
           count: remainingQty,
-          unitPrice: autoMatchedPrice,
-          supplierId: item.supplierId,
           purchaseRequestItemId: item.id,
           maxUnimportedQuantity: remainingQty,
           needVin: isVin,
           managementType: isVin ? VIN_MANAGEMENT_TYPE : 'sku',
-          vehicles: [],
-          quotes
+          vehicles: []
         }
 
         productCache.set(item.productVariantId, {
@@ -1067,12 +935,6 @@
   })
 
   const searchItems = computed(() => [
-    {
-      key: 'supplierName',
-      label: 'Nhà cung cấp',
-      type: 'input',
-      props: { placeholder: 'Tìm theo tên nhà cung cấp...' }
-    },
     {
       key: 'statusId',
       label: 'Trạng thái',
@@ -1163,15 +1025,6 @@
     }
   }
 
-  const loadSuppliers = async () => {
-    try {
-      const res = await SupplierApi.getList({ current: 1, size: 1000 })
-      suppliersList.value = res.items || []
-    } catch (error) {
-      console.error('Failed to load suppliers:', error)
-    }
-  }
-
   const loadStats = async () => {
     try {
       const res = await InventoryReceiptApi.getStats()
@@ -1192,9 +1045,6 @@
     loading.value = true
     try {
       const sieveFilters = []
-      if (filters?.supplierName) {
-        sieveFilters.push(`SupplierName@=${filters.supplierName}`)
-      }
       if (filters?.statusId && filters.statusId.length > 0) {
         if (Array.isArray(filters.statusId)) {
           sieveFilters.push(`StatusId==${filters.statusId.join('|')}`)
@@ -1306,43 +1156,21 @@
               colorName: p.productVariantColorName
             })
 
-            let quotes: any[] = []
-            try {
-              quotes = await QuotationApi.getApprovedPrices(
-                p.productVariantId,
-                p.productVariantColorId
-              )
-            } catch (e) {
-              console.error('Cannot load quotes', e)
-            }
-
-            let autoMatchedPrice = 0
-            if (p.supplierId) {
-              const matchedQuote = quotes.find((q: any) => q.supplierId === p.supplierId)
-              if (matchedQuote) {
-                autoMatchedPrice = matchedQuote.quotePrice || 0
-              }
-            }
-
             return {
               id: p.id,
               productVariantId: p.productVariantId,
               productVariantColorId: p.productVariantColorId,
               productVariantColorName: p.productVariantColorName,
               count: p.quantity || 0,
-              unitPrice: p.unitPrice != null ? p.unitPrice : autoMatchedPrice,
-              supplierId: p.supplierId,
               managementType: isVin ? VIN_MANAGEMENT_TYPE : 'sku',
               needVin: isVin,
               purchaseRequestItemId: p.purchaseRequestItemId,
               maxUnimportedQuantity: p.maxAllowedQuantity ?? (p.quantity || 0),
               invoicedVehicles: prItem ? prItem.invoicedVehicles || [] : [],
-              quotes,
               vehicles: (p.vehicles || []).map((vehicle: any) => ({
                 id: vehicle.id,
                 vinNumber: vehicle.vinNumber || '',
-                engineNumber: vehicle.engineNumber || '',
-                importPrice: vehicle.importPrice || 0
+                engineNumber: vehicle.engineNumber || ''
               }))
             }
           })
@@ -1399,20 +1227,6 @@
       return
     }
 
-    const invalidSupplier = formData.value.products.filter((p) => !p.supplierId)
-    if (invalidSupplier.length > 0) {
-      ElMessage.error('Vui lòng chọn nhà cung cấp cho tất cả sản phẩm!')
-      return
-    }
-
-    const invalidPrice = formData.value.products.filter(
-      (p) => p.unitPrice === undefined || p.unitPrice === null || p.unitPrice < 0
-    )
-    if (invalidPrice.length > 0) {
-      ElMessage.error('Vui lòng nhập đơn giá hợp lệ cho tất cả sản phẩm!')
-      return
-    }
-
     for (const product of formData.value.products) {
       if (!isVinManagedProduct(product)) continue
 
@@ -1450,15 +1264,13 @@
         purchaseRequestItemId: p.purchaseRequestItemId,
         productVariantId: p.productVariantId!,
         productVariantColorId: p.productVariantColorId,
-        supplierId: p.supplierId,
-        unitPrice: p.unitPrice,
         count: p.count,
         vehicles: isVinManagedProduct(p)
           ? p.vehicles?.map((vehicle) => ({
               id: vehicle.id,
               vinNumber: vehicle.vinNumber.trim(),
               engineNumber: vehicle.engineNumber.trim(),
-              importPrice: vehicle.importPrice || p.unitPrice || 0
+              importPrice: vehicle.importPrice || 0
             }))
           : undefined
       }))
@@ -1480,16 +1292,12 @@
               purchaseRequestItemId,
               productVariantId,
               productVariantColorId,
-              supplierId,
-              unitPrice,
               count,
               vehicles
             }) => ({
               purchaseRequestItemId,
               productVariantId,
               productVariantColorId,
-              supplierId,
-              unitPrice,
               count,
               vehicles
             })
@@ -1510,7 +1318,7 @@
 
   onMounted(async () => {
     loading.value = true
-    await Promise.all([loadStatuses(), loadSuppliers()])
+    await loadStatuses()
     await loadData()
   })
 </script>

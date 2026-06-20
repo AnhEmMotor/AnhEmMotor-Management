@@ -130,6 +130,13 @@
                       label="Nhà cung cấp"
                       minWidth="150"
                     />
+                    <ElTableColumn
+                      v-if="log.details.items.some((i) => i.price)"
+                      prop="price"
+                      label="Đơn giá"
+                      minWidth="150"
+                      align="center"
+                    />
                   </ElTable>
                 </div>
                 <div
@@ -154,23 +161,10 @@
                       minWidth="200"
                     />
                     <ElTableColumn
-                      v-if="log.details.infoLogs.some((i) => i.supplierName)"
-                      prop="supplierName"
-                      label="Nhà cung cấp"
-                      minWidth="150"
-                    />
-                    <ElTableColumn
                       v-if="log.details.infoLogs.some((i) => i.quantity)"
                       prop="quantity"
                       label="Số lượng"
                       width="150"
-                      align="center"
-                    />
-                    <ElTableColumn
-                      v-if="log.details.infoLogs.some((i) => i.price)"
-                      prop="price"
-                      label="Đơn giá"
-                      minWidth="150"
                       align="center"
                     />
                   </ElTable>

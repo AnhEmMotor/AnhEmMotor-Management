@@ -186,12 +186,29 @@ export const AuditTrailApi = {
               ? il.newSupplierName || ''
               : `${il.oldSupplierName || ''} ➔ ${il.newSupplierName || ''}`
 
+        const formatPrice = (p: number | undefined | null) => {
+          if (p === null || p === undefined) return ''
+          return p.toLocaleString('vi-VN')
+        }
+
+        let price = ''
+        if (isCreate) price = formatPrice(il.newUnitPrice)
+        else if (isDelete) price = formatPrice(il.oldUnitPrice)
+        else {
+          if (il.oldUnitPrice === il.newUnitPrice) {
+            price = formatPrice(il.newUnitPrice)
+          } else {
+            price = `${formatPrice(il.oldUnitPrice)} ➔ ${formatPrice(il.newUnitPrice)}`
+          }
+        }
+
         return {
           id: il.id,
           action: il.action,
           quantity,
           productVariant,
-          supplierName
+          supplierName,
+          price
         }
       })
 
