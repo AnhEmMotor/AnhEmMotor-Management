@@ -191,43 +191,6 @@
               </template>
             </ElTableColumn>
 
-            <ElTableColumn label="Nhà cung cấp" width="220" required>
-              <template #default="{ row }">
-                <ElSelect
-                  v-model="row.supplierId"
-                  placeholder="Chọn nhà cung cấp"
-                  class="w-full"
-                  filterable
-                  clearable
-                >
-                  <ElOption
-                    v-for="sup in suppliersList"
-                    :key="sup.id"
-                    :label="sup.name"
-                    :value="sup.id"
-                  />
-                </ElSelect>
-                <div v-if="row.quotes && row.quotes.length" class="mt-1">
-                  <ElButton link type="primary" size="small" @click="openQuoteDialog(row)">
-                    Chọn báo giá <ElIcon class="el-icon--right"><ArrowDown /></ElIcon>
-                  </ElButton>
-                </div>
-              </template>
-            </ElTableColumn>
-
-            <ElTableColumn label="Đơn giá nhập" width="160" required>
-              <template #default="{ row }">
-                <ElInputNumber
-                  v-model="row.unitPrice"
-                  :min="0"
-                  :step="10000"
-                  controls-position="right"
-                  class="w-full"
-                  @change="syncVehiclePrices(row)"
-                />
-              </template>
-            </ElTableColumn>
-
             <ElTableColumn label="Số lượng nhập" width="130" align="center">
               <template #default="{ row }">
                 <ElInputNumber
@@ -451,90 +414,60 @@
         </div>
       </div>
       <template #footer>
-        <div class="flex justify-end gap-2 border-t border-gray-50 pt-3">
-          <ElButton @click="detailDialogVisible = false">Đóng</ElButton>
+        <div class="flex justify-between items-center border-t border-gray-50 pt-3">
+          <div>
+            <ElButton v-if="detailData?.id" type="primary" plain @click="auditTrailVisible = true">
+              <ElIcon class="mr-1"><Clock /></ElIcon> Lịch sử chỉnh sửa
+            </ElButton>
+          </div>
+          <div class="flex gap-2">
+            <ElButton @click="detailDialogVisible = false">Đóng</ElButton>
 
-          <template v-if="detailData">
-            <ElButton
-              v-if="
-                detailData.statusId?.toLowerCase() === 'draft' &&
-                hasAuth(Permissions.InventoryReceiptsSend)
-              "
-              type="primary"
-              :loading="detailSubmitting"
-              @click="handleSendReceipt(detailData.id)"
-            >
-              Gửi phiếu
-            </ElButton>
-            <ElButton
-              v-if="
-                detailData.statusId?.toLowerCase() === 'sent' &&
-                hasAuth(Permissions.InventoryReceiptsApproveReject)
-              "
-              type="success"
-              :loading="detailSubmitting"
-              @click="handleApproveRejectReceipt(detailData.id, 'approve')"
-            >
-              Phê duyệt
-            </ElButton>
-            <ElButton
-              v-if="
-                detailData.statusId?.toLowerCase() === 'sent' &&
-                hasAuth(Permissions.InventoryReceiptsApproveReject)
-              "
-              type="danger"
-              :loading="detailSubmitting"
-              @click="handleApproveRejectReceipt(detailData.id, 'reject')"
-            >
-              Từ chối
-            </ElButton>
-          </template>
+            <template v-if="detailData">
+              <ElButton
+                v-if="
+                  detailData.statusId?.toLowerCase() === 'draft' &&
+                  hasAuth(Permissions.InventoryReceiptsSend)
+                "
+                type="primary"
+                :loading="detailSubmitting"
+                @click="handleSendReceipt(detailData.id)"
+              >
+                Gửi phiếu
+              </ElButton>
+              <ElButton
+                v-if="
+                  detailData.statusId?.toLowerCase() === 'sent' &&
+                  hasAuth(Permissions.InventoryReceiptsApproveReject)
+                "
+                type="success"
+                :loading="detailSubmitting"
+                @click="handleApproveRejectReceipt(detailData.id, 'approve')"
+              >
+                Phê duyệt
+              </ElButton>
+              <ElButton
+                v-if="
+                  detailData.statusId?.toLowerCase() === 'sent' &&
+                  hasAuth(Permissions.InventoryReceiptsApproveReject)
+                "
+                type="danger"
+                :loading="detailSubmitting"
+                @click="handleApproveRejectReceipt(detailData.id, 'reject')"
+              >
+                Từ chối
+              </ElButton>
+            </template>
+          </div>
         </div>
       </template>
     </ElDialog>
 
-    <ElDialog
-      v-model="quoteDialogVisible"
-      title="Chọn báo giá"
-      width="600px"
-      append-to-body
-      destroy-on-close
-      class="rounded-xl overflow-hidden"
-    >
-      <div class="space-y-4">
-        <ElTable :data="paginatedQuotes" border size="small" class="w-full">
-          <ElTableColumn label="Nhà cung cấp" prop="supplierName" min-width="200" />
-          <ElTableColumn label="Đơn giá" width="150" align="right">
-            <template #default="{ row }">
-              {{ formatCurrency(row.quotePrice) }}
-            </template>
-          </ElTableColumn>
-          <ElTableColumn label="Ghi chú" prop="note" min-width="150">
-            <template #default="{ row }">
-              {{ row.note || '--' }}
-            </template>
-          </ElTableColumn>
-          <ElTableColumn label="Thao tác" width="100" align="center">
-            <template #default="{ row }">
-              <ElButton type="primary" size="small" plain @click="applyQuoteFromDialog(row)">
-                Chọn
-              </ElButton>
-            </template>
-          </ElTableColumn>
-        </ElTable>
-
-        <div class="flex justify-end pt-2 border-t">
-          <ElPagination
-            v-model:current-page="quotePage"
-            v-model:page-size="quotePageSize"
-            :total="quoteTotal"
-            layout="prev, pager, next, total"
-            background
-            size="small"
-          />
-        </div>
-      </div>
-    </ElDialog>
+    <AuditTrailModal
+      v-model:visible="auditTrailVisible"
+      :record-id="detailData?.id"
+      type="inventory-receipt"
+    />
 
     <ElDialog
       v-model="prSelectorVisible"
@@ -617,18 +550,20 @@
     Check,
     Close,
     Promotion,
-    InfoFilled
+    InfoFilled,
+    Clock
   } from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useDebounceFn } from '@vueuse/core'
   import { InventoryReceiptApi } from '@/api/inventory-receipt.api'
   import { PurchaseRequestApi } from '@/api/purchase-request.api'
-  import { SupplierApi } from '@/api/supplier.api'
-  import { QuotationApi } from '@/api/quotation.api'
   import { Permissions } from '@/domain/constants/permissions'
   import type { InventoryReceipt, InputInfo } from '@/domain/inventory/receipt.types'
+  import AuditTrailModal from '@/components/business/audit-trail-modal/index.vue'
 
-  defineOptions({ name: 'InventoryInput' })
+  defineOptions({ name: 'InventoryReceipt' })
+
+  const auditTrailVisible = ref(false)
 
   type VehicleIdentification = {
     id?: number
@@ -643,14 +578,11 @@
     productVariantColorId?: number
     productVariantColorName?: string
     count: number
-    unitPrice?: number
-    supplierId?: number
     managementType?: string
     vehicles?: VehicleIdentification[]
     purchaseRequestItemId?: number
     maxUnimportedQuantity?: number
     needVin?: boolean
-    quotes?: any[]
   }
 
   const VIN_MANAGEMENT_TYPE = 'vin_number'
@@ -771,7 +703,6 @@
   })
 
   const statuses = ref<Record<string, string>>({})
-  const suppliersList = ref<any[]>([])
   const productCache = reactive(
     new Map<
       number,
@@ -784,13 +715,13 @@
     return productCache.get(Number(id))?.displayName || `Sản phẩm #${id}`
   }
 
-  const getProductColorName = (row: ReceiptProductRow) => {
+  const getProductColorName = (row: any) => {
     return (
       row.productVariantColorName || productCache.get(Number(row.productVariantId))?.colorName || ''
     )
   }
 
-  const isVinManagedProduct = (row: ReceiptProductRow) => {
+  const isVinManagedProduct = (row: any) => {
     return row.managementType?.toLowerCase() === VIN_MANAGEMENT_TYPE
   }
 
@@ -841,28 +772,15 @@
     row.vehicles = newVehicles
   }
 
-  const syncVehiclePrices = (row: any) => {
-    if (row.vehicles) {
-      row.vehicles.forEach((v: any) => {
-        v.importPrice = row.unitPrice || 0
-      })
-    }
-  }
-
-  const applyQuote = (row: ReceiptProductRow, quote: any) => {
-    row.supplierId = quote.supplierId
-    row.unitPrice = quote.quotePrice
-    syncVehiclePrices(row)
-    ElMessage.success('Đã áp dụng báo giá')
-  }
-
-  const handleProductCountChange = (row: ReceiptProductRow) => {
+  const handleProductCountChange = (row: any) => {
     const newCount = Number(row.count) || 0
     const currentVehicles = row.vehicles || []
 
     if (newCount < currentVehicles.length) {
       const removedVehicles = currentVehicles.slice(newCount)
-      const hasData = removedVehicles.some((v) => v.vinNumber?.trim() || v.engineNumber?.trim())
+      const hasData = removedVehicles.some(
+        (v: any) => v.vinNumber?.trim() || v.engineNumber?.trim()
+      )
       if (hasData) {
         ElMessage.warning(
           'Số lượng giảm ảnh hưởng đến thông tin số khung/số máy đã nhập. Vui lòng mở hộp thoại Nhập VIN và xóa trực tiếp dòng xe mong muốn.'
@@ -881,13 +799,13 @@
     row.count = row.vehicles.length
   }
 
-  const getCompletedVehicleIdentityCount = (row: ReceiptProductRow) => {
+  const getCompletedVehicleIdentityCount = (row: any) => {
     return (row.vehicles ?? []).filter(
-      (vehicle) => vehicle.vinNumber?.trim() && vehicle.engineNumber?.trim()
+      (vehicle: any) => vehicle.vinNumber?.trim() && vehicle.engineNumber?.trim()
     ).length
   }
 
-  const getVehicleIdentityProgress = (row: ReceiptProductRow) => {
+  const getVehicleIdentityProgress = (row: any) => {
     return `${getCompletedVehicleIdentityCount(row)}/${row.count || 0}`
   }
 
@@ -911,33 +829,6 @@
     statusId: 'working',
     products: []
   })
-
-  const quoteDialogVisible = ref(false)
-  const activeQuoteRow = ref<ReceiptProductRow | null>(null)
-  const quotePage = ref(1)
-  const quotePageSize = ref(5)
-  const quoteTotal = ref(0)
-
-  const paginatedQuotes = computed(() => {
-    if (!activeQuoteRow.value || !activeQuoteRow.value.quotes) return []
-    const start = (quotePage.value - 1) * quotePageSize.value
-    const end = start + quotePageSize.value
-    return activeQuoteRow.value.quotes.slice(start, end)
-  })
-
-  const openQuoteDialog = (row: ReceiptProductRow) => {
-    activeQuoteRow.value = row
-    quotePage.value = 1
-    quoteTotal.value = row.quotes?.length || 0
-    quoteDialogVisible.value = true
-  }
-
-  const applyQuoteFromDialog = (quote: any) => {
-    if (activeQuoteRow.value) {
-      applyQuote(activeQuoteRow.value, quote)
-      quoteDialogVisible.value = false
-    }
-  }
 
   const prSelectorVisible = ref(false)
   const prSelectorLoading = ref(false)
@@ -994,34 +885,21 @@
       const detail = await PurchaseRequestApi.getApprovedById(pr.id)
 
       const productPromises = detail.items.map(async (item: any) => {
-        const remainingQty = item.unimportedQuantity || 0
+        const remainingQty = item.unimportedQuantity ?? 0
         if (remainingQty <= 0) return null
 
         const isVin = item.needVin || false
-
-        let quotes: any[] = []
-        try {
-          quotes = await QuotationApi.getApprovedPrices(
-            item.productVariantId,
-            item.productVariantColorId
-          )
-        } catch (e) {
-          console.error('Cannot load quotes', e)
-        }
 
         const newRow: ReceiptProductRow = {
           productVariantId: item.productVariantId,
           productVariantColorId: item.productVariantColorId,
           productVariantColorName: item.productVariantColorName,
           count: remainingQty,
-          unitPrice: 0,
-          supplierId: undefined,
           purchaseRequestItemId: item.id,
           maxUnimportedQuantity: remainingQty,
           needVin: isVin,
           managementType: isVin ? VIN_MANAGEMENT_TYPE : 'sku',
-          vehicles: [],
-          quotes
+          vehicles: []
         }
 
         productCache.set(item.productVariantId, {
@@ -1057,12 +935,6 @@
   })
 
   const searchItems = computed(() => [
-    {
-      key: 'supplierName',
-      label: 'Nhà cung cấp',
-      type: 'input',
-      props: { placeholder: 'Tìm theo tên nhà cung cấp...' }
-    },
     {
       key: 'statusId',
       label: 'Trạng thái',
@@ -1153,15 +1025,6 @@
     }
   }
 
-  const loadSuppliers = async () => {
-    try {
-      const res = await SupplierApi.getList({ current: 1, size: 1000 })
-      suppliersList.value = res.items || []
-    } catch (error) {
-      console.error('Failed to load suppliers:', error)
-    }
-  }
-
   const loadStats = async () => {
     try {
       const res = await InventoryReceiptApi.getStats()
@@ -1182,9 +1045,6 @@
     loading.value = true
     try {
       const sieveFilters = []
-      if (filters?.supplierName) {
-        sieveFilters.push(`SupplierName@=${filters.supplierName}`)
-      }
       if (filters?.statusId && filters.statusId.length > 0) {
         if (Array.isArray(filters.statusId)) {
           sieveFilters.push(`StatusId==${filters.statusId.join('|')}`)
@@ -1296,31 +1156,21 @@
               colorName: p.productVariantColorName
             })
 
-            let quotes: any[] = []
-            quotes = await QuotationApi.getApprovedPrices(
-              p.productVariantId,
-              p.productVariantColorId
-            )
-
             return {
               id: p.id,
               productVariantId: p.productVariantId,
               productVariantColorId: p.productVariantColorId,
               productVariantColorName: p.productVariantColorName,
               count: p.quantity || 0,
-              unitPrice: p.unitPrice || 0,
-              supplierId: p.supplierId,
               managementType: isVin ? VIN_MANAGEMENT_TYPE : 'sku',
               needVin: isVin,
               purchaseRequestItemId: p.purchaseRequestItemId,
               maxUnimportedQuantity: p.maxAllowedQuantity ?? (p.quantity || 0),
               invoicedVehicles: prItem ? prItem.invoicedVehicles || [] : [],
-              quotes,
               vehicles: (p.vehicles || []).map((vehicle: any) => ({
                 id: vehicle.id,
                 vinNumber: vehicle.vinNumber || '',
-                engineNumber: vehicle.engineNumber || '',
-                importPrice: vehicle.importPrice || 0
+                engineNumber: vehicle.engineNumber || ''
               }))
             }
           })
@@ -1377,20 +1227,6 @@
       return
     }
 
-    const invalidSupplier = formData.value.products.filter((p) => !p.supplierId)
-    if (invalidSupplier.length > 0) {
-      ElMessage.error('Vui lòng chọn nhà cung cấp cho tất cả sản phẩm!')
-      return
-    }
-
-    const invalidPrice = formData.value.products.filter(
-      (p) => p.unitPrice === undefined || p.unitPrice === null || p.unitPrice < 0
-    )
-    if (invalidPrice.length > 0) {
-      ElMessage.error('Vui lòng nhập đơn giá hợp lệ cho tất cả sản phẩm!')
-      return
-    }
-
     for (const product of formData.value.products) {
       if (!isVinManagedProduct(product)) continue
 
@@ -1428,15 +1264,13 @@
         purchaseRequestItemId: p.purchaseRequestItemId,
         productVariantId: p.productVariantId!,
         productVariantColorId: p.productVariantColorId,
-        supplierId: p.supplierId,
-        unitPrice: p.unitPrice,
         count: p.count,
         vehicles: isVinManagedProduct(p)
           ? p.vehicles?.map((vehicle) => ({
               id: vehicle.id,
               vinNumber: vehicle.vinNumber.trim(),
               engineNumber: vehicle.engineNumber.trim(),
-              importPrice: vehicle.importPrice || p.unitPrice || 0
+              importPrice: vehicle.importPrice || 0
             }))
           : undefined
       }))
@@ -1458,16 +1292,12 @@
               purchaseRequestItemId,
               productVariantId,
               productVariantColorId,
-              supplierId,
-              unitPrice,
               count,
               vehicles
             }) => ({
               purchaseRequestItemId,
               productVariantId,
               productVariantColorId,
-              supplierId,
-              unitPrice,
               count,
               vehicles
             })
@@ -1488,7 +1318,7 @@
 
   onMounted(async () => {
     loading.value = true
-    await Promise.all([loadStatuses(), loadSuppliers()])
+    await loadStatuses()
     await loadData()
   })
 </script>

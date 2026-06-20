@@ -156,6 +156,23 @@
               </template>
             </ElTableColumn>
 
+            <ElTableColumn label="Nhà cung cấp & Đơn giá" width="220" align="center">
+              <template #default="{ row, $index }">
+                <div v-if="row.productQuotationId" class="text-left mb-1">
+                  <div class="font-medium text-gray-800 text-xs text-center">{{
+                    row.supplierName
+                  }}</div>
+                  <div class="text-primary font-bold text-center">{{
+                    formatCurrency(row.unitPrice)
+                  }}</div>
+                </div>
+                <div v-else class="text-gray-400 text-xs italic mb-1">Chưa chọn báo giá</div>
+                <ElButton type="primary" size="small" plain @click="openQuoteDialog(row, $index)">
+                  Chọn báo giá
+                </ElButton>
+              </template>
+            </ElTableColumn>
+
             <ElTableColumn label="Thao tác" width="120" align="center">
               <template #default="{ $index }">
                 <ElButton
@@ -181,6 +198,55 @@
           </ElButton>
         </div>
       </template>
+    </ElDialog>
+
+    <ElDialog
+      v-model="quoteDialogVisible"
+      title="Chọn báo giá"
+      width="600px"
+      append-to-body
+      destroy-on-close
+      class="rounded-xl overflow-hidden"
+    >
+      <div class="space-y-4">
+        <ElTable
+          :data="paginatedQuotes"
+          border
+          size="small"
+          class="w-full"
+          v-loading="quoteLoading"
+        >
+          <ElTableColumn label="Nhà cung cấp" prop="supplierName" min-width="200" />
+          <ElTableColumn label="Đơn giá" width="150" align="right">
+            <template #default="{ row }">
+              {{ formatCurrency(row.quotePrice) }}
+            </template>
+          </ElTableColumn>
+          <ElTableColumn label="Ghi chú" prop="note" min-width="150">
+            <template #default="{ row }">
+              {{ row.note || '--' }}
+            </template>
+          </ElTableColumn>
+          <ElTableColumn label="Thao tác" width="100" align="center">
+            <template #default="{ row }">
+              <ElButton type="primary" size="small" plain @click="applyQuoteFromDialog(row)">
+                Chọn
+              </ElButton>
+            </template>
+          </ElTableColumn>
+        </ElTable>
+
+        <div class="flex justify-end pt-2 border-t">
+          <ElPagination
+            v-model:current-page="quotePage"
+            v-model:page-size="quotePageSize"
+            :total="quoteTotal"
+            layout="prev, pager, next, total"
+            background
+            size="small"
+          />
+        </div>
+      </div>
     </ElDialog>
 
     <ElDialog
@@ -256,6 +322,15 @@
               </template>
             </ElTableColumn>
             <ElTableColumn prop="quantity" label="S/L yêu cầu" width="95" align="center" />
+            <ElTableColumn label="Nhà cung cấp & Đơn giá" minWidth="150">
+              <template #default="{ row }">
+                <div v-if="row.supplierName" class="text-left">
+                  <div class="text-gray-800 font-medium">{{ row.supplierName }}</div>
+                  <div class="text-primary font-bold">{{ formatCurrency(row.unitPrice) }}</div>
+                </div>
+                <span v-else class="text-gray-400 italic">Chưa chọn báo giá</span>
+              </template>
+            </ElTableColumn>
 
             <ElTableColumn
               v-if="
@@ -308,28 +383,44 @@
       </div>
 
       <template #footer>
-        <div class="flex justify-end gap-2 border-t border-gray-50 pt-3">
-          <ElButton @click="detailDialogVisible = false">Đóng</ElButton>
+        <div class="flex justify-between items-center border-t border-gray-50 pt-3">
+          <div>
+            <ElButton v-if="detailData?.id" type="primary" plain @click="auditTrailVisible = true">
+              <ElIcon class="mr-1"><Clock /></ElIcon> Lịch sử chỉnh sửa
+            </ElButton>
+          </div>
+          <div class="flex gap-2">
+            <ElButton @click="detailDialogVisible = false">Đóng</ElButton>
 
-          <template v-if="detailData">
-            <template v-if="detailData.status?.toLowerCase() === 'sent'">
-              <ElButton type="danger" @click="handleApproveRejectStatus(detailData.id, 'reject')">
-                Từ chối duyệt
-              </ElButton>
-              <ElButton type="success" @click="handleApproveRejectStatus(detailData.id, 'approve')">
-                Duyệt yêu cầu
-              </ElButton>
-            </template>
+            <template v-if="detailData">
+              <template v-if="detailData.status?.toLowerCase() === 'sent'">
+                <ElButton type="danger" @click="handleApproveRejectStatus(detailData.id, 'reject')">
+                  Từ chối duyệt
+                </ElButton>
+                <ElButton
+                  type="success"
+                  @click="handleApproveRejectStatus(detailData.id, 'approve')"
+                >
+                  Duyệt yêu cầu
+                </ElButton>
+              </template>
 
-            <template v-if="detailData.status?.toLowerCase() === 'draft'">
-              <ElButton type="success" @click="handleSendRequest(detailData)">
-                Gửi phê duyệt
-              </ElButton>
+              <template v-if="detailData.status?.toLowerCase() === 'draft'">
+                <ElButton type="success" @click="handleSendRequest(detailData)">
+                  Gửi phê duyệt
+                </ElButton>
+              </template>
             </template>
-          </template>
+          </div>
         </div>
       </template>
     </ElDialog>
+
+    <AuditTrailModal
+      v-model:visible="auditTrailVisible"
+      :record-id="detailData?.id"
+      type="purchase-request"
+    />
 
     <ElDialog
       v-model="productSelectorVisible"
@@ -459,19 +550,24 @@
     InfoFilled,
     Promotion,
     Check,
-    Close
+    Close,
+    Clock
   } from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useDebounceFn } from '@vueuse/core'
   import { PurchaseRequestApi } from '@/api/purchase-request.api'
   import { ProductApi } from '@/api/product.api'
+  import { QuotationApi } from '@/api/quotation.api'
   import type {
     PurchaseRequestListResponse,
     PurchaseRequestDetailResponse
   } from '@/domain/purchase-request/request.types'
   import type { ProductVariantLiteForInput } from '@/domain/product/product.types'
+  import AuditTrailModal from '@/components/business/audit-trail-modal/index.vue'
 
   defineOptions({ name: 'PurchaseRequest' })
+
+  const auditTrailVisible = ref(false)
 
   const loading = ref(false)
   const dialogVisible = ref(false)
@@ -649,6 +745,10 @@
       productVariantColorId?: number
       productVariantColorName?: string
       quantity: number
+      productQuotationId?: number
+      unitPrice?: number
+      supplierId?: number
+      supplierName?: string
     }>
   }>({
     note: '',
@@ -670,6 +770,63 @@
       statusMap.value = res || {}
     } catch (e) {
       console.error('Failed to load purchase request statuses', e)
+    }
+  }
+
+  const quoteDialogVisible = ref(false)
+  const activeQuoteRowIndex = ref<number | null>(null)
+  const quoteLoading = ref(false)
+  const quotesList = ref<any[]>([])
+  const quotePage = ref(1)
+  const quotePageSize = ref(5)
+  const quoteTotal = computed(() => quotesList.value.length)
+
+  const formatCurrency = (value?: number) => {
+    if (value === undefined || value === null) return '0 ₫'
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
+  }
+
+  const paginatedQuotes = computed(() => {
+    const start = (quotePage.value - 1) * quotePageSize.value
+    const end = start + quotePageSize.value
+    return quotesList.value.slice(start, end)
+  })
+
+  const openQuoteDialog = async (row: any, index: number) => {
+    if (!row.productVariantId) {
+      ElMessage.warning('Vui lòng chọn sản phẩm trước khi chọn báo giá')
+      return
+    }
+    activeQuoteRowIndex.value = index
+    quoteDialogVisible.value = true
+    quotePage.value = 1
+    quoteLoading.value = true
+    try {
+      const res = await QuotationApi.getApprovedPrices(
+        row.productVariantId,
+        row.productVariantColorId
+      )
+      quotesList.value = res || []
+    } catch (e) {
+      console.error(e)
+      ElMessage.error('Không thể tải danh sách báo giá')
+      quotesList.value = []
+    } finally {
+      quoteLoading.value = false
+    }
+  }
+
+  const applyQuoteFromDialog = (quote: any) => {
+    if (activeQuoteRowIndex.value !== null) {
+      const row = formData.value.items[activeQuoteRowIndex.value]
+      if (row) {
+        row.productQuotationId = quote.productQuotationId
+        row.supplierId = quote.supplierId
+        row.supplierName = quote.supplierName
+        row.unitPrice = quote.quotePrice
+        ElMessage.success('Đã áp dụng báo giá')
+      }
+      quoteDialogVisible.value = false
     }
   }
 
@@ -823,7 +980,12 @@
           productVariantId: item.productVariantId,
           productVariantColorId: item.productVariantColorId,
           productVariantColorName: item.productVariantColorName,
-          quantity: item.quantity
+          quantity: item.quantity,
+          productQuotationId: item.productQuotationId,
+          supplierId: item.supplierId,
+          supplierName: item.supplierName,
+          unitPrice: item.unitPrice,
+          maxUnimportedQuantity: item.unimportedQuantity
         }))
       }
       dialogVisible.value = true
@@ -941,11 +1103,14 @@
       if (isEdit.value && formData.value.id) {
         const payload = {
           note: formData.value.note,
-          items: validItems.map((x) => ({
-            id: x.id,
-            productVariantId: x.productVariantId!,
-            productVariantColorId: x.productVariantColorId,
-            quantity: x.quantity
+          items: validItems.map((i) => ({
+            id: i.id,
+            productVariantId: i.productVariantId,
+            productVariantColorId: i.productVariantColorId,
+            quantity: i.quantity,
+            productQuotationId: i.productQuotationId,
+            supplierId: i.supplierId,
+            unitPrice: i.unitPrice
           }))
         }
         await PurchaseRequestApi.update(formData.value.id, payload)
@@ -953,10 +1118,13 @@
       } else {
         const payload = {
           note: formData.value.note,
-          items: validItems.map((x) => ({
-            productVariantId: x.productVariantId!,
-            productVariantColorId: x.productVariantColorId,
-            quantity: x.quantity
+          items: validItems.map((i) => ({
+            productVariantId: i.productVariantId,
+            productVariantColorId: i.productVariantColorId,
+            quantity: i.quantity,
+            productQuotationId: i.productQuotationId,
+            supplierId: i.supplierId,
+            unitPrice: i.unitPrice
           }))
         }
         await PurchaseRequestApi.create(payload)

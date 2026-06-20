@@ -643,8 +643,8 @@
           modelValue: formData.value.richTextContent,
           height: '300px',
           placeholder: 'Vui lòng nhậpphúvănquyểnNoiDung...',
-          'onUpdate:modelValue': (value: string) => {
-            formData.value.richTextContent = value
+          'onUpdate:modelValue': (value: string | undefined) => {
+            formData.value.richTextContent = value || ''
             console.log('phúvănquyểnNoiDungbiếnhóa:', value)
           },
           toolbarKeys: [

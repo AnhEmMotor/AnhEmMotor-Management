@@ -115,6 +115,11 @@
           }}</ElCheckbox>
         </div>
       </ElPopover>
+      <ElTooltip v-if="shouldShow('guide')" content="Hướng dẫn" placement="top">
+        <div class="button" id="tour-guide-btn" @click="emit('guide')">
+          <ArtSvgIcon icon="ri:question-line" />
+        </div>
+      </ElTooltip>
       <slot name="right"></slot>
     </div>
   </div>
@@ -168,6 +173,7 @@
     (e: 'refresh'): void
     (e: 'search'): void
     (e: 'update:showSearchBar', value: boolean): void
+    (e: 'guide'): void
   }>()
 
   const getColumnVisibility = (col: ColumnOption): boolean => {
