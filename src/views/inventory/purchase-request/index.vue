@@ -156,6 +156,25 @@
               </template>
             </ElTableColumn>
 
+            <ElTableColumn label="Nhà cung cấp" width="200" align="center">
+              <template #default="{ row }">
+                <ElSelect
+                  v-model="row.supplierId"
+                  placeholder="Chọn nhà cung cấp"
+                  clearable
+                  filterable
+                  class="w-full"
+                >
+                  <ElOption
+                    v-for="sup in suppliers"
+                    :key="sup.id"
+                    :label="sup.name"
+                    :value="sup.id"
+                  />
+                </ElSelect>
+              </template>
+            </ElTableColumn>
+
             <ElTableColumn label="Thao tác" width="120" align="center">
               <template #default="{ $index }">
                 <ElButton
@@ -256,6 +275,14 @@
               </template>
             </ElTableColumn>
             <ElTableColumn prop="quantity" label="S/L yêu cầu" width="95" align="center" />
+            <ElTableColumn label="Nhà cung cấp" minWidth="150">
+              <template #default="{ row }">
+                <span v-if="row.supplierName" class="text-gray-800 font-medium">{{
+                  row.supplierName
+                }}</span>
+                <span v-else class="text-gray-400 italic">Chưa chọn</span>
+              </template>
+            </ElTableColumn>
 
             <ElTableColumn
               v-if="
@@ -482,6 +509,8 @@
   import { useDebounceFn } from '@vueuse/core'
   import { PurchaseRequestApi } from '@/api/purchase-request.api'
   import { ProductApi } from '@/api/product.api'
+  import { SupplierApi } from '@/api/supplier.api'
+  import type { Supplier } from '@/domain/supplier/supplier.types'
   import type {
     PurchaseRequestListResponse,
     PurchaseRequestDetailResponse
@@ -669,6 +698,7 @@
       productVariantColorId?: number
       productVariantColorName?: string
       quantity: number
+      supplierId?: number
     }>
   }>({
     note: '',
@@ -690,6 +720,16 @@
       statusMap.value = res || {}
     } catch (e) {
       console.error('Failed to load purchase request statuses', e)
+    }
+  }
+
+  const suppliers = ref<Supplier[]>([])
+  const fetchSuppliers = async () => {
+    try {
+      const res = await SupplierApi.getList({ current: 1, size: 100, Filters: 'StatusId==active' })
+      suppliers.value = res.items || []
+    } catch (e) {
+      console.error('Failed to load suppliers', e)
     }
   }
 
@@ -843,7 +883,8 @@
           productVariantId: item.productVariantId,
           productVariantColorId: item.productVariantColorId,
           productVariantColorName: item.productVariantColorName,
-          quantity: item.quantity
+          quantity: item.quantity,
+          supplierId: item.supplierId
         }))
       }
       dialogVisible.value = true
@@ -965,7 +1006,8 @@
             id: x.id,
             productVariantId: x.productVariantId!,
             productVariantColorId: x.productVariantColorId,
-            quantity: x.quantity
+            quantity: x.quantity,
+            supplierId: x.supplierId
           }))
         }
         await PurchaseRequestApi.update(formData.value.id, payload)
@@ -976,7 +1018,8 @@
           items: validItems.map((x) => ({
             productVariantId: x.productVariantId!,
             productVariantColorId: x.productVariantColorId,
-            quantity: x.quantity
+            quantity: x.quantity,
+            supplierId: x.supplierId
           }))
         }
         await PurchaseRequestApi.create(payload)
@@ -994,6 +1037,7 @@
 
   onMounted(async () => {
     await fetchStatuses()
+    await fetchSuppliers()
     await loadData()
   })
 </script>

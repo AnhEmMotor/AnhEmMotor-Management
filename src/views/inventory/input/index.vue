@@ -193,25 +193,9 @@
 
             <ElTableColumn label="Nhà cung cấp" width="220" required>
               <template #default="{ row }">
-                <ElSelect
-                  v-model="row.supplierId"
-                  placeholder="Chọn nhà cung cấp"
-                  class="w-full"
-                  filterable
-                  clearable
-                >
-                  <ElOption
-                    v-for="sup in suppliersList"
-                    :key="sup.id"
-                    :label="sup.name"
-                    :value="sup.id"
-                  />
-                </ElSelect>
-                <div v-if="row.quotes && row.quotes.length" class="mt-1">
-                  <ElButton link type="primary" size="small" @click="openQuoteDialog(row)">
-                    Chọn báo giá <ElIcon class="el-icon--right"><ArrowDown /></ElIcon>
-                  </ElButton>
-                </div>
+                <span class="font-medium text-gray-800">
+                  {{ getSupplierNameById(row.supplierId) }}
+                </span>
               </template>
             </ElTableColumn>
 
@@ -801,6 +785,12 @@
     return productCache.get(Number(id))?.displayName || `Sản phẩm #${id}`
   }
 
+  const getSupplierNameById = (id?: number) => {
+    if (!id) return 'Chưa xác định'
+    const sup = suppliersList.value.find((s) => s.id === id)
+    return sup ? sup.name : 'Chưa xác định'
+  }
+
   const getProductColorName = (row: any) => {
     return (
       row.productVariantColorName || productCache.get(Number(row.productVariantId))?.colorName || ''
@@ -944,13 +934,6 @@
     return activeQuoteRow.value.quotes.slice(start, end)
   })
 
-  const openQuoteDialog = (row: any) => {
-    activeQuoteRow.value = row
-    quotePage.value = 1
-    quoteTotal.value = row.quotes?.length || 0
-    quoteDialogVisible.value = true
-  }
-
   const applyQuoteFromDialog = (quote: any) => {
     if (activeQuoteRow.value) {
       applyQuote(activeQuoteRow.value, quote)
@@ -1013,7 +996,7 @@
       const detail = await PurchaseRequestApi.getApprovedById(pr.id)
 
       const productPromises = detail.items.map(async (item: any) => {
-        const remainingQty = item.unimportedQuantity || 0
+        const remainingQty = item.unimportedQuantity ?? 0
         if (remainingQty <= 0) return null
 
         const isVin = item.needVin || false
@@ -1028,13 +1011,21 @@
           console.error('Cannot load quotes', e)
         }
 
+        let autoMatchedPrice = 0
+        if (item.supplierId) {
+          const matchedQuote = quotes.find((q: any) => q.supplierId === item.supplierId)
+          if (matchedQuote) {
+            autoMatchedPrice = matchedQuote.quotePrice || 0
+          }
+        }
+
         const newRow: ReceiptProductRow = {
           productVariantId: item.productVariantId,
           productVariantColorId: item.productVariantColorId,
           productVariantColorName: item.productVariantColorName,
           count: remainingQty,
-          unitPrice: 0,
-          supplierId: undefined,
+          unitPrice: autoMatchedPrice,
+          supplierId: item.supplierId,
           purchaseRequestItemId: item.id,
           maxUnimportedQuantity: remainingQty,
           needVin: isVin,
@@ -1316,10 +1307,22 @@
             })
 
             let quotes: any[] = []
-            quotes = await QuotationApi.getApprovedPrices(
-              p.productVariantId,
-              p.productVariantColorId
-            )
+            try {
+              quotes = await QuotationApi.getApprovedPrices(
+                p.productVariantId,
+                p.productVariantColorId
+              )
+            } catch (e) {
+              console.error('Cannot load quotes', e)
+            }
+
+            let autoMatchedPrice = 0
+            if (p.supplierId) {
+              const matchedQuote = quotes.find((q: any) => q.supplierId === p.supplierId)
+              if (matchedQuote) {
+                autoMatchedPrice = matchedQuote.quotePrice || 0
+              }
+            }
 
             return {
               id: p.id,
@@ -1327,7 +1330,7 @@
               productVariantColorId: p.productVariantColorId,
               productVariantColorName: p.productVariantColorName,
               count: p.quantity || 0,
-              unitPrice: p.unitPrice || 0,
+              unitPrice: p.unitPrice != null ? p.unitPrice : autoMatchedPrice,
               supplierId: p.supplierId,
               managementType: isVin ? VIN_MANAGEMENT_TYPE : 'sku',
               needVin: isVin,

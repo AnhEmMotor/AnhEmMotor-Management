@@ -50,7 +50,13 @@ export const AuditTrailApi = {
         else if (isDelete) price = ''
         else price = `${il.oldPrice} ➔ ${il.newPrice}`
 
-        return { action: il.action, quantity, price }
+        return {
+          action: il.action,
+          quantity,
+          price,
+          productVariant: il.productVariantName,
+          supplierName: il.supplierName
+        }
       })
 
       const vehicleLogs = l.vehicleLogs?.map((vl: any) => {
@@ -74,7 +80,12 @@ export const AuditTrailApi = {
         else if (isDelete) engine = vl.oldEngineNumber
         else engine = `${vl.oldEngineNumber} ➔ ${vl.newEngineNumber}`
 
-        return { action: vl.action, vinNumber: vin, engineNumber: engine }
+        return {
+          action: vl.action,
+          vinNumber: vin,
+          engineNumber: engine,
+          productVariant: vl.productVariantName
+        }
       })
 
       const details: Record<string, any> = {}
@@ -166,11 +177,21 @@ export const AuditTrailApi = {
               ? il.newProductVariantName
               : `${il.oldProductVariantName} ➔ ${il.newProductVariantName}`
 
+        let supplierName = ''
+        if (isCreate) supplierName = il.newSupplierName || ''
+        else if (isDelete) supplierName = il.oldSupplierName || ''
+        else
+          supplierName =
+            il.oldSupplierName === il.newSupplierName
+              ? il.newSupplierName || ''
+              : `${il.oldSupplierName || ''} ➔ ${il.newSupplierName || ''}`
+
         return {
           id: il.id,
           action: il.action,
           quantity,
-          productVariant
+          productVariant,
+          supplierName
         }
       })
 

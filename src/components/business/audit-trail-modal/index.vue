@@ -124,6 +124,12 @@
                       width="120"
                       align="center"
                     />
+                    <ElTableColumn
+                      v-if="log.details.items.some((i) => i.supplierName)"
+                      prop="supplierName"
+                      label="Nhà cung cấp"
+                      minWidth="150"
+                    />
                   </ElTable>
                 </div>
                 <div
@@ -141,6 +147,18 @@
                         }}</ElTag>
                       </template>
                     </ElTableColumn>
+                    <ElTableColumn
+                      v-if="log.details.infoLogs.some((i) => i.productVariant)"
+                      prop="productVariant"
+                      label="Sản phẩm"
+                      minWidth="200"
+                    />
+                    <ElTableColumn
+                      v-if="log.details.infoLogs.some((i) => i.supplierName)"
+                      prop="supplierName"
+                      label="Nhà cung cấp"
+                      minWidth="150"
+                    />
                     <ElTableColumn
                       v-if="log.details.infoLogs.some((i) => i.quantity)"
                       prop="quantity"
@@ -170,6 +188,12 @@
                         }}</ElTag>
                       </template>
                     </ElTableColumn>
+                    <ElTableColumn
+                      v-if="log.details.vehicleLogs.some((vl) => vl.productVariant)"
+                      prop="productVariant"
+                      label="Sản phẩm"
+                      minWidth="200"
+                    />
                     <ElTableColumn prop="vinNumber" label="Số khung" minWidth="150" />
                     <ElTableColumn prop="engineNumber" label="Số máy" minWidth="150" />
                   </ElTable>

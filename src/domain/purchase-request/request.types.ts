@@ -2,6 +2,7 @@ export interface CreatePurchaseRequestItemRequest {
   productVariantId?: number
   productVariantColorId?: number
   quantity?: number
+  supplierId?: number
 }
 
 export interface CreatePurchaseRequest {
@@ -14,6 +15,7 @@ export interface UpdatePurchaseRequestItemRequest {
   productVariantId?: number
   productVariantColorId?: number
   quantity?: number
+  supplierId?: number
 }
 
 export interface UpdatePurchaseRequest {
@@ -29,6 +31,8 @@ export interface PurchaseRequestItemResponse {
   productVariantColorId?: number
   productVariantColorName?: string
   quantity: number
+  supplierId?: number
+  supplierName?: string
 
   importedQuantity?: number | null
   pendingQuantity?: number | null
@@ -81,6 +85,8 @@ export interface ApprovedPurchaseRequestItemResponse {
   productVariantColorId?: number
   productVariantColorName?: string
   quantity: number
+  supplierId?: number
+  supplierName?: string
 
   unimportedQuantity: number
   needVin: boolean
