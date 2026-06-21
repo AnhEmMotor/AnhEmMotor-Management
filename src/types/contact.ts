@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/no-namespace: "off" */
 export namespace Contact {
   export interface ContactBasic {
     id: number
@@ -62,6 +63,8 @@ export namespace Contact {
   }
 
   export interface CreateSupportRequestPayload {
+    fullName?: string
+    phoneNumber?: string
     subject: string
     category: string
     email: string
@@ -101,5 +104,9 @@ export namespace Contact {
   export const FeedbackStatuses = ['Pending', 'Read', 'Resolved'] as const
   export const CandidateStatuses = ['New', 'Interview', 'Offer', 'Rejected'] as const
 
-  export const AllStatuses = [...SupportStatuses, ...FeedbackStatuses, ...CandidateStatuses] as readonly string[]
+  export const AllStatuses = [
+    ...SupportStatuses,
+    ...FeedbackStatuses,
+    ...CandidateStatuses,
+  ] as readonly string[]
 }

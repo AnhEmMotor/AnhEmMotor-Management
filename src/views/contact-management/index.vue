@@ -1,5 +1,5 @@
 <template>
-  <div class="contact-page min-h-full bg-[#F8FAFC] font-inter text-[#0F172A] pb-6">
+  <div class="contact-page min-h-full font-inter pb-6">
     <div class="bg-white border-b border-slate-200 px-6 py-4 shadow-sm">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
@@ -776,7 +776,9 @@
 <script setup lang="ts">
   import { ref, watch, computed, onMounted } from 'vue'
   import { ElMessage } from 'element-plus'
+  import { storeToRefs } from 'pinia'
   import { useContactStore } from '@/application/store/contact'
+  import { useSettingStore } from '@/application/store/setting'
   import {
     SupportStatuses,
     FeedbackStatuses,
@@ -786,6 +788,7 @@
 
   defineOptions({ name: 'ContactManagement' })
   const contactStore = useContactStore()
+  const { isDark } = storeToRefs(useSettingStore())
 
   const activeTab = ref('support')
   const searchQuery = ref('')
@@ -801,14 +804,15 @@
     { id: '3', name: 'Lê Văn C' },
   ])
 
-  const tableHeaderStyle = {
-    background: '#f8fafc',
-    color: '#64748b',
+  const tableHeaderStyle = computed(() => ({
+    background: isDark.value ? '#111827' : '#f8fafc',
+    color: isDark.value ? '#cbd5e1' : '#64748b',
     fontSize: '11px',
     fontWeight: 700,
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
-  }
+    borderColor: isDark.value ? 'rgb(255 255 255 / 10%)' : '#f1f5f9',
+  }))
 
   onMounted(() => {
     contactStore.fetchList()
@@ -953,15 +957,32 @@
 
 <style lang="scss" scoped>
   .contact-page {
+    --contact-page-bg: #f8fafc;
+    --contact-surface: #fff;
+    --contact-surface-soft: #fafbfc;
+    --contact-muted-surface: #f8fafc;
+    --contact-border: #e2e8f0;
+    --contact-border-soft: #f1f5f9;
+    --contact-text: #0f172a;
+    --contact-text-strong: #1e293b;
+    --contact-text-muted: #64748b;
+    --contact-text-soft: #94a3b8;
+    --contact-row-hover: #f8fafc;
+    --contact-shadow: 0 1px 2px rgb(15 23 42 / 6%);
+
+    color: var(--contact-text);
+    background: var(--contact-page-bg);
+
     .compact-textarea :deep(.el-textarea__inner) {
       padding: 12px;
       font-size: 13px;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
+      color: var(--contact-text);
+      background: var(--contact-muted-surface);
+      border: 1px solid var(--contact-border);
       border-radius: 12px;
 
       &:focus {
-        background: white;
+        background: var(--contact-surface);
         border-color: #3b82f6;
       }
     }
@@ -979,16 +1000,16 @@
       font-size: 13px;
       font-weight: 700;
       line-height: 40px;
-      color: #64748b;
+      color: var(--contact-text-muted);
 
       &.is-active {
-        color: #001529;
+        color: var(--contact-text);
       }
     }
 
     .el-tabs__active-bar {
       height: 3px;
-      background: #001529;
+      background: var(--contact-text);
       border-radius: 2px;
     }
   }
@@ -1004,9 +1025,10 @@
     flex-direction: column;
     width: 40%;
     overflow: hidden;
-    background: white;
-    border: 1px solid #e2e8f0;
+    background: var(--contact-surface);
+    border: 1px solid var(--contact-border);
     border-radius: 16px;
+    box-shadow: var(--contact-shadow);
   }
 
   .list-header {
@@ -1014,8 +1036,8 @@
     gap: 8px;
     align-items: center;
     padding: 12px 16px;
-    background: #fafbfc;
-    border-bottom: 1px solid #f1f5f9;
+    background: var(--contact-surface-soft);
+    border-bottom: 1px solid var(--contact-border-soft);
   }
 
   .pagination-bar {
@@ -1023,7 +1045,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 10px 16px;
-    border-top: 1px solid #f1f5f9;
+    border-top: 1px solid var(--contact-border-soft);
 
     :deep(.el-pagination) {
       justify-content: flex-end;
@@ -1034,9 +1056,10 @@
   .detail-panel {
     flex: 1;
     overflow: hidden;
-    background: white;
-    border: 1px solid #e2e8f0;
+    background: var(--contact-surface);
+    border: 1px solid var(--contact-border);
     border-radius: 16px;
+    box-shadow: var(--contact-shadow);
   }
 
   .empty-state {
@@ -1056,13 +1079,15 @@
 
   .detail-header {
     padding: 20px 24px;
-    background: #fafbfc;
-    border-bottom: 1px solid #f1f5f9;
+    background: var(--contact-surface-soft);
+    border-bottom: 1px solid var(--contact-border-soft);
   }
 
   .reply-input :deep(.el-textarea__inner) {
     font-size: 13px;
-    background: #f8fafc;
+    color: var(--contact-text);
+    background: var(--contact-muted-surface);
+    border-color: var(--contact-border);
     border-radius: 12px;
   }
 
@@ -1094,5 +1119,86 @@
 
   :deep(.el-table__body tr) {
     cursor: pointer;
+  }
+
+  .contact-table :deep(.el-table__cell) {
+    color: var(--contact-text);
+    background: var(--contact-surface);
+    border-bottom-color: var(--contact-border-soft);
+  }
+
+  .contact-table :deep(.el-table__body tr:hover > td.el-table__cell) {
+    background: var(--contact-row-hover);
+  }
+
+  .contact-table :deep(.el-table__inner-wrapper::before) {
+    background: var(--contact-border-soft);
+  }
+
+  .contact-page :deep(.el-input__wrapper),
+  .contact-page :deep(.el-select__wrapper),
+  .contact-page :deep(.el-textarea__inner) {
+    background: var(--contact-muted-surface);
+    border-color: var(--contact-border);
+    box-shadow: 0 0 0 1px var(--contact-border) inset;
+  }
+
+  .contact-page :deep(.el-input__inner),
+  .contact-page :deep(.el-select__placeholder),
+  .contact-page :deep(.el-textarea__inner) {
+    color: var(--contact-text);
+  }
+
+  :global(html.dark .contact-page) {
+    --contact-page-bg: #05070b;
+    --contact-surface: #10141c;
+    --contact-surface-soft: #111827;
+    --contact-muted-surface: #0b1120;
+    --contact-border: rgb(255 255 255 / 12%);
+    --contact-border-soft: rgb(255 255 255 / 8%);
+    --contact-text: #f8fafc;
+    --contact-text-strong: #e5e7eb;
+    --contact-text-muted: #cbd5e1;
+    --contact-text-soft: #94a3b8;
+    --contact-row-hover: rgb(255 255 255 / 5%);
+    --contact-shadow: 0 18px 45px rgb(0 0 0 / 28%);
+  }
+
+  :global(html.dark .contact-page > .bg-white),
+  :global(html.dark .contact-page .list-panel),
+  :global(html.dark .contact-page .detail-panel) {
+    background: var(--contact-surface) !important;
+    border-color: var(--contact-border) !important;
+  }
+
+  :global(html.dark .contact-page .list-header),
+  :global(html.dark .contact-page .detail-header),
+  :global(html.dark .contact-page .bg-slate-50),
+  :global(html.dark .contact-page .bg-\[\#FAFCFF\]) {
+    background: var(--contact-surface-soft) !important;
+    border-color: var(--contact-border-soft) !important;
+  }
+
+  :global(html.dark .contact-page .text-slate-900),
+  :global(html.dark .contact-page .text-slate-800),
+  :global(html.dark .contact-page .text-slate-700),
+  :global(html.dark .contact-page .text-slate-600) {
+    color: var(--contact-text-strong) !important;
+  }
+
+  :global(html.dark .contact-page .text-slate-500),
+  :global(html.dark .contact-page .text-slate-400),
+  :global(html.dark .contact-page .text-slate-300) {
+    color: var(--contact-text-soft) !important;
+  }
+
+  :global(html.dark .contact-page .border-slate-100),
+  :global(html.dark .contact-page .border-slate-200),
+  :global(html.dark .contact-page .border-slate-200\/60) {
+    border-color: var(--contact-border-soft) !important;
+  }
+
+  :global(html.dark .contact-page .empty-state .text-slate-200) {
+    color: rgb(148 163 184 / 45%) !important;
   }
 </style>
