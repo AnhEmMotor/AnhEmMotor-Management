@@ -1,7 +1,13 @@
 import request from '@/utils/http'
 
 export const InventoryReportApi = {
-  getSummary(params?: { pageNumber?: number; pageSize?: number; searchTerm?: string }) {
+  getSummary(params?: {
+    pageNumber?: number
+    pageSize?: number
+    searchTerm?: string
+    month?: number
+    year?: number
+  }) {
     return request.get<any>({
       url: '/api/v1/InventoryReport',
       params
@@ -19,7 +25,7 @@ export const InventoryReportApi = {
     })
   },
 
-  export(params?: { searchTerm?: string }) {
+  export(params?: { searchTerm?: string; month?: number; year?: number }) {
     return request.get<Blob>({
       url: '/api/v1/InventoryReport/export',
       params,

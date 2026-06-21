@@ -253,6 +253,7 @@
     id: string
     name: string
     level: number
+    beginning: number
     imported: number
     exported: number
     inStock: number
@@ -282,6 +283,7 @@
   }
 
   const searchQuery = ref('')
+  const searchMonthYear = ref('')
   const tableRef = ref()
   const exporting = ref(false)
   const loadingData = ref(false)
@@ -334,6 +336,7 @@
                     id: `c-${c.colorId}`,
                     name: c.colorName,
                     level: 2,
+                    beginning: c.beginningQty || 0,
                     imported: c.importedQty,
                     exported: c.exportedQty,
                     inStock: c.inventoryQty,
@@ -349,6 +352,7 @@
               id: `v-${v.variantId}`,
               name: v.variantName,
               level: 1,
+              beginning: v.beginningQty || 0,
               imported: v.importedQty,
               exported: v.exportedQty,
               inStock: v.inventoryQty,
@@ -364,6 +368,7 @@
         id: `p-${prod.productId}`,
         name: prod.productName,
         level: 0,
+        beginning: prod.beginningQty || 0,
         imported: prod.importedQty,
         exported: prod.exportedQty,
         inStock: prod.inventoryQty,
@@ -378,10 +383,22 @@
   const fetchData = async () => {
     loadingData.value = true
     try {
+      let month: number | undefined = undefined
+      let year: number | undefined = undefined
+      if (searchMonthYear.value) {
+        const parts = searchMonthYear.value.split('-')
+        if (parts.length === 2) {
+          year = parseInt(parts[0], 10)
+          month = parseInt(parts[1], 10)
+        }
+      }
+
       const res = await InventoryReportApi.getSummary({
         pageNumber: paginationState.value.current,
         pageSize: paginationState.value.size,
-        searchTerm: searchQuery.value || undefined
+        searchTerm: searchQuery.value || undefined,
+        month,
+        year
       })
       if (res) {
         tableData.value = mapToStockItems(res.items || [])
@@ -417,6 +434,7 @@
   // Table columns definition
   const columns = [
     { label: 'Tên Sản phẩm / Biến thể / Màu sắc', prop: 'name', minWidth: 320, useSlot: true },
+    { label: 'Tồn kho đầu kỳ', prop: 'beginning', width: 160, align: 'right' },
     { label: 'Số lượng đã nhập', prop: 'imported', width: 160, align: 'right' },
     { label: 'Số lượng đã xuất', prop: 'exported', width: 160, align: 'right' },
     { label: 'Số lượng tồn kho', prop: 'inStock', width: 160, align: 'right' },
@@ -431,6 +449,18 @@
       label: 'Tên sản phẩm',
       type: 'input',
       props: { placeholder: 'Nhập tên xe, phiên bản hoặc màu sắc...' }
+    },
+    {
+      key: 'monthYear',
+      label: 'Tháng',
+      type: 'date',
+      props: {
+        type: 'month',
+        format: 'MM/YYYY',
+        valueFormat: 'YYYY-MM',
+        placeholder: 'Chọn tháng (Mặc định tháng hiện tại)',
+        clearable: true
+      }
     }
   ])
 
@@ -440,12 +470,14 @@
 
   const handleSearch = (form: Record<string, any>) => {
     searchQuery.value = form.name || ''
+    searchMonthYear.value = form.monthYear || ''
     paginationState.value.current = 1
     fetchData()
   }
 
   const handleReset = () => {
     searchQuery.value = ''
+    searchMonthYear.value = ''
     paginationState.value.current = 1
     fetchData()
   }
@@ -486,8 +518,20 @@
   const handleExport = async () => {
     exporting.value = true
     try {
+      let month: number | undefined = undefined
+      let year: number | undefined = undefined
+      if (searchMonthYear.value) {
+        const parts = searchMonthYear.value.split('-')
+        if (parts.length === 2) {
+          year = parseInt(parts[0], 10)
+          month = parseInt(parts[1], 10)
+        }
+      }
+
       const resBlob = await InventoryReportApi.export({
-        searchTerm: searchQuery.value || undefined
+        searchTerm: searchQuery.value || undefined,
+        month,
+        year
       })
       const url = window.URL.createObjectURL(new Blob([resBlob]))
       const link = document.createElement('a')
