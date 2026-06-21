@@ -1,7 +1,7 @@
-import fs from 'fs';
+import fs from 'fs'
 
-const filePath = 'src/views/contract/templates/edit.vue';
-let content = fs.readFileSync(filePath, 'utf8');
+const filePath = 'src/views/contract/templates/edit.vue'
+let content = fs.readFileSync(filePath, 'utf8')
 
 // 1. Back button UI
 content = content.replace(
@@ -20,8 +20,8 @@ content = content.replace(
           class="!w-10 !h-10 !border-red-200 hover:!border-red-600 mr-2 text-red-500 transition-colors"
         >
           <ArtSvgIcon icon="ri:arrow-left-line" class="text-lg" />
-        </el-button>`
-);
+        </el-button>`,
+)
 
 // 2. Import button & Input File
 content = content.replace(
@@ -38,8 +38,8 @@ content = content.replace(
         </el-button>
         <input type="file" ref="fileInput" accept=".docx" class="hidden" @change="handleImportFile" />
         <el-button
-          @click="handlePreview"`
-);
+          @click="handlePreview"`,
+)
 
 // 3. Version Label instead of input
 content = content.replace(
@@ -56,8 +56,8 @@ content = content.replace(
   `<div class="h-[34px] flex items-center gap-2 mt-1">
               <span class="text-[14px] font-black text-slate-700 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200">v{{ form.version }}.0</span>
               <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider bg-slate-100 px-2 py-1 rounded-md">Hệ thống sinh</span>
-            </div>`
-);
+            </div>`,
+)
 
 // 4. Token list HTML
 const newGroupHtml = `
@@ -84,24 +84,25 @@ const newGroupHtml = `
               </div>
             </div>
           </div>
-`;
+`
 content = content.replace(
   `</div>
           </div>
         </div>
 
         <!-- Syntax Warning Panel -->`,
-  newGroupHtml + `
+  newGroupHtml +
+    `
         </div>
 
-        <!-- Syntax Warning Panel -->`
-);
+        <!-- Syntax Warning Panel -->`,
+)
 
 // 5. Script part - Add ref
 content = content.replace(
   `const tokenSearch = ref('')`,
-  `const tokenSearch = ref('')\n  const fileInput = ref<HTMLInputElement | null>(null)`
-);
+  `const tokenSearch = ref('')\n  const fileInput = ref<HTMLInputElement | null>(null)`,
+)
 
 // 6. Script part - Supplier Tokens & Method
 const supplierTokensCode = `
@@ -133,12 +134,12 @@ const supplierTokensCode = `
       }
     }
   }
-`;
+`
 
 content = content.replace(
   `const filteredFinanceTokens = computed(() =>`,
-  supplierTokensCode + `\n  const filteredFinanceTokens = computed(() =>`
-);
+  supplierTokensCode + `\n  const filteredFinanceTokens = computed(() =>`,
+)
 
 // Update save dynamicFields
 content = content.replace(
@@ -146,8 +147,8 @@ content = content.replace(
           finance: financeTokens,`,
   `vehicle: vehicleTokens,
           finance: financeTokens,
-          supplier: supplierTokens,`
-);
+          supplier: supplierTokens,`,
+)
 
-fs.writeFileSync(filePath, content, 'utf8');
-console.log('Patched edit.vue successfully');
+fs.writeFileSync(filePath, content, 'utf8')
+console.log('Patched edit.vue successfully')

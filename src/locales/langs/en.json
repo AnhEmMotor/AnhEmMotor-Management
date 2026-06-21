@@ -578,6 +578,7 @@
     "hr": {
       "title": "Human Resources",
       "employees": "Employee Profiles",
+      "employee": "Employee Profiles",
       "commissionPolicy": "Commission Policy",
       "payroll": "Payroll",
       "kpi": "KPI Management"

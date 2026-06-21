@@ -11,18 +11,18 @@ export const hrRoutes: AppRouteRecord = {
   },
   children: [
     {
-      path: 'employees',
-      name: 'HREmployees',
-      component: '/hr/employees/index',
+      path: 'employee',
+      name: 'HREmployee',
+      component: '/Admin/view/employee/employee/index',
       meta: {
-        title: 'menus.hr.employees',
+        title: 'menus.hr.employee',
         icon: 'ri:group-line',
       },
     },
     {
       path: 'commission-policy',
       name: 'HRCommissionPolicy',
-      component: '/hr/policy/index',
+      component: '/Admin/view/employee/policy/index',
       meta: {
         title: 'menus.hr.commissionPolicy',
         icon: 'ri:percent-line',
@@ -31,7 +31,7 @@ export const hrRoutes: AppRouteRecord = {
     {
       path: 'payroll',
       name: 'HRPayroll',
-      component: '/hr/payroll/index',
+      component: '/Admin/view/employee/payroll/index',
       meta: {
         title: 'menus.hr.payroll',
         icon: 'ri:bank-card-line',
@@ -40,7 +40,7 @@ export const hrRoutes: AppRouteRecord = {
     {
       path: 'kpi',
       name: 'HRKPI',
-      component: '/hr/kpi/index',
+      component: '/Admin/view/employee/kpi/index',
       meta: {
         title: 'menus.hr.kpi',
         icon: 'ri:bar-chart-box-line',

@@ -490,6 +490,7 @@
     "hr": {
       "title": "Quản lý Nhân sự",
       "employees": "Hồ sơ nhân viên",
+      "employee": "Hồ sơ nhân viên",
       "commissionPolicy": "Chính sách hoa hồng",
       "payroll": "Bảng Lương",
       "kpi": "Quản lý KPI"

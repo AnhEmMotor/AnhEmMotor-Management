@@ -1,4 +1,4 @@
-import { AppRouteRecord } from '@/types/router'
+﻿import { AppRouteRecord } from '@/types/router'
 import { Permissions } from '@/domain/constants/permissions'
 
 export const reportingRoutes: AppRouteRecord = {
@@ -6,7 +6,7 @@ export const reportingRoutes: AppRouteRecord = {
   name: 'Reporting',
   component: '/index/index',
   meta: {
-    title: 'Thống kê & Báo cáo',
+    title: 'Thá»‘ng kÃª & BÃ¡o cÃ¡o',
     icon: 'ri:bar-chart-grouped-line',
     permission: Permissions.StatisticalView,
   },
@@ -14,9 +14,9 @@ export const reportingRoutes: AppRouteRecord = {
     {
       path: 'executive-dashboard',
       name: 'ExecutiveDashboard',
-      component: '/analytics-reporting/dashboard',
+      component: '/Accountant/view/dashboard/index',
       meta: {
-        title: 'Tổng quan điều hành',
+        title: 'Tá»•ng quan Ä‘iá»u hÃ nh',
         icon: 'ri:dashboard-line',
         permission: Permissions.StatisticalView,
       },
@@ -24,9 +24,9 @@ export const reportingRoutes: AppRouteRecord = {
     {
       path: 'sales',
       name: 'SalesAnalytics',
-      component: '/analytics-reporting/revenue',
+      component: '/Accountant/view/revenue/index',
       meta: {
-        title: 'Báo cáo bán hàng',
+        title: 'BÃ¡o cÃ¡o bÃ¡n hÃ ng',
         icon: 'ri:money-cny-circle-line',
         permission: Permissions.StatisticalView,
       },
@@ -34,9 +34,9 @@ export const reportingRoutes: AppRouteRecord = {
     {
       path: 'financial',
       name: 'FinancialAnalytics',
-      component: '/analytics-reporting/financial',
+      component: '/Accountant/view/financial/index',
       meta: {
-        title: 'Báo cáo tài chính',
+        title: 'BÃ¡o cÃ¡o tÃ i chÃ­nh',
         icon: 'ri:file-chart-line',
         permission: Permissions.StatisticalView,
       },
@@ -44,9 +44,9 @@ export const reportingRoutes: AppRouteRecord = {
     {
       path: 'financing',
       name: 'FinancingAnalytics',
-      component: '/analytics-reporting/financing',
+      component: '/Accountant/view/financing/index',
       meta: {
-        title: 'Báo cáo trả góp',
+        title: 'BÃ¡o cÃ¡o tráº£ gÃ³p',
         icon: 'ri:bank-line',
         permission: Permissions.StatisticalView,
       },
@@ -54,9 +54,9 @@ export const reportingRoutes: AppRouteRecord = {
     {
       path: 'inventory',
       name: 'InventoryAnalytics',
-      component: '/analytics-reporting/inventory',
+      component: '/Accountant/view/inventory/index',
       meta: {
-        title: 'Báo cáo tồn kho',
+        title: 'BÃ¡o cÃ¡o tá»“n kho',
         icon: 'ri:archive-line',
         permission: Permissions.StatisticalView,
       },
@@ -64,9 +64,9 @@ export const reportingRoutes: AppRouteRecord = {
     {
       path: 'workshop',
       name: 'WorkshopAnalytics',
-      component: '/analytics-reporting/workshop',
+      component: '/Accountant/view/workshop/index',
       meta: {
-        title: 'Báo cáo xưởng dịch vụ',
+        title: 'BÃ¡o cÃ¡o xÆ°á»Ÿng dá»‹ch vá»¥',
         icon: 'ri:tools-line',
         permission: Permissions.StatisticalView,
       },
@@ -74,9 +74,9 @@ export const reportingRoutes: AppRouteRecord = {
     {
       path: 'customer',
       name: 'CustomerAnalytics',
-      component: '/analytics-reporting/customer',
+      component: '/Accountant/view/customer/index',
       meta: {
-        title: 'Báo cáo khách hàng',
+        title: 'BÃ¡o cÃ¡o khÃ¡ch hÃ ng',
         icon: 'ri:user-heart-line',
         permission: Permissions.StatisticalView,
       },
@@ -84,9 +84,9 @@ export const reportingRoutes: AppRouteRecord = {
     {
       path: 'hr-commission',
       name: 'HRCommissionAnalytics',
-      component: '/analytics-reporting/employee',
+      component: '/Accountant/view/employee/index',
       meta: {
-        title: 'Báo cáo nhân sự & hoa hồng',
+        title: 'BÃ¡o cÃ¡o nhÃ¢n sá»± & hoa há»“ng',
         icon: 'ri:team-line',
         permission: Permissions.StatisticalView,
       },
@@ -94,9 +94,9 @@ export const reportingRoutes: AppRouteRecord = {
     {
       path: 'customer-service',
       name: 'CustomerServiceAnalytics',
-      component: '/analytics-reporting/customer-service',
+      component: '/Accountant/view/customer-service/index',
       meta: {
-        title: 'Báo cáo chăm sóc khách hàng',
+        title: 'BÃ¡o cÃ¡o chÄƒm sÃ³c khÃ¡ch hÃ ng',
         icon: 'ri:customer-service-2-line',
         permission: Permissions.StatisticalView,
       },

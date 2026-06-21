@@ -13,7 +13,7 @@ export const marketingRoutes: AppRouteRecord = {
     {
       path: 'banner',
       name: 'MarketingBanner',
-      component: '/marketing/banner',
+      component: '/Marketing/view/banner/index',
       meta: {
         title: 'Danh sách Banner',
         icon: 'ri:image-line',
@@ -24,7 +24,7 @@ export const marketingRoutes: AppRouteRecord = {
     {
       path: 'conversion',
       name: 'MarketingConversion',
-      component: '/marketing/conversion',
+      component: '/Marketing/view/conversion/index',
       meta: {
         title: 'Công cụ chuyển đổi',
         icon: 'ri:magic-line',

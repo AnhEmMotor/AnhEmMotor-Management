@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Contact {
   export interface ContactBasic {
     id: number
@@ -101,5 +102,9 @@ export namespace Contact {
   export const FeedbackStatuses = ['Pending', 'Read', 'Resolved'] as const
   export const CandidateStatuses = ['New', 'Interview', 'Offer', 'Rejected'] as const
 
-  export const AllStatuses = [...SupportStatuses, ...FeedbackStatuses, ...CandidateStatuses] as readonly string[]
+  export const AllStatuses = [
+    ...SupportStatuses,
+    ...FeedbackStatuses,
+    ...CandidateStatuses,
+  ] as readonly string[]
 }

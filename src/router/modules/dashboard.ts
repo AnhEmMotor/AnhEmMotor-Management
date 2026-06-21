@@ -13,7 +13,7 @@ export const dashboardRoutes: AppRouteRecord = {
     {
       path: 'console',
       name: 'Console',
-      component: '/dashboard/console',
+      component: '/Admin/view/dashboard',
       meta: {
         title: 'menus.dashboard.console',
         icon: 'ri:home-smile-2-line',

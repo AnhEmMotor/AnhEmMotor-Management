@@ -13,7 +13,7 @@ export const customerRoutes: AppRouteRecord = {
     {
       path: 'potential',
       name: 'CustomerPotential',
-      component: '/customer/potential/index',
+      component: '/Marketing/view/customer/potential/index',
       meta: {
         title: 'menus.customer.potential',
         icon: 'ri:user-search-line',
@@ -22,7 +22,7 @@ export const customerRoutes: AppRouteRecord = {
     {
       path: 'profile',
       name: 'CustomerProfile',
-      component: '/customer/profile/index',
+      component: '/Marketing/view/customer/profile/index',
       meta: {
         title: 'menus.customer.profile',
         icon: 'ri:profile-line',
@@ -31,7 +31,7 @@ export const customerRoutes: AppRouteRecord = {
     {
       path: 'asset',
       name: 'CustomerAsset',
-      component: '/customer/asset/index',
+      component: '/Marketing/view/customer/asset/index',
       meta: {
         title: 'menus.customer.asset',
         icon: 'ri:car-line',
@@ -40,7 +40,7 @@ export const customerRoutes: AppRouteRecord = {
     {
       path: 'care',
       name: 'CustomerCare',
-      component: '/customer/care/index',
+      component: '/Marketing/view/customer/care/index',
       meta: {
         title: 'menus.customer.care',
         icon: 'ri:gift-line',
@@ -49,7 +49,7 @@ export const customerRoutes: AppRouteRecord = {
     {
       path: 'progress',
       name: 'CustomerProgress',
-      component: '/customer/progress/index',
+      component: '/Marketing/view/customer/progress/index',
       meta: {
         title: 'menus.customer.progress',
         icon: 'ri:git-commit-line',

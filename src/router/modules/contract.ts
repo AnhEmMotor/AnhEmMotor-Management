@@ -13,7 +13,7 @@ export const contractRoutes: AppRouteRecord = {
     {
       path: 'sales',
       name: 'SalesContract',
-      component: '/contract/sales/index',
+      component: '/Admin/view/contract/sales/index',
       meta: {
         title: 'menus.contract.sales',
         icon: 'ri:file-paper-2-line',
@@ -22,7 +22,7 @@ export const contractRoutes: AppRouteRecord = {
     {
       path: 'sales/preview/:id?',
       name: 'SalesContractPreview',
-      component: '/contract/sales/contract-preview',
+      component: '/Admin/view/contract/sales/contract-preview',
       meta: {
         title: 'Chi tiết Hợp đồng',
         icon: 'ri:file-search-line',
@@ -32,7 +32,7 @@ export const contractRoutes: AppRouteRecord = {
     {
       path: 'finance',
       name: 'FinanceContract',
-      component: '/contract/finance/index',
+      component: '/Admin/view/contract/finance/index',
       meta: {
         title: 'menus.contract.finance',
         icon: 'ri:money-dollar-circle-line',
@@ -41,7 +41,7 @@ export const contractRoutes: AppRouteRecord = {
     {
       path: 'finance/preview/:id?',
       name: 'FinanceContractPreview',
-      component: '/contract/finance/finance-contract-detail',
+      component: '/Admin/view/contract/finance/finance-contract-detail',
       meta: {
         title: 'Chi tiết Hợp đồng tài chính',
         icon: 'ri:file-search-line',
@@ -51,7 +51,7 @@ export const contractRoutes: AppRouteRecord = {
     {
       path: 'supplier',
       name: 'SupplierContract',
-      component: '/contract/supplier/index',
+      component: '/Admin/view/contract/supplier/index',
       meta: {
         title: 'menus.contract.supplier',
         icon: 'ri:truck-line',
@@ -60,7 +60,7 @@ export const contractRoutes: AppRouteRecord = {
     {
       path: 'supplier/preview/:id?',
       name: 'SupplierContractPreview',
-      component: '/contract/supplier/contract-preview',
+      component: '/Admin/view/contract/supplier/contract-preview',
       meta: {
         title: 'Chi tiết Hợp đồng nhà cung cấp',
         icon: 'ri:file-search-line',
@@ -70,7 +70,7 @@ export const contractRoutes: AppRouteRecord = {
     {
       path: 'templates',
       name: 'ContractTemplates',
-      component: '/contract/templates/index',
+      component: '/Admin/view/contract/templates/index',
       meta: {
         title: 'menus.contract.templates',
         icon: 'ri:layout-4-line',
@@ -79,7 +79,7 @@ export const contractRoutes: AppRouteRecord = {
     {
       path: 'templates/edit/:id?',
       name: 'EditContractTemplate',
-      component: '/contract/templates/edit',
+      component: '/Admin/view/contract/templates/edit',
       meta: {
         title: 'Biên tập Mẫu Hợp đồng',
         icon: 'ri:edit-2-line',

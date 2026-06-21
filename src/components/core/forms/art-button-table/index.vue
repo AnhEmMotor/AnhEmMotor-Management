@@ -13,56 +13,56 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+  import { computed } from 'vue'
 
-defineOptions({ name: 'ArtButtonTable' })
+  defineOptions({ name: 'ArtButtonTable' })
 
-interface Props {
-  type?: 'add' | 'edit' | 'delete' | 'more' | 'view'
+  interface Props {
+    type?: 'add' | 'edit' | 'delete' | 'more' | 'view'
 
-  icon?: string
+    icon?: string
 
-  iconClass?: string
+    iconClass?: string
 
-  iconColor?: string
+    iconColor?: string
 
-  buttonBgColor?: string
+    buttonBgColor?: string
 
-  variant?: 'filled' | 'ghost'
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  variant: 'filled',
-})
-
-const emit = defineEmits<{
-  (e: 'click'): void
-}>()
-
-const defaultButtons = {
-  add: { icon: 'ri:add-fill', class: 'bg-theme/12 text-theme' },
-  edit: { icon: 'ri:pencil-line', class: 'bg-secondary/12 text-secondary' },
-  delete: { icon: 'ri:delete-bin-5-line', class: 'bg-error/12 text-error' },
-  view: { icon: 'ri:eye-line', class: 'bg-info/12 text-info' },
-  more: { icon: 'ri:more-2-fill', class: '' },
-} as const
-
-const iconContent = computed(() => {
-  return props.icon || (props.type ? defaultButtons[props.type]?.icon : '') || ''
-})
-
-const buttonClass = computed(() => {
-  return props.iconClass || (props.type ? defaultButtons[props.type]?.class : '') || ''
-})
-
-const computedStyle = computed(() => {
-  if (props.variant === 'ghost') {
-    return { backgroundColor: 'transparent' }
+    variant?: 'filled' | 'ghost'
   }
-  return { backgroundColor: props.buttonBgColor, color: props.iconColor }
-})
 
-const handleClick = () => {
-  emit('click')
-}
+  const props = withDefaults(defineProps<Props>(), {
+    variant: 'filled',
+  })
+
+  const emit = defineEmits<{
+    (e: 'click'): void
+  }>()
+
+  const defaultButtons = {
+    add: { icon: 'ri:add-fill', class: 'bg-theme/12 text-theme' },
+    edit: { icon: 'ri:pencil-line', class: 'bg-secondary/12 text-secondary' },
+    delete: { icon: 'ri:delete-bin-5-line', class: 'bg-error/12 text-error' },
+    view: { icon: 'ri:eye-line', class: 'bg-info/12 text-info' },
+    more: { icon: 'ri:more-2-fill', class: '' },
+  } as const
+
+  const iconContent = computed(() => {
+    return props.icon || (props.type ? defaultButtons[props.type]?.icon : '') || ''
+  })
+
+  const buttonClass = computed(() => {
+    return props.iconClass || (props.type ? defaultButtons[props.type]?.class : '') || ''
+  })
+
+  const computedStyle = computed(() => {
+    if (props.variant === 'ghost') {
+      return { backgroundColor: 'transparent' }
+    }
+    return { backgroundColor: props.buttonBgColor, color: props.iconColor }
+  })
+
+  const handleClick = () => {
+    emit('click')
+  }
 </script>

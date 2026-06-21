@@ -1,4 +1,4 @@
-﻿export default {
+export default {
   httpMsg: {
     unauthorized: 'Unauthorized access, please login again',
     forbidden: 'Access to this resource is forbidden',
@@ -425,6 +425,7 @@
     hr: {
       title: 'HR Management',
       employees: 'Employees',
+      employee: 'Employees',
       commissionPolicy: 'Commission Policy',
       payroll: 'Payroll',
       kpi: 'KPI Management',
@@ -976,4 +977,3 @@
     },
   },
 }
-

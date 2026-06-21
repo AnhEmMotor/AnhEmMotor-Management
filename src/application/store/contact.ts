@@ -1,6 +1,6 @@
-﻿import { defineStore } from 'pinia'
+import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { ContactApi, type PaginatedContactResponse } from '@/infrastructure/api/contact.api'
+import { ContactApi } from '@/infrastructure/api/contact.api'
 import { ElMessage } from 'element-plus'
 import type { Contact } from '@/types'
 
@@ -134,4 +134,3 @@ export const useContactStore = defineStore('contactStore', () => {
     incrementBadge,
   }
 })
-
