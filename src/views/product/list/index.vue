@@ -233,6 +233,7 @@
                     Mô Tả Chi Tiết Sản Phẩm
                   </label>
                   <ArtWangEditor
+                    v-if="dialogVisible"
                     v-model="formData.description"
                     height="400px"
                     :upload-config="{

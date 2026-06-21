@@ -94,7 +94,7 @@
               >Nội dung bài viết</span
             >
           </div>
-          <ArtWangEditor v-model="editorHtml" class="flex-1" />
+          <ArtWangEditor v-if="showEditor" v-model="editorHtml" class="flex-1" />
         </div>
       </div>
 
@@ -289,7 +289,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, reactive, onMounted } from 'vue'
+  import { ref, reactive, onMounted, onActivated, onDeactivated } from 'vue'
   import { useRouter, useRoute } from 'vue-router'
   import { InfoFilled } from '@element-plus/icons-vue'
   import { ElMessage } from 'element-plus'
@@ -312,6 +312,15 @@
   const ogImage = ref('')
   const isPublished = ref(false)
   const pageMode = ref(PageModeEnum.Add)
+  const showEditor = ref(true)
+
+  onActivated(() => {
+    showEditor.value = true
+  })
+
+  onDeactivated(() => {
+    showEditor.value = false
+  })
 
   const resetForm = () => {
     articleName.value = ''
