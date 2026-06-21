@@ -36,6 +36,14 @@
           </ElTag>
         </template>
 
+        <template #isFullyImported="{ row }">
+          <template v-if="row.status?.toLowerCase() === 'approve'">
+            <ElTag v-if="row.isFullyImported" type="success" size="small"> Đã nhập đủ </ElTag>
+            <ElTag v-else type="danger" size="small"> Chưa nhập đủ </ElTag>
+          </template>
+          <span v-else>-</span>
+        </template>
+
         <template #operation="{ row }">
           <div class="flex gap-2 justify-center">
             <ElTooltip content="Xem chi tiết" placement="top">
@@ -858,6 +866,13 @@
     { label: 'Người tạo', prop: 'createdByName', minWidth: 150 },
     { label: 'Số mặt hàng', prop: 'totalItems', width: 120, align: 'center' },
     { label: 'Trạng thái', prop: 'status', useSlot: true, width: 130, align: 'center' },
+    {
+      label: 'Đã nhập toàn bộ',
+      prop: 'isFullyImported',
+      useSlot: true,
+      width: 150,
+      align: 'center'
+    },
     {
       label: 'Thao tác',
       prop: 'operation',

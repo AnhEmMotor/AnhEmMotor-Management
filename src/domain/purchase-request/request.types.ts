@@ -67,6 +67,7 @@ export interface PurchaseRequestListResponse {
   createdAt?: string
   totalItems: number
   paidAmount: number
+  isFullyImported: boolean
 }
 
 export interface PurchaseRequestList {
