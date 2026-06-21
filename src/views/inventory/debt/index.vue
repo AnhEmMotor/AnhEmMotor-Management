@@ -4,7 +4,7 @@
       <ArtStatsCard
         title="Tổng nợ NCC"
         :count="formatCurrency(totalSuppliersDebt)"
-        description="Số tiền cần thanh toán cho các lô xe/phụ tùng"
+        description="Số tiền nợ của các nhà cung cấp hiển thị trên trang này"
         icon="ri:money-cny-box-line"
         iconStyle="bg-danger"
       />
@@ -29,119 +29,51 @@
           </span>
         </template>
         <template #operation="{ row }">
-          <ElButton type="primary" size="small" link @click="handleViewReceipts(row)">
-            Chi tiết đơn nợ
-          </ElButton>
+          <div class="flex gap-2 justify-center items-center">
+            <ElButton
+              type="success"
+              size="small"
+              :disabled="row.totalDebt <= 0"
+              @click="openPaymentForm(row)"
+            >
+              Thanh toán
+            </ElButton>
+            <ElButton type="primary" size="small" link @click="openPaymentLogs(row)">
+              Lịch sử thanh toán
+            </ElButton>
+          </div>
         </template>
       </ArtTable>
+
+      <div class="mt-4 flex justify-end">
+        <ElPagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :page-sizes="[10, 20, 50, 100]"
+          :total="total"
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </div>
     </ElCard>
 
     <ElDialog
-      v-model="receiptsDialogVisible"
-      :title="`Danh sách phiếu nhập còn nợ - ${selectedSupplier?.name}`"
-      width="950px"
-      append-to-body
-      destroy-on-close
-    >
-      <div v-loading="receiptsLoading">
-        <ElTabs v-model="activeTab" class="mb-4">
-          <ElTabPane name="unpaid" :label="`Chưa thanh toán hoàn tất (${unpaidDebts.length})`" />
-          <ElTabPane name="fully_paid" :label="`Đã thanh toán (${fullyPaidDebts.length})`" />
-        </ElTabs>
-
-        <ElTable :data="filteredReceipts" border stripe style="width: 100%">
-          <ElTableColumn label="Mã phiếu" width="120" align="center">
-            <template #default="{ row }">
-              <span class="font-mono font-bold text-primary">IR-{{ row.inventoryReceiptId }}</span>
-            </template>
-          </ElTableColumn>
-          <ElTableColumn label="Sản phẩm" min-width="200">
-            <template #default="{ row }">
-              <div class="font-medium text-gray-900">{{ row.productVariantName }}</div>
-              <div v-if="row.colorName" class="text-xs text-gray-500"
-                >Phân loại: {{ row.colorName }}</div
-              >
-            </template>
-          </ElTableColumn>
-          <ElTableColumn label="Hạn thanh toán" width="140" align="center">
-            <template #default="{ row }">
-              <span
-                :class="{ 'text-red-500 font-bold': isOverdue(row) && getRemainingDebt(row) > 0 }"
-              >
-                {{ row.dueDate ? new Date(row.dueDate).toLocaleDateString('vi-VN') : '-' }}
-              </span>
-            </template>
-          </ElTableColumn>
-          <ElTableColumn label="Tổng tiền" width="140" align="right">
-            <template #default="{ row }">
-              {{ formatCurrency(row.totalAmount) }}
-            </template>
-          </ElTableColumn>
-          <ElTableColumn label="Đã trả" width="130" align="right">
-            <template #default="{ row }">
-              <span class="text-success font-medium">{{
-                formatCurrency(row.paidAmount || 0)
-              }}</span>
-            </template>
-          </ElTableColumn>
-          <ElTableColumn label="Còn nợ" width="140" align="right">
-            <template #default="{ row }">
-              <span class="text-danger font-bold">{{ formatCurrency(getRemainingDebt(row)) }}</span>
-            </template>
-          </ElTableColumn>
-          <ElTableColumn label="Thao tác" width="130" align="center" fixed="right">
-            <template #default="{ row }">
-              <div class="flex gap-1 justify-center">
-                <ElButton
-                  type="success"
-                  size="small"
-                  :disabled="getRemainingDebt(row) <= 0"
-                  @click="openPaymentForm(row)"
-                  title="Trả nợ"
-                >
-                  Trả nợ
-                </ElButton>
-                <ElButton
-                  type="info"
-                  size="small"
-                  @click="openAuditTrail(row)"
-                  title="Lịch sử chỉnh sửa"
-                >
-                  <ElIcon><Clock /></ElIcon>
-                </ElButton>
-              </div>
-            </template>
-          </ElTableColumn>
-        </ElTable>
-      </div>
-    </ElDialog>
-
-    <ElDialog
       v-model="paymentFormVisible"
-      :title="`Thanh toán nợ phiếu IR-${selectedReceipt?.inventoryReceiptId}`"
+      :title="`Thanh toán nợ cho nhà cung cấp: ${selectedSupplierToPay?.name}`"
       width="450px"
       append-to-body
     >
-      <div v-if="selectedReceipt" class="space-y-4">
+      <div v-if="selectedSupplierToPay" class="space-y-4">
         <div class="bg-gray-50 p-4 rounded-lg text-sm space-y-2">
           <div class="flex justify-between">
-            <span class="text-gray-500">Mã đơn nhập:</span>
-            <span class="font-bold">IR-{{ selectedReceipt.inventoryReceiptId }}</span>
-          </div>
-          <div class="flex flex-col gap-1 border-t border-b border-gray-100 py-2 my-2">
-            <span class="text-gray-500 text-xs">Sản phẩm:</span>
-            <span class="font-medium text-gray-800 text-xs">{{
-              selectedReceipt.productVariantName
-            }}</span>
-            <span v-if="selectedReceipt.colorName" class="text-gray-500 text-xs"
-              >Phân loại: {{ selectedReceipt.colorName }}</span
-            >
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-500">Tổng số tiền nợ:</span>
+            <span class="text-gray-500">Tổng dư nợ hiện tại:</span>
             <span class="font-bold text-red-500">{{
-              formatCurrency(getRemainingDebt(selectedReceipt))
+              formatCurrency(selectedSupplierToPay.totalDebt)
             }}</span>
+          </div>
+          <div class="text-xs text-gray-500 mt-2">
+            Hệ thống sẽ tự động cấn trừ số tiền thanh toán vào các đơn nợ từ cũ nhất đến mới nhất.
           </div>
         </div>
         <ElForm label-position="top">
@@ -149,7 +81,7 @@
             <ElInputNumber
               v-model="paymentAmount"
               :min="1"
-              :max="getRemainingDebt(selectedReceipt)"
+              :max="selectedSupplierToPay.totalDebt"
               class="w-full"
               :controls="false"
             />
@@ -164,25 +96,55 @@
       </template>
     </ElDialog>
 
-    <AuditTrailModal
-      v-model:visible="auditTrailVisible"
-      :record-id="auditRecordId"
-      type="supplier-debt-settlement"
-    />
+    <ElDialog
+      v-model="paymentLogsVisible"
+      :title="`Lịch sử thanh toán - ${selectedSupplierLogs?.name}`"
+      width="800px"
+      append-to-body
+      destroy-on-close
+    >
+      <div v-loading="logsLoading">
+        <ElTable :data="paymentLogs" border stripe style="width: 100%">
+          <ElTableColumn label="Thời gian" width="160" align="center">
+            <template #default="{ row }">
+              {{ new Date(row.paymentDate).toLocaleString('vi-VN') }}
+            </template>
+          </ElTableColumn>
+          <ElTableColumn label="Người trả" min-width="150">
+            <template #default="{ row }">
+              {{ row.createdBy?.fullName || row.createdBy?.userName || 'Hệ thống' }}
+            </template>
+          </ElTableColumn>
+          <ElTableColumn label="Số tiền trả" width="150" align="right">
+            <template #default="{ row }">
+              <span class="text-success font-bold">{{ formatCurrency(row.amountPaid) }}</span>
+            </template>
+          </ElTableColumn>
+          <ElTableColumn label="Dư nợ còn lại" width="150" align="right">
+            <template #default="{ row }">
+              <span class="text-danger">{{ formatCurrency(row.remainingDebt) }}</span>
+            </template>
+          </ElTableColumn>
+        </ElTable>
+      </div>
+    </ElDialog>
   </div>
 </template>
 
 <script setup lang="ts">
   import { ref, onMounted, computed } from 'vue'
-  import { Refresh, Clock } from '@element-plus/icons-vue'
+  import { Refresh } from '@element-plus/icons-vue'
   import { ElMessage } from 'element-plus'
   import { DebtApi } from '@/api/debt.api'
-  import AuditTrailModal from '@/components/business/audit-trail-modal/index.vue'
 
   defineOptions({ name: 'InventoryDebt' })
 
   const loading = ref(false)
   const supplierDebts = ref<any[]>([])
+
+  const currentPage = ref(1)
+  const pageSize = ref(10)
+  const total = ref(0)
 
   const totalSuppliersDebt = computed(() => {
     return supplierDebts.value.reduce((sum, item) => sum + (item.totalDebt || 0), 0)
@@ -192,23 +154,31 @@
     return (val || 0).toLocaleString('vi-VN') + ' VNĐ'
   }
 
-  const getRemainingDebt = (receipt: any): number => {
-    const total = receipt.totalAmount || 0
-    const paid = receipt.paidAmount || 0
-    return Math.max(0, total - paid)
-  }
-
   const fetchSupplierDebts = async () => {
     loading.value = true
     try {
-      const res = await DebtApi.getSuppliersWithDebt()
-      supplierDebts.value = res || []
+      const res = await DebtApi.getSuppliersWithDebt({
+        Page: currentPage.value,
+        PageSize: pageSize.value
+      })
+      supplierDebts.value = res?.items || []
+      total.value = res?.totalCount || 0
     } catch (err: any) {
       console.error(err)
       ElMessage.error('Không thể lấy danh sách công nợ nhà cung cấp')
     } finally {
       loading.value = false
     }
+  }
+
+  const handleSizeChange = (val: number) => {
+    pageSize.value = val
+    fetchSupplierDebts()
+  }
+
+  const handleCurrentChange = (val: number) => {
+    currentPage.value = val
+    fetchSupplierDebts()
   }
 
   const supplierColumns = [
@@ -225,94 +195,56 @@
       label: 'Thao tác',
       prop: 'operation',
       useSlot: true,
-      width: 180,
+      width: 250,
       align: 'center',
       fixed: 'right' as const
     }
   ]
 
-  const receiptsDialogVisible = ref(false)
-  const receiptsLoading = ref(false)
-  const selectedSupplier = ref<any | null>(null)
-  const receipts = ref<any[]>([])
-  const activeTab = ref('unpaid')
-
-  const isOverdue = (row: any): boolean => {
-    if (!row.dueDate) return false
-    return new Date(row.dueDate).getTime() < Date.now()
-  }
-
-  const unpaidDebts = computed(() => {
-    return receipts.value.filter((row) => getRemainingDebt(row) > 0)
-  })
-
-  const fullyPaidDebts = computed(() => {
-    return receipts.value.filter((row) => getRemainingDebt(row) === 0)
-  })
-
-  const filteredReceipts = computed(() => {
-    if (activeTab.value === 'unpaid') {
-      return unpaidDebts.value
-    }
-    if (activeTab.value === 'fully_paid') {
-      return fullyPaidDebts.value
-    }
-    return []
-  })
-
-  const handleViewReceipts = async (supplier: any) => {
-    selectedSupplier.value = supplier
-    receiptsDialogVisible.value = true
-    receiptsLoading.value = true
-    try {
-      const res = await DebtApi.getReceiptsWithDebt(supplier.id)
-      receipts.value = res || []
-    } catch (err: any) {
-      console.error(err)
-      ElMessage.error('Không thể lấy danh sách phiếu nợ')
-    } finally {
-      receiptsLoading.value = false
-    }
-  }
-
   const paymentFormVisible = ref(false)
   const paying = ref(false)
-  const selectedReceipt = ref<any | null>(null)
+  const selectedSupplierToPay = ref<any | null>(null)
   const paymentAmount = ref<number>(0)
 
-  const auditTrailVisible = ref(false)
-  const auditRecordId = ref<number | null>(null)
-
-  const openAuditTrail = (row: any) => {
-    auditRecordId.value = row.id
-    auditTrailVisible.value = true
-  }
-
-  const openPaymentForm = (receipt: any) => {
-    selectedReceipt.value = receipt
-    paymentAmount.value = getRemainingDebt(receipt)
+  const openPaymentForm = (supplier: any) => {
+    selectedSupplierToPay.value = supplier
+    paymentAmount.value = supplier.totalDebt
     paymentFormVisible.value = true
   }
 
   const submitPayment = async () => {
-    if (!selectedReceipt.value) return
+    if (!selectedSupplierToPay.value) return
     paying.value = true
     try {
-      await DebtApi.payDebt(selectedReceipt.value.id, paymentAmount.value)
+      await DebtApi.paySupplierDebt(selectedSupplierToPay.value.id, paymentAmount.value)
       ElMessage.success('Thanh toán công nợ thành công!')
       paymentFormVisible.value = false
-
-      if (selectedSupplier.value) {
-        const res = await DebtApi.getReceiptsWithDebt(selectedSupplier.value.id)
-        receipts.value = res || []
-      }
-
       fetchSupplierDebts()
     } catch (err: any) {
       console.error(err)
       ElMessage.error(err.response?.data?.Message || 'Thanh toán thất bại')
     } finally {
       paying.value = false
+    }
+  }
+
+  const paymentLogsVisible = ref(false)
+  const logsLoading = ref(false)
+  const paymentLogs = ref<any[]>([])
+  const selectedSupplierLogs = ref<any | null>(null)
+
+  const openPaymentLogs = async (supplier: any) => {
+    selectedSupplierLogs.value = supplier
+    paymentLogsVisible.value = true
+    logsLoading.value = true
+    try {
+      const res = await DebtApi.getSupplierDebtLogs(supplier.id)
+      paymentLogs.value = res || []
+    } catch (err: any) {
+      console.error(err)
+      ElMessage.error('Không thể lấy lịch sử thanh toán')
+    } finally {
+      logsLoading.value = false
     }
   }
 
