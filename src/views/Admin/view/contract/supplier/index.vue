@@ -438,7 +438,7 @@
   import { useRouter } from 'vue-router'
   import { ElMessage, ElMessageBox, type FormInstance } from 'element-plus'
   import type { ColumnOption } from '@/types/component'
-  import ReportPageHeader from '@/views/analytics-reporting/components/ReportPageHeader.vue'
+  import ReportPageHeader from '@/views/Accountant/view/reporting/ReportPageHeader.vue'
   import type {
     SupplierContractDto,
     SupplierContractSkuItem,

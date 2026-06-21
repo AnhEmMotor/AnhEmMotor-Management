@@ -332,7 +332,7 @@
   import { useRoute, useRouter } from 'vue-router'
   import { ElMessage } from 'element-plus'
   import { useI18n } from 'vue-i18n'
-  import ReportPageHeader from '@/views/analytics-reporting/components/ReportPageHeader.vue'
+  import ReportPageHeader from '@/views/Accountant/view/reporting/ReportPageHeader.vue'
   import {
     getContractTemplateById,
     createContractTemplate,
@@ -340,7 +340,7 @@
     validateContractTemplateSyntax,
   } from '@/infrastructure/api/contract-template.api'
   import { useCommon } from '@/hooks/core/useCommon'
-  import '@/views/analytics-reporting/styles/reporting.scss'
+  import '@/views/Accountant/logic/reporting.scss'
 
   defineOptions({ name: 'ContractTemplateEditor' })
 

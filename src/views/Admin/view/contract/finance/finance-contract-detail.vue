@@ -396,7 +396,7 @@
     type FinanceContractDetailDto,
     type FinanceContractStatus,
   } from '@/infrastructure/api/finance-contract.api'
-  import ReportPageHeader from '@/views/analytics-reporting/components/ReportPageHeader.vue'
+  import ReportPageHeader from '@/views/Accountant/view/reporting/ReportPageHeader.vue'
   import ArtStatsCard from '@/components/core/cards/art-stats-card/index.vue'
 
   const route = useRoute()

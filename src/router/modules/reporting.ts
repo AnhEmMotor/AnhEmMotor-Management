@@ -14,7 +14,7 @@ export const reportingRoutes: AppRouteRecord = {
     {
       path: 'executive-dashboard',
       name: 'ExecutiveDashboard',
-      component: '/Accountant/view/dashboard/index',
+      component: '/Accountant/view/reporting/dashboard',
       meta: {
         title: 'Tá»•ng quan Ä‘iá»u hÃ nh',
         icon: 'ri:dashboard-line',
@@ -24,7 +24,7 @@ export const reportingRoutes: AppRouteRecord = {
     {
       path: 'sales',
       name: 'SalesAnalytics',
-      component: '/Accountant/view/revenue/index',
+      component: '/Accountant/view/reporting/revenue',
       meta: {
         title: 'BÃ¡o cÃ¡o bÃ¡n hÃ ng',
         icon: 'ri:money-cny-circle-line',
@@ -34,7 +34,7 @@ export const reportingRoutes: AppRouteRecord = {
     {
       path: 'financial',
       name: 'FinancialAnalytics',
-      component: '/Accountant/view/financial/index',
+      component: '/Accountant/view/reporting/financial',
       meta: {
         title: 'BÃ¡o cÃ¡o tÃ i chÃ­nh',
         icon: 'ri:file-chart-line',
@@ -44,7 +44,7 @@ export const reportingRoutes: AppRouteRecord = {
     {
       path: 'financing',
       name: 'FinancingAnalytics',
-      component: '/Accountant/view/financing/index',
+      component: '/Accountant/view/reporting/financing',
       meta: {
         title: 'BÃ¡o cÃ¡o tráº£ gÃ³p',
         icon: 'ri:bank-line',
@@ -54,7 +54,7 @@ export const reportingRoutes: AppRouteRecord = {
     {
       path: 'inventory',
       name: 'InventoryAnalytics',
-      component: '/Accountant/view/inventory/index',
+      component: '/Accountant/view/reporting/inventory',
       meta: {
         title: 'BÃ¡o cÃ¡o tá»“n kho',
         icon: 'ri:archive-line',
@@ -64,7 +64,7 @@ export const reportingRoutes: AppRouteRecord = {
     {
       path: 'workshop',
       name: 'WorkshopAnalytics',
-      component: '/Accountant/view/workshop/index',
+      component: '/Accountant/view/reporting/workshop',
       meta: {
         title: 'BÃ¡o cÃ¡o xÆ°á»Ÿng dá»‹ch vá»¥',
         icon: 'ri:tools-line',
@@ -74,7 +74,7 @@ export const reportingRoutes: AppRouteRecord = {
     {
       path: 'customer',
       name: 'CustomerAnalytics',
-      component: '/Accountant/view/customer/index',
+      component: '/Accountant/view/reporting/customer',
       meta: {
         title: 'BÃ¡o cÃ¡o khÃ¡ch hÃ ng',
         icon: 'ri:user-heart-line',
@@ -84,7 +84,7 @@ export const reportingRoutes: AppRouteRecord = {
     {
       path: 'hr-commission',
       name: 'HRCommissionAnalytics',
-      component: '/Accountant/view/employee/index',
+      component: '/Accountant/view/reporting/employee',
       meta: {
         title: 'BÃ¡o cÃ¡o nhÃ¢n sá»± & hoa há»“ng',
         icon: 'ri:team-line',
@@ -94,7 +94,7 @@ export const reportingRoutes: AppRouteRecord = {
     {
       path: 'customer-service',
       name: 'CustomerServiceAnalytics',
-      component: '/Accountant/view/customer-service/index',
+      component: '/Accountant/view/reporting/customer-service',
       meta: {
         title: 'BÃ¡o cÃ¡o chÄƒm sÃ³c khÃ¡ch hÃ ng',
         icon: 'ri:customer-service-2-line',
@@ -105,3 +105,4 @@ export const reportingRoutes: AppRouteRecord = {
 }
 
 // Removed default export
+

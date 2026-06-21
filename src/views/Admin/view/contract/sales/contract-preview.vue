@@ -327,7 +327,7 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { SalesContractApi } from '@/infrastructure/api/sales-contract.api'
   import type { SalesContractStatus } from '@/domain/sales/contract.types'
-  import ReportPageHeader from '@/views/analytics-reporting/components/ReportPageHeader.vue'
+  import ReportPageHeader from '@/views/Accountant/view/reporting/ReportPageHeader.vue'
   import ArtStatsCard from '@/components/core/cards/art-stats-card/index.vue'
 
   const route = useRoute()
