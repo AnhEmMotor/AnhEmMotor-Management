@@ -2,7 +2,7 @@
   <div class="art-card h-82 p-5 mb-5 max-sm:mb-4">
     <div class="art-card-header">
       <div class="title">
-        <h4>{{ $t('admin.t38') }}</h4>
+        <h4>{{ $t("admin.t38") }}</h4>
       </div>
     </div>
 
@@ -10,7 +10,7 @@
       :data="[
         { value: 30, name: 'Bắc Kinh' },
         { value: 25, name: 'Thượng Hải' },
-        { value: 45, name: 'Quảng Châu' }
+        { value: 45, name: 'Quảng Châu' },
       ]"
       :color="['#4C87F3', '#93F1B4', '#8BD8FC']"
       :radius="['46%', '60%']"

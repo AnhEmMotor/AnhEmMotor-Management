@@ -1,87 +1,87 @@
-import { AppRouteRecord } from '@/types/router'
+import { AppRouteRecord } from "@/types/router";
 
 export const contentRoutes: AppRouteRecord = {
-  path: '/content',
-  name: 'Content',
-  component: '/index/index',
+  path: "/content",
+  name: "Content",
+  component: "/index/index",
   meta: {
-    title: 'Quản lý Nội dung',
-    icon: 'ri:file-text-line',
-    roles: ['R_SUPER', 'R_ADMIN']
+    title: "Quản lý Nội dung",
+    icon: "ri:file-text-line",
+    roles: ["R_SUPER", "R_ADMIN"],
   },
   children: [
     {
-      path: 'article',
-      name: 'ArticleList',
-      component: '/article/list',
+      path: "article",
+      name: "ArticleList",
+      component: "/article/list",
       meta: {
-        title: 'Bài viết',
-        icon: 'ri:book-2-line',
+        title: "Bài viết",
+        icon: "ri:book-2-line",
         keepAlive: true,
         authList: [
-          { title: 'Thêm mới', authMark: 'add' },
-          { title: 'Chỉnh sửa', authMark: 'edit' }
-        ]
-      }
+          { title: "Thêm mới", authMark: "add" },
+          { title: "Chỉnh sửa", authMark: "edit" },
+        ],
+      },
     },
     {
-      path: 'article/publish',
-      name: 'ArticlePublish',
-      component: '/article/publish',
+      path: "article/publish",
+      name: "ArticlePublish",
+      component: "/article/publish",
       meta: {
-        title: 'Đăng bài',
+        title: "Đăng bài",
         isHide: true,
         isHideTab: true,
         keepAlive: true,
-        activePath: '/content/article',
-        authList: [{ title: 'Đăng tải', authMark: 'add' }]
-      }
+        activePath: "/content/article",
+        authList: [{ title: "Đăng tải", authMark: "add" }],
+      },
     },
     {
-      path: 'article/publish/:id',
-      name: 'ArticleEdit',
-      component: '/article/publish',
+      path: "article/publish/:id",
+      name: "ArticleEdit",
+      component: "/article/publish",
       meta: {
-        title: 'Sửa bài viết',
+        title: "Sửa bài viết",
         isHide: true,
         isHideTab: true,
         keepAlive: true,
-        activePath: '/content/article',
-        authList: [{ title: 'Sửa', authMark: 'edit' }]
-      }
+        activePath: "/content/article",
+        authList: [{ title: "Sửa", authMark: "edit" }],
+      },
     },
     {
-      path: 'article/detail/:id',
-      name: 'ArticleDetail',
-      component: '/article/detail',
+      path: "article/detail/:id",
+      name: "ArticleDetail",
+      component: "/article/detail",
       meta: {
-        title: 'Chi tiết bài viết',
+        title: "Chi tiết bài viết",
         isHide: true,
         keepAlive: true,
-        activePath: '/content/article'
-      }
+        activePath: "/content/article",
+      },
     },
     {
-      path: 'article/comment/:id',
-      name: 'ArticleComment',
-      component: '/article/comment',
+      path: "article/comment/:id",
+      name: "ArticleComment",
+      component: "/article/comment",
       meta: {
-        title: 'Bình luận',
+        title: "Bình luận",
         isHide: true,
         keepAlive: true,
-        activePath: '/content/article'
-      }
+        activePath: "/content/article",
+      },
     },
     {
-      path: 'banner',
-      name: 'MarketingBanner',
-      component: '/marketing/banner',
+      path: "banner",
+      name: "MarketingBanner",
+      component: "/marketing/banner",
       meta: {
-        title: 'Banner',
-        icon: 'ri:advertisement-line',
+        title: "Banner",
+        icon: "ri:advertisement-line",
         keepAlive: true,
-        roles: ['R_SUPER', 'R_ADMIN']
-      }
-    }
-  ]
-}
+        roles: ["R_SUPER", "R_ADMIN"],
+      },
+    },
+  ],
+};

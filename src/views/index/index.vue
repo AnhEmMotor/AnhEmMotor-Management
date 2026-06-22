@@ -20,9 +20,9 @@
 </template>
 
 <script setup lang="ts">
-  defineOptions({ name: 'AppLayout' })
+defineOptions({ name: "AppLayout" });
 </script>
 
 <style lang="scss" scoped>
-  @use './style';
+@use "./style";
 </style>

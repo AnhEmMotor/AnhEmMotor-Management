@@ -1,22 +1,23 @@
-import request from '@/utils/http'
+import request from "@/utils/http";
 
 export const DebtApi = {
-  getSuppliersWithDebt() {
-    return request.get<any[]>({
-      url: '/api/v1/DebtPayments/suppliers'
-    })
+  getSuppliersWithDebt(params?: any) {
+    return request.get<any>({
+      url: "/api/v1/DebtPayments/suppliers",
+      params,
+    });
   },
 
-  getReceiptsWithDebt(supplierId: number) {
-    return request.get<any[]>({
-      url: `/api/v1/DebtPayments/suppliers/${supplierId}/receipts`
-    })
+  paySupplierDebt(supplierId: number, amount: number) {
+    return request.post<boolean>({
+      url: `/api/v1/DebtPayments/suppliers/${supplierId}/pay`,
+      data: { amount },
+    });
   },
 
-  payDebt(lineId: number, amount: number) {
-    return request.post<any>({
-      url: `/api/v1/DebtPayments/${lineId}/pay`,
-      data: { amount }
-    })
-  }
-}
+  getSupplierDebtLogs(supplierId: number) {
+    return request.get<any[]>({
+      url: `/api/v1/DebtPayments/suppliers/${supplierId}/debt-logs`,
+    });
+  },
+};

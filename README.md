@@ -51,7 +51,7 @@ Update the information in `.env`:
 
 ```properties
 # Backend API URL (Production or Local)
-VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT=https://localhost:7001
+VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT=https://localhost:5000
 ```
 
 ### Local Development
@@ -144,7 +144,7 @@ Cập nhật thông tin trong `.env`:
 
 ```properties
 # URL của Backend API (Production hoặc Local)
-VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT=https://localhost:7001
+VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT=https://localhost:5000
 ```
 
 ### Chạy Local Development

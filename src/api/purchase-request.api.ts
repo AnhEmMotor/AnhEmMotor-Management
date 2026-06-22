@@ -1,92 +1,92 @@
-import request from '@/utils/http'
+import request from "@/utils/http";
 import type {
   PurchaseRequestDetailResponse,
   PurchaseRequestList,
   CreatePurchaseRequest,
   UpdatePurchaseRequest,
-  ApprovedPurchaseRequestDetailResponse
-} from '@/domain/purchase-request/request.types'
+  ApprovedPurchaseRequestDetailResponse,
+} from "@/domain/purchase-request/request.types";
 
 export const PurchaseRequestApi = {
   getList(params: any) {
-    const { current, size, ...rest } = params
+    const { current, size, ...rest } = params;
     return request.get<PurchaseRequestList>({
-      url: '/api/v1/purchase-requests',
+      url: "/api/v1/purchase-requests",
       params: {
         Page: current,
         PageSize: size,
-        ...rest
-      }
-    })
+        ...rest,
+      },
+    });
   },
 
   getApprovedList(params: any) {
-    const { current, size, ...rest } = params
+    const { current, size, ...rest } = params;
     return request.get<PurchaseRequestList>({
-      url: '/api/v1/purchase-requests/approved',
+      url: "/api/v1/purchase-requests/approved",
       params: {
         Page: current,
         PageSize: size,
-        ...rest
-      }
-    })
+        ...rest,
+      },
+    });
   },
 
   getById(id: number) {
     return request.get<PurchaseRequestDetailResponse>({
-      url: `/api/v1/purchase-requests/${id}`
-    })
+      url: `/api/v1/purchase-requests/${id}`,
+    });
   },
 
   getApprovedById(id: number, excludePurchaseOrderId?: number) {
     return request.get<ApprovedPurchaseRequestDetailResponse>({
       url: `/api/v1/purchase-requests/approved/${id}`,
-      params: { excludePurchaseOrderId }
-    })
+      params: { excludePurchaseOrderId },
+    });
   },
 
   create(data: CreatePurchaseRequest) {
     return request.post<PurchaseRequestDetailResponse>({
-      url: '/api/v1/purchase-requests',
-      data
-    })
+      url: "/api/v1/purchase-requests",
+      data,
+    });
   },
 
-  update(id: number, data: Omit<UpdatePurchaseRequest, 'id'>) {
+  update(id: number, data: Omit<UpdatePurchaseRequest, "id">) {
     return request.put<PurchaseRequestDetailResponse>({
       url: `/api/v1/purchase-requests/${id}`,
-      data
-    })
+      data,
+    });
   },
 
   delete(id: number) {
     return request.del({
-      url: `/api/v1/purchase-requests/${id}`
-    })
+      url: `/api/v1/purchase-requests/${id}`,
+    });
   },
 
   send(id: number) {
     return request.post<void>({
-      url: `/api/v1/purchase-requests/${id}/send`
-    })
+      url: `/api/v1/purchase-requests/${id}/send`,
+    });
   },
 
   approveReject(id: number, status: string) {
     return request.patch<void>({
       url: `/api/v1/purchase-requests/${id}/status`,
-      data: { status }
-    })
+      data: { status },
+    });
   },
 
   getStatuses() {
     return request.get<Record<string, string>>({
-      url: '/api/v1/purchase-requests/status'
-    })
+      url: "/api/v1/purchase-requests/status",
+    });
   },
 
   getAuditLogs(id: number) {
     return request.get<any[]>({
-      url: `/api/v1/purchase-requests/${id}/audit-logs`
-    })
-  }
-}
+      url: `/api/v1/purchase-requests/${id}/audit-logs`,
+    });
+  },
+};

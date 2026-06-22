@@ -1,4 +1,4 @@
-@use '@styles/core/mixin.scss' as *;
+@use "@styles/core/mixin.scss" as *;
 
 $menu-height: 42px;
 $menu-icon-size: 20px;
@@ -177,7 +177,7 @@ $popup-menu-radius: 6px;
         left: 0;
         width: 4px;
         height: 100%;
-        content: '';
+        content: "";
         background: var(--theme-color);
       }
     }
@@ -206,7 +206,11 @@ $popup-menu-radius: 6px;
 
 .el-menu--vertical,
 .el-menu--popup-container {
-  @include popup-menu-base(var(--art-gray-200), var(--art-gray-900), var(--art-gray-200));
+  @include popup-menu-base(
+    var(--art-gray-200),
+    var(--art-gray-900),
+    var(--art-gray-200)
+  );
 }
 
 .dark {

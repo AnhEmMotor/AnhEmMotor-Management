@@ -1,11 +1,11 @@
-import type { App } from 'vue'
-import { createPinia } from 'pinia'
-import { createPersistedState } from 'pinia-plugin-persistedstate'
-import { StorageKeyManager } from '@/utils/storage/storage-key-manager'
+import type { App } from "vue";
+import { createPinia } from "pinia";
+import { createPersistedState } from "pinia-plugin-persistedstate";
+import { StorageKeyManager } from "@/utils/storage/storage-key-manager";
 
-export const store = createPinia()
+export const store = createPinia();
 
-const storageKeyManager = new StorageKeyManager()
+const storageKeyManager = new StorageKeyManager();
 
 store.use(
   createPersistedState({
@@ -13,11 +13,11 @@ store.use(
     storage: localStorage,
     serializer: {
       serialize: JSON.stringify,
-      deserialize: JSON.parse
-    }
-  })
-)
+      deserialize: JSON.parse,
+    },
+  }),
+);
 
 export function initStore(app: App<Element>): void {
-  app.use(store)
+  app.use(store);
 }

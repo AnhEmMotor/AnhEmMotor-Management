@@ -40,7 +40,11 @@
     />
 
     <ElCard class="flex-1 art-table-card">
-      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
+      <ArtTableHeader
+        v-model:columns="columnChecks"
+        :loading="loading"
+        @refresh="refreshData"
+      >
         <template #left>
           <ElButton type="primary" v-ripple @click="handleAdd">
             <ElIcon><Plus /></ElIcon> Thêm mới
@@ -91,7 +95,12 @@
         </template>
 
         <template #inventory_status="{ row }">
-          <ElTag :type="getStatusType(row.inventory_status)" size="small" effect="light" round>
+          <ElTag
+            :type="getStatusType(row.inventory_status)"
+            size="small"
+            effect="light"
+            round
+          >
             {{ getStatusLabel(row.inventory_status) }}
           </ElTag>
         </template>
@@ -122,9 +131,11 @@
                 <div
                   class="bg-gray-50/50 p-4 border border-gray-150 rounded-xl space-y-4 shadow-sm flex flex-col justify-start"
                 >
-                  <div class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2"
-                    >Thông tin cơ bản</div
+                  <div
+                    class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2"
                   >
+                    Thông tin cơ bản
+                  </div>
                   <div>
                     <label
                       class="el-form-item__label !text-xs !font-semibold !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
@@ -137,7 +148,7 @@
                       node-key="id"
                       :props="{
                         label: 'name',
-                        children: 'children'
+                        children: 'children',
                       }"
                       placeholder="Chọn thể loại"
                       clearable
@@ -155,7 +166,11 @@
                     <div class="flex items-center gap-2">
                       <div
                         class="flex-1 flex items-center justify-between border border-gray-200 rounded-lg px-3 py-2 bg-white shadow-sm hover:border-primary/30 transition-all cursor-pointer min-h-[38px]"
-                        @click="openBrandSelector((brand) => (formData.brand_id = brand.id))"
+                        @click="
+                          openBrandSelector(
+                            (brand) => (formData.brand_id = brand.id),
+                          )
+                        "
                       >
                         <div class="flex items-center gap-2">
                           <ElIcon class="text-gray-400"><InfoFilled /></ElIcon>
@@ -165,7 +180,9 @@
                           >
                             {{ getBrandNameById(formData.brand_id) }}
                           </span>
-                          <span v-else class="text-sm text-gray-400">Chọn thương hiệu...</span>
+                          <span v-else class="text-sm text-gray-400"
+                            >Chọn thương hiệu...</span
+                          >
                         </div>
                         <ElIcon class="text-gray-400"><ArrowDown /></ElIcon>
                       </div>
@@ -178,23 +195,31 @@
                       Tên sản phẩm
                       <span class="text-red-500">*</span>
                     </label>
-                    <ElInput v-model="formData.name" placeholder="Nhập tên sản phẩm..." />
+                    <ElInput
+                      v-model="formData.name"
+                      placeholder="Nhập tên sản phẩm..."
+                    />
                   </div>
                 </div>
 
                 <div
                   class="bg-gray-50/50 p-4 border border-gray-150 rounded-xl space-y-4 shadow-sm flex flex-col justify-start"
                 >
-                  <div class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2"
-                    >Tối ưu hóa tìm kiếm (SEO)</div
+                  <div
+                    class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2"
                   >
+                    Tối ưu hóa tìm kiếm (SEO)
+                  </div>
                   <div>
                     <label
                       class="el-form-item__label !text-xs !font-semibold !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
                     >
                       Tiêu đề SEO (Meta Title)
                     </label>
-                    <ElInput v-model="formData.meta_title" placeholder="Tối ưu cho SEO..." />
+                    <ElInput
+                      v-model="formData.meta_title"
+                      placeholder="Tối ưu cho SEO..."
+                    />
                   </div>
                   <div>
                     <label
@@ -233,11 +258,12 @@
                     Mô Tả Chi Tiết Sản Phẩm
                   </label>
                   <ArtWangEditor
+                    v-if="dialogVisible"
                     v-model="formData.description"
                     height="400px"
                     :upload-config="{
                       server: `${VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT}/api/v1/product/images/content`,
-                      isCustomUpload: true
+                      isCustomUpload: true,
                     }"
                     placeholder="Nhập mô tả chi tiết..."
                   />
@@ -288,7 +314,10 @@
                       class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
                       >Xuất xứ</label
                     >
-                    <ElInput v-model="formData.origin" placeholder="Ví dụ: Nhật Bản, Thái Lan..." />
+                    <ElInput
+                      v-model="formData.origin"
+                      placeholder="Ví dụ: Nhật Bản, Thái Lan..."
+                    />
                   </div>
                   <div>
                     <label
@@ -325,7 +354,10 @@
                       class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
                       >Kích cỡ lốp (Vỏ)</label
                     >
-                    <ElInput v-model="formData.tire_size" placeholder="Ví dụ: 90/80-17" />
+                    <ElInput
+                      v-model="formData.tire_size"
+                      placeholder="Ví dụ: 90/80-17"
+                    />
                   </div>
                   <div>
                     <label
@@ -422,7 +454,9 @@
                   </div>
                   <ElIcon
                     class="text-gray-400 transition-transform duration-300"
-                    :class="{ 'rotate-180': activeSpecGroup === 'engine_specs' }"
+                    :class="{
+                      'rotate-180': activeSpecGroup === 'engine_specs',
+                    }"
                   >
                     <ArrowDown />
                   </ElIcon>
@@ -462,14 +496,20 @@
                       class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
                       >Đường kính x Hành trình piston</label
                     >
-                    <ElInput v-model="formData.bore_stroke" placeholder="Ví dụ: 52.4 x 57.9 mm" />
+                    <ElInput
+                      v-model="formData.bore_stroke"
+                      placeholder="Ví dụ: 52.4 x 57.9 mm"
+                    />
                   </div>
                   <div>
                     <label
                       class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
                       >Tỷ số nén</label
                     >
-                    <ElInput v-model="formData.compression_ratio" placeholder="Ví dụ: 11.0:1" />
+                    <ElInput
+                      v-model="formData.compression_ratio"
+                      placeholder="Ví dụ: 11.0:1"
+                    />
                   </div>
                   <div>
                     <label
@@ -564,7 +604,9 @@
                   </div>
                   <ElIcon
                     class="text-gray-400 transition-transform duration-300"
-                    :class="{ 'rotate-180': activeSpecGroup === 'chassis_specs' }"
+                    :class="{
+                      'rotate-180': activeSpecGroup === 'chassis_specs',
+                    }"
                   >
                     <ArrowDown />
                   </ElIcon>
@@ -662,7 +704,9 @@
                   </div>
                   <ElIcon
                     class="text-gray-400 transition-transform duration-300"
-                    :class="{ 'rotate-180': activeSpecGroup === 'electric_specs' }"
+                    :class="{
+                      'rotate-180': activeSpecGroup === 'electric_specs',
+                    }"
                   >
                     <ArrowDown />
                   </ElIcon>
@@ -714,7 +758,9 @@
                 >
                   <div class="flex items-center gap-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-cyan-500"></span>
-                    <span class="font-bold text-gray-800 text-sm">Công nghệ & Tiện ích</span>
+                    <span class="font-bold text-gray-800 text-sm"
+                      >Công nghệ & Tiện ích</span
+                    >
                   </div>
                   <ElIcon
                     class="text-gray-400 transition-transform duration-300"
@@ -746,7 +792,10 @@
                       </ElButton>
                     </div>
 
-                    <div v-if="loadingTechs" class="text-center py-6 text-gray-400">
+                    <div
+                      v-if="loadingTechs"
+                      class="text-center py-6 text-gray-400"
+                    >
                       Đang tải danh sách công nghệ...
                     </div>
 
@@ -754,7 +803,8 @@
                       v-else-if="!availableTechnologies.length"
                       class="text-center py-6 text-gray-400 italic"
                     >
-                      Không tìm thấy công nghệ nào phù hợp cho Thể loại / Thương hiệu này.
+                      Không tìm thấy công nghệ nào phù hợp cho Thể loại / Thương
+                      hiệu này.
                     </div>
 
                     <div v-else class="space-y-4">
@@ -763,7 +813,9 @@
                         :key="catName"
                         class="bg-white border border-gray-150 rounded-xl p-4 shadow-sm"
                       >
-                        <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+                        <div
+                          class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3"
+                        >
                           {{ catName }}
                         </div>
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -772,19 +824,23 @@
                             :key="tech.id"
                             class="group relative flex items-center justify-between p-3 border border-gray-150 rounded-lg hover:border-primary/20 hover:bg-gray-50/50 transition-all cursor-pointer select-none"
                             :class="{
-                              'border-primary/30 bg-red-50/10': isTechnologySelected(tech.id)
+                              'border-primary/30 bg-red-50/10':
+                                isTechnologySelected(tech.id),
                             }"
                             @click="toggleTechnology(tech)"
                           >
-                            <div class="flex items-center gap-2.5 overflow-hidden flex-1 mr-2">
+                            <div
+                              class="flex items-center gap-2.5 overflow-hidden flex-1 mr-2"
+                            >
                               <ElCheckbox
                                 :model-value="isTechnologySelected(tech.id)"
                                 @click.stop
                                 @change="toggleTechnology(tech)"
                               />
-                              <span class="text-sm font-medium text-gray-700 truncate">{{
-                                tech.name
-                              }}</span>
+                              <span
+                                class="text-sm font-medium text-gray-700 truncate"
+                                >{{ tech.name }}</span
+                              >
                             </div>
 
                             <div
@@ -816,13 +872,17 @@
                   </div>
 
                   <div
-                    v-if="formData.highlights_list && formData.highlights_list.length > 0"
+                    v-if="
+                      formData.highlights_list &&
+                      formData.highlights_list.length > 0
+                    "
                     class="space-y-4 pt-4 border-t border-gray-100"
                   >
                     <label
                       class="el-form-item__label !text-sm !font-bold !text-gray-800 border-b border-gray-200 pb-2 mb-0 block"
                     >
-                      Tùy chỉnh nội dung công nghệ cho sản phẩm này (Hiện trên Web)
+                      Tùy chỉnh nội dung công nghệ cho sản phẩm này (Hiện trên
+                      Web)
                     </label>
 
                     <div
@@ -839,8 +899,9 @@
                           </span>
                           <span class="text-sm font-bold text-gray-800">
                             {{
-                              availableTechnologies.find((t) => t.id === hl.technology_id)?.name ||
-                              'Công nghệ'
+                              availableTechnologies.find(
+                                (t) => t.id === hl.technology_id,
+                              )?.name || "Công nghệ"
                             }}
                           </span>
                         </div>
@@ -867,7 +928,9 @@
                             v-model="hl.custom_description"
                             type="textarea"
                             :rows="2"
-                            :placeholder="hl._defaultDescription || 'Nhập mô tả chi tiết...'"
+                            :placeholder="
+                              hl._defaultDescription || 'Nhập mô tả chi tiết...'
+                            "
                           />
                         </div>
                       </div>
@@ -875,14 +938,21 @@
                       <div
                         class="w-full md:w-36 flex flex-col items-center justify-center border-l border-gray-150 pl-4"
                       >
-                        <span class="text-xs text-gray-500 mb-2">Ảnh tùy chỉnh</span>
+                        <span class="text-xs text-gray-500 mb-2"
+                          >Ảnh tùy chỉnh</span
+                        >
                         <ElUpload
                           action="#"
                           :show-file-list="false"
                           :auto-upload="true"
-                          :http-request="(opt) => handleHighlightImageUpload(opt, hl)"
+                          :http-request="
+                            (opt) => handleHighlightImageUpload(opt, hl)
+                          "
                         >
-                          <div v-if="hl.custom_image_url" class="relative group">
+                          <div
+                            v-if="hl.custom_image_url"
+                            class="relative group"
+                          >
                             <img
                               :src="hl.custom_image_url"
                               class="w-24 h-24 object-cover rounded-lg border border-gray-200"
@@ -890,10 +960,15 @@
                             <div
                               class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-lg"
                             >
-                              <ElIcon class="text-white text-lg"><Plus /></ElIcon>
+                              <ElIcon class="text-white text-lg"
+                                ><Plus
+                              /></ElIcon>
                             </div>
                           </div>
-                          <div v-else-if="hl._defaultImageUrl" class="relative group">
+                          <div
+                            v-else-if="hl._defaultImageUrl"
+                            class="relative group"
+                          >
                             <img
                               :src="hl._defaultImageUrl"
                               class="w-24 h-24 object-cover rounded-lg border border-gray-200 opacity-60"
@@ -901,7 +976,9 @@
                             <div
                               class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-lg"
                             >
-                              <ElIcon class="text-white text-lg"><Plus /></ElIcon>
+                              <ElIcon class="text-white text-lg"
+                                ><Plus
+                              /></ElIcon>
                             </div>
                           </div>
                           <div
@@ -927,11 +1004,15 @@
                 >
                   <div class="flex items-center gap-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span>
-                    <span class="font-bold text-gray-800 text-sm">Tiêu chuẩn chất lượng</span>
+                    <span class="font-bold text-gray-800 text-sm"
+                      >Tiêu chuẩn chất lượng</span
+                    >
                   </div>
                   <ElIcon
                     class="text-gray-400 transition-transform duration-300"
-                    :class="{ 'rotate-180': activeSpecGroup === 'quality_specs' }"
+                    :class="{
+                      'rotate-180': activeSpecGroup === 'quality_specs',
+                    }"
                   >
                     <ArrowDown />
                   </ElIcon>
@@ -952,9 +1033,15 @@
                         class="flex items-center gap-3 p-4 border border-gray-200 rounded-xl hover:border-primary/20 hover:bg-gray-50/30 transition-all cursor-pointer"
                         @click="formData.std_dot = !formData.std_dot"
                       >
-                        <ElCheckbox v-model="formData.std_dot" size="large" @click.stop />
+                        <ElCheckbox
+                          v-model="formData.std_dot"
+                          size="large"
+                          @click.stop
+                        />
                         <div class="flex flex-col">
-                          <span class="font-bold text-gray-800 text-sm">Tiêu chuẩn DOT</span>
+                          <span class="font-bold text-gray-800 text-sm"
+                            >Tiêu chuẩn DOT</span
+                          >
                           <span class="text-[11px] text-gray-400 mt-0.5"
                             >Tiêu chuẩn an toàn của Bộ GTVT Hoa Kỳ</span
                           >
@@ -965,9 +1052,15 @@
                         class="flex items-center gap-3 p-4 border border-gray-200 rounded-xl hover:border-primary/20 hover:bg-gray-50/30 transition-all cursor-pointer"
                         @click="formData.std_ece = !formData.std_ece"
                       >
-                        <ElCheckbox v-model="formData.std_ece" size="large" @click.stop />
+                        <ElCheckbox
+                          v-model="formData.std_ece"
+                          size="large"
+                          @click.stop
+                        />
                         <div class="flex flex-col">
-                          <span class="font-bold text-gray-800 text-sm">Tiêu chuẩn ECE</span>
+                          <span class="font-bold text-gray-800 text-sm"
+                            >Tiêu chuẩn ECE</span
+                          >
                           <span class="text-[11px] text-gray-400 mt-0.5"
                             >Tiêu chuẩn an toàn của Ủy ban Kinh tế Châu Âu</span
                           >
@@ -978,9 +1071,15 @@
                         class="flex items-center gap-3 p-4 border border-gray-200 rounded-xl hover:border-primary/20 hover:bg-gray-50/30 transition-all cursor-pointer"
                         @click="formData.std_snell = !formData.std_snell"
                       >
-                        <ElCheckbox v-model="formData.std_snell" size="large" @click.stop />
+                        <ElCheckbox
+                          v-model="formData.std_snell"
+                          size="large"
+                          @click.stop
+                        />
                         <div class="flex flex-col">
-                          <span class="font-bold text-gray-800 text-sm">Tiêu chuẩn SNELL</span>
+                          <span class="font-bold text-gray-800 text-sm"
+                            >Tiêu chuẩn SNELL</span
+                          >
                           <span class="text-[11px] text-gray-400 mt-0.5"
                             >Tiêu chuẩn phi lợi nhuận khắt khe của Hoa Kỳ</span
                           >
@@ -991,9 +1090,15 @@
                         class="flex items-center gap-3 p-4 border border-gray-200 rounded-xl hover:border-primary/20 hover:bg-gray-50/30 transition-all cursor-pointer"
                         @click="formData.std_jis = !formData.std_jis"
                       >
-                        <ElCheckbox v-model="formData.std_jis" size="large" @click.stop />
+                        <ElCheckbox
+                          v-model="formData.std_jis"
+                          size="large"
+                          @click.stop
+                        />
                         <div class="flex flex-col">
-                          <span class="font-bold text-gray-800 text-sm">Tiêu chuẩn JIS</span>
+                          <span class="font-bold text-gray-800 text-sm"
+                            >Tiêu chuẩn JIS</span
+                          >
                           <span class="text-[11px] text-gray-400 mt-0.5"
                             >Tiêu chuẩn công nghiệp của Nhật Bản</span
                           >
@@ -1040,7 +1145,9 @@
                       </span>
                       <span class="font-bold text-gray-800 text-sm">
                         Biến thể #{{ index + 1 }}
-                        <span v-if="variant.variant_name" class="text-gray-500 font-normal"
+                        <span
+                          v-if="variant.variant_name"
+                          class="text-gray-500 font-normal"
                           >({{ variant.variant_name }})</span
                         >
                       </span>
@@ -1067,7 +1174,10 @@
                     </div>
                   </div>
 
-                  <div v-show="activeVariantIndex === index" class="p-5 space-y-4 bg-white">
+                  <div
+                    v-show="activeVariantIndex === index"
+                    class="p-5 space-y-4 bg-white"
+                  >
                     <div class="grid grid-cols-3 gap-4 mb-4">
                       <div>
                         <label
@@ -1087,7 +1197,10 @@
                         >
                           Mã SKU <span class="text-red-500">*</span>
                         </label>
-                        <ElInput v-model="variant.sku" placeholder="Nhập mã SKU..." />
+                        <ElInput
+                          v-model="variant.sku"
+                          placeholder="Nhập mã SKU..."
+                        />
                       </div>
                       <div>
                         <label
@@ -1119,7 +1232,9 @@
                         action="#"
                         :show-file-list="false"
                         :auto-upload="true"
-                        :http-request="(opt) => handleVariantCoverUpload(opt, variant)"
+                        :http-request="
+                          (opt) => handleVariantCoverUpload(opt, variant)
+                        "
                       >
                         <div
                           class="w-28 h-28 rounded-lg border border-dashed border-gray-300 hover:border-primary/50 flex items-center justify-center text-gray-400 cursor-pointer overflow-hidden bg-gray-50"
@@ -1136,7 +1251,9 @@
 
                     <div class="mt-4 border-t border-gray-100 pt-4">
                       <div class="flex items-center justify-between mb-3">
-                        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <span
+                          class="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                        >
                           Thuộc tính tùy chọn
                         </span>
                         <ElButton
@@ -1168,12 +1285,17 @@
                               :value="option.key"
                             />
                           </ElSelect>
-                          <ElInput v-model="optionRow.value" placeholder="Giá trị thuộc tính" />
+                          <ElInput
+                            v-model="optionRow.value"
+                            placeholder="Giá trị thuộc tính"
+                          />
                           <ElButton
                             type="danger"
                             plain
                             :icon="Delete"
-                            @click="removeVariantOptionValue(variant, optionIdx)"
+                            @click="
+                              removeVariantOptionValue(variant, optionIdx)
+                            "
                           />
                         </div>
                       </div>
@@ -1181,7 +1303,9 @@
 
                     <div class="mt-4 border-t border-gray-100 pt-4">
                       <div class="flex items-center justify-between mb-3">
-                        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <span
+                          class="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                        >
                           Ghi đè thông số kỹ thuật (Spec Overriding)
                         </span>
                         <ElButton
@@ -1189,9 +1313,15 @@
                           link
                           @click="variant.showSpecs = !variant.showSpecs"
                         >
-                          {{ variant.showSpecs ? 'Ẩn thiết lập' : 'Thiết lập ghi đè' }}
+                          {{
+                            variant.showSpecs
+                              ? "Ẩn thiết lập"
+                              : "Thiết lập ghi đè"
+                          }}
                           <ElIcon class="el-icon--right">
-                            <component :is="variant.showSpecs ? ArrowUp : ArrowDown" />
+                            <component
+                              :is="variant.showSpecs ? ArrowUp : ArrowDown"
+                            />
                           </ElIcon>
                         </ElButton>
                       </div>
@@ -1220,7 +1350,10 @@
                             >
                               Kích thước (D x R x C)
                             </label>
-                            <ElInput v-model="variant.dimensions" placeholder="Dùng gốc" />
+                            <ElInput
+                              v-model="variant.dimensions"
+                              placeholder="Dùng gốc"
+                            />
                           </div>
                           <div>
                             <label
@@ -1282,12 +1415,15 @@
                             >
                               Kích cỡ lốp
                             </label>
-                            <ElInput v-model="variant.tire_size" placeholder="Dùng gốc" />
+                            <ElInput
+                              v-model="variant.tire_size"
+                              placeholder="Dùng gốc"
+                            />
                           </div>
                         </div>
                         <p class="text-[10px] text-gray-400 italic mb-0">
-                          * Các trường để trống hệ thống sẽ tự động lấy từ Thông số gốc (Root
-                          Specs).
+                          * Các trường để trống hệ thống sẽ tự động lấy từ Thông
+                          số gốc (Root Specs).
                         </p>
                       </div>
                     </div>
@@ -1313,7 +1449,10 @@
                                 >
                                   Tên màu <span class="text-red-500">*</span>
                                 </label>
-                                <ElInput v-model="color.name" placeholder="Đỏ nhám, Đen bóng..." />
+                                <ElInput
+                                  v-model="color.name"
+                                  placeholder="Đỏ nhám, Đen bóng..."
+                                />
                               </div>
                               <div>
                                 <label
@@ -1332,7 +1471,9 @@
                               </div>
                             </div>
 
-                            <div class="w-20 flex flex-col items-center shrink-0">
+                            <div
+                              class="w-20 flex flex-col items-center shrink-0"
+                            >
                               <span class="text-[10px] text-gray-400 mb-1"
                                 >Ảnh <span class="text-red-500">*</span></span
                               >
@@ -1341,7 +1482,9 @@
                                 action="#"
                                 :show-file-list="false"
                                 :auto-upload="true"
-                                :http-request="(opt) => handleColorImageUpload(opt, color)"
+                                :http-request="
+                                  (opt) => handleColorImageUpload(opt, color)
+                                "
                               >
                                 <img
                                   v-if="color.image"
@@ -1404,7 +1547,9 @@
                               link
                               size="small"
                               :icon="Delete"
-                              @click="removeVariantGalleryImage(variant, imgIdx)"
+                              @click="
+                                removeVariantGalleryImage(variant, imgIdx)
+                              "
                             />
                           </div>
                         </div>
@@ -1413,7 +1558,9 @@
                           action="#"
                           :show-file-list="false"
                           :auto-upload="true"
-                          :http-request="(opt) => handleVariantGalleryUpload(opt, variant)"
+                          :http-request="
+                            (opt) => handleVariantGalleryUpload(opt, variant)
+                          "
                         >
                           <div
                             class="w-20 h-20 rounded-lg border border-dashed border-gray-300 hover:border-primary/50 flex flex-col items-center justify-center text-gray-400 cursor-pointer transition-colors"
@@ -1431,12 +1578,20 @@
                       >
                         URL Slug (SEO) <span class="text-red-500">*</span>
                       </label>
-                      <ElInput v-model="variant.url_slug" placeholder="Nhập URL Slug..." />
+                      <ElInput
+                        v-model="variant.url_slug"
+                        placeholder="Nhập URL Slug..."
+                      />
                     </div>
                   </div>
                 </div>
 
-                <ElButton type="success" class="w-full py-3" :icon="Plus" @click="handleAddVariant">
+                <ElButton
+                  type="success"
+                  class="w-full py-3"
+                  :icon="Plus"
+                  @click="handleAddVariant"
+                >
                   Thêm biến thể mới
                 </ElButton>
               </div>
@@ -1461,8 +1616,8 @@
                         <span class="text-[11px] text-gray-500">
                           {{
                             (variant.colors || []).length
-                              ? 'Báo giá theo màu'
-                              : 'Báo giá theo biến thể'
+                              ? "Báo giá theo màu"
+                              : "Báo giá theo biến thể"
                           }}
                         </span>
                       </div>
@@ -1470,12 +1625,20 @@
                   </template>
 
                   <div class="p-4 space-y-4">
-                    <div v-if="!(variant.colors || []).length" class="space-y-3">
+                    <div
+                      v-if="!(variant.colors || []).length"
+                      class="space-y-3"
+                    >
                       <div
                         class="flex items-center justify-between cursor-pointer select-none"
-                        @click="variant.showSupplierPrices = !variant.showSupplierPrices"
+                        @click="
+                          variant.showSupplierPrices =
+                            !variant.showSupplierPrices
+                        "
                       >
-                        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <span
+                          class="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                        >
                           Báo giá biến thể
                         </span>
                         <div class="flex items-center gap-2">
@@ -1490,7 +1653,9 @@
                           </ElButton>
                           <ElIcon
                             class="transition-transform duration-300"
-                            :class="{ 'rotate-180': variant.showSupplierPrices }"
+                            :class="{
+                              'rotate-180': variant.showSupplierPrices,
+                            }"
                           >
                             <ArrowDown />
                           </ElIcon>
@@ -1499,9 +1664,14 @@
 
                       <ElCollapseTransition>
                         <div v-show="variant.showSupplierPrices">
-                          <div v-if="variant.supplier_prices?.length" class="space-y-3 pt-3">
+                          <div
+                            v-if="variant.supplier_prices?.length"
+                            class="space-y-3 pt-3"
+                          >
                             <div
-                              v-for="(priceRow, pIdx) in variant.supplier_prices"
+                              v-for="(
+                                priceRow, pIdx
+                              ) in variant.supplier_prices"
                               :key="pIdx"
                               class="grid grid-cols-[1.1fr_0.9fr_1.2fr_auto] gap-3 items-start"
                             >
@@ -1519,7 +1689,7 @@
                                     isSupplierUsedInRows(
                                       variant.supplier_prices || [],
                                       sup.id,
-                                      pIdx
+                                      pIdx,
                                     )
                                   "
                                 />
@@ -1531,12 +1701,17 @@
                                 controls-position="right"
                                 placeholder="Giá"
                               />
-                              <ElInput v-model="priceRow.note" placeholder="Ghi chú" />
+                              <ElInput
+                                v-model="priceRow.note"
+                                placeholder="Ghi chú"
+                              />
                               <ElButton
                                 type="danger"
                                 plain
                                 :icon="Delete"
-                                @click="removeVariantSupplierPrice(variant, pIdx)"
+                                @click="
+                                  removeVariantSupplierPrice(variant, pIdx)
+                                "
                               />
                             </div>
                           </div>
@@ -1556,13 +1731,17 @@
                         <div
                           class="flex items-center justify-between cursor-pointer select-none"
                           :class="{ 'mb-3': color.showSupplierPrices }"
-                          @click="color.showSupplierPrices = !color.showSupplierPrices"
+                          @click="
+                            color.showSupplierPrices = !color.showSupplierPrices
+                          "
                         >
                           <div class="flex flex-col">
                             <span class="font-semibold text-gray-800 text-sm">
                               {{ color.name || `Màu ${cIdx + 1}` }}
                             </span>
-                            <span class="text-[11px] text-gray-500">{{ color.code || '' }}</span>
+                            <span class="text-[11px] text-gray-500">{{
+                              color.code || ""
+                            }}</span>
                           </div>
                           <div class="flex items-center gap-2">
                             <ElButton
@@ -1576,7 +1755,9 @@
                             </ElButton>
                             <ElIcon
                               class="transition-transform duration-300"
-                              :class="{ 'rotate-180': color.showSupplierPrices }"
+                              :class="{
+                                'rotate-180': color.showSupplierPrices,
+                              }"
                             >
                               <ArrowDown />
                             </ElIcon>
@@ -1585,9 +1766,14 @@
 
                         <ElCollapseTransition>
                           <div v-show="color.showSupplierPrices">
-                            <div v-if="color.supplier_prices?.length" class="space-y-2">
+                            <div
+                              v-if="color.supplier_prices?.length"
+                              class="space-y-2"
+                            >
                               <div
-                                v-for="(priceRow, pIdx) in color.supplier_prices"
+                                v-for="(
+                                  priceRow, pIdx
+                                ) in color.supplier_prices"
                                 :key="pIdx"
                                 class="grid grid-cols-[1.1fr_0.9fr_1.2fr_auto] gap-3 items-start"
                               >
@@ -1605,7 +1791,7 @@
                                       isSupplierUsedInRows(
                                         color.supplier_prices || [],
                                         sup.id,
-                                        pIdx
+                                        pIdx,
                                       )
                                     "
                                   />
@@ -1617,7 +1803,10 @@
                                   controls-position="right"
                                   placeholder="Giá"
                                 />
-                                <ElInput v-model="priceRow.note" placeholder="Ghi chú" />
+                                <ElInput
+                                  v-model="priceRow.note"
+                                  placeholder="Ghi chú"
+                                />
                                 <ElButton
                                   type="danger"
                                   plain
@@ -1647,8 +1836,9 @@
                 >
                   <ElIcon class="text-blue-500 text-lg"><InfoFilled /></ElIcon>
                   <p class="text-sm text-gray-600 italic leading-relaxed mb-0">
-                    QUAN TRỌNG: Chọn các dòng xe mà món phụ tùng này có thể lắp vừa. Hệ thống sẽ
-                    dùng dữ liệu này để gợi ý sản phẩm liên quan.
+                    QUAN TRỌNG: Chọn các dòng xe mà món phụ tùng này có thể lắp
+                    vừa. Hệ thống sẽ dùng dữ liệu này để gợi ý sản phẩm liên
+                    quan.
                   </p>
                 </div>
 
@@ -1676,9 +1866,15 @@
                         class="px-4 py-2.5 hover:bg-blue-50 cursor-pointer flex items-center justify-between transition-colors border-b border-gray-50 last:border-b-0"
                         @click="addCompatibleVehicle(v.id)"
                       >
-                        <span class="text-gray-700 font-medium text-sm">{{ v.name }}</span>
+                        <span class="text-gray-700 font-medium text-sm">{{
+                          v.name
+                        }}</span>
                         <span
-                          v-if="formData.compatible_vehicle_model_ids?.includes(v.id)"
+                          v-if="
+                            formData.compatible_vehicle_model_ids?.includes(
+                              v.id,
+                            )
+                          "
                           class="text-xs text-blue-600 font-semibold"
                         >
                           Đã chọn
@@ -1724,7 +1920,12 @@
       <template #footer>
         <div class="flex justify-end gap-3 mt-2">
           <ElButton @click="dialogVisible = false">Đóng</ElButton>
-          <ElButton type="primary" :loading="submitting" @click="submitForm" class="px-8">
+          <ElButton
+            type="primary"
+            :loading="submitting"
+            @click="submitForm"
+            class="px-8"
+          >
             Lưu sản phẩm
           </ElButton>
         </div>
@@ -1740,7 +1941,10 @@
     >
       <ElForm :model="newTechForm" label-position="top">
         <ElFormItem label="Tên công nghệ" required>
-          <ElInput v-model="newTechForm.name" placeholder="Ví dụ: Phanh ABS, Động cơ eSP+..." />
+          <ElInput
+            v-model="newTechForm.name"
+            placeholder="Ví dụ: Phanh ABS, Động cơ eSP+..."
+          />
         </ElFormItem>
 
         <ElFormItem label="Nhóm công nghệ">
@@ -1758,7 +1962,12 @@
                 :value="cat.id"
               />
             </ElSelect>
-            <ElButton type="primary" plain :icon="Plus" @click="openNewTechCatDialog">
+            <ElButton
+              type="primary"
+              plain
+              :icon="Plus"
+              @click="openNewTechCatDialog"
+            >
               Nhóm mới
             </ElButton>
           </div>
@@ -1768,14 +1977,21 @@
           <div class="flex items-center gap-2 w-full">
             <div
               class="flex-1 flex items-center justify-between border border-gray-200 rounded-lg px-3 py-2 bg-white shadow-sm hover:border-primary/30 transition-all cursor-pointer min-h-[38px]"
-              @click="openBrandSelector((brand) => (newTechForm.brandId = brand.id))"
+              @click="
+                openBrandSelector((brand) => (newTechForm.brandId = brand.id))
+              "
             >
               <div class="flex items-center gap-2">
                 <ElIcon class="text-gray-400"><InfoFilled /></ElIcon>
-                <span v-if="newTechForm.brandId" class="text-sm font-semibold text-gray-800">
+                <span
+                  v-if="newTechForm.brandId"
+                  class="text-sm font-semibold text-gray-800"
+                >
                   {{ getBrandNameById(newTechForm.brandId) }}
                 </span>
-                <span v-else class="text-sm text-gray-400">Chọn thương hiệu liên kết...</span>
+                <span v-else class="text-sm text-gray-400"
+                  >Chọn thương hiệu liên kết...</span
+                >
               </div>
               <ElIcon class="text-gray-400"><ArrowDown /></ElIcon>
             </div>
@@ -1793,7 +2009,10 @@
         </ElFormItem>
 
         <ElFormItem label="Tiêu đề hiển thị mặc định (Không bắt buộc)">
-          <ElInput v-model="newTechForm.defaultTitle" placeholder="Tiêu đề hiển thị trên web..." />
+          <ElInput
+            v-model="newTechForm.defaultTitle"
+            placeholder="Tiêu đề hiển thị trên web..."
+          />
         </ElFormItem>
 
         <ElFormItem label="Mô tả mặc định (Không bắt buộc)">
@@ -1808,7 +2027,12 @@
       <template #footer>
         <div class="flex justify-end gap-2">
           <ElButton @click="newTechDialogVisible = false">Hủy</ElButton>
-          <ElButton type="primary" :loading="creatingTech" @click="submitNewTech">Tạo mới</ElButton>
+          <ElButton
+            type="primary"
+            :loading="creatingTech"
+            @click="submitNewTech"
+            >Tạo mới</ElButton
+          >
         </div>
       </template>
     </ElDialog>
@@ -1821,13 +2045,19 @@
     >
       <ElForm :model="newTechCatForm" label-position="top">
         <ElFormItem label="Tên nhóm công nghệ" required>
-          <ElInput v-model="newTechCatForm.name" placeholder="Ví dụ: Động cơ, Phanh, Tiện ích..." />
+          <ElInput
+            v-model="newTechCatForm.name"
+            placeholder="Ví dụ: Động cơ, Phanh, Tiện ích..."
+          />
         </ElFormItem>
       </ElForm>
       <template #footer>
         <div class="flex justify-end gap-2">
           <ElButton @click="newTechCatDialogVisible = false">Hủy</ElButton>
-          <ElButton type="primary" :loading="creatingTechCat" @click="submitNewTechCat"
+          <ElButton
+            type="primary"
+            :loading="creatingTechCat"
+            @click="submitNewTechCat"
             >Tạo mới</ElButton
           >
         </div>
@@ -1843,7 +2073,10 @@
     >
       <ElForm :model="editTechForm" label-position="top">
         <ElFormItem label="Tên công nghệ" required>
-          <ElInput v-model="editTechForm.name" placeholder="Ví dụ: Phanh ABS, Động cơ eSP+..." />
+          <ElInput
+            v-model="editTechForm.name"
+            placeholder="Ví dụ: Phanh ABS, Động cơ eSP+..."
+          />
         </ElFormItem>
 
         <ElFormItem label="Nhóm công nghệ">
@@ -1861,7 +2094,12 @@
                 :value="cat.id"
               />
             </ElSelect>
-            <ElButton type="primary" plain :icon="Plus" @click="openNewTechCatDialog">
+            <ElButton
+              type="primary"
+              plain
+              :icon="Plus"
+              @click="openNewTechCatDialog"
+            >
               Nhóm mới
             </ElButton>
           </div>
@@ -1871,14 +2109,21 @@
           <div class="flex items-center gap-2 w-full">
             <div
               class="flex-1 flex items-center justify-between border border-gray-200 rounded-lg px-3 py-2 bg-white shadow-sm hover:border-primary/30 transition-all cursor-pointer min-h-[38px]"
-              @click="openBrandSelector((brand) => (editTechForm.brandId = brand.id))"
+              @click="
+                openBrandSelector((brand) => (editTechForm.brandId = brand.id))
+              "
             >
               <div class="flex items-center gap-2">
                 <ElIcon class="text-gray-400"><InfoFilled /></ElIcon>
-                <span v-if="editTechForm.brandId" class="text-sm font-semibold text-gray-800">
+                <span
+                  v-if="editTechForm.brandId"
+                  class="text-sm font-semibold text-gray-800"
+                >
                   {{ getBrandNameById(editTechForm.brandId) }}
                 </span>
-                <span v-else class="text-sm text-gray-400">Chọn thương hiệu liên kết...</span>
+                <span v-else class="text-sm text-gray-400"
+                  >Chọn thương hiệu liên kết...</span
+                >
               </div>
               <ElIcon class="text-gray-400"><ArrowDown /></ElIcon>
             </div>
@@ -1896,7 +2141,10 @@
         </ElFormItem>
 
         <ElFormItem label="Tiêu đề hiển thị mặc định (Không bắt buộc)">
-          <ElInput v-model="editTechForm.defaultTitle" placeholder="Tiêu đề hiển thị trên web..." />
+          <ElInput
+            v-model="editTechForm.defaultTitle"
+            placeholder="Tiêu đề hiển thị trên web..."
+          />
         </ElFormItem>
 
         <ElFormItem label="Mô tả mặc định (Không bắt buộc)">
@@ -1911,7 +2159,12 @@
       <template #footer>
         <div class="flex justify-end gap-2">
           <ElButton @click="editTechDialogVisible = false">Hủy</ElButton>
-          <ElButton type="primary" :loading="updatingTech" @click="submitEditTech">Lưu</ElButton>
+          <ElButton
+            type="primary"
+            :loading="updatingTech"
+            @click="submitEditTech"
+            >Lưu</ElButton
+          >
         </div>
       </template>
     </ElDialog>
@@ -1963,12 +2216,14 @@
                   brand.name.substring(0, 2).toUpperCase()
                 }}</span>
               </div>
-              <span class="mt-2 text-sm font-semibold text-gray-800 text-center truncate w-full">{{
-                brand.name
-              }}</span>
-              <span class="text-[11px] text-gray-400 text-center truncate w-full">{{
-                brand.origin || 'Không rõ xuất xứ'
-              }}</span>
+              <span
+                class="mt-2 text-sm font-semibold text-gray-800 text-center truncate w-full"
+                >{{ brand.name }}</span
+              >
+              <span
+                class="text-[11px] text-gray-400 text-center truncate w-full"
+                >{{ brand.origin || "Không rõ xuất xứ" }}</span
+              >
             </div>
           </div>
         </div>
@@ -1990,532 +2245,538 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, watch, onMounted } from 'vue'
-  import {
-    Plus,
-    Picture,
-    Download,
-    Delete,
-    Search,
-    InfoFilled,
-    ArrowDown,
-    ArrowUp,
-    Edit
-  } from '@element-plus/icons-vue'
-  import { useProductTable } from './hooks/useProductTable'
-  import { FileApi } from '@/api/file.api'
-  import { ElMessage, ElMessageBox } from 'element-plus'
+import { ref, computed, watch, onMounted } from "vue";
+import {
+  Plus,
+  Picture,
+  Download,
+  Delete,
+  Search,
+  InfoFilled,
+  ArrowDown,
+  ArrowUp,
+  Edit,
+} from "@element-plus/icons-vue";
+import { useProductTable } from "./hooks/useProductTable";
+import { FileApi } from "@/infrastructure/api/file.api";
+import { ElMessage, ElMessageBox } from "element-plus";
 
-  defineOptions({ name: 'ProductList' })
+defineOptions({ name: "ProductList" });
 
-  const { VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT } = import.meta.env
+const { VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT } = import.meta.env;
 
-  const activeTab = ref('common')
-  const activePricingPanels = ref<string[]>([])
-  const activeSpecGroup = ref<string | null>('part_specs')
-  const toggleSpecGroup = (groupName: string) => {
-    if (activeSpecGroup.value === groupName) {
-      activeSpecGroup.value = null
-    } else {
-      activeSpecGroup.value = groupName
+const activeTab = ref("common");
+const activePricingPanels = ref<string[]>([]);
+const activeSpecGroup = ref<string | null>("part_specs");
+const toggleSpecGroup = (groupName: string) => {
+  if (activeSpecGroup.value === groupName) {
+    activeSpecGroup.value = null;
+  } else {
+    activeSpecGroup.value = groupName;
+  }
+};
+
+const activeVariantIndex = ref<number | null>(0);
+const toggleVariantAccordion = (index: number) => {
+  if (activeVariantIndex.value === index) {
+    activeVariantIndex.value = null;
+  } else {
+    activeVariantIndex.value = index;
+  }
+};
+
+const handleAddVariant = () => {
+  addVariant();
+  setTimeout(() => {
+    if (formData.value && formData.value.variants) {
+      activeVariantIndex.value = formData.value.variants.length - 1;
+      activePricingPanels.value = [String(formData.value.variants.length - 1)];
     }
-  }
+  }, 50);
+};
 
-  const activeVariantIndex = ref<number | null>(0)
-  const toggleVariantAccordion = (index: number) => {
-    if (activeVariantIndex.value === index) {
-      activeVariantIndex.value = null
-    } else {
-      activeVariantIndex.value = index
+const syncPricingPanels = () => {
+  activePricingPanels.value = [];
+};
+
+const {
+  categoryTree,
+  brandSelectorVisible,
+  brandSelectorLoading,
+  brandSelectorQuery,
+  brandSelectorPage,
+  brandSelectorPageSize,
+  brandSelectorTotal,
+  brandSelectorItems,
+  openBrandSelector,
+  selectBrand,
+  handleSelectorSearch,
+  ensureBrandLoaded,
+  getBrandNameById,
+  fetchSelectorBrands,
+  data,
+  loading,
+  pagination,
+  columns,
+  columnChecks,
+  handleSizeChange,
+  handleCurrentChange,
+  handleSearch,
+  handleReset,
+  refreshData,
+
+  dialogVisible,
+  dialogTitle,
+  formData,
+  submitting,
+  handleAdd,
+  handleEdit,
+  handleDelete,
+  submitForm,
+  addVariant,
+  removeVariant,
+  addColor,
+  removeColor,
+  addVariantOptionValue,
+  removeVariantOptionValue,
+  addVariantSupplierPrice,
+  removeVariantSupplierPrice,
+  addColorSupplierPrice,
+  removeColorSupplierPrice,
+  isSupplierUsedInRows,
+
+  vehicleSearch,
+  filteredVehicles,
+  getVehicleName,
+  addCompatibleVehicle,
+  removeCompatibleVehicle,
+  toggleTechnology,
+  isTechnologySelected,
+  availableTechnologies,
+  availablePredefinedOptions,
+  suppliersList,
+  loadingTechs,
+  technologyCategories,
+  createTechnology,
+  createTechnologyCategory,
+  updateTechnology,
+  deleteTechnology,
+
+  exportToExcel,
+} = useProductTable();
+
+const handleRemoveVariant = (index: number) => {
+  removeVariant(index);
+  syncPricingPanels();
+};
+
+const handleRemoveColor = (variant: any, index: number) => {
+  removeColor(variant, index);
+  syncPricingPanels();
+};
+
+const groupedTechnologies = computed(() => {
+  const groups: Record<string, any[]> = {};
+  availableTechnologies.value.forEach((tech: any) => {
+    const cat = tech.categoryName || "CÔNG NGHỆ CHUNG";
+    if (!groups[cat]) {
+      groups[cat] = [];
     }
+    groups[cat].push(tech);
+  });
+  return groups;
+});
+
+const newTechDialogVisible = ref(false);
+const newTechForm = ref({
+  name: "",
+  categoryId: undefined as number | undefined,
+  brandId: undefined as number | undefined,
+  defaultTitle: "",
+  defaultDescription: "",
+  defaultImageUrl: "",
+});
+const creatingTech = ref(false);
+
+const openNewTechDialog = () => {
+  newTechForm.value = {
+    name: "",
+    categoryId: undefined,
+    brandId: formData.value.brand_id
+      ? Number(formData.value.brand_id)
+      : undefined,
+    defaultTitle: "",
+    defaultDescription: "",
+    defaultImageUrl: "",
+  };
+  newTechDialogVisible.value = true;
+};
+
+const submitNewTech = async () => {
+  if (!newTechForm.value.name.trim()) {
+    ElMessage.warning("Vui lòng nhập tên công nghệ");
+    return;
   }
-
-  const handleAddVariant = () => {
-    addVariant()
-    setTimeout(() => {
-      if (formData.value && formData.value.variants) {
-        activeVariantIndex.value = formData.value.variants.length - 1
-        activePricingPanels.value = [String(formData.value.variants.length - 1)]
-      }
-    }, 50)
+  creatingTech.value = true;
+  try {
+    await createTechnology({
+      name: newTechForm.value.name.trim(),
+      categoryId: newTechForm.value.categoryId,
+      brandId: newTechForm.value.brandId,
+      defaultTitle: newTechForm.value.defaultTitle.trim() || undefined,
+      defaultDescription:
+        newTechForm.value.defaultDescription.trim() || undefined,
+      defaultImageUrl: newTechForm.value.defaultImageUrl.trim() || undefined,
+    });
+    newTechDialogVisible.value = false;
+  } catch (_err) {
+    // Error message is already handled in createTechnology
+  } finally {
+    creatingTech.value = false;
   }
+};
 
-  const syncPricingPanels = () => {
-    activePricingPanels.value = []
+const newTechCatDialogVisible = ref(false);
+const newTechCatForm = ref({
+  name: "",
+});
+const creatingTechCat = ref(false);
+
+const openNewTechCatDialog = () => {
+  newTechCatForm.value = {
+    name: "",
+  };
+  newTechCatDialogVisible.value = true;
+};
+
+const submitNewTechCat = async () => {
+  if (!newTechCatForm.value.name.trim()) {
+    ElMessage.warning("Vui lòng nhập tên nhóm công nghệ");
+    return;
   }
-
-  const {
-    categoryTree,
-    brandSelectorVisible,
-    brandSelectorLoading,
-    brandSelectorQuery,
-    brandSelectorPage,
-    brandSelectorPageSize,
-    brandSelectorTotal,
-    brandSelectorItems,
-    openBrandSelector,
-    selectBrand,
-    handleSelectorSearch,
-    ensureBrandLoaded,
-    getBrandNameById,
-    fetchSelectorBrands,
-    data,
-    loading,
-    pagination,
-    columns,
-    columnChecks,
-    handleSizeChange,
-    handleCurrentChange,
-    handleSearch,
-    handleReset,
-    refreshData,
-
-    dialogVisible,
-    dialogTitle,
-    formData,
-    submitting,
-    handleAdd,
-    handleEdit,
-    handleDelete,
-    submitForm,
-    addVariant,
-    removeVariant,
-    addColor,
-    removeColor,
-    addVariantOptionValue,
-    removeVariantOptionValue,
-    addVariantSupplierPrice,
-    removeVariantSupplierPrice,
-    addColorSupplierPrice,
-    removeColorSupplierPrice,
-    isSupplierUsedInRows,
-
-    vehicleSearch,
-    filteredVehicles,
-    getVehicleName,
-    addCompatibleVehicle,
-    removeCompatibleVehicle,
-    toggleTechnology,
-    isTechnologySelected,
-    availableTechnologies,
-    availablePredefinedOptions,
-    suppliersList,
-    loadingTechs,
-    technologyCategories,
-    createTechnology,
-    createTechnologyCategory,
-    updateTechnology,
-    deleteTechnology,
-
-    exportToExcel
-  } = useProductTable()
-
-  const handleRemoveVariant = (index: number) => {
-    removeVariant(index)
-    syncPricingPanels()
+  creatingTechCat.value = true;
+  try {
+    const newCat = await createTechnologyCategory(
+      newTechCatForm.value.name.trim(),
+    );
+    newTechForm.value.categoryId = newCat.id;
+    newTechCatDialogVisible.value = false;
+  } catch (_err) {
+    // Test
+  } finally {
+    creatingTechCat.value = false;
   }
+};
 
-  const handleRemoveColor = (variant: any, index: number) => {
-    removeColor(variant, index)
-    syncPricingPanels()
+const editTechDialogVisible = ref(false);
+const editTechForm = ref({
+  id: 0,
+  name: "",
+  categoryId: undefined as number | undefined,
+  brandId: undefined as number | undefined,
+  defaultTitle: "",
+  defaultDescription: "",
+  defaultImageUrl: "",
+});
+const updatingTech = ref(false);
+
+const openEditTechDialog = (tech: any) => {
+  editTechForm.value = {
+    id: tech.id,
+    name: tech.name,
+    categoryId: tech.categoryId || undefined,
+    brandId: tech.brandId || undefined,
+    defaultTitle: tech.defaultTitle || "",
+    defaultDescription: tech.defaultDescription || "",
+    defaultImageUrl: tech.defaultImageUrl || "",
+  };
+  if (editTechForm.value.brandId) {
+    ensureBrandLoaded(Number(editTechForm.value.brandId));
   }
+  editTechDialogVisible.value = true;
+};
 
-  const groupedTechnologies = computed(() => {
-    const groups: Record<string, any[]> = {}
-    availableTechnologies.value.forEach((tech: any) => {
-      const cat = tech.categoryName || 'CÔNG NGHỆ CHUNG'
-      if (!groups[cat]) {
-        groups[cat] = []
-      }
-      groups[cat].push(tech)
-    })
-    return groups
-  })
-
-  const newTechDialogVisible = ref(false)
-  const newTechForm = ref({
-    name: '',
-    categoryId: undefined as number | undefined,
-    brandId: undefined as number | undefined,
-    defaultTitle: '',
-    defaultDescription: '',
-    defaultImageUrl: ''
-  })
-  const creatingTech = ref(false)
-
-  const openNewTechDialog = () => {
-    newTechForm.value = {
-      name: '',
-      categoryId: undefined,
-      brandId: formData.value.brand_id ? Number(formData.value.brand_id) : undefined,
-      defaultTitle: '',
-      defaultDescription: '',
-      defaultImageUrl: ''
-    }
-    newTechDialogVisible.value = true
+const submitEditTech = async () => {
+  if (!editTechForm.value.name.trim()) {
+    ElMessage.warning("Vui lòng nhập tên công nghệ");
+    return;
   }
-
-  const submitNewTech = async () => {
-    if (!newTechForm.value.name.trim()) {
-      ElMessage.warning('Vui lòng nhập tên công nghệ')
-      return
-    }
-    creatingTech.value = true
-    try {
-      await createTechnology({
-        name: newTechForm.value.name.trim(),
-        categoryId: newTechForm.value.categoryId,
-        brandId: newTechForm.value.brandId,
-        defaultTitle: newTechForm.value.defaultTitle.trim() || undefined,
-        defaultDescription: newTechForm.value.defaultDescription.trim() || undefined,
-        defaultImageUrl: newTechForm.value.defaultImageUrl.trim() || undefined
-      })
-      newTechDialogVisible.value = false
-    } catch (_err) {
-      // Error message is already handled in createTechnology
-    } finally {
-      creatingTech.value = false
-    }
+  updatingTech.value = true;
+  try {
+    await updateTechnology(editTechForm.value.id, {
+      id: editTechForm.value.id,
+      name: editTechForm.value.name.trim(),
+      categoryId: editTechForm.value.categoryId,
+      brandId: editTechForm.value.brandId,
+      defaultTitle: editTechForm.value.defaultTitle.trim() || undefined,
+      defaultDescription:
+        editTechForm.value.defaultDescription.trim() || undefined,
+      defaultImageUrl: editTechForm.value.defaultImageUrl.trim() || undefined,
+    });
+    editTechDialogVisible.value = false;
+  } catch (_err) {
+    // Error message is handled in updateTechnology
+  } finally {
+    updatingTech.value = false;
   }
+};
 
-  const newTechCatDialogVisible = ref(false)
-  const newTechCatForm = ref({
-    name: ''
-  })
-  const creatingTechCat = ref(false)
-
-  const openNewTechCatDialog = () => {
-    newTechCatForm.value = {
-      name: ''
-    }
-    newTechCatDialogVisible.value = true
-  }
-
-  const submitNewTechCat = async () => {
-    if (!newTechCatForm.value.name.trim()) {
-      ElMessage.warning('Vui lòng nhập tên nhóm công nghệ')
-      return
-    }
-    creatingTechCat.value = true
-    try {
-      const newCat = await createTechnologyCategory(newTechCatForm.value.name.trim())
-      newTechForm.value.categoryId = newCat.id
-      newTechCatDialogVisible.value = false
-    } catch (_err) {
-      // Test
-    } finally {
-      creatingTechCat.value = false
-    }
-  }
-
-  const editTechDialogVisible = ref(false)
-  const editTechForm = ref({
-    id: 0,
-    name: '',
-    categoryId: undefined as number | undefined,
-    brandId: undefined as number | undefined,
-    defaultTitle: '',
-    defaultDescription: '',
-    defaultImageUrl: ''
-  })
-  const updatingTech = ref(false)
-
-  const openEditTechDialog = (tech: any) => {
-    editTechForm.value = {
-      id: tech.id,
-      name: tech.name,
-      categoryId: tech.categoryId || undefined,
-      brandId: tech.brandId || undefined,
-      defaultTitle: tech.defaultTitle || '',
-      defaultDescription: tech.defaultDescription || '',
-      defaultImageUrl: tech.defaultImageUrl || ''
-    }
-    if (editTechForm.value.brandId) {
-      ensureBrandLoaded(Number(editTechForm.value.brandId))
-    }
-    editTechDialogVisible.value = true
-  }
-
-  const submitEditTech = async () => {
-    if (!editTechForm.value.name.trim()) {
-      ElMessage.warning('Vui lòng nhập tên công nghệ')
-      return
-    }
-    updatingTech.value = true
-    try {
-      await updateTechnology(editTechForm.value.id, {
-        id: editTechForm.value.id,
-        name: editTechForm.value.name.trim(),
-        categoryId: editTechForm.value.categoryId,
-        brandId: editTechForm.value.brandId,
-        defaultTitle: editTechForm.value.defaultTitle.trim() || undefined,
-        defaultDescription: editTechForm.value.defaultDescription.trim() || undefined,
-        defaultImageUrl: editTechForm.value.defaultImageUrl.trim() || undefined
-      })
-      editTechDialogVisible.value = false
-    } catch (_err) {
-      // Error message is handled in updateTechnology
-    } finally {
-      updatingTech.value = false
-    }
-  }
-
-  const handleDeleteTech = async (tech: any) => {
-    await ElMessageBox.confirm(
-      `Bạn có chắc chắn muốn xóa công nghệ "${tech.name}"? Hành động này không thể hoàn tác và sẽ xóa khỏi tất cả sản phẩm đang dùng.`,
-      'Xác nhận xóa',
-      {
-        confirmButtonText: 'Xóa',
-        cancelButtonText: 'Hủy',
-        type: 'warning'
-      }
-    )
-    await deleteTechnology(tech.id)
-  }
-
-  const handleColorImageUpload = async (options: any, colorObj: any) => {
-    try {
-      const res = await FileApi.uploadProductImage(options.file)
-      colorObj.image = res.publicUrl
-      ElMessage.success('Tải ảnh biến thể lên thành công')
-    } catch (err: any) {
-      ElMessage.error(err.message || 'Tải ảnh thất bại')
-    }
-  }
-
-  const handleVariantCoverUpload = async (options: any, variantObj: any) => {
-    try {
-      const res = await FileApi.uploadProductImage(options.file)
-      variantObj.cover_image_url = res.publicUrl
-      ElMessage.success('Tải cover biến thể lên thành công')
-    } catch (err: any) {
-      ElMessage.error(err.message || 'Tải ảnh thất bại')
-    }
-  }
-
-  const handleVariantGalleryUpload = async (options: any, variantObj: any) => {
-    try {
-      const res = await FileApi.uploadProductImage(options.file)
-      if (!variantObj.photo_collection) {
-        variantObj.photo_collection = []
-      }
-      variantObj.photo_collection.push(res.publicUrl)
-      ElMessage.success('Tải ảnh chi tiết lên thành công')
-    } catch (err: any) {
-      ElMessage.error(err.message || 'Tải ảnh thất bại')
-    }
-  }
-
-  const removeVariantGalleryImage = (variantObj: any, index: number) => {
-    if (variantObj.photo_collection) {
-      variantObj.photo_collection.splice(index, 1)
-    }
-  }
-
-  const handleHighlightImageUpload = async (options: any, highlightObj: any) => {
-    try {
-      const res = await FileApi.uploadProductImage(options.file)
-      highlightObj.custom_image_url = res.publicUrl
-      ElMessage.success('Tải ảnh công nghệ tùy chỉnh lên thành công')
-    } catch (err: any) {
-      ElMessage.error(err.message || 'Tải ảnh thất bại')
-    }
-  }
-
-  const searchItems = computed(() => [
+const handleDeleteTech = async (tech: any) => {
+  await ElMessageBox.confirm(
+    `Bạn có chắc chắn muốn xóa công nghệ "${tech.name}"? Hành động này không thể hoàn tác và sẽ xóa khỏi tất cả sản phẩm đang dùng.`,
+    "Xác nhận xóa",
     {
-      key: 'name',
-      label: 'Tên sản phẩm',
-      type: 'input',
-      props: { placeholder: 'Tìm kiếm tên...' }
+      confirmButtonText: "Xóa",
+      cancelButtonText: "Hủy",
+      type: "warning",
     },
-    {
-      key: 'brand',
-      label: 'Thương hiệu',
-      type: 'input',
-      props: { placeholder: 'Nhập tên hãng...' }
-    },
-    {
-      key: 'category_id',
-      label: 'Thể loại',
-      type: 'treeselect',
+  );
+  await deleteTechnology(tech.id);
+};
+
+const handleColorImageUpload = async (options: any, colorObj: any) => {
+  try {
+    const res = await FileApi.uploadProductImage(options.file);
+    colorObj.image = res.publicUrl;
+    ElMessage.success("Tải ảnh biến thể lên thành công");
+  } catch (err: any) {
+    ElMessage.error(err.message || "Tải ảnh thất bại");
+  }
+};
+
+const handleVariantCoverUpload = async (options: any, variantObj: any) => {
+  try {
+    const res = await FileApi.uploadProductImage(options.file);
+    variantObj.cover_image_url = res.publicUrl;
+    ElMessage.success("Tải cover biến thể lên thành công");
+  } catch (err: any) {
+    ElMessage.error(err.message || "Tải ảnh thất bại");
+  }
+};
+
+const handleVariantGalleryUpload = async (options: any, variantObj: any) => {
+  try {
+    const res = await FileApi.uploadProductImage(options.file);
+    if (!variantObj.photo_collection) {
+      variantObj.photo_collection = [];
+    }
+    variantObj.photo_collection.push(res.publicUrl);
+    ElMessage.success("Tải ảnh chi tiết lên thành công");
+  } catch (err: any) {
+    ElMessage.error(err.message || "Tải ảnh thất bại");
+  }
+};
+
+const removeVariantGalleryImage = (variantObj: any, index: number) => {
+  if (variantObj.photo_collection) {
+    variantObj.photo_collection.splice(index, 1);
+  }
+};
+
+const handleHighlightImageUpload = async (options: any, highlightObj: any) => {
+  try {
+    const res = await FileApi.uploadProductImage(options.file);
+    highlightObj.custom_image_url = res.publicUrl;
+    ElMessage.success("Tải ảnh công nghệ tùy chỉnh lên thành công");
+  } catch (err: any) {
+    ElMessage.error(err.message || "Tải ảnh thất bại");
+  }
+};
+
+const searchItems = computed(() => [
+  {
+    key: "name",
+    label: "Tên sản phẩm",
+    type: "input",
+    props: { placeholder: "Tìm kiếm tên..." },
+  },
+  {
+    key: "brand",
+    label: "Thương hiệu",
+    type: "input",
+    props: { placeholder: "Nhập tên hãng..." },
+  },
+  {
+    key: "category_id",
+    label: "Thể loại",
+    type: "treeselect",
+    props: {
+      data: categoryTree.value,
       props: {
-        data: categoryTree.value,
-        props: {
-          label: 'name',
-          children: 'children'
-        },
-        'node-key': 'id',
-        nodeKey: 'id',
-        placeholder: 'Chọn thể loại...',
-        clearable: true,
-        multiple: true,
-        'show-checkbox': true,
-        'collapse-tags': true,
-        'collapse-tags-tooltip': true,
-        checkStrictly: true,
-        'default-expand-all': true,
-        class: 'w-full'
-      }
-    }
-  ])
+        label: "name",
+        children: "children",
+      },
+      "node-key": "id",
+      nodeKey: "id",
+      placeholder: "Chọn thể loại...",
+      clearable: true,
+      multiple: true,
+      "show-checkbox": true,
+      "collapse-tags": true,
+      "collapse-tags-tooltip": true,
+      checkStrictly: true,
+      "default-expand-all": true,
+      class: "w-full",
+    },
+  },
+]);
 
-  const getStatusType = (status: string) => {
-    switch (status) {
-      case 'InStock':
-        return 'success'
-      case 'LowStock':
-        return 'warning'
-      case 'OutOfStock':
-        return 'danger'
-      default:
-        return 'info'
-    }
+const getStatusType = (status: string) => {
+  switch (status) {
+    case "InStock":
+      return "success";
+    case "LowStock":
+      return "warning";
+    case "OutOfStock":
+      return "danger";
+    default:
+      return "info";
   }
+};
 
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'InStock':
-        return 'Còn hàng'
-      case 'LowStock':
-        return 'Sắp hết'
-      case 'OutOfStock':
-        return 'Hết hàng'
-      default:
-        return status
-    }
+const getStatusLabel = (status: string) => {
+  switch (status) {
+    case "InStock":
+      return "Còn hàng";
+    case "LowStock":
+      return "Sắp hết";
+    case "OutOfStock":
+      return "Hết hàng";
+    default:
+      return status;
   }
+};
 
-  watch(
-    () => formData.value.variants?.length,
-    () => {
-      syncPricingPanels()
-    }
-  )
+watch(
+  () => formData.value.variants?.length,
+  () => {
+    syncPricingPanels();
+  },
+);
 
-  onMounted(() => {})
+onMounted(() => {});
 </script>
 
 <style scoped>
-  .art-table-card {
-    border: none;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgb(0 0 0 / 3%);
-  }
+.art-table-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 3%);
+}
 
-  .bg-primary {
-    background-color: var(--main-color);
-  }
+.bg-primary {
+  background-color: var(--main-color);
+}
 
-  :deep(.product-tabs .el-tabs__item.is-active) {
-    font-weight: bold;
-    color: #ff4d4f !important;
-  }
+:deep(.product-tabs .el-tabs__item.is-active) {
+  font-weight: bold;
+  color: #ff4d4f !important;
+}
 
-  :deep(.product-tabs .el-tabs__active-bar) {
-    background-color: #ff4d4f !important;
-  }
+:deep(.product-tabs .el-tabs__active-bar) {
+  background-color: #ff4d4f !important;
+}
 
-  .form-tabs {
-    overflow: hidden;
-    border: 1px solid #f0f0f0 !important;
-    border-radius: 8px;
-    box-shadow: none !important;
-  }
+.form-tabs {
+  overflow: hidden;
+  border: 1px solid #f0f0f0 !important;
+  border-radius: 8px;
+  box-shadow: none !important;
+}
 
-  .product-uploader :deep(.el-upload) {
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    background-color: #f9fafb;
-    border: 2px dashed #e5e7eb;
-    border-radius: 16px;
-    transition: all 0.3s ease;
-  }
+.product-uploader :deep(.el-upload) {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  background-color: #f9fafb;
+  border: 2px dashed #e5e7eb;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
 
-  .product-uploader :deep(.el-upload:hover) {
-    background-color: #fff;
-    border-color: #ff4d4f;
-  }
+.product-uploader :deep(.el-upload:hover) {
+  background-color: #fff;
+  border-color: #ff4d4f;
+}
 
-  .product-uploader-trigger {
-    width: 200px;
-    height: 200px;
-  }
+.product-uploader-trigger {
+  width: 200px;
+  height: 200px;
+}
 
-  .product-preview {
-    display: block;
-    width: 160px;
-    height: 160px;
-    object-fit: cover;
-    border-radius: 16px;
-  }
+.product-preview {
+  display: block;
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 16px;
+}
 
-  :deep(.el-table__row--level-1) {
-    background-color: #fafafa !important;
-  }
+:deep(.el-table__row--level-1) {
+  background-color: #fafafa !important;
+}
 
-  :deep(.el-table__expand-icon) {
-    margin-right: 8px !important;
-    font-weight: bold;
-    color: var(--main-color) !important;
-  }
+:deep(.el-table__expand-icon) {
+  margin-right: 8px !important;
+  font-weight: bold;
+  color: var(--main-color) !important;
+}
 </style>
 
 <style>
-  .premium-dialog {
-    display: flex !important;
-    flex-direction: column !important;
-    height: 85vh !important;
-    margin: auto !important;
-    overflow: hidden !important;
-    border-radius: 16px !important;
-  }
+.premium-dialog {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 85vh !important;
+  margin: auto !important;
+  overflow: hidden !important;
+  border-radius: 16px !important;
+}
 
-  .premium-dialog .el-dialog__header {
-    padding: 20px 24px !important;
-    margin-right: 0 !important;
-    background: #fff !important;
-    border-bottom: 1px solid #f0f0f0 !important;
-  }
+.premium-dialog .el-dialog__header {
+  padding: 20px 24px !important;
+  margin-right: 0 !important;
+  background: #fff !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+}
 
-  .premium-dialog .el-dialog__title {
-    font-size: 16px !important;
-    font-weight: 700 !important;
-    color: #1f2937 !important;
-  }
+.premium-dialog .el-dialog__title {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  color: #1f2937 !important;
+}
 
-  .premium-dialog .el-dialog__body {
-    flex: 1 !important;
-    padding: 24px !important;
-    overflow-y: auto !important;
-    background: #f9fafb !important;
-  }
+.premium-dialog .el-dialog__body {
+  flex: 1 !important;
+  padding: 24px !important;
+  overflow-y: auto !important;
+  background: #f9fafb !important;
+}
 
-  .premium-dialog .el-dialog__footer {
-    display: flex !important;
-    gap: 12px !important;
-    justify-content: flex-end !important;
-    padding: 16px 24px !important;
-    background: #fff !important;
-    border-top: 1px solid #e5e7eb !important;
-  }
+.premium-dialog .el-dialog__footer {
+  display: flex !important;
+  gap: 12px !important;
+  justify-content: flex-end !important;
+  padding: 16px 24px !important;
+  background: #fff !important;
+  border-top: 1px solid #e5e7eb !important;
+}
 
-  .premium-dialog .el-tabs--border-card {
-    overflow: hidden !important;
-    background: #fff !important;
-    border: 1px solid #e5e7eb !important;
-    border-radius: 12px !important;
-    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 5%) !important;
-  }
+.premium-dialog .el-tabs--border-card {
+  overflow: hidden !important;
+  background: #fff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 12px !important;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 5%) !important;
+}
 
-  .premium-dialog .el-tabs--border-card > .el-tabs__header {
-    background-color: #f3f4f6 !important;
-    border-bottom: 1px solid #e5e7eb !important;
-    border-radius: 11px 11px 0 0 !important;
-  }
+.premium-dialog .el-tabs--border-card > .el-tabs__header {
+  background-color: #f3f4f6 !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  border-radius: 11px 11px 0 0 !important;
+}
 
-  .premium-dialog .el-tabs--border-card > .el-tabs__content {
-    padding: 20px !important;
-  }
+.premium-dialog .el-tabs--border-card > .el-tabs__content {
+  padding: 20px !important;
+}
 </style>

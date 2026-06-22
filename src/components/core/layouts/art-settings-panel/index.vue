@@ -23,44 +23,46 @@
 </template>
 
 <script setup lang="ts">
-  import { useSettingsPanel } from './composables/useSettingsPanel'
+import { useSettingsPanel } from "./composables/useSettingsPanel";
 
-  import SettingDrawer from './widget/SettingDrawer.vue'
-  import SettingHeader from './widget/SettingHeader.vue'
-  import ThemeSettings from './widget/ThemeSettings.vue'
-  import MenuLayoutSettings from './widget/MenuLayoutSettings.vue'
-  import MenuStyleSettings from './widget/MenuStyleSettings.vue'
-  import ColorSettings from './widget/ColorSettings.vue'
-  import BoxStyleSettings from './widget/BoxStyleSettings.vue'
-  import ContainerSettings from './widget/ContainerSettings.vue'
-  import BasicSettings from './widget/BasicSettings.vue'
-  import SettingActions from './widget/SettingActions.vue'
+import SettingDrawer from "./widget/SettingDrawer.vue";
+import SettingHeader from "./widget/SettingHeader.vue";
+import ThemeSettings from "./widget/ThemeSettings.vue";
+import MenuLayoutSettings from "./widget/MenuLayoutSettings.vue";
+import MenuStyleSettings from "./widget/MenuStyleSettings.vue";
+import ColorSettings from "./widget/ColorSettings.vue";
+import BoxStyleSettings from "./widget/BoxStyleSettings.vue";
+import ContainerSettings from "./widget/ContainerSettings.vue";
+import BasicSettings from "./widget/BasicSettings.vue";
+import SettingActions from "./widget/SettingActions.vue";
 
-  defineOptions({ name: 'ArtSettingsPanel' })
+defineOptions({ name: "ArtSettingsPanel" });
 
-  interface Props {
-    open?: boolean
-  }
+interface Props {
+  open?: boolean;
+}
 
-  const props = defineProps<Props>()
+const props = defineProps<Props>();
 
-  const settingsPanel = useSettingsPanel()
-  const { showDrawer } = settingsPanel
+const settingsPanel = useSettingsPanel();
+const { showDrawer } = settingsPanel;
 
-  const { handleOpen, handleClose, closeDrawer } = settingsPanel.useDrawerControl()
-  const { initializeSettings, cleanupSettings } = settingsPanel.useSettingsInitializer()
+const { handleOpen, handleClose, closeDrawer } =
+  settingsPanel.useDrawerControl();
+const { initializeSettings, cleanupSettings } =
+  settingsPanel.useSettingsInitializer();
 
-  settingsPanel.usePropsWatcher(props)
+settingsPanel.usePropsWatcher(props);
 
-  onMounted(() => {
-    initializeSettings()
-  })
+onMounted(() => {
+  initializeSettings();
+});
 
-  onUnmounted(() => {
-    cleanupSettings()
-  })
+onUnmounted(() => {
+  cleanupSettings();
+});
 </script>
 
 <style lang="scss">
-  @use './style';
+@use "./style";
 </style>

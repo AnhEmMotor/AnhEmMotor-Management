@@ -1,7 +1,7 @@
 export interface BaseResponse<T = unknown> {
-  code: number
+  code: number;
 
-  msg: string
+  msg: string;
 
-  data: T
+  data: T;
 }

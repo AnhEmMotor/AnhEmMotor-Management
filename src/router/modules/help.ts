@@ -1,3 +1,3 @@
-import { AppRouteRecord } from '@/types/router'
+import { AppRouteRecord } from "@/types/router";
 
-export const helpRoutes: AppRouteRecord[] = []
+export const helpRoutes: AppRouteRecord[] = [];

@@ -31,10 +31,10 @@
 
 @mixin animation(
   $from: (
-    width: 0px
+    width: 0px,
   ),
   $to: (
-    width: 100px
+    width: 100px,
   ),
   $name: mymove,
   $animate: mymove 2s 1 linear infinite
@@ -108,11 +108,11 @@
   background: transparent \9;
   zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#{$ie_c}, endColorstr=#{$ie_c});
-  -ms-filter: 'progid:DXImageTransform.Microsoft.gradient(startColorstr=#{$ie_c}, endColorstr=#{$ie_c})';
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#{$ie_c}, endColorstr=#{$ie_c})";
 }
 
 @mixin browserPrefix($propertyName, $value) {
-  @each $prefix in -webkit-, -moz-, -ms-, -o-, '' {
+  @each $prefix in -webkit-, -moz-, -ms-, -o-, "" {
     #{$prefix}#{$propertyName}: $value;
   }
 }
@@ -124,10 +124,13 @@
 @mixin backdropBlur() {
   --tw-backdrop-blur: blur(30px);
   -webkit-backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness)
-    var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate)
-    var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate)
+    var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale)
+    var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert)
+    var(--tw-backdrop-opacity) var(--tw-backdrop-saturate)
     var(--tw-backdrop-sepia);
-  backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast)
-    var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert)
-    var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
+  backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness)
+    var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale)
+    var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert)
+    var(--tw-backdrop-opacity) var(--tw-backdrop-saturate)
+    var(--tw-backdrop-sepia);
 }

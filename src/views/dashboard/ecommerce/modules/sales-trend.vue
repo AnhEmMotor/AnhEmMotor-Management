@@ -2,8 +2,8 @@
   <div class="art-card p-5 mb-5 h-105 max-sm:mb-4">
     <div class="art-card-header">
       <div class="title">
-        <h4>{{ $t('dashboard.ecommerce.salesTrend') }}</h4>
-        <p>{{ $t('dashboard.ecommerce.monthlyComparison') }}</p>
+        <h4>{{ $t("dashboard.ecommerce.salesTrend") }}</h4>
+        <p>{{ $t("dashboard.ecommerce.monthlyComparison") }}</p>
       </div>
     </div>
 

@@ -1,10 +1,11 @@
 <template>
   <div
     :class="[
-      'inline-flex items-center justify-center min-w-8 h-8 px-2.5 mr-2.5 text-sm c-p rounded-md align-middle',
-      buttonClass
+      'inline-flex items-center justify-center min-w-8 h-8 px-2.5 mr-2.5 text-sm c-p rounded-md align-middle transition-colors duration-150',
+      buttonClass,
+      variant === 'ghost' ? 'hover:bg-gray-100' : '',
     ]"
-    :style="{ backgroundColor: buttonBgColor, color: iconColor }"
+    :style="computedStyle"
     @click="handleClick"
   >
     <ArtSvgIcon :icon="iconContent" />
@@ -12,43 +13,62 @@
 </template>
 
 <script setup lang="ts">
-  defineOptions({ name: 'ArtButtonTable' })
+import { computed } from "vue";
 
-  interface Props {
-    type?: 'add' | 'edit' | 'delete' | 'more' | 'view'
+defineOptions({ name: "ArtButtonTable" });
 
-    icon?: string
+interface Props {
+  type?: "add" | "edit" | "delete" | "more" | "view";
 
-    iconClass?: string
+  icon?: string;
 
-    iconColor?: string
+  iconClass?: string;
 
-    buttonBgColor?: string
+  iconColor?: string;
+
+  buttonBgColor?: string;
+
+  variant?: "filled" | "ghost";
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  variant: "filled",
+});
+
+const emit = defineEmits<{
+  (e: "click"): void;
+}>();
+
+const defaultButtons = {
+  add: { icon: "ri:add-fill", class: "bg-theme/12 text-theme" },
+  edit: { icon: "ri:pencil-line", class: "bg-secondary/12 text-secondary" },
+  delete: { icon: "ri:delete-bin-5-line", class: "bg-error/12 text-error" },
+  view: { icon: "ri:eye-line", class: "bg-info/12 text-info" },
+  more: { icon: "ri:more-2-fill", class: "" },
+} as const;
+
+const iconContent = computed(() => {
+  return (
+    props.icon || (props.type ? defaultButtons[props.type]?.icon : "") || ""
+  );
+});
+
+const buttonClass = computed(() => {
+  return (
+    props.iconClass ||
+    (props.type ? defaultButtons[props.type]?.class : "") ||
+    ""
+  );
+});
+
+const computedStyle = computed(() => {
+  if (props.variant === "ghost") {
+    return { backgroundColor: "transparent" };
   }
+  return { backgroundColor: props.buttonBgColor, color: props.iconColor };
+});
 
-  const props = withDefaults(defineProps<Props>(), {})
-
-  const emit = defineEmits<{
-    (e: 'click'): void
-  }>()
-
-  const defaultButtons = {
-    add: { icon: 'ri:add-fill', class: 'bg-theme/12 text-theme' },
-    edit: { icon: 'ri:pencil-line', class: 'bg-secondary/12 text-secondary' },
-    delete: { icon: 'ri:delete-bin-5-line', class: 'bg-error/12 text-error' },
-    view: { icon: 'ri:eye-line', class: 'bg-info/12 text-info' },
-    more: { icon: 'ri:more-2-fill', class: '' }
-  } as const
-
-  const iconContent = computed(() => {
-    return props.icon || (props.type ? defaultButtons[props.type]?.icon : '') || ''
-  })
-
-  const buttonClass = computed(() => {
-    return props.iconClass || (props.type ? defaultButtons[props.type]?.class : '') || ''
-  })
-
-  const handleClick = () => {
-    emit('click')
-  }
+const handleClick = () => {
+  emit("click");
+};
 </script>

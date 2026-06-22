@@ -1,127 +1,127 @@
-import { AppRouteRecord } from '@/types/router'
+import { AppRouteRecord } from "@/types/router";
 
 export const systemRoutes: AppRouteRecord = {
-  path: '/system',
-  name: 'System',
-  component: '/index/index',
+  path: "/system",
+  name: "System",
+  component: "/index/index",
   meta: {
-    title: 'menus.system.title',
-    icon: 'ri:user-3-line',
-    roles: ['R_SUPER', 'R_ADMIN']
+    title: "menus.system.title",
+    icon: "ri:user-3-line",
+    roles: ["R_SUPER", "R_ADMIN"],
   },
   children: [
     {
-      path: 'user-center',
-      name: 'UserCenter',
-      component: '/system/user-center',
+      path: "user-center",
+      name: "UserCenter",
+      component: "/system/user-center",
       meta: {
-        title: 'menus.system.userCenter',
-        icon: 'ri:user-line',
+        title: "menus.system.userCenter",
+        icon: "ri:user-line",
         isHide: true,
         keepAlive: true,
-        isHideTab: true
-      }
+        isHideTab: true,
+      },
     },
     {
-      path: 'menu',
-      name: 'Menus',
-      component: '/system/menu',
+      path: "menu",
+      name: "Menus",
+      component: "/system/menu",
       meta: {
-        title: 'menus.system.menu',
-        icon: 'ri:menu-line',
+        title: "menus.system.menu",
+        icon: "ri:menu-line",
         keepAlive: true,
-        roles: ['R_SUPER'],
+        roles: ["R_SUPER"],
         authList: [
-          { title: 'Thêm mới', authMark: 'add' },
-          { title: 'Chỉnh sửa', authMark: 'edit' },
-          { title: 'Xóa', authMark: 'delete' }
-        ]
-      }
+          { title: "Thêm mới", authMark: "add" },
+          { title: "Chỉnh sửa", authMark: "edit" },
+          { title: "Xóa", authMark: "delete" },
+        ],
+      },
     },
     {
-      path: 'nested',
-      name: 'Nested',
-      component: '',
+      path: "nested",
+      name: "Nested",
+      component: "",
       meta: {
-        title: 'menus.system.nested',
-        icon: 'ri:menu-unfold-3-line',
-        keepAlive: true
+        title: "menus.system.nested",
+        icon: "ri:menu-unfold-3-line",
+        keepAlive: true,
       },
       children: [
         {
-          path: 'menu1',
-          name: 'NestedMenu1',
-          component: '/system/nested/menu1',
+          path: "menu1",
+          name: "NestedMenu1",
+          component: "/system/nested/menu1",
           meta: {
-            title: 'menus.system.menu1',
-            icon: 'ri:align-justify',
-            keepAlive: true
-          }
+            title: "menus.system.menu1",
+            icon: "ri:align-justify",
+            keepAlive: true,
+          },
         },
         {
-          path: 'menu2',
-          name: 'NestedMenu2',
-          component: '',
+          path: "menu2",
+          name: "NestedMenu2",
+          component: "",
           meta: {
-            title: 'menus.system.menu2',
-            icon: 'ri:align-justify',
-            keepAlive: true
+            title: "menus.system.menu2",
+            icon: "ri:align-justify",
+            keepAlive: true,
           },
           children: [
             {
-              path: 'menu2-1',
-              name: 'NestedMenu2-1',
-              component: '/system/nested/menu2',
+              path: "menu2-1",
+              name: "NestedMenu2-1",
+              component: "/system/nested/menu2",
               meta: {
-                title: 'menus.system.menu21',
-                icon: 'ri:align-justify',
-                keepAlive: true
-              }
-            }
-          ]
+                title: "menus.system.menu21",
+                icon: "ri:align-justify",
+                keepAlive: true,
+              },
+            },
+          ],
         },
         {
-          path: 'menu3',
-          name: 'NestedMenu3',
-          component: '',
+          path: "menu3",
+          name: "NestedMenu3",
+          component: "",
           meta: {
-            title: 'menus.system.menu3',
-            icon: 'ri:align-justify',
-            keepAlive: true
+            title: "menus.system.menu3",
+            icon: "ri:align-justify",
+            keepAlive: true,
           },
           children: [
             {
-              path: 'menu3-1',
-              name: 'NestedMenu3-1',
-              component: '/system/nested/menu3',
+              path: "menu3-1",
+              name: "NestedMenu3-1",
+              component: "/system/nested/menu3",
               meta: {
-                title: 'menus.system.menu31',
-                keepAlive: true
-              }
+                title: "menus.system.menu31",
+                keepAlive: true,
+              },
             },
             {
-              path: 'menu3-2',
-              name: 'NestedMenu3-2',
-              component: '',
+              path: "menu3-2",
+              name: "NestedMenu3-2",
+              component: "",
               meta: {
-                title: 'menus.system.menu32',
-                keepAlive: true
+                title: "menus.system.menu32",
+                keepAlive: true,
               },
               children: [
                 {
-                  path: 'menu3-2-1',
-                  name: 'NestedMenu3-2-1',
-                  component: '/system/nested/menu3/menu3-2',
+                  path: "menu3-2-1",
+                  name: "NestedMenu3-2-1",
+                  component: "/system/nested/menu3/menu3-2",
                   meta: {
-                    title: 'menus.system.menu321',
-                    keepAlive: true
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
+                    title: "menus.system.menu321",
+                    keepAlive: true,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};

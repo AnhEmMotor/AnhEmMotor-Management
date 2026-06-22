@@ -1,10 +1,15 @@
-import AppConfig from '@/config'
-import { SystemThemeEnum, MenuThemeEnum, MenuTypeEnum, ContainerWidthEnum } from '@/enums/appEnum'
+import AppConfig from "@/config";
+import {
+  SystemThemeEnum,
+  MenuThemeEnum,
+  MenuTypeEnum,
+  ContainerWidthEnum,
+} from "@/enums/appEnum";
 
 export const SETTING_DEFAULT_CONFIG = {
   menuType: MenuTypeEnum.LEFT,
 
-  menuOpenWidth: 260,
+  menuOpenWidth: 300,
 
   menuOpen: true,
 
@@ -50,26 +55,26 @@ export const SETTING_DEFAULT_CONFIG = {
 
   boxBorderMode: true,
 
-  pageTransition: 'slide-left',
+  pageTransition: "slide-left",
 
-  tabStyle: 'tab-default',
+  tabStyle: "tab-default",
 
-  customRadius: '0.75',
+  customRadius: "0.75",
 
   containerWidth: ContainerWidthEnum.FULL,
 
-  festivalDate: ''
-}
+  festivalDate: "",
+};
 
 export function getSettingDefaults() {
-  return { ...SETTING_DEFAULT_CONFIG }
+  return { ...SETTING_DEFAULT_CONFIG };
 }
 
 export function resetToDefaults(currentSettings: Record<string, any>) {
-  const defaults = getSettingDefaults()
+  const defaults = getSettingDefaults();
   Object.keys(defaults).forEach((key) => {
     if (key in currentSettings) {
-      currentSettings[key] = defaults[key as keyof typeof defaults]
+      currentSettings[key] = defaults[key as keyof typeof defaults];
     }
-  })
+  });
 }

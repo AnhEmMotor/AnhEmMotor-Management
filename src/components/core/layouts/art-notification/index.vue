@@ -3,15 +3,19 @@
     class="art-notification-panel art-card-sm !shadow-xl"
     :style="{
       transform: show ? 'scaleY(1)' : 'scaleY(0.9)',
-      opacity: show ? 1 : 0
+      opacity: show ? 1 : 0,
     }"
     v-show="visible"
     @click.stop
   >
     <div class="flex-cb px-3.5 mt-3.5">
-      <span class="text-base font-medium text-g-800">{{ $t('notice.title') }}</span>
-      <span class="text-xs text-g-800 px-1.5 py-1 c-p select-none rounded hover:bg-g-200">
-        {{ $t('notice.btnRead') }}
+      <span class="text-base font-medium text-g-800">{{
+        $t("notice.title")
+      }}</span>
+      <span
+        class="text-xs text-g-800 px-1.5 py-1 c-p select-none rounded hover:bg-g-200"
+      >
+        {{ $t("notice.btnRead") }}
       </span>
     </div>
 
@@ -39,10 +43,15 @@
               class="size-9 leading-9 text-center rounded-lg flex-cc"
               :class="[getNoticeStyle(item.type).iconClass]"
             >
-              <ArtSvgIcon class="text-lg !bg-transparent" :icon="getNoticeStyle(item.type).icon" />
+              <ArtSvgIcon
+                class="text-lg !bg-transparent"
+                :icon="getNoticeStyle(item.type).icon"
+              />
             </div>
             <div class="w-[calc(100%-45px)] ml-3.5">
-              <h4 class="text-sm font-normal leading-5.5 text-g-900">{{ item.title }}</h4>
+              <h4 class="text-sm font-normal leading-5.5 text-g-900">
+                {{ item.title }}
+              </h4>
               <p class="mt-1.5 text-xs text-g-500">{{ item.time }}</p>
             </div>
           </li>
@@ -80,15 +89,15 @@
           class="relative top-25 h-full text-g-500 text-center !bg-transparent"
         >
           <ArtSvgIcon icon="system-uicons:inbox" class="text-5xl" />
-          <p class="mt-3.5 text-xs !bg-transparent"
-            >{{ $t('notice.text[0]') }}{{ barList[barActiveIndex].name }}</p
-          >
+          <p class="mt-3.5 text-xs !bg-transparent">
+            {{ $t("notice.text[0]") }}{{ barList[barActiveIndex].name }}
+          </p>
         </div>
       </div>
 
       <div class="relative box-border w-full px-3.5">
         <ElButton class="w-full mt-3" @click="handleViewAll" v-ripple>
-          {{ $t('notice.viewAll') }}
+          {{ $t("notice.viewAll") }}
         </ElButton>
       </div>
     </div>
@@ -98,303 +107,303 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, ref, watch, type Ref, type ComputedRef } from 'vue'
-  import { useI18n } from 'vue-i18n'
+import { computed, ref, watch, type Ref, type ComputedRef } from "vue";
+import { useI18n } from "vue-i18n";
 
-  import avatar1 from '@/assets/images/avatar/avatar1.webp'
-  import avatar2 from '@/assets/images/avatar/avatar2.webp'
-  import avatar3 from '@/assets/images/avatar/avatar3.webp'
-  import avatar4 from '@/assets/images/avatar/avatar4.webp'
-  import avatar5 from '@/assets/images/avatar/avatar5.webp'
-  import avatar6 from '@/assets/images/avatar/avatar6.webp'
+import avatar1 from "@/assets/images/avatar/avatar1.webp";
+import avatar2 from "@/assets/images/avatar/avatar2.webp";
+import avatar3 from "@/assets/images/avatar/avatar3.webp";
+import avatar4 from "@/assets/images/avatar/avatar4.webp";
+import avatar5 from "@/assets/images/avatar/avatar5.webp";
+import avatar6 from "@/assets/images/avatar/avatar6.webp";
 
-  defineOptions({ name: 'ArtNotification' })
+defineOptions({ name: "ArtNotification" });
 
-  interface NoticeItem {
-    title: string
+interface NoticeItem {
+  title: string;
 
-    time: string
+  time: string;
 
-    type: NoticeType
-  }
+  type: NoticeType;
+}
 
-  interface MessageItem {
-    title: string
+interface MessageItem {
+  title: string;
 
-    time: string
+  time: string;
 
-    avatar: string
-  }
+  avatar: string;
+}
 
-  interface PendingItem {
-    title: string
+interface PendingItem {
+  title: string;
 
-    time: string
-  }
+  time: string;
+}
 
-  interface BarItem {
-    name: ComputedRef<string>
+interface BarItem {
+  name: ComputedRef<string>;
 
-    num: number
-  }
+  num: number;
+}
 
-  interface NoticeStyle {
-    icon: string
+interface NoticeStyle {
+  icon: string;
 
-    iconClass: string
-  }
+  iconClass: string;
+}
 
-  type NoticeType = 'email' | 'message' | 'collection' | 'user' | 'notice'
+type NoticeType = "email" | "message" | "collection" | "user" | "notice";
 
-  const { t } = useI18n()
+const { t } = useI18n();
 
-  const props = defineProps<{
-    value: boolean
-  }>()
+const props = defineProps<{
+  value: boolean;
+}>();
 
-  const emit = defineEmits<{
-    'update:value': [value: boolean]
-  }>()
+const emit = defineEmits<{
+  "update:value": [value: boolean];
+}>();
 
-  const show = ref(false)
-  const visible = ref(false)
-  const barActiveIndex = ref(0)
+const show = ref(false);
+const visible = ref(false);
+const barActiveIndex = ref(0);
 
-  const useNotificationData = () => {
-    const noticeList = ref<NoticeItem[]>([
-      {
-        title: 'Thêm mớiquốctếhóa',
-        time: '2024-6-13 0:10',
-        type: 'notice'
-      },
-      {
-        title: 'lạnhthángngốcngốcchobạnphátrồimộtđiềuTinNhan',
-        time: '2024-4-21 8:05',
-        type: 'message'
-      },
-      {
-        title: 'tiểubéolợnđóngtâmrồibạn',
-        time: '2020-3-17 21:12',
-        type: 'collection'
-      },
-      {
-        title: 'Thêm mớikhiếndùngTaiLieu',
-        time: '2024-02-14 0:20',
-        type: 'notice'
-      },
-      {
-        title: 'tiểubéolợnchobạnphátrồimộtphongbưuphần tử',
-        time: '2024-1-20 0:15',
-        type: 'email'
-      },
-      {
-        title: 'MenumockquyểnđịathậtthựcDữ liệu',
-        time: '2024-1-17 22:06',
-        type: 'notice'
-      }
-    ])
+const useNotificationData = () => {
+  const noticeList = ref<NoticeItem[]>([
+    {
+      title: "Thêm mớiquốctếhóa",
+      time: "2024-6-13 0:10",
+      type: "notice",
+    },
+    {
+      title: "lạnhthángngốcngốcchobạnphátrồimộtđiềuTinNhan",
+      time: "2024-4-21 8:05",
+      type: "message",
+    },
+    {
+      title: "tiểubéolợnđóngtâmrồibạn",
+      time: "2020-3-17 21:12",
+      type: "collection",
+    },
+    {
+      title: "Thêm mớikhiếndùngTaiLieu",
+      time: "2024-02-14 0:20",
+      type: "notice",
+    },
+    {
+      title: "tiểubéolợnchobạnphátrồimộtphongbưuphần tử",
+      time: "2024-1-20 0:15",
+      type: "email",
+    },
+    {
+      title: "MenumockquyểnđịathậtthựcDữ liệu",
+      time: "2024-1-17 22:06",
+      type: "notice",
+    },
+  ]);
 
-    const msgList = ref<MessageItem[]>([
-      {
-        title: 'aoKhôngbéo đóngtâmrồibạn',
-        time: '2021-2-26 23:50',
-        avatar: avatar1
-      },
-      {
-        title: 'đườngKhôngkhổ đóngtâmrồibạn',
-        time: '2021-2-21 8:05',
-        avatar: avatar2
-      },
-      {
-        title: 'trongtiểucá đóngtâmrồibạn',
-        time: '2020-1-17 21:12',
-        avatar: avatar3
-      },
-      {
-        title: 'nàotiểusen đóngtâmrồibạn',
-        time: '2021-01-14 0:20',
-        avatar: avatar4
-      },
-      {
-        title: ' đóngtâmrồibạn',
-        time: '2020-12-20 0:15',
-        avatar: avatar5
-      },
-      {
-        title: 'lạnhthángngốcngốc đóngtâmrồibạn',
-        time: '2020-12-17 22:06',
-        avatar: avatar6
-      }
-    ])
+  const msgList = ref<MessageItem[]>([
+    {
+      title: "aoKhôngbéo đóngtâmrồibạn",
+      time: "2021-2-26 23:50",
+      avatar: avatar1,
+    },
+    {
+      title: "đườngKhôngkhổ đóngtâmrồibạn",
+      time: "2021-2-21 8:05",
+      avatar: avatar2,
+    },
+    {
+      title: "trongtiểucá đóngtâmrồibạn",
+      time: "2020-1-17 21:12",
+      avatar: avatar3,
+    },
+    {
+      title: "nàotiểusen đóngtâmrồibạn",
+      time: "2021-01-14 0:20",
+      avatar: avatar4,
+    },
+    {
+      title: " đóngtâmrồibạn",
+      time: "2020-12-20 0:15",
+      avatar: avatar5,
+    },
+    {
+      title: "lạnhthángngốcngốc đóngtâmrồibạn",
+      time: "2020-12-17 22:06",
+      avatar: avatar6,
+    },
+  ]);
 
-    const pendingList = ref<PendingItem[]>([])
+  const pendingList = ref<PendingItem[]>([]);
 
-    const barList = computed<BarItem[]>(() => [
-      {
-        name: computed(() => t('notice.bar[0]')),
-        num: noticeList.value.length
-      },
-      {
-        name: computed(() => t('notice.bar[1]')),
-        num: msgList.value.length
-      },
-      {
-        name: computed(() => t('notice.bar[2]')),
-        num: pendingList.value.length
-      }
-    ])
+  const barList = computed<BarItem[]>(() => [
+    {
+      name: computed(() => t("notice.bar[0]")),
+      num: noticeList.value.length,
+    },
+    {
+      name: computed(() => t("notice.bar[1]")),
+      num: msgList.value.length,
+    },
+    {
+      name: computed(() => t("notice.bar[2]")),
+      num: pendingList.value.length,
+    },
+  ]);
 
-    return {
-      noticeList,
-      msgList,
-      pendingList,
-      barList
-    }
-  }
-
-  const useNotificationStyles = () => {
-    const noticeStyleMap: Record<NoticeType, NoticeStyle> = {
-      email: {
-        icon: 'ri:mail-line',
-        iconClass: 'bg-warning/12 text-warning'
-      },
-      message: {
-        icon: 'ri:volume-down-line',
-        iconClass: 'bg-success/12 text-success'
-      },
-      collection: {
-        icon: 'ri:heart-3-line',
-        iconClass: 'bg-danger/12 text-danger'
-      },
-      user: {
-        icon: 'ri:volume-down-line',
-        iconClass: 'bg-info/12 text-info'
-      },
-      notice: {
-        icon: 'ri:notification-3-line',
-        iconClass: 'bg-theme/12 text-theme'
-      }
-    }
-
-    const getNoticeStyle = (type: NoticeType): NoticeStyle => {
-      const defaultStyle: NoticeStyle = {
-        icon: 'ri:arrow-right-circle-line',
-        iconClass: 'bg-theme/12 text-theme'
-      }
-
-      return noticeStyleMap[type] || defaultStyle
-    }
-
-    return {
-      getNoticeStyle
-    }
-  }
-
-  const useNotificationAnimation = () => {
-    const showNotice = (open: boolean) => {
-      if (open) {
-        visible.value = true
-        setTimeout(() => {
-          show.value = true
-        }, 5)
-      } else {
-        show.value = false
-        setTimeout(() => {
-          visible.value = false
-        }, 350)
-      }
-    }
-
-    return {
-      showNotice
-    }
-  }
-
-  const useTabManagement = (
-    noticeList: Ref<NoticeItem[]>,
-    msgList: Ref<MessageItem[]>,
-    pendingList: Ref<PendingItem[]>,
-    businessHandlers: {
-      handleNoticeAll: () => void
-      handleMsgAll: () => void
-      handlePendingAll: () => void
-    }
-  ) => {
-    const changeBar = (index: number) => {
-      barActiveIndex.value = index
-    }
-
-    const currentTabIsEmpty = computed(() => {
-      const tabDataMap = [noticeList.value, msgList.value, pendingList.value]
-
-      const currentData = tabDataMap[barActiveIndex.value]
-      return currentData && currentData.length === 0
-    })
-
-    const handleViewAll = () => {
-      const viewAllHandlers: Record<number, () => void> = {
-        0: businessHandlers.handleNoticeAll,
-        1: businessHandlers.handleMsgAll,
-        2: businessHandlers.handlePendingAll
-      }
-
-      const handler = viewAllHandlers[barActiveIndex.value]
-      handler?.()
-
-      emit('update:value', false)
-    }
-
-    return {
-      changeBar,
-      currentTabIsEmpty,
-      handleViewAll
-    }
-  }
-
-  const useBusinessLogic = () => {
-    const handleNoticeAll = () => {
-      console.log('XemtoànbộThongBao')
-    }
-
-    const handleMsgAll = () => {
-      console.log('XemtoànbộTinNhan')
-    }
-
-    const handlePendingAll = () => {
-      console.log('XemtoànbộViệc cần làm')
-    }
-
-    return {
-      handleNoticeAll,
-      handleMsgAll,
-      handlePendingAll
-    }
-  }
-
-  const { noticeList, msgList, pendingList, barList } = useNotificationData()
-  const { getNoticeStyle } = useNotificationStyles()
-  const { showNotice } = useNotificationAnimation()
-  const { handleNoticeAll, handleMsgAll, handlePendingAll } = useBusinessLogic()
-  const { changeBar, currentTabIsEmpty, handleViewAll } = useTabManagement(
+  return {
     noticeList,
     msgList,
     pendingList,
-    { handleNoticeAll, handleMsgAll, handlePendingAll }
-  )
+    barList,
+  };
+};
 
-  watch(
-    () => props.value,
-    (newValue) => {
-      showNotice(newValue)
+const useNotificationStyles = () => {
+  const noticeStyleMap: Record<NoticeType, NoticeStyle> = {
+    email: {
+      icon: "ri:mail-line",
+      iconClass: "bg-warning/12 text-warning",
+    },
+    message: {
+      icon: "ri:volume-down-line",
+      iconClass: "bg-success/12 text-success",
+    },
+    collection: {
+      icon: "ri:heart-3-line",
+      iconClass: "bg-danger/12 text-danger",
+    },
+    user: {
+      icon: "ri:volume-down-line",
+      iconClass: "bg-info/12 text-info",
+    },
+    notice: {
+      icon: "ri:notification-3-line",
+      iconClass: "bg-theme/12 text-theme",
+    },
+  };
+
+  const getNoticeStyle = (type: NoticeType): NoticeStyle => {
+    const defaultStyle: NoticeStyle = {
+      icon: "ri:arrow-right-circle-line",
+      iconClass: "bg-theme/12 text-theme",
+    };
+
+    return noticeStyleMap[type] || defaultStyle;
+  };
+
+  return {
+    getNoticeStyle,
+  };
+};
+
+const useNotificationAnimation = () => {
+  const showNotice = (open: boolean) => {
+    if (open) {
+      visible.value = true;
+      setTimeout(() => {
+        show.value = true;
+      }, 5);
+    } else {
+      show.value = false;
+      setTimeout(() => {
+        visible.value = false;
+      }, 350);
     }
-  )
+  };
+
+  return {
+    showNotice,
+  };
+};
+
+const useTabManagement = (
+  noticeList: Ref<NoticeItem[]>,
+  msgList: Ref<MessageItem[]>,
+  pendingList: Ref<PendingItem[]>,
+  businessHandlers: {
+    handleNoticeAll: () => void;
+    handleMsgAll: () => void;
+    handlePendingAll: () => void;
+  },
+) => {
+  const changeBar = (index: number) => {
+    barActiveIndex.value = index;
+  };
+
+  const currentTabIsEmpty = computed(() => {
+    const tabDataMap = [noticeList.value, msgList.value, pendingList.value];
+
+    const currentData = tabDataMap[barActiveIndex.value];
+    return currentData && currentData.length === 0;
+  });
+
+  const handleViewAll = () => {
+    const viewAllHandlers: Record<number, () => void> = {
+      0: businessHandlers.handleNoticeAll,
+      1: businessHandlers.handleMsgAll,
+      2: businessHandlers.handlePendingAll,
+    };
+
+    const handler = viewAllHandlers[barActiveIndex.value];
+    handler?.();
+
+    emit("update:value", false);
+  };
+
+  return {
+    changeBar,
+    currentTabIsEmpty,
+    handleViewAll,
+  };
+};
+
+const useBusinessLogic = () => {
+  const handleNoticeAll = () => {
+    console.log("XemtoànbộThongBao");
+  };
+
+  const handleMsgAll = () => {
+    console.log("XemtoànbộTinNhan");
+  };
+
+  const handlePendingAll = () => {
+    console.log("XemtoànbộViệc cần làm");
+  };
+
+  return {
+    handleNoticeAll,
+    handleMsgAll,
+    handlePendingAll,
+  };
+};
+
+const { noticeList, msgList, pendingList, barList } = useNotificationData();
+const { getNoticeStyle } = useNotificationStyles();
+const { showNotice } = useNotificationAnimation();
+const { handleNoticeAll, handleMsgAll, handlePendingAll } = useBusinessLogic();
+const { changeBar, currentTabIsEmpty, handleViewAll } = useTabManagement(
+  noticeList,
+  msgList,
+  pendingList,
+  { handleNoticeAll, handleMsgAll, handlePendingAll },
+);
+
+watch(
+  () => props.value,
+  (newValue) => {
+    showNotice(newValue);
+  },
+);
 </script>
 
 <style scoped>
-  @reference '@styles/core/tailwind.css';
+@reference '@styles/core/tailwind.css';
 
-  .art-notification-panel {
-    @apply absolute 
+.art-notification-panel {
+  @apply absolute 
     top-14.5 
     right-5 
     w-90 
@@ -408,22 +417,22 @@
     max-[640px]:right-0
     max-[640px]:w-full 
     max-[640px]:h-[80vh];
-  }
+}
 
-  .bar-active {
-    color: var(--theme-color) !important;
-    border-bottom: 2px solid var(--theme-color);
-  }
+.bar-active {
+  color: var(--theme-color) !important;
+  border-bottom: 2px solid var(--theme-color);
+}
 
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 5px !important;
-  }
+.scrollbar-thin::-webkit-scrollbar {
+  width: 5px !important;
+}
 
-  .dark .scrollbar-thin::-webkit-scrollbar-track {
-    background-color: var(--default-box-color);
-  }
+.dark .scrollbar-thin::-webkit-scrollbar-track {
+  background-color: var(--default-box-color);
+}
 
-  .dark .scrollbar-thin::-webkit-scrollbar-thumb {
-    background-color: #222 !important;
-  }
+.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: #222 !important;
+}
 </style>

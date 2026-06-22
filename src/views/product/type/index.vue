@@ -29,7 +29,11 @@
     />
 
     <ElCard class="flex-1 art-table-card">
-      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
+      <ArtTableHeader
+        v-model:columns="columnChecks"
+        :loading="loading"
+        @refresh="refreshData"
+      >
         <template #left>
           <ElButton type="primary" v-ripple @click="handleAdd">
             <ElIcon><Plus /></ElIcon> Thêm mới
@@ -80,8 +84,13 @@
         </template>
 
         <template #isActive="{ row }">
-          <ElTag :type="row.isActive ? 'success' : 'info'" size="small" effect="light" round>
-            {{ row.isActive ? 'Hoạt động' : 'Tạm dừng' }}
+          <ElTag
+            :type="row.isActive ? 'success' : 'info'"
+            size="small"
+            effect="light"
+            round
+          >
+            {{ row.isActive ? "Hoạt động" : "Tạm dừng" }}
           </ElTag>
         </template>
 
@@ -176,7 +185,11 @@
         </ElFormItem>
 
         <ElFormItem label="Trạng thái">
-          <ElSwitch v-model="formData.isActive" active-text="Hoạt động" inactive-text="Tạm dừng" />
+          <ElSwitch
+            v-model="formData.isActive"
+            active-text="Hoạt động"
+            inactive-text="Tạm dừng"
+          />
         </ElFormItem>
 
         <ElFormItem label="Mô tả">
@@ -191,7 +204,9 @@
       <template #footer>
         <div class="flex justify-end gap-2">
           <ElButton @click="dialogVisible = false">Hủy</ElButton>
-          <ElButton type="primary" :loading="submitting" @click="submitForm"> Xác nhận </ElButton>
+          <ElButton type="primary" :loading="submitting" @click="submitForm">
+            Xác nhận
+          </ElButton>
         </div>
       </template>
     </ElDialog>
@@ -199,151 +214,155 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, ref, watch, nextTick } from 'vue'
-  import { Plus, Picture, Download } from '@element-plus/icons-vue'
-  import { useCategoryTable } from './hooks/useCategoryTable'
-  import { FileApi } from '@/api/file.api'
-  import { ElMessage } from 'element-plus'
+import { computed, ref, watch, nextTick } from "vue";
+import { Plus, Picture, Download } from "@element-plus/icons-vue";
+import { useCategoryTable } from "./hooks/useCategoryTable";
+import { FileApi } from "@/infrastructure/api/file.api";
+import { ElMessage } from "element-plus";
 
-  defineOptions({ name: 'ProductType' })
+defineOptions({ name: "ProductType" });
 
-  const tableRef = ref()
+const tableRef = ref();
 
-  const {
-    tableData,
-    stats,
-    managementTypes,
-    parentCategories,
-    loading,
-    columns,
-    columnChecks,
-    handleSizeChange,
-    handleCurrentChange,
-    handleSearch,
-    handleReset,
-    refreshData,
-    isSearching,
+const {
+  tableData,
+  stats,
+  managementTypes,
+  parentCategories,
+  loading,
+  columns,
+  columnChecks,
+  handleSizeChange,
+  handleCurrentChange,
+  handleSearch,
+  handleReset,
+  refreshData,
+  isSearching,
 
-    dialogVisible,
-    dialogTitle,
-    formData,
-    submitting,
-    handleAdd,
-    handleEdit,
-    handleDelete,
-    submitForm,
-    exporting,
-    handleExport
-  } = useCategoryTable()
+  dialogVisible,
+  dialogTitle,
+  formData,
+  submitting,
+  handleAdd,
+  handleEdit,
+  handleDelete,
+  submitForm,
+  exporting,
+  handleExport,
+} = useCategoryTable();
 
-  watch(
-    () => tableData.value,
-    (newData) => {
-      if (isSearching.value && newData?.length) {
-        nextTick(() => {
-          if (tableRef.value?.elTableRef) {
-            const expandRows = (rows: any[]) => {
-              rows.forEach((row) => {
-                if (row.children?.length) {
-                  tableRef.value.elTableRef.toggleRowExpansion(row, true)
-                  expandRows(row.children)
-                }
-              })
-            }
-            expandRows(newData)
-          }
-        })
-      }
-    },
-    { deep: true }
-  )
-
-  const formatDateTime = (val: string | null | undefined) => {
-    if (!val) return 'Chưa có cập nhật'
-    return new Date(val).toLocaleString('vi-VN')
-  }
-
-  const handleUpload = async (options: any) => {
-    try {
-      const res = await FileApi.uploadProductImage(options.file)
-      formData.value.imageUrl = res.publicUrl
-      ElMessage.success('Tải ảnh lên thành công')
-    } catch (err: any) {
-      ElMessage.error(err.message || 'Tải ảnh thất bại')
+watch(
+  () => tableData.value,
+  (newData) => {
+    if (isSearching.value && newData?.length) {
+      nextTick(() => {
+        if (tableRef.value?.elTableRef) {
+          const expandRows = (rows: any[]) => {
+            rows.forEach((row) => {
+              if (row.children?.length) {
+                tableRef.value.elTableRef.toggleRowExpansion(row, true);
+                expandRows(row.children);
+              }
+            });
+          };
+          expandRows(newData);
+        }
+      });
     }
-  }
+  },
+  { deep: true },
+);
 
-  const getManagementTypeLabel = (value?: string) => {
-    return managementTypes.value.find((item) => item.value === value)?.label || value || 'Chưa chọn'
-  }
+const formatDateTime = (val: string | null | undefined) => {
+  if (!val) return "Chưa có cập nhật";
+  return new Date(val).toLocaleString("vi-VN");
+};
 
-  const searchItems = computed(() => [
-    {
-      key: 'name',
-      label: 'Tên thể loại',
-      type: 'input',
-      props: { placeholder: 'Tìm kiếm tên...' }
+const handleUpload = async (options: any) => {
+  try {
+    const res = await FileApi.uploadProductImage(options.file);
+    formData.value.imageUrl = res.publicUrl;
+    ElMessage.success("Tải ảnh lên thành công");
+  } catch (err: any) {
+    ElMessage.error(err.message || "Tải ảnh thất bại");
+  }
+};
+
+const getManagementTypeLabel = (value?: string) => {
+  return (
+    managementTypes.value.find((item) => item.value === value)?.label ||
+    value ||
+    "Chưa chọn"
+  );
+};
+
+const searchItems = computed(() => [
+  {
+    key: "name",
+    label: "Tên thể loại",
+    type: "input",
+    props: { placeholder: "Tìm kiếm tên..." },
+  },
+  {
+    key: "managementType",
+    label: "Loại quản lý",
+    type: "select",
+    props: {
+      placeholder: "Chọn loại quản lý...",
+      clearable: true,
+      filterable: true,
+      options: managementTypes.value,
     },
-    {
-      key: 'managementType',
-      label: 'Loại quản lý',
-      type: 'select',
-      props: {
-        placeholder: 'Chọn loại quản lý...',
-        clearable: true,
-        filterable: true,
-        options: managementTypes.value
-      }
-    }
-  ])
+  },
+]);
 </script>
 
 <style scoped>
-  .art-table-card {
-    border: none;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgb(0 0 0 / 3%);
-  }
+.art-table-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 3%);
+}
 
-  .bg-primary {
-    background-color: var(--main-color);
-  }
+.bg-primary {
+  background-color: var(--main-color);
+}
 
-  .category-uploader :deep(.el-upload) {
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    background-color: #fafafa;
-    border: 1px dashed #d9d9d9;
-    border-radius: 12px;
-    transition: var(--el-transition-duration-fast);
-  }
+.category-uploader :deep(.el-upload) {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  background-color: #fafafa;
+  border: 1px dashed #d9d9d9;
+  border-radius: 12px;
+  transition: var(--el-transition-duration-fast);
+}
 
-  .category-uploader :deep(.el-upload:hover) {
-    background-color: #fff;
-    border-color: var(--main-color);
-  }
+.category-uploader :deep(.el-upload:hover) {
+  background-color: #fff;
+  border-color: var(--main-color);
+}
 
-  .category-uploader-trigger {
-    width: 80px;
-    height: 80px;
-  }
+.category-uploader-trigger {
+  width: 80px;
+  height: 80px;
+}
 
-  .category-preview {
-    display: block;
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 12px;
-  }
+.category-preview {
+  display: block;
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 12px;
+}
 
-  :deep(.el-table__row--level-1) {
-    background-color: #fafafa !important;
-  }
+:deep(.el-table__row--level-1) {
+  background-color: #fafafa !important;
+}
 
-  :deep(.el-table__expand-icon) {
-    margin-right: 8px !important;
-    font-weight: bold;
-    color: var(--main-color) !important;
-  }
+:deep(.el-table__expand-icon) {
+  margin-right: 8px !important;
+  font-weight: bold;
+  color: var(--main-color) !important;
+}
 </style>

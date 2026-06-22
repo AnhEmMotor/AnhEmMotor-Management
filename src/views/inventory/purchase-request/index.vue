@@ -10,7 +10,11 @@
     />
 
     <ElCard class="flex-1 art-table-card">
-      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
+      <ArtTableHeader
+        v-model:columns="columnChecks"
+        :loading="loading"
+        @refresh="refreshData"
+      >
         <template #left>
           <ElButton type="primary" v-ripple @click="handleAdd">
             <ElIcon class="mr-1"><Plus /></ElIcon> Tạo yêu cầu mua hàng
@@ -36,10 +40,25 @@
           </ElTag>
         </template>
 
+        <template #isFullyImported="{ row }">
+          <template v-if="row.status?.toLowerCase() === 'approve'">
+            <ElTag v-if="row.isFullyImported" type="success" size="small">
+              Đã nhập đủ
+            </ElTag>
+            <ElTag v-else type="danger" size="small"> Chưa nhập đủ </ElTag>
+          </template>
+          <span v-else>-</span>
+        </template>
+
         <template #operation="{ row }">
           <div class="flex gap-2 justify-center">
             <ElTooltip content="Xem chi tiết" placement="top">
-              <ElButton circle size="small" type="info" @click="handleViewDetail(row)">
+              <ElButton
+                circle
+                size="small"
+                type="info"
+                @click="handleViewDetail(row)"
+              >
                 <ElIcon><View /></ElIcon>
               </ElButton>
             </ElTooltip>
@@ -48,12 +67,26 @@
               content="Chỉnh sửa"
               placement="top"
             >
-              <ElButton circle size="small" type="primary" @click="handleEdit(row)">
+              <ElButton
+                circle
+                size="small"
+                type="primary"
+                @click="handleEdit(row)"
+              >
                 <ElIcon><Edit /></ElIcon>
               </ElButton>
             </ElTooltip>
-            <ElTooltip v-if="row.status?.toLowerCase() === 'draft'" content="Xóa" placement="top">
-              <ElButton circle size="small" type="danger" @click="handleDelete(row)">
+            <ElTooltip
+              v-if="row.status?.toLowerCase() === 'draft'"
+              content="Xóa"
+              placement="top"
+            >
+              <ElButton
+                circle
+                size="small"
+                type="danger"
+                @click="handleDelete(row)"
+              >
                 <ElIcon><Delete /></ElIcon>
               </ElButton>
             </ElTooltip>
@@ -62,7 +95,12 @@
               content="Gửi phê duyệt"
               placement="top"
             >
-              <ElButton circle size="small" type="success" @click="handleSendRequest(row)">
+              <ElButton
+                circle
+                size="small"
+                type="success"
+                @click="handleSendRequest(row)"
+              >
                 <ElIcon><Promotion /></ElIcon>
               </ElButton>
             </ElTooltip>
@@ -119,8 +157,15 @@
 
         <div class="border-t border-gray-100 pt-4 mt-4">
           <div class="flex justify-between items-center mb-3">
-            <span class="text-sm font-semibold text-gray-700">Danh sách biến thể yêu cầu</span>
-            <ElButton type="success" size="small" plain @click="handleAddProductRow">
+            <span class="text-sm font-semibold text-gray-700"
+              >Danh sách biến thể yêu cầu</span
+            >
+            <ElButton
+              type="success"
+              size="small"
+              plain
+              @click="handleAddProductRow"
+            >
               <ElIcon class="mr-1"><Plus /></ElIcon> Thêm sản phẩm
             </ElButton>
           </div>
@@ -132,13 +177,23 @@
                   class="w-full border border-gray-300 rounded px-2 py-1 bg-white flex items-center justify-between cursor-pointer hover:border-primary transition duration-200 min-h-[32px]"
                   @click="openProductSelector($index)"
                 >
-                  <span v-if="row.productVariantId" class="text-gray-800 text-xs font-medium">
+                  <span
+                    v-if="row.productVariantId"
+                    class="text-gray-800 text-xs font-medium"
+                  >
                     {{ getProductNameById(row.productVariantId) }}
                   </span>
-                  <span v-else class="text-gray-400 text-xs">Chọn biến thể sản phẩm...</span>
+                  <span v-else class="text-gray-400 text-xs"
+                    >Chọn biến thể sản phẩm...</span
+                  >
                   <ElIcon class="text-gray-400 text-xs"><ArrowDown /></ElIcon>
                 </div>
-                <ElTag v-if="getProductColorName(row)" size="small" type="info" class="mt-1 w-fit">
+                <ElTag
+                  v-if="getProductColorName(row)"
+                  size="small"
+                  type="info"
+                  class="mt-1 w-fit"
+                >
                   Màu: {{ getProductColorName(row) }}
                 </ElTag>
               </template>
@@ -156,18 +211,29 @@
               </template>
             </ElTableColumn>
 
-            <ElTableColumn label="Nhà cung cấp & Đơn giá" width="220" align="center">
+            <ElTableColumn
+              label="Nhà cung cấp & Đơn giá"
+              width="220"
+              align="center"
+            >
               <template #default="{ row, $index }">
                 <div v-if="row.productQuotationId" class="text-left mb-1">
-                  <div class="font-medium text-gray-800 text-xs text-center">{{
-                    row.supplierName
-                  }}</div>
-                  <div class="text-primary font-bold text-center">{{
-                    formatCurrency(row.unitPrice)
-                  }}</div>
+                  <div class="font-medium text-gray-800 text-xs text-center">
+                    {{ row.supplierName }}
+                  </div>
+                  <div class="text-primary font-bold text-center">
+                    {{ formatCurrency(row.unitPrice) }}
+                  </div>
                 </div>
-                <div v-else class="text-gray-400 text-xs italic mb-1">Chưa chọn báo giá</div>
-                <ElButton type="primary" size="small" plain @click="openQuoteDialog(row, $index)">
+                <div v-else class="text-gray-400 text-xs italic mb-1">
+                  Chưa chọn báo giá
+                </div>
+                <ElButton
+                  type="primary"
+                  size="small"
+                  plain
+                  @click="openQuoteDialog(row, $index)"
+                >
                   Chọn báo giá
                 </ElButton>
               </template>
@@ -216,7 +282,11 @@
           class="w-full"
           v-loading="quoteLoading"
         >
-          <ElTableColumn label="Nhà cung cấp" prop="supplierName" min-width="200" />
+          <ElTableColumn
+            label="Nhà cung cấp"
+            prop="supplierName"
+            min-width="200"
+          />
           <ElTableColumn label="Đơn giá" width="150" align="right">
             <template #default="{ row }">
               {{ formatCurrency(row.quotePrice) }}
@@ -224,12 +294,17 @@
           </ElTableColumn>
           <ElTableColumn label="Ghi chú" prop="note" min-width="150">
             <template #default="{ row }">
-              {{ row.note || '--' }}
+              {{ row.note || "--" }}
             </template>
           </ElTableColumn>
           <ElTableColumn label="Thao tác" width="100" align="center">
             <template #default="{ row }">
-              <ElButton type="primary" size="small" plain @click="applyQuoteFromDialog(row)">
+              <ElButton
+                type="primary"
+                size="small"
+                plain
+                @click="applyQuoteFromDialog(row)"
+              >
                 Chọn
               </ElButton>
             </template>
@@ -269,17 +344,21 @@
           </div>
           <div>
             <span class="text-gray-500">Thời gian tạo:</span>
-            <span class="ml-2 text-gray-700">{{ formatDateTime(detailData.createdAt) }}</span>
+            <span class="ml-2 text-gray-700">{{
+              formatDateTime(detailData.createdAt)
+            }}</span>
           </div>
           <div>
             <span class="text-gray-500">Người tạo:</span>
             <span class="ml-2 text-gray-800 font-medium">{{
-              detailData.createdByName || 'N/A'
+              detailData.createdByName || "N/A"
             }}</span>
           </div>
           <div v-if="detailData.sentByName">
             <span class="text-gray-500">Người gửi:</span>
-            <span class="ml-2 text-gray-800 font-medium">{{ detailData.sentByName }}</span>
+            <span class="ml-2 text-gray-800 font-medium">{{
+              detailData.sentByName
+            }}</span>
           </div>
           <div
             v-if="
@@ -289,7 +368,9 @@
             "
           >
             <span class="text-gray-500">Người duyệt:</span>
-            <span class="ml-2 text-gray-800 font-medium">{{ detailData.approvedByName }}</span>
+            <span class="ml-2 text-gray-800 font-medium">{{
+              detailData.approvedByName
+            }}</span>
           </div>
           <div
             v-if="
@@ -299,36 +380,57 @@
             "
           >
             <span class="text-gray-500">Người từ chối:</span>
-            <span class="ml-2 text-gray-800 font-medium">{{ detailData.rejectedByName }}</span>
+            <span class="ml-2 text-gray-800 font-medium">{{
+              detailData.rejectedByName
+            }}</span>
           </div>
           <div class="col-span-2 border-t border-gray-200 pt-2 mt-1">
             <span class="text-gray-500 font-medium">Ghi chú:</span>
-            <div class="mt-1 bg-white p-2.5 rounded border border-gray-100 text-gray-700">
-              {{ detailData.note || 'Không có ghi chú' }}
+            <div
+              class="mt-1 bg-white p-2.5 rounded border border-gray-100 text-gray-700"
+            >
+              {{ detailData.note || "Không có ghi chú" }}
             </div>
           </div>
         </div>
 
         <div>
-          <h4 class="text-sm font-semibold text-gray-700 mb-2">Danh sách mặt hàng</h4>
+          <h4 class="text-sm font-semibold text-gray-700 mb-2">
+            Danh sách mặt hàng
+          </h4>
           <ElTable :data="detailData.items" border size="small" class="w-full">
             <ElTableColumn type="index" label="STT" width="55" align="center" />
             <ElTableColumn label="Tên sản phẩm" minWidth="200">
               <template #default="{ row }">
-                <span class="font-medium text-gray-800">{{ row.productName }}</span>
+                <span class="font-medium text-gray-800">{{
+                  row.productName
+                }}</span>
                 <div v-if="row.productVariantColorName" class="mt-1">
-                  <ElTag size="small" type="info">Màu: {{ row.productVariantColorName }}</ElTag>
+                  <ElTag size="small" type="info"
+                    >Màu: {{ row.productVariantColorName }}</ElTag
+                  >
                 </div>
               </template>
             </ElTableColumn>
-            <ElTableColumn prop="quantity" label="S/L yêu cầu" width="95" align="center" />
+            <ElTableColumn
+              prop="quantity"
+              label="S/L yêu cầu"
+              width="95"
+              align="center"
+            />
             <ElTableColumn label="Nhà cung cấp & Đơn giá" minWidth="150">
               <template #default="{ row }">
                 <div v-if="row.supplierName" class="text-left">
-                  <div class="text-gray-800 font-medium">{{ row.supplierName }}</div>
-                  <div class="text-primary font-bold">{{ formatCurrency(row.unitPrice) }}</div>
+                  <div class="text-gray-800 font-medium">
+                    {{ row.supplierName }}
+                  </div>
+                  <div class="text-primary font-bold">
+                    {{ formatCurrency(row.unitPrice) }}
+                  </div>
                 </div>
-                <span v-else class="text-gray-400 italic">Chưa chọn báo giá</span>
+                <span v-else class="text-gray-400 italic"
+                  >Chưa chọn báo giá</span
+                >
               </template>
             </ElTableColumn>
 
@@ -344,7 +446,11 @@
             >
               <template #default="{ row }">
                 <span
-                  :class="row.importedQuantity > 0 ? 'text-success font-bold' : 'text-gray-400'"
+                  :class="
+                    row.importedQuantity > 0
+                      ? 'text-success font-bold'
+                      : 'text-gray-400'
+                  "
                 >
                   {{ row.importedQuantity }}
                 </span>
@@ -361,7 +467,9 @@
               align="center"
             >
               <template #default="{ row }">
-                <span class="text-warning font-medium">{{ row.pendingQuantity }}</span>
+                <span class="text-warning font-medium">{{
+                  row.pendingQuantity
+                }}</span>
               </template>
             </ElTableColumn>
             <ElTableColumn
@@ -375,7 +483,9 @@
               align="center"
             >
               <template #default="{ row }">
-                <span class="text-danger font-medium">{{ row.unimportedQuantity }}</span>
+                <span class="text-danger font-medium">{{
+                  row.unimportedQuantity
+                }}</span>
               </template>
             </ElTableColumn>
           </ElTable>
@@ -383,9 +493,16 @@
       </div>
 
       <template #footer>
-        <div class="flex justify-between items-center border-t border-gray-50 pt-3">
+        <div
+          class="flex justify-between items-center border-t border-gray-50 pt-3"
+        >
           <div>
-            <ElButton v-if="detailData?.id" type="primary" plain @click="auditTrailVisible = true">
+            <ElButton
+              v-if="detailData?.id"
+              type="primary"
+              plain
+              @click="auditTrailVisible = true"
+            >
               <ElIcon class="mr-1"><Clock /></ElIcon> Lịch sử chỉnh sửa
             </ElButton>
           </div>
@@ -394,7 +511,10 @@
 
             <template v-if="detailData">
               <template v-if="detailData.status?.toLowerCase() === 'sent'">
-                <ElButton type="danger" @click="handleApproveRejectStatus(detailData.id, 'reject')">
+                <ElButton
+                  type="danger"
+                  @click="handleApproveRejectStatus(detailData.id, 'reject')"
+                >
                   Từ chối duyệt
                 </ElButton>
                 <ElButton
@@ -488,7 +608,9 @@
                       v-if="getSelectedVariantColor(variant)"
                       class="inline-block w-4 h-4 rounded border border-gray-200 flex-shrink-0"
                       :style="{
-                        backgroundColor: getSelectedVariantColor(variant)?.colorCode || '#ffffff'
+                        backgroundColor:
+                          getSelectedVariantColor(variant)?.colorCode ||
+                          '#ffffff',
                       }"
                     ></span>
                   </template>
@@ -501,13 +623,20 @@
                     <div class="flex items-center gap-2">
                       <span
                         class="inline-block w-4 h-4 rounded border border-gray-200 flex-shrink-0"
-                        :style="{ backgroundColor: color.colorCode || '#ffffff' }"
+                        :style="{
+                          backgroundColor: color.colorCode || '#ffffff',
+                        }"
                       ></span>
                       <span>{{ color.colorName || `Màu #${color.id}` }}</span>
                     </div>
                   </ElOption>
                 </ElSelect>
-                <ElButton type="primary" size="small" plain @click="selectProductVariant(variant)">
+                <ElButton
+                  type="primary"
+                  size="small"
+                  plain
+                  @click="selectProductVariant(variant)"
+                >
                   Chọn
                 </ElButton>
               </div>
@@ -540,614 +669,646 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, reactive, computed, onMounted } from 'vue'
-  import {
-    Plus,
-    Edit,
-    Delete,
-    View,
-    ArrowDown,
-    InfoFilled,
-    Promotion,
-    Check,
-    Close,
-    Clock
-  } from '@element-plus/icons-vue'
-  import { ElMessage, ElMessageBox } from 'element-plus'
-  import { useDebounceFn } from '@vueuse/core'
-  import { PurchaseRequestApi } from '@/api/purchase-request.api'
-  import { ProductApi } from '@/api/product.api'
-  import { QuotationApi } from '@/api/quotation.api'
-  import type {
-    PurchaseRequestListResponse,
-    PurchaseRequestDetailResponse
-  } from '@/domain/purchase-request/request.types'
-  import type { ProductVariantLiteForInput } from '@/domain/product/product.types'
-  import AuditTrailModal from '@/components/business/audit-trail-modal/index.vue'
+import { ref, reactive, computed, onMounted } from "vue";
+import {
+  Plus,
+  Edit,
+  Delete,
+  View,
+  ArrowDown,
+  InfoFilled,
+  Promotion,
+  Check,
+  Close,
+  Clock,
+} from "@element-plus/icons-vue";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { useDebounceFn } from "@vueuse/core";
+import { PurchaseRequestApi } from "@/api/purchase-request.api";
+import { ProductApi } from "@/api/product.api";
+import { QuotationApi } from "@/api/quotation.api";
+import type {
+  PurchaseRequestListResponse,
+  PurchaseRequestDetailResponse,
+} from "@/domain/purchase-request/request.types";
+import type { ProductVariantLiteForInput } from "@/domain/product/product.types";
+import AuditTrailModal from "@/components/business/audit-trail-modal/index.vue";
 
-  defineOptions({ name: 'PurchaseRequest' })
+defineOptions({ name: "PurchaseRequest" });
 
-  const auditTrailVisible = ref(false)
+const auditTrailVisible = ref(false);
 
-  const loading = ref(false)
-  const dialogVisible = ref(false)
-  const dialogTitle = ref('Tạo yêu cầu mua hàng mới')
-  const submitting = ref(false)
-  const isEdit = ref(false)
+const loading = ref(false);
+const dialogVisible = ref(false);
+const dialogTitle = ref("Tạo yêu cầu mua hàng mới");
+const submitting = ref(false);
+const isEdit = ref(false);
 
-  const detailDialogVisible = ref(false)
-  const detailData = ref<PurchaseRequestDetailResponse | null>(null)
+const detailDialogVisible = ref(false);
+const detailData = ref<PurchaseRequestDetailResponse | null>(null);
 
-  const productCache = reactive(new Map<number, { displayName: string; colorName?: string }>())
+const productCache = reactive(
+  new Map<number, { displayName: string; colorName?: string }>(),
+);
 
-  const getProductNameById = (id?: number) => {
-    if (!id) return ''
-    return productCache.get(Number(id))?.displayName || `Sản phẩm #${id}`
-  }
+const getProductNameById = (id?: number) => {
+  if (!id) return "";
+  return productCache.get(Number(id))?.displayName || `Sản phẩm #${id}`;
+};
 
-  const getProductColorName = (row: any) => {
-    return (
-      row.productVariantColorName || productCache.get(Number(row.productVariantId))?.colorName || ''
-    )
-  }
+const getProductColorName = (row: any) => {
+  return (
+    row.productVariantColorName ||
+    productCache.get(Number(row.productVariantId))?.colorName ||
+    ""
+  );
+};
 
-  const getVariantColorKey = (variant: ProductVariantLiteForInput) => String(variant.id)
+const getVariantColorKey = (variant: ProductVariantLiteForInput) =>
+  String(variant.id);
 
-  const getSelectedVariantColor = (variant: ProductVariantLiteForInput) => {
-    const selectedColorId = selectedVariantColors[getVariantColorKey(variant)]
-    return variant.colors?.find((color) => color.id === selectedColorId)
-  }
+const getSelectedVariantColor = (variant: ProductVariantLiteForInput) => {
+  const selectedColorId = selectedVariantColors[getVariantColorKey(variant)];
+  return variant.colors?.find((color) => color.id === selectedColorId);
+};
 
-  const getVariantColorLabel = (
-    color: NonNullable<ProductVariantLiteForInput['colors']>[number]
-  ) => {
-    return color.colorName || `Màu #${color.id}`
-  }
+const getVariantColorLabel = (
+  color: NonNullable<ProductVariantLiteForInput["colors"]>[number],
+) => {
+  return color.colorName || `Màu #${color.id}`;
+};
 
-  const getVariantDisplayNameWithColor = (variant: ProductVariantLiteForInput) => {
-    const displayName = variant.displayName || `Sản phẩm #${variant.id}`
-    const selectedColor = getSelectedVariantColor(variant)
-    if (!selectedColor) return displayName
-    return `${displayName} - ${getVariantColorLabel(selectedColor)}`
-  }
+const getVariantDisplayNameWithColor = (
+  variant: ProductVariantLiteForInput,
+) => {
+  const displayName = variant.displayName || `Sản phẩm #${variant.id}`;
+  const selectedColor = getSelectedVariantColor(variant);
+  if (!selectedColor) return displayName;
+  return `${displayName} - ${getVariantColorLabel(selectedColor)}`;
+};
 
-  const productSelectorVisible = ref(false)
-  const productSelectorLoading = ref(false)
-  const productSelectorQuery = ref('')
-  const productSelectorPage = ref(1)
-  const productSelectorPageSize = ref(10)
-  const productSelectorTotal = ref(0)
-  const productSelectorItems = ref<ProductVariantLiteForInput[]>([])
-  const selectedVariantColors = reactive<Record<string, number | undefined>>({})
-  const productSelectorActiveRowIndex = ref<number | null>(null)
+const productSelectorVisible = ref(false);
+const productSelectorLoading = ref(false);
+const productSelectorQuery = ref("");
+const productSelectorPage = ref(1);
+const productSelectorPageSize = ref(10);
+const productSelectorTotal = ref(0);
+const productSelectorItems = ref<ProductVariantLiteForInput[]>([]);
+const selectedVariantColors = reactive<Record<string, number | undefined>>({});
+const productSelectorActiveRowIndex = ref<number | null>(null);
 
-  const initializeVariantColorSelection = (variants: ProductVariantLiteForInput[]) => {
-    variants.forEach((variant) => {
-      const key = getVariantColorKey(variant)
-      if (selectedVariantColors[key] || !variant.colors?.length) return
-      selectedVariantColors[key] = variant.colors[0].id
-    })
-  }
+const initializeVariantColorSelection = (
+  variants: ProductVariantLiteForInput[],
+) => {
+  variants.forEach((variant) => {
+    const key = getVariantColorKey(variant);
+    if (selectedVariantColors[key] || !variant.colors?.length) return;
+    selectedVariantColors[key] = variant.colors[0].id;
+  });
+};
 
-  const fetchSelectorProducts = async () => {
-    productSelectorLoading.value = true
-    try {
-      const filters = []
-      if (productSelectorQuery.value.trim()) {
-        filters.push(`search@=${productSelectorQuery.value.trim()}`)
-      }
-      const res = await ProductApi.getVariantsForInput({
-        current: productSelectorPage.value,
-        size: productSelectorPageSize.value,
-        Filters: filters.join(',')
-      })
-      productSelectorItems.value = res.items || []
-      initializeVariantColorSelection(productSelectorItems.value)
-      productSelectorTotal.value = res.totalCount || 0
-    } catch (err) {
-      console.error('Failed to fetch selector products:', err)
-    } finally {
-      productSelectorLoading.value = false
+const fetchSelectorProducts = async () => {
+  productSelectorLoading.value = true;
+  try {
+    const filters = [];
+    if (productSelectorQuery.value.trim()) {
+      filters.push(`search@=${productSelectorQuery.value.trim()}`);
     }
+    const res = await ProductApi.getVariantsForInput({
+      current: productSelectorPage.value,
+      size: productSelectorPageSize.value,
+      Filters: filters.join(","),
+    });
+    productSelectorItems.value = res.items || [];
+    initializeVariantColorSelection(productSelectorItems.value);
+    productSelectorTotal.value = res.totalCount || 0;
+  } catch (err) {
+    console.error("Failed to fetch selector products:", err);
+  } finally {
+    productSelectorLoading.value = false;
+  }
+};
+
+const openProductSelector = (rowIndex?: number) => {
+  productSelectorActiveRowIndex.value =
+    rowIndex !== undefined ? rowIndex : null;
+  productSelectorQuery.value = "";
+  productSelectorPage.value = 1;
+  productSelectorVisible.value = true;
+  fetchSelectorProducts();
+};
+
+const selectProductVariant = (variant: ProductVariantLiteForInput) => {
+  if (!variant.id) return;
+  const productVariantColorId =
+    selectedVariantColors[getVariantColorKey(variant)];
+  if (variant.colors?.length && !productVariantColorId) {
+    ElMessage.warning("Vui lòng chọn màu cho biến thể sản phẩm này");
+    return;
   }
 
-  const openProductSelector = (rowIndex?: number) => {
-    productSelectorActiveRowIndex.value = rowIndex !== undefined ? rowIndex : null
-    productSelectorQuery.value = ''
-    productSelectorPage.value = 1
-    productSelectorVisible.value = true
-    fetchSelectorProducts()
-  }
+  const displayName = getVariantDisplayNameWithColor(variant);
+  const selectedColor = getSelectedVariantColor(variant);
+  productCache.set(variant.id, {
+    displayName,
+    colorName: selectedColor?.colorName,
+  });
 
-  const selectProductVariant = (variant: ProductVariantLiteForInput) => {
-    if (!variant.id) return
-    const productVariantColorId = selectedVariantColors[getVariantColorKey(variant)]
-    if (variant.colors?.length && !productVariantColorId) {
-      ElMessage.warning('Vui lòng chọn màu cho biến thể sản phẩm này')
-      return
-    }
+  if (productSelectorActiveRowIndex.value !== null) {
+    const idx = productSelectorActiveRowIndex.value;
+    if (formData.value.items[idx]) {
+      const row = formData.value.items[idx];
 
-    const displayName = getVariantDisplayNameWithColor(variant)
-    const selectedColor = getSelectedVariantColor(variant)
-    productCache.set(variant.id, {
-      displayName,
-      colorName: selectedColor?.colorName
-    })
-
-    if (productSelectorActiveRowIndex.value !== null) {
-      const idx = productSelectorActiveRowIndex.value
-      if (formData.value.items[idx]) {
-        const row = formData.value.items[idx]
-
-        const existsIdx = formData.value.items.findIndex(
-          (item, i) =>
-            i !== idx &&
-            item.productVariantId === variant.id &&
-            item.productVariantColorId === productVariantColorId
-        )
-
-        if (existsIdx > -1) {
-          formData.value.items[existsIdx].quantity =
-            (formData.value.items[existsIdx].quantity || 0) + (row.quantity || 1)
-          formData.value.items.splice(idx, 1)
-          ElMessage.success('Sản phẩm đã tồn tại trong yêu cầu. Đã gộp và cộng dồn số lượng.')
-        } else {
-          row.productVariantId = variant.id
-          row.productVariantColorId = productVariantColorId
-          row.productVariantColorName = selectedColor?.colorName
-        }
-      }
-    } else {
-      const items = formData.value.items
-      const lastRow = items[items.length - 1]
-
-      const existsIdx = items.findIndex(
-        (item) =>
+      const existsIdx = formData.value.items.findIndex(
+        (item, i) =>
+          i !== idx &&
           item.productVariantId === variant.id &&
-          item.productVariantColorId === productVariantColorId
-      )
+          item.productVariantColorId === productVariantColorId,
+      );
 
       if (existsIdx > -1) {
-        items[existsIdx].quantity = (items[existsIdx].quantity || 0) + 1
-        if (lastRow && lastRow.productVariantId === undefined) {
-          items.splice(items.length - 1, 1)
-        }
+        formData.value.items[existsIdx].quantity =
+          (formData.value.items[existsIdx].quantity || 0) + (row.quantity || 1);
+        formData.value.items.splice(idx, 1);
+        ElMessage.success(
+          "Sản phẩm đã tồn tại trong yêu cầu. Đã gộp và cộng dồn số lượng.",
+        );
       } else {
-        if (lastRow && lastRow.productVariantId === undefined) {
-          lastRow.productVariantId = variant.id
-          lastRow.productVariantColorId = productVariantColorId
-          lastRow.productVariantColorName = selectedColor?.colorName
-        } else {
-          items.push({
-            productVariantId: variant.id,
-            productVariantColorId,
-            productVariantColorName: selectedColor?.colorName,
-            quantity: 1
-          })
-        }
+        row.productVariantId = variant.id;
+        row.productVariantColorId = productVariantColorId;
+        row.productVariantColorName = selectedColor?.colorName;
       }
     }
-    productSelectorVisible.value = false
-  }
+  } else {
+    const items = formData.value.items;
+    const lastRow = items[items.length - 1];
 
-  const handleProductSelectorSearch = useDebounceFn(async (query: string) => {
-    productSelectorQuery.value = query
-    productSelectorPage.value = 1
-    await fetchSelectorProducts()
-  }, 300)
+    const existsIdx = items.findIndex(
+      (item) =>
+        item.productVariantId === variant.id &&
+        item.productVariantColorId === productVariantColorId,
+    );
 
-  const formData = ref<{
-    id?: number
-    note: string
-    items: Array<{
-      id?: number
-      productVariantId: number | undefined
-      productVariantColorId?: number
-      productVariantColorName?: string
-      quantity: number
-      productQuotationId?: number
-      unitPrice?: number
-      supplierId?: number
-      supplierName?: string
-    }>
-  }>({
-    note: '',
-    items: []
-  })
-
-  const data = ref<PurchaseRequestListResponse[]>([])
-  const pagination = reactive({
-    current: 1,
-    size: 10,
-    total: 0
-  })
-
-  const statusMap = ref<Record<string, string>>({})
-
-  const fetchStatuses = async () => {
-    try {
-      const res = await PurchaseRequestApi.getStatuses()
-      statusMap.value = res || {}
-    } catch (e) {
-      console.error('Failed to load purchase request statuses', e)
-    }
-  }
-
-  const quoteDialogVisible = ref(false)
-  const activeQuoteRowIndex = ref<number | null>(null)
-  const quoteLoading = ref(false)
-  const quotesList = ref<any[]>([])
-  const quotePage = ref(1)
-  const quotePageSize = ref(5)
-  const quoteTotal = computed(() => quotesList.value.length)
-
-  const formatCurrency = (value?: number) => {
-    if (value === undefined || value === null) return '0 ₫'
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
-  }
-
-  const paginatedQuotes = computed(() => {
-    const start = (quotePage.value - 1) * quotePageSize.value
-    const end = start + quotePageSize.value
-    return quotesList.value.slice(start, end)
-  })
-
-  const openQuoteDialog = async (row: any, index: number) => {
-    if (!row.productVariantId) {
-      ElMessage.warning('Vui lòng chọn sản phẩm trước khi chọn báo giá')
-      return
-    }
-    activeQuoteRowIndex.value = index
-    quoteDialogVisible.value = true
-    quotePage.value = 1
-    quoteLoading.value = true
-    try {
-      const res = await QuotationApi.getApprovedPrices(
-        row.productVariantId,
-        row.productVariantColorId
-      )
-      quotesList.value = res || []
-    } catch (e) {
-      console.error(e)
-      ElMessage.error('Không thể tải danh sách báo giá')
-      quotesList.value = []
-    } finally {
-      quoteLoading.value = false
-    }
-  }
-
-  const applyQuoteFromDialog = (quote: any) => {
-    if (activeQuoteRowIndex.value !== null) {
-      const row = formData.value.items[activeQuoteRowIndex.value]
-      if (row) {
-        row.productQuotationId = quote.productQuotationId
-        row.supplierId = quote.supplierId
-        row.supplierName = quote.supplierName
-        row.unitPrice = quote.quotePrice
-        ElMessage.success('Đã áp dụng báo giá')
+    if (existsIdx > -1) {
+      items[existsIdx].quantity = (items[existsIdx].quantity || 0) + 1;
+      if (lastRow && lastRow.productVariantId === undefined) {
+        items.splice(items.length - 1, 1);
       }
-      quoteDialogVisible.value = false
-    }
-  }
-
-  const searchForm = ref({
-    status: [] as string[]
-  })
-
-  const searchItems = computed(() => [
-    {
-      key: 'status',
-      label: 'Trạng thái',
-      type: 'select',
-      props: {
-        placeholder: 'Tất cả trạng thái',
-        clearable: true,
-        multiple: true,
-        collapseTags: true,
-        options: Object.entries(statusMap.value).map(([key, label]) => ({
-          label,
-          value: key
-        }))
+    } else {
+      if (lastRow && lastRow.productVariantId === undefined) {
+        lastRow.productVariantId = variant.id;
+        lastRow.productVariantColorId = productVariantColorId;
+        lastRow.productVariantColorName = selectedColor?.colorName;
+      } else {
+        items.push({
+          productVariantId: variant.id,
+          productVariantColorId,
+          productVariantColorName: selectedColor?.colorName,
+          quantity: 1,
+        });
       }
     }
-  ])
+  }
+  productSelectorVisible.value = false;
+};
 
-  const columns = ref([
-    { label: 'Thời gian tạo', prop: 'createdAt', useSlot: true, width: 170 },
-    { label: 'Ghi chú', prop: 'note', minWidth: 200 },
-    { label: 'Người tạo', prop: 'createdByName', minWidth: 150 },
-    { label: 'Số mặt hàng', prop: 'totalItems', width: 120, align: 'center' },
-    { label: 'Trạng thái', prop: 'status', useSlot: true, width: 130, align: 'center' },
-    {
-      label: 'Thao tác',
-      prop: 'operation',
-      useSlot: true,
-      width: 170,
-      fixed: 'right' as const,
-      align: 'center'
+const handleProductSelectorSearch = useDebounceFn(async (query: string) => {
+  productSelectorQuery.value = query;
+  productSelectorPage.value = 1;
+  await fetchSelectorProducts();
+}, 300);
+
+const formData = ref<{
+  id?: number;
+  note: string;
+  items: Array<{
+    id?: number;
+    productVariantId: number | undefined;
+    productVariantColorId?: number;
+    productVariantColorName?: string;
+    quantity: number;
+    productQuotationId?: number;
+    unitPrice?: number;
+    supplierId?: number;
+    supplierName?: string;
+  }>;
+}>({
+  note: "",
+  items: [],
+});
+
+const data = ref<PurchaseRequestListResponse[]>([]);
+const pagination = reactive({
+  current: 1,
+  size: 10,
+  total: 0,
+});
+
+const statusMap = ref<Record<string, string>>({});
+
+const fetchStatuses = async () => {
+  try {
+    const res = await PurchaseRequestApi.getStatuses();
+    statusMap.value = res || {};
+  } catch (e) {
+    console.error("Failed to load purchase request statuses", e);
+  }
+};
+
+const quoteDialogVisible = ref(false);
+const activeQuoteRowIndex = ref<number | null>(null);
+const quoteLoading = ref(false);
+const quotesList = ref<any[]>([]);
+const quotePage = ref(1);
+const quotePageSize = ref(5);
+const quoteTotal = computed(() => quotesList.value.length);
+
+const formatCurrency = (value?: number) => {
+  if (value === undefined || value === null) return "0 ₫";
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(value);
+};
+
+const paginatedQuotes = computed(() => {
+  const start = (quotePage.value - 1) * quotePageSize.value;
+  const end = start + quotePageSize.value;
+  return quotesList.value.slice(start, end);
+});
+
+const openQuoteDialog = async (row: any, index: number) => {
+  if (!row.productVariantId) {
+    ElMessage.warning("Vui lòng chọn sản phẩm trước khi chọn báo giá");
+    return;
+  }
+  activeQuoteRowIndex.value = index;
+  quoteDialogVisible.value = true;
+  quotePage.value = 1;
+  quoteLoading.value = true;
+  try {
+    const res = await QuotationApi.getApprovedPrices(
+      row.productVariantId,
+      row.productVariantColorId,
+    );
+    quotesList.value = res || [];
+  } catch (e) {
+    console.error(e);
+    ElMessage.error("Không thể tải danh sách báo giá");
+    quotesList.value = [];
+  } finally {
+    quoteLoading.value = false;
+  }
+};
+
+const applyQuoteFromDialog = (quote: any) => {
+  if (activeQuoteRowIndex.value !== null) {
+    const row = formData.value.items[activeQuoteRowIndex.value];
+    if (row) {
+      row.productQuotationId = quote.productQuotationId;
+      row.supplierId = quote.supplierId;
+      row.supplierName = quote.supplierName;
+      row.unitPrice = quote.quotePrice;
+      ElMessage.success("Đã áp dụng báo giá");
     }
-  ])
-
-  const columnChecks = columns
-
-  const getStatusLabel = (status?: string) => {
-    if (!status) return '-'
-    return statusMap.value[status.toLowerCase()] || status
+    quoteDialogVisible.value = false;
   }
+};
 
-  const getStatusTagType = (status?: string) => {
-    switch (status?.toLowerCase()) {
-      case 'draft':
-        return 'info'
-      case 'sent':
-        return 'warning'
-      case 'approve':
-      case 'approved':
-        return 'success'
-      case 'reject':
-      case 'rejected':
-        return 'danger'
-      default:
-        return 'info'
+const searchForm = ref({
+  status: [] as string[],
+});
+
+const searchItems = computed(() => [
+  {
+    key: "status",
+    label: "Trạng thái",
+    type: "select",
+    props: {
+      placeholder: "Tất cả trạng thái",
+      clearable: true,
+      multiple: true,
+      collapseTags: true,
+      options: Object.entries(statusMap.value).map(([key, label]) => ({
+        label,
+        value: key,
+      })),
+    },
+  },
+]);
+
+const columns = ref([
+  { label: "Thời gian tạo", prop: "createdAt", useSlot: true, width: 170 },
+  { label: "Ghi chú", prop: "note", minWidth: 200 },
+  { label: "Người tạo", prop: "createdByName", minWidth: 150 },
+  { label: "Số mặt hàng", prop: "totalItems", width: 120, align: "center" },
+  {
+    label: "Trạng thái",
+    prop: "status",
+    useSlot: true,
+    width: 130,
+    align: "center",
+  },
+  {
+    label: "Đã nhập toàn bộ",
+    prop: "isFullyImported",
+    useSlot: true,
+    width: 150,
+    align: "center",
+  },
+  {
+    label: "Thao tác",
+    prop: "operation",
+    useSlot: true,
+    width: 170,
+    fixed: "right" as const,
+    align: "center",
+  },
+]);
+
+const columnChecks = columns;
+
+const getStatusLabel = (status?: string) => {
+  if (!status) return "-";
+  return statusMap.value[status.toLowerCase()] || status;
+};
+
+const getStatusTagType = (status?: string) => {
+  switch (status?.toLowerCase()) {
+    case "draft":
+      return "info";
+    case "sent":
+      return "warning";
+    case "approve":
+    case "approved":
+      return "success";
+    case "reject":
+    case "rejected":
+      return "danger";
+    default:
+      return "info";
+  }
+};
+
+const formatDateTime = (dateStr?: string) => {
+  if (!dateStr) return "-";
+  return new Date(dateStr).toLocaleString("vi-VN");
+};
+
+const refreshData = () => {
+  loadData();
+};
+
+const loadData = async () => {
+  loading.value = true;
+  try {
+    const sieveFilters = [];
+    if (searchForm.value.status && searchForm.value.status.length > 0) {
+      sieveFilters.push(`Status==${searchForm.value.status.join("|")}`);
     }
+
+    const res = await PurchaseRequestApi.getList({
+      current: pagination.current,
+      size: pagination.size,
+      Filters: sieveFilters.join(",") || undefined,
+      Sorts: "-createdAt",
+    });
+
+    data.value = res.items || [];
+    pagination.total = res.totalCount || 0;
+  } catch (error) {
+    console.error(error);
+    ElMessage.error("Không thể tải danh sách Yêu cầu mua hàng");
+  } finally {
+    loading.value = false;
   }
+};
 
-  const formatDateTime = (dateStr?: string) => {
-    if (!dateStr) return '-'
-    return new Date(dateStr).toLocaleString('vi-VN')
-  }
+const handleSearch = () => {
+  pagination.current = 1;
+  loadData();
+};
 
-  const refreshData = () => {
-    loadData()
-  }
+const handleReset = () => {
+  searchForm.value.status = [];
+  pagination.current = 1;
+  loadData();
+};
 
-  const loadData = async () => {
-    loading.value = true
-    try {
-      const sieveFilters = []
-      if (searchForm.value.status && searchForm.value.status.length > 0) {
-        sieveFilters.push(`Status==${searchForm.value.status.join('|')}`)
-      }
+const handleSizeChange = (size: number) => {
+  pagination.size = size;
+  pagination.current = 1;
+  loadData();
+};
 
-      const res = await PurchaseRequestApi.getList({
-        current: pagination.current,
-        size: pagination.size,
-        Filters: sieveFilters.join(',') || undefined,
-        Sorts: '-createdAt'
-      })
+const handleCurrentChange = (page: number) => {
+  pagination.current = page;
+  loadData();
+};
 
-      data.value = res.items || []
-      pagination.total = res.totalCount || 0
-    } catch (error) {
-      console.error(error)
-      ElMessage.error('Không thể tải danh sách Yêu cầu mua hàng')
-    } finally {
-      loading.value = false
-    }
-  }
+const handleAdd = () => {
+  isEdit.value = false;
+  dialogTitle.value = "Tạo yêu cầu mua hàng mới";
+  formData.value = {
+    note: "",
+    items: [],
+  };
+  dialogVisible.value = true;
+};
 
-  const handleSearch = () => {
-    pagination.current = 1
-    loadData()
-  }
+const handleEdit = async (row: PurchaseRequestListResponse) => {
+  try {
+    loading.value = true;
+    const detail = await PurchaseRequestApi.getById(row.id);
+    isEdit.value = true;
+    dialogTitle.value = `Chỉnh sửa Yêu cầu mua hàng #${detail.id}`;
 
-  const handleReset = () => {
-    searchForm.value.status = []
-    pagination.current = 1
-    loadData()
-  }
+    detail.items.forEach((item) => {
+      productCache.set(item.productVariantId, {
+        displayName: item.productName || `Biến thể #${item.productVariantId}`,
+        colorName: item.productVariantColorName,
+      });
+    });
 
-  const handleSizeChange = (size: number) => {
-    pagination.size = size
-    pagination.current = 1
-    loadData()
-  }
-
-  const handleCurrentChange = (page: number) => {
-    pagination.current = page
-    loadData()
-  }
-
-  const handleAdd = () => {
-    isEdit.value = false
-    dialogTitle.value = 'Tạo yêu cầu mua hàng mới'
     formData.value = {
-      note: '',
-      items: []
-    }
-    dialogVisible.value = true
+      id: detail.id,
+      note: detail.note || "",
+      items: detail.items.map((item) => ({
+        id: item.id,
+        productVariantId: item.productVariantId,
+        productVariantColorId: item.productVariantColorId,
+        productVariantColorName: item.productVariantColorName,
+        quantity: item.quantity,
+        productQuotationId: item.productQuotationId,
+        supplierId: item.supplierId,
+        supplierName: item.supplierName,
+        unitPrice: item.unitPrice,
+        maxUnimportedQuantity: item.unimportedQuantity,
+      })),
+    };
+    dialogVisible.value = true;
+  } catch (e) {
+    console.error(e);
+    ElMessage.error("Không thể tải chi tiết yêu cầu");
+  } finally {
+    loading.value = false;
   }
+};
 
-  const handleEdit = async (row: PurchaseRequestListResponse) => {
-    try {
-      loading.value = true
-      const detail = await PurchaseRequestApi.getById(row.id)
-      isEdit.value = true
-      dialogTitle.value = `Chỉnh sửa Yêu cầu mua hàng #${detail.id}`
-
-      detail.items.forEach((item) => {
-        productCache.set(item.productVariantId, {
-          displayName: item.productName || `Biến thể #${item.productVariantId}`,
-          colorName: item.productVariantColorName
-        })
-      })
-
-      formData.value = {
-        id: detail.id,
-        note: detail.note || '',
-        items: detail.items.map((item) => ({
-          id: item.id,
-          productVariantId: item.productVariantId,
-          productVariantColorId: item.productVariantColorId,
-          productVariantColorName: item.productVariantColorName,
-          quantity: item.quantity,
-          productQuotationId: item.productQuotationId,
-          supplierId: item.supplierId,
-          supplierName: item.supplierName,
-          unitPrice: item.unitPrice,
-          maxUnimportedQuantity: item.unimportedQuantity
-        }))
-      }
-      dialogVisible.value = true
-    } catch (e) {
-      console.error(e)
-      ElMessage.error('Không thể tải chi tiết yêu cầu')
-    } finally {
-      loading.value = false
-    }
-  }
-
-  const handleDelete = async (row: PurchaseRequestListResponse) => {
-    try {
-      await ElMessageBox.confirm(
-        `Bạn có chắc muốn xóa yêu cầu mua hàng #${row.id}?`,
-        'Xác nhận xóa',
-        {
-          confirmButtonText: 'Xóa',
-          cancelButtonText: 'Hủy',
-          type: 'warning'
-        }
-      )
-      await PurchaseRequestApi.delete(row.id)
-      ElMessage.success('Xóa yêu cầu thành công')
-      loadData()
-    } catch (e) {
-      if (e !== 'cancel') {
-        ElMessage.error('Xóa Có lỗi từ hệ thống')
-      }
+const handleDelete = async (row: PurchaseRequestListResponse) => {
+  try {
+    await ElMessageBox.confirm(
+      `Bạn có chắc muốn xóa yêu cầu mua hàng #${row.id}?`,
+      "Xác nhận xóa",
+      {
+        confirmButtonText: "Xóa",
+        cancelButtonText: "Hủy",
+        type: "warning",
+      },
+    );
+    await PurchaseRequestApi.delete(row.id);
+    ElMessage.success("Xóa yêu cầu thành công");
+    loadData();
+  } catch (e) {
+    if (e !== "cancel") {
+      ElMessage.error("Xóa Có lỗi từ hệ thống");
     }
   }
+};
 
-  const handleSendRequest = async (row: any) => {
-    try {
-      await ElMessageBox.confirm(
-        `Gửi yêu cầu mua hàng #${row.id} lên cấp trên phê duyệt?`,
-        'Gửi phê duyệt',
-        {
-          confirmButtonText: 'Gửi',
-          cancelButtonText: 'Hủy',
-          type: 'info'
-        }
-      )
-      await PurchaseRequestApi.send(row.id)
-      ElMessage.success('Gửi phê duyệt thành công')
-      loadData()
-      if (detailDialogVisible.value && detailData.value?.id === row.id) {
-        detailDialogVisible.value = false
-      }
-    } catch (e) {
-      if (e !== 'cancel') {
-        ElMessage.error('Gửi duyệt thất bại')
-      }
+const handleSendRequest = async (row: any) => {
+  try {
+    await ElMessageBox.confirm(
+      `Gửi yêu cầu mua hàng #${row.id} lên cấp trên phê duyệt?`,
+      "Gửi phê duyệt",
+      {
+        confirmButtonText: "Gửi",
+        cancelButtonText: "Hủy",
+        type: "info",
+      },
+    );
+    await PurchaseRequestApi.send(row.id);
+    ElMessage.success("Gửi phê duyệt thành công");
+    loadData();
+    if (detailDialogVisible.value && detailData.value?.id === row.id) {
+      detailDialogVisible.value = false;
+    }
+  } catch (e) {
+    if (e !== "cancel") {
+      ElMessage.error("Gửi duyệt thất bại");
     }
   }
+};
 
-  const handleViewDetail = async (row: PurchaseRequestListResponse) => {
-    try {
-      loading.value = true
-      detailData.value = await PurchaseRequestApi.getById(row.id)
-      detailDialogVisible.value = true
-    } catch (e) {
-      console.error(e)
-      ElMessage.error('Không thể lấy chi tiết yêu cầu')
-    } finally {
-      loading.value = false
+const handleViewDetail = async (row: PurchaseRequestListResponse) => {
+  try {
+    loading.value = true;
+    detailData.value = await PurchaseRequestApi.getById(row.id);
+    detailDialogVisible.value = true;
+  } catch (e) {
+    console.error(e);
+    ElMessage.error("Không thể lấy chi tiết yêu cầu");
+  } finally {
+    loading.value = false;
+  }
+};
+
+const handleApproveRejectStatus = async (
+  id: number,
+  status: "approve" | "reject",
+) => {
+  try {
+    const verb = status === "approve" ? "phê duyệt" : "từ chối";
+    await ElMessageBox.confirm(
+      `Bạn có chắc muốn ${verb} yêu cầu mua hàng #${id}?`,
+      "Xác nhận hành động",
+      {
+        confirmButtonText: "Xác nhận",
+        cancelButtonText: "Hủy",
+        type: status === "approve" ? "success" : "warning",
+      },
+    );
+    await PurchaseRequestApi.approveReject(id, status);
+    ElMessage.success(`Đã ${verb} yêu cầu mua hàng`);
+    if (detailDialogVisible.value && detailData.value?.id === id) {
+      detailDialogVisible.value = false;
+    }
+    loadData();
+  } catch (e) {
+    if (e !== "cancel") {
+      ElMessage.error("Cập nhật trạng thái thất bại");
     }
   }
+};
 
-  const handleApproveRejectStatus = async (id: number, status: 'approve' | 'reject') => {
-    try {
-      const verb = status === 'approve' ? 'phê duyệt' : 'từ chối'
-      await ElMessageBox.confirm(
-        `Bạn có chắc muốn ${verb} yêu cầu mua hàng #${id}?`,
-        'Xác nhận hành động',
-        {
-          confirmButtonText: 'Xác nhận',
-          cancelButtonText: 'Hủy',
-          type: status === 'approve' ? 'success' : 'warning'
-        }
-      )
-      await PurchaseRequestApi.approveReject(id, status)
-      ElMessage.success(`Đã ${verb} yêu cầu mua hàng`)
-      if (detailDialogVisible.value && detailData.value?.id === id) {
-        detailDialogVisible.value = false
-      }
-      loadData()
-    } catch (e) {
-      if (e !== 'cancel') {
-        ElMessage.error('Cập nhật trạng thái thất bại')
-      }
+const handleAddProductRow = () => {
+  openProductSelector();
+};
+
+const handleRemoveProductRow = (index: number) => {
+  formData.value.items.splice(index, 1);
+};
+
+const submitForm = async () => {
+  const validItems = formData.value.items.filter(
+    (x) => x.productVariantId !== undefined && x.productVariantId !== null,
+  );
+
+  if (validItems.length === 0) {
+    ElMessage.warning("Vui lòng thêm ít nhất một sản phẩm yêu cầu");
+    return;
+  }
+
+  submitting.value = true;
+  try {
+    if (isEdit.value && formData.value.id) {
+      const payload = {
+        note: formData.value.note,
+        items: validItems.map((i) => ({
+          id: i.id,
+          productVariantId: i.productVariantId,
+          productVariantColorId: i.productVariantColorId,
+          quantity: i.quantity,
+          productQuotationId: i.productQuotationId,
+          supplierId: i.supplierId,
+          unitPrice: i.unitPrice,
+        })),
+      };
+      await PurchaseRequestApi.update(formData.value.id, payload);
+      ElMessage.success("Cập nhật yêu cầu mua hàng thành công");
+    } else {
+      const payload = {
+        note: formData.value.note,
+        items: validItems.map((i) => ({
+          productVariantId: i.productVariantId,
+          productVariantColorId: i.productVariantColorId,
+          quantity: i.quantity,
+          productQuotationId: i.productQuotationId,
+          supplierId: i.supplierId,
+          unitPrice: i.unitPrice,
+        })),
+      };
+      await PurchaseRequestApi.create(payload);
+      ElMessage.success("Tạo yêu cầu mua hàng thành công");
     }
+    dialogVisible.value = false;
+    loadData();
+  } catch (e: any) {
+    console.error(e);
+    ElMessage.error(e.message || "Lưu yêu cầu mua hàng thất bại");
+  } finally {
+    submitting.value = false;
   }
+};
 
-  const handleAddProductRow = () => {
-    openProductSelector()
-  }
-
-  const handleRemoveProductRow = (index: number) => {
-    formData.value.items.splice(index, 1)
-  }
-
-  const submitForm = async () => {
-    const validItems = formData.value.items.filter(
-      (x) => x.productVariantId !== undefined && x.productVariantId !== null
-    )
-
-    if (validItems.length === 0) {
-      ElMessage.warning('Vui lòng thêm ít nhất một sản phẩm yêu cầu')
-      return
-    }
-
-    submitting.value = true
-    try {
-      if (isEdit.value && formData.value.id) {
-        const payload = {
-          note: formData.value.note,
-          items: validItems.map((i) => ({
-            id: i.id,
-            productVariantId: i.productVariantId,
-            productVariantColorId: i.productVariantColorId,
-            quantity: i.quantity,
-            productQuotationId: i.productQuotationId,
-            supplierId: i.supplierId,
-            unitPrice: i.unitPrice
-          }))
-        }
-        await PurchaseRequestApi.update(formData.value.id, payload)
-        ElMessage.success('Cập nhật yêu cầu mua hàng thành công')
-      } else {
-        const payload = {
-          note: formData.value.note,
-          items: validItems.map((i) => ({
-            productVariantId: i.productVariantId,
-            productVariantColorId: i.productVariantColorId,
-            quantity: i.quantity,
-            productQuotationId: i.productQuotationId,
-            supplierId: i.supplierId,
-            unitPrice: i.unitPrice
-          }))
-        }
-        await PurchaseRequestApi.create(payload)
-        ElMessage.success('Tạo yêu cầu mua hàng thành công')
-      }
-      dialogVisible.value = false
-      loadData()
-    } catch (e: any) {
-      console.error(e)
-      ElMessage.error(e.message || 'Lưu yêu cầu mua hàng thất bại')
-    } finally {
-      submitting.value = false
-    }
-  }
-
-  onMounted(async () => {
-    await fetchStatuses()
-    await loadData()
-  })
+onMounted(async () => {
+  await fetchStatuses();
+  await loadData();
+});
 </script>
 
 <style scoped>
-  :deep(.el-table) {
-    --el-table-header-bg-color: var(--el-fill-color-light);
-  }
+:deep(.el-table) {
+  --el-table-header-bg-color: var(--el-fill-color-light);
+}
 </style>

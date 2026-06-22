@@ -9,7 +9,7 @@
     popper-class="fast-enter-popover"
     :popper-style="{
       border: '1px solid var(--default-border)',
-      borderRadius: 'calc(var(--custom-radius) / 2 + 4px)'
+      borderRadius: 'calc(var(--custom-radius) / 2 + 4px)',
     }"
   >
     <template #reference>
@@ -27,7 +27,9 @@
             class="mr-3 c-p flex-c gap-3 rounded-lg p-2 hover:bg-g-200/70 dark:hover:bg-g-200/90 hover:[&_.app-icon]:!bg-transparent"
             @click="handleApplicationClick(application)"
           >
-            <div class="app-icon size-12 flex-cc rounded-lg bg-g-200/80 dark:bg-g-300/30">
+            <div
+              class="app-icon size-12 flex-cc rounded-lg bg-g-200/80 dark:bg-g-300/30"
+            >
               <ArtSvgIcon
                 class="text-xl"
                 :icon="application.icon"
@@ -35,8 +37,12 @@
               />
             </div>
             <div>
-              <h3 class="m-0 text-sm font-medium text-g-800">{{ application.name }}</h3>
-              <p class="mt-1 text-xs text-g-600">{{ application.description }}</p>
+              <h3 class="m-0 text-sm font-medium text-g-800">
+                {{ application.name }}
+              </h3>
+              <p class="mt-1 text-xs text-g-600">
+                {{ application.description }}
+              </p>
             </div>
           </div>
         </div>
@@ -60,38 +66,40 @@
 </template>
 
 <script setup lang="ts">
-  import { useFastEnter } from '@/hooks/core/useFastEnter'
-  import type { FastEnterApplication, FastEnterQuickLink } from '@/types/config'
+import { useFastEnter } from "@/hooks/core/useFastEnter";
+import type { FastEnterApplication, FastEnterQuickLink } from "@/types/config";
 
-  defineOptions({ name: 'ArtFastEnter' })
+defineOptions({ name: "ArtFastEnter" });
 
-  const router = useRouter()
-  const popoverRef = ref()
+const router = useRouter();
+const popoverRef = ref();
 
-  const { enabledApplications, enabledQuickLinks } = useFastEnter()
+const { enabledApplications, enabledQuickLinks } = useFastEnter();
 
-  const handleNavigate = (routeName?: string, link?: string): void => {
-    const targetPath = routeName || link
+const handleNavigate = (routeName?: string, link?: string): void => {
+  const targetPath = routeName || link;
 
-    if (!targetPath) {
-      console.warn('Điều hướngCauHinhvôhiệu：thiếuthiểuRoutingdanhtênhoặcliêntiếp')
-      return
-    }
-
-    if (targetPath.startsWith('http')) {
-      window.open(targetPath, '_blank')
-    } else {
-      router.push({ name: targetPath })
-    }
-
-    popoverRef.value?.hide()
+  if (!targetPath) {
+    console.warn(
+      "Điều hướngCauHinhvôhiệu：thiếuthiểuRoutingdanhtênhoặcliêntiếp",
+    );
+    return;
   }
 
-  const handleApplicationClick = (application: FastEnterApplication): void => {
-    handleNavigate(application.routeName, application.link)
+  if (targetPath.startsWith("http")) {
+    window.open(targetPath, "_blank");
+  } else {
+    router.push({ name: targetPath });
   }
 
-  const handleQuickLinkClick = (quickLink: FastEnterQuickLink): void => {
-    handleNavigate(quickLink.routeName, quickLink.link)
-  }
+  popoverRef.value?.hide();
+};
+
+const handleApplicationClick = (application: FastEnterApplication): void => {
+  handleNavigate(application.routeName, application.link);
+};
+
+const handleQuickLinkClick = (quickLink: FastEnterQuickLink): void => {
+  handleNavigate(quickLink.routeName, quickLink.link);
+};
 </script>

@@ -1,112 +1,112 @@
-import { MenuThemeEnum, SystemThemeEnum } from '@/enums/appEnum'
-import { LocationQueryRaw } from 'vue-router'
+import { MenuThemeEnum, SystemThemeEnum } from "@/enums/appEnum";
+import { LocationQueryRaw } from "vue-router";
 
 export interface SystemThemeType {
-  className: string
+  className: string;
 }
 
 export type SystemThemeTypes = {
-  [key in Exclude<SystemThemeEnum, SystemThemeEnum.AUTO>]: SystemThemeType
-}
+  [key in Exclude<SystemThemeEnum, SystemThemeEnum.AUTO>]: SystemThemeType;
+};
 
 export interface MenuThemeType {
-  theme: MenuThemeEnum
+  theme: MenuThemeEnum;
 
-  background: string
+  background: string;
 
-  systemNameColor: string
+  systemNameColor: string;
 
-  textColor: string
+  textColor: string;
 
-  iconColor: string
+  iconColor: string;
 
-  img?: string
+  img?: string;
 }
 
 export interface SettingState {
-  theme: string
+  theme: string;
 
-  uniqueOpened: boolean
+  uniqueOpened: boolean;
 
-  menuButton: boolean
+  menuButton: boolean;
 
-  showRefreshButton: boolean
+  showRefreshButton: boolean;
 
-  showCrumbs: boolean
+  showCrumbs: boolean;
 
-  autoClose: boolean
+  autoClose: boolean;
 
-  showWorkTab: boolean
+  showWorkTab: boolean;
 
-  showLanguage: boolean
+  showLanguage: boolean;
 
-  showNprogress: boolean
+  showNprogress: boolean;
 
-  themeModel: string
+  themeModel: string;
 }
 
 export interface WorkTab {
-  title: string
+  title: string;
 
-  customTitle?: string
+  customTitle?: string;
 
-  path: string
+  path: string;
 
-  name: string
+  name: string;
 
-  keepAlive: boolean
+  keepAlive: boolean;
 
-  fixedTab?: boolean
+  fixedTab?: boolean;
 
-  params?: object
+  params?: object;
 
-  query?: LocationQueryRaw
+  query?: LocationQueryRaw;
 
-  icon?: string
+  icon?: string;
 
-  isActive?: boolean
+  isActive?: boolean;
 }
 
 export interface UserState {
-  userInfo: Api.Auth.UserInfo | null
+  userInfo: Api.Auth.UserInfo | null;
 
-  token: string | null
+  token: string | null;
 
-  roles: string[]
+  roles: string[];
 
-  permissions: string[]
+  permissions: string[];
 }
 
 export interface SettingStoreState extends SettingState {
-  collapsed: boolean
+  collapsed: boolean;
 
-  device: 'desktop' | 'mobile'
+  device: "desktop" | "mobile";
 
-  language: string
+  language: string;
 }
 
 export interface WorkTabState {
-  tabs: WorkTab[]
+  tabs: WorkTab[];
 
-  activeTab: string
+  activeTab: string;
 
-  cachedTabs: string[]
+  cachedTabs: string[];
 }
 
 export interface MenuState {
-  menuList: any[]
+  menuList: any[];
 
-  isLoaded: boolean
+  isLoaded: boolean;
 
-  collapsed: boolean
+  collapsed: boolean;
 }
 
 export interface RootState {
-  user: UserState
+  user: UserState;
 
-  setting: SettingStoreState
+  setting: SettingStoreState;
 
-  workTab: WorkTabState
+  workTab: WorkTabState;
 
-  menu: MenuState
+  menu: MenuState;
 }

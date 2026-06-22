@@ -9,13 +9,13 @@
 </template>
 
 <script lang="ts" setup>
-  defineOptions({ name: 'ArtIconButton' })
+defineOptions({ name: "ArtIconButton" });
 
-  interface Props {
-    icon: string
+interface Props {
+  icon: string;
 
-    circle?: boolean
-  }
+  circle?: boolean;
+}
 
-  withDefaults(defineProps<Props>(), {})
+withDefaults(defineProps<Props>(), {});
 </script>

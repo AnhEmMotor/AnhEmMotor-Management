@@ -1,111 +1,111 @@
 export type SearchComponentType =
-  | 'input'
-  | 'select'
-  | 'radio'
-  | 'checkbox'
-  | 'date'
-  | 'datetime'
-  | 'daterange'
-  | 'datetimerange'
-  | 'month'
-  | 'monthrange'
-  | 'year'
-  | 'yearrange'
-  | 'week'
-  | 'time'
-  | 'timerange'
+  | "input"
+  | "select"
+  | "radio"
+  | "checkbox"
+  | "date"
+  | "datetime"
+  | "daterange"
+  | "datetimerange"
+  | "month"
+  | "monthrange"
+  | "year"
+  | "yearrange"
+  | "week"
+  | "time"
+  | "timerange";
 
 export interface SearchChangeParams {
-  prop: string
-  val: unknown
+  prop: string;
+  val: unknown;
 }
 
 export interface ColumnOption<T = any> {
-  type?: 'selection' | 'expand' | 'index' | 'globalIndex'
+  type?: "selection" | "expand" | "index" | "globalIndex";
 
-  prop?: string
+  prop?: string;
 
-  label?: string
+  label?: string;
 
-  width?: string | number
+  width?: string | number;
 
-  minWidth?: string | number
+  minWidth?: string | number;
 
-  fixed?: boolean | 'left' | 'right'
+  fixed?: boolean | "left" | "right";
 
-  sortable?: boolean | 'custom'
+  sortable?: boolean | "custom";
 
-  filters?: any[]
+  filters?: any[];
 
-  filterMethod?: (value: any, row: any) => boolean
+  filterMethod?: (value: any, row: any) => boolean;
 
-  filterPlacement?: string
+  filterPlacement?: string;
 
-  disabled?: boolean
+  disabled?: boolean;
 
-  visible?: boolean
+  visible?: boolean;
 
-  checked?: boolean
+  checked?: boolean;
 
-  formatter?: (row: T) => any
+  formatter?: (row: T) => any;
 
-  useSlot?: boolean
+  useSlot?: boolean;
 
-  slotName?: string
+  slotName?: string;
 
-  useHeaderSlot?: boolean
+  useHeaderSlot?: boolean;
 
-  headerSlotName?: string
+  headerSlotName?: string;
 
-  [key: string]: any
+  [key: string]: any;
 }
 
 export interface PaginationConfig {
-  currentPage: number
+  currentPage: number;
 
-  pageSize: number
+  pageSize: number;
 
-  total: number
+  total: number;
 
-  pageSizes?: number[]
+  pageSizes?: number[];
 
-  layout?: string
+  layout?: string;
 
-  small?: boolean
+  small?: boolean;
 }
 
 export interface FormRule {
-  required?: boolean
+  required?: boolean;
 
-  message?: string
+  message?: string;
 
-  trigger?: string | string[]
+  trigger?: string | string[];
 
-  min?: number
+  min?: number;
 
-  max?: number
+  max?: number;
 
-  pattern?: RegExp
+  pattern?: RegExp;
 
-  validator?: (rule: any, value: any, callback: any) => void
+  validator?: (rule: any, value: any, callback: any) => void;
 }
 
 export interface DialogConfig {
-  title: string
+  title: string;
 
-  visible: boolean
+  visible: boolean;
 
-  width?: string | number
+  width?: string | number;
 
-  closeOnClickModal?: boolean
+  closeOnClickModal?: boolean;
 
-  closeOnPressEscape?: boolean
+  closeOnPressEscape?: boolean;
 
-  showClose?: boolean
+  showClose?: boolean;
 
-  lockScroll?: boolean
+  lockScroll?: boolean;
 
-  modal?: boolean
+  modal?: boolean;
 
-  customClass?: string
+  customClass?: string;
 }

@@ -3,7 +3,7 @@
     "unauthorized": "Truy cập không được phép, vui lòng đăng nhập lại",
     "forbidden": "Cấm truy cập vào tài nguyên này",
     "notFound": "Tài nguyên được yêu cầu không tồn tại",
-    "methodNotAllowed": "PhuongThuc yêu cầu không được phép",
+    "methodNotAllowed": "Phương thức yêu cầu không được phép",
     "requestTimeout": "Yêu cầu quá thời gian, vui lòng thử lại sau",
     "internalServerError": "Lỗi máy chủ nội bộ, vui lòng thử lại sau",
     "badGateway": "Lỗi cổng kết nối, vui lòng thử lại sau",
@@ -209,6 +209,150 @@
     "gohome": "Về trang chủ"
   },
   "menus": {
+    "contract": {
+      "title": "Quản lý Hợp đồng",
+      "sales": "Hợp đồng Mua bán Xe",
+      "finance": "Hợp đồng Tài chính Trả góp",
+      "supplier": "Hợp đồng Nhà cung cấp",
+      "templates": "Mẫu Hợp đồng",
+      "templateList": "Danh sách mẫu hợp đồng",
+      "templateEditTitle": "Chỉnh sửa mẫu hợp đồng",
+      "templateCreateTitle": "Tạo mẫu hợp đồng mới",
+      "templateEditor": "Biên tập mẫu hợp đồng",
+      "templateEditorDescription": "Thiết lập thông tin và biên tập nội dung mẫu hợp đồng động",
+      "templateImport": "Nhập từ Word",
+      "templateName": "Tên mẫu hợp đồng",
+      "templateCode": "Mã định danh",
+      "templateCodePlaceholder": "VD: CONTRACT_SALES_DEFAULT",
+      "templateType": "Phân loại",
+      "templateVersion": "Phiên bản",
+      "templateStatus": "Trạng thái",
+      "templateContent": "Nội dung mẫu",
+      "templateDynamicFields": "Từ điển biến động",
+      "templateCreate": "Tạo mẫu hợp đồng mới",
+      "templateEdit": "Chỉnh sửa mẫu hợp đồng",
+      "templateClone": "Nhân bản tạo phiên bản mới",
+      "templateDelete": "Xóa mẫu hợp đồng",
+      "templateSave": "Lưu mẫu",
+      "templatePreview": "Xem thử bản in",
+      "templateSearchPlaceholder": "Tìm kiếm tên hoặc mã mẫu...",
+      "typeSales": "Hợp đồng Mua bán",
+      "typeFinance": "Hợp đồng Trả góp",
+      "typeSupplier": "Hợp đồng Nhà cung cấp",
+      "typeAppendix": "Phụ lục",
+      "statusActive": "Kích hoạt",
+      "statusInactive": "Tạm dừng",
+      "statusDeprecated": "Ngừng áp dụng",
+      "placeholderCustomerName": "Tên khách hàng",
+      "placeholderCustomerIdCard": "Số CCCD",
+      "placeholderCustomerAddress": "Địa chỉ",
+      "placeholderVehicleName": "Tên xe",
+      "placeholderChassisNumber": "Số khung",
+      "placeholderEngineNumber": "Số máy",
+      "placeholderVehiclePrice": "Đơn giá",
+      "placeholderDepositAmount": "Tiền cọc",
+      "placeholderRemainingAmount": "Tiền còn lại",
+      "validateSyntaxError": "Sai cú pháp từ khóa động. Vui lòng kiểm tra lại ký tự đóng mở ngoặc {{ }}.",
+      "cannotUpdateUsedTemplate": "Mẫu hợp đồng đã phát sinh hợp đồng thực tế không thể sửa trực tiếp. Vui lòng sử dụng chức năng 'Nhân bản tạo phiên bản mới'.",
+      "confirmDeleteTemplate": "Bạn có chắc muốn xóa mẫu hợp đồng này? Hành động này không thể hoàn tác.",
+      "cloneSuccess": "Nhân bản thành công! Mẫu mới đã được kích hoạt.",
+      "saveSuccess": "Lưu mẫu hợp đồng thành công!",
+      "deleteSuccess": "Xóa mẫu hợp đồng thành công!",
+      "emptyContentWarning": "Nội dung mẫu không được để trống.",
+      "usedBadge": "Đã sử dụng",
+      "versionBadge": "Phiên bản",
+      "filterAll": "Tất cả",
+      "filterActive": "Đang áp dụng",
+      "filterInactive": "Tạm dừng",
+      "filterDeprecated": "Ngừng áp dụng",
+      "tokenSearchPlaceholder": "Tìm kiếm biến động...",
+      "tokens": {
+        "customer": {
+          "ShowroomName": "Đơn vị bán",
+          "ShowroomAddress": "Địa chỉ showroom",
+          "ShowroomPhone": "SĐT showroom",
+          "ShowroomTaxCode": "MST showroom",
+          "ShowroomRepresentative": "Người đại diện showroom",
+          "ShowroomRepresentativeTitle": "Chức danh đại diện showroom",
+          "ShowroomRepresentativeIdCard": "CCCD đại diện showroom",
+          "ShowroomRepresentativeIdIssuedDate": "Ngày cấp CCCD đại diện",
+          "ShowroomRepresentativeIdIssuedPlace": "Nơi cấp CCCD đại diện",
+          "ShowroomFax": "Fax showroom",
+          "ShowroomBankAccount": "Tài khoản showroom",
+          "ShowroomBankName": "Ngân hàng showroom",
+          "CustomerName": "Tên khách hàng",
+          "CustomerIdCard": "Số CCCD",
+          "CustomerAddress": "Địa chỉ",
+          "CustomerPhone": "Số điện thoại",
+          "CustomerEmail": "Email",
+          "CustomerRepresentativeTitle": "Chức danh bên mua",
+          "CustomerIdIssuedDate": "Ngày cấp CCCD bên mua",
+          "CustomerIdIssuedPlace": "Nơi cấp CCCD bên mua",
+          "CustomerFax": "Fax bên mua",
+          "CustomerBankAccount": "Tài khoản bên mua",
+          "CustomerBankName": "Ngân hàng bên mua"
+        },
+        "vehicle": {
+          "VehicleName": "Tên xe",
+          "ChassisNumber": "Số khung",
+          "EngineNumber": "Số máy",
+          "VehiclePrice": "Đơn giá",
+          "VehiclePriceInWords": "Giá bằng chữ",
+          "VehicleColor": "Màu xe",
+          "LicensePlate": "Biển số",
+          "PaymentDueDate": "Ngày thanh toán",
+          "PaymentMethod": "Hình thức thanh toán",
+          "DeliveryDate": "Thời gian giao hàng",
+          "DeliveryLocation": "Địa điểm giao hàng",
+          "TransportationResponsibleParty": "Bên chịu vận chuyển",
+          "StorageFeePerDay": "Phí lưu kho/ngày",
+          "InspectionAgency": "Đơn vị kiểm tra",
+          "ComplaintDeadlineDays": "Hạn khiếu nại",
+          "SellerResponseDays": "Hạn phản hồi bên bán",
+          "WarrantyProductName": "Hàng hóa bảo hành",
+          "WarrantyMonths": "Tháng bảo hành",
+          "PenaltyPercent": "Tỷ lệ phạt",
+          "ContractCopies": "Số bản hợp đồng",
+          "EachPartyCopies": "Số bản mỗi bên giữ"
+        },
+        "finance": {
+          "DepositAmount": "Tiền cọc",
+          "RemainingAmount": "Tiền còn lại",
+          "FinancialPartner": "Đối tác tài chính",
+          "FinancialPartnerContact": "Liên hệ tài chính",
+          "FinanceContractNumber": "Số HĐ tài chính",
+          "LoanAmount": "Số tiền vay",
+          "TermMonths": "Kỳ hạn",
+          "InterestRate": "Lãi suất",
+          "MonthlyPayment": "Trả góp/tháng",
+          "ExpectedDisbursementDate": "Ngày GN dự kiến",
+          "ActualDisbursementDate": "Ngày GN thực tế",
+          "ExpectedDisbursementAmount": "Tiền GN dự kiến",
+          "ActualDisbursementAmount": "Tiền GN thực tế",
+          "CavetStatus": "Trạng thái cavet",
+          "ContractDate": "Ngày ký"
+        },
+        "supplier": {
+          "SupplierName": "Tên NCC",
+          "SupplierContact": "Đầu mối liên hệ",
+          "CreditLimit": "Hạn mức tín dụng",
+          "DiscountPolicy": "Chính sách chiết khấu",
+          "TargetVolume": "Sản lượng cam kết",
+          "EffectiveDate": "Ngày hiệu lực",
+          "ExpiryDate": "Ngày hết hạn",
+          "ParentContractNumber": "Số HĐ gốc",
+          "AppendixChangeContent": "Nội dung phụ lục"
+        }
+      }
+    },
+    "logistics": {
+      "title": "Quản lý vận chuyển",
+      "dashboard": "Dashboard Vận Chuyển",
+      "fulfillment": "Xử Lý Đơn Giao",
+      "tracking": "Tra Cứu Hành Trình",
+      "returns": "Hàng Hoàn",
+      "carrierSettings": "Đối tác vận chuyển"
+    },
     "inventory": {
       "title": "Quản lý kho",
       "supplier": "Nhà cung cấp",
@@ -234,7 +378,8 @@
       "title": "Bảng tổng quan",
       "console": "Trang chủ",
       "analysis": "Phân tích dữ liệu",
-      "ecommerce": "Tổng quan kinh doanh"
+      "ecommerce": "Tổng quan kinh doanh",
+      "analytics": "Trung tâm thống kê & Báo cáo"
     },
     "widgets": {
       "title": "Trung tâm Component",
@@ -329,11 +474,16 @@
       "title": "Quản lý khách hàng",
       "potential": "Khách hàng tiềm năng",
       "profile": "Hồ sơ khách hàng",
-      "progress": "Tiến độ mua hàng",
+      "progress": "Hồ sơ biển số",
       "asset": "Quản lý tài sản",
       "care": "Chăm sóc & Ưu đãi",
       "contact": "Quản lý liên hệ",
-      "booking": "Đặt Lịch & lái Thử"
+      "booking": "Đặt Lịch & lái Thử",
+      "workshop": "Xưởng dịch vụ"
+    },
+    "contact": {
+      "title": "Quản lý liên hệ",
+      "index": "Danh sách liên hệ"
     },
     "marketing": {
       "title": "Quản lý Banner",
@@ -343,9 +493,39 @@
     "hr": {
       "title": "Quản lý Nhân sự",
       "employees": "Hồ sơ nhân viên",
+      "employee": "Hồ sơ nhân viên",
       "commissionPolicy": "Chính sách hoa hồng",
       "payroll": "Bảng Lương",
       "kpi": "Quản lý KPI"
+    },
+    "service": {
+      "title": "Quản lý dịch vụ",
+      "workshop": {
+        "title": "Quản lý xưởng sửa chữa",
+        "dashboard": "Dashboard Xưởng",
+        "repairOrders": "Sửa Chữa & Bảo Dưỡng",
+        "maintenance": "Lịch Sử Bảo Dưỡng & Sửa Chữa",
+        "warrantyRequests": "Yêu Cầu Bảo Hành",
+        "historyByVin": "Tra cứu lịch sử",
+        "evaluation": "Đánh giá dịch vụ"
+      },
+      "warrantyAndComplaints": {
+        "title": "Bảo hành & Khiếu nại",
+        "warrantyRequests": "Yêu cầu bảo hành",
+        "complaints": "Khiếu nại"
+      },
+      "administrative": {
+        "title": "Dịch vụ hành chính",
+        "registration_plate": "Hồ sơ đăng ký biển số"
+      },
+      "list": {
+        "title": "Danh sách dịch vụ",
+        "stats": {
+          "total": "Tổng số dịch vụ",
+          "active": "Đang hoạt động",
+          "inactive": "Tạm ngừng"
+        }
+      }
     }
   },
   "table": {
@@ -392,7 +572,7 @@
     "t13": "Khối lượng công việc & Dịch vụ",
     "t14": "Về dự án",
     "t15": "Sử dụng công nghệ mới nhất như Vue3, TypeScript, Vite, Element Plus",
-    "t16": "TongQuan người dùng",
+    "t16": "Tổng quan người dùng",
     "t17": "So với tuần trước",
     "t18": "Chúng tôi cung cấp nhiều tùy chọn có thể kết hợp và tùy chỉnh để tạo trang hoàn hảo",
     "t19": "So với tuần trước",
@@ -466,6 +646,116 @@
       "lowStock": "Sắp hết",
       "moderateStock": "Trung bình",
       "sufficientStock": "Đầy đủ"
+    }
+  },
+  "contact": {
+    "title": "Quản lý Tương tác & Liên hệ",
+    "subtitle": "Quản lý yêu cầu hỗ trợ, ý kiến đóng góp của khách hàng và hồ sơ ứng viên",
+    "unreadBadge": "Chưa đọc",
+    "tabSupport": "Yêu cầu hỗ trợ",
+    "tabFeedback": "Đóng góp ý kiến",
+    "tabCandidate": "Hồ sơ ứng viên",
+    "searchPlaceholder": "Tìm kiếm...",
+    "allStatus": "Tất cả trạng thái",
+    "totalCount": "Tổng số: {count}",
+    "noDetail": "Chọn một mục từ danh sách bên trái để xem nội dung chi tiết",
+    "columnId": "Mã số",
+    "columnIdCustomer": "Mã số / Khách hàng",
+    "columnSubject": "Tiêu đề",
+    "columnCategory": "Danh mục",
+    "columnStatus": "Trạng thái",
+    "columnCreatedAt": "Thời gian",
+    "columnRating": "Đánh giá",
+    "columnCustomer": "Khách hàng / Họ tên",
+    "columnContent": "Nội dung",
+    "columnPosition": "Vị trí ứng tuyển",
+    "actionNote": "Ghi chú nội bộ",
+    "actionReply": "Phản hồi",
+    "actionAssign": "Phân công",
+    "actionViewCv": "Xem CV",
+    "statusClosed": "Đóng",
+    "statusInProgress": "Đang xử lý",
+    "statusNew": "Mới",
+    "statusResolved": "Đã giải quyết",
+    "statusRead": "Đã đọc",
+    "statusPending": "Chờ xử lý",
+    "statusOffer": "Nhận việc (Offer)",
+    "statusInterview": "Hẹn phỏng vấn",
+    "statusRejected": "Từ chối",
+    "supportStatus": {
+      "New": "Mới",
+      "InProgress": "Đang xử lý",
+      "Closed": "Đã đóng"
+    },
+    "feedbackStatus": {
+      "Pending": "Chờ xử lý",
+      "Read": "Đã đọc",
+      "Resolved": "Đã giải quyết"
+    },
+    "candidateStatus": {
+      "New": "Mới",
+      "Interview": "Hẹn phỏng vấn",
+      "Offer": "Nhận việc",
+      "Rejected": "Từ chối"
+    },
+    "category": {
+      "Quality": "Chất lượng xe",
+      "Service": "Thái độ phục vụ",
+      "Rating": "Đánh giá",
+      "General": "Chung",
+      "Sales": "Bán hàng",
+      "AfterSales": "Bảo hành/Hậu mãi",
+      "Other": "Khác"
+    },
+    "noteDialog": {
+      "title": "Ghi chú nội bộ",
+      "placeholder": "Nhập ghi chú nội bộ...",
+      "saveBtn": "Lưu ghi chú"
+    },
+    "replyDialog": {
+      "contentPlaceholder": "Nhập nội dung phản hồi cho khách hàng...",
+      "sendBtn": "Gửi phản hồi cho khách"
+    },
+    "cvViewer": {
+      "title": "Xem tệp tin CV",
+      "noFile": "Không có tệp CV",
+      "download": "Tải CV"
+    },
+    "assignDialog": {
+      "title": "Phân công xử lý",
+      "selectUser": "Chọn nhân viên..."
+    },
+    "createDialog": {
+      "submit": "Tạo mới"
+    }
+  },
+  "logistics": {
+    "dashboard": {
+      "today": "Hôm nay",
+      "thisMonth": "Tháng này",
+      "thisYear": "Năm nay",
+      "fulfillmentWorkload": "Khối lượng công việc hôm nay",
+      "pendingCod": "Dòng tiền COD chưa đối soát",
+      "otifRate": "Tỷ lệ giao hàng đúng hạn",
+      "returnsClaimsRatio": "Tỷ lệ bom hàng/Chuyển hoàn",
+      "fulfillmentFunnel": "Phễu trạng thái vận chuyển",
+      "funnelPlaceholder": "Dữ liệu biểu đồ Doughnut (API: fulfillmentFunnel)",
+      "productionShippingCost": "Xu hướng sản lượng & Chi phí",
+      "costPlaceholder": "Dữ liệu biểu đồ cột & đường (API: trends)",
+      "carrierScorecard": "Bảng hiệu suất đối tác vận chuyển",
+      "refresh": "Làm mới",
+      "carrier": "Đơn vị vận chuyển",
+      "deliveredCount": "Số đơn đã giao",
+      "avgDeliveryDays": "Thời gian giao TB (ngày)",
+      "avgShippingCostPerOrder": "Phí ship TB/Đơn",
+      "returnsRatio": "Tỷ lệ bom hàng",
+      "exceptionsLog": "Cảnh báo sự cố khẩn cấp",
+      "items": "mục",
+      "noExceptions": "Không có sự cố khẩn cấp nào.",
+      "type": "Loại",
+      "tracking": "Mã vận đơn",
+      "message": "Tin nhắn",
+      "createdAt": "Tạo lúc"
     }
   }
 }

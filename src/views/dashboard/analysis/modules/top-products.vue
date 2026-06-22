@@ -2,7 +2,7 @@
   <div class="art-card h-82 p-5 mb-5 overflow-hidden max-sm:mb-4">
     <div class="art-card-header">
       <div class="title">
-        <h4>{{ $t('admin.t44') }}</h4>
+        <h4>{{ $t("admin.t44") }}</h4>
       </div>
     </div>
     <div class="overflow-auto h-full">
@@ -34,7 +34,7 @@
                 border: '1px solid',
                 padding: '3px 6px',
                 borderRadius: '4px',
-                fontSize: '12px'
+                fontSize: '12px',
               }"
               >{{ scope.row.sales }}</span
             >
@@ -46,40 +46,40 @@
 </template>
 
 <script setup lang="ts">
-  import { hexToRgb } from '@/utils/ui'
+import { hexToRgb } from "@/utils/ui";
 
-  interface Product {
-    name: string
-    popularity: number
-    sales: string
-  }
+interface Product {
+  name: string;
+  popularity: number;
+  sales: string;
+}
 
-  const COLOR_THRESHOLDS = {
-    LOW: 25,
-    MEDIUM: 50,
-    HIGH: 75
-  } as const
+const COLOR_THRESHOLDS = {
+  LOW: 25,
+  MEDIUM: 50,
+  HIGH: 75,
+} as const;
 
-  const POPULARITY_COLORS = {
-    LOW: '#00E096',
-    MEDIUM: '#0095FF',
-    HIGH: '#884CFF',
-    VERY_HIGH: '#FE8F0E'
-  } as const
+const POPULARITY_COLORS = {
+  LOW: "#00E096",
+  MEDIUM: "#0095FF",
+  HIGH: "#884CFF",
+  VERY_HIGH: "#FE8F0E",
+} as const;
 
-  const products = computed<Product[]>(() => [
-    { name: 'trínăngtaymáy', popularity: 10, sales: '100' },
-    { name: 'bútghiquyểnđiệnnão', popularity: 29, sales: '100' },
-    { name: 'bảnđiệnnão', popularity: 65, sales: '100' },
-    { name: 'trínăngtaybảng', popularity: 32, sales: '100' },
-    { name: 'vôđườngtaimáy', popularity: 78, sales: '100' },
-    { name: 'trínăngâmhộp', popularity: 41, sales: '100' }
-  ])
+const products = computed<Product[]>(() => [
+  { name: "trínăngtaymáy", popularity: 10, sales: "100" },
+  { name: "bútghiquyểnđiệnnão", popularity: 29, sales: "100" },
+  { name: "bảnđiệnnão", popularity: 65, sales: "100" },
+  { name: "trínăngtaybảng", popularity: 32, sales: "100" },
+  { name: "vôđườngtaimáy", popularity: 78, sales: "100" },
+  { name: "trínăngâmhộp", popularity: 41, sales: "100" },
+]);
 
-  const getColor = (percentage: number): string => {
-    if (percentage < COLOR_THRESHOLDS.LOW) return POPULARITY_COLORS.LOW
-    if (percentage < COLOR_THRESHOLDS.MEDIUM) return POPULARITY_COLORS.MEDIUM
-    if (percentage < COLOR_THRESHOLDS.HIGH) return POPULARITY_COLORS.HIGH
-    return POPULARITY_COLORS.VERY_HIGH
-  }
+const getColor = (percentage: number): string => {
+  if (percentage < COLOR_THRESHOLDS.LOW) return POPULARITY_COLORS.LOW;
+  if (percentage < COLOR_THRESHOLDS.MEDIUM) return POPULARITY_COLORS.MEDIUM;
+  if (percentage < COLOR_THRESHOLDS.HIGH) return POPULARITY_COLORS.HIGH;
+  return POPULARITY_COLORS.VERY_HIGH;
+};
 </script>

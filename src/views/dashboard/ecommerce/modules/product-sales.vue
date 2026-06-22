@@ -4,9 +4,12 @@
       <div class="title">
         <h4 class="text-2xl">
           <span>14.5k</span>
-          <ArtSvgIcon icon="ri:arrow-right-up-line" class="text-success text-lg ml-1" />
+          <ArtSvgIcon
+            icon="ri:arrow-right-up-line"
+            class="text-success text-lg ml-1"
+          />
         </h4>
-        <p>{{ $t('admin.t75') }}</p>
+        <p>{{ $t("admin.t75") }}</p>
       </div>
     </div>
 
