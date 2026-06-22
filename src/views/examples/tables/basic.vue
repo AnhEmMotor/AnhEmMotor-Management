@@ -17,45 +17,52 @@
 </template>
 
 <script setup lang="ts">
-  import { useTable } from '@/hooks/core/useTable'
-  import { fetchGetUserList } from '@/infrastructure/api/system-manage'
+import { useTable } from "@/hooks/core/useTable";
+import { fetchGetUserList } from "@/infrastructure/api/system-manage";
 
-  defineOptions({ name: 'UserMixedUsageExample' })
+defineOptions({ name: "UserMixedUsageExample" });
 
-  const { data, columns, loading, pagination, handleSizeChange, handleCurrentChange } = useTable({
-    core: {
-      apiFn: fetchGetUserList as any,
-      apiParams: {
-        current: 1,
-        size: 20,
-        userName: '',
-        userPhone: '',
-        userEmail: '',
-      },
-      columnsFactory: () => [
-        {
-          prop: 'id',
-          label: 'ID',
-        },
-        {
-          prop: 'nickName',
-          label: 'Biệt danh',
-        },
-        {
-          prop: 'userGender',
-          label: 'GioiTinh',
-          sortable: true,
-          formatter: (row: any) => row.userGender || 'Chưabáo',
-        },
-        {
-          prop: 'userPhone',
-          label: 'Số điện thoại',
-        },
-        {
-          prop: 'userEmail',
-          label: 'Email',
-        },
-      ],
+const {
+  data,
+  columns,
+  loading,
+  pagination,
+  handleSizeChange,
+  handleCurrentChange,
+} = useTable({
+  core: {
+    apiFn: fetchGetUserList as any,
+    apiParams: {
+      current: 1,
+      size: 20,
+      userName: "",
+      userPhone: "",
+      userEmail: "",
     },
-  })
+    columnsFactory: () => [
+      {
+        prop: "id",
+        label: "ID",
+      },
+      {
+        prop: "nickName",
+        label: "Biệt danh",
+      },
+      {
+        prop: "userGender",
+        label: "GioiTinh",
+        sortable: true,
+        formatter: (row: any) => row.userGender || "Chưabáo",
+      },
+      {
+        prop: "userPhone",
+        label: "Số điện thoại",
+      },
+      {
+        prop: "userEmail",
+        label: "Email",
+      },
+    ],
+  },
+});
 </script>

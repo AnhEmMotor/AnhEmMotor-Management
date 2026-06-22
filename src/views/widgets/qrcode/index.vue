@@ -26,92 +26,92 @@
 </template>
 
 <script setup lang="ts">
-  import QrcodeVue from 'qrcode.vue'
-  import type { Level, RenderAs, ImageSettings } from 'qrcode.vue'
+import QrcodeVue from "qrcode.vue";
+import type { Level, RenderAs, ImageSettings } from "qrcode.vue";
 
-  defineOptions({ name: 'WidgetsQrcode' })
+defineOptions({ name: "WidgetsQrcode" });
 
-  const qrValue = ref('https://www.artd.pro')
-  const isShowLogo = ref(false)
+const qrValue = ref("https://www.artd.pro");
+const isShowLogo = ref(false);
 
-  const qrcodePresets = [
-    {
-      title: 'Renderthành svg Tag',
-      config: {
-        size: 160,
-        level: 'H' as Level,
-        renderAs: 'svg' as RenderAs,
-        margin: 0,
-        background: '#ffffff',
-        foreground: '#000000',
-      },
+const qrcodePresets = [
+  {
+    title: "Renderthành svg Tag",
+    config: {
+      size: 160,
+      level: "H" as Level,
+      renderAs: "svg" as RenderAs,
+      margin: 0,
+      background: "#ffffff",
+      foreground: "#000000",
     },
-    {
-      title: 'Renderthành canvas Tag',
-      config: {
-        size: 160,
-        level: 'H' as Level,
-        renderAs: 'canvas' as RenderAs,
-        margin: 0,
-        background: '#ffffff',
-        foreground: '#000000',
-      },
+  },
+  {
+    title: "Renderthành canvas Tag",
+    config: {
+      size: 160,
+      level: "H" as Level,
+      renderAs: "canvas" as RenderAs,
+      margin: 0,
+      background: "#ffffff",
+      foreground: "#000000",
     },
-    {
-      title: 'Màu sắc tùy chỉnh',
-      config: {
-        size: 160,
-        level: 'H' as Level,
-        renderAs: 'canvas' as RenderAs,
-        margin: 0,
-        background: '#f0f0f0',
-        foreground: '#4080ff',
-      },
+  },
+  {
+    title: "Màu sắc tùy chỉnh",
+    config: {
+      size: 160,
+      level: "H" as Level,
+      renderAs: "canvas" as RenderAs,
+      margin: 0,
+      background: "#f0f0f0",
+      foreground: "#4080ff",
     },
-    {
-      title: 'mangcóLogo',
-      config: {
-        size: 160,
-        level: 'H' as Level,
-        renderAs: 'canvas' as RenderAs,
-        margin: 0,
-        background: '#ffffff',
-        foreground: '#000000',
-        imageSettings: {
-          src: 'https://www.artd.pro/assets/draw1-Ce1WF34i.png',
-          width: 40,
-          height: 40,
-          excavate: true,
-        },
-      },
-    },
-  ]
-
-  const qrcodeConfig = reactive({
-    size: 160,
-    level: 'H' as Level,
-    renderAs: 'canvas' as RenderAs,
-    margin: 0,
-    background: '#ffffff',
-    foreground: '#000000',
-    imageSettings: {
-      src: 'https://www.artd.pro/assets/draw1-Ce1WF34i.png',
-      width: 40,
-      height: 40,
-      excavate: true,
-    } as ImageSettings,
-  })
-
-  watch(isShowLogo, (val) => {
-    if (!val) {
-      qrcodeConfig.imageSettings = {} as ImageSettings
-    } else {
-      qrcodeConfig.imageSettings = {
-        src: 'https://www.artd.pro/assets/draw1-Ce1WF34i.png',
+  },
+  {
+    title: "mangcóLogo",
+    config: {
+      size: 160,
+      level: "H" as Level,
+      renderAs: "canvas" as RenderAs,
+      margin: 0,
+      background: "#ffffff",
+      foreground: "#000000",
+      imageSettings: {
+        src: "https://www.artd.pro/assets/draw1-Ce1WF34i.png",
         width: 40,
         height: 40,
         excavate: true,
-      }
-    }
-  })
+      },
+    },
+  },
+];
+
+const qrcodeConfig = reactive({
+  size: 160,
+  level: "H" as Level,
+  renderAs: "canvas" as RenderAs,
+  margin: 0,
+  background: "#ffffff",
+  foreground: "#000000",
+  imageSettings: {
+    src: "https://www.artd.pro/assets/draw1-Ce1WF34i.png",
+    width: 40,
+    height: 40,
+    excavate: true,
+  } as ImageSettings,
+});
+
+watch(isShowLogo, (val) => {
+  if (!val) {
+    qrcodeConfig.imageSettings = {} as ImageSettings;
+  } else {
+    qrcodeConfig.imageSettings = {
+      src: "https://www.artd.pro/assets/draw1-Ce1WF34i.png",
+      width: 40,
+      height: 40,
+      excavate: true,
+    };
+  }
+});
 </script>

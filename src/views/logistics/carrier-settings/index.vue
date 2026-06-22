@@ -1,11 +1,13 @@
 <template>
-  <div class="art-full-height animate__animated animate__fadeIn flex flex-col gap-4 pb-5">
+  <div
+    class="art-full-height animate__animated animate__fadeIn flex flex-col gap-4 pb-5"
+  >
     <div class="flex items-center justify-between mb-2">
       <div>
         <h2 class="text-lg font-bold">Quản lý Đối tác Vận chuyển</h2>
-        <p class="text-sm text-gray-500"
-          >Cấu hình kết nối và quy tắc giao hàng cho các đối tác vận chuyển.</p
-        >
+        <p class="text-sm text-gray-500">
+          Cấu hình kết nối và quy tắc giao hàng cho các đối tác vận chuyển.
+        </p>
       </div>
     </div>
 
@@ -20,7 +22,10 @@
         <template #header>
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <el-avatar :size="32" :style="{ backgroundColor: getCarrierColor(p.carrierCode) }">
+              <el-avatar
+                :size="32"
+                :style="{ backgroundColor: getCarrierColor(p.carrierCode) }"
+              >
                 {{ p.name.slice(0, 1).toUpperCase() }}
               </el-avatar>
               <div class="text-sm font-bold">{{ p.name }}</div>
@@ -37,8 +42,11 @@
         <div class="flex flex-col gap-3">
           <div class="flex justify-between items-center text-xs">
             <span class="text-gray-500">Môi trường:</span>
-            <el-tag :type="p.environment === 'production' ? 'success' : 'info'" size="small">
-              {{ p.environment === 'production' ? 'Production' : 'Sandbox' }}
+            <el-tag
+              :type="p.environment === 'production' ? 'success' : 'info'"
+              size="small"
+            >
+              {{ p.environment === "production" ? "Production" : "Sandbox" }}
             </el-tag>
           </div>
 
@@ -48,7 +56,7 @@
               class="font-medium"
               :class="p.autoSyncPricing ? 'text-green-600' : 'text-red-500'"
             >
-              {{ p.autoSyncPricing ? 'BẬT' : 'TẮT' }}
+              {{ p.autoSyncPricing ? "BẬT" : "TẮT" }}
             </span>
           </div>
 
@@ -58,7 +66,7 @@
               class="font-medium"
               :class="p.allowOversizeCargo ? 'text-green-600' : 'text-red-500'"
             >
-              {{ p.allowOversizeCargo ? 'CÓ' : 'KHÔNG' }}
+              {{ p.allowOversizeCargo ? "CÓ" : "KHÔNG" }}
             </span>
           </div>
 
@@ -68,7 +76,7 @@
               class="font-medium"
               :class="p.allowLiquidCargo ? 'text-green-600' : 'text-red-500'"
             >
-              {{ p.allowLiquidCargo ? 'CÓ' : 'KHÔNG' }}
+              {{ p.allowLiquidCargo ? "CÓ" : "KHÔNG" }}
             </span>
           </div>
 
@@ -118,9 +126,17 @@
                 />
               </div>
 
-              <el-form label-position="top" :model="selected" :rules="rules" ref="formRef">
+              <el-form
+                label-position="top"
+                :model="selected"
+                :rules="rules"
+                ref="formRef"
+              >
                 <el-form-item label="API Base URL">
-                  <el-input v-model="selected.apiBaseUrl" placeholder="https://..." />
+                  <el-input
+                    v-model="selected.apiBaseUrl"
+                    placeholder="https://..."
+                  />
                 </el-form-item>
 
                 <el-form-item label="API Token">
@@ -150,16 +166,24 @@
                 <el-form-item label="Webhook Endpoint URL">
                   <div class="flex items-center gap-2 w-full">
                     <el-input v-model="selected.webhookEndpointUrl" readonly />
-                    <el-button type="primary" plain @click="copyWebhook">📋 Copy</el-button>
+                    <el-button type="primary" plain @click="copyWebhook"
+                      >📋 Copy</el-button
+                    >
                   </div>
                 </el-form-item>
               </el-form>
 
-              <div class="mt-4 p-4 bg-gray-50 rounded border flex justify-between items-center">
-                <div class="text-sm text-gray-600"
-                  >Kiểm tra kết nối API với các thiết lập hiện tại.</div
+              <div
+                class="mt-4 p-4 bg-gray-50 rounded border flex justify-between items-center"
+              >
+                <div class="text-sm text-gray-600">
+                  Kiểm tra kết nối API với các thiết lập hiện tại.
+                </div>
+                <el-button
+                  type="warning"
+                  :loading="testing"
+                  @click="testConnection"
                 >
-                <el-button type="warning" :loading="testing" @click="testConnection">
                   ⚡ Kiểm tra kết nối
                 </el-button>
               </div>
@@ -223,149 +247,157 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, nextTick, onMounted, ref } from 'vue'
-  import {
-    ElDrawer,
-    ElCard,
-    ElInput,
-    ElInputNumber,
-    ElAvatar,
-    ElButton,
-    ElForm,
-    ElFormItem,
-    ElSwitch,
-    ElSegmented,
-    ElTabs,
-    ElTabPane,
-    ElTag,
-  } from 'element-plus'
-  import { useI18n } from 'vue-i18n'
-  import type {
-    CarrierPartnerSummary,
-    UpdateCarrierPartnerRequest,
-  } from '@/domain/logistics/carrier-settings.types'
-  import { LogisticsCarrierSettingsService } from '@/services/logisticsCarrierSettings.service'
-  import { ElNotification } from 'element-plus'
+import { computed, nextTick, onMounted, ref } from "vue";
+import {
+  ElDrawer,
+  ElCard,
+  ElInput,
+  ElInputNumber,
+  ElAvatar,
+  ElButton,
+  ElForm,
+  ElFormItem,
+  ElSwitch,
+  ElSegmented,
+  ElTabs,
+  ElTabPane,
+  ElTag,
+} from "element-plus";
+import { useI18n } from "vue-i18n";
+import type {
+  CarrierPartnerSummary,
+  UpdateCarrierPartnerRequest,
+} from "@/domain/logistics/carrier-settings.types";
+import { LogisticsCarrierSettingsService } from "@/services/logisticsCarrierSettings.service";
+import { ElNotification } from "element-plus";
 
-  useI18n()
+useI18n();
 
-  type Carrier = CarrierPartnerSummary
+type Carrier = CarrierPartnerSummary;
 
-  const carriers = ref<Carrier[]>([])
+const carriers = ref<Carrier[]>([]);
 
-  const drawerOpen = ref(false)
-  const selected = ref<Carrier | null>(null)
-  const activeTab = ref('api')
+const drawerOpen = ref(false);
+const selected = ref<Carrier | null>(null);
+const activeTab = ref("api");
 
-  const drawerTitle = computed(() =>
-    selected.value ? `Cấu hình Đối tác: ${selected.value.name}` : '',
-  )
+const drawerTitle = computed(() =>
+  selected.value ? `Cấu hình Đối tác: ${selected.value.name}` : "",
+);
 
-  const formRef = ref()
+const formRef = ref();
 
-  const tokenDraft = ref('')
-  const webhookSecretDraft = ref('')
+const tokenDraft = ref("");
+const webhookSecretDraft = ref("");
 
-  const saving = ref(false)
-  const testing = ref(false)
+const saving = ref(false);
+const testing = ref(false);
 
-  const rules = ref({})
+const rules = ref({});
 
-  const getCarrierColor = (code: string) => {
-    const colors: Record<string, string> = {
-      ghtk: '#008a00',
-      ghn: '#f48120',
-      'viettel-post': '#ee0033',
-      'shipper-nha': '#3b82f6',
+const getCarrierColor = (code: string) => {
+  const colors: Record<string, string> = {
+    ghtk: "#008a00",
+    ghn: "#f48120",
+    "viettel-post": "#ee0033",
+    "shipper-nha": "#3b82f6",
+  };
+  return colors[code] || "#6b7280";
+};
+
+const openPanel = async (p: Carrier) => {
+  selected.value = { ...p };
+  tokenDraft.value = "";
+  webhookSecretDraft.value = "";
+  activeTab.value = "api";
+  drawerOpen.value = true;
+  await nextTick();
+};
+
+const closeDrawer = () => {
+  drawerOpen.value = false;
+};
+
+const loadCarriers = async () => {
+  const res = await LogisticsCarrierSettingsService.getCarriers();
+  carriers.value = res.items;
+};
+
+const copyWebhook = async () => {
+  if (!selected.value) return;
+  const text = selected.value.webhookEndpointUrl;
+  await navigator.clipboard.writeText(text);
+  ElNotification.success({ title: "Đã copy webhook URL" });
+};
+
+const saveQuickStatus = async (p: Carrier) => {
+  try {
+    const payload: UpdateCarrierPartnerRequest = {
+      isActive: p.isActive,
+      environment: p.environment,
+      apiBaseUrl: p.apiBaseUrl,
+      webhookEndpointUrl: p.webhookEndpointUrl,
+      autoSyncPricing: p.autoSyncPricing,
+      maxParcelWeightKg: p.maxParcelWeightKg,
+      allowLiquidCargo: p.allowLiquidCargo,
+      allowOversizeCargo: p.allowOversizeCargo,
+    };
+    await LogisticsCarrierSettingsService.updateCarrier(p.id, payload);
+    ElNotification.success({ title: "Đã cập nhật trạng thái" });
+  } catch (_error) {
+    p.isActive = !p.isActive; // revert
+  }
+};
+
+const saveConfig = async () => {
+  if (!selected.value) return;
+  saving.value = true;
+  try {
+    const payload: UpdateCarrierPartnerRequest = {
+      isActive: selected.value.isActive,
+      environment: selected.value.environment,
+      apiBaseUrl: selected.value.apiBaseUrl,
+      apiTokenPlain: tokenDraft.value ? tokenDraft.value : undefined,
+      webhookSecretPlain: webhookSecretDraft.value
+        ? webhookSecretDraft.value
+        : undefined,
+      webhookEndpointUrl: selected.value.webhookEndpointUrl,
+      autoSyncPricing: selected.value.autoSyncPricing,
+      maxParcelWeightKg: selected.value.maxParcelWeightKg,
+      allowLiquidCargo: selected.value.allowLiquidCargo,
+      allowOversizeCargo: selected.value.allowOversizeCargo,
+    };
+    await LogisticsCarrierSettingsService.updateCarrier(
+      selected.value.id,
+      payload,
+    );
+    ElNotification.success({ title: "Lưu cấu hình thành công" });
+    await loadCarriers();
+    closeDrawer();
+  } finally {
+    saving.value = false;
+  }
+};
+
+const testConnection = async () => {
+  if (!selected.value) return;
+  testing.value = true;
+  try {
+    const res = await LogisticsCarrierSettingsService.testConnection(
+      selected.value.id,
+      {},
+    );
+    if (res.isSuccess) {
+      ElNotification.success({ title: res.message || "Kết nối thành công!" });
+    } else {
+      ElNotification.error({ title: res.message || "Kết nối thất bại!" });
     }
-    return colors[code] || '#6b7280'
+  } finally {
+    testing.value = false;
   }
+};
 
-  const openPanel = async (p: Carrier) => {
-    selected.value = { ...p }
-    tokenDraft.value = ''
-    webhookSecretDraft.value = ''
-    activeTab.value = 'api'
-    drawerOpen.value = true
-    await nextTick()
-  }
-
-  const closeDrawer = () => {
-    drawerOpen.value = false
-  }
-
-  const loadCarriers = async () => {
-    const res = await LogisticsCarrierSettingsService.getCarriers()
-    carriers.value = res.items
-  }
-
-  const copyWebhook = async () => {
-    if (!selected.value) return
-    const text = selected.value.webhookEndpointUrl
-    await navigator.clipboard.writeText(text)
-    ElNotification.success({ title: 'Đã copy webhook URL' })
-  }
-
-  const saveQuickStatus = async (p: Carrier) => {
-    try {
-      const payload: UpdateCarrierPartnerRequest = {
-        isActive: p.isActive,
-        environment: p.environment,
-        apiBaseUrl: p.apiBaseUrl,
-        webhookEndpointUrl: p.webhookEndpointUrl,
-        autoSyncPricing: p.autoSyncPricing,
-        maxParcelWeightKg: p.maxParcelWeightKg,
-        allowLiquidCargo: p.allowLiquidCargo,
-        allowOversizeCargo: p.allowOversizeCargo,
-      }
-      await LogisticsCarrierSettingsService.updateCarrier(p.id, payload)
-      ElNotification.success({ title: 'Đã cập nhật trạng thái' })
-    } catch (_error) {
-      p.isActive = !p.isActive // revert
-    }
-  }
-
-  const saveConfig = async () => {
-    if (!selected.value) return
-    saving.value = true
-    try {
-      const payload: UpdateCarrierPartnerRequest = {
-        isActive: selected.value.isActive,
-        environment: selected.value.environment,
-        apiBaseUrl: selected.value.apiBaseUrl,
-        apiTokenPlain: tokenDraft.value ? tokenDraft.value : undefined,
-        webhookSecretPlain: webhookSecretDraft.value ? webhookSecretDraft.value : undefined,
-        webhookEndpointUrl: selected.value.webhookEndpointUrl,
-        autoSyncPricing: selected.value.autoSyncPricing,
-        maxParcelWeightKg: selected.value.maxParcelWeightKg,
-        allowLiquidCargo: selected.value.allowLiquidCargo,
-        allowOversizeCargo: selected.value.allowOversizeCargo,
-      }
-      await LogisticsCarrierSettingsService.updateCarrier(selected.value.id, payload)
-      ElNotification.success({ title: 'Lưu cấu hình thành công' })
-      await loadCarriers()
-      closeDrawer()
-    } finally {
-      saving.value = false
-    }
-  }
-
-  const testConnection = async () => {
-    if (!selected.value) return
-    testing.value = true
-    try {
-      const res = await LogisticsCarrierSettingsService.testConnection(selected.value.id, {})
-      if (res.isSuccess) {
-        ElNotification.success({ title: res.message || 'Kết nối thành công!' })
-      } else {
-        ElNotification.error({ title: res.message || 'Kết nối thất bại!' })
-      }
-    } finally {
-      testing.value = false
-    }
-  }
-
-  onMounted(() => {
-    void loadCarriers()
-  })
+onMounted(() => {
+  void loadCarriers();
+});
 </script>

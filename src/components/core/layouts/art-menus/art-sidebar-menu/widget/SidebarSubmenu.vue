@@ -1,6 +1,13 @@
 <template>
-  <template v-for="(item, index) in filteredMenuItems" :key="getUniqueKey(item, index)">
-    <ElSubMenu v-if="hasChildren(item)" :index="item.path || item.meta.title" :level="level">
+  <template
+    v-for="(item, index) in filteredMenuItems"
+    :key="getUniqueKey(item, index)"
+  >
+    <ElSubMenu
+      v-if="hasChildren(item)"
+      :index="item.path || item.meta.title"
+      :level="level"
+    >
       <template #title>
         <div class="menu-icon flex-cc">
           <ArtSvgIcon
@@ -48,7 +55,10 @@
           {{ formatMenuTitle(item.meta.title) }}
         </span>
         <div v-if="item.meta.showBadge" class="art-badge" />
-        <div v-if="item.meta.showTextBadge && (level > 0 || menuOpen)" class="art-text-badge">
+        <div
+          v-if="item.meta.showTextBadge && (level > 0 || menuOpen)"
+          class="art-text-badge"
+        >
           {{ item.meta.showTextBadge }}
         </div>
       </template>
@@ -57,94 +67,96 @@
 </template>
 
 <script setup lang="ts">
-  import { computed } from 'vue'
-  import type { AppRouteRecord } from '@/types/router'
-  import { formatMenuTitle } from '@/utils/router'
-  import { handleMenuJump } from '@/utils/navigation'
-  import { useSettingStore } from '@/application/store/setting'
+import { computed } from "vue";
+import type { AppRouteRecord } from "@/types/router";
+import { formatMenuTitle } from "@/utils/router";
+import { handleMenuJump } from "@/utils/navigation";
+import { useSettingStore } from "@/application/store/setting";
 
-  interface MenuTheme {
-    iconColor?: string
+interface MenuTheme {
+  iconColor?: string;
+}
+
+interface Props {
+  title?: string;
+
+  list?: AppRouteRecord[];
+
+  theme?: MenuTheme;
+
+  isMobile?: boolean;
+
+  level?: number;
+}
+
+interface Emits {
+  (e: "close"): void;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  title: "",
+  list: () => [],
+  theme: () => ({}),
+  isMobile: false,
+  level: 0,
+});
+
+const emit = defineEmits<Emits>();
+
+const settingStore = useSettingStore();
+
+const { menuOpen } = storeToRefs(settingStore);
+
+const filteredMenuItems = computed(() => filterRoutes(props.list));
+
+const goPage = (item: AppRouteRecord): void => {
+  closeMenu();
+  handleMenuJump(item);
+};
+
+const closeMenu = (): void => {
+  emit("close");
+};
+
+const isNavigableRoute = (item: AppRouteRecord): boolean => {
+  return !!(
+    !item.meta.isHide &&
+    ((item.path && item.path.trim()) ||
+      item.meta.link ||
+      item.meta.isIframe === true) &&
+    (item.component || item.meta.link || item.meta.isIframe === true)
+  );
+};
+
+const filterRoutes = (items: AppRouteRecord[]): AppRouteRecord[] => {
+  return items
+    .filter((item) => {
+      if (item.meta.isHide) {
+        return false;
+      }
+
+      if (item.children && item.children.length > 0) {
+        const filteredChildren = filterRoutes(item.children);
+        return filteredChildren.length > 0 || isNavigableRoute(item);
+      }
+
+      return isNavigableRoute(item);
+    })
+    .map((item) => ({
+      ...item,
+      children: item.children ? filterRoutes(item.children) : undefined,
+    }));
+};
+
+const hasChildren = (item: AppRouteRecord): boolean => {
+  if (!item.children || item.children.length === 0) {
+    return false;
   }
+  const filteredChildren = filterRoutes(item.children);
+  return filteredChildren.length > 0;
+};
 
-  interface Props {
-    title?: string
-
-    list?: AppRouteRecord[]
-
-    theme?: MenuTheme
-
-    isMobile?: boolean
-
-    level?: number
-  }
-
-  interface Emits {
-    (e: 'close'): void
-  }
-
-  const props = withDefaults(defineProps<Props>(), {
-    title: '',
-    list: () => [],
-    theme: () => ({}),
-    isMobile: false,
-    level: 0,
-  })
-
-  const emit = defineEmits<Emits>()
-
-  const settingStore = useSettingStore()
-
-  const { menuOpen } = storeToRefs(settingStore)
-
-  const filteredMenuItems = computed(() => filterRoutes(props.list))
-
-  const goPage = (item: AppRouteRecord): void => {
-    closeMenu()
-    handleMenuJump(item)
-  }
-
-  const closeMenu = (): void => {
-    emit('close')
-  }
-
-  const isNavigableRoute = (item: AppRouteRecord): boolean => {
-    return !!(
-      !item.meta.isHide &&
-      ((item.path && item.path.trim()) || item.meta.link || item.meta.isIframe === true) &&
-      (item.component || item.meta.link || item.meta.isIframe === true)
-    )
-  }
-
-  const filterRoutes = (items: AppRouteRecord[]): AppRouteRecord[] => {
-    return items
-      .filter((item) => {
-        if (item.meta.isHide) {
-          return false
-        }
-
-        if (item.children && item.children.length > 0) {
-          const filteredChildren = filterRoutes(item.children)
-          return filteredChildren.length > 0 || isNavigableRoute(item)
-        }
-
-        return isNavigableRoute(item)
-      })
-      .map((item) => ({
-        ...item,
-        children: item.children ? filterRoutes(item.children) : undefined,
-      }))
-  }
-
-  const hasChildren = (item: AppRouteRecord): boolean => {
-    if (!item.children || item.children.length === 0) {
-      return false
-    }
-    const filteredChildren = filterRoutes(item.children)
-    return filteredChildren.length > 0
-  }
-
-  const getUniqueKey = (item: AppRouteRecord, index: number): string => {
-    return `${item.path || item.meta.title || 'menu'}-${props.level}-${index}`
-  }
+const getUniqueKey = (item: AppRouteRecord, index: number): string => {
+  return `${item.path || item.meta.title || "menu"}-${props.level}-${index}`;
+};
 </script>

@@ -7,7 +7,11 @@
       </div>
 
       <div class="space-y-4">
-        <div v-for="(staff, index) in staffList" :key="index" class="flex items-center text-sm">
+        <div
+          v-for="(staff, index) in staffList"
+          :key="index"
+          class="flex items-center text-sm"
+        >
           <div class="w-8 font-bold text-gray-500">#{{ index + 1 }}</div>
           <div class="w-24 truncate">{{ staff.name }}</div>
           <div class="flex-1 mx-2">
@@ -18,7 +22,9 @@
               :stroke-width="8"
             />
           </div>
-          <div class="w-24 text-right font-medium">{{ formatCurrency(staff.amount) }}</div>
+          <div class="w-24 text-right font-medium">
+            {{ formatCurrency(staff.amount) }}
+          </div>
           <div class="w-28 text-right text-xs" :class="staff.statusColor">
             <span class="mr-1">{{ staff.icon }}</span> {{ staff.status }}
           </div>
@@ -33,7 +39,12 @@
       </div>
       <div class="flex items-center">
         <div class="flex-1 mr-3">
-          <ElProgress :percentage="76" color="#67c23a" :show-text="false" :stroke-width="10" />
+          <ElProgress
+            :percentage="76"
+            color="#67c23a"
+            :show-text="false"
+            :stroke-width="10"
+          />
         </div>
         <div class="text-sm font-bold text-green-600">76% mục tiêu</div>
       </div>
@@ -42,55 +53,55 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue'
+import { ref } from "vue";
 
-  defineProps({
-    period: {
-      type: String,
-      default: 'today',
-    },
-  })
+defineProps({
+  period: {
+    type: String,
+    default: "today",
+  },
+});
 
-  const staffList = ref([
-    {
-      name: 'Nguyễn A',
-      amount: 42000000,
-      status: 'Vượt KPI',
-      icon: '⭐',
-      color: '#409eff',
-      statusColor: 'text-blue-500',
-    },
-    {
-      name: 'Trần B',
-      amount: 31000000,
-      status: 'Đạt',
-      icon: '✓',
-      color: '#67c23a',
-      statusColor: 'text-green-500',
-    },
-    {
-      name: 'Lê C',
-      amount: 18000000,
-      status: 'Cần cải thiện',
-      icon: '⚠️',
-      color: '#e6a23c',
-      statusColor: 'text-orange-500',
-    },
-  ])
+const staffList = ref([
+  {
+    name: "Nguyễn A",
+    amount: 42000000,
+    status: "Vượt KPI",
+    icon: "⭐",
+    color: "#409eff",
+    statusColor: "text-blue-500",
+  },
+  {
+    name: "Trần B",
+    amount: 31000000,
+    status: "Đạt",
+    icon: "✓",
+    color: "#67c23a",
+    statusColor: "text-green-500",
+  },
+  {
+    name: "Lê C",
+    amount: 18000000,
+    status: "Cần cải thiện",
+    icon: "⚠️",
+    color: "#e6a23c",
+    statusColor: "text-orange-500",
+  },
+]);
 
-  const calculatePercentage = (amount: number, max: number) => {
-    return Number(Math.min((amount / max) * 100, 100).toFixed(1))
-  }
+const calculatePercentage = (amount: number, max: number) => {
+  return Number(Math.min((amount / max) * 100, 100).toFixed(1));
+};
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('vi-VN').format(value)
-  }
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat("vi-VN").format(value);
+};
 </script>
 
 <style scoped>
-  .art-card {
-    background-color: var(--art-bg-color);
-    border: 1px solid var(--art-border-color);
-    border-radius: var(--art-border-radius);
-  }
+.art-card {
+  background-color: var(--art-bg-color);
+  border: 1px solid var(--art-border-color);
+  border-radius: var(--art-border-radius);
+}
 </style>

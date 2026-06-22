@@ -5,13 +5,13 @@ import {
   RealConfirmBookingUseCase,
   RealCreateBookingUseCase,
   RealGetBookingEventsUseCase,
-} from '@/application/bookings/usecases'
+} from "@/application/bookings/usecases";
 
 export interface BookingUseCases {
-  getBookingEvents: GetBookingEventsUseCase
-  confirmBooking: ConfirmBookingUseCase
+  getBookingEvents: GetBookingEventsUseCase;
+  confirmBooking: ConfirmBookingUseCase;
 
-  createBooking: CreateBookingUseCase
+  createBooking: CreateBookingUseCase;
 }
 
 export function createBookingUseCases(): BookingUseCases {
@@ -19,5 +19,5 @@ export function createBookingUseCases(): BookingUseCases {
     getBookingEvents: new RealGetBookingEventsUseCase(),
     confirmBooking: new RealConfirmBookingUseCase(),
     createBooking: new RealCreateBookingUseCase(),
-  }
+  };
 }

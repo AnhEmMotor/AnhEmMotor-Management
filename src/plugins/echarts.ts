@@ -1,4 +1,4 @@
-import * as echarts from 'echarts/core'
+import * as echarts from "echarts/core";
 
 import {
   BarChart,
@@ -8,7 +8,7 @@ import {
   RadarChart,
   MapChart,
   CandlestickChart,
-} from 'echarts/charts'
+} from "echarts/charts";
 
 import {
   TitleComponent,
@@ -22,9 +22,9 @@ import {
   BrushComponent,
   GeoComponent,
   VisualMapComponent,
-} from 'echarts/components'
+} from "echarts/components";
 
-import { CanvasRenderer } from 'echarts/renderers'
+import { CanvasRenderer } from "echarts/renderers";
 
 echarts.use([
   BarChart,
@@ -48,9 +48,9 @@ echarts.use([
   VisualMapComponent,
 
   CanvasRenderer,
-])
+]);
 
-export { echarts }
-export type { EChartsOption, BarSeriesOption } from 'echarts'
+export { echarts };
+export type { EChartsOption, BarSeriesOption } from "echarts";
 
-export const graphic = echarts.graphic
+export const graphic = echarts.graphic;

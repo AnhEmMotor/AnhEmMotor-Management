@@ -14,7 +14,7 @@
               class="mt-1.5 text-xs font-medium"
               :class="percentage > 0 ? 'text-success' : 'text-danger'"
             >
-              {{ percentage > 0 ? '+' : '' }}{{ percentage }}%
+              {{ percentage > 0 ? "+" : "" }}{{ percentage }}%
               <span v-if="percentageLabel">{{ percentageLabel }}</span>
             </div>
           </div>
@@ -38,84 +38,84 @@
 </template>
 
 <script setup lang="ts">
-  import { type EChartsOption } from '@/plugins/echarts'
-  import { useChartOps, useChartComponent } from '@/hooks/core/useChart'
+import { type EChartsOption } from "@/plugins/echarts";
+import { useChartOps, useChartComponent } from "@/hooks/core/useChart";
 
-  defineOptions({ name: 'ArtDonutChartCard' })
+defineOptions({ name: "ArtDonutChartCard" });
 
-  interface Props {
-    value: number
+interface Props {
+  value: number;
 
-    title: string
+  title: string;
 
-    percentage: number
+  percentage: number;
 
-    percentageLabel?: string
+  percentageLabel?: string;
 
-    currentValue?: string
+  currentValue?: string;
 
-    previousValue?: string
+  previousValue?: string;
 
-    height?: number
+  height?: number;
 
-    color?: string
+  color?: string;
 
-    radius?: [string, string]
+  radius?: [string, string];
 
-    data: [number, number]
-  }
+  data: [number, number];
+}
 
-  const props = withDefaults(defineProps<Props>(), {
-    height: 9,
-    radius: () => ['70%', '90%'],
-    data: () => [0, 0],
-  })
+const props = withDefaults(defineProps<Props>(), {
+  height: 9,
+  radius: () => ["70%", "90%"],
+  data: () => [0, 0],
+});
 
-  const formatNumber = (num: number) => {
-    return num.toLocaleString()
-  }
+const formatNumber = (num: number) => {
+  return num.toLocaleString();
+};
 
-  const { chartRef } = useChartComponent({
-    props: {
-      height: `${props.height}rem`,
-      loading: false,
-      isEmpty: props.data.every((val) => val === 0),
-    },
-    checkEmpty: () => props.data.every((val) => val === 0),
-    watchSources: [
-      () => props.data,
-      () => props.color,
-      () => props.radius,
-      () => props.currentValue,
-      () => props.previousValue,
-    ],
-    generateOptions: (): EChartsOption => {
-      const computedColor = props.color || useChartOps().themeColor
+const { chartRef } = useChartComponent({
+  props: {
+    height: `${props.height}rem`,
+    loading: false,
+    isEmpty: props.data.every((val) => val === 0),
+  },
+  checkEmpty: () => props.data.every((val) => val === 0),
+  watchSources: [
+    () => props.data,
+    () => props.color,
+    () => props.radius,
+    () => props.currentValue,
+    () => props.previousValue,
+  ],
+  generateOptions: (): EChartsOption => {
+    const computedColor = props.color || useChartOps().themeColor;
 
-      return {
-        series: [
-          {
-            type: 'pie',
-            radius: props.radius,
-            avoidLabelOverlap: false,
-            label: {
-              show: false,
-            },
-            data: [
-              {
-                value: props.data[0],
-                name: props.currentValue,
-                itemStyle: { color: computedColor },
-              },
-              {
-                value: props.data[1],
-                name: props.previousValue,
-                itemStyle: { color: '#e6e8f7' },
-              },
-            ],
+    return {
+      series: [
+        {
+          type: "pie",
+          radius: props.radius,
+          avoidLabelOverlap: false,
+          label: {
+            show: false,
           },
-        ],
-      }
-    },
-  })
+          data: [
+            {
+              value: props.data[0],
+              name: props.currentValue,
+              itemStyle: { color: computedColor },
+            },
+            {
+              value: props.data[1],
+              name: props.previousValue,
+              itemStyle: { color: "#e6e8f7" },
+            },
+          ],
+        },
+      ],
+    };
+  },
+});
 </script>

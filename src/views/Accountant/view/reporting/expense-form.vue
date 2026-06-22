@@ -1,13 +1,26 @@
 <template>
   <ElForm label-position="top" class="expense-form">
     <ElFormItem label="Tên khoản chi" required>
-      <ElInput v-model="form.name" placeholder="VD: Thuê mặt bằng, Marketing..." />
+      <ElInput
+        v-model="form.name"
+        placeholder="VD: Thuê mặt bằng, Marketing..."
+      />
     </ElFormItem>
 
     <ElFormItem label="Phân loại" required>
-      <ElSelect v-model="form.category" popper-class="reporting-select-popper" class="w-full">
-        <ElOption label="Chi phí cố định (mặt bằng, lương cơ bản...)" :value="0" />
-        <ElOption label="Chi phí biến đổi (hoa hồng, điện nước, vật tư...)" :value="1" />
+      <ElSelect
+        v-model="form.category"
+        popper-class="reporting-select-popper"
+        class="w-full"
+      >
+        <ElOption
+          label="Chi phí cố định (mặt bằng, lương cơ bản...)"
+          :value="0"
+        />
+        <ElOption
+          label="Chi phí biến đổi (hoa hồng, điện nước, vật tư...)"
+          :value="1"
+        />
       </ElSelect>
     </ElFormItem>
 
@@ -33,7 +46,12 @@
     </ElFormItem>
 
     <ElFormItem label="Ghi chú">
-      <ElInput v-model="form.note" type="textarea" :rows="3" placeholder="Ghi chú nội bộ nếu có" />
+      <ElInput
+        v-model="form.note"
+        type="textarea"
+        :rows="3"
+        placeholder="Ghi chú nội bộ nếu có"
+      />
     </ElFormItem>
 
     <div class="flex justify-end gap-3 mt-6">
@@ -44,35 +62,35 @@
 </template>
 
 <script setup lang="ts">
-  import { reactive } from 'vue'
-  import { ElMessage } from 'element-plus'
+import { reactive } from "vue";
+import { ElMessage } from "element-plus";
 
-  type ExpenseFormData = {
-    name: string
-    category: number
-    amount: number
-    expenseDate: string
-    note?: string
+type ExpenseFormData = {
+  name: string;
+  category: number;
+  amount: number;
+  expenseDate: string;
+  note?: string;
+};
+
+const emit = defineEmits<{
+  close: [];
+  submit: [value: ExpenseFormData];
+}>();
+
+const form = reactive<ExpenseFormData>({
+  name: "",
+  category: 0, // 0: Fixed, 1: Variable
+  amount: 0,
+  expenseDate: new Date().toISOString().split("T")[0],
+  note: "",
+});
+
+const submitForm = () => {
+  if (!form.name || form.amount <= 0) {
+    ElMessage.warning("Vui lòng nhập tên khoản chi và số tiền hợp lệ.");
+    return;
   }
-
-  const emit = defineEmits<{
-    close: []
-    submit: [value: ExpenseFormData]
-  }>()
-
-  const form = reactive<ExpenseFormData>({
-    name: '',
-    category: 0, // 0: Fixed, 1: Variable
-    amount: 0,
-    expenseDate: new Date().toISOString().split('T')[0],
-    note: '',
-  })
-
-  const submitForm = () => {
-    if (!form.name || form.amount <= 0) {
-      ElMessage.warning('Vui lòng nhập tên khoản chi và số tiền hợp lệ.')
-      return
-    }
-    emit('submit', { ...form })
-  }
+  emit("submit", { ...form });
+};
 </script>

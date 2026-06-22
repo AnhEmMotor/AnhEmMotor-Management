@@ -2,7 +2,7 @@
   <div class="art-card h-82 p-5 mb-5 max-sm:mb-4">
     <div class="art-card-header">
       <div class="title">
-        <h4>{{ $t('admin.t48') }}</h4>
+        <h4>{{ $t("admin.t48") }}</h4>
       </div>
     </div>
     <ArtLineChart
@@ -18,18 +18,31 @@
 </template>
 
 <script setup lang="ts">
-  import type { LineDataItem } from '@/types/component/chart'
+import type { LineDataItem } from "@/types/component/chart";
 
-  const xAxisData = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+const xAxisData = [
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "10",
+  "11",
+  "12",
+];
 
-  const chartData = computed<LineDataItem[]>(() => [
-    {
-      name: 'giàkháchkhoản',
-      data: [280, 350, 300, 250, 230, 210, 240, 280, 320, 350, 300, 200],
-    },
-    {
-      name: 'mớikháchkhoản',
-      data: [260, 200, 150, 130, 180, 270, 340, 380, 300, 220, 170, 130],
-    },
-  ])
+const chartData = computed<LineDataItem[]>(() => [
+  {
+    name: "giàkháchkhoản",
+    data: [280, 350, 300, 250, 230, 210, 240, 280, 320, 350, 300, 200],
+  },
+  {
+    name: "mớikháchkhoản",
+    data: [260, 200, 150, 130, 180, 270, 340, 380, 300, 220, 170, 130],
+  },
+]);
 </script>

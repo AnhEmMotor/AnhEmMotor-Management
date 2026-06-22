@@ -1,45 +1,46 @@
-import { AppRouteRecord } from '@/types/router'
+import { AppRouteRecord } from "@/types/router";
 
 export const dashboardRoutes: AppRouteRecord = {
-  name: 'Dashboard',
-  path: '/dashboard',
-  component: '/index/index',
+  name: "Dashboard",
+  path: "/dashboard",
+  component: "/index/index",
   meta: {
-    title: 'menus.dashboard.title',
-    icon: 'ri:pie-chart-line',
-    roles: ['R_SUPER', 'R_ADMIN'],
+    title: "menus.dashboard.title",
+    icon: "ri:pie-chart-line",
   },
   children: [
     {
-      path: 'console',
-      name: 'Console',
-      component: '/Admin/view/dashboard',
+      path: "console",
+      name: "Console",
+      component: "/Admin/view/dashboard",
       meta: {
-        title: 'menus.dashboard.console',
-        icon: 'ri:home-smile-2-line',
+        title: "menus.dashboard.console",
+        icon: "ri:home-smile-2-line",
         keepAlive: false,
         fixedTab: true,
       },
     },
     {
-      path: 'analysis',
-      name: 'Analysis',
-      component: '/dashboard/analysis',
+      path: "analysis",
+      name: "Analysis",
+      component: "/dashboard/analysis",
       meta: {
-        title: 'menus.dashboard.analysis',
-        icon: 'ri:align-item-bottom-line',
+        title: "menus.dashboard.analysis",
+        icon: "ri:align-item-bottom-line",
         keepAlive: false,
+        permission: "Permissions.Statistical.View",
       },
     },
     {
-      path: 'ecommerce',
-      name: 'Ecommerce',
-      component: '/dashboard/ecommerce',
+      path: "ecommerce",
+      name: "Ecommerce",
+      component: "/dashboard/ecommerce",
       meta: {
-        title: 'menus.dashboard.ecommerce',
-        icon: 'ri:bar-chart-box-line',
+        title: "menus.dashboard.ecommerce",
+        icon: "ri:bar-chart-box-line",
         keepAlive: false,
+        permission: "Permissions.Statistical.View",
       },
     },
   ],
-}
+};

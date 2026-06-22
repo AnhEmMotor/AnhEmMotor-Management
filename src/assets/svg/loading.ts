@@ -28,4 +28,4 @@ export const fourDotsSpinnerSvg = `
       <circle class="dot" cx="8" cy="20" r="4"/>
     </g>
   </svg>
-`
+`;

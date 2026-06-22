@@ -1,24 +1,24 @@
-import request from '@/utils/http'
+import request from "@/utils/http";
 
 export interface EmployeeResponse {
-  id: number
-  userId: string
-  fullName: string
-  email: string
-  jobTitle: string
-  baseSalary: number
-  identityNumber: string
-  address: string
-  contractDate: string
-  bankName: string
-  bankAccountNumber: string
-  avatarUrl?: string
+  id: number;
+  userId: string;
+  fullName: string;
+  email: string;
+  jobTitle: string;
+  baseSalary: number;
+  identityNumber: string;
+  address: string;
+  contractDate: string;
+  bankName: string;
+  bankAccountNumber: string;
+  avatarUrl?: string;
 }
 
 export const EmployeeApi = {
   getList() {
     return request.get<EmployeeResponse[]>({
-      url: '/api/v1/hr/employees',
-    })
+      url: "/api/v1/hr/employees",
+    });
   },
-}
+};

@@ -1,9 +1,9 @@
-import request from '@/utils/http'
+import request from "@/utils/http";
 import type {
   ReturnOrderDto,
   ReturnDetailDto,
   InspectReturnCommand,
-} from '@/domain/logistics/returns.types'
+} from "@/domain/logistics/returns.types";
 
 /**
  * Lấy danh sách các đơn hàng hoàn
@@ -11,9 +11,9 @@ import type {
  */
 export function getReturns(status?: string) {
   return request.get<ReturnOrderDto[]>({
-    url: '/api/v1/logistics/returns',
+    url: "/api/v1/logistics/returns",
     params: { status: status || undefined },
-  })
+  });
 }
 
 /**
@@ -23,7 +23,7 @@ export function getReturns(status?: string) {
 export function getReturnDetail(id: number) {
   return request.get<ReturnDetailDto>({
     url: `/api/v1/logistics/returns/${id}`,
-  })
+  });
 }
 
 /**
@@ -35,5 +35,5 @@ export function inspectReturn(id: number, data: InspectReturnCommand) {
   return request.post<void>({
     url: `/api/v1/logistics/returns/${id}/inspect`,
     data,
-  })
+  });
 }

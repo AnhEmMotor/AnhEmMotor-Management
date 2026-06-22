@@ -9,89 +9,87 @@ import type {
   RestoreSupplierContractUseCase,
   UpdateSupplierContractStatusUseCase,
   UpdateSupplierContractUseCase,
-} from '@/application/supplier/contract.usecases'
+} from "@/application/supplier/contract.usecases";
 import type {
-  SupplierContractAuditLogDto,
   SupplierContractDto,
   SupplierContractListParams,
-  SupplierContractStatisticsResponse,
   SupplierContractStatus,
-} from '@/domain/supplier/contract.types'
+} from "@/domain/supplier/contract.types";
 
-import { SupplierContractApi } from '@/infrastructure/api/supplier-contract.api'
+import { SupplierContractApi } from "@/infrastructure/api/supplier-contract.api";
 
 class RealGetSupplierContractsUseCase implements GetSupplierContractsUseCase {
   async execute(params: SupplierContractListParams) {
-    const res = await SupplierContractApi.getList(params)
-    return { items: res.items ?? [], totalCount: res.totalCount ?? 0 }
+    const res = await SupplierContractApi.getList(params);
+    return { items: res.items ?? [], totalCount: res.totalCount ?? 0 };
   }
 }
 
 class RealGetSupplierContractDetailUseCase implements GetSupplierContractDetailUseCase {
   async execute(id: string) {
-    return SupplierContractApi.getById(id)
+    return SupplierContractApi.getById(id);
   }
 }
 
 class RealGetSupplierContractAuditLogsUseCase implements GetSupplierContractAuditLogsUseCase {
   async execute(id: string) {
-    return SupplierContractApi.getAuditLogs(id)
+    return SupplierContractApi.getAuditLogs(id);
   }
 }
 
 class RealCreateSupplierContractUseCase implements CreateSupplierContractUseCase {
   async execute(data: Partial<SupplierContractDto>) {
-    return SupplierContractApi.create(data)
+    return SupplierContractApi.create(data);
   }
 }
 
 class RealUpdateSupplierContractUseCase implements UpdateSupplierContractUseCase {
   async execute(id: string, data: Partial<SupplierContractDto>) {
-    return SupplierContractApi.update(id, data)
+    return SupplierContractApi.update(id, data);
   }
 }
 
 class RealUpdateSupplierContractStatusUseCase implements UpdateSupplierContractStatusUseCase {
   async execute(id: string, status: SupplierContractStatus) {
-    return SupplierContractApi.updateStatus(id, { status })
+    return SupplierContractApi.updateStatus(id, { status });
   }
 }
 
 class RealDeleteSupplierContractUseCase implements DeleteSupplierContractUseCase {
   async execute(id: string) {
-    await SupplierContractApi.delete(id)
+    await SupplierContractApi.delete(id);
   }
 }
 
 class RealRestoreSupplierContractUseCase implements RestoreSupplierContractUseCase {
   async execute(id: string) {
-    await SupplierContractApi.restore(id)
+    await SupplierContractApi.restore(id);
   }
 }
 
 class RealGetSupplierContractStatisticsUseCase implements GetSupplierContractStatisticsUseCase {
   async execute() {
-    return SupplierContractApi.getStatistics()
+    return SupplierContractApi.getStatistics();
   }
 }
 
 class RealGetSuppliersForSelectUseCase implements GetSuppliersForSelectUseCase {
   async execute() {
-    return SupplierContractApi.getSuppliersForSelect()
+    return SupplierContractApi.getSuppliersForSelect();
   }
 }
 
 export interface SupplierContractUseCases {
-  getContracts: GetSupplierContractsUseCase
-  getContractDetail: GetSupplierContractDetailUseCase
-  getAuditLogs: GetSupplierContractAuditLogsUseCase
-  create: CreateSupplierContractUseCase
-  update: UpdateSupplierContractUseCase
-  updateStatus: UpdateSupplierContractStatusUseCase
-  delete: DeleteSupplierContractUseCase
-  restore: RestoreSupplierContractUseCase
-  getStatistics: GetSupplierContractStatisticsUseCase
-  getSuppliersForSelect: GetSuppliersForSelectUseCase
+  getContracts: GetSupplierContractsUseCase;
+  getContractDetail: GetSupplierContractDetailUseCase;
+  getAuditLogs: GetSupplierContractAuditLogsUseCase;
+  create: CreateSupplierContractUseCase;
+  update: UpdateSupplierContractUseCase;
+  updateStatus: UpdateSupplierContractStatusUseCase;
+  delete: DeleteSupplierContractUseCase;
+  restore: RestoreSupplierContractUseCase;
+  getStatistics: GetSupplierContractStatisticsUseCase;
+  getSuppliersForSelect: GetSuppliersForSelectUseCase;
 }
 
 export function createSupplierContractUseCases(): SupplierContractUseCases {
@@ -106,5 +104,5 @@ export function createSupplierContractUseCases(): SupplierContractUseCases {
     restore: new RealRestoreSupplierContractUseCase(),
     getStatistics: new RealGetSupplierContractStatisticsUseCase(),
     getSuppliersForSelect: new RealGetSuppliersForSelectUseCase(),
-  }
+  };
 }

@@ -30,28 +30,43 @@
             prefix="¥"
             separator=","
           />
-          <ArtSvgIcon icon="ri:arrow-right-up-line" class="text-xl text-success relative -top-2" />
+          <ArtSvgIcon
+            icon="ri:arrow-right-up-line"
+            class="text-xl text-success relative -top-2"
+          />
         </p>
-        <p class="mt-1 text-sm text-g-700">{{ $t('dashboard.ecommerce.todaySales') }}</p>
+        <p class="mt-1 text-sm text-g-700">
+          {{ $t("dashboard.ecommerce.todaySales") }}
+        </p>
       </div>
       <div class="mr-8">
         <p class="text-3xl">
-          <ArtCountTo class="number box-title" :target="35" :duration="1500" suffix="%" />
-          <ArtSvgIcon icon="ri:arrow-right-up-line" class="text-xl text-success relative -top-2" />
+          <ArtCountTo
+            class="number box-title"
+            :target="35"
+            :duration="1500"
+            suffix="%"
+          />
+          <ArtSvgIcon
+            icon="ri:arrow-right-up-line"
+            class="text-xl text-success relative -top-2"
+          />
         </p>
-        <p class="mt-1 text-sm text-g-700">{{ $t('dashboard.ecommerce.vsYesterday') }}</p>
+        <p class="mt-1 text-sm text-g-700">
+          {{ $t("dashboard.ecommerce.vsYesterday") }}
+        </p>
       </div>
     </div>
   </ArtBasicBanner>
 </template>
 
 <script setup lang="ts">
-  import bannerCover from '@imgs/login/lf_icon2.webp'
-  import { useUserStore } from '@/application/store/user'
+import bannerCover from "@imgs/login/lf_icon2.webp";
+import { useUserStore } from "@/application/store/user";
 
-  const userStore = useUserStore()
+const userStore = useUserStore();
 
-  const userInfo = computed(() => userStore.getUserInfo)
+const userInfo = computed(() => userStore.getUserInfo);
 
-  const handleBannerClick = (): void => {}
+const handleBannerClick = (): void => {};
 </script>

@@ -2,8 +2,8 @@
   <div class="art-card p-5 mb-5 h-105 max-sm:mb-4">
     <div class="art-card-header">
       <div class="title">
-        <h4>{{ $t('dashboard.ecommerce.salesClassification') }}</h4>
-        <p>{{ $t('dashboard.ecommerce.byCategory') }}</p>
+        <h4>{{ $t("dashboard.ecommerce.salesClassification") }}</h4>
+        <p>{{ $t("dashboard.ecommerce.byCategory") }}</p>
       </div>
     </div>
 
@@ -27,7 +27,9 @@
         </div>
         <div>
           <p class="text-lg">¥500,458</p>
-          <span class="text-sm">{{ $t('dashboard.ecommerce.totalIncome') }}</span>
+          <span class="text-sm">{{
+            $t("dashboard.ecommerce.totalIncome")
+          }}</span>
         </div>
       </div>
       <div class="flex-c">

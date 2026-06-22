@@ -7,13 +7,20 @@
     <div
       v-if="isDualMenu"
       class="dual-menu-left"
-      :style="{ width: dualMenuShowText ? '92px' : '76px', background: getMenuTheme.background }"
+      :style="{
+        width: dualMenuShowText ? '92px' : '76px',
+        background: getMenuTheme.background,
+      }"
     >
       <ArtLogo class="logo" @click="navigateToHome" />
 
       <ElScrollbar style="height: calc(100% - 135px)">
         <ul>
-          <li v-for="menu in firstLevelMenus" :key="menu.path" @click="handleMenuJump(menu, true)">
+          <li
+            v-for="menu in firstLevelMenus"
+            :key="menu.path"
+            @click="handleMenuJump(menu, true)"
+          >
             <ElTooltip
               class="box-item"
               effect="dark"
@@ -43,7 +50,10 @@
                 <span v-if="dualMenuShowText" class="text-md text-g-700">
                   {{ $t(menu.meta.title) }}
                 </span>
-                <div v-if="menu.meta.showBadge" class="art-badge art-badge-dual" />
+                <div
+                  v-if="menu.meta.showBadge"
+                  class="art-badge art-badge-dual"
+                />
               </div>
             </ElTooltip>
           </li>
@@ -104,10 +114,16 @@
         </ElMenu>
       </ElScrollbar>
 
-      <div class="dual-menu-collapse-btn" v-if="isDualMenu" @click="toggleMenuVisibility">
+      <div
+        class="dual-menu-collapse-btn"
+        v-if="isDualMenu"
+        @click="toggleMenuVisibility"
+      >
         <ArtSvgIcon
           class="text-g-500/70"
-          :icon="menuOpen ? 'ri:arrow-left-wide-fill' : 'ri:arrow-right-wide-fill'"
+          :icon="
+            menuOpen ? 'ri:arrow-left-wide-fill' : 'ri:arrow-right-wide-fill'
+          "
         />
       </div>
 
@@ -124,179 +140,187 @@
 </template>
 
 <script setup lang="ts">
-  import AppConfig from '@/config'
-  import { useSettingStore } from '@/application/store/setting'
-  import { MenuTypeEnum, MenuWidth } from '@/enums/appEnum'
-  import { useMenuStore } from '@/application/store/menu'
-  import { isIframe } from '@/utils/navigation'
-  import { handleMenuJump } from '@/utils/navigation'
-  import SidebarSubmenu from './widget/SidebarSubmenu.vue'
-  import { useCommon } from '@/hooks/core/useCommon'
-  import { useWindowSize, useTimeoutFn } from '@vueuse/core'
+import AppConfig from "@/config";
+import { useSettingStore } from "@/application/store/setting";
+import { MenuTypeEnum, MenuWidth } from "@/enums/appEnum";
+import { useMenuStore } from "@/application/store/menu";
+import { isIframe } from "@/utils/navigation";
+import { handleMenuJump } from "@/utils/navigation";
+import SidebarSubmenu from "./widget/SidebarSubmenu.vue";
+import { useCommon } from "@/hooks/core/useCommon";
+import { useWindowSize, useTimeoutFn } from "@vueuse/core";
 
-  defineOptions({ name: 'ArtSidebarMenu' })
+defineOptions({ name: "ArtSidebarMenu" });
 
-  const MOBILE_BREAKPOINT = 800
-  const ANIMATION_DELAY = 350
-  const MENU_CLOSE_WIDTH = MenuWidth.CLOSE
+const MOBILE_BREAKPOINT = 800;
+const ANIMATION_DELAY = 350;
+const MENU_CLOSE_WIDTH = MenuWidth.CLOSE;
 
-  const route = useRoute()
-  const router = useRouter()
-  const settingStore = useSettingStore()
+const route = useRoute();
+const router = useRouter();
+const settingStore = useSettingStore();
 
-  const { getMenuOpenWidth, menuType, uniqueOpened, dualMenuShowText, menuOpen, getMenuTheme } =
-    storeToRefs(settingStore)
+const {
+  getMenuOpenWidth,
+  menuType,
+  uniqueOpened,
+  dualMenuShowText,
+  menuOpen,
+  getMenuTheme,
+} = storeToRefs(settingStore);
 
-  const defaultOpenedMenus = ref<string[]>([])
-  const isMobileMode = ref(false)
-  const showMobileModal = ref(false)
+const defaultOpenedMenus = ref<string[]>([]);
+const isMobileMode = ref(false);
+const showMobileModal = ref(false);
 
-  const { width } = useWindowSize()
+const { width } = useWindowSize();
 
-  const menuopenwidth = computed(() => getMenuOpenWidth.value)
-  const menuclosewidth = computed(() => MENU_CLOSE_WIDTH)
+const menuopenwidth = computed(() => getMenuOpenWidth.value);
+const menuclosewidth = computed(() => MENU_CLOSE_WIDTH);
 
-  const isTopLeftMenu = computed(() => menuType.value === MenuTypeEnum.TOP_LEFT)
-  const showLeftMenu = computed(
-    () => menuType.value === MenuTypeEnum.LEFT || menuType.value === MenuTypeEnum.TOP_LEFT,
-  )
-  const isDualMenu = computed(() => menuType.value === MenuTypeEnum.DUAL_MENU)
+const isTopLeftMenu = computed(() => menuType.value === MenuTypeEnum.TOP_LEFT);
+const showLeftMenu = computed(
+  () =>
+    menuType.value === MenuTypeEnum.LEFT ||
+    menuType.value === MenuTypeEnum.TOP_LEFT,
+);
+const isDualMenu = computed(() => menuType.value === MenuTypeEnum.DUAL_MENU);
 
-  const isMobileScreen = computed(() => width.value < MOBILE_BREAKPOINT)
+const isMobileScreen = computed(() => width.value < MOBILE_BREAKPOINT);
 
-  const firstLevelMenuPath = computed(() => route.matched[0]?.path)
-  const routerPath = computed(() => String(route.meta.activePath || route.path))
+const firstLevelMenuPath = computed(() => route.matched[0]?.path);
+const routerPath = computed(() => String(route.meta.activePath || route.path));
 
-  const firstLevelMenus = computed(() => {
-    return useMenuStore().menuList.filter((menu) => !menu.meta.isHide)
-  })
+const firstLevelMenus = computed(() => {
+  return useMenuStore().menuList.filter((menu) => !menu.meta.isHide);
+});
 
-  const menuList = computed(() => {
-    const menuStore = useMenuStore()
-    const allMenus = menuStore.menuList
+const menuList = computed(() => {
+  const menuStore = useMenuStore();
+  const allMenus = menuStore.menuList;
 
-    if (!isTopLeftMenu.value && !isDualMenu.value) {
-      return allMenus
-    }
-
-    if (isIframe(route.path)) {
-      return findIframeMenuList(route.path, allMenus)
-    }
-
-    if (route.meta.isFirstLevel) {
-      return []
-    }
-
-    const currentTopPath = `/${route.path.split('/')[1]}`
-    const currentMenu = allMenus.find((menu) => menu.path === currentTopPath)
-    return currentMenu?.children ?? []
-  })
-
-  const scrollbarStyle = computed(() => {
-    const isCollapsed = isDualMenu.value && !menuOpen.value
-    return {
-      transform: isCollapsed ? 'translateY(-50px)' : 'translateY(0)',
-      height: isCollapsed ? 'calc(100% + 50px)' : 'calc(100% - 60px)',
-      transition: 'transform 0.3s ease',
-    }
-  })
-
-  const { start: delayHideMobileModal } = useTimeoutFn(
-    () => {
-      showMobileModal.value = false
-    },
-    ANIMATION_DELAY,
-    { immediate: false },
-  )
-
-  const findIframeMenuList = (currentPath: string, menuList: any[]) => {
-    const hasPath = (items: any[]): boolean => {
-      for (const item of items) {
-        if (item.path === currentPath) {
-          return true
-        }
-        if (item.children && hasPath(item.children)) {
-          return true
-        }
-      }
-      return false
-    }
-
-    for (const menu of menuList) {
-      if (menu.children && hasPath(menu.children)) {
-        return menu.children
-      }
-    }
-    return []
+  if (!isTopLeftMenu.value && !isDualMenu.value) {
+    return allMenus;
   }
 
-  const { homePath } = useCommon()
-
-  const navigateToHome = (): void => {
-    router.push(homePath.value)
+  if (isIframe(route.path)) {
+    return findIframeMenuList(route.path, allMenus);
   }
 
-  const toggleMenuVisibility = (): void => {
-    settingStore.setMenuOpen(!menuOpen.value)
+  if (route.meta.isFirstLevel) {
+    return [];
+  }
 
-    if (isMobileScreen.value) {
-      if (!menuOpen.value) {
-        showMobileModal.value = true
-      } else {
-        delayHideMobileModal()
+  const currentTopPath = `/${route.path.split("/")[1]}`;
+  const currentMenu = allMenus.find((menu) => menu.path === currentTopPath);
+  return currentMenu?.children ?? [];
+});
+
+const scrollbarStyle = computed(() => {
+  const isCollapsed = isDualMenu.value && !menuOpen.value;
+  return {
+    transform: isCollapsed ? "translateY(-50px)" : "translateY(0)",
+    height: isCollapsed ? "calc(100% + 50px)" : "calc(100% - 60px)",
+    transition: "transform 0.3s ease",
+  };
+});
+
+const { start: delayHideMobileModal } = useTimeoutFn(
+  () => {
+    showMobileModal.value = false;
+  },
+  ANIMATION_DELAY,
+  { immediate: false },
+);
+
+const findIframeMenuList = (currentPath: string, menuList: any[]) => {
+  const hasPath = (items: any[]): boolean => {
+    for (const item of items) {
+      if (item.path === currentPath) {
+        return true;
+      }
+      if (item.children && hasPath(item.children)) {
+        return true;
       }
     }
-  }
+    return false;
+  };
 
-  const handleMenuClose = (): void => {
-    if (isMobileScreen.value) {
-      settingStore.setMenuOpen(false)
-      delayHideMobileModal()
+  for (const menu of menuList) {
+    if (menu.children && hasPath(menu.children)) {
+      return menu.children;
     }
   }
+  return [];
+};
 
-  const toggleDualMenuMode = (): void => {
-    settingStore.setDualMenuShowText(!dualMenuShowText.value)
-  }
+const { homePath } = useCommon();
 
-  watch(width, (newWidth: number) => {
-    if (newWidth < MOBILE_BREAKPOINT) {
-      settingStore.setMenuOpen(false)
-      if (!menuOpen.value) {
-        showMobileModal.value = false
-      }
+const navigateToHome = (): void => {
+  router.push(homePath.value);
+};
+
+const toggleMenuVisibility = (): void => {
+  settingStore.setMenuOpen(!menuOpen.value);
+
+  if (isMobileScreen.value) {
+    if (!menuOpen.value) {
+      showMobileModal.value = true;
     } else {
-      showMobileModal.value = false
+      delayHideMobileModal();
     }
-  })
+  }
+};
 
-  watch(menuOpen, (isMenuOpen: boolean) => {
-    if (!isMobileScreen.value) {
-      showMobileModal.value = false
-    } else {
-      if (isMenuOpen) {
-        showMobileModal.value = true
-      } else {
-        delayHideMobileModal()
-      }
+const handleMenuClose = (): void => {
+  if (isMobileScreen.value) {
+    settingStore.setMenuOpen(false);
+    delayHideMobileModal();
+  }
+};
+
+const toggleDualMenuMode = (): void => {
+  settingStore.setDualMenuShowText(!dualMenuShowText.value);
+};
+
+watch(width, (newWidth: number) => {
+  if (newWidth < MOBILE_BREAKPOINT) {
+    settingStore.setMenuOpen(false);
+    if (!menuOpen.value) {
+      showMobileModal.value = false;
     }
-  })
+  } else {
+    showMobileModal.value = false;
+  }
+});
+
+watch(menuOpen, (isMenuOpen: boolean) => {
+  if (!isMobileScreen.value) {
+    showMobileModal.value = false;
+  } else {
+    if (isMenuOpen) {
+      showMobileModal.value = true;
+    } else {
+      delayHideMobileModal();
+    }
+  }
+});
 </script>
 
 <style lang="scss" scoped>
-  @use './style';
+@use "./style";
 </style>
 
 <style lang="scss">
-  @use './theme';
+@use "./theme";
 
-  .layout-sidebar {
-    .el-menu:not(.el-menu--collapse) {
-      width: v-bind(menuopenwidth);
-    }
-
-    .el-menu--collapse {
-      width: v-bind(menuclosewidth);
-    }
+.layout-sidebar {
+  .el-menu:not(.el-menu--collapse) {
+    width: v-bind(menuopenwidth);
   }
+
+  .el-menu--collapse {
+    width: v-bind(menuclosewidth);
+  }
+}
 </style>

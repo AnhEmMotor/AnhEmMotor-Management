@@ -1,5 +1,7 @@
 <template>
-  <div class="customer-asset-page flex flex-col h-screen bg-[#F8F9FA] overflow-hidden">
+  <div
+    class="customer-asset-page flex flex-col h-screen bg-[#F8F9FA] overflow-hidden"
+  >
     <div
       class="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 shrink-0 shadow-sm z-10"
     >
@@ -8,10 +10,13 @@
           <ArtSvgIcon icon="ri:car-fill" class="text-xl" />
         </div>
         <div>
-          <h2 class="m-0 text-base font-black text-gray-800 tracking-tight uppercase"
-            >Quản lý Tài sản Khách hàng</h2
+          <h2
+            class="m-0 text-base font-black text-gray-800 tracking-tight uppercase"
           >
-          <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none"
+            Quản lý Tài sản Khách hàng
+          </h2>
+          <span
+            class="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none"
             >Hồ sơ Pháp lý & Lịch sử Xe sạch</span
           >
         </div>
@@ -39,15 +44,22 @@
     </div>
 
     <div class="flex flex-1 overflow-hidden">
-      <div class="w-[380px] bg-white border-r border-gray-100 flex flex-col shrink-0">
-        <div class="p-4 border-b border-gray-50 flex items-center justify-between">
-          <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest"
+      <div
+        class="w-[380px] bg-white border-r border-gray-100 flex flex-col shrink-0"
+      >
+        <div
+          class="p-4 border-b border-gray-50 flex items-center justify-between"
+        >
+          <span
+            class="text-[10px] font-black text-gray-400 uppercase tracking-widest"
             >Danh sách tài sản ({{ assets.length }})</span
           >
           <ArtSvgIcon icon="ri:sort-desc" class="text-gray-300" />
         </div>
 
-        <div class="flex-1 overflow-y-auto custom-scrollbar p-2 flex flex-col gap-2">
+        <div
+          class="flex-1 overflow-y-auto custom-scrollbar p-2 flex flex-col gap-2"
+        >
           <div
             v-for="asset in assets"
             :key="asset.id"
@@ -67,9 +79,10 @@
               </div>
               <div class="flex-1 flex flex-col justify-center">
                 <div class="flex justify-between items-start">
-                  <span class="text-sm font-black text-gray-800 leading-tight">{{
-                    asset.model
-                  }}</span>
+                  <span
+                    class="text-sm font-black text-gray-800 leading-tight"
+                    >{{ asset.model }}</span
+                  >
 
                   <div v-if="asset.needsService" class="maintenance-bell">
                     <ElTooltip content="Đến hạn bảo trì (Thay nhớt)">
@@ -86,9 +99,10 @@
                   >
                     {{ asset.plate }}
                   </div>
-                  <span class="text-[9px] font-bold text-gray-400 uppercase tracking-tighter">{{
-                    asset.owner
-                  }}</span>
+                  <span
+                    class="text-[9px] font-bold text-gray-400 uppercase tracking-tighter"
+                    >{{ asset.owner }}</span
+                  >
                 </div>
               </div>
             </div>
@@ -96,12 +110,15 @@
         </div>
       </div>
 
-      <div v-if="selectedAsset" class="flex-1 overflow-y-auto bg-[#F8F9FA] p-8 custom-scrollbar">
+      <div
+        v-if="selectedAsset"
+        class="flex-1 overflow-y-auto bg-[#F8F9FA] p-8 custom-scrollbar"
+      >
         <div class="flex justify-between items-start mb-8">
           <div class="flex flex-col gap-2">
-            <h1 class="m-0 text-3xl font-black text-gray-800 tracking-tight">{{
-              selectedAsset.model
-            }}</h1>
+            <h1 class="m-0 text-3xl font-black text-gray-800 tracking-tight">
+              {{ selectedAsset.model }}
+            </h1>
             <div class="flex gap-3">
               <ElTag
                 effect="dark"
@@ -125,7 +142,8 @@
               type="primary"
               class="bg-navy border-none rounded-xl font-black text-[10px] uppercase h-10 shadow-lg shadow-blue-900/10"
             >
-              <ArtSvgIcon icon="ri:file-pdf-line" class="mr-2" /> Xuất báo cáo PDF
+              <ArtSvgIcon icon="ri:file-pdf-line" class="mr-2" /> Xuất báo cáo
+              PDF
             </ElButton>
           </div>
         </div>
@@ -140,20 +158,25 @@
               <div class="size-7 rounded-lg bg-gray-50 flex-cc text-gray-400">
                 <ArtSvgIcon :icon="spec.icon" class="text-xs" />
               </div>
-              <span class="text-[9px] font-black text-gray-400 uppercase tracking-widest">{{
-                spec.label
-              }}</span>
+              <span
+                class="text-[9px] font-black text-gray-400 uppercase tracking-widest"
+                >{{ spec.label }}</span
+              >
             </div>
-            <span class="text-xs font-black text-gray-800 tracking-tight">{{ spec.value }}</span>
+            <span class="text-xs font-black text-gray-800 tracking-tight">{{
+              spec.value
+            }}</span>
           </div>
         </div>
 
         <div class="mb-12">
           <div class="flex items-center gap-2 mb-6">
             <div class="w-1 h-4 bg-navy rounded-full"></div>
-            <h3 class="m-0 text-xs font-black text-gray-800 uppercase tracking-widest"
-              >Kho dữ liệu Pháp lý (Digital Vault)</h3
+            <h3
+              class="m-0 text-xs font-black text-gray-800 uppercase tracking-widest"
             >
+              Kho dữ liệu Pháp lý (Digital Vault)
+            </h3>
           </div>
           <div class="grid grid-cols-3 gap-6">
             <div
@@ -168,7 +191,9 @@
 
               <div class="relative z-10">
                 <div class="flex justify-between items-start mb-4">
-                  <div class="size-12 rounded-2xl bg-blue-50 text-blue-600 flex-cc shadow-inner">
+                  <div
+                    class="size-12 rounded-2xl bg-blue-50 text-blue-600 flex-cc shadow-inner"
+                  >
                     <ArtSvgIcon :icon="folder.icon" class="text-xl" />
                   </div>
                   <div
@@ -177,8 +202,11 @@
                     <ArtSvgIcon icon="ri:zoom-in-line" class="text-gray-400" />
                   </div>
                 </div>
-                <h4 class="m-0 text-sm font-black text-gray-800 mb-1">{{ folder.title }}</h4>
-                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-tighter"
+                <h4 class="m-0 text-sm font-black text-gray-800 mb-1">
+                  {{ folder.title }}
+                </h4>
+                <span
+                  class="text-[10px] font-bold text-gray-400 uppercase tracking-tighter"
                   >{{ folder.count }} tệp tin • Bảo mật</span
                 >
               </div>
@@ -190,9 +218,11 @@
           <div class="flex items-center justify-between mb-8">
             <div class="flex items-center gap-2">
               <div class="w-1 h-4 bg-emerald-500 rounded-full"></div>
-              <h3 class="m-0 text-xs font-black text-gray-800 uppercase tracking-widest"
-                >Lịch sử "Xe sạch" (Verified Timeline)</h3
+              <h3
+                class="m-0 text-xs font-black text-gray-800 uppercase tracking-widest"
               >
+                Lịch sử "Xe sạch" (Verified Timeline)
+              </h3>
             </div>
             <div
               class="next-service-banner bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-100 flex items-center gap-3"
@@ -202,7 +232,8 @@
                 class="text-emerald-600 animate-pulse"
               />
               <div class="flex flex-col">
-                <span class="text-[9px] font-black text-emerald-600 uppercase tracking-widest"
+                <span
+                  class="text-[9px] font-black text-emerald-600 uppercase tracking-widest"
                   >Bảo trì kế tiếp (Dự kiến)</span
                 >
                 <span class="text-[11px] font-black text-gray-700 uppercase"
@@ -215,7 +246,11 @@
           <div
             class="timeline-container relative pl-8 border-l-2 border-gray-100 ml-4 flex flex-col gap-10"
           >
-            <div v-for="event in maintenanceHistory" :key="event.id" class="timeline-item relative">
+            <div
+              v-for="event in maintenanceHistory"
+              :key="event.id"
+              class="timeline-item relative"
+            >
               <div
                 class="absolute -left-[41px] top-0 size-5 rounded-full border-4 border-[#F8F9FA] bg-emerald-500 shadow-sm shadow-emerald-200"
               ></div>
@@ -225,9 +260,13 @@
               >
                 <div class="flex justify-between items-start mb-4">
                   <div class="flex items-center gap-4">
-                    <span class="text-[11px] font-black text-gray-800">{{ event.date }}</span>
+                    <span class="text-[11px] font-black text-gray-800">{{
+                      event.date
+                    }}</span>
                     <div class="h-3 w-px bg-gray-200"></div>
-                    <div class="flex items-center gap-1.5 bg-emerald-50 px-2 py-0.5 rounded-full">
+                    <div
+                      class="flex items-center gap-1.5 bg-emerald-50 px-2 py-0.5 rounded-full"
+                    >
                       <ArtSvgIcon
                         icon="ri:check-double-line"
                         class="text-[10px] text-emerald-600"
@@ -238,10 +277,16 @@
                       >
                     </div>
                   </div>
-                  <span class="text-[11px] font-black text-gray-400">{{ event.km }} KM</span>
+                  <span class="text-[11px] font-black text-gray-400"
+                    >{{ event.km }} KM</span
+                  >
                 </div>
-                <h5 class="m-0 text-sm font-black text-gray-800 mb-2">{{ event.title }}</h5>
-                <p class="m-0 text-xs text-gray-500 leading-relaxed">{{ event.note }}</p>
+                <h5 class="m-0 text-sm font-black text-gray-800 mb-2">
+                  {{ event.title }}
+                </h5>
+                <p class="m-0 text-xs text-gray-500 leading-relaxed">
+                  {{ event.note }}
+                </p>
               </div>
             </div>
           </div>
@@ -259,192 +304,202 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, onMounted, watch } from 'vue'
-  import { ElMessage } from 'element-plus'
-  import { VehicleApi } from '@/infrastructure/api/vehicle'
-  import { RepairOrderApi } from '@/infrastructure/api/repair-order'
+import { ref, computed, onMounted, watch } from "vue";
+import { ElMessage } from "element-plus";
+import { VehicleApi } from "@/infrastructure/api/vehicle";
+import { RepairOrderApi } from "@/infrastructure/api/repair-order";
 
-  defineOptions({ name: 'CustomerAsset' })
+defineOptions({ name: "CustomerAsset" });
 
-  const selectedAssetId = ref<number | null>(null)
-  const rawVehicles = ref<any[]>([])
-  const assets = ref<any[]>([])
-  const maintenanceHistory = ref<any[]>([])
+const selectedAssetId = ref<number | null>(null);
+const rawVehicles = ref<any[]>([]);
+const assets = ref<any[]>([]);
+const maintenanceHistory = ref<any[]>([]);
 
-  const fetchVehicles = async () => {
-    try {
-      const res = await VehicleApi.getList({ current: 1, size: 100 })
-      rawVehicles.value = res.items || []
-      assets.value = rawVehicles.value.map((v: any) => ({
-        id: v.id,
-        model: v.vehicleName || `Xe máy #${v.id}`,
-        plate: v.licensePlate || 'Chưa cấp biển',
-        owner: v.fullName || 'Ẩn danh',
-        image:
-          'https://images.unsplash.com/photo-1611311025708-659a84495574?auto=format&fit=crop&q=80&w=200',
-        needsService: false,
-      }))
+const fetchVehicles = async () => {
+  try {
+    const res = await VehicleApi.getList({ current: 1, size: 100 });
+    rawVehicles.value = res.items || [];
+    assets.value = rawVehicles.value.map((v: any) => ({
+      id: v.id,
+      model: v.vehicleName || `Xe máy #${v.id}`,
+      plate: v.licensePlate || "Chưa cấp biển",
+      owner: v.fullName || "Ẩn danh",
+      image:
+        "https://images.unsplash.com/photo-1611311025708-659a84495574?auto=format&fit=crop&q=80&w=200",
+      needsService: false,
+    }));
 
-      if (assets.value.length > 0) {
-        selectedAssetId.value = assets.value[0].id
-      }
-    } catch (err: any) {
-      ElMessage.error(err.message || 'Lỗi khi tải danh sách phương tiện')
+    if (assets.value.length > 0) {
+      selectedAssetId.value = assets.value[0].id;
     }
+  } catch (err: any) {
+    ElMessage.error(err.message || "Lỗi khi tải danh sách phương tiện");
   }
+};
 
-  const fetchMaintenanceHistory = async (vehicleId: number) => {
-    try {
-      const res = await RepairOrderApi.getList({
-        current: 1,
-        size: 50,
-        Filters: `VehicleId==${vehicleId}`,
-      })
-      maintenanceHistory.value = (res.items || []).map((ro: any) => ({
-        id: ro.id,
-        date: ro.completedDate
-          ? new Date(ro.completedDate).toLocaleDateString('vi-VN')
-          : new Date(ro.createdAt).toLocaleDateString('vi-VN'),
-        km: ro.mileage || 0,
-        title: ro.description || 'Bảo trì sửa chữa',
-        note: `Chi phí: ${ro.totalAmount.toLocaleString('vi-VN')} VND. Thợ phụ trách: ${ro.technicianName || 'Chưa phân công'}. Trạng thái: ${ro.status}. ${ro.notes || ''}`,
-      }))
-    } catch (err: any) {
-      ElMessage.error(err.message || 'Lỗi khi tải lịch sử bảo trì')
-    }
+const fetchMaintenanceHistory = async (vehicleId: number) => {
+  try {
+    const res = await RepairOrderApi.getList({
+      current: 1,
+      size: 50,
+      Filters: `VehicleId==${vehicleId}`,
+    });
+    maintenanceHistory.value = (res.items || []).map((ro: any) => ({
+      id: ro.id,
+      date: ro.completedDate
+        ? new Date(ro.completedDate).toLocaleDateString("vi-VN")
+        : new Date(ro.createdAt).toLocaleDateString("vi-VN"),
+      km: ro.mileage || 0,
+      title: ro.description || "Bảo trì sửa chữa",
+      note: `Chi phí: ${ro.totalAmount.toLocaleString("vi-VN")} VND. Thợ phụ trách: ${ro.technicianName || "Chưa phân công"}. Trạng thái: ${ro.status}. ${ro.notes || ""}`,
+    }));
+  } catch (err: any) {
+    ElMessage.error(err.message || "Lỗi khi tải lịch sử bảo trì");
   }
+};
 
-  const selectedAsset = computed(() => assets.value.find((a) => a.id === selectedAssetId.value))
+const selectedAsset = computed(() =>
+  assets.value.find((a) => a.id === selectedAssetId.value),
+);
 
-  const selectedRawVehicle = computed(() =>
-    rawVehicles.value.find((v) => v.id === selectedAssetId.value),
-  )
+const selectedRawVehicle = computed(() =>
+  rawVehicles.value.find((v) => v.id === selectedAssetId.value),
+);
 
-  const assetSpecs = computed(() => {
-    const v = selectedRawVehicle.value
-    if (!v) return []
-    return [
-      { label: 'Số khung', value: v.vinNumber || 'N/A', icon: 'ri:barcode-line' },
-      { label: 'Số máy', value: v.engineNumber || 'N/A', icon: 'ri:settings-line' },
-      {
-        label: 'Ngày mua',
-        value: v.purchaseDate ? new Date(v.purchaseDate).toLocaleDateString('vi-VN') : 'N/A',
-        icon: 'ri:calendar-line',
-      },
-      { label: 'Đăng kiểm/Phí', value: 'Không bắt buộc', icon: 'ri:shield-line' },
-      {
-        label: 'Bảo hành đến',
-        value: v.purchaseDate
-          ? new Date(
-              new Date(v.purchaseDate).setFullYear(new Date(v.purchaseDate).getFullYear() + 3),
-            ).toLocaleDateString('vi-VN')
-          : '3 năm kể từ ngày mua',
-        icon: 'ri:verified-badge-line',
-      },
-    ]
-  })
-
-  const vaultFolders = [
+const assetSpecs = computed(() => {
+  const v = selectedRawVehicle.value;
+  if (!v) return [];
+  return [
+    { label: "Số khung", value: v.vinNumber || "N/A", icon: "ri:barcode-line" },
     {
-      title: 'Đăng ký xe',
-      icon: 'ri:file-list-line',
-      count: '2',
-      preview:
-        'https://images.unsplash.com/photo-1589330694653-9ecf794ff8a3?auto=format&fit=crop&q=80&w=200',
+      label: "Số máy",
+      value: v.engineNumber || "N/A",
+      icon: "ri:settings-line",
     },
     {
-      title: 'Bảo hiểm dân sự',
-      icon: 'ri:shield-user-line',
-      count: '1',
-      preview:
-        'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=200',
+      label: "Ngày mua",
+      value: v.purchaseDate
+        ? new Date(v.purchaseDate).toLocaleDateString("vi-VN")
+        : "N/A",
+      icon: "ri:calendar-line",
     },
+    { label: "Đăng kiểm/Phí", value: "Không bắt buộc", icon: "ri:shield-line" },
     {
-      title: 'Hóa đơn mua hàng',
-      icon: 'ri:bill-line',
-      count: '3',
-      preview:
-        'https://images.unsplash.com/photo-1554224155-1696413565d3?auto=format&fit=crop&q=80&w=200',
+      label: "Bảo hành đến",
+      value: v.purchaseDate
+        ? new Date(
+            new Date(v.purchaseDate).setFullYear(
+              new Date(v.purchaseDate).getFullYear() + 3,
+            ),
+          ).toLocaleDateString("vi-VN")
+        : "3 năm kể từ ngày mua",
+      icon: "ri:verified-badge-line",
     },
-  ]
+  ];
+});
 
-  watch(selectedAssetId, (newVal) => {
-    if (newVal) {
-      fetchMaintenanceHistory(newVal)
-    }
-  })
+const vaultFolders = [
+  {
+    title: "Đăng ký xe",
+    icon: "ri:file-list-line",
+    count: "2",
+    preview:
+      "https://images.unsplash.com/photo-1589330694653-9ecf794ff8a3?auto=format&fit=crop&q=80&w=200",
+  },
+  {
+    title: "Bảo hiểm dân sự",
+    icon: "ri:shield-user-line",
+    count: "1",
+    preview:
+      "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=200",
+  },
+  {
+    title: "Hóa đơn mua hàng",
+    icon: "ri:bill-line",
+    count: "3",
+    preview:
+      "https://images.unsplash.com/photo-1554224155-1696413565d3?auto=format&fit=crop&q=80&w=200",
+  },
+];
 
-  onMounted(() => {
-    fetchVehicles()
-  })
+watch(selectedAssetId, (newVal) => {
+  if (newVal) {
+    fetchMaintenanceHistory(newVal);
+  }
+});
+
+onMounted(() => {
+  fetchVehicles();
+});
 </script>
 
 <style lang="scss" scoped>
-  .customer-asset-page {
-    .bg-navy {
-      background-color: #001529;
-    }
+.customer-asset-page {
+  .bg-navy {
+    background-color: #001529;
+  }
 
-    .text-navy {
-      color: #001529;
-    }
+  .text-navy {
+    color: #001529;
+  }
 
-    .custom-scrollbar {
-      scrollbar-width: none;
-      -ms-overflow-style: none;
+  .custom-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 
-      &::-webkit-scrollbar {
-        display: none;
-        width: 0;
-        height: 0;
-      }
-    }
-
-    .animate-swing {
-      transform-origin: top center;
-      animation: swing 2s infinite ease-in-out;
-    }
-
-    @keyframes swing {
-      0% {
-        transform: rotate(0deg);
-      }
-
-      10% {
-        transform: rotate(15deg);
-      }
-
-      20% {
-        transform: rotate(-10deg);
-      }
-
-      30% {
-        transform: rotate(5deg);
-      }
-
-      40% {
-        transform: rotate(-5deg);
-      }
-
-      50% {
-        transform: rotate(0deg);
-      }
-
-      100% {
-        transform: rotate(0deg);
-      }
-    }
-
-    .timeline-container {
-      &::before {
-        position: absolute;
-        bottom: 0;
-        left: -1px;
-        width: 2px;
-        height: 40px;
-        content: '';
-        background: linear-gradient(to bottom, #f1f5f9, transparent);
-      }
+    &::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
     }
   }
+
+  .animate-swing {
+    transform-origin: top center;
+    animation: swing 2s infinite ease-in-out;
+  }
+
+  @keyframes swing {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    10% {
+      transform: rotate(15deg);
+    }
+
+    20% {
+      transform: rotate(-10deg);
+    }
+
+    30% {
+      transform: rotate(5deg);
+    }
+
+    40% {
+      transform: rotate(-5deg);
+    }
+
+    50% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(0deg);
+    }
+  }
+
+  .timeline-container {
+    &::before {
+      position: absolute;
+      bottom: 0;
+      left: -1px;
+      width: 2px;
+      height: 40px;
+      content: "";
+      background: linear-gradient(to bottom, #f1f5f9, transparent);
+    }
+  }
+}
 </style>

@@ -1,161 +1,161 @@
-import { MenuTypeEnum, SystemThemeEnum } from '@/enums/appEnum'
-import { MenuThemeType, SystemThemeTypes } from '@/types/store'
+import { MenuTypeEnum, SystemThemeEnum } from "@/enums/appEnum";
+import { MenuThemeType, SystemThemeTypes } from "@/types/store";
 
 export interface ThemeSetting {
-  name: string
+  name: string;
 
-  theme: SystemThemeEnum
+  theme: SystemThemeEnum;
 
-  color: string[]
+  color: string[];
 
-  leftLineColor: string
+  leftLineColor: string;
 
-  rightLineColor: string
+  rightLineColor: string;
 
-  img: string
+  img: string;
 }
 
 export interface MenuLayout {
-  name: string
+  name: string;
 
-  value: MenuTypeEnum
+  value: MenuTypeEnum;
 
-  img: string
+  img: string;
 
-  description?: string
+  description?: string;
 }
 
 export interface FestivalConfig {
-  date: string
+  date: string;
 
-  endDate?: string
+  endDate?: string;
 
-  name: string
+  name: string;
 
-  image: string
+  image: string;
 
-  scrollText: string
+  scrollText: string;
 
-  isActive?: boolean
+  isActive?: boolean;
 
-  count?: number
+  count?: number;
 }
 
 export interface SystemBasicConfig {
-  name: string
+  name: string;
 
-  description?: string
+  description?: string;
 
-  logo?: string
+  logo?: string;
 
-  favicon?: string
+  favicon?: string;
 
-  copyright?: string
+  copyright?: string;
 }
 
 export interface FastEnterBaseItem {
-  name: string
+  name: string;
 
-  enabled?: boolean
+  enabled?: boolean;
 
-  order?: number
+  order?: number;
 
-  routeName?: string
+  routeName?: string;
 
-  link?: string
+  link?: string;
 }
 
 export interface FastEnterApplication extends FastEnterBaseItem {
-  description: string
+  description: string;
 
-  icon: string
+  icon: string;
 
-  iconColor: string
+  iconColor: string;
 }
 
-export type FastEnterQuickLink = FastEnterBaseItem
+export type FastEnterQuickLink = FastEnterBaseItem;
 
 export interface FastEnterConfig {
-  applications: FastEnterApplication[]
+  applications: FastEnterApplication[];
 
-  quickLinks: FastEnterQuickLink[]
+  quickLinks: FastEnterQuickLink[];
 
-  minWidth?: number
+  minWidth?: number;
 }
 
 export interface SystemConfig {
-  systemInfo: SystemBasicConfig
+  systemInfo: SystemBasicConfig;
 
-  systemThemeStyles: SystemThemeTypes
+  systemThemeStyles: SystemThemeTypes;
 
-  settingThemeList: ThemeSetting[]
+  settingThemeList: ThemeSetting[];
 
-  menuLayoutList: MenuLayout[]
+  menuLayoutList: MenuLayout[];
 
-  themeList: MenuThemeType[]
+  themeList: MenuThemeType[];
 
-  darkMenuStyles: MenuThemeType[]
+  darkMenuStyles: MenuThemeType[];
 
-  systemMainColor: readonly string[]
+  systemMainColor: readonly string[];
 
-  fastEnter?: FastEnterConfig
+  fastEnter?: FastEnterConfig;
 
-  headerBar?: HeaderBarFeatureConfig
+  headerBar?: HeaderBarFeatureConfig;
 }
 
 export interface EnvConfig {
-  NODE_ENV: string
+  NODE_ENV: string;
 
-  VITE_VERSION: string
+  VITE_VERSION: string;
 
-  VITE_PORT: string
+  VITE_PORT: string;
 
-  VITE_BASE_URL: string
+  VITE_BASE_URL: string;
 
-  VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT: string
+  VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT: string;
 
-  VITE_USE_MOCK?: string
+  VITE_USE_MOCK?: string;
 
-  VITE_USE_GZIP?: string
+  VITE_USE_GZIP?: string;
 
-  VITE_USE_CDN?: string
+  VITE_USE_CDN?: string;
 }
 
 export interface AppConfig extends SystemConfig {
-  env: EnvConfig
+  env: EnvConfig;
 
-  isDev: boolean
+  isDev: boolean;
 
-  isProd: boolean
+  isProd: boolean;
 
-  isTest: boolean
+  isTest: boolean;
 }
 
 export interface FeatureConfigItem {
-  enabled: boolean
-  description: string
+  enabled: boolean;
+  description: string;
 }
 
 export interface HeaderBarFeatureConfig {
-  menuButton: FeatureConfigItem
+  menuButton: FeatureConfigItem;
 
-  refreshButton: FeatureConfigItem
+  refreshButton: FeatureConfigItem;
 
-  fastEnter: FeatureConfigItem
+  fastEnter: FeatureConfigItem;
 
-  breadcrumb: FeatureConfigItem
+  breadcrumb: FeatureConfigItem;
 
-  globalSearch: FeatureConfigItem
+  globalSearch: FeatureConfigItem;
 
-  fullscreen: FeatureConfigItem
+  fullscreen: FeatureConfigItem;
 
-  notification: FeatureConfigItem
+  notification: FeatureConfigItem;
 
-  chat: FeatureConfigItem
+  chat: FeatureConfigItem;
 
-  language: FeatureConfigItem
+  language: FeatureConfigItem;
 
-  settings: FeatureConfigItem
+  settings: FeatureConfigItem;
 
-  themeToggle: FeatureConfigItem
+  themeToggle: FeatureConfigItem;
 }

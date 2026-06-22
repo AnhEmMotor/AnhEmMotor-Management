@@ -3,11 +3,19 @@
     class="art-card h-32 flex-c px-5 transition-transform duration-200 hover:-translate-y-0.5"
     :class="boxStyle"
   >
-    <div v-if="icon" class="mr-4 size-11 flex-cc rounded-lg text-xl text-white" :class="iconStyle">
+    <div
+      v-if="icon"
+      class="mr-4 size-11 flex-cc rounded-lg text-xl text-white"
+      :class="iconStyle"
+    >
       <ArtSvgIcon :icon="icon"></ArtSvgIcon>
     </div>
     <div class="flex-1">
-      <p class="m-0 text-lg font-medium" :style="{ color: textColor }" v-if="title">
+      <p
+        class="m-0 text-lg font-medium"
+        :style="{ color: textColor }"
+        v-if="title"
+      >
         {{ title }}
       </p>
       <template v-if="count !== undefined">
@@ -19,7 +27,11 @@
           :decimals="decimals"
           :separator="separator"
         />
-        <p v-else class="m-0 text-2xl font-medium" :style="{ color: textColor }">
+        <p
+          v-else
+          class="m-0 text-2xl font-medium"
+          :style="{ color: textColor }"
+        >
           {{ count }}
         </p>
       </template>
@@ -27,8 +39,9 @@
         class="mt-1 text-sm text-g-500 opacity-90"
         :style="{ color: textColor }"
         v-if="description"
-        >{{ description }}</p
       >
+        {{ description }}
+      </p>
     </div>
     <div v-if="showArrow">
       <ArtSvgIcon icon="ri:arrow-right-s-line" class="text-xl text-g-500" />
@@ -37,34 +50,34 @@
 </template>
 
 <script setup lang="ts">
-  defineOptions({ name: 'ArtStatsCard' })
+defineOptions({ name: "ArtStatsCard" });
 
-  interface StatsCardProps {
-    boxStyle?: string
+interface StatsCardProps {
+  boxStyle?: string;
 
-    icon?: string
+  icon?: string;
 
-    iconStyle?: string
+  iconStyle?: string;
 
-    title?: string
+  title?: string;
 
-    count?: string | number
+  count?: string | number;
 
-    decimals?: number
+  decimals?: number;
 
-    separator?: string
+  separator?: string;
 
-    description?: string
+  description?: string;
 
-    textColor?: string
+  textColor?: string;
 
-    showArrow?: boolean
-  }
+  showArrow?: boolean;
+}
 
-  withDefaults(defineProps<StatsCardProps>(), {
-    iconSize: 30,
-    iconBgRadius: 50,
-    decimals: 0,
-    separator: ',',
-  })
+withDefaults(defineProps<StatsCardProps>(), {
+  iconSize: 30,
+  iconBgRadius: 50,
+  decimals: 0,
+  separator: ",",
+});
 </script>

@@ -1,40 +1,40 @@
-declare module 'nprogress'
+declare module "nprogress";
 
-declare module 'crypto-js'
+declare module "crypto-js";
 
-declare module 'vue-img-cutter'
+declare module "vue-img-cutter";
 
-declare module 'file-saver'
+declare module "file-saver";
 
-declare module 'qrcode.vue' {
-  export type Level = 'L' | 'M' | 'Q' | 'H'
-  export type RenderAs = 'canvas' | 'svg'
-  export type GradientType = 'linear' | 'radial'
+declare module "qrcode.vue" {
+  export type Level = "L" | "M" | "Q" | "H";
+  export type RenderAs = "canvas" | "svg";
+  export type GradientType = "linear" | "radial";
   export interface ImageSettings {
-    src: string
-    height: number
-    width: number
-    excavate: boolean
+    src: string;
+    height: number;
+    width: number;
+    excavate: boolean;
   }
   export interface QRCodeProps {
-    value: string
-    size?: number
-    level?: Level
-    background?: string
-    foreground?: string
-    renderAs?: RenderAs
+    value: string;
+    size?: number;
+    level?: Level;
+    background?: string;
+    foreground?: string;
+    renderAs?: RenderAs;
   }
-  const QrcodeVue: any
-  export default QrcodeVue
+  const QrcodeVue: any;
+  export default QrcodeVue;
 }
 
-declare const __APP_VERSION__: string
+declare const __APP_VERSION__: string;
 
 interface ImportMetaEnv {
-  readonly VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT: string
-  readonly VITE_WITH_CREDENTIALS: string
+  readonly VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT: string;
+  readonly VITE_WITH_CREDENTIALS: string;
 }
 
 interface ImportMeta {
-  readonly env: ImportMetaEnv
+  readonly env: ImportMetaEnv;
 }

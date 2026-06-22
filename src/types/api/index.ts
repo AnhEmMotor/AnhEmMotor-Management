@@ -1,1 +1,1 @@
-export * from './paged'
+export * from "./paged";

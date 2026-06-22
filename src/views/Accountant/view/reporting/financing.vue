@@ -35,7 +35,9 @@
         :count="kpi.pendingCount"
         description="Cần theo dõi tiến độ ngân hàng"
         icon="ri:time-line"
-        :icon-style="kpi.pendingCount > 0 ? 'bg-report-red-dark' : 'bg-report-gray'"
+        :icon-style="
+          kpi.pendingCount > 0 ? 'bg-report-red-dark' : 'bg-report-gray'
+        "
       />
       <ArtStatsCard
         title="Tỷ lệ duyệt thành công"
@@ -68,13 +70,19 @@
         <ElTableColumn prop="partnerName" label="Đối tác tài chính" />
         <ElTableColumn prop="vehicleName" label="Xe" />
         <ElTableColumn prop="amount" label="Số tiền" width="140">
-          <template #default="{ row }">{{ formatCurrency(row.amount) }}</template>
+          <template #default="{ row }">{{
+            formatCurrency(row.amount)
+          }}</template>
         </ElTableColumn>
         <ElTableColumn prop="status" label="Trạng thái" width="160">
           <template #default="{ row }">
-            <ElTag :type="statusType(row.status)" size="small" effect="light" round>{{
-              row.status
-            }}</ElTag>
+            <ElTag
+              :type="statusType(row.status)"
+              size="small"
+              effect="light"
+              round
+              >{{ row.status }}</ElTag
+            >
           </template>
         </ElTableColumn>
         <ElTableColumn prop="cavetStatus" label="Cavet" width="140">
@@ -92,7 +100,9 @@
           </template>
         </ElTableColumn>
         <ElTableColumn prop="createdAt" label="Ngày tạo" width="120">
-          <template #default="{ row }">{{ formatDate(row.createdAt) }}</template>
+          <template #default="{ row }">{{
+            formatDate(row.createdAt)
+          }}</template>
         </ElTableColumn>
       </ElTable>
     </ElCard>
@@ -100,90 +110,106 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, onMounted, ref } from 'vue'
-  import { statisticsApi } from '@/infrastructure/api/statistics.api'
-  import ArtStatsCard from '@/components/core/cards/art-stats-card/index.vue'
-  import ReportPageHeader from './ReportPageHeader.vue'
-  import ReportPeriodSwitcher from './ReportPeriodSwitcher.vue'
-  import ReportPlaceholder from './ReportPlaceholder.vue'
+import { computed, onMounted, ref } from "vue";
+import { statisticsApi } from "@/infrastructure/api/statistics.api";
+import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
+import ReportPageHeader from "./ReportPageHeader.vue";
+import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
+import ReportPlaceholder from "./ReportPlaceholder.vue";
 
-  const currentPeriod = ref<'today' | 'month' | 'year' | 'custom'>('month')
-  const periodStart = ref('')
-  const periodEnd = ref('')
+const currentPeriod = ref<"today" | "month" | "year" | "custom">("month");
+const periodStart = ref("");
+const periodEnd = ref("");
 
-  const kpi = ref({
-    totalApplications: 0,
-    disbursedCount: 0,
-    pendingCount: 0,
-    overdueCount: 0,
-  })
-  const installments = ref<
-    Array<{
-      id: number
-      applicationCode: string
-      customerName: string
-      partnerName: string
-      vehicleName: string
-      amount: number
-      status: string
-      cavetStatus?: string
-      createdAt: string
-    }>
-  >([])
-  const loading = ref(false)
+const kpi = ref({
+  totalApplications: 0,
+  disbursedCount: 0,
+  pendingCount: 0,
+  overdueCount: 0,
+});
+const installments = ref<
+  Array<{
+    id: number;
+    applicationCode: string;
+    customerName: string;
+    partnerName: string;
+    vehicleName: string;
+    amount: number;
+    status: string;
+    cavetStatus?: string;
+    createdAt: string;
+  }>
+>([]);
+const loading = ref(false);
 
-  const approvalRate = computed(() => {
-    if (!kpi.value.totalApplications) return '0'
-    return ((kpi.value.disbursedCount / kpi.value.totalApplications) * 100).toFixed(1)
-  })
+const approvalRate = computed(() => {
+  if (!kpi.value.totalApplications) return "0";
+  return (
+    (kpi.value.disbursedCount / kpi.value.totalApplications) *
+    100
+  ).toFixed(1);
+});
 
-  function onPeriodChange() {
-    // TODO: Pass period params to API when backend supports it
-    // Expected: GET /api/v1/Statistics/financing-overview?period=...&start=...&end=...
-    loadData()
+function onPeriodChange() {
+  // TODO: Pass period params to API when backend supports it
+  // Expected: GET /api/v1/Statistics/financing-overview?period=...&start=...&end=...
+  loadData();
+}
+
+async function loadData() {
+  loading.value = true;
+  try {
+    const data = await statisticsApi.getFinancingOverview();
+    kpi.value = data.kpi;
+    installments.value = data.installments;
+  } finally {
+    loading.value = false;
   }
+}
 
-  async function loadData() {
-    loading.value = true
-    try {
-      const data = await statisticsApi.getFinancingOverview()
-      kpi.value = data.kpi
-      installments.value = data.installments
-    } finally {
-      loading.value = false
-    }
-  }
+function statusType(
+  status: string,
+): "primary" | "success" | "info" | "danger" | "warning" {
+  const map: Record<
+    string,
+    "primary" | "success" | "info" | "danger" | "warning"
+  > = {
+    "Chờ duyệt": "info",
+    "Đã duyệt": "primary",
+    "Chờ giải ngân": "warning",
+    "Đã giải ngân": "success",
+    "Từ chối": "danger",
+  };
+  return map[status] || "info";
+}
 
-  function statusType(status: string): 'primary' | 'success' | 'info' | 'danger' | 'warning' {
-    const map: Record<string, 'primary' | 'success' | 'info' | 'danger' | 'warning'> = {
-      'Chờ duyệt': 'info',
-      'Đã duyệt': 'primary',
-      'Chờ giải ngân': 'warning',
-      'Đã giải ngân': 'success',
-      'Từ chối': 'danger',
-    }
-    return map[status] || 'info'
-  }
+function cavetType(
+  status: string,
+): "primary" | "success" | "info" | "danger" | "warning" {
+  const map: Record<
+    string,
+    "primary" | "success" | "info" | "danger" | "warning"
+  > = {
+    "Công ty tài chính giữ": "warning",
+    "Cửa hàng giữ hộ": "info",
+    "Đã giao khách": "success",
+  };
+  return map[status] || "info";
+}
 
-  function cavetType(status: string): 'primary' | 'success' | 'info' | 'danger' | 'warning' {
-    const map: Record<string, 'primary' | 'success' | 'info' | 'danger' | 'warning'> = {
-      'Công ty tài chính giữ': 'warning',
-      'Cửa hàng giữ hộ': 'info',
-      'Đã giao khách': 'success',
-    }
-    return map[status] || 'info'
-  }
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(value);
+}
 
-  function formatCurrency(value: number) {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
-  }
+function formatDate(iso: string) {
+  if (!iso) return "-";
+  return new Date(iso).toLocaleDateString("vi-VN");
+}
 
-  function formatDate(iso: string) {
-    if (!iso) return '-'
-    return new Date(iso).toLocaleDateString('vi-VN')
-  }
-
-  onMounted(() => {
-    loadData()
-  })
+onMounted(() => {
+  loadData();
+});
 </script>

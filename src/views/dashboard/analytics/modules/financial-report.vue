@@ -3,7 +3,9 @@
     <div class="art-card-header">
       <div class="title">
         <h4>9.3. Bao cao Tai chinh Chi tiet</h4>
-        <p>P&L va thong ke nhan vien se hien thi khi API tra ve du lieu that.</p>
+        <p>
+          P&L va thong ke nhan vien se hien thi khi API tra ve du lieu that.
+        </p>
       </div>
     </div>
 
@@ -24,11 +26,11 @@
 </template>
 
 <script setup lang="ts">
-  defineOptions({ name: 'FinancialReport' })
+defineOptions({ name: "FinancialReport" });
 </script>
 
 <style scoped>
-  .art-card {
-    min-height: 520px;
-  }
+.art-card {
+  min-height: 520px;
+}
 </style>

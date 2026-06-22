@@ -29,19 +29,19 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue'
-  import ReportPageHeader from './ReportPageHeader.vue'
-  import ReportPeriodSwitcher from './ReportPeriodSwitcher.vue'
-  import ProductReport from './product-report.vue'
-  import WarehouseReport from './warehouse-report.vue'
+import { ref } from "vue";
+import ReportPageHeader from "./ReportPageHeader.vue";
+import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
+import ProductReport from "./product-report.vue";
+import WarehouseReport from "./warehouse-report.vue";
 
-  const activeTab = ref('product')
-  const currentPeriod = ref<'today' | 'month' | 'year' | 'custom'>('month')
-  const periodStart = ref('')
-  const periodEnd = ref('')
+const activeTab = ref("product");
+const currentPeriod = ref<"today" | "month" | "year" | "custom">("month");
+const periodStart = ref("");
+const periodEnd = ref("");
 
-  function onPeriodChange() {
-    // TODO: Pass period params to child reports when backend supports it
-    // Expected: GET /api/v1/Statistics/product-report?period=...&start=...&end=...
-  }
+function onPeriodChange() {
+  // TODO: Pass period params to child reports when backend supports it
+  // Expected: GET /api/v1/Statistics/product-report?period=...&start=...&end=...
+}
 </script>

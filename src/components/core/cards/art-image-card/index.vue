@@ -47,41 +47,41 @@
 </template>
 
 <script setup lang="ts">
-  import { Picture, View, ChatLineRound } from '@element-plus/icons-vue'
+import { Picture, View, ChatLineRound } from "@element-plus/icons-vue";
 
-  defineOptions({ name: 'ArtImageCard' })
+defineOptions({ name: "ArtImageCard" });
 
-  interface Props {
-    imageUrl: string
+interface Props {
+  imageUrl: string;
 
-    title: string
+  title: string;
 
-    category?: string
+  category?: string;
 
-    readTime?: string
+  readTime?: string;
 
-    views?: number
+  views?: number;
 
-    comments?: number
+  comments?: number;
 
-    date?: string
-  }
+  date?: string;
+}
 
-  const props = withDefaults(defineProps<Props>(), {
-    imageUrl: '',
-    title: '',
-    category: '',
-    readTime: '',
-    views: 0,
-    comments: 0,
-    date: '',
-  })
+const props = withDefaults(defineProps<Props>(), {
+  imageUrl: "",
+  title: "",
+  category: "",
+  readTime: "",
+  views: 0,
+  comments: 0,
+  date: "",
+});
 
-  const emit = defineEmits<{
-    (e: 'click', card: Props): void
-  }>()
+const emit = defineEmits<{
+  (e: "click", card: Props): void;
+}>();
 
-  const handleClick = () => {
-    emit('click', props)
-  }
+const handleClick = () => {
+  emit("click", props);
+};
 </script>

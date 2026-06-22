@@ -1,7 +1,15 @@
 <template>
-  <ElSubMenu v-if="hasChildren" :index="item.path || item.meta.title" class="!p-0">
+  <ElSubMenu
+    v-if="hasChildren"
+    :index="item.path || item.meta.title"
+    class="!p-0"
+  >
     <template #title>
-      <ArtSvgIcon :icon="item.meta.icon" :color="theme?.iconColor" class="mr-1 text-lg" />
+      <ArtSvgIcon
+        :icon="item.meta.icon"
+        :color="theme?.iconColor"
+        class="mr-1 text-lg"
+      />
       <span class="text-md">{{ formatMenuTitle(item.meta.title) }}</span>
       <div v-if="item.meta.showBadge" class="art-badge art-badge-horizontal" />
       <div v-if="item.meta.showTextBadge" class="art-text-badge">
@@ -44,59 +52,61 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, type PropType } from 'vue'
-  import { AppRouteRecord } from '@/types/router'
-  import { handleMenuJump } from '@/utils/navigation'
-  import { formatMenuTitle } from '@/utils/router'
+import { computed, type PropType } from "vue";
+import { AppRouteRecord } from "@/types/router";
+import { handleMenuJump } from "@/utils/navigation";
+import { formatMenuTitle } from "@/utils/router";
 
-  const props = defineProps({
-    item: {
-      type: Object as PropType<AppRouteRecord>,
-      required: true,
-    },
-    theme: {
-      type: Object,
-      default: () => ({}),
-    },
-    isMobile: Boolean,
-    level: {
-      type: Number,
-      default: 0,
-    },
-  })
+const props = defineProps({
+  item: {
+    type: Object as PropType<AppRouteRecord>,
+    required: true,
+  },
+  theme: {
+    type: Object,
+    default: () => ({}),
+  },
+  isMobile: Boolean,
+  level: {
+    type: Number,
+    default: 0,
+  },
+});
 
-  const emit = defineEmits(['close'])
+const emit = defineEmits(["close"]);
 
-  const filteredChildren = computed(() => {
-    return props.item.children?.filter((child) => !child.meta.isHide) || []
-  })
+const filteredChildren = computed(() => {
+  return props.item.children?.filter((child) => !child.meta.isHide) || [];
+});
 
-  const isNavigableRoute = computed(() => {
-    return !!(
-      !props.item.meta.isHide &&
-      ((props.item.path && props.item.path.trim()) ||
-        props.item.meta.link ||
-        props.item.meta.isIframe === true) &&
-      (props.item.component || props.item.meta.link || props.item.meta.isIframe === true)
-    )
-  })
+const isNavigableRoute = computed(() => {
+  return !!(
+    !props.item.meta.isHide &&
+    ((props.item.path && props.item.path.trim()) ||
+      props.item.meta.link ||
+      props.item.meta.isIframe === true) &&
+    (props.item.component ||
+      props.item.meta.link ||
+      props.item.meta.isIframe === true)
+  );
+});
 
-  const hasChildren = computed(() => {
-    return filteredChildren.value.length > 0
-  })
+const hasChildren = computed(() => {
+  return filteredChildren.value.length > 0;
+});
 
-  const goPage = (item: AppRouteRecord) => {
-    closeMenu()
-    handleMenuJump(item)
-  }
+const goPage = (item: AppRouteRecord) => {
+  closeMenu();
+  handleMenuJump(item);
+};
 
-  const closeMenu = () => {
-    emit('close')
-  }
+const closeMenu = () => {
+  emit("close");
+};
 </script>
 
 <style scoped>
-  :deep(.el-sub-menu__title .el-sub-menu__icon-arrow) {
-    right: 10px !important;
-  }
+:deep(.el-sub-menu__title .el-sub-menu__icon-arrow) {
+  right: 10px !important;
+}
 </style>

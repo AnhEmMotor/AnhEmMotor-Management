@@ -6,7 +6,7 @@
     iconCode="ri:check-fill"
   >
     <template #content>
-      <p>{{ $t('admin.t119') }}</p>
+      <p>{{ $t("admin.t119") }}</p>
     </template>
     <template #buttons>
       <ElButton type="primary" v-ripple>Quay lạisửasửa</ElButton>
@@ -17,5 +17,5 @@
 </template>
 
 <script setup lang="ts">
-  defineOptions({ name: 'ResultSuccess' })
+defineOptions({ name: "ResultSuccess" });
 </script>

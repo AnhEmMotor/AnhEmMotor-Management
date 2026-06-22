@@ -13,7 +13,9 @@
       @scroll="handleScroll"
       @wheel="handleWheel"
     >
-      <div class="box-border flex-c flex-shrink-0 flex-nowrap h-15 whitespace-nowrap">
+      <div
+        class="box-border flex-c flex-shrink-0 flex-nowrap h-15 whitespace-nowrap"
+      >
         <template v-for="item in processedMenuList" :key="item.meta.title">
           <div
             v-if="!item.meta.isHide"
@@ -40,7 +42,11 @@
       </div>
     </ElScrollbar>
 
-    <div v-show="showRightArrow" class="button-arrow right-2" @click="scroll('right')">
+    <div
+      v-show="showRightArrow"
+      class="button-arrow right-2"
+      @click="scroll('right')"
+    >
       <ElIcon>
         <ArrowRight />
       </ElIcon>
@@ -49,132 +55,135 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, onMounted, nextTick } from 'vue'
-  import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
-  import { useThrottleFn } from '@vueuse/core'
-  import { formatMenuTitle } from '@/utils/router'
-  import { handleMenuJump } from '@/utils/navigation'
-  import type { AppRouteRecord } from '@/types/router'
+import { ref, computed, onMounted, nextTick } from "vue";
+import { ArrowLeft, ArrowRight } from "@element-plus/icons-vue";
+import { useThrottleFn } from "@vueuse/core";
+import { formatMenuTitle } from "@/utils/router";
+import { handleMenuJump } from "@/utils/navigation";
+import type { AppRouteRecord } from "@/types/router";
 
-  defineOptions({ name: 'ArtMixedMenu' })
+defineOptions({ name: "ArtMixedMenu" });
 
-  interface Props {
-    list: AppRouteRecord[]
+interface Props {
+  list: AppRouteRecord[];
+}
+
+interface ProcessedMenuItem extends AppRouteRecord {
+  isActive: boolean;
+  formattedTitle: string;
+}
+
+type ScrollDirection = "left" | "right";
+
+const route = useRoute();
+
+const props = withDefaults(defineProps<Props>(), {
+  list: () => [],
+});
+
+const scrollbarRef = ref<any>();
+const showLeftArrow = ref(false);
+const showRightArrow = ref(false);
+
+const SCROLL_CONFIG = {
+  BUTTON_SCROLL_DISTANCE: 200,
+  WHEEL_FAST_STEP: 35,
+  WHEEL_SLOW_STEP: 30,
+  WHEEL_FAST_THRESHOLD: 100,
+};
+
+const currentActivePath = computed(() => {
+  return String(route.meta.activePath || route.path);
+});
+
+const isMenuItemActive = (item: AppRouteRecord): boolean => {
+  const activePath = currentActivePath.value;
+
+  if (item.children?.length) {
+    return item.children.some((child) => {
+      if (child.children?.length) {
+        return isMenuItemActive(child);
+      }
+      return child.path === activePath;
+    });
   }
 
-  interface ProcessedMenuItem extends AppRouteRecord {
-    isActive: boolean
-    formattedTitle: string
-  }
+  return item.path === activePath;
+};
 
-  type ScrollDirection = 'left' | 'right'
+const processedMenuList = computed<ProcessedMenuItem[]>(() => {
+  return props.list.map((item) => ({
+    ...item,
+    isActive: isMenuItemActive(item),
+    formattedTitle: formatMenuTitle(item.meta.title),
+  }));
+});
 
-  const route = useRoute()
+const handleScrollCore = (): void => {
+  if (!scrollbarRef.value?.wrapRef) return;
 
-  const props = withDefaults(defineProps<Props>(), {
-    list: () => [],
-  })
+  const { scrollLeft, scrollWidth, clientWidth } = scrollbarRef.value.wrapRef;
 
-  const scrollbarRef = ref<any>()
-  const showLeftArrow = ref(false)
-  const showRightArrow = ref(false)
+  showLeftArrow.value = scrollLeft > 0;
 
-  const SCROLL_CONFIG = {
-    BUTTON_SCROLL_DISTANCE: 200,
-    WHEEL_FAST_STEP: 35,
-    WHEEL_SLOW_STEP: 30,
-    WHEEL_FAST_THRESHOLD: 100,
-  }
+  showRightArrow.value = scrollLeft + clientWidth < scrollWidth;
+};
 
-  const currentActivePath = computed(() => {
-    return String(route.meta.activePath || route.path)
-  })
+const handleScroll = useThrottleFn(handleScrollCore, 16);
 
-  const isMenuItemActive = (item: AppRouteRecord): boolean => {
-    const activePath = currentActivePath.value
+const scroll = (direction: ScrollDirection): void => {
+  if (!scrollbarRef.value?.wrapRef) return;
 
-    if (item.children?.length) {
-      return item.children.some((child) => {
-        if (child.children?.length) {
-          return isMenuItemActive(child)
-        }
-        return child.path === activePath
-      })
-    }
+  const currentScroll = scrollbarRef.value.wrapRef.scrollLeft;
+  const targetScroll =
+    direction === "left"
+      ? currentScroll - SCROLL_CONFIG.BUTTON_SCROLL_DISTANCE
+      : currentScroll + SCROLL_CONFIG.BUTTON_SCROLL_DISTANCE;
 
-    return item.path === activePath
-  }
+  scrollbarRef.value.wrapRef.scrollTo({
+    left: targetScroll,
+    behavior: "smooth",
+  });
+};
 
-  const processedMenuList = computed<ProcessedMenuItem[]>(() => {
-    return props.list.map((item) => ({
-      ...item,
-      isActive: isMenuItemActive(item),
-      formattedTitle: formatMenuTitle(item.meta.title),
-    }))
-  })
+const handleWheel = (event: WheelEvent): void => {
+  event.preventDefault();
+  event.stopPropagation();
 
-  const handleScrollCore = (): void => {
-    if (!scrollbarRef.value?.wrapRef) return
+  if (!scrollbarRef.value?.wrapRef) return;
 
-    const { scrollLeft, scrollWidth, clientWidth } = scrollbarRef.value.wrapRef
+  const { wrapRef } = scrollbarRef.value;
+  const { scrollLeft, scrollWidth, clientWidth } = wrapRef;
 
-    showLeftArrow.value = scrollLeft > 0
+  const scrollStep =
+    Math.abs(event.deltaY) > SCROLL_CONFIG.WHEEL_FAST_THRESHOLD
+      ? SCROLL_CONFIG.WHEEL_FAST_STEP
+      : SCROLL_CONFIG.WHEEL_SLOW_STEP;
+  const scrollDelta = event.deltaY > 0 ? scrollStep : -scrollStep;
+  const targetScroll = Math.max(
+    0,
+    Math.min(scrollLeft + scrollDelta, scrollWidth - clientWidth),
+  );
 
-    showRightArrow.value = scrollLeft + clientWidth < scrollWidth
-  }
+  wrapRef.scrollLeft = targetScroll;
 
-  const handleScroll = useThrottleFn(handleScrollCore, 16)
+  handleScrollCore();
+};
 
-  const scroll = (direction: ScrollDirection): void => {
-    if (!scrollbarRef.value?.wrapRef) return
+const initScrollState = (): void => {
+  nextTick(() => {
+    handleScrollCore();
+  });
+};
 
-    const currentScroll = scrollbarRef.value.wrapRef.scrollLeft
-    const targetScroll =
-      direction === 'left'
-        ? currentScroll - SCROLL_CONFIG.BUTTON_SCROLL_DISTANCE
-        : currentScroll + SCROLL_CONFIG.BUTTON_SCROLL_DISTANCE
-
-    scrollbarRef.value.wrapRef.scrollTo({
-      left: targetScroll,
-      behavior: 'smooth',
-    })
-  }
-
-  const handleWheel = (event: WheelEvent): void => {
-    event.preventDefault()
-    event.stopPropagation()
-
-    if (!scrollbarRef.value?.wrapRef) return
-
-    const { wrapRef } = scrollbarRef.value
-    const { scrollLeft, scrollWidth, clientWidth } = wrapRef
-
-    const scrollStep =
-      Math.abs(event.deltaY) > SCROLL_CONFIG.WHEEL_FAST_THRESHOLD
-        ? SCROLL_CONFIG.WHEEL_FAST_STEP
-        : SCROLL_CONFIG.WHEEL_SLOW_STEP
-    const scrollDelta = event.deltaY > 0 ? scrollStep : -scrollStep
-    const targetScroll = Math.max(0, Math.min(scrollLeft + scrollDelta, scrollWidth - clientWidth))
-
-    wrapRef.scrollLeft = targetScroll
-
-    handleScrollCore()
-  }
-
-  const initScrollState = (): void => {
-    nextTick(() => {
-      handleScrollCore()
-    })
-  }
-
-  onMounted(initScrollState)
+onMounted(initScrollState);
 </script>
 
 <style scoped>
-  @reference '@styles/core/tailwind.css';
+@reference '@styles/core/tailwind.css';
 
-  .button-arrow {
-    @apply absolute 
+.button-arrow {
+  @apply absolute 
     top-1/2
     z-2 
     flex
@@ -189,37 +198,37 @@
     -translate-y-1/2 
     hover:text-g-900 
     hover:bg-g-200;
-  }
+}
 </style>
 
 <style scoped>
-  :deep(.el-scrollbar__bar.is-horizontal) {
-    bottom: 5px;
-    display: none;
-    height: 2px;
-  }
+:deep(.el-scrollbar__bar.is-horizontal) {
+  bottom: 5px;
+  display: none;
+  height: 2px;
+}
 
+:deep(.scrollbar-wrapper) {
+  flex: 1;
+  min-width: 0;
+  margin: 0 50px 0 30px;
+}
+
+.menu-item-active::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  margin: auto;
+  content: "";
+  background-color: var(--theme-color);
+}
+
+@media (width <= 1440px) {
   :deep(.scrollbar-wrapper) {
-    flex: 1;
-    min-width: 0;
-    margin: 0 50px 0 30px;
+    margin: 0 45px;
   }
-
-  .menu-item-active::after {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    width: 40px;
-    height: 2px;
-    margin: auto;
-    content: '';
-    background-color: var(--theme-color);
-  }
-
-  @media (width <= 1440px) {
-    :deep(.scrollbar-wrapper) {
-      margin: 0 45px;
-    }
-  }
+}
 </style>

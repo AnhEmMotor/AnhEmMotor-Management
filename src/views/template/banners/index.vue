@@ -1,6 +1,6 @@
 <template>
   <div class="pt-5">
-    <h1 class="page-title">{{ $t('admin.t172') }}</h1>
+    <h1 class="page-title">{{ $t("admin.t172") }}</h1>
     <ElRow :gutter="20">
       <ElCol :xs="24" :sm="12" :md="12" class="mb-5">
         <ArtBasicBanner
@@ -27,7 +27,7 @@
       </ElCol>
     </ElRow>
 
-    <h1 class="page-title">{{ $t('admin.t173') }}</h1>
+    <h1 class="page-title">{{ $t("admin.t173") }}</h1>
 
     <ElRow :gutter="20">
       <ElCol :xs="24" :sm="12" :md="12" class="mb-5">
@@ -54,16 +54,17 @@
           }"
         >
           <template #title>
-            <h2 style="margin: 0; font-size: 1.6rem; color: #fff !important">{{
-              $t('admin.t174')
-            }}</h2>
+            <h2 style="margin: 0; font-size: 1.6rem; color: #fff !important">
+              {{ $t("admin.t174") }}
+            </h2>
           </template>
 
           <template #subtitle>
             <div style="margin-top: 12px">
-              <p style="position: relative; z-index: 10; font-style: italic"
-                >linhsốngCauHinh，cườngđạimởtriển，chiếctrìTùy chỉnhchènkheNoiDung</p
-              >
+              <p style="position: relative; z-index: 10; font-style: italic">
+                linhsốngCauHinh，cườngđạimởtriển，chiếctrìTùy
+                chỉnhchènkheNoiDung
+              </p>
             </div>
           </template>
 
@@ -146,63 +147,63 @@
 </template>
 
 <script setup lang="ts">
-  import icon2 from '@imgs/3d/icon2.webp'
-  import icon3 from '@imgs/3d/icon3.webp'
-  import icon4 from '@imgs/3d/icon4.webp'
-  import icon5 from '@imgs/3d/icon7.webp'
+import icon2 from "@imgs/3d/icon2.webp";
+import icon3 from "@imgs/3d/icon3.webp";
+import icon4 from "@imgs/3d/icon4.webp";
+import icon5 from "@imgs/3d/icon7.webp";
 
-  defineOptions({ name: 'TemplateBanners' })
+defineOptions({ name: "TemplateBanners" });
 
-  const handleBannerClick = () => {
-    console.log('banner clicked')
-  }
+const handleBannerClick = () => {
+  console.log("banner clicked");
+};
 
-  const handleConfirm = () => {
-    console.log('confirm clicked')
-  }
+const handleConfirm = () => {
+  console.log("confirm clicked");
+};
 
-  const handleCancel = () => {
-    console.log('cancel clicked')
-  }
+const handleCancel = () => {
+  console.log("cancel clicked");
+};
 
-  const PresetBanners = {
-    marketing: {
-      title: 'hạngiờTốiưu đãisốngđộng',
-      subtitle:
-        'tinhvịthươngsản phẩm 48 tiểugiờchớpmua，nhấtcaochia sẻnhận 7 Tốiưu đãi，Số lượngcóhạn！',
-      titleColor: 'var(--art-gray-900)',
-      subtitleColor: 'var(--art-gray-900)',
-      boxStyle: '!bg-success/15',
-      meteorConfig: { enabled: true, count: 15 },
-      buttonConfig: {
-        show: true,
-        text: 'lậplàcướpmua',
-        color: 'var(--art-success)',
-        textColor: '#fff',
-      },
+const PresetBanners = {
+  marketing: {
+    title: "hạngiờTốiưu đãisốngđộng",
+    subtitle:
+      "tinhvịthươngsản phẩm 48 tiểugiờchớpmua，nhấtcaochia sẻnhận 7 Tốiưu đãi，Số lượngcóhạn！",
+    titleColor: "var(--art-gray-900)",
+    subtitleColor: "var(--art-gray-900)",
+    boxStyle: "!bg-success/15",
+    meteorConfig: { enabled: true, count: 15 },
+    buttonConfig: {
+      show: true,
+      text: "lậplàcướpmua",
+      color: "var(--art-success)",
+      textColor: "#fff",
     },
-    info: {
-      title: 'phụcvụđếnkỳgợitỉnh',
-      subtitle:
-        'bạncủaNâng caophụcvụtươngtại 7 ngàysauđếnkỳ，Vui lòngvàgiờtiếpphílấytiếptiếpchia sẻnhậnĐầy đủcôngnăng。',
-      titleColor: 'var(--art-gray-900)',
-      subtitleColor: 'var(--art-gray-900)',
-      boxStyle: '!bg-theme/15',
-      meteorConfig: { enabled: true, count: 15 },
-      buttonConfig: {
-        show: true,
-        text: 'lậplàtiếpphí',
-        color: 'var(--art-secondary)',
-        textColor: '#fff',
-      },
+  },
+  info: {
+    title: "phụcvụđếnkỳgợitỉnh",
+    subtitle:
+      "bạncủaNâng caophụcvụtươngtại 7 ngàysauđếnkỳ，Vui lòngvàgiờtiếpphílấytiếptiếpchia sẻnhậnĐầy đủcôngnăng。",
+    titleColor: "var(--art-gray-900)",
+    subtitleColor: "var(--art-gray-900)",
+    boxStyle: "!bg-theme/15",
+    meteorConfig: { enabled: true, count: 15 },
+    buttonConfig: {
+      show: true,
+      text: "lậplàtiếpphí",
+      color: "var(--art-secondary)",
+      textColor: "#fff",
     },
-  } as const
+  },
+} as const;
 </script>
 
 <style scoped>
-  @reference '@styles/core/tailwind.css';
+@reference '@styles/core/tailwind.css';
 
-  .page-title {
-    @apply my-5 text-xl font-medium first:mt-0;
-  }
+.page-title {
+  @apply my-5 text-xl font-medium first:mt-0;
+}
 </style>

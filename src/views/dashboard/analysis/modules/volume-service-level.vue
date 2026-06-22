@@ -2,7 +2,7 @@
   <div class="art-card h-82 p-5 mb-5 max-sm:mb-4">
     <div class="art-card-header">
       <div class="title">
-        <h4>{{ $t('admin.t49') }}</h4>
+        <h4>{{ $t("admin.t49") }}</h4>
       </div>
     </div>
 
@@ -20,30 +20,30 @@
 </template>
 
 <script setup lang="ts">
-  interface VolumeServiceDataItem {
-    name: string
-    data: number[]
-    stack: string
-  }
+interface VolumeServiceDataItem {
+  name: string;
+  data: number[];
+  stack: string;
+}
 
-  const serviceCategories = ref([
-    'sinhsản phẩmA',
-    'sinhsản phẩmB',
-    'sinhsản phẩmC',
-    'sinhsản phẩmD',
-    'sinhsản phẩmE',
-  ])
+const serviceCategories = ref([
+  "sinhsản phẩmA",
+  "sinhsản phẩmB",
+  "sinhsản phẩmC",
+  "sinhsản phẩmD",
+  "sinhsản phẩmE",
+]);
 
-  const volumeServiceData = ref<VolumeServiceDataItem[]>([
-    {
-      name: 'nghiệpvụlượng',
-      data: [20, 25, 30, 35, 40],
-      stack: 'total',
-    },
-    {
-      name: 'phụcvụlượng',
-      data: [30, 35, 40, 45, 50],
-      stack: 'total',
-    },
-  ])
+const volumeServiceData = ref<VolumeServiceDataItem[]>([
+  {
+    name: "nghiệpvụlượng",
+    data: [20, 25, 30, 35, 40],
+    stack: "total",
+  },
+  {
+    name: "phụcvụlượng",
+    data: [30, 35, 40, 45, 50],
+    stack: "total",
+  },
+]);
 </script>

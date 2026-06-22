@@ -4,89 +4,93 @@
     class="relative w-full"
     :style="{ height: props.height }"
     v-loading="props.loading"
-  >
-  </div>
+  ></div>
 </template>
 
 <script setup lang="ts">
-  import type { EChartsOption } from '@/plugins/echarts'
-  import { useChartOps, useChartComponent } from '@/hooks/core/useChart'
-  import type { RingChartProps } from '@/types/component/chart'
+import type { EChartsOption } from "@/plugins/echarts";
+import { useChartOps, useChartComponent } from "@/hooks/core/useChart";
+import type { RingChartProps } from "@/types/component/chart";
 
-  defineOptions({ name: 'ArtRingChart' })
+defineOptions({ name: "ArtRingChart" });
 
-  const props = withDefaults(defineProps<RingChartProps>(), {
-    height: useChartOps().chartHeight,
-    loading: false,
-    isEmpty: false,
-    colors: () => useChartOps().colors,
+const props = withDefaults(defineProps<RingChartProps>(), {
+  height: useChartOps().chartHeight,
+  loading: false,
+  isEmpty: false,
+  colors: () => useChartOps().colors,
 
-    data: () => [],
-    radius: () => ['50%', '80%'],
-    borderRadius: 10,
-    centerText: '',
-    showLabel: false,
+  data: () => [],
+  radius: () => ["50%", "80%"],
+  borderRadius: 10,
+  centerText: "",
+  showLabel: false,
 
-    showTooltip: true,
-    showLegend: false,
-    legendPosition: 'right',
-  })
+  showTooltip: true,
+  showLegend: false,
+  legendPosition: "right",
+});
 
-  const { isDark, getAnimationConfig, getTooltipStyle, getLegendStyle } = useChartComponent({
+const { isDark, getAnimationConfig, getTooltipStyle, getLegendStyle } =
+  useChartComponent({
     props,
     checkEmpty: () => {
-      return !props.data?.length || props.data.every((item) => item.value === 0)
+      return (
+        !props.data?.length || props.data.every((item) => item.value === 0)
+      );
     },
     watchSources: [() => props.data, () => props.centerText],
     generateOptions: (): EChartsOption => {
       const getCenterPosition = (): [string, string] => {
-        if (!props.showLegend) return ['50%', '50%']
+        if (!props.showLegend) return ["50%", "50%"];
 
         switch (props.legendPosition) {
-          case 'left':
-            return ['60%', '50%']
-          case 'right':
-            return ['40%', '50%']
-          case 'top':
-            return ['50%', '60%']
-          case 'bottom':
-            return ['50%', '40%']
+          case "left":
+            return ["60%", "50%"];
+          case "right":
+            return ["40%", "50%"];
+          case "top":
+            return ["50%", "60%"];
+          case "bottom":
+            return ["50%", "40%"];
           default:
-            return ['50%', '50%']
+            return ["50%", "50%"];
         }
-      }
+      };
 
       const option: EChartsOption = {
         tooltip: props.showTooltip
-          ? getTooltipStyle('item', {
-              formatter: '{b}: {c} ({d}%)',
+          ? getTooltipStyle("item", {
+              formatter: "{b}: {c} ({d}%)",
             })
           : undefined,
-        legend: props.showLegend ? getLegendStyle(props.legendPosition) : undefined,
+        legend: props.showLegend
+          ? getLegendStyle(props.legendPosition)
+          : undefined,
         series: [
           {
-            name: 'Dữ liệuchiếmso sánh',
-            type: 'pie',
+            name: "Dữ liệuchiếmso sánh",
+            type: "pie",
             radius: props.radius,
             center: getCenterPosition(),
             avoidLabelOverlap: false,
             itemStyle: {
               borderRadius: props.borderRadius,
-              borderColor: isDark.value ? '#2c2c2c' : '#fff',
+              borderColor: isDark.value ? "#2c2c2c" : "#fff",
               borderWidth: 0,
             },
             label: {
               show: props.showLabel,
-              formatter: '{b}\n{d}%',
-              position: 'outside',
-              color: isDark.value ? '#ccc' : '#999',
+              formatter: "{b}\n{d}%",
+              position: "outside",
+              color: isDark.value ? "#ccc" : "#999",
               fontSize: 12,
             },
             emphasis: {
               label: {
                 show: false,
                 fontSize: 14,
-                fontWeight: 'bold',
+                fontWeight: "bold",
               },
             },
             labelLine: {
@@ -98,28 +102,28 @@
             data: props.data,
             color: props.colors,
             ...getAnimationConfig(),
-            animationType: 'expansion',
+            animationType: "expansion",
           },
         ],
-      }
+      };
 
       if (props.centerText) {
-        const centerPos = getCenterPosition()
+        const centerPos = getCenterPosition();
         option.title = {
           text: props.centerText,
           left: centerPos[0],
           top: centerPos[1],
-          textAlign: 'center',
-          textVerticalAlign: 'middle',
+          textAlign: "center",
+          textVerticalAlign: "middle",
           textStyle: {
             fontSize: 18,
             fontWeight: 500,
-            color: isDark.value ? '#999' : '#ADB0BC',
+            color: isDark.value ? "#999" : "#ADB0BC",
           },
-        }
+        };
       }
 
-      return option
+      return option;
     },
-  })
+  });
 </script>

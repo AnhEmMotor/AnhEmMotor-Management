@@ -1,9 +1,9 @@
-import { useTimeoutFn, useIntervalFn, useDateFormat } from '@vueuse/core'
-import { storeToRefs } from 'pinia'
-import { computed } from 'vue'
-import { useSettingStore } from '@/application/store/setting'
-import { mittBus } from '@/utils/sys'
-import { festivalConfigList } from '@/config/modules/festival'
+import { useTimeoutFn, useIntervalFn, useDateFormat } from "@vueuse/core";
+import { storeToRefs } from "pinia";
+import { computed } from "vue";
+import { useSettingStore } from "@/application/store/setting";
+import { mittBus } from "@/utils/sys";
+import { festivalConfigList } from "@/config/modules/festival";
 
 const FESTIVAL_CONFIG = {
   INITIAL_DELAY: 300,
@@ -13,13 +13,13 @@ const FESTIVAL_CONFIG = {
   TEXT_DELAY: 2000,
 
   DEFAULT_FIREWORKS_COUNT: 3,
-} as const
+} as const;
 
 export function useCeremony() {
-  const settingStore = useSettingStore()
-  const { holidayFireworksLoaded, isShowFireworks } = storeToRefs(settingStore)
+  const settingStore = useSettingStore();
+  const { holidayFireworksLoaded, isShowFireworks } = storeToRefs(settingStore);
 
-  let fireworksInterval: { pause: () => void } | null = null
+  let fireworksInterval: { pause: () => void } | null = null;
 
   const isDateInRange = (
     currentDate: string,
@@ -27,73 +27,80 @@ export function useCeremony() {
     festivalEndDate?: string,
   ): boolean => {
     if (!festivalEndDate) {
-      return currentDate === festivalDate
+      return currentDate === festivalDate;
     }
 
-    const current = new Date(currentDate)
-    const start = new Date(festivalDate)
-    const end = new Date(festivalEndDate)
+    const current = new Date(currentDate);
+    const start = new Date(festivalDate);
+    const end = new Date(festivalEndDate);
 
-    return current >= start && current <= end
-  }
+    return current >= start && current <= end;
+  };
 
   const currentFestivalData = computed(() => {
-    const currentDate = useDateFormat(new Date(), 'YYYY-MM-DD').value
-    return festivalConfigList.find((item) => isDateInRange(currentDate, item.date, item.endDate))
-  })
+    const currentDate = useDateFormat(new Date(), "YYYY-MM-DD").value;
+    return festivalConfigList.find((item) =>
+      isDateInRange(currentDate, item.date, item.endDate),
+    );
+  });
 
   const updateFestivalDate = () => {
-    settingStore.setFestivalDate(currentFestivalData.value?.date || '')
-  }
+    settingStore.setFestivalDate(currentFestivalData.value?.date || "");
+  };
 
   const triggerFirework = () => {
-    mittBus.emit('triggerFireworks', currentFestivalData.value?.image)
-  }
+    mittBus.emit("triggerFireworks", currentFestivalData.value?.image);
+  };
 
   const showFestivalText = () => {
-    settingStore.setholidayFireworksLoaded(true)
+    settingStore.setholidayFireworksLoaded(true);
 
     useTimeoutFn(() => {
-      settingStore.setShowFestivalText(true)
-      updateFestivalDate()
-    }, FESTIVAL_CONFIG.TEXT_DELAY)
-  }
+      settingStore.setShowFestivalText(true);
+      updateFestivalDate();
+    }, FESTIVAL_CONFIG.TEXT_DELAY);
+  };
 
   const startFireworksLoop = () => {
-    let playedCount = 0
+    let playedCount = 0;
 
-    const count = currentFestivalData.value?.count ?? FESTIVAL_CONFIG.DEFAULT_FIREWORKS_COUNT
+    const count =
+      currentFestivalData.value?.count ??
+      FESTIVAL_CONFIG.DEFAULT_FIREWORKS_COUNT;
 
     const { pause } = useIntervalFn(() => {
-      triggerFirework()
-      playedCount++
+      triggerFirework();
+      playedCount++;
 
       if (playedCount >= count) {
-        pause()
-        showFestivalText()
+        pause();
+        showFestivalText();
       }
-    }, FESTIVAL_CONFIG.FIREWORK_INTERVAL)
+    }, FESTIVAL_CONFIG.FIREWORK_INTERVAL);
 
-    fireworksInterval = { pause }
-  }
+    fireworksInterval = { pause };
+  };
 
   const openFestival = () => {
     if (!currentFestivalData.value || !isShowFireworks.value) {
-      return
+      return;
     }
 
-    const { start } = useTimeoutFn(startFireworksLoop, FESTIVAL_CONFIG.INITIAL_DELAY)
-    start()
-  }
+    const { start } = useTimeoutFn(
+      startFireworksLoop,
+      FESTIVAL_CONFIG.INITIAL_DELAY,
+    );
+    start();
+  };
 
   const cleanup = () => {
     if (fireworksInterval) {
-      fireworksInterval.pause()
-      fireworksInterval = null
+      fireworksInterval.pause();
+      fireworksInterval = null;
     }
-    settingStore.setShowFestivalText(false)
-    updateFestivalDate()
-  }
+    settingStore.setShowFestivalText(false);
+    updateFestivalDate();
+  };
 
   return {
     openFestival,
@@ -101,5 +108,5 @@ export function useCeremony() {
     holidayFireworksLoaded,
     currentFestivalData,
     isShowFireworks,
-  }
+  };
 }

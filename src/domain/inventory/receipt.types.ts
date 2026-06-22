@@ -1,63 +1,71 @@
 export interface InputInfo {
-  id?: number
-  productVarientId: number
-  productVarientColorId?: number
-  name?: string
-  quantity: number // backend uses Quantity for response, Count for request
-  unitPrice?: number
-  importPrice: number // backend uses ImportPrice for response, InputPrice for request
-  discount?: number
-  total?: number
-  remainingCount?: number
+  id?: number;
+  productVariantId: number;
+  productVariantColorId?: number;
+  productVariantColorName?: string;
+  name?: string;
+  quantity: number;
+  remainingCount?: number;
+  purchaseRequestItemId?: number;
+  vehicles?: Array<{
+    id?: number;
+    vinNumber: string;
+    engineNumber: string;
+  }>;
 }
 
 export interface InventoryReceipt {
-  id: number
-  notes?: string
-  statusId: string // 'working', 'finished', 'cancelled'
-  supplierId: number
-  supplierName?: string
-  supplierPhone?: string
-  supplierEmail?: string
-  createdAt?: string
-  totalPayable?: number
-  products: InputInfo[]
+  id: number;
+  notes?: string;
+  statusId: string;
+  supplierId?: number;
+  supplierName?: string;
+  createdAt?: string;
+  purchaseRequestId?: number;
+  createdByName?: string;
+  sentByName?: string;
+  approvedByName?: string;
+  rejectedByName?: string;
+  products: InputInfo[];
 }
 
 export interface InventoryReceiptList {
-  items: InventoryReceipt[]
-  totalCount: number
-  pageNumber?: number
-  pageSize?: number
-  totalPages?: number
+  items: InventoryReceipt[];
+  totalCount: number;
+  pageNumber?: number;
+  pageSize?: number;
+  totalPages?: number;
 }
 
 export interface CreateInventoryReceipt {
-  notes?: string
-  statusId?: string
-  supplierId?: number
+  notes?: string;
+  statusId?: string;
+  supplierId?: number;
+  purchaseRequestId?: number;
   products: Array<{
-    productVarientId: number
-    productVarientColorId?: number
-    count: number
-    inputPrice: number
+    purchaseRequestItemId?: number;
+    count: number;
     vehicles?: Array<{
-      vinNumber: string
-      engineNumber: string
-      licensePlate?: string
-    }>
-  }>
+      id?: number;
+      vinNumber: string;
+      engineNumber: string;
+    }>;
+  }>;
 }
 
 export interface UpdateInventoryReceipt {
-  statusId?: string
-  supplierId?: number
-  notes?: string
+  statusId?: string;
+  supplierId?: number;
+  purchaseRequestId?: number;
+  notes?: string;
   products: Array<{
-    id?: number
-    productVarientId: number
-    productVarientColorId?: number
-    count: number
-    inputPrice: number
-  }>
+    id?: number;
+    purchaseRequestItemId?: number;
+    count: number;
+    vehicles?: Array<{
+      id?: number;
+      vinNumber: string;
+      engineNumber: string;
+    }>;
+  }>;
 }

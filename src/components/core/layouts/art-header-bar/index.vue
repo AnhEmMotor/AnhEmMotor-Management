@@ -2,7 +2,9 @@
   <div
     class="w-full bg-[var(--default-bg-color)]"
     :class="[
-      tabStyle === 'tab-card' || tabStyle === 'tab-google' ? 'mb-5 max-sm:mb-3 !bg-box' : '',
+      tabStyle === 'tab-card' || tabStyle === 'tab-google'
+        ? 'mb-5 max-sm:mb-3 !bg-box'
+        : '',
     ]"
   >
     <div
@@ -14,9 +16,14 @@
       ]"
     >
       <div class="flex-c flex-1 min-w-0 leading-15" style="display: flex">
-        <div class="flex-c c-p" @click="toHome" v-if="isTopMenu">
+        <div class="flex-c c-p" @click="toHome" v-if="isTopMenu || isPortal">
           <ArtLogo class="pl-4.5" />
-          <p v-if="width >= 1400" class="my-0 mx-2 ml-2 text-lg">{{ AppConfig.systemInfo.name }}</p>
+          <p
+            v-if="width >= 1400 || isPortal"
+            class="my-0 mx-2 ml-2 text-lg text-[var(--el-text-color-primary)]"
+          >
+            {{ AppConfig.systemInfo.name }}
+          </p>
         </div>
 
         <ArtLogo
@@ -25,31 +32,40 @@
         />
 
         <ArtIconButton
-          v-if="isLeftMenu && shouldShowMenuButton"
+          v-if="isLeftMenu && shouldShowMenuButton && !isPortal"
           icon="ri:menu-2-fill"
           class="ml-3 max-sm:ml-[7px]"
           @click="visibleMenu"
         />
 
         <ArtIconButton
-          v-if="shouldShowRefreshButton"
+          v-if="shouldShowRefreshButton && !isPortal"
           icon="ri:refresh-line"
           class="!ml-3 refresh-btn max-sm:!hidden"
           :style="{ marginLeft: !isLeftMenu ? '10px' : '0' }"
           @click="reload"
         />
 
-        <ArtFastEnter v-if="shouldShowFastEnter && width >= headerBarFastEnterMinWidth">
+        <ArtFastEnter
+          v-if="
+            shouldShowFastEnter &&
+            width >= headerBarFastEnterMinWidth &&
+            !isPortal
+          "
+        >
           <ArtIconButton icon="ri:function-line" class="ml-3" />
         </ArtFastEnter>
 
         <ArtBreadcrumb
-          v-if="(shouldShowBreadcrumb && isLeftMenu) || (shouldShowBreadcrumb && isDualMenu)"
+          v-if="
+            (shouldShowBreadcrumb && isLeftMenu && !isPortal) ||
+            (shouldShowBreadcrumb && isDualMenu && !isPortal)
+          "
         />
 
-        <ArtHorizontalMenu v-if="isTopMenu" :list="menuList" />
+        <ArtHorizontalMenu v-if="isTopMenu && !isPortal" :list="menuList" />
 
-        <ArtMixedMenu v-if="isTopLeftMenu" :list="menuList" />
+        <ArtMixedMenu v-if="isTopLeftMenu && !isPortal" :list="menuList" />
       </div>
 
       <div class="flex-c gap-2.5">
@@ -60,9 +76,13 @@
         >
           <div class="flex-c">
             <ArtSvgIcon icon="ri:search-line" class="text-sm text-g-500" />
-            <span class="ml-1 text-xs font-normal text-g-500">{{ $t('topBar.search.title') }}</span>
+            <span class="ml-1 text-xs font-normal text-g-500">{{
+              $t("topBar.search.title")
+            }}</span>
           </div>
-          <div class="flex-c h-5 px-1.5 text-g-500/80 border border-g-400 rounded">
+          <div
+            class="flex-c h-5 px-1.5 text-g-500/80 border border-g-400 rounded"
+          >
             <ArtSvgIcon v-if="isWindows" icon="vaadin:ctrl-a" class="text-sm" />
             <ArtSvgIcon v-else icon="ri:command-fill" class="text-xs" />
             <span class="ml-0.5 text-xs">k</span>
@@ -71,8 +91,13 @@
 
         <ArtIconButton
           v-if="shouldShowFullscreen"
-          :icon="isFullscreen ? 'ri:fullscreen-exit-line' : 'ri:fullscreen-fill'"
-          :class="[!isFullscreen ? 'full-screen-btn' : 'exit-full-screen-btn', 'ml-3']"
+          :icon="
+            isFullscreen ? 'ri:fullscreen-exit-line' : 'ri:fullscreen-fill'
+          "
+          :class="[
+            !isFullscreen ? 'full-screen-btn' : 'exit-full-screen-btn',
+            'ml-3',
+          ]"
           class="max-md:!hidden"
           @click="toggleFullScreen"
         />
@@ -82,16 +107,26 @@
           popper-class="langDropDownStyle"
           v-if="shouldShowLanguage"
         >
-          <ArtIconButton icon="ri:translate-2" class="language-btn text-[19px]" />
+          <ArtIconButton
+            icon="ri:translate-2"
+            class="language-btn text-[19px]"
+          />
           <template #dropdown>
             <ElDropdownMenu>
-              <div v-for="item in languageOptions" :key="item.category" class="lang-btn-item">
+              <div
+                v-for="item in languageOptions"
+                :key="item.category"
+                class="lang-btn-item"
+              >
                 <ElDropdownItem
                   :command="item.category"
                   :class="{ 'is-selected': locale === item.category }"
                 >
                   <span class="menu-txt">{{ item.lang }}</span>
-                  <ArtSvgIcon icon="ri:check-fill" v-if="locale === item.category" />
+                  <ArtSvgIcon
+                    icon="ri:check-fill"
+                    v-if="locale === item.category"
+                  />
                 </ElDropdownItem>
               </div>
             </ElDropdownMenu>
@@ -104,7 +139,9 @@
           class="notice-button relative"
           @click="visibleNotice"
         >
-          <div class="absolute top-2 right-2 size-1.5 !bg-danger rounded-full"></div>
+          <div
+            class="absolute top-2 right-2 size-1.5 !bg-danger rounded-full"
+          ></div>
         </ArtIconButton>
 
         <ArtIconButton
@@ -113,12 +150,18 @@
           class="chat-button relative"
           @click="openChat"
         >
-          <div class="breathing-dot absolute top-2 right-2 size-1.5 !bg-success rounded-full"></div>
+          <div
+            class="breathing-dot absolute top-2 right-2 size-1.5 !bg-success rounded-full"
+          ></div>
         </ArtIconButton>
 
         <div v-if="shouldShowSettings">
           <div class="flex-cc">
-            <ArtIconButton icon="ri:settings-line" class="setting-btn" @click="openSetting" />
+            <ArtIconButton
+              icon="ri:settings-line"
+              class="setting-btn"
+              @click="openSetting"
+            />
           </div>
         </div>
 
@@ -132,277 +175,284 @@
       </div>
     </div>
 
-    <ArtWorkTab />
+    <ArtWorkTab v-if="!isPortal" />
 
     <ArtNotification v-model:value="showNotice" ref="notice" />
   </div>
 </template>
 
 <script setup lang="ts">
-  import { useI18n } from 'vue-i18n'
-  import { useRouter } from 'vue-router'
-  import { useFullscreen, useWindowSize } from '@vueuse/core'
-  import { LanguageEnum, MenuTypeEnum } from '@/enums/appEnum'
-  import { useSettingStore } from '@/application/store/setting'
-  import { useUserStore } from '@/application/store/user'
-  import { useMenuStore } from '@/application/store/menu'
-  import AppConfig from '@/config'
-  import { langList as languageOptions } from '@/utils/langList'
-  import { mittBus } from '@/utils/sys'
-  import { themeAnimation } from '@/utils/ui/animation'
-  import { useCommon } from '@/hooks/core/useCommon'
-  import { useHeaderBar } from '@/hooks/core/useHeaderBar'
-  import ArtUserMenu from './widget/ArtUserMenu.vue'
+defineProps({
+  isPortal: {
+    type: Boolean,
+    default: false,
+  },
+});
+import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
+import { useFullscreen, useWindowSize } from "@vueuse/core";
+import { LanguageEnum, MenuTypeEnum } from "@/enums/appEnum";
+import { useSettingStore } from "@/application/store/setting";
+import { useUserStore } from "@/application/store/user";
+import { useMenuStore } from "@/application/store/menu";
+import AppConfig from "@/config";
+import { langList as languageOptions } from "@/utils/langList";
+import { mittBus } from "@/utils/sys";
+import { themeAnimation } from "@/utils/ui/animation";
+import { useCommon } from "@/hooks/core/useCommon";
+import { useHeaderBar } from "@/hooks/core/useHeaderBar";
+import ArtUserMenu from "./widget/ArtUserMenu.vue";
 
-  defineOptions({ name: 'ArtHeaderBar' })
+defineOptions({ name: "ArtHeaderBar" });
 
-  const isWindows = navigator.userAgent.includes('Windows')
+const isWindows = navigator.userAgent.includes("Windows");
 
-  const router = useRouter()
-  const { locale } = useI18n()
-  const { width } = useWindowSize()
+const router = useRouter();
+const { locale } = useI18n();
+const { width } = useWindowSize();
 
-  const settingStore = useSettingStore()
-  const userStore = useUserStore()
-  const menuStore = useMenuStore()
+const settingStore = useSettingStore();
+const userStore = useUserStore();
+const menuStore = useMenuStore();
 
-  const {
-    shouldShowMenuButton,
-    shouldShowRefreshButton,
-    shouldShowFastEnter,
-    shouldShowBreadcrumb,
-    shouldShowGlobalSearch,
-    shouldShowFullscreen,
-    shouldShowNotification,
-    shouldShowChat,
-    shouldShowLanguage,
-    shouldShowSettings,
-    shouldShowThemeToggle,
-    fastEnterMinWidth: headerBarFastEnterMinWidth,
-  } = useHeaderBar()
+const {
+  shouldShowMenuButton,
+  shouldShowRefreshButton,
+  shouldShowFastEnter,
+  shouldShowBreadcrumb,
+  shouldShowGlobalSearch,
+  shouldShowFullscreen,
+  shouldShowNotification,
+  shouldShowChat,
+  shouldShowLanguage,
+  shouldShowSettings,
+  shouldShowThemeToggle,
+  fastEnterMinWidth: headerBarFastEnterMinWidth,
+} = useHeaderBar();
 
-  const { menuOpen, showSettingGuide, menuType, isDark, tabStyle } = storeToRefs(settingStore)
+const { menuOpen, showSettingGuide, menuType, isDark, tabStyle } =
+  storeToRefs(settingStore);
 
-  const { language } = storeToRefs(userStore)
-  const { menuList } = storeToRefs(menuStore)
+const { language } = storeToRefs(userStore);
+const { menuList } = storeToRefs(menuStore);
 
-  const showNotice = ref(false)
+const showNotice = ref(false);
 
-  const isLeftMenu = computed(() => menuType.value === MenuTypeEnum.LEFT)
-  const isDualMenu = computed(() => menuType.value === MenuTypeEnum.DUAL_MENU)
-  const isTopMenu = computed(() => menuType.value === MenuTypeEnum.TOP)
-  const isTopLeftMenu = computed(() => menuType.value === MenuTypeEnum.TOP_LEFT)
+const isLeftMenu = computed(() => menuType.value === MenuTypeEnum.LEFT);
+const isDualMenu = computed(() => menuType.value === MenuTypeEnum.DUAL_MENU);
+const isTopMenu = computed(() => menuType.value === MenuTypeEnum.TOP);
+const isTopLeftMenu = computed(() => menuType.value === MenuTypeEnum.TOP_LEFT);
 
-  const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
+const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
-  onMounted(() => {
-    initLanguage()
-    document.addEventListener('click', bodyCloseNotice)
-  })
+onMounted(() => {
+  initLanguage();
+  document.addEventListener("click", bodyCloseNotice);
+});
 
-  onUnmounted(() => {
-    document.removeEventListener('click', bodyCloseNotice)
-  })
+onUnmounted(() => {
+  document.removeEventListener("click", bodyCloseNotice);
+});
 
-  const toggleFullScreen = (): void => {
-    toggleFullscreen()
+const toggleFullScreen = (): void => {
+  toggleFullscreen();
+};
+
+const visibleMenu = (): void => {
+  settingStore.setMenuOpen(!menuOpen.value);
+};
+
+const { homePath } = useCommon();
+const { refresh } = useCommon();
+
+const toHome = (): void => {
+  router.push(homePath.value);
+};
+
+const reload = (time: number = 0): void => {
+  setTimeout(() => {
+    refresh();
+  }, time);
+};
+
+const initLanguage = (): void => {
+  locale.value = language.value;
+};
+
+const changeLanguage = (lang: LanguageEnum): void => {
+  if (locale.value === lang) return;
+  locale.value = lang;
+  userStore.setLanguage(lang);
+  reload(50);
+};
+
+const openSetting = (): void => {
+  mittBus.emit("openSetting");
+
+  if (showSettingGuide.value) {
+    settingStore.hideSettingGuide();
   }
+};
 
-  const visibleMenu = (): void => {
-    settingStore.setMenuOpen(!menuOpen.value)
+const openSearchDialog = (): void => {
+  mittBus.emit("openSearchDialog");
+};
+
+const bodyCloseNotice = (e: any): void => {
+  if (!showNotice.value) return;
+
+  const target = e.target as HTMLElement;
+
+  const isNoticeButton = target.closest(".notice-button");
+  const isNoticePanel = target.closest(".art-notification-panel");
+
+  if (!isNoticeButton && !isNoticePanel) {
+    showNotice.value = false;
   }
+};
 
-  const { homePath } = useCommon()
-  const { refresh } = useCommon()
+const visibleNotice = (): void => {
+  showNotice.value = !showNotice.value;
+};
 
-  const toHome = (): void => {
-    router.push(homePath.value)
-  }
-
-  const reload = (time: number = 0): void => {
-    setTimeout(() => {
-      refresh()
-    }, time)
-  }
-
-  const initLanguage = (): void => {
-    locale.value = language.value
-  }
-
-  const changeLanguage = (lang: LanguageEnum): void => {
-    if (locale.value === lang) return
-    locale.value = lang
-    userStore.setLanguage(lang)
-    reload(50)
-  }
-
-  const openSetting = (): void => {
-    mittBus.emit('openSetting')
-
-    if (showSettingGuide.value) {
-      settingStore.hideSettingGuide()
-    }
-  }
-
-  const openSearchDialog = (): void => {
-    mittBus.emit('openSearchDialog')
-  }
-
-  const bodyCloseNotice = (e: any): void => {
-    if (!showNotice.value) return
-
-    const target = e.target as HTMLElement
-
-    const isNoticeButton = target.closest('.notice-button')
-    const isNoticePanel = target.closest('.art-notification-panel')
-
-    if (!isNoticeButton && !isNoticePanel) {
-      showNotice.value = false
-    }
-  }
-
-  const visibleNotice = (): void => {
-    showNotice.value = !showNotice.value
-  }
-
-  const openChat = (): void => {
-    mittBus.emit('openChat')
-  }
+const openChat = (): void => {
+  mittBus.emit("openChat");
+};
 </script>
 
 <style lang="scss" scoped>
-  @keyframes rotate180 {
-    0% {
-      transform: rotate(0);
-    }
-
-    100% {
-      transform: rotate(180deg);
-    }
+@keyframes rotate180 {
+  0% {
+    transform: rotate(0);
   }
 
-  @keyframes shake {
-    0% {
-      transform: rotate(0);
-    }
+  100% {
+    transform: rotate(180deg);
+  }
+}
 
-    25% {
-      transform: rotate(-5deg);
-    }
-
-    50% {
-      transform: rotate(5deg);
-    }
-
-    75% {
-      transform: rotate(-5deg);
-    }
-
-    100% {
-      transform: rotate(0);
-    }
+@keyframes shake {
+  0% {
+    transform: rotate(0);
   }
 
-  @keyframes expand {
-    0% {
-      transform: scale(1);
-    }
-
-    50% {
-      transform: scale(1.1);
-    }
-
-    100% {
-      transform: scale(1);
-    }
+  25% {
+    transform: rotate(-5deg);
   }
 
-  @keyframes shrink {
-    0% {
-      transform: scale(1);
-    }
-
-    50% {
-      transform: scale(0.9);
-    }
-
-    100% {
-      transform: scale(1);
-    }
+  50% {
+    transform: rotate(5deg);
   }
 
-  @keyframes moveUp {
-    0% {
-      transform: translateY(0);
-    }
-
-    50% {
-      transform: translateY(-3px);
-    }
-
-    100% {
-      transform: translateY(0);
-    }
+  75% {
+    transform: rotate(-5deg);
   }
 
-  @keyframes breathing {
-    0% {
-      opacity: 0.4;
-      transform: scale(0.9);
-    }
+  100% {
+    transform: rotate(0);
+  }
+}
 
-    50% {
-      opacity: 1;
-      transform: scale(1.1);
-    }
-
-    100% {
-      opacity: 0.4;
-      transform: scale(0.9);
-    }
+@keyframes expand {
+  0% {
+    transform: scale(1);
   }
 
-  .refresh-btn:hover :deep(.art-svg-icon) {
-    animation: rotate180 0.5s;
+  50% {
+    transform: scale(1.1);
   }
 
-  .language-btn:hover :deep(.art-svg-icon) {
-    animation: moveUp 0.4s;
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes shrink {
+  0% {
+    transform: scale(1);
   }
 
-  .setting-btn:hover :deep(.art-svg-icon) {
-    animation: rotate180 0.5s;
+  50% {
+    transform: scale(0.9);
   }
 
-  .full-screen-btn:hover :deep(.art-svg-icon) {
-    animation: expand 0.6s forwards;
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes moveUp {
+  0% {
+    transform: translateY(0);
   }
 
-  .exit-full-screen-btn:hover :deep(.art-svg-icon) {
-    animation: shrink 0.6s forwards;
+  50% {
+    transform: translateY(-3px);
   }
 
-  .notice-button:hover :deep(.art-svg-icon) {
-    animation: shake 0.5s ease-in-out;
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes breathing {
+  0% {
+    opacity: 0.4;
+    transform: scale(0.9);
   }
 
-  .chat-button:hover :deep(.art-svg-icon) {
-    animation: shake 0.5s ease-in-out;
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
   }
 
-  .breathing-dot {
-    animation: breathing 1.5s ease-in-out infinite;
+  100% {
+    opacity: 0.4;
+    transform: scale(0.9);
   }
+}
 
-  @media screen and (width <= 768px) {
-    .logo2 {
-      display: block !important;
-    }
-  }
+.refresh-btn:hover :deep(.art-svg-icon) {
+  animation: rotate180 0.5s;
+}
 
-  @media screen and (width <= 640px) {
-    .btn-box {
-      width: 40px;
-    }
+.language-btn:hover :deep(.art-svg-icon) {
+  animation: moveUp 0.4s;
+}
+
+.setting-btn:hover :deep(.art-svg-icon) {
+  animation: rotate180 0.5s;
+}
+
+.full-screen-btn:hover :deep(.art-svg-icon) {
+  animation: expand 0.6s forwards;
+}
+
+.exit-full-screen-btn:hover :deep(.art-svg-icon) {
+  animation: shrink 0.6s forwards;
+}
+
+.notice-button:hover :deep(.art-svg-icon) {
+  animation: shake 0.5s ease-in-out;
+}
+
+.chat-button:hover :deep(.art-svg-icon) {
+  animation: shake 0.5s ease-in-out;
+}
+
+.breathing-dot {
+  animation: breathing 1.5s ease-in-out infinite;
+}
+
+@media screen and (width <= 768px) {
+  .logo2 {
+    display: block !important;
   }
+}
+
+@media screen and (width <= 640px) {
+  .btn-box {
+    width: 40px;
+  }
+}
 </style>

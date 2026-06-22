@@ -213,7 +213,9 @@
   border-left-color: var(--report-border-strong);
 }
 
-.reporting-page .el-radio-button__original-radio:checked + .el-radio-button__inner {
+.reporting-page
+  .el-radio-button__original-radio:checked
+  + .el-radio-button__inner {
   color: #fff;
   background: var(--report-red);
   border-color: var(--report-red);
@@ -270,7 +272,11 @@
   border-bottom-color: var(--report-border);
 }
 
-.reporting-page .el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell {
+.reporting-page
+  .el-table--enable-row-hover
+  .el-table__body
+  tr:hover
+  > td.el-table__cell {
   background: #202126;
 }
 
@@ -457,7 +463,10 @@
   background: #111214;
 }
 
-.reporting-date-popper .el-date-table td.current:not(.disabled) .el-date-table-cell__text,
+.reporting-date-popper
+  .el-date-table
+  td.current:not(.disabled)
+  .el-date-table-cell__text,
 .reporting-date-popper .el-month-table td.current:not(.disabled) .cell,
 .reporting-date-popper .el-year-table td.current:not(.disabled) .cell,
 .reporting-select-popper .el-select-dropdown__item.is-selected {

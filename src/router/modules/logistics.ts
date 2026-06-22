@@ -1,62 +1,62 @@
-import { AppRouteRecord } from '@/types/router'
+import { AppRouteRecord } from "@/types/router";
 
 export const logisticsRoutes: AppRouteRecord = {
-  path: '/logistics',
-  name: 'LogisticsManagement',
-  component: '/index/index',
+  path: "/logistics",
+  name: "LogisticsManagement",
+  component: "/index/index",
   meta: {
-    title: 'menus.logistics.title',
-    icon: 'ri:truck-line',
+    title: "menus.logistics.title",
+    icon: "ri:truck-line",
   },
   children: [
     {
-      path: 'dashboard',
-      name: 'LogisticsDashboard',
-      component: '/logistics/dashboard/index',
+      path: "dashboard",
+      name: "LogisticsDashboard",
+      component: "/logistics/dashboard/index",
       meta: {
-        title: 'menus.logistics.dashboard',
-        icon: 'ri:dashboard-line',
+        title: "menus.logistics.dashboard",
+        icon: "ri:dashboard-line",
       },
     },
     {
-      path: 'fulfillment',
-      name: 'ParcelFulfillment',
-      component: '/logistics/fulfillment/index',
+      path: "fulfillment",
+      name: "ParcelFulfillment",
+      component: "/logistics/fulfillment/index",
       meta: {
-        title: 'menus.logistics.fulfillment',
-        icon: 'ri:box-3-line',
+        title: "menus.logistics.fulfillment",
+        icon: "ri:box-3-line",
         showBadge: true,
-        showTextBadge: '5',
+        showTextBadge: "5",
       },
     },
     {
-      path: 'tracking',
-      name: 'ShipmentTracking',
-      component: '/logistics/tracking/index',
+      path: "tracking",
+      name: "ShipmentTracking",
+      component: "/logistics/tracking/index",
       meta: {
-        title: 'menus.logistics.tracking',
-        icon: 'ri:map-pin-time-line',
+        title: "menus.logistics.tracking",
+        icon: "ri:map-pin-time-line",
       },
     },
     {
-      path: 'returns',
-      name: 'ReverseLogistics',
-      component: '/logistics/returns/index',
+      path: "returns",
+      name: "ReverseLogistics",
+      component: "/logistics/returns/index",
       meta: {
-        title: 'menus.logistics.returns',
-        icon: 'ri:arrow-go-back-line',
+        title: "menus.logistics.returns",
+        icon: "ri:arrow-go-back-line",
         showBadge: true,
-        showTextBadge: '1',
+        showTextBadge: "1",
       },
     },
     {
-      path: 'carrier-settings',
-      name: 'CarrierSettings',
-      component: '/logistics/carrier-settings/index',
+      path: "carrier-settings",
+      name: "CarrierSettings",
+      component: "/logistics/carrier-settings/index",
       meta: {
-        title: 'menus.logistics.carrierSettings',
-        icon: 'ri:settings-4-line',
+        title: "menus.logistics.carrierSettings",
+        icon: "ri:settings-4-line",
       },
     },
   ],
-}
+};

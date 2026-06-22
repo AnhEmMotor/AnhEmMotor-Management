@@ -3,11 +3,17 @@
     <ElCard class="editor-card">
       <template #header>
         <div class="card-header">
-          <span>{{ $t('admin.t279') }}</span>
+          <span>{{ $t("admin.t279") }}</span>
           <div class="header-buttons">
-            <ElButton size="small" @click="clearFullEditor">{{ $t('admin.t280') }}</ElButton>
-            <ElButton size="small" @click="getFullEditorContent">{{ $t('admin.t281') }}</ElButton>
-            <ElButton size="small" @click="setFullEditorDemo">{{ $t('admin.t282') }}</ElButton>
+            <ElButton size="small" @click="clearFullEditor">{{
+              $t("admin.t280")
+            }}</ElButton>
+            <ElButton size="small" @click="getFullEditorContent">{{
+              $t("admin.t281")
+            }}</ElButton>
+            <ElButton size="small" @click="setFullEditorDemo">{{
+              $t("admin.t282")
+            }}</ElButton>
           </div>
         </div>
       </template>
@@ -26,9 +32,15 @@
         <div class="card-header">
           <span>✨ rúthóaThanh công cụTrình biên tập</span>
           <div class="header-buttons">
-            <ElButton size="small" @click="clearSimpleEditor">xóakhông</ElButton>
-            <ElButton size="small" @click="getSimpleEditorContent">LấyNoiDung</ElButton>
-            <ElButton size="small" @click="setSimpleEditorDemo">CaiDatVí dụ</ElButton>
+            <ElButton size="small" @click="clearSimpleEditor"
+              >xóakhông</ElButton
+            >
+            <ElButton size="small" @click="getSimpleEditorContent"
+              >LấyNoiDung</ElButton
+            >
+            <ElButton size="small" @click="setSimpleEditorDemo"
+              >CaiDatVí dụ</ElButton
+            >
           </div>
         </div>
       </template>
@@ -180,15 +192,25 @@
               <ElCol :span="12">
                 <h5>✅ Đầy đủThanh công cụBao gồm：</h5>
                 <ul>
-                  <li
-                    >vănquyểncáchkiểu：thêmđậm、nghiêngthể、dướigạchđường、Phông chữMàu
-                    sắc、Nềnmàu</li
-                  >
-                  <li>Đoạn văncáchkiểu：TieuDe、tríchdùng、đốicănphươngkiểu、thụtvào</li>
-                  <li>Danh sách：cóthứDanh sách、vôthứDanh sách、Việc cần làmviệcmục</li>
-                  <li>chènvào：liêntiếp、Hình ảnh、Bảng、phầncắtđường、bảngtình</li>
+                  <li>
+                    vănquyểncáchkiểu：thêmđậm、nghiêngthể、dướigạchđường、Phông
+                    chữMàu sắc、Nềnmàu
+                  </li>
+                  <li>
+                    Đoạn
+                    văncáchkiểu：TieuDe、tríchdùng、đốicănphươngkiểu、thụtvào
+                  </li>
+                  <li>
+                    Danh sách：cóthứDanh sách、vôthứDanh sách、Việc cần
+                    làmviệcmục
+                  </li>
+                  <li>
+                    chènvào：liêntiếp、Hình ảnh、Bảng、phầncắtđường、bảngtình
+                  </li>
                   <li>đạimã：đạimãkhối、dòngtrongđạimã</li>
-                  <li>HanhDong：hoàntác、trùnglàm、Toàn màn hình、xóachiacáchkiểu</li>
+                  <li>
+                    HanhDong：hoàntác、trùnglàm、Toàn màn hình、xóachiacáchkiểu
+                  </li>
                 </ul>
               </ElCol>
               <ElCol :span="12">
@@ -199,9 +221,10 @@
                   <li>chènvào：liêntiếp、Hình ảnh</li>
                   <li>HanhDong：hoàntác、trùnglàm</li>
                 </ul>
-                <p class="note"
-                  >thíchdùngởrútđơncủavănquyểnChỉnh sửatrườngcảnh，giaomặthơnxóasảng。</p
-                >
+                <p class="note">
+                  thíchdùngởrútđơncủavănquyểnChỉnh
+                  sửatrườngcảnh，giaomặthơnxóasảng。
+                </p>
               </ElCol>
             </ElRow>
           </div>
@@ -212,30 +235,31 @@
 </template>
 
 <script setup lang="ts">
-  defineOptions({ name: 'WidgetsWangEditor' })
+defineOptions({ name: "WidgetsWangEditor" });
 
-  const fullEditorRef = ref()
-  const simpleEditorRef = ref()
-  const fullActiveTab = ref('preview')
-  const simpleActiveTab = ref('preview')
-  const activeCollapse = ref(['basic'])
+const fullEditorRef = ref();
+const simpleEditorRef = ref();
+const fullActiveTab = ref("preview");
+const simpleActiveTab = ref("preview");
+const activeCollapse = ref(["basic"]);
 
-  const simpleToolbarKeys = [
-    'bold',
-    'italic',
-    'underline',
-    '|',
-    'bulletedList',
-    'numberedList',
-    '|',
-    'insertLink',
-    'insertImage',
-    '|',
-    'undo',
-    'redo',
-  ]
+const simpleToolbarKeys = [
+  "bold",
+  "italic",
+  "underline",
+  "|",
+  "bulletedList",
+  "numberedList",
+  "|",
+  "insertLink",
+  "insertImage",
+  "|",
+  "undo",
+  "redo",
+];
 
-  const fullEditorHtml = ref(`<h1>🎨 Đầy đủThanh công cụTrình biên tậpthịví dụ</h1>
+const fullEditorHtml =
+  ref(`<h1>🎨 Đầy đủThanh công cụTrình biên tậpthịví dụ</h1>
 <p>nàychiếcTrình biên tậpBao gồmnêncócôngnăng，bạnCó thểlấythểnghiệmphongphúcủacáchkiểuChỉnh sửacôngnăng。</p>
 
 <h2>✨ vănquyểnKiểu dáng</h2>
@@ -284,9 +308,9 @@ function createEditor() {
   });
 }</code></pre>
 
-<p>🔗 <a href="https://www.wangeditor.com/" target="_blank">Truy cậpTrangChurồigiảiThêm</a></p>`)
+<p>🔗 <a href="https://www.wangeditor.com/" target="_blank">Truy cậpTrangChurồigiảiThêm</a></p>`);
 
-  const simpleEditorHtml = ref(`<h1>✨ rúthóaThanh công cụTrình biên tậpVí dụ</h1>
+const simpleEditorHtml = ref(`<h1>✨ rúthóaThanh công cụTrình biên tậpVí dụ</h1>
 <p>nàychiếcTrình biên tậpchỉBao gồmCơ bảncủaChỉnh sửacôngnăng，giaomặthơnthêmrútkhiết。</p>
 
 <h2>Cơ bảnvănquyểncáchkiểu</h2>
@@ -308,21 +332,21 @@ function createEditor() {
 <h2>liêntiếpvàHình ảnh</h2>
 <p>chiếctrìchènvào <a href="https://www.wangeditor.com/" target="_blank">liêntiếp</a> vàđồphiến。</p>
 
-<p>rúthóabảnTrình biên tậpTập trungởCơ bảncôngnăng，thíchhợprútđơncủaNoiDungChỉnh sửacầncầu。</p>`)
+<p>rúthóabảnTrình biên tậpTập trungởCơ bảncôngnăng，thíchhợprútđơncủaNoiDungChỉnh sửacầncầu。</p>`);
 
-  const clearFullEditor = () => {
-    fullEditorRef.value?.clear()
-    ElMessage.success('Đầy đủTrình biên tậpĐãxóakhông')
-  }
+const clearFullEditor = () => {
+  fullEditorRef.value?.clear();
+  ElMessage.success("Đầy đủTrình biên tậpĐãxóakhông");
+};
 
-  const getFullEditorContent = () => {
-    const content = fullEditorRef.value?.getHtml()
-    console.log('Đầy đủTrình biên tậpNoiDung:', content)
-    ElMessage.success('Đầy đủTrình biên tậpNoiDungĐãnhậprađếnBảng tổng quan')
-  }
+const getFullEditorContent = () => {
+  const content = fullEditorRef.value?.getHtml();
+  console.log("Đầy đủTrình biên tậpNoiDung:", content);
+  ElMessage.success("Đầy đủTrình biên tậpNoiDungĐãnhậprađếnBảng tổng quan");
+};
 
-  const setFullEditorDemo = () => {
-    const demoContent = `<h2>🎉 Đầy đủTrình biên tậpdiễnthịNoiDung</h2>
+const setFullEditorDemo = () => {
+  const demoContent = `<h2>🎉 Đầy đủTrình biên tậpdiễnthịNoiDung</h2>
 <p>nàylàthông quaPhuongThucCaiDatcủadiễnthịNoiDung，triểnthịĐầy đủTrình biên tậpcủamạnhđạicôngnăng。</p>
 <ul>
   <li>chitrìphongphúcủavănbảncáchthức</li>
@@ -333,25 +357,25 @@ function createEditor() {
   <tr><th>đặctính</th><th>Trạng thái</th></tr>
   <tr><td>hoànchỉnhcôngcụthanh</td><td>✅ ĐãBật</td></tr>
   <tr><td>caocấpcôngnăng</td><td>✅ ĐãBật</td></tr>
-</table>`
+</table>`;
 
-    fullEditorRef.value?.setHtml(demoContent)
-    ElMessage.success('ĐãCaiDatĐầy đủTrình biên tậpdiễnthịNoiDung')
-  }
+  fullEditorRef.value?.setHtml(demoContent);
+  ElMessage.success("ĐãCaiDatĐầy đủTrình biên tậpdiễnthịNoiDung");
+};
 
-  const clearSimpleEditor = () => {
-    simpleEditorRef.value?.clear()
-    ElMessage.success('rúthóaTrình biên tậpĐãxóakhông')
-  }
+const clearSimpleEditor = () => {
+  simpleEditorRef.value?.clear();
+  ElMessage.success("rúthóaTrình biên tậpĐãxóakhông");
+};
 
-  const getSimpleEditorContent = () => {
-    const content = simpleEditorRef.value?.getHtml()
-    console.log('rúthóaTrình biên tậpNoiDung:', content)
-    ElMessage.success('rúthóaTrình biên tậpNoiDungĐãnhậprađếnBảng tổng quan')
-  }
+const getSimpleEditorContent = () => {
+  const content = simpleEditorRef.value?.getHtml();
+  console.log("rúthóaTrình biên tậpNoiDung:", content);
+  ElMessage.success("rúthóaTrình biên tậpNoiDungĐãnhậprađếnBảng tổng quan");
+};
 
-  const setSimpleEditorDemo = () => {
-    const demoContent = `<h2>⚡ rúthóaTrình biên tậpdiễnthịNoiDung</h2>
+const setSimpleEditorDemo = () => {
+  const demoContent = `<h2>⚡ rúthóaTrình biên tậpdiễnthịNoiDung</h2>
 <p>nàylàthông quaPhuongThucCaiDatcủadiễnthịNoiDung，triểnthịrúthóaTrình biên tậpcủaCốt lõicôngnăng。</p>
 <ul>
   <li><strong>Cơ bảncáchthức</strong>：thêmđậm、nghiêngthể、dướigạchđường</li>
@@ -363,152 +387,152 @@ function createEditor() {
   <li>côngnăngchuyênchúthựcdùng</li>
   <li>thíchhợpkhoáiChỉnh sửa</li>
 </ol>
-<p>🔗 <a href="https://example.com" target="_blank">nàylàmộtcáiliêntiếpthịví dụ</a></p>`
+<p>🔗 <a href="https://example.com" target="_blank">nàylàmộtcáiliêntiếpthịví dụ</a></p>`;
 
-    simpleEditorRef.value?.setHtml(demoContent)
-    ElMessage.success('ĐãCaiDatrúthóaTrình biên tậpdiễnthịNoiDung')
-  }
+  simpleEditorRef.value?.setHtml(demoContent);
+  ElMessage.success("ĐãCaiDatrúthóaTrình biên tậpdiễnthịNoiDung");
+};
 </script>
 
 <style lang="scss" scoped>
-  .page-content {
-    padding: 20px;
-  }
+.page-content {
+  padding: 20px;
+}
 
-  .editor-card {
-    margin-bottom: 24px;
+.editor-card {
+  margin-bottom: 24px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.preview-card {
+  margin-bottom: 24px;
+}
+
+.preview-card h3 {
+  margin: 0 0 16px;
+  font-size: 16px;
+  color: var(--el-text-color-primary);
+}
+
+.content-preview {
+  min-height: 200px;
+  max-height: 300px;
+  padding: 16px;
+  overflow-y: auto;
+  background-color: var(--el-bg-color);
+  border: 1px solid var(--el-border-color);
+  border-radius: 6px;
+}
+
+.content-preview :deep(h1),
+.content-preview :deep(h2),
+.content-preview :deep(h3) {
+  margin: 16px 0 8px;
+}
+
+.content-preview :deep(p) {
+  margin: 8px 0;
+  line-height: 1.6;
+}
+
+.content-preview :deep(table) {
+  margin: 16px 0;
+}
+
+.content-preview :deep(table th),
+.content-preview :deep(table td) {
+  padding: 8px 12px;
+}
+
+.content-preview :deep(pre) {
+  padding: 12px;
+  margin: 16px 0;
+  overflow-x: auto;
+  background-color: var(--el-fill-color-light);
+  border-radius: 4px;
+}
+
+.content-preview :deep(blockquote) {
+  padding-left: 16px;
+  margin: 16px 0;
+  color: var(--el-text-color-regular);
+  border-left: 4px solid var(--el-color-primary);
+}
+
+.usage-card :deep(.el-collapse-item__content) {
+  padding-bottom: 16px;
+}
+
+.usage-card pre {
+  padding: 16px;
+  margin: 0;
+  overflow-x: auto;
+  background-color: var(--el-fill-color-light);
+  border-radius: 6px;
+}
+
+.usage-card pre code {
+  font-family: Consolas, Monaco, "Courier New", monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.toolbar-explanation h4 {
+  margin: 0 0 16px;
+  color: var(--el-text-color-primary);
+}
+
+.toolbar-explanation h5 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--el-text-color-regular);
+}
+
+.toolbar-explanation ul {
+  padding-left: 20px;
+  margin: 8px 0 16px;
+}
+
+.toolbar-explanation ul li {
+  margin: 4px 0;
+  font-size: 13px;
+  color: var(--el-text-color-regular);
+}
+
+.toolbar-explanation .note {
+  margin: 8px 0 0;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--el-text-color-placeholder);
+}
+
+@media (width <= 768px) {
+  .page-content {
+    padding: 12px;
   }
 
   .card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch !important;
   }
 
   .header-buttons {
-    display: flex;
-    gap: 8px;
+    justify-content: center;
   }
 
-  .preview-card {
-    margin-bottom: 24px;
+  .preview-card :deep(.el-col) {
+    margin-bottom: 16px;
   }
-
-  .preview-card h3 {
-    margin: 0 0 16px;
-    font-size: 16px;
-    color: var(--el-text-color-primary);
-  }
-
-  .content-preview {
-    min-height: 200px;
-    max-height: 300px;
-    padding: 16px;
-    overflow-y: auto;
-    background-color: var(--el-bg-color);
-    border: 1px solid var(--el-border-color);
-    border-radius: 6px;
-  }
-
-  .content-preview :deep(h1),
-  .content-preview :deep(h2),
-  .content-preview :deep(h3) {
-    margin: 16px 0 8px;
-  }
-
-  .content-preview :deep(p) {
-    margin: 8px 0;
-    line-height: 1.6;
-  }
-
-  .content-preview :deep(table) {
-    margin: 16px 0;
-  }
-
-  .content-preview :deep(table th),
-  .content-preview :deep(table td) {
-    padding: 8px 12px;
-  }
-
-  .content-preview :deep(pre) {
-    padding: 12px;
-    margin: 16px 0;
-    overflow-x: auto;
-    background-color: var(--el-fill-color-light);
-    border-radius: 4px;
-  }
-
-  .content-preview :deep(blockquote) {
-    padding-left: 16px;
-    margin: 16px 0;
-    color: var(--el-text-color-regular);
-    border-left: 4px solid var(--el-color-primary);
-  }
-
-  .usage-card :deep(.el-collapse-item__content) {
-    padding-bottom: 16px;
-  }
-
-  .usage-card pre {
-    padding: 16px;
-    margin: 0;
-    overflow-x: auto;
-    background-color: var(--el-fill-color-light);
-    border-radius: 6px;
-  }
-
-  .usage-card pre code {
-    font-family: Consolas, Monaco, 'Courier New', monospace;
-    font-size: 14px;
-    line-height: 1.5;
-  }
-
-  .toolbar-explanation h4 {
-    margin: 0 0 16px;
-    color: var(--el-text-color-primary);
-  }
-
-  .toolbar-explanation h5 {
-    margin: 0 0 8px;
-    font-size: 14px;
-    color: var(--el-text-color-regular);
-  }
-
-  .toolbar-explanation ul {
-    padding-left: 20px;
-    margin: 8px 0 16px;
-  }
-
-  .toolbar-explanation ul li {
-    margin: 4px 0;
-    font-size: 13px;
-    color: var(--el-text-color-regular);
-  }
-
-  .toolbar-explanation .note {
-    margin: 8px 0 0;
-    font-size: 12px;
-    font-style: italic;
-    color: var(--el-text-color-placeholder);
-  }
-
-  @media (width <= 768px) {
-    .page-content {
-      padding: 12px;
-    }
-
-    .card-header {
-      flex-direction: column;
-      gap: 12px;
-      align-items: stretch !important;
-    }
-
-    .header-buttons {
-      justify-content: center;
-    }
-
-    .preview-card :deep(.el-col) {
-      margin-bottom: 16px;
-    }
-  }
+}
 </style>

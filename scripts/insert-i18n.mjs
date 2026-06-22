@@ -1,25 +1,24 @@
-import fs from 'fs'
+import fs from "fs";
 
-const path = 'd:/DATN/AnhEmMotor/AnhEmMotor-Management/src/i18n/package/vi.ts'
-let content = fs.readFileSync(path, 'utf8')
+const path = "d:/DATN/AnhEmMotor/AnhEmMotor-Management/src/i18n/package/vi.ts";
+let content = fs.readFileSync(path, "utf8");
 
 // The target marker: line 436 is "},", line 437 is "marketing: {"
 // We want to replace the transition with: "},\ncontact: { ... },\nmarketing: {"
 
 const contactBlock = `},
 contact: {
-  title: 'Quăn lÃ½ LiÃªn háº·',
-  subtitle: 'Tiáº¿p nháº­n & xá»­ lÃ½ yÃªu cáº§u há»— trá»£, pháº£n há»“i vÃ  há»“ sÆ¡ á»©ng viÃªn',
-  tabSupport: 'YÃªu cáº§u há»— trá»£',
-  tabFeedback: 'Äáº§ng gÃ³p Ã½ kiáº¿n',
-  tabCandidate: 'Há»“ sÆ¡ á»©ng viÃªn',
-  searchPlaceholder: 'TÃ¬m tÃªn, email, SÄ\á»T, tiÃªu Äá»...',
-  allStatus: 'Táº¥t cáº£ tráº¡ng thÃ¡i',
-  supportStatus: { New: 'Má»›i', InProgress: 'Äang xá»­ lÃ½', Closed: 'ÄÃ£ Äá»ng' },
-  feedbackStatus: { Pending: 'ChÆ°a xá»­ lÃ½', Read: 'ÄÃ£ Äá»c', Resolved: 'ÄÃ£ giáº£i quyáº¿t' },
-  candidateStatus: { New: 'Má»›i', Interview: 'Phá»ỏng váº¥n', Offer: 'ÄÃ£ gá»­i offer', Rejected: 'Tá»« chá»i' },
+  title: 'Quản lý Liên hệ',
+  subtitle: 'Tiếp nhận & xử lý yêu cầu hỗ trợ, phản hồi và hồ sơ ứng viên',
+  tabSupport: 'Yêu cầu hỗ trợ',
+  tabFeedback: 'Đóng góp ý kiến',
+  tabCandidate: 'Hồ sơ ứng viên',
+  searchPlaceholder: 'Tìm tên, email, SĐT, tiêu đề...',
+  allStatus: 'Tất cả trạng thái',
+  supportStatus: { New: 'Mới', InProgress: 'Đang xử lý', Closed: 'Đã đóng' },
+  feedbackStatus: { Pending: 'Chưa xử lý', Read: 'Đã đọc', Resolved: 'Đã giải quyết' },
+  candidateStatus: { New: 'Mới', Interview: 'Phỏng vấn', Offer: 'Đã gửi offer', Rejected: 'Từ chối' },
   category: {
-    Quality: 'Cháº¥t lÆ°á»£ng xe',
     Service: 'ThÃ¡i Äá» phá»¥c váº¥',
     Rating: 'Äánh giÃ¡ & Rating',
     General: 'Chung',
@@ -89,9 +88,9 @@ contact: {
     submit: 'Táº¡o má»›i',
   },
 },
-marketing: {`
+marketing: {`;
 
-content = content.replace('},\nmarketing: {', contactBlock)
+content = content.replace("},\nmarketing: {", contactBlock);
 
-fs.writeFileSync(path, content, 'utf8')
-console.log('Done')
+fs.writeFileSync(path, content, "utf8");
+console.log("Done");

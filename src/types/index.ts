@@ -1,11 +1,11 @@
-export * from './common'
+export * from "./common";
 
-export * from './component'
+export * from "./component";
 
-export * from './store'
+export * from "./store";
 
-export * from './router'
+export * from "./router";
 
-export * from './config'
+export * from "./config";
 
-export * from './contact'
+export * from "./contact";

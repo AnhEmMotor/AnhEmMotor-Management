@@ -356,7 +356,10 @@
       "title": "Inventory Management",
       "supplier": "Suppliers",
       "input": "Inventory Input",
-      "debt": "Debt Management"
+      "debt": "Debt Management",
+      "quotation": "Quotation",
+      "inOutStock": "Stock In-Out Report",
+      "ledger": "Stock Ledger"
     },
     "login": {
       "title": "Login"

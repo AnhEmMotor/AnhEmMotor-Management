@@ -16,16 +16,16 @@
 </template>
 
 <script setup lang="ts">
-  import { useSettingStore } from '@/application/store/setting'
-  import { useCeremony } from '@/hooks/core/useCeremony'
+import { useSettingStore } from "@/application/store/setting";
+import { useCeremony } from "@/hooks/core/useCeremony";
 
-  defineOptions({ name: 'ArtFestivalTextScroll' })
+defineOptions({ name: "ArtFestivalTextScroll" });
 
-  const settingStore = useSettingStore()
-  const { showFestivalText } = storeToRefs(settingStore)
-  const { currentFestivalData } = useCeremony()
+const settingStore = useSettingStore();
+const { showFestivalText } = storeToRefs(settingStore);
+const { currentFestivalData } = useCeremony();
 
-  const handleClose = () => {
-    settingStore.setShowFestivalText(false)
-  }
+const handleClose = () => {
+  settingStore.setShowFestivalText(false);
+};
 </script>

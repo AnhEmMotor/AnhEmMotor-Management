@@ -5,7 +5,10 @@
     :class="themeClasses"
     :style="containerStyle"
   >
-    <div class="flex-cc absolute left-0 h-full w-9 z-10" :style="{ backgroundColor: bgColor }">
+    <div
+      class="flex-cc absolute left-0 h-full w-9 z-10"
+      :style="{ backgroundColor: bgColor }"
+    >
       <ArtSvgIcon icon="ri:volume-down-line" class="text-lg" />
     </div>
 
@@ -41,224 +44,229 @@
 </template>
 
 <script setup lang="ts">
-  import {
-    useElementSize,
-    useRafFn,
-    useElementHover,
-    useDebounceFn,
-    useTimeoutFn,
-  } from '@vueuse/core'
-  import { useSettingStore } from '@/application/store/setting'
+import {
+  useElementSize,
+  useRafFn,
+  useElementHover,
+  useDebounceFn,
+  useTimeoutFn,
+} from "@vueuse/core";
+import { useSettingStore } from "@/application/store/setting";
 
-  type ThemeType =
-    | 'theme'
-    | 'primary'
-    | 'secondary'
-    | 'error'
-    | 'info'
-    | 'success'
-    | 'warning'
-    | 'danger'
+type ThemeType =
+  | "theme"
+  | "primary"
+  | "secondary"
+  | "error"
+  | "info"
+  | "success"
+  | "warning"
+  | "danger";
 
-  export interface TextScrollProps {
-    text?: string
+export interface TextScrollProps {
+  text?: string;
 
-    type?: ThemeType
+  type?: ThemeType;
 
-    direction?: 'left' | 'right' | 'up' | 'down'
+  direction?: "left" | "right" | "up" | "down";
 
-    speed?: number
+  speed?: number;
 
-    width?: string
+  width?: string;
 
-    height?: string
+  height?: string;
 
-    pauseOnHover?: boolean
+  pauseOnHover?: boolean;
 
-    showClose?: boolean
+  showClose?: boolean;
 
-    alwaysScroll?: boolean
+  alwaysScroll?: boolean;
+}
+
+const props = withDefaults(defineProps<TextScrollProps>(), {
+  text: "",
+  direction: "left",
+  speed: 80,
+  width: "100%",
+  height: "36px",
+  pauseOnHover: true,
+  type: "theme",
+  showClose: false,
+  alwaysScroll: true,
+});
+
+const emit = defineEmits<{
+  close: [];
+}>();
+
+const handleClose = () => {
+  emit("close");
+};
+
+const settingStore = useSettingStore();
+const { isDark } = storeToRefs(settingStore);
+
+const containerRef = ref<HTMLElement>();
+const contentRef = ref<HTMLElement>();
+const textRef = ref<HTMLElement>();
+const isReady = ref(false);
+
+const currentPosition = ref(0);
+const textSize = ref(0);
+const containerSize = ref(0);
+const shouldClone = ref(false);
+
+const isHorizontal = computed(
+  () => props.direction === "left" || props.direction === "right",
+);
+const isReverse = computed(
+  () => props.direction === "right" || props.direction === "down",
+);
+
+const { width: containerWidth, height: containerHeight } =
+  useElementSize(containerRef);
+
+const isHovered = useElementHover(containerRef);
+
+const isPaused = computed(() => {
+  if (!props.alwaysScroll && textSize.value <= containerSize.value) {
+    return true;
+  }
+  return props.pauseOnHover && isHovered.value;
+});
+
+const themeClasses = computed(() => {
+  const themeMap: Record<ThemeType, string> = {
+    theme: "text-theme/90 !border-theme/50",
+    primary: "text-primary/90 !border-primary/50",
+    secondary: "text-secondary/90 !border-secondary/50",
+    error: "text-error/90 !border-error/50",
+    info: "text-info/90 !border-info/50",
+    success: "text-success/90 !border-success/50",
+    warning: "text-warning/90 !border-warning/50",
+    danger: "text-danger/90 !border-danger/50",
+  };
+  return themeMap[props.type] || themeMap.theme;
+});
+
+const bgColor = computed(
+  () =>
+    `color-mix(in oklch, var(--color-${props.type}) ${isDark.value ? "25" : "10"}%, var(--art-color))`,
+);
+
+const containerStyle = computed(() => ({
+  width: props.width,
+  height: props.height,
+  backgroundColor: bgColor.value,
+}));
+
+const contentClass = computed(() => {
+  if (!isHorizontal.value) {
+    return "flex flex-col";
+  }
+  return "";
+});
+
+const contentStyle = computed(() => {
+  const transform = isHorizontal.value
+    ? `translateX(${currentPosition.value}px)`
+    : `translateY(${currentPosition.value}px)`;
+
+  return {
+    transform,
+    willChange: "transform",
+  };
+});
+
+const cloneSpacing = computed(() => {
+  const spacing = "2em";
+  return isHorizontal.value ? { marginLeft: spacing } : { marginTop: spacing };
+});
+
+const measureSizes = () => {
+  if (!containerRef.value || !textRef.value) return;
+
+  const text = textRef.value;
+
+  if (isHorizontal.value) {
+    containerSize.value = containerWidth.value;
+    textSize.value = text.offsetWidth;
+  } else {
+    containerSize.value = containerHeight.value;
+    textSize.value = text.offsetHeight;
   }
 
-  const props = withDefaults(defineProps<TextScrollProps>(), {
-    text: '',
-    direction: 'left',
-    speed: 80,
-    width: '100%',
-    height: '36px',
-    pauseOnHover: true,
-    type: 'theme',
-    showClose: false,
-    alwaysScroll: true,
-  })
+  const isOverflow = textSize.value > containerSize.value;
+  shouldClone.value = isOverflow;
 
-  const emit = defineEmits<{
-    close: []
-  }>()
+  currentPosition.value = (containerSize.value - textSize.value) / 2;
 
-  const handleClose = () => {
-    emit('close')
+  if (!isReady.value) {
+    isReady.value = true;
   }
+};
 
-  const settingStore = useSettingStore()
-  const { isDark } = storeToRefs(settingStore)
+const debouncedMeasure = useDebounceFn(measureSizes, 150);
 
-  const containerRef = ref<HTMLElement>()
-  const contentRef = ref<HTMLElement>()
-  const textRef = ref<HTMLElement>()
-  const isReady = ref(false)
+let lastTimestamp = 0;
 
-  const currentPosition = ref(0)
-  const textSize = ref(0)
-  const containerSize = ref(0)
-  const shouldClone = ref(false)
+const { pause, resume } = useRafFn(
+  ({ timestamp }) => {
+    if (!lastTimestamp) lastTimestamp = timestamp;
 
-  const isHorizontal = computed(() => props.direction === 'left' || props.direction === 'right')
-  const isReverse = computed(() => props.direction === 'right' || props.direction === 'down')
+    if (!isPaused.value) {
+      const delta = (timestamp - lastTimestamp) / 1000;
+      const distance = props.speed * delta;
+      const spacing = textSize.value * 0.1;
 
-  const { width: containerWidth, height: containerHeight } = useElementSize(containerRef)
+      currentPosition.value += isReverse.value ? distance : -distance;
 
-  const isHovered = useElementHover(containerRef)
-
-  const isPaused = computed(() => {
-    if (!props.alwaysScroll && textSize.value <= containerSize.value) {
-      return true
-    }
-    return props.pauseOnHover && isHovered.value
-  })
-
-  const themeClasses = computed(() => {
-    const themeMap: Record<ThemeType, string> = {
-      theme: 'text-theme/90 !border-theme/50',
-      primary: 'text-primary/90 !border-primary/50',
-      secondary: 'text-secondary/90 !border-secondary/50',
-      error: 'text-error/90 !border-error/50',
-      info: 'text-info/90 !border-info/50',
-      success: 'text-success/90 !border-success/50',
-      warning: 'text-warning/90 !border-warning/50',
-      danger: 'text-danger/90 !border-danger/50',
-    }
-    return themeMap[props.type] || themeMap.theme
-  })
-
-  const bgColor = computed(
-    () =>
-      `color-mix(in oklch, var(--color-${props.type}) ${isDark.value ? '25' : '10'}%, var(--art-color))`,
-  )
-
-  const containerStyle = computed(() => ({
-    width: props.width,
-    height: props.height,
-    backgroundColor: bgColor.value,
-  }))
-
-  const contentClass = computed(() => {
-    if (!isHorizontal.value) {
-      return 'flex flex-col'
-    }
-    return ''
-  })
-
-  const contentStyle = computed(() => {
-    const transform = isHorizontal.value
-      ? `translateX(${currentPosition.value}px)`
-      : `translateY(${currentPosition.value}px)`
-
-    return {
-      transform,
-      willChange: 'transform',
-    }
-  })
-
-  const cloneSpacing = computed(() => {
-    const spacing = '2em'
-    return isHorizontal.value ? { marginLeft: spacing } : { marginTop: spacing }
-  })
-
-  const measureSizes = () => {
-    if (!containerRef.value || !textRef.value) return
-
-    const text = textRef.value
-
-    if (isHorizontal.value) {
-      containerSize.value = containerWidth.value
-      textSize.value = text.offsetWidth
-    } else {
-      containerSize.value = containerHeight.value
-      textSize.value = text.offsetHeight
-    }
-
-    const isOverflow = textSize.value > containerSize.value
-    shouldClone.value = isOverflow
-
-    currentPosition.value = (containerSize.value - textSize.value) / 2
-
-    if (!isReady.value) {
-      isReady.value = true
-    }
-  }
-
-  const debouncedMeasure = useDebounceFn(measureSizes, 150)
-
-  let lastTimestamp = 0
-
-  const { pause, resume } = useRafFn(
-    ({ timestamp }) => {
-      if (!lastTimestamp) lastTimestamp = timestamp
-
-      if (!isPaused.value) {
-        const delta = (timestamp - lastTimestamp) / 1000
-        const distance = props.speed * delta
-        const spacing = textSize.value * 0.1
-
-        currentPosition.value += isReverse.value ? distance : -distance
-
-        if (isReverse.value) {
-          if (currentPosition.value > containerSize.value) {
-            currentPosition.value = -(textSize.value + spacing)
-          }
-        } else {
-          if (currentPosition.value < -(textSize.value + spacing)) {
-            currentPosition.value = containerSize.value
-          }
+      if (isReverse.value) {
+        if (currentPosition.value > containerSize.value) {
+          currentPosition.value = -(textSize.value + spacing);
+        }
+      } else {
+        if (currentPosition.value < -(textSize.value + spacing)) {
+          currentPosition.value = containerSize.value;
         }
       }
-
-      lastTimestamp = timestamp
-    },
-    { immediate: false },
-  )
-
-  const handleContentClick = (e: MouseEvent) => {
-    const target = e.target as HTMLElement
-    if (target.tagName === 'A') {
-      e.stopPropagation()
     }
+
+    lastTimestamp = timestamp;
+  },
+  { immediate: false },
+);
+
+const handleContentClick = (e: MouseEvent) => {
+  const target = e.target as HTMLElement;
+  if (target.tagName === "A") {
+    e.stopPropagation();
   }
+};
 
-  watch([containerWidth, containerHeight], () => {
-    debouncedMeasure()
-  })
+watch([containerWidth, containerHeight], () => {
+  debouncedMeasure();
+});
 
-  watch(
-    () => [props.direction, props.speed, props.text],
-    () => {
-      measureSizes()
-      lastTimestamp = 0
-    },
-  )
+watch(
+  () => [props.direction, props.speed, props.text],
+  () => {
+    measureSizes();
+    lastTimestamp = 0;
+  },
+);
 
-  const { start: startMeasure } = useTimeoutFn(() => {
-    measureSizes()
+const { start: startMeasure } = useTimeoutFn(() => {
+  measureSizes();
 
-    resume()
-  }, 100)
+  resume();
+}, 100);
 
-  onMounted(() => {
-    startMeasure()
-  })
+onMounted(() => {
+  startMeasure();
+});
 
-  onBeforeUnmount(() => {
-    pause()
-  })
+onBeforeUnmount(() => {
+  pause();
+});
 </script>

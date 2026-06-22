@@ -1,6 +1,6 @@
 # AnhEmMotor Management Dashboard Project
 
-[English](#english) | [Tiếng Việt](#tiếng-việt) | [Rules (Quy chuẩn)](./RULES.md)
+[English](#english) | [Tiếng Việt](#tiếng-việt) | [Rules (Quy chuẩn)](./RULES.md) | [Setup VPS](./SETUP_VPS.md)
 
 ---
 

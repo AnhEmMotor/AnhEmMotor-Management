@@ -1,47 +1,47 @@
-export type CarrierEnvironment = 'sandbox' | 'production'
+export type CarrierEnvironment = "sandbox" | "production";
 
 export interface CarrierPartnerSummary {
-  id: number
-  carrierCode: string
-  name: string
-  isActive: boolean
+  id: number;
+  carrierCode: string;
+  name: string;
+  isActive: boolean;
 
-  environment: CarrierEnvironment
-  apiBaseUrl: string
-  apiTokenMasked: string
-  apiTokenPlain?: string
-  webhookSecretMasked: string
-  webhookSecretPlain?: string
-  webhookEndpointUrl: string
+  environment: CarrierEnvironment;
+  apiBaseUrl: string;
+  apiTokenMasked: string;
+  apiTokenPlain?: string;
+  webhookSecretMasked: string;
+  webhookSecretPlain?: string;
+  webhookEndpointUrl: string;
 
-  autoSyncPricing: boolean
-  maxParcelWeightKg: number
+  autoSyncPricing: boolean;
+  maxParcelWeightKg: number;
 
-  allowLiquidCargo: boolean
-  allowOversizeCargo: boolean
+  allowLiquidCargo: boolean;
+  allowOversizeCargo: boolean;
 }
 
 export interface GetCarriersResponse {
-  items: CarrierPartnerSummary[]
+  items: CarrierPartnerSummary[];
 }
 
 export interface UpdateCarrierPartnerRequest {
-  isActive: boolean
-  environment: CarrierEnvironment
-  apiBaseUrl: string
+  isActive: boolean;
+  environment: CarrierEnvironment;
+  apiBaseUrl: string;
 
   // Optional new secrets. If user keeps unchanged, UI sends undefined.
-  apiTokenPlain?: string
-  webhookSecretPlain?: string
+  apiTokenPlain?: string;
+  webhookSecretPlain?: string;
 
-  webhookEndpointUrl: string
-  autoSyncPricing: boolean
-  maxParcelWeightKg: number
-  allowLiquidCargo: boolean
-  allowOversizeCargo: boolean
+  webhookEndpointUrl: string;
+  autoSyncPricing: boolean;
+  maxParcelWeightKg: number;
+  allowLiquidCargo: boolean;
+  allowOversizeCargo: boolean;
 }
 
 export interface TestCarrierConnectionResponse {
-  isSuccess: boolean
-  message: string
+  isSuccess: boolean;
+  message: string;
 }

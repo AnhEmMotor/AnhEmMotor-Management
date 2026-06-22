@@ -1,12 +1,20 @@
-import { ref, reactive, computed, onMounted, onUnmounted, nextTick, readonly } from 'vue'
-import { useWindowSize } from '@vueuse/core'
-import { useTableColumns } from './useTableColumns'
-import type { ColumnOption } from '@/types/component'
+import {
+  ref,
+  reactive,
+  computed,
+  onMounted,
+  onUnmounted,
+  nextTick,
+  readonly,
+} from "vue";
+import { useWindowSize } from "@vueuse/core";
+import { useTableColumns } from "./useTableColumns";
+import type { ColumnOption } from "@/types/component";
 import {
   TableCache,
   CacheInvalidationStrategy,
   type ApiResponse,
-} from '../../utils/table/tableCache'
+} from "../../utils/table/tableCache";
 import {
   type TableError,
   defaultResponseAdapter,
@@ -14,12 +22,15 @@ import {
   updatePaginationFromResponse,
   createSmartDebounce,
   createErrorHandler,
-} from '../../utils/table/tableUtils'
-import { tableConfig } from '../../utils/table/tableConfig'
+} from "../../utils/table/tableUtils";
+import { tableConfig } from "../../utils/table/tableConfig";
 
-type InferApiParams<T> = T extends (params: infer P) => any ? P : never
-type InferApiResponse<T> = T extends (params: any) => Promise<infer R> ? R : never
-type InferRecordType<T> = T extends Api.Common.PaginatedResponse<infer U> ? U : never
+type InferApiParams<T> = T extends (params: infer P) => any ? P : never;
+type InferApiResponse<T> = T extends (params: any) => Promise<infer R>
+  ? R
+  : never;
+type InferRecordType<T> =
+  T extends Api.Common.PaginatedResponse<infer U> ? U : never;
 
 export interface UseTableConfig<
   TApiFn extends (params: any) => Promise<any> = (params: any) => Promise<any>,
@@ -28,69 +39,69 @@ export interface UseTableConfig<
   TResponse = InferApiResponse<TApiFn>,
 > {
   core: {
-    apiFn: TApiFn
+    apiFn: TApiFn;
 
-    apiParams?: Partial<TParams>
+    apiParams?: Partial<TParams>;
 
-    excludeParams?: string[]
+    excludeParams?: string[];
 
-    immediate?: boolean
+    immediate?: boolean;
 
-    columnsFactory?: () => ColumnOption<TRecord>[]
+    columnsFactory?: () => ColumnOption<TRecord>[];
 
     paginationKey?: {
-      current?: string
+      current?: string;
 
-      size?: string
-    }
-  }
+      size?: string;
+    };
+  };
 
   transform?: {
-    dataTransformer?: (data: TRecord[]) => TRecord[]
+    dataTransformer?: (data: TRecord[]) => TRecord[];
 
-    responseAdapter?: (response: TResponse) => ApiResponse<TRecord>
-  }
+    responseAdapter?: (response: TResponse) => ApiResponse<TRecord>;
+  };
 
   performance?: {
-    enableCache?: boolean
+    enableCache?: boolean;
 
-    cacheTime?: number
+    cacheTime?: number;
 
-    debounceTime?: number
+    debounceTime?: number;
 
-    maxCacheSize?: number
-  }
+    maxCacheSize?: number;
+  };
 
   hooks?: {
-    onSuccess?: (data: TRecord[], response: ApiResponse<TRecord>) => void
+    onSuccess?: (data: TRecord[], response: ApiResponse<TRecord>) => void;
 
-    onError?: (error: TableError) => void
+    onError?: (error: TableError) => void;
 
-    onCacheHit?: (data: TRecord[], response: ApiResponse<TRecord>) => void
+    onCacheHit?: (data: TRecord[], response: ApiResponse<TRecord>) => void;
 
-    onLoading?: (loading: boolean) => void
+    onLoading?: (loading: boolean) => void;
 
-    resetFormCallback?: () => void
-  }
+    resetFormCallback?: () => void;
+  };
 
   debug?: {
-    enableLog?: boolean
+    enableLog?: boolean;
 
-    logLevel?: 'info' | 'warn' | 'error'
-  }
+    logLevel?: "info" | "warn" | "error";
+  };
 }
 
 export function useTable<TApiFn extends (params: any) => Promise<any>>(
   config: UseTableConfig<TApiFn>,
 ) {
-  return useTableImpl(config)
+  return useTableImpl(config);
 }
 
 function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
   config: UseTableConfig<TApiFn>,
 ) {
-  type TRecord = InferRecordType<InferApiResponse<TApiFn>>
-  type TParams = InferApiParams<TApiFn>
+  type TRecord = InferRecordType<InferApiResponse<TApiFn>>;
+  type TParams = InferApiParams<TApiFn>;
   const {
     core: {
       apiFn,
@@ -100,7 +111,10 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
       columnsFactory,
       paginationKey,
     },
-    transform: { dataTransformer, responseAdapter = defaultResponseAdapter } = {},
+    transform: {
+      dataTransformer,
+      responseAdapter = defaultResponseAdapter,
+    } = {},
     performance: {
       enableCache = false,
       cacheTime = 5 * 60 * 1000,
@@ -109,44 +123,46 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     } = {},
     hooks: { onSuccess, onError, onCacheHit, resetFormCallback } = {},
     debug: { enableLog = false } = {},
-  } = config
+  } = config;
 
-  const pageKey = paginationKey?.current || tableConfig.paginationKey.current
-  const sizeKey = paginationKey?.size || tableConfig.paginationKey.size
+  const pageKey = paginationKey?.current || tableConfig.paginationKey.current;
+  const sizeKey = paginationKey?.size || tableConfig.paginationKey.size;
 
-  const cacheUpdateTrigger = ref(0)
+  const cacheUpdateTrigger = ref(0);
 
   const logger = {
     log: (message: string, ...args: unknown[]) => {
       if (enableLog) {
-        console.log(`[useTable] ${message}`, ...args)
+        console.log(`[useTable] ${message}`, ...args);
       }
     },
     warn: (message: string, ...args: unknown[]) => {
       if (enableLog) {
-        console.warn(`[useTable] ${message}`, ...args)
+        console.warn(`[useTable] ${message}`, ...args);
       }
     },
     error: (message: string, ...args: unknown[]) => {
       if (enableLog) {
-        console.error(`[useTable] ${message}`, ...args)
+        console.error(`[useTable] ${message}`, ...args);
       }
     },
-  }
+  };
 
-  const cache = enableCache ? new TableCache<TRecord>(cacheTime, maxCacheSize, enableLog) : null
+  const cache = enableCache
+    ? new TableCache<TRecord>(cacheTime, maxCacheSize, enableLog)
+    : null;
 
-  type LoadingState = 'idle' | 'loading' | 'success' | 'error'
-  const loadingState = ref<LoadingState>('idle')
-  const loading = computed(() => loadingState.value === 'loading')
+  type LoadingState = "idle" | "loading" | "success" | "error";
+  const loadingState = ref<LoadingState>("idle");
+  const loading = computed(() => loadingState.value === "loading");
 
-  const error = ref<TableError | null>(null)
+  const error = ref<TableError | null>(null);
 
-  const data = ref<TRecord[]>([])
+  const data = ref<TRecord[]>([]);
 
-  let abortController: AbortController | null = null
+  let abortController: AbortController | null = null;
 
-  let cacheCleanupTimer: NodeJS.Timeout | null = null
+  let cacheCleanupTimer: NodeJS.Timeout | null = null;
 
   const searchParams = reactive(
     Object.assign(
@@ -156,77 +172,87 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
       },
       apiParams || {},
     ) as TParams,
-  )
+  );
 
   const pagination = reactive<Api.Common.PaginationParams>({
-    current: ((searchParams as Record<string, unknown>)[pageKey] as number) || 1,
+    current:
+      ((searchParams as Record<string, unknown>)[pageKey] as number) || 1,
     size: ((searchParams as Record<string, unknown>)[sizeKey] as number) || 10,
     total: 0,
-  })
+  });
 
-  const { width } = useWindowSize()
+  const { width } = useWindowSize();
   const mobilePagination = computed(() => ({
     ...pagination,
     small: width.value < 768,
-  }))
+  }));
 
-  const columnConfig = columnsFactory ? useTableColumns<TRecord>(columnsFactory) : null
-  const columns = columnConfig?.columns
-  const columnChecks = columnConfig?.columnChecks
+  const columnConfig = columnsFactory
+    ? useTableColumns<TRecord>(columnsFactory)
+    : null;
+  const columns = columnConfig?.columns;
+  const columnChecks = columnConfig?.columnChecks;
 
-  const hasData = computed(() => data.value.length > 0)
+  const hasData = computed(() => data.value.length > 0);
 
   const cacheInfo = computed(() => {
-    void cacheUpdateTrigger.value
-    if (!cache) return { total: 0, size: '0KB', hitRate: '0 avg hits' }
-    return cache.getStats()
-  })
+    void cacheUpdateTrigger.value;
+    if (!cache) return { total: 0, size: "0KB", hitRate: "0 avg hits" };
+    return cache.getStats();
+  });
 
-  const handleError = createErrorHandler(onError, enableLog)
+  const handleError = createErrorHandler(onError, enableLog);
 
-  const clearCache = (strategy: CacheInvalidationStrategy, context?: string): void => {
-    if (!cache) return
+  const clearCache = (
+    strategy: CacheInvalidationStrategy,
+    context?: string,
+  ): void => {
+    if (!cache) return;
 
-    let clearedCount = 0
+    let clearedCount = 0;
 
     switch (strategy) {
       case CacheInvalidationStrategy.CLEAR_ALL:
-        cache.clear()
-        logger.log(`xóakhôngnêncóCache - ${context || ''}`)
-        break
+        cache.clear();
+        logger.log(`xóakhôngnêncóCache - ${context || ""}`);
+        break;
 
       case CacheInvalidationStrategy.CLEAR_CURRENT:
-        clearedCount = cache.clearCurrentSearch(searchParams)
-        logger.log(`xóakhôngkhitrướcTìm kiếmCache ${clearedCount} điều - ${context || ''}`)
-        break
+        clearedCount = cache.clearCurrentSearch(searchParams);
+        logger.log(
+          `xóakhôngkhitrướcTìm kiếmCache ${clearedCount} điều - ${context || ""}`,
+        );
+        break;
 
       case CacheInvalidationStrategy.CLEAR_PAGINATION:
-        clearedCount = cache.clearPagination()
-        logger.log(`xóakhôngPhân trangCache ${clearedCount} điều - ${context || ''}`)
-        break
+        clearedCount = cache.clearPagination();
+        logger.log(
+          `xóakhôngPhân trangCache ${clearedCount} điều - ${context || ""}`,
+        );
+        break;
 
       case CacheInvalidationStrategy.KEEP_ALL:
       default:
-        logger.log(`Duy trìCacheKhôngbiến - ${context || ''}`)
-        break
+        logger.log(`Duy trìCacheKhôngbiến - ${context || ""}`);
+        break;
     }
 
-    cacheUpdateTrigger.value++
-  }
+    cacheUpdateTrigger.value++;
+  };
 
   const fetchData = async (
     params?: Partial<TParams>,
     useCache = enableCache,
   ): Promise<ApiResponse<TRecord>> => {
     if (abortController) {
-      abortController.abort()
+      abortController.abort();
     }
 
-    const currentController = new AbortController()
-    abortController = currentController
+    const currentController = new AbortController();
+    abortController = currentController;
 
-    loadingState.value = 'loading'
-    error.value = null
+    loadingState.value = "loading";
+    error.value = null;
 
     try {
       let requestParams = Object.assign(
@@ -237,159 +263,167 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
           [sizeKey]: pagination.size,
         },
         params || {},
-      ) as TParams
+      ) as TParams;
 
       if (excludeParams.length > 0) {
-        const filteredParams = { ...requestParams }
+        const filteredParams = { ...requestParams };
         excludeParams.forEach((key) => {
-          delete (filteredParams as Record<string, unknown>)[key]
-        })
-        requestParams = filteredParams as TParams
+          delete (filteredParams as Record<string, unknown>)[key];
+        });
+        requestParams = filteredParams as TParams;
       }
 
       if (useCache && cache) {
-        const cachedItem = cache.get(requestParams)
+        const cachedItem = cache.get(requestParams);
         if (cachedItem) {
-          data.value = cachedItem.data
-          updatePaginationFromResponse(pagination, cachedItem.response)
+          data.value = cachedItem.data;
+          updatePaginationFromResponse(pagination, cachedItem.response);
 
-          const paramsRecord = searchParams as Record<string, unknown>
+          const paramsRecord = searchParams as Record<string, unknown>;
           if (paramsRecord[pageKey] !== pagination.current) {
-            paramsRecord[pageKey] = pagination.current
+            paramsRecord[pageKey] = pagination.current;
           }
           if (paramsRecord[sizeKey] !== pagination.size) {
-            paramsRecord[sizeKey] = pagination.size
+            paramsRecord[sizeKey] = pagination.size;
           }
 
-          loadingState.value = 'success'
+          loadingState.value = "success";
 
           if (onCacheHit) {
-            onCacheHit(cachedItem.data, cachedItem.response)
+            onCacheHit(cachedItem.data, cachedItem.response);
           }
 
-          logger.log(`Cachemệnhtrong`)
-          return cachedItem.response
+          logger.log(`Cachemệnhtrong`);
+          return cachedItem.response;
         }
       }
 
-      const response = await apiFn(requestParams)
+      const response = await apiFn(requestParams);
 
       if (currentController.signal.aborted) {
-        throw new Error('Vui lòngcầuĐãHủy')
+        throw new Error("Vui lòngcầuĐãHủy");
       }
 
-      const standardResponse = responseAdapter(response)
+      const standardResponse = responseAdapter(response);
 
-      let tableData = extractTableData(standardResponse)
+      let tableData = extractTableData(standardResponse);
 
       if (dataTransformer) {
-        tableData = dataTransformer(tableData)
+        tableData = dataTransformer(tableData);
       }
 
-      data.value = tableData
-      updatePaginationFromResponse(pagination, standardResponse)
+      data.value = tableData;
+      updatePaginationFromResponse(pagination, standardResponse);
 
-      const paramsRecord = searchParams as Record<string, unknown>
+      const paramsRecord = searchParams as Record<string, unknown>;
       if (paramsRecord[pageKey] !== pagination.current) {
-        paramsRecord[pageKey] = pagination.current
+        paramsRecord[pageKey] = pagination.current;
       }
       if (paramsRecord[sizeKey] !== pagination.size) {
-        paramsRecord[sizeKey] = pagination.size
+        paramsRecord[sizeKey] = pagination.size;
       }
 
       if (useCache && cache) {
-        cache.set(requestParams, tableData, standardResponse)
+        cache.set(requestParams, tableData, standardResponse);
 
-        cacheUpdateTrigger.value++
-        logger.log(`Dữ liệuĐãCache`)
+        cacheUpdateTrigger.value++;
+        logger.log(`Dữ liệuĐãCache`);
       }
 
-      loadingState.value = 'success'
+      loadingState.value = "success";
 
       if (onSuccess) {
-        onSuccess(tableData, standardResponse)
+        onSuccess(tableData, standardResponse);
       }
 
-      return standardResponse
+      return standardResponse;
     } catch (err) {
-      if (err instanceof Error && err.message === 'Vui lòngcầuĐãHủy') {
-        loadingState.value = 'idle'
-        return { records: [], total: 0, current: 1, size: 10 }
+      if (err instanceof Error && err.message === "Vui lòngcầuĐãHủy") {
+        loadingState.value = "idle";
+        return { records: [], total: 0, current: 1, size: 10 };
       }
 
-      loadingState.value = 'error'
-      data.value = []
-      const tableError = handleError(err, 'LấyBảngDữ liệuThatBai')
-      throw tableError
+      loadingState.value = "error";
+      data.value = [];
+      const tableError = handleError(err, "LấyBảngDữ liệuThatBai");
+      throw tableError;
     } finally {
       if (abortController === currentController) {
-        abortController = null
+        abortController = null;
       }
     }
-  }
+  };
 
-  const getData = async (params?: Partial<TParams>): Promise<ApiResponse<TRecord> | void> => {
+  const getData = async (
+    params?: Partial<TParams>,
+  ): Promise<ApiResponse<TRecord> | void> => {
     try {
-      return await fetchData(params)
+      return await fetchData(params);
     } catch {
-      return Promise.resolve()
+      return Promise.resolve();
     }
-  }
+  };
 
-  const getDataByPage = async (params?: Partial<TParams>): Promise<ApiResponse<TRecord> | void> => {
-    pagination.current = 1
-    ;(searchParams as Record<string, unknown>)[pageKey] = 1
+  const getDataByPage = async (
+    params?: Partial<TParams>,
+  ): Promise<ApiResponse<TRecord> | void> => {
+    pagination.current = 1;
+    (searchParams as Record<string, unknown>)[pageKey] = 1;
 
-    clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, 'Tìm kiếmDữ liệu')
+    clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, "Tìm kiếmDữ liệu");
 
     try {
-      return await fetchData(params, false)
+      return await fetchData(params, false);
     } catch {
-      return Promise.resolve()
+      return Promise.resolve();
     }
-  }
+  };
 
-  const debouncedGetDataByPage = createSmartDebounce(getDataByPage, debounceTime)
+  const debouncedGetDataByPage = createSmartDebounce(
+    getDataByPage,
+    debounceTime,
+  );
 
   const resetSearchParams = async (): Promise<void> => {
-    debouncedGetDataByPage.cancel()
+    debouncedGetDataByPage.cancel();
 
-    const paramsRecord = searchParams as Record<string, unknown>
+    const paramsRecord = searchParams as Record<string, unknown>;
     const defaultPagination = {
       [pageKey]: 1,
       [sizeKey]: (paramsRecord[sizeKey] as number) || 10,
-    }
+    };
 
     Object.keys(searchParams).forEach((key) => {
-      delete paramsRecord[key]
-    })
+      delete paramsRecord[key];
+    });
 
-    Object.assign(searchParams, apiParams || {}, defaultPagination)
+    Object.assign(searchParams, apiParams || {}, defaultPagination);
 
-    pagination.current = 1
-    pagination.size = defaultPagination[sizeKey] as number
+    pagination.current = 1;
+    pagination.size = defaultPagination[sizeKey] as number;
 
-    error.value = null
+    error.value = null;
 
-    clearCache(CacheInvalidationStrategy.CLEAR_ALL, 'Đặt lạiTìm kiếm')
+    clearCache(CacheInvalidationStrategy.CLEAR_ALL, "Đặt lạiTìm kiếm");
 
-    await getData()
+    await getData();
 
     if (resetFormCallback) {
-      await nextTick()
-      resetFormCallback()
+      await nextTick();
+      resetFormCallback();
     }
-  }
+  };
 
   const replaceSearchParams = (params?: Partial<TParams>): void => {
-    const paramsRecord = searchParams as Record<string, unknown>
-    const currentSize = pagination.size || ((paramsRecord[sizeKey] as number) ?? 10)
+    const paramsRecord = searchParams as Record<string, unknown>;
+    const currentSize =
+      pagination.size || ((paramsRecord[sizeKey] as number) ?? 10);
 
     Object.keys(searchParams).forEach((key) => {
       if (key !== pageKey && key !== sizeKey) {
-        delete paramsRecord[key]
+        delete paramsRecord[key];
       }
-    })
+    });
 
     Object.assign(
       searchParams,
@@ -398,143 +432,146 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
         [sizeKey]: currentSize,
       },
       params || {},
-    )
+    );
 
-    pagination.current = 1
-    pagination.size = currentSize
-  }
+    pagination.current = 1;
+    pagination.size = currentSize;
+  };
 
-  let isCurrentChanging = false
+  let isCurrentChanging = false;
 
   const handleSizeChange = async (newSize: number): Promise<void> => {
-    if (newSize <= 0) return
+    if (newSize <= 0) return;
 
-    debouncedGetDataByPage.cancel()
+    debouncedGetDataByPage.cancel();
 
-    const paramsRecord = searchParams as Record<string, unknown>
-    pagination.size = newSize
-    pagination.current = 1
-    paramsRecord[sizeKey] = newSize
-    paramsRecord[pageKey] = 1
+    const paramsRecord = searchParams as Record<string, unknown>;
+    pagination.size = newSize;
+    pagination.current = 1;
+    paramsRecord[sizeKey] = newSize;
+    paramsRecord[pageKey] = 1;
 
-    clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, 'Phân trangKích thướcbiếnhóa')
+    clearCache(
+      CacheInvalidationStrategy.CLEAR_CURRENT,
+      "Phân trangKích thướcbiếnhóa",
+    );
 
-    await getData()
-  }
+    await getData();
+  };
 
   const handleCurrentChange = async (newCurrent: number): Promise<void> => {
-    if (newCurrent <= 0) return
+    if (newCurrent <= 0) return;
 
     if (isCurrentChanging) {
-      return
+      return;
     }
 
     if (pagination.current === newCurrent) {
-      logger.log('Phân trangtrangmãChưabiếnhóa，nhảyquaVui lòngcầu')
-      return
+      logger.log("Phân trangtrangmãChưabiếnhóa，nhảyquaVui lòngcầu");
+      return;
     }
 
     try {
-      isCurrentChanging = true
+      isCurrentChanging = true;
 
-      const paramsRecord = searchParams as Record<string, unknown>
-      pagination.current = newCurrent
+      const paramsRecord = searchParams as Record<string, unknown>;
+      pagination.current = newCurrent;
 
       if (paramsRecord[pageKey] !== newCurrent) {
-        paramsRecord[pageKey] = newCurrent
+        paramsRecord[pageKey] = newCurrent;
       }
 
-      await getData()
+      await getData();
     } finally {
-      isCurrentChanging = false
+      isCurrentChanging = false;
     }
-  }
+  };
 
   const refreshCreate = async (): Promise<void> => {
-    debouncedGetDataByPage.cancel()
-    pagination.current = 1
-    ;(searchParams as Record<string, unknown>)[pageKey] = 1
-    clearCache(CacheInvalidationStrategy.CLEAR_PAGINATION, 'Thêm mớiDữ liệu')
-    await getData()
-  }
+    debouncedGetDataByPage.cancel();
+    pagination.current = 1;
+    (searchParams as Record<string, unknown>)[pageKey] = 1;
+    clearCache(CacheInvalidationStrategy.CLEAR_PAGINATION, "Thêm mớiDữ liệu");
+    await getData();
+  };
 
   const refreshUpdate = async (): Promise<void> => {
-    clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, 'Chỉnh sửaDữ liệu')
-    await getData()
-  }
+    clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, "Chỉnh sửaDữ liệu");
+    await getData();
+  };
 
   const refreshRemove = async (): Promise<void> => {
-    const { current } = pagination
+    const { current } = pagination;
 
-    clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, 'XóaDữ liệu')
-    await getData()
+    clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, "XóaDữ liệu");
+    await getData();
 
     if (data.value.length === 0 && current > 1) {
-      pagination.current = current - 1
-      ;(searchParams as Record<string, unknown>)[pageKey] = current - 1
-      await getData()
+      pagination.current = current - 1;
+      (searchParams as Record<string, unknown>)[pageKey] = current - 1;
+      await getData();
     }
-  }
+  };
 
   const refreshData = async (): Promise<void> => {
-    debouncedGetDataByPage.cancel()
-    clearCache(CacheInvalidationStrategy.CLEAR_ALL, 'tayđộngLàm mới')
-    await getData()
-  }
+    debouncedGetDataByPage.cancel();
+    clearCache(CacheInvalidationStrategy.CLEAR_ALL, "tayđộngLàm mới");
+    await getData();
+  };
 
   const refreshSoft = async (): Promise<void> => {
-    clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, 'mềmLàm mới')
-    await getData()
-  }
+    clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, "mềmLàm mới");
+    await getData();
+  };
 
   const cancelRequest = (): void => {
     if (abortController) {
-      abortController.abort()
+      abortController.abort();
     }
-    debouncedGetDataByPage.cancel()
-  }
+    debouncedGetDataByPage.cancel();
+  };
 
   const clearData = (): void => {
-    data.value = []
-    error.value = null
-    clearCache(CacheInvalidationStrategy.CLEAR_ALL, 'xóakhôngDữ liệu')
-  }
+    data.value = [];
+    error.value = null;
+    clearCache(CacheInvalidationStrategy.CLEAR_ALL, "xóakhôngDữ liệu");
+  };
 
   const clearExpiredCache = (): number => {
-    if (!cache) return 0
-    const cleanedCount = cache.cleanupExpired()
+    if (!cache) return 0;
+    const cleanedCount = cache.cleanupExpired();
     if (cleanedCount > 0) {
-      cacheUpdateTrigger.value++
+      cacheUpdateTrigger.value++;
     }
-    return cleanedCount
-  }
+    return cleanedCount;
+  };
 
   if (enableCache && cache) {
     cacheCleanupTimer = setInterval(() => {
-      const cleanedCount = cache.cleanupExpired()
+      const cleanedCount = cache.cleanupExpired();
       if (cleanedCount > 0) {
-        logger.log(`từđộngxóalý ${cleanedCount} điềuquakỳCache`)
+        logger.log(`từđộngxóalý ${cleanedCount} điềuquakỳCache`);
 
-        cacheUpdateTrigger.value++
+        cacheUpdateTrigger.value++;
       }
-    }, cacheTime / 2)
+    }, cacheTime / 2);
   }
 
   if (immediate) {
     onMounted(async () => {
-      await getData()
-    })
+      await getData();
+    });
   }
 
   onUnmounted(() => {
-    cancelRequest()
+    cancelRequest();
     if (cache) {
-      cache.clear()
+      cache.clear();
     }
     if (cacheCleanupTimer) {
-      clearInterval(cacheCleanupTimer)
+      clearInterval(cacheCleanupTimer);
     }
-  })
+  });
 
   return {
     data,
@@ -610,9 +647,12 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
 
       resetColumns: columnConfig.resetColumns,
     }),
-  }
+  };
 }
 
-export { CacheInvalidationStrategy } from '../../utils/table/tableCache'
-export type { ApiResponse, CacheItem } from '../../utils/table/tableCache'
-export type { BaseRequestParams, TableError } from '../../utils/table/tableUtils'
+export { CacheInvalidationStrategy } from "../../utils/table/tableCache";
+export type { ApiResponse, CacheItem } from "../../utils/table/tableCache";
+export type {
+  BaseRequestParams,
+  TableError,
+} from "../../utils/table/tableUtils";

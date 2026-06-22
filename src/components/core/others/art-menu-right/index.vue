@@ -1,6 +1,10 @@
 <template>
   <div class="menu-right">
-    <Transition name="context-menu" @before-enter="onBeforeEnter" @after-leave="onAfterLeave">
+    <Transition
+      name="context-menu"
+      @before-enter="onBeforeEnter"
+      @after-leave="onAfterLeave"
+    >
       <div
         v-show="visible"
         :style="menuStyle"
@@ -11,7 +15,10 @@
             <li
               v-if="!item.children"
               class="menu-item relative flex-c c-p select-none rounded text-xs transition-colors duration-150 hover:bg-g-200"
-              :class="{ 'is-disabled': item.disabled, 'has-line': item.showLine }"
+              :class="{
+                'is-disabled': item.disabled,
+                'has-line': item.showLine,
+              }"
               :style="menuItemStyle"
               @click="handleMenuClick(item)"
             >
@@ -54,7 +61,10 @@
                   v-for="child in item.children"
                   :key="child.key"
                   class="menu-item relative mx-1.5 flex-c c-p select-none rounded text-xs transition-colors duration-150 hover:bg-g-200"
-                  :class="{ 'is-disabled': child.disabled, 'has-line': child.showLine }"
+                  :class="{
+                    'is-disabled': child.disabled,
+                    'has-line': child.showLine,
+                  }"
                   :style="menuItemStyle"
                   @click="handleMenuClick(child)"
                 >
@@ -78,308 +88,311 @@
 </template>
 
 <script setup lang="ts">
-  import type { CSSProperties } from 'vue'
+import type { CSSProperties } from "vue";
 
-  defineOptions({ name: 'ArtMenuRight' })
+defineOptions({ name: "ArtMenuRight" });
 
-  export interface MenuItemType {
-    key: string
+export interface MenuItemType {
+  key: string;
 
-    label: string
+  label: string;
 
-    icon?: string
+  icon?: string;
 
-    disabled?: boolean
+  disabled?: boolean;
 
-    showLine?: boolean
+  showLine?: boolean;
 
-    children?: MenuItemType[]
-    [key: string]: any
-  }
+  children?: MenuItemType[];
+  [key: string]: any;
+}
 
-  interface Props {
-    menuItems: MenuItemType[]
+interface Props {
+  menuItems: MenuItemType[];
 
-    menuWidth?: number
+  menuWidth?: number;
 
-    submenuWidth?: number
+  submenuWidth?: number;
 
-    itemHeight?: number
+  itemHeight?: number;
 
-    boundaryDistance?: number
+  boundaryDistance?: number;
 
-    menuPadding?: number
+  menuPadding?: number;
 
-    itemPaddingX?: number
+  itemPaddingX?: number;
 
-    borderRadius?: number
+  borderRadius?: number;
 
-    animationDuration?: number
-  }
+  animationDuration?: number;
+}
 
-  const props = withDefaults(defineProps<Props>(), {
-    menuWidth: 120,
-    submenuWidth: 150,
-    itemHeight: 32,
-    boundaryDistance: 10,
-    menuPadding: 5,
-    itemPaddingX: 6,
-    borderRadius: 6,
-    animationDuration: 100,
-  })
+const props = withDefaults(defineProps<Props>(), {
+  menuWidth: 120,
+  submenuWidth: 150,
+  itemHeight: 32,
+  boundaryDistance: 10,
+  menuPadding: 5,
+  itemPaddingX: 6,
+  borderRadius: 6,
+  animationDuration: 100,
+});
 
-  const emit = defineEmits<{
-    (e: 'select', item: MenuItemType): void
-    (e: 'show'): void
-    (e: 'hide'): void
-  }>()
+const emit = defineEmits<{
+  (e: "select", item: MenuItemType): void;
+  (e: "show"): void;
+  (e: "hide"): void;
+}>();
 
-  const visible = ref(false)
-  const position = ref({ x: 0, y: 0 })
+const visible = ref(false);
+const position = ref({ x: 0, y: 0 });
 
-  let showTimer: number | null = null
-  let eventListenersAdded = false
+let showTimer: number | null = null;
+let eventListenersAdded = false;
 
-  const menuStyle = computed(
-    (): CSSProperties => ({
-      position: 'fixed' as const,
-      left: `${position.value.x}px`,
-      top: `${position.value.y}px`,
-      zIndex: 2000,
-      width: `${props.menuWidth}px`,
-    }),
-  )
+const menuStyle = computed(
+  (): CSSProperties => ({
+    position: "fixed" as const,
+    left: `${position.value.x}px`,
+    top: `${position.value.y}px`,
+    zIndex: 2000,
+    width: `${props.menuWidth}px`,
+  }),
+);
 
-  const menuListStyle = computed(
-    (): CSSProperties => ({
-      padding: `${props.menuPadding}px`,
-    }),
-  )
+const menuListStyle = computed(
+  (): CSSProperties => ({
+    padding: `${props.menuPadding}px`,
+  }),
+);
 
-  const menuItemStyle = computed(
-    (): CSSProperties => ({
-      height: `${props.itemHeight}px`,
-      padding: `0 ${props.itemPaddingX}px`,
-      borderRadius: '4px',
-    }),
-  )
+const menuItemStyle = computed(
+  (): CSSProperties => ({
+    height: `${props.itemHeight}px`,
+    padding: `0 ${props.itemPaddingX}px`,
+    borderRadius: "4px",
+  }),
+);
 
-  const submenuListStyle = computed(
-    (): CSSProperties => ({
-      minWidth: `${props.submenuWidth}px`,
-      padding: `${props.menuPadding}px 0`,
-      borderRadius: `${props.borderRadius}px`,
-    }),
-  )
+const submenuListStyle = computed(
+  (): CSSProperties => ({
+    minWidth: `${props.submenuWidth}px`,
+    padding: `${props.menuPadding}px 0`,
+    borderRadius: `${props.borderRadius}px`,
+  }),
+);
 
-  const calculateMenuHeight = (): number => {
-    let totalHeight = props.menuPadding * 2
+const calculateMenuHeight = (): number => {
+  let totalHeight = props.menuPadding * 2;
 
-    props.menuItems.forEach((item) => {
-      totalHeight += props.itemHeight
-      if (item.showLine) {
-        totalHeight += 10
-      }
-    })
-
-    return totalHeight
-  }
-
-  const calculatePosition = (e: MouseEvent) => {
-    const screenWidth = window.innerWidth
-    const screenHeight = window.innerHeight
-    const menuHeight = calculateMenuHeight()
-
-    let x = e.clientX
-    let y = e.clientY
-
-    if (x + props.menuWidth > screenWidth - props.boundaryDistance) {
-      x = Math.max(props.boundaryDistance, x - props.menuWidth)
+  props.menuItems.forEach((item) => {
+    totalHeight += props.itemHeight;
+    if (item.showLine) {
+      totalHeight += 10;
     }
+  });
 
-    if (y + menuHeight > screenHeight - props.boundaryDistance) {
-      y = Math.max(props.boundaryDistance, screenHeight - menuHeight - props.boundaryDistance)
-    }
+  return totalHeight;
+};
 
-    x = Math.max(
-      props.boundaryDistance,
-      Math.min(x, screenWidth - props.menuWidth - props.boundaryDistance),
-    )
+const calculatePosition = (e: MouseEvent) => {
+  const screenWidth = window.innerWidth;
+  const screenHeight = window.innerHeight;
+  const menuHeight = calculateMenuHeight();
+
+  let x = e.clientX;
+  let y = e.clientY;
+
+  if (x + props.menuWidth > screenWidth - props.boundaryDistance) {
+    x = Math.max(props.boundaryDistance, x - props.menuWidth);
+  }
+
+  if (y + menuHeight > screenHeight - props.boundaryDistance) {
     y = Math.max(
       props.boundaryDistance,
-      Math.min(y, screenHeight - menuHeight - props.boundaryDistance),
-    )
-
-    return { x, y }
+      screenHeight - menuHeight - props.boundaryDistance,
+    );
   }
 
-  const addEventListeners = () => {
-    if (eventListenersAdded) return
+  x = Math.max(
+    props.boundaryDistance,
+    Math.min(x, screenWidth - props.menuWidth - props.boundaryDistance),
+  );
+  y = Math.max(
+    props.boundaryDistance,
+    Math.min(y, screenHeight - menuHeight - props.boundaryDistance),
+  );
 
-    document.addEventListener('click', handleDocumentClick)
-    document.addEventListener('contextmenu', handleDocumentContextmenu)
-    document.addEventListener('keydown', handleKeydown)
-    eventListenersAdded = true
+  return { x, y };
+};
+
+const addEventListeners = () => {
+  if (eventListenersAdded) return;
+
+  document.addEventListener("click", handleDocumentClick);
+  document.addEventListener("contextmenu", handleDocumentContextmenu);
+  document.addEventListener("keydown", handleKeydown);
+  eventListenersAdded = true;
+};
+
+const removeEventListeners = () => {
+  if (!eventListenersAdded) return;
+
+  document.removeEventListener("click", handleDocumentClick);
+  document.removeEventListener("contextmenu", handleDocumentContextmenu);
+  document.removeEventListener("keydown", handleKeydown);
+  eventListenersAdded = false;
+};
+
+const handleDocumentClick = (e: Event) => {
+  const target = e.target as Element;
+  const menuElement = document.querySelector(".context-menu");
+  if (menuElement && menuElement.contains(target)) {
+    return;
+  }
+  hide();
+};
+
+const handleDocumentContextmenu = () => {
+  hide();
+};
+
+const handleKeydown = (e: KeyboardEvent) => {
+  if (e.key === "Escape") {
+    hide();
+  }
+};
+
+const show = (e: MouseEvent) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  if (showTimer) {
+    window.clearTimeout(showTimer);
+    showTimer = null;
   }
 
-  const removeEventListeners = () => {
-    if (!eventListenersAdded) return
+  position.value = calculatePosition(e);
+  visible.value = true;
 
-    document.removeEventListener('click', handleDocumentClick)
-    document.removeEventListener('contextmenu', handleDocumentContextmenu)
-    document.removeEventListener('keydown', handleKeydown)
-    eventListenersAdded = false
-  }
+  emit("show");
 
-  const handleDocumentClick = (e: Event) => {
-    const target = e.target as Element
-    const menuElement = document.querySelector('.context-menu')
-    if (menuElement && menuElement.contains(target)) {
-      return
+  showTimer = window.setTimeout(() => {
+    if (visible.value) {
+      addEventListeners();
     }
-    hide()
+    showTimer = null;
+  }, 50);
+};
+
+const hide = () => {
+  if (!visible.value) return;
+
+  visible.value = false;
+  emit("hide");
+
+  if (showTimer) {
+    window.clearTimeout(showTimer);
+    showTimer = null;
   }
 
-  const handleDocumentContextmenu = () => {
-    hide()
+  removeEventListeners();
+};
+
+const handleMenuClick = (item: MenuItemType) => {
+  if (item.disabled) return;
+  emit("select", item);
+  hide();
+};
+
+const onBeforeEnter = (el: Element) => {
+  const element = el as HTMLElement;
+  element.style.transformOrigin = "top left";
+};
+
+const onAfterLeave = () => {
+  removeEventListeners();
+  if (showTimer) {
+    window.clearTimeout(showTimer);
+    showTimer = null;
   }
+};
 
-  const handleKeydown = (e: KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      hide()
-    }
+onUnmounted(() => {
+  removeEventListeners();
+  if (showTimer) {
+    window.clearTimeout(showTimer);
+    showTimer = null;
   }
+});
 
-  const show = (e: MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-
-    if (showTimer) {
-      window.clearTimeout(showTimer)
-      showTimer = null
-    }
-
-    position.value = calculatePosition(e)
-    visible.value = true
-
-    emit('show')
-
-    showTimer = window.setTimeout(() => {
-      if (visible.value) {
-        addEventListeners()
-      }
-      showTimer = null
-    }, 50)
-  }
-
-  const hide = () => {
-    if (!visible.value) return
-
-    visible.value = false
-    emit('hide')
-
-    if (showTimer) {
-      window.clearTimeout(showTimer)
-      showTimer = null
-    }
-
-    removeEventListeners()
-  }
-
-  const handleMenuClick = (item: MenuItemType) => {
-    if (item.disabled) return
-    emit('select', item)
-    hide()
-  }
-
-  const onBeforeEnter = (el: Element) => {
-    const element = el as HTMLElement
-    element.style.transformOrigin = 'top left'
-  }
-
-  const onAfterLeave = () => {
-    removeEventListeners()
-    if (showTimer) {
-      window.clearTimeout(showTimer)
-      showTimer = null
-    }
-  }
-
-  onUnmounted(() => {
-    removeEventListeners()
-    if (showTimer) {
-      window.clearTimeout(showTimer)
-      showTimer = null
-    }
-  })
-
-  defineExpose({
-    show,
-    hide,
-    visible: computed(() => visible.value),
-  })
+defineExpose({
+  show,
+  hide,
+  visible: computed(() => visible.value),
+});
 </script>
 
 <style scoped>
-  .menu-right {
-    --menu-width: v-bind('props.menuWidth + "px"');
-    --border-radius: v-bind('props.borderRadius + "px"');
-  }
+.menu-right {
+  --menu-width: v-bind('props.menuWidth + "px"');
+  --border-radius: v-bind('props.borderRadius + "px"');
+}
 
-  .menu-item.has-line {
-    margin-bottom: 10px;
-  }
+.menu-item.has-line {
+  margin-bottom: 10px;
+}
 
-  .menu-item.has-line::after {
-    position: absolute;
-    right: 0;
-    bottom: -5px;
-    left: 0;
-    height: 1px;
-    content: '';
-    background-color: var(--art-gray-300);
-  }
+.menu-item.has-line::after {
+  position: absolute;
+  right: 0;
+  bottom: -5px;
+  left: 0;
+  height: 1px;
+  content: "";
+  background-color: var(--art-gray-300);
+}
 
-  .menu-item.is-disabled {
-    color: var(--el-text-color-disabled);
-    cursor: not-allowed;
-  }
+.menu-item.is-disabled {
+  color: var(--el-text-color-disabled);
+  cursor: not-allowed;
+}
 
-  .menu-item.is-disabled:hover {
-    background-color: transparent !important;
-  }
+.menu-item.is-disabled:hover {
+  background-color: transparent !important;
+}
 
-  .menu-item.is-disabled i:not(.submenu-arrow),
-  .menu-item.is-disabled :deep(.art-svg-icon) {
-    color: var(--el-text-color-disabled) !important;
-  }
+.menu-item.is-disabled i:not(.submenu-arrow),
+.menu-item.is-disabled :deep(.art-svg-icon) {
+  color: var(--el-text-color-disabled) !important;
+}
 
-  .menu-item.is-disabled .menu-label {
-    color: var(--el-text-color-disabled) !important;
-  }
+.menu-item.is-disabled .menu-label {
+  color: var(--el-text-color-disabled) !important;
+}
 
-  .menu-item.submenu:hover .submenu-list {
-    display: block;
-  }
+.menu-item.submenu:hover .submenu-list {
+  display: block;
+}
 
-  .menu-item.submenu:hover .submenu-title .submenu-arrow {
-    transform: rotate(90deg);
-  }
+.menu-item.submenu:hover .submenu-title .submenu-arrow {
+  transform: rotate(90deg);
+}
 
-  .context-menu-enter-active,
-  .context-menu-leave-active {
-    transition: all v-bind('props.animationDuration + "ms"') ease-out;
-  }
+.context-menu-enter-active,
+.context-menu-leave-active {
+  transition: all v-bind('props.animationDuration + "ms"') ease-out;
+}
 
-  .context-menu-enter-from,
-  .context-menu-leave-to {
-    opacity: 0;
-    transform: scale(0.9);
-  }
+.context-menu-enter-from,
+.context-menu-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
+}
 
-  .context-menu-enter-to,
-  .context-menu-leave-from {
-    opacity: 1;
-    transform: scale(1);
-  }
+.context-menu-enter-to,
+.context-menu-leave-from {
+  opacity: 1;
+  transform: scale(1);
+}
 </style>

@@ -2,18 +2,31 @@
   <div class="flex flex-col gap-4 pb-5">
     <div class="flex items-start justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-bold">{{ $t('menus.service.workshop.repairOrders') }}</h1>
+        <h1 class="text-2xl font-bold">
+          {{ $t("menus.service.workshop.repairOrders") }}
+        </h1>
         <p class="mt-1 text-sm text-slate-500">
-          Quản lý phiếu sửa chữa: tiếp nhận, phân công kỹ thuật, cấp phát linh kiện và hoàn tất.
+          Quản lý phiếu sửa chữa: tiếp nhận, phân công kỹ thuật, cấp phát linh
+          kiện và hoàn tất.
         </p>
       </div>
 
       <div class="flex gap-2">
-        <ElButton :icon="Refresh" type="primary" :loading="loading" @click="refreshData">
+        <ElButton
+          :icon="Refresh"
+          type="primary"
+          :loading="loading"
+          @click="refreshData"
+        >
           Làm mới
         </ElButton>
 
-        <ElButton type="success" :icon="Plus" :loading="loading" @click="openCreateDialog">
+        <ElButton
+          type="success"
+          :icon="Plus"
+          :loading="loading"
+          @click="openCreateDialog"
+        >
           Tạo phiếu
         </ElButton>
       </div>
@@ -61,9 +74,15 @@
     />
 
     <ElCard class="flex-1 art-table-card">
-      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
+      <ArtTableHeader
+        v-model:columns="columnChecks"
+        :loading="loading"
+        @refresh="refreshData"
+      >
         <template #left>
-          <ElTag type="info" class="mr-2">{{ 'Total: ' + (pagination?.total ?? 0) }}</ElTag>
+          <ElTag type="info" class="mr-2">{{
+            "Total: " + (pagination?.total ?? 0)
+          }}</ElTag>
         </template>
       </ArtTableHeader>
 
@@ -84,7 +103,10 @@
         </template>
 
         <template #paymentStatus="{ row }">
-          <ElTag :type="row.paymentStatus === 'Paid' ? 'success' : 'warning'" effect="dark">
+          <ElTag
+            :type="row.paymentStatus === 'Paid' ? 'success' : 'warning'"
+            effect="dark"
+          >
             {{ row.paymentStatus }}
           </ElTag>
         </template>
@@ -123,7 +145,12 @@
       append-to-body
       destroy-on-close
     >
-      <ElForm :model="createForm" label-width="140px" class="space-y-4" :disabled="submitting">
+      <ElForm
+        :model="createForm"
+        label-width="140px"
+        class="space-y-4"
+        :disabled="submitting"
+      >
         <!-- 1) Luôn hỏi SĐT trước -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -167,7 +194,9 @@
               class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
             >
               VIN / Số khung xe máy
-              <span class="text-red-500" v-if="createForm.isNewCustomer">*</span>
+              <span class="text-red-500" v-if="createForm.isNewCustomer"
+                >*</span
+              >
             </label>
             <ElInput
               v-model="createForm.vinNumber"
@@ -181,7 +210,9 @@
               class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
             >
               Biển số xe
-              <span class="text-red-500" v-if="createForm.isNewCustomer">*</span>
+              <span class="text-red-500" v-if="createForm.isNewCustomer"
+                >*</span
+              >
             </label>
             <ElInput
               v-model="createForm.licensePlate"
@@ -197,7 +228,9 @@
               class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
             >
               Tên xe / Phiên bản
-              <span class="text-red-500" v-if="createForm.isNewCustomer">*</span>
+              <span class="text-red-500" v-if="createForm.isNewCustomer"
+                >*</span
+              >
             </label>
             <ElInput
               v-model="createForm.vehicleName"
@@ -211,7 +244,9 @@
               class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
             >
               Màu sắc
-              <span class="text-red-500" v-if="createForm.isNewCustomer">*</span>
+              <span class="text-red-500" v-if="createForm.isNewCustomer"
+                >*</span
+              >
             </label>
             <ElInput
               v-model="createForm.vehicleColor"
@@ -229,7 +264,10 @@
             >
               Thợ kỹ thuật (Tên)
             </label>
-            <ElInput v-model="createForm.technicianName" placeholder="Nhập tên thợ kỹ thuật" />
+            <ElInput
+              v-model="createForm.technicianName"
+              placeholder="Nhập tên thợ kỹ thuật"
+            />
           </div>
 
           <div></div>
@@ -243,7 +281,12 @@
             >
               Mileage (km) <span class="text-red-500">*</span>
             </label>
-            <ElInputNumber v-model="createForm.mileage" :min="0" class="w-full" placeholder="0" />
+            <ElInputNumber
+              v-model="createForm.mileage"
+              :min="0"
+              class="w-full"
+              placeholder="0"
+            />
           </div>
 
           <div>
@@ -262,8 +305,14 @@
 
       <template #footer>
         <div class="flex justify-end gap-3 mt-2">
-          <ElButton @click="createDialogVisible = false" :disabled="submitting">Đóng</ElButton>
-          <ElButton type="primary" :loading="submitting" @click="submitCreate" class="px-8"
+          <ElButton @click="createDialogVisible = false" :disabled="submitting"
+            >Đóng</ElButton
+          >
+          <ElButton
+            type="primary"
+            :loading="submitting"
+            @click="submitCreate"
+            class="px-8"
             >Tạo</ElButton
           >
         </div>
@@ -280,7 +329,12 @@
       append-to-body
       destroy-on-close
     >
-      <ElForm :model="assignForm" label-width="140px" class="space-y-4" :disabled="submitting">
+      <ElForm
+        :model="assignForm"
+        label-width="140px"
+        class="space-y-4"
+        :disabled="submitting"
+      >
         <div>
           <label
             class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
@@ -296,14 +350,21 @@
         </div>
 
         <div class="text-sm text-slate-500">
-          RepairOrder: <span class="font-medium">#{{ assignForm.repairOrderId }}</span>
+          RepairOrder:
+          <span class="font-medium">#{{ assignForm.repairOrderId }}</span>
         </div>
       </ElForm>
 
       <template #footer>
         <div class="flex justify-end gap-3 mt-2">
-          <ElButton @click="assignDialogVisible = false" :disabled="submitting">Đóng</ElButton>
-          <ElButton type="primary" :loading="submitting" @click="submitAssign" class="px-8"
+          <ElButton @click="assignDialogVisible = false" :disabled="submitting"
+            >Đóng</ElButton
+          >
+          <ElButton
+            type="primary"
+            :loading="submitting"
+            @click="submitAssign"
+            class="px-8"
             >Xác nhận</ElButton
           >
         </div>
@@ -328,9 +389,15 @@
         description="UI demo: nhập tối thiểu để gọi API issue-parts (backend quyết định valid input)."
       />
 
-      <ElForm :model="issuePartsForm" label-width="160px" class="space-y-6" :disabled="submitting">
+      <ElForm
+        :model="issuePartsForm"
+        label-width="160px"
+        class="space-y-6"
+        :disabled="submitting"
+      >
         <div class="text-sm text-slate-500">
-          RepairOrder: <span class="font-medium">#{{ issuePartsForm.repairOrderId }}</span>
+          RepairOrder:
+          <span class="font-medium">#{{ issuePartsForm.repairOrderId }}</span>
         </div>
 
         <!-- Parts Section -->
@@ -345,10 +412,19 @@
               Thêm linh kiện
             </ElButton>
           </div>
-          <ElTable :data="issuePartsForm.parts" border size="small" style="width: 100%">
+          <ElTable
+            :data="issuePartsForm.parts"
+            border
+            size="small"
+            style="width: 100%"
+          >
             <ElTableColumn label="Linh kiện" min-width="200px">
               <template #default="{ row }">
-                <ElSelect v-model="row.productVariantId" placeholder="Chọn linh kiện" clearable>
+                <ElSelect
+                  v-model="row.productVariantId"
+                  placeholder="Chọn linh kiện"
+                  clearable
+                >
                   <ElOption
                     v-for="v in productVariants"
                     :key="v.id"
@@ -395,14 +471,28 @@
             >
               Dịch vụ
             </label>
-            <ElButton type="primary" :icon="Plus" size="small" @click="addService">
+            <ElButton
+              type="primary"
+              :icon="Plus"
+              size="small"
+              @click="addService"
+            >
               Thêm dịch vụ
             </ElButton>
           </div>
-          <ElTable :data="issuePartsForm.services" border size="small" style="width: 100%">
+          <ElTable
+            :data="issuePartsForm.services"
+            border
+            size="small"
+            style="width: 100%"
+          >
             <ElTableColumn label="Dịch vụ" min-width="200px">
               <template #default="{ row }">
-                <ElSelect v-model="row.serviceId" placeholder="Chọn dịch vụ" clearable>
+                <ElSelect
+                  v-model="row.serviceId"
+                  placeholder="Chọn dịch vụ"
+                  clearable
+                >
                   <ElOption
                     v-for="s in serviceCategories"
                     :key="s.id"
@@ -439,8 +529,16 @@
 
       <template #footer>
         <div class="flex justify-end gap-3 mt-2">
-          <ElButton @click="issuePartsDialogVisible = false" :disabled="submitting">Đóng</ElButton>
-          <ElButton type="primary" :loading="submitting" @click="submitIssueParts" class="px-8"
+          <ElButton
+            @click="issuePartsDialogVisible = false"
+            :disabled="submitting"
+            >Đóng</ElButton
+          >
+          <ElButton
+            type="primary"
+            :loading="submitting"
+            @click="submitIssueParts"
+            class="px-8"
             >Cấp phát</ElButton
           >
         </div>
@@ -457,9 +555,15 @@
       append-to-body
       destroy-on-close
     >
-      <ElForm :model="completeForm" label-width="160px" class="space-y-4" :disabled="submitting">
+      <ElForm
+        :model="completeForm"
+        label-width="160px"
+        class="space-y-4"
+        :disabled="submitting"
+      >
         <div class="text-sm text-slate-500">
-          RepairOrder: <span class="font-medium">#{{ completeForm.repairOrderId }}</span>
+          RepairOrder:
+          <span class="font-medium">#{{ completeForm.repairOrderId }}</span>
         </div>
 
         <div>
@@ -484,14 +588,25 @@
           >
             Notes
           </label>
-          <ElInput v-model="completeForm.notes" placeholder="Ghi chú (nếu có)" />
+          <ElInput
+            v-model="completeForm.notes"
+            placeholder="Ghi chú (nếu có)"
+          />
         </div>
       </ElForm>
 
       <template #footer>
         <div class="flex justify-end gap-3 mt-2">
-          <ElButton @click="completeDialogVisible = false" :disabled="submitting">Đóng</ElButton>
-          <ElButton type="primary" :loading="submitting" @click="submitComplete" class="px-8"
+          <ElButton
+            @click="completeDialogVisible = false"
+            :disabled="submitting"
+            >Đóng</ElButton
+          >
+          <ElButton
+            type="primary"
+            :loading="submitting"
+            @click="submitComplete"
+            class="px-8"
             >Hoàn tất</ElButton
           >
         </div>
@@ -501,380 +616,402 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, ref } from 'vue'
-  import { Refresh, Plus, Delete as TrashBin } from '@element-plus/icons-vue'
-  import { ElMessage } from 'element-plus'
+import { computed, ref } from "vue";
+import { Refresh, Plus, Delete as TrashBin } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
 
-  import { RepairOrderApi, type RepairOrder } from '@/infrastructure/api/repair-order'
-  import { ProductApi } from '@/infrastructure/api/product/product.api'
-  import {
-    ServiceCategoryApi,
-    type ServiceCategoryResponse,
-  } from '@/infrastructure/api/service-category.api'
+import {
+  RepairOrderApi,
+  type RepairOrder,
+} from "@/infrastructure/api/repair-order";
+import { ProductApi } from "@/infrastructure/api/product/product.api";
+import {
+  ServiceCategoryApi,
+  type ServiceCategoryResponse,
+} from "@/infrastructure/api/service-category.api";
 
-  defineOptions({ name: 'ServiceWorkshopRepairOrders' })
+defineOptions({ name: "ServiceWorkshopRepairOrders" });
 
-  // NOTE: Dùng useTable pattern dự án nếu có. Ở đây tạo UI tối giản nhưng tương thích shape của ArtTable.
-  const loading = ref(false)
-  const tableRef = ref()
+// NOTE: Dùng useTable pattern dự án nếu có. Ở đây tạo UI tối giản nhưng tương thích shape của ArtTable.
+const loading = ref(false);
+const tableRef = ref();
 
-  // Pagination
-  const pagination = ref<any>({ current: 1, size: 10, total: 0 })
+// Pagination
+const pagination = ref<any>({ current: 1, size: 10, total: 0 });
 
-  // Table data
-  const data = ref<RepairOrder[]>([])
+// Table data
+const data = ref<RepairOrder[]>([]);
 
-  // Column checks (ArtTableHeader v-model)
-  const columnChecks = ref<any[]>([])
+// Column checks (ArtTableHeader v-model)
+const columnChecks = ref<any[]>([]);
 
-  // Columns (ArtTable)
-  const columns = computed(() => {
-    return [
-      { prop: 'id', label: 'ID', width: 90, align: 'center' },
-      { prop: 'licensePlate', label: 'Biển số', minWidth: 130 },
-      { prop: 'customerName', label: 'Khách', minWidth: 180 },
-      { prop: 'customerPhone', label: 'SĐT', width: 150 },
-      { prop: 'mileage', label: 'Km', width: 110, align: 'right' },
-      {
-        prop: 'status',
-        label: 'Trạng thái',
-        width: 140,
-        align: 'center',
-        useSlot: true,
-        slot: 'status',
-      },
-      {
-        prop: 'paymentStatus',
-        label: 'Thanh toán',
-        width: 140,
-        align: 'center',
-        useSlot: true,
-        slot: 'paymentStatus',
-      },
-      { prop: 'totalAmount', label: 'Tổng', width: 140, align: 'right' },
-      { prop: 'createdAt', label: 'Tạo lúc', minWidth: 160 },
-      {
-        prop: 'operation',
-        label: 'Hành động',
-        width: 250,
-        align: 'center',
-        fixed: 'right' as const,
-        useSlot: true,
-        slot: 'operation',
-      },
-    ]
-  })
-
-  const searchItems = [
+// Columns (ArtTable)
+const columns = computed(() => {
+  return [
+    { prop: "id", label: "ID", width: 90, align: "center" },
+    { prop: "licensePlate", label: "Biển số", minWidth: 130 },
+    { prop: "customerName", label: "Khách", minWidth: 180 },
+    { prop: "customerPhone", label: "SĐT", width: 150 },
+    { prop: "mileage", label: "Km", width: 110, align: "right" },
     {
-      key: 'licensePlate',
-      label: 'VIN / Biển số',
-      prop: 'licensePlate',
-      type: 'text',
-      placeholder: 'Nhập VIN/biển số',
+      prop: "status",
+      label: "Trạng thái",
+      width: 140,
+      align: "center",
+      useSlot: true,
+      slot: "status",
     },
     {
-      key: 'customerPhone',
-      label: 'SĐT',
-      prop: 'customerPhone',
-      type: 'text',
-      placeholder: 'Nhập SĐT',
+      prop: "paymentStatus",
+      label: "Thanh toán",
+      width: 140,
+      align: "center",
+      useSlot: true,
+      slot: "paymentStatus",
     },
+    { prop: "totalAmount", label: "Tổng", width: 140, align: "right" },
+    { prop: "createdAt", label: "Tạo lúc", minWidth: 160 },
     {
-      key: 'status',
-      label: 'Trạng thái',
-      prop: 'status',
-      type: 'select',
-      options: ['Pending', 'InProgress', 'QcPending', 'Completed', 'Cancelled'].map((s) => ({
-        label: s,
-        value: s,
-      })),
+      prop: "operation",
+      label: "Hành động",
+      width: 250,
+      align: "center",
+      fixed: "right" as const,
+      useSlot: true,
+      slot: "operation",
     },
-  ]
+  ];
+});
 
-  const refreshData = async () => {
-    await fetchData({ Page: pagination.value.current, PageSize: pagination.value.size })
+const searchItems = [
+  {
+    key: "licensePlate",
+    label: "VIN / Biển số",
+    prop: "licensePlate",
+    type: "text",
+    placeholder: "Nhập VIN/biển số",
+  },
+  {
+    key: "customerPhone",
+    label: "SĐT",
+    prop: "customerPhone",
+    type: "text",
+    placeholder: "Nhập SĐT",
+  },
+  {
+    key: "status",
+    label: "Trạng thái",
+    prop: "status",
+    type: "select",
+    options: [
+      "Pending",
+      "InProgress",
+      "QcPending",
+      "Completed",
+      "Cancelled",
+    ].map((s) => ({
+      label: s,
+      value: s,
+    })),
+  },
+];
+
+const refreshData = async () => {
+  await fetchData({
+    Page: pagination.value.current,
+    PageSize: pagination.value.size,
+  });
+};
+
+const handleSearch = async (params: any) => {
+  const filters: string[] = [];
+
+  if (params.licensePlate) filters.push(`LicensePlate@=${params.licensePlate}`);
+  if (params.customerPhone)
+    filters.push(`CustomerPhone@=${params.customerPhone}`);
+  if (params.status) filters.push(`Status==${params.status}`);
+
+  await fetchData({
+    Page: pagination.value.current,
+    PageSize: pagination.value.size,
+    Filters: filters.join(","),
+  });
+};
+
+const handleReset = async () => {
+  await fetchData({
+    Page: pagination.value.current,
+    PageSize: pagination.value.size,
+    Filters: "",
+  });
+};
+
+const handleSizeChange = async (size: number) => {
+  pagination.value.size = size;
+  pagination.value.current = 1;
+  await refreshData();
+};
+
+const handleCurrentChange = async (current: number) => {
+  pagination.value.current = current;
+  await refreshData();
+};
+
+const fetchData = async (params: any) => {
+  loading.value = true;
+  try {
+    // API shape: items + totalCount
+    const res = await RepairOrderApi.getList(params);
+    data.value = res.items || [];
+    pagination.value.total = res.totalCount || 0;
+  } catch (err: any) {
+    // fallback mock để UI vẫn chạy
+    data.value = [];
+    pagination.value.total = 0;
+    ElMessage.error(err?.message || "Không thể tải danh sách phiếu sửa chữa");
+  } finally {
+    loading.value = false;
   }
+};
 
-  const handleSearch = async (params: any) => {
-    const filters: string[] = []
+// Stats theo trạng thái
+const counts = computed(() => {
+  const safe = data.value || [];
+  const byStatus = safe.reduce(
+    (acc: any, x: any) => {
+      const s = x.status;
+      if (s === "Pending") acc.pending++;
+      else if (s === "InProgress") acc.inProgress++;
+      else if (s === "QcPending") acc.qcPending++;
+      else if (s === "Completed") acc.completed++;
+      return acc;
+    },
+    { pending: 0, inProgress: 0, qcPending: 0, completed: 0 },
+  );
+  return byStatus;
+});
 
-    if (params.licensePlate) filters.push(`LicensePlate@=${params.licensePlate}`)
-    if (params.customerPhone) filters.push(`CustomerPhone@=${params.customerPhone}`)
-    if (params.status) filters.push(`Status==${params.status}`)
-
-    await fetchData({
-      Page: pagination.value.current,
-      PageSize: pagination.value.size,
-      Filters: filters.join(','),
-    })
+const statusTagType = (status: string) => {
+  switch (status) {
+    case "Completed":
+      return "success";
+    case "Cancelled":
+      return "danger";
+    case "InProgress":
+      return "warning";
+    case "QcPending":
+      return "info";
+    default:
+      return "primary";
   }
+};
 
-  const handleReset = async () => {
-    await fetchData({
-      Page: pagination.value.current,
-      PageSize: pagination.value.size,
-      Filters: '',
-    })
-  }
+// Dialog: Create
+const createDialogVisible = ref(false);
+const submitting = ref(false);
+const createForm = ref({
+  customerPhone: "",
+  customerName: "",
+  mileage: 0,
+  description: "",
 
-  const handleSizeChange = async (size: number) => {
-    pagination.value.size = size
-    pagination.value.current = 1
-    await refreshData()
-  }
+  // Auto-fill vehicle/customer info (Vehicle Portfolio)
+  isNewCustomer: true,
+  vinNumber: "",
+  licensePlate: "",
+  vehicleName: "",
+  vehicleColor: "",
 
-  const handleCurrentChange = async (current: number) => {
-    pagination.value.current = current
-    await refreshData()
-  }
+  // Assign technician (main tech)
+  technicianName: "",
+});
 
-  const fetchData = async (params: any) => {
-    loading.value = true
-    try {
-      // API shape: items + totalCount
-      const res = await RepairOrderApi.getList(params)
-      data.value = res.items || []
-      pagination.value.total = res.totalCount || 0
-    } catch (err: any) {
-      // fallback mock để UI vẫn chạy
-      data.value = []
-      pagination.value.total = 0
-      ElMessage.error(err?.message || 'Không thể tải danh sách phiếu sửa chữa')
-    } finally {
-      loading.value = false
-    }
-  }
-
-  // Stats theo trạng thái
-  const counts = computed(() => {
-    const safe = data.value || []
-    const byStatus = safe.reduce(
-      (acc: any, x: any) => {
-        const s = x.status
-        if (s === 'Pending') acc.pending++
-        else if (s === 'InProgress') acc.inProgress++
-        else if (s === 'QcPending') acc.qcPending++
-        else if (s === 'Completed') acc.completed++
-        return acc
-      },
-      { pending: 0, inProgress: 0, qcPending: 0, completed: 0 },
-    )
-    return byStatus
-  })
-
-  const statusTagType = (status: string) => {
-    switch (status) {
-      case 'Completed':
-        return 'success'
-      case 'Cancelled':
-        return 'danger'
-      case 'InProgress':
-        return 'warning'
-      case 'QcPending':
-        return 'info'
-      default:
-        return 'primary'
-    }
-  }
-
-  // Dialog: Create
-  const createDialogVisible = ref(false)
-  const submitting = ref(false)
-  const createForm = ref({
-    customerPhone: '',
-    customerName: '',
+const openCreateDialog = () => {
+  createDialogVisible.value = true;
+  createForm.value = {
+    customerPhone: "",
+    customerName: "",
     mileage: 0,
-    description: '',
+    description: "",
 
-    // Auto-fill vehicle/customer info (Vehicle Portfolio)
     isNewCustomer: true,
-    vinNumber: '',
-    licensePlate: '',
-    vehicleName: '',
-    vehicleColor: '',
+    vinNumber: "",
+    licensePlate: "",
+    vehicleName: "",
+    vehicleColor: "",
+    technicianName: "",
+  };
+};
 
-    // Assign technician (main tech)
-    technicianName: '',
-  })
+// Stub: Auto-fill khi user nhập SĐT (phần backend/call sẽ bổ sung sau)
+const handleCustomerPhoneBlur = async () => {
+  // Nếu dự án chưa có endpoint auto-fill Customer/Vehicle Portfolio theo SĐT,
+  // giữ nguyên trạng thái isNewCustomer = true để UI hoạt động.
+  // Khi có API: gọi, nếu có dữ liệu => set isNewCustomer=false và fill: customerName/vinNumber/licensePlate/vehicleName/vehicleColor
+  createForm.value.isNewCustomer = !createForm.value.customerName;
+};
 
-  const openCreateDialog = () => {
-    createDialogVisible.value = true
-    createForm.value = {
-      customerPhone: '',
-      customerName: '',
-      mileage: 0,
-      description: '',
+const submitCreate = async () => {
+  submitting.value = true;
+  try {
+    // Payload hiện tại của RepairOrderApi đang chỉ yêu cầu: customerName, customerPhone, mileage, description.
+    // Các field VIN/biển số/tên xe/màu sẽ cần backend hỗ trợ để map tự động.
+    const payload = {
+      customerPhone: createForm.value.customerPhone,
+      customerName: createForm.value.customerName,
+      mileage: createForm.value.mileage,
+      description: createForm.value.description,
 
-      isNewCustomer: true,
-      vinNumber: '',
-      licensePlate: '',
-      vehicleName: '',
-      vehicleColor: '',
-      technicianName: '',
-    }
+      // Field cho luồng “chỉ định thợ chính” (nếu backend đã hỗ trợ)
+      technicianName: createForm.value.technicianName,
+    };
+
+    // Ghi chú: technicianName hiện chỉ phục vụ UI; cần backend hỗ trợ field tương ứng để lưu DB.
+    await RepairOrderApi.create(payload as any);
+
+    ElMessage.success("Tạo phiếu thành công");
+    createDialogVisible.value = false;
+    await refreshData();
+  } catch (err: any) {
+    ElMessage.error(err?.message || "Tạo phiếu thất bại");
+  } finally {
+    submitting.value = false;
+  }
+};
+
+// Dialog: Assign technician
+const assignDialogVisible = ref(false);
+const assignForm = ref({ repairOrderId: 0, technicianId: 1 });
+
+const openAssignTechnician = (row: RepairOrder) => {
+  assignForm.value = { repairOrderId: row.id, technicianId: 1 };
+  assignDialogVisible.value = true;
+};
+
+const submitAssign = async () => {
+  submitting.value = true;
+  try {
+    await RepairOrderApi.assignTechnician(assignForm.value as any);
+    ElMessage.success("Phân công kỹ thuật thành công");
+    assignDialogVisible.value = false;
+    await refreshData();
+  } catch (err: any) {
+    ElMessage.error(err?.message || "Phân công thất bại");
+  } finally {
+    submitting.value = false;
+  }
+};
+
+// Dialog: Issue parts
+const issuePartsDialogVisible = ref(false);
+const productVariants = ref<any[]>([]);
+const serviceCategories = ref<ServiceCategoryResponse[]>([]);
+const issuePartsForm = ref({
+  repairOrderId: 0,
+  parts: [] as any[],
+  services: [] as any[],
+});
+
+const openIssueParts = async (row: RepairOrder) => {
+  issuePartsForm.value = {
+    repairOrderId: row.id,
+    parts: [],
+    services: [],
+  };
+
+  try {
+    // Load options for selection
+    const [variants, categories] = await Promise.all([
+      ProductApi.getVariantsForInput({ current: 1, size: 100 }),
+      ServiceCategoryApi.getList({ current: 1, size: 100 }),
+    ]);
+    productVariants.value = variants.items || [];
+    serviceCategories.value = categories.items || [];
+  } catch (_err) {
+    ElMessage.error("Không thể tải danh sách linh kiện/dịch vụ");
   }
 
-  // Stub: Auto-fill khi user nhập SĐT (phần backend/call sẽ bổ sung sau)
-  const handleCustomerPhoneBlur = async () => {
-    // Nếu dự án chưa có endpoint auto-fill Customer/Vehicle Portfolio theo SĐT,
-    // giữ nguyên trạng thái isNewCustomer = true để UI hoạt động.
-    // Khi có API: gọi, nếu có dữ liệu => set isNewCustomer=false và fill: customerName/vinNumber/licensePlate/vehicleName/vehicleColor
-    createForm.value.isNewCustomer = !createForm.value.customerName
+  issuePartsDialogVisible.value = true;
+};
+
+const addPart = () => {
+  issuePartsForm.value.parts.push({
+    productVariantId: "",
+    count: 1,
+    price: 0,
+    notes: "",
+  });
+};
+const removePart = (index: number) => {
+  issuePartsForm.value.parts.splice(index, 1);
+};
+const addService = () => {
+  issuePartsForm.value.services.push({
+    serviceId: "",
+    laborCost: 0,
+    notes: "",
+  });
+};
+const removeService = (index: number) => {
+  issuePartsForm.value.services.splice(index, 1);
+};
+const submitIssueParts = async () => {
+  submitting.value = true;
+  try {
+    await RepairOrderApi.issueParts({
+      repairOrderId: issuePartsForm.value.repairOrderId,
+      parts: issuePartsForm.value.parts,
+      services: issuePartsForm.value.services,
+    } as any);
+    ElMessage.success("Cấp phát thành công");
+    issuePartsDialogVisible.value = false;
+    await refreshData();
+  } catch (err: any) {
+    ElMessage.error(err?.message || "Cấp phát thất bại");
+  } finally {
+    submitting.value = false;
   }
+};
 
-  const submitCreate = async () => {
-    submitting.value = true
-    try {
-      // Payload hiện tại của RepairOrderApi đang chỉ yêu cầu: customerName, customerPhone, mileage, description.
-      // Các field VIN/biển số/tên xe/màu sẽ cần backend hỗ trợ để map tự động.
-      const payload = {
-        customerPhone: createForm.value.customerPhone,
-        customerName: createForm.value.customerName,
-        mileage: createForm.value.mileage,
-        description: createForm.value.description,
+// Dialog: Complete
+const completeDialogVisible = ref(false);
+const completeForm = ref({
+  repairOrderId: 0,
+  paymentMethod: "Cash",
+  paymentStatus: "Paid",
+  notes: "",
+});
 
-        // Field cho luồng “chỉ định thợ chính” (nếu backend đã hỗ trợ)
-        technicianName: createForm.value.technicianName,
-      }
+const openComplete = (row: RepairOrder) => {
+  completeForm.value = {
+    repairOrderId: row.id,
+    paymentMethod: "Cash",
+    paymentStatus: "Paid",
+    notes: "",
+  };
+  completeDialogVisible.value = true;
+};
 
-      // Ghi chú: technicianName hiện chỉ phục vụ UI; cần backend hỗ trợ field tương ứng để lưu DB.
-      await RepairOrderApi.create(payload as any)
+const submitComplete = async () => {
+  submitting.value = true;
+  try {
+    await RepairOrderApi.complete({
+      repairOrderId: completeForm.value.repairOrderId,
+      paymentMethod: completeForm.value.paymentMethod,
+      paymentStatus: completeForm.value.paymentStatus,
+      notes: completeForm.value.notes,
+    } as any);
 
-      ElMessage.success('Tạo phiếu thành công')
-      createDialogVisible.value = false
-      await refreshData()
-    } catch (err: any) {
-      ElMessage.error(err?.message || 'Tạo phiếu thất bại')
-    } finally {
-      submitting.value = false
-    }
+    ElMessage.success("Hoàn tất phiếu thành công");
+    completeDialogVisible.value = false;
+    await refreshData();
+  } catch (err: any) {
+    ElMessage.error(err?.message || "Hoàn tất thất bại");
+  } finally {
+    submitting.value = false;
   }
+};
 
-  // Dialog: Assign technician
-  const assignDialogVisible = ref(false)
-  const assignForm = ref({ repairOrderId: 0, technicianId: 1 })
-
-  const openAssignTechnician = (row: RepairOrder) => {
-    assignForm.value = { repairOrderId: row.id, technicianId: 1 }
-    assignDialogVisible.value = true
-  }
-
-  const submitAssign = async () => {
-    submitting.value = true
-    try {
-      await RepairOrderApi.assignTechnician(assignForm.value as any)
-      ElMessage.success('Phân công kỹ thuật thành công')
-      assignDialogVisible.value = false
-      await refreshData()
-    } catch (err: any) {
-      ElMessage.error(err?.message || 'Phân công thất bại')
-    } finally {
-      submitting.value = false
-    }
-  }
-
-  // Dialog: Issue parts
-  const issuePartsDialogVisible = ref(false)
-  const productVariants = ref<any[]>([])
-  const serviceCategories = ref<ServiceCategoryResponse[]>([])
-  const issuePartsForm = ref({
-    repairOrderId: 0,
-    parts: [] as any[],
-    services: [] as any[],
-  })
-
-  const openIssueParts = async (row: RepairOrder) => {
-    issuePartsForm.value = {
-      repairOrderId: row.id,
-      parts: [],
-      services: [],
-    }
-
-    try {
-      // Load options for selection
-      const [variants, categories] = await Promise.all([
-        ProductApi.getVariantsForInput({ current: 1, size: 100 }),
-        ServiceCategoryApi.getList({ current: 1, size: 100 }),
-      ])
-      productVariants.value = variants.items || []
-      serviceCategories.value = categories.items || []
-    } catch (_err) {
-      ElMessage.error('Không thể tải danh sách linh kiện/dịch vụ')
-    }
-
-    issuePartsDialogVisible.value = true
-  }
-
-  const addPart = () => {
-    issuePartsForm.value.parts.push({ productVariantId: '', count: 1, price: 0, notes: '' })
-  }
-  const removePart = (index: number) => {
-    issuePartsForm.value.parts.splice(index, 1)
-  }
-  const addService = () => {
-    issuePartsForm.value.services.push({ serviceId: '', laborCost: 0, notes: '' })
-  }
-  const removeService = (index: number) => {
-    issuePartsForm.value.services.splice(index, 1)
-  }
-  const submitIssueParts = async () => {
-    submitting.value = true
-    try {
-      await RepairOrderApi.issueParts({
-        repairOrderId: issuePartsForm.value.repairOrderId,
-        parts: issuePartsForm.value.parts,
-        services: issuePartsForm.value.services,
-      } as any)
-      ElMessage.success('Cấp phát thành công')
-      issuePartsDialogVisible.value = false
-      await refreshData()
-    } catch (err: any) {
-      ElMessage.error(err?.message || 'Cấp phát thất bại')
-    } finally {
-      submitting.value = false
-    }
-  }
-
-  // Dialog: Complete
-  const completeDialogVisible = ref(false)
-  const completeForm = ref({
-    repairOrderId: 0,
-    paymentMethod: 'Cash',
-    paymentStatus: 'Paid',
-    notes: '',
-  })
-
-  const openComplete = (row: RepairOrder) => {
-    completeForm.value = {
-      repairOrderId: row.id,
-      paymentMethod: 'Cash',
-      paymentStatus: 'Paid',
-      notes: '',
-    }
-    completeDialogVisible.value = true
-  }
-
-  const submitComplete = async () => {
-    submitting.value = true
-    try {
-      await RepairOrderApi.complete({
-        repairOrderId: completeForm.value.repairOrderId,
-        paymentMethod: completeForm.value.paymentMethod,
-        paymentStatus: completeForm.value.paymentStatus,
-        notes: completeForm.value.notes,
-      } as any)
-
-      ElMessage.success('Hoàn tất phiếu thành công')
-      completeDialogVisible.value = false
-      await refreshData()
-    } catch (err: any) {
-      ElMessage.error(err?.message || 'Hoàn tất thất bại')
-    } finally {
-      submitting.value = false
-    }
-  }
-
-  // Initial load
-  refreshData()
+// Initial load
+refreshData();
 </script>

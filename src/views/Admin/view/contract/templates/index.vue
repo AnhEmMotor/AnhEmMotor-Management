@@ -4,17 +4,23 @@
       class="template-list-header border-b px-8 py-5 sticky top-0 z-[100] flex justify-between items-center"
     >
       <div class="flex items-center gap-4">
-        <div class="size-11 rounded-xl bg-[#001529] flex-cc text-white shadow-lg">
+        <div
+          class="size-11 rounded-xl bg-[#001529] flex-cc text-white shadow-lg"
+        >
           <ArtSvgIcon icon="ri:layout-4-line" class="text-xl" />
         </div>
         <div>
-          <h1 class="m-0 text-lg font-black tracking-tight text-white leading-none">
-            {{ t('menus.contract.templates') }}
+          <h1
+            class="m-0 text-lg font-black tracking-tight text-white leading-none"
+          >
+            {{ t("menus.contract.templates") }}
           </h1>
           <p
             class="m-0 text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1.5 flex items-center gap-2"
           >
-            <span class="size-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span
+              class="size-1.5 rounded-full bg-emerald-500 animate-pulse"
+            ></span>
             DANH SÁCH MẪU HỢP ĐỒNG
           </p>
         </div>
@@ -26,7 +32,7 @@
           class="!h-10 !px-6 !rounded-xl !font-black !text-[10px] !uppercase !tracking-widest !shadow-xl hover:!shadow-2xl active:!scale-95 transition-all"
         >
           <ArtSvgIcon icon="ri:add-line" class="mr-1" />
-          {{ t('menus.contract.templateCreate') }}
+          {{ t("menus.contract.templateCreate") }}
         </el-button>
       </div>
     </div>
@@ -43,7 +49,10 @@
               @input="handleSearch"
             >
               <template #prefix>
-                <ArtSvgIcon icon="ri:search-line" class="text-slate-400 text-sm" />
+                <ArtSvgIcon
+                  icon="ri:search-line"
+                  class="text-slate-400 text-sm"
+                />
               </template>
             </el-input>
           </div>
@@ -57,8 +66,14 @@
           >
             <el-option :label="t('menus.contract.filterAll')" value="" />
             <el-option :label="t('menus.contract.typeSales')" value="Sales" />
-            <el-option :label="t('menus.contract.typeFinance')" value="Finance" />
-            <el-option :label="t('menus.contract.typeSupplier')" value="Supplier" />
+            <el-option
+              :label="t('menus.contract.typeFinance')"
+              value="Finance"
+            />
+            <el-option
+              :label="t('menus.contract.typeSupplier')"
+              value="Supplier"
+            />
           </el-select>
           <el-select
             v-model="filterStatus"
@@ -75,7 +90,9 @@
         </div>
       </div>
 
-      <div class="mb-4 text-slate-500 text-[13px] italic font-medium flex items-center gap-2">
+      <div
+        class="mb-4 text-slate-500 text-[13px] italic font-medium flex items-center gap-2"
+      >
         <ArtSvgIcon icon="ri:information-line" />
         Tìm thấy {{ totalCount }} mẫu hợp đồng phù hợp dựa trên bộ lọc
       </div>
@@ -114,36 +131,50 @@
 
           <!-- Card Body -->
           <div class="px-5 pb-5 flex-1">
-            <div class="border-y border-slate-100 py-4 grid grid-cols-2 gap-y-3 gap-x-4">
+            <div
+              class="border-y border-slate-100 py-4 grid grid-cols-2 gap-y-3 gap-x-4"
+            >
               <div class="flex items-center gap-2 text-[12px] text-slate-500">
                 <ArtSvgIcon icon="ri:git-branch-line" class="text-slate-400" />
-                Phiên bản: <span class="font-bold text-slate-700">v{{ row.version }}</span>
+                Phiên bản:
+                <span class="font-bold text-slate-700">v{{ row.version }}</span>
               </div>
               <div class="flex items-center gap-2 text-[12px] text-slate-500">
-                <ArtSvgIcon icon="ri:checkbox-circle-line" class="text-slate-400" />
+                <ArtSvgIcon
+                  icon="ri:checkbox-circle-line"
+                  class="text-slate-400"
+                />
                 Trạng thái:
                 <span
                   class="font-bold"
-                  :class="row.status === 1 ? 'text-emerald-500' : 'text-slate-400'"
+                  :class="
+                    row.status === 1 ? 'text-emerald-500' : 'text-slate-400'
+                  "
                 >
-                  {{ row.status === 1 ? 'Đang áp dụng' : 'Đã lưu trữ' }}
+                  {{ row.status === 1 ? "Đang áp dụng" : "Đã lưu trữ" }}
                 </span>
               </div>
               <div class="flex items-center gap-2 text-[12px] text-slate-500">
                 <ArtSvgIcon icon="ri:brackets-line" class="text-slate-400" />
                 Biến số:
-                <span class="font-bold text-slate-700">{{ row.variableCount || 14 }} trường</span>
+                <span class="font-bold text-slate-700"
+                  >{{ row.variableCount || 14 }} trường</span
+                >
               </div>
               <div class="flex items-center gap-2 text-[12px] text-slate-500">
                 <ArtSvgIcon icon="ri:calendar-line" class="text-slate-400" />
                 Cập nhật:
-                <span class="font-bold text-slate-700">{{ formatDate(row.createdAt) }}</span>
+                <span class="font-bold text-slate-700">{{
+                  formatDate(row.createdAt)
+                }}</span>
               </div>
             </div>
           </div>
 
           <!-- Card Footer -->
-          <div class="template-card-actions flex items-center border-t rounded-b-[20px]">
+          <div
+            class="template-card-actions flex items-center border-t rounded-b-[20px]"
+          >
             <button
               @click="handlePreview(row)"
               class="flex-1 py-3.5 text-[13px] font-bold text-slate-600 hover:text-blue-600 hover:bg-blue-50/80 transition-colors flex-cc gap-2 border-r border-slate-100 rounded-bl-[20px]"
@@ -202,7 +233,9 @@
     >
       <div class="preview-dialog-toolbar">
         <div class="min-w-0">
-          <div class="preview-dialog-title">{{ selectedTemplate?.name || 'Mẫu hợp đồng' }}</div>
+          <div class="preview-dialog-title">
+            {{ selectedTemplate?.name || "Mẫu hợp đồng" }}
+          </div>
           <div class="preview-dialog-subtitle">
             Dữ liệu mẫu được dùng để kiểm tra bố cục và biến động
           </div>
@@ -227,10 +260,16 @@
       </div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="previewVisible = false" class="!h-10 !rounded-xl !font-bold"
+          <el-button
+            @click="previewVisible = false"
+            class="!h-10 !rounded-xl !font-bold"
             >Đóng</el-button
           >
-          <el-button type="primary" @click="handlePrint" class="!h-10 !rounded-xl !font-bold">
+          <el-button
+            type="primary"
+            @click="handlePrint"
+            class="!h-10 !rounded-xl !font-bold"
+          >
             <ArtSvgIcon icon="ri:printer-line" class="mr-1.5" />
             In hợp đồng mẫu
           </el-button>
@@ -241,7 +280,11 @@
     <!-- Variables Modal -->
     <el-dialog
       v-model="variablesVisible"
-      :title="selectedTemplate ? `Danh sách biến: ${selectedTemplate.name}` : 'Danh sách biến số'"
+      :title="
+        selectedTemplate
+          ? `Danh sách biến: ${selectedTemplate.name}`
+          : 'Danh sách biến số'
+      "
       width="920px"
       destroy-on-close
       class="variables-modal"
@@ -252,7 +295,8 @@
             <div>
               <div class="variable-attach-title">Biến đang dùng trong mẫu</div>
               <div class="variable-attach-subtitle">
-                Bấm vào biến để sao chép nhanh, hoặc mở trình gắn biến để chèn trực tiếp.
+                Bấm vào biến để sao chép nhanh, hoặc mở trình gắn biến để chèn
+                trực tiếp.
               </div>
             </div>
             <el-button
@@ -307,8 +351,8 @@
             </div>
           </div>
           <div v-else class="variable-empty-note">
-            Mẫu này chưa dùng biến nào trong nội dung. Mở trình gắn biến để chèn placeholder vào
-            mẫu.
+            Mẫu này chưa dùng biến nào trong nội dung. Mở trình gắn biến để chèn
+            placeholder vào mẫu.
           </div>
         </div>
         <el-input
@@ -325,14 +369,18 @@
 
         <div v-if="hasVariables" class="variables-modal-content space-y-4">
           <!-- Customer Group -->
-          <div v-if="filteredVariableGroups.customer.length" class="variable-group">
+          <div
+            v-if="filteredVariableGroups.customer.length"
+            class="variable-group"
+          >
             <div class="variable-group-header flex items-center gap-2 mb-2">
               <span
                 class="size-5 rounded-md bg-amber-500/15 flex items-center justify-center text-amber-400"
               >
                 <ArtSvgIcon icon="ri:user-line" class="text-xs" />
               </span>
-              <span class="text-[11px] font-black text-amber-400 uppercase tracking-wider"
+              <span
+                class="text-[11px] font-black text-amber-400 uppercase tracking-wider"
                 >Khách hàng</span
               >
             </div>
@@ -350,14 +398,18 @@
           </div>
 
           <!-- Vehicle Group -->
-          <div v-if="filteredVariableGroups.vehicle.length" class="variable-group">
+          <div
+            v-if="filteredVariableGroups.vehicle.length"
+            class="variable-group"
+          >
             <div class="variable-group-header flex items-center gap-2 mb-2">
               <span
                 class="size-5 rounded-md bg-emerald-500/15 flex items-center justify-center text-emerald-400"
               >
                 <ArtSvgIcon icon="ri:motorbike-line" class="text-xs" />
               </span>
-              <span class="text-[11px] font-black text-emerald-400 uppercase tracking-wider"
+              <span
+                class="text-[11px] font-black text-emerald-400 uppercase tracking-wider"
                 >Xe máy / Giao dịch</span
               >
             </div>
@@ -375,14 +427,21 @@
           </div>
 
           <!-- Finance Group -->
-          <div v-if="filteredVariableGroups.finance.length" class="variable-group">
+          <div
+            v-if="filteredVariableGroups.finance.length"
+            class="variable-group"
+          >
             <div class="variable-group-header flex items-center gap-2 mb-2">
               <span
                 class="size-5 rounded-md bg-violet-500/15 flex items-center justify-center text-violet-400"
               >
-                <ArtSvgIcon icon="ri:money-dollar-circle-line" class="text-xs" />
+                <ArtSvgIcon
+                  icon="ri:money-dollar-circle-line"
+                  class="text-xs"
+                />
               </span>
-              <span class="text-[11px] font-black text-violet-400 uppercase tracking-wider"
+              <span
+                class="text-[11px] font-black text-violet-400 uppercase tracking-wider"
                 >Tài chính / Trả góp</span
               >
             </div>
@@ -400,14 +459,18 @@
           </div>
 
           <!-- Supplier Group -->
-          <div v-if="filteredVariableGroups.supplier.length" class="variable-group">
+          <div
+            v-if="filteredVariableGroups.supplier.length"
+            class="variable-group"
+          >
             <div class="variable-group-header flex items-center gap-2 mb-2">
               <span
                 class="size-5 rounded-md bg-orange-500/15 flex items-center justify-center text-orange-400"
               >
                 <ArtSvgIcon icon="ri:truck-line" class="text-xs" />
               </span>
-              <span class="text-[11px] font-black text-orange-400 uppercase tracking-wider"
+              <span
+                class="text-[11px] font-black text-orange-400 uppercase tracking-wider"
                 >Nhà cung cấp</span
               >
             </div>
@@ -433,270 +496,279 @@
 </template>
 
 <script setup lang="ts">
-  import { useI18n } from 'vue-i18n'
-  import { ref, onMounted, computed } from 'vue'
-  import { useRouter } from 'vue-router'
-  import { ElMessage, ElMessageBox } from 'element-plus'
-  import {
-    getContractTemplates,
-    deleteContractTemplate,
-    cloneContractTemplate,
-  } from '@/infrastructure/api/contract-template.api'
-  import { useCommon } from '@/hooks/core/useCommon'
-  import {
-    extractUsedTokenGroups,
-    getTokenGroupsForDisplay,
-    getUnresolvedPreviewTokens,
-    parseDynamicFields as parseContractDynamicFields,
-    type TokenGroupMap,
-  } from '@/views/Admin/logic/contract-template.utils'
+import { useI18n } from "vue-i18n";
+import { ref, onMounted, computed } from "vue";
+import { useRouter } from "vue-router";
+import { ElMessage, ElMessageBox } from "element-plus";
+import {
+  getContractTemplates,
+  deleteContractTemplate,
+  cloneContractTemplate,
+} from "@/infrastructure/api/contract-template.api";
+import { useCommon } from "@/hooks/core/useCommon";
+import {
+  extractUsedTokenGroups,
+  getTokenGroupsForDisplay,
+  getUnresolvedPreviewTokens,
+  parseDynamicFields as parseContractDynamicFields,
+  type TokenGroupMap,
+} from "@/views/Admin/logic/contract-template.utils";
 
-  defineOptions({ name: 'ContractTemplateList' })
+defineOptions({ name: "ContractTemplateList" });
 
-  const { t } = useI18n()
-  const router = useRouter()
+const { t } = useI18n();
+const router = useRouter();
 
-  const searchQuery = ref('')
-  const filterType = ref('')
-  const filterStatus = ref<number | ''>('')
-  const currentPage = ref(1)
-  const pageSize = ref(10)
-  const totalCount = ref(0)
-  const tableData = ref<any[]>([])
+const searchQuery = ref("");
+const filterType = ref("");
+const filterStatus = ref<number | "">("");
+const currentPage = ref(1);
+const pageSize = ref(10);
+const totalCount = ref(0);
+const tableData = ref<any[]>([]);
 
-  // Preview and Variables states
-  const previewVisible = ref(false)
-  const previewHtml = ref('')
-  const previewUnresolvedTokens = ref<string[]>([])
-  const variablesVisible = ref(false)
-  const variableSearch = ref('')
-  const selectedTemplate = ref<any>(null)
-  const variableGroups = ref<TokenGroupMap>({
-    customer: [],
-    vehicle: [],
-    finance: [],
-    supplier: [],
-  })
-  const usedVariableGroups = ref<TokenGroupMap>({
-    customer: [],
-    vehicle: [],
-    finance: [],
-    supplier: [],
-  })
-  const unknownVariableKeys = ref<string[]>([])
+// Preview and Variables states
+const previewVisible = ref(false);
+const previewHtml = ref("");
+const previewUnresolvedTokens = ref<string[]>([]);
+const variablesVisible = ref(false);
+const variableSearch = ref("");
+const selectedTemplate = ref<any>(null);
+const variableGroups = ref<TokenGroupMap>({
+  customer: [],
+  vehicle: [],
+  finance: [],
+  supplier: [],
+});
+const usedVariableGroups = ref<TokenGroupMap>({
+  customer: [],
+  vehicle: [],
+  finance: [],
+  supplier: [],
+});
+const unknownVariableKeys = ref<string[]>([]);
 
-  const _headerCellStyle = () => ({
-    background: '#f8fafc',
-    color: '#64748b',
-    fontWeight: 800,
-    fontSize: '10px',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em',
-    borderBottom: '2px solid #e2e8f0',
-  })
+const _headerCellStyle = () => ({
+  background: "#f8fafc",
+  color: "#64748b",
+  fontWeight: 800,
+  fontSize: "10px",
+  textTransform: "uppercase",
+  letterSpacing: "0.05em",
+  borderBottom: "2px solid #e2e8f0",
+});
 
-  const _cellStyle = () => ({
-    padding: '12px 16px',
-    borderBottom: '1px solid #f1f5f9',
-  })
+const _cellStyle = () => ({
+  padding: "12px 16px",
+  borderBottom: "1px solid #f1f5f9",
+});
 
-  const _getTypeAbbr = (type: string) => {
-    const map: Record<string, string> = {
-      Sales: 'MB',
-      Finance: 'TG',
-      Supplier: 'NC',
-      Appendix: 'PL',
+const _getTypeAbbr = (type: string) => {
+  const map: Record<string, string> = {
+    Sales: "MB",
+    Finance: "TG",
+    Supplier: "NC",
+    Appendix: "PL",
+  };
+  return map[type] || type.slice(0, 2).toUpperCase();
+};
+
+const getTypeColor = (type: string) => {
+  const map: Record<string, string> = {
+    Sales: "bg-blue-500",
+    Finance: "bg-violet-500",
+    Supplier: "bg-emerald-500",
+    Appendix: "bg-amber-500",
+  };
+  return map[type] || "bg-slate-400";
+};
+
+const getTypeTagType = (
+  type: string,
+): "primary" | "warning" | "success" | "info" => {
+  const map: Record<string, "primary" | "warning" | "success" | "info"> = {
+    Sales: "primary",
+    Finance: "warning",
+    Supplier: "success",
+    Appendix: "info",
+  };
+  return map[type] || "info";
+};
+
+const getTypeLabel = (type: string) => {
+  const key = `menus.contract.type${type.charAt(0).toUpperCase() + type.slice(1)}`;
+  return t(key) || type;
+};
+
+const _getStatusTagType = (status: number) => {
+  const map: Record<number, string> = { 1: "success", 2: "info", 3: "danger" };
+  return map[status] || "info";
+};
+
+const _getStatusLabel = (status: number) => {
+  const key = `menus.contract.status${status === 1 ? "Active" : status === 2 ? "Inactive" : "Deprecated"}`;
+  return t(key) || String(status);
+};
+
+const formatDate = (dateStr?: string) => {
+  if (!dateStr) return "-";
+  return new Date(dateStr).toLocaleDateString("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+};
+
+const fetchTemplates = async () => {
+  try {
+    const params: any = {
+      page: currentPage.value,
+      pageSize: pageSize.value,
+      search: searchQuery.value || undefined,
+      filter: filterType.value ? `type == ${filterType.value}` : undefined,
+    };
+    if (filterStatus.value) {
+      params.filter = params.filter
+        ? `${params.filter},status == ${filterStatus.value}`
+        : `status == ${filterStatus.value}`;
     }
-    return map[type] || type.slice(0, 2).toUpperCase()
+    const res = await getContractTemplates(params);
+    tableData.value = res.items.map((item: any) => ({
+      ...item,
+      createdAt: item.createdAt || new Date().toISOString(),
+    }));
+    totalCount.value = res.totalCount;
+  } catch (_err) {
+    ElMessage.error("Không thể tải danh sách mẫu hợp đồng");
   }
+};
 
-  const getTypeColor = (type: string) => {
-    const map: Record<string, string> = {
-      Sales: 'bg-blue-500',
-      Finance: 'bg-violet-500',
-      Supplier: 'bg-emerald-500',
-      Appendix: 'bg-amber-500',
-    }
-    return map[type] || 'bg-slate-400'
+const handleSearch = () => {
+  currentPage.value = 1;
+  fetchTemplates();
+};
+
+const handleFilterChange = () => {
+  currentPage.value = 1;
+  fetchTemplates();
+};
+
+const handleCreate = () => {
+  router.push({ name: "EditContractTemplate" });
+};
+
+const handleEdit = (row: any) => {
+  if (row.isUsed) {
+    ElMessage.warning(t("menus.contract.cannotUpdateUsedTemplate"));
+    return;
   }
+  router.push({ name: "EditContractTemplate", params: { id: row.id } });
+};
 
-  const getTypeTagType = (type: string): 'primary' | 'warning' | 'success' | 'info' => {
-    const map: Record<string, 'primary' | 'warning' | 'success' | 'info'> = {
-      Sales: 'primary',
-      Finance: 'warning',
-      Supplier: 'success',
-      Appendix: 'info',
-    }
-    return map[type] || 'info'
-  }
-
-  const getTypeLabel = (type: string) => {
-    const key = `menus.contract.type${type.charAt(0).toUpperCase() + type.slice(1)}`
-    return t(key) || type
-  }
-
-  const _getStatusTagType = (status: number) => {
-    const map: Record<number, string> = { 1: 'success', 2: 'info', 3: 'danger' }
-    return map[status] || 'info'
-  }
-
-  const _getStatusLabel = (status: number) => {
-    const key = `menus.contract.status${status === 1 ? 'Active' : status === 2 ? 'Inactive' : 'Deprecated'}`
-    return t(key) || String(status)
-  }
-
-  const formatDate = (dateStr?: string) => {
-    if (!dateStr) return '-'
-    return new Date(dateStr).toLocaleDateString('vi-VN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    })
-  }
-
-  const fetchTemplates = async () => {
-    try {
-      const params: any = {
-        page: currentPage.value,
-        pageSize: pageSize.value,
-        search: searchQuery.value || undefined,
-        filter: filterType.value ? `type == ${filterType.value}` : undefined,
-      }
-      if (filterStatus.value) {
-        params.filter = params.filter
-          ? `${params.filter},status == ${filterStatus.value}`
-          : `status == ${filterStatus.value}`
-      }
-      const res = await getContractTemplates(params)
-      tableData.value = res.items.map((item: any) => ({
-        ...item,
-        createdAt: item.createdAt || new Date().toISOString(),
-      }))
-      totalCount.value = res.totalCount
-    } catch (_err) {
-      ElMessage.error('Không thể tải danh sách mẫu hợp đồng')
-    }
-  }
-
-  const handleSearch = () => {
-    currentPage.value = 1
-    fetchTemplates()
-  }
-
-  const handleFilterChange = () => {
-    currentPage.value = 1
-    fetchTemplates()
-  }
-
-  const handleCreate = () => {
-    router.push({ name: 'EditContractTemplate' })
-  }
-
-  const handleEdit = (row: any) => {
-    if (row.isUsed) {
-      ElMessage.warning(t('menus.contract.cannotUpdateUsedTemplate'))
-      return
-    }
-    router.push({ name: 'EditContractTemplate', params: { id: row.id } })
-  }
-
-  const getPreviewContent = (content: string) => {
-    // Note: Preview uses actual data when available. For empty template preview,
-    // only basic placeholders are shown without hardcoded sample data.
-    return `<div style="position: relative;">
+const getPreviewContent = (content: string) => {
+  // Note: Preview uses actual data when available. For empty template preview,
+  // only basic placeholders are shown without hardcoded sample data.
+  return `<div style="position: relative;">
       <div style="position: absolute; top: 14px; right: 18px; z-index: 2; padding: 4px 10px; border: 1px solid #cbd5e1; border-radius: 999px; color: #64748b; background: #ffffff; font-family: Arial, sans-serif; font-size: 11px; font-weight: 700;">
         Bản xem thử - Cần nhập dữ liệu
       </div>
       ${content}
-    </div>`
+    </div>`;
+};
+
+const parseDynamicFields = (dynamicFieldsStr?: string) => {
+  return parseContractDynamicFields(dynamicFieldsStr);
+};
+
+const handlePreview = (row: any) => {
+  selectedTemplate.value = row;
+  previewHtml.value = getPreviewContent(row.content || "");
+  previewUnresolvedTokens.value = getUnresolvedPreviewTokens(row.content || "");
+  previewVisible.value = true;
+};
+
+const handleVariables = (row: any) => {
+  selectedTemplate.value = row;
+  const parsed = parseDynamicFields(row.dynamicFields);
+  const usedTokens = extractUsedTokenGroups(row.content || "", parsed);
+  variableGroups.value = parsed;
+  usedVariableGroups.value = usedTokens.groups;
+  unknownVariableKeys.value = usedTokens.unknownTokens;
+  variablesVisible.value = true;
+};
+
+const hasVariables = computed(() => {
+  const g = variableGroups.value;
+  return !!(
+    g.customer.length ||
+    g.vehicle.length ||
+    g.finance.length ||
+    g.supplier.length
+  );
+});
+
+const hasUsedVariables = computed(() => {
+  const g = usedVariableGroups.value;
+  return !!(
+    g.customer.length ||
+    g.vehicle.length ||
+    g.finance.length ||
+    g.supplier.length ||
+    unknownVariableKeys.value.length
+  );
+});
+
+const filteredVariableGroups = computed(() => {
+  const search = variableSearch.value.toLowerCase().trim();
+  const filterFn = (item: any) => {
+    if (!search) return true;
+    return (
+      item.key.toLowerCase().includes(search) ||
+      (item.label && item.label.toLowerCase().includes(search))
+    );
+  };
+
+  return {
+    customer: variableGroups.value.customer.filter(filterFn),
+    vehicle: variableGroups.value.vehicle.filter(filterFn),
+    finance: variableGroups.value.finance.filter(filterFn),
+    supplier: variableGroups.value.supplier.filter(filterFn),
+  };
+});
+
+const usedVariableGroupsForDisplay = computed(() =>
+  getTokenGroupsForDisplay(usedVariableGroups.value).filter(
+    (group) => group.tokens.length > 0,
+  ),
+);
+
+const copyVariableKey = async (key: string) => {
+  try {
+    await navigator.clipboard.writeText(key);
+    ElMessage.success(`Đã sao chép ${key}`);
+  } catch {
+    ElMessage.warning("Không thể sao chép biến trên trình duyệt hiện tại");
   }
+};
 
-  const parseDynamicFields = (dynamicFieldsStr?: string) => {
-    return parseContractDynamicFields(dynamicFieldsStr)
+const openVariableEditor = () => {
+  if (!selectedTemplate.value) return;
+  if (selectedTemplate.value.isUsed) {
+    ElMessage.warning(t("menus.contract.cannotUpdateUsedTemplate"));
+    return;
   }
+  variablesVisible.value = false;
+  router.push({
+    name: "EditContractTemplate",
+    params: { id: selectedTemplate.value.id },
+    query: { panel: "variables" },
+  });
+};
 
-  const handlePreview = (row: any) => {
-    selectedTemplate.value = row
-    previewHtml.value = getPreviewContent(row.content || '')
-    previewUnresolvedTokens.value = getUnresolvedPreviewTokens(row.content || '')
-    previewVisible.value = true
-  }
-
-  const handleVariables = (row: any) => {
-    selectedTemplate.value = row
-    const parsed = parseDynamicFields(row.dynamicFields)
-    const usedTokens = extractUsedTokenGroups(row.content || '', parsed)
-    variableGroups.value = parsed
-    usedVariableGroups.value = usedTokens.groups
-    unknownVariableKeys.value = usedTokens.unknownTokens
-    variablesVisible.value = true
-  }
-
-  const hasVariables = computed(() => {
-    const g = variableGroups.value
-    return !!(g.customer.length || g.vehicle.length || g.finance.length || g.supplier.length)
-  })
-
-  const hasUsedVariables = computed(() => {
-    const g = usedVariableGroups.value
-    return !!(
-      g.customer.length ||
-      g.vehicle.length ||
-      g.finance.length ||
-      g.supplier.length ||
-      unknownVariableKeys.value.length
-    )
-  })
-
-  const filteredVariableGroups = computed(() => {
-    const search = variableSearch.value.toLowerCase().trim()
-    const filterFn = (item: any) => {
-      if (!search) return true
-      return (
-        item.key.toLowerCase().includes(search) ||
-        (item.label && item.label.toLowerCase().includes(search))
-      )
-    }
-
-    return {
-      customer: variableGroups.value.customer.filter(filterFn),
-      vehicle: variableGroups.value.vehicle.filter(filterFn),
-      finance: variableGroups.value.finance.filter(filterFn),
-      supplier: variableGroups.value.supplier.filter(filterFn),
-    }
-  })
-
-  const usedVariableGroupsForDisplay = computed(() =>
-    getTokenGroupsForDisplay(usedVariableGroups.value).filter((group) => group.tokens.length > 0),
-  )
-
-  const copyVariableKey = async (key: string) => {
-    try {
-      await navigator.clipboard.writeText(key)
-      ElMessage.success(`Đã sao chép ${key}`)
-    } catch {
-      ElMessage.warning('Không thể sao chép biến trên trình duyệt hiện tại')
-    }
-  }
-
-  const openVariableEditor = () => {
-    if (!selectedTemplate.value) return
-    if (selectedTemplate.value.isUsed) {
-      ElMessage.warning(t('menus.contract.cannotUpdateUsedTemplate'))
-      return
-    }
-    variablesVisible.value = false
-    router.push({
-      name: 'EditContractTemplate',
-      params: { id: selectedTemplate.value.id },
-      query: { panel: 'variables' },
-    })
-  }
-
-  const handlePrint = () => {
-    const printWindow = window.open('', '_blank', 'width=800,height=600')
-    if (printWindow) {
-      printWindow.document.write(`
+const handlePrint = () => {
+  const printWindow = window.open("", "_blank", "width=800,height=600");
+  if (printWindow) {
+    printWindow.document.write(`
         <html>
           <head>
             <title>In mẫu hợp đồng</title>
@@ -755,371 +827,451 @@
             ${previewHtml.value}
           </body>
         </html>
-      `)
-      printWindow.document.close()
-      printWindow.focus()
-      setTimeout(() => {
-        printWindow.print()
-        printWindow.close()
-      }, 250)
-    }
+      `);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+      printWindow.close();
+    }, 250);
   }
+};
 
-  const _handleArchive = async (_row: any) => {
-    try {
-      await ElMessageBox.confirm('Bạn có chắc muốn lưu trữ mẫu hợp đồng này?', 'Lưu trữ mẫu', {
-        confirmButtonText: 'Lưu trữ',
-        cancelButtonText: 'Hủy',
-        type: 'warning',
-      })
-      // Call mock or real API here, e.g. await archiveContractTemplate(row.id)
-      ElMessage.success('Lưu trữ mẫu hợp đồng thành công!')
-      fetchTemplates()
-    } catch (_e) {
-      // User cancelled
-    }
+const _handleArchive = async (_row: any) => {
+  try {
+    await ElMessageBox.confirm(
+      "Bạn có chắc muốn lưu trữ mẫu hợp đồng này?",
+      "Lưu trữ mẫu",
+      {
+        confirmButtonText: "Lưu trữ",
+        cancelButtonText: "Hủy",
+        type: "warning",
+      },
+    );
+    // Call mock or real API here, e.g. await archiveContractTemplate(row.id)
+    ElMessage.success("Lưu trữ mẫu hợp đồng thành công!");
+    fetchTemplates();
+  } catch (_e) {
+    // User cancelled
   }
+};
 
-  const _handleClone = async (row: any) => {
-    try {
-      await ElMessageBox.confirm(
-        `Nhân bản mẫu "${row.name}" thành phiên bản mới? Mẫu mới sẽ có version v${parseFloat(String(row.version)) + 0.1} và được kích hoạt ngay.`,
-        'Nhân bản Mẫu Hợp đồng',
-        { confirmButtonText: 'Nhân bản', cancelButtonText: 'Hủy', type: 'info' },
-      )
-      await cloneContractTemplate(row.id)
-      ElMessage.success(t('menus.contract.cloneSuccess'))
-      fetchTemplates()
-    } catch (_e) {
-      // User cancelled
-    }
+const _handleClone = async (row: any) => {
+  try {
+    await ElMessageBox.confirm(
+      `Nhân bản mẫu "${row.name}" thành phiên bản mới? Mẫu mới sẽ có version v${parseFloat(String(row.version)) + 0.1} và được kích hoạt ngay.`,
+      "Nhân bản Mẫu Hợp đồng",
+      { confirmButtonText: "Nhân bản", cancelButtonText: "Hủy", type: "info" },
+    );
+    await cloneContractTemplate(row.id);
+    ElMessage.success(t("menus.contract.cloneSuccess"));
+    fetchTemplates();
+  } catch (_e) {
+    // User cancelled
   }
+};
 
-  const _handleDelete = async (row: any) => {
-    try {
-      await ElMessageBox.confirm(t('menus.contract.confirmDeleteTemplate'), 'Xóa Mẫu Hợp đồng', {
-        confirmButtonText: 'Xóa',
-        cancelButtonText: 'Hủy',
-        type: 'warning',
-      })
-      await deleteContractTemplate(row.id)
-      ElMessage.success(t('menus.contract.deleteSuccess'))
-      fetchTemplates()
-    } catch (_e) {
-      // User cancelled
-    }
+const _handleDelete = async (row: any) => {
+  try {
+    await ElMessageBox.confirm(
+      t("menus.contract.confirmDeleteTemplate"),
+      "Xóa Mẫu Hợp đồng",
+      {
+        confirmButtonText: "Xóa",
+        cancelButtonText: "Hủy",
+        type: "warning",
+      },
+    );
+    await deleteContractTemplate(row.id);
+    ElMessage.success(t("menus.contract.deleteSuccess"));
+    fetchTemplates();
+  } catch (_e) {
+    // User cancelled
   }
+};
 
-  onMounted(() => {
-    useCommon().scrollToTop()
-    fetchTemplates()
-  })
+onMounted(() => {
+  useCommon().scrollToTop();
+  fetchTemplates();
+});
 </script>
 
 <style scoped lang="scss">
-  html.dark .contract-templates-page {
-    min-height: 100vh;
-    color: #f8fafc;
+html.dark .contract-templates-page {
+  min-height: 100vh;
+  color: #f8fafc;
+  background: #050506;
+
+  .template-list-header {
     background: #050506;
+    border-color: rgb(255 255 255 / 9%);
+  }
 
-    .template-list-header {
-      background: #050506;
-      border-color: rgb(255 255 255 / 9%);
-    }
+  .template-filter-panel,
+  .template-card,
+  .template-pagination-panel {
+    background: #161618;
+    border-color: rgb(255 255 255 / 10%);
+    box-shadow: 0 14px 36px rgb(0 0 0 / 24%);
+  }
 
-    .template-filter-panel,
-    .template-card,
-    .template-pagination-panel {
-      background: #161618;
-      border-color: rgb(255 255 255 / 10%);
-      box-shadow: 0 14px 36px rgb(0 0 0 / 24%);
-    }
+  .template-card {
+    overflow: hidden;
 
-    .template-card {
-      overflow: hidden;
-
-      &:hover {
-        border-color: rgb(255 255 255 / 18%);
-        box-shadow: 0 18px 42px rgb(0 0 0 / 32%);
-      }
-    }
-
-    .template-card-actions {
-      background: #111214;
-      border-color: rgb(255 255 255 / 9%);
-
-      button {
-        color: #f8fafc;
-        border-color: rgb(255 255 255 / 9%);
-
-        &:hover {
-          color: #ff6b6b;
-          background: rgb(232 74 74 / 12%);
-        }
-      }
-    }
-
-    [class*='text-slate-'] {
-      color: #f8fafc !important;
-    }
-
-    [class*='border-slate-'] {
-      border-color: rgb(255 255 255 / 9%) !important;
-    }
-
-    :deep(.el-input__wrapper),
-    :deep(.el-select__wrapper) {
-      min-height: 38px;
-      color: #f8fafc;
-      background: #101114 !important;
-      border: 1px solid rgb(255 255 255 / 14%);
-      box-shadow: none !important;
-    }
-
-    :deep(.el-input__inner),
-    :deep(.el-select__placeholder),
-    :deep(.el-select__selected-item),
-    :deep(.el-select__caret) {
-      color: #f8fafc !important;
-    }
-
-    :deep(.el-input__inner::placeholder) {
-      color: #cbd5e1 !important;
-      opacity: 1;
-    }
-
-    :deep(.el-pagination) {
-      color: #f8fafc;
-
-      .el-pagination__total,
-      .el-pagination__sizes,
-      .el-select__selected-item,
-      button,
-      li {
-        color: #f8fafc;
-      }
-
-      button,
-      .el-pager li {
-        background: #101114;
-        border: 1px solid rgb(255 255 255 / 10%);
-      }
-
-      .el-pager li.is-active {
-        color: #fff;
-        background: #e84a4a;
-        border-color: #e84a4a;
-      }
-    }
-
-    :deep(.el-tag) {
-      color: #fff;
-      border-color: transparent;
+    &:hover {
+      border-color: rgb(255 255 255 / 18%);
+      box-shadow: 0 18px 42px rgb(0 0 0 / 32%);
     }
   }
 
-  .contract-templates-table {
-    :deep(.el-table__row) {
-      transition: all 0.2s;
+  .template-card-actions {
+    background: #111214;
+    border-color: rgb(255 255 255 / 9%);
+
+    button {
+      color: #f8fafc;
+      border-color: rgb(255 255 255 / 9%);
 
       &:hover {
-        background-color: #f8fafc !important;
+        color: #ff6b6b;
+        background: rgb(232 74 74 / 12%);
       }
     }
+  }
 
-    :deep(.el-table__cell) {
-      padding: 8px 0;
-    }
+  [class*="text-slate-"] {
+    color: #f8fafc !important;
+  }
+
+  [class*="border-slate-"] {
+    border-color: rgb(255 255 255 / 9%) !important;
+  }
+
+  :deep(.el-input__wrapper),
+  :deep(.el-select__wrapper) {
+    min-height: 38px;
+    color: #f8fafc;
+    background: #101114 !important;
+    border: 1px solid rgb(255 255 255 / 14%);
+    box-shadow: none !important;
+  }
+
+  :deep(.el-input__inner),
+  :deep(.el-select__placeholder),
+  :deep(.el-select__selected-item),
+  :deep(.el-select__caret) {
+    color: #f8fafc !important;
+  }
+
+  :deep(.el-input__inner::placeholder) {
+    color: #cbd5e1 !important;
+    opacity: 1;
   }
 
   :deep(.el-pagination) {
+    color: #f8fafc;
+
+    .el-pagination__total,
+    .el-pagination__sizes,
+    .el-select__selected-item,
+    button,
+    li {
+      color: #f8fafc;
+    }
+
+    button,
     .el-pager li {
-      margin: 0 2px;
-      font-weight: 700;
-      border-radius: 8px;
+      background: #101114;
+      border: 1px solid rgb(255 255 255 / 10%);
+    }
+
+    .el-pager li.is-active {
+      color: #fff;
+      background: #e84a4a;
+      border-color: #e84a4a;
     }
   }
 
-  // Variables modal styles
-  :deep(.variables-modal) {
-    border-radius: 20px !important;
+  :deep(.el-tag) {
+    color: #fff;
+    border-color: transparent;
+  }
+}
 
-    .el-dialog__header {
-      padding: 20px 24px;
-      border-bottom: 1px solid #e2e8f0;
+.contract-templates-table {
+  :deep(.el-table__row) {
+    transition: all 0.2s;
 
-      .el-dialog__title {
-        font-size: 15px;
-        font-weight: 800;
-        color: #0f172a;
-      }
-    }
-
-    .el-dialog__body {
-      max-height: 70vh;
-      padding: 20px 24px;
-      overflow-y: auto;
-    }
-
-    .el-dialog__footer {
-      padding: 16px 24px;
-      border-top: 1px solid #e2e8f0;
+    &:hover {
+      background-color: #f8fafc !important;
     }
   }
 
-  .preview-dialog-toolbar {
-    display: flex;
-    gap: 16px;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 0 16px;
+  :deep(.el-table__cell) {
+    padding: 8px 0;
   }
+}
 
-  .preview-dialog-title {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 14px;
-    font-weight: 900;
-    color: #0f172a;
-    white-space: nowrap;
-  }
-
-  .preview-dialog-subtitle {
-    margin-top: 3px;
-    font-size: 12px;
+:deep(.el-pagination) {
+  .el-pager li {
+    margin: 0 2px;
     font-weight: 700;
-    color: #64748b;
+    border-radius: 8px;
+  }
+}
+
+// Variables modal styles
+:deep(.variables-modal) {
+  border-radius: 20px !important;
+
+  .el-dialog__header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #e2e8f0;
+
+    .el-dialog__title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f172a;
+    }
   }
 
-  .preview-ready,
-  .preview-unresolved {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    align-items: center;
-    justify-content: flex-end;
-    max-width: 48%;
-    font-size: 11px;
-    font-weight: 800;
+  .el-dialog__body {
+    max-height: 70vh;
+    padding: 20px 24px;
+    overflow-y: auto;
   }
 
-  .preview-ready {
-    color: #059669;
+  .el-dialog__footer {
+    padding: 16px 24px;
+    border-top: 1px solid #e2e8f0;
   }
+}
 
-  .preview-unresolved-label,
-  .preview-unresolved-token {
-    padding: 4px 8px;
-    border-radius: 999px;
+.preview-dialog-toolbar {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 16px;
+}
+
+.preview-dialog-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 14px;
+  font-weight: 900;
+  color: #0f172a;
+  white-space: nowrap;
+}
+
+.preview-dialog-subtitle {
+  margin-top: 3px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.preview-ready,
+.preview-unresolved {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  justify-content: flex-end;
+  max-width: 48%;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.preview-ready {
+  color: #059669;
+}
+
+.preview-unresolved-label,
+.preview-unresolved-token {
+  padding: 4px 8px;
+  border-radius: 999px;
+}
+
+.preview-unresolved-label {
+  color: #b45309;
+  background: rgb(245 158 11 / 12%);
+}
+
+.preview-unresolved-token {
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  color: #b91c1c;
+  background: rgb(239 68 68 / 10%);
+  border: 1px solid rgb(239 68 68 / 24%);
+}
+
+.variable-attach-summary {
+  padding: 16px;
+  background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+  border: 1px solid #dbe4f0;
+  border-radius: 16px;
+}
+
+.variable-attach-summary-header {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.variable-attach-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: #0f172a;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.variable-attach-subtitle,
+.variable-empty-note {
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.variable-used-groups {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.variable-used-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding: 10px;
+  background: var(--used-bg);
+  border: 1px solid var(--used-border);
+  border-radius: 12px;
+}
+
+.variable-used-heading {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  width: 100%;
+  font-size: 10px;
+  font-weight: 900;
+  color: var(--used-color);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.variable-used-group--amber {
+  --used-color: #d97706;
+  --used-bg: rgb(245 158 11 / 8%);
+  --used-border: rgb(245 158 11 / 22%);
+}
+
+.variable-used-group--emerald {
+  --used-color: #059669;
+  --used-bg: rgb(16 185 129 / 8%);
+  --used-border: rgb(16 185 129 / 22%);
+}
+
+.variable-used-group--violet {
+  --used-color: #7c3aed;
+  --used-bg: rgb(139 92 246 / 8%);
+  --used-border: rgb(139 92 246 / 22%);
+}
+
+.variable-used-group--orange {
+  --used-color: #ea580c;
+  --used-bg: rgb(249 115 22 / 8%);
+  --used-border: rgb(249 115 22 / 22%);
+}
+
+.variable-used-group--danger {
+  --used-color: #dc2626;
+  --used-bg: rgb(239 68 68 / 8%);
+  --used-border: rgb(239 68 68 / 22%);
+}
+
+.variable-token {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.variable-token--clickable {
+  cursor: pointer;
+
+  &:hover {
+    color: #fff;
+    background: #111827;
+    border-color: #111827;
+    transform: translateY(-1px);
   }
+}
 
-  .preview-unresolved-label {
-    color: #b45309;
-    background: rgb(245 158 11 / 12%);
-  }
+.variable-token--amber {
+  color: #d97706;
+  background: rgb(245 158 11 / 10%);
+  border-color: rgb(245 158 11 / 26%);
+}
 
-  .preview-unresolved-token {
-    font-family: 'JetBrains Mono', 'Fira Code', monospace;
-    color: #b91c1c;
-    background: rgb(239 68 68 / 10%);
-    border: 1px solid rgb(239 68 68 / 24%);
-  }
+.variable-token--emerald {
+  color: #059669;
+  background: rgb(16 185 129 / 8%);
+  border-color: rgb(16 185 129 / 20%);
+}
 
-  .variable-attach-summary {
+.variable-token--violet {
+  color: #7c3aed;
+  background: rgb(139 92 246 / 8%);
+  border-color: rgb(139 92 246 / 20%);
+}
+
+.variable-token--orange {
+  color: #ea580c;
+  background: rgb(249 115 22 / 8%);
+  border-color: rgb(249 115 22 / 20%);
+}
+
+.variable-token--danger {
+  color: #dc2626;
+  background: rgb(239 68 68 / 8%);
+  border-color: rgb(239 68 68 / 24%);
+}
+
+.variables-modal-content {
+  .variable-group {
     padding: 16px;
-    background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
-    border: 1px solid #dbe4f0;
+    margin-bottom: 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
     border-radius: 16px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 
-  .variable-attach-summary-header {
+  .variable-group-header {
     display: flex;
-    gap: 14px;
-    align-items: flex-start;
-    justify-content: space-between;
-    margin-bottom: 14px;
-  }
-
-  .variable-attach-title {
-    font-size: 13px;
-    font-weight: 900;
-    color: #0f172a;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-
-  .variable-attach-subtitle,
-  .variable-empty-note {
-    margin-top: 4px;
-    font-size: 12px;
-    font-weight: 700;
-    color: #64748b;
-  }
-
-  .variable-used-groups {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-  }
-
-  .variable-used-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
     align-items: center;
-    padding: 10px;
-    background: var(--used-bg);
-    border: 1px solid var(--used-border);
-    border-radius: 12px;
-  }
-
-  .variable-used-heading {
-    display: inline-flex;
-    gap: 6px;
-    align-items: center;
-    width: 100%;
-    font-size: 10px;
-    font-weight: 900;
-    color: var(--used-color);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .variable-used-group--amber {
-    --used-color: #d97706;
-    --used-bg: rgb(245 158 11 / 8%);
-    --used-border: rgb(245 158 11 / 22%);
-  }
-
-  .variable-used-group--emerald {
-    --used-color: #059669;
-    --used-bg: rgb(16 185 129 / 8%);
-    --used-border: rgb(16 185 129 / 22%);
-  }
-
-  .variable-used-group--violet {
-    --used-color: #7c3aed;
-    --used-bg: rgb(139 92 246 / 8%);
-    --used-border: rgb(139 92 246 / 22%);
-  }
-
-  .variable-used-group--orange {
-    --used-color: #ea580c;
-    --used-bg: rgb(249 115 22 / 8%);
-    --used-border: rgb(249 115 22 / 22%);
-  }
-
-  .variable-used-group--danger {
-    --used-color: #dc2626;
-    --used-bg: rgb(239 68 68 / 8%);
-    --used-border: rgb(239 68 68 / 22%);
+    margin-bottom: 12px;
   }
 
   .variable-token {
     display: inline-flex;
     align-items: center;
     padding: 4px 10px;
-    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-family: "JetBrains Mono", "Fira Code", monospace;
     font-size: 11px;
     font-weight: 700;
     border: 1px solid;
@@ -1167,172 +1319,100 @@
     background: rgb(239 68 68 / 8%);
     border-color: rgb(239 68 68 / 24%);
   }
+}
 
-  .variables-modal-content {
-    .variable-group {
-      padding: 16px;
-      margin-bottom: 16px;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 16px;
+.a4-preview {
+  max-height: 70vh;
+  padding: 20px;
+  overflow-y: auto;
+  background: #6b7280;
+  border-radius: 12px;
+}
 
-      &:last-child {
-        margin-bottom: 0;
-      }
+.a4-page {
+  width: 210mm;
+  max-width: 100%;
+  min-height: 297mm;
+  padding: 20mm;
+  margin: 0 auto;
+  font-family: "Times New Roman", serif;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #111827;
+  background: white;
+  border-radius: 2px;
+  box-shadow: 0 4px 20px rgb(0 0 0 / 25%);
+}
+
+.a4-page :deep(*) {
+  font-family: "Times New Roman", serif !important;
+  color: #111827 !important;
+}
+
+.a4-page :deep(h1) {
+  margin: 14px 0 6px;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.a4-page :deep(h2) {
+  margin: 12px 0 4px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.a4-page :deep(p) {
+  margin: 3px 0;
+}
+
+.a4-page :deep(ol),
+.a4-page :deep(ul) {
+  padding-left: 18px;
+  margin: 4px 0 8px;
+}
+
+.a4-page :deep(li) {
+  margin: 2px 0;
+}
+
+.a4-page :deep(table) {
+  width: 100%;
+  margin: 8px 0 12px;
+  border-collapse: collapse;
+}
+
+.a4-page :deep(td),
+.a4-page :deep(th) {
+  padding: 6px 8px;
+  border: 1px solid #111827;
+}
+
+:global(.contract-template-select-popper) {
+  background: #161618 !important;
+  border-color: rgb(255 255 255 / 14%) !important;
+
+  .el-select-dropdown__item {
+    color: #f8fafc;
+
+    &.is-hovering,
+    &:hover {
+      color: #fff;
+      background: rgb(232 74 74 / 14%);
     }
 
-    .variable-group-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-
-    .variable-token {
-      display: inline-flex;
-      align-items: center;
-      padding: 4px 10px;
-      font-family: 'JetBrains Mono', 'Fira Code', monospace;
-      font-size: 11px;
-      font-weight: 700;
-      border: 1px solid;
-      border-radius: 8px;
-      transition: all 0.2s;
-    }
-
-    .variable-token--clickable {
-      cursor: pointer;
-
-      &:hover {
-        color: #fff;
-        background: #111827;
-        border-color: #111827;
-        transform: translateY(-1px);
-      }
-    }
-
-    .variable-token--amber {
-      color: #d97706;
-      background: rgb(245 158 11 / 10%);
-      border-color: rgb(245 158 11 / 26%);
-    }
-
-    .variable-token--emerald {
-      color: #059669;
-      background: rgb(16 185 129 / 8%);
-      border-color: rgb(16 185 129 / 20%);
-    }
-
-    .variable-token--violet {
-      color: #7c3aed;
-      background: rgb(139 92 246 / 8%);
-      border-color: rgb(139 92 246 / 20%);
-    }
-
-    .variable-token--orange {
-      color: #ea580c;
-      background: rgb(249 115 22 / 8%);
-      border-color: rgb(249 115 22 / 20%);
-    }
-
-    .variable-token--danger {
-      color: #dc2626;
-      background: rgb(239 68 68 / 8%);
-      border-color: rgb(239 68 68 / 24%);
+    &.is-selected {
+      color: #ff6b6b;
     }
   }
 
-  .a4-preview {
-    max-height: 70vh;
-    padding: 20px;
-    overflow-y: auto;
-    background: #6b7280;
-    border-radius: 12px;
-  }
-
-  .a4-page {
-    width: 210mm;
-    max-width: 100%;
-    min-height: 297mm;
-    padding: 20mm;
-    margin: 0 auto;
-    font-family: 'Times New Roman', serif;
-    font-size: 14px;
-    line-height: 1.4;
-    color: #111827;
-    background: white;
-    border-radius: 2px;
-    box-shadow: 0 4px 20px rgb(0 0 0 / 25%);
-  }
-
-  .a4-page :deep(*) {
-    font-family: 'Times New Roman', serif !important;
-    color: #111827 !important;
-  }
-
-  .a4-page :deep(h1) {
-    margin: 14px 0 6px;
-    font-size: 20px;
-    font-weight: 700;
-    line-height: 1.2;
-    text-align: center;
-    text-transform: uppercase;
-  }
-
-  .a4-page :deep(h2) {
-    margin: 12px 0 4px;
-    font-size: 15px;
-    font-weight: 700;
-    line-height: 1.25;
-    text-transform: uppercase;
-  }
-
-  .a4-page :deep(p) {
-    margin: 3px 0;
-  }
-
-  .a4-page :deep(ol),
-  .a4-page :deep(ul) {
-    padding-left: 18px;
-    margin: 4px 0 8px;
-  }
-
-  .a4-page :deep(li) {
-    margin: 2px 0;
-  }
-
-  .a4-page :deep(table) {
-    width: 100%;
-    margin: 8px 0 12px;
-    border-collapse: collapse;
-  }
-
-  .a4-page :deep(td),
-  .a4-page :deep(th) {
-    padding: 6px 8px;
-    border: 1px solid #111827;
-  }
-
-  :global(.contract-template-select-popper) {
+  .el-popper__arrow::before {
     background: #161618 !important;
     border-color: rgb(255 255 255 / 14%) !important;
-
-    .el-select-dropdown__item {
-      color: #f8fafc;
-
-      &.is-hovering,
-      &:hover {
-        color: #fff;
-        background: rgb(232 74 74 / 14%);
-      }
-
-      &.is-selected {
-        color: #ff6b6b;
-      }
-    }
-
-    .el-popper__arrow::before {
-      background: #161618 !important;
-      border-color: rgb(255 255 255 / 14%) !important;
-    }
   }
+}
 </style>

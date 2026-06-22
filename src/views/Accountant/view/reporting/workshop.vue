@@ -42,7 +42,9 @@
         :count="kpi.overdueCount"
         description="Cần ưu tiên kiểm tra"
         icon="ri:alarm-warning-line"
-        :icon-style="kpi.overdueCount > 0 ? 'bg-report-red-dark' : 'bg-report-gray'"
+        :icon-style="
+          kpi.overdueCount > 0 ? 'bg-report-red-dark' : 'bg-report-gray'
+        "
       />
     </div>
 
@@ -69,16 +71,24 @@
         <ElTableColumn prop="technicianName" label="Thợ phụ trách" />
         <ElTableColumn prop="status" label="Trạng thái" width="140">
           <template #default="{ row }">
-            <ElTag :type="statusType(row.status)" size="small" effect="light" round>{{
-              row.status
-            }}</ElTag>
+            <ElTag
+              :type="statusType(row.status)"
+              size="small"
+              effect="light"
+              round
+              >{{ row.status }}</ElTag
+            >
           </template>
         </ElTableColumn>
         <ElTableColumn prop="startedAt" label="Bắt đầu" width="120">
-          <template #default="{ row }">{{ formatDate(row.startedAt) }}</template>
+          <template #default="{ row }">{{
+            formatDate(row.startedAt)
+          }}</template>
         </ElTableColumn>
         <ElTableColumn prop="laborFee" label="Tiền công" width="120">
-          <template #default="{ row }">{{ formatCurrency(row.laborFee) }}</template>
+          <template #default="{ row }">{{
+            formatCurrency(row.laborFee)
+          }}</template>
         </ElTableColumn>
       </ElTable>
     </ElCard>
@@ -86,74 +96,82 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue'
-  import { statisticsApi } from '@/infrastructure/api/statistics.api'
-  import ArtStatsCard from '@/components/core/cards/art-stats-card/index.vue'
-  import ReportPageHeader from './ReportPageHeader.vue'
-  import ReportPeriodSwitcher from './ReportPeriodSwitcher.vue'
-  import ReportPlaceholder from './ReportPlaceholder.vue'
+import { onMounted, ref } from "vue";
+import { statisticsApi } from "@/infrastructure/api/statistics.api";
+import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
+import ReportPageHeader from "./ReportPageHeader.vue";
+import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
+import ReportPlaceholder from "./ReportPlaceholder.vue";
 
-  const currentPeriod = ref<'today' | 'month' | 'year' | 'custom'>('month')
-  const periodStart = ref('')
-  const periodEnd = ref('')
+const currentPeriod = ref<"today" | "month" | "year" | "custom">("month");
+const periodStart = ref("");
+const periodEnd = ref("");
 
-  const loading = ref(false)
-  const kpi = ref({
-    inProgressCount: 0,
-    avgCompletionHours: 0,
-    monthlyRevenue: 0,
-    overdueCount: 0,
-  })
-  const repairOrders = ref<
-    Array<{
-      id: number
-      orderCode: string
-      customerName: string
-      vehicleInfo: string
-      technicianName: string
-      status: string
-      startedAt: string
-      laborFee: number
-    }>
-  >([])
+const loading = ref(false);
+const kpi = ref({
+  inProgressCount: 0,
+  avgCompletionHours: 0,
+  monthlyRevenue: 0,
+  overdueCount: 0,
+});
+const repairOrders = ref<
+  Array<{
+    id: number;
+    orderCode: string;
+    customerName: string;
+    vehicleInfo: string;
+    technicianName: string;
+    status: string;
+    startedAt: string;
+    laborFee: number;
+  }>
+>([]);
 
-  function onPeriodChange() {
-    // TODO: Pass period params to API when backend supports it
-    // Expected: GET /api/v1/Statistics/workshop-overview?period=...&start=...&end=...
-    loadData()
+function onPeriodChange() {
+  // TODO: Pass period params to API when backend supports it
+  // Expected: GET /api/v1/Statistics/workshop-overview?period=...&start=...&end=...
+  loadData();
+}
+
+async function loadData() {
+  loading.value = true;
+  try {
+    const data = await statisticsApi.getWorkshopOverview();
+    kpi.value = data.kpi;
+    repairOrders.value = data.repairOrders;
+  } finally {
+    loading.value = false;
   }
+}
 
-  async function loadData() {
-    loading.value = true
-    try {
-      const data = await statisticsApi.getWorkshopOverview()
-      kpi.value = data.kpi
-      repairOrders.value = data.repairOrders
-    } finally {
-      loading.value = false
-    }
-  }
+function statusType(
+  status: string,
+): "primary" | "success" | "info" | "danger" | "warning" {
+  const map: Record<
+    string,
+    "primary" | "success" | "info" | "danger" | "warning"
+  > = {
+    "Đang sửa": "warning",
+    "Chờ phụ tùng": "info",
+    "Sẵn sàng bàn giao": "success",
+    "Đã bàn giao": "success",
+  };
+  return map[status] || "info";
+}
 
-  function statusType(status: string): 'primary' | 'success' | 'info' | 'danger' | 'warning' {
-    const map: Record<string, 'primary' | 'success' | 'info' | 'danger' | 'warning'> = {
-      'Đang sửa': 'warning',
-      'Chờ phụ tùng': 'info',
-      'Sẵn sàng bàn giao': 'success',
-      'Đã bàn giao': 'success',
-    }
-    return map[status] || 'info'
-  }
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(value);
+}
 
-  function formatCurrency(value: number) {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
-  }
+function formatDate(iso: string) {
+  if (!iso) return "-";
+  return new Date(iso).toLocaleDateString("vi-VN");
+}
 
-  function formatDate(iso: string) {
-    if (!iso) return '-'
-    return new Date(iso).toLocaleDateString('vi-VN')
-  }
-
-  onMounted(() => {
-    loadData()
-  })
+onMounted(() => {
+  loadData();
+});
 </script>

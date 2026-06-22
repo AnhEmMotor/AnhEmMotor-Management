@@ -1,32 +1,31 @@
-import { ref, computed } from 'vue'
-import { useDebounceFn } from '@vueuse/core'
-import { ServiceApi } from '@/infrastructure/api/service'
-import { ServiceCategoryApi } from '@/infrastructure/api/service-category.api'
-import { useTable } from '@/hooks/core/useTable'
-import type { ServiceResponse } from '@/infrastructure/api/service'
-import type { ServiceCategoryResponse } from '@/infrastructure/api/service-category.api'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ref } from "vue";
+import { ServiceApi } from "@/infrastructure/api/service";
+import { ServiceCategoryApi } from "@/infrastructure/api/service-category.api";
+import { useTable } from "@/hooks/core/useTable";
+import type { ServiceResponse } from "@/infrastructure/api/service";
+import type { ServiceCategoryResponse } from "@/infrastructure/api/service-category.api";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 export function useServiceTable() {
   // Service categories
-  const categories = ref<ServiceCategoryResponse[]>([])
-  const loadingCategories = ref(false)
+  const categories = ref<ServiceCategoryResponse[]>([]);
+  const loadingCategories = ref(false);
 
   const fetchCategories = async () => {
-    loadingCategories.value = true
+    loadingCategories.value = true;
     try {
       const res = await ServiceCategoryApi.getList({
         current: 1,
         size: 1000,
-      })
-      categories.value = res.items || []
+      });
+      categories.value = res.items || [];
     } catch (_err) {
-      console.error('Failed to fetch service categories:', _err)
-      categories.value = []
+      console.error("Failed to fetch service categories:", _err);
+      categories.value = [];
     } finally {
-      loadingCategories.value = false
+      loadingCategories.value = false;
     }
-  }
+  };
 
   // Table state via useTable hook
   const {
@@ -40,145 +39,154 @@ export function useServiceTable() {
     getData,
     refreshData,
     replaceSearchParams,
-    searchParams,
   } = useTable({
     core: {
       apiFn: async (params: any) => {
-        const res = await ServiceApi.getList(params)
+        const res = await ServiceApi.getList(params);
         if (res && res.items) {
           res.items = res.items.map((item: any) => ({
             ...item,
             categoryName: getCategoryName(item.categoryId),
-          }))
+          }));
         }
-        return res
+        return res;
       },
       apiParams: {
         current: 1,
         size: 10,
-        Filters: '',
+        Filters: "",
       },
       immediate: true,
       columnsFactory: () => [
-        { prop: 'id', label: 'ID', width: 80, align: 'center' },
-        { prop: 'name', label: 'Tên dịch vụ', minWidth: 200 },
-        { prop: 'categoryName', label: 'Danh mục', width: 180 },
-        { prop: 'basePrice', label: 'Giá (VNĐ)', width: 140, align: 'right' },
+        { prop: "id", label: "ID", width: 80, align: "center" },
+        { prop: "name", label: "Tên dịch vụ", minWidth: 200 },
+        { prop: "categoryName", label: "Danh mục", width: 180 },
+        { prop: "basePrice", label: "Giá (VNĐ)", width: 140, align: "right" },
         {
-          prop: 'estimatedDurationMinutes',
-          label: 'Thời gian (phút)',
+          prop: "estimatedDurationMinutes",
+          label: "Thời gian (phút)",
           width: 130,
-          align: 'center',
+          align: "center",
         },
-        { prop: 'isActive', label: 'Trạng thái', width: 120, align: 'center', useSlot: true },
         {
-          prop: 'operation',
-          label: 'Hành động',
+          prop: "isActive",
+          label: "Trạng thái",
+          width: 120,
+          align: "center",
+          useSlot: true,
+        },
+        {
+          prop: "operation",
+          label: "Hành động",
           width: 180,
-          align: 'center',
-          fixed: 'right',
+          align: "center",
+          fixed: "right",
           useSlot: true,
         },
       ],
     },
-  })
+  });
 
   // Add categoryName to data for display
   const getCategoryName = (categoryId?: number) => {
-    if (!categoryId) return '-'
-    const cat = categories.value.find((c) => c.id === categoryId)
-    return cat?.name || `Danh mục #${categoryId}`
-  }
+    if (!categoryId) return "-";
+    const cat = categories.value.find((c) => c.id === categoryId);
+    return cat?.name || `Danh mục #${categoryId}`;
+  };
 
   // Form state
-  const dialogVisible = ref(false)
-  const dialogTitle = ref('')
+  const dialogVisible = ref(false);
+  const dialogTitle = ref("");
   const formData = ref<Partial<ServiceResponse>>({
     isActive: true,
-  })
-  const submitting = ref(false)
+  });
+  const submitting = ref(false);
 
   const handleAdd = () => {
-    dialogTitle.value = 'Thêm dịch vụ mới'
+    dialogTitle.value = "Thêm dịch vụ mới";
     formData.value = {
-      name: '',
-      description: '',
+      name: "",
+      description: "",
       basePrice: 0,
       estimatedDurationMinutes: undefined,
       categoryId: undefined,
       isActive: true,
-    }
-    dialogVisible.value = true
-  }
+    };
+    dialogVisible.value = true;
+  };
 
   const handleEdit = async (row: any) => {
-    dialogTitle.value = 'Cập nhật dịch vụ'
+    dialogTitle.value = "Cập nhật dịch vụ";
     try {
       // Since there's no get-by-id endpoint, we might have full data in row
-      formData.value = { ...row }
-      dialogVisible.value = true
+      formData.value = { ...row };
+      dialogVisible.value = true;
     } catch (_err) {
-      ElMessage.error('Không thể lấy chi tiết dịch vụ')
+      ElMessage.error("Không thể lấy chi tiết dịch vụ");
     }
-  }
+  };
 
   const handleDelete = (row: any) => {
-    ElMessageBox.confirm(`Bạn có chắc chắn muốn xóa dịch vụ "${row.name}" không?`, 'Xác nhận xóa', {
-      confirmButtonText: 'Xóa',
-      cancelButtonText: 'Hủy',
-      type: 'warning',
-    }).then(async () => {
+    ElMessageBox.confirm(
+      `Bạn có chắc chắn muốn xóa dịch vụ "${row.name}" không?`,
+      "Xác nhận xóa",
+      {
+        confirmButtonText: "Xóa",
+        cancelButtonText: "Hủy",
+        type: "warning",
+      },
+    ).then(async () => {
       try {
         // No delete endpoint? Use update to deactivate
-        await ServiceApi.update(row.id, { ...row, isActive: false })
-        ElMessage.success('Đã vô hiệu hóa dịch vụ')
-        refreshData()
+        await ServiceApi.update(row.id, { ...row, isActive: false });
+        ElMessage.success("Đã vô hiệu hóa dịch vụ");
+        refreshData();
       } catch (_err: any) {
-        ElMessage.error(_err.message || 'Xóa thất bại')
+        ElMessage.error(_err.message || "Xóa thất bại");
       }
-    })
-  }
+    });
+  };
 
   const handleSearch = (params: any) => {
-    const filters = []
-    if (params.name) filters.push(`Name@=${params.name}`)
-    if (params.categoryId) filters.push(`CategoryId==${params.categoryId}`)
-    if (params.isActive !== undefined && params.isActive !== '')
-      filters.push(`IsActive==${params.isActive}`)
+    const filters = [];
+    if (params.name) filters.push(`Name@=${params.name}`);
+    if (params.categoryId) filters.push(`CategoryId==${params.categoryId}`);
+    if (params.isActive !== undefined && params.isActive !== "")
+      filters.push(`IsActive==${params.isActive}`);
 
     replaceSearchParams({
-      Filters: filters.join(','),
-    })
-    getData()
-  }
+      Filters: filters.join(","),
+    });
+    getData();
+  };
 
   const handleReset = () => {
     replaceSearchParams({
-      Filters: '',
-    })
-    getData()
-  }
+      Filters: "",
+    });
+    getData();
+  };
 
   const submitForm = async () => {
-    submitting.value = true
+    submitting.value = true;
     try {
       if (formData.value.id) {
-        await ServiceApi.update(formData.value.id, formData.value)
-        ElMessage.success('Cập nhật dịch vụ thành công')
+        await ServiceApi.update(formData.value.id, formData.value);
+        ElMessage.success("Cập nhật dịch vụ thành công");
       } else {
-        await ServiceApi.create(formData.value as any)
-        ElMessage.success('Thêm dịch vụ thành công')
+        await ServiceApi.create(formData.value as any);
+        ElMessage.success("Thêm dịch vụ thành công");
       }
-      dialogVisible.value = false
-      refreshData()
+      dialogVisible.value = false;
+      refreshData();
     } catch (_err: any) {
-      ElMessage.error(_err.message || 'Thao tác thất bại')
+      ElMessage.error(_err.message || "Thao tác thất bại");
     } finally {
-      submitting.value = false
+      submitting.value = false;
     }
-  }
+  };
 
-  fetchCategories()
+  fetchCategories();
 
   return {
     categories,
@@ -203,5 +211,5 @@ export function useServiceTable() {
     handleEdit,
     handleDelete,
     submitForm,
-  }
+  };
 }

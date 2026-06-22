@@ -1,3 +1,3 @@
-import { FestivalConfig } from '@/types/config'
+import { FestivalConfig } from "@/types/config";
 
-export const festivalConfigList: FestivalConfig[] = []
+export const festivalConfigList: FestivalConfig[] = [];

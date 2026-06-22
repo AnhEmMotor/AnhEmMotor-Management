@@ -20,13 +20,15 @@
       </ElFormItem>
       <ElFormItem>
         <div class="flex justify-end w-full">
-          <ElButton type="primary" @click="addComment">{{ $t('admin.t1') }}</ElButton>
+          <ElButton type="primary" @click="addComment">{{
+            $t("admin.t1")
+          }}</ElButton>
         </div>
       </ElFormItem>
     </ElForm>
 
     <ul>
-      <div class="pb-5 text-lg font-medium"> BinhLuan {{ comments.length }} </div>
+      <div class="pb-5 text-lg font-medium">BinhLuan {{ comments.length }}</div>
       <CommentItem
         v-for="comment in comments.slice().reverse()"
         :key="comment.id"
@@ -41,71 +43,78 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue'
-  import CommentItem from './widget/CommentItem.vue'
-  import { commentList, Comment } from '@/mock/temp/commentDetail'
-  const comments = commentList
+import { ref } from "vue";
+import CommentItem from "./widget/CommentItem.vue";
+import { commentList, Comment } from "@/mock/temp/commentDetail";
+const comments = commentList;
 
-  const newComment = ref<Partial<Comment>>({
-    author: '',
-    content: '',
-  })
+const newComment = ref<Partial<Comment>>({
+  author: "",
+  content: "",
+});
 
-  const showReplyForm = ref<number | null>(null)
+const showReplyForm = ref<number | null>(null);
 
-  const addComment = () => {
-    if (!newComment.value.author?.trim() || !newComment.value.content?.trim()) {
-      ElMessage.warning('Vui lòngviếtĐầy đủcủaBinhLuanThongTin')
-      return
-    }
+const addComment = () => {
+  if (!newComment.value.author?.trim() || !newComment.value.content?.trim()) {
+    ElMessage.warning("Vui lòngviếtĐầy đủcủaBinhLuanThongTin");
+    return;
+  }
 
-    comments.value.push({
+  comments.value.push({
+    id: Date.now(),
+    author: newComment.value.author.trim(),
+    content: newComment.value.content.trim(),
+    timestamp: new Date().toISOString(),
+    replies: [],
+  });
+
+  newComment.value.author = "";
+  newComment.value.content = "";
+  ElMessage.success("BinhLuanĐăng tảiThanhCong");
+};
+
+const addReply = (
+  commentId: number,
+  replyAuthor: string,
+  replyContent: string,
+) => {
+  if (!replyAuthor?.trim() || !replyContent?.trim()) {
+    ElMessage.warning("Vui lòngviếtĐầy đủcủaTraLoiThongTin");
+    return;
+  }
+
+  const comment = findComment(comments.value, commentId);
+  if (comment) {
+    comment.replies.push({
       id: Date.now(),
-      author: newComment.value.author.trim(),
-      content: newComment.value.content.trim(),
+      author: replyAuthor.trim(),
+      content: replyContent.trim(),
       timestamp: new Date().toISOString(),
       replies: [],
-    })
-
-    newComment.value.author = ''
-    newComment.value.content = ''
-    ElMessage.success('BinhLuanĐăng tảiThanhCong')
+    });
+    showReplyForm.value = null;
+    ElMessage.success("TraLoiĐăng tảiThanhCong");
   }
+};
 
-  const addReply = (commentId: number, replyAuthor: string, replyContent: string) => {
-    if (!replyAuthor?.trim() || !replyContent?.trim()) {
-      ElMessage.warning('Vui lòngviếtĐầy đủcủaTraLoiThongTin')
-      return
+const toggleReply = (commentId: number) => {
+  showReplyForm.value = showReplyForm.value === commentId ? null : commentId;
+};
+
+const findComment = (
+  comments: Comment[],
+  commentId: number,
+): Comment | undefined => {
+  for (const comment of comments) {
+    if (comment.id === commentId) {
+      return comment;
     }
-
-    const comment = findComment(comments.value, commentId)
-    if (comment) {
-      comment.replies.push({
-        id: Date.now(),
-        author: replyAuthor.trim(),
-        content: replyContent.trim(),
-        timestamp: new Date().toISOString(),
-        replies: [],
-      })
-      showReplyForm.value = null
-      ElMessage.success('TraLoiĐăng tảiThanhCong')
+    const found = findComment(comment.replies, commentId);
+    if (found) {
+      return found;
     }
   }
-
-  const toggleReply = (commentId: number) => {
-    showReplyForm.value = showReplyForm.value === commentId ? null : commentId
-  }
-
-  const findComment = (comments: Comment[], commentId: number): Comment | undefined => {
-    for (const comment of comments) {
-      if (comment.id === commentId) {
-        return comment
-      }
-      const found = findComment(comment.replies, commentId)
-      if (found) {
-        return found
-      }
-    }
-    return undefined
-  }
+  return undefined;
+};
 </script>

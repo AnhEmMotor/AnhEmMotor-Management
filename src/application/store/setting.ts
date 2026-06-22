@@ -1,240 +1,263 @@
-import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
-import { MenuThemeType } from '@/types/store'
-import AppConfig from '@/config'
-import { SystemThemeEnum, MenuThemeEnum, MenuTypeEnum, ContainerWidthEnum } from '@/enums/appEnum'
-import { setElementThemeColor } from '@/utils/ui'
-import { useCeremony } from '@/hooks/core/useCeremony'
-import { StorageConfig } from '@/utils'
-import { SETTING_DEFAULT_CONFIG } from '@/config/setting'
+import { defineStore } from "pinia";
+import { ref, computed } from "vue";
+import { MenuThemeType } from "@/types/store";
+import AppConfig from "@/config";
+import {
+  SystemThemeEnum,
+  MenuThemeEnum,
+  MenuTypeEnum,
+  ContainerWidthEnum,
+} from "@/enums/appEnum";
+import { setElementThemeColor } from "@/utils/ui";
+import { useCeremony } from "@/hooks/core/useCeremony";
+import { StorageConfig } from "@/utils";
+import { SETTING_DEFAULT_CONFIG } from "@/config/setting";
 
 export const useSettingStore = defineStore(
-  'settingStore',
+  "settingStore",
   () => {
-    // One-time migration of old localStorage defaults to new defaults
     try {
-      const stored = localStorage.getItem('setting')
+      const stored = localStorage.getItem("setting");
       if (stored) {
-        const parsed = JSON.parse(stored)
-        let changed = false
+        const parsed = JSON.parse(stored);
+        let changed = false;
         if (parsed.menuOpenWidth === 230) {
-          parsed.menuOpenWidth = 260
-          changed = true
+          parsed.menuOpenWidth = 260;
+          changed = true;
         }
-        if (parsed.systemThemeColor === '#5D87FF') {
-          parsed.systemThemeColor = '#E84A4A'
-          changed = true
+        if (parsed.systemThemeColor === "#5D87FF") {
+          parsed.systemThemeColor = "#E84A4A";
+          changed = true;
         }
         if (changed) {
-          localStorage.setItem('setting', JSON.stringify(parsed))
+          localStorage.setItem("setting", JSON.stringify(parsed));
         }
       }
     } catch (e) {
-      console.error('Failed to migrate local storage settings:', e)
+      console.error("Failed to migrate local storage settings:", e);
     }
 
-    const menuType = ref(SETTING_DEFAULT_CONFIG.menuType)
+    const menuType = ref(SETTING_DEFAULT_CONFIG.menuType);
 
-    const menuOpenWidth = ref(SETTING_DEFAULT_CONFIG.menuOpenWidth)
+    const menuOpenWidth = ref(SETTING_DEFAULT_CONFIG.menuOpenWidth);
 
-    const menuOpen = ref(SETTING_DEFAULT_CONFIG.menuOpen)
+    const menuOpen = ref(SETTING_DEFAULT_CONFIG.menuOpen);
 
-    const dualMenuShowText = ref(SETTING_DEFAULT_CONFIG.dualMenuShowText)
+    const dualMenuShowText = ref(SETTING_DEFAULT_CONFIG.dualMenuShowText);
 
-    const systemThemeType = ref(SETTING_DEFAULT_CONFIG.systemThemeType)
+    const systemThemeType = ref(SETTING_DEFAULT_CONFIG.systemThemeType);
 
-    const systemThemeMode = ref(SETTING_DEFAULT_CONFIG.systemThemeMode)
+    const systemThemeMode = ref(SETTING_DEFAULT_CONFIG.systemThemeMode);
 
-    const menuThemeType = ref(SETTING_DEFAULT_CONFIG.menuThemeType)
+    const menuThemeType = ref(SETTING_DEFAULT_CONFIG.menuThemeType);
 
-    const systemThemeColor = ref(SETTING_DEFAULT_CONFIG.systemThemeColor)
+    const systemThemeColor = ref(SETTING_DEFAULT_CONFIG.systemThemeColor);
 
-    const showMenuButton = ref(SETTING_DEFAULT_CONFIG.showMenuButton)
+    const showMenuButton = ref(SETTING_DEFAULT_CONFIG.showMenuButton);
 
-    const showFastEnter = ref(SETTING_DEFAULT_CONFIG.showFastEnter)
+    const showFastEnter = ref(SETTING_DEFAULT_CONFIG.showFastEnter);
 
-    const showRefreshButton = ref(SETTING_DEFAULT_CONFIG.showRefreshButton)
+    const showRefreshButton = ref(SETTING_DEFAULT_CONFIG.showRefreshButton);
 
-    const showCrumbs = ref(SETTING_DEFAULT_CONFIG.showCrumbs)
+    const showCrumbs = ref(SETTING_DEFAULT_CONFIG.showCrumbs);
 
-    const showWorkTab = ref(SETTING_DEFAULT_CONFIG.showWorkTab)
+    const showWorkTab = ref(SETTING_DEFAULT_CONFIG.showWorkTab);
 
-    const showLanguage = ref(SETTING_DEFAULT_CONFIG.showLanguage)
+    const showLanguage = ref(SETTING_DEFAULT_CONFIG.showLanguage);
 
-    const showNprogress = ref(SETTING_DEFAULT_CONFIG.showNprogress)
+    const showNprogress = ref(SETTING_DEFAULT_CONFIG.showNprogress);
 
-    const showSettingGuide = ref(SETTING_DEFAULT_CONFIG.showSettingGuide)
+    const showSettingGuide = ref(SETTING_DEFAULT_CONFIG.showSettingGuide);
 
-    const showFestivalText = ref(SETTING_DEFAULT_CONFIG.showFestivalText)
+    const showFestivalText = ref(SETTING_DEFAULT_CONFIG.showFestivalText);
 
-    const watermarkVisible = ref(SETTING_DEFAULT_CONFIG.watermarkVisible)
+    const watermarkVisible = ref(SETTING_DEFAULT_CONFIG.watermarkVisible);
 
-    const autoClose = ref(SETTING_DEFAULT_CONFIG.autoClose)
+    const autoClose = ref(SETTING_DEFAULT_CONFIG.autoClose);
 
-    const uniqueOpened = ref(SETTING_DEFAULT_CONFIG.uniqueOpened)
+    const uniqueOpened = ref(SETTING_DEFAULT_CONFIG.uniqueOpened);
 
-    const colorWeak = ref(SETTING_DEFAULT_CONFIG.colorWeak)
+    const colorWeak = ref(SETTING_DEFAULT_CONFIG.colorWeak);
 
-    const refresh = ref(SETTING_DEFAULT_CONFIG.refresh)
+    const refresh = ref(SETTING_DEFAULT_CONFIG.refresh);
 
-    const holidayFireworksLoaded = ref(SETTING_DEFAULT_CONFIG.holidayFireworksLoaded)
+    const holidayFireworksLoaded = ref(
+      SETTING_DEFAULT_CONFIG.holidayFireworksLoaded,
+    );
 
-    const boxBorderMode = ref(SETTING_DEFAULT_CONFIG.boxBorderMode)
+    const boxBorderMode = ref(SETTING_DEFAULT_CONFIG.boxBorderMode);
 
-    const pageTransition = ref(SETTING_DEFAULT_CONFIG.pageTransition)
+    const pageTransition = ref(SETTING_DEFAULT_CONFIG.pageTransition);
 
-    const tabStyle = ref(SETTING_DEFAULT_CONFIG.tabStyle)
+    const tabStyle = ref(SETTING_DEFAULT_CONFIG.tabStyle);
 
-    const customRadius = ref(SETTING_DEFAULT_CONFIG.customRadius)
+    const customRadius = ref(SETTING_DEFAULT_CONFIG.customRadius);
 
-    const containerWidth = ref(SETTING_DEFAULT_CONFIG.containerWidth)
+    const containerWidth = ref(SETTING_DEFAULT_CONFIG.containerWidth);
 
-    const festivalDate = ref('')
+    const festivalDate = ref("");
 
     const getMenuTheme = computed((): MenuThemeType => {
-      const list = AppConfig.themeList.filter((item) => item.theme === menuThemeType.value)
+      const list = AppConfig.themeList.filter(
+        (item) => item.theme === menuThemeType.value,
+      );
       if (isDark.value) {
-        return AppConfig.darkMenuStyles[0]
+        return AppConfig.darkMenuStyles[0];
       } else {
-        return list[0]
+        return list[0];
       }
-    })
+    });
 
     const isDark = computed((): boolean => {
-      return systemThemeType.value === SystemThemeEnum.DARK
-    })
+      return systemThemeType.value === SystemThemeEnum.DARK;
+    });
 
     const getMenuOpenWidth = computed((): string => {
-      return menuOpenWidth.value + 'px' || SETTING_DEFAULT_CONFIG.menuOpenWidth + 'px'
-    })
+      return (
+        menuOpenWidth.value + "px" ||
+        SETTING_DEFAULT_CONFIG.menuOpenWidth + "px"
+      );
+    });
 
     const getCustomRadius = computed((): string => {
-      return customRadius.value + 'rem' || SETTING_DEFAULT_CONFIG.customRadius + 'rem'
-    })
+      return (
+        customRadius.value + "rem" ||
+        SETTING_DEFAULT_CONFIG.customRadius + "rem"
+      );
+    });
 
     const isShowFireworks = computed((): boolean => {
-      return festivalDate.value === useCeremony().currentFestivalData.value?.date ? false : true
-    })
+      return festivalDate.value ===
+        useCeremony().currentFestivalData.value?.date
+        ? false
+        : true;
+    });
 
     const switchMenuLayouts = (type: MenuTypeEnum) => {
-      menuType.value = type
-    }
+      menuType.value = type;
+    };
 
     const setMenuOpenWidth = (width: number) => {
-      menuOpenWidth.value = width
-    }
+      menuOpenWidth.value = width;
+    };
 
-    const setGlopTheme = (theme: SystemThemeEnum, themeMode: SystemThemeEnum) => {
-      systemThemeType.value = theme
-      systemThemeMode.value = themeMode
-      localStorage.setItem(StorageConfig.THEME_KEY, theme)
-    }
+    const setGlopTheme = (
+      theme: SystemThemeEnum,
+      themeMode: SystemThemeEnum,
+    ) => {
+      systemThemeType.value = theme;
+      systemThemeMode.value = themeMode;
+      localStorage.setItem(StorageConfig.THEME_KEY, theme);
+    };
 
     const switchMenuStyles = (theme: MenuThemeEnum) => {
-      menuThemeType.value = theme
-    }
+      menuThemeType.value = theme;
+    };
 
     const setElementTheme = (theme: string) => {
-      systemThemeColor.value = theme
-      setElementThemeColor(theme)
-    }
+      systemThemeColor.value = theme;
+      setElementThemeColor(theme);
+    };
 
     const setBorderMode = () => {
-      boxBorderMode.value = !boxBorderMode.value
-    }
+      boxBorderMode.value = !boxBorderMode.value;
+    };
 
     const setContainerWidth = (width: ContainerWidthEnum) => {
-      containerWidth.value = width
-    }
+      containerWidth.value = width;
+    };
 
     const setUniqueOpened = () => {
-      uniqueOpened.value = !uniqueOpened.value
-    }
+      uniqueOpened.value = !uniqueOpened.value;
+    };
 
     const setButton = () => {
-      showMenuButton.value = !showMenuButton.value
-    }
+      showMenuButton.value = !showMenuButton.value;
+    };
 
     const setFastEnter = () => {
-      showFastEnter.value = !showFastEnter.value
-    }
+      showFastEnter.value = !showFastEnter.value;
+    };
 
     const setAutoClose = () => {
-      autoClose.value = !autoClose.value
-    }
+      autoClose.value = !autoClose.value;
+    };
 
     const setShowRefreshButton = () => {
-      showRefreshButton.value = !showRefreshButton.value
-    }
+      showRefreshButton.value = !showRefreshButton.value;
+    };
 
     const setCrumbs = () => {
-      showCrumbs.value = !showCrumbs.value
-    }
+      showCrumbs.value = !showCrumbs.value;
+    };
 
     const setWorkTab = (show: boolean) => {
-      showWorkTab.value = show
-    }
+      showWorkTab.value = show;
+    };
 
     const setLanguage = () => {
-      showLanguage.value = !showLanguage.value
-    }
+      showLanguage.value = !showLanguage.value;
+    };
 
     const setNprogress = () => {
-      showNprogress.value = !showNprogress.value
-    }
+      showNprogress.value = !showNprogress.value;
+    };
 
     const setColorWeak = () => {
-      colorWeak.value = !colorWeak.value
-    }
+      colorWeak.value = !colorWeak.value;
+    };
 
     const hideSettingGuide = () => {
-      showSettingGuide.value = false
-    }
+      showSettingGuide.value = false;
+    };
 
     const openSettingGuide = () => {
-      showSettingGuide.value = true
-    }
+      showSettingGuide.value = true;
+    };
 
     const setPageTransition = (transition: string) => {
-      pageTransition.value = transition
-    }
+      pageTransition.value = transition;
+    };
 
     const setTabStyle = (style: string) => {
-      tabStyle.value = style
-    }
+      tabStyle.value = style;
+    };
 
     const setMenuOpen = (open: boolean) => {
-      menuOpen.value = open
-    }
+      menuOpen.value = open;
+    };
 
     const reload = () => {
-      refresh.value = !refresh.value
-    }
+      refresh.value = !refresh.value;
+    };
 
     const setWatermarkVisible = (visible: boolean) => {
-      watermarkVisible.value = visible
-    }
+      watermarkVisible.value = visible;
+    };
 
     const setCustomRadius = (radius: string) => {
-      customRadius.value = radius
-      document.documentElement.style.setProperty('--custom-radius', `${radius}rem`)
-    }
+      customRadius.value = radius;
+      document.documentElement.style.setProperty(
+        "--custom-radius",
+        `${radius}rem`,
+      );
+    };
 
     const setholidayFireworksLoaded = (isLoad: boolean) => {
-      holidayFireworksLoaded.value = isLoad
-    }
+      holidayFireworksLoaded.value = isLoad;
+    };
 
     const setShowFestivalText = (show: boolean) => {
-      showFestivalText.value = show
-    }
+      showFestivalText.value = show;
+    };
 
     const setFestivalDate = (date: string) => {
-      festivalDate.value = date
-    }
+      festivalDate.value = date;
+    };
 
     const setDualMenuShowText = (show: boolean) => {
-      dualMenuShowText.value = show
-    }
+      dualMenuShowText.value = show;
+    };
 
     return {
       menuType,
@@ -300,12 +323,12 @@ export const useSettingStore = defineStore(
       setShowFestivalText,
       setFestivalDate,
       setDualMenuShowText,
-    }
+    };
   },
   {
     persist: {
-      key: 'setting',
+      key: "setting",
       storage: localStorage,
     },
   },
-)
+);

@@ -4,47 +4,53 @@ import type {
   SupplierContractListParams,
   SupplierContractStatisticsResponse,
   SupplierContractStatus,
-} from '@/domain/supplier/contract.types'
+} from "@/domain/supplier/contract.types";
 
 export interface GetSupplierContractsUseCase {
   execute(params: SupplierContractListParams): Promise<{
-    items: SupplierContractDto[]
-    totalCount: number
-  }>
+    items: SupplierContractDto[];
+    totalCount: number;
+  }>;
 }
 
 export interface GetSupplierContractDetailUseCase {
-  execute(id: string): Promise<SupplierContractDto>
+  execute(id: string): Promise<SupplierContractDto>;
 }
 
 export interface GetSupplierContractAuditLogsUseCase {
-  execute(id: string): Promise<SupplierContractAuditLogDto[]>
+  execute(id: string): Promise<SupplierContractAuditLogDto[]>;
 }
 
 export interface CreateSupplierContractUseCase {
-  execute(data: Partial<SupplierContractDto>): Promise<SupplierContractDto>
+  execute(data: Partial<SupplierContractDto>): Promise<SupplierContractDto>;
 }
 
 export interface UpdateSupplierContractUseCase {
-  execute(id: string, data: Partial<SupplierContractDto>): Promise<SupplierContractDto>
+  execute(
+    id: string,
+    data: Partial<SupplierContractDto>,
+  ): Promise<SupplierContractDto>;
 }
 
 export interface UpdateSupplierContractStatusUseCase {
-  execute(id: string, status: SupplierContractStatus): Promise<SupplierContractDto>
+  execute(
+    id: string,
+    status: SupplierContractStatus,
+  ): Promise<SupplierContractDto>;
 }
 
 export interface DeleteSupplierContractUseCase {
-  execute(id: string): Promise<void>
+  execute(id: string): Promise<void>;
 }
 
 export interface RestoreSupplierContractUseCase {
-  execute(id: string): Promise<void>
+  execute(id: string): Promise<void>;
 }
 
 export interface GetSupplierContractStatisticsUseCase {
-  execute(): Promise<SupplierContractStatisticsResponse>
+  execute(): Promise<SupplierContractStatisticsResponse>;
 }
 
 export interface GetSuppliersForSelectUseCase {
-  execute(): Promise<{ id: string; name: string }[]>
+  execute(): Promise<{ id: string; name: string }[]>;
 }

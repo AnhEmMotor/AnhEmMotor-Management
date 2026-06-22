@@ -1,53 +1,56 @@
-import { createI18n } from 'vue-i18n'
-import type { I18n, I18nOptions } from 'vue-i18n'
-import { LanguageEnum } from '@/enums/appEnum'
-import { getSystemStorage } from '@/utils/storage'
-import { StorageKeyManager } from '@/utils/storage/storage-key-manager'
+import { createI18n } from "vue-i18n";
+import type { I18n, I18nOptions } from "vue-i18n";
+import { LanguageEnum } from "@/enums/appEnum";
+import { getSystemStorage } from "@/utils/storage";
+import { StorageKeyManager } from "@/utils/storage/storage-key-manager";
 
-import enMessages from './langs/en.json'
-import viMessages from './langs/vi.json'
+import enMessages from "./langs/en.json";
+import viMessages from "./langs/vi.json";
 
-const storageKeyManager = new StorageKeyManager()
+const storageKeyManager = new StorageKeyManager();
 
 const messages = {
   [LanguageEnum.EN]: enMessages,
   [LanguageEnum.VI]: viMessages,
-}
+};
 
 export const languageOptions = [
-  { value: LanguageEnum.VI, label: 'Tiếng Việt' },
-  { value: LanguageEnum.EN, label: 'English' },
-]
+  { value: LanguageEnum.VI, label: "Tiếng Việt" },
+  { value: LanguageEnum.EN, label: "English" },
+];
 
 const getDefaultLanguage = (): LanguageEnum => {
   try {
-    const storageKey = storageKeyManager.getStorageKey('user')
-    const userStore = localStorage.getItem(storageKey)
+    const storageKey = storageKeyManager.getStorageKey("user");
+    const userStore = localStorage.getItem(storageKey);
 
     if (userStore) {
-      const { language } = JSON.parse(userStore)
+      const { language } = JSON.parse(userStore);
       if (language && Object.values(LanguageEnum).includes(language)) {
-        return language
+        return language;
       }
     }
   } catch (error) {
-    console.warn('[i18n] Lỗi lấy ngôn ngữ từ storage:', error)
+    console.warn("[i18n] Lỗi lấy ngôn ngữ từ storage:", error);
   }
 
   try {
-    const sys = getSystemStorage()
+    const sys = getSystemStorage();
     if (sys) {
-      const { user } = JSON.parse(sys)
-      if (user?.language && Object.values(LanguageEnum).includes(user.language)) {
-        return user.language
+      const { user } = JSON.parse(sys);
+      if (
+        user?.language &&
+        Object.values(LanguageEnum).includes(user.language)
+      ) {
+        return user.language;
       }
     }
   } catch (error) {
-    console.warn('[i18n] Lỗi lấy ngôn ngữ từ system storage:', error)
+    console.warn("[i18n] Lỗi lấy ngôn ngữ từ system storage:", error);
   }
 
-  return LanguageEnum.VI
-}
+  return LanguageEnum.VI;
+};
 
 const i18nOptions: I18nOptions = {
   locale: getDefaultLanguage(),
@@ -55,17 +58,17 @@ const i18nOptions: I18nOptions = {
   globalInjection: true,
   fallbackLocale: LanguageEnum.VI,
   messages,
-}
+};
 
-const i18n: I18n = createI18n(i18nOptions)
+const i18n: I18n = createI18n(i18nOptions);
 
 interface Translation {
-  (key: string): string
+  (key: string): string;
 }
 
-export const $t = i18n.global.t as Translation
+export const $t = i18n.global.t as Translation;
 
-export default i18n
+export default i18n;
 
 // Force HMR
 //

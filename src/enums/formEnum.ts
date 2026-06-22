@@ -4,7 +4,7 @@ export enum PageModeEnum {
 }
 
 export enum TableSizeEnum {
-  DEFAULT = 'default',
-  SMALL = 'small',
-  LARGE = 'large',
+  DEFAULT = "default",
+  SMALL = "small",
+  LARGE = "large",
 }

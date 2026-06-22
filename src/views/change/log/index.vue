@@ -1,6 +1,6 @@
 <template>
   <div class="mx-auto pt-5 mb-5">
-    <h3 class="text-2xl font-medium text-g-900 mb-8">{{ $t('admin.t35') }}</h3>
+    <h3 class="text-2xl font-medium text-g-900 mb-8">{{ $t("admin.t35") }}</h3>
 
     <div class="space-y-5">
       <div
@@ -9,7 +9,9 @@
         class="art-card-sm rounded-lg p-6 transition-shadow max-md:p-4"
       >
         <div class="flex-cb gap-3 mb-4 flex-wrap">
-          <span class="px-3 py-1 bg-theme/10 text-theme text-sm font-medium rounded-full">
+          <span
+            class="px-3 py-1 bg-theme/10 text-theme text-sm font-medium rounded-full"
+          >
             {{ item.version }}
           </span>
           <span class="text-sm text-g-500">{{ item.date }}</span>
@@ -28,18 +30,23 @@
           </li>
         </ul>
 
-        <div v-if="item.remark" class="text-sm text-g-800 bg-g-300/60 rounded p-3 mb-3">
+        <div
+          v-if="item.remark"
+          class="text-sm text-g-800 bg-g-300/60 rounded p-3 mb-3"
+        >
           {{ item.remark }}
         </div>
 
-        <ElTag v-if="item.requireReLogin" type="warning" size="small">{{ $t('admin.t36') }}</ElTag>
+        <ElTag v-if="item.requireReLogin" type="warning" size="small">{{
+          $t("admin.t36")
+        }}</ElTag>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { upgradeLogList } from '@/mock/upgrade/changeLog'
+import { upgradeLogList } from "@/mock/upgrade/changeLog";
 
-  defineOptions({ name: 'ChangeLog' })
+defineOptions({ name: "ChangeLog" });
 </script>

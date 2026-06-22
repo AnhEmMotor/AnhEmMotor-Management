@@ -11,21 +11,40 @@
 
     <ArtTextScroll :text="$t('admin.t274')" @close="handleClose" />
 
-    <ArtTextScroll type="warning" :text="$t('admin.t275')" :speed="30" direction="right" />
+    <ArtTextScroll
+      type="warning"
+      :text="$t('admin.t275')"
+      :speed="30"
+      direction="right"
+    />
 
-    <ArtTextScroll :text="$t('admin.t276')" @close="handleClose" :alwaysScroll="false" />
+    <ArtTextScroll
+      :text="$t('admin.t276')"
+      @close="handleClose"
+      :alwaysScroll="false"
+    />
 
-    <ArtTextScroll type="danger" direction="up" :speed="30" :text="$t('admin.t277')" />
+    <ArtTextScroll
+      type="danger"
+      direction="up"
+      :speed="30"
+      :text="$t('admin.t277')"
+    />
 
-    <ArtTextScroll type="info" direction="down" :speed="30" :text="$t('admin.t278')" />
+    <ArtTextScroll
+      type="info"
+      direction="down"
+      :speed="30"
+      :text="$t('admin.t278')"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-  defineOptions({ name: 'WidgetsTextScroll' })
+defineOptions({ name: "WidgetsTextScroll" });
 
-  const handleClose = () => {
-    console.log('vănquyểnCuộnComponentĐãđóngđóng')
-    ElMessage.info('Đãđóngđóng')
-  }
+const handleClose = () => {
+  console.log("vănquyểnCuộnComponentĐãđóngđóng");
+  ElMessage.info("Đãđóngđóng");
+};
 </script>

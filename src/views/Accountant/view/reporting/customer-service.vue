@@ -78,23 +78,34 @@
         <ElTableColumn prop="rating" label="Đánh giá" width="120">
           <template #default="{ row }">
             <span class="text-yellow-500"
-              >{{ '⭐'.repeat(row.rating) }}{{ '☆'.repeat(5 - row.rating) }}</span
+              >{{ "⭐".repeat(row.rating)
+              }}{{ "☆".repeat(5 - row.rating) }}</span
             >
           </template>
         </ElTableColumn>
         <ElTableColumn prop="status" label="Trạng thái" width="140">
           <template #default="{ row }">
-            <ElTag :type="complaintStatusType(row.status)" size="small" effect="light" round>{{
-              row.status
-            }}</ElTag>
+            <ElTag
+              :type="complaintStatusType(row.status)"
+              size="small"
+              effect="light"
+              round
+              >{{ row.status }}</ElTag
+            >
           </template>
         </ElTableColumn>
         <ElTableColumn prop="createdAt" label="Ngày tạo" width="120">
-          <template #default="{ row }">{{ formatDate(row.createdAt) }}</template>
-        </ElTableColumn>
-        <ElTableColumn prop="responseHours" label="Thời gian phản hồi" width="170">
           <template #default="{ row }">{{
-            row.responseHours ? row.responseHours + 'h' : '-'
+            formatDate(row.createdAt)
+          }}</template>
+        </ElTableColumn>
+        <ElTableColumn
+          prop="responseHours"
+          label="Thời gian phản hồi"
+          width="170"
+        >
+          <template #default="{ row }">{{
+            row.responseHours ? row.responseHours + "h" : "-"
           }}</template>
         </ElTableColumn>
       </ElTable>
@@ -113,72 +124,75 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue'
-  import { statisticsApi } from '@/infrastructure/api/statistics.api'
-  import ArtStatsCard from '@/components/core/cards/art-stats-card/index.vue'
-  import ReportPageHeader from './ReportPageHeader.vue'
-  import ReportPeriodSwitcher from './ReportPeriodSwitcher.vue'
-  import ReportPlaceholder from './ReportPlaceholder.vue'
+import { onMounted, ref } from "vue";
+import { statisticsApi } from "@/infrastructure/api/statistics.api";
+import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
+import ReportPageHeader from "./ReportPageHeader.vue";
+import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
+import ReportPlaceholder from "./ReportPlaceholder.vue";
 
-  const currentPeriod = ref<'today' | 'month' | 'year' | 'custom'>('month')
-  const periodStart = ref('')
-  const periodEnd = ref('')
+const currentPeriod = ref<"today" | "month" | "year" | "custom">("month");
+const periodStart = ref("");
+const periodEnd = ref("");
 
-  const loading = ref(false)
-  const kpi = ref({
-    avgRating: 0,
-    newComplaints: 0,
-    avgResponseHours: 0,
-    resolvedCount: 0,
-  })
-  const complaints = ref<
-    Array<{
-      id: number
-      ticketCode: string
-      customerName: string
-      subject: string
-      rating: number
-      status: string
-      createdAt: string
-      responseHours?: number
-    }>
-  >([])
+const loading = ref(false);
+const kpi = ref({
+  avgRating: 0,
+  newComplaints: 0,
+  avgResponseHours: 0,
+  resolvedCount: 0,
+});
+const complaints = ref<
+  Array<{
+    id: number;
+    ticketCode: string;
+    customerName: string;
+    subject: string;
+    rating: number;
+    status: string;
+    createdAt: string;
+    responseHours?: number;
+  }>
+>([]);
 
-  function onPeriodChange() {
-    // TODO: Pass period params to API when backend supports it
-    // Expected: GET /api/v1/Statistics/customer-service-analytics?period=...&start=...&end=...
-    loadData()
+function onPeriodChange() {
+  // TODO: Pass period params to API when backend supports it
+  // Expected: GET /api/v1/Statistics/customer-service-analytics?period=...&start=...&end=...
+  loadData();
+}
+
+async function loadData() {
+  loading.value = true;
+  try {
+    const data = await statisticsApi.getCustomerServiceAnalytics();
+    kpi.value = data.kpi;
+    complaints.value = data.complaints;
+  } finally {
+    loading.value = false;
   }
+}
 
-  async function loadData() {
-    loading.value = true
-    try {
-      const data = await statisticsApi.getCustomerServiceAnalytics()
-      kpi.value = data.kpi
-      complaints.value = data.complaints
-    } finally {
-      loading.value = false
-    }
-  }
+function complaintStatusType(
+  status: string,
+): "primary" | "success" | "info" | "danger" | "warning" {
+  const map: Record<
+    string,
+    "primary" | "success" | "info" | "danger" | "warning"
+  > = {
+    Mới: "danger",
+    "Đang xử lý": "warning",
+    "Đã phản hồi": "primary",
+    "Đã đóng": "success",
+  };
+  return map[status] || "info";
+}
 
-  function complaintStatusType(
-    status: string,
-  ): 'primary' | 'success' | 'info' | 'danger' | 'warning' {
-    const map: Record<string, 'primary' | 'success' | 'info' | 'danger' | 'warning'> = {
-      Mới: 'danger',
-      'Đang xử lý': 'warning',
-      'Đã phản hồi': 'primary',
-      'Đã đóng': 'success',
-    }
-    return map[status] || 'info'
-  }
+function formatDate(iso: string) {
+  if (!iso) return "-";
+  return new Date(iso).toLocaleDateString("vi-VN");
+}
 
-  function formatDate(iso: string) {
-    if (!iso) return '-'
-    return new Date(iso).toLocaleDateString('vi-VN')
-  }
-
-  onMounted(() => {
-    loadData()
-  })
+onMounted(() => {
+  loadData();
+});
 </script>

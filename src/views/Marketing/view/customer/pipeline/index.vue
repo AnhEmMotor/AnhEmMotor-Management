@@ -10,14 +10,19 @@
           <ArtSvgIcon :icon="stat.icon" class="text-white text-lg" />
         </div>
         <div class="flex flex-col">
-          <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{{
-            stat.label
-          }}</span>
+          <span
+            class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"
+            >{{ stat.label }}</span
+          >
           <div class="flex items-baseline gap-2">
-            <span class="text-xl font-black text-gray-800">{{ stat.count }}</span>
-            <span v-if="stat.value" class="text-[10px] text-emerald-500 font-bold">{{
-              stat.value
+            <span class="text-xl font-black text-gray-800">{{
+              stat.count
             }}</span>
+            <span
+              v-if="stat.value"
+              class="text-[10px] text-emerald-500 font-bold"
+              >{{ stat.value }}</span
+            >
           </div>
         </div>
       </div>
@@ -31,7 +36,12 @@
           class="w-48 premium-select"
           clearable
         >
-          <ElOption v-for="sale in salesList" :key="sale.id" :label="sale.name" :value="sale.id" />
+          <ElOption
+            v-for="sale in salesList"
+            :key="sale.id"
+            :label="sale.name"
+            :value="sale.id"
+          />
         </ElSelect>
         <ElSelect
           v-model="filterVehicle"
@@ -44,7 +54,9 @@
           <ElOption label="Air Blade" value="Air Blade" />
         </ElSelect>
       </div>
-      <div class="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase">
+      <div
+        class="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase"
+      >
         <div class="size-2 rounded-full bg-red-500 animate-pulse"></div>
         Trực tiếp: Mega Sale 2024
       </div>
@@ -59,10 +71,15 @@
         >
           <div class="flex items-center justify-between px-3 py-4">
             <div class="flex items-center gap-2">
-              <div class="size-2 rounded-full" :style="{ backgroundColor: column.color }"></div>
-              <h4 class="m-0 text-xs font-black text-gray-700 uppercase tracking-wider">{{
-                column.title
-              }}</h4>
+              <div
+                class="size-2 rounded-full"
+                :style="{ backgroundColor: column.color }"
+              ></div>
+              <h4
+                class="m-0 text-xs font-black text-gray-700 uppercase tracking-wider"
+              >
+                {{ column.title }}
+              </h4>
             </div>
             <ElTag size="small" effect="plain" round class="font-bold">{{
               column.items.length
@@ -85,7 +102,9 @@
             >
               <div
                 class="absolute top-0 left-4 w-6 h-1 rounded-b-full"
-                :class="deal.priority === 'Urgent' ? 'bg-red-500' : 'bg-orange-400'"
+                :class="
+                  deal.priority === 'Urgent' ? 'bg-red-500' : 'bg-orange-400'
+                "
               ></div>
 
               <div class="flex justify-between items-start mb-3 mt-1">
@@ -111,7 +130,9 @@
                 </div>
               </div>
 
-              <div class="flex justify-between items-end mt-4 pt-3 border-t border-gray-50">
+              <div
+                class="flex justify-between items-end mt-4 pt-3 border-t border-gray-50"
+              >
                 <div class="flex items-center gap-1.5">
                   <ArtSvgIcon icon="ri:history-line" class="text-gray-300" />
                   <span
@@ -141,205 +162,217 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue'
-  import { VueDraggable } from 'vue-draggable-plus'
-  import { ElMessage } from 'element-plus'
+import { ref } from "vue";
+import { VueDraggable } from "vue-draggable-plus";
+import { ElMessage } from "element-plus";
 
-  defineOptions({ name: 'PurchasingPipeline' })
+defineOptions({ name: "PurchasingPipeline" });
 
-  const pipelineStats = ref([
-    {
-      label: 'Tổng Deal',
-      count: 42,
-      icon: 'ri:exchange-funds-line',
-      bg: 'bg-blue-600',
-      value: '+12% mtd',
-    },
-    { label: 'Đang tư vấn', count: 15, icon: 'ri:customer-service-2-line', bg: 'bg-indigo-500' },
-    {
-      label: 'Đã đặt cọc',
-      count: 8,
-      icon: 'ri:money-dollar-circle-line',
-      bg: 'bg-orange-500',
-      value: '420tr',
-    },
-    { label: 'Chờ biển số', count: 12, icon: 'ri:government-line', bg: 'bg-purple-500' },
-    {
-      label: 'Đã giao xe',
-      count: 7,
-      icon: 'ri:checkbox-circle-line',
-      bg: 'bg-emerald-500',
-      value: 'Goal 85%',
-    },
-  ])
+const pipelineStats = ref([
+  {
+    label: "Tổng Deal",
+    count: 42,
+    icon: "ri:exchange-funds-line",
+    bg: "bg-blue-600",
+    value: "+12% mtd",
+  },
+  {
+    label: "Đang tư vấn",
+    count: 15,
+    icon: "ri:customer-service-2-line",
+    bg: "bg-indigo-500",
+  },
+  {
+    label: "Đã đặt cọc",
+    count: 8,
+    icon: "ri:money-dollar-circle-line",
+    bg: "bg-orange-500",
+    value: "420tr",
+  },
+  {
+    label: "Chờ biển số",
+    count: 12,
+    icon: "ri:government-line",
+    bg: "bg-purple-500",
+  },
+  {
+    label: "Đã giao xe",
+    count: 7,
+    icon: "ri:checkbox-circle-line",
+    bg: "bg-emerald-500",
+    value: "Goal 85%",
+  },
+]);
 
-  const filterSale = ref('')
-  const filterVehicle = ref('')
-  const salesList = [
-    { id: 1, name: 'Sale Nguyễn Văn A' },
-    { id: 2, name: 'Sale Trần Thị B' },
-  ]
+const filterSale = ref("");
+const filterVehicle = ref("");
+const salesList = [
+  { id: 1, name: "Sale Nguyễn Văn A" },
+  { id: 2, name: "Sale Trần Thị B" },
+];
 
-  const boardColumns = ref([
-    {
-      id: 'Consulting',
-      title: 'Đang tư vấn',
-      color: '#3b82f6',
-      items: [
-        {
-          id: 101,
-          customerName: 'Nguyễn Hoàng Long',
-          vehicle: 'Winner X 2024',
-          priority: 'High',
-          timeInStage: '2 ngày',
-          saleName: 'Admin',
-        },
-        {
-          id: 102,
-          customerName: 'Trần Minh Tâm',
-          vehicle: 'SH 125i',
-          priority: 'Urgent',
-          timeInStage: '5 giờ',
-          saleName: 'Sale A',
-        },
-      ],
-    },
-    {
-      id: 'TestDrive',
-      title: 'Đang lái thử',
-      color: '#6366f1',
-      items: [
-        {
-          id: 103,
-          customerName: 'Lê Văn Tám',
-          vehicle: 'Air Blade 160',
-          priority: 'High',
-          timeInStage: '3 ngày',
-          saleName: 'Sale B',
-        },
-      ],
-    },
-    {
-      id: 'Deposit',
-      title: 'Đã đặt cọc',
-      color: '#f97316',
-      items: [
-        {
-          id: 104,
-          customerName: 'Phạm Thị Nở',
-          vehicle: 'Vision 2024',
-          priority: 'Urgent',
-          timeInStage: '1 ngày',
-          saleName: 'Admin',
-        },
-      ],
-    },
-    {
-      id: 'Processing',
-      title: 'Chờ giấy tờ',
-      color: '#a855f7',
-      items: [
-        {
-          id: 105,
-          customerName: 'Hoàng Xuân Vinh',
-          vehicle: 'Winner X',
-          priority: 'High',
-          timeInStage: '4 ngày',
-          saleName: 'Sale A',
-        },
-      ],
-    },
-    {
-      id: 'Delivered',
-      title: 'Đã giao xe',
-      color: '#10b981',
-      items: [
-        {
-          id: 106,
-          customerName: 'Bùi Tiến Dũng',
-          vehicle: 'SH Mode',
-          priority: 'High',
-          timeInStage: 'Vừa chốt',
-          saleName: 'Sale B',
-        },
-      ],
-    },
-  ])
+const boardColumns = ref([
+  {
+    id: "Consulting",
+    title: "Đang tư vấn",
+    color: "#3b82f6",
+    items: [
+      {
+        id: 101,
+        customerName: "Nguyễn Hoàng Long",
+        vehicle: "Winner X 2024",
+        priority: "High",
+        timeInStage: "2 ngày",
+        saleName: "Admin",
+      },
+      {
+        id: 102,
+        customerName: "Trần Minh Tâm",
+        vehicle: "SH 125i",
+        priority: "Urgent",
+        timeInStage: "5 giờ",
+        saleName: "Sale A",
+      },
+    ],
+  },
+  {
+    id: "TestDrive",
+    title: "Đang lái thử",
+    color: "#6366f1",
+    items: [
+      {
+        id: 103,
+        customerName: "Lê Văn Tám",
+        vehicle: "Air Blade 160",
+        priority: "High",
+        timeInStage: "3 ngày",
+        saleName: "Sale B",
+      },
+    ],
+  },
+  {
+    id: "Deposit",
+    title: "Đã đặt cọc",
+    color: "#f97316",
+    items: [
+      {
+        id: 104,
+        customerName: "Phạm Thị Nở",
+        vehicle: "Vision 2024",
+        priority: "Urgent",
+        timeInStage: "1 ngày",
+        saleName: "Admin",
+      },
+    ],
+  },
+  {
+    id: "Processing",
+    title: "Chờ giấy tờ",
+    color: "#a855f7",
+    items: [
+      {
+        id: 105,
+        customerName: "Hoàng Xuân Vinh",
+        vehicle: "Winner X",
+        priority: "High",
+        timeInStage: "4 ngày",
+        saleName: "Sale A",
+      },
+    ],
+  },
+  {
+    id: "Delivered",
+    title: "Đã giao xe",
+    color: "#10b981",
+    items: [
+      {
+        id: 106,
+        customerName: "Bùi Tiến Dũng",
+        vehicle: "SH Mode",
+        priority: "High",
+        timeInStage: "Vừa chốt",
+        saleName: "Sale B",
+      },
+    ],
+  },
+]);
 
-  const isStale = (deal: any) => {
-    return deal.timeInStage.includes('ngày') && parseInt(deal.timeInStage) >= 3
-  }
+const isStale = (deal: any) => {
+  return deal.timeInStage.includes("ngày") && parseInt(deal.timeInStage) >= 3;
+};
 
-  const handleDragChange = (event: any, columnId: string) => {
-    if (event.added) {
-      const deal = event.added.element
-      ElMessage.success(`Đã chuyển ${deal.customerName} sang giai đoạn ${getStageName(columnId)}`)
+const handleDragChange = (event: any, columnId: string) => {
+  if (event.added) {
+    const deal = event.added.element;
+    ElMessage.success(
+      `Đã chuyển ${deal.customerName} sang giai đoạn ${getStageName(columnId)}`,
+    );
 
-      if (columnId === 'Delivered') {
-        triggerSuccessCelebration()
-      }
+    if (columnId === "Delivered") {
+      triggerSuccessCelebration();
+    }
 
-      if (columnId === 'Processing') {
-        ElMessage({
-          message: 'Hệ thống đã gửi thông báo cho bộ phận hành chính Biên Hòa.',
-          type: 'info',
-        })
-      }
+    if (columnId === "Processing") {
+      ElMessage({
+        message: "Hệ thống đã gửi thông báo cho bộ phận hành chính Biên Hòa.",
+        type: "info",
+      });
     }
   }
+};
 
-  const getStageName = (id: string) => {
-    const col = boardColumns.value.find((c) => c.id === id)
-    return col ? col.title : id
-  }
+const getStageName = (id: string) => {
+  const col = boardColumns.value.find((c) => c.id === id);
+  return col ? col.title : id;
+};
 
-  const triggerSuccessCelebration = () => {
-    console.log('FIREWORKS EFFECT!')
-  }
+const triggerSuccessCelebration = () => {
+  console.log("FIREWORKS EFFECT!");
+};
 </script>
 
 <style lang="scss" scoped>
-  .purchasing-pipeline-page {
-    background-color: #f8fafc;
+.purchasing-pipeline-page {
+  background-color: #f8fafc;
 
-    .premium-select {
-      :deep(.el-input__wrapper) {
-        background-color: white;
-        border: 1px solid #f1f5f9;
-        border-radius: 12px;
-        box-shadow: none;
-      }
+  .premium-select {
+    :deep(.el-input__wrapper) {
+      background-color: white;
+      border: 1px solid #f1f5f9;
+      border-radius: 12px;
+      box-shadow: none;
     }
+  }
 
-    .kanban-column {
-      .deal-card {
-        &.is-stale {
-          background-color: #fff1f0;
-          border-color: #ffa39e;
-        }
-
-        &.ghost-card {
-          background-color: #e2e8f0;
-          border: 2px dashed #94a3b8;
-          opacity: 0.5;
-        }
-
-        &.dragging-card {
-          box-shadow: 0 20px 40px rgb(0 0 0 / 10%);
-          transform: rotate(2deg) scale(1.05);
-        }
-      }
-    }
-
-    .custom-scrollbar {
-      &::-webkit-scrollbar {
-        width: 4px;
+  .kanban-column {
+    .deal-card {
+      &.is-stale {
+        background-color: #fff1f0;
+        border-color: #ffa39e;
       }
 
-      &::-webkit-scrollbar-thumb {
-        background: #e2e8f0;
-        border-radius: 10px;
+      &.ghost-card {
+        background-color: #e2e8f0;
+        border: 2px dashed #94a3b8;
+        opacity: 0.5;
+      }
+
+      &.dragging-card {
+        box-shadow: 0 20px 40px rgb(0 0 0 / 10%);
+        transform: rotate(2deg) scale(1.05);
       }
     }
   }
+
+  .custom-scrollbar {
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #e2e8f0;
+      border-radius: 10px;
+    }
+  }
+}
 </style>

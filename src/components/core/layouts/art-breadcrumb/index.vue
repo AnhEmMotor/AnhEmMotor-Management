@@ -32,95 +32,103 @@
 </template>
 
 <script setup lang="ts">
-  import { computed } from 'vue'
-  import { useRouter, useRoute } from 'vue-router'
-  import type { RouteLocationMatched, RouteRecordRaw } from 'vue-router'
-  import { formatMenuTitle } from '@/utils/router'
+import { computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import type { RouteLocationMatched, RouteRecordRaw } from "vue-router";
+import { formatMenuTitle } from "@/utils/router";
 
-  defineOptions({ name: 'ArtBreadcrumb' })
+defineOptions({ name: "ArtBreadcrumb" });
 
-  export interface BreadcrumbItem {
-    path: string
-    meta: RouteRecordRaw['meta']
+export interface BreadcrumbItem {
+  path: string;
+  meta: RouteRecordRaw["meta"];
+}
+
+const route = useRoute();
+const router = useRouter();
+
+const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
+  const { matched } = route;
+  const matchedLength = matched.length;
+
+  if (!matchedLength || isHomeRoute(matched[0])) {
+    return [];
   }
 
-  const route = useRoute()
-  const router = useRouter()
+  const firstRoute = matched[0];
+  const isFirstLevel = firstRoute.meta?.isFirstLevel;
+  const lastIndex = matchedLength - 1;
+  const currentRoute = matched[lastIndex];
+  const currentRouteMeta = currentRoute.meta;
 
-  const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
-    const { matched } = route
-    const matchedLength = matched.length
+  let items = isFirstLevel
+    ? [createBreadcrumbItem(currentRoute)]
+    : matched.map(createBreadcrumbItem);
 
-    if (!matchedLength || isHomeRoute(matched[0])) {
-      return []
-    }
-
-    const firstRoute = matched[0]
-    const isFirstLevel = firstRoute.meta?.isFirstLevel
-    const lastIndex = matchedLength - 1
-    const currentRoute = matched[lastIndex]
-    const currentRouteMeta = currentRoute.meta
-
-    let items = isFirstLevel
-      ? [createBreadcrumbItem(currentRoute)]
-      : matched.map(createBreadcrumbItem)
-
-    if (items.length > 1 && isWrapperContainer(items[0])) {
-      items = items.slice(1)
-    }
-
-    if (currentRouteMeta?.isIframe && (items.length === 1 || items.every(isWrapperContainer))) {
-      return [createBreadcrumbItem(currentRoute)]
-    }
-
-    return items
-  })
-
-  const isWrapperContainer = (item: BreadcrumbItem): boolean =>
-    item.path === '/outside' && !!item.meta?.isIframe
-
-  const createBreadcrumbItem = (route: RouteLocationMatched): BreadcrumbItem => ({
-    path: route.path,
-    meta: route.meta,
-  })
-
-  const isHomeRoute = (route: RouteLocationMatched): boolean => route.name === '/'
-
-  const isLastItem = (index: number): boolean => {
-    const itemsLength = breadcrumbItems.value.length
-    return index === itemsLength - 1
+  if (items.length > 1 && isWrapperContainer(items[0])) {
+    items = items.slice(1);
   }
 
-  const isClickable = (item: BreadcrumbItem, index: number): boolean =>
-    item.path !== '/outside' && !isLastItem(index)
-
-  const findFirstValidChild = (route: RouteRecordRaw) =>
-    route.children?.find((child) => !child.redirect && !child.meta?.isHide)
-
-  const buildFullPath = (childPath: string): string => `/${childPath}`.replace('//', '/')
-
-  async function handleBreadcrumbClick(item: BreadcrumbItem, index: number): Promise<void> {
-    if (isLastItem(index) || item.path === '/outside') {
-      return
-    }
-
-    try {
-      const routes = router.getRoutes()
-      const targetRoute = routes.find((route) => route.path === item.path)
-
-      if (!targetRoute?.children?.length) {
-        await router.push(item.path)
-        return
-      }
-
-      const firstValidChild = findFirstValidChild(targetRoute)
-      if (firstValidChild) {
-        await router.push(buildFullPath(firstValidChild.path))
-      } else {
-        await router.push(item.path)
-      }
-    } catch (error) {
-      console.error('Điều hướngThatBai:', error)
-    }
+  if (
+    currentRouteMeta?.isIframe &&
+    (items.length === 1 || items.every(isWrapperContainer))
+  ) {
+    return [createBreadcrumbItem(currentRoute)];
   }
+
+  return items;
+});
+
+const isWrapperContainer = (item: BreadcrumbItem): boolean =>
+  item.path === "/outside" && !!item.meta?.isIframe;
+
+const createBreadcrumbItem = (route: RouteLocationMatched): BreadcrumbItem => ({
+  path: route.path,
+  meta: route.meta,
+});
+
+const isHomeRoute = (route: RouteLocationMatched): boolean =>
+  route.name === "/";
+
+const isLastItem = (index: number): boolean => {
+  const itemsLength = breadcrumbItems.value.length;
+  return index === itemsLength - 1;
+};
+
+const isClickable = (item: BreadcrumbItem, index: number): boolean =>
+  item.path !== "/outside" && !isLastItem(index);
+
+const findFirstValidChild = (route: RouteRecordRaw) =>
+  route.children?.find((child) => !child.redirect && !child.meta?.isHide);
+
+const buildFullPath = (childPath: string): string =>
+  `/${childPath}`.replace("//", "/");
+
+async function handleBreadcrumbClick(
+  item: BreadcrumbItem,
+  index: number,
+): Promise<void> {
+  if (isLastItem(index) || item.path === "/outside") {
+    return;
+  }
+
+  try {
+    const routes = router.getRoutes();
+    const targetRoute = routes.find((route) => route.path === item.path);
+
+    if (!targetRoute?.children?.length) {
+      await router.push(item.path);
+      return;
+    }
+
+    const firstValidChild = findFirstValidChild(targetRoute);
+    if (firstValidChild) {
+      await router.push(buildFullPath(firstValidChild.path));
+    } else {
+      await router.push(item.path);
+    }
+  } catch (error) {
+    console.error("Điều hướngThatBai:", error);
+  }
+}
 </script>

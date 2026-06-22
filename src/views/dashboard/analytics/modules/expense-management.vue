@@ -14,11 +14,11 @@
 </template>
 
 <script setup lang="ts">
-  defineOptions({ name: 'ExpenseManagement' })
+defineOptions({ name: "ExpenseManagement" });
 </script>
 
 <style scoped>
-  .art-card {
-    min-height: 520px;
-  }
+.art-card {
+  min-height: 520px;
+}
 </style>

@@ -24,45 +24,45 @@
 </template>
 
 <script setup lang="ts">
-  import { reactive } from 'vue'
-  import { ElScrollbar } from 'element-plus'
+import { reactive } from "vue";
+import { ElScrollbar } from "element-plus";
 
-  interface DynamicItem {
-    username: string
-    type: string
-    target: string
-  }
+interface DynamicItem {
+  username: string;
+  type: string;
+  target: string;
+}
 
-  const list = reactive<DynamicItem[]>([
-    {
-      username: 'Admin A',
-      type: 'đã thay đổi hoa hồng',
-      target: 'Winner X (lên 700k)',
-    },
-    {
-      username: 'Kế toán B',
-      type: 'đã hủy Hóa đơn',
-      target: 'HD-2026-05041',
-    },
-    {
-      username: 'Quản lý C',
-      type: 'đã chốt bảng lương',
-      target: 'Tháng 4/2026',
-    },
-    {
-      username: 'Hệ thống',
-      type: 'tự động gia hạn HĐ',
-      target: 'NCC Dầu nhớt Castrol',
-    },
-    {
-      username: 'Kỹ thuật viên D',
-      type: 'hoàn tất phiếu sửa chữa',
-      target: 'PSC-9982',
-    },
-    {
-      username: 'Sale E',
-      type: 'đã tạo đơn hàng mới',
-      target: 'DH-2026-00912',
-    },
-  ])
+const list = reactive<DynamicItem[]>([
+  {
+    username: "Admin A",
+    type: "đã thay đổi hoa hồng",
+    target: "Winner X (lên 700k)",
+  },
+  {
+    username: "Kế toán B",
+    type: "đã hủy Hóa đơn",
+    target: "HD-2026-05041",
+  },
+  {
+    username: "Quản lý C",
+    type: "đã chốt bảng lương",
+    target: "Tháng 4/2026",
+  },
+  {
+    username: "Hệ thống",
+    type: "tự động gia hạn HĐ",
+    target: "NCC Dầu nhớt Castrol",
+  },
+  {
+    username: "Kỹ thuật viên D",
+    type: "hoàn tất phiếu sửa chữa",
+    target: "PSC-9982",
+  },
+  {
+    username: "Sale E",
+    type: "đã tạo đơn hàng mới",
+    target: "DH-2026-00912",
+  },
+]);
 </script>

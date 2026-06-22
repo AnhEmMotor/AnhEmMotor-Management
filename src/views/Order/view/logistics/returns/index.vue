@@ -12,9 +12,13 @@
             <h3 class="m-0 font-medium text-lg flex items-center gap-2">
               <ElIcon><List /></ElIcon> Đơn chờ hoàn
             </h3>
-            <ElTag type="danger" effect="dark" round v-if="returnsList.length > 0">{{
-              returnsList.length
-            }}</ElTag>
+            <ElTag
+              type="danger"
+              effect="dark"
+              round
+              v-if="returnsList.length > 0"
+              >{{ returnsList.length }}</ElTag
+            >
           </div>
 
           <ElInput
@@ -24,7 +28,12 @@
             :prefix-icon="Search"
           />
 
-          <ElRadioGroup v-model="statusFilter" @change="fetchReturns" size="small" class="w-full">
+          <ElRadioGroup
+            v-model="statusFilter"
+            @change="fetchReturns"
+            size="small"
+            class="w-full"
+          >
             <ElRadioButton label="">Tất cả</ElRadioButton>
             <ElRadioButton label="pending">Chờ xử lý</ElRadioButton>
             <ElRadioButton label="inspecting">Đang kiểm tra</ElRadioButton>
@@ -55,9 +64,12 @@
               <span class="font-bold text-base text-primary">{{
                 item.originalTrackingNumber
               }}</span>
-              <ElTag :type="getCarrierTag(item.carrier)" size="small" effect="plain">{{
-                item.carrier
-              }}</ElTag>
+              <ElTag
+                :type="getCarrierTag(item.carrier)"
+                size="small"
+                effect="plain"
+                >{{ item.carrier }}</ElTag
+              >
             </div>
 
             <div class="text-sm text-regular mb-2 flex items-center gap-2">
@@ -73,9 +85,12 @@
               >
                 {{ item.reason }}
               </ElTag>
-              <ElTag :type="getStatusTag(item.status)" size="small" effect="dark">{{
-                getStatusLabel(item.status)
-              }}</ElTag>
+              <ElTag
+                :type="getStatusTag(item.status)"
+                size="small"
+                effect="dark"
+                >{{ getStatusLabel(item.status) }}</ElTag
+              >
             </div>
           </div>
         </div>
@@ -93,17 +108,22 @@
         <!-- Detail Header -->
         <div class="p-4 border-b border-color bg-fill-lighter shrink-0">
           <div class="flex justify-between items-center mb-2">
-            <h2 class="m-0 text-xl font-bold"
-              >Đơn hoàn RET-{{ detail.id.toString().padStart(3, '0') }}</h2
+            <h2 class="m-0 text-xl font-bold">
+              Đơn hoàn RET-{{ detail.id.toString().padStart(3, "0") }}
+            </h2>
+            <ElTag
+              :type="getStatusTag(detail.status)"
+              effect="dark"
+              size="large"
+              >{{ getStatusLabel(detail.status) }}</ElTag
             >
-            <ElTag :type="getStatusTag(detail.status)" effect="dark" size="large">{{
-              getStatusLabel(detail.status)
-            }}</ElTag>
           </div>
-          <p class="text-secondary m-0"
-            >Đơn gốc:
-            <span class="font-medium text-primary">{{ detail.originalTrackingNumber }}</span></p
-          >
+          <p class="text-secondary m-0">
+            Đơn gốc:
+            <span class="font-medium text-primary">{{
+              detail.originalTrackingNumber
+            }}</span>
+          </p>
         </div>
 
         <div class="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
@@ -146,7 +166,12 @@
                   min-width="150"
                   show-overflow-tooltip
                 />
-                <ElTableColumn prop="quantity" label="SL" width="80" align="center" />
+                <ElTableColumn
+                  prop="quantity"
+                  label="SL"
+                  width="80"
+                  align="center"
+                />
               </ElTable>
             </div>
           </div>
@@ -156,11 +181,17 @@
             v-if="detail.status !== 'completed'"
             class="bg-fill-lighter p-5 rounded-lg border border-color"
           >
-            <h3 class="text-base font-semibold mb-4 flex items-center gap-2 text-primary">
+            <h3
+              class="text-base font-semibold mb-4 flex items-center gap-2 text-primary"
+            >
               <ElIcon><Check /></ElIcon> Kiểm định thực tế tại kho
             </h3>
 
-            <ElForm :model="inspectForm" label-position="top" :disabled="submitting">
+            <ElForm
+              :model="inspectForm"
+              label-position="top"
+              :disabled="submitting"
+            >
               <div class="grid grid-cols-2 gap-4">
                 <ElFormItem label="Tình trạng vỏ hộp/bao bì">
                   <ElRadioGroup v-model="inspectForm.boxCondition">
@@ -173,14 +204,18 @@
                   <ElRadioGroup v-model="inspectForm.productCondition">
                     <ElRadio value="Sử dụng tốt">Sử dụng tốt</ElRadio>
                     <ElRadio value="Trầy xước nhẹ">Trầy xước nhẹ</ElRadio>
-                    <ElRadio value="Hư hỏng hoàn toàn">Hư hỏng hoàn toàn</ElRadio>
+                    <ElRadio value="Hư hỏng hoàn toàn"
+                      >Hư hỏng hoàn toàn</ElRadio
+                    >
                   </ElRadioGroup>
                 </ElFormItem>
               </div>
 
               <ElFormItem label="Ảnh bằng chứng khui hộp">
                 <div class="flex items-center gap-4">
-                  <ElButton :icon="Camera" @click="handleUploadClick">Tải ảnh lên</ElButton>
+                  <ElButton :icon="Camera" @click="handleUploadClick"
+                    >Tải ảnh lên</ElButton
+                  >
                   <span
                     v-if="inspectForm.returnProofImage"
                     class="text-success text-sm flex items-center gap-1"
@@ -202,22 +237,35 @@
           </div>
 
           <!-- Hiển thị lại nếu đã completed -->
-          <div v-else class="bg-success-light-9 p-5 rounded-lg border border-success-light-5">
-            <h3 class="text-base font-semibold mb-4 flex items-center gap-2 text-success">
+          <div
+            v-else
+            class="bg-success-light-9 p-5 rounded-lg border border-success-light-5"
+          >
+            <h3
+              class="text-base font-semibold mb-4 flex items-center gap-2 text-success"
+            >
               <ElIcon><SuccessFilled /></ElIcon> Đã hoàn tất xử lý
             </h3>
             <div class="grid grid-cols-2 gap-y-3 text-sm">
               <div class="text-secondary">Quyết định:</div>
-              <div class="font-medium text-primary">{{ getActionLabel(detail.returnAction) }}</div>
+              <div class="font-medium text-primary">
+                {{ getActionLabel(detail.returnAction) }}
+              </div>
 
               <div class="text-secondary">Vỏ hộp:</div>
-              <div class="font-medium">{{ detail.boxCondition || 'Không có' }}</div>
+              <div class="font-medium">
+                {{ detail.boxCondition || "Không có" }}
+              </div>
 
               <div class="text-secondary">Sản phẩm:</div>
-              <div class="font-medium">{{ detail.productCondition || 'Không có' }}</div>
+              <div class="font-medium">
+                {{ detail.productCondition || "Không có" }}
+              </div>
 
               <div class="text-secondary">Ghi chú:</div>
-              <div class="font-medium italic">{{ detail.returnInternalNote || 'Không có' }}</div>
+              <div class="font-medium italic">
+                {{ detail.returnInternalNote || "Không có" }}
+              </div>
             </div>
           </div>
         </div>
@@ -264,220 +312,229 @@
         class="h-full flex items-center justify-center bg-fill-lighter"
         body-class="flex flex-col items-center p-10 text-secondary"
       >
-        <ElIcon :size="60" class="mb-4 text-color-secondary"><Document /></ElIcon>
-        <h3 class="m-0 font-normal text-lg"
-          >Chọn một đơn hàng hoàn ở danh sách bên trái để xử lý</h3
-        >
+        <ElIcon :size="60" class="mb-4 text-color-secondary"
+          ><Document
+        /></ElIcon>
+        <h3 class="m-0 font-normal text-lg">
+          Chọn một đơn hàng hoàn ở danh sách bên trái để xử lý
+        </h3>
       </ElCard>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, onMounted } from 'vue'
-  import { ElMessage, ElMessageBox } from 'element-plus'
-  import {
-    List,
-    Search,
-    User,
-    Box,
-    Picture,
-    Check,
-    Camera,
-    CircleCheck,
-    SuccessFilled,
-    Refresh,
-    Warning,
-    Money,
-    Document,
-  } from '@element-plus/icons-vue'
-  import { getReturns, getReturnDetail, inspectReturn } from '@/api/logistics/returns'
-  import type {
-    ReturnOrderDto,
-    ReturnDetailDto,
-    InspectReturnCommand,
-  } from '@/domain/logistics/returns.types'
+import { ref, computed, onMounted } from "vue";
+import { ElMessage, ElMessageBox } from "element-plus";
+import {
+  List,
+  Search,
+  User,
+  Box,
+  Picture,
+  Check,
+  Camera,
+  CircleCheck,
+  SuccessFilled,
+  Refresh,
+  Warning,
+  Money,
+  Document,
+} from "@element-plus/icons-vue";
+import {
+  getReturns,
+  getReturnDetail,
+  inspectReturn,
+} from "@/api/logistics/returns";
+import type {
+  ReturnOrderDto,
+  ReturnDetailDto,
+  InspectReturnCommand,
+} from "@/domain/logistics/returns.types";
 
-  defineOptions({ name: 'ReverseLogistics' })
+defineOptions({ name: "ReverseLogistics" });
 
-  // State for List
-  const returnsList = ref<ReturnOrderDto[]>([])
-  const loadingList = ref(false)
-  const searchQuery = ref('')
-  const statusFilter = ref('')
+// State for List
+const returnsList = ref<ReturnOrderDto[]>([]);
+const loadingList = ref(false);
+const searchQuery = ref("");
+const statusFilter = ref("");
 
-  // State for Detail
-  const selectedId = ref<number | null>(null)
-  const detail = ref<ReturnDetailDto | null>(null)
-  const loadingDetail = ref(false)
+// State for Detail
+const selectedId = ref<number | null>(null);
+const detail = ref<ReturnDetailDto | null>(null);
+const loadingDetail = ref(false);
 
-  // State for Form
-  const inspectForm = ref<InspectReturnCommand>({
-    boxCondition: '',
-    productCondition: '',
-    returnProofImage: '',
-    returnInternalNote: '',
-    action: '',
-  })
-  const submitting = ref(false)
+// State for Form
+const inspectForm = ref<InspectReturnCommand>({
+  boxCondition: "",
+  productCondition: "",
+  returnProofImage: "",
+  returnInternalNote: "",
+  action: "",
+});
+const submitting = ref(false);
 
-  // Filter logic
-  const filteredReturns = computed(() => {
-    if (!searchQuery.value) return returnsList.value
-    const q = searchQuery.value.toLowerCase()
-    return returnsList.value.filter(
-      (item) =>
-        item.originalTrackingNumber.toLowerCase().includes(q) ||
-        item.customerName.toLowerCase().includes(q) ||
-        (item.reason && item.reason.toLowerCase().includes(q)),
-    )
-  })
+// Filter logic
+const filteredReturns = computed(() => {
+  if (!searchQuery.value) return returnsList.value;
+  const q = searchQuery.value.toLowerCase();
+  return returnsList.value.filter(
+    (item) =>
+      item.originalTrackingNumber.toLowerCase().includes(q) ||
+      item.customerName.toLowerCase().includes(q) ||
+      (item.reason && item.reason.toLowerCase().includes(q)),
+  );
+});
 
-  // Lifecycle
-  onMounted(() => {
-    fetchReturns()
-  })
+// Lifecycle
+onMounted(() => {
+  fetchReturns();
+});
 
-  // Fetch Data
-  const fetchReturns = async () => {
-    loadingList.value = true
-    try {
-      const res = await getReturns(statusFilter.value)
-      returnsList.value = (res as unknown as ReturnOrderDto[]) || []
+// Fetch Data
+const fetchReturns = async () => {
+  loadingList.value = true;
+  try {
+    const res = await getReturns(statusFilter.value);
+    returnsList.value = (res as unknown as ReturnOrderDto[]) || [];
 
-      // Auto select first item if list is not empty and none is selected
-      if (returnsList.value.length > 0 && !selectedId.value) {
-        handleSelect(returnsList.value[0].id)
-      }
-    } catch (_error) {
-      ElMessage.error('Lỗi khi tải danh sách hàng hoàn')
-    } finally {
-      loadingList.value = false
+    // Auto select first item if list is not empty and none is selected
+    if (returnsList.value.length > 0 && !selectedId.value) {
+      handleSelect(returnsList.value[0].id);
     }
+  } catch (_error) {
+    ElMessage.error("Lỗi khi tải danh sách hàng hoàn");
+  } finally {
+    loadingList.value = false;
   }
+};
 
-  const handleSelect = async (id: number) => {
-    selectedId.value = id
-    loadingDetail.value = true
-    try {
-      const res = await getReturnDetail(id)
-      detail.value = res as unknown as ReturnDetailDto
+const handleSelect = async (id: number) => {
+  selectedId.value = id;
+  loadingDetail.value = true;
+  try {
+    const res = await getReturnDetail(id);
+    detail.value = res as unknown as ReturnDetailDto;
 
-      // Reset form
-      inspectForm.value = {
-        boxCondition: detail.value?.boxCondition || 'Còn nguyên vẹn',
-        productCondition: detail.value?.productCondition || 'Sử dụng tốt',
-        returnProofImage: detail.value?.returnProofImage || '',
-        returnInternalNote: detail.value?.returnInternalNote || '',
-        action: '',
-      }
-    } catch (_error) {
-      ElMessage.error('Lỗi khi tải chi tiết hàng hoàn')
-    } finally {
-      loadingDetail.value = false
+    // Reset form
+    inspectForm.value = {
+      boxCondition: detail.value?.boxCondition || "Còn nguyên vẹn",
+      productCondition: detail.value?.productCondition || "Sử dụng tốt",
+      returnProofImage: detail.value?.returnProofImage || "",
+      returnInternalNote: detail.value?.returnInternalNote || "",
+      action: "",
+    };
+  } catch (_error) {
+    ElMessage.error("Lỗi khi tải chi tiết hàng hoàn");
+  } finally {
+    loadingDetail.value = false;
+  }
+};
+
+// Actions
+const handleUploadClick = () => {
+  // Simulate image upload
+  setTimeout(() => {
+    inspectForm.value.returnProofImage =
+      "https://fakeimg.pl/350x200/?text=Proof";
+    ElMessage.success("Tải ảnh thành công");
+  }, 500);
+};
+
+const submitDecision = async (action: "restock" | "defect" | "refund") => {
+  if (!detail.value) return;
+
+  const actionMap: Record<string, string> = {
+    restock: "Nhập lại kho bán lẻ",
+    defect: "Cách ly chờ hủy",
+    refund: "Hoàn tiền cho khách",
+  };
+
+  try {
+    await ElMessageBox.confirm(
+      `Bạn chắc chắn muốn đóng hồ sơ đơn hàng này với quyết định: <strong>${actionMap[action]}</strong>?`,
+      "Xác nhận xử lý",
+      {
+        confirmButtonText: "Xác nhận",
+        cancelButtonText: "Hủy",
+        type: "warning",
+        dangerouslyUseHTMLString: true,
+      },
+    );
+
+    submitting.value = true;
+    inspectForm.value.action = action;
+
+    await inspectReturn(detail.value.id, inspectForm.value);
+
+    ElMessage.success(`Xử lý thành công: ${actionMap[action]}`);
+
+    // Refresh
+    await fetchReturns();
+    await handleSelect(detail.value.id); // reload detail to show completed state
+  } catch (e: any) {
+    if (e !== "cancel") {
+      ElMessage.error("Có lỗi xảy ra khi xử lý");
     }
+  } finally {
+    submitting.value = false;
   }
+};
 
-  // Actions
-  const handleUploadClick = () => {
-    // Simulate image upload
-    setTimeout(() => {
-      inspectForm.value.returnProofImage = 'https://fakeimg.pl/350x200/?text=Proof'
-      ElMessage.success('Tải ảnh thành công')
-    }, 500)
-  }
+// Helpers
+const getCarrierTag = (carrier: string) => {
+  const c = carrier.toLowerCase();
+  if (c.includes("ghtk")) return "success";
+  if (c.includes("viettel") || c.includes("vtp")) return "warning";
+  return "info";
+};
 
-  const submitDecision = async (action: 'restock' | 'defect' | 'refund') => {
-    if (!detail.value) return
+const getReasonTag = (reason: string): "warning" | "danger" => {
+  const r = reason.toLowerCase();
+  if (r.includes("bom") || r.includes("không nhận")) return "warning";
+  return "danger";
+};
 
-    const actionMap: Record<string, string> = {
-      restock: 'Nhập lại kho bán lẻ',
-      defect: 'Cách ly chờ hủy',
-      refund: 'Hoàn tiền cho khách',
-    }
+const getReasonAlertType = (reason: string) => {
+  const r = reason.toLowerCase();
+  if (r.includes("bom") || r.includes("không nhận")) return "warning";
+  return "error";
+};
 
-    try {
-      await ElMessageBox.confirm(
-        `Bạn chắc chắn muốn đóng hồ sơ đơn hàng này với quyết định: <strong>${actionMap[action]}</strong>?`,
-        'Xác nhận xử lý',
-        {
-          confirmButtonText: 'Xác nhận',
-          cancelButtonText: 'Hủy',
-          type: 'warning',
-          dangerouslyUseHTMLString: true,
-        },
-      )
+const getStatusTag = (
+  status: string,
+): "danger" | "warning" | "success" | "info" => {
+  const map: Record<string, "danger" | "warning" | "success" | "info"> = {
+    pending: "danger",
+    inspecting: "warning",
+    completed: "success",
+  };
+  return map[status] || "info";
+};
 
-      submitting.value = true
-      inspectForm.value.action = action
+const getStatusLabel = (status: string) => {
+  const map: Record<string, string> = {
+    pending: "Chờ xử lý",
+    inspecting: "Đang kiểm tra",
+    completed: "Đã hoàn tất",
+  };
+  return map[status] || status;
+};
 
-      await inspectReturn(detail.value.id, inspectForm.value)
-
-      ElMessage.success(`Xử lý thành công: ${actionMap[action]}`)
-
-      // Refresh
-      await fetchReturns()
-      await handleSelect(detail.value.id) // reload detail to show completed state
-    } catch (e: any) {
-      if (e !== 'cancel') {
-        ElMessage.error('Có lỗi xảy ra khi xử lý')
-      }
-    } finally {
-      submitting.value = false
-    }
-  }
-
-  // Helpers
-  const getCarrierTag = (carrier: string) => {
-    const c = carrier.toLowerCase()
-    if (c.includes('ghtk')) return 'success'
-    if (c.includes('viettel') || c.includes('vtp')) return 'warning'
-    return 'info'
-  }
-
-  const getReasonTag = (reason: string) => {
-    const r = reason.toLowerCase()
-    if (r.includes('bom') || r.includes('không nhận')) return 'warning'
-    return 'danger'
-  }
-
-  const getReasonAlertType = (reason: string) => {
-    const r = reason.toLowerCase()
-    if (r.includes('bom') || r.includes('không nhận')) return 'warning'
-    return 'error'
-  }
-
-  const getStatusTag = (status: string) => {
-    const map: Record<string, string> = {
-      pending: 'danger',
-      inspecting: 'warning',
-      completed: 'success',
-    }
-    return map[status] || 'info'
-  }
-
-  const getStatusLabel = (status: string) => {
-    const map: Record<string, string> = {
-      pending: 'Chờ xử lý',
-      inspecting: 'Đang kiểm tra',
-      completed: 'Đã hoàn tất',
-    }
-    return map[status] || status
-  }
-
-  const getActionLabel = (action?: string) => {
-    if (!action) return 'Chưa xử lý'
-    const map: Record<string, string> = {
-      restock: 'Nhập lại kho bán lẻ',
-      defect: 'Cách ly chờ hủy',
-      refund: 'Hoàn tiền cho khách',
-    }
-    return map[action] || action
-  }
+const getActionLabel = (action?: string) => {
+  if (!action) return "Chưa xử lý";
+  const map: Record<string, string> = {
+    restock: "Nhập lại kho bán lẻ",
+    defect: "Cách ly chờ hủy",
+    refund: "Hoàn tiền cho khách",
+  };
+  return map[action] || action;
+};
 </script>
 
 <style scoped>
-  .reverse-logistics-container {
-    height: calc(100vh - 120px);
-  }
+.reverse-logistics-container {
+  height: calc(100vh - 120px);
+}
 </style>

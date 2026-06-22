@@ -18,9 +18,9 @@
 </template>
 
 <script setup lang="ts">
-  import AnalyticsDashboard from './modules/analytics-dashboard.vue'
-  import ExpenseManagement from './modules/expense-management.vue'
-  import FinancialReport from './modules/financial-report.vue'
+import AnalyticsDashboard from "./modules/analytics-dashboard.vue";
+import ExpenseManagement from "./modules/expense-management.vue";
+import FinancialReport from "./modules/financial-report.vue";
 
-  defineOptions({ name: 'Analytics' })
+defineOptions({ name: "Analytics" });
 </script>

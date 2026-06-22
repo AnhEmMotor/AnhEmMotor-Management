@@ -11,15 +11,15 @@ import {
   RealIssuePartsUseCase,
   RealUpdateOdoAndGenerateWarningsUseCase,
   UpdateOdoAndGenerateWarningsUseCase,
-} from '@/application/maintenance/usecases'
+} from "@/application/maintenance/usecases";
 
 export interface MaintenanceUseCases {
-  getTicket: GetMaintenanceTicketUseCase
-  createTicket: CreateMaintenanceTicketUseCase
-  updateOdoAndWarnings: UpdateOdoAndGenerateWarningsUseCase
-  applyPackage: ApplyMaintenancePackageUseCase
-  issueParts: IssuePartsUseCase
-  changeWorkflowStatus: ChangeWorkflowStatusUseCase
+  getTicket: GetMaintenanceTicketUseCase;
+  createTicket: CreateMaintenanceTicketUseCase;
+  updateOdoAndWarnings: UpdateOdoAndGenerateWarningsUseCase;
+  applyPackage: ApplyMaintenancePackageUseCase;
+  issueParts: IssuePartsUseCase;
+  changeWorkflowStatus: ChangeWorkflowStatusUseCase;
 }
 
 export function createMaintenanceUseCases(): MaintenanceUseCases {
@@ -30,5 +30,5 @@ export function createMaintenanceUseCases(): MaintenanceUseCases {
     applyPackage: new RealApplyMaintenancePackageUseCase(),
     issueParts: new RealIssuePartsUseCase(),
     changeWorkflowStatus: new RealChangeWorkflowStatusUseCase(),
-  }
+  };
 }

@@ -1,29 +1,30 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import { TableSizeEnum } from '@/enums/formEnum'
+import { defineStore } from "pinia";
+import { ref } from "vue";
+import { TableSizeEnum } from "@/enums/formEnum";
 
 export const useTableStore = defineStore(
-  'tableStore',
+  "tableStore",
   () => {
-    const tableSize = ref(TableSizeEnum.DEFAULT)
+    const tableSize = ref(TableSizeEnum.DEFAULT);
 
-    const isZebra = ref(false)
+    const isZebra = ref(false);
 
-    const isBorder = ref(false)
+    const isBorder = ref(false);
 
-    const isHeaderBackground = ref(false)
+    const isHeaderBackground = ref(false);
 
-    const isFullScreen = ref(false)
+    const isFullScreen = ref(false);
 
-    const setTableSize = (size: TableSizeEnum) => (tableSize.value = size)
+    const setTableSize = (size: TableSizeEnum) => (tableSize.value = size);
 
-    const setIsZebra = (value: boolean) => (isZebra.value = value)
+    const setIsZebra = (value: boolean) => (isZebra.value = value);
 
-    const setIsBorder = (value: boolean) => (isBorder.value = value)
+    const setIsBorder = (value: boolean) => (isBorder.value = value);
 
-    const setIsHeaderBackground = (value: boolean) => (isHeaderBackground.value = value)
+    const setIsHeaderBackground = (value: boolean) =>
+      (isHeaderBackground.value = value);
 
-    const setIsFullScreen = (value: boolean) => (isFullScreen.value = value)
+    const setIsFullScreen = (value: boolean) => (isFullScreen.value = value);
 
     return {
       tableSize,
@@ -36,12 +37,12 @@ export const useTableStore = defineStore(
       setIsHeaderBackground,
       isFullScreen,
       setIsFullScreen,
-    }
+    };
   },
   {
     persist: {
-      key: 'table',
+      key: "table",
       storage: localStorage,
     },
   },
-)
+);

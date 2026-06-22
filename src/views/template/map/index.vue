@@ -5,9 +5,9 @@
 </template>
 
 <script setup lang="ts">
-  defineOptions({ name: 'TemplateMap' })
+defineOptions({ name: "TemplateMap" });
 
-  const ArtMapChart = defineAsyncComponent(
-    () => import('@/components/core/charts/art-map-chart/index.vue'),
-  )
+const ArtMapChart = defineAsyncComponent(
+  () => import("@/components/core/charts/art-map-chart/index.vue"),
+);
 </script>

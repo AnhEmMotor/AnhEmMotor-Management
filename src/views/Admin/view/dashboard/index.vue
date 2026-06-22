@@ -1,7 +1,9 @@
 <template>
   <div class="console-dashboard">
     <div class="mb-6 flex justify-between items-center">
-      <h1 class="text-2xl font-bold text-gray-800">📊 Trung tâm Thống kê & Điều hành</h1>
+      <h1 class="text-2xl font-bold text-gray-800">
+        📊 Trung tâm Thống kê & Điều hành
+      </h1>
     </div>
 
     <!-- 4 Thẻ KPI: Tổng thu, Tổng chi, Lợi nhuận gộp, Lợi nhuận ròng -->
@@ -36,12 +38,12 @@
 </template>
 
 <script setup lang="ts">
-  import CardList from './card-list.vue'
-  import ActiveUser from './active-user.vue'
-  import SalesOverview from './sales-overview.vue'
-  import NewUser from './new-user.vue'
-  import Dynamic from './dynamic-stats.vue'
-  import TodoList from './todo-list.vue'
+import CardList from "./card-list.vue";
+import ActiveUser from "./active-user.vue";
+import SalesOverview from "./sales-overview.vue";
+import NewUser from "./new-user.vue";
+import Dynamic from "./dynamic-stats.vue";
+import TodoList from "./todo-list.vue";
 
-  defineOptions({ name: 'AdminDashboard' })
+defineOptions({ name: "AdminDashboard" });
 </script>

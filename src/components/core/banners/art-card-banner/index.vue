@@ -34,58 +34,58 @@
 </template>
 
 <script setup lang="ts">
-  import defaultIcon from '@imgs/3d/icon1.webp'
+import defaultIcon from "@imgs/3d/icon1.webp";
 
-  defineOptions({ name: 'ArtCardBanner' })
+defineOptions({ name: "ArtCardBanner" });
 
-  interface CardBannerProps {
-    height?: string
-    image?: string
-    title: string
-    description: string
-    button?: {
-      show?: boolean
-      text?: string
-      color?: string
-      textColor?: string
-    }
-    cancelButton?: {
-      show?: boolean
-      text?: string
-      color?: string
-      textColor?: string
-    }
-  }
+interface CardBannerProps {
+  height?: string;
+  image?: string;
+  title: string;
+  description: string;
+  button?: {
+    show?: boolean;
+    text?: string;
+    color?: string;
+    textColor?: string;
+  };
+  cancelButton?: {
+    show?: boolean;
+    text?: string;
+    color?: string;
+    textColor?: string;
+  };
+}
 
-  withDefaults(defineProps<CardBannerProps>(), {
-    height: '24rem',
-    image: defaultIcon,
-    title: '',
-    description: '',
-    button: () => ({
-      show: true,
-      text: 'XemChiTiet',
-      color: 'var(--theme-color)',
-      textColor: '#fff',
-    }),
-    cancelButton: () => ({
-      show: false,
-      text: 'Hủy',
-      color: '#f5f5f5',
-      textColor: '#666',
-    }),
-  })
+withDefaults(defineProps<CardBannerProps>(), {
+  height: "24rem",
+  image: defaultIcon,
+  title: "",
+  description: "",
+  button: () => ({
+    show: true,
+    text: "XemChiTiet",
+    color: "var(--theme-color)",
+    textColor: "#fff",
+  }),
+  cancelButton: () => ({
+    show: false,
+    text: "Hủy",
+    color: "#f5f5f5",
+    textColor: "#666",
+  }),
+});
 
-  const emit = defineEmits<{
-    (e: 'click'): void
-    (e: 'cancel'): void
-  }>()
+const emit = defineEmits<{
+  (e: "click"): void;
+  (e: "cancel"): void;
+}>();
 
-  const handleClick = () => {
-    emit('click')
-  }
+const handleClick = () => {
+  emit("click");
+};
 
-  const handleCancel = () => {
-    emit('cancel')
-  }
+const handleCancel = () => {
+  emit("cancel");
+};
 </script>

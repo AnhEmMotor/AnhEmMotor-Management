@@ -3,175 +3,291 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <ArtStatsCard
         title="Tổng nợ NCC"
-        count="1.2 tỷ"
-        description="Số tiền cần thanh toán cho các lô xe"
+        :count="formatCurrency(totalSuppliersDebt)"
+        description="Số tiền nợ của các nhà cung cấp hiển thị trên trang này"
         icon="ri:money-cny-box-line"
         iconStyle="bg-danger"
-      />
-      <ArtStatsCard
-        title="Hồ sơ treo Ngân hàng"
-        :count="15"
-        description="Đang chờ giải ngân trả góp"
-        icon="ri:timer-flash-line"
-        iconStyle="bg-warning"
-      />
-      <ArtStatsCard
-        title="Giá trị cam kết"
-        count="450 triệu"
-        description="Tiền đang kẹt tại Bank"
-        icon="ri:safe-2-line"
-        iconStyle="bg-primary"
       />
     </div>
 
     <ElCard class="flex-1 art-table-card">
       <template #header>
-        <div class="flex items-center gap-4">
-          <h4 class="m-0">Quản lý Công nợ & Cam kết (Mục 7.3)</h4>
-          <ElRadioGroup v-model="activeTab" size="small">
-            <ElRadioButton label="suppliers">Công nợ NCC</ElRadioButton>
-            <ElRadioButton label="banks">Đối tác Ngân hàng</ElRadioButton>
-          </ElRadioGroup>
+        <div class="flex items-center gap-4 justify-between">
+          <div class="flex items-center gap-4">
+            <h4 class="m-0 font-bold text-gray-800 text-lg">
+              Quản lý Công nợ nhà cung cấp
+            </h4>
+          </div>
+          <ElButton type="primary" size="small" @click="fetchSupplierDebts">
+            <ElIcon class="mr-1"><Refresh /></ElIcon> Làm mới
+          </ElButton>
         </div>
       </template>
 
-      <div v-if="activeTab === 'suppliers'">
-        <ArtTable :data="supplierDebts" :columns="supplierColumns">
-          <template #balance="{ row }">
-            <span class="font-bold" :class="row.balance > 0 ? 'text-red-500' : 'text-gray-400'">
-              {{ row.balance.toLocaleString() }} VNĐ
-            </span>
-          </template>
-          <template #status="{ row }">
-            <ElTag :type="row.status === 'Overdue' ? 'danger' : 'warning'" size="small">
-              {{ row.status === 'Overdue' ? 'Quá hạn' : 'Đang treo' }}
-            </ElTag>
-          </template>
-        </ArtTable>
-      </div>
-
-      <div v-else>
-        <ArtTable :data="bankInstallments" :columns="bankColumns">
-          <template #daysPending="{ row }">
-            <span :class="row.daysPending > 7 ? 'text-danger font-bold' : ''">
-              {{ row.daysPending }} ngày
-            </span>
-          </template>
-          <template #operation="{ row }">
-            <ElButton type="primary" link size="small" @click="handleContact(row)">
-              Liên hệ đầu mối (Mục 7.1)
+      <ArtTable
+        :data="supplierDebts"
+        :columns="supplierColumns"
+        v-loading="loading"
+      >
+        <template #totalDebt="{ row }">
+          <span class="font-bold text-red-500">
+            {{ formatCurrency(row.totalDebt) }}
+          </span>
+        </template>
+        <template #operation="{ row }">
+          <div class="flex gap-2 justify-center items-center">
+            <ElButton
+              type="success"
+              size="small"
+              :disabled="row.totalDebt <= 0"
+              @click="openPaymentForm(row)"
+            >
+              Thanh toán
             </ElButton>
-          </template>
-        </ArtTable>
-        <div
-          class="mt-4 p-4 bg-info/5 rounded border border-info/10 text-xs text-info flex items-center gap-2"
-        >
-          <ElIcon><InfoFilled /></ElIcon>
-          <span
-            >Nếu ngân hàng chậm giải ngân (> 7 ngày), Admin cần tra cứu đầu mối liên hệ tại mục 7.1
-            để thúc đẩy hồ sơ.</span
-          >
-        </div>
+            <ElButton
+              type="primary"
+              size="small"
+              link
+              @click="openPaymentLogs(row)"
+            >
+              Lịch sử thanh toán
+            </ElButton>
+          </div>
+        </template>
+      </ArtTable>
+
+      <div class="mt-4 flex justify-end">
+        <ElPagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :page-sizes="[10, 20, 50, 100]"
+          :total="total"
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
       </div>
     </ElCard>
+
+    <ElDialog
+      v-model="paymentFormVisible"
+      :title="`Thanh toán nợ cho nhà cung cấp: ${selectedSupplierToPay?.name}`"
+      width="450px"
+      append-to-body
+    >
+      <div v-if="selectedSupplierToPay" class="space-y-4">
+        <div class="bg-gray-50 p-4 rounded-lg text-sm space-y-2">
+          <div class="flex justify-between">
+            <span class="text-gray-500">Tổng dư nợ hiện tại:</span>
+            <span class="font-bold text-red-500">{{
+              formatCurrency(selectedSupplierToPay.totalDebt)
+            }}</span>
+          </div>
+          <div class="text-xs text-gray-500 mt-2">
+            Hệ thống sẽ tự động cấn trừ số tiền thanh toán vào các đơn nợ từ cũ
+            nhất đến mới nhất.
+          </div>
+        </div>
+        <ElForm label-position="top">
+          <ElFormItem label="Số tiền thanh toán (VNĐ)">
+            <ElInputNumber
+              v-model="paymentAmount"
+              :min="1"
+              :max="selectedSupplierToPay.totalDebt"
+              class="w-full"
+              :controls="false"
+            />
+          </ElFormItem>
+        </ElForm>
+      </div>
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <ElButton @click="paymentFormVisible = false">Hủy</ElButton>
+          <ElButton type="primary" :loading="paying" @click="submitPayment"
+            >Xác nhận</ElButton
+          >
+        </div>
+      </template>
+    </ElDialog>
+
+    <ElDialog
+      v-model="paymentLogsVisible"
+      :title="`Lịch sử thanh toán - ${selectedSupplierLogs?.name}`"
+      width="800px"
+      append-to-body
+      destroy-on-close
+    >
+      <div v-loading="logsLoading">
+        <ElTable :data="paymentLogs" border stripe style="width: 100%">
+          <ElTableColumn label="Thời gian" width="160" align="center">
+            <template #default="{ row }">
+              {{ new Date(row.paymentDate).toLocaleString("vi-VN") }}
+            </template>
+          </ElTableColumn>
+          <ElTableColumn label="Người trả" min-width="150">
+            <template #default="{ row }">
+              {{
+                row.createdBy?.fullName || row.createdBy?.userName || "Hệ thống"
+              }}
+            </template>
+          </ElTableColumn>
+          <ElTableColumn label="Số tiền trả" width="150" align="right">
+            <template #default="{ row }">
+              <span class="text-success font-bold">{{
+                formatCurrency(row.amountPaid)
+              }}</span>
+            </template>
+          </ElTableColumn>
+          <ElTableColumn label="Dư nợ còn lại" width="150" align="right">
+            <template #default="{ row }">
+              <span class="text-danger">{{
+                formatCurrency(row.remainingDebt)
+              }}</span>
+            </template>
+          </ElTableColumn>
+        </ElTable>
+      </div>
+    </ElDialog>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue'
-  import { InfoFilled } from '@element-plus/icons-vue'
+import { ref, onMounted } from "vue";
+import { Refresh } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
+import { DebtApi } from "@/api/debt.api";
 
-  defineOptions({ name: 'InventoryDebt' })
+defineOptions({ name: "InventoryDebt" });
 
-  const activeTab = ref('suppliers')
+// const activeTab = ref("suppliers");
 
-  const supplierDebts = [
-    {
-      name: 'Honda Việt Nam',
-      total: 5000000000,
-      paid: 3500000000,
-      balance: 1500000000,
-      deadline: '20/05/2026',
-      status: 'Pending',
-    },
-    {
-      name: 'Yamaha Motor',
-      total: 1200000000,
-      paid: 1200000000,
-      balance: 0,
-      deadline: '-',
-      status: 'Cleared',
-    },
-    {
-      name: 'Mạnh Quang Phụ Tùng',
-      total: 150000000,
-      paid: 50000000,
-      balance: 100000000,
-      deadline: '10/05/2026',
-      status: 'Overdue',
-    },
-  ]
+const supplierDebts = [
+  {
+    name: "Honda Việt Nam",
+    total: 5000000000,
+    paid: 3500000000,
+    balance: 1500000000,
+    deadline: "20/05/2026",
+    status: "Pending",
+  },
+  {
+    name: "Yamaha Motor",
+    total: 1200000000,
+    paid: 1200000000,
+    balance: 0,
+    deadline: "-",
+    status: "Cleared",
+  },
+  {
+    name: "Mạnh Quang Phụ Tùng",
+    total: 150000000,
+    paid: 50000000,
+    balance: 100000000,
+    deadline: "10/05/2026",
+    status: "Overdue",
+  },
+];
 
-  const bankInstallments = [
-    {
-      customer: 'Nguyễn Văn A',
-      bank: 'FE Credit',
-      amount: 25000000,
-      daysPending: 5,
-      contact: 'Mr. Bình (0901234567)',
-    },
-    {
-      customer: 'Trần Thị B',
-      bank: 'Home Credit',
-      amount: 18000000,
-      daysPending: 2,
-      contact: 'Ms. Lan (0987654321)',
-    },
-    {
-      customer: 'Lê Văn C',
-      bank: 'HD Saison',
-      amount: 45000000,
-      daysPending: 12,
-      contact: 'Mr. Hùng (0912345678)',
-    },
-  ]
+const supplierColumns = [
+  { label: "Nhà cung cấp", prop: "name", minWidth: 200 },
+  {
+    label: "Số điện thoại",
+    prop: "phone",
+    width: 150,
+    align: "right",
+    formatter: (row: any) => row.total?.toLocaleString(),
+  },
+  {
+    label: "Còn nợ",
+    prop: "balance",
+    width: 180,
+    useSlot: true,
+    align: "right",
+  },
+  { label: "Hạn thanh toán", prop: "deadline", width: 140, align: "center" },
+  {
+    label: "Trạng thái",
+    prop: "status",
+    width: 130,
+    useSlot: true,
+    align: "center",
+  },
+];
 
-  const supplierColumns = [
-    { label: 'Nhà cung cấp', prop: 'name', minWidth: 200 },
-    {
-      label: 'Tổng nhập',
-      prop: 'total',
-      width: 150,
-      align: 'right',
-      formatter: (row: any) => row.total?.toLocaleString(),
-    },
-    { label: 'Còn nợ', prop: 'balance', width: 180, useSlot: true, align: 'right' },
-    { label: 'Hạn thanh toán', prop: 'deadline', width: 140, align: 'center' },
-    { label: 'Trạng thái', prop: 'status', width: 130, useSlot: true, align: 'center' },
-  ]
+const fetchSupplierDebts = () => {};
 
-  const bankColumns = [
-    { label: 'Khách hàng', prop: 'customer', width: 160 },
-    { label: 'Ngân hàng', prop: 'bank', width: 130 },
-    {
-      label: 'Số tiền vay',
-      prop: 'amount',
-      width: 150,
-      align: 'right',
-      formatter: (row: any) => row.amount?.toLocaleString(),
-    },
-    { label: 'Thời gian treo', prop: 'daysPending', width: 140, useSlot: true, align: 'center' },
-    { label: 'Đầu mối liên hệ', prop: 'contact', minWidth: 200 },
-    {
-      label: 'Thao tác',
-      prop: 'operation',
-      useSlot: true,
-      width: 180,
-      fixed: 'right' as const,
-    },
-  ]
+const paymentFormVisible = ref(false);
+const paying = ref(false);
+const selectedSupplierToPay = ref<any | null>(null);
+const paymentAmount = ref<number>(0);
 
-  const handleContact = (row: any) => {
-    console.log('Contact', row)
+const openPaymentForm = (supplier: any) => {
+  selectedSupplierToPay.value = supplier;
+  paymentAmount.value = supplier.totalDebt;
+  paymentFormVisible.value = true;
+};
+
+const submitPayment = async () => {
+  if (!selectedSupplierToPay.value) return;
+  paying.value = true;
+  try {
+    await DebtApi.paySupplierDebt(
+      selectedSupplierToPay.value.id,
+      paymentAmount.value,
+    );
+    ElMessage.success("Thanh toán công nợ thành công!");
+    paymentFormVisible.value = false;
+    fetchSupplierDebts();
+  } catch (err: any) {
+    console.error(err);
+    ElMessage.error(err.response?.data?.Message || "Thanh toán thất bại");
+  } finally {
+    paying.value = false;
   }
+};
+
+const paymentLogsVisible = ref(false);
+const logsLoading = ref(false);
+const paymentLogs = ref<any[]>([]);
+const selectedSupplierLogs = ref<any | null>(null);
+
+const openPaymentLogs = async (supplier: any) => {
+  selectedSupplierLogs.value = supplier;
+  paymentLogsVisible.value = true;
+  logsLoading.value = true;
+  try {
+    const res = await DebtApi.getSupplierDebtLogs(supplier.id);
+    paymentLogs.value = res || [];
+  } catch (err: any) {
+    console.error(err);
+    ElMessage.error("Không thể lấy lịch sử thanh toán");
+  } finally {
+    logsLoading.value = false;
+  }
+};
+
+const formatCurrency = (val: number) => val?.toLocaleString() + " VNĐ";
+const loading = ref(false);
+const total = ref(0);
+const currentPage = ref(1);
+const pageSize = ref(10);
+const handleCurrentChange = (_val: number) => {};
+const handleSizeChange = (_val: number) => {};
+const totalSuppliersDebt = ref(0);
+
+onMounted(() => {
+  fetchSupplierDebts();
+});
 </script>
+
+<style scoped>
+.art-table-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 3%);
+}
+
+.bg-primary {
+  background-color: var(--main-color);
+}
+</style>

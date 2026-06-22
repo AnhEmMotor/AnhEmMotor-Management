@@ -6,14 +6,14 @@
     iconCode="ri:close-fill"
   >
     <template #content>
-      <p>{{ $t('admin.t115') }}</p>
+      <p>{{ $t("admin.t115") }}</p>
       <p>
         <ArtSvgIcon icon="ri:close-circle-line" class="text-red-500 mr-1" />
-        <span>{{ $t('admin.t116') }}</span>
+        <span>{{ $t("admin.t116") }}</span>
       </p>
       <p>
         <ArtSvgIcon icon="ri:close-circle-line" class="text-red-500 mr-1" />
-        <span>{{ $t('admin.t117') }}</span>
+        <span>{{ $t("admin.t117") }}</span>
       </p>
     </template>
     <template #buttons>
@@ -24,5 +24,5 @@
 </template>
 
 <script setup lang="ts">
-  defineOptions({ name: 'ResultFail' })
+defineOptions({ name: "ResultFail" });
 </script>
