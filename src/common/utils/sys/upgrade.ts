@@ -1,5 +1,5 @@
 import { useUserStore } from "@/application/store/user";
-import { StorageConfig } from "@/utils/storage/storage-config";
+import { StorageConfig } from "@/common/utils/storage/storage-config";
 
 class VersionManager {
   private normalizeVersion(version: string | undefined): string {

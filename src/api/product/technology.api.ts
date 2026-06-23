@@ -1,4 +1,4 @@
-import request from "@/utils/http";
+import request from "@/common/utils/http";
 import type { Technology } from "@/domain/product/technology.types";
 
 export const TechnologyApi = {

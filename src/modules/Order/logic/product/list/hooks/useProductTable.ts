@@ -11,7 +11,7 @@ import type { ProductCategory } from "@/domain/product/category.types";
 import type { Brand } from "@/domain/product/brand.types";
 import type { Technology } from "@/domain/product/technology.types";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { buildTree } from "@/utils";
+import { buildTree } from "@/common/utils";
 
 export function useProductTable() {
   const categories = ref<ProductCategory[]>([]);

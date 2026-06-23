@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { mittBus } from "@/utils/sys";
+import { mittBus } from "@/common/utils/sys";
 import bp from "@imgs/ceremony/hb.png";
 import sd from "@imgs/ceremony/sd.png";
 

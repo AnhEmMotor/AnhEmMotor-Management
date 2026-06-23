@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { AppRouteRecord } from "@/types/router";
-import { getFirstMenuPath } from "@/utils";
+import { getFirstMenuPath } from "@/common/utils";
 import { HOME_PAGE_PATH } from "@/router";
 
 export const useMenuStore = defineStore("menuStore", () => {

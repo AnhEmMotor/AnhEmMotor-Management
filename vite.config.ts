@@ -53,6 +53,7 @@ export default ({ mode }: { mode: string }) => {
     resolve: {
       alias: {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
+        "@view": resolvePath("src/view"),
         "@views": resolvePath("src/modules"),
         "@imgs": resolvePath("src/assets/images"),
         "@icons": resolvePath("src/assets/icons"),

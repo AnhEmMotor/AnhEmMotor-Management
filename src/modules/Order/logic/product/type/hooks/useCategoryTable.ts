@@ -3,7 +3,7 @@ import { CategoryApi } from "@/api/product/category.api";
 import { ref, computed, onMounted, watch } from "vue";
 import type { ProductCategory } from "@/domain/product/category.types";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { buildTree } from "@/utils";
+import { buildTree } from "@/common/utils";
 
 export function useCategoryTable() {
   const dialogVisible = ref(false);

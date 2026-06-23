@@ -1,4 +1,4 @@
-import request from "@/utils/http";
+import request from "@/common/utils/http";
 import type { Banner, BannerList } from "@/domain/marketing/banner.types";
 
 export const BannerApi = {

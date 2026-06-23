@@ -122,7 +122,7 @@ import {
   fetchUpdateUser,
   fetchAssignUserRoles,
 } from "@/api/system-manage.api";
-import { normalizeBackendErrors } from "@/utils/form/error-helper";
+import { normalizeBackendErrors } from "@/common/utils/form/error-helper";
 
 interface Props {
   visible: boolean;

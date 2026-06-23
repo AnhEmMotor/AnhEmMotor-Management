@@ -1,4 +1,4 @@
-import { AppRouteRecordRaw } from "@/utils/router";
+import { AppRouteRecordRaw } from "@/common/utils/router";
 
 export const staticRoutes: AppRouteRecordRaw[] = [
   {
@@ -15,7 +15,7 @@ export const staticRoutes: AppRouteRecordRaw[] = [
   {
     path: "/auth/portal",
     name: "WorkspacePortal",
-    component: () => import("@views/auth/WorkspacePortal.vue"),
+    component: () => import("@view/workspace.vue"),
     meta: { title: "Workspace Portal", isHideTab: true },
   },
   {
@@ -33,7 +33,7 @@ export const staticRoutes: AppRouteRecordRaw[] = [
   {
     path: "/workspace",
     name: "WorkspacePortal",
-    component: () => import("@views/auth/WorkspacePortal.vue"),
+    component: () => import("@view/workspace.vue"),
     meta: { title: "Workspace", isHideTab: true },
   },
   {

@@ -1,4 +1,4 @@
-import request from "@/utils/http";
+import request from "@/common/utils/http";
 
 export const DebtApi = {
   getSuppliersWithDebt(params?: any) {

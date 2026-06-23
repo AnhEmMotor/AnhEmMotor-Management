@@ -123,10 +123,10 @@
 import { useUserStore } from "@/application/store/user";
 import { AppRouteRecord } from "@/types/router";
 import { Search } from "@element-plus/icons-vue";
-import { mittBus } from "@/utils/sys";
+import { mittBus } from "@/common/utils/sys";
 import { useMenuStore } from "@/application/store/menu";
-import { formatMenuTitle } from "@/utils/router";
-import { handleMenuJump } from "@/utils/navigation";
+import { formatMenuTitle } from "@/common/utils/router";
+import { handleMenuJump } from "@/common/utils/navigation";
 import { type ScrollbarInstance } from "element-plus";
 
 defineOptions({ name: "ArtGlobalSearch" });

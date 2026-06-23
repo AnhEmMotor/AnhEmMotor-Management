@@ -2,7 +2,7 @@ import { useTimeoutFn, useIntervalFn, useDateFormat } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { computed } from "vue";
 import { useSettingStore } from "@/application/store/setting";
-import { mittBus } from "@/utils/sys";
+import { mittBus } from "@/common/utils/sys";
 import { festivalConfigList } from "@/config/modules/festival";
 
 const FESTIVAL_CONFIG = {

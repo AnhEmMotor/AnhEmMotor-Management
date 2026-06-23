@@ -4,7 +4,7 @@ import { useAppMode } from "@/hooks/core/useAppMode";
 import { fetchGetMenuList } from "@/api/system-manage.api";
 import { asyncRoutes } from "../routes/asyncRoutes";
 import { RoutesAlias } from "../routesAlias";
-import { formatMenuTitle } from "@/utils";
+import { formatMenuTitle } from "@/common/utils";
 
 export class MenuProcessor {
   async getMenuList(): Promise<AppRouteRecord[]> {

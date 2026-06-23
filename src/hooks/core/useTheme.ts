@@ -2,7 +2,7 @@ import { useSettingStore } from "@/application/store/setting";
 import { SystemThemeEnum } from "@/enums/appEnum";
 import AppConfig from "@/config";
 import { SystemThemeTypes } from "@/types/store";
-import { getDarkColor, getLightColor, setElementThemeColor } from "@/utils/ui";
+import { getDarkColor, getLightColor, setElementThemeColor } from "@/common/utils/ui";
 import { usePreferredDark } from "@vueuse/core";
 import { watch } from "vue";
 

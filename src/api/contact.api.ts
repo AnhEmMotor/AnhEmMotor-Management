@@ -1,4 +1,4 @@
-import request from "@/utils/http";
+import request from "@/common/utils/http";
 import { Contact } from "@/types";
 
 export const SupportStatuses = ["New", "InProgress", "Closed"] as const;

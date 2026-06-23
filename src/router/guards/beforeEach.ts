@@ -5,17 +5,17 @@ import type { NavigationGuardReturn } from "vue-router";
 import { useSettingStore } from "@/application/store/setting";
 import { useUserStore } from "@/application/store/user";
 import { useMenuStore } from "@/application/store/menu";
-import { setWorktab } from "@/utils/navigation";
-import { setPageTitle } from "@/utils/router";
-import type { AppRouteRecordRaw } from "@/utils/router";
+import { setWorktab } from "@/common/utils/navigation";
+import { setPageTitle } from "@/common/utils/router";
+import type { AppRouteRecordRaw } from "@/common/utils/router";
 import { RoutesAlias } from "../routesAlias";
 import { staticRoutes } from "../routes/staticRoutes";
-import { loadingService } from "@/utils/ui";
+import { loadingService } from "@/common/utils/ui";
 import { useCommon } from "@/hooks/core/useCommon";
 import { useWorktabStore } from "@/application/store/worktab";
 import { fetchGetUserInfo } from "@/api/auth.api";
-import { ApiStatus } from "@/utils/http/status";
-import { isHttpError } from "@/utils/http/error";
+import { ApiStatus } from "@/common/utils/http/status";
+import { isHttpError } from "@/common/utils/http/error";
 import {
   RouteRegistry,
   MenuProcessor,

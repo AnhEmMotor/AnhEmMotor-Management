@@ -1,6 +1,6 @@
 import { router } from "@/router";
 import { useUserStore } from "@/application/store/user";
-import { StorageConfig } from "@/utils/storage/storage-config";
+import { StorageConfig } from "@/common/utils/storage/storage-config";
 
 class StorageCompatibilityManager {
   getSystemVersion(): string | null {

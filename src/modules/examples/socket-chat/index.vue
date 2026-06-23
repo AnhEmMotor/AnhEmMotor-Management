@@ -223,7 +223,7 @@
 </template>
 
 <script setup lang="ts">
-import WebSocketClient from "@/utils/socket";
+import WebSocketClient from "@/common/utils/socket";
 import { ElMessage } from "element-plus";
 
 defineOptions({ name: "WidgetsSocketChat" });

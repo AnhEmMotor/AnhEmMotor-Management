@@ -1,4 +1,4 @@
-import api from "@/utils/http";
+import api from "@/common/utils/http";
 import type { LogisticsDashboardResponse } from "@/domain/logistics/dashboard.types";
 
 const API_BASE = "/api/logistics";

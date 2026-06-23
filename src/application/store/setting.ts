@@ -8,9 +8,9 @@ import {
   MenuTypeEnum,
   ContainerWidthEnum,
 } from "@/enums/appEnum";
-import { setElementThemeColor } from "@/utils/ui";
+import { setElementThemeColor } from "@/common/utils/ui";
 import { useCeremony } from "@/hooks/core/useCeremony";
-import { StorageConfig } from "@/utils";
+import { StorageConfig } from "@/common/utils";
 import { SETTING_DEFAULT_CONFIG } from "@/config/setting";
 
 export const useSettingStore = defineStore(

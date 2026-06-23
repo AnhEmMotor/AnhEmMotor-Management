@@ -14,7 +14,7 @@ import {
   TableCache,
   CacheInvalidationStrategy,
   type ApiResponse,
-} from "../../utils/table/tableCache";
+} from "@/common/utils/table/tableCache";
 import {
   type TableError,
   defaultResponseAdapter,
@@ -22,8 +22,8 @@ import {
   updatePaginationFromResponse,
   createSmartDebounce,
   createErrorHandler,
-} from "../../utils/table/tableUtils";
-import { tableConfig } from "../../utils/table/tableConfig";
+} from "@/common/utils/table/tableUtils";
+import { tableConfig } from "@/common/utils/table/tableConfig";
 
 type InferApiParams<T> = T extends (params: infer P) => any ? P : never;
 type InferApiResponse<T> = T extends (params: any) => Promise<infer R>
@@ -650,9 +650,9 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
   };
 }
 
-export { CacheInvalidationStrategy } from "../../utils/table/tableCache";
-export type { ApiResponse, CacheItem } from "../../utils/table/tableCache";
+export { CacheInvalidationStrategy } from "@/common/utils/table/tableCache";
+export type { ApiResponse, CacheItem } from "@/common/utils/table/tableCache";
 export type {
   BaseRequestParams,
   TableError,
-} from "../../utils/table/tableUtils";
+} from "@/common/utils/table/tableUtils";

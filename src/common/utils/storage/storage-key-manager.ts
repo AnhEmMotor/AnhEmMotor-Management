@@ -1,4 +1,4 @@
-import { StorageConfig } from "@/utils/storage";
+import { StorageConfig } from "@/common/utils/storage";
 
 export class StorageKeyManager {
   private getCurrentVersionKey(storeId: string): string {

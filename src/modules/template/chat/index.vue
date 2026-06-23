@@ -197,7 +197,7 @@
 
 <script setup lang="ts">
 import { Picture, Paperclip, ArrowDown } from "@element-plus/icons-vue";
-import { mittBus } from "@/utils/sys";
+import { mittBus } from "@/common/utils/sys";
 import meAvatar from "@/assets/images/avatar/avatar5.webp";
 import aiAvatar from "@/assets/images/avatar/avatar10.webp";
 import avatar2 from "@/assets/images/avatar/avatar2.webp";

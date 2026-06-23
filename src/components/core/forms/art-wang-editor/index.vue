@@ -21,14 +21,14 @@ import "@wangeditor/editor/dist/css/style.css";
 import { onBeforeUnmount, onMounted, shallowRef, computed } from "vue";
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
 import { useUserStore } from "@/application/store/user";
-import EmojiText from "@/utils/ui/emojo";
+import EmojiText from "@/common/utils/ui/emojo";
 import {
   i18nChangeLanguage,
   IDomEditor,
   IToolbarConfig,
   IEditorConfig,
 } from "@wangeditor/editor";
-import request from "@/utils/http";
+import request from "@/common/utils/http";
 
 i18nChangeLanguage("en");
 

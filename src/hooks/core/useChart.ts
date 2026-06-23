@@ -1,7 +1,7 @@
 import { ref, onUnmounted, nextTick, watch, computed, onMounted } from "vue";
 import * as echarts from "echarts";
 import { useWindowSize, useDark } from "@vueuse/core";
-import { getCssVar } from "@/utils/ui";
+import { getCssVar } from "@/common/utils/ui";
 
 export interface ChartOptions {
   [key: string]: any;
