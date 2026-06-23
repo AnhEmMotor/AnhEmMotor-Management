@@ -53,8 +53,8 @@
 
         <div class="text-center">
           <a
-            href="/login"
-            class="font-medium text-primary-600 hover:text-primary-500 text-sm"
+            @click="router.push({ name: 'Login' })"
+            class="font-medium text-primary-600 hover:text-primary-500 text-sm cursor-pointer"
           >
             Quay lại đăng nhập
           </a>
