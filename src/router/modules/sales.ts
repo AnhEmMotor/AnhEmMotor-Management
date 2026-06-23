@@ -7,7 +7,7 @@ export const salesRoutes: AppRouteRecord = {
   meta: {
     title: "Quản lý bán hàng",
     icon: "ri:bill-line",
-    roles: ["R_SUPER", "R_ADMIN"],
+    roles: ["Admin", "SuperAdmin"],
   },
   children: [
     {

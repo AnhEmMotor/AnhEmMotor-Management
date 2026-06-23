@@ -7,6 +7,6 @@ export const contactRoutes: AppRouteRecord = {
   meta: {
     title: "menus.contact.title",
     icon: "ri:message-2-line",
-    roles: ["R_SUPER", "R_ADMIN"],
+    roles: ["Admin", "SuperAdmin"],
   },
 };

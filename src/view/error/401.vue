@@ -5,23 +5,23 @@
       <el-card class="login-card max-w-lg w-full m-4 border-0" shadow="hover">
         <div class="text-center py-8">
           <div class="flex justify-center mb-6">
-            <div class="w-24 h-24 rounded-full bg-primary flex items-center justify-center shadow-lg" style="background-color: var(--el-color-danger)">
+            <div class="w-24 h-24 rounded-full bg-primary flex items-center justify-center shadow-lg" style="background-color: var(--el-color-warning)">
               <el-icon :size="48" color="white"><WarningFilled /></el-icon>
             </div>
           </div>
           
-          <h1 class="text-8xl font-extrabold mb-2 tracking-tighter" style="color: var(--el-color-danger)">404</h1>
+          <h1 class="text-8xl font-extrabold mb-2 tracking-tighter" style="color: var(--el-color-warning)">401</h1>
           <h2 class="text-3xl font-bold title tracking-tight mb-4">
-            Không tìm thấy trang
+            Không có quyền truy cập
           </h2>
           <p class="text-base subtitle px-6 mb-10">
-            Xin lỗi, trang bạn đang tìm kiếm không tồn tại, đã bị gỡ bỏ, đổi tên hoặc tạm thời không truy cập được.
+            Xin lỗi, bạn cần phải đăng nhập để truy cập vào tài nguyên này. Vui lòng quay lại trang đăng nhập.
           </p>
           
           <div class="flex justify-center gap-4">
             <el-button 
               size="large" 
-              @click="router.back()"
+              @click="goBack"
               class="custom-btn"
             >
               <el-icon class="mr-2"><Back /></el-icon>
@@ -30,11 +30,11 @@
             <el-button 
               type="primary" 
               size="large" 
-              @click="goHome"
+              @click="goLogin"
               class="custom-btn submit-btn"
             >
-              <el-icon class="mr-2"><HomeFilled /></el-icon>
-              Về trang chủ
+              <el-icon class="mr-2"><UserFilled /></el-icon>
+              Đăng nhập ngay
             </el-button>
           </div>
         </div>
@@ -45,12 +45,16 @@
 
 <script setup lang="ts">
 import { useRouter } from "vue-router";
-import { WarningFilled, HomeFilled, Back } from "@element-plus/icons-vue";
+import { WarningFilled, UserFilled, Back } from "@element-plus/icons-vue";
 
 const router = useRouter();
 
-const goHome = () => {
-  router.push("/");
+const goBack = () => {
+  router.back();
+};
+
+const goLogin = () => {
+  router.push("/login");
 };
 </script>
 

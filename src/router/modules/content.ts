@@ -7,7 +7,7 @@ export const contentRoutes: AppRouteRecord = {
   meta: {
     title: "Quản lý Nội dung",
     icon: "ri:file-text-line",
-    roles: ["R_SUPER", "R_ADMIN"],
+    roles: ["Admin", "SuperAdmin"],
   },
   children: [
     {
@@ -80,7 +80,7 @@ export const contentRoutes: AppRouteRecord = {
         title: "Banner",
         icon: "ri:advertisement-line",
         keepAlive: true,
-        roles: ["R_SUPER", "R_ADMIN"],
+        roles: ["Admin", "SuperAdmin"],
       },
     },
   ],

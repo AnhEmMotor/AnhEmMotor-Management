@@ -7,7 +7,7 @@ export const hrRoutes: AppRouteRecord = {
   meta: {
     title: "menus.hr.title",
     icon: "ri:user-star-line",
-    roles: ["R_SUPER", "R_ADMIN"],
+    roles: ["Admin", "SuperAdmin"],
   },
   children: [
     {

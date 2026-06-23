@@ -47,7 +47,6 @@
               placeholder="Mật khẩu"
               :prefix-icon="Lock"
               show-password
-              clearable
               class="custom-input"
               @keyup.enter="handleLogin"
             />

@@ -8,7 +8,7 @@ export const productRoutes: AppRouteRecord[] = [
     meta: {
       title: "menus.product.title",
       icon: "ri:shopping-bag-3-line",
-      roles: ["R_SUPER", "R_ADMIN"],
+      roles: ["Admin", "SuperAdmin"],
     },
     children: [
       {
@@ -48,7 +48,7 @@ export const productRoutes: AppRouteRecord[] = [
     meta: {
       title: "menus.product.title",
       icon: "ri:shopping-bag-3-line",
-      roles: ["R_SUPER", "R_ADMIN"],
+      roles: ["Admin", "SuperAdmin"],
     },
     children: [
       {

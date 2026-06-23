@@ -7,7 +7,7 @@ export const inventoryRoutes: AppRouteRecord = {
   meta: {
     title: "menus.inventory.title",
     icon: "ri:archive-line",
-    roles: ["R_SUPER", "R_ADMIN"],
+    roles: ["Admin", "SuperAdmin"],
   },
   children: [
     {

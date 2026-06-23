@@ -7,7 +7,7 @@ export const contractRoutes: AppRouteRecord = {
   meta: {
     title: "menus.contract.title",
     icon: "ri:file-list-line",
-    roles: ["R_SUPER", "R_ADMIN"],
+    roles: ["Admin", "SuperAdmin"],
   },
   children: [
     {

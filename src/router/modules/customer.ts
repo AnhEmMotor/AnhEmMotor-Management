@@ -7,7 +7,7 @@ export const customerRoutes: AppRouteRecord = {
   meta: {
     title: "menus.customer.title",
     icon: "ri:user-heart-line",
-    roles: ["R_SUPER", "R_ADMIN"],
+    roles: ["Admin", "SuperAdmin"],
   },
   children: [
     {
