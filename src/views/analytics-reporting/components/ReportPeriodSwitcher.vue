@@ -76,7 +76,7 @@
     display: grid;
     grid-template-columns: repeat(4, minmax(88px, 1fr));
     overflow: hidden;
-    border: 1px solid rgb(255 255 255 / 14%);
+    border: 1px solid var(--el-border-color-lighter);
     border-radius: 8px;
   }
 
@@ -94,12 +94,12 @@
     font-size: 14px;
     font-weight: 600;
     line-height: 1;
-    color: #cbd5e1;
+    color: var(--el-text-color-regular);
     text-align: center;
     white-space: nowrap;
-    background: #101114;
+    background: var(--el-fill-color-light);
     border: 0;
-    border-left: 1px solid rgb(255 255 255 / 14%);
+    border-left: 1px solid var(--el-border-color-lighter);
     border-radius: 0;
     box-shadow: none !important;
   }
@@ -115,14 +115,35 @@
 
   :deep(.el-input__wrapper) {
     min-height: 34px;
-    background: #101114;
-    border: 1px solid rgb(255 255 255 / 14%);
+    background: var(--el-fill-color-light);
+    border: 1px solid var(--el-border-color-lighter);
     border-radius: 8px;
     box-shadow: none;
   }
 
   :deep(.el-input__inner) {
-    color: #f8fafc;
+    color: var(--el-text-color-primary);
+  }
+
+  :global(html.dark) {
+    .report-period-switcher :deep(.el-radio-group) {
+      border-color: rgb(255 255 255 / 14%);
+    }
+
+    .report-period-switcher :deep(.el-radio-button__inner) {
+      color: #cbd5e1;
+      background: #101114;
+      border-left-color: rgb(255 255 255 / 14%);
+    }
+
+    .report-period-switcher :deep(.el-input__wrapper) {
+      background: #101114;
+      border-color: rgb(255 255 255 / 14%);
+    }
+
+    .report-period-switcher :deep(.el-input__inner) {
+      color: #f8fafc;
+    }
   }
 
   @media (width <= 767px) {

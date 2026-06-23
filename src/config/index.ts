@@ -82,10 +82,10 @@ const appConfig: SystemConfig = {
   darkMenuStyles: [
     {
       theme: MenuThemeEnum.DARK,
-      background: 'var(--default-box-color)',
+      background: '#161618',
       systemNameColor: '#DDDDDD',
       iconColor: '#BABBBD',
-      textColor: 'rgba(#FFFFFF, 0.7)',
+      textColor: 'rgba(255, 255, 255, 0.7)',
     },
   ],
 

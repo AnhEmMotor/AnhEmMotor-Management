@@ -78,7 +78,7 @@
     font-size: 24px;
     font-weight: 800;
     line-height: 1.25;
-    color: #f8fafc;
+    color: var(--el-text-color-primary);
   }
 
   p {
@@ -86,7 +86,7 @@
     margin: 8px 0 0;
     font-size: 14px;
     line-height: 1.6;
-    color: #9ca3af;
+    color: var(--el-text-color-secondary);
   }
 
   .report-page-header__actions {
@@ -107,6 +107,16 @@
       width: 100%;
       min-height: auto;
       padding-top: 0;
+    }
+  }
+
+  :global(html.dark) {
+    h1 {
+      color: #f8fafc;
+    }
+
+    p {
+      color: #9ca3af;
     }
   }
 </style>

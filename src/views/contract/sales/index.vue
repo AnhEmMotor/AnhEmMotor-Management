@@ -337,48 +337,53 @@
 <style scoped lang="scss">
   .contract-sales-container {
     padding: 16px;
-    color: #f8fafc;
   }
 
-  .contract-sales-container :deep(.el-card) {
-    color: #f8fafc;
-    background: #161618;
-    border-color: rgb(255 255 255 / 9%);
-  }
+  :global(html.dark) {
+    .contract-sales-container {
+      color: #f8fafc;
+    }
 
-  .contract-sales-container :deep(.el-card__header),
-  .contract-sales-container :deep(.el-table),
-  .contract-sales-container :deep(.el-table .cell),
-  .contract-sales-container :deep(.el-table th.el-table__cell),
-  .contract-sales-container :deep(.el-table td.el-table__cell),
-  .contract-sales-container :deep(.el-pagination),
-  .contract-sales-container :deep(.el-pagination *) {
-    color: #f8fafc !important;
-  }
+    .contract-sales-container :deep(.el-card) {
+      color: #f8fafc;
+      background: #161618;
+      border-color: rgb(255 255 255 / 9%);
+    }
 
-  .contract-sales-container :deep(.el-table th.el-table__cell) {
-    background: #111214;
-  }
+    .contract-sales-container :deep(.el-card__header),
+    .contract-sales-container :deep(.el-table),
+    .contract-sales-container :deep(.el-table .cell),
+    .contract-sales-container :deep(.el-table th.el-table__cell),
+    .contract-sales-container :deep(.el-table td.el-table__cell),
+    .contract-sales-container :deep(.el-pagination),
+    .contract-sales-container :deep(.el-pagination *) {
+      color: #f8fafc !important;
+    }
 
-  .contract-sales-container :deep(.el-input__wrapper),
-  .contract-sales-container :deep(.el-select__wrapper) {
-    background: #101114;
-    border: 1px solid rgb(255 255 255 / 14%);
-    box-shadow: none;
-  }
+    .contract-sales-container :deep(.el-table th.el-table__cell) {
+      background: #111214;
+    }
 
-  .contract-sales-container :deep(.el-input__inner),
-  .contract-sales-container :deep(.el-select__placeholder),
-  .contract-sales-container :deep(.el-select__selected-item) {
-    color: #f8fafc;
-  }
+    .contract-sales-container :deep(.el-input__wrapper),
+    .contract-sales-container :deep(.el-select__wrapper) {
+      background: #101114;
+      border: 1px solid rgb(255 255 255 / 14%);
+      box-shadow: none;
+    }
 
-  .contract-sales-container .text-gray-400,
-  .contract-sales-container .text-gray-500,
-  .contract-sales-container .text-gray-600,
-  .contract-sales-container .text-gray-800,
-  .contract-sales-container .text-gray-900 {
-    color: #f8fafc !important;
+    .contract-sales-container :deep(.el-input__inner),
+    .contract-sales-container :deep(.el-select__placeholder),
+    .contract-sales-container :deep(.el-select__selected-item) {
+      color: #f8fafc;
+    }
+
+    .contract-sales-container .text-gray-400,
+    .contract-sales-container .text-gray-500,
+    .contract-sales-container .text-gray-600,
+    .contract-sales-container .text-gray-800,
+    .contract-sales-container .text-gray-900 {
+      color: #f8fafc !important;
+    }
   }
 
   .kpi-card {

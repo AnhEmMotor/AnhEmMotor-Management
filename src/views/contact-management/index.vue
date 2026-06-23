@@ -635,17 +635,148 @@
 
                 <!-- Scrollable Content -->
                 <div class="flex-1 overflow-y-auto p-5 space-y-5">
-                  <!-- CV PDF Viewer -->
+                  <!-- CV File and Preview Section -->
                   <div>
                     <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2"
                       >Hồ sơ ứng viên (CV)</h4
                     >
-                    <div
-                      v-if="activeItem?.cvFileUrl"
-                      class="border border-slate-200 rounded-xl overflow-hidden h-[360px] bg-slate-50 shadow-inner"
-                    >
-                      <iframe :src="activeItem.cvFileUrl" class="w-full h-full border-none" />
+
+                    <div v-if="cvFileUrl">
+                      <!-- File Header / Download bar -->
+                      <div
+                        class="cv-file-header flex items-center justify-between p-3 bg-slate-100 rounded-t-xl border border-slate-200 border-b-0"
+                      >
+                        <div class="flex items-center gap-2 overflow-hidden mr-3">
+                          <ArtSvgIcon
+                            :icon="
+                              isLegacyCv
+                                ? 'ri:error-warning-line'
+                                : isCvPdf
+                                  ? 'ri:file-pdf-2-fill'
+                                  : isCvImage
+                                    ? 'ri:image-2-fill'
+                                    : isCvWord
+                                      ? 'ri:file-word-2-fill'
+                                      : 'ri:file-line'
+                            "
+                            class="text-lg flex-shrink-0"
+                            :class="{
+                              'text-amber-500': isLegacyCv,
+                              'text-red-500': !isLegacyCv && isCvPdf,
+                              'text-blue-500': !isLegacyCv && isCvWord,
+                              'text-emerald-500': !isLegacyCv && isCvImage,
+                              'text-slate-500': !isLegacyCv && !isCvPdf && !isCvWord && !isCvImage,
+                            }"
+                          />
+                          <span
+                            class="text-xs font-bold text-slate-700 truncate"
+                            :title="cvFileName"
+                          >
+                            {{ cvFileName }}
+                            <span v-if="isLegacyCv" class="text-amber-600 font-semibold ml-1"
+                              >(File cũ - Không có trên server)</span
+                            >
+                          </span>
+                        </div>
+                        <ElButton
+                          v-if="!isLegacyCv"
+                          type="primary"
+                          size="small"
+                          class="flex-shrink-0"
+                          @click="downloadCvUrl(cvFileUrl)"
+                        >
+                          <ArtSvgIcon icon="ri:download-2-line" class="mr-1" />
+                          Tải xuống CV
+                        </ElButton>
+                      </div>
+
+                      <!-- Preview Frame -->
+                      <div
+                        class="border border-slate-200 rounded-b-xl overflow-hidden h-[450px] bg-slate-50 shadow-inner flex items-center justify-center p-2"
+                      >
+                        <!-- Legacy CV warning card -->
+                        <div
+                          v-if="isLegacyCv"
+                          class="flex flex-col items-center justify-center text-center p-6 text-slate-500"
+                        >
+                          <ArtSvgIcon
+                            icon="ri:error-warning-line"
+                            class="text-5xl text-amber-500 mb-3"
+                          />
+                          <p class="text-sm font-bold text-slate-700 mb-1"
+                            >Hồ sơ CV cũ (Chưa tải lên)</p
+                          >
+                          <p class="text-xs text-slate-400 max-w-xs leading-relaxed">
+                            Hồ sơ này được tạo trước khi hệ thống tải tệp CV hoạt động. Máy chủ chỉ
+                            lưu tên file và không chứa tệp tin vật lý để xem trước hoặc tải xuống.
+                          </p>
+                        </div>
+
+                        <!-- Image Preview -->
+                        <img
+                          v-else-if="isCvImage"
+                          :src="getFullCvUrl(cvFileUrl)"
+                          class="max-w-full max-h-full object-contain rounded-lg shadow-sm"
+                          alt="CV Preview"
+                        />
+
+                        <!-- PDF Preview -->
+                        <iframe
+                          v-else-if="isCvPdf"
+                          :src="getFullCvUrl(cvFileUrl)"
+                          class="w-full h-full border-none rounded-lg"
+                        />
+
+                        <!-- Word Document Placeholder -->
+                        <div
+                          v-else-if="isCvWord"
+                          class="flex flex-col items-center justify-center text-center p-6 text-slate-500"
+                        >
+                          <ArtSvgIcon
+                            icon="ri:file-word-2-line"
+                            class="text-5xl text-blue-500 mb-3"
+                          />
+                          <p class="text-sm font-bold text-slate-700 mb-1">Tệp Word (.docx/.doc)</p>
+                          <p class="text-xs text-slate-400 max-w-xs mb-4">
+                            Không hỗ trợ xem trực tiếp tệp Word trên trình duyệt. Vui lòng tải xuống
+                            để xem chi tiết.
+                          </p>
+                          <ElButton
+                            type="primary"
+                            plain
+                            size="default"
+                            @click="downloadCvUrl(cvFileUrl)"
+                          >
+                            <ArtSvgIcon icon="ri:download-2-line" class="mr-1.5" />
+                            Tải về máy tính
+                          </ElButton>
+                        </div>
+
+                        <!-- Generic File Placeholder -->
+                        <div
+                          v-else
+                          class="flex flex-col items-center justify-center text-center p-6 text-slate-500"
+                        >
+                          <ArtSvgIcon icon="ri:file-line" class="text-5xl text-slate-400 mb-3" />
+                          <p class="text-sm font-bold text-slate-700 mb-1">Tệp đính kèm</p>
+                          <p class="text-xs text-slate-400 max-w-xs mb-4">
+                            Không hỗ trợ xem trực tiếp định dạng này. Vui lòng tải xuống để xem chi
+                            tiết.
+                          </p>
+                          <ElButton
+                            type="primary"
+                            plain
+                            size="default"
+                            @click="downloadCvUrl(cvFileUrl)"
+                          >
+                            <ArtSvgIcon icon="ri:download-2-line" class="mr-1.5" />
+                            Tải về máy tính
+                          </ElButton>
+                        </div>
+                      </div>
                     </div>
+
+                    <!-- Empty State -->
                     <div
                       v-else
                       class="flex flex-col items-center justify-center py-12 bg-slate-50 border border-dashed border-slate-200 rounded-xl text-slate-400"
@@ -815,6 +946,7 @@
   }))
 
   onMounted(() => {
+    contactStore.setFilter(activeTab.value, statusFilter.value)
     contactStore.fetchList()
   })
 
@@ -919,6 +1051,42 @@
     () => (activeItem.value as Contact.JobApplication)?.coverLetter ?? '',
   )
 
+  const cvFileUrl = computed(() => (activeItem.value as Contact.JobApplication)?.cvFileUrl ?? '')
+  const isLegacyCv = computed(() => {
+    if (!cvFileUrl.value) return false
+    return (
+      !cvFileUrl.value.startsWith('cv/') &&
+      !cvFileUrl.value.startsWith('http://') &&
+      !cvFileUrl.value.startsWith('https://')
+    )
+  })
+  const cvExtension = computed(() => cvFileUrl.value.split('.').pop()?.toLowerCase() ?? '')
+
+  const isCvImage = computed(() => {
+    return ['png', 'jpg', 'jpeg', 'webp', 'gif'].includes(cvExtension.value)
+  })
+
+  const isCvPdf = computed(() => {
+    return cvExtension.value === 'pdf'
+  })
+
+  const isCvWord = computed(() => {
+    return ['doc', 'docx'].includes(cvExtension.value)
+  })
+
+  const cvFileName = computed(() => {
+    if (!cvFileUrl.value) return ''
+    return cvFileUrl.value.split('/').pop() ?? cvFileUrl.value
+  })
+
+  const getFullCvUrl = (url: string | undefined) => {
+    if (!url) return ''
+    if (url.startsWith('http://') || url.startsWith('https://')) return url
+    const baseUrl =
+      import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:5000'
+    return `${baseUrl}/api/v1/MediaFile/view-image/${url}`
+  }
+
   const handleReply = async () => {
     if (!replyDraft.value.trim() || !contactStore.activeItem) return
     try {
@@ -940,7 +1108,12 @@
   }
 
   const downloadCvUrl = (url: string) => {
-    if (url) window.open(url, '_blank')
+    if (!url) return
+    const fullUrl = getFullCvUrl(url)
+    const downloadUrl = fullUrl.includes('?')
+      ? `${fullUrl}&download=true`
+      : `${fullUrl}?download=true`
+    window.open(downloadUrl, '_blank')
   }
   const openAssignDialog = () => {
     assignDialogVisible.value = true
@@ -1173,6 +1346,7 @@
 
   :global(html.dark .contact-page .list-header),
   :global(html.dark .contact-page .detail-header),
+  :global(html.dark .contact-page .cv-file-header),
   :global(html.dark .contact-page .bg-slate-50),
   :global(html.dark .contact-page .bg-\[\#FAFCFF\]) {
     background: var(--contact-surface-soft) !important;
@@ -1200,5 +1374,9 @@
 
   :global(html.dark .contact-page .empty-state .text-slate-200) {
     color: rgb(148 163 184 / 45%) !important;
+  }
+
+  :global(html.dark .contact-page .badge.bg-slate-100) {
+    color: #000 !important;
   }
 </style>

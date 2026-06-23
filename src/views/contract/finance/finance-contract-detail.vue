@@ -598,7 +598,7 @@
 <style scoped lang="scss">
   .finance-contract-detail {
     padding: 8px 12px;
-    color: #f8fafc;
+    color: var(--art-color);
 
     // Responsive layout: stack on mobile, side-by-side on desktop
     @media (width <= 768px) {
@@ -656,9 +656,9 @@
   }
 
   .finance-contract-detail :deep(.el-card) {
-    color: #f8fafc;
-    background: #161618;
-    border-color: rgb(255 255 255 / 9%);
+    color: var(--art-color);
+    background: var(--default-box-color);
+    border-color: rgb(var(--art-color-rgb), 9%);
   }
 
   .finance-contract-detail :deep(.el-card__header),
@@ -669,60 +669,60 @@
   .finance-contract-detail :deep(.el-radio__label),
   .finance-contract-detail :deep(.el-upload__text),
   .finance-contract-detail :deep(.el-upload__tip) {
-    color: #f8fafc;
+    color: var(--art-color);
   }
 
   .finance-contract-detail :deep(.el-card__body) {
-    background: #161618 !important;
+    background: var(--default-box-color) !important;
   }
 
   .finance-contract-detail :deep(.el-descriptions__label),
   .finance-contract-detail :deep(.el-descriptions__content) {
-    background: #111214;
-    border-color: rgb(255 255 255 / 9%);
+    background: var(--default-bg-color);
+    border-color: rgb(var(--art-color-rgb), 9%);
   }
 
   .finance-contract-detail :deep(.el-divider) {
-    border-color: rgb(255 255 255 / 9%);
+    border-color: rgb(var(--art-color-rgb), 9%);
   }
 
   .finance-contract-detail :deep(.el-input__wrapper),
   .finance-contract-detail :deep(.el-input-number),
   .finance-contract-detail :deep(.el-date-editor),
   .finance-contract-detail :deep(.el-upload-dragger) {
-    color: #f8fafc;
-    background: #101114;
-    border-color: rgb(255 255 255 / 14%);
+    color: var(--art-color);
+    background: var(--art-gray-100);
+    border-color: rgb(var(--art-color-rgb), 14%);
     box-shadow: none;
   }
 
   .finance-contract-detail :deep(.el-input__inner) {
-    color: #f8fafc;
+    color: var(--art-color);
   }
 
   .finance-contract-detail .text-gray-400,
   .finance-contract-detail .text-gray-500,
   .finance-contract-detail .text-gray-600,
   .finance-contract-detail .text-gray-900 {
-    color: #f8fafc !important;
+    color: var(--art-color) !important;
   }
 
   .finance-contract-detail .bg-gray-200,
   .finance-contract-detail .bg-white {
-    background-color: #202126 !important;
+    background-color: var(--default-bg-color) !important;
   }
 
   .finance-contract-detail .border-gray-100,
   .finance-contract-detail .border-gray-300,
   .finance-contract-detail .border-b,
   .finance-contract-detail .border-l {
-    border-color: rgb(255 255 255 / 14%) !important;
+    border-color: rgb(var(--art-color-rgb), 14%) !important;
   }
 
   .finance-contract-detail .preview-toolbar {
-    color: #f8fafc;
-    background: #111214 !important;
-    border-color: rgb(255 255 255 / 9%) !important;
+    color: var(--art-color);
+    background: var(--art-gray-100) !important;
+    border-color: rgb(var(--art-color-rgb), 9%) !important;
   }
 
   .finance-contract-detail .a4-paper,
@@ -770,28 +770,28 @@
 
 <style lang="scss">
   .finance-detail-date-popper.el-popper {
-    --el-bg-color-overlay: #161618;
-    --el-border-color-light: rgb(255 255 255 / 9%);
-    --el-text-color-primary: #f8fafc;
-    --el-text-color-regular: #f8fafc;
-    --el-text-color-secondary: #f8fafc;
+    --el-bg-color-overlay: var(--default-box-color);
+    --el-border-color-light: rgb(var(--art-color-rgb), 9%);
+    --el-text-color-primary: var(--art-color);
+    --el-text-color-regular: var(--art-color);
+    --el-text-color-secondary: var(--art-color);
 
-    background: #161618;
-    border-color: rgb(255 255 255 / 9%);
+    background: var(--default-box-color);
+    border-color: rgb(var(--art-color-rgb), 9%);
   }
 
   .finance-detail-date-popper .el-picker-panel,
   .finance-detail-date-popper .el-picker-panel__body,
   .finance-detail-date-popper .el-picker-panel__footer {
-    color: #f8fafc;
-    background: #161618;
-    border-color: rgb(255 255 255 / 9%);
+    color: var(--art-color);
+    background: var(--default-box-color);
+    border-color: rgb(var(--art-color-rgb), 9%);
   }
 
   .finance-detail-date-popper .el-date-table th,
   .finance-detail-date-popper .el-date-table td.available,
   .finance-detail-date-popper .el-date-picker__header-label,
   .finance-detail-date-popper .el-picker-panel__icon-btn {
-    color: #f8fafc;
+    color: var(--art-color);
   }
 </style>

@@ -922,10 +922,6 @@
 </script>
 
 <style scoped lang="scss">
-  .contract-supplier-container {
-    color: #f8fafc;
-  }
-
   .supplier-create-button {
     height: 40px;
     padding: 0 18px;
@@ -939,25 +935,6 @@
 
   .supplier-kpi-grid :deep(.art-card) {
     min-height: 128px;
-    color: #f8fafc;
-    background: #161618;
-    border-color: rgb(255 255 255 / 9%) !important;
-  }
-
-  .supplier-kpi-grid :deep(.art-card .text-g-900),
-  .supplier-kpi-grid :deep(.art-card .text-g-800),
-  .supplier-kpi-grid :deep(.art-card .text-g-700),
-  .supplier-kpi-grid :deep(.art-card .text-g-600),
-  .supplier-kpi-grid :deep(.art-card .text-g-500),
-  .supplier-kpi-grid :deep(.art-card p),
-  .supplier-table-card :deep(.el-table),
-  .supplier-table-card :deep(.el-table .cell),
-  .supplier-table-card :deep(.el-table th.el-table__cell),
-  .supplier-table-card :deep(.el-table td.el-table__cell),
-  .supplier-table-card :deep(.el-pagination),
-  .supplier-table-card :deep(.el-pagination *) {
-    color: #f8fafc !important;
-    opacity: 1 !important;
   }
 
   .supplier-filter-card {
@@ -970,7 +947,6 @@
 
   .supplier-filter-card :deep(.art-search-bar) {
     padding: 0;
-    color: #f8fafc;
     background: transparent;
     border: 0 !important;
     box-shadow: none;
@@ -1044,28 +1020,9 @@
     line-height: 32px;
   }
 
-  .contract-supplier-container :deep(.el-input__wrapper),
-  .contract-supplier-container :deep(.el-select__wrapper) {
-    color: #f8fafc;
-    background: #101114 !important;
-    border-color: rgb(255 255 255 / 14%) !important;
-    box-shadow: none;
-  }
-
   .contract-supplier-container :deep(.el-date-editor.el-input__wrapper) {
     box-sizing: border-box;
     width: 100% !important;
-  }
-
-  .contract-supplier-container :deep(.art-search-bar .el-form-item__label),
-  .contract-supplier-container :deep(.el-input__inner),
-  .contract-supplier-container :deep(.el-select__placeholder),
-  .contract-supplier-container :deep(.el-select__selected-item),
-  .contract-supplier-container :deep(.el-select__caret),
-  .contract-supplier-container :deep(.el-range-input),
-  .contract-supplier-container :deep(.el-range-separator) {
-    color: #f8fafc !important;
-    background: transparent !important;
   }
 
   .supplier-table-card :deep(.el-card__body) {
@@ -1076,7 +1033,7 @@
     display: flex;
     flex-direction: column;
     gap: 3px;
-    color: #f8fafc;
+    color: var(--el-text-color-primary);
   }
 
   .supplier-table-heading span {
@@ -1086,27 +1043,17 @@
 
   .supplier-table-heading small {
     font-size: 12px;
-    color: #9ca3af;
+    color: var(--el-text-color-secondary);
   }
 
   .supplier-table-card :deep(#art-table-header) {
     padding-bottom: 14px;
     margin-bottom: 14px;
-    border-bottom: 1px solid rgb(255 255 255 / 9%);
+    border-bottom: 1px solid var(--el-border-color-lighter);
   }
 
   .supplier-table-card :deep(#art-table-header .button) {
-    color: #cbd5e1;
-    background: #202126;
-    border: 1px solid rgb(255 255 255 / 9%);
-  }
-
-  .supplier-table-card :deep(.el-table th.el-table__cell) {
-    background: #111214;
-  }
-
-  .supplier-table-card :deep(.el-table__empty-block) {
-    background: #161618;
+    border: 1px solid var(--el-border-color-lighter);
   }
 
   .supplier-operation-cell {
@@ -1135,34 +1082,140 @@
     font-weight: 700;
   }
 
-  .contract-supplier-container .text-gray-400,
-  .contract-supplier-container .text-gray-500,
-  .contract-supplier-container .text-gray-600,
-  .contract-supplier-container .text-gray-800,
-  .contract-supplier-container .text-gray-900 {
-    color: #f8fafc !important;
-  }
-
   .border-l {
-    border-left: 1px solid rgb(255 255 255 / 14%);
+    border-left: 1px solid var(--el-border-color-lighter);
   }
 
-  @media (width >= 1280px) {
-    .supplier-kpi-grid {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+  :global(.contract-supplier-dialog .contract-file-upload .el-upload),
+  :global(.contract-supplier-dialog .contract-file-upload .el-upload-dragger) {
+    width: 100%;
+  }
+
+  :global(.contract-supplier-dialog .contract-upload-preview) {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 190px;
+    padding: 12px;
+    color: var(--el-text-color-secondary);
+  }
+
+  :global(.contract-supplier-dialog .contract-upload-preview img) {
+    max-width: 100%;
+    max-height: 260px;
+    object-fit: contain;
+    border: 1px solid var(--el-border-color);
+    border-radius: 10px;
+  }
+
+  :global(.contract-supplier-dialog .contract-upload-preview .preview-hint) {
+    font-size: 12px;
+    color: var(--el-text-color-secondary);
+  }
+
+  :global(.contract-supplier-dialog .contract-upload-filebar) {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 8px 10px;
+    margin-top: 8px;
+    color: var(--el-text-color-primary);
+    background: var(--el-fill-color-light);
+    border: 1px solid var(--el-border-color-lighter);
+    border-radius: 8px;
+  }
+
+  :global(html.dark) {
+    .contract-supplier-container {
+      color: #f8fafc;
+    }
+
+    .supplier-kpi-grid :deep(.art-card) {
+      color: #f8fafc;
+      background: #161618;
+      border-color: rgb(255 255 255 / 9%) !important;
+    }
+
+    .supplier-kpi-grid :deep(.art-card .text-g-900),
+    .supplier-kpi-grid :deep(.art-card .text-g-800),
+    .supplier-kpi-grid :deep(.art-card .text-g-700),
+    .supplier-kpi-grid :deep(.art-card .text-g-600),
+    .supplier-kpi-grid :deep(.art-card .text-g-500),
+    .supplier-kpi-grid :deep(.art-card p),
+    .supplier-table-card :deep(.el-table),
+    .supplier-table-card :deep(.el-table .cell),
+    .supplier-table-card :deep(.el-table th.el-table__cell),
+    .supplier-table-card :deep(.el-table td.el-table__cell),
+    .supplier-table-card :deep(.el-pagination),
+    .supplier-table-card :deep(.el-pagination *) {
+      color: #f8fafc !important;
+      opacity: 1 !important;
+    }
+
+    .supplier-filter-card :deep(.art-search-bar) {
+      color: #f8fafc;
+    }
+
+    .contract-supplier-container :deep(.el-input__wrapper),
+    .contract-supplier-container :deep(.el-select__wrapper) {
+      color: #f8fafc;
+      background: #101114 !important;
+      border: 1px solid rgb(255 255 255 / 14%) !important;
+      box-shadow: none;
+    }
+
+    .contract-supplier-container :deep(.art-search-bar .el-form-item__label),
+    .contract-supplier-container :deep(.el-input__inner),
+    .contract-supplier-container :deep(.el-select__placeholder),
+    .contract-supplier-container :deep(.el-select__selected-item),
+    .contract-supplier-container :deep(.el-select__caret),
+    .contract-supplier-container :deep(.el-range-input),
+    .contract-supplier-container :deep(.el-range-separator) {
+      color: #f8fafc !important;
+      background: transparent !important;
+    }
+
+    .supplier-table-heading {
+      color: #f8fafc;
+    }
+
+    .supplier-table-card :deep(#art-table-header) {
+      border-bottom-color: rgb(255 255 255 / 9%);
+    }
+
+    .supplier-table-card :deep(#art-table-header .button) {
+      color: #cbd5e1;
+      background: #202126;
+      border-color: rgb(255 255 255 / 9%);
+    }
+
+    .supplier-table-card :deep(.el-table th.el-table__cell) {
+      background: #111214;
+    }
+
+    .supplier-table-card :deep(.el-table__empty-block) {
+      background: #161618;
+    }
+
+    .contract-supplier-container .text-gray-400,
+    .contract-supplier-container .text-gray-500,
+    .contract-supplier-container .text-gray-600,
+    .contract-supplier-container .text-gray-800,
+    .contract-supplier-container .text-gray-900 {
+      color: #f8fafc !important;
+    }
+
+    .border-l {
+      border-left-color: rgb(255 255 255 / 14%);
     }
   }
 
-  @media (width <= 768px) {
-    .supplier-filter-card :deep(.action-buttons-wrapper) {
-      justify-content: flex-start !important;
-      min-height: 0;
-    }
-  }
-</style>
-
-<style lang="scss">
-  .contract-supplier-dialog.el-dialog {
+  :global(html.dark .contract-supplier-dialog.el-dialog) {
     --el-color-primary: #e84a4a;
     --el-bg-color: #161618;
     --el-bg-color-overlay: #1c1c20;
@@ -1177,76 +1230,56 @@
     border: 1px solid rgb(255 255 255 / 9%);
   }
 
-  .contract-supplier-dialog .el-dialog__title,
-  .contract-supplier-dialog .el-form-item__label,
-  .contract-supplier-dialog .el-upload__text,
-  .contract-supplier-dialog .el-upload__tip,
-  .contract-supplier-dialog .text-gray-400,
-  .contract-supplier-dialog .text-gray-500,
-  .contract-supplier-dialog .text-gray-600 {
+  :global(html.dark .contract-supplier-dialog .el-dialog__title),
+  :global(html.dark .contract-supplier-dialog .el-form-item__label),
+  :global(html.dark .contract-supplier-dialog .el-upload__text),
+  :global(html.dark .contract-supplier-dialog .el-upload__tip),
+  :global(html.dark .contract-supplier-dialog .text-gray-400),
+  :global(html.dark .contract-supplier-dialog .text-gray-500),
+  :global(html.dark .contract-supplier-dialog .text-gray-600) {
     color: #f8fafc !important;
   }
 
-  .contract-supplier-dialog .el-input__wrapper,
-  .contract-supplier-dialog .el-input-number,
-  .contract-supplier-dialog .el-date-editor,
-  .contract-supplier-dialog .el-select__wrapper,
-  .contract-supplier-dialog .el-textarea__inner,
-  .contract-supplier-dialog .el-upload-dragger {
+  :global(html.dark .contract-supplier-dialog .el-input__wrapper),
+  :global(html.dark .contract-supplier-dialog .el-input-number),
+  :global(html.dark .contract-supplier-dialog .el-date-editor),
+  :global(html.dark .contract-supplier-dialog .el-select__wrapper),
+  :global(html.dark .contract-supplier-dialog .el-textarea__inner),
+  :global(html.dark .contract-supplier-dialog .el-upload-dragger) {
     color: #f8fafc;
     background: #101114;
-    border-color: rgb(255 255 255 / 14%);
+    border: 1px solid rgb(255 255 255 / 14%);
     box-shadow: none;
   }
 
-  .contract-supplier-dialog .el-input__inner,
-  .contract-supplier-dialog .el-select__placeholder,
-  .contract-supplier-dialog .el-select__selected-item,
-  .contract-supplier-dialog .el-textarea__inner {
+  :global(html.dark .contract-supplier-dialog .el-input__inner),
+  :global(html.dark .contract-supplier-dialog .el-select__placeholder),
+  :global(html.dark .contract-supplier-dialog .el-select__selected-item),
+  :global(html.dark .contract-supplier-dialog .el-textarea__inner),
+  :global(html.dark .contract-supplier-dialog .contract-upload-preview),
+  :global(html.dark .contract-supplier-dialog .contract-upload-filebar) {
     color: #f8fafc;
   }
 
-  .contract-supplier-dialog .contract-file-upload .el-upload,
-  .contract-supplier-dialog .contract-file-upload .el-upload-dragger {
-    width: 100%;
+  :global(html.dark .contract-supplier-dialog .contract-upload-preview img) {
+    border-color: rgb(255 255 255 / 14%);
   }
 
-  .contract-supplier-dialog .contract-upload-preview {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    min-height: 190px;
-    padding: 12px;
-    color: #f8fafc;
-  }
-
-  .contract-supplier-dialog .contract-upload-preview img {
-    max-width: 100%;
-    max-height: 260px;
-    object-fit: contain;
-    border: 1px solid rgb(255 255 255 / 14%);
-    border-radius: 10px;
-  }
-
-  .contract-supplier-dialog .contract-upload-preview .preview-hint {
-    font-size: 12px;
-    color: #94a3b8;
-  }
-
-  .contract-supplier-dialog .contract-upload-filebar {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    padding: 8px 10px;
-    margin-top: 8px;
-    color: #f8fafc;
+  :global(html.dark .contract-supplier-dialog .contract-upload-filebar) {
     background: #111214;
-    border: 1px solid rgb(255 255 255 / 12%);
-    border-radius: 8px;
+    border-color: rgb(255 255 255 / 12%);
+  }
+
+  @media (width >= 1280px) {
+    .supplier-kpi-grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+
+  @media (width <= 768px) {
+    .supplier-filter-card :deep(.action-buttons-wrapper) {
+      justify-content: flex-start !important;
+      min-height: 0;
+    }
   }
 </style>

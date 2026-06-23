@@ -1,6 +1,8 @@
 import { ref, onUnmounted, nextTick, watch, computed, onMounted } from 'vue'
 import * as echarts from 'echarts'
-import { useWindowSize, useDark } from '@vueuse/core'
+import { storeToRefs } from 'pinia'
+import { useWindowSize } from '@vueuse/core'
+import { useSettingStore } from '@/application/store/setting'
 import { getCssVar } from '@/utils/ui'
 
 export interface ChartOptions {
@@ -24,10 +26,11 @@ export const useChartOps = () => ({
 })
 
 export function useChart(options: any = {}) {
-  const { initOptions = {}, initDelay = 0, autoTheme = true } = options
-  const isDark = useDark()
+  const { initOptions = {}, initDelay = 0 } = options
+  const { isDark } = storeToRefs(useSettingStore())
   const chartRef = ref<HTMLElement | null>(null)
   let chartInstance: echarts.ECharts | null = null
+  let currentTheme: 'dark' | 'light' | null = null
   let resizeTimer: number | null = null
 
   const { width, height } = useWindowSize()
@@ -35,8 +38,15 @@ export function useChart(options: any = {}) {
   const initChart = (customOptions: any = {}, clear = false) => {
     if (!chartRef.value) return
 
+    const theme = isDark.value ? 'dark' : 'light'
+
+    if (chartInstance && currentTheme !== theme) {
+      destroyChart()
+    }
+
     if (!chartInstance) {
-      chartInstance = echarts.init(chartRef.value, isDark.value ? 'dark' : 'light', initOptions)
+      chartInstance = echarts.init(chartRef.value, theme, initOptions)
+      currentTheme = theme
     }
 
     if (clear) {
@@ -57,6 +67,7 @@ export function useChart(options: any = {}) {
     if (chartInstance) {
       chartInstance.dispose()
       chartInstance = null
+      currentTheme = null
     }
   }
 
@@ -143,16 +154,6 @@ export function useChart(options: any = {}) {
   }
 
   watch([width, height], handleResize)
-
-  watch(isDark, () => {
-    if (autoTheme && chartInstance) {
-      const options = chartInstance.getOption()
-      destroyChart()
-      nextTick(() => {
-        initChart(options)
-      })
-    }
-  })
 
   onMounted(() => {
     if (initDelay > 0) {

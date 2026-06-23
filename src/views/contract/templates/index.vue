@@ -1,5 +1,5 @@
 <template>
-  <div class="contract-templates-page min-h-screen font-inter text-white pb-10">
+  <div class="contract-templates-page min-h-screen font-inter pb-10">
     <div
       class="template-list-header border-b px-8 py-5 sticky top-0 z-[100] flex justify-between items-center"
     >
@@ -8,7 +8,7 @@
           <ArtSvgIcon icon="ri:layout-4-line" class="text-xl" />
         </div>
         <div>
-          <h1 class="m-0 text-lg font-black tracking-tight text-white leading-none">
+          <h1 class="m-0 text-lg font-black tracking-tight text-slate-900 leading-none">
             {{ t('menus.contract.templates') }}
           </h1>
           <p
@@ -819,38 +819,38 @@
 <style scoped lang="scss">
   .contract-templates-page {
     min-height: 100vh;
-    color: #f8fafc;
-    background: #050506;
+    color: var(--el-text-color-primary);
+    background: var(--el-bg-color-page);
 
     .template-list-header {
-      background: #050506;
-      border-color: rgb(255 255 255 / 9%);
+      background: var(--el-bg-color);
+      border-color: var(--el-border-color-lighter);
     }
 
     .template-filter-panel,
     .template-card,
     .template-pagination-panel {
-      background: #161618;
-      border-color: rgb(255 255 255 / 10%);
-      box-shadow: 0 14px 36px rgb(0 0 0 / 24%);
+      background: var(--el-bg-color-overlay);
+      border-color: var(--el-border-color-lighter);
+      box-shadow: 0 14px 36px rgb(15 23 42 / 8%);
     }
 
     .template-card {
       overflow: hidden;
 
       &:hover {
-        border-color: rgb(255 255 255 / 18%);
-        box-shadow: 0 18px 42px rgb(0 0 0 / 32%);
+        border-color: var(--el-border-color);
+        box-shadow: 0 18px 42px rgb(15 23 42 / 12%);
       }
     }
 
     .template-card-actions {
-      background: #111214;
-      border-color: rgb(255 255 255 / 9%);
+      background: var(--el-fill-color-light);
+      border-color: var(--el-border-color-lighter);
 
       button {
-        color: #f8fafc;
-        border-color: rgb(255 255 255 / 9%);
+        color: var(--el-text-color-primary);
+        border-color: var(--el-border-color-lighter);
 
         &:hover {
           color: #ff6b6b;
@@ -859,52 +859,12 @@
       }
     }
 
-    [class*='text-slate-'] {
-      color: #f8fafc !important;
-    }
-
-    [class*='border-slate-'] {
-      border-color: rgb(255 255 255 / 9%) !important;
-    }
-
     :deep(.el-input__wrapper),
     :deep(.el-select__wrapper) {
       min-height: 38px;
-      color: #f8fafc;
-      background: #101114 !important;
-      border: 1px solid rgb(255 255 255 / 14%);
-      box-shadow: none !important;
-    }
-
-    :deep(.el-input__inner),
-    :deep(.el-select__placeholder),
-    :deep(.el-select__selected-item),
-    :deep(.el-select__caret) {
-      color: #f8fafc !important;
-    }
-
-    :deep(.el-input__inner::placeholder) {
-      color: #cbd5e1 !important;
-      opacity: 1;
     }
 
     :deep(.el-pagination) {
-      color: #f8fafc;
-
-      .el-pagination__total,
-      .el-pagination__sizes,
-      .el-select__selected-item,
-      button,
-      li {
-        color: #f8fafc;
-      }
-
-      button,
-      .el-pager li {
-        background: #101114;
-        border: 1px solid rgb(255 255 255 / 10%);
-      }
-
       .el-pager li.is-active {
         color: #fff;
         background: #e84a4a;
@@ -913,9 +873,176 @@
     }
 
     :deep(.el-tag) {
-      color: #fff;
       border-color: transparent;
     }
+  }
+
+  :global(html.dark .contract-templates-page) {
+    color: #f8fafc;
+    background: #050506;
+  }
+
+  :global(html.dark .contract-templates-page .template-list-header) {
+    background: #050506;
+    border-color: rgb(255 255 255 / 9%);
+  }
+
+  :global(html.dark .contract-templates-page .template-filter-panel),
+  :global(html.dark .contract-templates-page .template-card),
+  :global(html.dark .contract-templates-page .template-pagination-panel) {
+    background: #161618;
+    border-color: rgb(255 255 255 / 10%);
+    box-shadow: 0 14px 36px rgb(0 0 0 / 24%);
+  }
+
+  :global(html.dark .contract-templates-page .template-card:hover) {
+    border-color: rgb(255 255 255 / 18%);
+    box-shadow: 0 18px 42px rgb(0 0 0 / 32%);
+  }
+
+  :global(html.dark .contract-templates-page .template-card-actions) {
+    background: #111214;
+    border-color: rgb(255 255 255 / 9%);
+  }
+
+  :global(html.dark .contract-templates-page .template-card-actions button) {
+    color: #f8fafc;
+    border-color: rgb(255 255 255 / 9%);
+  }
+
+  :global(html.dark .contract-templates-page h1),
+  :global(html.dark .contract-templates-page h2),
+  :global(html.dark .contract-templates-page h3),
+  :global(html.dark .contract-templates-page h4),
+  :global(html.dark .contract-templates-page h5),
+  :global(html.dark .contract-templates-page h6),
+  :global(html.dark .contract-templates-page p),
+  :global(html.dark .contract-templates-page li),
+  :global(html.dark .contract-templates-page td),
+  :global(html.dark .contract-templates-page th),
+  :global(html.dark .contract-templates-page .text-slate-100),
+  :global(html.dark .contract-templates-page .text-slate-200),
+  :global(html.dark .contract-templates-page .text-slate-300),
+  :global(html.dark .contract-templates-page .text-slate-700),
+  :global(html.dark .contract-templates-page .text-slate-800),
+  :global(html.dark .contract-templates-page .text-slate-900),
+  :global(html.dark .contract-templates-page [class*='text-slate-']) {
+    color: #f8fafc !important;
+  }
+
+  :global(html.dark .contract-templates-page .text-slate-400) {
+    color: #9ca3af !important;
+  }
+
+  :global(html.dark .contract-templates-page .text-slate-500) {
+    color: #cbd5e1 !important;
+  }
+
+  :global(html.dark .contract-templates-page .text-slate-600) {
+    color: #e5e7eb !important;
+  }
+
+  :global(html.dark .contract-templates-page .text-red-500),
+  :global(html.dark .contract-templates-page .text-red-400),
+  :global(html.dark .contract-templates-page .text-red-300) {
+    color: #f87171 !important;
+  }
+
+  :global(html.dark .contract-templates-page .text-green-600),
+  :global(html.dark .contract-templates-page .text-green-500),
+  :global(html.dark .contract-templates-page .text-green-400),
+  :global(html.dark .contract-templates-page .text-emerald-500),
+  :global(html.dark .contract-templates-page .text-emerald-400),
+  :global(html.dark .contract-templates-page .text-emerald-300) {
+    color: #34d399 !important;
+  }
+
+  :global(html.dark .contract-templates-page .text-blue-500),
+  :global(html.dark .contract-templates-page .text-blue-400) {
+    color: #60a5fa !important;
+  }
+
+  :global(html.dark .contract-templates-page .text-amber-500),
+  :global(html.dark .contract-templates-page .text-amber-400),
+  :global(html.dark .contract-templates-page .text-amber-300) {
+    color: #fbbf24 !important;
+  }
+
+  :global(html.dark .contract-templates-page .text-violet-500),
+  :global(html.dark .contract-templates-page .text-violet-400) {
+    color: #c4b5fd !important;
+  }
+
+  :global(html.dark .contract-templates-page .text-orange-500),
+  :global(html.dark .contract-templates-page .text-orange-400) {
+    color: #fb923c !important;
+  }
+
+  :global(html.dark .contract-templates-page .bg-red-500\/10) {
+    background: rgb(239 68 68 / 20%) !important;
+  }
+
+  :global(html.dark .contract-templates-page .bg-amber-500\/10) {
+    background: rgb(245 158 11 / 20%) !important;
+  }
+
+  :global(html.dark .contract-templates-page .bg-emerald-500\/10) {
+    background: rgb(16 185 129 / 20%) !important;
+  }
+
+  :global(html.dark .contract-templates-page [class*='border-slate-']) {
+    border-color: rgb(255 255 255 / 12%) !important;
+  }
+
+  :global(html.dark .contract-templates-page .border-red-500\/30) {
+    border-color: rgb(239 68 68 / 40%) !important;
+  }
+
+  :global(html.dark .contract-templates-page .border-amber-500\/25) {
+    border-color: rgb(245 158 11 / 35%) !important;
+  }
+
+  :global(html.dark .contract-templates-page .border-emerald-500\/25) {
+    border-color: rgb(16 185 129 / 35%) !important;
+  }
+
+  :global(html.dark .contract-templates-page .el-input__wrapper),
+  :global(html.dark .contract-templates-page .el-select__wrapper) {
+    color: #f8fafc;
+    background: #101114 !important;
+    border: 1px solid rgb(255 255 255 / 14%);
+    box-shadow: none !important;
+  }
+
+  :global(html.dark .contract-templates-page .el-input__inner),
+  :global(html.dark .contract-templates-page .el-select__placeholder),
+  :global(html.dark .contract-templates-page .el-select__selected-item),
+  :global(html.dark .contract-templates-page .el-select__caret) {
+    color: #f8fafc !important;
+  }
+
+  :global(html.dark .contract-templates-page .el-input__inner::placeholder) {
+    color: #9ca3af !important;
+    opacity: 1;
+  }
+
+  :global(html.dark .contract-templates-page .el-pagination),
+  :global(html.dark .contract-templates-page .el-pagination__total),
+  :global(html.dark .contract-templates-page .el-pagination__sizes),
+  :global(html.dark .contract-templates-page .el-pagination .el-select__selected-item),
+  :global(html.dark .contract-templates-page .el-pagination button),
+  :global(html.dark .contract-templates-page .el-pagination li) {
+    color: #f8fafc;
+  }
+
+  :global(html.dark .contract-templates-page .el-pagination button),
+  :global(html.dark .contract-templates-page .el-pagination .el-pager li) {
+    background: #101114;
+    border: 1px solid rgb(255 255 255 / 10%);
+  }
+
+  :global(html.dark .contract-templates-page .el-tag) {
+    color: #fff;
   }
 
   .contract-templates-table {
@@ -1312,7 +1439,7 @@
     border: 1px solid #111827;
   }
 
-  :global(.contract-template-select-popper) {
+  :global(html.dark .contract-template-select-popper) {
     background: #161618 !important;
     border-color: rgb(255 255 255 / 14%) !important;
 

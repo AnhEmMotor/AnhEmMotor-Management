@@ -1,5 +1,5 @@
 <template>
-  <div class="art-card p-5 overflow-hidden bg-white">
+  <div class="art-card p-5 overflow-hidden">
     <div class="art-card-header">
       <div class="title">
         <h4>9.2. Dashboard Tổng quan</h4>
@@ -155,6 +155,6 @@
   }
 
   .kpi-card {
-    background: white;
+    background: var(--default-box-color);
   }
 </style>

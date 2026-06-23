@@ -278,7 +278,7 @@
 
   .reporting-page__summary-title {
     font-weight: 700;
-    color: #f8fafc;
+    color: var(--art-color);
   }
 
   .reporting-page__summary-period {
@@ -302,7 +302,7 @@
     align-items: center;
     justify-content: space-between;
     padding-bottom: 10px;
-    border-bottom: 1px dashed rgb(255 255 255 / 8%);
+    border-bottom: 1px dashed rgb(var(--art-color-rgb), 8%);
   }
 
   .reporting-page__summary-row:last-child {
@@ -313,7 +313,7 @@
   .reporting-page__summary-row--accent {
     padding: 12px 16px;
     margin-top: 4px;
-    color: #fff;
+    color: var(--art-color);
     background: linear-gradient(135deg, rgb(232 74 74 / 18%), rgb(255 107 107 / 6%));
     border: 1px solid rgb(232 74 74 / 32%);
     border-radius: 12px;

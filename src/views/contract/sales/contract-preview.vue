@@ -526,11 +526,11 @@
     height: calc(100vh - 100px);
     padding: 16px;
     overflow-y: auto;
-    color: #f8fafc;
+    color: var(--art-color);
 
     :deep(.el-card) {
-      background-color: #151619;
-      border-color: #2c2f36;
+      background-color: var(--default-box-color);
+      border-color: rgb(var(--art-color-rgb), 18%);
       box-shadow: none;
     }
 
@@ -546,28 +546,28 @@
     :deep(.el-descriptions__content),
     :deep(.el-upload__text),
     :deep(.el-upload__tip) {
-      color: #f8fafc !important;
+      color: var(--art-color) !important;
     }
 
     :deep(.el-input__wrapper),
     :deep(.el-select__wrapper),
     :deep(.el-textarea__inner),
     :deep(.el-upload-dragger) {
-      background-color: #101114;
-      border-color: #333741;
-      box-shadow: 0 0 0 1px #333741 inset;
+      background-color: var(--art-gray-100);
+      border-color: rgb(var(--art-color-rgb), 20%);
+      box-shadow: 0 0 0 1px rgb(var(--art-color-rgb), 20%) inset;
     }
 
     :deep(.el-input__inner::placeholder),
     :deep(.el-textarea__inner::placeholder) {
-      color: #cbd5e1;
+      color: var(--art-gray-500);
     }
 
     :deep(.el-descriptions__cell),
     :deep(.el-descriptions__label),
     :deep(.el-descriptions__content) {
-      background-color: #151619 !important;
-      border-color: #2c2f36 !important;
+      background-color: var(--default-box-color) !important;
+      border-color: rgb(var(--art-color-rgb), 18%) !important;
     }
 
     :deep(.text-gray-400),
@@ -576,20 +576,20 @@
     :deep(.text-gray-700),
     :deep(.text-gray-800),
     :deep(.text-gray-900) {
-      color: #f8fafc !important;
+      color: var(--art-color) !important;
     }
 
     :deep(.bg-gray-50),
     :deep(.bg-gray-100),
     :deep(.bg-gray-200),
     :deep(.bg-white) {
-      background-color: #151619 !important;
+      background-color: var(--default-bg-color) !important;
     }
 
     :deep(.border-gray-100),
     :deep(.border-gray-200),
     :deep(.border-b) {
-      border-color: #2c2f36 !important;
+      border-color: rgb(var(--art-color-rgb), 18%) !important;
     }
 
     :deep(.a4-paper),
@@ -644,8 +644,8 @@
   .upload-zone {
     padding: 20px;
     text-align: center;
-    background-color: #151619;
-    border: 1px dashed #333741;
+    background-color: var(--default-box-color);
+    border: 1px dashed rgb(var(--art-color-rgb), 20%);
     border-radius: 6px;
     transition: all 0.5s ease;
   }
@@ -655,5 +655,107 @@
     border-color: #e84a4a;
     box-shadow: 0 0 15px rgb(232 74 74 / 40%);
     transform: scale(1.02);
+  }
+
+  :global(html.dark) {
+    .contract-preview-container {
+      color: #f8fafc;
+    }
+
+    .contract-preview-container :deep(.el-card) {
+      background: #161618 !important;
+      border-color: rgb(255 255 255 / 9%) !important;
+    }
+
+    .contract-preview-container :deep(.el-card__header),
+    .contract-preview-container :deep(.el-card__body) {
+      background: #161618 !important;
+    }
+
+    .contract-preview-container :deep(.el-input__wrapper),
+    .contract-preview-container :deep(.el-select__wrapper),
+    .contract-preview-container :deep(.el-textarea__inner),
+    .contract-preview-container :deep(.el-upload-dragger) {
+      color: #f8fafc;
+      background: #101114 !important;
+      border-color: rgb(255 255 255 / 14%) !important;
+      box-shadow: none !important;
+    }
+
+    .contract-preview-container :deep(.el-input__inner),
+    .contract-preview-container :deep(.el-select__placeholder),
+    .contract-preview-container :deep(.el-select__selected-item),
+    .contract-preview-container :deep(.el-textarea__inner) {
+      color: #f8fafc !important;
+    }
+
+    .contract-preview-container :deep(.el-input__inner::placeholder),
+    .contract-preview-container :deep(.el-textarea__inner::placeholder) {
+      color: #9ca3af !important;
+    }
+
+    .contract-preview-container :deep(.el-upload__text),
+    .contract-preview-container :deep(.el-upload__tip) {
+      color: #9ca3af !important;
+    }
+
+    .pipeline-card :deep(.el-card__body) {
+      background: #161618 !important;
+    }
+
+    .pipeline-card :deep(.text-gray-500) {
+      color: #9ca3af !important;
+    }
+
+    .pipeline-card :deep(.text-gray-400) {
+      color: #6b7280 !important;
+    }
+
+    .pipeline-card :deep(.bg-gray-200) {
+      background: #1f2937 !important;
+    }
+
+    .bg-report-gray {
+      background-color: #1f2937 !important;
+    }
+
+    .form-card :deep(.el-card__header) {
+      background: #161618 !important;
+      border-bottom-color: rgb(255 255 255 / 9%) !important;
+    }
+
+    .form-card :deep(.el-card__body) {
+      background: #161618 !important;
+    }
+
+    .form-card :deep(.el-form-item__label) {
+      color: #f8fafc !important;
+    }
+
+    .upload-zone {
+      background: #161618 !important;
+      border-color: rgb(255 255 255 / 14%) !important;
+    }
+
+    .upload-zone :deep(.text-gray-500) {
+      color: #9ca3af !important;
+    }
+
+    .preview-card :deep(.el-card__body) {
+      background: #0a0a0a !important;
+    }
+
+    .preview-toolbar {
+      background: #1f2937 !important;
+      border-color: rgb(255 255 255 / 9%) !important;
+    }
+
+    .preview-toolbar :deep(.text-gray-600) {
+      color: #d1d5db !important;
+    }
+
+    .a4-preview-container {
+      background: #1f2937 !important;
+    }
   }
 </style>

@@ -9,7 +9,6 @@
         icon="ri:file-list-3-line"
         iconStyle="bg-primary"
         box-style="finance-stat-card"
-        text-color="#f8fafc"
       />
       <ArtStatsCard
         title="Chờ ngân hàng giải ngân"
@@ -18,7 +17,6 @@
         icon="ri:bank-card-line"
         iconStyle="bg-warning"
         box-style="finance-stat-card"
-        text-color="#f8fafc"
       />
       <ArtStatsCard
         title="Cảnh báo chậm giải ngân"
@@ -27,7 +25,6 @@
         icon="ri:alarm-warning-line"
         iconStyle="bg-danger"
         box-style="finance-stat-card"
-        text-color="#f8fafc"
       />
       <ArtStatsCard
         title="Cavet đang giữ hộ"
@@ -36,7 +33,6 @@
         icon="ri:car-line"
         iconStyle="bg-info"
         box-style="finance-stat-card"
-        text-color="#f8fafc"
       />
     </div>
 
@@ -572,88 +568,104 @@
   })
 </script>
 
-<style scoped lang="scss">
-  .finance-contract-page {
-    color: #f8fafc;
+<style lang="scss">
+  :global(html.dark) {
+    .finance-contract-page {
+      color: #f8fafc;
+    }
+
+    .finance-contract-page .finance-stat-card {
+      color: #f8fafc;
+      background: #161618 !important;
+      border-color: rgb(255 255 255 / 9%) !important;
+    }
+
+    .finance-contract-page .finance-stat-card .text-g-900,
+    .finance-contract-page .finance-stat-card .text-g-800,
+    .finance-contract-page .finance-stat-card .text-g-700,
+    .finance-contract-page .finance-stat-card .text-g-600,
+    .finance-contract-page .finance-stat-card .text-g-500,
+    .finance-contract-page .finance-stat-card .text-2xl,
+    .finance-contract-page .finance-stat-card p {
+      color: #f8fafc !important;
+      opacity: 1 !important;
+    }
+
+    .finance-contract-page .art-search-bar {
+      color: #f8fafc;
+      background: #161618;
+      border-color: rgb(255 255 255 / 9%) !important;
+    }
+
+    .finance-contract-page .art-search-bar .el-form-item__label,
+    .finance-contract-page .art-search-bar .el-input__inner,
+    .finance-contract-page .art-search-bar .el-select__placeholder,
+    .finance-contract-page .art-search-bar .el-select__selected-item,
+    .finance-contract-page .art-search-bar .el-button {
+      color: #f8fafc;
+    }
+
+    .finance-contract-page .art-search-bar .el-input__wrapper,
+    .finance-contract-page .art-search-bar .el-select__wrapper {
+      background: #101114;
+      border: 1px solid rgb(255 255 255 / 14%);
+      box-shadow: none;
+    }
+
+    .finance-contract-page .art-table-card {
+      color: #f8fafc;
+      background: #161618;
+      border-color: rgb(255 255 255 / 9%) !important;
+    }
+
+    .finance-contract-page .art-table .el-table {
+      --el-table-text-color: #f8fafc;
+      --el-table-header-text-color: #f8fafc;
+      --el-text-color-regular: #f8fafc;
+      --el-text-color-secondary: #f8fafc;
+
+      color: #f8fafc;
+      background: #161618;
+    }
+
+    .finance-contract-page .art-table .el-table .cell,
+    .finance-contract-page .art-table .el-table td.el-table__cell,
+    .finance-contract-page .art-table .el-table th.el-table__cell {
+      color: #f8fafc !important;
+    }
+
+    .finance-contract-page .art-table .el-table th.el-table__cell {
+      background: #111214;
+    }
+
+    .finance-contract-page .art-table .el-pagination,
+    .finance-contract-page .art-table .el-pagination * {
+      color: #f8fafc;
+    }
+
+    .finance-contract-page .el-tag--info.el-tag--light {
+      color: #f8fafc;
+      background: rgb(148 163 184 / 18%);
+      border-color: rgb(148 163 184 / 30%);
+    }
+
+    .finance-strong-text {
+      color: #f8fafc;
+    }
+
+    .finance-dialog-summary {
+      color: #f8fafc;
+      background: #111214;
+      border-color: rgb(255 255 255 / 12%);
+    }
+
+    .finance-dialog-summary strong {
+      color: #f8fafc;
+    }
   }
 
-  .finance-contract-page :deep(.finance-stat-card) {
-    color: #f8fafc;
-    background: #161618 !important;
-    border-color: rgb(255 255 255 / 9%) !important;
-  }
-
-  .finance-contract-page :deep(.finance-stat-card .text-g-900),
-  .finance-contract-page :deep(.finance-stat-card .text-g-800),
-  .finance-contract-page :deep(.finance-stat-card .text-g-700),
-  .finance-contract-page :deep(.finance-stat-card .text-g-600),
-  .finance-contract-page :deep(.finance-stat-card .text-g-500),
-  .finance-contract-page :deep(.finance-stat-card .text-2xl),
-  .finance-contract-page :deep(.finance-stat-card p) {
-    color: #f8fafc !important;
-    opacity: 1 !important;
-  }
-
-  .finance-contract-page :deep(.art-search-bar) {
-    color: #f8fafc;
-    background: #161618;
-    border-color: rgb(255 255 255 / 9%) !important;
-  }
-
-  .finance-contract-page :deep(.art-search-bar .el-form-item__label),
-  .finance-contract-page :deep(.art-search-bar .el-input__inner),
-  .finance-contract-page :deep(.art-search-bar .el-select__placeholder),
-  .finance-contract-page :deep(.art-search-bar .el-select__selected-item),
-  .finance-contract-page :deep(.art-search-bar .el-button) {
-    color: #f8fafc;
-  }
-
-  .finance-contract-page :deep(.art-search-bar .el-input__wrapper),
-  .finance-contract-page :deep(.art-search-bar .el-select__wrapper) {
-    background: #101114;
-    border: 1px solid rgb(255 255 255 / 14%);
-    box-shadow: none;
-  }
-
-  .finance-contract-page :deep(.art-table-card) {
-    color: #f8fafc;
-    background: #161618;
-    border-color: rgb(255 255 255 / 9%) !important;
-  }
-
-  .finance-contract-page :deep(.art-table .el-table) {
-    --el-table-text-color: #f8fafc;
-    --el-table-header-text-color: #f8fafc;
-    --el-text-color-regular: #f8fafc;
-    --el-text-color-secondary: #f8fafc;
-
-    color: #f8fafc;
-    background: #161618;
-  }
-
-  .finance-contract-page :deep(.art-table .el-table .cell),
-  .finance-contract-page :deep(.art-table .el-table td.el-table__cell),
-  .finance-contract-page :deep(.art-table .el-table th.el-table__cell) {
-    color: #f8fafc !important;
-  }
-
-  .finance-contract-page :deep(.art-table .el-table th.el-table__cell) {
-    background: #111214;
-  }
-
-  .finance-contract-page :deep(.art-table .el-pagination),
-  .finance-contract-page :deep(.art-table .el-pagination *) {
-    color: #f8fafc;
-  }
-
-  .finance-contract-page :deep(.el-tag) {
+  .finance-contract-page .el-tag {
     font-weight: 700;
-  }
-
-  .finance-contract-page :deep(.el-tag--info.el-tag--light) {
-    color: #f8fafc;
-    background: rgb(148 163 184 / 18%);
-    border-color: rgb(148 163 184 / 30%);
   }
 
   .finance-operation-cell {
@@ -705,7 +717,6 @@
 
   .finance-strong-text {
     font-weight: 800;
-    color: #f8fafc;
   }
 
   .finance-term-text {
@@ -717,14 +728,14 @@
     padding: 12px;
     margin-bottom: 16px;
     font-size: 14px;
-    color: #f8fafc;
-    background: #111214;
-    border: 1px solid rgb(255 255 255 / 12%);
+    color: var(--el-text-color-primary);
+    background: var(--el-fill-color-light);
+    border: 1px solid var(--el-border-color-lighter);
     border-radius: 10px;
   }
 
   .finance-dialog-summary strong {
-    color: #f8fafc;
+    color: inherit;
   }
 
   .blink-text {
@@ -735,39 +746,6 @@
     50% {
       opacity: 0;
     }
-  }
-</style>
-
-<style lang="scss">
-  .finance-contract-dialog.el-dialog {
-    --el-color-primary: #e84a4a;
-    --el-bg-color: #161618;
-    --el-bg-color-overlay: #1c1c20;
-    --el-fill-color-blank: #161618;
-    --el-border-color: rgb(255 255 255 / 9%);
-    --el-text-color-primary: #f8fafc;
-    --el-text-color-regular: #f8fafc;
-    --el-text-color-secondary: #f8fafc;
-
-    color: #f8fafc;
-    background: #161618;
-    border: 1px solid rgb(255 255 255 / 9%);
-  }
-
-  .finance-contract-dialog .el-dialog__title,
-  .finance-contract-dialog .el-form-item__label,
-  .finance-contract-dialog .el-upload__text,
-  .finance-contract-dialog .el-upload__tip {
-    color: #f8fafc;
-  }
-
-  .finance-contract-dialog .el-input__wrapper,
-  .finance-contract-dialog .el-date-editor,
-  .finance-contract-dialog .el-upload-dragger {
-    color: #f8fafc;
-    background: #101114;
-    border-color: rgb(255 255 255 / 14%);
-    box-shadow: none;
   }
 
   .finance-contract-dialog .finance-proof-upload .el-upload,
@@ -783,14 +761,12 @@
     justify-content: center;
     width: 100%;
     min-height: 190px;
-    color: #f8fafc;
   }
 
   .finance-contract-dialog .finance-upload-preview img {
     max-width: 100%;
     max-height: 260px;
     object-fit: contain;
-    border: 1px solid rgb(255 255 255 / 14%);
     border-radius: 10px;
   }
 
@@ -802,35 +778,79 @@
     width: 100%;
     padding: 8px 10px;
     margin-top: 8px;
-    color: #f8fafc;
-    background: #111214;
-    border: 1px solid rgb(255 255 255 / 12%);
     border-radius: 8px;
   }
 
-  .finance-date-popper.el-popper {
-    --el-bg-color-overlay: #161618;
-    --el-border-color-light: rgb(255 255 255 / 9%);
-    --el-text-color-primary: #f8fafc;
-    --el-text-color-regular: #f8fafc;
-    --el-text-color-secondary: #f8fafc;
+  :global(html.dark) {
+    .finance-contract-dialog.el-dialog {
+      --el-color-primary: #e84a4a;
+      --el-bg-color: #161618;
+      --el-bg-color-overlay: #1c1c20;
+      --el-fill-color-blank: #161618;
+      --el-border-color: rgb(255 255 255 / 9%);
+      --el-text-color-primary: #f8fafc;
+      --el-text-color-regular: #f8fafc;
+      --el-text-color-secondary: #f8fafc;
 
-    background: #161618;
-    border-color: rgb(255 255 255 / 9%);
-  }
+      color: #f8fafc;
+      background: #161618;
+      border: 1px solid rgb(255 255 255 / 9%);
+    }
 
-  .finance-date-popper .el-picker-panel,
-  .finance-date-popper .el-picker-panel__body,
-  .finance-date-popper .el-picker-panel__footer {
-    color: #f8fafc;
-    background: #161618;
-    border-color: rgb(255 255 255 / 9%);
-  }
+    .finance-contract-dialog .el-dialog__title,
+    .finance-contract-dialog .el-form-item__label,
+    .finance-contract-dialog .el-upload__text,
+    .finance-contract-dialog .el-upload__tip {
+      color: #f8fafc !important;
+    }
 
-  .finance-date-popper .el-date-table th,
-  .finance-date-popper .el-date-table td.available,
-  .finance-date-popper .el-date-picker__header-label,
-  .finance-date-popper .el-picker-panel__icon-btn {
-    color: #f8fafc;
+    .finance-contract-dialog .el-input__wrapper,
+    .finance-contract-dialog .el-date-editor,
+    .finance-contract-dialog .el-upload-dragger {
+      color: #f8fafc;
+      background: #101114;
+      border-color: rgb(255 255 255 / 14%);
+      box-shadow: none;
+    }
+
+    .finance-contract-dialog .finance-upload-preview {
+      color: #f8fafc;
+    }
+
+    .finance-contract-dialog .finance-upload-preview img {
+      border: 1px solid rgb(255 255 255 / 14%);
+    }
+
+    .finance-contract-dialog .finance-upload-filebar {
+      color: #f8fafc;
+      background: #111214;
+      border: 1px solid rgb(255 255 255 / 12%);
+    }
+
+    .finance-date-popper.el-popper {
+      --el-bg-color-overlay: #161618;
+      --el-border-color-light: rgb(255 255 255 / 9%);
+      --el-text-color-primary: #f8fafc;
+      --el-text-color-regular: #f8fafc;
+      --el-text-color-secondary: #f8fafc;
+
+      background: #161618;
+      border-color: rgb(255 255 255 / 9%);
+    }
+
+    .finance-date-popper .el-picker-panel,
+    .finance-date-popper .el-picker-panel__body,
+    .finance-date-popper .el-picker-panel__footer {
+      color: #f8fafc;
+      background: #161618;
+      border-color: rgb(255 255 255 / 9%);
+    }
+
+    .finance-date-popper .el-date-table th,
+    .finance-date-popper .el-date-table td.available,
+    .finance-date-popper .el-date-picker__header-label,
+    .finance-date-popper .el-picker-panel__icon-btn {
+      color: #f8fafc;
+    }
   }
 </style>

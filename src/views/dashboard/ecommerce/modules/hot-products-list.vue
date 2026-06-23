@@ -22,7 +22,7 @@
                 <img class="size-12.5 object-cover rounded-md" :src="scope.row.image" />
                 <div class="flex flex-col ml-3">
                   <div class="font-medium">{{ scope.row.name }}</div>
-                  <div class="text-xs text-slate-500">{{ scope.row.category }}</div>
+                  <div class="text-xs text-g-500">{{ scope.row.category }}</div>
                 </div>
               </div>
             </template>

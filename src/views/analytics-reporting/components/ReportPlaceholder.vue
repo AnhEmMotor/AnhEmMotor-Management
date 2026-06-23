@@ -35,10 +35,10 @@
     justify-content: center;
     min-height: 108px;
     padding: 18px;
-    color: #9ca3af;
+    color: var(--el-text-color-secondary);
     text-align: left;
-    background: #111214;
-    border: 1px dashed rgb(255 255 255 / 16%);
+    background: var(--el-fill-color-light);
+    border: 1px dashed var(--el-border-color);
     border-radius: 12px;
   }
 
@@ -58,7 +58,7 @@
   .report-placeholder__title {
     font-size: 14px;
     font-weight: 700;
-    color: #e5e7eb;
+    color: var(--el-text-color-primary);
   }
 
   p {
@@ -71,7 +71,23 @@
     display: inline-block;
     margin-top: 6px;
     font-size: 12px;
-    color: #6b7280;
+    color: var(--el-text-color-secondary);
     white-space: normal;
+  }
+
+  :global(html.dark) {
+    .report-placeholder {
+      color: #9ca3af;
+      background: #111214;
+      border-color: rgb(255 255 255 / 16%);
+    }
+
+    .report-placeholder__title {
+      color: #e5e7eb;
+    }
+
+    code {
+      color: #6b7280;
+    }
   }
 </style>

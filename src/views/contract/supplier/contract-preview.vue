@@ -577,11 +577,11 @@
 <style scoped lang="scss">
   .supplier-contract-detail {
     padding: 16px;
-    color: #f8fafc;
+    color: var(--art-color);
 
     :deep(.el-card) {
-      background-color: #151619;
-      border-color: #2c2f36;
+      background-color: var(--default-box-color);
+      border-color: rgb(var(--art-color-rgb), 18%);
       box-shadow: none;
     }
 
@@ -598,7 +598,7 @@
     :deep(.el-progress__text),
     :deep(.el-upload__text),
     :deep(.el-upload__tip) {
-      color: #f8fafc !important;
+      color: var(--art-color) !important;
     }
 
     :deep(.el-descriptions__cell),
@@ -607,27 +607,27 @@
     :deep(.el-table th.el-table__cell),
     :deep(.el-table tr),
     :deep(.el-table td.el-table__cell) {
-      background-color: #151619 !important;
-      border-color: #2c2f36 !important;
+      background-color: var(--default-box-color) !important;
+      border-color: rgb(var(--art-color-rgb), 18%) !important;
     }
 
     :deep(.el-table) {
-      --el-table-border-color: #2c2f36;
-      --el-table-header-bg-color: #111214;
-      --el-table-row-hover-bg-color: #202227;
-      --el-table-tr-bg-color: #151619;
+      --el-table-border-color: rgb(var(--art-color-rgb), 18%);
+      --el-table-header-bg-color: var(--art-gray-100);
+      --el-table-row-hover-bg-color: var(--art-hover-color);
+      --el-table-tr-bg-color: var(--default-box-color);
     }
 
     :deep(.el-input__wrapper),
     :deep(.el-select__wrapper),
     :deep(.el-upload-dragger) {
-      background-color: #101114;
-      border-color: #333741;
-      box-shadow: 0 0 0 1px #333741 inset;
+      background-color: var(--art-gray-100);
+      border-color: rgb(var(--art-color-rgb), 20%);
+      box-shadow: 0 0 0 1px rgb(var(--art-color-rgb), 20%) inset;
     }
 
     :deep(.el-input__inner::placeholder) {
-      color: #cbd5e1;
+      color: var(--art-gray-500);
     }
 
     :deep(.text-gray-300),
@@ -637,20 +637,20 @@
     :deep(.text-gray-700),
     :deep(.text-gray-800),
     :deep(.text-gray-900) {
-      color: #f8fafc !important;
+      color: var(--art-color) !important;
     }
 
     :deep(.bg-gray-50),
     :deep(.bg-gray-100),
     :deep(.bg-gray-200),
     :deep(.bg-white) {
-      background-color: #151619 !important;
+      background-color: var(--default-bg-color) !important;
     }
 
     :deep(.border-gray-100),
     :deep(.border-gray-200),
     :deep(.border-b) {
-      border-color: #2c2f36 !important;
+      border-color: rgb(var(--art-color-rgb), 18%) !important;
     }
 
     :deep(.el-alert) {
@@ -662,14 +662,14 @@
     :deep(.el-alert__description),
     :deep(.el-alert__content),
     :deep(.el-alert p) {
-      color: #f8fafc !important;
+      color: var(--art-color) !important;
     }
   }
 
   .card-header {
     font-size: 14px;
     font-weight: 600;
-    color: #f8fafc;
+    color: var(--art-color);
   }
 
   .max-h-300 {
@@ -679,22 +679,22 @@
 
 <style lang="scss">
   .supplier-contract-preview-dialog {
-    background: #151619;
-    border: 1px solid #2c2f36;
+    background: var(--default-box-color);
+    border: 1px solid rgb(var(--art-color-rgb), 18%);
 
     .el-dialog__title,
     .el-dialog__body,
     .el-form-item__label,
     .el-select__selected-item,
     .el-input__inner {
-      color: #f8fafc !important;
+      color: var(--art-color) !important;
     }
 
     .el-input__wrapper,
     .el-select__wrapper {
-      background-color: #101114;
-      border-color: #333741;
-      box-shadow: 0 0 0 1px #333741 inset;
+      background-color: var(--art-gray-100);
+      border-color: rgb(var(--art-color-rgb), 20%);
+      box-shadow: 0 0 0 1px rgb(var(--art-color-rgb), 20%) inset;
     }
   }
 </style>

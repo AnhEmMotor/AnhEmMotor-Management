@@ -15,7 +15,7 @@ body {
     sans-serif !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #333;
+  color: var(--art-color);
 }
 
 #nprogress .peg {
@@ -288,6 +288,11 @@ body {
 }
 
 /* Hide any unexpected floating widgets like the 'island god' live2d */
-div[id*="waifu"], div[class*="waifu"], div[id*="live2d"], div[class*="live2d"], .lonely-island-widget, #island-god {
+div[id*='waifu'],
+div[class*='waifu'],
+div[id*='live2d'],
+div[class*='live2d'],
+.lonely-island-widget,
+#island-god {
   display: none !important;
 }

@@ -10,7 +10,7 @@
       <template #actions>
         <el-button
           @click="() => fileInput?.click()"
-          class="!h-10 !px-5 !rounded-xl !border !border-white/14 !text-white !font-bold !text-[11px] !uppercase !tracking-widest hover:!border-white/30 hover:!bg-white/5 transition-all"
+          class="!h-10 !px-5 !rounded-xl !border !border-slate-200 !text-slate-700 !font-bold !text-[11px] !uppercase !tracking-widest hover:!border-red-300 hover:!bg-red-50 transition-all"
         >
           <ArtSvgIcon icon="ri:folder-upload-line" class="mr-1.5" />
           {{ t('menus.contract.templateImport') }}
@@ -24,7 +24,7 @@
         />
         <el-button
           @click="handlePreview"
-          class="!h-10 !px-5 !rounded-xl !border !border-white/14 !text-white !font-bold !text-[11px] !uppercase !tracking-widest hover:!border-white/30 hover:!bg-white/5 transition-all"
+          class="!h-10 !px-5 !rounded-xl !border !border-slate-200 !text-slate-700 !font-bold !text-[11px] !uppercase !tracking-widest hover:!border-red-300 hover:!bg-red-50 transition-all"
         >
           <ArtSvgIcon icon="ri:eye-line" class="mr-1.5" />
           {{ t('menus.contract.templatePreview') }}
@@ -46,7 +46,7 @@
       <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
         <div class="col-span-3">
           <label
-            class="text-[10px] font-black text-white uppercase tracking-widest mb-2 block px-1"
+            class="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-2 block px-1"
           >
             {{ t('menus.contract.templateName') }}
           </label>
@@ -59,7 +59,7 @@
         </div>
         <div class="col-span-3">
           <label
-            class="text-[10px] font-black text-white uppercase tracking-widest mb-2 block px-1"
+            class="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-2 block px-1"
           >
             {{ t('menus.contract.templateCode') }}
           </label>
@@ -72,7 +72,7 @@
         </div>
         <div class="col-span-2">
           <label
-            class="text-[10px] font-black text-white uppercase tracking-widest mb-2 block px-1"
+            class="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-2 block px-1"
           >
             {{ t('menus.contract.templateType') }}
           </label>
@@ -91,7 +91,7 @@
         </div>
         <div class="col-span-2">
           <label
-            class="text-[10px] font-black text-white uppercase tracking-widest mb-2 block px-1"
+            class="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-2 block px-1"
           >
             {{ t('menus.contract.templateStatus') }}
           </label>
@@ -139,11 +139,11 @@
           <template #header>
             <div class="flex items-center gap-2">
               <ArtSvgIcon icon="ri:code-box-line" class="text-[#ff6b6b]" />
-              <span class="text-xs font-black uppercase tracking-widest text-white">
+              <span class="text-xs font-black uppercase tracking-widest text-slate-800">
                 {{ t('menus.contract.templateDynamicFields') }}
               </span>
             </div>
-            <p class="m-0 text-[10px] font-bold text-white mt-1.5">
+            <p class="m-0 text-[10px] font-bold text-slate-500 mt-1.5">
               {{ t('menus.contract.templateDynamicFieldsHint') }}
             </p>
           </template>
@@ -156,7 +156,7 @@
             class="!mb-4"
           >
             <template #prefix>
-              <ArtSvgIcon icon="ri:search-line" class="text-white text-xs" />
+              <ArtSvgIcon icon="ri:search-line" class="text-slate-400 text-xs" />
             </template>
           </el-input>
 
@@ -276,7 +276,7 @@
         <ElCard class="reporting-card editor-card flex flex-col">
           <template #header>
             <div class="flex justify-between items-center">
-              <span class="text-[10px] font-black text-white uppercase tracking-widest">
+              <span class="text-[10px] font-black text-slate-800 uppercase tracking-widest">
                 {{ t('menus.contract.templateContent') }}
               </span>
               <span
@@ -1087,16 +1087,7 @@
 
 <style scoped lang="scss">
   .contract-template-editor-page {
-    color: #f8fafc;
-
-    :deep(.reporting-card.el-card) {
-      background: #161618;
-      border-color: rgb(255 255 255 / 9%) !important;
-    }
-
-    :deep(.reporting-card.el-card > .el-card__header) {
-      border-bottom-color: rgb(255 255 255 / 9%);
-    }
+    color: var(--el-text-color-primary);
 
     :deep(.editor-card.el-card) {
       display: flex;
@@ -1116,35 +1107,6 @@
     :deep(.el-input__wrapper),
     :deep(.el-select__wrapper) {
       min-height: 38px;
-      color: #f8fafc;
-      background: #101114 !important;
-      border: 1px solid rgb(255 255 255 / 14%);
-      box-shadow: none !important;
-    }
-
-    :deep(.el-input__inner),
-    :deep(.el-select__placeholder),
-    :deep(.el-select__selected-item),
-    :deep(.el-select__caret) {
-      color: #f8fafc !important;
-    }
-
-    :deep(.el-input__inner::placeholder) {
-      color: #f8fafc !important;
-      opacity: 1;
-    }
-
-    :deep(.el-button:not(.el-button--primary)) {
-      color: #f8fafc;
-      background: #161618;
-      border-color: rgb(255 255 255 / 14%);
-
-      &:hover,
-      &:focus {
-        color: #fff;
-        background: rgb(255 255 255 / 8%);
-        border-color: rgb(255 255 255 / 28%);
-      }
     }
   }
 
@@ -1154,8 +1116,8 @@
     flex-direction: column;
     min-height: 0;
     overflow: hidden;
-    background: #050506;
-    border: 1px solid rgb(255 255 255 / 10%);
+    background: var(--el-bg-color-page);
+    border: 1px solid var(--el-border-color-lighter);
     border-radius: 14px;
 
     :deep(.w-e-text-container) {
@@ -1333,19 +1295,16 @@
     --token-shadow: rgb(249 115 22 / 40%);
   }
 
-  :deep(.contract-preview-dialog) {
+  :global(.contract-preview-dialog) {
     overflow: hidden;
     border-radius: 24px;
 
     .el-dialog__header {
       padding: 20px 24px;
-      background: #0a0a0b;
-      border-bottom: 1px solid rgb(255 255 255 / 9%);
 
       .el-dialog__title {
         font-size: 14px;
         font-weight: 900;
-        color: #f8fafc;
         text-transform: uppercase;
         letter-spacing: 0.05em;
       }
@@ -1357,8 +1316,6 @@
 
     .el-dialog__footer {
       padding: 16px 24px;
-      background: #0a0a0b;
-      border-top: 1px solid rgb(255 255 255 / 9%);
     }
   }
 
@@ -1383,231 +1340,542 @@
     }
   }
 
-  @media (width <= 1024px) {
-    :deep(.max-w-\[1600px\]) {
-      max-width: 100%;
-    }
-  }
-</style>
-
-<style lang="scss">
-  /* Deep overrides for ArtWangEditor to match dark dashboard theme */
-  .contract-editor {
+  :global(.contract-editor) {
     display: flex !important;
     flex-direction: column !important;
     height: 100% !important;
     overflow: hidden;
-    background: #050506 !important;
     border: 0 !important;
     border-radius: 14px;
+  }
 
-    .editor-wrapper {
-      display: flex !important;
-      flex: 1 !important;
-      flex-direction: column !important;
-      height: 100% !important;
-      overflow: hidden !important;
+  :global(.contract-editor .editor-wrapper) {
+    display: flex !important;
+    flex: 1 !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    overflow: hidden !important;
+  }
+
+  :global(.contract-editor .w-e-text-container) {
+    flex: 1 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 24px 0;
+    overflow: hidden !important;
+    color: var(--el-text-color-primary) !important;
+    background: #525659 !important;
+    border-top: none !important;
+  }
+
+  :global(.contract-editor .w-e-text-container .w-e-scroll) {
+    height: 100% !important;
+    overflow-y: auto !important;
+    scrollbar-color: rgb(120 115 150 / 75%) transparent;
+    scrollbar-width: thin;
+    background: #525659 !important;
+  }
+
+  :global(.contract-editor .w-e-text-container .w-e-scroll::-webkit-scrollbar) {
+    width: 8px;
+  }
+
+  :global(.contract-editor .w-e-text-container .w-e-scroll::-webkit-scrollbar-track) {
+    background: transparent;
+  }
+
+  :global(.contract-editor .w-e-text-container .w-e-scroll::-webkit-scrollbar-thumb) {
+    background: rgb(120 115 150 / 75%);
+    border-radius: 999px;
+  }
+
+  :global(.contract-editor .w-e-text-container [data-slate-editor]) {
+    box-sizing: border-box;
+    width: 794px;
+    max-width: calc(100% - 32px) !important;
+    min-height: 1123px;
+    padding: 36px 48px !important;
+    margin: 0 auto !important;
+    font-family: 'Times New Roman', serif !important;
+    font-size: 14px !important;
+    line-height: 1.35 !important;
+    color: #111827 !important;
+    background: #fff !important;
+    border-radius: 1px;
+    box-shadow: 0 18px 50px rgb(0 0 0 / 45%);
+  }
+
+  :global(.contract-editor .w-e-text-container [data-slate-editor] *) {
+    font-family: 'Times New Roman', serif !important;
+    color: #111827 !important;
+  }
+
+  :global(.contract-editor .w-e-text-container [data-slate-editor] .token-jump-flash) {
+    border-radius: 4px;
+    animation: token-jump-flash 1.2s ease-out;
+  }
+
+  :global(.contract-editor .w-e-text-container [data-slate-editor] h1) {
+    margin: 10px 0 4px !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    text-align: center !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0 !important;
+  }
+
+  :global(.contract-editor .w-e-text-container [data-slate-editor] h2) {
+    margin: 10px 0 4px !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    line-height: 1.25 !important;
+    text-transform: uppercase !important;
+  }
+
+  :global(.contract-editor .w-e-text-container [data-slate-editor] h1 + h2) {
+    margin: 0 0 10px !important;
+    font-size: 14px !important;
+    text-align: center !important;
+    text-transform: none !important;
+  }
+
+  :global(.contract-editor .w-e-text-container [data-slate-editor] p) {
+    margin: 2px 0 !important;
+  }
+
+  :global(.contract-editor .w-e-text-container [data-slate-editor] h1 + p) {
+    margin-bottom: 12px !important;
+    text-align: right !important;
+  }
+
+  :global(.contract-editor .w-e-text-container [data-slate-editor] ol),
+  :global(.contract-editor .w-e-text-container [data-slate-editor] ul) {
+    padding-left: 18px !important;
+    margin: 4px 0 8px !important;
+  }
+
+  :global(.contract-editor .w-e-text-container [data-slate-editor] li) {
+    margin: 2px 0 !important;
+  }
+
+  :global(.contract-editor .w-e-text-container [data-slate-editor] table) {
+    width: 100% !important;
+    margin: 6px 0 10px !important;
+    border-collapse: collapse !important;
+  }
+
+  :global(.contract-editor .w-e-text-container [data-slate-editor] table:first-child) {
+    margin-bottom: 12px !important;
+  }
+
+  :global(.contract-editor .w-e-text-container [data-slate-editor] table:first-child td) {
+    width: 50% !important;
+    padding: 0 10px 0 0 !important;
+    font-size: 13px !important;
+    vertical-align: top !important;
+    border: 0 !important;
+  }
+
+  :global(
+    .contract-editor .w-e-text-container [data-slate-editor] table:first-child td:last-child
+  ) {
+    padding-right: 0 !important;
+    text-align: center !important;
+  }
+
+  :global(.contract-editor .w-e-text-container [data-slate-editor] td),
+  :global(.contract-editor .w-e-text-container [data-slate-editor] th) {
+    padding: 5px 6px !important;
+    vertical-align: top !important;
+    border: 1px solid #111827 !important;
+  }
+
+  :global(.contract-editor .w-e-text-container [data-slate-editor] table:last-child) {
+    margin-top: 24px !important;
+  }
+
+  :global(.contract-editor .w-e-text-container [data-slate-editor] table:last-child td) {
+    width: 50% !important;
+    text-align: center !important;
+    border: 0 !important;
+  }
+
+  :global(.contract-editor .w-e-text-container > div[data-placeholder]) {
+    color: var(--el-text-color-secondary) !important;
+  }
+
+  :global(html.dark) {
+    .contract-template-editor-page {
+      color: #f8fafc;
+
+      :deep(.reporting-card.el-card) {
+        background: #161618;
+        border-color: rgb(255 255 255 / 9%) !important;
+      }
+
+      :deep(.reporting-card.el-card > .el-card__header) {
+        border-bottom-color: rgb(255 255 255 / 9%);
+      }
+
+      :deep(.el-input__wrapper),
+      :deep(.el-select__wrapper) {
+        color: #f8fafc;
+        background: #101114 !important;
+        border: 1px solid rgb(255 255 255 / 14%);
+        box-shadow: none !important;
+      }
+
+      :deep(.el-input__inner),
+      :deep(.el-select__placeholder),
+      :deep(.el-select__selected-item),
+      :deep(.el-select__caret) {
+        color: #f8fafc !important;
+      }
+
+      :deep(.el-input__inner::placeholder) {
+        color: #f8fafc !important;
+        opacity: 1;
+      }
+
+      :deep(.el-button:not(.el-button--primary)) {
+        color: #f8fafc;
+        background: #161618;
+        border-color: rgb(255 255 255 / 14%);
+
+        &:hover,
+        &:focus {
+          color: #fff;
+          background: rgb(255 255 255 / 8%);
+          border-color: rgb(255 255 255 / 28%);
+        }
+      }
+
+      [class*='text-slate-'] {
+        color: #f8fafc !important;
+      }
+
+      // Accent colors dark mode
+      .text-amber-400 {
+        color: #fbbf24 !important;
+      }
+
+      .text-amber-300 {
+        color: #fcd34d !important;
+      }
+
+      .text-emerald-400 {
+        color: #34d399 !important;
+      }
+
+      .text-emerald-300 {
+        color: #6ee7b7 !important;
+      }
+
+      .text-violet-400 {
+        color: #c4b5fd !important;
+      }
+
+      .text-orange-400 {
+        color: #fb923c !important;
+      }
+
+      .text-red-400 {
+        color: #f87171 !important;
+      }
+
+      .text-red-300 {
+        color: #fca5a5 !important;
+      }
+
+      // Background accent colors
+      .bg-amber-500\/10 {
+        background: rgb(245 158 11 / 20%) !important;
+      }
+
+      .bg-amber-500\/15 {
+        background: rgb(245 158 11 / 28%) !important;
+      }
+
+      .bg-emerald-500\/10 {
+        background: rgb(16 185 129 / 20%) !important;
+      }
+
+      .bg-emerald-500\/15 {
+        background: rgb(16 185 129 / 28%) !important;
+      }
+
+      .bg-red-500\/10 {
+        background: rgb(239 68 68 / 20%) !important;
+      }
+
+      .bg-red-500\/15 {
+        background: rgb(239 68 68 / 28%) !important;
+      }
+
+      // Border accent colors
+      .border-amber-500\/25 {
+        border-color: rgb(245 158 11 / 35%) !important;
+      }
+
+      .border-emerald-500\/25 {
+        border-color: rgb(16 185 129 / 35%) !important;
+      }
+
+      .border-red-500\/30 {
+        border-color: rgb(239 68 68 / 40%) !important;
+      }
+
+      // Variable group icons and labels dark mode
+      .bg-amber-500\/15 {
+        background: rgb(245 158 11 / 28%) !important;
+      }
+
+      .text-amber-400 {
+        color: #fbbf24 !important;
+      }
+
+      .bg-emerald-500\/15 {
+        background: rgb(16 185 129 / 28%) !important;
+      }
+
+      .text-emerald-400 {
+        color: #34d399 !important;
+      }
+
+      .bg-violet-500\/15 {
+        background: rgb(139 92 246 / 28%) !important;
+      }
+
+      .text-violet-400 {
+        color: #c4b5fd !important;
+      }
+
+      .bg-orange-500\/15 {
+        background: rgb(249 115 22 / 28%) !important;
+      }
+
+      .text-orange-400 {
+        color: #fb923c !important;
+      }
+
+      // Token buttons dark mode override (in variable dictionary)
+      .token-btn--amber {
+        --token-color: #fbbf24;
+        --token-bg: rgb(245 158 11 / 25%);
+        --token-border: rgb(245 158 11 / 50%);
+        --token-hover-bg: #b45309;
+        --token-hover-border: #fbbf24;
+        --token-shadow: rgb(245 158 11 / 60%);
+      }
+
+      .token-btn--emerald {
+        --token-color: #34d399;
+        --token-bg: rgb(16 185 129 / 25%);
+        --token-border: rgb(16 185 129 / 50%);
+        --token-hover-bg: #059669;
+        --token-hover-border: #34d399;
+        --token-shadow: rgb(16 185 129 / 60%);
+      }
+
+      .token-btn--violet {
+        --token-color: #c4b5fd;
+        --token-bg: rgb(139 92 246 / 25%);
+        --token-border: rgb(139 92 246 / 50%);
+        --token-hover-bg: #7c3aed;
+        --token-hover-border: #c4b5fd;
+        --token-shadow: rgb(139 92 246 / 60%);
+      }
+
+      .token-btn--orange {
+        --token-color: #fb923c;
+        --token-bg: rgb(249 115 22 / 25%);
+        --token-border: rgb(249 115 22 / 50%);
+        --token-hover-bg: #ea580c;
+        --token-hover-border: #fed7aa;
+        --token-shadow: rgb(249 115 22 / 60%);
+      }
+
+      // Accent colors for dark mode
+      .text-amber-400 {
+        color: #fbbf24 !important;
+      }
+
+      .text-amber-300 {
+        color: #fcd34d !important;
+      }
+
+      .text-emerald-400 {
+        color: #34d399 !important;
+      }
+
+      .text-emerald-300 {
+        color: #6ee7b7 !important;
+      }
+
+      .text-violet-400 {
+        color: #c4b5fd !important;
+      }
+
+      .text-orange-400 {
+        color: #fb923c !important;
+      }
+
+      .text-red-400 {
+        color: #f87171 !important;
+      }
+
+      .text-red-300 {
+        color: #fca5a5 !important;
+      }
+
+      // Background accent colors
+      .bg-amber-500\/10 {
+        background: rgb(245 158 11 / 20%) !important;
+      }
+
+      .bg-amber-500\/15 {
+        background: rgb(245 158 11 / 28%) !important;
+      }
+
+      .bg-emerald-500\/10 {
+        background: rgb(16 185 129 / 20%) !important;
+      }
+
+      .bg-emerald-500\/15 {
+        background: rgb(16 185 129 / 28%) !important;
+      }
+
+      .bg-red-500\/10 {
+        background: rgb(239 68 68 / 20%) !important;
+      }
+
+      .bg-red-500\/15 {
+        background: rgb(239 68 68 / 28%) !important;
+      }
+
+      // Border accent colors
+      .border-amber-500\/25 {
+        border-color: rgb(245 158 11 / 35%) !important;
+      }
+
+      .border-emerald-500\/25 {
+        border-color: rgb(16 185 129 / 35%) !important;
+      }
+
+      .border-red-500\/30 {
+        border-color: rgb(239 68 68 / 40%) !important;
+      }
+
+      // Token buttons dark mode override
+      .token-btn--amber {
+        --token-color: #fbbf24;
+        --token-bg: rgb(245 158 11 / 25%);
+        --token-border: rgb(245 158 11 / 50%);
+        --token-hover-bg: #b45309;
+        --token-hover-border: #fbbf24;
+        --token-shadow: rgb(245 158 11 / 60%);
+      }
+
+      .token-btn--emerald {
+        --token-color: #34d399;
+        --token-bg: rgb(16 185 129 / 25%);
+        --token-border: rgb(16 185 129 / 50%);
+        --token-hover-bg: #059669;
+        --token-hover-border: #34d399;
+        --token-shadow: rgb(16 185 129 / 60%);
+      }
+
+      .token-btn--violet {
+        --token-color: #c4b5fd;
+        --token-bg: rgb(139 92 246 / 25%);
+        --token-border: rgb(139 92 246 / 50%);
+        --token-hover-bg: #7c3aed;
+        --token-hover-border: #c4b5fd;
+        --token-shadow: rgb(139 92 246 / 60%);
+      }
+
+      .token-btn--orange {
+        --token-color: #fb923c;
+        --token-bg: rgb(249 115 22 / 25%);
+        --token-border: rgb(249 115 22 / 50%);
+        --token-hover-bg: #ea580c;
+        --token-hover-border: #fed7aa;
+        --token-shadow: rgb(249 115 22 / 60%);
+      }
     }
 
-    .w-e-toolbar {
-      background: #15161a !important;
-      border-bottom: 1px solid rgb(255 255 255 / 8%) !important;
-
-      .w-e-bar-item {
-        color: #f8fafc !important;
-
-        &:hover {
-          color: #fff !important;
-          background: rgb(255 255 255 / 6%) !important;
-        }
-
-        &.w-e-bar-item--active {
-          color: #ff6b6b !important;
-          background: rgb(232 74 74 / 18%) !important;
-        }
-      }
-
-      .w-e-bar-divider {
-        background: rgb(255 255 255 / 10%) !important;
-      }
-    }
-
-    .w-e-text-container {
-      flex: 1 !important;
-      height: auto !important;
-      min-height: 0 !important;
-      padding: 24px 0;
-      overflow: hidden !important;
-      color: #f8fafc !important;
-      background: #525659 !important;
-      border-top: none !important;
-
-      .w-e-scroll {
-        height: 100% !important;
-        overflow-y: auto !important;
-        scrollbar-color: rgb(120 115 150 / 75%) transparent;
-        scrollbar-width: thin;
-        background: #525659 !important;
-      }
-
-      .w-e-scroll::-webkit-scrollbar {
-        width: 8px;
-      }
-
-      .w-e-scroll::-webkit-scrollbar-track {
-        background: transparent;
-      }
-
-      .w-e-scroll::-webkit-scrollbar-thumb {
-        background: rgb(120 115 150 / 75%);
-        border-radius: 999px;
-      }
-
-      [data-slate-editor] {
-        box-sizing: border-box;
-        width: 794px;
-        max-width: calc(100% - 32px) !important;
-        min-height: 1123px;
-        padding: 36px 48px !important;
-        margin: 0 auto !important;
-        font-family: 'Times New Roman', serif !important;
-        font-size: 14px !important;
-        line-height: 1.35 !important;
-        color: #111827 !important;
-        background: #fff !important;
-        border-radius: 1px;
-        box-shadow: 0 18px 50px rgb(0 0 0 / 45%);
-      }
-
-      [data-slate-editor] * {
-        font-family: 'Times New Roman', serif !important;
-        color: #111827 !important;
-      }
-
-      [data-slate-editor] .token-jump-flash {
-        border-radius: 4px;
-        animation: token-jump-flash 1.2s ease-out;
-      }
-
-      [data-slate-editor] h1 {
-        margin: 10px 0 4px !important;
-        font-size: 20px !important;
-        font-weight: 700 !important;
-        line-height: 1.2 !important;
-        text-align: center !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0 !important;
-      }
-
-      [data-slate-editor] h2 {
-        margin: 10px 0 4px !important;
-        font-size: 15px !important;
-        font-weight: 700 !important;
-        line-height: 1.25 !important;
-        text-transform: uppercase !important;
-      }
-
-      [data-slate-editor] h1 + h2 {
-        margin: 0 0 10px !important;
-        font-size: 14px !important;
-        text-align: center !important;
-        text-transform: none !important;
-      }
-
-      [data-slate-editor] p {
-        margin: 2px 0 !important;
-      }
-
-      [data-slate-editor] h1 + p {
-        margin-bottom: 12px !important;
-        text-align: right !important;
-      }
-
-      [data-slate-editor] ol,
-      [data-slate-editor] ul {
-        padding-left: 18px !important;
-        margin: 4px 0 8px !important;
-      }
-
-      [data-slate-editor] li {
-        margin: 2px 0 !important;
-      }
-
-      [data-slate-editor] table {
-        width: 100% !important;
-        margin: 6px 0 10px !important;
-        border-collapse: collapse !important;
-      }
-
-      [data-slate-editor] table:first-child {
-        margin-bottom: 12px !important;
-      }
-
-      [data-slate-editor] table:first-child td {
-        width: 50% !important;
-        padding: 0 10px 0 0 !important;
-        font-size: 13px !important;
-        vertical-align: top !important;
-        border: 0 !important;
-      }
-
-      [data-slate-editor] table:first-child td:last-child {
-        padding-right: 0 !important;
-        text-align: center !important;
-      }
-
-      [data-slate-editor] td,
-      [data-slate-editor] th {
-        padding: 5px 6px !important;
-        vertical-align: top !important;
-        border: 1px solid #111827 !important;
-      }
-
-      [data-slate-editor] table:last-child {
-        margin-top: 24px !important;
-      }
-
-      [data-slate-editor] table:last-child td {
-        width: 50% !important;
-        text-align: center !important;
-        border: 0 !important;
-      }
-
-      & > div[data-placeholder] {
-        color: #f8fafc !important;
-      }
-    }
-
-    .w-e-panel {
-      color: #f8fafc !important;
-      background: #1a1a1d !important;
-      border-color: rgb(255 255 255 / 10%) !important;
-
-      .w-e-panel-tab-title {
-        color: #f8fafc !important;
-
-        &.active {
-          color: #ff6b6b !important;
-          border-bottom-color: #ff6b6b !important;
-        }
-      }
+    .editor-container {
+      background: #050506;
+      border-color: rgb(255 255 255 / 10%);
     }
   }
 
-  @keyframes token-jump-flash {
-    0%,
-    100% {
-      background: transparent;
-      box-shadow: none;
-    }
-
-    20% {
-      background: rgb(255 235 59 / 28%);
-      box-shadow: 0 0 0 3px rgb(245 158 11 / 22%);
-    }
+  :global(html.dark .contract-editor) {
+    background: #050506 !important;
   }
 
-  .contract-template-select-popper {
+  :global(html.dark .contract-editor .w-e-toolbar) {
+    background: #15161a !important;
+    border-bottom: 1px solid rgb(255 255 255 / 8%) !important;
+  }
+
+  :global(html.dark .contract-editor .w-e-toolbar .w-e-bar-item) {
+    color: #f8fafc !important;
+  }
+
+  :global(html.dark .contract-editor .w-e-toolbar .w-e-bar-item:hover) {
+    color: #fff !important;
+    background: rgb(255 255 255 / 6%) !important;
+  }
+
+  :global(html.dark .contract-editor .w-e-toolbar .w-e-bar-item.w-e-bar-item--active) {
+    color: #ff6b6b !important;
+    background: rgb(232 74 74 / 18%) !important;
+  }
+
+  :global(html.dark .contract-editor .w-e-toolbar .w-e-bar-divider) {
+    background: rgb(255 255 255 / 10%) !important;
+  }
+
+  :global(html.dark .contract-editor .w-e-text-container) {
+    color: #f8fafc !important;
+  }
+
+  :global(html.dark .contract-editor .w-e-text-container > div[data-placeholder]) {
+    color: #f8fafc !important;
+  }
+
+  :global(html.dark .contract-editor .w-e-panel) {
+    color: #f8fafc !important;
+    background: #1a1a1d !important;
+    border-color: rgb(255 255 255 / 10%) !important;
+  }
+
+  :global(html.dark .contract-editor .w-e-panel .w-e-panel-tab-title) {
+    color: #f8fafc !important;
+  }
+
+  :global(html.dark .contract-editor .w-e-panel .w-e-panel-tab-title.active) {
+    color: #ff6b6b !important;
+    border-bottom-color: #ff6b6b !important;
+  }
+
+  :global(html.dark .contract-preview-dialog .el-dialog__header) {
+    background: #0a0a0b;
+    border-bottom: 1px solid rgb(255 255 255 / 9%);
+  }
+
+  :global(html.dark .contract-preview-dialog .el-dialog__title) {
+    color: #f8fafc;
+  }
+
+  :global(html.dark .contract-preview-dialog .el-dialog__footer) {
+    background: #0a0a0b;
+    border-top: 1px solid rgb(255 255 255 / 9%);
+  }
+
+  :global(html.dark .contract-template-select-popper) {
     background: #161618 !important;
     border-color: rgb(255 255 255 / 14%) !important;
 
@@ -1628,6 +1896,71 @@
     .el-popper__arrow::before {
       background: #161618 !important;
       border-color: rgb(255 255 255 / 14%) !important;
+    }
+  }
+
+  // Variables modal dark mode
+  :global(html.dark .variables-modal) {
+    .variable-attach-summary {
+      background: linear-gradient(180deg, #1a1a1d 0%, #252530 100%) !important;
+      border-color: rgb(255 255 255 / 12%) !important;
+
+      .variable-attach-title {
+        color: #f8fafc !important;
+      }
+
+      .variable-attach-subtitle {
+        color: #9ca3af !important;
+      }
+    }
+
+    .variable-empty-note {
+      color: #9ca3af !important;
+    }
+  }
+
+  // Preview dialog dark mode
+  :global(html.dark .contract-preview-dialog) {
+    .preview-dialog-title {
+      color: #f8fafc !important;
+    }
+
+    .preview-dialog-subtitle {
+      color: #9ca3af !important;
+    }
+
+    .preview-ready {
+      color: #34d399 !important;
+    }
+
+    .preview-unresolved-label {
+      color: #fbbf24 !important;
+      background: rgb(245 158 11 / 15%) !important;
+    }
+
+    .preview-unresolved-token {
+      color: #f87171 !important;
+      background: rgb(239 68 68 / 15%) !important;
+      border-color: rgb(239 68 68 / 30%) !important;
+    }
+  }
+
+  @keyframes token-jump-flash {
+    0%,
+    100% {
+      background: transparent;
+      box-shadow: none;
+    }
+
+    20% {
+      background: rgb(255 235 59 / 28%);
+      box-shadow: 0 0 0 3px rgb(245 158 11 / 22%);
+    }
+  }
+
+  @media (width <= 1024px) {
+    :deep(.max-w-\[1600px\]) {
+      max-width: 100%;
     }
   }
 </style>

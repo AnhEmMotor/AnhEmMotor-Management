@@ -1,5 +1,5 @@
 <template>
-  <div class="art-card p-5 overflow-hidden bg-white">
+  <div class="art-card p-5 overflow-hidden">
     <div class="art-card-header">
       <div class="title">
         <h4>9.3. Bao cao Tai chinh Chi tiet</h4>
