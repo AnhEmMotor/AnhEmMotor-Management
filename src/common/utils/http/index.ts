@@ -100,7 +100,7 @@ axiosInstance.interceptors.response.use(
     if (response) {
       const { status, data } = response;
       if (status === ApiStatus.unauthorized)
-        handleUnauthorizedError(data.errors[0].message);
+        handleUnauthorizedError(data?.errors?.[0]?.message);
 
       let backendMsg = data?.Message || data?.msg || data?.message;
       if (!backendMsg && data?.errors) {

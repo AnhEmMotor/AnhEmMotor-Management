@@ -1,29 +1,22 @@
-import { fetchLogin, fetchGetUserInfo } from "@/api/auth";
+import * as AuthApis from "@/api/auth";
+import { useUserStore } from "@/application/store/user";
 
-// Types are from global namespace Api (declared in src/types/api/api.d.ts)
-export interface AuthState {
-  token: string | null;
-  userInfo: Api.Auth.UserInfo | null;
-  isAuthenticated: boolean;
-}
-
-class AuthService {
-  private readonly TOKEN_KEY = "auth_token";
-
-  async login(credentials: Api.Auth.LoginParams): Promise<AuthState> {
+export const AuthService = {
+  ...AuthApis,
+  async login(credentials: Api.Auth.LoginParams): Promise<any> {
     try {
-      const response = await fetchLogin(credentials);
-
+      const response = await AuthApis.fetchLogin(credentials);
       const token = response.accessToken;
       if (!token) {
         throw new Error("No access token received");
       }
-
-      this.setToken(token);
-
+      // Store token in localStorage for persistence
+      localStorage.setItem("auth_token", token);
+      // Sync token to userStore for API interceptor
+      const userStore = useUserStore();
+      userStore.setToken(token);
       // Fetch user info after login
       const userInfo = await this.getUserInfo();
-
       return {
         token,
         userInfo,
@@ -31,55 +24,34 @@ class AuthService {
       };
     } catch (error) {
       console.error("[AuthService] Login failed:", error);
-      this.clearToken();
+      localStorage.removeItem("auth_token");
       throw error;
     }
-  }
-
-  async register(_data: {
-    username: string;
-    email: string;
-    password: string;
-    fullName?: string;
-  }): Promise<AuthState> {
-    // TODO: Implement register API call when available
-    throw new Error("Register API not implemented yet");
-  }
-
-  async logout(): Promise<void> {
-    try {
-      // TODO: Call backend logout endpoint if exists
-      // await fetchLogout();
-    } finally {
-      this.clearToken();
-    }
-  }
-
+  },
   async getUserInfo(): Promise<Api.Auth.UserInfo | null> {
     try {
-      const response = await fetchGetUserInfo();
+      const response = await AuthApis.fetchGetUserInfo();
       return response as Api.Auth.UserInfo;
     } catch (error) {
       console.error("[AuthService] Get user info failed:", error);
       return null;
     }
-  }
-
+  },
   getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
-  }
-
+    return localStorage.getItem("auth_token");
+  },
   setToken(token: string): void {
-    localStorage.setItem(this.TOKEN_KEY, token);
-  }
-
+    localStorage.setItem("auth_token", token);
+  },
   clearToken(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-  }
-
+    localStorage.removeItem("auth_token");
+  },
   isAuthenticated(): boolean {
     return !!this.getToken();
-  }
-}
-
-export const authService = new AuthService();
+  },
+  async logout(): Promise<void> {
+    this.clearToken();
+    const userStore = useUserStore();
+    userStore.logOut();
+  },
+};

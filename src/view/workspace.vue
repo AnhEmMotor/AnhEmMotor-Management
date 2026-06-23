@@ -102,7 +102,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, markRaw } from "vue";
 import {
   DataAnalysis,
   Service,
@@ -128,7 +128,7 @@ const workspaces = ref([
   {
     title: "Ban Điều Hành & Chủ Showroom",
     subtitle: "Executive Overview",
-    icon: DataAnalysis,
+    icon: markRaw(DataAnalysis),
     color: "#e11d48",
     shadowColor: "rgba(225, 29, 72, 0.25)",
     hasAccess: true,
@@ -137,7 +137,7 @@ const workspaces = ref([
   {
     title: "Marketing & SEO",
     subtitle: "Marketing & SEO Workspace",
-    icon: UserFilled,
+    icon: markRaw(UserFilled),
     color: "#059669",
     shadowColor: "rgba(5, 150, 105, 0.25)",
     hasAccess: true,
@@ -146,7 +146,7 @@ const workspaces = ref([
   {
     title: "Quản Lý Kho & Hậu Cần",
     subtitle: "Inventory & Asset Logistics",
-    icon: Box,
+    icon: markRaw(Box),
     color: "#d97706",
     shadowColor: "rgba(217, 119, 6, 0.15)",
     hasAccess: true,
@@ -154,7 +154,7 @@ const workspaces = ref([
   {
     title: "Dịch Vụ & Xưởng Sửa Chữa",
     subtitle: "Workshop Operations",
-    icon: Service,
+    icon: markRaw(Service),
     color: "#2563eb",
     shadowColor: "rgba(37, 99, 235, 0.15)",
     hasAccess: true,
@@ -162,7 +162,7 @@ const workspaces = ref([
   {
     title: "Kế Toán, Lương & Thuế",
     subtitle: "Financial & Compliance",
-    icon: Wallet,
+    icon: markRaw(Wallet),
     color: "#7c3aed",
     shadowColor: "rgba(124, 58, 237, 0.15)",
     hasAccess: true,
@@ -170,7 +170,7 @@ const workspaces = ref([
   {
     title: "Đơn hàng & Vận chuyển",
     subtitle: "Order & Transer Workspace",
-    icon: Wallet,
+    icon: markRaw(Wallet),
     color: "#7c3aed",
     shadowColor: "rgba(124, 58, 237, 0.15)",
     hasAccess: true,
