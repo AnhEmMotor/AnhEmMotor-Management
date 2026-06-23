@@ -3,7 +3,7 @@ import { useSettingStore } from "@/application/store/setting";
 import { storeToRefs } from "pinia";
 import { useBreakpoints } from "@vueuse/core";
 import AppConfig from "@/config";
-import { SystemThemeEnum, MenuTypeEnum } from "@/enums/appEnum";
+import { SystemThemeEnum, MenuTypeEnum } from "@/common/enums/appEnum";
 import { mittBus } from "@/common/utils/sys";
 import { StorageConfig } from "@/common/utils";
 import { useTheme } from "@/common/composables/useTheme";

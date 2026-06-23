@@ -1,6 +1,6 @@
 import { useSettingStore } from "@/application/store/setting";
 import { storeToRefs } from "pinia";
-import type { ContainerWidthEnum } from "@/enums/appEnum";
+import type { ContainerWidthEnum } from "@/common/enums/appEnum";
 
 export function useSettingsHandlers() {
   const settingStore = useSettingStore();

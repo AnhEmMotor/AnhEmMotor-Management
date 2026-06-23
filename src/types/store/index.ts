@@ -1,4 +1,4 @@
-import { MenuThemeEnum, SystemThemeEnum } from "@/enums/appEnum";
+import { MenuThemeEnum, SystemThemeEnum } from "@/common/enums/appEnum";
 import { LocationQueryRaw } from "vue-router";
 
 export interface SystemThemeType {

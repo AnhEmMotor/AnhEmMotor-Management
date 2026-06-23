@@ -1,6 +1,6 @@
 import { createI18n } from "vue-i18n";
 import type { I18n, I18nOptions } from "vue-i18n";
-import { LanguageEnum } from "@/enums/appEnum";
+import { LanguageEnum } from "@/common/enums/appEnum";
 import { getSystemStorage } from "@/common/utils/storage";
 import { StorageKeyManager } from "@/common/utils/storage/storage-key-manager";
 

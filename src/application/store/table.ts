@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { TableSizeEnum } from "@/enums/formEnum";
+import { TableSizeEnum } from "@/common/enums/formEnum";
 
 export const useTableStore = defineStore(
   "tableStore",

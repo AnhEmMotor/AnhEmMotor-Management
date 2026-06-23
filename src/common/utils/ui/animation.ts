@@ -1,6 +1,6 @@
 import { useCommon } from "@/common/composables/useCommon";
 import { useTheme } from "@/common/composables/useTheme";
-import { SystemThemeEnum } from "@/enums/appEnum";
+import { SystemThemeEnum } from "@/common/enums/appEnum";
 import { useSettingStore } from "@/application/store/setting";
 const { LIGHT, DARK } = SystemThemeEnum;
 

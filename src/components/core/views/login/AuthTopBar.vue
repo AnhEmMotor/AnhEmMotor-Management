@@ -88,7 +88,7 @@ import { useUserStore } from "@/application/store/user";
 import { useHeaderBar } from "@/common/composables/useHeaderBar";
 import { themeAnimation } from "@/common/utils/ui/animation";
 import { languageOptions } from "@/i18n";
-import { LanguageEnum } from "@/enums/appEnum";
+import { LanguageEnum } from "@/common/enums/appEnum";
 import AppConfig from "@/config";
 
 defineOptions({ name: "AuthTopBar" });

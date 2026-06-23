@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref, computed, watch } from "vue";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
-import { LanguageEnum } from "@/enums/appEnum";
+import { LanguageEnum } from "@/common/enums/appEnum";
 import { router } from "@/router";
 import { useSettingStore } from "./setting";
 import { useWorktabStore } from "./worktab";

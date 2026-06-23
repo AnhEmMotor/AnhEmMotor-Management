@@ -191,7 +191,7 @@ defineProps({
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { useFullscreen, useWindowSize } from "@vueuse/core";
-import { LanguageEnum, MenuTypeEnum } from "@/enums/appEnum";
+import { LanguageEnum, MenuTypeEnum } from "@/common/enums/appEnum";
 import { useSettingStore } from "@/application/store/setting";
 import { useUserStore } from "@/application/store/user";
 import { useMenuStore } from "@/application/store/menu";

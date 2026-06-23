@@ -1,5 +1,5 @@
 import { useSettingStore } from "@/application/store/setting";
-import { SystemThemeEnum } from "@/enums/appEnum";
+import { SystemThemeEnum } from "@/common/enums/appEnum";
 import AppConfig from "@/config";
 import { SystemThemeTypes } from "@/types/store";
 import { getDarkColor, getLightColor, setElementThemeColor } from "@/common/utils/ui";

@@ -1,4 +1,4 @@
-import { MenuTypeEnum, SystemThemeEnum } from "@/enums/appEnum";
+import { MenuTypeEnum, SystemThemeEnum } from "@/common/enums/appEnum";
 import { MenuThemeType, SystemThemeTypes } from "@/types/store";
 
 export interface ThemeSetting {

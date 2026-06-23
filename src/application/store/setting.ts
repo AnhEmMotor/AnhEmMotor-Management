@@ -7,7 +7,7 @@ import {
   MenuThemeEnum,
   MenuTypeEnum,
   ContainerWidthEnum,
-} from "@/enums/appEnum";
+} from "@/common/enums/appEnum";
 import { setElementThemeColor } from "@/common/utils/ui";
 import { useCeremony } from "@/common/composables/useCeremony";
 import { StorageConfig } from "@/common/utils";
