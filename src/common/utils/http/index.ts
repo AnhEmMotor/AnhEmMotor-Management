@@ -24,8 +24,12 @@ interface ExtendedAxiosRequestConfig extends AxiosRequestConfig {
 }
 
 const { VITE_WITH_CREDENTIALS } = import.meta.env;
+const baseUrl =
+  import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT ||
+  "http://localhost:5000";
 
 const axiosInstance = axios.create({
+  baseURL: baseUrl,
   timeout: REQUEST_TIMEOUT,
   withCredentials: VITE_WITH_CREDENTIALS !== "false",
   validateStatus: (status) => status >= 200 && status < 300,
