@@ -516,9 +516,9 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { ArrowDown, Lock } from "@element-plus/icons-vue";
-import { useAuth } from "@/hooks/core/useAuth";
+import { useAuth } from "@/common/composables/useAuth";
 import { useUserStore } from "@/application/store/user";
-import { useAppMode } from "@/hooks/core/useAppMode";
+import { useAppMode } from "@/common/composables/useAppMode";
 import { useRoute } from "vue-router";
 import type { AppRouteRecord } from "@/types/router";
 

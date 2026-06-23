@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import "@/assets/styles/core/md.scss";
 import "@/assets/styles/custom/one-dark-pro.scss";
-import { useCommon } from "@/hooks/core/useCommon";
+import { useCommon } from "@/common/composables/useCommon";
 import { useRoute } from "vue-router";
 import { ref, shallowRef, computed, onMounted } from "vue";
 import { NewsApi } from "@/api/news.api";

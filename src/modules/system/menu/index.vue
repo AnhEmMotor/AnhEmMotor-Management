@@ -50,7 +50,7 @@
 <script setup lang="ts">
 import { formatMenuTitle } from "@/common/utils/router";
 import ArtButtonTable from "@/components/core/forms/art-button-table/index.vue";
-import { useTableColumns } from "@/hooks/core/useTableColumns";
+import { useTableColumns } from "@/common/composables/useTableColumns";
 import type { AppRouteRecord } from "@/types/router";
 import MenuDialog from "./modules/menu-dialog.vue";
 import { fetchGetMenuList } from "@/api/system-manage.api";

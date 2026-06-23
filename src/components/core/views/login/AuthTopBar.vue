@@ -85,7 +85,7 @@
 import { useI18n } from "vue-i18n";
 import { useSettingStore } from "@/application/store/setting";
 import { useUserStore } from "@/application/store/user";
-import { useHeaderBar } from "@/hooks/core/useHeaderBar";
+import { useHeaderBar } from "@/common/composables/useHeaderBar";
 import { themeAnimation } from "@/common/utils/ui/animation";
 import { languageOptions } from "@/i18n";
 import { LanguageEnum } from "@/enums/appEnum";

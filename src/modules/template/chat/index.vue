@@ -209,7 +209,7 @@ import avatar7 from "@/assets/images/avatar/avatar7.webp";
 import avatar8 from "@/assets/images/avatar/avatar8.webp";
 import avatar9 from "@/assets/images/avatar/avatar9.webp";
 import avatar10 from "@/assets/images/avatar/avatar10.webp";
-import { useAutoLayoutHeight } from "@/hooks/core/useLayoutHeight";
+import { useAutoLayoutHeight } from "@/common/composables/useLayoutHeight";
 
 defineOptions({ name: "TemplateChat" });
 

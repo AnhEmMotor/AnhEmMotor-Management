@@ -663,7 +663,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from "vue";
-import { useAuth } from "@/hooks/core/useAuth";
+import { useAuth } from "@/common/composables/useAuth";
 import { useUserStore } from "@/application/store/user";
 import { useRouter } from "vue-router";
 import {

@@ -69,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import { useTable } from "@/hooks/core/useTable";
+import { useTable } from "@/common/composables/useTable";
 import { fetchGetUserList } from "@/api/system-manage.api";
 import UserSearch from "@/modules/system/user/modules/user-search.vue";
 

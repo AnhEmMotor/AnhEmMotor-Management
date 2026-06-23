@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { useChartOps, useChartComponent } from "@/hooks/core/useChart";
+import { useChartOps, useChartComponent } from "@/common/composables/useChart";
 import type { EChartsOption, BarSeriesOption } from "@/plugins/echarts";
 import type { BidirectionalBarChartProps } from "@/types/component/chart";
 

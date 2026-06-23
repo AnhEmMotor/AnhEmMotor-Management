@@ -6,8 +6,8 @@ import AppConfig from "@/config";
 import { SystemThemeEnum, MenuTypeEnum } from "@/enums/appEnum";
 import { mittBus } from "@/common/utils/sys";
 import { StorageConfig } from "@/common/utils";
-import { useTheme } from "@/hooks/core/useTheme";
-import { useCeremony } from "@/hooks/core/useCeremony";
+import { useTheme } from "@/common/composables/useTheme";
+import { useCeremony } from "@/common/composables/useCeremony";
 import { useSettingsState } from "./useSettingsState";
 import { useSettingsHandlers } from "./useSettingsHandlers";
 

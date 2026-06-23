@@ -199,8 +199,8 @@ import AppConfig from "@/config";
 import { langList as languageOptions } from "@/common/utils/langList";
 import { mittBus } from "@/common/utils/sys";
 import { themeAnimation } from "@/common/utils/ui/animation";
-import { useCommon } from "@/hooks/core/useCommon";
-import { useHeaderBar } from "@/hooks/core/useHeaderBar";
+import { useCommon } from "@/common/composables/useCommon";
+import { useHeaderBar } from "@/common/composables/useHeaderBar";
 import ArtUserMenu from "./widget/ArtUserMenu.vue";
 
 defineOptions({ name: "ArtHeaderBar" });

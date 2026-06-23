@@ -382,7 +382,7 @@ import {
   updateContractTemplate,
   validateContractTemplateSyntax,
 } from "@/api/contract-template.api";
-import { useCommon } from "@/hooks/core/useCommon";
+import { useCommon } from "@/common/composables/useCommon";
 import "@/modules/Accountant/logic/reporting.scss";
 
 defineOptions({ name: "ContractTemplateEditor" });

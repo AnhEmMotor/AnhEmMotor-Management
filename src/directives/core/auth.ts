@@ -1,7 +1,7 @@
 import { router } from "@/router";
 import { App, Directive, DirectiveBinding, watch } from "vue";
 import { useUserStore } from "@/application/store/user";
-import { useAppMode } from "@/hooks/core/useAppMode";
+import { useAppMode } from "@/common/composables/useAppMode";
 
 export type AuthDirective = Directive<HTMLElement, string>;
 

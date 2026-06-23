@@ -48,7 +48,7 @@
 
 <script setup lang="ts">
 import { ButtonMoreItem } from "@/components/core/forms/art-button-more/index.vue";
-import { useTable } from "@/hooks/core/useTable";
+import { useTable } from "@/common/composables/useTable";
 import {
   fetchGetUserList,
   fetchDeleteUser,

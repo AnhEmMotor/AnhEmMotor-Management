@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import { useFastEnter } from "@/hooks/core/useFastEnter";
+import { useFastEnter } from "@/common/composables/useFastEnter";
 import type { FastEnterApplication, FastEnterQuickLink } from "@/types/config";
 
 defineOptions({ name: "ArtFastEnter" });

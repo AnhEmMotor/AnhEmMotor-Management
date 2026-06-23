@@ -111,7 +111,7 @@ import {
   Wallet,
 } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
-import { useCommon } from "@/hooks/core/useCommon";
+import { useCommon } from "@/common/composables/useCommon";
 import ArtHeaderBar from "@/components/core/layouts/art-header-bar/index.vue";
 import ArtGlobalComponent from "@/components/core/layouts/art-global-component/index.vue";
 

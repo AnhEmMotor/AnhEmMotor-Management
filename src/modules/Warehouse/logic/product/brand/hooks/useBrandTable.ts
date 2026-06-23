@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import { useTable } from "@/hooks/core/useTable";
+import { useTable } from "@/common/composables/useTable";
 import { BrandApi } from "@/api/brand.api";
 import type { Brand } from "@/domain/product/brand.types";
 import { ElMessage, ElMessageBox } from "element-plus";

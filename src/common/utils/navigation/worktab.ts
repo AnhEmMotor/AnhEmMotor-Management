@@ -3,7 +3,7 @@ import { RouteLocationNormalized } from "vue-router";
 import { isIframe } from "./route";
 import { useSettingStore } from "@/application/store/setting";
 import { IframeRouteManager } from "@/router/core";
-import { useCommon } from "@/hooks/core/useCommon";
+import { useCommon } from "@/common/composables/useCommon";
 
 export const setWorktab = (to: RouteLocationNormalized): void => {
   const worktabStore = useWorktabStore();

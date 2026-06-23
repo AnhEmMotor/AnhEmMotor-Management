@@ -1,4 +1,4 @@
-import { useTable } from "@/hooks/core/useTable";
+import { useTable } from "@/common/composables/useTable";
 import { CategoryApi } from "@/api/product/category.api";
 import { ref, computed, onMounted, watch } from "vue";
 import type { ProductCategory } from "@/domain/product/category.types";

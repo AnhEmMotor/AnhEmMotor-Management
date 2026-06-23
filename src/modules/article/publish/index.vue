@@ -341,7 +341,7 @@ import { InfoFilled } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { useDebounceFn } from "@vueuse/core";
 import { PageModeEnum } from "@/enums/formEnum";
-import { useCommon } from "@/hooks/core/useCommon";
+import { useCommon } from "@/common/composables/useCommon";
 import { NewsApi } from "@/api/news.api";
 import { ProductApi } from "@/api/product.api";
 import type { ProductVariantLiteForInput } from "@/domain/product/product.types";

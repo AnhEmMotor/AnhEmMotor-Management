@@ -2,7 +2,7 @@ import { nextTick } from "vue";
 import { useSettingStore } from "@/application/store/setting";
 import { Router } from "vue-router";
 import NProgress from "nprogress";
-import { useCommon } from "@/hooks/core/useCommon";
+import { useCommon } from "@/common/composables/useCommon";
 import { loadingService } from "@/common/utils/ui";
 import { getPendingLoading, resetPendingLoading } from "./beforeEach";
 

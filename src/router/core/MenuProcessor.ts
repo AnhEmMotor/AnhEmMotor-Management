@@ -1,6 +1,6 @@
 import type { AppRouteRecord } from "@/types/router";
 import { useUserStore } from "@/application/store/user";
-import { useAppMode } from "@/hooks/core/useAppMode";
+import { useAppMode } from "@/common/composables/useAppMode";
 import { fetchGetMenuList } from "@/api/system-manage.api";
 import { asyncRoutes } from "../routes/asyncRoutes";
 import { RoutesAlias } from "../routesAlias";

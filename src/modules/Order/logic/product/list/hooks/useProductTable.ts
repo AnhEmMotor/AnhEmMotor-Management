@@ -5,7 +5,7 @@ import { ProductApi } from "@/api/product.api";
 import { CategoryApi } from "@/api/category.api";
 import { BrandApi } from "@/api/brand.api";
 import { SupplierApi } from "@/api/supplier.api";
-import { useTable } from "@/hooks/core/useTable";
+import { useTable } from "@/common/composables/useTable";
 import type { Product } from "@/domain/product/product.types";
 import type { ProductCategory } from "@/domain/product/category.types";
 import type { Brand } from "@/domain/product/brand.types";

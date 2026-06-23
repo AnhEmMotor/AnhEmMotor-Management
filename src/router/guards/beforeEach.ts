@@ -11,7 +11,7 @@ import type { AppRouteRecordRaw } from "@/common/utils/router";
 import { RoutesAlias } from "../routesAlias";
 import { staticRoutes } from "../routes/staticRoutes";
 import { loadingService } from "@/common/utils/ui";
-import { useCommon } from "@/hooks/core/useCommon";
+import { useCommon } from "@/common/composables/useCommon";
 import { useWorktabStore } from "@/application/store/worktab";
 import { fetchGetUserInfo } from "@/api/auth.api";
 import { ApiStatus } from "@/common/utils/http/status";

@@ -1,5 +1,5 @@
-import { useCommon } from "@/hooks/core/useCommon";
-import { useTheme } from "@/hooks/core/useTheme";
+import { useCommon } from "@/common/composables/useCommon";
+import { useTheme } from "@/common/composables/useTheme";
 import { SystemThemeEnum } from "@/enums/appEnum";
 import { useSettingStore } from "@/application/store/setting";
 const { LIGHT, DARK } = SystemThemeEnum;

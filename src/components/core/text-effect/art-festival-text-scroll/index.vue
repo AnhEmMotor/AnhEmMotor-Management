@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import { useSettingStore } from "@/application/store/setting";
-import { useCeremony } from "@/hooks/core/useCeremony";
+import { useCeremony } from "@/common/composables/useCeremony";
 
 defineOptions({ name: "ArtFestivalTextScroll" });
 

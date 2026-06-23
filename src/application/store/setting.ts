@@ -9,7 +9,7 @@ import {
   ContainerWidthEnum,
 } from "@/enums/appEnum";
 import { setElementThemeColor } from "@/common/utils/ui";
-import { useCeremony } from "@/hooks/core/useCeremony";
+import { useCeremony } from "@/common/composables/useCeremony";
 import { StorageConfig } from "@/common/utils";
 import { SETTING_DEFAULT_CONFIG } from "@/config/setting";
 

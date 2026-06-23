@@ -495,10 +495,10 @@ import {
   ArrowDown,
 } from "@element-plus/icons-vue";
 import { ElMessageBox } from "element-plus";
-import { useTable, CacheInvalidationStrategy } from "@/hooks/core/useTable";
+import { useTable, CacheInvalidationStrategy } from "@/common/composables/useTable";
 import { fetchGetUserList } from "@/api/system-manage.api";
 import { ACCOUNT_TABLE_DATA } from "@/mock/temp/formData";
-import { getColumnKey } from "@/hooks/core/useTableColumns";
+import { getColumnKey } from "@/common/composables/useTableColumns";
 
 defineOptions({ name: "AdvancedTableDemo" });
 
