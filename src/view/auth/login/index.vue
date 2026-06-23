@@ -140,10 +140,12 @@
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { authService } from "@/common/auth";
+import { useUserStore } from "@/application/store/user";
 import { UserFilled, User, Lock } from "@element-plus/icons-vue";
 import LoadingOverlay from "@/view/common/loading-overlay/index.vue";
 
 const router = useRouter();
+const userStore = useUserStore();
 
 const form = reactive({
   usernameOrEmail: "",
@@ -171,9 +173,15 @@ const handleLogin = async () => {
     });
 
     if (result.isAuthenticated && result.token) {
+      // Set user login state and info
+      userStore.setLoginStatus(true);
+      if (result.userInfo) {
+        userStore.setUserInfo(result.userInfo);
+      }
+
       // Trigger success transition
       isSuccessTransition.value = true;
-      
+
       // Delay navigation to show animation
       setTimeout(() => {
         router.push("/workspace");
