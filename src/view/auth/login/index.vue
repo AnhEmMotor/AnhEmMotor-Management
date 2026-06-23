@@ -1,11 +1,16 @@
 <template>
-  <div class="login-page min-h-screen flex items-center justify-center bg-gray-50">
+  <div
+    class="login-page min-h-screen flex items-center justify-center bg-gray-50"
+  >
     <div class="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
       <div class="text-center">
         <h2 class="mt-6 text-3xl font-bold text-gray-900">Đăng nhập</h2>
         <p class="mt-2 text-sm text-gray-600">
           Hoặc
-          <a href="/register" class="font-medium text-primary-600 hover:text-primary-500">
+          <a
+            href="/register"
+            class="font-medium text-primary-600 hover:text-primary-500"
+          >
             tạo tài khoản mới
           </a>
         </p>
@@ -14,7 +19,9 @@
       <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
         <div class="rounded-md shadow-sm -space-y-px">
           <div>
-            <label for="usernameOrEmail" class="sr-only">Tên đăng nhập hoặc Email</label>
+            <label for="usernameOrEmail" class="sr-only"
+              >Tên đăng nhập hoặc Email</label
+            >
             <input
               id="usernameOrEmail"
               v-model="form.usernameOrEmail"
@@ -55,7 +62,10 @@
         </div>
 
         <div class="text-center">
-          <a href="/forgot-password" class="font-medium text-primary-600 hover:text-primary-500 text-sm">
+          <a
+            href="/forgot-password"
+            class="font-medium text-primary-600 hover:text-primary-500 text-sm"
+          >
             Quên mật khẩu?
           </a>
         </div>

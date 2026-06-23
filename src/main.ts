@@ -26,7 +26,7 @@ pinia.use(
       serialize: JSON.stringify,
       deserialize: JSON.parse,
     },
-  })
+  }),
 );
 
 app.use(pinia);

@@ -1,9 +1,6 @@
 import { BookingEventVM, BookingFormVM } from "@/domain/bookings/types";
 
-import {
-  BookingApi,
-  type Booking as BookingDTO,
-} from "@/api/booking.api";
+import { BookingApi, type Booking as BookingDTO } from "@/api/booking.api";
 
 // NOTE: UI giữ nguyên; usecase bên dưới gọi BookingApi thật.
 

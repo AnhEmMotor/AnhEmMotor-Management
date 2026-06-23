@@ -80,5 +80,5 @@ export const productRoutes: AppRouteRecord[] = [
         },
       },
     ],
-  }
+  },
 ];

@@ -1,4 +1,8 @@
-import { MenuThemeEnum, MenuTypeEnum, SystemThemeEnum } from "@/common/enums/appEnum";
+import {
+  MenuThemeEnum,
+  MenuTypeEnum,
+  SystemThemeEnum,
+} from "@/common/enums/appEnum";
 import { SystemConfig } from "@/types/config";
 import { configImages } from "./assets/images";
 import fastEnterConfig from "./modules/fastEnter";

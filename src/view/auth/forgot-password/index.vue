@@ -1,5 +1,7 @@
 <template>
-  <div class="forgot-password-page min-h-screen flex items-center justify-center bg-gray-50">
+  <div
+    class="forgot-password-page min-h-screen flex items-center justify-center bg-gray-50"
+  >
     <div class="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
       <div class="text-center">
         <h2 class="mt-6 text-3xl font-bold text-gray-900">Quên mật khẩu</h2>
@@ -24,11 +26,17 @@
           </div>
         </div>
 
-        <div v-if="errorMessage" class="text-red-600 text-sm text-center bg-red-50 p-3 rounded">
+        <div
+          v-if="errorMessage"
+          class="text-red-600 text-sm text-center bg-red-50 p-3 rounded"
+        >
           {{ errorMessage }}
         </div>
 
-        <div v-if="successMessage" class="text-green-600 text-sm text-center bg-green-50 p-3 rounded">
+        <div
+          v-if="successMessage"
+          class="text-green-600 text-sm text-center bg-green-50 p-3 rounded"
+        >
           {{ successMessage }}
         </div>
 
@@ -44,7 +52,10 @@
         </div>
 
         <div class="text-center">
-          <a href="/login" class="font-medium text-primary-600 hover:text-primary-500 text-sm">
+          <a
+            href="/login"
+            class="font-medium text-primary-600 hover:text-primary-500 text-sm"
+          >
             Quay lại đăng nhập
           </a>
         </div>
@@ -74,7 +85,8 @@ const handleForgotPassword = async () => {
     // await fetchForgotPassword({ email: email.value });
 
     // Simulate success for now
-    successMessage.value = "Vui lòng kiểm tra email của bạn để nhận link đặt lại mật khẩu.";
+    successMessage.value =
+      "Vui lòng kiểm tra email của bạn để nhận link đặt lại mật khẩu.";
 
     // Clear email after successful submission
     email.value = "";
