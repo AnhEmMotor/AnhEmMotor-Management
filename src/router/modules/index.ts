@@ -34,6 +34,7 @@ const coreRoutes: AppRouteRecord[] = [
   contactRoutes,
   contractRoutes,
   contentRoutes,
+  reportingRoutes,
 ];
 
 const developmentRoutes: AppRouteRecord[] = [
@@ -44,7 +45,6 @@ const developmentRoutes: AppRouteRecord[] = [
   resultRoutes,
   exceptionRoutes,
   safeguardRoutes,
-  reportingRoutes,
   logisticsRoutes,
   ...helpRoutes,
 ];
