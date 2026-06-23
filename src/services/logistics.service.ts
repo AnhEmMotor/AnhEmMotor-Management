@@ -1,13 +1,10 @@
-import api from "@/common/utils/http";
+import * as LogisticsApis from "@/api/logistics";
 import type { LogisticsDashboardResponse } from "@/domain/logistics/dashboard.types";
 
-const API_BASE = "/api/logistics";
-
 export const LogisticsService = {
-  async getDashboard(range: string): Promise<LogisticsDashboardResponse> {
-    return api.get<LogisticsDashboardResponse>({
-      url: `${API_BASE}/dashboard`,
-      params: { range },
-    });
+  ...LogisticsApis,
+  async getDashboard(_range: any): Promise<LogisticsDashboardResponse> {
+    // TODO: Implement when backend endpoint is available
+    throw new Error("Logistics dashboard API not implemented yet");
   },
 };
