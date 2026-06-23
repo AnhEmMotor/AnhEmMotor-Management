@@ -120,7 +120,7 @@
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import * as echarts from "echarts";
 import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
-import { statisticsApi } from "@/api/statistics.api";
+import { statisticsApi } from "@/api/operations";
 import type * as Statistical from "@/types/api/statistical";
 
 const brandChartRef = ref<HTMLElement | null>(null);

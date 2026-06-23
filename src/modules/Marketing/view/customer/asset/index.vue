@@ -306,8 +306,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
 import { ElMessage } from "element-plus";
-import { VehicleApi } from "@/api/vehicle.api";
-import { RepairOrderApi } from "@/api/repair-order.api";
+import { VehicleApi } from "@/api/vehicle";
+import { RepairOrderApi } from "@/api/sales";
 
 defineOptions({ name: "CustomerAsset" });
 

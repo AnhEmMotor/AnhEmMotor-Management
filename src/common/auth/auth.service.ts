@@ -1,4 +1,4 @@
-import { fetchLogin, fetchGetUserInfo } from "@/api/auth.api";
+import { fetchLogin, fetchGetUserInfo } from "@/api/auth";
 
 // Types are from global namespace Api (declared in src/types/api/api.d.ts)
 export interface AuthState {
@@ -36,7 +36,7 @@ class AuthService {
     }
   }
 
-  async register(data: {
+  async register(_data: {
     username: string;
     email: string;
     password: string;

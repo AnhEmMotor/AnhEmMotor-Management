@@ -395,7 +395,7 @@ import {
   Check,
 } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { SalesContractApi } from "@/api/sales-contract.api";
+import { SalesContractApi } from "@/api/sales";
 import type { SalesContractStatus } from "@/domain/sales/contract.types";
 import ReportPageHeader from "@/modules/Accountant/view/reporting/ReportPageHeader.vue";
 import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";

@@ -295,7 +295,7 @@ import ArtBarChart from "@/components/core/charts/art-bar-chart/index.vue";
 import ArtLineChart from "@/components/core/charts/art-line-chart/index.vue";
 import ArtRingChart from "@/components/core/charts/art-ring-chart/index.vue";
 
-import { statisticsApi } from "@/api/statistics.api";
+import { statisticsApi } from "@/api/operations";
 
 type RepairOrderStatus =
   | "Pending"

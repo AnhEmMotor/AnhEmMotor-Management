@@ -53,7 +53,7 @@ import ArtButtonTable from "@/components/core/forms/art-button-table/index.vue";
 import { useTableColumns } from "@/common/composables/useTableColumns";
 import type { AppRouteRecord } from "@/types/router";
 import MenuDialog from "./modules/menu-dialog.vue";
-import { fetchGetMenuList } from "@/api/system-manage.api";
+import { fetchGetMenuList } from "@/api/auth";
 import { ElTag, ElMessageBox } from "element-plus";
 
 defineOptions({ name: "Menus" });

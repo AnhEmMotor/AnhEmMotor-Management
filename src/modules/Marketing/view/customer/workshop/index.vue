@@ -402,7 +402,7 @@
 import { ref, onMounted, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
-import { RepairOrderApi, RepairOrder } from "@/api/repair-order.api";
+import { RepairOrderApi, RepairOrder } from "@/api/sales";
 
 defineOptions({ name: "CustomerWorkshopIndex" });
 

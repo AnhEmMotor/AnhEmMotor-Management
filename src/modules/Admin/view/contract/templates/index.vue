@@ -504,7 +504,7 @@ import {
   getContractTemplates,
   deleteContractTemplate,
   cloneContractTemplate,
-} from "@/api/contract-template.api";
+} from "@/api/contracts";
 import { useCommon } from "@/common/composables/useCommon";
 import {
   extractUsedTokenGroups,

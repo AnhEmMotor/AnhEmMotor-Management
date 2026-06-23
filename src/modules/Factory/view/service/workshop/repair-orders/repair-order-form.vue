@@ -407,8 +407,8 @@ import {
   RepairOrderApi,
   type IssuePartsPayload,
   type RepairOrder,
-} from "@/api/repair-order.api";
-import { EmployeeApi, type EmployeeResponse } from "@/api/employee.api";
+} from "@/api/sales";
+import { EmployeeApi, type EmployeeResponse } from "@/api/operations";
 
 defineOptions({ name: "ServiceWorkshopRepairOrderForm" });
 

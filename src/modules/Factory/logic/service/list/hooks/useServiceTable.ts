@@ -1,9 +1,9 @@
 import { ref } from "vue";
-import { ServiceApi } from "@/api/service.api";
-import { ServiceCategoryApi } from "@/api/service-category.api";
+import { ServiceApi } from "@/api/service";
+import { ServiceCategoryApi } from "@/api/product";
 import { useTable } from "@/common/composables/useTable";
-import type { ServiceResponse } from "@/api/service.api";
-import type { ServiceCategoryResponse } from "@/api/service-category.api";
+import type { ServiceResponse } from "@/api/service";
+import type { ServiceCategoryResponse } from "@/api/product";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 export function useServiceTable() {

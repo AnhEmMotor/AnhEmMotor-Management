@@ -186,7 +186,7 @@ import { computed } from "vue";
 import { Plus } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { useServiceTable } from "@/modules/Factory/logic/service/list/hooks/useServiceTable";
-import { ServiceApi } from "@/api/service.api";
+import { ServiceApi } from "@/api/service";
 
 defineOptions({ name: "ServiceList" });
 

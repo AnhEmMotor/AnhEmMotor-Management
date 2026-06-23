@@ -293,7 +293,7 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import * as echarts from "echarts";
 import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
-import { statisticsApi } from "@/api/statistics.api";
+import { statisticsApi } from "@/api/operations";
 import ReportPageHeader from "./ReportPageHeader.vue";
 import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
 import type {

@@ -41,7 +41,7 @@
 
 <script setup lang="ts">
 import type { FormInstance, FormRules } from "element-plus";
-import { fetchChangeUserPassword } from "@/api/system-manage.api";
+import { fetchChangeUserPassword } from "@/api/auth";
 
 interface Props {
   modelValue: boolean;

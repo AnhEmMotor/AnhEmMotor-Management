@@ -55,7 +55,7 @@
 <script setup lang="ts">
 import { ButtonMoreItem } from "@/components/core/forms/art-button-more/index.vue";
 import { useTable } from "@/common/composables/useTable";
-import { fetchGetRoleList, fetchDeleteRole } from "@/api/system-manage.api";
+import { fetchGetRoleList, fetchDeleteRole } from "@/api/auth";
 import ArtButtonMore from "@/components/core/forms/art-button-more/index.vue";
 import RoleSearch from "./modules/role-search.vue";
 import RoleEditDialog from "./modules/role-edit-dialog.vue";

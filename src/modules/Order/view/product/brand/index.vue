@@ -430,7 +430,7 @@ import {
   Help,
 } from "@element-plus/icons-vue";
 import { useBrandTable } from "@/modules/Order/logic/product/brand/hooks/useBrandTable";
-import { FileApi } from "@/api/file.api";
+import { FileApi } from "@/api/operations";
 import { ElMessage } from "element-plus";
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";

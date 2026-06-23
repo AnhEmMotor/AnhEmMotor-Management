@@ -680,8 +680,8 @@ import {
 } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useDebounceFn } from "@vueuse/core";
-import { InventoryReceiptApi } from "@/api/inventory-receipt.api";
-import { PurchaseRequestApi } from "@/api/purchase-request.api";
+import { InventoryReceiptApi } from "@/api/inventory";
+import { PurchaseRequestApi } from "@/api/inventory";
 import { Permissions } from "@/domain/constants/permissions";
 import type {
   InventoryReceipt,

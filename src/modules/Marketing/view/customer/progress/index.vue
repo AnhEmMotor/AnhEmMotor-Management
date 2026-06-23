@@ -312,7 +312,7 @@
 import { ref, computed, onMounted } from "vue";
 import { VueDraggable } from "vue-draggable-plus";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { PlateDossierApi, PlateDossier } from "@/api/plate-dossier.api";
+import { PlateDossierApi, PlateDossier } from "@/api/vehicle";
 
 defineOptions({ name: "PurchasingProgress" });
 

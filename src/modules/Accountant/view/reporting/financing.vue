@@ -111,7 +111,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import { statisticsApi } from "@/api/statistics.api";
+import { statisticsApi } from "@/api/operations";
 import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
 import ReportPageHeader from "./ReportPageHeader.vue";
 import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";

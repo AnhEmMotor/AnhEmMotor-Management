@@ -2258,7 +2258,7 @@ import {
   Edit,
 } from "@element-plus/icons-vue";
 import { useProductTable } from "@/modules/Order/logic/product/list/hooks/useProductTable";
-import { FileApi } from "@/api/file.api";
+import { FileApi } from "@/api/operations";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 defineOptions({ name: "ProductList" });

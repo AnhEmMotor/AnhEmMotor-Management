@@ -99,7 +99,7 @@
 import { Plus } from "@element-plus/icons-vue";
 import { ref, reactive, onMounted } from "vue";
 import { ElMessage } from "element-plus";
-import { EmployeeApi, type EmployeeResponse } from "@/api/employee.api";
+import { EmployeeApi, type EmployeeResponse } from "@/api/operations";
 
 defineOptions({ name: "HREmployee" });
 

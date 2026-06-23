@@ -499,7 +499,7 @@ import {
   useTable,
   CacheInvalidationStrategy,
 } from "@/common/composables/useTable";
-import { fetchGetUserList } from "@/api/system-manage.api";
+import { fetchGetUserList } from "@/api/auth";
 import { ACCOUNT_TABLE_DATA } from "@/mock/temp/formData";
 import { getColumnKey } from "@/common/composables/useTableColumns";
 

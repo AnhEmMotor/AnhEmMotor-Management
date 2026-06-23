@@ -481,7 +481,7 @@ import {
   FinanceContractApi,
   type FinanceContractDetailDto,
   type FinanceContractStatus,
-} from "@/api/finance-contract.api";
+} from "@/api/finance";
 import ReportPageHeader from "@/modules/Accountant/view/reporting/ReportPageHeader.vue";
 import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
 

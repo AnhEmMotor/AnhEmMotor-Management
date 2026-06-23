@@ -263,7 +263,7 @@ import {
 } from "@element-plus/icons-vue";
 
 import { ElMessage } from "element-plus";
-import { SalesContractApi } from "@/api/sales-contract.api";
+import { SalesContractApi } from "@/api/sales";
 
 const { t: $t } = useI18n();
 const router = useRouter();

@@ -684,9 +684,9 @@ import {
 } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useDebounceFn } from "@vueuse/core";
-import { PurchaseRequestApi } from "@/api/purchase-request.api";
-import { ProductApi } from "@/api/product.api";
-import { QuotationApi } from "@/api/quotation.api";
+import { PurchaseRequestApi } from "@/api/inventory";
+import { ProductApi } from "@/api/product";
+import { QuotationApi } from "@/api/sales";
 import type {
   PurchaseRequestListResponse,
   PurchaseRequestDetailResponse,

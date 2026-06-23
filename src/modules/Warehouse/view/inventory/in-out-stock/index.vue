@@ -341,8 +341,8 @@
 import { ref, computed, nextTick, onMounted } from "vue";
 import { Download, Memo } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
-import { InventoryReportApi } from "@/api/inventory-report.api";
-import { InventoryReceiptApi } from "@/api/inventory-receipt.api";
+import { InventoryReportApi } from "@/api/inventory";
+import { InventoryReceiptApi } from "@/api/inventory";
 
 defineOptions({ name: "InventoryInOutStock" });
 

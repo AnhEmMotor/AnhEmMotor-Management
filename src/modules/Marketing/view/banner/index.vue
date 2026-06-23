@@ -313,8 +313,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { BannerApi } from "@/api/banner.api";
-import { FileApi } from "@/api/file.api";
+import { BannerApi } from "@/api/marketing";
+import { FileApi } from "@/api/operations";
 
 defineOptions({ name: "MarketingBannerManagement" });
 

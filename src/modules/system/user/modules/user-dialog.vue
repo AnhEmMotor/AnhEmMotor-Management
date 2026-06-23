@@ -121,7 +121,7 @@ import {
   fetchCreateUser,
   fetchUpdateUser,
   fetchAssignUserRoles,
-} from "@/api/system-manage.api";
+} from "@/api/auth";
 import { normalizeBackendErrors } from "@/common/utils/form/error-helper";
 
 interface Props {

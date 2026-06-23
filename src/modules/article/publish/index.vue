@@ -342,8 +342,8 @@ import { ElMessage } from "element-plus";
 import { useDebounceFn } from "@vueuse/core";
 import { PageModeEnum } from "@/common/enums/formEnum";
 import { useCommon } from "@/common/composables/useCommon";
-import { NewsApi } from "@/api/news.api";
-import { ProductApi } from "@/api/product.api";
+import { NewsApi } from "@/api/marketing";
+import { ProductApi } from "@/api/product";
 import type { ProductVariantLiteForInput } from "@/domain/product/product.types";
 
 defineOptions({ name: "ArticlePublishWorkflow" });

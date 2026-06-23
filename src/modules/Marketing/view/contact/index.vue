@@ -987,7 +987,7 @@ import {
   SupportStatuses,
   FeedbackStatuses,
   CandidateStatuses,
-} from "@/api/contact.api";
+} from "@/api/customer";
 import type { Contact } from "@/types";
 
 defineOptions({ name: "ContactManagement" });

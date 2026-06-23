@@ -155,7 +155,7 @@
 import { ref, onMounted } from "vue";
 import { Refresh } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
-import { DebtApi } from "@/api/debt.api";
+import { DebtApi } from "@/api/supplier";
 
 defineOptions({ name: "InventoryDebt" });
 

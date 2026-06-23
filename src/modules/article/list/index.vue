@@ -146,7 +146,7 @@
 import { ref, computed, onMounted, onActivated } from "vue";
 import { useDateFormat } from "@vueuse/core";
 import { router } from "@/router";
-import { NewsApi } from "@/api/news.api";
+import { NewsApi } from "@/api/marketing";
 import { useCommon } from "@/common/composables/useCommon";
 import { ElMessage, ElMessageBox } from "element-plus";
 

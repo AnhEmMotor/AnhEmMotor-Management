@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { useTable } from "@/common/composables/useTable";
-import { fetchGetUserList } from "@/api/system-manage.api";
+import { fetchGetUserList } from "@/api/auth";
 
 defineOptions({ name: "UserMixedUsageExample" });
 

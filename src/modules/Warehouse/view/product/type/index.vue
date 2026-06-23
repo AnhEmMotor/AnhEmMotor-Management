@@ -217,7 +217,7 @@
 import { computed, ref, watch, nextTick } from "vue";
 import { Plus, Picture, Download } from "@element-plus/icons-vue";
 import { useCategoryTable } from "@/modules/Warehouse/logic/product/type/hooks/useCategoryTable";
-import { FileApi } from "@/api/file.api";
+import { FileApi } from "@/api/operations";
 import { ElMessage } from "element-plus";
 
 defineOptions({ name: "ProductType" });

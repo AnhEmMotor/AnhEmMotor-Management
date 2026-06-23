@@ -274,7 +274,7 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import {
   FinanceContractApi,
   type FinanceContractListParams,
-} from "@/api/finance-contract.api";
+} from "@/api/finance";
 
 const router = useRouter();
 const loading = ref(false);

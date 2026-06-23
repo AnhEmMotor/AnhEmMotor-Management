@@ -397,7 +397,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import { ElMessage, ElLoading } from "element-plus";
-import { BookingApi, Booking } from "@/api/booking.api";
+import { BookingApi, Booking } from "@/api/sales";
 
 defineOptions({ name: "BookingCalendar" });
 

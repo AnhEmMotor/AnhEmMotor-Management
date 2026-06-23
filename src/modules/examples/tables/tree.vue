@@ -70,7 +70,7 @@
 
 <script setup lang="ts">
 import { useTable } from "@/common/composables/useTable";
-import { fetchGetUserList } from "@/api/system-manage.api";
+import { fetchGetUserList } from "@/api/auth";
 import UserSearch from "@/modules/system/user/modules/user-search.vue";
 
 defineOptions({ name: "TreeTable" });

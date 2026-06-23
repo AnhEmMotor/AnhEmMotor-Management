@@ -82,7 +82,7 @@ import {
   fetchUpdateRole,
   fetchGetRolePermissions,
   fetchGetPermissionStructure,
-} from "@/api/system-manage.api";
+} from "@/api/auth";
 
 interface Props {
   modelValue: boolean;

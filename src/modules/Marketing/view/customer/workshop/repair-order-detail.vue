@@ -881,10 +881,10 @@
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
-import { RepairOrderApi, RepairOrder } from "@/api/repair-order.api";
-import { EmployeeApi, EmployeeResponse } from "@/api/employee.api";
-import { ServiceApi, ServiceResponse } from "@/api/service.api";
-import { ProductApi } from "@/api/product/product.api";
+import { RepairOrderApi, RepairOrder } from "@/api/sales";
+import { EmployeeApi, EmployeeResponse } from "@/api/operations";
+import { ServiceApi, ServiceResponse } from "@/api/service";
+import { ProductApi } from "@/api/product";
 
 defineOptions({ name: "CustomerWorkshopDetail" });
 

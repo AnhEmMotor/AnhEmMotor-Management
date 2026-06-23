@@ -1,10 +1,10 @@
 import { ref, watch, computed, reactive } from "vue";
 import { useDebounceFn } from "@vueuse/core";
-import { TechnologyApi } from "@/api/product/technology.api";
-import { ProductApi } from "@/api/product.api";
-import { CategoryApi } from "@/api/category.api";
-import { BrandApi } from "@/api/brand.api";
-import { SupplierApi } from "@/api/supplier.api";
+import { TechnologyApi } from "@/api/product";
+import { ProductApi } from "@/api/product";
+import { CategoryApi } from "@/api/product";
+import { BrandApi } from "@/api/product";
+import { SupplierApi } from "@/api/supplier";
 import { useTable } from "@/common/composables/useTable";
 import type { Product } from "@/domain/product/product.types";
 import type { ProductCategory } from "@/domain/product/category.types";

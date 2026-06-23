@@ -141,7 +141,7 @@
 <script setup lang="ts">
 import { Plus, Download, Phone, Message } from "@element-plus/icons-vue";
 import { ref, reactive, onMounted } from "vue";
-import { SupplierApi } from "@/api/supplier.api";
+import { SupplierApi } from "@/api/supplier";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type {
   Supplier,

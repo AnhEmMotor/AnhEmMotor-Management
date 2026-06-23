@@ -620,12 +620,12 @@ import { computed, ref } from "vue";
 import { Refresh, Plus, Delete as TrashBin } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 
-import { RepairOrderApi, type RepairOrder } from "@/api/repair-order.api";
-import { ProductApi } from "@/api/product/product.api";
+import { RepairOrderApi, type RepairOrder } from "@/api/sales";
+import { ProductApi } from "@/api/product";
 import {
   ServiceCategoryApi,
   type ServiceCategoryResponse,
-} from "@/api/service-category.api";
+} from "@/api/product";
 
 defineOptions({ name: "ServiceWorkshopRepairOrders" });
 

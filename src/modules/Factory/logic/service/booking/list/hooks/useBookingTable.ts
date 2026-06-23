@@ -1,6 +1,6 @@
 import { ref, reactive, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { BookingApi, type Booking } from "@/api/booking.api";
+import { BookingApi, type Booking } from "@/api/sales";
 import type { ColumnOption } from "@/types";
 
 export function useBookingTable() {

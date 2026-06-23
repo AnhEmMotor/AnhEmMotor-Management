@@ -54,7 +54,7 @@ import {
   fetchDeleteUser,
   fetchChangeUserStatus,
   fetchGetRoleList,
-} from "@/api/system-manage.api";
+} from "@/api/auth";
 import { useQuery } from "@tanstack/vue-query";
 import ArtButtonMore from "@/components/core/forms/art-button-more/index.vue";
 import UserSearch from "./modules/user-search.vue";

@@ -16,7 +16,7 @@ import type {
   SupplierContractStatus,
 } from "@/domain/supplier/contract.types";
 
-import { SupplierContractApi } from "@/api/supplier-contract.api";
+import { SupplierContractApi } from "@/api/supplier";
 
 class RealGetSupplierContractsUseCase implements GetSupplierContractsUseCase {
   async execute(params: SupplierContractListParams) {

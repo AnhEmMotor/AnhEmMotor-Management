@@ -1,5 +1,5 @@
 import { useTable } from "@/common/composables/useTable";
-import { CategoryApi } from "@/api/product/category.api";
+import { CategoryApi } from "@/api/product";
 import { ref, computed, onMounted, watch } from "vue";
 import type { ProductCategory } from "@/domain/product/category.types";
 import { ElMessage, ElMessageBox } from "element-plus";

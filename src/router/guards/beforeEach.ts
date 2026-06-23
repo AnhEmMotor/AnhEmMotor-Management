@@ -13,7 +13,7 @@ import { staticRoutes } from "../routes/staticRoutes";
 import { loadingService } from "@/common/utils/ui";
 import { useCommon } from "@/common/composables/useCommon";
 import { useWorktabStore } from "@/application/store/worktab";
-import { fetchGetUserInfo } from "@/api/auth.api";
+import { fetchGetUserInfo } from "@/api/auth";
 import { ApiStatus } from "@/common/utils/http/status";
 import { isHttpError } from "@/common/utils/http/error";
 import {

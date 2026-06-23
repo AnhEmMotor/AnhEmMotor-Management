@@ -381,7 +381,7 @@ import {
   createContractTemplate,
   updateContractTemplate,
   validateContractTemplateSyntax,
-} from "@/api/contract-template.api";
+} from "@/api/contracts";
 import { useCommon } from "@/common/composables/useCommon";
 import "@/modules/Accountant/logic/reporting.scss";
 

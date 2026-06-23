@@ -213,7 +213,7 @@
 import { ref, computed, onMounted } from "vue";
 import { Download } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
-import { InventoryReportApi } from "@/api/inventory-report.api";
+import { InventoryReportApi } from "@/api/inventory";
 
 defineOptions({ name: "InventoryLedger" });
 

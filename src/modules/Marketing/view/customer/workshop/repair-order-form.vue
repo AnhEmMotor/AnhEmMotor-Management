@@ -309,8 +309,8 @@
 import { ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
-import { VehicleApi, Vehicle } from "@/api/vehicle.api";
-import { RepairOrderApi } from "@/api/repair-order.api";
+import { VehicleApi, Vehicle } from "@/api/vehicle";
+import { RepairOrderApi } from "@/api/sales";
 
 defineOptions({ name: "CustomerWorkshopCreate" });
 
