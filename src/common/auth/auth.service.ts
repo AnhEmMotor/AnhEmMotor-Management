@@ -1,9 +1,14 @@
 import * as AuthApis from "@/api/auth";
 import { useUserStore } from "@/application/store/user";
 
-export const AuthService = {
-  ...AuthApis,
-  async login(credentials: Api.Auth.LoginParams): Promise<any> {
+interface AuthState {
+  token: string | null;
+  userInfo: Api.Auth.UserInfo | null;
+  isAuthenticated: boolean;
+}
+
+const AuthService = {
+  async login(credentials: Api.Auth.LoginParams): Promise<AuthState> {
     try {
       const response = await AuthApis.fetchLogin(credentials);
       const token = response.accessToken;
@@ -28,6 +33,7 @@ export const AuthService = {
       throw error;
     }
   },
+
   async getUserInfo(): Promise<Api.Auth.UserInfo | null> {
     try {
       const response = await AuthApis.fetchGetUserInfo();
@@ -37,21 +43,28 @@ export const AuthService = {
       return null;
     }
   },
+
   getToken(): string | null {
     return localStorage.getItem("auth_token");
   },
+
   setToken(token: string): void {
     localStorage.setItem("auth_token", token);
   },
+
   clearToken(): void {
     localStorage.removeItem("auth_token");
   },
+
   isAuthenticated(): boolean {
     return !!this.getToken();
   },
+
   async logout(): Promise<void> {
     this.clearToken();
     const userStore = useUserStore();
     userStore.logOut();
   },
 };
+
+export const authService = AuthService;

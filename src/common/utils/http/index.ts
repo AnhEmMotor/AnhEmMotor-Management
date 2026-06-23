@@ -51,8 +51,8 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (request: InternalAxiosRequestConfig) => {
     const userStore = useUserStore();
-    if (userStore.accessToken)
-      request.headers.set("Authorization", `Bearer ${userStore.accessToken}`);
+    if (userStore.accessToken.value)
+      request.headers.set("Authorization", `Bearer ${userStore.accessToken.value}`);
 
     if (
       request.data &&
