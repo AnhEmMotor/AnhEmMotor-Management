@@ -13,7 +13,7 @@ import { staticRoutes } from "../routes/staticRoutes";
 import { loadingService } from "@/utils/ui";
 import { useCommon } from "@/hooks/core/useCommon";
 import { useWorktabStore } from "@/application/store/worktab";
-import { fetchGetUserInfo } from "@/infrastructure/api/auth";
+import { fetchGetUserInfo } from "@/api/auth.api";
 import { ApiStatus } from "@/utils/http/status";
 import { isHttpError } from "@/utils/http/error";
 import {

@@ -15,7 +15,7 @@
     "skipLibCheck": true,
     "paths": {
       "@/*": ["./src/*"],
-      "@views/*": ["./src/views/*"],
+      "@views/*": ["./src/modules/*"],
       "@imgs/*": ["./src/assets/images/*"],
       "@icons/*": ["./src/assets/icons/*"],
       "@utils/*": ["./src/utils/*"],

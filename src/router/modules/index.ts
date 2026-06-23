@@ -24,7 +24,7 @@ import { salesRoutes } from "./sales";
 
 const coreRoutes: AppRouteRecord[] = [
   dashboardRoutes,
-  productRoutes,
+  ...productRoutes,
   serviceRoutes,
   inventoryRoutes,
   salesRoutes,

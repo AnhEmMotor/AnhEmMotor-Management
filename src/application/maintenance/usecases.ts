@@ -8,7 +8,7 @@ import {
 import {
   RepairOrderApi,
   type RepairOrderDetail,
-} from "@/infrastructure/api/repair-order";
+} from "@/api/repair-order.api";
 
 export type MaintenanceWorkflowPayload = {
   status: MaintenanceWorkflowStatus;

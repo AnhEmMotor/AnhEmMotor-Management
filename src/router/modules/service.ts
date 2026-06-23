@@ -1,9 +1,9 @@
 import { AppRouteRecord } from "@/types/router";
 
 export const serviceRoutes: AppRouteRecord = {
-  path: "/service",
+  path: "/factory/service",
   name: "Service",
-  component: "/index/index",
+  component: "/Factory/view/service/index/index",
   meta: {
     title: "menus.service.title",
     icon: "ri:customer-service-2-line",
