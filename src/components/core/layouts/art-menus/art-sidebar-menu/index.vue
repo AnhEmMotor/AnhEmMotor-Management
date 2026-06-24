@@ -147,8 +147,9 @@ import { useMenuStore } from "@/application/store/menu";
 import { isIframe } from "@/common/utils/navigation";
 import { handleMenuJump } from "@/common/utils/navigation";
 import SidebarSubmenu from "./widget/SidebarSubmenu.vue";
-import { useCommon } from "@/common/composables/useCommon";
 import { useWindowSize, useTimeoutFn } from "@vueuse/core";
+import { adminMenu } from "@/modules/Admin/Menu";
+import { factoryMenu } from "@/modules/Factory/Menu";
 
 defineOptions({ name: "ArtSidebarMenu" });
 
@@ -199,12 +200,36 @@ const menuList = computed(() => {
   const menuStore = useMenuStore();
   const allMenus = menuStore.menuList;
 
+  // Lọc menu theo phân hệ hiện tại (Admin hoặc Factory)
+  const isPathInMenu = (menus: any[], targetPath: string): boolean => {
+    return menus.some(m => {
+      if (targetPath.startsWith(m.path)) return true;
+      if (m.children) return isPathInMenu(m.children, targetPath);
+      return false;
+    });
+  };
+
+  const isFactory = isPathInMenu(factoryMenu, route.path);
+  const isAdmin = isPathInMenu(adminMenu, route.path);
+
+  let allowedPaths: string[] = [];
+  if (isFactory) {
+    allowedPaths = factoryMenu.map(m => m.path);
+  } else if (isAdmin) {
+    allowedPaths = adminMenu.map(m => m.path);
+  } else {
+    // Mặc định fallback về admin nếu không match
+    allowedPaths = adminMenu.map(m => m.path);
+  }
+
+  const workspaceMenus = allMenus.filter(m => allowedPaths.includes(m.path));
+
   if (!isTopLeftMenu.value && !isDualMenu.value) {
-    return allMenus;
+    return workspaceMenus;
   }
 
   if (isIframe(route.path)) {
-    return findIframeMenuList(route.path, allMenus);
+    return findIframeMenuList(route.path, workspaceMenus);
   }
 
   if (route.meta.isFirstLevel) {
@@ -212,7 +237,7 @@ const menuList = computed(() => {
   }
 
   const currentTopPath = `/${route.path.split("/")[1]}`;
-  const currentMenu = allMenus.find((menu) => menu.path === currentTopPath);
+  const currentMenu = workspaceMenus.find((menu) => menu.path === currentTopPath);
   return currentMenu?.children ?? [];
 });
 
@@ -254,10 +279,10 @@ const findIframeMenuList = (currentPath: string, menuList: any[]) => {
   return [];
 };
 
-const { homePath } = useCommon();
+// Removed unused homePath
 
 const navigateToHome = (): void => {
-  router.push(homePath.value);
+  router.push("/workspace");
 };
 
 const toggleMenuVisibility = (): void => {

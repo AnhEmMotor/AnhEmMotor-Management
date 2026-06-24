@@ -15,8 +15,8 @@ const AuthService = {
       if (!token) {
         throw new Error("No access token received");
       }
-      // Store token in localStorage for persistence
-      localStorage.setItem("auth_token", token);
+      // Store token in localStorage for persistence under the same key Pinia uses
+      localStorage.setItem("user", JSON.stringify({ accessToken: token }));
       // Sync token to userStore for API interceptor
       const userStore = useUserStore();
       userStore.setToken(token);
@@ -29,7 +29,7 @@ const AuthService = {
       };
     } catch (error) {
       console.error("[AuthService] Login failed:", error);
-      localStorage.removeItem("auth_token");
+      localStorage.removeItem("user");
       throw error;
     }
   },
@@ -45,15 +45,33 @@ const AuthService = {
   },
 
   getToken(): string | null {
-    return localStorage.getItem("auth_token");
+    // Try to get token from store first, then from localStorage
+    const userStore = useUserStore();
+    if (userStore.accessToken) {
+      return userStore.accessToken;
+    }
+
+    // Fallback to localStorage if store not hydrated yet
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      try {
+        const data = JSON.parse(userData);
+        return data.accessToken;
+      } catch {
+        return null;
+      }
+    }
+    return null;
   },
 
   setToken(token: string): void {
-    localStorage.setItem("auth_token", token);
+    localStorage.setItem("user", JSON.stringify({ accessToken: token }));
+    const userStore = useUserStore();
+    userStore.setToken(token);
   },
 
   clearToken(): void {
-    localStorage.removeItem("auth_token");
+    localStorage.removeItem("user");
   },
 
   isAuthenticated(): boolean {

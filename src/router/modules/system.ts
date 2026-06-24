@@ -41,7 +41,7 @@ export const systemRoutes: AppRouteRecord = {
     {
       path: "nested",
       name: "Nested",
-      component: "",
+      component: "/index/index",
       meta: {
         title: "menus.system.nested",
         icon: "ri:menu-unfold-3-line",
@@ -61,7 +61,7 @@ export const systemRoutes: AppRouteRecord = {
         {
           path: "menu2",
           name: "NestedMenu2",
-          component: "",
+          component: "/index/index",
           meta: {
             title: "menus.system.menu2",
             icon: "ri:align-justify",
@@ -83,7 +83,7 @@ export const systemRoutes: AppRouteRecord = {
         {
           path: "menu3",
           name: "NestedMenu3",
-          component: "",
+          component: "/index/index",
           meta: {
             title: "menus.system.menu3",
             icon: "ri:align-justify",
@@ -102,7 +102,7 @@ export const systemRoutes: AppRouteRecord = {
             {
               path: "menu3-2",
               name: "NestedMenu3-2",
-              component: "",
+              component: "/index/index",
               meta: {
                 title: "menus.system.menu32",
                 keepAlive: true,

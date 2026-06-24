@@ -1,4 +1,4 @@
-﻿import type { Router, RouteLocationNormalized } from "vue-router";
+import type { Router, RouteLocationNormalized } from "vue-router";
 import { nextTick } from "vue";
 import NProgress from "nprogress";
 import type { NavigationGuardReturn } from "vue-router";
@@ -160,7 +160,7 @@ function handleLoginStatus(
   if (
     to.path === RoutesAlias.Login ||
     to.path === "/auth/login" ||
-    isStaticRoute(to.path)
+    (isStaticRoute(to.path) && to.path !== "/" && to.path !== "/workspace" && to.path !== "/auth/portal")
   ) {
     return null;
   }

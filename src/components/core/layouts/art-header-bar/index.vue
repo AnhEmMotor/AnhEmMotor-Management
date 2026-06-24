@@ -262,11 +262,10 @@ const visibleMenu = (): void => {
   settingStore.setMenuOpen(!menuOpen.value);
 };
 
-const { homePath } = useCommon();
 const { refresh } = useCommon();
 
 const toHome = (): void => {
-  router.push(homePath.value);
+  router.push("/workspace");
 };
 
 const reload = (time: number = 0): void => {

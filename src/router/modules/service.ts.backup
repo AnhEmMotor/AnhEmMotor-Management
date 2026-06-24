@@ -12,7 +12,7 @@ export const serviceRoutes: AppRouteRecord = {
     {
       path: "workshop",
       name: "ServiceWorkshop",
-      component: "/index/index",
+      component: "",
       meta: {
         title: "menus.service.workshop.title",
         icon: "ri:tools-line",
@@ -28,12 +28,12 @@ export const serviceRoutes: AppRouteRecord = {
           },
         },
         {
-          path: "repair-orders",
-          name: "ServiceWorkshopRepairOrders",
+          path: "repair",
+          name: "ServiceWorkshopRepair",
           component: "/Factory/view/service/workshop/repair-orders/index",
           meta: {
-            title: "menus.service.workshop.repairOrders",
-            icon: "ri:tools-fill",
+            title: "Sửa chữa",
+            icon: "ri:wrench-line",
           },
         },
         {
@@ -71,7 +71,7 @@ export const serviceRoutes: AppRouteRecord = {
           name: "ServiceWorkshopHistoryByVin",
           component: "/Factory/view/service/workshop/history/index",
           meta: {
-            title: "menus.service.workshop.historyByVin",
+            title: "Tra cứu hồ sơ xe",
             icon: "ri:search-eye-line",
           },
         },
@@ -84,12 +84,21 @@ export const serviceRoutes: AppRouteRecord = {
             icon: "ri:star-smile-line",
           },
         },
+      {
+        path: "statistics",
+        name: "ServiceWorkshopStatistics",
+        component: "/Factory/view/service/workshop/statistics/index",
+        meta: {
+          title: "Thống kê xưởng",
+          icon: "ri:bar-chart-line",
+        },
+      },
       ],
     },
     {
       path: "administrative",
       name: "ServiceAdministrative",
-      component: "/index/index",
+      component: "",
       meta: {
         title: "menus.service.administrative.title",
         icon: "ri:file-list-3-line",
@@ -109,7 +118,7 @@ export const serviceRoutes: AppRouteRecord = {
     {
       path: "booking",
       name: "ServiceBooking",
-      component: "/index/index",
+      component: "",
       meta: {
         title: "menus.service.booking.title",
         icon: "ri:calendar-event-line",
@@ -138,12 +147,25 @@ export const serviceRoutes: AppRouteRecord = {
     {
       path: "warranty-and-complaints",
       name: "ServiceWarrantyAndComplaints",
-      component: "/Factory/view/service/warranty-and-complaints/complaints/index",
+      component: "",
       meta: {
         title: "menus.service.warrantyAndComplaints.title",
         icon: "ri:shield-check-line",
         isHide: true,
       },
+      children: [
+        {
+          path: "complaints",
+          name: "ServiceComplaints",
+          component:
+            "/Factory/view/service/warranty-and-complaints/complaints/index",
+          meta: {
+            title: "menus.service.warrantyAndComplaints.complaints",
+            icon: "ri:message-3-line",
+            isHide: true,
+          },
+        },
+      ],
     },
   ],
 };

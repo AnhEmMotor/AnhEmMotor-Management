@@ -120,7 +120,11 @@ const { homePath } = useCommon();
 
 const handleWorkspaceClick = (workspace: any) => {
   if (workspace.hasAccess) {
-    router.push(homePath.value || "/dashboard");
+    if (workspace.path) {
+      router.push(workspace.path);
+    } else {
+      router.push(homePath.value || "/dashboard");
+    }
   }
 };
 
@@ -133,6 +137,7 @@ const workspaces = ref([
     shadowColor: "rgba(225, 29, 72, 0.25)",
     hasAccess: true,
     badge: { isDot: true, type: "danger" },
+    path: "/admin/dashboard/console",
   },
   {
     title: "Marketing & SEO",
@@ -158,6 +163,7 @@ const workspaces = ref([
     color: "#2563eb",
     shadowColor: "rgba(37, 99, 235, 0.15)",
     hasAccess: true,
+    path: "/factory/workshop/dashboard",
   },
   {
     title: "Kế Toán, Lương & Thuế",

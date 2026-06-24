@@ -75,7 +75,7 @@ export const contentRoutes: AppRouteRecord = {
     {
       path: "banner",
       name: "MarketingBanner",
-      component: "/marketing/banner",
+      component: "/Marketing/view/banner",
       meta: {
         title: "Banner",
         icon: "ri:advertisement-line",

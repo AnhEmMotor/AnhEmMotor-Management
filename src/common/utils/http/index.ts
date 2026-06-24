@@ -51,8 +51,28 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (request: InternalAxiosRequestConfig) => {
     const userStore = useUserStore();
-    if (userStore.accessToken.value)
-      request.headers.set("Authorization", `Bearer ${userStore.accessToken.value}`);
+    // Get token from store first (reactive), fallback to localStorage for initial requests
+    let token = userStore.accessToken;
+    if (!token) {
+      // Fallback to localStorage for initial load when store hydration hasn't completed yet
+      // Check both old and new keys for backwards compatibility
+      token = localStorage.getItem("auth_token") ||
+              (() => {
+                const userData = localStorage.getItem("user");
+                if (userData) {
+                  try {
+                    return JSON.parse(userData).accessToken;
+                  } catch {
+                    return null;
+                  }
+                }
+                return null;
+              })();
+    }
+
+    if (token) {
+      request.headers.set("Authorization", `Bearer ${token}`);
+    }
 
     if (
       request.data &&
@@ -99,19 +119,24 @@ axiosInstance.interceptors.response.use(
     const { response } = error;
     if (response) {
       const { status, data } = response;
-      if (status === ApiStatus.unauthorized)
-        handleUnauthorizedError(data?.errors?.[0]?.message);
-
-      let backendMsg = data?.Message || data?.msg || data?.message;
-      if (!backendMsg && data?.errors) {
-        if (Array.isArray(data.errors)) {
-          backendMsg = data.errors
-            .map((e: any) => e.message || e.Message || JSON.stringify(e))
-            .join(", ");
-        } else if (typeof data.errors === "object") {
-          backendMsg = Object.values(data.errors).flat().join(", ");
-        }
+      if (status === ApiStatus.unauthorized) {
+        // Extract backend error message more carefully
+        let backendMsg = data?.errors?.[0]?.message ||
+                        data?.Message ||
+                        data?.msg ||
+                        data?.message ||
+                        "Truy cập không được phép, vui lòng đăng nhập lại";
+        handleUnauthorizedError(backendMsg);
       }
+        if (!backendMsg && data?.errors) {
+          if (Array.isArray(data.errors)) {
+            backendMsg = data.errors
+              .map((e: any) => e.message || e.Message || JSON.stringify(e))
+              .join(", ");
+          } else if (typeof data.errors === "object") {
+            backendMsg = Object.values(data.errors).flat().join(", ");
+          }
+        }
 
       if (backendMsg) {
         return Promise.reject(new HttpError(backendMsg, status, { data }));

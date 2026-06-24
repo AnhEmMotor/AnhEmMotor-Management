@@ -4,7 +4,7 @@ export const staticRoutes: AppRouteRecordRaw[] = [
   {
     path: "/",
     name: "RootRedirect",
-    redirect: "/outside",
+    redirect: "/workspace", // Redirect to workspace by default
   },
   {
     path: "/auth/login",

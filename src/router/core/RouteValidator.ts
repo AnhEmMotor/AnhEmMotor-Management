@@ -87,6 +87,7 @@ export class RouteValidator {
         Array.isArray(route.children) && route.children.length > 0;
       const routePath = route.path || "[ChưaĐịnh nghĩađường]";
       const isIframe = route.meta?.isIframe;
+      const isHide = route.meta?.isHide;
 
       if (route.component) {
         if (route.children?.length) {
@@ -96,14 +97,14 @@ export class RouteValidator {
         return;
       }
 
-      if (parentPath === "" && !hasExternalLink && !isIframe) {
+      if (parentPath === "" && !hasExternalLink && !isIframe && !isHide) {
         errors.push(
           `mộtcấpMenu(${routePath}) thiếuthiểu component，tấtphảihướng ${RoutesAlias.Layout}`,
         );
         return;
       }
 
-      if (!hasExternalLink && !isIframe && !hasChildren) {
+      if (!hasExternalLink && !isIframe && !hasChildren && !isHide) {
         errors.push(`Routing(${routePath}) thiếuthiểu component CauHinh`);
       }
 

@@ -12,7 +12,7 @@ export const examplesRoutes: AppRouteRecord = {
     {
       path: "permission",
       name: "Permission",
-      component: "",
+      component: "/index/index",
       meta: {
         title: "menus.examples.permission.title",
         icon: "ri:fingerprint-line",
