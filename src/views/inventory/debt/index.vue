@@ -161,32 +161,7 @@ defineOptions({ name: "InventoryDebt" });
 
 // const activeTab = ref("suppliers");
 
-const supplierDebts = [
-  {
-    name: "Honda Việt Nam",
-    total: 5000000000,
-    paid: 3500000000,
-    balance: 1500000000,
-    deadline: "20/05/2026",
-    status: "Pending",
-  },
-  {
-    name: "Yamaha Motor",
-    total: 1200000000,
-    paid: 1200000000,
-    balance: 0,
-    deadline: "-",
-    status: "Cleared",
-  },
-  {
-    name: "Mạnh Quang Phụ Tùng",
-    total: 150000000,
-    paid: 50000000,
-    balance: 100000000,
-    deadline: "10/05/2026",
-    status: "Overdue",
-  },
-];
+const supplierDebts = ref<any[]>([]);
 
 const supplierColumns = [
   { label: "Nhà cung cấp", prop: "name", minWidth: 200 },
@@ -195,26 +170,52 @@ const supplierColumns = [
     prop: "phone",
     width: 150,
     align: "right",
-    formatter: (row: any) => row.total?.toLocaleString(),
   },
   {
     label: "Còn nợ",
-    prop: "balance",
+    prop: "totalDebt",
     width: 180,
     useSlot: true,
     align: "right",
   },
-  { label: "Hạn thanh toán", prop: "deadline", width: 140, align: "center" },
   {
-    label: "Trạng thái",
-    prop: "status",
-    width: 130,
+    label: "Thao tác",
+    prop: "operation",
+    width: 240,
     useSlot: true,
     align: "center",
   },
 ];
 
-const fetchSupplierDebts = () => {};
+const fetchSupplierDebts = async () => {
+  loading.value = true;
+  try {
+    const res = await DebtApi.getSuppliersWithDebt({
+      pageIndex: currentPage.value,
+      pageSize: pageSize.value,
+    });
+    if (res && res.items) {
+      supplierDebts.value = res.items;
+      total.value = res.totalCount || 0;
+    } else if (Array.isArray(res)) {
+      supplierDebts.value = res;
+      total.value = res.length;
+    } else {
+      supplierDebts.value = [];
+      total.value = 0;
+    }
+
+    totalSuppliersDebt.value = supplierDebts.value.reduce(
+      (acc, curr) => acc + (curr.totalDebt || 0),
+      0,
+    );
+  } catch (err) {
+    console.error(err);
+    ElMessage.error("Không thể tải danh sách công nợ");
+  } finally {
+    loading.value = false;
+  }
+};
 
 const paymentFormVisible = ref(false);
 const paying = ref(false);
@@ -271,8 +272,15 @@ const loading = ref(false);
 const total = ref(0);
 const currentPage = ref(1);
 const pageSize = ref(10);
-const handleCurrentChange = (_val: number) => {};
-const handleSizeChange = (_val: number) => {};
+const handleCurrentChange = (val: number) => {
+  currentPage.value = val;
+  fetchSupplierDebts();
+};
+const handleSizeChange = (val: number) => {
+  pageSize.value = val;
+  currentPage.value = 1;
+  fetchSupplierDebts();
+};
 const totalSuppliersDebt = ref(0);
 
 onMounted(() => {

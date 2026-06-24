@@ -28,17 +28,98 @@
       <ArtTableHeader
         v-model:columns="columnChecks"
         :loading="loading"
+        layout="search,refresh,size,fullscreen,columns,settings,guide"
         @refresh="refreshData"
+        @guide="startTour"
       >
         <template #left>
-          <ElButton
-            type="primary"
-            v-ripple
-            @click="handleAdd"
-            v-auth="Permissions.InventoryReceiptsCreate"
-          >
-            <ElIcon class="mr-1"><Plus /></ElIcon> Tạo phiếu nhập
-          </ElButton>
+          <div class="flex items-center gap-3">
+            <ElButton
+              type="primary"
+              class="btn-add"
+              v-ripple
+              @click="handleAdd"
+              style="margin-left: 0"
+            >
+              <ElIcon class="mr-1"><Plus /></ElIcon> Tạo phiếu nhập
+            </ElButton>
+
+            <ElButton
+              :loading="exporting"
+              :disabled="importing"
+              class="btn-import"
+              v-ripple
+              @click="handleExport"
+              style="margin-left: 0"
+            >
+              <ElIcon class="mr-1"><Download /></ElIcon> Xuất Excel
+            </ElButton>
+
+            <ElDropdown
+              trigger="click"
+              class="btn-import"
+              style="margin-left: 0"
+              :disabled="importing"
+            >
+              <ElButton v-ripple :loading="importing" :disabled="importing">
+                <ElIcon class="mr-1"><Upload /></ElIcon>
+                {{ importing ? "Đang nhập..." : "Nhập Excel" }}
+                <ElIcon class="el-icon--right"><ArrowDown /></ElIcon>
+              </ElButton>
+              <template #dropdown>
+                <ElDropdownMenu>
+                  <ElDropdownItem @click="openPrSelectorForTemplate">
+                    <div class="flex items-center gap-2">
+                      <ElIcon><Download /></ElIcon> Tải mẫu Excel
+                    </div>
+                  </ElDropdownItem>
+                  <ElDropdownItem>
+                    <ElUpload
+                      action="#"
+                      :show-file-list="false"
+                      :auto-upload="false"
+                      :on-change="(file) => file.raw && handleImport(file.raw)"
+                      accept=".xlsx, .xls"
+                    >
+                      <div class="flex items-center gap-2 w-full">
+                        <ElIcon><Upload /></ElIcon> Nhập dữ liệu vào
+                      </div>
+                    </ElUpload>
+                  </ElDropdownItem>
+                </ElDropdownMenu>
+              </template>
+            </ElDropdown>
+
+            <ElButton
+              v-if="
+                selectedRows.length > 0 &&
+                selectedRows.every(
+                  (row) => row.statusId?.toLowerCase() === 'draft',
+                )
+              "
+              type="danger"
+              class="btn-bulk"
+              v-ripple
+              :disabled="importing"
+              @click="handleDeleteMany"
+              style="margin-left: 0"
+            >
+              <ElIcon class="mr-1"><Delete /></ElIcon> Xóa ({{
+                selectedRows.length
+              }})
+            </ElButton>
+
+            <ElButton
+              type="info"
+              class="btn-restore"
+              v-ripple
+              :disabled="importing"
+              @click="openRestoreDialog"
+              style="margin-left: 0"
+            >
+              <ElIcon class="mr-1"><RefreshLeft /></ElIcon> Khôi phục
+            </ElButton>
+          </div>
         </template>
       </ArtTableHeader>
 
@@ -47,6 +128,7 @@
         :data="data"
         :columns="columns"
         :pagination="pagination"
+        @selection-change="handleSelectionChange"
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
@@ -658,6 +740,57 @@
         </div>
       </div>
     </ElDialog>
+
+    <ElDialog
+      v-model="restoreDialogVisible"
+      title="Khôi phục phiếu nhập đã xóa"
+      width="900px"
+      append-to-body
+      destroy-on-close
+      class="rounded-xl overflow-hidden"
+    >
+      <div class="mb-4 flex justify-between items-center">
+        <span class="text-sm text-gray-500"
+          >Chọn các phiếu nhập để khôi phục</span
+        >
+        <ElButton
+          type="primary"
+          :disabled="selectedDeletedReceipts.length === 0"
+          @click="handleRestoreMany"
+        >
+          Khôi phục ({{ selectedDeletedReceipts.length }})
+        </ElButton>
+      </div>
+      <ElTable
+        :data="deletedReceiptsData"
+        v-loading="deletedReceiptsLoading"
+        border
+        size="small"
+        @selection-change="handleDeletedSelectionChange"
+      >
+        <ElTableColumn type="selection" width="50" align="center" />
+        <ElTableColumn prop="id" label="Mã PN" width="80" align="center" />
+        <ElTableColumn prop="notes" label="Ghi chú" min-width="200" />
+        <ElTableColumn
+          prop="deleted_at"
+          label="Thời gian xóa"
+          width="160"
+          align="center"
+        >
+          <template #default="{ row }">
+            {{ formatDateTime(row.deleted_at) }}
+          </template>
+        </ElTableColumn>
+      </ElTable>
+    </ElDialog>
+
+    <ImportResultDialog
+      v-model="importResultDialogVisible"
+      :result-data="importResultData"
+      title="Kết quả nhập Excel phiếu nhập kho"
+      download-template-text="Tải file mẫu phiếu nhập trắng"
+      @download-template="openPrSelectorForTemplate"
+    />
   </div>
 </template>
 
@@ -677,7 +810,12 @@ import {
   Promotion,
   InfoFilled,
   Clock,
+  RefreshLeft,
+  Upload,
+  Download,
 } from "@element-plus/icons-vue";
+import { driver } from "driver.js";
+import "driver.js/dist/driver.css";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useDebounceFn } from "@vueuse/core";
 import { InventoryReceiptApi } from "@/infrastructure/api/inventory-receipt.api";
@@ -688,8 +826,104 @@ import type {
   InputInfo,
 } from "@/domain/inventory/receipt.types";
 import AuditTrailModal from "@/components/business/audit-trail-modal/index.vue";
+import ImportResultDialog from "@/components/business/import-result-dialog/index.vue";
+import { useInventoryReceiptTable } from "./hooks/useInventoryReceiptTable";
 
 defineOptions({ name: "InventoryReceipt" });
+
+const {
+  data,
+  loading: loading,
+  pagination,
+  columns,
+  columnChecks,
+  searchForm,
+  searchItems,
+  stats,
+  statuses,
+  refreshData,
+  handleSearch,
+  handleReset,
+  handleSizeChange,
+  handleCurrentChange,
+  selectedRows,
+  handleSelectionChange,
+  handleDeleteMany,
+
+  restoreDialogVisible,
+  deletedReceiptsData,
+  deletedReceiptsLoading,
+  selectedDeletedReceipts,
+  handleDeletedSelectionChange,
+  openRestoreDialog,
+  handleRestoreMany,
+  importing,
+  importResultData,
+  importResultDialogVisible,
+  handleImport,
+  handleDownloadTemplate,
+  exporting,
+  handleExport,
+} = useInventoryReceiptTable();
+
+const startTour = () => {
+  const driverObj = driver({
+    showProgress: true,
+    animate: true,
+    nextBtnText: "Tiếp theo",
+    prevBtnText: "Quay lại",
+    doneBtnText: "Hoàn thành",
+    steps: [
+      {
+        element: ".art-table-card",
+        popover: {
+          title: "Bảng dữ liệu",
+          description: "Hiển thị danh sách phiếu nhập kho.",
+          side: "top",
+          align: "start",
+        },
+      },
+      {
+        element: ".btn-add",
+        popover: {
+          title: "Thêm phiếu nhập",
+          description: "Click vào đây để tạo mới một phiếu nhập kho.",
+          side: "bottom",
+          align: "start",
+        },
+      },
+      {
+        element: ".btn-import",
+        popover: {
+          title: "Nhập/Xuất Excel",
+          description: "Bạn có thể nhập hoặc xuất danh sách bằng Excel.",
+          side: "bottom",
+          align: "start",
+        },
+      },
+      {
+        element: ".btn-bulk",
+        popover: {
+          title: "Thao tác hàng loạt",
+          description:
+            "Chọn các hàng trong bảng để xóa hoặc nhân bản hàng loạt.",
+          side: "bottom",
+          align: "start",
+        },
+      },
+      {
+        element: ".btn-restore",
+        popover: {
+          title: "Khôi phục dữ liệu",
+          description: "Xem và khôi phục các phiếu nhập kho đã bị xóa.",
+          side: "bottom",
+          align: "start",
+        },
+      },
+    ],
+  });
+  driverObj.drive();
+};
 
 const auditTrailVisible = ref(false);
 
@@ -715,7 +949,6 @@ type ReceiptProductRow = {
 
 const VIN_MANAGEMENT_TYPE = "vin_number";
 
-const loading = ref(false);
 const dialogVisible = ref(false);
 const dialogTitle = ref("Tạo phiếu nhập mới");
 const submitting = ref(false);
@@ -788,7 +1021,7 @@ const handleSendReceipt = async (id: number) => {
     await InventoryReceiptApi.send(id);
     ElMessage.success("Gửi phiếu nhập thành công");
     detailDialogVisible.value = false;
-    loadData();
+    refreshData();
   } catch (error: any) {
     if (error !== "cancel") {
       console.error("Failed to send receipt:", error);
@@ -823,7 +1056,7 @@ const handleApproveRejectReceipt = async (
         : "Từ chối phiếu nhập thành công",
     );
     detailDialogVisible.value = false;
-    loadData();
+    refreshData();
   } catch (error: any) {
     if (error !== "cancel") {
       console.error(`Failed to ${action} receipt:`, error);
@@ -834,13 +1067,6 @@ const handleApproveRejectReceipt = async (
   }
 };
 
-const stats = ref({
-  totalVehicles: 0,
-  processingReceipts: 0,
-  totalValue: 0,
-});
-
-const statuses = ref<Record<string, string>>({});
 const productCache = reactive(
   new Map<
     number,
@@ -893,7 +1119,6 @@ const syncVehicleRows = (row: any) => {
 
   const newVehicles = [...currentVehicles];
 
-  // 1. Try to populate from invoicedList for any VINs that are not yet in newVehicles
   for (
     let i = 0;
     i < invoicedList.length && newVehicles.length < targetCount;
@@ -913,7 +1138,6 @@ const syncVehicleRows = (row: any) => {
     }
   }
 
-  // 2. Fill up to targetCount with empty vehicles
   while (newVehicles.length < targetCount) {
     newVehicles.push(createEmptyVehicle(row.unitPrice || 0));
   }
@@ -934,7 +1158,7 @@ const handleProductCountChange = (row: any) => {
       ElMessage.warning(
         "Số lượng giảm ảnh hưởng đến thông tin số khung/số máy đã nhập. Vui lòng mở hộp thoại Nhập VIN và xóa trực tiếp dòng xe mong muốn.",
       );
-      row.count = currentVehicles.length; // Revert the input value
+      row.count = currentVehicles.length;
       return;
     }
   }
@@ -980,6 +1204,7 @@ const formData = ref<{
 });
 
 const prSelectorVisible = ref(false);
+const prSelectorMode = ref<"form" | "template">("form");
 const prSelectorLoading = ref(false);
 const prSelectorItems = ref<any[]>([]);
 const prSelectorPage = ref(1);
@@ -990,7 +1215,7 @@ const prSelectorQuery = ref("");
 const fetchSelectorPrs = async () => {
   prSelectorLoading.value = true;
   try {
-    const filters = [];
+    const filters = ["IsFullyImported==false"];
     if (prSelectorQuery.value.trim()) {
       filters.push(`Id==${prSelectorQuery.value.trim()}`);
     }
@@ -1009,6 +1234,15 @@ const fetchSelectorPrs = async () => {
 };
 
 const openPrSelector = () => {
+  prSelectorMode.value = "form";
+  prSelectorQuery.value = "";
+  prSelectorPage.value = 1;
+  prSelectorVisible.value = true;
+  fetchSelectorPrs();
+};
+
+const openPrSelectorForTemplate = () => {
+  prSelectorMode.value = "template";
   prSelectorQuery.value = "";
   prSelectorPage.value = 1;
   prSelectorVisible.value = true;
@@ -1026,6 +1260,12 @@ const clearPrSelection = () => {
 };
 
 const selectPurchaseRequest = async (pr: any) => {
+  if (prSelectorMode.value === "template") {
+    prSelectorVisible.value = false;
+    await handleDownloadTemplate(pr.id);
+    return;
+  }
+
   try {
     loading.value = true;
     prSelectorVisible.value = false;
@@ -1073,58 +1313,6 @@ const selectPurchaseRequest = async (pr: any) => {
   }
 };
 
-const data = ref<InventoryReceipt[]>([]);
-const pagination = reactive({
-  current: 1,
-  size: 10,
-  total: 0,
-});
-
-const searchForm = ref({
-  supplierName: "",
-  statusId: [] as string[],
-});
-
-const searchItems = computed(() => [
-  {
-    key: "statusId",
-    label: "Trạng thái",
-    type: "select",
-    props: {
-      placeholder: "Tất cả trạng thái",
-      clearable: true,
-      multiple: true,
-      collapseTags: true,
-      options: Object.entries(statuses.value).map(([key, value]) => ({
-        label: value,
-        value: key,
-      })),
-    },
-  },
-]);
-
-const columns = ref([
-  { label: "Thời gian tạo", prop: "createdAt", useSlot: true, width: 170 },
-  { label: "Tóm tắt SP", prop: "productSummary", useSlot: true, minWidth: 320 },
-  {
-    label: "Trạng thái",
-    prop: "statusId",
-    useSlot: true,
-    width: 150,
-    align: "center",
-  },
-  {
-    label: "Thao tác",
-    prop: "operation",
-    useSlot: true,
-    width: 200,
-    fixed: "right" as const,
-    align: "center",
-  },
-]);
-
-const columnChecks = columns;
-
 const formatCurrency = (val?: number) => {
   if (val === undefined || val === null) return "0 đ";
   return new Intl.NumberFormat("vi-VN", {
@@ -1169,93 +1357,6 @@ const getStatusTagType = (statusId?: string) => {
 const getProductSummaryText = (products?: InputInfo[]) => {
   if (!products || products.length === 0) return "Không có sản phẩm";
   return products.map((p) => `${p.name} (SL: ${p.quantity})`).join(", ");
-};
-
-const loadStatuses = async () => {
-  try {
-    statuses.value = await InventoryReceiptApi.getStatuses();
-  } catch (error) {
-    console.error("Failed to load statuses:", error);
-    statuses.value = {
-      draft: "Phiếu tạm",
-      sent: "Đã gửi",
-      approve: "Đã duyệt",
-      reject: "Đã từ chối",
-    };
-  }
-};
-
-const loadStats = async () => {
-  try {
-    const res = await InventoryReceiptApi.getStats();
-    stats.value = {
-      totalVehicles: res.totalVehicles || 0,
-      processingReceipts: res.processingReceipts || 0,
-      totalValue: 0,
-    };
-  } catch (error) {
-    console.error("Failed to load stats:", error);
-  }
-};
-
-const loadData = async () => {
-  await loadDataWithFilters(searchForm.value);
-};
-
-const loadDataWithFilters = async (filters?: any) => {
-  loading.value = true;
-  try {
-    const sieveFilters = [];
-    if (filters?.statusId && filters.statusId.length > 0) {
-      if (Array.isArray(filters.statusId)) {
-        sieveFilters.push(`StatusId==${filters.statusId.join("|")}`);
-      } else {
-        sieveFilters.push(`StatusId==${filters.statusId}`);
-      }
-    }
-
-    const params = {
-      current: pagination.current,
-      size: pagination.size,
-      Filters: sieveFilters.join(",") || undefined,
-      Sorts: "-createdAt",
-    };
-
-    const res = await InventoryReceiptApi.getList(params);
-    data.value = res.items || [];
-    pagination.total = res.totalCount || 0;
-    await loadStats();
-  } catch (error) {
-    console.error("Failed to load inventory receipts:", error);
-    ElMessage.error("Không thể tải danh sách phiếu nhập kho");
-  } finally {
-    loading.value = false;
-  }
-};
-
-const handleSearch = (filters: any) => {
-  pagination.current = 1;
-  loadDataWithFilters(filters);
-};
-
-const handleReset = () => {
-  pagination.current = 1;
-  loadDataWithFilters();
-};
-
-const refreshData = () => {
-  loadData();
-};
-
-const handleSizeChange = (size: number) => {
-  pagination.size = size;
-  pagination.current = 1;
-  loadData();
-};
-
-const handleCurrentChange = (page: number) => {
-  pagination.current = page;
-  loadData();
 };
 
 const handleViewDetail = async (row: InventoryReceipt) => {
@@ -1365,8 +1466,8 @@ const handleDelete = async (row: InventoryReceipt) => {
       },
     );
     await InventoryReceiptApi.delete(row.id);
-    ElMessage.success("Xóa phiếu nhập công thành");
-    loadData();
+    ElMessage.success("Xóa phiếu nhập thành công");
+    refreshData();
   } catch (error) {
     if (error !== "cancel") {
       console.error("Failed to delete receipt:", error);
@@ -1483,19 +1584,17 @@ const submitForm = async () => {
       ElMessage.success("Tạo phiếu nhập thành công");
     }
     dialogVisible.value = false;
-    loadData();
-  } catch (error: any) {
-    console.error("Failed to save receipt:", error);
-    ElMessage.error(error.message || "Không thể lưu phiếu nhập");
+    refreshData();
+  } catch (e: any) {
+    console.error(e);
+    ElMessage.error(e.message || "Lưu phiếu nhập thất bại");
   } finally {
     submitting.value = false;
   }
 };
 
 onMounted(async () => {
-  loading.value = true;
-  await loadStatuses();
-  await loadData();
+  refreshData();
 });
 </script>
 
