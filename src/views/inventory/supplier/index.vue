@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-4 pb-5">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div id="tour-stats" class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <ArtStatsCard
         title="Tổng đối tác"
         :count="stats.totalSuppliers"
@@ -22,6 +22,7 @@
     </div>
 
     <ArtSearchBar
+      id="tour-search"
       v-model="searchForm"
       :items="searchItems"
       :label-width="100"
@@ -34,27 +35,116 @@
       <ArtTableHeader
         v-model:columns="columnChecks"
         :loading="loading"
+        layout="search,refresh,size,fullscreen,columns,settings,guide"
         @refresh="refreshData"
+        @guide="startTour"
       >
         <template #left>
-          <ElButton type="primary" v-ripple @click="handleAdd">
-            <ElIcon><Plus /></ElIcon> Thêm đối tác mới
-          </ElButton>
-          <ElButton v-ripple :loading="exporting" @click="handleExport">
-            <ElIcon><Download /></ElIcon> Xuất báo cáo
-          </ElButton>
+          <div class="flex items-center gap-3">
+            <ElButton
+              id="tour-add-btn"
+              type="primary"
+              v-ripple
+              :disabled="importing"
+              @click="handleAdd"
+              style="margin-left: 0"
+            >
+              <ElIcon><Plus /></ElIcon> Thêm đối tác mới
+            </ElButton>
+
+            <ElButton
+              :loading="exporting"
+              :disabled="importing"
+              v-ripple
+              @click="handleExport"
+              style="margin-left: 0"
+            >
+              <ElIcon><Download /></ElIcon> Xuất Excel
+            </ElButton>
+
+            <ElDropdown
+              trigger="click"
+              style="margin-left: 0"
+              :disabled="importing"
+            >
+              <ElButton v-ripple :loading="importing" :disabled="importing">
+                <ElIcon><Upload /></ElIcon>
+                {{ importing ? "Đang nhập..." : "Nhập Excel" }}
+                <ElIcon class="el-icon--right"><ArrowDown /></ElIcon>
+              </ElButton>
+              <template #dropdown>
+                <ElDropdownMenu>
+                  <ElDropdownItem @click="handleDownloadTemplate">
+                    <div class="flex items-center gap-2">
+                      <ElIcon><Download /></ElIcon> Tải mẫu Excel
+                    </div>
+                  </ElDropdownItem>
+                  <ElDropdownItem>
+                    <ElUpload
+                      action="#"
+                      :show-file-list="false"
+                      :auto-upload="false"
+                      :on-change="(file) => file.raw && handleImport(file.raw)"
+                      accept=".xlsx, .xls"
+                    >
+                      <div class="flex items-center gap-2 w-full">
+                        <ElIcon><Upload /></ElIcon> Nhập dữ liệu vào
+                      </div>
+                    </ElUpload>
+                  </ElDropdownItem>
+                </ElDropdownMenu>
+              </template>
+            </ElDropdown>
+
+            <ElButton
+              v-if="selectedRows.length > 0"
+              type="warning"
+              v-ripple
+              :disabled="importing"
+              @click="handleCloneMany"
+              style="margin-left: 0"
+            >
+              <ElIcon><DocumentCopy /></ElIcon> Nhân bản ({{
+                selectedRows.length
+              }})
+            </ElButton>
+            <ElButton
+              v-if="selectedRows.length > 0"
+              type="danger"
+              v-ripple
+              :disabled="importing"
+              @click="handleDeleteMany"
+              style="margin-left: 0"
+            >
+              <ElIcon><Delete /></ElIcon> Xóa ({{ selectedRows.length }})
+            </ElButton>
+
+            <!-- Assuming stats will return deletedSuppliersCount if needed, or we just show the button -->
+            <ElButton
+              type="info"
+              v-ripple
+              :disabled="importing"
+              @click="openRestoreDialog"
+              style="margin-left: 0"
+            >
+              <ElIcon><RefreshLeft /></ElIcon> Khôi phục
+            </ElButton>
+          </div>
         </template>
       </ArtTableHeader>
 
       <ArtTable
+        id="tour-table"
         ref="tableRef"
         :loading="loading"
         :data="data"
         :columns="columns"
         :pagination="pagination"
+        @selection-change="handleSelectionChange"
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
+        <!-- Thêm cột checkbox thông qua config columns (type: 'selection') hoặc ArtTable sẽ tự xử lý nếu có type='selection' trong columns definition -->
         <template #partnerTypeId="{ row }">
           <ElTag :type="getPartnerTypeTag(row.partnerTypeId)" size="small">
             {{ getPartnerTypeName(row.partnerTypeId) }}
@@ -85,13 +175,25 @@
 
     <ElDialog
       v-model="dialogVisible"
-      :title="dialogTitle"
       width="600px"
       append-to-body
       destroy-on-close
     >
+      <template #header>
+        <div class="flex items-center justify-between pr-2">
+          <span class="text-lg font-medium">{{ dialogTitle }}</span>
+          <button
+            id="tour-dialog-help"
+            class="text-gray-400 hover:text-blue-500 transition-colors bg-transparent border-none cursor-pointer flex items-center justify-center text-[20px]"
+            @click.prevent="startDialogTour"
+            title="Hướng dẫn"
+          >
+            <ElIcon><Help /></ElIcon>
+          </button>
+        </div>
+      </template>
       <ElForm :model="formData" label-width="120px" class="mt-4">
-        <ElFormItem label="Loại đối tác" required>
+        <ElFormItem label="Loại đối tác" required id="tour-form-type">
           <ElSelect
             v-model="formData.partnerTypeId"
             placeholder="Chọn loại đối tác..."
@@ -102,32 +204,32 @@
             <ElOption label="Đối tác bảo hiểm" value="insurance" />
           </ElSelect>
         </ElFormItem>
-        <ElFormItem label="Tên đối tác" required>
+        <ElFormItem label="Tên đối tác" required id="tour-form-name">
           <ElInput
             v-model="formData.name"
             placeholder="Ví dụ: Honda Việt Nam, FE Credit..."
           />
         </ElFormItem>
         <div class="grid grid-cols-2 gap-4">
-          <ElFormItem label="Điện thoại">
+          <ElFormItem label="Điện thoại" id="tour-form-phone">
             <ElInput v-model="formData.phone" />
           </ElFormItem>
-          <ElFormItem label="Mã số thuế">
+          <ElFormItem label="Mã số thuế" id="tour-form-tax">
             <ElInput v-model="formData.taxIdentificationNumber" />
           </ElFormItem>
         </div>
-        <ElFormItem label="Email">
+        <ElFormItem label="Email" id="tour-form-email">
           <ElInput v-model="formData.email" />
         </ElFormItem>
-        <ElFormItem label="Địa chỉ">
+        <ElFormItem label="Địa chỉ" id="tour-form-address">
           <ElInput v-model="formData.address" type="textarea" :rows="2" />
         </ElFormItem>
-        <ElFormItem label="Ghi chú">
+        <ElFormItem label="Ghi chú" id="tour-form-notes">
           <ElInput v-model="formData.notes" type="textarea" :rows="2" />
         </ElFormItem>
       </ElForm>
       <template #footer>
-        <div class="flex justify-end gap-2">
+        <div class="flex justify-end gap-2" id="tour-form-actions">
           <ElButton @click="dialogVisible = false">Hủy</ElButton>
           <ElButton type="primary" :loading="submitting" @click="submitForm">
             Lưu thông tin
@@ -135,79 +237,151 @@
         </div>
       </template>
     </ElDialog>
+
+    <ElDialog
+      v-model="importResultDialogVisible"
+      title="Kết quả nhập dữ liệu Excel"
+      width="600px"
+      append-to-body
+    >
+      <div v-if="importResultData" class="space-y-4">
+        <div class="flex items-center gap-2 text-lg">
+          <ElIcon class="text-success text-2xl"><SuccessFilled /></ElIcon>
+          <span
+            >Đã nhập thành công
+            <strong>{{ importResultData.successCount }}</strong> dòng.</span
+          >
+        </div>
+
+        <div
+          v-if="importResultData.failedCount > 0"
+          class="flex items-center gap-2 text-lg text-danger"
+        >
+          <ElIcon class="text-2xl"><WarningFilled /></ElIcon>
+          <span
+            >Thất bại
+            <strong>{{ importResultData.failedCount }}</strong> dòng.</span
+          >
+        </div>
+
+        <div
+          v-if="importResultData.failedCount > 0"
+          class="mt-4 p-4 bg-gray-50 rounded-lg"
+        >
+          <p class="mb-3 text-gray-600">
+            Bạn có thể tải xuống danh sách các dòng bị lỗi để kiểm tra và sửa
+            lại:
+          </p>
+          <div class="flex gap-3">
+            <ElButton
+              type="primary"
+              plain
+              tag="a"
+              :href="apiUrl + importResultData.errorFileUrl"
+            >
+              <ElIcon class="mr-1"><Download /></ElIcon> Tải danh sách lỗi
+            </ElButton>
+            <ElButton
+              type="danger"
+              plain
+              tag="a"
+              :href="apiUrl + importResultData.errorFileWithReasonUrl"
+            >
+              <ElIcon class="mr-1"><Download /></ElIcon> Tải danh sách lỗi (kèm
+              lý do)
+            </ElButton>
+          </div>
+        </div>
+      </div>
+      <template #footer>
+        <ElButton @click="importResultDialogVisible = false">Đóng</ElButton>
+      </template>
+    </ElDialog>
+
+    <ElDialog v-model="restoreDialogVisible" width="800px" append-to-body>
+      <template #header>
+        <div class="flex items-center justify-between pr-2">
+          <span class="text-lg font-medium">Khôi phục đối tác đã xóa</span>
+          <button
+            id="tour-restore-help"
+            class="text-gray-400 hover:text-blue-500 transition-colors bg-transparent border-none cursor-pointer flex items-center justify-center text-[20px]"
+            @click.prevent="startRestoreTour"
+            title="Hướng dẫn"
+          >
+            <ElIcon><Help /></ElIcon>
+          </button>
+        </div>
+      </template>
+      <div class="mb-4 text-gray-500 text-sm" id="tour-restore-desc">
+        Chọn các đối tác bạn muốn khôi phục từ danh sách bên dưới.
+      </div>
+      <ElTable
+        id="tour-restore-table"
+        v-loading="deletedSuppliersLoading"
+        :data="deletedSuppliersData"
+        border
+        max-height="400"
+        @selection-change="handleDeletedSelectionChange"
+      >
+        <ElTableColumn type="selection" width="50" align="center" />
+        <ElTableColumn prop="name" label="Tên đối tác" width="200" />
+        <ElTableColumn prop="phone" label="Điện thoại" width="120" />
+        <ElTableColumn
+          prop="email"
+          label="Email"
+          min-width="150"
+          show-overflow-tooltip
+        />
+        <ElTableColumn prop="deleted_at" label="Thời gian xóa" width="160">
+          <template #default="{ row }">
+            {{ formatDateTime(row.deleted_at) }}
+          </template>
+        </ElTableColumn>
+      </ElTable>
+      <template #footer>
+        <div class="flex justify-between items-center w-full">
+          <span></span>
+          <div class="flex gap-2" id="tour-restore-actions">
+            <ElButton @click="restoreDialogVisible = false">Đóng</ElButton>
+            <ElButton
+              type="success"
+              :disabled="selectedDeletedSuppliers.length === 0"
+              @click="handleRestoreMany"
+            >
+              <ElIcon class="mr-1"><RefreshRight /></ElIcon>
+              Khôi phục đã chọn
+            </ElButton>
+          </div>
+        </div>
+      </template>
+    </ElDialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Plus, Download, Phone, Message } from "@element-plus/icons-vue";
-import { ref, reactive, onMounted } from "vue";
-import { SupplierApi } from "@/infrastructure/api/supplier.api";
-import { ElMessage, ElMessageBox } from "element-plus";
-import type {
-  Supplier,
-  PartnerType,
-  SupplierStatistics,
-} from "@/domain/supplier/supplier.types";
+import { ref } from "vue";
+import {
+  Plus,
+  Download,
+  Phone,
+  Message,
+  Upload,
+  DocumentCopy,
+  Delete,
+  RefreshRight,
+  RefreshLeft,
+  ArrowDown,
+  SuccessFilled,
+  WarningFilled,
+  Help,
+} from "@element-plus/icons-vue";
+import { useSupplierTable } from "./hooks/useSupplierTable";
+import { driver } from "driver.js";
+import "driver.js/dist/driver.css";
 
 defineOptions({ name: "InventorySupplier" });
 
-const loading = ref(false);
-const dialogVisible = ref(false);
-const dialogTitle = ref("Thêm đối tác");
-const submitting = ref(false);
-const partnerTypes = ref<PartnerType[]>([]);
-const stats = ref<SupplierStatistics>({
-  totalSuppliers: 0,
-  financialSuppliers: 0,
-  creditSuppliers: 0,
-});
-
-const pagination = reactive({
-  current: 1,
-  size: 10,
-  total: 0,
-});
-
-const data = ref<Supplier[]>([]);
-
-const formData = ref<Partial<Supplier>>({
-  name: "",
-  partnerTypeId: "",
-  phone: "",
-  email: "",
-  taxIdentificationNumber: "",
-  address: "",
-  notes: "",
-  status: true,
-});
-
-const columns = ref([
-  { label: "Tên đối tác", prop: "name", minWidth: 220 },
-  {
-    label: "Phân loại",
-    prop: "partnerTypeId",
-    useSlot: true,
-    width: 200,
-    align: "center",
-  },
-  { label: "Liên hệ", prop: "contact", useSlot: true, width: 350 },
-  {
-    label: "Mã số thuế",
-    prop: "taxIdentificationNumber",
-    width: 140,
-    align: "center",
-  },
-  {
-    label: "Thao tác",
-    prop: "operation",
-    useSlot: true,
-    width: 120,
-    fixed: "right" as const,
-    align: "center",
-  },
-]);
-
-const columnChecks = columns;
+const apiUrl = import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || "";
 
 const searchForm = ref({
   name: "",
@@ -236,6 +410,219 @@ const searchItems = ref([
   },
 ]);
 
+const formatDateTime = (val: string | null | undefined) => {
+  if (!val) return "Chưa có cập nhật";
+  return new Date(val).toLocaleString("vi-VN");
+};
+
+const startTour = () => {
+  const driverObj = driver({
+    showProgress: true,
+    animate: true,
+    nextBtnText: "Tiếp theo",
+    prevBtnText: "Quay lại",
+    doneBtnText: "Hoàn thành",
+    steps: [
+      {
+        element: "#tour-stats",
+        popover: {
+          title: "Thống kê tổng quan",
+          description:
+            "Khu vực này hiển thị các thông tin thống kê chung về các loại đối tác.",
+          side: "bottom",
+          align: "start",
+        },
+      },
+      {
+        element: "#tour-search",
+        popover: {
+          title: "Tìm kiếm",
+          description:
+            "Sử dụng thanh tìm kiếm để nhanh chóng lọc các đối tác theo từ khóa hoặc phân loại.",
+          side: "bottom",
+          align: "start",
+        },
+      },
+      {
+        element: "#tour-add-btn",
+        popover: {
+          title: "Thêm mới",
+          description: "Nhấn vào đây để tạo một đối tác mới trên hệ thống.",
+          side: "bottom",
+          align: "start",
+        },
+      },
+      {
+        element: "#tour-table",
+        popover: {
+          title: "Danh sách đối tác",
+          description:
+            "Bảng hiển thị chi tiết các đối tác. Bạn có thể chọn nhiều dòng để thao tác nhanh.",
+          side: "top",
+          align: "start",
+        },
+      },
+    ],
+  });
+  driverObj.drive();
+};
+
+const startDialogTour = () => {
+  const driverObj = driver({
+    showProgress: true,
+    animate: true,
+    nextBtnText: "Tiếp theo",
+    prevBtnText: "Quay lại",
+    doneBtnText: "Hoàn thành",
+    steps: [
+      {
+        element: "#tour-form-type",
+        popover: {
+          title: "Loại đối tác",
+          description: "Bắt buộc chọn loại đối tác.",
+          side: "right",
+          align: "start",
+        },
+      },
+      {
+        element: "#tour-form-name",
+        popover: {
+          title: "Tên đối tác",
+          description: "Nhập tên của đối tác (bắt buộc).",
+          side: "right",
+          align: "start",
+        },
+      },
+      {
+        element: "#tour-form-phone",
+        popover: {
+          title: "Điện thoại",
+          description: "Số điện thoại liên hệ.",
+          side: "right",
+          align: "start",
+        },
+      },
+      {
+        element: "#tour-form-email",
+        popover: {
+          title: "Email",
+          description: "Địa chỉ email liên hệ.",
+          side: "right",
+          align: "start",
+        },
+      },
+      {
+        element: "#tour-form-actions",
+        popover: {
+          title: "Thao tác",
+          description: "Nhấn Xác nhận để lưu thay đổi hoặc Hủy để đóng.",
+          side: "top",
+          align: "end",
+        },
+      },
+    ],
+  });
+  driverObj.drive();
+};
+
+const startRestoreTour = () => {
+  const driverObj = driver({
+    showProgress: true,
+    animate: true,
+    nextBtnText: "Tiếp theo",
+    prevBtnText: "Quay lại",
+    doneBtnText: "Hoàn thành",
+    steps: [
+      {
+        element: "#tour-restore-desc",
+        popover: {
+          title: "Hướng dẫn khôi phục",
+          description: "Danh sách các đối tác đã xóa sẽ hiển thị tại đây.",
+          side: "bottom",
+          align: "start",
+        },
+      },
+      {
+        element: "#tour-restore-table",
+        popover: {
+          title: "Chọn đối tác",
+          description: "Tích chọn vào các đối tác mà bạn muốn khôi phục lại.",
+          side: "top",
+          align: "start",
+        },
+      },
+      {
+        element: "#tour-restore-actions",
+        popover: {
+          title: "Thực hiện khôi phục",
+          description:
+            "Sau khi chọn, nhấn nút 'Khôi phục đã chọn' để hoàn tất.",
+          side: "top",
+          align: "end",
+        },
+      },
+    ],
+  });
+  driverObj.drive();
+};
+
+const {
+  data,
+  loading,
+  pagination,
+  columns: baseColumns,
+  columnChecks,
+  handleSizeChange,
+  handleCurrentChange,
+  handleSearch,
+  handleReset,
+  refreshData,
+  stats,
+  partnerTypes,
+
+  selectedRows,
+  handleSelectionChange,
+  handleDeleteMany,
+  handleCloneMany,
+
+  restoreDialogVisible,
+  deletedSuppliersData,
+  deletedSuppliersLoading,
+  selectedDeletedSuppliers,
+  handleDeletedSelectionChange,
+  openRestoreDialog,
+  handleRestoreMany,
+
+  importing,
+  importResultData,
+  importResultDialogVisible,
+  handleImport,
+  handleDownloadTemplate,
+
+  dialogVisible,
+  dialogTitle,
+  formData,
+  submitting,
+  handleAdd,
+  handleEdit,
+  handleDelete,
+  submitForm,
+
+  exporting,
+  handleExport,
+} = useSupplierTable();
+
+// Update search items dropdown options
+import { watchEffect } from "vue";
+watchEffect(() => {
+  if (partnerTypes.value && searchItems.value[1].props) {
+    searchItems.value[1].props.options = partnerTypes.value.map((pt) => ({
+      label: pt.name,
+      value: pt.key,
+    }));
+  }
+});
+
 const getPartnerTypeTag = (type: string) => {
   const partnerType = partnerTypes.value.find((pt) => pt.key === type);
   if (!partnerType) return "info";
@@ -251,207 +638,22 @@ const getPartnerTypeName = (type: string) => {
   return partnerType?.name || type;
 };
 
-const loadPartnerTypes = async () => {
-  try {
-    partnerTypes.value = await SupplierApi.getPartnerTypes();
-    if (searchItems.value[1].props) {
-      searchItems.value[1].props.options = partnerTypes.value.map((pt) => ({
-        label: pt.name,
-        value: pt.key,
-      }));
-    }
-  } catch (error) {
-    console.error("Failed to load partner types:", error);
-  }
-};
-
-const loadData = async () => {
-  await loadDataWithFilters(searchForm.value);
-};
-
-const handleReset = () => {
-  pagination.current = 1;
-  loadDataWithFilters();
-};
-
-const handleAdd = () => {
-  dialogTitle.value = "Thêm đối tác mới";
-  formData.value = {
-    name: "",
-    partnerTypeId: "",
-    phone: "",
-    email: "",
-    taxIdentificationNumber: "",
-    address: "",
-    notes: "",
-    status: true,
-  };
-  dialogVisible.value = true;
-};
-
-const handleEdit = (row: Supplier) => {
-  dialogTitle.value = "Cập nhật đối tác";
-  formData.value = { ...row };
-  dialogVisible.value = true;
-};
-
-const handleDelete = async (row: Supplier) => {
-  try {
-    await ElMessageBox.confirm(
-      `Bạn có chắc chắn muốn xóa đối tác "${row.name}"?`,
-      "Xác nhận xóa",
-      {
-        confirmButtonText: "Xóa",
-        cancelButtonText: "Hủy",
-        type: "warning",
-      },
-    );
-    await SupplierApi.delete(row.id);
-    ElMessage.success("Xóa thành công");
-    loadData();
-  } catch (error) {
-    if (error !== "cancel") {
-      console.error("Failed to delete supplier:", error);
-      ElMessage.error("Không thể xóa nhà cung cấp");
-    }
-  }
-};
-
-const submitForm = async () => {
-  if (!formData.value.name || !formData.value.partnerTypeId) {
-    ElMessage.warning("Vui lòng điền đầy đủ thông tin bắt buộc");
-    return;
-  }
-  submitting.value = true;
-  try {
-    if (formData.value.id) {
-      await SupplierApi.update(formData.value.id, formData.value);
-      ElMessage.success("Cập nhật thành công");
-    } else {
-      await SupplierApi.create(formData.value);
-      ElMessage.success("Tạo mới thành công");
-    }
-    dialogVisible.value = false;
-    loadData();
-  } catch (error) {
-    console.error("Failed to save supplier:", error);
-    ElMessage.error("Không thể lưu nhà cung cấp");
-  } finally {
-    submitting.value = false;
-  }
-};
-
-const handleSearch = (filters: any) => {
-  pagination.current = 1;
-  loadDataWithFilters(filters);
-};
-
-const loadDataWithFilters = async (filters?: any) => {
-  loading.value = true;
-  try {
-    const sieveFilters = [];
-    const keyword = filters?.name?.trim();
-    if (keyword) {
-      sieveFilters.push(
-        `Name@=${keyword}|Phone@=${keyword}|TaxIdentificationNumber@=${keyword}|Address@=${keyword}`,
-      );
-    }
-    if (filters?.type && filters.type.length > 0) {
-      if (Array.isArray(filters.type)) {
-        const typeFilters = `PartnerTypeId==${filters.type.join("|")}`;
-        sieveFilters.push(typeFilters);
-      } else {
-        sieveFilters.push(`PartnerTypeId==${filters.type}`);
-      }
-    }
-
-    const params: any = {
-      current: pagination.current,
-      size: pagination.size,
-      Filters: sieveFilters.join(",") || undefined,
-    };
-
-    const res = await SupplierApi.getList(params);
-    data.value = res.items || [];
-    pagination.total = res.totalCount || 0;
-  } catch (error) {
-    console.error("Failed to load suppliers:", error);
-    ElMessage.error("Không thể tải danh sách nhà cung cấp");
-  } finally {
-    loading.value = false;
-  }
-};
-
-const refreshData = () => {
-  loadData();
-};
-
-const handleSizeChange = (size: number) => {
-  pagination.size = size;
-  pagination.current = 1;
-  loadData();
-};
-
-const handleCurrentChange = (page: number) => {
-  pagination.current = page;
-  loadData();
-};
-
-onMounted(() => {
-  loadPartnerTypes();
-  loadData();
-  loadStats();
-});
-
-const loadStats = async () => {
-  try {
-    stats.value = await SupplierApi.getStatistics();
-  } catch (error) {
-    console.error("Failed to load supplier statistics:", error);
-  }
-};
-
-const exporting = ref(false);
-
-const handleExport = async () => {
-  exporting.value = true;
-  try {
-    const sieveFilters = [];
-    const keyword = searchForm.value.name?.trim();
-    if (keyword) {
-      sieveFilters.push(
-        `Name@=${keyword}|Phone@=${keyword}|TaxIdentificationNumber@=${keyword}|Address@=${keyword}`,
-      );
-    }
-    if (searchForm.value.type && searchForm.value.type.length > 0) {
-      if (Array.isArray(searchForm.value.type)) {
-        const typeFilters = `PartnerTypeId==${searchForm.value.type.join("|")}`;
-        sieveFilters.push(typeFilters);
-      } else {
-        sieveFilters.push(`PartnerTypeId==${searchForm.value.type}`);
-      }
-    }
-
-    const resBlob = await SupplierApi.exportExcel({
-      Filters: sieveFilters.join(",") || undefined,
-      Sorts: "Id desc",
-    });
-
-    const url = window.URL.createObjectURL(new Blob([resBlob]));
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "Danh_sach_nha_cung_cap.xlsx");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
-
-    ElMessage.success("Xuất file Excel thành công");
-  } catch (err: any) {
-    console.error(err);
-    ElMessage.error(err.message || "Xuất file Excel thất bại");
-  } finally {
-    exporting.value = false;
-  }
-};
+// Define columns inside index to allow selection
+const columns = ref([
+  { type: "selection" as const, width: 50, align: "center" },
+  ...baseColumns.value,
+]);
 </script>
+
+<style scoped>
+.art-table-card :deep(.el-card__header) {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.art-table-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 3%);
+}
+</style>

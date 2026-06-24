@@ -3,7 +3,7 @@
     "unauthorized": "Truy cập không được phép, vui lòng đăng nhập lại",
     "forbidden": "Cấm truy cập vào tài nguyên này",
     "notFound": "Tài nguyên được yêu cầu không tồn tại",
-    "methodNotAllowed": "PhuongThuc yêu cầu không được phép",
+    "methodNotAllowed": "Phương thức HTTP mà request yêu cầu không có trong hệ thống ",
     "requestTimeout": "Yêu cầu quá thời gian, vui lòng thử lại sau",
     "internalServerError": "Lỗi máy chủ nội bộ, vui lòng thử lại sau",
     "badGateway": "Lỗi cổng kết nối, vui lòng thử lại sau",
