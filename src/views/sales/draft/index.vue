@@ -132,7 +132,11 @@
                 <ElIcon><Link /></ElIcon>
               </ElButton>
             </ElTooltip>
-            <ElTooltip v-if="canDeleteRow(row)" content="Xóa phiếu" placement="top">
+            <ElTooltip
+              v-if="canDeleteRow(row)"
+              content="Xóa phiếu"
+              placement="top"
+            >
               <ElButton
                 circle
                 size="small"
@@ -248,7 +252,13 @@
             </ElButton>
           </div>
 
-          <ElTable :data="formData.products" border size="small" class="w-full" max-height="320">
+          <ElTable
+            :data="formData.products"
+            border
+            size="small"
+            class="w-full"
+            max-height="320"
+          >
             <ElTableColumn label="Sản phẩm" min-width="280">
               <template #default="{ row }">
                 <ElSelect
@@ -449,7 +459,12 @@
           show-icon
           :closable="false"
         />
-        <ElTable :data="vehicleRequirements.items" border size="small" class="w-full">
+        <ElTable
+          :data="vehicleRequirements.items"
+          border
+          size="small"
+          class="w-full"
+        >
           <ElTableColumn label="Sản phẩm" min-width="240">
             <template #default="{ row }">
               <div class="flex flex-col">
@@ -507,20 +522,20 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, onMounted, reactive, ref } from 'vue'
-  import { Delete, Edit, Link, Plus, Switch } from '@element-plus/icons-vue'
-  import { ElMessage, ElMessageBox } from 'element-plus'
-  import { SalesOrderApi } from '@/api/sales-order.api'
-  import { ProductApi } from '@/api/product.api'
-  import { fetchGetUserList } from '@/api/system-manage'
-  import { Permissions } from '@/domain/constants/permissions'
-  import type {
-    SalesOrder,
-    VehicleAssignmentOption,
-    VehicleAssignmentRequirement
-  } from '@/domain/order/order.types'
-  import type { ProductVariantLiteForInput } from '@/domain/product/product.types'
-  import type { ColumnOption } from '@/types/component'
+import { computed, onMounted, reactive, ref } from "vue";
+import { Delete, Edit, Link, Plus, Switch } from "@element-plus/icons-vue";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { SalesOrderApi } from "@/infrastructure/api/sales-order.api";
+import { ProductApi } from "@/api/product.api";
+import { fetchGetUserList } from "@/infrastructure/api/system-manage";
+import { Permissions } from "@/domain/constants/permissions";
+import type {
+  SalesOrder,
+  VehicleAssignmentOption,
+  VehicleAssignmentRequirement,
+} from "@/domain/order/order.types";
+import type { ProductVariantLiteForInput } from "@/domain/product/product.types";
+import type { ColumnOption } from "@/types/component";
 
 type StatusOption = { id: string; name: string };
 type CustomerOption = {
@@ -608,21 +623,45 @@ const searchItems = computed(() => [
   },
 ]);
 
-  const columnChecks = ref<ColumnOption[]>([
-    { prop: 'createdAt', label: 'Thời gian', width: 170, checked: true, useSlot: true },
-    { prop: 'customer', label: 'Khách hàng', minWidth: 220, checked: true, useSlot: true },
-    { prop: 'notes', label: 'Ghi chú', minWidth: 220, checked: true },
-    { prop: 'statusId', label: 'Trạng thái', width: 170, checked: true, useSlot: true },
-    { prop: 'total', label: 'Tổng tiền', width: 160, checked: true, useSlot: true },
-    {
-      prop: 'operation',
-      label: 'Thao tác',
-      width: 170,
-      fixed: 'right' as const,
-      checked: true,
-      useSlot: true
-    }
-  ])
+const columnChecks = ref<ColumnOption[]>([
+  {
+    prop: "createdAt",
+    label: "Thời gian",
+    width: 170,
+    checked: true,
+    useSlot: true,
+  },
+  {
+    prop: "customer",
+    label: "Khách hàng",
+    minWidth: 220,
+    checked: true,
+    useSlot: true,
+  },
+  { prop: "notes", label: "Ghi chú", minWidth: 220, checked: true },
+  {
+    prop: "statusId",
+    label: "Trạng thái",
+    width: 170,
+    checked: true,
+    useSlot: true,
+  },
+  {
+    prop: "total",
+    label: "Tổng tiền",
+    width: 160,
+    checked: true,
+    useSlot: true,
+  },
+  {
+    prop: "operation",
+    label: "Thao tác",
+    width: 170,
+    fixed: "right" as const,
+    checked: true,
+    useSlot: true,
+  },
+]);
 
 const columns = computed(() =>
   columnChecks.value.filter((item) => item.checked),
@@ -814,101 +853,15 @@ async function handlePrepareStatusChange() {
         delete selectedVehicleIdsByOutputInfo[Number(key)];
       });
 
-      requirements.items.forEach((item) => {
+      requirements.items.forEach((item: any) => {
         selectedVehicleIdsByOutputInfo[item.outputInfoId] =
-          item.assignedVehicles?.map((v) => v.id) || [];
+          item.assignedVehicles?.map((v: any) => v.id) || [];
       });
-
-  function handleAdd() {
-    editingOrder.value = null
-    originalStatusId.value = ''
-    resetForm()
-    dialogVisible.value = true
-  }
-
-  async function handleEdit(row: SalesOrder) {
-    loading.value = true
-    try {
-      const detail = await SalesOrderApi.getById(row.id)
-      editingOrder.value = detail
-      originalStatusId.value = detail.statusId || 'pending'
-      fillForm(detail)
-      dialogVisible.value = true
-    } finally {
-      loading.value = false
-    }
-  }
-
-  async function handleDelete(row: SalesOrder) {
-    await ElMessageBox.confirm(
-      `Xóa phiếu bán của ${row.customerName || row.buyerName || 'khách hàng này'}?`,
-      'Xác nhận',
-      { type: 'warning' }
-    )
-    await SalesOrderApi.delete(row.id)
-    ElMessage.success('Đã xóa phiếu bán')
-    fetchOrders()
-  }
-
-  function canEditRow(row: SalesOrder) {
-    const statusId = row.statusId || ''
-    return !(
-      getLockedList('buyerAndProducts').includes(statusId) &&
-      getLockedList('deliveryInfo').includes(statusId) &&
-      getLockedList('notes').includes(statusId)
-    )
-  }
-
-  function canDeleteRow(row: SalesOrder) {
-    return !['completed', 'refunded', 'cancelled'].includes(row.statusId || '')
-  }
-
-  function canCopyPaymentLink(row: SalesOrder) {
-    const paymentMethod = String(row.paymentMethod || '').toLowerCase()
-    return (
-      ['vnpay', 'payos'].includes(paymentMethod) &&
-      ['pending', 'waiting_deposit'].includes(row.statusId || '')
-    )
-  }
-
-  async function handleCopyPaymentLink(row: SalesOrder) {
-    try {
-      const res = await SalesOrderApi.getPaymentLink(row.id)
-      const url = res.url
-      if (!url) {
-        return ElMessage.warning('Đơn hàng này chưa có link thanh toán')
-      }
-      try {
-        await navigator.clipboard.writeText(url)
-        ElMessage.success('Đã copy link thanh toán vào clipboard')
-      } catch {
-        ElMessage.info(`Link: ${url}`)
-      }
-    } catch {
-      ElMessage.error('Không thể lấy link thanh toán')
-    }
-  }
-
-  function canChangeStatusRow(row: SalesOrder) {
-    return (transitionMap.value[row.statusId || ''] || []).length > 0
-  }
-
-  function handleOpenStatusDialog(row: SalesOrder) {
-    statusOrder.value = row
-    targetStatusId.value = ''
-    vehicleRequirements.value = null
-    statusDialogVisible.value = true
-  }
-
-  async function handlePrepareStatusChange() {
-    if (!statusOrder.value || !targetStatusId.value) {
-      return ElMessage.warning('Vui lòng chọn trạng thái mới')
-    }
-    statusSaving.value = true
-    try {
-      const requirements = await SalesOrderApi.getVehicleAssignmentRequirements(
+    } else {
+      await SalesOrderApi.updateStatus(
         statusOrder.value.id,
         targetStatusId.value,
+        [],
       );
       statusDialogVisible.value = false;
       ElMessage.success("Đã cập nhật trạng thái");
@@ -925,7 +878,33 @@ async function handlePrepareStatusChange() {
   }
 }
 
-function getVehicleOptions(item: VehicleAssignmentRequirementItem) {
+async function handleCopyPaymentLink(row: SalesOrder) {
+  try {
+    const res = await SalesOrderApi.getPaymentLink(row.id);
+    const url = res.url;
+    if (!url) {
+      return ElMessage.warning("Đơn hàng này chưa có link thanh toán");
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      ElMessage.success("Đã copy link thanh toán vào clipboard");
+    } catch {
+      ElMessage.info(`Link: ${url}`);
+    }
+  } catch {
+    ElMessage.error("Không thể lấy link thanh toán");
+  }
+}
+
+function canCopyPaymentLink(row: SalesOrder) {
+  const paymentMethod = String(row.paymentMethod || "").toLowerCase();
+  return (
+    ["vnpay", "payos"].includes(paymentMethod) &&
+    ["pending", "waiting_deposit"].includes(row.statusId || "")
+  );
+}
+
+function getVehicleOptions(item: any) {
   const map = new Map<number, VehicleAssignmentOption>();
   for (const vehicle of [...item.assignedVehicles, ...item.availableVehicles]) {
     map.set(vehicle.id, vehicle);
@@ -1137,14 +1116,6 @@ function fillForm(order: SalesOrder) {
   }
 }
 
-  function getVehicleOptions(item: any) {
-    const map = new Map<number, VehicleAssignmentOption>()
-    for (const vehicle of [...item.assignedVehicles, ...item.availableVehicles]) {
-      map.set(vehicle.id, vehicle)
-    }
-    return Array.from(map.values())
-  }
-
 function getLockedList(key: string): string[] {
   const data = lockedStatuses.value || {};
   return Array.isArray(data) ? [] : data[key] || [];
@@ -1198,152 +1169,19 @@ function formatCurrency(val?: number) {
   }).format(Number(val || 0));
 }
 
+function getProductColors(row: any) {
+  return (
+    productOptions.value.find((item) => item.id === row.productVariantId)
+      ?.colors || []
+  );
+}
+
 function formatDateTime(value?: string) {
   if (!value) return "---";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "---";
 
-  function handleCustomerChange(id: string) {
-    const customer = customerOptions.value.find((item) => item.id === id)
-    if (!customer) return
-    formData.customerName = customer.fullName || customer.name || formData.customerName
-    formData.customerPhone = customer.phoneNumber || formData.customerPhone
-    formData.customerAddress = customer.address || formData.customerAddress
-  }
-
-  function handleProductChange(row: any, id: number) {
-    const product = productOptions.value.find((item) => item.id === id)
-    if (!product) return
-    row.productName = product.displayName
-    row.price = product.price || 0
-    row.coverImageUrl = product.coverImageUrl
-    row.productVariantColorId = undefined
-  }
-
-  function addProductRow() {
-    formData.products.push({ productVariantId: undefined, count: 1, price: 0 })
-  }
-
-  function removeProductRow(index: number) {
-    formData.products.splice(index, 1)
-  }
-
-  function resetForm() {
-    formData.buyerId = ''
-    formData.customerName = ''
-    formData.customerPhone = ''
-    formData.customerAddress = ''
-    formData.statusId = 'pending'
-    formData.depositRatio = 0
-    formData.notes = ''
-    formData.products = []
-  }
-
-  function fillForm(order: SalesOrder) {
-    const products = order.products || []
-    formData.buyerId = order.buyerId || ''
-    formData.customerName = order.customerName || order.buyerName || ''
-    formData.customerPhone = order.customerPhone || order.buyerPhone || ''
-    formData.customerAddress = order.customerAddress || ''
-    formData.statusId = order.statusId || 'pending'
-    formData.depositRatio = order.depositRatio || 0
-    formData.notes = order.notes || ''
-    formData.products = products.map((item) => ({
-      id: item.id,
-      productVariantId: item.productVariantId,
-      productVariantColorId: item.productVariantColorId,
-      productName: item.productName,
-      count: item.count || 1,
-      price: item.price || 0,
-      coverImageUrl: item.coverImageUrl,
-      assignedVehicles: item.assignedVehicles || []
-    }))
-    if (order.buyerId && !customerOptions.value.some((item) => item.id === order.buyerId)) {
-      customerOptions.value.push({
-        id: order.buyerId,
-        fullName: order.buyerName,
-        email: order.buyerEmail,
-        phoneNumber: order.buyerPhone
-      })
-    }
-    for (const product of formData.products) {
-      if (
-        product.productVariantId &&
-        !productOptions.value.some((item) => item.id === product.productVariantId)
-      ) {
-        productOptions.value.push({
-          id: product.productVariantId,
-          productId: product.productVariantId,
-          displayName: product.productName || `Sản phẩm #${product.productVariantId}`,
-          coverImageUrl: product.coverImageUrl || '',
-          price: product.price || 0,
-          categoryId: 0,
-          colors: []
-        })
-      }
-    }
-  }
-
-  function getProductColors(row: any) {
-    return productOptions.value.find((item) => item.id === row.productVariantId)?.colors || []
-  }
-
-  function getLockedList(key: string): string[] {
-    const data = lockedStatuses.value || {}
-    return Array.isArray(data) ? [] : data[key] || []
-  }
-
-  function getStatusLabel(statusId?: string) {
-    if (!statusId) return '---'
-    return (
-      statuses.value[statusId] ||
-      statusMap.value.find((item) => item.id === statusId)?.name ||
-      statusId
-    )
-  }
-
-  function getStatusTagType(statusId?: string) {
-    const map: Record<string, 'success' | 'warning' | 'info' | 'danger' | 'primary'> = {
-      pending: 'info',
-      waiting_deposit: 'warning',
-      waiting_installment: 'warning',
-      confirmed_cod: 'warning',
-      paid_processing: 'primary',
-      deposit_paid: 'primary',
-      installment_approved: 'primary',
-      delivering: 'primary',
-      waiting_pickup: 'success',
-      completed: 'success',
-      refunding: 'warning',
-      refunded: 'info',
-      cancelled: 'danger'
-    }
-    return map[statusId || ''] || 'info'
-  }
-
-  function getCustomerLabel(customer: CustomerOption) {
-    return [
-      customer.fullName || customer.name || customer.email || customer.id,
-      customer.phoneNumber
-    ]
-      .filter(Boolean)
-      .join(' - ')
-  }
-
-  function formatCurrency(val?: number) {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND',
-      maximumFractionDigits: 0
-    }).format(Number(val || 0))
-  }
-
-  function formatDateTime(value?: string) {
-    if (!value) return '---'
-    const date = new Date(value)
-    if (Number.isNaN(date.getTime())) return '---'
-
-    const pad = (num: number) => String(num).padStart(2, '0')
-    return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`
-  }
+  const pad = (num: number) => String(num).padStart(2, "0");
+  return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
 </script>

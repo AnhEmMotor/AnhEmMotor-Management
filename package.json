@@ -65,6 +65,7 @@
     "axios": "^1.16.1",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.21",
+    "driver.js": "^1.5.0",
     "echarts": "^6.0.0",
     "element-plus": "^2.14.0",
     "file-saver": "^2.0.5",
