@@ -147,6 +147,7 @@ const workspaces = ref([
     shadowColor: "rgba(5, 150, 105, 0.25)",
     hasAccess: true,
     badge: { isDot: false, value: 5, label: "đơn mới", type: "warning" },
+    path: "/Marketing/banner",
   },
   {
     title: "Quản Lý Kho & Hậu Cần",
@@ -180,6 +181,7 @@ const workspaces = ref([
     color: "#7c3aed",
     shadowColor: "rgba(124, 58, 237, 0.15)",
     hasAccess: true,
+    path: "/Order/list",
   },
 ]);
 </script>

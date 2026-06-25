@@ -150,6 +150,8 @@ import SidebarSubmenu from "./widget/SidebarSubmenu.vue";
 import { useWindowSize, useTimeoutFn } from "@vueuse/core";
 import { adminMenu } from "@/modules/Admin/Menu";
 import { factoryMenu } from "@/modules/Factory/Menu";
+import { marketingMenu } from "@/modules/Marketing/Menu";
+import { orderMenu } from "@/modules/Order/Menu";
 
 defineOptions({ name: "ArtSidebarMenu" });
 
@@ -211,12 +213,18 @@ const menuList = computed(() => {
 
   const isFactory = isPathInMenu(factoryMenu, route.path);
   const isAdmin = isPathInMenu(adminMenu, route.path);
+  const isMarketing = isPathInMenu(marketingMenu, route.path);
+  const isOrder = isPathInMenu(orderMenu, route.path);
 
   let allowedPaths: string[] = [];
   if (isFactory) {
     allowedPaths = factoryMenu.map(m => m.path);
   } else if (isAdmin) {
     allowedPaths = adminMenu.map(m => m.path);
+  } else if (isMarketing) {
+    allowedPaths = marketingMenu.map(m => m.path);
+  } else if (isOrder) {
+    allowedPaths = orderMenu.map(m => m.path);
   } else {
     // Mặc định fallback về admin nếu không match
     allowedPaths = adminMenu.map(m => m.path);

@@ -5,18 +5,16 @@ import { widgetsRoutes } from "./widgets";
 import { examplesRoutes } from "./examples";
 import { systemRoutes } from "./system";
 import { authorizationRoutes } from "./authorization";
-import { contentRoutes } from "./content";
+import { marketingMenu } from "@/modules/Marketing/Menu";
 import { resultRoutes } from "./result";
 import { exceptionRoutes } from "./exception";
 import { safeguardRoutes } from "./safeguard";
 import { productRoutes } from "./product";
-import { customerRoutes } from "./customer";
-import { contactRoutes } from "./contact";
 import { contractRoutes } from "./contract";
+import { orderMenu } from "@/modules/Order/Menu";
 
 import { serviceRoutes } from "./service";
 import { reportingRoutes } from "./reporting";
-import { logisticsRoutes } from "./logistics";
 import { hrRoutes } from "./hr";
 import { helpRoutes } from "./help";
 import { inventoryRoutes } from "./inventory";
@@ -27,16 +25,15 @@ import { factoryMenu } from "@/modules/Factory/Menu";
 const coreRoutes: AppRouteRecord[] = [
   dashboardRoutes,
   ...productRoutes,
+  ...orderMenu,
   serviceRoutes,
   ...factoryMenu,
   inventoryRoutes,
   salesRoutes,
   authorizationRoutes,
   hrRoutes,
-  customerRoutes,
-  contactRoutes,
   contractRoutes,
-  contentRoutes,
+  ...marketingMenu,
   reportingRoutes,
 ];
 
@@ -48,7 +45,6 @@ const developmentRoutes: AppRouteRecord[] = [
   resultRoutes,
   exceptionRoutes,
   safeguardRoutes,
-  logisticsRoutes,
   ...helpRoutes,
 ];
 
