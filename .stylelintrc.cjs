@@ -17,6 +17,7 @@ module.exports = {
     }
   ],
   rules: {
+    'no-invalid-position-declaration': null,
     'import-notation': 'string',
     'selector-class-pattern': null,
     'custom-property-pattern': null,
