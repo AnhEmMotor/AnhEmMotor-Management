@@ -105,7 +105,9 @@
             </div>
 
             <div class="mt-4">
-              <h4 class="text-base font-bold mb-2">{{ $t("marketing.comment.replyTitle") }}</h4>
+              <h4 class="text-base font-bold mb-2">
+                {{ $t("marketing.comment.replyTitle") }}
+              </h4>
               <CommentWidget :comment-id="clickItem.id" />
             </div>
           </div>

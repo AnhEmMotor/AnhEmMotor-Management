@@ -548,18 +548,26 @@ const refresh = async () => {
         partsShortage: mock.partsShortage,
       };
       technicianRows.value = mock.technicians;
-      
       // Mock data for warranty and complaints
       warrantyAndComplaints.value = {
         loading: false,
         warrantyRequestsCount: 5,
         complaintsCount: 2,
         recentItems: [
-          { ticketId: "WR-001", type: "Bảo hành phụ tùng", customerName: "Lê Văn T", status: "Chờ duyệt" },
-          { ticketId: "CP-002", type: "Khiếu nại dịch vụ", customerName: "Nguyễn Thị N", status: "Đang xử lý" }
-        ]
+          {
+            ticketId: "WR-001",
+            type: "Bảo hành phụ tùng",
+            customerName: "Lê Văn T",
+            status: "Chờ duyệt",
+          },
+          {
+            ticketId: "CP-002",
+            type: "Khiếu nại dịch vụ",
+            customerName: "Nguyễn Thị N",
+            status: "Đang xử lý",
+          },
+        ],
       };
-      
       return;
     }
 
@@ -588,16 +596,25 @@ const refresh = async () => {
 
     technicianRows.value =
       (asAny?.technicianPerformance as any[]) ?? mock.technicians;
-
     // Mock data for warranty and complaints
     warrantyAndComplaints.value = {
       loading: false,
       warrantyRequestsCount: asAny?.warrantyRequestsCount ?? 5,
       complaintsCount: asAny?.complaintsCount ?? 2,
       recentItems: asAny?.recentItems ?? [
-        { ticketId: "WR-001", type: "Bảo hành phụ tùng", customerName: "Lê Văn T", status: "Chờ duyệt" },
-        { ticketId: "CP-002", type: "Khiếu nại dịch vụ", customerName: "Nguyễn Thị N", status: "Đang xử lý" }
-      ]
+        {
+          ticketId: "WR-001",
+          type: "Bảo hành phụ tùng",
+          customerName: "Lê Văn T",
+          status: "Chờ duyệt",
+        },
+        {
+          ticketId: "CP-002",
+          type: "Khiếu nại dịch vụ",
+          customerName: "Nguyễn Thị N",
+          status: "Đang xử lý",
+        },
+      ],
     };
   } finally {
     loading.value = false;
