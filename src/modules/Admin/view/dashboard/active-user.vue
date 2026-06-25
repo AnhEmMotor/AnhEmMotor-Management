@@ -11,14 +11,7 @@
     </div>
     
     <div class="flex-1 overflow-hidden">
-      <ArtBarChart
-        class="box-border p-2"
-        barWidth="50%"
-        height="13.7rem"
-        :showAxisLine="false"
-        :data="chartData"
-        :xAxisData="xAxisLabels"
-      />
+      <div class="w-full h-full" ref="chartRef"></div>
     </div>
 
     <div class="flex-b mt-2 pt-4 border-t border-gray-100">
@@ -31,10 +24,99 @@
 </template>
 
 <script setup lang="ts">
-import ArtBarChart from "@/components/core/charts/art-bar-chart/index.vue";
+import { ref, onMounted, onUnmounted, nextTick } from "vue";
+import * as echarts from "echarts";
 import {
   xAxisLabels,
   chartData,
   list,
 } from "@/modules/Admin/logic/active-user";
+
+const chartRef = ref<HTMLElement | null>(null);
+let chartInstance: echarts.ECharts | null = null;
+
+function initChart() {
+  if (!chartRef.value) return;
+  chartInstance = echarts.init(chartRef.value);
+
+  const option: echarts.EChartsOption = {
+    tooltip: {
+      trigger: "axis",
+      axisPointer: {
+        type: "line",
+      },
+    },
+    grid: {
+      left: "0%",
+      right: "0%",
+      bottom: "0%",
+      top: "10%",
+      containLabel: true,
+    },
+    xAxis: [
+      {
+        type: "category",
+        boundaryGap: false,
+        data: xAxisLabels,
+        axisLine: { show: false },
+        axisTick: { show: false },
+        axisLabel: { color: "#9ca3af" },
+      },
+    ],
+    yAxis: [
+      {
+        type: "value",
+        splitLine: {
+          lineStyle: {
+            type: "dashed",
+            color: "#e5e7eb",
+          },
+        },
+        axisLabel: { color: "#9ca3af" },
+      },
+    ],
+    series: [
+      {
+        name: "Lượt tiếp nhận",
+        type: "line",
+        smooth: true,
+        symbol: "none",
+        lineStyle: {
+          width: 3,
+          color: "#409eff",
+        },
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: "rgba(64, 158, 255, 0.4)" },
+            { offset: 1, color: "rgba(64, 158, 255, 0.0)" },
+          ]),
+        },
+        data: chartData,
+      },
+    ],
+  };
+
+  chartInstance.setOption(option);
+}
+
+function resizeChart() {
+  if (chartInstance) {
+    chartInstance.resize();
+  }
+}
+
+onMounted(() => {
+  nextTick(() => {
+    initChart();
+    window.addEventListener("resize", resizeChart);
+  });
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", resizeChart);
+  if (chartInstance) {
+    chartInstance.dispose();
+    chartInstance = null;
+  }
+});
 </script>
