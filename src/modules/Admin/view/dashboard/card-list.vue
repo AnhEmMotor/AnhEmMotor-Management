@@ -11,10 +11,10 @@
         class="art-card relative flex flex-col justify-center h-35 px-5 mb-5 max-sm:mb-4"
       >
         <span class="text-g-700 text-sm">{{ item.des }}</span>
-        <!-- Thay vì ArtCountTo không nhận format VNĐ, dùng div bình thường nhưng font-medium như gốc -->
-        <div class="text-[26px] font-medium mt-2">
-          {{ formatCurrency(item.num) }}
-        </div>
+        <!-- Thay vì ArtCountTo không nhận format VNĐ, dùng thẻ div và thêm text-gray-900 để không bị ẩn màu -->
+        <h2 class="text-2xl font-bold text-gray-900 mt-2 mb-1">
+          {{ item.num }}
+        </h2>
         <div class="flex-c mt-1">
           <span class="text-xs text-g-600">So với tháng trước</span>
           <span
@@ -45,44 +45,30 @@ interface CardDataItem {
 }
 
 // Dữ liệu giả lập (Mock data) cho báo cáo tài chính
-const dataList = reactive<CardDataItem[]>([
+const dataList = reactive([
   {
     des: "Tổng thu (Đơn hàng)",
     icon: "ri:wallet-3-line",
-    num: 1250000000,
+    num: "1.3 tỷ đ",
     change: 12.5,
   },
   {
     des: "Tổng chi (Expenses)",
     icon: "ri:shopping-cart-2-line",
-    num: 820000000,
+    num: "820 tr đ",
     change: -4.2,
   },
   {
     des: "Lợi nhuận gộp",
     icon: "ri:funds-line",
-    num: 430000000,
+    num: "430 tr đ",
     change: 8.4,
   },
   {
     des: "Lợi nhuận ròng",
     icon: "ri:money-dollar-circle-line",
-    num: 285000000,
+    num: "285 tr đ",
     change: 15.2,
   },
 ]);
-
-function formatCurrency(value: number) {
-  if (value == null) return "0 đ";
-  if (value >= 1000000000) {
-    return (value / 1000000000).toFixed(1) + " tỷ đ";
-  }
-  if (value >= 1000000) {
-    return (value / 1000000).toFixed(0) + " tr đ";
-  }
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(value);
-}
 </script>
