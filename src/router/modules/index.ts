@@ -16,12 +16,14 @@ import { hrRoutes } from './hr'
 import { helpRoutes } from './help'
 import { inventoryRoutes } from './inventory'
 import { salesRoutes } from './sales'
+import { salesSettingsRoutes } from './sales-settings'
 
 const coreRoutes: AppRouteRecord[] = [
   dashboardRoutes,
   productRoutes,
   inventoryRoutes,
   salesRoutes,
+  salesSettingsRoutes,
   authorizationRoutes,
   hrRoutes,
   customerRoutes,
