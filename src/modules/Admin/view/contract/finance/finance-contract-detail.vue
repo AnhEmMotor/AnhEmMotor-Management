@@ -117,14 +117,13 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from "vue";
 import { useRoute } from "vue-router";
-import { UploadFilled, Check, Printer } from "@element-plus/icons-vue";
+import { Check } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import {
   FinanceContractApi,
   type FinanceContractDetailDto,
   type FinanceContractStatus,
 } from "@/api/finance";
-import ReportPageHeader from "@/modules/Accountant/view/reporting/ReportPageHeader.vue";
 import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
 
 const route = useRoute();
@@ -194,7 +193,7 @@ const isAmountMatched = computed(() => {
   return Number(disbursementForm.actualAmount) === Number(expectedAmount.value);
 });
 
-const canUploadEvidence = computed(() => {
+const _canUploadEvidence = computed(() => {
   return contract.value.status === "Pending";
 });
 
@@ -225,7 +224,7 @@ const lateAlertDescription = computed(() => {
 // Placeholder (Backend sẽ cung cấp danh sách xe treo Cavet ở Dashboard)
 const showCavetStuckAlert = computed(() => false);
 
-const cavetLabel = (state: string) => {
+const _cavetLabel = (state: string) => {
   switch (state) {
     case "FinancialCompanyHolds":
       return "Công ty tài chính giữ";
@@ -250,18 +249,18 @@ const formatDate = (dateString?: string) => {
   return new Date(dateString).toLocaleDateString("vi-VN");
 };
 
-const formatDateShort = (dateString?: string | null) => {
+const _formatDateShort = (dateString?: string | null) => {
   if (!dateString) return "-";
   const d = new Date(dateString);
   if (Number.isNaN(d.getTime())) return String(dateString);
   return d.toLocaleDateString("vi-VN");
 };
 
-const handlePrint = () => {
+const _handlePrint = () => {
   window.print();
 };
 
-const customUploadRequest = async (options: any) => {
+const _customUploadRequest = async (options: any) => {
   try {
     const id = contract.value.id;
     if (!id) return;
@@ -280,7 +279,7 @@ const customUploadRequest = async (options: any) => {
   }
 };
 
-const handleSaveCavet = async () => {
+const _handleSaveCavet = async () => {
   if (!canUpdateCavet.value) return;
   await FinanceContractApi.updateCavetState(contract.value.id, {
     state: cavetForm.state,
@@ -292,7 +291,7 @@ const handleSaveCavet = async () => {
   await fetchDetail();
 };
 
-const handleSubmitDisbursementPayment = async () => {
+const _handleSubmitDisbursementPayment = async () => {
   if (
     !canSubmitDisbursementPayment.value ||
     disbursementForm.actualAmount == null

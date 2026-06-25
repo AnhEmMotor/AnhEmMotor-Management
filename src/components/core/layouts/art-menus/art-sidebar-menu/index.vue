@@ -164,14 +164,8 @@ const route = useRoute();
 const router = useRouter();
 const settingStore = useSettingStore();
 
-const {
-  getMenuOpenWidth,
-  menuType,
-  uniqueOpened,
-  dualMenuShowText,
-  menuOpen,
-  getMenuTheme,
-} = storeToRefs(settingStore);
+const { getMenuOpenWidth, menuType, dualMenuShowText, menuOpen, getMenuTheme } =
+  storeToRefs(settingStore);
 
 const defaultOpenedMenus = ref<string[]>([]);
 const isMobileMode = ref(false);
@@ -205,7 +199,7 @@ const menuList = computed(() => {
 
   // Lọc menu theo phân hệ hiện tại (Admin hoặc Factory)
   const isPathInMenu = (menus: any[], targetPath: string): boolean => {
-    return menus.some(m => {
+    return menus.some((m) => {
       if (targetPath.startsWith(m.path)) return true;
       if (m.children) return isPathInMenu(m.children, targetPath);
       return false;
@@ -221,23 +215,23 @@ const menuList = computed(() => {
 
   let allowedPaths: string[] = [];
   if (isFactory) {
-    allowedPaths = factoryMenu.map(m => m.path);
+    allowedPaths = factoryMenu.map((m) => m.path);
   } else if (isAdmin) {
-    allowedPaths = adminMenu.map(m => m.path);
+    allowedPaths = adminMenu.map((m) => m.path);
   } else if (isMarketing) {
-    allowedPaths = marketingMenu.map(m => m.path);
+    allowedPaths = marketingMenu.map((m) => m.path);
   } else if (isOrder) {
-    allowedPaths = orderMenu.map(m => m.path);
+    allowedPaths = orderMenu.map((m) => m.path);
   } else if (isWarehouse) {
-    allowedPaths = warehouseMenu.map(m => m.path);
+    allowedPaths = warehouseMenu.map((m) => m.path);
   } else if (isAccountant) {
-    allowedPaths = accountancyMenu.map(m => m.path);
+    allowedPaths = accountancyMenu.map((m) => m.path);
   } else {
     // Mặc định fallback về admin nếu không match
-    allowedPaths = adminMenu.map(m => m.path);
+    allowedPaths = adminMenu.map((m) => m.path);
   }
 
-  const workspaceMenus = allMenus.filter(m => allowedPaths.includes(m.path));
+  const workspaceMenus = allMenus.filter((m) => allowedPaths.includes(m.path));
 
   if (!isTopLeftMenu.value && !isDualMenu.value) {
     // Nếu phân hệ chỉ có 1 root wrapper (vd: /Accountant, /Marketing, /Order, /Warehouse)
@@ -257,7 +251,9 @@ const menuList = computed(() => {
   }
 
   const currentTopPath = `/${route.path.split("/")[1]}`;
-  const currentMenu = workspaceMenus.find((menu) => menu.path === currentTopPath);
+  const currentMenu = workspaceMenus.find(
+    (menu) => menu.path === currentTopPath,
+  );
   return currentMenu?.children ?? [];
 });
 

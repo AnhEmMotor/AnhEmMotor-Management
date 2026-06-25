@@ -2,28 +2,40 @@
   <div class="art-card h-128 p-5 box-border mb-5 max-sm:mb-4 flex flex-col">
     <div class="art-card-header mb-4">
       <div class="title">
-        <h4 class="text-lg font-bold text-gray-800">Tổng quan hoạt động xưởng</h4>
+        <h4 class="text-lg font-bold text-gray-800">
+          Tổng quan hoạt động xưởng
+        </h4>
         <p class="text-sm text-gray-500 mt-1">
           Dữ liệu tiếp nhận và xử lý dịch vụ xe. So với tháng trước
           <span class="text-success font-semibold ml-1">+12.5%</span>
         </p>
       </div>
-
     </div>
-    
+
     <div class="flex-1 overflow-hidden">
       <div class="w-full h-full" ref="chartRef"></div>
     </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2 pt-5 border-t border-gray-100">
+    <div
+      class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2 pt-5 border-t border-gray-100"
+    >
       <div
         class="flex flex-col items-center justify-center py-3 px-2 rounded-xl border border-gray-100/50 shadow-sm transition-all"
         :class="item.bgClass || 'bg-gray-50'"
         v-for="(item, index) in list"
         :key="index"
       >
-        <p class="text-[22px] font-bold" :class="item.colorClass || 'text-gray-900'">{{ item.num }}</p>
-        <p class="text-[11px] font-semibold text-gray-500 mt-1 uppercase tracking-wide text-center">{{ item.name }}</p>
+        <p
+          class="text-[22px] font-bold"
+          :class="item.colorClass || 'text-gray-900'"
+        >
+          {{ item.num }}
+        </p>
+        <p
+          class="text-[11px] font-semibold text-gray-500 mt-1 uppercase tracking-wide text-center"
+        >
+          {{ item.name }}
+        </p>
       </div>
     </div>
   </div>
@@ -57,11 +69,12 @@ function initChart() {
         params.forEach((item: any) => {
           tooltipHtml += `${item.marker} ${item.seriesName}: <strong>${item.value} xe</strong><br/>`;
         });
-        
+
         if (params.length > 1) {
           const received = params[0].value;
           const completed = params[1].value;
-          const rate = received > 0 ? ((completed / received) * 100).toFixed(1) : 0;
+          const rate =
+            received > 0 ? ((completed / received) * 100).toFixed(1) : 0;
           tooltipHtml += `<br/><em>Insight:</em> Tỉ lệ hoàn thành: <strong class="text-success">${rate}%</strong>`;
         }
         return tooltipHtml;

@@ -11,7 +11,7 @@
 
 ::-webkit-scrollbar-thumb {
   border-radius: 5px;
-  background-color: #cccccc !important;
+  background-color: #ccc !important;
   transition: all 0.2s;
   -webkit-transition: all 0.2s;
 }
@@ -21,7 +21,7 @@
 }
 
 ::-webkit-scrollbar-button {
-  height: 0px;
+  height: 0;
   width: 0;
 }
 

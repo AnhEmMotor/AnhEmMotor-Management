@@ -3,10 +3,10 @@ $bg-animation-color-dark: #070707;
 $bg-animation-duration: 0.5s;
 
 html {
-  --bg-animation-color: $bg-animation-color-light;
+  --bg-animation-color: #{$bg-animation-color-light};
 
   &.dark {
-    --bg-animation-color: $bg-animation-color-dark;
+    --bg-animation-color: #{$bg-animation-color-dark};
   }
 
   &::view-transition-old(*) {

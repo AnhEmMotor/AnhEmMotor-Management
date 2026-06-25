@@ -48,7 +48,10 @@
                     <span>{{ item.collection }}</span>
                   </div>
                   <div class="flex-c mr-5 text-xs text-g-600">
-                    <ArtSvgIcon icon="ri:message-3-line" class="mr-1 text-base" />
+                    <ArtSvgIcon
+                      icon="ri:message-3-line"
+                      class="mr-1 text-base"
+                    />
                     <span>{{ item.comment }}</span>
                   </div>
                 </div>
@@ -113,20 +116,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue"
-import { commentList } from "@/mock/temp/commentList"
-import CommentWidget from "@/components/business/comment-widget/index.vue"
+import { ref, computed } from "vue";
+import { commentList } from "@/mock/temp/commentList";
+import CommentWidget from "@/components/business/comment-widget/index.vue";
 
-defineOptions({ name: "MarketingComment" })
+defineOptions({ name: "MarketingComment" });
 
 interface CommentItem {
-  id: number
-  date: string
-  content: string
-  collection: number
-  comment: number
-  userName: string
-  color?: string
+  id: number;
+  date: string;
+  content: string;
+  collection: number;
+  comment: number;
+  userName: string;
+  color?: string;
 }
 
 const COLOR_LIST = [
@@ -137,9 +140,9 @@ const COLOR_LIST = [
   "#FFEABC",
   "#F5E1FF",
   "#E1E6FE",
-]
+];
 
-const showDrawer = ref(false)
+const showDrawer = ref(false);
 const clickItem = ref<CommentItem>({
   id: 0,
   date: "",
@@ -148,19 +151,19 @@ const clickItem = ref<CommentItem>({
   comment: 0,
   userName: "",
   color: "",
-})
+});
 
 const commentsWithColors = computed(() => {
   return commentList.map((item, index) => ({
     ...item,
     color: COLOR_LIST[index % COLOR_LIST.length],
-  }))
-})
+  }));
+});
 
 const openDrawer = (item: CommentItem) => {
-  clickItem.value = item
-  showDrawer.value = true
-}
+  clickItem.value = item;
+  showDrawer.value = true;
+};
 </script>
 
 <style scoped>

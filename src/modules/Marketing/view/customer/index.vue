@@ -44,7 +44,9 @@
             </div>
             <div>
               <h3 class="text-sm font-bold text-slate-900">{{ menu.title }}</h3>
-              <p class="text-xs text-slate-500 mt-0.5">{{ menu.description }}</p>
+              <p class="text-xs text-slate-500 mt-0.5">
+                {{ menu.description }}
+              </p>
             </div>
           </div>
         </div>

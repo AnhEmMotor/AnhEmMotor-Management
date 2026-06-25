@@ -56,18 +56,19 @@ axiosInstance.interceptors.request.use(
     if (!token) {
       // Fallback to localStorage for initial load when store hydration hasn't completed yet
       // Check both old and new keys for backwards compatibility
-      token = localStorage.getItem("auth_token") ||
-              (() => {
-                const userData = localStorage.getItem("user");
-                if (userData) {
-                  try {
-                    return JSON.parse(userData).accessToken;
-                  } catch {
-                    return null;
-                  }
-                }
-                return null;
-              })();
+      token =
+        localStorage.getItem("auth_token") ||
+        (() => {
+          const userData = localStorage.getItem("user");
+          if (userData) {
+            try {
+              return JSON.parse(userData).accessToken;
+            } catch {
+              return null;
+            }
+          }
+          return null;
+        })();
     }
 
     if (token) {
@@ -123,11 +124,12 @@ axiosInstance.interceptors.response.use(
 
       if (status === ApiStatus.unauthorized) {
         // Extract backend error message more carefully
-        backendMsg = data?.errors?.[0]?.message ||
-                      data?.Message ||
-                      data?.msg ||
-                      data?.message ||
-                      "Truy cập không được phép, vui lòng đăng nhập lại";
+        backendMsg =
+          data?.errors?.[0]?.message ||
+          data?.Message ||
+          data?.msg ||
+          data?.message ||
+          "Truy cập không được phép, vui lòng đăng nhập lại";
         handleUnauthorizedError(backendMsg);
       }
 

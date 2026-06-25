@@ -1,7 +1,9 @@
 <template>
   <div class="product-invoice-container">
     <h1>Hóa đơn mua hàng</h1>
-    <p>Trang hóa đơn mua hàng (phụ tùng & phụ kiện) sẽ được phát triển ở đây.</p>
+    <p>
+      Trang hóa đơn mua hàng (phụ tùng & phụ kiện) sẽ được phát triển ở đây.
+    </p>
   </div>
 </template>
 

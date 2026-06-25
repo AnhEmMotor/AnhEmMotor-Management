@@ -1,0 +1,7 @@
+node_modules/
+dist/
+public/
+**/*.min.css
+**/*.min.scss
+src/assets/font/**
+src/assets/styles/vendor/**

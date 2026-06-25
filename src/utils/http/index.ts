@@ -23,8 +23,11 @@ interface ExtendedAxiosRequestConfig extends AxiosRequestConfig {
   showSuccessMessage?: boolean;
 }
 
-const { VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT, VITE_WITH_CREDENTIALS } =
-  import.meta.env;
+const {
+  VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT:
+    _VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT,
+  VITE_WITH_CREDENTIALS,
+} = import.meta.env;
 
 const axiosInstance = axios.create({
   timeout: REQUEST_TIMEOUT,

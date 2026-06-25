@@ -594,6 +594,7 @@ onMounted(() => {
     display: none !important;
   }
 }
+
 :deep(.el-card) {
   overflow: hidden !important;
 }

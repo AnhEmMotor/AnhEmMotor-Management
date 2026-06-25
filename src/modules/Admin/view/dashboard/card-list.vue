@@ -37,7 +37,7 @@
 <script setup lang="ts">
 import { reactive } from "vue";
 
-interface CardDataItem {
+interface _CardDataItem {
   des: string;
   icon: string;
   num: number;

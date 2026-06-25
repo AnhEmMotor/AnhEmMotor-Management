@@ -1,23 +1,31 @@
 <template>
   <div class="forgot-password-page">
     <div class="login-bg-overlay"></div>
-    <div class="login-container relative z-10 flex items-center justify-center min-h-screen">
+    <div
+      class="login-container relative z-10 flex items-center justify-center min-h-screen"
+    >
       <el-card class="login-card max-w-md w-full m-4 border-0" shadow="hover">
         <div class="text-center mb-8">
           <div class="flex justify-center mb-4">
             <!-- Icon -->
-            <div class="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center shadow-lg" style="background-color: var(--el-color-primary)">
+            <div
+              class="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center shadow-lg"
+              style="background-color: var(--el-color-primary)"
+            >
               <el-icon :size="32" color="white"><Key /></el-icon>
             </div>
           </div>
-          <h2 class="mt-2 text-3xl font-extrabold title tracking-tight">Quên mật khẩu</h2>
+          <h2 class="mt-2 text-3xl font-extrabold title tracking-tight">
+            Quên mật khẩu
+          </h2>
           <p class="mt-3 text-sm subtitle px-4">
-            Nhập địa chỉ email của bạn và chúng tôi sẽ gửi cho bạn một liên kết để đặt lại mật khẩu.
+            Nhập địa chỉ email của bạn và chúng tôi sẽ gửi cho bạn một liên kết
+            để đặt lại mật khẩu.
           </p>
         </div>
 
-        <el-form 
-          @submit.prevent="handleForgotPassword" 
+        <el-form
+          @submit.prevent="handleForgotPassword"
           class="space-y-5"
           label-position="top"
           size="large"
@@ -151,7 +159,7 @@ const handleForgotPassword = async () => {
     -webkit-backdrop-filter: blur(20px);
     backdrop-filter: blur(20px);
     padding: 10px;
-    
+
     :deep(.el-card__body) {
       padding: 30px;
     }
@@ -173,8 +181,9 @@ const handleForgotPassword = async () => {
       padding: 4px 15px;
       box-shadow: 0 0 0 1px var(--el-border-color) inset;
       transition: all 0.3s;
-      
-      &:hover, &.is-focus {
+
+      &:hover,
+      &.is-focus {
         box-shadow: 0 0 0 1px var(--el-color-primary) inset;
         background-color: var(--el-bg-color);
       }
@@ -187,7 +196,7 @@ const handleForgotPassword = async () => {
     font-size: 16px;
     padding: 24px 0;
     transition: all 0.3s;
-    
+
     &:hover {
       transform: translateY(-2px);
       box-shadow: 0 8px 20px var(--el-color-primary-light-5);

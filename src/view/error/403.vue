@@ -1,35 +1,42 @@
 <template>
   <div class="error-page">
     <div class="login-bg-overlay"></div>
-    <div class="login-container relative z-10 flex items-center justify-center min-h-screen">
+    <div
+      class="login-container relative z-10 flex items-center justify-center min-h-screen"
+    >
       <el-card class="login-card max-w-lg w-full m-4 border-0" shadow="hover">
         <div class="text-center py-8">
           <div class="flex justify-center mb-6">
-            <div class="w-24 h-24 rounded-full bg-primary flex items-center justify-center shadow-lg" style="background-color: var(--el-color-warning)">
+            <div
+              class="w-24 h-24 rounded-full bg-primary flex items-center justify-center shadow-lg"
+              style="background-color: var(--el-color-warning)"
+            >
               <el-icon :size="48" color="white"><Lock /></el-icon>
             </div>
           </div>
-          
-          <h1 class="text-8xl font-extrabold mb-2 tracking-tighter" style="color: var(--el-color-warning)">403</h1>
+
+          <h1
+            class="text-8xl font-extrabold mb-2 tracking-tighter"
+            style="color: var(--el-color-warning)"
+          >
+            403
+          </h1>
           <h2 class="text-3xl font-bold title tracking-tight mb-4">
             Truy cập bị từ chối
           </h2>
           <p class="text-base subtitle px-6 mb-10">
-            Xin lỗi, bạn không có quyền truy cập trang này. Vui lòng liên hệ quản trị viên nếu cần hỗ trợ.
+            Xin lỗi, bạn không có quyền truy cập trang này. Vui lòng liên hệ
+            quản trị viên nếu cần hỗ trợ.
           </p>
-          
+
           <div class="flex justify-center gap-4">
-            <el-button 
-              size="large" 
-              @click="goBack"
-              class="custom-btn"
-            >
+            <el-button size="large" @click="goBack" class="custom-btn">
               <el-icon class="mr-2"><Back /></el-icon>
               Quay lại
             </el-button>
-            <el-button 
-              type="primary" 
-              size="large" 
+            <el-button
+              type="primary"
+              size="large"
               @click="goHome"
               class="custom-btn submit-btn"
             >
@@ -87,7 +94,7 @@ const goHome = () => {
     -webkit-backdrop-filter: blur(20px);
     backdrop-filter: blur(20px);
     padding: 10px;
-    
+
     :deep(.el-card__body) {
       padding: 30px;
     }
@@ -107,7 +114,7 @@ const goHome = () => {
     font-weight: 600;
     padding: 12px 24px;
     transition: all 0.3s;
-    
+
     &:hover {
       transform: translateY(-2px);
     }
