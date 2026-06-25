@@ -5,7 +5,7 @@ export const accountancyMenu: AppRouteRecord[] = [
   {
     path: "/Accountant",
     name: "Accountant",
-    component: "/index/index",
+    component: "",
     meta: {
       title: "Kế Toán, Lương & Thuế",
       icon: "ri:calculator-line",
@@ -127,7 +127,7 @@ export const accountancyMenu: AppRouteRecord[] = [
       {
         path: "contract",
         name: "AccountantContract",
-        component: "/index/index",
+        component: "",
         meta: {
           title: "Quản lý hợp đồng",
           icon: "ri:file-list-line",
@@ -170,7 +170,7 @@ export const accountancyMenu: AppRouteRecord[] = [
       {
         path: "invoice",
         name: "AccountantInvoice",
-        component: "/index/index",
+        component: "",
         meta: {
           title: "Quản lý hóa đơn",
           icon: "ri:bill-line",

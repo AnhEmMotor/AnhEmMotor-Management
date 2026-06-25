@@ -4,7 +4,7 @@ export const productRoutes: AppRouteRecord[] = [
   {
     name: "OrderProductManagement",
     path: "/order/product",
-    component: "/index/index",
+    component: "",
     meta: {
       title: "menus.product.title",
       icon: "ri:shopping-bag-3-line",
@@ -44,7 +44,7 @@ export const productRoutes: AppRouteRecord[] = [
   {
     name: "WarehouseProductManagement",
     path: "/warehouse/product",
-    component: "/index/index",
+    component: "",
     meta: {
       title: "menus.product.title",
       icon: "ri:shopping-bag-3-line",

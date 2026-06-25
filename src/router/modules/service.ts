@@ -23,7 +23,7 @@ export const serviceRoutes: AppRouteRecord = {
     {
       path: "workshop",
       name: "ServiceWorkshop",
-      component: "/index/index",
+      component: "",
       meta: {
         title: "menus.service.workshop.title",
         icon: "ri:tools-line",
@@ -110,7 +110,7 @@ export const serviceRoutes: AppRouteRecord = {
     {
       path: "administrative",
       name: "ServiceAdministrative",
-      component: "/index/index",
+      component: "",
       meta: {
         title: "menus.service.administrative.title",
         icon: "ri:file-list-3-line",
@@ -131,7 +131,7 @@ export const serviceRoutes: AppRouteRecord = {
     {
       path: "booking",
       name: "ServiceBooking",
-      component: "/index/index",
+      component: "",
       meta: {
         title: "menus.service.booking.title",
         icon: "ri:calendar-event-line",

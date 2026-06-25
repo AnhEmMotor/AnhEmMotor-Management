@@ -4,7 +4,7 @@ export const factoryMenu: AppRouteRecord[] = [
   {
     path: "/factory/workshop",
     name: "Workshop",
-    component: "/index/index",
+    component: "",
     meta: {
       title: "Dịch vụ xưởng",
       icon: "ri:tools-line",
@@ -88,7 +88,7 @@ export const factoryMenu: AppRouteRecord[] = [
   {
     path: "/factory/administrative",
     name: "Administrative",
-    component: "/index/index",
+    component: "",
     meta: {
       title: "Dịch vụ hành chính",
       icon: "ri:file-list-3-line",
