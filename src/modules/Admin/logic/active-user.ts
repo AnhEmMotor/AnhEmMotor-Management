@@ -16,6 +16,7 @@ export const xAxisLabels = [
 ];
 
 export const chartData = [160, 100, 150, 80, 190, 100, 175, 120, 160];
+export const completedData = [150, 95, 140, 75, 180, 90, 170, 115, 155];
 
 export const list: UserStatItem[] = [
   { name: "Tổng số xe tiếp nhận", num: "1,250" },
