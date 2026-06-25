@@ -2,7 +2,7 @@ name: AnhEmMotor Management - Pull Request (Pre-deploy) check
 
 on:
   pull_request:
-    branches: ['master', 'main']
+    branches: ["master", "main"]
 
 jobs:
   build:
@@ -15,7 +15,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install dependencies
         run: npm install

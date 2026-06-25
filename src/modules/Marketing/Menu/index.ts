@@ -6,7 +6,7 @@ export const marketingMenu: AppRouteRecord[] = [
     name: "Marketing",
     component: "/index/index",
     meta: {
-      title: "Marketing",
+      title: "menus.marketing.title",
       icon: "ri:market-line",
       roles: ["Admin", "SuperAdmin"],
     },
@@ -17,7 +17,7 @@ export const marketingMenu: AppRouteRecord[] = [
         name: "MarketingBanner",
         component: "/Marketing/view/banner/index",
         meta: {
-          title: "Quản lý Banner",
+          title: "menus.marketing.banner",
           icon: "ri:advertisement-line",
           keepAlive: true,
         },
@@ -25,9 +25,9 @@ export const marketingMenu: AppRouteRecord[] = [
       {
         path: "article",
         name: "ArticleList",
-        component: "/article/list",
+        component: "/Marketing/article/list",
         meta: {
-          title: "Quản lý Bài viết",
+          title: "menus.marketing.article",
           icon: "ri:book-2-line",
           keepAlive: true,
           authList: [
@@ -39,9 +39,9 @@ export const marketingMenu: AppRouteRecord[] = [
       {
         path: "article/publish",
         name: "ArticlePublish",
-        component: "/article/publish",
+        component: "/Marketing/article/publish",
         meta: {
-          title: "Đăng bài",
+          title: "menus.marketing.articlePublish",
           isHide: true,
           isHideTab: true,
           keepAlive: true,
@@ -52,9 +52,9 @@ export const marketingMenu: AppRouteRecord[] = [
       {
         path: "article/publish/:id",
         name: "ArticleEdit",
-        component: "/article/publish",
+        component: "/Marketing/article/publish",
         meta: {
-          title: "Sửa bài viết",
+          title: "menus.marketing.articleEdit",
           isHide: true,
           isHideTab: true,
           keepAlive: true,
@@ -65,9 +65,9 @@ export const marketingMenu: AppRouteRecord[] = [
       {
         path: "article/detail/:id",
         name: "ArticleDetail",
-        component: "/article/detail",
+        component: "/Marketing/article/detail",
         meta: {
-          title: "Chi tiết bài viết",
+          title: "menus.marketing.articleDetail",
           isHide: true,
           keepAlive: true,
           activePath: "/Marketing/article",
@@ -78,7 +78,7 @@ export const marketingMenu: AppRouteRecord[] = [
         name: "MarketingComment",
         component: "/Marketing/view/comment/index",
         meta: {
-          title: "Quản lý Bình luận",
+          title: "menus.marketing.comment",
           icon: "ri:chat-1-line",
           keepAlive: true,
         },
@@ -88,7 +88,7 @@ export const marketingMenu: AppRouteRecord[] = [
         name: "ContactManagement",
         component: "/Marketing/view/contact/index",
         meta: {
-          title: "Quản lý Liên hệ",
+          title: "menus.marketing.contact",
           icon: "ri:message-2-line",
           keepAlive: true,
         },
@@ -98,7 +98,7 @@ export const marketingMenu: AppRouteRecord[] = [
         name: "CustomerManagement",
         component: "/Marketing/view/customer/index",
         meta: {
-          title: "Quản lý Khách hàng",
+          title: "menus.marketing.customer",
           icon: "ri:user-heart-line",
           roles: ["Admin", "SuperAdmin"],
         },
@@ -108,7 +108,7 @@ export const marketingMenu: AppRouteRecord[] = [
             name: "CustomerPotential",
             component: "/Marketing/view/customer/potential/index",
             meta: {
-              title: "Khách hàng tiềm năng",
+              title: "menus.marketing.customerPotential",
               icon: "ri:user-search-line",
             },
           },
@@ -117,7 +117,7 @@ export const marketingMenu: AppRouteRecord[] = [
             name: "CustomerProfile",
             component: "/Marketing/view/customer/profile/index",
             meta: {
-              title: "Hồ sơ khách hàng",
+              title: "menus.marketing.customerProfile",
               icon: "ri:profile-line",
             },
           },
@@ -126,7 +126,7 @@ export const marketingMenu: AppRouteRecord[] = [
             name: "CustomerAsset",
             component: "/Marketing/view/customer/asset/index",
             meta: {
-              title: "Tài sản",
+              title: "menus.marketing.customerAsset",
               icon: "ri:car-line",
             },
           },
@@ -135,7 +135,7 @@ export const marketingMenu: AppRouteRecord[] = [
             name: "CustomerCare",
             component: "/Marketing/view/customer/care/index",
             meta: {
-              title: "Chăm sóc",
+              title: "menus.marketing.customerCare",
               icon: "ri:gift-line",
             },
           },
@@ -144,7 +144,7 @@ export const marketingMenu: AppRouteRecord[] = [
             name: "CustomerProgress",
             component: "/Marketing/view/customer/progress/index",
             meta: {
-              title: "Tiến độ",
+              title: "menus.marketing.customerProgress",
               icon: "ri:git-commit-line",
             },
           },
@@ -155,7 +155,7 @@ export const marketingMenu: AppRouteRecord[] = [
         name: "CustomerBooking",
         component: "/Marketing/view/customer/booking/index",
         meta: {
-          title: "Quản lý Lịch hẹn",
+          title: "menus.marketing.booking",
           icon: "ri:calendar-event-line",
           keepAlive: true,
         },

@@ -401,8 +401,8 @@ const formatCurrencyForTable = (val: number | string) => {
   return num.toLocaleString("vi-VN");
 };
 
-const getPaidAmount = (log: AuditLogItem) => {
-  const change = log.changes?.find((c) => c.field === "Số tiền");
+const getPaidAmount = (log: any) => {
+  const change = log.changes?.find((c: any) => c.field === "Số tiền");
   if (change) {
     const oldAmount = typeof change.oldValue === "number" ? change.oldValue : 0;
     const newAmount = typeof change.newValue === "number" ? change.newValue : 0;
@@ -411,8 +411,8 @@ const getPaidAmount = (log: AuditLogItem) => {
   return 0;
 };
 
-const getNewAmount = (log: AuditLogItem) => {
-  const change = log.changes?.find((c) => c.field === "Số tiền");
+const getNewAmount = (log: any) => {
+  const change = log.changes?.find((c: any) => c.field === "Số tiền");
   if (change && typeof change.newValue === "number") {
     return change.newValue;
   }

@@ -13,12 +13,12 @@
               <h1
                 class="m-0 text-xl font-black tracking-tight text-slate-900 leading-none"
               >
-                Quản lý Bình luận
+                {{ $t("marketing.comment.title") }}
               </h1>
               <p
                 class="m-0 text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em] mt-1.5"
               >
-                Quản lý tất cả bình luận từ khách hàng
+                {{ $t("marketing.comment.subtitle") }}
               </p>
             </div>
           </div>
@@ -72,7 +72,7 @@
         modal-class="comment-modal"
       >
         <template #header>
-          <h4>Chi tiết bình luận</h4>
+          <h4>{{ $t("marketing.comment.detailTitle") }}</h4>
         </template>
         <template #default>
           <div class="drawer-default">
@@ -105,7 +105,9 @@
             </div>
 
             <div class="mt-4">
-              <h4 class="text-base font-bold mb-2">Trả lời bình luận</h4>
+              <h4 class="text-base font-bold mb-2">
+                {{ $t("marketing.comment.replyTitle") }}
+              </h4>
               <CommentWidget :comment-id="clickItem.id" />
             </div>
           </div>

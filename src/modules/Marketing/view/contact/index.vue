@@ -178,7 +178,7 @@
                       type="danger"
                       text
                       @click="closeDetail"
-                      >Đóng</ElButton
+                      >{{ $t("contact.closeBtn") }}</ElButton
                     >
                   </div>
                   <h2 class="text-base font-black text-slate-800 mt-2">
@@ -253,7 +253,7 @@
                           <ArtSvgIcon
                             icon="ri:checkbox-circle-line"
                             class="mr-1"
-                          />Đóng yêu cầu
+                          />{{ $t("contact.closeRequest") }}
                         </ElButton>
                         <ElButton
                           v-if="
@@ -315,7 +315,7 @@
                     <h4
                       class="text-xs font-bold text-indigo-500 uppercase tracking-wider m-0"
                     >
-                      Ghi chú nội bộ
+                      {{ $t("contact.internalNote") }}
                     </h4>
                     <span class="text-[10px] text-slate-400 italic"
                       >Chỉ hiển thị với nhân viên điều hành</span
@@ -471,7 +471,7 @@
                       type="danger"
                       text
                       @click="closeDetail"
-                      >Đóng</ElButton
+                      >{{ $t("contact.closeBtn") }}</ElButton
                     >
                   </div>
                   <h2 class="text-base font-black text-slate-800 mt-2">
@@ -519,7 +519,7 @@
                     <h4
                       class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2"
                     >
-                      Nội dung đóng góp
+                      {{ $t("contact.feedbackContent") }}
                     </h4>
                     <div
                       class="bg-slate-50 border border-slate-100 rounded-xl p-4 shadow-sm"
@@ -608,7 +608,7 @@
                     <h4
                       class="text-xs font-bold text-indigo-500 uppercase tracking-wider m-0"
                     >
-                      Ghi chú nội bộ
+                      {{ $t("contact.internalNote") }}
                     </h4>
                     <span class="text-[10px] text-slate-400 italic"
                       >Chỉ hiển thị với nhân viên điều hành</span
@@ -771,7 +771,7 @@
                       type="danger"
                       text
                       @click="closeDetail"
-                      >Đóng</ElButton
+                      >{{ $t("contact.closeBtn") }}</ElButton
                     >
                   </div>
                   <h2 class="text-base font-black text-slate-800 mt-2">
@@ -1065,7 +1065,7 @@
                       <h4
                         class="text-xs font-bold text-indigo-500 uppercase tracking-wider m-0"
                       >
-                        Ghi chú nội bộ
+                        {{ $t("contact.internalNote") }}
                       </h4>
                       <span class="text-[10px] text-slate-400 italic"
                         >Chỉ hiển thị với nhân viên điều hành</span
@@ -1130,6 +1130,7 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
 import { ref, watch, computed, onMounted } from "vue";
 import { ElMessage } from "element-plus";
 import { storeToRefs } from "pinia";
@@ -1143,6 +1144,8 @@ import {
 import type { Contact } from "@/types";
 
 defineOptions({ name: "ContactManagement" });
+
+const { t } = useI18n();
 const contactStore = useContactStore();
 const { isDark } = storeToRefs(useSettingStore());
 
