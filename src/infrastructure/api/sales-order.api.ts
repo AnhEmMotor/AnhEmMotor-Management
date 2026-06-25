@@ -94,13 +94,13 @@ export const SalesOrderApi = {
 
   delete(id: number) {
     return request.del({
-      url: `/api/v1/SalesOrders/${id}`
-    })
+      url: `/api/v1/SalesOrders/${id}`,
+    });
   },
 
   getPaymentLink(id: number) {
     return request.get<{ url: string }>({
-      url: `/api/v1/Payment/${id}/link`
-    })
-  }
-}
+      url: `/api/v1/Payment/${id}/link`,
+    });
+  },
+};

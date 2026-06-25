@@ -65,13 +65,19 @@
               :preview-src-list="[row.imageUrl]"
               preview-teleported
             />
-            <ElIcon v-else class="category-image-placeholder"><Picture /></ElIcon>
+            <ElIcon v-else class="category-image-placeholder"
+              ><Picture
+            /></ElIcon>
           </span>
         </template>
 
         <template #name="{ row }">
           <div class="flex flex-col text-left">
-            <span :class="row.parentId ? 'category-name-child' : 'category-name-root'">
+            <span
+              :class="
+                row.parentId ? 'category-name-child' : 'category-name-root'
+              "
+            >
               {{ row.name }}
             </span>
           </div>

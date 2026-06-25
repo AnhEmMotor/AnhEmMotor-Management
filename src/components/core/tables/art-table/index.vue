@@ -95,12 +95,13 @@ import { useResizeObserver, useWindowSize } from "@vueuse/core";
 
 defineOptions({ name: "ArtTable" });
 
-  const { width } = useWindowSize()
-  const elTableRef = ref<any>(null)
-  const paginationRef = ref<HTMLElement>()
-  const tableHeaderRef = ref<HTMLElement>()
-  const tableStore = useTableStore()
-  const { isBorder, isZebra, tableSize, isFullScreen, isHeaderBackground } = storeToRefs(tableStore)
+const { width } = useWindowSize();
+const elTableRef = ref<any>(null);
+const paginationRef = ref<HTMLElement>();
+const tableHeaderRef = ref<HTMLElement>();
+const tableStore = useTableStore();
+const { isBorder, isZebra, tableSize, isFullScreen, isHeaderBackground } =
+  storeToRefs(tableStore);
 
 interface PaginationConfig {
   current: number;

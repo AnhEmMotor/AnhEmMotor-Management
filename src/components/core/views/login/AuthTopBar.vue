@@ -116,22 +116,22 @@ const changeThemeColor = (color: string) => {
 </script>
 
 <style scoped>
-  .color-dots {
-    pointer-events: none;
-    box-shadow: 0 2px 12px var(--art-gray-300);
-    backdrop-filter: blur(10px);
-    transform: translateX(10px);
-    transition:
-      opacity 0.3s ease,
-      transform 0.3s ease;
-  }
+.color-dots {
+  pointer-events: none;
+  box-shadow: 0 2px 12px var(--art-gray-300);
+  backdrop-filter: blur(10px);
+  transform: translateX(10px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
 
-  .color-dot {
-    box-shadow: 0 2px 4px rgb(0 0 0 / 15%);
-    transform: translateX(20px) scale(0.8);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    transition-delay: calc(var(--index) * 0.05s);
-  }
+.color-dot {
+  box-shadow: 0 2px 4px rgb(0 0 0 / 15%);
+  transform: translateX(20px) scale(0.8);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition-delay: calc(var(--index) * 0.05s);
+}
 
 .color-dot:hover {
   box-shadow: 0 4px 8px rgb(0 0 0 / 20%);
