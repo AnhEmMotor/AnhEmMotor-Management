@@ -388,7 +388,6 @@ export default {
     contract: {
       title: "Quản lý Hợp đồng",
       sales: "Hợp đồng Mua bán Xe",
-      finance: "Hợp đồng Tài chính Trả góp",
       supplier: "Hợp đồng Nhà cung cấp",
       templates: "Mẫu Hợp đồng",
       templateList: "Danh sách mẫu hợp đồng",
@@ -415,7 +414,6 @@ export default {
       templateDynamicFieldsHint: "Click để chèn vào vị trí con trỏ",
       tokenSearchPlaceholder: "Tìm biến...",
       typeSales: "Hợp đồng Mua bán",
-      typeFinance: "Hợp đồng Trả góp",
       typeSupplier: "Hợp đồng Nhà cung cấp",
       typeAppendix: "Phụ lục",
       statusActive: "Kích hoạt",

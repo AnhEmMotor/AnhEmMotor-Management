@@ -43,20 +43,61 @@ export const orderMenu: AppRouteRecord[] = [
         },
       },
       {
-        path: "product/invoice",
-        name: "OrderProductInvoice",
-        component: "/Order/view/product/invoice/index",
+        path: "product",
+        name: "OrderProduct",
         meta: {
-          title: "Hóa đơn mua hàng",
-          icon: "ri:bill-line",
-          keepAlive: true,
+          title: "Quản lý sản phẩm",
+          icon: "ri:shopping-bag-3-line",
           roles: ["Admin", "SuperAdmin"],
         },
+        redirect: "/Order/product/list",
+        children: [
+          {
+            path: "list",
+            name: "OrderProductList",
+            component: "/Order/view/product/list/index",
+            meta: {
+              title: "Danh sách sản phẩm",
+              icon: "ri:list-unordered",
+              keepAlive: true,
+            },
+          },
+          {
+            path: "type",
+            name: "OrderProductType",
+            component: "/Order/view/product/type/index",
+            meta: {
+              title: "Loại xe",
+              icon: "ri:car-line",
+              keepAlive: true,
+            },
+          },
+          {
+            path: "brand",
+            name: "OrderProductBrand",
+            component: "/Order/view/product/brand/index",
+            meta: {
+              title: "Thương hiệu",
+              icon: "ri:price-tag-3-line",
+              keepAlive: true,
+            },
+          },
+          {
+            path: "invoice",
+            name: "OrderProductInvoice",
+            component: "/Order/view/product/invoice/index",
+            meta: {
+              title: "Hóa đơn mua hàng",
+              icon: "ri:bill-line",
+              keepAlive: true,
+              roles: ["Admin", "SuperAdmin"],
+            },
+          },
+        ],
       },
       {
         path: "logistics",
         name: "OrderLogistics",
-        component: "/index/index",
         meta: {
           title: "Quản lý vận chuyển",
           icon: "ri:truck-line",

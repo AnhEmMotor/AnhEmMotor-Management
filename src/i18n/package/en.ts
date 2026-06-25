@@ -389,7 +389,6 @@ export default {
     contract: {
       title: "Contract Management",
       sales: "Sales Contract",
-      finance: "Finance Contract (Installment)",
       supplier: "Supplier Contract",
       templates: "Contract Templates",
       templateName: "Contract Template Name",

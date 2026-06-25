@@ -1,14 +1,25 @@
 import { AppRouteRecord } from "@/types/router";
+import { Permissions } from "@/domain/constants/permissions";
 
 export const serviceRoutes: AppRouteRecord = {
   path: "/factory/service",
   name: "Service",
   component: "/Factory/view/service/index/index",
   meta: {
-    title: "menus.service.title",
-    icon: "ri:customer-service-2-line",
+    title: "Thống kê Xưởng",
+    icon: "ri:bar-chart-grouped-line",
   },
   children: [
+    {
+      path: "service-dashboard",
+      name: "ServiceDashboard",
+      component: "/Factory/view/service/workshop/dashboard/index",
+      meta: {
+        title: "Dashboard xưởng",
+        icon: "ri:dashboard-line",
+        keepAlive: true,
+      },
+    },
     {
       path: "workshop",
       name: "ServiceWorkshop",
@@ -16,6 +27,7 @@ export const serviceRoutes: AppRouteRecord = {
       meta: {
         title: "menus.service.workshop.title",
         icon: "ri:tools-line",
+        isHide: true,
       },
       children: [
         {
@@ -93,6 +105,7 @@ export const serviceRoutes: AppRouteRecord = {
       meta: {
         title: "menus.service.administrative.title",
         icon: "ri:file-list-3-line",
+        isHide: true,
       },
       children: [
         {
@@ -113,6 +126,7 @@ export const serviceRoutes: AppRouteRecord = {
       meta: {
         title: "menus.service.booking.title",
         icon: "ri:calendar-event-line",
+        isHide: true,
       },
       children: [
         {
@@ -143,6 +157,17 @@ export const serviceRoutes: AppRouteRecord = {
         title: "menus.service.warrantyAndComplaints.title",
         icon: "ri:shield-check-line",
         isHide: true,
+      },
+    },
+    {
+      path: "workshop-report",
+      name: "ServiceWorkshopReport",
+      component: "/Accountant/view/reporting/workshop",
+      meta: {
+        title: "Báo cáo xưởng dịch vụ",
+        icon: "ri:tools-line",
+        keepAlive: true,
+        permission: Permissions.StatisticalView,
       },
     },
   ],

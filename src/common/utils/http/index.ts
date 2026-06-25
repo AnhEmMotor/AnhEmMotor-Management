@@ -119,24 +119,27 @@ axiosInstance.interceptors.response.use(
     const { response } = error;
     if (response) {
       const { status, data } = response;
+      let backendMsg: string | undefined;
+
       if (status === ApiStatus.unauthorized) {
         // Extract backend error message more carefully
-        let backendMsg = data?.errors?.[0]?.message ||
-                        data?.Message ||
-                        data?.msg ||
-                        data?.message ||
-                        "Truy cập không được phép, vui lòng đăng nhập lại";
+        backendMsg = data?.errors?.[0]?.message ||
+                      data?.Message ||
+                      data?.msg ||
+                      data?.message ||
+                      "Truy cập không được phép, vui lòng đăng nhập lại";
         handleUnauthorizedError(backendMsg);
       }
-        if (!backendMsg && data?.errors) {
-          if (Array.isArray(data.errors)) {
-            backendMsg = data.errors
-              .map((e: any) => e.message || e.Message || JSON.stringify(e))
-              .join(", ");
-          } else if (typeof data.errors === "object") {
-            backendMsg = Object.values(data.errors).flat().join(", ");
-          }
+
+      if (!backendMsg && data?.errors) {
+        if (Array.isArray(data.errors)) {
+          backendMsg = data.errors
+            .map((e: any) => e.message || e.Message || JSON.stringify(e))
+            .join(", ");
+        } else if (typeof data.errors === "object") {
+          backendMsg = Object.values(data.errors).flat().join(", ");
         }
+      }
 
       if (backendMsg) {
         return Promise.reject(new HttpError(backendMsg, status, { data }));

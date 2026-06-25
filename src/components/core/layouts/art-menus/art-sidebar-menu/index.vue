@@ -152,6 +152,8 @@ import { adminMenu } from "@/modules/Admin/Menu";
 import { factoryMenu } from "@/modules/Factory/Menu";
 import { marketingMenu } from "@/modules/Marketing/Menu";
 import { orderMenu } from "@/modules/Order/Menu";
+import { warehouseMenu } from "@/modules/Warehouse/Menu";
+import { accountancyMenu } from "@/modules/Accountant/Menu";
 
 defineOptions({ name: "ArtSidebarMenu" });
 
@@ -215,6 +217,8 @@ const menuList = computed(() => {
   const isAdmin = isPathInMenu(adminMenu, route.path);
   const isMarketing = isPathInMenu(marketingMenu, route.path);
   const isOrder = isPathInMenu(orderMenu, route.path);
+  const isWarehouse = isPathInMenu(warehouseMenu, route.path);
+  const isAccountant = isPathInMenu(accountancyMenu, route.path);
 
   let allowedPaths: string[] = [];
   if (isFactory) {
@@ -225,6 +229,10 @@ const menuList = computed(() => {
     allowedPaths = marketingMenu.map(m => m.path);
   } else if (isOrder) {
     allowedPaths = orderMenu.map(m => m.path);
+  } else if (isWarehouse) {
+    allowedPaths = warehouseMenu.map(m => m.path);
+  } else if (isAccountant) {
+    allowedPaths = accountancyMenu.map(m => m.path);
   } else {
     // Mặc định fallback về admin nếu không match
     allowedPaths = adminMenu.map(m => m.path);
@@ -233,6 +241,11 @@ const menuList = computed(() => {
   const workspaceMenus = allMenus.filter(m => allowedPaths.includes(m.path));
 
   if (!isTopLeftMenu.value && !isDualMenu.value) {
+    // Nếu phân hệ chỉ có 1 root wrapper (vd: /Accountant, /Marketing, /Order, /Warehouse)
+    // thì trả về children trực tiếp để sidebar hiển thị phẳng (không lồng thêm 1 cấp)
+    if (workspaceMenus.length === 1 && workspaceMenus[0].children?.length) {
+      return workspaceMenus[0].children;
+    }
     return workspaceMenus;
   }
 

@@ -1,4 +1,4 @@
-﻿import { AppRouteRecord } from "@/types/router";
+import { AppRouteRecord } from "@/types/router";
 import { Permissions } from "@/domain/constants/permissions";
 
 export const reportingRoutes: AppRouteRecord = {
@@ -6,7 +6,7 @@ export const reportingRoutes: AppRouteRecord = {
   name: "Reporting",
   component: "/index/index",
   meta: {
-    title: "Thá»‘ng kÃª & BÃ¡o cÃ¡o",
+    title: "Thống kê & Báo cáo",
     icon: "ri:bar-chart-grouped-line",
     permission: Permissions.StatisticalView,
   },
@@ -16,7 +16,7 @@ export const reportingRoutes: AppRouteRecord = {
       name: "ExecutiveDashboard",
       component: "/Accountant/view/reporting/dashboard",
       meta: {
-        title: "Tá»•ng quan Ä‘iá»u hÃ nh",
+        title: "Tổng quan điều hành",
         icon: "ri:dashboard-line",
         permission: Permissions.StatisticalView,
       },
@@ -26,9 +26,10 @@ export const reportingRoutes: AppRouteRecord = {
       name: "SalesAnalytics",
       component: "/Accountant/view/reporting/revenue",
       meta: {
-        title: "BÃ¡o cÃ¡o bÃ¡n hÃ ng",
+        title: "Báo cáo bán hàng",
         icon: "ri:money-cny-circle-line",
         permission: Permissions.StatisticalView,
+        isHide: true,
       },
     },
     {
@@ -36,7 +37,7 @@ export const reportingRoutes: AppRouteRecord = {
       name: "FinancialAnalytics",
       component: "/Accountant/view/reporting/financial",
       meta: {
-        title: "BÃ¡o cÃ¡o tÃ i chÃ­nh",
+        title: "Báo cáo tài chính",
         icon: "ri:file-chart-line",
         permission: Permissions.StatisticalView,
       },
@@ -46,9 +47,10 @@ export const reportingRoutes: AppRouteRecord = {
       name: "FinancingAnalytics",
       component: "/Accountant/view/reporting/financing",
       meta: {
-        title: "BÃ¡o cÃ¡o tráº£ gÃ³p",
+        title: "Báo cáo trả góp",
         icon: "ri:bank-line",
         permission: Permissions.StatisticalView,
+        isHide: true,
       },
     },
     {
@@ -56,7 +58,7 @@ export const reportingRoutes: AppRouteRecord = {
       name: "InventoryAnalytics",
       component: "/Accountant/view/reporting/inventory",
       meta: {
-        title: "BÃ¡o cÃ¡o tá»“n kho",
+        title: "Báo cáo tồn kho",
         icon: "ri:archive-line",
         permission: Permissions.StatisticalView,
       },
@@ -66,9 +68,10 @@ export const reportingRoutes: AppRouteRecord = {
       name: "WorkshopAnalytics",
       component: "/Accountant/view/reporting/workshop",
       meta: {
-        title: "BÃ¡o cÃ¡o xÆ°á»Ÿng dá»‹ch vá»¥",
+        title: "Báo cáo xưởng dịch vụ",
         icon: "ri:tools-line",
         permission: Permissions.StatisticalView,
+        isHide: true,
       },
     },
     {
@@ -76,7 +79,7 @@ export const reportingRoutes: AppRouteRecord = {
       name: "CustomerAnalytics",
       component: "/Accountant/view/reporting/customer",
       meta: {
-        title: "BÃ¡o cÃ¡o khÃ¡ch hÃ ng",
+        title: "Báo cáo khách hàng",
         icon: "ri:user-heart-line",
         permission: Permissions.StatisticalView,
       },
@@ -86,9 +89,10 @@ export const reportingRoutes: AppRouteRecord = {
       name: "HRCommissionAnalytics",
       component: "/Accountant/view/reporting/employee",
       meta: {
-        title: "BÃ¡o cÃ¡o nhÃ¢n sá»± & hoa há»“ng",
+        title: "Báo cáo nhân sự & hoa hồng",
         icon: "ri:team-line",
         permission: Permissions.StatisticalView,
+        isHide: true,
       },
     },
     {
@@ -96,12 +100,11 @@ export const reportingRoutes: AppRouteRecord = {
       name: "CustomerServiceAnalytics",
       component: "/Accountant/view/reporting/customer-service",
       meta: {
-        title: "BÃ¡o cÃ¡o chÄƒm sÃ³c khÃ¡ch hÃ ng",
+        title: "Báo cáo chăm sóc khách hàng",
         icon: "ri:customer-service-2-line",
         permission: Permissions.StatisticalView,
+        isHide: true,
       },
     },
   ],
 };
-
-// Removed default export

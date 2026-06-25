@@ -9,26 +9,26 @@ import { marketingMenu } from "@/modules/Marketing/Menu";
 import { resultRoutes } from "./result";
 import { exceptionRoutes } from "./exception";
 import { safeguardRoutes } from "./safeguard";
-import { productRoutes } from "./product";
 import { contractRoutes } from "./contract";
 import { orderMenu } from "@/modules/Order/Menu";
+import { warehouseMenu } from "@/modules/Warehouse/Menu";
+import { accountancyMenu } from "@/modules/Accountant/Menu";
 
 import { serviceRoutes } from "./service";
 import { reportingRoutes } from "./reporting";
 import { hrRoutes } from "./hr";
 import { helpRoutes } from "./help";
-import { inventoryRoutes } from "./inventory";
 import { salesRoutes } from "./sales";
 
 import { factoryMenu } from "@/modules/Factory/Menu";
 
 const coreRoutes: AppRouteRecord[] = [
   dashboardRoutes,
-  ...productRoutes,
   ...orderMenu,
   serviceRoutes,
   ...factoryMenu,
-  inventoryRoutes,
+  ...warehouseMenu,
+  ...accountancyMenu,
   salesRoutes,
   authorizationRoutes,
   hrRoutes,

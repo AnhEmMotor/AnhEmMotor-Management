@@ -156,6 +156,7 @@ const workspaces = ref([
     color: "#d97706",
     shadowColor: "rgba(217, 119, 6, 0.15)",
     hasAccess: true,
+    path: "/Warehouse/product",
   },
   {
     title: "Dịch Vụ & Xưởng Sửa Chữa",
@@ -173,6 +174,7 @@ const workspaces = ref([
     color: "#7c3aed",
     shadowColor: "rgba(124, 58, 237, 0.15)",
     hasAccess: true,
+    path: "/Accountant/executive-dashboard",
   },
   {
     title: "Đơn hàng & Vận chuyển",

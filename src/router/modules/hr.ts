@@ -1,4 +1,5 @@
 import { AppRouteRecord } from "@/types/router";
+import { Permissions } from "@/domain/constants/permissions";
 
 export const hrRoutes: AppRouteRecord = {
   name: "HRManagement",
@@ -35,6 +36,7 @@ export const hrRoutes: AppRouteRecord = {
       meta: {
         title: "menus.hr.payroll",
         icon: "ri:bank-card-line",
+        isHide: true,
       },
     },
     {
@@ -44,6 +46,18 @@ export const hrRoutes: AppRouteRecord = {
       meta: {
         title: "menus.hr.kpi",
         icon: "ri:bar-chart-box-line",
+        isHide: true,
+      },
+    },
+    {
+      path: "hr-report",
+      name: "HRCommissionReport",
+      component: "/Accountant/view/reporting/employee",
+      meta: {
+        title: "Báo cáo nhân sự & hoa hồng",
+        icon: "ri:team-line",
+        keepAlive: true,
+        permission: Permissions.StatisticalView,
       },
     },
   ],
