@@ -21,15 +21,11 @@
     </ElRow>
 
     <ElRow :gutter="20">
-      <ElCol :sm="24" :md="24" :lg="12">
-        <!-- Dashboard Thuế & Hóa đơn -->
-        <NewUser />
-      </ElCol>
-      <ElCol :sm="24" :md="12" :lg="6">
+      <ElCol :sm="24" :md="12" :lg="12">
         <!-- Audit Log / Hoạt động hệ thống -->
         <Dynamic />
       </ElCol>
-      <ElCol :sm="24" :md="12" :lg="6">
+      <ElCol :sm="24" :md="12" :lg="12">
         <!-- Cảnh báo hệ thống (Todo) -->
         <TodoList />
       </ElCol>
@@ -41,7 +37,6 @@
 import CardList from "./card-list.vue";
 import ActiveUser from "./active-user.vue";
 import SalesOverview from "./sales-overview.vue";
-import NewUser from "./new-user.vue";
 import Dynamic from "./dynamic-stats.vue";
 import TodoList from "./todo-list.vue";
 
