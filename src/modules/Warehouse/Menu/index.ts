@@ -4,7 +4,7 @@ export const warehouseMenu: AppRouteRecord[] = [
   {
     path: "/Warehouse",
     name: "Warehouse",
-    component: "",
+    component: "/index/index",
     meta: {
       title: "Warehouse",
       icon: "ri:store-2-line",

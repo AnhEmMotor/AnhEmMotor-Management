@@ -4,7 +4,7 @@ export const orderMenu: AppRouteRecord[] = [
   {
     path: "/Order",
     name: "Order",
-    component: "",
+    component: "/index/index",
     meta: {
       title: "Order",
       icon: "ri:file-list-3-line",

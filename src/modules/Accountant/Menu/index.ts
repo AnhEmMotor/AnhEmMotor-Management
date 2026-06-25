@@ -5,7 +5,7 @@ export const accountancyMenu: AppRouteRecord[] = [
   {
     path: "/Accountant",
     name: "Accountant",
-    component: "",
+    component: "/index/index",
     meta: {
       title: "Kế Toán, Lương & Thuế",
       icon: "ri:calculator-line",
