@@ -10,6 +10,15 @@ export default tseslint.config(
   ...pluginVue.configs["flat/essential"],
   eslintPluginPrettierRecommended,
   {
+    ignores: [
+      "dist/**",
+      "node_modules/**",
+      "public/**",
+      "src/types/import/auto-imports.d.ts",
+      "src/types/import/components.d.ts",
+    ],
+  },
+  {
     files: ["*.vue", "**/*.vue"],
     languageOptions: {
       parser: vueParser,
@@ -39,7 +48,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ["*.ts", "**/*.ts", "*.js", "**/*.js"],
+    files: ["*.ts", "**/*.ts", "*.js", "**/*.js", "*.cjs", "**/*.cjs"],
     languageOptions: {
       parser: tseslint.parser,
       sourceType: "module",
