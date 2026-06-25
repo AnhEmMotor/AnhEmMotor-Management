@@ -40,6 +40,15 @@ export const serviceRoutes: AppRouteRecord = {
           },
         },
         {
+          path: "assignment",
+          name: "ServiceWorkshopAssignment",
+          component: "/Factory/view/service/workshop/assignment/index",
+          meta: {
+            title: "Phân công nhân viên",
+            icon: "ri:user-settings-line",
+          },
+        },
+        {
           path: "repair-orders",
           name: "ServiceWorkshopRepairOrders",
           component: "/Factory/view/service/workshop/repair-orders/index",
@@ -152,7 +161,8 @@ export const serviceRoutes: AppRouteRecord = {
     {
       path: "warranty-and-complaints",
       name: "ServiceWarrantyAndComplaints",
-      component: "/Factory/view/service/warranty-and-complaints/complaints/index",
+      component:
+        "/Factory/view/service/warranty-and-complaints/complaints/index",
       meta: {
         title: "menus.service.warrantyAndComplaints.title",
         icon: "ri:shield-check-line",

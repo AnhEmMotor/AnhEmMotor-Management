@@ -1,7 +1,7 @@
-﻿<template>
+<template>
   <div class="report-page-header">
     <div class="report-page-header__content">
-      <div class="report-page-header__eyebrow">Thá»‘ng kÃª &amp; BÃ¡o cÃ¡o</div>
+      <div class="report-page-header__eyebrow">Thống kê &amp; Báo cáo</div>
       <div class="report-page-header__title-row">
         <div v-if="icon" class="report-page-header__icon">
           <ArtSvgIcon :icon="icon" />
@@ -78,7 +78,7 @@ h1 {
   font-size: 24px;
   font-weight: 800;
   line-height: 1.25;
-  color: #f8fafc;
+  color: var(--report-text);
 }
 
 p {
@@ -86,7 +86,7 @@ p {
   margin: 8px 0 0;
   font-size: 14px;
   line-height: 1.6;
-  color: #9ca3af;
+  color: var(--report-muted);
 }
 
 .report-page-header__actions {

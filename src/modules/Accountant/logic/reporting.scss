@@ -83,39 +83,28 @@
   color: var(--report-text);
 }
 
-.reporting-page .text-primary {
-  color: var(--report-red-light) !important;
-}
-
-.reporting-page .text-green-500,
-.reporting-page .text-green-600 {
-  color: #4ade80 !important;
-}
-
-.reporting-page .text-red-500,
-.reporting-page .text-red-600 {
-  color: #f87171 !important;
-}
-
-.reporting-page .text-yellow-500,
-.reporting-page .text-yellow-600 {
-  color: #facc15 !important;
-}
-
-.reporting-page .text-gray-400 {
-  color: var(--report-muted) !important;
-}
-
-.reporting-page .bg-gray-300 {
-  background-color: #4b5563 !important;
-}
-
 .reporting-page .border-slate-100,
 .reporting-page .border-slate-200,
 .reporting-page .border-b,
 .reporting-page .border-t,
 .reporting-page .border-y-2 {
   border-color: var(--report-border) !important;
+}
+
+.bg-report-red {
+  background: var(--el-color-primary) !important;
+}
+
+.bg-report-red-light {
+  background: var(--el-color-primary-light-3) !important;
+}
+
+.bg-report-red-dark {
+  background: var(--el-color-primary-dark-2) !important;
+}
+
+.bg-report-gray {
+  background: var(--el-text-color-secondary) !important;
 }
 
 .reporting-kpi-grid .art-card {
@@ -517,6 +506,33 @@ html.dark {
     --report-muted-strong: #cbd5e1;
     --report-input-bg: #101114;
     --report-radio-bg: #101114;
+
+    .text-primary {
+      color: var(--report-red-light) !important;
+    }
+
+    .text-green-500,
+    .text-green-600 {
+      color: #4ade80 !important;
+    }
+
+    .text-red-500,
+    .text-red-600 {
+      color: #f87171 !important;
+    }
+
+    .text-yellow-500,
+    .text-yellow-600 {
+      color: #facc15 !important;
+    }
+
+    .text-gray-400 {
+      color: var(--report-muted) !important;
+    }
+
+    .bg-gray-300 {
+      background-color: #4b5563 !important;
+    }
   }
 
   .reporting-dialog.el-dialog {

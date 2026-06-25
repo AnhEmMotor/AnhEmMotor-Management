@@ -20,6 +20,15 @@ export const factoryMenu: AppRouteRecord[] = [
         },
       },
       {
+        path: "assignment",
+        name: "WorkshopAssignment",
+        component: "/Factory/view/service/workshop/assignment/index",
+        meta: {
+          title: "Phân công nhân viên",
+          icon: "ri:user-settings-line",
+        },
+      },
+      {
         path: "repair",
         name: "WorkshopRepair",
         component: "/Factory/view/service/workshop/repair-orders/index",
@@ -31,7 +40,8 @@ export const factoryMenu: AppRouteRecord[] = [
       {
         path: "warranty",
         name: "WorkshopWarranty",
-        component: "/Factory/view/service/warranty-and-complaints/complaints/index",
+        component:
+          "/Factory/view/service/warranty-and-complaints/complaints/index",
         meta: {
           title: "Bảo hành",
           icon: "ri:shield-check-line",
@@ -64,16 +74,16 @@ export const factoryMenu: AppRouteRecord[] = [
           icon: "ri:star-smile-line",
         },
       },
-      {
-        path: "statistics",
-        name: "WorkshopStatistics",
-        component: "/Factory/view/service/workshop/statistics/index",
-        meta: {
-          title: "Thống kê xưởng",
-          icon: "ri:bar-chart-line",
-        },
-      },
     ],
+  },
+  {
+    path: "/factory/statistics",
+    name: "FactoryStatistics",
+    component: "/Factory/view/service/workshop/statistics/index",
+    meta: {
+      title: "Thống kê xưởng",
+      icon: "ri:bar-chart-line",
+    },
   },
   {
     path: "/factory/administrative",

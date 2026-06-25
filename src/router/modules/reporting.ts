@@ -40,6 +40,7 @@ export const reportingRoutes: AppRouteRecord = {
         title: "Báo cáo tài chính",
         icon: "ri:file-chart-line",
         permission: Permissions.StatisticalView,
+        isHide: true,
       },
     },
     {

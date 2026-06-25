@@ -55,6 +55,7 @@ export const accountancyMenu: AppRouteRecord[] = [
           icon: "ri:bank-line",
           keepAlive: true,
           permission: Permissions.StatisticalView,
+          isHide: true,
         },
       },
       {
@@ -111,6 +112,92 @@ export const accountancyMenu: AppRouteRecord[] = [
           keepAlive: true,
           permission: Permissions.StatisticalView,
         },
+      },
+      {
+        path: "payroll",
+        name: "AccountantPayroll",
+        component: "/Admin/view/employee/payroll/index",
+        meta: {
+          title: "Tiền lương nhân sự",
+          icon: "ri:bank-card-line",
+          keepAlive: true,
+          permission: Permissions.StatisticalView,
+        },
+      },
+      {
+        path: "contract",
+        name: "AccountantContract",
+        component: "/index/index",
+        meta: {
+          title: "Quản lý hợp đồng",
+          icon: "ri:file-list-line",
+          permission: Permissions.StatisticalView,
+        },
+        children: [
+          {
+            path: "sales",
+            name: "AccountantSalesContract",
+            component: "/Admin/view/contract/sales/index",
+            meta: {
+              title: "Hợp đồng bán xe",
+              icon: "ri:file-paper-2-line",
+              permission: Permissions.StatisticalView,
+            },
+          },
+          {
+            path: "supplier",
+            name: "AccountantSupplierContract",
+            component: "/Admin/view/contract/supplier/index",
+            meta: {
+              title: "Hợp đồng nhà cung cấp",
+              icon: "ri:truck-line",
+              permission: Permissions.StatisticalView,
+            },
+          },
+        ],
+      },
+      {
+        path: "debt",
+        name: "AccountantDebt",
+        component: "/Warehouse/view/inventory/debt/index",
+        meta: {
+          title: "Báo cáo công nợ",
+          icon: "ri:money-dollar-box-line",
+          keepAlive: true,
+          permission: Permissions.StatisticalView,
+        },
+      },
+      {
+        path: "invoice",
+        name: "AccountantInvoice",
+        component: "/index/index",
+        meta: {
+          title: "Quản lý hóa đơn",
+          icon: "ri:bill-line",
+          permission: Permissions.StatisticalView,
+        },
+        children: [
+          {
+            path: "payment",
+            name: "AccountantPaymentInvoice",
+            component: "/Order/view/product/invoice/index",
+            meta: {
+              title: "Hóa đơn thanh toán",
+              icon: "ri:secure-payment-line",
+              permission: Permissions.StatisticalView,
+            },
+          },
+          {
+            path: "sales",
+            name: "AccountantSalesInvoice",
+            component: "/Order/view/product/invoice/index",
+            meta: {
+              title: "Hóa đơn bán hàng",
+              icon: "ri:receipt-line",
+              permission: Permissions.StatisticalView,
+            },
+          },
+        ],
       },
     ],
   },

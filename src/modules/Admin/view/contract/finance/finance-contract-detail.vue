@@ -1,121 +1,117 @@
 <template>
+  <!-- KPI Cards Row -->
+  <div
+    class="reporting-kpi-grid mb-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"
+  >
+    <ArtStatsCard
+      title="Số hợp đồng TC"
+      :count="contract.contractNumber || '-'"
+      description="Mã hợp đồng đang theo dõi"
+      icon="ri:hashtag"
+      icon-style="bg-report-red"
+    />
+    <ArtStatsCard
+      title="Tiền giải ngân dự kiến"
+      :count="formatCurrency(contract.disbursement?.expectedAmount ?? 0)"
+      description="Số tiền công ty tài chính cam kết"
+      icon="ri:money-dollar-circle-line"
+      icon-style="bg-report-red-light"
+    />
+    <ArtStatsCard
+      title="Trả góp/tháng"
+      :count="formatCurrency(contract.creditPackage?.monthlyPaymentAmount ?? 0)"
+      :description="`Kỳ hạn: ${contract.creditPackage?.termMonths ?? '-'} tháng`"
+      icon="ri:wallet-3-line"
+      icon-style="bg-report-red-dark"
+    />
+    <ArtStatsCard
+      title="Trạng thái"
+      :count="getStatusLabel(contract.status)"
+      description="Vòng đời giải ngân"
+      icon="ri:shield-check-line"
+      icon-style="bg-report-gray"
+    />
+  </div>
 
-    <!-- KPI Cards Row -->
-    <div
-      class="reporting-kpi-grid mb-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"
-    >
-      <ArtStatsCard
-        title="Số hợp đồng TC"
-        :count="contract.contractNumber || '-'"
-        description="Mã hợp đồng đang theo dõi"
-        icon="ri:hashtag"
-        icon-style="bg-report-red"
-      />
-      <ArtStatsCard
-        title="Tiền giải ngân dự kiến"
-        :count="formatCurrency(contract.disbursement?.expectedAmount ?? 0)"
-        description="Số tiền công ty tài chính cam kết"
-        icon="ri:money-dollar-circle-line"
-        icon-style="bg-report-red-light"
-      />
-      <ArtStatsCard
-        title="Trả góp/tháng"
-        :count="
-          formatCurrency(contract.creditPackage?.monthlyPaymentAmount ?? 0)
-        "
-        :description="`Kỳ hạn: ${contract.creditPackage?.termMonths ?? '-'} tháng`"
-        icon="ri:wallet-3-line"
-        icon-style="bg-report-red-dark"
-      />
-      <ArtStatsCard
-        title="Trạng thái"
-        :count="getStatusLabel(contract.status)"
-        description="Vòng đời giải ngân"
-        icon="ri:shield-check-line"
-        icon-style="bg-report-gray"
-      />
+  <!-- Progress Pipeline -->
+  <el-card
+    shadow="never"
+    class="mb-2 pipeline-card"
+    body-style="padding: 12px 16px;"
+  >
+    <div class="text-sm text-gray-500 mb-2 font-medium">
+      Trạng thái vòng đời giải ngân
     </div>
 
-    <!-- Progress Pipeline -->
-    <el-card
-      shadow="never"
-      class="mb-2 pipeline-card"
-      body-style="padding: 12px 16px;"
-    >
-      <div class="text-sm text-gray-500 mb-2 font-medium">
-        Trạng thái vòng đời giải ngân
-      </div>
+    <div class="relative flex w-full overflow-x-auto pb-2">
+      <div
+        class="absolute top-4 left-[12.5%] right-[12.5%] h-0.5 bg-gray-200 z-0 min-w-[200px]"
+      ></div>
+      <div
+        class="absolute top-4 left-[12.5%] h-0.5 bg-report-red z-0 transition-all duration-300 min-w-[50px]"
+        :style="{
+          width: `${Math.min(Math.max(pipelineActiveStep, 0), 3) * 25}%`,
+        }"
+      ></div>
 
-      <div class="relative flex w-full overflow-x-auto pb-2">
+      <div
+        v-for="(step, index) in [
+          'Đang gửi thẩm định',
+          'Chờ phê duyệt',
+          'Chờ giải ngân',
+          'Đã giải ngân',
+        ]"
+        :key="index"
+        class="flex-1 flex flex-col items-center relative z-10 min-w-[80px]"
+      >
         <div
-          class="absolute top-4 left-[12.5%] right-[12.5%] h-0.5 bg-gray-200 z-0 min-w-[200px]"
-        ></div>
-        <div
-          class="absolute top-4 left-[12.5%] h-0.5 bg-report-red z-0 transition-all duration-300 min-w-[50px]"
-          :style="{
-            width: `${Math.min(Math.max(pipelineActiveStep, 0), 3) * 25}%`,
-          }"
-        ></div>
-
-        <div
-          v-for="(step, index) in [
-            'Đang gửi thẩm định',
-            'Chờ phê duyệt',
-            'Chờ giải ngân',
-            'Đã giải ngân',
+          class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 bg-white transition-colors duration-300 flex-shrink-0"
+          :class="[
+            pipelineActiveStep > index
+              ? 'border-report-red text-report-red'
+              : '',
+            pipelineActiveStep === index
+              ? 'border-report-red bg-report-red text-white'
+              : '',
+            pipelineActiveStep < index ? 'border-gray-300 text-gray-400' : '',
           ]"
-          :key="index"
-          class="flex-1 flex flex-col items-center relative z-10 min-w-[80px]"
         >
-          <div
-            class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 bg-white transition-colors duration-300 flex-shrink-0"
-            :class="[
-              pipelineActiveStep > index
-                ? 'border-report-red text-report-red'
-                : '',
-              pipelineActiveStep === index
-                ? 'border-report-red bg-report-red text-white'
-                : '',
-              pipelineActiveStep < index ? 'border-gray-300 text-gray-400' : '',
-            ]"
-          >
-            <el-icon v-if="pipelineActiveStep > index"><Check /></el-icon>
-            <span v-else>{{ index + 1 }}</span>
-          </div>
-          <div
-            class="mt-1 text-center text-sm px-1 w-full wrap-break-word"
-            :class="
-              pipelineActiveStep >= index
-                ? 'text-gray-900 font-medium'
-                : 'text-gray-400'
-            "
-          >
-            {{ step }}
-          </div>
+          <el-icon v-if="pipelineActiveStep > index"><Check /></el-icon>
+          <span v-else>{{ index + 1 }}</span>
+        </div>
+        <div
+          class="mt-1 text-center text-sm px-1 w-full wrap-break-word"
+          :class="
+            pipelineActiveStep >= index
+              ? 'text-gray-900 font-medium'
+              : 'text-gray-400'
+          "
+        >
+          {{ step }}
         </div>
       </div>
-    </el-card>
-
-    <div v-if="showDisbursementLateAlert" class="mb-2">
-      <el-alert
-        type="error"
-        :closable="false"
-        show-icon
-        title="Cảnh báo chậm giải ngân"
-        :description="lateAlertDescription"
-      />
     </div>
+  </el-card>
 
-    <div v-if="showCavetStuckAlert" class="mb-2">
-      <el-alert
-        type="warning"
-        :closable="false"
-        show-icon
-        title="Cảnh báo treo Cavet"
-        description="Danh sách các xe quá 7 ngày chưa giao trả Cavet đã tất toán nợ gốc"
-      />
-    </div>
+  <div v-if="showDisbursementLateAlert" class="mb-2">
+    <el-alert
+      type="error"
+      :closable="false"
+      show-icon
+      title="Cảnh báo chậm giải ngân"
+      :description="lateAlertDescription"
+    />
+  </div>
 
+  <div v-if="showCavetStuckAlert" class="mb-2">
+    <el-alert
+      type="warning"
+      :closable="false"
+      show-icon
+      title="Cảnh báo treo Cavet"
+      description="Danh sách các xe quá 7 ngày chưa giao trả Cavet đã tất toán nợ gốc"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
