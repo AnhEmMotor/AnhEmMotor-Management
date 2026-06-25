@@ -88,8 +88,8 @@
   }
 
   .setting-card {
-    border-color: var(--el-border-color-light);
     background: var(--el-bg-color);
+    border-color: var(--el-border-color-light);
   }
 
   .card-header {
@@ -100,15 +100,15 @@
 
     h3 {
       margin: 0;
-      color: var(--el-text-color-primary);
       font-size: 18px;
       font-weight: 700;
+      color: var(--el-text-color-primary);
     }
 
     p {
       margin: 6px 0 0;
-      color: var(--el-text-color-secondary);
       font-size: 13px;
+      color: var(--el-text-color-secondary);
     }
   }
 
@@ -118,14 +118,14 @@
 
   .field-hint {
     margin-top: 6px;
-    color: var(--el-text-color-secondary);
     font-size: 12px;
+    color: var(--el-text-color-secondary);
   }
 
-  @media (max-width: 900px) {
+  @media (width <= 900px) {
     .card-header {
-      align-items: flex-start;
       flex-direction: column;
+      align-items: flex-start;
     }
   }
 </style>

@@ -464,8 +464,7 @@
   import type {
     SalesOrder,
     VehicleAssignmentOption,
-    VehicleAssignmentRequirement,
-    VehicleAssignmentRequirementItem
+    VehicleAssignmentRequirement
   } from '@/domain/order/order.types'
   import type { ProductVariantLiteForInput } from '@/domain/product/product.types'
   import type { ColumnOption } from '@/types/component'
@@ -793,7 +792,7 @@
     }
   }
 
-  function getVehicleOptions(item: VehicleAssignmentRequirementItem) {
+  function getVehicleOptions(item: any) {
     const map = new Map<number, VehicleAssignmentOption>()
     for (const vehicle of [...item.assignedVehicles, ...item.availableVehicles]) {
       map.set(vehicle.id, vehicle)
@@ -914,7 +913,7 @@
     formData.customerAddress = customer.address || formData.customerAddress
   }
 
-  function handleProductChange(row: OrderFormProduct, id: number) {
+  function handleProductChange(row: any, id: number) {
     const product = productOptions.value.find((item) => item.id === id)
     if (!product) return
     row.productName = product.displayName
@@ -987,7 +986,7 @@
     }
   }
 
-  function getProductColors(row: OrderFormProduct) {
+  function getProductColors(row: any) {
     return productOptions.value.find((item) => item.id === row.productVariantId)?.colors || []
   }
 

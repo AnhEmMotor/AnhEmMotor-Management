@@ -318,14 +318,14 @@
     position: relative;
     overflow: hidden;
     cursor: pointer;
-    background-color: var(--el-fill-color-lighter);
-    border: 1px dashed var(--el-border-color-light);
+    background-color: #fafafa;
+    border: 1px dashed #d9d9d9;
     border-radius: 12px;
     transition: var(--el-transition-duration-fast);
   }
 
   .category-uploader :deep(.el-upload:hover) {
-    background-color: var(--el-fill-color);
+    background-color: #fff;
     border-color: var(--main-color);
   }
 
@@ -352,15 +352,15 @@
   }
 
   .category-name-root {
-    color: var(--el-text-color-primary);
-    font-weight: 700;
     font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--el-text-color-primary);
   }
 
   .category-name-child {
-    color: var(--el-text-color-regular);
-    font-weight: 500;
     font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--el-text-color-regular);
   }
 
   .category-uploader-icon,

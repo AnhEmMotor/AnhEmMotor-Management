@@ -79,7 +79,7 @@
   defineOptions({ name: 'ArtTable' })
 
   const { width } = useWindowSize()
-  const elTableRef = ref<InstanceType<typeof ElTable> | null>(null)
+  const elTableRef = ref<any>(null)
   const paginationRef = ref<HTMLElement>()
   const tableHeaderRef = ref<HTMLElement>()
   const tableStore = useTableStore()

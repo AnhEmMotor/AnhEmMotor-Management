@@ -1063,7 +1063,7 @@
     return productCache.get(Number(id))?.displayName || `Sản phẩm #${id}`
   }
 
-  const getProductColorName = (row: ReceiptProductRow) => {
+  const getProductColorName = (row: any) => {
     return (
       row.productVariantColorName || productCache.get(Number(row.productVariantId))?.colorName || ''
     )
@@ -1091,7 +1091,7 @@
     return `${displayName} - ${getVariantColorLabel(selectedColor)}`
   }
 
-  const isVinManagedProduct = (row: ReceiptProductRow) => {
+  const isVinManagedProduct = (row: any) => {
     return row.managementType?.toLowerCase() === VIN_MANAGEMENT_TYPE
   }
 
@@ -1100,7 +1100,7 @@
     engineNumber: ''
   })
 
-  const syncVehicleRows = (row: ReceiptProductRow) => {
+  const syncVehicleRows = (row: any) => {
     if (!isVinManagedProduct(row)) {
       row.vehicles = undefined
       return
@@ -1117,17 +1117,17 @@
     row.vehicles = vehicles
   }
 
-  const handleProductCountChange = (row: ReceiptProductRow) => {
+  const handleProductCountChange = (row: any) => {
     syncVehicleRows(row)
   }
 
-  const getCompletedVehicleIdentityCount = (row: ReceiptProductRow) => {
+  const getCompletedVehicleIdentityCount = (row: any) => {
     return (row.vehicles ?? []).filter(
-      (vehicle) => vehicle.vinNumber?.trim() && vehicle.engineNumber?.trim()
+      (vehicle: any) => vehicle.vinNumber?.trim() && vehicle.engineNumber?.trim()
     ).length
   }
 
-  const getVehicleIdentityProgress = (row: ReceiptProductRow) => {
+  const getVehicleIdentityProgress = (row: any) => {
     return `${getCompletedVehicleIdentityCount(row)}/${row.count || 0}`
   }
 
@@ -1437,7 +1437,7 @@
     }
   }
 
-  const openQuoteSelector = async (row: ReceiptProductRow, index: number) => {
+  const openQuoteSelector = async (row: any, index: number) => {
     if (row.productVariantId === undefined || row.productVariantId === null) {
       ElMessage.warning('Không tìm thấy mã sản phẩm biến thể')
       return
