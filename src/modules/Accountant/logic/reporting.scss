@@ -1,15 +1,20 @@
 .reporting-page {
-  --report-bg: #050505;
-  --report-panel: #161618;
-  --report-panel-soft: #111214;
-  --report-border: rgb(255 255 255 / 9%);
-  --report-border-strong: rgb(255 255 255 / 14%);
-  --report-text: #f8fafc;
-  --report-muted: #9ca3af;
-  --report-muted-strong: #cbd5e1;
+  // Light mode (default) - sử dụng Element Plus theme variables
+  --report-bg: var(--el-bg-color-page);
+  --report-panel: var(--el-bg-color-overlay);
+  --report-panel-soft: var(--el-fill-color-light);
+  --report-border: #cbd5e1;
+  --report-border-strong: #cbd5e1;
+  --report-text: var(--el-text-color-primary);
+  --report-muted: var(--el-text-color-secondary);
+  --report-muted-strong: var(--el-text-color-regular);
   --report-red: #e84a4a;
   --report-red-light: #ff6b6b;
   --report-red-dark: #c53a3a;
+  --report-input-bg: var(--el-fill-color-blank);
+  --report-radio-bg: var(--el-fill-color-blank);
+
+  // Element Plus color overrides for consistent red theme
   --el-color-primary: var(--report-red);
   --el-color-primary-light-3: #f26f6f;
   --el-color-primary-light-5: #f58f8f;
@@ -17,19 +22,19 @@
   --el-color-primary-light-9: rgb(232 74 74 / 14%);
   --el-color-primary-dark-2: var(--report-red-dark);
   --el-bg-color: var(--report-panel);
-  --el-bg-color-overlay: #1c1c20;
-  --el-fill-color: #1d1d21;
-  --el-fill-color-light: #202126;
+  --el-bg-color-overlay: var(--report-panel);
+  --el-fill-color: var(--report-panel);
+  --el-fill-color-light: var(--report-panel-soft);
   --el-fill-color-blank: var(--report-panel);
   --el-border-color: var(--report-border);
-  --el-border-color-light: rgb(255 255 255 / 8%);
-  --el-border-color-lighter: rgb(255 255 255 / 6%);
+  --el-border-color-light: var(--report-border);
+  --el-border-color-lighter: var(--report-border);
   --el-text-color-primary: var(--report-text);
   --el-text-color-regular: var(--report-muted-strong);
   --el-text-color-secondary: var(--report-muted);
   --el-table-header-bg-color: var(--report-panel-soft);
   --el-table-tr-bg-color: var(--report-panel);
-  --el-table-row-hover-bg-color: #202126;
+  --el-table-row-hover-bg-color: var(--el-fill-color-light);
   --el-table-border-color: var(--report-border);
 
   min-height: 100%;
@@ -204,7 +209,7 @@
 
 .reporting-page .el-radio-button__inner {
   color: var(--report-muted-strong);
-  background: #101114;
+  background: var(--report-radio-bg);
   border-color: var(--report-border-strong);
   box-shadow: none !important;
 }
@@ -221,8 +226,9 @@
   border-color: var(--report-red);
 }
 
-.reporting-page .el-input__wrapper {
-  background: #101114;
+.reporting-page .el-input__wrapper,
+.reporting-page .el-select__wrapper {
+  background: var(--report-input-bg);
   border: 1px solid var(--report-border-strong);
   box-shadow: none;
 }
@@ -272,12 +278,8 @@
   border-bottom-color: var(--report-border);
 }
 
-.reporting-page
-  .el-table--enable-row-hover
-  .el-table__body
-  tr:hover
-  > td.el-table__cell {
-  background: #202126;
+.reporting-page .el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell {
+  background: var(--report-panel-soft);
 }
 
 .reporting-page .el-table__empty-block {
@@ -500,5 +502,119 @@
 
   .reporting-kpi-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+html.dark {
+  .reporting-page {
+    --report-bg: #050505;
+    --report-panel: #161618;
+    --report-panel-soft: #111214;
+    --report-border: rgb(255 255 255 / 9%);
+    --report-border-strong: rgb(255 255 255 / 14%);
+    --report-text: #f8fafc;
+    --report-muted: #9ca3af;
+    --report-muted-strong: #cbd5e1;
+    --report-input-bg: #101114;
+    --report-radio-bg: #101114;
+  }
+
+  .reporting-dialog.el-dialog {
+    --el-bg-color: #161618;
+    --el-bg-color-overlay: #1c1c20;
+    --el-fill-color: #1d1d21;
+    --el-fill-color-light: #202126;
+    --el-fill-color-blank: #161618;
+    --el-border-color: rgb(255 255 255 / 9%);
+    --el-border-color-light: rgb(255 255 255 / 8%);
+    --el-text-color-primary: #f8fafc;
+    --el-text-color-regular: #cbd5e1;
+    --el-text-color-secondary: #9ca3af;
+
+    color: #f8fafc;
+    background: #161618;
+    border: 1px solid rgb(255 255 255 / 9%);
+  }
+
+  .reporting-dialog .el-dialog__header {
+    border-bottom-color: rgb(255 255 255 / 9%);
+  }
+
+  .reporting-dialog .el-dialog__title {
+    color: #f8fafc;
+  }
+
+  .reporting-dialog .el-form-item__label {
+    color: #cbd5e1;
+  }
+
+  .reporting-dialog .el-input__wrapper,
+  .reporting-dialog .el-input-number,
+  .reporting-dialog .el-textarea__inner,
+  .reporting-dialog .el-select__wrapper {
+    color: #f8fafc;
+    background: #101114;
+    border: 1px solid rgb(255 255 255 / 14%);
+    box-shadow: none;
+  }
+
+  .reporting-dialog .el-input__inner,
+  .reporting-dialog .el-textarea__inner {
+    color: #f8fafc;
+  }
+
+  .reporting-date-popper.el-popper,
+  .reporting-select-popper.el-popper {
+    --el-bg-color-overlay: #161618;
+    --el-border-color-light: rgb(255 255 255 / 9%);
+    --el-fill-color-light: #202126;
+    --el-text-color-primary: #f8fafc;
+    --el-text-color-regular: #cbd5e1;
+    --el-text-color-secondary: #9ca3af;
+
+    background: #161618;
+    border-color: rgb(255 255 255 / 9%);
+  }
+
+  .reporting-date-popper .el-picker-panel,
+  .reporting-date-popper .el-picker-panel__body,
+  .reporting-date-popper .el-picker-panel__footer,
+  .reporting-select-popper .el-select-dropdown {
+    color: #cbd5e1;
+    background: #161618;
+    border-color: rgb(255 255 255 / 9%);
+  }
+
+  .reporting-date-popper .el-picker-panel__icon-btn,
+  .reporting-date-popper .el-date-picker__header-label,
+  .reporting-date-popper .el-month-table td .cell,
+  .reporting-date-popper .el-year-table td .cell,
+  .reporting-date-popper .el-date-table th,
+  .reporting-date-popper .el-date-table td.available,
+  .reporting-select-popper .el-select-dropdown__item {
+    color: #cbd5e1;
+  }
+
+  .reporting-date-popper .el-date-table td.disabled .el-date-table-cell,
+  .reporting-select-popper .el-select-dropdown__item.is-disabled {
+    color: #6b7280;
+    background: #111214;
+  }
+
+  .reporting-date-popper .el-date-table td.current:not(.disabled) .el-date-table-cell__text,
+  .reporting-date-popper .el-month-table td.current:not(.disabled) .cell,
+  .reporting-date-popper .el-year-table td.current:not(.disabled) .cell,
+  .reporting-select-popper .el-select-dropdown__item.is-selected {
+    color: #fff;
+    background: #e84a4a;
+  }
+
+  .reporting-date-popper .el-date-table td.available:hover,
+  .reporting-date-popper .el-month-table td .cell:hover,
+  .reporting-date-popper .el-year-table td .cell:hover,
+  .reporting-select-popper .el-select-dropdown__item.hover,
+  .reporting-select-popper .el-select-dropdown__item:hover {
+    color: #fff;
+    background: #202126;
   }
 }
