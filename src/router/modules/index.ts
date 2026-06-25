@@ -19,6 +19,7 @@ import { reportingRoutes } from "./reporting";
 import { hrRoutes } from "./hr";
 import { helpRoutes } from "./help";
 import { salesRoutes } from "./sales";
+import { salesSettingsRoutes } from "./sales-settings";
 
 import { factoryMenu } from "@/modules/Factory/Menu";
 
@@ -30,6 +31,7 @@ const coreRoutes: AppRouteRecord[] = [
   ...warehouseMenu,
   ...accountancyMenu,
   salesRoutes,
+  salesSettingsRoutes,
   authorizationRoutes,
   hrRoutes,
   contractRoutes,
