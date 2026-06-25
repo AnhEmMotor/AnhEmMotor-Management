@@ -8,16 +8,22 @@
           <span class="text-success font-semibold ml-1">+12.5%</span>
         </p>
       </div>
+
     </div>
     
     <div class="flex-1 overflow-hidden">
       <div class="w-full h-full" ref="chartRef"></div>
     </div>
 
-    <div class="flex-b mt-2 pt-4 border-t border-gray-100">
-      <div class="flex-1" v-for="(item, index) in list" :key="index">
-        <p class="text-2xl text-g-900 font-semibold">{{ item.num }}</p>
-        <p class="text-xs text-g-500 mt-1">{{ item.name }}</p>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2 pt-5 border-t border-gray-100">
+      <div
+        class="flex flex-col items-center justify-center py-3 px-2 rounded-xl border border-gray-100/50 shadow-sm transition-all"
+        :class="item.bgClass || 'bg-gray-50'"
+        v-for="(item, index) in list"
+        :key="index"
+      >
+        <p class="text-[22px] font-bold" :class="item.colorClass || 'text-gray-900'">{{ item.num }}</p>
+        <p class="text-[11px] font-semibold text-gray-500 mt-1 uppercase tracking-wide text-center">{{ item.name }}</p>
       </div>
     </div>
   </div>
