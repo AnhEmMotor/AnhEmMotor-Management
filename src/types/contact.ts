@@ -1,4 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-namespace
+/* eslint @typescript-eslint/no-namespace: "off" */
 export namespace Contact {
   export interface ContactBasic {
     id: number;
@@ -63,6 +63,8 @@ export namespace Contact {
   }
 
   export interface CreateSupportRequestPayload {
+    fullName?: string;
+    phoneNumber?: string;
     subject: string;
     category: string;
     email: string;

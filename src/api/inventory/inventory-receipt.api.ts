@@ -1,0 +1,150 @@
+import request from "@/common/utils/http";
+import type {
+  InventoryReceipt,
+  InventoryReceiptList,
+  CreateInventoryReceipt,
+  UpdateInventoryReceipt,
+} from "@/domain/inventory/receipt.types";
+
+export const InventoryReceiptApi = {
+  getList(params: any) {
+    const { current, size, ...rest } = params;
+    return request.get<InventoryReceiptList>({
+      url: "/api/v1/InventoryReceipts",
+      params: {
+        Page: current,
+        PageSize: size,
+        ...rest,
+      },
+    });
+  },
+
+  getListPurchaseOrderApproved(params: any) {
+    const { current, size, ...rest } = params;
+    return request.get<any>({
+      url: "/api/v1/purchase-orders",
+      params: {
+        Page: current,
+        PageSize: size,
+        Filters: "Status==Approved",
+        ...rest,
+      },
+    });
+  },
+
+  getById(id: number) {
+    return request.get<InventoryReceipt>({
+      url: `/api/v1/InventoryReceipts/${id}`,
+    });
+  },
+
+  getStatuses() {
+    return request.get<Record<string, string>>({
+      url: "/api/v1/InventoryReceipts/status",
+    });
+  },
+
+  getStats() {
+    return request.get<{
+      totalVehicles: number;
+      processingReceipts: number;
+      totalValue: number;
+    }>({
+      url: "/api/v1/InventoryReceipts/statistics",
+    });
+  },
+
+  create(data: CreateInventoryReceipt) {
+    return request.post<InventoryReceipt>({
+      url: "/api/v1/InventoryReceipts",
+      data,
+    });
+  },
+
+  update(id: number, data: UpdateInventoryReceipt) {
+    return request.put<InventoryReceipt>({
+      url: `/api/v1/InventoryReceipts/${id}`,
+      data,
+    });
+  },
+
+  delete(id: number) {
+    return request.del({
+      url: `/api/v1/InventoryReceipts/${id}`,
+    });
+  },
+
+  send(id: number) {
+    return request.post<InventoryReceipt>({
+      url: `/api/v1/InventoryReceipts/${id}/send`,
+    });
+  },
+
+  updateStatus(id: number, statusId: string) {
+    return request.patch<InventoryReceipt>({
+      url: `/api/v1/InventoryReceipts/${id}/status`,
+      data: { statusId },
+    });
+  },
+
+  updateNotes(id: number, notes: string | null) {
+    return request.patch<InventoryReceipt>({
+      url: `/api/v1/InventoryReceipts/${id}/notes`,
+      data: { notes },
+    });
+  },
+
+  importExcel(file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+    return request.post<any>({
+      url: "/api/v1/InventoryReceipts/import",
+      data: formData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  },
+
+  exportExcel(params?: any) {
+    return request.get<Blob>({
+      url: "/api/v1/InventoryReceipts/export",
+      params,
+      responseType: "blob",
+    });
+  },
+
+  downloadImportTemplate(purchaseRequestId: number) {
+    return request.get<Blob>({
+      url: "/api/v1/InventoryReceipts/import-template",
+      params: { purchaseRequestId },
+      responseType: "blob",
+    });
+  },
+
+  deleteMany(ids: number[]) {
+    return request.del({
+      url: "/api/v1/InventoryReceipts",
+      data: { ids },
+    });
+  },
+
+  getDeletedList(params: any) {
+    const { current, size, ...rest } = params;
+    return request.get<InventoryReceiptList>({
+      url: "/api/v1/InventoryReceipts/deleted",
+      params: {
+        Page: current,
+        PageSize: size,
+        ...rest,
+      },
+    });
+  },
+
+  restoreMany(ids: number[]) {
+    return request.post({
+      url: "/api/v1/InventoryReceipts/restore",
+      data: { ids },
+    });
+  },
+};

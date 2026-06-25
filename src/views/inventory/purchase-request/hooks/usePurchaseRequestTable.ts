@@ -1,9 +1,9 @@
 import { ref, reactive, computed, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useDebounceFn } from "@vueuse/core";
-import { PurchaseRequestApi } from "@/api/purchase-request.api";
-import { ProductApi } from "@/api/product.api";
-import { QuotationApi } from "@/api/quotation.api";
+import { PurchaseRequestApi } from "@/api/inventory/purchase-request.api";
+import { ProductApi } from "@/api/product";
+import { QuotationApi } from "@/api/sales/quotation.api";
 import type {
   PurchaseRequestListResponse,
   PurchaseRequestDetailResponse,

@@ -8,8 +8,8 @@
 </template>
 
 <script setup lang="ts">
-import { useChartOps, useChartComponent } from "@/hooks/core/useChart";
-import { getCssVar } from "@/utils/ui";
+import { useChartOps, useChartComponent } from "@/common/composables/useChart";
+import { getCssVar } from "@/common/utils/ui";
 import { graphic, type EChartsOption } from "@/plugins/echarts";
 import type { BarChartProps, BarDataItem } from "@/types/component/chart";
 

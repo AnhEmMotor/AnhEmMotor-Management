@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import api from "@/utils/http";
+import api from "@/common/utils/http";
 
 export const useHRStore = defineStore("hr", {
   state: () => ({

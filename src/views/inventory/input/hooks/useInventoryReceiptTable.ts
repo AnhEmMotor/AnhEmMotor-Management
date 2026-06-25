@@ -1,6 +1,6 @@
 import { ref, reactive, computed, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { InventoryReceiptApi } from "@/infrastructure/api/inventory-receipt.api";
+import { InventoryReceiptApi } from "@/api/inventory/inventory-receipt.api";
 import type { InventoryReceipt } from "@/domain/inventory/receipt.types";
 
 export function useInventoryReceiptTable() {

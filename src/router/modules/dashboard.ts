@@ -2,11 +2,12 @@ import { AppRouteRecord } from "@/types/router";
 
 export const dashboardRoutes: AppRouteRecord = {
   name: "Dashboard",
-  path: "/dashboard",
+  path: "/admin/dashboard",
   component: "/index/index",
   meta: {
     title: "menus.dashboard.title",
     icon: "ri:pie-chart-line",
+    roles: ["Admin", "SuperAdmin"],
   },
   children: [
     {

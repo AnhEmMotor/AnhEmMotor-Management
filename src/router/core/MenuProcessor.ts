@@ -1,10 +1,10 @@
 import type { AppRouteRecord } from "@/types/router";
 import { useUserStore } from "@/application/store/user";
-import { useAppMode } from "@/hooks/core/useAppMode";
-import { fetchGetMenuList } from "@/infrastructure/api/system-manage";
+import { useAppMode } from "@/common/composables/useAppMode";
+import { fetchGetMenuList } from "@/api/auth";
 import { asyncRoutes } from "../routes/asyncRoutes";
 import { RoutesAlias } from "../routesAlias";
-import { formatMenuTitle } from "@/utils";
+import { formatMenuTitle } from "@/common/utils";
 
 export class MenuProcessor {
   async getMenuList(): Promise<AppRouteRecord[]> {
@@ -117,10 +117,6 @@ export class MenuProcessor {
         return item;
       })
       .filter((item) => {
-        if ("children" in item) {
-          return true;
-        }
-
         if (item.meta?.isIframe === true || item.meta?.link) {
           return true;
         }
@@ -130,6 +126,16 @@ export class MenuProcessor {
           item.component !== "" &&
           item.component !== RoutesAlias.Layout
         ) {
+          return true;
+        }
+
+        // Chỉ giữ lại nếu có children thực sự (không rỗng)
+        if (item.children && item.children.length > 0) {
+          return true;
+        }
+
+        // Luôn giữ lại route được đánh dấu isHide (dù không có component/children)
+        if (item.meta?.isHide) {
           return true;
         }
 

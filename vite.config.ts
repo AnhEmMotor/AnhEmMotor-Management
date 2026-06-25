@@ -53,7 +53,8 @@ export default ({ mode }: { mode: string }) => {
     resolve: {
       alias: {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
-        "@views": resolvePath("src/views"),
+        "@view": resolvePath("src/view"),
+        "@views": resolvePath("src/modules"),
         "@imgs": resolvePath("src/assets/images"),
         "@icons": resolvePath("src/assets/icons"),
         "@utils": resolvePath("src/utils"),
@@ -75,7 +76,7 @@ export default ({ mode }: { mode: string }) => {
       dynamicImportVarsOptions: {
         warnOnError: true,
         exclude: [],
-        include: ["src/views/**/*.vue"],
+        include: ["src/modules/**/*.vue"],
       },
       rollupOptions: {
         onwarn(warning, defaultWarn) {

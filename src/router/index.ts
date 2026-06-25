@@ -1,7 +1,7 @@
 import type { App } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import { staticRoutes } from "./routes/staticRoutes";
-import { configureNProgress } from "@/utils/router";
+import { configureNProgress } from "@/common/utils/router";
 import { setupBeforeEachGuard } from "./guards/beforeEach";
 import { setupAfterEachGuard } from "./guards/afterEach";
 

@@ -23,7 +23,11 @@ interface ExtendedAxiosRequestConfig extends AxiosRequestConfig {
   showSuccessMessage?: boolean;
 }
 
-const { VITE_WITH_CREDENTIALS } = import.meta.env;
+const {
+  VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT:
+    _VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT,
+  VITE_WITH_CREDENTIALS,
+} = import.meta.env;
 
 const axiosInstance = axios.create({
   timeout: REQUEST_TIMEOUT,
@@ -46,6 +50,13 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (request: InternalAxiosRequestConfig) => {
+    if (request.url?.startsWith("/api/") && !request.url.includes("/api/v1/")) {
+      // Chỉ thêm /v1/ nếu KHÔNG PHẢI là API Analytics
+      if (!request.url.startsWith("/api/analytics/")) {
+        request.url = request.url.replace(/^\/api\//, "/api/v1/");
+      }
+    }
+
     const userStore = useUserStore();
     if (userStore.accessToken)
       request.headers.set("Authorization", `Bearer ${userStore.accessToken}`);
@@ -95,8 +106,7 @@ axiosInstance.interceptors.response.use(
     const { response } = error;
     if (response) {
       const { status, data } = response;
-      if (status === ApiStatus.unauthorized)
-        handleUnauthorizedError(data.errors[0].message);
+      if (status === ApiStatus.unauthorized) handleUnauthorizedError();
 
       let backendMsg = data?.Message || data?.msg || data?.message;
       if (!backendMsg && data?.errors) {

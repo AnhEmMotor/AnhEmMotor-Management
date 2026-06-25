@@ -104,10 +104,10 @@ import { storeToRefs } from "pinia";
 
 import { useWorktabStore } from "@/application/store/worktab";
 import { useUserStore } from "@/application/store/user";
-import { formatMenuTitle } from "@/utils/router";
+import { formatMenuTitle } from "@/common/utils/router";
 import { useSettingStore } from "@/application/store/setting";
 import { MenuItemType } from "../../others/art-menu-right/index.vue";
-import { useCommon } from "@/hooks/core/useCommon";
+import { useCommon } from "@/common/composables/useCommon";
 import { WorkTab } from "@/types";
 
 defineOptions({ name: "ArtWorkTab" });

@@ -4,7 +4,7 @@ export class ComponentLoader {
   private modules: Record<string, () => Promise<any>>;
 
   constructor() {
-    this.modules = import.meta.glob("../../views/**/*.vue");
+    this.modules = import.meta.glob("../../modules/**/*.vue");
   }
 
   load(componentPath: any): () => Promise<any> {
@@ -18,10 +18,10 @@ export class ComponentLoader {
     }
 
     const pathStr = String(componentPath)
-      .replace(/^@\/views\//, "/")
+      .replace(/^@\/modules\//, "/")
       .replace(/\.vue$/, "");
-    const fullPath = `../../views${pathStr}.vue`;
-    const fullPathWithIndex = `../../views${pathStr}/index.vue`;
+    const fullPath = `../../modules${pathStr}.vue`;
+    const fullPathWithIndex = `../../modules${pathStr}/index.vue`;
 
     const module = this.modules[fullPath] || this.modules[fullPathWithIndex];
 
@@ -36,11 +36,11 @@ export class ComponentLoader {
   }
 
   loadLayout(): () => Promise<any> {
-    return () => import("@/views/index/index.vue");
+    return () => import("@/modules/index/index.vue");
   }
 
   loadIframe(): () => Promise<any> {
-    return () => import("@/views/outside/Iframe.vue");
+    return () => import("@/modules/outside/Iframe.vue");
   }
 
   private createEmptyComponent(): () => Promise<any> {

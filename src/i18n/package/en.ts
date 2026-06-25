@@ -389,7 +389,6 @@ export default {
     contract: {
       title: "Contract Management",
       sales: "Sales Contract",
-      finance: "Finance Contract (Installment)",
       supplier: "Supplier Contract",
       templates: "Contract Templates",
       templateName: "Contract Template Name",
@@ -447,16 +446,16 @@ export default {
       workshop: {
         title: "Workshop Management",
         dashboard: "Workshop Dashboard",
-        repairOrders: "Repair Orders",
-        historyByVin: "History lookup by VIN",
+        repairOrders: "Repairs",
+        historyByVin: "Vehicle Records Lookup",
         maintenance: "Maintenance",
         evaluation: "Service Evaluation",
       },
       administrative: {
-        title: "Administrative & License Plates",
-        registration: "License plate registration",
-        cashFlow: "Collection & payment cash flow",
-        registrationFeeConfig: "Auto registration fee config",
+        title: "Administrative Services",
+        registration: "License Plate Registration",
+        cashFlow: "Collection & Payment Cash Flow",
+        registrationFeeConfig: "Auto Registration Fee Config",
       },
       booking: {
         title: "Booking & Test Drive",
@@ -464,9 +463,9 @@ export default {
         calendar: "Visual Coordination Calendar",
       },
       warrantyAndComplaints: {
-        title: "Warranty & After-sales Complaints",
-        warrantyRequests: "Technical Warranty Requests",
-        complaints: "Customer Reviews & Complaints",
+        title: "Warranty",
+        warrantyRequests: "Warranty",
+        complaints: "Complaints",
       },
     },
   },

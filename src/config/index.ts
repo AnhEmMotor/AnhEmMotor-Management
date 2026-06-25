@@ -1,4 +1,8 @@
-import { MenuThemeEnum, MenuTypeEnum, SystemThemeEnum } from "@/enums/appEnum";
+import {
+  MenuThemeEnum,
+  MenuTypeEnum,
+  SystemThemeEnum,
+} from "@/common/enums/appEnum";
 import { SystemConfig } from "@/types/config";
 import { configImages } from "./assets/images";
 import fastEnterConfig from "./modules/fastEnter";
@@ -94,10 +98,10 @@ const appConfig: SystemConfig = {
   darkMenuStyles: [
     {
       theme: MenuThemeEnum.DARK,
-      background: "var(--default-box-color)",
+      background: "#161618",
       systemNameColor: "#DDDDDD",
       iconColor: "#BABBBD",
-      textColor: "rgba(#FFFFFF, 0.7)",
+      textColor: "rgba(255, 255, 255, 0.7)",
     },
   ],
 

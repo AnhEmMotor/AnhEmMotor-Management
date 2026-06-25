@@ -7,7 +7,7 @@ export const authorizationRoutes: AppRouteRecord = {
   meta: {
     title: "menus.auth.title",
     icon: "ri:shield-user-line",
-    roles: ["R_SUPER", "R_ADMIN"],
+    roles: ["Admin", "SuperAdmin"],
   },
   children: [
     {
@@ -18,7 +18,7 @@ export const authorizationRoutes: AppRouteRecord = {
         title: "menus.auth.user",
         icon: "ri:user-shared-line",
         keepAlive: true,
-        roles: ["R_SUPER", "R_ADMIN"],
+        roles: ["Admin", "SuperAdmin"],
       },
     },
     {
@@ -29,7 +29,7 @@ export const authorizationRoutes: AppRouteRecord = {
         title: "menus.auth.role",
         icon: "ri:shield-keyhole-line",
         keepAlive: true,
-        roles: ["R_SUPER", "R_ADMIN"],
+        roles: ["Admin", "SuperAdmin"],
       },
     },
   ],

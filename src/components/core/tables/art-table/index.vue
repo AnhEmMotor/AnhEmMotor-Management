@@ -89,8 +89,8 @@ import type { TableProps } from "element-plus";
 import { storeToRefs } from "pinia";
 import { ColumnOption } from "@/types";
 import { useTableStore } from "@/application/store/table";
-import { useCommon } from "@/hooks/core/useCommon";
-import { useTableHeight } from "@/hooks/core/useTableHeight";
+import { useCommon } from "@/common/composables/useCommon";
+import { useTableHeight } from "@/common/composables/useTableHeight";
 import { useResizeObserver, useWindowSize } from "@vueuse/core";
 
 defineOptions({ name: "ArtTable" });

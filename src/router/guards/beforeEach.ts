@@ -1,21 +1,21 @@
-﻿import type { Router, RouteLocationNormalized } from "vue-router";
+import type { Router, RouteLocationNormalized } from "vue-router";
 import { nextTick } from "vue";
 import NProgress from "nprogress";
 import type { NavigationGuardReturn } from "vue-router";
 import { useSettingStore } from "@/application/store/setting";
 import { useUserStore } from "@/application/store/user";
 import { useMenuStore } from "@/application/store/menu";
-import { setWorktab } from "@/utils/navigation";
-import { setPageTitle } from "@/utils/router";
-import type { AppRouteRecordRaw } from "@/utils/router";
+import { setWorktab } from "@/common/utils/navigation";
+import { setPageTitle } from "@/common/utils/router";
+import type { AppRouteRecordRaw } from "@/common/utils/router";
 import { RoutesAlias } from "../routesAlias";
 import { staticRoutes } from "../routes/staticRoutes";
-import { loadingService } from "@/utils/ui";
-import { useCommon } from "@/hooks/core/useCommon";
+import { loadingService } from "@/common/utils/ui";
+import { useCommon } from "@/common/composables/useCommon";
 import { useWorktabStore } from "@/application/store/worktab";
-import { fetchGetUserInfo } from "@/infrastructure/api/auth";
-import { ApiStatus } from "@/utils/http/status";
-import { isHttpError } from "@/utils/http/error";
+import { fetchGetUserInfo } from "@/api/auth";
+import { ApiStatus } from "@/common/utils/http/status";
+import { isHttpError } from "@/common/utils/http/error";
 import {
   RouteRegistry,
   MenuProcessor,
@@ -25,7 +25,14 @@ import {
 
 let routeRegistry: RouteRegistry | null = null;
 
-const menuProcessor = new MenuProcessor();
+let menuProcessor: MenuProcessor | null = null;
+
+const getMenuProcessor = (): MenuProcessor => {
+  if (!menuProcessor) {
+    menuProcessor = new MenuProcessor();
+  }
+  return menuProcessor;
+};
 
 let pendingLoading = false;
 
@@ -55,7 +62,7 @@ export function setupBeforeEachGuard(router: Router): void {
 
   window.addEventListener("auth:permissions-changed", async () => {
     try {
-      const menuList = await menuProcessor.getMenuList();
+      const menuList = await getMenuProcessor().getMenuList();
       const menuStore = useMenuStore();
       menuStore.setMenuList(menuList);
 
@@ -160,7 +167,10 @@ function handleLoginStatus(
   if (
     to.path === RoutesAlias.Login ||
     to.path === "/auth/login" ||
-    isStaticRoute(to.path)
+    (isStaticRoute(to.path) &&
+      to.path !== "/" &&
+      to.path !== "/workspace" &&
+      to.path !== "/auth/portal")
   ) {
     return null;
   }
@@ -244,9 +254,10 @@ async function handleDynamicRoutes(
 
   try {
     await fetchUserInfo();
-    const menuList = await menuProcessor.getMenuList();
+    const processor = getMenuProcessor();
+    const menuList = await processor.getMenuList();
 
-    if (!menuProcessor.validateMenuList(menuList)) {
+    if (!processor.validateMenuList(menuList)) {
       throw new Error("Lấy danh sách menu thất bại, vui lòng đăng nhập lại");
     }
 

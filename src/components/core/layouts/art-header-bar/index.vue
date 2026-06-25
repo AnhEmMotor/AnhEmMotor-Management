@@ -191,16 +191,16 @@ defineProps({
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { useFullscreen, useWindowSize } from "@vueuse/core";
-import { LanguageEnum, MenuTypeEnum } from "@/enums/appEnum";
+import { LanguageEnum, MenuTypeEnum } from "@/common/enums/appEnum";
 import { useSettingStore } from "@/application/store/setting";
 import { useUserStore } from "@/application/store/user";
 import { useMenuStore } from "@/application/store/menu";
 import AppConfig from "@/config";
-import { langList as languageOptions } from "@/utils/langList";
-import { mittBus } from "@/utils/sys";
-import { themeAnimation } from "@/utils/ui/animation";
-import { useCommon } from "@/hooks/core/useCommon";
-import { useHeaderBar } from "@/hooks/core/useHeaderBar";
+import { langList as languageOptions } from "@/common/utils/langList";
+import { mittBus } from "@/common/utils/sys";
+import { themeAnimation } from "@/common/utils/ui/animation";
+import { useCommon } from "@/common/composables/useCommon";
+import { useHeaderBar } from "@/common/composables/useHeaderBar";
 import ArtUserMenu from "./widget/ArtUserMenu.vue";
 
 defineOptions({ name: "ArtHeaderBar" });
@@ -262,11 +262,10 @@ const visibleMenu = (): void => {
   settingStore.setMenuOpen(!menuOpen.value);
 };
 
-const { homePath } = useCommon();
 const { refresh } = useCommon();
 
 const toHome = (): void => {
-  router.push(homePath.value);
+  router.push("/workspace");
 };
 
 const reload = (time: number = 0): void => {

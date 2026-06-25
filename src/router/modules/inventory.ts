@@ -2,18 +2,18 @@ import { AppRouteRecord } from "@/types/router";
 
 export const inventoryRoutes: AppRouteRecord = {
   name: "InventoryManagement",
-  path: "/inventory",
-  component: "/index/index",
+  path: "/warehouse/inventory",
+  component: "/Warehouse/view/inventory/index",
   meta: {
     title: "menus.inventory.title",
     icon: "ri:archive-line",
-    roles: ["R_SUPER", "R_ADMIN"],
+    roles: ["Admin", "SuperAdmin"],
   },
   children: [
     {
       path: "supplier",
       name: "InventorySupplier",
-      component: "/inventory/supplier/index",
+      component: "/Warehouse/view/inventory/supplier/index",
       meta: {
         title: "menus.inventory.supplier",
         icon: "ri:team-line",
@@ -22,7 +22,7 @@ export const inventoryRoutes: AppRouteRecord = {
     {
       path: "purchase-request",
       name: "PurchaseRequest",
-      component: "/inventory/purchase-request/index",
+      component: "/Warehouse/view/inventory/purchase-request/index",
       meta: {
         title: "Yêu cầu mua hàng",
         icon: "ri:git-pull-request-line",
@@ -31,7 +31,7 @@ export const inventoryRoutes: AppRouteRecord = {
     {
       path: "input",
       name: "InventoryInput",
-      component: "/inventory/input/index",
+      component: "/Warehouse/view/inventory/input/index",
       meta: {
         title: "menus.inventory.input",
         icon: "ri:file-list-3-line",
@@ -40,7 +40,7 @@ export const inventoryRoutes: AppRouteRecord = {
     {
       path: "debt",
       name: "InventoryDebt",
-      component: "/inventory/debt/index",
+      component: "/Warehouse/view/inventory/debt/index",
       meta: {
         title: "menus.inventory.debt",
         icon: "ri:money-cny-box-line",
@@ -49,7 +49,7 @@ export const inventoryRoutes: AppRouteRecord = {
     {
       path: "in-out-stock",
       name: "InventoryInOutStock",
-      component: "/inventory/in-out-stock/index",
+      component: "/Warehouse/view/inventory/in-out-stock/index",
       meta: {
         title: "menus.inventory.inOutStock",
         icon: "ri:line-chart-line",
@@ -58,7 +58,7 @@ export const inventoryRoutes: AppRouteRecord = {
     {
       path: "ledger",
       name: "InventoryLedger",
-      component: "/inventory/ledger/index",
+      component: "/Warehouse/view/inventory/ledger/index",
       meta: {
         title: "menus.inventory.ledger",
         icon: "ri:book-3-line",

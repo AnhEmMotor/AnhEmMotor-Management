@@ -7,7 +7,7 @@ export const contractRoutes: AppRouteRecord = {
   meta: {
     title: "menus.contract.title",
     icon: "ri:file-list-line",
-    roles: ["R_SUPER", "R_ADMIN"],
+    roles: ["Admin", "SuperAdmin"],
   },
   children: [
     {
@@ -29,25 +29,7 @@ export const contractRoutes: AppRouteRecord = {
         isHide: true,
       },
     },
-    {
-      path: "finance",
-      name: "FinanceContract",
-      component: "/Admin/view/contract/finance/index",
-      meta: {
-        title: "menus.contract.finance",
-        icon: "ri:money-dollar-circle-line",
-      },
-    },
-    {
-      path: "finance/preview/:id?",
-      name: "FinanceContractPreview",
-      component: "/Admin/view/contract/finance/finance-contract-detail",
-      meta: {
-        title: "Chi tiết Hợp đồng tài chính",
-        icon: "ri:file-search-line",
-        isHide: true,
-      },
-    },
+
     {
       path: "supplier",
       name: "SupplierContract",

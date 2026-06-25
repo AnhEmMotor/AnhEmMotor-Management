@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import AppConfig from "@/config";
 import SectionTitle from "./SectionTitle.vue";
-import { MenuTypeEnum, type MenuThemeEnum } from "@/enums/appEnum";
+import { MenuTypeEnum, type MenuThemeEnum } from "@/common/enums/appEnum";
 import { useSettingStore } from "@/application/store/setting";
 
 const menuThemeList = AppConfig.themeList;

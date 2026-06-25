@@ -1,15 +1,15 @@
 import { defineStore } from "pinia";
 import { ref, computed, watch } from "vue";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
-import { LanguageEnum } from "@/enums/appEnum";
+import { LanguageEnum } from "@/common/enums/appEnum";
 import { router } from "@/router";
 import { useSettingStore } from "./setting";
 import { useWorktabStore } from "./worktab";
 import { AppRouteRecord } from "@/types/router";
-import { setPageTitle } from "@/utils/router";
+import { setPageTitle } from "@/common/utils/router";
 import { resetRouterState } from "@/router/guards/beforeEach";
 import { useMenuStore } from "./menu";
-import { StorageConfig } from "@/utils/storage/storage-config";
+import { StorageConfig } from "@/common/utils/storage/storage-config";
 import i18n from "@/i18n";
 
 export const useUserStore = defineStore(

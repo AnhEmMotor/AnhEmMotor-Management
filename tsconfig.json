@@ -15,7 +15,8 @@
     "skipLibCheck": true,
     "paths": {
       "@/*": ["./src/*"],
-      "@views/*": ["./src/views/*"],
+      "@view/*": ["./src/view/*"],
+      "@views/*": ["./src/modules/*"],
       "@imgs/*": ["./src/assets/images/*"],
       "@icons/*": ["./src/assets/icons/*"],
       "@utils/*": ["./src/utils/*"],
@@ -31,5 +32,12 @@
     "src/**/*.tsx",
     "src/**/*.vue"
   ],
-  "exclude": ["node_modules", "dist", "**/*.js"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.js",
+    "src/views/analytics-reporting",
+    "src/views/contract",
+    "src/hooks/core/useChart.ts"
+  ]
 }

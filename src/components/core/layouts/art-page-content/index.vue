@@ -60,7 +60,7 @@
 <script setup lang="ts">
 import type { CSSProperties } from "vue";
 import { useRoute } from "vue-router";
-import { useAutoLayoutHeight } from "@/hooks/core/useLayoutHeight";
+import { useAutoLayoutHeight } from "@/common/composables/useLayoutHeight";
 import { useSettingStore } from "@/application/store/setting";
 import { useWorktabStore } from "@/application/store/worktab";
 

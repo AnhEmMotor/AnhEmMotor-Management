@@ -1,5 +1,5 @@
 import { useSettingStore } from "@/application/store/setting";
-import { MenuThemeEnum, MenuTypeEnum } from "@/enums/appEnum";
+import { MenuThemeEnum, MenuTypeEnum } from "@/common/enums/appEnum";
 
 export function useSettingsState() {
   const settingStore = useSettingStore();

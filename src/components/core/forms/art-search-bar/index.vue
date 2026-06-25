@@ -158,7 +158,7 @@ import {
 import {
   calculateResponsiveSpan,
   type ResponsiveBreakpoint,
-} from "@/utils/form/responsive";
+} from "@/common/utils/form/responsive";
 
 defineOptions({ name: "ArtSearchBar" });
 

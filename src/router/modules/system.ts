@@ -7,7 +7,7 @@ export const systemRoutes: AppRouteRecord = {
   meta: {
     title: "menus.system.title",
     icon: "ri:user-3-line",
-    roles: ["R_SUPER", "R_ADMIN"],
+    roles: ["Admin", "SuperAdmin"],
   },
   children: [
     {
@@ -30,7 +30,7 @@ export const systemRoutes: AppRouteRecord = {
         title: "menus.system.menu",
         icon: "ri:menu-line",
         keepAlive: true,
-        roles: ["R_SUPER"],
+        roles: ["SuperAdmin"],
         authList: [
           { title: "Thêm mới", authMark: "add" },
           { title: "Chỉnh sửa", authMark: "edit" },

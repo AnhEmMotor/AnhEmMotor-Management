@@ -98,7 +98,6 @@
           :collapse="!menuOpen"
           :default-active="routerPath"
           :text-color="getMenuTheme.textColor"
-          :unique-opened="uniqueOpened"
           :background-color="getMenuTheme.background"
           :default-openeds="defaultOpenedMenus"
           :popper-class="`menu-left-popper menu-left-${getMenuTheme.theme}-popper`"
@@ -142,13 +141,18 @@
 <script setup lang="ts">
 import AppConfig from "@/config";
 import { useSettingStore } from "@/application/store/setting";
-import { MenuTypeEnum, MenuWidth } from "@/enums/appEnum";
+import { MenuTypeEnum, MenuWidth } from "@/common/enums/appEnum";
 import { useMenuStore } from "@/application/store/menu";
-import { isIframe } from "@/utils/navigation";
-import { handleMenuJump } from "@/utils/navigation";
+import { isIframe } from "@/common/utils/navigation";
+import { handleMenuJump } from "@/common/utils/navigation";
 import SidebarSubmenu from "./widget/SidebarSubmenu.vue";
-import { useCommon } from "@/hooks/core/useCommon";
 import { useWindowSize, useTimeoutFn } from "@vueuse/core";
+import { adminMenu } from "@/modules/Admin/Menu";
+import { factoryMenu } from "@/modules/Factory/Menu";
+import { marketingMenu } from "@/modules/Marketing/Menu";
+import { orderMenu } from "@/modules/Order/Menu";
+import { warehouseMenu } from "@/modules/Warehouse/Menu";
+import { accountancyMenu } from "@/modules/Accountant/Menu";
 
 defineOptions({ name: "ArtSidebarMenu" });
 
@@ -160,14 +164,8 @@ const route = useRoute();
 const router = useRouter();
 const settingStore = useSettingStore();
 
-const {
-  getMenuOpenWidth,
-  menuType,
-  uniqueOpened,
-  dualMenuShowText,
-  menuOpen,
-  getMenuTheme,
-} = storeToRefs(settingStore);
+const { getMenuOpenWidth, menuType, dualMenuShowText, menuOpen, getMenuTheme } =
+  storeToRefs(settingStore);
 
 const defaultOpenedMenus = ref<string[]>([]);
 const isMobileMode = ref(false);
@@ -199,12 +197,53 @@ const menuList = computed(() => {
   const menuStore = useMenuStore();
   const allMenus = menuStore.menuList;
 
+  // Lọc menu theo phân hệ hiện tại (Admin hoặc Factory)
+  const isPathInMenu = (menus: any[], targetPath: string): boolean => {
+    return menus.some((m) => {
+      if (targetPath.startsWith(m.path)) return true;
+      if (m.children) return isPathInMenu(m.children, targetPath);
+      return false;
+    });
+  };
+
+  const isFactory = isPathInMenu(factoryMenu, route.path);
+  const isAdmin = isPathInMenu(adminMenu, route.path);
+  const isMarketing = isPathInMenu(marketingMenu, route.path);
+  const isOrder = isPathInMenu(orderMenu, route.path);
+  const isWarehouse = isPathInMenu(warehouseMenu, route.path);
+  const isAccountant = isPathInMenu(accountancyMenu, route.path);
+
+  let allowedPaths: string[] = [];
+  if (isFactory) {
+    allowedPaths = factoryMenu.map((m) => m.path);
+  } else if (isAdmin) {
+    allowedPaths = adminMenu.map((m) => m.path);
+  } else if (isMarketing) {
+    allowedPaths = marketingMenu.map((m) => m.path);
+  } else if (isOrder) {
+    allowedPaths = orderMenu.map((m) => m.path);
+  } else if (isWarehouse) {
+    allowedPaths = warehouseMenu.map((m) => m.path);
+  } else if (isAccountant) {
+    allowedPaths = accountancyMenu.map((m) => m.path);
+  } else {
+    // Mặc định fallback về admin nếu không match
+    allowedPaths = adminMenu.map((m) => m.path);
+  }
+
+  const workspaceMenus = allMenus.filter((m) => allowedPaths.includes(m.path));
+
   if (!isTopLeftMenu.value && !isDualMenu.value) {
-    return allMenus;
+    // Nếu phân hệ chỉ có 1 root wrapper (vd: /Accountant, /Marketing, /Order, /Warehouse)
+    // thì trả về children trực tiếp để sidebar hiển thị phẳng (không lồng thêm 1 cấp)
+    if (workspaceMenus.length === 1 && workspaceMenus[0].children?.length) {
+      return workspaceMenus[0].children;
+    }
+    return workspaceMenus;
   }
 
   if (isIframe(route.path)) {
-    return findIframeMenuList(route.path, allMenus);
+    return findIframeMenuList(route.path, workspaceMenus);
   }
 
   if (route.meta.isFirstLevel) {
@@ -212,7 +251,9 @@ const menuList = computed(() => {
   }
 
   const currentTopPath = `/${route.path.split("/")[1]}`;
-  const currentMenu = allMenus.find((menu) => menu.path === currentTopPath);
+  const currentMenu = workspaceMenus.find(
+    (menu) => menu.path === currentTopPath,
+  );
   return currentMenu?.children ?? [];
 });
 
@@ -254,10 +295,10 @@ const findIframeMenuList = (currentPath: string, menuList: any[]) => {
   return [];
 };
 
-const { homePath } = useCommon();
+// Removed unused homePath
 
 const navigateToHome = (): void => {
-  router.push(homePath.value);
+  router.push("/workspace");
 };
 
 const toggleMenuVisibility = (): void => {

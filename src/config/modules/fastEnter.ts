@@ -1,4 +1,4 @@
-import { WEB_LINKS } from "@/utils/constants";
+import { WEB_LINKS } from "@/common/utils/constants";
 import type { FastEnterConfig } from "@/types/config";
 
 const fastEnterConfig: FastEnterConfig = {

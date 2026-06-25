@@ -134,7 +134,7 @@ import type { FormInstance, FormRules } from "element-plus";
 import { useI18n } from "vue-i18n";
 import CryptoJS from "crypto-js";
 import { useUserStore } from "@/application/store/user";
-import { mittBus } from "@/utils/sys";
+import { mittBus } from "@/common/utils/sys";
 
 const { t } = useI18n();
 

@@ -1,4 +1,4 @@
-import request from "@/utils/http";
+import request from "@/common/utils/http";
 import type { ActiveShipmentItem } from "@/domain/logistics/active-shipment.types";
 
 export interface TrackingItem {

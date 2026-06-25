@@ -1,7 +1,7 @@
 import { createI18n } from "vue-i18n";
 import messages from "@/i18n/package";
-import { langList } from "@/utils/langList";
-import { getSystemStorage } from "@/utils/storage";
+import { langList } from "@/common/utils/langList";
+import { getSystemStorage } from "@/common/utils/storage";
 
 const langListArr: string[] = langList.map((lang) => lang.category);
 

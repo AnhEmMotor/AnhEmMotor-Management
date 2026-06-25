@@ -1,6 +1,6 @@
 import { ref, reactive, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { SupplierApi } from "@/infrastructure/api/supplier.api";
+import { SupplierApi } from "@/api/supplier";
 import type {
   Supplier,
   PartnerType,

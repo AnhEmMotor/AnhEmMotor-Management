@@ -19,7 +19,7 @@
 import SectionTitle from "./SectionTitle.vue";
 import { useSettingStore } from "@/application/store/setting";
 import { useSettingsConfig } from "../composables/useSettingsConfig";
-import { useTheme } from "@/hooks/core/useTheme";
+import { useTheme } from "@/common/composables/useTheme";
 
 const settingStore = useSettingStore();
 const { systemThemeMode } = storeToRefs(settingStore);

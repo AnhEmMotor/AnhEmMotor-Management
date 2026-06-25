@@ -1,4 +1,5 @@
 import { AppRouteRecord } from "@/types/router";
+import { Permissions } from "@/domain/constants/permissions";
 
 export const salesRoutes: AppRouteRecord = {
   name: "SalesManagement",
@@ -7,7 +8,7 @@ export const salesRoutes: AppRouteRecord = {
   meta: {
     title: "Quản lý bán hàng",
     icon: "ri:bill-line",
-    roles: ["R_SUPER", "R_ADMIN"],
+    roles: ["Admin", "SuperAdmin"],
   },
   children: [
     {
@@ -28,6 +29,17 @@ export const salesRoutes: AppRouteRecord = {
         title: "Phiếu bán hàng",
         icon: "ri:file-list-3-line",
         keepAlive: true,
+      },
+    },
+    {
+      path: "sales-report",
+      name: "SalesAnalyticsReport",
+      component: "/Accountant/view/reporting/revenue",
+      meta: {
+        title: "Báo cáo bán hàng",
+        icon: "ri:money-cny-circle-line",
+        keepAlive: true,
+        permission: Permissions.StatisticalView,
       },
     },
   ],

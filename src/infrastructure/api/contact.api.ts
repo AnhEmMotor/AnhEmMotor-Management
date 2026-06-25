@@ -48,16 +48,19 @@ export const ContactApi = {
   createSupportRequest(data: Contact.CreateSupportRequestPayload) {
     return request.post<number>({
       url: "/api/v1/Contacts/support-request",
-      data,
+      data: { request: data },
     });
   },
   createFeedback(data: Contact.CreateFeedbackPayload) {
-    return request.post<number>({ url: "/api/v1/Contacts/feedback", data });
+    return request.post<number>({
+      url: "/api/v1/Contacts/feedback",
+      data: { request: data },
+    });
   },
   createJobApplication(data: Contact.CreateJobApplicationPayload) {
     return request.post<number>({
       url: "/api/v1/Contacts/job-application",
-      data,
+      data: { request: data },
     });
   },
 };

@@ -304,7 +304,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import dayjs from "dayjs";
-import { AuditTrailApi, type AuditLogItem } from "@/api/audit-trail.api";
+import { AuditTrailApi, type AuditLogItem } from "@/api/operations";
 import { ElMessage } from "element-plus";
 import { Right } from "@element-plus/icons-vue";
 

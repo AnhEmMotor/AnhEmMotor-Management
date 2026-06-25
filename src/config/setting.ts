@@ -4,7 +4,7 @@ import {
   MenuThemeEnum,
   MenuTypeEnum,
   ContainerWidthEnum,
-} from "@/enums/appEnum";
+} from "@/common/enums/appEnum";
 
 export const SETTING_DEFAULT_CONFIG = {
   menuType: MenuTypeEnum.LEFT,
