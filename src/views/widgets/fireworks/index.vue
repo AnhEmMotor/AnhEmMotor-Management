@@ -2,21 +2,36 @@
   <div class="page-content">
     <div class="mb-5">
       <ElSpace wrap>
-        <ElButton :disabled="isLaunching" v-ripple @click="handleSingleLaunch">{{
-          $t('admin.t240')
-        }}</ElButton>
-        <ElButton :disabled="isLaunching" v-ripple @click="handleImageLaunch(bp)">{{
-          $t('admin.t241')
-        }}</ElButton>
-        <ElButton :disabled="isLaunching" v-ripple @click="handleMultipleLaunch('')">{{
-          $t('admin.t242')
-        }}</ElButton>
-        <ElButton :disabled="isLaunching" v-ripple @click="handleImageLaunch(sd)">{{
-          $t('admin.t243')
-        }}</ElButton>
-        <ElButton :disabled="isLaunching" v-ripple @click="handleMultipleLaunch(sd)">{{
-          $t('admin.t244')
-        }}</ElButton>
+        <ElButton
+          :disabled="isLaunching"
+          v-ripple
+          @click="handleSingleLaunch"
+          >{{ $t("admin.t240") }}</ElButton
+        >
+        <ElButton
+          :disabled="isLaunching"
+          v-ripple
+          @click="handleImageLaunch(bp)"
+          >{{ $t("admin.t241") }}</ElButton
+        >
+        <ElButton
+          :disabled="isLaunching"
+          v-ripple
+          @click="handleMultipleLaunch('')"
+          >{{ $t("admin.t242") }}</ElButton
+        >
+        <ElButton
+          :disabled="isLaunching"
+          v-ripple
+          @click="handleImageLaunch(sd)"
+          >{{ $t("admin.t243") }}</ElButton
+        >
+        <ElButton
+          :disabled="isLaunching"
+          v-ripple
+          @click="handleMultipleLaunch(sd)"
+          >{{ $t("admin.t244") }}</ElButton
+        >
       </ElSpace>
     </div>
 
@@ -27,61 +42,69 @@
       border
       style="margin-top: 50px"
     >
-      <ElDescriptionsItem :label="$t('admin.t250')">{{ $t('admin.t245') }}</ElDescriptionsItem>
-      <ElDescriptionsItem :label="$t('admin.t251')">{{ $t('admin.t246') }}</ElDescriptionsItem>
-      <ElDescriptionsItem :label="$t('admin.t252')">{{ $t('admin.t247') }}</ElDescriptionsItem>
-      <ElDescriptionsItem :label="$t('admin.t253')">{{ $t('admin.t248') }}</ElDescriptionsItem>
+      <ElDescriptionsItem :label="$t('admin.t250')">{{
+        $t("admin.t245")
+      }}</ElDescriptionsItem>
+      <ElDescriptionsItem :label="$t('admin.t251')">{{
+        $t("admin.t246")
+      }}</ElDescriptionsItem>
+      <ElDescriptionsItem :label="$t('admin.t252')">{{
+        $t("admin.t247")
+      }}</ElDescriptionsItem>
+      <ElDescriptionsItem :label="$t('admin.t253')">{{
+        $t("admin.t248")
+      }}</ElDescriptionsItem>
     </ElDescriptions>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { mittBus } from '@/utils/sys'
-  import bp from '@imgs/ceremony/hb.png'
-  import sd from '@imgs/ceremony/sd.png'
+import { mittBus } from "@/utils/sys";
+import bp from "@imgs/ceremony/hb.png";
+import sd from "@imgs/ceremony/sd.png";
 
-  defineOptions({ name: 'WidgetsFireworks' })
+defineOptions({ name: "WidgetsFireworks" });
 
-  const timerRef = ref<ReturnType<typeof setInterval> | null>(null)
-  const isLaunching = ref(false)
+const timerRef = ref<ReturnType<typeof setInterval> | null>(null);
+const isLaunching = ref(false);
 
-  const triggerFireworks = (count: number, src: string) => {
-    if (timerRef.value) {
-      clearInterval(timerRef.value)
-      timerRef.value = null
+const triggerFireworks = (count: number, src: string) => {
+  if (timerRef.value) {
+    clearInterval(timerRef.value);
+    timerRef.value = null;
+  }
+
+  isLaunching.value = true;
+
+  let fired = 0;
+  timerRef.value = setInterval(() => {
+    mittBus.emit("triggerFireworks", src);
+    fired++;
+
+    if (fired >= count) {
+      clearInterval(timerRef.value!);
+      timerRef.value = null;
+      isLaunching.value = false;
     }
+  }, 1000);
+};
 
-    isLaunching.value = true
+const handleSingleLaunch = () => {
+  mittBus.emit("triggerFireworks");
+};
 
-    let fired = 0
-    timerRef.value = setInterval(() => {
-      mittBus.emit('triggerFireworks', src)
-      fired++
+const handleMultipleLaunch = (src: string) => {
+  triggerFireworks(10, src);
+};
 
-      if (fired >= count) {
-        clearInterval(timerRef.value!)
-        timerRef.value = null
-        isLaunching.value = false
-      }
-    }, 1000)
+const handleImageLaunch = (src: string) => {
+  mittBus.emit("triggerFireworks", src);
+};
+
+onUnmounted(() => {
+  if (timerRef.value) {
+    clearInterval(timerRef.value);
+    timerRef.value = null;
   }
-
-  const handleSingleLaunch = () => {
-    mittBus.emit('triggerFireworks')
-  }
-
-  const handleMultipleLaunch = (src: string) => {
-    triggerFireworks(10, src)
-  }
-
-  const handleImageLaunch = (src: string) => {
-    mittBus.emit('triggerFireworks', src)
-  }
-
-  onUnmounted(() => {
-    if (timerRef.value) {
-      clearInterval(timerRef.value)
-      timerRef.value = null
-    }
-  })
+});
 </script>

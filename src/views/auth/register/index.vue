@@ -7,8 +7,8 @@
 
       <div class="auth-right-wrap">
         <div class="form">
-          <h3 class="title">{{ $t('register.title') }}</h3>
-          <p class="sub-title">{{ $t('register.subTitle') }}</p>
+          <h3 class="title">{{ $t("register.title") }}</h3>
+          <p class="sub-title">{{ $t("register.subTitle") }}</p>
           <ElForm
             class="mt-7.5"
             ref="formRef"
@@ -50,11 +50,11 @@
 
             <ElFormItem prop="agreement">
               <ElCheckbox v-model="formData.agreement">
-                {{ $t('register.agreeText') }}
+                {{ $t("register.agreeText") }}
                 <RouterLink
                   style="color: var(--theme-color); text-decoration: none"
                   to="/privacy-policy"
-                  >{{ $t('register.privacyPolicy') }}</RouterLink
+                  >{{ $t("register.privacyPolicy") }}</RouterLink
                 >
               </ElCheckbox>
             </ElFormItem>
@@ -67,14 +67,14 @@
                 :loading="loading"
                 v-ripple
               >
-                {{ $t('register.submitBtnText') }}
+                {{ $t("register.submitBtnText") }}
               </ElButton>
             </div>
 
             <div class="mt-5 text-sm text-g-600">
-              <span>{{ $t('register.hasAccount') }}</span>
+              <span>{{ $t("register.hasAccount") }}</span>
               <RouterLink class="text-theme" :to="{ name: 'Login' }">{{
-                $t('register.toLogin')
+                $t("register.toLogin")
               }}</RouterLink>
             </div>
           </ElForm>
@@ -85,123 +85,141 @@
 </template>
 
 <script setup lang="ts">
-  import { useI18n } from 'vue-i18n'
-  import type { FormInstance, FormRules } from 'element-plus'
+import { useI18n } from "vue-i18n";
+import type { FormInstance, FormRules } from "element-plus";
 
-  defineOptions({ name: 'Register' })
+defineOptions({ name: "Register" });
 
-  interface RegisterForm {
-    username: string
-    password: string
-    confirmPassword: string
-    agreement: boolean
+interface RegisterForm {
+  username: string;
+  password: string;
+  confirmPassword: string;
+  agreement: boolean;
+}
+
+const USERNAME_MIN_LENGTH = 3;
+const USERNAME_MAX_LENGTH = 20;
+const PASSWORD_MIN_LENGTH = 6;
+const REDIRECT_DELAY = 1000;
+
+const { t, locale } = useI18n();
+const router = useRouter();
+const formRef = ref<FormInstance>();
+
+const loading = ref(false);
+const formKey = ref(0);
+
+watch(locale, () => {
+  formKey.value++;
+});
+
+const formData = reactive<RegisterForm>({
+  username: "",
+  password: "",
+  confirmPassword: "",
+  agreement: false,
+});
+
+const validatePassword = (
+  _rule: any,
+  value: string,
+  callback: (error?: Error) => void,
+) => {
+  if (!value) {
+    callback(new Error(t("register.placeholder.password")));
+    return;
   }
 
-  const USERNAME_MIN_LENGTH = 3
-  const USERNAME_MAX_LENGTH = 20
-  const PASSWORD_MIN_LENGTH = 6
-  const REDIRECT_DELAY = 1000
-
-  const { t, locale } = useI18n()
-  const router = useRouter()
-  const formRef = ref<FormInstance>()
-
-  const loading = ref(false)
-  const formKey = ref(0)
-
-  watch(locale, () => {
-    formKey.value++
-  })
-
-  const formData = reactive<RegisterForm>({
-    username: '',
-    password: '',
-    confirmPassword: '',
-    agreement: false
-  })
-
-  const validatePassword = (_rule: any, value: string, callback: (error?: Error) => void) => {
-    if (!value) {
-      callback(new Error(t('register.placeholder.password')))
-      return
-    }
-
-    if (formData.confirmPassword) {
-      formRef.value?.validateField('confirmPassword')
-    }
-
-    callback()
+  if (formData.confirmPassword) {
+    formRef.value?.validateField("confirmPassword");
   }
 
-  const validateConfirmPassword = (
-    _rule: any,
-    value: string,
-    callback: (error?: Error) => void
-  ) => {
-    if (!value) {
-      callback(new Error(t('register.rule.confirmPasswordRequired')))
-      return
-    }
+  callback();
+};
 
-    if (value !== formData.password) {
-      callback(new Error(t('register.rule.passwordMismatch')))
-      return
-    }
-
-    callback()
+const validateConfirmPassword = (
+  _rule: any,
+  value: string,
+  callback: (error?: Error) => void,
+) => {
+  if (!value) {
+    callback(new Error(t("register.rule.confirmPasswordRequired")));
+    return;
   }
 
-  const validateAgreement = (_rule: any, value: boolean, callback: (error?: Error) => void) => {
-    if (!value) {
-      callback(new Error(t('register.rule.agreementRequired')))
-      return
-    }
-    callback()
+  if (value !== formData.password) {
+    callback(new Error(t("register.rule.passwordMismatch")));
+    return;
   }
 
-  const rules = computed<FormRules<RegisterForm>>(() => ({
-    username: [
-      { required: true, message: t('register.placeholder.username'), trigger: 'blur' },
-      {
-        min: USERNAME_MIN_LENGTH,
-        max: USERNAME_MAX_LENGTH,
-        message: t('register.rule.usernameLength'),
-        trigger: 'blur'
-      }
-    ],
-    password: [
-      { required: true, validator: validatePassword, trigger: 'blur' },
-      { min: PASSWORD_MIN_LENGTH, message: t('register.rule.passwordLength'), trigger: 'blur' }
-    ],
-    confirmPassword: [{ required: true, validator: validateConfirmPassword, trigger: 'blur' }],
-    agreement: [{ validator: validateAgreement, trigger: 'change' }]
-  }))
+  callback();
+};
 
-  const register = async () => {
-    if (!formRef.value) return
-
-    try {
-      await formRef.value.validate()
-      loading.value = true
-
-      setTimeout(() => {
-        loading.value = false
-        ElMessage.success('DangKyThanhCong')
-        toLogin()
-      }, REDIRECT_DELAY)
-    } catch (error) {
-      console.error('FormnghiệmtínhThatBai:', error)
-      loading.value = false
-    }
+const validateAgreement = (
+  _rule: any,
+  value: boolean,
+  callback: (error?: Error) => void,
+) => {
+  if (!value) {
+    callback(new Error(t("register.rule.agreementRequired")));
+    return;
   }
+  callback();
+};
 
-  const toLogin = () => {
+const rules = computed<FormRules<RegisterForm>>(() => ({
+  username: [
+    {
+      required: true,
+      message: t("register.placeholder.username"),
+      trigger: "blur",
+    },
+    {
+      min: USERNAME_MIN_LENGTH,
+      max: USERNAME_MAX_LENGTH,
+      message: t("register.rule.usernameLength"),
+      trigger: "blur",
+    },
+  ],
+  password: [
+    { required: true, validator: validatePassword, trigger: "blur" },
+    {
+      min: PASSWORD_MIN_LENGTH,
+      message: t("register.rule.passwordLength"),
+      trigger: "blur",
+    },
+  ],
+  confirmPassword: [
+    { required: true, validator: validateConfirmPassword, trigger: "blur" },
+  ],
+  agreement: [{ validator: validateAgreement, trigger: "change" }],
+}));
+
+const register = async () => {
+  if (!formRef.value) return;
+
+  try {
+    await formRef.value.validate();
+    loading.value = true;
+
     setTimeout(() => {
-      router.push({ name: 'Login' })
-    }, REDIRECT_DELAY)
+      loading.value = false;
+      ElMessage.success("DangKyThanhCong");
+      toLogin();
+    }, REDIRECT_DELAY);
+  } catch (error) {
+    console.error("FormnghiệmtínhThatBai:", error);
+    loading.value = false;
   }
+};
+
+const toLogin = () => {
+  setTimeout(() => {
+    router.push({ name: "Login" });
+  }, REDIRECT_DELAY);
+};
 </script>
 
 <style scoped>
-  @import '../login/style.css';
+@import "../login/style.css";
 </style>

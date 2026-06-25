@@ -1,4 +1,4 @@
-import { AppRouteRecord } from '@/types/router'
-import { routeModules } from '../modules'
+import { AppRouteRecord } from "@/types/router";
+import { routeModules } from "../modules";
 
-export const asyncRoutes: AppRouteRecord[] = routeModules
+export const asyncRoutes: AppRouteRecord[] = routeModules;

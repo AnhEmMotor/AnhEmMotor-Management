@@ -1,49 +1,52 @@
-import { RouteRecordRaw } from 'vue-router'
+import { RouteRecordRaw } from "vue-router";
 
 export interface RouteMeta extends Record<string | number | symbol, unknown> {
-  title: string
+  title: string;
 
-  icon?: string
+  icon?: string;
 
-  showBadge?: boolean
+  showBadge?: boolean;
 
-  showTextBadge?: string
+  showTextBadge?: string;
 
-  isHide?: boolean
+  isHide?: boolean;
 
-  isHideTab?: boolean
+  isHideTab?: boolean;
 
-  link?: string
+  link?: string;
 
-  isIframe?: boolean
+  isIframe?: boolean;
 
-  keepAlive?: boolean
+  keepAlive?: boolean;
 
   authList?: Array<{
-    title: string
-    authMark: string
-  }>
+    title: string;
+    authMark: string;
+  }>;
 
-  isFirstLevel?: boolean
+  isFirstLevel?: boolean;
 
-  roles?: string[]
+  roles?: string[];
 
-  fixedTab?: boolean
+  fixedTab?: boolean;
 
-  activePath?: string
+  activePath?: string;
 
-  isFullPage?: boolean
+  isFullPage?: boolean;
 
-  isAuthButton?: boolean
+  isAuthButton?: boolean;
 
-  authMark?: string
+  authMark?: string;
 
-  parentPath?: string
+  parentPath?: string;
 }
 
-export interface AppRouteRecord extends Omit<RouteRecordRaw, 'meta' | 'children' | 'component'> {
-  id?: number
-  meta: RouteMeta
-  children?: AppRouteRecord[]
-  component?: string | (() => Promise<any>)
+export interface AppRouteRecord extends Omit<
+  RouteRecordRaw,
+  "meta" | "children" | "component"
+> {
+  id?: number;
+  meta: RouteMeta;
+  children?: AppRouteRecord[];
+  component?: string | (() => Promise<any>);
 }

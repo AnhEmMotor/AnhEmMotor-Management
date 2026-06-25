@@ -2,8 +2,8 @@
   <div class="art-card p-5 mb-5 h-105 max-sm:mb-4">
     <div class="art-card-header">
       <div class="title">
-        <h4>{{ $t('dashboard.ecommerce.salesClassification') }}</h4>
-        <p>{{ $t('dashboard.ecommerce.byCategory') }}</p>
+        <h4>{{ $t("dashboard.ecommerce.salesClassification") }}</h4>
+        <p>{{ $t("dashboard.ecommerce.byCategory") }}</p>
       </div>
     </div>
 
@@ -11,7 +11,7 @@
       :data="[
         { value: 30, name: 'Điện tử' },
         { value: 55, name: 'Thời trang' },
-        { value: 36, name: 'Gia dụng' }
+        { value: 36, name: 'Gia dụng' },
       ]"
       :color="['#4C87F3', '#EDF2FF', '#8BD8FC']"
       :radius="['70%', '80%']"
@@ -27,7 +27,9 @@
         </div>
         <div>
           <p class="text-lg">¥500,458</p>
-          <span class="text-sm">{{ $t('dashboard.ecommerce.totalIncome') }}</span>
+          <span class="text-sm">{{
+            $t("dashboard.ecommerce.totalIncome")
+          }}</span>
         </div>
       </div>
       <div class="flex-c">

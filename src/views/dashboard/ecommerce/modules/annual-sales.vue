@@ -2,8 +2,8 @@
   <div class="art-card p-5 h-[28.2rem] mb-5 max-sm:mb-4">
     <div class="art-card-header">
       <div class="title">
-        <h4>{{ $t('admin.t68') }}</h4>
-        <p>{{ $t('admin.t69') }}</p>
+        <h4>{{ $t("admin.t68") }}</h4>
+        <p>{{ $t("admin.t69") }}</p>
       </div>
     </div>
 
@@ -22,7 +22,7 @@
         </div>
         <div>
           <p class="text-lg">¥200,858</p>
-          <span class="text-sm">{{ $t('admin.t70') }}</span>
+          <span class="text-sm">{{ $t("admin.t70") }}</span>
         </div>
       </div>
       <div class="flex-c">
@@ -31,7 +31,7 @@
         </div>
         <div>
           <p class="text-lg">¥102,927</p>
-          <span class="text-sm">{{ $t('admin.t71') }}</span>
+          <span class="text-sm">{{ $t("admin.t71") }}</span>
         </div>
       </div>
     </div>

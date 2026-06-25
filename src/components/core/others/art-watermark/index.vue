@@ -17,46 +17,46 @@
 </template>
 
 <script setup lang="ts">
-  import AppConfig from '@/config'
-  import { useSettingStore } from '@/store/modules/setting'
+import AppConfig from "@/config";
+import { useSettingStore } from "@/application/store/setting";
 
-  defineOptions({ name: 'ArtWatermark' })
+defineOptions({ name: "ArtWatermark" });
 
-  const settingStore = useSettingStore()
-  const { watermarkVisible } = storeToRefs(settingStore)
+const settingStore = useSettingStore();
+const { watermarkVisible } = storeToRefs(settingStore);
 
-  interface WatermarkProps {
-    content?: string
+interface WatermarkProps {
+  content?: string;
 
-    visible?: boolean
+  visible?: boolean;
 
-    fontSize?: number
+  fontSize?: number;
 
-    fontColor?: string
+  fontColor?: string;
 
-    rotate?: number
+  rotate?: number;
 
-    gapX?: number
+  gapX?: number;
 
-    gapY?: number
+  gapY?: number;
 
-    offsetX?: number
+  offsetX?: number;
 
-    offsetY?: number
+  offsetY?: number;
 
-    zIndex?: number
-  }
+  zIndex?: number;
+}
 
-  withDefaults(defineProps<WatermarkProps>(), {
-    content: AppConfig.systemInfo.name,
-    visible: false,
-    fontSize: 16,
-    fontColor: 'rgba(128, 128, 128, 0.2)',
-    rotate: -22,
-    gapX: 100,
-    gapY: 100,
-    offsetX: 50,
-    offsetY: 50,
-    zIndex: 3100
-  })
+withDefaults(defineProps<WatermarkProps>(), {
+  content: AppConfig.systemInfo.name,
+  visible: false,
+  fontSize: 16,
+  fontColor: "rgba(128, 128, 128, 0.2)",
+  rotate: -22,
+  gapX: 100,
+  gapY: 100,
+  offsetX: 50,
+  offsetY: 50,
+  zIndex: 3100,
+});
 </script>

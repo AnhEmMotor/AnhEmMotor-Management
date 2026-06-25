@@ -1,6 +1,6 @@
 # AnhEmMotor Management Dashboard Project
 
-[English](#english) | [Tiếng Việt](#tiếng-việt) | [Rules (Quy chuẩn)](./RULES.md)
+[English](#english) | [Tiếng Việt](#tiếng-việt) | [Rules (Quy chuẩn)](./RULES.md) | [Setup VPS](./SETUP_VPS.md)
 
 ---
 
@@ -51,7 +51,7 @@ Update the information in `.env`:
 
 ```properties
 # Backend API URL (Production or Local)
-VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT=https://localhost:7001
+VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT=https://localhost:5000
 ```
 
 ### Local Development
@@ -144,7 +144,7 @@ Cập nhật thông tin trong `.env`:
 
 ```properties
 # URL của Backend API (Production hoặc Local)
-VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT=https://localhost:7001
+VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT=https://localhost:5000
 ```
 
 ### Chạy Local Development

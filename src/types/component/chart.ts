@@ -1,247 +1,250 @@
-import type { EChartsOption } from '@/plugins/echarts'
+import type { EChartsOption } from "@/plugins/echarts";
 
-export type LegendPosition = 'bottom' | 'top' | 'left' | 'right'
+export type LegendPosition = "bottom" | "top" | "left" | "right";
 
 export type SymbolType =
-  | 'circle'
-  | 'rect'
-  | 'roundRect'
-  | 'triangle'
-  | 'diamond'
-  | 'pin'
-  | 'arrow'
-  | 'none'
+  | "circle"
+  | "rect"
+  | "roundRect"
+  | "triangle"
+  | "diamond"
+  | "pin"
+  | "arrow"
+  | "none";
 
 export interface ChartThemeConfig {
-  chartHeight: string
+  chartHeight: string;
 
-  fontSize: number
+  fontSize: number;
 
-  fontColor: string
+  fontColor: string;
 
-  themeColor: string
+  themeColor: string;
 
-  colors: string[]
+  colors: string[];
 }
 
 export interface UseChartOptions {
-  initOptions?: EChartsOption
+  initOptions?: EChartsOption;
 
-  initDelay?: number
+  initDelay?: number;
 
-  threshold?: number
+  threshold?: number;
 
-  autoTheme?: boolean
+  autoTheme?: boolean;
 }
 
 export interface BaseChartProps {
-  height?: string
+  height?: string;
 
-  loading?: boolean
-  isEmpty?: boolean
+  loading?: boolean;
+  isEmpty?: boolean;
 
-  colors?: string[]
+  colors?: string[];
 }
 
 export interface AxisDisplayProps {
-  showAxisLabel?: boolean
+  showAxisLabel?: boolean;
 
-  showAxisLine?: boolean
+  showAxisLine?: boolean;
 
-  showSplitLine?: boolean
+  showSplitLine?: boolean;
 }
 
 export interface InteractionProps {
-  showTooltip?: boolean
+  showTooltip?: boolean;
 
-  showLegend?: boolean
+  showLegend?: boolean;
 
-  legendPosition?: LegendPosition
+  legendPosition?: LegendPosition;
 }
 
 export interface BarDataItem {
-  name: string
+  name: string;
 
-  data: number[]
+  data: any[];
 
-  barWidth?: string | number
+  barWidth?: string | number;
 
-  stack?: string
+  stack?: string;
 }
 
-export interface BarChartProps extends BaseChartProps, AxisDisplayProps, InteractionProps {
-  data: number[] | BarDataItem[]
+export interface BarChartProps
+  extends BaseChartProps, AxisDisplayProps, InteractionProps {
+  data: any[] | BarDataItem[];
 
-  xAxisData?: string[]
+  xAxisData?: string[];
 
-  barWidth?: string | number
+  barWidth?: string | number;
 
-  stack?: boolean
+  stack?: boolean;
 
-  borderRadius?: number | number[]
+  borderRadius?: number | number[];
 }
 
 export interface LineDataItem {
-  name: string
+  name: string;
 
-  data: number[]
+  data: number[];
 
-  lineWidth?: number
+  lineWidth?: number;
 
-  showAreaColor?: boolean
+  showAreaColor?: boolean;
 
   areaStyle?: {
-    startOpacity?: number
+    startOpacity?: number;
 
-    endOpacity?: number
+    endOpacity?: number;
 
-    custom?: any
-  }
+    custom?: any;
+  };
 
-  smooth?: boolean
+  smooth?: boolean;
 
-  symbol?: SymbolType
+  symbol?: SymbolType;
 
-  symbolSize?: number
+  symbolSize?: number;
 }
 
-export interface LineChartProps extends BaseChartProps, AxisDisplayProps, InteractionProps {
-  data: number[] | LineDataItem[]
+export interface LineChartProps
+  extends BaseChartProps, AxisDisplayProps, InteractionProps {
+  data: number[] | LineDataItem[];
 
-  xAxisData?: string[]
+  xAxisData?: string[];
 
-  lineWidth?: number
+  lineWidth?: number;
 
-  showAreaColor?: boolean
+  showAreaColor?: boolean;
 
-  smooth?: boolean
+  smooth?: boolean;
 
-  symbol?: SymbolType
+  symbol?: SymbolType;
 
-  symbolSize?: number
+  symbolSize?: number;
 
-  animationDelay?: number
+  animationDelay?: number;
 }
 
 export interface RadarDataItem {
-  name: string
+  name: string;
 
-  value: number[]
+  value: number[];
 }
 
 export interface RadarChartProps extends BaseChartProps, InteractionProps {
-  indicator?: Array<{ name: string; max: number }>
+  indicator?: Array<{ name: string; max: number }>;
 
-  data?: RadarDataItem[]
+  data?: RadarDataItem[];
 }
 
 export interface PieDataItem {
-  value: number
+  value: number;
 
-  name: string
+  name: string;
 }
 
 export interface RingChartProps extends BaseChartProps, InteractionProps {
-  data: PieDataItem[]
+  data: PieDataItem[];
 
-  radius?: string[]
+  radius?: string[];
 
-  borderRadius?: number
+  borderRadius?: number;
 
-  centerText?: string
+  centerText?: string;
 
-  showLabel?: boolean
+  showLabel?: boolean;
 }
 
 export interface KLineDataItem {
-  time: string
+  time: string;
 
-  open: number
+  open: number;
 
-  close: number
+  close: number;
 
-  high: number
+  high: number;
 
-  low: number
+  low: number;
 }
 
 export interface KLineChartProps extends BaseChartProps {
-  data?: KLineDataItem[]
+  data?: KLineDataItem[];
 
-  showDataZoom?: boolean
+  showDataZoom?: boolean;
 
-  dataZoomStart?: number
+  dataZoomStart?: number;
 
-  dataZoomEnd?: number
+  dataZoomEnd?: number;
 }
 
 export interface ScatterDataItem {
-  value: number[]
+  value: number[];
 }
 
-export interface ScatterChartProps extends BaseChartProps, AxisDisplayProps, InteractionProps {
-  data?: ScatterDataItem[]
+export interface ScatterChartProps
+  extends BaseChartProps, AxisDisplayProps, InteractionProps {
+  data?: ScatterDataItem[];
 
-  symbolSize?: number
+  symbolSize?: number;
 }
 
 export interface DualBarCompareChartProps extends BaseChartProps {
-  topData: number[]
+  topData: number[];
 
-  bottomData: number[]
+  bottomData: number[];
 
-  xAxisData: string[]
+  xAxisData: string[];
 
-  topColor?: string
+  topColor?: string;
 
-  bottomColor?: string
+  bottomColor?: string;
 
-  barWidth?: number
+  barWidth?: number;
 }
 
 export interface MapChartProps extends BaseChartProps {
-  mapData?: any[]
+  mapData?: any[];
 
-  selectedRegion?: string
+  selectedRegion?: string;
 
-  showLabels?: boolean
+  showLabels?: boolean;
 
-  showScatter?: boolean
+  showScatter?: boolean;
 }
 
 export interface BidirectionalBarChartProps
   extends BaseChartProps, AxisDisplayProps, InteractionProps {
-  positiveData: number[]
+  positiveData: number[];
 
-  negativeData: number[]
+  negativeData: number[];
 
-  xAxisData?: string[]
+  xAxisData?: string[];
 
-  positiveName?: string
+  positiveName?: string;
 
-  negativeName?: string
+  negativeName?: string;
 
-  barWidth?: string | number
+  barWidth?: string | number;
 
-  yAxisMin?: number
+  yAxisMin?: number;
 
-  yAxisMax?: number
+  yAxisMax?: number;
 
-  showDataLabel?: boolean
+  showDataLabel?: boolean;
 
-  positiveBorderRadius?: number | number[]
+  positiveBorderRadius?: number | number[];
 
-  negativeBorderRadius?: number | number[]
+  negativeBorderRadius?: number | number[];
 }
 
-export type ChartOptionGenerator = () => EChartsOption
+export type ChartOptionGenerator = () => EChartsOption;
 
-export type ChartEventCallback = (params: any) => void
+export type ChartEventCallback = (params: any) => void;
 
 export interface ChartError {
-  code: string
+  code: string;
 
-  message: string
+  message: string;
 
-  details?: any
+  details?: any;
 }

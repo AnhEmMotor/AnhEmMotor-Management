@@ -105,6 +105,8 @@ $box-radius: calc(var(--custom-radius) / 3 + 2px);
   }
 
   .w-e-text-container {
+    text-align: left;
+
     [data-slate-editor] {
       h1,
       h2,

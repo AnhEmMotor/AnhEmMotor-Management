@@ -209,6 +209,149 @@
     "gohome": "Go Home"
   },
   "menus": {
+    "contract": {
+      "title": "Contract Management",
+      "sales": "Sales Contract",
+      "finance": "Finance Contract (Installment)",
+      "supplier": "Supplier Contract",
+      "templates": "Contract Templates",
+      "templateList": "Contract Templates List",
+      "templateEditTitle": "Edit Contract Template",
+      "templateCreateTitle": "Create New Contract Template",
+      "templateEditor": "Contract Template Editor",
+      "templateEditorDescription": "Configure information and edit dynamic contract template content",
+      "templateImport": "Import from Word",
+      "templateName": "Template Name",
+      "templateCode": "Template Code",
+      "templateType": "Type",
+      "templateVersion": "Version",
+      "templateStatus": "Status",
+      "templateContent": "Template Content",
+      "templateDynamicFields": "Dynamic Placeholders",
+      "templateCreate": "Create New Template",
+      "templateEdit": "Edit Template",
+      "templateClone": "Clone to New Version",
+      "templateDelete": "Delete Template",
+      "templateSave": "Save Template",
+      "templatePreview": "Preview Print",
+      "templateSearchPlaceholder": "Search by name or code...",
+      "typeSales": "Sales Contract",
+      "typeFinance": "Finance Contract (Installment)",
+      "typeSupplier": "Supplier Contract",
+      "typeAppendix": "Appendix",
+      "statusActive": "Active",
+      "statusInactive": "Inactive",
+      "statusDeprecated": "Deprecated",
+      "placeholderCustomerName": "Customer Name",
+      "placeholderCustomerIdCard": "ID Card",
+      "placeholderCustomerAddress": "Address",
+      "placeholderVehicleName": "Vehicle Name",
+      "placeholderChassisNumber": "Chassis Number",
+      "placeholderEngineNumber": "Engine Number",
+      "placeholderVehiclePrice": "Unit Price",
+      "placeholderDepositAmount": "Deposit Amount",
+      "placeholderRemainingAmount": "Remaining Amount",
+      "validateSyntaxError": "Invalid dynamic placeholder syntax. Please check your bracket characters {{ }}.",
+      "cannotUpdateUsedTemplate": "This template has already been used to generate contracts. Use 'Clone to New Version' instead.",
+      "confirmDeleteTemplate": "Are you sure you want to delete this template? This action cannot be undone.",
+      "cloneSuccess": "Cloned successfully! New version is now active.",
+      "saveSuccess": "Template saved successfully!",
+      "deleteSuccess": "Template deleted successfully!",
+      "emptyContentWarning": "Template content must not be empty.",
+      "usedBadge": "Used",
+      "versionBadge": "Version",
+      "filterAll": "All",
+      "filterActive": "Active",
+      "filterInactive": "Inactive",
+      "filterDeprecated": "Deprecated",
+      "tokenSearchPlaceholder": "Search placeholders...",
+      "tokens": {
+        "customer": {
+          "ShowroomName": "Showroom Name",
+          "ShowroomAddress": "Showroom Address",
+          "ShowroomPhone": "Showroom Phone",
+          "ShowroomTaxCode": "Tax Code",
+          "ShowroomRepresentative": "Showroom Representative",
+          "ShowroomRepresentativeTitle": "Representative Title",
+          "ShowroomRepresentativeIdCard": "Representative ID Card",
+          "ShowroomRepresentativeIdIssuedDate": "ID Issued Date",
+          "ShowroomRepresentativeIdIssuedPlace": "ID Issued Place",
+          "ShowroomFax": "Fax",
+          "ShowroomBankAccount": "Bank Account",
+          "ShowroomBankName": "Bank Name",
+          "CustomerName": "Customer Name",
+          "CustomerIdCard": "ID Card",
+          "CustomerAddress": "Address",
+          "CustomerPhone": "Phone",
+          "CustomerEmail": "Email",
+          "CustomerRepresentativeTitle": "Representative Title",
+          "CustomerIdIssuedDate": "ID Issued Date",
+          "CustomerIdIssuedPlace": "ID Issued Place",
+          "CustomerFax": "Fax",
+          "CustomerBankAccount": "Bank Account",
+          "CustomerBankName": "Bank Name"
+        },
+        "vehicle": {
+          "VehicleName": "Vehicle Name",
+          "ChassisNumber": "Chassis Number",
+          "EngineNumber": "Engine Number",
+          "VehiclePrice": "Price",
+          "VehiclePriceInWords": "Price in Words",
+          "VehicleColor": "Color",
+          "LicensePlate": "License Plate",
+          "PaymentDueDate": "Due Date",
+          "PaymentMethod": "Payment Method",
+          "DeliveryDate": "Delivery Date",
+          "DeliveryLocation": "Delivery Location",
+          "TransportationResponsibleParty": "Transportation Party",
+          "StorageFeePerDay": "Storage Fee/Day",
+          "InspectionAgency": "Inspection Agency",
+          "ComplaintDeadlineDays": "Complaint Deadline (Days)",
+          "SellerResponseDays": "Seller Response Days",
+          "WarrantyProductName": "Warranty Item",
+          "WarrantyMonths": "Warranty (Months)",
+          "PenaltyPercent": "Penalty %",
+          "ContractCopies": "Contract Copies",
+          "EachPartyCopies": "Copies per Party"
+        },
+        "finance": {
+          "DepositAmount": "Deposit",
+          "RemainingAmount": "Remaining Amount",
+          "FinancialPartner": "Finance Partner",
+          "FinancialPartnerContact": "Finance Contact",
+          "FinanceContractNumber": "Finance Contract No.",
+          "LoanAmount": "Loan Amount",
+          "TermMonths": "Term (Months)",
+          "InterestRate": "Interest Rate",
+          "MonthlyPayment": "Monthly Payment",
+          "ExpectedDisbursementDate": "Expected Disbursement Date",
+          "ActualDisbursementDate": "Actual Disbursement Date",
+          "ExpectedDisbursementAmount": "Expected Disbursement Amount",
+          "ActualDisbursementAmount": "Actual Disbursement Amount",
+          "CavetStatus": "Cavet Status",
+          "ContractDate": "Contract Date"
+        },
+        "supplier": {
+          "SupplierName": "Supplier Name",
+          "SupplierContact": "Contact Person",
+          "CreditLimit": "Credit Limit",
+          "DiscountPolicy": "Discount Policy",
+          "TargetVolume": "Target Volume",
+          "EffectiveDate": "Effective Date",
+          "ExpiryDate": "Expiry Date",
+          "ParentContractNumber": "Parent Contract No.",
+          "AppendixChangeContent": "Appendix Content"
+        }
+      }
+    },
+    "logistics": {
+      "title": "Shipping Management",
+      "dashboard": "Logistics Dashboard",
+      "fulfillment": "Parcel Fulfillment",
+      "tracking": "Shipment Tracking",
+      "returns": "Reverse Logistics",
+      "carrierSettings": "Carrier Settings"
+    },
     "inventory": {
       "title": "Inventory Management",
       "supplier": "Suppliers",
@@ -329,18 +472,159 @@
       "title": "Customer Management",
       "potential": "Potential customers",
       "profile": "Customer profile",
-      "progress": "Progress",
+      "progress": "Plate Dossiers",
       "asset": "Asset",
       "care": "Customer care",
-      "contact": "Contact",
-      "booking": "Booking"
+      "contact": "Contact Management and Interaction",
+      "booking": "Booking",
+      "workshop": "Workshop"
+    },
+    "contact": {
+      "title": "Contact Management and Interaction",
+      "subtitle": "Manage support requests, customer feedback, and candidate applications",
+      "unreadBadge": "Unread",
+      "tabSupport": "Support Requests",
+      "tabFeedback": "Feedback and Suggestions",
+      "tabCandidate": "Candidate Applications",
+      "searchPlaceholder": "Search...",
+      "allStatus": "All statuses",
+      "totalCount": "Total: {count}",
+      "noDetail": "Select an item from the list to view details",
+      "columnId": "ID",
+      "columnIdCustomer": "ID / Customer",
+      "columnSubject": "Subject",
+      "columnCategory": "Category",
+      "columnStatus": "Status",
+      "columnCreatedAt": "Created",
+      "columnRating": "Rating",
+      "columnCustomer": "Customer / Name",
+      "columnContent": "Content",
+      "columnPosition": "Position",
+      "columnCvFile": "CV File",
+      "actionNote": "Internal note",
+      "actionReply": "Reply",
+      "actionAssign": "Assign",
+      "actionViewCv": "View CV",
+      "statusClosed": "Closed",
+      "statusInProgress": "In Progress",
+      "statusNew": "New",
+      "statusResolved": "Resolved",
+      "statusRead": "Read",
+      "statusPending": "Pending",
+      "statusOffer": "Offer Accepted",
+      "statusInterview": "Interview Scheduled",
+      "statusRejected": "Rejected",
+      "supportStatus": {
+        "New": "New",
+        "InProgress": "In Progress",
+        "Closed": "Closed"
+      },
+      "feedbackStatus": {
+        "Pending": "Pending",
+        "Read": "Read",
+        "Resolved": "Resolved"
+      },
+      "candidateStatus": {
+        "New": "New",
+        "Interview": "Interview",
+        "Offer": "Offer",
+        "Rejected": "Rejected"
+      },
+      "category": {
+        "Quality": "Quality",
+        "Service": "Service",
+        "Rating": "Rating",
+        "General": "General",
+        "Sales": "Sales",
+        "AfterSales": "After-Sales",
+        "Other": "Other"
+      },
+      "noteDialog": {
+        "title": "Internal Note",
+        "placeholder": "Enter internal note...",
+        "saveBtn": "Save"
+      },
+      "replyDialog": {
+        "contentPlaceholder": "Enter your reply to the customer...",
+        "sendBtn": "Send Reply"
+      },
+      "cvViewer": {
+        "title": "CV Preview",
+        "noFile": "No CV uploaded",
+        "download": "Download CV"
+      },
+      "assignDialog": {
+        "title": "Assign Handler",
+        "selectUser": "Select staff..."
+      },
+      "detailHeader": {
+        "requestContent": "Request Content",
+        "replyDraft": "Draft Reply",
+        "internalNote": "Internal Note",
+        "internalNoteHint": "Only visible to staff",
+        "processActions": "Processing Actions",
+        "closeRequest": "Close Request",
+        "processing": "Processing",
+        "reopen": "Reopen (New)",
+        "sendReply": "Send Reply",
+        "scheduleInterview": "Schedule Interview",
+        "acceptOffer": "Accept (Offer)",
+        "reject": "Reject",
+        "candidateProfile": "Candidate Profile (CV)",
+        "coverLetter": "Cover Letter",
+        "noCoverLetter": "No cover letter provided."
+      },
+      "createDialog": {
+        "submit": "Create"
+      }
     },
     "hr": {
       "title": "Human Resources",
       "employees": "Employee Profiles",
+      "employee": "Employee Profiles",
       "commissionPolicy": "Commission Policy",
       "payroll": "Payroll",
       "kpi": "KPI Management"
+    },
+    "service": {
+      "title": "Service Management",
+      "workshop": {
+        "title": "Workshop Management",
+        "dashboard": "Workshop Dashboard",
+        "repairOrders": "Repair & Maintenance",
+        "maintenance": "Maintenance & Repair History",
+        "warrantyRequests": "Warranty Requests",
+        "historyByVin": "History Lookup",
+        "evaluation": "Service Evaluation"
+      },
+      "warrantyAndComplaints": {
+        "title": "Warranty & Complaints",
+        "warrantyRequests": "Warranty Requests",
+        "complaints": "Complaints"
+      },
+      "administrative": {
+        "title": "Administrative Services",
+        "registration_plate": "Registration Plate Dossiers"
+      },
+      "list": {
+        "title": "Service List",
+        "stats": {
+          "total": "Total Services",
+          "active": "Active",
+          "inactive": "Inactive"
+        }
+      }
+    }
+  },
+  "components": {
+    "richText": {
+      "placeholder": "Please enter content"
+    },
+    "imageCrop": {
+      "selectImage": "Select Image",
+      "cropImage": "Crop Image",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
     }
   },
   "table": {
@@ -461,6 +745,134 @@
       "lowStock": "Low Stock",
       "moderateStock": "Moderate",
       "sufficientStock": "Sufficient"
+    }
+  },
+  "contact": {
+    "title": "Contact Management and Interaction",
+    "subtitle": "Manage support requests, customer feedback, and candidate applications",
+    "unreadBadge": "Unread",
+    "tabSupport": "Support Requests",
+    "tabFeedback": "Feedback and Suggestions",
+    "tabCandidate": "Candidate Applications",
+    "searchPlaceholder": "Search...",
+    "allStatus": "All statuses",
+    "totalCount": "Total: {count}",
+    "noDetail": "Select an item from the list to view details",
+    "columnId": "ID",
+    "columnIdCustomer": "ID / Customer",
+    "columnSubject": "Subject",
+    "columnCategory": "Category",
+    "columnStatus": "Status",
+    "columnCreatedAt": "Created",
+    "columnRating": "Rating",
+    "columnCustomer": "Customer / Name",
+    "columnContent": "Content",
+    "columnPosition": "Position",
+    "columnCvFile": "CV File",
+    "actionNote": "Internal note",
+    "actionReply": "Reply",
+    "actionAssign": "Assign",
+    "actionViewCv": "View CV",
+    "statusClosed": "Closed",
+    "statusInProgress": "In Progress",
+    "statusNew": "New",
+    "statusResolved": "Resolved",
+    "statusRead": "Read",
+    "statusPending": "Pending",
+    "statusOffer": "Offer Accepted",
+    "statusInterview": "Interview Scheduled",
+    "statusRejected": "Rejected",
+    "supportStatus": {
+      "New": "New",
+      "InProgress": "In Progress",
+      "Closed": "Closed"
+    },
+    "feedbackStatus": {
+      "Pending": "Pending",
+      "Read": "Read",
+      "Resolved": "Resolved"
+    },
+    "candidateStatus": {
+      "New": "New",
+      "Interview": "Interview",
+      "Offer": "Offer",
+      "Rejected": "Rejected"
+    },
+    "category": {
+      "Quality": "Quality",
+      "Service": "Service",
+      "Rating": "Rating",
+      "General": "General",
+      "Sales": "Sales",
+      "AfterSales": "After-Sales",
+      "Other": "Other"
+    },
+    "noteDialog": {
+      "title": "Internal Note",
+      "placeholder": "Enter internal note...",
+      "saveBtn": "Save"
+    },
+    "replyDialog": {
+      "contentPlaceholder": "Enter your reply to the customer...",
+      "sendBtn": "Send Reply"
+    },
+    "cvViewer": {
+      "title": "CV Preview",
+      "noFile": "No CV uploaded",
+      "download": "Download CV"
+    },
+    "assignDialog": {
+      "title": "Assign Handler",
+      "selectUser": "Select staff..."
+    },
+    "detailHeader": {
+      "requestContent": "Request Content",
+      "replyDraft": "Draft Reply",
+      "internalNote": "Internal Note",
+      "internalNoteHint": "Only visible to staff",
+      "processActions": "Processing Actions",
+      "closeRequest": "Close Request",
+      "processing": "Processing",
+      "reopen": "Reopen (New)",
+      "sendReply": "Send Reply",
+      "scheduleInterview": "Schedule Interview",
+      "acceptOffer": "Accept (Offer)",
+      "reject": "Reject",
+      "candidateProfile": "Candidate Profile (CV)",
+      "coverLetter": "Cover Letter",
+      "noCoverLetter": "No cover letter provided."
+    },
+    "createDialog": {
+      "submit": "Create"
+    }
+  },
+  "logistics": {
+    "dashboard": {
+      "today": "Today",
+      "thisMonth": "This Month",
+      "thisYear": "This Year",
+      "fulfillmentWorkload": "Fulfillment Workload",
+      "pendingCod": "Pending COD Pipeline",
+      "otifRate": "OTIF Rate",
+      "returnsClaimsRatio": "Returns & Claims Ratio",
+      "fulfillmentFunnel": "Fulfillment Funnel",
+      "funnelPlaceholder": "Doughnut chart placeholder (API data: fulfillmentFunnel)",
+      "productionShippingCost": "Production & Shipping Cost",
+      "costPlaceholder": "Combo bar+line chart placeholder (API data: trends)",
+      "carrierScorecard": "Carrier Scorecard",
+      "refresh": "Refresh",
+      "carrier": "Carrier",
+      "deliveredCount": "Delivered",
+      "avgDeliveryDays": "Avg Delivery (days)",
+      "avgShippingCostPerOrder": "Avg Cost/Order",
+      "returnsRatio": "Returns Ratio",
+      "exceptionsLog": "Logistics Exceptions",
+      "items": "items",
+      "noExceptions": "No urgent exceptions.",
+      "type": "Type",
+      "tracking": "Tracking No.",
+      "message": "Message",
+      "createdAt": "Created At"
     }
   }
 }

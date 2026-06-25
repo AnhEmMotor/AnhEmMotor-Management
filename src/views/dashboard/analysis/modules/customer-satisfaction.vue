@@ -2,7 +2,7 @@
   <div class="art-card h-100 p-5 mb-5 max-sm:mb-4">
     <div class="art-card-header">
       <div class="title">
-        <h4>{{ $t('admin.t37') }}</h4>
+        <h4>{{ $t("admin.t37") }}</h4>
       </div>
     </div>
     <ArtLineChart
@@ -18,25 +18,25 @@
 </template>
 
 <script setup lang="ts">
-  import type { LineDataItem } from '@/types/component/chart'
+import type { LineDataItem } from "@/types/component/chart";
 
-  const AREA_STYLE_CONFIG = {
-    startOpacity: 0.08,
-    endOpacity: 0
-  } as const
+const AREA_STYLE_CONFIG = {
+  startOpacity: 0.08,
+  endOpacity: 0,
+} as const;
 
-  const xAxisData = ['1', '2', '3', '4', '5', '6', '7']
+const xAxisData = ["1", "2", "3", "4", "5", "6", "7"];
 
-  const chartData = computed<LineDataItem[]>(() => [
-    {
-      name: 'trênchiếctháng',
-      data: [65, 72, 68, 75, 82, 78, 85],
-      areaStyle: AREA_STYLE_CONFIG
-    },
-    {
-      name: 'Tháng này',
-      data: [78, 85, 82, 88, 92, 89, 95],
-      areaStyle: AREA_STYLE_CONFIG
-    }
-  ])
+const chartData = computed<LineDataItem[]>(() => [
+  {
+    name: "trênchiếctháng",
+    data: [65, 72, 68, 75, 82, 78, 85],
+    areaStyle: AREA_STYLE_CONFIG,
+  },
+  {
+    name: "Tháng này",
+    data: [78, 85, 82, 88, 92, 89, 95],
+    areaStyle: AREA_STYLE_CONFIG,
+  },
+]);
 </script>

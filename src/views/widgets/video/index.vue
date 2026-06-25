@@ -14,13 +14,13 @@
 </template>
 
 <script setup lang="ts">
-  import lockImg from '@imgs/lock/bg_dark.webp'
+import lockImg from "@imgs/lock/bg_dark.webp";
 
-  defineOptions({ name: 'WidgetsVideo' })
+defineOptions({ name: "WidgetsVideo" });
 
-  const videoUrl = ref(
-    '//lf3-static.bytednsdoc.com/obj/eden-cn/nupenuvpxnuvo/xgplayer_doc/xgplayer-demo.mp4'
-  )
+const videoUrl = ref(
+  "//lf3-static.bytednsdoc.com/obj/eden-cn/nupenuvpxnuvo/xgplayer_doc/xgplayer-demo.mp4",
+);
 
-  const posterUrl = ref(lockImg)
+const posterUrl = ref(lockImg);
 </script>

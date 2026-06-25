@@ -1,3 +1,3 @@
-export * from './validator'
+export * from "./validator";
 
-export * from './responsive'
+export * from "./responsive";

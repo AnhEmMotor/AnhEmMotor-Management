@@ -1,45 +1,49 @@
-import { StorageConfig } from '@/utils/storage'
+import { StorageConfig } from "@/utils/storage";
 
 export class StorageKeyManager {
   private getCurrentVersionKey(storeId: string): string {
-    return StorageConfig.generateStorageKey(storeId)
+    return StorageConfig.generateStorageKey(storeId);
   }
 
   private hasCurrentVersionData(key: string): boolean {
-    return localStorage.getItem(key) !== null
+    return localStorage.getItem(key) !== null;
   }
 
   private findExistingKey(storeId: string): string | null {
-    const storageKeys = Object.keys(localStorage)
-    const pattern = StorageConfig.createKeyPattern(storeId)
+    const storageKeys = Object.keys(localStorage);
+    const pattern = StorageConfig.createKeyPattern(storeId);
 
-    return storageKeys.find((key) => pattern.test(key) && localStorage.getItem(key)) || null
+    return (
+      storageKeys.find(
+        (key) => pattern.test(key) && localStorage.getItem(key),
+      ) || null
+    );
   }
 
   private migrateData(fromKey: string, toKey: string): void {
     try {
-      const existingData = localStorage.getItem(fromKey)
+      const existingData = localStorage.getItem(fromKey);
       if (existingData) {
-        localStorage.setItem(toKey, existingData)
-        console.info(`[Storage] ĐãdờiDiDữ liệu: ${fromKey} → ${toKey}`)
+        localStorage.setItem(toKey, existingData);
+        console.info(`[Storage] ĐãdờiDiDữ liệu: ${fromKey} → ${toKey}`);
       }
     } catch (error) {
-      console.warn(`[Storage] Dữ liệudờiDiThatBai: ${fromKey}`, error)
+      console.warn(`[Storage] Dữ liệudờiDiThatBai: ${fromKey}`, error);
     }
   }
 
   getStorageKey(storeId: string): string {
-    const currentKey = this.getCurrentVersionKey(storeId)
+    const currentKey = this.getCurrentVersionKey(storeId);
 
     if (this.hasCurrentVersionData(currentKey)) {
-      return currentKey
+      return currentKey;
     }
 
-    const existingKey = this.findExistingKey(storeId)
+    const existingKey = this.findExistingKey(storeId);
     if (existingKey) {
-      this.migrateData(existingKey, currentKey)
+      this.migrateData(existingKey, currentKey);
     }
 
-    return currentKey
+    return currentKey;
   }
 }

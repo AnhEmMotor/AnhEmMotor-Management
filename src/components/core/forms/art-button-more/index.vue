@@ -1,7 +1,10 @@
 <template>
   <div>
     <ElDropdown v-if="hasAnyAuthItem">
-      <ArtIconButton icon="ri:more-2-fill" class="!size-8 bg-g-200 dark:bg-g-300/45 text-sm" />
+      <ArtIconButton
+        icon="ri:more-2-fill"
+        class="!size-8 bg-g-200 dark:bg-g-300/45 text-sm"
+      />
       <template #dropdown>
         <ElDropdownMenu>
           <template v-for="item in list" :key="item.key">
@@ -23,38 +26,38 @@
 </template>
 
 <script setup lang="ts">
-  import { useAuth } from '@/hooks/core/useAuth'
+import { useAuth } from "@/hooks/core/useAuth";
 
-  defineOptions({ name: 'ArtButtonMore' })
+defineOptions({ name: "ArtButtonMore" });
 
-  const { hasAuth } = useAuth()
+const { hasAuth } = useAuth();
 
-  export interface ButtonMoreItem {
-    key: string | number
-    label: string
-    disabled?: boolean
-    auth?: string
-    icon?: string
-    color?: string
-    iconColor?: string
-  }
+export interface ButtonMoreItem {
+  key: string | number;
+  label: string;
+  disabled?: boolean;
+  auth?: string;
+  icon?: string;
+  color?: string;
+  iconColor?: string;
+}
 
-  interface Props {
-    list: ButtonMoreItem[]
-    auth?: string
-  }
+interface Props {
+  list: ButtonMoreItem[];
+  auth?: string;
+}
 
-  const props = withDefaults(defineProps<Props>(), {})
+const props = withDefaults(defineProps<Props>(), {});
 
-  const hasAnyAuthItem = computed(() => {
-    return props.list.some((item) => !item.auth || hasAuth(item.auth))
-  })
+const hasAnyAuthItem = computed(() => {
+  return props.list.some((item) => !item.auth || hasAuth(item.auth));
+});
 
-  const emit = defineEmits<{
-    (e: 'click', item: ButtonMoreItem): void
-  }>()
+const emit = defineEmits<{
+  (e: "click", item: ButtonMoreItem): void;
+}>();
 
-  const handleClick = (item: ButtonMoreItem) => {
-    emit('click', item)
-  }
+const handleClick = (item: ButtonMoreItem) => {
+  emit("click", item);
+};
 </script>

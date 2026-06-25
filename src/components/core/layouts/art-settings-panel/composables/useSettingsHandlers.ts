@@ -1,56 +1,61 @@
-import { useSettingStore } from '@/store/modules/setting'
-import { storeToRefs } from 'pinia'
-import type { ContainerWidthEnum } from '@/enums/appEnum'
+import { useSettingStore } from "@/application/store/setting";
+import { storeToRefs } from "pinia";
+import type { ContainerWidthEnum } from "@/enums/appEnum";
 
 export function useSettingsHandlers() {
-  const settingStore = useSettingStore()
+  const settingStore = useSettingStore();
 
   const domOperations = {
     setHtmlClass: (className: string, add: boolean) => {
-      const el = document.getElementsByTagName('html')[0]
+      const el = document.getElementsByTagName("html")[0];
       if (add) {
-        el.classList.add(className)
+        el.classList.add(className);
       } else {
-        el.classList.remove(className)
+        el.classList.remove(className);
       }
     },
 
     setRootAttribute: (attribute: string, value: string) => {
-      const el = document.documentElement
-      el.setAttribute(attribute, value)
+      const el = document.documentElement;
+      el.setAttribute(attribute, value);
     },
 
     setBodyClass: (className: string, add: boolean) => {
-      const el = document.getElementsByTagName('body')[0]
+      const el = document.getElementsByTagName("body")[0];
       if (add) {
-        el.classList.add(className)
+        el.classList.add(className);
       } else {
-        el.classList.remove(className)
+        el.classList.remove(className);
       }
-    }
-  }
+    },
+  };
 
-  const createToggleHandler = (storeMethod: () => void, callback?: () => void) => {
+  const createToggleHandler = (
+    storeMethod: () => void,
+    callback?: () => void,
+  ) => {
     return () => {
-      storeMethod()
-      callback?.()
-    }
-  }
+      storeMethod();
+      callback?.();
+    };
+  };
 
   const createValueHandler = <T>(
     storeMethod: (value: T) => void,
-    callback?: (value: T) => void
+    callback?: (value: T) => void,
   ) => {
     return (value: T) => {
       if (value !== undefined && value !== null) {
-        storeMethod(value)
-        callback?.(value)
+        storeMethod(value);
+        callback?.(value);
       }
-    }
-  }
+    };
+  };
 
   const basicHandlers = {
-    workTab: createToggleHandler(() => settingStore.setWorkTab(!settingStore.showWorkTab)),
+    workTab: createToggleHandler(() =>
+      settingStore.setWorkTab(!settingStore.showWorkTab),
+    ),
 
     uniqueOpened: createToggleHandler(() => settingStore.setUniqueOpened()),
 
@@ -58,7 +63,9 @@ export function useSettingsHandlers() {
 
     fastEnter: createToggleHandler(() => settingStore.setFastEnter()),
 
-    refreshButton: createToggleHandler(() => settingStore.setShowRefreshButton()),
+    refreshButton: createToggleHandler(() =>
+      settingStore.setShowRefreshButton(),
+    ),
 
     crumbs: createToggleHandler(() => settingStore.setCrumbs()),
 
@@ -69,60 +76,62 @@ export function useSettingsHandlers() {
     colorWeak: createToggleHandler(
       () => settingStore.setColorWeak(),
       () => {
-        domOperations.setHtmlClass('color-weak', settingStore.colorWeak)
-      }
+        domOperations.setHtmlClass("color-weak", settingStore.colorWeak);
+      },
     ),
 
     watermark: createToggleHandler(() =>
-      settingStore.setWatermarkVisible(!settingStore.watermarkVisible)
+      settingStore.setWatermarkVisible(!settingStore.watermarkVisible),
     ),
 
     menuOpenWidth: createValueHandler<number>((width: number) =>
-      settingStore.setMenuOpenWidth(width)
+      settingStore.setMenuOpenWidth(width),
     ),
 
-    tabStyle: createValueHandler<string>((style: string) => settingStore.setTabStyle(style)),
+    tabStyle: createValueHandler<string>((style: string) =>
+      settingStore.setTabStyle(style),
+    ),
 
     pageTransition: createValueHandler<string>((transition: string) =>
-      settingStore.setPageTransition(transition)
+      settingStore.setPageTransition(transition),
     ),
 
     customRadius: createValueHandler<string>((radius: string) =>
-      settingStore.setCustomRadius(radius)
-    )
-  }
+      settingStore.setCustomRadius(radius),
+    ),
+  };
 
   const boxStyleHandlers = {
-    setBoxMode: (type: 'border-mode' | 'shadow-mode') => {
-      const { boxBorderMode } = storeToRefs(settingStore)
+    setBoxMode: (type: "border-mode" | "shadow-mode") => {
+      const { boxBorderMode } = storeToRefs(settingStore);
 
       if (
-        (type === 'shadow-mode' && boxBorderMode.value === false) ||
-        (type === 'border-mode' && boxBorderMode.value === true)
+        (type === "shadow-mode" && boxBorderMode.value === false) ||
+        (type === "border-mode" && boxBorderMode.value === true)
       ) {
-        return
+        return;
       }
 
       setTimeout(() => {
-        domOperations.setRootAttribute('data-box-mode', type)
-        settingStore.setBorderMode()
-      }, 50)
-    }
-  }
+        domOperations.setRootAttribute("data-box-mode", type);
+        settingStore.setBorderMode();
+      }, 50);
+    },
+  };
 
   const colorHandlers = {
     selectColor: (theme: string) => {
-      settingStore.setElementTheme(theme)
-      settingStore.reload()
-    }
-  }
+      settingStore.setElementTheme(theme);
+      settingStore.reload();
+    },
+  };
 
   const containerHandlers = {
     setWidth: (type: ContainerWidthEnum) => {
-      settingStore.setContainerWidth(type)
-      settingStore.reload()
-    }
-  }
+      settingStore.setContainerWidth(type);
+      settingStore.reload();
+    },
+  };
 
   return {
     domOperations,
@@ -131,6 +140,6 @@ export function useSettingsHandlers() {
     colorHandlers,
     containerHandlers,
     createToggleHandler,
-    createValueHandler
-  }
+    createValueHandler,
+  };
 }

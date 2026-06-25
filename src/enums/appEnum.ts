@@ -1,41 +1,41 @@
 export enum MenuTypeEnum {
-  LEFT = 'left',
+  LEFT = "left",
 
-  TOP = 'top',
+  TOP = "top",
 
-  TOP_LEFT = 'top-left',
+  TOP_LEFT = "top-left",
 
-  DUAL_MENU = 'dual-menu'
+  DUAL_MENU = "dual-menu",
 }
 
 export enum SystemThemeEnum {
-  DARK = 'dark',
+  DARK = "dark",
 
-  LIGHT = 'light',
+  LIGHT = "light",
 
-  AUTO = 'auto'
+  AUTO = "auto",
 }
 
 export enum MenuThemeEnum {
-  DARK = 'dark',
+  DARK = "dark",
 
-  LIGHT = 'light',
+  LIGHT = "light",
 
-  DESIGN = 'design'
+  DESIGN = "design",
 }
 
 export enum MenuWidth {
-  CLOSE = '64px'
+  CLOSE = "64px",
 }
 
 export enum LanguageEnum {
-  VI = 'vi',
+  VI = "vi",
 
-  EN = 'en'
+  EN = "en",
 }
 
 export enum ContainerWidthEnum {
-  FULL = '100%',
+  FULL = "100%",
 
-  BOXED = '1200px'
+  BOXED = "1200px",
 }

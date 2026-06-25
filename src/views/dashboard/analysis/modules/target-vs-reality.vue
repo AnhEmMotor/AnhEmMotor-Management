@@ -2,7 +2,7 @@
   <div class="art-card h-100 p-5 mb-5 max-sm:mb-4">
     <div class="art-card-header">
       <div class="title">
-        <h4>{{ $t('admin.t39') }}</h4>
+        <h4>{{ $t("admin.t39") }}</h4>
       </div>
     </div>
 
@@ -16,9 +16,16 @@
     />
 
     <div class="px-5 mt-4">
-      <div v-for="item in totalItems" :key="item.label" class="flex-c mb-5 last:mb-0">
+      <div
+        v-for="item in totalItems"
+        :key="item.label"
+        class="flex-c mb-5 last:mb-0"
+      >
         <div class="flex-c justify-start w-3/5 text-sm">
-          <div class="w-10 h-10 mr-3 text-lg rounded-md flex-cc" :class="item.iconClass">
+          <div
+            class="w-10 h-10 mr-3 text-lg rounded-md flex-cc"
+            :class="item.iconClass"
+          >
             <ArtSvgIcon :icon="item.icon" />
           </div>
 
@@ -27,51 +34,53 @@
             <span class="mt-1 text-xs text-g-500">{{ item.subLabel }}</span>
           </div>
         </div>
-        <div class="text-lg font-normal" :class="item.valueClass">{{ item.value }}</div>
+        <div class="text-lg font-normal" :class="item.valueClass">
+          {{ item.value }}
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  interface RevenueDataItem {
-    name: string
-    data: number[]
-  }
+interface RevenueDataItem {
+  name: string;
+  data: number[];
+}
 
-  const weekDays = ref([
-    'tuầnmột',
-    'tuầnhai',
-    'tuầnba',
-    'tuầnbốn',
-    'tuầnnăm',
-    'tuầnsáu',
-    'tuầnngày'
-  ])
+const weekDays = ref([
+  "tuầnmột",
+  "tuầnhai",
+  "tuầnba",
+  "tuầnbốn",
+  "tuầnnăm",
+  "tuầnsáu",
+  "tuầnngày",
+]);
 
-  const revenueData = ref<RevenueDataItem[]>([
-    {
-      name: 'Bán hàng trực tuyến',
-      data: [12, 13, 5, 15, 10, 15, 18]
-    }
-  ])
+const revenueData = ref<RevenueDataItem[]>([
+  {
+    name: "Bán hàng trực tuyến",
+    data: [12, 13, 5, 15, 10, 15, 18],
+  },
+]);
 
-  const totalItems = [
-    {
-      icon: 'ri:shopping-bag-line',
-      iconClass: 'text-theme bg-theme/12',
-      label: 'thựctếtácbántrán',
-      subLabel: 'toàncầu',
-      value: '8,823',
-      valueClass: 'text-theme'
-    },
-    {
-      icon: 'ri:money-dollar-circle-line',
-      iconClass: 'text-theme bg-theme/12',
-      label: 'mụctiêutácbántrán',
-      subLabel: 'thươngnghiệp',
-      value: '12,122',
-      valueClass: 'text-theme'
-    }
-  ]
+const totalItems = [
+  {
+    icon: "ri:shopping-bag-line",
+    iconClass: "text-theme bg-theme/12",
+    label: "thựctếtácbántrán",
+    subLabel: "toàncầu",
+    value: "8,823",
+    valueClass: "text-theme",
+  },
+  {
+    icon: "ri:money-dollar-circle-line",
+    iconClass: "text-theme bg-theme/12",
+    label: "mụctiêutácbántrán",
+    subLabel: "thươngnghiệp",
+    value: "12,122",
+    valueClass: "text-theme",
+  },
+];
 </script>

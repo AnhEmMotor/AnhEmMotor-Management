@@ -11,7 +11,7 @@
         class="box"
         :class="{ 'is-active': item.theme === menuThemeType }"
         :style="{
-          cursor: disabled ? 'no-drop' : 'pointer'
+          cursor: disabled ? 'no-drop' : 'pointer',
         }"
       >
         <img :src="item.img" />
@@ -21,23 +21,25 @@
 </template>
 
 <script setup lang="ts">
-  import AppConfig from '@/config'
-  import SectionTitle from './SectionTitle.vue'
-  import { MenuTypeEnum, type MenuThemeEnum } from '@/enums/appEnum'
-  import { useSettingStore } from '@/store/modules/setting'
+import AppConfig from "@/config";
+import SectionTitle from "./SectionTitle.vue";
+import { MenuTypeEnum, type MenuThemeEnum } from "@/enums/appEnum";
+import { useSettingStore } from "@/application/store/setting";
 
-  const menuThemeList = AppConfig.themeList
-  const settingStore = useSettingStore()
-  const { menuThemeType, menuType, isDark } = storeToRefs(settingStore)
-  const isTopMenu = computed(() => menuType.value === MenuTypeEnum.TOP)
-  const isDualMenu = computed(() => menuType.value === MenuTypeEnum.DUAL_MENU)
+const menuThemeList = AppConfig.themeList;
+const settingStore = useSettingStore();
+const { menuThemeType, menuType, isDark } = storeToRefs(settingStore);
+const isTopMenu = computed(() => menuType.value === MenuTypeEnum.TOP);
+const isDualMenu = computed(() => menuType.value === MenuTypeEnum.DUAL_MENU);
 
-  const disabled = computed(() => isTopMenu.value || isDualMenu.value || isDark.value)
+const disabled = computed(
+  () => isTopMenu.value || isDualMenu.value || isDark.value,
+);
 
-  const switchMenuStyles = (theme: MenuThemeEnum) => {
-    if (isDualMenu.value || isTopMenu.value || isDark.value) {
-      return
-    }
-    settingStore.switchMenuStyles(theme)
+const switchMenuStyles = (theme: MenuThemeEnum) => {
+  if (isDualMenu.value || isTopMenu.value || isDark.value) {
+    return;
   }
+  settingStore.switchMenuStyles(theme);
+};
 </script>

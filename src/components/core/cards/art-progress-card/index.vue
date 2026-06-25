@@ -1,7 +1,14 @@
 <template>
   <div class="art-card h-32 flex flex-col justify-center px-5">
-    <div class="mb-3.5 flex-c" :style="{ justifyContent: icon ? 'space-between' : 'flex-start' }">
-      <div v-if="icon" class="size-11 flex-cc bg-g-300 text-xl rounded-lg" :class="iconStyle">
+    <div
+      class="mb-3.5 flex-c"
+      :style="{ justifyContent: icon ? 'space-between' : 'flex-start' }"
+    >
+      <div
+        v-if="icon"
+        class="size-11 flex-cc bg-g-300 text-xl rounded-lg"
+        :class="iconStyle"
+      >
         <ArtSvgIcon :icon="icon" class="text-2xl"></ArtSvgIcon>
       </div>
       <div>
@@ -26,58 +33,58 @@
 </template>
 
 <script setup lang="ts">
-  defineOptions({ name: 'ArtProgressCard' })
+defineOptions({ name: "ArtProgressCard" });
 
-  interface Props {
-    percentage: number
+interface Props {
+  percentage: number;
 
-    title: string
+  title: string;
 
-    color?: string
+  color?: string;
 
-    icon?: string
+  icon?: string;
 
-    iconStyle?: string
+  iconStyle?: string;
 
-    strokeWidth?: number
-  }
+  strokeWidth?: number;
+}
 
-  const props = withDefaults(defineProps<Props>(), {
-    strokeWidth: 5,
-    color: '#67C23A'
-  })
+const props = withDefaults(defineProps<Props>(), {
+  strokeWidth: 5,
+  color: "#67C23A",
+});
 
-  const animationDuration = 500
-  const currentPercentage = ref(0)
+const animationDuration = 500;
+const currentPercentage = ref(0);
 
-  const animateProgress = () => {
-    const startTime = Date.now()
-    const startValue = currentPercentage.value
-    const endValue = props.percentage
+const animateProgress = () => {
+  const startTime = Date.now();
+  const startValue = currentPercentage.value;
+  const endValue = props.percentage;
 
-    const animate = () => {
-      const currentTime = Date.now()
-      const elapsed = currentTime - startTime
-      const progress = Math.min(elapsed / animationDuration, 1)
+  const animate = () => {
+    const currentTime = Date.now();
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / animationDuration, 1);
 
-      currentPercentage.value = startValue + (endValue - startValue) * progress
+    currentPercentage.value = startValue + (endValue - startValue) * progress;
 
-      if (progress < 1) {
-        requestAnimationFrame(animate)
-      }
+    if (progress < 1) {
+      requestAnimationFrame(animate);
     }
+  };
 
-    requestAnimationFrame(animate)
-  }
+  requestAnimationFrame(animate);
+};
 
-  onMounted(() => {
-    animateProgress()
-  })
+onMounted(() => {
+  animateProgress();
+});
 
-  watch(
-    () => props.percentage,
-    () => {
-      animateProgress()
-    }
-  )
+watch(
+  () => props.percentage,
+  () => {
+    animateProgress();
+  },
+);
 </script>

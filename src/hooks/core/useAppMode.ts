@@ -1,17 +1,17 @@
-import { computed } from 'vue'
+import { computed } from "vue";
 
 export function useAppMode() {
-  const accessMode = import.meta.env.VITE_ACCESS_MODE || 'frontend'
+  const accessMode = import.meta.env.VITE_ACCESS_MODE || "frontend";
 
-  const isFrontendMode = computed(() => accessMode === 'frontend')
+  const isFrontendMode = computed(() => accessMode === "frontend");
 
-  const isBackendMode = computed(() => accessMode === 'backend')
+  const isBackendMode = computed(() => accessMode === "backend");
 
-  const currentMode = computed(() => accessMode)
+  const currentMode = computed(() => accessMode);
 
   return {
     isFrontendMode,
     isBackendMode,
-    currentMode
-  }
+    currentMode,
+  };
 }

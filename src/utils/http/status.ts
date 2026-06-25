@@ -11,5 +11,5 @@ export enum ApiStatus {
   badGateway = 502,
   serviceUnavailable = 503,
   gatewayTimeout = 504,
-  httpVersionNotSupported = 505
+  httpVersionNotSupported = 505,
 }

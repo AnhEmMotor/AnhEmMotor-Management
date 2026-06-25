@@ -1,17 +1,17 @@
-import mitt, { type Emitter } from 'mitt'
+import mitt, { type Emitter } from "mitt";
 
 type Events = {
-  triggerFireworks: string | undefined
+  triggerFireworks: string | undefined;
 
-  openSetting: void
+  openSetting: void;
 
-  openSearchDialog: void
+  openSearchDialog: void;
 
-  openChat: void
+  openChat: void;
 
-  openLockScreen: void
-}
+  openLockScreen: void;
+};
 
-const mittBus: Emitter<Events> = mitt<Events>()
+const mittBus: Emitter<Events> = mitt<Events>();
 
-export default mittBus
+export default mittBus;

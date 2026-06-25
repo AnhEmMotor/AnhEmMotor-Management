@@ -20,18 +20,18 @@
 </template>
 
 <script setup lang="ts">
-  import SectionTitle from './SectionTitle.vue'
-  import { useSettingStore } from '@/store/modules/setting'
-  import { useSettingsConfig } from '../composables/useSettingsConfig'
-  import { useSettingsHandlers } from '../composables/useSettingsHandlers'
-  import { storeToRefs } from 'pinia'
+import SectionTitle from "./SectionTitle.vue";
+import { useSettingStore } from "@/application/store/setting";
+import { useSettingsConfig } from "../composables/useSettingsConfig";
+import { useSettingsHandlers } from "../composables/useSettingsHandlers";
+import { storeToRefs } from "pinia";
 
-  const settingStore = useSettingStore()
-  const { boxBorderMode } = storeToRefs(settingStore)
-  const { boxStyleOptions } = useSettingsConfig()
-  const { boxStyleHandlers } = useSettingsHandlers()
+const settingStore = useSettingStore();
+const { boxBorderMode } = storeToRefs(settingStore);
+const { boxStyleOptions } = useSettingsConfig();
+const { boxStyleHandlers } = useSettingsHandlers();
 
-  const isActive = (type: 'border-mode' | 'shadow-mode') => {
-    return type === 'border-mode' ? boxBorderMode.value : !boxBorderMode.value
-  }
+const isActive = (type: "border-mode" | "shadow-mode") => {
+  return type === "border-mode" ? boxBorderMode.value : !boxBorderMode.value;
+};
 </script>

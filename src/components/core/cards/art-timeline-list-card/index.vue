@@ -17,7 +17,9 @@
           <div class="flex-c gap-3">
             <div class="flex-c gap-2">
               <span class="text-sm">{{ item.content }}</span>
-              <span v-if="item.code" class="text-sm text-theme"> #{{ item.code }} </span>
+              <span v-if="item.code" class="text-sm text-theme">
+                #{{ item.code }}
+              </span>
             </div>
           </div>
         </ElTimelineItem>
@@ -27,31 +29,31 @@
 </template>
 
 <script setup lang="ts">
-  defineOptions({ name: 'ArtTimelineListCard' })
+defineOptions({ name: "ArtTimelineListCard" });
 
-  const ITEM_HEIGHT = 65
-  const TIMELINE_PLACEMENT = 'top'
-  const DEFAULT_MAX_COUNT = 5
+const ITEM_HEIGHT = 65;
+const TIMELINE_PLACEMENT = "top";
+const DEFAULT_MAX_COUNT = 5;
 
-  interface TimelineItem {
-    time: string
-    status: string
-    content: string
-    code?: string
-  }
+interface TimelineItem {
+  time: string;
+  status: string;
+  content: string;
+  code?: string;
+}
 
-  interface Props {
-    list: TimelineItem[]
-    title: string
-    subtitle?: string
-    maxCount?: number
-  }
+interface Props {
+  list: TimelineItem[];
+  title: string;
+  subtitle?: string;
+  maxCount?: number;
+}
 
-  const props = withDefaults(defineProps<Props>(), {
-    title: '',
-    subtitle: '',
-    maxCount: DEFAULT_MAX_COUNT
-  })
+const props = withDefaults(defineProps<Props>(), {
+  title: "",
+  subtitle: "",
+  maxCount: DEFAULT_MAX_COUNT,
+});
 
-  const maxHeight = computed(() => `${ITEM_HEIGHT * props.maxCount}px`)
+const maxHeight = computed(() => `${ITEM_HEIGHT * props.maxCount}px`);
 </script>

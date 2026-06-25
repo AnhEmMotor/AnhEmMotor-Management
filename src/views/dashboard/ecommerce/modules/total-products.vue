@@ -3,7 +3,7 @@
     <div class="art-card-header">
       <div class="title">
         <h4 class="text-2xl font-medium">55,231</h4>
-        <p>{{ $t('dashboard.ecommerce.totalProducts') }}</p>
+        <p>{{ $t("dashboard.ecommerce.totalProducts") }}</p>
       </div>
     </div>
 
