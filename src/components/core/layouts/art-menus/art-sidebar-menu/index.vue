@@ -98,7 +98,6 @@
           :collapse="!menuOpen"
           :default-active="routerPath"
           :text-color="getMenuTheme.textColor"
-          :unique-opened="uniqueOpened"
           :background-color="getMenuTheme.background"
           :default-openeds="defaultOpenedMenus"
           :popper-class="`menu-left-popper menu-left-${getMenuTheme.theme}-popper`"
