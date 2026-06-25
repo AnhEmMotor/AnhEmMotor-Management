@@ -1,77 +1,108 @@
 module.exports = {
   extends: [
-    'stylelint-config-standard',
-    'stylelint-config-recommended-scss',
-    'stylelint-config-recommended-vue/scss',
-    'stylelint-config-html/vue',
-    'stylelint-config-recess-order'
+    "stylelint-config-standard",
+    "stylelint-config-recommended-scss",
+    "stylelint-config-recommended-vue/scss",
+    "stylelint-config-html/vue",
+    "stylelint-config-recess-order",
   ],
   overrides: [
     {
-      files: ['**/*.{vue,html}'],
-      customSyntax: 'postcss-html'
+      files: ["**/*.{vue,html}"],
+      customSyntax: "postcss-html",
     },
     {
-      files: ['**/*.{css,scss}'],
-      customSyntax: 'postcss-scss'
-    }
+      files: ["**/*.{css,scss}"],
+      customSyntax: "postcss-scss",
+    },
   ],
   rules: {
-    'no-invalid-position-declaration': null,
-    'import-notation': 'string',
-    'selector-class-pattern': null,
-    'custom-property-pattern': null,
-    'keyframes-name-pattern': null,
-    'no-descending-specificity': null,
-    'no-empty-source': null,
-    'property-no-vendor-prefix': null,
-    'selector-pseudo-class-no-unknown': [
+    "no-invalid-position-declaration": null,
+    "import-notation": "string",
+    "selector-class-pattern": null,
+    "custom-property-pattern": null,
+    "keyframes-name-pattern": null,
+    "no-descending-specificity": null,
+    "no-empty-source": null,
+    "property-no-vendor-prefix": null,
+    "selector-pseudo-class-no-unknown": [
       true,
       {
-        ignorePseudoClasses: ['global', 'export', 'deep']
-      }
+        ignorePseudoClasses: [
+          "global",
+          "export",
+          "deep",
+          "v-deep",
+          "input-placeholder",
+        ],
+      },
     ],
-    'property-no-unknown': [
+    "property-no-unknown": [
       true,
       {
-        ignoreProperties: []
-      }
+        ignoreProperties: [],
+      },
     ],
-    'at-rule-no-unknown': [
+    "at-rule-no-unknown": [
       true,
       {
         ignoreAtRules: [
-          'apply',
-          'use',
-          'mixin',
-          'include',
-          'extend',
-          'each',
-          'if',
-          'else',
-          'for',
-          'while',
-          'reference'
-        ]
-      }
+          "apply",
+          "use",
+          "mixin",
+          "include",
+          "extend",
+          "each",
+          "if",
+          "else",
+          "for",
+          "while",
+          "reference",
+          "return",
+          "tailwind",
+          "config",
+          "custom-variant",
+          "theme",
+          "utility",
+          "plugin",
+          "source",
+        ],
+      },
     ],
-    'scss/at-rule-no-unknown': [
+    "selector-pseudo-element-no-unknown": [
+      true,
+      {
+        ignorePseudoElements: ["v-deep", "input-placeholder"],
+      },
+    ],
+    "scss/at-rule-no-unknown": [
       true,
       {
         ignoreAtRules: [
-          'apply',
-          'use',
-          'mixin',
-          'include',
-          'extend',
-          'each',
-          'if',
-          'else',
-          'for',
-          'while',
-          'reference'
-        ]
-      }
-    ]
-  }
-}
+          "apply",
+          "use",
+          "mixin",
+          "include",
+          "extend",
+          "each",
+          "if",
+          "else",
+          "for",
+          "while",
+          "reference",
+          "return",
+          "tailwind",
+          "config",
+          "custom-variant",
+          "theme",
+          "utility",
+          "plugin",
+          "source",
+        ],
+      },
+    ],
+    "order/properties-order": null,
+    "scss/operator-no-unspaced": null,
+    "block-no-redundant-nested-style-rules": null,
+  },
+};
