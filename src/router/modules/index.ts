@@ -13,7 +13,6 @@ import { productRoutes } from "./product";
 import { customerRoutes } from "./customer";
 import { contactRoutes } from "./contact";
 import { contractRoutes } from "./contract";
-
 import { serviceRoutes } from "./service";
 import { reportingRoutes } from "./reporting";
 import { logisticsRoutes } from "./logistics";
@@ -21,6 +20,7 @@ import { hrRoutes } from "./hr";
 import { helpRoutes } from "./help";
 import { inventoryRoutes } from "./inventory";
 import { salesRoutes } from "./sales";
+import { salesSettingsRoutes } from "./sales-settings";
 
 const coreRoutes: AppRouteRecord[] = [
   dashboardRoutes,
@@ -28,6 +28,7 @@ const coreRoutes: AppRouteRecord[] = [
   serviceRoutes,
   inventoryRoutes,
   salesRoutes,
+  salesSettingsRoutes,
   authorizationRoutes,
   hrRoutes,
   customerRoutes,

@@ -97,4 +97,10 @@ export const SalesOrderApi = {
       url: `/api/v1/SalesOrders/${id}`,
     });
   },
+
+  getPaymentLink(id: number) {
+    return request.get<{ url: string }>({
+      url: `/api/v1/Payment/${id}/link`,
+    });
+  },
 };

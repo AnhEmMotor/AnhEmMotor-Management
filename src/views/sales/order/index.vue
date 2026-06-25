@@ -132,6 +132,21 @@
                 <ElIcon><Delete /></ElIcon>
               </ElButton>
             </ElTooltip>
+            <ElTooltip
+              v-if="canCopyPaymentLink(row)"
+              content="Copy link thanh toán"
+              placement="top"
+            >
+              <ElButton
+                circle
+                size="small"
+                type="success"
+                @click="handleCopyPaymentLink(row)"
+                v-auth="Permissions.OutputsEdit"
+              >
+                <ElIcon><Link /></ElIcon>
+              </ElButton>
+            </ElTooltip>
           </div>
         </template>
       </ArtTable>
@@ -243,7 +258,6 @@
             size="small"
             class="w-full"
             max-height="320"
-            style="width: 100%"
           >
             <ElTableColumn label="Sản phẩm" min-width="280">
               <template #default="{ row }">
@@ -305,7 +319,6 @@
                   controls-position="right"
                   class="w-full"
                   :disabled="isBuyerProductLocked"
-                  style="width: 120px"
                 />
               </template>
             </ElTableColumn>
@@ -450,7 +463,7 @@
           :data="vehicleRequirements.items"
           border
           size="small"
-          style="width: 100%"
+          class="w-full"
         >
           <ElTableColumn label="Sản phẩm" min-width="240">
             <template #default="{ row }">
@@ -510,17 +523,16 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from "vue";
-import { Delete, Edit, Plus, Switch } from "@element-plus/icons-vue";
+import { Delete, Edit, Plus, Switch, Link } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { SalesOrderApi } from "@/infrastructure/api/sales-order.api";
-import { ProductApi } from "@/infrastructure/api/product/product.api";
+import { ProductApi } from "@/api/product.api";
 import { fetchGetUserList } from "@/infrastructure/api/system-manage";
 import { Permissions } from "@/domain/constants/permissions";
 import type {
   SalesOrder,
   VehicleAssignmentOption,
   VehicleAssignmentRequirement,
-  VehicleAssignmentRequirementItem,
 } from "@/domain/order/order.types";
 import type { ProductVariantLiteForInput } from "@/domain/product/product.types";
 import type { ColumnOption } from "@/types/component";
@@ -644,7 +656,7 @@ const columnChecks = ref<ColumnOption[]>([
   {
     prop: "operation",
     label: "Thao tác",
-    width: 130,
+    width: 150,
     fixed: "right" as const,
     checked: true,
     useSlot: true,
@@ -704,6 +716,15 @@ const statusChangeOptions = computed(() => {
   const allowed = transitionMap.value[current] || [];
   return statusMap.value.filter((item) => allowed.includes(item.id));
 });
+
+const canCopyPaymentLink = (row: SalesOrder) => {
+  const statusId = row.statusId || "";
+  const paymentMethod = String(row.paymentMethod || "").toLowerCase();
+  return (
+    ["vnpay", "payos"].includes(paymentMethod) &&
+    ["pending", "waiting_deposit"].includes(statusId)
+  );
+};
 
 onMounted(async () => {
   await Promise.all([
@@ -841,17 +862,15 @@ async function handlePrepareStatusChange() {
         delete selectedVehicleIdsByOutputInfo[Number(key)];
       });
 
-      requirements.items.forEach((item) => {
+      requirements.items.forEach((item: any) => {
         selectedVehicleIdsByOutputInfo[item.outputInfoId] =
-          item.assignedVehicles?.map((v) => v.id) || [];
+          item.assignedVehicles?.map((v: any) => v.id) || [];
       });
-
-      statusDialogVisible.value = false;
-      vinDialogVisible.value = true;
     } else {
       await SalesOrderApi.updateStatus(
         statusOrder.value.id,
         targetStatusId.value,
+        [],
       );
       statusDialogVisible.value = false;
       ElMessage.success("Đã cập nhật trạng thái");
@@ -868,7 +887,25 @@ async function handlePrepareStatusChange() {
   }
 }
 
-function getVehicleOptions(item: VehicleAssignmentRequirementItem) {
+async function handleCopyPaymentLink(row: SalesOrder) {
+  try {
+    const res = await SalesOrderApi.getPaymentLink(row.id);
+    const url = res.url;
+    if (!url) {
+      return ElMessage.warning("Đơn hàng này chưa có link thanh toán");
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      ElMessage.success("Đã copy link thanh toán vào clipboard");
+    } catch {
+      ElMessage.info(`Link: ${url}`);
+    }
+  } catch {
+    ElMessage.error("Không thể lấy link thanh toán");
+  }
+}
+
+function getVehicleOptions(item: any) {
   const map = new Map<number, VehicleAssignmentOption>();
   for (const vehicle of [...item.assignedVehicles, ...item.availableVehicles]) {
     map.set(vehicle.id, vehicle);
@@ -1080,13 +1117,6 @@ function fillForm(order: SalesOrder) {
   }
 }
 
-function getProductColors(row: any) {
-  return (
-    productOptions.value.find((item) => item.id === row.productVariantId)
-      ?.colors || []
-  );
-}
-
 function getLockedList(key: string): string[] {
   const data = lockedStatuses.value || {};
   return Array.isArray(data) ? [] : data[key] || [];
@@ -1138,6 +1168,13 @@ function formatCurrency(val?: number) {
     currency: "VND",
     maximumFractionDigits: 0,
   }).format(Number(val || 0));
+}
+
+function getProductColors(row: any) {
+  return (
+    productOptions.value.find((item) => item.id === row.productVariantId)
+      ?.colors || []
+  );
 }
 
 function formatDateTime(value?: string) {
