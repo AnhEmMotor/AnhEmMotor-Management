@@ -25,7 +25,14 @@ import {
 
 let routeRegistry: RouteRegistry | null = null;
 
-const menuProcessor = new MenuProcessor();
+let menuProcessor: MenuProcessor | null = null;
+
+const getMenuProcessor = (): MenuProcessor => {
+  if (!menuProcessor) {
+    menuProcessor = new MenuProcessor();
+  }
+  return menuProcessor;
+};
 
 let pendingLoading = false;
 
@@ -55,7 +62,7 @@ export function setupBeforeEachGuard(router: Router): void {
 
   window.addEventListener("auth:permissions-changed", async () => {
     try {
-      const menuList = await menuProcessor.getMenuList();
+      const menuList = await getMenuProcessor().getMenuList();
       const menuStore = useMenuStore();
       menuStore.setMenuList(menuList);
 
@@ -160,7 +167,10 @@ function handleLoginStatus(
   if (
     to.path === RoutesAlias.Login ||
     to.path === "/auth/login" ||
-    (isStaticRoute(to.path) && to.path !== "/" && to.path !== "/workspace" && to.path !== "/auth/portal")
+    (isStaticRoute(to.path) &&
+      to.path !== "/" &&
+      to.path !== "/workspace" &&
+      to.path !== "/auth/portal")
   ) {
     return null;
   }
@@ -244,9 +254,10 @@ async function handleDynamicRoutes(
 
   try {
     await fetchUserInfo();
-    const menuList = await menuProcessor.getMenuList();
+    const processor = getMenuProcessor();
+    const menuList = await processor.getMenuList();
 
-    if (!menuProcessor.validateMenuList(menuList)) {
+    if (!processor.validateMenuList(menuList)) {
       throw new Error("Lấy danh sách menu thất bại, vui lòng đăng nhập lại");
     }
 
