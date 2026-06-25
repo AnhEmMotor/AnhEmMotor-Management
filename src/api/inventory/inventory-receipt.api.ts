@@ -93,4 +93,58 @@ export const InventoryReceiptApi = {
       data: { notes },
     });
   },
+
+  importExcel(file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+    return request.post<any>({
+      url: "/api/v1/InventoryReceipts/import",
+      data: formData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  },
+
+  exportExcel(params?: any) {
+    return request.get<Blob>({
+      url: "/api/v1/InventoryReceipts/export",
+      params,
+      responseType: "blob",
+    });
+  },
+
+  downloadImportTemplate(purchaseRequestId: number) {
+    return request.get<Blob>({
+      url: "/api/v1/InventoryReceipts/import-template",
+      params: { purchaseRequestId },
+      responseType: "blob",
+    });
+  },
+
+  deleteMany(ids: number[]) {
+    return request.del({
+      url: "/api/v1/InventoryReceipts",
+      data: { ids },
+    });
+  },
+
+  getDeletedList(params: any) {
+    const { current, size, ...rest } = params;
+    return request.get<InventoryReceiptList>({
+      url: "/api/v1/InventoryReceipts/deleted",
+      params: {
+        Page: current,
+        PageSize: size,
+        ...rest,
+      },
+    });
+  },
+
+  restoreMany(ids: number[]) {
+    return request.post({
+      url: "/api/v1/InventoryReceipts/restore",
+      data: { ids },
+    });
+  },
 };

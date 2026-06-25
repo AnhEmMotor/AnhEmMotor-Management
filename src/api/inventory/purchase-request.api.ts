@@ -89,4 +89,71 @@ export const PurchaseRequestApi = {
       url: `/api/v1/purchase-requests/${id}/audit-logs`,
     });
   },
+
+  deleteMany(ids: number[]) {
+    return request.del({
+      url: "/api/v1/purchase-requests/delete-many",
+      data: { ids },
+    });
+  },
+
+  cloneMany(ids: number[]) {
+    return request.post<number>({
+      url: "/api/v1/purchase-requests/clone-many",
+      data: { ids },
+    });
+  },
+
+  restore(id: number) {
+    return request.post<void>({
+      url: `/api/v1/purchase-requests/restore/${id}`,
+    });
+  },
+
+  restoreMany(ids: number[]) {
+    return request.post<number>({
+      url: "/api/v1/purchase-requests/restore-many",
+      data: { ids },
+    });
+  },
+
+  getDeletedList(params: any) {
+    const { current, size, ...rest } = params;
+    return request.get<PurchaseRequestList>({
+      url: "/api/v1/purchase-requests/deleted",
+      params: {
+        Page: current,
+        PageSize: size,
+        ...rest,
+      },
+    });
+  },
+
+  exportExcel(params: any) {
+    return request.get<Blob>({
+      url: "/api/v1/purchase-requests/export",
+      params,
+      responseType: "blob",
+    });
+  },
+
+  importExcel(file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+    return request.post<Blob>({
+      url: "/api/v1/purchase-requests/import",
+      data: formData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      responseType: "blob", // To handle the error file if returned
+    });
+  },
+
+  downloadImportTemplate() {
+    return request.get<Blob>({
+      url: "/api/v1/purchase-requests/import-template",
+      responseType: "blob",
+    });
+  },
 };

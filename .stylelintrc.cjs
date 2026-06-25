@@ -1,0 +1,108 @@
+module.exports = {
+  extends: [
+    "stylelint-config-standard",
+    "stylelint-config-recommended-scss",
+    "stylelint-config-recommended-vue/scss",
+    "stylelint-config-html/vue",
+    "stylelint-config-recess-order",
+  ],
+  overrides: [
+    {
+      files: ["**/*.{vue,html}"],
+      customSyntax: "postcss-html",
+    },
+    {
+      files: ["**/*.{css,scss}"],
+      customSyntax: "postcss-scss",
+    },
+  ],
+  rules: {
+    "no-invalid-position-declaration": null,
+    "import-notation": "string",
+    "selector-class-pattern": null,
+    "custom-property-pattern": null,
+    "keyframes-name-pattern": null,
+    "no-descending-specificity": null,
+    "no-empty-source": null,
+    "property-no-vendor-prefix": null,
+    "selector-pseudo-class-no-unknown": [
+      true,
+      {
+        ignorePseudoClasses: [
+          "global",
+          "export",
+          "deep",
+          "v-deep",
+          "input-placeholder",
+        ],
+      },
+    ],
+    "property-no-unknown": [
+      true,
+      {
+        ignoreProperties: [],
+      },
+    ],
+    "at-rule-no-unknown": [
+      true,
+      {
+        ignoreAtRules: [
+          "apply",
+          "use",
+          "mixin",
+          "include",
+          "extend",
+          "each",
+          "if",
+          "else",
+          "for",
+          "while",
+          "reference",
+          "return",
+          "tailwind",
+          "config",
+          "custom-variant",
+          "theme",
+          "utility",
+          "plugin",
+          "source",
+        ],
+      },
+    ],
+    "selector-pseudo-element-no-unknown": [
+      true,
+      {
+        ignorePseudoElements: ["v-deep", "input-placeholder"],
+      },
+    ],
+    "scss/at-rule-no-unknown": [
+      true,
+      {
+        ignoreAtRules: [
+          "apply",
+          "use",
+          "mixin",
+          "include",
+          "extend",
+          "each",
+          "if",
+          "else",
+          "for",
+          "while",
+          "reference",
+          "return",
+          "tailwind",
+          "config",
+          "custom-variant",
+          "theme",
+          "utility",
+          "plugin",
+          "source",
+        ],
+      },
+    ],
+    "order/properties-order": null,
+    "scss/operator-no-unspaced": null,
+    "block-no-redundant-nested-style-rules": null,
+  },
+};

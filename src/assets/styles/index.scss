@@ -1,8 +1,8 @@
-@use "./core/reset.scss";
-@use "./core/app.scss";
-@use "./core/el-ui.scss";
-@use "./core/el-dark.scss";
-@use "./core/dark.scss";
+@use "./core/reset";
+@use "./core/app";
+@use "./core/el-ui";
+@use "./core/el-dark";
+@use "./core/dark";
 @use "./core/router-transition";
-@use "./core/theme-change.scss";
-@use "./core/reporting-theme.scss";
+@use "./core/theme-change";
+@use "./core/reporting-theme";

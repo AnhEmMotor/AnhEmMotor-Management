@@ -58,6 +58,13 @@ export const SupplierApi = {
     });
   },
 
+  cloneMany(ids: number[]) {
+    return request.post({
+      url: "/api/v1/Supplier/clone-many",
+      data: { ids },
+    });
+  },
+
   restoreMany(ids: number[]) {
     return request.post({
       url: "/api/v1/Supplier/restore-many",
@@ -108,6 +115,37 @@ export const SupplierApi = {
       url: "/api/v1/Supplier/export",
       params,
       responseType: "blob",
+    });
+  },
+
+  importExcel(file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+    return request.post<any>({
+      url: "/api/v1/Supplier/import",
+      data: formData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  },
+
+  getImportTemplate() {
+    return request.get<Blob>({
+      url: "/api/v1/Supplier/import-template",
+      responseType: "blob",
+    });
+  },
+
+  getDeletedList(params: any) {
+    const { current, size, ...rest } = params;
+    return request.get<SupplierList>({
+      url: "/api/v1/Supplier/deleted",
+      params: {
+        Page: current,
+        PageSize: size,
+        ...rest,
+      },
     });
   },
 };

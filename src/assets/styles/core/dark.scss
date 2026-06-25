@@ -1,4 +1,4 @@
-$font-color: rgba(#ffffff, 0.85);
+$font-color: rgba(#fff, 0.85);
 
 html.dark {
   --el-bg-color: var(--default-box-color);
@@ -25,6 +25,7 @@ html.dark {
       color: inherit !important;
     }
   }
+
   .w-e-bar-divider {
     background-color: var(--art-gray-300) !important;
   }
@@ -46,13 +47,13 @@ html.dark {
   }
 
   .w-e-text-container [data-slate-editor] pre > code {
-    background-color: #25262b !important;
     text-shadow: none !important;
+    background-color: #25262b !important;
   }
 
   .w-e-text-container [data-slate-editor] blockquote {
-    border-left: 4px solid var(--default-border-dashed) !important;
     background-color: var(--art-color);
+    border-left: 4px solid var(--default-border-dashed) !important;
   }
 
   .editor-wrapper {

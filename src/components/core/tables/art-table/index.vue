@@ -96,7 +96,7 @@ import { useResizeObserver, useWindowSize } from "@vueuse/core";
 defineOptions({ name: "ArtTable" });
 
 const { width } = useWindowSize();
-const elTableRef = ref<{ setScrollTop: (top: number) => void } | null>(null);
+const elTableRef = ref<any>(null);
 const paginationRef = ref<HTMLElement>();
 const tableHeaderRef = ref<HTMLElement>();
 const tableStore = useTableStore();

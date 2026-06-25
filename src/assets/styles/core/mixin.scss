@@ -14,24 +14,21 @@
 }
 
 @mixin userSelect($value: none) {
-  user-select: $value;
   -moz-user-select: $value;
   -ms-user-select: $value;
   -webkit-user-select: $value;
+  user-select: $value;
 }
 
 @mixin absoluteCenter() {
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
+  inset: 0;
   margin: auto;
 }
 
 @mixin animation(
   $from: (
-    width: 0px,
+    width: 0,
   ),
   $to: (
     width: 100px,
@@ -57,7 +54,7 @@
     }
   }
 
-  @-webkit-keyframes #{$name} {
+  @keyframes #{$name} {
     from {
       @each $key, $value in $from {
         $key: $value;
@@ -73,25 +70,25 @@
 }
 
 @mixin circle($size: 11px, $bg: #fff) {
-  border-radius: 50%;
   width: $size;
   height: $size;
   line-height: $size;
   text-align: center;
   background: $bg;
+  border-radius: 50%;
 }
 
 @mixin placeholder($color: #bbb) {
-  &::-moz-placeholder {
+  &::placeholder {
     color: $color;
     opacity: 1;
   }
 
-  &:-ms-input-placeholder {
+  &:input-placeholder {
     color: $color;
   }
 
-  &::-webkit-input-placeholder {
+  &::input-placeholder {
     color: $color;
   }
 
@@ -103,12 +100,13 @@
 @mixin betterTransparentize($color, $alpha) {
   $c: rgba($color, $alpha);
   $ie_c: ie_hex_str($c);
+
+  zoom: 1;
   background: rgba($color, 1);
   background: $c;
   background: transparent \9;
-  zoom: 1;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#{$ie_c}, endColorstr=#{$ie_c});
   -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#{$ie_c}, endColorstr=#{$ie_c})";
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#{$ie_c}, endColorstr=#{$ie_c});
 }
 
 @mixin browserPrefix($propertyName, $value) {
@@ -123,6 +121,7 @@
 
 @mixin backdropBlur() {
   --tw-backdrop-blur: blur(30px);
+
   -webkit-backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness)
     var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale)
     var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert)

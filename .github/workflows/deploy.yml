@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install dependencies
         run: npm install
@@ -34,6 +34,6 @@ jobs:
           username: ${{ secrets.PRODUCTION_SERVER_USERNAME }}
           key: ${{ secrets.SERVER_REMOTE_ACCESS_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT_FOR_PRODUCTION_SERVER }}
-          source: 'dist/'
-          target: '/var/www/anhemmotor/frontend-management'
+          source: "dist/"
+          target: "/var/www/anhemmotor/frontend-management"
           strip_components: 1

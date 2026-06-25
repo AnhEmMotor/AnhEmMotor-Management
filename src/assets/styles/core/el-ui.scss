@@ -3,13 +3,9 @@
   --el-color-white: white !important;
   --el-color-black: white !important;
   --el-font-weight-primary: 400 !important;
-
   --el-component-custom-height: 36px !important;
-
   --el-component-size: var(--el-component-custom-height) !important;
-
   --el-border-radius-base: calc(var(--custom-radius) / 3 + 2px) !important;
-
   --el-border-radius-small: calc(var(--custom-radius) / 3 + 4px) !important;
   --el-messagebox-border-radius: calc(
     var(--custom-radius) / 3 + 4px
@@ -40,7 +36,7 @@ html.dark .el-card {
     --el-pagination-button-height: var(--el-pagination-button-width) !important;
   }
 
-  @media (max-width: 1180px) {
+  @media (width <= 1180px) {
     & {
       --el-pagination-button-width: 28px !important;
     }
@@ -99,9 +95,9 @@ html.dark .el-card {
 }
 
 .el-dialog {
+  overflow: hidden;
   border-radius: 100px !important;
   border-radius: calc(var(--custom-radius) / 1.2 + 2px) !important;
-  overflow: hidden;
 }
 
 .el-dialog__header {
@@ -111,19 +107,19 @@ html.dark .el-card {
 }
 
 .el-dialog__body {
-  padding: 25px 0 !important;
   position: relative;
+  padding: 25px 0 !important;
 }
 
 .el-dialog.el-dialog-border {
   .el-dialog__body {
     &::before,
     &::after {
-      content: "";
       position: absolute;
       left: -16px;
       width: calc(100% + 32px);
       height: 1px;
+      content: "";
       background-color: var(--art-gray-300);
     }
 
@@ -141,9 +137,9 @@ html.dark .el-card {
   background-color: var(--default-box-color) !important;
   border: 0 !important;
   box-shadow:
-    0 6px 16px 0 rgba(0, 0, 0, 0.08),
-    0 3px 6px -4px rgba(0, 0, 0, 0.12),
-    0 9px 28px 8px rgba(0, 0, 0, 0.05) !important;
+    0 6px 16px 0 rgb(0 0 0 / 8%),
+    0 3px 6px -4px rgb(0 0 0 / 12%),
+    0 9px 28px 8px rgb(0 0 0 / 5%) !important;
 
   p {
     font-size: 13px;
@@ -152,8 +148,8 @@ html.dark .el-card {
 
 .el-dropdown-menu {
   padding: 6px !important;
-  border-radius: 10px !important;
   border: none !important;
+  border-radius: 10px !important;
 
   .el-dropdown-menu__item {
     padding: 6px 16px !important;
@@ -184,15 +180,15 @@ html.dark .el-card {
   outline: none !important;
 }
 
-@media screen and (max-width: 640px) {
+@media screen and (width <= 640px) {
   .el-message-box,
   .el-dialog {
     width: calc(100% - 24px) !important;
   }
 
   .el-date-picker.has-sidebar.has-time {
-    width: calc(100% - 24px);
     left: 12px !important;
+    width: calc(100% - 24px);
   }
 
   .el-picker-panel *[slot="sidebar"],
@@ -208,8 +204,8 @@ html.dark .el-card {
 
 .el-button {
   &.el-button--text {
-    background-color: transparent !important;
     padding: 0 !important;
+    background-color: transparent !important;
 
     span {
       margin-left: 0 !important;
@@ -263,9 +259,9 @@ html.dark .el-card {
     border-radius: 4px !important;
 
     &::before {
-      content: "";
-      height: 4px !important;
       top: 5px !important;
+      height: 4px !important;
+      content: "";
       background-color: #fff !important;
       transform: scale(0.6) !important;
     }
@@ -278,8 +274,8 @@ html.dark .el-card {
         height: 8px;
         margin: auto;
         border: 2px solid var(--el-checkbox-checked-icon-color);
-        border-left: 0;
         border-top: 0;
+        border-left: 0;
         transform: translate(-45%, -60%) rotate(45deg) scale(0.86) !important;
         transform-origin: center;
       }
@@ -301,8 +297,8 @@ html.dark .el-card {
   transition: all 0.3s;
 
   &:hover {
-    background-color: var(--art-hover-color) !important;
     color: var(--art-gray-900) !important;
+    background-color: var(--art-hover-color) !important;
   }
 }
 
@@ -315,15 +311,15 @@ html.dark .el-card {
 }
 
 .el-table__column-filter-trigger i {
-  color: var(--theme-color) !important;
   margin: -3px 0 0 2px;
+  color: var(--theme-color) !important;
 }
 
 .el-tooltip__trigger:focus-visible {
   outline: unset;
 }
 
-@media screen and (max-width: 1180px) {
+@media screen and (width <= 1180px) {
   .el-table-fixed-column--right {
     padding-right: 0 !important;
   }
@@ -396,10 +392,10 @@ html.dark .el-card {
       border-radius: 6px !important;
 
       &.is-selected {
-        color: var(--art-gray-900) !important;
-        font-weight: 400 !important;
-        background-color: var(--art-el-active-color) !important;
         margin-bottom: 4px !important;
+        font-weight: 400 !important;
+        color: var(--art-gray-900) !important;
+        background-color: var(--art-el-active-color) !important;
       }
 
       &:hover {
@@ -449,9 +445,9 @@ html.dark .el-card {
 }
 
 .el-tree-node__content {
-  border-radius: 4px;
-  margin-bottom: 4px;
   padding: 1px 0;
+  margin-bottom: 4px;
+  border-radius: 4px;
 
   &:hover {
     background-color: var(--art-hover-color) !important;
@@ -468,8 +464,8 @@ html.dark .el-card {
 
 .menu-left-popper:focus-within,
 .horizontal-menu-popper:focus-within {
-  box-shadow: none !important;
   outline: none !important;
+  box-shadow: none !important;
 }
 
 .el-input-number--default.is-controls-right {

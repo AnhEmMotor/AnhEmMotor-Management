@@ -55,7 +55,7 @@
       >
         <template #imageUrl="{ row }">
           <span
-            class="inline-flex items-center justify-center h-10 w-10 bg-gray-50 rounded shadow-inner border border-gray-100 overflow-hidden align-middle"
+            class="category-image-cell inline-flex items-center justify-center h-10 w-10 rounded shadow-inner overflow-hidden align-middle"
           >
             <ElImage
               v-if="row.imageUrl"
@@ -65,7 +65,9 @@
               :preview-src-list="[row.imageUrl]"
               preview-teleported
             />
-            <ElIcon v-else class="text-gray-300"><Picture /></ElIcon>
+            <ElIcon v-else class="category-image-placeholder"
+              ><Picture
+            /></ElIcon>
           </span>
         </template>
 
@@ -73,9 +75,7 @@
           <div class="flex flex-col text-left">
             <span
               :class="
-                row.parentId
-                  ? 'text-gray-600 font-medium text-sm'
-                  : 'text-gray-900 font-bold text-sm'
+                row.parentId ? 'category-name-child' : 'category-name-root'
               "
             >
               {{ row.name }}
@@ -158,6 +158,17 @@
           </ElSelect>
         </ElFormItem>
 
+        <ElFormItem label="Số lượng mua tối đa">
+          <ElInputNumber
+            v-model="formData.maxPurchaseQuantity"
+            :min="1"
+            :max="999"
+            placeholder="Không giới hạn nếu để trống"
+            class="w-full"
+            controls-position="right"
+          />
+        </ElFormItem>
+
         <ElFormItem label="Hình ảnh">
           <ElUpload
             class="category-uploader"
@@ -178,8 +189,8 @@
               v-else
               class="category-uploader-trigger flex flex-col items-center justify-center gap-2"
             >
-              <ElIcon class="text-gray-400 text-2xl"><Plus /></ElIcon>
-              <span class="text-xs text-gray-400">Tải ảnh</span>
+              <ElIcon class="category-uploader-icon text-2xl"><Plus /></ElIcon>
+              <span class="category-uploader-text text-xs">Tải ảnh</span>
             </div>
           </ElUpload>
         </ElFormItem>
