@@ -24,18 +24,19 @@ export const dashboardRoutes: AppRouteRecord = {
     {
       path: "analysis",
       name: "Analysis",
-      component: "/dashboard/analysis",
+      component: "/Admin/view/dashboard/analysis",
       meta: {
         title: "menus.dashboard.analysis",
         icon: "ri:align-item-bottom-line",
         keepAlive: false,
         permission: "Permissions.Statistical.View",
+        isHide: true,
       },
     },
     {
       path: "ecommerce",
       name: "Ecommerce",
-      component: "/dashboard/ecommerce",
+      component: "/Admin/view/dashboard/ecommerce",
       meta: {
         title: "menus.dashboard.ecommerce",
         icon: "ri:bar-chart-box-line",

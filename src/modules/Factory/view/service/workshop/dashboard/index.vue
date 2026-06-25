@@ -61,6 +61,7 @@
     <!-- KPI Cards (Module 6) -->
     <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
       <ArtStatsCard
+        icon="ri:tools-line"
         icon-style="bg-primary"
         title="Phiếu đang sửa chữa"
         :count="kpi.inProgress"
@@ -68,6 +69,7 @@
         :loading="loading"
       />
       <ArtStatsCard
+        icon="ri:time-line"
         icon-style="bg-warning"
         title="Thời gian hoàn thành TB"
         :count="formatHours(kpi.avgFinishHours)"
@@ -75,6 +77,7 @@
         :loading="loading"
       />
       <ArtStatsCard
+        icon="ri:money-dollar-circle-line"
         icon-style="bg-success"
         title="Doanh thu dịch vụ"
         :count="formatVnd(kpi.serviceRevenue)"
@@ -82,6 +85,7 @@
         :loading="loading"
       />
       <ArtStatsCard
+        icon="ri:shopping-cart-2-line"
         icon-style="bg-danger"
         title="Doanh thu bán xe"
         :count="formatVnd(analytics.revenueComparison.retailRevenue)"
@@ -544,6 +548,18 @@ const refresh = async () => {
         partsShortage: mock.partsShortage,
       };
       technicianRows.value = mock.technicians;
+      
+      // Mock data for warranty and complaints
+      warrantyAndComplaints.value = {
+        loading: false,
+        warrantyRequestsCount: 5,
+        complaintsCount: 2,
+        recentItems: [
+          { ticketId: "WR-001", type: "Bảo hành phụ tùng", customerName: "Lê Văn T", status: "Chờ duyệt" },
+          { ticketId: "CP-002", type: "Khiếu nại dịch vụ", customerName: "Nguyễn Thị N", status: "Đang xử lý" }
+        ]
+      };
+      
       return;
     }
 
@@ -572,6 +588,17 @@ const refresh = async () => {
 
     technicianRows.value =
       (asAny?.technicianPerformance as any[]) ?? mock.technicians;
+
+    // Mock data for warranty and complaints
+    warrantyAndComplaints.value = {
+      loading: false,
+      warrantyRequestsCount: asAny?.warrantyRequestsCount ?? 5,
+      complaintsCount: asAny?.complaintsCount ?? 2,
+      recentItems: asAny?.recentItems ?? [
+        { ticketId: "WR-001", type: "Bảo hành phụ tùng", customerName: "Lê Văn T", status: "Chờ duyệt" },
+        { ticketId: "CP-002", type: "Khiếu nại dịch vụ", customerName: "Nguyễn Thị N", status: "Đang xử lý" }
+      ]
+    };
   } finally {
     loading.value = false;
   }

@@ -14,12 +14,12 @@
             <h1
               class="m-0 text-xl font-black tracking-tight text-slate-900 leading-none"
             >
-              Công cụ Chuyển đổi (Conversion)
+              {{ $t("marketing.conversionTools.title") }}
             </h1>
             <p
               class="m-0 text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2"
             >
-              Pop-up & Landing Page: Chốt sale tự động
+              {{ $t("marketing.conversionTools.subtitle") }}
             </p>
           </div>
         </div>
@@ -34,7 +34,7 @@
                 : 'text-slate-400 hover:text-slate-600'
             "
           >
-            Quản lý Pop-up
+            {{ $t("marketing.conversionTools.tabPopup") }}
           </button>
           <button
             @click="activeTab = 'landing'"
@@ -45,7 +45,7 @@
                 : 'text-slate-400 hover:text-slate-600'
             "
           >
-            Landing Page Builder
+            {{ $t("marketing.conversionTools.tabLanding") }}
           </button>
         </div>
       </div>
@@ -57,13 +57,13 @@
           <h3
             class="m-0 text-xs font-black uppercase tracking-widest text-slate-400"
           >
-            Danh sách Pop-up hoạt động
+            {{ $t("marketing.conversionTools.popupListTitle") }}
           </h3>
           <button
             @click="handleAddPopup"
             class="h-10 px-6 bg-[#001529] text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg flex items-center gap-2"
           >
-            <ArtSvgIcon icon="ri:add-line" /> Tạo Pop-up mới
+            <ArtSvgIcon icon="ri:add-line" /> {{ $t("marketing.conversionTools.createPopupBtn") }}
           </button>
         </div>
 
@@ -103,11 +103,11 @@
                 <div class="flex flex-wrap gap-2">
                   <span
                     class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[8px] font-black uppercase"
-                    >Hiện sau: {{ popup.delay }}s</span
+                    >{{ $t("marketing.conversionTools.showAfter") }}: {{ popup.delay }}s</span
                   >
                   <span
                     class="px-2 py-0.5 bg-purple-50 text-purple-600 rounded text-[8px] font-black uppercase"
-                    >Trang: {{ popup.pages }}</span
+                    >{{ $t("marketing.conversionTools.page") }}: {{ popup.pages }}</span
                   >
                 </div>
               </div>
@@ -118,7 +118,7 @@
               <div class="flex gap-4">
                 <div class="flex flex-col">
                   <span class="text-[8px] font-black text-slate-300 uppercase"
-                    >Hiển thị</span
+                    >{{ $t("marketing.conversionTools.views") }}</span
                   >
                   <span class="text-xs font-black text-slate-700">{{
                     popup.views
@@ -126,7 +126,7 @@
                 </div>
                 <div class="flex flex-col">
                   <span class="text-[8px] font-black text-slate-300 uppercase"
-                    >Click</span
+                    >{{ $t("marketing.conversionTools.clicks") }}</span
                   >
                   <span class="text-xs font-black text-blue-600">{{
                     popup.clicks
@@ -155,13 +155,13 @@
           <h3
             class="m-0 text-xs font-black uppercase tracking-widest text-slate-400"
           >
-            Trang đích & Chiến dịch sản phẩm
+            {{ $t("marketing.conversionTools.landingListTitle") }}
           </h3>
           <button
             @click="handleAddLanding"
             class="h-10 px-6 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg flex items-center gap-2"
           >
-            <ArtSvgIcon icon="ri:layout-4-line" /> Xây dựng trang mới
+            <ArtSvgIcon icon="ri:layout-4-line" /> {{ $t("marketing.conversionTools.createLandingBtn") }}
           </button>
         </div>
 
@@ -182,7 +182,7 @@
                 <button
                   class="px-6 py-2 bg-white text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl"
                 >
-                  Xem trang
+                  {{ $t("marketing.conversionTools.viewPageBtn") }}
                 </button>
               </div>
             </div>
@@ -230,7 +230,7 @@
                     <p
                       class="m-0 text-[8px] font-black text-slate-300 uppercase"
                     >
-                      Click
+                      {{ $t("marketing.conversionTools.clicks") }}
                     </p>
                     <p class="m-0 text-xs font-black text-slate-700">
                       {{ page.clicks }}
@@ -275,9 +275,12 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
 import { ref } from "vue";
 
 defineOptions({ name: "MarketingConversionTools" });
+
+const { t } = useI18n();
 
 const activeTab = ref("popup");
 const dialogVisible = ref(false);

@@ -1,5 +1,5 @@
 <template>
-  <div class="revenue-dashboard">
+  <div class="revenue-dashboard" v-if="false">
     <!-- 2.1 THANH CHUYỂN ĐỔI CHU KỲ -->
     <div class="header-actions flex justify-between items-center mb-5">
       <h2 class="text-xl font-bold m-0">Dashboard Tổng quan Doanh thu</h2>

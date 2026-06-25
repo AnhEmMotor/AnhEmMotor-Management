@@ -18,7 +18,7 @@
             <h1
               class="m-0 text-xl font-black tracking-tight text-slate-900 leading-none"
             >
-              Quản lý Banner
+              {{ $t("marketing.bannerManagement.title") }}
             </h1>
           </div>
         </div>
@@ -28,7 +28,7 @@
             @click="handleAddBanner"
             class="h-11 px-8 bg-[#001529] text-white rounded-xl font-black text-[11px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95 flex items-center gap-2"
           >
-            <ArtSvgIcon icon="ri:add-fill" /> Tạo banner
+            <ArtSvgIcon icon="ri:add-fill" /> {{ $t("marketing.bannerManagement.createBtn") }}
           </button>
         </div>
       </div>
@@ -73,7 +73,7 @@
                     : 'text-white/60 hover:text-white'
                 "
               >
-                PC
+                {{ $t("marketing.bannerManagement.pc") }}
               </button>
               <button
                 @click.stop="viewMode = 'Mobile'"
@@ -84,7 +84,7 @@
                     : 'text-white/60 hover:text-white'
                 "
               >
-                MB
+                {{ $t("marketing.bannerManagement.mb") }}
               </button>
             </div>
 
@@ -101,7 +101,7 @@
                   @click.stop="handleEdit(banner)"
                   class="h-10 px-6 bg-slate-900/90 backdrop-blur-md text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg"
                 >
-                  Sửa banner
+                  {{ $t("marketing.bannerManagement.editBtn") }}
                 </button>
                 <button
                   @click.stop="handleDelete(banner)"
@@ -145,7 +145,7 @@
           <div>
             <label
               class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
-              >Tiêu đề banner</label
+              >{{ $t("marketing.bannerManagement.formTitle") }}</label
             >
             <ElInput
               v-model="bannerForm.title"
@@ -157,7 +157,7 @@
           <div>
             <label
               class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
-              >Vị trí hiển thị (Placement)</label
+              >{{ $t("marketing.bannerManagement.formPlacement") }}</label
             >
             <ElSelect
               v-model="bannerForm.placement"
@@ -176,7 +176,7 @@
           <div>
             <label
               class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
-              >Mô tả banner</label
+              >{{ $t("marketing.bannerManagement.formDesc") }}</label
             >
             <ElInput
               v-model="bannerForm.description"
@@ -191,7 +191,7 @@
             <div>
               <label
                 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
-                >Nút bấm (CTA Label)</label
+                >{{ $t("marketing.bannerManagement.formCtaLabel") }}</label
               >
               <ElInput
                 v-model="bannerForm.ctaLabel"
@@ -204,7 +204,7 @@
           <div>
             <label
               class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
-              >Đường dẫn đích (CTA Link)</label
+              >{{ $t("marketing.bannerManagement.formCtaLink") }}</label
             >
             <ElInput
               v-model="bannerForm.ctaLink"
@@ -220,7 +220,7 @@
           <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
             <label
               class="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-3 block"
-              >Ảnh Desktop (Tỷ lệ 21:9)</label
+              >{{ $t("marketing.bannerManagement.formDesktopImg") }}</label
             >
             <ElUpload
               class="w-full block combat-banner-upload"
@@ -254,7 +254,7 @@
           <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
             <label
               class="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-3 block"
-              >Ảnh Mobile (Tỷ lệ 4:5 hoặc 1:1)</label
+              >{{ $t("marketing.bannerManagement.formMobileImg") }}</label
             >
             <ElUpload
               class="w-full block combat-banner-upload"
@@ -295,13 +295,13 @@
               @click="dialogVisible = false"
               class="h-11 px-6 text-slate-400 font-black text-[10px] uppercase tracking-widest hover:text-slate-700"
             >
-              Đóng
+              {{ $t("marketing.bannerManagement.closeBtn") }}
             </button>
             <button
               @click="saveBanner"
               class="h-11 px-8 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95"
             >
-              {{ isEditing ? "Lưu thay đổi" : "Tạo banner" }}
+              {{ isEditing ? $t("marketing.bannerManagement.saveBtn") : $t("marketing.bannerManagement.createSubmitBtn") }}
             </button>
           </div>
         </div>
@@ -316,11 +316,15 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { BannerApi } from "@/api/marketing";
 import { FileApi } from "@/api/operations";
 
+import { useI18n } from "vue-i18n";
+
 defineOptions({ name: "MarketingBannerManagement" });
+
+const { t } = useI18n();
 
 const viewMode = ref("Desktop");
 const dialogVisible = ref(false);
-const dialogTitle = ref("Tạo banner mới");
+const dialogTitle = ref("");
 const isEditing = ref(false);
 
 const banners = ref<any[]>([]);
@@ -387,7 +391,7 @@ const handleUploadMobile = async (options: any) => {
 
 const handleAddBanner = () => {
   isEditing.value = false;
-  dialogTitle.value = "Tạo banner mới";
+  dialogTitle.value = t("marketing.bannerManagement.createTitle");
   bannerForm.value = {
     id: 0,
     title: "",
@@ -403,7 +407,7 @@ const handleAddBanner = () => {
 
 const handleEdit = (banner: any) => {
   isEditing.value = true;
-  dialogTitle.value = "Chỉnh sửa banner";
+  dialogTitle.value = t("marketing.bannerManagement.editTitle");
   bannerForm.value = {
     ...banner,
     placement: banner.placement || "Home",

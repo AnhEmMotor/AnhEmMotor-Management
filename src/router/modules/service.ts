@@ -4,7 +4,7 @@ import { Permissions } from "@/domain/constants/permissions";
 export const serviceRoutes: AppRouteRecord = {
   path: "/factory/service",
   name: "Service",
-  component: "/Factory/view/service/index/index",
+  component: "/index/index",
   meta: {
     title: "Thống kê Xưởng",
     icon: "ri:bar-chart-grouped-line",

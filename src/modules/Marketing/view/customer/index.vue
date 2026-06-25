@@ -14,12 +14,12 @@
             <h1
               class="m-0 text-xl font-black tracking-tight text-slate-900 leading-none"
             >
-              Quản lý Khách hàng
+              {{ $t("marketing.customer.title") }}
             </h1>
             <p
               class="m-0 text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em] mt-1.5"
             >
-              Quản lý thông tin và hoạt động của khách hàng
+              {{ $t("marketing.customer.subtitle") }}
             </p>
           </div>
         </div>
@@ -56,37 +56,40 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
 defineOptions({ name: "CustomerManagement" });
+
+const { t } = useI18n();
 
 const customerMenus = [
   {
     path: "/marketing/customer/potential",
-    title: "Khách hàng tiềm năng",
-    description: "Quản lý leads và khách hàng tiềm năng",
+    title: t("marketing.customer.potential"),
+    description: t("marketing.customer.potentialDesc"),
     icon: "ri:user-search-line",
   },
   {
     path: "/marketing/customer/profile",
-    title: "Hồ sơ khách hàng",
-    description: "Xem và chỉnh sửa hồ sơ khách hàng",
+    title: t("marketing.customer.profile"),
+    description: t("marketing.customer.profileDesc"),
     icon: "ri:profile-line",
   },
   {
     path: "/marketing/customer/asset",
-    title: "Tài sản",
-    description: "Quản lý tài sản của khách hàng",
+    title: t("marketing.customer.asset"),
+    description: t("marketing.customer.assetDesc"),
     icon: "ri:car-line",
   },
   {
     path: "/marketing/customer/care",
-    title: "Chăm sóc",
-    description: "Chăm sóc và hỗ trợ khách hàng",
+    title: t("marketing.customer.care"),
+    description: t("marketing.customer.careDesc"),
     icon: "ri:gift-line",
   },
   {
     path: "/marketing/customer/progress",
-    title: "Tiến độ",
-    description: "Theo dõi tiến độ dịch vụ",
+    title: t("marketing.customer.progress"),
+    description: t("marketing.customer.progressDesc"),
     icon: "ri:git-commit-line",
   },
 ];

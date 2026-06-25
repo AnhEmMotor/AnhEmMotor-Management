@@ -4,6 +4,23 @@
       <h1 class="text-2xl font-bold text-gray-800">
         📊 Trung tâm Thống kê & Điều hành
       </h1>
+      <div class="flex items-center gap-3">
+        <ElRadioGroup v-model="timeFilter" size="default">
+          <ElRadioButton label="today">Hôm nay</ElRadioButton>
+          <ElRadioButton label="week">Tuần này</ElRadioButton>
+          <ElRadioButton label="month">Tháng này</ElRadioButton>
+          <ElRadioButton label="year">Năm nay</ElRadioButton>
+        </ElRadioGroup>
+        <ElDatePicker
+          v-model="dateRange"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="Từ ngày"
+          end-placeholder="Đến ngày"
+          size="default"
+          style="width: 240px"
+        />
+      </div>
     </div>
 
     <!-- 4 Thẻ KPI: Tổng thu, Tổng chi, Lợi nhuận gộp, Lợi nhuận ròng -->
@@ -34,6 +51,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
 import CardList from "./card-list.vue";
 import ActiveUser from "./active-user.vue";
 import SalesOverview from "./sales-overview.vue";
@@ -41,4 +59,7 @@ import Dynamic from "./dynamic-stats.vue";
 import TodoList from "./todo-list.vue";
 
 defineOptions({ name: "AdminDashboard" });
+
+const timeFilter = ref("month");
+const dateRange = ref("");
 </script>
