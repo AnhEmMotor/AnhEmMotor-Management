@@ -76,7 +76,6 @@ function select(value: string | number | boolean | undefined) {
   display: grid;
   grid-template-columns: repeat(4, minmax(88px, 1fr));
   overflow: hidden;
-  border: 1px solid rgb(255 255 255 / 14%);
   border-radius: 8px;
 }
 
@@ -94,12 +93,9 @@ function select(value: string | number | boolean | undefined) {
   font-size: 14px;
   font-weight: 600;
   line-height: 1;
-  color: #cbd5e1;
   text-align: center;
   white-space: nowrap;
-  background: #101114;
   border: 0;
-  border-left: 1px solid rgb(255 255 255 / 14%);
   border-radius: 0;
   box-shadow: none !important;
 }
@@ -109,20 +105,12 @@ function select(value: string | number | boolean | undefined) {
 }
 
 :deep(.el-radio-button__original-radio:checked + .el-radio-button__inner) {
-  color: #fff;
-  background: #e84a4a;
+  /* color, background, and border handled by reporting.scss */
 }
 
 :deep(.el-input__wrapper) {
   min-height: 34px;
-  background: #101114;
-  border: 1px solid rgb(255 255 255 / 14%);
   border-radius: 8px;
-  box-shadow: none;
-}
-
-:deep(.el-input__inner) {
-  color: #f8fafc;
 }
 
 @media (width <= 767px) {

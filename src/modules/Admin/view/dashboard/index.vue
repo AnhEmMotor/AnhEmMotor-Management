@@ -24,7 +24,7 @@
     </div>
 
     <!-- 4 Thẻ KPI: Tổng thu, Tổng chi, Lợi nhuận gộp, Lợi nhuận ròng -->
-    <CardList />
+    <CardList :time-filter="timeFilter" :date-range="dateRange" />
 
     <ElRow :gutter="20">
       <ElCol :sm="24" :md="12" :lg="10">
@@ -61,5 +61,5 @@ import TodoList from "./todo-list.vue";
 defineOptions({ name: "AdminDashboard" });
 
 const timeFilter = ref("month");
-const dateRange = ref("");
+const dateRange = ref<[Date, Date] | null>(null);
 </script>

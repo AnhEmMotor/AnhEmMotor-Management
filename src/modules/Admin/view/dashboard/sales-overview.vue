@@ -5,42 +5,53 @@
         <h4 class="text-lg font-bold text-gray-800">
           Biểu đồ so sánh doanh thu và chi phí theo từng tháng
         </h4>
-        <p class="text-sm text-gray-500 mt-1">
-          Lợi nhuận ròng tăng trưởng
-          <span class="text-success font-semibold">+15%</span> trong năm nay
-        </p>
+        <p class="text-sm text-gray-500 mt-1">Lợi nhuận gộp theo từng tháng</p>
       </div>
     </div>
-    <div class="h-[calc(100%-80px)]" ref="chartRef"></div>
+    <div v-if="isLoading" class="mt-4">
+      <ElSkeleton :rows="2" animated />
+    </div>
+    <div v-else class="h-[calc(100%-80px)]" ref="chartRef"></div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick } from "vue";
 import * as echarts from "echarts";
+import {
+  fetchMonthlyRevenueProfit,
+  type MonthlyRevenueProfit,
+} from "@/api/dashboard.api";
 
 const chartRef = ref<HTMLElement | null>(null);
 let chartInstance: echarts.ECharts | null = null;
+const isLoading = ref(false);
 
-// Mock data cho báo cáo tài chính
-const months = [
-  "Tháng 1",
-  "Tháng 2",
-  "Tháng 3",
-  "Tháng 4",
-  "Tháng 5",
-  "Tháng 6",
-  "Tháng 7",
-  "Tháng 8",
-  "Tháng 9",
-  "Tháng 10",
-  "Tháng 11",
-  "Tháng 12",
-];
-const revenueData = [
-  120, 150, 180, 200, 250, 210, 190, 230, 260, 280, 310, 350,
-]; // Tỷ đồng
-const expenseData = [90, 110, 130, 140, 160, 150, 140, 170, 180, 200, 210, 240]; // Tỷ đồng
+const months = ref<string[]>([]);
+const revenueData = ref<number[]>([]);
+const expenseData = ref<number[]>([]);
+
+async function fetchData() {
+  isLoading.value = true;
+  try {
+    const data = await fetchMonthlyRevenueProfit(12);
+    months.value = data.map((item: MonthlyRevenueProfit) => {
+      const date = new Date(item.reportMonth);
+      return `Tháng ${date.getMonth() + 1}`;
+    });
+    revenueData.value = data.map(
+      (item: MonthlyRevenueProfit) => item.totalRevenue,
+    );
+    // Expense = Revenue - Profit (Gross Profit)
+    expenseData.value = data.map(
+      (item: MonthlyRevenueProfit) => item.totalRevenue - item.totalProfit,
+    );
+  } catch (error) {
+    console.error("Failed to fetch monthly revenue profit:", error);
+  } finally {
+    isLoading.value = false;
+  }
+}
 
 function initChart() {
   if (!chartRef.value) return;
@@ -55,16 +66,20 @@ function initChart() {
       formatter: function (params: any) {
         let tooltipHtml = `<strong>${params[0].name}</strong><br/>`;
         params.forEach((param: any) => {
-          tooltipHtml += `${param.marker} ${param.seriesName}: <strong>${param.value} Tỷ VNĐ</strong><br/>`;
+          const valueInBillions = (param.value / 1e9).toFixed(2);
+          tooltipHtml += `${param.marker} ${param.seriesName}: <strong>${valueInBillions} tỷ VNĐ</strong><br/>`;
         });
         // Tính lợi nhuận
-        const profit = params[0].value - params[1].value;
-        tooltipHtml += `<br/>Lợi nhuận ròng: <strong>${profit.toFixed(1)} Tỷ VNĐ</strong>`;
+        const revenue = params[0].value;
+        const expense = params[1].value;
+        const profit = revenue - expense;
+        const profitInBillions = (profit / 1e9).toFixed(2);
+        tooltipHtml += `<br/>Lợi nhuận gộp: <strong>${profitInBillions} tỷ VNĐ</strong>`;
         return tooltipHtml;
       },
     },
     legend: {
-      data: ["Tổng thu (Doanh thu)", "Tổng chi (Chi phí)"],
+      data: ["Tổng thu (Doanh thu)", "Tổng chi (Giá vốn)"],
       bottom: 0,
     },
     grid: {
@@ -77,7 +92,7 @@ function initChart() {
     xAxis: [
       {
         type: "category",
-        data: months,
+        data: months.value,
         axisTick: {
           alignWithLabel: true,
         },
@@ -88,7 +103,9 @@ function initChart() {
         type: "value",
         name: "Tỷ VNĐ",
         axisLabel: {
-          formatter: "{value}",
+          formatter: function (value: number) {
+            return (value / 1e9).toFixed(1);
+          },
         },
       },
     ],
@@ -104,10 +121,10 @@ function initChart() {
           color: "#409eff",
           borderRadius: [4, 4, 0, 0],
         },
-        data: revenueData,
+        data: revenueData.value,
       },
       {
-        name: "Tổng chi (Chi phí)",
+        name: "Tổng chi (Giá vốn)",
         type: "bar",
         emphasis: {
           focus: "series",
@@ -116,7 +133,7 @@ function initChart() {
           color: "#f56c6c",
           borderRadius: [4, 4, 0, 0],
         },
-        data: expenseData,
+        data: expenseData.value,
       },
     ],
   };
@@ -132,8 +149,14 @@ function resizeChart() {
 
 onMounted(() => {
   nextTick(() => {
-    initChart();
-    window.addEventListener("resize", resizeChart);
+    fetchData().then(() => {
+      // Init chart after data loaded
+      if (chartRef.value) {
+        chartInstance = echarts.init(chartRef.value);
+        initChart();
+        window.addEventListener("resize", resizeChart);
+      }
+    });
   });
 });
 

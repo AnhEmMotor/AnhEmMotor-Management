@@ -1,4 +1,4 @@
-import { fourDotsSpinnerSvg } from "@/assets/svg/loading";
+import { motorcycleSpinnerSvg } from "@/assets/svg/loading";
 
 const getLoadingBackground = (): string => {
   const isDark = document.documentElement.classList.contains("dark");
@@ -10,8 +10,8 @@ const DEFAULT_LOADING_CONFIG = {
   get background() {
     return getLoadingBackground();
   },
-  svg: fourDotsSpinnerSvg,
-  svgViewBox: "0 0 40 40",
+  svg: motorcycleSpinnerSvg,
+  svgViewBox: "0 0 24 24",
   customClass: "art-loading-fix",
 } as const;
 

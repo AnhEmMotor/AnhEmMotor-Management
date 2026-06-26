@@ -7,7 +7,7 @@
             {{ $t("menus.service.workshop.dashboard") }}
           </h1>
           <div
-            class="flex items-center gap-2 bg-green-50 text-green-600 px-2.5 py-1 rounded-full border border-green-200 shadow-sm relative overflow-hidden"
+            class="flex items-center gap-2 px-2.5 py-1 rounded-full border shadow-sm relative overflow-hidden bg-green-50 text-green-600 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800/50"
           >
             <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
             <span class="text-xs font-semibold tracking-wide"
@@ -15,7 +15,7 @@
             >
           </div>
         </div>
-        <p class="mt-1 text-sm text-slate-500">
+        <p class="mt-1 text-sm text-g-500">
           Dashboard quản lý xưởng: KPI tiến độ, cảnh báo phiếu quá hạn/vật tư và
           analytics doanh thu dịch vụ.
         </p>
@@ -101,7 +101,7 @@
           <span class="font-semibold">Cảnh báo phiếu quá hạn</span>
         </template>
 
-        <div v-if="alerts.overdue.length === 0" class="text-sm text-slate-500">
+        <div v-if="alerts.overdue.length === 0" class="text-sm text-g-500">
           Không có phiếu quá hạn.
         </div>
 
@@ -109,21 +109,21 @@
           <div
             v-for="o in alerts.overdue"
             :key="o.ticketId"
-            class="rounded-lg border border-slate-200 p-3"
+            class="rounded-lg border border-border p-3 bg-box dark:!bg-[#1c1c20] dark:!border-[#333]"
           >
             <div class="flex items-center justify-between gap-3">
-              <div class="text-sm font-semibold">#{{ o.ticketId }}</div>
+              <div class="text-sm font-semibold text-g-900">
+                #{{ o.ticketId }}
+              </div>
               <ElTag type="danger" effect="dark">
                 Quá hạn: {{ o.overdueHours }} giờ
               </ElTag>
             </div>
-            <div class="mt-2 text-xs text-slate-500">
+            <div class="mt-2 text-xs text-g-500">
               Khách hàng:
-              <span class="font-medium text-slate-700">{{
-                o.customerName
-              }}</span>
+              <span class="font-medium text-g-700">{{ o.customerName }}</span>
             </div>
-            <div class="mt-1 text-xs text-slate-500">
+            <div class="mt-1 text-xs text-g-500">
               Trạng thái: {{ o.status }}
             </div>
           </div>
@@ -137,7 +137,7 @@
 
         <div
           v-if="alerts.partsShortage.length === 0"
-          class="text-sm text-slate-500"
+          class="text-sm text-g-500"
         >
           Không thiếu vật tư.
         </div>
@@ -146,10 +146,12 @@
           <div
             v-for="p in alerts.partsShortage"
             :key="p.ticketId + '_' + p.partName"
-            class="rounded-lg border border-slate-200 p-3"
+            class="rounded-lg border border-border p-3 bg-box dark:!bg-[#1c1c20] dark:!border-[#333]"
           >
             <div class="flex items-center justify-between gap-3">
-              <div class="text-sm font-semibold">#{{ p.ticketId }}</div>
+              <div class="text-sm font-semibold text-g-900">
+                #{{ p.ticketId }}
+              </div>
               <div class="flex gap-2">
                 <ElTag type="danger" effect="dark">Thiếu</ElTag>
                 <ElButton size="small" type="primary" link
@@ -157,10 +159,10 @@
                 >
               </div>
             </div>
-            <div class="mt-1 text-xs text-slate-500">
+            <div class="mt-1 text-xs text-g-500">
               Hạng mục: {{ p.partName }}
             </div>
-            <div class="mt-1 text-xs text-slate-500">
+            <div class="mt-1 text-xs text-g-500">
               Thiếu: {{ p.requiredQuantity }} (Còn: {{ p.availableQuantity }})
             </div>
           </div>
@@ -173,38 +175,39 @@
           <span class="font-semibold">Bảo trì &amp; đánh giá dịch vụ</span>
         </template>
 
-        <div
-          v-if="warrantyAndComplaints.loading"
-          class="text-sm text-slate-500"
-        >
+        <div v-if="warrantyAndComplaints.loading" class="text-sm text-g-500">
           Đang tải...
         </div>
         <div v-else>
           <div class="grid grid-cols-1 gap-3">
-            <div class="rounded-lg border border-slate-200 p-3">
+            <div
+              class="rounded-lg border border-border p-3 bg-box dark:!bg-[#1c1c20] dark:!border-[#333]"
+            >
               <div class="flex items-center justify-between gap-3">
-                <div class="text-sm font-semibold">
+                <div class="text-sm font-semibold text-g-900">
                   Yêu cầu bảo hành kỹ thuật
                 </div>
                 <ElTag type="warning" effect="dark">
                   {{ warrantyAndComplaints.warrantyRequestsCount }}
                 </ElTag>
               </div>
-              <div class="mt-1 text-xs text-slate-500">
+              <div class="mt-1 text-xs text-g-500">
                 Ưu tiên xử lý các yêu cầu quá hạn.
               </div>
             </div>
 
-            <div class="rounded-lg border border-slate-200 p-3">
+            <div
+              class="rounded-lg border border-border p-3 bg-box dark:!bg-[#1c1c20] dark:!border-[#333]"
+            >
               <div class="flex items-center justify-between gap-3">
-                <div class="text-sm font-semibold">
+                <div class="text-sm font-semibold text-g-900">
                   Đánh giá &amp; khiếu nại từ khách
                 </div>
                 <ElTag type="danger" effect="dark">
                   {{ warrantyAndComplaints.complaintsCount }}
                 </ElTag>
               </div>
-              <div class="mt-1 text-xs text-slate-500">
+              <div class="mt-1 text-xs text-g-500">
                 Theo dõi mức độ hài lòng và phản hồi.
               </div>
             </div>
@@ -224,7 +227,7 @@
               />
               <ElTableColumn prop="status" label="Trạng thái" min-width="140" />
             </ElTable>
-            <div v-else class="text-center text-sm text-slate-400 py-4">
+            <div v-else class="text-center text-sm text-g-400 py-4">
               Chưa có dữ liệu gần đây.
             </div>
           </div>
@@ -641,5 +644,43 @@ onMounted(() => {
 
 :deep(.el-card) {
   overflow: hidden !important;
+}
+
+/* Kích hoạt chế độ tối (bắt buộc) cho các thẻ/card trong Dashboard nếu global CSS Tailwind chưa load kịp */
+:global(html.dark) .dashboard-workshop {
+  --default-box-color: #161618 !important;
+  --default-bg-color: #070707 !important;
+  --el-bg-color-overlay: #1d1e1f !important;
+  --el-text-color-primary: #e5e6eb !important;
+  --el-border-color-light: #414243 !important;
+}
+
+:global(html.dark) .dashboard-workshop :deep(.el-card) {
+  background-color: #1d1e1f !important;
+  border-color: #414243 !important;
+  color: #e5e6eb !important;
+}
+
+:global(html.dark) .dashboard-workshop :deep(.el-card__header) {
+  border-bottom-color: #414243 !important;
+}
+
+:global(html.dark) .dashboard-workshop :deep(.art-card) {
+  background-color: #1d1e1f !important;
+  border-color: #414243 !important;
+}
+
+:global(html.dark) .dashboard-workshop :deep(.art-card p) {
+  color: #e5e6eb !important;
+}
+
+:global(html.dark) .dashboard-workshop .text-g-900 {
+  color: #e5e6eb !important;
+}
+
+:global(html.dark) .dashboard-workshop .bg-green-50 {
+  background-color: rgb(22 101 52 / 30%) !important;
+  color: #4ade80 !important;
+  border-color: rgb(21 128 61 / 50%) !important;
 }
 </style>

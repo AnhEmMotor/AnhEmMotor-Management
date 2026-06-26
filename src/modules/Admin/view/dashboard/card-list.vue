@@ -11,7 +11,6 @@
         class="art-card relative flex flex-col justify-center h-35 px-5 mb-5 max-sm:mb-4"
       >
         <span class="text-g-700 text-sm">{{ item.des }}</span>
-        <!-- Thay vì ArtCountTo không nhận format VNĐ, dùng thẻ div và thêm text-gray-900 để không bị ẩn màu -->
         <h2 class="text-2xl font-bold text-gray-900 mt-2 mb-1">
           {{ item.num }}
         </h2>
@@ -35,40 +34,127 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
+import { ref, reactive, watch, onMounted } from "vue";
+import { fetchDashboardSummary } from "@/api/dashboard.api";
 
 interface _CardDataItem {
   des: string;
   icon: string;
-  num: number;
+  num: string;
   change: number;
 }
 
-// Dữ liệu giả lập (Mock data) cho báo cáo tài chính
-const dataList = reactive([
-  {
-    des: "Tổng thu (Đơn hàng)",
-    icon: "ri:wallet-3-line",
-    num: "1.3 tỷ đ",
-    change: 12.5,
+const props = defineProps<{
+  timeFilter: string;
+  dateRange: [Date, Date] | null;
+}>();
+
+const dataList = reactive<_CardDataItem[]>([]);
+const isLoading = ref(false);
+
+function formatVnd(value: number): string {
+  if (value === 0) return "0đ";
+  const formatted = new Intl.NumberFormat("vi-VN", {
+    maximumFractionDigits: 0,
+  }).format(value);
+  return `${formatted}đ`;
+}
+
+function getDateRange() {
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  let start: Date;
+  let end: Date;
+
+  switch (props.timeFilter) {
+    case "today":
+      start = today;
+      end = new Date(today);
+      end.setHours(23, 59, 59, 999);
+      break;
+    case "week": {
+      // Lấy thứ 2 của tuần hiện tại
+      const day = today.getDay() || 7; // Chủ nhật = 0 -> 7
+      start = new Date(today);
+      start.setDate(today.getDate() - day + 1);
+      start.setHours(0, 0, 0, 0);
+      end = new Date(today);
+      end.setHours(23, 59, 59, 999);
+      break;
+    }
+    case "month":
+      start = new Date(now.getFullYear(), now.getMonth(), 1);
+      end = new Date(today);
+      end.setHours(23, 59, 59, 999);
+      break;
+    case "year":
+      start = new Date(now.getFullYear(), 0, 1);
+      end = new Date(today);
+      end.setHours(23, 59, 59, 999);
+      break;
+    default:
+      start = today;
+      end = new Date(today);
+      end.setHours(23, 59, 59, 999);
+  }
+
+  // Nếu có dateRange từ picker, ưu tiên dùng dateRange
+  if (props.dateRange && props.dateRange[0] && props.dateRange[1]) {
+    start = new Date(props.dateRange[0]);
+    start.setHours(0, 0, 0, 0);
+    end = new Date(props.dateRange[1]);
+    end.setHours(23, 59, 59, 999);
+  }
+
+  return { start, end };
+}
+
+async function fetchData() {
+  isLoading.value = true;
+  try {
+    const { start, end } = getDateRange();
+    const data = await fetchDashboardSummary(start, end);
+
+    // Map API data to card items
+    dataList.length = 0; // Clear existing
+    dataList.push(
+      {
+        des: "Tổng thu (Đơn hàng)",
+        icon: "ri:wallet-3-line",
+        num: formatVnd(data.totalRevenue ?? 0),
+        change: 0, // TODO: calculate from API if available
+      },
+      {
+        des: "Tổng chi",
+        icon: "ri:shopping-cart-2-line",
+        num: formatVnd(data.totalExpense ?? 0),
+        change: 0,
+      },
+      {
+        des: "Lợi nhuận gộp",
+        icon: "ri:funds-line",
+        num: formatVnd(data.grossProfit ?? 0),
+        change: 0,
+      },
+      {
+        des: "Lợi nhuận ròng",
+        icon: "ri:money-dollar-circle-line",
+        num: formatVnd(data.netProfit ?? 0),
+        change: 0,
+      },
+    );
+  } catch (error) {
+    console.error("Failed to fetch dashboard summary:", error);
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+watch(
+  () => [props.timeFilter, props.dateRange],
+  () => {
+    fetchData();
   },
-  {
-    des: "Tổng chi (Expenses)",
-    icon: "ri:shopping-cart-2-line",
-    num: "820 tr đ",
-    change: -4.2,
-  },
-  {
-    des: "Lợi nhuận gộp",
-    icon: "ri:funds-line",
-    num: "430 tr đ",
-    change: 8.4,
-  },
-  {
-    des: "Lợi nhuận ròng",
-    icon: "ri:money-dollar-circle-line",
-    num: "285 tr đ",
-    change: 15.2,
-  },
-]);
+  { immediate: true, deep: true },
+);
 </script>

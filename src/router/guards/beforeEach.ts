@@ -157,6 +157,22 @@ function handleLoginStatus(
   to: RouteLocationNormalized,
   userStore: ReturnType<typeof useUserStore>,
 ): any {
+  // Add a fallback check for isLogin in case pinia hydration is delayed or failed
+  if (!userStore.isLogin) {
+    try {
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        const parsed = JSON.parse(userData);
+        if (parsed.isLogin && parsed.accessToken) {
+          userStore.setLoginStatus(true);
+          userStore.setToken(parsed.accessToken);
+        }
+      }
+    } catch (e) {
+      console.warn("Fallback hydration failed:", e);
+    }
+  }
+
   if (userStore.isLogin) {
     if (to.path === RoutesAlias.Login || to.path === "/auth/login") {
       return { path: "/workspace", replace: true };

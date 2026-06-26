@@ -5,9 +5,9 @@
   --report-panel-soft: var(--el-fill-color-light);
   --report-border: #cbd5e1;
   --report-border-strong: #cbd5e1;
-  --report-text: var(--el-text-color-primary);
-  --report-muted: var(--el-text-color-secondary);
-  --report-muted-strong: var(--el-text-color-regular);
+  --report-text: #303133;
+  --report-muted: #909399;
+  --report-muted-strong: #606266;
   --report-red: #e84a4a;
   --report-red-light: #ff6b6b;
   --report-red-dark: #c53a3a;
@@ -267,7 +267,11 @@
   border-bottom-color: var(--report-border);
 }
 
-.reporting-page .el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell {
+.reporting-page
+  .el-table--enable-row-hover
+  .el-table__body
+  tr:hover
+  > td.el-table__cell {
   background: var(--report-panel-soft);
 }
 
@@ -617,7 +621,10 @@ html.dark {
     background: #111214;
   }
 
-  .reporting-date-popper .el-date-table td.current:not(.disabled) .el-date-table-cell__text,
+  .reporting-date-popper
+    .el-date-table
+    td.current:not(.disabled)
+    .el-date-table-cell__text,
   .reporting-date-popper .el-month-table td.current:not(.disabled) .cell,
   .reporting-date-popper .el-year-table td.current:not(.disabled) .cell,
   .reporting-select-popper .el-select-dropdown__item.is-selected {
