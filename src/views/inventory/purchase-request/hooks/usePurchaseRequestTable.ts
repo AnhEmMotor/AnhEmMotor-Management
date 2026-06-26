@@ -657,14 +657,14 @@ export function usePurchaseRequestTable() {
   };
 
   const handleCloneMany = () => {
-    if (selectedRows.value.length === 0) {
+    if (selectedRows.value.length !== 1) {
       ElMessage.warning(
-        "Vui lòng chọn ít nhất một yêu cầu mua hàng để nhân bản",
+        "Vui lòng chọn duy nhất một yêu cầu mua hàng để nhân bản",
       );
       return;
     }
     ElMessageBox.confirm(
-      `Bạn có chắc chắn muốn nhân bản ${selectedRows.value.length} yêu cầu đã chọn?`,
+      `Bạn có chắc chắn muốn nhân bản yêu cầu mua hàng đã chọn?`,
       "Xác nhận nhân bản",
       {
         confirmButtonText: "Nhân bản",
@@ -675,10 +675,10 @@ export function usePurchaseRequestTable() {
       try {
         const ids = selectedRows.value.map((item) => item.id);
         await PurchaseRequestApi.cloneMany(ids);
-        ElMessage.success("Nhân bản hàng loạt thành công");
+        ElMessage.success("Nhân bản thành công");
         refreshData();
       } catch (err: any) {
-        ElMessage.error(err.message || "Nhân bản hàng loạt thất bại");
+        ElMessage.error(err.message || "Nhân bản thất bại");
       }
     });
   };

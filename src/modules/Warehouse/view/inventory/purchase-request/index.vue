@@ -76,7 +76,7 @@
             </ElDropdown>
 
             <ElButton
-              v-if="selectedRows.length > 0"
+              v-if="selectedRows.length === 1"
               type="warning"
               class="btn-bulk"
               v-ripple
@@ -84,9 +84,7 @@
               @click="handleCloneMany"
               style="margin-left: 0"
             >
-              <ElIcon class="mr-1"><DocumentCopy /></ElIcon> Nhân bản ({{
-                selectedRows.length
-              }})
+              <ElIcon class="mr-1"><DocumentCopy /></ElIcon> Nhân bản
             </ElButton>
 
             <ElButton
