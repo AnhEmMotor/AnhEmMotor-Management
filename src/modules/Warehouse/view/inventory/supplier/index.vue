@@ -179,7 +179,7 @@
     >
       <template #header>
         <div class="flex items-center justify-between pr-2">
-          <span class="text-lg font-medium">{{ dialogTitle }}</span>
+          <span class="text-lg font-medium text-black">{{ dialogTitle }}</span>
           <button
             id="tour-dialog-help"
             class="text-gray-400 hover:text-blue-500 transition-colors bg-transparent border-none cursor-pointer flex items-center justify-center text-[20px]"
