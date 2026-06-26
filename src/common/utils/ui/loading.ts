@@ -1,34 +1,45 @@
-import { motorcycleSpinnerSvg } from "@/assets/svg/loading";
-
-const getLoadingBackground = (): string => {
-  const isDark = document.documentElement.classList.contains("dark");
-  return isDark ? "rgba(7, 7, 7, 0.85)" : "#fff";
-};
-
-const DEFAULT_LOADING_CONFIG = {
-  lock: true,
-  get background() {
-    return getLoadingBackground();
-  },
-  svg: motorcycleSpinnerSvg,
-  svgViewBox: "0 0 24 24",
-  customClass: "art-loading-fix",
-} as const;
+import { createVNode, render } from "vue";
+import LoadingOverlay from "@/view/common/loading-overlay/index.vue";
 
 interface LoadingInstance {
   close: () => void;
 }
 
 let loadingInstance: LoadingInstance | null = null;
+let loadingContainer: HTMLElement | null = null;
 
 export const loadingService = {
-  showLoading(): () => void {
+  showLoading(text = "Đang tải dữ liệu"): () => void {
     if (!loadingInstance) {
-      const config = {
-        ...DEFAULT_LOADING_CONFIG,
-        background: getLoadingBackground(),
+      if (!loadingContainer) {
+        loadingContainer = document.createElement("div");
+        document.body.appendChild(loadingContainer);
+      }
+
+      const vnode = createVNode(LoadingOverlay, { visible: true, text });
+      render(vnode, loadingContainer);
+
+      loadingInstance = {
+        close: () => {
+          if (loadingContainer) {
+            const closeVnode = createVNode(LoadingOverlay, {
+              visible: false,
+              text,
+            });
+            render(closeVnode, loadingContainer);
+
+            // Wait for transition to complete before removing
+            setTimeout(() => {
+              if (loadingContainer) {
+                render(null, loadingContainer);
+                loadingContainer.remove();
+                loadingContainer = null;
+              }
+            }, 400);
+          }
+          loadingInstance = null;
+        },
       };
-      loadingInstance = ElLoading.service(config);
     }
     return () => this.hideLoading();
   },
@@ -36,7 +47,6 @@ export const loadingService = {
   hideLoading(): void {
     if (loadingInstance) {
       loadingInstance.close();
-      loadingInstance = null;
     }
   },
 };

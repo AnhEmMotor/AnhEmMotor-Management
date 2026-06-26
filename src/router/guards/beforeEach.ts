@@ -145,6 +145,21 @@ async function handleRouteGuard(
   }
 
   if (to.matched.length > 0) {
+    const fromModule = from.path.split("/")[1];
+    const toModule = to.path.split("/")[1];
+
+    if (
+      from.path !== "/" &&
+      fromModule &&
+      toModule &&
+      fromModule !== toModule &&
+      toModule !== "workspace" &&
+      toModule !== "auth"
+    ) {
+      pendingLoading = true;
+      loadingService.showLoading("Đang truy cập hệ thống...");
+    }
+
     setWorktab(to);
     setPageTitle(to);
     return true;

@@ -240,7 +240,7 @@
       <ElCard class="lg:col-span-2 overflow-hidden relative">
         <template #header>
           <span class="font-semibold"
-            >Doanh thu dịch vụ vs doanh thu bán xe</span
+            >Biểu đồ so sánh doanh thu xưởng theo tháng</span
           >
         </template>
 
@@ -443,7 +443,7 @@ const serviceVsSalesChart = computed(() => {
         data: [12, 14, 16, 18, 20, 22],
       },
       {
-        name: "Doanh thu bán xe",
+        name: "Doanh thu phụ tùng",
         data: [10, 13, 15, 14, 18, 19],
       },
     ],
