@@ -2,11 +2,11 @@
   <div class="art-card h-128 p-5 box-border mb-5 max-sm:mb-4 flex flex-col">
     <div class="art-card-header mb-4">
       <div class="title">
-        <h4 class="text-lg font-bold text-gray-800">
-          Tổng quan hoạt động xưởng
+        <h4 class="text-lg font-bold text-gray-800 dark:text-gray-100">
+          Tổng quan Nhân sự & Khách hàng
         </h4>
-        <p class="text-sm text-gray-500 mt-1">
-          Dữ liệu tiếp nhận và xử lý dịch vụ xe. So với tháng trước
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          Dữ liệu nhân sự và tăng trưởng lượng khách hàng. So với tháng trước
           <span class="text-success font-semibold ml-1">+12.5%</span>
         </p>
       </div>
@@ -20,19 +20,19 @@
       class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2 pt-5 border-t border-gray-100"
     >
       <div
-        class="flex flex-col items-center justify-center py-3 px-2 rounded-xl border border-gray-100/50 shadow-sm transition-all"
-        :class="item.bgClass || 'bg-gray-50'"
+        class="flex flex-col items-center justify-center py-3 px-2 rounded-xl border shadow-sm transition-all dark:border-gray-700/50"
+        :class="item.bgClass || 'bg-gray-50 dark:bg-gray-800'"
         v-for="(item, index) in list"
         :key="index"
       >
         <p
           class="text-[22px] font-bold"
-          :class="item.colorClass || 'text-gray-900'"
+          :class="item.colorClass || 'text-gray-900 dark:text-gray-100'"
         >
           {{ item.num }}
         </p>
         <p
-          class="text-[11px] font-semibold text-gray-500 mt-1 uppercase tracking-wide text-center"
+          class="text-[11px] font-semibold text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wide text-center"
         >
           {{ item.name }}
         </p>
@@ -67,26 +67,30 @@ function initChart() {
       formatter: function (params: any) {
         let tooltipHtml = `<strong>${params[0].name}</strong><br/>`;
         params.forEach((item: any) => {
-          tooltipHtml += `${item.marker} ${item.seriesName}: <strong>${item.value} xe</strong><br/>`;
+          let suffix = item.seriesName === "Lượt truy cập" ? " lượt" : " người";
+          tooltipHtml += `${item.marker} ${item.seriesName}: <strong>${item.value}${suffix}</strong><br/>`;
         });
 
         if (params.length > 1) {
-          const received = params[0].value;
-          const completed = params[1].value;
+          const visits = params[0].value;
+          const newCustomers = params[1].value;
           const rate =
-            received > 0 ? ((completed / received) * 100).toFixed(1) : 0;
-          tooltipHtml += `<br/><em>Insight:</em> Tỉ lệ hoàn thành: <strong class="text-success">${rate}%</strong>`;
+            visits > 0 ? ((newCustomers / visits) * 100).toFixed(1) : 0;
+          tooltipHtml += `<br/><em>Insight:</em> Tỷ lệ chuyển đổi KH: <strong class="text-success">${rate}%</strong>`;
         }
         return tooltipHtml;
       },
     },
     legend: {
-      data: ["Lượt tiếp nhận", "Đã hoàn thành"],
+      data: ["Lượt truy cập", "Khách hàng mới"],
       top: 0,
       right: 0,
       icon: "circle",
       itemWidth: 10,
       itemHeight: 10,
+      textStyle: {
+        color: "#9ca3af",
+      },
     },
     grid: {
       left: "0%",
@@ -111,7 +115,7 @@ function initChart() {
         splitLine: {
           lineStyle: {
             type: "dashed",
-            color: "#e5e7eb",
+            color: "rgba(156, 163, 175, 0.2)",
           },
         },
         axisLabel: { color: "#9ca3af" },
@@ -119,7 +123,7 @@ function initChart() {
     ],
     series: [
       {
-        name: "Lượt tiếp nhận",
+        name: "Lượt truy cập",
         type: "line",
         smooth: true,
         symbol: "none",
@@ -136,7 +140,7 @@ function initChart() {
         data: chartData,
       },
       {
-        name: "Đã hoàn thành",
+        name: "Khách hàng mới",
         type: "line",
         smooth: true,
         symbol: "none",

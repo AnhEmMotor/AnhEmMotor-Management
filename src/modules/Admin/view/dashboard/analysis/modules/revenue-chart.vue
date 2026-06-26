@@ -25,27 +25,33 @@
         :xs="24"
         class="flex flex-col justify-center border-l border-gray-100 pl-6 mt-4 lg:mt-0"
       >
-        <h5 class="text-sm text-gray-500 font-semibold mb-6">
+        <h5 class="text-sm text-gray-500 dark:text-gray-400 font-semibold mb-6">
           Tháng 5/2026 — 8 ngày đã qua
         </h5>
 
         <div class="mb-6">
-          <div class="text-sm text-gray-500 mb-1">Đã đạt</div>
+          <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">
+            Đã đạt
+          </div>
           <div class="text-xl font-bold text-blue-600">285.000.000đ</div>
         </div>
 
         <div class="mb-6">
-          <div class="text-sm text-gray-500 mb-1">Cần thêm</div>
+          <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">
+            Cần thêm
+          </div>
           <div class="text-xl font-bold text-orange-500">415.000.000đ</div>
         </div>
 
         <div>
-          <div class="text-sm text-gray-500 mb-1">
+          <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">
             Dự báo (Dựa trên tốc độ hiện tại)
           </div>
           <div class="text-xl font-bold text-green-600">
             ~890.000.000đ
-            <span class="text-sm font-normal text-gray-500">(89%)</span>
+            <span class="text-sm font-normal text-gray-500 dark:text-gray-400"
+              >(89%)</span
+            >
           </div>
         </div>
       </ElCol>

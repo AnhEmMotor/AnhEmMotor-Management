@@ -3,7 +3,9 @@
     <div>
       <div class="flex justify-between items-center mb-6">
         <h4 class="m-0 font-bold text-lg">HIỆU SUẤT SALE</h4>
-        <span class="text-sm text-gray-500">— Tháng 5/2026</span>
+        <span class="text-sm text-gray-500 dark:text-gray-400"
+          >— Tháng 5/2026</span
+        >
       </div>
 
       <div class="space-y-4">
@@ -12,7 +14,9 @@
           :key="index"
           class="flex items-center text-sm"
         >
-          <div class="w-8 font-bold text-gray-500">#{{ index + 1 }}</div>
+          <div class="w-8 font-bold text-gray-500 dark:text-gray-400">
+            #{{ index + 1 }}
+          </div>
           <div class="w-24 truncate">{{ staff.name }}</div>
           <div class="flex-1 mx-2">
             <ElProgress
@@ -34,7 +38,9 @@
 
     <div class="mt-6 pt-4 border-t border-gray-100">
       <div class="flex justify-between text-sm mb-2">
-        <span class="font-medium text-gray-600">Tổng team:</span>
+        <span class="font-medium text-gray-600 dark:text-gray-300"
+          >Tổng team:</span
+        >
         <span class="font-bold">91.000.000đ / 120.000.000đ</span>
       </div>
       <div class="flex items-center">

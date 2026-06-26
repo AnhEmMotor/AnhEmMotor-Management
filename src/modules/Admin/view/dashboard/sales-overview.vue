@@ -2,10 +2,12 @@
   <div class="art-card h-128 p-5 mb-5 max-sm:mb-4">
     <div class="art-card-header mb-6">
       <div class="title">
-        <h4 class="text-lg font-bold text-gray-800">
+        <h4 class="text-lg font-bold text-gray-800 dark:text-gray-100">
           Biểu đồ so sánh doanh thu và chi phí theo từng tháng
         </h4>
-        <p class="text-sm text-gray-500 mt-1">Lợi nhuận gộp theo từng tháng</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          Lợi nhuận gộp theo từng tháng
+        </p>
       </div>
     </div>
     <div v-if="isLoading" class="mt-4">
@@ -81,12 +83,15 @@ function initChart() {
     legend: {
       data: ["Tổng thu (Doanh thu)", "Tổng chi (Giá vốn)"],
       bottom: 0,
+      textStyle: {
+        color: "#9ca3af",
+      },
     },
     grid: {
       left: "3%",
       right: "4%",
       bottom: "15%",
-      top: "5%",
+      top: "15%",
       containLabel: true,
     },
     xAxis: [
@@ -96,13 +101,26 @@ function initChart() {
         axisTick: {
           alignWithLabel: true,
         },
+        axisLabel: {
+          color: "#9ca3af",
+        },
       },
     ],
     yAxis: [
       {
         type: "value",
         name: "Tỷ VNĐ",
+        nameTextStyle: {
+          color: "#9ca3af",
+        },
+        splitLine: {
+          lineStyle: {
+            type: "dashed",
+            color: "rgba(156, 163, 175, 0.2)",
+          },
+        },
         axisLabel: {
+          color: "#9ca3af",
           formatter: function (value: number) {
             return (value / 1e9).toFixed(1);
           },

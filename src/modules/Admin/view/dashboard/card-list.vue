@@ -11,7 +11,9 @@
         class="art-card relative flex flex-col justify-center h-35 px-5 mb-5 max-sm:mb-4"
       >
         <span class="text-g-700 text-sm">{{ item.des }}</span>
-        <h2 class="text-2xl font-bold text-gray-900 mt-2 mb-1">
+        <h2
+          class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-2 mb-1"
+        >
           {{ item.num }}
         </h2>
         <div class="flex-c mt-1">

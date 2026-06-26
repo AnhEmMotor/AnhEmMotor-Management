@@ -13,7 +13,9 @@
     >
       <ElTableColumn prop="time" width="80">
         <template #default="scope">
-          <span class="text-gray-500">{{ scope.row.time }}</span>
+          <span class="text-gray-500 dark:text-gray-400">{{
+            scope.row.time
+          }}</span>
         </template>
       </ElTableColumn>
 
@@ -21,7 +23,9 @@
         <template #default="scope">
           <span class="font-medium">{{ scope.row.customer }}</span>
           <span class="text-gray-400 mx-2">—</span>
-          <span class="text-gray-600">{{ scope.row.product }}</span>
+          <span class="text-gray-600 dark:text-gray-300">{{
+            scope.row.product
+          }}</span>
         </template>
       </ElTableColumn>
 
@@ -52,13 +56,15 @@
 
       <ElTableColumn prop="staff" width="120" align="right">
         <template #default="scope">
-          <span class="text-gray-500">{{ scope.row.staff }}</span>
+          <span class="text-gray-500 dark:text-gray-400">{{
+            scope.row.staff
+          }}</span>
         </template>
       </ElTableColumn>
     </ElTable>
 
     <div
-      class="mt-4 pt-3 border-t border-gray-100 flex items-center text-xs text-gray-500 space-x-4"
+      class="mt-4 pt-3 border-t border-gray-100 flex items-center text-xs text-gray-500 dark:text-gray-400 space-x-4"
     >
       <div class="flex items-center">
         <span class="mr-1">⏳</span> Tiền đang treo, chưa chắc chắn

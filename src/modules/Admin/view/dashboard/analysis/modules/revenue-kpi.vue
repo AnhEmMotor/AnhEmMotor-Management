@@ -4,7 +4,9 @@
     <ElCol :xl="6" :lg="6" :md="12" :sm="24" :xs="24" class="mb-4">
       <div class="art-card h-full p-4 flex flex-col justify-between">
         <div>
-          <p class="text-sm text-gray-500 mb-2 font-semibold">
+          <p
+            class="text-sm text-gray-500 dark:text-gray-400 mb-2 font-semibold"
+          >
             DOANH THU THỰC TẾ
           </p>
           <div class="text-2xl font-bold mb-2">85.500.000đ</div>
@@ -31,13 +33,20 @@
     <ElCol :xl="6" :lg="6" :md="12" :sm="24" :xs="24" class="mb-4">
       <div class="art-card h-full p-4 flex flex-col justify-between">
         <div>
-          <p class="text-sm text-gray-500 mb-2 font-semibold">LỢI NHUẬN RÒNG</p>
+          <p
+            class="text-sm text-gray-500 dark:text-gray-400 mb-2 font-semibold"
+          >
+            LỢI NHUẬN RÒNG
+          </p>
           <div class="text-2xl font-bold mb-2">18.200.000đ</div>
         </div>
         <div class="text-sm">
           <div class="mb-1">Biên lợi nhuận: 21%</div>
           <div class="text-red-500 font-bold">
-            ▼ -3% <span class="text-gray-600 font-normal">so với hôm qua</span>
+            ▼ -3%
+            <span class="text-gray-600 dark:text-gray-300 font-normal"
+              >so với hôm qua</span
+            >
           </div>
         </div>
       </div>
@@ -47,7 +56,11 @@
     <ElCol :xl="6" :lg="6" :md="12" :sm="24" :xs="24" class="mb-4">
       <div class="art-card h-full p-4 flex flex-col justify-between">
         <div>
-          <p class="text-sm text-gray-500 mb-2 font-semibold">TIỀN ĐANG TREO</p>
+          <p
+            class="text-sm text-gray-500 dark:text-gray-400 mb-2 font-semibold"
+          >
+            TIỀN ĐANG TREO
+          </p>
           <div class="text-2xl font-bold mb-2 text-orange-500">42.000.000đ</div>
         </div>
         <div class="text-sm space-y-1">
@@ -66,7 +79,9 @@
     <!-- Card 4: Cảnh báo cần xử lý -->
     <ElCol :xl="6" :lg="6" :md="12" :sm="24" :xs="24" class="mb-4">
       <div class="art-card h-full p-4">
-        <p class="text-sm text-gray-500 mb-2 font-semibold">CẦN XỬ LÝ</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2 font-semibold">
+          CẦN XỬ LÝ
+        </p>
         <ul class="text-sm space-y-2 mt-3 cursor-pointer">
           <li class="flex items-center hover:text-blue-500 transition-colors">
             <span class="w-3 h-3 rounded-full bg-red-500 mr-2"></span>
