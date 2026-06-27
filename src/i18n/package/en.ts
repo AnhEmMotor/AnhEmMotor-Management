@@ -1,4 +1,4 @@
-export default {
+﻿export default {
   httpMsg: {
     unauthorized: "Unauthorized access, please login again",
     forbidden: "Access to this resource is forbidden",
@@ -390,34 +390,6 @@ export default {
       title: "Contract Management",
       sales: "Sales Contract",
       supplier: "Supplier Contract",
-      templates: "Contract Templates",
-      templateName: "Contract Template Name",
-      templateCode: "Code",
-      templateType: "Template Type",
-      templateStatus: "Status",
-      templateContent: "Template Content",
-      templateDynamicFields: "Dynamic Field Dictionary",
-      templateCreateTitle: "Create Contract Template",
-      templateEditTitle: "Edit Contract Template",
-      templateImport: "Import Word File",
-      templateSave: "Save Template",
-      templatePreview: "Print Preview",
-      templateEditorDescription:
-        "Edit template content, insert dynamic fields, and preview the contract before saving.",
-      templateDynamicFieldsHint: "Click to insert at the cursor position",
-      tokenSearchPlaceholder: "Search fields...",
-      typeSales: "Sales Contract",
-      typeFinance: "Installment Contract",
-      typeSupplier: "Supplier Contract",
-      typeAppendix: "Appendix",
-      statusActive: "Active",
-      statusInactive: "Inactive",
-      validateSyntaxError:
-        "Invalid dynamic field syntax. Please check matching {{ }} brackets.",
-      cannotUpdateUsedTemplate:
-        "This template has already generated real contracts and cannot be edited directly. Please clone it into a new version.",
-      saveSuccess: "Contract template saved successfully!",
-      emptyContentWarning: "Template content cannot be empty.",
     },
     customer: {
       title: "Customer Management",
@@ -428,7 +400,7 @@ export default {
       care: "Customer care",
       contact: "Contact",
     },
-marketing: {
+    marketing: {
       title: "Marketing",
       banner: "Banner Management",
       article: "Article Management",
@@ -879,7 +851,7 @@ marketing: {
       careDesc: "Customer care and support",
       progress: "Progress",
       progressDesc: "Track service progress",
-    }
+    },
   },
   contact: {
     title: "Contact Management",
