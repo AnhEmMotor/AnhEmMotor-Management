@@ -1,6 +1,6 @@
 <template>
   <div
-    class="art-card h-32 flex-c px-5 transition-transform duration-200 hover:-translate-y-0.5"
+    class="art-card min-h-[128px] py-4 flex-c px-5 transition-transform duration-200 hover:-translate-y-0.5"
     :class="boxStyle"
   >
     <div

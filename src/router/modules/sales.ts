@@ -1,4 +1,4 @@
-import { AppRouteRecord } from "@/types/router";
+﻿import { AppRouteRecord } from "@/types/router";
 import { Permissions } from "@/domain/constants/permissions";
 
 export const salesRoutes: AppRouteRecord = {
@@ -12,16 +12,6 @@ export const salesRoutes: AppRouteRecord = {
   },
   children: [
     {
-      path: "online-orders",
-      name: "OnlineOrders",
-      component: "/Admin/view/sales/online-orders/index",
-      meta: {
-        title: "Đơn đặt hàng Online",
-        icon: "ri:shopping-cart-line",
-        keepAlive: true,
-      },
-    },
-    {
       path: "returns",
       name: "SalesReturns",
       component: "/sales/returns/index",
@@ -34,7 +24,7 @@ export const salesRoutes: AppRouteRecord = {
     {
       path: "invoices",
       name: "SalesInvoices",
-      component: "/sales/invoices/index",
+      component: "/Admin/view/sales/invoices/index",
       meta: {
         title: "Hóa đơn bán hàng",
         icon: "ri:receipt-line",
@@ -44,7 +34,7 @@ export const salesRoutes: AppRouteRecord = {
     {
       path: "sales-report",
       name: "SalesAnalyticsReport",
-      component: "/Accountant/view/reporting/revenue",
+      component: "/Admin/view/sales/sales-report/index",
       meta: {
         title: "Báo cáo bán hàng",
         icon: "ri:money-cny-circle-line",
