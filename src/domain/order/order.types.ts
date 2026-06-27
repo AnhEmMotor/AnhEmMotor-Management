@@ -24,11 +24,15 @@ export interface SalesOrder {
   notes?: string;
   statusId: string;
   paymentMethod?: "COD" | "VNPay" | "PayOS" | string;
+  paymentStatus?: "pending" | "paid" | "cod" | "failed";
   depositRatio?: number;
   depositAmount?: number;
   remainingAmount?: number;
   shippingFee?: number;
+  discount?: number;
+  subtotal?: number;
   total?: number;
+  isInventoryLocked?: boolean;
   createdAt?: string;
   products: OrderProduct[];
 }

@@ -18,9 +18,14 @@
               Quản lý Công nợ nhà cung cấp
             </h4>
           </div>
-          <ElButton type="primary" size="small" @click="fetchSupplierDebts">
-            <ElIcon class="mr-1"><Refresh /></ElIcon> Làm mới
-          </ElButton>
+          <div class="flex gap-2">
+            <ElButton type="warning" size="small" @click="openMissingProofs">
+              Nợ thiếu ảnh minh chứng
+            </ElButton>
+            <ElButton type="primary" size="small" @click="fetchSupplierDebts">
+              <ElIcon class="mr-1"><Refresh /></ElIcon> Làm mới
+            </ElButton>
+          </div>
         </div>
       </template>
 
@@ -96,7 +101,21 @@
               :max="selectedSupplierToPay.totalDebt"
               class="w-full"
               :controls="false"
+              :formatter="formatCurrencyInput"
+              :parser="parseCurrencyInput"
             />
+          </ElFormItem>
+          <ElFormItem label="Hình ảnh minh chứng (không bắt buộc)">
+            <ElUpload
+              action="#"
+              list-type="picture-card"
+              :auto-upload="false"
+              multiple
+              v-model:file-list="paymentProofFiles"
+              accept="image/*"
+            >
+              <ElIcon><Plus /></ElIcon>
+            </ElUpload>
           </ElFormItem>
         </ElForm>
       </div>
@@ -145,15 +164,158 @@
               }}</span>
             </template>
           </ElTableColumn>
+          <ElTableColumn label="Hình ảnh" width="120" align="center">
+            <template #default="{ row }">
+              <ElButton
+                v-if="row.hasProofImage"
+                type="primary"
+                size="small"
+                link
+                @click="viewProofImages(row)"
+              >
+                Xem / Sửa
+              </ElButton>
+              <ElButton
+                v-else
+                type="success"
+                size="small"
+                link
+                @click="viewProofImages(row)"
+              >
+                Thêm ảnh
+              </ElButton>
+            </template>
+          </ElTableColumn>
         </ElTable>
       </div>
+    </ElDialog>
+
+    <ElDialog
+      v-model="missingProofsVisible"
+      title="Danh sách thanh toán thiếu ảnh minh chứng"
+      width="800px"
+      append-to-body
+      destroy-on-close
+    >
+      <div v-loading="missingProofsLoading">
+        <ElTable :data="missingProofsData" border stripe style="width: 100%">
+          <ElTableColumn label="Thời gian" width="160" align="center">
+            <template #default="{ row }">
+              {{ new Date(row.paymentDate).toLocaleString("vi-VN") }}
+            </template>
+          </ElTableColumn>
+          <ElTableColumn label="Nhà cung cấp" min-width="150">
+            <template #default="{ row }">
+              {{ row.supplier?.name }}
+            </template>
+          </ElTableColumn>
+          <ElTableColumn label="Người trả" min-width="150">
+            <template #default="{ row }">
+              {{
+                row.createdBy?.fullName || row.createdBy?.userName || "Hệ thống"
+              }}
+            </template>
+          </ElTableColumn>
+          <ElTableColumn label="Số tiền trả" width="150" align="right">
+            <template #default="{ row }">
+              <span class="text-success font-bold">{{
+                formatCurrency(row.amountPaid)
+              }}</span>
+            </template>
+          </ElTableColumn>
+          <ElTableColumn label="Thao tác" width="120" align="center">
+            <template #default="{ row }">
+              <ElButton
+                type="success"
+                size="small"
+                link
+                @click="viewProofImages(row)"
+              >
+                Thêm ảnh
+              </ElButton>
+            </template>
+          </ElTableColumn>
+        </ElTable>
+        <div class="mt-4 flex justify-end">
+          <ElPagination
+            v-model:current-page="mpCurrentPage"
+            v-model:page-size="mpPageSize"
+            :page-sizes="[10, 20, 50]"
+            :total="mpTotal"
+            layout="total, sizes, prev, pager, next"
+            @size-change="mpFetch"
+            @current-change="mpFetch"
+          />
+        </div>
+      </div>
+    </ElDialog>
+
+    <ElDialog
+      v-model="imageViewerVisible"
+      title="Ảnh minh chứng"
+      width="600px"
+      append-to-body
+      destroy-on-close
+    >
+      <div v-loading="savingImages">
+        <div class="flex flex-col gap-4 mb-4">
+          <div
+            v-for="(url, index) in currentImageUrls"
+            :key="url"
+            class="relative border rounded p-2 text-center group"
+          >
+            <ElImage
+              :src="url"
+              :preview-src-list="currentImageUrls"
+              fit="contain"
+              style="width: 100%; max-height: 400px"
+            />
+            <ElButton
+              type="danger"
+              circle
+              size="small"
+              class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+              @click="removeExistingImage(index)"
+            >
+              x
+            </ElButton>
+          </div>
+        </div>
+
+        <ElForm label-position="top">
+          <ElFormItem label="Thêm ảnh mới">
+            <ElUpload
+              action="#"
+              list-type="picture-card"
+              :auto-upload="false"
+              multiple
+              v-model:file-list="additionalProofFiles"
+              accept="image/*"
+            >
+              <ElIcon><Plus /></ElIcon>
+            </ElUpload>
+          </ElFormItem>
+        </ElForm>
+      </div>
+
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <ElButton @click="imageViewerVisible = false">Hủy</ElButton>
+          <ElButton
+            type="primary"
+            :loading="savingImages"
+            @click="saveProofImages"
+            >Lưu thay đổi</ElButton
+          >
+        </div>
+      </template>
     </ElDialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { Refresh } from "@element-plus/icons-vue";
+import { ref, onMounted, onUnmounted } from "vue";
+import { Refresh, Plus } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { DebtApi } from "@/api/supplier";
 
@@ -221,10 +383,12 @@ const paymentFormVisible = ref(false);
 const paying = ref(false);
 const selectedSupplierToPay = ref<any | null>(null);
 const paymentAmount = ref<number>(0);
+const paymentProofFiles = ref<any[]>([]);
 
 const openPaymentForm = (supplier: any) => {
   selectedSupplierToPay.value = supplier;
   paymentAmount.value = supplier.totalDebt;
+  paymentProofFiles.value = [];
   paymentFormVisible.value = true;
 };
 
@@ -232,9 +396,22 @@ const submitPayment = async () => {
   if (!selectedSupplierToPay.value) return;
   paying.value = true;
   try {
+    const proofUrls: string[] = [];
+    if (paymentProofFiles.value.length > 0) {
+      for (const file of paymentProofFiles.value) {
+        if (file.raw) {
+          const res = await DebtApi.uploadProofImage(file.raw);
+          if (res && res.url) {
+            proofUrls.push(res.url);
+          }
+        }
+      }
+    }
+
     await DebtApi.paySupplierDebt(
       selectedSupplierToPay.value.id,
       paymentAmount.value,
+      proofUrls.length > 0 ? proofUrls : undefined,
     );
     ElMessage.success("Thanh toán công nợ thành công!");
     paymentFormVisible.value = false;
@@ -268,6 +445,15 @@ const openPaymentLogs = async (supplier: any) => {
 };
 
 const formatCurrency = (val: number) => val?.toLocaleString() + " VNĐ";
+const formatCurrencyInput = (value: string | number) => {
+  if (!value) return "";
+  return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
+const parseCurrencyInput = (value: string) => {
+  if (!value) return "0";
+  return value.replace(/\$\s?|(,*)/g, "");
+};
+
 const loading = ref(false);
 const total = ref(0);
 const currentPage = ref(1);
@@ -282,6 +468,106 @@ const handleSizeChange = (val: number) => {
   fetchSupplierDebts();
 };
 const totalSuppliersDebt = ref(0);
+
+// Missing Proofs logic
+const missingProofsVisible = ref(false);
+const missingProofsLoading = ref(false);
+const missingProofsData = ref<any[]>([]);
+const mpTotal = ref(0);
+const mpCurrentPage = ref(1);
+const mpPageSize = ref(10);
+
+const openMissingProofs = () => {
+  missingProofsVisible.value = true;
+  mpCurrentPage.value = 1;
+  mpFetch();
+};
+
+const mpFetch = async () => {
+  missingProofsLoading.value = true;
+  try {
+    const res = await DebtApi.getMissingProofs({
+      page: mpCurrentPage.value,
+      pageSize: mpPageSize.value,
+    });
+    if (res) {
+      missingProofsData.value = res.items || [];
+      mpTotal.value = res.totalCount || 0;
+    }
+  } catch (err) {
+    ElMessage.error("Không thể lấy dữ liệu thiếu ảnh minh chứng");
+  } finally {
+    missingProofsLoading.value = false;
+  }
+};
+
+// Image Viewer logic
+const imageViewerVisible = ref(false);
+const currentImageUrls = ref<string[]>([]);
+const additionalProofFiles = ref<any[]>([]);
+const selectedDebtLogId = ref<number | null>(null);
+const savingImages = ref(false);
+
+const viewProofImages = async (row: any) => {
+  if (!row) return;
+  selectedDebtLogId.value = row.id;
+  currentImageUrls.value = [];
+  additionalProofFiles.value = [];
+  imageViewerVisible.value = true;
+
+  if (row.hasProofImage) {
+    try {
+      const urls = await DebtApi.getDebtLogProofImages(row.id);
+      if (urls && urls.length > 0) {
+        currentImageUrls.value = urls;
+      }
+    } catch (e) {
+      console.error("Failed to load image URLs", e);
+    }
+  }
+};
+
+const removeExistingImage = (index: number) => {
+  currentImageUrls.value.splice(index, 1);
+};
+
+const saveProofImages = async () => {
+  if (!selectedDebtLogId.value) return;
+  savingImages.value = true;
+  try {
+    const proofUrls: string[] = [...currentImageUrls.value];
+
+    // Upload new files
+    if (additionalProofFiles.value.length > 0) {
+      for (const file of additionalProofFiles.value) {
+        if (file.raw) {
+          const res = await DebtApi.uploadProofImage(file.raw);
+          if (res && res.url) {
+            proofUrls.push(res.url);
+          }
+        }
+      }
+    }
+
+    await DebtApi.updateProofImages(selectedDebtLogId.value, proofUrls);
+    ElMessage.success("Cập nhật ảnh minh chứng thành công!");
+    imageViewerVisible.value = false;
+
+    // Refresh current views
+    fetchSupplierDebts();
+    if (paymentLogsVisible.value && selectedSupplierLogs.value) {
+      openPaymentLogs(selectedSupplierLogs.value);
+    }
+    if (missingProofsVisible.value) {
+      mpFetch();
+    }
+  } catch (err: any) {
+    console.error(err);
+    ElMessage.error(err.response?.data?.Message || "Cập nhật thất bại");
+  } finally {
+    savingImages.value = false;
+  }
+};
 
 onMounted(() => {
   fetchSupplierDebts();

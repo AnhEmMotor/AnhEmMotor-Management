@@ -2,7 +2,7 @@ name: AnhEmMotor Management - Pull Request (Pre-deploy) check
 
 on:
   pull_request:
-    branches: ["master", "main"]
+    branches: ["master", "main", "merge/dev"]
 
 jobs:
   build:

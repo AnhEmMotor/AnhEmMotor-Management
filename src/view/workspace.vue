@@ -114,9 +114,16 @@ import { useRouter } from "vue-router";
 import { useCommon } from "@/common/composables/useCommon";
 import ArtHeaderBar from "@/components/core/layouts/art-header-bar/index.vue";
 import ArtGlobalComponent from "@/components/core/layouts/art-global-component/index.vue";
+import { useWorktabStore } from "@/application/store/worktab";
+import { onMounted } from "vue";
 
 const router = useRouter();
 const { homePath } = useCommon();
+const worktabStore = useWorktabStore();
+
+onMounted(() => {
+  worktabStore.clearAll();
+});
 
 const handleWorkspaceClick = (workspace: any) => {
   if (workspace.hasAccess) {

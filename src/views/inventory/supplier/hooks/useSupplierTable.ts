@@ -259,12 +259,12 @@ export function useSupplierTable() {
   };
 
   const handleCloneMany = () => {
-    if (selectedRows.value.length === 0) {
-      ElMessage.warning("Vui lòng chọn ít nhất một đối tác để nhân bản");
+    if (selectedRows.value.length !== 1) {
+      ElMessage.warning("Vui lòng chọn duy nhất một đối tác để nhân bản");
       return;
     }
     ElMessageBox.confirm(
-      `Bạn có chắc chắn muốn nhân bản ${selectedRows.value.length} đối tác đã chọn?`,
+      `Bạn có chắc chắn muốn nhân bản đối tác đã chọn?`,
       "Xác nhận nhân bản",
       {
         confirmButtonText: "Nhân bản",
@@ -275,10 +275,10 @@ export function useSupplierTable() {
       try {
         const ids = selectedRows.value.map((item) => item.id);
         await SupplierApi.cloneMany(ids);
-        ElMessage.success("Nhân bản hàng loạt thành công");
+        ElMessage.success("Nhân bản thành công");
         refreshAll();
       } catch (err: any) {
-        ElMessage.error(err.message || "Nhân bản hàng loạt thất bại");
+        ElMessage.error(err.message || "Nhân bản thất bại");
       }
     });
   };

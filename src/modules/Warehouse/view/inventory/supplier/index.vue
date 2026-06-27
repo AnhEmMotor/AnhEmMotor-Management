@@ -97,16 +97,14 @@
             </ElDropdown>
 
             <ElButton
-              v-if="selectedRows.length > 0"
+              v-if="selectedRows.length === 1"
               type="warning"
               v-ripple
               :disabled="importing"
               @click="handleCloneMany"
               style="margin-left: 0"
             >
-              <ElIcon><DocumentCopy /></ElIcon> Nhân bản ({{
-                selectedRows.length
-              }})
+              <ElIcon><DocumentCopy /></ElIcon> Nhân bản
             </ElButton>
             <ElButton
               v-if="selectedRows.length > 0"
@@ -181,7 +179,7 @@
     >
       <template #header>
         <div class="flex items-center justify-between pr-2">
-          <span class="text-lg font-medium">{{ dialogTitle }}</span>
+          <span class="text-lg font-medium text-black">{{ dialogTitle }}</span>
           <button
             id="tour-dialog-help"
             class="text-gray-400 hover:text-blue-500 transition-colors bg-transparent border-none cursor-pointer flex items-center justify-center text-[20px]"

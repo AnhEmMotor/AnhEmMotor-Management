@@ -19,18 +19,6 @@
         icon="ri:archive-line"
         iconStyle="bg-warning"
       />
-      <ArtStatsCard
-        title="Tổng đã đặt"
-        :count="totalStats.ordered"
-        icon="ri:shopping-cart-2-line"
-        iconStyle="bg-danger"
-      />
-      <ArtStatsCard
-        title="Tổng còn lại"
-        :count="totalStats.remaining"
-        icon="ri:check-double-line"
-        iconStyle="bg-info"
-      />
     </div>
 
     <ArtSearchBar
@@ -85,12 +73,6 @@
           </span>
         </template>
 
-        <template #remaining="{ row }">
-          <span :class="getRemainingClass(row)">
-            {{ row.remaining }}
-          </span>
-        </template>
-
         <template #operation="{ row }">
           <ElButton
             v-if="isLeafNode(row)"
@@ -122,7 +104,6 @@
           </div>
           <div><strong>Đã nhập:</strong> {{ selectedRow.imported }} xe</div>
           <div><strong>Đã xuất:</strong> {{ selectedRow.exported }} xe</div>
-          <div><strong>Đã đặt trước:</strong> {{ selectedRow.ordered }} xe</div>
         </div>
 
         <ElTabs v-model="activeTab" class="pl-4 pr-2">
@@ -354,8 +335,6 @@ interface StockItem {
   imported: number;
   exported: number;
   inStock: number;
-  ordered: number;
-  remaining: number;
   variantId?: number;
   colorId?: number;
   children?: StockItem[];
@@ -437,8 +416,6 @@ const mapToStockItems = (apiItems: any[]): StockItem[] => {
                   imported: c.importedQty,
                   exported: c.exportedQty,
                   inStock: c.inventoryQty,
-                  ordered: c.orderedQty,
-                  remaining: c.remainingQty,
                   variantId: v.variantId,
                   colorId: c.colorId,
                 } as StockItem;
@@ -453,8 +430,6 @@ const mapToStockItems = (apiItems: any[]): StockItem[] => {
             imported: v.importedQty,
             exported: v.exportedQty,
             inStock: v.inventoryQty,
-            ordered: v.orderedQty,
-            remaining: v.remainingQty,
             variantId: v.variantId,
             children: colors && colors.length > 0 ? colors : undefined,
           } as StockItem;
@@ -469,8 +444,6 @@ const mapToStockItems = (apiItems: any[]): StockItem[] => {
       imported: prod.importedQty,
       exported: prod.exportedQty,
       inStock: prod.inventoryQty,
-      ordered: prod.orderedQty,
-      remaining: prod.remainingQty,
       children: variants.length > 0 ? variants : undefined,
     } as StockItem;
   });
@@ -520,11 +493,9 @@ const totalStats = computed(() => {
       acc.imported += p.imported;
       acc.exported += p.exported;
       acc.inStock += p.inStock;
-      acc.ordered += p.ordered;
-      acc.remaining += p.remaining;
       return acc;
     },
-    { imported: 0, exported: 0, inStock: 0, ordered: 0, remaining: 0 },
+    { imported: 0, exported: 0, inStock: 0 },
   );
 });
 
@@ -540,14 +511,6 @@ const columns = [
   { label: "Số lượng đã nhập", prop: "imported", width: 160, align: "right" },
   { label: "Số lượng đã xuất", prop: "exported", width: 160, align: "right" },
   { label: "Số lượng tồn kho", prop: "inStock", width: 160, align: "right" },
-  { label: "Số lượng đã đặt", prop: "ordered", width: 160, align: "right" },
-  {
-    label: "Số lượng còn lại",
-    prop: "remaining",
-    width: 160,
-    align: "right",
-    useSlot: true,
-  },
   {
     label: "Thao tác",
     prop: "operation",
@@ -624,12 +587,6 @@ const getNameClass = (row: StockItem) => {
   if (row.level === 0) return "text-gray-900 font-bold text-sm md:text-base";
   if (row.level === 1) return "text-gray-700 font-medium text-sm";
   return "text-gray-500 text-sm italic";
-};
-
-const getRemainingClass = (row: StockItem) => {
-  if (row.remaining < 5) return "font-bold text-danger";
-  if (row.remaining < 15) return "font-medium text-warning";
-  return "text-success font-semibold";
 };
 
 const handleExport = async () => {

@@ -92,6 +92,13 @@ export const SalesOrderApi = {
     });
   },
 
+  updateManyOutputStatus(data: { ids: number[]; statusId: string }) {
+    return request.patch<any>({
+      url: "/api/v1/SalesOrders/status",
+      data,
+    });
+  },
+
   delete(id: number) {
     return request.del({
       url: `/api/v1/SalesOrders/${id}`,
