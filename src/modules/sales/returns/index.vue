@@ -1,7 +1,7 @@
 <template>
   <div class="returns-page flex flex-col gap-4 h-full">
     <!-- Split Screen Layout -->
-    <div class="split-layout flex gap-4" style="height: calc(100vh - 200px)">
+    <div class="split-layout flex gap-4" style="height: calc(100vh - 120px)">
       <!-- LEFT: Request List -->
       <div class="left-panel w-1/2 flex flex-col gap-3">
         <ElCard class="list-card flex flex-col" shadow="never">
@@ -54,10 +54,7 @@
           </div>
 
           <!-- Request List -->
-          <div
-            class="request-list flex-1 overflow-y-auto"
-            style="max-height: 600px"
-          >
+          <div class="request-list flex-1 overflow-y-auto">
             <div
               v-for="req in filteredRequests"
               :key="req.id"
@@ -392,12 +389,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Search } from "@element-plus/icons-vue";
-import type { SalesOrder } from "@/domain/order/order.types";
+import {
+  getReturns,
+  getReturnDetail,
+  inspectReturn,
+} from "@/api/logistics/returns";
 
 defineOptions({ name: "SalesReturns" });
+
+const USE_MOCK = true;
 
 // ==================== TYPES ====================
 interface EvidenceItem {
@@ -617,7 +620,7 @@ function getMockRequests(): ReturnRequest[] {
 }
 
 // ==================== STATE ====================
-const requests = ref<ReturnRequest[]>(getMockRequests());
+const requests = ref<ReturnRequest[]>([]);
 const selectedRequest = ref<ReturnRequest | null>(null);
 const searchQuery = ref("");
 const filterType = ref<string>("");
@@ -633,6 +636,46 @@ const previewDialog = reactive({
   title: "",
   type: "image" as "image" | "video",
 });
+
+// ==================== FETCH ====================
+async function fetchData() {
+  try {
+    if (USE_MOCK) {
+      await new Promise((resolve) => setTimeout(resolve, 400));
+      requests.value = getMockRequests();
+    } else {
+      const res: ReturnOrderDto[] = await getReturns(
+        filterStatus.value || undefined,
+      );
+      requests.value = res.map((r) => ({
+        id: r.id,
+        rmaCode: `RMA-${String(r.id).padStart(3, "0")}`,
+        originalOrderCode: `ORD-${1000 + r.id}`,
+        type: r.status === "completed" ? "return" : "cancel",
+        urgency: "medium" as const,
+        status:
+          r.status === "pending"
+            ? "pending"
+            : r.status === "inspecting"
+              ? "approved"
+              : "rejected",
+        customerName: r.customerName,
+        customerPhone: "",
+        staffName: "",
+        reason: r.reason,
+        evidences: [],
+        refundStatus: "none" as const,
+        refundAmount: 0,
+        paymentMethod: "COD",
+        products: [],
+        createdAt: r.createdAt,
+      }));
+    }
+  } catch (error) {
+    console.error("Failed to fetch returns:", error);
+    ElMessage.error("Không thể tải danh sách yêu cầu");
+  }
+}
 
 // ==================== COMPUTED ====================
 const filteredRequests = computed(() => {
@@ -748,9 +791,9 @@ function getPaymentMethodLabel(method?: string): string {
 function getRequestItemClass(req: ReturnRequest): string {
   const base = "request-item";
   if (req.type === "return") {
-    return `${base} bg-red-50 border-red-200 hover:border-red-400`;
+    return `${base} request-item--return`;
   }
-  return `${base} bg-orange-50 border-orange-200 hover:border-orange-400`;
+  return `${base} request-item--cancel`;
 }
 
 function selectRequest(req: ReturnRequest) {
@@ -814,6 +857,14 @@ async function handleApprove() {
       "Xác nhận duyệt",
       { type: "success", confirmButtonText: "Duyệt xử lý" },
     );
+    if (!USE_MOCK) {
+      await inspectReturn(selectedRequest.value.id, {
+        action: "refund",
+        boxCondition: "Đã kiểm tra",
+        productCondition: "Đã kiểm tra",
+        returnInternalNote: "Đã duyệt",
+      });
+    }
     // Mock: update status
     selectedRequest.value.status = "approved";
     if (selectedRequest.value.paymentMethod === "COD") {
@@ -833,6 +884,10 @@ async function handleApprove() {
     actionLoading.value = false;
   }
 }
+
+onMounted(() => {
+  fetchData();
+});
 </script>
 
 <style scoped>
@@ -861,11 +916,12 @@ async function handleApprove() {
 
 .detail-card :deep(.el-card__body) {
   overflow-y: auto;
-  max-height: calc(100vh - 280px);
+  max-height: calc(100vh - 200px);
 }
 
 .request-item {
   transition: all 0.2s;
+  border: 1px solid var(--el-border-color-light);
 }
 
 .request-item:hover {
@@ -873,8 +929,26 @@ async function handleApprove() {
 }
 
 .request-item.active {
-  border-color: #409eff;
-  box-shadow: 0 0 0 2px rgb(64 158 255 / 20%);
+  border-color: var(--el-color-primary);
+  box-shadow: 0 0 0 2px var(--el-color-primary-light-8);
+}
+
+.request-item--return {
+  background-color: var(--el-color-danger-light-9);
+  border-color: var(--el-color-danger-light-5);
+}
+
+.request-item--return:hover {
+  border-color: var(--el-color-danger);
+}
+
+.request-item--cancel {
+  background-color: var(--el-color-warning-light-9);
+  border-color: var(--el-color-warning-light-5);
+}
+
+.request-item--cancel:hover {
+  border-color: var(--el-color-warning);
 }
 
 .info-grid {
@@ -912,5 +986,41 @@ async function handleApprove() {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+:global(html.dark) {
+  .text-gray-900,
+  .text-gray-800,
+  .text-gray-700 {
+    color: var(--el-text-color-primary) !important;
+  }
+  .text-gray-600 {
+    color: var(--el-text-color-regular) !important;
+  }
+  .text-gray-500 {
+    color: var(--el-text-color-secondary) !important;
+  }
+  .text-gray-400,
+  .text-gray-300 {
+    color: var(--el-text-color-placeholder) !important;
+  }
+
+  .request-item .text-gray-600,
+  .request-item .text-gray-500,
+  .request-item .text-gray-400 {
+    color: var(--el-text-color-primary) !important;
+  }
+
+  .bg-gray-50 {
+    background-color: var(--el-fill-color-light) !important;
+  }
+  .bg-white {
+    background-color: var(--el-bg-color-overlay) !important;
+  }
+
+  .reason-text {
+    background-color: var(--el-color-warning-light-9) !important;
+    border-color: var(--el-color-warning-light-5) !important;
+  }
 }
 </style>

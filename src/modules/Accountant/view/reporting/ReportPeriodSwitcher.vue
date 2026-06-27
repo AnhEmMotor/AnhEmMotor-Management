@@ -27,7 +27,7 @@ function select(value: string | number | boolean | undefined) {
       <ElRadioButton value="custom">Tùy chọn</ElRadioButton>
     </ElRadioGroup>
 
-    <div v-if="modelValue === 'custom'" class="report-period-switcher__custom">
+    <div class="report-period-switcher__custom">
       <ElDatePicker
         :model-value="startDate"
         type="date"
@@ -35,7 +35,12 @@ function select(value: string | number | boolean | undefined) {
         placeholder="Từ ngày"
         popper-class="reporting-date-popper"
         class="report-period-switcher__date"
-        @update:model-value="(value: string) => emit('update:startDate', value)"
+        @update:model-value="
+          (value: string) => {
+            emit('update:startDate', value);
+            if (modelValue !== 'custom') emit('update:modelValue', 'custom');
+          }
+        "
       />
       <ElDatePicker
         :model-value="endDate"
@@ -44,7 +49,12 @@ function select(value: string | number | boolean | undefined) {
         placeholder="Đến ngày"
         popper-class="reporting-date-popper"
         class="report-period-switcher__date"
-        @update:model-value="(value: string) => emit('update:endDate', value)"
+        @update:model-value="
+          (value: string) => {
+            emit('update:endDate', value);
+            if (modelValue !== 'custom') emit('update:modelValue', 'custom');
+          }
+        "
       />
     </div>
   </div>

@@ -30,22 +30,20 @@
           <ElRadioButton value="custom">Tuỳ chọn</ElRadioButton>
         </ElRadioGroup>
 
-        <template v-if="cycle === 'custom'">
-          <ElDatePicker
-            v-model="fromDate"
-            type="date"
-            placeholder="Từ ngày"
-            class="w-40"
-            @change="handleDateChange"
-          />
-          <ElDatePicker
-            v-model="toDate"
-            type="date"
-            placeholder="Đến ngày"
-            class="w-40"
-            @change="handleDateChange"
-          />
-        </template>
+        <ElDatePicker
+          v-model="fromDate"
+          type="date"
+          placeholder="Từ ngày"
+          class="w-40"
+          @change="handleDateChange"
+        />
+        <ElDatePicker
+          v-model="toDate"
+          type="date"
+          placeholder="Đến ngày"
+          class="w-40"
+          @change="handleDateChange"
+        />
 
         <ElButton
           :icon="Refresh"
@@ -95,7 +93,7 @@
     </div>
 
     <!-- Alerts -->
-    <div class="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
+    <div class="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3 items-start">
       <ElCard class="lg:col-span-1">
         <template #header>
           <span class="font-semibold">Cảnh báo phiếu quá hạn</span>
@@ -244,7 +242,7 @@
           >
         </template>
 
-        <div class="h-96">
+        <div class="h-72">
           <ArtLineChart
             :data="serviceVsSalesChart.data"
             :x-axis-data="serviceVsSalesChart.xAxisData"
@@ -261,7 +259,7 @@
           <span class="font-semibold">Cơ cấu nguồn thu</span>
         </template>
 
-        <div class="h-96">
+        <div class="h-72">
           <ArtRingChart
             :data="revenueSourceChart"
             :loading="loading"
@@ -346,6 +344,9 @@ function handleCycleChange() {
 }
 
 function handleDateChange() {
+  if (cycle.value !== "custom") {
+    cycle.value = "custom";
+  }
   refresh();
 }
 
