@@ -1,4 +1,4 @@
-﻿import { AppRouteRecord } from "@/types/router";
+import { AppRouteRecord } from "@/types/router";
 
 export const productRoutes: AppRouteRecord[] = [
   {
@@ -27,7 +27,7 @@ export const productRoutes: AppRouteRecord[] = [
         component: "/Order/view/product/type/index",
         meta: {
           title: "menus.product.type.title",
-          icon: "ri:apps-2-line",
+          icon: "ri:folders-line",
         },
       },
       {
@@ -67,7 +67,7 @@ export const productRoutes: AppRouteRecord[] = [
         component: "/Warehouse/view/product/type/index",
         meta: {
           title: "menus.product.type.title",
-          icon: "ri:apps-2-line",
+          icon: "ri:folders-line",
         },
       },
       {

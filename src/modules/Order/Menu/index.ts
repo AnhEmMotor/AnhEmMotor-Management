@@ -89,8 +89,8 @@ export const orderMenu: AppRouteRecord[] = [
             name: "OrderProductType",
             component: "/Order/view/product/type/index",
             meta: {
-              title: "Loại xe",
-              icon: "ri:car-line",
+              title: "Danh mục sản phẩm",
+              icon: "ri:folders-line",
               keepAlive: true,
             },
           },

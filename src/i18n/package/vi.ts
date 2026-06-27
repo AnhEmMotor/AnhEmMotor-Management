@@ -354,9 +354,9 @@ export default {
         records: "Xác nhận đăng xuất?",
       },
       type: {
-        title: "Quản lý Thể loại",
+        title: "Danh mục sản phẩm",
         stats: {
-          total: "Tổng số lượng thể loại",
+          total: "Tổng số lượng danh mục",
           product: "Danh mục Sản phẩm",
           vehicle: "Dòng xe",
           new: "Mới cập nhật",
@@ -557,7 +557,7 @@ export default {
         submit: "Tạo mới",
       },
     },
-marketing: {
+    marketing: {
       title: "Marketing",
       banner: "Quản lý Banner",
       article: "Quản lý Bài viết",
@@ -1008,7 +1008,7 @@ marketing: {
       careDesc: "Chăm sóc và hỗ trợ khách hàng",
       progress: "Tiến độ",
       progressDesc: "Theo dõi tiến độ dịch vụ",
-    }
+    },
   },
   contact: {
     title: "Quản lý Liên hệ",
