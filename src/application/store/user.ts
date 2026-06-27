@@ -226,7 +226,18 @@ export const useUserStore = defineStore(
                 abortController = null;
               }
               if (retryCount < 3) {
-                logOut();
+                import("@/common/utils/http")
+                  .then((module) => {
+                    module.default
+                      .get("/api/v1/user/me")
+                      .then(() => {
+                        setTimeout(() => connectSSE(retryCount + 1), 1000);
+                      })
+                      .catch(() => {
+                        logOut();
+                      });
+                  })
+                  .catch(() => logOut());
               } else {
                 logOut();
               }

@@ -15,12 +15,34 @@ export const orderMenu: AppRouteRecord[] = [
       {
         path: "list",
         name: "OrderList",
-        component: "/Order/view/order/list/index",
         meta: {
           title: "Quản lý đơn hàng",
           icon: "ri:list-check",
           keepAlive: true,
         },
+        redirect: "/Order/list/draft",
+        children: [
+          {
+            path: "draft",
+            name: "OrderDraft",
+            component: "/sales/draft/index",
+            meta: {
+              title: "Phiếu tạm",
+              icon: "ri:draft-line",
+              keepAlive: true,
+            },
+          },
+          {
+            path: "order",
+            name: "OrderSales",
+            component: "/sales/order/index",
+            meta: {
+              title: "Phiếu bán hàng",
+              icon: "ri:file-list-3-line",
+              keepAlive: true,
+            },
+          },
+        ],
       },
       {
         path: "statistics",
@@ -29,6 +51,16 @@ export const orderMenu: AppRouteRecord[] = [
         meta: {
           title: "Thống kê đơn hàng",
           icon: "ri:bar-chart-line",
+          keepAlive: true,
+        },
+      },
+      {
+        path: "deposit-settings",
+        name: "OrderDepositSettings",
+        component: "/sales-settings/deposit/index",
+        meta: {
+          title: "Cài đặt đặt cọc",
+          icon: "ri:secure-payment-line",
           keepAlive: true,
         },
       },
@@ -50,18 +82,8 @@ export const orderMenu: AppRouteRecord[] = [
           icon: "ri:shopping-bag-3-line",
           roles: ["Admin", "SuperAdmin"],
         },
-        redirect: "/Order/product/list",
+        redirect: "/Order/product/type",
         children: [
-          {
-            path: "list",
-            name: "OrderProductList",
-            component: "/Order/view/product/list/index",
-            meta: {
-              title: "Danh sách sản phẩm",
-              icon: "ri:list-unordered",
-              keepAlive: true,
-            },
-          },
           {
             path: "type",
             name: "OrderProductType",

@@ -9,6 +9,23 @@ import { HttpError, handleError, showError, showSuccess } from "./error";
 import { $t } from "@/i18n";
 import { BaseResponse } from "@/types";
 
+let isRefreshing = false;
+let failedQueue: Array<{
+  resolve: (value?: any) => void;
+  reject: (reason?: any) => void;
+}> = [];
+
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
 const REQUEST_TIMEOUT = 15000;
 const LOGOUT_DELAY = 500;
 const MAX_RETRIES = 0;
@@ -102,11 +119,72 @@ axiosInstance.interceptors.response.use(
 
     return response;
   },
-  (error) => {
+  async (error) => {
     const { response } = error;
     if (response) {
       const { status, data } = response;
-      if (status === ApiStatus.unauthorized) handleUnauthorizedError();
+      if (status === ApiStatus.unauthorized) {
+        const originalRequest = error.config as ExtendedAxiosRequestConfig & {
+          _retry?: boolean;
+        };
+
+        if (
+          originalRequest &&
+          !originalRequest._retry &&
+          originalRequest.url !== "/api/v1/auth/refresh-token" &&
+          originalRequest.url !== "/api/v1/Auth/refresh-token"
+        ) {
+          if (isRefreshing) {
+            return new Promise((resolve, reject) => {
+              failedQueue.push({ resolve, reject });
+            })
+              .then((token) => {
+                originalRequest.headers = originalRequest.headers || {};
+                originalRequest.headers["Authorization"] = `Bearer ${token}`;
+                return axiosInstance(originalRequest);
+              })
+              .catch((err) => Promise.reject(err));
+          }
+
+          originalRequest._retry = true;
+          isRefreshing = true;
+
+          try {
+            const refreshResponse = await axios.post(
+              "/api/v1/auth/refresh-token",
+              {},
+              {
+                withCredentials:
+                  import.meta.env.VITE_WITH_CREDENTIALS !== "false",
+              },
+            );
+
+            const newAccessToken =
+              refreshResponse.data?.data?.accessToken ||
+              refreshResponse.data?.accessToken;
+
+            if (newAccessToken) {
+              const userStore = useUserStore();
+              userStore.setToken(newAccessToken);
+              originalRequest.headers = originalRequest.headers || {};
+              originalRequest.headers["Authorization"] =
+                `Bearer ${newAccessToken}`;
+              processQueue(null, newAccessToken);
+              return axiosInstance(originalRequest);
+            } else {
+              throw new Error("No token returned");
+            }
+          } catch (err) {
+            processQueue(err, null);
+            handleUnauthorizedError();
+            return Promise.reject(err);
+          } finally {
+            isRefreshing = false;
+          }
+        } else {
+          handleUnauthorizedError();
+        }
+      }
 
       let backendMsg = data?.Message || data?.msg || data?.message;
       if (!backendMsg && data?.errors) {

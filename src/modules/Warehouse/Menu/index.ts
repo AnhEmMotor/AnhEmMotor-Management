@@ -92,6 +92,16 @@ export const warehouseMenu: AppRouteRecord[] = [
           keepAlive: true,
         },
       },
+      {
+        path: "inventory-settings",
+        name: "WarehouseInventorySettings",
+        component: "/sales-settings/inventory/index",
+        meta: {
+          title: "Cài đặt tồn kho",
+          icon: "ri:alarm-warning-line",
+          keepAlive: true,
+        },
+      },
     ],
   },
 ];
