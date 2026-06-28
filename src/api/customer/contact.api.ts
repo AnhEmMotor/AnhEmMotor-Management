@@ -18,12 +18,13 @@ export interface PaginatedContactResponse {
 }
 
 export const ContactApi = {
-  getPaginated(params: {
-    contactType?: string;
-    status?: string;
-    page?: number;
-    pageSize?: number;
-  }) {
+getPaginated(params: {
+contactType?: string;
+status?: string;
+assignedUserId?: string;
+page?: number;
+pageSize?: number;
+}) {
     return request.get<PaginatedContactResponse>({
       url: "/api/v1/Contacts/paginated",
       params,
@@ -54,10 +55,16 @@ export const ContactApi = {
   createFeedback(data: Contact.CreateFeedbackPayload) {
     return request.post<number>({ url: "/api/v1/Contacts/feedback", data });
   },
-  createJobApplication(data: Contact.CreateJobApplicationPayload) {
-    return request.post<number>({
-      url: "/api/v1/Contacts/job-application",
-      data,
-    });
-  },
+createJobApplication(data: Contact.CreateJobApplicationPayload) {
+  return request.post<number>({
+    url: "/api/v1/Contacts/job-application",
+    data,
+  });
+},
+assign(id: number, assignedUserId: string | null) {
+  return request.patch<void>({
+    url: `/api/v1/Contacts/${id}/assign`,
+    data: { assignedUserId },
+  });
+},
 };

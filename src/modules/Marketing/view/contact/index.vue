@@ -46,33 +46,42 @@
         <ElTabPane :label="$t('contact.tabSupport')" name="support">
           <div class="split-layout">
             <div class="list-panel">
-              <div class="list-header">
-                <ElInput
-                  v-model="searchQuery"
-                  :placeholder="$t('contact.searchPlaceholder')"
-                  class="flex-1"
-                  clearable
-                  @input="onSearch"
-                >
-                  <template #prefix>
-                    <ArtSvgIcon icon="ri:search-2-line" />
-                  </template>
-                </ElInput>
-                <ElSelect
-                  v-model="statusFilter"
-                  :placeholder="$t('contact.allStatus')"
-                  clearable
-                  style="width: 160px"
-                  @change="onFilterChange"
-                >
-                  <ElOption
-                    v-for="s in SupportStatuses"
-                    :key="s"
-                    :label="$t('contact.supportStatus.' + s)"
-                    :value="s"
-                  />
-                </ElSelect>
-              </div>
+<div class="list-header">
+  <ElInput
+    v-model="searchQuery"
+    :placeholder="$t('contact.searchPlaceholder')"
+    class="flex-1"
+    clearable
+    @input="onSearch"
+  >
+    <template #prefix>
+      <ArtSvgIcon icon="ri:search-2-line" />
+    </template>
+  </ElInput>
+  <ElSelect
+    v-model="statusFilter"
+    :placeholder="$t('contact.allStatus')"
+    clearable
+    style="width: 160px"
+    @change="onFilterChange"
+  >
+    <ElOption
+      v-for="s in SupportStatuses"
+      :key="s"
+      :label="$t('contact.supportStatus.' + s)"
+      :value="s"
+    />
+  </ElSelect>
+  <ElButton
+    :type="showMyAssignmentsFilter ? 'primary' : 'default'"
+    size="small"
+    class="font-bold text-[10px] shrink-0"
+    @click="toggleMyAssignments"
+  >
+    <ArtSvgIcon icon="ri:user-settings-line" class="mr-1" />
+    {{ $t("contact.myAssignments") || "Phân công của tôi" }}
+  </ElButton>
+</div>
 
               <ElTable
                 :data="tableData"
@@ -119,12 +128,19 @@
                       $t("contact.supportStatus." + row.status)
                     }}</span>
                   </template>
-                </ElTableColumn>
-                <ElTableColumn
-                  prop="createdAt"
-                  :label="$t('contact.columnCreatedAt')"
-                  width="120"
-                />
+<ElTableColumn :label="$t('contact.columnAssignedTo')" width="130">
+  <template #default="{ row }">
+    <span v-if="(row as Contact.SupportRequest).assignedUserName" class="text-xs font-semibold text-slate-700">
+      {{ (row as Contact.SupportRequest).assignedUserName }}
+    </span>
+    <span v-else class="text-[11px] text-slate-300">-</span>
+  </template>
+</ElTableColumn>
+<ElTableColumn
+  prop="createdAt"
+  :label="$t('contact.columnCreatedAt')"
+  width="120"
+/>
               </ElTable>
 
               <div class="pagination-bar">
@@ -220,6 +236,39 @@
                       >
                         {{ activeItemContent }}
                       </p>
+                    </div>
+                  </div>
+
+                  <!-- Lịch sử phản hồi -->
+                  <div v-if="activeItem?.contact?.replies?.length" class="space-y-2 mt-4">
+                    <h4
+                      class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2"
+                    >
+                      {{ $t("contact.replyHistory") }}
+                    </h4>
+                    <div class="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+                      <div
+                        v-for="rep in activeItem.contact.replies"
+                        :key="rep.id"
+                        class="reply-bubble p-3.5 rounded-xl border"
+                      >
+                        <div class="flex items-center justify-between mb-2">
+                          <div class="flex items-center gap-2">
+                            <div class="size-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 border border-slate-200">
+                              <ArtSvgIcon icon="ri:user-line" class="text-xs" />
+                            </div>
+                            <span class="text-xs font-extrabold text-slate-800">
+                              {{ rep.repliedByName || 'Hệ thống' }}
+                            </span>
+                          </div>
+                          <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                            {{ formatDateTime(rep.createdAt) }}
+                          </span>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed m-0 whitespace-pre-line font-medium">
+                          {{ rep.message }}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
@@ -529,6 +578,39 @@
                       >
                         {{ activeItemContent }}
                       </p>
+                    </div>
+                  </div>
+
+                  <!-- Lịch sử phản hồi -->
+                  <div v-if="activeItem?.contact?.replies?.length" class="space-y-2 mt-4">
+                    <h4
+                      class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2"
+                    >
+                      {{ $t("contact.replyHistory") }}
+                    </h4>
+                    <div class="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+                      <div
+                        v-for="rep in activeItem.contact.replies"
+                        :key="rep.id"
+                        class="reply-bubble p-3.5 rounded-xl border"
+                      >
+                        <div class="flex items-center justify-between mb-2">
+                          <div class="flex items-center gap-2">
+                            <div class="size-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 border border-slate-200">
+                              <ArtSvgIcon icon="ri:user-line" class="text-xs" />
+                            </div>
+                            <span class="text-xs font-extrabold text-slate-800">
+                              {{ rep.repliedByName || 'Hệ thống' }}
+                            </span>
+                          </div>
+                          <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                            {{ formatDateTime(rep.createdAt) }}
+                          </span>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed m-0 whitespace-pre-line font-medium">
+                          {{ rep.message }}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
@@ -1131,16 +1213,19 @@
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
-import { ref, watch, computed, onMounted } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { ElMessage } from "element-plus";
 import { storeToRefs } from "pinia";
 import { useContactStore } from "@/application/store/contact";
 import { useSettingStore } from "@/application/store/setting";
+import { useUserStore } from "@/application/store/user";
+import { fetchGetUserList } from "@/api/auth/system-manage.api";
 import {
   SupportStatuses,
   FeedbackStatuses,
   CandidateStatuses,
 } from "@/infrastructure/api/contact.api";
+import { ContactApi } from "@/api/customer/contact.api";
 import type { Contact } from "@/types";
 
 defineOptions({ name: "ContactManagement" });
@@ -1148,21 +1233,82 @@ defineOptions({ name: "ContactManagement" });
 const { t } = useI18n();
 const contactStore = useContactStore();
 const { isDark } = storeToRefs(useSettingStore());
+const userStore = useUserStore();
 
 const activeTab = ref("support");
 const searchQuery = ref("");
 const statusFilter = ref("");
 const replyDraft = ref("");
 const noteDraft = ref("");
+
+const formatDateTime = (dateStr: string | undefined) => {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  return d.toLocaleString("vi-VN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
 const assignDialogVisible = ref(false);
 const assignedUser = ref("");
+const usersLoading = ref(false);
+const userOptions = ref<{ id: string; name: string }[]>([]);
 
-const userOptions = ref<{ id: string; name: string }[]>([
-  { id: "1", name: "Nguyễn Văn A" },
-  { id: "2", name: "Trần Thị B" },
-  { id: "3", name: "Lê Văn C" },
-]);
+const currentUserId = computed(() => {
+  const info = userStore.info as any;
+  return info?.userId ? String(info.userId) : null;
+});
 
+const showMyAssignmentsFilter = ref(false);
+
+const fetchUsers = async () => {
+  usersLoading.value = true;
+  try {
+    const res = await fetchGetUserList({ Page: 1, PageSize: 100 });
+    const items = (res as any).items ?? (res as any).records ?? [];
+    userOptions.value = items
+      .filter((u: any) => u.status !== "Deleted")
+      .map((u: any) => ({ id: String(u.id ?? u.userId ?? ""), name: u.fullName || u.userName || "" }));
+  } catch {
+    userOptions.value = [];
+  } finally {
+    usersLoading.value = false;
+  }
+};
+
+const openAssignDialog = async () => {
+  if (userOptions.value.length === 0) {
+    await fetchUsers();
+  }
+  assignDialogVisible.value = true;
+};
+const toggleMyAssignments = () => {
+  showMyAssignmentsFilter.value = !showMyAssignmentsFilter.value;
+  if (showMyAssignmentsFilter.value && currentUserId.value) {
+    contactStore.setAssignedFilter(currentUserId.value);
+  } else {
+    contactStore.clearAssignedFilter();
+  }
+  contactStore.fetchList();
+};
+const handleAssign = async () => {
+  if (!assignedUser.value) {
+    ElMessage.warning("Vui lòng chọn nhân viên");
+    return;
+  }
+  try {
+    await ContactApi.assign(contactStore.activeItem!.id, assignedUser.value);
+    assignDialogVisible.value = false;
+    assignedUser.value = "";
+    ElMessage.success("Đã phân công xử lý");
+    contactStore.fetchList();
+  } catch {
+    ElMessage.error("Phân công thất bại");
+  }
+};
 const tableHeaderStyle = computed(() => ({
   background: isDark.value ? "#111827" : "#f8fafc",
   color: isDark.value ? "#cbd5e1" : "#64748b",
@@ -1191,7 +1337,7 @@ watch(
   activeItem,
   (newVal) => {
     if (newVal) {
-      noteDraft.value = (newVal as any).internalNote || "";
+      noteDraft.value = (newVal as any).contact?.internalNote || (newVal as any).internalNote || "";
     } else {
       noteDraft.value = "";
     }
@@ -1330,7 +1476,8 @@ const getFullCvUrl = (url: string | undefined) => {
 const handleReply = async () => {
   if (!replyDraft.value.trim() || !contactStore.activeItem) return;
   try {
-    await contactStore.sendReply(contactStore.activeItem.id, replyDraft.value);
+    const userName = userStore.info?.userName || "Bạn";
+    await contactStore.sendReply(contactStore.activeItem.contactId, replyDraft.value, userName);
     replyDraft.value = "";
   } catch {
     /* handled */
@@ -1349,7 +1496,7 @@ const handleStatus = async (newStatus: string) => {
 const saveNote = async () => {
   if (!contactStore.activeItem) return;
   await contactStore.saveInternalNote(
-    contactStore.activeItem.id,
+    contactStore.activeItem.contactId,
     noteDraft.value,
   );
 };
@@ -1362,19 +1509,7 @@ const downloadCvUrl = (url: string) => {
     : `${fullUrl}?download=true`;
   window.open(downloadUrl, "_blank");
 };
-const openAssignDialog = () => {
-  assignDialogVisible.value = true;
-};
-const handleAssign = async () => {
-  if (!assignedUser.value) {
-    ElMessage.warning("Vui lòng chọn nhân viên");
-    return;
-  }
-  assignDialogVisible.value = false;
-  ElMessage.success("Đã phân công xử lý");
-};
 </script>
-
 <style lang="scss" scoped>
 .contact-page {
   --contact-page-bg: #f8fafc;
@@ -1625,5 +1760,15 @@ const handleAssign = async () => {
 
 :global(html.dark .contact-page .badge.bg-slate-100) {
   color: #000 !important;
+}
+
+.reply-bubble {
+  background: var(--contact-muted-surface);
+  border-color: var(--contact-border-soft);
+  
+  :global(html.dark) & {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+  }
 }
 </style>

@@ -921,6 +921,7 @@ marketing: {
     columnCv: "CV / Profile",
     columnAssignedTo: "Assigned To",
     noDetail: "Select a contact to view details",
+    replyHistory: "Response History",
     replyDialog: {
       title: "Send Response",
       contentLabel: "Response content",

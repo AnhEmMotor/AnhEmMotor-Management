@@ -1,26 +1,39 @@
 /* eslint @typescript-eslint/no-namespace: "off" */
 export namespace Contact {
+  export interface ContactReply {
+    id: number;
+    contactId: number;
+    message: string;
+    repliedById?: string;
+    repliedByName?: string;
+    isInternal: boolean;
+    createdAt?: string;
+  }
+
   export interface ContactBasic {
     id: number;
     fullName: string;
     email: string;
     phoneNumber: string;
+    internalNote?: string;
+    replies?: ContactReply[];
     createdAt?: string;
   }
 
-  export interface SupportRequest {
-    id: number;
-    contactId: number;
-    subject: string;
-    category: string;
-    email: string;
-    orderCode?: string;
-    content: string;
-    status: string;
-    assignedUserId?: string;
-    contact?: ContactBasic;
-    createdAt?: string;
-  }
+export interface SupportRequest {
+  id: number;
+  contactId: number;
+  subject: string;
+  category: string;
+  email: string;
+  orderCode?: string;
+  content: string;
+  status: string;
+  assignedUserId?: string;
+  assignedUserName?: string;
+  contact?: ContactBasic;
+  createdAt?: string;
+}
 
   export interface CustomerFeedback {
     id: number;
@@ -100,7 +113,7 @@ export namespace Contact {
     internalNote: string;
   }
 
-  export const SupportStatuses = ["New", "InProgress", "Closed"] as const;
+  export const SupportStatuses = ["New", "Assigned", "InProgress", "Closed"] as const;
   export const FeedbackStatuses = ["Pending", "Read", "Resolved"] as const;
   export const CandidateStatuses = [
     "New",

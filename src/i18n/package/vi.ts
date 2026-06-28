@@ -1053,6 +1053,7 @@ marketing: {
     columnCv: "CV / Hồ sơ",
     columnAssignedTo: "Người phụ trách",
     noDetail: "Chọn một liên hệ để xem chi tiết",
+    replyHistory: "Lịch sử phản hồi",
     replyDialog: {
       title: "Gửi phản hồi",
       contentLabel: "Nội dung phản hồi",
