@@ -229,7 +229,7 @@ export const useUserStore = defineStore(
                 import("@/common/utils/http")
                   .then((module) => {
                     module.default
-                      .get("/api/v1/user/me")
+                      .get({ url: "/api/v1/user/me" })
                       .then(() => {
                         setTimeout(() => connectSSE(retryCount + 1), 1000);
                       })

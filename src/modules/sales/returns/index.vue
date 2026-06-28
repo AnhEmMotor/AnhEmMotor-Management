@@ -7,5 +7,6 @@
 </template>
 
 <script setup lang="ts">
+import type { ReturnOrderDto } from "@/domain/logistics/returns.types";
 defineOptions({ name: "SalesReturns" });
 </script>
