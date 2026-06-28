@@ -1,97 +1,92 @@
 <template>
-  <div class="hr-employee-container">
-    <el-card shadow="never">
-      <template #header>
-        <div class="card-header">
-          <span>{{ $t("menus.hr.employee") }}</span>
-        </div>
-      </template>
+  <div class="hr-employee-container flex flex-col gap-4 h-full">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+      <h1 class="text-2xl font-bold">{{ $t("menus.hr.employee") }}</h1>
+      <ElButton type="primary" v-ripple @click="handleAdd">
+        <ElIcon class="mr-1"><Plus /></ElIcon> Thêm nhân viên
+      </ElButton>
+    </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <ArtStatsCard
-          title="Tổng nhân viên"
-          :count="stats.total"
-          icon="ri:group-line"
-          iconStyle="bg-primary"
-        />
-        <ArtStatsCard
-          title="Đang làm việc"
-          :count="stats.active"
-          icon="ri:checkbox-circle-line"
-          iconStyle="bg-success"
-        />
-        <ArtStatsCard
-          title="Đã nghỉ việc"
-          :count="stats.inactive"
-          icon="ri:close-circle-line"
-          iconStyle="bg-danger"
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <ArtStatsCard
+        title="Tổng nhân viên"
+        :count="stats.total"
+        icon="ri:group-line"
+        iconStyle="bg-primary"
+      />
+      <ArtStatsCard
+        title="Đang làm việc"
+        :count="stats.active"
+        icon="ri:checkbox-circle-line"
+        iconStyle="bg-success"
+      />
+      <ArtStatsCard
+        title="Đã nghỉ việc"
+        :count="stats.inactive"
+        icon="ri:close-circle-line"
+        iconStyle="bg-danger"
+      />
+    </div>
+
+    <!-- Main Content -->
+    <ElCard class="flex-1 art-table-card flex flex-col" shadow="never">
+      <div class="mb-4">
+        <ArtSearchBar
+          v-model="searchForm"
+          :items="searchItems"
+          :label-width="80"
+          :span="6"
+          @search="handleSearch"
+          @reset="handleReset"
         />
       </div>
 
-      <ArtSearchBar
-        v-model="searchForm"
-        :items="searchItems"
-        :label-width="120"
-        :span="8"
-        @search="handleSearch"
-        @reset="handleReset"
+      <ArtTableHeader
+        v-model:columns="columnChecks"
+        :loading="loading"
+        @refresh="loadData"
       />
 
-      <ElCard class="flex-1 art-table-card mt-4">
-        <ArtTableHeader
-          v-model:columns="columnChecks"
-          :loading="loading"
-          @refresh="loadData"
-        >
-          <template #left>
-            <ElButton type="primary" v-ripple @click="handleAdd">
-              <ElIcon><Plus /></ElIcon> Thêm nhân viên
-            </ElButton>
-          </template>
-        </ArtTableHeader>
-
-        <ArtTable
-          ref="tableRef"
-          :loading="loading"
-          :data="data"
-          :columns="columns"
-          :pagination="pagination"
-          @pagination:size-change="handleSizeChange"
-          @pagination:current-change="handleCurrentChange"
-        >
-          <template #fullName="{ row }">
-            <div class="flex items-center gap-2">
-              <div
-                class="w-8 h-8 rounded-full bg-primary/10 flex-cc text-primary font-medium text-sm"
-              >
-                {{ getInitial(row.fullName) }}
-              </div>
-              <span>{{ row.fullName }}</span>
+      <ArtTable
+        ref="tableRef"
+        :loading="loading"
+        :data="data"
+        :columns="columns"
+        :pagination="pagination"
+        @pagination:size-change="handleSizeChange"
+        @pagination:current-change="handleCurrentChange"
+      >
+        <template #fullName="{ row }">
+          <div class="flex items-center gap-2">
+            <div
+              class="w-8 h-8 rounded-full bg-primary/10 flex-cc text-primary font-medium text-sm"
+            >
+              {{ getInitial(row.fullName) }}
             </div>
-          </template>
-          <template #jobTitle="{ row }">
-            <ElTag type="info" size="small">{{ row.jobTitle }}</ElTag>
-          </template>
-          <template #baseSalary="{ row }">
-            <span class="font-medium">{{
-              formatCurrency(row.baseSalary)
-            }}</span>
-          </template>
-          <template #operation="{ row }">
-            <div class="flex gap-2 justify-center">
-              <ArtButtonTable type="view" @click="handleView(row)" />
-              <ElButton
-                v-ripple
-                size="small"
-                type="primary"
-                @click="handleEdit(row)"
-                >Sửa</ElButton
-              >
-            </div>
-          </template>
-        </ArtTable>
-      </ElCard>
-    </el-card>
+            <span>{{ row.fullName }}</span>
+          </div>
+        </template>
+        <template #jobTitle="{ row }">
+          <ElTag type="info" size="small">{{ row.jobTitle }}</ElTag>
+        </template>
+        <template #baseSalary="{ row }">
+          <span class="font-medium text-gray-800 dark:text-gray-200">{{
+            formatCurrency(row.baseSalary)
+          }}</span>
+        </template>
+        <template #contractDate="{ row }">
+          {{ formatDate(row.contractDate) }}
+        </template>
+        <template #operation="{ row }">
+          <div class="flex gap-2 justify-center">
+            <ArtButtonTable type="view" @click="handleView(row)" />
+            <ArtButtonTable type="edit" @click="handleEdit(row)" />
+          </div>
+        </template>
+      </ArtTable>
+    </ElCard>
   </div>
 </template>
 
@@ -123,6 +118,16 @@ const formatCurrency = (value: number) =>
   new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(
     value,
   );
+
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return "---";
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+};
 
 const loadStats = async () => {
   stats.total = data.value.length;

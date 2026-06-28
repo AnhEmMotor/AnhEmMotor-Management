@@ -30,6 +30,15 @@ export const hrRoutes: AppRouteRecord = {
       },
     },
     {
+      path: "commission-policy/detail/:id?",
+      name: "HRCommissionPolicyDetail",
+      component: "/Admin/view/employee/policy/detail",
+      meta: {
+        title: "Chi tiết chính sách",
+        isHide: true,
+      },
+    },
+    {
       path: "payroll",
       name: "HRPayroll",
       component: "/Admin/view/employee/payroll/index",

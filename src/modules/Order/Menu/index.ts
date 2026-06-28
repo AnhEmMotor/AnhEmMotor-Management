@@ -17,8 +17,8 @@ export const orderMenu: AppRouteRecord[] = [
         name: "OrderList",
         component: "/Order/view/order/list/index",
         meta: {
-          title: "Quản lý đơn hàng",
-          icon: "ri:list-check",
+          title: "Đơn đặt hàng Online",
+          icon: "ri:shopping-cart-line",
           keepAlive: true,
         },
       },

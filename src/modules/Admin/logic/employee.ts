@@ -17,7 +17,13 @@ export const columns: ColumnOption[] = [
     align: "right",
     useSlot: true,
   },
-  { label: "Ngày vào làm", prop: "contractDate", width: 130, align: "center" },
+  {
+    label: "Ngày vào làm",
+    prop: "contractDate",
+    width: 130,
+    align: "center",
+    useSlot: true,
+  },
   {
     label: "Thao tác",
     prop: "operation",
