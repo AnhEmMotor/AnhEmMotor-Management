@@ -82,8 +82,18 @@ export const orderMenu: AppRouteRecord[] = [
           icon: "ri:shopping-bag-3-line",
           roles: ["Admin", "SuperAdmin"],
         },
-        redirect: "/Order/product/type",
+        redirect: "/Order/product/list",
         children: [
+          {
+            path: "list",
+            name: "OrderProductList",
+            component: "/Order/view/product/list/index",
+            meta: {
+              title: "Danh sách sản phẩm",
+              icon: "ri:list-unordered",
+              keepAlive: true,
+            },
+          },
           {
             path: "type",
             name: "OrderProductType",

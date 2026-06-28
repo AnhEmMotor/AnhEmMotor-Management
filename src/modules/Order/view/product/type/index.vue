@@ -368,7 +368,7 @@ const searchItems = computed(() => [
 }
 
 :deep(.el-table__row--level-1) {
-  background-color: #fafafa !important;
+  background-color: var(--el-fill-color-lighter) !important;
 }
 
 :deep(.el-table__expand-icon) {
