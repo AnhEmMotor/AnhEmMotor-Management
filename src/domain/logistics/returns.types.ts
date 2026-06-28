@@ -4,7 +4,7 @@ export interface ReturnOrderDto {
   customerName: string;
   carrier: string;
   reason: string;
-  status: string; // 'pending' | 'inspecting' | 'completed'
+  status: "pending" | "inspecting" | "completed" | "rejected";
   createdAt: string;
 }
 
@@ -31,6 +31,8 @@ export interface ReturnDetailDto {
   returnProofImage?: string;
   returnInternalNote?: string;
   returnAction?: string;
+  rejectionReason?: string;
+  inspectedAt?: string;
   items: ReturnDetailItemDto[];
 }
 

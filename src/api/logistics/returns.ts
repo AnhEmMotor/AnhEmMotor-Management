@@ -7,7 +7,7 @@ import type {
 
 /**
  * Lấy danh sách các đơn hàng hoàn
- * @param status Lọc theo trạng thái ('pending', 'inspecting', 'completed', hoặc rỗng cho tất cả)
+ * @param status Lọc theo trạng thái ('pending', 'inspecting', 'completed', 'rejected', hoặc rỗng cho tất cả)
  */
 export function getReturns(status?: string) {
   return request.get<ReturnOrderDto[]>({
@@ -35,5 +35,17 @@ export function inspectReturn(id: number, data: InspectReturnCommand) {
   return request.post<void>({
     url: `/api/v1/logistics/returns/${id}/inspect`,
     data,
+  });
+}
+
+/**
+ * Từ chối đơn hàng hoàn
+ * @param id ID của đơn hàng hoàn
+ * @param rejectionReason Lý do từ chối
+ */
+export function rejectReturn(id: number, rejectionReason: string) {
+  return request.post<void>({
+    url: `/api/v1/logistics/returns/${id}/reject`,
+    data: { rejectionReason },
   });
 }
