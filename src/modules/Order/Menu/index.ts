@@ -13,57 +13,68 @@ export const orderMenu: AppRouteRecord[] = [
     redirect: "/Order/list",
     children: [
       {
-        path: "list",
-        name: "OrderList",
-        component: "/Order/view/order/list/index",
+        path: "management",
+        name: "OrderManagement",
         meta: {
-          title: "Đơn đặt hàng Online",
-          icon: "ri:shopping-cart-line",
-          keepAlive: true,
+          title: "Quản lý đơn hàng",
+          icon: "ri:file-list-3-line",
         },
-      },
-      {
-        path: "deposit-settings",
-        name: "OrderDepositSettings",
-        component: "/sales-settings/deposit/index",
-        meta: {
-          title: "Cài đặt đặt cọc",
-          icon: "ri:secure-payment-line",
-          keepAlive: true,
-        },
-      },
-      {
-        path: "contract",
-        name: "OrderContract",
-        component: "/Order/view/order/contract/index",
-        meta: {
-          title: "Hợp đồng mua xe",
-          icon: "ri:file-contract-line",
-          keepAlive: true,
-        },
-      },
-      {
-        path: "returns",
-        name: "OrderLogisticsReturns",
-        component: "/Order/view/logistics/returns/index",
-        meta: {
-          title: "Trả hàng - Hoàn trả",
-          icon: "ri:arrow-go-back-line",
-          keepAlive: true,
-          showBadge: true,
-          showTextBadge: "1",
-        },
-      },
-      {
-        path: "invoice",
-        name: "OrderProductInvoice",
-        component: "/Order/view/product/invoice/index",
-        meta: {
-          title: "Hóa đơn mua hàng",
-          icon: "ri:bill-line",
-          keepAlive: true,
-          roles: ["Admin", "SuperAdmin"],
-        },
+        redirect: "/Order/management/list",
+        children: [
+          {
+            path: "list",
+            name: "OrderList",
+            component: "/Order/view/order/list/index",
+            meta: {
+              title: "Đơn đặt hàng Online",
+              icon: "ri:shopping-cart-line",
+              keepAlive: true,
+            },
+          },
+          {
+            path: "deposit-settings",
+            name: "OrderDepositSettings",
+            component: "/sales-settings/deposit/index",
+            meta: {
+              title: "Cài đặt đặt cọc",
+              icon: "ri:secure-payment-line",
+              keepAlive: true,
+            },
+          },
+          {
+            path: "contract",
+            name: "OrderContract",
+            component: "/Order/view/order/contract/index",
+            meta: {
+              title: "Hợp đồng mua xe",
+              icon: "ri:file-contract-line",
+              keepAlive: true,
+            },
+          },
+          {
+            path: "returns",
+            name: "OrderLogisticsReturns",
+            component: "/Order/view/logistics/returns/index",
+            meta: {
+              title: "Trả hàng - Hoàn trả",
+              icon: "ri:arrow-go-back-line",
+              keepAlive: true,
+              showBadge: true,
+              showTextBadge: "1",
+            },
+          },
+          {
+            path: "invoice",
+            name: "OrderProductInvoice",
+            component: "/Order/view/product/invoice/index",
+            meta: {
+              title: "Hóa đơn mua hàng",
+              icon: "ri:bill-line",
+              keepAlive: true,
+              roles: ["Admin", "SuperAdmin"],
+            },
+          },
+        ],
       },
       {
         path: "product",
