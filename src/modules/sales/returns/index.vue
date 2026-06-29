@@ -367,7 +367,9 @@ interface ReturnItem {
 const requests = ref<ReturnItem[]>([]);
 const selectedRequest = ref<ReturnItem | null>(null);
 const searchQuery = ref("");
-const filterStatus = ref<string>("");
+const filterStatus = ref<
+  "pending" | "inspecting" | "completed" | "rejected" | ""
+>("");
 const actionLoading = ref(false);
 const loading = ref(false);
 const detailDialogVisible = ref(false);
