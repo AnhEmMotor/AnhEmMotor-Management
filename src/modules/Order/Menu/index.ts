@@ -22,16 +22,7 @@ export const orderMenu: AppRouteRecord[] = [
           keepAlive: true,
         },
       },
-      {
-        path: "statistics",
-        name: "OrderStatistics",
-        component: "/Order/view/order/statistics/index",
-        meta: {
-          title: "Thống kê đơn hàng",
-          icon: "ri:bar-chart-line",
-          keepAlive: true,
-        },
-      },
+
       {
         path: "contract",
         name: "OrderContract",
@@ -40,6 +31,39 @@ export const orderMenu: AppRouteRecord[] = [
           title: "Hợp đồng mua xe",
           icon: "ri:file-contract-line",
           keepAlive: true,
+        },
+      },
+      {
+        path: "returns",
+        name: "OrderLogisticsReturns",
+        component: "/Order/view/logistics/returns/index",
+        meta: {
+          title: "Trả hàng - Hoàn trả",
+          icon: "ri:arrow-go-back-line",
+          keepAlive: true,
+          showBadge: true,
+          showTextBadge: "1",
+        },
+      },
+      {
+        path: "return-requests",
+        name: "OrderReturnRequests",
+        component: "/Order/view/order/returns/index",
+        meta: {
+          title: "Yêu cầu Trả/Hủy đơn",
+          icon: "ri:exchange-line",
+          keepAlive: true,
+        },
+      },
+      {
+        path: "invoice",
+        name: "OrderProductInvoice",
+        component: "/Order/view/product/invoice/index",
+        meta: {
+          title: "Hóa đơn mua hàng",
+          icon: "ri:bill-line",
+          keepAlive: true,
+          roles: ["Admin", "SuperAdmin"],
         },
       },
       {
@@ -62,39 +86,9 @@ export const orderMenu: AppRouteRecord[] = [
               keepAlive: true,
             },
           },
-          {
-            path: "type",
-            name: "OrderProductType",
-            component: "/Order/view/product/type/index",
-            meta: {
-              title: "Loại xe",
-              icon: "ri:car-line",
-              keepAlive: true,
-            },
-          },
-          {
-            path: "brand",
-            name: "OrderProductBrand",
-            component: "/Order/view/product/brand/index",
-            meta: {
-              title: "Thương hiệu",
-              icon: "ri:price-tag-3-line",
-              keepAlive: true,
-            },
-          },
-          {
-            path: "invoice",
-            name: "OrderProductInvoice",
-            component: "/Order/view/product/invoice/index",
-            meta: {
-              title: "Hóa đơn mua hàng",
-              icon: "ri:bill-line",
-              keepAlive: true,
-              roles: ["Admin", "SuperAdmin"],
-            },
-          },
         ],
       },
+
       {
         path: "logistics",
         name: "OrderLogistics",
@@ -137,18 +131,7 @@ export const orderMenu: AppRouteRecord[] = [
               showTextBadge: "5",
             },
           },
-          {
-            path: "returns",
-            name: "OrderLogisticsReturns",
-            component: "/Order/view/logistics/returns/index",
-            meta: {
-              title: "Trả hàng - Hoàn trả",
-              icon: "ri:arrow-go-back-line",
-              keepAlive: true,
-              showBadge: true,
-              showTextBadge: "1",
-            },
-          },
+
           {
             path: "carrier-settings",
             name: "OrderLogisticsCarrierSettings",
@@ -160,6 +143,16 @@ export const orderMenu: AppRouteRecord[] = [
             },
           },
         ],
+      },
+      {
+        path: "statistics",
+        name: "OrderStatistics",
+        component: "/Order/view/order/statistics/index",
+        meta: {
+          title: "Thống kê đơn hàng",
+          icon: "ri:bar-chart-line",
+          keepAlive: true,
+        },
       },
     ],
   },
