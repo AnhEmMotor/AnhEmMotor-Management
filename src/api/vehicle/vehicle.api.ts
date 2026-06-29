@@ -10,7 +10,14 @@ export interface Vehicle {
   purchaseDate: string;
   leadId: number;
   productId?: number;
+  productVariantId?: number;
+  variantName?: string;
+  productVariantColorId?: number;
+  colorName?: string;
+  brandName?: string;
+  warrantyPeriod?: string;
   isActive: boolean;
+  currentOdo?: number;
 }
 
 export interface MaintenanceAlert {

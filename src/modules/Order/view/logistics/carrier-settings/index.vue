@@ -11,7 +11,6 @@
       </div>
     </div>
 
-    <!-- Grid view -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <el-card
         v-for="p in carriers"
@@ -94,7 +93,6 @@
       </el-card>
     </div>
 
-    <!-- Slide-over panel -->
     <el-drawer
       v-model="drawerOpen"
       size="45%"
@@ -103,7 +101,6 @@
       destroy-on-close
     >
       <div v-if="selected" class="flex flex-col h-full">
-        <!-- Header controls -->
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-2">
             <span class="text-sm text-gray-500">Trạng thái hoạt động:</span>
@@ -112,7 +109,6 @@
         </div>
 
         <el-tabs v-model="activeTab" class="flex-grow">
-          <!-- Tab 1: Kết nối API -->
           <el-tab-pane label="🌐 Kết nối API" name="api">
             <div class="flex flex-col gap-4 mt-2">
               <div class="flex items-center gap-2 mb-2">
@@ -190,7 +186,6 @@
             </div>
           </el-tab-pane>
 
-          <!-- Tab 2: Quy tắc vận chuyển -->
           <el-tab-pane label="📦 Quy tắc Vận chuyển" name="rules">
             <div class="mt-2">
               <el-form label-position="top" :model="selected">
@@ -234,7 +229,6 @@
           </el-tab-pane>
         </el-tabs>
 
-        <!-- Footer Actions -->
         <div class="flex justify-end gap-3 mt-auto pt-4 border-t">
           <el-button @click="closeDrawer">❌ Hủy bỏ</el-button>
           <el-button type="primary" :loading="saving" @click="saveConfig">

@@ -1,6 +1,5 @@
 <template>
   <div class="flex flex-col gap-4 pb-5">
-    <!-- 0) Range tabs -->
     <div class="flex items-center gap-3 flex-wrap">
       <ElButton
         v-for="t in ranges"
@@ -13,7 +12,6 @@
       </ElButton>
     </div>
 
-    <!-- 1) Summary cards (4) -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
       <ArtStatsCard
         :title="$t('logistics.dashboard.fulfillmentWorkload')"
@@ -44,7 +42,6 @@
       />
     </div>
 
-    <!-- 2) Charts (2) -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <ElCard class="art-table-card">
         <template #header>
@@ -55,7 +52,6 @@
           </div>
         </template>
 
-        <!-- Use lightweight fallback divs (chart lib integration TBD) -->
         <div
           class="h-72 flex items-center justify-center text-sm text-gray-500"
         >
@@ -80,7 +76,6 @@
       </ElCard>
     </div>
 
-    <!-- 3) Carrier scorecard -->
     <ElCard class="flex-1 art-table-card">
       <template #header>
         <div class="flex items-center justify-between">
@@ -115,7 +110,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- 4) Exceptions log -->
     <ElCard class="flex-1 art-table-card">
       <template #header>
         <div class="flex items-center justify-between">

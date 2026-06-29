@@ -479,7 +479,11 @@ function formatHours(value: number): string {
 const refresh = async () => {
   loading.value = true;
   try {
-    const res = await statisticsApi.getDashboardOverview().catch(() => null);
+    const fromStr = fromDate.value ? fromDate.value.toISOString() : undefined;
+    const toStr = toDate.value ? toDate.value.toISOString() : undefined;
+    const res = await statisticsApi
+      .getWorkshopDashboardOverview(fromStr, toStr)
+      .catch(() => null);
 
     const mock = {
       inProgress: 12,
@@ -577,28 +581,111 @@ const refresh = async () => {
     const asAny = res as any;
 
     kpi.value = {
-      inProgress: Number(asAny?.inProgressCount ?? mock.inProgress),
-      avgFinishHours: Number(asAny?.avgFinishHours ?? mock.avgFinishHours),
-      serviceRevenue: Number(asAny?.serviceRevenue ?? mock.serviceRevenue),
-      serviceRevenueVsTargetPct: Number(
-        asAny?.serviceRevenueVsTargetPct ?? mock.serviceRevenueVsTargetPct,
+      inProgress: Number(
+        asAny?.KpiCards?.InProgressCount ??
+          asAny?.kpiCards?.inProgressCount ??
+          mock.inProgress,
       ),
+      avgFinishHours: Number(
+        asAny?.KpiCards?.AvgCompletionHours ??
+          asAny?.kpiCards?.avgCompletionHours ??
+          mock.avgFinishHours,
+      ),
+      serviceRevenue: Number(
+        asAny?.KpiCards?.CumulativeRevenue ??
+          asAny?.kpiCards?.cumulativeRevenue ??
+          mock.serviceRevenue,
+      ),
+      serviceRevenueVsTargetPct: mock.serviceRevenueVsTargetPct,
     };
 
-    if (asAny?.revenueComparison) {
-      analytics.value.revenueComparison = asAny.revenueComparison;
+    const revComparison =
+      asAny?.Analytics?.RevenueComparison ??
+      asAny?.analytics?.revenueComparison;
+    if (revComparison) {
+      analytics.value.revenueComparison = {
+        workshopRevenue: Number(
+          revComparison.WorkshopRevenue ??
+            revComparison.workshopRevenue ??
+            mock.revenueComparison.workshopRevenue,
+        ),
+        retailRevenue: Number(
+          revComparison.RetailRevenue ??
+            revComparison.retailRevenue ??
+            mock.revenueComparison.retailRevenue,
+        ),
+      };
     } else {
       analytics.value.revenueComparison = mock.revenueComparison;
     }
 
-    alerts.value = {
-      overdue: (asAny?.overdueRepairOrders as OverdueAlert[]) ?? mock.overdue,
-      partsShortage:
-        (asAny?.partsShortage as PartsShortageAlert[]) ?? mock.partsShortage,
-    };
+    const rawOverdue =
+      (asAny?.Alerts?.OverdueTickets ?? asAny?.alerts?.overdueTickets) || [];
+    alerts.value.overdue =
+      rawOverdue.length > 0
+        ? rawOverdue.map((o: any) => {
+            const ticketId = o.TicketId ?? o.ticketId ?? 0;
+            const expectedCompletionTime =
+              o.ExpectedCompletionTime ?? o.expectedCompletionTime;
+            const overdueHours = expectedCompletionTime
+              ? Math.max(
+                  0,
+                  Math.floor(
+                    (Date.now() - new Date(expectedCompletionTime).getTime()) /
+                      (1000 * 60 * 60),
+                  ),
+                )
+              : 0;
+            return {
+              repairOrderId: ticketId,
+              ticketId: `TICK-${String(ticketId).padStart(3, "0")}`,
+              licensePlate: "",
+              customerName: o.CustomerName ?? o.customerName ?? "",
+              status: o.Status ?? o.status ?? "Pending",
+              overdueHours,
+              expectedCompletionTime:
+                expectedCompletionTime ?? new Date().toISOString(),
+            };
+          })
+        : mock.overdue;
 
+    const rawParts =
+      (asAny?.Alerts?.PartShortages ?? asAny?.alerts?.partShortages) || [];
+    alerts.value.partsShortage =
+      rawParts.length > 0
+        ? rawParts.map((p: any) => {
+            const ticketId = p.TicketId ?? p.ticketId ?? 0;
+            const req = p.RequiredQuantity ?? p.requiredQuantity ?? 0;
+            const avail = p.AvailableQuantity ?? p.availableQuantity ?? 0;
+            return {
+              affectedRepairOrderId: ticketId,
+              ticketId: `TICK-${String(ticketId).padStart(3, "0")}`,
+              partName: p.PartName ?? p.partName ?? "",
+              productVariantId: 0,
+              productVariantName: p.PartName ?? p.partName ?? "",
+              shortCount: Math.max(0, req - avail),
+              requiredQuantity: req,
+              availableQuantity: avail,
+            };
+          })
+        : mock.partsShortage;
+
+    const rawTechnicians =
+      (asAny?.Productivity?.TechnicianRankings ??
+        asAny?.productivity?.technicianRankings) ||
+      [];
     technicianRows.value =
-      (asAny?.technicianPerformance as any[]) ?? mock.technicians;
+      rawTechnicians.length > 0
+        ? rawTechnicians.map((t: any) => ({
+            technician: t.TechnicianName ?? t.technicianName ?? "Unknown",
+            completed: t.CompletedTickets ?? t.completedTickets ?? 0,
+            inProgress: 0,
+            revenue: t.TotalRevenue ?? t.totalRevenue ?? 0,
+            customerSatisfaction:
+              100 - (t.ComplaintRate ?? t.complaintRate ?? 0) * 100,
+          }))
+        : mock.technicians;
+
     // Mock data for warranty and complaints
     warrantyAndComplaints.value = {
       loading: false,

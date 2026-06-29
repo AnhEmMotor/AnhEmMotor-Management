@@ -219,8 +219,73 @@ export default {
   menus: {
     logistics: {
       title: "Quản lý vận chuyển",
-      dashboard: "Dashboard Vận Chuyển",
-      fulfillment: "Xử Lý Đơn Giao",
+      dashboard: {
+        today: "Hôm nay",
+        thisMonth: "Tháng này",
+        thisYear: "Tháng năm này",
+        fulfillmentWorkload: "Khối lượng xử lý",
+        pendingCod: "COD đang vận chuyển",
+        otifRate: "Tỷ lệ giao hàng đúng hạn (OTIF)",
+        returnsClaimsRatio: "Tỷ lệ trả hàng & Khiếu nại",
+        fulfillmentFunnel: "Phễu trạng thái vận chuyển",
+        funnelPlaceholder: "Biểu đồ phễu trạng thái vận chuyển",
+        productionShippingCost: "Sản lượng & Chi phí vận chuyển",
+        costPlaceholder: "Biểu đồ xu hướng sản lượng & chi phí ship",
+        carrierScorecard: "Thống kê hiệu suất đối tác",
+        refresh: "Làm mới",
+        carrier: "Đối tác",
+        deliveredCount: "Đã giao thành công",
+        avgDeliveryDays: "Thời gian giao TB (ngày)",
+        avgShippingCostPerOrder: "Phí ship TB/Đơn",
+        returnsRatio: "Tỷ lệ trả hàng",
+        exceptionsLog: "Nhật ký bất thường",
+        items: "mục",
+        noExceptions: "Không có bất thường khẩn cấp nào.",
+        type: "Phân loại",
+        tracking: "Mã vận đơn",
+        message: "Nội dung cảnh báo",
+        createdAt: "Thời gian phát hiện",
+      },
+      fulfillment: {
+        title: "Xử lý đóng gói & Bàn giao",
+        pickingList: "Danh sách sản phẩm cần nhặt (Picking List)",
+        dispatchPanel: "Thông tin bàn giao & Vận đơn",
+        orderId: "Mã vận đơn nội bộ",
+        originalOrder: "Đơn hàng gốc",
+        status: {
+          pending: "Chờ nhặt hàng",
+          packing: "Đang đóng gói",
+          shipping: "Đang giao hàng",
+          completed: "Đã hoàn thành",
+        },
+        alerts: {
+          restricted:
+            "Đơn hàng chứa hàng hạn chế (axit/chất lỏng). Cần kiểm tra kỹ trước khi xuất kho.",
+          outOfStock:
+            "Một số sản phẩm đang hết hàng. Không thể hoàn tất đóng gói.",
+          pickingIncomplete:
+            "Vui lòng tích chọn nhặt đầy đủ các mặt hàng trước khi bắt đầu đóng gói.",
+        },
+        table: {
+          image: "Hình ảnh",
+          product: "Sản phẩm & SKU",
+          shelf: "Vị trí kệ kho",
+          qty: "Số lượng",
+          picked: "Trạng thái",
+        },
+        customer: "Thông tin khách hàng",
+        financial: "Thông tin tài chính",
+        codAmount: "Tiền thu hộ COD",
+        shippingCost: "Phí vận chuyển dự kiến",
+        carrier: "Nhà vận chuyển",
+        trackingCode: "Mã vận đơn / Tracking No.",
+        inputTracking: "Nhập mã vận đơn từ đối tác",
+        actions: {
+          startPacking: "Bắt đầu đóng gói (Khóa tồn kho)",
+          exportWarehouse: "Xuất kho & Lấy mã vận đơn",
+          markCompleted: "Xác nhận giao thành công",
+        },
+      },
       tracking: "Tra Cứu Hành Trình",
       returns: "Hàng Hoàn",
       carrierSettings: "Đối tác vận chuyển",
@@ -557,7 +622,7 @@ export default {
         submit: "Tạo mới",
       },
     },
-marketing: {
+    marketing: {
       title: "Marketing",
       banner: "Quản lý Banner",
       article: "Quản lý Bài viết",
@@ -1008,7 +1073,7 @@ marketing: {
       careDesc: "Chăm sóc và hỗ trợ khách hàng",
       progress: "Tiến độ",
       progressDesc: "Theo dõi tiến độ dịch vụ",
-    }
+    },
   },
   contact: {
     title: "Quản lý Liên hệ",

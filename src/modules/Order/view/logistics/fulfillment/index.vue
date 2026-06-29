@@ -1,6 +1,5 @@
 <template>
   <div class="fulfillment-container p-4">
-    <!-- Header: Steps & Guards -->
     <el-card shadow="never" class="mb-4">
       <div class="flex items-center justify-between mb-4">
         <div>
@@ -32,7 +31,6 @@
         </div>
       </div>
 
-      <!-- System Guards -->
       <el-alert
         v-if="hasRestrictedItems"
         :title="t('logistics.fulfillment.alerts.restricted')"
@@ -51,7 +49,6 @@
     </el-card>
 
     <el-row :gutter="20">
-      <!-- Cột trái (70%): Picking List -->
       <el-col :span="16">
         <el-card shadow="never" class="picking-card h-full">
           <template #header>
@@ -179,7 +176,6 @@
         </el-card>
       </el-col>
 
-      <!-- Cột phải (30%): Dispatch Panel -->
       <el-col :span="8">
         <el-card shadow="never" class="dispatch-card h-full">
           <template #header>
@@ -263,7 +259,6 @@
             </el-input>
           </div>
 
-          <!-- Actions -->
           <div class="mt-8 flex flex-col gap-3">
             <el-button
               v-if="detailData.status === 0"
@@ -326,7 +321,6 @@ import type { FulfillmentDetailResponse } from "@/api/logistics/fulfillment";
 
 const { t } = useI18n();
 
-// For demo purposes, we fetch ID 1 or get from route
 const orderId = 1;
 const loading = ref(false);
 
@@ -367,10 +361,9 @@ const fetchDetail = async () => {
   loading.value = true;
   try {
     const res = await getFulfillmentDetail(orderId);
-    // mock API logic if backend doesn't exist
+
     detailData.value = (res as any).data || getMockData();
   } catch (_error) {
-    // silently fallback to mock data
     detailData.value = getMockData();
   } finally {
     loading.value = false;

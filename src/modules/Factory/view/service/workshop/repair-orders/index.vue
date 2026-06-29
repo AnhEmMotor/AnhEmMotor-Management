@@ -339,14 +339,22 @@
           <label
             class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
           >
-            Technician ID <span class="text-red-500">*</span>
+            Kỹ thuật viên <span class="text-red-500">*</span>
           </label>
-          <ElInputNumber
+          <ElSelect
             v-model="assignForm.technicianId"
-            :min="1"
+            placeholder="Chọn kỹ thuật viên"
             class="w-full"
-            placeholder="Nhập technicianId"
-          />
+            clearable
+            filterable
+          >
+            <ElOption
+              v-for="emp in technicians"
+              :key="emp.id"
+              :label="emp.fullName + ' (' + emp.jobTitle + ')'"
+              :value="emp.id"
+            />
+          </ElSelect>
         </div>
 
         <div class="text-sm text-slate-500">
@@ -626,6 +634,10 @@ import {
   ServiceCategoryApi,
   type ServiceCategoryResponse,
 } from "@/api/product";
+import {
+  EmployeeApi,
+  type EmployeeResponse,
+} from "@/api/operations/employee.api";
 
 defineOptions({ name: "ServiceWorkshopRepairOrders" });
 
@@ -879,10 +891,34 @@ const submitCreate = async () => {
 // Dialog: Assign technician
 const assignDialogVisible = ref(false);
 const assignForm = ref({ repairOrderId: 0, technicianId: 1 });
+const technicians = ref<EmployeeResponse[]>([]);
 
-const openAssignTechnician = (row: RepairOrder) => {
-  assignForm.value = { repairOrderId: row.id, technicianId: 1 };
+const fetchTechnicians = async () => {
+  try {
+    const list = await EmployeeApi.getList();
+    const filtered = list.filter(
+      (e) =>
+        e.jobTitle?.toLowerCase().includes("technician") ||
+        e.jobTitle?.toLowerCase().includes("kỹ thuật") ||
+        e.jobTitle?.toLowerCase().includes("thợ") ||
+        e.jobTitle?.toLowerCase().includes("tech"),
+    );
+    technicians.value = filtered.length > 0 ? filtered : list;
+  } catch (err) {
+    ElMessage.error("Không thể tải danh sách kỹ thuật viên");
+  }
+};
+
+const openAssignTechnician = async (row: RepairOrder) => {
+  assignForm.value = {
+    repairOrderId: row.id,
+    technicianId: (row as any).technicianId || 1,
+  };
   assignDialogVisible.value = true;
+  await fetchTechnicians();
+  if (technicians.value.length > 0 && !assignForm.value.technicianId) {
+    assignForm.value.technicianId = technicians.value[0].id;
+  }
 };
 
 const submitAssign = async () => {

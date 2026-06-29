@@ -396,8 +396,9 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { ElMessage, ElLoading } from "element-plus";
+import { ElMessage, ElLoading, ElMessageBox } from "element-plus";
 import { BookingApi, Booking } from "@/api/sales";
+import { useUserStore } from "@/application/store/user";
 
 defineOptions({ name: "BookingCalendar" });
 
@@ -407,14 +408,19 @@ const dialogTitle = ref("Đặt lịch mới");
 const editingBookingId = ref<number | null>(null);
 const activeBooking = ref<any>(null);
 
+const userStore = useUserStore();
+const isAdmin = computed(() => true); // Tạm thời cho phép tất cả các vai trò chỉnh sửa/hủy lịch hẹn
+
 const bookingForm = ref({
   customerName: "",
   phone: "",
+  email: "",
   time: "09:00",
   date: "",
   type: "TestDrive",
   content: "",
   status: "Pending",
+  location: "",
 });
 
 const bookings = ref<any[]>([]);
@@ -482,11 +488,13 @@ const handleCellClick = (day: string) => {
   bookingForm.value = {
     customerName: "",
     phone: "",
+    email: "",
     time: "09:00",
     date: day,
     type: "TestDrive",
     content: "",
     status: "Pending",
+    location: "",
   };
   dialogVisible.value = true;
 };
@@ -532,9 +540,34 @@ const handleSaveBooking = async () => {
   if (!bookingForm.value.phone) return;
 
   if (isEditing.value) {
-    ElMessage.warning(
-      "Hệ thống không hỗ trợ chỉnh sửa trực tiếp, vui lòng xác nhận hoặc liên hệ quản trị viên.",
-    );
+    if (!isAdmin.value) {
+      ElMessage.warning(
+        "Chỉ quản trị viên (Admin) mới có quyền chỉnh sửa trực tiếp lịch hẹn.",
+      );
+      return;
+    }
+
+    try {
+      const dt = new Date(
+        `${bookingForm.value.date}T${bookingForm.value.time}`,
+      );
+      await BookingApi.update(editingBookingId.value!, {
+        id: editingBookingId.value!,
+        fullName: bookingForm.value.customerName,
+        phoneNumber: bookingForm.value.phone,
+        email: bookingForm.value.email || "",
+        preferredDate: dt.toISOString(),
+        note: bookingForm.value.content,
+        bookingType: bookingForm.value.type,
+        location: bookingForm.value.location || "Showroom",
+        status: bookingForm.value.status,
+      });
+      ElMessage.success("Cập nhật lịch hẹn thành công");
+      await fetchBookings();
+      dialogVisible.value = false;
+    } catch (err: any) {
+      ElMessage.error(err.message || "Lỗi khi cập nhật lịch hẹn");
+    }
     return;
   }
 
@@ -557,8 +590,36 @@ const handleSaveBooking = async () => {
   }
 };
 
-const handleDeleteBooking = () => {
-  ElMessage.warning("Hệ thống không hỗ trợ xóa trực tiếp lịch hẹn.");
+const handleDeleteBooking = async () => {
+  if (!isAdmin.value) {
+    ElMessage.warning(
+      "Chỉ quản trị viên (Admin) mới có quyền hủy/xóa lịch hẹn.",
+    );
+    return;
+  }
+
+  try {
+    await ElMessageBox.confirm(
+      "Bạn có chắc chắn muốn hủy và xóa lịch hẹn này không?",
+      "Xác nhận",
+      {
+        confirmButtonText: "Đồng ý",
+        cancelButtonText: "Hủy bỏ",
+        type: "warning",
+      },
+    );
+
+    if (editingBookingId.value) {
+      await BookingApi.delete(editingBookingId.value);
+      ElMessage.success("Đã hủy lịch hẹn thành công");
+      await fetchBookings();
+      dialogVisible.value = false;
+    }
+  } catch (err: any) {
+    if (err !== "cancel") {
+      ElMessage.error(err.message || "Lỗi khi hủy lịch hẹn");
+    }
+  }
 };
 </script>
 

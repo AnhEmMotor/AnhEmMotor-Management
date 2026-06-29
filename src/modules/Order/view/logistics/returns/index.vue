@@ -1,12 +1,10 @@
 <template>
   <div class="h-full flex gap-4 reverse-logistics-container">
-    <!-- CỘT TRÁI (30%): DANH SÁCH ĐƠN CHỜ HOÀN -->
     <div class="w-1/3 flex flex-col gap-4 h-full">
       <ElCard
         class="flex-1 overflow-hidden flex flex-col art-card-list"
         body-class="p-0 flex flex-col h-full"
       >
-        <!-- Header -->
         <div class="p-4 border-b border-color flex flex-col gap-3 shrink-0">
           <div class="flex justify-between items-center">
             <h3 class="m-0 font-medium text-lg flex items-center gap-2">
@@ -41,7 +39,6 @@
           </ElRadioGroup>
         </div>
 
-        <!-- List -->
         <div class="flex-1 overflow-y-auto p-2" v-loading="loadingList">
           <ElEmpty
             v-if="filteredReturns.length === 0"
@@ -97,7 +94,6 @@
       </ElCard>
     </div>
 
-    <!-- CỘT PHẢI (70%): PANEL KHUI HỘP & QUYẾT ĐỊNH XỬ LÝ -->
     <div class="w-2/3 h-full">
       <ElCard
         v-if="selectedId && detail"
@@ -105,7 +101,6 @@
         body-class="p-0 flex flex-col h-full overflow-hidden"
         v-loading="loadingDetail"
       >
-        <!-- Detail Header -->
         <div class="p-4 border-b border-color bg-fill-lighter shrink-0">
           <div class="flex justify-between items-center mb-2">
             <h2 class="m-0 text-xl font-bold">
@@ -127,7 +122,6 @@
         </div>
 
         <div class="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
-          <!-- LÝ DO -->
           <ElAlert
             :title="`Lý do: ${detail.reason}`"
             :type="getReasonAlertType(detail.reason)"
@@ -135,7 +129,6 @@
             show-icon
           />
 
-          <!-- THÔNG TIN PHỤ TÙNG -->
           <div>
             <h3 class="text-base font-semibold mb-3 flex items-center gap-2">
               <ElIcon><Box /></ElIcon> Chi tiết kiện hàng
@@ -176,7 +169,6 @@
             </div>
           </div>
 
-          <!-- KHỐI KIỂM ĐỊNH -->
           <div
             v-if="detail.status !== 'completed'"
             class="bg-fill-lighter p-5 rounded-lg border border-color"
@@ -236,7 +228,6 @@
             </ElForm>
           </div>
 
-          <!-- Hiển thị lại nếu đã completed -->
           <div
             v-else
             class="bg-success-light-9 p-5 rounded-lg border border-success-light-5"
@@ -270,7 +261,6 @@
           </div>
         </div>
 
-        <!-- KHỐI ĐÓNG HỒ SƠ (Nút bấm hành động) -->
         <div
           v-if="detail.status !== 'completed'"
           class="p-4 border-t border-color shrink-0 bg-fill-lighter flex gap-3 justify-end"
@@ -387,7 +377,6 @@ const filteredReturns = computed(() => {
   );
 });
 
-// Lifecycle
 onMounted(() => {
   fetchReturns();
 });
@@ -432,7 +421,6 @@ const handleSelect = async (id: number) => {
   }
 };
 
-// Actions
 const handleUploadClick = () => {
   // Simulate image upload
   setTimeout(() => {
@@ -482,7 +470,6 @@ const submitDecision = async (action: "restock" | "defect" | "refund") => {
   }
 };
 
-// Helpers
 const getCarrierTag = (carrier: string) => {
   const c = carrier.toLowerCase();
   if (c.includes("ghtk")) return "success";

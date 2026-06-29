@@ -31,6 +31,9 @@ export interface ReturnDetailDto {
   returnProofImage?: string;
   returnInternalNote?: string;
   returnAction?: string;
+  refundAmount?: number;
+  returnShippingCost?: number;
+  carrierReturnNote?: string;
   items: ReturnDetailItemDto[];
 }
 
