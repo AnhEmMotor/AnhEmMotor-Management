@@ -17,34 +17,34 @@ export const SalesContractApi = {
   }) {
     const { current, size, ...rest } = params;
     return request.get<{ items: SalesContractListDto[]; total: number }>({
-      url: "/api/contracts/sales",
+      url: "/api/v1/contracts/sales",
       params: { Page: current, PageSize: size, ...rest },
     });
   },
 
   getById(id: string) {
     return request.get<SalesContractDetailDto>({
-      url: `/api/contracts/sales/${id}`,
+      url: `/api/v1/contracts/sales/${id}`,
     });
   },
 
   create(data: CreateSalesContractRequest) {
     return request.post<SalesContractDetailDto>({
-      url: "/api/contracts/sales",
+      url: "/api/v1/contracts/sales",
       data,
     });
   },
 
   update(id: string, data: UpdateSalesContractRequest) {
     return request.put<SalesContractDetailDto>({
-      url: `/api/contracts/sales/${id}`,
+      url: `/api/v1/contracts/sales/${id}`,
       data,
     });
   },
 
   delete(id: string) {
     return request.del({
-      url: `/api/contracts/sales/${id}`,
+      url: `/api/v1/contracts/sales/${id}`,
     });
   },
 
@@ -52,7 +52,7 @@ export const SalesContractApi = {
     const formData = new FormData();
     formData.append("file", file);
     return request.post<{ scannedFileUrl: string }>({
-      url: `/api/contracts/sales/${contractId}/scanned-file`,
+      url: `/api/v1/contracts/sales/${contractId}/scanned-file`,
       data: formData,
       headers: { "Content-Type": "multipart/form-data" },
     });
@@ -60,7 +60,7 @@ export const SalesContractApi = {
 
   updateStatus(contractId: string, status: UpdateContractStatusRequest) {
     return request.patch<SalesContractDetailDto>({
-      url: `/api/contracts/sales/${contractId}/status`,
+      url: `/api/v1/contracts/sales/${contractId}/status`,
       data: status,
     });
   },
@@ -71,7 +71,7 @@ export const SalesContractApi = {
       overdueCount: number;
       signedCount: number;
     }>({
-      url: "/api/contracts/sales/statistics",
+      url: "/api/v1/contracts/sales/statistics",
     });
   },
 };

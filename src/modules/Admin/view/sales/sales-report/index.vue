@@ -870,7 +870,9 @@ async function fetchData() {
 
 function renderCharts() {
   if (trendChartRef.value) {
-    if (!trendChart) trendChart = echarts.init(trendChartRef.value);
+    if (!trendChart) {
+      trendChart = echarts.init(trendChartRef.value);
+    }
     const dates = revenueTrendData.value.map((r) => {
       const d = new Date(r.date);
       return `${d.getDate()}/${d.getMonth() + 1}`;

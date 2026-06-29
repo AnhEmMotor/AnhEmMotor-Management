@@ -226,13 +226,13 @@
           <div class="mb-2">
             <h4 class="mb-1 font-bold text-sm">Trường quản lý Cavet gốc</h4>
             <el-radio-group v-model="cavetForm.state" class="mt-1">
-              <el-radio label="FinancialCompanyHolds" class="mb-1"
+              <el-radio value="FinancialCompanyHolds" class="mb-1"
                 >Công ty tài chính giữ</el-radio
               >
-              <el-radio label="StoreHoldsOnBehalf" class="mb-1"
+              <el-radio value="StoreHoldsOnBehalf" class="mb-1"
                 >Cửa hàng giữ hộ</el-radio
               >
-              <el-radio label="DeliveredToCustomer" class="mb-1"
+              <el-radio value="DeliveredToCustomer" class="mb-1"
                 >Đã giao khách</el-radio
               >
             </el-radio-group>
