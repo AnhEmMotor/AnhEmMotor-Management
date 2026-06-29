@@ -568,7 +568,7 @@ function handleCurrentChange() {
 }
 
 // ==================== DIALOG ACTIONS ====================
-function handleRowClick(row: InvoiceRow) {
+function handleRowClick(row: any) {
   dialog.readonly = true;
   dialog.title = `Hóa đơn ${row.invoiceNumber}`;
   dialog.invoice = row as unknown as AdminInvoiceDetailResponse;
@@ -594,7 +594,7 @@ function handleRowClick(row: InvoiceRow) {
   dialog.visible = true;
 }
 
-function handleEdit(row: InvoiceRow) {
+function handleEdit(row: any) {
   dialog.readonly = false;
   dialog.title = `Chỉnh sửa hóa đơn ${row.invoiceNumber}`;
   dialog.form = {
@@ -672,7 +672,7 @@ async function handleCreate() {
   }
 }
 
-async function handleMarkCompleted(row: InvoiceRow) {
+async function handleMarkCompleted(row: any) {
   try {
     await ElMessageBox.confirm(
       `Xác nhận thanh toán hóa đơn ${row.invoiceNumber}?\n\nTổng tiền: ${formatCurrency(row.totalAmount)}`,
