@@ -129,6 +129,63 @@
             show-icon
           />
 
+          <div
+            class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-lg border"
+            style="
+              background-color: var(--el-fill-color-blank);
+              border-color: var(--el-border-color-light);
+            "
+          >
+            <div class="flex flex-col">
+              <span
+                class="text-xs uppercase"
+                style="color: var(--el-text-color-secondary)"
+                >Giá trị hoàn lại</span
+              >
+              <span class="font-bold text-red-500 text-base mt-1">{{
+                formatCurrency(detail.refundAmount || 0)
+              }}</span>
+            </div>
+            <div class="flex flex-col">
+              <span
+                class="text-xs uppercase"
+                style="color: var(--el-text-color-secondary)"
+                >Phí hoàn phát sinh</span
+              >
+              <span
+                class="font-bold text-base mt-1"
+                style="color: var(--el-text-color-primary)"
+                >{{ formatCurrency(detail.returnShippingCost || 0) }}</span
+              >
+            </div>
+            <div class="flex flex-col">
+              <span
+                class="text-xs uppercase"
+                style="color: var(--el-text-color-secondary)"
+                >Nhà vận chuyển</span
+              >
+              <div class="flex items-center gap-1.5 mt-1">
+                <el-tag size="small" type="info" effect="plain">{{
+                  detail.carrier
+                }}</el-tag>
+                <span
+                  class="text-xs font-mono"
+                  style="color: var(--el-text-color-secondary)"
+                  >{{ detail.trackingNumber }}</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <el-alert
+            v-if="detail.carrierReturnNote"
+            title="Ghi chú từ bưu tá"
+            :description="detail.carrierReturnNote"
+            type="warning"
+            show-icon
+            :closable="false"
+          />
+
           <div>
             <h3 class="text-base font-semibold mb-3 flex items-center gap-2">
               <ElIcon><Box /></ElIcon> Chi tiết kiện hàng
@@ -251,6 +308,19 @@
               <div class="text-secondary">Sản phẩm:</div>
               <div class="font-medium">
                 {{ detail.productCondition || "Không có" }}
+              </div>
+
+              <div class="text-secondary">Giá trị hoàn:</div>
+              <div class="font-medium text-red-500 font-bold">
+                {{ formatCurrency(detail.refundAmount || 0) }}
+              </div>
+
+              <div class="text-secondary">Phí hoàn phát sinh:</div>
+              <div
+                class="font-medium font-bold"
+                style="color: var(--el-text-color-primary)"
+              >
+                {{ formatCurrency(detail.returnShippingCost || 0) }}
               </div>
 
               <div class="text-secondary">Ghi chú:</div>
@@ -517,6 +587,13 @@ const getActionLabel = (action?: string) => {
     refund: "Hoàn tiền cho khách",
   };
   return map[action] || action;
+};
+
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(value);
 };
 </script>
 
