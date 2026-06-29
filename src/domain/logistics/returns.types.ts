@@ -24,7 +24,7 @@ export interface ReturnDetailDto {
   customerName: string;
   carrier: string;
   reason: string;
-  status: string;
+  status: "pending" | "inspecting" | "completed" | "rejected";
   createdAt: string;
   boxCondition?: string;
   productCondition?: string;
