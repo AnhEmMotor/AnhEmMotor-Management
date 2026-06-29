@@ -29,7 +29,6 @@ export const contractRoutes: AppRouteRecord = {
         isHide: true,
       },
     },
-
     {
       path: "supplier",
       name: "SupplierContract",
@@ -46,25 +45,6 @@ export const contractRoutes: AppRouteRecord = {
       meta: {
         title: "Chi tiết Hợp đồng nhà cung cấp",
         icon: "ri:file-search-line",
-        isHide: true,
-      },
-    },
-    {
-      path: "templates",
-      name: "ContractTemplates",
-      component: "/Admin/view/contract/templates/index",
-      meta: {
-        title: "menus.contract.templates",
-        icon: "ri:layout-4-line",
-      },
-    },
-    {
-      path: "templates/edit/:id?",
-      name: "EditContractTemplate",
-      component: "/Admin/view/contract/templates/edit",
-      meta: {
-        title: "Biên tập Mẫu Hợp đồng",
-        icon: "ri:edit-2-line",
         isHide: true,
       },
     },

@@ -16,8 +16,8 @@ export const orderMenu: AppRouteRecord[] = [
         path: "list",
         name: "OrderList",
         meta: {
-          title: "Quản lý đơn hàng",
-          icon: "ri:list-check",
+          title: "Đơn đặt hàng Online",
+          icon: "ri:shopping-cart-line",
           keepAlive: true,
         },
         redirect: "/Order/list/draft",

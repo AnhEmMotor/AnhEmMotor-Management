@@ -162,12 +162,18 @@ const {
             h("div", { class: "flex flex-col gap-0.5" }, [
               h(
                 "span",
-                { class: "font-semibold text-gray-800 text-sm" },
+                {
+                  class: "font-semibold text-sm",
+                  style: { color: "var(--el-text-color-primary)" },
+                },
                 row.fullName || "Chưa đặt tên",
               ),
               h(
                 "span",
-                { class: "text-xs text-gray-500" },
+                {
+                  class: "text-xs",
+                  style: { color: "var(--el-text-color-secondary)" },
+                },
                 row.email || row.userName,
               ),
             ]),
