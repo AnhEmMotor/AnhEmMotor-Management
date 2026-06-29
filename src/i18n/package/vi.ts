@@ -410,6 +410,7 @@
       allStatus: "Tất cả trạng thái",
       supportStatus: {
         New: "Mới",
+        Assigned: "Đã phân công",
         InProgress: "Đang xử lý",
         Closed: "Đã đóng",
       },
@@ -515,6 +516,7 @@
       customer: "Quản lý Khách hàng",
       customerPotential: "Khách hàng tiềm năng",
       customerProfile: "Hồ sơ khách hàng",
+      customerProfile360: "Hồ sơ 360",
       customerAsset: "Tài sản",
       customerCare: "Chăm sóc",
       customerProgress: "Tiến độ",
@@ -964,7 +966,17 @@
     tabCandidate: "Hồ sơ ứng viên",
     searchPlaceholder: "Tìm tên, email, SĐT, tiêu đề...",
     allStatus: "Tất cả trạng thái",
-    supportStatus: { New: "Mới", InProgress: "Đang xử lý", Closed: "Đã đóng" },
+    myAssignments: "Phân công của tôi",
+    closeBtn: "Đóng",
+    closeRequest: "Đóng yêu cầu",
+    internalNote: "Ghi chú nội bộ",
+    feedbackContent: "Nội dung phản ánh",
+    supportStatus: {
+      New: "Mới",
+      Assigned: "Đã phân công",
+      InProgress: "Đang xử lý",
+      Closed: "Đã đóng",
+    },
     feedbackStatus: {
       Pending: "Chưa xử lý",
       Read: "Đã đọc",
@@ -999,6 +1011,7 @@
     columnCv: "CV / Hồ sơ",
     columnAssignedTo: "Người phụ trách",
     noDetail: "Chọn một liên hệ để xem chi tiết",
+    replyHistory: "Lịch sử phản hồi",
     replyDialog: {
       title: "Gửi phản hồi",
       contentLabel: "Nội dung phản hồi",

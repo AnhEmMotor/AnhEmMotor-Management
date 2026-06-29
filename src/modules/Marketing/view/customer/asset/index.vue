@@ -1,505 +1,329 @@
 <template>
-  <div
-    class="customer-asset-page flex flex-col h-screen bg-[#F8F9FA] overflow-hidden"
-  >
-    <div
-      class="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 shrink-0 shadow-sm z-10"
-    >
-      <div class="flex items-center gap-4">
-        <div class="size-10 bg-navy text-white rounded-xl flex-cc shadow-lg">
-          <ArtSvgIcon icon="ri:car-fill" class="text-xl" />
-        </div>
-        <div>
-          <h2
-            class="m-0 text-base font-black text-gray-800 tracking-tight uppercase"
-          >
-            Quản lý Tài sản Khách hàng
-          </h2>
-          <span
-            class="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none"
-            >Hồ sơ Pháp lý & Lịch sử Xe sạch</span
-          >
-        </div>
+  <div class="customer-asset-page">
+    <header class="page-header">
+      <div>
+        <h2>
+          <ArtSvgIcon icon="ri:motorbike-line" />
+          Tài sản khách hàng
+        </h2>
+        <p>Danh sách xe thật được gắn với Lead trong hệ thống</p>
       </div>
+      <ElButton type="primary" @click="loadAssets">
+        <ArtSvgIcon icon="ri:refresh-line" />
+        Tai lai
+      </ElButton>
+    </header>
 
-      <div class="flex items-center gap-4">
-        <div class="search-box relative">
-          <ArtSvgIcon
-            icon="ri:search-line"
-            class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-          />
-          <input
-            type="text"
-            placeholder="Tìm theo Biển số hoặc 5 số cuối Số khung..."
-            class="w-80 h-10 pl-10 pr-4 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
-          />
-        </div>
-        <ElButton
-          type="primary"
-          class="bg-navy border-none h-10 rounded-xl font-black text-[10px] uppercase shadow-md shadow-blue-900/10"
-        >
-          <ArtSvgIcon icon="ri:file-add-line" class="mr-2" /> Thêm tài sản mới
-        </ElButton>
-      </div>
-    </div>
+    <section class="filter-row">
+      <ElInput
+        v-model="filters.keyword"
+        clearable
+        placeholder="Tìm biển số, số khung, số máy"
+        @keyup.enter="handleSearch"
+      />
+      <ElInputNumber
+        v-model="filters.leadId"
+        :min="1"
+        :controls="false"
+        placeholder="Lead ID"
+      />
+      <ElButton type="primary" @click="handleSearch">
+        <ArtSvgIcon icon="ri:search-line" />
+        Tìm kiếm
+      </ElButton>
+      <ElButton @click="handleReset">Đặt lại</ElButton>
+    </section>
 
-    <div class="flex flex-1 overflow-hidden">
-      <div
-        class="w-[380px] bg-white border-r border-gray-100 flex flex-col shrink-0"
+    <section class="asset-layout">
+      <ElTable
+        v-loading="loading"
+        :data="filteredAssets"
+        border
+        class="asset-table"
+        highlight-current-row
+        @row-click="selectAsset"
       >
-        <div
-          class="p-4 border-b border-gray-50 flex items-center justify-between"
-        >
-          <span
-            class="text-[10px] font-black text-gray-400 uppercase tracking-widest"
-            >Danh sách tài sản ({{ assets.length }})</span
-          >
-          <ArtSvgIcon icon="ri:sort-desc" class="text-gray-300" />
-        </div>
-
-        <div
-          class="flex-1 overflow-y-auto custom-scrollbar p-2 flex flex-col gap-2"
-        >
-          <div
-            v-for="asset in assets"
-            :key="asset.id"
-            class="asset-item group p-4 rounded-2xl cursor-pointer transition-all border border-transparent"
-            :class="
-              selectedAssetId === asset.id
-                ? 'bg-blue-50 border-blue-100 shadow-sm'
-                : 'hover:bg-gray-50'
-            "
-            @click="selectedAssetId = asset.id"
-          >
-            <div class="flex gap-4">
-              <div
-                class="size-16 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-gray-100 group-hover:scale-105 transition-transform"
-              >
-                <img :src="asset.image" class="size-full object-cover" />
-              </div>
-              <div class="flex-1 flex flex-col justify-center">
-                <div class="flex justify-between items-start">
-                  <span
-                    class="text-sm font-black text-gray-800 leading-tight"
-                    >{{ asset.model }}</span
-                  >
-
-                  <div v-if="asset.needsService" class="maintenance-bell">
-                    <ElTooltip content="Đến hạn bảo trì (Thay nhớt)">
-                      <ArtSvgIcon
-                        icon="ri:notification-3-fill"
-                        class="text-red-500 animate-swing text-sm"
-                      />
-                    </ElTooltip>
-                  </div>
-                </div>
-                <div class="flex items-center gap-2 mt-1">
-                  <div
-                    class="bg-gray-800 text-white px-1.5 py-0.5 rounded text-[10px] font-black tracking-widest shadow-sm"
-                  >
-                    {{ asset.plate }}
-                  </div>
-                  <span
-                    class="text-[9px] font-bold text-gray-400 uppercase tracking-tighter"
-                    >{{ asset.owner }}</span
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div
-        v-if="selectedAsset"
-        class="flex-1 overflow-y-auto bg-[#F8F9FA] p-8 custom-scrollbar"
-      >
-        <div class="flex justify-between items-start mb-8">
-          <div class="flex flex-col gap-2">
-            <h1 class="m-0 text-3xl font-black text-gray-800 tracking-tight">
-              {{ selectedAsset.model }}
-            </h1>
-            <div class="flex gap-3">
-              <ElTag
-                effect="dark"
-                class="bg-emerald-500 border-none font-black text-[10px] rounded-lg"
-                >ĐÃ CÓ BIỂN</ElTag
-              >
-              <ElTag
-                effect="plain"
-                class="border-blue-200 text-blue-600 font-black text-[10px] rounded-lg"
-                >HỒ SƠ CHUẨN</ElTag
-              >
-            </div>
-          </div>
-          <div class="flex gap-2">
+        <ElTableColumn prop="licensePlate" label="Biển số" min-width="120">
+          <template #default="{ row }">
+            {{ row.licensePlate || "Chưa cấp" }}
+          </template>
+        </ElTableColumn>
+        <ElTableColumn prop="fullName" label="Khách hàng" min-width="160" />
+        <ElTableColumn prop="phoneNumber" label="Điện thoại" min-width="130" />
+        <ElTableColumn prop="vinNumber" label="Số khung" min-width="170" />
+        <ElTableColumn prop="engineNumber" label="Số máy" min-width="170" />
+        <ElTableColumn prop="purchaseDate" label="Ngày mua" min-width="130">
+          <template #default="{ row }">{{
+            formatDate(row.purchaseDate)
+          }}</template>
+        </ElTableColumn>
+        <ElTableColumn prop="isActive" label="Trạng thái" min-width="110">
+          <template #default="{ row }">
+            <ElTag :type="row.isActive ? 'success' : 'info'" effect="plain">
+              {{ row.isActive ? "Đang hoạt động" : "Ngưng" }}
+            </ElTag>
+          </template>
+        </ElTableColumn>
+        <ElTableColumn label="Hồ sơ" width="110" fixed="right">
+          <template #default="{ row }">
             <ElButton
-              class="rounded-xl font-black text-[10px] uppercase h-10 border-gray-200 shadow-sm"
-            >
-              <ArtSvgIcon icon="ri:edit-line" class="mr-2" /> Chỉnh sửa
-            </ElButton>
-            <ElButton
+              v-if="row.leadId"
               type="primary"
-              class="bg-navy border-none rounded-xl font-black text-[10px] uppercase h-10 shadow-lg shadow-blue-900/10"
+              link
+              @click.stop="openProfile(row.leadId)"
             >
-              <ArtSvgIcon icon="ri:file-pdf-line" class="mr-2" /> Xuất báo cáo
-              PDF
+              360
             </ElButton>
-          </div>
-        </div>
+            <span v-else>-</span>
+          </template>
+        </ElTableColumn>
+      </ElTable>
 
-        <div class="grid grid-cols-5 gap-4 mb-10">
-          <div
-            v-for="spec in assetSpecs"
-            :key="spec.label"
-            class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 transition-all hover:border-blue-200"
+      <aside class="asset-detail">
+        <ElEmpty
+          v-if="!selectedAsset"
+          description="Chọn một xe để xem chi tiết"
+        />
+        <template v-else>
+          <h3>{{ selectedAsset.licensePlate || "Chưa cấp biển số" }}</h3>
+          <dl>
+            <div>
+              <dt>Khách hàng</dt>
+              <dd>{{ selectedAsset.fullName || "-" }}</dd>
+            </div>
+            <div>
+              <dt>Điện thoại</dt>
+              <dd>{{ selectedAsset.phoneNumber || "-" }}</dd>
+            </div>
+            <div>
+              <dt>Lead ID</dt>
+              <dd>{{ selectedAsset.leadId || "-" }}</dd>
+            </div>
+            <div>
+              <dt>Số khung</dt>
+              <dd>{{ selectedAsset.vinNumber || "-" }}</dd>
+            </div>
+            <div>
+              <dt>Số máy</dt>
+              <dd>{{ selectedAsset.engineNumber || "-" }}</dd>
+            </div>
+            <div>
+              <dt>Ngày mua</dt>
+              <dd>{{ formatDate(selectedAsset.purchaseDate) }}</dd>
+            </div>
+          </dl>
+          <ElButton
+            v-if="selectedAsset.leadId"
+            type="primary"
+            class="w-full"
+            @click="openProfile(selectedAsset.leadId)"
           >
-            <div class="flex items-center gap-2.5 mb-2">
-              <div class="size-7 rounded-lg bg-gray-50 flex-cc text-gray-400">
-                <ArtSvgIcon :icon="spec.icon" class="text-xs" />
-              </div>
-              <span
-                class="text-[9px] font-black text-gray-400 uppercase tracking-widest"
-                >{{ spec.label }}</span
-              >
-            </div>
-            <span class="text-xs font-black text-gray-800 tracking-tight">{{
-              spec.value
-            }}</span>
-          </div>
-        </div>
+            Mở hồ sơ khách hàng
+          </ElButton>
+        </template>
+      </aside>
+    </section>
 
-        <div class="mb-12">
-          <div class="flex items-center gap-2 mb-6">
-            <div class="w-1 h-4 bg-navy rounded-full"></div>
-            <h3
-              class="m-0 text-xs font-black text-gray-800 uppercase tracking-widest"
-            >
-              Kho dữ liệu Pháp lý (Digital Vault)
-            </h3>
-          </div>
-          <div class="grid grid-cols-3 gap-6">
-            <div
-              v-for="folder in vaultFolders"
-              :key="folder.title"
-              class="vault-folder relative overflow-hidden bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-lg transition-all cursor-pointer group"
-            >
-              <img
-                :src="folder.preview"
-                class="absolute right-[-20px] top-[-20px] size-24 object-cover opacity-10 blur-[2px] group-hover:scale-125 transition-transform"
-              />
-
-              <div class="relative z-10">
-                <div class="flex justify-between items-start mb-4">
-                  <div
-                    class="size-12 rounded-2xl bg-blue-50 text-blue-600 flex-cc shadow-inner"
-                  >
-                    <ArtSvgIcon :icon="folder.icon" class="text-xl" />
-                  </div>
-                  <div
-                    class="size-8 bg-white/80 backdrop-blur-md rounded-full flex-cc opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
-                  >
-                    <ArtSvgIcon icon="ri:zoom-in-line" class="text-gray-400" />
-                  </div>
-                </div>
-                <h4 class="m-0 text-sm font-black text-gray-800 mb-1">
-                  {{ folder.title }}
-                </h4>
-                <span
-                  class="text-[10px] font-bold text-gray-400 uppercase tracking-tighter"
-                  >{{ folder.count }} tệp tin • Bảo mật</span
-                >
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div class="flex items-center justify-between mb-8">
-            <div class="flex items-center gap-2">
-              <div class="w-1 h-4 bg-emerald-500 rounded-full"></div>
-              <h3
-                class="m-0 text-xs font-black text-gray-800 uppercase tracking-widest"
-              >
-                Lịch sử "Xe sạch" (Verified Timeline)
-              </h3>
-            </div>
-            <div
-              class="next-service-banner bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-100 flex items-center gap-3"
-            >
-              <ArtSvgIcon
-                icon="ri:notification-badge-line"
-                class="text-emerald-600 animate-pulse"
-              />
-              <div class="flex flex-col">
-                <span
-                  class="text-[9px] font-black text-emerald-600 uppercase tracking-widest"
-                  >Bảo trì kế tiếp (Dự kiến)</span
-                >
-                <span class="text-[11px] font-black text-gray-700 uppercase"
-                  >10,000 KM • Sau 45 ngày nữa</span
-                >
-              </div>
-            </div>
-          </div>
-
-          <div
-            class="timeline-container relative pl-8 border-l-2 border-gray-100 ml-4 flex flex-col gap-10"
-          >
-            <div
-              v-for="event in maintenanceHistory"
-              :key="event.id"
-              class="timeline-item relative"
-            >
-              <div
-                class="absolute -left-[41px] top-0 size-5 rounded-full border-4 border-[#F8F9FA] bg-emerald-500 shadow-sm shadow-emerald-200"
-              ></div>
-
-              <div
-                class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:border-emerald-200 transition-all"
-              >
-                <div class="flex justify-between items-start mb-4">
-                  <div class="flex items-center gap-4">
-                    <span class="text-[11px] font-black text-gray-800">{{
-                      event.date
-                    }}</span>
-                    <div class="h-3 w-px bg-gray-200"></div>
-                    <div
-                      class="flex items-center gap-1.5 bg-emerald-50 px-2 py-0.5 rounded-full"
-                    >
-                      <ArtSvgIcon
-                        icon="ri:check-double-line"
-                        class="text-[10px] text-emerald-600"
-                      />
-                      <span
-                        class="text-[9px] font-black text-emerald-600 uppercase tracking-tighter"
-                        >Verified by AEM</span
-                      >
-                    </div>
-                  </div>
-                  <span class="text-[11px] font-black text-gray-400"
-                    >{{ event.km }} KM</span
-                  >
-                </div>
-                <h5 class="m-0 text-sm font-black text-gray-800 mb-2">
-                  {{ event.title }}
-                </h5>
-                <p class="m-0 text-xs text-gray-500 leading-relaxed">
-                  {{ event.note }}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div v-else class="flex-1 flex flex-cc flex-col gap-4 text-gray-300">
-        <ArtSvgIcon icon="ri:car-washing-line" class="text-6xl opacity-20" />
-        <span class="text-sm font-bold uppercase tracking-widest"
-          >Vui lòng chọn một tài sản để xem chi tiết</span
-        >
-      </div>
-    </div>
+    <footer class="pagination-row">
+      <ElPagination
+        background
+        layout="sizes, prev, pager, next, total"
+        :current-page="pagination.current"
+        :page-size="pagination.size"
+        :total="pagination.total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
+    </footer>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
+import { useRouter } from "vue-router";
+import dayjs from "dayjs";
 import { ElMessage } from "element-plus";
-import { VehicleApi } from "@/api/vehicle";
-import { RepairOrderApi } from "@/api/sales";
+import { VehicleApi, type Vehicle } from "@/api/vehicle";
 
 defineOptions({ name: "CustomerAsset" });
 
-const selectedAssetId = ref<number | null>(null);
-const rawVehicles = ref<any[]>([]);
-const assets = ref<any[]>([]);
-const maintenanceHistory = ref<any[]>([]);
+const router = useRouter();
+const loading = ref(false);
+const assets = ref<Vehicle[]>([]);
+const selectedAsset = ref<Vehicle | null>(null);
+const filters = reactive<{ keyword: string; leadId?: number }>({
+  keyword: "",
+  leadId: undefined,
+});
+const pagination = reactive({
+  current: 1,
+  size: 10,
+  total: 0,
+});
 
-const fetchVehicles = async () => {
+const filteredAssets = computed(() => {
+  const keyword = filters.keyword.trim().toLowerCase();
+  if (!keyword) return assets.value;
+  return assets.value.filter((asset) =>
+    [asset.licensePlate, asset.vinNumber, asset.engineNumber]
+      .filter(Boolean)
+      .some((value) => value.toLowerCase().includes(keyword)),
+  );
+});
+
+const loadAssets = async () => {
+  loading.value = true;
   try {
-    const res = await VehicleApi.getList({ current: 1, size: 100 });
-    rawVehicles.value = res.items || [];
-    assets.value = rawVehicles.value.map((v: any) => ({
-      id: v.id,
-      model: v.vehicleName || `Xe máy #${v.id}`,
-      plate: v.licensePlate || "Chưa cấp biển",
-      owner: v.fullName || "Ẩn danh",
-      image:
-        "https://images.unsplash.com/photo-1611311025708-659a84495574?auto=format&fit=crop&q=80&w=200",
-      needsService: false,
-    }));
-
-    if (assets.value.length > 0) {
-      selectedAssetId.value = assets.value[0].id;
-    }
-  } catch (err: any) {
-    ElMessage.error(err.message || "Lỗi khi tải danh sách phương tiện");
-  }
-};
-
-const fetchMaintenanceHistory = async (vehicleId: number) => {
-  try {
-    const res = await RepairOrderApi.getList({
-      current: 1,
-      size: 50,
-      Filters: `VehicleId==${vehicleId}`,
+    const res = await VehicleApi.getList({
+      current: pagination.current,
+      size: pagination.size,
+      Filters: filters.leadId ? `LeadId==${filters.leadId}` : undefined,
     });
-    maintenanceHistory.value = (res.items || []).map((ro: any) => ({
-      id: ro.id,
-      date: ro.completedDate
-        ? new Date(ro.completedDate).toLocaleDateString("vi-VN")
-        : new Date(ro.createdAt).toLocaleDateString("vi-VN"),
-      km: ro.mileage || 0,
-      title: ro.description || "Bảo trì sửa chữa",
-      note: `Chi phí: ${ro.totalAmount.toLocaleString("vi-VN")} VND. Thợ phụ trách: ${ro.technicianName || "Chưa phân công"}. Trạng thái: ${ro.status}. ${ro.notes || ""}`,
-    }));
-  } catch (err: any) {
-    ElMessage.error(err.message || "Lỗi khi tải lịch sử bảo trì");
+    assets.value = res.items ?? [];
+    pagination.total = res.totalCount ?? assets.value.length;
+    selectedAsset.value = assets.value[0] ?? null;
+  } catch (error: any) {
+    ElMessage.error(error?.message || "Không thể tải danh sách tài sản");
+  } finally {
+    loading.value = false;
   }
 };
 
-const selectedAsset = computed(() =>
-  assets.value.find((a) => a.id === selectedAssetId.value),
-);
+const selectAsset = (asset: Vehicle) => {
+  selectedAsset.value = asset;
+};
 
-const selectedRawVehicle = computed(() =>
-  rawVehicles.value.find((v) => v.id === selectedAssetId.value),
-);
+const handleSearch = () => {
+  pagination.current = 1;
+  loadAssets();
+};
 
-const assetSpecs = computed(() => {
-  const v = selectedRawVehicle.value;
-  if (!v) return [];
-  return [
-    { label: "Số khung", value: v.vinNumber || "N/A", icon: "ri:barcode-line" },
-    {
-      label: "Số máy",
-      value: v.engineNumber || "N/A",
-      icon: "ri:settings-line",
-    },
-    {
-      label: "Ngày mua",
-      value: v.purchaseDate
-        ? new Date(v.purchaseDate).toLocaleDateString("vi-VN")
-        : "N/A",
-      icon: "ri:calendar-line",
-    },
-    { label: "Đăng kiểm/Phí", value: "Không bắt buộc", icon: "ri:shield-line" },
-    {
-      label: "Bảo hành đến",
-      value: v.purchaseDate
-        ? new Date(
-            new Date(v.purchaseDate).setFullYear(
-              new Date(v.purchaseDate).getFullYear() + 3,
-            ),
-          ).toLocaleDateString("vi-VN")
-        : "3 năm kể từ ngày mua",
-      icon: "ri:verified-badge-line",
-    },
-  ];
-});
+const handleReset = () => {
+  filters.keyword = "";
+  filters.leadId = undefined;
+  pagination.current = 1;
+  loadAssets();
+};
 
-const vaultFolders = [
-  {
-    title: "Đăng ký xe",
-    icon: "ri:file-list-line",
-    count: "2",
-    preview:
-      "https://images.unsplash.com/photo-1589330694653-9ecf794ff8a3?auto=format&fit=crop&q=80&w=200",
-  },
-  {
-    title: "Bảo hiểm dân sự",
-    icon: "ri:shield-user-line",
-    count: "1",
-    preview:
-      "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=200",
-  },
-  {
-    title: "Hóa đơn mua hàng",
-    icon: "ri:bill-line",
-    count: "3",
-    preview:
-      "https://images.unsplash.com/photo-1554224155-1696413565d3?auto=format&fit=crop&q=80&w=200",
-  },
-];
+const handleSizeChange = (size: number) => {
+  pagination.size = size;
+  loadAssets();
+};
 
-watch(selectedAssetId, (newVal) => {
-  if (newVal) {
-    fetchMaintenanceHistory(newVal);
-  }
-});
+const handleCurrentChange = (current: number) => {
+  pagination.current = current;
+  loadAssets();
+};
 
-onMounted(() => {
-  fetchVehicles();
-});
+const openProfile = (leadId: number) => {
+  router.push(`/Marketing/customer/profile/${leadId}`);
+};
+
+const formatDate = (value?: string) => {
+  if (!value) return "-";
+  return dayjs(value).format("DD/MM/YYYY");
+};
+
+onMounted(loadAssets);
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
 .customer-asset-page {
-  .bg-navy {
-    background-color: #001529;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.page-header,
+.filter-row,
+.asset-detail {
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-light);
+  border-radius: 8px;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+}
+
+.page-header h2 {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.page-header p {
+  margin: 4px 0 0;
+  color: var(--el-text-color-secondary);
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) 160px auto auto;
+  gap: 10px;
+  padding: 12px;
+}
+
+.asset-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 14px;
+  align-items: start;
+}
+
+.asset-detail {
+  position: sticky;
+  top: 12px;
+  padding: 16px;
+}
+
+.asset-detail h3 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.asset-detail dl {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 16px;
+}
+
+.asset-detail dt {
+  color: var(--el-text-color-secondary);
+  font-size: 12px;
+}
+
+.asset-detail dd {
+  margin: 2px 0 0;
+  font-weight: 700;
+}
+
+.pagination-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (width <= 900px) {
+  .filter-row,
+  .asset-layout {
+    grid-template-columns: 1fr;
   }
 
-  .text-navy {
-    color: #001529;
+  .page-header {
+    align-items: stretch;
+    flex-direction: column;
   }
 
-  .custom-scrollbar {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-
-    &::-webkit-scrollbar {
-      display: none;
-      width: 0;
-      height: 0;
-    }
-  }
-
-  .animate-swing {
-    transform-origin: top center;
-    animation: swing 2s infinite ease-in-out;
-  }
-
-  @keyframes swing {
-    0% {
-      transform: rotate(0deg);
-    }
-
-    10% {
-      transform: rotate(15deg);
-    }
-
-    20% {
-      transform: rotate(-10deg);
-    }
-
-    30% {
-      transform: rotate(5deg);
-    }
-
-    40% {
-      transform: rotate(-5deg);
-    }
-
-    50% {
-      transform: rotate(0deg);
-    }
-
-    100% {
-      transform: rotate(0deg);
-    }
-  }
-
-  .timeline-container {
-    &::before {
-      position: absolute;
-      bottom: 0;
-      left: -1px;
-      width: 2px;
-      height: 40px;
-      content: "";
-      background: linear-gradient(to bottom, #f1f5f9, transparent);
-    }
+  .asset-detail {
+    position: static;
   }
 }
 </style>

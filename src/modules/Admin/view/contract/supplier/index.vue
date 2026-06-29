@@ -232,247 +232,85 @@
             </ElFormItem>
           </el-col>
 
+          <!-- Right Column (File Upload & Terms) -->
           <el-col :span="12">
             <div class="border-l pl-4">
-              <div class="font-bold text-sm mb-3 text-gray-600">
-                Hạn mức Tín dụng & Thanh toán
-              </div>
-              <ElFormItem label="Hạn mức công nợ tối đa">
-                <ElInputNumber
-                  v-model="formData.creditLimit"
-                  :min="0"
-                  :step="100000000"
-                  :precision="0"
-                  class="w-full"
-                  placeholder="VD: 2000000000"
-                />
-              </ElFormItem>
-              <ElFormItem label="Thời hạn thanh toán (ngày)">
-                <ElInputNumber
-                  v-model="formData.paymentWindowDays"
-                  :min="0"
-                  :step="1"
-                  class="w-full"
-                  placeholder="VD: 30"
-                />
-              </ElFormItem>
-              <ElFormItem label="Ngân hàng">
-                <ElInput
-                  v-model="formData.bankName"
-                  placeholder="Tên ngân hàng"
-                />
-              </ElFormItem>
-              <ElFormItem label="Số tài khoản">
-                <ElInput
-                  v-model="formData.bankAccountNumber"
-                  placeholder="Số tài khoản"
-                />
-              </ElFormItem>
-            </div>
-          </el-col>
-        </el-row>
-
-        <el-divider />
-
-        <div class="font-bold text-sm mb-3 text-gray-600">
-          Chính sách Giá sỉ & Cam kết Sản lượng
-        </div>
-        <el-row :gutter="20" class="mb-4">
-          <el-col :span="12">
-            <ElFormItem label="Sản lượng tối thiểu/tháng">
-              <ElInputNumber
-                v-model="formData.minimumVolumePerMonth"
-                :min="0"
-                :step="1"
-                class="w-full"
-                placeholder="Số lượng sản phẩm/tháng"
-              />
-            </ElFormItem>
-          </el-col>
-          <el-col :span="12">
-            <ElFormItem label="Tỷ lệ chiết khấu (%)">
-              <ElInputNumber
-                v-model="formData.discountRate"
-                :min="0"
-                :max="100"
-                :step="0.1"
-                :precision="2"
-                class="w-full"
-                placeholder="VD: 5.5"
-              />
-            </ElFormItem>
-          </el-col>
-        </el-row>
-
-        <!-- SKU Price List Table -->
-        <div class="mb-4">
-          <div class="flex justify-between items-center mb-2">
-            <span class="font-bold text-sm">Bảng giá nhập sỉ (SKU)</span>
-            <ElButton
-              v-if="!isFormLocked"
-              type="primary"
-              size="small"
-              @click="handleAddSkuItem"
-            >
-              <ElIcon><Plus /></ElIcon> Thêm SKU
-            </ElButton>
-          </div>
-          <ElTable
-            :data="formData.contractItems"
-            border
-            stripe
-            size="small"
-            max-height="300"
-            empty-text="Chưa có SKU nào"
-          >
-            <ElTableColumn type="index" label="#" width="50" align="center" />
-            <ElTableColumn
-              prop="productVariantId"
-              label="Mã SKU"
-              width="120"
-              align="center"
-            >
-              <template #default="{ row }">
-                <ElInput
-                  v-model="row.skuCode"
-                  placeholder="SKU"
-                  size="small"
+              <ElFormItem label="File hợp đồng">
+                <ElUpload
+                  :http-request="customUploadRequest"
+                  :file-list="fileList"
+                  :show-file-list="false"
+                  drag
+                  class="w-full contract-file-upload"
                   :disabled="isFormLocked"
-                />
-              </template>
-            </ElTableColumn>
-            <ElTableColumn label="Tên sản phẩm" min-width="180">
-              <template #default="{ row }">
-                <span>{{ row.productName || "-" }}</span>
-              </template>
-            </ElTableColumn>
-            <ElTableColumn label="Giá nhập sỉ" width="150" align="right">
-              <template #default="{ row }">
-                <ElInputNumber
-                  v-model="row.wholesalePrice"
-                  :min="0"
-                  :step="1000"
-                  :precision="0"
-                  size="small"
-                  :disabled="isFormLocked"
-                  class="w-full"
-                />
-              </template>
-            </ElTableColumn>
-            <ElTableColumn label="MOQ" width="90" align="center">
-              <template #default="{ row }">
-                <ElInputNumber
-                  v-model="row.moq"
-                  :min="1"
-                  :step="1"
-                  size="small"
-                  :disabled="isFormLocked"
-                />
-              </template>
-            </ElTableColumn>
-            <ElTableColumn label="Danh mục" width="150">
-              <template #default="{ row }">
-                <span>{{ row.category || "-" }}</span>
-              </template>
-            </ElTableColumn>
-            <ElTableColumn
-              label="Thao tác"
-              width="80"
-              align="center"
-              v-if="!isFormLocked"
-            >
-              <template #default="{ $index }">
-                <ElButton
-                  type="danger"
-                  size="small"
-                  text
-                  @click="handleRemoveSkuItem($index)"
+                  accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
                 >
-                  Xóa
-                </ElButton>
-              </template>
-            </ElTableColumn>
-          </ElTable>
-          <div
-            v-if="(formData.contractItems || []).length === 0"
-            class="text-center text-gray-400 text-sm py-3"
-          >
-            Chưa có dữ liệu SKU. Nhấn "Thêm SKU" để thêm.
-          </div>
-        </div>
-
-        <el-divider />
-
-        <ElFormItem label="File hợp đồng">
-          <ElUpload
-            :http-request="customUploadRequest"
-            :file-list="fileList"
-            :show-file-list="false"
-            drag
-            class="w-full contract-file-upload"
-            :disabled="isFormLocked"
-            accept=".pdf,.jpg,.jpeg,.png"
-          >
-            <div v-if="contractFilePreviewUrl" class="contract-upload-preview">
-              <img
-                :src="contractFilePreviewUrl"
-                alt="Xem trước file hợp đồng"
-              />
-              <span class="preview-hint">Bấm để đổi file hợp đồng</span>
+                  <div
+                    v-if="contractFilePreviewUrl"
+                    class="contract-upload-preview"
+                  >
+                    <img
+                      :src="contractFilePreviewUrl"
+                      alt="Xem trước file hợp đồng"
+                    />
+                    <span class="preview-hint">Bấm để đổi file hợp đồng</span>
+                  </div>
+                  <template v-else>
+                    <ElIcon class="el-icon--upload"><UploadFilled /></ElIcon>
+                    <div class="el-upload__text">
+                      Kéo thả file hoặc <em>bấm vào đây</em> để tải lên
+                    </div>
+                  </template>
+                  <template #tip>
+                    <div class="el-upload__tip">
+                      Hỗ trợ PDF, Word (.doc, .docx), JPG, PNG (tối đa 10MB)
+                    </div>
+                  </template>
+                </ElUpload>
+                <div
+                  v-if="contractFilePreviewUrl && !isFormLocked"
+                  class="contract-upload-filebar"
+                >
+                  <span class="truncate">{{ contractFileName }}</span>
+                  <ElButton link type="danger" @click.stop="clearContractFile"
+                    >Xóa</ElButton
+                  >
+                </div>
+                <div
+                  v-else-if="contractFileName && !contractFilePreviewUrl"
+                  class="contract-upload-filebar"
+                >
+                  <span class="truncate">{{ contractFileName }}</span>
+                  <ElButton
+                    v-if="!isFormLocked"
+                    link
+                    type="danger"
+                    @click.stop="clearContractFile"
+                    >Xóa</ElButton
+                  >
+                </div>
+              </ElFormItem>
+              <ElFormItem label="Điều khoản chính">
+                <ElInput
+                  v-model="formData.terms"
+                  type="textarea"
+                  :rows="3"
+                  placeholder="Nội dung điều khoản chính..."
+                  :disabled="isFormLocked"
+                />
+              </ElFormItem>
+              <ElFormItem label="Ghi chú">
+                <ElInput
+                  v-model="formData.note"
+                  type="textarea"
+                  :rows="2"
+                  placeholder="Ghi chú thêm..."
+                  :disabled="isFormLocked"
+                />
+              </ElFormItem>
             </div>
-            <template v-else>
-              <ElIcon class="el-icon--upload"><UploadFilled /></ElIcon>
-              <div class="el-upload__text">
-                Kéo thả file hoặc <em>bấm vào đây</em> để tải lên
-              </div>
-            </template>
-            <template #tip>
-              <div class="el-upload__tip">
-                Hỗ trợ PDF, JPG, PNG (tối đa 10MB)
-              </div>
-            </template>
-          </ElUpload>
-          <div
-            v-if="contractFilePreviewUrl && !isFormLocked"
-            class="contract-upload-filebar"
-          >
-            <span class="truncate">{{ contractFileName }}</span>
-            <ElButton link type="danger" @click.stop="clearContractFile"
-              >Xóa</ElButton
-            >
-          </div>
-          <div
-            v-else-if="contractFileName && !contractFilePreviewUrl"
-            class="contract-upload-filebar"
-          >
-            <span class="truncate">{{ contractFileName }}</span>
-            <ElButton
-              v-if="!isFormLocked"
-              link
-              type="danger"
-              @click.stop="clearContractFile"
-              >Xóa</ElButton
-            >
-          </div>
-        </ElFormItem>
-        <ElFormItem label="Điều khoản chính">
-          <ElInput
-            v-model="formData.terms"
-            type="textarea"
-            :rows="3"
-            placeholder="Nội dung điều khoản chính..."
-            :disabled="isFormLocked"
-          />
-        </ElFormItem>
-        <ElFormItem label="Ghi chú">
-          <ElInput
-            v-model="formData.note"
-            type="textarea"
-            :rows="2"
-            placeholder="Ghi chú thêm..."
-            :disabled="isFormLocked"
-          />
-        </ElFormItem>
+          </el-col>
+        </el-row>
       </ElForm>
 
       <template #footer>
@@ -960,23 +798,6 @@ const handleDelete = async (row: SupplierContractDto) => {
       ElMessage.error("Không thể xóa hợp đồng");
     }
   }
-};
-
-const handleAddSkuItem = () => {
-  const items = formData.value.contractItems || [];
-  items.push({
-    productVariantId: 0,
-    wholesalePrice: 0,
-    skuCode: "",
-    productName: "",
-    category: "",
-    moq: 1,
-  } as any);
-};
-
-const handleRemoveSkuItem = (index: number) => {
-  const items = formData.value.contractItems || [];
-  items.splice(index, 1);
 };
 
 const handleCreateAddendum = () => {

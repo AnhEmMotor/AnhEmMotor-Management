@@ -135,6 +135,7 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { ElMessage } from "element-plus";
+import { fetchCreateLead, fetchUpdateLead } from "@/api/customer/lead.api";
 
 const props = defineProps<{
   modelValue: boolean;
@@ -160,13 +161,41 @@ const form = ref({
   status: "New",
   interestedVehicle: "",
   note: "",
+  gender: "",
+  birthday: "",
+  identificationNumber: "",
+  addressDetail: "",
+  ward: "",
+  district: "",
+  province: "",
+  score: 0,
+  isVerified: false,
 });
 
 watch(
   () => props.initialData,
   (newData) => {
     if (newData) {
-      form.value = { ...newData };
+      form.value = {
+        id: newData.id ?? null,
+        fullName: newData.fullName ?? "",
+        phoneNumber: newData.phoneNumber ?? "",
+        email: newData.email ?? "",
+        source: newData.source ?? "Store",
+        priority: newData.priority ?? "High",
+        status: newData.status ?? "New",
+        interestedVehicle: newData.interestedVehicle ?? "",
+        note: newData.note ?? "",
+        gender: newData.gender ?? "",
+        birthday: newData.birthday ?? "",
+        identificationNumber: newData.identificationNumber ?? "",
+        addressDetail: newData.addressDetail ?? "",
+        ward: newData.ward ?? "",
+        district: newData.district ?? "",
+        province: newData.province ?? "",
+        score: newData.score ?? 0,
+        isVerified: newData.isVerified ?? false,
+      };
     } else {
       form.value = {
         id: null,
@@ -178,24 +207,71 @@ watch(
         status: "New",
         interestedVehicle: "",
         note: "",
+        gender: "",
+        birthday: "",
+        identificationNumber: "",
+        addressDetail: "",
+        ward: "",
+        district: "",
+        province: "",
+        score: 0,
+        isVerified: false,
       };
     }
   },
   { immediate: true },
 );
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
   if (!form.value.fullName || !form.value.phoneNumber) {
     ElMessage.warning("Vui lòng nhập Tên và Số điện thoại");
     return;
   }
 
-  const message = form.value.id
-    ? "Đã cập nhật thông tin khách hàng!"
-    : "Đã thêm khách hàng mới vào hệ thống!";
-  ElMessage.success(message);
-  emit("success", { ...form.value });
-  visible.value = false;
+  try {
+    if (form.value.id) {
+      await fetchUpdateLead(form.value.id, {
+        fullName: form.value.fullName,
+        phoneNumber: form.value.phoneNumber,
+        email: form.value.email,
+        source: form.value.source,
+        status: form.value.status,
+        interestedVehicle: form.value.interestedVehicle,
+        gender: form.value.gender,
+        birthday: form.value.birthday,
+        identificationNumber: form.value.identificationNumber,
+        addressDetail: form.value.addressDetail,
+        ward: form.value.ward,
+        district: form.value.district,
+        province: form.value.province,
+        score: form.value.score,
+        isVerified: form.value.isVerified,
+      });
+      ElMessage.success("Đã cập nhật thông tin khách hàng!");
+    } else {
+      await fetchCreateLead({
+        fullName: form.value.fullName,
+        phoneNumber: form.value.phoneNumber,
+        email: form.value.email,
+        source: form.value.source,
+        status: form.value.status,
+        interestedVehicle: form.value.interestedVehicle,
+        gender: form.value.gender,
+        birthday: form.value.birthday,
+        identificationNumber: form.value.identificationNumber,
+        addressDetail: form.value.addressDetail,
+        ward: form.value.ward,
+        district: form.value.district,
+        province: form.value.province,
+        score: form.value.score,
+      });
+      ElMessage.success("Đã thêm khách hàng mới vào hệ thống!");
+    }
+    emit("success", { ...form.value });
+    visible.value = false;
+  } catch {
+    ElMessage.error("Lỗi khi lưu hồ sơ khách hàng. Vui lòng thử lại.");
+  }
 };
 </script>
 

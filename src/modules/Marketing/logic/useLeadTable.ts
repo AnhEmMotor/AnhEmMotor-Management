@@ -1,6 +1,13 @@
 import { ref, onMounted, reactive } from "vue";
-import { fetchGetLeadList, Lead } from "@/api/customer";
+import {
+  fetchGetLeadList,
+  fetchAssignLead,
+  type Lead,
+  type LeadListParams,
+} from "@/api/customer";
+import { fetchGetUserList } from "@/api/auth/system-manage.api";
 import { ElMessage } from "element-plus";
+import { isHighIntentLeadStatus } from "@/modules/Marketing/constants/customerCrm";
 
 export function useLeadTable() {
   const data = ref<Lead[]>([]);
@@ -29,11 +36,21 @@ export function useLeadTable() {
   ];
 
   const selectedIds = ref<number[]>([]);
-  const salesList = ref([
-    { id: 1, name: "Admin", color: "#ff4d4f" },
-    { id: 2, name: "Sale Nguyễn Văn A", color: "#1890ff" },
-    { id: 3, name: "Sale Trần Thị B", color: "#52c41a" },
-  ]);
+  const salesList = ref<{ id: string; name: string }[]>([]);
+  const currentFilters = ref<LeadListParams>({});
+
+  const fetchSalesList = async () => {
+    try {
+      const res = await fetchGetUserList({ Page: 1, PageSize: 100 });
+      const users = ((res as any).items ?? (res as any).records ?? []) as any[];
+      salesList.value = users.map((user: any) => ({
+        id: String(user.id),
+        name: user.fullName || user.username || user.email || String(user.id),
+      }));
+    } catch {
+      salesList.value = [];
+    }
+  };
 
   const toggleSelect = (id: number) => {
     const index = selectedIds.value.indexOf(id);
@@ -52,15 +69,23 @@ export function useLeadTable() {
     }
   };
 
-  const handleAssignBulk = (_saleId: number) => {
-    ElMessage.success(
-      `Đã giao ${selectedIds.value.length} khách hàng cho nhân viên mới`,
-    );
-    selectedIds.value = [];
+  const handleAssignBulk = async (saleId: string) => {
+    try {
+      await Promise.all(
+        selectedIds.value.map((id) => fetchAssignLead(id, saleId)),
+      );
+      ElMessage.success(
+        `Đã giao ${selectedIds.value.length} khách hàng cho nhân viên mới`,
+      );
+      selectedIds.value = [];
+      refreshData();
+    } catch {
+      ElMessage.error("Lỗi khi giao khách hàng. Vui lòng thử lại.");
+    }
   };
 
   const getPriority = (lead: Lead) => {
-    if (lead.status === "TestDrive" || lead.status === "Negotiating") {
+    if (isHighIntentLeadStatus(lead.status)) {
       return {
         level: 3,
         label: "CẤP BÁCH",
@@ -89,8 +114,13 @@ export function useLeadTable() {
   const refreshData = async () => {
     loading.value = true;
     try {
-      const res = await fetchGetLeadList();
-      const leads = Array.isArray(res) ? res : (res as any).items || [];
+      const res = await fetchGetLeadList({
+        Page: pagination.current,
+        PageSize: pagination.size,
+        Sorts: "-createdAt",
+        ...currentFilters.value,
+      });
+      const leads = Array.isArray(res) ? res : (res.items ?? res.records ?? []);
 
       data.value = leads.sort((a: any, b: any) => {
         const pA = getPriority(a).level;
@@ -98,7 +128,9 @@ export function useLeadTable() {
         return pB - pA;
       });
 
-      pagination.total = data.value.length;
+      pagination.total = Array.isArray(res)
+        ? data.value.length
+        : (res.totalCount ?? res.total ?? data.value.length);
     } catch (_err: any) {
       ElMessage.error("Lỗi khi lấy dữ liệu");
     } finally {
@@ -116,15 +148,42 @@ export function useLeadTable() {
     refreshData();
   };
 
-  const handleSearch = (_params: any) => {
+  const handleSearch = (params: any = {}) => {
+    const filters = [
+      params.status ? `Status==${params.status}` : "",
+      params.source ? `Source==${params.source}` : "",
+      params.assignedToId ? `AssignedToId==${params.assignedToId}` : "",
+      params.isVerified !== undefined && params.isVerified !== ""
+        ? `IsVerified==${params.isVerified}`
+        : "",
+    ]
+      .filter(Boolean)
+      .join(",");
+    currentFilters.value = {
+      Filters: filters || undefined,
+    };
+    pagination.current = 1;
     refreshData();
   };
 
+  const handleAssignSingle = async (leadId: number, saleId: string | null) => {
+    try {
+      await fetchAssignLead(leadId, saleId);
+      ElMessage.success("Đã cập nhật nhân viên phụ trách");
+      refreshData();
+    } catch {
+      ElMessage.error("Lỗi khi giao khách hàng. Vui lòng thử lại.");
+    }
+  };
+
   const handleReset = () => {
+    currentFilters.value = {};
+    pagination.current = 1;
     refreshData();
   };
 
   onMounted(() => {
+    fetchSalesList();
     refreshData();
   });
 
@@ -142,6 +201,7 @@ export function useLeadTable() {
     toggleSelect,
     toggleSelectAll,
     handleAssignBulk,
+    handleAssignSingle,
     refreshData,
     getPriority,
   };

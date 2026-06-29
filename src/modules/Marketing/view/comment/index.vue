@@ -168,7 +168,7 @@ const openDrawer = (item: CommentItem) => {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .comment-page {
   min-height: 100vh;
 }
@@ -178,5 +178,39 @@ const openDrawer = (item: CommentItem) => {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+// Dark Mode overrides
+:global(html.dark .comment-page) {
+  background-color: #05070b !important;
+  color: #f8fafc !important;
+}
+
+:global(html.dark .comment-page .bg-white) {
+  background-color: #10141c !important;
+}
+
+:global(html.dark .comment-page .border-slate-200) {
+  border-color: rgb(255 255 255 / 12%) !important;
+}
+
+:global(html.dark .comment-page .text-slate-900),
+:global(html.dark .comment-page h4) {
+  color: #f8fafc !important;
+}
+
+:global(html.dark .comment-modal .el-drawer) {
+  background-color: #10141c !important;
+  border-left: 1px solid rgb(255 255 255 / 12%) !important;
+}
+
+:global(html.dark .comment-modal .el-drawer__header) {
+  padding-bottom: 16px;
+  margin-bottom: 0;
+  border-bottom: 1px solid rgb(255 255 255 / 8%) !important;
+}
+
+:global(html.dark .comment-modal h4) {
+  color: #f8fafc !important;
 }
 </style>

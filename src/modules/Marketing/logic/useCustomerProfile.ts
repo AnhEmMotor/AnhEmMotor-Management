@@ -1,15 +1,18 @@
-import { ref, reactive } from "vue";
+import { ref, reactive, watch } from "vue";
 import { ElMessage } from "element-plus";
+import {
+  fetchUpdateLead,
+  fetchAddLeadActivity,
+  type Lead,
+} from "@/api/customer/lead.api";
 
 export function useCustomerProfile() {
-  const activeTab = ref("timeline");
   const isVerified = ref(false);
-
   const customerInfo = reactive({
-    id: "AEM-2024-089",
-    fullName: "Nguyễn Hoàng Long",
-    phone: "0988.123.456",
-    status: "Purchasing",
+    id: 0,
+    fullName: "",
+    phone: "",
+    status: "",
     cccd: "",
     address: {
       province: "Đồng Nai",
@@ -31,67 +34,108 @@ export function useCustomerProfile() {
     "Quyết Thắng",
   ];
 
-  const timelineEvents = ref([
+  const timelineEvents = ref<
     {
-      id: 1,
-      type: "ai",
-      content: "Khách hỏi về mức tiêu hao xăng của Winner X",
-      time: "10:30 - 02/05/2024",
-      icon: "ri:robot-line",
-      color: "#6366f1",
-    },
-    {
-      id: 2,
-      type: "sale",
-      content:
-        "Đã tư vấn qua điện thoại: Khách thích màu Đỏ Đen, đang cân nhắc trả góp 0%",
-      time: "14:20 - 02/05/2024",
-      icon: "ri:user-voice-line",
-      color: "#f59e0b",
-    },
-    {
-      id: 3,
-      type: "milestone",
-      content: "Đã đến Showroom xem xe trực tiếp",
-      time: "09:00 - 03/05/2024",
-      icon: "ri:map-pin-line",
-      color: "#ef4444",
-    },
-  ]);
+      id: number;
+      type: string;
+      content: string;
+      time: string;
+      icon: string;
+      color: string;
+    }[]
+  >([]);
 
-  const handleVerify = () => {
+  const onVerifiedChange = ref<(() => void) | null>(null);
+
+  const loadFromLead = (lead: Lead) => {
+    isVerified.value = lead.isVerified ?? false;
+    customerInfo.id = lead.id;
+    customerInfo.fullName = lead.fullName;
+    customerInfo.phone = lead.phoneNumber;
+    customerInfo.status = lead.status;
+    customerInfo.cccd = lead.identificationNumber || "";
+    customerInfo.address.ward = lead.ward || "";
+    customerInfo.address.province = lead.province || "Đồng Nai";
+    customerInfo.address.city = "Biên Hòa";
+
+    if (lead.activities && lead.activities.length > 0) {
+      timelineEvents.value = lead.activities
+        .slice()
+        .reverse()
+        .map((a) => ({
+          id: a.id,
+          type: a.activityType.toLowerCase() === "note" ? "sale" : "ai",
+          content: a.description,
+          time: a.createdAt,
+          icon:
+            a.activityType.toLowerCase() === "note"
+              ? "ri:edit-line"
+              : "ri:robot-line",
+          color:
+            a.activityType.toLowerCase() === "note" ? "#f59e0b" : "#6366f1",
+        }));
+    } else {
+      timelineEvents.value = [];
+    }
+  };
+
+  const handleVerify = async () => {
     if (!customerInfo.cccd || !customerInfo.address.ward) {
       ElMessage.warning(
         "Vui lòng hoàn thiện CCCD và Địa chỉ trước khi xác thực",
       );
       return;
     }
-    isVerified.value = !isVerified.value;
-    if (isVerified.value) {
-      ElMessage.success(
-        "Đã xác thực hồ sơ. Dữ liệu hiện đã được khóa để đảm bảo an toàn.",
+
+    try {
+      const newVerified = !isVerified.value;
+      await fetchUpdateLead(customerInfo.id, {
+        identificationNumber: customerInfo.cccd,
+        ward: customerInfo.address.ward,
+        isVerified: newVerified,
+      });
+      isVerified.value = newVerified;
+      if (newVerified) {
+        ElMessage.success(
+          "Đã xác thực hồ sơ. Dữ liệu hiện đã được khóa để đảm bảo an toàn.",
+        );
+      }
+      onVerifiedChange.value?.();
+    } catch {
+      ElMessage.error(
+        "Không thể cập nhật trạng thái xác thực. Vui lòng thử lại.",
       );
     }
   };
 
-  const addNote = (note: string) => {
-    timelineEvents.value.unshift({
-      id: Date.now(),
-      type: "sale",
-      content: note,
-      time: "Vừa xong",
-      icon: "ri:edit-line",
-      color: "#f59e0b",
-    });
+  const addNote = async (note: string) => {
+    try {
+      await fetchAddLeadActivity(customerInfo.id, {
+        activityType: "Note",
+        description: note,
+      });
+      timelineEvents.value.unshift({
+        id: Date.now(),
+        type: "sale",
+        content: note,
+        time: "Vừa xong",
+        icon: "ri:edit-line",
+        color: "#f59e0b",
+      });
+      onVerifiedChange.value?.();
+    } catch {
+      ElMessage.error("Không thể thêm ghi chú. Vui lòng thử lại.");
+    }
   };
 
   return {
-    activeTab,
     isVerified,
     customerInfo,
     wardsInBienHoa,
     timelineEvents,
     handleVerify,
     addNote,
+    loadFromLead,
+    onVerifiedChange,
   };
 }

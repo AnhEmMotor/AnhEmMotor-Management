@@ -279,4 +279,68 @@ onActivated(() => {
     }
   }
 }
+
+// Dark Mode overrides
+:global(html.dark .article-list-page) {
+  background-color: #05070b !important;
+  color: #f8fafc !important;
+}
+
+:global(html.dark .article-list-page .bg-white) {
+  background-color: #10141c !important;
+}
+
+:global(html.dark .article-list-page .article-card.bg-white) {
+  background-color: #10141c !important;
+  border-color: rgb(255 255 255 / 12%) !important;
+}
+
+:global(html.dark .article-list-page .bg-slate-50) {
+  background-color: #111827 !important;
+}
+
+:global(html.dark .article-list-page .border-slate-200),
+:global(html.dark .article-list-page .border-slate-100),
+:global(html.dark .article-list-page .border-slate-50) {
+  border-color: rgb(255 255 255 / 12%) !important;
+}
+
+:global(html.dark .article-list-page .text-slate-800) {
+  color: #f8fafc !important;
+}
+
+:global(html.dark .article-list-page .text-slate-400) {
+  color: #94a3b8 !important;
+}
+
+:global(html.dark .article-list-page input.bg-slate-50) {
+  color: #f8fafc !important;
+  caret-color: #f8fafc;
+}
+
+:global(html.dark .article-list-page input.bg-slate-50::placeholder) {
+  color: #64748b;
+}
+
+:global(html.dark .article-list-page input.focus\:bg-white:focus) {
+  background-color: #111827 !important;
+}
+
+:global(html.dark .article-list-page .bg-slate-100) {
+  background-color: rgb(255 255 255 / 8%) !important;
+}
+
+:global(html.dark .article-list-page .combat-pagination .el-pager li),
+:global(html.dark .article-list-page .combat-pagination .btn-prev),
+:global(html.dark .article-list-page .combat-pagination .btn-next) {
+  background-color: #111827 !important;
+  color: #cbd5e1 !important;
+}
+
+:global(
+  html.dark .article-list-page .combat-pagination .el-pager li.is-active
+) {
+  background-color: #001529 !important;
+  color: #fff !important;
+}
 </style>
