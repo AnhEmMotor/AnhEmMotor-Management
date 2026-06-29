@@ -1,135 +1,175 @@
 <template>
-  <div class="h-full flex gap-4 reverse-logistics-container">
-    <!-- CỘT TRÁI (30%): DANH SÁCH ĐƠN CHỜ HOÀN -->
-    <div class="w-1/3 flex flex-col gap-4 h-full">
-      <ElCard
-        class="flex-1 overflow-hidden flex flex-col art-card-list"
-        body-class="p-0 flex flex-col h-full"
+  <div
+    class="returns-page flex flex-col gap-4 animate__animated animate__fadeIn"
+  >
+    <!-- Header with Search & Tabs -->
+    <ElCard class="shrink-0" body-class="pb-0">
+      <div class="flex justify-between items-center mb-4">
+        <h1
+          class="m-0 text-xl font-black tracking-tight text-slate-900 dark:text-white leading-none flex items-center gap-2"
+        >
+          <ElIcon class="text-2xl text-primary"><List /></ElIcon>
+          Quản lý hoàn hàng
+        </h1>
+        <ElInput
+          v-model="searchQuery"
+          placeholder="Tìm mã đơn, khách hàng..."
+          clearable
+          :prefix-icon="Search"
+          class="w-80"
+        />
+      </div>
+
+      <ElTabs
+        v-model="statusFilter"
+        @tab-change="fetchReturns"
+        class="order-tabs"
       >
-        <!-- Header -->
-        <div class="p-4 border-b border-color flex flex-col gap-3 shrink-0">
-          <div class="flex justify-between items-center">
-            <h3 class="m-0 font-medium text-lg flex items-center gap-2">
-              <ElIcon><List /></ElIcon> Đơn chờ hoàn
-            </h3>
-            <ElTag
-              type="danger"
-              effect="dark"
-              round
-              v-if="returnsList.length > 0"
-              >{{ returnsList.length }}</ElTag
-            >
-          </div>
+        <ElTabPane label="Tất cả" name="" />
+        <ElTabPane label="Chờ xử lý" name="pending" />
+        <ElTabPane label="Đang kiểm tra" name="inspecting" />
+        <ElTabPane label="Đã hoàn tất" name="completed" />
+      </ElTabs>
 
-          <ElInput
-            v-model="searchQuery"
-            placeholder="Tìm mã đơn..."
-            clearable
-            :prefix-icon="Search"
-          />
-
-          <ElRadioGroup
-            v-model="statusFilter"
-            @change="fetchReturns"
+      <!-- Bulk Actions Bar -->
+      <div
+        v-if="selectedRows.length > 0"
+        class="flex items-center gap-4 bg-primary-light-9 p-3 rounded-lg mt-2 border border-primary-light-5 animate__animated animate__fadeIn"
+      >
+        <span class="text-sm font-medium text-primary"
+          >Đã chọn {{ selectedRows.length }} đơn hàng</span
+        >
+        <div class="flex gap-2">
+          <ElButton
+            type="primary"
             size="small"
-            class="w-full"
+            @click="handleBulkAction('restock')"
+            >Nhập kho hàng loạt</ElButton
           >
-            <ElRadioButton label="">Tất cả</ElRadioButton>
-            <ElRadioButton label="pending">Chờ xử lý</ElRadioButton>
-            <ElRadioButton label="inspecting">Đang kiểm tra</ElRadioButton>
-            <ElRadioButton label="completed">Đã xong</ElRadioButton>
-          </ElRadioGroup>
+          <ElButton
+            type="danger"
+            size="small"
+            @click="handleBulkAction('defect')"
+            >Cách ly hàng loạt</ElButton
+          >
         </div>
+      </div>
+    </ElCard>
 
-        <!-- List -->
-        <div class="flex-1 overflow-y-auto p-2" v-loading="loadingList">
-          <ElEmpty
-            v-if="filteredReturns.length === 0"
-            description="Không có đơn hàng hoàn nào"
-            :image-size="80"
-          />
-
-          <div
-            v-for="item in filteredReturns"
-            :key="item.id"
-            class="return-card cursor-pointer p-3 rounded-md border mb-2 transition-all"
-            :class="[
-              selectedId === item.id
-                ? 'border-primary bg-primary-light-9'
-                : 'border-color hover:border-primary-light-5 hover:bg-fill-lighter',
-            ]"
-            @click="handleSelect(item.id)"
+    <!-- Main List Data Table -->
+    <ElCard
+      class="art-table-card flex-1 overflow-hidden"
+      body-class="p-0 h-full flex flex-col"
+    >
+      <div class="flex-1 p-4 h-[calc(100vh-250px)]">
+        <ElTable
+          :data="filteredReturns"
+          style="width: 100%"
+          v-loading="loadingList"
+          @row-click="handleRowClick"
+          @selection-change="handleSelectionChange"
+          height="100%"
+          class="custom-table cursor-pointer"
+          stripe
+          border
+        >
+          <ElTableColumn type="selection" width="50" align="center" />
+          <ElTableColumn
+            prop="originalTrackingNumber"
+            label="Mã đơn gốc"
+            min-width="150"
+            align="center"
           >
-            <div class="flex justify-between items-start mb-2">
-              <span class="font-bold text-base text-primary">{{
-                item.originalTrackingNumber
+            <template #default="{ row }">
+              <span class="font-bold text-primary hover:underline">{{
+                row.originalTrackingNumber
               }}</span>
+            </template>
+          </ElTableColumn>
+          <ElTableColumn prop="customerName" label="Khách hàng" min-width="180">
+            <template #default="{ row }">
+              <div class="flex items-center gap-2">
+                <ElIcon><User /></ElIcon> {{ row.customerName }}
+              </div>
+            </template>
+          </ElTableColumn>
+          <ElTableColumn
+            prop="carrier"
+            label="Vận chuyển"
+            width="150"
+            align="center"
+          >
+            <template #default="{ row }">
               <ElTag
-                :type="getCarrierTag(item.carrier)"
+                :type="getCarrierTag(row.carrier)"
                 size="small"
                 effect="plain"
-                >{{ item.carrier }}</ElTag
+                >{{ row.carrier }}</ElTag
               >
-            </div>
+            </template>
+          </ElTableColumn>
+          <ElTableColumn
+            prop="reason"
+            label="Lý do hoàn"
+            min-width="200"
+            show-overflow-tooltip
+          >
+            <template #default="{ row }">
+              <ElTag :type="getReasonTag(row.reason)" size="small">{{
+                row.reason
+              }}</ElTag>
+            </template>
+          </ElTableColumn>
+          <ElTableColumn
+            prop="status"
+            label="Trạng thái"
+            width="150"
+            align="center"
+          >
+            <template #default="{ row }">
+              <ElTag :type="getStatusTag(row.status)" effect="dark">{{
+                getStatusLabel(row.status)
+              }}</ElTag>
+            </template>
+          </ElTableColumn>
+        </ElTable>
+      </div>
+    </ElCard>
 
-            <div class="text-sm text-regular mb-2 flex items-center gap-2">
-              <ElIcon><User /></ElIcon> {{ item.customerName }}
-            </div>
-
-            <div class="flex justify-between items-end">
-              <ElTag
-                :type="getReasonTag(item.reason)"
-                size="small"
-                class="max-w-[150px] truncate"
-                :title="item.reason"
-              >
-                {{ item.reason }}
-              </ElTag>
-              <ElTag
-                :type="getStatusTag(item.status)"
-                size="small"
-                effect="dark"
-                >{{ getStatusLabel(item.status) }}</ElTag
-              >
-            </div>
-          </div>
-        </div>
-      </ElCard>
-    </div>
-
-    <!-- CỘT PHẢI (70%): PANEL KHUI HỘP & QUYẾT ĐỊNH XỬ LÝ -->
-    <div class="w-2/3 h-full">
-      <ElCard
-        v-if="selectedId && detail"
-        class="h-full flex flex-col"
-        body-class="p-0 flex flex-col h-full overflow-hidden"
-        v-loading="loadingDetail"
-      >
-        <!-- Detail Header -->
-        <div class="p-4 border-b border-color bg-fill-lighter shrink-0">
-          <div class="flex justify-between items-center mb-2">
-            <h2 class="m-0 text-xl font-bold">
-              Đơn hoàn RET-{{ detail.id.toString().padStart(3, "0") }}
-            </h2>
-            <ElTag
-              :type="getStatusTag(detail.status)"
-              effect="dark"
-              size="large"
-              >{{ getStatusLabel(detail.status) }}</ElTag
-            >
-          </div>
+    <!-- PANEL TRƯỢT CHI TIẾT (SLIDING DRAWER) -->
+    <ElDrawer
+      v-model="drawerVisible"
+      :title="
+        detail
+          ? `Chi tiết đơn hoàn RET-${detail.id.toString().padStart(3, '0')}`
+          : 'Chi tiết đơn hoàn'
+      "
+      size="600px"
+      direction="rtl"
+      :destroy-on-close="false"
+      class="returns-drawer"
+    >
+      <div v-loading="loadingDetail" class="h-full flex flex-col" v-if="detail">
+        <div
+          class="flex justify-between items-center mb-4 bg-fill-lighter p-4 rounded-xl border border-color"
+        >
           <p class="text-secondary m-0">
             Đơn gốc:
-            <span class="font-medium text-primary">{{
+            <span class="font-medium text-primary text-lg ml-2">{{
               detail.originalTrackingNumber
             }}</span>
           </p>
+          <ElTag :type="getStatusTag(detail.status)" effect="dark" size="large">
+            {{ getStatusLabel(detail.status) }}
+          </ElTag>
         </div>
 
-        <div class="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
+        <div
+          class="flex-1 overflow-y-auto pr-2 flex flex-col gap-6 custom-scrollbar"
+        >
           <!-- LÝ DO -->
           <ElAlert
-            :title="`Lý do: ${detail.reason}`"
+            :title="`Lý do hoàn: ${detail.reason}`"
             :type="getReasonAlertType(detail.reason)"
             :closable="false"
             show-icon
@@ -273,7 +313,7 @@
         <!-- KHỐI ĐÓNG HỒ SƠ (Nút bấm hành động) -->
         <div
           v-if="detail.status !== 'completed'"
-          class="p-4 border-t border-color shrink-0 bg-fill-lighter flex gap-3 justify-end"
+          class="pt-4 mt-2 border-t border-color shrink-0 flex gap-3 justify-end"
         >
           <ElButton
             type="primary"
@@ -305,21 +345,8 @@
             <ElIcon class="mr-1"><Money /></ElIcon> Hoàn tiền
           </ElButton>
         </div>
-      </ElCard>
-
-      <ElCard
-        v-else
-        class="h-full flex items-center justify-center bg-fill-lighter"
-        body-class="flex flex-col items-center p-10 text-secondary"
-      >
-        <ElIcon :size="60" class="mb-4 text-color-secondary"
-          ><Document
-        /></ElIcon>
-        <h3 class="m-0 font-normal text-lg">
-          Chọn một đơn hàng hoàn ở danh sách bên trái để xử lý
-        </h3>
-      </ElCard>
-    </div>
+      </div>
+    </ElDrawer>
   </div>
 </template>
 
@@ -339,7 +366,6 @@ import {
   Refresh,
   Warning,
   Money,
-  Document,
 } from "@element-plus/icons-vue";
 import {
   getReturns,
@@ -359,9 +385,10 @@ const returnsList = ref<ReturnOrderDto[]>([]);
 const loadingList = ref(false);
 const searchQuery = ref("");
 const statusFilter = ref("");
+const selectedRows = ref<ReturnOrderDto[]>([]);
 
-// State for Detail
-const selectedId = ref<number | null>(null);
+// State for Drawer
+const drawerVisible = ref(false);
 const detail = ref<ReturnDetailDto | null>(null);
 const loadingDetail = ref(false);
 
@@ -398,11 +425,6 @@ const fetchReturns = async () => {
   try {
     const res = await getReturns(statusFilter.value);
     returnsList.value = (res as unknown as ReturnOrderDto[]) || [];
-
-    // Auto select first item if list is not empty and none is selected
-    if (returnsList.value.length > 0 && !selectedId.value) {
-      handleSelect(returnsList.value[0].id);
-    }
   } catch (_error) {
     ElMessage.error("Lỗi khi tải danh sách hàng hoàn");
   } finally {
@@ -410,11 +432,11 @@ const fetchReturns = async () => {
   }
 };
 
-const handleSelect = async (id: number) => {
-  selectedId.value = id;
+const handleRowClick = async (row: ReturnOrderDto) => {
+  drawerVisible.value = true;
   loadingDetail.value = true;
   try {
-    const res = await getReturnDetail(id);
+    const res = await getReturnDetail(row.id);
     detail.value = res as unknown as ReturnDetailDto;
 
     // Reset form
@@ -427,6 +449,7 @@ const handleSelect = async (id: number) => {
     };
   } catch (_error) {
     ElMessage.error("Lỗi khi tải chi tiết hàng hoàn");
+    drawerVisible.value = false;
   } finally {
     loadingDetail.value = false;
   }
@@ -470,9 +493,9 @@ const submitDecision = async (action: "restock" | "defect" | "refund") => {
 
     ElMessage.success(`Xử lý thành công: ${actionMap[action]}`);
 
-    // Refresh
+    // Refresh and close drawer
     await fetchReturns();
-    await handleSelect(detail.value.id); // reload detail to show completed state
+    drawerVisible.value = false;
   } catch (e: any) {
     if (e !== "cancel") {
       ElMessage.error("Có lỗi xảy ra khi xử lý");
@@ -531,10 +554,69 @@ const getActionLabel = (action?: string) => {
   };
   return map[action] || action;
 };
+
+// Selection logic
+const handleSelectionChange = (rows: ReturnOrderDto[]) => {
+  selectedRows.value = rows;
+};
+
+const handleBulkAction = async (action: "restock" | "defect") => {
+  const actionMap: Record<string, string> = {
+    restock: "Nhập lại kho hàng loạt",
+    defect: "Cách ly chờ hủy hàng loạt",
+  };
+
+  try {
+    await ElMessageBox.confirm(
+      `Bạn chắc chắn muốn <strong>${actionMap[action]}</strong> cho ${selectedRows.value.length} đơn hàng đã chọn?`,
+      "Xác nhận xử lý hàng loạt",
+      {
+        confirmButtonText: "Đồng ý",
+        cancelButtonText: "Hủy",
+        type: "warning",
+        dangerouslyUseHTMLString: true,
+      },
+    );
+
+    // Giả lập gọi API xử lý hàng loạt
+    ElMessage.success(
+      `Đã xử lý thành công ${selectedRows.value.length} đơn hàng.`,
+    );
+    selectedRows.value = [];
+    await fetchReturns();
+  } catch (e) {
+    // Cancelled
+  }
+};
 </script>
 
 <style scoped>
-.reverse-logistics-container {
-  height: calc(100vh - 120px);
+.returns-page {
+  height: calc(100vh - 100px);
+}
+
+:deep(.order-tabs .el-tabs__nav-wrap::after) {
+  height: 1px;
+  background-color: var(--el-border-color-light);
+}
+
+:deep(.returns-drawer .el-drawer__header) {
+  margin-bottom: 0;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+  font-weight: bold;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--el-border-color-dark);
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background-color: transparent;
 }
 </style>
