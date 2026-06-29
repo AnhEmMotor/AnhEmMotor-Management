@@ -1,618 +1,635 @@
 <template>
-  <div class="customer-care-page p-8 bg-[#F8FAFC] min-h-full font-inter">
-    <div v-if="!isDetailView">
-      <div class="flex justify-between items-center mb-8">
-        <div>
-          <h1
-            class="m-0 text-2xl font-black tracking-tight text-slate-900 uppercase"
-          >
-            Chăm sóc Khách hàng
-          </h1>
-          <p
-            class="m-0 text-xs font-bold text-slate-400 uppercase tracking-widest mt-1"
-          >
-            Quản lý vòng đời & Trải nghiệm khách hàng Anh Em Motor
-          </p>
-        </div>
-        <div class="flex gap-3">
-          <button
-            @click="handleAddCustomer"
-            class="h-11 px-8 bg-[#001529] text-white rounded-xl font-black text-[11px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95 flex items-center gap-2"
-          >
-            <ArtSvgIcon icon="ri:user-add-line" /> Thêm khách hàng mới
-          </button>
-        </div>
-      </div>
-
-      <div
-        class="bg-white border border-slate-200 rounded-[32px] p-6 mb-8 shadow-sm"
-      >
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div class="col-span-2">
-            <ElInput
-              v-model="searchQuery"
-              placeholder="Tìm tên, SĐT hoặc Biển số khách hàng..."
-              class="combat-input-large"
-            >
-              <template #prefix
-                ><ArtSvgIcon icon="ri:search-2-line"
-              /></template>
-            </ElInput>
-          </div>
-          <div>
-            <ElSelect
-              v-model="filterType"
-              placeholder="Tất cả phân loại"
-              class="w-full premium-select"
-            >
-              <ElOption label="Tất cả khách hàng" value="all" />
-              <ElOption label="Khách hàng VIP" value="VIP" />
-              <ElOption label="Khách hàng cũ" value="Old" />
-              <ElOption label="Khách mới" value="New" />
-            </ElSelect>
-          </div>
-          <div class="flex items-center gap-2">
-            <div
-              class="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl border border-blue-100 flex items-center gap-2 shrink-0"
-            >
-              <span class="text-[9px] font-black uppercase tracking-tighter"
-                >Đang quản lý:</span
-              >
-              <span class="text-sm font-black">{{ customers.length }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="bg-white border border-slate-200 rounded-[40px] shadow-sm overflow-hidden"
-      >
-        <ElTable :data="customers" style="width: 100%" class="combat-table">
-          <ElTableColumn label="Khách hàng" min-width="240">
-            <template #default="{ row }">
-              <div class="flex items-center gap-4 py-2">
-                <div
-                  class="size-10 rounded-xl bg-slate-100 flex-cc text-slate-500 font-black"
-                >
-                  {{ row.name.charAt(0) }}
-                </div>
-                <div>
-                  <p
-                    class="m-0 text-sm font-black text-slate-800 leading-none mb-1"
-                  >
-                    {{ row.name }}
-                  </p>
-                  <p
-                    class="m-0 text-[10px] font-bold text-slate-400 uppercase tracking-tighter"
-                  >
-                    {{ row.phone }}
-                  </p>
-                </div>
-              </div>
-            </template>
-          </ElTableColumn>
-          <ElTableColumn label="Phân loại" width="150">
-            <template #default="{ row }">
-              <span
-                class="px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border"
-                :class="getTypeClasses(row.type)"
-              >
-                {{ row.typeLabel }}
-              </span>
-            </template>
-          </ElTableColumn>
-          <ElTableColumn label="Lần cuối bảo dưỡng" width="180">
-            <template #default="{ row }">
-              <span class="text-xs font-bold text-slate-500">{{
-                row.lastContact
-              }}</span>
-            </template>
-          </ElTableColumn>
-          <ElTableColumn label="Trạng thái Loyalty" width="160">
-            <template #default="{ row }">
-              <span class="text-[10px] font-black text-amber-500"
-                >{{ row.points }} pts</span
-              >
-            </template>
-          </ElTableColumn>
-          <ElTableColumn label="Thao tác" width="120" align="right">
-            <template #default="{ row }">
-              <button
-                @click="viewDetails(row)"
-                class="h-9 px-4 bg-blue-600 text-white rounded-lg font-black text-[10px] uppercase tracking-widest shadow-md hover:bg-blue-700 transition-all"
-              >
-                Chi tiết
-              </button>
-            </template>
-          </ElTableColumn>
-        </ElTable>
+  <div class="customer-care-page flex flex-col gap-5 pb-10">
+    <div class="page-header flex items-center justify-between">
+      <div>
+        <h2
+          class="m-0 text-2xl font-black text-gray-800 tracking-tight flex items-center gap-2"
+        >
+          <ArtSvgIcon icon="ri:gift-line" class="text-amber-500" />
+          Chăm sóc Khách hàng
+        </h2>
+        <p
+          class="m-0 text-xs font-bold text-gray-400 uppercase tracking-widest mt-1"
+        >
+          Quản lý vòng đời & Trải nghiệm khách hàng
+        </p>
       </div>
     </div>
 
-    <div v-else class="animate-fade-in">
-      <div class="flex justify-between items-center mb-8">
-        <div class="flex items-center gap-6">
-          <button
-            @click="isDetailView = false"
-            class="size-12 rounded-2xl bg-white border border-slate-200 text-slate-400 flex-cc hover:bg-slate-900 hover:text-white transition-all shadow-sm"
-          >
-            <ArtSvgIcon icon="ri:arrow-left-line" />
-          </button>
-          <div>
-            <h1 class="m-0 text-3xl font-black text-slate-900 tracking-tight">
-              {{ activeCustomer?.name }}
-            </h1>
-            <p
-              class="m-0 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-2 flex items-center gap-2"
-            >
-              <ArtSvgIcon icon="ri:shield-user-line" class="text-amber-500" />
-              Hồ sơ Customer 360 -
-              {{ activeCustomer?.typeLabel }}
-            </p>
-          </div>
-        </div>
-        <div class="flex gap-3">
-          <button
-            class="h-11 px-6 bg-emerald-500 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg hover:bg-emerald-600 transition-all"
-          >
-            Gọi Zalo
-          </button>
-          <button
-            class="h-11 px-6 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg hover:bg-blue-700 transition-all"
-          >
-            Gửi Ưu đãi
-          </button>
-        </div>
-      </div>
+    <div
+      class="search-bar-wrapper bg-white rounded-xl shadow-sm border border-gray-100 p-2"
+    >
+      <ArtSearchBar
+        v-model="searchModel"
+        :items="searchItems"
+        :label-width="120"
+        :span="8"
+        :show-expand="true"
+        @search="handleSearch"
+        @reset="handleReset"
+      />
+    </div>
 
-      <div class="grid grid-cols-12 gap-8">
-        <div class="col-span-12 lg:col-span-4 space-y-6">
-          <div
-            class="bg-slate-900 rounded-[40px] p-8 text-white shadow-2xl relative overflow-hidden"
-          >
-            <ArtSvgIcon
-              icon="ri:fingerprint-line"
-              class="absolute -right-4 -top-4 text-9xl opacity-10"
-            />
-            <h3
-              class="m-0 text-xs font-black uppercase tracking-widest text-blue-400 mb-8 flex items-center gap-2"
+    <div class="content-section" v-loading="loading">
+      <div v-if="customers.length > 0" class="flex flex-col gap-4">
+        <div
+          v-for="customer in customers"
+          :key="customer.id"
+          class="customer-row-card group bg-white rounded-2xl shadow-sm border border-gray-100 transition-all duration-300 flex items-center hover:border-amber-200 cursor-pointer overflow-hidden"
+          :class="{ 'is-expanded': expandedId === customer.id }"
+          @click="handleToggleExpand(customer.id)"
+        >
+          <div class="flex flex-1 items-center p-5 gap-6">
+            <div
+              class="priority-column shrink-0 w-24 flex flex-col items-center gap-1.5"
             >
-              Dữ liệu cốt lõi
-            </h3>
-            <div class="space-y-6 relative z-10">
-              <div class="flex justify-between border-b border-white/10 pb-4">
-                <span class="text-[10px] font-bold opacity-40 uppercase"
-                  >Số điện thoại</span
-                >
-                <span class="text-sm font-black">{{
-                  activeCustomer?.phone
-                }}</span>
+              <div
+                class="priority-label flex flex-col items-center justify-center p-2 rounded-xl text-white w-20 h-14"
+                :style="{ backgroundColor: getPriority(customer).color }"
+              >
+                <ArtSvgIcon
+                  :icon="getPriority(customer).icon"
+                  class="text-xl"
+                />
+                <span class="text-[9px] font-black tracking-tighter uppercase">
+                  {{ getPriority(customer).label }}
+                </span>
               </div>
-              <div class="flex justify-between border-b border-white/10 pb-4">
-                <span class="text-[10px] font-bold opacity-40 uppercase"
-                  >CCCD / CMND</span
+            </div>
+
+            <div
+              class="identity-column shrink-0 w-64 border-l border-gray-50 pl-4"
+            >
+              <div class="flex flex-col gap-1">
+                <h4
+                  class="m-0 text-gray-900 font-extrabold text-base group-hover:text-amber-600 transition-colors"
                 >
-                <span class="text-sm font-black">{{
-                  activeCustomer?.identity
-                }}</span>
+                  {{ customer.fullName }}
+                </h4>
+                <div class="flex items-center gap-2">
+                  <span class="text-sm text-gray-500 font-bold">
+                    {{ customer.phoneNumber }}
+                  </span>
+                </div>
               </div>
-              <div class="flex justify-between border-b border-white/10 pb-4">
-                <span class="text-[10px] font-bold opacity-40 uppercase"
-                  >Hạng Loyalty</span
-                >
-                <span class="text-sm font-black text-amber-500">{{
-                  activeCustomer?.tier
-                }}</span>
-              </div>
-              <div>
+            </div>
+
+            <div class="flex-1 px-4 border-l border-gray-50">
+              <div class="flex flex-col gap-1">
                 <span
-                  class="text-[10px] font-bold opacity-40 uppercase mb-3 block"
-                  >Địa chỉ thường trú</span
+                  class="text-[10px] font-bold text-gray-300 uppercase tracking-widest"
                 >
-                <p class="m-0 text-sm font-bold leading-relaxed">
-                  {{ activeCustomer?.address }}
+                  Nhắc nhở gần nhất
+                </span>
+                <p class="m-0 text-xs text-gray-600 italic line-clamp-1">
+                  "{{ getTopReminder(customer) }}"
                 </p>
               </div>
             </div>
-          </div>
 
-          <div
-            class="bg-white border border-slate-200 rounded-[40px] p-8 shadow-sm"
-          >
-            <h3
-              class="m-0 text-xs font-black uppercase tracking-widest text-slate-800 mb-6"
-            >
-              Nhu cầu & Sở thích
-            </h3>
-            <div class="flex flex-wrap gap-2">
-              <span
-                v-for="tag in activeCustomer?.needs"
-                :key="tag"
-                class="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-[10px] font-black uppercase border border-blue-100"
-                >{{ tag }}</span
-              >
-            </div>
-            <div
-              class="mt-8 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center gap-4"
-            >
-              <div
-                class="size-10 rounded-xl bg-red-500 text-white flex-cc shrink-0 animate-pulse"
-              >
-                <ArtSvgIcon icon="ri:alarm-warning-line" />
+            <div class="w-48 px-4 border-l border-gray-50">
+              <div class="flex flex-col gap-1">
+                <span
+                  class="text-[10px] text-gray-400 font-bold uppercase tracking-tighter"
+                >
+                  Điểm / Hạng
+                </span>
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-black text-amber-500">
+                    {{ customer.points }} pts
+                  </span>
+                  <ElTag size="small" effect="plain" round class="text-[9px]">
+                    {{ customer.tier }}
+                  </ElTag>
+                </div>
               </div>
-              <p
-                class="m-0 text-[10px] font-black text-red-600 uppercase leading-relaxed"
-              >
-                Nhắc nhở: Quá hạn thay nhớt lần 3 (12 ngày)
-              </p>
+            </div>
+
+            <div
+              class="flex items-center gap-2 border-l border-gray-50 pl-6 pr-2"
+            >
+              <div class="flex gap-1" @click.stop>
+                <ElTooltip content="Hồ sơ 360">
+                  <div
+                    class="size-8 bg-amber-50 text-amber-500 rounded-lg flex-cc hover:bg-amber-500 hover:text-white transition-all cursor-pointer"
+                    @click="handleView360(customer)"
+                  >
+                    <ArtSvgIcon icon="ri:eye-line" class="text-sm" />
+                  </div>
+                </ElTooltip>
+                <ElTooltip content="Xử lý nhắc nhở">
+                  <div
+                    class="size-8 bg-gray-50 text-gray-400 rounded-lg flex-cc hover:bg-amber-500 hover:text-white transition-all cursor-pointer"
+                    @click="handleCareAction(customer)"
+                  >
+                    <ArtSvgIcon icon="ri:heart-line" class="text-sm" />
+                  </div>
+                </ElTooltip>
+              </div>
+              <ArtSvgIcon
+                :icon="
+                  expandedId === customer.id
+                    ? 'ri:arrow-up-s-line'
+                    : 'ri:arrow-down-s-line'
+                "
+                class="text-xl text-gray-300"
+              />
             </div>
           </div>
-        </div>
 
-        <div class="col-span-12 lg:col-span-8 space-y-8">
-          <div
-            class="bg-white border border-slate-200 rounded-[40px] shadow-sm overflow-hidden"
-          >
-            <ElTabs v-model="activeTab" class="combat-tabs-large">
-              <ElTabPane label="DÒNG THỜI GIAN TƯƠNG TÁC" name="timeline">
-                <div class="p-10 space-y-8 relative">
+          <div v-if="expandedId === customer.id" class="expansion-container">
+            <div class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div
+                class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100"
+              >
+                <h3
+                  class="text-sm font-black text-gray-800 uppercase tracking-wider mb-4 flex items-center gap-2"
+                >
+                  <ArtSvgIcon icon="ri:bell-line" class="text-amber-500" />
+                  Nhắc nhở chăm sóc
+                </h3>
+                <div
+                  v-if="getCareReminders(customer).length === 0"
+                  class="text-center text-gray-400 py-8"
+                >
+                  <ArtSvgIcon
+                    icon="ri:checkbox-circle-line"
+                    class="text-3xl mb-2 text-emerald-400"
+                  />
+                  <p class="text-sm font-bold">Không có nhắc nhở quá hạn</p>
+                </div>
+                <div class="flex flex-col gap-3">
                   <div
-                    class="absolute left-[59px] top-12 bottom-12 w-0.5 bg-slate-100"
-                  ></div>
-                  <div
-                    v-for="log in timeline"
-                    :key="log.id"
-                    class="flex gap-8 relative"
+                    v-for="reminder in getCareReminders(customer)"
+                    :key="reminder.type + reminder.title"
+                    class="reminder-item flex items-start gap-3 p-3 rounded-xl border border-gray-50"
                   >
                     <div
-                      class="size-14 rounded-2xl flex-cc z-10 shadow-xl"
-                      :class="
-                        log.type === 'call'
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-slate-800 text-white'
-                      "
+                      class="mt-0.5"
+                      :class="reminderPriorityClass(reminder.priority)"
                     >
                       <ArtSvgIcon
-                        :icon="
-                          log.type === 'call'
-                            ? 'ri:phone-line'
-                            : 'ri:message-3-line'
-                        "
-                        class="text-xl"
+                        :icon="reminderIcon(reminder.type)"
+                        class="text-base"
                       />
                     </div>
-                    <div
-                      class="flex-1 bg-slate-50/50 p-8 rounded-[32px] border border-slate-100"
-                    >
-                      <div class="flex justify-between items-center mb-4">
-                        <div class="flex items-center gap-3">
-                          <span
-                            class="text-[11px] font-black text-slate-400 uppercase tracking-widest"
-                            >{{ log.date }}</span
-                          >
-                          <span class="size-1 rounded-full bg-slate-300"></span>
-                          <span
-                            class="text-[11px] font-black text-blue-500 uppercase tracking-widest"
-                            >{{ log.staff }}</span
-                          >
-                        </div>
-                        <span
-                          class="px-3 py-1 bg-white text-[9px] font-black uppercase rounded-lg border border-slate-200 shadow-sm"
-                          >{{ log.category }}</span
-                        >
+                    <div class="flex-1">
+                      <div class="font-semibold text-gray-800 text-sm">
+                        {{ reminder.title }}
                       </div>
-                      <p
-                        class="m-0 text-base font-bold text-slate-700 leading-relaxed"
-                      >
-                        {{ log.content }}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </ElTabPane>
-              <ElTabPane label="LỊCH SỬ MUA XE & DỊCH VỤ" name="purchase">
-                <div class="p-10 space-y-10">
-                  <div class="grid grid-cols-2 gap-6">
-                    <div
-                      v-for="bike in activeCustomer?.bikes"
-                      :key="bike.id"
-                      class="bg-white border border-slate-100 rounded-[32px] p-6 shadow-sm hover:border-blue-300 transition-all"
-                    >
-                      <div class="flex gap-5 mb-4">
-                        <img
-                          :src="bike.img"
-                          class="size-20 rounded-2xl object-cover shadow-lg"
-                        />
-                        <div>
-                          <h4 class="m-0 text-lg font-black text-slate-800">
-                            {{ bike.model }}
-                          </h4>
-                          <p
-                            class="m-0 text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest"
-                          >
-                            {{ bike.deliveryDate }}
-                          </p>
-                        </div>
+                      <div class="text-xs text-gray-500 mt-0.5">
+                        {{ reminder.description }}
                       </div>
-                      <div class="grid grid-cols-2 gap-3">
-                        <div class="p-3 bg-slate-50 rounded-2xl">
-                          <p
-                            class="m-0 text-[9px] font-black text-slate-300 uppercase mb-1"
-                          >
-                            Thanh toán
-                          </p>
-                          <p class="m-0 text-xs font-black text-slate-700">
-                            {{ bike.payment }}
-                          </p>
-                        </div>
-                        <div class="p-3 bg-slate-50 rounded-2xl">
-                          <p
-                            class="m-0 text-[9px] font-black text-slate-300 uppercase mb-1"
-                          >
-                            Giá trị
-                          </p>
-                          <p class="m-0 text-xs font-black text-blue-600">
-                            {{ bike.price }}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="pt-8 border-t border-slate-100">
-                    <h3
-                      class="m-0 text-xs font-black uppercase tracking-widest text-slate-800 mb-6"
-                    >
-                      Nhật ký bảo dưỡng & Sửa chữa
-                    </h3>
-                    <div class="space-y-4">
                       <div
-                        v-for="i in 2"
-                        :key="i"
-                        class="p-5 bg-slate-50/50 rounded-2xl flex justify-between items-center border border-transparent hover:border-slate-200 transition-all"
+                        v-if="reminder.dueDate"
+                        class="text-xs text-gray-400 mt-1"
                       >
-                        <div class="flex items-center gap-4">
-                          <div
-                            class="size-10 rounded-xl bg-white border border-slate-100 flex-cc text-slate-400"
-                          >
-                            <ArtSvgIcon icon="ri:tools-line" />
-                          </div>
-                          <div>
-                            <p class="m-0 text-sm font-black text-slate-800">
-                              Bảo dưỡng định kỳ lần {{ i }}
-                            </p>
-                            <p
-                              class="m-0 text-[10px] font-bold text-slate-400 uppercase"
-                            >
-                              Ngày 12/01/2024 - Thợ: Nguyễn Bình
-                            </p>
-                          </div>
-                        </div>
-                        <span class="text-sm font-black text-slate-700"
-                          >350,000đ</span
-                        >
+                        Hạn: {{ formatDate(reminder.dueDate) }}
+                      </div>
+                    </div>
+                    <ElButton
+                      size="small"
+                      type="primary"
+                      round
+                      class="shrink-0"
+                      @click.stop="handleReminderAction(customer, reminder)"
+                    >
+                      Xử lý
+                    </ElButton>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100"
+              >
+                <h3
+                  class="text-sm font-black text-gray-800 uppercase tracking-wider mb-4 flex items-center gap-2"
+                >
+                  <ArtSvgIcon icon="ri:history-line" class="text-blue-500" />
+                  Lịch sử tương tác
+                </h3>
+                <div
+                  v-if="
+                    !customer.activities || customer.activities.length === 0
+                  "
+                  class="text-center text-gray-400 py-8"
+                >
+                  <ArtSvgIcon icon="ri:inbox-line" class="text-3xl mb-2" />
+                  <p class="text-sm font-bold">Chưa có tương tác</p>
+                </div>
+                <div class="flex flex-col gap-3 max-h-[300px] overflow-y-auto">
+                  <div
+                    v-for="act in getSortedActivities(customer)"
+                    :key="act.id"
+                    class="flex items-start gap-3 p-3 rounded-xl bg-gray-50/50"
+                  >
+                    <div
+                      class="size-8 rounded-lg flex-cc shrink-0"
+                      :class="activityIconClass(act.activityType)"
+                    >
+                      <ArtSvgIcon
+                        :icon="activityIcon(act.activityType)"
+                        class="text-sm"
+                      />
+                    </div>
+                    <div class="flex-1">
+                      <div class="text-xs font-bold text-gray-500 uppercase">
+                        {{ act.activityType }}
+                      </div>
+                      <div class="text-sm text-gray-800 mt-0.5">
+                        {{ act.description }}
+                      </div>
+                      <div class="text-[10px] text-gray-400 mt-1">
+                        {{ formatDate(act.createdAt) }}
                       </div>
                     </div>
                   </div>
                 </div>
-              </ElTabPane>
-            </ElTabs>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      <div
+        v-else-if="!loading"
+        class="empty-state p-20 flex flex-col items-center bg-white rounded-3xl border border-dashed border-gray-200 mx-4"
+      >
+        <ArtSvgIcon icon="ri:gift-line" class="text-6xl text-gray-200 mb-4" />
+        <p class="text-gray-400 font-bold">Chưa có khách hàng nào</p>
+        <p class="text-xs mt-1">Dữ liệu sẽ được tải từ hệ thống</p>
+      </div>
     </div>
+
+    <ElDialog
+      v-model="actionDialogVisible"
+      title="Xử lý nhắc nhở"
+      width="500px"
+      destroy-on-close
+    >
+      <div class="flex flex-col gap-4">
+        <div class="p-4 bg-amber-50 rounded-xl border border-amber-100">
+          <p class="text-sm font-bold text-gray-800">
+            {{ activeReminder?.title }}
+          </p>
+          <p class="text-xs text-gray-500 mt-1">
+            {{ activeReminder?.description }}
+          </p>
+        </div>
+        <ElSelect
+          v-model="selectedAction"
+          placeholder="Chọn hành động"
+          class="w-full"
+        >
+          <ElOption label="📞 Gọi điện" value="Call" />
+          <ElOption label="💬 Zalo / Tin nhắn" value="Phone" />
+          <ElOption label="📝 Ghi chú" value="Note" />
+          <ElOption label="📅 Đặt lịch hẹn" value="Booking" />
+          <ElOption label="✅ Đánh dấu đã xử lý" value="Handled" />
+        </ElSelect>
+        <ElInput
+          v-model="actionNote"
+          type="textarea"
+          :rows="3"
+          placeholder="Nhập nội dung tương tác..."
+        />
+      </div>
+      <template #footer>
+        <div class="flex gap-3 justify-end">
+          <ElButton @click="actionDialogVisible = false">Hủy</ElButton>
+          <ElButton
+            type="primary"
+            @click="submitCareAction"
+            :loading="actionLoading"
+          >
+            Lưu
+          </ElButton>
+        </div>
+      </template>
+    </ElDialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
+import dayjs from "dayjs";
+import "dayjs/locale/vi";
+import {
+  fetchGetLeadList,
+  fetchAddLeadActivity,
+  type Lead,
+} from "@/api/customer/lead.api";
+import { isHighIntentLeadStatus } from "@/modules/Marketing/constants/customerCrm";
 
-defineOptions({ name: "CustomerCareFocusMode" });
+dayjs.locale("vi");
 
-const searchQuery = ref("");
-const filterType = ref("all");
-const isDetailView = ref(false);
-const activeTab = ref("timeline");
-const activeCustomer = ref<any>(null);
+defineOptions({ name: "CustomerCare" });
 
-const customers = ref([
+const router = useRouter();
+const data = ref<Lead[]>([]);
+const loading = ref(false);
+const searchModel = ref({});
+const expandedId = ref<number | null>(null);
+
+const actionDialogVisible = ref(false);
+const actionLoading = ref(false);
+const activeCustomer = ref<Lead | null>(null);
+const activeReminder = ref<any>(null);
+const selectedAction = ref("");
+const actionNote = ref("");
+
+const customers = computed(() => data.value);
+
+const searchItems = [
   {
-    id: 1,
-    name: "Nguyễn Văn A",
-    phone: "0901.234.567",
-    type: "VIP",
-    typeLabel: "Khách hàng VIP",
-    lastContact: "02/05/2024",
-    points: 4250,
-    tier: "Gold Member",
-    address: "123 Đường 30/4, P. Trung Dũng, Biên Hòa, Đồng Nai",
-    email: "vana@gmail.com",
-    source: "Website",
-    identity: "072095001234",
-    needs: [
-      "Tay ga cao cấp",
-      "Thích màu đen mờ",
-      "Đổi xe cũ",
-      "Quan tâm trả góp",
-    ],
-    bikes: [
-      {
-        id: 1,
-        model: "Honda SH 160i Sporty",
-        price: "102.500.000đ",
-        deliveryDate: "12/12/2023",
-        img: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=800",
-        payment: "Trả thẳng",
-      },
-      {
-        id: 2,
-        model: "Honda Vision",
-        price: "32.000.000đ",
-        deliveryDate: "15/05/2022",
-        img: "https://images.unsplash.com/photo-1449495169669-7b118f960237?auto=format&fit=crop&q=80&w=400",
-        payment: "Trả góp 0%",
-      },
-    ],
+    key: "fullName",
+    label: "Tìm kiếm",
+    type: "input",
+    props: {
+      placeholder: "Tên hoặc SĐT...",
+      clearable: true,
+    },
   },
   {
-    id: 2,
-    name: "Trần Thị B",
-    phone: "0938.888.999",
-    type: "Old",
-    typeLabel: "Khách hàng cũ",
-    lastContact: "28/04/2024",
-    points: 1200,
-    tier: "Silver Member",
-    address: "Long Thành, Đồng Nai",
-    source: "Facebook Fanpage",
-    identity: "072093005678",
-    needs: ["Tiết kiệm xăng", "Đi làm xa", "Màu xanh"],
-    bikes: [
-      {
-        id: 1,
-        model: "Honda Vision 2023",
-        price: "34.500.000đ",
-        deliveryDate: "10/10/2023",
-        img: "https://images.unsplash.com/photo-1449495169669-7b118f960237?auto=format&fit=crop&q=80&w=400",
-        payment: "Tiền mặt",
-      },
-    ],
+    key: "tier",
+    label: "Hạng thành viên",
+    type: "select",
+    props: {
+      placeholder: "Tất cả hạng",
+      clearable: true,
+      options: [
+        { label: "Thành viên mới", value: "Thành viên mới" },
+        { label: "VIP", value: "VIP" },
+        { label: "Thân thiết", value: "Thân thiết" },
+      ],
+    },
   },
-]);
+];
 
-const timeline = ref([
-  {
-    id: 1,
-    type: "call",
-    date: "02/05/2024 10:15",
-    staff: "Sale: Minh Tuấn",
-    category: "Tư vấn đổi xe",
-    content:
-      "Khách hàng có nhu cầu đổi từ Vision lên SH 160i. Đã báo giá sơ bộ và hẹn lái thử vào cuối tuần này. Khách đang cân nhắc giữa màu Đen mờ và Đỏ đô.",
-  },
-  {
-    id: 2,
-    type: "note",
-    date: "28/04/2024 15:30",
-    staff: "Admin: Lan Anh",
-    category: "Hậu mãi",
-    content:
-      "Gửi tin nhắn Zalo chúc mừng sinh nhật khách hàng kèm Voucher giảm giá 20% thay nhớt tại showroom.",
-  },
-  {
-    id: 3,
-    type: "call",
-    date: "15/03/2024 09:00",
-    staff: "Kỹ thuật: Hoàng",
-    category: "Nhắc bảo dưỡng",
-    content:
-      "Nhắc khách bảo dưỡng lần 3 theo lịch hẹn. Khách báo đang đi công tác, sẽ ghé vào tuần sau.",
-  },
-]);
-
-const getTypeClasses = (type: string) => {
-  if (type === "VIP") return "bg-amber-50 text-amber-600 border-amber-100";
-  if (type === "Old") return "bg-blue-50 text-blue-600 border-blue-100";
-  return "bg-slate-50 text-slate-500 border-slate-200";
+const getPriority = (lead: Lead) => {
+  if (isHighIntentLeadStatus(lead.status)) {
+    return {
+      level: 3,
+      label: "CẤP BÁCH",
+      icon: "ri:fire-fill",
+      color: "#ef4444",
+    };
+  }
+  if (lead.interestedVehicle) {
+    return {
+      level: 2,
+      label: "TIỀM NẠNG",
+      icon: "ri:star-fill",
+      color: "#f97316",
+    };
+  }
+  return {
+    level: 1,
+    label: "THEO DÕI",
+    icon: "ri:folder-user-fill",
+    color: "#64748b",
+  };
 };
 
-const handleAddCustomer = () =>
-  ElMessage.success("Mở Form thêm khách hàng mới");
-
-const viewDetails = (row: any) => {
-  activeCustomer.value = row;
-  isDetailView.value = true;
+const getTopReminder = (customer: Lead) => {
+  const reminders = computeCareReminders(customer);
+  if (reminders.length === 0) return "Không có nhắc nhở";
+  return reminders[0].title;
 };
+
+const getCareReminders = (customer: Lead) => {
+  return computeCareReminders(customer);
+};
+
+const computeCareReminders = (customer: Lead) => {
+  const reminders: any[] = [];
+  const now = dayjs();
+
+  if (customer.birthday) {
+    const birthDate = dayjs(customer.birthday);
+    let nextBirthday = birthDate.set("year", now.year());
+    if (nextBirthday.isBefore(now)) {
+      nextBirthday = nextBirthday.add(1, "year");
+    }
+    const daysUntil = nextBirthday.diff(now, "day");
+    reminders.push({
+      type: "birthday",
+      title: "Sinh nhật khách hàng",
+      description: `${customer.fullName} - ${nextBirthday.format("DD/MM/YYYY")}`,
+      dueDate: nextBirthday.toISOString(),
+      priority: daysUntil <= 7 ? "urgent" : daysUntil <= 30 ? "high" : "normal",
+    });
+  }
+
+  if (customer.tier === "VIP" || customer.tier === "Thân thiết") {
+    reminders.push({
+      type: "tier",
+      title: `Khách hàng ${customer.tier}`,
+      description: "Ưu tiên chăm sóc và ưu đãi đặc biệt",
+      priority: "high",
+    });
+  }
+
+  if (customer.points < 50 && customer.status !== "New") {
+    reminders.push({
+      type: "points",
+      title: "Điểm tích lũy thấp",
+      description: `Khách hàng chỉ có ${customer.points} điểm. Cần kích hoạt lại.`,
+      priority: "normal",
+    });
+  }
+
+  return reminders;
+};
+
+const getSortedActivities = (customer: Lead) => {
+  if (!customer.activities) return [];
+  return [...customer.activities].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
+};
+
+const formatDate = (val: string) => {
+  return dayjs(val).format("DD/MM/YYYY HH:mm");
+};
+
+const reminderIcon = (type: string) => {
+  const map: Record<string, string> = {
+    birthday: "ri:cake-line",
+    tier: "ri:vip-crown-line",
+    points: "ri:star-line",
+    maintenance: "ri:tools-line",
+    stalled_order: "ri:alert-line",
+  };
+  return map[type] || "ri:information-line";
+};
+
+const reminderPriorityClass = (priority: string) => {
+  const map: Record<string, string> = {
+    urgent: "text-red-500",
+    high: "text-amber-500",
+    normal: "text-blue-500",
+    low: "text-gray-400",
+  };
+  return map[priority] || "text-gray-400";
+};
+
+const activityIcon = (type: string) => {
+  const map: Record<string, string> = {
+    Call: "ri:phone-line",
+    Phone: "ri:phone-line",
+    Note: "ri:edit-line",
+    Booking: "ri:calendar-line",
+    TestDrive: "ri:motorbike-line",
+    Contact: "ri:message-3-line",
+  };
+  return map[type] || "ri:information-line";
+};
+
+const activityIconClass = (type: string) => {
+  const map: Record<string, string> = {
+    Call: "bg-green-50 text-green-500",
+    Phone: "bg-green-50 text-green-500",
+    Note: "bg-amber-50 text-amber-500",
+    Booking: "bg-blue-50 text-blue-500",
+    TestDrive: "bg-purple-50 text-purple-500",
+    Contact: "bg-gray-100 text-gray-500",
+  };
+  return map[type] || "bg-gray-100 text-gray-500";
+};
+
+const handleToggleExpand = (id: number) => {
+  expandedId.value = expandedId.value === id ? null : id;
+};
+
+const handleView360 = (customer: Lead) => {
+  router.push(`/Marketing/customer/profile/${customer.id}`);
+};
+
+const handleCareAction = (customer: Lead) => {
+  activeCustomer.value = customer;
+  activeReminder.value = null;
+  selectedAction.value = "";
+  actionNote.value = "";
+  actionDialogVisible.value = true;
+};
+
+const handleReminderAction = (customer: Lead, reminder: any) => {
+  activeCustomer.value = customer;
+  activeReminder.value = reminder;
+  selectedAction.value = "";
+  actionNote.value = "";
+  actionDialogVisible.value = true;
+};
+
+const submitCareAction = async () => {
+  if (!activeCustomer.value) return;
+  if (!selectedAction.value) {
+    ElMessage.warning("Vui lòng chọn hành động");
+    return;
+  }
+
+  actionLoading.value = true;
+  try {
+    const description = actionNote.value || selectedAction.value;
+    await fetchAddLeadActivity(activeCustomer.value.id, {
+      activityType: selectedAction.value,
+      description,
+    });
+    ElMessage.success("Đã ghi nhận tương tác");
+    actionDialogVisible.value = false;
+    await refreshData();
+  } catch {
+    ElMessage.error("Lỗi khi ghi nhận tương tác");
+  } finally {
+    actionLoading.value = false;
+  }
+};
+
+const refreshData = async () => {
+  loading.value = true;
+  try {
+    const res = await fetchGetLeadList();
+    const leads = Array.isArray(res) ? res : (res as any).items || [];
+    data.value = leads;
+  } catch (_err: any) {
+    ElMessage.error("Lỗi khi tải dữ liệu khách hàng");
+  } finally {
+    loading.value = false;
+  }
+};
+
+const handleSearch = (_params: any) => {
+  refreshData();
+};
+
+const handleReset = () => {
+  refreshData();
+};
+
+onMounted(() => {
+  refreshData();
+});
 </script>
 
 <style lang="scss" scoped>
 .customer-care-page {
-  .combat-input-large :deep(.el-input__wrapper) {
-    height: 52px;
-    background-color: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 20px;
-    box-shadow: none;
+  .customer-row-card {
+    border: 1px solid #f3f4f6;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-    &:focus {
-      border-color: #3b82f6;
-    }
-  }
-
-  .premium-select :deep(.el-input__wrapper) {
-    height: 52px;
-    background-color: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 20px;
-    box-shadow: none;
-  }
-
-  .combat-table {
-    :deep(.el-table__header-wrapper th) {
-      padding: 20px 0;
-      font-size: 10px;
-      font-weight: 900;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      background-color: #f8fafc;
+    &:hover {
+      background-color: #fffdf7;
+      border-color: #f59e0b;
+      box-shadow: 0 12px 24px rgb(0 0 0 / 5%);
+      transform: translateY(-2px);
     }
 
-    :deep(.el-table__row) {
-      transition: all 0.3s;
+    &.is-expanded {
+      background-color: white;
+      border-color: #f59e0b;
+      border-bottom-right-radius: 0;
+      border-bottom-left-radius: 0;
+      box-shadow: 0 10px 30px rgb(0 0 0 / 5%);
+    }
+
+    .priority-label {
+      box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+      transition: transform 0.3s;
 
       &:hover {
-        cursor: pointer;
-        background-color: #f1f5f9;
+        transform: scale(1.05);
       }
     }
   }
 
-  .combat-tabs-large {
-    :deep(.el-tabs__header) {
-      padding: 0 40px;
-      margin: 0;
-      background: #f8fafc;
-      border-bottom: 1px solid #f1f5f9;
-    }
-
-    :deep(.el-tabs__nav-wrap::after) {
-      display: none;
-    }
-
-    :deep(.el-tabs__item) {
-      height: 80px;
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: 0.1em;
-
-      &.is-active {
-        color: #3b82f6;
-      }
-    }
-
-    :deep(.el-tabs__active-bar) {
-      height: 4px;
-      background: #3b82f6;
-      border-radius: 4px;
-    }
-  }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.98) translateY(10px);
+  .expansion-container {
+    overflow: hidden;
+    background-color: #fafafa;
+    border: 1px solid #f59e0b;
+    border-top: none;
+    border-bottom-right-radius: 1.5rem;
+    border-bottom-left-radius: 1.5rem;
   }
 
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
+  .reminder-item {
+    border-radius: 12px;
+    transition: background 0.15s;
+
+    &:hover {
+      background: #fefce8;
+    }
+  }
+
+  .search-bar-wrapper {
+    :deep(.el-form-item__label) {
+      font-weight: 600;
+      color: #4b5563;
+      white-space: nowrap !important;
+    }
   }
 }
 </style>

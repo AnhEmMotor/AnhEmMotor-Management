@@ -86,7 +86,7 @@
                       </ElTooltip>
                       <span
                         class="text-[10px] text-gray-400 font-bold uppercase tracking-wider"
-                        >Mega Sale 2024</span
+                        >{{ customer.source || "—" }}</span
                       >
                     </div>
                   </div>
@@ -129,11 +129,11 @@
                     >Người phụ trách</span
                   >
                   <ElSelect
-                    :model-value="customer.saleId || null"
+                    :model-value="customer.assignedToId || null"
                     size="small"
                     class="sale-select-premium"
                     :placeholder="
-                      !customer.saleId ? 'CHƯA BÀN GIAO' : 'Giao Sale...'
+                      !customer.assignedToId ? 'CHƯA BÀN GIAO' : 'Giao Sale...'
                     "
                   >
                     <ElOption
@@ -150,6 +150,14 @@
                 class="flex items-center gap-2 border-l border-gray-50 pl-6 pr-2"
               >
                 <div class="flex gap-1" @click.stop>
+                  <ElTooltip content="Hồ sơ 360">
+                    <div
+                      class="size-8 bg-blue-50 text-blue-500 rounded-lg flex-cc hover:bg-blue-500 hover:text-white transition-all cursor-pointer"
+                      @click="handleView360(customer)"
+                    >
+                      <ArtSvgIcon icon="ri:eye-line" class="text-sm" />
+                    </div>
+                  </ElTooltip>
                   <ElTooltip content="Chỉnh sửa hồ sơ">
                     <div
                       class="size-8 bg-gray-50 text-gray-400 rounded-lg flex-cc hover:bg-blue-500 hover:text-white transition-all cursor-pointer"
@@ -210,6 +218,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 import { useLeadTable } from "@/modules/Marketing/logic/useLeadTable";
 import CustomerDetailExpansion from "./CustomerDetailExpansion.vue";
 import CustomerFormDialog from "./CustomerFormDialog.vue";
@@ -233,6 +242,8 @@ const {
   getPriority,
 } = useLeadTable();
 
+const router = useRouter();
+
 const searchModel = ref({});
 const expandedId = ref<number | null>(null);
 const addDialogVisible = ref(false);
@@ -250,6 +261,10 @@ const handleAdd = () => {
 const handleEdit = (customer: any) => {
   editData.value = { ...customer };
   addDialogVisible.value = true;
+};
+
+const handleView360 = (customer: any) => {
+  router.push(`/Marketing/customer/profile/${customer.id}`);
 };
 
 const handleDelete = (customer: any) => {
@@ -283,9 +298,13 @@ const searchItems = [
       placeholder: "Tất cả trạng thái",
       clearable: true,
       options: [
-        { label: "Chính thức", value: "Official" },
-        { label: "Đang mua", value: "Purchasing" },
+        { label: "Mới đăng ký", value: "New" },
+        { label: "Đã liên hệ", value: "Contacted" },
+        { label: "Đang tư vấn", value: "Consulting" },
+        { label: "Đang lái thử", value: "TestDriving" },
         { label: "Tiềm năng", value: "Potential" },
+        { label: "Đã chốt đơn", value: "Won" },
+        { label: "Khách chính thức", value: "Official" },
       ],
     },
   },
@@ -304,33 +323,36 @@ const getSourceClass = (source: string) => {
 };
 
 const getPipelineLabel = (status: string) => {
-  const map: any = {
+  const map: Record<string, string> = {
     New: "Mới đăng ký",
-    TestDrive: "Đã lái thử",
-    Negotiating: "Thương lượng",
+    Contacted: "Đã liên hệ",
     Consulting: "Đang tư vấn",
+    TestDriving: "Đang lái thử",
+    Negotiating: "Thương lượng",
+    Potential: "Tiềm năng",
     Won: "Đã chốt đơn",
     Official: "Khách chính thức",
+    Closed: "Đã đóng",
   };
   return map[status] || "Đang tư vấn";
 };
 
 const getPipelineType = (status: string) => {
-  if (status === "New") return "info";
-  if (status === "TestDrive" || status === "Negotiating") return "warning";
   if (status === "Won" || status === "Official") return "success";
+  if (status === "TestDriving" || status === "Negotiating") return "warning";
+  if (status === "New") return "info";
   return "primary";
 };
 
 const getLastNote = (customer: any) => {
-  const notes = [
-    "Khách thích màu đỏ đen nhám",
-    "Đang chờ duyệt hồ sơ trả góp",
-    "Đã gửi báo giá lăn bánh chi tiết",
-    "Hẹn xem xe vào sáng Thứ 7",
-    "Quan tâm đến chính sách bảo hành 3 năm",
-  ];
-  return notes[customer.id % notes.length];
+  if (customer.activities && customer.activities.length > 0) {
+    const sorted = [...customer.activities].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+    return sorted[0].description;
+  }
+  return "Chưa có ghi chú";
 };
 </script>
 

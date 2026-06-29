@@ -45,6 +45,9 @@
           <span class="font-bold text-lg">{{
             $t("menus.contract.sales")
           }}</span>
+          <el-button type="primary" :icon="Plus" @click="handleOpenAddDialog">
+            Thêm hợp đồng
+          </el-button>
         </div>
       </template>
       <div>
@@ -241,6 +244,137 @@
         </div>
       </div>
     </el-card>
+
+    <!-- Create Contract Dialog -->
+    <el-dialog
+      v-model="dialogVisible"
+      title="Thêm hợp đồng"
+      width="600px"
+      append-to-body
+      destroy-on-close
+    >
+      <el-form
+        :model="form"
+        :rules="formRules"
+        ref="formRef"
+        label-position="top"
+      >
+        <el-form-item label="Chọn đơn hàng" prop="orderId">
+          <el-select
+            v-model="form.orderId"
+            filterable
+            remote
+            reserve-keyword
+            placeholder="Nhập tên KH, SĐT hoặc mã đơn hàng..."
+            :remote-method="searchOrders"
+            :loading="orderSearchLoading"
+            class="w-full"
+            clearable
+          >
+            <el-option
+              v-for="item in orderOptions"
+              :key="item.id"
+              :label="`${item.customerName} - ${item.customerPhone} (Đơn hàng #${item.id})`"
+              :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="Điều khoản đặc biệt">
+          <el-input
+            v-model="form.specialTerms"
+            type="textarea"
+            :rows="3"
+            placeholder="Nhập các điều khoản đặc biệt nếu có..."
+          />
+        </el-form-item>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="Thời gian bảo hành">
+              <el-input
+                v-model="form.warrantyPeriod"
+                placeholder="VD: 3 năm hoặc 30.000km"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="Phạm vi bảo hành">
+              <el-input
+                v-model="form.warrantyScope"
+                placeholder="VD: Toàn quốc"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-form-item label="Ghi chú nội bộ">
+          <el-input
+            v-model="form.note"
+            type="textarea"
+            :rows="2"
+            placeholder="Ghi chú riêng nội bộ..."
+          />
+        </el-form-item>
+
+        <el-form-item label="File hợp đồng (Bản scan/Word/PDF)">
+          <el-upload
+            :http-request="customUploadRequest"
+            :show-file-list="false"
+            drag
+            class="w-full contract-file-upload"
+            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+          >
+            <div
+              v-if="contractFilePreviewUrl"
+              class="contract-upload-preview flex flex-col items-center justify-center p-4 border border-dashed rounded-lg"
+            >
+              <img
+                :src="contractFilePreviewUrl"
+                alt="Xem trước file"
+                class="max-h-[150px] object-contain rounded"
+              />
+              <span class="text-xs text-gray-500 mt-2"
+                >Bấm để chọn file khác</span
+              >
+            </div>
+            <template v-else>
+              <el-icon class="el-icon--upload"><UploadFilled /></el-icon>
+              <div class="el-upload__text text-sm">
+                Kéo thả file hoặc <em>bấm vào đây</em> để tải lên
+              </div>
+            </template>
+            <template #tip>
+              <div class="el-upload__tip text-xs text-gray-400">
+                Hỗ trợ PDF, Word (.doc, .docx), JPG, PNG (tối đa 10MB)
+              </div>
+            </template>
+          </el-upload>
+          <div
+            v-if="contractFileName"
+            class="contract-upload-filebar flex items-center justify-between mt-2 p-2 bg-gray-50 dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-lg text-xs"
+          >
+            <span class="truncate font-medium">{{ contractFileName }}</span>
+            <el-button link type="danger" @click.stop="clearContractFile"
+              >Xóa</el-button
+            >
+          </div>
+        </el-form-item>
+      </el-form>
+
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <el-button @click="dialogVisible = false">Hủy</el-button>
+          <el-button
+            type="primary"
+            :loading="submitLoading"
+            @click="handleSubmit"
+          >
+            Xác nhận
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -260,10 +394,11 @@ import {
   WarningFilled,
   WarnTriangleFilled,
   ArrowDown,
+  Plus,
 } from "@element-plus/icons-vue";
 
 import { ElMessage } from "element-plus";
-import { SalesContractApi } from "@/api/sales";
+import { SalesContractApi, SalesOrderApi } from "@/api/sales";
 
 const { t: $t } = useI18n();
 const router = useRouter();
@@ -389,6 +524,121 @@ const isOverdue = (dateStr: string) => {
 const formatDate = (dateStr: string) => {
   if (!dateStr) return "";
   return new Date(dateStr).toLocaleDateString("vi-VN");
+};
+
+const dialogVisible = ref(false);
+const orderSearchLoading = ref(false);
+const submitLoading = ref(false);
+const orderOptions = ref<any[]>([]);
+const formRef = ref<any>(null);
+
+const selectedFile = ref<File | null>(null);
+const contractFileName = ref("");
+const contractFilePreviewUrl = ref("");
+
+const customUploadRequest = async (options: any) => {
+  const file = options.file as File;
+  selectedFile.value = file;
+  contractFileName.value = file.name;
+  if (/\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(file.name)) {
+    contractFilePreviewUrl.value = URL.createObjectURL(file);
+  } else {
+    contractFilePreviewUrl.value = "";
+  }
+  options.onSuccess?.({});
+};
+
+const clearContractFile = () => {
+  selectedFile.value = null;
+  contractFileName.value = "";
+  if (
+    contractFilePreviewUrl.value &&
+    contractFilePreviewUrl.value.startsWith("blob:")
+  ) {
+    URL.revokeObjectURL(contractFilePreviewUrl.value);
+  }
+  contractFilePreviewUrl.value = "";
+};
+
+const form = reactive({
+  orderId: null as number | null,
+  specialTerms: "",
+  warrantyPeriod: "3 năm hoặc 30.000km",
+  warrantyScope: "Toàn quốc",
+  note: "",
+});
+
+const formRules = reactive({
+  orderId: [
+    { required: true, message: "Vui lòng chọn đơn hàng", trigger: "change" },
+  ],
+});
+
+const handleOpenAddDialog = () => {
+  form.orderId = null;
+  form.specialTerms = "";
+  form.warrantyPeriod = "3 năm hoặc 30.000km";
+  form.warrantyScope = "Toàn quốc";
+  form.note = "";
+  selectedFile.value = null;
+  contractFileName.value = "";
+  contractFilePreviewUrl.value = "";
+  if (formRef.value) {
+    formRef.value.resetFields();
+  }
+  dialogVisible.value = true;
+  searchOrders("");
+};
+
+const searchOrders = async (query: string) => {
+  orderSearchLoading.value = true;
+  try {
+    const res = await SalesOrderApi.getConfirmedList({
+      current: 1,
+      size: 50,
+      Search: query || undefined,
+      Sorts: "-CreatedAt",
+    });
+    orderOptions.value = res.items || [];
+  } catch (_e) {
+    ElMessage.error("Không tải được danh sách đơn hàng.");
+  } finally {
+    orderSearchLoading.value = false;
+  }
+};
+
+const handleSubmit = async () => {
+  if (!formRef.value) return;
+  await formRef.value.validate(async (valid: boolean) => {
+    if (!valid) return;
+    submitLoading.value = true;
+    try {
+      const res = await SalesContractApi.create({
+        orderId: form.orderId!,
+        specialTerms: form.specialTerms || undefined,
+        warrantyPeriod: form.warrantyPeriod || undefined,
+        warrantyScope: form.warrantyScope || undefined,
+        note: form.note || undefined,
+      });
+
+      const createdContractId = res?.id;
+      if (createdContractId && selectedFile.value) {
+        await SalesContractApi.uploadScannedFile(
+          createdContractId,
+          selectedFile.value,
+        );
+      }
+
+      ElMessage.success("Thêm hợp đồng thành công.");
+      dialogVisible.value = false;
+      fetchData();
+      loadStatistics();
+    } catch (_e) {
+      ElMessage.error("Không thể tạo hợp đồng mới.");
+    } finally {
+      submitLoading.value = false;
+    }
+  });
 };
 
 const goToPreview = (id?: string) => {
