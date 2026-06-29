@@ -190,7 +190,7 @@ const workspaces = ref([
     color: "#7c3aed",
     shadowColor: "rgba(124, 58, 237, 0.15)",
     hasAccess: true,
-    path: "/Order/list",
+    path: "/Order/management/list",
   },
 ]);
 </script>
