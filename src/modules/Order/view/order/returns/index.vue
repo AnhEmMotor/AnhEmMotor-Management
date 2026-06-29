@@ -392,14 +392,9 @@ import { Refresh } from "@element-plus/icons-vue";
 import {
   getReturnRequests,
   getReturnRequestDetail,
-  createReturnRequest,
-  createCancelRequest,
   updateReturnRequestStatus,
-} from "@/api/sales/returns";
-import type {
-  ReturnRequestDetail,
-  ReturnRequestItem,
-} from "@/domain/sales/returns.types";
+} from "@/api/sales/returns.api";
+import type { ReturnRequestDetail } from "@/domain/sales/returns.types";
 
 defineOptions({ name: "OrderReturns" });
 
@@ -536,7 +531,6 @@ const columnChecks = ref([
     width: 140,
     checked: true,
     useSlot: true,
-    fixed: "right",
   },
 ]);
 
