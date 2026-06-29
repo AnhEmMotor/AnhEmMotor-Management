@@ -15,10 +15,42 @@ export const orderMenu: AppRouteRecord[] = [
       {
         path: "list",
         name: "OrderList",
-        component: "/Order/view/order/list/index",
         meta: {
           title: "Đơn đặt hàng Online",
           icon: "ri:shopping-cart-line",
+          keepAlive: true,
+        },
+        redirect: "/Order/list/draft",
+        children: [
+          {
+            path: "draft",
+            name: "OrderDraft",
+            component: "/sales/draft/index",
+            meta: {
+              title: "Phiếu tạm",
+              icon: "ri:draft-line",
+              keepAlive: true,
+            },
+          },
+          {
+            path: "order",
+            name: "OrderSales",
+            component: "/sales/order/index",
+            meta: {
+              title: "Phiếu bán hàng",
+              icon: "ri:file-list-3-line",
+              keepAlive: true,
+            },
+          },
+        ],
+      },
+      {
+        path: "deposit-settings",
+        name: "OrderDepositSettings",
+        component: "/sales-settings/deposit/index",
+        meta: {
+          title: "Cài đặt đặt cọc",
+          icon: "ri:secure-payment-line",
           keepAlive: true,
         },
       },

@@ -822,5 +822,18 @@ onMounted(() => {
   .text-gray-500 {
     color: var(--el-text-color-secondary) !important;
   }
+
+  .text-gray-400,
+  .text-gray-300 {
+    color: var(--el-text-color-placeholder) !important;
+  }
+
+  .bg-gray-50 {
+    background-color: var(--el-fill-color-light) !important;
+  }
+
+  .bg-white {
+    background-color: var(--el-bg-color-overlay) !important;
+  }
 }
 </style>

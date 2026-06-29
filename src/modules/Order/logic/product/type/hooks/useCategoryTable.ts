@@ -101,7 +101,7 @@ export function useCategoryTable() {
           useSlot: true,
           align: "left",
         },
-        { prop: "name", label: "Tên thể loại", minWidth: 220, useSlot: true },
+        { prop: "name", label: "Tên danh mục", minWidth: 220, useSlot: true },
         { prop: "slug", label: "Slug", width: 300 },
         {
           prop: "managementType",
@@ -245,7 +245,7 @@ export function useCategoryTable() {
       const url = window.URL.createObjectURL(new Blob([resBlob]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "Danh_sach_the_loai.xlsx");
+      link.setAttribute("download", "Danh_sach_danh_muc.xlsx");
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

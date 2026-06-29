@@ -327,6 +327,7 @@
 </template>
 
 <script setup lang="ts">
+import type { ReturnOrderDto } from "@/domain/logistics/returns.types";
 import { computed, onMounted, reactive, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Search } from "@element-plus/icons-vue";

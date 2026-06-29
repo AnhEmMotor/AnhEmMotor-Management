@@ -117,14 +117,14 @@
       destroy-on-close
     >
       <ElForm :model="formData" label-width="140px" class="mt-4 pr-4">
-        <ElFormItem label="Tên thể loại" required>
-          <ElInput v-model="formData.name" placeholder="Nhập tên thể loại..." />
+        <ElFormItem label="Tên danh mục" required>
+          <ElInput v-model="formData.name" placeholder="Nhập tên danh mục..." />
         </ElFormItem>
 
-        <ElFormItem label="Thể loại cha">
+        <ElFormItem label="Danh mục cha">
           <ElSelect
             v-model="formData.parentId"
-            placeholder="Chọn thể loại cha (nếu có)..."
+            placeholder="Chọn danh mục cha (nếu có)..."
             clearable
             filterable
             class="w-full"
@@ -139,7 +139,7 @@
         </ElFormItem>
 
         <ElFormItem label="Đường dẫn (Slug)">
-          <ElInput v-model="formData.slug" placeholder="slug-ten-the-loai..." />
+          <ElInput v-model="formData.slug" placeholder="slug-ten-danh-muc..." />
         </ElFormItem>
 
         <ElFormItem label="Loại quản lý" required>
@@ -208,7 +208,7 @@
             v-model="formData.description"
             type="textarea"
             :rows="3"
-            placeholder="Mô tả về thể loại này..."
+            placeholder="Mô tả về danh mục này..."
           />
         </ElFormItem>
       </ElForm>
@@ -310,7 +310,7 @@ const getManagementTypeLabel = (value?: string) => {
 const searchItems = computed(() => [
   {
     key: "name",
-    label: "Tên thể loại",
+    label: "Tên danh mục",
     type: "input",
     props: { placeholder: "Tìm kiếm tên..." },
   },
@@ -368,7 +368,7 @@ const searchItems = computed(() => [
 }
 
 :deep(.el-table__row--level-1) {
-  background-color: #fafafa !important;
+  background-color: var(--el-fill-color-lighter) !important;
 }
 
 :deep(.el-table__expand-icon) {

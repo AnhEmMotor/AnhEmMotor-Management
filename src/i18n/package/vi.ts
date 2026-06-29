@@ -354,9 +354,9 @@
         records: "Xác nhận đăng xuất?",
       },
       type: {
-        title: "Quản lý Thể loại",
+        title: "Danh mục sản phẩm",
         stats: {
-          total: "Tổng số lượng thể loại",
+          total: "Tổng số lượng danh mục",
           product: "Danh mục Sản phẩm",
           vehicle: "Dòng xe",
           new: "Mới cập nhật",

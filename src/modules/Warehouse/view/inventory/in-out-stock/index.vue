@@ -73,6 +73,21 @@
           </span>
         </template>
 
+        <template #inStock="{ row }">
+          <span v-if="row.inStock === 0" class="text-red-500 font-bold">
+            {{ row.inStock }}
+          </span>
+          <span
+            v-else-if="row.inStock <= inventoryThreshold"
+            class="text-yellow-500 font-bold"
+          >
+            {{ row.inStock }}
+          </span>
+          <span v-else>
+            {{ row.inStock }}
+          </span>
+        </template>
+
         <template #operation="{ row }">
           <ElButton
             v-if="isLeafNode(row)"
@@ -324,6 +339,7 @@ import { Download, Memo } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { InventoryReportApi } from "@/api/inventory";
 import { InventoryReceiptApi } from "@/api/inventory";
+import { SettingApi } from "@/api/setting.api";
 
 defineOptions({ name: "InventoryInOutStock" });
 
@@ -363,6 +379,7 @@ const searchMonthYear = ref("");
 const tableRef = ref();
 const exporting = ref(false);
 const loadingData = ref(false);
+const inventoryThreshold = ref(5);
 
 // Pagination state
 const paginationState = ref({
@@ -482,7 +499,16 @@ const fetchData = async () => {
   }
 };
 
-onMounted(() => {
+onMounted(async () => {
+  try {
+    const data = await SettingApi.getAll();
+    if (data && data.Inventory_alert_level) {
+      const parsed = Number(data.Inventory_alert_level);
+      if (Number.isFinite(parsed)) inventoryThreshold.value = parsed;
+    }
+  } catch (err) {
+    console.error("Lỗi khi tải cài đặt tồn kho", err);
+  }
   fetchData();
 });
 
@@ -510,7 +536,13 @@ const columns = [
   { label: "Tồn kho đầu kỳ", prop: "beginning", width: 160, align: "right" },
   { label: "Số lượng đã nhập", prop: "imported", width: 160, align: "right" },
   { label: "Số lượng đã xuất", prop: "exported", width: 160, align: "right" },
-  { label: "Số lượng tồn kho", prop: "inStock", width: 160, align: "right" },
+  {
+    label: "Số lượng tồn kho",
+    prop: "inStock",
+    width: 160,
+    align: "right",
+    useSlot: true,
+  },
   {
     label: "Thao tác",
     prop: "operation",
