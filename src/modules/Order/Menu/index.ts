@@ -22,7 +22,6 @@ export const orderMenu: AppRouteRecord[] = [
           keepAlive: true,
         },
       },
-
       {
         path: "contract",
         name: "OrderContract",
@@ -43,16 +42,6 @@ export const orderMenu: AppRouteRecord[] = [
           keepAlive: true,
           showBadge: true,
           showTextBadge: "1",
-        },
-      },
-      {
-        path: "return-requests",
-        name: "OrderReturnRequests",
-        component: "/Order/view/order/returns/index",
-        meta: {
-          title: "Yêu cầu Trả/Hủy đơn",
-          icon: "ri:exchange-line",
-          keepAlive: true,
         },
       },
       {
@@ -88,7 +77,6 @@ export const orderMenu: AppRouteRecord[] = [
           },
         ],
       },
-
       {
         path: "logistics",
         name: "OrderLogistics",
@@ -131,7 +119,6 @@ export const orderMenu: AppRouteRecord[] = [
               showTextBadge: "5",
             },
           },
-
           {
             path: "carrier-settings",
             name: "OrderLogisticsCarrierSettings",
