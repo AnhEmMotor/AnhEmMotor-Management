@@ -12,45 +12,34 @@
             src="@imgs/user/avatar.webp"
           />
           <h2 class="mt-5 text-xl font-normal">{{ userInfo.userName }}</h2>
-          <p class="mt-5 text-sm">{{ $t("admin.t155") }}</p>
+          <p class="mt-5 text-sm">Hệ thống quản lý Anh Em Motor</p>
 
           <div class="w-75 mx-auto mt-7.5 text-left">
             <div class="mt-2.5">
               <ArtSvgIcon icon="ri:mail-line" class="text-g-700" />
-              <span class="ml-2 text-sm">jdkjjfnndf@mall.com</span>
+              <span class="ml-2 text-sm">admin@anhemmotor.com</span>
             </div>
             <div class="mt-2.5">
               <ArtSvgIcon icon="ri:user-3-line" class="text-g-700" />
-              <span class="ml-2 text-sm">{{ $t("admin.t156") }}</span>
+              <span class="ml-2 text-sm">Quản trị viên</span>
             </div>
             <div class="mt-2.5">
               <ArtSvgIcon icon="ri:map-pin-line" class="text-g-700" />
-              <span class="ml-2 text-sm">{{ $t("admin.t157") }}</span>
-            </div>
-            <div class="mt-2.5">
-              <ArtSvgIcon icon="ri:dribbble-fill" class="text-g-700" />
-              <span class="ml-2 text-sm">{{ $t("admin.t158") }}</span>
+              <span class="ml-2 text-sm">TP. Hồ Chí Minh, Việt Nam</span>
             </div>
           </div>
 
-          <div class="mt-10">
-            <h3 class="text-sm font-medium">{{ $t("admin.t159") }}</h3>
-            <div class="flex flex-wrap justify-center mt-3.5">
-              <div
-                v-for="item in lableList"
-                :key="item"
-                class="py-1 px-1.5 mr-2.5 mb-2.5 text-xs border border-g-300 rounded"
-              >
-                {{ item }}
-              </div>
-            </div>
+          <div class="mt-8 mb-2 flex justify-center">
+            <ElButton type="primary" @click="showPwdDialog = true">
+              <ArtSvgIcon icon="ri:key-2-line" class="mr-2" /> Đổi mật khẩu
+            </ElButton>
           </div>
         </div>
       </div>
       <div class="flex-1 overflow-hidden max-md:w-full max-md:mt-3.5">
         <div class="art-card-sm">
           <h1 class="p-4 text-xl font-normal border-b border-g-300">
-            {{ $t("admin.t160") }}
+            Cài đặt cơ bản
           </h1>
 
           <ElForm
@@ -62,10 +51,10 @@
             label-position="top"
           >
             <ElRow>
-              <ElFormItem :label="$t('admin.t162')" prop="realName">
+              <ElFormItem label="Họ tên" prop="realName">
                 <ElInput v-model="form.realName" :disabled="!isEdit" />
               </ElFormItem>
-              <ElFormItem :label="$t('admin.t163')" prop="sex" class="ml-5">
+              <ElFormItem label="Giới tính" prop="sex" class="ml-5">
                 <ElSelect
                   v-model="form.sex"
                   placeholder="Select"
@@ -82,24 +71,24 @@
             </ElRow>
 
             <ElRow>
-              <ElFormItem :label="$t('admin.t164')" prop="nikeName">
+              <ElFormItem label="Biệt danh" prop="nikeName">
                 <ElInput v-model="form.nikeName" :disabled="!isEdit" />
               </ElFormItem>
-              <ElFormItem :label="$t('admin.t165')" prop="email" class="ml-5">
+              <ElFormItem label="Email" prop="email" class="ml-5">
                 <ElInput v-model="form.email" :disabled="!isEdit" />
               </ElFormItem>
             </ElRow>
 
             <ElRow>
-              <ElFormItem :label="$t('admin.t166')" prop="mobile">
+              <ElFormItem label="Số điện thoại" prop="mobile">
                 <ElInput v-model="form.mobile" :disabled="!isEdit" />
               </ElFormItem>
-              <ElFormItem :label="$t('admin.t167')" prop="address" class="ml-5">
+              <ElFormItem label="Địa chỉ" prop="address" class="ml-5">
                 <ElInput v-model="form.address" :disabled="!isEdit" />
               </ElFormItem>
             </ElRow>
 
-            <ElFormItem :label="$t('admin.t168')" prop="des" class="h-32">
+            <ElFormItem label="Giới thiệu cá nhân" prop="des" class="h-32">
               <ElInput
                 type="textarea"
                 :rows="4"
@@ -110,59 +99,46 @@
 
             <div class="flex-c justify-end [&_.el-button]:!w-27.5">
               <ElButton type="primary" class="w-22.5" v-ripple @click="edit">
-                {{ isEdit ? "Lưutồn" : "Chỉnh sửa" }}
-              </ElButton>
-            </div>
-          </ElForm>
-        </div>
-
-        <div class="art-card-sm my-5">
-          <h1 class="p-4 text-xl font-normal border-b border-g-300">
-            {{ $t("admin.t161") }}
-          </h1>
-
-          <ElForm
-            :model="pwdForm"
-            class="box-border p-5"
-            label-width="86px"
-            label-position="top"
-          >
-            <ElFormItem :label="$t('admin.t169')" prop="password">
-              <ElInput
-                v-model="pwdForm.password"
-                type="password"
-                :disabled="!isEditPwd"
-                show-password
-              />
-            </ElFormItem>
-
-            <ElFormItem :label="$t('admin.t170')" prop="newPassword">
-              <ElInput
-                v-model="pwdForm.newPassword"
-                type="password"
-                :disabled="!isEditPwd"
-                show-password
-              />
-            </ElFormItem>
-
-            <ElFormItem :label="$t('admin.t171')" prop="confirmPassword">
-              <ElInput
-                v-model="pwdForm.confirmPassword"
-                type="password"
-                :disabled="!isEditPwd"
-                show-password
-              />
-            </ElFormItem>
-
-            <div class="flex-c justify-end [&_.el-button]:!w-27.5">
-              <ElButton type="primary" class="w-22.5" v-ripple @click="editPwd">
-                {{ isEditPwd ? "Lưutồn" : "Chỉnh sửa" }}
+                {{ isEdit ? "Lưu lại" : "Chỉnh sửa" }}
               </ElButton>
             </div>
           </ElForm>
         </div>
       </div>
     </div>
+
+    <ElDialog
+      v-model="showPwdDialog"
+      title="Đổi mật khẩu"
+      width="400px"
+      destroy-on-close
+    >
+      <ElForm :model="pwdForm" class="box-border" label-position="top">
+        <ElFormItem label="Mật khẩu hiện tại" prop="password">
+          <ElInput v-model="pwdForm.password" type="password" show-password />
+        </ElFormItem>
+        <ElFormItem label="Mật khẩu mới" prop="newPassword">
+          <ElInput
+            v-model="pwdForm.newPassword"
+            type="password"
+            show-password
+          />
+        </ElFormItem>
+        <ElFormItem label="Xác nhận mật khẩu" prop="confirmPassword">
+          <ElInput
+            v-model="pwdForm.confirmPassword"
+            type="password"
+            show-password
+          />
+        </ElFormItem>
+      </ElForm>
+      <template #footer>
+        <div class="dialog-footer">
+          <ElButton @click="showPwdDialog = false">Hủy bỏ</ElButton>
+          <ElButton type="primary" @click="editPwd">Lưu lại</ElButton>
+        </div>
+      </template>
+    </ElDialog>
   </div>
 </template>
 
@@ -177,17 +153,18 @@ const userInfo = computed(() => userStore.getUserInfo);
 
 const isEdit = ref(false);
 const isEditPwd = ref(false);
+const showPwdDialog = ref(false);
 const date = ref("");
 const ruleFormRef = ref<FormInstance>();
 
 const form = reactive({
-  realName: "John Snow",
-  nikeName: "dathẻđồi",
-  email: "59301283@mall.com",
-  mobile: "18888888888",
-  address: "Thành phố Thâm Quyến, Quảng Đôngbảoanđồngtâyquêphốđạo101tòa201",
-  sex: "2",
-  des: "Art Design Pro làmộtkhoảnkiêmdụng cụthiếtkếmỹhọcvớicaohiệumởphátcủasauchiếcHeThong.",
+  realName: "Nguyễn Văn A",
+  nikeName: "Anh Em Motor",
+  email: "admin@anhemmotor.com",
+  mobile: "0987654321",
+  address: "Quận 1, TP. Hồ Chí Minh",
+  sex: "1",
+  des: "Hệ thống quản lý bán hàng Anh Em Motor - Nền tảng quản lý toàn diện.",
 });
 
 const pwdForm = reactive({
@@ -198,35 +175,37 @@ const pwdForm = reactive({
 
 const rules = reactive<FormRules>({
   realName: [
-    { required: true, message: "Vui lòng nhậpHọ tên", trigger: "blur" },
+    { required: true, message: "Vui lòng nhập họ tên", trigger: "blur" },
     {
       min: 2,
       max: 50,
-      message: "trườngđộtại 2 đến 50 chiếcchữký",
+      message: "Độ dài từ 2 đến 50 ký tự",
       trigger: "blur",
     },
   ],
   nikeName: [
-    { required: true, message: "Vui lòng nhậpBiệt danh", trigger: "blur" },
+    { required: true, message: "Vui lòng nhập biệt danh", trigger: "blur" },
     {
       min: 2,
       max: 50,
-      message: "trườngđộtại 2 đến 50 chiếcchữký",
+      message: "Độ dài từ 2 đến 50 ký tự",
       trigger: "blur",
     },
   ],
-  email: [{ required: true, message: "Vui lòng nhậpEmail", trigger: "blur" }],
+  email: [{ required: true, message: "Vui lòng nhập email", trigger: "blur" }],
   mobile: [
     {
       required: true,
-      message: "Vui lòng nhậpSố điện thoạimã",
+      message: "Vui lòng nhập số điện thoại",
       trigger: "blur",
     },
   ],
   address: [
-    { required: true, message: "Vui lòng nhậpDiaChi", trigger: "blur" },
+    { required: true, message: "Vui lòng nhập địa chỉ", trigger: "blur" },
   ],
-  sex: [{ required: true, message: "Vui lòng chọnGioiTinh", trigger: "blur" }],
+  sex: [
+    { required: true, message: "Vui lòng chọn giới tính", trigger: "blur" },
+  ],
 });
 
 const options = [
@@ -235,12 +214,12 @@ const options = [
 ];
 
 const lableList: Array<string> = [
-  "Tập trungthiếtkế",
-  "rấtcómuốnpháp",
-  "cay~",
-  "đạitrườngchân",
-  "xuyênemtử",
-  "biểnnạpxuyên",
+  "Nhiệt huyết",
+  "Thân thiện",
+  "Chuyên nghiệp",
+  "Đam mê xe",
+  "Du lịch",
+  "Năng động",
 ];
 
 onMounted(() => {
@@ -250,12 +229,12 @@ onMounted(() => {
 const getDate = () => {
   const h = new Date().getHours();
 
-  if (h >= 6 && h < 9) date.value = "sángtrênhảo";
-  else if (h >= 9 && h < 11) date.value = "trêntrưahảo";
-  else if (h >= 11 && h < 13) date.value = "trongtrưahảo";
-  else if (h >= 13 && h < 18) date.value = "dướitrưahảo";
-  else if (h >= 18 && h < 24) date.value = "tốitrênhảo";
-  else date.value = "rấttốirồi，sángđiểmngủ";
+  if (h >= 6 && h < 9) date.value = "Chào buổi sáng";
+  else if (h >= 9 && h < 11) date.value = "Chào buổi trưa";
+  else if (h >= 11 && h < 13) date.value = "Chào buổi trưa";
+  else if (h >= 13 && h < 18) date.value = "Chào buổi chiều";
+  else if (h >= 18 && h < 24) date.value = "Chào buổi tối";
+  else date.value = "Khuya rồi, đi ngủ thôi";
 };
 
 const edit = () => {
@@ -263,6 +242,6 @@ const edit = () => {
 };
 
 const editPwd = () => {
-  isEditPwd.value = !isEditPwd.value;
+  showPwdDialog.value = false;
 };
 </script>

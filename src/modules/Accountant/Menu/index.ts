@@ -24,17 +24,7 @@ export const accountancyMenu: AppRouteRecord[] = [
           permission: Permissions.StatisticalView,
         },
       },
-      {
-        path: "sales",
-        name: "AccountantSales",
-        component: "/Accountant/view/reporting/revenue",
-        meta: {
-          title: "Báo cáo bán hàng",
-          icon: "ri:money-cny-circle-line",
-          keepAlive: true,
-          permission: Permissions.StatisticalView,
-        },
-      },
+
       {
         path: "financial",
         name: "AccountantFinancial",
@@ -159,34 +149,12 @@ export const accountancyMenu: AppRouteRecord[] = [
       {
         path: "invoice",
         name: "AccountantInvoice",
-        component: "",
+        component: "/Accountant/view/reporting/invoice",
         meta: {
-          title: "Quản lý hóa đơn",
+          title: "Thống kê hóa đơn",
           icon: "ri:bill-line",
           permission: Permissions.StatisticalView,
         },
-        children: [
-          {
-            path: "payment",
-            name: "AccountantPaymentInvoice",
-            component: "/Order/view/product/invoice/index",
-            meta: {
-              title: "Hóa đơn thanh toán",
-              icon: "ri:secure-payment-line",
-              permission: Permissions.StatisticalView,
-            },
-          },
-          {
-            path: "sales",
-            name: "AccountantSalesInvoice",
-            component: "/Order/view/product/invoice/index",
-            meta: {
-              title: "Hóa đơn bán hàng",
-              icon: "ri:receipt-line",
-              permission: Permissions.StatisticalView,
-            },
-          },
-        ],
       },
     ],
   },

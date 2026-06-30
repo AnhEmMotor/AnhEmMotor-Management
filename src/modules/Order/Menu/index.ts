@@ -1,4 +1,4 @@
-﻿import { AppRouteRecord } from "@/types/router";
+import { AppRouteRecord } from "@/types/router";
 
 export const orderMenu: AppRouteRecord[] = [
   {
@@ -42,23 +42,14 @@ export const orderMenu: AppRouteRecord[] = [
             },
           },
           {
-            path: "contract",
-            name: "OrderContract",
-            component: "/Order/view/order/contract/index",
+            path: "invoice",
+            name: "OrderProductInvoice",
+            component: "/Order/view/product/invoice/index",
             meta: {
-              title: "Hợp đồng mua xe",
-              icon: "ri:file-contract-line",
+              title: "Hóa đơn mua hàng",
+              icon: "ri:bill-line",
               keepAlive: true,
-            },
-          },
-          {
-            path: "contract/preview/:id?",
-            name: "SalesContractPreview",
-            component: "/Order/view/order/contract/contract-preview",
-            meta: {
-              title: "Chi tiết Hợp đồng",
-              icon: "ri:file-search-line",
-              isHide: true,
+              roles: ["Admin", "SuperAdmin"],
             },
           },
           {
@@ -74,14 +65,23 @@ export const orderMenu: AppRouteRecord[] = [
             },
           },
           {
-            path: "invoice",
-            name: "OrderProductInvoice",
-            component: "/Order/view/product/invoice/index",
+            path: "contract",
+            name: "OrderContract",
+            component: "/Order/view/order/contract/index",
             meta: {
-              title: "Hóa đơn mua hàng",
-              icon: "ri:bill-line",
+              title: "Hợp đồng mua xe",
+              icon: "ri:file-paper-2-line",
               keepAlive: true,
-              roles: ["Admin", "SuperAdmin"],
+            },
+          },
+          {
+            path: "contract/preview/:id?",
+            name: "SalesContractPreview",
+            component: "/Order/view/order/contract/contract-preview",
+            meta: {
+              title: "Chi tiết Hợp đồng",
+              icon: "ri:file-search-line",
+              isHide: true,
             },
           },
         ],

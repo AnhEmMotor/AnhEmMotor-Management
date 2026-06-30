@@ -1,8 +1,8 @@
 <template>
   <div class="reporting-page">
     <ReportPageHeader
-      title="Báo Cáo Khách Hàng"
-      description="Theo dõi lead, tỷ lệ chuyển đổi, đánh giá, khiếu nại và thời gian phản hồi CSKH."
+      title="Báo cáo khách hàng & Lead"
+      description="Phân tích chất lượng tệp khách hàng, phễu chuyển đổi và theo dõi nguồn khách hàng."
       icon="ri:user-heart-line"
     >
       <template #actions>
@@ -15,357 +15,412 @@
       </template>
     </ReportPageHeader>
 
-    <el-tabs
-      v-model="activeTab"
-      class="customer-tabs"
-      @tab-change="onTabChange"
-    >
-      <el-tab-pane label="Phân tích khách hàng" name="analytics">
-        <div class="reporting-kpi-grid">
-          <ArtStatsCard
-            title="Tổng lead mới"
-            :count="kpi.totalLeads"
-            description="Lead phát sinh trong kỳ"
-            icon="ri:user-add-line"
-            icon-style="bg-report-red"
-          />
-          <ArtStatsCard
-            title="Tỷ lệ chuyển đổi"
-            :count="`${conversionRate}%`"
-            description="Lead chuyển thành khách hàng"
-            icon="ri:exchange-funds-line"
-            icon-style="bg-report-red-light"
-          />
-          <ArtStatsCard
-            title="Khách hàng mới"
-            :count="kpi.newCustomers"
-            description="Khách hàng được tạo mới"
-            icon="ri:user-heart-line"
-            icon-style="bg-report-red-dark"
-          />
-          <ArtStatsCard
-            title="Lead nóng"
-            :count="kpi.hotLeads"
-            description="Lead có điểm ưu tiên cao"
-            icon="ri:fire-line"
-            icon-style="bg-report-gray"
-          />
-        </div>
+    <!-- TẦNG 1: BỘ CHỈ SỐ KPI -->
+    <div class="reporting-kpi-grid">
+      <ArtStatsCard
+        title="Tổng lead mới"
+        :count="3"
+        description="🔼 +15% so với tháng trước"
+        icon="ri:user-add-line"
+        icon-style="bg-report-blue"
+      />
+      <ArtStatsCard
+        title="Tỷ lệ chuyển đổi"
+        count="0.0%"
+        description="🔽 -1.2% so với tháng trước"
+        icon="ri:filter-3-line"
+        icon-style="bg-report-orange"
+      />
+      <ArtStatsCard
+        title="Khách hàng mới"
+        :count="0"
+        description="0% (Chưa tăng trưởng)"
+        icon="ri:user-star-line"
+        icon-style="bg-report-green"
+      />
+      <ArtStatsCard
+        title="Lead nóng"
+        :count="1"
+        description="🔼 +1 lead mới trong ngày"
+        icon="ri:fire-line"
+        icon-style="bg-report-red"
+      />
+    </div>
 
-        <div class="reporting-section-grid two-columns mt-4">
-          <ElCard class="reporting-card">
-            <template #header>Phễu chuyển đổi theo kênh</template>
-            <ReportPlaceholder
-              title="Chờ API phân tích khách hàng"
-              description="Biểu đồ sẽ thể hiện lead theo từng kênh và tỷ lệ chuyển đổi tương ứng."
-              endpoint="GET /api/v1/Statistics/customer-analytics"
-            />
-          </ElCard>
-          <ElCard class="reporting-card">
-            <template #header>Phân bổ nguồn khách hàng</template>
-            <ReportPlaceholder
-              title="Chờ dữ liệu nguồn khách hàng"
-              description="Hiển thị tỷ trọng lead đến từ website, mạng xã hội, showroom và các nguồn khác."
-            />
-          </ElCard>
-        </div>
+    <!-- TẦNG 2: CẶP BIỂU ĐỒ TRUNG TÂM -->
+    <div class="reporting-section-grid two-columns mt-4">
+      <ElCard class="reporting-card">
+        <template #header>Phễu chuyển đổi theo kênh</template>
+        <div ref="funnelChartRef" class="reporting-chart"></div>
+      </ElCard>
+      <ElCard class="reporting-card">
+        <template #header>Phân bổ nguồn khách hàng</template>
+        <div ref="sourceChartRef" class="reporting-chart"></div>
+      </ElCard>
+    </div>
 
-        <ElCard class="reporting-card mt-4">
-          <template #header>Phân bổ điểm lead</template>
-          <ReportPlaceholder
-            title="Chờ dữ liệu điểm lead"
-            description="Biểu đồ sẽ nhóm lead theo mức ưu tiên để đội bán hàng xử lý theo thứ tự phù hợp."
-          />
-        </ElCard>
+    <!-- TẦNG 3: BIỂU ĐỒ PHÂN BỔ ĐIỂM LEAD (FULL-WIDTH) -->
+    <ElCard class="reporting-card mt-4">
+      <template #header>Phân bổ điểm Lead (Chất lượng khách hàng)</template>
+      <div ref="histogramChartRef" class="reporting-chart"></div>
+    </ElCard>
 
-        <ElCard class="reporting-card mt-4">
-          <template #header>Danh sách lead ưu tiên</template>
-          <ElTable
-            :data="leads"
-            class="reporting-table"
-            v-loading="loading"
-            empty-text="Chưa có dữ liệu lead"
-          >
-            <ElTableColumn prop="customerName" label="Khách hàng" />
-            <ElTableColumn prop="source" label="Nguồn" width="140">
-              <template #default="{ row }">
-                <ElTag size="small" effect="light" round>{{
-                  row.source
-                }}</ElTag>
-              </template>
-            </ElTableColumn>
-            <ElTableColumn prop="leadScore" label="Lead Score" width="120">
-              <template #default="{ row }">
-                <span :class="scoreClass(row.leadScore)">{{
-                  row.leadScore
-                }}</span>
-              </template>
-            </ElTableColumn>
-            <ElTableColumn prop="status" label="Trạng thái" width="140">
-              <template #default="{ row }">
-                <ElTag
-                  :type="leadStatusType(row.status)"
-                  size="small"
-                  effect="light"
-                  round
-                  >{{ row.status }}</ElTag
-                >
-              </template>
-            </ElTableColumn>
-            <ElTableColumn
-              prop="lastContact"
-              label="Liên hệ gần nhất"
-              width="160"
+    <!-- TẦNG 4: BẢNG DANH SÁCH LEAD ƯU TIÊN -->
+    <ElCard class="reporting-card mt-4">
+      <template #header>
+        <div class="flex justify-between items-center">
+          <span>Danh sách Lead ưu tiên</span>
+          <div class="flex gap-2">
+            <ElInput
+              v-model="searchQuery"
+              placeholder="Tìm tên khách hàng..."
+              class="w-64"
             >
-              <template #default="{ row }">{{
-                formatDate(row.lastContact)
-              }}</template>
-            </ElTableColumn>
-          </ElTable>
-        </ElCard>
-      </el-tab-pane>
-
-      <el-tab-pane label="Chăm sóc khách hàng" name="service">
-        <div class="reporting-kpi-grid">
-          <ArtStatsCard
-            title="Đánh giá trung bình"
-            :count="`${kpi.avgRating}/5`"
-            description="Điểm hài lòng khách hàng"
-            icon="ri:star-smile-line"
-            icon-style="bg-report-red"
-          />
-          <ArtStatsCard
-            title="Khiếu nại mới"
-            :count="kpi.newComplaints"
-            description="Phát sinh trong kỳ"
-            icon="ri:error-warning-line"
-            icon-style="bg-report-red-dark"
-          />
-          <ArtStatsCard
-            title="Thời gian xử lý TB"
-            :count="`${kpi.avgResponseHours}h`"
-            description="Trung bình đến khi phản hồi"
-            icon="ri:timer-flash-line"
-            icon-style="bg-report-red-light"
-          />
-          <ArtStatsCard
-            title="Đã xử lý"
-            :count="kpi.resolvedCount"
-            description="Khiếu nại đã hoàn tất"
-            icon="ri:checkbox-circle-line"
-            icon-style="bg-report-gray"
-          />
-        </div>
-
-        <div class="reporting-section-grid two-columns mt-4">
-          <ElCard class="reporting-card">
-            <template #header>Phân bổ đánh giá sao</template>
-            <ReportPlaceholder
-              title="Chờ API CSKH"
-              description="Biểu đồ sẽ thể hiện phân bổ đánh giá từ 1 đến 5 sao theo kỳ."
-              endpoint="GET /api/v1/Statistics/customer-service-analytics"
-            />
-          </ElCard>
-          <ElCard class="reporting-card">
-            <template #header>Xu hướng khiếu nại</template>
-            <ReportPlaceholder
-              title="Chờ dữ liệu khiếu nại"
-              description="Biểu đồ sẽ theo dõi số khiếu nại mới, đang xử lý và đã hoàn tất."
-            />
-          </ElCard>
-        </div>
-
-        <ElCard class="reporting-card mt-4">
-          <template #header>Khiếu nại gần đây</template>
-          <ElTable
-            :data="complaints"
-            class="reporting-table"
-            v-loading="loading"
-            empty-text="Không có khiếu nại nào"
-          >
-            <ElTableColumn prop="ticketCode" label="Mã phiếu" width="140" />
-            <ElTableColumn prop="customerName" label="Khách hàng" />
-            <ElTableColumn prop="subject" label="Tiêu đề" />
-            <ElTableColumn prop="rating" label="Đánh giá" width="120">
-              <template #default="{ row }">
-                <span class="text-yellow-500"
-                  >{{ "⭐".repeat(row.rating)
-                  }}{{ "☆".repeat(5 - row.rating) }}</span
-                >
+              <template #prefix>
+                <div class="i-ri-search-line"></div>
               </template>
-            </ElTableColumn>
-            <ElTableColumn prop="status" label="Trạng thái" width="140">
-              <template #default="{ row }">
-                <ElTag
-                  :type="complaintStatusType(row.status)"
-                  size="small"
-                  effect="light"
-                  round
-                  >{{ row.status }}</ElTag
-                >
-              </template>
-            </ElTableColumn>
-            <ElTableColumn prop="createdAt" label="Ngày tạo" width="120">
-              <template #default="{ row }">{{
-                formatDate(row.createdAt)
-              }}</template>
-            </ElTableColumn>
-            <ElTableColumn
-              prop="responseHours"
-              label="Thời gian phản hồi"
-              width="170"
-            >
-              <template #default="{ row }">{{
-                row.responseHours ? row.responseHours + "h" : "-"
-              }}</template>
-            </ElTableColumn>
-          </ElTable>
-        </ElCard>
+            </ElInput>
+            <ElButton type="primary" plain>
+              <div class="i-ri-file-excel-2-line mr-1"></div>
+              Xuất Excel
+            </ElButton>
+          </div>
+        </div>
+      </template>
 
-        <ElCard class="reporting-card mt-4">
-          <template #header>Ghi chú nội bộ chỉ dành cho CSKH/Admin</template>
-          <ReportPlaceholder
-            title="Chờ API ghi chú nội bộ"
-            description="Khu vực này sẽ ghi nhận đặc điểm, thói quen và lưu ý chăm sóc của từng khách hàng."
-            endpoint="Backend API cho ghi chú đặc điểm và thói quen khách hàng"
-            icon="ri:lock-line"
-          />
-        </ElCard>
-      </el-tab-pane>
-    </el-tabs>
+      <ElTable
+        :data="filteredLeads"
+        class="reporting-table"
+        empty-text="Không tìm thấy khách hàng"
+      >
+        <ElTableColumn prop="name" label="Tên khách hàng" min-width="150">
+          <template #default="{ row }">
+            <div class="font-medium">{{ row.name }}</div>
+          </template>
+        </ElTableColumn>
+        <ElTableColumn prop="phone" label="Số điện thoại" min-width="120" />
+        <ElTableColumn prop="source" label="Nguồn" min-width="120">
+          <template #default="{ row }">
+            <ElTag :type="getSourceType(row.source)" effect="light" round>
+              {{ row.source }}
+            </ElTag>
+          </template>
+        </ElTableColumn>
+        <ElTableColumn prop="status" label="Trạng thái" min-width="140" />
+
+        <!-- Cột Lead Score với Progress Bar -->
+        <ElTableColumn prop="score" label="Lead Score" min-width="200">
+          <template #default="{ row }">
+            <div class="flex items-center gap-3">
+              <span
+                class="w-8 font-semibold"
+                :class="getScoreTextColor(row.score)"
+                >{{ row.score }}</span
+              >
+              <ElProgress
+                class="flex-1"
+                :percentage="row.score"
+                :color="getScoreColor(row.score)"
+                :show-text="false"
+                :stroke-width="10"
+              />
+            </div>
+          </template>
+        </ElTableColumn>
+
+        <ElTableColumn prop="assignee" label="Sale phụ trách" min-width="150" />
+        <ElTableColumn
+          label="Thao tác"
+          width="100"
+          align="center"
+          fixed="right"
+        >
+          <template #default>
+            <ElButton link type="primary">Chi tiết</ElButton>
+          </template>
+        </ElTableColumn>
+      </ElTable>
+    </ElCard>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
-import { statisticsApi } from "@/api/operations";
+import { ref, computed, onMounted, onUnmounted } from "vue";
+import * as echarts from "echarts";
 import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
 import ReportPageHeader from "./ReportPageHeader.vue";
 import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
-import ReportPlaceholder from "./ReportPlaceholder.vue";
 
-const activeTab = ref("analytics");
 const currentPeriod = ref<"today" | "month" | "year" | "custom">("month");
-const periodStart = ref("");
-const periodEnd = ref("");
+const periodStart = ref(
+  new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+    .toISOString()
+    .split("T")[0],
+);
+const periodEnd = ref(new Date().toISOString().split("T")[0]);
+const searchQuery = ref("");
 
-const loading = ref(false);
-const kpi = ref({
-  totalLeads: 0,
-  newCustomers: 0,
-  hotLeads: 0,
-  avgRating: 0,
-  newComplaints: 0,
-  avgResponseHours: 0,
-  resolvedCount: 0,
-});
-const leads = ref<
-  Array<{
-    id: number;
-    customerName: string;
-    source: string;
-    leadScore: number;
-    status: string;
-    lastContact: string;
-  }>
->([]);
-const complaints = ref<
-  Array<{
-    id: number;
-    ticketCode: string;
-    customerName: string;
-    subject: string;
-    rating: number;
-    status: string;
-    createdAt: string;
-    responseHours?: number;
-  }>
->([]);
+// Refs cho ECharts
+const funnelChartRef = ref<HTMLElement | null>(null);
+const sourceChartRef = ref<HTMLElement | null>(null);
+const histogramChartRef = ref<HTMLElement | null>(null);
 
-const conversionRate = computed(() => {
-  if (!kpi.value.totalLeads) return "0";
-  return ((kpi.value.newCustomers / kpi.value.totalLeads) * 100).toFixed(1);
+let funnelChart: echarts.ECharts | null = null;
+let sourceChart: echarts.ECharts | null = null;
+let histogramChart: echarts.ECharts | null = null;
+
+const chartTextColor = "#aeb0bd";
+const chartAxisLineColor = "rgba(255, 255, 255, 0.16)";
+const chartGridLineColor = "rgba(255, 255, 255, 0.1)";
+
+// --- MOCK DATA ---
+const mockGroupedFunnelData = {
+  stages: ["Tiếp cận", "Đã liên hệ", "Đến Showroom", "Chốt hợp đồng"],
+  website: [100, 60, 20, 5],
+  facebook: [80, 50, 15, 3],
+  showroom: [40, 35, 30, 25],
+};
+
+const mockSourceData = [
+  { name: "Website", value: 40 },
+  { name: "Showroom", value: 35 },
+  { name: "Facebook", value: 20 },
+  { name: "Nguồn khác", value: 5 },
+];
+
+const mockHistogramData = [
+  { group: "Thấp (0-30)", count: 120 },
+  { group: "Trung bình (31-60)", count: 85 },
+  { group: "Tiềm năng (61-80)", count: 45 },
+  { group: "Cực nóng (81-100)", count: 15 },
+];
+
+const mockLeads = [
+  {
+    id: 1,
+    name: "Lê Minh Hiếu",
+    phone: "0901xxx222",
+    source: "Showroom",
+    status: "Đang thương lượng",
+    score: 85,
+    assignee: "Nguyễn Văn A",
+  },
+  {
+    id: 2,
+    name: "Nguyễn Văn Nam",
+    phone: "0988xxx333",
+    source: "Website",
+    status: "Mới tạo",
+    score: 30,
+    assignee: "Trần Thị B",
+  },
+  {
+    id: 3,
+    name: "Trần Thị Mai",
+    phone: "0912xxx444",
+    source: "Facebook",
+    status: "Đã tư vấn",
+    score: 65,
+    assignee: "Lê Quốc C",
+  },
+  {
+    id: 4,
+    name: "Phạm Tấn Tài",
+    phone: "0933xxx555",
+    source: "Zalo OA",
+    status: "Hẹn đến xem",
+    score: 75,
+    assignee: "Nguyễn Văn A",
+  },
+  {
+    id: 5,
+    name: "Đinh Quang Anh",
+    phone: "0909xxx666",
+    source: "Website",
+    status: "Chốt nóng",
+    score: 95,
+    assignee: "Trần Thị B",
+  },
+];
+
+const filteredLeads = computed(() => {
+  if (!searchQuery.value) return mockLeads;
+  const q = searchQuery.value.toLowerCase();
+  return mockLeads.filter(
+    (l) => l.name.toLowerCase().includes(q) || l.phone.includes(q),
+  );
 });
+
+function getSourceType(source: string) {
+  if (source === "Website") return "danger";
+  if (source === "Showroom") return "success";
+  if (source === "Facebook") return "primary";
+  return "warning";
+}
+
+function getScoreColor(score: number) {
+  if (score > 80) return "#ef4444"; // Đỏ rực
+  if (score > 60) return "#f97316"; // Cam
+  if (score > 30) return "#3b82f6"; // Xanh dương
+  return "#9ca3af"; // Xám
+}
+
+function getScoreTextColor(score: number) {
+  if (score > 80) return "text-red-500";
+  if (score > 60) return "text-orange-500";
+  if (score > 30) return "text-blue-500";
+  return "text-gray-500";
+}
 
 function onPeriodChange() {
-  loadData();
+  // Mock refresh
 }
 
-function onTabChange() {
-  loadData();
-}
+function renderCharts() {
+  // 1. Bar Chart Nhóm: Phễu chuyển đổi theo kênh
+  if (funnelChartRef.value) {
+    if (!funnelChart) funnelChart = echarts.init(funnelChartRef.value);
+    funnelChart.setOption({
+      backgroundColor: "transparent",
+      textStyle: { color: chartTextColor },
+      tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+      legend: {
+        data: ["Website", "Facebook", "Showroom"],
+        textStyle: { color: chartTextColor },
+        top: 0,
+      },
+      grid: {
+        left: "3%",
+        right: "4%",
+        bottom: "5%",
+        top: "15%",
+        containLabel: true,
+      },
+      xAxis: {
+        type: "category",
+        data: mockGroupedFunnelData.stages,
+        axisLabel: { color: chartTextColor },
+        axisLine: { lineStyle: { color: chartAxisLineColor } },
+      },
+      yAxis: {
+        type: "value",
+        axisLabel: { color: chartTextColor },
+        splitLine: { lineStyle: { color: chartGridLineColor } },
+      },
+      series: [
+        {
+          name: "Website",
+          type: "bar",
+          data: mockGroupedFunnelData.website,
+          itemStyle: { color: "#3b82f6", borderRadius: [4, 4, 0, 0] },
+          barGap: "15%",
+        },
+        {
+          name: "Facebook",
+          type: "bar",
+          data: mockGroupedFunnelData.facebook,
+          itemStyle: { color: "#a855f7", borderRadius: [4, 4, 0, 0] },
+        },
+        {
+          name: "Showroom",
+          type: "bar",
+          data: mockGroupedFunnelData.showroom,
+          itemStyle: { color: "#f97316", borderRadius: [4, 4, 0, 0] },
+        },
+      ],
+    });
+  }
 
-async function loadData() {
-  loading.value = true;
-  try {
-    if (activeTab.value === "analytics") {
-      const data = await statisticsApi.getCustomerAnalytics();
-      kpi.value.totalLeads = data.kpi.totalLeads;
-      kpi.value.newCustomers = data.kpi.newCustomers;
-      kpi.value.hotLeads = data.kpi.hotLeads;
-      leads.value = data.leads;
-    } else {
-      const data = await statisticsApi.getCustomerServiceAnalytics();
-      kpi.value.avgRating = data.kpi.avgRating;
-      kpi.value.newComplaints = data.kpi.newComplaints;
-      kpi.value.avgResponseHours = data.kpi.avgResponseHours;
-      kpi.value.resolvedCount = data.kpi.resolvedCount;
-      complaints.value = data.complaints;
-    }
-  } finally {
-    loading.value = false;
+  // 2. Donut Chart: Nguồn khách hàng
+  if (sourceChartRef.value) {
+    if (!sourceChart) sourceChart = echarts.init(sourceChartRef.value);
+    sourceChart.setOption({
+      backgroundColor: "transparent",
+      textStyle: { color: chartTextColor },
+      tooltip: { trigger: "item", formatter: "{b}: {c}%" },
+      legend: { top: 0, textStyle: { color: chartTextColor } },
+      series: [
+        {
+          type: "pie",
+          radius: ["40%", "65%"],
+          center: ["50%", "55%"],
+          data: mockSourceData,
+          label: {
+            formatter: "{b}: {c}%",
+            color: chartTextColor,
+          },
+        },
+      ],
+      color: ["#ef4444", "#22c55e", "#3b82f6", "#eab308"],
+    });
+  }
+
+  // 3. Histogram Chart: Phân bổ điểm Lead
+  if (histogramChartRef.value) {
+    if (!histogramChart) histogramChart = echarts.init(histogramChartRef.value);
+    histogramChart.setOption({
+      backgroundColor: "transparent",
+      textStyle: { color: chartTextColor },
+      tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+      grid: {
+        left: "3%",
+        right: "4%",
+        bottom: "5%",
+        top: "10%",
+        containLabel: true,
+      },
+      xAxis: {
+        type: "category",
+        data: mockHistogramData.map((d) => d.group),
+        axisLabel: { color: chartTextColor },
+        axisLine: { lineStyle: { color: chartAxisLineColor } },
+      },
+      yAxis: {
+        type: "value",
+        name: "Số lượng Lead",
+        nameTextStyle: { color: chartTextColor },
+        axisLabel: { color: chartTextColor },
+        splitLine: { lineStyle: { color: chartGridLineColor } },
+      },
+      series: [
+        {
+          type: "bar",
+          data: mockHistogramData.map((d, i) => {
+            const colors = ["#9ca3af", "#3b82f6", "#f97316", "#ef4444"];
+            return {
+              value: d.count,
+              itemStyle: { color: colors[i] },
+            };
+          }),
+          barWidth: "40%",
+          itemStyle: { borderRadius: [4, 4, 0, 0] },
+        },
+      ],
+    });
   }
 }
 
-function scoreClass(score: number) {
-  if (score >= 80) return "text-green-600 font-bold";
-  if (score >= 60) return "text-blue-600";
-  if (score >= 40) return "text-yellow-600";
-  return "text-gray-400";
-}
-
-function leadStatusType(
-  status: string,
-): "primary" | "success" | "info" | "danger" | "warning" {
-  const map: Record<
-    string,
-    "primary" | "success" | "info" | "danger" | "warning"
-  > = {
-    Mới: "info",
-    "Đang theo dõi": "primary",
-    "Đã chuyển đổi": "success",
-    "Không quan tâm": "danger",
-  };
-  return map[status] || "info";
-}
-
-function complaintStatusType(
-  status: string,
-): "primary" | "success" | "info" | "danger" | "warning" {
-  const map: Record<
-    string,
-    "primary" | "success" | "info" | "danger" | "warning"
-  > = {
-    Mới: "danger",
-    "Đang xử lý": "warning",
-    "Đã phản hồi": "primary",
-    "Đã đóng": "success",
-  };
-  return map[status] || "info";
-}
-
-function formatDate(iso: string) {
-  if (!iso) return "-";
-  return new Date(iso).toLocaleDateString("vi-VN");
+function handleResize() {
+  funnelChart?.resize();
+  sourceChart?.resize();
+  histogramChart?.resize();
 }
 
 onMounted(() => {
-  loadData();
+  setTimeout(() => {
+    renderCharts();
+  }, 100);
+  window.addEventListener("resize", handleResize);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", handleResize);
+  funnelChart?.dispose();
+  sourceChart?.dispose();
+  histogramChart?.dispose();
 });
 </script>
 
 <style scoped>
-.customer-tabs :deep(.el-tabs__content) {
-  padding: 0;
-}
+/* Scoped styles nếu cần */
 </style>

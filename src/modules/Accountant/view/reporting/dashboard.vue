@@ -15,7 +15,7 @@
       </template>
     </ReportPageHeader>
 
-    <div class="reporting-kpi-grid">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
       <ArtStatsCard
         title="Doanh thu thực tế"
         :count="formatCurrency(summary.todayRevenue)"
@@ -59,10 +59,10 @@
           'p-4 rounded-lg shadow border-l-4',
           summary.isRevenueAlert
             ? 'bg-red-50 dark:bg-red-900/30 border-red-500'
-            : 'bg-white dark:bg-gray-800 dark:border-gray-700 border-blue-500',
+            : 'bg-[var(--el-bg-color-overlay)] border-[var(--el-color-primary)]',
         ]"
       >
-        <div class="text-gray-500 dark:text-gray-400 text-sm">
+        <div class="text-[var(--el-text-color-secondary)] text-sm">
           Doanh thu thực tế
         </div>
         <div class="text-2xl font-bold">
@@ -77,9 +77,9 @@
       </div>
 
       <div
-        class="p-4 rounded-lg shadow border-l-4 bg-white dark:bg-gray-800 dark:border-gray-700 border-green-500"
+        class="p-4 rounded-lg shadow border-l-4 bg-[var(--el-bg-color-overlay)] border-[var(--el-color-success)]"
       >
-        <div class="text-gray-500 dark:text-gray-400 text-sm">
+        <div class="text-[var(--el-text-color-secondary)] text-sm">
           Lợi nhuận ròng
         </div>
         <div class="text-2xl font-bold">
@@ -95,10 +95,10 @@
           'p-4 rounded-lg shadow border-l-4',
           summary.isPendingAlert
             ? 'bg-yellow-50 dark:bg-yellow-900/30 border-yellow-500'
-            : 'bg-white dark:bg-gray-800 dark:border-gray-700 border-orange-500',
+            : 'bg-[var(--el-bg-color-overlay)] border-[var(--el-color-warning)]',
         ]"
       >
-        <div class="text-gray-500 dark:text-gray-400 text-sm">
+        <div class="text-[var(--el-text-color-secondary)] text-sm">
           Tiền đang treo (Pending)
         </div>
         <div class="text-2xl font-bold">
@@ -117,10 +117,10 @@
           'p-4 rounded-lg shadow border-l-4',
           summary.isStockAlert
             ? 'bg-yellow-50 dark:bg-yellow-900/30 border-yellow-500'
-            : 'bg-white dark:bg-gray-800 dark:border-gray-700 border-gray-500',
+            : 'bg-[var(--el-bg-color-overlay)] border-[var(--el-border-color-dark)]',
         ]"
       >
-        <div class="text-gray-500 dark:text-gray-400 text-sm">
+        <div class="text-[var(--el-text-color-secondary)] text-sm">
           Cảnh báo cần xử lý
         </div>
         <div class="text-2xl font-bold">{{ summary.alertsCount }}</div>
@@ -136,21 +136,19 @@
     <!-- Khu vực Trung tâm: Biểu đồ và Tóm tắt tháng -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
       <div
-        class="lg:col-span-2 bg-white dark:bg-gray-800 dark:border-gray-700 p-4 rounded-lg shadow"
+        class="lg:col-span-2 bg-[var(--el-bg-color-overlay)] p-4 rounded-lg shadow"
       >
         <h3 class="font-bold mb-4">Biểu đồ doanh thu theo chu kỳ</h3>
         <div
           ref="revenueChartRef"
-          class="h-64 w-full bg-gray-50 dark:bg-gray-900 rounded"
+          class="h-64 w-full bg-[var(--el-fill-color-light)] rounded"
         ></div>
       </div>
-      <div
-        class="bg-white dark:bg-gray-800 dark:border-gray-700 p-4 rounded-lg shadow"
-      >
+      <div class="bg-[var(--el-bg-color-overlay)] p-4 rounded-lg shadow">
         <h3 class="font-bold mb-4">Tóm tắt mục tiêu tháng</h3>
         <div class="space-y-4">
           <div class="flex justify-between">
-            <span class="text-gray-500 dark:text-gray-400">Đã đạt:</span>
+            <span class="text-[var(--el-text-color-secondary)]">Đã đạt:</span>
             <span class="font-bold">{{
               formatCurrency(summary.monthAchieved)
             }}</span>
@@ -177,9 +175,7 @@
 
     <!-- Phân tích song song -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-      <div
-        class="bg-white dark:bg-gray-800 dark:border-gray-700 p-4 rounded-lg shadow"
-      >
+      <div class="bg-[var(--el-bg-color-overlay)] p-4 rounded-lg shadow">
         <h3 class="font-bold mb-4">Phân tích nguồn doanh thu</h3>
         <div class="space-y-3">
           <div
@@ -189,7 +185,7 @@
           >
             <span class="text-xs w-24">{{ source.name }}</span>
             <div
-              class="flex-1 bg-gray-100 dark:bg-gray-700 rounded-full h-4 overflow-hidden"
+              class="flex-1 bg-[var(--el-fill-color-light)] rounded-full h-4 overflow-hidden"
             >
               <div
                 class="bg-indigo-500 h-full"
@@ -200,13 +196,13 @@
           </div>
         </div>
       </div>
-      <div
-        class="bg-white dark:bg-gray-800 dark:border-gray-700 p-4 rounded-lg shadow"
-      >
+      <div class="bg-[var(--el-bg-color-overlay)] p-4 rounded-lg shadow">
         <h3 class="font-bold mb-4">Hiệu suất Sale (Top Ranking)</h3>
         <table class="w-full text-left text-sm">
           <thead>
-            <tr class="border-b text-gray-500 dark:text-gray-400">
+            <tr
+              class="border-b border-[var(--el-border-color-light)] text-[var(--el-text-color-secondary)]"
+            >
               <th class="pb-2">Nhân viên</th>
               <th class="pb-2">Doanh số</th>
               <th class="pb-2">KPI</th>
@@ -216,7 +212,7 @@
             <tr
               v-for="staff in topStaff"
               :key="staff.employeeName"
-              class="border-b last:border-0"
+              class="border-b border-[var(--el-border-color-lighter)] last:border-0"
             >
               <td class="py-2 font-medium">{{ staff.employeeName }}</td>
               <td class="py-2">{{ formatCurrency(staff.totalSales) }}</td>
@@ -237,14 +233,14 @@
     </div>
 
     <!-- Dòng giao dịch thời gian thực -->
-    <div
-      class="bg-white dark:bg-gray-800 dark:border-gray-700 p-4 rounded-lg shadow"
-    >
+    <div class="bg-[var(--el-bg-color-overlay)] p-4 rounded-lg shadow">
       <h3 class="font-bold mb-4">Luồng nhật ký giao dịch (Real-time)</h3>
       <div class="overflow-x-auto">
         <table class="w-full text-left text-sm">
           <thead>
-            <tr class="border-b text-gray-500 dark:text-gray-400">
+            <tr
+              class="border-b border-[var(--el-border-color-light)] text-[var(--el-text-color-secondary)]"
+            >
               <th class="pb-2">Mốc giờ</th>
               <th class="pb-2">Khách hàng</th>
               <th class="pb-2">Sản phẩm</th>
@@ -256,9 +252,11 @@
             <tr
               v-for="tx in transactions"
               :key="tx.timestamp"
-              class="border-b last:border-0 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900"
+              class="border-b border-[var(--el-border-color-lighter)] last:border-0 hover:bg-[var(--el-fill-color-light)] transition-colors"
             >
-              <td class="py-2 text-gray-400">{{ formatTime(tx.timestamp) }}</td>
+              <td class="py-2 text-[var(--el-text-color-secondary)]">
+                {{ formatTime(tx.timestamp) }}
+              </td>
               <td class="py-2 font-medium">{{ tx.customerName }}</td>
               <td class="py-2">{{ tx.productName }}</td>
               <td

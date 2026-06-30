@@ -1,13 +1,13 @@
 .reporting-page {
   // Light mode (default) - sử dụng Element Plus theme variables
-  --report-bg: var(--el-bg-color-page);
+  --report-bg: var(--el-bg-color-overlay);
   --report-panel: var(--el-bg-color-overlay);
   --report-panel-soft: var(--el-fill-color-light);
-  --report-border: #cbd5e1;
-  --report-border-strong: #cbd5e1;
-  --report-text: #303133;
-  --report-muted: #909399;
-  --report-muted-strong: #606266;
+  --report-border: transparent;
+  --report-border-strong: transparent;
+  --report-text: var(--el-text-color-primary);
+  --report-muted: var(--el-text-color-secondary);
+  --report-muted-strong: var(--el-text-color-regular);
   --report-red: #e84a4a;
   --report-red-light: #ff6b6b;
   --report-red-dark: #c53a3a;
@@ -43,6 +43,10 @@
   color: var(--report-text);
   background: var(--report-bg);
   border-radius: 0;
+}
+
+.reporting-page .shadow {
+  box-shadow: none !important;
 }
 
 .reporting-section-grid {
@@ -500,16 +504,16 @@
 
 html.dark {
   .reporting-page {
-    --report-bg: #050505;
-    --report-panel: #161618;
-    --report-panel-soft: #111214;
-    --report-border: rgb(255 255 255 / 9%);
-    --report-border-strong: rgb(255 255 255 / 14%);
-    --report-text: #f8fafc;
-    --report-muted: #9ca3af;
-    --report-muted-strong: #cbd5e1;
-    --report-input-bg: #101114;
-    --report-radio-bg: #101114;
+    --report-bg: var(--el-bg-color-overlay);
+    --report-panel: var(--el-bg-color-overlay);
+    --report-panel-soft: var(--el-fill-color-light);
+    --report-border: transparent;
+    --report-border-strong: transparent;
+    --report-text: var(--el-text-color-primary);
+    --report-muted: var(--el-text-color-secondary);
+    --report-muted-strong: var(--el-text-color-regular);
+    --report-input-bg: var(--el-fill-color-blank);
+    --report-radio-bg: var(--el-fill-color-blank);
 
     .text-primary {
       color: var(--report-red-light) !important;

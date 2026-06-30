@@ -15,7 +15,7 @@
       </template>
     </ReportPageHeader>
 
-    <div class="reporting-kpi-grid reporting-page__kpi">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
       <ArtStatsCard
         title="Tổng thu nhập"
         :count="formatCurrency(pnlData.totalRevenue)"
@@ -48,8 +48,10 @@
       />
     </div>
 
-    <div class="reporting-section-grid two-columns mt-4">
-      <ElCard class="reporting-card reporting-page__summary">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
+      <ElCard
+        class="reporting-card reporting-page__summary lg:col-span-1 bg-[var(--el-bg-color-overlay)]"
+      >
         <template #header>
           <div class="reporting-page__summary-header">
             <span class="reporting-page__summary-title">Tổng quan nhanh</span>
@@ -90,7 +92,9 @@
         </div>
       </ElCard>
 
-      <ElCard class="reporting-card reporting-page__tabs">
+      <ElCard
+        class="reporting-card reporting-page__tabs lg:col-span-2 bg-[var(--el-bg-color-overlay)]"
+      >
         <template #header>
           <ElTabs
             v-model="activeTab"
@@ -303,7 +307,7 @@ onMounted(() => {
 
 .reporting-page__summary-title {
   font-weight: 700;
-  color: #f8fafc;
+  color: var(--el-text-color-primary);
 }
 
 .reporting-page__summary-period {
@@ -327,7 +331,7 @@ onMounted(() => {
   align-items: center;
   justify-content: space-between;
   padding-bottom: 10px;
-  border-bottom: 1px dashed rgb(255 255 255 / 8%);
+  border-bottom: 1px dashed var(--el-border-color-light);
 }
 
 .reporting-page__summary-row:last-child {
@@ -338,13 +342,9 @@ onMounted(() => {
 .reporting-page__summary-row--accent {
   padding: 12px 16px;
   margin-top: 4px;
-  color: #fff;
-  background: linear-gradient(
-    135deg,
-    rgb(232 74 74 / 18%),
-    rgb(255 107 107 / 6%)
-  );
-  border: 1px solid rgb(232 74 74 / 32%);
+  color: var(--el-color-danger);
+  background: var(--el-color-danger-light-9);
+  border: 1px solid var(--el-color-danger-light-7);
   border-radius: 12px;
 }
 

@@ -176,6 +176,7 @@ export const serviceRoutes: AppRouteRecord = {
       meta: {
         title: "Hợp đồng mua bán xe",
         icon: "ri:file-paper-2-line",
+        isHide: true,
       },
     },
     {

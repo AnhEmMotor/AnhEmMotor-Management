@@ -84,10 +84,10 @@
         </template>
         <template #customer="{ row }">
           <div class="flex flex-col">
-            <span class="font-medium text-gray-800">{{
+            <span class="font-medium text-[var(--el-text-color-primary)]">{{
               row.customerName || row.buyerName || "---"
             }}</span>
-            <span class="text-xs text-gray-500">{{
+            <span class="text-xs text-[var(--el-text-color-secondary)]">{{
               row.customerPhone || row.buyerEmail || "---"
             }}</span>
           </div>
@@ -115,7 +115,7 @@
           <span v-else class="text-gray-400 text-xs">---</span>
         </template>
         <template #total="{ row }">
-          <span class="font-semibold text-gray-800">{{
+          <span class="font-semibold text-[var(--el-text-color-primary)]">{{
             formatCurrency(row.total || 0)
           }}</span>
         </template>
@@ -140,12 +140,11 @@
       </div>
     </ElCard>
 
-    <!-- Sliding Drawer for Order Details -->
-    <ElDrawer
+    <!-- Modal for Order Details -->
+    <ElDialog
       v-model="drawer.visible"
       :title="drawer.order ? `Chi tiết đơn #${drawer.order.id}` : ''"
-      size="60%"
-      direction="rtl"
+      width="60%"
       :destroy-on-close="true"
     >
       <div v-if="drawer.order" class="order-detail">
@@ -191,8 +190,12 @@
         </div>
 
         <!-- Order Total Breakdown -->
-        <div class="total-breakdown mb-4 p-3 bg-gray-50 rounded">
-          <h4 class="font-bold mb-2 text-gray-700">Tổng doanh thu</h4>
+        <div
+          class="total-breakdown mb-4 p-3 bg-[var(--el-fill-color-light)] rounded"
+        >
+          <h4 class="font-bold mb-2 text-[var(--el-text-color-primary)]">
+            Tổng doanh thu
+          </h4>
           <div class="space-y-1 text-sm">
             <div class="flex justify-between">
               <span>Tổng tiền hàng:</span>
@@ -229,7 +232,9 @@
 
         <!-- Products Table -->
         <div class="products-section">
-          <h4 class="font-bold mb-2 text-gray-700">Chi tiết giỏ hàng</h4>
+          <h4 class="font-bold mb-2 text-[var(--el-text-color-primary)]">
+            Chi tiết giỏ hàng
+          </h4>
           <ElTable
             :data="drawer.order.products || []"
             border
@@ -295,7 +300,7 @@
           </ElButton>
         </div>
       </template>
-    </ElDrawer>
+    </ElDialog>
   </div>
 </template>
 
