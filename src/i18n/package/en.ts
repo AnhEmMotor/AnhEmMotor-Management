@@ -428,7 +428,7 @@ export default {
       care: "Customer care",
       contact: "Contact",
     },
-marketing: {
+    marketing: {
       title: "Marketing",
       banner: "Banner Management",
       article: "Article Management",
@@ -879,7 +879,7 @@ marketing: {
       careDesc: "Customer care and support",
       progress: "Progress",
       progressDesc: "Track service progress",
-    }
+    },
   },
   contact: {
     title: "Contact Management",
@@ -1007,6 +1007,14 @@ marketing: {
       tracking: "Tracking No.",
       message: "Message",
       createdAt: "Created At",
+      status: {
+        completed: "Completed",
+        shipping: "Shipping",
+        packing: "Packing",
+        pendingPickup: "Pending Pick",
+        returned: "Returned",
+      },
+      noData: "No Data",
     },
     fulfillment: {
       title: "Fulfillment Processing",

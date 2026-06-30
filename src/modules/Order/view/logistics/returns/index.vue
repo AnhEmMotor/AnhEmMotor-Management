@@ -260,8 +260,37 @@
                 </ElFormItem>
               </div>
 
+              <!-- New Financial Input Fields -->
+              <div class="grid grid-cols-2 gap-4">
+                <ElFormItem label="Giá trị hoàn lại cho khách (VND)">
+                  <ElInputNumber
+                    v-model="inspectForm.refundAmount"
+                    :min="0"
+                    placeholder="Ví dụ: 500,000"
+                    class="w-full"
+                    :controls="false"
+                  />
+                </ElFormItem>
+                <ElFormItem label="Chi phí chuyển hoàn phát sinh (VND)">
+                  <ElInputNumber
+                    v-model="inspectForm.returnShippingCost"
+                    :min="0"
+                    placeholder="Ví dụ: 30,000"
+                    class="w-full"
+                    :controls="false"
+                  />
+                </ElFormItem>
+              </div>
+
               <ElFormItem label="Ảnh bằng chứng khui hộp">
                 <div class="flex items-center gap-4">
+                  <input
+                    type="file"
+                    ref="fileInput"
+                    class="hidden"
+                    accept="image/*"
+                    @change="onFileChange"
+                  />
                   <ElButton :icon="Camera" @click="handleUploadClick"
                     >Tải ảnh lên</ElButton
                   >
@@ -411,6 +440,7 @@ import type {
   ReturnDetailDto,
   InspectReturnCommand,
 } from "@/domain/logistics/returns.types";
+import { FileApi } from "@/api/operations/file.api";
 
 defineOptions({ name: "ReverseLogistics" });
 
@@ -432,8 +462,11 @@ const inspectForm = ref<InspectReturnCommand>({
   returnProofImage: "",
   returnInternalNote: "",
   action: "",
+  refundAmount: 0,
+  returnShippingCost: 0,
 });
 const submitting = ref(false);
+const fileInput = ref<HTMLInputElement | null>(null);
 
 // Filter logic
 const filteredReturns = computed(() => {
@@ -483,6 +516,16 @@ const handleSelect = async (id: number) => {
       returnProofImage: detail.value?.returnProofImage || "",
       returnInternalNote: detail.value?.returnInternalNote || "",
       action: "",
+      refundAmount:
+        detail.value?.refundAmount !== undefined &&
+        detail.value?.refundAmount > 0
+          ? detail.value.refundAmount
+          : detail.value?.codAmount || 0,
+      returnShippingCost:
+        detail.value?.returnShippingCost !== undefined &&
+        detail.value?.returnShippingCost > 0
+          ? detail.value.returnShippingCost
+          : Math.round((detail.value?.shippingCost || 0) * 0.5),
     };
   } catch (_error) {
     ElMessage.error("Lỗi khi tải chi tiết hàng hoàn");
@@ -492,12 +535,23 @@ const handleSelect = async (id: number) => {
 };
 
 const handleUploadClick = () => {
-  // Simulate image upload
-  setTimeout(() => {
-    inspectForm.value.returnProofImage =
-      "https://fakeimg.pl/350x200/?text=Proof";
-    ElMessage.success("Tải ảnh thành công");
-  }, 500);
+  fileInput.value?.click();
+};
+
+const onFileChange = async (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  if (target.files && target.files.length > 0) {
+    const file = target.files[0];
+    try {
+      const res = await FileApi.uploadProductImage(file);
+      const data = (res as any).data || res;
+      inspectForm.value.returnProofImage = data.publicUrl;
+      ElMessage.success("Tải ảnh bằng chứng thành công!");
+    } catch (error) {
+      console.error(error);
+      ElMessage.error("Không thể tải ảnh lên hệ thống.");
+    }
+  }
 };
 
 const submitDecision = async (action: "restock" | "defect" | "refund") => {

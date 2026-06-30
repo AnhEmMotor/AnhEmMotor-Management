@@ -33,6 +33,8 @@ export interface ReturnDetailDto {
   returnAction?: string;
   refundAmount?: number;
   returnShippingCost?: number;
+  codAmount?: number;
+  shippingCost?: number;
   carrierReturnNote?: string;
   items: ReturnDetailItemDto[];
 }
@@ -43,4 +45,6 @@ export interface InspectReturnCommand {
   returnProofImage?: string;
   returnInternalNote?: string;
   action: string; // 'restock', 'defect', 'refund'
+  refundAmount?: number;
+  returnShippingCost?: number;
 }
