@@ -1,6 +1,6 @@
 .reporting-page {
   // Light mode (default) - sử dụng Element Plus theme variables
-  --report-bg: var(--el-bg-color-page);
+  --report-bg: var(--default-bg-color);
   --report-panel: var(--el-bg-color-overlay);
   --report-panel-soft: var(--el-fill-color-light);
   --report-border: #cbd5e1;
@@ -500,7 +500,7 @@
 
 html.dark {
   .reporting-page {
-    --report-bg: #050505;
+    --report-bg: var(--default-bg-color);
     --report-panel: #161618;
     --report-panel-soft: #111214;
     --report-border: rgb(255 255 255 / 9%);
