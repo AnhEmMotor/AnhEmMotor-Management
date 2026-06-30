@@ -85,7 +85,7 @@ export const accountancyMenu: AppRouteRecord[] = [
         name: "AccountantCustomer",
         component: "/Accountant/view/reporting/customer",
         meta: {
-          title: "Báo cáo khách hàng",
+          title: "Báo Cáo Khách Hàng",
           icon: "ri:user-heart-line",
           keepAlive: true,
           permission: Permissions.StatisticalView,
@@ -98,17 +98,6 @@ export const accountancyMenu: AppRouteRecord[] = [
         meta: {
           title: "Báo cáo nhân sự & hoa hồng",
           icon: "ri:team-line",
-          keepAlive: true,
-          permission: Permissions.StatisticalView,
-        },
-      },
-      {
-        path: "customer-service",
-        name: "AccountantCustomerService",
-        component: "/Accountant/view/reporting/customer-service",
-        meta: {
-          title: "Báo cáo chăm sóc khách hàng",
-          icon: "ri:customer-service-2-line",
           keepAlive: true,
           permission: Permissions.StatisticalView,
         },

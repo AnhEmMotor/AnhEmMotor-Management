@@ -1,4 +1,4 @@
-import { AppRouteRecord } from "@/types/router";
+﻿import { AppRouteRecord } from "@/types/router";
 
 export const orderMenu: AppRouteRecord[] = [
   {
@@ -49,6 +49,16 @@ export const orderMenu: AppRouteRecord[] = [
               title: "Hợp đồng mua xe",
               icon: "ri:file-contract-line",
               keepAlive: true,
+            },
+          },
+          {
+            path: "contract/preview/:id?",
+            name: "SalesContractPreview",
+            component: "/Order/view/order/contract/contract-preview",
+            meta: {
+              title: "Chi tiết Hợp đồng",
+              icon: "ri:file-search-line",
+              isHide: true,
             },
           },
           {

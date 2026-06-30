@@ -77,6 +77,26 @@ export const factoryMenu: AppRouteRecord[] = [
     ],
   },
   {
+    path: "/factory/sales-contracts",
+    name: "SalesContracts",
+    component: "/index/index",
+    meta: {
+      title: "Hợp đồng mua bán xe",
+      icon: "ri:file-paper-2-line",
+    },
+    children: [
+      {
+        path: "",
+        name: "SalesContractList",
+        component: "/Factory/view/service/sales-contracts/index",
+        meta: {
+          title: "Danh sách hợp đồng",
+          icon: "ri:file-list-line",
+        },
+      },
+    ],
+  },
+  {
     path: "/factory/statistics",
     name: "FactoryStatistics",
     component: "/Factory/view/service/workshop/statistics/index",

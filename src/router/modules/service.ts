@@ -170,6 +170,25 @@ export const serviceRoutes: AppRouteRecord = {
       },
     },
     {
+      path: "sales-contracts",
+      name: "ServiceSalesContracts",
+      component: "/Factory/view/service/sales-contracts/index",
+      meta: {
+        title: "Hợp đồng mua bán xe",
+        icon: "ri:file-paper-2-line",
+      },
+    },
+    {
+      path: "sales-contracts/preview/:id?",
+      name: "SalesContractPreview",
+      component: "/Factory/view/service/sales-contracts/contract-preview",
+      meta: {
+        title: "Chi tiết Hợp đồng",
+        icon: "ri:file-search-line",
+        isHide: true,
+      },
+    },
+    {
       path: "workshop-report",
       name: "ServiceWorkshopReport",
       component: "/Accountant/view/reporting/workshop",
