@@ -57,3 +57,17 @@ export function toggleItemPick(itemId: number, isPicked: boolean) {
     data: { isPicked },
   });
 }
+
+export interface FulfillmentOrdersParams {
+  status?: number;
+  carrier?: string;
+  fromDate?: string;
+  toDate?: string;
+}
+
+export function getFulfillmentOrders(params?: FulfillmentOrdersParams) {
+  return request.get<FulfillmentDetailResponse[]>({
+    url: "/api/v1/logistics/fulfillment",
+    params,
+  });
+}

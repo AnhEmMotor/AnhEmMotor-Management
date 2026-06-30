@@ -7,6 +7,12 @@ export const statisticsApi = {
       url: "/api/v1/Statistics/dashboard-overview",
     });
   },
+  getWorkshopDashboardOverview(fromDate?: string, toDate?: string) {
+    return request.get<any>({
+      url: "/api/workshop/dashboard/overview",
+      params: { fromDate, toDate },
+    });
+  },
   getDailyRevenue(days: number = 7) {
     return request.get<Statistical.DailyRevenueResponse[]>({
       url: "/api/v1/Statistics/daily-revenue",

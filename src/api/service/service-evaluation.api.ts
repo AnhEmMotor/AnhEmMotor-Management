@@ -18,7 +18,7 @@ export const ServiceEvaluationApi = {
     size: number;
   }) {
     return request.get<EvaluationListResponse>({
-      url: "/ServiceWorkshopEvaluations",
+      url: "/api/v1/ServiceWorkshopEvaluations",
       params: {
         status: params.status,
         criteria: params.criteria,
@@ -31,7 +31,7 @@ export const ServiceEvaluationApi = {
 
   getDetail(id: number) {
     return request.get<EvaluationDetail>({
-      url: `/ServiceWorkshopEvaluations/${id}`,
+      url: `/api/v1/ServiceWorkshopEvaluations/${id}`,
     });
   },
 
@@ -41,21 +41,21 @@ export const ServiceEvaluationApi = {
     markAsProcessed: boolean;
   }) {
     return request.post<any>({
-      url: "/ServiceWorkshopEvaluations/reply",
+      url: "/api/v1/ServiceWorkshopEvaluations/reply",
       data,
     });
   },
 
   markProcessed(data: { evaluationId: number }) {
     return request.post<any>({
-      url: "/ServiceWorkshopEvaluations/processed",
+      url: "/api/v1/ServiceWorkshopEvaluations/processed",
       data,
     });
   },
 
   updateInternalNotes(data: { evaluationId: number; internalNotes: string }) {
     return request.put<any>({
-      url: "/ServiceWorkshopEvaluations/internal-notes",
+      url: "/api/v1/ServiceWorkshopEvaluations/internal-notes",
       data,
     });
   },

@@ -325,6 +325,7 @@ import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 
 import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
+import { PlateDossierApi } from "@/api/vehicle/plate-dossier.api";
 
 type PlateRegistrationDetail = {
   id: number;
@@ -377,24 +378,24 @@ const formatCurrency = (val?: number) => {
 
 const steps = [
   {
-    key: "Preparation",
+    key: "Prepare",
     title: "Chuẩn bị hồ sơ",
     description:
       "Nhân viên phụ trách thực hiện. Hệ thống không gửi thông báo khách ngay ở bước này.",
   },
   {
-    key: "PreTaxPaid",
+    key: "TaxPaid",
     title: "Đã nộp thuế trước bạ",
     description:
       "Sau khi nộp xong, hệ thống gửi Zalo/SMS để thông báo tiến độ.",
   },
   {
-    key: "PlateBilled",
+    key: "PlateAssigned",
     title: "Đã bấm biển số",
     description: "Gửi Zalo/SMS cập nhật tình trạng hồ sơ sau khi bấm xong.",
   },
   {
-    key: "WaitingCavet",
+    key: "WaitingCard",
     title: "Đang chờ cà-vet (Giấy hẹn)",
     description: "Gửi thông báo về việc đang chờ giấy hẹn/diễn biến hồ sơ.",
   },
@@ -431,13 +432,13 @@ const getStatusBadgeClass = (status: string) => {
   switch (status) {
     case "Completed":
       return "px-2 py-0.5 bg-green-50 text-green-700 rounded text-[10px] font-black uppercase";
-    case "WaitingCavet":
+    case "WaitingCard":
       return "px-2 py-0.5 bg-amber-50 text-amber-700 rounded text-[10px] font-black uppercase";
-    case "PlateBilled":
+    case "PlateAssigned":
       return "px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-[10px] font-black uppercase";
-    case "PreTaxPaid":
+    case "TaxPaid":
       return "px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded text-[10px] font-black uppercase";
-    case "Preparation":
+    case "Prepare":
       return "px-2 py-0.5 bg-red-50 text-red-700 rounded text-[10px] font-black uppercase";
     default:
       return "px-2 py-0.5 bg-slate-50 text-slate-700 rounded text-[10px] font-black uppercase";
@@ -450,7 +451,7 @@ const timeline = computed<TimelineItem[]>(() => {
   const base: TimelineItem[] = [
     {
       key: "t1",
-      status: "Preparation",
+      status: "Prepare",
       title: "Nhân viên chuẩn bị hồ sơ",
       note: "Đã xác nhận bộ hồ sơ hợp lệ để tiến hành bước nộp thuế.",
       occurredAt: detail.value.createdAt || new Date().toISOString(),
@@ -458,7 +459,7 @@ const timeline = computed<TimelineItem[]>(() => {
     },
     {
       key: "t2",
-      status: "PreTaxPaid",
+      status: "TaxPaid",
       title: "Nộp thuế trước bạ thành công",
       note: "Hệ thống đã ghi nhận đã nộp.",
       occurredAt: new Date(Date.now() - 2 * 24 * 3600 * 1000).toISOString(),
@@ -466,7 +467,7 @@ const timeline = computed<TimelineItem[]>(() => {
     },
     {
       key: "t3",
-      status: "PlateBilled",
+      status: "PlateAssigned",
       title: "Bấm biển số",
       note: "Đã bấm biển số theo thông tin hồ sơ.",
       occurredAt: new Date(Date.now() - 24 * 3600 * 1000).toISOString(),
@@ -474,7 +475,7 @@ const timeline = computed<TimelineItem[]>(() => {
     },
     {
       key: "t4",
-      status: "WaitingCavet",
+      status: "WaitingCard",
       title: "Đang chờ giấy hẹn/cà-vet",
       note: "Hồ sơ đang được cơ quan liên quan xử lý.",
       occurredAt: new Date(Date.now() - 8 * 3600 * 1000).toISOString(),
@@ -564,40 +565,25 @@ const fetchDetail = async () => {
   loading.value = true;
   try {
     const id = Number(route.params.id);
-
-    // Stub data (replace with backend in next iteration)
-    const map: Record<number, PlateRegistrationDetail> = {
-      1: {
-        id: 1,
-        code: "HSBS-9982",
-        phoneNumber: "0901234567",
-        customerName: "Trần Minh Hoàng",
-        vinNumber: "RLH-2024-0001",
-        licensePlate: "51A-123.45",
-        workshopAssignee: "Admin A",
-        workflowStatus: "Completed",
-        createdAt: "2026-05-20T09:30:00Z",
-        totalCollected: 3500000,
-        totalPaid: 3200000,
+    const item = await PlateDossierApi.getDetail(id);
+    if (item) {
+      detail.value = {
+        id: item.id,
+        code: item.dossierNumber || `HSBS-${item.id}`,
+        phoneNumber: item.customerPhone || "",
+        customerName: item.customerName || "Không rõ",
+        vinNumber: item.vinNumber || "N/A",
+        licensePlate: item.licensePlate,
+        workshopAssignee: "",
+        workflowStatus: item.status,
+        createdAt: item.createdAt,
+        totalCollected: Number(item.registrationFee) + Number(item.serviceFee),
+        totalPaid: Number(item.actualCost),
         debtAmount: 0,
-      },
-      2: {
-        id: 2,
-        code: "HSBS-1001",
-        phoneNumber: "0902222333",
-        customerName: "Lê Thị B",
-        vinNumber: "RLH-2024-0002",
-        licensePlate: undefined,
-        workshopAssignee: "Admin B",
-        workflowStatus: "WaitingCavet",
-        createdAt: "2026-05-22T15:10:00Z",
-        totalCollected: 4000000,
-        totalPaid: 3500000,
-        debtAmount: 500000,
-      },
-    };
-
-    detail.value = map[id] || null;
+      };
+    } else {
+      detail.value = null;
+    }
   } catch (e: any) {
     ElMessage.error(e?.message || "Không thể tải chi tiết hồ sơ");
   } finally {
@@ -610,13 +596,19 @@ const handleAdvanceWorkflow = async () => {
 
   submitting.value = true;
   try {
-    // TODO: call backend mutation e.g. AdvancePlateRegistrationStepCommand
-    detail.value = {
-      ...detail.value,
-      workflowStatus: advanceStatus.value,
-    };
-
-    ElMessage.success("Đã tiến hành bước tiếp theo (stub UI)");
+    const success = await PlateDossierApi.updateStatus({
+      id: detail.value.id,
+      status: advanceStatus.value,
+    });
+    if (success) {
+      detail.value = {
+        ...detail.value,
+        workflowStatus: advanceStatus.value,
+      };
+      ElMessage.success("Đã tiến hành bước tiếp theo thành công!");
+    } else {
+      throw new Error("Không thể cập nhật trạng thái");
+    }
   } catch (e: any) {
     ElMessage.error(e?.message || "Tiến hành bước thất bại");
   } finally {

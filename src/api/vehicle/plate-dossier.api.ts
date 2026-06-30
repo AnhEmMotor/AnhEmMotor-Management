@@ -2,17 +2,20 @@ import request from "@/common/utils/http";
 
 export interface PlateDossier {
   id: number;
-  outputId: number;
-  customerName?: string;
-  customerPhone?: string;
+  outputId?: number;
+  dossierNumber: string;
+  customerName: string;
+  customerPhone: string;
   vehicleName?: string;
-  status: "Prepare" | "TaxPaid" | "PlateAssigned" | "WaitingCard" | "Completed";
+  vinNumber: string;
+  status: string;
   licensePlate?: string;
   registrationFee: number;
   actualCost: number;
   serviceFee: number;
   notes?: string;
   createdAt: string;
+  completedDate?: string;
 }
 
 export interface PlateDossierList {
@@ -21,17 +24,36 @@ export interface PlateDossierList {
 }
 
 export interface CreatePlateDossierPayload {
-  outputId: number;
+  outputId?: number;
+  customerName: string;
+  customerPhone: string;
+  licensePlate: string;
+  vinNumber: string;
+  status: string;
   registrationFee: number;
   actualCost: number;
   serviceFee: number;
   notes?: string;
-  licensePlate?: string;
+  completedDate?: string;
+}
+
+export interface UpdatePlateDossierPayload {
+  id?: number;
+  customerName: string;
+  customerPhone: string;
+  licensePlate: string;
+  vinNumber: string;
+  status: string;
+  registrationFee: number;
+  actualCost: number;
+  serviceFee: number;
+  notes?: string;
+  completedDate?: string;
 }
 
 export interface UpdatePlateDossierStatusPayload {
   id: number;
-  status: "Prepare" | "TaxPaid" | "PlateAssigned" | "WaitingCard" | "Completed";
+  status: string;
   licensePlate?: string;
   registrationFee?: number;
   actualCost?: number;
@@ -52,9 +74,22 @@ export const PlateDossierApi = {
     });
   },
 
+  getDetail(id: number) {
+    return request.get<PlateDossier>({
+      url: `/api/v1/PlateDossiers/${id}`,
+    });
+  },
+
   create(data: CreatePlateDossierPayload) {
     return request.post<number>({
       url: "/api/v1/PlateDossiers",
+      data,
+    });
+  },
+
+  update(id: number, data: UpdatePlateDossierPayload) {
+    return request.put<boolean>({
+      url: `/api/v1/PlateDossiers/${id}`,
       data,
     });
   },
@@ -63,6 +98,12 @@ export const PlateDossierApi = {
     return request.put<boolean>({
       url: "/api/v1/PlateDossiers/status",
       data,
+    });
+  },
+
+  delete(id: number) {
+    return request.del<boolean>({
+      url: `/api/v1/PlateDossiers/${id}`,
     });
   },
 };

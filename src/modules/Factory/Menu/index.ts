@@ -41,7 +41,7 @@ export const factoryMenu: AppRouteRecord[] = [
         path: "warranty",
         name: "WorkshopWarranty",
         component:
-          "/Factory/view/service/warranty-and-complaints/complaints/index",
+          "/Factory/view/service/warranty-and-complaints/warranty-requests/index",
         meta: {
           title: "Bảo hành",
           icon: "ri:shield-check-line",

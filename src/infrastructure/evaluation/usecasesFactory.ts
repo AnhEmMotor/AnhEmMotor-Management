@@ -52,8 +52,8 @@ class RealCreateEvaluationReplyUseCase implements CreateEvaluationReplyUseCase {
       message: payload.text,
       markAsProcessed: false,
     });
-    if (!res.isSuccess) {
-      throw new Error(res.errors?.[0]?.description || "Gửi phản hồi thất bại");
+    if (!res) {
+      throw new Error("Không nhận được phản hồi từ server");
     }
   }
 }
@@ -61,10 +61,8 @@ class RealCreateEvaluationReplyUseCase implements CreateEvaluationReplyUseCase {
 class RealMarkEvaluationProcessedUseCase implements MarkEvaluationProcessedUseCase {
   async execute(payload: MarkEvaluationProcessedPayload): Promise<void> {
     const res = await ServiceEvaluationApi.markProcessed(payload);
-    if (!res.isSuccess) {
-      throw new Error(
-        res.errors?.[0]?.description || "Cập nhật trạng thái thất bại",
-      );
+    if (!res) {
+      throw new Error("Không nhận được phản hồi từ server");
     }
   }
 }
@@ -75,8 +73,8 @@ class RealUpdateInternalNotesUseCase implements UpdateInternalNotesUseCase {
       evaluationId: payload.evaluationId,
       internalNotes: payload.notes,
     });
-    if (!res.isSuccess) {
-      throw new Error(res.errors?.[0]?.description || "Lưu ghi chú thất bại");
+    if (!res) {
+      throw new Error("Không nhận được phản hồi từ server");
     }
   }
 }

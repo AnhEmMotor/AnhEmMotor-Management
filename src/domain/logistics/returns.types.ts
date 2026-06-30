@@ -33,6 +33,9 @@ export interface ReturnDetailDto {
   returnAction?: string;
   rejectionReason?: string;
   inspectedAt?: string;
+  refundAmount?: number;
+  returnShippingCost?: number;
+  carrierReturnNote?: string;
   items: ReturnDetailItemDto[];
 }
 
