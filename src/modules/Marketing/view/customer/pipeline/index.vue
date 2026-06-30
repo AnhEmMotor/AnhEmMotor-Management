@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="purchasing-pipeline-page flex flex-col gap-6 pb-10 h-screen">
     <div class="grid grid-cols-5 gap-4 px-4 pt-4">
       <div
@@ -162,47 +162,130 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { VueDraggable } from "vue-draggable-plus";
+import { leadApi } from "@/api/operations/lead.api";
 import { ElMessage } from "element-plus";
 
 defineOptions({ name: "PurchasingPipeline" });
 
+interface PipelineItem {
+  id: number;
+  customerName: string;
+  vehicle: string;
+  priority: string;
+  timeInStage: string;
+  saleName: string;
+}
+
+const STATUS_MAP: Record<string, { id: string; title: string; color: string }> =
+  {
+    Consulting: { id: "Consulting", title: "Đang tư vấn", color: "#3b82f6" },
+    TestDrive: { id: "TestDrive", title: "Đang lái thử", color: "#6366f1" },
+    Deposit: { id: "Deposit", title: "Đã đặt cọc", color: "#f97316" },
+    Processing: { id: "Processing", title: "Chờ giấy tờ", color: "#a855f7" },
+    Delivered: { id: "Delivered", title: "Đã giao xe", color: "#10b981" },
+  };
+
+const boardColumns = ref<
+  { id: string; title: string; color: string; items: PipelineItem[] }[]
+>([]);
 const pipelineStats = ref([
   {
     label: "Tổng Deal",
-    count: 42,
+    count: 0,
     icon: "ri:exchange-funds-line",
     bg: "bg-blue-600",
-    value: "+12% mtd",
+    value: "",
   },
   {
     label: "Đang tư vấn",
-    count: 15,
+    count: 0,
     icon: "ri:customer-service-2-line",
     bg: "bg-indigo-500",
   },
   {
     label: "Đã đặt cọc",
-    count: 8,
+    count: 0,
     icon: "ri:money-dollar-circle-line",
     bg: "bg-orange-500",
-    value: "420tr",
   },
   {
     label: "Chờ biển số",
-    count: 12,
+    count: 0,
     icon: "ri:government-line",
     bg: "bg-purple-500",
   },
   {
     label: "Đã giao xe",
-    count: 7,
+    count: 0,
     icon: "ri:checkbox-circle-line",
     bg: "bg-emerald-500",
-    value: "Goal 85%",
   },
 ]);
+
+const loadPipeline = async () => {
+  try {
+    const res = await leadApi.getPipeline();
+    const groups = res.data;
+    const columns = groups
+      .map((g) => {
+        const mapped = STATUS_MAP[g.status];
+        if (!mapped) return null;
+        return {
+          ...mapped,
+          items: g.leads.map((l) => ({
+            id: l.id,
+            customerName: l.fullName,
+            vehicle: l.interestedVehicle || "N/A",
+            priority: l.score >= 80 ? "Urgent" : "Normal",
+            timeInStage: formatTimeAgo(l.createdAt),
+            saleName: l.assignedToName || "Chưa giao",
+          })),
+        };
+      })
+      .filter(Boolean) as {
+      id: string;
+      title: string;
+      color: string;
+      items: PipelineItem[];
+    }[];
+
+    boardColumns.value = columns;
+
+    const totalDeals = groups.reduce((sum, g) => sum + g.leads.length, 0);
+    pipelineStats.value[0].count = totalDeals;
+    const consultingCount =
+      groups.find((g) => g.status === "Consulting")?.leads.length ?? 0;
+    pipelineStats.value[1].count = consultingCount;
+    const depositCount =
+      groups.find((g) => g.status === "Deposit")?.leads.length ?? 0;
+    pipelineStats.value[2].count = depositCount;
+    const processingCount =
+      groups.find((g) => g.status === "Processing")?.leads.length ?? 0;
+    pipelineStats.value[3].count = processingCount;
+    const deliveredCount =
+      groups.find((g) => g.status === "Delivered")?.leads.length ?? 0;
+    pipelineStats.value[4].count = deliveredCount;
+  } catch (error) {
+    console.error("Failed to load pipeline:", error);
+  }
+};
+
+const formatTimeAgo = (dateStr: string): string => {
+  const now = new Date();
+  const date = new Date(dateStr);
+  const diffMs = now.getTime() - date.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  if (diffDays === 0) return "Hôm nay";
+  if (diffDays === 1) return "1 ngày";
+  if (diffDays < 7) return `${diffDays} ngày`;
+  return `${Math.floor(diffDays / 7)} tuần`;
+};
+
+const isStale = (deal: PipelineItem) => {
+  return deal.timeInStage.includes("ngày") && parseInt(deal.timeInStage) >= 3;
+};
 
 const filterSale = ref("");
 const filterVehicle = ref("");
@@ -211,95 +294,7 @@ const salesList = [
   { id: 2, name: "Sale Trần Thị B" },
 ];
 
-const boardColumns = ref([
-  {
-    id: "Consulting",
-    title: "Đang tư vấn",
-    color: "#3b82f6",
-    items: [
-      {
-        id: 101,
-        customerName: "Nguyễn Hoàng Long",
-        vehicle: "Winner X 2024",
-        priority: "High",
-        timeInStage: "2 ngày",
-        saleName: "Admin",
-      },
-      {
-        id: 102,
-        customerName: "Trần Minh Tâm",
-        vehicle: "SH 125i",
-        priority: "Urgent",
-        timeInStage: "5 giờ",
-        saleName: "Sale A",
-      },
-    ],
-  },
-  {
-    id: "TestDrive",
-    title: "Đang lái thử",
-    color: "#6366f1",
-    items: [
-      {
-        id: 103,
-        customerName: "Lê Văn Tám",
-        vehicle: "Air Blade 160",
-        priority: "High",
-        timeInStage: "3 ngày",
-        saleName: "Sale B",
-      },
-    ],
-  },
-  {
-    id: "Deposit",
-    title: "Đã đặt cọc",
-    color: "#f97316",
-    items: [
-      {
-        id: 104,
-        customerName: "Phạm Thị Nở",
-        vehicle: "Vision 2024",
-        priority: "Urgent",
-        timeInStage: "1 ngày",
-        saleName: "Admin",
-      },
-    ],
-  },
-  {
-    id: "Processing",
-    title: "Chờ giấy tờ",
-    color: "#a855f7",
-    items: [
-      {
-        id: 105,
-        customerName: "Hoàng Xuân Vinh",
-        vehicle: "Winner X",
-        priority: "High",
-        timeInStage: "4 ngày",
-        saleName: "Sale A",
-      },
-    ],
-  },
-  {
-    id: "Delivered",
-    title: "Đã giao xe",
-    color: "#10b981",
-    items: [
-      {
-        id: 106,
-        customerName: "Bùi Tiến Dũng",
-        vehicle: "SH Mode",
-        priority: "High",
-        timeInStage: "Vừa chốt",
-        saleName: "Sale B",
-      },
-    ],
-  },
-]);
-
-const isStale = (deal: any) => {
-  return deal.timeInStage.includes("ngày") && parseInt(deal.timeInStage) >= 3;
-};
+// boardColumns is now populated by loadPipeline()
 
 const handleDragChange = (event: any, columnId: string) => {
   if (event.added) {
@@ -329,6 +324,14 @@ const getStageName = (id: string) => {
 const triggerSuccessCelebration = () => {
   console.log("FIREWORKS EFFECT!");
 };
+
+onMounted(() => {
+  loadPipeline();
+});
+
+onMounted(() => {
+  loadPipeline();
+});
 </script>
 
 <style lang="scss" scoped>

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div>
     <div class="comment-page min-h-full bg-[#F8FAFC] font-inter text-[#0F172A]">
       <div class="bg-white border-b border-slate-200 px-6 py-4 shadow-sm">
@@ -118,11 +118,30 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { commentList } from "@/mock/temp/commentList";
+import { ref, computed, onMounted } from "vue";
+import { commentApi } from "@/api/operations/comment.api";
 import CommentWidget from "@/components/business/comment-widget/index.vue";
 
 defineOptions({ name: "MarketingComment" });
+
+const loadComments = async () => {
+  loadingComments.value = true;
+  try {
+    const res = await commentApi.getAll();
+    comments.value = res.data.map((c) => ({
+      id: c.id,
+      date: c.createdAt,
+      content: c.content,
+      collection: 0,
+      comment: 0,
+      userName: c.authorName,
+    }));
+  } catch (error) {
+    console.error("Failed to load comments:", error);
+  } finally {
+    loadingComments.value = false;
+  }
+};
 
 interface CommentItem {
   id: number;
@@ -156,7 +175,7 @@ const clickItem = ref<CommentItem>({
 });
 
 const commentsWithColors = computed(() => {
-  return commentList.map((item, index) => ({
+  return comments.value.map((item, index) => ({
     ...item,
     color: COLOR_LIST[index % COLOR_LIST.length],
   }));
@@ -166,6 +185,10 @@ const openDrawer = (item: CommentItem) => {
   clickItem.value = item;
   showDrawer.value = true;
 };
+
+onMounted(() => {
+  loadComments();
+});
 </script>
 
 <style lang="scss" scoped>

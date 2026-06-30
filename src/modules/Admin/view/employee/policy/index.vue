@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="hr-policy-container flex flex-col gap-4 h-full p-4">
     <!-- Header -->
     <div class="flex items-center justify-between">
@@ -96,93 +96,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { Plus, Right } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
+import { commissionPolicyApi } from "@/api/operations/commission-policy.api";
 
 defineOptions({ name: "HRCommissionPolicy" });
 
 const router = useRouter();
-
-// Mock Data
-const allPolicies = ref([
-  {
-    id: 1,
-    name: "Thưởng nóng Winner X - T6/2026",
-    department: "vehicle_sales",
-    status: "active",
-    startDate: "2026-06-01",
-    endDate: "2026-06-30",
-    target: "Toàn bộ Sale xe",
-    tiers: [
-      { from: 1, to: 5, bonus: 500000 },
-      { from: 6, to: 999, bonus: 900000 },
-    ],
-  },
-  {
-    id: 2,
-    name: "Cơ bản dòng xe Honda SH",
-    department: "vehicle_sales",
-    status: "active",
-    startDate: "2026-01-01",
-    endDate: "2026-12-31",
-    target: "Toàn bộ Sale xe",
-    tiers: [{ from: 1, to: 999, bonus: 1200000 }],
-  },
-  {
-    id: 3,
-    name: "Chiến dịch xe ga mùa Hè",
-    department: "vehicle_sales",
-    status: "pending",
-    startDate: "2026-07-01",
-    endDate: "2026-07-31",
-    target: "Toàn bộ Sale xe",
-    tiers: [
-      { from: 1, to: 3, bonus: 300000 },
-      { from: 4, to: 999, bonus: 600000 },
-    ],
-  },
-  {
-    id: 4,
-    name: "Chính sách tháng Tết 2026",
-    department: "vehicle_sales",
-    status: "expired",
-    startDate: "2026-01-01",
-    endDate: "2026-02-28",
-    target: "Toàn bộ Sale xe",
-    tiers: [{ from: 1, to: 999, bonus: 1000000 }],
-  },
-  {
-    id: 5,
-    name: "Hoa hồng phụ tùng chung",
-    department: "parts_sales",
-    status: "active",
-    startDate: "2026-01-01",
-    endDate: "2026-12-31",
-    target: "Sale Phụ tùng / Online",
-    percentage: 5,
-    basis: "revenue",
-  },
-  {
-    id: 6,
-    name: "Hoa hồng kỹ thuật viên",
-    department: "mechanic",
-    status: "active",
-    startDate: "2026-01-01",
-    endDate: "2026-12-31",
-    target: "Kỹ thuật viên xưởng",
-    laborPercentage: 15,
-    partsPercentage: 2,
-  },
-]);
-
+const loading = ref(false);
+const allPolicies = ref<any[]>([]);
 const activeTab = ref("vehicle_sales");
 
 const filteredPolicies = computed(() => {
   return allPolicies.value.filter((p) => p.department === activeTab.value);
 });
 
-// Formatting Utils
 const formatDate = (dateStr: string) => {
   if (!dateStr) return "---";
   const date = new Date(dateStr);
@@ -193,7 +123,6 @@ const formatDate = (dateStr: string) => {
   });
 };
 
-// Styles & Labels
 const getStatusRibbonClass = (status: string) => {
   switch (status) {
     case "active":
@@ -230,7 +159,45 @@ const getPolicyItemClass = (policy: any) => {
   return `${base} bg-gray-50 dark:bg-gray-800 opacity-80`;
 };
 
-// Actions
+const mapBackendPolicy = (p: any) => {
+  const dept =
+    p.targetGroup === "Mechanic"
+      ? "mechanic"
+      : p.targetGroup === "PartsSales"
+        ? "parts_sales"
+        : "vehicle_sales";
+  return {
+    id: p.id,
+    name: p.name,
+    department: dept,
+    status: p.isActive ? "active" : "expired",
+    startDate: p.effectiveDate?.split("T")[0] || "",
+    endDate: "",
+    target: p.targetGroup || "",
+    percentage: p.type === "Percentage" ? Number(p.value) : undefined,
+    basis: "revenue",
+    laborPercentage: dept === "mechanic" ? Number(p.value) : undefined,
+    partsPercentage: dept === "mechanic" ? Number(p.value) * 0.1 : undefined,
+    tiers:
+      dept === "vehicle_sales"
+        ? [{ from: 1, to: 999, bonus: Number(p.value) }]
+        : undefined,
+  };
+};
+
+const loadPolicies = async () => {
+  loading.value = true;
+  try {
+    const res = await commissionPolicyApi.getAll();
+    allPolicies.value = res.data.map(mapBackendPolicy);
+  } catch (error) {
+    console.error("Failed to load policies:", error);
+    ElMessage.error("Không thể tải danh sách chính sách");
+  } finally {
+    loading.value = false;
+  }
+};
+
 const selectPolicy = (policy: any) => {
   router.push({
     name: "HRCommissionPolicyDetail",
@@ -245,6 +212,10 @@ const handleCreateNew = () => {
     query: { dept: activeTab.value },
   });
 };
+
+onMounted(() => {
+  loadPolicies();
+});
 </script>
 
 <style scoped lang="scss">
