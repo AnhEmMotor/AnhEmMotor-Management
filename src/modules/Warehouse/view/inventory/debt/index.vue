@@ -1,13 +1,32 @@
 <template>
   <div class="flex flex-col gap-4 pb-5">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <ArtStatsCard
-        title="Tổng nợ NCC"
-        :count="formatCurrency(totalSuppliersDebt)"
-        description="Số tiền nợ của các nhà cung cấp hiển thị trên trang này"
-        icon="ri:money-cny-box-line"
-        iconStyle="bg-danger"
-      />
+      <div class="md:col-span-1 flex flex-col justify-between">
+        <ArtStatsCard
+          title="Tổng nợ NCC"
+          :count="formatCurrency(totalSuppliersDebt)"
+          description="Số tiền nợ của các nhà cung cấp hiển thị trên trang này"
+          icon="ri:money-cny-box-line"
+          iconStyle="bg-danger"
+          class="h-full"
+        />
+      </div>
+
+      <ElCard
+        class="md:col-span-2 art-table-card flex flex-col"
+        body-style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 12px;"
+      >
+        <template #header>
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-gray-800 text-sm"
+              >Cơ cấu công nợ theo nhà cung cấp</span
+            >
+          </div>
+        </template>
+        <div class="w-full flex items-center justify-center min-h-[140px]">
+          <div ref="debtChartRef" class="w-full h-[140px]"></div>
+        </div>
+      </ElCard>
     </div>
 
     <ElCard class="flex-1 art-table-card">
@@ -314,10 +333,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, nextTick } from "vue";
 import { Refresh, Plus } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { DebtApi } from "@/api/supplier";
+import * as echarts from "echarts";
 
 defineOptions({ name: "InventoryDebt" });
 
@@ -397,6 +417,9 @@ const fetchSupplierDebts = async () => {
       (acc, curr) => acc + (curr.totalDebt || 0),
       0,
     );
+    nextTick(() => {
+      updateChart();
+    });
   } catch (err) {
     console.error(err);
     ElMessage.error("Không thể tải danh sách công nợ");
@@ -641,8 +664,86 @@ const saveProofImages = async () => {
   }
 };
 
+const debtChartRef = ref<HTMLElement | null>(null);
+let debtChart: echarts.ECharts | null = null;
+
+const updateChart = () => {
+  if (!debtChartRef.value) return;
+  if (!debtChart) {
+    debtChart = echarts.init(debtChartRef.value);
+  }
+
+  const chartData = supplierDebts.value
+    .filter((item) => item.totalDebt > 0)
+    .map((item) => ({
+      name: item.name,
+      value: item.totalDebt,
+    }));
+
+  debtChart.setOption({
+    tooltip: {
+      trigger: "item",
+      formatter: "{b}: <b>{c} VNĐ</b> ({d}%)",
+    },
+    legend: {
+      orient: "vertical",
+      left: "5%",
+      top: "center",
+      textStyle: {
+        fontSize: 11,
+        color: "#4b5563",
+      },
+      itemWidth: 10,
+      itemHeight: 10,
+      formatter: (name: string) => {
+        return name.length > 25 ? name.substring(0, 25) + "..." : name;
+      },
+    },
+    series: [
+      {
+        name: "Công nợ",
+        type: "pie",
+        radius: ["50%", "85%"],
+        center: ["65%", "50%"],
+        avoidLabelOverlap: false,
+        itemStyle: {
+          borderRadius: 6,
+          borderColor: "#fff",
+          borderWidth: 2,
+        },
+        label: {
+          show: false,
+          position: "center",
+        },
+        emphasis: {
+          label: {
+            show: true,
+            fontSize: 12,
+            fontWeight: "bold",
+          },
+        },
+        labelLine: {
+          show: false,
+        },
+        data: chartData,
+      },
+    ],
+    color: ["#e84a4a", "#ff6b6b", "#c53a3a", "#fca5a5", "#f87171"],
+  });
+};
+
+const handleResize = () => {
+  debtChart?.resize();
+};
+
 onMounted(() => {
   fetchSupplierDebts();
+  window.addEventListener("resize", handleResize);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", handleResize);
+  debtChart?.dispose();
 });
 </script>
 
