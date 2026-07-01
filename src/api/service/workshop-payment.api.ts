@@ -88,4 +88,12 @@ export const WorkshopPaymentApi = {
       data,
     });
   },
+
+  getStats() {
+    return request.get<any>({
+      url: "/api/v1/WorkshopPayments/stats",
+    });
+  },
 };
+
+export type WorkshopPaymentApiType = typeof WorkshopPaymentApi;

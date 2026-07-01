@@ -33,15 +33,26 @@ export class RealGetPaymentsUseCase implements GetPaymentsUseCase {
   async call(input: GetPaymentsInput): Promise<PaymentListResult | null> {
     const { current, size, sourceType, paymentStatus, paymentMethod, search } =
       input;
-    const params: Record<string, unknown> = { current, size };
-    if (sourceType) params.sourceType = sourceType;
-    if (paymentStatus) params.paymentStatus = paymentStatus;
-    if (paymentMethod) params.paymentMethod = paymentMethod;
-    if (search) params.search = search;
+
+    const filters: string[] = [];
+    if (sourceType) filters.push(`SourceType==${sourceType}`);
+    if (paymentStatus) filters.push(`PaymentStatus==${paymentStatus}`);
+    if (paymentMethod) filters.push(`PaymentMethod==${paymentMethod}`);
+    if (search) filters.push(`PaymentNumber@=*${search}*`);
+
+    const params: Record<string, unknown> = {
+      current,
+      size,
+      Filters: filters.join(","),
+      Sorts: "-CreatedAt",
+    };
 
     const res = await this.api.getList(params);
     if (!res) return null;
-    return { items: res.items as PaymentItem[], totalCount: res.totalCount };
+    return {
+      items: res.items as PaymentItem[],
+      totalCount: res.totalCount,
+    };
   }
 }
 
@@ -64,6 +75,18 @@ export class RealCreatePaymentUseCase implements CreatePaymentUseCase {
 
   async call(payload: CreatePaymentPayload): Promise<number | null> {
     return this.api.create(payload);
+  }
+}
+
+export interface GetPaymentStatsUseCase {
+  (): Promise<any | null>;
+}
+
+export class RealGetPaymentStatsUseCase implements GetPaymentStatsUseCase {
+  constructor(private api: WorkshopPaymentApiType) {}
+
+  async call(): Promise<any | null> {
+    return this.api.getStats();
   }
 }
 

@@ -751,6 +751,11 @@ async function fetchData() {
       data.value = [];
       pagination.value.total = 0;
     }
+
+    const statsResult = await useCases.getStats.call();
+    if (statsResult) {
+      Object.assign(stats, statsResult);
+    }
   } catch (e: any) {
     ElMessage.error(e?.message || "Không thể tải danh sách phiếu thanh toán");
     data.value = [];
