@@ -539,4 +539,85 @@ const handleDelete = (banner: any) => {
     border-top: 1px solid var(--el-border-color-lighter);
   }
 }
+
+// Dark Mode overrides
+:global(html.dark .banner-management-page) {
+  background-color: #05070b !important;
+  color: #f8fafc !important;
+}
+
+:global(html.dark .banner-management-page .bg-white) {
+  background-color: #10141c !important;
+}
+
+:global(html.dark .banner-management-page .banner-card.bg-white) {
+  background-color: #10141c !important;
+  border-color: rgb(255 255 255 / 12%) !important;
+}
+
+:global(html.dark .banner-management-page .border-slate-200) {
+  border-color: rgb(255 255 255 / 12%) !important;
+}
+
+:global(html.dark .banner-management-page .text-slate-900) {
+  color: #f8fafc !important;
+}
+
+:global(html.dark .banner-management-page .combat-input .el-input__wrapper) {
+  background-color: #111827 !important;
+  border-color: rgb(255 255 255 / 12%) !important;
+  box-shadow: none !important;
+}
+
+:global(html.dark .banner-management-page .combat-input .el-input__inner) {
+  color: #f8fafc !important;
+}
+
+:global(html.dark .banner-management-page .combat-input .el-textarea__inner) {
+  background-color: #111827 !important;
+  border-color: rgb(255 255 255 / 12%) !important;
+  color: #f8fafc !important;
+  box-shadow: none !important;
+}
+
+:global(html.dark .combat-banner-dialog) {
+  background-color: #10141c !important;
+  border: 1px solid rgb(255 255 255 / 12%) !important;
+}
+
+:global(html.dark .combat-banner-dialog .el-dialog__header) {
+  border-bottom-color: rgb(255 255 255 / 8%) !important;
+}
+
+:global(html.dark .combat-banner-dialog .el-dialog__footer) {
+  border-top-color: rgb(255 255 255 / 8%) !important;
+}
+
+:global(html.dark .combat-banner-dialog h3.text-slate-800) {
+  color: #f8fafc !important;
+}
+
+:global(html.dark .combat-banner-dialog label.text-slate-400) {
+  color: #cbd5e1 !important;
+}
+
+:global(html.dark .combat-banner-dialog .bg-slate-50) {
+  background-color: #111827 !important;
+  border-color: rgb(255 255 255 / 8%) !important;
+}
+
+:global(html.dark .combat-banner-dialog .border-slate-100) {
+  border-color: rgb(255 255 255 / 8%) !important;
+}
+
+:global(html.dark .combat-banner-dialog .combat-banner-upload .bg-white) {
+  background-color: #111827 !important;
+  border-color: rgb(255 255 255 / 12%) !important;
+}
+
+:global(
+  html.dark .combat-banner-dialog .combat-banner-upload span.text-slate-400
+) {
+  color: #94a3b8 !important;
+}
 </style>

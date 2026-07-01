@@ -144,11 +144,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { commentList } from "@/mock/temp/commentList";
+import { ref, computed, onMounted } from "vue";
+import { commentApi } from "@/api/operations/comment.api";
 import CommentWidget from "@/components/business/comment-widget/index.vue";
 
 defineOptions({ name: "MarketingComment" });
+
+const loadingComments = ref(false);
+const comments = ref<CommentItem[]>([]);
+
+const loadComments = async () => {
+  loadingComments.value = true;
+  try {
+    const res = await commentApi.getAll();
+    const dataList = (res as any).data || res || [];
+    comments.value = dataList.map((c: any) => ({
+      id: c.id,
+      date: c.createdAt,
+      content: c.content,
+      collection: 0,
+      comment: 0,
+      userName: c.authorName,
+    }));
+  } catch (error) {
+    console.error("Failed to load comments:", error);
+  } finally {
+    loadingComments.value = false;
+  }
+};
 
 interface CommentItem {
   id: number;
@@ -182,7 +205,7 @@ const clickItem = ref<CommentItem>({
 });
 
 const commentsWithColors = computed(() => {
-  return commentList.map((item, index) => ({
+  return comments.value.map((item: CommentItem, index: number) => ({
     ...item,
     color: COLOR_LIST[index % COLOR_LIST.length],
   }));
@@ -192,6 +215,10 @@ const openDrawer = (item: CommentItem) => {
   clickItem.value = item;
   showDrawer.value = true;
 };
+
+onMounted(() => {
+  loadComments();
+});
 </script>
 
 <style scoped lang="scss">
@@ -214,5 +241,39 @@ const openDrawer = (item: CommentItem) => {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+// Dark Mode overrides
+:global(html.dark .comment-page) {
+  background-color: #05070b !important;
+  color: #f8fafc !important;
+}
+
+:global(html.dark .comment-page .bg-white) {
+  background-color: #10141c !important;
+}
+
+:global(html.dark .comment-page .border-slate-200) {
+  border-color: rgb(255 255 255 / 12%) !important;
+}
+
+:global(html.dark .comment-page .text-slate-900),
+:global(html.dark .comment-page h4) {
+  color: #f8fafc !important;
+}
+
+:global(html.dark .comment-modal .el-drawer) {
+  background-color: #10141c !important;
+  border-left: 1px solid rgb(255 255 255 / 12%) !important;
+}
+
+:global(html.dark .comment-modal .el-drawer__header) {
+  padding-bottom: 16px;
+  margin-bottom: 0;
+  border-bottom: 1px solid rgb(255 255 255 / 8%) !important;
+}
+
+:global(html.dark .comment-modal h4) {
+  color: #f8fafc !important;
 }
 </style>

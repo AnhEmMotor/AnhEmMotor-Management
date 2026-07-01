@@ -1,4 +1,4 @@
-import { AppRouteRecord } from "@/types/router";
+﻿import { AppRouteRecord } from "@/types/router";
 import { Permissions } from "@/domain/constants/permissions";
 
 export const reportingRoutes: AppRouteRecord = {
@@ -80,7 +80,7 @@ export const reportingRoutes: AppRouteRecord = {
       name: "CustomerAnalytics",
       component: "/Accountant/view/reporting/customer",
       meta: {
-        title: "Báo cáo khách hàng",
+        title: "Báo Cáo Khách Hàng",
         icon: "ri:user-heart-line",
         permission: Permissions.StatisticalView,
       },
@@ -92,17 +92,6 @@ export const reportingRoutes: AppRouteRecord = {
       meta: {
         title: "Báo cáo nhân sự & hoa hồng",
         icon: "ri:team-line",
-        permission: Permissions.StatisticalView,
-        isHide: true,
-      },
-    },
-    {
-      path: "customer-service",
-      name: "CustomerServiceAnalytics",
-      component: "/Accountant/view/reporting/customer-service",
-      meta: {
-        title: "Báo cáo chăm sóc khách hàng",
-        icon: "ri:customer-service-2-line",
         permission: Permissions.StatisticalView,
         isHide: true,
       },

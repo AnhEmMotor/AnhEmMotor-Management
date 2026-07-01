@@ -57,7 +57,9 @@ async function fetchData() {
 
 function initChart() {
   if (!chartRef.value) return;
-  chartInstance = echarts.init(chartRef.value);
+  if (!chartInstance) {
+    chartInstance = echarts.init(chartRef.value);
+  }
 
   const option = {
     tooltip: {
@@ -170,7 +172,6 @@ onMounted(() => {
     fetchData().then(() => {
       // Init chart after data loaded
       if (chartRef.value) {
-        chartInstance = echarts.init(chartRef.value);
         initChart();
         window.addEventListener("resize", resizeChart);
       }

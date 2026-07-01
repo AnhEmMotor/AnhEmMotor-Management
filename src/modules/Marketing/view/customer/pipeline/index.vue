@@ -419,7 +419,7 @@ async function handleDragChange(event: any, columnId: string) {
     await fetchUpdateLead(deal.id, {
       ...deal.raw,
       status: columnId,
-      birthday: deal.raw.birthday || null,
+      birthday: deal.raw.birthday || undefined,
     });
 
     ElMessage.success(

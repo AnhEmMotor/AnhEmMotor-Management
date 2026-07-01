@@ -72,7 +72,7 @@ export interface FinanceContractListParams {
 export const FinanceContractApi = {
   getFinanceContractDetail(financeContractId: string) {
     return request.get<FinanceContractDetailDto>({
-      url: `/api/FinanceContracts/${financeContractId}`,
+      url: `/api/v1/FinanceContracts/${financeContractId}`,
     });
   },
   getFinanceContractList(params: FinanceContractListParams) {
@@ -109,7 +109,7 @@ export const FinanceContractApi = {
     if (filters.length > 0) query.Filters = filters.join(",");
 
     return request.get<PagedResult<FinanceContractDetailDto>>({
-      url: `/api/FinanceContracts`,
+      url: `/api/v1/FinanceContracts`,
       params: query,
     });
   },
@@ -120,7 +120,7 @@ export const FinanceContractApi = {
     formData.append("file", payload.file);
 
     return request.post<any>({
-      url: `/api/FinanceContracts/${payload.financeContractId}/disbursement/evidence/upload`,
+      url: `/api/v1/FinanceContracts/${payload.financeContractId}/disbursement/evidence/upload`,
       data: formData,
       headers: {
         "Content-Type": "multipart/form-data",
@@ -134,7 +134,7 @@ export const FinanceContractApi = {
     actualDate?: string,
   ) {
     return request.post<any>({
-      url: `/api/FinanceContracts/${financeContractId}/disbursement/payment`,
+      url: `/api/v1/FinanceContracts/${financeContractId}/disbursement/payment`,
       data: {
         actualAmount,
         actualDate: actualDate || null,
@@ -147,7 +147,7 @@ export const FinanceContractApi = {
     cavet: FinanceContractDetailDto["cavet"],
   ) {
     return request.post<any>({
-      url: `/api/FinanceContracts/${financeContractId}/cavet/state`,
+      url: `/api/v1/FinanceContracts/${financeContractId}/cavet/state`,
       data: {
         state: cavet?.state,
         receivedDate: cavet?.receivedDate || null,

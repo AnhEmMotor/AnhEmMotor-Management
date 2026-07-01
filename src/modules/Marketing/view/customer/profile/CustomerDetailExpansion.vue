@@ -283,11 +283,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useCustomerProfile } from "@/modules/Marketing/logic/useCustomerProfile";
+import type { Lead } from "@/api/customer/lead.api";
 
-defineProps<{
-  lead: any;
+const props = defineProps<{
+  lead: Lead;
 }>();
 
 const {
@@ -297,7 +298,18 @@ const {
   timelineEvents,
   handleVerify,
   addNote,
+  loadFromLead,
 } = useCustomerProfile();
+
+watch(
+  () => props.lead,
+  (newLead) => {
+    if (newLead) {
+      loadFromLead(newLead);
+    }
+  },
+  { immediate: true },
+);
 
 const newNote = ref("");
 

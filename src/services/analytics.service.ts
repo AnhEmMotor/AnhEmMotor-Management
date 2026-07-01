@@ -1,4 +1,4 @@
-import api from "@/common/utils/http";
+﻿import api from "@/common/utils/http";
 import type {
   DashboardSummary,
   PnlReport,
@@ -49,20 +49,20 @@ export const AnalyticsService = {
   // Expenses
   async getExpenses(): Promise<Expense[]> {
     return api.get<Expense[]>({
-      url: `${API_BASE}/expense`,
+      url: `/api/v1/expenses`,
     });
   },
 
   async createExpense(expense: Partial<Expense>): Promise<Expense> {
     return api.post<Expense>({
-      url: `${API_BASE}/expense`,
+      url: `/api/v1/expenses`,
       data: expense,
     });
   },
 
   async deleteExpense(id: number): Promise<void> {
     return api.del({
-      url: `${API_BASE}/expense/${id}`,
+      url: `/api/v1/expenses/${id}`,
     });
   },
 };

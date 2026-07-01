@@ -104,6 +104,15 @@ export const marketingMenu: AppRouteRecord[] = [
         },
         children: [
           {
+            path: "",
+            name: "CustomerManagementHome",
+            component: "/Marketing/view/customer/index",
+            meta: {
+              title: "menus.marketing.customer",
+              isHide: true,
+            },
+          },
+          {
             path: "potential",
             name: "CustomerPotential",
             component: "/Marketing/view/customer/potential/index",
@@ -119,6 +128,18 @@ export const marketingMenu: AppRouteRecord[] = [
             meta: {
               title: "menus.marketing.customerProfile",
               icon: "ri:profile-line",
+            },
+          },
+          {
+            path: "profile/:leadId",
+            name: "CustomerProfile360",
+            component: "/Marketing/view/customer/profile/360",
+            meta: {
+              title: "menus.marketing.customerProfile360",
+              isHide: true,
+              isHideTab: true,
+              keepAlive: true,
+              activePath: "/Marketing/customer/profile",
             },
           },
           {

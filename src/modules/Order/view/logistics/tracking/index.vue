@@ -22,7 +22,7 @@
                 v-model="searchQuery"
                 :placeholder="
                   t(
-                    'logistics.fulfillment.tracking.searchPlaceholder',
+                    'logistics.tracking.searchPlaceholder',
                     'Tìm SĐT, Vận đơn...',
                   )
                 "

@@ -21,4 +21,26 @@ export const EmployeeApi = {
       url: "/api/v1/hr/employees",
     });
   },
+  getById(id: number) {
+    return request.get<EmployeeResponse>({
+      url: `/api/v1/hr/employees/${id}`,
+    });
+  },
+  create(data: any) {
+    return request.post<EmployeeResponse>({
+      url: "/api/v1/hr/employees",
+      data,
+    });
+  },
+  update(id: number, data: any) {
+    return request.put<EmployeeResponse>({
+      url: `/api/v1/hr/employees/${id}`,
+      data,
+    });
+  },
+  delete(id: number) {
+    return request.del<any>({
+      url: `/api/v1/hr/employees/${id}`,
+    });
+  },
 };

@@ -412,6 +412,7 @@ export default {
       customer: "Customer Management",
       customerPotential: "Potential Customers",
       customerProfile: "Customer Profiles",
+      customerProfile360: "Customer 360 Profile",
       customerAsset: "Assets",
       customerCare: "Customer Care",
       customerProgress: "Progress",
@@ -437,7 +438,6 @@ export default {
         repairOrders: "Repairs",
         historyByVin: "Vehicle Records Lookup",
         maintenance: "Maintenance",
-        evaluation: "Service Evaluation",
       },
       administrative: {
         title: "Administrative Services",
@@ -866,7 +866,17 @@ export default {
     tabCandidate: "Candidate Profiles",
     searchPlaceholder: "Search by name, email, phone, subject...",
     allStatus: "All statuses",
-    supportStatus: { New: "New", InProgress: "In Progress", Closed: "Closed" },
+    myAssignments: "My Assignments",
+    closeBtn: "Close",
+    closeRequest: "Close Request",
+    internalNote: "Internal Note",
+    feedbackContent: "Feedback Content",
+    supportStatus: {
+      New: "New",
+      Assigned: "Assigned",
+      InProgress: "In Progress",
+      Closed: "Closed",
+    },
     feedbackStatus: { Pending: "Pending", Read: "Read", Resolved: "Resolved" },
     candidateStatus: {
       New: "New",
@@ -897,6 +907,7 @@ export default {
     columnCv: "CV / Profile",
     columnAssignedTo: "Assigned To",
     noDetail: "Select a contact to view details",
+    replyHistory: "Response History",
     replyDialog: {
       title: "Send Response",
       contentLabel: "Response content",
@@ -983,6 +994,14 @@ export default {
       tracking: "Tracking No.",
       message: "Message",
       createdAt: "Created At",
+      status: {
+        completed: "Completed",
+        shipping: "Shipping",
+        packing: "Packing",
+        pendingPickup: "Pending Pick",
+        returned: "Returned",
+      },
+      noData: "No Data",
     },
     fulfillment: {
       title: "Fulfillment Processing",

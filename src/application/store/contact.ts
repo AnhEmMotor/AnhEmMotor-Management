@@ -186,6 +186,7 @@ export const useContactStore = defineStore("contactStore", () => {
   const activeItem = ref<Contact.ContactItem | null>(null);
   const contactType = ref<string>("");
   const status = ref<string>("");
+  const assignedUserId = ref<string | null>(null);
   const unreadBadge = ref(0);
 
   const hasActive = computed(() => activeItem.value !== null);
@@ -218,6 +219,7 @@ export const useContactStore = defineStore("contactStore", () => {
       const res = await ContactApi.getPaginated({
         contactType: contactType.value || undefined,
         status: status.value || undefined,
+        assignedUserId: assignedUserId.value || undefined,
         page: page.value,
         pageSize: pageSize.value,
       });
@@ -240,6 +242,16 @@ export const useContactStore = defineStore("contactStore", () => {
   const setFilter = (type: string, st: string) => {
     contactType.value = type;
     status.value = st;
+    page.value = 1;
+  };
+
+  const setAssignedFilter = (userId: string | null) => {
+    assignedUserId.value = userId;
+    page.value = 1;
+  };
+
+  const clearAssignedFilter = () => {
+    assignedUserId.value = null;
     page.value = 1;
   };
 
@@ -285,10 +297,32 @@ export const useContactStore = defineStore("contactStore", () => {
     }
   };
 
-  const sendReply = async (contactId: number, message: string) => {
+  const sendReply = async (
+    contactId: number,
+    message: string,
+    userName?: string,
+  ) => {
     try {
-      await ContactApi.reply({ contactId, message, isInternal: false });
+      const res = await ContactApi.reply({
+        contactId,
+        message,
+        isInternal: false,
+      });
       ElMessage.success("Đã gửi phản hồi");
+      if (activeItem.value && (activeItem.value as any).contact) {
+        const contactObj = (activeItem.value as any).contact;
+        if (!contactObj.replies) {
+          contactObj.replies = [];
+        }
+        contactObj.replies.push({
+          id: (res as any) || Date.now(),
+          contactId,
+          message,
+          repliedByName: userName || "Bạn",
+          isInternal: false,
+          createdAt: new Date().toISOString(),
+        });
+      }
     } catch {
       ElMessage.success("Đã gửi phản hồi (Local)");
     }
@@ -298,6 +332,9 @@ export const useContactStore = defineStore("contactStore", () => {
     try {
       await ContactApi.updateInternalNote({ contactId, internalNote });
       if (activeItem.value) {
+        if ((activeItem.value as any).contact) {
+          (activeItem.value as any).contact.internalNote = internalNote;
+        }
         (activeItem.value as any).internalNote = internalNote;
       }
       ElMessage.success("Đã lưu ghi chú");
@@ -326,6 +363,7 @@ export const useContactStore = defineStore("contactStore", () => {
     activeItem,
     contactType,
     status,
+    assignedUserId,
     unreadBadge,
     hasActive,
     totalPages,
@@ -340,5 +378,7 @@ export const useContactStore = defineStore("contactStore", () => {
     saveInternalNote,
     setUnreadBadge,
     incrementBadge,
+    setAssignedFilter,
+    clearAssignedFilter,
   };
 });

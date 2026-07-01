@@ -19,6 +19,8 @@ export interface CarrierPartnerSummary {
 
   allowLiquidCargo: boolean;
   allowOversizeCargo: boolean;
+  pricingRulesJson?: string;
+  slaJson?: string;
 }
 
 export interface GetCarriersResponse {
@@ -39,6 +41,8 @@ export interface UpdateCarrierPartnerRequest {
   maxParcelWeightKg: number;
   allowLiquidCargo: boolean;
   allowOversizeCargo: boolean;
+  pricingRulesJson?: string;
+  slaJson?: string;
 }
 
 export interface TestCarrierConnectionResponse {

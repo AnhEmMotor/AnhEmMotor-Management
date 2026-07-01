@@ -43,4 +43,31 @@ export const BookingApi = {
       data,
     });
   },
+
+  update(
+    id: number,
+    data: {
+      id: number;
+      fullName: string;
+      email?: string;
+      phoneNumber: string;
+      productVariantId?: number;
+      preferredDate: string;
+      note: string;
+      location?: string;
+      bookingType: string;
+      status?: string;
+    },
+  ) {
+    return request.put<boolean>({
+      url: `/api/v1/Bookings/${id}`,
+      data,
+    });
+  },
+
+  delete(id: number) {
+    return request.del<boolean>({
+      url: `/api/v1/Bookings/${id}`,
+    });
+  },
 };

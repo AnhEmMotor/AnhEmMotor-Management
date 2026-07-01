@@ -180,7 +180,7 @@
                       type="danger"
                       text
                       @click="closeDetail"
-                      >{{ $t("contact.closeBtn") }}</ElButton
+                      >Đóng</ElButton
                     >
                   </div>
                   <h2 class="text-base font-black text-slate-800 mt-2">
@@ -255,7 +255,7 @@
                           <ArtSvgIcon
                             icon="ri:checkbox-circle-line"
                             class="mr-1"
-                          />{{ $t("contact.closeRequest") }}
+                          />Đóng yêu cầu
                         </ElButton>
                         <ElButton
                           v-if="
@@ -317,7 +317,7 @@
                     <h4
                       class="text-xs font-bold text-indigo-500 uppercase tracking-wider m-0"
                     >
-                      {{ $t("contact.internalNote") }}
+                      Ghi chú nội bộ
                     </h4>
                     <span class="text-[10px] text-slate-400 italic"
                       >Chỉ hiển thị với nhân viên điều hành</span
@@ -473,7 +473,7 @@
                       type="danger"
                       text
                       @click="closeDetail"
-                      >{{ $t("contact.closeBtn") }}</ElButton
+                      >Đóng</ElButton
                     >
                   </div>
                   <h2 class="text-base font-black text-slate-800 mt-2">
@@ -521,7 +521,7 @@
                     <h4
                       class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2"
                     >
-                      {{ $t("contact.feedbackContent") }}
+                      Nội dung đóng góp
                     </h4>
                     <div
                       class="bg-slate-50 border border-slate-100 rounded-xl p-4 shadow-sm"
@@ -610,7 +610,7 @@
                     <h4
                       class="text-xs font-bold text-indigo-500 uppercase tracking-wider m-0"
                     >
-                      {{ $t("contact.internalNote") }}
+                      Ghi chú nội bộ
                     </h4>
                     <span class="text-[10px] text-slate-400 italic"
                       >Chỉ hiển thị với nhân viên điều hành</span
@@ -1247,7 +1247,6 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from "vue-i18n";
 import { ref, watch, computed, onMounted } from "vue";
 import { ElMessage } from "element-plus";
 import { storeToRefs } from "pinia";
@@ -1261,8 +1260,6 @@ import {
 import type { Contact } from "@/types";
 
 defineOptions({ name: "ContactManagement" });
-
-const { t } = useI18n();
 const contactStore = useContactStore();
 const { isDark } = storeToRefs(useSettingStore());
 
@@ -1363,46 +1360,6 @@ const statusStyle = (status: string) => {
   };
   return m[status] || "bg-slate-100 text-slate-600 border-slate-200";
 };
-
-const tableData = computed(() => contactStore.records);
-const activeItemSubject = computed(
-  () => (activeItem.value as Contact.SupportRequest)?.subject ?? "",
-);
-const activeItemEmail = computed(
-  () =>
-    activeItem.value?.contact?.email ?? (activeItem.value as any)?.email ?? "",
-);
-const activeItemPhone = computed(
-  () =>
-    activeItem.value?.contact?.phoneNumber ??
-    (activeItem.value as any)?.phoneNumber ??
-    "",
-);
-const activeItemContent = computed(
-  () =>
-    activeItem.value?.contact?.content ??
-    (activeItem.value as any)?.content ??
-    "",
-);
-const activeItemOrderCode = computed(
-  () => (activeItem.value as Contact.SupportRequest)?.orderCode ?? "",
-);
-const activeItemCustomerName = computed(
-  () => (activeItem.value as Contact.CustomerFeedback)?.customerName ?? "",
-);
-const activeItemFeedbackArea = computed(
-  () => (activeItem.value as Contact.CustomerFeedback)?.feedbackArea ?? "",
-);
-const activeItemFullName = computed(
-  () => (activeItem.value as Contact.JobApplication)?.fullName ?? "",
-);
-const activeItemAppliedPosition = computed(
-  () => (activeItem.value as Contact.JobApplication)?.appliedPosition ?? "",
-);
-const activeItemCoverLetter = computed(
-  () => (activeItem.value as Contact.JobApplication)?.coverLetter ?? "",
-);
-
 const cvFileUrl = computed(
   () => (activeItem.value as Contact.JobApplication)?.cvFileUrl ?? "",
 );
@@ -1462,6 +1419,45 @@ const handleReply = async () => {
   }
 };
 
+const tableData = computed(() => contactStore.records);
+const activeItemSubject = computed(
+  () => (activeItem.value as Contact.SupportRequest)?.subject ?? "",
+);
+const activeItemEmail = computed(
+  () =>
+    activeItem.value?.contact?.email ?? (activeItem.value as any)?.email ?? "",
+);
+const activeItemPhone = computed(
+  () =>
+    activeItem.value?.contact?.phoneNumber ??
+    (activeItem.value as any)?.phoneNumber ??
+    "",
+);
+const activeItemContent = computed(
+  () =>
+    activeItem.value?.contact?.content ??
+    (activeItem.value as any)?.content ??
+    "",
+);
+const activeItemOrderCode = computed(
+  () => (activeItem.value as Contact.SupportRequest)?.orderCode ?? "",
+);
+const activeItemCustomerName = computed(
+  () => (activeItem.value as Contact.CustomerFeedback)?.customerName ?? "",
+);
+const activeItemFeedbackArea = computed(
+  () => (activeItem.value as Contact.CustomerFeedback)?.feedbackArea ?? "",
+);
+const activeItemFullName = computed(
+  () => (activeItem.value as Contact.JobApplication)?.fullName ?? "",
+);
+const activeItemAppliedPosition = computed(
+  () => (activeItem.value as Contact.JobApplication)?.appliedPosition ?? "",
+);
+const activeItemCoverLetter = computed(
+  () => (activeItem.value as Contact.JobApplication)?.coverLetter ?? "",
+);
+
 const handleStatus = async (newStatus: string) => {
   if (!contactStore.activeItem) return;
   await contactStore.updateStatus(
@@ -1480,12 +1476,7 @@ const saveNote = async () => {
 };
 
 const downloadCvUrl = (url: string) => {
-  if (!url) return;
-  const fullUrl = getFullCvUrl(url);
-  const downloadUrl = fullUrl.includes("?")
-    ? `${fullUrl}&download=true`
-    : `${fullUrl}?download=true`;
-  window.open(downloadUrl, "_blank");
+  if (url) window.open(url, "_blank");
 };
 const openAssignDialog = () => {
   assignDialogVisible.value = true;
@@ -1531,109 +1522,114 @@ const handleAssign = async () => {
       border-color: #3b82f6;
     }
   }
-}
 
-.contact-tabs :deep(.el-tabs__header) {
-  margin-bottom: 16px;
+  .contact-tabs :deep(.el-tabs__header) {
+    margin-bottom: 16px;
 
-  .el-tabs__nav-wrap::after {
-    display: none;
-  }
+    .el-tabs__nav-wrap::after {
+      display: none;
+    }
 
-  .el-tabs__item {
-    height: 40px;
-    font-size: 13px;
-    font-weight: 700;
-    line-height: 40px;
-    color: var(--contact-text-muted);
+    .el-tabs__item {
+      height: 40px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 40px;
+      color: var(--contact-text-muted);
 
-    &.is-active {
-      color: var(--contact-text);
+      &.is-active {
+        color: var(--contact-text);
+      }
+    }
+
+    .el-tabs__active-bar {
+      height: 3px;
+      background: var(--contact-text);
+      border-radius: 2px;
     }
   }
 
-  .el-tabs__active-bar {
-    height: 3px;
-    background: var(--contact-text);
-    border-radius: 2px;
+  .split-layout {
+    display: flex;
+    gap: 16px;
+    min-height: calc(100vh - 220px);
   }
-}
 
-.split-layout {
-  display: flex;
-  gap: 16px;
-  min-height: calc(100vh - 220px);
-}
-
-.list-panel {
-  display: flex;
-  flex-direction: column;
-  width: 40%;
-  overflow: hidden;
-  background: var(--contact-surface);
-  border: 1px solid var(--contact-border);
-  border-radius: 16px;
-  box-shadow: var(--contact-shadow);
-}
-
-.list-header {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 12px 16px;
-  background: var(--contact-surface-soft);
-  border-bottom: 1px solid var(--contact-border-soft);
-}
-
-.pagination-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 16px;
-  border-top: 1px solid var(--contact-border-soft);
-
-  :deep(.el-pagination) {
-    justify-content: flex-end;
-    padding: 0;
+  .list-panel {
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    overflow: hidden;
+    background: var(--contact-surface);
+    border: 1px solid var(--contact-border);
+    border-radius: 16px;
+    box-shadow: var(--contact-shadow);
   }
-}
 
-.detail-panel {
-  flex: 1;
-  overflow: hidden;
-  background: var(--contact-surface);
-  border: 1px solid var(--contact-border);
-  border-radius: 16px;
-  box-shadow: var(--contact-shadow);
-}
+  .list-header {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--contact-surface-soft);
+    border-bottom: 1px solid var(--contact-border-soft);
+  }
 
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  min-height: 300px;
-}
+  .pagination-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-top: 1px solid var(--contact-border-soft);
 
-.detail-content {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
+    :deep(.el-pagination) {
+      justify-content: flex-end;
+      padding: 0;
+    }
+  }
 
-.detail-header {
-  padding: 20px 24px;
-  background: var(--contact-surface-soft);
-  border-bottom: 1px solid var(--contact-border-soft);
-}
+  .detail-panel {
+    flex: 1;
+    overflow: hidden;
+    background: var(--contact-surface);
+    border: 1px solid var(--contact-border);
+    border-radius: 16px;
+    box-shadow: var(--contact-shadow);
+  }
 
-.reply-input :deep(.el-textarea__inner) {
-  font-size: 13px;
-  color: var(--contact-text);
-  background: var(--contact-muted-surface);
-  border-color: var(--contact-border);
-  border-radius: 12px;
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 300px;
+  }
+
+  .detail-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .detail-header {
+    padding: 20px 24px;
+    background: var(--contact-surface-soft);
+    border-bottom: 1px solid var(--contact-border-soft);
+  }
+
+  .reply-input :deep(.el-textarea__inner) {
+    font-size: 13px;
+    color: var(--contact-text);
+    background: var(--contact-muted-surface);
+    border-color: var(--contact-border);
+    border-radius: 12px;
+
+    &:focus {
+      background: white;
+      border-color: #3b82f6;
+    }
+  }
 }
 
 .badge {

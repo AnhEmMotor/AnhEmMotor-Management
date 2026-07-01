@@ -299,7 +299,8 @@
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
-import { ref } from "vue";
+import { ref, computed, onMounted } from "vue";
+import { conversionToolApi } from "@/api/operations/conversion-tool.api";
 
 defineOptions({ name: "MarketingConversionTools" });
 
@@ -309,64 +310,52 @@ const activeTab = ref("popup");
 const dialogVisible = ref(false);
 const dialogTitle = ref("");
 
-const popups = ref([
-  {
-    id: 1,
-    name: "Lì xì 1 triệu mừng xe mới",
-    content:
-      "Nhận ngay Voucher 1.000.000đ khi cọc xe SH 160i trực tuyến hôm nay!",
-    delay: 5,
-    pages: "Trang chủ, Sản phẩm",
-    active: true,
-    views: 4502,
-    clicks: 312,
-    img: "https://picsum.photos/200/200?random=1",
-  },
-  {
-    id: 2,
-    name: "Đăng ký lái thử Winner X",
-    content:
-      "Trải nghiệm sức mạnh động cơ 150cc hoàn toàn miễn phí tại Showroom.",
-    delay: 15,
-    pages: "Bài viết so sánh",
-    active: false,
-    views: 1205,
-    clicks: 89,
-    img: "https://picsum.photos/200/200?random=2",
-  },
-]);
+const tools = ref<any[]>([]);
+const loadingTools = ref(false);
 
-const landingPages = ref([
-  {
-    id: 101,
-    name: "Giới thiệu Winner X 2024",
-    url: "/lp/winner-x-2024",
-    status: "Live",
-    leads: 42,
-    clicks: 1560,
-    preview:
-      "https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?auto=format&fit=crop&q=80&w=800",
-  },
-  {
-    id: 102,
-    name: "Chương trình Ưu đãi Lễ 30/4",
-    url: "/lp/uu-dai-30-4",
-    status: "Scheduled",
-    leads: 0,
-    clicks: 0,
-    preview: "https://picsum.photos/800/450?random=3",
-  },
-  {
-    id: 103,
-    name: "So sánh SH 160i vs SH Mode",
-    url: "/lp/so-sanh-sh",
-    status: "Draft",
-    leads: 12,
-    clicks: 850,
-    preview:
-      "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=800",
-  },
-]);
+const loadTools = async () => {
+  loadingTools.value = true;
+  try {
+    const res = await conversionToolApi.getAll();
+    tools.value = (res as any).data || res || [];
+  } catch (error) {
+    console.error("Failed to load conversion tools:", error);
+  } finally {
+    loadingTools.value = false;
+  }
+};
+
+const popups = computed(() =>
+  tools.value
+    .filter((t: any) => t.type === "Popup")
+    .map((t: any) => ({
+      id: t.id,
+      name: t.name,
+      content: t.content || "",
+      delay: t.delaySeconds || 0,
+      pages: t.pages || "",
+      active: t.isActive,
+      views: t.views,
+      clicks: t.clicks,
+      img: t.imageUrl || "",
+    })),
+);
+
+const landingPages = computed(() =>
+  tools.value
+    .filter((t: any) => t.type === "Landing")
+    .map((t: any) => ({
+      id: t.id,
+      name: t.name,
+      url: t.url || "",
+      status: t.status || "draft",
+      leads: t.leads,
+      clicks: t.clicks,
+      preview:
+        t.imageUrl ||
+        "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&q=80&w=300",
+    })),
+);
 
 const handleAddPopup = () => {
   dialogTitle.value = "Cấu hình Pop-up thông minh";
@@ -377,6 +366,13 @@ const handleAddLanding = () => {
   dialogTitle.value = "Khởi tạo Landing Page";
   dialogVisible.value = true;
 };
+onMounted(() => {
+  loadTools();
+});
+
+onMounted(() => {
+  loadTools();
+});
 </script>
 
 <style lang="scss" scoped>

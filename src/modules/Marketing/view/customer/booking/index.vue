@@ -407,8 +407,9 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { ElMessage, ElLoading } from "element-plus";
+import { ElMessage, ElLoading, ElMessageBox } from "element-plus";
 import { BookingApi, Booking } from "@/api/sales";
+import { useUserStore } from "@/application/store/user";
 
 defineOptions({ name: "BookingCalendar" });
 
@@ -418,14 +419,19 @@ const dialogTitle = ref("Đặt lịch mới");
 const editingBookingId = ref<number | null>(null);
 const activeBooking = ref<any>(null);
 
+const userStore = useUserStore();
+const isAdmin = computed(() => true); // Tạm thời cho phép tất cả các vai trò chỉnh sửa/hủy lịch hẹn
+
 const bookingForm = ref({
   customerName: "",
   phone: "",
+  email: "",
   time: "09:00",
   date: "",
   type: "TestDrive",
   content: "",
   status: "Pending",
+  location: "",
 });
 
 const bookings = ref<any[]>([]);
@@ -493,11 +499,13 @@ const handleCellClick = (day: string) => {
   bookingForm.value = {
     customerName: "",
     phone: "",
+    email: "",
     time: "09:00",
     date: day,
     type: "TestDrive",
     content: "",
     status: "Pending",
+    location: "",
   };
   dialogVisible.value = true;
 };
@@ -543,9 +551,34 @@ const handleSaveBooking = async () => {
   if (!bookingForm.value.phone) return;
 
   if (isEditing.value) {
-    ElMessage.warning(
-      "Hệ thống không hỗ trợ chỉnh sửa trực tiếp, vui lòng xác nhận hoặc liên hệ quản trị viên.",
-    );
+    if (!isAdmin.value) {
+      ElMessage.warning(
+        "Chỉ quản trị viên (Admin) mới có quyền chỉnh sửa trực tiếp lịch hẹn.",
+      );
+      return;
+    }
+
+    try {
+      const dt = new Date(
+        `${bookingForm.value.date}T${bookingForm.value.time}`,
+      );
+      await BookingApi.update(editingBookingId.value!, {
+        id: editingBookingId.value!,
+        fullName: bookingForm.value.customerName,
+        phoneNumber: bookingForm.value.phone,
+        email: bookingForm.value.email || "",
+        preferredDate: dt.toISOString(),
+        note: bookingForm.value.content,
+        bookingType: bookingForm.value.type,
+        location: bookingForm.value.location || "Showroom",
+        status: bookingForm.value.status,
+      });
+      ElMessage.success("Cập nhật lịch hẹn thành công");
+      await fetchBookings();
+      dialogVisible.value = false;
+    } catch (err: any) {
+      ElMessage.error(err.message || "Lỗi khi cập nhật lịch hẹn");
+    }
     return;
   }
 
@@ -568,8 +601,36 @@ const handleSaveBooking = async () => {
   }
 };
 
-const handleDeleteBooking = () => {
-  ElMessage.warning("Hệ thống không hỗ trợ xóa trực tiếp lịch hẹn.");
+const handleDeleteBooking = async () => {
+  if (!isAdmin.value) {
+    ElMessage.warning(
+      "Chỉ quản trị viên (Admin) mới có quyền hủy/xóa lịch hẹn.",
+    );
+    return;
+  }
+
+  try {
+    await ElMessageBox.confirm(
+      "Bạn có chắc chắn muốn hủy và xóa lịch hẹn này không?",
+      "Xác nhận",
+      {
+        confirmButtonText: "Đồng ý",
+        cancelButtonText: "Hủy bỏ",
+        type: "warning",
+      },
+    );
+
+    if (editingBookingId.value) {
+      await BookingApi.delete(editingBookingId.value);
+      ElMessage.success("Đã hủy lịch hẹn thành công");
+      await fetchBookings();
+      dialogVisible.value = false;
+    }
+  } catch (err: any) {
+    if (err !== "cancel") {
+      ElMessage.error(err.message || "Lỗi khi hủy lịch hẹn");
+    }
+  }
 };
 </script>
 
@@ -652,5 +713,154 @@ const handleDeleteBooking = () => {
     padding: 20px 32px;
     border-top: 1px solid #f1f5f9;
   }
+}
+
+// Dark Mode overrides
+:global(html.dark .customer-booking-page) {
+  background-color: #05070b !important;
+  color: #f8fafc !important;
+}
+
+:global(html.dark .customer-booking-page .bg-white) {
+  background-color: #10141c !important;
+}
+
+:global(html.dark .customer-booking-page .border-slate-200) {
+  border-color: rgb(255 255 255 / 12%) !important;
+}
+
+:global(html.dark .customer-booking-page .bg-slate-50\/30) {
+  background-color: rgb(255 255 255 / 2%) !important;
+}
+
+:global(html.dark .customer-booking-page .border-b.border-slate-50) {
+  border-color: rgb(255 255 255 / 8%) !important;
+}
+
+:global(html.dark .customer-booking-page .text-slate-900) {
+  color: #f8fafc !important;
+}
+
+:global(html.dark .customer-booking-page .text-slate-800) {
+  color: #e5e7eb !important;
+}
+
+:global(html.dark .customer-booking-page .text-slate-500) {
+  color: #cbd5e1 !important;
+}
+
+:global(html.dark .customer-booking-page .text-slate-400) {
+  color: #94a3b8 !important;
+}
+
+:global(html.dark .customer-booking-page .bg-slate-100) {
+  background-color: #111827 !important;
+  border-color: rgb(255 255 255 / 12%) !important;
+}
+
+:global(html.dark .customer-booking-page .bg-white.shadow-sm) {
+  background-color: #10141c !important;
+  color: #f8fafc !important;
+}
+
+:global(html.dark .customer-booking-page .hover\:bg-blue-50\/30:hover) {
+  background-color: rgb(30 58 138 / 20%) !important;
+}
+
+:global(html.dark .customer-booking-page .bg-red-50\/30) {
+  background-color: rgb(239 68 68 / 10%) !important;
+  border-bottom-color: rgb(255 255 255 / 8%) !important;
+}
+
+:global(html.dark .customer-booking-page .border-slate-100) {
+  border-color: rgb(255 255 255 / 8%) !important;
+}
+
+:global(html.dark .customer-booking-page .border-red-100.bg-red-50\/10) {
+  background-color: rgb(239 68 68 / 5%) !important;
+  border-color: rgb(239 68 68 / 20%) !important;
+}
+
+:global(html.dark .customer-booking-page .border-red-100.bg-red-50\/10:hover) {
+  background-color: rgb(239 68 68 / 10%) !important;
+}
+
+:global(html.dark .customer-booking-page .bg-white.border-red-100) {
+  background-color: #10141c !important;
+  border-color: rgb(239 68 68 / 20%) !important;
+}
+
+:global(html.dark .customer-booking-page .combat-calendar) {
+  background-color: #10141c !important;
+
+  --el-calendar-header-border-bottom: 1px solid rgb(255 255 255 / 8%);
+}
+
+:global(
+  html.dark .customer-booking-page .combat-calendar .el-calendar-table td
+) {
+  border-color: rgb(255 255 255 / 8%) !important;
+}
+
+:global(
+  html.dark
+    .customer-booking-page
+    .combat-calendar
+    .el-calendar-table
+    td.is-today
+) {
+  background-color: rgb(30 58 138 / 20%) !important;
+}
+
+:global(html.dark .customer-booking-page .combat-input .el-input__wrapper),
+:global(html.dark .customer-booking-page .combat-time .el-input__wrapper) {
+  background-color: #111827 !important;
+  border-color: rgb(255 255 255 / 12%) !important;
+  box-shadow: none !important;
+}
+
+:global(html.dark .customer-booking-page .combat-input .el-input__inner),
+:global(html.dark .customer-booking-page .combat-time .el-input__inner) {
+  color: #f8fafc !important;
+}
+
+:global(html.dark .customer-booking-page .combat-textarea .el-textarea__inner) {
+  background-color: #111827 !important;
+  border-color: rgb(255 255 255 / 12%) !important;
+  color: #f8fafc !important;
+}
+
+:global(html.dark .combat-booking-dialog) {
+  background-color: #10141c !important;
+  border: 1px solid rgb(255 255 255 / 12%) !important;
+}
+
+:global(html.dark .combat-booking-dialog .el-dialog__header) {
+  border-bottom: 1px solid rgb(255 255 255 / 8%) !important;
+}
+
+:global(html.dark .combat-booking-dialog .el-dialog__footer) {
+  border-top: 1px solid rgb(255 255 255 / 8%) !important;
+}
+
+:global(html.dark .combat-booking-dialog h3.text-slate-800) {
+  color: #f8fafc !important;
+}
+
+:global(html.dark .combat-booking-dialog label.text-slate-400) {
+  color: #cbd5e1 !important;
+}
+
+:global(html.dark .combat-booking-dialog .bg-slate-50) {
+  background-color: #111827 !important;
+  border-color: rgb(255 255 255 / 8%) !important;
+}
+
+:global(html.dark .combat-booking-dialog .border-slate-100) {
+  border-color: rgb(255 255 255 / 8%) !important;
+}
+
+:global(html.dark .combat-booking-dialog .text-slate-500) {
+  color: #cbd5e1 !important;
 }
 </style>

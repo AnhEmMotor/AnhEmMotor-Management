@@ -69,6 +69,7 @@ import { Plus } from "@element-plus/icons-vue";
 import { ref, reactive, onMounted } from "vue";
 import { ElMessage } from "element-plus";
 import type { ColumnOption } from "@/types/component";
+import { kpiApi } from "@/api/operations/kpi.api";
 
 defineOptions({ name: "HRKPI" });
 
@@ -113,8 +114,10 @@ const getScoreType = (score: number) => {
 const loadData = async () => {
   loading.value = true;
   try {
-    data.value = [];
-    pagination.total = 0;
+    const res = await kpiApi.getAll();
+    const dataList = (res as any).data || res || [];
+    data.value = dataList;
+    pagination.total = dataList.length;
   } catch (error) {
     console.error("Failed to load KPIs:", error);
     ElMessage.error("Không thể tải danh sách KPI");
