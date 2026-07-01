@@ -322,14 +322,21 @@ const handleNoteSubmit = () => {
   }
 }
 
-:global(html.dark) .lead-detail-expansion {
+:global(.dark) .lead-detail-expansion {
   background-color: #0f172a !important;
 
-  .premium-input {
-    :deep(.el-input__wrapper) {
-      background-color: #1f2937 !important;
-      border-color: #334155 !important;
-    }
+  .premium-input :deep(.el-input__wrapper) {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    box-shadow: none !important;
+  }
+
+  .premium-input :deep(.el-input__inner) {
+    color: #f8fafc !important;
+  }
+
+  .premium-input :deep(.el-input__inner::placeholder) {
+    color: #64748b !important;
   }
 }
 

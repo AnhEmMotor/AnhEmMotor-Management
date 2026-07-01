@@ -38,10 +38,12 @@
           class="customer-row-container flex flex-col"
         >
           <div
-            class="customer-row-card group bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 transition-all duration-300 flex items-center hover:border-blue-200 dark:hover:border-blue-500 cursor-pointer overflow-hidden"
-            :class="{
-              'is-expanded': expandedId === customer.id,
-            }"
+            class="customer-row-card group flex items-center cursor-pointer overflow-hidden transition-all duration-300 border"
+            :class="[
+              expandedId === customer.id
+                ? 'bg-white dark:bg-slate-900 border-blue-500 dark:border-slate-800 rounded-t-2xl rounded-b-none shadow-md'
+                : 'bg-white dark:bg-slate-900 border-gray-100 dark:border-slate-800/60 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:border-blue-200 dark:hover:border-blue-500/50 hover:shadow-md hover:-translate-y-0.5',
+            ]"
             @click="handleToggleExpand(customer.id)"
           >
             <div class="flex flex-1 items-center p-5 gap-6">
@@ -185,7 +187,10 @@
             </div>
           </div>
 
-          <div v-if="expandedId === customer.id" class="expansion-container">
+          <div
+            v-if="expandedId === customer.id"
+            class="expansion-container overflow-hidden bg-gray-50/50 dark:bg-[#0f172a] border-x border-b border-blue-500 dark:border-slate-800 rounded-b-2xl shadow-inner"
+          >
             <CustomerDetailExpansion :lead="customer" />
           </div>
         </div>
@@ -341,36 +346,10 @@ const getLastNote = (customer: any) => {
 
 <style lang="scss" scoped>
 .customer-profile-management {
-  --customer-card-border: #f3f4f6;
-  --customer-card-hover-bg: #f8faff;
-  --customer-card-expanded-bg: #fff;
-  --customer-card-active-border: #3b82f6;
-  --customer-card-shadow: 0 12px 24px rgb(0 0 0 / 5%);
-  --customer-card-expanded-shadow: 0 10px 30px rgb(0 0 0 / 5%);
   --customer-select-bg: #f3f4f6;
   --customer-select-hover-bg: #e5e7eb;
-  --customer-expansion-bg: #fafafa;
-  --customer-expansion-border: #3b82f6;
 
   .customer-row-card {
-    border: 1px solid var(--customer-card-border);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-    &:hover {
-      background-color: var(--customer-card-hover-bg);
-      border-color: var(--customer-card-active-border);
-      box-shadow: var(--customer-card-shadow);
-      transform: translateY(-2px);
-    }
-
-    &.is-expanded {
-      background-color: var(--customer-card-expanded-bg);
-      border-color: var(--customer-card-active-border);
-      border-bottom-right-radius: 0;
-      border-bottom-left-radius: 0;
-      box-shadow: var(--customer-card-expanded-shadow);
-    }
-
     .priority-label {
       box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
       transition: transform 0.3s;
@@ -394,15 +373,6 @@ const getLastNote = (customer: any) => {
     }
   }
 
-  .expansion-container {
-    overflow: hidden;
-    background-color: var(--customer-expansion-bg);
-    border: 1px solid var(--customer-expansion-border);
-    border-top: none;
-    border-bottom-right-radius: 1.5rem;
-    border-bottom-left-radius: 1.5rem;
-  }
-
   .search-bar-wrapper {
     :deep(.el-form-item__label) {
       font-weight: 600;
@@ -410,19 +380,11 @@ const getLastNote = (customer: any) => {
       white-space: nowrap !important;
     }
   }
+}
 
-  :global(html.dark) & {
-    --customer-card-border: #1f2937;
-    --customer-card-hover-bg: #374151;
-    --customer-card-expanded-bg: #1f2937;
-    --customer-card-active-border: #334155;
-    --customer-card-shadow: 0 12px 24px rgb(0 0 0 / 25%);
-    --customer-card-expanded-shadow: 0 10px 30px rgb(0 0 0 / 25%);
-    --customer-select-bg: #1f2937;
-    --customer-select-hover-bg: #374151;
-    --customer-expansion-bg: #0f172a;
-    --customer-expansion-border: #334155;
-  }
+:global(.dark) .customer-profile-management {
+  --customer-select-bg: #1f2937;
+  --customer-select-hover-bg: #374151;
 }
 
 .custom-scrollbar {
