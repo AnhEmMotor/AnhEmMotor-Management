@@ -53,7 +53,7 @@ export const fetchDashboardSummary = (start: Date, end: Date) => {
 
 export const fetchMonthlyRevenueProfit = (months?: number) => {
   return request.get<MonthlyRevenueProfit[]>({
-    url: "/api/v1/statistics/monthly-revenue-profit",
+    url: "/api/v1/Statistics/monthly-revenue-profit",
     params: { months },
   });
 };
@@ -76,5 +76,25 @@ export const fetchWorkshopOverview = (fromDate: Date, toDate: Date) => {
   return request.get<any>({
     url: "/api/workshop/dashboard/overview",
     params: { fromDate, toDate },
+  });
+};
+
+export const fetchCustomerAnalytics = () => {
+  return request.get<{
+    kpi: { totalLeads: number; newCustomers: number; hotLeads: number };
+    leads: any[];
+  }>({
+    url: "/api/v1/Statistics/customer-analytics",
+  });
+};
+
+export const fetchDashboardStats = () => {
+  return request.get<{
+    newCustomersCount: number;
+    monthlyVehiclesSold: number;
+    currentInventoryCount: number;
+    pendingOrdersCount: number;
+  }>({
+    url: "/api/v1/Statistics/dashboard-stats",
   });
 };

@@ -50,6 +50,16 @@ export const logisticsRoutes: AppRouteRecord = {
       },
     },
     {
+      path: "returns/:id",
+      name: "ReturnDetail",
+      component: "/logistics/returns/detail",
+      meta: {
+        title: "Chi tiết đơn hoàn",
+        hidden: true,
+        activeMenu: "/logistics/returns",
+      },
+    },
+    {
       path: "carrier-settings",
       name: "CarrierSettings",
       component: "/logistics/carrier-settings/index",

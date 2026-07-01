@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="flex flex-col gap-4 pb-5">
     <!-- Header & Quick Search -->
     <div class="flex items-center justify-between gap-4">
@@ -242,7 +242,7 @@ const loadStats = async () => {
   loadingStats.value = true;
   try {
     const res = await orderStatisticsApi.getStatistics();
-    const d = res.data;
+    const d = res;
     workload.value = {
       pendingOrders: d.pendingOrders,
       slaDelayed: d.slaDelayed,
@@ -255,6 +255,10 @@ const loadStats = async () => {
       ...e,
       waitTime: "",
     }));
+
+    nextTick(() => {
+      renderHourlyChart();
+    });
   } catch (error) {
     console.error("Failed to load order statistics:", error);
   } finally {
@@ -278,7 +282,7 @@ const filteredExceptions = computed(() => {
     const q = searchQuery.value.toLowerCase();
     list = list.filter(
       (item) =>
-        item.id.toLowerCase().includes(q) ||
+        item.id.toString().toLowerCase().includes(q) ||
         item.customerName.toLowerCase().includes(q),
     );
   }
@@ -460,7 +464,10 @@ const renderMethodChart = () => {
           borderWidth: 2,
         },
         label: { show: false },
-        data: mockData.value.charts.deliveryMethods,
+        data: [
+          { value: 65, name: "Giao tận nhà" },
+          { value: 35, name: "Nhận tại cửa hàng" },
+        ],
       },
     ],
   };

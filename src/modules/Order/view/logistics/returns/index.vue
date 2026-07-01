@@ -106,333 +106,20 @@
         </ElTableColumn>
       </ElTable>
     </div>
-
-    <!-- PANEL TRƯỢT CHI TIẾT (SLIDING DRAWER) -->
-    <ElDrawer
-      v-model="drawerVisible"
-      :title="
-        detail
-          ? `Chi tiết đơn hoàn RET-${detail.id.toString().padStart(3, '0')}`
-          : 'Chi tiết đơn hoàn'
-      "
-      size="600px"
-      direction="rtl"
-      :destroy-on-close="false"
-      class="returns-drawer"
-    >
-      <div v-loading="loadingDetail" class="h-full flex flex-col" v-if="detail">
-        <div
-          class="flex justify-between items-center mb-4 bg-fill-lighter p-4 rounded-xl border border-color"
-        >
-          <p class="text-secondary m-0">
-            Đơn gốc:
-            <span class="font-medium text-primary text-lg ml-2">{{
-              detail.originalTrackingNumber
-            }}</span>
-          </p>
-          <ElTag :type="getStatusTag(detail.status)" effect="dark" size="large">
-            {{ getStatusLabel(detail.status) }}
-          </ElTag>
-        </div>
-
-        <div
-          class="flex-1 overflow-y-auto pr-2 flex flex-col gap-6 custom-scrollbar"
-        >
-          <!-- LÝ DO -->
-          <ElAlert
-            :title="`Lý do hoàn: ${detail.reason}`"
-            :type="getReasonAlertType(detail.reason)"
-            :closable="false"
-            show-icon
-          />
-
-          <div
-            class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-lg border"
-            style="
-              background-color: var(--el-fill-color-blank);
-              border-color: var(--el-border-color-light);
-            "
-          >
-            <div class="flex flex-col">
-              <span
-                class="text-xs uppercase"
-                style="color: var(--el-text-color-secondary)"
-                >Giá trị hoàn lại</span
-              >
-              <span class="font-bold text-red-500 text-base mt-1">{{
-                formatCurrency(detail.refundAmount || 0)
-              }}</span>
-            </div>
-            <div class="flex flex-col">
-              <span
-                class="text-xs uppercase"
-                style="color: var(--el-text-color-secondary)"
-                >Phí hoàn phát sinh</span
-              >
-              <span
-                class="font-bold text-base mt-1"
-                style="color: var(--el-text-color-primary)"
-                >{{ formatCurrency(detail.returnShippingCost || 0) }}</span
-              >
-            </div>
-            <div class="flex flex-col">
-              <span
-                class="text-xs uppercase"
-                style="color: var(--el-text-color-secondary)"
-                >Nhà vận chuyển</span
-              >
-              <div class="flex items-center gap-1.5 mt-1">
-                <el-tag size="small" type="info" effect="plain">{{
-                  detail.carrier
-                }}</el-tag>
-                <span
-                  class="text-xs font-mono"
-                  style="color: var(--el-text-color-secondary)"
-                  >{{ detail.trackingNumber }}</span
-                >
-              </div>
-            </div>
-          </div>
-
-          <el-alert
-            v-if="detail.carrierReturnNote"
-            title="Ghi chú từ bưu tá"
-            :description="detail.carrierReturnNote"
-            type="warning"
-            show-icon
-            :closable="false"
-          />
-
-          <div>
-            <h3 class="text-base font-semibold mb-3 flex items-center gap-2">
-              <ElIcon><Box /></ElIcon> Chi tiết kiện hàng
-            </h3>
-            <div class="border border-color rounded-md overflow-hidden">
-              <ElTable :data="detail.items" style="width: 100%">
-                <ElTableColumn width="80" align="center">
-                  <template #default="{ row }">
-                    <ElImage
-                      :src="row.thumbnailUrl || '/placeholder.png'"
-                      class="w-10 h-10 rounded"
-                      fit="cover"
-                    >
-                      <template #error>
-                        <div
-                          class="w-10 h-10 bg-fill-lighter flex items-center justify-center text-secondary text-xs rounded"
-                        >
-                          <ElIcon><Picture /></ElIcon>
-                        </div>
-                      </template>
-                    </ElImage>
-                  </template>
-                </ElTableColumn>
-                <ElTableColumn prop="sku" label="Mã SKU" width="120" />
-                <ElTableColumn
-                  prop="productName"
-                  label="Tên phụ tùng"
-                  min-width="150"
-                  show-overflow-tooltip
-                />
-                <ElTableColumn
-                  prop="quantity"
-                  label="SL"
-                  width="80"
-                  align="center"
-                />
-              </ElTable>
-            </div>
-          </div>
-
-          <div
-            v-if="detail.status === 'pending'"
-            class="bg-fill-lighter p-5 rounded-lg border border-color"
-          >
-            <h3
-              class="text-base font-semibold mb-4 flex items-center gap-2 text-primary"
-            >
-              <ElIcon><Check /></ElIcon> Kiểm định thực tế tại kho
-            </h3>
-
-            <ElForm
-              :model="inspectForm"
-              label-position="top"
-              :disabled="submitting"
-            >
-              <div class="grid grid-cols-2 gap-4">
-                <ElFormItem label="Tình trạng vỏ hộp/bao bì">
-                  <ElRadioGroup v-model="inspectForm.boxCondition">
-                    <ElRadio value="Còn nguyên vẹn">Còn nguyên vẹn</ElRadio>
-                    <ElRadio value="Đã bóc tem">Đã bóc tem</ElRadio>
-                    <ElRadio value="Rách nát">Rách nát</ElRadio>
-                  </ElRadioGroup>
-                </ElFormItem>
-                <ElFormItem label="Tình trạng phụ tùng">
-                  <ElRadioGroup v-model="inspectForm.productCondition">
-                    <ElRadio value="Sử dụng tốt">Sử dụng tốt</ElRadio>
-                    <ElRadio value="Trầy xước nhẹ">Trầy xước nhẹ</ElRadio>
-                    <ElRadio value="Hư hỏng hoàn toàn"
-                      >Hư hỏng hoàn toàn</ElRadio
-                    >
-                  </ElRadioGroup>
-                </ElFormItem>
-              </div>
-
-              <!-- New Financial Input Fields -->
-              <div class="grid grid-cols-2 gap-4">
-                <ElFormItem label="Giá trị hoàn lại cho khách (VND)">
-                  <ElInputNumber
-                    v-model="inspectForm.refundAmount"
-                    :min="0"
-                    placeholder="Ví dụ: 500,000"
-                    class="w-full"
-                    :controls="false"
-                  />
-                </ElFormItem>
-                <ElFormItem label="Chi phí chuyển hoàn phát sinh (VND)">
-                  <ElInputNumber
-                    v-model="inspectForm.returnShippingCost"
-                    :min="0"
-                    placeholder="Ví dụ: 30,000"
-                    class="w-full"
-                    :controls="false"
-                  />
-                </ElFormItem>
-              </div>
-
-              <ElFormItem label="Ảnh bằng chứng khui hộp">
-                <div class="flex items-center gap-4">
-                  <input
-                    type="file"
-                    ref="fileInput"
-                    class="hidden"
-                    accept="image/*"
-                    @change="onFileChange"
-                  />
-                  <ElButton :icon="Camera" @click="handleUploadClick"
-                    >Tải ảnh lên</ElButton
-                  >
-                  <span
-                    v-if="inspectForm.returnProofImage"
-                    class="text-success text-sm flex items-center gap-1"
-                  >
-                    <ElIcon><CircleCheck /></ElIcon> Đã tải lên ảnh bằng chứng
-                  </span>
-                </div>
-              </ElFormItem>
-
-              <ElFormItem label="Ghi chú nội bộ (Lưu vết trách nhiệm)">
-                <ElInput
-                  v-model="inspectForm.returnInternalNote"
-                  type="textarea"
-                  :rows="3"
-                  placeholder="Ghi rõ đánh giá của thủ kho, ví dụ: 'Hàng móp do vận chuyển Viettel Post'"
-                />
-              </ElFormItem>
-            </ElForm>
-          </div>
-
-          <div
-            v-else
-            class="bg-success-light-9 p-5 rounded-lg border border-success-light-5"
-          >
-            <h3
-              class="text-base font-semibold mb-4 flex items-center gap-2 text-success"
-            >
-              <ElIcon><SuccessFilled /></ElIcon> Đã hoàn tất xử lý
-            </h3>
-            <div class="grid grid-cols-2 gap-y-3 text-sm">
-              <div class="text-secondary">Quyết định:</div>
-              <div class="font-medium text-primary">
-                {{ getActionLabel(detail.returnAction) }}
-              </div>
-
-              <div class="text-secondary">Vỏ hộp:</div>
-              <div class="font-medium">
-                {{ detail.boxCondition || "Không có" }}
-              </div>
-
-              <div class="text-secondary">Sản phẩm:</div>
-              <div class="font-medium">
-                {{ detail.productCondition || "Không có" }}
-              </div>
-
-              <div class="text-secondary">Giá trị hoàn:</div>
-              <div class="font-medium text-red-500 font-bold">
-                {{ formatCurrency(detail.refundAmount || 0) }}
-              </div>
-
-              <div class="text-secondary">Phí hoàn phát sinh:</div>
-              <div
-                class="font-medium font-bold"
-                style="color: var(--el-text-color-primary)"
-              >
-                {{ formatCurrency(detail.returnShippingCost || 0) }}
-              </div>
-
-              <div class="text-secondary">Ghi chú:</div>
-              <div class="font-medium italic">
-                {{ detail.returnInternalNote || "Không có" }}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          v-if="detail.status === 'pending'"
-          class="pt-4 mt-2 border-t border-color shrink-0 flex gap-3 justify-end"
-        >
-          <ElButton
-            type="primary"
-            size="large"
-            :loading="submitting"
-            @click="submitInspection"
-          >
-            <ElIcon class="mr-1"><Check /></ElIcon> Chuyển Admin phê duyệt
-          </ElButton>
-        </div>
-        <div
-          v-else-if="detail.status === 'inspecting'"
-          class="pt-4 mt-2 border-t border-color shrink-0 flex gap-3 justify-end"
-        >
-          <ElTag type="warning" size="large" effect="dark"
-            >Đang chờ Admin phê duyệt</ElTag
-          >
-        </div>
-      </div>
-    </ElDrawer>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
-import {
-  List,
-  Search,
-  User,
-  Box,
-  Picture,
-  Check,
-  Camera,
-  CircleCheck,
-  SuccessFilled,
-  Refresh,
-  Warning,
-  Money,
-} from "@element-plus/icons-vue";
-import {
-  getReturns,
-  getReturnDetail,
-  inspectReturn,
-} from "@/api/logistics/returns";
-import type {
-  ReturnOrderDto,
-  ReturnDetailDto,
-  InspectReturnCommand,
-} from "@/domain/logistics/returns.types";
-import { FileApi } from "@/api/operations/file.api";
+import { useRouter } from "vue-router";
+import { ElMessage } from "element-plus";
+import { List, Search, User } from "@element-plus/icons-vue";
+import { getReturns } from "@/api/logistics/returns";
+import type { ReturnOrderDto } from "@/domain/logistics/returns.types";
 
 defineOptions({ name: "ReverseLogistics" });
+
+const router = useRouter();
 
 // State for List
 const returnsList = ref<ReturnOrderDto[]>([]);
@@ -440,24 +127,6 @@ const loadingList = ref(false);
 const searchQuery = ref("");
 const statusFilter = ref("");
 const selectedRows = ref<ReturnOrderDto[]>([]);
-
-// State for Drawer
-const drawerVisible = ref(false);
-const detail = ref<ReturnDetailDto | null>(null);
-const loadingDetail = ref(false);
-
-// State for Form
-const inspectForm = ref<InspectReturnCommand>({
-  boxCondition: "",
-  productCondition: "",
-  returnProofImage: "",
-  returnInternalNote: "",
-  action: "",
-  refundAmount: 0,
-  returnShippingCost: 0,
-});
-const submitting = ref(false);
-const fileInput = ref<HTMLInputElement | null>(null);
 
 // Filter logic
 const filteredReturns = computed(() => {
@@ -488,95 +157,8 @@ const fetchReturns = async () => {
   }
 };
 
-const handleRowClick = async (row: ReturnOrderDto) => {
-  drawerVisible.value = true;
-  loadingDetail.value = true;
-  try {
-    const res = await getReturnDetail(row.id);
-    detail.value = res as unknown as ReturnDetailDto;
-
-    // Reset form
-    inspectForm.value = {
-      boxCondition: detail.value?.boxCondition || "Còn nguyên vẹn",
-      productCondition: detail.value?.productCondition || "Sử dụng tốt",
-      returnProofImage: detail.value?.returnProofImage || "",
-      returnInternalNote: detail.value?.returnInternalNote || "",
-      action: "",
-      refundAmount:
-        detail.value?.refundAmount !== undefined &&
-        detail.value?.refundAmount > 0
-          ? detail.value.refundAmount
-          : detail.value?.codAmount || 0,
-      returnShippingCost:
-        detail.value?.returnShippingCost !== undefined &&
-        detail.value?.returnShippingCost > 0
-          ? detail.value.returnShippingCost
-          : Math.round((detail.value?.shippingCost || 0) * 0.5),
-    };
-  } catch (_error) {
-    ElMessage.error("Lỗi khi tải chi tiết hàng hoàn");
-    drawerVisible.value = false;
-  } finally {
-    loadingDetail.value = false;
-  }
-};
-
-const handleUploadClick = () => {
-  fileInput.value?.click();
-};
-
-const onFileChange = async (e: Event) => {
-  const target = e.target as HTMLInputElement;
-  if (target.files && target.files.length > 0) {
-    const file = target.files[0];
-    try {
-      const res = await FileApi.uploadProductImage(file);
-      const data = (res as any).data || res;
-      inspectForm.value.returnProofImage = data.publicUrl;
-      ElMessage.success("Tải ảnh bằng chứng thành công!");
-    } catch (error) {
-      console.error(error);
-      ElMessage.error("Không thể tải ảnh lên hệ thống.");
-    }
-  }
-};
-
-const submitInspection = async () => {
-  if (!detail.value) return;
-
-  if (!inspectForm.value.boxCondition || !inspectForm.value.productCondition) {
-    ElMessage.warning("Vui lòng nhập tình trạng hộp và phụ tùng");
-    return;
-  }
-
-  try {
-    await ElMessageBox.confirm(
-      `Xác nhận lưu thông tin kiểm định và chuyển Admin phê duyệt?`,
-      "Xác nhận chuyển",
-      {
-        confirmButtonText: "Xác nhận",
-        cancelButtonText: "Hủy",
-        type: "info",
-      },
-    );
-
-    submitting.value = true;
-    inspectForm.value.action = ""; // Admin se duyet sau
-
-    await inspectReturn(detail.value.id, inspectForm.value);
-
-    ElMessage.success(`Chuyển Admin phê duyệt thành công`);
-
-    // Refresh and close drawer
-    await fetchReturns();
-    drawerVisible.value = false;
-  } catch (e: any) {
-    if (e !== "cancel") {
-      ElMessage.error("Có lỗi xảy ra khi xử lý");
-    }
-  } finally {
-    submitting.value = false;
-  }
+const handleRowClick = (row: ReturnOrderDto) => {
+  router.push({ name: "ReturnDetail", params: { id: row.id } });
 };
 
 const getCarrierTag = (carrier: string) => {
@@ -616,8 +198,8 @@ const getStatusTag = (
 const getStatusLabel = (status: string | number) => {
   const strStatus = String(status).toLowerCase();
   const map: Record<string, string> = {
-    pending: "Chờ xử lý",
-    "0": "Chờ xử lý",
+    pending: "Chờ kiểm tra",
+    "0": "Chờ kiểm tra",
     inspecting: "Đang kiểm tra",
     "1": "Đang kiểm tra",
     completed: "Đã hoàn tất",
@@ -649,7 +231,7 @@ const formatCurrency = (value: number) => {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .returns-page {
   height: calc(100vh - 100px);
 }
@@ -657,13 +239,6 @@ const formatCurrency = (value: number) => {
 :deep(.order-tabs .el-tabs__nav-wrap::after) {
   height: 1px;
   background-color: var(--el-border-color-light);
-}
-
-:deep(.returns-drawer .el-drawer__header) {
-  margin-bottom: 0;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-  font-weight: bold;
 }
 
 .custom-scrollbar::-webkit-scrollbar {

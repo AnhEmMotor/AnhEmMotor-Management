@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="hr-policy-container flex flex-col gap-4 h-full p-4">
     <!-- Header -->
     <div class="flex items-center justify-between">
@@ -160,10 +160,11 @@ const getPolicyItemClass = (policy: any) => {
 };
 
 const mapBackendPolicy = (p: any) => {
+  const target = p.targetGroup || "";
   const dept =
-    p.targetGroup === "Mechanic"
+    target.includes("Kỹ thuật") || target === "Mechanic"
       ? "mechanic"
-      : p.targetGroup === "PartsSales"
+      : target.includes("Phụ tùng") || target === "PartsSales"
         ? "parts_sales"
         : "vehicle_sales";
   return {
@@ -189,7 +190,7 @@ const loadPolicies = async () => {
   loading.value = true;
   try {
     const res = await commissionPolicyApi.getAll();
-    allPolicies.value = res.data.map(mapBackendPolicy);
+    allPolicies.value = (res || []).map(mapBackendPolicy);
   } catch (error) {
     console.error("Failed to load policies:", error);
     ElMessage.error("Không thể tải danh sách chính sách");

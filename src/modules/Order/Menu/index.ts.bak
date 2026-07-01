@@ -1,4 +1,4 @@
-import { AppRouteRecord } from "@/types/router";
+﻿import { AppRouteRecord } from "@/types/router";
 
 export const orderMenu: AppRouteRecord[] = [
   {
@@ -16,7 +16,7 @@ export const orderMenu: AppRouteRecord[] = [
         path: "management",
         name: "OrderManagement",
         meta: {
-          title: "Quản lý đơn hàng",
+          title: "Quáº£n lÃ½ Ä‘Æ¡n hÃ ng",
           icon: "ri:file-list-3-line",
         },
         redirect: "/Order/management/list",
@@ -26,7 +26,7 @@ export const orderMenu: AppRouteRecord[] = [
             name: "OrderList",
             component: "/Order/view/order/list/index",
             meta: {
-              title: "Đơn đặt hàng Online",
+              title: "ÄÆ¡n Ä‘áº·t hÃ ng Online",
               icon: "ri:shopping-cart-line",
               keepAlive: true,
             },
@@ -36,7 +36,7 @@ export const orderMenu: AppRouteRecord[] = [
             name: "OrderDepositSettings",
             component: "/sales-settings/deposit/index",
             meta: {
-              title: "Cài đặt đặt cọc",
+              title: "CÃ i Ä‘áº·t Ä‘áº·t cá»c",
               icon: "ri:secure-payment-line",
               keepAlive: true,
             },
@@ -46,7 +46,7 @@ export const orderMenu: AppRouteRecord[] = [
             name: "OrderProductInvoice",
             component: "/Order/view/product/invoice/index",
             meta: {
-              title: "Hóa đơn bán xe",
+              title: "HÃ³a Ä‘Æ¡n mua hÃ ng",
               icon: "ri:bill-line",
               keepAlive: true,
               roles: ["Admin", "SuperAdmin"],
@@ -57,7 +57,7 @@ export const orderMenu: AppRouteRecord[] = [
             name: "OrderLogisticsReturns",
             component: "/Order/view/logistics/returns/index",
             meta: {
-              title: "Trả hàng - Hoàn trả",
+              title: "Tráº£ hÃ ng - HoÃ n tráº£",
               icon: "ri:arrow-go-back-line",
               keepAlive: true,
               showBadge: true,
@@ -65,21 +65,11 @@ export const orderMenu: AppRouteRecord[] = [
             },
           },
           {
-            path: "returns/detail/:id?",
-            name: "ReturnDetail",
-            component: "/Order/view/logistics/returns/detail",
-            meta: {
-              title: "Chi tiết đơn hoàn",
-              icon: "ri:file-search-line",
-              isHide: true,
-            },
-          },
-          {
             path: "contract",
             name: "OrderContract",
             component: "/Order/view/order/contract/index",
             meta: {
-              title: "Hợp đồng mua xe",
+              title: "Há»£p Ä‘á»“ng mua xe",
               icon: "ri:file-paper-2-line",
               keepAlive: true,
             },
@@ -89,7 +79,7 @@ export const orderMenu: AppRouteRecord[] = [
             name: "SalesContractPreview",
             component: "/Order/view/order/contract/contract-preview",
             meta: {
-              title: "Chi tiết Hợp đồng",
+              title: "Chi tiáº¿t Há»£p Ä‘á»“ng",
               icon: "ri:file-search-line",
               isHide: true,
             },
@@ -100,7 +90,7 @@ export const orderMenu: AppRouteRecord[] = [
         path: "product",
         name: "OrderProduct",
         meta: {
-          title: "Quản lý sản phẩm",
+          title: "Quáº£n lÃ½ sáº£n pháº©m",
           icon: "ri:shopping-bag-3-line",
           roles: ["Admin", "SuperAdmin"],
         },
@@ -111,7 +101,7 @@ export const orderMenu: AppRouteRecord[] = [
             name: "OrderProductList",
             component: "/Order/view/product/list/index",
             meta: {
-              title: "Danh sách sản phẩm",
+              title: "Danh sÃ¡ch sáº£n pháº©m",
               icon: "ri:list-unordered",
               keepAlive: true,
             },
@@ -122,7 +112,7 @@ export const orderMenu: AppRouteRecord[] = [
         path: "logistics",
         name: "OrderLogistics",
         meta: {
-          title: "Quản lý vận chuyển",
+          title: "Quáº£n lÃ½ váº­n chuyá»ƒn",
           icon: "ri:truck-line",
           roles: ["Admin", "SuperAdmin"],
         },
@@ -143,7 +133,7 @@ export const orderMenu: AppRouteRecord[] = [
             name: "OrderLogisticsTracking",
             component: "/Order/view/logistics/tracking/index",
             meta: {
-              title: "Theo dõi vận chuyển",
+              title: "Theo dÃµi váº­n chuyá»ƒn",
               icon: "ri:map-pin-time-line",
               keepAlive: true,
             },
@@ -153,7 +143,7 @@ export const orderMenu: AppRouteRecord[] = [
             name: "OrderLogisticsFulfillment",
             component: "/Order/view/logistics/fulfillment/index",
             meta: {
-              title: "Hoàn thành đơn hàng",
+              title: "HoÃ n thÃ nh Ä‘Æ¡n hÃ ng",
               icon: "ri:box-3-line",
               keepAlive: true,
               showBadge: true,
@@ -165,7 +155,7 @@ export const orderMenu: AppRouteRecord[] = [
             name: "OrderLogisticsCarrierSettings",
             component: "/Order/view/logistics/carrier-settings/index",
             meta: {
-              title: "Cài đặt nhà vận chuyển",
+              title: "CÃ i Ä‘áº·t nhÃ  váº­n chuyá»ƒn",
               icon: "ri:settings-4-line",
               keepAlive: true,
             },
@@ -177,7 +167,7 @@ export const orderMenu: AppRouteRecord[] = [
         name: "OrderStatistics",
         component: "/Order/view/order/statistics/index",
         meta: {
-          title: "Thống kê đơn hàng",
+          title: "Thá»‘ng kÃª Ä‘Æ¡n hÃ ng",
           icon: "ri:bar-chart-line",
           keepAlive: true,
         },
@@ -187,3 +177,4 @@ export const orderMenu: AppRouteRecord[] = [
 ];
 
 export default orderMenu;
+

@@ -1,4 +1,4 @@
-export default {
+﻿export default {
   httpMsg: {
     unauthorized: "Truy cập không được phép, vui lòng đăng nhập lại",
     forbidden: "Cấm truy cập vào tài nguyên này",
@@ -386,6 +386,28 @@ export default {
         },
       },
     },
+    purchaseInvoice: {
+      title: "Hóa đơn mua hàng",
+      searchPlaceholder: "Tìm theo mã HĐ, nhà cung cấp, khách hàng...",
+      statusDraft: "Nháp",
+      statusSent: "Đã gửi",
+      statusApproved: "Đã duyệt",
+      statusRejected: "Từ chối",
+      statusCancelled: "Đã hủy",
+      linkPurchaseInvoice: "Liên kết Hóa đơn mua hàng",
+      selectPurchaseInvoice: "Chọn HĐ mua hàng",
+      supplier: "Nhà cung cấp",
+      customer: "Khách hàng",
+      subtotal: "Tạm tính",
+      taxAmount: "Thuế VAT (8%)",
+      totalAmount: "Tổng cộng",
+      items: "Sản phẩm",
+      quantity: "Số lượng",
+      unitPrice: "Đơn giá",
+      lineTotal: "Thành tiền",
+      createNew: "Tạo hóa đơn mới",
+    },
+
     contract: {
       title: "Quản lý Hợp đồng",
       sales: "Hợp đồng Mua bán Xe",

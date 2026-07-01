@@ -3,7 +3,7 @@
     <ReportPageHeader
       title="Mẫu Hợp Đồng Mua Bán Xe Máy"
       description="Trình xem trước và quản lý hợp đồng bán hàng — theo dõi vòng đời đặt cọc, ký kết và bàn giao xe."
-      icon="ri:file-contract-line"
+      icon="ri:file-paper-2-line"
     >
       <template #actions>
         <el-button @click="handlePrint">
@@ -71,13 +71,17 @@
         Trạng thái vòng đời hợp đồng
       </div>
 
-      <div class="relative flex w-full">
+      <div class="pipeline-steps-wrapper relative flex w-full">
+        <!-- Track line nền xám -->
         <div
-          class="absolute top-4 left-[12.5%] right-[12.5%] h-0.5 bg-gray-200 z-0"
+          class="pipeline-track-bg absolute top-4 left-[12.5%] right-[12.5%] h-0.5 z-0"
         ></div>
+        <!-- Track line đỏ tiến trình -->
         <div
-          class="absolute top-4 left-[12.5%] h-0.5 bg-report-red z-0 transition-all duration-300"
-          :style="{ width: `${Math.min(Math.max(activeStep, 0), 2) * 37.5}%` }"
+          class="pipeline-track-active absolute top-4 left-[12.5%] h-0.5 z-0 transition-all duration-700"
+          :style="{
+            width: activeStep === 0 ? '0%' : activeStep === 1 ? '37.5%' : '75%',
+          }"
         ></div>
 
         <div
@@ -89,30 +93,29 @@
           :key="index"
           class="flex-1 flex flex-col items-center relative z-10"
         >
+          <!-- Circle bọc bằng class riêng step-circle để tránh bị override -->
           <div
-            class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 bg-white transition-colors duration-300"
+            class="step-circle w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 transition-all duration-300"
             :class="[
-              activeStep > index ? 'border-report-red text-report-red' : '',
-              activeStep === index
-                ? 'border-report-red bg-report-red text-white'
-                : '',
-              activeStep < index ? 'border-gray-300 text-gray-400' : '',
+              activeStep > index ? 'step-circle--done' : '',
+              activeStep === index ? 'step-circle--active' : '',
+              activeStep < index ? 'step-circle--pending' : '',
             ]"
           >
             <el-icon v-if="activeStep > index"><Check /></el-icon>
             <span v-else>{{ index + 1 }}</span>
           </div>
           <div
-            class="mt-2 text-center text-sm px-1 w-full wrap-break-word"
+            class="step-label mt-2 text-center text-sm px-1 w-full"
             :class="
               activeStep >= index
-                ? 'text-gray-900 font-medium'
-                : 'text-gray-400'
+                ? 'step-label--active'
+                : 'step-label--inactive'
             "
           >
             {{ step.label }}
           </div>
-          <div class="text-xs text-gray-400 mt-1 text-center px-2 w-full">
+          <div class="step-desc text-xs mt-1 text-center px-2 w-full">
             {{ step.desc }}
           </div>
         </div>
@@ -136,7 +139,7 @@
         <el-card
           shadow="never"
           class="form-card reporting-card"
-          body-style="height: 600px; overflow-y: auto;"
+          body-style="padding: 20px; display: flex; flex-direction: column; height: 800px; overflow-y: auto;"
         >
           <template #header>
             <div class="card-header font-bold flex items-center gap-2">
@@ -200,7 +203,8 @@
               class="upload-demo"
               drag
               :http-request="customUploadRequest"
-              :disabled="true"
+              :disabled="isContractSigned"
+              accept=".pdf,.jpg,.jpeg,.png"
             >
               <el-icon class="el-icon--upload"><upload-filled /></el-icon>
               <div class="el-upload__text">
@@ -228,7 +232,7 @@
         <el-card
           shadow="never"
           class="preview-card reporting-card"
-          body-style="padding: 0; background-color: #f3f4f6; height: 650px;"
+          body-style="padding: 0; background-color: #f3f4f6; height: 800px; display: flex; flex-direction: column;"
         >
           <div
             class="preview-toolbar p-2 bg-gray-200 border-b flex justify-between items-center"
@@ -244,10 +248,7 @@
             </el-tag>
           </div>
 
-          <div
-            class="a4-preview-container p-6"
-            style="height: calc(100% - 40px); overflow-y: auto"
-          >
+          <div class="a4-preview-container p-6 flex-1 overflow-y-auto">
             <div
               class="a4-paper bg-white shadow-lg p-8 mx-auto"
               style="width: 210mm; max-width: 100%; min-height: 297mm"
@@ -593,32 +594,40 @@ const formatDate = (dateString: string) => {
   height: calc(100vh - 100px);
   padding: 16px;
   overflow-y: auto;
-  color: #f8fafc;
 
+  // =============================================
+  // Dark theme — tất cả el-card trong trang
+  // =============================================
   :deep(.el-card) {
     background-color: #151619;
     border-color: #2c2f36;
     box-shadow: none;
   }
 
-  :deep(.el-card__header),
-  :deep(.el-card__body),
-  :deep(.el-form-item__label),
-  :deep(.el-step__title),
-  :deep(.el-step__description),
+  :deep(.el-card__header) {
+    color: #f8fafc;
+    border-color: #2c2f36;
+  }
+
+  :deep(.el-card__body) {
+    color: #f8fafc;
+  }
+
+  // Form labels
+  :deep(.el-form-item__label) {
+    color: #cbd5e1;
+  }
+
+  // Inputs & Textarea
   :deep(.el-textarea__inner),
-  :deep(.el-input__inner),
-  :deep(.el-select__selected-item),
-  :deep(.el-descriptions__label),
-  :deep(.el-descriptions__content),
-  :deep(.el-upload__text),
-  :deep(.el-upload__tip) {
-    color: #f8fafc !important;
+  :deep(.el-input__inner) {
+    color: #f8fafc;
+    background-color: #101114;
+    border-color: #333741;
   }
 
   :deep(.el-input__wrapper),
   :deep(.el-select__wrapper),
-  :deep(.el-textarea__inner),
   :deep(.el-upload-dragger) {
     background-color: #101114;
     border-color: #333741;
@@ -627,47 +636,47 @@ const formatDate = (dateString: string) => {
 
   :deep(.el-input__inner::placeholder),
   :deep(.el-textarea__inner::placeholder) {
-    color: #cbd5e1;
+    color: #64748b;
   }
 
-  :deep(.el-descriptions__cell),
-  :deep(.el-descriptions__label),
-  :deep(.el-descriptions__content) {
-    background-color: #151619 !important;
+  // Upload text
+  :deep(.el-upload__text),
+  :deep(.el-upload__tip) {
+    color: #94a3b8;
+  }
+
+  // =============================================
+  // Pipeline toolbar — preview card header
+  // =============================================
+  :deep(.preview-toolbar) {
+    background-color: #1e2028 !important;
     border-color: #2c2f36 !important;
   }
 
-  :deep(.text-gray-400),
-  :deep(.text-gray-500),
-  :deep(.text-gray-600),
-  :deep(.text-gray-700),
-  :deep(.text-gray-800),
-  :deep(.text-gray-900) {
-    color: #f8fafc !important;
+  :deep(.preview-toolbar .text-gray-600) {
+    color: #94a3b8 !important;
   }
 
-  :deep(.bg-gray-50),
-  :deep(.bg-gray-100),
-  :deep(.bg-gray-200),
-  :deep(.bg-white) {
-    background-color: #151619 !important;
-  }
-
-  :deep(.border-gray-100),
-  :deep(.border-gray-200),
-  :deep(.border-b) {
-    border-color: #2c2f36 !important;
+  // =============================================
+  // A4 Paper — giữ nguyên màu trắng
+  // =============================================
+  :deep(.a4-preview-container) {
+    background-color: #1e2028;
   }
 
   :deep(.a4-paper),
-  :deep(.a4-paper *) {
+  :deep(.a4-paper *:not(table, tr, td, th)) {
     color: #111827 !important;
     background-color: #fff !important;
   }
 
-  :deep(.a4-paper .border-b),
-  :deep(.a4-paper .border-gray-200) {
-    border-color: #e5e7eb !important;
+  :deep(.a4-paper table),
+  :deep(.a4-paper tr),
+  :deep(.a4-paper td),
+  :deep(.a4-paper th) {
+    color: #111827 !important;
+    background-color: #fff !important;
+    border-color: #d1d5db !important;
   }
 }
 
@@ -691,9 +700,79 @@ const formatDate = (dateString: string) => {
   background-color: #2d2d2d !important;
 }
 
+// =============================================
+// Pipeline track lines
+// =============================================
+.pipeline-track-bg {
+  background-color: #2c2f36;
+}
+
+.pipeline-track-active {
+  background-color: #e84a4a;
+}
+
+// =============================================
+// Pipeline step circles — tách biệt khỏi dark theme override
+// =============================================
+.step-circle {
+  // Base: pending (chưa đến)
+  background-color: #1e2028;
+  border-color: #3d4149;
+  color: #64748b;
+
+  &.step-circle--done {
+    background-color: #1e2028;
+    border-color: #e84a4a;
+    color: #ff6b6b;
+  }
+
+  &.step-circle--active {
+    background-color: #e84a4a;
+    border-color: #e84a4a;
+    color: #fff;
+    box-shadow: 0 0 0 3px rgb(232 74 74 / 25%);
+  }
+
+  &.step-circle--pending {
+    background-color: #1e2028;
+    border-color: #3d4149;
+    color: #64748b;
+  }
+}
+
+// =============================================
+// Pipeline step labels
+// =============================================
+.step-label {
+  color: #475569;
+  font-weight: 400;
+
+  &.step-label--active {
+    color: #f1f5f9;
+    font-weight: 600;
+  }
+
+  &.step-label--inactive {
+    color: #475569;
+    font-weight: 400;
+  }
+}
+
+.step-desc {
+  color: #64748b;
+}
+
+// Pipeline card subtitle
+.pipeline-card {
+  .text-gray-500 {
+    color: #94a3b8 !important;
+  }
+}
+
 .a4-preview-container {
   height: 600px;
   overflow-y: auto;
+  border-radius: 0 0 8px 8px;
 }
 
 .a4-paper {
@@ -714,13 +793,35 @@ const formatDate = (dateString: string) => {
   background-color: #151619;
   border: 1px dashed #333741;
   border-radius: 6px;
-  transition: all 0.5s ease;
+  transition:
+    background-color 0.4s ease,
+    border-color 0.4s ease,
+    box-shadow 0.4s ease;
+  transform-origin: center;
+  will-change: box-shadow, border-color;
 }
 
 .highlight-upload {
-  background-color: rgb(232 74 74 / 14%);
+  background-color: rgb(232 74 74 / 12%);
   border-color: #e84a4a;
-  box-shadow: 0 0 15px rgb(232 74 74 / 40%);
-  transform: scale(1.02);
+  box-shadow:
+    0 0 0 2px rgb(232 74 74 / 30%),
+    0 0 20px rgb(232 74 74 / 25%);
+  animation: pulse-upload 1.5s ease-in-out 2;
+}
+
+@keyframes pulse-upload {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 2px rgb(232 74 74 / 30%),
+      0 0 20px rgb(232 74 74 / 25%);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 4px rgb(232 74 74 / 50%),
+      0 0 32px rgb(232 74 74 / 45%);
+  }
 }
 </style>
