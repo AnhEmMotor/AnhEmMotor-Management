@@ -17,11 +17,13 @@
             />
           </div>
           <div class="flex flex-col">
-            <h3 class="m-0 text-base font-black text-gray-800 tracking-tight">
+            <h3
+              class="m-0 text-base font-black text-gray-800 dark:text-slate-100 tracking-tight"
+            >
               {{ form.id ? "CẬP NHẬT HỒ SƠ" : "THÊM KHÁCH HÀNG" }}
             </h3>
             <span
-              class="text-[10px] text-gray-400 font-bold uppercase tracking-widest"
+              class="text-[10px] text-gray-400 dark:text-slate-500 font-bold uppercase tracking-widest"
             >
               {{
                 form.id
@@ -31,9 +33,12 @@
             </span>
           </div>
         </div>
-        <ElButton circle @click="visible = false">
+        <button
+          @click="visible = false"
+          class="size-8 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-400 dark:text-slate-200 flex-cc hover:bg-slate-50 transition-all shadow-sm"
+        >
           <ArtSvgIcon icon="ri:close-line" />
-        </ElButton>
+        </button>
       </div>
     </template>
 
@@ -67,7 +72,7 @@
           />
         </ElFormItem>
 
-        <div class="col-span-2 h-px bg-gray-100 my-2"></div>
+        <div class="col-span-2 h-px bg-gray-100 dark:bg-slate-800 my-2"></div>
 
         <ElFormItem label="Nguồn khách hàng">
           <ElSelect v-model="form.source" class="w-full premium-select">
@@ -116,17 +121,18 @@
 
     <template #footer>
       <div class="flex gap-3 justify-end p-2">
-        <ElButton
+        <button
           @click="visible = false"
-          class="rounded-xl border-none bg-gray-100 text-gray-500 font-bold px-6"
-          >HỦY BỎ</ElButton
+          class="h-10 px-6 text-slate-400 dark:text-slate-500 font-black text-[10px] uppercase tracking-widest hover:text-slate-700 dark:hover:text-slate-300"
         >
-        <ElButton
-          type="primary"
+          Hủy bỏ
+        </button>
+        <button
           @click="handleSubmit"
-          class="rounded-xl px-8 font-black shadow-lg shadow-blue-100"
-          >LƯU HỒ SƠ</ElButton
+          class="h-10 px-8 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95"
         >
+          Lưu hồ sơ
+        </button>
       </div>
     </template>
   </ElDialog>
@@ -210,20 +216,20 @@ const handleSubmit = () => {
   :deep(.el-dialog__header) {
     padding: 24px;
     margin-right: 0;
-    border-bottom: 1px solid #f9fafb;
+    border-bottom: 1px solid var(--el-border-color-lighter);
   }
 
   .premium-input {
     :deep(.el-input__wrapper),
-    :deep(.el-textarea__wrapper) {
+    :deep(.el-textarea__inner) {
       padding: 4px 12px;
-      background-color: #f9fafb;
-      border: 1px solid #f3f4f6;
+      background-color: var(--el-fill-color-blank);
+      border: 1px solid var(--el-border-color-light);
       border-radius: 12px;
       box-shadow: none;
 
       &.is-focus {
-        background-color: white;
+        background-color: var(--el-fill-color-blank);
         border-color: #3b82f6;
         box-shadow: 0 0 0 4px rgb(59 130 246 / 10%);
       }
@@ -232,8 +238,8 @@ const handleSubmit = () => {
 
   .premium-select {
     :deep(.el-input__wrapper) {
-      background-color: #f9fafb;
-      border: 1px solid #f3f4f6;
+      background-color: var(--el-fill-color-blank);
+      border: 1px solid var(--el-border-color-light);
       border-radius: 12px;
       box-shadow: none;
     }
@@ -243,7 +249,7 @@ const handleSubmit = () => {
     margin-bottom: 6px;
     font-size: 11px;
     font-weight: 700;
-    color: #374151;
+    color: var(--el-text-color-regular);
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }

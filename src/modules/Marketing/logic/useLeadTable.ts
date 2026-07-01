@@ -86,19 +86,39 @@ export function useLeadTable() {
     };
   };
 
+  const rawData = ref<Lead[]>([]);
+
+  const filterData = (params: any = {}) => {
+    let filtered = [...rawData.value];
+
+    if (params.fullName?.trim()) {
+      const q = params.fullName.trim().toLowerCase();
+      filtered = filtered.filter(
+        (item) =>
+          item.fullName?.toLowerCase().includes(q) ||
+          item.phoneNumber?.includes(q),
+      );
+    }
+
+    if (params.source) {
+      filtered = filtered.filter((item) => item.source === params.source);
+    }
+
+    data.value = filtered.sort((a: any, b: any) => {
+      const pA = getPriority(a).level;
+      const pB = getPriority(b).level;
+      return pB - pA;
+    });
+
+    pagination.total = data.value.length;
+  };
+
   const refreshData = async () => {
     loading.value = true;
     try {
       const res = await fetchGetLeadList();
-      const leads = Array.isArray(res) ? res : (res as any).items || [];
-
-      data.value = leads.sort((a: any, b: any) => {
-        const pA = getPriority(a).level;
-        const pB = getPriority(b).level;
-        return pB - pA;
-      });
-
-      pagination.total = data.value.length;
+      rawData.value = Array.isArray(res) ? res : (res as any).items || [];
+      filterData();
     } catch (_err: any) {
       ElMessage.error("Lỗi khi lấy dữ liệu");
     } finally {
@@ -116,12 +136,24 @@ export function useLeadTable() {
     refreshData();
   };
 
-  const handleSearch = (_params: any) => {
-    refreshData();
+  const handleSearch = (params: any) => {
+    filterData(params);
   };
 
   const handleReset = () => {
-    refreshData();
+    filterData({});
+  };
+
+  const handleAssignSale = (leadId: number, saleId: number | null) => {
+    const lead = data.value.find((item) => item.id === leadId);
+    if (lead) {
+      lead.saleId = saleId;
+      const rawLead = rawData.value.find((item) => item.id === leadId);
+      if (rawLead) {
+        rawLead.saleId = saleId;
+      }
+      ElMessage.success("Đã phân công nhân sự phụ trách");
+    }
   };
 
   onMounted(() => {
@@ -137,6 +169,7 @@ export function useLeadTable() {
     handleCurrentChange,
     handleSearch,
     handleReset,
+    handleAssignSale,
     selectedIds,
     salesList,
     toggleSelect,

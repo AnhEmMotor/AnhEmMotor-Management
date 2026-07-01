@@ -28,3 +28,17 @@ export function fetchGetLeadDetail(id: number) {
     url: `/api/v1/Lead/${id}`,
   });
 }
+
+export function fetchCreateLead(data: any) {
+  return request.post<number>({
+    url: "/api/v1/Lead",
+    data,
+  });
+}
+
+export function fetchUpdateLead(id: number, data: any) {
+  return request.put<number>({
+    url: `/api/v1/Lead/${id}`,
+    data,
+  });
+}

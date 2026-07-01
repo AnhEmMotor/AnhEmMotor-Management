@@ -1,26 +1,29 @@
 <template>
   <div
-    class="workshop-dashboard-page flex flex-col min-h-screen bg-[#F8FAFC] font-inter text-[#0F172A]"
+    class="workshop-dashboard-page flex flex-col min-h-screen bg-[#F8FAFC] dark:bg-[#020617] font-inter text-[#0F172A] dark:text-[#E2E8F0]"
   >
     <!-- Header -->
     <div
-      class="bg-white border-b border-slate-200 px-8 py-5 shrink-0 shadow-sm relative z-20"
+      class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-8 py-5 shrink-0 shadow-sm relative z-20"
     >
       <div class="flex justify-between items-center max-w-[1600px] mx-auto">
         <div class="flex items-center gap-5">
           <div
-            class="size-11 rounded-xl bg-[#001529] flex-cc text-white shadow-xl"
+            class="size-11 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex-cc text-slate-800 dark:text-white shadow-sm"
           >
-            <ArtSvgIcon icon="ri:tools-line" class="text-xl" />
+            <ArtSvgIcon
+              icon="ri:tools-line"
+              class="text-xl text-blue-500 dark:text-blue-400"
+            />
           </div>
           <div>
             <h1
-              class="m-0 text-xl font-black tracking-tight text-slate-900 leading-none"
+              class="m-0 text-xl font-black tracking-tight text-slate-900 dark:text-slate-100 leading-none"
             >
               Trung tâm Điều phối Dịch vụ sửa chữa (Workshop)
             </h1>
             <p
-              class="m-0 text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-2 flex items-center gap-2"
+              class="m-0 text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mt-2 flex items-center gap-2"
             >
               <span
                 class="size-1.5 rounded-full bg-emerald-500 animate-pulse"
@@ -33,10 +36,10 @@
         <div class="flex items-center gap-3">
           <button
             @click="goToCreate"
-            class="h-10 px-6 bg-[#001529] text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg hover:bg-blue-900 transition-all active:scale-95 flex items-center gap-2"
+            class="h-10 px-6 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-sm hover:bg-slate-50 transition-all active:scale-95 flex items-center gap-2"
           >
-            <ArtSvgIcon icon="ri:user-add-line" class="text-sm" /> + Tiếp nhận
-            xe
+            <ArtSvgIcon icon="ri:user-add-line" class="text-blue-500" /> + Tiếp
+            nhận xe
           </button>
         </div>
       </div>
@@ -47,7 +50,7 @@
       <!-- Stats Cards -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div
-          class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm flex items-center justify-between"
+          class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-[24px] shadow-sm flex items-center justify-between"
         >
           <div>
             <p
@@ -55,12 +58,14 @@
             >
               Đang sửa chữa
             </p>
-            <h3 class="text-2xl font-black text-slate-800 mt-2 m-0">
+            <h3
+              class="text-2xl font-black text-slate-800 dark:text-slate-100 mt-2 m-0"
+            >
               {{ stats.inProgress }}
             </h3>
           </div>
           <div
-            class="size-12 rounded-xl bg-blue-50 text-blue-600 flex-cc text-xl"
+            class="size-12 rounded-xl bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 flex-cc text-xl"
           >
             <ArtSvgIcon
               icon="ri:settings-4-line"
@@ -71,7 +76,7 @@
         </div>
 
         <div
-          class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm flex items-center justify-between"
+          class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-[24px] shadow-sm flex items-center justify-between"
         >
           <div>
             <p
@@ -79,19 +84,21 @@
             >
               Chờ kiểm định (QC)
             </p>
-            <h3 class="text-2xl font-black text-slate-800 mt-2 m-0">
+            <h3
+              class="text-2xl font-black text-slate-800 dark:text-slate-100 mt-2 m-0"
+            >
               {{ stats.qcPending }}
             </h3>
           </div>
           <div
-            class="size-12 rounded-xl bg-amber-50 text-amber-600 flex-cc text-xl"
+            class="size-12 rounded-xl bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 flex-cc text-xl"
           >
             <ArtSvgIcon icon="ri:shield-check-line" />
           </div>
         </div>
 
         <div
-          class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm flex items-center justify-between"
+          class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-[24px] shadow-sm flex items-center justify-between"
         >
           <div>
             <p
@@ -99,19 +106,21 @@
             >
               Chờ tiếp nhận / Phân công
             </p>
-            <h3 class="text-2xl font-black text-slate-800 mt-2 m-0">
+            <h3
+              class="text-2xl font-black text-slate-800 dark:text-slate-100 mt-2 m-0"
+            >
               {{ stats.pending }}
             </h3>
           </div>
           <div
-            class="size-12 rounded-xl bg-purple-50 text-purple-600 flex-cc text-xl"
+            class="size-12 rounded-xl bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400 flex-cc text-xl"
           >
             <ArtSvgIcon icon="ri:user-shared-line" />
           </div>
         </div>
 
         <div
-          class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm flex items-center justify-between"
+          class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-[24px] shadow-sm flex items-center justify-between"
         >
           <div>
             <p
@@ -119,12 +128,14 @@
             >
               Hoàn thành hôm nay
             </p>
-            <h3 class="text-2xl font-black text-slate-800 mt-2 m-0">
+            <h3
+              class="text-2xl font-black text-slate-800 dark:text-slate-100 mt-2 m-0"
+            >
               {{ stats.completedToday }}
             </h3>
           </div>
           <div
-            class="size-12 rounded-xl bg-emerald-50 text-emerald-600 flex-cc text-xl"
+            class="size-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex-cc text-xl"
           >
             <ArtSvgIcon icon="ri:checkbox-circle-line" />
           </div>
@@ -133,11 +144,11 @@
 
       <!-- Filters & Table Area -->
       <div
-        class="bg-white border border-slate-200 rounded-[32px] shadow-sm overflow-hidden flex flex-col"
+        class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[32px] shadow-sm overflow-hidden flex flex-col"
       >
         <!-- Filter Bar -->
         <div
-          class="p-6 border-b border-slate-100 bg-slate-50/50 flex flex-wrap gap-4 items-center justify-between"
+          class="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 flex flex-wrap gap-4 items-center justify-between"
         >
           <div class="flex flex-wrap gap-4 items-center flex-1">
             <div class="relative w-80">
@@ -176,7 +187,7 @@
           <div class="flex items-center gap-3">
             <button
               @click="loadData"
-              class="h-9 px-4 bg-slate-100 text-slate-600 rounded-xl font-bold text-[10px] uppercase tracking-wider hover:bg-slate-200 transition-all flex items-center gap-2"
+              class="h-9 px-4 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-[10px] uppercase tracking-wider hover:bg-slate-200 dark:hover:bg-slate-750 transition-all flex items-center gap-2"
             >
               <ArtSvgIcon icon="ri:refresh-line" /> Làm mới
             </button>
@@ -208,27 +219,30 @@
             <div
               v-for="row in repairOrders"
               :key="row.id"
-              class="bg-white border border-slate-200 rounded-[20px] shadow-sm hover:shadow-md transition-shadow flex flex-col relative overflow-hidden"
+              class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[20px] shadow-sm hover:shadow-md transition-shadow flex flex-col relative overflow-hidden"
             >
               <!-- Card Header -->
               <div
-                class="p-5 border-b border-slate-100 flex items-start justify-between bg-white"
+                class="p-5 border-b border-slate-100 dark:border-slate-800 flex items-start justify-between bg-white dark:bg-slate-900"
               >
                 <div class="flex items-center gap-3">
                   <div
-                    class="size-11 rounded-xl bg-[#001529] flex-cc text-white shadow-md shrink-0"
+                    class="size-11 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex-cc text-slate-800 dark:text-slate-100 shadow-sm shrink-0"
                   >
-                    <ArtSvgIcon icon="ri:tools-line" class="text-xl" />
+                    <ArtSvgIcon
+                      icon="ri:tools-line"
+                      class="text-xl text-blue-500 dark:text-blue-400"
+                    />
                   </div>
                   <div class="flex flex-col min-w-0">
                     <span
-                      class="font-black text-slate-800 text-[15px] truncate pr-2"
+                      class="font-black text-slate-800 dark:text-slate-100 text-[15px] truncate pr-2"
                       :title="row.customerName"
                     >
                       {{ row.customerName }}
                     </span>
                     <span
-                      class="font-mono font-bold text-slate-400 text-[11px] mt-0.5"
+                      class="font-mono font-bold text-slate-400 dark:text-slate-500 text-[11px] mt-0.5"
                     >
                       RO-{{ String(row.id).padStart(5, "0") }}
                     </span>
@@ -251,25 +265,25 @@
                   <!-- Biển số & Số khung -->
                   <div class="flex flex-col">
                     <span
-                      class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1"
+                      class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-1"
                     >
                       <ArtSvgIcon icon="ri:motorbike-line" /> Xe máy
                     </span>
                     <div class="mt-1.5">
                       <span
                         v-if="row.licensePlate"
-                        class="px-2 py-1 bg-slate-100 rounded-md text-slate-700 font-mono font-bold text-[11px] border border-slate-200"
+                        class="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded-md text-slate-700 dark:text-slate-200 font-mono font-bold text-[11px] border border-slate-200 dark:border-slate-700"
                       >
                         {{ row.licensePlate }}
                       </span>
                       <span
                         v-else
-                        class="text-slate-400 italic text-[11px] block mt-0.5"
+                        class="text-slate-400 dark:text-slate-500 italic text-[11px] block mt-0.5"
                         >Chưa đăng ký biển</span
                       >
                       <div
                         v-if="row.vehicle && row.vehicle.vinNumber"
-                        class="text-[9px] text-slate-400 mt-1.5 font-mono"
+                        class="text-[9px] text-slate-400 dark:text-slate-500 mt-1.5 font-mono"
                       >
                         Khung: {{ row.vehicle.vinNumber }}
                       </div>
@@ -279,19 +293,20 @@
                   <!-- Liên hệ -->
                   <div class="flex flex-col">
                     <span
-                      class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1"
+                      class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-1"
                     >
                       <ArtSvgIcon icon="ri:phone-line" /> Liên hệ
                     </span>
-                    <span class="font-bold text-slate-700 text-[13px] mt-1.5">{{
-                      row.customerPhone
-                    }}</span>
+                    <span
+                      class="font-bold text-slate-700 dark:text-slate-200 text-[13px] mt-1.5"
+                      >{{ row.customerPhone }}</span
+                    >
                   </div>
 
                   <!-- Kỹ thuật viên -->
                   <div class="flex flex-col">
                     <span
-                      class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1"
+                      class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-1"
                     >
                       <ArtSvgIcon icon="ri:user-settings-line" /> Kỹ thuật viên
                     </span>
@@ -300,7 +315,7 @@
                       v-if="row.technicianId"
                     >
                       <div
-                        class="size-5 rounded-full bg-slate-100 text-slate-600 flex-cc font-bold text-[9px] uppercase shadow-inner shrink-0"
+                        class="size-5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex-cc font-bold text-[9px] uppercase shadow-inner shrink-0"
                       >
                         {{
                           row.technicianName
@@ -309,7 +324,7 @@
                         }}
                       </div>
                       <span
-                        class="font-bold text-slate-700 text-[12px] truncate"
+                        class="font-bold text-slate-700 dark:text-slate-200 text-[12px] truncate"
                         :title="row.technicianName"
                       >
                         {{ row.technicianName }}
@@ -326,15 +341,16 @@
                   <!-- Chi phí -->
                   <div class="flex flex-col">
                     <span
-                      class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1"
+                      class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-1"
                     >
                       <ArtSvgIcon icon="ri:money-dollar-circle-line" /> Chi phí
                     </span>
-                    <span class="font-black text-slate-800 text-[14px] mt-1">{{
-                      formatCurrency(row.totalAmount)
-                    }}</span>
                     <span
-                      class="text-[9px] text-slate-400 mt-0.5 leading-tight"
+                      class="font-black text-slate-800 dark:text-slate-100 text-[14px] mt-1"
+                      >{{ formatCurrency(row.totalAmount) }}</span
+                    >
+                    <span
+                      class="text-[9px] text-slate-400 dark:text-slate-500 mt-0.5 leading-tight"
                       v-if="row.totalAmount > 0"
                     >
                       DV: {{ formatCurrency(row.laborCost) }} <br />
@@ -345,16 +361,16 @@
 
                 <!-- Footer Stats -->
                 <div
-                  class="flex items-center justify-between pt-3 border-t border-slate-100"
+                  class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800"
                 >
                   <div
-                    class="flex items-center gap-1.5 text-[11px] text-slate-500 font-medium"
+                    class="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 font-medium"
                   >
                     <ArtSvgIcon icon="ri:calendar-line" />
                     {{ formatDate(row.createdAt) }}
                   </div>
                   <div
-                    class="flex items-center gap-1.5 text-[11px] text-slate-500 font-medium"
+                    class="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 font-medium"
                   >
                     <ArtSvgIcon icon="ri:dashboard-3-line" />
                     {{ row.mileage.toLocaleString() }} km
@@ -363,10 +379,12 @@
               </div>
 
               <!-- Card Footer Action -->
-              <div class="border-t border-slate-100 bg-slate-50/50 flex">
+              <div
+                class="border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 flex"
+              >
                 <button
                   @click="goToDetail(row.id)"
-                  class="flex-1 py-3.5 text-[12px] font-black text-slate-600 uppercase tracking-wider hover:text-[#001529] hover:bg-slate-100 transition-colors flex-cc gap-2"
+                  class="flex-1 py-3.5 text-[12px] font-black text-slate-600 dark:text-slate-300 uppercase tracking-wider hover:text-blue-500 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex-cc gap-2"
                 >
                   Xem chi tiết <ArtSvgIcon icon="ri:arrow-right-line" />
                 </button>
@@ -376,9 +394,11 @@
 
           <!-- Pagination -->
           <div
-            class="flex justify-between items-center mt-6 bg-white border border-slate-200 rounded-[20px] shadow-sm px-6 py-4"
+            class="flex justify-between items-center mt-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[20px] shadow-sm px-6 py-4"
           >
-            <span class="text-[11px] text-slate-400 font-bold uppercase">
+            <span
+              class="text-[11px] text-slate-400 dark:text-slate-500 font-bold uppercase"
+            >
               Hiển thị {{ repairOrders.length }} / {{ totalCount }} phiếu
             </span>
             <ElPagination

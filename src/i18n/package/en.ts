@@ -1,4 +1,4 @@
-﻿export default {
+export default {
   httpMsg: {
     unauthorized: "Unauthorized access, please login again",
     forbidden: "Access to this resource is forbidden",
@@ -416,6 +416,10 @@
       customerCare: "Customer Care",
       customerProgress: "Progress",
       booking: "Booking Management",
+      conversion: "Conversion Tools",
+      customerPipeline: "Purchasing Pipeline",
+      customerWorkshop: "Customer Repair History",
+      customerContact: "Chat & Support",
     },
     hr: {
       title: "HR Management",

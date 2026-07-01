@@ -1,22 +1,22 @@
 <template>
   <div
-    class="banner-management-page min-h-full bg-[#F8FAFC] font-inter text-[#0F172A] pb-10"
+    class="banner-management-page min-h-full font-inter text-[#0F172A] dark:text-slate-100 pb-10"
   >
     <div
-      class="bg-white border-b border-slate-200 px-8 py-6 sticky top-0 z-[50] shadow-sm"
+      class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-8 py-6 sticky top-0 z-[50] shadow-sm"
     >
       <div
         class="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4"
       >
         <div class="flex items-center gap-4">
           <div
-            class="size-12 rounded-2xl bg-[#001529] flex-cc text-white shadow-xl"
+            class="size-12 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex-cc text-slate-800 dark:text-slate-100 shadow-sm"
           >
             <ArtSvgIcon icon="ri:advertisement-line" class="text-2xl" />
           </div>
           <div>
             <h1
-              class="m-0 text-xl font-black tracking-tight text-slate-900 leading-none"
+              class="m-0 text-xl font-black tracking-tight text-slate-900 dark:text-slate-100 leading-none"
             >
               {{ $t("marketing.bannerManagement.title") }}
             </h1>
@@ -26,9 +26,10 @@
         <div class="flex items-center gap-3">
           <button
             @click="handleAddBanner"
-            class="h-11 px-8 bg-[#001529] text-white rounded-xl font-black text-[11px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95 flex items-center gap-2"
+            class="h-11 px-8 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-sm hover:bg-slate-50 transition-all active:scale-95 flex items-center gap-2"
           >
-            <ArtSvgIcon icon="ri:add-fill" /> {{ $t("marketing.bannerManagement.createBtn") }}
+            <ArtSvgIcon icon="ri:add-fill" class="text-blue-500" />
+            {{ $t("marketing.bannerManagement.createBtn") }}
           </button>
         </div>
       </div>
@@ -39,7 +40,7 @@
         <div
           v-for="banner in banners"
           :key="banner.id"
-          class="banner-card bg-white border border-slate-200 rounded-[32px] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 group relative"
+          class="banner-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[32px] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 group relative"
         >
           <div class="absolute top-4 left-4 z-10 flex flex-col gap-2">
             <span
@@ -126,13 +127,13 @@
       <template #header>
         <div class="flex items-center gap-4">
           <div
-            class="size-11 rounded-xl bg-[#001529] flex-cc text-white shadow-xl"
+            class="size-11 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex-cc text-slate-800 dark:text-slate-100 shadow-sm"
           >
             <ArtSvgIcon icon="ri:image-edit-line" class="text-2xl" />
           </div>
           <div>
             <h3
-              class="m-0 font-black uppercase text-xs tracking-[0.2em] text-slate-800"
+              class="m-0 font-black uppercase text-xs tracking-[0.2em] text-slate-800 dark:text-slate-100"
             >
               {{ dialogTitle }}
             </h3>
@@ -217,7 +218,9 @@
         </div>
 
         <div class="space-y-6">
-          <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+          <div
+            class="p-4 bg-slate-50 dark:bg-slate-950/20 rounded-2xl border border-slate-100 dark:border-slate-800"
+          >
             <label
               class="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-3 block"
               >{{ $t("marketing.bannerManagement.formDesktopImg") }}</label
@@ -231,7 +234,7 @@
               accept="image/*"
             >
               <div
-                class="aspect-[21/9] w-full bg-white border-2 border-dashed border-slate-200 rounded-xl flex-cc flex-col gap-2 cursor-pointer hover:border-blue-400 transition-all overflow-hidden relative"
+                class="aspect-[21/9] w-full bg-white dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl flex-cc flex-col gap-2 cursor-pointer hover:border-blue-400 transition-all overflow-hidden relative"
               >
                 <img
                   v-if="bannerForm.desktopImageUrl"
@@ -241,9 +244,10 @@
                 <template v-else>
                   <ArtSvgIcon
                     icon="ri:computer-line"
-                    class="text-2xl text-slate-300"
+                    class="text-2xl text-slate-300 dark:text-slate-600"
                   />
-                  <span class="text-[9px] font-black uppercase text-slate-400"
+                  <span
+                    class="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500"
                     >Chọn ảnh Desktop</span
                   >
                 </template>
@@ -251,7 +255,9 @@
             </ElUpload>
           </div>
 
-          <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+          <div
+            class="p-4 bg-slate-50 dark:bg-slate-950/20 rounded-2xl border border-slate-100 dark:border-slate-800"
+          >
             <label
               class="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-3 block"
               >{{ $t("marketing.bannerManagement.formMobileImg") }}</label
@@ -265,7 +271,7 @@
               accept="image/*"
             >
               <div
-                class="aspect-[4/5] h-40 bg-white border-2 border-dashed border-slate-200 rounded-xl flex-cc flex-col gap-2 cursor-pointer hover:border-emerald-400 transition-all mx-auto overflow-hidden relative"
+                class="aspect-[4/5] h-40 bg-white dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl flex-cc flex-col gap-2 cursor-pointer hover:border-emerald-400 transition-all mx-auto overflow-hidden relative"
               >
                 <img
                   v-if="bannerForm.mobileImageUrl"
@@ -275,9 +281,10 @@
                 <template v-else>
                   <ArtSvgIcon
                     icon="ri:smartphone-line"
-                    class="text-2xl text-slate-300"
+                    class="text-2xl text-slate-300 dark:text-slate-600"
                   />
-                  <span class="text-[9px] font-black uppercase text-slate-400"
+                  <span
+                    class="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500"
                     >Chọn ảnh Mobile</span
                   >
                 </template>
@@ -301,7 +308,11 @@
               @click="saveBanner"
               class="h-11 px-8 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95"
             >
-              {{ isEditing ? $t("marketing.bannerManagement.saveBtn") : $t("marketing.bannerManagement.createSubmitBtn") }}
+              {{
+                isEditing
+                  ? $t("marketing.bannerManagement.saveBtn")
+                  : $t("marketing.bannerManagement.createSubmitBtn")
+              }}
             </button>
           </div>
         </div>
@@ -481,9 +492,10 @@ const handleDelete = (banner: any) => {
 <style lang="scss" scoped>
 .banner-management-page {
   .combat-input {
-    :deep(.el-input__wrapper) {
-      background-color: #f8fafc;
-      border: 1px solid #e2e8f0;
+    :deep(.el-input__wrapper),
+    :deep(.el-textarea__inner) {
+      background-color: var(--el-fill-color-blank);
+      border: 1px solid var(--el-border-color-light);
       border-radius: 12px;
       box-shadow: none;
     }
@@ -492,15 +504,15 @@ const handleDelete = (banner: any) => {
   .combat-number {
     :deep(.el-input-number__increase),
     :deep(.el-input-number__decrease) {
-      background: #f1f5f9;
+      background: var(--el-fill-color-light);
       border: none;
       border-radius: 8px;
     }
   }
 
   .combat-range {
-    background-color: #f8fafc;
-    border: 1px solid #e2e8f0;
+    background-color: var(--el-fill-color-blank);
+    border: 1px solid var(--el-border-color-light);
     border-radius: 12px;
     box-shadow: none;
   }
@@ -519,12 +531,12 @@ const handleDelete = (banner: any) => {
   .el-dialog__header {
     padding: 32px;
     margin-right: 0;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--el-border-color-lighter);
   }
 
   .el-dialog__footer {
     padding: 24px 32px;
-    border-top: 1px solid #f1f5f9;
+    border-top: 1px solid var(--el-border-color-lighter);
   }
 }
 </style>

@@ -1,15 +1,15 @@
 <template>
-  <div class="customer-care-page p-8 bg-[#F8FAFC] min-h-full font-inter">
+  <div class="customer-care-page p-8 min-h-full font-inter">
     <div v-if="!isDetailView">
       <div class="flex justify-between items-center mb-8">
         <div>
           <h1
-            class="m-0 text-2xl font-black tracking-tight text-slate-900 uppercase"
+            class="m-0 text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100 uppercase"
           >
             Chăm sóc Khách hàng
           </h1>
           <p
-            class="m-0 text-xs font-bold text-slate-400 uppercase tracking-widest mt-1"
+            class="m-0 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1"
           >
             Quản lý vòng đời & Trải nghiệm khách hàng Anh Em Motor
           </p>
@@ -17,15 +17,16 @@
         <div class="flex gap-3">
           <button
             @click="handleAddCustomer"
-            class="h-11 px-8 bg-[#001529] text-white rounded-xl font-black text-[11px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95 flex items-center gap-2"
+            class="h-11 px-8 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-sm hover:bg-slate-50 transition-all active:scale-95 flex items-center gap-2"
           >
-            <ArtSvgIcon icon="ri:user-add-line" /> Thêm khách hàng mới
+            <ArtSvgIcon icon="ri:user-add-line" class="text-blue-500" /> Thêm
+            khách hàng mới
           </button>
         </div>
       </div>
 
       <div
-        class="bg-white border border-slate-200 rounded-[32px] p-6 mb-8 shadow-sm"
+        class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[32px] p-6 mb-8 shadow-sm"
       >
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div class="col-span-2">
@@ -58,16 +59,22 @@
               <span class="text-[9px] font-black uppercase tracking-tighter"
                 >Đang quản lý:</span
               >
-              <span class="text-sm font-black">{{ customers.length }}</span>
+              <span class="text-sm font-black">{{
+                filteredCustomers.length
+              }}</span>
             </div>
           </div>
         </div>
       </div>
 
       <div
-        class="bg-white border border-slate-200 rounded-[40px] shadow-sm overflow-hidden"
+        class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[40px] shadow-sm overflow-hidden"
       >
-        <ElTable :data="customers" style="width: 100%" class="combat-table">
+        <ElTable
+          :data="filteredCustomers"
+          style="width: 100%"
+          class="combat-table"
+        >
           <ElTableColumn label="Khách hàng" min-width="240">
             <template #default="{ row }">
               <div class="flex items-center gap-4 py-2">
@@ -78,12 +85,12 @@
                 </div>
                 <div>
                   <p
-                    class="m-0 text-sm font-black text-slate-800 leading-none mb-1"
+                    class="m-0 text-sm font-black text-slate-800 dark:text-slate-100 leading-none mb-1"
                   >
                     {{ row.name }}
                   </p>
                   <p
-                    class="m-0 text-[10px] font-bold text-slate-400 uppercase tracking-tighter"
+                    class="m-0 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tighter"
                   >
                     {{ row.phone }}
                   </p>
@@ -103,9 +110,10 @@
           </ElTableColumn>
           <ElTableColumn label="Lần cuối bảo dưỡng" width="180">
             <template #default="{ row }">
-              <span class="text-xs font-bold text-slate-500">{{
-                row.lastContact
-              }}</span>
+              <span
+                class="text-xs font-bold text-slate-500 dark:text-slate-400"
+                >{{ row.lastContact }}</span
+              >
             </template>
           </ElTableColumn>
           <ElTableColumn label="Trạng thái Loyalty" width="160">
@@ -134,16 +142,18 @@
         <div class="flex items-center gap-6">
           <button
             @click="isDetailView = false"
-            class="size-12 rounded-2xl bg-white border border-slate-200 text-slate-400 flex-cc hover:bg-slate-900 hover:text-white transition-all shadow-sm"
+            class="size-12 rounded-2xl bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-300 flex-cc hover:bg-slate-900 hover:text-white transition-all shadow-sm"
           >
             <ArtSvgIcon icon="ri:arrow-left-line" />
           </button>
           <div>
-            <h1 class="m-0 text-3xl font-black text-slate-900 tracking-tight">
+            <h1
+              class="m-0 text-3xl font-black text-slate-900 dark:text-white tracking-tight"
+            >
               {{ activeCustomer?.name }}
             </h1>
             <p
-              class="m-0 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-2 flex items-center gap-2"
+              class="m-0 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mt-2 flex items-center gap-2"
             >
               <ArtSvgIcon icon="ri:shield-user-line" class="text-amber-500" />
               Hồ sơ Customer 360 -
@@ -168,36 +178,47 @@
       <div class="grid grid-cols-12 gap-8">
         <div class="col-span-12 lg:col-span-4 space-y-6">
           <div
-            class="bg-slate-900 rounded-[40px] p-8 text-white shadow-2xl relative overflow-hidden"
+            class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[40px] p-8 text-slate-800 dark:text-slate-100 shadow-sm relative overflow-hidden"
           >
             <ArtSvgIcon
               icon="ri:fingerprint-line"
-              class="absolute -right-4 -top-4 text-9xl opacity-10"
+              class="absolute -right-4 -top-4 text-9xl opacity-5 dark:opacity-10 text-slate-300 dark:text-white"
             />
             <h3
-              class="m-0 text-xs font-black uppercase tracking-widest text-blue-400 mb-8 flex items-center gap-2"
+              class="m-0 text-xs font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-8 flex items-center gap-2"
             >
               Dữ liệu cốt lõi
             </h3>
             <div class="space-y-6 relative z-10">
-              <div class="flex justify-between border-b border-white/10 pb-4">
-                <span class="text-[10px] font-bold opacity-40 uppercase"
+              <div
+                class="flex justify-between border-b border-slate-100 dark:border-white/10 pb-4"
+              >
+                <span
+                  class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase"
                   >Số điện thoại</span
                 >
-                <span class="text-sm font-black">{{
-                  activeCustomer?.phone
-                }}</span>
+                <span
+                  class="text-sm font-black text-slate-800 dark:text-slate-100"
+                  >{{ activeCustomer?.phone }}</span
+                >
               </div>
-              <div class="flex justify-between border-b border-white/10 pb-4">
-                <span class="text-[10px] font-bold opacity-40 uppercase"
+              <div
+                class="flex justify-between border-b border-slate-100 dark:border-white/10 pb-4"
+              >
+                <span
+                  class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase"
                   >CCCD / CMND</span
                 >
-                <span class="text-sm font-black">{{
-                  activeCustomer?.identity
-                }}</span>
+                <span
+                  class="text-sm font-black text-slate-800 dark:text-slate-100"
+                  >{{ activeCustomer?.identity }}</span
+                >
               </div>
-              <div class="flex justify-between border-b border-white/10 pb-4">
-                <span class="text-[10px] font-bold opacity-40 uppercase"
+              <div
+                class="flex justify-between border-b border-slate-100 dark:border-white/10 pb-4"
+              >
+                <span
+                  class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase"
                   >Hạng Loyalty</span
                 >
                 <span class="text-sm font-black text-amber-500">{{
@@ -206,10 +227,12 @@
               </div>
               <div>
                 <span
-                  class="text-[10px] font-bold opacity-40 uppercase mb-3 block"
+                  class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase mb-3 block"
                   >Địa chỉ thường trú</span
                 >
-                <p class="m-0 text-sm font-bold leading-relaxed">
+                <p
+                  class="m-0 text-sm font-bold text-slate-800 dark:text-slate-100 leading-relaxed"
+                >
                   {{ activeCustomer?.address }}
                 </p>
               </div>
@@ -217,7 +240,7 @@
           </div>
 
           <div
-            class="bg-white border border-slate-200 rounded-[40px] p-8 shadow-sm"
+            class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[40px] p-8 shadow-sm"
           >
             <h3
               class="m-0 text-xs font-black uppercase tracking-widest text-slate-800 mb-6"
@@ -251,13 +274,13 @@
 
         <div class="col-span-12 lg:col-span-8 space-y-8">
           <div
-            class="bg-white border border-slate-200 rounded-[40px] shadow-sm overflow-hidden"
+            class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[40px] shadow-sm overflow-hidden"
           >
             <ElTabs v-model="activeTab" class="combat-tabs-large">
               <ElTabPane label="DÒNG THỜI GIAN TƯƠNG TÁC" name="timeline">
                 <div class="p-10 space-y-8 relative">
                   <div
-                    class="absolute left-[59px] top-12 bottom-12 w-0.5 bg-slate-100"
+                    class="absolute left-[59px] top-12 bottom-12 w-0.5 bg-slate-100 dark:bg-slate-800"
                   ></div>
                   <div
                     v-for="log in timeline"
@@ -282,7 +305,7 @@
                       />
                     </div>
                     <div
-                      class="flex-1 bg-slate-50/50 p-8 rounded-[32px] border border-slate-100"
+                      class="flex-1 bg-slate-50/50 dark:bg-slate-950/20 p-8 rounded-[32px] border border-slate-100 dark:border-slate-800"
                     >
                       <div class="flex justify-between items-center mb-4">
                         <div class="flex items-center gap-3">
@@ -316,7 +339,7 @@
                     <div
                       v-for="bike in activeCustomer?.bikes"
                       :key="bike.id"
-                      class="bg-white border border-slate-100 rounded-[32px] p-6 shadow-sm hover:border-blue-300 transition-all"
+                      class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[32px] p-6 shadow-sm hover:border-blue-300 dark:hover:border-blue-800 transition-all"
                     >
                       <div class="flex gap-5 mb-4">
                         <img
@@ -361,7 +384,7 @@
 
                   <div class="pt-8 border-t border-slate-100">
                     <h3
-                      class="m-0 text-xs font-black uppercase tracking-widest text-slate-800 mb-6"
+                      class="m-0 text-xs font-black uppercase tracking-widest text-slate-800 dark:text-slate-200 mb-6"
                     >
                       Nhật ký bảo dưỡng & Sửa chữa
                     </h3>
@@ -369,16 +392,18 @@
                       <div
                         v-for="i in 2"
                         :key="i"
-                        class="p-5 bg-slate-50/50 rounded-2xl flex justify-between items-center border border-transparent hover:border-slate-200 transition-all"
+                        class="p-5 bg-slate-50/50 dark:bg-slate-950/20 rounded-2xl flex justify-between items-center border border-transparent hover:border-slate-200 dark:hover:border-slate-800 transition-all"
                       >
                         <div class="flex items-center gap-4">
                           <div
-                            class="size-10 rounded-xl bg-white border border-slate-100 flex-cc text-slate-400"
+                            class="size-10 rounded-xl bg-white dark:bg-slate-850 border border-slate-100 dark:border-slate-700 flex-cc text-slate-400 dark:text-slate-300"
                           >
                             <ArtSvgIcon icon="ri:tools-line" />
                           </div>
                           <div>
-                            <p class="m-0 text-sm font-black text-slate-800">
+                            <p
+                              class="m-0 text-sm font-black text-slate-800 dark:text-slate-200"
+                            >
                               Bảo dưỡng định kỳ lần {{ i }}
                             </p>
                             <p
@@ -388,7 +413,8 @@
                             </p>
                           </div>
                         </div>
-                        <span class="text-sm font-black text-slate-700"
+                        <span
+                          class="text-sm font-black text-slate-700 dark:text-slate-200"
                           >350,000đ</span
                         >
                       </div>
@@ -401,11 +427,90 @@
         </div>
       </div>
     </div>
+
+    <!-- Dialog Thêm khách hàng chăm sóc mới -->
+    <ElDialog
+      v-model="addDialogVisible"
+      title="THÊM KHÁCH HÀNG CHĂM SÓC"
+      width="600px"
+      class="premium-dialog"
+      destroy-on-close
+    >
+      <ElForm :model="form" label-position="top" class="grid grid-cols-2 gap-4">
+        <ElFormItem label="Họ và tên khách hàng" class="col-span-2 is-required">
+          <ElInput v-model="form.name" placeholder="Ví dụ: Nguyễn Văn A" />
+        </ElFormItem>
+
+        <ElFormItem label="Số điện thoại" class="is-required">
+          <ElInput v-model="form.phone" placeholder="Ví dụ: 0901234567" />
+        </ElFormItem>
+
+        <ElFormItem label="Địa chỉ Email">
+          <ElInput v-model="form.email" placeholder="Ví dụ: vana@gmail.com" />
+        </ElFormItem>
+
+        <ElFormItem label="Số CCCD/Định danh">
+          <ElInput v-model="form.identity" placeholder="Nhập số căn cước..." />
+        </ElFormItem>
+
+        <ElFormItem label="Phân loại khách hàng" class="is-required">
+          <ElSelect
+            v-model="form.type"
+            placeholder="Chọn phân loại..."
+            class="w-full"
+          >
+            <ElOption label="Khách hàng VIP" value="VIP" />
+            <ElOption label="Khách hàng cũ" value="Old" />
+            <ElOption label="Khách mới" value="New" />
+          </ElSelect>
+        </ElFormItem>
+
+        <ElFormItem label="Điểm Loyalty tích lũy">
+          <ElInputNumber v-model="form.points" :min="0" class="w-full" />
+        </ElFormItem>
+
+        <ElFormItem label="Hạng thành viên">
+          <ElSelect
+            v-model="form.tier"
+            placeholder="Chọn hạng..."
+            class="w-full"
+          >
+            <ElOption label="Gold Member" value="Gold Member" />
+            <ElOption label="Silver Member" value="Silver Member" />
+            <ElOption label="Platinum Member" value="Platinum Member" />
+            <ElOption label="Standard Member" value="Standard Member" />
+          </ElSelect>
+        </ElFormItem>
+
+        <ElFormItem label="Địa chỉ khách hàng" class="col-span-2">
+          <ElInput v-model="form.address" placeholder="Nhập địa chỉ..." />
+        </ElFormItem>
+
+        <ElFormItem
+          label="Nhu cầu nổi bật (Nhập cách nhau bằng dấu phẩy)"
+          class="col-span-2"
+        >
+          <ElInput
+            v-model="form.needsStr"
+            placeholder="Ví dụ: Tay ga cao cấp, Thích màu đen mờ, Trả góp..."
+          />
+        </ElFormItem>
+      </ElForm>
+
+      <template #footer>
+        <div class="flex gap-3 justify-end">
+          <ElButton @click="addDialogVisible = false">Hủy bỏ</ElButton>
+          <ElButton type="primary" @click="submitAddCustomer"
+            >Lưu khách hàng</ElButton
+          >
+        </div>
+      </template>
+    </ElDialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { ElMessage } from "element-plus";
 
 defineOptions({ name: "CustomerCareFocusMode" });
@@ -415,6 +520,23 @@ const filterType = ref("all");
 const isDetailView = ref(false);
 const activeTab = ref("timeline");
 const activeCustomer = ref<any>(null);
+
+const filteredCustomers = computed(() => {
+  return customers.value.filter((c) => {
+    const q = searchQuery.value.trim().toLowerCase();
+    const matchesSearch =
+      !q ||
+      c.name.toLowerCase().includes(q) ||
+      c.phone.includes(q) ||
+      c.identity.includes(q) ||
+      (c.bikes && c.bikes.some((b) => b.model.toLowerCase().includes(q)));
+
+    const matchesFilter =
+      filterType.value === "all" || c.type === filterType.value;
+
+    return matchesSearch && matchesFilter;
+  });
+});
 
 const customers = ref([
   {
@@ -517,8 +639,74 @@ const getTypeClasses = (type: string) => {
   return "bg-slate-50 text-slate-500 border-slate-200";
 };
 
-const handleAddCustomer = () =>
-  ElMessage.success("Mở Form thêm khách hàng mới");
+const addDialogVisible = ref(false);
+const form = ref({
+  name: "",
+  phone: "",
+  email: "",
+  identity: "",
+  type: "New",
+  points: 0,
+  tier: "Standard Member",
+  address: "",
+  needsStr: "",
+});
+
+const handleAddCustomer = () => {
+  form.value = {
+    name: "",
+    phone: "",
+    email: "",
+    identity: "",
+    type: "New",
+    points: 0,
+    tier: "Standard Member",
+    address: "",
+    needsStr: "",
+  };
+  addDialogVisible.value = true;
+};
+
+const submitAddCustomer = () => {
+  if (!form.value.name || !form.value.phone) {
+    ElMessage.warning("Vui lòng nhập Họ tên và Số điện thoại");
+    return;
+  }
+
+  const needsList = form.value.needsStr
+    ? form.value.needsStr
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s)
+    : [];
+
+  const typeLabels: Record<string, string> = {
+    VIP: "Khách hàng VIP",
+    Old: "Khách hàng cũ",
+    New: "Khách mới",
+  };
+
+  const newCust = {
+    id: Date.now(),
+    name: form.value.name,
+    phone: form.value.phone,
+    type: form.value.type,
+    typeLabel: typeLabels[form.value.type] || "Khách mới",
+    lastContact: new Date().toLocaleDateString("vi-VN"),
+    points: form.value.points,
+    tier: form.value.tier,
+    address: form.value.address,
+    email: form.value.email,
+    source: "Showroom",
+    identity: form.value.identity,
+    needs: needsList,
+    bikes: [],
+  };
+
+  customers.value.unshift(newCust);
+  ElMessage.success("Đã thêm khách hàng mới thành công!");
+  addDialogVisible.value = false;
+};
 
 const viewDetails = (row: any) => {
   activeCustomer.value = row;
@@ -530,8 +718,8 @@ const viewDetails = (row: any) => {
 .customer-care-page {
   .combat-input-large :deep(.el-input__wrapper) {
     height: 52px;
-    background-color: #f8fafc;
-    border: 1px solid #e2e8f0;
+    background-color: var(--el-fill-color-blank);
+    border: 1px solid var(--el-border-color-light);
     border-radius: 20px;
     box-shadow: none;
 
@@ -542,8 +730,8 @@ const viewDetails = (row: any) => {
 
   .premium-select :deep(.el-input__wrapper) {
     height: 52px;
-    background-color: #f8fafc;
-    border: 1px solid #e2e8f0;
+    background-color: var(--el-fill-color-blank);
+    border: 1px solid var(--el-border-color-light);
     border-radius: 20px;
     box-shadow: none;
   }
@@ -556,7 +744,7 @@ const viewDetails = (row: any) => {
       color: #94a3b8;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      background-color: #f8fafc;
+      background-color: var(--el-fill-color-light);
     }
 
     :deep(.el-table__row) {
@@ -564,7 +752,7 @@ const viewDetails = (row: any) => {
 
       &:hover {
         cursor: pointer;
-        background-color: #f1f5f9;
+        background-color: var(--el-fill-color-hover);
       }
     }
   }
@@ -573,8 +761,8 @@ const viewDetails = (row: any) => {
     :deep(.el-tabs__header) {
       padding: 0 40px;
       margin: 0;
-      background: #f8fafc;
-      border-bottom: 1px solid #f1f5f9;
+      background: transparent;
+      border-bottom: 1px solid var(--el-border-color-light);
     }
 
     :deep(.el-tabs__nav-wrap::after) {
@@ -586,6 +774,7 @@ const viewDetails = (row: any) => {
       font-size: 11px;
       font-weight: 900;
       letter-spacing: 0.1em;
+      color: var(--el-text-color-regular);
 
       &.is-active {
         color: #3b82f6;

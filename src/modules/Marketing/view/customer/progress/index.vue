@@ -1,6 +1,6 @@
 <template>
   <div
-    class="purchasing-pipeline-page flex flex-col h-screen bg-[#F8F9FA] overflow-hidden"
+    class="purchasing-pipeline-page flex flex-col h-screen bg-[#F8F9FA] dark:bg-[#020617] overflow-hidden"
   >
     <div
       class="slim-header bg-[#001529] px-6 py-2.5 flex items-center justify-between shadow-lg z-10"
@@ -34,12 +34,16 @@
     <div class="flex flex-1 overflow-hidden">
       <div class="main-kanban-area flex-1 flex flex-col overflow-hidden">
         <div
-          class="p-4 px-6 flex items-center justify-between bg-white/40 border-b border-gray-100"
+          class="p-4 px-6 flex items-center justify-between bg-white/40 dark:bg-slate-900/40 border-b border-gray-100 dark:border-slate-800"
         >
           <div class="flex items-center gap-6">
             <div class="flex items-center gap-2">
-              <ArtSvgIcon icon="ri:filter-line" class="text-navy text-sm" />
-              <span class="text-[10px] font-black text-gray-400 uppercase"
+              <ArtSvgIcon
+                icon="ri:filter-line"
+                class="text-navy dark:text-blue-400 text-sm"
+              />
+              <span
+                class="text-[10px] font-black text-gray-400 dark:text-slate-500 uppercase"
                 >Bộ lọc:</span
               >
             </div>
@@ -83,7 +87,7 @@
               ]"
             >
               <div
-                class="column-header flex items-center justify-between mb-4 px-3 py-2 rounded-xl bg-white border border-gray-100 shadow-sm cursor-pointer hover:bg-gray-50"
+                class="column-header flex items-center justify-between mb-4 px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 shadow-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-850"
                 @click="column.isCollapsed = !column.isCollapsed"
               >
                 <div class="flex items-center gap-2 overflow-hidden">
@@ -93,7 +97,7 @@
                   ></div>
                   <h4
                     v-if="!column.isCollapsed"
-                    class="m-0 text-[11px] font-black text-gray-700 uppercase truncate"
+                    class="m-0 text-[11px] font-black text-gray-700 dark:text-slate-200 uppercase truncate"
                   >
                     {{ column.title }}
                   </h4>
@@ -124,24 +128,24 @@
                 <div
                   v-for="deal in column.items"
                   :key="deal.id"
-                  class="minimal-deal-card group relative bg-white rounded-2xl p-4 shadow-sm transition-all hover:shadow-md border-[1.5px]"
+                  class="minimal-deal-card group relative bg-white dark:bg-slate-900 rounded-2xl p-4 shadow-sm transition-all hover:shadow-md border-[1.5px] border-slate-100 dark:border-slate-800"
                   :style="{
                     borderColor:
                       deal.priority === 'Urgent'
                         ? '#ef4444'
                         : deal.priority === 'High'
                           ? '#eab308'
-                          : '#f1f5f9',
+                          : '',
                   }"
                 >
                   <div class="flex justify-between items-start mb-2">
                     <div class="flex flex-col gap-0.5">
                       <span
-                        class="text-sm font-black text-gray-800 tracking-tight leading-tight"
+                        class="text-sm font-black text-gray-800 dark:text-slate-200 tracking-tight leading-tight"
                         >{{ deal.customerName }}</span
                       >
                       <span
-                        class="text-[9px] font-bold text-gray-400 uppercase tracking-widest"
+                        class="text-[9px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest"
                         >{{ deal.vehicle }}</span
                       >
                     </div>
@@ -157,8 +161,8 @@
                         class="size-6 rounded-lg flex-cc"
                         :class="
                           deal.isVerified
-                            ? 'bg-emerald-50 text-emerald-500'
-                            : 'bg-gray-100 text-gray-300 blink-warning'
+                            ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-500'
+                            : 'bg-gray-100 dark:bg-slate-800 text-gray-300 dark:text-slate-500 blink-warning'
                         "
                       >
                         <ArtSvgIcon icon="ri:profile-line" class="text-xs" />
@@ -168,7 +172,7 @@
 
                   <div class="flex flex-wrap gap-2 mt-3">
                     <div
-                      class="flex items-center gap-1 bg-gray-50 px-2 py-0.5 rounded-full"
+                      class="flex items-center gap-1 bg-gray-50 dark:bg-slate-950/20 px-2 py-0.5 rounded-full"
                     >
                       <ArtSvgIcon
                         icon="ri:time-line"
@@ -184,10 +188,10 @@
                     </div>
                     <div
                       v-if="(deal as any).subStatus"
-                      class="bg-blue-50 px-2 py-0.5 rounded-full"
+                      class="bg-blue-50 dark:bg-blue-950/30 px-2 py-0.5 rounded-full"
                     >
                       <span
-                        class="text-[9px] font-black text-blue-500 uppercase tracking-tighter"
+                        class="text-[9px] font-black text-blue-500 dark:text-blue-400 uppercase tracking-tighter"
                         >{{ (deal as any).subStatus }}</span
                       >
                     </div>
@@ -505,8 +509,8 @@ const handleDragChange = async (event: any, columnId: string) => {
 
   .slim-select {
     :deep(.el-input__wrapper) {
-      background-color: white;
-      border: 1px solid #e2e8f0;
+      background-color: var(--el-fill-color-blank);
+      border: 1px solid var(--el-border-color-light);
       border-radius: 10px;
       box-shadow: none;
     }
@@ -514,7 +518,7 @@ const handleDragChange = async (event: any, columnId: string) => {
 
   .kanban-column {
     &.column-collapsed {
-      background-color: #f8fafc;
+      background-color: var(--el-fill-color-light);
     }
   }
 

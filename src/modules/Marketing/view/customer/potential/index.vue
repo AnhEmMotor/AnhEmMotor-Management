@@ -2,7 +2,7 @@
   <div class="lead-management flex flex-col gap-5 pb-8">
     <div class="page-header flex items-center justify-between">
       <h2
-        class="m-0 text-2xl font-black text-gray-800 tracking-tight flex items-center gap-2"
+        class="m-0 text-2xl font-black text-gray-800 dark:text-slate-100 tracking-tight flex items-center gap-2"
       >
         <ArtSvgIcon icon="ri:user-star-line" class="text-red-500" />
         Khách hàng tiềm năng
@@ -46,7 +46,7 @@
     </div>
 
     <div
-      class="search-bar-wrapper bg-white rounded-xl shadow-sm border border-gray-100 p-2"
+      class="search-bar-wrapper bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800 p-2"
     >
       <ArtSearchBar
         v-model="searchModel"
@@ -64,14 +64,14 @@
         <div
           v-for="lead in data"
           :key="lead.id"
-          class="lead-row-card group bg-white rounded-2xl shadow-sm border border-gray-100 transition-all duration-300 flex items-center hover:border-red-200"
+          class="lead-row-card group bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 transition-all duration-300 flex items-center hover:border-red-200 dark:hover:border-red-900"
           :class="{
             'is-selected': selectedIds.includes(lead.id),
             'is-critical': isCriticalWait(lead),
           }"
         >
           <div
-            class="px-5 flex-cc border-r border-gray-50 h-full min-h-[100px]"
+            class="px-5 flex-cc border-r border-gray-50 dark:border-slate-800 h-full min-h-[100px]"
           >
             <ElCheckbox
               :model-value="selectedIds.includes(lead.id)"
@@ -114,20 +114,22 @@
               <div class="flex items-center gap-4">
                 <ElAvatar
                   :size="54"
-                  class="bg-gradient-to-tr from-gray-100 to-gray-200 text-gray-500 font-bold text-xl border-2 border-white"
+                  class="bg-gradient-to-tr from-gray-100 to-gray-200 dark:from-slate-800 dark:to-slate-700 text-gray-500 dark:text-slate-300 font-bold text-xl border-2 border-white dark:border-slate-900"
                 >
                   {{ lead.fullName.charAt(0) }}
                 </ElAvatar>
                 <div class="flex flex-col gap-1">
                   <h4
-                    class="m-0 text-gray-900 font-extrabold text-lg line-clamp-1"
+                    class="m-0 text-gray-900 dark:text-white font-extrabold text-lg line-clamp-1"
                   >
                     {{ lead.fullName }}
                   </h4>
                   <div class="flex items-center gap-2">
-                    <span class="text-sm text-gray-500 font-bold">{{
-                      lead.phoneNumber
-                    }}</span>
+                    <span
+                      class="text-sm text-gray-500 dark:text-slate-400 font-bold"
+                    >
+                      {{ lead.phoneNumber }}
+                    </span>
                     <div class="flex gap-1.5 ml-1">
                       <a
                         :href="'tel:' + lead.phoneNumber"
@@ -147,13 +149,14 @@
             </div>
 
             <div
-              class="interest-column flex-1 px-4 border-l border-r border-gray-50"
+              class="interest-column flex-1 px-4 border-l border-r border-gray-50 dark:border-slate-800"
             >
               <div class="flex flex-col gap-2">
                 <div class="flex items-center gap-2">
-                  <span class="text-base font-bold text-gray-700">{{
-                    lead.interestedVehicle || "Chưa xác định"
-                  }}</span>
+                  <span
+                    class="text-base font-bold text-gray-700 dark:text-slate-200"
+                    >{{ lead.interestedVehicle || "Chưa xác định" }}</span
+                  >
                   <ElTag
                     v-if="lead.interestedVehicle"
                     size="small"
@@ -166,7 +169,9 @@
                 </div>
                 <div class="flex items-center gap-1.5 text-xs">
                   <ArtSvgIcon icon="ri:megaphone-line" class="text-red-500" />
-                  <span class="font-black text-gray-800">Mega Sale 2024</span>
+                  <span class="font-black text-gray-800 dark:text-slate-200"
+                    >Mega Sale 2024</span
+                  >
                 </div>
               </div>
             </div>
@@ -182,25 +187,26 @@
                 {{ getStatusLabel(lead.status) }}
               </ElTag>
               <div
-                class="mt-2 text-[10px] text-gray-400 font-bold uppercase tracking-wider italic"
+                class="mt-2 text-[10px] text-gray-400 dark:text-slate-500 font-bold uppercase tracking-wider italic"
               >
                 Phễu:
-                <span class="text-gray-600">{{
+                <span class="text-gray-600 dark:text-slate-400">{{
                   getFunnelStep(lead.status)
                 }}</span>
               </div>
             </div>
 
             <div
-              class="time-column w-48 text-right pr-4 border-l border-gray-50"
+              class="time-column w-48 text-right pr-4 border-l border-gray-50 dark:border-slate-800"
             >
               <div class="flex flex-col gap-1.5 items-end">
                 <span
-                  class="text-[11px] text-gray-400 font-bold uppercase tracking-tighter"
+                  class="text-[11px] text-gray-400 dark:text-slate-500 font-bold uppercase tracking-tighter"
                   >Sale phụ trách</span
                 >
                 <ElSelect
                   :model-value="lead.saleId || null"
+                  @change="(val) => handleAssignSale(lead.id, val)"
                   size="small"
                   class="sale-select"
                   :class="{ 'is-unassigned': !lead.saleId }"
@@ -221,7 +227,7 @@
                 type="danger"
                 circle
                 class="size-11 flex-cc shadow-lg shadow-red-100 hover:scale-110 transition-transform"
-                @click="$router.push('/customer/profile')"
+                @click="$router.push('/Marketing/customer/profile')"
               >
                 <ArtSvgIcon icon="ri:arrow-right-line" class="text-lg" />
               </ElButton>
@@ -251,6 +257,7 @@ const {
   pagination,
   handleSearch,
   handleReset,
+  handleAssignSale,
   selectedIds,
   salesList,
   toggleSelect,
@@ -372,7 +379,7 @@ const isToday = (date: string) => dayjs(date).isSame(dayjs(), "day");
       }
 
       :deep(.el-input__wrapper) {
-        background-color: #fef2f2;
+        background-color: var(--el-color-danger-light-9);
       }
     }
   }
@@ -380,7 +387,7 @@ const isToday = (date: string) => dayjs(date).isSame(dayjs(), "day");
 
 @keyframes critical-blink {
   50% {
-    background-color: #fff1f0;
+    background-color: var(--el-color-danger-light-9);
     border-color: #ff4d4f;
   }
 }
