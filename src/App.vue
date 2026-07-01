@@ -69,6 +69,7 @@ html.dark {
 
 html.dark .el-card {
   --el-card-bg-color: #161618 !important;
+  --el-card-border-color: #333 !important;
   --el-text-color-primary: #e5e6eb !important;
   --el-text-color-regular: #a3a6ad !important;
   --el-border-color-light: #333 !important;
