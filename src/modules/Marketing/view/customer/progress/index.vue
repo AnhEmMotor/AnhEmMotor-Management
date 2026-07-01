@@ -33,6 +33,7 @@
             class="lead-row"
             :class="{ active: selectedLeadId === lead.id }"
             @click="selectLead(lead.id)"
+            v-auth="Permissions.Marketing.CustomerManagement.View"
           >
             <strong>{{ lead.fullName || "Chưa có tên" }}</strong>
             <span>{{ lead.phoneNumber || "-" }}</span>
@@ -107,6 +108,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/common/constants/permissions";
 import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import dayjs from "dayjs";

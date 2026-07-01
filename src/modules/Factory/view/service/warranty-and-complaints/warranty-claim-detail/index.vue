@@ -26,6 +26,7 @@
           :loading="submitting"
           plain
           @click="handleUpdateStatus(6)"
+          v-auth="Permissions.Factory.CustomerManagement.View"
         >
           Từ Chối Bảo Hành
         </el-button>
@@ -36,6 +37,7 @@
           type="primary"
           :loading="submitting"
           @click="handleUpdateStatus(2)"
+          v-auth="Permissions.Factory.CustomerManagement.View"
         >
           Gửi Hãng Thẩm Định
         </el-button>
@@ -45,6 +47,7 @@
           type="success"
           :loading="submitting"
           @click="handleApproveClaim"
+          v-auth="Permissions.Factory.CustomerManagement.View"
         >
           Duyệt Bồi Hoàn
         </el-button>
@@ -54,6 +57,7 @@
           type="primary"
           :loading="submitting"
           @click="handleUpdateStatus(4)"
+          v-auth="Permissions.Factory.CustomerManagement.View"
         >
           Xác Nhận Thay Thế Linh Kiện
         </el-button>
@@ -63,6 +67,7 @@
           type="success"
           :loading="submitting"
           @click="handleUpdateStatus(5)"
+          v-auth="Permissions.Factory.CustomerManagement.View"
         >
           💾 Hoàn tất & Đóng hồ sơ
         </el-button>
@@ -311,6 +316,7 @@
                 type="warning"
                 :loading="submitting"
                 @click="handleRecall"
+                v-auth="Permissions.Factory.CustomerManagement.View"
               >
                 Kích hoạt Thu hồi & Đổi xe
               </el-button>
@@ -507,6 +513,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/common/constants/permissions";
 import { ref, computed, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";

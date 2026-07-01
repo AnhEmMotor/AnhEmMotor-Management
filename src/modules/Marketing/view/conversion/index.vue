@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div
     class="conversion-tools-page min-h-full bg-[#F8FAFC] font-inter text-[#0F172A] pb-10"
   >
@@ -294,13 +294,15 @@ const dialogVisible = ref(false);
 const dialogTitle = ref("");
 
 const popups = ref<any[]>([]);
+const allTools = ref<any[]>([]);
 const loadingTools = ref(false);
 
 const loadTools = async () => {
   loadingTools.value = true;
   try {
     const res = await conversionToolApi.getAll();
-    popups.value = res.data
+    allTools.value = res as any;
+    popups.value = allTools.value
       .filter((t: any) => t.type === "Popup")
       .map((t: any) => ({
         id: t.id,
@@ -321,7 +323,7 @@ const loadTools = async () => {
 };
 
 const landingPages = computed(() =>
-  popups.value
+  allTools.value
     .filter((t: any) => t.type === "Landing")
     .map((t: any) => ({
       id: t.id,
@@ -330,6 +332,7 @@ const landingPages = computed(() =>
       status: t.status || "draft",
       leads: t.leads,
       clicks: t.clicks,
+      preview: t.imageUrl || "",
     })),
 );
 

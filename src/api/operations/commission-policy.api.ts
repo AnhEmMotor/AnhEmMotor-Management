@@ -1,4 +1,4 @@
-﻿import request from "@/common/utils/http";
+import request from "@/common/utils/http";
 
 export interface CommissionPolicyResponse {
   id: number;
@@ -39,7 +39,7 @@ export const commissionPolicyApi = {
     });
   },
   delete(id: number) {
-    return request.delete({
+    return request.del({
       url: `/api/v1/hr/commission-policies/${id}`,
     });
   },

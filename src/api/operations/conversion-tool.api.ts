@@ -35,7 +35,7 @@ export const conversionToolApi = {
     });
   },
   delete(id: number) {
-    return request.delete<void>({
+    return request.del<void>({
       url: `/api/v1/conversion-tools/${id}`,
     });
   },

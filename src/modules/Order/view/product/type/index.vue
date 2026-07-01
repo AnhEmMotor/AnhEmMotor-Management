@@ -102,8 +102,16 @@
 
         <template #operation="{ row }">
           <div class="flex gap-2 justify-center">
-            <ArtButtonTable type="edit" @click="handleEdit(row)" />
-            <ArtButtonTable type="delete" @click="handleDelete(row)" />
+            <ArtButtonTable
+              type="edit"
+              @click="handleEdit(row)"
+              v-auth="Permissions.Order.ProductManagement.Edit"
+            />
+            <ArtButtonTable
+              type="delete"
+              @click="handleDelete(row)"
+              v-auth="Permissions.Order.ProductManagement.Delete"
+            />
           </div>
         </template>
       </ArtTable>
@@ -225,6 +233,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/common/constants/permissions";
 import { computed, ref, watch, nextTick } from "vue";
 import { Plus, Picture, Download } from "@element-plus/icons-vue";
 import { useCategoryTable } from "@/modules/Order/logic/product/type/hooks/useCategoryTable";

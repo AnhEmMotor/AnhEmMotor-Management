@@ -42,6 +42,7 @@
             v-if="order?.status === 'Completed'"
             @click="openPrintInvoice"
             class="h-9 px-4 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center gap-2"
+            v-auth="Permissions.Factory.RepairOrderManagement.View"
           >
             <ArtSvgIcon icon="ri:printer-line" /> In hóa đơn dịch vụ
           </button>
@@ -209,6 +210,7 @@
                 @click="assignTechnician"
                 :disabled="!selectedTechId || submitting"
                 class="h-10 px-6 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all disabled:opacity-50 flex items-center gap-2 shadow-md"
+                v-auth="Permissions.Factory.RepairOrderManagement.View"
               >
                 <ArtSvgIcon icon="ri:user-shared-line" /> Xác nhận phân công
               </button>
@@ -236,6 +238,7 @@
                   @click="openServiceDialog"
                   :disabled="order.status === 'QcPending'"
                   class="h-8 px-4 bg-slate-900 text-white rounded-lg font-black text-[9px] uppercase tracking-widest hover:bg-blue-900 transition-all flex items-center gap-1.5 shadow-sm disabled:opacity-60"
+                  v-auth="Permissions.Factory.RepairOrderManagement.View"
                 >
                   + Thêm dịch vụ
                 </button>
@@ -243,6 +246,7 @@
                   @click="openPartsDialog"
                   :disabled="order.status === 'QcPending'"
                   class="h-8 px-4 bg-slate-900 text-white rounded-lg font-black text-[9px] uppercase tracking-widest hover:bg-blue-900 transition-all flex items-center gap-1.5 shadow-sm disabled:opacity-60"
+                  v-auth="Permissions.Factory.RepairOrderManagement.View"
                 >
                   + Thêm phụ tùng
                 </button>
@@ -306,6 +310,7 @@
                         v-if="order.status !== 'QcPending'"
                         @click="removeService(index)"
                         class="text-red-400 hover:text-red-600"
+                        v-auth="Permissions.Factory.RepairOrderManagement.View"
                       >
                         <ArtSvgIcon icon="ri:delete-bin-line" />
                       </button>
@@ -361,6 +366,7 @@
                         v-if="order.status !== 'QcPending'"
                         @click="removePart(index)"
                         class="text-red-400 hover:text-red-600"
+                        v-auth="Permissions.Factory.RepairOrderManagement.View"
                       >
                         <ArtSvgIcon icon="ri:delete-bin-line" />
                       </button>
@@ -418,6 +424,7 @@
                 @click="saveIssueParts('InProgress')"
                 :disabled="submitting"
                 class="h-10 px-5 border border-slate-200 text-slate-700 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center gap-2"
+                v-auth="Permissions.Factory.RepairOrderManagement.View"
               >
                 Lưu thay đổi
               </button>
@@ -426,6 +433,7 @@
                 @click="saveIssueParts('QcPending')"
                 :disabled="submitting"
                 class="h-10 px-6 bg-amber-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-amber-700 transition-all flex items-center gap-2 shadow-md"
+                v-auth="Permissions.Factory.RepairOrderManagement.View"
               >
                 <ArtSvgIcon icon="ri:shield-flash-line" /> Hoàn tất sửa & Chuyển
                 QC
@@ -504,6 +512,7 @@
                 @click="completeRepairOrder"
                 :disabled="submitting"
                 class="h-10 px-8 bg-emerald-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-700 transition-all flex items-center gap-2 shadow-lg"
+                v-auth="Permissions.Factory.RepairOrderManagement.View"
               >
                 <ArtSvgIcon icon="ri:checkbox-circle-fill" /> Xác nhận thanh
                 toán & Bàn giao xe
@@ -660,6 +669,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/common/constants/permissions";
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";

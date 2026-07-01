@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="hr-policy-container flex flex-col gap-4 h-full p-4">
     <!-- Header -->
     <div class="flex items-center justify-between">
@@ -189,7 +189,7 @@ const loadPolicies = async () => {
   loading.value = true;
   try {
     const res = await commissionPolicyApi.getAll();
-    allPolicies.value = res.data.map(mapBackendPolicy);
+    allPolicies.value = (res as any).map(mapBackendPolicy);
   } catch (error) {
     console.error("Failed to load policies:", error);
     ElMessage.error("Không thể tải danh sách chính sách");

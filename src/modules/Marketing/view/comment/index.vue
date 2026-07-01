@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div>
     <div class="comment-page min-h-full bg-[#F8FAFC] font-inter text-[#0F172A]">
       <div class="bg-white border-b border-slate-200 px-6 py-4 shadow-sm">
@@ -124,11 +124,14 @@ import CommentWidget from "@/components/business/comment-widget/index.vue";
 
 defineOptions({ name: "MarketingComment" });
 
+const loadingComments = ref(false);
+const comments = ref<CommentItem[]>([]);
+
 const loadComments = async () => {
   loadingComments.value = true;
   try {
     const res = await commentApi.getAll();
-    comments.value = res.data.map((c) => ({
+    comments.value = (res as any).map((c: any) => ({
       id: c.id,
       date: c.createdAt,
       content: c.content,
@@ -175,7 +178,7 @@ const clickItem = ref<CommentItem>({
 });
 
 const commentsWithColors = computed(() => {
-  return comments.value.map((item, index) => ({
+  return comments.value.map((item: any, index: number) => ({
     ...item,
     color: COLOR_LIST[index % COLOR_LIST.length],
   }));

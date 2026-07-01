@@ -28,12 +28,14 @@
         <button
           @click="handleSaveDraft"
           class="h-10 px-6 border-2 border-slate-200 text-slate-600 rounded-xl font-black text-[10px] uppercase tracking-widest hover:border-slate-800 transition-all"
+          v-auth="Permissions.Marketing.NewsManagement.Edit"
         >
           Lưu nháp
         </button>
         <button
           @click="submit"
           class="h-10 px-8 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95"
+          v-auth="Permissions.Marketing.NewsManagement.Edit"
         >
           {{
             pageMode === PageModeEnum.Edit
@@ -160,6 +162,7 @@
             <button
               @click="openProductSelector"
               class="size-7 rounded-lg bg-blue-50 text-blue-600 flex-cc hover:bg-blue-600 hover:text-white transition-all"
+              v-auth="Permissions.Marketing.NewsManagement.View"
             >
               <ArtSvgIcon icon="ri:add-line" />
             </button>
@@ -185,6 +188,7 @@
               <button
                 @click="removeProduct(p.id)"
                 class="opacity-0 group-hover:opacity-100 transition-opacity text-red-400 hover:text-red-600"
+                v-auth="Permissions.Marketing.NewsManagement.Delete"
               >
                 <ArtSvgIcon icon="ri:close-circle-line" />
               </button>
@@ -335,6 +339,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/common/constants/permissions";
 import { ref, reactive, onMounted, onActivated, onDeactivated } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { InfoFilled } from "@element-plus/icons-vue";

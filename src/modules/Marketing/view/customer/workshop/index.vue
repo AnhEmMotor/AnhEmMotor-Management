@@ -34,6 +34,7 @@
           <button
             @click="goToCreate"
             class="h-10 px-6 bg-[#001529] text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg hover:bg-blue-900 transition-all active:scale-95 flex items-center gap-2"
+            v-auth="Permissions.Marketing.CustomerManagement.View"
           >
             <ArtSvgIcon icon="ri:user-add-line" class="text-sm" /> + Tiếp nhận
             xe
@@ -177,6 +178,7 @@
             <button
               @click="loadData"
               class="h-9 px-4 bg-slate-100 text-slate-600 rounded-xl font-bold text-[10px] uppercase tracking-wider hover:bg-slate-200 transition-all flex items-center gap-2"
+              v-auth="Permissions.Marketing.CustomerManagement.View"
             >
               <ArtSvgIcon icon="ri:refresh-line" /> Làm mới
             </button>
@@ -367,6 +369,7 @@
                 <button
                   @click="goToDetail(row.id)"
                   class="flex-1 py-3.5 text-[12px] font-black text-slate-600 uppercase tracking-wider hover:text-[#001529] hover:bg-slate-100 transition-colors flex-cc gap-2"
+                  v-auth="Permissions.Marketing.CustomerManagement.View"
                 >
                   Xem chi tiết <ArtSvgIcon icon="ri:arrow-right-line" />
                 </button>
@@ -399,6 +402,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/common/constants/permissions";
 import { ref, onMounted, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";

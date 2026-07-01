@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="flex flex-col gap-4 pb-5">
     <!-- Header & Quick Search -->
     <div class="flex items-center justify-between gap-4">
@@ -242,7 +242,7 @@ const loadStats = async () => {
   loadingStats.value = true;
   try {
     const res = await orderStatisticsApi.getStatistics();
-    const d = res.data;
+    const d = res as any;
     workload.value = {
       pendingOrders: d.pendingOrders,
       slaDelayed: d.slaDelayed,
@@ -251,7 +251,7 @@ const loadStats = async () => {
     };
     productivity.value = { target: d.targetToday, completed: d.completedToday };
     hourlyData.value = d.hourlyData;
-    exceptionOrders.value = d.exceptionOrders.map((e) => ({
+    exceptionOrders.value = d.exceptionOrders.map((e: any) => ({
       ...e,
       waitTime: "",
     }));
@@ -278,7 +278,7 @@ const filteredExceptions = computed(() => {
     const q = searchQuery.value.toLowerCase();
     list = list.filter(
       (item) =>
-        item.id.toLowerCase().includes(q) ||
+        String(item.id).toLowerCase().includes(q) ||
         item.customerName.toLowerCase().includes(q),
     );
   }
@@ -460,7 +460,10 @@ const renderMethodChart = () => {
           borderWidth: 2,
         },
         label: { show: false },
-        data: mockData.value.charts.deliveryMethods,
+        data: [
+          { name: "Standard", value: 60 },
+          { name: "Express", value: 40 },
+        ],
       },
     ],
   };

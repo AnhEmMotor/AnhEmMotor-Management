@@ -230,6 +230,7 @@
             class="text-gray-400 hover:text-blue-500 transition-colors bg-transparent border-none cursor-pointer flex items-center justify-center text-[20px]"
             @click.prevent="startDialogTour"
             title="Hướng dẫn"
+            v-auth="Permissions.Warehouse.BrandManagement.Edit"
           >
             <ElIcon><Help /></ElIcon>
           </button>
@@ -363,6 +364,7 @@
             class="text-gray-400 hover:text-blue-500 transition-colors bg-transparent border-none cursor-pointer flex items-center justify-center text-[20px]"
             @click.prevent="startRestoreTour"
             title="Hướng dẫn"
+            v-auth="Permissions.Warehouse.BrandManagement.Edit"
           >
             <ElIcon><Help /></ElIcon>
           </button>
@@ -414,6 +416,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/common/constants/permissions";
 import { ref } from "vue";
 import {
   Plus,

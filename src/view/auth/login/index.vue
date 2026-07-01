@@ -79,6 +79,7 @@
               native-type="submit"
               :loading="isLoading"
               class="w-full submit-btn"
+              v-auth="Permissions.Admin.EmployeeManagement.Edit"
             >
               Đăng nhập hệ thống
             </el-button>
@@ -108,7 +109,10 @@
                 class="relative w-full h-full cursor-pointer overflow-hidden rounded-md"
               >
                 <!-- Nút custom hiển thị cho người dùng -->
-                <el-button class="w-full social-btn google-btn h-full">
+                <el-button
+                  class="w-full social-btn google-btn h-full"
+                  v-auth="Permissions.Admin.EmployeeManagement.View"
+                >
                   <template #icon>
                     <svg
                       class="w-5 h-5"
@@ -155,6 +159,7 @@
               <el-button
                 class="w-full social-btn facebook-btn"
                 @click="handleFacebookLogin"
+                v-auth="Permissions.Admin.EmployeeManagement.Edit"
               >
                 <template #icon>
                   <svg
@@ -186,6 +191,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/common/constants/permissions";
 import { reactive, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { authService } from "@/common/auth";

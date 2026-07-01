@@ -43,7 +43,12 @@
       <template #header>
         <div class="card-header flex justify-between items-center">
           <span class="font-bold text-lg">Hợp đồng mua bán xe</span>
-          <el-button type="primary" :icon="Plus" @click="handleOpenAddDialog">
+          <el-button
+            type="primary"
+            :icon="Plus"
+            @click="handleOpenAddDialog"
+            v-auth="Permissions.Order.ContractManagement.Create"
+          >
             Thêm hợp đồng
           </el-button>
         </div>
@@ -102,7 +107,12 @@
           />
           <el-table-column label="Mã Đơn Hàng" width="140">
             <template #default="scope">
-              <el-button link type="primary" class="font-semibold">
+              <el-button
+                link
+                type="primary"
+                class="font-semibold"
+                v-auth="Permissions.Order.ContractManagement.Edit"
+              >
                 {{ scope.row.orderId }}
               </el-button>
             </template>
@@ -178,7 +188,11 @@
           >
             <template #default="scope">
               <el-dropdown trigger="click">
-                <el-button type="primary" link>
+                <el-button
+                  type="primary"
+                  link
+                  v-auth="Permissions.Order.ContractManagement.Edit"
+                >
                   Thao tác
                   <el-icon class="el-icon--right"><ArrowDown /></el-icon>
                 </el-button>
@@ -187,6 +201,7 @@
                     <el-dropdown-item
                       @click="goToPreview(scope.row.id)"
                       :icon="View"
+                      v-auth="Permissions.Order.ContractManagement.View"
                     >
                       Xem chi tiết
                     </el-dropdown-item>
@@ -194,13 +209,21 @@
                       <el-dropdown-item
                         @click="goToPreview(scope.row.id)"
                         :icon="Edit"
+                        v-auth="Permissions.Order.ContractManagement.Edit"
                       >
                         Xem trước & Chỉnh sửa
                       </el-dropdown-item>
-                      <el-dropdown-item :icon="UploadFilled">
+                      <el-dropdown-item
+                        :icon="UploadFilled"
+                        v-auth="Permissions.Order.ContractManagement.View"
+                      >
                         Tải lên bản quét PDF
                       </el-dropdown-item>
-                      <el-dropdown-item divided disabled>
+                      <el-dropdown-item
+                        divided
+                        disabled
+                        v-auth="Permissions.Order.ContractManagement.View"
+                      >
                         <el-icon class="text-orange-500"
                           ><WarningFilled
                         /></el-icon>
@@ -208,13 +231,17 @@
                       </el-dropdown-item>
                     </template>
                     <template v-else-if="scope.row.status === 'Signed'">
-                      <el-dropdown-item :icon="DocumentAdd">
+                      <el-dropdown-item
+                        :icon="DocumentAdd"
+                        v-auth="Permissions.Order.ContractManagement.Create"
+                      >
                         Tạo phụ lục
                       </el-dropdown-item>
                       <el-dropdown-item
                         v-if="isOverdue(scope.row.deliveryDeadline)"
                         divided
                         disabled
+                        v-auth="Permissions.Order.ContractManagement.Edit"
                       >
                         <el-icon class="text-red-500"
                           ><WarnTriangleFilled
@@ -362,11 +389,16 @@
 
       <template #footer>
         <div class="flex justify-end gap-2">
-          <el-button @click="dialogVisible = false">Hủy</el-button>
+          <el-button
+            @click="dialogVisible = false"
+            v-auth="Permissions.Order.ContractManagement.View"
+            >Hủy</el-button
+          >
           <el-button
             type="primary"
             :loading="submitLoading"
             @click="handleSubmit"
+            v-auth="Permissions.Order.ContractManagement.Edit"
           >
             Xác nhận
           </el-button>
@@ -377,6 +409,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/common/constants/permissions";
 import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";

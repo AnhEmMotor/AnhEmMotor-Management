@@ -28,6 +28,7 @@
           <button
             @click="toAddArticle"
             class="h-11 px-8 bg-[#001529] text-white rounded-xl font-black text-[11px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95 flex items-center gap-2"
+            v-auth="Permissions.Marketing.NewsManagement.Create"
           >
             <ArtSvgIcon icon="ri:add-circle-line" /> Viết bài mới
           </button>
@@ -66,12 +67,14 @@
                 <button
                   @click.stop="toEdit(item)"
                   class="flex-1 h-9 bg-blue-600 text-white rounded-lg font-black text-[9px] uppercase tracking-widest hover:bg-blue-700 transition-all"
+                  v-auth="Permissions.Marketing.NewsManagement.Edit"
                 >
                   Chỉnh sửa
                 </button>
                 <button
                   @click.stop="toDelete(item)"
                   class="flex-1 h-9 bg-red-600 text-white rounded-lg font-black text-[9px] uppercase tracking-widest hover:bg-red-700 transition-all"
+                  v-auth="Permissions.Marketing.NewsManagement.Delete"
                 >
                   Xoá
                 </button>
@@ -143,6 +146,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/common/constants/permissions";
 import { ref, computed, onMounted, onActivated } from "vue";
 import { useDateFormat } from "@vueuse/core";
 import { router } from "@/router";

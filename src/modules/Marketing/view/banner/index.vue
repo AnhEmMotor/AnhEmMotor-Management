@@ -27,6 +27,7 @@
           <button
             @click="handleAddBanner"
             class="h-11 px-8 bg-[#001529] text-white rounded-xl font-black text-[11px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95 flex items-center gap-2"
+            v-auth="Permissions.Marketing.BannerManagement.Create"
           >
             <ArtSvgIcon icon="ri:add-fill" />
             {{ $t("marketing.bannerManagement.createBtn") }}
@@ -73,6 +74,7 @@
                     ? 'bg-white text-slate-900 shadow-sm'
                     : 'text-white/60 hover:text-white'
                 "
+                v-auth="Permissions.Marketing.BannerManagement.View"
               >
                 {{ $t("marketing.bannerManagement.pc") }}
               </button>
@@ -84,6 +86,7 @@
                     ? 'bg-white text-slate-900 shadow-sm'
                     : 'text-white/60 hover:text-white'
                 "
+                v-auth="Permissions.Marketing.BannerManagement.View"
               >
                 {{ $t("marketing.bannerManagement.mb") }}
               </button>
@@ -295,12 +298,14 @@
             <button
               @click="dialogVisible = false"
               class="h-11 px-6 text-slate-400 font-black text-[10px] uppercase tracking-widest hover:text-slate-700"
+              v-auth="Permissions.Marketing.BannerManagement.Edit"
             >
               {{ $t("marketing.bannerManagement.closeBtn") }}
             </button>
             <button
               @click="saveBanner"
               class="h-11 px-8 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95"
+              v-auth="Permissions.Marketing.BannerManagement.Edit"
             >
               {{
                 isEditing
@@ -316,6 +321,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/common/constants/permissions";
 import { ref, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { BannerApi } from "@/api/marketing";

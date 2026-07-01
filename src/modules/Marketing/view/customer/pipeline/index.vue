@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="purchasing-pipeline-page flex flex-col gap-6 pb-10 h-screen">
     <div class="grid grid-cols-5 gap-4 px-4 pt-4">
       <div
@@ -227,14 +227,14 @@ const pipelineStats = ref([
 const loadPipeline = async () => {
   try {
     const res = await leadApi.getPipeline();
-    const groups = res.data;
+    const groups = res as any;
     const columns = groups
-      .map((g) => {
+      .map((g: any) => {
         const mapped = STATUS_MAP[g.status];
         if (!mapped) return null;
         return {
           ...mapped,
-          items: g.leads.map((l) => ({
+          items: g.leads.map((l: any) => ({
             id: l.id,
             customerName: l.fullName,
             vehicle: l.interestedVehicle || "N/A",
@@ -253,19 +253,22 @@ const loadPipeline = async () => {
 
     boardColumns.value = columns;
 
-    const totalDeals = groups.reduce((sum, g) => sum + g.leads.length, 0);
+    const totalDeals = groups.reduce(
+      (sum: number, g: any) => sum + g.leads.length,
+      0,
+    );
     pipelineStats.value[0].count = totalDeals;
     const consultingCount =
-      groups.find((g) => g.status === "Consulting")?.leads.length ?? 0;
+      groups.find((g: any) => g.status === "Consulting")?.leads.length ?? 0;
     pipelineStats.value[1].count = consultingCount;
     const depositCount =
-      groups.find((g) => g.status === "Deposit")?.leads.length ?? 0;
+      groups.find((g: any) => g.status === "Deposit")?.leads.length ?? 0;
     pipelineStats.value[2].count = depositCount;
     const processingCount =
-      groups.find((g) => g.status === "Processing")?.leads.length ?? 0;
+      groups.find((g: any) => g.status === "Processing")?.leads.length ?? 0;
     pipelineStats.value[3].count = processingCount;
     const deliveredCount =
-      groups.find((g) => g.status === "Delivered")?.leads.length ?? 0;
+      groups.find((g: any) => g.status === "Delivered")?.leads.length ?? 0;
     pipelineStats.value[4].count = deliveredCount;
   } catch (error) {
     console.error("Failed to load pipeline:", error);

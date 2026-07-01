@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="hr-payroll-container">
     <el-card shadow="never">
       <template #header>
@@ -80,7 +80,11 @@
           </template>
           <template #operation="{ row }">
             <div class="flex gap-2 justify-center">
-              <ArtButtonTable type="view" @click="handleView(row)" />
+              <ArtButtonTable
+                type="view"
+                @click="handleView(row)"
+                v-auth="Permissions.Admin.EmployeeManagement.View"
+              />
               <ElButton
                 v-ripple
                 size="small"
@@ -97,6 +101,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/common/constants/permissions";
 import { Plus } from "@element-plus/icons-vue";
 import { ref, reactive, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -201,9 +206,9 @@ const loadData = async () => {
       payrollApi.getList({ month: currentMonth, year: currentYear }),
       payrollApi.getStatistics(currentMonth, currentYear),
     ]);
-    data.value = listRes.data;
-    pagination.total = listRes.data.length;
-    const s = statsRes.data;
+    data.value = listRes as any;
+    pagination.total = (listRes as any).length;
+    const s = statsRes as any;
     stats.totalPayroll = s.totalPayroll;
     stats.paid = s.paid;
     stats.pending = s.pending;

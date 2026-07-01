@@ -61,8 +61,16 @@
 
         <template #operation="{ row }">
           <div class="flex gap-2 justify-center">
-            <ArtButtonTable type="edit" @click="handleEdit(row)" />
-            <ArtButtonTable type="delete" @click="handleDelete(row)" />
+            <ArtButtonTable
+              type="edit"
+              @click="handleEdit(row)"
+              v-auth="Permissions.Factory.CustomerManagement.View"
+            />
+            <ArtButtonTable
+              type="delete"
+              @click="handleDelete(row)"
+              v-auth="Permissions.Factory.CustomerManagement.Delete"
+            />
           </div>
         </template>
       </ArtTable>
@@ -182,6 +190,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/common/constants/permissions";
 import { computed } from "vue";
 import { Plus } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";

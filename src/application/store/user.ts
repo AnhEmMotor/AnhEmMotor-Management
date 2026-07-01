@@ -11,6 +11,7 @@ import { resetRouterState } from "@/router/guards/beforeEach";
 import { useMenuStore } from "./menu";
 import { StorageConfig } from "@/common/utils/storage/storage-config";
 import i18n from "@/i18n";
+import api from "@/common/utils/http";
 
 export const useUserStore = defineStore(
   "userStore",
@@ -226,18 +227,14 @@ export const useUserStore = defineStore(
                 abortController = null;
               }
               if (retryCount < 3) {
-                import("@/common/utils/http")
-                  .then((module) => {
-                    module.default
-                      .get({ url: "/api/v1/user/me" })
-                      .then(() => {
-                        setTimeout(() => connectSSE(retryCount + 1), 1000);
-                      })
-                      .catch(() => {
-                        logOut();
-                      });
+                api
+                  .get({ url: "/api/v1/user/me" })
+                  .then(() => {
+                    setTimeout(() => connectSSE(retryCount + 1), 1000);
                   })
-                  .catch(() => logOut());
+                  .catch(() => {
+                    logOut();
+                  });
               } else {
                 logOut();
               }

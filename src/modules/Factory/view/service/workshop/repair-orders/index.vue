@@ -117,12 +117,14 @@
               type="edit"
               @click="openAssignTechnician(row)"
               v-if="row.status !== 'Completed'"
+              v-auth="Permissions.Factory.RepairOrderManagement.View"
             />
 
             <ArtButtonTable
               type="edit"
               @click="openIssueParts(row)"
               v-if="row.status === 'InProgress' || row.status === 'QcPending'"
+              v-auth="Permissions.Factory.RepairOrderManagement.View"
             />
 
             <ArtButtonTable
@@ -624,6 +626,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/common/constants/permissions";
 import { computed, ref } from "vue";
 import { Refresh, Plus, Delete as TrashBin } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";

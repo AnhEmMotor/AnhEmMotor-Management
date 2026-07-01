@@ -21,6 +21,7 @@
           size="large"
           class="shadow-md hover:shadow-lg transition-all"
           @click="openCreateDrawer"
+          v-auth="Permissions.Factory.RepairOrderManagement.Create"
         >
           Tạo Phiếu Bảo Trì
         </el-button>
@@ -143,6 +144,7 @@
               :icon="View"
               plain
               @click="openDetail(row.id)"
+              v-auth="Permissions.Factory.RepairOrderManagement.View"
             >
               Chi tiết
             </el-button>
@@ -435,6 +437,7 @@
                   :icon="Plus"
                   plain
                   @click="addPart"
+                  v-auth="Permissions.Factory.RepairOrderManagement.Create"
                   >Thêm phụ tùng</el-button
                 >
               </div>
@@ -507,6 +510,7 @@
                       :icon="Delete"
                       circle
                       @click="removePart($index)"
+                      v-auth="Permissions.Factory.RepairOrderManagement.View"
                     />
                   </template>
                 </el-table-column>
@@ -548,8 +552,16 @@
 
       <template #footer>
         <div class="flex justify-end gap-3 p-4 border-t border-slate-100">
-          <el-button @click="createDrawerVisible = false">Hủy bỏ</el-button>
-          <el-button type="primary" :loading="submitting" @click="submitForm"
+          <el-button
+            @click="createDrawerVisible = false"
+            v-auth="Permissions.Factory.RepairOrderManagement.Create"
+            >Hủy bỏ</el-button
+          >
+          <el-button
+            type="primary"
+            :loading="submitting"
+            @click="submitForm"
+            v-auth="Permissions.Factory.RepairOrderManagement.View"
             >Tạo Phiếu Bảo Trì</el-button
           >
         </div>
@@ -772,7 +784,9 @@
       </div>
       <template #footer>
         <div class="flex justify-end p-4 border-t border-slate-100">
-          <el-button @click="detailDrawerVisible = false"
+          <el-button
+            @click="detailDrawerVisible = false"
+            v-auth="Permissions.Factory.RepairOrderManagement.View"
             >Đóng cửa sổ</el-button
           >
         </div>
@@ -782,6 +796,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/common/constants/permissions";
 import { ref, reactive, computed, onMounted } from "vue";
 import { ElMessage } from "element-plus";
 import type { FormInstance, FormRules } from "element-plus";

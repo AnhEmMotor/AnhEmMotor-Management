@@ -1,0 +1,277 @@
+export const Permissions = {
+  Admin: {
+    Module: "Permissions.Admin",
+    EmployeeManagement: {
+      View: "Permissions.Admin.EmployeeManagement.View",
+      Create: "Permissions.Admin.EmployeeManagement.Create",
+      Edit: "Permissions.Admin.EmployeeManagement.Edit",
+      Delete: "Permissions.Admin.EmployeeManagement.Delete",
+    },
+    PayrollManagement: {
+      View: "Permissions.Admin.PayrollManagement.View",
+      Configure: "Permissions.Admin.PayrollManagement.Configure",
+      Approve: "Permissions.Admin.PayrollManagement.Approve",
+    },
+    DashboardManagement: {
+      View: "Permissions.Admin.DashboardManagement.View",
+      Export: "Permissions.Admin.DashboardManagement.Export",
+    },
+    ContractManagement: {
+      View: "Permissions.Admin.ContractManagement.View",
+      Create: "Permissions.Admin.ContractManagement.Create",
+      Edit: "Permissions.Admin.ContractManagement.Edit",
+      Delete: "Permissions.Admin.ContractManagement.Delete",
+    },
+    FileManagement: {
+      View: "Permissions.Admin.FileManagement.View",
+      Upload: "Permissions.Admin.FileManagement.Upload",
+      Delete: "Permissions.Admin.FileManagement.Delete",
+    },
+    RoleManagement: {
+      View: "Permissions.Admin.RoleManagement.View",
+      Create: "Permissions.Admin.RoleManagement.Create",
+      Edit: "Permissions.Admin.RoleManagement.Edit",
+      Delete: "Permissions.Admin.RoleManagement.Delete",
+    },
+    SettingManagement: {
+      View: "Permissions.Admin.SettingManagement.View",
+      Edit: "Permissions.Admin.SettingManagement.Edit",
+    },
+    UserManagement: {
+      View: "Permissions.Admin.UserManagement.View",
+      Create: "Permissions.Admin.UserManagement.Create",
+      Edit: "Permissions.Admin.UserManagement.Edit",
+      Delete: "Permissions.Admin.UserManagement.Delete",
+      AssignRoles: "Permissions.Admin.UserManagement.AssignRoles",
+      ChangePassword: "Permissions.Admin.UserManagement.ChangePassword",
+    },
+  },
+  Marketing: {
+    Module: "Permissions.Marketing",
+    BannerManagement: {
+      View: "Permissions.Marketing.BannerManagement.View",
+      Create: "Permissions.Marketing.BannerManagement.Create",
+      Edit: "Permissions.Marketing.BannerManagement.Edit",
+      Delete: "Permissions.Marketing.BannerManagement.Delete",
+    },
+    CustomerManagement: {
+      View: "Permissions.Marketing.CustomerManagement.View",
+      Reply: "Permissions.Marketing.CustomerManagement.Reply",
+      EditNote: "Permissions.Marketing.CustomerManagement.EditNote",
+      Delete: "Permissions.Marketing.CustomerManagement.Delete",
+    },
+    LeadManagement: {
+      View: "Permissions.Marketing.LeadManagement.View",
+      Create: "Permissions.Marketing.LeadManagement.Create",
+      Edit: "Permissions.Marketing.LeadManagement.Edit",
+      Delete: "Permissions.Marketing.LeadManagement.Delete",
+    },
+    NewsManagement: {
+      View: "Permissions.Marketing.NewsManagement.View",
+      Create: "Permissions.Marketing.NewsManagement.Create",
+      Edit: "Permissions.Marketing.NewsManagement.Edit",
+      Delete: "Permissions.Marketing.NewsManagement.Delete",
+    },
+    BookingManagement: {
+      View: "Permissions.Marketing.BookingManagement.View",
+      Confirm: "Permissions.Marketing.BookingManagement.Confirm",
+      Delete: "Permissions.Marketing.BookingManagement.Delete",
+    },
+  },
+  Warehouse: {
+    Module: "Permissions.Warehouse",
+    DebtPaymentManagement: {
+      View: "Permissions.Warehouse.DebtPaymentManagement.View",
+      Create: "Permissions.Warehouse.DebtPaymentManagement.Create",
+      Edit: "Permissions.Warehouse.DebtPaymentManagement.Edit",
+    },
+    BrandManagement: {
+      View: "Permissions.Warehouse.BrandManagement.View",
+      Create: "Permissions.Warehouse.BrandManagement.Create",
+      Edit: "Permissions.Warehouse.BrandManagement.Edit",
+      Delete: "Permissions.Warehouse.BrandManagement.Delete",
+    },
+    CategoryManagement: {
+      View: "Permissions.Warehouse.CategoryManagement.View",
+      Create: "Permissions.Warehouse.CategoryManagement.Create",
+      Edit: "Permissions.Warehouse.CategoryManagement.Edit",
+      Delete: "Permissions.Warehouse.CategoryManagement.Delete",
+    },
+    OutputManagement: {
+      View: "Permissions.Warehouse.OutputManagement.View",
+      ViewConfirmed: "Permissions.Warehouse.OutputManagement.ViewConfirmed",
+      ViewUnconfirmed: "Permissions.Warehouse.OutputManagement.ViewUnconfirmed",
+      Create: "Permissions.Warehouse.OutputManagement.Create",
+      Edit: "Permissions.Warehouse.OutputManagement.Edit",
+      Delete: "Permissions.Warehouse.OutputManagement.Delete",
+      ChangeStatus: "Permissions.Warehouse.OutputManagement.ChangeStatus",
+    },
+    ProductManagement: {
+      View: "Permissions.Warehouse.ProductManagement.View",
+      Create: "Permissions.Warehouse.ProductManagement.Create",
+      Edit: "Permissions.Warehouse.ProductManagement.Edit",
+      Delete: "Permissions.Warehouse.ProductManagement.Delete",
+      EditPrice: "Permissions.Warehouse.ProductManagement.EditPrice",
+      ChangeStatus: "Permissions.Warehouse.ProductManagement.ChangeStatus",
+    },
+    PurchaseOrderManagement: {
+      View: "Permissions.Warehouse.PurchaseOrderManagement.View",
+      Create: "Permissions.Warehouse.PurchaseOrderManagement.Create",
+      Edit: "Permissions.Warehouse.PurchaseOrderManagement.Edit",
+      Delete: "Permissions.Warehouse.PurchaseOrderManagement.Delete",
+      Send: "Permissions.Warehouse.PurchaseOrderManagement.Send",
+      ApproveReject:
+        "Permissions.Warehouse.PurchaseOrderManagement.ApproveReject",
+    },
+    PurchaseRequestManagement: {
+      View: "Permissions.Warehouse.PurchaseRequestManagement.View",
+      Create: "Permissions.Warehouse.PurchaseRequestManagement.Create",
+      Edit: "Permissions.Warehouse.PurchaseRequestManagement.Edit",
+      Delete: "Permissions.Warehouse.PurchaseRequestManagement.Delete",
+      Send: "Permissions.Warehouse.PurchaseRequestManagement.Send",
+      ApproveReject:
+        "Permissions.Warehouse.PurchaseRequestManagement.ApproveReject",
+    },
+    ReceiptManagement: {
+      View: "Permissions.Warehouse.ReceiptManagement.View",
+      Create: "Permissions.Warehouse.ReceiptManagement.Create",
+      Edit: "Permissions.Warehouse.ReceiptManagement.Edit",
+      Delete: "Permissions.Warehouse.ReceiptManagement.Delete",
+      Send: "Permissions.Warehouse.ReceiptManagement.Send",
+      ApproveReject: "Permissions.Warehouse.ReceiptManagement.ApproveReject",
+    },
+    SupplierContractManagement: {
+      View: "Permissions.Warehouse.SupplierContractManagement.View",
+      Create: "Permissions.Warehouse.SupplierContractManagement.Create",
+      Edit: "Permissions.Warehouse.SupplierContractManagement.Edit",
+      Delete: "Permissions.Warehouse.SupplierContractManagement.Delete",
+    },
+    SupplierManagement: {
+      View: "Permissions.Warehouse.SupplierManagement.View",
+      Create: "Permissions.Warehouse.SupplierManagement.Create",
+      Edit: "Permissions.Warehouse.SupplierManagement.Edit",
+      Delete: "Permissions.Warehouse.SupplierManagement.Delete",
+    },
+  },
+  Factory: {
+    Module: "Permissions.Factory",
+    CustomerManagement: {
+      View: "Permissions.Factory.CustomerManagement.View",
+      Reply: "Permissions.Factory.CustomerManagement.Reply",
+      EditNote: "Permissions.Factory.CustomerManagement.EditNote",
+      Delete: "Permissions.Factory.CustomerManagement.Delete",
+    },
+    DashboardManagement: {
+      View: "Permissions.Factory.DashboardManagement.View",
+      Export: "Permissions.Factory.DashboardManagement.Export",
+    },
+    ContractManagement: {
+      View: "Permissions.Factory.ContractManagement.View",
+      Create: "Permissions.Factory.ContractManagement.Create",
+      Edit: "Permissions.Factory.ContractManagement.Edit",
+      Delete: "Permissions.Factory.ContractManagement.Delete",
+    },
+    CustomerSelection: {
+      View: "Permissions.Factory.CustomerSelection.View",
+    },
+    BookingManagement: {
+      View: "Permissions.Factory.BookingManagement.View",
+      Confirm: "Permissions.Factory.BookingManagement.Confirm",
+      Delete: "Permissions.Factory.BookingManagement.Delete",
+    },
+    RepairOrderManagement: {
+      View: "Permissions.Factory.RepairOrderManagement.View",
+      Create: "Permissions.Factory.RepairOrderManagement.Create",
+      Diagnosis: "Permissions.Factory.RepairOrderManagement.Diagnosis",
+      AssignTechnician:
+        "Permissions.Factory.RepairOrderManagement.AssignTechnician",
+      StartRepair: "Permissions.Factory.RepairOrderManagement.StartRepair",
+      SubmitQc: "Permissions.Factory.RepairOrderManagement.SubmitQc",
+      Complete: "Permissions.Factory.RepairOrderManagement.Complete",
+      Cancel: "Permissions.Factory.RepairOrderManagement.Cancel",
+    },
+    SparePartSelection: {
+      View: "Permissions.Factory.SparePartSelection.View",
+    },
+  },
+  Accountant: {
+    Module: "Permissions.Accountant",
+    ContractVerification: {
+      View: "Permissions.Accountant.ContractVerification.View",
+    },
+    DebtPaymentManagement: {
+      View: "Permissions.Accountant.DebtPaymentManagement.View",
+      Create: "Permissions.Accountant.DebtPaymentManagement.Create",
+      Edit: "Permissions.Accountant.DebtPaymentManagement.Edit",
+    },
+    EmployeeManagement: {
+      View: "Permissions.Accountant.EmployeeManagement.View",
+      Create: "Permissions.Accountant.EmployeeManagement.Create",
+      Edit: "Permissions.Accountant.EmployeeManagement.Edit",
+      Delete: "Permissions.Accountant.EmployeeManagement.Delete",
+    },
+    PayrollManagement: {
+      View: "Permissions.Accountant.PayrollManagement.View",
+      Configure: "Permissions.Accountant.PayrollManagement.Configure",
+      Approve: "Permissions.Accountant.PayrollManagement.Approve",
+    },
+    SupplierContractManagement: {
+      View: "Permissions.Accountant.SupplierContractManagement.View",
+      Create: "Permissions.Accountant.SupplierContractManagement.Create",
+      Edit: "Permissions.Accountant.SupplierContractManagement.Edit",
+      Delete: "Permissions.Accountant.SupplierContractManagement.Delete",
+    },
+    CustomerManagement: {
+      View: "Permissions.Accountant.CustomerManagement.View",
+      Reply: "Permissions.Accountant.CustomerManagement.Reply",
+      EditNote: "Permissions.Accountant.CustomerManagement.EditNote",
+      Delete: "Permissions.Accountant.CustomerManagement.Delete",
+    },
+    DashboardManagement: {
+      View: "Permissions.Accountant.DashboardManagement.View",
+      Export: "Permissions.Accountant.DashboardManagement.Export",
+    },
+    ContractManagement: {
+      View: "Permissions.Accountant.ContractManagement.View",
+      Create: "Permissions.Accountant.ContractManagement.Create",
+      Edit: "Permissions.Accountant.ContractManagement.Edit",
+      Delete: "Permissions.Accountant.ContractManagement.Delete",
+    },
+  },
+  Order: {
+    Module: "Permissions.Order",
+    ProductManagement: {
+      View: "Permissions.Order.ProductManagement.View",
+      Create: "Permissions.Order.ProductManagement.Create",
+      Edit: "Permissions.Order.ProductManagement.Edit",
+      Delete: "Permissions.Order.ProductManagement.Delete",
+      EditPrice: "Permissions.Order.ProductManagement.EditPrice",
+      ChangeStatus: "Permissions.Order.ProductManagement.ChangeStatus",
+    },
+    CustomerManagement: {
+      View: "Permissions.Order.CustomerManagement.View",
+      Reply: "Permissions.Order.CustomerManagement.Reply",
+      EditNote: "Permissions.Order.CustomerManagement.EditNote",
+      Delete: "Permissions.Order.CustomerManagement.Delete",
+    },
+    ContractManagement: {
+      View: "Permissions.Order.ContractManagement.View",
+      Create: "Permissions.Order.ContractManagement.Create",
+      Edit: "Permissions.Order.ContractManagement.Edit",
+      Delete: "Permissions.Order.ContractManagement.Delete",
+    },
+    CustomerSelection: {
+      View: "Permissions.Order.CustomerSelection.View",
+    },
+    OrderManagement: {
+      View: "Permissions.Order.OrderManagement.View",
+      Create: "Permissions.Order.OrderManagement.Create",
+      Edit: "Permissions.Order.OrderManagement.Edit",
+      Delete: "Permissions.Order.OrderManagement.Delete",
+      ChangeStatus: "Permissions.Order.OrderManagement.ChangeStatus",
+    },
+    ProductSelection: {
+      View: "Permissions.Order.ProductSelection.View",
+    },
+  },
+};

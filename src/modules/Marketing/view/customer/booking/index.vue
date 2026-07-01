@@ -45,6 +45,7 @@
           <button
             @click="handleCreateNew"
             class="h-10 px-6 bg-[#001529] text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg hover:bg-blue-700 transition-all active:scale-95"
+            v-auth="Permissions.Marketing.BookingManagement.View"
           >
             + Đặt lịch mới
           </button>
@@ -173,6 +174,7 @@
               <button
                 @click.stop="confirmBooking(booking)"
                 class="mt-3 w-full h-8 bg-red-500 text-white rounded-lg font-black text-[9px] uppercase tracking-widest shadow-md hover:bg-red-600 transition-all opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0"
+                v-auth="Permissions.Marketing.BookingManagement.View"
               >
                 Xác nhận & Gửi Mail/SMS
               </button>
@@ -314,6 +316,7 @@
                   ? 'bg-[#001529] text-white border-[#001529]'
                   : 'bg-white text-slate-400 border-slate-100 hover:border-slate-300'
               "
+              v-auth="Permissions.Marketing.BookingManagement.View"
             >
               {{
                 t === "TestDrive"
@@ -360,6 +363,7 @@
             v-if="isEditing"
             @click="handleDeleteBooking"
             class="text-red-400 hover:text-red-600 font-black text-[9px] uppercase tracking-widest"
+            v-auth="Permissions.Marketing.BookingManagement.View"
           >
             Hủy lịch
           </button>
@@ -368,6 +372,7 @@
             <button
               @click="dialogVisible = false"
               class="h-10 px-6 text-slate-400 font-black text-[10px] uppercase tracking-widest"
+              v-auth="Permissions.Marketing.BookingManagement.View"
             >
               Đóng
             </button>
@@ -376,6 +381,7 @@
               v-if="bookingForm.status === 'Pending' && isEditing"
               @click="confirmBooking(activeBooking)"
               class="h-10 px-8 bg-red-500 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-red-600 transition-all flex items-center gap-2"
+              v-auth="Permissions.Marketing.BookingManagement.View"
             >
               <ArtSvgIcon icon="ri:check-double-line" /> Xác nhận & Gửi thông
               báo
@@ -384,6 +390,7 @@
             <button
               @click="handleSaveBooking"
               class="h-10 px-8 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all"
+              v-auth="Permissions.Marketing.BookingManagement.View"
             >
               {{ isEditing ? "Cập nhật" : "Tạo mới" }}
             </button>
@@ -395,6 +402,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/common/constants/permissions";
 import { ref, computed, onMounted } from "vue";
 import { ElMessage, ElLoading, ElMessageBox } from "element-plus";
 import { BookingApi, Booking } from "@/api/sales";

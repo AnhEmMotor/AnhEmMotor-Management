@@ -285,6 +285,7 @@
                 @click="handleSubmit"
                 :disabled="submitting"
                 class="w-full h-11 bg-emerald-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg hover:bg-emerald-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                v-auth="Permissions.Marketing.CustomerManagement.View"
               >
                 <ArtSvgIcon
                   icon="ri:checkbox-circle-line"
@@ -306,6 +307,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/common/constants/permissions";
 import { ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
