@@ -19,7 +19,11 @@
       >
         <template #left>
           <ElSpace wrap>
-            <ElButton type="primary" @click="showDialog('add')" v-ripple
+            <ElButton
+              v-auth="Permissions.Admin.RoleManagement.Create"
+              type="primary"
+              @click="showDialog('add')"
+              v-ripple
               >Thêm vai trò mới</ElButton
             >
           </ElSpace>
@@ -61,6 +65,7 @@ import RoleSearch from "./modules/role-search.vue";
 import RoleEditDialog from "./modules/role-edit-dialog.vue";
 import RolePermissionDialog from "./modules/role-permission-dialog.vue";
 import { ElMessageBox } from "element-plus";
+import { Permissions } from "@/common/constants/permissions";
 defineOptions({ name: "Role" });
 
 type RoleSearchFormParams = {
@@ -126,17 +131,20 @@ const {
                   key: "permission",
                   label: "Phân quyền hạn",
                   icon: "ri:shield-keyhole-line",
+                  auth: Permissions.Admin.RoleManagement.Edit,
                 },
                 {
                   key: "edit",
                   label: "Chỉnh sửa vai trò",
                   icon: "ri:edit-2-line",
+                  auth: Permissions.Admin.RoleManagement.Edit,
                 },
                 {
                   key: "delete",
                   label: "Xóa vai trò",
                   icon: "ri:delete-bin-4-line",
                   color: "#f56c6c",
+                  auth: Permissions.Admin.RoleManagement.Delete,
                 },
               ],
               onClick: (item: ButtonMoreItem) => buttonMoreClick(item, row),

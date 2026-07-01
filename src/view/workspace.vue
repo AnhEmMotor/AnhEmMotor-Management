@@ -115,7 +115,9 @@ import { useCommon } from "@/common/composables/useCommon";
 import ArtHeaderBar from "@/components/core/layouts/art-header-bar/index.vue";
 import ArtGlobalComponent from "@/components/core/layouts/art-global-component/index.vue";
 import { useWorktabStore } from "@/application/store/worktab";
-import { onMounted } from "vue";
+import { onMounted, computed } from "vue";
+import { useAuth } from "@/common/composables/useAuth";
+import { Permissions } from "@/common/constants/permissions";
 
 const router = useRouter();
 const { homePath } = useCommon();
@@ -135,14 +137,16 @@ const handleWorkspaceClick = (workspace: any) => {
   }
 };
 
-const workspaces = ref([
+const { hasAuth } = useAuth();
+
+const workspaces = computed(() => [
   {
     title: "Ban Điều Hành & Chủ Showroom",
     subtitle: "Executive Overview",
     icon: markRaw(DataAnalysis),
     color: "#e11d48",
     shadowColor: "rgba(225, 29, 72, 0.25)",
-    hasAccess: true,
+    hasAccess: hasAuth(Permissions.Admin.Module),
     badge: { isDot: true, type: "danger" },
     path: "/admin/dashboard/console",
   },
@@ -152,7 +156,7 @@ const workspaces = ref([
     icon: markRaw(UserFilled),
     color: "#059669",
     shadowColor: "rgba(5, 150, 105, 0.25)",
-    hasAccess: true,
+    hasAccess: hasAuth(Permissions.Marketing.Module),
     badge: { isDot: false, value: 5, label: "đơn mới", type: "warning" },
     path: "/Marketing/banner",
   },
@@ -162,7 +166,7 @@ const workspaces = ref([
     icon: markRaw(Box),
     color: "#d97706",
     shadowColor: "rgba(217, 119, 6, 0.15)",
-    hasAccess: true,
+    hasAccess: hasAuth(Permissions.Warehouse.Module),
     path: "/Warehouse/product",
   },
   {
@@ -171,7 +175,7 @@ const workspaces = ref([
     icon: markRaw(Service),
     color: "#2563eb",
     shadowColor: "rgba(37, 99, 235, 0.15)",
-    hasAccess: true,
+    hasAccess: hasAuth(Permissions.Factory.Module),
     path: "/factory/workshop/dashboard",
   },
   {
@@ -180,7 +184,7 @@ const workspaces = ref([
     icon: markRaw(Wallet),
     color: "#7c3aed",
     shadowColor: "rgba(124, 58, 237, 0.15)",
-    hasAccess: true,
+    hasAccess: hasAuth(Permissions.Accountant.Module),
     path: "/Accountant/executive-dashboard",
   },
   {
@@ -189,7 +193,7 @@ const workspaces = ref([
     icon: markRaw(Wallet),
     color: "#7c3aed",
     shadowColor: "rgba(124, 58, 237, 0.15)",
-    hasAccess: true,
+    hasAccess: hasAuth(Permissions.Order.Module),
     path: "/Order/management/list",
   },
 ]);

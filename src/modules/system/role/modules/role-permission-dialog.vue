@@ -151,11 +151,22 @@ const loadRolePermissions = async () => {
   try {
     const permissions = await fetchGetRolePermissions(props.roleData.id);
     nextTick(() => {
-      treeRef.value?.setCheckedKeys(permissions || []);
+      const validActionIds = new Set<string>();
+      treeData.value.forEach((mod) => {
+        mod.children?.forEach((feat) => {
+          feat.children?.forEach((act) => validActionIds.add(act.id));
+        });
+      });
+      const leafPermissions = (permissions || []).filter((p) =>
+        validActionIds.has(p),
+      );
+
+      treeRef.value?.setCheckedKeys(leafPermissions);
       lastCheckedKeys.value = treeRef.value?.getCheckedKeys() || [];
       const allKeys = getAllNodeKeys(treeData.value);
       isSelectAll.value =
-        (permissions || []).length === allKeys.length && allKeys.length > 0;
+        leafPermissions.length === validActionIds.size &&
+        validActionIds.size > 0;
     });
   } catch (error) {
     console.error("Failed to load role permissions:", error);
@@ -185,9 +196,23 @@ const savePermission = async () => {
   if (!props.roleData) return;
   saving.value = true;
   try {
-    const checkedKeys = (treeRef.value?.getCheckedKeys(true) || []) as string[];
+    const checkedKeys = (treeRef.value?.getCheckedKeys(false) ||
+      []) as string[];
+    const halfCheckedKeys = (treeRef.value?.getHalfCheckedKeys() ||
+      []) as string[];
+    const allSelectedKeys = [...checkedKeys, ...halfCheckedKeys];
 
-    const realPermissions = checkedKeys.filter((id) => id.includes("."));
+    const validPermissionIds = new Set<string>();
+    treeData.value.forEach((mod) => {
+      validPermissionIds.add(mod.id);
+      mod.children?.forEach((feat) => {
+        feat.children?.forEach((act) => validPermissionIds.add(act.id));
+      });
+    });
+
+    const realPermissions = allSelectedKeys.filter((id) =>
+      validPermissionIds.has(id),
+    );
 
     await fetchUpdateRole(props.roleData.id, {
       roleName: props.roleData.name,
