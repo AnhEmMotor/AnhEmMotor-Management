@@ -153,29 +153,25 @@ const loadPermissionStructure = async () => {
     permissionDependencies.value = res.dependencies || {};
     permissionConflicts.value = res.conflicts || {};
 
-    const metadataMap = new Map(res.metadata.map((m) => [m.id, m]));
-
-    const nodes: TreePermissionNode[] = Object.entries(res.groups).map(
-      ([groupName, permIds]) => {
-        const children: TreePermissionNode[] = permIds
-          .map((id) => {
-            const meta = metadataMap.get(id);
-            if (!meta) return null;
-            return {
-              id: meta.id,
-              label: meta.name || meta.id,
-              description: meta.description,
-            };
-          })
-          .filter(Boolean) as TreePermissionNode[];
-
-        return {
-          id: groupName,
-          label: `Nhóm ${groupName}`,
-          children,
-        };
-      },
-    );
+    const nodes: TreePermissionNode[] = (res.modules || []).map((mod: any) => {
+      return {
+        id: mod.id,
+        label: mod.name,
+        children: (mod.features || []).map((feat: any) => {
+          return {
+            id: feat.id,
+            label: feat.name,
+            children: (feat.permissions || []).map((perm: any) => {
+              return {
+                id: perm.id,
+                label: perm.name,
+                description: perm.description,
+              };
+            }),
+          };
+        }),
+      };
+    });
     treeData.value = nodes;
   } catch (error) {
     console.error("Failed to load permission structure:", error);
