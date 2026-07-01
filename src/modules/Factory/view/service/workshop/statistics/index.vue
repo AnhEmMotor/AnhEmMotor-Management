@@ -168,8 +168,9 @@ const loadData = async () => {
       .getWorkshopDashboardOverview(fromStr, toStr)
       .catch(() => null);
 
-    if (res && res.data) {
-      const data = res.data;
+    if (res) {
+      // res could be the DTO itself, or wrapped in a data property depending on the HTTP client interceptor
+      const data = res.data || res;
 
       // Extract Status Breakdown
       const breakdowns = data.statusBreakdowns || [];
