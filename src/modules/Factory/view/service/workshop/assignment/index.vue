@@ -1,343 +1,256 @@
 <template>
-  <div class="p-4 assignment-container">
-    <div class="flex items-start justify-between gap-4 mb-6 flex-wrap">
+  <div class="workshop-assignment-page">
+    <div class="workshop-assignment-page__header">
       <div>
-        <h1 class="text-2xl font-bold flex items-center gap-2">
-          <ElIcon class="text-primary"><Compass /></ElIcon>
-          Bảng Phân Công Sửa Chữa (Kanban & Timeline)
-        </h1>
-        <p class="mt-1 text-sm text-slate-500">
-          Kéo thả phiếu sửa chữa để phân công công việc hoặc theo dõi tiến độ
-          làm việc của kỹ thuật viên theo dòng thời gian.
-        </p>
+        <h1>Phân công nhân viên</h1>
+        <p>Điều phối phiếu sửa chữa cho kỹ thuật viên xưởng.</p>
       </div>
 
-      <div class="flex items-center gap-3">
-        <ElRadioGroup v-model="viewMode" size="default">
-          <ElRadioButton value="kanban">
-            <div class="flex items-center gap-1">
-              <ElIcon><Grid /></ElIcon> Kanban
-            </div>
-          </ElRadioButton>
-          <ElRadioButton value="timeline">
-            <div class="flex items-center gap-1">
-              <ElIcon><Calendar /></ElIcon> Dòng thời gian
-            </div>
+      <ElButton
+        type="primary"
+        :icon="Refresh"
+        :loading="loading"
+        @click="refreshData"
+      >
+        Làm mới
+      </ElButton>
+    </div>
+
+    <div class="workshop-assignment-page__stats">
+      <ArtStatsCard
+        title="Chờ phân công"
+        :count="unassignedOrders.length"
+        description="Phiếu chưa có kỹ thuật viên"
+        icon="ri:user-add-line"
+        :icon-style="unassignedOrders.length ? 'bg-danger' : 'bg-success'"
+        :loading="loading"
+      />
+      <ArtStatsCard
+        title="Đang xử lý"
+        :count="activeOrderCount"
+        description="Phiếu còn trong luồng xưởng"
+        icon="ri:tools-line"
+        icon-style="bg-primary"
+        :loading="loading"
+      />
+      <ArtStatsCard
+        title="Kỹ thuật viên"
+        :count="technicians.length"
+        description="Nhân sự khả dụng"
+        icon="ri:team-line"
+        icon-style="bg-info"
+        :loading="loading"
+      />
+      <ArtStatsCard
+        title="Giá trị đang giữ"
+        :count="formatCurrency(activeOrderValue)"
+        description="Tổng giá trị phiếu chưa hoàn tất"
+        icon="ri:money-dollar-circle-line"
+        icon-style="bg-warning"
+        :loading="loading"
+      />
+    </div>
+
+    <ElAlert
+      v-if="errorMessage"
+      type="error"
+      show-icon
+      :closable="false"
+      :title="errorMessage"
+    />
+
+    <ElCard class="workshop-assignment-card">
+      <div class="workshop-assignment-page__filters">
+        <ElInput
+          v-model="searchKeyword"
+          clearable
+          placeholder="Tìm biển số, khách hàng, số điện thoại"
+          class="workshop-assignment-page__search"
+        />
+        <ElRadioGroup v-model="statusFilter">
+          <ElRadioButton
+            v-for="status in statusOptions"
+            :key="status.value"
+            :value="status.value"
+          >
+            {{ status.label }}
           </ElRadioButton>
         </ElRadioGroup>
-
-        <ElButton
-          :icon="Refresh"
-          type="primary"
-          :loading="loading"
-          @click="initData"
-        >
-          Làm mới
-        </ElButton>
       </div>
-    </div>
+    </ElCard>
 
-    <div
-      v-if="viewMode === 'kanban'"
-      class="grid grid-cols-1 lg:grid-cols-3 gap-6"
-    >
-      <div class="lg:col-span-1 flex flex-col">
-        <ElCard class="flex-1 flex flex-col hide-header-border" shadow="hover">
-          <template #header>
-            <div class="flex items-center justify-between">
-              <span class="font-bold text-slate-800 flex items-center gap-2">
-                <ElTag type="danger" effect="dark">{{
-                  unassignedTickets.length
-                }}</ElTag>
-                Phiếu Chờ Phân Công
-              </span>
-              <ElInput
-                v-model="searchQuery"
-                placeholder="Tìm khách/SĐT/biển số..."
-                size="small"
-                clearable
-                class="w-48"
-              />
-            </div>
-          </template>
-
-          <div
-            v-if="filteredUnassigned.length === 0"
-            class="py-12 text-center text-slate-400 flex flex-col items-center justify-center gap-2"
-          >
-            <ElIcon size="36"><CircleCheck /></ElIcon>
-            <span>Đã phân công hết phiếu sửa chữa!</span>
-          </div>
-
-          <div v-else class="space-y-3 overflow-y-auto max-h-[600px] pr-1">
-            <div
-              v-for="ticket in filteredUnassigned"
-              :key="ticket.id"
-              class="ticket-card"
-              draggable="true"
-              @dragstart="onDragStart($event, ticket)"
-            >
-              <div class="flex items-start justify-between gap-2">
-                <span class="text-xs font-bold text-primary"
-                  >#{{ ticket.id }}</span
-                >
-                <ElTag
-                  :type="ticket.status === 'Pending' ? 'warning' : 'primary'"
-                  size="small"
-                >
-                  {{ ticket.status }}
-                </ElTag>
-              </div>
-
-              <div class="mt-2 text-sm font-bold text-slate-900">
-                {{ ticket.licensePlate || "Chưa có biển số" }}
-              </div>
-
-              <div class="mt-1 text-xs text-slate-500">
-                Khách hàng:
-                <span class="font-semibold text-slate-700">{{
-                  ticket.customerName
-                }}</span>
-              </div>
-              <div class="mt-0.5 text-xs text-slate-500">
-                SĐT:
-                <span class="font-mono text-slate-700">{{
-                  ticket.customerPhone
-                }}</span>
-              </div>
-
-              <div
-                class="mt-2 pt-2 border-t border-dashed border-slate-100 flex items-center justify-between gap-2"
-              >
-                <span
-                  class="text-xs text-amber-600 font-medium truncate max-w-[150px]"
-                >
-                  {{ ticket.description || "Không có mô tả" }}
-                </span>
-
-                <ElDropdown
-                  trigger="click"
-                  @command="
-                    (techId: number) => handleQuickAssign(ticket.id, techId)
-                  "
-                >
-                  <ElButton size="small" type="primary" link
-                    >Phân công nhanh</ElButton
-                  >
-                  <template #dropdown>
-                    <ElDropdownMenu>
-                      <ElDropdownItem
-                        v-for="tech in technicians"
-                        :key="tech.id"
-                        :command="tech.id"
-                      >
-                        {{ tech.fullName }} ({{ getTechWorkloadCount(tech.id) }}
-                        việc)
-                      </ElDropdownItem>
-                    </ElDropdownMenu>
-                  </template>
-                </ElDropdown>
-              </div>
-            </div>
-          </div>
-        </ElCard>
-      </div>
-
-      <div class="lg:col-span-2">
-        <ElCard class="hide-header-border" shadow="hover">
-          <template #header>
-            <div class="flex items-center justify-between">
-              <span class="font-bold text-slate-800 flex items-center gap-2">
-                <ElIcon><Tools /></ElIcon>
-                Trạng Thái Tải Công Việc Kỹ Thuật Viên
-              </span>
-              <span class="text-xs text-slate-400"
-                >Thả phiếu sửa chữa vào thẻ kỹ thuật viên để giao việc</span
-              >
-            </div>
-          </template>
-
-          <div
-            v-if="technicians.length === 0"
-            class="py-12 text-center text-slate-400"
-          >
-            Không tìm thấy thông tin kỹ thuật viên.
-          </div>
-
-          <div
-            v-else
-            class="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto max-h-[600px] pr-1"
-          >
-            <div
-              v-for="tech in technicians"
-              :key="tech.id"
-              class="tech-column"
-              :class="{ 'drag-over': activeDragOverTechId === tech.id }"
-              @dragover.prevent="onDragOver(tech.id)"
-              @dragleave="onDragLeave"
-              @drop="onDrop($event, tech)"
-            >
-              <div
-                class="flex items-center justify-between gap-3 mb-3 pb-3 border-b border-slate-100"
-              >
-                <div class="flex items-center gap-2.5">
-                  <ElAvatar
-                    :size="36"
-                    class="bg-primary-light text-primary font-bold"
-                  >
-                    {{ tech.fullName.charAt(0) }}
-                  </ElAvatar>
-                  <div>
-                    <div class="text-sm font-bold text-slate-900 leading-tight">
-                      {{ tech.fullName }}
-                    </div>
-                    <div class="text-[10px] text-slate-400 mt-0.5">
-                      {{ tech.jobTitle || "Kỹ thuật viên" }}
-                    </div>
-                  </div>
-                </div>
-
-                <div class="text-right">
-                  <ElTag
-                    :type="
-                      getTechWorkloadCount(tech.id) > 0 ? 'warning' : 'success'
-                    "
-                    size="small"
-                    effect="dark"
-                  >
-                    {{ getTechWorkloadCount(tech.id) > 0 ? "Bận" : "Rảnh" }}
-                  </ElTag>
-                  <div class="text-[10px] text-slate-400 mt-1">
-                    {{ getTechWorkloadCount(tech.id) }} Phiếu đang làm
-                  </div>
-                </div>
-              </div>
-
-              <div class="space-y-2 min-h-[100px] flex flex-col">
-                <div
-                  v-if="getTechTickets(tech.id).length === 0"
-                  class="flex-1 flex items-center justify-center text-center py-6 text-xs text-slate-400 border border-dashed border-slate-200 rounded-xl bg-slate-50/50"
-                >
-                  Kéo thả phiếu vào đây để giao việc
-                </div>
-
-                <div
-                  v-else
-                  v-for="ticket in getTechTickets(tech.id)"
-                  :key="ticket.id"
-                  class="tech-assigned-card"
-                >
-                  <div class="flex items-center justify-between">
-                    <span class="text-[10px] font-mono text-slate-400"
-                      >#{{ ticket.id }}</span
-                    >
-                    <span class="text-xs font-bold text-slate-900">{{
-                      ticket.licensePlate || "N/A"
-                    }}</span>
-                  </div>
-                  <div class="text-xs text-slate-600 mt-1 flex justify-between">
-                    <span>Khách: {{ ticket.customerName }}</span>
-                    <ElTag
-                      size="small"
-                      type="info"
-                      class="scale-90 transform origin-right"
-                    >
-                      {{ ticket.status }}
-                    </ElTag>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </ElCard>
-      </div>
-    </div>
-
-    <div v-else class="timeline-view-wrapper">
-      <ElCard shadow="hover">
+    <div class="workshop-assignment-page__workspace">
+      <ElCard class="workshop-assignment-card workshop-assignment-queue">
         <template #header>
-          <div class="flex items-center justify-between">
-            <span class="font-bold text-slate-800 flex items-center gap-2">
-              <ElIcon><Calendar /></ElIcon>
-              Phân Bổ Công Việc Theo Giờ (Trong Ngày)
-            </span>
-            <span class="text-xs text-slate-400"
-              >Xem sơ đồ phân phối công việc của đội ngũ thợ máy</span
-            >
+          <div class="workshop-assignment-card__header">
+            <span>Phiếu cần phân công</span>
+            <ElTag type="danger" effect="light" round>
+              {{ filteredUnassignedOrders.length }}
+            </ElTag>
           </div>
         </template>
 
-        <div class="timeline-container overflow-x-auto">
-          <div class="timeline-grid min-w-[800px]">
-            <div
-              class="timeline-header-row flex border-b border-slate-100 pb-3 mb-3"
-            >
-              <div class="w-48 font-bold text-sm text-slate-500 shrink-0">
-                Nhân viên
-              </div>
-              <div
-                class="flex-1 grid grid-cols-5 text-center text-xs font-bold text-slate-500"
-              >
-                <div>08:00 - 10:00</div>
-                <div>10:00 - 12:00</div>
-                <div>13:00 - 15:00</div>
-                <div>15:00 - 17:00</div>
-                <div>17:00 - 19:00</div>
-              </div>
+        <ElSkeleton v-if="loading" :rows="7" animated />
+        <div
+          v-else-if="filteredUnassignedOrders.length"
+          class="workshop-assignment-queue__list"
+        >
+          <button
+            v-for="order in filteredUnassignedOrders"
+            :key="order.id"
+            type="button"
+            :class="[
+              'workshop-assignment-order',
+              { 'is-active': selectedOrderId === order.id },
+            ]"
+            @click="selectOrder(order)"
+          >
+            <div class="workshop-assignment-order__main">
+              <strong>{{ order.licensePlate || `#${order.id}` }}</strong>
+              <ElTag :type="statusTagType(order.status)" effect="light" round>
+                {{ statusLabel(order.status) }}
+              </ElTag>
             </div>
-
-            <div
-              v-if="technicians.length === 0"
-              class="py-12 text-center text-slate-400"
-            >
-              Không có dữ liệu kỹ thuật viên.
+            <div class="workshop-assignment-order__meta">
+              <span>{{ order.customerName || "Chưa có khách hàng" }}</span>
+              <span>{{ order.customerPhone || "-" }}</span>
             </div>
+            <div class="workshop-assignment-order__foot">
+              <span>{{ formatDateTime(order.createdAt) }}</span>
+              <strong>{{ formatCurrency(order.totalAmount || 0) }}</strong>
+            </div>
+          </button>
+        </div>
+        <ElEmpty v-else description="Chưa có phiếu cần phân công" />
+      </ElCard>
 
-            <div v-else class="space-y-4">
-              <div
-                v-for="tech in technicians"
-                :key="tech.id"
-                class="timeline-row flex items-center py-2 border-b border-slate-50 last:border-0"
-              >
-                <div class="w-48 flex items-center gap-2 shrink-0 pr-4">
-                  <ElAvatar
-                    :size="28"
-                    class="bg-primary-light text-primary font-bold text-xs"
-                  >
-                    {{ tech.fullName.charAt(0) }}
-                  </ElAvatar>
-                  <div class="min-w-0">
-                    <div class="text-xs font-bold text-slate-800 truncate">
-                      {{ tech.fullName }}
-                    </div>
-                    <div class="text-[9px] text-slate-400">
-                      {{ tech.jobTitle || "Thợ máy" }}
-                    </div>
-                  </div>
+      <ElCard class="workshop-assignment-card workshop-assignment-workload">
+        <template #header>
+          <div class="workshop-assignment-card__header">
+            <span>Tải việc kỹ thuật viên</span>
+            <ElTag type="info" effect="light" round>
+              {{ technicianWorkloads.length }}
+            </ElTag>
+          </div>
+        </template>
+
+        <ElTable
+          v-loading="loading"
+          :data="technicianWorkloads"
+          class="workshop-assignment-table"
+          empty-text="Chưa có nhân viên"
+        >
+          <ElTableColumn label="Kỹ thuật viên" min-width="190">
+            <template #default="{ row }">
+              <div class="workshop-assignment-technician">
+                <div class="workshop-assignment-technician__avatar">
+                  {{ row.fullName.charAt(0) }}
                 </div>
-
-                <div
-                  class="flex-1 grid grid-cols-5 gap-3 h-14 bg-slate-50/50 dark:bg-slate-900/10 rounded-xl relative p-1"
-                >
-                  <div
-                    v-for="ticket in getTechTickets(tech.id)"
-                    :key="ticket.id"
-                    class="absolute rounded-lg p-2 text-[10px] font-bold text-white shadow-sm flex flex-col justify-center cursor-pointer transition-all hover:scale-[1.02]"
-                    :style="getTicketTimelineStyle(ticket)"
-                  >
-                    <div class="truncate">
-                      {{ ticket.licensePlate || "N/A" }}
-                    </div>
-                    <div
-                      class="truncate font-normal scale-90 origin-left mt-0.5"
-                    >
-                      {{ ticket.customerName }}
-                    </div>
-                  </div>
+                <div>
+                  <strong>{{ row.fullName }}</strong>
+                  <span>{{ row.jobTitle || "Kỹ thuật viên" }}</span>
                 </div>
               </div>
+            </template>
+          </ElTableColumn>
+          <ElTableColumn prop="activeCount" label="Đang giữ" width="110" />
+          <ElTableColumn prop="inProgressCount" label="Đang sửa" width="110" />
+          <ElTableColumn label="Giá trị" min-width="140" align="right">
+            <template #default="{ row }">
+              {{ formatCurrency(row.estimatedValue) }}
+            </template>
+          </ElTableColumn>
+          <ElTableColumn label="Chọn" width="90" align="center">
+            <template #default="{ row }">
+              <ElButton
+                type="primary"
+                link
+                :disabled="!selectedOrder"
+                @click="selectedTechnicianId = row.id"
+              >
+                Chọn
+              </ElButton>
+            </template>
+          </ElTableColumn>
+        </ElTable>
+      </ElCard>
+
+      <ElCard class="workshop-assignment-card workshop-assignment-detail">
+        <template #header>
+          <div class="workshop-assignment-card__header">
+            <span>Phân công phiếu</span>
+            <ElTag v-if="selectedOrder" type="primary" effect="light" round>
+              #{{ selectedOrder.id }}
+            </ElTag>
+          </div>
+        </template>
+
+        <ElEmpty
+          v-if="!selectedOrder"
+          description="Chọn phiếu cần phân công"
+          :image-size="92"
+        />
+        <div v-else class="workshop-assignment-detail__body">
+          <div class="workshop-assignment-detail__summary">
+            <div>
+              <span>Biển số</span>
+              <strong>{{ selectedOrder.licensePlate || "-" }}</strong>
+            </div>
+            <div>
+              <span>Khách hàng</span>
+              <strong>{{ selectedOrder.customerName || "-" }}</strong>
+            </div>
+            <div>
+              <span>Mô tả</span>
+              <strong>{{ selectedOrder.description || "-" }}</strong>
+            </div>
+            <div>
+              <span>Thành tiền</span>
+              <strong>{{
+                formatCurrency(selectedOrder.totalAmount || 0)
+              }}</strong>
             </div>
           </div>
+
+          <ElForm label-position="top" class="workshop-assignment-form">
+            <ElFormItem label="Kỹ thuật viên phụ trách">
+              <ElSelect
+                v-model="selectedTechnicianId"
+                filterable
+                clearable
+                placeholder="Chọn kỹ thuật viên"
+                class="w-full"
+              >
+                <ElOption
+                  v-for="technician in technicians"
+                  :key="technician.id"
+                  :label="technician.fullName"
+                  :value="technician.id"
+                >
+                  <span>{{ technician.fullName }}</span>
+                  <small>{{ technician.jobTitle || "Kỹ thuật viên" }}</small>
+                </ElOption>
+              </ElSelect>
+            </ElFormItem>
+
+            <div v-if="selectedTechnician" class="workshop-assignment-selected">
+              <span>Đang chọn</span>
+              <strong>{{ selectedTechnician.fullName }}</strong>
+              <small>{{
+                selectedTechnician.jobTitle || "Kỹ thuật viên"
+              }}</small>
+            </div>
+
+            <ElButton
+              type="primary"
+              :loading="submitting"
+              :disabled="!selectedTechnicianId"
+              class="w-full"
+              @click="submitAssignment"
+            >
+              Phân công
+            </ElButton>
+          </ElForm>
         </div>
       </ElCard>
     </div>
@@ -346,248 +259,536 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import {
-  Compass,
-  Refresh,
-  CircleCheck,
-  Tools,
-  Grid,
-  Calendar,
-} from "@element-plus/icons-vue";
+import { Refresh } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
+
+import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
+import { EmployeeApi, type EmployeeResponse } from "@/api/operations";
 import { RepairOrderApi, type RepairOrder } from "@/api/sales";
-import {
-  EmployeeApi,
-  type EmployeeResponse,
-} from "@/api/operations/employee.api";
 
 defineOptions({ name: "WorkshopAssignment" });
 
+type RepairOrderStatus = RepairOrder["status"];
+type StatusFilter = "all" | RepairOrderStatus;
+
+interface TechnicianWorkload {
+  id: number;
+  fullName: string;
+  jobTitle: string;
+  activeCount: number;
+  pendingCount: number;
+  inProgressCount: number;
+  qcPendingCount: number;
+  estimatedValue: number;
+}
+
+const statusOptions: Array<{ label: string; value: StatusFilter }> = [
+  { label: "Tất cả", value: "all" },
+  { label: "Chờ nhận", value: "Pending" },
+  { label: "Đang sửa", value: "InProgress" },
+  { label: "Chờ QC", value: "QcPending" },
+];
+
 const loading = ref(false);
-const viewMode = ref<"kanban" | "timeline">("kanban");
-const searchQuery = ref("");
-const activeDragOverTechId = ref<number | null>(null);
+const submitting = ref(false);
+const errorMessage = ref("");
+const repairOrders = ref<RepairOrder[]>([]);
+const employees = ref<EmployeeResponse[]>([]);
+const selectedOrderId = ref<number | null>(null);
+const selectedTechnicianId = ref<number | null>(null);
+const searchKeyword = ref("");
+const statusFilter = ref<StatusFilter>("all");
 
-const tickets = ref<RepairOrder[]>([]);
-const technicians = ref<EmployeeResponse[]>([]);
+const activeOrders = computed(() =>
+  repairOrders.value.filter(
+    (order) => order.status !== "Completed" && order.status !== "Cancelled",
+  ),
+);
 
-const unassignedTickets = computed(() => {
-  return tickets.value.filter(
-    (t) =>
-      !t.technicianId && t.status !== "Completed" && t.status !== "Cancelled",
-  );
+const activeOrderCount = computed(() => activeOrders.value.length);
+
+const activeOrderValue = computed(() =>
+  activeOrders.value.reduce(
+    (total, order) => total + (order.totalAmount || 0),
+    0,
+  ),
+);
+
+const technicians = computed(() => {
+  const workshopEmployees = employees.value.filter(isWorkshopTechnician);
+  return workshopEmployees.length ? workshopEmployees : employees.value;
 });
 
-const filteredUnassigned = computed(() => {
-  const q = searchQuery.value.trim().toLowerCase();
-  if (!q) return unassignedTickets.value;
-  return unassignedTickets.value.filter(
-    (t) =>
-      t.id.toString().includes(q) ||
-      t.customerName.toLowerCase().includes(q) ||
-      t.customerPhone.includes(q) ||
-      (t.licensePlate && t.licensePlate.toLowerCase().includes(q)),
-  );
+const unassignedOrders = computed(() =>
+  activeOrders.value.filter((order) => !order.technicianId),
+);
+
+const filteredUnassignedOrders = computed(() => {
+  const keyword = normalizeText(searchKeyword.value);
+
+  return unassignedOrders.value.filter((order) => {
+    const matchesStatus =
+      statusFilter.value === "all" || order.status === statusFilter.value;
+    const searchable = normalizeText(
+      [
+        order.licensePlate,
+        order.customerName,
+        order.customerPhone,
+        order.description,
+        `#${order.id}`,
+      ]
+        .filter(Boolean)
+        .join(" "),
+    );
+
+    return matchesStatus && (!keyword || searchable.includes(keyword));
+  });
 });
 
-const initData = async () => {
+const selectedOrder = computed(() =>
+  selectedOrderId.value
+    ? (activeOrders.value.find((order) => order.id === selectedOrderId.value) ??
+      null)
+    : null,
+);
+
+const selectedTechnician = computed(() =>
+  selectedTechnicianId.value
+    ? (technicians.value.find(
+        (technician) => technician.id === selectedTechnicianId.value,
+      ) ?? null)
+    : null,
+);
+
+const technicianWorkloads = computed<TechnicianWorkload[]>(() =>
+  technicians.value
+    .map((technician) => {
+      const assignedOrders = activeOrders.value.filter(
+        (order) => order.technicianId === technician.id,
+      );
+
+      return {
+        id: technician.id,
+        fullName: technician.fullName,
+        jobTitle: technician.jobTitle,
+        activeCount: assignedOrders.length,
+        pendingCount: countByStatus(assignedOrders, "Pending"),
+        inProgressCount: countByStatus(assignedOrders, "InProgress"),
+        qcPendingCount: countByStatus(assignedOrders, "QcPending"),
+        estimatedValue: assignedOrders.reduce(
+          (total, order) => total + (order.totalAmount || 0),
+          0,
+        ),
+      };
+    })
+    .sort((first, second) => first.activeCount - second.activeCount),
+);
+
+async function refreshData() {
   loading.value = true;
+  errorMessage.value = "";
+
   try {
-    const [ordersRes, empRes] = await Promise.all([
-      RepairOrderApi.getList({ Page: 1, PageSize: 100 }),
+    const [orderResult, employeeResult] = await Promise.all([
+      RepairOrderApi.getList({ current: 1, size: 200 }),
       EmployeeApi.getList(),
     ]);
 
-    tickets.value = ordersRes.items || [];
-
-    technicians.value = (empRes || []).filter(
-      (e) =>
-        e.jobTitle?.toLowerCase().includes("technician") ||
-        e.jobTitle?.toLowerCase().includes("kỹ thuật") ||
-        e.jobTitle?.toLowerCase().includes("thợ") ||
-        e.jobTitle?.toLowerCase().includes("tech"),
+    repairOrders.value = orderResult.items || [];
+    employees.value = employeeResult || [];
+    selectDefaultOrder();
+  } catch (error) {
+    repairOrders.value = [];
+    employees.value = [];
+    errorMessage.value = getErrorMessage(
+      error,
+      "Không thể tải dữ liệu phân công xưởng",
     );
-
-    if (technicians.value.length === 0) {
-      technicians.value = empRes || [];
-    }
-  } catch (err: any) {
-    ElMessage.error(err?.message || "Không thể tải dữ liệu phân công");
+    ElMessage.error(errorMessage.value);
   } finally {
     loading.value = false;
   }
-};
+}
 
-const getTechTickets = (techId: number) => {
-  return tickets.value.filter(
-    (t) =>
-      t.technicianId === techId &&
-      t.status !== "Completed" &&
-      t.status !== "Cancelled",
-  );
-};
+function selectOrder(order: RepairOrder) {
+  selectedOrderId.value = order.id;
+  selectedTechnicianId.value = order.technicianId || null;
+}
 
-const getTechWorkloadCount = (techId: number) => {
-  return getTechTickets(techId).length;
-};
+function selectDefaultOrder() {
+  const stillSelected = selectedOrderId.value
+    ? activeOrders.value.some((order) => order.id === selectedOrderId.value)
+    : false;
 
-const onDragStart = (event: DragEvent, ticket: RepairOrder) => {
-  if (event.dataTransfer) {
-    event.dataTransfer.setData("text/plain", ticket.id.toString());
-    event.dataTransfer.effectAllowed = "move";
+  if (!stillSelected) {
+    const nextOrder =
+      unassignedOrders.value[0] ?? activeOrders.value[0] ?? null;
+    selectedOrderId.value = nextOrder?.id ?? null;
+    selectedTechnicianId.value = nextOrder?.technicianId ?? null;
   }
-};
+}
 
-const onDragOver = (techId: number) => {
-  activeDragOverTechId.value = techId;
-};
+async function submitAssignment() {
+  if (!selectedOrder.value) {
+    ElMessage.warning("Vui lòng chọn phiếu sửa chữa");
+    return;
+  }
 
-const onDragLeave = () => {
-  activeDragOverTechId.value = null;
-};
+  if (!selectedTechnicianId.value) {
+    ElMessage.warning("Vui lòng chọn kỹ thuật viên");
+    return;
+  }
 
-const onDrop = async (event: DragEvent, tech: EmployeeResponse) => {
-  activeDragOverTechId.value = null;
-  if (!event.dataTransfer) return;
-
-  const ticketId = Number(event.dataTransfer.getData("text/plain"));
-  if (!ticketId) return;
-
-  await assignJob(ticketId, tech.id);
-};
-
-const handleQuickAssign = async (ticketId: number, techId: number) => {
-  await assignJob(ticketId, techId);
-};
-
-const assignJob = async (ticketId: number, techId: number) => {
-  loading.value = true;
+  submitting.value = true;
   try {
-    const success = await RepairOrderApi.assignTechnician({
-      repairOrderId: ticketId,
-      technicianId: techId,
+    await RepairOrderApi.assignTechnician({
+      repairOrderId: selectedOrder.value.id,
+      technicianId: selectedTechnicianId.value,
     });
-    if (success) {
-      ElMessage.success("Phân công công việc thành công!");
-      await initData();
-    } else {
-      throw new Error("Không phản hồi kết quả từ server");
-    }
-  } catch (err: any) {
-    ElMessage.error(err?.message || "Phân công thất bại");
+    ElMessage.success("Phân công kỹ thuật viên thành công");
+    await refreshData();
+  } catch (error) {
+    ElMessage.error(getErrorMessage(error, "Phân công thất bại"));
   } finally {
-    loading.value = false;
+    submitting.value = false;
   }
-};
+}
 
-const getTicketTimelineStyle = (ticket: RepairOrder) => {
-  let startHour = 8;
-  let duration = 2;
+function isWorkshopTechnician(employee: EmployeeResponse) {
+  const text = normalizeText(`${employee.jobTitle} ${employee.fullName}`);
+  return [
+    "ky thuat",
+    "xuong",
+    "sua chua",
+    "bao tri",
+    "technician",
+    "mechanic",
+  ].some((keyword) => text.includes(keyword));
+}
 
-  if (ticket.startTime) {
-    const date = new Date(ticket.startTime);
-    startHour = date.getHours();
-  } else {
-    startHour = 8 + (ticket.id % 4) * 2;
-  }
+function countByStatus(orders: RepairOrder[], status: RepairOrderStatus) {
+  return orders.filter((order) => order.status === status).length;
+}
 
-  if (ticket.expectedCompletionTime && ticket.startTime) {
-    const start = new Date(ticket.startTime).getTime();
-    const end = new Date(ticket.expectedCompletionTime).getTime();
-    duration = Math.max(1, Math.round((end - start) / (1000 * 60 * 60)));
-  } else {
-    duration = 2;
-  }
-
-  const totalGridHours = 11;
-  const startOffset = Math.max(0, startHour - 8);
-  const leftPercent = (startOffset / totalGridHours) * 100;
-  const widthPercent = (duration / totalGridHours) * 100;
-
-  const colors = ["#409eff", "#67c23a", "#e6a23c", "#f56c6c", "#909399"];
-  const bgColor = colors[ticket.id % colors.length];
-
-  return {
-    left: `calc(${leftPercent}% + 4px)`,
-    width: `calc(${widthPercent}% - 8px)`,
-    backgroundColor: bgColor,
-    zIndex: 10,
+function statusLabel(status: RepairOrderStatus) {
+  const labels: Record<RepairOrderStatus, string> = {
+    Pending: "Chờ nhận",
+    InProgress: "Đang sửa",
+    QcPending: "Chờ QC",
+    Completed: "Hoàn tất",
+    Cancelled: "Đã hủy",
   };
-};
+
+  return labels[status] ?? status;
+}
+
+function statusTagType(
+  status: RepairOrderStatus,
+): "primary" | "success" | "info" | "danger" | "warning" {
+  switch (status) {
+    case "Completed":
+      return "success";
+    case "Cancelled":
+      return "danger";
+    case "InProgress":
+      return "warning";
+    case "QcPending":
+      return "info";
+    default:
+      return "primary";
+  }
+}
+
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+    maximumFractionDigits: 0,
+  }).format(Number.isFinite(value) ? value : 0);
+}
+
+function formatDateTime(value?: string) {
+  if (!value) return "-";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "-";
+
+  return new Intl.DateTimeFormat("vi-VN", {
+    dateStyle: "short",
+    timeStyle: "short",
+  }).format(date);
+}
+
+function normalizeText(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error && error.message ? error.message : fallback;
+}
 
 onMounted(() => {
-  initData();
+  void refreshData();
 });
 </script>
 
-<style scoped>
-.assignment-container {
-  min-height: 100%;
+<style scoped lang="scss">
+.workshop-assignment-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 20px;
 }
 
-.ticket-card {
-  padding: 14px;
-  background-color: var(--el-bg-color-overlay, #fff);
-  border: 1px solid var(--el-border-color-light, #e2e8f0);
-  border-radius: 12px;
-  cursor: grab;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 1px 3px rgb(0 0 0 / 2%);
+.workshop-assignment-page__header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
 }
 
-.ticket-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgb(0 0 0 / 5%);
-  border-color: var(--el-color-primary, #409eff);
+.workshop-assignment-page__header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--el-text-color-primary);
 }
 
-.ticket-card:active {
-  cursor: grabbing;
+.workshop-assignment-page__header p {
+  margin: 6px 0 0;
+  color: var(--el-text-color-secondary);
 }
 
-.tech-column {
+.workshop-assignment-page__stats {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.workshop-assignment-page__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.workshop-assignment-page__search {
+  flex: 1 1 280px;
+  max-width: 420px;
+}
+
+.workshop-assignment-page__workspace {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.workshop-assignment-card {
+  min-width: 0;
+  border-radius: 8px;
+}
+
+.workshop-assignment-card :deep(.el-card__body) {
   padding: 16px;
-  background-color: var(--el-bg-color-overlay, #fff);
-  border: 1.5px solid var(--el-border-color-light, #e2e8f0);
-  border-radius: 16px;
-  transition: all 0.3s ease;
 }
 
-.tech-column.drag-over {
-  border-color: var(--el-color-primary, #409eff);
-  background-color: rgb(64 158 255 / 4%);
-  box-shadow: 0 4px 16px rgb(64 158 255 / 8%);
+.workshop-assignment-card__header {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
 }
 
-.tech-assigned-card {
+.workshop-assignment-queue__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 620px;
+  overflow-y: auto;
+}
+
+.workshop-assignment-order {
+  width: 100%;
+  padding: 12px;
+  color: var(--el-text-color-regular);
+  text-align: left;
+  cursor: pointer;
+  background: var(--el-fill-color-blank);
+  border: 1px solid var(--el-border-color-light);
+  border-radius: 8px;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.workshop-assignment-order:hover,
+.workshop-assignment-order.is-active {
+  background: var(--el-color-primary-light-9);
+  border-color: var(--el-color-primary-light-5);
+}
+
+.workshop-assignment-order:hover {
+  transform: translateY(-1px);
+}
+
+.workshop-assignment-order__main,
+.workshop-assignment-order__meta,
+.workshop-assignment-order__foot {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.workshop-assignment-order__main strong {
+  overflow: hidden;
+  font-size: 15px;
+  color: var(--el-text-color-primary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workshop-assignment-order__meta,
+.workshop-assignment-order__foot {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+
+.workshop-assignment-order__foot strong {
+  color: var(--el-text-color-primary);
+}
+
+.workshop-assignment-table {
+  width: 100%;
+}
+
+.workshop-assignment-technician {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+}
+
+.workshop-assignment-technician__avatar {
+  display: inline-flex;
+  flex: 0 0 36px;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  font-weight: 800;
+  color: var(--el-color-primary);
+  background: var(--el-color-primary-light-9);
+  border-radius: 50%;
+}
+
+.workshop-assignment-technician strong {
+  display: block;
+  overflow: hidden;
+  color: var(--el-text-color-primary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workshop-assignment-technician span {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+
+.workshop-assignment-detail__body,
+.workshop-assignment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.workshop-assignment-detail__summary {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.workshop-assignment-detail__summary > div,
+.workshop-assignment-selected {
   padding: 10px 12px;
-  background-color: var(--el-bg-color, #f8fafc);
-  border: 1px solid var(--el-border-color-light, #e2e8f0);
-  border-radius: 10px;
-  transition: all 0.2s ease;
+  background: var(--el-fill-color-light);
+  border: 1px solid var(--el-border-color-light);
+  border-radius: 8px;
 }
 
-.tech-assigned-card:hover {
-  border-color: var(--el-color-info-light-3, #a0cfff);
-  background-color: #fff;
+.workshop-assignment-detail__summary span,
+.workshop-assignment-selected span,
+.workshop-assignment-selected small {
+  display: block;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
 }
 
-:global(html.dark) .tech-assigned-card {
-  background-color: #1a1a1e;
-  border-color: #2e2e33;
+.workshop-assignment-detail__summary strong,
+.workshop-assignment-selected strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--el-text-color-primary);
 }
 
-:global(html.dark) .tech-assigned-card:hover {
-  background-color: #242428;
+:deep(.el-select-dropdown__item) {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
 }
 
-:global(html.dark) .ticket-card {
-  background-color: #1a1a1e;
-  border-color: #2e2e33;
+:deep(.el-select-dropdown__item small) {
+  color: var(--el-text-color-secondary);
 }
 
-:global(html.dark) .tech-column {
-  background-color: #131316;
-  border-color: #2e2e33;
+@media (width >= 768px) {
+  .workshop-assignment-page__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .workshop-assignment-detail__summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width >= 1280px) {
+  .workshop-assignment-page__stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .workshop-assignment-page__workspace {
+    grid-template-columns: minmax(280px, 0.9fr) minmax(430px, 1.35fr) minmax(
+        320px,
+        0.95fr
+      );
+  }
+}
+
+@media (width <= 767px) {
+  .workshop-assignment-page__search {
+    max-width: none;
+  }
+
+  .workshop-assignment-page__filters :deep(.el-radio-group) {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+
+  .workshop-assignment-page__filters :deep(.el-radio-button) {
+    flex-shrink: 0;
+  }
 }
 </style>
