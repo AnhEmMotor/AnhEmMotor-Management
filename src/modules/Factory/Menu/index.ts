@@ -1,4 +1,4 @@
-﻿import { AppRouteRecord } from "@/types/router";
+import { AppRouteRecord } from "@/types/router";
 
 export const factoryMenu: AppRouteRecord[] = [
   {
@@ -47,12 +47,6 @@ export const factoryMenu: AppRouteRecord[] = [
     ],
   },
   {
-    path: "/factory/statistics",
-    name: "FactoryStatistics",
-    component: "/Factory/view/service/workshop/statistics/index",
-    meta: { title: "Thống kê xưởng", icon: "ri:bar-chart-line" },
-  },
-  {
     path: "/factory/administrative",
     name: "Administrative",
     component: "/index/index",
@@ -83,6 +77,12 @@ export const factoryMenu: AppRouteRecord[] = [
         meta: { title: "Phiếu thu xưởng", icon: "ri:receipt-line" },
       },
     ],
+  },
+  {
+    path: "/factory/statistics",
+    name: "FactoryStatistics",
+    component: "/Factory/view/service/workshop/statistics/index",
+    meta: { title: "Thống kê xưởng", icon: "ri:bar-chart-line" },
   },
 ];
 
