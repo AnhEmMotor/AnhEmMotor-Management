@@ -1,82 +1,62 @@
 <template>
-  <div class="reporting-page contract-supplier-container">
-    <ReportPageHeader
-      title="Hợp đồng Nhà cung cấp"
-      description="Theo dõi hiệu lực hợp đồng, hạn mức công nợ, chiết khấu và các hợp đồng cần phê duyệt trong một màn hình."
-      icon="ri:truck-line"
-    >
-      <template #actions>
-        <ElButton
-          type="primary"
-          v-ripple
-          class="supplier-create-button"
-          @click="handleAdd"
-        >
-          <ElIcon><Plus /></ElIcon>
-          Tạo hợp đồng mới
-        </ElButton>
-      </template>
-    </ReportPageHeader>
-
-    <div class="supplier-kpi-grid reporting-kpi-grid">
+  <div class="flex flex-col gap-4 pb-5 contract-supplier-container">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
       <ArtStatsCard
         title="Tổng hợp đồng"
         :count="stats.totalContracts"
+        description="Tổng số hợp đồng"
         icon="ri:file-list-3-line"
         iconStyle="bg-primary"
       />
       <ArtStatsCard
         title="Đang hiệu lực"
         :count="stats.activeContracts"
+        description="Hợp đồng đang chạy"
         icon="ri:checkbox-circle-line"
         iconStyle="bg-success"
       />
       <ArtStatsCard
         title="Chờ phê duyệt"
         :count="stats.pendingApproval"
+        description="Cần được duyệt"
         icon="ri:time-line"
         iconStyle="bg-warning"
       />
       <ArtStatsCard
         title="Sắp hết hạn"
         :count="stats.expiringContracts"
+        description="Sắp đến ngày hết hạn"
         icon="ri:alarm-warning-line"
         iconStyle="bg-warning"
       />
       <ArtStatsCard
         title="Đã hết hạn"
         :count="stats.expiredContracts"
+        description="Quá ngày hết hạn"
         icon="ri:error-warning-line"
         iconStyle="bg-danger"
       />
     </div>
 
-    <ElCard
-      class="reporting-card supplier-filter-card supplier-filter-card--compact"
-    >
-      <ArtSearchBar
-        v-model="searchForm"
-        :items="searchItems"
-        :label-width="0"
-        label-position="top"
-        :gutter="14"
-        :span="8"
-        @search="handleSearch"
-        @reset="handleReset"
-      />
-    </ElCard>
+    <ArtSearchBar
+      v-model="searchForm"
+      :items="searchItems"
+      :label-width="160"
+      :span="6"
+      @search="handleSearch"
+      @reset="handleReset"
+    />
 
-    <ElCard class="reporting-card supplier-table-card art-table-card">
+    <ElCard class="flex-1 art-table-card">
       <ArtTableHeader
         v-model:columns="columnChecks"
         :loading="loading"
         @refresh="loadData"
       >
         <template #left>
-          <div class="supplier-table-heading">
-            <span>Danh sách hợp đồng</span>
-            <small>{{ pagination.total }} hợp đồng</small>
-          </div>
+          <ElButton type="primary" v-ripple @click="handleAdd">
+            <ElIcon><Plus /></ElIcon> Thêm mới
+          </ElButton>
         </template>
       </ArtTableHeader>
 
@@ -121,26 +101,18 @@
           {{ row.expirationDate ? formatDate(row.expirationDate) : "-" }}
         </template>
         <template #operation="{ row }">
-          <div class="supplier-operation-cell">
+          <div class="flex gap-2 justify-center">
             <ArtButtonTable type="view" @click="handleView(row)" />
-            <ElButton
-              v-ripple
-              size="small"
-              type="primary"
-              class="supplier-operation-button"
+            <ArtButtonTable
+              type="edit"
               @click="handleEdit(row)"
               :disabled="row.status === 'Active'"
-              >Sửa</ElButton
-            >
-            <ElButton
-              v-ripple
-              size="small"
-              type="danger"
-              class="supplier-operation-button"
+            />
+            <ArtButtonTable
+              type="delete"
               @click="handleDelete(row)"
               :disabled="row.status === 'Active'"
-              >Xóa</ElButton
-            >
+            />
           </div>
         </template>
       </ArtTable>
@@ -343,7 +315,6 @@ import { ref, reactive, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import type { ColumnOption } from "@/types/component";
-import ReportPageHeader from "@/modules/Accountant/view/reporting/ReportPageHeader.vue";
 import type {
   SupplierContractDto,
   SupplierContractSkuItem,
@@ -861,7 +832,7 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-.contract-supplier-container {
+html.dark .contract-supplier-container {
   color: #f8fafc;
 }
 
@@ -878,23 +849,26 @@ onMounted(() => {
 
 .supplier-kpi-grid :deep(.art-card) {
   min-height: 128px;
+}
+
+html.dark .supplier-kpi-grid :deep(.art-card) {
   color: #f8fafc;
   background: #161618;
   border-color: rgb(255 255 255 / 9%) !important;
 }
 
-.supplier-kpi-grid :deep(.art-card .text-g-900),
-.supplier-kpi-grid :deep(.art-card .text-g-800),
-.supplier-kpi-grid :deep(.art-card .text-g-700),
-.supplier-kpi-grid :deep(.art-card .text-g-600),
-.supplier-kpi-grid :deep(.art-card .text-g-500),
-.supplier-kpi-grid :deep(.art-card p),
-.supplier-table-card :deep(.el-table),
-.supplier-table-card :deep(.el-table .cell),
-.supplier-table-card :deep(.el-table th.el-table__cell),
-.supplier-table-card :deep(.el-table td.el-table__cell),
-.supplier-table-card :deep(.el-pagination),
-.supplier-table-card :deep(.el-pagination *) {
+html.dark .supplier-kpi-grid :deep(.art-card .text-g-900),
+html.dark .supplier-kpi-grid :deep(.art-card .text-g-800),
+html.dark .supplier-kpi-grid :deep(.art-card .text-g-700),
+html.dark .supplier-kpi-grid :deep(.art-card .text-g-600),
+html.dark .supplier-kpi-grid :deep(.art-card .text-g-500),
+html.dark .supplier-kpi-grid :deep(.art-card p),
+html.dark .supplier-table-card :deep(.el-table),
+html.dark .supplier-table-card :deep(.el-table .cell),
+html.dark .supplier-table-card :deep(.el-table th.el-table__cell),
+html.dark .supplier-table-card :deep(.el-table td.el-table__cell),
+html.dark .supplier-table-card :deep(.el-pagination),
+html.dark .supplier-table-card :deep(.el-pagination *) {
   color: #f8fafc !important;
   opacity: 1 !important;
 }
@@ -909,6 +883,9 @@ onMounted(() => {
 
 .supplier-filter-card :deep(.art-search-bar) {
   padding: 0;
+}
+
+html.dark .supplier-filter-card :deep(.art-search-bar) {
   color: #f8fafc;
   background: transparent;
   border: 0 !important;
@@ -983,8 +960,8 @@ onMounted(() => {
   line-height: 32px;
 }
 
-.contract-supplier-container :deep(.el-input__wrapper),
-.contract-supplier-container :deep(.el-select__wrapper) {
+html.dark .contract-supplier-container :deep(.el-input__wrapper),
+html.dark .contract-supplier-container :deep(.el-select__wrapper) {
   color: #f8fafc;
   background: #101114 !important;
   border-color: rgb(255 255 255 / 14%) !important;
@@ -996,13 +973,15 @@ onMounted(() => {
   width: 100% !important;
 }
 
-.contract-supplier-container :deep(.art-search-bar .el-form-item__label),
-.contract-supplier-container :deep(.el-input__inner),
-.contract-supplier-container :deep(.el-select__placeholder),
-.contract-supplier-container :deep(.el-select__selected-item),
-.contract-supplier-container :deep(.el-select__caret),
-.contract-supplier-container :deep(.el-range-input),
-.contract-supplier-container :deep(.el-range-separator) {
+html.dark
+  .contract-supplier-container
+  :deep(.art-search-bar .el-form-item__label),
+html.dark .contract-supplier-container :deep(.el-input__inner),
+html.dark .contract-supplier-container :deep(.el-select__placeholder),
+html.dark .contract-supplier-container :deep(.el-select__selected-item),
+html.dark .contract-supplier-container :deep(.el-select__caret),
+html.dark .contract-supplier-container :deep(.el-range-input),
+html.dark .contract-supplier-container :deep(.el-range-separator) {
   color: #f8fafc !important;
   background: transparent !important;
 }
@@ -1015,6 +994,9 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 3px;
+}
+
+html.dark .supplier-table-heading {
   color: #f8fafc;
 }
 
@@ -1034,17 +1016,17 @@ onMounted(() => {
   border-bottom: 1px solid rgb(255 255 255 / 9%);
 }
 
-.supplier-table-card :deep(#art-table-header .button) {
+html.dark .supplier-table-card :deep(#art-table-header .button) {
   color: #cbd5e1;
   background: #202126;
   border: 1px solid rgb(255 255 255 / 9%);
 }
 
-.supplier-table-card :deep(.el-table th.el-table__cell) {
+html.dark .supplier-table-card :deep(.el-table th.el-table__cell) {
   background: #111214;
 }
 
-.supplier-table-card :deep(.el-table__empty-block) {
+html.dark .supplier-table-card :deep(.el-table__empty-block) {
   background: #161618;
 }
 
@@ -1074,11 +1056,11 @@ onMounted(() => {
   font-weight: 700;
 }
 
-.contract-supplier-container .text-gray-400,
-.contract-supplier-container .text-gray-500,
-.contract-supplier-container .text-gray-600,
-.contract-supplier-container .text-gray-800,
-.contract-supplier-container .text-gray-900 {
+html.dark .contract-supplier-container .text-gray-400,
+html.dark .contract-supplier-container .text-gray-500,
+html.dark .contract-supplier-container .text-gray-600,
+html.dark .contract-supplier-container .text-gray-800,
+html.dark .contract-supplier-container .text-gray-900 {
   color: #f8fafc !important;
 }
 
@@ -1132,7 +1114,7 @@ html.dark .contract-supplier-container :deep(.el-tag) {
 </style>
 
 <style lang="scss">
-.contract-supplier-dialog.el-dialog {
+html.dark .contract-supplier-dialog.el-dialog {
   --el-color-primary: #e84a4a;
   --el-bg-color: #161618;
   --el-bg-color-overlay: #1c1c20;
@@ -1147,41 +1129,41 @@ html.dark .contract-supplier-container :deep(.el-tag) {
   border: 1px solid rgb(255 255 255 / 9%);
 }
 
-.contract-supplier-dialog .el-dialog__title,
-.contract-supplier-dialog .el-form-item__label,
-.contract-supplier-dialog .el-upload__text,
-.contract-supplier-dialog .el-upload__tip,
-.contract-supplier-dialog .text-gray-400,
-.contract-supplier-dialog .text-gray-500,
-.contract-supplier-dialog .text-gray-600 {
+html.dark .contract-supplier-dialog .el-dialog__title,
+html.dark .contract-supplier-dialog .el-form-item__label,
+html.dark .contract-supplier-dialog .el-upload__text,
+html.dark .contract-supplier-dialog .el-upload__tip,
+html.dark .contract-supplier-dialog .text-gray-400,
+html.dark .contract-supplier-dialog .text-gray-500,
+html.dark .contract-supplier-dialog .text-gray-600 {
   color: #f8fafc !important;
 }
 
-.contract-supplier-dialog .el-input__wrapper,
-.contract-supplier-dialog .el-input-number,
-.contract-supplier-dialog .el-date-editor,
-.contract-supplier-dialog .el-select__wrapper,
-.contract-supplier-dialog .el-textarea__inner,
-.contract-supplier-dialog .el-upload-dragger {
+html.dark .contract-supplier-dialog .el-input__wrapper,
+html.dark .contract-supplier-dialog .el-input-number,
+html.dark .contract-supplier-dialog .el-date-editor,
+html.dark .contract-supplier-dialog .el-select__wrapper,
+html.dark .contract-supplier-dialog .el-textarea__inner,
+html.dark .contract-supplier-dialog .el-upload-dragger {
   color: #f8fafc;
   background: #101114;
   border-color: rgb(255 255 255 / 14%);
   box-shadow: none;
 }
 
-.contract-supplier-dialog .el-input__inner,
-.contract-supplier-dialog .el-select__placeholder,
-.contract-supplier-dialog .el-select__selected-item,
-.contract-supplier-dialog .el-textarea__inner {
+html.dark .contract-supplier-dialog .el-input__inner,
+html.dark .contract-supplier-dialog .el-select__placeholder,
+html.dark .contract-supplier-dialog .el-select__selected-item,
+html.dark .contract-supplier-dialog .el-textarea__inner {
   color: #f8fafc;
 }
 
-.contract-supplier-dialog .contract-file-upload .el-upload,
-.contract-supplier-dialog .contract-file-upload .el-upload-dragger {
+html.dark .contract-supplier-dialog .contract-file-upload .el-upload,
+html.dark .contract-supplier-dialog .contract-file-upload .el-upload-dragger {
   width: 100%;
 }
 
-.contract-supplier-dialog .contract-upload-preview {
+html.dark .contract-supplier-dialog .contract-upload-preview {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -1193,7 +1175,7 @@ html.dark .contract-supplier-container :deep(.el-tag) {
   color: #f8fafc;
 }
 
-.contract-supplier-dialog .contract-upload-preview img {
+html.dark .contract-supplier-dialog .contract-upload-preview img {
   max-width: 100%;
   max-height: 260px;
   object-fit: contain;
@@ -1201,12 +1183,12 @@ html.dark .contract-supplier-container :deep(.el-tag) {
   border-radius: 10px;
 }
 
-.contract-supplier-dialog .contract-upload-preview .preview-hint {
+html.dark .contract-supplier-dialog .contract-upload-preview .preview-hint {
   font-size: 12px;
   color: #94a3b8;
 }
 
-.contract-supplier-dialog .contract-upload-filebar {
+html.dark .contract-supplier-dialog .contract-upload-filebar {
   display: flex;
   gap: 12px;
   align-items: center;
