@@ -182,7 +182,10 @@ const loadData = async () => {
       };
 
       const inProgressCount =
-        getStatusCount("In-Progress") || getStatusCount("Đang sửa chữa");
+        getStatusCount("In-Progress") ||
+        getStatusCount("Đang sửa chữa") ||
+        getStatusCount("InProgress") ||
+        getStatusCount("In Progress");
 
       const fin = data.financialSummary || data.FinancialSummary || {};
       const sum = data.summaryCards || data.SummaryCards || {};
