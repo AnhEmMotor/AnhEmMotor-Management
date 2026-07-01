@@ -891,9 +891,11 @@
                         <!-- Mock CV Preview for Demo/Mock Data -->
                         <div
                           v-else-if="isMockCv"
-                          class="w-full h-full bg-white p-6 overflow-y-auto font-inter text-slate-800 flex flex-col gap-4 text-left shadow-sm rounded-lg"
+                          class="w-full h-full bg-white dark:bg-[#0f172a] p-6 overflow-y-auto font-inter text-slate-800 dark:text-slate-100 flex flex-col gap-4 text-left shadow-sm rounded-lg border dark:border-slate-800"
                         >
-                          <div class="border-b-2 border-slate-900 pb-4">
+                          <div
+                            class="border-b-2 border-slate-900 dark:border-slate-700 pb-4"
+                          >
                             <h1
                               class="text-xl font-extrabold uppercase tracking-wide m-0 text-slate-900"
                             >
