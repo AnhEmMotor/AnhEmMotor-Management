@@ -173,20 +173,26 @@ const loadData = async () => {
       const data = res.data || res;
 
       // Extract Status Breakdown
-      const breakdowns = data.statusBreakdowns || [];
+      const breakdowns = data.statusBreakdowns || data.StatusBreakdowns || [];
       const getStatusCount = (statusName: string) => {
-        const item = breakdowns.find((b: any) => b.status === statusName);
-        return item ? item.statusCount : 0;
+        const item = breakdowns.find(
+          (b: any) => b.status === statusName || b.Status === statusName,
+        );
+        return item ? (item.statusCount ?? item.StatusCount ?? 0) : 0;
       };
 
       const inProgressCount =
         getStatusCount("In-Progress") || getStatusCount("Đang sửa chữa");
 
+      const fin = data.financialSummary || data.FinancialSummary || {};
+      const sum = data.summaryCards || data.SummaryCards || {};
+
       // Map KPI
       kpiData.value = {
-        cumulativeRevenue: data.financialSummary?.totalRevenue || 0,
+        cumulativeRevenue: fin.totalRevenue ?? fin.TotalRevenue ?? 0,
         inProgressCount: inProgressCount,
-        avgCompletionHours: data.summaryCards?.avgCompletionHours || 0,
+        avgCompletionHours:
+          sum.avgCompletionHours ?? sum.AvgCompletionHours ?? 0,
       };
 
       // Map Status Counts for Bar Chart
@@ -203,12 +209,14 @@ const loadData = async () => {
       };
 
       // Map Daily Revenues for Line Chart
-      const dailyRevenues = data.dailyRevenues || [];
+      const dailyRevenues = data.dailyRevenues || data.DailyRevenues || [];
       revenueTrend.value = {
         dates: dailyRevenues.map((d: any) =>
-          dayjs(d.revenueDate).format("DD/MM"),
+          dayjs(d.revenueDate || d.RevenueDate).format("DD/MM"),
         ),
-        amounts: dailyRevenues.map((d: any) => d.dailyRevenue),
+        amounts: dailyRevenues.map(
+          (d: any) => d.dailyRevenue ?? d.DailyRevenue ?? 0,
+        ),
       };
     } else {
       // Fallback
