@@ -604,6 +604,7 @@
         historyByVin: "Tra cứu hồ sơ xe",
         maintenance: "Bảo trì",
         evaluation: "Đánh giá dịch vụ",
+        counter: { title: "Quầy thanh toán" },
       },
       administrative: {
         title: "Dịch vụ hành chính",

@@ -869,7 +869,7 @@ function handleCurrentChange(page: number) {
 
 function openDetail(id: number) {
   router
-    .push({ name: "ServiceWarrantyClaimDetail", params: { id } })
+    .push({ name: "WorkshopWarrantyDetail", params: { id } })
     .catch(() => null);
 }
 

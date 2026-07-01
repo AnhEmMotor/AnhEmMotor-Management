@@ -315,7 +315,7 @@ import type { ColumnOption } from "@/types/component";
 // ============================================
 // MOCK DATA CONFIGURATION
 // ============================================
-const USE_MOCK = true; // Set to false to use real API
+const USE_MOCK = false; // Set to false to use real API
 
 // Mock orders data
 function getMockOrders(): SalesOrder[] {

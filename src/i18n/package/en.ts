@@ -1,4 +1,4 @@
-﻿export default {
+export default {
   httpMsg: {
     unauthorized: "Unauthorized access, please login again",
     forbidden: "Access to this resource is forbidden",
@@ -434,7 +434,6 @@
         repairOrders: "Repairs",
         historyByVin: "Vehicle Records Lookup",
         maintenance: "Maintenance",
-        evaluation: "Service Evaluation",
       },
       administrative: {
         title: "Administrative Services",

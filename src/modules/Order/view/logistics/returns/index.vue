@@ -30,111 +30,82 @@
         <ElTabPane label="Đang kiểm tra" name="inspecting" />
         <ElTabPane label="Đã hoàn tất" name="completed" />
       </ElTabs>
-
-      <!-- Bulk Actions Bar -->
-      <div
-        v-if="selectedRows.length > 0"
-        class="flex items-center gap-4 bg-primary-light-9 p-3 rounded-lg mt-2 border border-primary-light-5 animate__animated animate__fadeIn"
-      >
-        <span class="text-sm font-medium text-primary"
-          >Đã chọn {{ selectedRows.length }} đơn hàng</span
-        >
-        <div class="flex gap-2">
-          <ElButton
-            type="primary"
-            size="small"
-            @click="handleBulkAction('restock')"
-            >Nhập kho hàng loạt</ElButton
-          >
-          <ElButton
-            type="danger"
-            size="small"
-            @click="handleBulkAction('defect')"
-            >Cách ly hàng loạt</ElButton
-          >
-        </div>
-      </div>
     </ElCard>
 
     <!-- Main List Data Table -->
-    <ElCard
-      class="art-table-card flex-1 overflow-hidden"
-      body-class="p-0 h-full flex flex-col"
-    >
-      <div class="flex-1 p-4 h-[calc(100vh-250px)]">
-        <ElTable
-          :data="filteredReturns"
-          style="width: 100%"
-          v-loading="loadingList"
-          @row-click="handleRowClick"
-          @selection-change="handleSelectionChange"
-          height="100%"
-          class="custom-table cursor-pointer"
-          stripe
-          border
+    <div class="flex-1 h-[calc(100vh-220px)] mt-2">
+      <ElTable
+        :data="filteredReturns"
+        style="width: 100%"
+        v-loading="loadingList"
+        @row-click="handleRowClick"
+        @selection-change="handleSelectionChange"
+        height="100%"
+        class="custom-table cursor-pointer"
+        stripe
+        border
+      >
+        <ElTableColumn type="selection" width="50" align="center" />
+        <ElTableColumn
+          prop="originalTrackingNumber"
+          label="Mã đơn gốc"
+          min-width="150"
+          align="center"
         >
-          <ElTableColumn type="selection" width="50" align="center" />
-          <ElTableColumn
-            prop="originalTrackingNumber"
-            label="Mã đơn gốc"
-            min-width="150"
-            align="center"
-          >
-            <template #default="{ row }">
-              <span class="font-bold text-primary hover:underline">{{
-                row.originalTrackingNumber
-              }}</span>
-            </template>
-          </ElTableColumn>
-          <ElTableColumn prop="customerName" label="Khách hàng" min-width="180">
-            <template #default="{ row }">
-              <div class="flex items-center gap-2">
-                <ElIcon><User /></ElIcon> {{ row.customerName }}
-              </div>
-            </template>
-          </ElTableColumn>
-          <ElTableColumn
-            prop="carrier"
-            label="Vận chuyển"
-            width="150"
-            align="center"
-          >
-            <template #default="{ row }">
-              <ElTag
-                :type="getCarrierTag(row.carrier)"
-                size="small"
-                effect="plain"
-                >{{ row.carrier }}</ElTag
-              >
-            </template>
-          </ElTableColumn>
-          <ElTableColumn
-            prop="reason"
-            label="Lý do hoàn"
-            min-width="200"
-            show-overflow-tooltip
-          >
-            <template #default="{ row }">
-              <ElTag :type="getReasonTag(row.reason)" size="small">{{
-                row.reason
-              }}</ElTag>
-            </template>
-          </ElTableColumn>
-          <ElTableColumn
-            prop="status"
-            label="Trạng thái"
-            width="150"
-            align="center"
-          >
-            <template #default="{ row }">
-              <ElTag :type="getStatusTag(row.status)" effect="dark">{{
-                getStatusLabel(row.status)
-              }}</ElTag>
-            </template>
-          </ElTableColumn>
-        </ElTable>
-      </div>
-    </ElCard>
+          <template #default="{ row }">
+            <span class="font-bold text-primary hover:underline">{{
+              row.originalTrackingNumber
+            }}</span>
+          </template>
+        </ElTableColumn>
+        <ElTableColumn prop="customerName" label="Khách hàng" min-width="180">
+          <template #default="{ row }">
+            <div class="flex items-center gap-2">
+              <ElIcon><User /></ElIcon> {{ row.customerName }}
+            </div>
+          </template>
+        </ElTableColumn>
+        <ElTableColumn
+          prop="carrier"
+          label="Vận chuyển"
+          width="150"
+          align="center"
+        >
+          <template #default="{ row }">
+            <ElTag
+              :type="getCarrierTag(row.carrier)"
+              size="small"
+              effect="plain"
+              >{{ row.carrier }}</ElTag
+            >
+          </template>
+        </ElTableColumn>
+        <ElTableColumn
+          prop="reason"
+          label="Lý do hoàn"
+          min-width="200"
+          show-overflow-tooltip
+        >
+          <template #default="{ row }">
+            <ElTag :type="getReasonTag(row.reason)" size="small">{{
+              row.reason
+            }}</ElTag>
+          </template>
+        </ElTableColumn>
+        <ElTableColumn
+          prop="status"
+          label="Trạng thái"
+          width="150"
+          align="center"
+        >
+          <template #default="{ row }">
+            <ElTag :type="getStatusTag(row.status)" effect="dark">{{
+              getStatusLabel(row.status)
+            }}</ElTag>
+          </template>
+        </ElTableColumn>
+      </ElTable>
+    </div>
 
     <!-- PANEL TRƯỢT CHI TIẾT (SLIDING DRAWER) -->
     <ElDrawer
@@ -273,7 +244,7 @@
           </div>
 
           <div
-            v-if="detail.status !== 'completed'"
+            v-if="detail.status === 'pending'"
             class="bg-fill-lighter p-5 rounded-lg border border-color"
           >
             <h3
@@ -378,38 +349,25 @@
         </div>
 
         <div
-          v-if="detail.status !== 'completed'"
+          v-if="detail.status === 'pending'"
           class="pt-4 mt-2 border-t border-color shrink-0 flex gap-3 justify-end"
         >
           <ElButton
             type="primary"
-            plain
             size="large"
             :loading="submitting"
-            @click="submitDecision('restock')"
+            @click="submitInspection"
           >
-            <ElIcon class="mr-1"><Refresh /></ElIcon> Nhập kho bán lẻ
+            <ElIcon class="mr-1"><Check /></ElIcon> Chuyển Admin phê duyệt
           </ElButton>
-
-          <ElButton
-            type="danger"
-            plain
-            size="large"
-            :loading="submitting"
-            @click="submitDecision('defect')"
+        </div>
+        <div
+          v-else-if="detail.status === 'inspecting'"
+          class="pt-4 mt-2 border-t border-color shrink-0 flex gap-3 justify-end"
+        >
+          <ElTag type="warning" size="large" effect="dark"
+            >Đang chờ Admin phê duyệt</ElTag
           >
-            <ElIcon class="mr-1"><Warning /></ElIcon> Cách ly chờ hủy
-          </ElButton>
-
-          <ElButton
-            type="warning"
-            plain
-            size="large"
-            :loading="submitting"
-            @click="submitDecision('refund')"
-          >
-            <ElIcon class="mr-1"><Money /></ElIcon> Hoàn tiền
-          </ElButton>
         </div>
       </div>
     </ElDrawer>
@@ -529,33 +487,31 @@ const handleUploadClick = () => {
   }, 500);
 };
 
-const submitDecision = async (action: "restock" | "defect" | "refund") => {
+const submitInspection = async () => {
   if (!detail.value) return;
 
-  const actionMap: Record<string, string> = {
-    restock: "Nhập lại kho bán lẻ",
-    defect: "Cách ly chờ hủy",
-    refund: "Hoàn tiền cho khách",
-  };
+  if (!inspectForm.value.boxCondition || !inspectForm.value.productCondition) {
+    ElMessage.warning("Vui lòng nhập tình trạng hộp và phụ tùng");
+    return;
+  }
 
   try {
     await ElMessageBox.confirm(
-      `Bạn chắc chắn muốn đóng hồ sơ đơn hàng này với quyết định: <strong>${actionMap[action]}</strong>?`,
-      "Xác nhận xử lý",
+      `Xác nhận lưu thông tin kiểm định và chuyển Admin phê duyệt?`,
+      "Xác nhận chuyển",
       {
         confirmButtonText: "Xác nhận",
         cancelButtonText: "Hủy",
-        type: "warning",
-        dangerouslyUseHTMLString: true,
+        type: "info",
       },
     );
 
     submitting.value = true;
-    inspectForm.value.action = action;
+    inspectForm.value.action = ""; // Admin se duyet sau
 
     await inspectReturn(detail.value.id, inspectForm.value);
 
-    ElMessage.success(`Xử lý thành công: ${actionMap[action]}`);
+    ElMessage.success(`Chuyển Admin phê duyệt thành công`);
 
     // Refresh and close drawer
     await fetchReturns();
@@ -589,23 +545,31 @@ const getReasonAlertType = (reason: string) => {
 };
 
 const getStatusTag = (
-  status: string,
+  status: string | number,
 ): "danger" | "warning" | "success" | "info" => {
+  const strStatus = String(status).toLowerCase();
   const map: Record<string, "danger" | "warning" | "success" | "info"> = {
     pending: "danger",
+    "0": "danger",
     inspecting: "warning",
+    "1": "warning",
     completed: "success",
+    "2": "success",
   };
-  return map[status] || "info";
+  return map[strStatus] || "info";
 };
 
-const getStatusLabel = (status: string) => {
+const getStatusLabel = (status: string | number) => {
+  const strStatus = String(status).toLowerCase();
   const map: Record<string, string> = {
     pending: "Chờ xử lý",
+    "0": "Chờ xử lý",
     inspecting: "Đang kiểm tra",
+    "1": "Đang kiểm tra",
     completed: "Đã hoàn tất",
+    "2": "Đã hoàn tất",
   };
-  return map[status] || status;
+  return map[strStatus] || String(status);
 };
 
 const getActionLabel = (action?: string) => {
@@ -621,35 +585,6 @@ const getActionLabel = (action?: string) => {
 // Selection logic
 const handleSelectionChange = (rows: ReturnOrderDto[]) => {
   selectedRows.value = rows;
-};
-
-const handleBulkAction = async (action: "restock" | "defect") => {
-  const actionMap: Record<string, string> = {
-    restock: "Nhập lại kho hàng loạt",
-    defect: "Cách ly chờ hủy hàng loạt",
-  };
-
-  try {
-    await ElMessageBox.confirm(
-      `Bạn chắc chắn muốn <strong>${actionMap[action]}</strong> cho ${selectedRows.value.length} đơn hàng đã chọn?`,
-      "Xác nhận xử lý hàng loạt",
-      {
-        confirmButtonText: "Đồng ý",
-        cancelButtonText: "Hủy",
-        type: "warning",
-        dangerouslyUseHTMLString: true,
-      },
-    );
-
-    // Giả lập gọi API xử lý hàng loạt
-    ElMessage.success(
-      `Đã xử lý thành công ${selectedRows.value.length} đơn hàng.`,
-    );
-    selectedRows.value = [];
-    await fetchReturns();
-  } catch (e) {
-    // Cancelled
-  }
 };
 
 const formatCurrency = (value: number) => {

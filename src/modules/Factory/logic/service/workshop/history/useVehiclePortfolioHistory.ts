@@ -129,7 +129,7 @@ export function useVehiclePortfolioHistory(): UseVehiclePortfolioHistoryResult {
       // Handle "Not Found" specifically as a state, not a critical error
       if (
         e?.response?.status === 400 &&
-        e?.response?.data?.message?.includes("No vehicle found")
+        JSON.stringify(e?.response?.data || {}).includes("No vehicle found")
       ) {
         error.value = "Không tìm thấy hồ sơ xe phù hợp với thông tin đã nhập.";
         vehicle.value = null;
