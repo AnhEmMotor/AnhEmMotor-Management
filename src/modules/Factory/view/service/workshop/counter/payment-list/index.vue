@@ -5,7 +5,9 @@
       class="flex items-start justify-between gap-4 flex-wrap bg-white p-6 rounded-xl shadow-sm border border-slate-100"
     >
       <div>
-        <h1 class="text-2xl font-bold">{{ $t("Quầy Thanh Toán") }}</h1>
+        <h1 class="text-2xl font-bold">
+          {{ $t("factory.service.workshop.counter.title") }}
+        </h1>
         <p class="mt-1 text-sm text-slate-500">
           Quản lý thu tiền dịch vụ xưởng: Sửa chữa, Bảo trì, Bảo hành, Đặt dịch
           vụ. Xưởng in phiếu → Khách mang đến quầy → Thu ngân thu tiền.

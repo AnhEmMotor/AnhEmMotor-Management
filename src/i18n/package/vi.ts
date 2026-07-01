@@ -1,4 +1,4 @@
-﻿export default {
+export default {
   httpMsg: {
     unauthorized: "Truy cập không được phép, vui lòng đăng nhập lại",
     forbidden: "Cấm truy cập vào tài nguyên này",
@@ -1083,6 +1083,7 @@
       fulfillmentFunnel: "Phễu trạng thái vận chuyển",
       funnelPlaceholder: "Biểu đồ phễu trạng thái vận chuyển",
       productionShippingCost: "Sản lượng & Chi phí vận chuyển",
+      shippingCost: "Chi phí vận chuyển",
       costPlaceholder: "Biểu đồ xu hướng sản lượng & chi phí ship",
       carrierScorecard: "Thống kê hiệu suất đối tác",
       refresh: "Làm mới",
