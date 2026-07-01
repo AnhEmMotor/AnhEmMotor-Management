@@ -26,7 +26,7 @@
         <div class="flex items-center gap-3">
           <button
             @click="handleAddBanner"
-            class="h-11 px-8 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-sm hover:bg-slate-50 transition-all active:scale-95 flex items-center gap-2"
+            class="h-11 px-8 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center gap-2"
           >
             <ArtSvgIcon icon="ri:add-fill" class="text-blue-500" />
             {{ $t("marketing.bannerManagement.createBtn") }}

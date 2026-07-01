@@ -1,14 +1,14 @@
 <template>
   <div
-    class="lead-detail-expansion bg-gray-50/50 p-6 border-t border-gray-100 shadow-inner"
+    class="lead-detail-expansion bg-gray-50/50 dark:bg-slate-950 p-6 border-t border-gray-100 dark:border-slate-700 shadow-inner"
   >
     <div class="grid grid-cols-12 gap-6">
       <div class="col-span-12 lg:col-span-3 flex flex-col gap-6">
         <div
-          class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col items-center text-center"
+          class="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col items-center text-center"
         >
           <div
-            class="qr-wrapper bg-gray-50 p-4 rounded-2xl mb-4 border border-dashed border-gray-200"
+            class="qr-wrapper bg-gray-50 dark:bg-slate-800 p-4 rounded-2xl mb-4 border border-dashed border-gray-200 dark:border-slate-700"
           >
             <img
               :src="
@@ -20,21 +20,27 @@
             />
           </div>
           <span
-            class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"
+            class="text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest"
             >Mã định danh</span
           >
-          <h3 class="m-0 text-base font-black text-gray-700 tracking-tighter">
+          <h3
+            class="m-0 text-base font-black text-gray-700 dark:text-slate-100 tracking-tighter"
+          >
             {{ lead.id }}
           </h3>
         </div>
 
-        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+        <div
+          class="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-slate-700"
+        >
           <div class="flex items-center gap-2 mb-6">
-            <div class="size-8 bg-blue-50 text-blue-500 rounded-lg flex-cc">
+            <div
+              class="size-8 bg-blue-50 dark:bg-blue-950/40 text-blue-500 rounded-lg flex-cc"
+            >
               <ArtSvgIcon icon="ri:government-line" />
             </div>
             <h4
-              class="m-0 font-black text-gray-700 uppercase text-[10px] tracking-wider"
+              class="m-0 font-black text-gray-700 dark:text-slate-100 uppercase text-[10px] tracking-wider"
             >
               Hồ sơ hành chính
             </h4>
@@ -43,7 +49,7 @@
           <div class="flex flex-col gap-5">
             <div>
               <label
-                class="text-[10px] font-bold text-gray-400 uppercase mb-2 block"
+                class="text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase mb-2 block"
                 >Số CCCD (12 số)</label
               >
               <ElInput
@@ -64,7 +70,7 @@
 
             <div>
               <label
-                class="text-[10px] font-bold text-gray-400 uppercase mb-2 block"
+                class="text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase mb-2 block"
                 >Địa chỉ thường trú</label
               >
               <div class="flex flex-col gap-3">
@@ -108,17 +114,17 @@
 
       <div class="col-span-12 lg:col-span-6 flex flex-col gap-6">
         <div
-          class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex-1 flex flex-col"
+          class="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-slate-700 flex-1 flex flex-col"
         >
           <div class="flex items-center justify-between mb-8">
             <div class="flex items-center gap-2">
               <div
-                class="size-8 bg-purple-50 text-purple-500 rounded-lg flex-cc"
+                class="size-8 bg-purple-50 dark:bg-purple-950/40 text-purple-500 rounded-lg flex-cc"
               >
                 <ArtSvgIcon icon="ri:history-line" />
               </div>
               <h4
-                class="m-0 font-black text-gray-700 uppercase text-[10px] tracking-wider"
+                class="m-0 font-black text-gray-700 dark:text-slate-100 uppercase text-[10px] tracking-wider"
               >
                 Dòng thời gian
               </h4>
@@ -153,8 +159,12 @@
                 :color="event.color"
               >
                 <div
-                  class="p-3 rounded-xl border border-gray-50 shadow-sm"
-                  :class="event.type === 'ai' ? 'bg-indigo-50/30' : 'bg-white'"
+                  class="p-3 rounded-xl border border-gray-50 dark:border-slate-700 shadow-sm"
+                  :class="
+                    event.type === 'ai'
+                      ? 'bg-indigo-50/30 dark:bg-indigo-950/30'
+                      : 'bg-white dark:bg-slate-800'
+                  "
                 >
                   <div class="flex items-center gap-2 mb-1">
                     <ArtSvgIcon
@@ -163,12 +173,14 @@
                       class="text-sm"
                     />
                     <span
-                      class="text-[9px] font-bold uppercase tracking-wider text-gray-400"
+                      class="text-[9px] font-bold uppercase tracking-wider text-gray-400 dark:text-slate-500"
                     >
                       {{ event.type === "ai" ? "AI Assistant" : "Sale Note" }}
                     </span>
                   </div>
-                  <p class="m-0 text-xs text-gray-700 leading-relaxed">
+                  <p
+                    class="m-0 text-xs text-gray-700 dark:text-slate-300 leading-relaxed"
+                  >
                     {{ event.content }}
                   </p>
                 </div>
@@ -176,7 +188,9 @@
             </ElTimeline>
           </div>
 
-          <div class="mt-4 pt-4 border-t border-gray-50 flex gap-2">
+          <div
+            class="mt-4 pt-4 border-t border-gray-50 dark:border-slate-700 flex gap-2"
+          >
             <ElInput
               v-model="newNote"
               placeholder="Nhập ghi chú nhanh..."
@@ -226,21 +240,28 @@
           </div>
         </div>
 
-        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+        <div
+          class="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-slate-700"
+        >
           <div class="flex items-center gap-2 mb-6">
-            <div class="size-8 bg-red-50 text-red-500 rounded-lg flex-cc">
+            <div
+              class="size-8 bg-red-50 dark:bg-red-950/40 text-red-500 rounded-lg flex-cc"
+            >
               <ArtSvgIcon icon="ri:motorbike-line" />
             </div>
             <h4
-              class="m-0 font-black text-gray-700 uppercase text-[10px] tracking-wider"
+              class="m-0 font-black text-gray-700 dark:text-slate-100 uppercase text-[10px] tracking-wider"
             >
               Thông tin xe
             </h4>
           </div>
 
-          <div class="p-3 rounded-xl border border-gray-50 bg-gray-50/30">
+          <div
+            class="p-3 rounded-xl border border-gray-50 dark:border-slate-700 bg-gray-50/30 dark:bg-slate-800"
+          >
             <div class="flex justify-between items-center mb-1">
-              <span class="text-[10px] font-bold text-gray-500"
+              <span
+                class="text-[10px] font-bold text-gray-500 dark:text-slate-300"
                 >Winner X 2024</span
               >
               <ElTag
@@ -297,6 +318,17 @@ const handleNoteSubmit = () => {
       border: 1px solid #f3f4f6;
       border-radius: 10px;
       box-shadow: none;
+    }
+  }
+}
+
+:global(html.dark) .lead-detail-expansion {
+  background-color: #0f172a !important;
+
+  .premium-input {
+    :deep(.el-input__wrapper) {
+      background-color: #1f2937 !important;
+      border-color: #334155 !important;
     }
   }
 }

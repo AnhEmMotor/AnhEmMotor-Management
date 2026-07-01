@@ -41,7 +41,7 @@
         </div>
         <button
           @click="openAddDialog"
-          class="bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 h-10 px-4 rounded-xl font-black text-[10px] uppercase shadow-sm hover:bg-slate-50 transition-all active:scale-95 flex items-center justify-center gap-2"
+          class="bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 h-10 px-4 rounded-xl font-black text-[10px] uppercase shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center justify-center gap-2"
         >
           <ArtSvgIcon icon="ri:file-add-line" class="text-blue-500" /> Thêm tài
           sản mới
@@ -73,7 +73,7 @@
             :class="
               selectedAssetId === asset.id
                 ? 'bg-blue-50 dark:bg-blue-950/30 border-blue-100 dark:border-blue-900 shadow-sm'
-                : 'hover:bg-gray-50 dark:hover:bg-slate-850'
+                : 'hover:bg-gray-50 dark:hover:bg-slate-800'
             "
             @click="selectedAssetId = asset.id"
           >
@@ -142,12 +142,12 @@
           </div>
           <div class="flex gap-2">
             <button
-              class="rounded-xl font-black text-[10px] uppercase h-10 px-4 border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-all shadow-sm flex items-center justify-center gap-2"
+              class="rounded-xl font-black text-[10px] uppercase h-10 px-4 border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm flex items-center justify-center gap-2"
             >
               <ArtSvgIcon icon="ri:edit-line" /> Chỉnh sửa
             </button>
             <button
-              class="bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[10px] uppercase h-10 px-4 shadow-sm hover:bg-slate-50 transition-all active:scale-95 flex items-center justify-center gap-2"
+              class="bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[10px] uppercase h-10 px-4 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center justify-center gap-2"
             >
               <ArtSvgIcon icon="ri:file-pdf-line" class="text-blue-500" /> Xuất
               báo cáo PDF

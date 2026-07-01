@@ -1,6 +1,9 @@
 <template>
-  <div class="purchasing-pipeline-page flex flex-col gap-6 pb-10 h-screen">
-    <div class="grid grid-cols-5 gap-4 px-4 pt-4">
+  <div
+    v-loading="loading"
+    class="purchasing-pipeline-page flex flex-col gap-6 pb-10 h-screen"
+  >
+    <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-7 gap-4 px-4 pt-4">
       <div
         v-for="stat in pipelineStats"
         :key="stat.label"
@@ -50,16 +53,19 @@
           class="w-40 premium-select"
           clearable
         >
-          <ElOption label="Winner X" value="Winner X" />
-          <ElOption label="SH 125i" value="SH 125i" />
-          <ElOption label="Air Blade" value="Air Blade" />
+          <ElOption
+            v-for="vehicle in vehicleOptions"
+            :key="vehicle"
+            :label="vehicle"
+            :value="vehicle"
+          />
         </ElSelect>
       </div>
       <div
         class="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase"
       >
-        <div class="size-2 rounded-full bg-red-500 animate-pulse"></div>
-        Trực tiếp: Mega Sale 2024
+        <div class="size-2 rounded-full bg-emerald-500"></div>
+        Dữ liệu Lead Pipeline
       </div>
     </div>
 
@@ -109,27 +115,35 @@
               ></div>
 
               <div class="flex justify-between items-start mb-3 mt-1">
-                <div class="flex flex-col">
+                <div class="flex flex-col min-w-0">
                   <span
                     class="text-sm font-black text-gray-800 dark:text-slate-100 line-clamp-1"
                     >{{ deal.customerName }}</span
                   >
                   <span
-                    class="text-[10px] font-bold text-blue-500 dark:text-blue-400 uppercase"
+                    class="text-[10px] font-bold text-blue-500 dark:text-blue-400 uppercase line-clamp-1"
                     >{{ deal.vehicle }}</span
                   >
                 </div>
                 <div class="flex gap-1">
-                  <div
-                    class="size-7 bg-blue-50 dark:bg-blue-950/30 text-blue-500 rounded-lg flex-cc hover:bg-blue-500 hover:text-white transition-all cursor-pointer"
-                  >
-                    <ArtSvgIcon icon="ri:chat-1-fill" class="text-xs" />
-                  </div>
-                  <div
-                    class="size-7 bg-green-50 dark:bg-green-950/30 text-green-500 rounded-lg flex-cc hover:bg-green-500 hover:text-white transition-all cursor-pointer"
-                  >
-                    <ArtSvgIcon icon="ri:phone-fill" class="text-xs" />
-                  </div>
+                  <ElTooltip content="Ghi nhận chat/tư vấn">
+                    <button
+                      class="size-7 bg-blue-50 dark:bg-blue-950/30 text-blue-500 rounded-lg flex-cc hover:bg-blue-500 hover:text-white transition-all cursor-pointer"
+                      type="button"
+                      @click.stop="addActivity(deal, 'Chat')"
+                    >
+                      <ArtSvgIcon icon="ri:chat-1-fill" class="text-xs" />
+                    </button>
+                  </ElTooltip>
+                  <ElTooltip content="Ghi nhận cuộc gọi">
+                    <button
+                      class="size-7 bg-green-50 dark:bg-green-950/30 text-green-500 rounded-lg flex-cc hover:bg-green-500 hover:text-white transition-all cursor-pointer"
+                      type="button"
+                      @click.stop="addActivity(deal, 'Call')"
+                    >
+                      <ArtSvgIcon icon="ri:phone-fill" class="text-xs" />
+                    </button>
+                  </ElTooltip>
                 </div>
               </div>
 
@@ -158,6 +172,13 @@
               </div>
             </div>
           </VueDraggable>
+
+          <ElEmpty
+            v-if="!column.items.length"
+            description="Chưa có khách hàng"
+            :image-size="80"
+            class="py-10"
+          />
         </div>
       </div>
     </div>
@@ -165,172 +186,270 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { VueDraggable } from "vue-draggable-plus";
 import { ElMessage } from "element-plus";
+import {
+  fetchAddLeadActivity,
+  fetchGetLeadPipeline,
+  fetchUpdateLead,
+  Lead,
+  LeadPipelineGroup,
+} from "@/api/customer";
 
 defineOptions({ name: "PurchasingPipeline" });
 
-const pipelineStats = ref([
-  {
-    label: "Tổng Deal",
-    count: 42,
-    icon: "ri:exchange-funds-line",
-    bg: "bg-blue-600",
-    value: "+12% mtd",
-  },
-  {
-    label: "Đang tư vấn",
-    count: 15,
-    icon: "ri:customer-service-2-line",
-    bg: "bg-indigo-500",
-  },
-  {
-    label: "Đã đặt cọc",
-    count: 8,
-    icon: "ri:money-dollar-circle-line",
-    bg: "bg-orange-500",
-    value: "420tr",
-  },
-  {
-    label: "Chờ biển số",
-    count: 12,
-    icon: "ri:government-line",
-    bg: "bg-purple-500",
-  },
-  {
-    label: "Đã giao xe",
-    count: 7,
-    icon: "ri:checkbox-circle-line",
-    bg: "bg-emerald-500",
-    value: "Goal 85%",
-  },
-]);
+type Deal = {
+  id: number;
+  customerName: string;
+  vehicle: string;
+  priority: "Normal" | "High" | "Urgent";
+  timeInStage: string;
+  saleName: string;
+  saleId: string;
+  raw: Lead;
+};
 
-const filterSale = ref("");
-const filterVehicle = ref("");
-const salesList = [
-  { id: 1, name: "Sale Nguyễn Văn A" },
-  { id: 2, name: "Sale Trần Thị B" },
-];
+type BoardColumn = {
+  id: string;
+  title: string;
+  color: string;
+  icon: string;
+  bg: string;
+  items: Deal[];
+};
 
-const boardColumns = ref([
-  {
+const stageMeta: Record<string, Omit<BoardColumn, "items">> = {
+  New: {
+    id: "New",
+    title: "Mới",
+    color: "#64748b",
+    icon: "ri:user-add-line",
+    bg: "bg-slate-500",
+  },
+  Consulting: {
     id: "Consulting",
     title: "Đang tư vấn",
     color: "#3b82f6",
-    items: [
-      {
-        id: 101,
-        customerName: "Nguyễn Hoàng Long",
-        vehicle: "Winner X 2024",
-        priority: "High",
-        timeInStage: "2 ngày",
-        saleName: "Admin",
-      },
-      {
-        id: 102,
-        customerName: "Trần Minh Tâm",
-        vehicle: "SH 125i",
-        priority: "Urgent",
-        timeInStage: "5 giờ",
-        saleName: "Sale A",
-      },
-    ],
+    icon: "ri:customer-service-2-line",
+    bg: "bg-blue-600",
   },
-  {
-    id: "TestDrive",
+  TestDriving: {
+    id: "TestDriving",
     title: "Đang lái thử",
     color: "#6366f1",
-    items: [
-      {
-        id: 103,
-        customerName: "Lê Văn Tám",
-        vehicle: "Air Blade 160",
-        priority: "High",
-        timeInStage: "3 ngày",
-        saleName: "Sale B",
-      },
-    ],
+    icon: "ri:steering-2-line",
+    bg: "bg-indigo-500",
   },
-  {
-    id: "Deposit",
+  Deposited: {
+    id: "Deposited",
     title: "Đã đặt cọc",
     color: "#f97316",
-    items: [
-      {
-        id: 104,
-        customerName: "Phạm Thị Nở",
-        vehicle: "Vision 2024",
-        priority: "Urgent",
-        timeInStage: "1 ngày",
-        saleName: "Admin",
-      },
-    ],
+    icon: "ri:money-dollar-circle-line",
+    bg: "bg-orange-500",
   },
-  {
-    id: "Processing",
+  Paperwork: {
+    id: "Paperwork",
     title: "Chờ giấy tờ",
     color: "#a855f7",
-    items: [
-      {
-        id: 105,
-        customerName: "Hoàng Xuân Vinh",
-        vehicle: "Winner X",
-        priority: "High",
-        timeInStage: "4 ngày",
-        saleName: "Sale A",
-      },
-    ],
+    icon: "ri:file-list-3-line",
+    bg: "bg-purple-500",
   },
-  {
+  Delivered: {
     id: "Delivered",
     title: "Đã giao xe",
     color: "#10b981",
-    items: [
-      {
-        id: 106,
-        customerName: "Bùi Tiến Dũng",
-        vehicle: "SH Mode",
-        priority: "High",
-        timeInStage: "Vừa chốt",
-        saleName: "Sale B",
-      },
-    ],
+    icon: "ri:checkbox-circle-line",
+    bg: "bg-emerald-500",
   },
-]);
+};
 
-const isStale = (deal: any) => {
+const stageOrder = Object.keys(stageMeta);
+const loading = ref(false);
+const filterSale = ref("");
+const filterVehicle = ref("");
+const pipelineGroups = ref<LeadPipelineGroup[]>([]);
+const boardColumns = ref<BoardColumn[]>(createEmptyColumns());
+
+const pipelineStats = computed(() => {
+  const total = boardColumns.value.reduce(
+    (sum, column) => sum + column.items.length,
+    0,
+  );
+
+  return [
+    {
+      label: "Tổng Deal",
+      count: total,
+      icon: "ri:exchange-funds-line",
+      bg: "bg-blue-600",
+      value: "",
+    },
+    ...boardColumns.value.map((column) => ({
+      label: column.title,
+      count: column.items.length,
+      icon: column.icon,
+      bg: column.bg,
+      value: "",
+    })),
+  ];
+});
+
+const salesList = computed(() => {
+  const sales = new Map<string, string>();
+  pipelineGroups.value
+    .flatMap((group) => group.leads ?? [])
+    .forEach((lead) => {
+      const id = lead.assignedToId ?? "";
+      if (id) {
+        sales.set(id, `Nhân viên ${id.slice(0, 8)}`);
+      }
+    });
+
+  return [...sales.entries()].map(([id, name]) => ({ id, name }));
+});
+
+const vehicleOptions = computed(() => {
+  const names = pipelineGroups.value
+    .flatMap((group) => group.leads ?? [])
+    .map((lead) => lead.interestedVehicle)
+    .filter(Boolean);
+
+  return [...new Set(names)];
+});
+
+watch([filterSale, filterVehicle, pipelineGroups], rebuildBoardColumns, {
+  deep: true,
+});
+
+onMounted(() => {
+  fetchPipeline();
+});
+
+async function fetchPipeline() {
+  loading.value = true;
+  try {
+    pipelineGroups.value = await fetchGetLeadPipeline();
+    rebuildBoardColumns();
+  } catch (err: any) {
+    ElMessage.error(err.message || "Lỗi khi tải phễu mua hàng");
+  } finally {
+    loading.value = false;
+  }
+}
+
+function createEmptyColumns(): BoardColumn[] {
+  return stageOrder.map((stage) => ({
+    ...stageMeta[stage],
+    items: [],
+  }));
+}
+
+function rebuildBoardColumns() {
+  const columns = createEmptyColumns();
+
+  pipelineGroups.value.forEach((group) => {
+    const target = columns.find((column) => column.id === group.status);
+    if (!target) return;
+
+    target.title = group.statusDisplayName || target.title;
+    target.items = (group.leads ?? [])
+      .filter(matchesFilters)
+      .map((lead) => mapLeadToDeal(lead));
+  });
+
+  boardColumns.value = columns;
+}
+
+function matchesFilters(lead: Lead) {
+  const saleMatches =
+    !filterSale.value || lead.assignedToId === filterSale.value;
+  const vehicleMatches =
+    !filterVehicle.value || lead.interestedVehicle === filterVehicle.value;
+
+  return saleMatches && vehicleMatches;
+}
+
+function mapLeadToDeal(lead: Lead): Deal {
+  return {
+    id: lead.id,
+    customerName: lead.fullName || "Khách hàng chưa đặt tên",
+    vehicle: lead.interestedVehicle || "Chưa chọn xe",
+    priority: getPriority(lead),
+    timeInStage: formatTimeInStage(lead.createdAt),
+    saleName: lead.assignedToId
+      ? `NV ${lead.assignedToId.slice(0, 8)}`
+      : "Chưa giao",
+    saleId: lead.assignedToId ?? "",
+    raw: lead,
+  };
+}
+
+function getPriority(lead: Lead): Deal["priority"] {
+  if (lead.score >= 80 || lead.status === "Deposited") return "Urgent";
+  if (lead.score >= 40 || Boolean(lead.interestedVehicle)) return "High";
+  return "Normal";
+}
+
+function formatTimeInStage(dateStr?: string) {
+  if (!dateStr) return "Chưa rõ";
+
+  const created = new Date(dateStr);
+  if (Number.isNaN(created.getTime())) return "Chưa rõ";
+
+  const diffMs = new Date().getTime() - created.getTime();
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  if (diffHours < 1) return "Vừa tạo";
+  if (diffHours < 24) return `${diffHours} giờ`;
+  return `${Math.floor(diffHours / 24)} ngày`;
+}
+
+const isStale = (deal: Deal) => {
   return deal.timeInStage.includes("ngày") && parseInt(deal.timeInStage) >= 3;
 };
 
-const handleDragChange = (event: any, columnId: string) => {
-  if (event.added) {
-    const deal = event.added.element;
+async function handleDragChange(event: any, columnId: string) {
+  if (!event.added) return;
+
+  const deal = event.added.element as Deal;
+  const previousStatus = deal.raw.status;
+  deal.raw.status = columnId;
+
+  try {
+    await fetchUpdateLead(deal.id, {
+      ...deal.raw,
+      status: columnId,
+      birthday: deal.raw.birthday || null,
+    });
+
     ElMessage.success(
       `Đã chuyển ${deal.customerName} sang giai đoạn ${getStageName(columnId)}`,
     );
-
-    if (columnId === "Delivered") {
-      triggerSuccessCelebration();
-    }
-
-    if (columnId === "Processing") {
-      ElMessage({
-        message: "Hệ thống đã gửi thông báo cho bộ phận hành chính Biên Hòa.",
-        type: "info",
-      });
-    }
+    await fetchPipeline();
+  } catch (err: any) {
+    deal.raw.status = previousStatus;
+    ElMessage.error(err.message || "Lỗi khi cập nhật trạng thái");
+    await fetchPipeline();
   }
-};
+}
+
+async function addActivity(deal: Deal, activityType: "Chat" | "Call") {
+  try {
+    const actionLabel = activityType === "Call" ? "cuộc gọi" : "tư vấn chat";
+    await fetchAddLeadActivity(deal.id, {
+      activityType,
+      description: `Ghi nhận ${actionLabel} từ màn hình phễu mua hàng`,
+    });
+    ElMessage.success(`Đã ghi nhận ${actionLabel}`);
+    await fetchPipeline();
+  } catch (err: any) {
+    ElMessage.error(err.message || "Lỗi khi ghi nhận hoạt động");
+  }
+}
 
 const getStageName = (id: string) => {
   const col = boardColumns.value.find((c) => c.id === id);
   return col ? col.title : id;
-};
-
-const triggerSuccessCelebration = () => {
-  console.log("FIREWORKS EFFECT!");
 };
 </script>
 

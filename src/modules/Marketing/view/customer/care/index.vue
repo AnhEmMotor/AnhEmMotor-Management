@@ -17,7 +17,7 @@
         <div class="flex gap-3">
           <button
             @click="handleAddCustomer"
-            class="h-11 px-8 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-sm hover:bg-slate-50 transition-all active:scale-95 flex items-center gap-2"
+            class="h-11 px-8 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center gap-2"
           >
             <ArtSvgIcon icon="ri:user-add-line" class="text-blue-500" /> Thêm
             khách hàng mới
@@ -390,7 +390,7 @@
                     </h3>
                     <div class="space-y-4">
                       <div
-                        v-for="i in 2"
+                        v-for="i in 1"
                         :key="i"
                         class="p-5 bg-slate-50/50 dark:bg-slate-950/20 rounded-2xl flex justify-between items-center border border-transparent hover:border-slate-200 dark:hover:border-slate-800 transition-all"
                       >

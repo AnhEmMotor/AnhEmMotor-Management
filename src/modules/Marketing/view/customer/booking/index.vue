@@ -49,7 +49,7 @@
           </div>
           <button
             @click="handleCreateNew"
-            class="h-10 px-6 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-sm hover:bg-slate-50 transition-all active:scale-95 flex items-center justify-center gap-2"
+            class="h-10 px-6 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center justify-center gap-2"
           >
             <ArtSvgIcon icon="ri:calendar-todo-line" class="text-blue-500" /> +
             Đặt lịch mới

@@ -96,7 +96,7 @@ export const marketingMenu: AppRouteRecord[] = [
       {
         path: "customer",
         name: "CustomerManagement",
-        component: "/Marketing/view/customer/index",
+        component: "",
         meta: {
           title: "menus.marketing.customer",
           icon: "ri:user-heart-line",

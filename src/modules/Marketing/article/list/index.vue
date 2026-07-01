@@ -19,7 +19,7 @@
               @input="searchArticle"
               type="text"
               placeholder="Tìm kiếm theo tiêu đề bài viết...."
-              class="w-full h-11 pl-12 pr-4 bg-slate-50 dark:bg-slate-850 border-2 border-slate-100 dark:border-slate-700 rounded-xl text-sm font-bold focus:border-blue-500 focus:bg-white dark:focus:bg-slate-850 dark:text-white transition-all outline-none"
+              class="w-full h-11 pl-12 pr-4 bg-slate-50 dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none"
               @keyup.enter="searchArticle"
             />
           </div>
@@ -28,7 +28,7 @@
         <div class="flex items-center gap-3 shrink-0">
           <button
             @click="toAddArticle"
-            class="h-11 px-8 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-sm hover:bg-slate-50 transition-all active:scale-95 flex items-center gap-2"
+            class="h-11 px-8 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center gap-2"
           >
             <ArtSvgIcon icon="ri:add-circle-line" class="text-blue-500" /> Viết
             bài mới

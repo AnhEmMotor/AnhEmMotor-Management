@@ -35,7 +35,7 @@
         </div>
         <button
           @click="visible = false"
-          class="size-8 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-400 dark:text-slate-200 flex-cc hover:bg-slate-50 transition-all shadow-sm"
+          class="size-8 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-400 dark:text-slate-200 flex-cc hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm"
         >
           <ArtSvgIcon icon="ri:close-line" />
         </button>

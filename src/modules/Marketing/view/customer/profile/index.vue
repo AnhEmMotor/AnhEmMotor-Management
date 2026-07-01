@@ -8,7 +8,7 @@
         Hồ sơ & Danh bạ khách hàng
       </h2>
       <button
-        class="h-10 px-6 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-full font-black text-[10px] uppercase tracking-widest shadow-sm hover:bg-slate-50 transition-all active:scale-95 flex items-center justify-center gap-2"
+        class="h-10 px-6 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-full font-black text-[10px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center justify-center gap-2"
         @click="handleAdd"
       >
         <ArtSvgIcon icon="ri:user-add-line" class="text-blue-500" /> Thêm khách
@@ -38,7 +38,7 @@
           class="customer-row-container flex flex-col"
         >
           <div
-            class="customer-row-card group bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 transition-all duration-300 flex items-center hover:border-blue-200 cursor-pointer overflow-hidden"
+            class="customer-row-card group bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 transition-all duration-300 flex items-center hover:border-blue-200 dark:hover:border-blue-500 cursor-pointer overflow-hidden"
             :class="{
               'is-expanded': expandedId === customer.id,
             }"
@@ -341,23 +341,34 @@ const getLastNote = (customer: any) => {
 
 <style lang="scss" scoped>
 .customer-profile-management {
+  --customer-card-border: #f3f4f6;
+  --customer-card-hover-bg: #f8faff;
+  --customer-card-expanded-bg: #fff;
+  --customer-card-active-border: #3b82f6;
+  --customer-card-shadow: 0 12px 24px rgb(0 0 0 / 5%);
+  --customer-card-expanded-shadow: 0 10px 30px rgb(0 0 0 / 5%);
+  --customer-select-bg: #f3f4f6;
+  --customer-select-hover-bg: #e5e7eb;
+  --customer-expansion-bg: #fafafa;
+  --customer-expansion-border: #3b82f6;
+
   .customer-row-card {
-    border: 1px solid #f3f4f6;
+    border: 1px solid var(--customer-card-border);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     &:hover {
-      background-color: #f8faff;
-      border-color: #3b82f6;
-      box-shadow: 0 12px 24px rgb(0 0 0 / 5%);
+      background-color: var(--customer-card-hover-bg);
+      border-color: var(--customer-card-active-border);
+      box-shadow: var(--customer-card-shadow);
       transform: translateY(-2px);
     }
 
     &.is-expanded {
-      background-color: white;
-      border-color: #3b82f6;
+      background-color: var(--customer-card-expanded-bg);
+      border-color: var(--customer-card-active-border);
       border-bottom-right-radius: 0;
       border-bottom-left-radius: 0;
-      box-shadow: 0 10px 30px rgb(0 0 0 / 5%);
+      box-shadow: var(--customer-card-expanded-shadow);
     }
 
     .priority-label {
@@ -371,13 +382,13 @@ const getLastNote = (customer: any) => {
 
     .sale-select-premium {
       :deep(.el-input__wrapper) {
-        background-color: #f3f4f6;
+        background-color: var(--customer-select-bg);
         border: none;
         border-radius: 8px;
         box-shadow: none;
 
         &:hover {
-          background-color: #e5e7eb;
+          background-color: var(--customer-select-hover-bg);
         }
       }
     }
@@ -385,8 +396,8 @@ const getLastNote = (customer: any) => {
 
   .expansion-container {
     overflow: hidden;
-    background-color: #fafafa;
-    border: 1px solid #3b82f6;
+    background-color: var(--customer-expansion-bg);
+    border: 1px solid var(--customer-expansion-border);
     border-top: none;
     border-bottom-right-radius: 1.5rem;
     border-bottom-left-radius: 1.5rem;
@@ -398,6 +409,19 @@ const getLastNote = (customer: any) => {
       color: #4b5563;
       white-space: nowrap !important;
     }
+  }
+
+  :global(html.dark) & {
+    --customer-card-border: #1f2937;
+    --customer-card-hover-bg: #374151;
+    --customer-card-expanded-bg: #1f2937;
+    --customer-card-active-border: #334155;
+    --customer-card-shadow: 0 12px 24px rgb(0 0 0 / 25%);
+    --customer-card-expanded-shadow: 0 10px 30px rgb(0 0 0 / 25%);
+    --customer-select-bg: #1f2937;
+    --customer-select-hover-bg: #374151;
+    --customer-expansion-bg: #0f172a;
+    --customer-expansion-border: #334155;
   }
 }
 
