@@ -46,10 +46,19 @@
         @refresh="refreshData"
       >
         <template #left>
-          <ElButton type="primary" v-ripple @click="handleAdd">
+          <ElButton
+            type="primary"
+            v-ripple
+            v-auth="'Permissions.Warehouse.ProductManagement.Create'"
+            @click="handleAdd"
+          >
             <ElIcon><Plus /></ElIcon> Thêm mới
           </ElButton>
-          <ElButton v-ripple @click="exportToExcel">
+          <ElButton
+            v-ripple
+            v-auth="'Permissions.Warehouse.ProductManagement.View'"
+            @click="exportToExcel"
+          >
             <ElIcon><Download /></ElIcon> Xuất Excel
           </ElButton>
         </template>
@@ -110,12 +119,12 @@
             <ArtButtonTable
               type="edit"
               @click="handleEdit(row)"
-              v-auth="Permissions.Warehouse.ProductManagement.Edit"
+              v-auth="'Permissions.Warehouse.ProductManagement.Edit'"
             />
             <ArtButtonTable
               type="delete"
               @click="handleDelete(row)"
-              v-auth="Permissions.Warehouse.ProductManagement.Delete"
+              v-auth="'Permissions.Warehouse.ProductManagement.Delete'"
             />
           </div>
         </template>

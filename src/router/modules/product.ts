@@ -9,6 +9,7 @@ export const productRoutes: AppRouteRecord[] = [
       title: "menus.product.title",
       icon: "ri:shopping-bag-3-line",
       roles: ["Admin", "SuperAdmin"],
+      permissions: ["Permissions.Order"],
     },
     children: [
       {
@@ -49,6 +50,7 @@ export const productRoutes: AppRouteRecord[] = [
       title: "menus.product.title",
       icon: "ri:shopping-bag-3-line",
       roles: ["Admin", "SuperAdmin"],
+      permissions: ["Permissions.Warehouse"],
     },
     children: [
       {

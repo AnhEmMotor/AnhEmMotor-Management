@@ -37,6 +37,7 @@
               Báo cáo Xuất - Nhập - Tồn
             </h4>
             <ElButton
+              v-if="tableData && tableData.length > 0"
               type="primary"
               :loading="exporting"
               @click="handleExport"

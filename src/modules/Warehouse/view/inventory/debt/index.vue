@@ -44,6 +44,7 @@
             <ElButton
               type="success"
               size="small"
+              v-auth="'Permissions.Warehouse.DebtPaymentManagement.Create'"
               :disabled="row.totalDebt <= 0"
               @click="openPaymentForm(row)"
             >
@@ -170,6 +171,7 @@
                 v-if="row.hasProofImage"
                 type="primary"
                 size="small"
+                v-auth="'Permissions.Warehouse.DebtPaymentManagement.Edit'"
                 link
                 @click="viewProofImages(row)"
               >
@@ -179,6 +181,7 @@
                 v-else
                 type="success"
                 size="small"
+                v-auth="'Permissions.Warehouse.DebtPaymentManagement.Edit'"
                 link
                 @click="viewProofImages(row)"
               >

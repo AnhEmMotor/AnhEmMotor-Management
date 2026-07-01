@@ -9,6 +9,7 @@ export const warehouseMenu: AppRouteRecord[] = [
       title: "Warehouse",
       icon: "ri:store-2-line",
       roles: ["Admin", "SuperAdmin"],
+      permissions: ["Permissions.Warehouse"],
     },
     redirect: "/Warehouse/product",
     children: [

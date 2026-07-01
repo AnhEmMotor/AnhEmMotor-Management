@@ -58,7 +58,7 @@
           <div class="flex items-center gap-3">
             <ElButton
               id="tour-add-btn"
-              v-auth="'Permissions.Brands.Create'"
+              v-auth="'Permissions.Warehouse.ProductManagement.Create'"
               type="primary"
               v-ripple
               :disabled="importing"
@@ -69,6 +69,7 @@
             </ElButton>
 
             <ElButton
+              v-auth="'Permissions.Warehouse.ProductManagement.View'"
               :loading="exporting"
               :disabled="importing"
               v-ripple
@@ -79,6 +80,7 @@
             </ElButton>
 
             <ElDropdown
+              v-auth="'Permissions.Warehouse.ProductManagement.Create'"
               trigger="click"
               style="margin-left: 0"
               :disabled="importing"
@@ -202,12 +204,12 @@
         <template #operation="{ row }">
           <div class="flex gap-2 justify-center">
             <ArtButtonTable
-              v-auth="'Permissions.Brands.Edit'"
+              v-auth="'Permissions.Warehouse.ProductManagement.Edit'"
               type="edit"
               @click="handleEdit(row)"
             />
             <ArtButtonTable
-              v-auth="'Permissions.Brands.Delete'"
+              v-auth="'Permissions.Warehouse.ProductManagement.Delete'"
               type="delete"
               @click="handleDelete(row)"
             />
@@ -230,7 +232,7 @@
             class="text-gray-400 hover:text-blue-500 transition-colors bg-transparent border-none cursor-pointer flex items-center justify-center text-[20px]"
             @click.prevent="startDialogTour"
             title="Hướng dẫn"
-            v-auth="Permissions.Warehouse.BrandManagement.Edit"
+            v-auth="'Permissions.Warehouse.ProductManagement.Edit'"
           >
             <ElIcon><Help /></ElIcon>
           </button>
@@ -364,7 +366,7 @@
             class="text-gray-400 hover:text-blue-500 transition-colors bg-transparent border-none cursor-pointer flex items-center justify-center text-[20px]"
             @click.prevent="startRestoreTour"
             title="Hướng dẫn"
-            v-auth="Permissions.Warehouse.BrandManagement.Edit"
+            v-auth="'Permissions.Warehouse.ProductManagement.Edit'"
           >
             <ElIcon><Help /></ElIcon>
           </button>

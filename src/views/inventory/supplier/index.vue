@@ -44,6 +44,7 @@
             <ElButton
               id="tour-add-btn"
               type="primary"
+              v-auth="Permissions.Warehouse.SupplierManagement.Create"
               v-ripple
               :disabled="importing"
               @click="handleAdd"

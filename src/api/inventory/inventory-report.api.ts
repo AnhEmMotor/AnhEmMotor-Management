@@ -44,4 +44,17 @@ export const InventoryReportApi = {
       params,
     });
   },
+
+  exportLedger(params?: {
+    searchQuery?: string;
+    type?: string;
+    startDate?: string;
+    endDate?: string;
+  }) {
+    return request.get<Blob>({
+      url: "/api/v1/InventoryLedgers/export",
+      params,
+      responseType: "blob",
+    });
+  },
 };

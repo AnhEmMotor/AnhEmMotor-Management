@@ -37,6 +37,7 @@
             <ElButton
               type="primary"
               class="btn-add"
+              v-auth="'Permissions.Warehouse.ReceiptManagement.Create'"
               v-ripple
               @click="handleAdd"
               style="margin-left: 0"
@@ -45,6 +46,7 @@
             </ElButton>
 
             <ElButton
+              v-auth="'Permissions.Warehouse.ReceiptManagement.View'"
               :loading="exporting"
               :disabled="importing"
               class="btn-import"
@@ -56,6 +58,7 @@
             </ElButton>
 
             <ElDropdown
+              v-auth="'Permissions.Warehouse.ReceiptManagement.Create'"
               trigger="click"
               class="btn-import"
               style="margin-left: 0"
@@ -99,6 +102,7 @@
               "
               type="danger"
               class="btn-bulk"
+              v-auth="'Permissions.Warehouse.ReceiptManagement.Delete'"
               v-ripple
               :disabled="importing"
               @click="handleDeleteMany"
@@ -165,6 +169,7 @@
                 circle
                 size="small"
                 type="primary"
+                v-auth="'Permissions.Warehouse.ReceiptManagement.Edit'"
                 @click="handleEdit(row)"
               >
                 <ElIcon><Edit /></ElIcon>
@@ -173,7 +178,7 @@
             <ElTooltip
               v-if="
                 row.statusId?.toLowerCase() === 'draft' &&
-                hasAuth(Permissions.InventoryReceiptsSend)
+                hasAuth('Permissions.Warehouse.ReceiptManagement.Send')
               "
               content="Gửi phiếu"
               placement="top"
@@ -190,7 +195,7 @@
             <template
               v-if="
                 row.statusId?.toLowerCase() === 'sent' &&
-                hasAuth(Permissions.InventoryReceiptsApproveReject)
+                hasAuth('Permissions.Warehouse.ReceiptManagement.ApproveReject')
               "
             >
               <ElTooltip content="Phê duyệt" placement="top">
@@ -219,6 +224,7 @@
                 circle
                 size="small"
                 type="danger"
+                v-auth="'Permissions.Warehouse.ReceiptManagement.Delete'"
                 @click="handleDelete(row)"
               >
                 <ElIcon><Delete /></ElIcon>
@@ -472,7 +478,7 @@
           <div>
             <span class="text-gray-500">Mã Yêu cầu mua hàng (PR):</span>
             <span class="ml-2 text-gray-800 font-medium"
-              >#{{ detailData.purchaseRequestId || "--" }}</span
+              >#{{ detailData.purchaseRequestId }}</span
             >
           </div>
           <div>

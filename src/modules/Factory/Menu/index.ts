@@ -8,6 +8,7 @@ export const factoryMenu: AppRouteRecord[] = [
     meta: {
       title: "Dịch vụ xưởng",
       icon: "ri:tools-line",
+      permissions: ["Permissions.Factory"],
     },
     children: [
       {
@@ -83,6 +84,7 @@ export const factoryMenu: AppRouteRecord[] = [
     meta: {
       title: "Hợp đồng mua bán xe",
       icon: "ri:file-paper-2-line",
+      permissions: ["Permissions.Factory"],
     },
     children: [
       {
@@ -103,6 +105,7 @@ export const factoryMenu: AppRouteRecord[] = [
     meta: {
       title: "Thống kê xưởng",
       icon: "ri:bar-chart-line",
+      permissions: ["Permissions.Factory"],
     },
   },
   {
@@ -112,6 +115,7 @@ export const factoryMenu: AppRouteRecord[] = [
     meta: {
       title: "Dịch vụ hành chính",
       icon: "ri:file-list-3-line",
+      permissions: ["Permissions.Factory"],
     },
     children: [
       {

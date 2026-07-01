@@ -74,7 +74,7 @@ export function setupBeforeEachGuard(router: Router): void {
       }
 
       const currentRoute = router.currentRoute.value;
-      if (currentRoute.matched.length > 0) {
+      if (currentRoute.path && currentRoute.path !== "/") {
         if (isStaticRoute(currentRoute.path)) {
           return;
         }
@@ -83,7 +83,7 @@ export function setupBeforeEachGuard(router: Router): void {
           menuList,
         );
         if (!hasAccess) {
-          router.push("/workspace");
+          window.location.href = "/workspace";
         }
       }
     } catch (err) {
@@ -271,7 +271,7 @@ function isStaticRoute(path: string): boolean {
   ): boolean => {
     return routes.some((route) => {
       if (route.name === "Exception404") {
-        return true;
+        return false;
       }
 
       const routePath = route.path;

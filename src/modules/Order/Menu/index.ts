@@ -9,6 +9,7 @@ export const orderMenu: AppRouteRecord[] = [
       title: "Order",
       icon: "ri:file-list-3-line",
       roles: ["Admin", "SuperAdmin"],
+      permissions: ["Permissions.Order"],
     },
     redirect: "/Order/management/list",
     children: [

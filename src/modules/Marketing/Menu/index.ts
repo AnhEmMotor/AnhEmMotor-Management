@@ -9,6 +9,7 @@ export const marketingMenu: AppRouteRecord[] = [
       title: "menus.marketing.title",
       icon: "ri:market-line",
       roles: ["Admin", "SuperAdmin"],
+      permissions: ["Permissions.Marketing"],
     },
     redirect: "/Marketing/banner",
     children: [
