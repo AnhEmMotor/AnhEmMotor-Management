@@ -227,6 +227,93 @@
               </el-form>
             </div>
           </el-tab-pane>
+
+          <el-tab-pane label="📋 Bảng giá & SLA" name="pricing">
+            <div class="mt-2 flex flex-col gap-4">
+              <div
+                v-if="selected.autoSyncPricing"
+                class="p-3 bg-green-50 text-green-700 rounded border border-green-200 flex items-center gap-2 text-sm"
+              >
+                <span
+                  >⚡ Đang tự động đồng bộ bảng giá và SLA từ API của
+                  {{ selected.name }}.</span
+                >
+              </div>
+              <div
+                v-else
+                class="p-3 bg-amber-50 text-amber-700 rounded border border-amber-200 flex items-center gap-2 text-sm"
+              >
+                <span
+                  >⚠️ Chế độ nhập thủ công. Bạn có thể thay đổi bảng giá và SLA
+                  bên dưới.</span
+                >
+              </div>
+
+              <div>
+                <h4 class="font-bold text-sm mb-2 text-gray-700">
+                  💰 Bảng giá cước vận chuyển
+                </h4>
+                <el-table
+                  :data="pricingRules"
+                  border
+                  size="small"
+                  style="width: 100%"
+                >
+                  <el-table-column label="Tuyến vận chuyển" width="150">
+                    <template #default="scope">
+                      <span>{{ getRouteTypeLabel(scope.row.routeType) }}</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="Mức cân nặng" width="120">
+                    <template #default="scope">
+                      <span>{{ scope.row.weightTier }}</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="Giá cước (VND)">
+                    <template #default="scope">
+                      <el-input-number
+                        v-model="scope.row.price"
+                        :min="0"
+                        :step="1000"
+                        :disabled="selected.autoSyncPricing"
+                        size="small"
+                        class="w-full"
+                        :controls="false"
+                      />
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </div>
+
+              <div>
+                <h4 class="font-bold text-sm mb-2 text-gray-700">
+                  ⏱️ Cam kết thời gian giao hàng (SLA)
+                </h4>
+                <el-table
+                  :data="slaRules"
+                  border
+                  size="small"
+                  style="width: 100%"
+                >
+                  <el-table-column label="Tuyến vận chuyển" width="150">
+                    <template #default="scope">
+                      <span>{{ getRouteTypeLabel(scope.row.routeType) }}</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="Thời gian dự kiến">
+                    <template #default="scope">
+                      <el-input
+                        v-model="scope.row.expectedDays"
+                        :disabled="selected.autoSyncPricing"
+                        size="small"
+                        placeholder="Ví dụ: 1-2 ngày"
+                      />
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </div>
+            </div>
+          </el-tab-pane>
         </el-tabs>
 
         <div class="flex justify-end gap-3 mt-auto pt-4 border-t">
@@ -289,6 +376,18 @@ const testing = ref(false);
 
 const rules = ref({});
 
+const pricingRules = ref<any[]>([]);
+const slaRules = ref<any[]>([]);
+
+const getRouteTypeLabel = (routeType: string) => {
+  const map: Record<string, string> = {
+    IntraProvince: "Nội tỉnh",
+    IntraRegion: "Nội vùng",
+    InterRegion: "Liên vùng",
+  };
+  return map[routeType] || routeType;
+};
+
 const getCarrierColor = (code: string) => {
   const colors: Record<string, string> = {
     ghtk: "#008a00",
@@ -304,6 +403,42 @@ const openPanel = async (p: Carrier) => {
   tokenDraft.value = "";
   webhookSecretDraft.value = "";
   activeTab.value = "api";
+
+  try {
+    pricingRules.value = p.pricingRulesJson
+      ? JSON.parse(p.pricingRulesJson)
+      : [];
+  } catch {
+    pricingRules.value = [];
+  }
+
+  try {
+    slaRules.value = p.slaJson ? JSON.parse(p.slaJson) : [];
+  } catch {
+    slaRules.value = [];
+  }
+
+  if (pricingRules.value.length === 0) {
+    pricingRules.value = [
+      { routeType: "IntraProvince", weightTier: "0-2kg", price: 22000 },
+      { routeType: "IntraProvince", weightTier: "2-5kg", price: 35000 },
+      { routeType: "IntraProvince", weightTier: ">5kg", price: 50000 },
+      { routeType: "IntraRegion", weightTier: "0-2kg", price: 30000 },
+      { routeType: "IntraRegion", weightTier: "2-5kg", price: 45000 },
+      { routeType: "IntraRegion", weightTier: ">5kg", price: 70000 },
+      { routeType: "InterRegion", weightTier: "0-2kg", price: 40000 },
+      { routeType: "InterRegion", weightTier: "2-5kg", price: 65000 },
+      { routeType: "InterRegion", weightTier: ">5kg", price: 95000 },
+    ];
+  }
+  if (slaRules.value.length === 0) {
+    slaRules.value = [
+      { routeType: "IntraProvince", expectedDays: "1-2 ngày" },
+      { routeType: "IntraRegion", expectedDays: "2-3 ngày" },
+      { routeType: "InterRegion", expectedDays: "3-5 ngày" },
+    ];
+  }
+
   drawerOpen.value = true;
   await nextTick();
 };
@@ -335,6 +470,8 @@ const saveQuickStatus = async (p: Carrier) => {
       maxParcelWeightKg: p.maxParcelWeightKg,
       allowLiquidCargo: p.allowLiquidCargo,
       allowOversizeCargo: p.allowOversizeCargo,
+      pricingRulesJson: p.pricingRulesJson,
+      slaJson: p.slaJson,
     };
     await LogisticsCarrierSettingsService.updateCarrier(p.id, payload);
     ElNotification.success({ title: "Đã cập nhật trạng thái" });
@@ -360,6 +497,8 @@ const saveConfig = async () => {
       maxParcelWeightKg: selected.value.maxParcelWeightKg,
       allowLiquidCargo: selected.value.allowLiquidCargo,
       allowOversizeCargo: selected.value.allowOversizeCargo,
+      pricingRulesJson: JSON.stringify(pricingRules.value),
+      slaJson: JSON.stringify(slaRules.value),
     };
     await LogisticsCarrierSettingsService.updateCarrier(
       selected.value.id,

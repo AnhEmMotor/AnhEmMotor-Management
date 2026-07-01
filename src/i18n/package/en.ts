@@ -990,6 +990,14 @@ export default {
       tracking: "Tracking No.",
       message: "Message",
       createdAt: "Created At",
+      status: {
+        completed: "Completed",
+        shipping: "Shipping",
+        packing: "Packing",
+        pendingPickup: "Pending Pick",
+        returned: "Returned",
+      },
+      noData: "No Data",
     },
     fulfillment: {
       title: "Fulfillment Processing",
