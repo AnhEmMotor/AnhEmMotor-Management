@@ -861,9 +861,14 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-.contract-supplier-container {
-  color: #f8fafc;
-}
+/*
+  Quy ước quan trọng để tránh lỗi màu:
+  - Mọi rule KHÔNG nằm trong "html.dark ..." sẽ áp dụng cho CẢ light mode
+    và dark mode. Vì vậy các màu chữ/nền cứng (ví dụ #f8fafc, #161618...)
+    chỉ được đặt bên trong khối "html.dark" ở cuối file.
+  - Ở light mode, Element Plus tự set màu chữ/nền hợp lý theo theme mặc định,
+    nên ta không cần (và không nên) ép màu ở đây.
+*/
 
 .supplier-create-button {
   height: 40px;
@@ -876,29 +881,6 @@ onMounted(() => {
   margin-bottom: 16px;
 }
 
-.supplier-kpi-grid :deep(.art-card) {
-  min-height: 128px;
-  color: #f8fafc;
-  background: #161618;
-  border-color: rgb(255 255 255 / 9%) !important;
-}
-
-.supplier-kpi-grid :deep(.art-card .text-g-900),
-.supplier-kpi-grid :deep(.art-card .text-g-800),
-.supplier-kpi-grid :deep(.art-card .text-g-700),
-.supplier-kpi-grid :deep(.art-card .text-g-600),
-.supplier-kpi-grid :deep(.art-card .text-g-500),
-.supplier-kpi-grid :deep(.art-card p),
-.supplier-table-card :deep(.el-table),
-.supplier-table-card :deep(.el-table .cell),
-.supplier-table-card :deep(.el-table th.el-table__cell),
-.supplier-table-card :deep(.el-table td.el-table__cell),
-.supplier-table-card :deep(.el-pagination),
-.supplier-table-card :deep(.el-pagination *) {
-  color: #f8fafc !important;
-  opacity: 1 !important;
-}
-
 .supplier-filter-card {
   margin-bottom: 16px;
 }
@@ -909,7 +891,6 @@ onMounted(() => {
 
 .supplier-filter-card :deep(.art-search-bar) {
   padding: 0;
-  color: #f8fafc;
   background: transparent;
   border: 0 !important;
   box-shadow: none;
@@ -983,28 +964,9 @@ onMounted(() => {
   line-height: 32px;
 }
 
-.contract-supplier-container :deep(.el-input__wrapper),
-.contract-supplier-container :deep(.el-select__wrapper) {
-  color: #f8fafc;
-  background: #101114 !important;
-  border-color: rgb(255 255 255 / 14%) !important;
-  box-shadow: none;
-}
-
 .contract-supplier-container :deep(.el-date-editor.el-input__wrapper) {
   box-sizing: border-box;
   width: 100% !important;
-}
-
-.contract-supplier-container :deep(.art-search-bar .el-form-item__label),
-.contract-supplier-container :deep(.el-input__inner),
-.contract-supplier-container :deep(.el-select__placeholder),
-.contract-supplier-container :deep(.el-select__selected-item),
-.contract-supplier-container :deep(.el-select__caret),
-.contract-supplier-container :deep(.el-range-input),
-.contract-supplier-container :deep(.el-range-separator) {
-  color: #f8fafc !important;
-  background: transparent !important;
 }
 
 .supplier-table-card :deep(.el-card__body) {
@@ -1015,7 +977,6 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  color: #f8fafc;
 }
 
 .supplier-table-heading span {
@@ -1031,21 +992,7 @@ onMounted(() => {
 .supplier-table-card :deep(#art-table-header) {
   padding-bottom: 14px;
   margin-bottom: 14px;
-  border-bottom: 1px solid rgb(255 255 255 / 9%);
-}
-
-.supplier-table-card :deep(#art-table-header .button) {
-  color: #cbd5e1;
-  background: #202126;
-  border: 1px solid rgb(255 255 255 / 9%);
-}
-
-.supplier-table-card :deep(.el-table th.el-table__cell) {
-  background: #111214;
-}
-
-.supplier-table-card :deep(.el-table__empty-block) {
-  background: #161618;
+  border-bottom: 1px solid rgb(0 0 0 / 8%);
 }
 
 .supplier-operation-cell {
@@ -1074,16 +1021,8 @@ onMounted(() => {
   font-weight: 700;
 }
 
-.contract-supplier-container .text-gray-400,
-.contract-supplier-container .text-gray-500,
-.contract-supplier-container .text-gray-600,
-.contract-supplier-container .text-gray-800,
-.contract-supplier-container .text-gray-900 {
-  color: #f8fafc !important;
-}
-
 .border-l {
-  border-left: 1px solid rgb(255 255 255 / 14%);
+  border-left: 1px solid rgb(0 0 0 / 12%);
 }
 
 @media (width >= 1280px) {
@@ -1099,20 +1038,114 @@ onMounted(() => {
   }
 }
 
-// Additional dark mode overrides
+/* ============================================================
+   DARK MODE ONLY — mọi màu chữ/nền tối đặt trong đây.
+   ============================================================ */
 html.dark .contract-supplier-container {
   min-height: 100vh;
+  color: #f8fafc;
   background: #050506;
 }
 
-html.dark .supplier-table-card :deep(.art-table-card) {
+html.dark .supplier-kpi-grid :deep(.art-card) {
+  min-height: 128px;
+  color: #f8fafc;
+  background: #161618;
+  border-color: rgb(255 255 255 / 9%) !important;
+}
+
+html.dark .supplier-kpi-grid :deep(.art-card .text-g-900),
+html.dark .supplier-kpi-grid :deep(.art-card .text-g-800),
+html.dark .supplier-kpi-grid :deep(.art-card .text-g-700),
+html.dark .supplier-kpi-grid :deep(.art-card .text-g-600),
+html.dark .supplier-kpi-grid :deep(.art-card .text-g-500),
+html.dark .supplier-kpi-grid :deep(.art-card p),
+html.dark .supplier-table-card :deep(.el-table),
+html.dark .supplier-table-card :deep(.el-table .cell),
+html.dark .supplier-table-card :deep(.el-table th.el-table__cell),
+html.dark .supplier-table-card :deep(.el-table td.el-table__cell),
+html.dark .supplier-table-card :deep(.el-pagination),
+html.dark .supplier-table-card :deep(.el-pagination *) {
+  color: #f8fafc !important;
+  opacity: 1 !important;
+}
+
+/* FIX #1: .art-table-card nằm CÙNG thẻ ElCard với .supplier-table-card
+   (không phải phần tử con), nên selector cũ
+   "html.dark .supplier-table-card :deep(.art-table-card)" dùng
+   descendant-combinator không bao giờ khớp -> card bảng KHÔNG
+   được set nền/viền tối như mong muốn. Sửa lại thành selector nối
+   liền (cùng phần tử), giống cách viết ".supplier-kpi-grid :deep(.art-card)"
+   nhưng đúng ngữ cảnh vì đây là chính phần tử, không phải con cháu. */
+html.dark .supplier-table-card.art-table-card {
   background: #161618 !important;
   border-color: rgb(255 255 255 / 9%) !important;
 }
 
-html.dark .supplier-table-card :deep(.el-pagination),
-html.dark .supplier-table-card :deep(.el-pagination *) {
+/* FIX #2: .supplier-filter-card TRƯỚC ĐÂY không có bất kỳ rule nền/viền
+   riêng nào cho dark mode (khác với kpi-card và table-card). Điều này khiến
+   card tìm kiếm ở dark mode rơi vào style mặc định khác biệt, làm padding/viền
+   hiển thị "bó sát" hơn so với light mode và so với các card khác trong cùng
+   trang. Thêm rule tường minh để đồng bộ diện mạo + đảm bảo padding không bị
+   ghi đè bởi style global khác. */
+html.dark .supplier-filter-card {
+  background: #161618 !important;
+  border-color: rgb(255 255 255 / 9%) !important;
+}
+
+html.dark .supplier-filter-card :deep(.el-card__body) {
+  padding: 14px 18px !important;
+}
+
+html.dark .contract-supplier-container :deep(.el-input__wrapper),
+html.dark .contract-supplier-container :deep(.el-select__wrapper) {
   color: #f8fafc;
+  background: #101114 !important;
+  border-color: rgb(255 255 255 / 14%) !important;
+  box-shadow: none;
+}
+
+html.dark
+  .contract-supplier-container
+  :deep(.art-search-bar .el-form-item__label),
+html.dark .contract-supplier-container :deep(.el-input__inner),
+html.dark .contract-supplier-container :deep(.el-select__placeholder),
+html.dark .contract-supplier-container :deep(.el-select__selected-item),
+html.dark .contract-supplier-container :deep(.el-select__caret),
+html.dark .contract-supplier-container :deep(.el-range-input),
+html.dark .contract-supplier-container :deep(.el-range-separator) {
+  color: #f8fafc !important;
+  background: transparent !important;
+}
+
+html.dark .supplier-table-card :deep(#art-table-header) {
+  border-bottom: 1px solid rgb(255 255 255 / 9%);
+}
+
+html.dark .supplier-table-card :deep(#art-table-header .button) {
+  color: #cbd5e1;
+  background: #202126;
+  border: 1px solid rgb(255 255 255 / 9%);
+}
+
+html.dark .supplier-table-card :deep(.el-table th.el-table__cell) {
+  background: #111214;
+}
+
+html.dark .supplier-table-card :deep(.el-table__empty-block) {
+  background: #161618;
+}
+
+html.dark .contract-supplier-container .text-gray-400,
+html.dark .contract-supplier-container .text-gray-500,
+html.dark .contract-supplier-container .text-gray-600,
+html.dark .contract-supplier-container .text-gray-800,
+html.dark .contract-supplier-container .text-gray-900 {
+  color: #f8fafc !important;
+}
+
+html.dark .border-l {
+  border-left: 1px solid rgb(255 255 255 / 14%);
 }
 
 html.dark .supplier-table-card :deep(.el-pagination .el-pager li) {
@@ -1132,50 +1165,11 @@ html.dark .contract-supplier-container :deep(.el-tag) {
 </style>
 
 <style lang="scss">
-.contract-supplier-dialog.el-dialog {
-  --el-color-primary: #e84a4a;
-  --el-bg-color: #161618;
-  --el-bg-color-overlay: #1c1c20;
-  --el-fill-color-blank: #161618;
-  --el-border-color: rgb(255 255 255 / 9%);
-  --el-text-color-primary: #f8fafc;
-  --el-text-color-regular: #f8fafc;
-  --el-text-color-secondary: #f8fafc;
-
-  color: #f8fafc;
-  background: #161618;
-  border: 1px solid rgb(255 255 255 / 9%);
-}
-
-.contract-supplier-dialog .el-dialog__title,
-.contract-supplier-dialog .el-form-item__label,
-.contract-supplier-dialog .el-upload__text,
-.contract-supplier-dialog .el-upload__tip,
-.contract-supplier-dialog .text-gray-400,
-.contract-supplier-dialog .text-gray-500,
-.contract-supplier-dialog .text-gray-600 {
-  color: #f8fafc !important;
-}
-
-.contract-supplier-dialog .el-input__wrapper,
-.contract-supplier-dialog .el-input-number,
-.contract-supplier-dialog .el-date-editor,
-.contract-supplier-dialog .el-select__wrapper,
-.contract-supplier-dialog .el-textarea__inner,
-.contract-supplier-dialog .el-upload-dragger {
-  color: #f8fafc;
-  background: #101114;
-  border-color: rgb(255 255 255 / 14%);
-  box-shadow: none;
-}
-
-.contract-supplier-dialog .el-input__inner,
-.contract-supplier-dialog .el-select__placeholder,
-.contract-supplier-dialog .el-select__selected-item,
-.contract-supplier-dialog .el-textarea__inner {
-  color: #f8fafc;
-}
-
+/*
+  Dialog dùng append-to-body nên phải viết style KHÔNG scoped.
+  Layout (kích thước, spacing) giữ chung cho cả 2 theme.
+  Toàn bộ MÀU (nền/chữ/viền) phải nằm trong "html.dark".
+*/
 .contract-supplier-dialog .contract-file-upload .el-upload,
 .contract-supplier-dialog .contract-file-upload .el-upload-dragger {
   width: 100%;
@@ -1190,14 +1184,12 @@ html.dark .contract-supplier-container :deep(.el-tag) {
   width: 100%;
   min-height: 190px;
   padding: 12px;
-  color: #f8fafc;
 }
 
 .contract-supplier-dialog .contract-upload-preview img {
   max-width: 100%;
   max-height: 260px;
   object-fit: contain;
-  border: 1px solid rgb(255 255 255 / 14%);
   border-radius: 10px;
 }
 
@@ -1214,9 +1206,60 @@ html.dark .contract-supplier-container :deep(.el-tag) {
   width: 100%;
   padding: 8px 10px;
   margin-top: 8px;
+  border-radius: 8px;
+}
+
+html.dark .contract-supplier-dialog.el-dialog {
+  --el-color-primary: #e84a4a;
+  --el-bg-color: #161618;
+  --el-bg-color-overlay: #1c1c20;
+  --el-fill-color-blank: #161618;
+  --el-border-color: rgb(255 255 255 / 9%);
+  --el-text-color-primary: #f8fafc;
+  --el-text-color-regular: #f8fafc;
+  --el-text-color-secondary: #f8fafc;
+
+  color: #f8fafc;
+  background: #161618;
+  border: 1px solid rgb(255 255 255 / 9%);
+}
+
+html.dark .contract-supplier-dialog .el-dialog__title,
+html.dark .contract-supplier-dialog .el-form-item__label,
+html.dark .contract-supplier-dialog .el-upload__text,
+html.dark .contract-supplier-dialog .el-upload__tip,
+html.dark .contract-supplier-dialog .text-gray-400,
+html.dark .contract-supplier-dialog .text-gray-500,
+html.dark .contract-supplier-dialog .text-gray-600 {
+  color: #f8fafc !important;
+}
+
+html.dark .contract-supplier-dialog .el-input__wrapper,
+html.dark .contract-supplier-dialog .el-input-number,
+html.dark .contract-supplier-dialog .el-date-editor,
+html.dark .contract-supplier-dialog .el-select__wrapper,
+html.dark .contract-supplier-dialog .el-textarea__inner,
+html.dark .contract-supplier-dialog .el-upload-dragger {
+  color: #f8fafc;
+  background: #101114;
+  border-color: rgb(255 255 255 / 14%);
+  box-shadow: none;
+}
+
+html.dark .contract-supplier-dialog .el-input__inner,
+html.dark .contract-supplier-dialog .el-select__placeholder,
+html.dark .contract-supplier-dialog .el-select__selected-item,
+html.dark .contract-supplier-dialog .el-textarea__inner {
+  color: #f8fafc;
+}
+
+html.dark .contract-supplier-dialog .contract-upload-preview img {
+  border: 1px solid rgb(255 255 255 / 14%);
+}
+
+html.dark .contract-supplier-dialog .contract-upload-filebar {
   color: #f8fafc;
   background: #111214;
   border: 1px solid rgb(255 255 255 / 12%);
-  border-radius: 8px;
 }
 </style>
