@@ -22,7 +22,7 @@ export const accountancyMenu: AppRouteRecord[] = [
           title: "Tổng quan điều hành",
           icon: "ri:dashboard-line",
           keepAlive: true,
-          permission: Permissions.StatisticalView,
+          permission: Permissions.Accountant.DashboardManagement.View,
         },
       },
 
@@ -34,7 +34,7 @@ export const accountancyMenu: AppRouteRecord[] = [
           title: "Báo cáo tài chính",
           icon: "ri:file-chart-line",
           keepAlive: true,
-          permission: Permissions.StatisticalView,
+          permission: Permissions.Accountant.DashboardManagement.View,
         },
       },
       {
@@ -45,7 +45,7 @@ export const accountancyMenu: AppRouteRecord[] = [
           title: "Báo cáo trả góp",
           icon: "ri:bank-line",
           keepAlive: true,
-          permission: Permissions.StatisticalView,
+          permission: Permissions.Accountant.DashboardManagement.View,
           isHide: true,
         },
       },
@@ -57,7 +57,7 @@ export const accountancyMenu: AppRouteRecord[] = [
           title: "Báo cáo tồn kho",
           icon: "ri:archive-line",
           keepAlive: true,
-          permission: Permissions.StatisticalView,
+          permission: Permissions.Accountant.DashboardManagement.View,
         },
       },
       {
@@ -68,7 +68,7 @@ export const accountancyMenu: AppRouteRecord[] = [
           title: "Báo cáo xưởng dịch vụ",
           icon: "ri:tools-line",
           keepAlive: true,
-          permission: Permissions.StatisticalView,
+          permission: Permissions.Accountant.DashboardManagement.View,
         },
       },
       {
@@ -79,7 +79,7 @@ export const accountancyMenu: AppRouteRecord[] = [
           title: "Báo Cáo Khách Hàng",
           icon: "ri:user-heart-line",
           keepAlive: true,
-          permission: Permissions.StatisticalView,
+          permission: Permissions.Accountant.DashboardManagement.View,
         },
       },
       {
@@ -90,7 +90,7 @@ export const accountancyMenu: AppRouteRecord[] = [
           title: "Báo cáo nhân sự & hoa hồng",
           icon: "ri:team-line",
           keepAlive: true,
-          permission: Permissions.StatisticalView,
+          permission: Permissions.Accountant.DashboardManagement.View,
         },
       },
       {
@@ -101,7 +101,7 @@ export const accountancyMenu: AppRouteRecord[] = [
           title: "Tiền lương nhân sự",
           icon: "ri:bank-card-line",
           keepAlive: true,
-          permission: Permissions.StatisticalView,
+          permission: Permissions.Accountant.PayrollManagement.View,
         },
       },
       {
@@ -111,7 +111,7 @@ export const accountancyMenu: AppRouteRecord[] = [
         meta: {
           title: "Quản lý hợp đồng",
           icon: "ri:file-list-line",
-          permission: Permissions.StatisticalView,
+          permission: Permissions.Accountant.ContractManagement.View,
         },
         children: [
           {
@@ -121,7 +121,7 @@ export const accountancyMenu: AppRouteRecord[] = [
             meta: {
               title: "Hợp đồng bán xe",
               icon: "ri:file-paper-2-line",
-              permission: Permissions.StatisticalView,
+              permission: Permissions.Accountant.ContractManagement.View,
             },
           },
           {
@@ -131,7 +131,8 @@ export const accountancyMenu: AppRouteRecord[] = [
             meta: {
               title: "Hợp đồng nhà cung cấp",
               icon: "ri:truck-line",
-              permission: Permissions.StatisticalView,
+              permission:
+                Permissions.Accountant.SupplierContractManagement.View,
             },
           },
         ],
@@ -144,7 +145,7 @@ export const accountancyMenu: AppRouteRecord[] = [
           title: "Báo cáo công nợ",
           icon: "ri:money-dollar-box-line",
           keepAlive: true,
-          permission: Permissions.StatisticalView,
+          permission: Permissions.Accountant.DebtPaymentManagement.View,
         },
       },
       {
@@ -154,7 +155,7 @@ export const accountancyMenu: AppRouteRecord[] = [
         meta: {
           title: "Thống kê hóa đơn",
           icon: "ri:bill-line",
-          permission: Permissions.StatisticalView,
+          permission: Permissions.Accountant.DashboardManagement.View,
         },
       },
     ],
