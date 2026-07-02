@@ -8,6 +8,7 @@ export const authorizationRoutes: AppRouteRecord = {
     title: "menus.auth.title",
     icon: "ri:shield-user-line",
     roles: ["Admin", "SuperAdmin"],
+    permissions: ["Permissions.Admin"],
   },
   children: [
     {

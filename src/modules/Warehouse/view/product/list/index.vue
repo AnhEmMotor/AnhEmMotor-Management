@@ -46,10 +46,19 @@
         @refresh="refreshData"
       >
         <template #left>
-          <ElButton type="primary" v-ripple @click="handleAdd">
+          <ElButton
+            type="primary"
+            v-ripple
+            v-auth="'Permissions.Warehouse.ProductManagement.Create'"
+            @click="handleAdd"
+          >
             <ElIcon><Plus /></ElIcon> Thêm mới
           </ElButton>
-          <ElButton v-ripple @click="exportToExcel">
+          <ElButton
+            v-ripple
+            v-auth="'Permissions.Warehouse.ProductManagement.View'"
+            @click="exportToExcel"
+          >
             <ElIcon><Download /></ElIcon> Xuất Excel
           </ElButton>
         </template>
@@ -107,8 +116,16 @@
 
         <template #operation="{ row }">
           <div v-if="!row.isVariant" class="flex gap-2 justify-center">
-            <ArtButtonTable type="edit" @click="handleEdit(row)" />
-            <ArtButtonTable type="delete" @click="handleDelete(row)" />
+            <ArtButtonTable
+              type="edit"
+              @click="handleEdit(row)"
+              v-auth="'Permissions.Warehouse.ProductManagement.Edit'"
+            />
+            <ArtButtonTable
+              type="delete"
+              @click="handleDelete(row)"
+              v-auth="'Permissions.Warehouse.ProductManagement.Delete'"
+            />
           </div>
         </template>
       </ArtTable>
@@ -2245,6 +2262,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/domain/constants/permissions";
 import { ref, computed, watch, onMounted } from "vue";
 import {
   Plus,

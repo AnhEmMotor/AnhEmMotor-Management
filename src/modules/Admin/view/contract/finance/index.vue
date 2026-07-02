@@ -155,8 +155,16 @@
             </div>
 
             <div class="finance-operation-icons">
-              <ArtButtonTable type="view" @click="goToPreview(row.id)" />
-              <ArtButtonTable type="edit" @click="goToPreview(row.id)" />
+              <ArtButtonTable
+                type="view"
+                @click="goToPreview(row.id)"
+                v-auth="Permissions.Admin.ContractManagement.View"
+              />
+              <ArtButtonTable
+                type="edit"
+                @click="goToPreview(row.id)"
+                v-auth="Permissions.Admin.ContractManagement.Edit"
+              />
             </div>
           </div>
         </template>
@@ -261,6 +269,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/domain/constants/permissions";
 import { ref, reactive, computed, onBeforeUnmount, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import {

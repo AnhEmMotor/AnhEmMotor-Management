@@ -12,7 +12,7 @@
     <div class="portal-header relative z-10"></div>
 
     <div class="portal-container relative z-10">
-      <div class="workspace-grid max-w-[1100px] mx-auto">
+      <div class="workspace-grid max-w-[1350px] mx-auto">
         <el-card
           v-for="(workspace, index) in workspaces"
           :key="index"
@@ -115,7 +115,9 @@ import { useCommon } from "@/common/composables/useCommon";
 import ArtHeaderBar from "@/components/core/layouts/art-header-bar/index.vue";
 import ArtGlobalComponent from "@/components/core/layouts/art-global-component/index.vue";
 import { useWorktabStore } from "@/application/store/worktab";
-import { onMounted } from "vue";
+import { onMounted, computed } from "vue";
+import { useAuth } from "@/common/composables/useAuth";
+import { Permissions } from "@/domain/constants/permissions";
 
 const router = useRouter();
 const { homePath } = useCommon();
@@ -135,64 +137,68 @@ const handleWorkspaceClick = (workspace: any) => {
   }
 };
 
-const workspaces = ref([
-  {
-    title: "Ban Điều Hành & Chủ Showroom",
-    subtitle: "Executive Overview",
-    icon: markRaw(DataAnalysis),
-    color: "#e11d48",
-    shadowColor: "rgba(225, 29, 72, 0.25)",
-    hasAccess: true,
-    badge: { isDot: true, type: "danger" },
-    path: "/admin/dashboard/console",
-  },
-  {
-    title: "Marketing & SEO",
-    subtitle: "Marketing & SEO Workspace",
-    icon: markRaw(UserFilled),
-    color: "#059669",
-    shadowColor: "rgba(5, 150, 105, 0.25)",
-    hasAccess: true,
-    badge: { isDot: false, value: 5, label: "đơn mới", type: "warning" },
-    path: "/Marketing/banner",
-  },
-  {
-    title: "Quản Lý Kho & Hậu Cần",
-    subtitle: "Inventory & Asset Logistics",
-    icon: markRaw(Box),
-    color: "#d97706",
-    shadowColor: "rgba(217, 119, 6, 0.15)",
-    hasAccess: true,
-    path: "/Warehouse/product",
-  },
-  {
-    title: "Dịch Vụ & Xưởng Sửa Chữa",
-    subtitle: "Workshop Operations",
-    icon: markRaw(Service),
-    color: "#2563eb",
-    shadowColor: "rgba(37, 99, 235, 0.15)",
-    hasAccess: true,
-    path: "/factory/workshop/dashboard",
-  },
-  {
-    title: "Kế Toán, Lương & Thuế",
-    subtitle: "Financial & Compliance",
-    icon: markRaw(Wallet),
-    color: "#7c3aed",
-    shadowColor: "rgba(124, 58, 237, 0.15)",
-    hasAccess: true,
-    path: "/Accountant/executive-dashboard",
-  },
-  {
-    title: "Đơn hàng & Vận chuyển",
-    subtitle: "Order & Transer Workspace",
-    icon: markRaw(Wallet),
-    color: "#7c3aed",
-    shadowColor: "rgba(124, 58, 237, 0.15)",
-    hasAccess: true,
-    path: "/Order/management/list",
-  },
-]);
+const { hasAuth } = useAuth();
+
+const workspaces = computed(() =>
+  [
+    {
+      title: "Ban Điều Hành & Chủ Showroom",
+      subtitle: "Executive Overview",
+      icon: markRaw(DataAnalysis),
+      color: "#e11d48",
+      shadowColor: "rgba(225, 29, 72, 0.25)",
+      hasAccess: hasAuth(Permissions.Admin.Module),
+      badge: { isDot: true, type: "danger" },
+      path: "/admin/dashboard/console",
+    },
+    {
+      title: "Marketing & SEO",
+      subtitle: "Marketing & SEO Workspace",
+      icon: markRaw(UserFilled),
+      color: "#059669",
+      shadowColor: "rgba(5, 150, 105, 0.25)",
+      hasAccess: hasAuth(Permissions.Marketing.Module),
+      badge: { isDot: false, value: 5, label: "đơn mới", type: "warning" },
+      path: "/Marketing/banner",
+    },
+    {
+      title: "Quản Lý Kho & Hậu Cần",
+      subtitle: "Inventory & Asset Logistics",
+      icon: markRaw(Box),
+      color: "#d97706",
+      shadowColor: "rgba(217, 119, 6, 0.15)",
+      hasAccess: hasAuth(Permissions.Warehouse.Module),
+      path: "/Warehouse/product",
+    },
+    {
+      title: "Dịch Vụ & Xưởng Sửa Chữa",
+      subtitle: "Workshop Operations",
+      icon: markRaw(Service),
+      color: "#2563eb",
+      shadowColor: "rgba(37, 99, 235, 0.15)",
+      hasAccess: hasAuth(Permissions.Factory.Module),
+      path: "/factory/workshop/dashboard",
+    },
+    {
+      title: "Kế Toán, Lương & Thuế",
+      subtitle: "Financial & Compliance",
+      icon: markRaw(Wallet),
+      color: "#7c3aed",
+      shadowColor: "rgba(124, 58, 237, 0.15)",
+      hasAccess: hasAuth(Permissions.Accountant.Module),
+      path: "/Accountant/executive-dashboard",
+    },
+    {
+      title: "Đơn hàng & Vận chuyển",
+      subtitle: "Order & Transer Workspace",
+      icon: markRaw(Wallet),
+      color: "#7c3aed",
+      shadowColor: "rgba(124, 58, 237, 0.15)",
+      hasAccess: hasAuth(Permissions.Order.Module),
+      path: "/Order/management/list",
+    },
+  ].filter((workspace) => workspace.hasAccess),
+);
 </script>
 
 <style lang="scss" scoped>
@@ -318,17 +324,25 @@ const workspaces = ref([
     padding: 0 20px 60px;
 
     .workspace-grid {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: 1fr;
       gap: 24px;
-      justify-content: center;
       margin: auto;
+      width: 100%;
+
+      @media (width >= 768px) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      @media (width >= 1024px) {
+        grid-template-columns: repeat(3, 1fr);
+      }
 
       .workspace-card {
         display: flex;
         flex-direction: column;
         width: 100%;
-        max-width: 380px;
+        height: 100%;
         cursor: pointer;
         background: var(--el-bg-color-overlay);
         border: 1px solid var(--el-border-color-light);
@@ -337,14 +351,6 @@ const workspaces = ref([
         -webkit-backdrop-filter: blur(16px);
         backdrop-filter: blur(16px);
         transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-
-        @media (width >= 768px) {
-          width: calc(50% - 12px);
-        }
-
-        @media (width >= 1024px) {
-          width: calc(33.333% - 16px);
-        }
 
         &:hover:not(.is-disabled) {
           border-color: var(--theme-color);
@@ -362,7 +368,7 @@ const workspaces = ref([
         :deep(.el-card__body) {
           display: flex;
           flex-direction: column;
-          height: 100%;
+          flex: 1;
           padding: 20px 24px;
         }
 
@@ -401,6 +407,9 @@ const workspaces = ref([
 
         .card-content {
           flex: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
 
           .workspace-title {
             margin-bottom: 4px;

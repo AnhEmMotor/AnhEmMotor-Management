@@ -35,7 +35,12 @@
         @refresh="refreshData"
       >
         <template #left>
-          <ElButton type="primary" v-ripple @click="handleAdd">
+          <ElButton
+            type="primary"
+            v-ripple
+            v-auth="'Permissions.Warehouse.ProductManagement.Create'"
+            @click="handleAdd"
+          >
             <ElIcon><Plus /></ElIcon> Thêm mới
           </ElButton>
           <ElButton :loading="exporting" v-ripple @click="handleExport">
@@ -102,8 +107,16 @@
 
         <template #operation="{ row }">
           <div class="flex gap-2 justify-center">
-            <ArtButtonTable type="edit" @click="handleEdit(row)" />
-            <ArtButtonTable type="delete" @click="handleDelete(row)" />
+            <ArtButtonTable
+              type="edit"
+              @click="handleEdit(row)"
+              v-auth="'Permissions.Warehouse.ProductManagement.Edit'"
+            />
+            <ArtButtonTable
+              type="delete"
+              @click="handleDelete(row)"
+              v-auth="'Permissions.Warehouse.ProductManagement.Delete'"
+            />
           </div>
         </template>
       </ArtTable>
@@ -225,6 +238,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/domain/constants/permissions";
 import { computed, ref, watch, nextTick } from "vue";
 import { Plus, Picture, Download } from "@element-plus/icons-vue";
 import { useCategoryTable } from "@/modules/Warehouse/logic/product/type/hooks/useCategoryTable";

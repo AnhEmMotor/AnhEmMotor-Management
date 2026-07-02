@@ -53,6 +53,7 @@
             </ElButton>
 
             <ElButton
+              v-auth="'Permissions.Warehouse.SupplierManagement.View'"
               :loading="exporting"
               :disabled="importing"
               v-ripple
@@ -63,6 +64,7 @@
             </ElButton>
 
             <ElDropdown
+              v-auth="'Permissions.Warehouse.SupplierManagement.Create'"
               trigger="click"
               style="margin-left: 0"
               :disabled="importing"
@@ -164,8 +166,16 @@
 
         <template #operation="{ row }">
           <div class="flex gap-2 justify-center">
-            <ArtButtonTable type="edit" @click="handleEdit(row)" />
-            <ArtButtonTable type="delete" @click="handleDelete(row)" />
+            <ArtButtonTable
+              type="edit"
+              @click="handleEdit(row)"
+              v-auth="'Permissions.Warehouse.SupplierManagement.Edit'"
+            />
+            <ArtButtonTable
+              type="delete"
+              @click="handleDelete(row)"
+              v-auth="'Permissions.Warehouse.SupplierManagement.Delete'"
+            />
           </div>
         </template>
       </ArtTable>
@@ -185,6 +195,7 @@
             class="text-gray-400 hover:text-blue-500 transition-colors bg-transparent border-none cursor-pointer flex items-center justify-center text-[20px]"
             @click.prevent="startDialogTour"
             title="Hướng dẫn"
+            v-auth="'Permissions.Warehouse.SupplierManagement.Edit'"
           >
             <ElIcon><Help /></ElIcon>
           </button>
@@ -305,6 +316,7 @@
             class="text-gray-400 hover:text-blue-500 transition-colors bg-transparent border-none cursor-pointer flex items-center justify-center text-[20px]"
             @click.prevent="startRestoreTour"
             title="Hướng dẫn"
+            v-auth="'Permissions.Warehouse.SupplierManagement.Edit'"
           >
             <ElIcon><Help /></ElIcon>
           </button>
@@ -357,6 +369,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/domain/constants/permissions";
 import { ref } from "vue";
 import {
   Plus,

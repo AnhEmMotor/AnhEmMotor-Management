@@ -37,6 +37,7 @@
             <ElButton
               type="primary"
               class="btn-add"
+              v-auth="'Permissions.Warehouse.ReceiptManagement.Create'"
               v-ripple
               @click="handleAdd"
               style="margin-left: 0"
@@ -45,6 +46,7 @@
             </ElButton>
 
             <ElButton
+              v-auth="'Permissions.Warehouse.ReceiptManagement.View'"
               :loading="exporting"
               :disabled="importing"
               class="btn-import"
@@ -56,6 +58,7 @@
             </ElButton>
 
             <ElDropdown
+              v-auth="'Permissions.Warehouse.ReceiptManagement.Create'"
               trigger="click"
               class="btn-import"
               style="margin-left: 0"
@@ -99,6 +102,7 @@
               "
               type="danger"
               class="btn-bulk"
+              v-auth="'Permissions.Warehouse.ReceiptManagement.Delete'"
               v-ripple
               :disabled="importing"
               @click="handleDeleteMany"
@@ -165,6 +169,7 @@
                 circle
                 size="small"
                 type="primary"
+                v-auth="'Permissions.Warehouse.ReceiptManagement.Edit'"
                 @click="handleEdit(row)"
               >
                 <ElIcon><Edit /></ElIcon>
@@ -173,7 +178,7 @@
             <ElTooltip
               v-if="
                 row.statusId?.toLowerCase() === 'draft' &&
-                hasAuth(Permissions.InventoryReceiptsSend)
+                hasAuth('Permissions.Warehouse.ReceiptManagement.Send')
               "
               content="Gửi phiếu"
               placement="top"
@@ -190,7 +195,7 @@
             <template
               v-if="
                 row.statusId?.toLowerCase() === 'sent' &&
-                hasAuth(Permissions.InventoryReceiptsApproveReject)
+                hasAuth('Permissions.Warehouse.ReceiptManagement.ApproveReject')
               "
             >
               <ElTooltip content="Phê duyệt" placement="top">
@@ -219,6 +224,7 @@
                 circle
                 size="small"
                 type="danger"
+                v-auth="'Permissions.Warehouse.ReceiptManagement.Delete'"
                 @click="handleDelete(row)"
               >
                 <ElIcon><Delete /></ElIcon>
@@ -246,7 +252,7 @@
                 @click="openPrSelector"
               >
                 <span
-                  v-if="formData.purchaseRequestId"
+                  v-if="formData.purchaseRequestId !== undefined"
                   class="text-gray-800 font-medium"
                 >
                   Yêu cầu mua hàng #{{ formData.purchaseRequestId }}
@@ -257,7 +263,7 @@
                 <ElIcon class="text-gray-400"><ArrowDown /></ElIcon>
               </div>
               <ElButton
-                v-if="formData.purchaseRequestId"
+                v-if="formData.purchaseRequestId !== undefined"
                 type="danger"
                 plain
                 @click="clearPrSelection"
@@ -472,7 +478,7 @@
           <div>
             <span class="text-gray-500">Mã Yêu cầu mua hàng (PR):</span>
             <span class="ml-2 text-gray-800 font-medium"
-              >#{{ detailData.purchaseRequestId || "--" }}</span
+              >#{{ detailData.purchaseRequestId }}</span
             >
           </div>
           <div>
@@ -695,24 +701,30 @@
         >
           <div
             v-for="pr in prSelectorItems"
-            :key="pr.id"
+            :key="pr.id ?? pr.Id"
             class="p-4 border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition duration-200 cursor-pointer flex flex-col justify-between"
             @click="selectPurchaseRequest(pr)"
           >
             <div class="text-xs text-gray-500 space-y-1">
               <div class="flex justify-between items-center mb-1">
                 <span class="font-bold text-gray-800 text-sm"
-                  >Mã PR: #{{ pr.id }}</span
+                  >Mã PR: #{{ pr.id ?? pr.Id }}</span
                 >
                 <ElTag size="small" type="success">Đã phê duyệt</ElTag>
               </div>
               <div>
                 <span class="font-medium text-gray-400">Ghi chú:</span>
-                {{ pr.notes || "Không có ghi chú" }}
+                {{
+                  pr.notes ||
+                  pr.note ||
+                  pr.Notes ||
+                  pr.Note ||
+                  "Không có ghi chú"
+                }}
               </div>
               <div>
                 <span class="font-medium text-gray-400">Ngày yêu cầu:</span>
-                {{ formatDateTime(pr.createdAt) }}
+                {{ formatDateTime(pr.createdAt || pr.CreatedAt) }}
               </div>
             </div>
           </div>
@@ -1260,18 +1272,20 @@ const clearPrSelection = () => {
 };
 
 const selectPurchaseRequest = async (pr: any) => {
+  const prId = pr.id ?? pr.Id;
+
   if (prSelectorMode.value === "template") {
     prSelectorVisible.value = false;
-    await handleDownloadTemplate(pr.id);
+    await handleDownloadTemplate(prId);
     return;
   }
 
   try {
     loading.value = true;
     prSelectorVisible.value = false;
-    formData.value.purchaseRequestId = pr.id;
+    formData.value.purchaseRequestId = prId;
     formData.value.products = [];
-    const detail = await PurchaseRequestApi.getApprovedById(pr.id);
+    const detail = await PurchaseRequestApi.getApprovedById(prId);
 
     const productPromises = detail.items.map(async (item: any) => {
       const remainingQty = item.unimportedQuantity ?? 0;
@@ -1485,7 +1499,7 @@ const handleRemoveProductRow = (index: number) => {
 };
 
 const submitForm = async () => {
-  if (!formData.value.purchaseRequestId) {
+  if (formData.value.purchaseRequestId === undefined) {
     ElMessage.warning("Vui lòng chọn yêu cầu mua hàng (PR)");
     return;
   }

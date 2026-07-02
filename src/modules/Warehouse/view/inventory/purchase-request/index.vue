@@ -22,6 +22,7 @@
             <ElButton
               type="primary"
               class="btn-add"
+              v-auth="'Permissions.Warehouse.PurchaseRequestManagement.Create'"
               v-ripple
               @click="handleAdd"
               style="margin-left: 0"
@@ -30,6 +31,7 @@
             </ElButton>
 
             <ElButton
+              v-auth="'Permissions.Warehouse.PurchaseRequestManagement.View'"
               :loading="exporting"
               :disabled="importing"
               class="btn-import"
@@ -41,6 +43,7 @@
             </ElButton>
 
             <ElDropdown
+              v-auth="'Permissions.Warehouse.PurchaseRequestManagement.Create'"
               trigger="click"
               class="btn-import"
               style="margin-left: 0"
@@ -96,6 +99,7 @@
               "
               type="danger"
               class="btn-bulk"
+              v-auth="'Permissions.Warehouse.PurchaseRequestManagement.Delete'"
               v-ripple
               :disabled="importing"
               @click="handleDeleteMany"
@@ -170,6 +174,7 @@
                 circle
                 size="small"
                 type="primary"
+                v-auth="'Permissions.Warehouse.PurchaseRequestManagement.Edit'"
                 @click="handleEdit(row)"
               >
                 <ElIcon><Edit /></ElIcon>
@@ -184,6 +189,9 @@
                 circle
                 size="small"
                 type="danger"
+                v-auth="
+                  'Permissions.Warehouse.PurchaseRequestManagement.Delete'
+                "
                 @click="handleDelete(row)"
               >
                 <ElIcon><Delete /></ElIcon>
@@ -198,6 +206,7 @@
                 circle
                 size="small"
                 type="success"
+                v-auth="'Permissions.Warehouse.PurchaseRequestManagement.Send'"
                 @click="handleSendRequest(row)"
               >
                 <ElIcon><Promotion /></ElIcon>
@@ -212,6 +221,9 @@
                 circle
                 size="small"
                 type="success"
+                v-auth="
+                  'Permissions.Warehouse.PurchaseRequestManagement.ApproveReject'
+                "
                 @click="handleApproveRejectStatus(row.id, 'approve')"
               >
                 <ElIcon><Check /></ElIcon>
@@ -226,6 +238,9 @@
                 circle
                 size="small"
                 type="danger"
+                v-auth="
+                  'Permissions.Warehouse.PurchaseRequestManagement.ApproveReject'
+                "
                 @click="handleApproveRejectStatus(row.id, 'reject')"
               >
                 <ElIcon><Close /></ElIcon>

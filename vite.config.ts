@@ -80,7 +80,12 @@ export default ({ mode }: { mode: string }) => {
       },
       rollupOptions: {
         onwarn(warning, defaultWarn) {
-          if (warning.code === "INVALID_ANNOTATION") {
+          if (
+            warning.code === "INVALID_ANNOTATION" ||
+            warning.code === "EMPTY_BUNDLE" ||
+            (warning.message &&
+              warning.message.includes("Generated an empty chunk"))
+          ) {
             return;
           }
           defaultWarn(warning);

@@ -186,6 +186,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/domain/constants/permissions";
 import { reactive, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { authService } from "@/common/auth";

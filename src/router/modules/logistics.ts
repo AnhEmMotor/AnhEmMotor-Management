@@ -7,6 +7,7 @@ export const logisticsRoutes: AppRouteRecord = {
   meta: {
     title: "menus.logistics.title",
     icon: "ri:truck-line",
+    permissions: ["Permissions.Warehouse"],
   },
   children: [
     {

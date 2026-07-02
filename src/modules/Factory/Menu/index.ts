@@ -5,7 +5,11 @@ export const factoryMenu: AppRouteRecord[] = [
     path: "/factory/workshop",
     name: "Workshop",
     component: "/index/index",
-    meta: { title: "Dịch vụ xưởng", icon: "ri:tools-line" },
+    meta: {
+      title: "Dịch vụ xưởng",
+      icon: "ri:tools-line",
+      permissions: ["Permissions.Factory"],
+    },
     children: [
       {
         path: "dashboard",
@@ -68,6 +72,7 @@ export const factoryMenu: AppRouteRecord[] = [
     meta: {
       title: "menus.service.workshop.counter.title",
       icon: "ri:money-dollar-circle-line",
+      permissions: ["Permissions.Factory"],
     },
     children: [
       {
@@ -82,7 +87,32 @@ export const factoryMenu: AppRouteRecord[] = [
     path: "/factory/statistics",
     name: "FactoryStatistics",
     component: "/Factory/view/service/workshop/statistics/index",
-    meta: { title: "Thống kê xưởng", icon: "ri:bar-chart-line" },
+    meta: {
+      title: "Thống kê xưởng",
+      icon: "ri:bar-chart-line",
+      permissions: ["Permissions.Factory"],
+    },
+  },
+  {
+    path: "/factory/administrative",
+    name: "Administrative",
+    component: "/index/index",
+    meta: {
+      title: "Dịch vụ hành chính",
+      icon: "ri:file-list-3-line",
+      permissions: ["Permissions.Factory"],
+    },
+    children: [
+      {
+        path: "registration",
+        name: "AdministrativeRegistration",
+        component: "/Factory/view/service/administrative/registration/index",
+        meta: {
+          title: "Đăng ký biển số",
+          icon: "ri:profile-line",
+        },
+      },
+    ],
   },
 ];
 

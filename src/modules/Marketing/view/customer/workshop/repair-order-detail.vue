@@ -39,6 +39,7 @@
             v-if="order?.status === 'Completed'"
             @click="openPrintInvoice"
             class="h-9 px-4 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center gap-2"
+            v-auth="Permissions.Marketing.CustomerManagement.View"
           >
             <ArtSvgIcon icon="ri:printer-line" /> In hóa đơn dịch vụ
           </button>
@@ -205,6 +206,7 @@
                 @click="assignTechnician"
                 :disabled="!selectedTechId || submitting"
                 class="h-10 px-6 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all disabled:opacity-50 flex items-center gap-2 shadow-md"
+                v-auth="Permissions.Marketing.CustomerManagement.View"
               >
                 <ArtSvgIcon icon="ri:user-shared-line" /> Xác nhận phân công
               </button>
@@ -231,12 +233,14 @@
                 <button
                   @click="openServiceDialog"
                   class="h-8 px-4 bg-slate-900 text-white rounded-lg font-black text-[9px] uppercase tracking-widest hover:bg-blue-900 transition-all flex items-center gap-1.5 shadow-sm"
+                  v-auth="Permissions.Marketing.CustomerManagement.View"
                 >
                   + Thêm dịch vụ
                 </button>
                 <button
                   @click="openPartsDialog"
                   class="h-8 px-4 bg-slate-900 text-white rounded-lg font-black text-[9px] uppercase tracking-widest hover:bg-blue-900 transition-all flex items-center gap-1.5 shadow-sm"
+                  v-auth="Permissions.Marketing.CustomerManagement.View"
                 >
                   + Thêm phụ tùng
                 </button>
@@ -297,6 +301,7 @@
                       <button
                         @click="removeService(index)"
                         class="text-red-400 hover:text-red-600"
+                        v-auth="Permissions.Marketing.CustomerManagement.Delete"
                       >
                         <ArtSvgIcon icon="ri:delete-bin-line" />
                       </button>
@@ -348,6 +353,7 @@
                       <button
                         @click="removePart(index)"
                         class="text-red-400 hover:text-red-600"
+                        v-auth="Permissions.Marketing.CustomerManagement.Delete"
                       >
                         <ArtSvgIcon icon="ri:delete-bin-line" />
                       </button>
@@ -403,6 +409,7 @@
                 @click="saveIssueParts('InProgress')"
                 :disabled="submitting"
                 class="h-10 px-5 border border-slate-200 text-slate-700 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center gap-2"
+                v-auth="Permissions.Marketing.CustomerManagement.View"
               >
                 Lưu thay đổi
               </button>
@@ -410,6 +417,7 @@
                 @click="saveIssueParts('QcPending')"
                 :disabled="submitting"
                 class="h-10 px-6 bg-amber-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-amber-700 transition-all flex items-center gap-2 shadow-md"
+                v-auth="Permissions.Marketing.CustomerManagement.View"
               >
                 <ArtSvgIcon icon="ri:shield-flash-line" /> Hoàn tất sửa & Chuyển
                 QC
@@ -487,6 +495,7 @@
                 @click="completeRepairOrder"
                 :disabled="submitting"
                 class="h-10 px-8 bg-emerald-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-700 transition-all flex items-center gap-2 shadow-lg"
+                v-auth="Permissions.Marketing.CustomerManagement.View"
               >
                 <ArtSvgIcon icon="ri:checkbox-circle-fill" /> Xác nhận thanh
                 toán & Bàn giao xe
@@ -862,12 +871,14 @@
           <button
             @click="printInvoiceVisible = false"
             class="h-8 px-4 text-slate-500 font-bold text-[10px] uppercase"
+            v-auth="Permissions.Marketing.CustomerManagement.View"
           >
             Đóng
           </button>
           <button
             @click="doPrint"
             class="h-8 px-5 bg-blue-600 text-white rounded-lg font-bold text-[10px] uppercase shadow-md hover:bg-blue-700"
+            v-auth="Permissions.Marketing.CustomerManagement.View"
           >
             In ngay
           </button>
@@ -878,6 +889,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/domain/constants/permissions";
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";

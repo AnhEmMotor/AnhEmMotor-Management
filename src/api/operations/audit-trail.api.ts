@@ -57,12 +57,18 @@ export const AuditTrailApi = {
         let quantity = "";
         if (isCreate) quantity = `+${il.newQuantity}`;
         else if (isDelete) quantity = "";
-        else quantity = `${il.oldQuantity} ➔ ${il.newQuantity}`;
+        else {
+          const oldQ = il.oldQuantity ?? "?";
+          quantity = `${oldQ} ➔ ${il.newQuantity}`;
+        }
 
         let price = "";
         if (isCreate) price = `+${il.newPrice}`;
         else if (isDelete) price = "";
-        else price = `${il.oldPrice} ➔ ${il.newPrice}`;
+        else {
+          const oldP = il.oldPrice ?? "?";
+          price = `${oldP} ➔ ${il.newPrice}`;
+        }
 
         return {
           action: il.action,

@@ -11,6 +11,7 @@ import { resetRouterState } from "@/router/guards/beforeEach";
 import { useMenuStore } from "./menu";
 import { StorageConfig } from "@/common/utils/storage/storage-config";
 import i18n from "@/i18n";
+import api from "@/common/utils/http";
 
 export const useUserStore = defineStore(
   "userStore",
@@ -126,7 +127,10 @@ export const useUserStore = defineStore(
       localStorage.removeItem(StorageConfig.LAST_USER_ID_KEY);
     };
 
-    const mapUserInfo = (data: any): Api.Auth.UserInfo => {
+    const mapUserInfo = (
+      data: any,
+      isFullUpdate = false,
+    ): Api.Auth.UserInfo => {
       return {
         userId: data.id || info.value.userId || "",
         userName:
@@ -137,8 +141,18 @@ export const useUserStore = defineStore(
           "",
         email: data.email || info.value.email || "",
         avatar: data.avatarUrl || info.value.avatar || "",
-        roles: data.roles || info.value.roles || [],
-        buttons: data.permissions || info.value.buttons || [],
+        roles:
+          data.roles !== undefined && data.roles !== null
+            ? data.roles
+            : isFullUpdate
+              ? []
+              : info.value.roles || [],
+        buttons:
+          data.permissions !== undefined && data.permissions !== null
+            ? data.permissions
+            : isFullUpdate
+              ? []
+              : info.value.buttons || [],
       };
     };
 
@@ -203,7 +217,7 @@ export const useUserStore = defineStore(
             try {
               const data = JSON.parse(msg.data);
               if (data && (data.userName || data.id)) {
-                info.value = mapUserInfo(data);
+                info.value = mapUserInfo(data, true);
               }
             } catch (e) {
               console.error("Failed to parse SSE message data:", e);
@@ -226,18 +240,14 @@ export const useUserStore = defineStore(
                 abortController = null;
               }
               if (retryCount < 3) {
-                import("@/common/utils/http")
-                  .then((module) => {
-                    module.default
-                      .get({ url: "/api/v1/user/me" })
-                      .then(() => {
-                        setTimeout(() => connectSSE(retryCount + 1), 1000);
-                      })
-                      .catch(() => {
-                        logOut();
-                      });
+                api
+                  .get({ url: "/api/v1/user/me" })
+                  .then(() => {
+                    setTimeout(() => connectSSE(retryCount + 1), 1000);
                   })
-                  .catch(() => logOut());
+                  .catch(() => {
+                    logOut();
+                  });
               } else {
                 logOut();
               }

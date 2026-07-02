@@ -217,6 +217,7 @@
                       <button
                         class="text-indigo-500 hover:text-indigo-700 font-black text-[8px] uppercase"
                         @click="openNoteDialog"
+                        v-auth="Permissions.Marketing.CustomerManagement.View"
                       >
                         {{ $t("contact.actionNote") }}
                       </button>
@@ -464,6 +465,7 @@
                       <button
                         class="text-indigo-500 hover:text-indigo-700 font-black text-[8px] uppercase"
                         @click="openNoteDialog"
+                        v-auth="Permissions.Marketing.CustomerManagement.View"
                       >
                         {{ $t("contact.actionNote") }}
                       </button>
@@ -699,6 +701,7 @@
                       <button
                         class="text-indigo-500 hover:text-indigo-700 font-black text-[8px] uppercase"
                         @click="openNoteDialog"
+                        v-auth="Permissions.Marketing.CustomerManagement.View"
                       >
                         {{ $t("contact.actionNote") }}
                       </button>
@@ -984,6 +987,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/domain/constants/permissions";
 import { ref, watch, computed, onMounted } from "vue";
 import { ElMessage } from "element-plus";
 import { useI18n } from "vue-i18n";

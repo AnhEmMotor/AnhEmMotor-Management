@@ -66,8 +66,15 @@ export function setupBeforeEachGuard(router: Router): void {
       const menuStore = useMenuStore();
       menuStore.setMenuList(menuList);
 
+      const userStore = useUserStore();
+      const userPermissions = userStore.info?.buttons || [];
+      if (userPermissions.length === 0) {
+        userStore.logOut();
+        return;
+      }
+
       const currentRoute = router.currentRoute.value;
-      if (currentRoute.matched.length > 0) {
+      if (currentRoute.path && currentRoute.path !== "/") {
         if (isStaticRoute(currentRoute.path)) {
           return;
         }
@@ -76,8 +83,7 @@ export function setupBeforeEachGuard(router: Router): void {
           menuList,
         );
         if (!hasAccess) {
-          const { homePath } = useCommon();
-          router.push(homePath.value || "/");
+          window.location.href = "/workspace";
         }
       }
     } catch (err) {
@@ -145,6 +151,19 @@ async function handleRouteGuard(
   }
 
   if (to.matched.length > 0) {
+    if (!isStaticRoute(to.path) && userStore.isLogin) {
+      const menuStore = useMenuStore();
+      if (menuStore.menuList && menuStore.menuList.length > 0) {
+        const hasAccess = RoutePermissionValidator.hasPermission(
+          to.path,
+          menuStore.menuList,
+        );
+        if (!hasAccess) {
+          return { path: "/workspace", replace: true };
+        }
+      }
+    }
+
     const fromModule = from.path.split("/")[1];
     const toModule = to.path.split("/")[1];
 
@@ -252,7 +271,7 @@ function isStaticRoute(path: string): boolean {
   ): boolean => {
     return routes.some((route) => {
       if (route.name === "Exception404") {
-        return true;
+        return false;
       }
 
       const routePath = route.path;

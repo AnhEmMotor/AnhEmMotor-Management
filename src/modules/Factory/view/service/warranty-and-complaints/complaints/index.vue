@@ -133,6 +133,7 @@
               :icon="View"
               plain
               @click="openDetail(row.id)"
+              v-auth="Permissions.Factory.CustomerManagement.View"
             >
               Xem chi tiết
             </el-button>
@@ -157,6 +158,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/domain/constants/permissions";
 import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";

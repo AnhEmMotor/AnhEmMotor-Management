@@ -251,7 +251,7 @@ const loadStats = async () => {
     };
     productivity.value = { target: d.targetToday, completed: d.completedToday };
     hourlyData.value = d.hourlyData;
-    exceptionOrders.value = d.exceptionOrders.map((e) => ({
+    exceptionOrders.value = d.exceptionOrders.map((e: any) => ({
       ...e,
       waitTime: "",
     }));
@@ -282,7 +282,7 @@ const filteredExceptions = computed(() => {
     const q = searchQuery.value.toLowerCase();
     list = list.filter(
       (item) =>
-        item.id.toString().toLowerCase().includes(q) ||
+        String(item.id).toLowerCase().includes(q) ||
         item.customerName.toLowerCase().includes(q),
     );
   }
@@ -486,7 +486,6 @@ watch(isDark, () => {
   });
 });
 
-// --- LIFECYCLE ---
 onMounted(() => {
   startTimer();
   loadStats();
@@ -504,7 +503,3 @@ onBeforeUnmount(() => {
   methodChartInstance?.dispose();
 });
 </script>
-
-<style scoped>
-/* Scoped styles not required due to tailwind/element-plus classes */
-</style>

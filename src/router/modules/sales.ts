@@ -1,4 +1,4 @@
-﻿import { AppRouteRecord } from "@/types/router";
+import { AppRouteRecord } from "@/types/router";
 import { Permissions } from "@/domain/constants/permissions";
 
 export const salesRoutes: AppRouteRecord = {

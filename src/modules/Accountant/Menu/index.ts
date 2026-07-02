@@ -10,6 +10,7 @@ export const accountancyMenu: AppRouteRecord[] = [
       title: "Kế Toán, Lương & Thuế",
       icon: "ri:calculator-line",
       roles: ["Admin", "SuperAdmin", "Accountant"],
+      permissions: ["Permissions.Accountant"],
     },
     redirect: "/Accountant/executive-dashboard",
     children: [

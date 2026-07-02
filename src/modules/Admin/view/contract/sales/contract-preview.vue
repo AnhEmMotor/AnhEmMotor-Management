@@ -7,13 +7,17 @@
       icon="ri:file-contract-line"
     >
       <template #actions>
-        <el-button @click="handlePrint">
+        <el-button
+          @click="handlePrint"
+          v-auth="Permissions.Admin.ContractManagement.Edit"
+        >
           <el-icon><Printer /></el-icon>&nbsp;In Hợp Đồng
         </el-button>
         <el-button
           v-if="contractData.status === 'Draft'"
           type="primary"
           @click="handleSaveDraft"
+          v-auth="Permissions.Admin.ContractManagement.Edit"
         >
           <el-icon><Document /></el-icon>&nbsp;Lưu Bản Nháp
         </el-button>
@@ -21,6 +25,7 @@
           v-if="contractData.status === 'Signed'"
           type="warning"
           @click="handleCreateAddendum"
+          v-auth="Permissions.Admin.ContractManagement.Create"
         >
           <el-icon><DocumentCopy /></el-icon>&nbsp;Tạo Phụ Lục
         </el-button>
@@ -28,6 +33,7 @@
           v-if="contractData.status === 'Signed' && activeStep >= 1"
           type="success"
           @click="handleHandover"
+          v-auth="Permissions.Admin.ContractManagement.View"
         >
           <el-icon><CircleCheck /></el-icon>&nbsp;Xác Nhận Bàn Giao
         </el-button>
@@ -387,6 +393,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/domain/constants/permissions";
 import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import {

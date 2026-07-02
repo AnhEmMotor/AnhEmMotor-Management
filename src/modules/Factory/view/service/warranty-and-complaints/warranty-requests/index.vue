@@ -21,6 +21,7 @@
           size="large"
           class="shadow-md hover:shadow-lg transition-all"
           @click="openCreateDrawer"
+          v-auth="Permissions.Factory.CustomerManagement.View"
         >
           Tạo Phiếu Bảo hành
         </el-button>
@@ -141,6 +142,7 @@
               :icon="View"
               plain
               @click="openDetail(row.id)"
+              v-auth="Permissions.Factory.CustomerManagement.View"
             >
               Xem chi tiết
             </el-button>
@@ -462,6 +464,7 @@
                   :icon="Plus"
                   plain
                   @click="addPart"
+                  v-auth="Permissions.Factory.CustomerManagement.View"
                   >Thêm phụ tùng</el-button
                 >
               </div>
@@ -551,6 +554,7 @@
                       :icon="Delete"
                       circle
                       @click="removePart($index)"
+                      v-auth="Permissions.Factory.CustomerManagement.Delete"
                     />
                   </template>
                 </el-table-column>
@@ -598,8 +602,16 @@
 
       <template #footer>
         <div class="flex justify-end gap-3 p-4 border-t border-slate-100">
-          <el-button @click="drawerVisible = false">Hủy bỏ</el-button>
-          <el-button type="primary" :loading="submitting" @click="submitForm"
+          <el-button
+            @click="drawerVisible = false"
+            v-auth="Permissions.Factory.CustomerManagement.View"
+            >Hủy bỏ</el-button
+          >
+          <el-button
+            type="primary"
+            :loading="submitting"
+            @click="submitForm"
+            v-auth="Permissions.Factory.CustomerManagement.View"
             >Tạo Phiếu Bảo Hành</el-button
           >
         </div>
@@ -609,6 +621,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/domain/constants/permissions";
 import { ref, reactive, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";

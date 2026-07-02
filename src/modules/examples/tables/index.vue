@@ -337,13 +337,29 @@
 
         <template #operation="{ row }">
           <div class="flex">
-            <ArtButtonTable type="view" :row="row" @click="handleView(row)" />
-            <ArtButtonTable type="add" :row="row" @click="handleAdd()" />
-            <ArtButtonTable type="edit" :row="row" @click="handleEdit(row)" />
+            <ArtButtonTable
+              type="view"
+              :row="row"
+              @click="handleView(row)"
+              v-auth="Permissions.Admin.EmployeeManagement.View"
+            />
+            <ArtButtonTable
+              type="add"
+              :row="row"
+              @click="handleAdd()"
+              v-auth="Permissions.Admin.EmployeeManagement.Create"
+            />
+            <ArtButtonTable
+              type="edit"
+              :row="row"
+              @click="handleEdit(row)"
+              v-auth="Permissions.Admin.EmployeeManagement.Edit"
+            />
             <ArtButtonTable
               type="delete"
               :row="row"
               @click="handleDelete(row)"
+              v-auth="Permissions.Admin.EmployeeManagement.Delete"
             />
           </div>
         </template>
@@ -484,6 +500,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/domain/constants/permissions";
 import { ref, computed, watch, nextTick } from "vue";
 import {
   Plus,
