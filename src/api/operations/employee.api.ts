@@ -39,7 +39,7 @@ export const EmployeeApi = {
     });
   },
   delete(id: number) {
-    return request.delete<any>({
+    return request.del<any>({
       url: `/api/v1/hr/employees/${id}`,
     });
   },

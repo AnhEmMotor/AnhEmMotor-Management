@@ -46,27 +46,20 @@ $box-radius: calc(var(--custom-radius) / 3 + 2px);
   }
 
   .w-e-select-list ul li:hover {
-    background-color: var(--art-gray-200);
-  }
-
-  :root {
-    --w-e-toolbar-active-bg-color: var(--art-gray-200);
-    --w-e-toolbar-color: #000;
-    --w-e-textarea-selected-border-color: #ddd;
-    --w-e-textarea-slight-bg-color: var(--art-gray-200);
+    background-color: var(--el-fill-color-light);
   }
 
   .w-e-bar-item svg {
-    fill: var(--art-gray-800);
+    fill: var(--el-text-color-primary);
   }
 
   .w-e-bar-item button {
-    color: var(--art-gray-800);
+    color: var(--el-text-color-primary);
     border-radius: $box-radius;
   }
 
   .w-e-bar-item button:hover {
-    background-color: var(--art-gray-200);
+    background-color: var(--el-fill-color-light);
   }
 
   .w-e-bar-divider {
@@ -91,7 +84,7 @@ $box-radius: calc(var(--custom-radius) / 3 + 2px);
 
   .w-e-text-container [data-slate-editor] pre > code {
     padding: 0.6rem 1rem;
-    background-color: var(--art-gray-50);
+    background-color: var(--el-fill-color-light);
     border-radius: $box-radius;
   }
 
@@ -190,8 +183,8 @@ $box-radius: calc(var(--custom-radius) / 3 + 2px);
   }
 
   .w-e-text-container [data-slate-editor] blockquote {
-    background-color: var(--art-gray-200);
-    border-left: 4px solid var(--art-gray-300);
+    background-color: var(--el-fill-color-light);
+    border-left: 4px solid var(--el-border-color-light);
   }
 
   .w-e-hover-bar {

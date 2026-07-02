@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="hr-payroll-container">
     <el-card shadow="never">
       <template #header>
@@ -201,9 +201,10 @@ const loadData = async () => {
       payrollApi.getList({ month: currentMonth, year: currentYear }),
       payrollApi.getStatistics(currentMonth, currentYear),
     ]);
-    data.value = listRes.data;
-    pagination.total = listRes.data.length;
-    const s = statsRes.data;
+    const listData = (listRes as any).data || listRes || [];
+    data.value = listData;
+    pagination.total = listData.length;
+    const s = (statsRes as any).data || statsRes || {};
     stats.totalPayroll = s.totalPayroll;
     stats.paid = s.paid;
     stats.pending = s.pending;

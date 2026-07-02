@@ -141,8 +141,13 @@ const loading = ref(false);
 const detail = ref<any>(null);
 const useCases = createPaymentUseCases(WorkshopPaymentApi);
 
-const statusTagType = (status: string) => {
-  const map: Record<string, string> = {
+const statusTagType = (
+  status: string,
+): "primary" | "success" | "warning" | "info" | "danger" => {
+  const map: Record<
+    string,
+    "primary" | "success" | "warning" | "info" | "danger"
+  > = {
     Paid: "success",
     Unpaid: "danger",
     Partial: "warning",

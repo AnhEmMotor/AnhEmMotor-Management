@@ -1,350 +1,571 @@
 <template>
-  <div class="customer-progress-page">
-    <header class="page-header">
-      <div>
-        <h2>
-          <ArtSvgIcon icon="ri:git-commit-line" />
-          Tiến độ khách hàng
-        </h2>
-        <p>Theo dõi vòng đời giao dịch của khách hàng</p>
-      </div>
-      <ElButton type="primary" @click="refreshLeads">
-        <ArtSvgIcon icon="ri:refresh-line" />
-        Tải lại
-      </ElButton>
-    </header>
-
-    <section class="progress-layout">
-      <aside class="lead-panel">
-        <ElInput
-          v-model="keyword"
-          clearable
-          placeholder="Tìm tên hoặc số điện thoại"
-          class="mb-3"
-        />
-        <div v-loading="loadingLeads" class="lead-list">
-          <ElEmpty
-            v-if="!loadingLeads && filteredLeads.length === 0"
-            description="Chưa có khách hàng"
-          />
-          <button
-            v-for="lead in filteredLeads"
-            :key="lead.id"
-            class="lead-row"
-            :class="{ active: selectedLeadId === lead.id }"
-            @click="selectLead(lead.id)"
+  <div
+    class="purchasing-pipeline-page flex flex-col h-screen bg-[#F8F9FA] dark:bg-[#020617] overflow-hidden"
+  >
+    <div
+      class="slim-header bg-[#001529] px-6 py-2.5 flex items-center justify-between shadow-lg z-10"
+    >
+      <div class="flex items-center gap-6">
+        <div
+          v-for="stat in pipelineStats"
+          :key="stat.label"
+          class="flex items-center gap-2 px-3 border-r border-white/10 last:border-none"
+        >
+          <div class="size-2 rounded-full" :class="stat.dotColor"></div>
+          <span
+            class="text-[10px] font-bold text-white/50 uppercase tracking-widest"
+            >{{ stat.label }}</span
           >
-            <strong>{{ lead.fullName || "Chưa có tên" }}</strong>
-            <span>{{ lead.phoneNumber || "-" }}</span>
-            <ElTag size="small" effect="plain">{{ lead.status || "-" }}</ElTag>
-          </button>
+          <span class="text-sm font-black text-white">{{ stat.count }}</span>
         </div>
-      </aside>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="h-4 w-px bg-white/10"></div>
+        <div class="live-indicator flex items-center gap-2">
+          <div class="size-1.5 rounded-full bg-red-500 animate-pulse"></div>
+          <span
+            class="text-[9px] font-black text-red-400 uppercase tracking-widest"
+            >Live Updates</span
+          >
+        </div>
+      </div>
+    </div>
 
-      <main class="progress-panel" v-loading="loadingProfile">
-        <ElEmpty
-          v-if="!selectedLeadId"
-          description="Chọn khách hàng để xem tiến độ"
-        />
-        <ElEmpty
-          v-else-if="!loadingProfile && profile && profile.outputs.length === 0"
-          description="Khách hàng chưa có giao dịch"
-        />
-
-        <template v-else-if="profile">
-          <div class="profile-summary">
-            <div>
-              <h3>{{ profile.fullName }}</h3>
-              <p>
-                {{ profile.phoneNumber }} ·
-                {{ profile.assignedToName || "Chưa giao Sale" }}
-              </p>
+    <div class="flex flex-1 overflow-hidden">
+      <div class="main-kanban-area flex-1 flex flex-col overflow-hidden">
+        <div
+          class="p-4 px-6 flex items-center justify-between bg-white/40 dark:bg-slate-900/40 border-b border-gray-100 dark:border-slate-800"
+        >
+          <div class="flex items-center gap-6">
+            <div class="flex items-center gap-2">
+              <ArtSvgIcon
+                icon="ri:filter-line"
+                class="text-navy dark:text-blue-400 text-sm"
+              />
+              <span
+                class="text-[10px] font-black text-gray-400 dark:text-slate-500 uppercase"
+                >Bộ lọc:</span
+              >
             </div>
-            <ElButton type="primary" plain @click="openProfile(profile.id)">
-              Hồ sơ 360
+            <ElSelect
+              v-model="filterSale"
+              placeholder="Theo nhân viên"
+              class="slim-select w-44"
+              clearable
+              size="small"
+            >
+              <ElOption
+                v-for="sale in salesList"
+                :key="sale.id"
+                :label="sale.name"
+                :value="sale.id"
+              />
+            </ElSelect>
+            <ElButton
+              type="primary"
+              link
+              size="small"
+              class="font-bold text-[10px] uppercase"
+            >
+              <ArtSvgIcon icon="ri:flashlight-fill" class="mr-1" /> Kèo kẹt hồ
+              sơ
             </ElButton>
           </div>
+        </div>
 
-          <article
-            v-for="output in profile.outputs"
-            :key="output.id"
-            class="output-card"
-          >
-            <div class="output-header">
-              <div>
-                <h4>Giao dịch #{{ output.id }}</h4>
-                <p>
-                  {{
-                    output.statusDisplayName ||
-                    getOutputStatusLabel(output.statusId)
-                  }}
-                  <span v-if="output.lastStatusChangedAt">
-                    · cập nhật {{ formatDate(output.lastStatusChangedAt) }}
-                  </span>
-                </p>
-              </div>
-              <ElTag :type="getOutputTagType(output.statusId)" effect="plain">
-                {{ output.statusId || "unknown" }}
-              </ElTag>
-            </div>
-
-            <div class="lifecycle-strip">
+        <div
+          class="flex-1 overflow-x-auto p-6 kanban-board-wrapper custom-scrollbar"
+        >
+          <div class="flex gap-4 h-full min-w-max">
+            <div
+              v-for="column in boardColumns"
+              :key="column.id"
+              class="kanban-column transition-all duration-500"
+              :class="[
+                column.isCollapsed ? 'w-[60px]' : 'w-[320px]',
+                { 'column-collapsed': column.isCollapsed },
+              ]"
+            >
               <div
-                v-for="(step, index) in OUTPUT_STATUS_OPTIONS"
-                :key="step.value"
-                class="lifecycle-step"
-                :class="getStepClass(output.statusId, index)"
+                class="column-header flex items-center justify-between mb-4 px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 shadow-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-850"
+                @click="column.isCollapsed = !column.isCollapsed"
               >
-                <span></span>
-                <small>{{ step.label }}</small>
+                <div class="flex items-center gap-2 overflow-hidden">
+                  <div
+                    class="size-2 rounded-full shrink-0"
+                    :style="{ backgroundColor: column.color }"
+                  ></div>
+                  <h4
+                    v-if="!column.isCollapsed"
+                    class="m-0 text-[11px] font-black text-gray-700 dark:text-slate-200 uppercase truncate"
+                  >
+                    {{ column.title }}
+                  </h4>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <span class="text-[10px] font-black text-gray-300">{{
+                    column.items.length
+                  }}</span>
+                  <ArtSvgIcon
+                    :icon="
+                      column.isCollapsed
+                        ? 'ri:arrow-right-s-line'
+                        : 'ri:arrow-left-s-line'
+                    "
+                    class="text-gray-300"
+                  />
+                </div>
+              </div>
+
+              <VueDraggable
+                v-if="!column.isCollapsed"
+                v-model="column.items"
+                group="pipeline"
+                ghost-class="ghost-card"
+                class="flex-1 overflow-y-auto flex flex-col gap-3 pr-2 custom-scrollbar"
+                @change="(e) => handleDragChange(e, column.id)"
+              >
+                <div
+                  v-for="deal in column.items"
+                  :key="deal.id"
+                  class="minimal-deal-card group relative bg-white dark:bg-slate-900 rounded-2xl p-4 shadow-sm transition-all hover:shadow-md border-[1.5px] border-slate-100 dark:border-slate-800"
+                  :style="{
+                    borderColor:
+                      deal.priority === 'Urgent'
+                        ? '#ef4444'
+                        : deal.priority === 'High'
+                          ? '#eab308'
+                          : '',
+                  }"
+                >
+                  <div class="flex justify-between items-start mb-2">
+                    <div class="flex flex-col gap-0.5">
+                      <span
+                        class="text-sm font-black text-gray-800 dark:text-slate-200 tracking-tight leading-tight"
+                        >{{ deal.customerName }}</span
+                      >
+                      <span
+                        class="text-[9px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest"
+                        >{{ deal.vehicle }}</span
+                      >
+                    </div>
+
+                    <ElTooltip
+                      :content="
+                        deal.isVerified
+                          ? 'Hồ sơ đã xác thực'
+                          : 'Hồ sơ chưa chuẩn hóa'
+                      "
+                    >
+                      <div
+                        class="size-6 rounded-lg flex-cc"
+                        :class="
+                          deal.isVerified
+                            ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-500'
+                            : 'bg-gray-100 dark:bg-slate-800 text-gray-300 dark:text-slate-500 blink-warning'
+                        "
+                      >
+                        <ArtSvgIcon icon="ri:profile-line" class="text-xs" />
+                      </div>
+                    </ElTooltip>
+                  </div>
+
+                  <div class="flex flex-wrap gap-2 mt-3">
+                    <div
+                      class="flex items-center gap-1 bg-gray-50 dark:bg-slate-950/20 px-2 py-0.5 rounded-full"
+                    >
+                      <ArtSvgIcon
+                        icon="ri:time-line"
+                        class="text-[10px] text-gray-300"
+                      />
+                      <span
+                        class="text-[9px] font-bold"
+                        :class="
+                          isStale(deal) ? 'text-red-500' : 'text-gray-400'
+                        "
+                        >{{ deal.timeInStage }}</span
+                      >
+                    </div>
+                    <div
+                      v-if="(deal as any).subStatus"
+                      class="bg-blue-50 dark:bg-blue-950/30 px-2 py-0.5 rounded-full"
+                    >
+                      <span
+                        class="text-[9px] font-black text-blue-500 dark:text-blue-400 uppercase tracking-tighter"
+                        >{{ (deal as any).subStatus }}</span
+                      >
+                    </div>
+                  </div>
+
+                  <div
+                    class="absolute bottom-3 right-3 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <div
+                      class="size-7 bg-blue-600 text-white rounded-lg flex-cc shadow-lg cursor-pointer hover:scale-110"
+                    >
+                      <ArtSvgIcon icon="ri:chat-1-fill" class="text-xs" />
+                    </div>
+                    <div
+                      class="size-7 bg-emerald-500 text-white rounded-lg flex-cc shadow-lg cursor-pointer hover:scale-110"
+                    >
+                      <ArtSvgIcon icon="ri:phone-fill" class="text-xs" />
+                    </div>
+                  </div>
+                </div>
+              </VueDraggable>
+
+              <div v-else class="h-full flex flex-cc">
+                <span
+                  class="rotate-90 whitespace-nowrap text-[10px] font-black text-gray-300 uppercase tracking-widest"
+                >
+                  {{ column.title }}
+                </span>
               </div>
             </div>
-          </article>
-        </template>
-      </main>
-    </section>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="action-sidebar w-[350px] bg-white border-l border-gray-100 flex flex-col"
+      >
+        <div
+          class="p-6 border-b border-gray-50 flex items-center justify-between"
+        >
+          <h4
+            class="m-0 text-xs font-black text-navy uppercase tracking-widest flex items-center gap-2"
+          >
+            <ArtSvgIcon
+              icon="ri:notification-badge-line"
+              class="text-red-500"
+            />
+            Hành động ngay
+          </h4>
+          <ElTag
+            size="small"
+            type="danger"
+            effect="dark"
+            round
+            class="font-black border-none"
+            >5</ElTag
+          >
+        </div>
+
+        <div
+          class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 custom-scrollbar"
+        >
+          <div
+            v-for="alert in criticalAlerts"
+            :key="alert.id"
+            class="alert-item group bg-red-50/50 p-4 rounded-2xl border border-red-100 hover:bg-red-50 transition-all cursor-pointer relative"
+          >
+            <div class="flex gap-3">
+              <div
+                class="size-8 bg-red-500 text-white rounded-xl flex-cc shrink-0 shadow-lg shadow-red-100"
+              >
+                <ArtSvgIcon :icon="alert.icon" />
+              </div>
+              <div class="flex-1 flex flex-col gap-1">
+                <div class="flex justify-between items-start">
+                  <span
+                    class="text-[10px] font-black text-red-600 uppercase tracking-tighter"
+                    >{{ alert.type }}</span
+                  >
+
+                  <ElTooltip :content="'Đôn đốc Sale: ' + alert.saleName">
+                    <div
+                      class="size-6 bg-white text-blue-600 rounded-lg flex-cc shadow-sm hover:bg-blue-600 hover:text-white transition-all"
+                    >
+                      <ArtSvgIcon
+                        icon="ri:messenger-line"
+                        class="text-[10px]"
+                      />
+                    </div>
+                  </ElTooltip>
+                </div>
+                <p class="m-0 text-[11px] font-bold text-gray-700 leading-snug">
+                  {{ alert.content }}
+                </p>
+                <div class="flex items-center gap-2 mt-2">
+                  <span class="text-[9px] font-black text-gray-400 uppercase">{{
+                    alert.customer
+                  }}</span>
+                  <div class="size-1 rounded-full bg-gray-200"></div>
+                  <span class="text-[9px] font-black text-gray-400 uppercase">{{
+                    alert.time
+                  }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-4 bg-gray-50 border-t border-gray-100">
+          <ElButton
+            class="w-full rounded-xl font-black text-[10px] uppercase h-10 border-none shadow-sm"
+          >
+            Xem báo cáo chi tiết
+          </ElButton>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
-import dayjs from "dayjs";
-import { ElMessage } from "element-plus";
-import {
-  fetchGetLeadList,
-  fetchGetProfile360,
-  type Lead,
-  type Profile360Data,
-} from "@/api/customer";
-import {
-  getOutputStatusIndex,
-  getOutputStatusLabel,
-  OUTPUT_STATUS_OPTIONS,
-} from "@/modules/Marketing/constants/customerCrm";
+import { ref, computed, onMounted } from "vue";
+import { VueDraggable } from "vue-draggable-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { PlateDossierApi, PlateDossier } from "@/api/vehicle";
 
-defineOptions({ name: "CustomerProgress" });
+defineOptions({ name: "PurchasingProgress" });
 
-const router = useRouter();
-const keyword = ref("");
-const leads = ref<Lead[]>([]);
-const profile = ref<Profile360Data | null>(null);
-const selectedLeadId = ref<number | null>(null);
-const loadingLeads = ref(false);
-const loadingProfile = ref(false);
+const salesList = [
+  { id: 1, name: "Sale Nguyễn Văn A" },
+  { id: 2, name: "Sale Trần Thị B" },
+];
+const filterSale = ref("");
 
-const filteredLeads = computed(() => {
-  const q = keyword.value.trim().toLowerCase();
-  if (!q) return leads.value;
-  return leads.value.filter((lead) =>
-    [lead.fullName, lead.phoneNumber]
-      .filter(Boolean)
-      .some((value) => value.toLowerCase().includes(q)),
-  );
+const boardColumns = ref([
+  {
+    id: "Prepare",
+    title: "Chuẩn bị hồ sơ",
+    color: "#64748b",
+    isCollapsed: false,
+    items: [] as any[],
+  },
+  {
+    id: "TaxPaid",
+    title: "Đã nộp thuế",
+    color: "#eab308",
+    isCollapsed: false,
+    items: [] as any[],
+  },
+  {
+    id: "PlateAssigned",
+    title: "Đã bấm biển",
+    color: "#3b82f6",
+    isCollapsed: false,
+    items: [] as any[],
+  },
+  {
+    id: "WaitingCard",
+    title: "Chờ cà-vẹt",
+    color: "#a855f7",
+    isCollapsed: false,
+    items: [] as any[],
+  },
+  {
+    id: "Completed",
+    title: "Hoàn thành",
+    color: "#10b981",
+    isCollapsed: false,
+    items: [] as any[],
+  },
+]);
+
+const pipelineStats = computed(() => {
+  let total = 0;
+  const stats = boardColumns.value.map((col) => {
+    total += col.items.length;
+    return {
+      label: col.title,
+      count: col.items.length,
+      dotColor:
+        col.id === "Prepare"
+          ? "bg-slate-400"
+          : col.id === "TaxPaid"
+            ? "bg-amber-500"
+            : col.id === "PlateAssigned"
+              ? "bg-blue-500"
+              : col.id === "WaitingCard"
+                ? "bg-purple-500"
+                : "bg-emerald-500",
+    };
+  });
+  return [
+    { label: "Tổng Hồ Sơ", count: total, dotColor: "bg-[#001529]" },
+    ...stats,
+  ];
 });
 
-const refreshLeads = async () => {
-  loadingLeads.value = true;
+const criticalAlerts = ref<any[]>([]);
+
+const fetchDossiers = async () => {
   try {
-    const res = await fetchGetLeadList({
-      Page: 1,
-      PageSize: 100,
-      Sorts: "-createdAt",
+    const res = await PlateDossierApi.getList({ current: 1, size: 100 });
+    const dossiers: PlateDossier[] = res.items || [];
+
+    // reset columns
+    boardColumns.value.forEach((col) => {
+      col.items = [];
     });
-    leads.value = Array.isArray(res) ? res : (res.items ?? res.records ?? []);
-    if (!selectedLeadId.value && leads.value.length > 0) {
-      await selectLead(leads.value[0].id);
+
+    // fill columns
+    dossiers.forEach((d: PlateDossier) => {
+      const item = {
+        id: d.id,
+        customerName: d.customerName || "Khách hàng ẩn danh",
+        vehicle: d.vehicleName || "Xe máy",
+        priority: d.status === "Prepare" ? "High" : "Normal",
+        timeInStage: getFormattedTime(d.createdAt),
+        isVerified: d.status !== "Prepare",
+        subStatus: d.licensePlate || undefined,
+        licensePlate: d.licensePlate,
+        registrationFee: d.registrationFee,
+        actualCost: d.actualCost,
+        serviceFee: d.serviceFee,
+        notes: d.notes,
+        rawCreatedAt: d.createdAt,
+      };
+
+      const col = boardColumns.value.find((c) => c.id === d.status);
+      if (col) {
+        col.items.push(item);
+      }
+    });
+
+    // Generate critical alerts from Prepare status dossiers that are older than 1 day
+    criticalAlerts.value = dossiers
+      .filter((d: PlateDossier) => d.status === "Prepare")
+      .map((d: PlateDossier) => ({
+        id: d.id,
+        type: "HỒ SƠ MỚI",
+        content: `Đơn xuất hàng #${d.outputId} đang chờ nộp thuế trước bạ & bấm biển.`,
+        customer: d.customerName || "N/A",
+        saleName: "Admin",
+        time: getFormattedTime(d.createdAt),
+        icon: "ri:alert-fill",
+      }));
+  } catch (err: any) {
+    ElMessage.error(err.message || "Lỗi khi tải hồ sơ biển số");
+  }
+};
+
+const getFormattedTime = (dateStr: string) => {
+  const created = new Date(dateStr);
+  const diffMs = new Date().getTime() - created.getTime();
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  if (diffHours < 1) return "Vừa tạo";
+  if (diffHours < 24) return `${diffHours} giờ trước`;
+  const diffDays = Math.floor(diffHours / 24);
+  return `${diffDays} ngày trước`;
+};
+
+onMounted(() => {
+  fetchDossiers();
+});
+
+const isStale = (deal: any) => {
+  return deal.timeInStage.includes("ngày") && parseInt(deal.timeInStage) >= 3;
+};
+
+const handleDragChange = async (event: any, columnId: string) => {
+  if (event.added) {
+    const deal = event.added.element;
+    const payload: any = {
+      id: deal.id,
+      status: columnId,
+    };
+
+    if (columnId === "PlateAssigned" && !deal.licensePlate) {
+      try {
+        const { value: plate } = await ElMessageBox.prompt(
+          "Vui lòng nhập biển số xe đã được cấp:",
+          "Cấp biển số xe",
+          {
+            confirmButtonText: "Xác nhận",
+            cancelButtonText: "Hủy bỏ",
+            inputPattern: /^[0-9]{2}-[A-Z0-9]{1,2}\s?[0-9]{3,5}(\.[0-9]{2})?$/,
+            inputErrorMessage:
+              "Định dạng biển số không đúng (VD: 60-B1 123.45)",
+          },
+        );
+        payload.licensePlate = plate;
+      } catch {
+        // user cancelled, revert
+        await fetchDossiers();
+        return;
+      }
     }
-  } catch (error: any) {
-    ElMessage.error(error?.message || "Không thể tải danh sách khách hàng");
-  } finally {
-    loadingLeads.value = false;
+
+    try {
+      await PlateDossierApi.updateStatus(payload);
+      ElMessage.success(`Cập nhật trạng thái thành công`);
+      await fetchDossiers();
+    } catch (err: any) {
+      ElMessage.error(err.message || "Lỗi khi cập nhật trạng thái");
+      await fetchDossiers();
+    }
   }
 };
-
-const selectLead = async (leadId: number) => {
-  selectedLeadId.value = leadId;
-  loadingProfile.value = true;
-  try {
-    profile.value = await fetchGetProfile360(leadId);
-  } catch (error: any) {
-    profile.value = null;
-    ElMessage.error(error?.message || "Không thể tải tiến độ khách hàng");
-  } finally {
-    loadingProfile.value = false;
-  }
-};
-
-const getStepClass = (statusId: string | undefined, index: number) => {
-  const current = getOutputStatusIndex(statusId);
-  if (current < 0) return "pending";
-  if (index < current) return "done";
-  if (index === current) return "active";
-  return "pending";
-};
-
-const getOutputTagType = (statusId?: string) => {
-  if (statusId === "completed") return "success";
-  if (statusId === "cancelled" || statusId === "refunded") return "danger";
-  if (statusId === "refunding") return "warning";
-  return "primary";
-};
-
-const formatDate = (value: string) => dayjs(value).format("DD/MM/YYYY HH:mm");
-
-const openProfile = (leadId: number) => {
-  router.push(`/Marketing/customer/profile/${leadId}`);
-};
-
-onMounted(refreshLeads);
 </script>
 
-<style scoped lang="scss">
-.customer-progress-page {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.page-header,
-.lead-panel,
-.progress-panel,
-.output-card {
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-light);
-  border-radius: 8px;
-}
-
-.page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 16px;
-}
-
-.page-header h2,
-.profile-summary h3,
-.output-header h4 {
-  margin: 0;
-}
-
-.page-header h2 {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  font-size: 20px;
-  font-weight: 800;
-}
-
-.page-header p,
-.profile-summary p,
-.output-header p {
-  margin: 4px 0 0;
-  color: var(--el-text-color-secondary);
-}
-
-.progress-layout {
-  display: grid;
-  grid-template-columns: 320px minmax(0, 1fr);
-  gap: 14px;
-}
-
-.lead-panel,
-.progress-panel {
-  padding: 14px;
-}
-
-.lead-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: calc(100vh - 230px);
-  overflow: auto;
-}
-
-.lead-row {
-  display: grid;
-  gap: 4px;
-  padding: 10px;
-  text-align: left;
-  cursor: pointer;
-  background: var(--el-fill-color-lighter);
-  border: 1px solid transparent;
-  border-radius: 8px;
-}
-
-.lead-row.active {
-  background: var(--el-color-primary-light-9);
-  border-color: var(--el-color-primary-light-5);
-}
-
-.lead-row span {
-  color: var(--el-text-color-secondary);
-  font-size: 12px;
-}
-
-.profile-summary,
-.output-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.output-card {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 14px;
-  margin-top: 12px;
-}
-
-.lifecycle-strip {
-  display: grid;
-  grid-template-columns: repeat(13, minmax(72px, 1fr));
-  gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-}
-
-.lifecycle-step {
-  display: grid;
-  gap: 6px;
-  min-width: 72px;
-  color: var(--el-text-color-secondary);
-  font-size: 11px;
-}
-
-.lifecycle-step span {
-  height: 6px;
-  border-radius: 999px;
-  background: var(--el-fill-color);
-}
-
-.lifecycle-step.done span {
-  background: var(--el-color-success);
-}
-
-.lifecycle-step.active {
-  color: var(--el-color-primary);
-  font-weight: 700;
-}
-
-.lifecycle-step.active span {
-  background: var(--el-color-primary);
-}
-
-@media (width <= 900px) {
-  .page-header,
-  .profile-summary,
-  .output-header {
-    align-items: stretch;
-    flex-direction: column;
+<style lang="scss" scoped>
+.purchasing-pipeline-page {
+  .text-navy {
+    color: #001529;
   }
 
-  .progress-layout {
-    grid-template-columns: 1fr;
+  .slim-select {
+    :deep(.el-input__wrapper) {
+      background-color: var(--el-fill-color-blank);
+      border: 1px solid var(--el-border-color-light);
+      border-radius: 10px;
+      box-shadow: none;
+    }
+  }
+
+  .kanban-column {
+    &.column-collapsed {
+      background-color: var(--el-fill-color-light);
+    }
+  }
+
+  .minimal-deal-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+      box-shadow: 0 10px 20px rgb(0 0 0 / 5%);
+      transform: translateY(-4px);
+    }
+  }
+
+  .blink-warning {
+    animation: blink 1.5s infinite;
+  }
+
+  @keyframes blink {
+    0% {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    50% {
+      opacity: 0.5;
+      transform: scale(0.9);
+    }
+
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .custom-scrollbar {
+    &::-webkit-scrollbar {
+      width: 4px;
+      height: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
   }
 }
 </style>

@@ -1,8 +1,10 @@
-﻿<template>
+<template>
   <div
-    class="conversion-tools-page min-h-full bg-[#F8FAFC] font-inter text-[#0F172A] pb-10"
+    class="conversion-tools-page min-h-full bg-[#F8FAFC] dark:bg-[#020617] font-inter text-[#0F172A] dark:text-[#E2E8F0] pb-10"
   >
-    <div class="bg-white border-b border-slate-200 px-8 py-6 shadow-sm">
+    <div
+      class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-8 py-6 shadow-sm"
+    >
       <div class="max-w-[1400px] mx-auto flex justify-between items-center">
         <div class="flex items-center gap-4">
           <div
@@ -12,26 +14,28 @@
           </div>
           <div>
             <h1
-              class="m-0 text-xl font-black tracking-tight text-slate-900 leading-none"
+              class="m-0 text-xl font-black tracking-tight text-slate-900 dark:text-slate-100 leading-none"
             >
               {{ $t("marketing.conversionTools.title") }}
             </h1>
             <p
-              class="m-0 text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2"
+              class="m-0 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-2"
             >
               {{ $t("marketing.conversionTools.subtitle") }}
             </p>
           </div>
         </div>
 
-        <div class="flex bg-slate-100 p-1 rounded-xl">
+        <div
+          class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-transparent dark:border-slate-750"
+        >
           <button
             @click="activeTab = 'popup'"
             class="px-6 py-2 rounded-lg text-[10px] font-black uppercase transition-all"
             :class="
               activeTab === 'popup'
-                ? 'bg-white text-slate-900 shadow-md'
-                : 'text-slate-400 hover:text-slate-600'
+                ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-md'
+                : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
             "
           >
             {{ $t("marketing.conversionTools.tabPopup") }}
@@ -41,8 +45,8 @@
             class="px-6 py-2 rounded-lg text-[10px] font-black uppercase transition-all"
             :class="
               activeTab === 'landing'
-                ? 'bg-white text-slate-900 shadow-md'
-                : 'text-slate-400 hover:text-slate-600'
+                ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-md'
+                : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
             "
           >
             {{ $t("marketing.conversionTools.tabLanding") }}
@@ -55,15 +59,15 @@
       <div v-if="activeTab === 'popup'" class="space-y-6 animate-fade-in">
         <div class="flex justify-between items-center">
           <h3
-            class="m-0 text-xs font-black uppercase tracking-widest text-slate-400"
+            class="m-0 text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500"
           >
             {{ $t("marketing.conversionTools.popupListTitle") }}
           </h3>
           <button
             @click="handleAddPopup"
-            class="h-10 px-6 bg-[#001529] text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg flex items-center gap-2"
+            class="h-10 px-6 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center gap-2"
           >
-            <ArtSvgIcon icon="ri:add-line" />
+            <ArtSvgIcon icon="ri:add-line" class="text-blue-500" />
             {{ $t("marketing.conversionTools.createPopupBtn") }}
           </button>
         </div>
@@ -72,14 +76,14 @@
           <div
             v-for="popup in popups"
             :key="popup.id"
-            class="bg-white border border-slate-200 rounded-[32px] p-6 shadow-sm hover:shadow-xl transition-all group relative"
+            class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[32px] p-6 shadow-sm hover:shadow-xl transition-all group relative"
           >
             <div class="absolute top-6 right-6">
               <ElSwitch v-model="popup.active" active-color="#10b981" />
             </div>
             <div class="flex items-start gap-5">
               <div
-                class="size-16 rounded-2xl bg-slate-50 flex-cc border border-slate-100 overflow-hidden shrink-0"
+                class="size-16 rounded-2xl bg-slate-50 dark:bg-slate-950 flex-cc border border-slate-100 dark:border-slate-850 overflow-hidden shrink-0"
               >
                 <img
                   v-if="popup.img"
@@ -89,16 +93,18 @@
                 <ArtSvgIcon
                   v-else
                   icon="ri:window-line"
-                  class="text-3xl text-slate-200"
+                  class="text-3xl text-slate-200 dark:text-slate-800"
                 />
               </div>
               <div class="flex-1">
                 <h4
-                  class="m-0 text-base font-black text-slate-800 leading-tight mb-1"
+                  class="m-0 text-base font-black text-slate-800 dark:text-slate-100 leading-tight mb-1"
                 >
                   {{ popup.name }}
                 </h4>
-                <p class="m-0 text-[11px] font-bold text-slate-400 mb-3 italic">
+                <p
+                  class="m-0 text-[11px] font-bold text-slate-400 dark:text-slate-500 mb-3 italic"
+                >
                   "{{ popup.content }}"
                 </p>
                 <div class="flex flex-wrap gap-2">
@@ -116,21 +122,22 @@
               </div>
             </div>
             <div
-              class="mt-6 pt-6 border-t border-slate-50 flex justify-between items-center"
+              class="mt-6 pt-6 border-t border-slate-50 dark:border-slate-800 flex justify-between items-center"
             >
               <div class="flex gap-4">
                 <div class="flex flex-col">
                   <span
-                    class="text-[8px] font-black text-slate-300 uppercase"
+                    class="text-[8px] font-black text-slate-300 dark:text-slate-500 uppercase"
                     >{{ $t("marketing.conversionTools.views") }}</span
                   >
-                  <span class="text-xs font-black text-slate-700">{{
-                    popup.views
-                  }}</span>
+                  <span
+                    class="text-xs font-black text-slate-700 dark:text-slate-300"
+                    >{{ popup.views }}</span
+                  >
                 </div>
                 <div class="flex flex-col">
                   <span
-                    class="text-[8px] font-black text-slate-300 uppercase"
+                    class="text-[8px] font-black text-slate-300 dark:text-slate-500 uppercase"
                     >{{ $t("marketing.conversionTools.clicks") }}</span
                   >
                   <span class="text-xs font-black text-blue-600">{{
@@ -140,12 +147,12 @@
               </div>
               <div class="flex gap-2">
                 <button
-                  class="h-8 px-4 bg-slate-50 text-slate-400 rounded-lg text-[9px] font-black uppercase hover:bg-slate-800 hover:text-white transition-all"
+                  class="h-8 px-4 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-300 rounded-lg text-[9px] font-black uppercase hover:bg-slate-100 dark:hover:bg-slate-700 transition-all"
                 >
                   Sửa
                 </button>
                 <button
-                  class="size-8 bg-red-50 text-red-400 rounded-lg flex-cc hover:bg-red-500 hover:text-white transition-all"
+                  class="size-8 bg-red-50 dark:bg-red-950/20 text-red-400 rounded-lg flex-cc hover:bg-red-500 hover:text-white transition-all"
                 >
                   <ArtSvgIcon icon="ri:delete-bin-line" />
                 </button>
@@ -158,15 +165,15 @@
       <div v-if="activeTab === 'landing'" class="space-y-6 animate-fade-in">
         <div class="flex justify-between items-center">
           <h3
-            class="m-0 text-xs font-black uppercase tracking-widest text-slate-400"
+            class="m-0 text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500"
           >
             {{ $t("marketing.conversionTools.landingListTitle") }}
           </h3>
           <button
             @click="handleAddLanding"
-            class="h-10 px-6 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg flex items-center gap-2"
+            class="h-10 px-6 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-sm hover:bg-slate-50 transition-all active:scale-95 flex items-center gap-2"
           >
-            <ArtSvgIcon icon="ri:layout-4-line" />
+            <ArtSvgIcon icon="ri:layout-4-line" class="text-blue-500" />
             {{ $t("marketing.conversionTools.createLandingBtn") }}
           </button>
         </div>
@@ -175,9 +182,11 @@
           <div
             v-for="page in landingPages"
             :key="page.id"
-            class="bg-white border border-slate-200 rounded-[32px] overflow-hidden shadow-sm hover:shadow-2xl transition-all group"
+            class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[32px] overflow-hidden shadow-sm hover:shadow-2xl transition-all group"
           >
-            <div class="aspect-video bg-slate-100 relative overflow-hidden">
+            <div
+              class="aspect-video bg-slate-100 dark:bg-slate-950 relative overflow-hidden"
+            >
               <img
                 :src="page.preview"
                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
@@ -194,7 +203,9 @@
             </div>
             <div class="p-6">
               <div class="flex justify-between items-center mb-2">
-                <h4 class="m-0 text-sm font-black text-slate-800 truncate">
+                <h4
+                  class="m-0 text-sm font-black text-slate-800 dark:text-slate-100 truncate"
+                >
                   {{ page.name }}
                 </h4>
                 <span
@@ -202,43 +213,49 @@
                   >{{ page.status }}</span
                 >
               </div>
-              <p class="m-0 text-[10px] font-bold text-slate-400 mb-4 truncate">
+              <p
+                class="m-0 text-[10px] font-bold text-slate-400 dark:text-slate-500 mb-4 truncate"
+              >
                 {{ page.url }}
               </p>
 
               <div
-                class="grid grid-cols-2 gap-4 py-4 border-y border-slate-50 mb-4"
+                class="grid grid-cols-2 gap-4 py-4 border-y border-slate-50 dark:border-slate-800 mb-4"
               >
                 <div class="flex items-center gap-2">
                   <div
-                    class="size-8 rounded-lg bg-blue-50 text-blue-600 flex-cc shrink-0"
+                    class="size-8 rounded-lg bg-blue-50 dark:bg-blue-950/20 text-blue-600 flex-cc shrink-0"
                   >
                     <ArtSvgIcon icon="ri:user-voice-line" />
                   </div>
                   <div>
                     <p
-                      class="m-0 text-[8px] font-black text-slate-300 uppercase"
+                      class="m-0 text-[8px] font-black text-slate-300 dark:text-slate-500 uppercase"
                     >
                       Leads
                     </p>
-                    <p class="m-0 text-xs font-black text-slate-700">
+                    <p
+                      class="m-0 text-xs font-black text-slate-700 dark:text-slate-300"
+                    >
                       {{ page.leads }}
                     </p>
                   </div>
                 </div>
                 <div class="flex items-center gap-2">
                   <div
-                    class="size-8 rounded-lg bg-purple-50 text-purple-600 flex-cc shrink-0"
+                    class="size-8 rounded-lg bg-purple-50 dark:bg-purple-950/20 text-purple-600 flex-cc shrink-0"
                   >
                     <ArtSvgIcon icon="ri:cursor-line" />
                   </div>
                   <div>
                     <p
-                      class="m-0 text-[8px] font-black text-slate-300 uppercase"
+                      class="m-0 text-[8px] font-black text-slate-300 dark:text-slate-500 uppercase"
                     >
                       {{ $t("marketing.conversionTools.clicks") }}
                     </p>
-                    <p class="m-0 text-xs font-black text-slate-700">
+                    <p
+                      class="m-0 text-xs font-black text-slate-700 dark:text-slate-300"
+                    >
                       {{ page.clicks }}
                     </p>
                   </div>
@@ -247,12 +264,12 @@
 
               <div class="flex gap-2">
                 <button
-                  class="flex-1 h-9 bg-slate-50 text-slate-600 rounded-lg font-black text-[9px] uppercase tracking-widest border border-slate-100 hover:bg-slate-800 hover:text-white transition-all"
+                  class="flex-1 h-9 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg font-black text-[9px] uppercase tracking-widest border border-slate-100 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all"
                 >
                   Chỉnh sửa
                 </button>
                 <button
-                  class="size-9 bg-blue-50 text-blue-600 rounded-lg flex-cc hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+                  class="size-9 bg-blue-50 dark:bg-blue-950/20 text-blue-600 rounded-lg flex-cc hover:bg-blue-600 hover:text-white transition-all shadow-sm"
                 >
                   <ArtSvgIcon icon="ri:share-forward-line" />
                 </button>
@@ -293,26 +310,14 @@ const activeTab = ref("popup");
 const dialogVisible = ref(false);
 const dialogTitle = ref("");
 
-const popups = ref<any[]>([]);
+const tools = ref<any[]>([]);
 const loadingTools = ref(false);
 
 const loadTools = async () => {
   loadingTools.value = true;
   try {
     const res = await conversionToolApi.getAll();
-    popups.value = res.data
-      .filter((t: any) => t.type === "Popup")
-      .map((t: any) => ({
-        id: t.id,
-        name: t.name,
-        content: t.content || "",
-        delay: t.delaySeconds || 0,
-        pages: t.pages || "",
-        active: t.isActive,
-        views: t.views,
-        clicks: t.clicks,
-        img: t.imageUrl || "",
-      }));
+    tools.value = (res as any).data || res || [];
   } catch (error) {
     console.error("Failed to load conversion tools:", error);
   } finally {
@@ -320,8 +325,24 @@ const loadTools = async () => {
   }
 };
 
+const popups = computed(() =>
+  tools.value
+    .filter((t: any) => t.type === "Popup")
+    .map((t: any) => ({
+      id: t.id,
+      name: t.name,
+      content: t.content || "",
+      delay: t.delaySeconds || 0,
+      pages: t.pages || "",
+      active: t.isActive,
+      views: t.views,
+      clicks: t.clicks,
+      img: t.imageUrl || "",
+    })),
+);
+
 const landingPages = computed(() =>
-  popups.value
+  tools.value
     .filter((t: any) => t.type === "Landing")
     .map((t: any) => ({
       id: t.id,
@@ -330,6 +351,9 @@ const landingPages = computed(() =>
       status: t.status || "draft",
       leads: t.leads,
       clicks: t.clicks,
+      preview:
+        t.imageUrl ||
+        "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&q=80&w=300",
     })),
 );
 
@@ -375,7 +399,7 @@ onMounted(() => {
 
   .el-dialog__header {
     padding: 32px;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--el-border-color-lighter);
   }
 }
 </style>

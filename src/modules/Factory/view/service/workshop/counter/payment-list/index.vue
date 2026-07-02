@@ -516,8 +516,13 @@ const getPaymentMethodLabel = (val: string) => {
   return found?.label || val;
 };
 
-const sourceTypeTagType = (val: string) => {
-  const map: Record<string, string> = {
+const sourceTypeTagType = (
+  val: string,
+): "primary" | "success" | "warning" | "info" | "danger" => {
+  const map: Record<
+    string,
+    "primary" | "success" | "warning" | "info" | "danger"
+  > = {
     RepairOrder: "danger",
     Maintenance: "warning",
     Warranty: "info",
@@ -526,8 +531,13 @@ const sourceTypeTagType = (val: string) => {
   return map[val] || "primary";
 };
 
-const paymentStatusTagType = (val: string) => {
-  const map: Record<string, string> = {
+const paymentStatusTagType = (
+  val: string,
+): "primary" | "success" | "warning" | "info" | "danger" => {
+  const map: Record<
+    string,
+    "primary" | "success" | "warning" | "info" | "danger"
+  > = {
     Paid: "success",
     Unpaid: "danger",
     Partial: "warning",
@@ -641,7 +651,7 @@ async function handlePaymentSubmit() {
         paymentStatus: paymentForm.paymentStatus,
         notes: paymentForm.notes || undefined,
       };
-      const id = await useCases.create.call(payload);
+      const id = await useCases.create.call(payload as any);
       if (id) {
         ElMessage.success("Thu tiền thành công!");
         paymentDialogVisible.value = false;

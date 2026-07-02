@@ -417,6 +417,10 @@ export default {
       customerCare: "Customer Care",
       customerProgress: "Progress",
       booking: "Booking Management",
+      conversion: "Conversion Tools",
+      customerPipeline: "Purchasing Pipeline",
+      customerWorkshop: "Customer Repair History",
+      customerContact: "Chat & Support",
     },
     hr: {
       title: "HR Management",

@@ -1,22 +1,26 @@
-﻿<template>
+<template>
   <div>
-    <div class="comment-page min-h-full bg-[#F8FAFC] font-inter text-[#0F172A]">
-      <div class="bg-white border-b border-slate-200 px-6 py-4 shadow-sm">
+    <div
+      class="comment-page min-h-full font-inter text-[#0F172A] dark:text-slate-100 bg-[#F8FAFC] dark:bg-[#020617]"
+    >
+      <div
+        class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4 shadow-sm"
+      >
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-4">
             <div
-              class="size-11 rounded-xl bg-[#001529] flex-cc text-white shadow-lg shrink-0"
+              class="size-11 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex-cc text-slate-800 dark:text-white shadow-sm shrink-0"
             >
               <ArtSvgIcon icon="ri:chat-1-line" class="text-2xl" />
             </div>
             <div>
               <h1
-                class="m-0 text-xl font-black tracking-tight text-slate-900 leading-none"
+                class="m-0 text-xl font-black tracking-tight text-slate-900 dark:text-white leading-none"
               >
                 {{ $t("marketing.comment.title") }}
               </h1>
               <p
-                class="m-0 text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em] mt-1.5"
+                class="m-0 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.15em] mt-1.5"
               >
                 {{ $t("marketing.comment.subtitle") }}
               </p>
@@ -26,28 +30,38 @@
       </div>
 
       <div class="p-4">
-        <div class="bg-white rounded-lg border border-slate-200 p-4">
+        <div
+          class="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4"
+        >
           <div
             class="mt-10 grid grid-cols-5 gap-5 max-2xl:grid-cols-4 max-xl:grid-cols-3 max-lg:grid-cols-2 max-sm:grid-cols-1 mb-5"
           >
             <li
-              class="relative p-4 c-p aspect-16/12 duration-300 hover:-translate-y-1.5 cursor-pointer"
-              :style="{ background: item.color }"
+              class="comment-item relative p-4 c-p aspect-16/12 duration-300 hover:-translate-y-1.5 cursor-pointer rounded-2xl border border-transparent"
+              :style="{ '--comment-bg': item.color }"
               v-for="item in commentsWithColors"
               :key="item.id"
               @click="openDrawer(item)"
             >
-              <p class="text-g-600 text-sm">{{ item.date }}</p>
-              <p class="mt-4 text-sm text-gray-800 line-clamp-3">
+              <p class="text-g-600 dark:text-slate-400 text-sm">
+                {{ item.date }}
+              </p>
+              <p
+                class="mt-4 text-sm text-gray-800 dark:text-slate-200 line-clamp-3"
+              >
                 {{ item.content }}
               </p>
               <div class="absolute bottom-4 left-0 px-4 flex-cb w-full">
                 <div class="flex-c">
-                  <div class="flex-c mr-5 text-xs text-g-600">
+                  <div
+                    class="flex-c mr-5 text-xs text-g-600 dark:text-slate-400"
+                  >
                     <ArtSvgIcon icon="ri:heart-line" class="mr-1 text-base" />
                     <span>{{ item.collection }}</span>
                   </div>
-                  <div class="flex-c mr-5 text-xs text-g-600">
+                  <div
+                    class="flex-c mr-5 text-xs text-g-600 dark:text-slate-400"
+                  >
                     <ArtSvgIcon
                       icon="ri:message-3-line"
                       class="mr-1 text-base"
@@ -56,7 +70,9 @@
                   </div>
                 </div>
                 <div>
-                  <span class="text-sm text-gray-700">{{ item.userName }}</span>
+                  <span class="text-sm text-gray-700 dark:text-slate-300">{{
+                    item.userName
+                  }}</span>
                 </div>
               </div>
             </li>
@@ -72,25 +88,33 @@
         modal-class="comment-modal"
       >
         <template #header>
-          <h4>{{ $t("marketing.comment.detailTitle") }}</h4>
+          <h4 class="dark:text-white">
+            {{ $t("marketing.comment.detailTitle") }}
+          </h4>
         </template>
         <template #default>
           <div class="drawer-default">
             <div
-              class="relative p-4 aspect-16/12"
-              :style="{ background: clickItem.color }"
+              class="comment-item relative p-4 aspect-16/12 rounded-2xl border border-transparent"
+              :style="{ '--comment-bg': clickItem.color }"
             >
-              <p class="text-g-500 text-sm">{{ clickItem.date }}</p>
-              <p class="mt-4 text-sm text-gray-800">
+              <p class="text-g-500 dark:text-slate-400 text-sm">
+                {{ clickItem.date }}
+              </p>
+              <p class="mt-4 text-sm text-gray-800 dark:text-slate-200">
                 {{ clickItem.content }}
               </p>
               <div class="absolute bottom-4 left-0 px-4 flex-cb w-full">
                 <div class="flex-c">
-                  <div class="flex-c mr-5 text-xs text-g-600">
+                  <div
+                    class="flex-c mr-5 text-xs text-g-600 dark:text-slate-400"
+                  >
                     <ArtSvgIcon icon="ri:heart-line" class="mr-1 text-base" />
                     <span>{{ clickItem.collection }}</span>
                   </div>
-                  <div class="flex-c mr-5 text-xs text-g-600">
+                  <div
+                    class="flex-c mr-5 text-xs text-g-600 dark:text-slate-400"
+                  >
                     <ArtSvgIcon
                       icon="ri:message-3-line"
                       class="mr-1 text-base"
@@ -98,14 +122,16 @@
                     <span>{{ clickItem.comment }}</span>
                   </div>
                 </div>
-                <span class="text-sm text-gray-700">{{
-                  clickItem.userName
-                }}</span>
+                <div>
+                  <span class="text-sm text-gray-700 dark:text-slate-300">{{
+                    clickItem.userName
+                  }}</span>
+                </div>
               </div>
             </div>
 
             <div class="mt-4">
-              <h4 class="text-base font-bold mb-2">
+              <h4 class="text-base font-bold mb-2 dark:text-white">
                 {{ $t("marketing.comment.replyTitle") }}
               </h4>
               <CommentWidget :comment-id="clickItem.id" />
@@ -124,11 +150,15 @@ import CommentWidget from "@/components/business/comment-widget/index.vue";
 
 defineOptions({ name: "MarketingComment" });
 
+const loadingComments = ref(false);
+const comments = ref<CommentItem[]>([]);
+
 const loadComments = async () => {
   loadingComments.value = true;
   try {
     const res = await commentApi.getAll();
-    comments.value = res.data.map((c) => ({
+    const dataList = (res as any).data || res || [];
+    comments.value = dataList.map((c: any) => ({
       id: c.id,
       date: c.createdAt,
       content: c.content,
@@ -175,7 +205,7 @@ const clickItem = ref<CommentItem>({
 });
 
 const commentsWithColors = computed(() => {
-  return comments.value.map((item, index) => ({
+  return comments.value.map((item: CommentItem, index: number) => ({
     ...item,
     color: COLOR_LIST[index % COLOR_LIST.length],
   }));
@@ -191,9 +221,19 @@ onMounted(() => {
 });
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
 .comment-page {
   min-height: 100vh;
+}
+
+.comment-item {
+  background-color: var(--comment-bg);
+}
+
+:deep(.dark) .comment-item,
+.dark .comment-item {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
 }
 
 .line-clamp-3 {

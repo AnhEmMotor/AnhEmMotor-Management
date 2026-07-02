@@ -575,7 +575,7 @@ const handleSaveDraft = async () => {
       await NewsApi.create(payload);
     }
     ElMessage.success("Đã lưu bản nháp thành công");
-    router.push("/content/article");
+    router.push("/Marketing/article");
   } catch (error) {
     console.error(error);
   }
@@ -591,7 +591,7 @@ const submit = async () => {
       await NewsApi.create(payload);
     }
     ElMessage.success("Bài viết đã được xuất bản thành công!");
-    router.push("/content/article");
+    router.push("/Marketing/article");
   } catch (error) {
     console.error(error);
   }

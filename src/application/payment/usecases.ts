@@ -16,15 +16,15 @@ export type GetPaymentsInput = {
 };
 
 export interface GetPaymentsUseCase {
-  (input: GetPaymentsInput): Promise<PaymentListResult | null>;
+  call(input: GetPaymentsInput): Promise<PaymentListResult | null>;
 }
 
 export interface GetPaymentDetailUseCase {
-  (id: number): Promise<PaymentDetail | null>;
+  call(id: number): Promise<PaymentDetail | null>;
 }
 
 export interface CreatePaymentUseCase {
-  (payload: CreatePaymentPayload): Promise<number | null>;
+  call(payload: CreatePaymentPayload): Promise<number | null>;
 }
 
 export class RealGetPaymentsUseCase implements GetPaymentsUseCase {
@@ -79,7 +79,7 @@ export class RealCreatePaymentUseCase implements CreatePaymentUseCase {
 }
 
 export interface GetPaymentStatsUseCase {
-  (): Promise<any | null>;
+  call(): Promise<any | null>;
 }
 
 export class RealGetPaymentStatsUseCase implements GetPaymentStatsUseCase {

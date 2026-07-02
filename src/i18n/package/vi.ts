@@ -1,4 +1,4 @@
-﻿export default {
+export default {
   httpMsg: {
     unauthorized: "Truy cập không được phép, vui lòng đăng nhập lại",
     forbidden: "Cấm truy cập vào tài nguyên này",
@@ -543,6 +543,10 @@
       customerCare: "Chăm sóc",
       customerProgress: "Tiến độ",
       booking: "Quản lý Lịch hẹn",
+      conversion: "Công cụ chuyển đổi",
+      customerPipeline: "Phễu mua hàng (Pipeline)",
+      customerWorkshop: "Lịch sử sửa chữa xưởng",
+      customerContact: "Chat & Hỗ trợ KH",
     },
     hr: {
       title: "Quản lý Nhân sự",
@@ -611,12 +615,12 @@
   },
   admin: {
     t1: "Đăng tải",
-    t2: "bạncủadanhtên",
+    t2: "Tên của bạn",
     t3: "Nói gì đó đơn giản...",
-    t4: "TraLoi",
+    t4: "Trả lời",
     t5: "Hủy",
     t6: "Đăng tải",
-    t7: "bạncủadanhtên",
+    t7: "Tên của bạn",
     t8: "Câu trả lời của bạn...",
     t9: "Xem thêm",
     t10: "Nhập Excel",

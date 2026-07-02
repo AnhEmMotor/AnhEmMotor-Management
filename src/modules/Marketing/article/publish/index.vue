@@ -1,19 +1,19 @@
 <template>
   <div
-    class="article-publish-page min-h-screen bg-[#F8FAFC] font-inter text-[#0F172A] pb-10"
+    class="article-publish-page min-h-screen font-inter text-[#0F172A] dark:text-slate-100 pb-10"
   >
     <div
-      class="bg-white border-b border-slate-200 px-8 py-4 sticky top-0 z-[100] shadow-sm flex justify-between items-center"
+      class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-8 py-4 sticky top-0 z-[100] shadow-sm flex justify-between items-center"
     >
       <div class="flex items-center gap-4">
         <div
-          class="size-10 rounded-xl bg-[#001529] flex-cc text-white shadow-lg"
+          class="size-10 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex-cc text-slate-800 dark:text-white shadow-sm"
         >
           <ArtSvgIcon icon="ri:edit-box-line" class="text-xl" />
         </div>
         <div>
           <h1
-            class="m-0 text-lg font-black tracking-tight text-slate-900 leading-none flex items-center gap-3"
+            class="m-0 text-lg font-black tracking-tight text-slate-900 dark:text-white leading-none flex items-center gap-3"
           >
             Chỉnh sửa bài viết
             <span
@@ -47,7 +47,7 @@
     <div class="max-w-[1600px] mx-auto p-8 flex gap-8 items-start">
       <div class="flex-1 flex flex-col gap-6">
         <div
-          class="bg-white border border-slate-200 rounded-[32px] p-8 shadow-sm"
+          class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[32px] p-8 shadow-sm"
         >
           <div class="grid grid-cols-12 gap-6">
             <div class="col-span-12">
@@ -59,7 +59,7 @@
                 v-model="articleName"
                 type="text"
                 placeholder="Ví dụ: So sánh SH 160i và SH Mode: Lựa chọn nào cho phái đẹp?"
-                class="w-full h-10 bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 text-lg font-black text-slate-800 focus:border-blue-500 focus:bg-white transition-all outline-none"
+                class="w-full h-11 bg-slate-50 dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-2xl px-6 text-lg font-black text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none"
               />
             </div>
             <div class="col-span-9">
@@ -71,7 +71,7 @@
                 v-model="articleSlug"
                 type="text"
                 placeholder="Ví dụ: so-sanh-sh-160i-va-sh-mode"
-                class="w-full h-10 bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 text-base font-medium text-slate-600 focus:border-blue-500 focus:bg-white transition-all outline-none"
+                class="w-full h-11 bg-slate-50 dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-2xl px-6 text-base font-medium text-slate-600 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none"
               />
             </div>
             <div class="col-span-3">
@@ -97,10 +97,10 @@
         </div>
 
         <div
-          class="bg-white border border-slate-200 rounded-[32px] shadow-sm overflow-hidden min-h-[600px] flex flex-col"
+          class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[32px] shadow-sm overflow-hidden min-h-[600px] flex flex-col"
         >
           <div
-            class="p-6 border-b border-slate-100 bg-slate-50/30 flex justify-between items-center"
+            class="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-950/40 flex justify-between items-center"
           >
             <span
               class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
@@ -117,17 +117,17 @@
 
       <div class="w-96 flex flex-col gap-6 sticky top-28 shrink-0">
         <div
-          class="bg-white border border-slate-200 rounded-[32px] p-6 shadow-sm"
+          class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[32px] p-6 shadow-sm"
         >
           <h3
-            class="m-0 text-xs font-black uppercase tracking-widest text-slate-800 mb-4 flex items-center gap-2"
+            class="m-0 text-xs font-black uppercase tracking-widest text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2"
           >
             <ArtSvgIcon icon="ri:share-forward-line" class="text-blue-500" />
             Upload ảnh bìa
           </h3>
           <div class="space-y-4">
             <div
-              class="aspect-video bg-slate-100 rounded-2xl border border-slate-200 overflow-hidden relative group cursor-pointer"
+              class="aspect-video bg-slate-100 dark:bg-slate-950/40 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden relative group cursor-pointer"
               @click="triggerImageUpload"
             >
               <img
@@ -149,17 +149,17 @@
         </div>
 
         <div
-          class="bg-white border border-slate-200 rounded-[32px] p-6 shadow-sm"
+          class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[32px] p-6 shadow-sm"
         >
           <div class="flex justify-between items-center mb-4">
             <h3
-              class="m-0 text-xs font-black uppercase tracking-widest text-slate-800"
+              class="m-0 text-xs font-black uppercase tracking-widest text-slate-800 dark:text-slate-200"
             >
               Sản phẩm liên kết
             </h3>
             <button
               @click="openProductSelector"
-              class="size-7 rounded-lg bg-blue-50 text-blue-600 flex-cc hover:bg-blue-600 hover:text-white transition-all"
+              class="size-7 rounded-lg bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 flex-cc hover:bg-blue-600 hover:text-white transition-all"
             >
               <ArtSvgIcon icon="ri:add-line" />
             </button>
@@ -168,14 +168,16 @@
             <div
               v-for="p in selectedProducts"
               :key="p.id"
-              class="flex items-center gap-3 p-2 bg-slate-50 rounded-xl border border-slate-100 group"
+              class="flex items-center gap-3 p-2 bg-slate-50 dark:bg-slate-950/20 rounded-xl border border-slate-100 dark:border-slate-800 group"
             >
               <img
                 :src="p.img"
                 class="size-10 rounded-lg object-cover shadow-sm"
               />
               <div class="flex-1 overflow-hidden">
-                <h4 class="m-0 text-[11px] font-black text-slate-800 truncate">
+                <h4
+                  class="m-0 text-[11px] font-black text-slate-800 dark:text-slate-200 truncate"
+                >
                   {{ p.name }}
                 </h4>
                 <span class="text-[9px] font-bold text-slate-400">{{
@@ -191,7 +193,7 @@
             </div>
             <div
               v-if="selectedProducts.length === 0"
-              class="py-8 border-2 border-dashed border-slate-100 rounded-2xl flex-cc flex-col gap-2 opacity-30"
+              class="py-8 border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-2xl flex-cc flex-col gap-2 opacity-30"
             >
               <ArtSvgIcon icon="ri:car-line" class="text-3xl" />
               <span
@@ -575,7 +577,7 @@ const handleSaveDraft = async () => {
       await NewsApi.create(payload);
     }
     ElMessage.success("Đã lưu bản nháp thành công");
-    router.push("/content/article");
+    router.push("/Marketing/article");
   } catch (error) {
     console.error(error);
   }
@@ -591,7 +593,7 @@ const submit = async () => {
       await NewsApi.create(payload);
     }
     ElMessage.success("Bài viết đã được xuất bản thành công!");
-    router.push("/content/article");
+    router.push("/Marketing/article");
   } catch (error) {
     console.error(error);
   }
@@ -652,8 +654,8 @@ watch(
   .premium-select-large {
     :deep(.el-input__wrapper) {
       height: 56px;
-      background-color: #f8fafc;
-      border: 2px solid #f1f5f9;
+      background-color: var(--el-fill-color-blank);
+      border: 2px solid var(--el-border-color-light);
       border-radius: 16px;
       box-shadow: none;
 
@@ -677,6 +679,45 @@ watch(
         color: white;
       }
     }
+  }
+
+  :deep(.el-select__wrapper),
+  :deep(.el-input__wrapper) {
+    background-color: var(--el-fill-color-blank);
+    border-color: var(--el-border-color-light);
+    color: var(--el-text-color-primary);
+  }
+
+  :deep(.el-input__inner),
+  :deep(.el-textarea__inner) {
+    color: var(--el-text-color-primary);
+    background-color: transparent;
+
+    &::placeholder {
+      color: var(--el-text-color-placeholder);
+    }
+  }
+
+  :deep(.w-e-toolbar) {
+    background-color: var(--el-fill-color-blank);
+    border-color: var(--el-border-color-light);
+  }
+
+  :deep(.w-e-text-container) {
+    background-color: var(--el-fill-color-blank);
+    color: var(--el-text-color-primary);
+    border-color: var(--el-border-color-light);
+  }
+
+  :deep(.w-e-text-container [data-slate-editor]) {
+    background-color: var(--el-fill-color-blank);
+    color: var(--el-text-color-primary);
+  }
+
+  :deep(.w-e-bar-item button),
+  :deep(.w-e-bar-item svg) {
+    color: var(--el-text-color-primary);
+    fill: var(--el-text-color-primary);
   }
 }
 

@@ -28,7 +28,7 @@
           <ElOption label="❌ Đã hủy" value="cancelled" />
         </ElSelect>
       </div>
-      <ElButton type="primary" @click="handleCreateNew">
+      <ElButton type="primary" @click="handleCreate">
         <ElIcon class="mr-1"><Plus /></ElIcon>
         Tạo hóa đơn mới
       </ElButton>
@@ -521,11 +521,11 @@ const dialog = reactive({
   readonly: true,
   title: "",
   invoice: null as AdminInvoiceDetailResponse | null,
-  form: {} as UpdateAdminInvoiceRequest,
+  form: {} as any,
 });
 
 const loadingPurchaseInvoices = ref(false);
-const purchaseInvoiceOptions = ref<PurchaseInvoiceListResult[]>([]);
+const purchaseInvoiceOptions = ref<any[]>([]);
 
 const createDialog = reactive({
   visible: false,
@@ -550,7 +550,7 @@ const createDialog = reactive({
     items: [],
     subTotal: 0,
     taxAmount: 0,
-  } as CreateAdminInvoiceRequest,
+  } as any,
 });
 
 // ==================== COMPUTED ====================
@@ -623,7 +623,7 @@ async function searchPurchaseInvoices(query: string) {
       size: 10,
       search: query,
     });
-    purchaseInvoiceOptions.value = result.records || [];
+    purchaseInvoiceOptions.value = result.items || [];
   } catch {
     purchaseInvoiceOptions.value = [];
   } finally {
@@ -652,7 +652,7 @@ function onPurchaseInvoiceSelected(invoiceId: number | undefined) {
 }
 
 // ==================== DIALOG ACTIONS ====================
-function handleView(row: InvoiceRow) {
+function handleView(row: any) {
   dialog.visible = true;
   dialog.readonly = true;
   dialog.title = `Chi tiết hóa đơn ${row.invoiceNumber}`;
@@ -677,7 +677,7 @@ function handleView(row: InvoiceRow) {
   };
 }
 
-const handlePrintInvoice = (invoice: InvoiceRow) => {
+const handlePrintInvoice = (invoice: any) => {
   window.print();
 };
 
@@ -757,14 +757,19 @@ function getStatusLabel(status: string) {
   return map[status] || status;
 }
 
-function getStatusTagType(status: string) {
-  const map: Record<string, string> = {
+function getStatusTagType(
+  status: string,
+): "primary" | "success" | "warning" | "info" | "danger" {
+  const map: Record<
+    string,
+    "primary" | "success" | "warning" | "info" | "danger"
+  > = {
     pending: "warning",
     completed: "success",
     processing: "info",
     cancelled: "danger",
   };
-  return map[status] || "";
+  return map[status] || "info";
 }
 
 function getPaymentLabel(method: string) {
@@ -776,13 +781,18 @@ function getPaymentLabel(method: string) {
   return map[method] || method;
 }
 
-function getPaymentTagType(method: string) {
-  const map: Record<string, string> = {
+function getPaymentTagType(
+  method: string,
+): "primary" | "success" | "warning" | "info" | "danger" {
+  const map: Record<
+    string,
+    "primary" | "success" | "warning" | "info" | "danger"
+  > = {
     transfer: "primary",
     cash: "success",
     installment: "warning",
   };
-  return map[method] || "";
+  return map[method] || "info";
 }
 
 // ==================== LIFECYCLE ====================
@@ -826,15 +836,19 @@ html.dark {
     :deep(.el-dialog__footer) {
       border-color: #2c2f36;
     }
+
     .text-gray-800 {
       color: #f8fafc;
     }
+
     .text-gray-700 {
       color: #cbd5e1;
     }
+
     .text-gray-600 {
       color: #94a3b8;
     }
+
     .text-gray-500 {
       color: #64748b;
     }

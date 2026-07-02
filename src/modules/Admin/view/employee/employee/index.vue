@@ -313,7 +313,7 @@ import { searchItems, columns } from "@/modules/Admin/logic/employee";
 const searchForm = ref({ name: "", jobTitle: "", email: "" });
 const columnChecks = ref([...columns]);
 
-const dynamicSearchItems = ref([...searchItems]);
+const dynamicSearchItems = ref<any[]>([...searchItems]);
 
 const getInitial = (name: string) => name?.charAt(0).toUpperCase() || "?";
 

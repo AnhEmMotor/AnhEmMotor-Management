@@ -169,6 +169,60 @@ export const marketingMenu: AppRouteRecord[] = [
               icon: "ri:git-commit-line",
             },
           },
+          {
+            path: "/customer/pipeline",
+            name: "CustomerPipeline",
+            component: "/Marketing/view/customer/pipeline/index",
+            meta: {
+              title: "menus.marketing.customerPipeline",
+              icon: "ri:git-repository-line",
+              keepAlive: true,
+            },
+          },
+          {
+            path: "/customer/workshop",
+            name: "CustomerWorkshop",
+            component: "/Marketing/view/customer/workshop/index",
+            meta: {
+              title: "menus.marketing.customerWorkshop",
+              icon: "ri:tools-line",
+              keepAlive: true,
+            },
+          },
+          {
+            path: "/customer/workshop/create",
+            name: "CustomerWorkshopCreate",
+            component: "/Marketing/view/customer/workshop/repair-order-form",
+            meta: {
+              title: "menus.marketing.customerWorkshop",
+              isHide: true,
+              isHideTab: true,
+              keepAlive: true,
+              activePath: "/customer/workshop",
+            },
+          },
+          {
+            path: "/customer/workshop/repair/:id",
+            name: "CustomerWorkshopDetail",
+            component: "/Marketing/view/customer/workshop/repair-order-detail",
+            meta: {
+              title: "menus.marketing.customerWorkshop",
+              isHide: true,
+              isHideTab: true,
+              keepAlive: true,
+              activePath: "/customer/workshop",
+            },
+          },
+          {
+            path: "/customer/contact",
+            name: "CustomerContactSupport",
+            component: "/Marketing/view/customer/contact/index",
+            meta: {
+              title: "menus.marketing.customerContact",
+              icon: "ri:customer-service-2-line",
+              keepAlive: true,
+            },
+          },
         ],
       },
       {
@@ -178,6 +232,16 @@ export const marketingMenu: AppRouteRecord[] = [
         meta: {
           title: "menus.marketing.booking",
           icon: "ri:calendar-event-line",
+          keepAlive: true,
+        },
+      },
+      {
+        path: "conversion",
+        name: "MarketingConversion",
+        component: "/Marketing/view/conversion/index",
+        meta: {
+          title: "menus.marketing.conversion",
+          icon: "ri:magic-line",
           keepAlive: true,
         },
       },

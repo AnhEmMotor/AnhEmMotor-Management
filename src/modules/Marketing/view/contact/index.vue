@@ -1,21 +1,23 @@
 <template>
-  <div class="contact-page min-h-full font-inter pb-6">
-    <div class="bg-white border-b border-slate-200 px-6 py-4 shadow-sm">
+  <div class="contact-page min-h-full font-inter dark:text-slate-100 pb-6">
+    <div
+      class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4 shadow-sm"
+    >
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
           <div
-            class="size-11 rounded-xl bg-[#001529] flex-cc text-white shadow-lg shrink-0"
+            class="size-11 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex-cc text-slate-800 dark:text-white shadow-sm shrink-0"
           >
             <ArtSvgIcon icon="ri:message-2-line" class="text-2xl" />
           </div>
           <div>
             <h1
-              class="m-0 text-xl font-black tracking-tight text-slate-900 leading-none"
+              class="m-0 text-xl font-black tracking-tight text-slate-900 dark:text-white leading-none"
             >
               {{ $t("contact.title") }}
             </h1>
             <p
-              class="m-0 text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em] mt-1.5"
+              class="m-0 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.15em] mt-1.5"
             >
               {{ $t("contact.subtitle") }}
             </p>
@@ -640,6 +642,579 @@
             </div>
           </div>
         </ElTabPane>
+
+        <!-- TAB 3: HỒ SƠ ỨNG VIÊN -->
+        <ElTabPane :label="$t('contact.tabCandidate')" name="candidate">
+          <div class="split-layout">
+            <div class="list-panel">
+              <div class="list-header">
+                <ElInput
+                  v-model="searchQuery"
+                  :placeholder="$t('contact.searchPlaceholder')"
+                  class="flex-1"
+                  clearable
+                  @input="onSearch"
+                >
+                  <template #prefix>
+                    <ArtSvgIcon icon="ri:search-2-line" />
+                  </template>
+                </ElInput>
+                <ElSelect
+                  v-model="statusFilter"
+                  :placeholder="$t('contact.allStatus')"
+                  clearable
+                  style="width: 160px"
+                  @change="onFilterChange"
+                >
+                  <ElOption
+                    v-for="s in CandidateStatuses"
+                    :key="s"
+                    :label="$t('contact.candidateStatus.' + s)"
+                    :value="s"
+                  />
+                </ElSelect>
+              </div>
+
+              <ElTable
+                :data="tableData"
+                :loading="contactStore.loading"
+                class="contact-table"
+                :header-cell-style="tableHeaderStyle"
+                @row-click="selectItem"
+              >
+                <ElTableColumn
+                  prop="fullName"
+                  :label="$t('contact.columnCustomer')"
+                  min-width="140"
+                  show-overflow-tooltip
+                />
+                <ElTableColumn
+                  prop="appliedPosition"
+                  :label="$t('contact.columnPosition')"
+                  min-width="140"
+                  show-overflow-tooltip
+                />
+                <ElTableColumn label="Tệp CV" width="100">
+                  <template #default="{ row }">
+                    <ElButton
+                      v-if="(row as Contact.JobApplication).cvFileUrl"
+                      type="primary"
+                      link
+                      size="small"
+                      @click.stop="
+                        downloadCvUrl((row as Contact.JobApplication).cvFileUrl)
+                      "
+                    >
+                      <ArtSvgIcon
+                        icon="ri:file-pdf-2-fill"
+                        class="text-red-500 mr-1"
+                      />CV
+                    </ElButton>
+                    <span v-else class="text-[11px] text-slate-300">-</span>
+                  </template>
+                </ElTableColumn>
+                <ElTableColumn :label="$t('contact.columnStatus')" width="120">
+                  <template #default="{ row }">
+                    <span class="badge" :class="statusStyle(row.status)">{{
+                      $t("contact.candidateStatus." + row.status)
+                    }}</span>
+                  </template>
+                </ElTableColumn>
+              </ElTable>
+
+              <div class="pagination-bar">
+                <span class="text-[11px] text-slate-400 font-bold">{{
+                  $t("contact.totalCount", { count: contactStore.totalCount })
+                }}</span>
+                <ElPagination
+                  :current-page="contactStore.page"
+                  :page-sizes="[10, 20, 50]"
+                  :page-size="contactStore.pageSize"
+                  :total="contactStore.totalCount"
+                  layout="total, sizes, prev, pager, next"
+                  small
+                  @current-change="contactStore.changePage"
+                  @size-change="contactStore.changePageSize"
+                />
+              </div>
+            </div>
+
+            <div class="detail-panel">
+              <div v-if="!contactStore.hasActive" class="empty-state">
+                <ArtSvgIcon
+                  icon="ri:file-list-3-line"
+                  class="text-5xl text-slate-200 mb-3"
+                />
+                <p class="text-sm text-slate-400 font-bold">
+                  {{ $t("contact.noDetail") }}
+                </p>
+              </div>
+              <div v-else class="detail-content flex flex-col h-full">
+                <!-- Header -->
+                <div
+                  class="detail-header p-5 border-b border-slate-100 bg-[#FAFCFF]"
+                >
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                      <span
+                        class="text-[10px] font-black text-slate-300 uppercase tracking-widest"
+                        >#{{ activeItem?.id }}</span
+                      >
+                      <span
+                        class="badge"
+                        :class="statusStyle(activeItem!.status)"
+                        >{{
+                          $t("contact.candidateStatus." + activeItem!.status)
+                        }}</span
+                      >
+                    </div>
+                    <ElButton
+                      size="small"
+                      type="danger"
+                      text
+                      @click="closeDetail"
+                      >{{ $t("contact.closeBtn") }}</ElButton
+                    >
+                  </div>
+                  <h2 class="text-base font-black text-slate-800 mt-2">
+                    {{ activeItemFullName }}
+                  </h2>
+                  <div
+                    class="flex items-center gap-3 mt-1 text-xs text-slate-500"
+                  >
+                    <span class="text-blue-600 font-bold">{{
+                      activeItemEmail
+                    }}</span>
+                    <span class="text-slate-300">|</span>
+                    <span>{{ activeItemPhone }}</span>
+                    <span class="text-slate-300">|</span>
+                    <span class="font-semibold text-slate-700">{{
+                      activeItemAppliedPosition
+                    }}</span>
+                  </div>
+                </div>
+
+                <!-- Scrollable Content -->
+                <div class="flex-1 overflow-y-auto p-5 space-y-5">
+                  <!-- CV File and Preview Section -->
+                  <div>
+                    <h4
+                      class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2"
+                    >
+                      Hồ sơ ứng viên (CV)
+                    </h4>
+
+                    <div v-if="cvFileUrl">
+                      <!-- File Header / Download bar -->
+                      <div
+                        class="cv-file-header flex items-center justify-between p-3 bg-slate-100 dark:bg-slate-800 rounded-t-xl border border-slate-200 dark:border-slate-700 border-b-0"
+                      >
+                        <div
+                          class="flex items-center gap-2 overflow-hidden mr-3"
+                        >
+                          <ArtSvgIcon
+                            :icon="
+                              isLegacyCv
+                                ? 'ri:error-warning-line'
+                                : isCvPdf
+                                  ? 'ri:file-pdf-2-fill'
+                                  : isCvImage
+                                    ? 'ri:image-2-fill'
+                                    : isCvWord
+                                      ? 'ri:file-word-2-fill'
+                                      : 'ri:file-line'
+                            "
+                            class="text-lg flex-shrink-0"
+                            :class="{
+                              'text-amber-500': isLegacyCv,
+                              'text-red-500': !isLegacyCv && isCvPdf,
+                              'text-blue-500': !isLegacyCv && isCvWord,
+                              'text-emerald-500': !isLegacyCv && isCvImage,
+                              'text-slate-500':
+                                !isLegacyCv &&
+                                !isCvPdf &&
+                                !isCvWord &&
+                                !isCvImage,
+                            }"
+                          />
+                          <span
+                            class="text-xs font-bold text-slate-700 dark:text-slate-200 truncate"
+                            :title="cvFileName"
+                          >
+                            {{ cvFileName }}
+                            <span
+                              v-if="isLegacyCv"
+                              class="text-amber-600 font-semibold ml-1"
+                              >(File cũ - Không có trên server)</span
+                            >
+                          </span>
+                        </div>
+                        <ElButton
+                          v-if="!isLegacyCv"
+                          type="primary"
+                          size="small"
+                          class="flex-shrink-0"
+                          @click="downloadCvUrl(cvFileUrl)"
+                        >
+                          <ArtSvgIcon icon="ri:download-2-line" class="mr-1" />
+                          Tải xuống CV
+                        </ElButton>
+                      </div>
+
+                      <!-- Preview Frame -->
+                      <div
+                        class="border border-slate-200 dark:border-slate-700 rounded-b-xl overflow-hidden h-[450px] bg-slate-50 dark:bg-slate-900 shadow-inner flex items-center justify-center p-2"
+                      >
+                        <!-- Legacy CV warning card -->
+                        <div
+                          v-if="isLegacyCv"
+                          class="flex flex-col items-center justify-center text-center p-6 text-slate-500 dark:text-slate-400"
+                        >
+                          <ArtSvgIcon
+                            icon="ri:error-warning-line"
+                            class="text-5xl text-amber-500 mb-3"
+                          />
+                          <p
+                            class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-1"
+                          >
+                            Hồ sơ CV cũ (Chưa tải lên)
+                          </p>
+                          <p
+                            class="text-xs text-slate-400 dark:text-slate-500 max-w-xs leading-relaxed"
+                          >
+                            Hồ sơ này được tạo trước khi hệ thống tải tệp CV
+                            hoạt động. Máy chủ chỉ lưu tên file và không chứa
+                            tệp tin vật lý để xem trước hoặc tải xuống.
+                          </p>
+                        </div>
+
+                        <!-- Mock CV Preview for Demo/Mock Data -->
+                        <div
+                          v-else-if="isMockCv"
+                          class="w-full h-full bg-white dark:bg-[#0f172a] p-6 overflow-y-auto font-inter text-slate-800 dark:text-slate-100 flex flex-col gap-4 text-left shadow-sm rounded-lg border dark:border-slate-800"
+                        >
+                          <div
+                            class="border-b-2 border-slate-900 dark:border-slate-700 pb-4"
+                          >
+                            <h1
+                              class="text-xl font-extrabold uppercase tracking-wide m-0 text-slate-900"
+                            >
+                              {{ (activeItem as any)?.fullName }}
+                            </h1>
+                            <p
+                              class="text-xs font-semibold text-blue-600 mt-1 uppercase tracking-wider"
+                            >
+                              {{ (activeItem as any)?.appliedPosition }}
+                            </p>
+                            <div
+                              class="flex flex-wrap gap-x-4 gap-y-1 text-slate-500 text-[10px] font-bold mt-2"
+                            >
+                              <span
+                                >Email: {{ (activeItem as any)?.email }}</span
+                              >
+                              <span>•</span>
+                              <span
+                                >SĐT:
+                                {{ (activeItem as any)?.phoneNumber }}</span
+                              >
+                            </div>
+                          </div>
+
+                          <div>
+                            <h3
+                              class="text-xs font-bold text-slate-900 uppercase tracking-widest border-l-4 border-blue-500 pl-2 mb-2"
+                            >
+                              Mục tiêu nghề nghiệp
+                            </h3>
+                            <p
+                              class="text-[11px] leading-relaxed text-slate-600"
+                            >
+                              {{
+                                (activeItem as any)?.coverLetter ||
+                                "Mong muốn cống hiến năng lực, kinh nghiệm tích lũy để cùng đồng hành phát triển bền vững cùng thương hiệu."
+                              }}
+                            </p>
+                          </div>
+
+                          <div>
+                            <h3
+                              class="text-xs font-bold text-slate-900 uppercase tracking-widest border-l-4 border-blue-500 pl-2 mb-2"
+                            >
+                              Kinh nghiệm làm việc
+                            </h3>
+                            <div class="flex flex-col gap-3">
+                              <div>
+                                <div
+                                  class="flex justify-between items-baseline"
+                                >
+                                  <span
+                                    class="text-xs font-extrabold text-slate-800"
+                                    >Cửa hàng xe máy & dịch vụ bảo dưỡng
+                                    lớn</span
+                                  >
+                                  <span
+                                    class="text-[10px] text-slate-400 font-bold"
+                                    >2021 - Nay</span
+                                  >
+                                </div>
+                                <p
+                                  class="text-[10px] text-slate-500 font-semibold mb-1"
+                                >
+                                  Thợ chính / Tư vấn viên cao cấp
+                                </p>
+                                <ul
+                                  class="list-disc pl-4 text-[10px] text-slate-600 leading-relaxed m-0 flex flex-col gap-0.5"
+                                >
+                                  <li>
+                                    Trực tiếp kiểm tra, khắc phục sự cố kỹ thuật
+                                    phức tạp cho khách hàng.
+                                  </li>
+                                  <li>
+                                    Chăm sóc, tư vấn dịch vụ bảo dưỡng tối ưu và
+                                    tăng độ bền bỉ cho xe.
+                                  </li>
+                                  <li>
+                                    Phối hợp cùng đội ngũ vận hành nâng cao
+                                    doanh số và trải nghiệm dịch vụ.
+                                  </li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div>
+                            <h3
+                              class="text-xs font-bold text-slate-900 uppercase tracking-widest border-l-4 border-blue-500 pl-2 mb-2"
+                            >
+                              Học vấn & Chứng chỉ
+                            </h3>
+                            <div class="flex justify-between items-baseline">
+                              <span
+                                class="text-xs font-extrabold text-slate-800"
+                                >Trường Cao đẳng Công nghệ / Đào tạo chuyên
+                                ngành</span
+                              >
+                              <span class="text-[10px] text-slate-400 font-bold"
+                                >2018 - 2021</span
+                              >
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Image Preview -->
+                        <img
+                          v-else-if="isCvImage"
+                          :src="getFullCvUrl(cvFileUrl)"
+                          class="max-w-full max-h-full object-contain rounded-lg shadow-sm"
+                          alt="CV Preview"
+                        />
+
+                        <!-- PDF Preview -->
+                        <iframe
+                          v-else-if="isCvPdf"
+                          :src="getFullCvUrl(cvFileUrl)"
+                          class="w-full h-full border-none rounded-lg"
+                        />
+
+                        <!-- Word Document Placeholder -->
+                        <div
+                          v-else-if="isCvWord"
+                          class="flex flex-col items-center justify-center text-center p-6 text-slate-500"
+                        >
+                          <ArtSvgIcon
+                            icon="ri:file-word-2-line"
+                            class="text-5xl text-blue-500 mb-3"
+                          />
+                          <p class="text-sm font-bold text-slate-700 mb-1">
+                            Tệp Word (.docx/.doc)
+                          </p>
+                          <p class="text-xs text-slate-400 max-w-xs mb-4">
+                            Không hỗ trợ xem trực tiếp tệp Word trên trình
+                            duyệt. Vui lòng tải xuống để xem chi tiết.
+                          </p>
+                          <ElButton
+                            type="primary"
+                            plain
+                            size="default"
+                            @click="downloadCvUrl(cvFileUrl)"
+                          >
+                            <ArtSvgIcon
+                              icon="ri:download-2-line"
+                              class="mr-1.5"
+                            />
+                            Tải về máy tính
+                          </ElButton>
+                        </div>
+
+                        <!-- Generic File Placeholder -->
+                        <div
+                          v-else
+                          class="flex flex-col items-center justify-center text-center p-6 text-slate-500"
+                        >
+                          <ArtSvgIcon
+                            icon="ri:file-line"
+                            class="text-5xl text-slate-400 mb-3"
+                          />
+                          <p class="text-sm font-bold text-slate-700 mb-1">
+                            Tệp đính kèm
+                          </p>
+                          <p class="text-xs text-slate-400 max-w-xs mb-4">
+                            Không hỗ trợ xem trực tiếp định dạng này. Vui lòng
+                            tải xuống để xem chi tiết.
+                          </p>
+                          <ElButton
+                            type="primary"
+                            plain
+                            size="default"
+                            @click="downloadCvUrl(cvFileUrl)"
+                          >
+                            <ArtSvgIcon
+                              icon="ri:download-2-line"
+                              class="mr-1.5"
+                            />
+                            Tải về máy tính
+                          </ElButton>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div
+                      v-else
+                      class="flex flex-col items-center justify-center py-12 bg-slate-50 border border-dashed border-slate-200 rounded-xl text-slate-400"
+                    >
+                      <ArtSvgIcon
+                        icon="ri:file-pdf-2-line"
+                        class="text-3xl mb-1.5 text-slate-300"
+                      />
+                      <p class="text-xs font-semibold">
+                        Ứng viên chưa tải lên tệp CV
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Cover Letter -->
+                  <div>
+                    <h4
+                      class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2"
+                    >
+                      Thư giới thiệu
+                    </h4>
+                    <div
+                      class="bg-slate-50 border border-slate-100 rounded-xl p-4 shadow-sm"
+                    >
+                      <p
+                        class="text-xs text-slate-600 leading-relaxed m-0 whitespace-pre-line font-medium"
+                      >
+                        {{
+                          activeItemCoverLetter || "Không có thư giới thiệu."
+                        }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Footer (Sticky Action & Internal Notes) -->
+                <div
+                  class="border-t border-slate-100 p-5 bg-slate-50 space-y-4"
+                >
+                  <!-- Process Actions -->
+                  <div>
+                    <h4
+                      class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2"
+                    >
+                      Quy trình xử lý hồ sơ
+                    </h4>
+                    <div class="flex gap-2">
+                      <ElButton
+                        v-if="activeItem && activeItem.status !== 'Interview'"
+                        type="primary"
+                        class="flex-1 font-bold text-xs uppercase"
+                        style="background: #3b82f6; border-color: #3b82f6"
+                        @click="handleStatus('Interview')"
+                      >
+                        <ArtSvgIcon
+                          icon="ri:calendar-event-line"
+                          class="mr-1"
+                        />Hẹn phỏng vấn
+                      </ElButton>
+                      <ElButton
+                        v-if="activeItem && activeItem.status !== 'Offer'"
+                        type="success"
+                        class="flex-1 font-bold text-xs uppercase"
+                        style="background: #10b981; border-color: #10b981"
+                        @click="handleStatus('Offer')"
+                      >
+                        <ArtSvgIcon
+                          icon="ri:checkbox-circle-line"
+                          class="mr-1"
+                        />Nhận việc (Offer)
+                      </ElButton>
+                      <ElButton
+                        v-if="activeItem && activeItem.status !== 'Rejected'"
+                        type="danger"
+                        class="flex-1 font-bold text-xs uppercase"
+                        style="background: #ef4444; border-color: #ef4444"
+                        @click="handleStatus('Rejected')"
+                      >
+                        <ArtSvgIcon
+                          icon="ri:close-circle-line"
+                          class="mr-1"
+                        />Từ chối
+                      </ElButton>
+                      <ElButton
+                        size="small"
+                        plain
+                        class="font-bold text-[10px] w-28 shrink-0"
+                        @click="openAssignDialog"
+                      >
+                        <ArtSvgIcon
+                          icon="ri:user-settings-line"
+                          class="mr-1"
+                        />Phân công
+                      </ElButton>
+                    </div>
+                  </div>
+
+                  <!-- Inline Internal Notes -->
+                  <div class="pt-2 border-t border-slate-200/60">
+                    <div class="flex items-center justify-between mb-2">
+                      <h4
+                        class="text-xs font-bold text-indigo-500 uppercase tracking-wider m-0"
+                      >
+                        {{ $t("contact.internalNote") }}
+                      </h4>
+                      <span class="text-[10px] text-slate-400 italic"
+                        >Chỉ hiển thị với nhân viên điều hành</span
+                      >
+                    </div>
+                    <div class="flex gap-2 items-start">
+                      <ElInput
+                        v-model="noteDraft"
+                        type="textarea"
+                        :rows="2"
+                        placeholder="Nhập đánh giá nội bộ..."
+                        class="flex-1 text-xs"
+                        resize="none"
+                      />
+                      <ElButton
+                        type="primary"
+                        class="font-bold text-xs"
+                        style="
+                          height: 50px;
+                          background: #4f46e5;
+                          border-color: #4f46e5;
+                        "
+                        @click="saveNote"
+                        >Lưu</ElButton
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ElTabPane>
       </ElTabs>
     </div>
 
@@ -788,6 +1363,14 @@ const statusStyle = (status: string) => {
 const cvFileUrl = computed(
   () => (activeItem.value as Contact.JobApplication)?.cvFileUrl ?? "",
 );
+const isMockCv = computed(() => {
+  if (!cvFileUrl.value) return false;
+  return (
+    cvFileUrl.value.includes("cv-nguyen-van-hung.pdf") ||
+    cvFileUrl.value.includes("cv-tran-minh-tam.pdf") ||
+    cvFileUrl.value.includes("cv-le-thi-mai.pdf")
+  );
+});
 const isLegacyCv = computed(() => {
   if (!cvFileUrl.value) return false;
   return (

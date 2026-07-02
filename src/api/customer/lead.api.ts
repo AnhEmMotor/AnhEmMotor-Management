@@ -20,15 +20,24 @@ export interface Lead {
   isVerified: boolean;
   tier: string;
   points: number;
+  saleId?: number | null;
   assignedToId?: string | null;
   assignedToName?: string | null;
   createdAt: string;
-  activities?: {
-    id: number;
-    activityType: string;
-    description: string;
-    createdAt: string;
-  }[];
+  activities?: LeadActivity[];
+}
+
+export interface LeadActivity {
+  id: number;
+  activityType: string;
+  description: string;
+  createdAt: string;
+}
+
+export interface LeadPipelineGroup {
+  status: string;
+  statusDisplayName: string;
+  leads: Lead[];
 }
 
 export interface LeadListParams {
@@ -62,6 +71,12 @@ export function fetchUpdateLead(id: number, data: Partial<Lead>) {
   return request.put<number>({
     url: `/api/v1/Lead/${id}`,
     data,
+  });
+}
+
+export function fetchGetLeadPipeline() {
+  return request.get<LeadPipelineGroup[]>({
+    url: "/api/v1/Lead/pipeline",
   });
 }
 
@@ -125,13 +140,6 @@ export interface Profile360Data {
   careReminders: CareReminder[];
   timelineEvents: TimelineEvent[];
   summary: Profile360Summary;
-}
-
-export interface LeadActivity {
-  id: number;
-  activityType: string;
-  description: string;
-  createdAt: string;
 }
 
 export interface OutputSummary {

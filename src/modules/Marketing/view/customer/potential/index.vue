@@ -1,372 +1,411 @@
 <template>
-  <div class="customer-potential-page">
-    <header class="page-header">
-      <div>
-        <h2>
-          <ArtSvgIcon icon="ri:user-star-line" />
-          Khách hàng tiềm năng
-        </h2>
-        <p>Quản lý lead, giao Sale và mở hồ sơ 360</p>
-      </div>
-      <ElButton type="primary" @click="refreshData">
-        <ArtSvgIcon icon="ri:refresh-line" />
-        Tải lại
-      </ElButton>
-    </header>
+  <div class="lead-management flex flex-col gap-5 pb-8">
+    <div class="page-header flex items-center justify-between">
+      <h2
+        class="m-0 text-2xl font-black text-gray-800 dark:text-slate-100 tracking-tight flex items-center gap-2"
+      >
+        <ArtSvgIcon icon="ri:user-star-line" class="text-red-500" />
+        Khách hàng tiềm năng
+      </h2>
+    </div>
 
-    <section class="kpi-grid">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <ArtStatsCard
-        title="Tổng lead"
+        title="Tổng khách tiềm năng"
         :count="pagination.total"
-        description="Số lead đang quản lý"
+        description="Quy mô tệp khách hiện có"
         icon="ri:team-line"
-        iconStyle="bg-gradient-to-br from-blue-500 to-blue-600"
+        iconStyle="bg-gradient-to-br from-blue-500 to-blue-600 shadow-blue-100"
+      />
+      <ArtStatsCard
+        title="Đang chăm sóc"
+        :count="
+          data.filter(
+            (i) =>
+              i.status !== 'New' && i.status !== 'Lost' && i.status !== 'Won',
+          ).length
+        "
+        description="Khối lượng công việc của Sale"
+        icon="ri:customer-service-2-line"
+        iconStyle="bg-gradient-to-br from-orange-400 to-orange-500 shadow-orange-100"
       />
       <ArtStatsCard
         title="Lead nóng"
-        :count="hotLeadCount"
-        description="Cần ưu tiên chăm sóc"
+        :count="data.filter((i) => getPriority(i).level === 3).length"
+        description="Khách cần ưu tiên xử lý ngay"
         icon="ri:fire-line"
-        iconStyle="bg-gradient-to-br from-red-500 to-red-600"
+        iconStyle="bg-gradient-to-br from-red-500 to-red-600 shadow-red-100"
       />
       <ArtStatsCard
-        title="Đã giao Sale"
-        :count="assignedCount"
-        description="Lead có người phụ trách"
-        icon="ri:user-follow-line"
-        iconStyle="bg-gradient-to-br from-emerald-500 to-emerald-600"
-      />
-      <ArtStatsCard
-        title="Mới hôm nay"
-        :count="todayCount"
-        description="Lead phát sinh trong ngày"
+        title="Mới trong ngày"
+        :count="data.filter((i) => isToday(i.createdAt)).length"
+        description="Cơ hội mới từ Web/Facebook"
         icon="ri:user-add-line"
-        iconStyle="bg-gradient-to-br from-amber-500 to-orange-500"
+        iconStyle="bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-emerald-100"
       />
-    </section>
+    </div>
 
-    <section class="filter-bar">
+    <div
+      class="search-bar-wrapper bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800 p-2"
+    >
       <ArtSearchBar
         v-model="searchModel"
         :items="searchItems"
-        :label-width="110"
+        :label-width="120"
         :span="8"
         :show-expand="true"
         @search="handleSearch"
         @reset="handleReset"
       />
-    </section>
+    </div>
 
-    <section class="lead-list" v-loading="loading">
-      <ElEmpty
-        v-if="!loading && data.length === 0"
-        description="Chưa có lead phù hợp"
-      />
-
-      <article v-for="lead in data" :key="lead.id" class="lead-card">
+    <div class="content-section" v-loading="loading">
+      <div v-if="data.length > 0" class="flex flex-col gap-4">
         <div
-          class="lead-score"
-          :style="{ backgroundColor: getPriority(lead).color }"
+          v-for="lead in data"
+          :key="lead.id"
+          class="lead-row-card group bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 transition-all duration-300 flex items-center hover:border-red-200 dark:hover:border-red-900"
+          :class="{
+            'is-selected': selectedIds.includes(lead.id),
+            'is-critical': isCriticalWait(lead),
+          }"
         >
-          <ArtSvgIcon :icon="getPriority(lead).icon" />
-          <span>{{ getPriority(lead).label }}</span>
-        </div>
-
-        <div class="lead-main">
-          <div class="lead-title-row">
-            <h3>{{ lead.fullName || "Chưa có tên" }}</h3>
-            <ElTag :type="getLeadStatusType(lead.status)" effect="plain">
-              {{ getLeadStatusLabel(lead.status) }}
-            </ElTag>
-          </div>
-          <div class="lead-meta">
-            <span>{{ lead.phoneNumber || "-" }}</span>
-            <span>{{ lead.source || "-" }}</span>
-            <span>{{ lead.interestedVehicle || "Chưa chọn xe" }}</span>
-          </div>
-          <p class="lead-note">{{ getLastActivity(lead) }}</p>
-        </div>
-
-        <div class="lead-actions">
-          <ElSelect
-            :model-value="lead.assignedToId || null"
-            placeholder="Giao Sale"
-            clearable
-            filterable
-            @change="
-              (saleId: string | null) => handleAssignSingle(lead.id, saleId)
-            "
+          <div
+            class="px-5 flex-cc border-r border-gray-50 dark:border-slate-800 h-full min-h-[100px]"
           >
-            <ElOption
-              v-for="sale in salesList"
-              :key="sale.id"
-              :label="sale.name"
-              :value="sale.id"
+            <ElCheckbox
+              :model-value="selectedIds.includes(lead.id)"
+              @change="toggleSelect(lead.id)"
+              size="large"
             />
-          </ElSelect>
-          <ElButton type="primary" plain @click="openProfile(lead.id)">
-            <ArtSvgIcon icon="ri:eye-line" />
-            Hồ sơ 360
-          </ElButton>
-        </div>
-      </article>
-    </section>
+          </div>
 
-    <footer class="pagination-row">
-      <ElPagination
-        background
-        layout="sizes, prev, pager, next, total"
-        :current-page="pagination.current"
-        :page-size="pagination.size"
-        :total="pagination.total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
-    </footer>
+          <div class="flex flex-1 items-center p-5 gap-6">
+            <div class="priority-column flex-shrink-0 relative">
+              <div v-if="isNeglected(lead)" class="neglected-ribbon">
+                Chăm sóc chậm
+              </div>
+              <div class="flex flex-col items-center gap-1.5">
+                <div
+                  class="priority-badge flex flex-col items-center justify-center text-white font-black"
+                  :class="{ blinking: isCriticalWait(lead) }"
+                  :style="{ backgroundColor: getPriority(lead).color }"
+                >
+                  <ArtSvgIcon :icon="getPriority(lead).icon" class="text-xl" />
+                  <span class="text-[10px] tracking-tighter uppercase">{{
+                    getPriority(lead).label
+                  }}</span>
+                </div>
+                <div
+                  class="flex items-center gap-1 text-[10px] font-bold"
+                  :class="
+                    dayjs().diff(dayjs(lead.createdAt), 'hour') >= 24
+                      ? 'text-red-500'
+                      : 'text-gray-400'
+                  "
+                >
+                  <ArtSvgIcon icon="ri:time-line" />
+                  {{ getWaitTime(lead.createdAt) }}
+                </div>
+              </div>
+            </div>
+
+            <div class="identity-column flex-shrink-0 w-72">
+              <div class="flex items-center gap-4">
+                <ElAvatar
+                  :size="54"
+                  class="bg-gradient-to-tr from-gray-100 to-gray-200 dark:from-slate-800 dark:to-slate-700 text-gray-500 dark:text-slate-300 font-bold text-xl border-2 border-white dark:border-slate-900"
+                >
+                  {{ lead.fullName.charAt(0) }}
+                </ElAvatar>
+                <div class="flex flex-col gap-1">
+                  <h4
+                    class="m-0 text-gray-900 dark:text-white font-extrabold text-lg line-clamp-1"
+                  >
+                    {{ lead.fullName }}
+                  </h4>
+                  <div class="flex items-center gap-2">
+                    <span
+                      class="text-sm text-gray-500 dark:text-slate-400 font-bold"
+                    >
+                      {{ lead.phoneNumber }}
+                    </span>
+                    <div class="flex gap-1.5 ml-1">
+                      <a
+                        :href="'tel:' + lead.phoneNumber"
+                        class="size-7 bg-green-500 text-white rounded-lg flex-cc hover:bg-green-600 transition-all"
+                      >
+                        <ArtSvgIcon icon="ri:phone-fill" class="text-xs" />
+                      </a>
+                      <div
+                        class="size-7 bg-blue-500 text-white rounded-lg flex-cc hover:bg-blue-600 transition-all"
+                      >
+                        <ArtSvgIcon icon="ri:chat-1-fill" class="text-xs" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="interest-column flex-1 px-4 border-l border-r border-gray-50 dark:border-slate-800"
+            >
+              <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-2">
+                  <span
+                    class="text-base font-bold text-gray-700 dark:text-slate-200"
+                    >{{ lead.interestedVehicle || "Chưa xác định" }}</span
+                  >
+                  <ElTag
+                    v-if="lead.interestedVehicle"
+                    size="small"
+                    :type="getVehicleBrandType(lead.interestedVehicle)"
+                    effect="dark"
+                    class="rounded-md border-none px-2 uppercase font-bold text-[10px]"
+                  >
+                    {{ getBrand(lead.interestedVehicle) }}
+                  </ElTag>
+                </div>
+                <div class="flex items-center gap-1.5 text-xs">
+                  <ArtSvgIcon icon="ri:megaphone-line" class="text-red-500" />
+                  <span class="font-black text-gray-800 dark:text-slate-200"
+                    >Mega Sale 2024</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="status-column w-44 px-4 flex flex-col items-center justify-center"
+            >
+              <ElTag
+                :type="getStatusType(lead.status)"
+                class="status-tag-premium w-full"
+                effect="dark"
+              >
+                {{ getStatusLabel(lead.status) }}
+              </ElTag>
+              <div
+                class="mt-2 text-[10px] text-gray-400 dark:text-slate-500 font-bold uppercase tracking-wider italic"
+              >
+                Phễu:
+                <span class="text-gray-600 dark:text-slate-400">{{
+                  getFunnelStep(lead.status)
+                }}</span>
+              </div>
+            </div>
+
+            <div
+              class="time-column w-48 text-right pr-4 border-l border-gray-50 dark:border-slate-800"
+            >
+              <div class="flex flex-col gap-1.5 items-end">
+                <span
+                  class="text-[11px] text-gray-400 dark:text-slate-500 font-bold uppercase tracking-tighter"
+                  >Sale phụ trách</span
+                >
+                <ElSelect
+                  :model-value="lead.saleId || null"
+                  @change="(val) => handleAssignSale(lead.id, val)"
+                  size="small"
+                  class="sale-select"
+                  :class="{ 'is-unassigned': !lead.saleId }"
+                  :placeholder="!lead.saleId ? 'CHƯA BÀN GIAO' : 'Giao Sale...'"
+                >
+                  <ElOption
+                    v-for="sale in salesList"
+                    :key="sale.id"
+                    :label="sale.name"
+                    :value="sale.id"
+                  />
+                </ElSelect>
+              </div>
+            </div>
+
+            <div class="action-column flex-shrink-0">
+              <ElButton
+                type="danger"
+                circle
+                class="size-11 flex-cc shadow-lg shadow-red-100 hover:scale-110 transition-transform"
+                @click="$router.push('/Marketing/customer/profile')"
+              >
+                <ArtSvgIcon icon="ri:arrow-right-line" class="text-lg" />
+              </ElButton>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import { useRouter } from "vue-router";
-import dayjs from "dayjs";
+import { ref } from "vue";
 import { useLeadTable } from "@/modules/Marketing/logic/useLeadTable";
-import {
-  getLeadStatusLabel,
-  getLeadStatusType,
-  LEAD_STATUS_OPTIONS,
-} from "@/modules/Marketing/constants/customerCrm";
-import type { Lead } from "@/api/customer";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/vi";
+
+dayjs.extend(relativeTime);
+dayjs.locale("vi");
 
 defineOptions({ name: "CustomerPotential" });
-
-const router = useRouter();
-const searchModel = ref({});
 
 const {
   data,
   loading,
   pagination,
-  salesList,
-  getPriority,
-  handleAssignSingle,
   handleSearch,
   handleReset,
-  handleSizeChange,
-  handleCurrentChange,
-  refreshData,
+  handleAssignSale,
+  selectedIds,
+  salesList,
+  toggleSelect,
+  getPriority,
 } = useLeadTable();
+
+const searchModel = ref({});
+
+const getWaitTime = (date: string) => {
+  const diff = dayjs().diff(dayjs(date), "minute");
+  if (diff < 60) return `${diff} phút`;
+  const hours = Math.floor(diff / 60);
+  const mins = diff % 60;
+  return `${hours}h ${mins}m`;
+};
+
+const isCriticalWait = (lead: any) => {
+  const priority = getPriority(lead);
+  const diffInMinutes = dayjs().diff(dayjs(lead.createdAt), "minute");
+  return priority.level === 3 && diffInMinutes > 60;
+};
 
 const searchItems = [
   {
     key: "fullName",
-    label: "Tìm kiếm",
+    label: "Tìm kiếm nhanh",
     type: "input",
-    props: { placeholder: "Tên hoặc số điện thoại", clearable: true },
+    props: { placeholder: "Họ tên, SĐT...", clearable: true },
   },
   {
     key: "source",
-    label: "Nguồn",
+    label: "Nguồn khách",
     type: "select",
     props: {
-      placeholder: "Tất cả nguồn",
+      placeholder: "Chọn nguồn...",
       clearable: true,
       options: [
         { label: "Facebook", value: "Facebook" },
         { label: "Website", value: "Website" },
-        { label: "Showroom", value: "Showroom" },
       ],
-    },
-  },
-  {
-    key: "status",
-    label: "Trạng thái",
-    type: "select",
-    props: {
-      placeholder: "Tất cả trạng thái",
-      clearable: true,
-      options: LEAD_STATUS_OPTIONS.map((item) => ({
-        label: item.label,
-        value: item.value,
-      })),
     },
   },
 ];
 
-const hotLeadCount = computed(
-  () => data.value.filter((lead) => getPriority(lead).level === 3).length,
-);
-const assignedCount = computed(
-  () => data.value.filter((lead) => Boolean(lead.assignedToId)).length,
-);
-const todayCount = computed(
-  () =>
-    data.value.filter((lead) => dayjs(lead.createdAt).isSame(dayjs(), "day"))
-      .length,
-);
-
-const getLastActivity = (lead: Lead) => {
-  const activity = [...(lead.activities ?? [])].sort(
-    (a, b) => dayjs(b.createdAt).valueOf() - dayjs(a.createdAt).valueOf(),
-  )[0];
-  return activity?.description ?? "Chưa có ghi chú chăm sóc";
+const getStatusType = (status: string) => {
+  if (status === "New") return "info";
+  if (status === "TestDrive") return "primary";
+  return "success";
 };
 
-const openProfile = (leadId: number) => {
-  router.push(`/Marketing/customer/profile/${leadId}`);
+const getStatusLabel = (status: string) => {
+  if (status === "New") return "Mới đăng ký";
+  if (status === "TestDrive") return "Đang lái thử";
+  return "Đang tư vấn";
 };
+
+const getFunnelStep = (status: string) => {
+  if (status === "New") return "Tiếp cận";
+  return "Cân nhắc";
+};
+
+const getVehicleBrandType = (v: string) =>
+  v.toLowerCase().includes("honda") ? "danger" : "primary";
+const getBrand = (v: string) =>
+  v.toLowerCase().includes("honda") ? "Honda" : "Hãng khác";
+const isNeglected = (lead: any) =>
+  dayjs().diff(dayjs(lead.createdAt), "hour") > 24 && lead.status === "New";
+const isToday = (date: string) => dayjs(date).isSame(dayjs(), "day");
 </script>
 
 <style lang="scss" scoped>
-.customer-potential-page {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding-bottom: 24px;
-}
+.lead-management {
+  .search-bar-wrapper {
+    :deep(.el-form-item__label) {
+      font-weight: 600;
+      white-space: nowrap !important;
+    }
+  }
 
-.page-header,
-.filter-bar,
-.lead-card {
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-light);
-  border-radius: 8px;
-}
+  .lead-row-card {
+    position: relative;
 
-.page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 16px;
-}
+    &.is-critical {
+      animation: critical-blink 2s infinite;
+    }
 
-.page-header h2 {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  margin: 0;
-  font-size: 20px;
-  font-weight: 800;
-}
+    .neglected-ribbon {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      z-index: 20;
+      padding: 4px 12px;
+      font-size: 10px;
+      font-weight: 800;
+      color: white;
+      background: #ff4d4f;
+      border-radius: 6px;
+    }
 
-.page-header p {
-  margin: 4px 0 0;
-  color: var(--el-text-color-secondary);
-}
+    .priority-badge {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      align-items: center;
+      justify-content: center;
+      width: 100px;
+      height: 60px;
+      border-radius: 12px;
 
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-  gap: 12px;
-}
+      &.blinking {
+        animation: badge-blink 1s infinite;
+      }
+    }
 
-.filter-bar {
-  padding: 8px;
-}
+    .sale-select.is-unassigned {
+      :deep(.el-input__inner::placeholder) {
+        font-weight: 800;
+        color: #ef4444;
+      }
 
-.lead-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.lead-card {
-  display: grid;
-  grid-template-columns: 96px minmax(0, 1fr) minmax(240px, 320px);
-  gap: 14px;
-  align-items: center;
-  padding: 14px;
-}
-
-.lead-score {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: center;
-  justify-content: center;
-  min-height: 64px;
-  color: #fff;
-  border-radius: 8px;
-}
-
-.lead-score span {
-  font-size: 10px;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.lead-title-row,
-.lead-actions {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.lead-title-row h3 {
-  min-width: 0;
-  margin: 0;
-  overflow: hidden;
-  font-size: 16px;
-  font-weight: 800;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.lead-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 6px;
-  color: var(--el-text-color-secondary);
-  font-size: 12px;
-}
-
-.lead-note {
-  margin: 8px 0 0;
-  color: var(--el-text-color-regular);
-  font-size: 12px;
-}
-
-.lead-actions {
-  justify-content: flex-end;
-}
-
-.lead-actions .el-select {
-  min-width: 160px;
-}
-
-.pagination-row {
-  display: flex;
-  justify-content: flex-end;
-}
-
-@media (width >= 640px) {
-  .kpi-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+      :deep(.el-input__wrapper) {
+        background-color: var(--el-color-danger-light-9);
+      }
+    }
   }
 }
 
-@media (width >= 1024px) {
-  .kpi-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+@keyframes critical-blink {
+  50% {
+    background-color: var(--el-color-danger-light-9);
+    border-color: #ff4d4f;
   }
 }
 
-@media (width <= 768px) {
-  .page-header,
-  .lead-card,
-  .lead-actions {
-    align-items: stretch;
+@keyframes badge-blink {
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
   }
+}
 
-  .page-header,
-  .lead-actions {
-    flex-direction: column;
-  }
+.custom-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 
-  .lead-card {
-    grid-template-columns: 1fr;
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
   }
 }
 </style>

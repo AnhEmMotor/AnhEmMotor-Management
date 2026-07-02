@@ -115,8 +115,9 @@ const loadData = async () => {
   loading.value = true;
   try {
     const res = await kpiApi.getAll();
-    data.value = res.data;
-    pagination.total = res.data.length;
+    const dataList = (res as any).data || res || [];
+    data.value = dataList;
+    pagination.total = dataList.length;
   } catch (error) {
     console.error("Failed to load KPIs:", error);
     ElMessage.error("Không thể tải danh sách KPI");

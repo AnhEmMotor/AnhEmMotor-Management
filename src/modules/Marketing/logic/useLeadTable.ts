@@ -182,6 +182,10 @@ export function useLeadTable() {
     refreshData();
   };
 
+  const handleAssignSale = (leadId: number, saleId: any) => {
+    handleAssignSingle(leadId, saleId ? String(saleId) : null);
+  };
+
   onMounted(() => {
     fetchSalesList();
     refreshData();
@@ -196,6 +200,7 @@ export function useLeadTable() {
     handleCurrentChange,
     handleSearch,
     handleReset,
+    handleAssignSale,
     selectedIds,
     salesList,
     toggleSelect,

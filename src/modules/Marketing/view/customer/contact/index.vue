@@ -1,23 +1,28 @@
 <template>
   <div
-    class="contact-page min-h-full bg-[#F8FAFC] font-inter text-[#0F172A] pb-6"
+    class="contact-page min-h-full bg-[#F8FAFC] dark:bg-[#020617] font-inter text-[#0F172A] dark:text-[#E2E8F0] pb-6"
   >
-    <div class="bg-white border-b border-slate-200 px-6 py-4 shadow-sm">
+    <div
+      class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4 shadow-sm"
+    >
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
           <div
-            class="size-11 rounded-xl bg-[#001529] flex-cc text-white shadow-lg shrink-0"
+            class="size-11 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex-cc text-slate-800 dark:text-white shadow-sm shrink-0"
           >
-            <ArtSvgIcon icon="ri:message-2-line" class="text-2xl" />
+            <ArtSvgIcon
+              icon="ri:message-2-line"
+              class="text-2xl text-blue-500 dark:text-blue-400"
+            />
           </div>
           <div>
             <h1
-              class="m-0 text-xl font-black tracking-tight text-slate-900 leading-none"
+              class="m-0 text-xl font-black tracking-tight text-slate-900 dark:text-slate-100 leading-none"
             >
               {{ $t("contact.title") }}
             </h1>
             <p
-              class="m-0 text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em] mt-1.5"
+              class="m-0 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.15em] mt-1.5"
             >
               {{ $t("contact.subtitle") }}
             </p>
@@ -1229,18 +1234,18 @@ const handleCreate = async () => {
   .compact-textarea :deep(.el-textarea__inner) {
     padding: 12px;
     font-size: 13px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
+    background: var(--el-fill-color-blank);
+    border: 1px solid var(--el-border-color-light);
     border-radius: 12px;
 
     &:focus {
-      background: white;
+      background: var(--el-fill-color-blank);
       border-color: #3b82f6;
     }
   }
 
   .compact-input :deep(.el-input__wrapper) {
-    background: #f8fafc;
+    background: var(--el-fill-color-blank);
     border-radius: 10px;
   }
 }
@@ -1260,13 +1265,13 @@ const handleCreate = async () => {
     color: #64748b;
 
     &.is-active {
-      color: #001529;
+      color: var(--el-color-primary);
     }
   }
 
   .el-tabs__active-bar {
     height: 3px;
-    background: #001529;
+    background: var(--el-color-primary);
     border-radius: 2px;
   }
 }
@@ -1282,8 +1287,8 @@ const handleCreate = async () => {
   flex-direction: column;
   width: 40%;
   overflow: hidden;
-  background: white;
-  border: 1px solid #e2e8f0;
+  background: var(--el-fill-color-blank);
+  border: 1px solid var(--el-border-color-light);
   border-radius: 16px;
 }
 
@@ -1292,8 +1297,8 @@ const handleCreate = async () => {
   gap: 8px;
   align-items: center;
   padding: 12px 16px;
-  background: #fafbfc;
-  border-bottom: 1px solid #f1f5f9;
+  background: var(--el-fill-color-light);
+  border-bottom: 1px solid var(--el-border-color-lighter);
 }
 
 .pagination-bar {
@@ -1301,7 +1306,7 @@ const handleCreate = async () => {
   align-items: center;
   justify-content: space-between;
   padding: 10px 16px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--el-border-color-lighter);
 
   :deep(.el-pagination) {
     justify-content: flex-end;
@@ -1312,8 +1317,8 @@ const handleCreate = async () => {
 .detail-panel {
   flex: 1;
   overflow: hidden;
-  background: white;
-  border: 1px solid #e2e8f0;
+  background: var(--el-fill-color-blank);
+  border: 1px solid var(--el-border-color-light);
   border-radius: 16px;
 }
 
@@ -1334,13 +1339,13 @@ const handleCreate = async () => {
 
 .detail-header {
   padding: 20px 24px;
-  background: #fafbfc;
-  border-bottom: 1px solid #f1f5f9;
+  background: var(--el-fill-color-light);
+  border-bottom: 1px solid var(--el-border-color-lighter);
 }
 
 .section {
   padding: 16px 24px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--el-border-color-lighter);
 }
 
 .section-title {
@@ -1354,8 +1359,8 @@ const handleCreate = async () => {
 
 .content-box {
   padding: 14px 16px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: var(--el-fill-color-light);
+  border: 1px solid var(--el-border-color-light);
   border-radius: 12px;
 }
 
@@ -1364,13 +1369,13 @@ const handleCreate = async () => {
   font-size: 13px;
   font-style: italic;
   line-height: 1.7;
-  color: #334155;
+  color: var(--el-text-color-regular);
 }
 
 .note-box {
   padding: 12px 14px;
-  background: #eef2ff;
-  border: 1px solid #e0e7ff;
+  background: var(--el-color-primary-light-9);
+  border: 1px solid var(--el-color-primary-light-8);
   border-radius: 12px;
 }
 
@@ -1379,7 +1384,7 @@ const handleCreate = async () => {
   font-size: 12px;
   font-weight: 600;
   line-height: 1.5;
-  color: #4338ca;
+  color: var(--el-color-primary);
 }
 
 .actions-section {
@@ -1389,7 +1394,7 @@ const handleCreate = async () => {
 
 .reply-input :deep(.el-textarea__inner) {
   font-size: 13px;
-  background: #f8fafc;
+  background: var(--el-fill-color-blank);
   border-radius: 12px;
 }
 
@@ -1458,19 +1463,19 @@ const handleCreate = async () => {
 
 .search-input :deep(.el-input__wrapper) {
   height: 36px;
-  background: #f1f5f9;
+  background: var(--el-fill-color-light);
   border: 1px solid transparent;
   border-radius: 10px;
   box-shadow: none;
 
   &:hover {
-    border-color: #cbd5e1;
+    border-color: var(--el-border-color);
   }
 }
 
 .status-select :deep(.el-input__wrapper) {
   height: 36px;
-  background: #f1f5f9;
+  background: var(--el-fill-color-light);
   border-radius: 10px;
   box-shadow: none;
 }

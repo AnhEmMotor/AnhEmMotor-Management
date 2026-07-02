@@ -397,6 +397,7 @@ interface ReturnItem {
   returnInternalNote?: string;
   returnAction?: string;
   rejectionReason?: string;
+  returnProofImage?: string;
 }
 
 // ==================== STATE ====================

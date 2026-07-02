@@ -1,9 +1,9 @@
 <template>
   <div
-    class="article-list-page min-h-full bg-[#F8FAFC] font-inter text-[#0F172A] pb-10"
+    class="article-list-page min-h-full font-inter text-[#0F172A] dark:text-slate-100 pb-10"
   >
     <div
-      class="bg-white border-b border-slate-200 px-8 py-6 sticky top-0 z-[50] shadow-sm"
+      class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-8 py-6 sticky top-0 z-[50] shadow-sm"
     >
       <div
         class="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4"
@@ -16,9 +16,10 @@
             />
             <input
               v-model="searchVal"
+              @input="searchArticle"
               type="text"
               placeholder="Tìm kiếm theo tiêu đề bài viết...."
-              class="w-full h-11 pl-12 pr-4 bg-slate-50 border-2 border-slate-100 rounded-xl text-sm font-bold focus:border-blue-500 focus:bg-white transition-all outline-none"
+              class="w-full h-11 pl-12 pr-4 bg-slate-50 dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none"
               @keyup.enter="searchArticle"
             />
           </div>
@@ -27,9 +28,10 @@
         <div class="flex items-center gap-3 shrink-0">
           <button
             @click="toAddArticle"
-            class="h-11 px-8 bg-[#001529] text-white rounded-xl font-black text-[11px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95 flex items-center gap-2"
+            class="h-11 px-8 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center gap-2"
           >
-            <ArtSvgIcon icon="ri:add-circle-line" /> Viết bài mới
+            <ArtSvgIcon icon="ri:add-circle-line" class="text-blue-500" /> Viết
+            bài mới
           </button>
         </div>
       </div>
@@ -43,7 +45,7 @@
           v-for="item in articleList"
           :key="item.id"
           @click="toEdit(item)"
-          class="article-card cursor-pointer group bg-white border border-slate-200 rounded-[32px] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 relative"
+          class="article-card cursor-pointer group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[32px] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 relative"
         >
           <div class="absolute top-4 left-4 z-10">
             <span
@@ -89,7 +91,7 @@
               >
             </div>
             <h2
-              class="m-0 text-base font-black text-slate-800 leading-tight line-clamp-2 min-h-[3rem] group-hover:text-blue-600 transition-colors"
+              class="m-0 text-base font-black text-slate-800 dark:text-slate-200 leading-tight line-clamp-2 min-h-[3rem] group-hover:text-blue-600 transition-colors"
             >
               {{ item.title }}
             </h2>
@@ -128,7 +130,7 @@
       </div>
     </div>
 
-    <div class="flex justify-center mt-10">
+    <div v-if="total > 8" class="flex justify-center mt-10">
       <ElPagination
         background
         v-model:current-page="currentPage"
