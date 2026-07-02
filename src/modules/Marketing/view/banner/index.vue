@@ -321,7 +321,7 @@
 </template>
 
 <script setup lang="ts">
-import { Permissions } from "@/common/constants/permissions";
+import { Permissions } from "@/domain/constants/permissions";
 import { ref, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { BannerApi } from "@/api/marketing";

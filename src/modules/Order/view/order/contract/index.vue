@@ -409,7 +409,7 @@
 </template>
 
 <script setup lang="ts">
-import { Permissions } from "@/common/constants/permissions";
+import { Permissions } from "@/domain/constants/permissions";
 import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";

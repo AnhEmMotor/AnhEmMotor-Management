@@ -89,7 +89,7 @@
 </template>
 
 <script setup lang="ts">
-import { Permissions } from "@/common/constants/permissions";
+import { Permissions } from "@/domain/constants/permissions";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { Message, Key, Back } from "@element-plus/icons-vue";

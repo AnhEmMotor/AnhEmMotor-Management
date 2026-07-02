@@ -65,7 +65,7 @@ import RoleSearch from "./modules/role-search.vue";
 import RoleEditDialog from "./modules/role-edit-dialog.vue";
 import RolePermissionDialog from "./modules/role-permission-dialog.vue";
 import { ElMessageBox } from "element-plus";
-import { Permissions } from "@/common/constants/permissions";
+import { Permissions } from "@/domain/constants/permissions.ts";
 defineOptions({ name: "Role" });
 
 type RoleSearchFormParams = {

@@ -233,7 +233,7 @@
 </template>
 
 <script setup lang="ts">
-import { Permissions } from "@/common/constants/permissions";
+import { Permissions } from "@/domain/constants/permissions";
 import { computed, ref, watch, nextTick } from "vue";
 import { Plus, Picture, Download } from "@element-plus/icons-vue";
 import { useCategoryTable } from "@/modules/Order/logic/product/type/hooks/useCategoryTable";

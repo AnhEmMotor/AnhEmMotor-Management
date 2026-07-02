@@ -982,7 +982,7 @@
 </template>
 
 <script setup lang="ts">
-import { Permissions } from "@/common/constants/permissions";
+import { Permissions } from "@/domain/constants/permissions";
 import { ref, watch, computed, onMounted } from "vue";
 import { ElMessage } from "element-plus";
 import { useI18n } from "vue-i18n";

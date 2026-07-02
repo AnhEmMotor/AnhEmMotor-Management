@@ -2253,7 +2253,7 @@
 </template>
 
 <script setup lang="ts">
-import { Permissions } from "@/common/constants/permissions";
+import { Permissions } from "@/domain/constants/permissions";
 import { ref, computed, watch, onMounted } from "vue";
 import {
   Plus,

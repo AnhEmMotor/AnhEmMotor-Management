@@ -69,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import { Permissions } from "@/common/constants/permissions";
+import { Permissions } from "@/domain/constants/permissions";
 import { Plus } from "@element-plus/icons-vue";
 import { ref, reactive, onMounted } from "vue";
 import { ElMessage } from "element-plus";

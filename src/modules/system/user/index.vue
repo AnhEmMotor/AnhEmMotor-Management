@@ -66,7 +66,7 @@ import UserSearch from "./modules/user-search.vue";
 import UserDialog from "./modules/user-dialog.vue";
 import UserPasswordDialog from "./modules/user-password-dialog.vue";
 import { ElTag, ElMessageBox, ElImage } from "element-plus";
-import { Permissions } from "@/common/constants/permissions";
+import { Permissions } from "@/domain/constants/permissions.ts";
 defineOptions({ name: "User" });
 
 const dialogType = ref<"add" | "edit">("add");

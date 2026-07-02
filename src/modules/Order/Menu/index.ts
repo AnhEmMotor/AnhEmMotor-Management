@@ -1,4 +1,5 @@
 import { AppRouteRecord } from "@/types/router";
+import { Permissions } from "@/domain/constants/permissions";
 
 export const orderMenu: AppRouteRecord[] = [
   {
@@ -30,6 +31,28 @@ export const orderMenu: AppRouteRecord[] = [
               title: "Đơn đặt hàng Online",
               icon: "ri:shopping-cart-line",
               keepAlive: true,
+            },
+          },
+          {
+            path: "draft",
+            name: "OrderDraft",
+            component: "/sales/draft/index",
+            meta: {
+              title: "Phiếu tạm",
+              icon: "ri:draft-line",
+              keepAlive: true,
+              permissions: [Permissions.Order.DraftOrderManagement.View],
+            },
+          },
+          {
+            path: "order",
+            name: "OrderSalesInvoice",
+            component: "/sales/order/index",
+            meta: {
+              title: "Phiếu bán hàng",
+              icon: "ri:receipt-line",
+              keepAlive: true,
+              permissions: [Permissions.Order.SalesInvoiceManagement.View],
             },
           },
           {

@@ -339,7 +339,7 @@
 </template>
 
 <script setup lang="ts">
-import { Permissions } from "@/common/constants/permissions";
+import { Permissions } from "@/domain/constants/permissions";
 import { ref, reactive, onMounted, onActivated, onDeactivated } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { InfoFilled } from "@element-plus/icons-vue";

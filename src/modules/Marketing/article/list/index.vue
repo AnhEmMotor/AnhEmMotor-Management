@@ -146,7 +146,7 @@
 </template>
 
 <script setup lang="ts">
-import { Permissions } from "@/common/constants/permissions";
+import { Permissions } from "@/domain/constants/permissions";
 import { ref, computed, onMounted, onActivated } from "vue";
 import { useDateFormat } from "@vueuse/core";
 import { router } from "@/router";

@@ -388,7 +388,7 @@
 </template>
 
 <script setup lang="ts">
-import { Permissions } from "@/common/constants/permissions";
+import { Permissions } from "@/domain/constants/permissions";
 import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import {

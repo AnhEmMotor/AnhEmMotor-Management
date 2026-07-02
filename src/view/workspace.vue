@@ -117,7 +117,7 @@ import ArtGlobalComponent from "@/components/core/layouts/art-global-component/i
 import { useWorktabStore } from "@/application/store/worktab";
 import { onMounted, computed } from "vue";
 import { useAuth } from "@/common/composables/useAuth";
-import { Permissions } from "@/common/constants/permissions";
+import { Permissions } from "@/domain/constants/permissions";
 
 const router = useRouter();
 const { homePath } = useCommon();
