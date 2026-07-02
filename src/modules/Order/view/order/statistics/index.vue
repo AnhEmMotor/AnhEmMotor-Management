@@ -242,7 +242,7 @@ const loadStats = async () => {
   loadingStats.value = true;
   try {
     const res = await orderStatisticsApi.getStatistics();
-    const d = res as any;
+    const d = res;
     workload.value = {
       pendingOrders: d.pendingOrders,
       slaDelayed: d.slaDelayed,
@@ -255,6 +255,10 @@ const loadStats = async () => {
       ...e,
       waitTime: "",
     }));
+
+    nextTick(() => {
+      renderHourlyChart();
+    });
   } catch (error) {
     console.error("Failed to load order statistics:", error);
   } finally {
@@ -461,8 +465,8 @@ const renderMethodChart = () => {
         },
         label: { show: false },
         data: [
-          { name: "Standard", value: 60 },
-          { name: "Express", value: 40 },
+          { value: 65, name: "Giao tận nhà" },
+          { value: 35, name: "Nhận tại cửa hàng" },
         ],
       },
     ],
@@ -482,7 +486,6 @@ watch(isDark, () => {
   });
 });
 
-// --- LIFECYCLE ---
 onMounted(() => {
   startTimer();
   loadStats();
@@ -500,7 +503,3 @@ onBeforeUnmount(() => {
   methodChartInstance?.dispose();
 });
 </script>
-
-<style scoped>
-/* Scoped styles not required due to tailwind/element-plus classes */
-</style>

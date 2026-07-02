@@ -49,6 +49,18 @@
       </Transition>
     </RouterView>
 
+    <!-- Global Footer -->
+    <div
+      class="flex items-center justify-center py-6 mt-4 text-sm text-gray-500 dark:text-gray-400 gap-2"
+    >
+      <span>&copy; 2026 CÔNG NGHỆ ĐƯỢC PHÁT TRIỂN BỞI ANHEM TEAM - </span>
+      <img
+        src="@/assets/images/common/logo.webp"
+        alt="AnhEm Motor Logo"
+        class="h-8 object-contain ml-1"
+      />
+    </div>
+
     <Teleport to="body">
       <div
         v-show="showTransitionMask"

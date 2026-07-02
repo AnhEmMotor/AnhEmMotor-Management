@@ -252,7 +252,7 @@
         </div>
 
         <!-- Action Buttons -->
-        <div class="mt-4 flex justify-end gap-2 border-t pt-4">
+        <div class="mt-4 flex flex-col gap-2 border-t pt-4">
           <div
             v-if="selectedRequest.status === 'pending'"
             class="flex justify-end gap-2"
@@ -261,13 +261,48 @@
               ❌ Từ chối yêu cầu
             </ElButton>
             <ElButton
+              v-if="selectedRequest.type === 'cancel'"
               type="primary"
-              @click="handleApprove"
+              @click="handleDecision('refund')"
               :loading="actionLoading"
             >
-              ✓ Duyệt xử lý
+              ✓ Duyệt hủy & Hoàn tiền
+            </ElButton>
+            <ElTag v-else type="warning" size="large"
+              >Đang chờ kho tiếp nhận và kiểm tra</ElTag
+            >
+          </div>
+
+          <div
+            v-else-if="selectedRequest.status === 'inspecting'"
+            class="flex justify-end gap-2"
+          >
+            <ElButton
+              type="primary"
+              plain
+              :loading="actionLoading"
+              @click="handleDecision('restock')"
+            >
+              Nhập kho bán lẻ
+            </ElButton>
+            <ElButton
+              type="danger"
+              plain
+              :loading="actionLoading"
+              @click="handleDecision('defect')"
+            >
+              Cách ly chờ hủy
+            </ElButton>
+            <ElButton
+              type="warning"
+              plain
+              :loading="actionLoading"
+              @click="handleDecision('refund')"
+            >
+              Hoàn tiền
             </ElButton>
           </div>
+
           <div
             v-else
             class="text-sm text-gray-500 flex items-center justify-end w-full"
@@ -589,28 +624,43 @@ async function confirmReject() {
   }
 }
 
-async function handleApprove() {
+async function handleDecision(action: "restock" | "defect" | "refund") {
   if (!selectedRequest.value) return;
+
+  const actionMap: Record<string, string> = {
+    restock: "Nhập kho bán lẻ",
+    defect: "Cách ly chờ hủy",
+    refund: "Hoàn tiền",
+  };
+
   try {
     actionLoading.value = true;
     await ElMessageBox.confirm(
-      `Duyệt xử lý ${selectedRequest.value.rmaCode}?\n\nHệ thống sẽ tự động:\n- Kích hoạt lệnh hoàn tiền cho Kế toán\n- Tạo phiếu chờ khui hộp tại Quản lý hàng hoàn`,
-      "Xác nhận duyệt",
-      { type: "success", confirmButtonText: "Duyệt xử lý" },
+      `Xác nhận quyết định xử lý: <strong>${actionMap[action]}</strong> cho yêu cầu ${selectedRequest.value.rmaCode}?`,
+      "Xác nhận xử lý",
+      {
+        type: "success",
+        confirmButtonText: "Xác nhận",
+        dangerouslyUseHTMLString: true,
+      },
     );
+
     await inspectReturn(selectedRequest.value.id, {
-      action: "refund",
-      boxCondition: "Đã kiểm tra",
-      productCondition: "Đã kiểm tra",
-      returnInternalNote: "Đã duyệt",
+      action: action,
+      boxCondition: selectedRequest.value.boxCondition || "",
+      productCondition: selectedRequest.value.productCondition || "",
+      returnProofImage: selectedRequest.value.returnProofImage || "",
+      returnInternalNote: selectedRequest.value.returnInternalNote || "",
     });
-    selectedRequest.value.status = "inspecting";
-    ElMessage.success("Đã duyệt xử lý - Phiếu hàng hoàn đã được tạo");
+
+    selectedRequest.value.status = "completed";
+    selectedRequest.value.returnAction = action;
+    ElMessage.success(`Đã xử lý thành công: ${actionMap[action]}`);
     await fetchData();
   } catch (error) {
     if (error !== "cancel") {
       console.error(error);
-      ElMessage.error("Duyệt thất bại");
+      ElMessage.error("Xử lý thất bại");
     }
   } finally {
     actionLoading.value = false;

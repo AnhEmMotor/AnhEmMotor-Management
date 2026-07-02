@@ -70,7 +70,7 @@ export const orderMenu: AppRouteRecord[] = [
             name: "OrderProductInvoice",
             component: "/Order/view/product/invoice/index",
             meta: {
-              title: "Hóa đơn mua hàng",
+              title: "Hóa đơn bán xe",
               icon: "ri:bill-line",
               keepAlive: true,
               roles: ["Admin", "SuperAdmin"],
@@ -86,6 +86,16 @@ export const orderMenu: AppRouteRecord[] = [
               keepAlive: true,
               showBadge: true,
               showTextBadge: "1",
+            },
+          },
+          {
+            path: "returns/detail/:id?",
+            name: "ReturnDetail",
+            component: "/Order/view/logistics/returns/detail",
+            meta: {
+              title: "Chi tiết đơn hoàn",
+              icon: "ri:file-search-line",
+              isHide: true,
             },
           },
           {

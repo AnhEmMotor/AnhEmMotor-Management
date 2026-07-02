@@ -3,8 +3,8 @@
   --report-bg: var(--el-bg-color-overlay);
   --report-panel: var(--el-bg-color-overlay);
   --report-panel-soft: var(--el-fill-color-light);
-  --report-border: transparent;
-  --report-border-strong: transparent;
+  --report-border: rgb(0 0 0 / 10%);
+  --report-border-strong: rgb(0 0 0 / 16%);
   --report-text: var(--el-text-color-primary);
   --report-muted: var(--el-text-color-secondary);
   --report-muted-strong: var(--el-text-color-regular);
@@ -31,7 +31,7 @@
   --el-border-color-lighter: var(--report-border);
   --el-text-color-primary: var(--report-text);
   --el-text-color-regular: var(--report-muted-strong);
-  --el-text-color-secondary: var(--report-muted);
+  --el-text-color-secondary: #f26f6f;
   --el-table-header-bg-color: var(--report-panel-soft);
   --el-table-tr-bg-color: var(--report-panel);
   --el-table-row-hover-bg-color: var(--el-fill-color-light);

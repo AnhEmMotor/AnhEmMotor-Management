@@ -400,6 +400,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { commissionPolicyApi } from "@/api/operations/commission-policy.api";
 import { ElMessage, ElMessageBox } from "element-plus";
 import {
   Plus,
@@ -537,11 +538,38 @@ const formatCurrency = (value: number) => {
   }).format(value);
 };
 
+const mapBackendPolicy = (p: any) => {
+  const target = p.targetGroup || "";
+  const dept =
+    target.includes("Kỹ thuật") || target === "Mechanic"
+      ? "mechanic"
+      : target.includes("Phụ tùng") || target === "PartsSales"
+        ? "parts_sales"
+        : "vehicle_sales";
+  return {
+    id: p.id,
+    name: p.name,
+    department: dept,
+    status: p.isActive ? "active" : "expired",
+    startDate: p.effectiveDate?.split("T")[0] || "",
+    endDate: "",
+    target: p.targetGroup || "",
+    percentage: p.type === "Percentage" ? Number(p.value) : undefined,
+    basis: "revenue",
+    laborPercentage: dept === "mechanic" ? Number(p.value) : undefined,
+    partsPercentage: dept === "mechanic" ? Number(p.value) * 0.1 : undefined,
+    tiers:
+      dept === "vehicle_sales"
+        ? [{ from: 1, to: 999, bonus: Number(p.value) }]
+        : undefined,
+  };
+};
+
 const goBack = () => {
   router.push({ name: "HRCommissionPolicy" });
 };
 
-onMounted(() => {
+onMounted(async () => {
   const policyId = route.params.id;
   const dept = route.query.dept as string;
 
@@ -562,13 +590,16 @@ onMounted(() => {
     };
     enableTiers.value = true;
   } else {
-    const policy = allPolicies.value.find((p) => p.id === Number(policyId));
-    if (policy) {
-      editForm.value = JSON.parse(JSON.stringify(policy));
-      enableTiers.value = !!(
-        editForm.value.tiers && editForm.value.tiers.length > 0
-      );
-    } else {
+    try {
+      const res = await commissionPolicyApi.getById(Number(policyId));
+      if (res) {
+        const policy = mapBackendPolicy(res);
+        editForm.value = JSON.parse(JSON.stringify(policy));
+        enableTiers.value = !!(
+          editForm.value.tiers && editForm.value.tiers.length > 0
+        );
+      }
+    } catch (error) {
       ElMessage.error("Không tìm thấy chính sách");
       goBack();
     }

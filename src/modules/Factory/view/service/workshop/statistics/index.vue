@@ -112,6 +112,7 @@ import { statisticsApi } from "@/api/operations";
 import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
 import ArtBarChart from "@/components/core/charts/art-bar-chart/index.vue";
 import ArtLineChart from "@/components/core/charts/art-line-chart/index.vue";
+import dayjs from "dayjs";
 
 const loading = ref(false);
 const dateRange = ref<[Date, Date]>([
@@ -131,6 +132,11 @@ const statusCounts = ref({
   qcPending: 0,
   completed: 0,
   cancelled: 0,
+});
+
+const revenueTrend = ref<{ dates: string[]; amounts: number[] }>({
+  dates: [],
+  amounts: [],
 });
 
 // Format VND Helper
@@ -163,52 +169,73 @@ const loadData = async () => {
       .catch(() => null);
 
     if (res) {
-      const asAny = res as any;
+      // res could be the DTO itself, or wrapped in a data property depending on the HTTP client interceptor
+      const data = res.data || res;
+
+      // Extract Status Breakdown
+      const breakdowns = data.statusBreakdowns || data.StatusBreakdowns || [];
+      const getStatusCount = (statusName: string) => {
+        const item = breakdowns.find(
+          (b: any) => b.status === statusName || b.Status === statusName,
+        );
+        return item ? (item.statusCount ?? item.StatusCount ?? 0) : 0;
+      };
+
+      const inProgressCount =
+        getStatusCount("In-Progress") ||
+        getStatusCount("Đang sửa chữa") ||
+        getStatusCount("InProgress") ||
+        getStatusCount("In Progress");
+
+      const fin = data.financialSummary || data.FinancialSummary || {};
+      const sum = data.summaryCards || data.SummaryCards || {};
 
       // Map KPI
       kpiData.value = {
-        cumulativeRevenue: Number(
-          asAny?.KpiCards?.CumulativeRevenue ??
-            asAny?.kpiCards?.cumulativeRevenue ??
-            0,
-        ),
-        inProgressCount: Number(
-          asAny?.KpiCards?.InProgressCount ??
-            asAny?.kpiCards?.inProgressCount ??
-            0,
-        ),
-        avgCompletionHours: Number(
-          asAny?.KpiCards?.AvgCompletionHours ??
-            asAny?.kpiCards?.avgCompletionHours ??
-            0,
-        ),
+        cumulativeRevenue: fin.totalRevenue ?? fin.TotalRevenue ?? 0,
+        inProgressCount: inProgressCount,
+        avgCompletionHours:
+          sum.avgCompletionHours ?? sum.AvgCompletionHours ?? 0,
       };
 
-      // Calculate status counts based on overdue and list
-      const overdueList =
-        (asAny?.Alerts?.OverdueTickets ?? asAny?.alerts?.overdueTickets) || [];
-      const inProgressCount = kpiData.value.inProgressCount;
+      // Map Status Counts for Bar Chart
       statusCounts.value = {
-        pending: Math.max(1, overdueList.length),
+        pending:
+          getStatusCount("Pending") || getStatusCount("Chờ sửa chữa") || 0,
         inProgress: inProgressCount,
-        qcPending: 2,
-        completed: Math.max(5, overdueList.length * 3),
-        cancelled: 1,
+        qcPending:
+          getStatusCount("QC-Pending") || getStatusCount("Chờ nghiệm thu") || 0,
+        completed:
+          getStatusCount("Completed") || getStatusCount("Đã hoàn thành") || 0,
+        cancelled:
+          getStatusCount("Cancelled") || getStatusCount("Đã hủy phiếu") || 0,
+      };
+
+      // Map Daily Revenues for Line Chart
+      const dailyRevenues = data.dailyRevenues || data.DailyRevenues || [];
+      revenueTrend.value = {
+        dates: dailyRevenues.map((d: any) =>
+          dayjs(d.revenueDate || d.RevenueDate).format("DD/MM"),
+        ),
+        amounts: dailyRevenues.map(
+          (d: any) => d.dailyRevenue ?? d.DailyRevenue ?? 0,
+        ),
       };
     } else {
-      // Fallback fallback mocks if endpoint unavailable
+      // Fallback
       kpiData.value = {
-        cumulativeRevenue: 75200000,
-        inProgressCount: 8,
-        avgCompletionHours: 24.5,
+        cumulativeRevenue: 0,
+        inProgressCount: 0,
+        avgCompletionHours: 0,
       };
       statusCounts.value = {
-        pending: 3,
-        inProgress: 8,
-        qcPending: 2,
-        completed: 45,
-        cancelled: 2,
+        pending: 0,
+        inProgress: 0,
+        qcPending: 0,
+        completed: 0,
+        cancelled: 0,
       };
+      revenueTrend.value = { dates: [], amounts: [] };
     }
   } catch (err: any) {
     ElMessage.error(err?.message || "Không thể tải báo cáo thống kê");
@@ -219,16 +246,17 @@ const loadData = async () => {
 
 const revenueTrendChartData = computed(() => {
   return {
-    xAxis: ["Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4"],
+    xAxis:
+      revenueTrend.value.dates.length > 0
+        ? revenueTrend.value.dates
+        : ["Chưa có dữ liệu"],
     series: [
       {
         name: "Doanh thu dịch vụ (VNĐ)",
-        data: [
-          15000000,
-          18500000,
-          21000000,
-          kpiData.value.cumulativeRevenue || 20700000,
-        ],
+        data:
+          revenueTrend.value.amounts.length > 0
+            ? revenueTrend.value.amounts
+            : [0],
       },
     ],
   };

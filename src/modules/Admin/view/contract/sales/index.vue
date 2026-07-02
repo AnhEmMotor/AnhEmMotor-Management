@@ -154,21 +154,6 @@
             </template>
           </el-table-column>
 
-          <el-table-column label="Tiến Độ Đơn Hàng" min-width="260">
-            <template #default="scope">
-              <el-steps
-                :space="60"
-                :active="getProgressActive(scope.row.progress)"
-                class="mini-steps"
-                simple
-              >
-                <el-step title="Cọc" />
-                <el-step title="Đủ tiền" />
-                <el-step title="Giao xe" />
-              </el-steps>
-            </template>
-          </el-table-column>
-
           <el-table-column
             prop="status"
             label="Trạng Thái HĐ"
@@ -774,25 +759,5 @@ html.dark .contract-sales-container .text-gray-900 {
 
 .kpi-card {
   border-radius: 8px;
-}
-
-.mini-steps {
-  padding: 4px 8px !important;
-  background: transparent !important;
-
-  :deep(.el-step__title) {
-    font-size: 12px;
-    line-height: 1;
-    white-space: nowrap;
-  }
-
-  :deep(.el-step__head) {
-    display: none;
-  }
-
-  :deep(.el-step) {
-    flex-basis: auto !important;
-    min-width: 60px;
-  }
 }
 </style>

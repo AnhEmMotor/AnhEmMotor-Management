@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="flex flex-col gap-4 pb-5">
     <div class="flex items-start justify-between gap-4">
       <div>
@@ -98,7 +98,7 @@
       >
         <template #status="{ row }">
           <ElTag :type="statusTagType(row.status)" effect="dark">
-            {{ row.status }}
+            {{ getStatusText(row.status) }}
           </ElTag>
         </template>
 
@@ -818,7 +818,16 @@ const statusTagType = (status: string) => {
   }
 };
 
-// Dialog: Create
+const getStatusText = (status: string) => {
+  const map: Record<string, string> = {
+    Pending: "Chờ xử lý",
+    InProgress: "Đang sửa",
+    QcPending: "Chờ QC",
+    Completed: "Hoàn thành",
+    Cancelled: "Đã hủy",
+  };
+  return map[status] || status;
+}; // Dialog: Create
 const createDialogVisible = ref(false);
 const submitting = ref(false);
 const createForm = ref({
