@@ -1,4 +1,4 @@
-import { AppRouteRecord } from "@/types/router";
+﻿import { AppRouteRecord } from "@/types/router";
 
 export const marketingMenu: AppRouteRecord[] = [
   {
@@ -171,7 +171,7 @@ export const marketingMenu: AppRouteRecord[] = [
             },
           },
           {
-            path: "/customer/pipeline",
+            path: "pipeline",
             name: "CustomerPipeline",
             component: "/Marketing/view/customer/pipeline/index",
             meta: {
@@ -181,7 +181,7 @@ export const marketingMenu: AppRouteRecord[] = [
             },
           },
           {
-            path: "/customer/workshop",
+            path: "workshop",
             name: "CustomerContactSupport",
             component: "/Marketing/view/customer/contact/index",
             meta: {
