@@ -199,10 +199,6 @@ const loadPolicies = async () => {
   }
 };
 
-const handleReset = () => {
-  pagination.current = 1;
-  loadData();
-};
 const selectPolicy = (policy: any) => {
   router.push({
     name: "HRCommissionPolicyDetail",
