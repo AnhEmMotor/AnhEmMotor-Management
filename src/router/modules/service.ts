@@ -97,6 +97,15 @@ export const serviceRoutes: AppRouteRecord = {
             icon: "ri:file-search-line",
           },
         },
+        {
+          path: "statistics",
+          name: "ServiceWorkshopStatistics",
+          component: "/Factory/view/service/workshop/statistics/index",
+          meta: {
+            title: "Thống kê xưởng",
+            icon: "ri:bar-chart-line",
+          },
+        },
       ],
     },
     {
