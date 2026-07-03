@@ -442,7 +442,6 @@ function formatVnd(value: number): string {
 }
 
 
-}
 
 async function refreshTicket() {
   // Tạm gọi GetMaintenanceTicketUseCase bằng ticketId giả định.
