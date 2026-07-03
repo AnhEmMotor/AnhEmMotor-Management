@@ -7,7 +7,10 @@
       </div>
     </div>
 
-    <div class="h-9/10 mt-2 overflow-hidden">
+    <div v-if="isLoading" class="mt-4">
+      <ElSkeleton :rows="3" animated />
+    </div>
+    <div v-else class="h-9/10 mt-2 overflow-hidden">
       <ElScrollbar>
         <div
           class="h-17.5 leading-17.5 border-b border-g-300 text-sm overflow-hidden whitespace-nowrap text-ellipsis last:border-b-0"
@@ -24,8 +27,8 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
-import { ElScrollbar } from "element-plus";
+import { ref, reactive, onMounted } from "vue";
+import { fetchRecentTransactions } from "@/api/dashboard.api";
 
 interface DynamicItem {
   username: string;
@@ -33,36 +36,31 @@ interface DynamicItem {
   target: string;
 }
 
-const list = reactive<DynamicItem[]>([
-  {
-    username: "Admin A",
-    type: "đã thay đổi hoa hồng",
-    target: "Winner X (lên 700k)",
-  },
-  {
-    username: "Kế toán B",
-    type: "đã hủy Hóa đơn",
-    target: "HD-2026-05041",
-  },
-  {
-    username: "Quản lý C",
-    type: "đã chốt bảng lương",
-    target: "Tháng 4/2026",
-  },
-  {
-    username: "Hệ thống",
-    type: "tự động gia hạn HĐ",
-    target: "NCC Dầu nhớt Castrol",
-  },
-  {
-    username: "Kỹ thuật viên D",
-    type: "hoàn tất phiếu sửa chữa",
-    target: "PSC-9982",
-  },
-  {
-    username: "Sale E",
-    type: "đã tạo đơn hàng mới",
-    target: "DH-2026-00912",
-  },
-]);
+const list = reactive<DynamicItem[]>([]);
+const isLoading = ref(false);
+
+async function fetchData() {
+  isLoading.value = true;
+  try {
+    const data = await fetchRecentTransactions(20);
+    list.length = 0;
+    data.forEach((tx: any) => {
+      const username =
+        tx.staffName && tx.staffName !== "N/A"
+          ? tx.staffName
+          : tx.customerName || "Hệ thống";
+      const type = tx.isRevenue ? "tạo giao dịch" : "thêm chi phí";
+      const target = tx.productName || "N/A";
+      list.push({ username, type, target });
+    });
+  } catch (error) {
+    console.error("Failed to fetch recent transactions:", error);
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+onMounted(() => {
+  fetchData();
+});
 </script>

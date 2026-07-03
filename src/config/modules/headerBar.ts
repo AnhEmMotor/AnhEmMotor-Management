@@ -44,7 +44,7 @@ export const headerBarConfig: HeaderBarFeatureConfig = {
     description: "HeThongCaiDatBảng (Panel)",
   },
   themeToggle: {
-    enabled: true,
+    enabled: false,
     description: "ChuDeChuyển đổicôngnăng（minhámChuDe）",
   },
 };

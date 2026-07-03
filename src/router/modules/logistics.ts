@@ -7,6 +7,7 @@ export const logisticsRoutes: AppRouteRecord = {
   meta: {
     title: "menus.logistics.title",
     icon: "ri:truck-line",
+    permissions: ["Permissions.Warehouse"],
   },
   children: [
     {
@@ -47,6 +48,16 @@ export const logisticsRoutes: AppRouteRecord = {
         icon: "ri:arrow-go-back-line",
         showBadge: true,
         showTextBadge: "1",
+      },
+    },
+    {
+      path: "returns/:id",
+      name: "ReturnDetail",
+      component: "/logistics/returns/detail",
+      meta: {
+        title: "Chi tiết đơn hoàn",
+        hidden: true,
+        activeMenu: "/logistics/returns",
       },
     },
     {

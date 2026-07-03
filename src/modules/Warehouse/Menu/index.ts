@@ -9,6 +9,7 @@ export const warehouseMenu: AppRouteRecord[] = [
       title: "Warehouse",
       icon: "ri:store-2-line",
       roles: ["Admin", "SuperAdmin"],
+      permissions: ["Permissions.Warehouse"],
     },
     redirect: "/Warehouse/product",
     children: [
@@ -89,6 +90,16 @@ export const warehouseMenu: AppRouteRecord[] = [
         meta: {
           title: "Hợp đồng nhà cung cấp",
           icon: "ri:file-contract-line",
+          keepAlive: true,
+        },
+      },
+      {
+        path: "inventory-settings",
+        name: "WarehouseInventorySettings",
+        component: "/sales-settings/inventory/index",
+        meta: {
+          title: "Cài đặt tồn kho",
+          icon: "ri:alarm-warning-line",
           keepAlive: true,
         },
       },

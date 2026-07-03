@@ -3,7 +3,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --art-color: #fff;
+  --art-color: #000;
   --theme-color: var(--main-color);
   --art-primary: oklch(70% 0.23 260deg);
   --art-secondary: oklch(72% 0.19 231.6deg);
@@ -31,8 +31,8 @@
   --art-el-active-color: #f2f4f5;
 }
 
-.dark {
-  --art-color: #000;
+html.dark {
+  --art-color: #fff;
   --art-gray-100: #110f0f;
   --art-gray-200: #17171c;
   --art-gray-300: #393946;

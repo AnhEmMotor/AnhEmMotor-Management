@@ -4,7 +4,7 @@ export interface ReturnOrderDto {
   customerName: string;
   carrier: string;
   reason: string;
-  status: string; // 'pending' | 'inspecting' | 'completed'
+  status: "pending" | "inspecting" | "completed" | "rejected";
   createdAt: string;
 }
 
@@ -24,13 +24,20 @@ export interface ReturnDetailDto {
   customerName: string;
   carrier: string;
   reason: string;
-  status: string;
+  status: "pending" | "inspecting" | "completed" | "rejected";
   createdAt: string;
   boxCondition?: string;
   productCondition?: string;
   returnProofImage?: string;
   returnInternalNote?: string;
   returnAction?: string;
+  rejectionReason?: string;
+  inspectedAt?: string;
+  refundAmount?: number;
+  returnShippingCost?: number;
+  codAmount?: number;
+  shippingCost?: number;
+  carrierReturnNote?: string;
   items: ReturnDetailItemDto[];
 }
 
@@ -40,4 +47,6 @@ export interface InspectReturnCommand {
   returnProofImage?: string;
   returnInternalNote?: string;
   action: string; // 'restock', 'defect', 'refund'
+  refundAmount?: number;
+  returnShippingCost?: number;
 }

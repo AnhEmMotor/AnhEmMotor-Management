@@ -1,9 +1,28 @@
 import type { ColumnOption } from "@/types/component";
 
 export const searchItems = [
-  { key: "name", label: "Họ tên", type: "input" },
-  { key: "jobTitle", label: "Vị trí", type: "input" },
-  { key: "email", label: "Email", type: "input" },
+  {
+    key: "name",
+    label: "Họ tên",
+    type: "input",
+    props: { placeholder: "Nhập họ tên...", clearable: true },
+  },
+  {
+    key: "jobTitle",
+    label: "Vị trí",
+    type: "select",
+    props: {
+      placeholder: "Tất cả vị trí",
+      options: [], // Will be dynamically populated
+      clearable: true,
+    },
+  },
+  {
+    key: "email",
+    label: "Email",
+    type: "input",
+    props: { placeholder: "Nhập email...", clearable: true },
+  },
 ];
 
 export const columns: ColumnOption[] = [
@@ -17,7 +36,13 @@ export const columns: ColumnOption[] = [
     align: "right",
     useSlot: true,
   },
-  { label: "Ngày vào làm", prop: "contractDate", width: 130, align: "center" },
+  {
+    label: "Ngày vào làm",
+    prop: "contractDate",
+    width: 130,
+    align: "center",
+    useSlot: true,
+  },
   {
     label: "Thao tác",
     prop: "operation",

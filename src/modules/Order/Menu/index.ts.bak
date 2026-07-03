@@ -1,0 +1,180 @@
+﻿import { AppRouteRecord } from "@/types/router";
+
+export const orderMenu: AppRouteRecord[] = [
+  {
+    path: "/Order",
+    name: "Order",
+    component: "/index/index",
+    meta: {
+      title: "Order",
+      icon: "ri:file-list-3-line",
+      roles: ["Admin", "SuperAdmin"],
+    },
+    redirect: "/Order/management/list",
+    children: [
+      {
+        path: "management",
+        name: "OrderManagement",
+        meta: {
+          title: "Quáº£n lÃ½ Ä‘Æ¡n hÃ ng",
+          icon: "ri:file-list-3-line",
+        },
+        redirect: "/Order/management/list",
+        children: [
+          {
+            path: "list",
+            name: "OrderList",
+            component: "/Order/view/order/list/index",
+            meta: {
+              title: "ÄÆ¡n Ä‘áº·t hÃ ng Online",
+              icon: "ri:shopping-cart-line",
+              keepAlive: true,
+            },
+          },
+          {
+            path: "deposit-settings",
+            name: "OrderDepositSettings",
+            component: "/sales-settings/deposit/index",
+            meta: {
+              title: "CÃ i Ä‘áº·t Ä‘áº·t cá»c",
+              icon: "ri:secure-payment-line",
+              keepAlive: true,
+            },
+          },
+          {
+            path: "invoice",
+            name: "OrderProductInvoice",
+            component: "/Order/view/product/invoice/index",
+            meta: {
+              title: "HÃ³a Ä‘Æ¡n mua hÃ ng",
+              icon: "ri:bill-line",
+              keepAlive: true,
+              roles: ["Admin", "SuperAdmin"],
+            },
+          },
+          {
+            path: "returns",
+            name: "OrderLogisticsReturns",
+            component: "/Order/view/logistics/returns/index",
+            meta: {
+              title: "Tráº£ hÃ ng - HoÃ n tráº£",
+              icon: "ri:arrow-go-back-line",
+              keepAlive: true,
+              showBadge: true,
+              showTextBadge: "1",
+            },
+          },
+          {
+            path: "contract",
+            name: "OrderContract",
+            component: "/Order/view/order/contract/index",
+            meta: {
+              title: "Há»£p Ä‘á»“ng mua xe",
+              icon: "ri:file-paper-2-line",
+              keepAlive: true,
+            },
+          },
+          {
+            path: "contract/preview/:id?",
+            name: "SalesContractPreview",
+            component: "/Order/view/order/contract/contract-preview",
+            meta: {
+              title: "Chi tiáº¿t Há»£p Ä‘á»“ng",
+              icon: "ri:file-search-line",
+              isHide: true,
+            },
+          },
+        ],
+      },
+      {
+        path: "product",
+        name: "OrderProduct",
+        meta: {
+          title: "Quáº£n lÃ½ sáº£n pháº©m",
+          icon: "ri:shopping-bag-3-line",
+          roles: ["Admin", "SuperAdmin"],
+        },
+        redirect: "/Order/product/list",
+        children: [
+          {
+            path: "list",
+            name: "OrderProductList",
+            component: "/Order/view/product/list/index",
+            meta: {
+              title: "Danh sÃ¡ch sáº£n pháº©m",
+              icon: "ri:list-unordered",
+              keepAlive: true,
+            },
+          },
+        ],
+      },
+      {
+        path: "logistics",
+        name: "OrderLogistics",
+        meta: {
+          title: "Quáº£n lÃ½ váº­n chuyá»ƒn",
+          icon: "ri:truck-line",
+          roles: ["Admin", "SuperAdmin"],
+        },
+        redirect: "/Order/logistics/dashboard",
+        children: [
+          {
+            path: "dashboard",
+            name: "OrderLogisticsDashboard",
+            component: "/Order/view/logistics/dashboard/index",
+            meta: {
+              title: "Dashboard",
+              icon: "ri:dashboard-line",
+              keepAlive: true,
+            },
+          },
+          {
+            path: "tracking",
+            name: "OrderLogisticsTracking",
+            component: "/Order/view/logistics/tracking/index",
+            meta: {
+              title: "Theo dÃµi váº­n chuyá»ƒn",
+              icon: "ri:map-pin-time-line",
+              keepAlive: true,
+            },
+          },
+          {
+            path: "fulfillment",
+            name: "OrderLogisticsFulfillment",
+            component: "/Order/view/logistics/fulfillment/index",
+            meta: {
+              title: "HoÃ n thÃ nh Ä‘Æ¡n hÃ ng",
+              icon: "ri:box-3-line",
+              keepAlive: true,
+              showBadge: true,
+              showTextBadge: "5",
+            },
+          },
+          {
+            path: "carrier-settings",
+            name: "OrderLogisticsCarrierSettings",
+            component: "/Order/view/logistics/carrier-settings/index",
+            meta: {
+              title: "CÃ i Ä‘áº·t nhÃ  váº­n chuyá»ƒn",
+              icon: "ri:settings-4-line",
+              keepAlive: true,
+            },
+          },
+        ],
+      },
+      {
+        path: "statistics",
+        name: "OrderStatistics",
+        component: "/Order/view/order/statistics/index",
+        meta: {
+          title: "Thá»‘ng kÃª Ä‘Æ¡n hÃ ng",
+          icon: "ri:bar-chart-line",
+          keepAlive: true,
+        },
+      },
+    ],
+  },
+];
+
+export default orderMenu;
+

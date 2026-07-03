@@ -11,27 +11,56 @@ const AuthService = {
   async login(credentials: Api.Auth.LoginParams): Promise<AuthState> {
     try {
       const response = await AuthApis.fetchLogin(credentials);
-      const token = response.accessToken;
-      if (!token) {
-        throw new Error("No access token received");
-      }
-      // Store token in localStorage for persistence under the same key Pinia uses
-      localStorage.setItem("user", JSON.stringify({ accessToken: token }));
-      // Sync token to userStore for API interceptor
-      const userStore = useUserStore();
-      userStore.setToken(token);
-      // Fetch user info after login
-      const userInfo = await this.getUserInfo();
-      return {
-        token,
-        userInfo,
-        isAuthenticated: true,
-      };
+      return await this.handleLoginSuccess(response.accessToken);
     } catch (error) {
       console.error("[AuthService] Login failed:", error);
       localStorage.removeItem("user");
       throw error;
     }
+  },
+
+  async loginWithGoogle(
+    credentials: Api.Auth.GoogleLoginParams,
+  ): Promise<AuthState> {
+    try {
+      const response = await AuthApis.fetchGoogleLogin(credentials);
+      return await this.handleLoginSuccess(response.accessToken);
+    } catch (error) {
+      console.error("[AuthService] Google Login failed:", error);
+      localStorage.removeItem("user");
+      throw error;
+    }
+  },
+
+  async loginWithFacebook(
+    credentials: Api.Auth.FacebookLoginParams,
+  ): Promise<AuthState> {
+    try {
+      const response = await AuthApis.fetchFacebookLogin(credentials);
+      return await this.handleLoginSuccess(response.accessToken);
+    } catch (error) {
+      console.error("[AuthService] Facebook Login failed:", error);
+      localStorage.removeItem("user");
+      throw error;
+    }
+  },
+
+  async handleLoginSuccess(token?: string): Promise<AuthState> {
+    if (!token) {
+      throw new Error("No access token received");
+    }
+    // Store token in localStorage for persistence under the same key Pinia uses
+    localStorage.setItem("user", JSON.stringify({ accessToken: token }));
+    // Sync token to userStore for API interceptor
+    const userStore = useUserStore();
+    userStore.setToken(token);
+    // Fetch user info after login
+    const userInfo = await this.getUserInfo();
+    return {
+      token,
+      userInfo,
+      isAuthenticated: true,
+    };
   },
 
   async getUserInfo(): Promise<Api.Auth.UserInfo | null> {

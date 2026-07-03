@@ -306,6 +306,7 @@ const checkIsEmpty = () => {
 };
 
 const {
+  chartRef,
   initChart,
   getAxisLineStyle,
   getAxisLabelStyle,

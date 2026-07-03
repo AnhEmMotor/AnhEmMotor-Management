@@ -200,7 +200,8 @@ const menuList = computed(() => {
   // Lọc menu theo phân hệ hiện tại (Admin hoặc Factory)
   const isPathInMenu = (menus: any[], targetPath: string): boolean => {
     return menus.some((m) => {
-      if (targetPath.startsWith(m.path)) return true;
+      if (m.path && m.path.startsWith("/") && targetPath.startsWith(m.path))
+        return true;
       if (m.children) return isPathInMenu(m.children, targetPath);
       return false;
     });

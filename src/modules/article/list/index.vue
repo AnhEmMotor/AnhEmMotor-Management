@@ -279,4 +279,73 @@ onActivated(() => {
     }
   }
 }
+
+// Dark Mode overrides
+:global(html.dark .article-list-page) {
+  background-color: #05070b !important;
+  color: #f8fafc !important;
+
+  .bg-white {
+    background-color: #10141c !important;
+  }
+
+  .border-slate-200 {
+    border-color: rgb(255 255 255 / 12%) !important;
+  }
+
+  .article-card.bg-white {
+    background-color: #10141c !important;
+    border-color: rgb(255 255 255 / 12%) !important;
+  }
+
+  .text-slate-800 {
+    color: #f8fafc !important;
+  }
+
+  .text-slate-900 {
+    color: #f8fafc !important;
+  }
+
+  .border-t.border-slate-50 {
+    border-color: rgb(255 255 255 / 8%) !important;
+  }
+
+  input.w-full {
+    background-color: #111827 !important;
+    border-color: rgb(255 255 255 / 12%) !important;
+    color: #f8fafc !important;
+
+    &::placeholder {
+      color: #94a3b8 !important;
+      opacity: 0.6;
+    }
+  }
+
+  .combat-pagination {
+    :deep(.el-pager li) {
+      background-color: #111827 !important;
+      color: #cbd5e1 !important;
+      border: 1px solid rgb(255 255 255 / 12%) !important;
+
+      &.is-active {
+        background-color: #001529 !important;
+        color: #fff !important;
+        border-color: #001529 !important;
+      }
+    }
+
+    :deep(button.btn-prev),
+    :deep(button.btn-next) {
+      background-color: #111827 !important;
+      color: #cbd5e1 !important;
+      border: 1px solid rgb(255 255 255 / 12%) !important;
+
+      &:disabled {
+        background-color: #1e293b !important;
+        color: #475569 !important;
+        border-color: rgb(255 255 255 / 6%) !important;
+      }
+    }
+  }
+}
 </style>

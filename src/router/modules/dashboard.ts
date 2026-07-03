@@ -10,6 +10,7 @@ export const dashboardRoutes: AppRouteRecord = {
     title: "menus.dashboard.title",
     icon: "ri:pie-chart-line",
     roles: ["Admin", "SuperAdmin"],
+    permissions: ["Permissions.Admin"],
   },
   children: [
     {
@@ -20,7 +21,7 @@ export const dashboardRoutes: AppRouteRecord = {
         title: "menus.dashboard.console",
         icon: "ri:home-smile-2-line",
         keepAlive: false,
-        fixedTab: true,
+        fixedTab: false,
       },
     },
     {

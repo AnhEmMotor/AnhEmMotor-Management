@@ -28,7 +28,9 @@
     </ElForm>
 
     <ul>
-      <div class="pb-5 text-lg font-medium">BinhLuan {{ comments.length }}</div>
+      <div class="pb-5 text-lg font-medium">
+        Bình luận ({{ comments.length }})
+      </div>
       <CommentItem
         v-for="comment in comments.slice().reverse()"
         :key="comment.id"
@@ -57,7 +59,7 @@ const showReplyForm = ref<number | null>(null);
 
 const addComment = () => {
   if (!newComment.value.author?.trim() || !newComment.value.content?.trim()) {
-    ElMessage.warning("Vui lòngviếtĐầy đủcủaBinhLuanThongTin");
+    ElMessage.warning("Vui lòng nhập đầy đủ thông tin bình luận");
     return;
   }
 
@@ -71,7 +73,7 @@ const addComment = () => {
 
   newComment.value.author = "";
   newComment.value.content = "";
-  ElMessage.success("BinhLuanĐăng tảiThanhCong");
+  ElMessage.success("Đăng tải bình luận thành công");
 };
 
 const addReply = (
@@ -80,7 +82,7 @@ const addReply = (
   replyContent: string,
 ) => {
   if (!replyAuthor?.trim() || !replyContent?.trim()) {
-    ElMessage.warning("Vui lòngviếtĐầy đủcủaTraLoiThongTin");
+    ElMessage.warning("Vui lòng nhập đầy đủ thông tin trả lời");
     return;
   }
 
@@ -94,7 +96,7 @@ const addReply = (
       replies: [],
     });
     showReplyForm.value = null;
-    ElMessage.success("TraLoiĐăng tảiThanhCong");
+    ElMessage.success("Đăng tải câu trả lời thành công");
   }
 };
 

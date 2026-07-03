@@ -99,8 +99,9 @@
 <script setup lang="ts">
 import { Plus } from "@element-plus/icons-vue";
 import { ref, reactive, onMounted } from "vue";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 import type { ColumnOption } from "@/types/component";
+import { payrollApi } from "@/api/operations/payroll.api";
 
 defineOptions({ name: "HRPayroll" });
 
@@ -141,7 +142,7 @@ const columns = ref<ColumnOption[]>([
   { label: "Tháng", prop: "month", width: 100, align: "center" },
   { label: "Lương cơ bản", prop: "baseSalary", width: 140, align: "right" },
   { label: "Thưởng", prop: "bonus", width: 120, align: "right" },
-  { label: "Khấu trừ", prop: "deduction", width: 120, align: "right" },
+  { label: "Khấu trừ", prop: "penalty", width: 120, align: "right" },
   {
     label: "Tổng lương",
     prop: "totalSalary",
@@ -184,19 +185,30 @@ const getStatusLabel = (status: string) =>
     status
   ] || status;
 const formatCurrency = (value: number) =>
-  new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(
-    value,
-  );
+  new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(value);
+
+const now = new Date();
+const currentMonth = now.getMonth() + 1;
+const currentYear = now.getFullYear();
 
 const loadData = async () => {
   loading.value = true;
   try {
-    data.value = [];
-    pagination.total = 0;
-    stats.totalPayroll = 0;
-    stats.paid = 0;
-    stats.pending = 0;
-    stats.employeeCount = 0;
+    const [listRes, statsRes] = await Promise.all([
+      payrollApi.getList({ month: currentMonth, year: currentYear }),
+      payrollApi.getStatistics(currentMonth, currentYear),
+    ]);
+    const listData = (listRes as any).data || listRes || [];
+    data.value = listData;
+    pagination.total = listData.length;
+    const s = (statsRes as any).data || statsRes || {};
+    stats.totalPayroll = s.totalPayroll;
+    stats.paid = s.paid;
+    stats.pending = s.pending;
+    stats.employeeCount = s.employeeCount;
   } catch (error) {
     console.error("Failed to load payroll:", error);
     ElMessage.error("Không thể tải danh sách bảng lương");
@@ -218,7 +230,7 @@ const handleEdit = (_row: any) => {
   dialogTitle.value = "Cập nhật bảng lương";
 };
 const handleView = (row: any) => {
-  ElMessage.info(`Xem chi tiết: ${row.month}`);
+  ElMessage.info(`Xem chi tiết: ${row.employeeName}`);
 };
 const handleSizeChange = (size: number) => {
   pagination.size = size;

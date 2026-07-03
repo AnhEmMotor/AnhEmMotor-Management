@@ -7,7 +7,7 @@
             {{ $t("menus.service.workshop.dashboard") }}
           </h1>
           <div
-            class="flex items-center gap-2 bg-green-50 text-green-600 px-2.5 py-1 rounded-full border border-green-200 shadow-sm relative overflow-hidden"
+            class="flex items-center gap-2 px-2.5 py-1 rounded-full border shadow-sm relative overflow-hidden bg-green-50 text-green-600 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800/50"
           >
             <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
             <span class="text-xs font-semibold tracking-wide"
@@ -15,7 +15,7 @@
             >
           </div>
         </div>
-        <p class="mt-1 text-sm text-slate-500">
+        <p class="mt-1 text-sm text-g-500">
           Dashboard quản lý xưởng: KPI tiến độ, cảnh báo phiếu quá hạn/vật tư và
           analytics doanh thu dịch vụ.
         </p>
@@ -30,22 +30,20 @@
           <ElRadioButton value="custom">Tuỳ chọn</ElRadioButton>
         </ElRadioGroup>
 
-        <template v-if="cycle === 'custom'">
-          <ElDatePicker
-            v-model="fromDate"
-            type="date"
-            placeholder="Từ ngày"
-            class="w-40"
-            @change="handleDateChange"
-          />
-          <ElDatePicker
-            v-model="toDate"
-            type="date"
-            placeholder="Đến ngày"
-            class="w-40"
-            @change="handleDateChange"
-          />
-        </template>
+        <ElDatePicker
+          v-model="fromDate"
+          type="date"
+          placeholder="Từ ngày"
+          class="w-40"
+          @change="handleDateChange"
+        />
+        <ElDatePicker
+          v-model="toDate"
+          type="date"
+          placeholder="Đến ngày"
+          class="w-40"
+          @change="handleDateChange"
+        />
 
         <ElButton
           :icon="Refresh"
@@ -95,13 +93,13 @@
     </div>
 
     <!-- Alerts -->
-    <div class="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
+    <div class="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3 items-start">
       <ElCard class="lg:col-span-1">
         <template #header>
           <span class="font-semibold">Cảnh báo phiếu quá hạn</span>
         </template>
 
-        <div v-if="alerts.overdue.length === 0" class="text-sm text-slate-500">
+        <div v-if="alerts.overdue.length === 0" class="text-sm text-g-500">
           Không có phiếu quá hạn.
         </div>
 
@@ -109,21 +107,21 @@
           <div
             v-for="o in alerts.overdue"
             :key="o.ticketId"
-            class="rounded-lg border border-slate-200 p-3"
+            class="rounded-lg border border-border p-3 bg-box dark:!bg-[#1c1c20] dark:!border-[#333]"
           >
             <div class="flex items-center justify-between gap-3">
-              <div class="text-sm font-semibold">#{{ o.ticketId }}</div>
+              <div class="text-sm font-semibold text-g-900">
+                #{{ o.ticketId }}
+              </div>
               <ElTag type="danger" effect="dark">
                 Quá hạn: {{ o.overdueHours }} giờ
               </ElTag>
             </div>
-            <div class="mt-2 text-xs text-slate-500">
+            <div class="mt-2 text-xs text-g-500">
               Khách hàng:
-              <span class="font-medium text-slate-700">{{
-                o.customerName
-              }}</span>
+              <span class="font-medium text-g-700">{{ o.customerName }}</span>
             </div>
-            <div class="mt-1 text-xs text-slate-500">
+            <div class="mt-1 text-xs text-g-500">
               Trạng thái: {{ o.status }}
             </div>
           </div>
@@ -137,7 +135,7 @@
 
         <div
           v-if="alerts.partsShortage.length === 0"
-          class="text-sm text-slate-500"
+          class="text-sm text-g-500"
         >
           Không thiếu vật tư.
         </div>
@@ -146,10 +144,12 @@
           <div
             v-for="p in alerts.partsShortage"
             :key="p.ticketId + '_' + p.partName"
-            class="rounded-lg border border-slate-200 p-3"
+            class="rounded-lg border border-border p-3 bg-box dark:!bg-[#1c1c20] dark:!border-[#333]"
           >
             <div class="flex items-center justify-between gap-3">
-              <div class="text-sm font-semibold">#{{ p.ticketId }}</div>
+              <div class="text-sm font-semibold text-g-900">
+                #{{ p.ticketId }}
+              </div>
               <div class="flex gap-2">
                 <ElTag type="danger" effect="dark">Thiếu</ElTag>
                 <ElButton size="small" type="primary" link
@@ -157,10 +157,10 @@
                 >
               </div>
             </div>
-            <div class="mt-1 text-xs text-slate-500">
+            <div class="mt-1 text-xs text-g-500">
               Hạng mục: {{ p.partName }}
             </div>
-            <div class="mt-1 text-xs text-slate-500">
+            <div class="mt-1 text-xs text-g-500">
               Thiếu: {{ p.requiredQuantity }} (Còn: {{ p.availableQuantity }})
             </div>
           </div>
@@ -173,38 +173,39 @@
           <span class="font-semibold">Bảo trì &amp; đánh giá dịch vụ</span>
         </template>
 
-        <div
-          v-if="warrantyAndComplaints.loading"
-          class="text-sm text-slate-500"
-        >
+        <div v-if="warrantyAndComplaints.loading" class="text-sm text-g-500">
           Đang tải...
         </div>
         <div v-else>
           <div class="grid grid-cols-1 gap-3">
-            <div class="rounded-lg border border-slate-200 p-3">
+            <div
+              class="rounded-lg border border-border p-3 bg-box dark:!bg-[#1c1c20] dark:!border-[#333]"
+            >
               <div class="flex items-center justify-between gap-3">
-                <div class="text-sm font-semibold">
+                <div class="text-sm font-semibold text-g-900">
                   Yêu cầu bảo hành kỹ thuật
                 </div>
                 <ElTag type="warning" effect="dark">
                   {{ warrantyAndComplaints.warrantyRequestsCount }}
                 </ElTag>
               </div>
-              <div class="mt-1 text-xs text-slate-500">
+              <div class="mt-1 text-xs text-g-500">
                 Ưu tiên xử lý các yêu cầu quá hạn.
               </div>
             </div>
 
-            <div class="rounded-lg border border-slate-200 p-3">
+            <div
+              class="rounded-lg border border-border p-3 bg-box dark:!bg-[#1c1c20] dark:!border-[#333]"
+            >
               <div class="flex items-center justify-between gap-3">
-                <div class="text-sm font-semibold">
+                <div class="text-sm font-semibold text-g-900">
                   Đánh giá &amp; khiếu nại từ khách
                 </div>
                 <ElTag type="danger" effect="dark">
                   {{ warrantyAndComplaints.complaintsCount }}
                 </ElTag>
               </div>
-              <div class="mt-1 text-xs text-slate-500">
+              <div class="mt-1 text-xs text-g-500">
                 Theo dõi mức độ hài lòng và phản hồi.
               </div>
             </div>
@@ -224,7 +225,7 @@
               />
               <ElTableColumn prop="status" label="Trạng thái" min-width="140" />
             </ElTable>
-            <div v-else class="text-center text-sm text-slate-400 py-4">
+            <div v-else class="text-center text-sm text-g-400 py-4">
               Chưa có dữ liệu gần đây.
             </div>
           </div>
@@ -237,11 +238,11 @@
       <ElCard class="lg:col-span-2 overflow-hidden relative">
         <template #header>
           <span class="font-semibold"
-            >Doanh thu dịch vụ vs doanh thu bán xe</span
+            >Biểu đồ so sánh doanh thu xưởng theo tháng</span
           >
         </template>
 
-        <div class="h-96">
+        <div class="h-72">
           <ArtLineChart
             :data="serviceVsSalesChart.data"
             :x-axis-data="serviceVsSalesChart.xAxisData"
@@ -258,7 +259,7 @@
           <span class="font-semibold">Cơ cấu nguồn thu</span>
         </template>
 
-        <div class="h-96">
+        <div class="h-72">
           <ArtRingChart
             :data="revenueSourceChart"
             :loading="loading"
@@ -343,6 +344,9 @@ function handleCycleChange() {
 }
 
 function handleDateChange() {
+  if (cycle.value !== "custom") {
+    cycle.value = "custom";
+  }
   refresh();
 }
 
@@ -440,7 +444,7 @@ const serviceVsSalesChart = computed(() => {
         data: [12, 14, 16, 18, 20, 22],
       },
       {
-        name: "Doanh thu bán xe",
+        name: "Doanh thu phụ tùng",
         data: [10, 13, 15, 14, 18, 19],
       },
     ],
@@ -476,7 +480,11 @@ function formatHours(value: number): string {
 const refresh = async () => {
   loading.value = true;
   try {
-    const res = await statisticsApi.getDashboardOverview().catch(() => null);
+    const fromStr = fromDate.value ? fromDate.value.toISOString() : undefined;
+    const toStr = toDate.value ? toDate.value.toISOString() : undefined;
+    const res = await statisticsApi
+      .getWorkshopDashboardOverview(fromStr, toStr)
+      .catch(() => null);
 
     const mock = {
       inProgress: 12,
@@ -574,28 +582,111 @@ const refresh = async () => {
     const asAny = res as any;
 
     kpi.value = {
-      inProgress: Number(asAny?.inProgressCount ?? mock.inProgress),
-      avgFinishHours: Number(asAny?.avgFinishHours ?? mock.avgFinishHours),
-      serviceRevenue: Number(asAny?.serviceRevenue ?? mock.serviceRevenue),
-      serviceRevenueVsTargetPct: Number(
-        asAny?.serviceRevenueVsTargetPct ?? mock.serviceRevenueVsTargetPct,
+      inProgress: Number(
+        asAny?.KpiCards?.InProgressCount ??
+          asAny?.kpiCards?.inProgressCount ??
+          mock.inProgress,
       ),
+      avgFinishHours: Number(
+        asAny?.KpiCards?.AvgCompletionHours ??
+          asAny?.kpiCards?.avgCompletionHours ??
+          mock.avgFinishHours,
+      ),
+      serviceRevenue: Number(
+        asAny?.KpiCards?.CumulativeRevenue ??
+          asAny?.kpiCards?.cumulativeRevenue ??
+          mock.serviceRevenue,
+      ),
+      serviceRevenueVsTargetPct: mock.serviceRevenueVsTargetPct,
     };
 
-    if (asAny?.revenueComparison) {
-      analytics.value.revenueComparison = asAny.revenueComparison;
+    const revComparison =
+      asAny?.Analytics?.RevenueComparison ??
+      asAny?.analytics?.revenueComparison;
+    if (revComparison) {
+      analytics.value.revenueComparison = {
+        workshopRevenue: Number(
+          revComparison.WorkshopRevenue ??
+            revComparison.workshopRevenue ??
+            mock.revenueComparison.workshopRevenue,
+        ),
+        retailRevenue: Number(
+          revComparison.RetailRevenue ??
+            revComparison.retailRevenue ??
+            mock.revenueComparison.retailRevenue,
+        ),
+      };
     } else {
       analytics.value.revenueComparison = mock.revenueComparison;
     }
 
-    alerts.value = {
-      overdue: (asAny?.overdueRepairOrders as OverdueAlert[]) ?? mock.overdue,
-      partsShortage:
-        (asAny?.partsShortage as PartsShortageAlert[]) ?? mock.partsShortage,
-    };
+    const rawOverdue =
+      (asAny?.Alerts?.OverdueTickets ?? asAny?.alerts?.overdueTickets) || [];
+    alerts.value.overdue =
+      rawOverdue.length > 0
+        ? rawOverdue.map((o: any) => {
+            const ticketId = o.TicketId ?? o.ticketId ?? 0;
+            const expectedCompletionTime =
+              o.ExpectedCompletionTime ?? o.expectedCompletionTime;
+            const overdueHours = expectedCompletionTime
+              ? Math.max(
+                  0,
+                  Math.floor(
+                    (Date.now() - new Date(expectedCompletionTime).getTime()) /
+                      (1000 * 60 * 60),
+                  ),
+                )
+              : 0;
+            return {
+              repairOrderId: ticketId,
+              ticketId: `TICK-${String(ticketId).padStart(3, "0")}`,
+              licensePlate: "",
+              customerName: o.CustomerName ?? o.customerName ?? "",
+              status: o.Status ?? o.status ?? "Pending",
+              overdueHours,
+              expectedCompletionTime:
+                expectedCompletionTime ?? new Date().toISOString(),
+            };
+          })
+        : mock.overdue;
 
+    const rawParts =
+      (asAny?.Alerts?.PartShortages ?? asAny?.alerts?.partShortages) || [];
+    alerts.value.partsShortage =
+      rawParts.length > 0
+        ? rawParts.map((p: any) => {
+            const ticketId = p.TicketId ?? p.ticketId ?? 0;
+            const req = p.RequiredQuantity ?? p.requiredQuantity ?? 0;
+            const avail = p.AvailableQuantity ?? p.availableQuantity ?? 0;
+            return {
+              affectedRepairOrderId: ticketId,
+              ticketId: `TICK-${String(ticketId).padStart(3, "0")}`,
+              partName: p.PartName ?? p.partName ?? "",
+              productVariantId: 0,
+              productVariantName: p.PartName ?? p.partName ?? "",
+              shortCount: Math.max(0, req - avail),
+              requiredQuantity: req,
+              availableQuantity: avail,
+            };
+          })
+        : mock.partsShortage;
+
+    const rawTechnicians =
+      (asAny?.Productivity?.TechnicianRankings ??
+        asAny?.productivity?.technicianRankings) ||
+      [];
     technicianRows.value =
-      (asAny?.technicianPerformance as any[]) ?? mock.technicians;
+      rawTechnicians.length > 0
+        ? rawTechnicians.map((t: any) => ({
+            technician: t.TechnicianName ?? t.technicianName ?? "Unknown",
+            completed: t.CompletedTickets ?? t.completedTickets ?? 0,
+            inProgress: 0,
+            revenue: t.TotalRevenue ?? t.totalRevenue ?? 0,
+            customerSatisfaction:
+              100 - (t.ComplaintRate ?? t.complaintRate ?? 0) * 100,
+          }))
+        : mock.technicians;
+
     // Mock data for warranty and complaints
     warrantyAndComplaints.value = {
       loading: false,
@@ -641,5 +732,43 @@ onMounted(() => {
 
 :deep(.el-card) {
   overflow: hidden !important;
+}
+
+/* Kích hoạt chế độ tối (bắt buộc) cho các thẻ/card trong Dashboard nếu global CSS Tailwind chưa load kịp */
+:global(html.dark) .dashboard-workshop {
+  --default-box-color: #161618 !important;
+  --default-bg-color: #070707 !important;
+  --el-bg-color-overlay: #1d1e1f !important;
+  --el-text-color-primary: #e5e6eb !important;
+  --el-border-color-light: #414243 !important;
+}
+
+:global(html.dark) .dashboard-workshop :deep(.el-card) {
+  background-color: #1d1e1f !important;
+  border-color: #414243 !important;
+  color: #e5e6eb !important;
+}
+
+:global(html.dark) .dashboard-workshop :deep(.el-card__header) {
+  border-bottom-color: #414243 !important;
+}
+
+:global(html.dark) .dashboard-workshop :deep(.art-card) {
+  background-color: #1d1e1f !important;
+  border-color: #414243 !important;
+}
+
+:global(html.dark) .dashboard-workshop :deep(.art-card p) {
+  color: #e5e6eb !important;
+}
+
+:global(html.dark) .dashboard-workshop .text-g-900 {
+  color: #e5e6eb !important;
+}
+
+:global(html.dark) .dashboard-workshop .bg-green-50 {
+  background-color: rgb(22 101 52 / 30%) !important;
+  color: #4ade80 !important;
+  border-color: rgb(21 128 61 / 50%) !important;
 }
 </style>

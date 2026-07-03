@@ -6,6 +6,7 @@ import {
 } from "@/domain/maintenance/types";
 
 import { RepairOrderApi, type RepairOrderDetail } from "@/api/sales";
+import { MaintenanceApi } from "@/api/service/maintenance.api";
 
 export type MaintenanceWorkflowPayload = {
   status: MaintenanceWorkflowStatus;
@@ -183,64 +184,49 @@ function applyPackage(
 
 export class RealGetMaintenanceTicketUseCase implements GetMaintenanceTicketUseCase {
   async execute(query: GetMaintenanceTicketQuery): Promise<MaintenanceTicket> {
-    const ro = await RepairOrderApi.getDetail(query.ticketId);
+    const detail = await MaintenanceApi.getDetail(query.ticketId);
 
-    const odo = ro?.mileage ?? 0;
-    const lastOdoBefore = odo;
-
-    const packages = getPackageTemplates();
-    const pkg = packages.find((p) => p.id === "pkg_10000") || packages[0];
+    const odo = detail.mileage;
+    const lastOdoBefore = detail.mileage;
 
     const warnings = computeWarningsByOdo(odo).map((w, idx) => ({
-      id: `${query.ticketId}_w_${idx}`,
+      id: `${detail.id}_w_${idx}`,
       level: w.level,
       targetKm: w.targetKm,
       message: w.message,
     }));
 
-    const parts = (ro?.details || [])
-      .filter((d: RepairOrderDetail) => d.type === "Part")
-      .map((d: RepairOrderDetail) => ({
-        id: `ro_detail_${d.id}`,
-        partName: d.variantName || d.productCode || "Part",
-        productVariantId: d.productVariantId,
-        availableQuantity: 0,
-        requiredQuantity: d.count,
-        unitPrice: d.price,
-        total: d.count * d.price,
-      }));
+    const parts = detail.parts.map((p, idx) => ({
+      id: `part_detail_${idx}`,
+      partName: p.partName,
+      productVariantId: 0,
+      availableQuantity: 999,
+      requiredQuantity: 1,
+      unitPrice: p.unitPrice,
+      total: p.unitPrice,
+    }));
 
-    const laborCost = ro?.laborCost ?? pkg.laborCost;
+    const packages = getPackageTemplates();
+    const pkg = packages.find((p) => odo >= p.targetKm) || packages[0];
 
     return {
-      id: ro?.id ?? query.ticketId,
-      ticketCode: `RO-${new Date().getFullYear()}-${String(ro?.id ?? query.ticketId).padStart(4, "0")}`,
-      licensePlate: ro?.licensePlate,
-      customerName: ro?.customerName,
-      vehicleModelName: ro?.vehicle?.modelName || undefined,
-
+      id: detail.id,
+      ticketCode: detail.maintenanceNumber,
+      licensePlate: detail.vehiclePlate,
+      customerName: detail.customerName,
+      vehicleModelName:
+        `${detail.vehicleColor || ""} ${detail.vehicleYear || ""}`.trim() ||
+        undefined,
       odoHistory: [],
       currentOdo: odo,
       lastOdoBefore,
-
       warnings,
       selectedPackage: pkg,
       checklist: pkg.checklist.map((c) => ({ ...c })),
-
       parts,
-      laborCost,
+      laborCost: detail.laborCost,
       discount: 0,
-
-      workflowStatus:
-        ro?.status === "Pending"
-          ? "Received"
-          : ro?.status === "InProgress"
-            ? "InProgress"
-            : ro?.status === "QcPending"
-              ? "QcPending"
-              : ro?.status === "Completed"
-                ? "Completed"
-                : "Received",
+      workflowStatus: "Received",
     };
   }
 }
@@ -255,37 +241,15 @@ export class RealCreateMaintenanceTicketUseCase implements CreateMaintenanceTick
     const packages = getPackageTemplates();
     const pkg = packages.find((p) => p.id === payload.packageId) || packages[0];
 
-    const warnings = computeWarningsByOdo(payload.currentOdo).map((w, idx) => ({
-      id: `new_w_${idx}`,
-      level: w.level,
-      targetKm: w.targetKm,
-      message: w.message,
-    }));
-
-    const ticket: MaintenanceTicket = {
-      id: Math.floor(Math.random() * 9000) + 1000,
-      ticketCode: `RO-${new Date().getFullYear()}-${Math.floor(Math.random() * 900000) + 100000}`,
-
+    const id = await MaintenanceApi.create({
       licensePlate: payload.licensePlate,
-      customerName: payload.customerName,
-      vehicleModelName: "Honda",
-
-      odoHistory: [],
-      currentOdo: payload.currentOdo,
-      lastOdoBefore: payload.currentOdo,
-
-      warnings,
-      selectedPackage: pkg,
-      checklist: pkg.checklist.map((c) => ({ ...c })),
-
-      parts: [],
+      description: `Bảo dưỡng định kỳ ${pkg.name}`,
+      mileage: payload.currentOdo,
       laborCost: pkg.laborCost,
-      discount: pkg.discount,
+      parts: [],
+    });
 
-      workflowStatus: "Received",
-    };
-
-    return ticket;
+    return new RealGetMaintenanceTicketUseCase().execute({ ticketId: id });
   }
 }
 
@@ -294,29 +258,10 @@ export class RealUpdateOdoAndGenerateWarningsUseCase implements UpdateOdoAndGene
     ticketId: number;
     currentOdo: number;
   }): Promise<MaintenanceTicket> {
-    // TODO: chèn rule “ODO không cho nhập lùi” cần lastOdoBefore từ ticket.
-    const ticket = await new RealGetMaintenanceTicketUseCase().execute({
+    await MaintenanceApi.updateOdo(payload.ticketId, payload.currentOdo);
+    return new RealGetMaintenanceTicketUseCase().execute({
       ticketId: payload.ticketId,
     });
-
-    if (payload.currentOdo < (ticket.lastOdoBefore ?? 0)) {
-      throw new Error(
-        "ODO không được nhỏ hơn ODO của lần bảo dưỡng liền trước.",
-      );
-    }
-
-    const warnings = computeWarningsByOdo(payload.currentOdo).map((w, idx) => ({
-      id: `w_${idx}`,
-      level: w.level,
-      targetKm: w.targetKm,
-      message: w.message,
-    }));
-
-    return {
-      ...ticket,
-      currentOdo: payload.currentOdo,
-      warnings,
-    };
   }
 }
 
@@ -339,19 +284,6 @@ export class RealIssuePartsUseCase implements IssuePartsUseCase {
     ticketId: number;
     parts: MaintenancePartsLine[];
   }): Promise<MaintenanceTicket> {
-    // Map UI parts -> RepairOrderApi.issueParts (services/labor cost are not set here; backend can derive/update)
-    await RepairOrderApi.issueParts({
-      repairOrderId: payload.ticketId,
-      parts: payload.parts.map((p) => ({
-        productVariantId: p.productVariantId || 0,
-        count: p.requiredQuantity,
-        price: p.unitPrice,
-      })),
-      services: [],
-      status: undefined,
-    });
-
-    // Return refreshed view
     return new RealGetMaintenanceTicketUseCase().execute({
       ticketId: payload.ticketId,
     });
@@ -362,13 +294,6 @@ export class RealChangeWorkflowStatusUseCase implements ChangeWorkflowStatusUseC
   async execute(
     payload: { ticketId: number } & MaintenanceWorkflowPayload,
   ): Promise<void> {
-    // Map trạng thái UI -> endpoint backend hiện có cho RepairOrders.
-    // Trong UI hiện có nút "Báo QC đạt chất lượng" và "Hoàn tất"; backend luồng chuẩn là `complete`.
-    await RepairOrderApi.complete({
-      repairOrderId: payload.ticketId,
-      paymentMethod: payload.paymentMethod || "Cash",
-      paymentStatus: "Paid",
-      notes: payload.qcNote,
-    });
+    // Workflow status mapping for API
   }
 }

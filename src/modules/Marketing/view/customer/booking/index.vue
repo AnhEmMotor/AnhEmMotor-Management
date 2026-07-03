@@ -1,25 +1,28 @@
 <template>
   <div
-    class="customer-booking-page flex flex-col min-h-screen bg-[#F8FAFC] font-inter text-[#0F172A]"
+    class="customer-booking-page flex flex-col min-h-screen bg-[#F8FAFC] dark:bg-[#020617] font-inter text-[#0F172A] dark:text-[#E2E8F0]"
   >
     <div
-      class="bg-white border-b border-slate-200 px-8 py-5 shrink-0 shadow-sm relative z-20"
+      class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-8 py-5 shrink-0 shadow-sm relative z-20"
     >
       <div class="flex justify-between items-center max-w-[1600px] mx-auto">
         <div class="flex items-center gap-5">
           <div
-            class="size-11 rounded-xl bg-[#001529] flex-cc text-white shadow-xl"
+            class="size-11 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex-cc text-slate-800 dark:text-white shadow-sm shrink-0"
           >
-            <ArtSvgIcon icon="ri:calendar-event-line" class="text-xl" />
+            <ArtSvgIcon
+              icon="ri:calendar-event-line"
+              class="text-xl text-blue-500 dark:text-blue-400"
+            />
           </div>
           <div>
             <h1
-              class="m-0 text-xl font-black tracking-tight text-slate-900 leading-none"
+              class="m-0 text-xl font-black tracking-tight text-slate-900 dark:text-slate-100 leading-none"
             >
               Trung tâm Điều phối Đặt lịch
             </h1>
             <p
-              class="m-0 text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-2 flex items-center gap-2"
+              class="m-0 text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mt-2 flex items-center gap-2"
             >
               <span
                 class="size-1.5 rounded-full bg-emerald-500 animate-pulse"
@@ -30,9 +33,11 @@
         </div>
 
         <div class="flex items-center gap-3">
-          <div class="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+          <div
+            class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-750"
+          >
             <div
-              class="px-4 py-1.5 rounded-lg bg-white shadow-sm text-[10px] font-black uppercase text-slate-700"
+              class="px-4 py-1.5 rounded-lg bg-white dark:bg-slate-900 shadow-sm text-[10px] font-black uppercase text-slate-700 dark:text-slate-200"
             >
               Lịch tháng
             </div>
@@ -44,9 +49,10 @@
           </div>
           <button
             @click="handleCreateNew"
-            class="h-10 px-6 bg-[#001529] text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg hover:bg-blue-700 transition-all active:scale-95"
+            class="h-10 px-6 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center justify-center gap-2"
           >
-            + Đặt lịch mới
+            <ArtSvgIcon icon="ri:calendar-todo-line" class="text-blue-500" /> +
+            Đặt lịch mới
           </button>
         </div>
       </div>
@@ -56,27 +62,29 @@
       class="flex-1 flex overflow-hidden max-w-[1600px] mx-auto w-full p-6 gap-6"
     >
       <div
-        class="flex-1 bg-white border border-slate-200 rounded-[32px] shadow-sm overflow-hidden flex flex-col"
+        class="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[32px] shadow-sm overflow-hidden flex flex-col"
       >
         <div
-          class="p-4 border-b border-slate-50 flex justify-between items-center bg-slate-50/30"
+          class="p-4 border-b border-slate-50 dark:border-slate-850 flex justify-between items-center bg-slate-50/30 dark:bg-slate-950/20"
         >
           <div class="flex gap-4">
             <div class="flex items-center gap-2">
               <span class="size-2 rounded-full bg-red-500"></span>
-              <span class="text-[9px] font-black uppercase text-slate-400"
+              <span
+                class="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500"
                 >Chờ xác nhận</span
               >
             </div>
             <div class="flex items-center gap-2">
               <span class="size-2 rounded-full bg-blue-500"></span>
-              <span class="text-[9px] font-black uppercase text-slate-400"
+              <span
+                class="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500"
                 >Đã xác nhận</span
               >
             </div>
           </div>
           <div
-            class="text-[10px] font-black text-blue-600 uppercase tracking-widest"
+            class="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest"
           >
             Tháng 02 / 2025
           </div>
@@ -88,7 +96,7 @@
           <ElCalendar v-model="currentDate" class="combat-calendar">
             <template #date-cell="{ data }">
               <div
-                class="relative flex flex-col h-full min-h-[110px] p-2 transition-all hover:bg-blue-50/30 group/cell"
+                class="relative flex flex-col h-full min-h-[110px] p-2 transition-all hover:bg-blue-50/30 dark:hover:bg-blue-950/20 group/cell"
                 :class="{ 'is-selected': data.isSelected }"
                 @click="handleCellClick(data.day)"
               >
@@ -126,13 +134,13 @@
 
       <div class="w-80 flex flex-col gap-5 shrink-0">
         <div
-          class="flex-1 bg-white border border-slate-200 rounded-[32px] shadow-sm flex flex-col overflow-hidden border-t-4 border-t-red-500"
+          class="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[32px] shadow-sm flex flex-col overflow-hidden border-t-4 border-t-red-500"
         >
           <div
-            class="p-5 border-b border-slate-100 bg-red-50/30 flex justify-between items-center"
+            class="p-5 border-b border-slate-100 dark:border-slate-850 bg-red-50/30 dark:bg-red-950/20 flex justify-between items-center"
           >
             <h3
-              class="m-0 text-xs font-black uppercase tracking-widest text-red-600 flex items-center gap-2"
+              class="m-0 text-xs font-black uppercase tracking-widest text-red-600 dark:text-red-400 flex items-center gap-2"
             >
               <ArtSvgIcon icon="ri:notification-badge-line" /> Cần xác nhận
             </h3>
@@ -148,24 +156,27 @@
             <div
               v-for="booking in pendingBookings"
               :key="booking.id"
-              class="p-4 rounded-2xl border border-red-100 bg-red-50/10 hover:bg-red-50 transition-all cursor-pointer group relative"
+              class="p-4 rounded-2xl border border-red-100 dark:border-red-900 bg-red-50/10 dark:bg-red-950/10 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all cursor-pointer group relative"
               @click="handleBookingClick(booking)"
             >
               <div class="flex justify-between items-start mb-2">
                 <span
-                  class="text-[8px] font-black px-2 py-0.5 rounded bg-white border border-red-100 text-red-500 uppercase"
+                  class="text-[8px] font-black px-2 py-0.5 rounded bg-white dark:bg-slate-900 border border-red-100 dark:border-red-900 text-red-500 uppercase"
                 >
                   {{ booking.typeLabel }}
                 </span>
-                <span class="text-[9px] font-black text-slate-400">{{
-                  booking.time
-                }}</span>
+                <span
+                  class="text-[9px] font-black text-slate-400 dark:text-slate-500"
+                  >{{ booking.time }}</span
+                >
               </div>
-              <h4 class="m-0 text-sm font-black text-slate-800">
+              <h4
+                class="m-0 text-sm font-black text-slate-800 dark:text-slate-100"
+              >
                 {{ booking.customerName }}
               </h4>
               <p
-                class="m-0 text-[11px] font-bold text-slate-500 mt-1 italic truncate"
+                class="m-0 text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-1 italic truncate"
               >
                 "{{ booking.content }}"
               </p>
@@ -194,7 +205,7 @@
         </div>
 
         <div
-          class="bg-[#001529] p-5 rounded-[32px] text-white shadow-2xl relative overflow-hidden group"
+          class="bg-[#001529] dark:bg-slate-950 p-5 rounded-[32px] text-white border border-transparent dark:border-slate-800 shadow-2xl relative overflow-hidden group"
         >
           <ArtSvgIcon
             icon="ri:mail-send-line"
@@ -396,8 +407,9 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { ElMessage, ElLoading } from "element-plus";
+import { ElMessage, ElLoading, ElMessageBox } from "element-plus";
 import { BookingApi, Booking } from "@/api/sales";
+import { useUserStore } from "@/application/store/user";
 
 defineOptions({ name: "BookingCalendar" });
 
@@ -407,14 +419,19 @@ const dialogTitle = ref("Đặt lịch mới");
 const editingBookingId = ref<number | null>(null);
 const activeBooking = ref<any>(null);
 
+const userStore = useUserStore();
+const isAdmin = computed(() => true); // Tạm thời cho phép tất cả các vai trò chỉnh sửa/hủy lịch hẹn
+
 const bookingForm = ref({
   customerName: "",
   phone: "",
+  email: "",
   time: "09:00",
   date: "",
   type: "TestDrive",
   content: "",
   status: "Pending",
+  location: "",
 });
 
 const bookings = ref<any[]>([]);
@@ -482,11 +499,13 @@ const handleCellClick = (day: string) => {
   bookingForm.value = {
     customerName: "",
     phone: "",
+    email: "",
     time: "09:00",
     date: day,
     type: "TestDrive",
     content: "",
     status: "Pending",
+    location: "",
   };
   dialogVisible.value = true;
 };
@@ -532,9 +551,34 @@ const handleSaveBooking = async () => {
   if (!bookingForm.value.phone) return;
 
   if (isEditing.value) {
-    ElMessage.warning(
-      "Hệ thống không hỗ trợ chỉnh sửa trực tiếp, vui lòng xác nhận hoặc liên hệ quản trị viên.",
-    );
+    if (!isAdmin.value) {
+      ElMessage.warning(
+        "Chỉ quản trị viên (Admin) mới có quyền chỉnh sửa trực tiếp lịch hẹn.",
+      );
+      return;
+    }
+
+    try {
+      const dt = new Date(
+        `${bookingForm.value.date}T${bookingForm.value.time}`,
+      );
+      await BookingApi.update(editingBookingId.value!, {
+        id: editingBookingId.value!,
+        fullName: bookingForm.value.customerName,
+        phoneNumber: bookingForm.value.phone,
+        email: bookingForm.value.email || "",
+        preferredDate: dt.toISOString(),
+        note: bookingForm.value.content,
+        bookingType: bookingForm.value.type,
+        location: bookingForm.value.location || "Showroom",
+        status: bookingForm.value.status,
+      });
+      ElMessage.success("Cập nhật lịch hẹn thành công");
+      await fetchBookings();
+      dialogVisible.value = false;
+    } catch (err: any) {
+      ElMessage.error(err.message || "Lỗi khi cập nhật lịch hẹn");
+    }
     return;
   }
 
@@ -557,8 +601,36 @@ const handleSaveBooking = async () => {
   }
 };
 
-const handleDeleteBooking = () => {
-  ElMessage.warning("Hệ thống không hỗ trợ xóa trực tiếp lịch hẹn.");
+const handleDeleteBooking = async () => {
+  if (!isAdmin.value) {
+    ElMessage.warning(
+      "Chỉ quản trị viên (Admin) mới có quyền hủy/xóa lịch hẹn.",
+    );
+    return;
+  }
+
+  try {
+    await ElMessageBox.confirm(
+      "Bạn có chắc chắn muốn hủy và xóa lịch hẹn này không?",
+      "Xác nhận",
+      {
+        confirmButtonText: "Đồng ý",
+        cancelButtonText: "Hủy bỏ",
+        type: "warning",
+      },
+    );
+
+    if (editingBookingId.value) {
+      await BookingApi.delete(editingBookingId.value);
+      ElMessage.success("Đã hủy lịch hẹn thành công");
+      await fetchBookings();
+      dialogVisible.value = false;
+    }
+  } catch (err: any) {
+    if (err !== "cancel") {
+      ElMessage.error(err.message || "Lỗi khi hủy lịch hẹn");
+    }
+  }
 };
 </script>
 
@@ -641,5 +713,154 @@ const handleDeleteBooking = () => {
     padding: 20px 32px;
     border-top: 1px solid #f1f5f9;
   }
+}
+
+// Dark Mode overrides
+:global(html.dark .customer-booking-page) {
+  background-color: #05070b !important;
+  color: #f8fafc !important;
+}
+
+:global(html.dark .customer-booking-page .bg-white) {
+  background-color: #10141c !important;
+}
+
+:global(html.dark .customer-booking-page .border-slate-200) {
+  border-color: rgb(255 255 255 / 12%) !important;
+}
+
+:global(html.dark .customer-booking-page .bg-slate-50\/30) {
+  background-color: rgb(255 255 255 / 2%) !important;
+}
+
+:global(html.dark .customer-booking-page .border-b.border-slate-50) {
+  border-color: rgb(255 255 255 / 8%) !important;
+}
+
+:global(html.dark .customer-booking-page .text-slate-900) {
+  color: #f8fafc !important;
+}
+
+:global(html.dark .customer-booking-page .text-slate-800) {
+  color: #e5e7eb !important;
+}
+
+:global(html.dark .customer-booking-page .text-slate-500) {
+  color: #cbd5e1 !important;
+}
+
+:global(html.dark .customer-booking-page .text-slate-400) {
+  color: #94a3b8 !important;
+}
+
+:global(html.dark .customer-booking-page .bg-slate-100) {
+  background-color: #111827 !important;
+  border-color: rgb(255 255 255 / 12%) !important;
+}
+
+:global(html.dark .customer-booking-page .bg-white.shadow-sm) {
+  background-color: #10141c !important;
+  color: #f8fafc !important;
+}
+
+:global(html.dark .customer-booking-page .hover\:bg-blue-50\/30:hover) {
+  background-color: rgb(30 58 138 / 20%) !important;
+}
+
+:global(html.dark .customer-booking-page .bg-red-50\/30) {
+  background-color: rgb(239 68 68 / 10%) !important;
+  border-bottom-color: rgb(255 255 255 / 8%) !important;
+}
+
+:global(html.dark .customer-booking-page .border-slate-100) {
+  border-color: rgb(255 255 255 / 8%) !important;
+}
+
+:global(html.dark .customer-booking-page .border-red-100.bg-red-50\/10) {
+  background-color: rgb(239 68 68 / 5%) !important;
+  border-color: rgb(239 68 68 / 20%) !important;
+}
+
+:global(html.dark .customer-booking-page .border-red-100.bg-red-50\/10:hover) {
+  background-color: rgb(239 68 68 / 10%) !important;
+}
+
+:global(html.dark .customer-booking-page .bg-white.border-red-100) {
+  background-color: #10141c !important;
+  border-color: rgb(239 68 68 / 20%) !important;
+}
+
+:global(html.dark .customer-booking-page .combat-calendar) {
+  background-color: #10141c !important;
+
+  --el-calendar-header-border-bottom: 1px solid rgb(255 255 255 / 8%);
+}
+
+:global(
+  html.dark .customer-booking-page .combat-calendar .el-calendar-table td
+) {
+  border-color: rgb(255 255 255 / 8%) !important;
+}
+
+:global(
+  html.dark
+    .customer-booking-page
+    .combat-calendar
+    .el-calendar-table
+    td.is-today
+) {
+  background-color: rgb(30 58 138 / 20%) !important;
+}
+
+:global(html.dark .customer-booking-page .combat-input .el-input__wrapper),
+:global(html.dark .customer-booking-page .combat-time .el-input__wrapper) {
+  background-color: #111827 !important;
+  border-color: rgb(255 255 255 / 12%) !important;
+  box-shadow: none !important;
+}
+
+:global(html.dark .customer-booking-page .combat-input .el-input__inner),
+:global(html.dark .customer-booking-page .combat-time .el-input__inner) {
+  color: #f8fafc !important;
+}
+
+:global(html.dark .customer-booking-page .combat-textarea .el-textarea__inner) {
+  background-color: #111827 !important;
+  border-color: rgb(255 255 255 / 12%) !important;
+  color: #f8fafc !important;
+}
+
+:global(html.dark .combat-booking-dialog) {
+  background-color: #10141c !important;
+  border: 1px solid rgb(255 255 255 / 12%) !important;
+}
+
+:global(html.dark .combat-booking-dialog .el-dialog__header) {
+  border-bottom: 1px solid rgb(255 255 255 / 8%) !important;
+}
+
+:global(html.dark .combat-booking-dialog .el-dialog__footer) {
+  border-top: 1px solid rgb(255 255 255 / 8%) !important;
+}
+
+:global(html.dark .combat-booking-dialog h3.text-slate-800) {
+  color: #f8fafc !important;
+}
+
+:global(html.dark .combat-booking-dialog label.text-slate-400) {
+  color: #cbd5e1 !important;
+}
+
+:global(html.dark .combat-booking-dialog .bg-slate-50) {
+  background-color: #111827 !important;
+  border-color: rgb(255 255 255 / 8%) !important;
+}
+
+:global(html.dark .combat-booking-dialog .border-slate-100) {
+  border-color: rgb(255 255 255 / 8%) !important;
+}
+
+:global(html.dark .combat-booking-dialog .text-slate-500) {
+  color: #cbd5e1 !important;
 }
 </style>

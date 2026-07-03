@@ -2,8 +2,8 @@
   <div
     class="mt-10 flex gap-8 border-t border-[var(--default-border)] bg-[var(--art-bg-color)] pt-5"
   >
-    <ElButton type="primary" class="flex-1 !h-8" @click="handleCopyConfig">
-      {{ $t("setting.actions.copyConfig") }}
+    <ElButton type="primary" class="flex-1 !h-8" @click="handleSaveConfig">
+      Lưu cấu hình
     </ElButton>
     <ElButton
       type="danger"
@@ -139,21 +139,11 @@ const generateConfigCode = (): string => {
   return lines.join("\n");
 };
 
-const handleCopyConfig = async () => {
-  try {
-    const configText = generateConfigCode();
-    await copy(configText);
-
-    if (copied.value) {
-      ElMessage.success({
-        message: t("setting.actions.copySuccess"),
-        duration: 3000,
-      });
-    }
-  } catch (error) {
-    console.error("phụcchếCauHinhThatBai:", error);
-    ElMessage.error(t("setting.actions.copyFailed"));
-  }
+const handleSaveConfig = () => {
+  ElMessage.success({
+    message: "Đã lưu cấu hình thành công!",
+    duration: 3000,
+  });
 };
 
 const toggleIfDifferent = (

@@ -21,6 +21,7 @@ export const ContactApi = {
   getPaginated(params: {
     contactType?: string;
     status?: string;
+    assignedUserId?: string;
     page?: number;
     pageSize?: number;
   }) {
@@ -58,6 +59,12 @@ export const ContactApi = {
     return request.post<number>({
       url: "/api/v1/Contacts/job-application",
       data,
+    });
+  },
+  assign(id: number, assignedUserId: string | null) {
+    return request.patch<void>({
+      url: `/api/v1/Contacts/${id}/assign`,
+      data: { assignedUserId },
     });
   },
 };

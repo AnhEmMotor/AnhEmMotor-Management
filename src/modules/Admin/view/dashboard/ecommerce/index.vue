@@ -2,7 +2,9 @@
   <div class="ecommerce">
     <!-- Bộ Điều Hướng Chu Kỳ -->
     <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold text-gray-800">📊 Tổng quan kinh doanh</h1>
+      <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
+        📊 Tổng quan kinh doanh
+      </h1>
       <div class="flex justify-end gap-2">
         <ElButton
           @click="setPeriod('today')"
@@ -52,11 +54,11 @@
         >
           <div>
             <div
-              class="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-2"
+              class="text-gray-500 dark:text-gray-400 text-sm font-semibold uppercase tracking-wider mb-2"
             >
               DOANH THU THỰC TẾ
             </div>
-            <div class="text-3xl font-bold text-gray-800">
+            <div class="text-3xl font-bold text-gray-800 dark:text-gray-100">
               {{ formatCurrency(summary.totalRevenue) }}
             </div>
           </div>
@@ -72,11 +74,11 @@
               {{ summary.revenueVsYesterdayPercentage >= 0 ? "▲ +" : "▼ "
               }}{{ summary.revenueVsYesterdayPercentage }}% so với hôm qua
             </div>
-            <div class="text-sm text-gray-500 mt-1">
+            <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
               Mục tiêu ngày: {{ formatCurrency(summary.dailyTarget) }}
             </div>
             <div
-              class="w-full bg-gray-200 rounded-full h-2 mt-2 flex items-center relative overflow-hidden"
+              class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-2 flex items-center relative overflow-hidden"
             >
               <div
                 class="bg-blue-600 h-2 rounded-full transition-all duration-500"
@@ -89,7 +91,9 @@
                 }"
               ></div>
             </div>
-            <div class="text-right text-xs font-bold text-gray-600 mt-1">
+            <div
+              class="text-right text-xs font-bold text-gray-600 dark:text-gray-400 mt-1"
+            >
               {{
                 Math.round(
                   (summary.totalRevenue / (summary.dailyTarget || 1)) * 100,
@@ -113,16 +117,16 @@
         >
           <div>
             <div
-              class="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-2"
+              class="text-gray-500 dark:text-gray-400 text-sm font-semibold uppercase tracking-wider mb-2"
             >
               LỢI NHUẬN RÒNG
             </div>
-            <div class="text-3xl font-bold text-gray-800">
+            <div class="text-3xl font-bold text-gray-800 dark:text-gray-100">
               {{ formatCurrency(summary.netProfit) }}
             </div>
           </div>
           <div class="mt-4">
-            <div class="text-sm font-medium text-gray-700">
+            <div class="text-sm font-medium text-gray-700 dark:text-gray-300">
               Biên lợi nhuận: {{ summary.profitMargin }}%
             </div>
             <div
@@ -146,30 +150,30 @@
           :class="[
             'art-card p-5 h-full border-l-4 flex flex-col justify-between',
             summary.isPendingAlert
-              ? 'border-yellow-500 bg-yellow-50'
+              ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/30'
               : 'border-orange-500',
           ]"
         >
           <div>
             <div
-              class="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-2"
+              class="text-gray-500 dark:text-gray-400 text-sm font-semibold uppercase tracking-wider mb-2"
             >
               TIỀN ĐANG TREO
             </div>
-            <div class="text-3xl font-bold text-gray-800">
+            <div class="text-3xl font-bold text-gray-800 dark:text-gray-100">
               {{ formatCurrency(summary.pendingAmount) }}
             </div>
           </div>
-          <div class="mt-4 text-sm text-gray-600 space-y-2">
+          <div class="mt-4 text-sm text-gray-600 dark:text-gray-400 space-y-2">
             <div class="flex justify-between items-center border-b pb-1">
               <span>Cọc giữ xe:</span>
-              <span class="font-medium text-gray-800">{{
+              <span class="font-medium text-gray-800 dark:text-gray-100">{{
                 formatCurrency(summary.depositAmount)
               }}</span>
             </div>
             <div class="flex justify-between items-center pt-1">
               <span>Chờ giải ngân:</span>
-              <span class="font-medium text-gray-800">{{
+              <span class="font-medium text-gray-800 dark:text-gray-100">{{
                 formatCurrency(summary.loanWaitAmount)
               }}</span>
             </div>
@@ -190,45 +194,53 @@
         >
           <div>
             <div
-              class="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-2"
+              class="text-gray-500 dark:text-gray-400 text-sm font-semibold uppercase tracking-wider mb-2"
             >
               CẦN XỬ LÝ
             </div>
           </div>
           <div class="mt-2 space-y-3">
             <div
-              class="flex justify-between items-center cursor-pointer hover:bg-gray-50 p-1 rounded transition"
+              class="flex justify-between items-center cursor-pointer hover:bg-gray-50 dark:bg-gray-800 p-1 rounded transition"
             >
               <div class="flex items-center gap-2">
                 <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
-                <span class="text-sm text-gray-700">Khiếu nại mới</span>
+                <span class="text-sm text-gray-700 dark:text-gray-300"
+                  >Khiếu nại mới</span
+                >
               </div>
               <span class="font-bold">{{ summary.newComplaintsCount }}</span>
             </div>
             <div
-              class="flex justify-between items-center cursor-pointer hover:bg-gray-50 p-1 rounded transition"
+              class="flex justify-between items-center cursor-pointer hover:bg-gray-50 dark:bg-gray-800 p-1 rounded transition"
             >
               <div class="flex items-center gap-2">
                 <div class="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
-                <span class="text-sm text-gray-700">NH chậm giải ngân</span>
+                <span class="text-sm text-gray-700 dark:text-gray-300"
+                  >NH chậm giải ngân</span
+                >
               </div>
               <span class="font-bold">{{ summary.delayedLoansCount }}</span>
             </div>
             <div
-              class="flex justify-between items-center cursor-pointer hover:bg-gray-50 p-1 rounded transition"
+              class="flex justify-between items-center cursor-pointer hover:bg-gray-50 dark:bg-gray-800 p-1 rounded transition"
             >
               <div class="flex items-center gap-2">
                 <div class="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
-                <span class="text-sm text-gray-700">Xe sắp hết hàng</span>
+                <span class="text-sm text-gray-700 dark:text-gray-300"
+                  >Xe sắp hết hàng</span
+                >
               </div>
               <span class="font-bold">{{ summary.lowStockVehiclesCount }}</span>
             </div>
             <div
-              class="flex justify-between items-center cursor-pointer hover:bg-gray-50 p-1 rounded transition"
+              class="flex justify-between items-center cursor-pointer hover:bg-gray-50 dark:bg-gray-800 p-1 rounded transition"
             >
               <div class="flex items-center gap-2">
                 <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
-                <span class="text-sm text-gray-700">Lịch hẹn bỏ lỡ</span>
+                <span class="text-sm text-gray-700 dark:text-gray-300"
+                  >Lịch hẹn bỏ lỡ</span
+                >
               </div>
               <span class="font-bold">{{
                 summary.missedAppointmentsCount
@@ -244,7 +256,7 @@
       <ElCol :sm="24" :lg="16">
         <div class="art-card p-5 h-full">
           <div class="art-card-header mb-4">
-            <h3 class="font-bold text-gray-800">
+            <h3 class="font-bold text-gray-800 dark:text-gray-100">
               Biểu đồ doanh thu theo chu kỳ
             </h3>
           </div>
@@ -254,29 +266,36 @@
       <ElCol :sm="24" :lg="8">
         <div class="art-card p-5 h-full">
           <div class="art-card-header mb-4">
-            <h3 class="font-bold text-gray-800">Tóm tắt mục tiêu tháng</h3>
+            <h3 class="font-bold text-gray-800 dark:text-gray-100">
+              Tóm tắt mục tiêu tháng
+            </h3>
           </div>
           <div class="space-y-5 mt-4">
             <div class="flex justify-between items-center">
-              <span class="text-gray-500">Đã đạt:</span>
-              <span class="font-bold text-lg text-gray-800">{{
-                formatCurrency(summary.monthAchieved)
-              }}</span>
+              <span class="text-gray-500 dark:text-gray-400">Đã đạt:</span>
+              <span
+                class="font-bold text-lg text-gray-800 dark:text-gray-100"
+                >{{ formatCurrency(summary.monthAchieved) }}</span
+              >
             </div>
             <div class="flex justify-between items-center">
-              <span class="text-gray-500">Cần thêm:</span>
+              <span class="text-gray-500 dark:text-gray-400">Cần thêm:</span>
               <span class="font-bold text-lg text-red-500">{{
                 formatCurrency(summary.monthRemaining)
               }}</span>
             </div>
             <div class="flex justify-between items-center border-t pt-4">
-              <span class="font-medium text-gray-700">Dự báo cuối tháng:</span>
+              <span class="font-medium text-gray-700 dark:text-gray-300"
+                >Dự báo cuối tháng:</span
+              >
               <span class="font-bold text-xl text-blue-600">{{
                 formatCurrency(summary.monthForecast)
               }}</span>
             </div>
             <div>
-              <div class="flex justify-between text-xs text-gray-500 mb-1">
+              <div
+                class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1"
+              >
                 <span>Tiến độ tháng</span>
                 <span
                   >{{
@@ -308,7 +327,7 @@
         <div class="art-card p-5 h-full">
           <div class="art-card-header mb-6">
             <h3
-              class="font-bold uppercase tracking-wider text-sm text-gray-700"
+              class="font-bold uppercase tracking-wider text-sm text-gray-700 dark:text-gray-300"
             >
               NGUỒN DOANH THU — Hôm nay
             </h3>
@@ -319,9 +338,10 @@
               :key="source.name"
               class="flex items-center gap-4"
             >
-              <span class="text-sm font-medium w-28 text-gray-700">{{
-                source.name
-              }}</span>
+              <span
+                class="text-sm font-medium w-28 text-gray-700 dark:text-gray-300"
+                >{{ source.name }}</span
+              >
               <div class="flex-1">
                 <ElProgress
                   :percentage="source.percent"
@@ -330,9 +350,10 @@
                   color="#409eff"
                 />
               </div>
-              <span class="text-sm font-medium text-gray-800 w-28 text-right">{{
-                formatCurrency(source.amount).replace("₫", "")
-              }}</span>
+              <span
+                class="text-sm font-medium text-gray-800 dark:text-gray-100 w-28 text-right"
+                >{{ formatCurrency(source.amount).replace("₫", "") }}</span
+              >
             </div>
           </div>
           <div class="mt-6 text-center">
@@ -346,7 +367,7 @@
         <div class="art-card p-5 h-full">
           <div class="art-card-header mb-6">
             <h3
-              class="font-bold uppercase tracking-wider text-sm text-gray-700"
+              class="font-bold uppercase tracking-wider text-sm text-gray-700 dark:text-gray-300"
             >
               HIỆU SUẤT SALE — Tháng này
             </h3>
@@ -357,7 +378,8 @@
               :key="staff.employeeName"
               class="flex items-center gap-3"
             >
-              <span class="text-sm font-medium w-32 truncate text-gray-700"
+              <span
+                class="text-sm font-medium w-32 truncate text-gray-700 dark:text-gray-300"
                 >#{{ index + 1 }} {{ staff.employeeName }}</span
               >
               <div class="flex-1">
@@ -372,9 +394,10 @@
                   color="#67c23a"
                 />
               </div>
-              <span class="text-sm text-gray-800 font-medium w-24 text-right">{{
-                formatCurrencyShort(staff.totalSales)
-              }}</span>
+              <span
+                class="text-sm text-gray-800 dark:text-gray-100 font-medium w-24 text-right"
+                >{{ formatCurrencyShort(staff.totalSales) }}</span
+              >
               <span
                 class="text-xs font-bold w-24 text-right flex items-center justify-end"
               >
@@ -397,7 +420,8 @@
           </div>
           <div class="mt-6 pt-4 border-t">
             <div class="flex items-center gap-3">
-              <span class="text-sm font-bold w-32 text-gray-800"
+              <span
+                class="text-sm font-bold w-32 text-gray-800 dark:text-gray-100"
                 >Tổng team:</span
               >
               <div class="flex-1">
@@ -410,7 +434,9 @@
                 />
               </div>
             </div>
-            <div class="text-right text-xs text-gray-500 mt-1">
+            <div
+              class="text-right text-xs text-gray-500 dark:text-gray-400 mt-1"
+            >
               {{ formatCurrency(teamSales) }} / {{ formatCurrency(teamTarget) }}
             </div>
           </div>
@@ -424,7 +450,7 @@
         <div class="art-card p-5">
           <div class="art-card-header mb-4 flex justify-between items-center">
             <h3
-              class="font-bold uppercase tracking-wider text-sm text-gray-700"
+              class="font-bold uppercase tracking-wider text-sm text-gray-700 dark:text-gray-300"
             >
               GIAO DỊCH GẦN NHẤT
             </h3>
@@ -438,18 +464,45 @@
           >
             <ElTableColumn prop="timestamp" label="Thời gian" width="120">
               <template #default="scope">
-                <span class="text-gray-500">{{
+                <span class="text-gray-500 dark:text-gray-400">{{
                   formatTime(scope.row.timestamp)
                 }}</span>
               </template>
             </ElTableColumn>
-            <ElTableColumn label="Giao dịch">
+            <ElTableColumn label="Khách hàng" min-width="150">
               <template #default="scope">
-                <span class="font-medium text-gray-800">{{
+                <span class="font-medium text-gray-800 dark:text-gray-100">{{
                   scope.row.customerName
                 }}</span>
-                <span class="text-gray-500 mx-2">—</span>
-                <span class="text-gray-600">{{ scope.row.productName }}</span>
+              </template>
+            </ElTableColumn>
+            <ElTableColumn label="Sản phẩm / Dịch vụ" min-width="200">
+              <template #default="scope">
+                <span class="text-gray-600 dark:text-gray-300">{{
+                  scope.row.productName
+                }}</span>
+              </template>
+            </ElTableColumn>
+            <ElTableColumn label="Trạng thái" width="120">
+              <template #default="scope">
+                <ElTag
+                  size="small"
+                  :type="
+                    scope.row.status === 'Completed'
+                      ? 'success'
+                      : scope.row.status === 'Pending'
+                        ? 'warning'
+                        : 'danger'
+                  "
+                >
+                  {{
+                    scope.row.status === "Completed"
+                      ? "Hoàn thành"
+                      : scope.row.status === "Pending"
+                        ? "Đang chờ"
+                        : "Hủy/Hoàn"
+                  }}
+                </ElTag>
               </template>
             </ElTableColumn>
             <ElTableColumn prop="amount" label="Số tiền" width="180">
@@ -479,7 +532,9 @@
             <ElTableColumn prop="staffName" label="Nhân viên" width="180" />
           </ElTable>
 
-          <div class="mt-4 text-xs text-gray-500 flex gap-6 border-t pt-4">
+          <div
+            class="mt-4 text-xs text-gray-500 dark:text-gray-400 flex gap-6 border-t pt-4"
+          >
             <div class="flex items-center gap-1">
               <span>⏳</span> Tiền đang treo
             </div>

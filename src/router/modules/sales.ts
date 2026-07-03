@@ -6,35 +6,35 @@ export const salesRoutes: AppRouteRecord = {
   path: "/sales",
   component: "/index/index",
   meta: {
-    title: "Quản lý bán hàng",
+    title: "Quản lý đơn hàng",
     icon: "ri:bill-line",
     roles: ["Admin", "SuperAdmin"],
   },
   children: [
     {
-      path: "draft-orders",
-      name: "DraftSalesOrders",
-      component: "/sales/draft/index",
+      path: "returns",
+      name: "SalesReturns",
+      component: "/sales/returns/index",
       meta: {
-        title: "Phiếu tạm",
-        icon: "ri:file-list-3-line",
+        title: "Quản lý Hủy đơn / Trả hàng",
+        icon: "ri:arrow-go-back-line",
         keepAlive: true,
       },
     },
     {
-      path: "orders",
-      name: "SalesOrders",
-      component: "/sales/order/index",
+      path: "invoices",
+      name: "SalesInvoices",
+      component: "/Admin/view/sales/invoices/index",
       meta: {
-        title: "Phiếu bán hàng",
-        icon: "ri:file-list-3-line",
+        title: "Hóa đơn bán hàng",
+        icon: "ri:receipt-line",
         keepAlive: true,
       },
     },
     {
       path: "sales-report",
       name: "SalesAnalyticsReport",
-      component: "/Accountant/view/reporting/revenue",
+      component: "/Admin/view/sales/sales-report/index",
       meta: {
         title: "Báo cáo bán hàng",
         icon: "ri:money-cny-circle-line",

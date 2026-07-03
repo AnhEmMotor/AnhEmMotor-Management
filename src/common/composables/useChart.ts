@@ -1,7 +1,9 @@
 import { ref, onUnmounted, nextTick, watch, computed, onMounted } from "vue";
 import * as echarts from "echarts";
-import { useWindowSize, useDark } from "@vueuse/core";
+import { useWindowSize } from "@vueuse/core";
 import { getCssVar } from "@/common/utils/ui";
+import { useSettingStore } from "@/application/store/setting";
+import { storeToRefs } from "pinia";
 
 export interface ChartOptions {
   [key: string]: any;
@@ -25,7 +27,8 @@ export const useChartOps = () => ({
 
 export function useChart(options: any = {}) {
   const { initOptions = {}, initDelay = 0, autoTheme = true } = options;
-  const isDark = useDark();
+  const settingStore = useSettingStore();
+  const { isDark } = storeToRefs(settingStore);
   const chartRef = ref<HTMLElement | null>(null);
   let chartInstance: echarts.ECharts | null = null;
   let resizeTimer: number | null = null;

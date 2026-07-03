@@ -279,6 +279,14 @@ body {
   transform: none !important;
 }
 
+.art-loading-fix .el-loading-text {
+  margin-top: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--theme-color, #409eff);
+  letter-spacing: 0.5px;
+}
+
 @media screen and (width <= 1180px) {
   * {
     -webkit-tap-highlight-color: transparent;
@@ -286,10 +294,10 @@ body {
 }
 
 /* Hide any unexpected floating widgets like the 'island god' live2d */
-div[id*='waifu'],
-div[class*='waifu'],
-div[id*='live2d'],
-div[class*='live2d'],
+div[id*="waifu"],
+div[class*="waifu"],
+div[id*="live2d"],
+div[class*="live2d"],
 .lonely-island-widget,
 #island-god {
   display: none !important;

@@ -47,7 +47,7 @@
             type="primary"
             v-ripple
             @click="handleAdd"
-            v-auth="Permissions.OutputsCreate"
+            v-auth="Permissions.Order.DraftOrderManagement.Create"
           >
             <ElIcon class="mr-1"><Plus /></ElIcon> Tạo phiếu bán
           </ElButton>
@@ -97,7 +97,7 @@
                 size="small"
                 type="primary"
                 @click="handleEdit(row)"
-                v-auth="Permissions.OutputsEdit"
+                v-auth="Permissions.Order.DraftOrderManagement.Edit"
               >
                 <ElIcon><Edit /></ElIcon>
               </ElButton>
@@ -112,7 +112,7 @@
                 size="small"
                 type="warning"
                 @click="handleOpenStatusDialog(row)"
-                v-auth="Permissions.OutputsChangeStatus"
+                v-auth="Permissions.Order.DraftOrderManagement.ChangeStatus"
               >
                 <ElIcon><Switch /></ElIcon>
               </ElButton>
@@ -127,7 +127,7 @@
                 size="small"
                 type="success"
                 @click="handleCopyPaymentLink(row)"
-                v-auth="Permissions.OutputsEdit"
+                v-auth="Permissions.Order.DraftOrderManagement.Edit"
               >
                 <ElIcon><Link /></ElIcon>
               </ElButton>
@@ -142,7 +142,7 @@
                 size="small"
                 type="danger"
                 @click="handleDelete(row)"
-                v-auth="Permissions.OutputsDelete"
+                v-auth="Permissions.Order.DraftOrderManagement.Delete"
               >
                 <ElIcon><Delete /></ElIcon>
               </ElButton>

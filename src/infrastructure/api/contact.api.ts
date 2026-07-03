@@ -45,6 +45,12 @@ export const ContactApi = {
   updateInternalNote(data: Contact.UpdateInternalNotePayload) {
     return request.patch<void>({ url: "/api/v1/Contacts/internal-note", data });
   },
+  assign(id: number, assignedUserId: string | null) {
+    return request.patch<void>({
+      url: `/api/v1/Contacts/${id}/assign`,
+      data: { assignedUserId },
+    });
+  },
   createSupportRequest(data: Contact.CreateSupportRequestPayload) {
     return request.post<number>({
       url: "/api/v1/Contacts/support-request",

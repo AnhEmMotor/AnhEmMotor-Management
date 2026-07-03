@@ -107,8 +107,16 @@
 
         <template #operation="{ row }">
           <div v-if="!row.isVariant" class="flex gap-2 justify-center">
-            <ArtButtonTable type="edit" @click="handleEdit(row)" />
-            <ArtButtonTable type="delete" @click="handleDelete(row)" />
+            <ArtButtonTable
+              type="edit"
+              @click="handleEdit(row)"
+              v-auth="Permissions.Order.ProductManagement.Edit"
+            />
+            <ArtButtonTable
+              type="delete"
+              @click="handleDelete(row)"
+              v-auth="Permissions.Order.ProductManagement.Delete"
+            />
           </div>
         </template>
       </ArtTable>
@@ -2245,6 +2253,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/domain/constants/permissions";
 import { ref, computed, watch, onMounted } from "vue";
 import {
   Plus,
@@ -2713,7 +2722,7 @@ onMounted(() => {});
 }
 
 :deep(.el-table__row--level-1) {
-  background-color: #fafafa !important;
+  background-color: var(--el-fill-color-lighter) !important;
 }
 
 :deep(.el-table__expand-icon) {

@@ -634,7 +634,7 @@ const cancelEdit = () => {
     const original = allPolicies.value.find((p) => p.id === editForm.value.id);
     if (original) {
       editForm.value = JSON.parse(JSON.stringify(original));
-      enableTiers.value = !!(original.tiers && (original.tiers as any[]).length > 0);
+      enableTiers.value = !!(original.tiers && original.tiers.length > 0);
     }
     isEditing.value = false;
   }

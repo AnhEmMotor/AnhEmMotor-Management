@@ -8,6 +8,7 @@ export const inventoryRoutes: AppRouteRecord = {
     title: "menus.inventory.title",
     icon: "ri:archive-line",
     roles: ["Admin", "SuperAdmin"],
+    permissions: ["Permissions.Warehouse"],
   },
   children: [
     {
@@ -17,6 +18,7 @@ export const inventoryRoutes: AppRouteRecord = {
       meta: {
         title: "menus.inventory.supplier",
         icon: "ri:team-line",
+        permissions: ["Permissions.Warehouse.SupplierManagement.View"],
       },
     },
     {
@@ -26,6 +28,7 @@ export const inventoryRoutes: AppRouteRecord = {
       meta: {
         title: "Yêu cầu mua hàng",
         icon: "ri:git-pull-request-line",
+        permissions: ["Permissions.Warehouse.PurchaseRequestManagement.View"],
       },
     },
     {
@@ -35,6 +38,7 @@ export const inventoryRoutes: AppRouteRecord = {
       meta: {
         title: "menus.inventory.input",
         icon: "ri:file-list-3-line",
+        permissions: ["Permissions.Warehouse.ReceiptManagement.View"],
       },
     },
     {
@@ -44,6 +48,7 @@ export const inventoryRoutes: AppRouteRecord = {
       meta: {
         title: "menus.inventory.debt",
         icon: "ri:money-cny-box-line",
+        permissions: ["Permissions.Warehouse.DebtPaymentManagement.View"],
       },
     },
     {
@@ -53,6 +58,7 @@ export const inventoryRoutes: AppRouteRecord = {
       meta: {
         title: "menus.inventory.inOutStock",
         icon: "ri:line-chart-line",
+        permissions: ["Permissions.Warehouse.InventoryReportManagement.View"],
       },
     },
     {
@@ -62,6 +68,7 @@ export const inventoryRoutes: AppRouteRecord = {
       meta: {
         title: "menus.inventory.ledger",
         icon: "ri:book-3-line",
+        permissions: ["Permissions.Warehouse.LedgerManagement.View"],
       },
     },
   ],

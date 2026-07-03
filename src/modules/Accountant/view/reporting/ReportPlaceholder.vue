@@ -35,10 +35,10 @@ withDefaults(
   justify-content: center;
   min-height: 108px;
   padding: 18px;
-  color: #9ca3af;
+  color: var(--report-muted);
   text-align: left;
-  background: #111214;
-  border: 1px dashed rgb(255 255 255 / 16%);
+  background: var(--report-panel-soft);
+  border: 1px dashed var(--report-border-strong);
   border-radius: 12px;
 }
 
@@ -58,7 +58,7 @@ withDefaults(
 .report-placeholder__title {
   font-size: 14px;
   font-weight: 700;
-  color: #e5e7eb;
+  color: var(--report-text);
 }
 
 p {
@@ -71,7 +71,7 @@ code {
   display: inline-block;
   margin-top: 6px;
   font-size: 12px;
-  color: #6b7280;
+  color: var(--report-muted-strong);
   white-space: normal;
 }
 </style>

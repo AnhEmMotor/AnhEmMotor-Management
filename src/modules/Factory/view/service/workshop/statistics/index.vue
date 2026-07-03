@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="p-4 statistics-container">
     <!-- Header -->
     <div class="flex items-start justify-between gap-4 mb-6 flex-wrap">

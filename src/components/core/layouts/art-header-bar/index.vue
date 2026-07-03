@@ -46,16 +46,6 @@
           @click="reload"
         />
 
-        <ArtFastEnter
-          v-if="
-            shouldShowFastEnter &&
-            width >= headerBarFastEnterMinWidth &&
-            !isPortal
-          "
-        >
-          <ArtIconButton icon="ri:function-line" class="ml-3" />
-        </ArtFastEnter>
-
         <ArtBreadcrumb
           v-if="
             (shouldShowBreadcrumb && isLeftMenu && !isPortal) ||
