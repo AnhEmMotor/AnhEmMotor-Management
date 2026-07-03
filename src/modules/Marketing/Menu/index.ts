@@ -148,6 +148,26 @@ export const marketingMenu: AppRouteRecord[] = [
               icon: "ri:git-commit-line",
             },
           },
+          {
+            path: "pipeline",
+            name: "CustomerPipeline",
+            component: "/Marketing/view/customer/pipeline/index",
+            meta: {
+              title: "menus.marketing.customerPipeline",
+              icon: "ri:git-repository-line",
+              keepAlive: true,
+            },
+          },
+          {
+            path: "contact",
+            name: "CustomerContactSupport",
+            component: "/Marketing/view/customer/contact/index",
+            meta: {
+              title: "menus.marketing.customerContact",
+              icon: "ri:customer-service-2-line",
+              keepAlive: true,
+            },
+          },
         ],
       },
       {

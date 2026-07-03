@@ -1217,7 +1217,7 @@ const doPrint = () => {
 };
 
 const goBack = () => {
-  router.push("/customer/workshop");
+  router.push("/factory/workshop/repair-history");
 };
 
 // Helper formatting functions

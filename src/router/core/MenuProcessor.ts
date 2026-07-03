@@ -72,8 +72,8 @@ export class MenuProcessor {
 
         if (filteredItem.name === "Dashboard") {
           const hasStatsPerm = permissions.includes(
-            "Permissions.Statistical.View",
-          );
+            "Permissions.Statistical.View"
+          ) || permissions.includes("Permissions.Admin.DashboardManagement.View");
           if (!hasStatsPerm) {
             if (!filteredItem.meta) {
               filteredItem.meta = {} as any;

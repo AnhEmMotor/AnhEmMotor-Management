@@ -40,11 +40,20 @@ export const factoryMenu: AppRouteRecord[] = [
       {
         path: "warranty",
         name: "WorkshopWarranty",
-        component:
-          "/Factory/view/service/warranty-and-complaints/complaints/index",
+        component: "/Factory/view/service/warranty-and-complaints/complaints/index",
         meta: {
           title: "Bảo hành",
           icon: "ri:shield-check-line",
+        },
+      },
+      {
+        path: "warranty/:id",
+        name: "WorkshopWarrantyDetail",
+        component: "/Factory/view/service/warranty-and-complaints/warranty-claim-detail/index",
+        meta: {
+          title: "Chi tiết bảo hành",
+          isHide: true,
+          activePath: "/factory/workshop/warranty",
         },
       },
       {
@@ -54,6 +63,16 @@ export const factoryMenu: AppRouteRecord[] = [
         meta: {
           title: "Bảo trì",
           icon: "ri:tool-line",
+        },
+      },
+      {
+        path: "maintenance/:id",
+        name: "WorkshopMaintenanceDetail",
+        component: "/Factory/view/service/workshop/maintenance-detail/index",
+        meta: {
+          title: "Chi tiết bảo trì",
+          isHide: true,
+          activePath: "/factory/workshop/maintenance",
         },
       },
       {
@@ -74,16 +93,60 @@ export const factoryMenu: AppRouteRecord[] = [
           icon: "ri:star-smile-line",
         },
       },
+      {
+        path: "repair-history",
+        name: "WorkshopRepairHistory",
+        component: "/Factory/view/service/workshop/repair-history/index",
+        meta: {
+          title: "Lịch sử sửa chữa xưởng",
+          icon: "ri:tools-line",
+          keepAlive: true,
+        },
+      },
+      {
+        path: "repair-history/create",
+        name: "WorkshopRepairHistoryCreate",
+        component: "/Factory/view/service/workshop/repair-history/repair-order-form",
+        meta: {
+          title: "Lịch sử sửa chữa xưởng",
+          isHide: true,
+          isHideTab: true,
+          keepAlive: true,
+          activePath: "/factory/workshop/repair-history",
+        },
+      },
+      {
+        path: "repair-history/repair/:id",
+        name: "WorkshopRepairHistoryDetail",
+        component: "/Factory/view/service/workshop/repair-history/repair-order-detail",
+        meta: {
+          title: "Lịch sử sửa chữa xưởng",
+          isHide: true,
+          isHideTab: true,
+          keepAlive: true,
+          activePath: "/factory/workshop/repair-history",
+        },
+      },
     ],
   },
   {
-    path: "/factory/statistics",
-    name: "FactoryStatistics",
-    component: "/Factory/view/service/workshop/statistics/index",
+    path: "/factory/workshop/counter",
+    name: "WorkshopCounter",
+    component: "/index/index",
+    redirect: "/factory/workshop/counter/payment",
     meta: {
-      title: "Thống kê xưởng",
-      icon: "ri:bar-chart-line",
+      title: "menus.service.workshop.counter.title",
+      icon: "ri:money-dollar-circle-line",
+      permissions: ["Permissions.Factory"],
     },
+    children: [
+      {
+        path: "payment",
+        name: "CounterPaymentList",
+        component: "/Factory/view/service/workshop/counter/payment-list/index",
+        meta: { title: "Phiếu thu xưởng", icon: "ri:receipt-line" },
+      },
+    ],
   },
   {
     path: "/factory/administrative",
@@ -104,6 +167,16 @@ export const factoryMenu: AppRouteRecord[] = [
         },
       },
     ],
+  },
+  {
+    path: "/factory/statistics",
+    name: "FactoryStatistics",
+    component: "/Factory/view/service/workshop/statistics/index",
+    meta: {
+      title: "Thống kê xưởng",
+      icon: "ri:bar-chart-line",
+      permissions: ["Permissions.Factory"],
+    },
   },
 ];
 

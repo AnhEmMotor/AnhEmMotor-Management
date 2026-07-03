@@ -366,64 +366,12 @@
             </div>
           </section>
         </div>
-      </div>
 
-      <div class="md:col-span-4">
-        <div class="rounded-xl border border-slate-200 bg-white p-4">
-          <h2 class="text-sm font-bold text-slate-900">
-            🪪 KHÁCH HÀNG &amp; XE
-          </h2>
-
-          <div class="mt-3 space-y-3">
-            <div class="rounded-lg border border-slate-200 p-3">
-              <div class="text-xs text-slate-500">Khách hàng</div>
-              <div class="text-sm font-semibold text-slate-900">
-                {{ ticket.customerName || "—" }}
-              </div>
-            </div>
-
-            <div class="rounded-lg border border-slate-200 p-3">
-              <div class="text-xs text-slate-500">Xe</div>
-              <div class="text-sm font-semibold text-slate-900">
-                {{ ticket.vehicleModelName || "—" }}
-              </div>
-              <div
-                v-if="ticket.licensePlate"
-                class="text-xs text-slate-600 mt-1"
-              >
-                BKS: {{ ticket.licensePlate }}
-              </div>
-            </div>
-
-            <div class="rounded-lg border border-slate-200 p-3">
-              <div class="text-xs text-slate-500">ODO vào xưởng</div>
-              <div class="text-sm font-semibold text-slate-900">
-                {{ ticket.currentOdo ?? "—" }} km
-              </div>
-            </div>
-
-            <div class="rounded-lg border border-slate-200 p-3">
-              <div class="text-xs text-slate-500">Thợ phụ trách (tạm)</div>
-              <div class="text-sm font-semibold text-slate-900">
-                Nguyễn Văn B
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from "vue";
-import { ElInput, ElMessage } from "element-plus";
 
-import { createMaintenanceUseCases } from "@/infrastructure/maintenance/usecasesFactory";
-import type {
-  MaintenancePartsLine,
-  MaintenanceTicket,
-} from "@/domain/maintenance/types";
 
 const usecases = createMaintenanceUseCases();
 
@@ -493,12 +441,7 @@ function formatVnd(value: number): string {
   }
 }
 
-function formatDate(iso: string): string {
-  try {
-    return new Date(iso).toLocaleDateString("vi-VN");
-  } catch {
-    return iso;
-  }
+
 }
 
 async function refreshTicket() {

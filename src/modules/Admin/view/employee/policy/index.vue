@@ -143,6 +143,12 @@ const loadData = async () => {
 const handleReset = () => {
   pagination.current = 1;
   loadData();
+const selectPolicy = (policy: any) => {
+  router.push({
+    name: "HRCommissionPolicyDetail",
+    params: { id: String(policy.id) },
+    query: { dept: activeTab.value },
+  });
 };
 const handleAdd = () => {
   dialogVisible.value = true;
