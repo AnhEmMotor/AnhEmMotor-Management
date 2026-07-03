@@ -1,4 +1,4 @@
-import { AppRouteRecord } from "@/types/router";
+﻿import { AppRouteRecord } from "@/types/router";
 import { Permissions } from "@/domain/constants/permissions";
 
 export const reportingRoutes: AppRouteRecord = {
@@ -29,7 +29,6 @@ export const reportingRoutes: AppRouteRecord = {
         title: "Báo cáo bán hàng",
         icon: "ri:money-cny-circle-line",
         permission: Permissions.StatisticalView,
-        isHide: true,
       },
     },
     {
@@ -40,7 +39,6 @@ export const reportingRoutes: AppRouteRecord = {
         title: "Báo cáo tài chính",
         icon: "ri:file-chart-line",
         permission: Permissions.StatisticalView,
-        isHide: true,
       },
     },
     {
@@ -51,7 +49,6 @@ export const reportingRoutes: AppRouteRecord = {
         title: "Báo cáo trả góp",
         icon: "ri:bank-line",
         permission: Permissions.StatisticalView,
-        isHide: true,
       },
     },
     {
@@ -72,7 +69,6 @@ export const reportingRoutes: AppRouteRecord = {
         title: "Báo cáo xưởng dịch vụ",
         icon: "ri:tools-line",
         permission: Permissions.StatisticalView,
-        isHide: true,
       },
     },
     {
@@ -93,7 +89,6 @@ export const reportingRoutes: AppRouteRecord = {
         title: "Báo cáo nhân sự & hoa hồng",
         icon: "ri:team-line",
         permission: Permissions.StatisticalView,
-        isHide: true,
       },
     },
   ],
