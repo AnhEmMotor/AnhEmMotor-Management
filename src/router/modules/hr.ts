@@ -30,6 +30,15 @@ export const hrRoutes: AppRouteRecord = {
       },
     },
     {
+      path: "commission-policy/detail/:id?",
+      name: "HRCommissionPolicyDetail",
+      component: "/Admin/view/employee/policy/detail",
+      meta: {
+        title: "Chi tiết chính sách",
+        isHide: true,
+      },
+    },
+    {
       path: "payroll",
       name: "HRPayroll",
       component: "/Admin/view/employee/payroll/index",
@@ -54,10 +63,9 @@ export const hrRoutes: AppRouteRecord = {
       name: "HRCommissionReport",
       component: "/Accountant/view/reporting/employee",
       meta: {
-        title: "Báo cáo nhân sự & hoa hồng",
+        title: "menus.hr.report",
         icon: "ri:team-line",
         keepAlive: true,
-        permission: Permissions.StatisticalView,
       },
     },
   ],

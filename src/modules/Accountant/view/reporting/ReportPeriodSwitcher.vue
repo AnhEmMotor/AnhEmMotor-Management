@@ -27,7 +27,7 @@ function select(value: string | number | boolean | undefined) {
       <ElRadioButton value="custom">Tùy chọn</ElRadioButton>
     </ElRadioGroup>
 
-    <div v-if="modelValue === 'custom'" class="report-period-switcher__custom">
+    <div class="report-period-switcher__custom">
       <ElDatePicker
         :model-value="startDate"
         type="date"
@@ -35,7 +35,12 @@ function select(value: string | number | boolean | undefined) {
         placeholder="Từ ngày"
         popper-class="reporting-date-popper"
         class="report-period-switcher__date"
-        @update:model-value="(value: string) => emit('update:startDate', value)"
+        @update:model-value="
+          (value: string) => {
+            emit('update:startDate', value);
+            if (modelValue !== 'custom') emit('update:modelValue', 'custom');
+          }
+        "
       />
       <ElDatePicker
         :model-value="endDate"
@@ -44,7 +49,12 @@ function select(value: string | number | boolean | undefined) {
         placeholder="Đến ngày"
         popper-class="reporting-date-popper"
         class="report-period-switcher__date"
-        @update:model-value="(value: string) => emit('update:endDate', value)"
+        @update:model-value="
+          (value: string) => {
+            emit('update:endDate', value);
+            if (modelValue !== 'custom') emit('update:modelValue', 'custom');
+          }
+        "
       />
     </div>
   </div>
@@ -76,7 +86,6 @@ function select(value: string | number | boolean | undefined) {
   display: grid;
   grid-template-columns: repeat(4, minmax(88px, 1fr));
   overflow: hidden;
-  border: 1px solid rgb(255 255 255 / 14%);
   border-radius: 8px;
 }
 
@@ -94,12 +103,9 @@ function select(value: string | number | boolean | undefined) {
   font-size: 14px;
   font-weight: 600;
   line-height: 1;
-  color: #cbd5e1;
   text-align: center;
   white-space: nowrap;
-  background: #101114;
   border: 0;
-  border-left: 1px solid rgb(255 255 255 / 14%);
   border-radius: 0;
   box-shadow: none !important;
 }
@@ -109,20 +115,12 @@ function select(value: string | number | boolean | undefined) {
 }
 
 :deep(.el-radio-button__original-radio:checked + .el-radio-button__inner) {
-  color: #fff;
-  background: #e84a4a;
+  /* color, background, and border handled by reporting.scss */
 }
 
 :deep(.el-input__wrapper) {
   min-height: 34px;
-  background: #101114;
-  border: 1px solid rgb(255 255 255 / 14%);
   border-radius: 8px;
-  box-shadow: none;
-}
-
-:deep(.el-input__inner) {
-  color: #f8fafc;
 }
 
 @media (width <= 767px) {

@@ -1,7 +1,7 @@
 <template>
   <div class="console-dashboard">
     <div class="mb-6 flex justify-between items-center">
-      <h1 class="text-2xl font-bold text-gray-800">
+      <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
         📊 Trung tâm Thống kê & Điều hành
       </h1>
       <div class="flex items-center gap-3">
@@ -24,7 +24,7 @@
     </div>
 
     <!-- 4 Thẻ KPI: Tổng thu, Tổng chi, Lợi nhuận gộp, Lợi nhuận ròng -->
-    <CardList />
+    <CardList :time-filter="timeFilter" :date-range="dateRange" />
 
     <ElRow :gutter="20">
       <ElCol :sm="24" :md="12" :lg="10">
@@ -61,5 +61,5 @@ import TodoList from "./todo-list.vue";
 defineOptions({ name: "AdminDashboard" });
 
 const timeFilter = ref("month");
-const dateRange = ref("");
+const dateRange = ref<[Date, Date] | null>(null);
 </script>

@@ -92,7 +92,7 @@ export const SupplierContractApi = {
   getList(params: SupplierContractListParams) {
     const { current, size, ...rest } = params;
     return request.get<PagedResult<SupplierContractDto>>({
-      url: "/api/SupplierContracts",
+      url: "/api/v1/SupplierContracts",
       params: {
         Page: current,
         PageSize: size,
@@ -103,20 +103,20 @@ export const SupplierContractApi = {
 
   getById(id: string) {
     return request.get<SupplierContractDto>({
-      url: `/api/SupplierContracts/${id}`,
+      url: `/api/v1/SupplierContracts/${id}`,
     });
   },
 
   getAuditLogs(id: string) {
     return request.get<SupplierContractAuditLogDto[]>({
-      url: `/api/SupplierContracts/${id}/audit-logs`,
+      url: `/api/v1/SupplierContracts/${id}/audit-logs`,
     });
   },
 
   getDeletedList(params: SupplierContractListParams) {
     const { current, size, ...rest } = params;
     return request.get<PagedResult<SupplierContractDto>>({
-      url: "/api/SupplierContracts/deleted",
+      url: "/api/v1/SupplierContracts/deleted",
       params: {
         Page: current,
         PageSize: size,
@@ -127,46 +127,46 @@ export const SupplierContractApi = {
 
   create(data: Partial<SupplierContractDto>) {
     return request.post<SupplierContractDto>({
-      url: "/api/SupplierContracts",
+      url: "/api/v1/SupplierContracts",
       data,
     });
   },
 
   update(id: string, data: Partial<SupplierContractDto>) {
     return request.put<SupplierContractDto>({
-      url: `/api/SupplierContracts/${id}`,
+      url: `/api/v1/SupplierContracts/${id}`,
       data,
     });
   },
 
   updateStatus(id: string, data: { status: SupplierContractStatus }) {
     return request.put<SupplierContractDto>({
-      url: `/api/SupplierContracts/${id}`,
+      url: `/api/v1/SupplierContracts/${id}`,
       data,
     });
   },
 
   delete(id: string) {
     return request.del({
-      url: `/api/SupplierContracts/${id}`,
+      url: `/api/v1/SupplierContracts/${id}`,
     });
   },
 
   restore(id: string) {
     return request.post<SupplierContractDto>({
-      url: `/api/SupplierContracts/restore/${id}`,
+      url: `/api/v1/SupplierContracts/restore/${id}`,
     });
   },
 
   getStatistics() {
     return request.get<SupplierContractStatisticsResponse>({
-      url: "/api/SupplierContracts/statistics",
+      url: "/api/v1/SupplierContracts/statistics",
     });
   },
 
   getSuppliersForSelect() {
     return request.get<{ id: string; name: string }[]>({
-      url: "/api/SupplierContracts/suppliers-for-select",
+      url: "/api/v1/SupplierContracts/suppliers-for-select",
     });
   },
 };

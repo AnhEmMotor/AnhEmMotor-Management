@@ -47,6 +47,7 @@
           <div class="flex items-center gap-2">
             <h4 class="m-0 font-bold text-gray-800 text-lg">Sổ Cái Tồn Kho</h4>
             <ElButton
+              v-if="filteredLedgerData && filteredLedgerData.length > 0"
               type="primary"
               :loading="exporting"
               @click="handleExport"
@@ -477,12 +478,36 @@ const refreshData = () => {
   });
 };
 
-const handleExport = () => {
+const handleExport = async () => {
   exporting.value = true;
-  setTimeout(() => {
-    exporting.value = false;
+  try {
+    const params: any = {};
+    if (filters.value.searchQuery) {
+      params.searchQuery = filters.value.searchQuery;
+    }
+    if (filters.value.type && filters.value.type !== "ALL") {
+      params.type = filters.value.type;
+    }
+    if (filters.value.dateRange && filters.value.dateRange.length === 2) {
+      params.startDate = filters.value.dateRange[0];
+      params.endDate = filters.value.dateRange[1];
+    }
+    const resBlob = await InventoryReportApi.exportLedger(params);
+    const url = window.URL.createObjectURL(new Blob([resBlob]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "So_cai_ton_kho.xlsx");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
     ElMessage.success("Xuất file Excel sổ cái tồn kho thành công!");
-  }, 1500);
+  } catch (err) {
+    console.error(err);
+    ElMessage.error("Không thể xuất sổ cái tồn kho!");
+  } finally {
+    exporting.value = false;
+  }
 };
 
 const getTypeName = (type: string) => {

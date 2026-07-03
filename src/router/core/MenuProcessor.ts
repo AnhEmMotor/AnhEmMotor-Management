@@ -71,9 +71,9 @@ export class MenuProcessor {
         const filteredItem = { ...item };
 
         if (filteredItem.name === "Dashboard") {
-          const hasStatsPerm = permissions.includes(
-            "Permissions.Statistical.View",
-          );
+          const hasStatsPerm =
+            permissions.includes("Permissions.Statistical.View") ||
+            permissions.includes("Permissions.Admin.DashboardManagement.View");
           if (!hasStatsPerm) {
             if (!filteredItem.meta) {
               filteredItem.meta = {} as any;
@@ -239,13 +239,14 @@ export class MenuProcessor {
     const menuTitle = route.meta?.title || routeName;
     const suggestedPath = path.split("/").pop() || path.slice(1);
 
-    console.error(
-      `[RoutingCauHinhLỗi] Menu "${formatMenuTitle(menuTitle)}" (name: ${routeName}, path: ${path}) CauHinhLỗi\n` +
-        `  ViTri: ${parentName} > ${routeName}\n` +
-        `  hỏiđề: ${level + 1}cấpMenucủa path Khôngnănglấy / mởđầu\n` +
-        `  khitrướcCauHinh: path: '${path}'\n` +
-        `  ứngnênsửavì: path: '${suggestedPath}'`,
-    );
+    // [Disabled] RoutingCauHinhLoi log suppressed
+    // console.error(
+    //   `[RoutingCauHinhLoi] Menu "${formatMenuTitle(menuTitle)}" (name: ${routeName}, path: ${path}) CauHinhLoi\n` +
+    //     ` ViTri: ${parentName} > ${routeName}\n` +
+    //     ` hoi_de: ${level + 1}cap_Menu_cua path Khong_nang_lay / mo_dau\n` +
+    //     ` khi_truoc_CauHinh: path: "${path}"\n` +
+    //     ` ung_nen_sua_vi: path: "${suggestedPath}"`,
+    // );
   }
 
   private buildFullPath(path: string, parentPath: string): string {

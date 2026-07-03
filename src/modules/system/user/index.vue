@@ -14,7 +14,12 @@
       >
         <template #left>
           <ElSpace wrap>
-            <ElButton type="primary" @click="showDialog('add')" v-ripple>
+            <ElButton
+              v-auth="Permissions.Admin.UserManagement.Create"
+              type="primary"
+              @click="showDialog('add')"
+              v-ripple
+            >
               Thêm người dùng mới
             </ElButton>
           </ElSpace>
@@ -61,6 +66,7 @@ import UserSearch from "./modules/user-search.vue";
 import UserDialog from "./modules/user-dialog.vue";
 import UserPasswordDialog from "./modules/user-password-dialog.vue";
 import { ElTag, ElMessageBox, ElImage } from "element-plus";
+import { Permissions } from "@/domain/constants/permissions.ts";
 defineOptions({ name: "User" });
 
 const dialogType = ref<"add" | "edit">("add");
@@ -162,12 +168,18 @@ const {
             h("div", { class: "flex flex-col gap-0.5" }, [
               h(
                 "span",
-                { class: "font-semibold text-gray-800 text-sm" },
+                {
+                  class: "font-semibold text-sm",
+                  style: { color: "var(--el-text-color-primary)" },
+                },
                 row.fullName || "Chưa đặt tên",
               ),
               h(
                 "span",
-                { class: "text-xs text-gray-500" },
+                {
+                  class: "text-xs",
+                  style: { color: "var(--el-text-color-secondary)" },
+                },
                 row.email || row.userName,
               ),
             ]),
@@ -261,24 +273,28 @@ const {
                   key: "edit",
                   label: "Chỉnh sửa",
                   icon: "ri:edit-2-line",
+                  auth: Permissions.Admin.UserManagement.Edit,
                 },
                 {
                   key: "change-password",
                   label: "Đổi mật khẩu",
                   icon: "ri:key-line",
                   color: "#409eff",
+                  auth: Permissions.Admin.UserManagement.ChangePassword,
                 },
                 {
                   key: "toggle-status",
                   label: isBanned ? "Kích hoạt tài khoản" : "Khóa tài khoản",
                   icon: isBanned ? "ri:lock-unlock-line" : "ri:lock-line",
                   color: isBanned ? "#67c23a" : "#e6a23c",
+                  auth: Permissions.Admin.UserManagement.Edit,
                 },
                 {
                   key: "delete",
                   label: "Xóa tài khoản",
                   icon: "ri:delete-bin-4-line",
                   color: "#f56c6c",
+                  auth: Permissions.Admin.UserManagement.Delete,
                 },
               ],
               onClick: (item: ButtonMoreItem) => buttonMoreClick(item, row),

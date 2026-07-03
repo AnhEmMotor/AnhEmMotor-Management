@@ -7,7 +7,12 @@
       icon="ri:bank-card-2-line"
     >
       <template #actions>
-        <el-button type="primary" @click="handlePrint" :disabled="!contract.id">
+        <el-button
+          type="primary"
+          @click="handlePrint"
+          :disabled="!contract.id"
+          v-auth="Permissions.Admin.ContractManagement.Edit"
+        >
           <el-icon><Printer /></el-icon>&nbsp;In hợp đồng
         </el-button>
       </template>
@@ -226,13 +231,13 @@
           <div class="mb-2">
             <h4 class="mb-1 font-bold text-sm">Trường quản lý Cavet gốc</h4>
             <el-radio-group v-model="cavetForm.state" class="mt-1">
-              <el-radio label="FinancialCompanyHolds" class="mb-1"
+              <el-radio value="FinancialCompanyHolds" class="mb-1"
                 >Công ty tài chính giữ</el-radio
               >
-              <el-radio label="StoreHoldsOnBehalf" class="mb-1"
+              <el-radio value="StoreHoldsOnBehalf" class="mb-1"
                 >Cửa hàng giữ hộ</el-radio
               >
-              <el-radio label="DeliveredToCustomer" class="mb-1"
+              <el-radio value="DeliveredToCustomer" class="mb-1"
                 >Đã giao khách</el-radio
               >
             </el-radio-group>
@@ -263,6 +268,7 @@
             class="w-full"
             :disabled="!canUpdateCavet"
             @click="handleSaveCavet"
+            v-auth="Permissions.Admin.ContractManagement.Edit"
           >
             Lưu trạng thái Cavet
           </el-button>
@@ -317,6 +323,7 @@
                 !canSubmitDisbursementPayment || !disbursementForm.actualAmount
               "
               @click="handleSubmitDisbursementPayment"
+              v-auth="Permissions.Admin.ContractManagement.Edit"
             >
               Xác nhận đã giải ngân
             </el-button>
@@ -343,6 +350,7 @@
               @click="handlePrint"
               :disabled="!contract.id"
               class="print-btn !py-1 !px-2 text-xs"
+              v-auth="Permissions.Admin.ContractManagement.Edit"
             >
               <el-icon><Printer /></el-icon>
               <span class="ml-1">In</span>
@@ -473,6 +481,7 @@
 </template>
 
 <script setup lang="ts">
+import { Permissions } from "@/common/constants/permissions";
 import { computed, onMounted, reactive, ref } from "vue";
 import { useRoute } from "vue-router";
 import { UploadFilled, Check, Printer } from "@element-plus/icons-vue";

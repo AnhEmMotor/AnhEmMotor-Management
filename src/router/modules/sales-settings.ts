@@ -29,7 +29,7 @@ export const salesSettingsRoutes: AppRouteRecord = {
       meta: {
         title: "Cài đặt tồn kho",
         icon: "ri:alarm-warning-line",
-        permissions: [Permissions.SettingsView],
+        permissions: ["Permissions.Warehouse.InventorySettingManagement.View"],
       },
     },
   ],

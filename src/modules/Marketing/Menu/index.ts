@@ -1,4 +1,4 @@
-import { AppRouteRecord } from "@/types/router";
+﻿import { AppRouteRecord } from "@/types/router";
 
 export const marketingMenu: AppRouteRecord[] = [
   {
@@ -9,6 +9,7 @@ export const marketingMenu: AppRouteRecord[] = [
       title: "menus.marketing.title",
       icon: "ri:market-line",
       roles: ["Admin", "SuperAdmin"],
+      permissions: ["Permissions.Marketing"],
     },
     redirect: "/Marketing/banner",
     children: [
@@ -96,13 +97,22 @@ export const marketingMenu: AppRouteRecord[] = [
       {
         path: "customer",
         name: "CustomerManagement",
-        component: "/Marketing/view/customer/index",
+        component: "",
         meta: {
           title: "menus.marketing.customer",
           icon: "ri:user-heart-line",
           roles: ["Admin", "SuperAdmin"],
         },
         children: [
+          {
+            path: "",
+            name: "CustomerManagementHome",
+            component: "/Marketing/view/customer/index",
+            meta: {
+              title: "menus.marketing.customer",
+              isHide: true,
+            },
+          },
           {
             path: "potential",
             name: "CustomerPotential",
@@ -119,6 +129,18 @@ export const marketingMenu: AppRouteRecord[] = [
             meta: {
               title: "menus.marketing.customerProfile",
               icon: "ri:profile-line",
+            },
+          },
+          {
+            path: "profile/:leadId",
+            name: "CustomerProfile360",
+            component: "/Marketing/view/customer/profile/360",
+            meta: {
+              title: "menus.marketing.customerProfile360",
+              isHide: true,
+              isHideTab: true,
+              keepAlive: true,
+              activePath: "/Marketing/customer/profile",
             },
           },
           {
@@ -148,6 +170,26 @@ export const marketingMenu: AppRouteRecord[] = [
               icon: "ri:git-commit-line",
             },
           },
+          {
+            path: "pipeline",
+            name: "CustomerPipeline",
+            component: "/Marketing/view/customer/pipeline/index",
+            meta: {
+              title: "menus.marketing.customerPipeline",
+              icon: "ri:git-repository-line",
+              keepAlive: true,
+            },
+          },
+          {
+            path: "workshop",
+            name: "CustomerContactSupport",
+            component: "/Marketing/view/customer/contact/index",
+            meta: {
+              title: "menus.marketing.customerContact",
+              icon: "ri:customer-service-2-line",
+              keepAlive: true,
+            },
+          },
         ],
       },
       {
@@ -157,6 +199,16 @@ export const marketingMenu: AppRouteRecord[] = [
         meta: {
           title: "menus.marketing.booking",
           icon: "ri:calendar-event-line",
+          keepAlive: true,
+        },
+      },
+      {
+        path: "conversion",
+        name: "MarketingConversion",
+        component: "/Marketing/view/conversion/index",
+        meta: {
+          title: "menus.marketing.conversion",
+          icon: "ri:magic-line",
           keepAlive: true,
         },
       },

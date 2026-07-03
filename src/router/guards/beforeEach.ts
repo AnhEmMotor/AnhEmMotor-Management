@@ -66,8 +66,15 @@ export function setupBeforeEachGuard(router: Router): void {
       const menuStore = useMenuStore();
       menuStore.setMenuList(menuList);
 
+      const userStore = useUserStore();
+      const userPermissions = userStore.info?.buttons || [];
+      if (userPermissions.length === 0) {
+        userStore.logOut();
+        return;
+      }
+
       const currentRoute = router.currentRoute.value;
-      if (currentRoute.matched.length > 0) {
+      if (currentRoute.path && currentRoute.path !== "/") {
         if (isStaticRoute(currentRoute.path)) {
           return;
         }
@@ -76,8 +83,7 @@ export function setupBeforeEachGuard(router: Router): void {
           menuList,
         );
         if (!hasAccess) {
-          const { homePath } = useCommon();
-          router.push(homePath.value || "/");
+          window.location.href = "/workspace";
         }
       }
     } catch (err) {
@@ -145,6 +151,34 @@ async function handleRouteGuard(
   }
 
   if (to.matched.length > 0) {
+    if (!isStaticRoute(to.path) && userStore.isLogin) {
+      const menuStore = useMenuStore();
+      if (menuStore.menuList && menuStore.menuList.length > 0) {
+        const hasAccess = RoutePermissionValidator.hasPermission(
+          to.path,
+          menuStore.menuList,
+        );
+        if (!hasAccess) {
+          return { path: "/workspace", replace: true };
+        }
+      }
+    }
+
+    const fromModule = from.path.split("/")[1];
+    const toModule = to.path.split("/")[1];
+
+    if (
+      from.path !== "/" &&
+      fromModule &&
+      toModule &&
+      fromModule !== toModule &&
+      toModule !== "workspace" &&
+      toModule !== "auth"
+    ) {
+      pendingLoading = true;
+      loadingService.showLoading("Đang truy cập hệ thống...");
+    }
+
     setWorktab(to);
     setPageTitle(to);
     return true;
@@ -157,6 +191,22 @@ function handleLoginStatus(
   to: RouteLocationNormalized,
   userStore: ReturnType<typeof useUserStore>,
 ): any {
+  // Add a fallback check for isLogin in case pinia hydration is delayed or failed
+  if (!userStore.isLogin) {
+    try {
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        const parsed = JSON.parse(userData);
+        if (parsed.isLogin && parsed.accessToken) {
+          userStore.setLoginStatus(true);
+          userStore.setToken(parsed.accessToken);
+        }
+      }
+    } catch (e) {
+      console.warn("Fallback hydration failed:", e);
+    }
+  }
+
   if (userStore.isLogin) {
     if (to.path === RoutesAlias.Login || to.path === "/auth/login") {
       return { path: "/workspace", replace: true };
@@ -221,7 +271,7 @@ function isStaticRoute(path: string): boolean {
   ): boolean => {
     return routes.some((route) => {
       if (route.name === "Exception404") {
-        return true;
+        return false;
       }
 
       const routePath = route.path;

@@ -1,10 +1,10 @@
-import { AppRouteRecord } from "@/types/router";
+﻿import { AppRouteRecord } from "@/types/router";
 import { Permissions } from "@/domain/constants/permissions";
 
 export const serviceRoutes: AppRouteRecord = {
   path: "/factory/service",
   name: "Service",
-  component: "/Factory/view/service/index/index",
+  component: "/index/index",
   meta: {
     title: "Thống kê Xưởng",
     icon: "ri:bar-chart-grouped-line",
@@ -85,6 +85,7 @@ export const serviceRoutes: AppRouteRecord = {
             title: "menus.service.warrantyAndComplaints.warrantyRequests",
             icon: "ri:shield-check-line",
             isHide: true,
+            activePath: "/factory/service/workshop/warranty-requests",
           },
         },
         {
@@ -93,16 +94,16 @@ export const serviceRoutes: AppRouteRecord = {
           component: "/Factory/view/service/workshop/history/index",
           meta: {
             title: "menus.service.workshop.historyByVin",
-            icon: "ri:search-eye-line",
+            icon: "ri:file-search-line",
           },
         },
         {
-          path: "evaluation",
-          name: "ServiceWorkshopEvaluation",
-          component: "/Factory/view/service/workshop/evaluation/index",
+          path: "statistics",
+          name: "ServiceWorkshopStatistics",
+          component: "/Factory/view/service/workshop/statistics/index",
           meta: {
-            title: "menus.service.workshop.evaluation",
-            icon: "ri:star-smile-line",
+            title: "Thống kê xưởng",
+            icon: "ri:bar-chart-line",
           },
         },
       ],
@@ -124,6 +125,18 @@ export const serviceRoutes: AppRouteRecord = {
           meta: {
             title: "Hồ sơ đăng ký biển số",
             icon: "ri:profile-line",
+          },
+        },
+        {
+          path: "registration/:id",
+          name: "ServiceAdministrativeRegistrationPlateDetail",
+          component:
+            "/Factory/view/service/administrative/registration/registration-plate/plate-registration-detail/index",
+          meta: {
+            title: "Chi tiết hồ sơ đăng ký biển số",
+            icon: "ri:profile-line",
+            isHide: true,
+            activePath: "/factory/service/administrative/registration",
           },
         },
       ],

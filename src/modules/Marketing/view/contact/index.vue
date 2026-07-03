@@ -1,21 +1,23 @@
 <template>
-  <div class="contact-page min-h-full font-inter pb-6">
-    <div class="bg-white border-b border-slate-200 px-6 py-4 shadow-sm">
+  <div class="contact-page min-h-full font-inter dark:text-slate-100 pb-6">
+    <div
+      class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4 shadow-sm"
+    >
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
           <div
-            class="size-11 rounded-xl bg-[#001529] flex-cc text-white shadow-lg shrink-0"
+            class="size-11 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex-cc text-slate-800 dark:text-white shadow-sm shrink-0"
           >
             <ArtSvgIcon icon="ri:message-2-line" class="text-2xl" />
           </div>
           <div>
             <h1
-              class="m-0 text-xl font-black tracking-tight text-slate-900 leading-none"
+              class="m-0 text-xl font-black tracking-tight text-slate-900 dark:text-white leading-none"
             >
               {{ $t("contact.title") }}
             </h1>
             <p
-              class="m-0 text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em] mt-1.5"
+              class="m-0 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.15em] mt-1.5"
             >
               {{ $t("contact.subtitle") }}
             </p>
@@ -178,7 +180,7 @@
                       type="danger"
                       text
                       @click="closeDetail"
-                      >{{ $t("contact.closeBtn") }}</ElButton
+                      >Đóng</ElButton
                     >
                   </div>
                   <h2 class="text-base font-black text-slate-800 mt-2">
@@ -253,7 +255,7 @@
                           <ArtSvgIcon
                             icon="ri:checkbox-circle-line"
                             class="mr-1"
-                          />{{ $t("contact.closeRequest") }}
+                          />Đóng yêu cầu
                         </ElButton>
                         <ElButton
                           v-if="
@@ -315,7 +317,7 @@
                     <h4
                       class="text-xs font-bold text-indigo-500 uppercase tracking-wider m-0"
                     >
-                      {{ $t("contact.internalNote") }}
+                      Ghi chú nội bộ
                     </h4>
                     <span class="text-[10px] text-slate-400 italic"
                       >Chỉ hiển thị với nhân viên điều hành</span
@@ -471,7 +473,7 @@
                       type="danger"
                       text
                       @click="closeDetail"
-                      >{{ $t("contact.closeBtn") }}</ElButton
+                      >Đóng</ElButton
                     >
                   </div>
                   <h2 class="text-base font-black text-slate-800 mt-2">
@@ -519,7 +521,7 @@
                     <h4
                       class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2"
                     >
-                      {{ $t("contact.feedbackContent") }}
+                      Nội dung đóng góp
                     </h4>
                     <div
                       class="bg-slate-50 border border-slate-100 rounded-xl p-4 shadow-sm"
@@ -608,7 +610,7 @@
                     <h4
                       class="text-xs font-bold text-indigo-500 uppercase tracking-wider m-0"
                     >
-                      {{ $t("contact.internalNote") }}
+                      Ghi chú nội bộ
                     </h4>
                     <span class="text-[10px] text-slate-400 italic"
                       >Chỉ hiển thị với nhân viên điều hành</span
@@ -805,7 +807,7 @@
                     <div v-if="cvFileUrl">
                       <!-- File Header / Download bar -->
                       <div
-                        class="cv-file-header flex items-center justify-between p-3 bg-slate-100 rounded-t-xl border border-slate-200 border-b-0"
+                        class="cv-file-header flex items-center justify-between p-3 bg-slate-100 dark:bg-slate-800 rounded-t-xl border border-slate-200 dark:border-slate-700 border-b-0"
                       >
                         <div
                           class="flex items-center gap-2 overflow-hidden mr-3"
@@ -836,7 +838,7 @@
                             }"
                           />
                           <span
-                            class="text-xs font-bold text-slate-700 truncate"
+                            class="text-xs font-bold text-slate-700 dark:text-slate-200 truncate"
                             :title="cvFileName"
                           >
                             {{ cvFileName }}
@@ -861,27 +863,142 @@
 
                       <!-- Preview Frame -->
                       <div
-                        class="border border-slate-200 rounded-b-xl overflow-hidden h-[450px] bg-slate-50 shadow-inner flex items-center justify-center p-2"
+                        class="border border-slate-200 dark:border-slate-700 rounded-b-xl overflow-hidden h-[450px] bg-slate-50 dark:bg-slate-900 shadow-inner flex items-center justify-center p-2"
                       >
                         <!-- Legacy CV warning card -->
                         <div
                           v-if="isLegacyCv"
-                          class="flex flex-col items-center justify-center text-center p-6 text-slate-500"
+                          class="flex flex-col items-center justify-center text-center p-6 text-slate-500 dark:text-slate-400"
                         >
                           <ArtSvgIcon
                             icon="ri:error-warning-line"
                             class="text-5xl text-amber-500 mb-3"
                           />
-                          <p class="text-sm font-bold text-slate-700 mb-1">
+                          <p
+                            class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-1"
+                          >
                             Hồ sơ CV cũ (Chưa tải lên)
                           </p>
                           <p
-                            class="text-xs text-slate-400 max-w-xs leading-relaxed"
+                            class="text-xs text-slate-400 dark:text-slate-500 max-w-xs leading-relaxed"
                           >
                             Hồ sơ này được tạo trước khi hệ thống tải tệp CV
                             hoạt động. Máy chủ chỉ lưu tên file và không chứa
                             tệp tin vật lý để xem trước hoặc tải xuống.
                           </p>
+                        </div>
+
+                        <!-- Mock CV Preview for Demo/Mock Data -->
+                        <div
+                          v-else-if="isMockCv"
+                          class="w-full h-full bg-white dark:bg-[#0f172a] p-6 overflow-y-auto font-inter text-slate-800 dark:text-slate-100 flex flex-col gap-4 text-left shadow-sm rounded-lg border dark:border-slate-800"
+                        >
+                          <div
+                            class="border-b-2 border-slate-900 dark:border-slate-700 pb-4"
+                          >
+                            <h1
+                              class="text-xl font-extrabold uppercase tracking-wide m-0 text-slate-900"
+                            >
+                              {{ (activeItem as any)?.fullName }}
+                            </h1>
+                            <p
+                              class="text-xs font-semibold text-blue-600 mt-1 uppercase tracking-wider"
+                            >
+                              {{ (activeItem as any)?.appliedPosition }}
+                            </p>
+                            <div
+                              class="flex flex-wrap gap-x-4 gap-y-1 text-slate-500 text-[10px] font-bold mt-2"
+                            >
+                              <span
+                                >Email: {{ (activeItem as any)?.email }}</span
+                              >
+                              <span>•</span>
+                              <span
+                                >SĐT:
+                                {{ (activeItem as any)?.phoneNumber }}</span
+                              >
+                            </div>
+                          </div>
+
+                          <div>
+                            <h3
+                              class="text-xs font-bold text-slate-900 uppercase tracking-widest border-l-4 border-blue-500 pl-2 mb-2"
+                            >
+                              Mục tiêu nghề nghiệp
+                            </h3>
+                            <p
+                              class="text-[11px] leading-relaxed text-slate-600"
+                            >
+                              {{
+                                (activeItem as any)?.coverLetter ||
+                                "Mong muốn cống hiến năng lực, kinh nghiệm tích lũy để cùng đồng hành phát triển bền vững cùng thương hiệu."
+                              }}
+                            </p>
+                          </div>
+
+                          <div>
+                            <h3
+                              class="text-xs font-bold text-slate-900 uppercase tracking-widest border-l-4 border-blue-500 pl-2 mb-2"
+                            >
+                              Kinh nghiệm làm việc
+                            </h3>
+                            <div class="flex flex-col gap-3">
+                              <div>
+                                <div
+                                  class="flex justify-between items-baseline"
+                                >
+                                  <span
+                                    class="text-xs font-extrabold text-slate-800"
+                                    >Cửa hàng xe máy & dịch vụ bảo dưỡng
+                                    lớn</span
+                                  >
+                                  <span
+                                    class="text-[10px] text-slate-400 font-bold"
+                                    >2021 - Nay</span
+                                  >
+                                </div>
+                                <p
+                                  class="text-[10px] text-slate-500 font-semibold mb-1"
+                                >
+                                  Thợ chính / Tư vấn viên cao cấp
+                                </p>
+                                <ul
+                                  class="list-disc pl-4 text-[10px] text-slate-600 leading-relaxed m-0 flex flex-col gap-0.5"
+                                >
+                                  <li>
+                                    Trực tiếp kiểm tra, khắc phục sự cố kỹ thuật
+                                    phức tạp cho khách hàng.
+                                  </li>
+                                  <li>
+                                    Chăm sóc, tư vấn dịch vụ bảo dưỡng tối ưu và
+                                    tăng độ bền bỉ cho xe.
+                                  </li>
+                                  <li>
+                                    Phối hợp cùng đội ngũ vận hành nâng cao
+                                    doanh số và trải nghiệm dịch vụ.
+                                  </li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div>
+                            <h3
+                              class="text-xs font-bold text-slate-900 uppercase tracking-widest border-l-4 border-blue-500 pl-2 mb-2"
+                            >
+                              Học vấn & Chứng chỉ
+                            </h3>
+                            <div class="flex justify-between items-baseline">
+                              <span
+                                class="text-xs font-extrabold text-slate-800"
+                                >Trường Cao đẳng Công nghệ / Đào tạo chuyên
+                                ngành</span
+                              >
+                              <span class="text-[10px] text-slate-400 font-bold"
+                                >2018 - 2021</span
+                              >
+                            </div>
+                          </div>
                         </div>
 
                         <!-- Image Preview -->
@@ -1130,7 +1247,6 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from "vue-i18n";
 import { ref, watch, computed, onMounted } from "vue";
 import { ElMessage } from "element-plus";
 import { storeToRefs } from "pinia";
@@ -1144,8 +1260,6 @@ import {
 import type { Contact } from "@/types";
 
 defineOptions({ name: "ContactManagement" });
-
-const { t } = useI18n();
 const contactStore = useContactStore();
 const { isDark } = storeToRefs(useSettingStore());
 
@@ -1246,49 +1360,17 @@ const statusStyle = (status: string) => {
   };
   return m[status] || "bg-slate-100 text-slate-600 border-slate-200";
 };
-
-const tableData = computed(() => contactStore.records);
-const activeItemSubject = computed(
-  () => (activeItem.value as Contact.SupportRequest)?.subject ?? "",
-);
-const activeItemEmail = computed(
-  () =>
-    activeItem.value?.contact?.email ?? (activeItem.value as any)?.email ?? "",
-);
-const activeItemPhone = computed(
-  () =>
-    activeItem.value?.contact?.phoneNumber ??
-    (activeItem.value as any)?.phoneNumber ??
-    "",
-);
-const activeItemContent = computed(
-  () =>
-    activeItem.value?.contact?.content ??
-    (activeItem.value as any)?.content ??
-    "",
-);
-const activeItemOrderCode = computed(
-  () => (activeItem.value as Contact.SupportRequest)?.orderCode ?? "",
-);
-const activeItemCustomerName = computed(
-  () => (activeItem.value as Contact.CustomerFeedback)?.customerName ?? "",
-);
-const activeItemFeedbackArea = computed(
-  () => (activeItem.value as Contact.CustomerFeedback)?.feedbackArea ?? "",
-);
-const activeItemFullName = computed(
-  () => (activeItem.value as Contact.JobApplication)?.fullName ?? "",
-);
-const activeItemAppliedPosition = computed(
-  () => (activeItem.value as Contact.JobApplication)?.appliedPosition ?? "",
-);
-const activeItemCoverLetter = computed(
-  () => (activeItem.value as Contact.JobApplication)?.coverLetter ?? "",
-);
-
 const cvFileUrl = computed(
   () => (activeItem.value as Contact.JobApplication)?.cvFileUrl ?? "",
 );
+const isMockCv = computed(() => {
+  if (!cvFileUrl.value) return false;
+  return (
+    cvFileUrl.value.includes("cv-nguyen-van-hung.pdf") ||
+    cvFileUrl.value.includes("cv-tran-minh-tam.pdf") ||
+    cvFileUrl.value.includes("cv-le-thi-mai.pdf")
+  );
+});
 const isLegacyCv = computed(() => {
   if (!cvFileUrl.value) return false;
   return (
@@ -1337,6 +1419,45 @@ const handleReply = async () => {
   }
 };
 
+const tableData = computed(() => contactStore.records);
+const activeItemSubject = computed(
+  () => (activeItem.value as Contact.SupportRequest)?.subject ?? "",
+);
+const activeItemEmail = computed(
+  () =>
+    activeItem.value?.contact?.email ?? (activeItem.value as any)?.email ?? "",
+);
+const activeItemPhone = computed(
+  () =>
+    activeItem.value?.contact?.phoneNumber ??
+    (activeItem.value as any)?.phoneNumber ??
+    "",
+);
+const activeItemContent = computed(
+  () =>
+    activeItem.value?.contact?.content ??
+    (activeItem.value as any)?.content ??
+    "",
+);
+const activeItemOrderCode = computed(
+  () => (activeItem.value as Contact.SupportRequest)?.orderCode ?? "",
+);
+const activeItemCustomerName = computed(
+  () => (activeItem.value as Contact.CustomerFeedback)?.customerName ?? "",
+);
+const activeItemFeedbackArea = computed(
+  () => (activeItem.value as Contact.CustomerFeedback)?.feedbackArea ?? "",
+);
+const activeItemFullName = computed(
+  () => (activeItem.value as Contact.JobApplication)?.fullName ?? "",
+);
+const activeItemAppliedPosition = computed(
+  () => (activeItem.value as Contact.JobApplication)?.appliedPosition ?? "",
+);
+const activeItemCoverLetter = computed(
+  () => (activeItem.value as Contact.JobApplication)?.coverLetter ?? "",
+);
+
 const handleStatus = async (newStatus: string) => {
   if (!contactStore.activeItem) return;
   await contactStore.updateStatus(
@@ -1355,12 +1476,7 @@ const saveNote = async () => {
 };
 
 const downloadCvUrl = (url: string) => {
-  if (!url) return;
-  const fullUrl = getFullCvUrl(url);
-  const downloadUrl = fullUrl.includes("?")
-    ? `${fullUrl}&download=true`
-    : `${fullUrl}?download=true`;
-  window.open(downloadUrl, "_blank");
+  if (url) window.open(url, "_blank");
 };
 const openAssignDialog = () => {
   assignDialogVisible.value = true;
@@ -1406,109 +1522,114 @@ const handleAssign = async () => {
       border-color: #3b82f6;
     }
   }
-}
 
-.contact-tabs :deep(.el-tabs__header) {
-  margin-bottom: 16px;
+  .contact-tabs :deep(.el-tabs__header) {
+    margin-bottom: 16px;
 
-  .el-tabs__nav-wrap::after {
-    display: none;
-  }
+    .el-tabs__nav-wrap::after {
+      display: none;
+    }
 
-  .el-tabs__item {
-    height: 40px;
-    font-size: 13px;
-    font-weight: 700;
-    line-height: 40px;
-    color: var(--contact-text-muted);
+    .el-tabs__item {
+      height: 40px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 40px;
+      color: var(--contact-text-muted);
 
-    &.is-active {
-      color: var(--contact-text);
+      &.is-active {
+        color: var(--contact-text);
+      }
+    }
+
+    .el-tabs__active-bar {
+      height: 3px;
+      background: var(--contact-text);
+      border-radius: 2px;
     }
   }
 
-  .el-tabs__active-bar {
-    height: 3px;
-    background: var(--contact-text);
-    border-radius: 2px;
+  .split-layout {
+    display: flex;
+    gap: 16px;
+    min-height: calc(100vh - 220px);
   }
-}
 
-.split-layout {
-  display: flex;
-  gap: 16px;
-  min-height: calc(100vh - 220px);
-}
-
-.list-panel {
-  display: flex;
-  flex-direction: column;
-  width: 40%;
-  overflow: hidden;
-  background: var(--contact-surface);
-  border: 1px solid var(--contact-border);
-  border-radius: 16px;
-  box-shadow: var(--contact-shadow);
-}
-
-.list-header {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 12px 16px;
-  background: var(--contact-surface-soft);
-  border-bottom: 1px solid var(--contact-border-soft);
-}
-
-.pagination-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 16px;
-  border-top: 1px solid var(--contact-border-soft);
-
-  :deep(.el-pagination) {
-    justify-content: flex-end;
-    padding: 0;
+  .list-panel {
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    overflow: hidden;
+    background: var(--contact-surface);
+    border: 1px solid var(--contact-border);
+    border-radius: 16px;
+    box-shadow: var(--contact-shadow);
   }
-}
 
-.detail-panel {
-  flex: 1;
-  overflow: hidden;
-  background: var(--contact-surface);
-  border: 1px solid var(--contact-border);
-  border-radius: 16px;
-  box-shadow: var(--contact-shadow);
-}
+  .list-header {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--contact-surface-soft);
+    border-bottom: 1px solid var(--contact-border-soft);
+  }
 
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  min-height: 300px;
-}
+  .pagination-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-top: 1px solid var(--contact-border-soft);
 
-.detail-content {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
+    :deep(.el-pagination) {
+      justify-content: flex-end;
+      padding: 0;
+    }
+  }
 
-.detail-header {
-  padding: 20px 24px;
-  background: var(--contact-surface-soft);
-  border-bottom: 1px solid var(--contact-border-soft);
-}
+  .detail-panel {
+    flex: 1;
+    overflow: hidden;
+    background: var(--contact-surface);
+    border: 1px solid var(--contact-border);
+    border-radius: 16px;
+    box-shadow: var(--contact-shadow);
+  }
 
-.reply-input :deep(.el-textarea__inner) {
-  font-size: 13px;
-  color: var(--contact-text);
-  background: var(--contact-muted-surface);
-  border-color: var(--contact-border);
-  border-radius: 12px;
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 300px;
+  }
+
+  .detail-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .detail-header {
+    padding: 20px 24px;
+    background: var(--contact-surface-soft);
+    border-bottom: 1px solid var(--contact-border-soft);
+  }
+
+  .reply-input :deep(.el-textarea__inner) {
+    font-size: 13px;
+    color: var(--contact-text);
+    background: var(--contact-muted-surface);
+    border-color: var(--contact-border);
+    border-radius: 12px;
+
+    &:focus {
+      background: white;
+      border-color: #3b82f6;
+    }
+  }
 }
 
 .badge {

@@ -10,6 +10,7 @@ export const accountancyMenu: AppRouteRecord[] = [
       title: "Kế Toán, Lương & Thuế",
       icon: "ri:calculator-line",
       roles: ["Admin", "SuperAdmin", "Accountant"],
+      permissions: ["Permissions.Accountant"],
     },
     redirect: "/Accountant/executive-dashboard",
     children: [
@@ -21,20 +22,10 @@ export const accountancyMenu: AppRouteRecord[] = [
           title: "Tổng quan điều hành",
           icon: "ri:dashboard-line",
           keepAlive: true,
-          permission: Permissions.StatisticalView,
+          permission: Permissions.Accountant.DashboardManagement.View,
         },
       },
-      {
-        path: "sales",
-        name: "AccountantSales",
-        component: "/Accountant/view/reporting/revenue",
-        meta: {
-          title: "Báo cáo bán hàng",
-          icon: "ri:money-cny-circle-line",
-          keepAlive: true,
-          permission: Permissions.StatisticalView,
-        },
-      },
+
       {
         path: "financial",
         name: "AccountantFinancial",
@@ -43,7 +34,7 @@ export const accountancyMenu: AppRouteRecord[] = [
           title: "Báo cáo tài chính",
           icon: "ri:file-chart-line",
           keepAlive: true,
-          permission: Permissions.StatisticalView,
+          permission: Permissions.Accountant.DashboardManagement.View,
         },
       },
       {
@@ -54,7 +45,7 @@ export const accountancyMenu: AppRouteRecord[] = [
           title: "Báo cáo trả góp",
           icon: "ri:bank-line",
           keepAlive: true,
-          permission: Permissions.StatisticalView,
+          permission: Permissions.Accountant.DashboardManagement.View,
           isHide: true,
         },
       },
@@ -66,7 +57,7 @@ export const accountancyMenu: AppRouteRecord[] = [
           title: "Báo cáo tồn kho",
           icon: "ri:archive-line",
           keepAlive: true,
-          permission: Permissions.StatisticalView,
+          permission: Permissions.Accountant.DashboardManagement.View,
         },
       },
       {
@@ -77,7 +68,7 @@ export const accountancyMenu: AppRouteRecord[] = [
           title: "Báo cáo xưởng dịch vụ",
           icon: "ri:tools-line",
           keepAlive: true,
-          permission: Permissions.StatisticalView,
+          permission: Permissions.Accountant.DashboardManagement.View,
         },
       },
       {
@@ -85,10 +76,10 @@ export const accountancyMenu: AppRouteRecord[] = [
         name: "AccountantCustomer",
         component: "/Accountant/view/reporting/customer",
         meta: {
-          title: "Báo cáo khách hàng",
+          title: "Báo Cáo Khách Hàng",
           icon: "ri:user-heart-line",
           keepAlive: true,
-          permission: Permissions.StatisticalView,
+          permission: Permissions.Accountant.DashboardManagement.View,
         },
       },
       {
@@ -99,18 +90,7 @@ export const accountancyMenu: AppRouteRecord[] = [
           title: "Báo cáo nhân sự & hoa hồng",
           icon: "ri:team-line",
           keepAlive: true,
-          permission: Permissions.StatisticalView,
-        },
-      },
-      {
-        path: "customer-service",
-        name: "AccountantCustomerService",
-        component: "/Accountant/view/reporting/customer-service",
-        meta: {
-          title: "Báo cáo chăm sóc khách hàng",
-          icon: "ri:customer-service-2-line",
-          keepAlive: true,
-          permission: Permissions.StatisticalView,
+          permission: Permissions.Accountant.DashboardManagement.View,
         },
       },
       {
@@ -121,7 +101,7 @@ export const accountancyMenu: AppRouteRecord[] = [
           title: "Tiền lương nhân sự",
           icon: "ri:bank-card-line",
           keepAlive: true,
-          permission: Permissions.StatisticalView,
+          permission: Permissions.Accountant.PayrollManagement.View,
         },
       },
       {
@@ -131,7 +111,7 @@ export const accountancyMenu: AppRouteRecord[] = [
         meta: {
           title: "Quản lý hợp đồng",
           icon: "ri:file-list-line",
-          permission: Permissions.StatisticalView,
+          permission: Permissions.Accountant.ContractManagement.View,
         },
         children: [
           {
@@ -141,7 +121,7 @@ export const accountancyMenu: AppRouteRecord[] = [
             meta: {
               title: "Hợp đồng bán xe",
               icon: "ri:file-paper-2-line",
-              permission: Permissions.StatisticalView,
+              permission: Permissions.Accountant.ContractManagement.View,
             },
           },
           {
@@ -151,7 +131,8 @@ export const accountancyMenu: AppRouteRecord[] = [
             meta: {
               title: "Hợp đồng nhà cung cấp",
               icon: "ri:truck-line",
-              permission: Permissions.StatisticalView,
+              permission:
+                Permissions.Accountant.SupplierContractManagement.View,
             },
           },
         ],
@@ -164,40 +145,18 @@ export const accountancyMenu: AppRouteRecord[] = [
           title: "Báo cáo công nợ",
           icon: "ri:money-dollar-box-line",
           keepAlive: true,
-          permission: Permissions.StatisticalView,
+          permission: Permissions.Accountant.DebtPaymentManagement.View,
         },
       },
       {
         path: "invoice",
         name: "AccountantInvoice",
-        component: "",
+        component: "/Accountant/view/reporting/invoice",
         meta: {
-          title: "Quản lý hóa đơn",
+          title: "Thống kê hóa đơn",
           icon: "ri:bill-line",
-          permission: Permissions.StatisticalView,
+          permission: Permissions.Accountant.DashboardManagement.View,
         },
-        children: [
-          {
-            path: "payment",
-            name: "AccountantPaymentInvoice",
-            component: "/Order/view/product/invoice/index",
-            meta: {
-              title: "Hóa đơn thanh toán",
-              icon: "ri:secure-payment-line",
-              permission: Permissions.StatisticalView,
-            },
-          },
-          {
-            path: "sales",
-            name: "AccountantSalesInvoice",
-            component: "/Order/view/product/invoice/index",
-            meta: {
-              title: "Hóa đơn bán hàng",
-              icon: "ri:receipt-line",
-              permission: Permissions.StatisticalView,
-            },
-          },
-        ],
       },
     ],
   },

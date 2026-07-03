@@ -1,5 +1,9 @@
 <template>
   <div
+    v-if="
+      $route.path.toLowerCase() === '/marketing/customer' ||
+      $route.path.toLowerCase() === '/marketing/customer/'
+    "
     class="customer-management-page min-h-full bg-[#F8FAFC] font-inter text-[#0F172A]"
   >
     <div class="bg-white border-b border-slate-200 px-6 py-4 shadow-sm">
@@ -53,6 +57,7 @@
       </div>
     </div>
   </div>
+  <router-view v-else />
 </template>
 
 <script setup lang="ts">
@@ -63,31 +68,31 @@ const { t } = useI18n();
 
 const customerMenus = [
   {
-    path: "/marketing/customer/potential",
+    path: "/Marketing/customer/potential",
     title: t("marketing.customer.potential"),
     description: t("marketing.customer.potentialDesc"),
     icon: "ri:user-search-line",
   },
   {
-    path: "/marketing/customer/profile",
+    path: "/Marketing/customer/profile",
     title: t("marketing.customer.profile"),
     description: t("marketing.customer.profileDesc"),
     icon: "ri:profile-line",
   },
   {
-    path: "/marketing/customer/asset",
+    path: "/Marketing/customer/asset",
     title: t("marketing.customer.asset"),
     description: t("marketing.customer.assetDesc"),
     icon: "ri:car-line",
   },
   {
-    path: "/marketing/customer/care",
+    path: "/Marketing/customer/care",
     title: t("marketing.customer.care"),
     description: t("marketing.customer.careDesc"),
     icon: "ri:gift-line",
   },
   {
-    path: "/marketing/customer/progress",
+    path: "/Marketing/customer/progress",
     title: t("marketing.customer.progress"),
     description: t("marketing.customer.progressDesc"),
     icon: "ri:git-commit-line",

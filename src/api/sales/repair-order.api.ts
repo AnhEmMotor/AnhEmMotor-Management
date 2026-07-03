@@ -24,6 +24,8 @@ export interface RepairOrder {
   customerPhone: string;
   mileage: number;
   description: string;
+  startTime?: string;
+  expectedCompletionTime?: string;
   technicianId?: number;
   technicianName?: string;
   status: "Pending" | "InProgress" | "QcPending" | "Completed" | "Cancelled";

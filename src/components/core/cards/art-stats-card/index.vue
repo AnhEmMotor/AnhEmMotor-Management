@@ -1,6 +1,6 @@
 <template>
   <div
-    class="art-card h-32 flex-c px-5 transition-transform duration-200 hover:-translate-y-0.5"
+    class="art-card min-h-[128px] py-4 flex-c px-5 transition-transform duration-200 hover:-translate-y-0.5"
     :class="boxStyle"
   >
     <div
@@ -12,7 +12,7 @@
     </div>
     <div class="flex-1">
       <p
-        class="m-0 text-lg font-medium"
+        class="m-0 text-lg font-medium text-black dark:text-white"
         :style="{ color: textColor }"
         v-if="title"
       >
@@ -29,7 +29,7 @@
         />
         <p
           v-else
-          class="m-0 text-2xl font-medium"
+          class="m-0 text-2xl font-medium text-black dark:text-white"
           :style="{ color: textColor }"
         >
           {{ count }}

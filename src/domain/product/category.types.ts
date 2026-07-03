@@ -7,6 +7,7 @@ export interface ProductCategory {
   parentId: number | null;
   description: string;
   productCount: number;
+  inventoryQty?: number;
   categoryGroup?: string;
   managementType?: string;
   maxPurchaseQuantity?: number | null;

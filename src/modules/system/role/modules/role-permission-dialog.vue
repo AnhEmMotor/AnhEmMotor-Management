@@ -115,26 +115,24 @@ const loadPermissionStructure = async () => {
     permissionDependencies.value = res.dependencies || {};
     permissionConflicts.value = res.conflicts || {};
 
-    const metadataMap = new Map(res.metadata.map((m) => [m.id, m]));
-
-    const nodes: TreePermissionNode[] = Object.entries(res.groups).map(
-      ([groupName, permIds]) => {
-        const children: TreePermissionNode[] = permIds
-          .map((id) => {
-            const meta = metadataMap.get(id);
-            if (!meta) return null;
-            return {
-              id: meta.id,
-              label: meta.name || meta.id,
-              description: meta.description,
-            };
-          })
-          .filter(Boolean) as TreePermissionNode[];
-
+    const nodes: TreePermissionNode[] = ((res as any).modules || []).map(
+      (mod: any) => {
+        const moduleChildren = (mod.features || []).map((feat: any) => {
+          const featureChildren = (feat.permissions || []).map((perm: any) => ({
+            id: perm.id,
+            label: perm.name || perm.id,
+            description: perm.description,
+          }));
+          return {
+            id: feat.id,
+            label: feat.name || feat.id,
+            children: featureChildren,
+          };
+        });
         return {
-          id: groupName,
-          label: `Nhóm ${groupName}`,
-          children,
+          id: mod.id,
+          label: mod.name || mod.id,
+          children: moduleChildren,
         };
       },
     );
@@ -153,11 +151,22 @@ const loadRolePermissions = async () => {
   try {
     const permissions = await fetchGetRolePermissions(props.roleData.id);
     nextTick(() => {
-      treeRef.value?.setCheckedKeys(permissions || []);
+      const validActionIds = new Set<string>();
+      treeData.value.forEach((mod) => {
+        mod.children?.forEach((feat) => {
+          feat.children?.forEach((act) => validActionIds.add(act.id));
+        });
+      });
+      const leafPermissions = (permissions || []).filter((p) =>
+        validActionIds.has(p),
+      );
+
+      treeRef.value?.setCheckedKeys(leafPermissions);
       lastCheckedKeys.value = treeRef.value?.getCheckedKeys() || [];
       const allKeys = getAllNodeKeys(treeData.value);
       isSelectAll.value =
-        (permissions || []).length === allKeys.length && allKeys.length > 0;
+        leafPermissions.length === validActionIds.size &&
+        validActionIds.size > 0;
     });
   } catch (error) {
     console.error("Failed to load role permissions:", error);
@@ -187,9 +196,23 @@ const savePermission = async () => {
   if (!props.roleData) return;
   saving.value = true;
   try {
-    const checkedKeys = (treeRef.value?.getCheckedKeys(true) || []) as string[];
+    const checkedKeys = (treeRef.value?.getCheckedKeys(false) ||
+      []) as string[];
+    const halfCheckedKeys = (treeRef.value?.getHalfCheckedKeys() ||
+      []) as string[];
+    const allSelectedKeys = [...checkedKeys, ...halfCheckedKeys];
 
-    const realPermissions = checkedKeys.filter((id) => id.includes("."));
+    const validPermissionIds = new Set<string>();
+    treeData.value.forEach((mod) => {
+      validPermissionIds.add(mod.id);
+      mod.children?.forEach((feat) => {
+        feat.children?.forEach((act) => validPermissionIds.add(act.id));
+      });
+    });
+
+    const realPermissions = allSelectedKeys.filter((id) =>
+      validPermissionIds.has(id),
+    );
 
     await fetchUpdateRole(props.roleData.id, {
       roleName: props.roleData.name,

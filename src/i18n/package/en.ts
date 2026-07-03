@@ -390,34 +390,6 @@ export default {
       title: "Contract Management",
       sales: "Sales Contract",
       supplier: "Supplier Contract",
-      templates: "Contract Templates",
-      templateName: "Contract Template Name",
-      templateCode: "Code",
-      templateType: "Template Type",
-      templateStatus: "Status",
-      templateContent: "Template Content",
-      templateDynamicFields: "Dynamic Field Dictionary",
-      templateCreateTitle: "Create Contract Template",
-      templateEditTitle: "Edit Contract Template",
-      templateImport: "Import Word File",
-      templateSave: "Save Template",
-      templatePreview: "Print Preview",
-      templateEditorDescription:
-        "Edit template content, insert dynamic fields, and preview the contract before saving.",
-      templateDynamicFieldsHint: "Click to insert at the cursor position",
-      tokenSearchPlaceholder: "Search fields...",
-      typeSales: "Sales Contract",
-      typeFinance: "Installment Contract",
-      typeSupplier: "Supplier Contract",
-      typeAppendix: "Appendix",
-      statusActive: "Active",
-      statusInactive: "Inactive",
-      validateSyntaxError:
-        "Invalid dynamic field syntax. Please check matching {{ }} brackets.",
-      cannotUpdateUsedTemplate:
-        "This template has already generated real contracts and cannot be edited directly. Please clone it into a new version.",
-      saveSuccess: "Contract template saved successfully!",
-      emptyContentWarning: "Template content cannot be empty.",
     },
     customer: {
       title: "Customer Management",
@@ -428,7 +400,7 @@ export default {
       care: "Customer care",
       contact: "Contact",
     },
-marketing: {
+    marketing: {
       title: "Marketing",
       banner: "Banner Management",
       article: "Article Management",
@@ -440,10 +412,15 @@ marketing: {
       customer: "Customer Management",
       customerPotential: "Potential Customers",
       customerProfile: "Customer Profiles",
+      customerProfile360: "Customer 360 Profile",
       customerAsset: "Assets",
       customerCare: "Customer Care",
       customerProgress: "Progress",
       booking: "Booking Management",
+      conversion: "Conversion Tools",
+      customerPipeline: "Purchasing Pipeline",
+      customerWorkshop: "Customer Repair History",
+      customerContact: "Chat & Support",
     },
     hr: {
       title: "HR Management",
@@ -452,6 +429,7 @@ marketing: {
       commissionPolicy: "Commission Policy",
       payroll: "Payroll",
       kpi: "KPI Management",
+      report: "HR Report",
     },
     service: {
       title: "Service Management",
@@ -461,7 +439,6 @@ marketing: {
         repairOrders: "Repairs",
         historyByVin: "Vehicle Records Lookup",
         maintenance: "Maintenance",
-        evaluation: "Service Evaluation",
       },
       administrative: {
         title: "Administrative Services",
@@ -879,7 +856,7 @@ marketing: {
       careDesc: "Customer care and support",
       progress: "Progress",
       progressDesc: "Track service progress",
-    }
+    },
   },
   contact: {
     title: "Contact Management",
@@ -890,7 +867,17 @@ marketing: {
     tabCandidate: "Candidate Profiles",
     searchPlaceholder: "Search by name, email, phone, subject...",
     allStatus: "All statuses",
-    supportStatus: { New: "New", InProgress: "In Progress", Closed: "Closed" },
+    myAssignments: "My Assignments",
+    closeBtn: "Close",
+    closeRequest: "Close Request",
+    internalNote: "Internal Note",
+    feedbackContent: "Feedback Content",
+    supportStatus: {
+      New: "New",
+      Assigned: "Assigned",
+      InProgress: "In Progress",
+      Closed: "Closed",
+    },
     feedbackStatus: { Pending: "Pending", Read: "Read", Resolved: "Resolved" },
     candidateStatus: {
       New: "New",
@@ -921,6 +908,7 @@ marketing: {
     columnCv: "CV / Profile",
     columnAssignedTo: "Assigned To",
     noDetail: "Select a contact to view details",
+    replyHistory: "Response History",
     replyDialog: {
       title: "Send Response",
       contentLabel: "Response content",
@@ -1007,6 +995,14 @@ marketing: {
       tracking: "Tracking No.",
       message: "Message",
       createdAt: "Created At",
+      status: {
+        completed: "Completed",
+        shipping: "Shipping",
+        packing: "Packing",
+        pendingPickup: "Pending Pick",
+        returned: "Returned",
+      },
+      noData: "No Data",
     },
     fulfillment: {
       title: "Fulfillment Processing",
