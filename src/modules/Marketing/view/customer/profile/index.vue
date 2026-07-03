@@ -2,13 +2,13 @@
   <div class="customer-profile-management flex flex-col gap-6 pb-10">
     <div class="page-header flex items-center justify-between px-4">
       <h2
-        class="m-0 text-2xl font-black text-gray-800 dark:text-slate-100 tracking-tight flex items-center gap-2"
+        class="m-0 text-2xl font-bold text-gray-800 dark:text-slate-100 tracking-tight flex items-center gap-2"
       >
         <ArtSvgIcon icon="ri:user-search-line" class="text-blue-600" />
         Hồ sơ & Danh bạ khách hàng
       </h2>
       <button
-        class="h-10 px-6 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-full font-black text-[10px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center justify-center gap-2"
+        class="h-10 px-6 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-full font-bold text-[10px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center justify-center gap-2"
         @click="handleAdd"
       >
         <ArtSvgIcon icon="ri:user-add-line" class="text-blue-500" /> Thêm khách
@@ -57,7 +57,7 @@
                     class="text-xl"
                   />
                   <span
-                    class="text-[9px] font-black tracking-tighter uppercase"
+                    class="text-[9px] font-bold tracking-tighter uppercase"
                     >{{ getPriority(customer).label }}</span
                   >
                 </div>
@@ -120,7 +120,7 @@
                     >Ghi chú gần nhất</span
                   >
                   <p
-                    class="m-0 text-xs text-gray-600 dark:text-slate-400 italic line-clamp-1"
+                    class="m-0 text-xs text-gray-600 dark:text-slate-400 line-clamp-1"
                   >
                     "{{ getLastNote(customer) }}"
                   </p>

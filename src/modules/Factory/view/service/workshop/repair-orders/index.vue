@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="flex flex-col gap-4 pb-5">
     <div class="flex items-start justify-between gap-4">
       <div>
@@ -777,7 +777,6 @@ const fetchData = async (params: any) => {
     data.value = res.items || [];
     pagination.value.total = res.totalCount || 0;
   } catch (err: any) {
-    // fallback mock để UI vẫn chạy
     data.value = [];
     pagination.value.total = 0;
     ElMessage.error(err?.message || "Không thể tải danh sách phiếu sửa chữa");

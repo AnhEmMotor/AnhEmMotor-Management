@@ -441,77 +441,7 @@ const editForm = ref<{
   [key: string]: any;
 }>({});
 
-// Mock Data local
-const allPolicies = ref([
-  {
-    id: 1,
-    name: "Thưởng nóng Winner X - T6/2026",
-    department: "vehicle_sales",
-    status: "active",
-    startDate: "2026-06-01",
-    endDate: "2026-06-30",
-    target: "Toàn bộ Sale xe",
-    tiers: [
-      { from: 1, to: 5, bonus: 500000 },
-      { from: 6, to: 999, bonus: 900000 },
-    ],
-  },
-  {
-    id: 2,
-    name: "Cơ bản dòng xe Honda SH",
-    department: "vehicle_sales",
-    status: "active",
-    startDate: "2026-01-01",
-    endDate: "2026-12-31",
-    target: "Toàn bộ Sale xe",
-    tiers: [{ from: 1, to: 999, bonus: 1200000 }],
-  },
-  {
-    id: 3,
-    name: "Chiến dịch xe ga mùa Hè",
-    department: "vehicle_sales",
-    status: "pending",
-    startDate: "2026-07-01",
-    endDate: "2026-07-31",
-    target: "Toàn bộ Sale xe",
-    tiers: [
-      { from: 1, to: 3, bonus: 300000 },
-      { from: 4, to: 999, bonus: 600000 },
-    ],
-  },
-  {
-    id: 4,
-    name: "Chính sách tháng Tết 2026",
-    department: "vehicle_sales",
-    status: "expired",
-    startDate: "2026-01-01",
-    endDate: "2026-02-28",
-    target: "Toàn bộ Sale xe",
-    tiers: [{ from: 1, to: 999, bonus: 1000000 }],
-  },
-  {
-    id: 5,
-    name: "Hoa hồng phụ tùng chung",
-    department: "parts_sales",
-    status: "active",
-    startDate: "2026-01-01",
-    endDate: "2026-12-31",
-    target: "Sale Phụ tùng / Online",
-    percentage: 5,
-    basis: "revenue",
-  },
-  {
-    id: 6,
-    name: "Hoa hồng kỹ thuật viên",
-    department: "mechanic",
-    status: "active",
-    startDate: "2026-01-01",
-    endDate: "2026-12-31",
-    target: "Kỹ thuật viên xưởng",
-    laborPercentage: 15,
-    partsPercentage: 2,
-  },
-]);
+const allPolicies = ref<any[]>([]);
 
 // Simulator state
 const simInput = ref(0);

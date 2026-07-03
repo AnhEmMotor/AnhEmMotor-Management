@@ -76,7 +76,8 @@
 </template>
 
 <script setup lang="ts">
-import { commentList } from "@/mock/temp/commentList";
+import { onMounted } from "vue";
+import { commentApi } from "@/api/marketing/comment.api";
 
 defineOptions({ name: "ArticleComment" });
 
@@ -100,6 +101,24 @@ const COLOR_LIST = [
   "#E1E6FE",
 ];
 
+const commentList = ref<CommentItem[]>([]);
+
+onMounted(async () => {
+  try {
+    const res = await commentApi.getAll();
+    commentList.value = res.map((c: any) => ({
+      id: c.id,
+      date: c.createdAt,
+      content: c.content,
+      collection: 0,
+      comment: 0,
+      userName: c.authorName || "Ẩn danh",
+    }));
+  } catch (error) {
+    console.error("Failed to load comments", error);
+  }
+});
+
 const showDrawer = ref(false);
 const clickItem = ref<CommentItem>({
   id: 1,
@@ -114,7 +133,7 @@ const clickItem = ref<CommentItem>({
 const commentsWithColors = computed(() => {
   let lastColorIndex = -1;
 
-  return commentList.map((item) => {
+  return commentList.value.map((item) => {
     let newIndex: number;
 
     do {

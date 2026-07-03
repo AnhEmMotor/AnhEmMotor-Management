@@ -16,7 +16,7 @@
         </div>
         <div>
           <h2
-            class="m-0 text-base font-black text-gray-800 dark:text-slate-100 tracking-tight uppercase"
+            class="m-0 text-base font-bold text-gray-800 dark:text-slate-100 tracking-tight uppercase"
           >
             Quản lý Tài sản Khách hàng
           </h2>
@@ -51,7 +51,7 @@
         </div>
         <button
           @click="openAddDialog"
-          class="bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 h-10 px-4 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center justify-center gap-2"
+          class="bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 h-10 px-4 rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center justify-center gap-2"
         >
           <ArtSvgIcon icon="ri:file-add-line" class="text-blue-500" /> Thêm tài
           sản mới
@@ -67,7 +67,7 @@
           class="p-4 border-b border-gray-50 dark:border-slate-800 flex items-center justify-between"
         >
           <span
-            class="text-[10px] font-black text-gray-400 uppercase tracking-widest"
+            class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"
             >Danh sách tài sản ({{ assets.length }})</span
           >
           <ArtSvgIcon icon="ri:sort-desc" class="text-gray-300" />
@@ -96,7 +96,7 @@
               <div class="flex-1 flex flex-col justify-center">
                 <div class="flex justify-between items-start">
                   <span
-                    class="text-sm font-black text-gray-800 dark:text-slate-100 leading-tight"
+                    class="text-sm font-bold text-gray-800 dark:text-slate-100 leading-tight"
                     >{{ asset.model }}</span
                   >
 
@@ -111,7 +111,7 @@
                 </div>
                 <div class="flex items-center gap-2 mt-1">
                   <div
-                    class="bg-gray-800 text-white px-1.5 py-0.5 rounded text-[10px] font-black tracking-widest shadow-sm"
+                    class="bg-gray-800 text-white px-1.5 py-0.5 rounded text-[10px] font-bold tracking-widest shadow-sm"
                   >
                     {{ asset.plate }}
                   </div>
@@ -133,31 +133,31 @@
         <div class="flex justify-between items-start mb-8">
           <div class="flex flex-col gap-2">
             <h1
-              class="m-0 text-3xl font-black text-gray-800 dark:text-white tracking-tight"
+              class="m-0 text-3xl font-bold text-gray-800 dark:text-white tracking-tight"
             >
               {{ selectedAsset.model }}
             </h1>
             <div class="flex gap-3">
               <ElTag
                 effect="dark"
-                class="bg-emerald-500 border-none font-black text-[10px] rounded-lg"
+                class="bg-emerald-500 border-none font-bold text-[10px] rounded-lg"
                 >ĐÃ CÓ BIỂN</ElTag
               >
               <ElTag
                 effect="plain"
-                class="border-blue-200 text-blue-600 font-black text-[10px] rounded-lg"
+                class="border-blue-200 text-blue-600 font-bold text-[10px] rounded-lg"
                 >HỒ SƠ CHUẨN</ElTag
               >
             </div>
           </div>
           <div class="flex gap-2">
             <button
-              class="rounded-xl font-black text-[10px] uppercase h-10 px-4 border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm flex items-center justify-center gap-2"
+              class="rounded-xl font-bold text-[10px] uppercase h-10 px-4 border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm flex items-center justify-center gap-2"
             >
               <ArtSvgIcon icon="ri:edit-line" /> Chỉnh sửa
             </button>
             <button
-              class="bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[10px] uppercase h-10 px-4 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center justify-center gap-2"
+              class="bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-bold text-[10px] uppercase h-10 px-4 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center justify-center gap-2"
             >
               <ArtSvgIcon icon="ri:file-pdf-line" class="text-blue-500" /> Xuất
               báo cáo PDF
@@ -178,12 +178,12 @@
                 <ArtSvgIcon :icon="spec.icon" class="text-xs" />
               </div>
               <span
-                class="text-[9px] font-black text-gray-400 uppercase tracking-widest"
+                class="text-[9px] font-bold text-gray-400 uppercase tracking-widest"
                 >{{ spec.label }}</span
               >
             </div>
             <span
-              class="text-xs font-black text-gray-800 dark:text-slate-200 tracking-tight"
+              class="text-xs font-bold text-gray-800 dark:text-slate-200 tracking-tight"
               >{{ spec.value }}</span
             >
           </div>
@@ -193,7 +193,7 @@
           <div class="flex items-center gap-2 mb-6">
             <div class="w-1 h-4 bg-navy rounded-full"></div>
             <h3
-              class="m-0 text-xs font-black text-gray-800 dark:text-slate-100 uppercase tracking-widest"
+              class="m-0 text-xs font-bold text-gray-800 dark:text-slate-100 uppercase tracking-widest"
             >
               Kho dữ liệu Pháp lý (Digital Vault)
             </h3>
@@ -223,7 +223,7 @@
                   </div>
                 </div>
                 <h4
-                  class="m-0 text-sm font-black text-gray-800 dark:text-slate-200 mb-1"
+                  class="m-0 text-sm font-bold text-gray-800 dark:text-slate-200 mb-1"
                 >
                   {{ folder.title }}
                 </h4>
@@ -241,7 +241,7 @@
             <div class="flex items-center gap-2">
               <div class="w-1 h-4 bg-emerald-500 rounded-full"></div>
               <h3
-                class="m-0 text-xs font-black text-gray-800 dark:text-slate-200 uppercase tracking-widest"
+                class="m-0 text-xs font-bold text-gray-800 dark:text-slate-200 uppercase tracking-widest"
               >
                 Lịch sử "Xe sạch" (Verified Timeline)
               </h3>
@@ -255,11 +255,11 @@
               />
               <div class="flex flex-col">
                 <span
-                  class="text-[9px] font-black text-emerald-600 uppercase tracking-widest"
+                  class="text-[9px] font-bold text-emerald-600 uppercase tracking-widest"
                   >Bảo trì kế tiếp (Dự kiến)</span
                 >
                 <span
-                  class="text-[11px] font-black text-gray-700 dark:text-slate-300 uppercase"
+                  class="text-[11px] font-bold text-gray-700 dark:text-slate-300 uppercase"
                   >10,000 KM • Sau 45 ngày nữa</span
                 >
               </div>
@@ -283,7 +283,7 @@
               >
                 <div class="flex justify-between items-start mb-4">
                   <div class="flex items-center gap-4">
-                    <span class="text-[11px] font-black text-gray-800">{{
+                    <span class="text-[11px] font-bold text-gray-800">{{
                       event.date
                     }}</span>
                     <div class="h-3 w-px bg-gray-200"></div>
@@ -295,17 +295,17 @@
                         class="text-[10px] text-emerald-600"
                       />
                       <span
-                        class="text-[9px] font-black text-emerald-600 uppercase tracking-tighter"
+                        class="text-[9px] font-bold text-emerald-600 uppercase tracking-tighter"
                         >Verified by AEM</span
                       >
                     </div>
                   </div>
-                  <span class="text-[11px] font-black text-gray-400"
+                  <span class="text-[11px] font-bold text-gray-400"
                     >{{ event.km }} KM</span
                   >
                 </div>
                 <h5
-                  class="m-0 text-sm font-black text-gray-800 dark:text-slate-200 mb-2"
+                  class="m-0 text-sm font-bold text-gray-800 dark:text-slate-200 mb-2"
                 >
                   {{ event.title }}
                 </h5>
@@ -454,47 +454,6 @@ const form = ref({
   purchaseDate: "",
 });
 
-const getMockAssets = () => {
-  return [
-    {
-      id: -1,
-      model: "Honda SH 160i ABS 2024",
-      plate: "29A1-999.99",
-      owner: "Lê Minh Hiếu",
-      image:
-        "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=200",
-      needsService: true,
-      vinNumber: "RLHJK12A34M567890",
-      engineNumber: "JF96E-1002345",
-      purchaseDate: "2023-05-15T00:00:00Z",
-    },
-    {
-      id: -2,
-      model: "Honda Winner X v4 Côn tay",
-      plate: "59F1-888.88",
-      owner: "Trần Thị Mai",
-      image:
-        "https://images.unsplash.com/photo-1609630875171-b1321377ee65?auto=format&fit=crop&q=80&w=200",
-      needsService: false,
-      vinNumber: "RLHJK12B45M987654",
-      engineNumber: "K02E-2004567",
-      purchaseDate: "2024-01-10T00:00:00Z",
-    },
-    {
-      id: -3,
-      model: "Honda Air Blade 160 Đặc biệt",
-      plate: "60B1-777.77",
-      owner: "Nguyễn Văn Nam",
-      image:
-        "https://images.unsplash.com/photo-1599819811279-d5ad9cccf838?auto=format&fit=crop&q=80&w=200",
-      needsService: false,
-      vinNumber: "RLHJK12C78M456123",
-      engineNumber: "JF97E-3004512",
-      purchaseDate: "2023-11-20T00:00:00Z",
-    },
-  ];
-};
-
 const fetchVehicles = async () => {
   try {
     const res = await VehicleApi.getList({ current: 1, size: 100 });
@@ -506,15 +465,11 @@ const fetchVehicles = async () => {
       plate: v.licensePlate || "Chưa cấp biển",
       owner: v.lead?.fullName || "Ẩn danh",
       image:
-        "https://images.unsplash.com/photo-1611311025708-659a84495574?auto=format&fit=crop&q=80&w=200",
+        "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=200",
       needsService: false,
     }));
 
-    if (rawVehicles.value.length > 5) {
-      assets.value = realAssets;
-    } else {
-      assets.value = [...realAssets, ...getMockAssets()];
-    }
+    assets.value = realAssets;
 
     if (assets.value.length > 0 && selectedAssetId.value === null) {
       selectedAssetId.value = assets.value[0].id;
@@ -650,20 +605,6 @@ const selectedAsset = computed(() =>
 );
 
 const selectedRawVehicle = computed(() => {
-  const id = selectedAssetId.value;
-  if (id && id < 0) {
-    const mock = assets.value.find((a) => a.id === id);
-    return mock
-      ? {
-          id: mock.id,
-          vinNumber: mock.vinNumber,
-          engineNumber: mock.engineNumber,
-          purchaseDate: mock.purchaseDate,
-          fullName: mock.owner,
-          licensePlate: mock.plate,
-        }
-      : null;
-  }
   return rawVehicles.value.find((v) => v.id === selectedAssetId.value);
 });
 

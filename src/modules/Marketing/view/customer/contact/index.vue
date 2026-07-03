@@ -1,6 +1,6 @@
 <template>
   <div
-    class="contact-page min-h-full bg-[#F8FAFC] dark:bg-[#020617] font-inter text-[#0F172A] dark:text-[#E2E8F0] pb-6"
+    class="contact-page min-h-full bg-[#F8FAFC] dark:bg-[#020617] text-[#0F172A] dark:text-[#E2E8F0] pb-6"
   >
     <div
       class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4 shadow-sm"
@@ -17,7 +17,7 @@
           </div>
           <div>
             <h1
-              class="m-0 text-xl font-black tracking-tight text-slate-900 dark:text-slate-100 leading-none"
+              class="m-0 text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-none"
             >
               {{ $t("contact.title") }}
             </h1>
@@ -33,10 +33,10 @@
           class="flex items-center gap-2 bg-red-50 px-3 py-1.5 rounded-lg border border-red-100"
         >
           <span
-            class="text-[9px] font-black text-red-400 uppercase tracking-tighter"
+            class="text-[9px] font-bold text-red-400 uppercase tracking-tighter"
             >{{ $t("contact.unreadBadge") }}:</span
           >
-          <span class="text-sm font-black text-red-600 leading-none">{{
+          <span class="text-sm font-bold text-red-600 leading-none">{{
             contactStore.unreadBadge
           }}</span>
         </div>
@@ -162,7 +162,7 @@
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                       <span
-                        class="text-[10px] font-black text-slate-300 uppercase tracking-widest"
+                        class="text-[10px] font-bold text-slate-300 uppercase tracking-widest"
                         >#{{ activeItem?.id }}</span
                       >
                       <span
@@ -181,13 +181,13 @@
                       >Đóng</ElButton
                     >
                   </div>
-                  <h2 class="text-base font-black text-slate-800 mt-2">
+                  <h2 class="text-base font-bold text-slate-800 mt-2">
                     {{ activeItemSubject }}
                   </h2>
                   <div
                     class="flex items-center gap-3 mt-1 text-xs text-slate-500"
                   >
-                    <span class="text-blue-600 font-black">{{
+                    <span class="text-blue-600 font-bold">{{
                       activeItemEmail
                     }}</span>
                     <span class="text-slate-300">|</span>
@@ -211,11 +211,11 @@
                   <div class="note-box">
                     <div class="flex items-center justify-between mb-1">
                       <span
-                        class="text-[9px] font-black text-indigo-400 uppercase tracking-widest"
+                        class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest"
                         >{{ $t("contact.noteDialog.title") }}</span
                       >
                       <button
-                        class="text-indigo-500 hover:text-indigo-700 font-black text-[8px] uppercase"
+                        class="text-indigo-500 hover:text-indigo-700 font-bold text-[8px] uppercase"
                         @click="openNoteDialog"
                         v-auth="Permissions.Marketing.CustomerManagement.View"
                       >
@@ -408,7 +408,7 @@
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                       <span
-                        class="text-[10px] font-black text-slate-300 uppercase tracking-widest"
+                        class="text-[10px] font-bold text-slate-300 uppercase tracking-widest"
                         >#{{ activeItem?.id }}</span
                       >
                       <span
@@ -428,7 +428,7 @@
                     >
                   </div>
                   <div class="flex items-center gap-2 mt-2">
-                    <span class="text-sm font-black text-slate-800">{{
+                    <span class="text-sm font-bold text-slate-800">{{
                       activeItemCustomerName
                     }}</span>
                     <span class="text-slate-300">|</span>
@@ -439,7 +439,7 @@
                   <div
                     class="flex items-center gap-3 mt-1 text-xs text-slate-500"
                   >
-                    <span class="text-blue-600 font-black">{{
+                    <span class="text-blue-600 font-bold">{{
                       activeItemEmail
                     }}</span>
                     <span class="text-slate-300">|</span>
@@ -459,11 +459,11 @@
                   <div class="note-box">
                     <div class="flex items-center justify-between mb-1">
                       <span
-                        class="text-[9px] font-black text-indigo-400 uppercase tracking-widest"
+                        class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest"
                         >{{ $t("contact.noteDialog.title") }}</span
                       >
                       <button
-                        class="text-indigo-500 hover:text-indigo-700 font-black text-[8px] uppercase"
+                        class="text-indigo-500 hover:text-indigo-700 font-bold text-[8px] uppercase"
                         @click="openNoteDialog"
                         v-auth="Permissions.Marketing.CustomerManagement.View"
                       >
@@ -650,7 +650,7 @@
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                       <span
-                        class="text-[10px] font-black text-slate-300 uppercase tracking-widest"
+                        class="text-[10px] font-bold text-slate-300 uppercase tracking-widest"
                         >#{{ activeItem?.id }}</span
                       >
                       <span
@@ -669,13 +669,13 @@
                       >Đóng</ElButton
                     >
                   </div>
-                  <h2 class="text-base font-black text-slate-800 mt-2">
+                  <h2 class="text-base font-bold text-slate-800 mt-2">
                     {{ activeItemFullName }}
                   </h2>
                   <div
                     class="flex items-center gap-3 mt-1 text-xs text-slate-500"
                   >
-                    <span class="text-blue-600 font-black">{{
+                    <span class="text-blue-600 font-bold">{{
                       activeItemEmail
                     }}</span>
                     <span class="text-slate-300">|</span>
@@ -695,11 +695,11 @@
                   <div class="note-box">
                     <div class="flex items-center justify-between mb-1">
                       <span
-                        class="text-[9px] font-black text-indigo-400 uppercase tracking-widest"
+                        class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest"
                         >{{ $t("contact.noteDialog.title") }}</span
                       >
                       <button
-                        class="text-indigo-500 hover:text-indigo-700 font-black text-[8px] uppercase"
+                        class="text-indigo-500 hover:text-indigo-700 font-bold text-[8px] uppercase"
                         @click="openNoteDialog"
                         v-auth="Permissions.Marketing.CustomerManagement.View"
                       >
@@ -1022,6 +1022,8 @@ const userOptions = ref<{ id: string; name: string }[]>([
   { id: "3", name: "Lê Văn C" },
 ]);
 const supportCategories = [
+  "Technical",
+  "Billing",
   "Quality",
   "Service",
   "Rating",
@@ -1371,7 +1373,7 @@ const handleCreate = async () => {
 .content-text {
   margin: 0;
   font-size: 13px;
-  font-style: italic;
+  font-style: normal;
   line-height: 1.7;
   color: var(--el-text-color-regular);
 }

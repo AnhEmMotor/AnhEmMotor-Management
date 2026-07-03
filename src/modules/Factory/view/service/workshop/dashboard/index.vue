@@ -388,14 +388,6 @@ const warrantyAndComplaints = ref({
 });
 
 const statusBarChart = computed(() => {
-  const mock = {
-    pending: 8,
-    inProgress: 5,
-    qcPending: 3,
-    completed: 22,
-    cancelled: 1,
-  };
-
   return {
     categories: [
       "Chờ sửa chữa",
@@ -409,23 +401,23 @@ const statusBarChart = computed(() => {
         name: "Số lượng",
         data: [
           {
-            value: mock.pending,
+            value: 0,
             itemStyle: { color: "var(--el-color-warning)" },
           },
           {
-            value: mock.inProgress,
+            value: 0,
             itemStyle: { color: "var(--el-color-primary)" },
           },
           {
-            value: mock.qcPending,
+            value: 0,
             itemStyle: { color: "var(--el-color-info)" },
           },
           {
-            value: mock.completed,
+            value: 0,
             itemStyle: { color: "var(--el-color-success)" },
           },
           {
-            value: mock.cancelled,
+            value: 0,
             itemStyle: { color: "var(--el-text-color-placeholder)" },
           },
         ],
@@ -486,95 +478,27 @@ const refresh = async () => {
       .getWorkshopDashboardOverview(fromStr, toStr)
       .catch(() => null);
 
-    const mock = {
-      inProgress: 12,
-      avgFinishHours: 36,
-      serviceRevenue: 120_000_000,
-      serviceRevenueVsTargetPct: 85,
-      revenueComparison: {
-        workshopRevenue: 80_000_000,
-        retailRevenue: 40_000_000,
-      },
-      overdue: [
-        {
-          repairOrderId: 205,
-          ticketId: "TICK-001",
-          licensePlate: "51A-123.45",
-          customerName: "Nguyễn Văn A",
-          status: "InProgress" as RepairOrderStatus,
-          overdueHours: 14,
-          expectedCompletionTime: new Date().toISOString(),
-        },
-      ] as OverdueAlert[],
-      partsShortage: [
-        {
-          affectedRepairOrderId: 206,
-          ticketId: "TICK-002",
-          partName: "Mâm phanh DID",
-          productVariantId: 999,
-          productVariantName: "Mâm phanh DID (phụ tùng)",
-          shortCount: 2,
-          requiredQuantity: 5,
-          availableQuantity: 3,
-        },
-      ] as PartsShortageAlert[],
-      technicians: [
-        {
-          technician: "Anh Khoa",
-          completed: 16,
-          inProgress: 6,
-          revenue: 84_000_000,
-          customerSatisfaction: 82,
-        },
-        {
-          technician: "Bảo Trí",
-          completed: 11,
-          inProgress: 8,
-          revenue: 56_000_000,
-          customerSatisfaction: 74,
-        },
-        {
-          technician: "Minh Long",
-          completed: 7,
-          inProgress: 9,
-          revenue: 34_000_000,
-          customerSatisfaction: 88,
-        },
-      ],
-    };
-
     if (!res) {
       kpi.value = {
-        inProgress: mock.inProgress,
-        avgFinishHours: mock.avgFinishHours,
-        serviceRevenue: mock.serviceRevenue,
-        serviceRevenueVsTargetPct: mock.serviceRevenueVsTargetPct,
+        inProgress: 0,
+        avgFinishHours: 0,
+        serviceRevenue: 0,
+        serviceRevenueVsTargetPct: 0,
       };
-      analytics.value.revenueComparison = mock.revenueComparison;
+      analytics.value.revenueComparison = {
+        workshopRevenue: 0,
+        retailRevenue: 0,
+      };
       alerts.value = {
-        overdue: mock.overdue,
-        partsShortage: mock.partsShortage,
+        overdue: [],
+        partsShortage: [],
       };
-      technicianRows.value = mock.technicians;
-      // Mock data for warranty and complaints
+      technicianRows.value = [];
       warrantyAndComplaints.value = {
         loading: false,
-        warrantyRequestsCount: 5,
-        complaintsCount: 2,
-        recentItems: [
-          {
-            ticketId: "WR-001",
-            type: "Bảo hành phụ tùng",
-            customerName: "Lê Văn T",
-            status: "Chờ duyệt",
-          },
-          {
-            ticketId: "CP-002",
-            type: "Khiếu nại dịch vụ",
-            customerName: "Nguyễn Thị N",
-            status: "Đang xử lý",
-          },
-        ],
+        warrantyRequestsCount: 0,
+        complaintsCount: 0,
+        recentItems: [],
       };
       return;
     }
@@ -585,19 +509,19 @@ const refresh = async () => {
       inProgress: Number(
         asAny?.KpiCards?.InProgressCount ??
           asAny?.kpiCards?.inProgressCount ??
-          mock.inProgress,
+          0,
       ),
       avgFinishHours: Number(
         asAny?.KpiCards?.AvgCompletionHours ??
           asAny?.kpiCards?.avgCompletionHours ??
-          mock.avgFinishHours,
+          0,
       ),
       serviceRevenue: Number(
         asAny?.KpiCards?.CumulativeRevenue ??
           asAny?.kpiCards?.cumulativeRevenue ??
-          mock.serviceRevenue,
+          0,
       ),
-      serviceRevenueVsTargetPct: mock.serviceRevenueVsTargetPct,
+      serviceRevenueVsTargetPct: 0,
     };
 
     const revComparison =
@@ -606,18 +530,17 @@ const refresh = async () => {
     if (revComparison) {
       analytics.value.revenueComparison = {
         workshopRevenue: Number(
-          revComparison.WorkshopRevenue ??
-            revComparison.workshopRevenue ??
-            mock.revenueComparison.workshopRevenue,
+          revComparison.WorkshopRevenue ?? revComparison.workshopRevenue ?? 0,
         ),
         retailRevenue: Number(
-          revComparison.RetailRevenue ??
-            revComparison.retailRevenue ??
-            mock.revenueComparison.retailRevenue,
+          revComparison.RetailRevenue ?? revComparison.retailRevenue ?? 0,
         ),
       };
     } else {
-      analytics.value.revenueComparison = mock.revenueComparison;
+      analytics.value.revenueComparison = {
+        workshopRevenue: 0,
+        retailRevenue: 0,
+      };
     }
 
     const rawOverdue =
@@ -648,7 +571,7 @@ const refresh = async () => {
                 expectedCompletionTime ?? new Date().toISOString(),
             };
           })
-        : mock.overdue;
+        : [];
 
     const rawParts =
       (asAny?.Alerts?.PartShortages ?? asAny?.alerts?.partShortages) || [];
@@ -669,7 +592,7 @@ const refresh = async () => {
               availableQuantity: avail,
             };
           })
-        : mock.partsShortage;
+        : [];
 
     const rawTechnicians =
       (asAny?.Productivity?.TechnicianRankings ??
@@ -685,27 +608,13 @@ const refresh = async () => {
             customerSatisfaction:
               100 - (t.ComplaintRate ?? t.complaintRate ?? 0) * 100,
           }))
-        : mock.technicians;
+        : [];
 
-    // Mock data for warranty and complaints
     warrantyAndComplaints.value = {
       loading: false,
-      warrantyRequestsCount: asAny?.warrantyRequestsCount ?? 5,
-      complaintsCount: asAny?.complaintsCount ?? 2,
-      recentItems: asAny?.recentItems ?? [
-        {
-          ticketId: "WR-001",
-          type: "Bảo hành phụ tùng",
-          customerName: "Lê Văn T",
-          status: "Chờ duyệt",
-        },
-        {
-          ticketId: "CP-002",
-          type: "Khiếu nại dịch vụ",
-          customerName: "Nguyễn Thị N",
-          status: "Đang xử lý",
-        },
-      ],
+      warrantyRequestsCount: asAny?.warrantyRequestsCount ?? 0,
+      complaintsCount: asAny?.complaintsCount ?? 0,
+      recentItems: asAny?.recentItems ?? [],
     };
   } finally {
     loading.value = false;

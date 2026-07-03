@@ -1,6 +1,6 @@
 <template>
   <div
-    class="banner-management-page min-h-full font-inter text-[#0F172A] dark:text-slate-100 pb-10"
+    class="banner-management-page min-h-full text-[#0F172A] dark:text-slate-100 pb-10"
   >
     <div
       class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-8 py-6 sticky top-0 z-[50] shadow-sm"
@@ -16,7 +16,7 @@
           </div>
           <div>
             <h1
-              class="m-0 text-xl font-black tracking-tight text-slate-900 dark:text-slate-100 leading-none"
+              class="m-0 text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-none"
             >
               {{ $t("marketing.bannerManagement.title") }}
             </h1>
@@ -26,7 +26,7 @@
         <div class="flex items-center gap-3">
           <button
             @click="handleAddBanner"
-            class="h-11 px-8 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center gap-2"
+            class="h-11 px-8 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-bold text-[11px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center gap-2"
           >
             <ArtSvgIcon icon="ri:add-fill" class="text-blue-500" />
             {{ $t("marketing.bannerManagement.createBtn") }}
@@ -44,7 +44,7 @@
         >
           <div class="absolute top-4 left-4 z-10 flex flex-col gap-2">
             <span
-              class="px-3 py-1 bg-blue-600/90 text-white text-[10px] font-black uppercase rounded-lg shadow-sm backdrop-blur-md"
+              class="px-3 py-1 bg-blue-600/90 text-white text-[10px] font-bold uppercase rounded-lg shadow-sm backdrop-blur-md"
             >
               {{ getPlacementLabel(banner.placement) }}
             </span>
@@ -67,7 +67,7 @@
             >
               <button
                 @click.stop="viewMode = 'Desktop'"
-                class="px-3 py-1 rounded-lg text-[9px] font-black uppercase transition-all"
+                class="px-3 py-1 rounded-lg text-[9px] font-bold uppercase transition-all"
                 :class="
                   viewMode === 'Desktop'
                     ? 'bg-white text-slate-900 shadow-sm'
@@ -78,7 +78,7 @@
               </button>
               <button
                 @click.stop="viewMode = 'Mobile'"
-                class="px-3 py-1 rounded-lg text-[9px] font-black uppercase transition-all"
+                class="px-3 py-1 rounded-lg text-[9px] font-bold uppercase transition-all"
                 :class="
                   viewMode === 'Mobile'
                     ? 'bg-white text-slate-900 shadow-sm'
@@ -93,14 +93,14 @@
               class="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/90 via-black/50 to-transparent flex justify-between items-center gap-4"
             >
               <h2
-                class="m-0 text-lg font-black text-white leading-tight truncate"
+                class="m-0 text-lg font-bold text-white leading-tight truncate"
               >
                 {{ banner.title }}
               </h2>
               <div class="flex gap-2 shrink-0">
                 <button
                   @click.stop="handleEdit(banner)"
-                  class="h-10 px-6 bg-slate-900/90 backdrop-blur-md text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg"
+                  class="h-10 px-6 bg-slate-900/90 backdrop-blur-md text-white rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg"
                 >
                   {{ $t("marketing.bannerManagement.editBtn") }}
                 </button>
@@ -133,7 +133,7 @@
           </div>
           <div>
             <h3
-              class="m-0 font-black uppercase text-xs tracking-[0.2em] text-slate-800 dark:text-slate-100"
+              class="m-0 font-bold uppercase text-xs tracking-[0.2em] text-slate-800 dark:text-slate-100"
             >
               {{ dialogTitle }}
             </h3>
@@ -145,7 +145,7 @@
         <div class="space-y-5">
           <div>
             <label
-              class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
+              class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block px-1"
               >{{ $t("marketing.bannerManagement.formTitle") }}</label
             >
             <ElInput
@@ -157,7 +157,7 @@
 
           <div>
             <label
-              class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
+              class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block px-1"
               >{{ $t("marketing.bannerManagement.formPlacement") }}</label
             >
             <ElSelect
@@ -176,7 +176,7 @@
 
           <div>
             <label
-              class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
+              class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block px-1"
               >{{ $t("marketing.bannerManagement.formDesc") }}</label
             >
             <ElInput
@@ -191,7 +191,7 @@
           <div class="grid grid-cols-1 gap-4">
             <div>
               <label
-                class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
+                class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block px-1"
                 >{{ $t("marketing.bannerManagement.formCtaLabel") }}</label
               >
               <ElInput
@@ -204,7 +204,7 @@
 
           <div>
             <label
-              class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
+              class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block px-1"
               >{{ $t("marketing.bannerManagement.formCtaLink") }}</label
             >
             <ElInput
@@ -222,7 +222,7 @@
             class="p-4 bg-slate-50 dark:bg-slate-950/20 rounded-2xl border border-slate-100 dark:border-slate-800"
           >
             <label
-              class="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-3 block"
+              class="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-3 block"
               >{{ $t("marketing.bannerManagement.formDesktopImg") }}</label
             >
             <ElUpload
@@ -247,7 +247,7 @@
                     class="text-2xl text-slate-300 dark:text-slate-600"
                   />
                   <span
-                    class="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500"
+                    class="text-[9px] font-bold uppercase text-slate-400 dark:text-slate-500"
                     >Chọn ảnh Desktop</span
                   >
                 </template>
@@ -259,7 +259,7 @@
             class="p-4 bg-slate-50 dark:bg-slate-950/20 rounded-2xl border border-slate-100 dark:border-slate-800"
           >
             <label
-              class="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-3 block"
+              class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mb-3 block"
               >{{ $t("marketing.bannerManagement.formMobileImg") }}</label
             >
             <ElUpload
@@ -284,7 +284,7 @@
                     class="text-2xl text-slate-300 dark:text-slate-600"
                   />
                   <span
-                    class="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500"
+                    class="text-[9px] font-bold uppercase text-slate-400 dark:text-slate-500"
                     >Chọn ảnh Mobile</span
                   >
                 </template>
@@ -300,13 +300,13 @@
           <div class="flex gap-3">
             <button
               @click="dialogVisible = false"
-              class="h-11 px-6 text-slate-400 font-black text-[10px] uppercase tracking-widest hover:text-slate-700"
+              class="h-11 px-6 text-slate-400 font-bold text-[10px] uppercase tracking-widest hover:text-slate-700"
             >
               {{ $t("marketing.bannerManagement.closeBtn") }}
             </button>
             <button
               @click="saveBanner"
-              class="h-11 px-8 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95"
+              class="h-11 px-8 bg-blue-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95"
             >
               {{
                 isEditing

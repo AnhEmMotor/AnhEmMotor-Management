@@ -1,10 +1,10 @@
 <template>
-  <div class="customer-care-page p-8 min-h-full font-inter">
+  <div class="customer-care-page p-8 min-h-full">
     <div v-if="!isDetailView">
       <div class="flex justify-between items-center mb-8">
         <div>
           <h1
-            class="m-0 text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100 uppercase"
+            class="m-0 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 uppercase"
           >
             Chăm sóc Khách hàng
           </h1>
@@ -17,7 +17,7 @@
         <div class="flex gap-3">
           <button
             @click="handleAddCustomer"
-            class="h-11 px-8 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center gap-2"
+            class="h-11 px-8 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-bold text-[11px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center gap-2"
           >
             <ArtSvgIcon icon="ri:user-add-line" class="text-blue-500" /> Thêm
             khách hàng mới
@@ -56,10 +56,10 @@
             <div
               class="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl border border-blue-100 flex items-center gap-2 shrink-0"
             >
-              <span class="text-[9px] font-black uppercase tracking-tighter"
+              <span class="text-[9px] font-bold uppercase tracking-tighter"
                 >Đang quản lý:</span
               >
-              <span class="text-sm font-black">{{
+              <span class="text-sm font-bold">{{
                 filteredCustomers.length
               }}</span>
             </div>
@@ -79,13 +79,13 @@
             <template #default="{ row }">
               <div class="flex items-center gap-4 py-2">
                 <div
-                  class="size-10 rounded-xl bg-slate-100 flex-cc text-slate-500 font-black"
+                  class="size-10 rounded-xl bg-slate-100 flex-cc text-slate-500 font-bold"
                 >
                   {{ row.name.charAt(0) }}
                 </div>
                 <div>
                   <p
-                    class="m-0 text-sm font-black text-slate-800 dark:text-slate-100 leading-none mb-1"
+                    class="m-0 text-sm font-bold text-slate-800 dark:text-slate-100 leading-none mb-1"
                   >
                     {{ row.name }}
                   </p>
@@ -101,7 +101,7 @@
           <ElTableColumn label="Phân loại" width="150">
             <template #default="{ row }">
               <span
-                class="px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border"
+                class="px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest border"
                 :class="getTypeClasses(row.type)"
               >
                 {{ row.typeLabel }}
@@ -118,7 +118,7 @@
           </ElTableColumn>
           <ElTableColumn label="Trạng thái Loyalty" width="160">
             <template #default="{ row }">
-              <span class="text-[10px] font-black text-amber-500"
+              <span class="text-[10px] font-bold text-amber-500"
                 >{{ row.points }} pts</span
               >
             </template>
@@ -127,7 +127,7 @@
             <template #default="{ row }">
               <button
                 @click="viewDetails(row)"
-                class="h-9 px-4 bg-blue-600 text-white rounded-lg font-black text-[10px] uppercase tracking-widest shadow-md hover:bg-blue-700 transition-all"
+                class="h-9 px-4 bg-blue-600 text-white rounded-lg font-bold text-[10px] uppercase tracking-widest shadow-md hover:bg-blue-700 transition-all"
               >
                 Chi tiết
               </button>
@@ -148,12 +148,12 @@
           </button>
           <div>
             <h1
-              class="m-0 text-3xl font-black text-slate-900 dark:text-white tracking-tight"
+              class="m-0 text-3xl font-bold text-slate-900 dark:text-white tracking-tight"
             >
               {{ activeCustomer?.name }}
             </h1>
             <p
-              class="m-0 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mt-2 flex items-center gap-2"
+              class="m-0 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mt-2 flex items-center gap-2"
             >
               <ArtSvgIcon icon="ri:shield-user-line" class="text-amber-500" />
               Hồ sơ Customer 360 -
@@ -163,12 +163,12 @@
         </div>
         <div class="flex gap-3">
           <button
-            class="h-11 px-6 bg-emerald-500 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg hover:bg-emerald-600 transition-all"
+            class="h-11 px-6 bg-emerald-500 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-lg hover:bg-emerald-600 transition-all"
           >
             Gọi Zalo
           </button>
           <button
-            class="h-11 px-6 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg hover:bg-blue-700 transition-all"
+            class="h-11 px-6 bg-blue-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-lg hover:bg-blue-700 transition-all"
           >
             Gửi Ưu đãi
           </button>
@@ -185,7 +185,7 @@
               class="absolute -right-4 -top-4 text-9xl opacity-5 dark:opacity-10 text-slate-300 dark:text-white"
             />
             <h3
-              class="m-0 text-xs font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-8 flex items-center gap-2"
+              class="m-0 text-xs font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-8 flex items-center gap-2"
             >
               Dữ liệu cốt lõi
             </h3>
@@ -198,7 +198,7 @@
                   >Số điện thoại</span
                 >
                 <span
-                  class="text-sm font-black text-slate-800 dark:text-slate-100"
+                  class="text-sm font-bold text-slate-800 dark:text-slate-100"
                   >{{ activeCustomer?.phone }}</span
                 >
               </div>
@@ -210,7 +210,7 @@
                   >CCCD / CMND</span
                 >
                 <span
-                  class="text-sm font-black text-slate-800 dark:text-slate-100"
+                  class="text-sm font-bold text-slate-800 dark:text-slate-100"
                   >{{ activeCustomer?.identity }}</span
                 >
               </div>
@@ -221,7 +221,7 @@
                   class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase"
                   >Hạng Loyalty</span
                 >
-                <span class="text-sm font-black text-amber-500">{{
+                <span class="text-sm font-bold text-amber-500">{{
                   activeCustomer?.tier
                 }}</span>
               </div>
@@ -243,7 +243,7 @@
             class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[40px] p-8 shadow-sm"
           >
             <h3
-              class="m-0 text-xs font-black uppercase tracking-widest text-slate-800 mb-6"
+              class="m-0 text-xs font-bold uppercase tracking-widest text-slate-800 mb-6"
             >
               Nhu cầu & Sở thích
             </h3>
@@ -251,7 +251,7 @@
               <span
                 v-for="tag in activeCustomer?.needs"
                 :key="tag"
-                class="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-[10px] font-black uppercase border border-blue-100"
+                class="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-[10px] font-bold uppercase border border-blue-100"
                 >{{ tag }}</span
               >
             </div>
@@ -264,7 +264,7 @@
                 <ArtSvgIcon icon="ri:alarm-warning-line" />
               </div>
               <p
-                class="m-0 text-[10px] font-black text-red-600 uppercase leading-relaxed"
+                class="m-0 text-[10px] font-bold text-red-600 uppercase leading-relaxed"
               >
                 Nhắc nhở: Quá hạn thay nhớt lần 3 (12 ngày)
               </p>
@@ -310,17 +310,17 @@
                       <div class="flex justify-between items-center mb-4">
                         <div class="flex items-center gap-3">
                           <span
-                            class="text-[11px] font-black text-slate-400 uppercase tracking-widest"
+                            class="text-[11px] font-bold text-slate-400 uppercase tracking-widest"
                             >{{ log.date }}</span
                           >
                           <span class="size-1 rounded-full bg-slate-300"></span>
                           <span
-                            class="text-[11px] font-black text-blue-500 uppercase tracking-widest"
+                            class="text-[11px] font-bold text-blue-500 uppercase tracking-widest"
                             >{{ log.staff }}</span
                           >
                         </div>
                         <span
-                          class="px-3 py-1 bg-white text-[9px] font-black uppercase rounded-lg border border-slate-200 shadow-sm"
+                          class="px-3 py-1 bg-white text-[9px] font-bold uppercase rounded-lg border border-slate-200 shadow-sm"
                           >{{ log.category }}</span
                         >
                       </div>
@@ -347,7 +347,7 @@
                           class="size-20 rounded-2xl object-cover shadow-lg"
                         />
                         <div>
-                          <h4 class="m-0 text-lg font-black text-slate-800">
+                          <h4 class="m-0 text-lg font-bold text-slate-800">
                             {{ bike.model }}
                           </h4>
                           <p
@@ -360,21 +360,21 @@
                       <div class="grid grid-cols-2 gap-3">
                         <div class="p-3 bg-slate-50 rounded-2xl">
                           <p
-                            class="m-0 text-[9px] font-black text-slate-300 uppercase mb-1"
+                            class="m-0 text-[9px] font-bold text-slate-300 uppercase mb-1"
                           >
                             Thanh toán
                           </p>
-                          <p class="m-0 text-xs font-black text-slate-700">
+                          <p class="m-0 text-xs font-bold text-slate-700">
                             {{ bike.payment }}
                           </p>
                         </div>
                         <div class="p-3 bg-slate-50 rounded-2xl">
                           <p
-                            class="m-0 text-[9px] font-black text-slate-300 uppercase mb-1"
+                            class="m-0 text-[9px] font-bold text-slate-300 uppercase mb-1"
                           >
                             Giá trị
                           </p>
-                          <p class="m-0 text-xs font-black text-blue-600">
+                          <p class="m-0 text-xs font-bold text-blue-600">
                             {{ bike.price }}
                           </p>
                         </div>
@@ -384,7 +384,7 @@
 
                   <div class="pt-8 border-t border-slate-100">
                     <h3
-                      class="m-0 text-xs font-black uppercase tracking-widest text-slate-800 dark:text-slate-200 mb-6"
+                      class="m-0 text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-slate-200 mb-6"
                     >
                       Nhật ký bảo dưỡng & Sửa chữa
                     </h3>
@@ -402,7 +402,7 @@
                           </div>
                           <div>
                             <p
-                              class="m-0 text-sm font-black text-slate-800 dark:text-slate-200"
+                              class="m-0 text-sm font-bold text-slate-800 dark:text-slate-200"
                             >
                               Bảo dưỡng định kỳ lần {{ i }}
                             </p>
@@ -414,7 +414,7 @@
                           </div>
                         </div>
                         <span
-                          class="text-sm font-black text-slate-700 dark:text-slate-200"
+                          class="text-sm font-bold text-slate-700 dark:text-slate-200"
                           >350,000đ</span
                         >
                       </div>

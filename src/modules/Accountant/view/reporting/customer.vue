@@ -173,80 +173,23 @@ const chartTextColor = "#aeb0bd";
 const chartAxisLineColor = "rgba(255, 255, 255, 0.16)";
 const chartGridLineColor = "rgba(255, 255, 255, 0.1)";
 
-// --- MOCK DATA ---
-const mockGroupedFunnelData = {
-  stages: ["Tiếp cận", "Đã liên hệ", "Đến Showroom", "Chốt hợp đồng"],
-  website: [100, 60, 20, 5],
-  facebook: [80, 50, 15, 3],
-  showroom: [40, 35, 30, 25],
+const groupedFunnelData = {
+  stages: [],
+  website: [],
+  facebook: [],
+  showroom: [],
 };
 
-const mockSourceData = [
-  { name: "Website", value: 40 },
-  { name: "Showroom", value: 35 },
-  { name: "Facebook", value: 20 },
-  { name: "Nguồn khác", value: 5 },
-];
+const sourceData = [];
 
-const mockHistogramData = [
-  { group: "Thấp (0-30)", count: 120 },
-  { group: "Trung bình (31-60)", count: 85 },
-  { group: "Tiềm năng (61-80)", count: 45 },
-  { group: "Cực nóng (81-100)", count: 15 },
-];
+const histogramData = [];
 
-const mockLeads = [
-  {
-    id: 1,
-    name: "Lê Minh Hiếu",
-    phone: "0901xxx222",
-    source: "Showroom",
-    status: "Đang thương lượng",
-    score: 85,
-    assignee: "Nguyễn Văn A",
-  },
-  {
-    id: 2,
-    name: "Nguyễn Văn Nam",
-    phone: "0988xxx333",
-    source: "Website",
-    status: "Mới tạo",
-    score: 30,
-    assignee: "Trần Thị B",
-  },
-  {
-    id: 3,
-    name: "Trần Thị Mai",
-    phone: "0912xxx444",
-    source: "Facebook",
-    status: "Đã tư vấn",
-    score: 65,
-    assignee: "Lê Quốc C",
-  },
-  {
-    id: 4,
-    name: "Phạm Tấn Tài",
-    phone: "0933xxx555",
-    source: "Zalo OA",
-    status: "Hẹn đến xem",
-    score: 75,
-    assignee: "Nguyễn Văn A",
-  },
-  {
-    id: 5,
-    name: "Đinh Quang Anh",
-    phone: "0909xxx666",
-    source: "Website",
-    status: "Chốt nóng",
-    score: 95,
-    assignee: "Trần Thị B",
-  },
-];
+const leadsData = [];
 
 const filteredLeads = computed(() => {
-  if (!searchQuery.value) return mockLeads;
+  if (!searchQuery.value) return leadsData;
   const q = searchQuery.value.toLowerCase();
-  return mockLeads.filter(
+  return leadsData.filter(
     (l) => l.name.toLowerCase().includes(q) || l.phone.includes(q),
   );
 });
@@ -273,7 +216,7 @@ function getScoreTextColor(score: number) {
 }
 
 function onPeriodChange() {
-  // Mock refresh
+  // TODO: Fetch real data here
 }
 
 function renderCharts() {
@@ -298,7 +241,7 @@ function renderCharts() {
       },
       xAxis: {
         type: "category",
-        data: mockGroupedFunnelData.stages,
+        data: groupedFunnelData.stages,
         axisLabel: { color: chartTextColor },
         axisLine: { lineStyle: { color: chartAxisLineColor } },
       },
@@ -311,20 +254,20 @@ function renderCharts() {
         {
           name: "Website",
           type: "bar",
-          data: mockGroupedFunnelData.website,
+          data: groupedFunnelData.website,
           itemStyle: { color: "#3b82f6", borderRadius: [4, 4, 0, 0] },
           barGap: "15%",
         },
         {
           name: "Facebook",
           type: "bar",
-          data: mockGroupedFunnelData.facebook,
+          data: groupedFunnelData.facebook,
           itemStyle: { color: "#a855f7", borderRadius: [4, 4, 0, 0] },
         },
         {
           name: "Showroom",
           type: "bar",
-          data: mockGroupedFunnelData.showroom,
+          data: groupedFunnelData.showroom,
           itemStyle: { color: "#f97316", borderRadius: [4, 4, 0, 0] },
         },
       ],
@@ -344,7 +287,7 @@ function renderCharts() {
           type: "pie",
           radius: ["40%", "65%"],
           center: ["50%", "55%"],
-          data: mockSourceData,
+          data: sourceData,
           label: {
             formatter: "{b}: {c}%",
             color: chartTextColor,
@@ -371,7 +314,7 @@ function renderCharts() {
       },
       xAxis: {
         type: "category",
-        data: mockHistogramData.map((d) => d.group),
+        data: histogramData.map((d) => d.group),
         axisLabel: { color: chartTextColor },
         axisLine: { lineStyle: { color: chartAxisLineColor } },
       },
@@ -385,7 +328,7 @@ function renderCharts() {
       series: [
         {
           type: "bar",
-          data: mockHistogramData.map((d, i) => {
+          data: histogramData.map((d, i) => {
             const colors = ["#9ca3af", "#3b82f6", "#f97316", "#ef4444"];
             return {
               value: d.count,

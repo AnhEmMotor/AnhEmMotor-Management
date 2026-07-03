@@ -1,4 +1,4 @@
-﻿import { AppRouteRecord } from "@/types/router";
+import { AppRouteRecord } from "@/types/router";
 
 export const marketingMenu: AppRouteRecord[] = [
   {
@@ -161,25 +161,7 @@ export const marketingMenu: AppRouteRecord[] = [
               icon: "ri:gift-line",
             },
           },
-          {
-            path: "progress",
-            name: "CustomerProgress",
-            component: "/Marketing/view/customer/progress/index",
-            meta: {
-              title: "menus.marketing.customerProgress",
-              icon: "ri:git-commit-line",
-            },
-          },
-          {
-            path: "pipeline",
-            name: "CustomerPipeline",
-            component: "/Marketing/view/customer/pipeline/index",
-            meta: {
-              title: "menus.marketing.customerPipeline",
-              icon: "ri:git-repository-line",
-              keepAlive: true,
-            },
-          },
+
           {
             path: "workshop",
             name: "CustomerContactSupport",
@@ -199,16 +181,6 @@ export const marketingMenu: AppRouteRecord[] = [
         meta: {
           title: "menus.marketing.booking",
           icon: "ri:calendar-event-line",
-          keepAlive: true,
-        },
-      },
-      {
-        path: "conversion",
-        name: "MarketingConversion",
-        component: "/Marketing/view/conversion/index",
-        meta: {
-          title: "menus.marketing.conversion",
-          icon: "ri:magic-line",
           keepAlive: true,
         },
       },

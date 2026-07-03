@@ -14,7 +14,7 @@
           <ElButton circle plain @click="goBack">
             <ArtSvgIcon icon="ri:arrow-left-line" class="text-lg" />
           </ElButton>
-          <h2 class="m-0 text-xl font-black text-gray-800 tracking-tight">
+          <h2 class="m-0 text-xl font-bold text-gray-800 tracking-tight">
             {{ profile.fullName }}
           </h2>
           <ElTag :type="getStatusType(profile.status)" effect="dark" round>
@@ -31,20 +31,20 @@
             <div class="text-xs text-gray-500 mb-1">
               Đơn hàng đang hoạt động
             </div>
-            <div class="text-lg font-black text-gray-900">
+            <div class="text-lg font-bold text-gray-900">
               {{ profile.summary.activeOutputsCount }}
             </div>
           </div>
           <div class="kpi-card bg-gray-50 rounded-xl p-3 text-center">
             <div class="text-xs text-gray-500 mb-1">Xe đã sở hữu</div>
-            <div class="text-lg font-black text-gray-900">
+            <div class="text-lg font-bold text-gray-900">
               {{ profile.summary.ownedVehiclesCount }}
             </div>
           </div>
           <div class="kpi-card bg-gray-50 rounded-xl p-3 text-center">
             <div class="text-xs text-gray-500 mb-1">Nhắc nhở quá hạn</div>
             <div
-              class="text-lg font-black"
+              class="text-lg font-bold"
               :class="
                 profile.summary.overdueRemindersCount > 0
                   ? 'text-red-500'
@@ -56,7 +56,7 @@
           </div>
           <div class="kpi-card bg-gray-50 rounded-xl p-3 text-center">
             <div class="text-xs text-gray-500 mb-1">Điểm tích lũy</div>
-            <div class="text-lg font-black text-amber-600">
+            <div class="text-lg font-bold text-amber-600">
               {{ profile.points }}
             </div>
           </div>

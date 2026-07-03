@@ -1,5 +1,5 @@
 <template>
-  <div class="contact-page min-h-full font-inter dark:text-slate-100 pb-6">
+  <div class="contact-page min-h-full dark:text-slate-100 pb-6">
     <div
       class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4 shadow-sm"
     >
@@ -12,7 +12,7 @@
           </div>
           <div>
             <h1
-              class="m-0 text-xl font-black tracking-tight text-slate-900 dark:text-white leading-none"
+              class="m-0 text-xl font-bold tracking-tight text-slate-900 dark:text-white leading-none"
             >
               {{ $t("contact.title") }}
             </h1>
@@ -28,10 +28,10 @@
           class="flex items-center gap-2 bg-red-50 px-3 py-1.5 rounded-lg border border-red-100"
         >
           <span
-            class="text-[9px] font-black text-red-400 uppercase tracking-tighter"
+            class="text-[9px] font-bold text-red-400 uppercase tracking-tighter"
             >{{ $t("contact.unreadBadge") }}:</span
           >
-          <span class="text-sm font-black text-red-600 leading-none">{{
+          <span class="text-sm font-bold text-red-600 leading-none">{{
             contactStore.unreadBadge
           }}</span>
         </div>
@@ -164,7 +164,7 @@
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                       <span
-                        class="text-[10px] font-black text-slate-300 uppercase tracking-widest"
+                        class="text-[10px] font-bold text-slate-300 uppercase tracking-widest"
                         >#{{ activeItem?.id }}</span
                       >
                       <span
@@ -183,7 +183,7 @@
                       >Đóng</ElButton
                     >
                   </div>
-                  <h2 class="text-base font-black text-slate-800 mt-2">
+                  <h2 class="text-base font-bold text-slate-800 mt-2">
                     {{ activeItemSubject }}
                   </h2>
                   <div
@@ -319,7 +319,7 @@
                     >
                       Ghi chú nội bộ
                     </h4>
-                    <span class="text-[10px] text-slate-400 italic"
+                    <span class="text-[10px] text-slate-400"
                       >Chỉ hiển thị với nhân viên điều hành</span
                     >
                   </div>
@@ -457,7 +457,7 @@
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                       <span
-                        class="text-[10px] font-black text-slate-300 uppercase tracking-widest"
+                        class="text-[10px] font-bold text-slate-300 uppercase tracking-widest"
                         >#{{ activeItem?.id }}</span
                       >
                       <span
@@ -476,7 +476,7 @@
                       >Đóng</ElButton
                     >
                   </div>
-                  <h2 class="text-base font-black text-slate-800 mt-2">
+                  <h2 class="text-base font-bold text-slate-800 mt-2">
                     {{ activeItemCustomerName }}
                   </h2>
                   <div
@@ -612,7 +612,7 @@
                     >
                       Ghi chú nội bộ
                     </h4>
-                    <span class="text-[10px] text-slate-400 italic"
+                    <span class="text-[10px] text-slate-400"
                       >Chỉ hiển thị với nhân viên điều hành</span
                     >
                   </div>
@@ -757,7 +757,7 @@
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                       <span
-                        class="text-[10px] font-black text-slate-300 uppercase tracking-widest"
+                        class="text-[10px] font-bold text-slate-300 uppercase tracking-widest"
                         >#{{ activeItem?.id }}</span
                       >
                       <span
@@ -776,7 +776,7 @@
                       >{{ $t("contact.closeBtn") }}</ElButton
                     >
                   </div>
-                  <h2 class="text-base font-black text-slate-800 mt-2">
+                  <h2 class="text-base font-bold text-slate-800 mt-2">
                     {{ activeItemFullName }}
                   </h2>
                   <div
@@ -886,119 +886,6 @@
                             hoạt động. Máy chủ chỉ lưu tên file và không chứa
                             tệp tin vật lý để xem trước hoặc tải xuống.
                           </p>
-                        </div>
-
-                        <!-- Mock CV Preview for Demo/Mock Data -->
-                        <div
-                          v-else-if="isMockCv"
-                          class="w-full h-full bg-white dark:bg-[#0f172a] p-6 overflow-y-auto font-inter text-slate-800 dark:text-slate-100 flex flex-col gap-4 text-left shadow-sm rounded-lg border dark:border-slate-800"
-                        >
-                          <div
-                            class="border-b-2 border-slate-900 dark:border-slate-700 pb-4"
-                          >
-                            <h1
-                              class="text-xl font-extrabold uppercase tracking-wide m-0 text-slate-900"
-                            >
-                              {{ (activeItem as any)?.fullName }}
-                            </h1>
-                            <p
-                              class="text-xs font-semibold text-blue-600 mt-1 uppercase tracking-wider"
-                            >
-                              {{ (activeItem as any)?.appliedPosition }}
-                            </p>
-                            <div
-                              class="flex flex-wrap gap-x-4 gap-y-1 text-slate-500 text-[10px] font-bold mt-2"
-                            >
-                              <span
-                                >Email: {{ (activeItem as any)?.email }}</span
-                              >
-                              <span>•</span>
-                              <span
-                                >SĐT:
-                                {{ (activeItem as any)?.phoneNumber }}</span
-                              >
-                            </div>
-                          </div>
-
-                          <div>
-                            <h3
-                              class="text-xs font-bold text-slate-900 uppercase tracking-widest border-l-4 border-blue-500 pl-2 mb-2"
-                            >
-                              Mục tiêu nghề nghiệp
-                            </h3>
-                            <p
-                              class="text-[11px] leading-relaxed text-slate-600"
-                            >
-                              {{
-                                (activeItem as any)?.coverLetter ||
-                                "Mong muốn cống hiến năng lực, kinh nghiệm tích lũy để cùng đồng hành phát triển bền vững cùng thương hiệu."
-                              }}
-                            </p>
-                          </div>
-
-                          <div>
-                            <h3
-                              class="text-xs font-bold text-slate-900 uppercase tracking-widest border-l-4 border-blue-500 pl-2 mb-2"
-                            >
-                              Kinh nghiệm làm việc
-                            </h3>
-                            <div class="flex flex-col gap-3">
-                              <div>
-                                <div
-                                  class="flex justify-between items-baseline"
-                                >
-                                  <span
-                                    class="text-xs font-extrabold text-slate-800"
-                                    >Cửa hàng xe máy & dịch vụ bảo dưỡng
-                                    lớn</span
-                                  >
-                                  <span
-                                    class="text-[10px] text-slate-400 font-bold"
-                                    >2021 - Nay</span
-                                  >
-                                </div>
-                                <p
-                                  class="text-[10px] text-slate-500 font-semibold mb-1"
-                                >
-                                  Thợ chính / Tư vấn viên cao cấp
-                                </p>
-                                <ul
-                                  class="list-disc pl-4 text-[10px] text-slate-600 leading-relaxed m-0 flex flex-col gap-0.5"
-                                >
-                                  <li>
-                                    Trực tiếp kiểm tra, khắc phục sự cố kỹ thuật
-                                    phức tạp cho khách hàng.
-                                  </li>
-                                  <li>
-                                    Chăm sóc, tư vấn dịch vụ bảo dưỡng tối ưu và
-                                    tăng độ bền bỉ cho xe.
-                                  </li>
-                                  <li>
-                                    Phối hợp cùng đội ngũ vận hành nâng cao
-                                    doanh số và trải nghiệm dịch vụ.
-                                  </li>
-                                </ul>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div>
-                            <h3
-                              class="text-xs font-bold text-slate-900 uppercase tracking-widest border-l-4 border-blue-500 pl-2 mb-2"
-                            >
-                              Học vấn & Chứng chỉ
-                            </h3>
-                            <div class="flex justify-between items-baseline">
-                              <span
-                                class="text-xs font-extrabold text-slate-800"
-                                >Trường Cao đẳng Công nghệ / Đào tạo chuyên
-                                ngành</span
-                              >
-                              <span class="text-[10px] text-slate-400 font-bold"
-                                >2018 - 2021</span
-                              >
-                            </div>
-                          </div>
                         </div>
 
                         <!-- Image Preview -->
@@ -1184,7 +1071,7 @@
                       >
                         {{ $t("contact.internalNote") }}
                       </h4>
-                      <span class="text-[10px] text-slate-400 italic"
+                      <span class="text-[10px] text-slate-400"
                         >Chỉ hiển thị với nhân viên điều hành</span
                       >
                     </div>
@@ -1363,14 +1250,7 @@ const statusStyle = (status: string) => {
 const cvFileUrl = computed(
   () => (activeItem.value as Contact.JobApplication)?.cvFileUrl ?? "",
 );
-const isMockCv = computed(() => {
-  if (!cvFileUrl.value) return false;
-  return (
-    cvFileUrl.value.includes("cv-nguyen-van-hung.pdf") ||
-    cvFileUrl.value.includes("cv-tran-minh-tam.pdf") ||
-    cvFileUrl.value.includes("cv-le-thi-mai.pdf")
-  );
-});
+
 const isLegacyCv = computed(() => {
   if (!cvFileUrl.value) return false;
   return (

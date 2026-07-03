@@ -1,6 +1,6 @@
 <template>
   <div
-    class="article-publish-page min-h-screen font-inter text-[#0F172A] dark:text-slate-100 pb-10"
+    class="article-publish-page min-h-screen text-[#0F172A] dark:text-slate-100 pb-10"
   >
     <div
       class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-8 py-4 sticky top-0 z-[100] shadow-sm flex justify-between items-center"
@@ -13,11 +13,11 @@
         </div>
         <div>
           <h1
-            class="m-0 text-lg font-black tracking-tight text-slate-900 dark:text-white leading-none flex items-center gap-3"
+            class="m-0 text-lg font-bold tracking-tight text-slate-900 dark:text-white leading-none flex items-center gap-3"
           >
             Chỉnh sửa bài viết
             <span
-              class="px-2 py-0.5 rounded text-[9px] font-black uppercase text-white shadow-sm"
+              class="px-2 py-0.5 rounded text-[9px] font-bold uppercase text-white shadow-sm"
               :class="isPublished ? 'bg-blue-500' : 'bg-slate-400'"
               >{{ isPublished ? "Đã xuất bản" : "Bản nháp" }}</span
             >
@@ -27,13 +27,13 @@
       <div class="flex items-center gap-3">
         <button
           @click="handleSaveDraft"
-          class="h-10 px-6 border-2 border-slate-200 text-slate-600 rounded-xl font-black text-[10px] uppercase tracking-widest hover:border-slate-800 transition-all"
+          class="h-10 px-6 border-2 border-slate-200 text-slate-600 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:border-slate-800 transition-all"
         >
           Lưu nháp
         </button>
         <button
           @click="submit"
-          class="h-10 px-8 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95"
+          class="h-10 px-8 bg-blue-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95"
         >
           {{
             pageMode === PageModeEnum.Edit
@@ -52,19 +52,19 @@
           <div class="grid grid-cols-12 gap-6">
             <div class="col-span-12">
               <label
-                class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
+                class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block px-1"
                 >Tiêu đề bài viết</label
               >
               <input
                 v-model="articleName"
                 type="text"
                 placeholder="Ví dụ: So sánh SH 160i và SH Mode: Lựa chọn nào cho phái đẹp?"
-                class="w-full h-11 bg-slate-50 dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-2xl px-6 text-lg font-black text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none"
+                class="w-full h-11 bg-slate-50 dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-2xl px-6 text-lg font-bold text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none"
               />
             </div>
             <div class="col-span-9">
               <label
-                class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
+                class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block px-1"
                 >Đường dẫn tĩnh (Slug)</label
               >
               <input
@@ -76,7 +76,7 @@
             </div>
             <div class="col-span-3">
               <label
-                class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
+                class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block px-1"
                 >Danh mục</label
               >
               <ElSelect
@@ -103,7 +103,7 @@
             class="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-950/40 flex justify-between items-center"
           >
             <span
-              class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
+              class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"
               >Nội dung bài viết</span
             >
           </div>
@@ -120,7 +120,7 @@
           class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[32px] p-6 shadow-sm"
         >
           <h3
-            class="m-0 text-xs font-black uppercase tracking-widest text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2"
+            class="m-0 text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2"
           >
             <ArtSvgIcon icon="ri:share-forward-line" class="text-blue-500" />
             Upload ảnh bìa
@@ -140,7 +140,7 @@
                 class="w-full h-full flex-cc flex-col gap-2 text-slate-400"
               >
                 <ArtSvgIcon icon="ri:image-add-line" class="text-3xl" />
-                <span class="text-[9px] font-black uppercase"
+                <span class="text-[9px] font-bold uppercase"
                   >Tải ảnh bìa Social</span
                 >
               </div>
@@ -153,7 +153,7 @@
         >
           <div class="flex justify-between items-center mb-4">
             <h3
-              class="m-0 text-xs font-black uppercase tracking-widest text-slate-800 dark:text-slate-200"
+              class="m-0 text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-slate-200"
             >
               Sản phẩm liên kết
             </h3>
@@ -176,7 +176,7 @@
               />
               <div class="flex-1 overflow-hidden">
                 <h4
-                  class="m-0 text-[11px] font-black text-slate-800 dark:text-slate-200 truncate"
+                  class="m-0 text-[11px] font-bold text-slate-800 dark:text-slate-200 truncate"
                 >
                   {{ p.name }}
                 </h4>
@@ -197,12 +197,12 @@
             >
               <ArtSvgIcon icon="ri:car-line" class="text-3xl" />
               <span
-                class="text-[9px] font-black uppercase tracking-tighter text-center"
+                class="text-[9px] font-bold uppercase tracking-tighter text-center"
                 >Chưa chọn xe tư vấn</span
               >
             </div>
           </div>
-          <p class="m-0 text-[9px] font-bold text-slate-400 italic">
+          <p class="m-0 text-[9px] font-bold text-slate-400">
             Khách hàng sẽ thấy nút "Xem giá xe này" và "Lái thử" ngay dưới bài
             viết cho các xe trên.
           </p>

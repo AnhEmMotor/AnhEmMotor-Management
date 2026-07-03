@@ -70,13 +70,12 @@ const props = defineProps({
   },
 });
 
-// Mock data based on period
 const xAxisData = computed(() => {
   if (props.period === "today") {
-    return ["8h", "10h", "12h", "14h", "16h", "18h"];
+    return [];
   }
   // month
-  return Array.from({ length: 30 }, (_, i) => (i + 1).toString());
+  return [];
 });
 
 const chartData = computed(() => {
@@ -84,7 +83,7 @@ const chartData = computed(() => {
     return [
       {
         name: "Doanh thu",
-        data: [15, 22, 10, 25, 30, 18], // Triệu đồng
+        data: [],
       },
     ];
   }
@@ -92,10 +91,7 @@ const chartData = computed(() => {
   return [
     {
       name: "Doanh thu",
-      data: Array.from(
-        { length: 30 },
-        () => Math.floor(Math.random() * 80) + 40,
-      ),
+      data: [],
     },
   ];
 });

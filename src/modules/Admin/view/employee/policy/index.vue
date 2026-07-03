@@ -201,7 +201,7 @@ const loadPolicies = async () => {
 
 const handleReset = () => {
   pagination.current = 1;
-  loadData();
+  // loadData();
 };
 const selectPolicy = (policy: any) => {
   router.push({

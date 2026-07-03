@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="sales-report-page">
     <!-- Filter Bar -->
     <div class="filter-bar">
@@ -459,8 +459,6 @@ import type {
 
 defineOptions({ name: "SalesReport" });
 
-const USE_MOCK = true;
-
 // Filter state
 const filterBranch = ref("all");
 const filterPeriod = ref("month");
@@ -481,191 +479,25 @@ const pieChartRef = ref<HTMLElement | null>(null);
 let trendChart: echarts.ECharts | null = null;
 let pieChart: echarts.ECharts | null = null;
 
-// Mock KPI data
 const kpis = ref({
-  grossRevenue: 2500000000,
-  revenueChange: 12.5,
-  grossProfit: 450000000,
-  profitChange: 8.4,
-  totalOrders: 620,
-  orderChange: -2.1,
-  cancelledOrders: 12,
-  aov: 4032258,
-  aovChange: 5.3,
+  grossRevenue: 0,
+  revenueChange: 0,
+  grossProfit: 0,
+  profitChange: 0,
+  totalOrders: 0,
+  orderChange: 0,
+  cancelledOrders: 0,
+  aov: 0,
+  aovChange: 0,
 });
 
-// Mock revenue trend data (daily for current month)
-const revenueTrendData = ref([
-  { date: "2026-06-01", motorbike: 85000000, parts: 4200000, service: 2100000 },
-  { date: "2026-06-02", motorbike: 92000000, parts: 5100000, service: 1800000 },
-  { date: "2026-06-03", motorbike: 78000000, parts: 3800000, service: 2500000 },
-  {
-    date: "2026-06-04",
-    motorbike: 110000000,
-    parts: 6200000,
-    service: 3100000,
-  },
-  {
-    date: "2026-06-05",
-    motorbike: 125000000,
-    parts: 7500000,
-    service: 2800000,
-  },
-  { date: "2026-06-06", motorbike: 98000000, parts: 5400000, service: 2200000 },
-  {
-    date: "2026-06-07",
-    motorbike: 105000000,
-    parts: 6800000,
-    service: 3500000,
-  },
-  { date: "2026-06-08", motorbike: 88000000, parts: 4500000, service: 1900000 },
-  {
-    date: "2026-06-09",
-    motorbike: 115000000,
-    parts: 7200000,
-    service: 3000000,
-  },
-  {
-    date: "2026-06-10",
-    motorbike: 132000000,
-    parts: 8100000,
-    service: 2700000,
-  },
-  { date: "2026-06-11", motorbike: 97000000, parts: 5500000, service: 2400000 },
-  {
-    date: "2026-06-12",
-    motorbike: 108000000,
-    parts: 6900000,
-    service: 3200000,
-  },
-  {
-    date: "2026-06-13",
-    motorbike: 121000000,
-    parts: 7800000,
-    service: 2900000,
-  },
-  {
-    date: "2026-06-14",
-    motorbike: 135000000,
-    parts: 8500000,
-    service: 3600000,
-  },
-  {
-    date: "2026-06-15",
-    motorbike: 142000000,
-    parts: 9200000,
-    service: 3100000,
-  },
-  {
-    date: "2026-06-16",
-    motorbike: 118000000,
-    parts: 7100000,
-    service: 2700000,
-  },
-  {
-    date: "2026-06-17",
-    motorbike: 128000000,
-    parts: 8000000,
-    service: 3400000,
-  },
-  {
-    date: "2026-06-18",
-    motorbike: 105000000,
-    parts: 6700000,
-    service: 2500000,
-  },
-  {
-    date: "2026-06-19",
-    motorbike: 138000000,
-    parts: 8800000,
-    service: 3800000,
-  },
-  {
-    date: "2026-06-20",
-    motorbike: 145000000,
-    parts: 9500000,
-    service: 3200000,
-  },
-  {
-    date: "2026-06-21",
-    motorbike: 122000000,
-    parts: 7800000,
-    service: 2900000,
-  },
-  {
-    date: "2026-06-22",
-    motorbike: 130000000,
-    parts: 8200000,
-    service: 3500000,
-  },
-  {
-    date: "2026-06-23",
-    motorbike: 140000000,
-    parts: 9000000,
-    service: 3100000,
-  },
-  {
-    date: "2026-06-24",
-    motorbike: 150000000,
-    parts: 9800000,
-    service: 4000000,
-  },
-  {
-    date: "2026-06-25",
-    motorbike: 155000000,
-    parts: 10200000,
-    service: 3800000,
-  },
-  {
-    date: "2026-06-26",
-    motorbike: 148000000,
-    parts: 9500000,
-    service: 3500000,
-  },
-]);
+const revenueTrendData = ref<any[]>([]);
 
-// Mock top motorbikes
-const topMotorbikes = ref([
-  { name: "Honda Winner X V3", quantity: 45, revenue: 675000000 },
-  { name: "Yamaha Exciter 155", quantity: 38, revenue: 532000000 },
-  { name: "Honda Air Blade 160", quantity: 32, revenue: 416000000 },
-  { name: "Yamaha Sirius", quantity: 28, revenue: 252000000 },
-  { name: "Honda Vision", quantity: 25, revenue: 212500000 },
-]);
+const topMotorbikes = ref<any[]>([]);
 
-// Mock top parts
-const topParts = ref([
-  { name: "Nhớt Castrol 10W40 (1L)", quantity: 320, revenue: 38400000 },
-  { name: "Lốp Michelin City Pro", quantity: 85, revenue: 34000000 },
-  { name: "Phuộc trước YSS", quantity: 42, revenue: 29400000 },
-  { name: "Mũ bảo hiểm BOSS", quantity: 56, revenue: 25200000 },
-  { name: "Gương chiếu hậu LED", quantity: 120, revenue: 21600000 },
-]);
+const topParts = ref<any[]>([]);
 
-// Mock top employees
-const topEmployees = ref([
-  {
-    id: 1,
-    name: "Nguyễn Văn A",
-    role: "Trưởng ca bán xe",
-    revenue: 485000000,
-    orderCount: 42,
-  },
-  {
-    id: 2,
-    name: "Trần Thị B",
-    role: "Tư vấn phụ tùng",
-    revenue: 320000000,
-    orderCount: 156,
-  },
-  {
-    id: 3,
-    name: "Lê Văn C",
-    role: "Kỹ thuật viên xưởng",
-    revenue: 280000000,
-    orderCount: 89,
-  },
-]);
+const topEmployees = ref<any[]>([]);
 
 // Detail data for table
 const detailData = ref<any[]>([]);
@@ -694,39 +526,6 @@ const paginatedDetailData = computed(() => {
   const start = (tablePage.value - 1) * tablePageSize.value;
   return filteredDetailData.value.slice(start, start + tablePageSize.value);
 });
-
-function generateMockOrders(date: string, totalRevenue: number) {
-  const orders: any[] = [];
-  const count = Math.floor(Math.random() * 5) + 3;
-  const types = [
-    { type: "motorbike", label: "Bán xe" },
-    { type: "parts", label: "Phụ tùng" },
-    { type: "service", label: "Dịch vụ" },
-  ];
-  const names = [
-    "Nguyễn Văn An",
-    "Trần Thị Bình",
-    "Lê Văn Cường",
-    "Phạm Thị Dung",
-    "Hoàng Văn Em",
-  ];
-  const statuses = ["Đã thanh toán", "Chưa TT", "COD"];
-
-  for (let i = 0; i < count; i++) {
-    const typeInfo = types[Math.floor(Math.random() * types.length)];
-    orders.push({
-      id: Math.floor(Math.random() * 9000) + 1000,
-      type: typeInfo.type,
-      typeLabel: typeInfo.label,
-      customer: names[Math.floor(Math.random() * names.length)],
-      amount:
-        Math.floor(totalRevenue / count / 1000) * 1000 +
-        Math.floor(Math.random() * 500000),
-      status: statuses[Math.floor(Math.random() * statuses.length)],
-    });
-  }
-  return orders;
-}
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("vi-VN", {
@@ -794,21 +593,6 @@ function handleExportPdf() {
 
 async function fetchData() {
   try {
-    if (USE_MOCK) {
-      detailData.value = revenueTrendData.value.map((item) => ({
-        date: item.date,
-        motorbikeRevenue: item.motorbike,
-        partsRevenue: item.parts,
-        serviceRevenue: item.service,
-        totalRevenue: item.motorbike + item.parts + item.service,
-        orderCount: Math.floor(Math.random() * 20) + 10,
-        orders: generateMockOrders(
-          item.date,
-          item.motorbike + item.parts + item.service,
-        ),
-      }));
-      return;
-    }
     const res: AdminRevenueAnalysisResponse =
       await statisticsApi.getRevenueAnalysis();
 
