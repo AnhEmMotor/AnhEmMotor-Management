@@ -63,10 +63,9 @@ export const hrRoutes: AppRouteRecord = {
       name: "HRCommissionReport",
       component: "/Accountant/view/reporting/employee",
       meta: {
-        title: "Báo cáo nhân sự & hoa hồng",
+        title: "menus.hr.report",
         icon: "ri:team-line",
         keepAlive: true,
-        permission: Permissions.StatisticalView,
       },
     },
   ],

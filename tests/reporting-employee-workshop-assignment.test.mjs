@@ -172,7 +172,7 @@ test("workshop warranty menu opens the warranty request page", async () => {
   );
   assert.match(
     factoryMenuSource,
-    /path:\s*"warranty\/:id"[\s\S]*name:\s*"WorkshopWarrantyClaimDetail"[\s\S]*isHide:\s*true/,
+    /path:\s*"warranty\/:id"[\s\S]*name:\s*"WorkshopWarrantyDetail"[\s\S]*isHide:\s*true/,
     "Factory warranty detail route must exist as a hidden child route",
   );
   assert.doesNotMatch(
@@ -183,7 +183,7 @@ test("workshop warranty menu opens the warranty request page", async () => {
 
   assert.match(
     warrantyRequestsSource,
-    /name:\s*"WorkshopWarrantyClaimDetail"/,
+    /name:\s*"WorkshopWarrantyDetail"/,
     "warranty request rows must open the Factory warranty detail route",
   );
   assert.match(

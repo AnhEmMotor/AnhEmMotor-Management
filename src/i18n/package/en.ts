@@ -429,6 +429,7 @@ export default {
       commissionPolicy: "Commission Policy",
       payroll: "Payroll",
       kpi: "KPI Management",
+      report: "HR Report",
     },
     service: {
       title: "Service Management",

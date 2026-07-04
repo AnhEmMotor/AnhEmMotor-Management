@@ -555,6 +555,7 @@ export default {
       commissionPolicy: "Chính sách hoa hồng",
       payroll: "Bảng Lương",
       kpi: "Quản lý KPI",
+      report: "Báo cáo nhân sự",
     },
     service: {
       title: "Quản lý dịch vụ",

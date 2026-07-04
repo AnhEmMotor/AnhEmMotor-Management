@@ -548,11 +548,11 @@ const handleCurrentChange = (val: number) => {
 
 // Navigation
 const goToCreate = () => {
-  router.push("/customer/workshop/create");
+  router.push("/factory/workshop/repair-history/create");
 };
 
 const goToDetail = (id: number) => {
-  router.push(`/customer/workshop/repair/${id}`);
+  router.push(`/factory/workshop/repair-history/repair/${id}`);
 };
 
 // Helper formatting functions

@@ -1,4 +1,4 @@
-import { AppRouteRecord } from "@/types/router";
+﻿import { AppRouteRecord } from "@/types/router";
 
 export const marketingMenu: AppRouteRecord[] = [
   {
@@ -171,7 +171,7 @@ export const marketingMenu: AppRouteRecord[] = [
             },
           },
           {
-            path: "/customer/pipeline",
+            path: "pipeline",
             name: "CustomerPipeline",
             component: "/Marketing/view/customer/pipeline/index",
             meta: {
@@ -181,41 +181,7 @@ export const marketingMenu: AppRouteRecord[] = [
             },
           },
           {
-            path: "/customer/workshop",
-            name: "CustomerWorkshop",
-            component: "/Marketing/view/customer/workshop/index",
-            meta: {
-              title: "menus.marketing.customerWorkshop",
-              icon: "ri:tools-line",
-              keepAlive: true,
-            },
-          },
-          {
-            path: "/customer/workshop/create",
-            name: "CustomerWorkshopCreate",
-            component: "/Marketing/view/customer/workshop/repair-order-form",
-            meta: {
-              title: "menus.marketing.customerWorkshop",
-              isHide: true,
-              isHideTab: true,
-              keepAlive: true,
-              activePath: "/customer/workshop",
-            },
-          },
-          {
-            path: "/customer/workshop/repair/:id",
-            name: "CustomerWorkshopDetail",
-            component: "/Marketing/view/customer/workshop/repair-order-detail",
-            meta: {
-              title: "menus.marketing.customerWorkshop",
-              isHide: true,
-              isHideTab: true,
-              keepAlive: true,
-              activePath: "/customer/workshop",
-            },
-          },
-          {
-            path: "/customer/contact",
+            path: "workshop",
             name: "CustomerContactSupport",
             component: "/Marketing/view/customer/contact/index",
             meta: {

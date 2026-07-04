@@ -1,8 +1,10 @@
 import { AppRouteRecord } from "@/types/router";
+import { Permissions } from "@/domain/constants/permissions";
 
 export const dashboardRoutes: AppRouteRecord = {
   name: "Dashboard",
   path: "/admin/dashboard",
+  redirect: "/admin/dashboard/console",
   component: "/index/index",
   meta: {
     title: "menus.dashboard.title",
@@ -30,7 +32,7 @@ export const dashboardRoutes: AppRouteRecord = {
         title: "menus.dashboard.analysis",
         icon: "ri:align-item-bottom-line",
         keepAlive: false,
-        permission: "Permissions.Statistical.View",
+        permission: Permissions.Admin.DashboardManagement.View,
         isHide: true,
       },
     },
@@ -42,7 +44,7 @@ export const dashboardRoutes: AppRouteRecord = {
         title: "menus.dashboard.ecommerce",
         icon: "ri:bar-chart-box-line",
         keepAlive: false,
-        permission: "Permissions.Statistical.View",
+        permission: Permissions.Admin.DashboardManagement.View,
       },
     },
   ],

@@ -26,7 +26,7 @@ export class RouteTransformer {
       component: undefined,
     };
 
-    if (route.meta.isIframe) {
+    if (route.meta?.isIframe) {
       this.handleIframeRoute(converted, route, depth);
     } else if (this.isFirstLevelRoute(route, depth)) {
       this.handleFirstLevelRoute(converted, route, component as string);
