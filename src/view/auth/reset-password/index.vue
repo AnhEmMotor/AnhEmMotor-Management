@@ -15,29 +15,25 @@
             </div>
           </div>
           <h2 class="mt-2 text-3xl font-extrabold title tracking-tight">
-            Quên mật khẩu
+            Đặt lại mật khẩu
           </h2>
-          <p class="mt-3 text-sm subtitle px-4">
-            Nhập địa chỉ email của bạn và chúng tôi sẽ gửi cho bạn một liên kết
-            để đặt lại mật khẩu.
-          </p>
+          <p class="mt-3 text-sm subtitle px-4">Nhập mật khẩu mới của bạn.</p>
         </div>
 
         <el-form
-          @submit.prevent="handleForgotPassword"
+          @submit.prevent="handleReset"
           class="space-y-5"
           label-position="top"
           size="large"
         >
           <el-form-item>
             <el-input
-              v-model="email"
-              type="email"
-              placeholder="Nhập email đã đăng ký"
-              :prefix-icon="Message"
-              clearable
+              v-model="newPassword"
+              type="password"
+              placeholder="Mật khẩu mới"
+              :prefix-icon="Lock"
+              show-password
               class="custom-input"
-              @keyup.enter="handleForgotPassword"
             />
           </el-form-item>
 
@@ -66,7 +62,7 @@
               :loading="isLoading"
               class="w-full submit-btn"
             >
-              Gửi liên kết đặt lại mật khẩu
+              Đặt lại mật khẩu
             </el-button>
           </el-form-item>
 
@@ -87,21 +83,35 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import { Message, Key, Back } from "@element-plus/icons-vue";
-import { fetchForgotPassword } from "@/api/auth";
+import { ref, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { Key, Lock, Back } from "@element-plus/icons-vue";
+import { $t } from "@/i18n";
+import { fetchResetPassword } from "@/api/auth";
+import ElMessage from "element-plus/es/components/message/index.js";
 
+const route = useRoute();
 const router = useRouter();
 
-const email = ref("");
+const newPassword = ref("");
 const isLoading = ref(false);
 const errorMessage = ref("");
 const successMessage = ref("");
 
-const handleForgotPassword = async () => {
-  if (!email.value) {
-    errorMessage.value = "Vui lòng nhập địa chỉ email";
+const email = ref("");
+const token = ref("");
+
+onMounted(() => {
+  email.value = (route.query.email as string) ?? "";
+  token.value = (route.query.token as string) ?? "";
+  if (!email.value || !token.value) {
+    errorMessage.value = "Liên kết đặt lại mật khẩu không hợp lệ.";
+  }
+});
+
+const handleReset = async () => {
+  if (!newPassword.value || newPassword.value.length < 8) {
+    errorMessage.value = "Mật khẩu phải có ít nhất 8 ký tự.";
     return;
   }
 
@@ -110,17 +120,16 @@ const handleForgotPassword = async () => {
   successMessage.value = "";
 
   try {
-    const res = await fetchForgotPassword({ email: email.value });
-
-    if (res.data) {
-      successMessage.value =
-        res.data.message ||
-        "Vui lòng kiểm tra email của bạn để nhận link đặt lại mật khẩu.";
-    }
-
-    email.value = "";
+    await fetchResetPassword({
+      email: email.value,
+      token: token.value,
+      newPassword: newPassword.value,
+    });
+    successMessage.value =
+      "Đặt lại mật khẩu thành công. Bạn có thể đăng nhập ngay.";
+    newPassword.value = "";
   } catch (error: any) {
-    errorMessage.value = error.message || "Gửi yêu cầu thất bại";
+    errorMessage.value = error.message || "Đặt lại mật khẩu thất bại";
   } finally {
     isLoading.value = false;
   }

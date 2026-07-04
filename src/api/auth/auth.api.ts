@@ -32,3 +32,17 @@ export function fetchGetUserInfo() {
     url: "/api/v1/user/me",
   });
 }
+
+export function fetchForgotPassword(params: Api.Auth.ForgotPasswordParams) {
+  return request.post<Api.Auth.ForgotPasswordResponse>({
+    url: "/api/v1/auth/forgot-password",
+    params,
+  });
+}
+
+export function fetchResetPassword(params: Api.Auth.ResetPasswordParams) {
+  return request.post<Api.Auth.ResetPasswordResponse>({
+    url: "/api/v1/auth/reset-password",
+    params,
+  });
+}
