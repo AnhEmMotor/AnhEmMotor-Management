@@ -88,7 +88,7 @@
       </div>
     </div>
 
-    <!-- Pipeline progress -->
+<!-- Pipeline progress -->
     <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 mb-6">
       <div class="flex items-center justify-between mb-4">
         <span class="font-semibold text-slate-800 text-sm"
@@ -628,7 +628,7 @@ const getPartStatusLabel = (status: string) => {
 };
 
 function goBack() {
-  router.push({ name: "ServiceWarrantyRequests" }).catch(() => null);
+  router.push({ name: "WorkshopWarranty" }).catch(() => null);
 }
 
 // APIs
@@ -750,7 +750,7 @@ async function handleRecall() {
 }
 
 onMounted(() => {
-  void load();
+  load();
 });
 </script>
 

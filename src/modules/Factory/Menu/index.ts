@@ -37,6 +37,17 @@ export const factoryMenu: AppRouteRecord[] = [
         meta: { title: "Bảo hành", icon: "ri:shield-check-line" },
       },
       {
+        path: "warranty/:id",
+        name: "WorkshopWarrantyClaimDetail",
+        component:
+          "/Factory/view/service/warranty-and-complaints/warranty-claim-detail/index",
+        meta: {
+          title: "Bảo hành",
+          icon: "ri:shield-check-line",
+          isHide: true,
+        },
+      },
+      {
         path: "maintenance",
         name: "WorkshopMaintenance",
         component: "/Factory/view/service/workshop/maintenance/index",
@@ -50,20 +61,7 @@ export const factoryMenu: AppRouteRecord[] = [
       },
     ],
   },
-  {
-    path: "/factory/administrative",
-    name: "Administrative",
-    component: "/index/index",
-    meta: { title: "Dịch vụ hành chính", icon: "ri:file-list-3-line" },
-    children: [
-      {
-        path: "registration",
-        name: "AdministrativeRegistration",
-        component: "/Factory/view/service/administrative/registration/index",
-        meta: { title: "Đăng ký biển số", icon: "ri:profile-line" },
-      },
-    ],
-  },
+
   {
     path: "/factory/workshop/counter",
     name: "WorkshopCounter",
