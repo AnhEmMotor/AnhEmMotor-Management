@@ -146,6 +146,7 @@
       :title="drawer.order ? `Chi tiết đơn #${drawer.order.id}` : ''"
       width="60%"
       :destroy-on-close="true"
+      :loading="rowClickLoading"
     >
       <div v-if="drawer.order" class="order-detail">
         <!-- Order Summary -->
@@ -212,15 +213,7 @@
                 formatCurrency(drawer.order.shippingFee)
               }}</span>
             </div>
-            <div
-              v-if="(drawer.order.discount || 0) > 0"
-              class="flex justify-between text-red-600"
-            >
-              <span>Giảm giá:</span>
-              <span class="font-medium"
-                >-{{ formatCurrency(drawer.order.discount) }}</span
-              >
-            </div>
+
             <div
               class="flex justify-between text-base font-bold text-primary border-t pt-1 mt-1"
             >
@@ -369,6 +362,7 @@ const drawer = reactive({
   visible: false,
   order: null as SalesOrder | null,
 });
+const rowClickLoading = ref(false);
 
 const searchForm = reactive({
   search: "",
@@ -620,10 +614,16 @@ function handleSelectionChange(selection: SalesOrder[]) {
 }
 
 // Row click -> open drawer
-function handleRowClick(row: SalesOrder) {
-  // Fetch full detail if needed (the list might have incomplete product details)
-  // But the list likely includes products already. We'll use the row's data.
-  drawer.order = row;
+async function handleRowClick(row: SalesOrder) {
+  rowClickLoading.value = true;
+  try {
+    const detail = await SalesOrderApi.getById(row.id);
+    drawer.order = detail as SalesOrder;
+  } catch {
+    drawer.order = row;
+  } finally {
+    rowClickLoading.value = false;
+  }
   drawer.visible = true;
 }
 
