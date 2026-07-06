@@ -1,670 +1,674 @@
 <template>
-  <div
-    class="repair-order-detail-page flex flex-col min-h-screen bg-[#F8FAFC] font-inter text-[#0F172A]"
-  >
-    <!-- Header -->
-    <div
-      class="bg-white border-b border-slate-200 px-8 py-5 shrink-0 shadow-sm relative z-20"
-    >
-      <div class="flex justify-between items-center max-w-[1400px] mx-auto">
-        <div class="flex items-center gap-5">
-          <button
-            @click="goBack"
-            class="size-9 rounded-xl border border-slate-200 text-slate-600 flex-cc hover:bg-slate-50 transition-all active:scale-95"
+  <div class="flex flex-col gap-4 pb-5">
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold flex items-center gap-2">
+          <ElButton circle :icon="ArrowLeft" @click="goBack" class="mr-2" />
+          Chi tiết phiếu sửa chữa RO-{{ String(orderId).padStart(5, "0") }}
+          <ElTag
+            :type="getStatusType(calculatedStatus)"
+            class="ml-2 uppercase font-bold"
+            size="large"
           >
-            <ArtSvgIcon icon="ri:arrow-left-line" />
-          </button>
+            {{ getStatusText(calculatedStatus) }}
+          </ElTag>
+        </h1>
+        <p class="mt-1 text-sm text-slate-500">
+          Ngày tạo: {{ formatDate(order?.createdAt || "") }}
+        </p>
+      </div>
 
-          <div>
-            <div class="flex items-center gap-3">
-              <h1
-                class="m-0 text-lg font-black tracking-tight text-slate-900 leading-none"
-              >
-                Phiếu sửa chữa RO-{{ String(orderId).padStart(5, "0") }}
-              </h1>
-
-              <span :class="getStatusBadgeClass(order?.status || '')">
-                {{ getStatusText(order?.status || "") }}
-              </span>
-            </div>
-
-            <p
-              class="m-0 text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-2 flex items-center gap-1.5"
-            >
-              <ArtSvgIcon icon="ri:calendar-line" /> Ngày tạo:
-              {{ formatDate(order?.createdAt || "") }}
-            </p>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-3">
-          <button
-            v-if="order?.status === 'Completed'"
-            @click="openPrintInvoice"
-            class="h-9 px-4 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center gap-2"
-            v-auth="Permissions.Factory.RepairOrderManagement.View"
-          >
-            <ArtSvgIcon icon="ri:printer-line" /> In hóa đơn dịch vụ
-          </button>
-        </div>
+      <div class="flex gap-2">
+        <ElButton
+          v-if="calculatedStatus !== 'Completed'"
+          type="primary"
+          plain
+          :icon="Edit"
+          @click="openEditDialog"
+        >
+          Chỉnh sửa thông tin
+        </ElButton>
+        <ElButton
+          v-if="calculatedStatus === 'Completed'"
+          type="primary"
+          :icon="Printer"
+          @click="openPrintInvoice"
+          v-auth="Permissions.Factory.RepairOrderManagement.View"
+        >
+          In hóa đơn dịch vụ
+        </ElButton>
       </div>
     </div>
 
-    <!-- Main -->
-    <div class="flex-1 max-w-[1400px] mx-auto w-full p-6" v-loading="loading">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6" v-if="order">
-        <!-- Left side -->
-        <div class="lg:col-span-1 space-y-6">
-          <!-- Workflow timeline -->
-          <div
-            class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-6"
-          >
-            <h3
-              class="text-[10px] font-black uppercase text-slate-400 tracking-wider m-0"
+    <!-- Main Content -->
+    <div v-loading="loading">
+      <ElRow :gutter="20" v-if="order">
+        <!-- Left Column -->
+        <ElCol :span="8">
+          <div class="flex flex-col gap-4">
+            <!-- Tiến độ -->
+            <ElCard
+              shadow="never"
+              class="border-slate-200"
+              header="Tiến độ quy trình"
             >
-              Tiến độ quy trình
-            </h3>
+              <ElSteps
+                :active="currentStepIndex"
+                direction="vertical"
+                class="mt-2"
+              >
+                <ElStep
+                  v-for="(step, index) in steps"
+                  :key="index"
+                  :title="step.title"
+                  :description="step.description"
+                />
+              </ElSteps>
+            </ElCard>
 
-            <div class="relative pl-6 border-l-2 border-slate-100 space-y-6">
-              <div v-for="step in steps" :key="step.status" class="relative">
+            <!-- ── Phân công kỹ thuật viên (inline) ── -->
+            <ElCard
+              shadow="never"
+              class="border-slate-200"
+              v-if="calculatedStatus !== 'Completed'"
+            >
+              <template #header>
+                <div class="flex items-center justify-between">
+                  <span class="font-bold flex items-center gap-2">
+                    <ElIcon class="text-amber-500"><User /></ElIcon>
+                    Kỹ thuật viên phụ trách
+                  </span>
+                  <ElTag
+                    v-if="currentTechnicianName"
+                    type="success"
+                    effect="plain"
+                    size="small"
+                    round
+                  >
+                    Đã phân công
+                  </ElTag>
+                  <ElTag
+                    v-else
+                    type="warning"
+                    effect="plain"
+                    size="small"
+                    round
+                  >
+                    Chưa phân công
+                  </ElTag>
+                </div>
+              </template>
+
+              <!-- Người đang phụ trách -->
+              <div
+                v-if="currentTechnicianName"
+                class="flex items-center gap-3 mb-4 p-3 bg-amber-50 border border-amber-100 rounded-xl"
+              >
                 <div
-                  class="absolute -left-[31px] top-0 size-4 rounded-full border-2 flex-cc transition-all"
-                  :class="getStepDotClass(step.status)"
+                  class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0"
                 >
+                  <ElIcon class="text-amber-600 text-lg"><User /></ElIcon>
+                </div>
+                <div>
+                  <div class="font-bold text-slate-800">
+                    {{ currentTechnicianName }}
+                  </div>
+                  <div class="text-xs text-slate-500">
+                    Kỹ thuật viên được phân công
+                  </div>
+                </div>
+              </div>
+              <div v-else class="text-sm text-slate-400 italic mb-4">
+                Chưa có kỹ thuật viên nào được giao phiếu này.
+              </div>
+
+              <!-- Quick-assign form -->
+              <ElForm label-position="top" :disabled="submitting">
+                <ElFormItem label="Chọn / Thay đổi kỹ thuật viên">
+                  <ElSelect
+                    v-model="assignForm.technicianId"
+                    filterable
+                    class="w-full"
+                    placeholder="Tìm theo tên..."
+                    :loading="loadingTechnicians"
+                    @visible-change="onTechSelectOpen"
+                  >
+                    <ElOption
+                      v-for="emp in technicians"
+                      :key="emp.id"
+                      :label="emp.fullName"
+                      :value="emp.id"
+                    />
+                  </ElSelect>
+                </ElFormItem>
+                <ElButton
+                  type="warning"
+                  :loading="submitting"
+                  :disabled="!assignForm.technicianId"
+                  class="w-full"
+                  v-auth="
+                    Permissions.Factory.RepairOrderManagement.AssignTechnician
+                  "
+                  @click="submitAssign"
+                >
+                  <ElIcon class="mr-1"><User /></ElIcon>
+                  Lưu phân công
+                </ElButton>
+              </ElForm>
+            </ElCard>
+
+            <!-- KTV khi đã hoàn tất -->
+            <ElCard
+              shadow="never"
+              class="border-slate-200"
+              v-else-if="currentTechnicianName"
+            >
+              <template #header
+                ><span class="font-bold"
+                  >Kỹ thuật viên thực hiện</span
+                ></template
+              >
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center shrink-0"
+                >
+                  <ElIcon class="text-emerald-600"><User /></ElIcon>
+                </div>
+                <div>
+                  <div class="font-bold text-slate-800">
+                    {{ currentTechnicianName }}
+                  </div>
+                  <div class="text-xs text-slate-400">Đã hoàn thành phiếu</div>
+                </div>
+              </div>
+            </ElCard>
+
+            <!-- Thông tin xe & khách -->
+            <ElCard
+              shadow="never"
+              class="border-slate-200"
+              header="Thông tin Khách hàng & Xe"
+            >
+              <ElDescriptions :column="1" border size="small">
+                <ElDescriptionsItem label="Thông tin xe">
+                  <span class="font-bold text-slate-800">{{
+                    order.vehicleInfo || "-"
+                  }}</span>
+                </ElDescriptionsItem>
+                <ElDescriptionsItem label="Mã bảo dưỡng">
+                  <span class="font-mono">{{
+                    order.maintenanceNumber || "-"
+                  }}</span>
+                </ElDescriptionsItem>
+                <ElDescriptionsItem label="Số KM lúc vào">
+                  <span class="font-bold">{{
+                    order.mileage ? order.mileage.toLocaleString() + " km" : "-"
+                  }}</span>
+                </ElDescriptionsItem>
+
+                <ElDescriptionsItem label="Dự kiến lần tới">
+                  <span
+                    class="font-medium text-emerald-600"
+                    v-if="order.nextMaintenanceDate"
+                  >
+                    {{ formatDate(order.nextMaintenanceDate) }} (Hoặc
+                    {{ order.nextMaintenanceOdo?.toLocaleString() }} km)
+                  </span>
+                  <span v-else>-</span>
+                </ElDescriptionsItem>
+              </ElDescriptions>
+            </ElCard>
+
+            <!-- Ghi chú -->
+            <ElCard
+              shadow="never"
+              class="border-slate-200"
+              header="Triệu chứng & Lỗi ghi nhận"
+            >
+              <div
+                class="bg-slate-50 p-3 rounded text-sm italic text-slate-700 border border-slate-100"
+              >
+                "{{ order.description || "Không có mô tả" }}"
+              </div>
+            </ElCard>
+          </div>
+        </ElCol>
+
+        <!-- Right Column -->
+        <ElCol :span="16">
+          <div class="flex flex-col gap-4">
+            <!-- Phase 2: Hạng mục & Vật tư -->
+            <ElCard
+              shadow="never"
+              v-if="
+                calculatedStatus === 'InProgress' ||
+                calculatedStatus === 'QcPending'
+              "
+            >
+              <template #header>
+                <div class="flex justify-between items-center">
+                  <span class="font-bold"
+                    >Hạng mục sửa chữa & Vật tư thay thế</span
+                  >
                   <div
-                    :class="getStepInnerDotClass(step.status)"
-                    class="size-1.5 rounded-full"
-                  ></div>
-                </div>
-
-                <div class="pl-2">
-                  <h4
-                    class="m-0 text-xs font-black uppercase"
-                    :class="
-                      isStepActive(step.status)
-                        ? 'text-slate-800'
-                        : 'text-slate-400'
-                    "
+                    class="flex gap-2"
+                    v-if="calculatedStatus !== 'QcPending'"
                   >
-                    {{ step.title }}
-                  </h4>
-                  <p
-                    class="m-0 text-[10px] text-slate-400 mt-1 leading-relaxed"
-                  >
-                    {{ step.description }}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Customer & vehicle -->
-          <div
-            class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-4"
-          >
-            <h3
-              class="text-[10px] font-black uppercase text-slate-400 tracking-wider m-0"
-            >
-              Thông tin khách hàng & Xe
-            </h3>
-
-            <div class="space-y-3 divide-y divide-slate-50 text-xs">
-              <div class="pt-0 flex justify-between py-2">
-                <span class="text-slate-400">Khách hàng:</span>
-                <span class="font-bold text-slate-800">{{
-                  order.customerName
-                }}</span>
-              </div>
-              <div class="flex justify-between py-2">
-                <span class="text-slate-400">Số điện thoại:</span>
-                <span class="font-bold text-slate-800">{{
-                  order.customerPhone
-                }}</span>
-              </div>
-              <div class="flex justify-between py-2" v-if="order.vehicle">
-                <span class="text-slate-400">Biển số xe:</span>
-                <span class="font-bold text-slate-800 font-mono">{{
-                  order.vehicle.licensePlate || "Chưa đăng ký"
-                }}</span>
-              </div>
-              <div class="flex justify-between py-2" v-if="order.vehicle">
-                <span class="text-slate-400">Số khung:</span>
-                <span class="font-mono text-slate-800 text-[10px]">{{
-                  order.vehicle.vinNumber || "-"
-                }}</span>
-              </div>
-              <div class="flex justify-between py-2">
-                <span class="text-slate-400">Số KM lúc vào:</span>
-                <span class="font-bold text-slate-800"
-                  >{{ order.mileage.toLocaleString() }} km</span
-                >
-              </div>
-            </div>
-          </div>
-
-          <!-- Description -->
-          <div
-            class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-3"
-          >
-            <h3
-              class="text-[10px] font-black uppercase text-slate-400 tracking-wider m-0"
-            >
-              Triệu chứng & Lỗi ghi nhận
-            </h3>
-            <p
-              class="text-xs text-slate-700 leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-100 italic m-0"
-            >
-              "{{ order.description }}"
-            </p>
-            <div v-if="order.notes" class="mt-3">
-              <p
-                class="text-[9px] font-black uppercase text-slate-400 tracking-wider m-0"
-              >
-                Ghi chú ngoại quan:
-              </p>
-              <p
-                class="text-xs text-slate-500 m-0 mt-1 pl-1 border-l border-slate-300"
-              >
-                {{ order.notes }}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right side: actions by phase -->
-        <div class="lg:col-span-2 space-y-6">
-          <!-- Phase 1: Assign technician -->
-          <div
-            v-if="order.status === 'Pending'"
-            class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-5"
-          >
-            <h3
-              class="text-sm font-black uppercase text-slate-800 tracking-wider m-0 flex items-center gap-2"
-            >
-              <span
-                class="size-5 rounded bg-blue-50 text-blue-600 flex-cc text-xs"
-                >1</span
-              >
-              Phân công kỹ thuật viên phụ trách
-            </h3>
-            <p class="text-xs text-slate-500 m-0">
-              Chọn kỹ thuật viên để tiếp nhận xe, kiểm tra chẩn đoán lỗi và bắt
-              đầu sửa chữa.
-            </p>
-
-            <div class="flex gap-4 items-center pt-2">
-              <ElSelect
-                v-model="selectedTechId"
-                placeholder="Chọn kỹ thuật viên"
-                class="w-80 combat-select"
-              >
-                <ElOption
-                  v-for="tech in technicians"
-                  :key="tech.id"
-                  :label="`${tech.fullName} (${tech.jobTitle})`"
-                  :value="tech.id"
-                />
-              </ElSelect>
-
-              <button
-                @click="assignTechnician"
-                :disabled="!selectedTechId || submitting"
-                class="h-10 px-6 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all disabled:opacity-50 flex items-center gap-2 shadow-md"
-                v-auth="Permissions.Factory.RepairOrderManagement.View"
-              >
-                <ArtSvgIcon icon="ri:user-shared-line" /> Xác nhận phân công
-              </button>
-            </div>
-          </div>
-
-          <!-- Phase 2: Issue parts/services (InProgress & QcPending) -->
-          <div
-            v-if="order.status === 'InProgress' || order.status === 'QcPending'"
-            class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-5"
-          >
-            <div class="flex justify-between items-center">
-              <h3
-                class="text-sm font-black uppercase text-slate-800 tracking-wider m-0 flex items-center gap-2"
-              >
-                <span
-                  class="size-5 rounded bg-blue-50 text-blue-600 flex-cc text-xs"
-                  >2</span
-                >
-                Hạng mục sửa chữa & Vật tư thay thế
-              </h3>
-
-              <div class="flex gap-2">
-                <button
-                  @click="openServiceDialog"
-                  :disabled="order.status === 'QcPending'"
-                  class="h-8 px-4 bg-slate-900 text-white rounded-lg font-black text-[9px] uppercase tracking-widest hover:bg-blue-900 transition-all flex items-center gap-1.5 shadow-sm disabled:opacity-60"
-                  v-auth="Permissions.Factory.RepairOrderManagement.View"
-                >
-                  + Thêm dịch vụ
-                </button>
-                <button
-                  @click="openPartsDialog"
-                  :disabled="order.status === 'QcPending'"
-                  class="h-8 px-4 bg-slate-900 text-white rounded-lg font-black text-[9px] uppercase tracking-widest hover:bg-blue-900 transition-all flex items-center gap-1.5 shadow-sm disabled:opacity-60"
-                  v-auth="Permissions.Factory.RepairOrderManagement.View"
-                >
-                  + Thêm phụ tùng
-                </button>
-              </div>
-            </div>
-
-            <div class="border border-slate-100 rounded-2xl overflow-hidden">
-              <table class="w-full text-xs border-collapse">
-                <thead>
-                  <tr
-                    class="bg-slate-50 border-b border-slate-100 text-slate-400 font-black uppercase text-[9px] tracking-wider"
-                  >
-                    <th class="py-3 px-4 text-left">Hạng mục</th>
-                    <th class="py-3 px-4 text-center" width="80">Loại</th>
-                    <th class="py-3 px-4 text-center" width="100">Số lượng</th>
-                    <th class="py-3 px-4 text-right" width="140">Đơn giá</th>
-                    <th class="py-3 px-4 text-right" width="140">Thành tiền</th>
-                    <th class="py-3 px-4 text-center" width="60"></th>
-                  </tr>
-                </thead>
-
-                <tbody class="divide-y divide-slate-100">
-                  <tr
-                    v-for="(srv, index) in localServices"
-                    :key="'srv-' + index"
-                    class="hover:bg-slate-50/50"
-                  >
-                    <td class="py-3.5 px-4">
-                      <div class="font-bold text-slate-800">
-                        {{ srv.serviceName }}
-                      </div>
-                      <input
-                        v-model="srv.notes"
-                        :disabled="order.status === 'QcPending'"
-                        placeholder="Ghi chú dịch vụ..."
-                        class="w-full mt-1 border-0 bg-transparent text-[10px] text-slate-400 p-0 focus:ring-0 focus:outline-none"
-                      />
-                    </td>
-                    <td class="py-3.5 px-4 text-center">
-                      <span
-                        class="px-2 py-0.5 bg-purple-50 text-purple-600 rounded text-[9px] font-black uppercase"
-                      >
-                        Công việc
-                      </span>
-                    </td>
-                    <td class="py-3.5 px-4 text-center text-slate-500">1</td>
-                    <td class="py-3.5 px-4 text-right">
-                      <ElInputNumber
-                        v-model="srv.laborCost"
-                        :min="0"
-                        :controls="false"
-                        :disabled="order.status === 'QcPending'"
-                        class="slim-number-input inline-block text-right"
-                      />
-                    </td>
-                    <td class="py-3.5 px-4 text-right font-bold text-slate-700">
-                      {{ formatCurrency(srv.laborCost) }}
-                    </td>
-                    <td class="py-3.5 px-4 text-center">
-                      <button
-                        v-if="order.status !== 'QcPending'"
-                        @click="removeService(index)"
-                        class="text-red-400 hover:text-red-600"
-                        v-auth="Permissions.Factory.RepairOrderManagement.View"
-                      >
-                        <ArtSvgIcon icon="ri:delete-bin-line" />
-                      </button>
-                    </td>
-                  </tr>
-
-                  <tr
-                    v-for="(part, index) in localParts"
-                    :key="'part-' + index"
-                    class="hover:bg-slate-50/50"
-                  >
-                    <td class="py-3.5 px-4">
-                      <div class="font-bold text-slate-800">
-                        {{ part.variantName }}
-                      </div>
-                      <input
-                        v-model="part.notes"
-                        :disabled="order.status === 'QcPending'"
-                        placeholder="Ghi chú phụ tùng..."
-                        class="w-full mt-1 border-0 bg-transparent text-[10px] text-slate-400 p-0 focus:ring-0 focus:outline-none"
-                      />
-                    </td>
-                    <td class="py-3.5 px-4 text-center">
-                      <span
-                        class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[9px] font-black uppercase"
-                      >
-                        Phụ tùng
-                      </span>
-                    </td>
-                    <td class="py-3.5 px-4 text-center">
-                      <ElInputNumber
-                        v-model="part.count"
-                        :min="1"
-                        :controls="false"
-                        :disabled="order.status === 'QcPending'"
-                        class="slim-number-input inline-block w-14 text-center"
-                      />
-                    </td>
-                    <td class="py-3.5 px-4 text-right">
-                      <ElInputNumber
-                        v-model="part.price"
-                        :min="0"
-                        :controls="false"
-                        :disabled="order.status === 'QcPending'"
-                        class="slim-number-input inline-block text-right"
-                      />
-                    </td>
-                    <td class="py-3.5 px-4 text-right font-bold text-slate-700">
-                      {{ formatCurrency(part.price * part.count) }}
-                    </td>
-                    <td class="py-3.5 px-4 text-center">
-                      <button
-                        v-if="order.status !== 'QcPending'"
-                        @click="removePart(index)"
-                        class="text-red-400 hover:text-red-600"
-                        v-auth="Permissions.Factory.RepairOrderManagement.View"
-                      >
-                        <ArtSvgIcon icon="ri:delete-bin-line" />
-                      </button>
-                    </td>
-                  </tr>
-
-                  <tr
-                    v-if="localServices.length === 0 && localParts.length === 0"
-                  >
-                    <td
-                      colspan="6"
-                      class="py-8 text-center text-slate-400 italic"
+                    <ElButton
+                      size="small"
+                      type="primary"
+                      plain
+                      @click="openServiceDialog"
+                      >+ Thêm dịch vụ</ElButton
                     >
-                      Chưa có dịch vụ hay phụ tùng nào được thêm.
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+                    <ElButton
+                      size="small"
+                      type="primary"
+                      plain
+                      @click="openPartsDialog"
+                      >+ Thêm phụ tùng</ElButton
+                    >
+                  </div>
+                </div>
+              </template>
 
-            <!-- Cost summary -->
-            <div class="flex justify-end pt-2">
-              <div class="w-72 space-y-2 text-xs">
-                <div class="flex justify-between text-slate-500">
-                  <span>Tiền công sửa chữa:</span>
-                  <span class="font-bold text-slate-700">{{
-                    formatCurrency(totalLaborCost)
-                  }}</span>
-                </div>
-                <div class="flex justify-between text-slate-500">
-                  <span>Tiền phụ tùng vật tư:</span>
-                  <span class="font-bold text-slate-700">{{
-                    formatCurrency(totalPartsCost)
-                  }}</span>
-                </div>
-                <div
-                  class="flex justify-between text-base border-t border-slate-100 pt-3"
+              <ElTable
+                :data="combinedDetails"
+                border
+                stripe
+                size="small"
+                class="w-full"
+              >
+                <ElTableColumn label="Hạng mục" min-width="200">
+                  <template #default="{ row }">
+                    <div class="font-bold text-slate-800">{{ row.name }}</div>
+                    <ElInput
+                      v-if="calculatedStatus !== 'QcPending'"
+                      v-model="row.notes"
+                      size="small"
+                      placeholder="Ghi chú..."
+                      class="mt-1"
+                    />
+                    <div v-else class="text-xs text-slate-400 mt-1">
+                      {{ row.notes }}
+                    </div>
+                  </template>
+                </ElTableColumn>
+                <ElTableColumn label="Loại" width="100" align="center">
+                  <template #default="{ row }">
+                    <ElTag
+                      size="small"
+                      :type="row.type === 'Service' ? 'warning' : 'primary'"
+                      >{{
+                        row.type === "Service" ? "Công việc" : "Phụ tùng"
+                      }}</ElTag
+                    >
+                  </template>
+                </ElTableColumn>
+                <ElTableColumn label="Số lượng" width="120" align="center">
+                  <template #default="{ row }">
+                    <ElInputNumber
+                      v-if="
+                        row.type === 'Part' && calculatedStatus !== 'QcPending'
+                      "
+                      v-model="row.count"
+                      :min="1"
+                      size="small"
+                      class="w-full"
+                      :controls="false"
+                    />
+                    <span v-else>{{ row.count }}</span>
+                  </template>
+                </ElTableColumn>
+                <ElTableColumn label="Đơn giá" width="140" align="right">
+                  <template #default="{ row }">
+                    <ElInputNumber
+                      v-if="calculatedStatus !== 'QcPending'"
+                      v-model="row.price"
+                      :min="0"
+                      size="small"
+                      class="w-full"
+                      :controls="false"
+                    />
+                    <span v-else class="font-medium">{{
+                      formatCurrency(row.price)
+                    }}</span>
+                  </template>
+                </ElTableColumn>
+                <ElTableColumn label="Thành tiền" width="140" align="right">
+                  <template #default="{ row }">
+                    <span class="font-bold text-slate-700">{{
+                      formatCurrency(row.price * row.count)
+                    }}</span>
+                  </template>
+                </ElTableColumn>
+                <ElTableColumn
+                  label="Thao tác"
+                  width="60"
+                  align="center"
+                  v-if="calculatedStatus !== 'QcPending'"
                 >
-                  <span class="font-black text-slate-900 uppercase"
-                    >Tổng cộng:</span
+                  <template #default="{ $index, row }">
+                    <ElButton
+                      type="danger"
+                      link
+                      :icon="Delete"
+                      @click="removeItem(row.type, $index)"
+                    />
+                  </template>
+                </ElTableColumn>
+              </ElTable>
+
+              <div class="flex justify-end pt-4">
+                <div class="w-72 space-y-2">
+                  <div class="flex justify-between text-sm">
+                    <span class="text-slate-500">Tiền công sửa chữa:</span>
+                    <span class="font-bold">{{
+                      formatCurrency(totalLaborCost)
+                    }}</span>
+                  </div>
+                  <div class="flex justify-between text-sm">
+                    <span class="text-slate-500">Tiền phụ tùng:</span>
+                    <span class="font-bold">{{
+                      formatCurrency(totalPartsCost)
+                    }}</span>
+                  </div>
+                  <div
+                    class="flex justify-between text-base border-t pt-2 mt-2"
                   >
-                  <span class="font-black text-blue-600 text-lg">{{
-                    formatCurrency(totalAmount)
-                  }}</span>
+                    <span class="font-bold uppercase text-slate-800"
+                      >Tổng cộng:</span
+                    >
+                    <span class="font-bold text-red-600 text-lg">{{
+                      formatCurrency(totalAmount)
+                    }}</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <!-- Actions -->
-            <div
-              class="flex justify-end gap-3 pt-4 border-t border-slate-100"
-              v-if="order.status === 'InProgress'"
-            >
-              <button
-                @click="saveIssueParts('InProgress')"
-                :disabled="submitting"
-                class="h-10 px-5 border border-slate-200 text-slate-700 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center gap-2"
-                v-auth="Permissions.Factory.RepairOrderManagement.View"
+              <!-- Action buttons -->
+              <div
+                class="flex justify-end gap-3 mt-5 pt-4 border-t"
+                v-if="calculatedStatus === 'InProgress'"
               >
-                Lưu thay đổi
-              </button>
-
-              <button
-                @click="saveIssueParts('QcPending')"
-                :disabled="submitting"
-                class="h-10 px-6 bg-amber-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-amber-700 transition-all flex items-center gap-2 shadow-md"
-                v-auth="Permissions.Factory.RepairOrderManagement.View"
-              >
-                <ArtSvgIcon icon="ri:shield-flash-line" /> Hoàn tất sửa & Chuyển
-                QC
-              </button>
-            </div>
-          </div>
-
-          <!-- Phase 3: QC & Checkout -->
-          <div
-            v-if="order.status === 'QcPending'"
-            class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-5"
-          >
-            <h3
-              class="text-sm font-black uppercase text-slate-800 tracking-wider m-0 flex items-center gap-2"
-            >
-              <span
-                class="size-5 rounded bg-blue-50 text-blue-600 flex-cc text-xs"
-                >3</span
-              >
-              Nghiệm thu QC & Thanh toán hóa đơn dịch vụ
-            </h3>
-            <p class="text-xs text-slate-500 m-0">
-              Xe đã hoàn thành sửa chữa kỹ thuật và đã vượt qua bài kiểm tra
-              chất lượng (QC). Tiến hành lập hóa đơn để bàn giao.
-            </p>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
-              <div>
-                <label
-                  class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2"
-                  >Phương thức thanh toán *</label
+                <ElButton
+                  :disabled="submitting"
+                  @click="saveIssueParts('InProgress')"
+                  >Lưu thay đổi</ElButton
                 >
-                <ElSelect
-                  v-model="paymentMethod"
-                  placeholder="Phương thức"
-                  class="w-full combat-select"
+                <ElButton
+                  type="warning"
+                  :disabled="submitting"
+                  @click="saveIssueParts('QcPending')"
                 >
-                  <ElOption label="Tiền mặt (Cash)" value="Cash" />
-                  <ElOption
-                    label="Chuyển khoản (Transfer)"
-                    value="BankTransfer"
+                  Hoàn tất sửa & Chuyển QC
+                </ElButton>
+              </div>
+            </ElCard>
+
+            <!-- Phase 3: QC & Checkout -->
+            <ElCard
+              v-if="calculatedStatus === 'QcPending'"
+              shadow="never"
+              header="Nghiệm thu QC & Thanh toán hóa đơn"
+            >
+              <p class="text-sm text-slate-500 mb-4">
+                Xe đã hoàn thành sửa chữa kỹ thuật và đã vượt qua bài kiểm tra
+                chất lượng (QC). Tiến hành lập hóa đơn để bàn giao.
+              </p>
+
+              <ElRow :gutter="20">
+                <ElCol :span="8">
+                  <ElFormItem
+                    label="Phương thức thanh toán"
+                    label-position="top"
+                  >
+                    <ElSelect v-model="paymentMethod" class="w-full">
+                      <ElOption label="Tiền mặt" value="Cash" />
+                      <ElOption label="Chuyển khoản" value="BankTransfer" />
+                    </ElSelect>
+                  </ElFormItem>
+                </ElCol>
+                <ElCol :span="8">
+                  <ElFormItem
+                    label="Trạng thái thanh toán"
+                    label-position="top"
+                  >
+                    <ElSelect v-model="paymentStatus" class="w-full">
+                      <ElOption label="Đã thanh toán" value="Paid" />
+                      <ElOption label="Chưa thanh toán" value="Unpaid" />
+                    </ElSelect>
+                  </ElFormItem>
+                </ElCol>
+                <ElCol :span="8">
+                  <ElFormItem label="Ghi chú bàn giao" label-position="top">
+                    <ElInput
+                      v-model="checkoutNotes"
+                      placeholder="Nhập ghi chú"
+                    />
+                  </ElFormItem>
+                </ElCol>
+              </ElRow>
+
+              <div class="flex justify-end mt-4 pt-4 border-t">
+                <ElButton
+                  type="success"
+                  :disabled="submitting"
+                  @click="completeRepairOrder"
+                >
+                  Xác nhận thanh toán & Bàn giao xe
+                </ElButton>
+              </div>
+            </ElCard>
+
+            <!-- Phase 4: Completed -->
+            <ElCard
+              v-if="calculatedStatus === 'Completed'"
+              shadow="never"
+              class="bg-emerald-50"
+            >
+              <div class="flex items-center gap-2 mb-4">
+                <h3 class="font-bold text-emerald-700 m-0">
+                  Phiếu sửa chữa đã hoàn tất & Bàn giao thành công
+                </h3>
+              </div>
+              <ElRow :gutter="20">
+                <ElCol :span="6">
+                  <div class="text-xs text-slate-500 uppercase">
+                    Tổng tiền hóa đơn
+                  </div>
+                  <div class="font-bold text-lg mt-1 text-slate-800">
+                    {{ formatCurrency(order.totalCost) }}
+                  </div>
+                </ElCol>
+                <ElCol :span="6">
+                  <div class="text-xs text-slate-500 uppercase">
+                    Thời điểm hoàn tất
+                  </div>
+                  <div class="font-bold mt-1 text-slate-800">
+                    {{ formatDate(order.updatedAt || order.createdAt) }}
+                  </div>
+                </ElCol>
+              </ElRow>
+
+              <div class="mt-6 border-t pt-4 border-emerald-100">
+                <p class="font-bold text-emerald-800 mb-2">
+                  Chi tiết dịch vụ & phụ tùng:
+                </p>
+                <ElTable
+                  :data="combinedDetails"
+                  border
+                  size="small"
+                  class="w-full"
+                >
+                  <ElTableColumn label="Hạng mục" min-width="200">
+                    <template #default="{ row }">
+                      <div class="font-medium">{{ row.name }}</div>
+                      <div class="text-xs text-slate-400 mt-0.5">
+                        {{ row.notes }}
+                      </div>
+                    </template>
+                  </ElTableColumn>
+                  <ElTableColumn label="Loại" width="100" align="center">
+                    <template #default="{ row }">
+                      <ElTag
+                        size="small"
+                        :type="row.type === 'Service' ? 'warning' : 'primary'"
+                        >{{
+                          row.type === "Service" ? "Công việc" : "Phụ tùng"
+                        }}</ElTag
+                      >
+                    </template>
+                  </ElTableColumn>
+                  <ElTableColumn
+                    label="SL"
+                    prop="count"
+                    width="60"
+                    align="center"
                   />
-                </ElSelect>
+                  <ElTableColumn label="Đơn giá" width="120" align="right">
+                    <template #default="{ row }">{{
+                      formatCurrency(row.price)
+                    }}</template>
+                  </ElTableColumn>
+                  <ElTableColumn label="Thành tiền" width="120" align="right">
+                    <template #default="{ row }">
+                      <span class="font-bold">{{
+                        formatCurrency(row.price * row.count)
+                      }}</span>
+                    </template>
+                  </ElTableColumn>
+                </ElTable>
               </div>
-
-              <div>
-                <label
-                  class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2"
-                  >Trạng thái thanh toán *</label
-                >
-                <ElSelect
-                  v-model="paymentStatus"
-                  placeholder="Trạng thái"
-                  class="w-full combat-select"
-                >
-                  <ElOption label="Đã thanh toán (Paid)" value="Paid" />
-                  <ElOption label="Chưa thanh toán (Unpaid)" value="Unpaid" />
-                </ElSelect>
-              </div>
-
-              <div>
-                <label
-                  class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2"
-                  >Ghi chú bàn giao</label
-                >
-                <ElInput
-                  v-model="checkoutNotes"
-                  placeholder="Nhập ghi chú (nếu có)"
-                  class="combat-input"
-                />
-              </div>
-            </div>
-
-            <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
-              <button
-                @click="completeRepairOrder"
-                :disabled="submitting"
-                class="h-10 px-8 bg-emerald-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-700 transition-all flex items-center gap-2 shadow-lg"
-                v-auth="Permissions.Factory.RepairOrderManagement.View"
-              >
-                <ArtSvgIcon icon="ri:checkbox-circle-fill" /> Xác nhận thanh
-                toán & Bàn giao xe
-              </button>
-            </div>
+            </ElCard>
           </div>
-
-          <!-- Phase 4: Completed read-only -->
-          <div
-            v-if="order.status === 'Completed'"
-            class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-4"
-          >
-            <h3
-              class="text-sm font-black uppercase text-slate-800 tracking-wider m-0 flex items-center gap-2"
-            >
-              <ArtSvgIcon
-                icon="ri:checkbox-circle-fill"
-                class="text-emerald-500"
-              />
-              Thông tin thanh toán & Bàn giao hóa đơn
-            </h3>
-
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs pt-2">
-              <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
-                <p
-                  class="text-[9px] font-black text-slate-400 uppercase tracking-wider m-0"
-                >
-                  Tổng tiền hóa đơn
-                </p>
-                <p class="text-sm font-black text-slate-800 mt-2 m-0">
-                  {{ formatCurrency(order.totalAmount) }}
-                </p>
-              </div>
-
-              <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
-                <p
-                  class="text-[9px] font-black text-slate-400 uppercase tracking-wider m-0"
-                >
-                  Phương thức thanh toán
-                </p>
-                <p class="text-sm font-black text-slate-800 mt-2 m-0">
-                  {{ getPaymentMethodText(order.paymentMethod || "") }}
-                </p>
-              </div>
-
-              <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
-                <p
-                  class="text-[9px] font-black text-slate-400 uppercase tracking-wider m-0"
-                >
-                  Trạng thái thanh toán
-                </p>
-                <p class="text-sm font-black text-emerald-600 mt-2 m-0">
-                  {{
-                    order.paymentStatus === "Paid"
-                      ? "Đã thanh toán"
-                      : "Chưa thanh toán"
-                  }}
-                </p>
-              </div>
-
-              <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
-                <p
-                  class="text-[9px] font-black text-slate-400 uppercase tracking-wider m-0"
-                >
-                  Thời điểm hoàn tất
-                </p>
-                <p class="text-[11px] font-bold text-slate-700 mt-2.5 m-0">
-                  {{ formatDate(order.completedDate || order.createdAt || "") }}
-                </p>
-              </div>
-            </div>
-
-            <div
-              class="border border-slate-100 rounded-2xl overflow-hidden mt-5"
-            >
-              <table class="w-full text-xs border-collapse">
-                <thead>
-                  <tr
-                    class="bg-slate-50 border-b border-slate-100 text-slate-400 font-black uppercase text-[9px] tracking-wider"
-                  >
-                    <th class="py-3 px-4 text-left">Hạng mục</th>
-                    <th class="py-3 px-4 text-center" width="80">Loại</th>
-                    <th class="py-3 px-4 text-center" width="100">Số lượng</th>
-                    <th class="py-3 px-4 text-right" width="140">Đơn giá</th>
-                    <th class="py-3 px-4 text-right" width="140">Thành tiền</th>
-                  </tr>
-                </thead>
-
-                <tbody class="divide-y divide-slate-100">
-                  <tr
-                    v-for="detail in order.details"
-                    :key="detail.id"
-                    class="hover:bg-slate-50/50"
-                  >
-                    <td class="py-3 px-4">
-                      <div class="font-bold text-slate-800">
-                        {{
-                          detail.type === "Service"
-                            ? detail.serviceName
-                            : detail.variantName
-                        }}
-                      </div>
-                      <div
-                        class="text-[10px] text-slate-400 mt-0.5"
-                        v-if="detail.notes"
-                      >
-                        {{ detail.notes }}
-                      </div>
-                    </td>
-                    <td class="py-3 px-4 text-center">
-                      <span
-                        v-if="detail.type === 'Service'"
-                        class="px-2 py-0.5 bg-purple-50 text-purple-600 rounded text-[9px] font-black uppercase"
-                      >
-                        Công việc
-                      </span>
-                      <span
-                        v-else
-                        class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[9px] font-black uppercase"
-                      >
-                        Phụ tùng
-                      </span>
-                    </td>
-                    <td class="py-3 px-4 text-center text-slate-600">
-                      {{ detail.count }}
-                    </td>
-                    <td class="py-3 px-4 text-right text-slate-600">
-                      {{
-                        formatCurrency(
-                          detail.type === "Service"
-                            ? detail.laborCost
-                            : detail.price,
-                        )
-                      }}
-                    </td>
-                    <td class="py-3 px-4 text-right font-bold text-slate-800">
-                      {{
-                        formatCurrency(
-                          detail.type === "Service"
-                            ? detail.laborCost
-                            : detail.price * detail.count,
-                        )
-                      }}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
+        </ElCol>
+      </ElRow>
     </div>
+
+    <!-- Edit Dialog -->
+    <ElDialog
+      v-model="editDialogVisible"
+      title="Chỉnh sửa phiếu sửa chữa"
+      width="500px"
+    >
+      <ElForm
+        :model="editForm"
+        label-width="120px"
+        class="space-y-4"
+        :disabled="submitting"
+      >
+        <ElFormItem label="Số KM hiện tại">
+          <ElInputNumber v-model="editForm.mileage" :min="0" class="w-full" />
+        </ElFormItem>
+        <ElFormItem label="Lỗi ghi nhận">
+          <ElInput v-model="editForm.description" type="textarea" rows="3" />
+        </ElFormItem>
+        <ElFormItem label="Ngày BD tới">
+          <ElDatePicker
+            v-model="editForm.nextMaintenanceDate"
+            type="date"
+            class="w-full"
+            value-format="YYYY-MM-DD"
+          />
+        </ElFormItem>
+        <ElFormItem label="Số KM BD tới">
+          <ElInputNumber
+            v-model="editForm.nextMaintenanceOdo"
+            :min="0"
+            class="w-full"
+          />
+        </ElFormItem>
+      </ElForm>
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <ElButton @click="editDialogVisible = false" :disabled="submitting"
+            >Hủy</ElButton
+          >
+          <ElButton type="primary" :loading="submitting" @click="submitEdit"
+            >Lưu</ElButton
+          >
+        </div>
+      </template>
+    </ElDialog>
+
+    <!-- Assign Dialog -->
+    <ElDialog
+      v-model="assignDialogVisible"
+      title="Phân công Kỹ thuật viên"
+      width="400px"
+    >
+      <ElForm :model="assignForm" label-position="top" :disabled="submitting">
+        <ElFormItem label="Chọn kỹ thuật viên">
+          <ElSelect v-model="assignForm.technicianId" filterable class="w-full">
+            <ElOption
+              v-for="emp in technicians"
+              :key="emp.id"
+              :label="emp.fullName"
+              :value="emp.id"
+            />
+          </ElSelect>
+        </ElFormItem>
+      </ElForm>
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <ElButton @click="assignDialogVisible = false" :disabled="submitting"
+            >Hủy</ElButton
+          >
+          <ElButton type="primary" :loading="submitting" @click="submitAssign"
+            >Phân công</ElButton
+          >
+        </div>
+      </template>
+    </ElDialog>
+
+    <!-- Parts Dialog -->
+    <ElDialog v-model="partsDialogVisible" title="Thêm phụ tùng" width="500px">
+      <ElForm label-position="top">
+        <ElFormItem label="Chọn phụ tùng">
+          <ElSelect v-model="selectedPartId" filterable class="w-full">
+            <ElOption
+              v-for="part in availableParts"
+              :key="part.id"
+              :label="part.name"
+              :value="part.id"
+            />
+          </ElSelect>
+        </ElFormItem>
+      </ElForm>
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <ElButton @click="partsDialogVisible = false">Hủy</ElButton>
+          <ElButton type="primary" @click="confirmAddPart">Thêm</ElButton>
+        </div>
+      </template>
+    </ElDialog>
+
+    <!-- Services Dialog -->
+    <ElDialog
+      v-model="servicesDialogVisible"
+      title="Thêm dịch vụ"
+      width="500px"
+    >
+      <ElForm label-position="top">
+        <ElFormItem label="Chọn dịch vụ">
+          <ElSelect v-model="selectedServiceId" filterable class="w-full">
+            <ElOption
+              v-for="srv in availableServices"
+              :key="srv.id"
+              :label="srv.name"
+              :value="srv.id"
+            />
+          </ElSelect>
+        </ElFormItem>
+      </ElForm>
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <ElButton @click="servicesDialogVisible = false">Hủy</ElButton>
+          <ElButton type="primary" @click="confirmAddService">Thêm</ElButton>
+        </div>
+      </template>
+    </ElDialog>
   </div>
 </template>
 
@@ -672,177 +676,318 @@
 import { Permissions } from "@/domain/constants/permissions";
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
+import {
+  ArrowLeft,
+  Printer,
+  Delete,
+  Edit,
+  User,
+} from "@element-plus/icons-vue";
 
 import {
   RepairOrderApi,
   type RepairOrder,
   type RepairOrderDetail,
 } from "@/api/sales";
+import { ProductApi } from "@/api/product";
+import {
+  ServiceCategoryApi,
+  type ServiceCategoryResponse,
+} from "@/api/product";
 import { EmployeeApi, type EmployeeResponse } from "@/api/operations";
 
 defineOptions({ name: "ServiceWorkshopRepairOrderDetail" });
 
-interface LocalServiceItem {
-  serviceId: number;
-  serviceName?: string;
-  laborCost: number;
-  notes: string;
-}
-
-interface LocalPartItem {
-  productVariantId: number;
-  variantName?: string;
-  price: number;
-  count: number;
-  notes: string;
-}
-
 const route = useRoute();
 const router = useRouter();
 
-const routeId = Array.isArray(route.params.id)
-  ? route.params.id[0]
-  : route.params.id;
-const orderId = Number(routeId);
+const orderId = Number(
+  Array.isArray(route.params.id) ? route.params.id[0] : route.params.id,
+);
 
 const loading = ref(false);
 const submitting = ref(false);
 const order = ref<RepairOrder | null>(null);
 
-const technicians = ref<EmployeeResponse[]>([]);
-const selectedTechId = ref<number | null>(null);
+interface LocalItem {
+  type: "Service" | "Part";
+  id: number;
+  name: string;
+  count: number;
+  price: number;
+  notes: string;
+}
 
-const localServices = ref<LocalServiceItem[]>([]);
-const localParts = ref<LocalPartItem[]>([]);
-
+const localItems = ref<LocalItem[]>([]);
 const paymentMethod = ref("Cash");
 const paymentStatus = ref("Paid");
 const checkoutNotes = ref("");
 
 const steps = [
-  {
-    status: "Pending",
-    title: "Tiep nhan xe",
-    description: "Da lap phieu check-in va cho phan cong ky thuat vien.",
-  },
-  {
-    status: "InProgress",
-    title: "Sua chua",
-    description: "Dang khao sat, lap du toan dich vu va lap phu tung thay the.",
-  },
-  {
-    status: "QcPending",
-    title: "Kiem dinh QC",
-    description: "Kiem tra chat luong ky thuat xe sau sua chua.",
-  },
-  {
-    status: "Completed",
-    title: "Hoan tat & Ban giao",
-    description: "Thanh toan hoa don va ban giao xe cho khach hang.",
-  },
+  { title: "Sửa chữa", description: "Đang khảo sát, lắp phụ tùng" },
+  { title: "Kiểm định QC", description: "Kiểm tra chất lượng xe" },
+  { title: "Hoàn tất & Bàn giao", description: "Thanh toán hóa đơn" },
 ];
 
+const calculatedStatus = computed(() => {
+  if (!order.value) return "InProgress";
+  if (order.value.totalCost > 0) return "Completed";
+  return "InProgress";
+});
+
+const currentStepIndex = computed(() => {
+  const statusMap: Record<string, number> = {
+    QcPending: 1,
+    Completed: 3,
+  };
+  return statusMap[calculatedStatus.value] || 0;
+});
+
+const combinedDetails = computed(() => localItems.value);
+
 const totalLaborCost = computed(() =>
-  localServices.value.reduce((total, item) => total + (item.laborCost || 0), 0),
+  localItems.value
+    .filter((x) => x.type === "Service")
+    .reduce((acc, item) => acc + item.price * item.count, 0),
 );
 
 const totalPartsCost = computed(() =>
-  localParts.value.reduce(
-    (total, item) => total + (item.price || 0) * (item.count || 0),
-    0,
-  ),
+  localItems.value
+    .filter((x) => x.type === "Part")
+    .reduce((acc, item) => acc + item.price * item.count, 0),
 );
 
 const totalAmount = computed(() => totalLaborCost.value + totalPartsCost.value);
 
-const syncLocalItems = (details: RepairOrderDetail[]) => {
-  localServices.value = details
-    .filter((detail) => detail.type === "Service" && detail.serviceId)
-    .map((detail) => ({
-      serviceId: detail.serviceId as number,
-      serviceName: detail.serviceName,
-      laborCost: detail.laborCost || 0,
-      notes: detail.notes || "",
-    }));
-
-  localParts.value = details
-    .filter((detail) => detail.type === "Part" && detail.productVariantId)
-    .map((detail) => ({
-      productVariantId: detail.productVariantId as number,
-      variantName: detail.variantName,
-      price: detail.price || 0,
-      count: detail.count || 1,
-      notes: detail.notes || "",
-    }));
-};
-
 const loadOrderDetail = async () => {
-  if (!Number.isFinite(orderId)) {
-    ElMessage.error("Ma phieu sua chua khong hop le");
+  if (!orderId) {
+    ElMessage.error("Mã phiếu sửa chữa không hợp lệ");
     return;
   }
-
   loading.value = true;
   try {
     const res = await RepairOrderApi.getDetail(orderId);
     order.value = res;
-    selectedTechId.value = res.technicianId || null;
-    checkoutNotes.value = res.notes || "";
-    paymentMethod.value = res.paymentMethod || "Cash";
-    paymentStatus.value = res.paymentStatus || "Paid";
-    syncLocalItems(res.details || []);
+    // Attempt to parse partsJson
+    const itemsList: LocalItem[] = [];
+    if (res.partsJson) {
+      try {
+        const parsed = JSON.parse(res.partsJson);
+        if (Array.isArray(parsed)) {
+          parsed.forEach((p) => {
+            itemsList.push({
+              type: p.productVariantId ? "Part" : "Service",
+              id: p.productVariantId || p.serviceId || 0,
+              name: p.productVariantName || p.serviceName || "Hạng mục",
+              count: p.count || 1,
+              price: p.price || p.laborCost || 0,
+              notes: p.notes || "",
+            });
+          });
+        }
+      } catch (e) {
+        console.warn("Failed to parse partsJson", e);
+      }
+    }
+    localItems.value = itemsList;
+    // Pre-populate assign form with current technician
+    assignForm.value.technicianId = (res as any).technicianId || undefined;
   } catch (err: any) {
-    ElMessage.error(err?.message || "Khong the tai thong tin phieu sua chua");
+    ElMessage.error(err?.message || "Không thể tải thông tin phiếu");
   } finally {
     loading.value = false;
   }
 };
 
-const loadCatalogs = async () => {
-  try {
-    const employeeRes = await EmployeeApi.getList();
-    technicians.value = employeeRes || [];
-  } catch (err) {
-    console.error("Failed to load repair-order catalogs", err);
-  }
+// --- EDIT DIALOG ---
+const editDialogVisible = ref(false);
+const editForm = ref({
+  mileage: 0,
+  description: "",
+  nextMaintenanceDate: "",
+  nextMaintenanceOdo: 0,
+});
+
+const openEditDialog = () => {
+  if (!order.value) return;
+  editForm.value = {
+    mileage: order.value.mileage || 0,
+    description: order.value.description || "",
+    nextMaintenanceDate: order.value.nextMaintenanceDate || "",
+    nextMaintenanceOdo: order.value.nextMaintenanceOdo || 0,
+  };
+  editDialogVisible.value = true;
 };
 
-const assignTechnician = async () => {
-  if (!selectedTechId.value) {
-    ElMessage.warning("Vui long chon ky thuat vien");
-    return;
-  }
-
+const submitEdit = async () => {
+  if (!order.value) return;
   submitting.value = true;
   try {
-    await RepairOrderApi.assignTechnician({
-      repairOrderId: orderId,
-      technicianId: selectedTechId.value,
+    await RepairOrderApi.update(orderId, {
+      id: orderId,
+      vehicleId: order.value.vehicleId || 0,
+      maintenanceDate:
+        order.value.maintenanceDate ||
+        order.value.createdAt ||
+        new Date().toISOString(),
+      description: editForm.value.description,
+      mileage: editForm.value.mileage,
+      technicianId: (order.value as any).technicianId,
+      partsCost: 0,
+      laborCost: 0,
+      nextMaintenanceDate: editForm.value.nextMaintenanceDate || undefined,
+      nextMaintenanceOdo: editForm.value.nextMaintenanceOdo || undefined,
     });
-    ElMessage.success("Da phan cong ky thuat vien");
+    ElMessage.success("Cập nhật thông tin thành công");
+    editDialogVisible.value = false;
     await loadOrderDetail();
   } catch (err: any) {
-    ElMessage.error(err?.message || "Phan cong ky thuat vien that bai");
+    ElMessage.error(err?.message || "Cập nhật thất bại");
   } finally {
     submitting.value = false;
   }
 };
 
-const openServiceDialog = () => {
-  ElMessage.info("Man hinh nay chua co dialog them dich vu");
+const assignDialogVisible = ref(false);
+const assignForm = ref({ technicianId: undefined as number | undefined });
+const technicians = ref<EmployeeResponse[]>([]);
+const loadingTechnicians = ref(false);
+
+const currentTechnicianName = computed(() => {
+  if (!assignForm.value.technicianId) return "";
+  const found = technicians.value.find(
+    (t) => t.id === assignForm.value.technicianId,
+  );
+  return found?.fullName || "";
+});
+
+const onTechSelectOpen = async (visible: boolean) => {
+  if (visible && technicians.value.length === 0) {
+    loadingTechnicians.value = true;
+    try {
+      const list = await EmployeeApi.getList();
+      technicians.value = list.length ? list : [];
+    } catch {
+      ElMessage.error("Không thể tải danh sách kỹ thuật viên");
+    } finally {
+      loadingTechnicians.value = false;
+    }
+  }
 };
 
-const removeService = (index: number) => {
-  localServices.value.splice(index, 1);
+const fetchTechnicians = async () => {
+  try {
+    const list = await EmployeeApi.getList();
+    technicians.value = list.length ? list : [];
+  } catch (err) {
+    ElMessage.error("Không thể tải danh sách kỹ thuật viên");
+  }
 };
 
-const openPartsDialog = () => {
-  ElMessage.info("Man hinh nay chua co dialog them phu tung");
+const openAssignDialog = async () => {
+  if (!order.value) return;
+  assignForm.value.technicianId = (order.value as any).technicianId;
+  assignDialogVisible.value = true;
+  await fetchTechnicians();
 };
 
-const removePart = (index: number) => {
-  localParts.value.splice(index, 1);
+const submitAssign = async () => {
+  if (!order.value) return;
+  submitting.value = true;
+  try {
+    await RepairOrderApi.update(orderId, {
+      id: orderId,
+      vehicleId: order.value.vehicleId || 0,
+      maintenanceDate:
+        order.value.maintenanceDate ||
+        order.value.createdAt ||
+        new Date().toISOString(),
+      description: order.value.description || "",
+      mileage: order.value.mileage || 0,
+      technicianId: assignForm.value.technicianId,
+      partsCost: 0,
+      laborCost: 0,
+      nextMaintenanceDate: order.value.nextMaintenanceDate || undefined,
+      nextMaintenanceOdo: order.value.nextMaintenanceOdo || undefined,
+    });
+    ElMessage.success("Phân công kỹ thuật viên thành công");
+    assignDialogVisible.value = false;
+    await loadOrderDetail();
+  } catch (err: any) {
+    ElMessage.error(err?.message || "Phân công thất bại");
+  } finally {
+    submitting.value = false;
+  }
+};
+
+// --- PARTS & SERVICES DIALOGS ---
+const partsDialogVisible = ref(false);
+const selectedPartId = ref<number | undefined>(undefined);
+const availableParts = ref<any[]>([]);
+
+const servicesDialogVisible = ref(false);
+const selectedServiceId = ref<number | undefined>(undefined);
+const availableServices = ref<ServiceCategoryResponse[]>([]);
+
+const openServiceDialog = async () => {
+  try {
+    const res = await ServiceCategoryApi.getList({ current: 1, size: 100 });
+    availableServices.value = res.items || [];
+  } catch (err) {
+    ElMessage.error("Không thể tải danh sách dịch vụ");
+  }
+  selectedServiceId.value = undefined;
+  servicesDialogVisible.value = true;
+};
+
+const confirmAddService = () => {
+  if (!selectedServiceId.value) return;
+  const srv = availableServices.value.find(
+    (s) => s.id === selectedServiceId.value,
+  );
+  if (srv) {
+    localItems.value.push({
+      type: "Service",
+      id: srv.id,
+      name: srv.name,
+      count: 1,
+      price: 0, // Nhập giá thủ công hoặc lấy mặc định nếu có
+      notes: "",
+    });
+  }
+  servicesDialogVisible.value = false;
+};
+
+const openPartsDialog = async () => {
+  try {
+    const res = await ProductApi.getVariantsForInput({ current: 1, size: 100 });
+    availableParts.value = res.items || [];
+  } catch (err) {
+    ElMessage.error("Không thể tải danh sách phụ tùng");
+  }
+  selectedPartId.value = undefined;
+  partsDialogVisible.value = true;
+};
+
+const confirmAddPart = () => {
+  if (!selectedPartId.value) return;
+  const part = availableParts.value.find((p) => p.id === selectedPartId.value);
+  if (part) {
+    localItems.value.push({
+      type: "Part",
+      id: part.id,
+      name: part.name,
+      count: 1,
+      price: part.retailPrice || 0,
+      notes: "",
+    });
+  }
+  partsDialogVisible.value = false;
+};
+
+const removeItem = (type: string, index: number) => {
+  localItems.value.splice(index, 1);
 };
 
 const saveIssueParts = async (targetStatus: "InProgress" | "QcPending") => {
@@ -850,24 +995,27 @@ const saveIssueParts = async (targetStatus: "InProgress" | "QcPending") => {
   try {
     await RepairOrderApi.issueParts({
       repairOrderId: orderId,
-      parts: localParts.value.map((part) => ({
-        productVariantId: part.productVariantId,
-        count: part.count,
-        price: part.price,
-        notes: part.notes || undefined,
-      })),
-      services: localServices.value.map((service) => ({
-        serviceId: service.serviceId,
-        laborCost: service.laborCost,
-        notes: service.notes || undefined,
-      })),
+      parts: localItems.value
+        .filter((x) => x.type === "Part")
+        .map((part) => ({
+          productVariantId: part.id,
+          count: part.count,
+          price: part.price,
+          notes: part.notes || undefined,
+        })),
+      services: localItems.value
+        .filter((x) => x.type === "Service")
+        .map((service) => ({
+          serviceId: service.id,
+          laborCost: service.price,
+          notes: service.notes || undefined,
+        })),
       status: targetStatus,
     });
-
-    ElMessage.success("Da cap nhat hang muc sua chua");
+    ElMessage.success("Đã cập nhật hạng mục");
     await loadOrderDetail();
   } catch (err: any) {
-    ElMessage.error(err?.message || "Cap nhat hang muc sua chua that bai");
+    ElMessage.error(err?.message || "Cập nhật thất bại");
   } finally {
     submitting.value = false;
   }
@@ -882,10 +1030,10 @@ const completeRepairOrder = async () => {
       paymentStatus: paymentStatus.value,
       notes: checkoutNotes.value || undefined,
     });
-    ElMessage.success("Da hoan tat phieu sua chua");
+    ElMessage.success("Đã hoàn tất phiếu sửa chữa");
     await loadOrderDetail();
   } catch (err: any) {
-    ElMessage.error(err?.message || "Hoan tat phieu sua chua that bai");
+    ElMessage.error(err?.message || "Hoàn tất thất bại");
   } finally {
     submitting.value = false;
   }
@@ -896,18 +1044,15 @@ const openPrintInvoice = () => {
 };
 
 const goBack = () => {
-  router.push("/factory/service/workshop/repair-orders");
+  router.push("/factory/workshop/repair");
 };
 
 const formatCurrency = (value: number) => {
-  if (!value) return "0 d";
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(value);
+  if (!value) return "0 ₫";
+  return new Intl.NumberFormat("vi-VN").format(value) + " ₫";
 };
 
-const formatDate = (dateStr: string) => {
+const formatDate = (dateStr: string | Date) => {
   if (!dateStr) return "-";
   return new Date(dateStr).toLocaleDateString("vi-VN", {
     day: "2-digit",
@@ -918,89 +1063,31 @@ const formatDate = (dateStr: string) => {
   });
 };
 
-const statusOrder = ["Pending", "InProgress", "QcPending", "Completed"];
-
-const isStepActive = (status: string) => {
-  if (!order.value) return false;
-  return statusOrder.indexOf(status) <= statusOrder.indexOf(order.value.status);
-};
-
-const getStepDotClass = (status: string) => {
-  if (!order.value) return "border-slate-200 bg-white text-slate-300";
-
-  const currentIndex = statusOrder.indexOf(order.value.status);
-  const stepIndex = statusOrder.indexOf(status);
-
-  if (stepIndex < currentIndex)
-    return "border-emerald-500 bg-emerald-500 text-white";
-  if (stepIndex === currentIndex)
-    return "border-blue-600 bg-white text-blue-600";
-  return "border-slate-200 bg-white text-slate-300";
-};
-
-const getStepInnerDotClass = (status: string) => {
-  if (!order.value) return "bg-slate-200";
-
-  const currentIndex = statusOrder.indexOf(order.value.status);
-  const stepIndex = statusOrder.indexOf(status);
-
-  if (stepIndex < currentIndex) return "bg-white";
-  if (stepIndex === currentIndex) return "bg-blue-600";
-  return "bg-slate-200";
-};
-
-const getStatusBadgeClass = (status: string) => {
-  const base =
-    "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider inline-block text-center w-28 ";
-
-  switch (status) {
-    case "Pending":
-      return `${base}bg-purple-50 text-purple-600 border border-purple-200`;
-    case "InProgress":
-      return `${base}bg-blue-50 text-blue-600 border border-blue-200`;
-    case "QcPending":
-      return `${base}bg-amber-50 text-amber-600 border border-amber-200`;
-    case "Completed":
-      return `${base}bg-emerald-50 text-emerald-600 border border-emerald-200`;
-    case "Cancelled":
-      return `${base}bg-red-50 text-red-600 border border-red-200`;
-    default:
-      return `${base}bg-slate-50 text-slate-600 border border-slate-200`;
-  }
+const getStatusType = (status: string) => {
+  const map: Record<string, string> = {
+    InProgress: "warning",
+    QcPending: "primary",
+    Completed: "success",
+  };
+  return map[status] || "info";
 };
 
 const getStatusText = (status: string) => {
-  switch (status) {
-    case "Pending":
-      return "Cho tiep nhan";
-    case "InProgress":
-      return "Dang sua chua";
-    case "QcPending":
-      return "Dang QC";
-    case "Completed":
-      return "Da hoan thanh";
-    case "Cancelled":
-      return "Da huy";
-    default:
-      return status || "-";
-  }
-};
-
-const getPaymentMethodText = (method?: string) => {
-  switch (method) {
-    case "Cash":
-      return "Tien mat";
-    case "BankTransfer":
-      return "Chuyen khoan";
-    case "Card":
-      return "The";
-    default:
-      return method || "-";
-  }
+  const map: Record<string, string> = {
+    InProgress: "Đang sửa chữa",
+    QcPending: "Đang QC",
+    Completed: "Hoàn tất",
+  };
+  return map[status] || status;
 };
 
 onMounted(() => {
   loadOrderDetail();
-  loadCatalogs();
 });
 </script>
+
+<style scoped>
+.font-mono {
+  font-family: monospace;
+}
+</style>

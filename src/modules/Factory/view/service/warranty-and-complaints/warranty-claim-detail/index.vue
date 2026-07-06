@@ -196,7 +196,6 @@
               >
             </div>
           </template>
-
           <el-table
             :data="claim?.parts ?? []"
             border
@@ -263,250 +262,318 @@
           </el-table>
         </el-card>
 
-        <!-- Thu hồi xe lỗi (Recall) -->
-        <el-card class="shadow-sm border-slate-100">
+        <!-- Lịch sử bảo hành của xe -->
+        <el-card class="shadow-sm border-slate-100" v-loading="historyLoading">
           <template #header>
-            <div class="flex items-center gap-2 font-bold text-slate-800">
-              <el-icon class="text-primary"><Refresh /></el-icon>
-              <span>3. XỬ LÝ ĐỔI TRẢ ĐẶC BIỆT (THU HỒI PHƯƠNG TIỆN LỖI)</span>
-            </div>
-          </template>
-          <div class="space-y-4">
-            <p class="text-xs text-slate-500 leading-relaxed">
-              * Lưu ý: Tính năng này chỉ dùng cho trường hợp lỗi hệ thống nghiêm
-              trọng thuộc diện triệu hồi (Recall) từ nhà máy sản xuất. Việc kích
-              hoạt sẽ tự động cập nhật số khung xe trong kho tổng thành trạng
-              thái thu hồi và tiến hành thủ tục cấp đổi xe mới cho khách hàng.
-            </p>
-
-            <div
-              v-if="claim?.isRecall"
-              class="p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3"
-            >
-              <el-icon class="text-amber-600 text-xl mt-0.5"
-                ><Warning
-              /></el-icon>
-              <div>
-                <div class="text-sm font-bold text-amber-800">
-                  ĐÃ KÍCH HOẠT QUY TRÌNH THU HỒI XE LỖI
-                </div>
-                <div class="text-xs text-amber-600 mt-1">
-                  Đã kích hoạt đổi xe mới cho khách hàng. Trạng thái quyết định
-                  của hãng:
-                  {{
-                    claim?.manufacturerDecision || "Đang chờ xử lý đổi xe mới"
-                  }}
-                </div>
+            <div class="flex items-center gap-2 justify-between">
+              <div class="flex items-center gap-2 font-bold text-slate-800">
+                <el-icon class="text-primary"><Timer /></el-icon>
+                <span>4. LỊCH SỬ BẢO HÀNH CỦA XE</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <el-tag type="info" effect="plain" class="font-semibold">
+                  Đã bảo hành: {{ historyClaims.length }} lần
+                </el-tag>
+                <el-tag type="warning" effect="plain" class="font-semibold">
+                  Tổng VT phát sinh: {{ formatPrice(totalHistoryPartsCost) }}
+                </el-tag>
               </div>
             </div>
-
+          </template>
+          <!-- Empty state -->
+          <div
+            v-if="
+              !historyLoading && (!historyClaims || historyClaims.length === 0)
+            "
+            class="text-center py-10 text-slate-400"
+          >
+            <el-icon class="text-4xl mb-2"><Timer /></el-icon>
+            <p class="text-sm">Chưa có lịch sử bảo hành cho xe này.</p>
+          </div>
+          <!-- History list -->
+          <div v-else class="space-y-6">
             <div
-              v-else-if="currentStatusValue < 5"
-              class="bg-slate-50 p-4 rounded-lg border border-slate-100 flex items-center justify-between flex-wrap gap-4"
+              v-for="hc in historyClaims"
+              :key="hc.id"
+              class="border border-slate-200 rounded-lg overflow-hidden"
             >
-              <div>
-                <span class="text-sm font-bold text-slate-700"
-                  >Xe thuộc diện lỗi triệu hồi cần thu hồi?</span
+              <div
+                class="bg-slate-50 px-4 py-3 flex items-center justify-between flex-wrap gap-2"
+              >
+                <div class="flex items-center gap-3">
+                  <span class="font-bold text-slate-700 text-sm">{{
+                    hc.claimNumber
+                  }}</span>
+                  <el-tag
+                    :type="getHistoryStatusTagType(hc.statusText || '')"
+                    effect="dark"
+                    size="small"
+                  >
+                    {{ hc.statusText }}
+                  </el-tag>
+                  <span
+                    v-if="hc.isRecall"
+                    class="text-xs font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded"
+                  >
+                    Thu hồi
+                  </span>
+                </div>
+                <div class="text-xs text-slate-500">
+                  {{ dayjs(hc.createdAt).format("DD/MM/YYYY HH:mm") }}
+                </div>
+              </div>
+              <p
+                class="px-4 py-2 text-sm text-slate-600 border-b border-slate-100"
+              >
+                {{ hc.issueDescription }}
+              </p>
+              <div v-if="hc.parts && hc.parts.length > 0">
+                <el-table
+                  :data="hc.parts"
+                  border
+                  size="small"
+                  style="width: 100%"
+                  header-cell-class-name="bg-white font-semibold text-slate-600"
                 >
-                <p class="text-xs text-slate-500 mt-0.5">
-                  Tiến hành thu hồi xe và đổi trả xe mới cho khách hàng.
-                </p>
+                  <el-table-column
+                    prop="partName"
+                    label="Tên Linh Kiện"
+                    min-width="160"
+                  />
+                  <el-table-column
+                    prop="partCode"
+                    label="Mã Linh Kiện"
+                    min-width="120"
+                  />
+                  <el-table-column
+                    label="Đơn Giá"
+                    min-width="110"
+                    align="right"
+                  >
+                    <template #default="{ row }">
+                      <span
+                        :class="{
+                          'text-slate-400 line-through': row.unitPrice === 0,
+                          'text-amber-600 font-bold': row.unitPrice > 0,
+                        }"
+                      >
+                        {{ formatPrice(row.unitPrice) }}
+                      </span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    label="Thẩm Định"
+                    min-width="120"
+                    align="center"
+                  >
+                    <template #default="{ row }">
+                      <el-tag
+                        :type="getPartStatusTagType(row.statusText || '')"
+                        effect="plain"
+                        size="small"
+                      >
+                        {{ row.unitPrice === 0 ? "Miễn phí" : "Phát sinh" }}
+                      </el-tag>
+                    </template>
+                  </el-table-column>
+                </el-table>
               </div>
-              <el-button
-                type="warning"
-                :loading="submitting"
-                @click="handleRecall"
-                v-auth="Permissions.Factory.CustomerManagement.View"
+              <div
+                v-else
+                class="px-4 py-2 text-xs text-slate-400 italic border-b border-slate-100"
               >
-                Kích hoạt Thu hồi & Đổi xe
-              </el-button>
-            </div>
-
-            <div v-else class="text-sm text-slate-400 italic">
-              Không thuộc diện thu hồi lỗi từ hãng.
-            </div>
-          </div>
-        </el-card>
-      </div>
-
-      <!-- Cột phải (30%) - Định danh & Đối soát -->
-      <div class="lg:col-span-3 space-y-6">
-        <!-- Thông tin xe & khách hàng -->
-        <el-card class="shadow-sm border-slate-100">
-          <template #header>
-            <div class="font-bold text-slate-800 flex items-center gap-2">
-              <el-icon class="text-primary"><User /></el-icon>
-              <span>THÔNG TIN KHÁCH HÀNG</span>
-            </div>
-          </template>
-          <div class="space-y-3 text-sm text-slate-600">
-            <div>
-              <span
-                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
-                >Chủ sở hữu</span
+                Không có linh kiện phát sinh.
+              </div>
+              <div
+                v-if="hc.totalPartsCost > 0 || hc.totalLaborCost > 0"
+                class="px-4 py-2 flex justify-end gap-4 text-xs text-slate-500 bg-slate-50"
               >
-              <span class="text-slate-800 font-bold text-base">{{
-                claim?.customerName || "N/A"
-              }}</span>
-            </div>
-            <div class="border-t border-slate-100 pt-2">
-              <span
-                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
-                >Số điện thoại</span
-              >
-              <span class="text-slate-800 font-medium">{{
-                claim?.customerPhone || "N/A"
-              }}</span>
-            </div>
-            <div class="border-t border-slate-100 pt-2">
-              <span
-                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
-                >Địa chỉ liên lạc</span
-              >
-              <span class="text-slate-800 text-xs">{{
-                claim?.customerAddress || "N/A"
-              }}</span>
+                <span>VT: {{ formatPrice(hc.totalPartsCost) }}</span>
+                <span>TC: {{ formatPrice(hc.totalLaborCost) }}</span>
+              </div>
             </div>
           </div>
         </el-card>
 
-        <el-card class="shadow-sm border-slate-100">
-          <template #header>
-            <div class="font-bold text-slate-800 flex items-center gap-2">
-              <el-icon class="text-primary"><Setting /></el-icon>
-              <span>THÔNG TIN PHƯƠNG TIỆN</span>
+        <!-- Cột phải (30%) - Định danh & Đối soát -->
+        <div class="lg:col-span-3 space-y-6">
+          <!-- Thông tin xe & khách hàng -->
+          <el-card class="shadow-sm border-slate-100">
+            <template #header>
+              <div class="font-bold text-slate-800 flex items-center gap-2">
+                <el-icon class="text-primary"><User /></el-icon>
+                <span>THÔNG TIN KHÁCH HÀNG</span>
+              </div>
+            </template>
+            <div class="space-y-3 text-sm text-slate-600">
+              <div>
+                <span
+                  class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+                  >Chủ sở hữu</span
+                >
+                <span class="text-slate-800 font-bold text-base">{{
+                  claim?.customerName || "N/A"
+                }}</span>
+              </div>
+              <div class="border-t border-slate-100 pt-2">
+                <span
+                  class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+                  >Số điện thoại</span
+                >
+                <span class="text-slate-800 font-medium">{{
+                  claim?.customerPhone || "N/A"
+                }}</span>
+              </div>
+              <div class="border-t border-slate-100 pt-2">
+                <span
+                  class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+                  >Địa chỉ liên lạc</span
+                >
+                <span class="text-slate-800 text-xs">{{
+                  claim?.customerAddress || "N/A"
+                }}</span>
+              </div>
             </div>
-          </template>
-          <div class="space-y-3 text-sm text-slate-600">
-            <div>
-              <span
-                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
-                >Biển số xe</span
-              >
-              <el-tag
-                effect="plain"
-                class="font-bold text-slate-700 border-slate-300 mt-0.5"
-              >
-                {{ claim?.vehiclePlate || "N/A" }}
-              </el-tag>
-            </div>
-            <div class="border-t border-slate-100 pt-2">
-              <span
-                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
-                >Số khung (VIN)</span
-              >
-              <span class="text-slate-800 font-mono font-medium">{{
-                claim?.vehicleVin || "N/A"
-              }}</span>
-            </div>
-            <div class="border-t border-slate-100 pt-2">
-              <span
-                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
-                >Màu sắc xe</span
-              >
-              <span class="text-slate-800 font-medium">{{
-                claim?.vehicleColor || "N/A"
-              }}</span>
-            </div>
-            <div class="border-t border-slate-100 pt-2">
-              <span
-                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
-                >Dòng xe / Đời xe</span
-              >
-              <span class="text-slate-800 font-medium">{{
-                claim?.vehicleYear || "N/A"
-              }}</span>
-            </div>
-            <div class="border-t border-slate-100 pt-2">
-              <span
-                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
-                >Tình trạng bảo hành xe</span
-              >
-              <span
-                class="font-bold"
-                :class="
-                  claim?.warrantyRemaining === 'Hết hạn'
-                    ? 'text-rose-600'
-                    : 'text-emerald-600'
-                "
-              >
-                {{ claim?.warrantyRemaining || "N/A" }}
-              </span>
-            </div>
-          </div>
-        </el-card>
+          </el-card>
 
-        <!-- Đối soát hãng -->
-        <el-card class="shadow-sm border-slate-100">
-          <template #header>
-            <div class="font-bold text-slate-800 flex items-center gap-2">
-              <el-icon class="text-primary"><OfficeBuilding /></el-icon>
-              <span>ĐỐI SOÁT HÃNG</span>
+          <el-card class="shadow-sm border-slate-100">
+            <template #header>
+              <div class="font-bold text-slate-800 flex items-center gap-2">
+                <el-icon class="text-primary"><Setting /></el-icon>
+                <span>THÔNG TIN PHƯƠNG TIỆN</span>
+              </div>
+            </template>
+            <div class="space-y-3 text-sm text-slate-600">
+              <div>
+                <span
+                  class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+                  >Biển số xe</span
+                >
+                <el-tag
+                  effect="plain"
+                  class="font-bold text-slate-700 border-slate-300 mt-0.5"
+                >
+                  {{ claim?.vehiclePlate || "N/A" }}
+                </el-tag>
+              </div>
+              <div class="border-t border-slate-100 pt-2">
+                <span
+                  class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+                  >Số khung (VIN)</span
+                >
+                <span class="text-slate-800 font-mono font-medium">{{
+                  claim?.vehicleVin || "N/A"
+                }}</span>
+              </div>
+              <div class="border-t border-slate-100 pt-2">
+                <span
+                  class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+                  >Màu sắc xe</span
+                >
+                <span class="text-slate-800 font-medium">{{
+                  claim?.vehicleColor || "N/A"
+                }}</span>
+              </div>
+              <div class="border-t border-slate-100 pt-2">
+                <span
+                  class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+                  >Dòng xe / Đời xe</span
+                >
+                <span class="text-slate-800 font-medium">{{
+                  claim?.vehicleYear || "N/A"
+                }}</span>
+              </div>
+              <div class="border-t border-slate-100 pt-2">
+                <span
+                  class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+                  >Tình trạng bảo hành xe</span
+                >
+                <span
+                  class="font-bold"
+                  :class="
+                    claim?.warrantyRemaining === 'Hết hạn'
+                      ? 'text-rose-600'
+                      : 'text-emerald-600'
+                  "
+                >
+                  {{ claim?.warrantyRemaining || "N/A" }}
+                </span>
+              </div>
             </div>
-          </template>
-          <div class="space-y-3 text-sm text-slate-600">
-            <div>
-              <span
-                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
-                >Trung tâm tiếp nhận</span
-              >
-              <span class="text-slate-800 font-medium">{{
-                claim?.serviceCenterName || "N/A"
-              }}</span>
-            </div>
-            <div class="border-t border-slate-100 pt-2">
-              <span
-                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
-                >Mã số hồ sơ hãng</span
-              >
-              <span class="text-slate-800 font-mono font-medium">{{
-                claim?.manufacturerClaimNumber || "Chưa liên kết hãng"
-              }}</span>
-            </div>
-            <div class="border-t border-slate-100 pt-2">
-              <span
-                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
-                >Quyết định của Hãng</span
-              >
-              <span class="text-slate-800 font-medium">{{
-                claim?.manufacturerDecision || "Đang chờ hãng xem xét"
-              }}</span>
-            </div>
-          </div>
-        </el-card>
+          </el-card>
 
-        <!-- Chi phí tổng hợp -->
-        <el-card class="shadow-sm border-slate-100 bg-slate-900 text-white">
-          <template #header>
-            <div class="font-bold text-white flex items-center gap-2">
-              <el-icon class="text-primary"><Money /></el-icon>
-              <span>CHI PHÍ ĐỐI VỚI KHÁCH</span>
+          <!-- Đối soát hãng -->
+          <el-card class="shadow-sm border-slate-100">
+            <template #header>
+              <div class="font-bold text-slate-800 flex items-center gap-2">
+                <el-icon class="text-primary"><OfficeBuilding /></el-icon>
+                <span>ĐỐI SOÁT HÃNG</span>
+              </div>
+            </template>
+            <div class="space-y-3 text-sm text-slate-600">
+              <div>
+                <span
+                  class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+                  >Trung tâm tiếp nhận</span
+                >
+                <span class="text-slate-800 font-medium">{{
+                  claim?.serviceCenterName || "N/A"
+                }}</span>
+              </div>
+              <div class="border-t border-slate-100 pt-2">
+                <span
+                  class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+                  >Mã số hồ sơ hãng</span
+                >
+                <span class="text-slate-800 font-mono font-medium">{{
+                  claim?.manufacturerClaimNumber || "Chưa liên kết hãng"
+                }}</span>
+              </div>
+              <div class="border-t border-slate-100 pt-2">
+                <span
+                  class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+                  >Quyết định của Hãng</span
+                >
+                <span class="text-slate-800 font-medium">{{
+                  claim?.manufacturerDecision || "Đang chờ hãng xem xét"
+                }}</span>
+              </div>
             </div>
-          </template>
-          <div class="space-y-3 text-sm">
-            <div class="flex justify-between">
-              <span class="text-slate-400">Tiền công thợ:</span>
-              <span class="line-through text-slate-500">0 đ</span>
+          </el-card>
+
+          <!-- Chi phí tổng hợp -->
+          <el-card class="shadow-sm border-slate-100 bg-slate-900 text-white">
+            <template #header>
+              <div class="font-bold text-white flex items-center gap-2">
+                <el-icon class="text-primary"><Money /></el-icon>
+                <span>CHI PHÍ ĐỐI VỚI KHÁCH</span>
+              </div>
+            </template>
+            <div class="space-y-3 text-sm">
+              <div class="flex justify-between">
+                <span class="text-slate-400">Tiền công thợ:</span>
+                <span class="line-through text-slate-500">0 đ</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Tiền linh kiện phát sinh:</span>
+                <span class="text-amber-400 font-bold">{{
+                  formatPrice(totalPartsCost)
+                }}</span>
+              </div>
+              <div
+                class="border-t border-slate-800 pt-3 flex justify-between items-baseline"
+              >
+                <span class="text-slate-300 font-bold">TỔNG THU KHÁCH:</span>
+                <span class="text-xl font-extrabold text-primary">{{
+                  formatPrice(totalPartsCost)
+                }}</span>
+              </div>
+              <div class="text-[10px] text-slate-400 italic text-center mt-2">
+                (Áp dụng chính sách miễn phí 100% công sửa chữa bảo hành)
+              </div>
             </div>
-            <div class="flex justify-between">
-              <span class="text-slate-400">Tiền linh kiện phát sinh:</span>
-              <span class="text-amber-400 font-bold">{{
-                formatPrice(totalPartsCost)
-              }}</span>
-            </div>
-            <div
-              class="border-t border-slate-800 pt-3 flex justify-between items-baseline"
-            >
-              <span class="text-slate-300 font-bold">TỔNG THU KHÁCH:</span>
-              <span class="text-xl font-extrabold text-primary">{{
-                formatPrice(totalPartsCost)
-              }}</span>
-            </div>
-            <div class="text-[10px] text-slate-400 italic text-center mt-2">
-              (Áp dụng chính sách miễn phí 100% công sửa chữa bảo hành)
-            </div>
-          </div>
-        </el-card>
+          </el-card>
+        </div>
       </div>
     </div>
   </div>
@@ -529,6 +596,7 @@ import {
   User,
   OfficeBuilding,
   Money,
+  Timer,
 } from "@element-plus/icons-vue";
 import {
   WarrantyClaimApi,
@@ -547,14 +615,17 @@ const mediaUrls = computed(() => claim.value?.mediaUrls ?? []);
 
 // Trạng thái hiện tại dạng số để dễ so sánh và điều khiển workflow
 const currentStatusValue = computed(() => {
-  const s = (claim.value?.status ?? "").toLowerCase();
-  if (s === "received") return 1;
-  if (s === "pendingmanufacturer") return 2;
-  if (s === "approved") return 3;
-  if (s === "replaced") return 4;
-  if (s === "completed") return 5;
-  if (s === "rejected") return 6;
-  return 1;
+  const s = claim.value?.status;
+  if (typeof s === "string") {
+    const lowered = s.toLowerCase();
+    if (lowered === "received") return 1;
+    if (lowered === "pendingmanufacturer") return 2;
+    if (lowered === "approved") return 3;
+    if (lowered === "replaced") return 4;
+    if (lowered === "completed") return 5;
+    if (lowered === "rejected") return 6;
+  }
+  return s ?? 1;
 });
 
 const activeStepIndex = computed(() => {
@@ -580,8 +651,20 @@ const statusTagType = computed(() => {
 const totalPartsCost = computed(() => {
   if (!claim.value || !claim.value.parts) return 0;
   return claim.value.parts.reduce((sum, part) => {
-    // Nếu trạng thái thẩm định không được miễn phí hoặc là linh kiện phát sinh thêm ngoài diện bảo hành
     return sum + (part.unitPrice || 0);
+  }, 0);
+});
+
+// --- Warranty History ---
+const historyClaims = ref<any[]>([]);
+const historyLoading = ref(false);
+const totalHistoryPartsCost = computed(() => {
+  return historyClaims.value.reduce((sum, hc) => {
+    const partsCost = (hc.parts ?? []).reduce(
+      (s: number, p: any) => s + (p.unitPrice || 0),
+      0,
+    );
+    return sum + partsCost;
   }, 0);
 });
 
@@ -603,32 +686,57 @@ const isVideo = (url: string) => {
 };
 
 const getStatusLabel = (status: string) => {
-  const s = status ? status.toLowerCase() : "";
-  if (s === "received") return "Tiếp nhận";
-  if (s === "pendingmanufacturer") return "Chờ hãng thẩm định";
-  if (s === "approved") return "Đã duyệt bồi hoàn";
-  if (s === "replaced") return "Thợ thay thế";
-  if (s === "completed") return "Hoàn tất - Đóng hồ sơ";
-  if (s === "rejected") return "Từ chối";
+  const s = status ? String(status).toLowerCase() : "";
+  if (s === "received" || s === "1") return "Tiếp nhận";
+  if (s === "pendingmanufacturer" || s === "2") return "Chờ hãng thẩm định";
+  if (s === "approved" || s === "3") return "Đã duyệt bồi hoàn";
+  if (s === "replaced" || s === "4") return "Thợ thay thế";
+  if (s === "completed" || s === "5") return "Hoàn tất - Đóng hồ sơ";
+  if (s === "rejected" || s === "6") return "Từ chối";
   return status;
 };
 
 const getPartStatusTagType = (status: string) => {
-  const s = status ? status.toLowerCase() : "";
+  const s = status ? String(status).toLowerCase() : "";
   if (s === "approved") return "success";
   if (s === "rejected") return "danger";
   return "info";
 };
 
 const getPartStatusLabel = (status: string) => {
-  const s = status ? status.toLowerCase() : "";
+  const s = status ? String(status).toLowerCase() : "";
   if (s === "approved") return "Đã duyệt";
   if (s === "rejected") return "Từ chối";
   return "Chờ hãng";
 };
 
+const getHistoryStatusTagType = (statusText: string) => {
+  const s = String(statusText).toLowerCase();
+  if (s === "Tiếp nhận") return "info";
+  if (s === "Chờ hãng thẩm định") return "warning";
+  if (s === "Đã duyệt bồi hoàn") return "success";
+  if (s === "Thợ thay thế") return "primary";
+  if (s === "Hoàn tất") return "success";
+  if (s === "Từ chối") return "danger";
+  return "info";
+};
+
 function goBack() {
   router.push({ name: "ServiceWarrantyRequests" }).catch(() => null);
+}
+
+async function loadHistory() {
+  if (!claim.value?.vehicleId) return;
+  historyLoading.value = true;
+  try {
+    historyClaims.value = await WarrantyClaimApi.getHistory(
+      claim.value.vehicleId,
+    );
+  } catch (error) {
+    console.error("Lỗi khi lấy lịch sử bảo hành:", error);
+  } finally {
+    historyLoading.value = false;
+  }
 }
 
 // APIs
@@ -639,6 +747,7 @@ async function load() {
     if (res) {
       claim.value = res;
     }
+    await loadHistory();
   } catch (error) {
     console.error("Lỗi khi lấy chi tiết bảo hành:", error);
     ElMessage.error("Không thể tải chi tiết phiếu bảo hành.");
@@ -668,7 +777,9 @@ async function handleUpdateStatus(statusNum: number) {
     );
 
     submitting.value = true;
-    await WarrantyClaimApi.updateStatus(claimId, { status: statusNum });
+    await WarrantyClaimApi.updateStatus(claimId, {
+      status: statusNum,
+    });
     ElMessage.success("Cập nhật trạng thái thành công!");
     void load();
   } catch (err) {

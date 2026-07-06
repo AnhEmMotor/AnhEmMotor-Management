@@ -161,15 +161,37 @@ export const marketingMenu: AppRouteRecord[] = [
               icon: "ri:gift-line",
             },
           },
-
           {
-            path: "workshop",
-            name: "CustomerContactSupport",
-            component: "/Marketing/view/customer/contact/index",
+            path: "voucher",
+            name: "CustomerVoucher",
+            component: "/Marketing/view/customer/voucher/index",
             meta: {
-              title: "menus.marketing.customerContact",
-              icon: "ri:customer-service-2-line",
+              title: "Quản lý Voucher", // TODO: Add i18n
+              icon: "ri:coupon-3-line",
+            },
+          },
+          {
+            path: "voucher/save",
+            name: "CustomerVoucherSave",
+            component: "/Marketing/view/customer/voucher/save",
+            meta: {
+              title: "Tạo/Sửa Voucher",
+              isHide: true,
+              isHideTab: true,
               keepAlive: true,
+              activePath: "/Marketing/customer/voucher",
+            },
+          },
+          {
+            path: "voucher/detail/:id",
+            name: "CustomerVoucherDetail",
+            component: "/Marketing/view/customer/voucher/detail",
+            meta: {
+              title: "Chi tiết Voucher",
+              isHide: true,
+              isHideTab: true,
+              keepAlive: false,
+              activePath: "/Marketing/customer/voucher",
             },
           },
         ],

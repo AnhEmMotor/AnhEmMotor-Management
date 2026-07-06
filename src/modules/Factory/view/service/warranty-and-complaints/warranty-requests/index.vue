@@ -807,7 +807,7 @@ const formatPrice = (val: number) => {
 };
 
 const getStatusTagType = (status: string) => {
-  const s = status ? status.toLowerCase() : "";
+  const s = status ? String(status).toLowerCase() : "";
   if (s.includes("completed")) return "success";
   if (s.includes("approved")) return "warning";
   if (s.includes("replaced")) return "primary";
@@ -816,7 +816,7 @@ const getStatusTagType = (status: string) => {
 };
 
 const getStatusLabel = (status: string) => {
-  const s = status ? status.toLowerCase() : "";
+  const s = status ? String(status).toLowerCase() : "";
   if (s === "received") return "Tiếp nhận";
   if (s === "pendingmanufacturer") return "Chờ hãng thẩm định";
   if (s === "approved") return "Đã duyệt bồi hoàn";

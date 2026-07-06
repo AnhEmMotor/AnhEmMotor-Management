@@ -26,20 +26,23 @@ export const factoryMenu: AppRouteRecord[] = [
             component: "/Factory/view/service/workshop/dashboard/index",
             meta: { title: "Dashboard xưởng", icon: "ri:dashboard-line" },
           },
-          {
-            path: "assignment",
-            name: "WorkshopAssignment",
-            component: "/Factory/view/service/workshop/assignment/index",
-            meta: {
-              title: "Phân công nhân viên",
-              icon: "ri:user-settings-line",
-            },
-          },
+
           {
             path: "repair",
             name: "WorkshopRepair",
             component: "/Factory/view/service/workshop/repair-orders/index",
             meta: { title: "Sửa chữa", icon: "ri:wrench-line" },
+          },
+          {
+            path: "repair/:id",
+            name: "WorkshopRepairDetail",
+            component:
+              "/Factory/view/service/workshop/repair-orders/repair-order-detail",
+            meta: {
+              title: "Chi tiết phiếu sửa chữa",
+              isHide: true,
+              activePath: "/factory/workshop/repair",
+            },
           },
           {
             path: "warranty",
@@ -89,8 +92,7 @@ export const factoryMenu: AppRouteRecord[] = [
           {
             path: "repair-history",
             name: "WorkshopRepairHistory",
-            component:
-              "/Factory/view/service/workshop/repair-history/index",
+            component: "/Factory/view/service/workshop/repair-history/index",
             meta: {
               title: "Lịch sử sửa chữa xưởng",
               icon: "ri:tools-line",
