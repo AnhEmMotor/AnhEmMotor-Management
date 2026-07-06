@@ -855,6 +855,18 @@ const technicians = ref<EmployeeResponse[]>([]);
 const loadingTechnicians = ref(false);
 
 const currentTechnicianName = computed(() => {
+  // Nếu có technicianName từ API (order) và user chưa đổi KTV khác
+  if (order.value && (order.value as any).technicianName) {
+    if (assignForm.value.technicianId !== (order.value as any).technicianId) {
+      const foundLocally = technicians.value.find(
+        (t) => t.id === assignForm.value.technicianId,
+      );
+      if (foundLocally) return foundLocally.fullName;
+    }
+    return (order.value as any).technicianName;
+  }
+
+  // Fallback tìm trong local (dùng khi form đang mở và user chọn)
   if (!assignForm.value.technicianId) return "";
   const found = technicians.value.find(
     (t) => t.id === assignForm.value.technicianId,
