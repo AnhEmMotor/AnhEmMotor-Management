@@ -84,7 +84,7 @@
             <template #default="{ row }">
               <div class="flex items-center gap-2">
                 <span
-                  @click="viewDetail(row)"
+                  @click="viewDetail(row as any)"
                   class="px-2 py-1 bg-gray-100 dark:bg-slate-800 text-blue-600 dark:text-blue-400 font-bold text-xs rounded border border-gray-200 dark:border-slate-700 font-mono cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 transition-all underline-offset-2 hover:underline"
                   title="Xem chi tiết voucher"
                 >

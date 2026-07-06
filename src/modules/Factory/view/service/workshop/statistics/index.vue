@@ -170,7 +170,7 @@ const loadData = async () => {
 
     if (res) {
       // res could be the DTO itself, or wrapped in a data property depending on the HTTP client interceptor
-      const data = res.data || res;
+      const data = (res as any).data || res;
 
       // Extract Status Breakdown
       const breakdowns = data.statusBreakdowns || data.StatusBreakdowns || [];

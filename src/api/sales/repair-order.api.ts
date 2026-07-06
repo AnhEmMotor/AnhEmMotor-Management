@@ -34,6 +34,9 @@ export interface RepairOrder {
   createdAt: string;
   updatedAt?: string;
   isDeleted: boolean;
+  status: string;
+  details?: RepairOrderDetail[];
+  customerPhone?: string;
 }
 
 export interface RepairOrderList {

@@ -62,7 +62,7 @@
           <div class="flex items-center justify-between mt-2 mb-6">
             <el-checkbox
               v-model="form.rememberMe"
-              @change="onRememberChange"
+              @change="(val: any) => onRememberChange(val as boolean)"
               class="font-normal subtitle"
             >
               Ghi nhớ đăng nhập

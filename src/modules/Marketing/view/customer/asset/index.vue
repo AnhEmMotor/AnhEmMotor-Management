@@ -482,7 +482,7 @@ const openAddDialog = async () => {
 
   try {
     const [leadsRes, prodsRes] = await Promise.all([
-      fetchGetLeadList({ current: 1, size: 1000 }),
+      fetchGetLeadList({ Page: 1, PageSize: 1000 }),
       ProductApi.getList({ current: 1, size: 100 }),
     ]);
     leadList.value = Array.isArray(leadsRes)

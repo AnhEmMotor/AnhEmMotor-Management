@@ -88,7 +88,7 @@ import { useRoute, useRouter } from "vue-router";
 import { Key, Lock, Back } from "@element-plus/icons-vue";
 import { $t } from "@/i18n";
 import { fetchResetPassword } from "@/api/auth";
-import ElMessage from "element-plus/es/components/message/index.js";
+import { ElMessage } from "element-plus";
 
 const route = useRoute();
 const router = useRouter();

@@ -47,11 +47,10 @@
         <ElCol :span="8">
           <div class="flex flex-col gap-4">
             <!-- Tiến độ -->
-            <ElCard
-              shadow="never"
-              class="border-slate-200"
-              header="Tiến độ quy trình"
-            >
+            <div class="bg-white rounded-xl border border-gray-100 p-5">
+              <h3 class="text-sm font-bold m-0 mb-4 text-slate-800">
+                Tiến độ quy trình
+              </h3>
               <ElSteps
                 :active="currentStepIndex"
                 direction="vertical"
@@ -64,40 +63,31 @@
                   :description="step.description"
                 />
               </ElSteps>
-            </ElCard>
+            </div>
 
             <!-- ── Phân công kỹ thuật viên (inline) ── -->
-            <ElCard
-              shadow="never"
-              class="border-slate-200"
+            <div
+              class="bg-white rounded-xl border border-gray-100 p-5"
               v-if="calculatedStatus !== 'Completed'"
             >
-              <template #header>
-                <div class="flex items-center justify-between">
-                  <span class="font-bold flex items-center gap-2">
-                    <ElIcon class="text-amber-500"><User /></ElIcon>
-                    Kỹ thuật viên phụ trách
-                  </span>
-                  <ElTag
-                    v-if="currentTechnicianName"
-                    type="success"
-                    effect="plain"
-                    size="small"
-                    round
-                  >
-                    Đã phân công
-                  </ElTag>
-                  <ElTag
-                    v-else
-                    type="warning"
-                    effect="plain"
-                    size="small"
-                    round
-                  >
-                    Chưa phân công
-                  </ElTag>
-                </div>
-              </template>
+              <div class="flex items-center justify-between mb-4">
+                <span class="font-bold flex items-center gap-2">
+                  <ElIcon class="text-amber-500"><User /></ElIcon>
+                  Kỹ thuật viên phụ trách
+                </span>
+                <ElTag
+                  v-if="currentTechnicianName"
+                  type="success"
+                  effect="plain"
+                  size="small"
+                  round
+                >
+                  Đã phân công
+                </ElTag>
+                <ElTag v-else type="warning" effect="plain" size="small" round>
+                  Chưa phân công
+                </ElTag>
+              </div>
 
               <!-- Người đang phụ trách -->
               <div
@@ -155,19 +145,16 @@
                   Lưu phân công
                 </ElButton>
               </ElForm>
-            </ElCard>
+            </div>
 
             <!-- KTV khi đã hoàn tất -->
-            <ElCard
-              shadow="never"
-              class="border-slate-200"
+            <div
+              class="bg-white rounded-xl border border-gray-100 p-5"
               v-else-if="currentTechnicianName"
             >
-              <template #header
-                ><span class="font-bold"
-                  >Kỹ thuật viên thực hiện</span
-                ></template
-              >
+              <h3 class="text-sm font-bold m-0 mb-4 text-slate-800">
+                Kỹ thuật viên thực hiện
+              </h3>
               <div class="flex items-center gap-3">
                 <div
                   class="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center shrink-0"
@@ -181,14 +168,13 @@
                   <div class="text-xs text-slate-400">Đã hoàn thành phiếu</div>
                 </div>
               </div>
-            </ElCard>
+            </div>
 
             <!-- Thông tin xe & khách -->
-            <ElCard
-              shadow="never"
-              class="border-slate-200"
-              header="Thông tin Khách hàng & Xe"
-            >
+            <div class="bg-white rounded-xl border border-gray-100 p-5">
+              <h3 class="text-sm font-bold m-0 mb-4 text-slate-800">
+                Thông tin Khách hàng & Xe
+              </h3>
               <ElDescriptions :column="1" border size="small">
                 <ElDescriptionsItem label="Thông tin xe">
                   <span class="font-bold text-slate-800">{{
@@ -217,20 +203,19 @@
                   <span v-else>-</span>
                 </ElDescriptionsItem>
               </ElDescriptions>
-            </ElCard>
+            </div>
 
             <!-- Ghi chú -->
-            <ElCard
-              shadow="never"
-              class="border-slate-200"
-              header="Triệu chứng & Lỗi ghi nhận"
-            >
+            <div class="bg-white rounded-xl border border-gray-100 p-5">
+              <h3 class="text-sm font-bold m-0 mb-4 text-slate-800">
+                Triệu chứng & Lỗi ghi nhận
+              </h3>
               <div
                 class="bg-slate-50 p-3 rounded text-sm italic text-slate-700 border border-slate-100"
               >
                 "{{ order.description || "Không có mô tả" }}"
               </div>
-            </ElCard>
+            </div>
           </div>
         </ElCol>
 
@@ -238,39 +223,34 @@
         <ElCol :span="16">
           <div class="flex flex-col gap-4">
             <!-- Phase 2: Hạng mục & Vật tư -->
-            <ElCard
-              shadow="never"
+            <div
+              class="bg-white rounded-xl border border-gray-100 p-5"
               v-if="
                 calculatedStatus === 'InProgress' ||
                 calculatedStatus === 'QcPending'
               "
             >
-              <template #header>
-                <div class="flex justify-between items-center">
-                  <span class="font-bold"
-                    >Hạng mục sửa chữa & Vật tư thay thế</span
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="text-sm font-bold m-0 text-slate-800">
+                  Hạng mục sửa chữa & Vật tư thay thế
+                </h3>
+                <div class="flex gap-2" v-if="calculatedStatus !== 'QcPending'">
+                  <ElButton
+                    size="small"
+                    type="primary"
+                    plain
+                    @click="openServiceDialog"
+                    >+ Thêm dịch vụ</ElButton
                   >
-                  <div
-                    class="flex gap-2"
-                    v-if="calculatedStatus !== 'QcPending'"
+                  <ElButton
+                    size="small"
+                    type="primary"
+                    plain
+                    @click="openPartsDialog"
+                    >+ Thêm phụ tùng</ElButton
                   >
-                    <ElButton
-                      size="small"
-                      type="primary"
-                      plain
-                      @click="openServiceDialog"
-                      >+ Thêm dịch vụ</ElButton
-                    >
-                    <ElButton
-                      size="small"
-                      type="primary"
-                      plain
-                      @click="openPartsDialog"
-                      >+ Thêm phụ tùng</ElButton
-                    >
-                  </div>
                 </div>
-              </template>
+              </div>
 
               <ElTable
                 :data="combinedDetails"
@@ -404,14 +384,16 @@
                   Hoàn tất sửa & Chuyển QC
                 </ElButton>
               </div>
-            </ElCard>
+            </div>
 
             <!-- Phase 3: QC & Checkout -->
-            <ElCard
+            <div
               v-if="calculatedStatus === 'QcPending'"
-              shadow="never"
-              header="Nghiệm thu QC & Thanh toán hóa đơn"
+              class="bg-white rounded-xl border border-gray-100 p-5"
             >
+              <h3 class="text-sm font-bold m-0 mb-4 text-slate-800">
+                Nghiệm thu QC & Thanh toán hóa đơn
+              </h3>
               <p class="text-sm text-slate-500 mb-4">
                 Xe đã hoàn thành sửa chữa kỹ thuật và đã vượt qua bài kiểm tra
                 chất lượng (QC). Tiến hành lập hóa đơn để bàn giao.
@@ -456,18 +438,18 @@
                   :disabled="submitting"
                   @click="completeRepairOrder"
                 >
-                  Xác nhận thanh toán & Bàn giao xe
+                  Thanh toán & Hoàn tất
                 </ElButton>
               </div>
-            </ElCard>
+            </div>
 
-            <!-- Phase 4: Completed -->
-            <ElCard
+            <div
               v-if="calculatedStatus === 'Completed'"
-              shadow="never"
-              class="bg-emerald-50"
+              class="bg-emerald-50 rounded-xl border border-emerald-200 p-6"
             >
-              <div class="flex items-center gap-2 mb-4">
+              <div
+                class="flex flex-col items-center justify-center text-center mb-6"
+              >
                 <h3 class="font-bold text-emerald-700 m-0">
                   Phiếu sửa chữa đã hoàn tất & Bàn giao thành công
                 </h3>
@@ -540,7 +522,7 @@
                   </ElTableColumn>
                 </ElTable>
               </div>
-            </ElCard>
+            </div>
           </div>
         </ElCol>
       </ElRow>
@@ -562,7 +544,7 @@
           <ElInputNumber v-model="editForm.mileage" :min="0" class="w-full" />
         </ElFormItem>
         <ElFormItem label="Lỗi ghi nhận">
-          <ElInput v-model="editForm.description" type="textarea" rows="3" />
+          <ElInput v-model="editForm.description" type="textarea" :rows="3" />
         </ElFormItem>
         <ElFormItem label="Ngày BD tới">
           <ElDatePicker
@@ -579,6 +561,23 @@
             class="w-full"
           />
         </ElFormItem>
+        <ElFormItem label="Nhân viên phụ trách">
+          <ElSelect
+            v-model="editForm.technicianId"
+            filterable
+            class="w-full"
+            placeholder="Chọn nhân viên..."
+            :loading="loadingTechnicians"
+            @visible-change="onTechSelectOpen"
+          >
+            <ElOption
+              v-for="emp in technicians"
+              :key="emp.id"
+              :label="emp.fullName"
+              :value="emp.id"
+            />
+          </ElSelect>
+        </ElFormItem>
       </ElForm>
       <template #footer>
         <div class="flex justify-end gap-2">
@@ -586,7 +585,7 @@
             >Hủy</ElButton
           >
           <ElButton type="primary" :loading="submitting" @click="submitEdit"
-            >Lưu</ElButton
+            >Lưu phiếu</ElButton
           >
         </div>
       </template>
@@ -732,6 +731,7 @@ const steps = [
 
 const calculatedStatus = computed(() => {
   if (!order.value) return "InProgress";
+  if (order.value.status) return order.value.status;
   if (order.value.totalCost > 0) return "Completed";
   return "InProgress";
 });
@@ -807,6 +807,7 @@ const editForm = ref({
   description: "",
   nextMaintenanceDate: "",
   nextMaintenanceOdo: 0,
+  technicianId: undefined as number | undefined,
 });
 
 const openEditDialog = () => {
@@ -816,6 +817,7 @@ const openEditDialog = () => {
     description: order.value.description || "",
     nextMaintenanceDate: order.value.nextMaintenanceDate || "",
     nextMaintenanceOdo: order.value.nextMaintenanceOdo || 0,
+    technicianId: (order.value as any).technicianId || undefined,
   };
   editDialogVisible.value = true;
 };
@@ -833,7 +835,7 @@ const submitEdit = async () => {
         new Date().toISOString(),
       description: editForm.value.description,
       mileage: editForm.value.mileage,
-      technicianId: (order.value as any).technicianId,
+      technicianId: editForm.value.technicianId,
       partsCost: 0,
       laborCost: 0,
       nextMaintenanceDate: editForm.value.nextMaintenanceDate || undefined,
@@ -1075,8 +1077,13 @@ const formatDate = (dateStr: string | Date) => {
   });
 };
 
-const getStatusType = (status: string) => {
-  const map: Record<string, string> = {
+const getStatusType = (
+  status: string,
+): "primary" | "success" | "warning" | "info" | "danger" | undefined => {
+  const map: Record<
+    string,
+    "primary" | "success" | "warning" | "info" | "danger"
+  > = {
     InProgress: "warning",
     QcPending: "primary",
     Completed: "success",

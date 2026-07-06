@@ -362,7 +362,7 @@
                         }}
                       </td>
                     </tr>
-                    <tr v-if="order.details.length === 0">
+                    <tr v-if="!order?.details?.length">
                       <td
                         colspan="4"
                         class="py-8 text-center text-slate-400 italic"
