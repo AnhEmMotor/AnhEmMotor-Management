@@ -93,7 +93,6 @@ export class RealGetPaymentStatsUseCase implements GetPaymentStatsUseCase {
 function getSourceLabel(sourceType: string): string {
   const map: Record<string, string> = {
     RepairOrder: "Phiếu sửa chữa",
-    Maintenance: "Phiếu bảo trì",
     Warranty: "Phiếu bảo hành",
     ServiceBooking: "Đặt dịch vụ",
   };

@@ -52,7 +52,6 @@
         <ElFormItem label="Loại yêu cầu">
           <ElRadioGroup v-model="bookingForm.type">
             <ElRadio value="TestDrive">Lái thử</ElRadio>
-            <ElRadio value="Maintenance">Bảo trì</ElRadio>
             <ElRadio value="Consult">Tư vấn</ElRadio>
           </ElRadioGroup>
         </ElFormItem>

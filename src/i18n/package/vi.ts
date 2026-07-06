@@ -573,15 +573,8 @@ export default {
         dashboard: "Dashboard xưởng",
         repairOrders: "Sửa chữa",
         historyByVin: "Tra cứu hồ sơ xe",
-        maintenance: "Bảo trì",
         evaluation: "Đánh giá dịch vụ",
         counter: { title: "Quầy thanh toán" },
-      },
-      administrative: {
-        title: "Dịch vụ hành chính",
-        registration: "Đăng ký biển số",
-        cashFlow: "Dòng tiền thu hộ - chi hộ",
-        registrationFeeConfig: "Cấu hình phí trước bạ tự động",
       },
       booking: {
         title: "Đặt lịch hẹn & lái thử",

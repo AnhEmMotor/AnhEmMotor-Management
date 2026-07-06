@@ -438,13 +438,6 @@ export default {
         dashboard: "Workshop Dashboard",
         repairOrders: "Repairs",
         historyByVin: "Vehicle Records Lookup",
-        maintenance: "Maintenance",
-      },
-      administrative: {
-        title: "Administrative Services",
-        registration: "License Plate Registration",
-        cashFlow: "Collection & Payment Cash Flow",
-        registrationFeeConfig: "Auto Registration Fee Config",
       },
       booking: {
         title: "Booking & Test Drive",

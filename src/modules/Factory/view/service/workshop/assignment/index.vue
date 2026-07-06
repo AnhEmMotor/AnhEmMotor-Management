@@ -460,7 +460,6 @@ function isWorkshopTechnician(employee: EmployeeResponse) {
     "ky thuat",
     "xuong",
     "sua chua",
-    "bao tri",
     "technician",
     "mechanic",
   ].some((keyword) => text.includes(keyword));

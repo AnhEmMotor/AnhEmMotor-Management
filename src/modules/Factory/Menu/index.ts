@@ -60,27 +60,13 @@ export const factoryMenu: AppRouteRecord[] = [
             },
           },
           {
-            path: "maintenance",
-            name: "WorkshopMaintenance",
-            component: "/Factory/view/service/workshop/maintenance/index",
-            meta: { title: "Bảo trì", icon: "ri:settings-3-line" },
-          },
-          {
-            path: "maintenance/:id",
-            name: "WorkshopMaintenanceDetail",
-            component:
-              "/Factory/view/service/workshop/maintenance-detail/index",
-            meta: {
-              title: "Chi tiết bảo trì",
-              isHide: true,
-              activePath: "/factory/workshop/maintenance",
-            },
-          },
-          {
             path: "history",
             name: "WorkshopHistory",
             component: "/Factory/view/service/workshop/history/index",
-            meta: { title: "Tra cứu hồ sơ xe", icon: "ri:search-eye-line" },
+            meta: {
+              title: "Tra cứu hồ sơ xe",
+              icon: "ri:search-eye-line",
+            },
           },
         ],
       },
@@ -103,7 +89,8 @@ export const factoryMenu: AppRouteRecord[] = [
           {
             path: "repair-history",
             name: "WorkshopRepairHistory",
-            component: "/Factory/view/service/workshop/repair-history/index",
+            component:
+              "/Factory/view/service/workshop/repair-history/index",
             meta: {
               title: "Lịch sử sửa chữa xưởng",
               icon: "ri:tools-line",
@@ -134,26 +121,6 @@ export const factoryMenu: AppRouteRecord[] = [
               isHideTab: true,
               keepAlive: true,
               activePath: "/factory/workshop/repair-history",
-            },
-          },
-        ],
-      },
-      {
-        path: "administrative",
-        name: "Administrative",
-        meta: {
-          title: "Dịch vụ hành chính",
-          icon: "ri:file-list-3-line",
-        },
-        children: [
-          {
-            path: "registration",
-            name: "AdministrativeRegistration",
-            component:
-              "/Factory/view/service/administrative/registration/index",
-            meta: {
-              title: "Đăng ký biển số",
-              icon: "ri:profile-line",
             },
           },
         ],

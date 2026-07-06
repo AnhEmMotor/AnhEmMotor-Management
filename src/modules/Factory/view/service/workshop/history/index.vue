@@ -147,7 +147,7 @@
           </div>
         </div>
 
-        <!-- Predictive Maintenance Alerts -->
+        <!-- Predictive section removed -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <ElCard class="lg:col-span-2">
             <template #header>

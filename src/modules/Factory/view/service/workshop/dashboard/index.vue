@@ -170,7 +170,7 @@
       <!-- Warranty & complaints (merged into workshop dashboard) -->
       <ElCard class="lg:col-span-1" :class="{ 'mt-0': true }">
         <template #header>
-          <span class="font-semibold">Bảo trì &amp; đánh giá dịch vụ</span>
+          <span class="font-semibold">Đánh giá & khiếu nại dịch vụ</span>
         </template>
 
         <div v-if="warrantyAndComplaints.loading" class="text-sm text-g-500">

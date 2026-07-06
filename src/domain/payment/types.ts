@@ -1,7 +1,6 @@
 export type PaymentSourceType =
   | "RepairOrder"
-  | "Maintenance"
-  | "Warranty"
+    | "Warranty"
   | "ServiceBooking";
 
 export type PaymentMethod = "Cash" | "Transfer" | "Card" | "VNPay" | "MoMo";

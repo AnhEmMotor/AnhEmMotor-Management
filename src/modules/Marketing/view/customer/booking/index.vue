@@ -316,7 +316,7 @@
           >
           <div class="flex gap-2">
             <button
-              v-for="t in ['TestDrive', 'Maintenance', 'Consult']"
+              v-for="t in ['TestDrive', 'Consult']"
               :key="t"
               @click="bookingForm.type = t"
               class="flex-1 h-9 rounded-xl text-[9px] font-bold uppercase border-2 transition-all"
@@ -326,13 +326,11 @@
                   : 'bg-white text-slate-400 border-slate-100 hover:border-slate-300'
               "
             >
-              {{
-                t === "TestDrive"
-                  ? "Lái thử"
-                  : t === "Maintenance"
-                    ? "Bảo trì"
-                    : "Tư vấn"
-              }}
+         {{
+           t === "TestDrive"
+             ? "Lái thử"
+             : "Tư vấn"
+         }}
             </button>
           </div>
         </div>
