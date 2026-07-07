@@ -10,7 +10,7 @@ export const factoryMenu: AppRouteRecord[] = [
       icon: "ri:tools-line",
       permissions: ["Permissions.Factory"],
     },
-    redirect: "/factory/workshop/dashboard",
+    redirect: "/factory/workshop/banner",
     children: [
       {
         path: "workshop",
@@ -20,6 +20,16 @@ export const factoryMenu: AppRouteRecord[] = [
           icon: "ri:tools-line",
         },
         children: [
+          {
+            path: "banner",
+            name: "WorkshopBanner",
+            component: "/Factory/view/service/workshop/banner/index",
+            meta: {
+              title: "Giới thiệu xưởng",
+              icon: "ri:image-line",
+              isHide: true,
+            },
+          },
           {
             path: "dashboard",
             name: "WorkshopDashboard",

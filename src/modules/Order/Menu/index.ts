@@ -12,8 +12,18 @@ export const orderMenu: AppRouteRecord[] = [
       roles: ["Admin", "SuperAdmin"],
       permissions: ["Permissions.Order"],
     },
-    redirect: "/Order/management/list",
+    redirect: "/Order/intro",
     children: [
+      {
+        path: "intro",
+        name: "OrderIntro",
+        component: "/Order/view/intro/index",
+        meta: {
+          title: "Giới thiệu",
+          icon: "ri:image-line",
+          isHide: true,
+        },
+      },
       {
         path: "management",
         name: "OrderManagement",

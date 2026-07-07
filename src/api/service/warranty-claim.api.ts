@@ -80,8 +80,11 @@ export const WarrantyClaimApi = {
   },
 
   create(data: {
-    licensePlate: string;
+    vehicleId: number;
     issueDescription: string;
+    isRecall?: boolean;
+    totalPartsCost?: number;
+    totalLaborCost?: number;
     serviceCenterName?: string;
     manufacturerClaimNumber?: string;
     mediaUrls?: string;
@@ -104,6 +107,12 @@ export const WarrantyClaimApi = {
     return request.patch<boolean>({
       url: `/api/v1/WarrantyClaims/${id}/status`,
       data,
+    });
+  },
+
+  delete(id: number) {
+    return request.delete<boolean>({
+      url: `/api/v1/WarrantyClaims/${id}`,
     });
   },
 };

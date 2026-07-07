@@ -4,7 +4,7 @@ import { Permissions } from "@/domain/constants/permissions";
 export const dashboardRoutes: AppRouteRecord = {
   name: "Dashboard",
   path: "/admin/dashboard",
-  redirect: "/admin/dashboard/console",
+  redirect: "/admin/dashboard/intro",
   component: "/index/index",
   meta: {
     title: "menus.dashboard.title",
@@ -13,6 +13,16 @@ export const dashboardRoutes: AppRouteRecord = {
     permissions: ["Permissions.Admin"],
   },
   children: [
+    {
+      path: "intro",
+      name: "AdminIntro",
+      component: "/Admin/view/intro/index",
+      meta: {
+        title: "Giới thiệu",
+        icon: "ri:image-line",
+        isHide: true,
+      },
+    },
     {
       path: "console",
       name: "Console",

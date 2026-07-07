@@ -12,8 +12,18 @@ export const accountancyMenu: AppRouteRecord[] = [
       roles: ["Admin", "SuperAdmin", "Accountant"],
       permissions: ["Permissions.Accountant"],
     },
-    redirect: "/Accountant/executive-dashboard",
+    redirect: "/Accountant/intro",
     children: [
+      {
+        path: "intro",
+        name: "AccountantIntro",
+        component: "/Accountant/view/intro/index",
+        meta: {
+          title: "Giới thiệu",
+          icon: "ri:image-line",
+          isHide: true,
+        },
+      },
       {
         path: "executive-dashboard",
         name: "AccountantExecutiveDashboard",

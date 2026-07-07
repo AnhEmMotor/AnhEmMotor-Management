@@ -145,6 +145,18 @@
               v-auth="Permissions.Factory.CustomerManagement.View"
             >
               Xem chi tiết
+              <el-button
+                type="danger"
+                size="small"
+                :icon="Delete"
+                plain
+                @click="handleDelete(row.id)"
+                v-auth="
+                  Permissions.Factory.RepairOrderManagement.AssignTechnician
+                "
+              >
+                Xóa
+              </el-button>
             </el-button>
           </template>
         </el-table-column>
@@ -414,6 +426,20 @@
           </div>
         </div>
 
+        <!-- Loại bảo hành -->
+        <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <h3
+            class="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-3 flex items-center gap-2"
+          >
+            <el-icon class="text-primary"><Flag /></el-icon>
+            Loại bảo hành
+          </h3>
+          <el-radio-group v-model="warrantyType">
+            <el-radio value="standard">Bảo hành tiêu chuẩn</el-radio>
+            <el-radio value="exception">Bảo hành ngoại lệ</el-radio>
+          </el-radio-group>
+        </div>
+
         <!-- Nhóm 4: Thông tin tiếp nhận -->
         <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
           <h3
@@ -681,6 +707,8 @@ const customerHistory = ref<any[]>([]);
 const vehicleHistory = ref<any[]>([]);
 const vehicleSearched = ref(false);
 const isReadOnlyCustomer = ref(false);
+const selectedVehicleId = ref<number | null>(null);
+const warrantyType = ref<"standard" | "exception">("standard");
 
 // Form
 const form = reactive({
@@ -886,6 +914,27 @@ function openDetail(id: number) {
     .catch(() => null);
 }
 
+async function handleDelete(id: number) {
+  try {
+    await ElMessageBox.confirm(
+      "Bạn có chắc chắn muốn xóa phiếu bảo hành này?",
+      "Xác nhận xóa",
+      {
+        confirmButtonText: "Xóa",
+        cancelButtonText: "Hủy",
+        type: "error",
+      },
+    );
+    await WarrantyClaimApi.delete(id);
+    ElMessage.success("Xóa phiếu bảo hành thành công!");
+    handleSearch();
+  } catch (err: any) {
+    if (err !== "cancel") {
+      ElMessage.error(err.message || "Xóa thất bại.");
+    }
+  }
+}
+
 // Dialog/Drawer Functions
 async function openCreateDrawer() {
   // Clear form
@@ -987,6 +1036,7 @@ function handlePlateInput() {
           isReadOnlyCustomer.value = true;
           vehicleSearched.value = true;
 
+          selectedVehicleId.value = res.vehicle.id;
           // Lịch sử sửa chữa/bảo hành xe
           vehicleHistory.value = res.history || [];
           calculateWarrantyStatus();
@@ -1075,6 +1125,11 @@ async function submitForm() {
       return;
     }
 
+    if (!selectedVehicleId.value) {
+      ElMessage.error("Vui lòng tra biển số xe trước khi tạo phiếu bảo hành.");
+      return;
+    }
+
     // Check điều kiện bảo hành
     if (!isWarrantyValid.value && !form.confirmExpiredWarranty) {
       ElMessageBox.alert(
@@ -1104,8 +1159,11 @@ async function submitForm() {
       }
 
       await WarrantyClaimApi.create({
-        licensePlate: form.licensePlate,
+        vehicleId: selectedVehicleId.value!,
         issueDescription: form.issueDescription,
+        isRecall: false,
+        totalPartsCost: totalPartsCost.value,
+        totalLaborCost: 0,
         serviceCenterName: "Trung tâm bảo hành AnhEmMotor",
         manufacturerClaimNumber: "",
         parts: partsPayload,
