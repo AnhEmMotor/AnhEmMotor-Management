@@ -274,6 +274,7 @@ import * as echarts from "echarts";
 import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
 import ReportPageHeader from "./ReportPageHeader.vue";
 import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
+import { statisticsApi } from "@/api/operations";
 
 const currentPeriod = ref<"today" | "month" | "year" | "custom">("month");
 const periodStart = ref(
@@ -299,29 +300,26 @@ const chartTextColor = "#aeb0bd";
 const chartAxisLineColor = "rgba(255, 255, 255, 0.16)";
 const chartGridLineColor = "rgba(255, 255, 255, 0.1)";
 
-const summaryData = {
+const summaryData = ref({
   totalInvoiced: 0,
   collectedCash: 0,
   pendingTransit: 0,
   canceledAmount: 0,
-};
+});
 
-// Dữ liệu biểu đồ Line (Offline vs Online)
-const trendData = [];
-
-const productData = [];
-
-const paymentData = [];
-
-const invoicesData = [];
+const trendData = ref<any[]>([]);
+const productData = ref<any[]>([]);
+const paymentData = ref<any[]>([]);
+const invoicesData = ref<any[]>([]);
+const isLoading = ref(false);
 
 const filteredInvoices = computed(() => {
-  if (!searchQuery.value) return invoicesData;
+  if (!searchQuery.value) return invoicesData.value;
   const q = searchQuery.value.toLowerCase();
-  return invoicesData.filter(
+  return invoicesData.value.filter(
     (i) =>
       i.id.toLowerCase().includes(q) ||
-      i.customerName.toLowerCase().includes(q),
+      i.details?.customerName?.toLowerCase().includes(q),
   );
 });
 
@@ -330,8 +328,24 @@ function openDetail(row: any) {
   drawerVisible.value = true;
 }
 
-function onPeriodChange() {
-  // TODO: Fetch real data here
+async function onPeriodChange() {
+  isLoading.value = true;
+  try {
+    const res = await statisticsApi.getInvoiceOverview(
+      periodStart.value,
+      periodEnd.value,
+    );
+    summaryData.value = res.kpi;
+    trendData.value = res.trendData;
+    productData.value = res.productData;
+    paymentData.value = res.paymentData;
+    invoicesData.value = res.invoicesData;
+    renderCharts();
+  } catch (error) {
+    console.error("Failed to load invoice overview", error);
+  } finally {
+    isLoading.value = false;
+  }
 }
 
 function renderCharts() {
@@ -352,7 +366,7 @@ function renderCharts() {
       },
       xAxis: {
         type: "category",
-        data: trendData.map((d) => d.day),
+        data: trendData.value.map((d) => d.day),
         axisLabel: { color: chartTextColor },
         axisLine: { lineStyle: { color: chartAxisLineColor } },
       },
@@ -366,7 +380,7 @@ function renderCharts() {
           name: "Offline (Tại quầy)",
           type: "line",
           smooth: true,
-          data: trendData.map((d) => d.offlineRev),
+          data: trendData.value.map((d) => d.offlineRev),
           itemStyle: { color: "#22c55e" }, // Xanh lục
           lineStyle: { color: "#22c55e", width: 3 },
         },
@@ -374,7 +388,7 @@ function renderCharts() {
           name: "Online (Web/App)",
           type: "line",
           smooth: true,
-          data: trendData.map((d) => d.onlineRev),
+          data: trendData.value.map((d) => d.onlineRev),
           itemStyle: { color: "#3b82f6" }, // Xanh dương
           lineStyle: { color: "#3b82f6", width: 3 },
         },
@@ -397,14 +411,14 @@ function renderCharts() {
       },
       yAxis: {
         type: "category",
-        data: productData.map((r) => r.name),
+        data: productData.value.map((r) => r.name),
         axisLabel: { color: chartTextColor },
         axisLine: { lineStyle: { color: chartAxisLineColor } },
       },
       series: [
         {
           type: "bar",
-          data: productData.map((r) => r.value),
+          data: productData.value.map((r) => r.value),
           itemStyle: { color: "#e84a4a", borderRadius: [0, 4, 4, 0] },
           barWidth: "40%",
         },
@@ -426,7 +440,7 @@ function renderCharts() {
           type: "pie",
           radius: ["40%", "60%"],
           center: ["50%", "45%"],
-          data: paymentData.map((d) => ({
+          data: paymentData.value.map((d) => ({
             name: d.name,
             value: d.value,
           })),
@@ -472,9 +486,7 @@ function handleResize() {
 }
 
 onMounted(() => {
-  setTimeout(() => {
-    renderCharts();
-  }, 100);
+  onPeriodChange();
   window.addEventListener("resize", handleResize);
 });
 

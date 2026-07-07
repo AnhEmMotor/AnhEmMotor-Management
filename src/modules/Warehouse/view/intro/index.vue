@@ -215,8 +215,8 @@ import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
   color: #d97706;
 }
 
-.icon- {
-  color:;
+.icon-amber {
+  color: #d97706;
   font-size: 18px;
 }
 

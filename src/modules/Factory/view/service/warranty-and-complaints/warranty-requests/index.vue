@@ -663,6 +663,7 @@ import {
   Edit,
   Delete,
   Check,
+  Flag,
 } from "@element-plus/icons-vue";
 import { WarrantyClaimApi } from "@/api/service/warranty-claim.api";
 import { VehicleApi } from "@/api/vehicle/vehicle.api";

@@ -501,7 +501,7 @@ function handleCreateRepairOrder() {
   );
 
   router.push({
-    name: "ServiceWorkshopRepairOrders",
+    name: "WorkshopRepair",
     query: {
       source: "vehicle-portfolio",
       licensePlate: plate || "",

@@ -212,8 +212,8 @@ import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
   color: #ea580c;
 }
 
-.icon- {
-  color:;
+.icon-orange {
+  color: #ea580c;
   font-size: 18px;
 }
 

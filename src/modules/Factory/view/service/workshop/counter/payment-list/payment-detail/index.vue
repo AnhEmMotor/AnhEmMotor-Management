@@ -189,7 +189,7 @@ const formatDateTime = (d?: string) => {
 };
 
 const goBack = () => {
-  router.push({ name: "ServiceWorkshopCounterPaymentList" });
+  router.push({ name: "CounterPaymentList" });
 };
 
 const fetchDetail = async () => {

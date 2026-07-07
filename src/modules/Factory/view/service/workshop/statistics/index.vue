@@ -112,11 +112,10 @@ import { statisticsApi } from "@/api/operations";
 import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
 import ArtBarChart from "@/components/core/charts/art-bar-chart/index.vue";
 import ArtLineChart from "@/components/core/charts/art-line-chart/index.vue";
-import dayjs from "dayjs";
 
 const loading = ref(false);
 const dateRange = ref<[Date, Date]>([
-  new Date(Date.now() - 30 * 24 * 3600 * 1000), // Last 30 days
+  new Date(Date.now() - 30 * 24 * 3600 * 1000),
   new Date(),
 ]);
 
@@ -139,7 +138,6 @@ const revenueTrend = ref<{ dates: string[]; amounts: number[] }>({
   amounts: [],
 });
 
-// Format VND Helper
 const formatVnd = (value: number): string => {
   return new Intl.NumberFormat("vi-VN", {
     style: "currency",
@@ -147,18 +145,15 @@ const formatVnd = (value: number): string => {
   }).format(value);
 };
 
-// Format Hours Helper
 const formatHours = (value: number): string => {
   if (!value) return "0h";
   return `${value.toFixed(1)}h`;
 };
 
-// Handle Date filter changes
 const handleDateRangeChange = () => {
   loadData();
 };
 
-// Load Stats from API
 const loadData = async () => {
   loading.value = true;
   try {
@@ -168,61 +163,8 @@ const loadData = async () => {
       .getWorkshopDashboardOverview(fromStr, toStr)
       .catch(() => null);
 
-    if (res) {
-      // res could be the DTO itself, or wrapped in a data property depending on the HTTP client interceptor
-      const data = (res as any).data || res;
-
-      // Extract Status Breakdown
-      const breakdowns = data.statusBreakdowns || data.StatusBreakdowns || [];
-      const getStatusCount = (statusName: string) => {
-        const item = breakdowns.find(
-          (b: any) => b.status === statusName || b.Status === statusName,
-        );
-        return item ? (item.statusCount ?? item.StatusCount ?? 0) : 0;
-      };
-
-      const inProgressCount =
-        getStatusCount("In-Progress") ||
-        getStatusCount("Đang sửa chữa") ||
-        getStatusCount("InProgress") ||
-        getStatusCount("In Progress");
-
-      const fin = data.financialSummary || data.FinancialSummary || {};
-      const sum = data.summaryCards || data.SummaryCards || {};
-
-      // Map KPI
-      kpiData.value = {
-        cumulativeRevenue: fin.totalRevenue ?? fin.TotalRevenue ?? 0,
-        inProgressCount: inProgressCount,
-        avgCompletionHours:
-          sum.avgCompletionHours ?? sum.AvgCompletionHours ?? 0,
-      };
-
-      // Map Status Counts for Bar Chart
-      statusCounts.value = {
-        pending:
-          getStatusCount("Pending") || getStatusCount("Chờ sửa chữa") || 0,
-        inProgress: inProgressCount,
-        qcPending:
-          getStatusCount("QC-Pending") || getStatusCount("Chờ nghiệm thu") || 0,
-        completed:
-          getStatusCount("Completed") || getStatusCount("Đã hoàn thành") || 0,
-        cancelled:
-          getStatusCount("Cancelled") || getStatusCount("Đã hủy phiếu") || 0,
-      };
-
-      // Map Daily Revenues for Line Chart
-      const dailyRevenues = data.dailyRevenues || data.DailyRevenues || [];
-      revenueTrend.value = {
-        dates: dailyRevenues.map((d: any) =>
-          dayjs(d.revenueDate || d.RevenueDate).format("DD/MM"),
-        ),
-        amounts: dailyRevenues.map(
-          (d: any) => d.dailyRevenue ?? d.DailyRevenue ?? 0,
-        ),
-      };
-    } else {
-      // Fallback
+    const data = res ? (res as any).data || res : null;
+    if (!data) {
       kpiData.value = {
         cumulativeRevenue: 0,
         inProgressCount: 0,
@@ -236,7 +178,47 @@ const loadData = async () => {
         cancelled: 0,
       };
       revenueTrend.value = { dates: [], amounts: [] };
+      return;
     }
+
+    const kpiCards = data.KpiCards || data.kpiCards || {};
+    kpiData.value = {
+      cumulativeRevenue:
+        kpiCards.CumulativeRevenue ?? kpiCards.cumulativeRevenue ?? 0,
+      inProgressCount:
+        kpiCards.InProgressCount ?? kpiCards.inProgressCount ?? 0,
+      avgCompletionHours:
+        kpiCards.AvgCompletionHours ?? kpiCards.avgCompletionHours ?? 0,
+    };
+
+    const revenueSources =
+      data.Analytics?.RevenueSources || data.analytics?.revenueSources || [];
+    if (revenueSources.length > 0) {
+      revenueTrend.value = {
+        dates: revenueSources.map((r: any) => r.Source || r.source || ""),
+        amounts: revenueSources.map((r: any) => r.Amount ?? r.amount ?? 0),
+      };
+    } else {
+      revenueTrend.value = { dates: [], amounts: [] };
+    }
+
+    const techRankings =
+      data.Productivity?.TechnicianRankings ||
+      data.productivity?.technicianRankings ||
+      [];
+    const totalCompleted = techRankings.reduce(
+      (sum: number, t: any) =>
+        sum + (t.CompletedTickets ?? t.completedTickets ?? 0),
+      0,
+    );
+
+    statusCounts.value = {
+      pending: 0,
+      inProgress: kpiData.value.inProgressCount,
+      qcPending: 0,
+      completed: totalCompleted,
+      cancelled: 0,
+    };
   } catch (err: any) {
     ElMessage.error(err?.message || "Không thể tải báo cáo thống kê");
   } finally {
