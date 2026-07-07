@@ -12,7 +12,7 @@ export const orderMenu: AppRouteRecord[] = [
       roles: ["Admin", "SuperAdmin"],
       permissions: ["Permissions.Order"],
     },
-    redirect: "/Order/management/list",
+    redirect: "/Order/management/draft",
     children: [
       {
         path: "management",
@@ -21,18 +21,8 @@ export const orderMenu: AppRouteRecord[] = [
           title: "Quản lý đơn hàng",
           icon: "ri:file-list-3-line",
         },
-        redirect: "/Order/management/list",
+        redirect: "/Order/management/draft",
         children: [
-          {
-            path: "list",
-            name: "OrderList",
-            component: "/Order/view/order/list/index",
-            meta: {
-              title: "Đơn đặt hàng Online",
-              icon: "ri:shopping-cart-line",
-              keepAlive: true,
-            },
-          },
           {
             path: "draft",
             name: "OrderDraft",

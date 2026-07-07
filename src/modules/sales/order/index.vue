@@ -579,7 +579,7 @@ const targetStatusId = ref("");
 const vehicleRequirements = ref<VehicleAssignmentRequirement | null>(null);
 const selectedVehicleIdsByOutputInfo = reactive<Record<number, number[]>>({});
 
-const searchForm = reactive({
+const searchForm = ref({
   search: "",
   statusId: "",
 });
@@ -754,12 +754,13 @@ async function fetchOrders() {
   loading.value = true;
   try {
     const filters: string[] = [];
-    if (searchForm.statusId) filters.push(`StatusId==${searchForm.statusId}`);
+    if (searchForm.value.statusId)
+      filters.push(`StatusId==${searchForm.value.statusId}`);
     const res = await SalesOrderApi.getConfirmedList({
       current: pagination.current,
       size: pagination.size,
       Filters: filters.join("|") || undefined,
-      Search: searchForm.search || undefined,
+      Search: searchForm.value.search || undefined,
       Sorts: "-CreatedAt",
     });
     orders.value = res.items || [];
@@ -775,8 +776,8 @@ function handleSearch() {
 }
 
 function handleReset() {
-  searchForm.search = "";
-  searchForm.statusId = "";
+  searchForm.value.search = "";
+  searchForm.value.statusId = "";
   handleSearch();
 }
 
