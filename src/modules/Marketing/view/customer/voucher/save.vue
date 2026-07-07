@@ -73,16 +73,16 @@
             </ElFormItem>
             <ElFormItem label="Phạm vi áp dụng" class="col-span-1">
               <ElRadioGroup v-model="form.applyFor" class="custom-radio-group">
-                <ElRadioButton label="ALL">Cả Xe & Phụ tùng</ElRadioButton>
-                <ElRadioButton label="VEHICLE">Chỉ Xe máy</ElRadioButton>
-                <ElRadioButton label="PART">Chỉ Phụ tùng</ElRadioButton>
+                <ElRadioButton value="ALL">Cả Xe & Phụ tùng</ElRadioButton>
+                <ElRadioButton value="VEHICLE">Chỉ Xe máy</ElRadioButton>
+                <ElRadioButton value="PART">Chỉ Phụ tùng</ElRadioButton>
               </ElRadioGroup>
             </ElFormItem>
             <ElFormItem label="Kênh áp dụng" class="col-span-1">
               <ElRadioGroup v-model="form.channel" class="custom-radio-group">
-                <ElRadioButton label="ALL">Tất cả</ElRadioButton>
-                <ElRadioButton label="STORE">Cửa hàng</ElRadioButton>
-                <ElRadioButton label="WEBSITE">Website</ElRadioButton>
+                <ElRadioButton value="ALL">Tất cả</ElRadioButton>
+                <ElRadioButton value="STORE">Cửa hàng</ElRadioButton>
+                <ElRadioButton value="WEBSITE">Website</ElRadioButton>
               </ElRadioGroup>
             </ElFormItem>
             <ElFormItem
@@ -168,13 +168,13 @@
                 v-model="form.type"
                 class="custom-radio-group w-full"
               >
-                <ElRadioButton label="PUBLIC" class="flex-1 text-center">
+                <ElRadioButton value="PUBLIC" class="flex-1 text-center">
                   <div class="flex items-center justify-center gap-2">
                     <ArtSvgIcon icon="ri:global-line" /> Công khai (Ai cũng dùng
                     được)
                   </div>
                 </ElRadioButton>
-                <ElRadioButton label="PRIVATE" class="flex-1 text-center">
+                <ElRadioButton value="PRIVATE" class="flex-1 text-center">
                   <div class="flex items-center justify-center gap-2">
                     <ArtSvgIcon icon="ri:user-star-line" /> Tri ân đặc biệt
                     (Dành cho KH cụ thể)

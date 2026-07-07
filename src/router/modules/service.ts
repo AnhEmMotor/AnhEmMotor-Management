@@ -5,7 +5,7 @@ export const serviceRoutes: AppRouteRecord = {
   name: "Service",
   component: "/index/index",
   meta: {
-    title: "Thống kê Xưởng",
+    title: "Xưởng sửa chữa",
     icon: "ri:bar-chart-grouped-line",
   },
   children: [

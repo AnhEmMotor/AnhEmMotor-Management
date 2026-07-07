@@ -124,6 +124,16 @@
           <div class="supplier-operation-cell">
             <ArtButtonTable type="view" @click="handleView(row)" />
             <ElButton
+              v-if="row.status === 'PendingApproval' || row.status === 'Draft'"
+              v-ripple
+              size="small"
+              type="success"
+              class="supplier-operation-button"
+              @click="handleApprove(row)"
+            >
+              Duyệt
+            </ElButton>
+            <ElButton
               v-ripple
               size="small"
               type="primary"
@@ -488,30 +498,57 @@ const searchItems = ref([
 ]);
 
 const columns = ref<ColumnOption[]>([
-  { label: "Nhà cung cấp", prop: "supplierName", minWidth: 160 },
+  { label: "Nhà cung cấp", prop: "supplierName", minWidth: 160, useSlot: true },
   { label: "Số hợp đồng", prop: "contractNumber", minWidth: 150 },
-  { label: "Giá trị", prop: "contractValue", width: 130, align: "right" },
-  { label: "Hạn mức nợ", prop: "creditLimit", width: 130, align: "right" },
-  { label: "Chiết khấu", prop: "discountRate", width: 100, align: "center" },
-  { label: "Trạng thái", prop: "status", width: 130, align: "center" },
+  {
+    label: "Giá trị",
+    prop: "contractValue",
+    width: 130,
+    align: "right",
+    useSlot: true,
+  },
+  {
+    label: "Hạn mức nợ",
+    prop: "creditLimit",
+    width: 130,
+    align: "right",
+    useSlot: true,
+  },
+  {
+    label: "Chiết khấu",
+    prop: "discountRate",
+    width: 100,
+    align: "center",
+    useSlot: true,
+  },
+  {
+    label: "Trạng thái",
+    prop: "status",
+    width: 130,
+    align: "center",
+    useSlot: true,
+  },
   {
     label: "Ngày hiệu lực",
     prop: "effectiveDate",
     width: 120,
     align: "center",
+    useSlot: true,
   },
   {
     label: "Ngày hết hạn",
     prop: "expirationDate",
     width: 120,
     align: "center",
+    useSlot: true,
   },
   {
     label: "Thao tác",
     prop: "operation",
-    width: 180,
+    width: 280,
     fixed: "right" as const,
     align: "center",
+    useSlot: true,
   },
 ]);
 const columnChecks = columns;
@@ -800,6 +837,25 @@ const handleDelete = async (row: SupplierContractDto) => {
   }
 };
 
+const handleApprove = async (row: SupplierContractDto) => {
+  try {
+    await ElMessageBox.confirm(
+      `Bạn có chắc chắn muốn duyệt hợp đồng "${row.contractNumber}"?`,
+      "Xác nhận duyệt",
+      { confirmButtonText: "Duyệt", cancelButtonText: "Hủy", type: "success" },
+    );
+    await usecases.updateStatus.execute(row.id, "Active");
+    ElMessage.success("Đã duyệt hợp đồng thành công.");
+    loadData();
+    loadStats();
+  } catch (error) {
+    if (error !== "cancel") {
+      console.error("Failed to approve:", error);
+      ElMessage.error("Không thể duyệt hợp đồng");
+    }
+  }
+};
+
 const handleCreateAddendum = () => {
   ElMessage.info("Tính năng tạo phụ lục đang được phát triển.");
 };
@@ -996,11 +1052,11 @@ onMounted(() => {
 }
 
 .supplier-operation-cell {
-  display: grid;
-  grid-template-columns: 32px repeat(2, 48px);
-  gap: 8px;
+  display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
+  flex-wrap: nowrap;
   width: 100%;
 }
 

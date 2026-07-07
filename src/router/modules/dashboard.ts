@@ -57,5 +57,16 @@ export const dashboardRoutes: AppRouteRecord = {
         permission: Permissions.Admin.DashboardManagement.View,
       },
     },
+    {
+      path: "admin-channels",
+      name: "AdminChannels",
+      component: "/Admin/view/dashboard/admin-channels",
+      meta: {
+        title: "Kênh Doanh thu",
+        icon: "ri:store-2-line",
+        keepAlive: false,
+        permission: Permissions.Admin.DashboardManagement.View,
+      },
+    },
   ],
 };

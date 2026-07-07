@@ -151,7 +151,12 @@
     </ElCard>
 
     <!-- DRAWER: CHI TIẾT HÓA ĐƠN -->
-    <ElDrawer v-model="drawerVisible" title="Chi tiết hóa đơn" size="400px">
+    <ElDrawer
+      v-model="drawerVisible"
+      title="Chi tiết hóa đơn"
+      size="400px"
+      append-to-body
+    >
       <template v-if="selectedInvoice">
         <div class="mb-6">
           <div class="flex items-center justify-between mb-2">
@@ -499,6 +504,8 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+@reference '@styles/core/tailwind.css';
+
 /* Optional styles to make the icons in the drawer header display block */
 .i-ri-motorbike-line,
 .i-ri-settings-4-line {

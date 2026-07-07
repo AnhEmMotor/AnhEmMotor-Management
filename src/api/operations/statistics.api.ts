@@ -91,6 +91,37 @@ export interface InvoiceOverviewResponse {
   }>;
 }
 
+export interface ContractOverviewResponse {
+  kpi: {
+    totalSalesCount: number;
+    totalSalesValue: number;
+    totalSupplierCount: number;
+    totalSupplierValue: number;
+  };
+  trendData: Array<{
+    day: string;
+    salesValue: number;
+    supplierValue: number;
+  }>;
+  statusData: Array<{
+    name: string;
+    value: number;
+  }>;
+  topSuppliersData: Array<{
+    name: string;
+    value: number;
+  }>;
+  contractsData: Array<{
+    id: string;
+    contractNumber: string;
+    type: string;
+    partnerName: string;
+    value: number;
+    status: string;
+    date: string;
+  }>;
+}
+
 export const statisticsApi = {
   getWorkshopOverview(period?: string, start?: string, end?: string) {
     const params: Record<string, string> = {};
@@ -108,6 +139,15 @@ export const statisticsApi = {
     if (endDate) params.endDate = endDate;
     return request.get<InvoiceOverviewResponse>({
       url: "/api/v1/Statistics/invoice-overview",
+      params: Object.keys(params).length ? params : undefined,
+    });
+  },
+  getContractOverview(startDate?: string, endDate?: string) {
+    const params: Record<string, string> = {};
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+    return request.get<ContractOverviewResponse>({
+      url: "/api/v1/Statistics/contract-overview",
       params: Object.keys(params).length ? params : undefined,
     });
   },

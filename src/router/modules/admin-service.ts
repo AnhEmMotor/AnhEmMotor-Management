@@ -6,18 +6,54 @@ export const adminServiceRoutes: AppRouteRecord = {
   name: "AdminService",
   component: "/index/index",
   meta: {
-    title: "Thống kê Xưởng",
+    title: "Xưởng sửa chữa",
     icon: "ri:bar-chart-grouped-line",
   },
   children: [
     {
       path: "service-dashboard",
       name: "AdminServiceDashboard",
-      component: "/Factory/view/service/workshop/dashboard/index",
+      component: "/Admin/view/service/workshop/dashboard/index",
       meta: {
-        title: "Dashboard xưởng",
+        title: "Thống kê xưởng",
         icon: "ri:dashboard-line",
         keepAlive: true,
+      },
+    },
+    {
+      path: "repair-history",
+      name: "AdminServiceRepairHistory",
+      component: "/Admin/view/service/workshop/repair-history/index",
+      meta: {
+        title: "Lịch sử sửa chữa xưởng",
+        icon: "ri:history-line",
+        keepAlive: true,
+      },
+    },
+    {
+      path: "repair-history/create",
+      name: "AdminServiceRepairHistoryCreate",
+      component:
+        "/Admin/view/service/workshop/repair-history/repair-order-form",
+      meta: {
+        title: "Lịch sử sửa chữa xưởng",
+        isHide: true,
+        isHideTab: true,
+        keepAlive: true,
+        activePath: "/admin/service/repair-history",
+      },
+    },
+    {
+      path: "repair-history/repair/:id",
+      name: "AdminServiceRepairHistoryDetail",
+      component:
+        "/Admin/view/service/workshop/repair-history/repair-order-detail",
+      meta: {
+        title: "Lịch sử sửa chữa xưởng",
+        isHide: true,
+        isHideTab: true,
+        keepAlive: true,
+        activePath: "/admin/service/repair-history",
       },
     },
     {
