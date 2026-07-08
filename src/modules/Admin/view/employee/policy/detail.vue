@@ -184,6 +184,81 @@
                 </ElSelect>
               </ElFormItem>
 
+              <template v-if="editForm.department === 'vehicle_sales'">
+                <ElFormItem label="Xe">
+                  <ElSelect
+                    v-model="editForm.productId"
+                    filterable
+                    remote
+                    clearable
+                    reserve-keyword
+                    class="w-full"
+                    placeholder="Chọn xe từ quản lý sản phẩm"
+                    :loading="vehicleOptionsLoading"
+                    :remote-method="handleVehicleSearch"
+                    @change="handleVehicleChange"
+                    @clear="clearVehicleSelection"
+                  >
+                    <ElOption
+                      v-for="vehicle in vehicleOptions"
+                      :key="vehicle.productId"
+                      :label="vehicle.label"
+                      :value="vehicle.productId"
+                    />
+                  </ElSelect>
+                </ElFormItem>
+
+                <ElFormItem label="Phiên bản xe">
+                  <ElSelect
+                    v-model="editForm.productVariantId"
+                    filterable
+                    clearable
+                    class="w-full"
+                    placeholder="Chọn phiên bản"
+                    :disabled="!editForm.productId"
+                    @change="handleVariantChange"
+                    @clear="clearVariantSelection"
+                  >
+                    <ElOption
+                      v-for="variant in variantOptions"
+                      :key="variant.id"
+                      :label="getVariantLabel(variant)"
+                      :value="variant.id"
+                    />
+                  </ElSelect>
+                </ElFormItem>
+
+                <ElFormItem label="Màu xe" class="md:col-span-2">
+                  <ElSelect
+                    v-model="editForm.productVariantColorId"
+                    filterable
+                    clearable
+                    class="w-full"
+                    placeholder="Chọn màu xe"
+                    :disabled="
+                      !editForm.productVariantId || colorOptions.length === 0
+                    "
+                    @change="handleColorChange"
+                    @clear="clearColorSelection"
+                  >
+                    <ElOption
+                      v-for="color in colorOptions"
+                      :key="color.id"
+                      :label="getColorLabel(color)"
+                      :value="color.id"
+                    >
+                      <div class="flex items-center gap-2">
+                        <span
+                          class="vehicle-color-swatch"
+                          :style="getColorSwatchStyle(color)"
+                        />
+                        <span>{{ getColorLabel(color) }}</span>
+                      </div>
+                    </ElOption>
+                  </ElSelect>
+                </ElFormItem>
+              </template>
+
               <ElFormItem
                 label="Đối tượng cụ thể (Ghi chú)"
                 class="md:col-span-2"
@@ -241,8 +316,15 @@
                       placeholder="Tối đa"
                     />
                   </ElFormItem>
-                  <ElFormItem label="Mức thưởng (VNĐ/xe)" class="!mb-0 flex-1">
-                    <ElInput v-model="tier.bonus" type="number" />
+                  <ElFormItem label="Mức thưởng" class="!mb-0 flex-1">
+                    <ElInput
+                      v-model="tier.bonus"
+                      inputmode="decimal"
+                      placeholder="Nhập tỷ lệ"
+                    />
+                    <template #suffix>
+                      <span class="text-xs text-gray-400">%</span>
+                    </template>
                   </ElFormItem>
                   <ElButton
                     v-if="isEditing"
@@ -398,9 +480,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { computed, ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { commissionPolicyApi } from "@/api/operations/commission-policy.api";
+import { ProductApi } from "@/api/product";
+import type { ProductVariantLiteForInput } from "@/domain/product/product.types";
 import { ElMessage, ElMessageBox } from "element-plus";
 import {
   Plus,
@@ -417,6 +501,16 @@ import {
 
 defineOptions({ name: "HRCommissionPolicyDetail" });
 
+type ProductVariantColorOption = NonNullable<
+  ProductVariantLiteForInput["colors"]
+>[number];
+
+interface VehicleOption {
+  productId: number;
+  label: string;
+  categoryId?: number | null;
+}
+
 const route = useRoute();
 const router = useRouter();
 
@@ -431,6 +525,13 @@ const editForm = ref<{
   department?: string;
   status?: string;
   target?: string;
+  productId?: number | null;
+  productVariantId?: number | null;
+  productVariantColorId?: number | null;
+  vehicleName?: string;
+  vehicleVariantName?: string;
+  vehicleColorName?: string;
+  vehicleColorCode?: string;
   startDate?: string;
   endDate?: string;
   basis?: string;
@@ -513,6 +614,206 @@ const allPolicies = ref([
   },
 ]);
 
+const vehicleVariants = ref<ProductVariantLiteForInput[]>([]);
+const vehicleOptionsLoading = ref(false);
+
+const vehicleKeywords = [
+  "xe",
+  "motor",
+  "motorcycle",
+  "scooter",
+  "honda",
+  "yamaha",
+  "suzuki",
+  "sym",
+  "piaggio",
+];
+
+const getVehicleDisplayName = (variant: ProductVariantLiteForInput) => {
+  const displayName = variant.displayName?.trim();
+  if (!displayName) return `Xe #${variant.productId || variant.id}`;
+
+  const strippedName = displayName.replace(/\s*\([^)]*\)\s*$/, "").trim();
+  return strippedName || displayName;
+};
+
+const isVehicleVariant = (variant: ProductVariantLiteForInput) => {
+  const managementType = variant.managementType?.toLowerCase();
+  if (managementType === "vin_number") return true;
+
+  const displayName = variant.displayName?.toLowerCase() || "";
+  return vehicleKeywords.some((keyword) => displayName.includes(keyword));
+};
+
+const vehicleOptions = computed<VehicleOption[]>(() => {
+  const vehicleItems = vehicleVariants.value.filter(isVehicleVariant);
+  const sourceItems =
+    vehicleItems.length > 0 ? vehicleItems : vehicleVariants.value;
+  const optionsByProductId = new Map<number, VehicleOption>();
+
+  sourceItems.forEach((variant) => {
+    const productId = Number(variant.productId);
+    if (!Number.isFinite(productId) || optionsByProductId.has(productId))
+      return;
+
+    optionsByProductId.set(productId, {
+      productId,
+      label: getVehicleDisplayName(variant),
+      categoryId: variant.categoryId ?? null,
+    });
+  });
+
+  return Array.from(optionsByProductId.values()).sort((a, b) =>
+    a.label.localeCompare(b.label, "vi"),
+  );
+});
+
+const variantOptions = computed(() => {
+  const productId = Number(editForm.value.productId);
+  if (!Number.isFinite(productId)) return [];
+  return vehicleVariants.value.filter(
+    (variant) => Number(variant.productId) === productId,
+  );
+});
+
+const selectedVariant = computed(() => {
+  const variantId = Number(editForm.value.productVariantId);
+  if (!Number.isFinite(variantId)) return null;
+  return (
+    variantOptions.value.find((variant) => Number(variant.id) === variantId) ||
+    null
+  );
+});
+
+const colorOptions = computed<ProductVariantColorOption[]>(() => {
+  return selectedVariant.value?.colors || [];
+});
+
+const getVariantLabel = (variant: ProductVariantLiteForInput) => {
+  const displayName = variant.displayName?.trim();
+  if (!displayName) return `Phiên bản #${variant.id}`;
+
+  const vehicleName = getVehicleDisplayName(variant);
+  const suffix = displayName.startsWith(vehicleName)
+    ? displayName.slice(vehicleName.length).trim()
+    : displayName;
+  const cleanSuffix = suffix.replace(/^\((.*)\)$/, "$1").trim();
+
+  return cleanSuffix || "Phiên bản mặc định";
+};
+
+const getColorLabel = (color: ProductVariantColorOption) => {
+  return color.colorName || color.colorCode || `Màu #${color.id}`;
+};
+
+const getColorSwatchStyle = (color: ProductVariantColorOption) => ({
+  backgroundColor: color.colorCode || "#ffffff",
+});
+
+const syncVehicleSelectionMetadata = () => {
+  const selectedVehicle = vehicleOptions.value.find(
+    (vehicle) => vehicle.productId === Number(editForm.value.productId),
+  );
+  const selectedColor = colorOptions.value.find(
+    (color) =>
+      Number(color.id) === Number(editForm.value.productVariantColorId),
+  );
+
+  editForm.value.vehicleName = selectedVehicle?.label || "";
+  editForm.value.vehicleVariantName = selectedVariant.value
+    ? getVariantLabel(selectedVariant.value)
+    : "";
+  editForm.value.vehicleColorName = selectedColor
+    ? getColorLabel(selectedColor)
+    : "";
+  editForm.value.vehicleColorCode = selectedColor?.colorCode || "";
+};
+
+const clearColorSelection = () => {
+  editForm.value.productVariantColorId = null;
+  editForm.value.vehicleColorName = "";
+  editForm.value.vehicleColorCode = "";
+};
+
+const clearVariantSelection = () => {
+  editForm.value.productVariantId = null;
+  editForm.value.vehicleVariantName = "";
+  clearColorSelection();
+};
+
+const clearVehicleSelection = () => {
+  editForm.value.productId = null;
+  editForm.value.vehicleName = "";
+  clearVariantSelection();
+};
+
+const handleVehicleChange = () => {
+  clearVariantSelection();
+
+  if (variantOptions.value.length === 1) {
+    const [firstVariant] = variantOptions.value;
+    editForm.value.productVariantId = firstVariant.id;
+
+    if (firstVariant.colors?.length === 1) {
+      editForm.value.productVariantColorId = firstVariant.colors[0].id;
+    }
+  }
+
+  syncVehicleSelectionMetadata();
+};
+
+const handleVariantChange = () => {
+  clearColorSelection();
+
+  if (colorOptions.value.length === 1) {
+    editForm.value.productVariantColorId = colorOptions.value[0].id;
+  }
+
+  syncVehicleSelectionMetadata();
+};
+
+const handleColorChange = () => {
+  syncVehicleSelectionMetadata();
+};
+
+const loadVehicleOptions = async (search = "") => {
+  vehicleOptionsLoading.value = true;
+  try {
+    const filters: string[] = [];
+    const keyword = search.trim();
+    if (keyword) {
+      filters.push(`search@=${keyword}`);
+    }
+
+    const res = await ProductApi.getVariantsForInput({
+      current: 1,
+      size: 100,
+      Filters: filters.join(",") || undefined,
+    });
+
+    vehicleVariants.value = res.items || [];
+    syncVehicleSelectionMetadata();
+  } catch (error) {
+    console.error("Failed to load vehicle options:", error);
+    ElMessage.error("Không thể tải danh sách xe từ quản lý sản phẩm");
+  } finally {
+    vehicleOptionsLoading.value = false;
+  }
+};
+
+const handleVehicleSearch = (query: string) => {
+  void loadVehicleOptions(query);
+};
+
+watch(
+  () => editForm.value.department,
+  (department) => {
+    if (department !== "vehicle_sales") {
+      clearVehicleSelection();
+    }
+  },
+);
+
 // Simulator state
 const simInput = ref(0);
 const simInputVal = ref("");
@@ -551,9 +852,13 @@ const mapBackendPolicy = (p: any) => {
     name: p.name,
     department: dept,
     status: p.isActive ? "active" : "expired",
+    productId: p.productId ?? null,
+    productVariantId: null,
+    productVariantColorId: null,
     startDate: p.effectiveDate?.split("T")[0] || "",
     endDate: "",
     target: p.targetGroup || "",
+    notes: p.notes || "",
     percentage: p.type === "Percentage" ? Number(p.value) : undefined,
     basis: "revenue",
     laborPercentage: dept === "mechanic" ? Number(p.value) : undefined,
@@ -570,6 +875,8 @@ const goBack = () => {
 };
 
 onMounted(async () => {
+  await loadVehicleOptions();
+
   const policyId = route.params.id;
   const dept = route.query.dept as string;
 
@@ -579,6 +886,9 @@ onMounted(async () => {
     editForm.value = {
       department: dept || "vehicle_sales",
       status: "pending",
+      productId: null,
+      productVariantId: null,
+      productVariantColorId: null,
       tiers: [
         { from: 1, to: 5, bonus: 500000 },
         { from: 6, to: 999, bonus: 900000 },
@@ -588,6 +898,7 @@ onMounted(async () => {
       partsPercentage: 0,
       basis: "revenue",
     };
+    syncVehicleSelectionMetadata();
     enableTiers.value = true;
   } else {
     try {
@@ -595,6 +906,7 @@ onMounted(async () => {
       if (res) {
         const policy = mapBackendPolicy(res);
         editForm.value = JSON.parse(JSON.stringify(policy));
+        syncVehicleSelectionMetadata();
         enableTiers.value = !!(
           editForm.value.tiers && editForm.value.tiers.length > 0
         );
@@ -616,6 +928,7 @@ const handleClonePolicy = (id: number) => {
       name: policyToClone.name + " (Bản sao)",
       status: "pending",
     };
+    syncVehicleSelectionMetadata();
     enableTiers.value = !!(
       editForm.value.tiers && editForm.value.tiers.length > 0
     );
@@ -779,6 +1092,14 @@ const runSimulation = () => {
 <style scoped lang="scss">
 .policy-detail-page {
   // Styles for the new page
+}
+
+.vehicle-color-swatch {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
 }
 
 .simulator-input :deep(.el-input__wrapper),
