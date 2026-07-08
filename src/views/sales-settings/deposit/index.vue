@@ -72,10 +72,7 @@
           />
           <small>{{ formatCurrency(sampleOrderTotal) }}</small>
         </div>
-        <div class="preview-item">
-          <span>Ngưỡng hiện tại</span>
-          <strong>{{ formatCurrency(form.orderThreshold) }}</strong>
-        </div>
+
         <div class="preview-item highlight">
           <span>Số tiền cần đặt cọc</span>
           <strong>{{ formatCurrency(sampleDeposit) }}</strong>
@@ -198,7 +195,7 @@ onMounted(loadSettings);
 
 .preview-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 

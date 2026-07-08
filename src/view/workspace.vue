@@ -195,7 +195,7 @@ const workspaces = computed(() =>
       color: "#7c3aed",
       shadowColor: "rgba(124, 58, 237, 0.15)",
       hasAccess: hasAuth(Permissions.Order.Module),
-      path: "/Order/intro",
+      path: "/Order/management/draft",
     },
   ].filter((workspace) => workspace.hasAccess),
 );
