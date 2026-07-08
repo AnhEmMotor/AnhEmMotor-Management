@@ -62,11 +62,6 @@
                       >{{ order.trackingNumber }}</span
                     >
                   </div>
-                  <div
-                    class="bg-gray-100 text-gray-700 text-[10px] font-bold px-2 py-1 rounded-md border border-gray-200"
-                  >
-                    {{ order.daysInTransit }} ngày
-                  </div>
                 </div>
 
                 <div class="text-sm mt-3 pt-2 border-t border-gray-50">

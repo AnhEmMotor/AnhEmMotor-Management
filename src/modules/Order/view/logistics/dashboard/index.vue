@@ -1,17 +1,5 @@
 <template>
   <div class="fulfillment-container p-4">
-    <div class="flex items-center gap-3 flex-wrap mb-4">
-      <ElButton
-        v-for="t in ranges"
-        :key="t.value"
-        :type="t.value === range ? 'primary' : 'default'"
-        size="small"
-        @click="handleChangeRange(t.value)"
-      >
-        {{ t.label }}
-      </ElButton>
-    </div>
-
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
       <ArtStatsCard
         :title="$t('logistics.dashboard.fulfillmentWorkload')"
@@ -27,18 +15,6 @@
         :count="formatMoney(dashboard.summary.pendingUnreconciledCod)"
         icon="ri:bank-card-line"
         iconStyle="bg-info"
-      />
-      <ArtStatsCard
-        :title="$t('logistics.dashboard.otifRate')"
-        :count="`${(dashboard.summary.otifRate * 100).toFixed(1)}%`"
-        icon="ri:time-line"
-        iconStyle="bg-success"
-      />
-      <ArtStatsCard
-        :title="$t('logistics.dashboard.returnsClaimsRatio')"
-        :count="`${(dashboard.summary.returnsClaimsRate * 100).toFixed(1)}%`"
-        icon="ri:arrow-go-back-line"
-        iconStyle="bg-danger"
       />
     </div>
 
@@ -58,50 +34,6 @@
 
       <!-- Filters Form -->
       <div class="flex items-center gap-4 flex-wrap">
-        <!-- Date range -->
-        <div class="flex items-center">
-          <span class="text-sm font-medium mr-2 text-gray-700">Thời gian:</span>
-          <el-date-picker
-            v-model="filterParams.dateRange"
-            type="daterange"
-            range-separator="Tới"
-            start-placeholder="Từ ngày"
-            end-placeholder="Đến ngày"
-            value-format="YYYY-MM-DD"
-            size="default"
-            style="width: 260px"
-            @change="fetchOrders"
-          />
-        </div>
-
-        <!-- Carrier -->
-        <div class="flex items-center">
-          <span class="text-sm font-medium mr-2 text-gray-700">Đối tác:</span>
-          <el-select
-            v-model="filterParams.carrier"
-            clearable
-            placeholder="Tất cả đối tác"
-            style="width: 160px"
-            @change="fetchOrders"
-          >
-            <el-option label="Giao Hàng Tiết Kiệm" value="GHTK" />
-            <el-option label="Giao Hàng Nhanh" value="GHN" />
-            <el-option label="Viettel Post" value="ViettelPost" />
-            <el-option label="Đội xe nội bộ" value="Internal" />
-          </el-select>
-        </div>
-
-        <!-- Province/City -->
-        <div class="flex items-center">
-          <span class="text-sm font-medium mr-2 text-gray-700">Khu vực:</span>
-          <el-input
-            v-model="filterParams.region"
-            clearable
-            placeholder="Tỉnh / Thành phố..."
-            style="width: 180px"
-          />
-        </div>
-
         <!-- Status -->
         <div class="flex items-center">
           <span class="text-sm font-medium mr-2 text-gray-700"
@@ -114,11 +46,12 @@
             style="width: 180px"
             @change="fetchOrders"
           >
-            <el-option label="Chờ nhặt hàng" :value="0" />
-            <el-option label="Đang đóng gói" :value="1" />
-            <el-option label="Đang giao hàng" :value="2" />
-            <el-option label="Đã hoàn thành" :value="3" />
-            <el-option label="Đã trả hàng" :value="4" />
+            <el-option
+              v-for="st in deliveryStatuses"
+              :key="st.id"
+              :label="st.nameVi"
+              :value="st.id"
+            />
           </el-select>
         </div>
 
@@ -140,6 +73,13 @@
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
+        <!-- Status Slot -->
+        <template #status="{ row }">
+          <el-tag :type="getStatusTagType(row.status)" size="small">
+            {{ getStatusLabel(row.status) }}
+          </el-tag>
+        </template>
+
         <!-- Tracking Number Slot -->
         <template #trackingNumber="{ row }">
           <el-tag
@@ -206,36 +146,31 @@
           <div
             class="flex items-center justify-between flex-wrap gap-4 border-b pb-4 border-gray-100"
           >
-            <div>
-              <div class="text-sm text-gray-500 mb-1">
-                {{ t("logistics.fulfillment.orderId") }}:
-                <strong class="text-black font-mono"
-                  >#{{ detailData.id }}</strong
-                >
-              </div>
-              <div class="text-sm">
-                {{ t("logistics.fulfillment.originalOrder") }}:
-                <strong class="text-primary font-mono">{{
-                  detailData.originalOrderCode
-                }}</strong>
-              </div>
-            </div>
-            <div class="flex-1 max-w-md">
+            <div class="w-full">
               <el-steps
                 :active="currentStep"
-                finish-status="success"
+                :finish-status="detailData.status === 2 ? 'error' : 'success'"
                 align-center
                 size="small"
               >
-                <el-step :title="t('logistics.fulfillment.status.pending')" />
-                <el-step :title="t('logistics.fulfillment.status.packing')" />
-                <el-step :title="t('logistics.fulfillment.status.shipping')" />
-                <el-step :title="t('logistics.fulfillment.status.completed')" />
+                <el-step title="Đang giao hàng" />
+                <el-step
+                  :title="
+                    detailData.status === 2 ? 'Bị hoàn trả' : 'Đã hoàn thành'
+                  "
+                />
               </el-steps>
             </div>
           </div>
 
           <!-- Alerts inside Drawer -->
+          <el-alert
+            v-if="detailData.status === 2"
+            title="Đơn hàng này đã bị hoàn trả / hủy giao hàng từ đối tác."
+            type="error"
+            show-icon
+            :closable="false"
+          />
           <el-alert
             v-if="hasRestrictedItems"
             :title="t('logistics.fulfillment.alerts.restricted')"
@@ -252,15 +187,13 @@
           />
 
           <!-- Multi-column Layout inside Drawer -->
-          <el-row :gutter="20">
+          <div class="flex flex-col gap-6">
             <!-- Left side: Picking Checklist -->
-            <el-col :span="13">
+            <div>
               <el-card shadow="never">
                 <template #header>
                   <div class="flex justify-between items-center">
-                    <span class="font-bold">{{
-                      t("logistics.fulfillment.pickingList")
-                    }}</span>
+                    <span class="font-bold">Danh sách sản phẩm</span>
                     <el-tag type="info" size="small"
                       >{{ detailData.items.length }} sản phẩm</el-tag
                     >
@@ -273,18 +206,7 @@
                   style="width: 100%"
                   size="small"
                 >
-                  <el-table-column width="50" align="center">
-                    <template #default="scope">
-                      <el-checkbox
-                        v-model="scope.row.isPicked"
-                        @change="
-                          (val) =>
-                            handleTogglePick(scope.row.id, val as boolean)
-                        "
-                        :disabled="detailData.status >= 1"
-                      />
-                    </template>
-                  </el-table-column>
+                  <!-- Removed Checkbox Column -->
 
                   <el-table-column
                     :label="t('logistics.fulfillment.table.image')"
@@ -330,21 +252,7 @@
                     </template>
                   </el-table-column>
 
-                  <el-table-column
-                    :label="t('logistics.fulfillment.table.shelf')"
-                    width="90"
-                    align="center"
-                  >
-                    <template #default="scope">
-                      <el-tag
-                        effect="dark"
-                        type="success"
-                        size="small"
-                        class="font-mono"
-                        >{{ scope.row.shelfLocation }}</el-tag
-                      >
-                    </template>
-                  </el-table-column>
+                  <!-- Removed Shelf Location Column -->
 
                   <el-table-column
                     :label="t('logistics.fulfillment.table.qty')"
@@ -365,30 +273,13 @@
                     </template>
                   </el-table-column>
 
-                  <el-table-column
-                    :label="t('logistics.fulfillment.table.picked')"
-                    width="80"
-                    align="center"
-                  >
-                    <template #default="scope">
-                      <el-tag
-                        v-if="scope.row.isPicked"
-                        type="success"
-                        size="small"
-                        effect="plain"
-                        >Đã nhặt</el-tag
-                      >
-                      <el-tag v-else type="info" size="small" effect="plain"
-                        >Chờ</el-tag
-                      >
-                    </template>
-                  </el-table-column>
+                  <!-- Removed Picked Status Column -->
                 </el-table>
               </el-card>
-            </el-col>
+            </div>
 
             <!-- Right side: Customer Info & Timeline -->
-            <el-col :span="11">
+            <div>
               <div class="flex flex-col gap-4">
                 <!-- Dispatch Panel -->
                 <el-card shadow="never">
@@ -448,140 +339,10 @@
                       }}</span>
                     </div>
                   </div>
-
-                  <el-divider class="my-3" />
-
-                  <!-- Carrier Partner config -->
-                  <div class="mb-4">
-                    <h4
-                      class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
-                    >
-                      {{ t("logistics.fulfillment.carrier") }}
-                    </h4>
-                    <el-select
-                      v-model="detailData.carrier"
-                      class="w-full mb-3"
-                      size="small"
-                      :disabled="detailData.status >= 2"
-                      placeholder="Chọn nhà vận chuyển"
-                    >
-                      <el-option label="Giao Hàng Tiết Kiệm" value="GHTK" />
-                      <el-option label="Viettel Post" value="ViettelPost" />
-                      <el-option label="Giao Hàng Nhanh" value="GHN" />
-                      <el-option
-                        label="Đội xe nội bộ (Tự giao)"
-                        value="Internal"
-                      />
-                    </el-select>
-
-                    <h4
-                      class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
-                    >
-                      {{ t("logistics.fulfillment.trackingCode") }}
-                    </h4>
-                    <el-input
-                      v-model="detailData.trackingNumber"
-                      size="small"
-                      :placeholder="t('logistics.fulfillment.inputTracking')"
-                      :disabled="detailData.status >= 2"
-                    >
-                      <template #append>
-                        <el-button
-                          icon="Check"
-                          @click="handleUpdateTracking"
-                          :disabled="detailData.status >= 2"
-                        />
-                      </template>
-                    </el-input>
-                  </div>
-
-                  <!-- Action Buttons -->
-                  <div class="mt-4 flex flex-col gap-2">
-                    <el-button
-                      v-if="detailData.status === 0"
-                      type="primary"
-                      size="default"
-                      class="w-full font-bold"
-                      @click="handleUpdateStatus(1)"
-                    >
-                      {{ t("logistics.fulfillment.actions.startPacking") }}
-                    </el-button>
-
-                    <el-button
-                      v-if="detailData.status === 1"
-                      type="success"
-                      size="default"
-                      class="w-full font-bold"
-                      @click="handleUpdateStatus(2)"
-                    >
-                      {{ t("logistics.fulfillment.actions.exportWarehouse") }}
-                    </el-button>
-
-                    <el-button
-                      v-if="detailData.status === 2"
-                      type="primary"
-                      size="default"
-                      plain
-                      class="w-full font-bold"
-                      @click="handleUpdateStatus(3)"
-                    >
-                      {{ t("logistics.fulfillment.actions.markCompleted") }}
-                    </el-button>
-                  </div>
-
-                  <el-alert
-                    v-if="!isAllPicked && detailData.status === 0"
-                    :title="t('logistics.fulfillment.alerts.pickingIncomplete')"
-                    type="info"
-                    show-icon
-                    :closable="false"
-                    class="mt-3"
-                  />
-                </el-card>
-
-                <!-- Milestone Journey Timeline -->
-                <el-card
-                  v-if="detailData.trackingNumber"
-                  shadow="never"
-                  class="timeline-card"
-                >
-                  <template #header>
-                    <div class="flex items-center gap-1.5 font-bold">
-                      <el-icon class="text-blue-500"><Calendar /></el-icon>
-                      <span>{{ t("logistics.tracking.timelineTitle") }}</span>
-                    </div>
-                  </template>
-
-                  <div v-loading="loadingTracking" class="min-h-24">
-                    <div v-if="sortedMilestones.length > 0" class="p-1">
-                      <el-timeline class="tracking-timeline-dense">
-                        <el-timeline-item
-                          v-for="(milestone, idx) in sortedMilestones"
-                          :key="idx"
-                          :timestamp="formatDate(milestone.timestamp)"
-                          :color="milestone.isCurrent ? '#409eff' : '#909399'"
-                          :size="milestone.isCurrent ? 'large' : 'normal'"
-                        >
-                          <div class="font-semibold text-xs text-gray-800">
-                            {{ milestone.location }}
-                          </div>
-                          <div class="text-[11px] text-gray-500 mt-0.5">
-                            {{ milestone.description }}
-                          </div>
-                        </el-timeline-item>
-                      </el-timeline>
-                    </div>
-                    <div
-                      v-else
-                      class="text-center py-6 text-xs text-gray-400 italic"
-                    >
-                      Chưa phát sinh lịch trình vận chuyển từ đối tác 3PL
-                    </div>
-                  </div>
                 </el-card>
               </div>
-            </el-col>
-          </el-row>
+            </div>
+          </div>
         </div>
       </div>
     </el-drawer>
@@ -607,7 +368,9 @@ import {
   updateParcelStatus,
   updateTrackingNumber,
   toggleItemPick,
+  getDeliveryStatuses,
 } from "@/api/logistics/fulfillment";
+import type { DeliveryStatusDto } from "@/api/logistics/fulfillment";
 import { getShipmentTracking } from "@/api/logistics/tracking";
 
 import type { FulfillmentDetailResponse } from "@/api/logistics/fulfillment";
@@ -620,13 +383,24 @@ defineOptions({ name: "LogisticsDashboard" });
 
 const { t } = useI18n();
 
+const deliveryStatuses = ref<DeliveryStatusDto[]>([]);
+
+onMounted(async () => {
+  try {
+    const res = await getDeliveryStatuses();
+    deliveryStatuses.value = (res as any).data || res || [];
+  } catch (error) {
+    console.error("Failed to fetch delivery statuses", error);
+  }
+});
+
 // Filters & State
 const loading = ref(false);
 const filterParams = ref({
   dateRange: [] as any[],
   carrier: "",
   region: "",
-  status: 3, // Default to Completed (3)
+  status: null as number | null,
 });
 
 const orderList = ref<FulfillmentDetailResponse[]>([]);
@@ -721,6 +495,12 @@ const columns = computed(() => [
     minWidth: 150,
     useSlot: true,
   },
+  {
+    label: "Trạng thái",
+    prop: "status",
+    minWidth: 130,
+    useSlot: true,
+  },
   { label: "Khách hàng", prop: "customerName", minWidth: 150 },
   { label: "Số điện thoại", prop: "customerPhone", minWidth: 120 },
   { label: "COD thu hộ", prop: "codAmount", minWidth: 130, useSlot: true },
@@ -758,7 +538,7 @@ const trackingData = ref<TrackingResponse | null>(null);
 const loadingTracking = ref(false);
 
 const currentStep = computed(() => {
-  if (detailData.value.status === 4) return 4;
+  if (detailData.value.deliveredAt) return 2;
   return detailData.value.status;
 });
 
@@ -824,7 +604,7 @@ const resetFilters = () => {
     dateRange: [],
     carrier: "",
     region: "",
-    status: 3,
+    status: null,
   };
   pagination.value.current = 1;
   void fetchOrders();
@@ -941,6 +721,23 @@ const getCarrierTagType = (carrier: string) => {
       return "primary";
     default:
       return "info";
+  }
+};
+
+const getStatusLabel = (status: number) => {
+  const st = deliveryStatuses.value.find((x) => x.id === status);
+  return st ? st.nameVi : "Không rõ";
+};
+
+const getStatusTagType = (status: number) => {
+  switch (status) {
+    case 1:
+      return "success";
+    case 2:
+      return "danger";
+    case 0:
+    default:
+      return "warning";
   }
 };
 
