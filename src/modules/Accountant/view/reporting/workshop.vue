@@ -63,7 +63,7 @@
     <ElCard class="reporting-card mt-4">
       <template #header>Phiếu sửa chữa đang thực hiện</template>
       <ElTable
-        :data="repairOrders"
+        :data="paginatedRepairOrders"
         class="reporting-table"
         v-loading="loading"
         empty-text="Không có phiếu sửa chữa đang thực hiện"
@@ -94,12 +94,23 @@
           }}</template>
         </ElTableColumn>
       </ElTable>
+
+      <div class="flex justify-end mt-4">
+        <ElPagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :page-sizes="[10, 20, 50, 100]"
+          :total="repairOrders.length"
+          layout="total, sizes, prev, pager, next, jumper"
+          background
+        />
+      </div>
     </ElCard>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { statisticsApi } from "@/api/operations";
 import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
 import ArtBarChart from "@/components/core/charts/art-bar-chart/index.vue";
@@ -134,6 +145,14 @@ const repairOrders = ref<
     laborFee: number;
   }>
 >([]);
+
+const currentPage = ref(1);
+const pageSize = ref(10);
+
+const paginatedRepairOrders = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  return repairOrders.value.slice(start, start + pageSize.value);
+});
 
 function onPeriodChange() {
   // TODO: Pass period params to API when backend supports it

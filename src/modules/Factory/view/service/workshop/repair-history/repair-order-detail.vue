@@ -985,8 +985,8 @@ const loadOrderDetail = async () => {
 
       // Load details into local working state
       localServices.value = (order.value.details || [])
-        .filter((d) => d.type === "Service")
-        .map((d) => ({
+        .filter((d: any) => d.type === "Service")
+        .map((d: any) => ({
           serviceId: d.serviceId,
           serviceName: d.serviceName,
           laborCost: d.laborCost,
@@ -994,8 +994,8 @@ const loadOrderDetail = async () => {
         }));
 
       localParts.value = (order.value.details || [])
-        .filter((d) => d.type === "Part")
-        .map((d) => ({
+        .filter((d: any) => d.type === "Part")
+        .map((d: any) => ({
           productVariantId: d.productVariantId,
           variantName: d.variantName,
           price: d.price,

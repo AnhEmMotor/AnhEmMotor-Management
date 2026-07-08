@@ -23,8 +23,8 @@
             >
           </div>
         </template>
-        <div class="w-full flex items-center justify-center min-h-[140px]">
-          <div ref="debtChartRef" class="w-full h-[140px]"></div>
+        <div class="w-full flex items-center justify-center min-h-[200px]">
+          <div ref="debtChartRef" class="w-full h-[200px]"></div>
         </div>
       </ElCard>
     </div>
@@ -38,6 +38,17 @@
             </h4>
           </div>
           <div class="flex gap-2">
+            <ElDatePicker
+              v-model="dateRange"
+              type="daterange"
+              range-separator="-"
+              start-placeholder="Từ ngày"
+              end-placeholder="Đến ngày"
+              size="small"
+              value-format="YYYY-MM-DD"
+              @change="onDateFilterChange"
+              style="width: 220px"
+            />
             <ElButton type="warning" size="small" @click="openMissingProofs">
               Nợ thiếu ảnh minh chứng
             </ElButton>
@@ -348,6 +359,13 @@ defineOptions({ name: "InventoryDebt" });
 
 const supplierDebts = ref<any[]>([]);
 
+const dateRange = ref<[string, string] | null>(null);
+
+const onDateFilterChange = () => {
+  currentPage.value = 1;
+  fetchSupplierDebts();
+};
+
 const supplierColumns = [
   { label: "Nhà cung cấp", prop: "name", minWidth: 200 },
   {
@@ -375,10 +393,15 @@ const supplierColumns = [
 const fetchSupplierDebts = async () => {
   loading.value = true;
   try {
-    const res = await DebtApi.getSuppliersWithDebt({
+    const params: any = {
       pageIndex: currentPage.value,
       pageSize: pageSize.value,
-    });
+    };
+    if (dateRange.value && dateRange.value.length === 2) {
+      params.startDate = dateRange.value[0];
+      params.endDate = dateRange.value[1];
+    }
+    const res = await DebtApi.getSuppliersWithDebt(params);
     if (res && res.items && res.items.length > 0) {
       supplierDebts.value = res.items;
       total.value = res.totalCount || 0;
@@ -693,7 +716,7 @@ const updateChart = () => {
       left: "5%",
       top: "center",
       textStyle: {
-        fontSize: 11,
+        fontSize: 13,
         color: "#4b5563",
       },
       itemWidth: 10,
@@ -706,7 +729,7 @@ const updateChart = () => {
       {
         name: "Công nợ",
         type: "pie",
-        radius: ["50%", "85%"],
+        radius: ["40%", "75%"],
         center: ["65%", "50%"],
         avoidLabelOverlap: false,
         itemStyle: {
@@ -721,7 +744,7 @@ const updateChart = () => {
         emphasis: {
           label: {
             show: true,
-            fontSize: 12,
+            fontSize: 14,
             fontWeight: "bold",
           },
         },
@@ -731,7 +754,18 @@ const updateChart = () => {
         data: chartData,
       },
     ],
-    color: ["#e84a4a", "#ff6b6b", "#c53a3a", "#fca5a5", "#f87171"],
+    color: [
+      "#3b82f6",
+      "#22c55e",
+      "#f59e0b",
+      "#ef4444",
+      "#8b5cf6",
+      "#06b6d4",
+      "#ec4899",
+      "#14b8a6",
+      "#f97316",
+      "#6366f1",
+    ],
   });
 };
 
@@ -759,5 +793,14 @@ onUnmounted(() => {
 
 .bg-primary {
   background-color: var(--main-color);
+}
+
+:deep(.el-table) {
+  font-size: 14px;
+}
+
+:deep(.el-table th.el-table__cell) {
+  font-size: 14px;
+  font-weight: 600;
 }
 </style>

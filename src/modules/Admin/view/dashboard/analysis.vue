@@ -1,6 +1,6 @@
 <template>
   <div>
-    <CRMLayout :breadcrumb="breadcrumb" class="user">
+    <div class="user">
       <div class="admin-dashboard">
         <div class="art-card">
           <div class="mb-6 flex justify-between items-center flex-wrap gap-4">
@@ -73,102 +73,84 @@
             <h3 class="font-bold text-gray-800 dark:text-gray-100 mb-4">
               Chi tiết theo kênh
             </h3>
-            <ElTable :data="tableData" stripe>
-              <ElTableColumn prop="name" label="Kênh" min-width="180" />
+            <ElTable :data="paginatedTableData" stripe class="w-full">
+              <ElTableColumn prop="name" label="Kênh" min-width="150" />
               <ElTableColumn
                 prop="visits"
                 label="Lượt truy cập"
-                width="150"
+                min-width="130"
                 align="right"
               />
               <ElTableColumn
                 prop="orders"
                 label="Số đơn"
-                width="130"
+                min-width="110"
                 align="right"
               />
               <ElTableColumn
-                prop="amount"
-                label="Doanh thu"
-                width="190"
-                align="right"
-              >
-                <template #default="scope">{{
-                  formatCurrency(scope.row.amount)
-                }}</template>
-              </ElTableColumn>
-              <ElTableColumn
-                prop="changePercent"
-                label="% thay đổi"
-                width="150"
+                prop="conversionRate"
+                label="Tỉ lệ chuyển đổi"
+                min-width="140"
                 align="right"
               >
                 <template #default="scope">
-                  <span
-                    :class="
-                      scope.row.changePercent >= 0
-                        ? 'text-green-600'
-                        : 'text-red-600'
-                    "
-                  >
-                    {{ scope.row.changePercent >= 0 ? "▲" : "▼" }}
-                    {{ Math.abs(scope.row.changePercent) }}%
-                  </span>
+                  <span class="font-medium text-gray-700">{{
+                    formatPercent(scope.row.conversionRate)
+                  }}</span>
                 </template>
               </ElTableColumn>
               <ElTableColumn
-                prop="revenue"
-                label="Revenue"
-                width="180"
+                prop="amount"
+                label="Doanh thu"
+                min-width="150"
                 align="right"
               >
-                <template #default="scope">{{
-                  formatCurrency(scope.row.revenue)
-                }}</template>
+                <template #default="scope">
+                  <span class="font-bold text-blue-600">{{
+                    formatCurrency(scope.row.amount)
+                  }}</span>
+                </template>
               </ElTableColumn>
               <ElTableColumn
-                prop="customers"
-                label="Customers"
-                width="140"
-                align="right"
-              />
-              <ElTableColumn
-                prop="orders_COUNT"
-                label="Orders"
-                width="130"
-                align="right"
-              />
-              <ElTableColumn
-                prop="newCustomers"
-                label="New Customers"
-                width="160"
-                align="right"
-              />
-              <ElTableColumn
-                prop="avgOrderValue"
-                label="Avg Order Value"
-                width="170"
+                prop="changePercent"
+                label="Xu hướng (Tăng trưởng)"
+                min-width="180"
                 align="right"
               >
-                <template #default="scope">{{
-                  formatCurrency(scope.row.avgOrderValue)
-                }}</template>
-              </ElTableColumn>
-              <ElTableColumn
-                prop="conversionRate"
-                label="Conversion %"
-                width="150"
-                align="right"
-              >
-                <template #default="scope">{{
-                  formatPercent(scope.row.conversionRate)
-                }}</template>
+                <template #default="scope">
+                  <ElTag
+                    :type="scope.row.changePercent >= 0 ? 'success' : 'danger'"
+                    effect="light"
+                    round
+                    size="small"
+                  >
+                    <i
+                      :class="
+                        scope.row.changePercent >= 0
+                          ? 'ri-arrow-up-line'
+                          : 'ri-arrow-down-line'
+                      "
+                    ></i>
+                    {{ Math.abs(scope.row.changePercent).toFixed(1) }}%
+                  </ElTag>
+                </template>
               </ElTableColumn>
             </ElTable>
+
+            <div class="flex justify-end mt-4">
+              <ElPagination
+                v-model:current-page="currentPage"
+                v-model:page-size="pageSize"
+                :page-sizes="[10, 20, 50]"
+                :total="tableData.length"
+                layout="total, sizes, prev, pager, next, jumper"
+                background
+              />
+            </div>
           </div>
         </div>
       </div>
-    </CRMLayout>
+    </div>
   </div>
 </template>
 
@@ -183,8 +165,10 @@ import {
   ElCol,
   ElTable,
   ElTableColumn,
+  ElPagination,
+  ElTag,
 } from "element-plus";
-import { CRMLayout } from "@/layout";
+import { computed } from "vue";
 import CardList from "./card-list.vue";
 import { fetchDailyCategoryRevenue } from "@/api/dashboard.api";
 import { AnalyticsService } from "@/services/analytics.service";
@@ -215,6 +199,14 @@ const barChartRef = ref<HTMLElement | null>(null);
 let lineChart: echarts.ECharts | null = null;
 let barChart: echarts.ECharts | null = null;
 let lineResize: (() => void) | null = null;
+
+const currentPage = ref(1);
+const pageSize = ref(10);
+
+const paginatedTableData = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  return tableData.value.slice(start, start + pageSize.value);
+});
 
 const isFuture = (date: Date) => {
   const today = new Date();
@@ -329,14 +321,23 @@ async function loadCharts() {
 
     lineChart.setOption({
       tooltip: { trigger: "axis" },
-      legend: { data: categories, bottom: 0, textStyle: { color: "#9ca3af" } },
-      grid: { left: 10, right: 10, bottom: 50, top: 10, containLabel: true },
+      legend: {
+        data: categories,
+        bottom: 0,
+        textStyle: { color: "#4b5563", fontSize: 13, fontWeight: "bold" },
+      },
+      grid: { left: 10, right: 10, bottom: 40, top: 10, containLabel: true },
       xAxis: {
         type: "category",
         data: dayKeys,
-        axisLabel: { color: "#9ca3af" },
+        axisLabel: { color: "#4b5563", fontSize: 12, fontWeight: 500 },
       },
-      yAxis: { type: "value", name: "VNĐ", axisLabel: { color: "#9ca3af" } },
+      yAxis: {
+        type: "value",
+        name: "VNĐ",
+        axisLabel: { color: "#4b5563", fontSize: 12, fontWeight: 500 },
+        nameTextStyle: { fontSize: 12, fontWeight: "bold" },
+      },
       series: [
         {
           name: "Doanh thu",
@@ -344,7 +345,8 @@ async function loadCharts() {
           smooth: true,
           data: dailyTotal,
           itemStyle: { color: "#2563eb" },
-          lineStyle: { width: 2 },
+          lineStyle: { width: 3 },
+          symbolSize: 6,
           emphasis: { focus: "series" },
         },
       ],
@@ -354,13 +356,23 @@ async function loadCharts() {
     // Bar chart: tổng theo kênh
     barChart.setOption({
       tooltip: { trigger: "axis" },
-      grid: { left: 10, right: 10, bottom: 10, top: 10, containLabel: true },
+      grid: { left: 10, right: 10, bottom: 20, top: 10, containLabel: true },
       xAxis: {
         type: "category",
         data: categories,
-        axisLabel: { rotate: 30, color: "#9ca3af" },
+        axisLabel: {
+          rotate: 20,
+          color: "#4b5563",
+          fontSize: 12,
+          fontWeight: 500,
+        },
       },
-      yAxis: { type: "value", name: "VNĐ", axisLabel: { color: "#9ca3af" } },
+      yAxis: {
+        type: "value",
+        name: "VNĐ",
+        axisLabel: { color: "#4b5563", fontSize: 12, fontWeight: 500 },
+        nameTextStyle: { fontSize: 12, fontWeight: "bold" },
+      },
       series: [
         {
           type: "bar",
@@ -371,9 +383,13 @@ async function loadCharts() {
                 (rawByDay[d].find((x) => x.categoryName === cat)?.revenue ?? 0),
               0,
             ),
-            itemStyle: { color: palette[idx % palette.length] },
+            itemStyle: {
+              color: palette[idx % palette.length],
+              borderRadius: [4, 4, 0, 0],
+            },
           })),
           emphasis: { focus: "series" },
+          barMaxWidth: 50,
         },
       ],
     });

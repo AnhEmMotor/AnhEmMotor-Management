@@ -45,7 +45,7 @@
     <ElCard class="reporting-card mt-4">
       <template #header>Chi tiết theo thương hiệu</template>
       <ElTable
-        :data="data.warehouseTableData"
+        :data="paginatedTableData"
         class="reporting-table"
         empty-text="Chưa có dữ liệu"
       >
@@ -112,6 +112,16 @@
           </template>
         </ElTableColumn>
       </ElTable>
+      <div class="flex justify-end mt-4">
+        <ElPagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :page-sizes="[10, 20, 50]"
+          :total="data.warehouseTableData.length"
+          layout="total, sizes, prev, pager, next, jumper"
+          background
+        />
+      </div>
     </ElCard>
   </div>
 </template>
@@ -119,6 +129,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import * as echarts from "echarts";
+import { ElPagination } from "element-plus";
 import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
 import { statisticsApi } from "@/api/operations";
 import type * as Statistical from "@/types/api/statistical";
@@ -127,7 +138,7 @@ const brandChartRef = ref<HTMLElement | null>(null);
 const statusChartRef = ref<HTMLElement | null>(null);
 let brandChart: echarts.ECharts | null = null;
 let statusChart: echarts.ECharts | null = null;
-const chartTextColor = "#aeb0bd";
+const chartTextColor = "#4b5563";
 const chartPalette = [
   "#e84a4a",
   "#ff6b6b",
@@ -149,15 +160,20 @@ const data = ref<Statistical.AdminWarehouseReportResponse>({
   warehouseTableData: [],
 });
 
+const currentPage = ref(1);
+const pageSize = ref(10);
+const paginatedTableData = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  return data.value.warehouseTableData.slice(start, start + pageSize.value);
+});
+
 const stockRatio = computed(() => {
   const s = data.value.summary;
-  if (!s.totalStock) return "0%";
-  return (
-    (
-      ((s.totalStock - s.lowStockCount - s.outOfStockCount) / s.totalStock) *
-      100
-    ).toFixed(1) + "%"
-  );
+  const total = s.totalStock;
+  if (!total || total <= 0) return "0%";
+  const safe = total - s.lowStockCount - s.outOfStockCount;
+  const ratio = Math.max(0, Math.min(100, (safe / total) * 100));
+  return ratio.toFixed(1) + "%";
 });
 
 async function load() {
@@ -176,17 +192,29 @@ function renderCharts() {
     brandChart.setOption({
       backgroundColor: "transparent",
       color: chartPalette,
-      textStyle: { color: chartTextColor },
+      textStyle: { color: chartTextColor, fontSize: 12, fontWeight: 500 },
       tooltip: { trigger: "item" },
-      legend: { bottom: 0, textStyle: { color: chartTextColor } },
+      legend: {
+        type: "scroll",
+        orient: "horizontal",
+        bottom: 0,
+        left: "center",
+        itemWidth: 10,
+        itemHeight: 10,
+        textStyle: { color: chartTextColor, fontWeight: 500, fontSize: 11 },
+        formatter: (name: string) =>
+          name.length > 14 ? name.slice(0, 14) + "…" : name,
+      },
       series: [
         {
           type: "pie",
-          radius: ["40%", "70%"],
+          radius: ["38%", "65%"],
+          center: ["50%", "42%"],
           data: top.map((d) => ({
             name: d.brandName || "Khác",
             value: d.stockCount,
           })),
+          label: { show: false },
         },
       ],
     });
@@ -196,17 +224,26 @@ function renderCharts() {
     statusChart.setOption({
       backgroundColor: "transparent",
       color: chartPalette,
-      textStyle: { color: chartTextColor },
+      textStyle: { color: chartTextColor, fontSize: 12, fontWeight: 500 },
       tooltip: { trigger: "item" },
-      legend: { bottom: 0, textStyle: { color: chartTextColor } },
+      legend: {
+        orient: "horizontal",
+        bottom: 0,
+        left: "center",
+        itemWidth: 10,
+        itemHeight: 10,
+        textStyle: { color: chartTextColor, fontWeight: 500, fontSize: 11 },
+      },
       series: [
         {
           type: "pie",
-          radius: ["40%", "70%"],
+          radius: ["38%", "65%"],
+          center: ["50%", "42%"],
           data: data.value.stockStatusRatio.map((d) => ({
             name: d.statusLabel || "Khác",
             value: d.count,
           })),
+          label: { show: true, formatter: "{b}: {c}" },
         },
       ],
     });

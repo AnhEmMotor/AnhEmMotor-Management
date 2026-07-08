@@ -94,7 +94,7 @@
       </template>
 
       <ElTable
-        :data="filteredContracts"
+        :data="paginatedContracts"
         class="reporting-table"
         empty-text="Không có dữ liệu hợp đồng"
       >
@@ -139,6 +139,16 @@
           </template>
         </ElTableColumn>
       </ElTable>
+      <div class="flex justify-end mt-4">
+        <ElPagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :page-sizes="[10, 20, 50, 100]"
+          :total="filteredContracts.length"
+          layout="total, sizes, prev, pager, next, jumper"
+          background
+        />
+      </div>
     </ElCard>
   </div>
 </template>
@@ -204,7 +214,10 @@ const filteredContracts = computed(() => {
   let result = contractsData.value;
 
   if (typeFilter.value) {
-    result = result.filter((i) => i.type === typeFilter.value);
+    const qType = typeFilter.value.toLowerCase();
+    result = result.filter(
+      (i) => i.type && i.type.toLowerCase().includes(qType),
+    );
   }
 
   if (searchQuery.value) {
@@ -219,6 +232,14 @@ const filteredContracts = computed(() => {
   return result;
 });
 
+const currentPage = ref(1);
+const pageSize = ref(10);
+
+const paginatedContracts = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  return filteredContracts.value.slice(start, start + pageSize.value);
+});
+
 async function onPeriodChange() {
   isLoading.value = true;
   try {
@@ -226,11 +247,16 @@ async function onPeriodChange() {
       periodStart.value,
       periodEnd.value,
     );
-    summaryData.value = res.kpi;
-    trendData.value = res.trendData;
-    statusData.value = res.statusData;
-    topSuppliersData.value = res.topSuppliersData;
-    contractsData.value = res.contractsData;
+    summaryData.value = res.kpi || {
+      totalSalesCount: (res as any).totalSalesCount || 0,
+      totalSalesValue: (res as any).totalSalesValue || 0,
+      totalSupplierCount: (res as any).totalSupplierCount || 0,
+      totalSupplierValue: (res as any).totalSupplierValue || 0,
+    };
+    trendData.value = res.trendData || [];
+    statusData.value = res.statusData || [];
+    topSuppliersData.value = res.topSuppliersData || [];
+    contractsData.value = res.contractsData || [];
     renderCharts();
   } catch (error) {
     console.error("Failed to load contract overview", error);
@@ -325,8 +351,14 @@ function renderCharts() {
           name: "Giá trị HĐ",
           type: "bar",
           data: topSuppliersData.value.map((r) => r.value),
-          itemStyle: { color: "#f59e0b", borderRadius: [0, 4, 4, 0] },
-          barWidth: "40%",
+          itemStyle: { color: "#3b82f6", borderRadius: [0, 4, 4, 0] },
+          barWidth: "50%",
+          label: {
+            show: true,
+            position: "right",
+            formatter: (params: any) => formatShortCurrency(params.value),
+            fontSize: 12,
+          },
         },
       ],
     });
@@ -346,8 +378,8 @@ function renderCharts() {
       series: [
         {
           type: "pie",
-          radius: ["40%", "60%"],
-          center: ["50%", "50%"],
+          radius: ["40%", "70%"],
+          center: ["60%", "50%"],
           data: statusData.value.map((d) => ({
             name: d.name,
             value: d.value,
@@ -357,9 +389,16 @@ function renderCharts() {
             borderColor: isDark.value ? "rgba(30, 41, 59, 1)" : "#fff",
             borderWidth: 2,
           },
-          label: { color: chartTextColor.value },
+          label: {
+            show: true,
+            color: chartTextColor.value,
+            formatter: "{b}: {c}",
+            fontSize: 13,
+            fontWeight: "bold",
+          },
         },
       ],
+      color: ["#3b82f6", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6"],
     });
   }
 }

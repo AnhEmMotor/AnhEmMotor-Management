@@ -48,7 +48,7 @@ interface _CardDataItem {
 
 const props = defineProps<{
   timeFilter: string;
-  dateRange: [Date, Date] | null;
+  dateRange: any;
 }>();
 
 const dataList = reactive<_CardDataItem[]>([]);

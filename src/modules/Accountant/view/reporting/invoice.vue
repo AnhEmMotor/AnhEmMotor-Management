@@ -89,7 +89,7 @@
       </template>
 
       <ElTable
-        :data="filteredInvoices"
+        :data="paginatedInvoices"
         class="reporting-table"
         empty-text="Không tìm thấy hóa đơn"
       >
@@ -148,6 +148,16 @@
           </template>
         </ElTableColumn>
       </ElTable>
+      <div class="flex justify-end mt-4">
+        <ElPagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :page-sizes="[10, 20, 50, 100]"
+          :total="filteredInvoices.length"
+          layout="total, sizes, prev, pager, next, jumper"
+          background
+        />
+      </div>
     </ElCard>
 
     <!-- DRAWER: CHI TIẾT HÓA ĐƠN -->
@@ -328,6 +338,15 @@ const filteredInvoices = computed(() => {
   );
 });
 
+const currentPage = ref(1);
+const pageSize = ref(10);
+
+const paginatedInvoices = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  const end = start + pageSize.value;
+  return filteredInvoices.value.slice(start, end);
+});
+
 function openDetail(row: any) {
   selectedInvoice.value = row;
   drawerVisible.value = true;
@@ -359,7 +378,7 @@ function renderCharts() {
     if (!trendChart) trendChart = echarts.init(trendChartRef.value);
     trendChart.setOption({
       backgroundColor: "transparent",
-      textStyle: { color: chartTextColor },
+      textStyle: { color: chartTextColor, fontSize: 13 },
       tooltip: { trigger: "axis" },
       legend: { top: 0, textStyle: { color: chartTextColor } },
       grid: {
@@ -372,12 +391,12 @@ function renderCharts() {
       xAxis: {
         type: "category",
         data: trendData.value.map((d) => d.day),
-        axisLabel: { color: chartTextColor },
+        axisLabel: { color: chartTextColor, fontSize: 13 },
         axisLine: { lineStyle: { color: chartAxisLineColor } },
       },
       yAxis: {
         type: "value",
-        axisLabel: { color: chartTextColor },
+        axisLabel: { color: chartTextColor, fontSize: 13 },
         splitLine: { lineStyle: { color: chartGridLineColor } },
       },
       series: [
@@ -406,18 +425,18 @@ function renderCharts() {
     if (!productChart) productChart = echarts.init(productChartRef.value);
     productChart.setOption({
       backgroundColor: "transparent",
-      textStyle: { color: chartTextColor },
+      textStyle: { color: chartTextColor, fontSize: 13 },
       tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
       grid: { left: "3%", right: "10%", bottom: "3%", containLabel: true },
       xAxis: {
         type: "value",
-        axisLabel: { color: chartTextColor },
+        axisLabel: { color: chartTextColor, fontSize: 13 },
         splitLine: { lineStyle: { color: chartGridLineColor } },
       },
       yAxis: {
         type: "category",
         data: productData.value.map((r) => r.name),
-        axisLabel: { color: chartTextColor },
+        axisLabel: { color: chartTextColor, fontSize: 13 },
         axisLine: { lineStyle: { color: chartAxisLineColor } },
       },
       series: [
@@ -437,7 +456,7 @@ function renderCharts() {
     paymentChart.setOption({
       backgroundColor: "transparent",
       color: ["#e84a4a", "#3b82f6", "#22c55e", "#f97316", "#a855f7"],
-      textStyle: { color: chartTextColor },
+      textStyle: { color: chartTextColor, fontSize: 13 },
       tooltip: { trigger: "item", formatter: "{b}: {c}%" },
       legend: { bottom: 0, textStyle: { color: chartTextColor } },
       series: [
@@ -452,6 +471,7 @@ function renderCharts() {
           label: {
             formatter: "{b}: {c}%",
             color: chartTextColor,
+            fontSize: 14,
           },
         },
       ],

@@ -178,6 +178,60 @@
         </ElTableColumn>
       </ElTable>
     </ElCard>
+
+    <!-- DIALOG CHI TIẾT LEAD -->
+    <ElDialog
+      v-model="detailVisible"
+      title="Chi tiết khách hàng / Lead"
+      width="500px"
+      append-to-body
+    >
+      <div v-if="selectedLead" class="space-y-4">
+        <div class="flex justify-between border-b pb-2">
+          <span class="text-gray-500 font-semibold">Tên khách hàng:</span>
+          <span class="font-medium">{{ selectedLead.customerName }}</span>
+        </div>
+        <div class="flex justify-between border-b pb-2">
+          <span class="text-gray-500 font-semibold">Số điện thoại:</span>
+          <span>{{ selectedLead.phone || "Chưa cập nhật" }}</span>
+        </div>
+        <div class="flex justify-between border-b pb-2">
+          <span class="text-gray-500 font-semibold">Nguồn:</span>
+          <ElTag
+            :type="getSourceType(selectedLead.source)"
+            effect="light"
+            round
+          >
+            {{ selectedLead.source }}
+          </ElTag>
+        </div>
+        <div class="flex justify-between border-b pb-2">
+          <span class="text-gray-500 font-semibold">Trạng thái:</span>
+          <span>{{ selectedLead.status }}</span>
+        </div>
+        <div class="flex justify-between border-b pb-2">
+          <span class="text-gray-500 font-semibold"
+            >Điểm đánh giá (Score):</span
+          >
+          <span
+            :class="getScoreTextColor(selectedLead.leadScore)"
+            class="font-bold"
+          >
+            {{ selectedLead.leadScore }}
+          </span>
+        </div>
+        <div class="flex justify-between pb-2">
+          <span class="text-gray-500 font-semibold">Liên hệ gần nhất:</span>
+          <span>{{ selectedLead.lastContact }}</span>
+        </div>
+      </div>
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <ElButton @click="detailVisible = false">Đóng</ElButton>
+          <ElButton type="primary">Cập nhật</ElButton>
+        </div>
+      </template>
+    </ElDialog>
   </div>
 </template>
 
@@ -204,12 +258,16 @@ const leads = ref<
   Array<{
     id: number;
     customerName: string;
+    phone?: string;
     source: string;
     leadScore: number;
     status: string;
     lastContact: string;
   }>
 >([]);
+
+const detailVisible = ref(false);
+const selectedLead = ref<any>(null);
 
 const conversionRate = computed(() => {
   if (kpi.value.totalLeads === 0) return 0;
@@ -417,6 +475,7 @@ async function loadData() {
     leads.value = (res.leads ?? []).map((l) => ({
       id: l.id,
       customerName: l.customerName,
+      phone: l.phone || l.phoneNumber,
       source: l.source,
       leadScore: l.leadScore,
       status: l.status,
@@ -429,9 +488,9 @@ async function loadData() {
   }
 }
 
-function handleViewDetail(row: { id: number }) {
-  // navigate to lead detail page or open dialog
-  console.log("Detail lead:", row.id);
+function handleViewDetail(row: any) {
+  selectedLead.value = row;
+  detailVisible.value = true;
 }
 
 onMounted(async () => {

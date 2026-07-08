@@ -10,13 +10,24 @@ import { setPageTitle } from "@/common/utils/router";
 import { resetRouterState } from "@/router/guards/beforeEach";
 import { useMenuStore } from "./menu";
 import { StorageConfig } from "@/common/utils/storage/storage-config";
-import i18n from "@/i18n";
+import i18n, { setLocale } from "@/i18n";
 import api from "@/common/utils/http";
+
+const LANG_STORAGE_KEY = "app-lang";
+
+const readInitialLanguage = (): LanguageEnum => {
+  try {
+    return (localStorage.getItem(LANG_STORAGE_KEY) ||
+      LanguageEnum.VI) as LanguageEnum;
+  } catch {
+    return LanguageEnum.VI;
+  }
+};
 
 export const useUserStore = defineStore(
   "userStore",
   () => {
-    const language = ref(LanguageEnum.VI);
+    const language = ref<LanguageEnum>(readInitialLanguage());
 
     const isLogin = ref(false);
 
@@ -49,7 +60,7 @@ export const useUserStore = defineStore(
     const setLanguage = (lang: LanguageEnum) => {
       setPageTitle(router.currentRoute.value);
       language.value = lang;
-      i18n.global.locale.value = lang;
+      setLocale(lang);
     };
 
     const setSearchHistory = (list: AppRouteRecord[]) => {
@@ -185,6 +196,7 @@ export const useUserStore = defineStore(
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: "text/event-stream",
+            "Accept-Language": localStorage.getItem("app-lang") || "vi",
           },
           async onopen(response) {
             if (
