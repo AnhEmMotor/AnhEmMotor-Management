@@ -61,11 +61,6 @@
                       class="font-bold text-blue-700 text-[15px] group-hover:text-blue-800 transition-colors"
                       >{{ order.trackingNumber }}</span
                     >
-                    <div
-                      class="text-xs text-gray-500 mt-0.5 flex items-center gap-1"
-                    >
-                      <el-icon><Van /></el-icon> {{ order.carrier }}
-                    </div>
                   </div>
                   <div
                     class="bg-gray-100 text-gray-700 text-[10px] font-bold px-2 py-1 rounded-md border border-gray-200"
@@ -111,49 +106,6 @@
             v-loading="loadingDetails"
           >
             <template v-if="trackingData">
-              <!-- ETA Card (Hộp Tiêu Điểm) -->
-              <div
-                class="rounded-2xl p-5 mb-5 text-white shadow-lg relative overflow-hidden transition-colors duration-500"
-                :class="isEtaRisk ? 'bg-red-600' : 'bg-blue-700'"
-              >
-                <!-- Decorative background elements -->
-                <div
-                  class="absolute -right-6 -top-6 w-32 h-32 rounded-full bg-white opacity-10"
-                ></div>
-                <div
-                  class="absolute right-12 -bottom-8 w-20 h-20 rounded-full bg-white opacity-10"
-                ></div>
-
-                <div class="flex items-center gap-2 mb-2 relative z-10">
-                  <el-icon class="text-xl opacity-90"><Timer /></el-icon>
-                  <span
-                    class="font-semibold text-xs uppercase tracking-wider opacity-90"
-                    >Dự kiến giao</span
-                  >
-                </div>
-                <div
-                  class="text-[22px] font-black tracking-tight mb-3 flex items-center gap-2 relative z-10 drop-shadow-sm"
-                >
-                  {{ formatEtaDate(trackingData.estimatedDeliveryDate) }}
-                </div>
-                <div
-                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm relative z-10 backdrop-blur-sm"
-                  :class="
-                    isEtaRisk
-                      ? 'bg-red-900/40 text-red-50 border border-red-500/50'
-                      : 'bg-blue-900/40 text-blue-50 border border-blue-500/50'
-                  "
-                >
-                  <el-icon v-if="isEtaRisk" class="text-sm"
-                    ><WarningFilled
-                  /></el-icon>
-                  <el-icon v-else class="text-sm"
-                    ><CircleCheckFilled
-                  /></el-icon>
-                  {{ etaStatusText }}
-                </div>
-              </div>
-
               <!-- Order Info (Khối Chi tiết đơn hàng) -->
               <div
                 class="mb-5 bg-white p-4 rounded-xl border border-gray-200 shadow-sm"
@@ -258,11 +210,6 @@
                       >
                         {{ item.productName }}
                       </div>
-                      <div
-                        class="text-[11px] text-gray-500 mt-1 bg-gray-100 inline-block px-1.5 py-0.5 rounded"
-                      >
-                        SKU: {{ item.sku || "N/A" }}
-                      </div>
                     </div>
                     <div
                       class="text-sm font-bold bg-orange-50 text-orange-600 px-2.5 py-1.5 rounded-lg border border-orange-100 shadow-sm"
@@ -270,51 +217,6 @@
                       x{{ item.quantity }}
                     </div>
                   </div>
-                </div>
-              </div>
-
-              <!-- Milestone Logs (Trục thời gian hành trình) -->
-              <div>
-                <h4
-                  class="font-bold text-gray-800 mb-4 text-sm flex items-center gap-2"
-                >
-                  <el-icon class="text-blue-600 text-lg"><Calendar /></el-icon>
-                  Lịch sử vận chuyển
-                </h4>
-                <div
-                  class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm"
-                >
-                  <el-timeline class="tracking-timeline">
-                    <el-timeline-item
-                      v-for="(milestone, idx) in sortedMilestones"
-                      :key="idx"
-                      :timestamp="formatDate(milestone.timestamp)"
-                      :color="getMilestoneColor(milestone)"
-                      :size="milestone.isCurrent ? 'large' : 'normal'"
-                      :icon="milestone.isCurrent ? Location : undefined"
-                      class="transition-all"
-                    >
-                      <div
-                        :class="{
-                          'font-bold text-gray-900 text-sm':
-                            milestone.isCurrent,
-                          'font-semibold text-gray-600 text-sm':
-                            !milestone.isCurrent,
-                        }"
-                      >
-                        {{ milestone.location }}
-                      </div>
-                      <div
-                        class="text-xs mt-1 leading-relaxed"
-                        :class="{
-                          'text-gray-800 font-medium': milestone.isCurrent,
-                          'text-gray-500': !milestone.isCurrent,
-                        }"
-                      >
-                        {{ milestone.description }}
-                      </div>
-                    </el-timeline-item>
-                  </el-timeline>
                 </div>
               </div>
             </template>
@@ -395,9 +297,7 @@ const inTransitOrders = ref<ActiveShipmentItem[]>([]);
 const selectedOrder = ref<ActiveShipmentItem | null>(null);
 const trackingData = ref<TrackingResponse | null>(null);
 
-// Coordinates fallback
-const SHOWROOM_COORDS: L.LatLngExpression = [10.9576, 106.8427]; // Biên Hòa
-
+// Use coordinates directly from API response
 const filteredOrders = computed(() => {
   if (!searchQuery.value) return inTransitOrders.value;
   const q = searchQuery.value.toLowerCase();
@@ -414,30 +314,6 @@ const sortedMilestones = computed(() => {
   return [...trackingData.value.milestones].sort(
     (a, b) => dayjs(b.timestamp).valueOf() - dayjs(a.timestamp).valueOf(),
   ); // Newest first for timeline
-});
-
-// UX Logic: ETA Risk Calculation
-const hoursRemaining = computed(() => {
-  if (!trackingData.value?.estimatedDeliveryDate) return 48; // fallback
-  const eta = dayjs(trackingData.value.estimatedDeliveryDate);
-  return eta.diff(dayjs(), "hour", true);
-});
-
-const isEtaRisk = computed(() => {
-  // Danger if less than or equal to 5 hours remaining, or already stuck
-  return hoursRemaining.value <= 5 || selectedOrder.value?.isStuck;
-});
-
-const etaStatusText = computed(() => {
-  if (isEtaRisk.value) {
-    if (hoursRemaining.value < 0)
-      return `Trễ hạn ${Math.abs(Math.round(hoursRemaining.value))} giờ`;
-    return `Còn lại: ${Math.round(hoursRemaining.value)} giờ - Nguy cơ trễ hẹn`;
-  }
-  const days = Math.floor(hoursRemaining.value / 24);
-  const hrs = Math.round(hoursRemaining.value % 24);
-  if (days > 0) return `Còn lại: ${days} ngày ${hrs} giờ - Đúng tiến độ`;
-  return `Còn lại: ${hrs} giờ - Đúng tiến độ`;
 });
 
 onMounted(() => {
@@ -516,6 +392,7 @@ function deselectOrder() {
   selectedOrder.value = null;
   trackingData.value = null;
   clearMap();
+  // We can just keep the current view or reset to a generic center
   if (map.value) map.value.setView([10.9576, 106.8427], 9, { animate: true });
 }
 
@@ -534,27 +411,29 @@ function drawTrackingData() {
   )
     return;
 
-  const milestones = trackingData.value.milestones;
-  if (milestones.length === 0) return;
+  const milestones = trackingData.value.milestones || [];
 
-  // Find coordinates
+  // Find coordinates directly from the API response
   const startCoords: any = [
-    trackingData.value.originLatitude || (SHOWROOM_COORDS as any)[0],
-    trackingData.value.originLongitude || (SHOWROOM_COORDS as any)[1],
+    trackingData.value.originLatitude || 10.9576,
+    trackingData.value.originLongitude || 106.8427,
   ];
 
-  const currentMilestone =
-    milestones.find((m) => m.isCurrent) || milestones[milestones.length - 1];
-  const currentCoords: any = [
-    currentMilestone.latitude,
-    currentMilestone.longitude,
-  ];
+  let currentCoords: any = [...startCoords];
+  let currentMilestone = null;
+
+  if (milestones.length > 0) {
+    currentMilestone =
+      milestones.find((m) => m.isCurrent) || milestones[milestones.length - 1];
+    if (currentMilestone.latitude && currentMilestone.longitude) {
+      currentCoords = [currentMilestone.latitude, currentMilestone.longitude];
+    }
+  }
 
   // Mock Destination if missing (just slightly far from current for demo)
   const destCoords: any = [
-    trackingData.value.destinationLatitude || currentMilestone.latitude + 0.05,
-    trackingData.value.destinationLongitude ||
-      currentMilestone.longitude + 0.05,
+    trackingData.value.destinationLatitude || currentCoords[0] + 0.05,
+    trackingData.value.destinationLongitude || currentCoords[1] + 0.05,
   ];
 
   // DRAW POLYLINES
@@ -587,11 +466,9 @@ function drawTrackingData() {
     .bindTooltip("Showroom Biên Hòa", { direction: "top" })
     .addTo(markersLayer.value as any);
 
-  // 2. Current (Bưu cục)
-  const pulseColor = isEtaRisk.value ? "#ef4444" : "#3b82f6"; // red or blue
-  const pulseClass = isEtaRisk.value
-    ? "marker-risk-pulse"
-    : "marker-safe-pulse";
+  // 2. Current (Bưu cục) - Only if we have milestone or if we just want to show current = start
+  const pulseColor = "#3b82f6";
+  const pulseClass = "marker-safe-pulse";
 
   const currentIcon = L.divIcon({
     className: `custom-marker ${pulseClass}`,
@@ -601,8 +478,13 @@ function drawTrackingData() {
     iconSize: [36, 36],
     iconAnchor: [18, 18],
   });
+
+  const currentTooltipText = currentMilestone
+    ? `<b>Bưu cục hiện tại</b><br/>${currentMilestone.location}`
+    : `<b>Đang chờ lấy hàng</b>`;
+
   L.marker(currentCoords, { icon: currentIcon })
-    .bindTooltip(`<b>Bưu cục hiện tại</b><br/>${currentMilestone.location}`, {
+    .bindTooltip(currentTooltipText, {
       direction: "top",
       offset: [0, -18],
     })
@@ -626,7 +508,7 @@ function drawTrackingData() {
 
 function getMilestoneColor(milestone: TrackingMilestone) {
   if (milestone.isCurrent) {
-    return isEtaRisk.value ? "#ef4444" : "#3b82f6";
+    return "#3b82f6";
   }
   return "#e5e7eb"; // gray-200
 }

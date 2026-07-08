@@ -595,7 +595,7 @@ const filterParams = ref({
   dateRange: [] as any[],
   carrier: "",
   region: "",
-  status: 3, // Default to Completed (3)
+  status: null as number | null,
 });
 
 const orderList = ref<FulfillmentDetailResponse[]>([]);
@@ -755,7 +755,7 @@ const resetFilters = () => {
     dateRange: [],
     carrier: "",
     region: "",
-    status: 3,
+    status: null,
   };
   pagination.value.current = 1;
   void fetchOrders();

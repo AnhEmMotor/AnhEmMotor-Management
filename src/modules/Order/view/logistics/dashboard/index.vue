@@ -140,13 +140,6 @@
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
-        <!-- Original Order Slot -->
-        <template #originalOrderCode="{ row }">
-          <span class="font-bold text-gray-800"
-            >#{{ row.originalOrderCode }}</span
-          >
-        </template>
-
         <!-- Tracking Number Slot -->
         <template #trackingNumber="{ row }">
           <el-tag
@@ -160,13 +153,6 @@
           <span v-else class="text-gray-400 font-mono italic"
             >Chưa liên kết</span
           >
-        </template>
-
-        <!-- Carrier Slot -->
-        <template #carrier="{ row }">
-          <el-tag :type="getCarrierTagType(row.carrier)" size="small">
-            {{ getCarrierLabel(row.carrier) }}
-          </el-tag>
         </template>
 
         <!-- COD Amount Slot -->
@@ -729,20 +715,12 @@ const handleCurrentChange = (val: number) => {
 
 // Table Columns Config
 const columns = computed(() => [
-  { label: "Mã vận đơn nội bộ", prop: "id", minWidth: 100 },
-  {
-    label: "Đơn hàng gốc",
-    prop: "originalOrderCode",
-    minWidth: 160,
-    useSlot: true,
-  },
   {
     label: "Mã vận đơn 3PL",
     prop: "trackingNumber",
     minWidth: 150,
     useSlot: true,
   },
-  { label: "Đối tác", prop: "carrier", minWidth: 120, useSlot: true },
   { label: "Khách hàng", prop: "customerName", minWidth: 150 },
   { label: "Số điện thoại", prop: "customerPhone", minWidth: 120 },
   { label: "COD thu hộ", prop: "codAmount", minWidth: 130, useSlot: true },
