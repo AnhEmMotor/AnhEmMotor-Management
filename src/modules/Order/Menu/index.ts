@@ -172,28 +172,6 @@ export const orderMenu: AppRouteRecord[] = [
               keepAlive: true,
             },
           },
-          {
-            path: "fulfillment",
-            name: "OrderLogisticsFulfillment",
-            component: "/Order/view/logistics/fulfillment/index",
-            meta: {
-              title: "Hoàn thành đơn hàng",
-              icon: "ri:box-3-line",
-              keepAlive: true,
-              showBadge: true,
-              showTextBadge: "5",
-            },
-          },
-          {
-            path: "carrier-settings",
-            name: "OrderLogisticsCarrierSettings",
-            component: "/Order/view/logistics/carrier-settings/index",
-            meta: {
-              title: "Cài đặt nhà vận chuyển",
-              icon: "ri:settings-4-line",
-              keepAlive: true,
-            },
-          },
         ],
       },
       {
