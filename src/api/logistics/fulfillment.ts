@@ -71,3 +71,15 @@ export function getFulfillmentOrders(params?: FulfillmentOrdersParams) {
     params,
   });
 }
+
+export interface DeliveryStatusDto {
+  id: number;
+  nameEn: string;
+  nameVi: string;
+}
+
+export function getDeliveryStatuses() {
+  return request.get<DeliveryStatusDto[]>({
+    url: "/api/v1/logistics/delivery-statuses",
+  });
+}

@@ -1,18 +1,6 @@
 <template>
-  <div class="flex flex-col gap-4 pb-5">
-    <div class="flex items-center gap-3 flex-wrap">
-      <ElButton
-        v-for="t in ranges"
-        :key="t.value"
-        :type="t.value === range ? 'primary' : 'default'"
-        size="small"
-        @click="handleChangeRange(t.value)"
-      >
-        {{ t.label }}
-      </ElButton>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+  <div class="fulfillment-container p-4">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
       <ArtStatsCard
         :title="$t('logistics.dashboard.fulfillmentWorkload')"
         :count="dashboard.summary.fulfillmentWorkload"
@@ -28,152 +16,403 @@
         icon="ri:bank-card-line"
         iconStyle="bg-info"
       />
-      <ArtStatsCard
-        :title="$t('logistics.dashboard.otifRate')"
-        :count="`${(dashboard.summary.otifRate * 100).toFixed(1)}%`"
-        icon="ri:time-line"
-        iconStyle="bg-success"
-      />
-      <ArtStatsCard
-        :title="$t('logistics.dashboard.returnsClaimsRatio')"
-        :count="`${(dashboard.summary.returnsClaimsRate * 100).toFixed(1)}%`"
-        icon="ri:arrow-go-back-line"
-        iconStyle="bg-danger"
-      />
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <ElCard class="art-table-card">
-        <template #header>
-          <div class="flex items-center justify-between">
-            <span class="font-semibold">{{
-              $t("logistics.dashboard.fulfillmentFunnel")
-            }}</span>
+    <!-- Header & Statistics -->
+    <el-card shadow="never" class="mb-4">
+      <div class="flex items-center justify-between mb-4 flex-wrap gap-4">
+        <div>
+          <h2 class="text-xl font-bold mb-1">
+            {{ t("logistics.fulfillment.title") }}
+          </h2>
+          <div class="text-gray-500 text-sm">
+            Quản lý quy trình vận đơn, liên kết đối tác 3PL và theo dõi trạng
+            thái.
           </div>
-        </template>
-
-        <div ref="funnelChartRef" class="h-72 w-full"></div>
-      </ElCard>
-
-      <ElCard class="art-table-card">
-        <template #header>
-          <div class="flex items-center justify-between">
-            <span class="font-semibold">{{
-              $t("logistics.dashboard.productionShippingCost")
-            }}</span>
-          </div>
-        </template>
-
-        <div ref="costChartRef" class="h-72 w-full"></div>
-      </ElCard>
-    </div>
-
-    <ElCard class="flex-1 art-table-card">
-      <template #header>
-        <div class="flex items-center justify-between">
-          <span class="font-semibold">{{
-            $t("logistics.dashboard.carrierScorecard")
-          }}</span>
-          <ElButton
-            :loading="loading"
-            @click="loadData"
-            type="primary"
-            size="small"
-          >
-            {{ $t("logistics.dashboard.refresh") }}
-          </ElButton>
         </div>
-      </template>
+      </div>
 
+      <!-- Filters Form -->
+      <div class="flex items-center gap-4 flex-wrap">
+        <!-- Status -->
+        <div class="flex items-center">
+          <span class="text-sm font-medium mr-2 text-gray-700"
+            >Trạng thái:</span
+          >
+          <el-select
+            v-model="filterParams.status"
+            clearable
+            placeholder="Tất cả trạng thái"
+            style="width: 180px"
+            @change="fetchOrders"
+          >
+            <el-option
+              v-for="st in deliveryStatuses"
+              :key="st.id"
+              :label="st.nameVi"
+              :value="st.id"
+            />
+          </el-select>
+        </div>
+
+        <el-button type="primary" @click="fetchOrders">
+          <el-icon class="mr-1"><Search /></el-icon> Tìm kiếm
+        </el-button>
+        <el-button @click="resetFilters">Đặt lại</el-button>
+      </div>
+    </el-card>
+
+    <!-- Orders Table -->
+    <el-card shadow="never" class="art-table-card">
       <ArtTable
         ref="tableRef"
         :loading="loading"
-        :data="dashboard.carrierScorecard"
+        :data="pagedOrderList"
         :columns="columns"
-        :pagination="{
-          current: 1,
-          size: dashboard.carrierScorecard.length,
-          total: dashboard.carrierScorecard.length,
-        }"
+        :pagination="pagination"
+        @pagination:size-change="handleSizeChange"
+        @pagination:current-change="handleCurrentChange"
       >
-        <template #returnsRatio="{ row }">
-          {{ (row.returnsRatio * 100).toFixed(1) }}%
+        <!-- Status Slot -->
+        <template #status="{ row }">
+          <el-tag :type="getStatusTagType(row.status)" size="small">
+            {{ getStatusLabel(row.status) }}
+          </el-tag>
+        </template>
+
+        <!-- Tracking Number Slot -->
+        <template #trackingNumber="{ row }">
+          <el-tag
+            v-if="row.trackingNumber"
+            type="success"
+            effect="plain"
+            class="font-mono"
+          >
+            {{ row.trackingNumber }}
+          </el-tag>
+          <span v-else class="text-gray-400 font-mono italic"
+            >Chưa liên kết</span
+          >
+        </template>
+
+        <!-- COD Amount Slot -->
+        <template #codAmount="{ row }">
+          <span class="font-semibold text-red-500">{{
+            formatCurrency(row.codAmount)
+          }}</span>
+        </template>
+
+        <!-- Shipping Cost Slot -->
+        <template #shippingCost="{ row }">
+          <span class="text-gray-600">{{
+            formatCurrency(row.shippingCost)
+          }}</span>
+        </template>
+
+        <!-- Created At Slot -->
+        <template #createdAt="{ row }">
+          <span class="text-xs text-gray-500">{{
+            formatDate(row.createdAt)
+          }}</span>
+        </template>
+
+        <!-- Delivered At Slot -->
+        <template #deliveredAt="{ row }">
+          <span v-if="row.deliveredAt" class="text-xs text-gray-500">{{
+            formatDate(row.deliveredAt)
+          }}</span>
+          <span v-else class="text-gray-400 italic text-xs">-</span>
+        </template>
+
+        <!-- Actions Slot -->
+        <template #actions="{ row }">
+          <el-button type="primary" size="small" @click="openDetail(row)">
+            Chi tiết
+          </el-button>
         </template>
       </ArtTable>
-    </ElCard>
+    </el-card>
 
-    <ElCard class="flex-1 art-table-card">
-      <template #header>
-        <div class="flex items-center justify-between">
-          <span class="font-semibold text-red-500">{{
-            $t("logistics.dashboard.exceptionsLog")
-          }}</span>
-          <span class="text-xs text-red-400"
-            >{{ dashboard.exceptions.length }}
-            {{ $t("logistics.dashboard.items") }}</span
+    <!-- Detail Sliding Drawer -->
+    <el-drawer
+      v-model="drawerVisible"
+      title="Chi tiết quy trình Vận đơn"
+      size="60%"
+      destroy-on-close
+    >
+      <div v-loading="loadingDetail" class="p-2">
+        <div v-if="detailData.id" class="flex flex-col gap-6">
+          <!-- Header and Steps inside Drawer -->
+          <div
+            class="flex items-center justify-between flex-wrap gap-4 border-b pb-4 border-gray-100"
           >
+            <div class="w-full">
+              <el-steps
+                :active="currentStep"
+                :finish-status="detailData.status === 2 ? 'error' : 'success'"
+                align-center
+                size="small"
+              >
+                <el-step title="Đang giao hàng" />
+                <el-step
+                  :title="
+                    detailData.status === 2 ? 'Bị hoàn trả' : 'Đã hoàn thành'
+                  "
+                />
+              </el-steps>
+            </div>
+          </div>
+
+          <!-- Alerts inside Drawer -->
+          <el-alert
+            v-if="detailData.status === 2"
+            title="Đơn hàng này đã bị hoàn trả / hủy giao hàng từ đối tác."
+            type="error"
+            show-icon
+            :closable="false"
+          />
+          <el-alert
+            v-if="hasRestrictedItems"
+            :title="t('logistics.fulfillment.alerts.restricted')"
+            type="error"
+            show-icon
+            :closable="false"
+          />
+          <el-alert
+            v-if="hasOutOfStockItems"
+            :title="t('logistics.fulfillment.alerts.outOfStock')"
+            type="warning"
+            show-icon
+            :closable="false"
+          />
+
+          <!-- Multi-column Layout inside Drawer -->
+          <div class="flex flex-col gap-6">
+            <!-- Left side: Picking Checklist -->
+            <div>
+              <el-card shadow="never">
+                <template #header>
+                  <div class="flex justify-between items-center">
+                    <span class="font-bold">Danh sách sản phẩm</span>
+                    <el-tag type="info" size="small"
+                      >{{ detailData.items.length }} sản phẩm</el-tag
+                    >
+                  </div>
+                </template>
+
+                <el-table
+                  :data="detailData.items"
+                  stripe
+                  style="width: 100%"
+                  size="small"
+                >
+                  <!-- Removed Checkbox Column -->
+
+                  <el-table-column
+                    :label="t('logistics.fulfillment.table.image')"
+                    width="65"
+                  >
+                    <template #default="scope">
+                      <el-image
+                        v-if="scope.row.thumbnailUrl"
+                        :src="scope.row.thumbnailUrl"
+                        class="w-10 h-10 rounded border border-gray-100"
+                        fit="cover"
+                      >
+                        <template #error>
+                          <div
+                            class="flex items-center justify-center w-full h-full bg-gray-50 text-gray-300"
+                          >
+                            <el-icon><Picture /></el-icon>
+                          </div>
+                        </template>
+                      </el-image>
+                      <div
+                        v-else
+                        class="w-10 h-10 rounded flex items-center justify-center bg-gray-50 text-gray-300 border border-gray-100"
+                      >
+                        <el-icon><Picture /></el-icon>
+                      </div>
+                    </template>
+                  </el-table-column>
+
+                  <el-table-column
+                    :label="t('logistics.fulfillment.table.product')"
+                    min-width="120"
+                  >
+                    <template #default="scope">
+                      <div
+                        class="font-medium text-xs text-gray-900 leading-tight"
+                      >
+                        {{ scope.row.productName }}
+                      </div>
+                      <div class="text-[10px] text-gray-400 font-mono mt-0.5">
+                        SKU: {{ scope.row.sku }}
+                      </div>
+                    </template>
+                  </el-table-column>
+
+                  <!-- Removed Shelf Location Column -->
+
+                  <el-table-column
+                    :label="t('logistics.fulfillment.table.qty')"
+                    width="50"
+                    align="center"
+                  >
+                    <template #default="scope">
+                      <span
+                        class="font-bold text-xs"
+                        :class="
+                          scope.row.quantity > 1
+                            ? 'text-orange-600'
+                            : 'text-gray-700'
+                        "
+                      >
+                        x{{ scope.row.quantity }}
+                      </span>
+                    </template>
+                  </el-table-column>
+
+                  <!-- Removed Picked Status Column -->
+                </el-table>
+              </el-card>
+            </div>
+
+            <!-- Right side: Customer Info & Timeline -->
+            <div>
+              <div class="flex flex-col gap-4">
+                <!-- Dispatch Panel -->
+                <el-card shadow="never">
+                  <template #header>
+                    <span class="font-bold">{{
+                      t("logistics.fulfillment.dispatchPanel")
+                    }}</span>
+                  </template>
+
+                  <!-- Customer Info -->
+                  <div class="mb-4">
+                    <h4
+                      class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+                    >
+                      {{ t("logistics.fulfillment.customer") }}
+                    </h4>
+                    <div class="font-medium text-sm text-gray-900 mb-1">
+                      {{ detailData.customerName || "-" }}
+                    </div>
+                    <div
+                      class="text-xs text-gray-600 mb-1 flex items-center gap-1.5"
+                    >
+                      <el-icon><Phone /></el-icon>
+                      {{ detailData.customerPhone || "-" }}
+                    </div>
+                    <div
+                      class="text-xs text-gray-600 flex items-start gap-1.5 leading-snug"
+                    >
+                      <el-icon class="mt-0.5"><Location /></el-icon>
+                      <span>{{ detailData.customerAddress || "-" }}</span>
+                    </div>
+                  </div>
+
+                  <el-divider class="my-3" />
+
+                  <!-- Financial -->
+                  <div class="mb-4">
+                    <h4
+                      class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+                    >
+                      {{ t("logistics.fulfillment.financial") }}
+                    </h4>
+                    <div class="flex justify-between text-xs mb-1.5">
+                      <span class="text-gray-600"
+                        >{{ t("logistics.fulfillment.codAmount") }}:</span
+                      >
+                      <span class="font-bold text-red-500">{{
+                        formatCurrency(detailData.codAmount)
+                      }}</span>
+                    </div>
+                    <div class="flex justify-between text-xs">
+                      <span class="text-gray-600"
+                        >{{ t("logistics.fulfillment.shippingCost") }}:</span
+                      >
+                      <span class="font-semibold text-gray-800">{{
+                        formatCurrency(detailData.shippingCost)
+                      }}</span>
+                    </div>
+                  </div>
+                </el-card>
+              </div>
+            </div>
+          </div>
         </div>
-      </template>
-
-      <ElAlert
-        v-if="dashboard.exceptions.length === 0"
-        type="success"
-        show-icon
-        :closable="false"
-      >
-        {{ $t("logistics.dashboard.noExceptions") }}
-      </ElAlert>
-
-      <ArtTable
-        v-else
-        ref="exTableRef"
-        :loading="loading"
-        :data="dashboard.exceptions"
-        :columns="exceptionColumns"
-        :pagination="{
-          current: 1,
-          size: dashboard.exceptions.length,
-          total: dashboard.exceptions.length,
-        }"
-      />
-    </ElCard>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
 <script setup lang="ts">
-import {
-  ref,
-  onMounted,
-  onBeforeUnmount,
-  computed,
-  watch,
-  nextTick,
-} from "vue";
-import { ElCard, ElButton, ElAlert } from "element-plus";
+import { ref, computed, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import * as echarts from "echarts";
+import { ElMessage } from "element-plus";
+import {
+  Phone,
+  Location,
+  Picture,
+  Search,
+  Calendar,
+} from "@element-plus/icons-vue";
+import dayjs from "dayjs";
+
+import {
+  getFulfillmentOrders,
+  getFulfillmentDetail,
+  updateParcelStatus,
+  updateTrackingNumber,
+  toggleItemPick,
+  getDeliveryStatuses,
+} from "@/api/logistics/fulfillment";
+import type { DeliveryStatusDto } from "@/api/logistics/fulfillment";
+import { getShipmentTracking } from "@/api/logistics/tracking";
+
+import type { FulfillmentDetailResponse } from "@/api/logistics/fulfillment";
+import type { TrackingResponse } from "@/api/logistics/tracking";
+
 import type { LogisticsDashboardResponse } from "@/domain/logistics/dashboard.types";
 import { LogisticsService } from "@/services/logistics.service";
-import { useSettingStore } from "@/application/store/setting";
-
-type ArtTableColumn = any;
 
 defineOptions({ name: "LogisticsDashboard" });
 
 const { t } = useI18n();
-const settingStore = useSettingStore();
 
+const deliveryStatuses = ref<DeliveryStatusDto[]>([]);
+
+onMounted(async () => {
+  try {
+    const res = await getDeliveryStatuses();
+    deliveryStatuses.value = (res as any).data || res || [];
+  } catch (error) {
+    console.error("Failed to fetch delivery statuses", error);
+  }
+});
+
+// Filters & State
+const loading = ref(false);
+const filterParams = ref({
+  dateRange: [] as any[],
+  carrier: "",
+  region: "",
+  status: null as number | null,
+});
+
+const orderList = ref<FulfillmentDetailResponse[]>([]);
+
+// Dashboard Stats State
+type RangeValue = "today" | "month" | "year";
+const range = ref<RangeValue>("today");
 const ranges = computed(() => [
   { value: "today", label: t("logistics.dashboard.today") },
   { value: "month", label: t("logistics.dashboard.thisMonth") },
   { value: "year", label: t("logistics.dashboard.thisYear") },
 ]);
-
-type RangeValue = "today" | "month" | "year";
-const range = ref<RangeValue>("today");
-
-const loading = ref(false);
-
 const dashboard = ref<LogisticsDashboardResponse>({
   summary: {
     fulfillmentWorkload: 0,
@@ -188,283 +427,16 @@ const dashboard = ref<LogisticsDashboardResponse>({
   exceptions: [],
 });
 
-const funnelChartRef = ref<HTMLDivElement | null>(null);
-const costChartRef = ref<HTMLDivElement | null>(null);
-
-let funnelChartInstance: echarts.ECharts | null = null;
-let costChartInstance: echarts.ECharts | null = null;
-
-const isDark = computed(() => settingStore.systemThemeType === "dark");
-
-const getThemeColors = () => {
-  if (isDark.value) {
-    return {
-      text: "#e5e6eb",
-      line: "#333333",
-      tooltipBg: "#1f1f1f",
-      tooltipBorder: "#444444",
-      itemColors: ["#409eff", "#67c23a", "#e6a23c", "#f56c6c", "#909399"],
-    };
-  } else {
-    return {
-      text: "#606266",
-      line: "#e4e7ed",
-      tooltipBg: "#ffffff",
-      tooltipBorder: "#e4e7ed",
-      itemColors: ["#409eff", "#67c23a", "#e6a23c", "#f56c6c", "#909399"],
-    };
-  }
-};
-
-const renderFunnelChart = () => {
-  if (!funnelChartRef.value) return;
-
-  if (!funnelChartInstance) {
-    funnelChartInstance = echarts.init(funnelChartRef.value);
-  }
-
-  const colors = getThemeColors();
-  const funnel = dashboard.value.fulfillmentFunnel || {};
-
-  const funnelData = [
-    {
-      value: funnel.completed || 0,
-      name: t("logistics.dashboard.status.completed") || "Thành công",
-    },
-    {
-      value: funnel.shipping || 0,
-      name: t("logistics.dashboard.status.shipping") || "Đang giao",
-    },
-    {
-      value: funnel.packing || 0,
-      name: t("logistics.dashboard.status.packing") || "Đang đóng gói",
-    },
-    {
-      value: funnel.pendingPickup || 0,
-      name: t("logistics.dashboard.status.pendingPickup") || "Chờ nhặt",
-    },
-    {
-      value: funnel.returned || 0,
-      name: t("logistics.dashboard.status.returned") || "Đã trả hàng",
-    },
-  ].filter((item) => item.value > 0);
-
-  if (funnelData.length === 0) {
-    funnelData.push({
-      value: 0,
-      name: t("logistics.dashboard.noData") || "Không có dữ liệu",
-    });
-  }
-
-  const option = {
-    tooltip: {
-      trigger: "item",
-      formatter: "{b}: {c} đơn ({d}%)",
-      backgroundColor: colors.tooltipBg,
-      borderColor: colors.tooltipBorder,
-      textStyle: { color: colors.text },
-    },
-    legend: {
-      orient: "horizontal",
-      bottom: "0%",
-      textStyle: { color: colors.text },
-    },
-    color: colors.itemColors,
-    series: [
-      {
-        name: t("logistics.dashboard.fulfillmentFunnel"),
-        type: "pie",
-        radius: ["40%", "70%"],
-        avoidLabelOverlap: false,
-        itemStyle: {
-          borderRadius: 8,
-          borderColor: isDark.value ? "#161618" : "#fff",
-          borderWidth: 2,
-        },
-        label: {
-          show: false,
-          position: "center",
-        },
-        emphasis: {
-          label: {
-            show: true,
-            fontSize: 16,
-            fontWeight: "bold",
-            color: colors.text,
-          },
-        },
-        labelLine: {
-          show: false,
-        },
-        data: funnelData,
-      },
-    ],
-  };
-
-  funnelChartInstance.setOption(option);
-};
-
-const renderCostChart = () => {
-  if (!costChartRef.value) return;
-
-  if (!costChartInstance) {
-    costChartInstance = echarts.init(costChartRef.value);
-  }
-
-  const colors = getThemeColors();
-  const trends = dashboard.value.trends || [];
-
-  const dates = trends.map((t) => t.dayLabel);
-  const completedCounts = trends.map((t) => t.deliveredCount);
-  const shippingCosts = trends.map((t) => t.shippingCost);
-
-  const option = {
-    tooltip: {
-      trigger: "axis",
-      axisPointer: { type: "cross" },
-      backgroundColor: colors.tooltipBg,
-      borderColor: colors.tooltipBorder,
-      textStyle: { color: colors.text },
-    },
-    grid: {
-      left: "3%",
-      right: "4%",
-      bottom: "8%",
-      top: "12%",
-      containLabel: true,
-    },
-    legend: {
-      data: [
-        t("logistics.dashboard.deliveredCount"),
-        t("logistics.dashboard.shippingCost"),
-      ],
-      textStyle: { color: colors.text },
-      bottom: "0%",
-    },
-    xAxis: [
-      {
-        type: "category",
-        data: dates,
-        axisPointer: { type: "shadow" },
-        axisLabel: { color: colors.text },
-        axisLine: { lineStyle: { color: colors.line } },
-      },
-    ],
-    yAxis: [
-      {
-        type: "value",
-        name: t("logistics.dashboard.deliveredCount"),
-        minInterval: 1,
-        axisLabel: { color: colors.text },
-        axisLine: { lineStyle: { color: colors.line } },
-        splitLine: { lineStyle: { color: colors.line } },
-      },
-      {
-        type: "value",
-        name: t("logistics.dashboard.shippingCost") + " (VND)",
-        axisLabel: {
-          color: colors.text,
-          formatter: (value: number) => {
-            if (value >= 1000000) return (value / 1000000).toFixed(1) + "M";
-            if (value >= 1000) return (value / 1000).toFixed(0) + "K";
-            return value.toString();
-          },
-        },
-        axisLine: { lineStyle: { color: colors.line } },
-        splitLine: { show: false },
-      },
-    ],
-    series: [
-      {
-        name: t("logistics.dashboard.deliveredCount"),
-        type: "bar",
-        data: completedCounts,
-        itemStyle: {
-          borderRadius: [4, 4, 0, 0],
-          color: "#409eff",
-        },
-      },
-      {
-        name: t("logistics.dashboard.shippingCost"),
-        type: "line",
-        yAxisIndex: 1,
-        data: shippingCosts,
-        smooth: true,
-        lineStyle: { width: 3 },
-        itemStyle: { color: "#67c23a" },
-      },
-    ],
-  };
-
-  costChartInstance.setOption(option);
-};
-
-const resizeCharts = () => {
-  funnelChartInstance?.resize();
-  costChartInstance?.resize();
-};
-
-const handleChartsUpdate = () => {
-  nextTick(() => {
-    renderFunnelChart();
-    renderCostChart();
-  });
-};
-
-watch(dashboard, handleChartsUpdate, { deep: true });
-watch(isDark, handleChartsUpdate);
-
-const columns = computed<ArtTableColumn[]>(() => [
-  { label: t("logistics.dashboard.carrier"), prop: "carrier", minWidth: 160 },
-  {
-    label: t("logistics.dashboard.deliveredCount"),
-    prop: "deliveredCount",
-    minWidth: 160,
-  },
-  {
-    label: t("logistics.dashboard.avgDeliveryDays"),
-    prop: "avgDeliveryDays",
-    minWidth: 190,
-  },
-  {
-    label: t("logistics.dashboard.avgShippingCostPerOrder"),
-    prop: "avgShippingCostPerOrder",
-    minWidth: 190,
-  },
-  {
-    label: t("logistics.dashboard.returnsRatio"),
-    prop: "returnsRatio",
-    useSlot: true,
-    minWidth: 150,
-  },
-]);
-
-const exceptionColumns = computed<ArtTableColumn[]>(() => [
-  { label: t("logistics.dashboard.type"), prop: "type", minWidth: 160 },
-  {
-    label: t("logistics.dashboard.tracking"),
-    prop: "trackingNumber",
-    minWidth: 180,
-  },
-  { label: t("logistics.dashboard.message"), prop: "message", minWidth: 260 },
-  {
-    label: t("logistics.dashboard.createdAt"),
-    prop: "createdAt",
-    minWidth: 180,
-  },
-]);
-
 const handleChangeRange = (value: string) => {
   range.value = value as RangeValue;
-  void loadData();
+  void loadDashboardData();
 };
 
-const loadData = async () => {
-  loading.value = true;
+const loadDashboardData = async () => {
   try {
     dashboard.value = await LogisticsService.getDashboard(range.value);
-  } finally {
-    loading.value = false;
+  } catch (error) {
+    console.error("Failed to load dashboard stats", error);
   }
 };
 
@@ -479,14 +451,321 @@ const formatMoney = (value: number) => {
   }
 };
 
-onMounted(() => {
-  void loadData();
-  window.addEventListener("resize", resizeCharts);
+// Filter Client-side for region (Province/City)
+const filteredOrderList = computed(() => {
+  let list = orderList.value;
+  if (filterParams.value.region) {
+    const r = filterParams.value.region.toLowerCase().trim();
+    list = list.filter((o) => o.customerAddress?.toLowerCase().includes(r));
+  }
+  return list;
 });
 
-onBeforeUnmount(() => {
-  window.removeEventListener("resize", resizeCharts);
-  funnelChartInstance?.dispose();
-  costChartInstance?.dispose();
+// Pagination
+const pagination = ref({
+  current: 1,
+  size: 10,
+  total: 0,
+});
+
+watch(filteredOrderList, (newVal) => {
+  pagination.value.total = newVal.length;
+});
+
+const pagedOrderList = computed(() => {
+  const start = (pagination.value.current - 1) * pagination.value.size;
+  const end = start + pagination.value.size;
+  return filteredOrderList.value.slice(start, end);
+});
+
+const handleSizeChange = (val: number) => {
+  pagination.value.size = val;
+  pagination.value.current = 1;
+};
+
+const handleCurrentChange = (val: number) => {
+  pagination.value.current = val;
+};
+
+// Table Columns Config
+const columns = computed(() => [
+  {
+    label: "Mã vận đơn 3PL",
+    prop: "trackingNumber",
+    minWidth: 150,
+    useSlot: true,
+  },
+  {
+    label: "Trạng thái",
+    prop: "status",
+    minWidth: 130,
+    useSlot: true,
+  },
+  { label: "Khách hàng", prop: "customerName", minWidth: 150 },
+  { label: "Số điện thoại", prop: "customerPhone", minWidth: 120 },
+  { label: "COD thu hộ", prop: "codAmount", minWidth: 130, useSlot: true },
+  { label: "Phí ship", prop: "shippingCost", minWidth: 110, useSlot: true },
+  { label: "Ngày tạo", prop: "createdAt", minWidth: 160, useSlot: true },
+  {
+    label: "Ngày hoàn thành",
+    prop: "deliveredAt",
+    minWidth: 160,
+    useSlot: true,
+  },
+  { label: "Thao tác", prop: "actions", minWidth: 100, useSlot: true },
+]);
+
+// Drawer Detail State
+const drawerVisible = ref(false);
+const selectedOrderId = ref<number | null>(null);
+const loadingDetail = ref(false);
+const detailData = ref<FulfillmentDetailResponse>({
+  id: 0,
+  trackingNumber: "",
+  originalOrderCode: "",
+  customerName: "",
+  customerPhone: "",
+  customerAddress: "",
+  carrier: "",
+  status: 0,
+  codAmount: 0,
+  shippingCost: 0,
+  createdAt: "",
+  items: [],
+});
+
+const trackingData = ref<TrackingResponse | null>(null);
+const loadingTracking = ref(false);
+
+const currentStep = computed(() => {
+  if (detailData.value.deliveredAt) return 2;
+  return detailData.value.status;
+});
+
+const hasRestrictedItems = computed(() => {
+  return detailData.value.items.some((item) => item.isRestricted);
+});
+
+const hasOutOfStockItems = computed(() => {
+  return detailData.value.items.some((item) => item.isOutOfStock);
+});
+
+const isAllPicked = computed(() => {
+  if (detailData.value.items.length === 0) return false;
+  return detailData.value.items.every((item) => item.isPicked);
+});
+
+const sortedMilestones = computed(() => {
+  if (!trackingData.value?.milestones) return [];
+  return [...trackingData.value.milestones].sort(
+    (a, b) => dayjs(b.timestamp).valueOf() - dayjs(a.timestamp).valueOf(),
+  );
+});
+
+// Methods
+const fetchOrders = async () => {
+  loading.value = true;
+  try {
+    const params: any = {};
+    if (
+      filterParams.value.status !== null &&
+      filterParams.value.status !== undefined
+    ) {
+      params.status = filterParams.value.status;
+    }
+    if (filterParams.value.carrier) {
+      params.carrier = filterParams.value.carrier;
+    }
+    if (
+      filterParams.value.dateRange &&
+      filterParams.value.dateRange.length === 2
+    ) {
+      params.fromDate = dayjs(filterParams.value.dateRange[0])
+        .startOf("day")
+        .toISOString();
+      params.toDate = dayjs(filterParams.value.dateRange[1])
+        .endOf("day")
+        .toISOString();
+    }
+
+    const res = await getFulfillmentOrders(params);
+    orderList.value = (res as any).data || res || [];
+  } catch (error) {
+    console.error("Failed to load fulfillment list", error);
+    ElMessage.error("Không thể tải danh sách đơn hàng.");
+    orderList.value = [];
+  } finally {
+    loading.value = false;
+  }
+};
+
+const resetFilters = () => {
+  filterParams.value = {
+    dateRange: [],
+    carrier: "",
+    region: "",
+    status: null,
+  };
+  pagination.value.current = 1;
+  void fetchOrders();
+};
+
+const openDetail = async (row: any) => {
+  selectedOrderId.value = row.id;
+  drawerVisible.value = true;
+  await fetchDetail(row.id);
+};
+
+const fetchDetail = async (id: number) => {
+  loadingDetail.value = true;
+  loadingTracking.value = false;
+  trackingData.value = null;
+
+  try {
+    const res = await getFulfillmentDetail(id);
+    detailData.value = (res as any).data || res;
+
+    // Fetch Milestones from 3PL tracking if tracking number exists
+    if (detailData.value.trackingNumber) {
+      loadingTracking.value = true;
+      try {
+        const trackRes = await getShipmentTracking(
+          detailData.value.trackingNumber,
+        );
+        trackingData.value = (trackRes as any).data || trackRes;
+      } catch (trackError) {
+        console.warn("Failed to fetch shipment tracking details", trackError);
+      } finally {
+        loadingTracking.value = false;
+      }
+    }
+  } catch (error) {
+    console.error("Failed to fetch detail", error);
+    ElMessage.error("Không tải được chi tiết đơn hàng.");
+  } finally {
+    loadingDetail.value = false;
+  }
+};
+
+const handleTogglePick = async (itemId: number, isPicked: boolean) => {
+  try {
+    await toggleItemPick(itemId, isPicked);
+    ElMessage.success("Cập nhật nhặt hàng thành công");
+  } catch (error) {
+    console.warn("API error, state is kept locally", error);
+  }
+};
+
+const handleUpdateTracking = async () => {
+  if (!detailData.value.trackingNumber) return;
+  try {
+    await updateTrackingNumber(
+      detailData.value.id,
+      detailData.value.trackingNumber,
+    );
+    ElMessage.success("Cập nhật mã vận đơn thành công");
+    if (selectedOrderId.value) {
+      await fetchDetail(selectedOrderId.value);
+    }
+    await fetchOrders();
+  } catch (error) {
+    console.error(error);
+    ElMessage.error("Không cập nhật được mã vận đơn.");
+  }
+};
+
+const handleUpdateStatus = async (newStatus: number) => {
+  if (newStatus === 1 && !isAllPicked.value) {
+    ElMessage.warning(t("logistics.fulfillment.alerts.pickingIncomplete"));
+    return;
+  }
+
+  try {
+    await updateParcelStatus(detailData.value.id, newStatus);
+    ElMessage.success("Cập nhật trạng thái thành công");
+    if (selectedOrderId.value) {
+      await fetchDetail(selectedOrderId.value);
+    }
+    await fetchOrders();
+  } catch (error) {
+    console.error(error);
+    ElMessage.error("Cập nhật trạng thái thất bại.");
+  }
+};
+
+// Utilities
+const getCarrierLabel = (carrier: string) => {
+  switch (carrier) {
+    case "GHTK":
+      return "Giaohangtietkiem";
+    case "GHN":
+      return "Giaohangnhanh";
+    case "ViettelPost":
+      return "Viettel Post";
+    case "Internal":
+      return "Đội xe nội bộ";
+    default:
+      return carrier || "Chưa chọn";
+  }
+};
+
+const getCarrierTagType = (carrier: string) => {
+  switch (carrier) {
+    case "GHTK":
+      return "success";
+    case "GHN":
+      return "warning";
+    case "ViettelPost":
+      return "danger";
+    case "Internal":
+      return "primary";
+    default:
+      return "info";
+  }
+};
+
+const getStatusLabel = (status: number) => {
+  const st = deliveryStatuses.value.find((x) => x.id === status);
+  return st ? st.nameVi : "Không rõ";
+};
+
+const getStatusTagType = (status: number) => {
+  switch (status) {
+    case 1:
+      return "success";
+    case 2:
+      return "danger";
+    case 0:
+    default:
+      return "warning";
+  }
+};
+
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(value);
+};
+
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return "";
+  return dayjs(dateStr).format("DD/MM/YYYY HH:mm");
+};
+
+onMounted(() => {
+  void fetchOrders();
+  void loadDashboardData();
 });
 </script>
+
+<style scoped>
+.timeline-card :deep(.el-card__body) {
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.tracking-timeline-dense :deep(.el-timeline-item) {
+  padding-bottom: 12px;
+}
+</style>
