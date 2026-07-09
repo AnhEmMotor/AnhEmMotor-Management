@@ -33,6 +33,12 @@ export interface SalesOrder {
   subtotal?: number;
   total?: number;
   isInventoryLocked?: boolean;
+  isCompanyInvoice?: boolean;
+  companyName?: string;
+  companyAddress?: string;
+  companyTaxCode?: string;
+  companyEmail?: string;
+  budgetCode?: string;
   createdAt?: string;
   products: OrderProduct[];
 }

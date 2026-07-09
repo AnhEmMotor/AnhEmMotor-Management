@@ -236,6 +236,38 @@
           </ElCol>
         </ElRow>
 
+        <!-- Invoice Info if requested -->
+        <ElAlert
+          v-if="editingOrder && editingOrder.isCompanyInvoice"
+          title="Yêu cầu xuất hóa đơn công ty (VAT)"
+          type="info"
+          :closable="false"
+          show-icon
+          class="mb-4 mt-2"
+        >
+          <div
+            class="mt-2 text-xs space-y-1.5 font-medium text-[var(--el-text-color-regular)]"
+          >
+            <div>
+              <strong>Tên công ty:</strong> {{ editingOrder.companyName }}
+            </div>
+            <div>
+              <strong>Mã số thuế:</strong> {{ editingOrder.companyTaxCode }}
+            </div>
+            <div>
+              <strong>Địa chỉ công ty:</strong>
+              {{ editingOrder.companyAddress }}
+            </div>
+            <div v-if="editingOrder.companyEmail">
+              <strong>Email nhận HĐ:</strong> {{ editingOrder.companyEmail }}
+            </div>
+            <div v-if="editingOrder.budgetCode">
+              <strong>Mã đơn vị ngân sách:</strong>
+              {{ editingOrder.budgetCode }}
+            </div>
+          </div>
+        </ElAlert>
+
         <div class="border-t border-gray-100 pt-4 mt-2">
           <div class="flex justify-between items-center mb-3">
             <span class="text-sm font-semibold text-gray-700"
