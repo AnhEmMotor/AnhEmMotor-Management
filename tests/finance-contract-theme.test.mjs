@@ -8,8 +8,6 @@ const themedManagementViews = [
   ["finance contract list page", "../src/views/contract/finance/index.vue"],
   ["sales contract list page", "../src/views/contract/sales/index.vue"],
   ["supplier contract list page", "../src/views/contract/supplier/index.vue"],
-  ["contract template list page", "../src/views/contract/templates/index.vue"],
-  ["contract template editor page", "../src/views/contract/templates/edit.vue"],
   [
     "report page header component",
     "../src/views/analytics-reporting/components/ReportPageHeader.vue",

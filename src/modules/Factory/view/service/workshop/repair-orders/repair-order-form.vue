@@ -704,7 +704,7 @@ const openImagePreview = (src: string) => {
 };
 
 const goBack = () => {
-  router.push("/factory/service/workshop/repair-orders");
+  router.push("/factory/workshop/repair");
 };
 
 const formatCurrency = (value: number) => {

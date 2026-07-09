@@ -722,7 +722,7 @@ const getHistoryStatusTagType = (statusText: string) => {
 };
 
 function goBack() {
-  router.push({ name: "ServiceWarrantyRequests" }).catch(() => null);
+  router.push({ name: "WorkshopWarranty" }).catch(() => null);
 }
 
 async function loadHistory() {
@@ -861,7 +861,7 @@ async function handleRecall() {
 }
 
 onMounted(() => {
-  void load();
+  load();
 });
 </script>
 
