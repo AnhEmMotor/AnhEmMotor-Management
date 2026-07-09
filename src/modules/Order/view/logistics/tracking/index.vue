@@ -492,13 +492,6 @@ async function selectOrder(order: ActiveShipmentItem) {
     const res = await getShipmentTracking(order.trackingNumber);
     trackingData.value = (res as any).data || res;
 
-    // Mock ETA if missing for demonstration
-    if (!(trackingData.value as any).estimatedDeliveryDate) {
-      (trackingData.value as any).estimatedDeliveryDate = dayjs()
-        .add(order.isStuck ? 2 : 24, "hour")
-        .toISOString();
-    }
-
     nextTick(() => {
       drawTrackingData();
     });
@@ -550,11 +543,10 @@ function drawTrackingData() {
     currentMilestone.longitude,
   ];
 
-  // Mock Destination if missing (just slightly far from current for demo)
+  // Destination
   const destCoords: any = [
-    trackingData.value.destinationLatitude || currentMilestone.latitude + 0.05,
-    trackingData.value.destinationLongitude ||
-      currentMilestone.longitude + 0.05,
+    trackingData.value.destinationLatitude,
+    trackingData.value.destinationLongitude,
   ];
 
   // DRAW POLYLINES
@@ -567,13 +559,18 @@ function drawTrackingData() {
   }).addTo(polylineLayer.value as any);
 
   // 2. Current -> End (Dashed grey line - Expected)
-  L.polyline([currentCoords, destCoords], {
-    color: "#9ca3af", // gray-400
-    weight: 4,
-    opacity: 0.8,
-    dashArray: "8, 8",
-    lineJoin: "round",
-  }).addTo(polylineLayer.value as any);
+  if (
+    trackingData.value.destinationLatitude &&
+    trackingData.value.destinationLongitude
+  ) {
+    L.polyline([currentCoords, destCoords], {
+      color: "#9ca3af", // gray-400
+      weight: 4,
+      opacity: 0.8,
+      dashArray: "8, 8",
+      lineJoin: "round",
+    }).addTo(polylineLayer.value as any);
+  }
 
   // DRAW MARKERS
   // 1. Start (Showroom)
@@ -609,18 +606,30 @@ function drawTrackingData() {
     .addTo(markersLayer.value as any);
 
   // 3. Destination (Customer)
-  const endIcon = L.divIcon({
-    className: "custom-marker",
-    html: `<div class="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center shadow-lg border-2 border-white"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>`,
-    iconSize: [32, 32],
-    iconAnchor: [16, 16],
-  });
-  L.marker(destCoords, { icon: endIcon })
-    .bindTooltip("Địa chỉ nhận hàng", { direction: "top" })
-    .addTo(markersLayer.value as any);
+  if (
+    trackingData.value.destinationLatitude &&
+    trackingData.value.destinationLongitude
+  ) {
+    const endIcon = L.divIcon({
+      className: "custom-marker",
+      html: `<div class="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center shadow-lg border-2 border-white"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>`,
+      iconSize: [32, 32],
+      iconAnchor: [16, 16],
+    });
+    L.marker(destCoords, { icon: endIcon })
+      .bindTooltip("Địa chỉ nhận hàng", { direction: "top" })
+      .addTo(markersLayer.value as any);
+  }
 
   // Auto zoom to fit the route
-  const bounds = L.latLngBounds([startCoords, currentCoords, destCoords]);
+  const boundPoints = [startCoords, currentCoords];
+  if (
+    trackingData.value.destinationLatitude &&
+    trackingData.value.destinationLongitude
+  ) {
+    boundPoints.push(destCoords);
+  }
+  const bounds = L.latLngBounds(boundPoints);
   map.value.flyToBounds(bounds, { padding: [80, 80], duration: 1.2 });
 }
 

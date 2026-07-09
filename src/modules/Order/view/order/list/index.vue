@@ -146,6 +146,7 @@
       :title="drawer.order ? `Chi tiết đơn #${drawer.order.id}` : ''"
       width="60%"
       :destroy-on-close="true"
+      :loading="rowClickLoading"
     >
       <div v-if="drawer.order" class="order-detail">
         <!-- Order Summary -->
@@ -212,15 +213,7 @@
                 formatCurrency(drawer.order.shippingFee)
               }}</span>
             </div>
-            <div
-              v-if="(drawer.order.discount || 0) > 0"
-              class="flex justify-between text-red-600"
-            >
-              <span>Giảm giá:</span>
-              <span class="font-medium"
-                >-{{ formatCurrency(drawer.order.discount) }}</span
-              >
-            </div>
+
             <div
               class="flex justify-between text-base font-bold text-primary border-t pt-1 mt-1"
             >
@@ -313,249 +306,6 @@ import type { SalesOrder, OrderProduct } from "@/domain/order/order.types";
 import type { ColumnOption } from "@/types/component";
 
 // ============================================
-// MOCK DATA CONFIGURATION
-// ============================================
-const USE_MOCK = false; // Set to false to use real API
-
-// Mock orders data
-function getMockOrders(): SalesOrder[] {
-  const now = new Date();
-  return [
-    {
-      id: 1001,
-      createdAt: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-      customerName: "Nguyễn Văn An",
-      customerPhone: "0901234567",
-      customerAddress: "123 Nguyễn Huệ, Quận 1, TP.HCM",
-      subtotal: 850000,
-      shippingFee: 30000,
-      discount: 0,
-      total: 880000,
-      statusId: "pending",
-      paymentMethod: "COD",
-      paymentStatus: "pending",
-      isInventoryLocked: true,
-      products: [
-        {
-          productVariantId: 501,
-          productName: "Dầu nhớt Castrol 1L",
-          count: 2,
-          price: 250000,
-          coverImageUrl: "https://via.placeholder.com/80?text=Oil",
-        },
-        {
-          productVariantId: 502,
-          productName: "Bộ lọc gió Honda",
-          count: 1,
-          price: 350000,
-          coverImageUrl: "https://via.placeholder.com/80?text=Filter",
-        },
-      ],
-    },
-    {
-      id: 1002,
-      createdAt: new Date(now.getTime() - 5 * 60 * 60 * 1000).toISOString(), // 5 hours ago
-      customerName: "Trần Thị Bình",
-      customerPhone: "0912345678",
-      customerAddress: "456 Lê Duẩn, Quận 1, TP.HCM",
-      subtotal: 480000,
-      shippingFee: 25000,
-      discount: 0,
-      total: 505000,
-      statusId: "confirmed_cod",
-      paymentStatus: "paid",
-      isInventoryLocked: true,
-      paymentMethod: "COD",
-      products: [
-        {
-          productVariantId: 503,
-          productName: "Cà pê phanh xe máy",
-          count: 4,
-          price: 120000,
-          coverImageUrl: "https://via.placeholder.com/80?text=Brake",
-        },
-      ],
-    },
-    {
-      id: 1003,
-      createdAt: new Date(now.getTime() - 1 * 60 * 60 * 1000).toISOString(), // 1 hour ago
-      customerName: "Lê Văn Cường",
-      customerPhone: "0923456789",
-      customerAddress: "789 Cách Mạng Tháng 8, Quận 3, TP.HCM",
-      subtotal: 1710000,
-      shippingFee: 25000,
-      discount: 0,
-      total: 1735000,
-      statusId: "paid_processing",
-      paymentStatus: "paid",
-      isInventoryLocked: true,
-      paymentMethod: "VNPay",
-      products: [
-        {
-          productVariantId: 504,
-          productName: "Lốp xe máy Michelin",
-          count: 2,
-          price: 450000,
-          coverImageUrl: "https://via.placeholder.com/80?text=Tire",
-        },
-        {
-          productVariantId: 505,
-          productName: "Tay lái xe máy",
-          count: 1,
-          price: 1200000,
-          coverImageUrl: "https://via.placeholder.com/80?text=Handle",
-        },
-      ],
-    },
-    {
-      id: 1004,
-      createdAt: new Date(now.getTime() - 3 * 60 * 60 * 1000).toISOString(), // 3 hours ago
-      customerName: "Phạm Thị Dung",
-      customerPhone: "0934567890",
-      customerAddress: "321 Võ Văn Ngân, Quận Bình Thạnh, TP.HCM",
-      subtotal: 560000,
-      shippingFee: 30000,
-      discount: 0,
-      total: 590000,
-      statusId: "delivering",
-      paymentStatus: "paid",
-      isInventoryLocked: true,
-      paymentMethod: "PayOS",
-      products: [
-        {
-          productVariantId: 506,
-          productName: "Dây phanh xe máy",
-          count: 1,
-          price: 560000,
-          coverImageUrl: "https://via.placeholder.com/80?text=Cable",
-        },
-      ],
-    },
-    {
-      id: 1005,
-      createdAt: new Date(now.getTime() - 8 * 60 * 60 * 1000).toISOString(), // 8 hours ago
-      customerName: "Hoàng Văn Em",
-      customerPhone: "0945678901",
-      customerAddress: "654 Đặng Thùy Trâm, Quận Bình Thạnh, TP.HCM",
-      subtotal: 3200000,
-      shippingFee: 0,
-      discount: 0,
-      total: 3200000,
-      statusId: "completed",
-      paymentStatus: "paid",
-      isInventoryLocked: false,
-      paymentMethod: "COD",
-      products: [
-        {
-          productVariantId: 507,
-          productName: "Xe máy tay ga Air Blade",
-          count: 1,
-          price: 3200000,
-          coverImageUrl: "https://via.placeholder.com/80?text=Scooter",
-        },
-      ],
-    },
-    {
-      id: 1006,
-      createdAt: new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
-      customerName: "Vũ Thị Giang",
-      customerPhone: "0956789012",
-      customerAddress: "987 Nguyễn Văn Cừ, Quận 5, TP.HCM",
-      subtotal: 750000,
-      shippingFee: 35000,
-      discount: 0,
-      total: 785000,
-      statusId: "cancelled",
-      paymentStatus: "failed",
-      isInventoryLocked: false,
-      paymentMethod: "VNPay",
-      products: [
-        {
-          productVariantId: 508,
-          productName: "Phuộc xe máy",
-          count: 2,
-          price: 375000,
-          coverImageUrl: "https://via.placeholder.com/80?text=Suspension",
-        },
-      ],
-    },
-    {
-      id: 1007,
-      createdAt: new Date(now.getTime() - 4 * 60 * 60 * 1000).toISOString(), // 4 hours ago
-      customerName: "Đỗ Văn Huy",
-      customerPhone: "0967890123",
-      customerAddress: "147 Trần Hưng Đạo, Quận 1, TP.HCM",
-      subtotal: 1850000,
-      shippingFee: 25000,
-      discount: 0,
-      total: 1875000,
-      statusId: "deposit_paid",
-      paymentStatus: "paid",
-      isInventoryLocked: true,
-      paymentMethod: "PayOS",
-      products: [
-        {
-          productVariantId: 509,
-          productName: "Năm pô xe máy",
-          count: 1,
-          price: 1850000,
-          coverImageUrl: "https://via.placeholder.com/80?text=Exhaust",
-        },
-      ],
-    },
-    {
-      id: 1008,
-      createdAt: new Date(now.getTime() - 1 * 60 * 60 * 1000).toISOString(), // 1 hour ago
-      customerName: "Lâm Thị Kiều",
-      customerPhone: "0978901234",
-      customerAddress: "258 Hồ Tùng Mậu, Quận 1, TP.HCM",
-      subtotal: 690000,
-      shippingFee: 30000,
-      discount: 50000,
-      total: 670000,
-      statusId: "waiting_pickup",
-      paymentStatus: "pending",
-      isInventoryLocked: true,
-      paymentMethod: "COD",
-      products: [
-        {
-          productVariantId: 510,
-          productName: "Gương xe máy",
-          count: 2,
-          price: 230000,
-          coverImageUrl: "https://via.placeholder.com/80?text=Mirror",
-        },
-        {
-          productVariantId: 511,
-          productName: "Bơm nước xe máy",
-          count: 1,
-          price: 460000,
-          coverImageUrl: "https://via.placeholder.com/80?text=Pump",
-        },
-      ],
-    },
-  ];
-}
-
-function getMockStatusMap(): Array<{ id: string; name: string }> {
-  return [
-    { id: "pending", name: "Chờ xác nhận" },
-    { id: "confirmed_cod", name: "Đã xác nhận (COD)" },
-    { id: "paid_processing", name: "Đang xử lý" },
-    { id: "waiting_deposit", name: "Chờ đặt cọc" },
-    { id: "deposit_paid", name: "Đã đặt cọc" },
-    { id: "waiting_installment", name: "Chờ duyệt trả góp" },
-    { id: "installment_approved", name: "Đã duyệt trả góp" },
-    { id: "delivering", name: "Đang giao hàng" },
-    { id: "waiting_pickup", name: "Chờ lấy hàng" },
-    { id: "completed", name: "Đã hoàn thành" },
-    { id: "cancelled", name: "Đã hủy" },
-    { id: "refunding", name: "Đang hoàn tiền" },
-    { id: "refunded", name: "Đã hoàn tiền" },
-  ];
-}
-
-// ============================================
 // ORIGINAL CODE
 // ============================================
 
@@ -612,6 +362,7 @@ const drawer = reactive({
   visible: false,
   order: null as SalesOrder | null,
 });
+const rowClickLoading = ref(false);
 
 const searchForm = reactive({
   search: "",
@@ -803,34 +554,25 @@ function getPaymentStatusTagType(
 async function fetchData() {
   loading.value = true;
   try {
-    if (USE_MOCK) {
-      // Simulate network delay for realistic feel
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      orders.value = getMockOrders();
-      if (statusMap.value.length === 0) {
-        statusMap.value = getMockStatusMap();
-      }
-    } else {
-      // Fetch confirmed and unconfirmed orders in parallel, with large page size to reduce calls
-      const [confirmedRes, unconfirmedRes] = await Promise.all([
-        SalesOrderApi.getConfirmedList({ current: 1, size: 1000 }),
-        SalesOrderApi.getUnconfirmedList({ current: 1, size: 1000 }),
-      ]);
+    // Fetch confirmed and unconfirmed orders in parallel, with large page size to reduce calls
+    const [confirmedRes, unconfirmedRes] = await Promise.all([
+      SalesOrderApi.getConfirmedList({ current: 1, size: 1000 }),
+      SalesOrderApi.getUnconfirmedList({ current: 1, size: 1000 }),
+    ]);
 
-      orders.value = [
-        ...(confirmedRes.items || []),
-        ...(unconfirmedRes.items || []),
-      ].sort(
-        (a, b) =>
-          new Date(b.createdAt || 0).getTime() -
-          new Date(a.createdAt || 0).getTime(),
-      );
+    orders.value = [
+      ...(confirmedRes.items || []),
+      ...(unconfirmedRes.items || []),
+    ].sort(
+      (a, b) =>
+        new Date(b.createdAt || 0).getTime() -
+        new Date(a.createdAt || 0).getTime(),
+    );
 
-      // Also fetch status map for display names if not already loaded
-      if (statusMap.value.length === 0) {
-        const statusMapRes = await SalesOrderApi.getStatusMap();
-        statusMap.value = statusMapRes;
-      }
+    // Also fetch status map for display names if not already loaded
+    if (statusMap.value.length === 0) {
+      const statusMapRes = await SalesOrderApi.getStatusMap();
+      statusMap.value = statusMapRes;
     }
   } catch (error) {
     console.error("Failed to fetch orders:", error);
@@ -872,10 +614,16 @@ function handleSelectionChange(selection: SalesOrder[]) {
 }
 
 // Row click -> open drawer
-function handleRowClick(row: SalesOrder) {
-  // Fetch full detail if needed (the list might have incomplete product details)
-  // But the list likely includes products already. We'll use the row's data.
-  drawer.order = row;
+async function handleRowClick(row: SalesOrder) {
+  rowClickLoading.value = true;
+  try {
+    const detail = await SalesOrderApi.getById(row.id);
+    drawer.order = detail as SalesOrder;
+  } catch {
+    drawer.order = row;
+  } finally {
+    rowClickLoading.value = false;
+  }
   drawer.visible = true;
 }
 

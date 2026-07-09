@@ -21,11 +21,13 @@ import { helpRoutes } from "./help";
 import { salesRoutes } from "./sales";
 
 import { factoryMenu } from "@/modules/Factory/Menu";
+import { adminServiceRoutes } from "./admin-service";
 
 const coreRoutes: AppRouteRecord[] = [
   dashboardRoutes,
   ...orderMenu,
   serviceRoutes,
+  adminServiceRoutes,
   ...factoryMenu,
   ...warehouseMenu,
   ...accountancyMenu,

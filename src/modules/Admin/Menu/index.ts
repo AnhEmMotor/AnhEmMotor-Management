@@ -2,7 +2,7 @@ import { AppRouteRecord } from "@/types/router";
 import { dashboardRoutes } from "@/router/modules/dashboard";
 import { salesRoutes } from "@/router/modules/sales";
 import { contractRoutes } from "@/router/modules/contract";
-import { serviceRoutes } from "@/router/modules/service";
+import { adminServiceRoutes } from "@/router/modules/admin-service";
 import { reportingRoutes } from "@/router/modules/reporting";
 import { hrRoutes } from "@/router/modules/hr";
 import { authorizationRoutes } from "@/router/modules/authorization";
@@ -12,7 +12,7 @@ export const adminMenu: AppRouteRecord[] = [
   dashboardRoutes,
   salesRoutes,
   contractRoutes,
-  serviceRoutes,
+  adminServiceRoutes,
   reportingRoutes,
   hrRoutes,
   authorizationRoutes,

@@ -161,27 +161,7 @@ const loadTechnicians = async () => {
         complaintRate: r.ComplaintRate ?? r.complaintRate ?? 0.0,
       }));
     } else {
-      // Mock fallback data if API returned empty
-      techniciansList.value = [
-        {
-          name: "Nguyễn Anh Khoa",
-          completed: 16,
-          revenue: 84000000,
-          complaintRate: 0.0,
-        },
-        {
-          name: "Trần Bảo Trí",
-          completed: 11,
-          revenue: 56000000,
-          complaintRate: 0.05,
-        },
-        {
-          name: "Phạm Minh Long",
-          completed: 7,
-          revenue: 34000000,
-          complaintRate: 0.0,
-        },
-      ];
+      techniciansList.value = [];
     }
   } catch (err: any) {
     ElMessage.error(err?.message || "Không thể tải danh sách kỹ thuật viên");

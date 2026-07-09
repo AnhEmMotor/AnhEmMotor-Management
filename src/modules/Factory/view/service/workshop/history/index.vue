@@ -147,7 +147,7 @@
           </div>
         </div>
 
-        <!-- Predictive Maintenance Alerts -->
+        <!-- Predictive section removed -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <ElCard class="lg:col-span-2">
             <template #header>
@@ -228,7 +228,7 @@
                 <div>
                   <div class="flex items-center gap-2 flex-wrap">
                     <ElTag type="info" effect="dark">
-                      {{ formatRepairOrderTicket(item) }}
+                      {{ item.maintenanceNumber }}
                     </ElTag>
                     <ElTag :type="statusTagType(item.status)" effect="dark">
                       {{ item.status }}
@@ -253,11 +253,7 @@
                     Tổng chi phí
                   </div>
                   <div class="text-lg font-black text-blue-600">
-                    {{
-                      formatCurrency(
-                        item.totalAmount || item.laborCost + item.partsCost,
-                      )
-                    }}
+                    {{ formatCurrency(item.totalCost) }}
                   </div>
                 </div>
               </div>
@@ -505,7 +501,7 @@ function handleCreateRepairOrder() {
   );
 
   router.push({
-    name: "ServiceWorkshopRepairOrders",
+    name: "WorkshopRepair",
     query: {
       source: "vehicle-portfolio",
       licensePlate: plate || "",

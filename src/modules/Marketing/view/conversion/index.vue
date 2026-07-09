@@ -1,6 +1,6 @@
 <template>
   <div
-    class="conversion-tools-page min-h-full bg-[#F8FAFC] dark:bg-[#020617] font-inter text-[#0F172A] dark:text-[#E2E8F0] pb-10"
+    class="conversion-tools-page min-h-full bg-[#F8FAFC] dark:bg-[#020617] text-[#0F172A] dark:text-[#E2E8F0] pb-10"
   >
     <div
       class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-8 py-6 shadow-sm"
@@ -14,7 +14,7 @@
           </div>
           <div>
             <h1
-              class="m-0 text-xl font-black tracking-tight text-slate-900 dark:text-slate-100 leading-none"
+              class="m-0 text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-none"
             >
               {{ $t("marketing.conversionTools.title") }}
             </h1>
@@ -31,7 +31,7 @@
         >
           <button
             @click="activeTab = 'popup'"
-            class="px-6 py-2 rounded-lg text-[10px] font-black uppercase transition-all"
+            class="px-6 py-2 rounded-lg text-[10px] font-bold uppercase transition-all"
             :class="
               activeTab === 'popup'
                 ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-md'
@@ -42,7 +42,7 @@
           </button>
           <button
             @click="activeTab = 'landing'"
-            class="px-6 py-2 rounded-lg text-[10px] font-black uppercase transition-all"
+            class="px-6 py-2 rounded-lg text-[10px] font-bold uppercase transition-all"
             :class="
               activeTab === 'landing'
                 ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-md'
@@ -59,13 +59,13 @@
       <div v-if="activeTab === 'popup'" class="space-y-6 animate-fade-in">
         <div class="flex justify-between items-center">
           <h3
-            class="m-0 text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500"
+            class="m-0 text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500"
           >
             {{ $t("marketing.conversionTools.popupListTitle") }}
           </h3>
           <button
             @click="handleAddPopup"
-            class="h-10 px-6 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center gap-2"
+            class="h-10 px-6 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center gap-2"
           >
             <ArtSvgIcon icon="ri:add-line" class="text-blue-500" />
             {{ $t("marketing.conversionTools.createPopupBtn") }}
@@ -98,23 +98,23 @@
               </div>
               <div class="flex-1">
                 <h4
-                  class="m-0 text-base font-black text-slate-800 dark:text-slate-100 leading-tight mb-1"
+                  class="m-0 text-base font-bold text-slate-800 dark:text-slate-100 leading-tight mb-1"
                 >
                   {{ popup.name }}
                 </h4>
                 <p
-                  class="m-0 text-[11px] font-bold text-slate-400 dark:text-slate-500 mb-3 italic"
+                  class="m-0 text-[11px] font-bold text-slate-400 dark:text-slate-500 mb-3"
                 >
                   "{{ popup.content }}"
                 </p>
                 <div class="flex flex-wrap gap-2">
                   <span
-                    class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[8px] font-black uppercase"
+                    class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[8px] font-bold uppercase"
                     >{{ $t("marketing.conversionTools.showAfter") }}:
                     {{ popup.delay }}s</span
                   >
                   <span
-                    class="px-2 py-0.5 bg-purple-50 text-purple-600 rounded text-[8px] font-black uppercase"
+                    class="px-2 py-0.5 bg-purple-50 text-purple-600 rounded text-[8px] font-bold uppercase"
                     >{{ $t("marketing.conversionTools.page") }}:
                     {{ popup.pages }}</span
                   >
@@ -127,27 +127,27 @@
               <div class="flex gap-4">
                 <div class="flex flex-col">
                   <span
-                    class="text-[8px] font-black text-slate-300 dark:text-slate-500 uppercase"
+                    class="text-[8px] font-bold text-slate-300 dark:text-slate-500 uppercase"
                     >{{ $t("marketing.conversionTools.views") }}</span
                   >
                   <span
-                    class="text-xs font-black text-slate-700 dark:text-slate-300"
+                    class="text-xs font-bold text-slate-700 dark:text-slate-300"
                     >{{ popup.views }}</span
                   >
                 </div>
                 <div class="flex flex-col">
                   <span
-                    class="text-[8px] font-black text-slate-300 dark:text-slate-500 uppercase"
+                    class="text-[8px] font-bold text-slate-300 dark:text-slate-500 uppercase"
                     >{{ $t("marketing.conversionTools.clicks") }}</span
                   >
-                  <span class="text-xs font-black text-blue-600">{{
+                  <span class="text-xs font-bold text-blue-600">{{
                     popup.clicks
                   }}</span>
                 </div>
               </div>
               <div class="flex gap-2">
                 <button
-                  class="h-8 px-4 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-300 rounded-lg text-[9px] font-black uppercase hover:bg-slate-100 dark:hover:bg-slate-700 transition-all"
+                  class="h-8 px-4 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-300 rounded-lg text-[9px] font-bold uppercase hover:bg-slate-100 dark:hover:bg-slate-700 transition-all"
                 >
                   Sửa
                 </button>
@@ -165,13 +165,13 @@
       <div v-if="activeTab === 'landing'" class="space-y-6 animate-fade-in">
         <div class="flex justify-between items-center">
           <h3
-            class="m-0 text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500"
+            class="m-0 text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500"
           >
             {{ $t("marketing.conversionTools.landingListTitle") }}
           </h3>
           <button
             @click="handleAddLanding"
-            class="h-10 px-6 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-sm hover:bg-slate-50 transition-all active:scale-95 flex items-center gap-2"
+            class="h-10 px-6 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-sm hover:bg-slate-50 transition-all active:scale-95 flex items-center gap-2"
           >
             <ArtSvgIcon icon="ri:layout-4-line" class="text-blue-500" />
             {{ $t("marketing.conversionTools.createLandingBtn") }}
@@ -195,7 +195,7 @@
                 class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex-cc"
               >
                 <button
-                  class="px-6 py-2 bg-white text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl"
+                  class="px-6 py-2 bg-white text-slate-900 rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-xl"
                 >
                   {{ $t("marketing.conversionTools.viewPageBtn") }}
                 </button>
@@ -204,12 +204,12 @@
             <div class="p-6">
               <div class="flex justify-between items-center mb-2">
                 <h4
-                  class="m-0 text-sm font-black text-slate-800 dark:text-slate-100 truncate"
+                  class="m-0 text-sm font-bold text-slate-800 dark:text-slate-100 truncate"
                 >
                   {{ page.name }}
                 </h4>
                 <span
-                  class="px-2 py-0.5 bg-emerald-100 text-emerald-600 rounded text-[8px] font-black uppercase"
+                  class="px-2 py-0.5 bg-emerald-100 text-emerald-600 rounded text-[8px] font-bold uppercase"
                   >{{ page.status }}</span
                 >
               </div>
@@ -230,12 +230,12 @@
                   </div>
                   <div>
                     <p
-                      class="m-0 text-[8px] font-black text-slate-300 dark:text-slate-500 uppercase"
+                      class="m-0 text-[8px] font-bold text-slate-300 dark:text-slate-500 uppercase"
                     >
                       Leads
                     </p>
                     <p
-                      class="m-0 text-xs font-black text-slate-700 dark:text-slate-300"
+                      class="m-0 text-xs font-bold text-slate-700 dark:text-slate-300"
                     >
                       {{ page.leads }}
                     </p>
@@ -249,12 +249,12 @@
                   </div>
                   <div>
                     <p
-                      class="m-0 text-[8px] font-black text-slate-300 dark:text-slate-500 uppercase"
+                      class="m-0 text-[8px] font-bold text-slate-300 dark:text-slate-500 uppercase"
                     >
                       {{ $t("marketing.conversionTools.clicks") }}
                     </p>
                     <p
-                      class="m-0 text-xs font-black text-slate-700 dark:text-slate-300"
+                      class="m-0 text-xs font-bold text-slate-700 dark:text-slate-300"
                     >
                       {{ page.clicks }}
                     </p>
@@ -264,7 +264,7 @@
 
               <div class="flex gap-2">
                 <button
-                  class="flex-1 h-9 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg font-black text-[9px] uppercase tracking-widest border border-slate-100 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all"
+                  class="flex-1 h-9 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg font-bold text-[9px] uppercase tracking-widest border border-slate-100 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all"
                 >
                   Chỉnh sửa
                 </button>
@@ -288,7 +288,7 @@
     >
       <div class="p-8 text-center flex-cc flex-col gap-4 opacity-50">
         <ArtSvgIcon icon="ri:tools-line" class="text-5xl" />
-        <p class="text-sm font-black uppercase tracking-widest leading-relaxed">
+        <p class="text-sm font-bold uppercase tracking-widest leading-relaxed">
           Trình thiết kế trực quan (Visual Designer) <br />
           Đang được tối ưu hóa cấu trúc dữ liệu
         </p>

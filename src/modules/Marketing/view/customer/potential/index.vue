@@ -2,7 +2,7 @@
   <div class="lead-management flex flex-col gap-5 pb-8">
     <div class="page-header flex items-center justify-between">
       <h2
-        class="m-0 text-2xl font-black text-gray-800 dark:text-slate-100 tracking-tight flex items-center gap-2"
+        class="m-0 text-2xl font-bold text-gray-800 dark:text-slate-100 tracking-tight flex items-center gap-2"
       >
         <ArtSvgIcon icon="ri:user-star-line" class="text-red-500" />
         Khách hàng tiềm năng
@@ -87,7 +87,7 @@
               </div>
               <div class="flex flex-col items-center gap-1.5">
                 <div
-                  class="priority-badge flex flex-col items-center justify-center text-white font-black"
+                  class="priority-badge flex flex-col items-center justify-center text-white font-bold"
                   :class="{ blinking: isCriticalWait(lead) }"
                   :style="{ backgroundColor: getPriority(lead).color }"
                 >
@@ -169,7 +169,7 @@
                 </div>
                 <div class="flex items-center gap-1.5 text-xs">
                   <ArtSvgIcon icon="ri:megaphone-line" class="text-red-500" />
-                  <span class="font-black text-gray-800 dark:text-slate-200"
+                  <span class="font-bold text-gray-800 dark:text-slate-200"
                     >Mega Sale 2024</span
                   >
                 </div>
@@ -187,7 +187,7 @@
                 {{ getStatusLabel(lead.status) }}
               </ElTag>
               <div
-                class="mt-2 text-[10px] text-gray-400 dark:text-slate-500 font-bold uppercase tracking-wider italic"
+                class="mt-2 text-[10px] text-gray-400 dark:text-slate-500 font-bold uppercase tracking-wider"
               >
                 Phễu:
                 <span class="text-gray-600 dark:text-slate-400">{{

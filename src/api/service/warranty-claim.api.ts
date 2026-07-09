@@ -21,7 +21,7 @@ export interface WarrantyClaimListItem {
 export interface WarrantyClaimDetail {
   id: number;
   claimNumber: string;
-  status: string;
+  status: number;
   issueDescription: string;
   mediaUrls: string[];
   serviceCenterName?: string;
@@ -44,16 +44,26 @@ export interface WarrantyClaimListResponse {
   totalCount: number;
 }
 
+export interface WarrantyHistoryItem {
+  id: number;
+  claimNumber: string;
+  status: number;
+  statusText: string;
+  issueDescription: string;
+  manufacturerDecision?: string;
+  isRecall: boolean;
+  totalPartsCost: number;
+  totalLaborCost: number;
+  createdAt: string;
+  parts: WarrantyClaimPart[];
+}
+
 export const WarrantyClaimApi = {
   getList(params?: any) {
     const { current, size, ...rest } = params || {};
     return request.get<WarrantyClaimListResponse>({
       url: "/api/v1/WarrantyClaims",
-      params: {
-        page: current,
-        pageSize: size,
-        ...rest,
-      },
+      params: { page: current, pageSize: size, ...rest },
     });
   },
 
@@ -63,9 +73,18 @@ export const WarrantyClaimApi = {
     });
   },
 
+  getHistory(vehicleId: number) {
+    return request.get<WarrantyHistoryItem[]>({
+      url: `/api/v1/WarrantyClaims/vehicle/${vehicleId}/history`,
+    });
+  },
+
   create(data: {
-    licensePlate: string;
+    vehicleId: number;
     issueDescription: string;
+    isRecall?: boolean;
+    totalPartsCost?: number;
+    totalLaborCost?: number;
     serviceCenterName?: string;
     manufacturerClaimNumber?: string;
     mediaUrls?: string;
@@ -88,6 +107,12 @@ export const WarrantyClaimApi = {
     return request.patch<boolean>({
       url: `/api/v1/WarrantyClaims/${id}/status`,
       data,
+    });
+  },
+
+  delete(id: number) {
+    return request.delete<boolean>({
+      url: `/api/v1/WarrantyClaims/${id}`,
     });
   },
 };

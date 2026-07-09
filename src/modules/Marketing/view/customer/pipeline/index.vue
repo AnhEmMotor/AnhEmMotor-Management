@@ -18,10 +18,9 @@
             >{{ stat.label }}</span
           >
           <div class="flex items-baseline gap-2">
-            <span
-              class="text-xl font-black text-gray-800 dark:text-slate-100"
-              >{{ stat.count }}</span
-            >
+            <span class="text-xl font-bold text-gray-800 dark:text-slate-100">{{
+              stat.count
+            }}</span>
             <span
               v-if="stat.value"
               class="text-[10px] text-emerald-500 font-bold"
@@ -83,7 +82,7 @@
                 :style="{ backgroundColor: column.color }"
               ></div>
               <h4
-                class="m-0 text-xs font-black text-gray-700 dark:text-slate-200 uppercase tracking-wider"
+                class="m-0 text-xs font-bold text-gray-700 dark:text-slate-200 uppercase tracking-wider"
               >
                 {{ column.title }}
               </h4>
@@ -117,7 +116,7 @@
               <div class="flex justify-between items-start mb-3 mt-1">
                 <div class="flex flex-col min-w-0">
                   <span
-                    class="text-sm font-black text-gray-800 dark:text-slate-100 line-clamp-1"
+                    class="text-sm font-bold text-gray-800 dark:text-slate-100 line-clamp-1"
                     >{{ deal.customerName }}</span
                   >
                   <span
@@ -163,7 +162,7 @@
                   <ElTooltip :content="deal.saleName">
                     <ElAvatar
                       :size="20"
-                      class="border border-white dark:border-slate-800 bg-gray-200 dark:bg-slate-700 text-[8px] font-black text-gray-600 dark:text-slate-200"
+                      class="border border-white dark:border-slate-800 bg-gray-200 dark:bg-slate-700 text-[8px] font-bold text-gray-600 dark:text-slate-200"
                     >
                       {{ deal.saleName.charAt(0) }}
                     </ElAvatar>

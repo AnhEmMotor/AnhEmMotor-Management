@@ -24,7 +24,7 @@
             >Mã định danh</span
           >
           <h3
-            class="m-0 text-base font-black text-gray-700 dark:text-slate-100 tracking-tighter"
+            class="m-0 text-base font-bold text-gray-700 dark:text-slate-100 tracking-tighter"
           >
             {{ lead.id }}
           </h3>
@@ -40,7 +40,7 @@
               <ArtSvgIcon icon="ri:government-line" />
             </div>
             <h4
-              class="m-0 font-black text-gray-700 dark:text-slate-100 uppercase text-[10px] tracking-wider"
+              class="m-0 font-bold text-gray-700 dark:text-slate-100 uppercase text-[10px] tracking-wider"
             >
               Hồ sơ hành chính
             </h4>
@@ -124,7 +124,7 @@
                 <ArtSvgIcon icon="ri:history-line" />
               </div>
               <h4
-                class="m-0 font-black text-gray-700 dark:text-slate-100 uppercase text-[10px] tracking-wider"
+                class="m-0 font-bold text-gray-700 dark:text-slate-100 uppercase text-[10px] tracking-wider"
               >
                 Dòng thời gian
               </h4>
@@ -250,7 +250,7 @@
               <ArtSvgIcon icon="ri:motorbike-line" />
             </div>
             <h4
-              class="m-0 font-black text-gray-700 dark:text-slate-100 uppercase text-[10px] tracking-wider"
+              class="m-0 font-bold text-gray-700 dark:text-slate-100 uppercase text-[10px] tracking-wider"
             >
               Thông tin xe
             </h4>

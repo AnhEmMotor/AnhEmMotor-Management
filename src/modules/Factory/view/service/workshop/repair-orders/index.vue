@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="flex flex-col gap-4 pb-5">
     <div class="flex items-start justify-between gap-4">
       <div>
@@ -96,42 +96,39 @@
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
-        <template #status="{ row }">
-          <ElTag :type="statusTagType(row.status)" effect="dark">
-            {{ getStatusText(row.status) }}
-          </ElTag>
+        <template #totalCost="{ row }">
+          <span class="font-medium text-emerald-600">
+            {{
+              row.totalCost
+                ? new Intl.NumberFormat("vi-VN").format(row.totalCost) + " ₫"
+                : "0 ₫"
+            }}
+          </span>
         </template>
 
-        <template #paymentStatus="{ row }">
-          <ElTag
-            :type="row.paymentStatus === 'Paid' ? 'success' : 'warning'"
-            effect="dark"
-          >
-            {{ row.paymentStatus }}
-          </ElTag>
+        <template #createdAt="{ row }">
+          {{
+            row.createdAt ? dayjs(row.createdAt).format("DD/MM/YYYY HH:mm") : ""
+          }}
         </template>
 
         <template #operation="{ row }">
           <div class="flex gap-2 justify-center flex-wrap">
-            <ArtButtonTable
-              type="edit"
-              @click="openAssignTechnician(row)"
-              v-if="row.status !== 'Completed'"
-              v-auth="Permissions.Factory.RepairOrderManagement.View"
-            />
-
-            <ArtButtonTable
-              type="edit"
-              @click="openIssueParts(row)"
-              v-if="row.status === 'InProgress' || row.status === 'QcPending'"
-              v-auth="Permissions.Factory.RepairOrderManagement.View"
-            />
-
-            <ArtButtonTable
-              type="edit"
-              @click="openComplete(row)"
-              v-if="row.status !== 'Completed' && row.status !== 'Cancelled'"
-            />
+            <ElTooltip content="Chi tiết phiếu" placement="top">
+              <ArtButtonTable
+                type="view"
+                icon="ri:eye-line"
+                @click="openDetail(row)"
+              />
+            </ElTooltip>
+            <ElTooltip content="Chỉnh sửa phiếu" placement="top">
+              <ArtButtonTable
+                type="edit"
+                icon="ri:edit-2-line"
+                @click="openDetail(row)"
+                v-auth="Permissions.Factory.RepairOrderManagement.View"
+              />
+            </ElTooltip>
           </div>
         </template>
       </ArtTable>
@@ -380,263 +377,19 @@
         </div>
       </template>
     </ElDialog>
-
-    <!-- Dialog: Issue parts (cấp phát linh kiện) -->
-    <ElDialog
-      v-model="issuePartsDialogVisible"
-      title="Cấp phát linh kiện & dịch vụ"
-      width="820px"
-      class="premium-dialog"
-      align-center
-      append-to-body
-      destroy-on-close
-    >
-      <ElAlert
-        type="info"
-        show-icon
-        :closable="false"
-        class="mb-4"
-        description="UI demo: nhập tối thiểu để gọi API issue-parts (backend quyết định valid input)."
-      />
-
-      <ElForm
-        :model="issuePartsForm"
-        label-width="160px"
-        class="space-y-6"
-        :disabled="submitting"
-      >
-        <div class="text-sm text-slate-500">
-          RepairOrder:
-          <span class="font-medium">#{{ issuePartsForm.repairOrderId }}</span>
-        </div>
-
-        <!-- Parts Section -->
-        <div>
-          <div class="flex items-center justify-between mb-2">
-            <label
-              class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
-            >
-              Linh kiện
-            </label>
-            <ElButton type="primary" :icon="Plus" size="small" @click="addPart">
-              Thêm linh kiện
-            </ElButton>
-          </div>
-          <ElTable
-            :data="issuePartsForm.parts"
-            border
-            size="small"
-            style="width: 100%"
-          >
-            <ElTableColumn label="Linh kiện" min-width="200px">
-              <template #default="{ row }">
-                <ElSelect
-                  v-model="row.productVariantId"
-                  placeholder="Chọn linh kiện"
-                  clearable
-                >
-                  <ElOption
-                    v-for="v in productVariants"
-                    :key="v.id"
-                    :label="v.name"
-                    :value="v.id"
-                  />
-                </ElSelect>
-              </template>
-            </ElTableColumn>
-            <ElTableColumn label="SL" width="100px" align="center">
-              <template #default="{ row }">
-                <ElInputNumber v-model="row.count" :min="1" size="small" />
-              </template>
-            </ElTableColumn>
-            <ElTableColumn label="Đơn giá" width="150px">
-              <template #default="{ row }">
-                <ElInput v-model="row.price" type="number" size="small" />
-              </template>
-            </ElTableColumn>
-            <ElTableColumn label="Ghi chú" min-width="150px">
-              <template #default="{ row }">
-                <ElInput v-model="row.notes" size="small" />
-              </template>
-            </ElTableColumn>
-            <ElTableColumn label="Hành động" width="60px" align="center">
-              <template #default="{ $index }">
-                <ElButton
-                  type="danger"
-                  :icon="TrashBin"
-                  circle
-                  size="small"
-                  @click="removePart($index)"
-                />
-              </template>
-            </ElTableColumn>
-          </ElTable>
-        </div>
-
-        <!-- Services Section -->
-        <div>
-          <div class="flex items-center justify-between mb-2">
-            <label
-              class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
-            >
-              Dịch vụ
-            </label>
-            <ElButton
-              type="primary"
-              :icon="Plus"
-              size="small"
-              @click="addService"
-            >
-              Thêm dịch vụ
-            </ElButton>
-          </div>
-          <ElTable
-            :data="issuePartsForm.services"
-            border
-            size="small"
-            style="width: 100%"
-          >
-            <ElTableColumn label="Dịch vụ" min-width="200px">
-              <template #default="{ row }">
-                <ElSelect
-                  v-model="row.serviceId"
-                  placeholder="Chọn dịch vụ"
-                  clearable
-                >
-                  <ElOption
-                    v-for="s in serviceCategories"
-                    :key="s.id"
-                    :label="s.name"
-                    :value="s.id"
-                  />
-                </ElSelect>
-              </template>
-            </ElTableColumn>
-            <ElTableColumn label="Công xá" width="150px">
-              <template #default="{ row }">
-                <ElInput v-model="row.laborCost" type="number" size="small" />
-              </template>
-            </ElTableColumn>
-            <ElTableColumn label="Ghi chú" min-width="150px">
-              <template #default="{ row }">
-                <ElInput v-model="row.notes" size="small" />
-              </template>
-            </ElTableColumn>
-            <ElTableColumn label="Hành động" width="60px" align="center">
-              <template #default="{ $index }">
-                <ElButton
-                  type="danger"
-                  :icon="TrashBin"
-                  circle
-                  size="small"
-                  @click="removeService($index)"
-                />
-              </template>
-            </ElTableColumn>
-          </ElTable>
-        </div>
-      </ElForm>
-
-      <template #footer>
-        <div class="flex justify-end gap-3 mt-2">
-          <ElButton
-            @click="issuePartsDialogVisible = false"
-            :disabled="submitting"
-            >Đóng</ElButton
-          >
-          <ElButton
-            type="primary"
-            :loading="submitting"
-            @click="submitIssueParts"
-            class="px-8"
-            >Cấp phát</ElButton
-          >
-        </div>
-      </template>
-    </ElDialog>
-
-    <!-- Dialog: Complete -->
-    <ElDialog
-      v-model="completeDialogVisible"
-      title="Hoàn tất sửa chữa"
-      width="640px"
-      class="premium-dialog"
-      align-center
-      append-to-body
-      destroy-on-close
-    >
-      <ElForm
-        :model="completeForm"
-        label-width="160px"
-        class="space-y-4"
-        :disabled="submitting"
-      >
-        <div class="text-sm text-slate-500">
-          RepairOrder:
-          <span class="font-medium">#{{ completeForm.repairOrderId }}</span>
-        </div>
-
-        <div>
-          <label
-            class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
-          >
-            Payment Method <span class="text-red-500">*</span>
-          </label>
-          <ElSelect
-            v-model="completeForm.paymentMethod"
-            placeholder="Chọn phương thức"
-            class="w-full"
-          >
-            <ElOption label="Tiền mặt" value="Cash" />
-            <ElOption label="Chuyển khoản" value="BankTransfer" />
-          </ElSelect>
-        </div>
-
-        <div>
-          <label
-            class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
-          >
-            Notes
-          </label>
-          <ElInput
-            v-model="completeForm.notes"
-            placeholder="Ghi chú (nếu có)"
-          />
-        </div>
-      </ElForm>
-
-      <template #footer>
-        <div class="flex justify-end gap-3 mt-2">
-          <ElButton
-            @click="completeDialogVisible = false"
-            :disabled="submitting"
-            >Đóng</ElButton
-          >
-          <ElButton
-            type="primary"
-            :loading="submitting"
-            @click="submitComplete"
-            class="px-8"
-            >Hoàn tất</ElButton
-          >
-        </div>
-      </template>
-    </ElDialog>
   </div>
 </template>
 
 <script setup lang="ts">
+import dayjs from "dayjs";
 import { Permissions } from "@/domain/constants/permissions";
 import { computed, ref } from "vue";
+import { useRouter } from "vue-router";
 import { Refresh, Plus, Delete as TrashBin } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 
 import { RepairOrderApi, type RepairOrder } from "@/api/sales";
-import { ProductApi } from "@/api/product";
-import {
-  ServiceCategoryApi,
-  type ServiceCategoryResponse,
-} from "@/api/product";
+
 import {
   EmployeeApi,
   type EmployeeResponse,
@@ -661,28 +414,25 @@ const columnChecks = ref<any[]>([]);
 const columns = computed(() => {
   return [
     { prop: "id", label: "ID", width: 90, align: "center" },
-    { prop: "licensePlate", label: "Biển số", minWidth: 130 },
-    { prop: "customerName", label: "Khách", minWidth: 180 },
-    { prop: "customerPhone", label: "SĐT", width: 150 },
+    { prop: "maintenanceNumber", label: "Mã phiếu", minWidth: 150 },
+    { prop: "vehicleInfo", label: "Xe (Biển số)", minWidth: 180 },
+    { prop: "technicianName", label: "Kỹ thuật viên", minWidth: 150 },
     { prop: "mileage", label: "Km", width: 110, align: "right" },
     {
-      prop: "status",
-      label: "Trạng thái",
+      prop: "totalCost",
+      label: "Tổng",
       width: 140,
-      align: "center",
+      align: "right",
       useSlot: true,
-      slot: "status",
+      slot: "totalCost",
     },
     {
-      prop: "paymentStatus",
-      label: "Thanh toán",
-      width: 140,
-      align: "center",
+      prop: "createdAt",
+      label: "Tạo lúc",
+      minWidth: 160,
       useSlot: true,
-      slot: "paymentStatus",
+      slot: "createdAt",
     },
-    { prop: "totalAmount", label: "Tổng", width: 140, align: "right" },
-    { prop: "createdAt", label: "Tạo lúc", minWidth: 160 },
     {
       prop: "operation",
       label: "Hành động",
@@ -777,7 +527,6 @@ const fetchData = async (params: any) => {
     data.value = res.items || [];
     pagination.value.total = res.totalCount || 0;
   } catch (err: any) {
-    // fallback mock để UI vẫn chạy
     data.value = [];
     pagination.value.total = 0;
     ElMessage.error(err?.message || "Không thể tải danh sách phiếu sửa chữa");
@@ -827,7 +576,15 @@ const getStatusText = (status: string) => {
     Cancelled: "Đã hủy",
   };
   return map[status] || status;
-}; // Dialog: Create
+};
+
+const router = useRouter();
+
+const openDetail = (row: RepairOrder) => {
+  router.push(`/factory/workshop/repair/${row.id}`);
+};
+
+// Dialog: Create
 const createDialogVisible = ref(false);
 const submitting = ref(false);
 const createForm = ref({
@@ -942,116 +699,6 @@ const submitAssign = async () => {
     await refreshData();
   } catch (err: any) {
     ElMessage.error(err?.message || "Phân công thất bại");
-  } finally {
-    submitting.value = false;
-  }
-};
-
-// Dialog: Issue parts
-const issuePartsDialogVisible = ref(false);
-const productVariants = ref<any[]>([]);
-const serviceCategories = ref<ServiceCategoryResponse[]>([]);
-const issuePartsForm = ref({
-  repairOrderId: 0,
-  parts: [] as any[],
-  services: [] as any[],
-});
-
-const openIssueParts = async (row: RepairOrder) => {
-  issuePartsForm.value = {
-    repairOrderId: row.id,
-    parts: [],
-    services: [],
-  };
-
-  try {
-    // Load options for selection
-    const [variants, categories] = await Promise.all([
-      ProductApi.getVariantsForInput({ current: 1, size: 100 }),
-      ServiceCategoryApi.getList({ current: 1, size: 100 }),
-    ]);
-    productVariants.value = variants.items || [];
-    serviceCategories.value = categories.items || [];
-  } catch (_err) {
-    ElMessage.error("Không thể tải danh sách linh kiện/dịch vụ");
-  }
-
-  issuePartsDialogVisible.value = true;
-};
-
-const addPart = () => {
-  issuePartsForm.value.parts.push({
-    productVariantId: "",
-    count: 1,
-    price: 0,
-    notes: "",
-  });
-};
-const removePart = (index: number) => {
-  issuePartsForm.value.parts.splice(index, 1);
-};
-const addService = () => {
-  issuePartsForm.value.services.push({
-    serviceId: "",
-    laborCost: 0,
-    notes: "",
-  });
-};
-const removeService = (index: number) => {
-  issuePartsForm.value.services.splice(index, 1);
-};
-const submitIssueParts = async () => {
-  submitting.value = true;
-  try {
-    await RepairOrderApi.issueParts({
-      repairOrderId: issuePartsForm.value.repairOrderId,
-      parts: issuePartsForm.value.parts,
-      services: issuePartsForm.value.services,
-    } as any);
-    ElMessage.success("Cấp phát thành công");
-    issuePartsDialogVisible.value = false;
-    await refreshData();
-  } catch (err: any) {
-    ElMessage.error(err?.message || "Cấp phát thất bại");
-  } finally {
-    submitting.value = false;
-  }
-};
-
-// Dialog: Complete
-const completeDialogVisible = ref(false);
-const completeForm = ref({
-  repairOrderId: 0,
-  paymentMethod: "Cash",
-  paymentStatus: "Paid",
-  notes: "",
-});
-
-const openComplete = (row: RepairOrder) => {
-  completeForm.value = {
-    repairOrderId: row.id,
-    paymentMethod: "Cash",
-    paymentStatus: "Paid",
-    notes: "",
-  };
-  completeDialogVisible.value = true;
-};
-
-const submitComplete = async () => {
-  submitting.value = true;
-  try {
-    await RepairOrderApi.complete({
-      repairOrderId: completeForm.value.repairOrderId,
-      paymentMethod: completeForm.value.paymentMethod,
-      paymentStatus: completeForm.value.paymentStatus,
-      notes: completeForm.value.notes,
-    } as any);
-
-    ElMessage.success("Hoàn tất phiếu thành công");
-    completeDialogVisible.value = false;
-    await refreshData();
-  } catch (err: any) {
-    ElMessage.error(err?.message || "Hoàn tất thất bại");
   } finally {
     submitting.value = false;
   }

@@ -906,7 +906,7 @@ const router = useRouter();
 const orderId = Number(route.params.id);
 const loading = ref(false);
 const submitting = ref(false);
-const order = ref<RepairOrder | null>(null);
+const order = ref<any>(null);
 
 // Selection options
 const technicians = ref<EmployeeResponse[]>([]);

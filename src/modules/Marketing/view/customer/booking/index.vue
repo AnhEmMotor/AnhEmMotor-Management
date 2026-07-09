@@ -1,6 +1,6 @@
 <template>
   <div
-    class="customer-booking-page flex flex-col min-h-screen bg-[#F8FAFC] dark:bg-[#020617] font-inter text-[#0F172A] dark:text-[#E2E8F0]"
+    class="customer-booking-page flex flex-col min-h-screen bg-[#F8FAFC] dark:bg-[#020617] text-[#0F172A] dark:text-[#E2E8F0]"
   >
     <div
       class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-8 py-5 shrink-0 shadow-sm relative z-20"
@@ -17,7 +17,7 @@
           </div>
           <div>
             <h1
-              class="m-0 text-xl font-black tracking-tight text-slate-900 dark:text-slate-100 leading-none"
+              class="m-0 text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-none"
             >
               Trung tâm Điều phối Đặt lịch
             </h1>
@@ -37,19 +37,19 @@
             class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-750"
           >
             <div
-              class="px-4 py-1.5 rounded-lg bg-white dark:bg-slate-900 shadow-sm text-[10px] font-black uppercase text-slate-700 dark:text-slate-200"
+              class="px-4 py-1.5 rounded-lg bg-white dark:bg-slate-900 shadow-sm text-[10px] font-bold uppercase text-slate-700 dark:text-slate-200"
             >
               Lịch tháng
             </div>
             <div
-              class="px-4 py-1.5 rounded-lg text-[10px] font-black uppercase text-slate-400 opacity-50 cursor-not-allowed"
+              class="px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase text-slate-400 opacity-50 cursor-not-allowed"
             >
               Lịch tuần
             </div>
           </div>
           <button
             @click="handleCreateNew"
-            class="h-10 px-6 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center justify-center gap-2"
+            class="h-10 px-6 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center justify-center gap-2"
           >
             <ArtSvgIcon icon="ri:calendar-todo-line" class="text-blue-500" /> +
             Đặt lịch mới
@@ -71,20 +71,20 @@
             <div class="flex items-center gap-2">
               <span class="size-2 rounded-full bg-red-500"></span>
               <span
-                class="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500"
+                class="text-[9px] font-bold uppercase text-slate-400 dark:text-slate-500"
                 >Chờ xác nhận</span
               >
             </div>
             <div class="flex items-center gap-2">
               <span class="size-2 rounded-full bg-blue-500"></span>
               <span
-                class="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500"
+                class="text-[9px] font-bold uppercase text-slate-400 dark:text-slate-500"
                 >Đã xác nhận</span
               >
             </div>
           </div>
           <div
-            class="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest"
+            class="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest"
           >
             Tháng 02 / 2025
           </div>
@@ -101,7 +101,7 @@
                 @click="handleCellClick(data.day)"
               >
                 <span
-                  class="absolute top-2 right-3 text-[11px] font-black"
+                  class="absolute top-2 right-3 text-[11px] font-bold"
                   :class="data.isSelected ? 'text-blue-600' : 'text-slate-300'"
                 >
                   {{ data.day.split("-")[2] }}
@@ -112,7 +112,7 @@
                     v-for="booking in getBookings(data.day)"
                     :key="booking.id"
                     @click.stop="handleBookingClick(booking)"
-                    class="px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-tight truncate border transition-all cursor-pointer shadow-sm flex items-center gap-1"
+                    class="px-2 py-1 rounded-lg text-[8px] font-bold uppercase tracking-tight truncate border transition-all cursor-pointer shadow-sm flex items-center gap-1"
                     :class="getBookingClasses(booking)"
                   >
                     <ArtSvgIcon
@@ -140,12 +140,12 @@
             class="p-5 border-b border-slate-100 dark:border-slate-850 bg-red-50/30 dark:bg-red-950/20 flex justify-between items-center"
           >
             <h3
-              class="m-0 text-xs font-black uppercase tracking-widest text-red-600 dark:text-red-400 flex items-center gap-2"
+              class="m-0 text-xs font-bold uppercase tracking-widest text-red-600 dark:text-red-400 flex items-center gap-2"
             >
               <ArtSvgIcon icon="ri:notification-badge-line" /> Cần xác nhận
             </h3>
             <span
-              class="bg-red-600 text-white size-5 rounded-full flex-cc text-[10px] font-black shadow-lg"
+              class="bg-red-600 text-white size-5 rounded-full flex-cc text-[10px] font-bold shadow-lg"
               >{{ pendingBookings.length }}</span
             >
           </div>
@@ -161,29 +161,29 @@
             >
               <div class="flex justify-between items-start mb-2">
                 <span
-                  class="text-[8px] font-black px-2 py-0.5 rounded bg-white dark:bg-slate-900 border border-red-100 dark:border-red-900 text-red-500 uppercase"
+                  class="text-[8px] font-bold px-2 py-0.5 rounded bg-white dark:bg-slate-900 border border-red-100 dark:border-red-900 text-red-500 uppercase"
                 >
                   {{ booking.typeLabel }}
                 </span>
                 <span
-                  class="text-[9px] font-black text-slate-400 dark:text-slate-500"
+                  class="text-[9px] font-bold text-slate-400 dark:text-slate-500"
                   >{{ booking.time }}</span
                 >
               </div>
               <h4
-                class="m-0 text-sm font-black text-slate-800 dark:text-slate-100"
+                class="m-0 text-sm font-bold text-slate-800 dark:text-slate-100"
               >
                 {{ booking.customerName }}
               </h4>
               <p
-                class="m-0 text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-1 italic truncate"
+                class="m-0 text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-1 truncate"
               >
                 "{{ booking.content }}"
               </p>
 
               <button
                 @click.stop="confirmBooking(booking)"
-                class="mt-3 w-full h-8 bg-red-500 text-white rounded-lg font-black text-[9px] uppercase tracking-widest shadow-md hover:bg-red-600 transition-all opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0"
+                class="mt-3 w-full h-8 bg-red-500 text-white rounded-lg font-bold text-[9px] uppercase tracking-widest shadow-md hover:bg-red-600 transition-all opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0"
               >
                 Xác nhận & Gửi Mail/SMS
               </button>
@@ -197,7 +197,7 @@
                 icon="ri:check-double-line"
                 class="text-4xl text-emerald-500"
               />
-              <span class="text-[9px] font-black uppercase tracking-widest"
+              <span class="text-[9px] font-bold uppercase tracking-widest"
                 >Đã xử lý hết lịch chờ</span
               >
             </div>
@@ -212,11 +212,11 @@
             class="absolute -right-4 -bottom-4 text-8xl opacity-10 group-hover:rotate-12 transition-all duration-700"
           />
           <span
-            class="text-[9px] font-black uppercase tracking-[0.2em] text-blue-400 block mb-4"
+            class="text-[9px] font-bold uppercase tracking-[0.2em] text-blue-400 block mb-4"
             >Hiệu suất thông báo</span
           >
           <div class="flex items-end gap-2">
-            <span class="text-3xl font-black"
+            <span class="text-3xl font-bold"
               >98<span class="text-lg opacity-60">%</span></span
             >
             <span class="text-[9px] font-bold text-emerald-400 mb-2"
@@ -245,13 +245,13 @@
           </div>
           <div>
             <h3
-              class="m-0 font-black uppercase text-xs tracking-[0.2em] text-slate-800"
+              class="m-0 font-bold uppercase text-xs tracking-[0.2em] text-slate-800"
             >
               {{ dialogTitle }}
             </h3>
             <div class="flex items-center gap-2 mt-1">
               <span
-                class="px-2 py-0.5 rounded text-[8px] font-black uppercase"
+                class="px-2 py-0.5 rounded text-[8px] font-bold uppercase"
                 :class="
                   bookingForm.status === 'Confirmed'
                     ? 'bg-emerald-100 text-emerald-600'
@@ -273,7 +273,7 @@
         <div class="grid grid-cols-2 gap-4">
           <div class="col-span-2">
             <label
-              class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block px-1"
+              class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block px-1"
               >Tên khách hàng</label
             >
             <ElInput
@@ -284,7 +284,7 @@
           </div>
           <div>
             <label
-              class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block px-1"
+              class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block px-1"
               >SĐT</label
             >
             <ElInput
@@ -295,7 +295,7 @@
           </div>
           <div>
             <label
-              class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block px-1"
+              class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block px-1"
               >Giờ hẹn</label
             >
             <ElTimeSelect
@@ -311,35 +311,29 @@
 
         <div>
           <label
-            class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1"
+            class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-2 block px-1"
             >Loại yêu cầu</label
           >
           <div class="flex gap-2">
             <button
-              v-for="t in ['TestDrive', 'Maintenance', 'Consult']"
+              v-for="t in ['TestDrive', 'Consult']"
               :key="t"
               @click="bookingForm.type = t"
-              class="flex-1 h-9 rounded-xl text-[9px] font-black uppercase border-2 transition-all"
+              class="flex-1 h-9 rounded-xl text-[9px] font-bold uppercase border-2 transition-all"
               :class="
                 bookingForm.type === t
                   ? 'bg-[#001529] text-white border-[#001529]'
                   : 'bg-white text-slate-400 border-slate-100 hover:border-slate-300'
               "
             >
-              {{
-                t === "TestDrive"
-                  ? "Lái thử"
-                  : t === "Maintenance"
-                    ? "Bảo trì"
-                    : "Tư vấn"
-              }}
+              {{ t === "TestDrive" ? "Lái thử" : "Tư vấn" }}
             </button>
           </div>
         </div>
 
         <div>
           <label
-            class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block px-1"
+            class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block px-1"
             >Nội dung cuộc hẹn</label
           >
           <ElInput
@@ -356,9 +350,7 @@
           class="p-3 bg-blue-50 rounded-2xl border border-blue-100 flex items-start gap-3"
         >
           <ArtSvgIcon icon="ri:mail-line" class="text-blue-500 mt-1" />
-          <p
-            class="m-0 text-[10px] font-bold text-blue-700 leading-normal italic"
-          >
+          <p class="m-0 text-[10px] font-bold text-blue-700 leading-normal">
             Lưu ý: Sau khi xác nhận, ConfirmBookingCommand sẽ tự động gửi
             Mail/SMS thông báo lịch hẹn chính xác tới khách hàng.
           </p>
@@ -370,7 +362,7 @@
           <button
             v-if="isEditing"
             @click="handleDeleteBooking"
-            class="text-red-400 hover:text-red-600 font-black text-[9px] uppercase tracking-widest"
+            class="text-red-400 hover:text-red-600 font-bold text-[9px] uppercase tracking-widest"
           >
             Hủy lịch
           </button>
@@ -378,7 +370,7 @@
           <div class="flex gap-3">
             <button
               @click="dialogVisible = false"
-              class="h-10 px-6 text-slate-400 font-black text-[10px] uppercase tracking-widest"
+              class="h-10 px-6 text-slate-400 font-bold text-[10px] uppercase tracking-widest"
             >
               Đóng
             </button>
@@ -386,7 +378,7 @@
             <button
               v-if="bookingForm.status === 'Pending' && isEditing"
               @click="confirmBooking(activeBooking)"
-              class="h-10 px-8 bg-red-500 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-red-600 transition-all flex items-center gap-2"
+              class="h-10 px-8 bg-red-500 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-xl hover:bg-red-600 transition-all flex items-center gap-2"
             >
               <ArtSvgIcon icon="ri:check-double-line" /> Xác nhận & Gửi thông
               báo
@@ -394,7 +386,7 @@
 
             <button
               @click="handleSaveBooking"
-              class="h-10 px-8 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all"
+              class="h-10 px-8 bg-blue-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all"
             >
               {{ isEditing ? "Cập nhật" : "Tạo mới" }}
             </button>

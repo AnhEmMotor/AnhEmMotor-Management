@@ -19,28 +19,28 @@
     <div class="reporting-kpi-grid">
       <ArtStatsCard
         title="Tổng giá trị hóa đơn"
-        :count="formatShortCurrency(mockSummary.totalInvoiced)"
+        :count="formatShortCurrency(summaryData.totalInvoiced)"
         description="Đã phát hành"
         icon="ri:file-list-3-line"
         icon-style="bg-report-blue"
       />
       <ArtStatsCard
         title="Đã thu đủ"
-        :count="formatShortCurrency(mockSummary.collectedCash)"
+        :count="formatShortCurrency(summaryData.collectedCash)"
         description="Đã hạch toán"
         icon="ri:safe-2-line"
         icon-style="bg-report-green"
       />
       <ArtStatsCard
         title="Dòng tiền đang treo"
-        :count="formatShortCurrency(mockSummary.pendingTransit)"
+        :count="formatShortCurrency(summaryData.pendingTransit)"
         description="COD & Trả góp"
         icon="ri:timer-line"
         icon-style="bg-report-orange"
       />
       <ArtStatsCard
         title="Hóa đơn hủy / Lỗi"
-        :count="formatShortCurrency(mockSummary.canceledAmount)"
+        :count="formatShortCurrency(summaryData.canceledAmount)"
         description="Cần kiểm tra"
         icon="ri:error-warning-line"
         icon-style="bg-report-red"
@@ -151,7 +151,12 @@
     </ElCard>
 
     <!-- DRAWER: CHI TIẾT HÓA ĐƠN -->
-    <ElDrawer v-model="drawerVisible" title="Chi tiết hóa đơn" size="400px">
+    <ElDrawer
+      v-model="drawerVisible"
+      title="Chi tiết hóa đơn"
+      size="400px"
+      append-to-body
+    >
       <template v-if="selectedInvoice">
         <div class="mb-6">
           <div class="flex items-center justify-between mb-2">
@@ -274,6 +279,7 @@ import * as echarts from "echarts";
 import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
 import ReportPageHeader from "./ReportPageHeader.vue";
 import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
+import { statisticsApi } from "@/api/operations";
 
 const currentPeriod = ref<"today" | "month" | "year" | "custom">("month");
 const periodStart = ref(
@@ -299,128 +305,26 @@ const chartTextColor = "#aeb0bd";
 const chartAxisLineColor = "rgba(255, 255, 255, 0.16)";
 const chartGridLineColor = "rgba(255, 255, 255, 0.1)";
 
-// --- MOCK DATA ---
-const mockSummary = {
-  totalInvoiced: 8550000000,
-  collectedCash: 7120000000,
-  pendingTransit: 1300000000,
-  canceledAmount: 130000000,
-};
-
-// Dữ liệu biểu đồ Line (Offline vs Online)
-const mockTrendData = Array.from({ length: 30 }, (_, i) => {
-  const day = `Ngày ${String(i + 1).padStart(2, "0")}`;
-  const offlineRev = Math.floor(Math.random() * 200000000) + 100000000;
-  const onlineRev = Math.floor(Math.random() * 80000000) + 20000000;
-  return { day, offlineRev, onlineRev };
+const summaryData = ref({
+  totalInvoiced: 0,
+  collectedCash: 0,
+  pendingTransit: 0,
+  canceledAmount: 0,
 });
 
-const mockProductData = [
-  { name: "Khối Xe máy", value: 7800000000 },
-  { name: "Khối Phụ tùng", value: 750000000 },
-];
-
-const mockPaymentData = [
-  { name: "Tiền mặt", value: 35 },
-  { name: "Chuyển khoản QR", value: 40 },
-  { name: "Trả góp tài chính", value: 20 },
-  { name: "Quẹt thẻ POS", value: 5 },
-];
-
-const mockInvoices = [
-  {
-    id: "INV-2026-001",
-    date: "30/06/2026",
-    channel: "Offline",
-    category: "Xe máy",
-    paymentMethod: "Trả góp HD Saison",
-    amount: 45000000,
-    status: "Đã thu đủ",
-    customerName: "Nguyễn Trung Hiếu",
-    details: {
-      customerName: "Nguyễn Trung Hiếu",
-      cccd: "079090123456",
-      productName: "Honda SH 160i 2026",
-      vin: "RLH1234567890ABC",
-      engineNo: "JF91E123456",
-    },
-  },
-  {
-    id: "INV-2026-002",
-    date: "30/06/2026",
-    channel: "Online",
-    category: "Phụ tùng",
-    paymentMethod: "Chuyển khoản QR",
-    amount: 350000,
-    status: "Chờ đối soát COD",
-    customerName: "Lê Trần",
-    details: {
-      shippingProvider: "Giao Hàng Tiết Kiệm",
-      trackingCode: "GHTK-1829399491",
-      items: [
-        { name: "Nhớt Motul 300V", sku: "MT-300V-1L", qty: 1 },
-        { name: "Lọc nhớt Honda", sku: "FLT-HD-001", qty: 1 },
-      ],
-    },
-  },
-  {
-    id: "INV-2026-003",
-    date: "29/06/2026",
-    channel: "Offline",
-    category: "Phụ tùng",
-    paymentMethod: "Tiền mặt",
-    amount: 120000,
-    status: "Đã hủy",
-    customerName: "Khách lẻ",
-    details: {
-      shippingProvider: "Mua trực tiếp",
-      trackingCode: "N/A",
-      items: [{ name: "Gương hậu Vision", sku: "MR-VS-02", qty: 1 }],
-    },
-  },
-  {
-    id: "INV-2026-004",
-    date: "28/06/2026",
-    channel: "Online",
-    category: "Xe máy",
-    paymentMethod: "Quẹt thẻ POS",
-    amount: 82000000,
-    status: "Lỗi thanh toán",
-    customerName: "Trần Minh",
-    details: {
-      customerName: "Trần Minh Đức",
-      cccd: "001090111222",
-      productName: "Vespa Sprint 125",
-      vin: "ZAPM123456789",
-      engineNo: "ENG-VES-9988",
-    },
-  },
-  {
-    id: "INV-2026-005",
-    date: "28/06/2026",
-    channel: "Offline",
-    category: "Xe máy",
-    paymentMethod: "Chuyển khoản QR",
-    amount: 55000000,
-    status: "Đã thu đủ",
-    customerName: "Phạm Hùng",
-    details: {
-      customerName: "Phạm Hùng Cường",
-      cccd: "031090333444",
-      productName: "Yamaha Exciter 155",
-      vin: "RLY1234567890DEF",
-      engineNo: "ENG-EX-1234",
-    },
-  },
-];
+const trendData = ref<any[]>([]);
+const productData = ref<any[]>([]);
+const paymentData = ref<any[]>([]);
+const invoicesData = ref<any[]>([]);
+const isLoading = ref(false);
 
 const filteredInvoices = computed(() => {
-  if (!searchQuery.value) return mockInvoices;
+  if (!searchQuery.value) return invoicesData.value;
   const q = searchQuery.value.toLowerCase();
-  return mockInvoices.filter(
+  return invoicesData.value.filter(
     (i) =>
       i.id.toLowerCase().includes(q) ||
-      i.customerName.toLowerCase().includes(q),
+      i.details?.customerName?.toLowerCase().includes(q),
   );
 });
 
@@ -429,8 +333,24 @@ function openDetail(row: any) {
   drawerVisible.value = true;
 }
 
-function onPeriodChange() {
-  // Mock refresh
+async function onPeriodChange() {
+  isLoading.value = true;
+  try {
+    const res = await statisticsApi.getInvoiceOverview(
+      periodStart.value,
+      periodEnd.value,
+    );
+    summaryData.value = res.kpi;
+    trendData.value = res.trendData;
+    productData.value = res.productData;
+    paymentData.value = res.paymentData;
+    invoicesData.value = res.invoicesData;
+    renderCharts();
+  } catch (error) {
+    console.error("Failed to load invoice overview", error);
+  } finally {
+    isLoading.value = false;
+  }
 }
 
 function renderCharts() {
@@ -451,7 +371,7 @@ function renderCharts() {
       },
       xAxis: {
         type: "category",
-        data: mockTrendData.map((d) => d.day),
+        data: trendData.value.map((d) => d.day),
         axisLabel: { color: chartTextColor },
         axisLine: { lineStyle: { color: chartAxisLineColor } },
       },
@@ -465,7 +385,7 @@ function renderCharts() {
           name: "Offline (Tại quầy)",
           type: "line",
           smooth: true,
-          data: mockTrendData.map((d) => d.offlineRev),
+          data: trendData.value.map((d) => d.offlineRev),
           itemStyle: { color: "#22c55e" }, // Xanh lục
           lineStyle: { color: "#22c55e", width: 3 },
         },
@@ -473,7 +393,7 @@ function renderCharts() {
           name: "Online (Web/App)",
           type: "line",
           smooth: true,
-          data: mockTrendData.map((d) => d.onlineRev),
+          data: trendData.value.map((d) => d.onlineRev),
           itemStyle: { color: "#3b82f6" }, // Xanh dương
           lineStyle: { color: "#3b82f6", width: 3 },
         },
@@ -496,14 +416,14 @@ function renderCharts() {
       },
       yAxis: {
         type: "category",
-        data: mockProductData.map((r) => r.name),
+        data: productData.value.map((r) => r.name),
         axisLabel: { color: chartTextColor },
         axisLine: { lineStyle: { color: chartAxisLineColor } },
       },
       series: [
         {
           type: "bar",
-          data: mockProductData.map((r) => r.value),
+          data: productData.value.map((r) => r.value),
           itemStyle: { color: "#e84a4a", borderRadius: [0, 4, 4, 0] },
           barWidth: "40%",
         },
@@ -525,7 +445,7 @@ function renderCharts() {
           type: "pie",
           radius: ["40%", "60%"],
           center: ["50%", "45%"],
-          data: mockPaymentData.map((d) => ({
+          data: paymentData.value.map((d) => ({
             name: d.name,
             value: d.value,
           })),
@@ -571,9 +491,7 @@ function handleResize() {
 }
 
 onMounted(() => {
-  setTimeout(() => {
-    renderCharts();
-  }, 100);
+  onPeriodChange();
   window.addEventListener("resize", handleResize);
 });
 
@@ -586,6 +504,8 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+@reference '@styles/core/tailwind.css';
+
 /* Optional styles to make the icons in the drawer header display block */
 .i-ri-motorbike-line,
 .i-ri-settings-4-line {

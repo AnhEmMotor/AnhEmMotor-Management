@@ -6,10 +6,10 @@
       </h1>
       <div class="flex items-center gap-3">
         <ElRadioGroup v-model="timeFilter" size="default">
-          <ElRadioButton label="today">Hôm nay</ElRadioButton>
-          <ElRadioButton label="week">Tuần này</ElRadioButton>
-          <ElRadioButton label="month">Tháng này</ElRadioButton>
-          <ElRadioButton label="year">Năm nay</ElRadioButton>
+          <ElRadioButton value="today">Hôm nay</ElRadioButton>
+          <ElRadioButton value="week">Tuần này</ElRadioButton>
+          <ElRadioButton value="month">Tháng này</ElRadioButton>
+          <ElRadioButton value="year">Năm nay</ElRadioButton>
         </ElRadioGroup>
         <ElDatePicker
           v-model="dateRange"

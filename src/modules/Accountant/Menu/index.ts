@@ -12,8 +12,18 @@ export const accountancyMenu: AppRouteRecord[] = [
       roles: ["Admin", "SuperAdmin", "Accountant"],
       permissions: ["Permissions.Accountant"],
     },
-    redirect: "/Accountant/executive-dashboard",
+    redirect: "/Accountant/intro",
     children: [
+      {
+        path: "intro",
+        name: "AccountantIntro",
+        component: "/Accountant/view/intro/index",
+        meta: {
+          title: "Giới thiệu",
+          icon: "ri:image-line",
+          isHide: true,
+        },
+      },
       {
         path: "executive-dashboard",
         name: "AccountantExecutiveDashboard",
@@ -107,35 +117,12 @@ export const accountancyMenu: AppRouteRecord[] = [
       {
         path: "contract",
         name: "AccountantContract",
-        component: "",
+        component: "/Accountant/view/reporting/contract",
         meta: {
-          title: "Quản lý hợp đồng",
+          title: "Báo cáo hợp đồng",
           icon: "ri:file-list-line",
           permission: Permissions.Accountant.ContractManagement.View,
         },
-        children: [
-          {
-            path: "sales",
-            name: "AccountantSalesContract",
-            component: "/Admin/view/contract/sales/index",
-            meta: {
-              title: "Hợp đồng bán xe",
-              icon: "ri:file-paper-2-line",
-              permission: Permissions.Accountant.ContractManagement.View,
-            },
-          },
-          {
-            path: "supplier",
-            name: "AccountantSupplierContract",
-            component: "/Admin/view/contract/supplier/index",
-            meta: {
-              title: "Hợp đồng nhà cung cấp",
-              icon: "ri:truck-line",
-              permission:
-                Permissions.Accountant.SupplierContractManagement.View,
-            },
-          },
-        ],
       },
       {
         path: "debt",

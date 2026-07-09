@@ -52,7 +52,6 @@
         <ElFormItem label="Loại yêu cầu">
           <ElRadioGroup v-model="bookingForm.type">
             <ElRadio value="TestDrive">Lái thử</ElRadio>
-            <ElRadio value="Maintenance">Bảo trì</ElRadio>
             <ElRadio value="Consult">Tư vấn</ElRadio>
           </ElRadioGroup>
         </ElFormItem>
@@ -257,14 +256,13 @@ const handleEventClick = (event: BookingEventVM) => {
 
   bookingForm.value = {
     customerName: event.content?.split(":")[0] ?? event.content,
-    phone: "09xx...",
-
+    phone: (event as any).phone ?? "",
     time: event.time ?? "09:00",
     date: event.date,
     type: (event.type as any) ?? "TestDrive",
     content: event.content,
     status: (event.status as any) ?? "Pending",
-    productVariantId: undefined, // Would come from event if we had it, but we mock for now
+    productVariantId: (event as any).productVariantId ?? undefined,
   };
 
   dialogVisible.value = true;

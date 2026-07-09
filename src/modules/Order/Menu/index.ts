@@ -15,6 +15,16 @@ export const orderMenu: AppRouteRecord[] = [
     redirect: "/Order/management/draft",
     children: [
       {
+        path: "intro",
+        name: "OrderIntro",
+        component: "/Order/view/intro/index",
+        meta: {
+          title: "Giới thiệu",
+          icon: "ri:image-line",
+          isHide: true,
+        },
+      },
+      {
         path: "management",
         name: "OrderManagement",
         meta: {

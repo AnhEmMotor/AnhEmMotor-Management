@@ -1,4 +1,4 @@
-﻿import { AppRouteRecord } from "@/types/router";
+import { AppRouteRecord } from "@/types/router";
 
 export const marketingMenu: AppRouteRecord[] = [
   {
@@ -11,8 +11,18 @@ export const marketingMenu: AppRouteRecord[] = [
       roles: ["Admin", "SuperAdmin"],
       permissions: ["Permissions.Marketing"],
     },
-    redirect: "/Marketing/banner",
+    redirect: "/Marketing/intro",
     children: [
+      {
+        path: "intro",
+        name: "MarketingIntro",
+        component: "/Marketing/view/intro/index",
+        meta: {
+          title: "Giới thiệu Marketing",
+          icon: "ri:image-line",
+          isHide: true,
+        },
+      },
       {
         path: "banner",
         name: "MarketingBanner",
@@ -162,32 +172,36 @@ export const marketingMenu: AppRouteRecord[] = [
             },
           },
           {
-            path: "progress",
-            name: "CustomerProgress",
-            component: "/Marketing/view/customer/progress/index",
+            path: "voucher",
+            name: "CustomerVoucher",
+            component: "/Marketing/view/customer/voucher/index",
             meta: {
-              title: "menus.marketing.customerProgress",
-              icon: "ri:git-commit-line",
+              title: "Quản lý Voucher", // TODO: Add i18n
+              icon: "ri:coupon-3-line",
             },
           },
           {
-            path: "pipeline",
-            name: "CustomerPipeline",
-            component: "/Marketing/view/customer/pipeline/index",
+            path: "voucher/save",
+            name: "CustomerVoucherSave",
+            component: "/Marketing/view/customer/voucher/save",
             meta: {
-              title: "menus.marketing.customerPipeline",
-              icon: "ri:git-repository-line",
+              title: "Tạo/Sửa Voucher",
+              isHide: true,
+              isHideTab: true,
               keepAlive: true,
+              activePath: "/Marketing/customer/voucher",
             },
           },
           {
-            path: "workshop",
-            name: "CustomerContactSupport",
-            component: "/Marketing/view/customer/contact/index",
+            path: "voucher/detail/:id",
+            name: "CustomerVoucherDetail",
+            component: "/Marketing/view/customer/voucher/detail",
             meta: {
-              title: "menus.marketing.customerContact",
-              icon: "ri:customer-service-2-line",
-              keepAlive: true,
+              title: "Chi tiết Voucher",
+              isHide: true,
+              isHideTab: true,
+              keepAlive: false,
+              activePath: "/Marketing/customer/voucher",
             },
           },
         ],
@@ -199,16 +213,6 @@ export const marketingMenu: AppRouteRecord[] = [
         meta: {
           title: "menus.marketing.booking",
           icon: "ri:calendar-event-line",
-          keepAlive: true,
-        },
-      },
-      {
-        path: "conversion",
-        name: "MarketingConversion",
-        component: "/Marketing/view/conversion/index",
-        meta: {
-          title: "menus.marketing.conversion",
-          icon: "ri:magic-line",
           keepAlive: true,
         },
       },

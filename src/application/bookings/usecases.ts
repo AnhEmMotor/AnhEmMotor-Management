@@ -42,11 +42,9 @@ function toEventVM(dto: BookingDTO): BookingEventVM {
     bgClass:
       dto.status === "Confirmed"
         ? "bg-emerald-500"
-        : dto.bookingType === "Maintenance"
-          ? "bg-emerald-500"
-          : dto.bookingType === "TestDrive"
-            ? "bg-blue-600"
-            : "bg-amber-500",
+        : dto.bookingType === "TestDrive"
+          ? "bg-blue-600"
+          : "bg-amber-500",
     textClass: "text-white",
   };
 }

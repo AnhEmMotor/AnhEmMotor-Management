@@ -50,10 +50,13 @@
 
     <ElCard class="reporting-card mt-4">
       <template #header>So sánh doanh thu: xưởng sửa chữa và bán xe</template>
-      <ReportPlaceholder
-        title="Chờ API thống kê xưởng dịch vụ"
-        description="Biểu đồ sẽ so sánh doanh thu sửa chữa, phụ tùng và doanh thu bán xe theo kỳ."
-        endpoint="GET /api/v1/Statistics/workshop-overview"
+      <ArtBarChart
+        :data="chartData"
+        :x-axis-data="chartXAxisData"
+        :show-legend="true"
+        height="350px"
+        :loading="loading"
+        :colors="['#409EFF', '#67C23A']"
       />
     </ElCard>
 
@@ -99,9 +102,9 @@
 import { onMounted, ref } from "vue";
 import { statisticsApi } from "@/api/operations";
 import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
+import ArtBarChart from "@/components/core/charts/art-bar-chart/index.vue";
 import ReportPageHeader from "./ReportPageHeader.vue";
 import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
-import ReportPlaceholder from "./ReportPlaceholder.vue";
 
 const currentPeriod = ref<"today" | "month" | "year" | "custom">("month");
 const periodStart = ref("");
@@ -114,6 +117,11 @@ const kpi = ref({
   monthlyRevenue: 0,
   overdueCount: 0,
 });
+const chartData = ref([
+  { name: "Doanh thu xưởng", data: [] as number[] },
+  { name: "Doanh thu bán xe", data: [] as number[] },
+]);
+const chartXAxisData = ref<string[]>([]);
 const repairOrders = ref<
   Array<{
     id: number;
@@ -139,45 +147,33 @@ async function loadData() {
     const data = await statisticsApi.getWorkshopOverview();
     kpi.value = data.kpi;
     repairOrders.value = data.repairOrders;
+
+    if (data.revenueComparisonChart) {
+      chartXAxisData.value = data.revenueComparisonChart.map((x) => x.month);
+      chartData.value = [
+        {
+          name: "Doanh thu xưởng",
+          data: data.revenueComparisonChart.map((x) => x.workshopRevenue),
+        },
+        {
+          name: "Doanh thu bán xe",
+          data: data.revenueComparisonChart.map((x) => x.retailRevenue),
+        },
+      ];
+    }
   } catch (error) {
-    // Mock data fallback
+    // Fallback error handling
     kpi.value = {
-      inProgressCount: 15,
-      avgCompletionHours: 4.5,
-      monthlyRevenue: 125000000,
-      overdueCount: 2,
+      inProgressCount: 0,
+      avgCompletionHours: 0,
+      monthlyRevenue: 0,
+      overdueCount: 0,
     };
-    repairOrders.value = [
-      {
-        id: 1,
-        orderCode: "RO-2026-001",
-        customerName: "Nguyễn Văn A",
-        vehicleInfo: "Honda SH 150i - 59D1-123.45",
-        technicianName: "Lê Văn T",
-        status: "Đang sửa",
-        startedAt: new Date().toISOString(),
-        laborFee: 350000,
-      },
-      {
-        id: 2,
-        orderCode: "RO-2026-002",
-        customerName: "Trần Thị B",
-        vehicleInfo: "Yamaha Exciter - 60B1-987.65",
-        technicianName: "Phạm Văn H",
-        status: "Chờ phụ tùng",
-        startedAt: new Date(Date.now() - 86400000).toISOString(),
-        laborFee: 150000,
-      },
-      {
-        id: 3,
-        orderCode: "RO-2026-003",
-        customerName: "Lê Văn C",
-        vehicleInfo: "Honda Vision - 61C1-555.55",
-        technicianName: "Nguyễn Văn K",
-        status: "Sẵn sàng bàn giao",
-        startedAt: new Date(Date.now() - 172800000).toISOString(),
-        laborFee: 200000,
-      }
+    repairOrders.value = [];
+    chartXAxisData.value = [];
+    chartData.value = [
+      { name: "Doanh thu xưởng", data: [] },
+      { name: "Doanh thu bán xe", data: [] },
     ];
   } finally {
     loading.value = false;

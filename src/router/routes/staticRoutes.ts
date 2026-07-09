@@ -4,7 +4,7 @@ export const staticRoutes: AppRouteRecordRaw[] = [
   {
     path: "/",
     name: "RootRedirect",
-    redirect: "/workspace", // Redirect to workspace by default
+    redirect: "/workspace",
   },
   {
     path: "/auth/login",
@@ -23,6 +23,12 @@ export const staticRoutes: AppRouteRecordRaw[] = [
     name: "ForgetPassword",
     component: () => import("@view/auth/forgot-password/index.vue"),
     meta: { title: "menus.forgetPassword.title", isHideTab: true },
+  },
+  {
+    path: "/auth/reset-password",
+    name: "ResetPassword",
+    component: () => import("@view/auth/reset-password/index.vue"),
+    meta: { title: "Đặt lại mật khẩu", isHideTab: true },
   },
   {
     path: "/workspace",

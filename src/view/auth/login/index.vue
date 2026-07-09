@@ -60,7 +60,11 @@
           </div>
 
           <div class="flex items-center justify-between mt-2 mb-6">
-            <el-checkbox v-model="form.rememberMe" class="font-normal subtitle">
+            <el-checkbox
+              v-model="form.rememberMe"
+              @change="(val: any) => onRememberChange(val as boolean)"
+              class="font-normal subtitle"
+            >
               Ghi nhớ đăng nhập
             </el-checkbox>
 
@@ -196,6 +200,8 @@ import LoadingOverlay from "@/view/common/loading-overlay/index.vue";
 import { useOAuth } from "@/hooks/useOAuth";
 import { GoogleLogin } from "vue3-google-login";
 
+const REMEMBERED_USER_KEY = "remembered_username";
+
 const router = useRouter();
 const userStore = useUserStore();
 const { initOAuth, loginWithFacebookSDK, authConfig } = useOAuth();
@@ -226,6 +232,9 @@ const handleLogin = async () => {
     });
 
     if (result.isAuthenticated && result.token) {
+      if (form.rememberMe) {
+        localStorage.setItem(REMEMBERED_USER_KEY, form.usernameOrEmail);
+      }
       // Set user login state and info
       userStore.setLoginStatus(true);
       if (result.userInfo) {
@@ -281,8 +290,17 @@ const handleGoogleSuccess = async (response: any) => {
 };
 
 onMounted(() => {
+  const saved = localStorage.getItem(REMEMBERED_USER_KEY);
+  if (saved) {
+    form.usernameOrEmail = saved;
+    form.rememberMe = true;
+  }
   initOAuth();
 });
+
+const onRememberChange = (val: boolean) => {
+  if (!val) localStorage.removeItem(REMEMBERED_USER_KEY);
+};
 
 const handleFacebookLogin = async () => {
   try {

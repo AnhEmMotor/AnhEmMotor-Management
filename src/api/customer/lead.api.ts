@@ -169,9 +169,6 @@ export interface VehicleSummary {
   engineNumber: string;
   purchaseDate: string;
   status: string;
-  lastMaintenanceDate?: string;
-  nextMaintenanceDate?: string;
-  nextMaintenanceOdo?: number;
   currentOdo: number;
 }
 
