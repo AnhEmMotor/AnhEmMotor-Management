@@ -201,17 +201,11 @@
               </div>
             </div>
             <div class="w-full">
-              <el-steps
-                :active="currentStep"
-                :finish-status="detailData.status === 2 ? 'error' : 'success'"
-                align-center
-                size="small"
-              >
-                <el-step title="Đang giao hàng" />
+              <el-steps align-center size="small">
+                <el-step title="Đang giao hàng" :status="step0Status" />
                 <el-step
-                  :title="
-                    detailData.status === 2 ? 'Bị hoàn trả' : 'Đã hoàn thành'
-                  "
+                  :title="isReturned ? 'Bị hoàn trả' : 'Đã hoàn thành'"
+                  :status="step1Status"
                 />
               </el-steps>
             </div>
@@ -219,7 +213,7 @@
 
           <!-- Alerts inside Drawer -->
           <el-alert
-            v-if="detailData.status === 2"
+            v-if="isReturned"
             title="Đơn hàng này đã bị hoàn trả / hủy giao hàng từ đối tác."
             type="error"
             show-icon
@@ -608,9 +602,32 @@ const detailData = ref<FulfillmentDetailResponse>({
 const trackingData = ref<TrackingResponse | null>(null);
 const loadingTracking = ref(false);
 
-const currentStep = computed(() => {
-  if (detailData.value.deliveredAt) return 2;
-  return detailData.value.status;
+const isReturned = computed(() => {
+  const st = detailData.value.status;
+  console.log(st.toString().toUpperCase());
+  return st.toString().toUpperCase() === "RETURNED";
+});
+
+const isCompleted = computed(() => {
+  if (detailData.value.deliveredAt) return true;
+  const st = detailData.value.status;
+  return st.toString().toUpperCase() === "COMPLETED";
+});
+
+const isInTransit = computed(() => {
+  const st = detailData.value.status;
+  return st.toString().toUpperCase() === "INTRANSIT";
+});
+
+const step0Status = computed(() => {
+  if (isReturned.value || isCompleted.value) return "success";
+  return "process";
+});
+
+const step1Status = computed(() => {
+  if (isReturned.value) return "error";
+  if (isCompleted.value) return "success";
+  return "wait";
 });
 
 const hasRestrictedItems = computed(() => {
@@ -795,21 +812,28 @@ const getCarrierTagType = (carrier: string) => {
   }
 };
 
-const getStatusLabel = (status: number) => {
-  const st = deliveryStatuses.value.find((x) => x.id === status);
+const getStatusLabel = (status: number | string) => {
+  const st = deliveryStatuses.value.find(
+    (x) =>
+      x.id === status ||
+      (typeof status === "string" &&
+        x.nameEn.toUpperCase() === status.toUpperCase()),
+  );
   return st ? st.nameVi : "Không rõ";
 };
 
-const getStatusTagType = (status: number) => {
-  switch (status) {
-    case 1:
-      return "success";
-    case 2:
-      return "danger";
-    case 0:
-    default:
-      return "warning";
-  }
+const getStatusTagType = (status: number | string) => {
+  if (
+    status === 1 ||
+    (typeof status === "string" && status.toUpperCase() === "COMPLETED")
+  )
+    return "success";
+  if (
+    status === 2 ||
+    (typeof status === "string" && status.toUpperCase() === "RETURNED")
+  )
+    return "danger";
+  return "warning";
 };
 
 const formatCurrency = (value: number) => {
