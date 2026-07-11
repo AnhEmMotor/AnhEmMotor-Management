@@ -58,12 +58,12 @@ export interface UpdateRepairOrderPayload {
   maintenanceDate: string;
   description: string;
   mileage: number;
-  technicianId?: number;
+  technicianId?: number | null;
   partsCost: number;
   laborCost: number;
   partsJson?: string;
   nextMaintenanceDate?: string;
-  nextMaintenanceOdo?: number;
+  nextMaintenanceOdo?: number | null;
 }
 
 export interface PartItemPayload {
