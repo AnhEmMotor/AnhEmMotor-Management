@@ -1,11 +1,7 @@
 import { computed, ref, type ComputedRef, type Ref } from "vue";
 
 import type { RepairOrder } from "@/api/sales";
-import {
-  VehicleApi,
-  type Vehicle,
-  type VehiclePortfolioHistoryItem,
-} from "@/api/vehicle";
+import { VehicleApi, type Vehicle } from "@/api/vehicle";
 
 export type QueryType = "auto" | "vin" | "licensePlate" | "phone";
 

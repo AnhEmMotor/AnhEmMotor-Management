@@ -4,6 +4,8 @@ export interface DashboardSummary {
   dailyTarget: number;
 
   netProfit: number;
+  totalExpense: number;
+  grossProfit: number;
   profitMargin: number;
   profitVsYesterdayPercentage: number;
 

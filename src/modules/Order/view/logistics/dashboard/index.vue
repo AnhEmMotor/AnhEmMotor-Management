@@ -532,7 +532,7 @@ const trackingData = ref<TrackingResponse | null>(null);
 const loadingTracking = ref(false);
 
 const isReturned = computed(() => {
-  const st = detailData.value.status;
+  const st = detailData.value.status as any;
   return (
     st === 2 || (typeof st === "string" && st.toUpperCase() === "RETURNED")
   );
@@ -540,7 +540,7 @@ const isReturned = computed(() => {
 
 const isCompleted = computed(() => {
   if (detailData.value.deliveredAt) return true;
-  const st = detailData.value.status;
+  const st = detailData.value.status as any;
   return (
     st === 1 || (typeof st === "string" && st.toUpperCase() === "COMPLETED")
   );

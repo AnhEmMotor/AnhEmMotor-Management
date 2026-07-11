@@ -41,3 +41,19 @@
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { ref } from "vue";
+
+const activePeriod = ref("today");
+const customRange = ref<[string, string] | null>(null);
+const priceUnit = ref("VND");
+
+function onPeriodChange() {
+  // placeholder
+}
+
+function onCustomRangeChange() {
+  // placeholder
+}
+</script>

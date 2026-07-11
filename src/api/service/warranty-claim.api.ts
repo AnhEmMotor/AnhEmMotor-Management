@@ -31,6 +31,7 @@ export interface WarrantyClaimDetail {
   customerName?: string;
   customerPhone?: string;
   customerAddress?: string;
+  vehicleId?: number;
   vehicleVin?: string;
   vehiclePlate?: string;
   vehicleColor?: string;
@@ -111,7 +112,7 @@ export const WarrantyClaimApi = {
   },
 
   delete(id: number) {
-    return request.delete<boolean>({
+    return request.del<boolean>({
       url: `/api/v1/WarrantyClaims/${id}`,
     });
   },

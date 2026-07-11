@@ -135,7 +135,11 @@
         <ElTableColumn prop="phone" label="Số điện thoại" min-width="130" />
         <ElTableColumn prop="source" label="Nguồn" min-width="120">
           <template #default="{ row }">
-            <ElTag :type="getSourceType(row.source)" effect="light" round>
+            <ElTag
+              :type="getSourceType(row.source) as any"
+              effect="light"
+              round
+            >
               {{ row.source }}
             </ElTag>
           </template>
@@ -198,7 +202,7 @@
         <div class="flex justify-between border-b pb-2">
           <span class="text-gray-500 font-semibold">Nguồn:</span>
           <ElTag
-            :type="getSourceType(selectedLead.source)"
+            :type="getSourceType(selectedLead.source) as any"
             effect="light"
             round
           >

@@ -99,7 +99,7 @@
           effect="dark"
           class="font-semibold px-3 py-1.5"
         >
-          {{ getStatusLabel(claim?.status || "") }}
+          {{ getStatusLabel(claim?.status as any) }}
         </el-tag>
       </div>
       <el-steps
@@ -615,17 +615,7 @@ const mediaUrls = computed(() => claim.value?.mediaUrls ?? []);
 
 // Trạng thái hiện tại dạng số để dễ so sánh và điều khiển workflow
 const currentStatusValue = computed(() => {
-  const s = claim.value?.status;
-  if (typeof s === "string") {
-    const lowered = s.toLowerCase();
-    if (lowered === "received") return 1;
-    if (lowered === "pendingmanufacturer") return 2;
-    if (lowered === "approved") return 3;
-    if (lowered === "replaced") return 4;
-    if (lowered === "completed") return 5;
-    if (lowered === "rejected") return 6;
-  }
-  return s ?? 1;
+  return claim.value?.status ?? 1;
 });
 
 const activeStepIndex = computed(() => {

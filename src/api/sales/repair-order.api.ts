@@ -37,6 +37,10 @@ export interface RepairOrder {
   status: string;
   details?: RepairOrderDetail[];
   customerPhone?: string;
+  customerName?: string;
+  licensePlate?: string;
+  vehicle?: any;
+  totalAmount?: number;
 }
 
 export interface RepairOrderList {

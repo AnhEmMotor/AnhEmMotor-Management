@@ -9,4 +9,4 @@ export const createVoucher = (data: any) =>
 export const updateVoucher = (id: number, data: any) =>
   request.put({ url: `/api/v1/voucher/${id}`, data });
 export const deleteVoucher = (id: number) =>
-  request.delete({ url: `/api/v1/voucher/${id}` });
+  request.del({ url: `/api/v1/voucher/${id}` });

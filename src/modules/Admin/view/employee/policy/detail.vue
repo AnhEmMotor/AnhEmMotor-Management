@@ -293,11 +293,24 @@
                 class="mb-4"
               />
 
+              <div
+                v-if="enableTiers"
+                class="mb-3 rounded border border-blue-100 bg-blue-50 px-3 py-2 text-xs text-blue-700"
+              >
+                <span v-if="selectedRewardBasePrice > 0">
+                  Giá quy đổi: {{ formatCurrency(selectedRewardBasePrice) }} /
+                  xe
+                </span>
+                <span v-else>
+                  Chọn xe hoặc phiên bản xe để hệ thống quy đổi % ra số tiền.
+                </span>
+              </div>
+
               <div v-if="enableTiers" class="space-y-2">
                 <div
                   v-for="(tier, index) in editForm.tiers"
                   :key="index"
-                  class="flex items-end gap-4 p-3 bg-white border border-gray-200 rounded"
+                  class="flex items-start gap-4 p-3 bg-white border border-gray-200 rounded"
                 >
                   <ElFormItem label="Bán từ (xe)" class="!mb-0 flex-1">
                     <ElInputNumber
@@ -316,21 +329,31 @@
                       placeholder="Tối đa"
                     />
                   </ElFormItem>
-                  <ElFormItem label="Mức thưởng" class="!mb-0 flex-1">
+                  <ElFormItem label="Mức thưởng (%)" class="!mb-0 flex-1">
                     <ElInput
-                      v-model="tier.bonus"
+                      v-model="tier.bonusRate"
                       inputmode="decimal"
                       placeholder="Nhập tỷ lệ"
-                    />
-                    <template #suffix>
-                      <span class="text-xs text-gray-400">%</span>
-                    </template>
+                      @input="syncTierBonusAmounts"
+                    >
+                      <template #suffix>
+                        <span class="text-xs text-gray-400">%</span>
+                      </template>
+                    </ElInput>
+                    <div class="mt-1 text-xs leading-5 text-gray-500">
+                      <span v-if="selectedRewardBasePrice > 0">
+                        Quy ra {{ formatCurrency(getTierBonusAmount(tier)) }} /
+                        xe
+                      </span>
+                      <span v-else> Chưa có giá xe để quy đổi </span>
+                    </div>
                   </ElFormItem>
                   <ElButton
                     v-if="isEditing"
                     type="danger"
                     :icon="Delete"
                     plain
+                    class="mt-[30px]"
                     @click="removeTier(index)"
                   />
                 </div>
@@ -511,6 +534,13 @@ interface VehicleOption {
   categoryId?: number | null;
 }
 
+interface CommissionTier {
+  from: number;
+  to?: number | null;
+  bonus: number;
+  bonusRate?: number | string | null;
+}
+
 const route = useRoute();
 const router = useRouter();
 
@@ -538,7 +568,7 @@ const editForm = ref<{
   percentage?: number;
   laborPercentage?: number;
   partsPercentage?: number;
-  tiers?: any[];
+  tiers?: CommissionTier[];
   [key: string]: any;
 }>({});
 
@@ -769,6 +799,82 @@ const formatCurrency = (value: number) => {
   }).format(value);
 };
 
+const selectedRewardBasePrice = computed(() => {
+  const selectedPrice = Number(selectedVariant.value?.price);
+  if (Number.isFinite(selectedPrice) && selectedPrice > 0) return selectedPrice;
+
+  const fallbackPrice = variantOptions.value
+    .map((variant) => Number(variant.price))
+    .find((price) => Number.isFinite(price) && price > 0);
+
+  return fallbackPrice || 0;
+});
+
+const hasTierBonusRate = (tier: CommissionTier) => {
+  const value = tier.bonusRate;
+  return value !== undefined && value !== null && `${value}`.trim() !== "";
+};
+
+const normalizeBonusRate = (value: CommissionTier["bonusRate"]) => {
+  const normalized = `${value ?? ""}`.replace(",", ".").trim();
+  const numericValue = Number(normalized);
+  return Number.isFinite(numericValue) && numericValue > 0 ? numericValue : 0;
+};
+
+const calculateTierBonusAmount = (
+  bonusRate: CommissionTier["bonusRate"],
+  basePrice = selectedRewardBasePrice.value,
+) => {
+  const price = Number(basePrice) || 0;
+  if (price <= 0) return 0;
+
+  return Math.round(price * (normalizeBonusRate(bonusRate) / 100));
+};
+
+const deriveTierBonusRate = (bonus: number, basePrice: number) => {
+  const price = Number(basePrice) || 0;
+  const amount = Number(bonus) || 0;
+  if (price <= 0 || amount <= 0) return 0;
+
+  return Number(((amount / price) * 100).toFixed(2));
+};
+
+const getTierBonusAmount = (tier: CommissionTier) => {
+  if (!hasTierBonusRate(tier)) return Number(tier.bonus) || 0;
+
+  if (selectedRewardBasePrice.value <= 0) return Number(tier.bonus) || 0;
+
+  return calculateTierBonusAmount(tier.bonusRate);
+};
+
+const syncTierBonusAmounts = () => {
+  const tiers = editForm.value.tiers;
+  if (!tiers?.length) return;
+
+  const basePrice = selectedRewardBasePrice.value;
+
+  tiers.forEach((tier) => {
+    if (!hasTierBonusRate(tier) && basePrice > 0 && Number(tier.bonus) > 0) {
+      tier.bonusRate = deriveTierBonusRate(Number(tier.bonus), basePrice);
+      return;
+    }
+
+    if (hasTierBonusRate(tier) && basePrice > 0) {
+      tier.bonus = calculateTierBonusAmount(tier.bonusRate, basePrice);
+    }
+  });
+};
+
+watch(
+  () => [
+    selectedRewardBasePrice.value,
+    editForm.value.tiers?.map((tier) => `${tier.bonusRate ?? ""}`).join("|"),
+  ],
+  () => {
+    syncTierBonusAmounts();
+  },
+);
+
 const mapBackendPolicy = (p: any) => {
   const target = p.targetGroup || "";
   const dept =
@@ -820,8 +926,8 @@ onMounted(async () => {
       productVariantId: null,
       productVariantColorId: null,
       tiers: [
-        { from: 1, to: 5, bonus: 500000 },
-        { from: 6, to: 999, bonus: 900000 },
+        { from: 1, to: 5, bonus: 0, bonusRate: 1 },
+        { from: 6, to: 999, bonus: 0, bonusRate: 1.5 },
       ],
       percentage: 0,
       laborPercentage: 0,
@@ -884,6 +990,7 @@ const cancelEdit = () => {
 };
 
 const savePolicy = () => {
+  syncTierBonusAmounts();
   ElMessage.success(
     isCreating.value
       ? "Kích hoạt chính sách mới thành công!"
@@ -917,7 +1024,7 @@ const duplicatePolicy = () => {
 // Tier logic
 const addTier = () => {
   if (!editForm.value.tiers) editForm.value.tiers = [];
-  editForm.value.tiers.push({ from: 1, to: 999, bonus: 0 });
+  editForm.value.tiers.push({ from: 1, to: 999, bonus: 0, bonusRate: 0 });
 };
 
 const removeTier = (index: number) => {
@@ -989,7 +1096,8 @@ const runSimulation = () => {
         const itemsInTier = Math.min(remainingQty, tierMax);
 
         if (itemsInTier > 0) {
-          const tierTotal = itemsInTier * Number(tier.bonus);
+          const tierBonusAmount = getTierBonusAmount(tier);
+          const tierTotal = itemsInTier * tierBonusAmount;
           totalBonus += tierTotal;
           breakdownTexts.push(
             `${itemsInTier} xe mốc ${i + 1} (${formatCurrency(tierTotal)})`,

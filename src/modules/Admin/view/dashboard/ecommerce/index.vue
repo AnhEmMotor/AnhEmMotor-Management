@@ -52,13 +52,13 @@
           <div
             class="text-sm font-medium"
             :class="
-              summary.revenueChangePercentage >= 0
+              (summary.revenueChangePercentage || 0) >= 0
                 ? 'text-green-600'
                 : 'text-red-600'
             "
           >
-            {{ summary.revenueChangePercentage >= 0 ? "▲" : "▼ "
-            }}{{ summary.revenueChangePercentage }}% so với kỳ trước
+            {{ (summary.revenueChangePercentage || 0) >= 0 ? "▲" : "▼ "
+            }}{{ summary.revenueChangePercentage || 0 }}% so với kỳ trước
           </div>
           <div class="text-sm text-gray-500 mt-1">
             Mục tiêu ngày: {{ formatCurrency(summary.dailyTarget) }}
@@ -83,7 +83,6 @@
             {{
               Math.round(
                 (summary.totalRevenue / (summary.dailyTarget || 1)) * 100,
-                100,
               )
             }}
           </div>
@@ -488,7 +487,7 @@ import {
 import type {
   DashboardSummary,
   StaffPerformance,
-  TransactionLogRow,
+  TransactionLog,
 } from "@/services/analytics.types";
 
 defineOptions({ name: "Ecommerce" });
@@ -527,10 +526,11 @@ const summary = ref<DashboardSummary>({
   monthForecast: 0,
   totalExpense: 0,
   grossProfit: 0,
+  alertsCount: 0,
 });
 const sources = ref<{ name: string; amount: number; percent: number }[]>([]);
 const topStaff = ref<StaffPerformance[]>([]);
-const transactions = ref<TransactionLogRow[]>([]);
+const transactions = ref<TransactionLog[]>([]);
 
 const revenueChartRef = ref<HTMLElement | null>(null);
 let chartInstance: ECharts | null = null;
@@ -636,6 +636,7 @@ function normalizeSummary(s: any): DashboardSummary {
     netProfit: s.netProfit ?? s.profitToday ?? 0,
     totalExpense: safeNum(s.totalExpense),
     grossProfit: safeNum(s.grossProfit),
+    alertsCount: safeNum(s.alertsCount),
     revenueChangePercentage: safeNum(
       s.revenueChangePercentage ?? s.incomeChangePercent ?? 0,
     ),
@@ -777,7 +778,7 @@ onMounted(() => {
       headers: { Authorization: `Bearer ${token}` },
       onmessage(ev) {
         try {
-          const t = JSON.parse(ev.data) as TransactionLogRow;
+          const t = JSON.parse(ev.data) as TransactionLog;
           if (!t) return;
           transactions.value = [t, ...transactions.value].slice(0, 50);
         } catch {

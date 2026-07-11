@@ -30,7 +30,7 @@ const resolveStoredLanguage = (): string => {
 
 export function setLocale(lang: string): void {
   if (!langListArr.includes(lang)) return;
-  i18n.global.locale.value = lang;
+  i18n.global.locale.value = lang as any;
   localStorage.setItem("app-lang", lang);
 }
 

@@ -33,15 +33,15 @@ export function fetchGetUserInfo() {
   });
 }
 
-export function fetchForgotPassword(params: Api.Auth.ForgotPasswordParams) {
-  return request.post<Api.Auth.ForgotPasswordResponse>({
+export function fetchForgotPassword(params: any) {
+  return request.post<any>({
     url: "/api/v1/auth/forgot-password",
     params,
   });
 }
 
-export function fetchResetPassword(params: Api.Auth.ResetPasswordParams) {
-  return request.post<Api.Auth.ResetPasswordResponse>({
+export function fetchResetPassword(params: any) {
+  return request.post<any>({
     url: "/api/v1/auth/reset-password",
     params,
   });

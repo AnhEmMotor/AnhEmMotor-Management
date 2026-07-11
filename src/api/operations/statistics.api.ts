@@ -160,6 +160,16 @@ export const statisticsApi = {
       params: Object.keys(params).length ? params : undefined,
     });
   },
+  getFinancingOverview(period?: string, start?: string, end?: string) {
+    const params: Record<string, string> = {};
+    if (period) params.period = period;
+    if (start) params.start = start;
+    if (end) params.end = end;
+    return request.get<any>({
+      url: "/api/v1/Statistics/financing-overview",
+      params: Object.keys(params).length ? params : undefined,
+    });
+  },
   getDashboardOverview() {
     return request.get<Statistical.AdminDashboardOverviewResponse>({
       url: "/api/v1/Statistics/dashboard-overview",
