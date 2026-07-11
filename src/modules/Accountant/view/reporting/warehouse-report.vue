@@ -176,9 +176,25 @@ const stockRatio = computed(() => {
   return ratio.toFixed(1) + "%";
 });
 
+const props = defineProps<{
+  startDate?: string;
+  endDate?: string;
+}>();
+
+import { watch } from "vue";
+watch(
+  () => [props.startDate, props.endDate],
+  () => {
+    load();
+  },
+);
+
 async function load() {
   try {
-    data.value = await statisticsApi.getWarehouseReport();
+    data.value = await statisticsApi.getWarehouseReport(
+      props.startDate,
+      props.endDate,
+    );
     renderCharts();
   } catch (e) {
     console.error("Failed to load warehouse report:", e);

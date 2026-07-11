@@ -121,12 +121,12 @@ onMounted(async () => {
 
 const showDrawer = ref(false);
 const clickItem = ref<CommentItem>({
-  id: 1,
-  date: "2024-9-3",
-  content: "thêmdầu！họchảoNode từmìnhviếtchiếctiểuDemo",
-  collection: 5,
-  comment: 8,
-  userName: "ẩndanh",
+  id: 0,
+  date: "",
+  content: "",
+  collection: 0,
+  comment: 0,
+  userName: "",
   color: COLOR_LIST[0],
 });
 

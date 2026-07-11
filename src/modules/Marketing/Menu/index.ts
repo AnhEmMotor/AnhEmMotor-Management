@@ -176,7 +176,7 @@ export const marketingMenu: AppRouteRecord[] = [
             name: "CustomerVoucher",
             component: "/Marketing/view/customer/voucher/index",
             meta: {
-              title: "Quản lý Voucher", // TODO: Add i18n
+              title: "menus.marketing.customerVoucher",
               icon: "ri:coupon-3-line",
             },
           },

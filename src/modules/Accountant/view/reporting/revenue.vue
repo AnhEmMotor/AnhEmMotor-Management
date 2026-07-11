@@ -201,14 +201,15 @@ async function onExpandChange(row: Statistical.DailyRevenueTableResponse) {
 }
 
 function onPeriodChange() {
-  // TODO: Pass period params to API when backend supports it
-  // Expected: GET /api/v1/Statistics/revenue-analysis?period=...&start=...&end=...
   load();
 }
 
 async function load() {
   try {
-    data.value = await statisticsApi.getRevenueAnalysis();
+    data.value = await statisticsApi.getRevenueAnalysis(
+      periodStart.value,
+      periodEnd.value,
+    );
     renderCharts();
   } catch (e) {
     console.error("Failed to load revenue analysis:", e);

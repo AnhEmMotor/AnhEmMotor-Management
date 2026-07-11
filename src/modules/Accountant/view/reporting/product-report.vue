@@ -164,6 +164,11 @@ const paginatedTableData = computed(() => {
   );
 });
 
+const props = defineProps<{
+  startDate?: string;
+  endDate?: string;
+}>();
+
 const data = ref<Statistical.AdminProductReportResponse>({
   highlights: {
     bestSellerName: "",
@@ -177,6 +182,15 @@ const data = ref<Statistical.AdminProductReportResponse>({
   topProfitProducts: [],
   productPerformanceTable: [],
 });
+
+import { watch } from "vue";
+watch(
+  () => [props.startDate, props.endDate],
+  () => {
+    // Backend getProductReport currently doesn't accept date params
+    // load();
+  },
+);
 
 async function load() {
   try {

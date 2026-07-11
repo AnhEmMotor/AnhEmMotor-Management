@@ -170,9 +170,13 @@ export const statisticsApi = {
       params: Object.keys(params).length ? params : undefined,
     });
   },
-  getDashboardOverview() {
+  getDashboardOverview(startDate?: string, endDate?: string) {
+    const params: Record<string, string> = {};
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
     return request.get<Statistical.AdminDashboardOverviewResponse>({
       url: "/api/v1/Statistics/dashboard-overview",
+      params: Object.keys(params).length ? params : undefined,
     });
   },
   getDailyRevenue(days: number = 7) {
@@ -192,9 +196,13 @@ export const statisticsApi = {
       url: "/api/v1/Statistics/order-status-counts",
     });
   },
-  getRevenueAnalysis() {
+  getRevenueAnalysis(startDate?: string, endDate?: string) {
+    const params: Record<string, string> = {};
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
     return request.get<Statistical.AdminRevenueAnalysisResponse>({
       url: "/api/v1/Statistics/revenue-analysis",
+      params: Object.keys(params).length ? params : undefined,
     });
   },
   getProductReport() {
@@ -202,9 +210,13 @@ export const statisticsApi = {
       url: "/api/v1/Statistics/product-report",
     });
   },
-  getWarehouseReport() {
+  getWarehouseReport(startDate?: string, endDate?: string) {
+    const params: Record<string, string> = {};
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
     return request.get<Statistical.AdminWarehouseReportResponse>({
       url: "/api/v1/Statistics/warehouse-report",
+      params: Object.keys(params).length ? params : undefined,
     });
   },
   getProductStockPrice(variantId: number) {

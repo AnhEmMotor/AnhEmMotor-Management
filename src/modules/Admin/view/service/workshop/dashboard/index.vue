@@ -363,6 +363,13 @@ const analytics = ref({
     workshopRevenue: 0,
     retailRevenue: 0,
   },
+  revenueSources: [] as Array<{ source: string; amount: number }>,
+  revenueTrend: {
+    labels: [] as string[],
+    serviceRevenue: [] as number[],
+    retailRevenue: [] as number[],
+  },
+  repairOrderStatusCounts: [] as Array<{ status: string; count: number }>,
 });
 
 // Alerts
@@ -388,6 +395,10 @@ const warrantyAndComplaints = ref({
 });
 
 const statusBarChart = computed(() => {
+  const dataMap = new Map(
+    analytics.value.repairOrderStatusCounts.map((x) => [x.status, x.count]),
+  );
+
   return {
     categories: [
       "Chờ sửa chữa",
@@ -401,23 +412,23 @@ const statusBarChart = computed(() => {
         name: "Số lượng",
         data: [
           {
-            value: 0,
+            value: dataMap.get("Chờ sửa chữa") || 0,
             itemStyle: { color: "var(--el-color-warning)" },
           },
           {
-            value: 0,
+            value: dataMap.get("Đang sửa chữa") || 0,
             itemStyle: { color: "var(--el-color-primary)" },
           },
           {
-            value: 0,
+            value: dataMap.get("Chờ nghiệm thu") || 0,
             itemStyle: { color: "var(--el-color-info)" },
           },
           {
-            value: 0,
+            value: dataMap.get("Đã hoàn thành") || 0,
             itemStyle: { color: "var(--el-color-success)" },
           },
           {
-            value: 0,
+            value: dataMap.get("Đã hủy phiếu") || 0,
             itemStyle: { color: "var(--el-text-color-placeholder)" },
           },
         ],
@@ -429,27 +440,25 @@ const statusBarChart = computed(() => {
 // Charts
 const serviceVsSalesChart = computed(() => {
   return {
-    xAxisData: ["T1", "T2", "T3", "T4", "T5", "T6"],
+    xAxisData: analytics.value.revenueTrend.labels,
     data: [
       {
         name: "Doanh thu dịch vụ",
-        data: [12, 14, 16, 18, 20, 22],
+        data: analytics.value.revenueTrend.serviceRevenue,
       },
       {
         name: "Doanh thu phụ tùng",
-        data: [10, 13, 15, 14, 18, 19],
+        data: analytics.value.revenueTrend.retailRevenue,
       },
     ],
   };
 });
 
 const revenueSourceChart = computed(() => {
-  return [
-    { value: 45, name: "Xe máy" },
-    { value: 25, name: "Phụ tùng" },
-    { value: 20, name: "Phụ kiện" },
-    { value: 10, name: "Dịch vụ GTGT" },
-  ];
+  return analytics.value.revenueSources.map((s) => ({
+    value: s.amount,
+    name: s.source,
+  }));
 });
 
 function formatVnd(value: number): string {
@@ -543,6 +552,38 @@ const refresh = async () => {
       };
     }
 
+    const rawRevenueSources =
+      asAny?.Analytics?.RevenueSources ??
+      asAny?.analytics?.revenueSources ??
+      [];
+    analytics.value.revenueSources = rawRevenueSources.map((s: any) => ({
+      source: s.Source ?? s.source ?? "Không rõ",
+      amount: Number(s.Amount ?? s.amount ?? 0),
+    }));
+
+    const rawRevenueTrend =
+      asAny?.Analytics?.RevenueTrend ?? asAny?.analytics?.revenueTrend;
+    if (rawRevenueTrend) {
+      analytics.value.revenueTrend = {
+        labels: rawRevenueTrend.Labels ?? rawRevenueTrend.labels ?? [],
+        serviceRevenue:
+          rawRevenueTrend.ServiceRevenue ??
+          rawRevenueTrend.serviceRevenue ??
+          [],
+        retailRevenue:
+          rawRevenueTrend.RetailRevenue ?? rawRevenueTrend.retailRevenue ?? [],
+      };
+    }
+
+    const rawStatusCounts =
+      asAny?.Analytics?.RepairOrderStatusCounts ??
+      asAny?.analytics?.repairOrderStatusCounts ??
+      [];
+    analytics.value.repairOrderStatusCounts = rawStatusCounts.map((s: any) => ({
+      status: s.Status ?? s.status ?? "Không rõ",
+      count: Number(s.Count ?? s.count ?? 0),
+    }));
+
     const rawOverdue =
       (asAny?.Alerts?.OverdueTickets ?? asAny?.alerts?.overdueTickets) || [];
     alerts.value.overdue =
@@ -612,9 +653,10 @@ const refresh = async () => {
 
     warrantyAndComplaints.value = {
       loading: false,
-      warrantyRequestsCount: asAny?.warrantyRequestsCount ?? 0,
-      complaintsCount: asAny?.complaintsCount ?? 0,
-      recentItems: asAny?.recentItems ?? [],
+      warrantyRequestsCount:
+        asAny?.WarrantyRequestsCount ?? asAny?.warrantyRequestsCount ?? 0,
+      complaintsCount: asAny?.ComplaintsCount ?? asAny?.complaintsCount ?? 0,
+      recentItems: asAny?.RecentItems ?? asAny?.recentItems ?? [],
     };
   } finally {
     loading.value = false;

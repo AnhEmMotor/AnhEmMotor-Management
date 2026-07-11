@@ -138,10 +138,20 @@
                   ><ArtSvgIcon icon="ri:edit-line" class="mr-1" /> Chỉnh
                   sửa</ElButton
                 >
-                <ElButton size="small" round @click="handleAssign"
-                  ><ArtSvgIcon icon="ri:user-star-line" class="mr-1" /> Giao
-                  cho</ElButton
+                <ElSelect
+                  v-model="profile.assignedToId"
+                  @change="handleAssignSale"
+                  size="small"
+                  class="ml-2 w-[140px]"
+                  placeholder="Giao nhân viên..."
                 >
+                  <ElOption
+                    v-for="sale in salesList"
+                    :key="sale.id"
+                    :label="sale.name"
+                    :value="sale.id"
+                  />
+                </ElSelect>
               </div>
             </div>
 
@@ -459,9 +469,11 @@ import dayjs from "dayjs";
 import "dayjs/locale/vi";
 import {
   fetchGetProfile360,
+  fetchAssignLead,
   type Profile360Data,
   type CareReminder,
 } from "@/api/customer/lead.api";
+import { fetchGetUserList } from "@/api/auth/system-manage.api";
 import { ElMessage } from "element-plus";
 
 dayjs.locale("vi");
@@ -510,8 +522,23 @@ const loadProfile = async () => {
   }
 };
 onMounted(() => {
-  if (leadId.value) loadProfile();
+  if (leadId.value) {
+    loadProfile();
+    fetchSalesList();
+  }
 });
+
+const salesList = ref<{ id: string; name: string }[]>([]);
+const fetchSalesList = async () => {
+  try {
+    const res = await fetchGetUserList({ Page: 1, PageSize: 100 });
+    const users = ((res as any).items ?? (res as any).records ?? []) as any[];
+    salesList.value = users.map((user: any) => ({
+      id: String(user.id),
+      name: user.fullName || user.username || user.email || String(user.id),
+    }));
+  } catch {}
+};
 
 const goBack = () => router.push("/Marketing/customer/profile");
 const formatMoney = (val?: number) =>
@@ -584,8 +611,15 @@ const timelineDotClass = (type: string) =>
 const handleEdit = () => {
   if (profile.value) router.push("/Marketing/customer/profile");
 };
-const handleAssign = async () => {
-  ElMessage.info("Chức năng giao việc sẽ được bổ sung");
+const handleAssignSale = async (saleId: string) => {
+  if (!profile.value) return;
+  try {
+    await fetchAssignLead(profile.value.id, saleId);
+    ElMessage.success("Đã phân công nhân viên thành công");
+    loadProfile();
+  } catch (err: any) {
+    ElMessage.error(err.message || "Lỗi khi phân công nhân viên");
+  }
 };
 </script>
 

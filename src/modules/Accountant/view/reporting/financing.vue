@@ -151,15 +151,17 @@ const approvalRate = computed(() => {
 });
 
 function onPeriodChange() {
-  // TODO: Pass period params to API when backend supports it
-  // Expected: GET /api/v1/Statistics/financing-overview?period=...&start=...&end=...
   loadData();
 }
 
 async function loadData() {
   loading.value = true;
   try {
-    const data = await statisticsApi.getFinancingOverview();
+    const data = await statisticsApi.getFinancingOverview(
+      currentPeriod.value === "custom" ? undefined : currentPeriod.value,
+      periodStart.value,
+      periodEnd.value,
+    );
     kpi.value = data.kpi;
     installments.value = data.installments;
   } finally {

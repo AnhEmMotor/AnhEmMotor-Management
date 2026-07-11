@@ -155,15 +155,17 @@ const paginatedRepairOrders = computed(() => {
 });
 
 function onPeriodChange() {
-  // TODO: Pass period params to API when backend supports it
-  // Expected: GET /api/v1/Statistics/workshop-overview?period=...&start=...&end=...
   loadData();
 }
 
 async function loadData() {
   loading.value = true;
   try {
-    const data = await statisticsApi.getWorkshopOverview();
+    const data = await statisticsApi.getWorkshopOverview(
+      currentPeriod.value === "custom" ? undefined : currentPeriod.value,
+      periodStart.value,
+      periodEnd.value,
+    );
     kpi.value = data.kpi;
     repairOrders.value = data.repairOrders;
 
