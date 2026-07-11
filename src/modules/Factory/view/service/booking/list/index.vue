@@ -68,7 +68,7 @@
             type="success"
             >Lái thử</ElTag
           >
-                  </template>
+        </template>
 
         <template #status="{ row }">
           <ElTag v-if="row.status === 'Confirmed'" size="small" type="success"
@@ -130,7 +130,6 @@
           <ElSelect v-model="formData.bookingType" class="w-full">
             <ElOption label="Tư vấn" value="Consult" />
             <ElOption label="Lái thử" value="TestDrive" />
-            
           </ElSelect>
         </ElFormItem>
         <ElFormItem

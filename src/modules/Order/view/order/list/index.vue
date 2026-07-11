@@ -190,6 +190,38 @@
           </div>
         </div>
 
+        <!-- Invoice Info if requested -->
+        <ElAlert
+          v-if="drawer.order.isCompanyInvoice"
+          title="Yêu cầu xuất hóa đơn công ty (VAT)"
+          type="info"
+          :closable="false"
+          show-icon
+          class="mb-4"
+        >
+          <div
+            class="mt-2 text-xs space-y-1.5 font-medium text-[var(--el-text-color-regular)]"
+          >
+            <div>
+              <strong>Tên công ty:</strong> {{ drawer.order.companyName }}
+            </div>
+            <div>
+              <strong>Mã số thuế:</strong> {{ drawer.order.companyTaxCode }}
+            </div>
+            <div>
+              <strong>Địa chỉ công ty:</strong>
+              {{ drawer.order.companyAddress }}
+            </div>
+            <div v-if="drawer.order.companyEmail">
+              <strong>Email nhận HĐ:</strong> {{ drawer.order.companyEmail }}
+            </div>
+            <div v-if="drawer.order.budgetCode">
+              <strong>Mã đơn vị ngân sách:</strong>
+              {{ drawer.order.budgetCode }}
+            </div>
+          </div>
+        </ElAlert>
+
         <!-- Order Total Breakdown -->
         <div
           class="total-breakdown mb-4 p-3 bg-[var(--el-fill-color-light)] rounded"
