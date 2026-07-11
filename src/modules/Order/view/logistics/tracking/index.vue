@@ -214,6 +214,50 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Timeline (Khối Hành trình) -->
+              <div class="mb-6">
+                <h4
+                  class="font-bold text-gray-800 mb-3 text-sm flex items-center gap-2"
+                >
+                  <el-icon class="text-blue-600 text-lg"><Timer /></el-icon>
+                  Lịch sử hành trình
+                </h4>
+                <div
+                  class="bg-white p-4 border border-gray-200 rounded-xl shadow-sm"
+                >
+                  <el-timeline class="tracking-timeline mt-2">
+                    <el-timeline-item
+                      v-for="(milestone, idx) in sortedMilestones"
+                      :key="idx"
+                      :color="getMilestoneColor(milestone)"
+                      :size="milestone.isCurrent ? 'large' : 'normal'"
+                      :icon="
+                        milestone.isCurrent ? CircleCheckFilled : undefined
+                      "
+                    >
+                      <div class="flex flex-col gap-1">
+                        <div
+                          class="font-semibold text-sm"
+                          :class="
+                            milestone.isCurrent
+                              ? 'text-blue-600'
+                              : 'text-gray-700'
+                          "
+                        >
+                          {{ milestone.status }}
+                        </div>
+                        <div class="text-xs text-gray-500">
+                          {{ formatDate(milestone.timestamp) }}
+                        </div>
+                        <div class="text-xs text-gray-600 mt-1">
+                          Tại: {{ milestone.location }}
+                        </div>
+                      </div>
+                    </el-timeline-item>
+                  </el-timeline>
+                </div>
+              </div>
             </template>
             <div
               v-else-if="!loadingDetails"
