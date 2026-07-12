@@ -551,6 +551,8 @@ const summary = ref<DashboardSummary>({
   isRevenueAlert: false,
   isPendingAlert: false,
   isStockAlert: false,
+  totalExpense: 0,
+  grossProfit: 0,
 });
 const topStaff = ref<StaffPerformance[]>([]);
 const transactions = ref<TransactionLog[]>([]);

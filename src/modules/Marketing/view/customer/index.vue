@@ -4,7 +4,7 @@
       $route.path.toLowerCase() === '/marketing/customer' ||
       $route.path.toLowerCase() === '/marketing/customer/'
     "
-    class="customer-management-page min-h-full bg-[#F8FAFC] font-inter text-[#0F172A]"
+    class="customer-management-page min-h-full bg-[#F8FAFC] text-[#0F172A]"
   >
     <div class="bg-white border-b border-slate-200 px-6 py-4 shadow-sm">
       <div class="flex items-center justify-between">
@@ -16,7 +16,7 @@
           </div>
           <div>
             <h1
-              class="m-0 text-xl font-black tracking-tight text-slate-900 leading-none"
+              class="m-0 text-xl font-bold tracking-tight text-slate-900 leading-none"
             >
               {{ $t("marketing.customer.title") }}
             </h1>

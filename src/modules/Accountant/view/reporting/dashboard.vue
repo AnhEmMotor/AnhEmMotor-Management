@@ -99,25 +99,8 @@
       <div
         class="bg-(--el-bg-color-overlay) p-4 rounded-lg shadow border border-(--art-card-border)"
       >
-        <h3 class="font-bold mb-4">Phân tích nguồn doanh thu</h3>
-        <div class="space-y-3">
-          <div
-            v-for="source in sources"
-            :key="source.name"
-            class="flex items-center gap-2"
-          >
-            <span class="text-xs w-24">{{ source.name }}</span>
-            <div
-              class="flex-1 bg-(--el-fill-color-light) rounded-full h-4 overflow-hidden"
-            >
-              <div
-                class="bg-indigo-500 h-full"
-                :style="{ width: source.percent + '%' }"
-              ></div>
-            </div>
-            <span class="text-xs font-bold">{{ source.percent }}%</span>
-          </div>
-        </div>
+        <h3 class="font-bold mb-4">Doanh thu theo thương hiệu</h3>
+        <div ref="brandChartRef" class="h-64 w-full"></div>
       </div>
       <div
         class="bg-(--el-bg-color-overlay) p-4 rounded-lg shadow border border-(--art-card-border)"
@@ -282,19 +265,14 @@ const summary = ref<any>({
 const topStaff = ref<StaffPerformance[]>([]);
 const transactions = ref<TransactionLog[]>([]);
 
-const sources = [
-  { name: "Xe máy", percent: 70 },
-  { name: "Phụ tùng", percent: 15 },
-  { name: "Phụ kiện", percent: 10 },
-  { name: "Dịch vụ GTGT", percent: 5 },
-];
-
 async function loadData() {
   try {
     const res = await statisticsApi.getDashboardOverview();
     summary.value = res.summary;
     recentOrders.value = res.recentOrders.slice(0, 10);
     dailyRevenue.value = res.dailyRevenue;
+    if (res.topStaff) topStaff.value = res.topStaff;
+    if (res.recentTransactions) transactions.value = res.recentTransactions;
     updateCharts();
   } catch (e) {
     console.error("Failed to load dashboard overview:", e);

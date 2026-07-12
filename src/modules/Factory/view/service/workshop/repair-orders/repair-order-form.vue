@@ -122,7 +122,7 @@
               Thông tin tiếp nhận xe
             </h3>
 
-            <!-- Search Customer -->
+            <!-- Search Customer + Vehicle info + Gallery -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div class="md:col-span-1">
                 <label
@@ -134,6 +134,7 @@
                   v-model="form.customerPhone"
                   placeholder="Nhập SĐT của khách"
                   class="combat-input"
+                  @input="handlePhoneInput"
                 />
               </div>
 
@@ -141,26 +142,51 @@
                 <label
                   class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2"
                 >
-                  Dữ liệu xe (Autofill - demo)
+                  Biển số xe
                 </label>
                 <div
-                  class="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600"
+                  v-if="selectedVehicleId"
+                  class="rounded-xl border border-blue-200 bg-blue-50 p-3 text-xs text-slate-700"
                 >
-                  (Placeholder) Biển số / Màu / Đời xe / Số khung / Số máy /
-                  Lịch sử bảo dưỡng
+                  <div class="font-bold text-primary">
+                    {{ form.licensePlate }}
+                  </div>
+                  <div class="mt-0.5">
+                    {{ form.vehicleBrand }} / {{ form.vehicleColor }}
+                  </div>
+                  <div class="mt-0.5 text-slate-500">
+                    Năm: {{ form.vehicleYear || "-" }}
+                  </div>
                 </div>
+                <ElInput
+                  v-else
+                  v-model="form.licensePlate"
+                  placeholder="Nhập biển số xe"
+                  class="combat-input"
+                  @input="handlePlateInput"
+                />
               </div>
 
               <div class="md:col-span-1">
                 <label
                   class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2"
                 >
-                  Ô ảnh hiện trạng (Gallery)
+                  Ảnh hiện trạng xe
                 </label>
+                <div v-if="vehicleGallery.length" class="flex gap-2 flex-wrap">
+                  <img
+                    v-for="(img, idx) in vehicleGallery"
+                    :key="idx"
+                    :src="img"
+                    class="w-16 h-16 object-cover rounded-lg border border-slate-200 cursor-pointer"
+                    @click="openImagePreview(img)"
+                  />
+                </div>
                 <div
-                  class="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600"
+                  v-else
+                  class="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-400"
                 >
-                  (Placeholder) Upload hình: trầy xước, móp méo...
+                  Chưa có ảnh
                 </div>
               </div>
             </div>
@@ -260,14 +286,50 @@
               <div
                 class="bg-slate-50 border-b border-slate-100 px-4 py-3 text-xs font-black uppercase tracking-wider text-slate-500"
               >
-                Danh sách hạng mục công việc (demo: sử dụng services/parts hiện
-                có)
+                Danh sách hạng mục công việc
               </div>
 
               <div class="p-4 space-y-4">
-                <div class="text-xs text-slate-500">
-                  (Demo) Bạn có thể thêm bậc công việc theo services/parts bằng
-                  cách mở các thao tác phía dưới “Execution”.
+                <div
+                  class="text-xs text-slate-500"
+                  v-if="!order.details?.length"
+                >
+                  Chưa có hạng mục công việc nào.
+                </div>
+                <div v-else class="space-y-2">
+                  <div
+                    v-for="d in order.details"
+                    :key="d.id"
+                    class="flex items-center justify-between p-2 rounded-lg bg-slate-50"
+                  >
+                    <div>
+                      <span class="font-bold text-slate-700">
+                        {{
+                          d.type === "Service" ? d.serviceName : d.variantName
+                        }}
+                      </span>
+                      <span
+                        :class="
+                          d.type === 'Service'
+                            ? 'ml-2 px-2 py-0.5 bg-purple-50 text-purple-600 rounded text-[9px] font-black uppercase'
+                            : 'ml-2 px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[9px] font-black uppercase'
+                        "
+                      >
+                        {{ d.type === "Service" ? "Công việc" : "Phụ tùng" }}
+                      </span>
+                    </div>
+                    <div class="text-right">
+                      <span class="font-bold text-slate-800">
+                        {{
+                          formatCurrency(
+                            d.type === "Service"
+                              ? d.laborCost
+                              : d.price * d.count,
+                          )
+                        }}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -293,16 +355,14 @@
             </h3>
 
             <div class="flex justify-end gap-2 border-b border-slate-100 pb-3">
-              <ElButton type="primary" @click="openIssuePartsDialog">
-                <ArtSvgIcon icon="ri:shopping-cart-2-line" /> Xuất kho / Cấp
-                phát
+              <ElButton type="primary" @click="handleComplete">
+                <ArtSvgIcon icon="ri:check-double-line" /> Hoàn tất sửa chữa
               </ElButton>
             </div>
 
             <div class="space-y-3">
               <div class="text-xs text-slate-500">
-                Trạng thái từng hạng mục: (UI demo - dùng grouping theo
-                services/parts trong order.details)
+                Trạng thái từng hạng mục:
               </div>
 
               <div class="border border-slate-100 rounded-2xl overflow-hidden">
@@ -362,7 +422,7 @@
                         }}
                       </td>
                     </tr>
-                    <tr v-if="order.details.length === 0">
+                    <tr v-if="!order?.details?.length">
                       <td
                         colspan="4"
                         class="py-8 text-center text-slate-400 italic"
@@ -378,21 +438,27 @@
                 <div class="w-80 space-y-2 text-xs">
                   <div class="flex justify-between text-slate-500">
                     <span>Tiền công sửa chữa:</span>
-                    <span class="font-bold text-slate-700">{{
-                      formatCurrency(order.laborCost || 0)
-                    }}</span>
+                    <span class="font-bold text-slate-700">
+                      {{ formatCurrency(order.laborCost || 0) }}
+                    </span>
                   </div>
                   <div class="flex justify-between text-slate-500">
                     <span>Tiền phụ tùng vật tư:</span>
-                    <span class="font-bold text-slate-700">{{
-                      formatCurrency(order.partsCost || 0)
-                    }}</span>
+                    <span class="font-bold text-slate-700">
+                      {{ formatCurrency(order.partsCost || 0) }}
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Empty state when no order -->
+      <div v-else class="text-center py-20 text-slate-400">
+        <div class="text-4xl mb-4">🔧</div>
+        <div>Đang tải thông tin phiếu sửa chữa...</div>
       </div>
     </div>
   </div>
@@ -401,7 +467,7 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 import {
   RepairOrderApi,
@@ -409,6 +475,7 @@ import {
   type RepairOrder,
 } from "@/api/sales";
 import { EmployeeApi, type EmployeeResponse } from "@/api/operations";
+import { VehicleApi } from "@/api/vehicle/vehicle.api";
 
 defineOptions({ name: "ServiceWorkshopRepairOrderForm" });
 
@@ -425,9 +492,15 @@ const submitting = ref(false);
 const order = ref<RepairOrder | null>(null);
 const technicians = ref<EmployeeResponse[]>([]);
 const selectedTechId = ref<number | null>(null);
+const selectedVehicleId = ref<number | null>(null);
+const vehicleGallery = ref<string[]>([]);
 
 const form = reactive({
   customerPhone: "",
+  licensePlate: "",
+  vehicleBrand: "",
+  vehicleColor: "",
+  vehicleYear: "",
   mileage: 0,
   description: "",
 });
@@ -435,23 +508,23 @@ const form = reactive({
 const steps = [
   {
     status: "Pending",
-    title: "Tiep nhan xe",
-    description: "Ghi nhan thong tin xe va yeu cau sua chua ban dau.",
+    title: "Tiếp nhận xe",
+    description: "Ghi nhận thông tin xe và yêu cầu sửa chữa ban đầu.",
   },
   {
     status: "InProgress",
-    title: "Sua chua",
-    description: "Phan cong ky thuat vien va thuc hien sua chua.",
+    title: "Sửa chữa",
+    description: "Phân công kỹ thuật viên và thực hiện sửa chữa.",
   },
   {
     status: "QcPending",
-    title: "Kiem dinh QC",
-    description: "Kiem tra chat luong sau sua chua.",
+    title: "Kiểm định QC",
+    description: "Kiểm tra chất lượng sau sửa chữa.",
   },
   {
     status: "Completed",
-    title: "Hoan tat",
-    description: "Thanh toan va ban giao xe.",
+    title: "Hoàn tất",
+    description: "Thanh toán và bàn giao xe.",
   },
 ];
 
@@ -462,11 +535,12 @@ const syncForm = (value: RepairOrder) => {
   form.mileage = value.mileage || 0;
   form.description = value.description || "";
   selectedTechId.value = value.technicianId || null;
+  selectedVehicleId.value = value.vehicleId || null;
 };
 
 const loadOrder = async () => {
   if (!Number.isFinite(orderId)) {
-    ElMessage.error("Ma phieu sua chua khong hop le");
+    ElMessage.error("Mã phiếu sửa chữa không hợp lệ");
     return;
   }
 
@@ -476,7 +550,7 @@ const loadOrder = async () => {
     order.value = res;
     syncForm(res);
   } catch (err: any) {
-    ElMessage.error(err?.message || "Khong the tai thong tin phieu sua chua");
+    ElMessage.error(err?.message || "Không thể tải thông tin phiếu sửa chữa");
   } finally {
     loading.value = false;
   }
@@ -516,10 +590,32 @@ const buildIssuePartsPayload = (
   };
 };
 
-const handleSubmitPending = () => {
-  ElMessage.warning(
-    "Backend chua co endpoint cap nhat thong tin tiep nhan cua phieu sua chua",
-  );
+const handleSubmitPending = async () => {
+  if (!selectedVehicleId.value && !order.value?.vehicleId) {
+    ElMessage.warning("Vui lòng tra cứu biển số xe trước khi lưu tiếp nhận");
+    return;
+  }
+
+  submitting.value = true;
+  try {
+    const vehicleId = selectedVehicleId.value || order.value?.vehicleId || 0;
+    await RepairOrderApi.update(orderId, {
+      id: orderId,
+      vehicleId,
+      maintenanceDate: new Date().toISOString(),
+      description: form.description,
+      mileage: form.mileage,
+      technicianId: selectedTechId.value,
+      partsCost: order.value?.partsCost || 0,
+      laborCost: order.value?.laborCost || 0,
+    });
+    ElMessage.success("Cập nhật thông tin tiếp nhận thành công!");
+    await loadOrder();
+  } catch (err: any) {
+    ElMessage.error(err?.message || "Không thể cập nhật thông tin");
+  } finally {
+    submitting.value = false;
+  }
 };
 
 const handleStartRepair = async () => {
@@ -534,10 +630,10 @@ const handleStartRepair = async () => {
       await RepairOrderApi.issueParts(buildIssuePartsPayload("InProgress"));
     }
 
-    ElMessage.success("Da chuyen phieu sang trang thai dang sua chua");
+    ElMessage.success("Đã chuyển phiếu sang trạng thái đang sửa chữa");
     await loadOrder();
   } catch (err: any) {
-    ElMessage.error(err?.message || "Khong the bat dau sua chua");
+    ElMessage.error(err?.message || "Không thể bắt đầu sửa chữa");
   } finally {
     submitting.value = false;
   }
@@ -545,7 +641,7 @@ const handleStartRepair = async () => {
 
 const assignTechnician = async () => {
   if (!selectedTechId.value) {
-    ElMessage.warning("Vui long chon ky thuat vien");
+    ElMessage.warning("Vui lòng chọn kỹ thuật viên");
     return;
   }
 
@@ -555,10 +651,39 @@ const assignTechnician = async () => {
       repairOrderId: orderId,
       technicianId: selectedTechId.value,
     });
-    ElMessage.success("Da phan cong ky thuat vien");
+    ElMessage.success("Đã phân công kỹ thuật viên");
     await loadOrder();
   } catch (err: any) {
-    ElMessage.error(err?.message || "Phan cong ky thuat vien that bai");
+    ElMessage.error(err?.message || "Phân công kỹ thuật viên thất bại");
+  } finally {
+    submitting.value = false;
+  }
+};
+
+const handleComplete = async () => {
+  try {
+    await ElMessageBox.confirm(
+      "Xác nhận đóng phiếu sửa chữa? Phiếu sẽ chuyển sang trạng thái Hoàn tất.",
+      "Xác nhận hoàn tất",
+      {
+        confirmButtonText: "Xác nhận",
+        cancelButtonText: "Hủy",
+        type: "warning",
+      },
+    );
+
+    submitting.value = true;
+    await RepairOrderApi.complete({
+      repairOrderId: orderId,
+      paymentMethod: "Cash",
+      paymentStatus: "Paid",
+    });
+    ElMessage.success("Đã hoàn tất phiếu sửa chữa!");
+    await loadOrder();
+  } catch (err: any) {
+    if (err !== "cancel") {
+      ElMessage.error(err?.message || "Không thể hoàn tất phiếu");
+    }
   } finally {
     submitting.value = false;
   }
@@ -566,7 +691,7 @@ const assignTechnician = async () => {
 
 const openIssuePartsDialog = () => {
   ElMessage.info(
-    "Man hinh nay chua co dialog cap phat; hay dung man chi tiet de sua hang muc",
+    "Vui lòng mở trang chi tiết phiếu để quản lý hạng mục phụ tùng / dịch vụ",
   );
 };
 
@@ -574,12 +699,16 @@ const openPrintReceipt = () => {
   window.print();
 };
 
+const openImagePreview = (src: string) => {
+  window.open(src, "_blank");
+};
+
 const goBack = () => {
-  router.push("/factory/service/workshop/repair-orders");
+  router.push("/factory/workshop/repair");
 };
 
 const formatCurrency = (value: number) => {
-  if (!value) return "0 d";
+  if (!value) return "0 đ";
   return new Intl.NumberFormat("vi-VN", {
     style: "currency",
     currency: "VND",
@@ -596,6 +725,67 @@ const formatDate = (dateStr: string) => {
     minute: "2-digit",
   });
 };
+
+// Tra cứu xe theo SĐT
+let phoneTimeout: any = null;
+function handlePhoneInput() {
+  if (phoneTimeout) clearTimeout(phoneTimeout);
+
+  const phone = form.customerPhone.trim();
+  if (/^\d{9,10}$/.test(phone)) {
+    phoneTimeout = setTimeout(async () => {
+      try {
+        const res = await VehicleApi.getPortfolio({
+          query: phone,
+          queryType: "phone",
+          page: 1,
+          pageSize: 5,
+        });
+        if (res?.vehicle) {
+          applyVehicleData(res.vehicle);
+        }
+      } catch (err) {
+        console.error("Lỗi tra cứu SĐT:", err);
+      }
+    }, 400);
+  }
+}
+
+// Tra cứu xe theo biển số
+let plateTimeout: any = null;
+function handlePlateInput() {
+  if (plateTimeout) clearTimeout(plateTimeout);
+
+  const plate = form.licensePlate.trim();
+  if (plate.length >= 6) {
+    plateTimeout = setTimeout(async () => {
+      try {
+        const res = await VehicleApi.getPortfolio({
+          query: plate,
+          queryType: "licensePlate",
+          page: 1,
+          pageSize: 5,
+        });
+        if (res?.vehicle) {
+          applyVehicleData(res.vehicle);
+        }
+      } catch (err) {
+        console.error("Lỗi tra cứu biển số:", err);
+      }
+    }, 400);
+  }
+}
+
+function applyVehicleData(vehicle: any) {
+  form.licensePlate = vehicle.licensePlate || "";
+  form.vehicleBrand =
+    [vehicle.brandName, vehicle.variantName].filter(Boolean).join(" ") || "N/A";
+  form.vehicleColor = vehicle.colorName || "N/A";
+  form.vehicleYear = vehicle.productId ? String(vehicle.productId) : "";
+  selectedVehicleId.value = vehicle.id;
+  // Gallery: placeholder - backend chưa có endpoint gallery riêng
+  vehicleGallery.value = [];
+}
 
 const isStepActive = (status: string) => {
   if (!order.value) return false;
@@ -649,15 +839,15 @@ const getStatusBadgeClass = (status: string) => {
 const getStatusText = (status: string) => {
   switch (status) {
     case "Pending":
-      return "Cho tiep nhan";
+      return "Chờ tiếp nhận";
     case "InProgress":
-      return "Dang sua chua";
+      return "Đang sửa chữa";
     case "QcPending":
-      return "Dang QC";
+      return "Đang QC";
     case "Completed":
-      return "Da hoan thanh";
+      return "Đã hoàn thành";
     case "Cancelled":
-      return "Da huy";
+      return "Đã hủy";
     default:
       return status || "-";
   }
@@ -668,3 +858,13 @@ onMounted(() => {
   loadTechnicians();
 });
 </script>
+
+<style scoped>
+.repair-order-form-page {
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+</style>

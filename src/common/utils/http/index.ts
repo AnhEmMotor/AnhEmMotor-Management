@@ -6,7 +6,7 @@ import axios, {
 import { useUserStore } from "@/application/store/user";
 import { ApiStatus } from "./status";
 import { HttpError, handleError, showError, showSuccess } from "./error";
-import { $t } from "@/i18n";
+import i18n, { $t } from "@/i18n";
 import { BaseResponse } from "@/types";
 
 let isRefreshing = false;
@@ -68,11 +68,8 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (request: InternalAxiosRequestConfig) => {
     const userStore = useUserStore();
-    // Get token from store first (reactive), fallback to localStorage for initial requests
     let token = userStore.accessToken;
     if (!token) {
-      // Fallback to localStorage for initial load when store hydration hasn't completed yet
-      // Check both old and new keys for backwards compatibility
       token =
         localStorage.getItem("auth_token") ||
         (() => {
@@ -91,6 +88,8 @@ axiosInstance.interceptors.request.use(
     if (token) {
       request.headers.set("Authorization", `Bearer ${token}`);
     }
+
+    request.headers.set("Accept-Language", i18n.global.locale.value);
 
     if (
       request.data &&
@@ -204,7 +203,6 @@ axiosInstance.interceptors.response.use(
             isRefreshing = false;
           }
         } else {
-          // Extract backend error message more carefully
           backendMsg =
             data?.errors?.[0]?.message ||
             data?.Message ||

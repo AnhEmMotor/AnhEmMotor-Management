@@ -19,17 +19,7 @@ export const logisticsRoutes: AppRouteRecord = {
         icon: "ri:dashboard-line",
       },
     },
-    {
-      path: "fulfillment",
-      name: "ParcelFulfillment",
-      component: "/logistics/fulfillment/index",
-      meta: {
-        title: "menus.logistics.fulfillment",
-        icon: "ri:box-3-line",
-        showBadge: true,
-        showTextBadge: "5",
-      },
-    },
+
     {
       path: "tracking",
       name: "ShipmentTracking",
@@ -58,15 +48,6 @@ export const logisticsRoutes: AppRouteRecord = {
         title: "Chi tiết đơn hoàn",
         hidden: true,
         activeMenu: "/logistics/returns",
-      },
-    },
-    {
-      path: "carrier-settings",
-      name: "CarrierSettings",
-      component: "/logistics/carrier-settings/index",
-      meta: {
-        title: "menus.logistics.carrierSettings",
-        icon: "ri:settings-4-line",
       },
     },
   ],

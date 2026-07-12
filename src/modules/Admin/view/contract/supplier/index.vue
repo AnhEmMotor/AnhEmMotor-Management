@@ -124,6 +124,16 @@
           <div class="supplier-operation-cell">
             <ArtButtonTable type="view" @click="handleView(row)" />
             <ElButton
+              v-if="row.status === 'PendingApproval' || row.status === 'Draft'"
+              v-ripple
+              size="small"
+              type="success"
+              class="supplier-operation-button"
+              @click="handleApprove(row)"
+            >
+              Duyệt
+            </ElButton>
+            <ElButton
               v-ripple
               size="small"
               type="primary"
@@ -488,30 +498,57 @@ const searchItems = ref([
 ]);
 
 const columns = ref<ColumnOption[]>([
-  { label: "Nhà cung cấp", prop: "supplierName", minWidth: 160 },
+  { label: "Nhà cung cấp", prop: "supplierName", minWidth: 160, useSlot: true },
   { label: "Số hợp đồng", prop: "contractNumber", minWidth: 150 },
-  { label: "Giá trị", prop: "contractValue", width: 130, align: "right" },
-  { label: "Hạn mức nợ", prop: "creditLimit", width: 130, align: "right" },
-  { label: "Chiết khấu", prop: "discountRate", width: 100, align: "center" },
-  { label: "Trạng thái", prop: "status", width: 130, align: "center" },
+  {
+    label: "Giá trị",
+    prop: "contractValue",
+    width: 130,
+    align: "right",
+    useSlot: true,
+  },
+  {
+    label: "Hạn mức nợ",
+    prop: "creditLimit",
+    width: 130,
+    align: "right",
+    useSlot: true,
+  },
+  {
+    label: "Chiết khấu",
+    prop: "discountRate",
+    width: 100,
+    align: "center",
+    useSlot: true,
+  },
+  {
+    label: "Trạng thái",
+    prop: "status",
+    width: 130,
+    align: "center",
+    useSlot: true,
+  },
   {
     label: "Ngày hiệu lực",
     prop: "effectiveDate",
     width: 120,
     align: "center",
+    useSlot: true,
   },
   {
     label: "Ngày hết hạn",
     prop: "expirationDate",
     width: 120,
     align: "center",
+    useSlot: true,
   },
   {
     label: "Thao tác",
     prop: "operation",
-    width: 180,
+    width: 280,
     fixed: "right" as const,
     align: "center",
+    useSlot: true,
   },
 ]);
 const columnChecks = columns;
@@ -800,6 +837,25 @@ const handleDelete = async (row: SupplierContractDto) => {
   }
 };
 
+const handleApprove = async (row: SupplierContractDto) => {
+  try {
+    await ElMessageBox.confirm(
+      `Bạn có chắc chắn muốn duyệt hợp đồng "${row.contractNumber}"?`,
+      "Xác nhận duyệt",
+      { confirmButtonText: "Duyệt", cancelButtonText: "Hủy", type: "success" },
+    );
+    await usecases.updateStatus.execute(row.id, "Active");
+    ElMessage.success("Đã duyệt hợp đồng thành công.");
+    loadData();
+    loadStats();
+  } catch (error) {
+    if (error !== "cancel") {
+      console.error("Failed to approve:", error);
+      ElMessage.error("Không thể duyệt hợp đồng");
+    }
+  }
+};
+
 const handleCreateAddendum = () => {
   ElMessage.info("Tính năng tạo phụ lục đang được phát triển.");
 };
@@ -996,11 +1052,11 @@ onMounted(() => {
 }
 
 .supplier-operation-cell {
-  display: grid;
-  grid-template-columns: 32px repeat(2, 48px);
-  gap: 8px;
+  display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
+  flex-wrap: nowrap;
   width: 100%;
 }
 
@@ -1162,20 +1218,13 @@ html.dark .contract-supplier-container :deep(.el-tag) {
   color: #fff;
   border-color: transparent;
 }
-</style>
 
-<style lang="scss">
-/*
-  Dialog dùng append-to-body nên phải viết style KHÔNG scoped.
-  Layout (kích thước, spacing) giữ chung cho cả 2 theme.
-  Toàn bộ MÀU (nền/chữ/viền) phải nằm trong "html.dark".
-*/
-.contract-supplier-dialog .contract-file-upload .el-upload,
-.contract-supplier-dialog .contract-file-upload .el-upload-dragger {
+:global(.contract-supplier-dialog .contract-file-upload .el-upload),
+:global(.contract-supplier-dialog .contract-file-upload .el-upload-dragger) {
   width: 100%;
 }
 
-.contract-supplier-dialog .contract-upload-preview {
+:global(.contract-supplier-dialog .contract-upload-preview) {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -1186,19 +1235,19 @@ html.dark .contract-supplier-container :deep(.el-tag) {
   padding: 12px;
 }
 
-.contract-supplier-dialog .contract-upload-preview img {
+:global(.contract-supplier-dialog .contract-upload-preview img) {
   max-width: 100%;
   max-height: 260px;
   object-fit: contain;
   border-radius: 10px;
 }
 
-.contract-supplier-dialog .contract-upload-preview .preview-hint {
+:global(.contract-supplier-dialog .contract-upload-preview .preview-hint) {
   font-size: 12px;
   color: #94a3b8;
 }
 
-.contract-supplier-dialog .contract-upload-filebar {
+:global(.contract-supplier-dialog .contract-upload-filebar) {
   display: flex;
   gap: 12px;
   align-items: center;
@@ -1209,7 +1258,7 @@ html.dark .contract-supplier-container :deep(.el-tag) {
   border-radius: 8px;
 }
 
-html.dark .contract-supplier-dialog.el-dialog {
+:global(html.dark .contract-supplier-dialog.el-dialog) {
   --el-color-primary: #e84a4a;
   --el-bg-color: #161618;
   --el-bg-color-overlay: #1c1c20;
@@ -1224,40 +1273,40 @@ html.dark .contract-supplier-dialog.el-dialog {
   border: 1px solid rgb(255 255 255 / 9%);
 }
 
-html.dark .contract-supplier-dialog .el-dialog__title,
-html.dark .contract-supplier-dialog .el-form-item__label,
-html.dark .contract-supplier-dialog .el-upload__text,
-html.dark .contract-supplier-dialog .el-upload__tip,
-html.dark .contract-supplier-dialog .text-gray-400,
-html.dark .contract-supplier-dialog .text-gray-500,
-html.dark .contract-supplier-dialog .text-gray-600 {
+:global(html.dark .contract-supplier-dialog .el-dialog__title),
+:global(html.dark .contract-supplier-dialog .el-form-item__label),
+:global(html.dark .contract-supplier-dialog .el-upload__text),
+:global(html.dark .contract-supplier-dialog .el-upload__tip),
+:global(html.dark .contract-supplier-dialog .text-gray-400),
+:global(html.dark .contract-supplier-dialog .text-gray-500),
+:global(html.dark .contract-supplier-dialog .text-gray-600) {
   color: #f8fafc !important;
 }
 
-html.dark .contract-supplier-dialog .el-input__wrapper,
-html.dark .contract-supplier-dialog .el-input-number,
-html.dark .contract-supplier-dialog .el-date-editor,
-html.dark .contract-supplier-dialog .el-select__wrapper,
-html.dark .contract-supplier-dialog .el-textarea__inner,
-html.dark .contract-supplier-dialog .el-upload-dragger {
+:global(html.dark .contract-supplier-dialog .el-input__wrapper),
+:global(html.dark .contract-supplier-dialog .el-input-number),
+:global(html.dark .contract-supplier-dialog .el-date-editor),
+:global(html.dark .contract-supplier-dialog .el-select__wrapper),
+:global(html.dark .contract-supplier-dialog .el-textarea__inner),
+:global(html.dark .contract-supplier-dialog .el-upload-dragger) {
   color: #f8fafc;
   background: #101114;
   border-color: rgb(255 255 255 / 14%);
   box-shadow: none;
 }
 
-html.dark .contract-supplier-dialog .el-input__inner,
-html.dark .contract-supplier-dialog .el-select__placeholder,
-html.dark .contract-supplier-dialog .el-select__selected-item,
-html.dark .contract-supplier-dialog .el-textarea__inner {
+:global(html.dark .contract-supplier-dialog .el-input__inner),
+:global(html.dark .contract-supplier-dialog .el-select__placeholder),
+:global(html.dark .contract-supplier-dialog .el-select__selected-item),
+:global(html.dark .contract-supplier-dialog .el-textarea__inner) {
   color: #f8fafc;
 }
 
-html.dark .contract-supplier-dialog .contract-upload-preview img {
+:global(html.dark .contract-supplier-dialog .contract-upload-preview img) {
   border: 1px solid rgb(255 255 255 / 14%);
 }
 
-html.dark .contract-supplier-dialog .contract-upload-filebar {
+:global(html.dark .contract-supplier-dialog .contract-upload-filebar) {
   color: #f8fafc;
   background: #111214;
   border: 1px solid rgb(255 255 255 / 12%);

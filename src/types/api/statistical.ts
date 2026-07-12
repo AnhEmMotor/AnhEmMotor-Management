@@ -5,6 +5,8 @@ export interface AdminDashboardOverviewResponse {
   dailyRevenue: DailyRevenueResponse[];
   monthlyComparison: MonthlyRevenueProfitResponse[];
   recentOrders: RecentOrderResponse[];
+  topStaff: any[];
+  recentTransactions: any[];
 }
 
 export interface DashboardStatsResponse {
@@ -191,55 +193,6 @@ export interface ProductStockPriceResponse {
   sellPrice: number;
   costPrice?: number;
   lastRestocked?: string;
-}
-
-// --- Workshop overview ---
-export interface WorkshopOverviewResponse {
-  kpi: WorkshopKpi;
-  repairOrders: WorkshopRepairOrderDto[];
-}
-
-export interface WorkshopKpi {
-  inProgressCount: number;
-  avgCompletionHours: number;
-  monthlyRevenue: number;
-  overdueCount: number;
-}
-
-export interface WorkshopRepairOrderDto {
-  id: number;
-  orderCode: string;
-  customerName: string;
-  vehicleInfo: string;
-  technicianName: string;
-  status: string;
-  startedAt: string;
-  laborFee: number;
-}
-
-// --- Financing overview ---
-export interface FinancingOverviewResponse {
-  kpi: FinancingKpi;
-  installments: FinancingInstallmentDto[];
-}
-
-export interface FinancingKpi {
-  totalApplications: number;
-  disbursedCount: number;
-  pendingCount: number;
-  overdueCount: number;
-}
-
-export interface FinancingInstallmentDto {
-  id: number;
-  applicationCode: string;
-  customerName: string;
-  partnerName: string;
-  vehicleName: string;
-  amount: number;
-  status: string;
-  cavetStatus?: string;
-  createdAt: string;
 }
 
 // --- Customer analytics ---

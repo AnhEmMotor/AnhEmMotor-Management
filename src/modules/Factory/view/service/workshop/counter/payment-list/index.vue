@@ -524,7 +524,6 @@ const sourceTypeTagType = (
     "primary" | "success" | "warning" | "info" | "danger"
   > = {
     RepairOrder: "danger",
-    Maintenance: "warning",
     Warranty: "info",
     ServiceBooking: "primary",
   };

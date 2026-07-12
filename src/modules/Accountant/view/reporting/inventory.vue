@@ -18,10 +18,10 @@
     <ElCard class="reporting-card">
       <ElTabs v-model="activeTab" class="reporting-tabs">
         <ElTabPane label="Báo cáo sản phẩm" name="product">
-          <ProductReport />
+          <ProductReport :start-date="periodStart" :end-date="periodEnd" />
         </ElTabPane>
         <ElTabPane label="Báo cáo kho hàng" name="warehouse">
-          <WarehouseReport />
+          <WarehouseReport :start-date="periodStart" :end-date="periodEnd" />
         </ElTabPane>
       </ElTabs>
     </ElCard>
@@ -41,7 +41,6 @@ const periodStart = ref("");
 const periodEnd = ref("");
 
 function onPeriodChange() {
-  // TODO: Pass period params to child reports when backend supports it
-  // Expected: GET /api/v1/Statistics/product-report?period=...&start=...&end=...
+  // Period change triggers prop updates to children automatically
 }
 </script>

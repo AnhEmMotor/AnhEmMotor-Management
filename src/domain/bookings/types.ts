@@ -1,5 +1,5 @@
 export type BookingStatus = "Pending" | "Confirmed" | "Cancelled" | string;
-export type BookingType = "TestDrive" | "Maintenance" | "Consult" | string;
+export type BookingType = "TestDrive" | "Consult" | string;
 
 export interface Booking {
   id: number;

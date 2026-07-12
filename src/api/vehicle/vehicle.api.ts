@@ -20,18 +20,10 @@ export interface Vehicle {
   currentOdo?: number;
 }
 
-export interface MaintenanceAlert {
-  title: string;
-  severity: string;
-  type: "warning" | "danger" | "info" | "success";
-  description: string;
-}
-
 export interface VehiclePortfolioResponse {
   vehicle: Vehicle;
   history: any[]; // Replace 'any' with RepairOrder if imported
   totalHistoryCount: number;
-  alerts: MaintenanceAlert[];
 }
 
 export interface VehicleList {

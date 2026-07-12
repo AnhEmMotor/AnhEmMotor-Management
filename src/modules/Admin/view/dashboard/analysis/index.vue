@@ -4,10 +4,10 @@
     <div class="header-actions flex justify-between items-center mb-5">
       <h2 class="text-xl font-bold m-0">Dashboard Tổng quan Doanh thu</h2>
       <ElRadioGroup v-model="period" size="default">
-        <ElRadioButton label="today">Hôm nay</ElRadioButton>
-        <ElRadioButton label="month">Tháng này</ElRadioButton>
-        <ElRadioButton label="year">Năm này</ElRadioButton>
-        <ElRadioButton label="custom">Tuỳ chọn...</ElRadioButton>
+        <ElRadioButton value="today">Hôm nay</ElRadioButton>
+        <ElRadioButton value="month">Tháng này</ElRadioButton>
+        <ElRadioButton value="year">Năm này</ElRadioButton>
+        <ElRadioButton value="custom">Tuỳ chọn...</ElRadioButton>
       </ElRadioGroup>
     </div>
 

@@ -12,8 +12,18 @@ export const orderMenu: AppRouteRecord[] = [
       roles: ["Admin", "SuperAdmin"],
       permissions: ["Permissions.Order"],
     },
-    redirect: "/Order/management/list",
+    redirect: "/Order/management/draft",
     children: [
+      {
+        path: "intro",
+        name: "OrderIntro",
+        component: "/Order/view/intro/index",
+        meta: {
+          title: "Giới thiệu",
+          icon: "ri:image-line",
+          isHide: true,
+        },
+      },
       {
         path: "management",
         name: "OrderManagement",
@@ -21,18 +31,8 @@ export const orderMenu: AppRouteRecord[] = [
           title: "Quản lý đơn hàng",
           icon: "ri:file-list-3-line",
         },
-        redirect: "/Order/management/list",
+        redirect: "/Order/management/draft",
         children: [
-          {
-            path: "list",
-            name: "OrderList",
-            component: "/Order/view/order/list/index",
-            meta: {
-              title: "Đơn đặt hàng Online",
-              icon: "ri:shopping-cart-line",
-              keepAlive: true,
-            },
-          },
           {
             path: "draft",
             name: "OrderDraft",
@@ -169,28 +169,6 @@ export const orderMenu: AppRouteRecord[] = [
             meta: {
               title: "Theo dõi vận chuyển",
               icon: "ri:map-pin-time-line",
-              keepAlive: true,
-            },
-          },
-          {
-            path: "fulfillment",
-            name: "OrderLogisticsFulfillment",
-            component: "/Order/view/logistics/fulfillment/index",
-            meta: {
-              title: "Hoàn thành đơn hàng",
-              icon: "ri:box-3-line",
-              keepAlive: true,
-              showBadge: true,
-              showTextBadge: "5",
-            },
-          },
-          {
-            path: "carrier-settings",
-            name: "OrderLogisticsCarrierSettings",
-            component: "/Order/view/logistics/carrier-settings/index",
-            meta: {
-              title: "Cài đặt nhà vận chuyển",
-              icon: "ri:settings-4-line",
               keepAlive: true,
             },
           },

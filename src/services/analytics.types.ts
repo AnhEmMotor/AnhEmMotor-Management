@@ -4,6 +4,8 @@ export interface DashboardSummary {
   dailyTarget: number;
 
   netProfit: number;
+  totalExpense: number;
+  grossProfit: number;
   profitMargin: number;
   profitVsYesterdayPercentage: number;
 
@@ -25,6 +27,8 @@ export interface DashboardSummary {
   isRevenueAlert: boolean;
   isPendingAlert: boolean;
   isStockAlert: boolean;
+  revenueChangePercentage?: number;
+  channelData?: any[];
 }
 
 export interface PnlReport {
@@ -75,4 +79,16 @@ export interface RevenueSource {
   name: string;
   amount: number;
   percent: number;
+}
+
+export interface DailyCategoryRevenueRow {
+  reportDay?: string;
+  categoryName?: string;
+  revenue?: number;
+}
+
+export interface RevenueByCategoryItem {
+  categoryName: string;
+  revenue: number;
+  percentage: number;
 }

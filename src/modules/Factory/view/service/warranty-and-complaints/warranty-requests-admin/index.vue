@@ -57,6 +57,8 @@ type Row = {
 };
 
 const rows = ref<Row[]>([]);
+import { WarrantyClaimApi } from "@/api/service/warranty-claim.api";
+import { ElMessage } from "element-plus";
 
 function openDetail(id: number) {
   router
@@ -67,16 +69,11 @@ function openDetail(id: number) {
 async function load() {
   loading.value = true;
   try {
-    // Mock until backend endpoints for list are implemented
-    rows.value = [
-      {
-        id: 1,
-        claimNumber: "#WAR-2026-001",
-        vehiclePlate: "60-A1 555.55",
-        customerName: "Nguyễn Văn A",
-        statusText: "Received",
-      },
-    ];
+    const res = await WarrantyClaimApi.getList();
+    rows.value = res.items || [];
+  } catch (err: any) {
+    ElMessage.error(err?.message || "Lỗi khi tải danh sách");
+    rows.value = [];
   } finally {
     loading.value = false;
   }

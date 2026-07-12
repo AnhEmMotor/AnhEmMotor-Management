@@ -40,7 +40,9 @@
             :min="1"
             :max="99"
             :step="1"
-            :precision="1"
+            :precision="0"
+            :formatter="(value) => (value ? `${value}%` : '')"
+            :parser="(value) => value.replace('%', '')"
             controls-position="right"
             class="w-full"
           />
@@ -60,22 +62,13 @@
       </template>
 
       <div class="preview-grid">
-        <div class="preview-item sample-input">
-          <span>Giá trị đơn mẫu để xem thử</span>
-          <ElInputNumber
-            v-model="sampleOrderTotal"
-            :min="0"
-            :step="1000000"
-            :precision="0"
-            controls-position="right"
-            class="w-full mt-2"
-          />
-          <small>{{ formatCurrency(sampleOrderTotal) }}</small>
-        </div>
         <div class="preview-item">
-          <span>Ngưỡng hiện tại</span>
-          <strong>{{ formatCurrency(form.orderThreshold) }}</strong>
+          <span>Giá trị đơn mẫu để xem thử</span>
+          <strong class="mt-2 text-xl font-bold">{{
+            formatCurrency(sampleOrderTotal)
+          }}</strong>
         </div>
+
         <div class="preview-item highlight">
           <span>Số tiền cần đặt cọc</span>
           <strong>{{ formatCurrency(sampleDeposit) }}</strong>
@@ -101,7 +94,7 @@ const DEFAULT_DEPOSIT_RATIO = 50;
 
 const loading = ref(false);
 const saving = ref(false);
-const sampleOrderTotal = ref(120000000);
+const sampleOrderTotal = ref(100000000);
 
 const form = reactive({
   orderThreshold: DEFAULT_ORDER_THRESHOLD,
@@ -109,7 +102,7 @@ const form = reactive({
 });
 
 const sampleNeedsDeposit = computed(
-  () => sampleOrderTotal.value > form.orderThreshold,
+  () => sampleOrderTotal.value >= form.orderThreshold,
 );
 
 const sampleDeposit = computed(() => {
@@ -198,7 +191,7 @@ onMounted(loadSettings);
 
 .preview-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 

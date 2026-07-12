@@ -1,8 +1,4 @@
-export type PaymentSourceType =
-  | "RepairOrder"
-  | "Maintenance"
-  | "Warranty"
-  | "ServiceBooking";
+export type PaymentSourceType = "RepairOrder" | "Warranty" | "ServiceBooking";
 
 export type PaymentMethod = "Cash" | "Transfer" | "Card" | "VNPay" | "MoMo";
 

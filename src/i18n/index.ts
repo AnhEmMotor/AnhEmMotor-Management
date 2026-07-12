@@ -5,12 +5,11 @@ import { getSystemStorage } from "@/common/utils/storage";
 
 const langListArr: string[] = langList.map((lang) => lang.category);
 
-const getDefaultLanguage = (): string => {
+const resolveStoredLanguage = (): string => {
   try {
     const sys = getSystemStorage();
     if (sys) {
       const data = JSON.parse(sys);
-
       if (data.user?.language && langListArr.includes(data.user.language)) {
         return data.user.language;
       }
@@ -23,14 +22,20 @@ const getDefaultLanguage = (): string => {
         return user.language;
       }
     }
-  } catch (error) {
-    console.warn("[i18n] Lỗi lấy ngôn ngữ từ storage:", error);
+  } catch {
+    // ignore parse errors, fall through to default
   }
   return "vi";
 };
 
+export function setLocale(lang: string): void {
+  if (!langListArr.includes(lang)) return;
+  i18n.global.locale.value = lang as any;
+  localStorage.setItem("app-lang", lang);
+}
+
 const i18n = createI18n({
-  locale: getDefaultLanguage(),
+  locale: resolveStoredLanguage(),
   fallbackLocale: "vi",
   legacy: false,
   globalInjection: true,

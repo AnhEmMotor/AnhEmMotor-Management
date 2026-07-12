@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="comment-page min-h-full font-inter text-[#0F172A] dark:text-slate-100 bg-[#F8FAFC] dark:bg-[#020617]"
+      class="comment-page min-h-full text-[#0F172A] dark:text-slate-100 bg-[#F8FAFC] dark:bg-[#020617]"
     >
       <div
         class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4 shadow-sm"
@@ -15,7 +15,7 @@
             </div>
             <div>
               <h1
-                class="m-0 text-xl font-black tracking-tight text-slate-900 dark:text-white leading-none"
+                class="m-0 text-xl font-bold tracking-tight text-slate-900 dark:text-white leading-none"
               >
                 {{ $t("marketing.comment.title") }}
               </h1>

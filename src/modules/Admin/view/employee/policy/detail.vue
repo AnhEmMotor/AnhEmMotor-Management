@@ -184,6 +184,81 @@
                 </ElSelect>
               </ElFormItem>
 
+              <template v-if="editForm.department === 'vehicle_sales'">
+                <ElFormItem label="Xe">
+                  <ElSelect
+                    v-model="editForm.productId"
+                    filterable
+                    remote
+                    clearable
+                    reserve-keyword
+                    class="w-full"
+                    placeholder="Chọn xe từ quản lý sản phẩm"
+                    :loading="vehicleOptionsLoading"
+                    :remote-method="handleVehicleSearch"
+                    @change="handleVehicleChange"
+                    @clear="clearVehicleSelection"
+                  >
+                    <ElOption
+                      v-for="vehicle in vehicleOptions"
+                      :key="vehicle.productId"
+                      :label="vehicle.label"
+                      :value="vehicle.productId"
+                    />
+                  </ElSelect>
+                </ElFormItem>
+
+                <ElFormItem label="Phiên bản xe">
+                  <ElSelect
+                    v-model="editForm.productVariantId"
+                    filterable
+                    clearable
+                    class="w-full"
+                    placeholder="Chọn phiên bản"
+                    :disabled="!editForm.productId"
+                    @change="handleVariantChange"
+                    @clear="clearVariantSelection"
+                  >
+                    <ElOption
+                      v-for="variant in variantOptions"
+                      :key="variant.id"
+                      :label="getVariantLabel(variant)"
+                      :value="variant.id"
+                    />
+                  </ElSelect>
+                </ElFormItem>
+
+                <ElFormItem label="Màu xe" class="md:col-span-2">
+                  <ElSelect
+                    v-model="editForm.productVariantColorId"
+                    filterable
+                    clearable
+                    class="w-full"
+                    placeholder="Chọn màu xe"
+                    :disabled="
+                      !editForm.productVariantId || colorOptions.length === 0
+                    "
+                    @change="handleColorChange"
+                    @clear="clearColorSelection"
+                  >
+                    <ElOption
+                      v-for="color in colorOptions"
+                      :key="color.id"
+                      :label="getColorLabel(color)"
+                      :value="color.id"
+                    >
+                      <div class="flex items-center gap-2">
+                        <span
+                          class="vehicle-color-swatch"
+                          :style="getColorSwatchStyle(color)"
+                        />
+                        <span>{{ getColorLabel(color) }}</span>
+                      </div>
+                    </ElOption>
+                  </ElSelect>
+                </ElFormItem>
+              </template>
+
               <ElFormItem
                 label="Đối tượng cụ thể (Ghi chú)"
                 class="md:col-span-2"
@@ -218,11 +293,24 @@
                 class="mb-4"
               />
 
+              <div
+                v-if="enableTiers"
+                class="mb-3 rounded border border-blue-100 bg-blue-50 px-3 py-2 text-xs text-blue-700"
+              >
+                <span v-if="selectedRewardBasePrice > 0">
+                  Giá quy đổi: {{ formatCurrency(selectedRewardBasePrice) }} /
+                  xe
+                </span>
+                <span v-else>
+                  Chọn xe hoặc phiên bản xe để hệ thống quy đổi % ra số tiền.
+                </span>
+              </div>
+
               <div v-if="enableTiers" class="space-y-2">
                 <div
                   v-for="(tier, index) in editForm.tiers"
                   :key="index"
-                  class="flex items-end gap-4 p-3 bg-white border border-gray-200 rounded"
+                  class="flex items-start gap-4 p-3 bg-white border border-gray-200 rounded"
                 >
                   <ElFormItem label="Bán từ (xe)" class="!mb-0 flex-1">
                     <ElInputNumber
@@ -241,14 +329,31 @@
                       placeholder="Tối đa"
                     />
                   </ElFormItem>
-                  <ElFormItem label="Mức thưởng (VNĐ/xe)" class="!mb-0 flex-1">
-                    <ElInput v-model="tier.bonus" type="number" />
+                  <ElFormItem label="Mức thưởng (%)" class="!mb-0 flex-1">
+                    <ElInput
+                      v-model="tier.bonusRate"
+                      inputmode="decimal"
+                      placeholder="Nhập tỷ lệ"
+                      @input="syncTierBonusAmounts"
+                    >
+                      <template #suffix>
+                        <span class="text-xs text-gray-400">%</span>
+                      </template>
+                    </ElInput>
+                    <div class="mt-1 text-xs leading-5 text-gray-500">
+                      <span v-if="selectedRewardBasePrice > 0">
+                        Quy ra {{ formatCurrency(getTierBonusAmount(tier)) }} /
+                        xe
+                      </span>
+                      <span v-else> Chưa có giá xe để quy đổi </span>
+                    </div>
                   </ElFormItem>
                   <ElButton
                     v-if="isEditing"
                     type="danger"
                     :icon="Delete"
                     plain
+                    class="mt-[30px]"
                     @click="removeTier(index)"
                   />
                 </div>
@@ -398,9 +503,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { computed, ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { commissionPolicyApi } from "@/api/operations/commission-policy.api";
+import { ProductApi } from "@/api/product";
+import type { ProductVariantLiteForInput } from "@/domain/product/product.types";
 import { ElMessage, ElMessageBox } from "element-plus";
 import {
   Plus,
@@ -417,6 +524,23 @@ import {
 
 defineOptions({ name: "HRCommissionPolicyDetail" });
 
+type ProductVariantColorOption = NonNullable<
+  ProductVariantLiteForInput["colors"]
+>[number];
+
+interface VehicleOption {
+  productId: number;
+  label: string;
+  categoryId?: number | null;
+}
+
+interface CommissionTier {
+  from: number;
+  to?: number | null;
+  bonus: number;
+  bonusRate?: number | string | null;
+}
+
 const route = useRoute();
 const router = useRouter();
 
@@ -431,87 +555,224 @@ const editForm = ref<{
   department?: string;
   status?: string;
   target?: string;
+  productId?: number | null;
+  productVariantId?: number | null;
+  productVariantColorId?: number | null;
+  vehicleName?: string;
+  vehicleVariantName?: string;
+  vehicleColorName?: string;
+  vehicleColorCode?: string;
   startDate?: string;
   endDate?: string;
   basis?: string;
   percentage?: number;
   laborPercentage?: number;
   partsPercentage?: number;
-  tiers?: any[];
+  tiers?: CommissionTier[];
   [key: string]: any;
 }>({});
 
-// Mock Data local
-const allPolicies = ref([
-  {
-    id: 1,
-    name: "Thưởng nóng Winner X - T6/2026",
-    department: "vehicle_sales",
-    status: "active",
-    startDate: "2026-06-01",
-    endDate: "2026-06-30",
-    target: "Toàn bộ Sale xe",
-    tiers: [
-      { from: 1, to: 5, bonus: 500000 },
-      { from: 6, to: 999, bonus: 900000 },
-    ],
+const allPolicies = ref<any[]>([]);
+
+const vehicleVariants = ref<ProductVariantLiteForInput[]>([]);
+const vehicleOptionsLoading = ref(false);
+
+const vehicleKeywords = [
+  "xe",
+  "motor",
+  "motorcycle",
+  "scooter",
+  "honda",
+  "yamaha",
+  "suzuki",
+  "sym",
+  "piaggio",
+];
+
+const getVehicleDisplayName = (variant: ProductVariantLiteForInput) => {
+  const displayName = variant.displayName?.trim();
+  if (!displayName) return `Xe #${variant.productId || variant.id}`;
+
+  const strippedName = displayName.replace(/\s*\([^)]*\)\s*$/, "").trim();
+  return strippedName || displayName;
+};
+
+const isVehicleVariant = (variant: ProductVariantLiteForInput) => {
+  const managementType = variant.managementType?.toLowerCase();
+  if (managementType === "vin_number") return true;
+
+  const displayName = variant.displayName?.toLowerCase() || "";
+  return vehicleKeywords.some((keyword) => displayName.includes(keyword));
+};
+
+const vehicleOptions = computed<VehicleOption[]>(() => {
+  const vehicleItems = vehicleVariants.value.filter(isVehicleVariant);
+  const sourceItems =
+    vehicleItems.length > 0 ? vehicleItems : vehicleVariants.value;
+  const optionsByProductId = new Map<number, VehicleOption>();
+
+  sourceItems.forEach((variant) => {
+    const productId = Number(variant.productId);
+    if (!Number.isFinite(productId) || optionsByProductId.has(productId))
+      return;
+
+    optionsByProductId.set(productId, {
+      productId,
+      label: getVehicleDisplayName(variant),
+      categoryId: variant.categoryId ?? null,
+    });
+  });
+
+  return Array.from(optionsByProductId.values()).sort((a, b) =>
+    a.label.localeCompare(b.label, "vi"),
+  );
+});
+
+const variantOptions = computed(() => {
+  const productId = Number(editForm.value.productId);
+  if (!Number.isFinite(productId)) return [];
+  return vehicleVariants.value.filter(
+    (variant) => Number(variant.productId) === productId,
+  );
+});
+
+const selectedVariant = computed(() => {
+  const variantId = Number(editForm.value.productVariantId);
+  if (!Number.isFinite(variantId)) return null;
+  return (
+    variantOptions.value.find((variant) => Number(variant.id) === variantId) ||
+    null
+  );
+});
+
+const colorOptions = computed<ProductVariantColorOption[]>(() => {
+  return selectedVariant.value?.colors || [];
+});
+
+const getVariantLabel = (variant: ProductVariantLiteForInput) => {
+  const displayName = variant.displayName?.trim();
+  if (!displayName) return `Phiên bản #${variant.id}`;
+
+  const vehicleName = getVehicleDisplayName(variant);
+  const suffix = displayName.startsWith(vehicleName)
+    ? displayName.slice(vehicleName.length).trim()
+    : displayName;
+  const cleanSuffix = suffix.replace(/^\((.*)\)$/, "$1").trim();
+
+  return cleanSuffix || "Phiên bản mặc định";
+};
+
+const getColorLabel = (color: ProductVariantColorOption) => {
+  return color.colorName || color.colorCode || `Màu #${color.id}`;
+};
+
+const getColorSwatchStyle = (color: ProductVariantColorOption) => ({
+  backgroundColor: color.colorCode || "#ffffff",
+});
+
+const syncVehicleSelectionMetadata = () => {
+  const selectedVehicle = vehicleOptions.value.find(
+    (vehicle) => vehicle.productId === Number(editForm.value.productId),
+  );
+  const selectedColor = colorOptions.value.find(
+    (color) =>
+      Number(color.id) === Number(editForm.value.productVariantColorId),
+  );
+
+  editForm.value.vehicleName = selectedVehicle?.label || "";
+  editForm.value.vehicleVariantName = selectedVariant.value
+    ? getVariantLabel(selectedVariant.value)
+    : "";
+  editForm.value.vehicleColorName = selectedColor
+    ? getColorLabel(selectedColor)
+    : "";
+  editForm.value.vehicleColorCode = selectedColor?.colorCode || "";
+};
+
+const clearColorSelection = () => {
+  editForm.value.productVariantColorId = null;
+  editForm.value.vehicleColorName = "";
+  editForm.value.vehicleColorCode = "";
+};
+
+const clearVariantSelection = () => {
+  editForm.value.productVariantId = null;
+  editForm.value.vehicleVariantName = "";
+  clearColorSelection();
+};
+
+const clearVehicleSelection = () => {
+  editForm.value.productId = null;
+  editForm.value.vehicleName = "";
+  clearVariantSelection();
+};
+
+const handleVehicleChange = () => {
+  clearVariantSelection();
+
+  if (variantOptions.value.length === 1) {
+    const [firstVariant] = variantOptions.value;
+    editForm.value.productVariantId = firstVariant.id;
+
+    if (firstVariant.colors?.length === 1) {
+      editForm.value.productVariantColorId = firstVariant.colors[0].id;
+    }
+  }
+
+  syncVehicleSelectionMetadata();
+};
+
+const handleVariantChange = () => {
+  clearColorSelection();
+
+  if (colorOptions.value.length === 1) {
+    editForm.value.productVariantColorId = colorOptions.value[0].id;
+  }
+
+  syncVehicleSelectionMetadata();
+};
+
+const handleColorChange = () => {
+  syncVehicleSelectionMetadata();
+};
+
+const loadVehicleOptions = async (search = "") => {
+  vehicleOptionsLoading.value = true;
+  try {
+    const filters: string[] = [];
+    const keyword = search.trim();
+    if (keyword) {
+      filters.push(`search@=${keyword}`);
+    }
+
+    const res = await ProductApi.getVariantsForInput({
+      current: 1,
+      size: 100,
+      Filters: filters.join(",") || undefined,
+    });
+
+    vehicleVariants.value = res.items || [];
+    syncVehicleSelectionMetadata();
+  } catch (error) {
+    console.error("Failed to load vehicle options:", error);
+    ElMessage.error("Không thể tải danh sách xe từ quản lý sản phẩm");
+  } finally {
+    vehicleOptionsLoading.value = false;
+  }
+};
+
+const handleVehicleSearch = (query: string) => {
+  void loadVehicleOptions(query);
+};
+
+watch(
+  () => editForm.value.department,
+  (department) => {
+    if (department !== "vehicle_sales") {
+      clearVehicleSelection();
+    }
   },
-  {
-    id: 2,
-    name: "Cơ bản dòng xe Honda SH",
-    department: "vehicle_sales",
-    status: "active",
-    startDate: "2026-01-01",
-    endDate: "2026-12-31",
-    target: "Toàn bộ Sale xe",
-    tiers: [{ from: 1, to: 999, bonus: 1200000 }],
-  },
-  {
-    id: 3,
-    name: "Chiến dịch xe ga mùa Hè",
-    department: "vehicle_sales",
-    status: "pending",
-    startDate: "2026-07-01",
-    endDate: "2026-07-31",
-    target: "Toàn bộ Sale xe",
-    tiers: [
-      { from: 1, to: 3, bonus: 300000 },
-      { from: 4, to: 999, bonus: 600000 },
-    ],
-  },
-  {
-    id: 4,
-    name: "Chính sách tháng Tết 2026",
-    department: "vehicle_sales",
-    status: "expired",
-    startDate: "2026-01-01",
-    endDate: "2026-02-28",
-    target: "Toàn bộ Sale xe",
-    tiers: [{ from: 1, to: 999, bonus: 1000000 }],
-  },
-  {
-    id: 5,
-    name: "Hoa hồng phụ tùng chung",
-    department: "parts_sales",
-    status: "active",
-    startDate: "2026-01-01",
-    endDate: "2026-12-31",
-    target: "Sale Phụ tùng / Online",
-    percentage: 5,
-    basis: "revenue",
-  },
-  {
-    id: 6,
-    name: "Hoa hồng kỹ thuật viên",
-    department: "mechanic",
-    status: "active",
-    startDate: "2026-01-01",
-    endDate: "2026-12-31",
-    target: "Kỹ thuật viên xưởng",
-    laborPercentage: 15,
-    partsPercentage: 2,
-  },
-]);
+);
 
 // Simulator state
 const simInput = ref(0);
@@ -538,6 +799,82 @@ const formatCurrency = (value: number) => {
   }).format(value);
 };
 
+const selectedRewardBasePrice = computed(() => {
+  const selectedPrice = Number(selectedVariant.value?.price);
+  if (Number.isFinite(selectedPrice) && selectedPrice > 0) return selectedPrice;
+
+  const fallbackPrice = variantOptions.value
+    .map((variant) => Number(variant.price))
+    .find((price) => Number.isFinite(price) && price > 0);
+
+  return fallbackPrice || 0;
+});
+
+const hasTierBonusRate = (tier: CommissionTier) => {
+  const value = tier.bonusRate;
+  return value !== undefined && value !== null && `${value}`.trim() !== "";
+};
+
+const normalizeBonusRate = (value: CommissionTier["bonusRate"]) => {
+  const normalized = `${value ?? ""}`.replace(",", ".").trim();
+  const numericValue = Number(normalized);
+  return Number.isFinite(numericValue) && numericValue > 0 ? numericValue : 0;
+};
+
+const calculateTierBonusAmount = (
+  bonusRate: CommissionTier["bonusRate"],
+  basePrice = selectedRewardBasePrice.value,
+) => {
+  const price = Number(basePrice) || 0;
+  if (price <= 0) return 0;
+
+  return Math.round(price * (normalizeBonusRate(bonusRate) / 100));
+};
+
+const deriveTierBonusRate = (bonus: number, basePrice: number) => {
+  const price = Number(basePrice) || 0;
+  const amount = Number(bonus) || 0;
+  if (price <= 0 || amount <= 0) return 0;
+
+  return Number(((amount / price) * 100).toFixed(2));
+};
+
+const getTierBonusAmount = (tier: CommissionTier) => {
+  if (!hasTierBonusRate(tier)) return Number(tier.bonus) || 0;
+
+  if (selectedRewardBasePrice.value <= 0) return Number(tier.bonus) || 0;
+
+  return calculateTierBonusAmount(tier.bonusRate);
+};
+
+const syncTierBonusAmounts = () => {
+  const tiers = editForm.value.tiers;
+  if (!tiers?.length) return;
+
+  const basePrice = selectedRewardBasePrice.value;
+
+  tiers.forEach((tier) => {
+    if (!hasTierBonusRate(tier) && basePrice > 0 && Number(tier.bonus) > 0) {
+      tier.bonusRate = deriveTierBonusRate(Number(tier.bonus), basePrice);
+      return;
+    }
+
+    if (hasTierBonusRate(tier) && basePrice > 0) {
+      tier.bonus = calculateTierBonusAmount(tier.bonusRate, basePrice);
+    }
+  });
+};
+
+watch(
+  () => [
+    selectedRewardBasePrice.value,
+    editForm.value.tiers?.map((tier) => `${tier.bonusRate ?? ""}`).join("|"),
+  ],
+  () => {
+    syncTierBonusAmounts();
+  },
+);
+
 const mapBackendPolicy = (p: any) => {
   const target = p.targetGroup || "";
   const dept =
@@ -551,9 +888,13 @@ const mapBackendPolicy = (p: any) => {
     name: p.name,
     department: dept,
     status: p.isActive ? "active" : "expired",
+    productId: p.productId ?? null,
+    productVariantId: null,
+    productVariantColorId: null,
     startDate: p.effectiveDate?.split("T")[0] || "",
     endDate: "",
     target: p.targetGroup || "",
+    notes: p.notes || "",
     percentage: p.type === "Percentage" ? Number(p.value) : undefined,
     basis: "revenue",
     laborPercentage: dept === "mechanic" ? Number(p.value) : undefined,
@@ -570,6 +911,8 @@ const goBack = () => {
 };
 
 onMounted(async () => {
+  await loadVehicleOptions();
+
   const policyId = route.params.id;
   const dept = route.query.dept as string;
 
@@ -579,15 +922,19 @@ onMounted(async () => {
     editForm.value = {
       department: dept || "vehicle_sales",
       status: "pending",
+      productId: null,
+      productVariantId: null,
+      productVariantColorId: null,
       tiers: [
-        { from: 1, to: 5, bonus: 500000 },
-        { from: 6, to: 999, bonus: 900000 },
+        { from: 1, to: 5, bonus: 0, bonusRate: 1 },
+        { from: 6, to: 999, bonus: 0, bonusRate: 1.5 },
       ],
       percentage: 0,
       laborPercentage: 0,
       partsPercentage: 0,
       basis: "revenue",
     };
+    syncVehicleSelectionMetadata();
     enableTiers.value = true;
   } else {
     try {
@@ -595,6 +942,7 @@ onMounted(async () => {
       if (res) {
         const policy = mapBackendPolicy(res);
         editForm.value = JSON.parse(JSON.stringify(policy));
+        syncVehicleSelectionMetadata();
         enableTiers.value = !!(
           editForm.value.tiers && editForm.value.tiers.length > 0
         );
@@ -616,6 +964,7 @@ const handleClonePolicy = (id: number) => {
       name: policyToClone.name + " (Bản sao)",
       status: "pending",
     };
+    syncVehicleSelectionMetadata();
     enableTiers.value = !!(
       editForm.value.tiers && editForm.value.tiers.length > 0
     );
@@ -641,6 +990,7 @@ const cancelEdit = () => {
 };
 
 const savePolicy = () => {
+  syncTierBonusAmounts();
   ElMessage.success(
     isCreating.value
       ? "Kích hoạt chính sách mới thành công!"
@@ -674,7 +1024,7 @@ const duplicatePolicy = () => {
 // Tier logic
 const addTier = () => {
   if (!editForm.value.tiers) editForm.value.tiers = [];
-  editForm.value.tiers.push({ from: 1, to: 999, bonus: 0 });
+  editForm.value.tiers.push({ from: 1, to: 999, bonus: 0, bonusRate: 0 });
 };
 
 const removeTier = (index: number) => {
@@ -746,7 +1096,8 @@ const runSimulation = () => {
         const itemsInTier = Math.min(remainingQty, tierMax);
 
         if (itemsInTier > 0) {
-          const tierTotal = itemsInTier * Number(tier.bonus);
+          const tierBonusAmount = getTierBonusAmount(tier);
+          const tierTotal = itemsInTier * tierBonusAmount;
           totalBonus += tierTotal;
           breakdownTexts.push(
             `${itemsInTier} xe mốc ${i + 1} (${formatCurrency(tierTotal)})`,
@@ -779,6 +1130,14 @@ const runSimulation = () => {
 <style scoped lang="scss">
 .policy-detail-page {
   // Styles for the new page
+}
+
+.vehicle-color-swatch {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
 }
 
 .simulator-input :deep(.el-input__wrapper),

@@ -18,7 +18,7 @@
           </div>
           <div class="flex flex-col">
             <h3
-              class="m-0 text-base font-black text-gray-800 dark:text-slate-100 tracking-tight"
+              class="m-0 text-base font-bold text-gray-800 dark:text-slate-100 tracking-tight"
             >
               {{ form.id ? "CẬP NHẬT HỒ SƠ" : "THÊM KHÁCH HÀNG" }}
             </h3>
@@ -123,13 +123,13 @@
       <div class="flex gap-3 justify-end p-2">
         <button
           @click="visible = false"
-          class="h-10 px-6 text-slate-400 dark:text-slate-500 font-black text-[10px] uppercase tracking-widest hover:text-slate-700 dark:hover:text-slate-300"
+          class="h-10 px-6 text-slate-400 dark:text-slate-500 font-bold text-[10px] uppercase tracking-widest hover:text-slate-700 dark:hover:text-slate-300"
         >
           Hủy bỏ
         </button>
         <button
           @click="handleSubmit"
-          class="h-10 px-8 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95"
+          class="h-10 px-8 bg-blue-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95"
         >
           Lưu hồ sơ
         </button>

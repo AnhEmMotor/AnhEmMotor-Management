@@ -68,13 +68,6 @@
             type="success"
             >Lái thử</ElTag
           >
-          <ElTag
-            v-else-if="row.bookingType === 'Maintenance'"
-            size="small"
-            type="warning"
-            >Bảo dưỡng</ElTag
-          >
-          <ElTag v-else size="small" type="info">Tư vấn</ElTag>
         </template>
 
         <template #status="{ row }">
@@ -137,7 +130,6 @@
           <ElSelect v-model="formData.bookingType" class="w-full">
             <ElOption label="Tư vấn" value="Consult" />
             <ElOption label="Lái thử" value="TestDrive" />
-            <ElOption label="Bảo dưỡng" value="Maintenance" />
           </ElSelect>
         </ElFormItem>
         <ElFormItem

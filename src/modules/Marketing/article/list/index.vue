@@ -1,6 +1,6 @@
 <template>
   <div
-    class="article-list-page min-h-full font-inter text-[#0F172A] dark:text-slate-100 pb-10"
+    class="article-list-page min-h-full text-[#0F172A] dark:text-slate-100 pb-10"
   >
     <div
       class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-8 py-6 sticky top-0 z-[50] shadow-sm"
@@ -28,7 +28,7 @@
         <div class="flex items-center gap-3 shrink-0">
           <button
             @click="toAddArticle"
-            class="h-11 px-8 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center gap-2"
+            class="h-11 px-8 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-bold text-[11px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center gap-2"
           >
             <ArtSvgIcon icon="ri:add-circle-line" class="text-blue-500" /> Viết
             bài mới
@@ -49,7 +49,7 @@
         >
           <div class="absolute top-4 left-4 z-10">
             <span
-              class="px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest shadow-lg border border-white/20"
+              class="px-3 py-1 rounded-lg text-[8px] font-bold uppercase tracking-widest shadow-lg border border-white/20"
               :class="getStatusClasses(item.status || 'Published')"
             >
               {{ item.statusLabel || "Đã xuất bản" }}
@@ -67,13 +67,13 @@
               <div class="flex gap-2 w-full">
                 <button
                   @click.stop="toEdit(item)"
-                  class="flex-1 h-9 bg-blue-600 text-white rounded-lg font-black text-[9px] uppercase tracking-widest hover:bg-blue-700 transition-all"
+                  class="flex-1 h-9 bg-blue-600 text-white rounded-lg font-bold text-[9px] uppercase tracking-widest hover:bg-blue-700 transition-all"
                 >
                   Chỉnh sửa
                 </button>
                 <button
                   @click.stop="toDelete(item)"
-                  class="flex-1 h-9 bg-red-600 text-white rounded-lg font-black text-[9px] uppercase tracking-widest hover:bg-red-700 transition-all"
+                  class="flex-1 h-9 bg-red-600 text-white rounded-lg font-bold text-[9px] uppercase tracking-widest hover:bg-red-700 transition-all"
                 >
                   Xoá
                 </button>
@@ -84,14 +84,14 @@
           <div class="p-6">
             <div class="flex justify-between items-start mb-3">
               <span
-                class="text-[9px] font-black text-blue-500 uppercase tracking-widest"
+                class="text-[9px] font-bold text-blue-500 uppercase tracking-widest"
                 >{{
                   item.categoryName || item.category?.name || "Chưa phân loại"
                 }}</span
               >
             </div>
             <h2
-              class="m-0 text-base font-black text-slate-800 dark:text-slate-200 leading-tight line-clamp-2 min-h-[3rem] group-hover:text-blue-600 transition-colors"
+              class="m-0 text-base font-bold text-slate-800 dark:text-slate-200 leading-tight line-clamp-2 min-h-[3rem] group-hover:text-blue-600 transition-colors"
             >
               {{ item.title }}
             </h2>
@@ -124,7 +124,7 @@
 
       <div v-if="showEmpty" class="py-40 flex-cc flex-col gap-4 opacity-30">
         <ArtSvgIcon icon="ri:article-line" class="text-6xl" />
-        <p class="text-sm font-black uppercase tracking-widest">
+        <p class="text-sm font-bold uppercase tracking-widest">
           Chưa tìm thấy bài viết nào
         </p>
       </div>

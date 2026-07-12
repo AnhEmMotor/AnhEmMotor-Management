@@ -11,8 +11,18 @@ export const warehouseMenu: AppRouteRecord[] = [
       roles: ["Admin", "SuperAdmin"],
       permissions: ["Permissions.Warehouse"],
     },
-    redirect: "/Warehouse/product",
+    redirect: "/Warehouse/intro",
     children: [
+      {
+        path: "intro",
+        name: "WarehouseIntro",
+        component: "/Warehouse/view/intro/index",
+        meta: {
+          title: "Giới thiệu",
+          icon: "ri:image-line",
+          isHide: true,
+        },
+      },
       {
         path: "product",
         name: "WarehouseProduct",

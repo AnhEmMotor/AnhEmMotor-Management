@@ -9,6 +9,9 @@ export interface PayrollSummaryResponse {
   confirmedCommission: number;
   paidCommission: number;
   totalActualReceived: number;
+  volumeBonus: number;
+  /** Full salary for the selected month: base salary + eligible commission + volume bonus. */
+  totalNetPayable: number;
 }
 
 export interface PayrollListItem {
@@ -53,6 +56,12 @@ export const payrollApi = {
   approve(id: number) {
     return request.post<void>({
       url: `/api/v1/hr/payroll/${id}/approve`,
+    });
+  },
+  approveCommissions(employeeId: number | null, month: number, year: number) {
+    return request.post<void>({
+      url: "/api/v1/hr/commissions/approve-payroll",
+      data: { employeeId, month, year },
     });
   },
 };

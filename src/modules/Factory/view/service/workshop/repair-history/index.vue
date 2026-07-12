@@ -347,14 +347,14 @@
                     </span>
                     <span
                       class="font-black text-slate-800 dark:text-slate-100 text-[14px] mt-1"
-                      >{{ formatCurrency(row.totalAmount) }}</span
+                      >{{ formatCurrency(row.totalAmount || 0) }}</span
                     >
                     <span
                       class="text-[9px] text-slate-400 dark:text-slate-500 mt-0.5 leading-tight"
-                      v-if="row.totalAmount > 0"
+                      v-if="(row.totalAmount || 0) > 0"
                     >
-                      DV: {{ formatCurrency(row.laborCost) }} <br />
-                      PT: {{ formatCurrency(row.partsCost) }}
+                      DV: {{ formatCurrency(row.laborCost || 0) }} <br />
+                      PT: {{ formatCurrency(row.partsCost || 0) }}
                     </span>
                   </div>
                 </div>

@@ -149,7 +149,7 @@ const workspaces = computed(() =>
       shadowColor: "rgba(225, 29, 72, 0.25)",
       hasAccess: hasAuth(Permissions.Admin.Module),
       badge: { isDot: true, type: "danger" },
-      path: "/admin/dashboard/console",
+      path: "/admin/dashboard/intro",
     },
     {
       title: "Marketing & SEO",
@@ -159,7 +159,7 @@ const workspaces = computed(() =>
       shadowColor: "rgba(5, 150, 105, 0.25)",
       hasAccess: hasAuth(Permissions.Marketing.Module),
       badge: { isDot: false, value: 5, label: "đơn mới", type: "warning" },
-      path: "/Marketing/banner",
+      path: "/Marketing/intro",
     },
     {
       title: "Quản Lý Kho & Hậu Cần",
@@ -168,7 +168,7 @@ const workspaces = computed(() =>
       color: "#d97706",
       shadowColor: "rgba(217, 119, 6, 0.15)",
       hasAccess: hasAuth(Permissions.Warehouse.Module),
-      path: "/Warehouse/product",
+      path: "/Warehouse/intro",
     },
     {
       title: "Dịch Vụ & Xưởng Sửa Chữa",
@@ -177,7 +177,7 @@ const workspaces = computed(() =>
       color: "#2563eb",
       shadowColor: "rgba(37, 99, 235, 0.15)",
       hasAccess: hasAuth(Permissions.Factory.Module),
-      path: "/factory/workshop/dashboard",
+      path: "/factory/workshop/banner",
     },
     {
       title: "Kế Toán, Lương & Thuế",
@@ -186,7 +186,7 @@ const workspaces = computed(() =>
       color: "#7c3aed",
       shadowColor: "rgba(124, 58, 237, 0.15)",
       hasAccess: hasAuth(Permissions.Accountant.Module),
-      path: "/Accountant/executive-dashboard",
+      path: "/Accountant/intro",
     },
     {
       title: "Đơn hàng & Vận chuyển",
@@ -195,7 +195,7 @@ const workspaces = computed(() =>
       color: "#7c3aed",
       shadowColor: "rgba(124, 58, 237, 0.15)",
       hasAccess: hasAuth(Permissions.Order.Module),
-      path: "/Order/management/list",
+      path: "/Order/management/draft",
     },
   ].filter((workspace) => workspace.hasAccess),
 );

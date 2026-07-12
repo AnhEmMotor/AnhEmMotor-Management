@@ -10,14 +10,14 @@
       />
       <ArtStatsCard
         title="Sản phẩm bán chạy nhất"
-        :count="data.highlights.bestSellerName || 'Chưa có'"
+        :count="truncate(data.highlights.bestSellerName, 20) || 'Chưa có'"
         :description="`Đã bán: ${data.highlights.bestSellerSold}`"
         icon="ri:medal-line"
         icon-style="bg-report-red-light"
       />
       <ArtStatsCard
         title="Hàng ế tồn kho"
-        :count="data.highlights.deadStockName || 'Không có'"
+        :count="truncate(data.highlights.deadStockName, 20) || 'Không có'"
         :description="`Giá trị: ${formatCurrency(data.highlights.deadStockValue)}`"
         icon="ri:archive-drawer-line"
         icon-style="bg-report-red-dark"
@@ -45,7 +45,7 @@
     <ElCard class="reporting-card mt-4">
       <template #header>Hiệu suất sản phẩm</template>
       <ElTable
-        :data="data.productPerformanceTable"
+        :data="paginatedTableData"
         class="reporting-table"
         empty-text="Chưa có dữ liệu"
       >
@@ -124,13 +124,24 @@
           </template>
         </ElTableColumn>
       </ElTable>
+      <div class="flex justify-end mt-4">
+        <ElPagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :page-sizes="[10, 20, 50]"
+          :total="data.productPerformanceTable.length"
+          layout="total, sizes, prev, pager, next, jumper"
+          background
+        />
+      </div>
     </ElCard>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from "vue";
+import { onMounted, onUnmounted, ref, computed } from "vue";
 import * as echarts from "echarts";
+import { ElPagination } from "element-plus";
 import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
 import { statisticsApi } from "@/api/operations";
 import type * as Statistical from "@/types/api/statistical";
@@ -139,9 +150,24 @@ const topRevenueChartRef = ref<HTMLElement | null>(null);
 const topProfitChartRef = ref<HTMLElement | null>(null);
 let topRevenueChart: echarts.ECharts | null = null;
 let topProfitChart: echarts.ECharts | null = null;
-const chartTextColor = "#aeb0bd";
-const chartAxisLineColor = "rgba(255, 255, 255, 0.16)";
-const chartGridLineColor = "rgba(255, 255, 255, 0.1)";
+const chartTextColor = "#4b5563";
+const chartAxisLineColor = "#e5e7eb";
+const chartGridLineColor = "#f3f4f6";
+
+const currentPage = ref(1);
+const pageSize = ref(10);
+const paginatedTableData = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  return data.value.productPerformanceTable.slice(
+    start,
+    start + pageSize.value,
+  );
+});
+
+const props = defineProps<{
+  startDate?: string;
+  endDate?: string;
+}>();
 
 const data = ref<Statistical.AdminProductReportResponse>({
   highlights: {
@@ -156,6 +182,15 @@ const data = ref<Statistical.AdminProductReportResponse>({
   topProfitProducts: [],
   productPerformanceTable: [],
 });
+
+import { watch } from "vue";
+watch(
+  () => [props.startDate, props.endDate],
+  () => {
+    // Backend getProductReport currently doesn't accept date params
+    // load();
+  },
+);
 
 async function load() {
   try {
@@ -173,25 +208,37 @@ function renderCharts() {
     const top = data.value.topRevenueProducts.slice(0, 8);
     topRevenueChart.setOption({
       backgroundColor: "transparent",
-      textStyle: { color: chartTextColor },
-      tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
-      grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
+      textStyle: { color: chartTextColor, fontSize: 12, fontWeight: 500 },
+      tooltip: {
+        trigger: "axis",
+        axisPointer: { type: "shadow" },
+        formatter: (params: any) => {
+          const p = Array.isArray(params) ? params[0] : params;
+          return `${p.name}<br/>${p.marker} ${formatShortCurrency(p.value)}`;
+        },
+      },
+      grid: { left: "3%", right: "6%", bottom: "3%", containLabel: true },
       xAxis: {
         type: "value",
-        axisLabel: { color: chartTextColor },
+        axisLabel: {
+          color: chartTextColor,
+          fontWeight: 500,
+          formatter: (val: number) => formatShortLabel(val),
+        },
         splitLine: { lineStyle: { color: chartGridLineColor } },
       },
       yAxis: {
         type: "category",
         data: top.map((r) => r.productName).reverse(),
-        axisLabel: { color: chartTextColor },
+        axisLabel: { color: chartTextColor, width: 180, overflow: "truncate" },
         axisLine: { lineStyle: { color: chartAxisLineColor } },
       },
       series: [
         {
           type: "bar",
           data: top.map((r) => r.revenue).reverse(),
-          itemStyle: { color: "#e84a4a" },
+          itemStyle: { color: "#e84a4a", borderRadius: [0, 4, 4, 0] },
+          barMaxWidth: 30,
         },
       ],
     });
@@ -201,29 +248,62 @@ function renderCharts() {
     const top = data.value.topProfitProducts.slice(0, 8);
     topProfitChart.setOption({
       backgroundColor: "transparent",
-      textStyle: { color: chartTextColor },
-      tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
-      grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
+      textStyle: { color: chartTextColor, fontSize: 12, fontWeight: 500 },
+      tooltip: {
+        trigger: "axis",
+        axisPointer: { type: "shadow" },
+        formatter: (params: any) => {
+          const p = Array.isArray(params) ? params[0] : params;
+          return `${p.name}<br/>${p.marker} ${formatShortCurrency(p.value)}`;
+        },
+      },
+      grid: { left: "3%", right: "6%", bottom: "3%", containLabel: true },
       xAxis: {
         type: "value",
-        axisLabel: { color: chartTextColor },
+        axisLabel: {
+          color: chartTextColor,
+          fontWeight: 500,
+          formatter: (val: number) => formatShortLabel(val),
+        },
         splitLine: { lineStyle: { color: chartGridLineColor } },
       },
       yAxis: {
         type: "category",
         data: top.map((r) => r.productName).reverse(),
-        axisLabel: { color: chartTextColor },
+        axisLabel: { color: chartTextColor, width: 180, overflow: "truncate" },
         axisLine: { lineStyle: { color: chartAxisLineColor } },
       },
       series: [
         {
           type: "bar",
           data: top.map((r) => r.profit).reverse(),
-          itemStyle: { color: "#10b981" },
+          itemStyle: { color: "#10b981", borderRadius: [0, 4, 4, 0] },
+          barMaxWidth: 30,
         },
       ],
     });
   }
+}
+
+function truncate(text: string | undefined | null, maxLen: number): string {
+  if (!text) return "";
+  return text.length > maxLen ? text.slice(0, maxLen) + "..." : text;
+}
+
+function formatShortLabel(val: number): string {
+  if (Math.abs(val) >= 1_000_000_000)
+    return (val / 1_000_000_000).toFixed(1) + " tỷ";
+  if (Math.abs(val) >= 1_000_000) return (val / 1_000_000).toFixed(0) + " tr";
+  if (Math.abs(val) >= 1_000) return (val / 1_000).toFixed(0) + "k";
+  return val.toString();
+}
+
+function formatShortCurrency(val: number): string {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+    maximumFractionDigits: 0,
+  }).format(val);
 }
 
 function formatCurrency(value: number) {

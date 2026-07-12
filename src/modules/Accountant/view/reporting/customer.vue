@@ -16,32 +16,66 @@
     </ReportPageHeader>
 
     <!-- TẦNG 1: BỘ CHỈ SỐ KPI -->
-    <div class="reporting-kpi-grid">
+    <div v-if="loading" class="reporting-kpi-grid">
       <ArtStatsCard
         title="Tổng lead mới"
-        :count="3"
-        description="🔼 +15% so với tháng trước"
+        count="..."
+        description="Đang tải..."
+        icon="ri:user-add-line"
+        icon-style="bg-report-blue"
+        :loading="true"
+      />
+      <ArtStatsCard
+        title="Tỷ lệ chuyển đổi"
+        count="..."
+        description="Đang tải..."
+        icon="ri:filter-3-line"
+        icon-style="bg-report-orange"
+        :loading="true"
+      />
+      <ArtStatsCard
+        title="Khách hàng mới"
+        count="..."
+        description="Đang tải..."
+        icon="ri:user-star-line"
+        icon-style="bg-report-green"
+        :loading="true"
+      />
+      <ArtStatsCard
+        title="Lead nóng"
+        count="..."
+        description="Đang tải..."
+        icon="ri:fire-line"
+        icon-style="bg-report-red"
+        :loading="true"
+      />
+    </div>
+    <div v-else class="reporting-kpi-grid">
+      <ArtStatsCard
+        title="Tổng lead mới"
+        :count="kpi.totalLeads"
+        :description="`Tổng lead trong kỳ`"
         icon="ri:user-add-line"
         icon-style="bg-report-blue"
       />
       <ArtStatsCard
         title="Tỷ lệ chuyển đổi"
-        count="0.0%"
-        description="🔽 -1.2% so với tháng trước"
+        :count="`${conversionRate}%`"
+        :description="`Lead đã chuyển đổi`"
         icon="ri:filter-3-line"
         icon-style="bg-report-orange"
       />
       <ArtStatsCard
         title="Khách hàng mới"
-        :count="0"
-        description="0% (Chưa tăng trưởng)"
+        :count="kpi.newCustomers"
+        :description="`Khách hàng lần đầu`"
         icon="ri:user-star-line"
         icon-style="bg-report-green"
       />
       <ArtStatsCard
         title="Lead nóng"
-        :count="1"
-        description="🔼 +1 lead mới trong ngày"
+        :count="kpi.hotLeads"
+        description="Lead score >= 80"
         icon="ri:fire-line"
         icon-style="bg-report-red"
       />
@@ -51,11 +85,11 @@
     <div class="reporting-section-grid two-columns mt-4">
       <ElCard class="reporting-card">
         <template #header>Phễu chuyển đổi theo kênh</template>
-        <div ref="funnelChartRef" class="reporting-chart"></div>
+        <div ref="sourceChartRef" class="reporting-chart"></div>
       </ElCard>
       <ElCard class="reporting-card">
         <template #header>Phân bổ nguồn khách hàng</template>
-        <div ref="sourceChartRef" class="reporting-chart"></div>
+        <div ref="funnelChartRef" class="reporting-chart"></div>
       </ElCard>
     </div>
 
@@ -87,182 +121,186 @@
           </div>
         </div>
       </template>
-
       <ElTable
+        v-loading="loading"
         :data="filteredLeads"
         class="reporting-table"
         empty-text="Không tìm thấy khách hàng"
       >
         <ElTableColumn prop="name" label="Tên khách hàng" min-width="150">
           <template #default="{ row }">
-            <div class="font-medium">{{ row.name }}</div>
+            <div class="font-medium">{{ row.customerName }}</div>
           </template>
         </ElTableColumn>
-        <ElTableColumn prop="phone" label="Số điện thoại" min-width="120" />
+        <ElTableColumn prop="phone" label="Số điện thoại" min-width="130" />
         <ElTableColumn prop="source" label="Nguồn" min-width="120">
           <template #default="{ row }">
-            <ElTag :type="getSourceType(row.source)" effect="light" round>
+            <ElTag
+              :type="getSourceType(row.source) as any"
+              effect="light"
+              round
+            >
               {{ row.source }}
             </ElTag>
           </template>
         </ElTableColumn>
         <ElTableColumn prop="status" label="Trạng thái" min-width="140" />
-
-        <!-- Cột Lead Score với Progress Bar -->
         <ElTableColumn prop="score" label="Lead Score" min-width="200">
           <template #default="{ row }">
             <div class="flex items-center gap-3">
               <span
                 class="w-8 font-semibold"
-                :class="getScoreTextColor(row.score)"
-                >{{ row.score }}</span
+                :class="getScoreTextColor(row.leadScore)"
+                >{{ row.leadScore }}</span
               >
               <ElProgress
                 class="flex-1"
-                :percentage="row.score"
-                :color="getScoreColor(row.score)"
+                :percentage="row.leadScore"
+                :color="getScoreColor(row.leadScore)"
                 :show-text="false"
                 :stroke-width="10"
               />
             </div>
           </template>
         </ElTableColumn>
-
-        <ElTableColumn prop="assignee" label="Sale phụ trách" min-width="150" />
+        <ElTableColumn
+          prop="lastContact"
+          label="Liên hệ gần nhất"
+          min-width="160"
+        />
         <ElTableColumn
           label="Thao tác"
           width="100"
           align="center"
           fixed="right"
         >
-          <template #default>
-            <ElButton link type="primary">Chi tiết</ElButton>
+          <template #default="{ row }">
+            <ElButton link type="primary" @click="handleViewDetail(row)">
+              Chi tiết
+            </ElButton>
           </template>
         </ElTableColumn>
       </ElTable>
     </ElCard>
+
+    <!-- DIALOG CHI TIẾT LEAD -->
+    <ElDialog
+      v-model="detailVisible"
+      title="Chi tiết khách hàng / Lead"
+      width="500px"
+      append-to-body
+    >
+      <div v-if="selectedLead" class="space-y-4">
+        <div class="flex justify-between border-b pb-2">
+          <span class="text-gray-500 font-semibold">Tên khách hàng:</span>
+          <span class="font-medium">{{ selectedLead.customerName }}</span>
+        </div>
+        <div class="flex justify-between border-b pb-2">
+          <span class="text-gray-500 font-semibold">Số điện thoại:</span>
+          <span>{{ selectedLead.phone || "Chưa cập nhật" }}</span>
+        </div>
+        <div class="flex justify-between border-b pb-2">
+          <span class="text-gray-500 font-semibold">Nguồn:</span>
+          <ElTag
+            :type="getSourceType(selectedLead.source) as any"
+            effect="light"
+            round
+          >
+            {{ selectedLead.source }}
+          </ElTag>
+        </div>
+        <div class="flex justify-between border-b pb-2">
+          <span class="text-gray-500 font-semibold">Trạng thái:</span>
+          <span>{{ selectedLead.status }}</span>
+        </div>
+        <div class="flex justify-between border-b pb-2">
+          <span class="text-gray-500 font-semibold"
+            >Điểm đánh giá (Score):</span
+          >
+          <span
+            :class="getScoreTextColor(selectedLead.leadScore)"
+            class="font-bold"
+          >
+            {{ selectedLead.leadScore }}
+          </span>
+        </div>
+        <div class="flex justify-between pb-2">
+          <span class="text-gray-500 font-semibold">Liên hệ gần nhất:</span>
+          <span>{{ selectedLead.lastContact }}</span>
+        </div>
+      </div>
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <ElButton @click="detailVisible = false">Đóng</ElButton>
+          <ElButton type="primary">Cập nhật</ElButton>
+        </div>
+      </template>
+    </ElDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import * as echarts from "echarts";
+import { ElMessage } from "element-plus";
 import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
+import { fetchCustomerAnalytics } from "@/api/operations";
 import ReportPageHeader from "./ReportPageHeader.vue";
 import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
 
-const currentPeriod = ref<"today" | "month" | "year" | "custom">("month");
-const periodStart = ref(
-  new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-    .toISOString()
-    .split("T")[0],
-);
-const periodEnd = ref(new Date().toISOString().split("T")[0]);
-const searchQuery = ref("");
-
-// Refs cho ECharts
 const funnelChartRef = ref<HTMLElement | null>(null);
 const sourceChartRef = ref<HTMLElement | null>(null);
 const histogramChartRef = ref<HTMLElement | null>(null);
+const searchQuery = ref("");
+const loading = ref(false);
+const currentPeriod = ref<"today" | "month" | "year" | "custom">("month");
+const periodStart = ref("");
+const periodEnd = ref("");
 
-let funnelChart: echarts.ECharts | null = null;
-let sourceChart: echarts.ECharts | null = null;
-let histogramChart: echarts.ECharts | null = null;
+const kpi = ref({ totalLeads: 0, newCustomers: 0, hotLeads: 0 });
+const leads = ref<
+  Array<{
+    id: number;
+    customerName: string;
+    phone?: string;
+    source: string;
+    leadScore: number;
+    status: string;
+    lastContact: string;
+  }>
+>([]);
 
-const chartTextColor = "#aeb0bd";
-const chartAxisLineColor = "rgba(255, 255, 255, 0.16)";
-const chartGridLineColor = "rgba(255, 255, 255, 0.1)";
+const detailVisible = ref(false);
+const selectedLead = ref<any>(null);
 
-// --- MOCK DATA ---
-const mockGroupedFunnelData = {
-  stages: ["Tiếp cận", "Đã liên hệ", "Đến Showroom", "Chốt hợp đồng"],
-  website: [100, 60, 20, 5],
-  facebook: [80, 50, 15, 3],
-  showroom: [40, 35, 30, 25],
-};
-
-const mockSourceData = [
-  { name: "Website", value: 40 },
-  { name: "Showroom", value: 35 },
-  { name: "Facebook", value: 20 },
-  { name: "Nguồn khác", value: 5 },
-];
-
-const mockHistogramData = [
-  { group: "Thấp (0-30)", count: 120 },
-  { group: "Trung bình (31-60)", count: 85 },
-  { group: "Tiềm năng (61-80)", count: 45 },
-  { group: "Cực nóng (81-100)", count: 15 },
-];
-
-const mockLeads = [
-  {
-    id: 1,
-    name: "Lê Minh Hiếu",
-    phone: "0901xxx222",
-    source: "Showroom",
-    status: "Đang thương lượng",
-    score: 85,
-    assignee: "Nguyễn Văn A",
-  },
-  {
-    id: 2,
-    name: "Nguyễn Văn Nam",
-    phone: "0988xxx333",
-    source: "Website",
-    status: "Mới tạo",
-    score: 30,
-    assignee: "Trần Thị B",
-  },
-  {
-    id: 3,
-    name: "Trần Thị Mai",
-    phone: "0912xxx444",
-    source: "Facebook",
-    status: "Đã tư vấn",
-    score: 65,
-    assignee: "Lê Quốc C",
-  },
-  {
-    id: 4,
-    name: "Phạm Tấn Tài",
-    phone: "0933xxx555",
-    source: "Zalo OA",
-    status: "Hẹn đến xem",
-    score: 75,
-    assignee: "Nguyễn Văn A",
-  },
-  {
-    id: 5,
-    name: "Đinh Quang Anh",
-    phone: "0909xxx666",
-    source: "Website",
-    status: "Chốt nóng",
-    score: 95,
-    assignee: "Trần Thị B",
-  },
-];
+const conversionRate = computed(() => {
+  if (kpi.value.totalLeads === 0) return 0;
+  const converted = leads.value.filter(
+    (l) => l.status === "Đã chuyển đổi",
+  ).length;
+  return ((converted / kpi.value.totalLeads) * 100).toFixed(1);
+});
 
 const filteredLeads = computed(() => {
-  if (!searchQuery.value) return mockLeads;
+  if (!searchQuery.value) return leads.value;
   const q = searchQuery.value.toLowerCase();
-  return mockLeads.filter(
-    (l) => l.name.toLowerCase().includes(q) || l.phone.includes(q),
-  );
+  return leads.value.filter((l) => l.customerName.toLowerCase().includes(q));
 });
 
 function getSourceType(source: string) {
-  if (source === "Website") return "danger";
-  if (source === "Showroom") return "success";
-  if (source === "Facebook") return "primary";
-  return "warning";
+  const map: Record<string, string> = {
+    Website: "danger",
+    Showroom: "success",
+    Facebook: "primary",
+  };
+  return map[source] || "warning";
 }
 
 function getScoreColor(score: number) {
-  if (score > 80) return "#ef4444"; // Đỏ rực
-  if (score > 60) return "#f97316"; // Cam
-  if (score > 30) return "#3b82f6"; // Xanh dương
-  return "#9ca3af"; // Xám
+  if (score > 80) return "#ef4444";
+  if (score > 60) return "#f97316";
+  if (score > 30) return "#3b82f6";
+  return "#9ca3af";
 }
 
 function getScoreTextColor(score: number) {
@@ -272,93 +310,35 @@ function getScoreTextColor(score: number) {
   return "text-gray-500";
 }
 
+const chartTextColor = "#aeb0bd";
+const chartAxisLineColor = "rgba(255, 255, 255, 0.16)";
+const chartGridLineColor = "rgba(255, 255, 255, 0.1)";
+
+let funnelChart: echarts.ECharts | null = null;
+let sourceChart: echarts.ECharts | null = null;
+let histogramChart: echarts.ECharts | null = null;
+
 function onPeriodChange() {
-  // Mock refresh
+  loadData();
 }
 
 function renderCharts() {
-  // 1. Bar Chart Nhóm: Phễu chuyển đổi theo kênh
+  // 1. Funnel: Phân bổ điểm Lead (bar chart theo score range)
   if (funnelChartRef.value) {
     if (!funnelChart) funnelChart = echarts.init(funnelChartRef.value);
+    const scoreBuckets = [
+      { label: "0-30", min: 0, max: 30 },
+      { label: "31-60", min: 31, max: 60 },
+      { label: "61-80", min: 61, max: 80 },
+      { label: "81-100", min: 81, max: 100 },
+    ];
+    const bucketCounts = scoreBuckets.map(
+      (b) =>
+        leads.value.filter((l) => l.leadScore >= b.min && l.leadScore <= b.max)
+          .length,
+    );
+    const bucketColors = ["#9ca3af", "#3b82f6", "#f97316", "#ef4444"];
     funnelChart.setOption({
-      backgroundColor: "transparent",
-      textStyle: { color: chartTextColor },
-      tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
-      legend: {
-        data: ["Website", "Facebook", "Showroom"],
-        textStyle: { color: chartTextColor },
-        top: 0,
-      },
-      grid: {
-        left: "3%",
-        right: "4%",
-        bottom: "5%",
-        top: "15%",
-        containLabel: true,
-      },
-      xAxis: {
-        type: "category",
-        data: mockGroupedFunnelData.stages,
-        axisLabel: { color: chartTextColor },
-        axisLine: { lineStyle: { color: chartAxisLineColor } },
-      },
-      yAxis: {
-        type: "value",
-        axisLabel: { color: chartTextColor },
-        splitLine: { lineStyle: { color: chartGridLineColor } },
-      },
-      series: [
-        {
-          name: "Website",
-          type: "bar",
-          data: mockGroupedFunnelData.website,
-          itemStyle: { color: "#3b82f6", borderRadius: [4, 4, 0, 0] },
-          barGap: "15%",
-        },
-        {
-          name: "Facebook",
-          type: "bar",
-          data: mockGroupedFunnelData.facebook,
-          itemStyle: { color: "#a855f7", borderRadius: [4, 4, 0, 0] },
-        },
-        {
-          name: "Showroom",
-          type: "bar",
-          data: mockGroupedFunnelData.showroom,
-          itemStyle: { color: "#f97316", borderRadius: [4, 4, 0, 0] },
-        },
-      ],
-    });
-  }
-
-  // 2. Donut Chart: Nguồn khách hàng
-  if (sourceChartRef.value) {
-    if (!sourceChart) sourceChart = echarts.init(sourceChartRef.value);
-    sourceChart.setOption({
-      backgroundColor: "transparent",
-      textStyle: { color: chartTextColor },
-      tooltip: { trigger: "item", formatter: "{b}: {c}%" },
-      legend: { top: 0, textStyle: { color: chartTextColor } },
-      series: [
-        {
-          type: "pie",
-          radius: ["40%", "65%"],
-          center: ["50%", "55%"],
-          data: mockSourceData,
-          label: {
-            formatter: "{b}: {c}%",
-            color: chartTextColor,
-          },
-        },
-      ],
-      color: ["#ef4444", "#22c55e", "#3b82f6", "#eab308"],
-    });
-  }
-
-  // 3. Histogram Chart: Phân bổ điểm Lead
-  if (histogramChartRef.value) {
-    if (!histogramChart) histogramChart = echarts.init(histogramChartRef.value);
-    histogramChart.setOption({
       backgroundColor: "transparent",
       textStyle: { color: chartTextColor },
       tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
@@ -371,7 +351,7 @@ function renderCharts() {
       },
       xAxis: {
         type: "category",
-        data: mockHistogramData.map((d) => d.group),
+        data: scoreBuckets.map((b) => b.label),
         axisLabel: { color: chartTextColor },
         axisLine: { lineStyle: { color: chartAxisLineColor } },
       },
@@ -385,17 +365,98 @@ function renderCharts() {
       series: [
         {
           type: "bar",
-          data: mockHistogramData.map((d, i) => {
-            const colors = ["#9ca3af", "#3b82f6", "#f97316", "#ef4444"];
-            return {
-              value: d.count,
-              itemStyle: { color: colors[i] },
-            };
-          }),
-          barWidth: "40%",
-          itemStyle: { borderRadius: [4, 4, 0, 0] },
+          data: bucketCounts.map((v, i) => ({
+            value: v,
+            itemStyle: { color: bucketColors[i], borderRadius: [4, 4, 0, 0] },
+          })),
+          barWidth: "45%",
         },
       ],
+    });
+  }
+
+  // 2. Donut Chart: Nguồn khách hàng
+  if (sourceChartRef.value) {
+    if (!sourceChart) sourceChart = echarts.init(sourceChartRef.value);
+    const sourceMap = new Map<string, number>();
+    leads.value.forEach((l) => {
+      const s = l.source || "Khác";
+      sourceMap.set(s, (sourceMap.get(s) || 0) + 1);
+    });
+    const pieData = Array.from(sourceMap.entries()).map(([name, value]) => ({
+      name,
+      value,
+    }));
+    const pieColors = ["#ef4444", "#22c55e", "#3b82f6", "#eab308", "#a855f7"];
+    sourceChart.setOption({
+      backgroundColor: "transparent",
+      textStyle: { color: chartTextColor },
+      tooltip: { trigger: "item", formatter: "{b}: {c} ({d}%)" },
+      legend: { top: 0, textStyle: { color: chartTextColor } },
+      series: [
+        {
+          type: "pie",
+          radius: ["40%", "65%"],
+          center: ["50%", "55%"],
+          data: pieData,
+          label: { formatter: "{b}: {c}", color: chartTextColor },
+        },
+      ],
+      color: pieColors,
+    });
+  }
+
+  // 3. Histogram Chart: Phân bổ nguồn theo trạng thái (stacked bar)
+  if (histogramChartRef.value) {
+    if (!histogramChart) histogramChart = echarts.init(histogramChartRef.value);
+    const sources = Array.from(
+      new Set(leads.value.map((l) => l.source || "Khác")),
+    );
+    const statuses = Array.from(new Set(leads.value.map((l) => l.status)));
+    const seriesData = sources.map((src) => {
+      return {
+        name: src,
+        type: "bar",
+        stack: "status",
+        data: statuses.map(
+          (st) =>
+            leads.value.filter(
+              (l) => (l.source || "Khác") === src && l.status === st,
+            ).length,
+        ),
+      };
+    });
+    histogramChart.setOption({
+      backgroundColor: "transparent",
+      textStyle: { color: chartTextColor },
+      tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+      legend: {
+        data: statuses,
+        textStyle: { color: chartTextColor },
+        top: 0,
+      },
+      grid: {
+        left: "3%",
+        right: "4%",
+        bottom: "5%",
+        top: "15%",
+        containLabel: true,
+      },
+      xAxis: {
+        type: "category",
+        data: statuses,
+        axisLabel: { color: chartTextColor },
+        axisLine: { lineStyle: { color: chartAxisLineColor } },
+      },
+      yAxis: {
+        type: "value",
+        name: "Số lượng Lead",
+        nameTextStyle: { color: chartTextColor },
+        axisLabel: { color: chartTextColor },
+        splitLine: { lineStyle: { color: chartGridLineColor } },
+      },
+      series: seriesData,
+      color: ["#3b82f6", "#a855f7", "#f97316", "#ef4444", "#22c55e", "#eab308"],
     });
   }
 }
@@ -406,10 +467,39 @@ function handleResize() {
   histogramChart?.resize();
 }
 
-onMounted(() => {
-  setTimeout(() => {
-    renderCharts();
-  }, 100);
+async function loadData() {
+  loading.value = true;
+  try {
+    const res = await fetchCustomerAnalytics();
+    kpi.value = {
+      totalLeads: res.kpi?.totalLeads ?? 0,
+      newCustomers: res.kpi?.newCustomers ?? 0,
+      hotLeads: res.kpi?.hotLeads ?? 0,
+    };
+    leads.value = (res.leads ?? []).map((l) => ({
+      id: l.id,
+      customerName: l.customerName,
+      phone: l.phone || l.phoneNumber,
+      source: l.source,
+      leadScore: l.leadScore,
+      status: l.status,
+      lastContact: l.lastContact,
+    }));
+  } catch (e: any) {
+    ElMessage.error(e?.message || "Không thể tải dữ liệu khách hàng");
+  } finally {
+    loading.value = false;
+  }
+}
+
+function handleViewDetail(row: any) {
+  selectedLead.value = row;
+  detailVisible.value = true;
+}
+
+onMounted(async () => {
+  await loadData();
+  setTimeout(renderCharts, 100);
   window.addEventListener("resize", handleResize);
 });
 
@@ -422,5 +512,5 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* Scoped styles nếu cần */
+/* kept minimal to match project style */
 </style>

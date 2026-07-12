@@ -6,7 +6,7 @@ import { compileStyle, parse } from "@vue/compiler-sfc";
 
 test("contact management page has dark-mode scoped theme overrides", async () => {
   const componentUrl = new URL(
-    "../src/views/contact-management/index.vue",
+    "../src/modules/Marketing/view/contact/index.vue",
     import.meta.url,
   );
   const source = await readFile(componentUrl, "utf8");

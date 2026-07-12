@@ -17,27 +17,30 @@ export interface RepairOrderDetail {
 
 export interface RepairOrder {
   id: number;
-  vehicleId?: number;
-  vehicle?: any;
-  licensePlate?: string;
-  customerName: string;
-  customerPhone: string;
-  mileage: number;
+  maintenanceNumber: string;
+  vehicleId: number;
+  vehicleInfo?: string;
+  maintenanceDate: string;
   description: string;
-  startTime?: string;
-  expectedCompletionTime?: string;
+  mileage: number;
   technicianId?: number;
   technicianName?: string;
-  status: "Pending" | "InProgress" | "QcPending" | "Completed" | "Cancelled";
-  laborCost: number;
   partsCost: number;
-  totalAmount: number;
-  paymentStatus: "Unpaid" | "Paid";
-  paymentMethod?: string;
-  notes?: string;
-  completedDate?: string;
+  laborCost: number;
+  totalCost: number;
+  partsJson?: string;
+  nextMaintenanceDate?: string;
+  nextMaintenanceOdo?: number;
   createdAt: string;
-  details: RepairOrderDetail[];
+  updatedAt?: string;
+  isDeleted: boolean;
+  status: string;
+  details?: RepairOrderDetail[];
+  customerPhone?: string;
+  customerName?: string;
+  licensePlate?: string;
+  vehicle?: any;
+  totalAmount?: number;
 }
 
 export interface RepairOrderList {
@@ -53,9 +56,18 @@ export interface CreateRepairOrderPayload {
   description: string;
 }
 
-export interface AssignTechnicianPayload {
-  repairOrderId: number;
-  technicianId: number;
+export interface UpdateRepairOrderPayload {
+  id: number;
+  vehicleId: number;
+  maintenanceDate: string;
+  description: string;
+  mileage: number;
+  technicianId?: number | null;
+  partsCost: number;
+  laborCost: number;
+  partsJson?: string;
+  nextMaintenanceDate?: string;
+  nextMaintenanceOdo?: number | null;
 }
 
 export interface PartItemPayload {
@@ -111,9 +123,9 @@ export const RepairOrderApi = {
     });
   },
 
-  assignTechnician(data: AssignTechnicianPayload) {
-    return request.post<boolean>({
-      url: "/api/v1/RepairOrders/assign-technician",
+  update(id: number, data: UpdateRepairOrderPayload) {
+    return request.put<boolean>({
+      url: `/api/v1/RepairOrders/${id}`,
       data,
     });
   },
@@ -121,6 +133,13 @@ export const RepairOrderApi = {
   issueParts(data: IssuePartsPayload) {
     return request.post<boolean>({
       url: "/api/v1/RepairOrders/issue-parts",
+      data,
+    });
+  },
+
+  assignTechnician(data: { repairOrderId: number; technicianId: number }) {
+    return request.put<boolean>({
+      url: `/api/v1/RepairOrders/${data.repairOrderId}/assign-technician`,
       data,
     });
   },

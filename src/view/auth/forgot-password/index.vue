@@ -7,7 +7,6 @@
       <el-card class="login-card max-w-md w-full m-4 border-0" shadow="hover">
         <div class="text-center mb-8">
           <div class="flex justify-center mb-4">
-            <!-- Icon -->
             <div
               class="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center shadow-lg"
               style="background-color: var(--el-color-primary)"
@@ -66,7 +65,6 @@
               native-type="submit"
               :loading="isLoading"
               class="w-full submit-btn"
-              v-auth="Permissions.Admin.EmployeeManagement.Edit"
             >
               Gửi liên kết đặt lại mật khẩu
             </el-button>
@@ -89,10 +87,10 @@
 </template>
 
 <script setup lang="ts">
-import { Permissions } from "@/domain/constants/permissions";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { Message, Key, Back } from "@element-plus/icons-vue";
+import { fetchForgotPassword } from "@/api/auth";
 
 const router = useRouter();
 
@@ -112,17 +110,14 @@ const handleForgotPassword = async () => {
   successMessage.value = "";
 
   try {
-    // TODO: Call forgot password API when available
-    // await fetchForgotPassword({ email: email.value });
+    const res = await fetchForgotPassword({ email: email.value });
 
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    if (res.data) {
+      successMessage.value =
+        res.data.message ||
+        "Vui lòng kiểm tra email của bạn để nhận link đặt lại mật khẩu.";
+    }
 
-    // Simulate success for now
-    successMessage.value =
-      "Vui lòng kiểm tra email của bạn để nhận link đặt lại mật khẩu.";
-
-    // Clear email after successful submission
     email.value = "";
   } catch (error: any) {
     errorMessage.value = error.message || "Gửi yêu cầu thất bại";

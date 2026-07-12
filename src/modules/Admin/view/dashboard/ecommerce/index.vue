@@ -1,43 +1,30 @@
 <template>
   <div class="ecommerce">
     <!-- Bộ Điều Hướng Chu Kỳ -->
-    <div class="flex justify-between items-center mb-6">
+    <div class="flex justify-between items-center mb-6 flex-wrap gap-3">
       <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
         📊 Tổng quan kinh doanh
       </h1>
-      <div class="flex justify-end gap-2">
+      <div class="flex items-center gap-2 flex-wrap">
         <ElButton
-          @click="setPeriod('today')"
-          :type="currentPeriod === 'today' ? 'primary' : 'default'"
-          >Hôm nay</ElButton
+          v-for="p in periods"
+          :key="p.value"
+          size="small"
+          @click="setPeriod(p.value)"
+          :type="currentPeriod === p.value ? 'primary' : 'default'"
         >
-        <ElButton
-          @click="setPeriod('month')"
-          :type="currentPeriod === 'month' ? 'primary' : 'default'"
-          >Tháng này</ElButton
-        >
-        <ElButton
-          @click="setPeriod('year')"
-          :type="currentPeriod === 'year' ? 'primary' : 'default'"
-          >Năm này</ElButton
-        >
+          {{ p.label }}
+        </ElButton>
         <ElDatePicker
-          v-model="customStart"
-          type="date"
-          placeholder="Từ ngày"
-          format="YYYY-MM-DD"
+          v-model="customRange"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="Từ ngày"
+          end-placeholder="Đến ngày"
+          size="small"
           value-format="YYYY-MM-DD"
-          @change="setPeriod('custom')"
-          style="width: 140px"
-        />
-        <ElDatePicker
-          v-model="customEnd"
-          type="date"
-          placeholder="Đến ngày"
-          format="YYYY-MM-DD"
-          value-format="YYYY-MM-DD"
-          @change="setPeriod('custom')"
-          style="width: 140px"
+          @change="onCustomRangeChange"
+          style="width: 220px"
         />
       </div>
     </div>
@@ -48,98 +35,93 @@
       <ElCol :sm="24" :md="12" :lg="6">
         <div
           :class="[
-            'art-card p-5 h-full border-l-4 flex flex-col justify-between',
-            summary.isRevenueAlert ? 'border-red-500' : 'border-blue-500',
+            'art-card p-5 h-full border-l-4',
+            summary.isRevenueAlert
+              ? 'border-red-500 bg-red-50 dark:bg-red-900/10'
+              : 'border-blue-500',
           ]"
         >
-          <div>
-            <div
-              class="text-gray-500 dark:text-gray-400 text-sm font-semibold uppercase tracking-wider mb-2"
-            >
-              DOANH THU THỰC TẾ
-            </div>
-            <div class="text-3xl font-bold text-gray-800 dark:text-gray-100">
-              {{ formatCurrency(summary.totalRevenue) }}
-            </div>
+          <div
+            class="text-gray-500 dark:text-gray-400 text-sm font-bold uppercase tracking-wider mb-2"
+          >
+            DOANH THU THỰC TẾ
           </div>
-          <div class="mt-4">
+          <div class="text-2xl font-bold text-gray-800 dark:text-gray-100">
+            {{ formatCurrency(summary.totalRevenue) }}
+          </div>
+          <div
+            class="text-sm font-medium"
+            :class="
+              (summary.revenueChangePercentage || 0) >= 0
+                ? 'text-green-600'
+                : 'text-red-600'
+            "
+          >
+            {{ (summary.revenueChangePercentage || 0) >= 0 ? "▲" : "▼ "
+            }}{{ summary.revenueChangePercentage || 0 }}% so với kỳ trước
+          </div>
+          <div class="text-sm text-gray-500 mt-1">
+            Mục tiêu ngày: {{ formatCurrency(summary.dailyTarget) }}
+          </div>
+          <div
+            class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-1"
+          >
             <div
-              class="text-sm font-medium"
-              :class="
-                summary.revenueVsYesterdayPercentage >= 0
-                  ? 'text-green-600'
-                  : 'text-red-600'
-              "
-            >
-              {{ summary.revenueVsYesterdayPercentage >= 0 ? "▲ +" : "▼ "
-              }}{{ summary.revenueVsYesterdayPercentage }}% so với hôm qua
-            </div>
-            <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              Mục tiêu ngày: {{ formatCurrency(summary.dailyTarget) }}
-            </div>
-            <div
-              class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-2 flex items-center relative overflow-hidden"
-            >
-              <div
-                class="bg-blue-600 h-2 rounded-full transition-all duration-500"
-                :style="{
-                  width:
-                    Math.min(
+              class="bg-blue-600 h-2 rounded-full transition-all duration-500"
+              :style="{
+                width:
+                  Math.min(
+                    Math.round(
                       (summary.totalRevenue / (summary.dailyTarget || 1)) * 100,
-                      100,
-                    ) + '%',
-                }"
-              ></div>
-            </div>
-            <div
-              class="text-right text-xs font-bold text-gray-600 dark:text-gray-400 mt-1"
-            >
-              {{
-                Math.round(
-                  (summary.totalRevenue / (summary.dailyTarget || 1)) * 100,
-                )
-              }}%
-            </div>
-            <div
-              v-if="summary.isRevenueAlert"
-              class="text-red-600 text-xs mt-2 font-bold flex items-center gap-1"
-            >
-              <i class="ri-alert-fill"></i> Cảnh báo: Thấp hơn 50% mục tiêu
-            </div>
+                    ),
+                    100,
+                  ) + '%',
+              }"
+            ></div>
+          </div>
+          <div class="text-right text-xs text-gray-500 mt-1">
+            {{
+              Math.round(
+                (summary.totalRevenue / (summary.dailyTarget || 1)) * 100,
+              )
+            }}
+          </div>
+          <div
+            v-if="summary.isRevenueAlert"
+            class="text-red-600 text-xs mt-1 font-bold flex items-center gap-1"
+          >
+            <i class="ri-alert-fill"></i> Cảnh báo: Thấp hơn 50% mục tiêu
           </div>
         </div>
       </ElCol>
 
       <!-- Card 2: Lợi nhuận ròng -->
       <ElCol :sm="24" :md="12" :lg="6">
-        <div
-          class="art-card p-5 h-full border-l-4 border-green-500 flex flex-col justify-between"
-        >
-          <div>
-            <div
-              class="text-gray-500 dark:text-gray-400 text-sm font-semibold uppercase tracking-wider mb-2"
-            >
-              LỢI NHUẬN RÒNG
-            </div>
-            <div class="text-3xl font-bold text-gray-800 dark:text-gray-100">
-              {{ formatCurrency(summary.netProfit) }}
-            </div>
+        <div class="art-card p-5 h-full border-l-4 border-green-500">
+          <div
+            class="text-gray-500 dark:text-gray-400 text-sm font-bold uppercase tracking-wider mb-2"
+          >
+            LỢI NHUẬN RÒNG
           </div>
-          <div class="mt-4">
-            <div class="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Biên lợi nhuận: {{ summary.profitMargin }}%
-            </div>
-            <div
-              class="text-sm font-medium mt-1"
+          <div class="text-2xl font-bold text-gray-800 dark:text-gray-100">
+            {{ formatCurrency(summary.netProfit) }}
+          </div>
+          <div class="text-sm mt-2">
+            Biên lợi nhuận:
+            <span class="font-medium"> {{ summary.profitMargin }}% </span>
+          </div>
+          <div class="mt-2">
+            <span
+              class="text-sm"
               :class="
                 summary.profitVsYesterdayPercentage >= 0
                   ? 'text-green-600'
                   : 'text-red-600'
               "
             >
-              {{ summary.profitVsYesterdayPercentage >= 0 ? "▲ +" : "▼ "
-              }}{{ summary.profitVsYesterdayPercentage }}% so với hôm qua
-            </div>
+              {{ summary.profitVsYesterdayPercentage >= 0 ? "▲" : "▼" }}
+              {{ summary.profitVsYesterdayPercentage }}% so với hôm qua
+            </span>
           </div>
         </div>
       </ElCol>
@@ -147,101 +129,81 @@
       <!-- Card 3: Tiền đang treo -->
       <ElCol :sm="24" :md="12" :lg="6">
         <div
-          :class="[
-            'art-card p-5 h-full border-l-4 flex flex-col justify-between',
+          class="art-card p-5 h-full border-l-4"
+          :class="
             summary.isPendingAlert
-              ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/30'
-              : 'border-orange-500',
-          ]"
+              ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/10'
+              : 'border-orange-500'
+          "
         >
-          <div>
-            <div
-              class="text-gray-500 dark:text-gray-400 text-sm font-semibold uppercase tracking-wider mb-2"
-            >
-              TIỀN ĐANG TREO
-            </div>
-            <div class="text-3xl font-bold text-gray-800 dark:text-gray-100">
-              {{ formatCurrency(summary.pendingAmount) }}
-            </div>
+          <div
+            class="text-gray-500 dark:text-gray-400 text-sm font-bold uppercase tracking-wider mb-2"
+          >
+            TIỀN ĐANG TREO
           </div>
-          <div class="mt-4 text-sm text-gray-600 dark:text-gray-400 space-y-2">
-            <div class="flex justify-between items-center border-b pb-1">
-              <span>Cọc giữ xe:</span>
+          <div class="text-2xl font-bold text-gray-800 dark:text-gray-100">
+            {{ formatCurrency(summary.pendingAmount) }}
+          </div>
+          <div class="mt-3 space-y-2">
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-500">Cọc giữ xe:</span>
               <span class="font-medium text-gray-800 dark:text-gray-100">{{
                 formatCurrency(summary.depositAmount)
               }}</span>
             </div>
-            <div class="flex justify-between items-center pt-1">
-              <span>Chờ giải ngân:</span>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-500">Chờ giải ngân:</span>
               <span class="font-medium text-gray-800 dark:text-gray-100">{{
                 formatCurrency(summary.loanWaitAmount)
               }}</span>
             </div>
-            <div
-              v-if="summary.isPendingAlert"
-              class="text-yellow-600 text-xs mt-2 font-bold flex items-center gap-1"
-            >
-              <i class="ri-error-warning-fill"></i> > 48h chưa giải ngân
-            </div>
+          </div>
+          <div
+            v-if="summary.isPendingAlert"
+            class="text-yellow-600 text-xs mt-2 font-bold flex items-center gap-1"
+          >
+            <i class="ri-error-warning-fill"></i> > 48h chưa giải ngân
           </div>
         </div>
       </ElCol>
 
       <!-- Card 4: Cần xử lý -->
       <ElCol :sm="24" :md="12" :lg="6">
-        <div
-          class="art-card p-5 h-full border-l-4 border-gray-500 flex flex-col justify-between"
-        >
-          <div>
-            <div
-              class="text-gray-500 dark:text-gray-400 text-sm font-semibold uppercase tracking-wider mb-2"
-            >
-              CẦN XỬ LÝ
-            </div>
+        <div class="art-card p-5 h-full border-l-4 border-gray-500">
+          <div
+            class="text-gray-500 dark:text-gray-400 text-sm font-bold uppercase tracking-wider mb-2"
+          >
+            CẦN XỬ LÝ
           </div>
           <div class="mt-2 space-y-3">
-            <div
-              class="flex justify-between items-center cursor-pointer hover:bg-gray-50 dark:bg-gray-800 p-1 rounded transition"
-            >
-              <div class="flex items-center gap-2">
-                <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
-                <span class="text-sm text-gray-700 dark:text-gray-300"
-                  >Khiếu nại mới</span
-                >
-              </div>
+            <div class="flex justify-between text-sm cursor-pointer">
+              <span
+                class="flex items-center gap-2 text-gray-700 dark:text-gray-300"
+                ><span class="w-2 h-2 bg-red-500"></span>Khiếu nại mới</span
+              >
               <span class="font-bold">{{ summary.newComplaintsCount }}</span>
             </div>
-            <div
-              class="flex justify-between items-center cursor-pointer hover:bg-gray-50 dark:bg-gray-800 p-1 rounded transition"
-            >
-              <div class="flex items-center gap-2">
-                <div class="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
-                <span class="text-sm text-gray-700 dark:text-gray-300"
-                  >NH chậm giải ngân</span
-                >
-              </div>
+            <div class="flex justify-between text-sm cursor-pointer">
+              <span
+                class="flex items-center gap-2 text-gray-700 dark:text-gray-300"
+                ><span class="w-2 h-2 bg-yellow-400"></span>NH chậm giải
+                ngân</span
+              >
               <span class="font-bold">{{ summary.delayedLoansCount }}</span>
             </div>
-            <div
-              class="flex justify-between items-center cursor-pointer hover:bg-gray-50 dark:bg-gray-800 p-1 rounded transition"
-            >
-              <div class="flex items-center gap-2">
-                <div class="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
-                <span class="text-sm text-gray-700 dark:text-gray-300"
-                  >Xe sắp hết hàng</span
-                >
-              </div>
+            <div class="flex justify-between text-sm cursor-pointer">
+              <span
+                class="flex items-center gap-2 text-gray-700 dark:text-gray-300"
+                ><span class="w-2 h-2 bg-yellow-400"></span>Xe sắp hết
+                hàng</span
+              >
               <span class="font-bold">{{ summary.lowStockVehiclesCount }}</span>
             </div>
-            <div
-              class="flex justify-between items-center cursor-pointer hover:bg-gray-50 dark:bg-gray-800 p-1 rounded transition"
-            >
-              <div class="flex items-center gap-2">
-                <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
-                <span class="text-sm text-gray-700 dark:text-gray-300"
-                  >Lịch hẹn bỏ lỡ</span
-                >
-              </div>
+            <div class="flex justify-between text-sm cursor-pointer">
+              <span
+                class="flex items-center gap-2 text-gray-700 dark:text-gray-300"
+                ><span class="w-2 h-2 bg-green-500"></span>Lịch hẹn bỏ lỡ</span
+              >
               <span class="font-bold">{{
                 summary.missedAppointmentsCount
               }}</span>
@@ -251,7 +213,7 @@
       </ElCol>
     </ElRow>
 
-    <!-- Khu vực Trung tâm: Biểu đồ và Tóm tắt tháng -->
+    <!-- Charts + Monthly summary -->
     <ElRow :gutter="20" class="mb-5">
       <ElCol :sm="24" :lg="16">
         <div class="art-card p-5 h-full">
@@ -261,6 +223,12 @@
             </h3>
           </div>
           <div ref="revenueChartRef" class="h-64 w-full"></div>
+          <div
+            v-if="chartLoading"
+            class="h-64 flex items-center justify-center text-gray-400"
+          >
+            Đang tải dữ liệu...
+          </div>
         </div>
       </ElCol>
       <ElCol :sm="24" :lg="8">
@@ -270,22 +238,22 @@
               Tóm tắt mục tiêu tháng
             </h3>
           </div>
-          <div class="space-y-5 mt-4">
-            <div class="flex justify-between items-center">
-              <span class="text-gray-500 dark:text-gray-400">Đã đạt:</span>
+          <div class="space-y-4 mt-4">
+            <div class="flex justify-between">
+              <span class="text-gray-500">Đã đạt:</span>
               <span
                 class="font-bold text-lg text-gray-800 dark:text-gray-100"
                 >{{ formatCurrency(summary.monthAchieved) }}</span
               >
             </div>
-            <div class="flex justify-between items-center">
-              <span class="text-gray-500 dark:text-gray-400">Cần thêm:</span>
+            <div class="flex justify-between">
+              <span class="text-gray-500">Cần thêm:</span>
               <span class="font-bold text-lg text-red-500">{{
                 formatCurrency(summary.monthRemaining)
               }}</span>
             </div>
-            <div class="flex justify-between items-center border-t pt-4">
-              <span class="font-medium text-gray-700 dark:text-gray-300"
+            <div class="flex justify-between border-t pt-3">
+              <span class="text-gray-600 dark:text-gray-300"
                 >Dự báo cuối tháng:</span
               >
               <span class="font-bold text-xl text-blue-600">{{
@@ -293,10 +261,8 @@
               }}</span>
             </div>
             <div>
-              <div
-                class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1"
-              >
-                <span>Tiến độ tháng</span>
+              <div class="flex justify-between text-xs text-gray-500 mb-1">
+                <span>Tiến độ</span>
                 <span
                   >{{
                     Math.round(
@@ -320,87 +286,62 @@
       </ElCol>
     </ElRow>
 
-    <!-- Phân tích song song -->
+    <!-- Nguồn doanh thu + Staff -->
     <ElRow :gutter="20" class="mb-5">
-      <!-- Nguồn doanh thu -->
       <ElCol :sm="24" :lg="12">
         <div class="art-card p-5 h-full">
-          <div class="art-card-header mb-6">
+          <div class="art-card-header mb-4">
             <h3
-              class="font-bold uppercase tracking-wider text-sm text-gray-700 dark:text-gray-300"
+              class="font-bold uppercase text-sm tracking-wider text-gray-700 dark:text-gray-300"
             >
-              NGUỒN DOANH THU — Hôm nay
-            </h3>
-          </div>
-          <div class="space-y-5">
-            <div
-              v-for="source in sources"
-              :key="source.name"
-              class="flex items-center gap-4"
-            >
-              <span
-                class="text-sm font-medium w-28 text-gray-700 dark:text-gray-300"
-                >{{ source.name }}</span
-              >
-              <div class="flex-1">
-                <ElProgress
-                  :percentage="source.percent"
-                  :stroke-width="12"
-                  :show-text="false"
-                  color="#409eff"
-                />
-              </div>
-              <span
-                class="text-sm font-medium text-gray-800 dark:text-gray-100 w-28 text-right"
-                >{{ formatCurrency(source.amount).replace("₫", "") }}</span
-              >
-            </div>
-          </div>
-          <div class="mt-6 text-center">
-            <ElButton type="primary" link>Xem chi tiết từng loại</ElButton>
-          </div>
-        </div>
-      </ElCol>
-
-      <!-- Hiệu suất nhân viên -->
-      <ElCol :sm="24" :lg="12">
-        <div class="art-card p-5 h-full">
-          <div class="art-card-header mb-6">
-            <h3
-              class="font-bold uppercase tracking-wider text-sm text-gray-700 dark:text-gray-300"
-            >
-              HIỆU SUẤT SALE — Tháng này
+              NGUỒN DOANH THU
             </h3>
           </div>
           <div class="space-y-4">
             <div
-              v-for="(staff, index) in topStaff"
-              :key="staff.employeeName"
+              v-for="source in sources"
+              :key="source.name"
               class="flex items-center gap-3"
             >
-              <span
-                class="text-sm font-medium w-32 truncate text-gray-700 dark:text-gray-300"
-                >#{{ index + 1 }} {{ staff.employeeName }}</span
-              >
+              <span class="text-sm w-28 text-gray-700 dark:text-gray-300">{{
+                source.name
+              }}</span>
               <div class="flex-1">
-                <ElProgress
-                  :percentage="
-                    Math.round(
-                      (staff.totalSales / (staff.targetSales || 1)) * 100,
-                    )
-                  "
-                  :stroke-width="10"
-                  :show-text="false"
-                  color="#67c23a"
-                />
+                <ElProgress :percentage="source.percent" :show-text="false" />
               </div>
               <span
-                class="text-sm text-gray-800 dark:text-gray-100 font-medium w-24 text-right"
-                >{{ formatCurrencyShort(staff.totalSales) }}</span
+                class="text-sm w-28 text-right font-medium text-gray-800 dark:text-gray-100"
+                >{{ formatCurrency(source.amount).replace("₫", "") }}</span
               >
-              <span
-                class="text-xs font-bold w-24 text-right flex items-center justify-end"
-              >
+            </div>
+          </div>
+          <div
+            v-if="sources.length === 0"
+            class="text-center text-sm text-gray-400 mt-4"
+          >
+            Chưa có dữ liệu
+          </div>
+        </div>
+      </ElCol>
+
+      <ElCol :sm="24" :lg="12">
+        <div class="art-card p-5 h-full">
+          <div class="art-card-header mb-4">
+            <h3
+              class="font-bold uppercase text-sm tracking-wider text-gray-700 dark:text-gray-300"
+            >
+              HIỆU SUẤT SALE
+            </h3>
+          </div>
+          <div class="space-y-4">
+            <div v-for="(staff, idx) in topStaff" :key="staff.employeeName">
+              <div class="flex justify-between text-sm">
+                <span class="w-32 truncate text-gray-700 dark:text-gray-300"
+                  >#{{ idx + 1 }} {{ staff.employeeName }}</span
+                >
+                <span class="font-medium text-gray-800 dark:text-gray-100">{{
+                  formatCurrencyShort(staff.totalSales)
+                }}</span>
                 <ElTag
                   v-if="staff.isTopSeller"
                   type="success"
@@ -414,47 +355,55 @@
                   size="small"
                   >✓ Đạt</ElTag
                 >
-                <ElTag v-else type="warning" size="small">⚠️ Cần cố</ElTag>
-              </span>
-            </div>
-          </div>
-          <div class="mt-6 pt-4 border-t">
-            <div class="flex items-center gap-3">
-              <span
-                class="text-sm font-bold w-32 text-gray-800 dark:text-gray-100"
-                >Tổng team:</span
-              >
-              <div class="flex-1">
-                <ElProgress
-                  :percentage="
-                    Math.round((teamSales / (teamTarget || 1)) * 100)
-                  "
-                  :stroke-width="14"
-                  color="#e6a23c"
-                />
+                <ElTag v-else type="warning" size="small">⚠️</ElTag>
               </div>
+              <ElProgress
+                :percentage="
+                  Math.round(
+                    (staff.totalSales / (staff.targetSales || 1)) * 100,
+                  )
+                "
+                :stroke-width="8"
+              />
             </div>
             <div
-              class="text-right text-xs text-gray-500 dark:text-gray-400 mt-1"
+              v-if="topStaff.length === 0"
+              class="text-center text-sm text-gray-400 mt-4"
             >
-              {{ formatCurrency(teamSales) }} / {{ formatCurrency(teamTarget) }}
+              Chưa có dữ liệu
+            </div>
+
+            <div class="mt-4 pt-3 border-t">
+              <div class="flex justify-between text-sm">
+                <span class="font-bold text-gray-800 dark:text-gray-100"
+                  >Tổng team</span
+                >
+                <span
+                  >{{ formatCurrency(teamSales) }} /
+                  {{ formatCurrency(teamTarget) }}</span
+                >
+              </div>
+              <ElProgress
+                :percentage="Math.round((teamSales / (teamTarget || 1)) * 100)"
+                :stroke-width="12"
+                color="#e6a23c"
+              />
             </div>
           </div>
         </div>
       </ElCol>
     </ElRow>
 
-    <!-- Dòng giao dịch thời gian thực -->
-    <ElRow :gutter="20">
+    <!-- Dòng giao dịch gần đây -->
+    <ElRow>
       <ElCol :span="24">
         <div class="art-card p-5">
           <div class="art-card-header mb-4 flex justify-between items-center">
             <h3
-              class="font-bold uppercase tracking-wider text-sm text-gray-700 dark:text-gray-300"
+              class="font-bold uppercase text-sm tracking-wider text-gray-700 dark:text-gray-300"
             >
               GIAO DỊCH GẦN NHẤT
             </h3>
-            <ElButton type="primary" link>Xem tất cả</ElButton>
           </div>
           <ElTable
             :data="transactions"
@@ -462,92 +411,50 @@
             style="width: 100%"
             :max-height="400"
           >
-            <ElTableColumn prop="timestamp" label="Thời gian" width="120">
-              <template #default="scope">
-                <span class="text-gray-500 dark:text-gray-400">{{
-                  formatTime(scope.row.timestamp)
-                }}</span>
-              </template>
+            <ElTableColumn prop="reportTime" label="Ngày" width="100">
+              <template #default="scope">{{
+                formatDate(scope.row.reportTime)
+              }}</template>
             </ElTableColumn>
             <ElTableColumn label="Khách hàng" min-width="150">
-              <template #default="scope">
-                <span class="font-medium text-gray-800 dark:text-gray-100">{{
-                  scope.row.customerName
-                }}</span>
-              </template>
+              <template #default="scope">{{ scope.row.customerName }}</template>
             </ElTableColumn>
             <ElTableColumn label="Sản phẩm / Dịch vụ" min-width="200">
+              <template #default="scope">{{ scope.row.productName }}</template>
+            </ElTableColumn>
+            <ElTableColumn label="Trạng thái" width="110">
               <template #default="scope">
-                <span class="text-gray-600 dark:text-gray-300">{{
-                  scope.row.productName
-                }}</span>
+                <ElTag size="small" :type="mapStatusType(scope.row.status)">{{
+                  scope.row.status
+                }}</ElTag>
               </template>
             </ElTableColumn>
-            <ElTableColumn label="Trạng thái" width="120">
-              <template #default="scope">
-                <ElTag
-                  size="small"
-                  :type="
-                    scope.row.status === 'Completed'
-                      ? 'success'
-                      : scope.row.status === 'Pending'
-                        ? 'warning'
-                        : 'danger'
-                  "
-                >
-                  {{
-                    scope.row.status === "Completed"
-                      ? "Hoàn thành"
-                      : scope.row.status === "Pending"
-                        ? "Đang chờ"
-                        : "Hủy/Hoàn"
-                  }}
-                </ElTag>
-              </template>
-            </ElTableColumn>
-            <ElTableColumn prop="amount" label="Số tiền" width="180">
+            <ElTableColumn label="Số tiền" width="160" align="right">
               <template #default="scope">
                 <div
-                  class="font-bold flex items-center gap-2"
+                  class="flex items-center gap-1"
                   :class="
                     scope.row.isRevenue ? 'text-green-600' : 'text-red-600'
                   "
                 >
                   {{ scope.row.isRevenue ? "+" : "-"
-                  }}{{ formatCurrency(scope.row.amount) }}
+                  }}{{ formatCurrency(scope.row.revenue) }}
+                  <span v-if="scope.row.isPending" title="Đang chờ">⏳</span>
                   <span
-                    v-if="scope.row.status === 'Pending'"
-                    title="Tiền đang treo"
-                    >⏳</span
-                  >
-                  <span
-                    v-else-if="scope.row.status === 'Refund'"
+                    v-if="scope.row.isRefund"
                     class="text-red-500"
-                    title="Cần chú ý"
+                    title="Hoàn tiền"
                     >🔴</span
                   >
                 </div>
               </template>
             </ElTableColumn>
-            <ElTableColumn prop="staffName" label="Nhân viên" width="180" />
           </ElTable>
-
           <div
-            class="mt-4 text-xs text-gray-500 dark:text-gray-400 flex gap-6 border-t pt-4"
+            v-if="transactions.length === 0"
+            class="text-center text-sm text-gray-400 mt-4"
           >
-            <div class="flex items-center gap-1">
-              <span>⏳</span> Tiền đang treo
-            </div>
-            <div class="flex items-center gap-1">
-              <span class="text-red-500">🔴</span> Hoàn tiền / Cần chú ý
-            </div>
-            <div class="flex items-center gap-1">
-              <span class="text-green-600 font-bold">Màu xanh:</span> Thu vào
-            </div>
-            <div class="flex items-center gap-1">
-              <span class="text-red-600 font-bold">Màu đỏ:</span> Chi ra/Hoàn
-              trả
-            </div>
+            Chưa có giao dịch gần đây
           </div>
         </div>
       </ElCol>
@@ -556,15 +463,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import * as echarts from "echarts";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
-import { AnalyticsService } from "@/services/analytics.service";
-import type {
-  DashboardSummary,
-  StaffPerformance,
-  TransactionLog,
-} from "@/services/analytics.types";
 import { useUserStore } from "@/application/store/user";
 import {
   ElRow,
@@ -576,16 +477,34 @@ import {
   ElTableColumn,
   ElTag,
 } from "element-plus";
+import type { ECharts } from "echarts";
+
+import { AnalyticsService } from "@/services/analytics.service";
+import {
+  fetchRevenueByCategory,
+  fetchDailyCategoryRevenue,
+} from "@/api/dashboard.api";
+import type {
+  DashboardSummary,
+  StaffPerformance,
+  TransactionLog,
+} from "@/services/analytics.types";
 
 defineOptions({ name: "Ecommerce" });
 
+const periods = [
+  { label: "Hôm nay", value: "today" },
+  { label: "Tháng này", value: "month" },
+  { label: "Năm nay", value: "year" },
+];
+
 const currentPeriod = ref("today");
-const customStart = ref("");
-const customEnd = ref("");
-const revenueChartRef = ref<HTMLElement | null>(null);
+const customRange = ref<[string, string] | null>(null);
+const chartLoading = ref(false);
 
 const summary = ref<DashboardSummary>({
   totalRevenue: 0,
+  revenueChangePercentage: 0,
   revenueVsYesterdayPercentage: 0,
   dailyTarget: 0,
   netProfit: 0,
@@ -594,7 +513,9 @@ const summary = ref<DashboardSummary>({
   pendingAmount: 0,
   depositAmount: 0,
   loanWaitAmount: 0,
-  alertsCount: 0,
+  isRevenueAlert: false,
+  isPendingAlert: false,
+  isStockAlert: false,
   newComplaintsCount: 0,
   delayedLoansCount: 0,
   lowStockVehiclesCount: 0,
@@ -603,289 +524,290 @@ const summary = ref<DashboardSummary>({
   monthAchieved: 0,
   monthRemaining: 0,
   monthForecast: 0,
-  isRevenueAlert: false,
-  isPendingAlert: false,
-  isStockAlert: false,
+  totalExpense: 0,
+  grossProfit: 0,
+  alertsCount: 0,
 });
+const sources = ref<{ name: string; amount: number; percent: number }[]>([]);
 const topStaff = ref<StaffPerformance[]>([]);
 const transactions = ref<TransactionLog[]>([]);
 
+const revenueChartRef = ref<HTMLElement | null>(null);
+let chartInstance: ECharts | null = null;
+
 const teamSales = computed(() =>
-  topStaff.value.reduce((acc, curr) => acc + curr.totalSales, 0),
+  topStaff.value.reduce((acc, curr) => acc + (curr.totalSales ?? 0), 0),
 );
 const teamTarget = computed(() =>
-  topStaff.value.reduce((acc, curr) => acc + (curr.targetSales || 1), 0),
+  topStaff.value.reduce((acc, curr) => acc + (curr.targetSales ?? 1), 0),
 );
 
-import type { RevenueSource } from "@/services/analytics.types";
-const sources = ref<RevenueSource[]>([
-  { name: "Xe máy", percent: 79.5, amount: 68000000 },
-  { name: "Phụ tùng", percent: 14.0, amount: 12000000 },
-  { name: "Phụ kiện", percent: 4.1, amount: 3500000 },
-  { name: "Dịch vụ GTGT", percent: 2.3, amount: 2000000 },
-]);
-
-function getMockTransactions(): TransactionLog[] {
-  const now = new Date().getTime();
-  return [
-    {
-      id: "tx-1",
-      timestamp: new Date(now - 1000 * 60 * 5).toISOString(),
-      customerName: "Nguyễn Văn A",
-      productName: "Honda SH 150i",
-      amount: 105000000,
-      isRevenue: true,
-      status: "Completed",
-      staffName: "Lê Thị B",
-    },
-    {
-      id: "tx-2",
-      timestamp: new Date(now - 1000 * 60 * 30).toISOString(),
-      customerName: "Trần Thị C",
-      productName: "Cọc xe Air Blade",
-      amount: 5000000,
-      isRevenue: true,
-      status: "Pending",
-      staffName: "Phạm Văn D",
-    },
-    {
-      id: "tx-3",
-      timestamp: new Date(now - 1000 * 60 * 60).toISOString(),
-      customerName: "Lê Văn E",
-      productName: "Hoàn cọc xe Vision",
-      amount: 2000000,
-      isRevenue: false,
-      status: "Refund",
-      staffName: "Nguyễn Thị F",
-    },
-    {
-      id: "tx-4",
-      timestamp: new Date(now - 1000 * 60 * 120).toISOString(),
-      customerName: "Hoàng Minh G",
-      productName: "Nhớt Castrol Power1",
-      amount: 150000,
-      isRevenue: true,
-      status: "Completed",
-      staffName: "Lê Thị B",
-    },
-    {
-      id: "tx-5",
-      timestamp: new Date(now - 1000 * 60 * 150).toISOString(),
-      customerName: "Phạm Thu H",
-      productName: "Bảo dưỡng định kỳ",
-      amount: 350000,
-      isRevenue: true,
-      status: "Completed",
-      staffName: "Trần Quang I",
-    },
-  ] as any as TransactionLog[];
+function getDays() {
+  switch (currentPeriod.value) {
+    case "today":
+      return 7;
+    case "month":
+      return 30;
+    case "year":
+      return 366;
+    case "custom":
+      return 30;
+    default:
+      return 7;
+  }
 }
 
-function getMockStaffPerformance(): StaffPerformance[] {
-  return [
-    {
-      employeeName: "Nguyễn Văn A",
-      totalSales: 150000000,
-      targetSales: 100000000,
-      isTopSeller: true,
-      kpiStatus: "Vượt KPI",
-      role: "Sales",
-      commissionPaid: 0,
-    },
-    {
-      employeeName: "Trần Thị B",
-      totalSales: 95000000,
-      targetSales: 100000000,
-      isTopSeller: false,
-      kpiStatus: "Đạt",
-      role: "Sales",
-      commissionPaid: 0,
-    },
-    {
-      employeeName: "Lê Văn C",
-      totalSales: 80000000,
-      targetSales: 100000000,
-      isTopSeller: false,
-      kpiStatus: "Cần cải thiện",
-      role: "Sales",
-      commissionPaid: 0,
-    },
-    {
-      employeeName: "Phạm Thị D",
-      totalSales: 45000000,
-      targetSales: 100000000,
-      isTopSeller: false,
-      kpiStatus: "Cần cải thiện",
-      role: "Sales",
-      commissionPaid: 0,
-    },
-    {
-      employeeName: "Hoàng Văn E",
-      totalSales: 30000000,
-      targetSales: 100000000,
-      isTopSeller: false,
-      kpiStatus: "Cần cải thiện",
-      role: "Sales",
-      commissionPaid: 0,
-    },
-  ];
-}
-
-async function loadData() {
-  let start, end;
+function getDateRange(): { start: string; end: string } {
+  if (
+    currentPeriod.value === "custom" &&
+    customRange.value &&
+    customRange.value.length === 2
+  ) {
+    return { start: customRange.value[0], end: customRange.value[1] };
+  }
+  const now = new Date();
+  const to = now.toISOString().slice(0, 10);
+  let from: string;
   if (currentPeriod.value === "today") {
-    start = new Date().toISOString().split("T")[0];
-    end = start;
+    from = to;
   } else if (currentPeriod.value === "month") {
-    start = new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+    from = new Date(now.getFullYear(), now.getMonth(), 1)
       .toISOString()
-      .split("T")[0];
-    end = new Date().toISOString().split("T")[0];
-  } else if (currentPeriod.value === "year") {
-    start = new Date(new Date().getFullYear(), 0, 1)
-      .toISOString()
-      .split("T")[0];
-    end = new Date().toISOString().split("T")[0];
+      .slice(0, 10);
   } else {
-    start = customStart.value;
-    end = customEnd.value;
+    from = new Date(now.getFullYear(), 0, 1).toISOString().slice(0, 10);
   }
-
-  summary.value = await AnalyticsService.getDashboardSummary(start, end);
-  try {
-    const apiStaff = await AnalyticsService.getStaffPerformance(start, end);
-    if (
-      apiStaff &&
-      apiStaff.length > 0 &&
-      apiStaff.some((s) => s.totalSales > 0)
-    ) {
-      topStaff.value = apiStaff;
-    } else {
-      topStaff.value = getMockStaffPerformance();
-    }
-  } catch (error) {
-    topStaff.value = getMockStaffPerformance();
-  }
-  try {
-    const apiTransactions = await AnalyticsService.getRecentTransactions();
-    if (apiTransactions && apiTransactions.length > 0) {
-      transactions.value = apiTransactions;
-    } else {
-      transactions.value = getMockTransactions();
-    }
-  } catch (error) {
-    transactions.value = getMockTransactions();
-  }
-
-  updateChart();
+  return { start: from, end: to };
 }
 
-function setPeriod(p: string) {
-  currentPeriod.value = p;
-  loadData();
+async function loadAll() {
+  chartLoading.value = true;
+  const { start, end } = getDateRange();
+  try {
+    const [summaryRes, staffRes, txRes, sourcesRes, chartData] =
+      await Promise.allSettled([
+        AnalyticsService.getDashboardSummary(start, end),
+        AnalyticsService.getStaffPerformance(start, end),
+        AnalyticsService.getRecentTransactions(),
+        fetchRevenueByCategory(start, end),
+        fetchDailyCategoryRevenue(getDays()),
+      ]);
+
+    if (summaryRes.status === "fulfilled" && summaryRes.value)
+      summary.value = normalizeSummary(summaryRes.value);
+
+    if (staffRes.status === "fulfilled" && staffRes.value)
+      topStaff.value = staffRes.value;
+
+    if (txRes.status === "fulfilled" && txRes.value)
+      transactions.value = txRes.value;
+
+    if (sourcesRes.status === "fulfilled" && Array.isArray(sourcesRes.value)) {
+      const total = sourcesRes.value.reduce(
+        (s: number, i: any) => s + (i.revenue ?? 0),
+        0,
+      );
+      sources.value = sourcesRes.value.map((i: any) => ({
+        name: i.categoryName ?? i.name,
+        amount: i.revenue ?? i.amount ?? 0,
+        percent: total
+          ? Math.round(((i.revenue ?? i.amount ?? 0) / total) * 100)
+          : 0,
+      }));
+    } else {
+      sources.value = [];
+    }
+
+    if (chartData.status === "fulfilled") renderChart(chartData.value ?? []);
+    else renderChart([]);
+  } catch (err) {
+    console.error("Ecommerce load error:", err);
+  } finally {
+    chartLoading.value = false;
+  }
 }
 
-function updateChart() {
-  if (!revenueChartRef.value) return;
-
-  const chart = echarts.init(revenueChartRef.value);
-
-  const option = {
-    tooltip: { trigger: "axis" },
-    grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
-    xAxis: {
-      type: "category",
-      data:
-        currentPeriod.value === "today"
-          ? ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"]
-          : currentPeriod.value === "month"
-            ? Array.from({ length: 30 }, (_, i) => `${i + 1}`)
-            : ["Q1", "Q2", "Q3", "Q4"],
-      axisTick: { alignWithLabel: true },
-    },
-    yAxis: { type: "value" },
-    series: [
-      {
-        name: "Doanh thu",
-        type: "line",
-        smooth: true,
-        data: Array.from(
-          {
-            length:
-              currentPeriod.value === "today"
-                ? 7
-                : currentPeriod.value === "month"
-                  ? 30
-                  : 4,
-          },
-          () => Math.floor(Math.random() * 100000000) + 10000000,
-        ),
-        itemStyle: { color: "#2563eb" },
-        areaStyle: {
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            { offset: 0, color: "rgba(37, 99, 235, 0.3)" },
-            { offset: 1, color: "rgba(37, 99, 235, 0)" },
-          ]),
-        },
-      },
-    ],
+function normalizeSummary(s: any): DashboardSummary {
+  if (!s) return summary.value as any;
+  const safeNum = (v: any, fb = 0) =>
+    v == null ? fb : typeof v === "number" ? v : fb;
+  return {
+    totalRevenue: s.totalRevenue ?? s.revenueTotal ?? 0,
+    netProfit: s.netProfit ?? s.profitToday ?? 0,
+    totalExpense: safeNum(s.totalExpense),
+    grossProfit: safeNum(s.grossProfit),
+    alertsCount: safeNum(s.alertsCount),
+    revenueChangePercentage: safeNum(
+      s.revenueChangePercentage ?? s.incomeChangePercent ?? 0,
+    ),
+    revenueVsYesterdayPercentage: safeNum(
+      s.revenueVsYesterdayPercentage ?? s.incomeChangePercent ?? 0,
+    ),
+    dailyTarget: safeNum(s.dailyTarget),
+    profitMargin: s.profitMargin ?? 0,
+    profitVsYesterdayPercentage: safeNum(s.profitVsYesterdayPercentage),
+    pendingAmount: s.pendingAmount ?? s.totalPending ?? 0,
+    depositAmount: safeNum(s.depositAmount),
+    loanWaitAmount: safeNum(s.loanWaitAmount),
+    isRevenueAlert: !!s.isRevenueAlert,
+    isPendingAlert: !!s.isPendingAlert,
+    isStockAlert: !!s.isStockAlert,
+    newComplaintsCount: safeNum(s.newComplaintsCount),
+    delayedLoansCount: safeNum(s.delayedLoansCount),
+    lowStockVehiclesCount: safeNum(s.lowStockVehiclesCount),
+    missedAppointmentsCount: safeNum(s.missedAppointmentsCount),
+    monthTarget: safeNum(s.monthTarget),
+    monthAchieved: safeNum(s.monthAchieved),
+    monthRemaining: safeNum(s.monthRemaining),
+    monthForecast: safeNum(s.monthForecast),
   };
-
-  chart.setOption(option);
 }
 
-function formatCurrency(value: number) {
-  if (value == null) return "0đ";
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(value);
-}
+function renderChart(
+  data: { reportDay: string; categoryName: string; revenue: number }[],
+) {
+  if (!revenueChartRef.value) return;
+  if (!chartInstance) chartInstance = echarts.init(revenueChartRef.value);
 
-function formatCurrencyShort(value: number) {
-  if (value >= 1000000) {
-    return (value / 1000000).toFixed(0) + "tr";
+  if (!data.length) {
+    chartInstance.clear();
+    chartInstance.setOption({
+      xAxis: { type: "category", data: [] },
+      yAxis: { type: "value" },
+      series: [],
+      grid: { left: 10, right: 10, bottom: 20, top: 20 },
+    });
+    return;
   }
-  if (value >= 1000) {
-    return (value / 1000).toFixed(0) + "k";
-  }
-  return value + "đ";
-}
 
-function formatTime(ts: string) {
-  return new Date(ts).toLocaleTimeString("vi-VN", {
-    hour: "2-digit",
-    minute: "2-digit",
+  const days = Array.from(new Set(data.map((d) => d.reportDay)));
+  const categories = Array.from(new Set(data.map((d) => d.categoryName)));
+  const palette = [
+    "#2563eb",
+    "#67c23a",
+    "#e6a23c",
+    "#f56c6c",
+    "#9c27b0",
+    "#00bcd4",
+    "#ff9800",
+  ];
+
+  const series = categories.map((cat, idx) => ({
+    name: cat,
+    type: "line" as const,
+    smooth: true,
+    data: days.map(
+      (day) =>
+        data.find((d) => d.reportDay === day && d.categoryName === cat)
+          ?.revenue ?? 0,
+    ),
+    itemStyle: { color: palette[idx % palette.length] },
+    lineStyle: { type: "solid", width: 2 },
+    symbol: "circle",
+    symbolSize: 6,
+    emphasis: { focus: "series" },
+  }));
+
+  chartInstance.setOption({
+    tooltip: { trigger: "axis" },
+    legend: { bottom: 0, textStyle: { color: "#9ca3af" } },
+    grid: { left: 10, right: 10, bottom: 50, top: 10, containLabel: true },
+    xAxis: { type: "category", data: days, axisLabel: { color: "#9ca3af" } },
+    yAxis: { type: "value", name: "VNĐ", axisLabel: { color: "#9ca3af" } },
+    series,
+    color: palette,
   });
 }
 
+function setPeriod(p: string) {
+  currentPeriod.value = p as any;
+  if (p === "custom") return;
+  loadAll();
+}
+
+function onCustomRangeChange() {
+  if (!customRange.value) return;
+  currentPeriod.value = "custom";
+  loadAll();
+}
+
+function formatCurrency(value: any) {
+  const num = Number(value) || 0;
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+    maximumFractionDigits: 0,
+  }).format(num);
+}
+
+function formatCurrencyShort(value: number) {
+  if (!value && value !== 0) return "0đ";
+  if (Math.abs(value) >= 1_000_000) return `${Math.round(value / 1_000_000)}tr`;
+  if (Math.abs(value) >= 1_000) return `${Math.round(value / 1_000)}k`;
+  return `${value}`;
+}
+
+function formatDate(ts: string) {
+  if (!ts) return "-";
+  return ts.slice(0, 10);
+}
+
+function mapStatusType(status: string) {
+  switch (status) {
+    case "Completed":
+      return "success";
+    case "Pending":
+      return "warning";
+    case "Cancelled":
+      return "danger";
+    default:
+      return "info";
+  }
+}
+
 onMounted(() => {
-  loadData();
-  updateChart();
+  loadAll();
 
   const userStore = useUserStore();
   const token = userStore.accessToken;
-  if (token) {
-    fetchEventSource("/api/analytics/stream/transactions", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "text/event-stream",
-      },
-      onmessage(msg) {
-        if (!msg.data) return;
+  if (!token) return;
+
+  fetchEventSource(
+    `${import.meta.env.VITE_API_URL ?? "/api"}/analytics/stream/transactions`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+      onmessage(ev) {
         try {
-          const newTx = JSON.parse(msg.data);
-          transactions.value.unshift(newTx);
-          if (transactions.value.length > 50) transactions.value.pop();
-        } catch (e) {
-          console.error("Failed to parse SSE message:", e);
+          const t = JSON.parse(ev.data) as TransactionLog;
+          if (!t) return;
+          transactions.value = [t, ...transactions.value].slice(0, 50);
+        } catch {
+          // ignore
         }
       },
       onerror() {
-        console.error("SSE connection error for transaction stream");
+        // stream not available, ignore
       },
-    });
-  }
+    },
+  );
 });
 </script>
+
+<style scoped>
+.ecommerce {
+  min-height: 100%;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>
