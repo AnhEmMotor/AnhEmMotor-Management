@@ -11,6 +11,7 @@ import { setupGlobDirectives } from "./directives";
 import { setupErrorHandle } from "@/common/utils/sys/error-handle";
 import { StorageKeyManager } from "@/common/utils/storage/storage-key-manager";
 import axios from "axios";
+import { useUserStore } from "@/application/store/user";
 
 document.addEventListener("touchstart", function () {}, { passive: false });
 
@@ -66,7 +67,6 @@ async function refreshTokenOnStartup() {
       refreshResponse.data?.data?.accessToken ||
       refreshResponse.data?.accessToken;
     if (newAccessToken) {
-      const { useUserStore } = await import("@/application/store/user");
       useUserStore().setToken(newAccessToken);
     }
   } catch {

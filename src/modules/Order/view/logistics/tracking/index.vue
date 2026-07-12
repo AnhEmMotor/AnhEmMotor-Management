@@ -245,7 +245,7 @@
                               : 'text-gray-700'
                           "
                         >
-                          {{ milestone.status }}
+                          {{ milestone.description }}
                         </div>
                         <div class="text-xs text-gray-500">
                           {{ formatDate(milestone.timestamp) }}

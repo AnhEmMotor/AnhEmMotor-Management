@@ -197,10 +197,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { Plus, Edit, Delete } from "@element-plus/icons-vue";
-import ArtStatsCard from "@/components/business/stats-card/index.vue";
-import ArtSearchBar from "@/components/business/search-bar/index.vue";
-import ArtTableHeader from "@/components/business/table-header/index.vue";
-import ArtTable from "@/components/business/table/index.vue";
+import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
+import ArtSearchBar from "@/components/core/forms/art-search-bar/index.vue";
+import ArtTableHeader from "@/components/core/tables/art-table-header/index.vue";
+import ArtTable from "@/components/core/tables/art-table/index.vue";
 import { useSupplierContractTable } from "./hooks/useSupplierContractTable";
 import { SupplierContractApi } from "@/api/supplier/supplier-contract.api";
 import type { FormInstance, FormRules } from "element-plus";
@@ -267,8 +267,13 @@ const getStatusName = (status: string) => {
   return map[status] || status;
 };
 
-const getStatusTag = (status: string) => {
-  const map: Record<string, string> = {
+const getStatusTag = (
+  status: string,
+): "primary" | "success" | "warning" | "info" | "danger" => {
+  const map: Record<
+    string,
+    "primary" | "success" | "warning" | "info" | "danger"
+  > = {
     Draft: "info",
     PendingApproval: "warning",
     Active: "success",

@@ -21,8 +21,8 @@ export const useSupplierContractTable = () => {
   });
 
   const pagination = reactive({
-    currentPage: 1,
-    pageSize: 10,
+    current: 1,
+    size: 10,
     total: 0,
   });
 
@@ -32,7 +32,7 @@ export const useSupplierContractTable = () => {
     supplierId: "",
   });
 
-  const columns = [
+  const columns: any[] = [
     { type: "selection", width: 50, fixed: "left" },
     { label: "Mã Hợp Đồng", prop: "contractNumber", width: 150, fixed: "left" },
     { label: "Nhà cung cấp", prop: "supplierName", minWidth: 200 },
@@ -80,12 +80,14 @@ export const useSupplierContractTable = () => {
 
   const searchItems = [
     {
+      key: "contractNumber",
       label: "Mã hợp đồng",
       prop: "contractNumber",
       type: "input",
       placeholder: "Nhập mã HĐ...",
     },
     {
+      key: "status",
       label: "Trạng thái",
       prop: "status",
       type: "select",
@@ -122,8 +124,8 @@ export const useSupplierContractTable = () => {
     loading.value = true;
     try {
       const params: SupplierContractListParams = {
-        current: pagination.currentPage,
-        size: pagination.pageSize,
+        current: pagination.current,
+        size: pagination.size,
         ...searchForm,
       };
 
@@ -140,7 +142,7 @@ export const useSupplierContractTable = () => {
   };
 
   const handleSearch = () => {
-    pagination.currentPage = 1;
+    pagination.current = 1;
     fetchData();
   };
 
@@ -152,13 +154,13 @@ export const useSupplierContractTable = () => {
   };
 
   const handleSizeChange = (val: number) => {
-    pagination.pageSize = val;
-    pagination.currentPage = 1;
+    pagination.size = val;
+    pagination.current = 1;
     fetchData();
   };
 
   const handleCurrentChange = (val: number) => {
-    pagination.currentPage = val;
+    pagination.current = val;
     fetchData();
   };
 
