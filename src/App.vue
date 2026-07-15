@@ -8,10 +8,12 @@
     }"
   >
     <RouterView></RouterView>
+    <VueQueryDevtools />
   </ElConfigProvider>
 </template>
 
 <script setup lang="ts">
+import { VueQueryDevtools } from "@tanstack/vue-query-devtools";
 import { useUserStore } from "./application/store/user";
 import vi from "element-plus/es/locale/lang/vi";
 import en from "element-plus/es/locale/lang/en";

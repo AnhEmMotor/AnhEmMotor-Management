@@ -168,6 +168,7 @@
           show-icon
           :closable="false"
           class="mb-4"
+          style="margin-bottom: 12px"
         />
 
         <ElRow :gutter="20">
@@ -210,6 +211,47 @@
                 v-model="formData.customerPhone"
                 :disabled="isDeliveryInfoLocked"
               />
+            </ElFormItem>
+          </ElCol>
+
+          <ElCol :span="24" :md="12">
+            <ElFormItem label="Tỉnh/Thành phố">
+              <ElSelect
+                v-model="formData.provinceId"
+                filterable
+                clearable
+                placeholder="Chọn Tỉnh/Thành phố"
+                class="w-full"
+                :disabled="isDeliveryInfoLocked"
+                @change="handleProvinceChange"
+              >
+                <ElOption
+                  v-for="p in provinces"
+                  :key="p.provinceId"
+                  :label="p.provinceName"
+                  :value="p.provinceId"
+                />
+              </ElSelect>
+            </ElFormItem>
+          </ElCol>
+
+          <ElCol :span="24" :md="12">
+            <ElFormItem label="Phường/Xã">
+              <ElSelect
+                v-model="formData.wardCode"
+                filterable
+                clearable
+                placeholder="Chọn Phường/Xã"
+                class="w-full"
+                :disabled="isDeliveryInfoLocked || !formData.provinceId"
+              >
+                <ElOption
+                  v-for="w in wards"
+                  :key="w.wardCode"
+                  :label="w.wardName"
+                  :value="w.wardCode"
+                />
+              </ElSelect>
             </ElFormItem>
           </ElCol>
 
@@ -611,6 +653,9 @@ const targetStatusId = ref("");
 const vehicleRequirements = ref<VehicleAssignmentRequirement | null>(null);
 const selectedVehicleIdsByOutputInfo = reactive<Record<number, number[]>>({});
 
+const provinces = ref<{ provinceId: number; provinceName: string }[]>([]);
+const wards = ref<{ wardCode: string; wardName: string }[]>([]);
+
 const searchForm = ref({
   search: "",
   statusId: "",
@@ -627,6 +672,8 @@ const formData = reactive({
   customerName: "",
   customerPhone: "",
   customerAddress: "",
+  provinceId: undefined as number | undefined,
+  wardCode: undefined as string | undefined,
   statusId: "pending",
   depositRatio: 0,
   notes: "",
@@ -764,8 +811,31 @@ onMounted(async () => {
     fetchOrders(),
     searchCustomers(""),
     searchProducts(""),
+    fetchProvinces(),
   ]);
 });
+
+async function fetchProvinces() {
+  try {
+    const res = await SalesOrderApi.getProvinces();
+    provinces.value = res || [];
+  } catch (error) {
+    console.error("Failed to fetch provinces", error);
+  }
+}
+
+async function handleProvinceChange(provinceId: number | undefined) {
+  formData.wardCode = undefined;
+  wards.value = [];
+  if (provinceId) {
+    try {
+      const res = await SalesOrderApi.getWards(provinceId);
+      wards.value = res || [];
+    } catch (error) {
+      console.error("Failed to fetch wards", error);
+    }
+  }
+}
 
 async function fetchStatuses() {
   const [statusRes, statusMapRes, transitionRes, lockedRes] = await Promise.all(
@@ -1000,6 +1070,8 @@ async function handleSubmit() {
     customerName: formData.customerName,
     customerPhone: formData.customerPhone,
     customerAddress: formData.customerAddress,
+    provinceId: formData.provinceId,
+    wardCode: formData.wardCode,
     notes: formData.notes,
     statusId: formData.statusId,
     depositRatio: formData.depositRatio,
@@ -1095,6 +1167,8 @@ function resetForm() {
   formData.customerName = "";
   formData.customerPhone = "";
   formData.customerAddress = "";
+  formData.provinceId = undefined;
+  formData.wardCode = undefined;
   formData.statusId = "pending";
   formData.depositRatio = 0;
   formData.notes = "";
@@ -1107,6 +1181,17 @@ function fillForm(order: SalesOrder) {
   formData.customerName = order.customerName || order.buyerName || "";
   formData.customerPhone = order.customerPhone || order.buyerPhone || "";
   formData.customerAddress = order.customerAddress || "";
+  formData.provinceId = order.provinceId;
+  formData.wardCode = order.wardCode;
+
+  if (formData.provinceId) {
+    SalesOrderApi.getWards(formData.provinceId).then((res) => {
+      wards.value = res || [];
+    });
+  } else {
+    wards.value = [];
+  }
+
   formData.statusId = order.statusId || "pending";
   formData.depositRatio = order.depositRatio || 0;
   formData.notes = order.notes || "";

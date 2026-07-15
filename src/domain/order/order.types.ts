@@ -21,6 +21,8 @@ export interface SalesOrder {
   customerName?: string;
   customerAddress?: string;
   customerPhone?: string;
+  provinceId?: number;
+  wardCode?: string;
   notes?: string;
   statusId: string;
   paymentMethod?: "COD" | "VNPay" | "PayOS" | string;
@@ -56,6 +58,8 @@ export interface CreateSalesOrderByManager {
   customerName: string;
   customerAddress: string;
   customerPhone: string;
+  provinceId?: number;
+  wardCode?: string;
   notes?: string;
   statusId?: string;
   depositRatio?: number;

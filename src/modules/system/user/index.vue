@@ -164,6 +164,7 @@ const {
               previewSrcList: [avatarUrl],
               previewTeleported: true,
               fit: "cover",
+              referrerpolicy: "no-referrer",
             }),
             h("div", { class: "flex flex-col gap-0.5" }, [
               h(
