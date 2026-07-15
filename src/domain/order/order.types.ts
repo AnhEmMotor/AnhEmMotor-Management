@@ -5,6 +5,8 @@ export interface OrderProduct {
   productId?: number;
   productName?: string;
   productVariantName?: string;
+  colorName?: string;
+  colorCode?: string;
   count: number;
   price?: number;
   costPrice?: number;

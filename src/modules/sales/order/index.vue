@@ -625,6 +625,9 @@ type OrderFormProduct = {
   productVariantId?: number;
   productVariantColorId?: number;
   productName?: string;
+  variantName?: string;
+  colorName?: string;
+  colorCode?: string;
   count: number;
   price?: number;
   coverImageUrl?: string;
@@ -1200,6 +1203,9 @@ function fillForm(order: SalesOrder) {
     productVariantId: item.productVariantId,
     productVariantColorId: item.productVariantColorId,
     productName: item.productName,
+    variantName: item.productVariantName,
+    colorName: item.colorName,
+    colorCode: item.colorCode,
     count: item.count || 1,
     price: item.price || 0,
     coverImageUrl: item.coverImageUrl,
@@ -1221,6 +1227,16 @@ function fillForm(order: SalesOrder) {
       product.productVariantId &&
       !productOptions.value.some((item) => item.id === product.productVariantId)
     ) {
+      const dummyColors = [];
+      if (product.productVariantColorId) {
+        dummyColors.push({
+          id: product.productVariantColorId,
+          colorName:
+            product.colorName || `Màu #${product.productVariantColorId}`,
+          colorCode: product.colorCode || "",
+        });
+      }
+
       productOptions.value.push({
         id: product.productVariantId,
         productId: product.productVariantId,
@@ -1229,7 +1245,7 @@ function fillForm(order: SalesOrder) {
         coverImageUrl: product.coverImageUrl || "",
         price: product.price || 0,
         categoryId: 0,
-        colors: [],
+        colors: dummyColors as any[],
       });
     }
   }
