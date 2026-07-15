@@ -142,6 +142,41 @@ export const FinanceContractApi = {
     });
   },
 
+  createFinanceContract(data: {
+    salesOrderId: string;
+    contractNumber: string;
+    partnerId?: string;
+    principalAmount: number;
+    termMonths: number;
+    interestRate?: number;
+    monthlyPaymentAmount?: number;
+    expectedDate: string;
+  }) {
+    return request.post<{ id: string }>({
+      url: `/api/v1/FinanceContracts`,
+      data,
+    });
+  },
+
+  updateFinanceContract(
+    financeContractId: string,
+    data: {
+      salesOrderId?: string;
+      contractNumber?: string;
+      partnerId?: string;
+      principalAmount?: number;
+      termMonths?: number;
+      interestRate?: number;
+      monthlyPaymentAmount?: number;
+      expectedDate?: string;
+    },
+  ) {
+    return request.put<boolean>({
+      url: `/api/v1/FinanceContracts/${financeContractId}`,
+      data,
+    });
+  },
+
   updateCavetState(
     financeContractId: string,
     cavet: FinanceContractDetailDto["cavet"],

@@ -190,6 +190,14 @@ export const Permissions = {
       Complete: "Permissions.Factory.RepairOrderManagement.Complete",
       Cancel: "Permissions.Factory.RepairOrderManagement.Cancel",
     },
+    BookingAppointmentManagement: {
+      View: "Permissions.Factory.BookingAppointmentManagement.View",
+      Create: "Permissions.Factory.BookingAppointmentManagement.Create",
+      Edit: "Permissions.Factory.BookingAppointmentManagement.Edit",
+      Delete: "Permissions.Factory.BookingAppointmentManagement.Delete",
+      Confirm: "Permissions.Factory.BookingAppointmentManagement.Confirm",
+      Cancel: "Permissions.Factory.BookingAppointmentManagement.Cancel",
+    },
     SparePartSelection: {
       View: "Permissions.Factory.SparePartSelection.View",
     },

@@ -56,13 +56,13 @@
 
     <div class="flex justify-end gap-3 mt-6">
       <ElButton @click="emit('close')">Hủy</ElButton>
-      <ElButton type="primary" @click="submitForm">Lưu chi phí</ElButton>
+      <ElButton type="primary" @click="submitForm">{{ submitLabel }}</ElButton>
     </div>
   </ElForm>
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
+import { computed, reactive } from "vue";
 import { ElMessage } from "element-plus";
 
 type ExpenseFormData = {
@@ -73,17 +73,42 @@ type ExpenseFormData = {
   note?: string;
 };
 
+const props = withDefaults(
+  defineProps<{
+    mode?: "create" | "edit";
+    expenseId?: number;
+    initialData?: Partial<ExpenseFormData>;
+  }>(),
+  { mode: "create", expenseId: undefined, initialData: undefined },
+);
+
 const emit = defineEmits<{
   close: [];
-  submit: [value: ExpenseFormData];
+  submit: [value: ExpenseFormData & { editId?: number }];
 }>();
 
+const submitLabel = computed(() =>
+  props.mode === "edit" ? "Cập nhật chi phí" : "Lưu chi phí",
+);
+
+interface Expense {
+  id: number;
+  name: string;
+  amount: number;
+  expenseDate: string;
+  category: number;
+  note?: string;
+  updatedAt?: string;
+}
+
+const defaultDate = new Date().toISOString().split("T")[0];
+
 const form = reactive<ExpenseFormData>({
-  name: "",
-  category: 0, // 0: Fixed, 1: Variable
-  amount: 0,
-  expenseDate: new Date().toISOString().split("T")[0],
-  note: "",
+  name: props.initialData?.name ?? "",
+  category: props.initialData?.category ?? 0,
+  amount: props.initialData?.amount ?? 0,
+  expenseDate: props.initialData?.expenseDate ?? defaultDate,
+  note: props.initialData?.note ?? "",
 });
 
 const submitForm = () => {
@@ -91,6 +116,9 @@ const submitForm = () => {
     ElMessage.warning("Vui lòng nhập tên khoản chi và số tiền hợp lệ.");
     return;
   }
-  emit("submit", { ...form });
+  emit("submit", {
+    ...form,
+    editId: props.mode === "edit" ? props.expenseId : undefined,
+  });
 };
 </script>

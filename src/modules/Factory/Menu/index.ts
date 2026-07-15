@@ -1,4 +1,5 @@
 import { AppRouteRecord } from "@/types/router";
+import type { Component } from "vue";
 
 export const factoryMenu: AppRouteRecord[] = [
   {
@@ -34,14 +35,28 @@ export const factoryMenu: AppRouteRecord[] = [
             path: "dashboard",
             name: "WorkshopDashboard",
             component: "/Factory/view/service/workshop/dashboard/index",
-            meta: { title: "Dashboard xưởng", icon: "ri:dashboard-line" },
+            meta: {
+              title: "Dashboard xưởng",
+              icon: "ri:dashboard-line",
+            },
           },
-
+          {
+            path: "appointments",
+            name: "WorkshopAppointments",
+            component: "/Factory/view/service/workshop/appointments/index",
+            meta: {
+              title: "Lịch sửa chữa",
+              icon: "ri:calendar-check-line",
+            },
+          },
           {
             path: "repair",
             name: "WorkshopRepair",
             component: "/Factory/view/service/workshop/repair-orders/index",
-            meta: { title: "Sửa chữa", icon: "ri:wrench-line" },
+            meta: {
+              title: "Sửa chữa",
+              icon: "ri:wrench-line",
+            },
           },
           {
             path: "repair/:id",
@@ -59,7 +74,10 @@ export const factoryMenu: AppRouteRecord[] = [
             name: "WorkshopWarranty",
             component:
               "/Factory/view/service/warranty-and-complaints/warranty-requests/index",
-            meta: { title: "Bảo hành", icon: "ri:shield-check-line" },
+            meta: {
+              title: "Bảo hành",
+              icon: "ri:shield-check-line",
+            },
           },
           {
             path: "warranty/:id",
@@ -97,7 +115,10 @@ export const factoryMenu: AppRouteRecord[] = [
             name: "CounterPaymentList",
             component:
               "/Factory/view/service/workshop/counter/payment-list/index",
-            meta: { title: "Phiếu thu xưởng", icon: "ri:receipt-line" },
+            meta: {
+              title: "Phiếu thu xưởng",
+              icon: "ri:receipt-line",
+            },
           },
           {
             path: "repair-history",

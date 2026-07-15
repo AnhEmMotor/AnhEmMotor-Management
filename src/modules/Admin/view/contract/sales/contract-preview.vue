@@ -11,7 +11,7 @@
           @click="handlePrint"
           v-auth="Permissions.Admin.ContractManagement.Edit"
         >
-          <el-icon><Printer /></el-icon>&nbsp;In Hợp Đồng
+          <el-icon><Printer /></el-icon> In Hợp Đồng
         </el-button>
         <el-button
           v-if="contractData.status === 'Draft'"
@@ -19,7 +19,7 @@
           @click="handleSaveDraft"
           v-auth="Permissions.Admin.ContractManagement.Edit"
         >
-          <el-icon><Document /></el-icon>&nbsp;Lưu Bản Nháp
+          <el-icon><Document /></el-icon> Lưu Bản Nháp
         </el-button>
         <el-button
           v-if="contractData.status === 'Signed'"
@@ -27,7 +27,15 @@
           @click="handleCreateAddendum"
           v-auth="Permissions.Admin.ContractManagement.Create"
         >
-          <el-icon><DocumentCopy /></el-icon>&nbsp;Tạo Phụ Lục
+          <el-icon><DocumentCopy /></el-icon> Tạo Phụ Lục
+        </el-button>
+        <el-button
+          v-if="contractData.status === 'Draft'"
+          type="danger"
+          @click="handleDelete"
+          v-auth="Permissions.Admin.ContractManagement.Delete"
+        >
+          <el-icon><Delete /></el-icon> Xóa Hợp Đồng
         </el-button>
         <el-button
           v-if="contractData.status === 'Signed' && activeStep >= 1"
@@ -35,7 +43,7 @@
           @click="handleHandover"
           v-auth="Permissions.Admin.ContractManagement.View"
         >
-          <el-icon><CircleCheck /></el-icon>&nbsp;Xác Nhận Bàn Giao
+          <el-icon><CircleCheck /></el-icon> Xác Nhận Bàn Giao
         </el-button>
       </template>
     </ReportPageHeader>
@@ -404,6 +412,7 @@ import {
   Printer,
   CircleCheck,
   Check,
+  Delete,
 } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { SalesContractApi } from "@/api/sales";
@@ -559,6 +568,26 @@ const handleSaveDraft = async () => {
 
 const handleCreateAddendum = () => {
   ElMessage.info("Chức năng tạo Phụ lục hợp đồng đang được phát triển.");
+};
+
+const handleDelete = async () => {
+  try {
+    await ElMessageBox.confirm(
+      "Bạn có chắc muốn xóa hợp đồng này? Hành động này không thể hoàn tác.",
+      "Xác nhận xóa",
+      {
+        confirmButtonText: "Xóa",
+        cancelButtonText: "Hủy",
+        type: "error",
+      },
+    );
+    await SalesContractApi.delete(contractData.value.id);
+    ElMessage.success("Đã xóa hợp đồng thành công.");
+  } catch (_e: any) {
+    if (_e !== "cancel") {
+      ElMessage.error("Xóa hợp đồng thất bại.");
+    }
+  }
 };
 
 const customUploadRequest = async (options: any) => {

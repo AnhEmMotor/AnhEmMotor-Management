@@ -513,10 +513,16 @@ const getStatusTagType = (status: string) => {
 };
 
 const goToPreview = (id: string | null) => {
-  router.push({
-    name: "FinanceContractPreview",
-    params: id ? { id } : ({} as any),
-  });
+  if (id) {
+    router.push({
+      name: "FinanceContractPreview",
+      params: { id },
+    });
+  } else {
+    router.push({
+      name: "FinanceContractSave",
+    });
+  }
 };
 
 // Modal Cập nhật giải ngân

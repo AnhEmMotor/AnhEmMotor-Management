@@ -1,57 +1,54 @@
 <template>
   <div
-    class="customer-booking-page flex flex-col min-h-screen bg-[#F8FAFC] dark:bg-[#020617] text-[#0F172A] dark:text-[#E2E8F0]"
+    class="customer-booking-page flex flex-col h-screen bg-[#F8FAFC] dark:bg-[#020617] text-[#0F172A] dark:text-[#E2E8F0]"
   >
     <div
-      class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-8 py-5 shrink-0 shadow-sm relative z-20"
+      class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-3 shrink-0 shadow-sm relative z-20"
     >
       <div class="flex justify-between items-center max-w-[1600px] mx-auto">
-        <div class="flex items-center gap-5">
+        <div class="flex items-center gap-3">
           <div
-            class="size-11 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex-cc text-slate-800 dark:text-white shadow-sm shrink-0"
+            class="size-9 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex-cc text-slate-800 dark:text-white shadow-sm shrink-0"
           >
             <ArtSvgIcon
               icon="ri:calendar-event-line"
-              class="text-xl text-blue-500 dark:text-blue-400"
+              class="text-lg text-blue-500 dark:text-blue-400"
             />
           </div>
           <div>
             <h1
-              class="m-0 text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-none"
+              class="m-0 text-base font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-none"
             >
               Trung tâm Điều phối Đặt lịch
             </h1>
             <p
-              class="m-0 text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mt-2 flex items-center gap-2"
+              class="m-0 text-[8px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.15em] mt-0.5"
             >
-              <span
-                class="size-1.5 rounded-full bg-emerald-500 animate-pulse"
-              ></span>
-              Workflow: ConfirmBookingCommand Integrated
+              Marketing · Sửa chữa · Bảo hành · Tư vấn
             </p>
           </div>
         </div>
 
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
           <div
-            class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-750"
+            class="flex bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg border border-slate-200 dark:border-slate-750"
           >
             <div
-              class="px-4 py-1.5 rounded-lg bg-white dark:bg-slate-900 shadow-sm text-[10px] font-bold uppercase text-slate-700 dark:text-slate-200"
+              class="px-3 py-1 rounded bg-white dark:bg-slate-900 shadow-sm text-[9px] font-bold uppercase text-slate-700 dark:text-slate-200"
             >
-              Lịch tháng
+              Tháng
             </div>
             <div
-              class="px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase text-slate-400 opacity-50 cursor-not-allowed"
+              class="px-3 py-1 rounded text-[9px] font-bold uppercase text-slate-400 opacity-50 cursor-not-allowed"
             >
-              Lịch tuần
+              Tuần
             </div>
           </div>
           <button
             @click="handleCreateNew"
-            class="h-10 px-6 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center justify-center gap-2"
+            class="h-8 px-4 bg-[#001529] text-white rounded-lg font-bold text-[9px] uppercase tracking-widest shadow-sm hover:bg-[#001f3f] transition-all active:scale-95 flex items-center justify-center gap-1.5"
           >
-            <ArtSvgIcon icon="ri:calendar-todo-line" class="text-blue-500" /> +
+            <ArtSvgIcon icon="ri:add-line" class="text-sm" />
             Đặt lịch mới
           </button>
         </div>
@@ -59,71 +56,87 @@
     </div>
 
     <div
-      class="flex-1 flex overflow-hidden max-w-[1600px] mx-auto w-full p-6 gap-6"
+      class="flex-1 flex overflow-hidden max-w-[1600px] mx-auto w-full p-4 gap-4"
     >
       <div
-        class="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[32px] shadow-sm overflow-hidden flex flex-col"
+        class="flex-1 min-w-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden flex flex-col"
       >
         <div
-          class="p-4 border-b border-slate-50 dark:border-slate-850 flex justify-between items-center bg-slate-50/30 dark:bg-slate-950/20"
+          class="px-4 py-2.5 border-b border-slate-100 dark:border-slate-850 flex justify-between items-center bg-slate-50/50 dark:bg-slate-950/30"
         >
-          <div class="flex gap-4">
-            <div class="flex items-center gap-2">
-              <span class="size-2 rounded-full bg-red-500"></span>
-              <span
-                class="text-[9px] font-bold uppercase text-slate-400 dark:text-slate-500"
-                >Chờ xác nhận</span
-              >
+          <div class="flex items-center gap-3">
+            <button
+              @click="prevMonth"
+              class="size-7 flex-cc rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            >
+              <ArtSvgIcon icon="ri:arrow-left-s-line" class="text-sm" />
+            </button>
+            <span
+              class="text-xs font-bold text-slate-700 dark:text-slate-200 min-w-[120px] text-center"
+            >
+              {{ calendarMonthLabel }}
+            </span>
+            <button
+              @click="nextMonth"
+              class="size-7 flex-cc rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            >
+              <ArtSvgIcon icon="ri:arrow-right-s-line" class="text-sm" />
+            </button>
+          </div>
+
+          <div class="flex gap-3">
+            <div class="flex items-center gap-1.5">
+              <span class="size-2 rounded-full bg-red-400"></span>
+              <span class="text-[9px] font-bold text-slate-400">Chờ</span>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-1.5">
               <span class="size-2 rounded-full bg-blue-500"></span>
-              <span
-                class="text-[9px] font-bold uppercase text-slate-400 dark:text-slate-500"
+              <span class="text-[9px] font-bold text-slate-400"
                 >Đã xác nhận</span
               >
             </div>
-          </div>
-          <div
-            class="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest"
-          >
-            Tháng 02 / 2025
+            <div class="flex items-center gap-1.5">
+              <span class="size-2 rounded-full bg-orange-400"></span>
+              <span class="text-[9px] font-bold text-slate-400">Sửa chữa</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="size-2 rounded-full bg-purple-400"></span>
+              <span class="text-[9px] font-bold text-slate-400">Bảo hành</span>
+            </div>
           </div>
         </div>
 
-        <div
-          class="calendar-wrapper p-4 flex-1 overflow-y-auto custom-scrollbar"
-        >
-          <ElCalendar v-model="currentDate" class="combat-calendar">
+        <div class="flex-1 overflow-auto custom-scrollbar p-2">
+          <ElCalendar v-model="currentDate" class="compact-calendar">
             <template #date-cell="{ data }">
               <div
-                class="relative flex flex-col h-full min-h-[110px] p-2 transition-all hover:bg-blue-50/30 dark:hover:bg-blue-950/20 group/cell"
-                :class="{ 'is-selected': data.isSelected }"
+                class="cell-inner"
+                :class="data.isSelected ? 'is-selected' : ''"
                 @click="handleCellClick(data.day)"
               >
                 <span
-                  class="absolute top-2 right-3 text-[11px] font-bold"
-                  :class="data.isSelected ? 'text-blue-600' : 'text-slate-300'"
+                  class="day-num"
+                  :class="
+                    data.isSelected
+                      ? 'is-active'
+                      : isToday(data.day)
+                        ? 'is-today'
+                        : ''
+                  "
                 >
                   {{ data.day.split("-")[2] }}
                 </span>
 
-                <div class="flex flex-col gap-1 pr-1 mt-6 overflow-hidden">
+                <div class="cell-bookings">
                   <div
                     v-for="booking in getBookings(data.day)"
                     :key="booking.id"
                     @click.stop="handleBookingClick(booking)"
-                    class="px-2 py-1 rounded-lg text-[8px] font-bold uppercase tracking-tight truncate border transition-all cursor-pointer shadow-sm flex items-center gap-1"
-                    :class="getBookingClasses(booking)"
+                    class="booking-pill"
+                    :class="getBookingPillClass(booking)"
                   >
-                    <ArtSvgIcon
-                      v-if="booking.status === 'Confirmed'"
-                      icon="ri:checkbox-circle-fill"
-                      class="text-[10px]"
-                    />
-                    <span class="truncate"
-                      >{{ booking.customerName.split(" ").pop() }}:
-                      {{ booking.content }}</span
-                    >
+                    <span class="pill-time">{{ booking.time }}</span>
+                    <span class="pill-name">{{ booking.customerName }}</span>
                   </div>
                 </div>
               </div>
@@ -132,170 +145,212 @@
         </div>
       </div>
 
-      <div class="w-80 flex flex-col gap-5 shrink-0">
+      <div class="w-[280px] flex flex-col gap-3 shrink-0">
         <div
-          class="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[32px] shadow-sm flex flex-col overflow-hidden border-t-4 border-t-red-500"
+          class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm flex flex-col overflow-hidden"
         >
           <div
-            class="p-5 border-b border-slate-100 dark:border-slate-850 bg-red-50/30 dark:bg-red-950/20 flex justify-between items-center"
+            class="px-4 py-2.5 border-b border-red-100 dark:border-red-900/40 bg-red-50/60 dark:bg-red-950/20 flex justify-between items-center"
           >
             <h3
-              class="m-0 text-xs font-bold uppercase tracking-widest text-red-600 dark:text-red-400 flex items-center gap-2"
+              class="text-[10px] font-bold uppercase tracking-widest text-red-600 dark:text-red-400 flex items-center gap-1.5"
             >
-              <ArtSvgIcon icon="ri:notification-badge-line" /> Cần xác nhận
+              <ArtSvgIcon icon="ri:alarm-warning-line" class="text-xs" />
+              Cần xác nhận
             </h3>
             <span
-              class="bg-red-600 text-white size-5 rounded-full flex-cc text-[10px] font-bold shadow-lg"
+              class="bg-red-500 text-white size-4 flex-cc text-[8px] font-bold shadow"
               >{{ pendingBookings.length }}</span
             >
           </div>
 
           <div
-            class="flex-1 overflow-y-auto p-4 flex flex-col gap-3 custom-scrollbar"
+            class="flex-1 overflow-y-auto p-2.5 flex flex-col gap-1.5 custom-scrollbar max-h-[calc(100vh-250px)]"
           >
             <div
-              v-for="booking in pendingBookings"
+              v-for="booking in pendingBookingsPaged"
               :key="booking.id"
-              class="p-4 rounded-2xl border border-red-100 dark:border-red-900 bg-red-50/10 dark:bg-red-950/10 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all cursor-pointer group relative"
+              class="p-2.5 rounded-xl border border-red-100 dark:border-red-900/40 bg-red-50/40 dark:bg-red-950/10 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors cursor-pointer group"
               @click="handleBookingClick(booking)"
             >
-              <div class="flex justify-between items-start mb-2">
+              <div class="flex justify-between items-center mb-1">
                 <span
-                  class="text-[8px] font-bold px-2 py-0.5 rounded bg-white dark:bg-slate-900 border border-red-100 dark:border-red-900 text-red-500 uppercase"
+                  class="text-[7px] font-bold px-1.5 py-0.5 rounded bg-white dark:bg-slate-800 border border-red-100 dark:border-red-900/40 text-red-500 uppercase"
                 >
                   {{ booking.typeLabel }}
                 </span>
-                <span
-                  class="text-[9px] font-bold text-slate-400 dark:text-slate-500"
-                  >{{ booking.time }}</span
-                >
+                <span class="text-[8px] font-bold text-slate-400">{{
+                  booking.time
+                }}</span>
               </div>
-              <h4
-                class="m-0 text-sm font-bold text-slate-800 dark:text-slate-100"
+              <div
+                class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate"
               >
                 {{ booking.customerName }}
-              </h4>
-              <p
-                class="m-0 text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-1 truncate"
-              >
-                "{{ booking.content }}"
-              </p>
-
+              </div>
+              <div class="text-[9px] text-slate-400 truncate mt-0.5">
+                {{ booking.content || "—" }}
+              </div>
               <button
                 @click.stop="confirmBooking(booking)"
-                class="mt-3 w-full h-8 bg-red-500 text-white rounded-lg font-bold text-[9px] uppercase tracking-widest shadow-md hover:bg-red-600 transition-all opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0"
+                class="mt-1.5 w-full h-6 bg-red-500 hover:bg-red-600 text-white rounded-md font-bold text-[8px] uppercase tracking-wider transition-all"
               >
-                Xác nhận & Gửi Mail/SMS
+                Xác nhận
               </button>
             </div>
 
             <div
               v-if="pendingBookings.length === 0"
-              class="flex-cc flex-col gap-3 py-10 opacity-20"
+              class="flex-cc flex-col gap-2 py-8 opacity-30"
             >
               <ArtSvgIcon
-                icon="ri:check-double-line"
-                class="text-4xl text-emerald-500"
+                icon="ri:checkbox-circle-line"
+                class="text-2xl text-emerald-500"
               />
-              <span class="text-[9px] font-bold uppercase tracking-widest"
-                >Đã xử lý hết lịch chờ</span
+              <span class="text-[8px] font-bold uppercase tracking-wider">
+                Hết lịch chờ
+              </span>
+            </div>
+
+            <div
+              v-if="pendingTotalPages > 1"
+              class="flex justify-center items-center gap-1.5 pt-1 pb-0.5"
+            >
+              <button
+                :disabled="pendingPage === 1"
+                @click="pendingPage--"
+                class="h-6 px-2 rounded-md text-[9px] font-bold border border-slate-200 dark:border-slate-700 disabled:opacity-25 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
+                ‹
+              </button>
+              <span
+                class="text-[9px] font-bold text-slate-500 min-w-[40px] text-center"
+                >{{ pendingPage }}/{{ pendingTotalPages }}</span
+              >
+              <button
+                :disabled="pendingPage === pendingTotalPages"
+                @click="pendingPage++"
+                class="h-6 px-2 rounded-md text-[9px] font-bold border border-slate-200 dark:border-slate-700 disabled:opacity-25 hover:bg-slate-50 dark:hover:bg-slate-800"
+              >
+                ›
+              </button>
             </div>
           </div>
         </div>
 
         <div
-          class="bg-[#001529] dark:bg-slate-950 p-5 rounded-[32px] text-white border border-transparent dark:border-slate-800 shadow-2xl relative overflow-hidden group"
+          class="bg-gradient-to-br from-[#001529] to-[#0a2540] p-4 rounded-2xl text-white relative overflow-hidden shrink-0"
         >
+          <div class="relative z-10">
+            <span
+              class="text-[8px] font-bold uppercase tracking-[0.15em] text-blue-300/80 block mb-2"
+            >
+              Thông báo
+            </span>
+            <div class="flex items-baseline gap-1">
+              <span class="text-2xl font-bold">98%</span>
+              <span class="text-[9px] text-blue-200/70 mb-1"
+                >tỷ lệ gửi thành công</span
+              >
+            </div>
+            <div class="flex gap-3 mt-2">
+              <span class="text-[8px] text-blue-200/50 flex items-center gap-1">
+                <span class="size-1 rounded-full bg-emerald-400"></span>
+                SMS 99%
+              </span>
+              <span class="text-[8px] text-blue-200/50 flex items-center gap-1">
+                <span class="size-1 rounded-full bg-emerald-400"></span>
+                Email 97%
+              </span>
+            </div>
+          </div>
           <ArtSvgIcon
             icon="ri:mail-send-line"
-            class="absolute -right-4 -bottom-4 text-8xl opacity-10 group-hover:rotate-12 transition-all duration-700"
+            class="absolute -right-2 -bottom-2 text-6xl opacity-10"
           />
-          <span
-            class="text-[9px] font-bold uppercase tracking-[0.2em] text-blue-400 block mb-4"
-            >Hiệu suất thông báo</span
-          >
-          <div class="flex items-end gap-2">
-            <span class="text-3xl font-bold"
-              >98<span class="text-lg opacity-60">%</span></span
-            >
-            <span class="text-[9px] font-bold text-emerald-400 mb-2"
-              >SMS/Mail thành công</span
-            >
-          </div>
         </div>
       </div>
     </div>
 
     <ElDialog
       v-model="dialogVisible"
-      width="550px"
-      custom-class="combat-booking-dialog"
+      width="480px"
+      custom-class="compact-booking-dialog"
       :show-close="false"
     >
       <template #header>
-        <div class="flex items-center gap-4">
-          <div
-            class="size-11 rounded-xl bg-[#001529] flex-cc text-white shadow-xl"
-          >
+        <div class="flex items-center gap-3">
+          <div class="size-9 rounded-lg bg-[#001529] flex-cc text-white shadow">
             <ArtSvgIcon
               :icon="isEditing ? 'ri:edit-box-line' : 'ri:calendar-check-line'"
-              class="text-2xl"
+              class="text-lg"
             />
           </div>
           <div>
             <h3
-              class="m-0 font-bold uppercase text-xs tracking-[0.2em] text-slate-800"
+              class="m-0 text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-100"
             >
               {{ dialogTitle }}
             </h3>
-            <div class="flex items-center gap-2 mt-1">
-              <span
-                class="px-2 py-0.5 rounded text-[8px] font-bold uppercase"
-                :class="
-                  bookingForm.status === 'Confirmed'
-                    ? 'bg-emerald-100 text-emerald-600'
-                    : 'bg-red-100 text-red-600'
-                "
-              >
-                {{
-                  bookingForm.status === "Confirmed"
-                    ? "Đã xác nhận"
-                    : "Chờ phê duyệt"
-                }}
-              </span>
-            </div>
+            <span
+              class="inline-block mt-1 px-1.5 py-0.5 rounded text-[7px] font-bold uppercase"
+              :class="
+                bookingForm.status === 'Confirmed'
+                  ? 'bg-emerald-100 text-emerald-600'
+                  : 'bg-red-100 text-red-600'
+              "
+            >
+              {{
+                bookingForm.status === "Confirmed"
+                  ? "Đã xác nhận"
+                  : "Chờ xác nhận"
+              }}
+            </span>
           </div>
         </div>
       </template>
 
-      <div class="py-4 space-y-5">
-        <div class="grid grid-cols-2 gap-4">
-          <div class="col-span-2">
-            <label
-              class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block px-1"
-              >Tên khách hàng</label
-            >
-            <ElInput
-              v-model="bookingForm.customerName"
-              placeholder="Tên khách..."
-              class="combat-input"
-            />
-          </div>
+      <div class="py-3 space-y-3">
+        <div>
+          <label
+            class="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-1 block px-1"
+            >Tên khách hàng</label
+          >
+          <ElInput
+            v-model="bookingForm.customerName"
+            placeholder="Tên khách..."
+            class="compact-input"
+          />
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
           <div>
             <label
-              class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block px-1"
+              class="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-1 block px-1"
               >SĐT</label
             >
             <ElInput
               v-model="bookingForm.phone"
               placeholder="09xx..."
-              class="combat-input"
+              class="compact-input"
             />
           </div>
           <div>
             <label
-              class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block px-1"
+              class="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-1 block px-1"
+              >Ngày hẹn</label
+            >
+            <ElDatePicker
+              v-model="bookingForm.date"
+              type="date"
+              placeholder="Ngày"
+              value-format="YYYY-MM-DD"
+              class="compact-input"
+            />
+          </div>
+          <div>
+            <label
+              class="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-1 block px-1"
               >Giờ hẹn</label
             >
             <ElTimeSelect
@@ -303,90 +358,91 @@
               start="08:00"
               step="00:30"
               end="18:00"
-              placeholder="Chọn giờ"
-              class="combat-time"
+              placeholder="Giờ"
+              class="compact-input"
             />
           </div>
         </div>
 
         <div>
           <label
-            class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-2 block px-1"
+            class="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block px-1"
             >Loại yêu cầu</label
           >
-          <div class="flex gap-2">
+          <div class="grid grid-cols-4 gap-1.5">
             <button
-              v-for="t in ['TestDrive', 'Consult']"
-              :key="t"
-              @click="bookingForm.type = t"
-              class="flex-1 h-9 rounded-xl text-[9px] font-bold uppercase border-2 transition-all"
+              v-for="t in typeOptions"
+              :key="t.value"
+              @click="bookingForm.type = t.value"
+              class="h-7 rounded-lg text-[8px] font-bold uppercase border transition-all"
               :class="
-                bookingForm.type === t
+                bookingForm.type === t.value
                   ? 'bg-[#001529] text-white border-[#001529]'
-                  : 'bg-white text-slate-400 border-slate-100 hover:border-slate-300'
+                  : 'bg-white dark:bg-slate-800 text-slate-400 border-slate-100 dark:border-slate-700 hover:border-slate-300'
               "
             >
-              {{ t === "TestDrive" ? "Lái thử" : "Tư vấn" }}
+              {{ t.label }}
             </button>
           </div>
         </div>
 
         <div>
           <label
-            class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block px-1"
-            >Nội dung cuộc hẹn</label
+            class="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-1 block px-1"
+            >Nội dung</label
           >
           <ElInput
             v-model="bookingForm.content"
             type="textarea"
-            :rows="3"
+            :rows="2"
             placeholder="Ghi chú..."
-            class="combat-textarea"
+            class="compact-input"
           />
         </div>
 
         <div
           v-if="bookingForm.status === 'Pending' && isEditing"
-          class="p-3 bg-blue-50 rounded-2xl border border-blue-100 flex items-start gap-3"
+          class="p-2 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-100 dark:border-blue-900/40 flex items-start gap-2"
         >
-          <ArtSvgIcon icon="ri:mail-line" class="text-blue-500 mt-1" />
-          <p class="m-0 text-[10px] font-bold text-blue-700 leading-normal">
-            Lưu ý: Sau khi xác nhận, ConfirmBookingCommand sẽ tự động gửi
-            Mail/SMS thông báo lịch hẹn chính xác tới khách hàng.
+          <ArtSvgIcon
+            icon="ri:mail-line"
+            class="text-blue-500 text-xs mt-0.5 shrink-0"
+          />
+          <p
+            class="m-0 text-[9px] font-bold text-blue-700 dark:text-blue-300 leading-snug"
+          >
+            Xác nhận sẽ tự động gửi Mail/SMS thông báo tới khách hàng.
           </p>
         </div>
       </div>
 
       <template #footer>
-        <div class="flex justify-between items-center px-2">
+        <div class="flex justify-between items-center">
           <button
             v-if="isEditing"
             @click="handleDeleteBooking"
-            class="text-red-400 hover:text-red-600 font-bold text-[9px] uppercase tracking-widest"
+            class="text-red-400 hover:text-red-600 font-bold text-[8px] uppercase tracking-wider"
           >
             Hủy lịch
           </button>
           <div v-else></div>
-          <div class="flex gap-3">
+          <div class="flex gap-2">
             <button
               @click="dialogVisible = false"
-              class="h-10 px-6 text-slate-400 font-bold text-[10px] uppercase tracking-widest"
+              class="h-8 px-4 text-slate-400 font-bold text-[9px] uppercase"
             >
               Đóng
             </button>
-
             <button
               v-if="bookingForm.status === 'Pending' && isEditing"
               @click="confirmBooking(activeBooking)"
-              class="h-10 px-8 bg-red-500 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-xl hover:bg-red-600 transition-all flex items-center gap-2"
+              class="h-8 px-4 bg-red-500 text-white rounded-lg font-bold text-[9px] uppercase shadow hover:bg-red-600 transition-all"
             >
-              <ArtSvgIcon icon="ri:check-double-line" /> Xác nhận & Gửi thông
-              báo
+              Xác nhận
             </button>
-
             <button
               @click="handleSaveBooking"
-              class="h-10 px-8 bg-blue-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all"
+              class="h-8 px-4 bg-blue-600 text-white rounded-lg font-bold text-[9px] uppercase shadow hover:bg-blue-700 transition-all"
             >
               {{ isEditing ? "Cập nhật" : "Tạo mới" }}
             </button>
@@ -401,7 +457,7 @@
 import { ref, computed, onMounted } from "vue";
 import { ElMessage, ElLoading, ElMessageBox } from "element-plus";
 import { BookingApi, Booking } from "@/api/sales";
-import { useUserStore } from "@/application/store/user";
+import { BookingAppointmentApi } from "@/api/booking-appointment.api";
 
 defineOptions({ name: "BookingCalendar" });
 
@@ -411,8 +467,7 @@ const dialogTitle = ref("Đặt lịch mới");
 const editingBookingId = ref<number | null>(null);
 const activeBooking = ref<any>(null);
 
-const userStore = useUserStore();
-const isAdmin = computed(() => true); // Tạm thời cho phép tất cả các vai trò chỉnh sửa/hủy lịch hẹn
+const isAdmin = computed(() => true);
 
 const bookingForm = ref({
   customerName: "",
@@ -426,32 +481,59 @@ const bookingForm = ref({
   location: "",
 });
 
+const typeOptions = [
+  { value: "TestDrive", label: "Lái thử" },
+  { value: "Consulting", label: "Tư vấn" },
+  { value: "RepairService", label: "Sửa chữa" },
+  { value: "WarrantyService", label: "Bảo hành" },
+];
+
 const bookings = ref<any[]>([]);
+
+const calendarMonthLabel = computed(() => {
+  const d = currentDate.value;
+  return `Tháng ${String(d.getMonth() + 1).padStart(2, "0")} / ${d.getFullYear()}`;
+});
+
+const prevMonth = () => {
+  const d = new Date(currentDate.value);
+  d.setMonth(d.getMonth() - 1);
+  currentDate.value = d;
+};
+
+const nextMonth = () => {
+  const d = new Date(currentDate.value);
+  d.setMonth(d.getMonth() + 1);
+  currentDate.value = d;
+};
+
+const isToday = (day: string) => day === new Date().toISOString().split("T")[0];
 
 const fetchBookings = async () => {
   try {
     const res = await BookingApi.getList();
     bookings.value = (res || []).map((b: Booking) => {
       const dt = new Date(b.preferredDate);
-      const yyyy = dt.getFullYear();
-      const mm = String(dt.getMonth() + 1).padStart(2, "0");
-      const dd = String(dt.getDate()).padStart(2, "0");
-      const dateStr = `${yyyy}-${mm}-${dd}`;
+      const dateStr = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
       const timeStr = `${String(dt.getHours()).padStart(2, "0")}:${String(dt.getMinutes()).padStart(2, "0")}`;
-
       return {
         ...b,
         customerName: b.fullName,
-        phone: b.phoneNumber,
-        date: dateStr,
         time: timeStr,
+        date: dateStr,
         type: b.bookingType,
         typeLabel:
           b.bookingType === "TestDrive"
             ? "Lái thử"
-            : b.bookingType === "Maintenance"
-              ? "Bảo trì"
-              : "Tư vấn",
+            : b.bookingType === "Consulting"
+              ? "Tư vấn"
+              : b.bookingType === "RepairService"
+                ? "Sửa chữa"
+                : b.bookingType === "WarrantyService"
+                  ? "Bảo hành"
+                  : b.bookingType === "Maintenance"
+                    ? "Bảo trì"
+                    : "Tư vấn",
         content: b.note || "",
       };
     });
@@ -460,29 +542,46 @@ const fetchBookings = async () => {
   }
 };
 
-onMounted(() => {
-  fetchBookings();
-});
+onMounted(fetchBookings);
+
+const PENDING_PAGE_SIZE = 10;
+const pendingPage = ref(1);
 
 const pendingBookings = computed(() =>
   bookings.value
     .filter((b) => b.status === "Pending")
     .sort((a, b) => a.time.localeCompare(b.time)),
 );
+const pendingBookingsPaged = computed(() => {
+  const start = (pendingPage.value - 1) * PENDING_PAGE_SIZE;
+  return pendingBookings.value.slice(start, start + PENDING_PAGE_SIZE);
+});
+const pendingTotalPages = computed(() =>
+  Math.max(1, Math.ceil(pendingBookings.value.length / PENDING_PAGE_SIZE)),
+);
 const isEditing = computed(() => !!editingBookingId.value);
 
 const getBookings = (day: string) =>
   bookings.value.filter((b) => b.date === day);
 
+const getBookingPillClass = (booking: any) => {
+  if (booking.status === "Pending") return "pill-pending";
+  if (booking.type === "TestDrive") return "pill-testdrive";
+  if (booking.type === "RepairService") return "pill-repair";
+  if (booking.type === "WarrantyService") return "pill-warranty";
+  return "pill-default";
+};
+
 const getBookingClasses = (booking: any) => {
   if (booking.status === "Pending")
-    return "bg-white border-red-200 text-red-500 shadow-sm";
-
+    return "bg-amber-50 border-amber-200 text-amber-600 dark:bg-amber-950/20 dark:border-amber-800 dark:text-amber-300";
   if (booking.type === "TestDrive")
-    return "bg-blue-600 text-white border-blue-500";
-  if (booking.type === "Maintenance")
-    return "bg-emerald-500 text-white border-emerald-400";
-  return "bg-amber-500 text-white border-amber-400";
+    return "bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-950/20 dark:border-blue-800 dark:text-blue-300";
+  if (booking.type === "RepairService")
+    return "bg-orange-50 border-orange-200 text-orange-600 dark:bg-orange-950/20 dark:border-orange-800 dark:text-orange-300";
+  if (booking.type === "WarrantyService")
+    return "bg-purple-50 border-purple-200 text-purple-600 dark:bg-purple-950/20 dark:border-purple-800 dark:text-purple-300";
+  return "bg-slate-50 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300";
 };
 
 const handleCellClick = (day: string) => {
@@ -515,41 +614,36 @@ const handleBookingClick = (booking: any) => {
 
 const confirmBooking = async (booking: any) => {
   if (!booking) return;
-
   const loading = ElLoading.service({
     lock: true,
-    text: "Đang thực thi ConfirmBookingCommand: Đang gửi Mail & SMS thông báo...",
-    background: "rgba(0, 0, 0, 0.7)",
+    text: "Đang xác nhận & gửi thông báo...",
+    background: "rgba(0,0,0,0.7)",
   });
-
   try {
     await BookingApi.confirm(booking.id);
-    ElMessage({
-      message: `Xác nhận thành công! Đã gửi thông báo tới ${booking.customerName}`,
-      type: "success",
-      duration: 4000,
-    });
+    ElMessage.success(
+      `Đã xác nhận và gửi thông báo tới ${booking.customerName}`,
+    );
     await fetchBookings();
     dialogVisible.value = false;
   } catch (err: any) {
-    ElMessage.error(err.message || "Lỗi khi xác nhận lịch hẹn");
+    ElMessage.error(err.message || "Lỗi khi xác nhận");
   } finally {
     loading.close();
   }
 };
 
 const handleSaveBooking = async () => {
-  if (!bookingForm.value.customerName) return;
-  if (!bookingForm.value.phone) return;
+  if (!bookingForm.value.customerName)
+    return ElMessage.warning("Vui lòng nhập tên khách hàng.");
+  if (!bookingForm.value.phone)
+    return ElMessage.warning("Vui lòng nhập số điện thoại.");
+  if (!bookingForm.value.date)
+    return ElMessage.warning("Vui lòng chọn ngày hẹn.");
 
   if (isEditing.value) {
-    if (!isAdmin.value) {
-      ElMessage.warning(
-        "Chỉ quản trị viên (Admin) mới có quyền chỉnh sửa trực tiếp lịch hẹn.",
-      );
-      return;
-    }
-
+    if (!isAdmin.value)
+      return ElMessage.warning("Chỉ Admin mới được chỉnh sửa.");
     try {
       const dt = new Date(
         `${bookingForm.value.date}T${bookingForm.value.time}`,
@@ -562,66 +656,74 @@ const handleSaveBooking = async () => {
         preferredDate: dt.toISOString(),
         note: bookingForm.value.content,
         bookingType: bookingForm.value.type,
-        location: bookingForm.value.location || "Showroom",
+        location: "Showroom",
         status: bookingForm.value.status,
       });
-      ElMessage.success("Cập nhật lịch hẹn thành công");
+      ElMessage.success("Cập nhật thành công");
       await fetchBookings();
       dialogVisible.value = false;
     } catch (err: any) {
-      ElMessage.error(err.message || "Lỗi khi cập nhật lịch hẹn");
+      ElMessage.error(err.message || "Lỗi cập nhật");
     }
     return;
   }
 
+  const workshopTypes = ["RepairService", "WarrantyService"];
+  const typeLabel =
+    typeOptions.find((t) => t.value === bookingForm.value.type)?.label ?? "mới";
+
   try {
-    const dt = new Date(`${bookingForm.value.date}T${bookingForm.value.time}`);
     await BookingApi.create({
       fullName: bookingForm.value.customerName,
       phoneNumber: bookingForm.value.phone,
-      email: "",
-      preferredDate: dt.toISOString(),
+      email: bookingForm.value.email || "",
+      preferredDate: new Date(
+        `${bookingForm.value.date}T${bookingForm.value.time}`,
+      ).toISOString(),
       note: bookingForm.value.content,
       bookingType: bookingForm.value.type,
       location: "Showroom",
     });
-    ElMessage.success("Đã tạo lịch mới");
+
+    if (workshopTypes.includes(bookingForm.value.type)) {
+      try {
+        await BookingAppointmentApi.create({
+          fullName: bookingForm.value.customerName,
+          phone: bookingForm.value.phone,
+          email: bookingForm.value.email || undefined,
+          serviceType: bookingForm.value.type,
+          preferredDate: new Date(
+            `${bookingForm.value.date}T${bookingForm.value.time}`,
+          ).toISOString(),
+          notes: bookingForm.value.content,
+        });
+      } catch {
+        /* best-effort */
+      }
+    }
+
+    ElMessage.success(`Đã tạo lịch ${typeLabel}`);
     await fetchBookings();
     dialogVisible.value = false;
   } catch (err: any) {
-    ElMessage.error(err.message || "Lỗi khi tạo lịch hẹn mới");
+    ElMessage.error(err.message || "Lỗi tạo lịch hẹn");
   }
 };
 
 const handleDeleteBooking = async () => {
-  if (!isAdmin.value) {
-    ElMessage.warning(
-      "Chỉ quản trị viên (Admin) mới có quyền hủy/xóa lịch hẹn.",
-    );
-    return;
-  }
-
+  if (!isAdmin.value) return ElMessage.warning("Chỉ Admin mới được hủy lịch.");
   try {
-    await ElMessageBox.confirm(
-      "Bạn có chắc chắn muốn hủy và xóa lịch hẹn này không?",
-      "Xác nhận",
-      {
-        confirmButtonText: "Đồng ý",
-        cancelButtonText: "Hủy bỏ",
-        type: "warning",
-      },
-    );
-
-    if (editingBookingId.value) {
-      await BookingApi.delete(editingBookingId.value);
-      ElMessage.success("Đã hủy lịch hẹn thành công");
-      await fetchBookings();
-      dialogVisible.value = false;
-    }
+    await ElMessageBox.confirm("Hủy lịch hẹn này?", "Xác nhận", {
+      confirmButtonText: "Đồng ý",
+      cancelButtonText: "Bỏ",
+      type: "warning",
+    });
+    await BookingApi.delete(editingBookingId.value!);
+    ElMessage.success("Đã hủy lịch");
+    await fetchBookings();
+    dialogVisible.value = false;
   } catch (err: any) {
-    if (err !== "cancel") {
-      ElMessage.error(err.message || "Lỗi khi hủy lịch hẹn");
-    }
+    if (err !== "cancel") ElMessage.error(err.message || "Lỗi hủy lịch");
   }
 };
 </script>
@@ -629,230 +731,236 @@ const handleDeleteBooking = async () => {
 <style lang="scss" scoped>
 .customer-booking-page {
   .custom-scrollbar {
-    scrollbar-width: none;
-
     &::-webkit-scrollbar {
-      display: none;
-      width: 0;
+      width: 4px;
     }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
   }
 
-  .combat-calendar {
-    --el-calendar-border: none;
-    --el-calendar-header-border-bottom: 1px solid #f1f5f9;
+  .compact-calendar {
+    :deep(.el-calendar) {
+      height: 100%;
+    }
+    :deep(.el-calendar__body) {
+      padding: 0;
+    }
+
+    .cell-inner {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding: 3px 4px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.15s;
+
+      &:hover {
+        background-color: #f1f5f9;
+      }
+      &.is-selected {
+        background-color: #eff6ff;
+      }
+    }
+
+    .day-num {
+      font-size: 10px;
+      font-weight: 700;
+      color: #94a3b8;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      margin-left: auto;
+      flex-shrink: 0;
+
+      &.is-active {
+        background: #2563eb;
+        color: #fff;
+      }
+
+      &.is-today {
+        background: #dbeafe;
+        color: #2563eb;
+      }
+    }
+
+    .cell-bookings {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      margin-top: 2px;
+      overflow: hidden;
+    }
+
+    .booking-pill {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      line-height: 1.5;
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      color: #fff;
+
+      &.pill-pending {
+        background: #94a3b8;
+      }
+
+      &.pill-testdrive {
+        background: #2563eb;
+      }
+
+      &.pill-repair {
+        background: #ea580c;
+      }
+
+      &.pill-warranty {
+        background: #9333ea;
+      }
+
+      &.pill-default {
+        background: #64748b;
+      }
+
+      .pill-time {
+        font-size: 9px;
+        opacity: 0.85;
+        flex-shrink: 0;
+      }
+
+      .pill-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
 
     :deep(.el-calendar-table) {
       thead th {
-        padding: 12px 0;
-        font-size: 9px;
-        font-weight: 900;
+        padding: 8px 0;
+        font-size: 10px;
+        font-weight: 700;
         color: #94a3b8;
         text-transform: uppercase;
+        border-bottom: 1px solid #f1f5f9;
       }
 
       td {
         border: 1px solid #f1f5f9;
+        padding: 1px;
+        height: 90px;
 
         .el-calendar-day {
-          min-height: 110px;
+          min-height: 88px;
+          height: 90px;
           padding: 0;
         }
       }
     }
   }
 
-  .combat-input {
+  .compact-input {
     :deep(.el-input__wrapper) {
       background-color: #f8fafc;
       border: 1px solid #e2e8f0;
-      border-radius: 12px;
+      border-radius: 8px;
       box-shadow: none;
+      padding: 0 8px;
     }
-  }
-
-  .combat-time {
-    width: 100%;
-
-    :deep(.el-input__wrapper) {
-      background-color: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      box-shadow: none;
-    }
-  }
-
-  .combat-textarea {
-    :deep(.el-textarea__inner) {
-      padding: 12px;
-      font-size: 12px;
-      background-color: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 16px;
+    :deep(.el-input__inner) {
+      font-size: 11px;
     }
   }
 }
 
-:deep(.combat-booking-dialog) {
-  border-radius: 32px;
+:deep(.compact-booking-dialog) {
+  border-radius: 16px;
 
   .el-dialog__header {
-    padding: 24px 32px;
+    padding: 16px 20px;
     margin-right: 0;
     border-bottom: 1px solid #f1f5f9;
   }
+  .el-dialog__body {
+    padding: 12px 20px 0;
+  }
 
   .el-dialog__footer {
-    padding: 20px 32px;
+    padding: 12px 20px;
     border-top: 1px solid #f1f5f9;
   }
 }
 
-// Dark Mode overrides
 :global(html.dark .customer-booking-page) {
   background-color: #05070b !important;
   color: #f8fafc !important;
 }
 
-:global(html.dark .customer-booking-page .bg-white) {
-  background-color: #10141c !important;
+:global(html.dark .customer-booking-page .compact-calendar .el-calendar-table) {
+  thead th {
+    border-bottom-color: rgb(255 255 255 / 6%) !important;
+  }
+  td {
+    border-color: rgb(255 255 255 / 6%) !important;
+  }
 }
 
-:global(html.dark .customer-booking-page .border-slate-200) {
-  border-color: rgb(255 255 255 / 12%) !important;
-}
-
-:global(html.dark .customer-booking-page .bg-slate-50\/30) {
-  background-color: rgb(255 255 255 / 2%) !important;
-}
-
-:global(html.dark .customer-booking-page .border-b.border-slate-50) {
-  border-color: rgb(255 255 255 / 8%) !important;
-}
-
-:global(html.dark .customer-booking-page .text-slate-900) {
-  color: #f8fafc !important;
-}
-
-:global(html.dark .customer-booking-page .text-slate-800) {
-  color: #e5e7eb !important;
-}
-
-:global(html.dark .customer-booking-page .text-slate-500) {
-  color: #cbd5e1 !important;
-}
-
-:global(html.dark .customer-booking-page .text-slate-400) {
-  color: #94a3b8 !important;
-}
-
-:global(html.dark .customer-booking-page .bg-slate-100) {
+:global(html.dark .customer-booking-page .compact-input .el-input__wrapper) {
   background-color: #111827 !important;
-  border-color: rgb(255 255 255 / 12%) !important;
-}
-
-:global(html.dark .customer-booking-page .bg-white.shadow-sm) {
-  background-color: #10141c !important;
-  color: #f8fafc !important;
-}
-
-:global(html.dark .customer-booking-page .hover\:bg-blue-50\/30:hover) {
-  background-color: rgb(30 58 138 / 20%) !important;
-}
-
-:global(html.dark .customer-booking-page .bg-red-50\/30) {
-  background-color: rgb(239 68 68 / 10%) !important;
-  border-bottom-color: rgb(255 255 255 / 8%) !important;
-}
-
-:global(html.dark .customer-booking-page .border-slate-100) {
-  border-color: rgb(255 255 255 / 8%) !important;
-}
-
-:global(html.dark .customer-booking-page .border-red-100.bg-red-50\/10) {
-  background-color: rgb(239 68 68 / 5%) !important;
-  border-color: rgb(239 68 68 / 20%) !important;
-}
-
-:global(html.dark .customer-booking-page .border-red-100.bg-red-50\/10:hover) {
-  background-color: rgb(239 68 68 / 10%) !important;
-}
-
-:global(html.dark .customer-booking-page .bg-white.border-red-100) {
-  background-color: #10141c !important;
-  border-color: rgb(239 68 68 / 20%) !important;
-}
-
-:global(html.dark .customer-booking-page .combat-calendar) {
-  background-color: #10141c !important;
-
-  --el-calendar-header-border-bottom: 1px solid rgb(255 255 255 / 8%);
-}
-
-:global(
-  html.dark .customer-booking-page .combat-calendar .el-calendar-table td
-) {
-  border-color: rgb(255 255 255 / 8%) !important;
-}
-
-:global(
-  html.dark
-    .customer-booking-page
-    .combat-calendar
-    .el-calendar-table
-    td.is-today
-) {
-  background-color: rgb(30 58 138 / 20%) !important;
-}
-
-:global(html.dark .customer-booking-page .combat-input .el-input__wrapper),
-:global(html.dark .customer-booking-page .combat-time .el-input__wrapper) {
-  background-color: #111827 !important;
-  border-color: rgb(255 255 255 / 12%) !important;
+  border-color: rgb(255 255 255 / 10%) !important;
   box-shadow: none !important;
 }
 
-:global(html.dark .customer-booking-page .combat-input .el-input__inner),
-:global(html.dark .customer-booking-page .combat-time .el-input__inner) {
+:global(html.dark .customer-booking-page .compact-input .el-input__inner) {
   color: #f8fafc !important;
 }
 
-:global(html.dark .customer-booking-page .combat-textarea .el-textarea__inner) {
-  background-color: #111827 !important;
-  border-color: rgb(255 255 255 / 12%) !important;
-  color: #f8fafc !important;
+:global(html.dark .customer-booking-page .cell-inner:hover) {
+  background-color: rgb(255 255 255 / 4%) !important;
 }
 
-:global(html.dark .combat-booking-dialog) {
+:global(html.dark .customer-booking-page .cell-inner.is-selected) {
+  background-color: rgb(30 58 138 / 20%) !important;
+}
+
+:global(html.dark .customer-booking-page .day-num) {
+  color: #64748b !important;
+}
+
+:global(html.dark .customer-booking-page .day-num.is-today) {
+  background: rgb(30 58 138 / 40%) !important;
+  color: #93c5fd !important;
+}
+
+:global(html.dark .compact-booking-dialog) {
   background-color: #10141c !important;
-  border: 1px solid rgb(255 255 255 / 12%) !important;
 }
 
-:global(html.dark .combat-booking-dialog .el-dialog__header) {
-  border-bottom: 1px solid rgb(255 255 255 / 8%) !important;
+:global(html.dark .compact-booking-dialog .el-dialog__header) {
+  border-bottom-color: rgb(255 255 255 / 6%) !important;
 }
 
-:global(html.dark .combat-booking-dialog .el-dialog__footer) {
-  border-top: 1px solid rgb(255 255 255 / 8%) !important;
+:global(html.dark .compact-booking-dialog .el-dialog__footer) {
+  border-top-color: rgb(255 255 255 / 6%) !important;
 }
 
-:global(html.dark .combat-booking-dialog h3.text-slate-800) {
-  color: #f8fafc !important;
-}
-
-:global(html.dark .combat-booking-dialog label.text-slate-400) {
-  color: #cbd5e1 !important;
-}
-
-:global(html.dark .combat-booking-dialog .bg-slate-50) {
-  background-color: #111827 !important;
-  border-color: rgb(255 255 255 / 8%) !important;
-}
-
-:global(html.dark .combat-booking-dialog .border-slate-100) {
-  border-color: rgb(255 255 255 / 8%) !important;
-}
-
-:global(html.dark .combat-booking-dialog .text-slate-500) {
-  color: #cbd5e1 !important;
+:global(html.dark .compact-booking-dialog label) {
+  color: #94a3b8 !important;
 }
 </style>

@@ -91,6 +91,11 @@
               @click="handleEdit(row)"
               v-auth="Permissions.Admin.EmployeeManagement.Edit"
             />
+            <ArtButtonTable
+              type="delete"
+              @click="handleDelete(row)"
+              v-auth="Permissions.Admin.EmployeeManagement.Delete"
+            />
           </div>
         </template>
       </ArtTable>
@@ -262,9 +267,14 @@
 
 <script setup lang="ts">
 import { Permissions } from "@/domain/constants/permissions";
-import { Plus } from "@element-plus/icons-vue";
+import { Plus, Delete } from "@element-plus/icons-vue";
 import { ref, reactive, onMounted } from "vue";
-import { ElMessage, type FormInstance, type FormRules } from "element-plus";
+import {
+  ElMessage,
+  ElMessageBox,
+  type FormInstance,
+  type FormRules,
+} from "element-plus";
 import { EmployeeApi, type EmployeeResponse } from "@/api/operations";
 
 defineOptions({ name: "HREmployee" });
@@ -400,6 +410,7 @@ const handleReset = () => {
   pagination.current = 1;
   loadData();
 };
+
 const resetForm = () => {
   if (formRef.value) formRef.value.resetFields();
   Object.assign(form, {
@@ -458,6 +469,28 @@ const handleView = (row: EmployeeResponse) => {
   selectedEmployee.value = row;
   detailVisible.value = true;
 };
+
+const handleDelete = async (row: EmployeeResponse) => {
+  try {
+    await ElMessageBox.confirm(
+      `Bạn có chắc muốn xóa nhân viên "${row.fullName}"? Hành động này không thể hoàn tác.`,
+      "Xác nhận xóa",
+      {
+        confirmButtonText: "Xóa",
+        cancelButtonText: "Hủy",
+        type: "error",
+      },
+    );
+    await EmployeeApi.delete(row.id);
+    ElMessage.success("Đã xóa nhân viên thành công");
+    loadData();
+  } catch (_e: any) {
+    if (_e !== "cancel") {
+      ElMessage.error("Xóa nhân viên thất bại");
+    }
+  }
+};
+
 const handleSizeChange = (size: number) => {
   pagination.size = size;
   pagination.current = 1;
@@ -467,6 +500,7 @@ const handleCurrentChange = (page: number) => {
   pagination.current = page;
   loadData();
 };
+
 const handleSearch = () => {
   pagination.current = 1;
   loadData();

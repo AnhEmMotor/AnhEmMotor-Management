@@ -63,6 +63,7 @@ export interface Expense {
   expenseDate: string;
   category: number; // 0: Fixed, 1: Variable
   note?: string;
+  updatedAt?: string;
 }
 
 export interface TransactionLog {
