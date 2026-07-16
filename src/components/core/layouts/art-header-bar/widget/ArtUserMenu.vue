@@ -15,6 +15,7 @@
         class="size-8.5 mr-5 c-p rounded-full max-sm:w-6.5 max-sm:h-6.5 max-sm:mr-[16px]"
         :src="userInfo.avatar || '/src/assets/images/user/avatar.webp'"
         alt="avatar"
+        referrerpolicy="no-referrer"
       />
     </template>
     <template #default>
@@ -23,6 +24,7 @@
           <img
             class="w-10 h-10 mr-3 ml-0 overflow-hidden rounded-full float-left"
             :src="userInfo.avatar || '/src/assets/images/user/avatar.webp'"
+            referrerpolicy="no-referrer"
           />
           <div class="w-[calc(100%-60px)] h-full">
             <span class="block text-sm font-medium text-g-800 truncate">{{

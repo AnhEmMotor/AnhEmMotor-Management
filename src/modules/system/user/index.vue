@@ -1,5 +1,7 @@
 <template>
-  <div class="resp-page user-page art-full-height animate__animated animate__fadeIn">
+  <div
+    class="resp-page user-page art-full-height animate__animated animate__fadeIn"
+  >
     <UserSearch
       v-model="searchForm"
       @search="handleSearch"
@@ -164,6 +166,7 @@ const {
               previewSrcList: [avatarUrl],
               previewTeleported: true,
               fit: "cover",
+              referrerpolicy: "no-referrer",
             }),
             h("div", { class: "flex flex-col gap-0.5" }, [
               h(

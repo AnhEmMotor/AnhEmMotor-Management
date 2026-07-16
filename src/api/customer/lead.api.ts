@@ -12,7 +12,6 @@ export interface Lead {
   address: string;
   addressDetail: string;
   ward: string;
-  district: string;
   province: string;
   gender: string;
   birthday?: string;
@@ -123,7 +122,6 @@ export interface Profile360Data {
   address: string;
   addressDetail: string;
   ward: string;
-  district: string;
   province: string;
   gender: string;
   birthday?: string;

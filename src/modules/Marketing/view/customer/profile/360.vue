@@ -490,9 +490,8 @@ const activeTab = ref("overview");
 const fullAddress = computed(() => {
   if (!profile.value) return "";
   return (
-    [profile.value.ward, profile.value.district, profile.value.province]
-      .filter(Boolean)
-      .join(", ") || "—"
+    [profile.value.ward, profile.value.province].filter(Boolean).join(", ") ||
+    "—"
   );
 });
 

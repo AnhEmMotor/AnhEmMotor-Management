@@ -110,4 +110,16 @@ export const SalesOrderApi = {
       url: `/api/v1/Payment/${id}/link`,
     });
   },
+
+  getProvinces() {
+    return request.get<{ provinceId: number; provinceName: string }[]>({
+      url: "/api/v1/SalesOrders/provinces",
+    });
+  },
+
+  getWards(provinceId: number) {
+    return request.get<{ wardCode: string; wardName: string }[]>({
+      url: `/api/v1/SalesOrders/wards/${provinceId}`,
+    });
+  },
 };
