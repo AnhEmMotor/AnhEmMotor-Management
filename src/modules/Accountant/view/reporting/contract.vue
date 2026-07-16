@@ -450,7 +450,7 @@ function formatNumber(val: number) {
 }
 
 .reporting-kpi-grid {
-  @apply resp-stats-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6;
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6;
 }
 
 .reporting-card {

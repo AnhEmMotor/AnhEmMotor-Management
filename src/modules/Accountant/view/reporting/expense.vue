@@ -51,8 +51,13 @@
       <ElTableColumn prop="note" label="Ghi chú" min-width="220" />
       <ElTableColumn label="Hành động" width="120" align="center">
         <template #default="{ row }">
-          <ElButton type="primary" link @click="editExpense(row)">Sửa</ElButton>
-          <ElButton type="danger" link @click="deleteExpense(row.id)"
+          <ElButton type="primary" link @click="editExpense(row as Expense)"
+            >Sửa</ElButton
+          >
+          <ElButton
+            type="danger"
+            link
+            @click="deleteExpense((row as Expense).id)"
             >Xóa</ElButton
           >
         </template>
