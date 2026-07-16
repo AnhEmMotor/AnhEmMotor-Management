@@ -448,10 +448,24 @@
                       class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
                       >Kích thước (D x R x C)</label
                     >
-                    <ElInput
-                      v-model="formData.dimensions"
-                      placeholder="Ví dụ: 1888 x 678 x 1111 mm hoặc 300 x 200 x 150 mm"
-                    />
+                    <div class="flex gap-2">
+                      <ElInputNumber
+                        v-model="formData.length"
+                        :controls="false"
+                        placeholder="Dài"
+                        class="w-full"
+                      /><ElInputNumber
+                        v-model="formData.width"
+                        :controls="false"
+                        placeholder="Rộng"
+                        class="w-full"
+                      /><ElInputNumber
+                        v-model="formData.height"
+                        :controls="false"
+                        placeholder="Cao"
+                        class="w-full"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1367,10 +1381,24 @@
                             >
                               Kích thước (D x R x C)
                             </label>
-                            <ElInput
-                              v-model="variant.dimensions"
-                              placeholder="Dùng gốc"
-                            />
+                            <div class="flex gap-2">
+                              <ElInputNumber
+                                v-model="variant.length"
+                                :controls="false"
+                                placeholder="Dài"
+                                class="w-full"
+                              /><ElInputNumber
+                                v-model="variant.width"
+                                :controls="false"
+                                placeholder="Rộng"
+                                class="w-full"
+                              /><ElInputNumber
+                                v-model="variant.height"
+                                :controls="false"
+                                placeholder="Cao"
+                                class="w-full"
+                              />
+                            </div>
                           </div>
                           <div>
                             <label
