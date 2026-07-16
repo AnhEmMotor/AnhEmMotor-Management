@@ -1,5 +1,5 @@
 <template>
-  <div class="warehouse-report">
+  <div class="resp-page warehouse-report">
     <div class="reporting-kpi-grid">
       <ArtStatsCard
         title="Tổng tồn kho"

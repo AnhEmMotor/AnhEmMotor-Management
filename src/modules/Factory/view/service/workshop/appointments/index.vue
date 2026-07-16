@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-4 pb-5">
+  <div class="resp-page flex flex-col gap-4 pb-5">
     <div class="flex items-start justify-between gap-4">
       <div>
         <h1 class="text-2xl font-bold">
@@ -31,7 +31,7 @@
     </div>
 
     <!-- KPI -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-4">
       <ArtStatsCard
         icon-style="bg-primary"
         :title="'Tổng'"
@@ -175,7 +175,7 @@
             : 'Tạo lịch hẹn'
       "
       width="640px"
-      class="premium-dialog"
+      class="premium-dialog resp-dialog"
       align-center
       append-to-body
       destroy-on-close
@@ -186,7 +186,7 @@
         class="space-y-4"
         :disabled="formMode === 'detail' || submitting"
       >
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
               class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
@@ -208,7 +208,7 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
               class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
@@ -235,7 +235,7 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
               class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
@@ -263,7 +263,7 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
               class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
@@ -311,7 +311,7 @@
       v-model="confirmDialogVisible"
       title="Xác nhận lịch hẹn"
       width="420px"
-      class="premium-dialog"
+      class="premium-dialog resp-dialog"
       align-center
       append-to-body
       destroy-on-close
@@ -352,7 +352,7 @@
       v-model="cancelDialogVisible"
       title="Hủy lịch hẹn"
       width="420px"
-      class="premium-dialog"
+      class="premium-dialog resp-dialog"
       align-center
       append-to-body
       destroy-on-close

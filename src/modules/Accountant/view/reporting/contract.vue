@@ -1,5 +1,5 @@
 <template>
-  <div class="reporting-page">
+  <div class="resp-page reporting-page">
     <ReportPageHeader
       title="Báo cáo hợp đồng"
       description="Quản lý và theo dõi hợp đồng mua bán xe và hợp đồng với nhà cung cấp."
@@ -450,7 +450,7 @@ function formatNumber(val: number) {
 }
 
 .reporting-kpi-grid {
-  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6;
+  @apply resp-stats-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6;
 }
 
 .reporting-card {

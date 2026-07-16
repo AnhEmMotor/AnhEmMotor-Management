@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col gap-4 pb-5">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+  <div class="resp-page flex flex-col gap-4 pb-5">
+    <div class="resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-4">
       <ArtStatsCard
         title="Tổng phiếu"
         :count="pagination.total"

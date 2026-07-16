@@ -1,5 +1,5 @@
 <template>
-  <div class="sales-setting-page flex flex-col gap-4 pb-5">
+  <div class="resp-page sales-setting-page flex flex-col gap-4 pb-5">
     <ElCard class="setting-card" shadow="never">
       <template #header>
         <div class="card-header">
@@ -18,7 +18,7 @@
 
       <ElForm
         label-position="top"
-        class="grid grid-cols-1 md:grid-cols-2 gap-4"
+        class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4"
       >
         <ElFormItem label="Đơn hàng vượt quá">
           <ElInputNumber

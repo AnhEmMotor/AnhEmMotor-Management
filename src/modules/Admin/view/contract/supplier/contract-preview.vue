@@ -1,5 +1,5 @@
 <template>
-  <div class="supplier-contract-detail">
+  <div class="resp-page supplier-contract-detail">
     <!-- Expiration Pipeline Status -->
     <el-card shadow="never" class="mb-4">
       <div class="flex justify-between items-center">

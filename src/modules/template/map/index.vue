@@ -1,5 +1,5 @@
 <template>
-  <div class="page-content mb-5" element-loading-:text="$t('admin.t220')">
+  <div class="resp-page page-content mb-5" element-loading-:text="$t('admin.t220')">
     <ArtMapChart />
   </div>
 </template>

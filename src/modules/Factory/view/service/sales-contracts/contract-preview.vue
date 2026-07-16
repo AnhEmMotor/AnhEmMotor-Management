@@ -1,5 +1,5 @@
 <template>
-  <div class="contract-preview-container">
+  <div class="resp-page contract-preview-container">
     <ReportPageHeader
       title="Mẫu Hợp Đồng Mua Bán Xe Máy"
       description="Trình xem trước và quản lý hợp đồng bán hàng — theo dõi vòng đời đặt cọc, ký kết và bàn giao xe."

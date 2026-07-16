@@ -1,5 +1,5 @@
 <template>
-  <div class="hr-policy-container flex flex-col gap-4 h-full p-4">
+  <div class="resp-page hr-policy-container flex flex-col gap-4 h-full p-4">
     <!-- Header -->
     <div class="flex items-center justify-between">
       <h1
@@ -47,7 +47,7 @@
 
       <div
         v-if="filteredPolicies.length > 0"
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+        class="resp-cards-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
       >
         <div
           v-for="policy in filteredPolicies"

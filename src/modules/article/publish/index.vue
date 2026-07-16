@@ -1,6 +1,6 @@
 <template>
   <div
-    class="article-publish-page min-h-screen bg-[#F8FAFC] font-inter text-[#0F172A] pb-10"
+    class="resp-page article-publish-page min-h-screen bg-[#F8FAFC] font-inter text-[#0F172A] pb-10"
   >
     <div
       class="bg-white border-b border-slate-200 px-8 py-4 sticky top-0 z-[100] shadow-sm flex justify-between items-center"

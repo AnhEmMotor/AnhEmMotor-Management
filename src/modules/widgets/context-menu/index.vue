@@ -1,5 +1,5 @@
 <template>
-  <div class="page-content">
+  <div class="resp-page page-content">
     <ElButton @contextmenu.prevent="showMenu">{{ $t("admin.t227") }}</ElButton>
 
     <ArtMenuRight

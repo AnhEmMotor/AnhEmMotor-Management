@@ -1,5 +1,5 @@
 <template>
-  <ElForm label-position="top" class="expense-form">
+  <ElForm label-position="top" class="resp-page expense-form">
     <ElFormItem label="Tên khoản chi" required>
       <ElInput
         v-model="form.name"

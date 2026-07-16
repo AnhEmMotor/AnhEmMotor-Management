@@ -1,7 +1,7 @@
 <template>
-  <div class="expense-management">
+  <div class="resp-page expense-management">
     <div
-      class="reporting-actions mb-4 flex items-center justify-between flex-wrap gap-3"
+      class="reporting-actions resp-search mb-4 flex items-center justify-between flex-wrap gap-3"
     >
       <ElInput
         v-model="searchInput"
@@ -23,7 +23,7 @@
 
     <ElTable
       :data="tableExpenses"
-      class="reporting-table"
+      class="reporting-table resp-table"
       v-loading="props.loading"
       empty-text="Không có dữ liệu chi phí"
     >
@@ -76,7 +76,7 @@
       v-model="isFormVisible"
       :title="dialogTitle"
       width="520px"
-      class="reporting-dialog"
+      class="reporting-dialog resp-dialog"
       destroy-on-close
       align-center
     >

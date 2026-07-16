@@ -1,6 +1,6 @@
 <template>
-  <div class="fulfillment-container p-4">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+  <div class="resp-page fulfillment-container p-4">
+    <div class="resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
       <ArtStatsCard
         :title="$t('logistics.dashboard.fulfillmentWorkload')"
         :count="dashboard.summary.fulfillmentWorkload"

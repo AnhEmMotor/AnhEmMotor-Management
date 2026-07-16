@@ -1,5 +1,5 @@
 <template>
-  <div class="art-card p-5 h-full flex flex-col justify-between">
+  <div class="resp-page art-card p-5 h-full flex flex-col justify-between">
     <div>
       <div class="flex justify-between items-center mb-6">
         <h4 class="m-0 font-bold text-lg">HIỆU SUẤT SALE</h4>

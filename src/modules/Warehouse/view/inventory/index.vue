@@ -1,5 +1,5 @@
 <template>
-  <div class="inventory-page p-4">
+  <div class="resp-page inventory-page p-4">
     <h1>Quản lý kho (Inventory)</h1>
     <p>Module inventory đã được chuyển vào phân hệ Warehouse.</p>
   </div>

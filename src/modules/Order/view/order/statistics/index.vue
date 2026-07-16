@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-4 pb-5">
+  <div class="resp-page flex flex-col gap-4 pb-5">
     <!-- Header & Quick Search -->
     <div class="flex items-center justify-between gap-4">
       <div class="flex-1 max-w-xl">

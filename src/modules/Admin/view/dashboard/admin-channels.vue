@@ -1,5 +1,5 @@
 <template>
-  <div class="admin-dashboard">
+  <div class="resp-page admin-dashboard">
     <div class="art-card">
       <!-- Header + period filter -->
       <div class="mb-6 flex justify-between items-center flex-wrap gap-3">

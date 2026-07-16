@@ -1,5 +1,5 @@
 <template>
-  <div class="menu-page art-full-height">
+  <div class="resp-page menu-page art-full-height">
     <ArtSearchBar
       v-model="formFilters"
       :items="formItems"

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="customer-booking-page flex flex-col h-screen bg-[#F8FAFC] dark:bg-[#020617] text-[#0F172A] dark:text-[#E2E8F0]"
+    class="resp-page customer-booking-page flex flex-col h-screen bg-[#F8FAFC] dark:bg-[#020617] text-[#0F172A] dark:text-[#E2E8F0]"
   >
     <div
       class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-3 shrink-0 shadow-sm relative z-20"
@@ -34,12 +34,12 @@
             class="flex bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg border border-slate-200 dark:border-slate-750"
           >
             <div
-              class="px-3 py-1 rounded bg-white dark:bg-slate-900 shadow-sm text-[9px] font-bold uppercase text-slate-700 dark:text-slate-200"
+              class="px-3 max-md:px-1.5 py-1 rounded bg-white dark:bg-slate-900 shadow-sm text-[9px] font-bold uppercase text-slate-700 dark:text-slate-200"
             >
               Tháng
             </div>
             <div
-              class="px-3 py-1 rounded text-[9px] font-bold uppercase text-slate-400 opacity-50 cursor-not-allowed"
+              class="px-3 max-md:px-1.5 py-1 rounded text-[9px] font-bold uppercase text-slate-400 opacity-50 cursor-not-allowed"
             >
               Tuần
             </div>

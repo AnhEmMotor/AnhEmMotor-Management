@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 statistics-container">
+  <div class="resp-page p-4 statistics-container">
     <!-- Header -->
     <div class="flex items-start justify-between gap-4 mb-6 flex-wrap">
       <div>
@@ -36,7 +36,7 @@
     </div>
 
     <!-- Summary Cards Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="resp-stats-3 grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <ArtStatsCard
         icon="ri:money-dollar-circle-line"
         icon-style="bg-success"

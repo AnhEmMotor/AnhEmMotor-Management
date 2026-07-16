@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4">
+  <div class="resp-page p-4">
     <div class="flex items-start justify-between gap-4 flex-wrap">
       <div>
         <h1 class="text-2xl font-bold">

@@ -1,5 +1,5 @@
 <template>
-  <div class="article-detail page-content">
+  <div class="resp-page article-detail page-content">
     <div class="max-w-200 m-auto mt-15">
       <h1 class="text-3xl font-semibold">{{ articleTitle }}</h1>
       <div class="markdown-body mt-12.5" v-highlight v-html="articleHtml"></div>

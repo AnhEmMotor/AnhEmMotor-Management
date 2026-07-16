@@ -1,5 +1,5 @@
 <template>
-  <div class="finance-save-page art-full-height flex flex-col gap-4 pb-5">
+  <div class="resp-page finance-save-page art-full-height flex flex-col gap-4 pb-5">
     <ReportPageHeader
       :title="
         isEdit ? 'CHỈNH SỬA HỢP ĐỒNG TÀI CHÍNH' : 'TẠO HỢP ĐỒNG TÀI CHÍNH MỚI'
@@ -27,7 +27,7 @@
         label-position="top"
         label-width="160px"
       >
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           <ElFormItem label="Số hợp đồng" prop="contractNumber">
             <ElInput
               v-model="form.contractNumber"

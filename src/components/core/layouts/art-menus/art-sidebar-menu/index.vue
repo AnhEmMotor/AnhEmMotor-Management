@@ -2,7 +2,10 @@
   <div
     class="layout-sidebar"
     v-if="showLeftMenu || isDualMenu"
-    :class="{ 'no-border': menuList.length === 0 }"
+    :class="{
+  'no-border': menuList.length === 0,
+  'show-mobile': menuOpen && isMobileScreen,
+}"
   >
     <div
       v-if="isDualMenu"

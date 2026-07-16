@@ -1,7 +1,7 @@
 <template>
   <!-- KPI Cards Row -->
   <div
-    class="reporting-kpi-grid mb-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"
+    class="resp-page reporting-kpi-grid mb-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"
   >
     <ArtStatsCard
       title="Số hợp đồng TC"

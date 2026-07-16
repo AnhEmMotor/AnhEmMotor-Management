@@ -1,5 +1,5 @@
 <template>
-  <div class="page-content">
+  <div class="resp-page page-content">
     <div class="mb-5">
       <ElSpace wrap>
         <ElButton

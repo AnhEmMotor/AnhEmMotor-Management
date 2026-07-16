@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-4 pb-5">
+  <div class="resp-page flex flex-col gap-4 pb-5">
     <div class="grid grid-cols-5 gap-4">
       <ArtStatsCard
         title="Tổng đã nhập"
@@ -108,6 +108,7 @@
       v-model="dialogVisible"
       :title="`Lịch sử giao dịch biến động kho: ${selectedRowName}`"
       width="850px"
+class="resp-dialog"
       append-to-body
       destroy-on-close
     >

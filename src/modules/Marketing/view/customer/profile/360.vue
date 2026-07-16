@@ -1,5 +1,5 @@
 <template>
-  <div class="customer-360-hub flex flex-col gap-5 pb-10">
+  <div class="resp-page customer-360-hub flex flex-col gap-5 pb-10">
     <div v-if="loading" class="flex items-center justify-center py-20">
       <ElSkeleton :rows="5" animated />
     </div>

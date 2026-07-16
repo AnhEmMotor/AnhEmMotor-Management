@@ -1,6 +1,6 @@
 <template>
   <div
-    class="returns-page flex flex-col gap-4 animate__animated animate__fadeIn"
+    class="resp-page returns-page flex flex-col gap-4 animate__animated animate__fadeIn"
   >
     <!-- Header with Search & Tabs -->
     <ElCard class="shrink-0" body-class="pb-0">

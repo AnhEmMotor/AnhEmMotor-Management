@@ -1,6 +1,6 @@
 <template>
   <div
-    class="conversion-tools-page min-h-full bg-[#F8FAFC] dark:bg-[#020617] text-[#0F172A] dark:text-[#E2E8F0] pb-10"
+    class="resp-page conversion-tools-page min-h-full bg-[#F8FAFC] dark:bg-[#020617] text-[#0F172A] dark:text-[#E2E8F0] pb-10"
   >
     <div
       class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-8 py-6 shadow-sm"
@@ -72,7 +72,7 @@
           </button>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div
             v-for="popup in popups"
             :key="popup.id"

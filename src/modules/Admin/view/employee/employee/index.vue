@@ -1,5 +1,5 @@
 <template>
-  <div class="hr-employee-container flex flex-col gap-4 h-full">
+  <div class="resp-page hr-employee-container flex flex-col gap-4 h-full">
     <!-- Header -->
     <div class="flex items-center justify-between">
       <h1 class="text-2xl font-bold">{{ $t("menus.hr.employee") }}</h1>
@@ -9,7 +9,7 @@
     </div>
 
     <!-- Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="resp-stats-3 grid grid-cols-1 md:grid-cols-3 gap-4">
       <ArtStatsCard
         title="Tổng nhân viên"
         :count="stats.total"
@@ -106,6 +106,7 @@
       v-model="detailVisible"
       title="Hồ sơ chi tiết nhân viên"
       width="600px"
+class="resp-dialog"
       destroy-on-close
     >
       <div
@@ -194,6 +195,7 @@
       v-model="dialogVisible"
       :title="dialogTitle"
       width="600px"
+class="resp-dialog"
       destroy-on-close
     >
       <ElForm

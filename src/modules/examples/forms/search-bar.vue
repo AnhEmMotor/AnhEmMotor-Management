@@ -1,5 +1,5 @@
 <template>
-  <div class="pb-5">
+  <div class="resp-page pb-5">
     <h2 class="mb-1 text-lg font-medium">{{ $t("admin.t80") }}</h2>
     <ArtSearchBar
       ref="searchBarBasicRef"

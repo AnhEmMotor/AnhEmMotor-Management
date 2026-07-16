@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col gap-4 pb-5">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+  <div class="resp-page flex flex-col gap-4 pb-5">
+    <div class="resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-4">
       <ArtStatsCard
         :title="$t('menus.product.list.stats.total')"
         :count="pagination.total"
@@ -144,7 +144,7 @@
         <ElTabs v-model="activeTab" type="border-card" class="form-tabs">
           <ElTabPane name="common" label="Thông tin chung">
             <div class="tab-scroll-container">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-5 py-2">
+              <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-5 py-2">
                 <div
                   class="bg-gray-50/50 p-4 border border-gray-150 rounded-xl space-y-4 shadow-sm flex flex-col justify-start"
                 >

@@ -1,5 +1,5 @@
 <template>
-  <div class="art-card h-128 p-5 box-border mb-5 max-sm:mb-4 flex flex-col">
+  <div class="resp-page art-card h-128 p-5 box-border mb-5 max-sm:mb-4 flex flex-col">
     <div class="art-card-header mb-4">
       <div class="title">
         <h4 class="text-lg font-bold text-gray-800 dark:text-gray-100">

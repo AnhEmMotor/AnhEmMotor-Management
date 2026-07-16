@@ -1,6 +1,6 @@
 <template>
-  <div class="contract-sales-container">
-    <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+  <div class="resp-page contract-sales-container">
+    <div class="mb-4 resp-stats-3 grid grid-cols-1 gap-4 md:grid-cols-3">
       <el-card shadow="hover" class="kpi-card">
         <div class="flex items-center justify-between">
           <div>

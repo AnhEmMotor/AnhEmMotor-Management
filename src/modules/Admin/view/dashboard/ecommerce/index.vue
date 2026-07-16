@@ -1,5 +1,5 @@
 <template>
-  <div class="ecommerce">
+  <div class="resp-page ecommerce">
     <!-- Bộ Điều Hướng Chu Kỳ -->
     <div class="flex justify-between items-center mb-6 flex-wrap gap-3">
       <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">

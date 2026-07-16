@@ -1,7 +1,7 @@
 <template>
-  <div class="finance-contract-page art-full-height flex flex-col gap-4 pb-5">
+  <div class="resp-page finance-contract-page art-full-height flex flex-col gap-4 pb-5">
     <!-- 1. Hàng thẻ chỉ số vĩ mô (Finance Overview Cards) -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-4">
       <ArtStatsCard
         title="Hồ sơ chờ phê duyệt"
         :count="statistics.pendingCount"

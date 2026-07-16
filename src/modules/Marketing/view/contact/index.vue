@@ -1,5 +1,5 @@
 <template>
-  <div class="contact-page min-h-full dark:text-slate-100 pb-6">
+  <div class="resp-page contact-page min-h-full dark:text-slate-100 pb-6">
     <div
       class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4 shadow-sm"
     >

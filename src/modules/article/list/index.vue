@@ -1,6 +1,6 @@
 <template>
   <div
-    class="article-list-page min-h-full bg-[#F8FAFC] font-inter text-[#0F172A] pb-10"
+    class="resp-page article-list-page min-h-full bg-[#F8FAFC] font-inter text-[#0F172A] pb-10"
   >
     <div
       class="bg-white border-b border-slate-200 px-8 py-6 sticky top-0 z-[50] shadow-sm"
@@ -37,7 +37,7 @@
 
     <div class="p-8 max-w-[1400px] mx-auto">
       <div
-        class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6"
+        class="resp-cards-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6"
       >
         <div
           v-for="item in articleList"
@@ -114,7 +114,9 @@
           >
             <div
               class="h-full bg-blue-500 transition-all duration-1000 ease-out"
-              :style="{ width: ((item.viewCount || 0) / 1000) * 100 + '%' }"
+              :style="{
+                width: ((item.viewCount || 0) / 1000) * 100 + '%',
+              }"
             ></div>
           </div>
         </div>
@@ -210,10 +212,7 @@ const handleCurrentChange = (val: number) => {
 };
 
 const toEdit = (item: any) =>
-  router.push({
-    name: "ArticlePublish",
-    query: { id: item.id, slug: item.slug },
-  });
+  router.push({ name: "ArticlePublish", query: { id: item.id, slug: item.slug } });
 const toAddArticle = () => router.push({ name: "ArticlePublish" });
 
 const toDelete = (item: any) => {

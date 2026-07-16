@@ -1,5 +1,5 @@
 <template>
-  <div class="contract-preview-container">
+  <div class="resp-page contract-preview-container">
     <!-- Modern Page Header -->
     <ReportPageHeader
       title="Mẫu Hợp Đồng Mua Bán Xe Máy"

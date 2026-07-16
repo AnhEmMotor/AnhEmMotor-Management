@@ -1,6 +1,7 @@
 <template>
   <div>
-    <h1 class="text-4xl font-medium mt-5">{{ $t("admin.t21") }}</h1>
+    <div class="resp-page">
+			<h1 class="text-4xl font-medium mt-5">{{ $t("admin.t21") }}</h1>
     <p class="mt-3.5 text-g-600">{{ $t("admin.t22") }}</p>
 
     <ul

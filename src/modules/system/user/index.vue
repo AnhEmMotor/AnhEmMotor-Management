@@ -1,5 +1,5 @@
 <template>
-  <div class="user-page art-full-height animate__animated animate__fadeIn">
+  <div class="resp-page user-page art-full-height animate__animated animate__fadeIn">
     <UserSearch
       v-model="searchForm"
       @search="handleSearch"

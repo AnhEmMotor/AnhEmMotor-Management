@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-4 pb-5">
+  <div class="resp-page flex flex-col gap-4 pb-5">
     <!-- Header -->
     <div class="flex items-start justify-between gap-4 flex-wrap">
       <div>
@@ -33,7 +33,7 @@
         <span class="font-semibold">Smart Search</span>
       </template>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="resp-stats-3 grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <label
             class="block text-[11px] font-black text-slate-400 uppercase tracking-wider mb-2"
@@ -113,7 +113,7 @@
             </div>
           </div>
 
-          <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+          <div class="mt-4 resp-stats-3 grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
             <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
               <div
                 class="text-slate-400 text-[10px] font-black uppercase tracking-wider"
@@ -264,7 +264,7 @@
                 >
                   Chi tiết hạng mục
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div
                     class="rounded-xl border border-slate-100 p-3 bg-slate-50"
                   >

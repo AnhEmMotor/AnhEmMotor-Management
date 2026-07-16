@@ -1,5 +1,5 @@
 <template>
-  <div class="page-content">
+  <div class="resp-page page-content">
     <ElRow :gutter="20">
       <ElCol
         :span="6"

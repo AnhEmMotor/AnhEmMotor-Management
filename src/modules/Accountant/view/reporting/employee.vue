@@ -1,5 +1,5 @@
 <template>
-  <div class="reporting-page employee-report-page">
+  <div class="resp-page reporting-page employee-report-page">
     <ReportPageHeader
       title="Báo cáo nhân sự & hoa hồng"
       description="Theo dõi doanh số theo nhân viên, hoa hồng chi trả và trạng thái KPI trong kỳ."

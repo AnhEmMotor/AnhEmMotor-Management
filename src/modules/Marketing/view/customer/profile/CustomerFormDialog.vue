@@ -3,7 +3,7 @@
     v-model="visible"
     :title="form.id ? 'CẬP NHẬT HỒ SƠ' : 'THÊM KHÁCH HÀNG MỚI'"
     width="650px"
-    class="premium-dialog"
+    class="resp-dialog premium-dialog"
     destroy-on-close
     :show-close="false"
   >

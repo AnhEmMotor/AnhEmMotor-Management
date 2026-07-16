@@ -1,5 +1,5 @@
 <template>
-  <div class="reporting-page">
+  <div class="resp-page reporting-page">
     <ReportPageHeader
       title="Báo cáo trả góp"
       description="Theo dõi hồ sơ tài chính, trạng thái giải ngân, tỷ lệ duyệt và tình trạng cavet."

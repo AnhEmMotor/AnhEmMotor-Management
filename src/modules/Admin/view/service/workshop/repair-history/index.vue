@@ -1,6 +1,6 @@
 <template>
   <div
-    class="workshop-dashboard-page flex flex-col min-h-screen bg-[#F8FAFC] dark:bg-[#020617] font-inter text-[#0F172A] dark:text-[#E2E8F0]"
+    class="resp-page workshop-dashboard-page flex flex-col min-h-screen bg-[#F8FAFC] dark:bg-[#020617] font-inter text-[#0F172A] dark:text-[#E2E8F0]"
   >
     <!-- Header -->
     <div
@@ -48,7 +48,7 @@
     <!-- Main Content Area -->
     <div class="flex-1 max-w-[1600px] mx-auto w-full p-6 space-y-6">
       <!-- Stats Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div class="resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-6">
         <div
           class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-[24px] shadow-sm flex items-center justify-between"
         >
@@ -213,7 +213,7 @@
           </div>
 
           <div
-            class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+            class="resp-cards-3 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
             v-loading="loading"
           >
             <div

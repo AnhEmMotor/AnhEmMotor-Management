@@ -1,5 +1,5 @@
 <template>
-  <div class="voucher-detail-page flex flex-col gap-5 pb-10">
+  <div class="resp-page voucher-detail-page flex flex-col gap-5 pb-10">
     <!-- Loading -->
     <div v-if="loading" class="flex items-center justify-center py-20">
       <ElSkeleton :rows="6" animated />

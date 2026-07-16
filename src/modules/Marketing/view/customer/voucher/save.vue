@@ -1,6 +1,6 @@
 <template>
   <div
-    class="voucher-save-page flex flex-col h-screen bg-[#F8F9FA] dark:bg-[#020617] overflow-hidden"
+    class="resp-page voucher-save-page flex flex-col h-screen bg-[#F8F9FA] dark:bg-[#020617] overflow-hidden"
   >
     <!-- Header -->
     <div

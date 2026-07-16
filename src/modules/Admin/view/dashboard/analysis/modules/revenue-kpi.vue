@@ -1,5 +1,6 @@
 <template>
-  <ElRow :gutter="20">
+  <div class="resp-page">
+<ElRow :gutter="20">
     <!-- Card 1: Doanh thu thực tế -->
     <ElCol :xl="6" :lg="6" :md="12" :sm="24" :xs="24" class="mb-4">
       <div class="art-card h-full p-4 flex flex-col justify-between">
@@ -105,6 +106,7 @@
       </div>
     </ElCol>
   </ElRow>
+</div>
 </template>
 
 <script setup lang="ts">

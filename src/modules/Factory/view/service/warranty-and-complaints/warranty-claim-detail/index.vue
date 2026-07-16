@@ -1,5 +1,5 @@
 <template>
-  <div class="p-6 bg-slate-50 min-h-screen">
+  <div class="resp-page p-6 bg-slate-50 min-h-screen">
     <!-- Header -->
     <div
       class="flex items-center justify-between mb-6 flex-wrap gap-4 bg-white p-6 rounded-xl shadow-sm border border-slate-100"

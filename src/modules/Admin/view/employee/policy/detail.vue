@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4">
+  <div class="resp-page p-4">
     <el-card shadow="never" class="border-none">
       <template #header>
         <div class="flex justify-between items-center">
@@ -94,7 +94,7 @@
           <h4 class="font-bold text-gray-700 mb-3 flex items-center gap-2">
             <ElIcon><DataLine /></ElIcon> Thống kê hiệu suất
           </h4>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="resp-stats-3 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="bg-gray-50 p-4 rounded border border-gray-200">
               <p class="text-gray-500 text-sm mb-1">Tổng chi hoa hồng</p>
               <p class="text-xl font-bold text-blue-600">24.500.000 đ</p>
@@ -370,7 +370,7 @@
             </div>
 
             <div v-else-if="editForm.department === 'parts_sales'">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <ElFormItem label="Điều kiện tính">
                   <ElRadioGroup v-model="editForm.basis">
                     <ElRadio value="revenue">Trên Doanh thu</ElRadio>
@@ -390,7 +390,7 @@
             </div>
 
             <div v-else-if="editForm.department === 'mechanic'">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <ElFormItem label="Trích từ Tiền công (%)">
                   <ElInputNumber
                     v-model="editForm.laborPercentage"

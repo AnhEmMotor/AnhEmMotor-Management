@@ -1,5 +1,5 @@
 <template>
-  <div class="customer-profile-management flex flex-col gap-6 pb-10">
+  <div class="resp-page customer-profile-management flex flex-col gap-6 pb-10">
     <div class="page-header flex items-center justify-between px-4">
       <h2
         class="m-0 text-2xl font-bold text-gray-800 dark:text-slate-100 tracking-tight flex items-center gap-2"

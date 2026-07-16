@@ -1,5 +1,5 @@
 <template>
-  <div class="lead-management flex flex-col gap-5 pb-8">
+  <div class="resp-page lead-management flex flex-col gap-5 pb-8">
     <div class="page-header flex items-center justify-between">
       <h2
         class="m-0 text-2xl font-bold text-gray-800 dark:text-slate-100 tracking-tight flex items-center gap-2"
@@ -9,7 +9,7 @@
       </h2>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="resp-stats-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <ArtStatsCard
         title="Tổng khách tiềm năng"
         :count="pagination.total"

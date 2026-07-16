@@ -1,5 +1,5 @@
 <template>
-  <div class="art-full-height animate__animated animate__fadeIn">
+  <div class="resp-page art-full-height animate__animated animate__fadeIn">
     <RoleSearch
       v-show="showSearchBar"
       v-model="searchForm"

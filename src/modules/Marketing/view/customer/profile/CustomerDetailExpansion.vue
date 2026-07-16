@@ -1,6 +1,6 @@
 <template>
   <div
-    class="lead-detail-expansion bg-gray-50/50 dark:bg-slate-950 p-6 border-t border-gray-100 dark:border-slate-700 shadow-inner"
+    class="resp-page lead-detail-expansion bg-gray-50/50 dark:bg-slate-950 p-6 border-t border-gray-100 dark:border-slate-700 shadow-inner"
   >
     <div class="grid grid-cols-12 gap-6">
       <div class="col-span-12 lg:col-span-3 flex flex-col gap-6">

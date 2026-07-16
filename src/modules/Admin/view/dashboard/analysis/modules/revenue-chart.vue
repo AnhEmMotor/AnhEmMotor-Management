@@ -1,5 +1,5 @@
 <template>
-  <div class="art-card p-5 mb-5">
+  <div class="resp-page art-card p-5 mb-5">
     <ElRow :gutter="20">
       <!-- Biểu đồ -->
       <ElCol :xl="18" :lg="16" :md="24" :sm="24" :xs="24">

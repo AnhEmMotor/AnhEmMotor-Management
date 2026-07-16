@@ -1,6 +1,6 @@
 <template>
-  <div class="contract-sales-container">
-    <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+  <div class="resp-page contract-sales-container">
+    <div class="mb-4 resp-stats-4 grid grid-cols-1 gap-4 md:grid-cols-3">
       <el-card shadow="hover" class="kpi-card">
         <div class="flex items-center justify-between">
           <div>
@@ -56,7 +56,7 @@
         </div>
       </template>
       <div>
-        <div class="mb-4 grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+        <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-4 max-md:flex-wrap max-md:gap-2 items-center">
           <el-input
             v-model="searchQuery"
             placeholder="Số hợp đồng, Tên KH, Số CCCD, Số khung/máy"
@@ -99,7 +99,8 @@
         <el-table
           :data="tableData"
           border
-          style="width: 100%"
+          class="resp-table"
+style="width: 100%"
           v-loading="loading"
         >
           <el-table-column
@@ -261,6 +262,7 @@
       v-model="dialogVisible"
       title="Thêm hợp đồng"
       width="600px"
+class="resp-dialog"
       append-to-body
       destroy-on-close
     >

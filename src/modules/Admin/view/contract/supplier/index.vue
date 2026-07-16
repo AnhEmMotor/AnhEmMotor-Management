@@ -1,5 +1,5 @@
 <template>
-  <div class="reporting-page contract-supplier-container">
+  <div class="resp-page reporting-page contract-supplier-container">
     <ReportPageHeader
       title="Hợp đồng Nhà cung cấp"
       description="Theo dõi hiệu lực hợp đồng, hạn mức công nợ, chiết khấu và các hợp đồng cần phê duyệt trong một màn hình."

@@ -1,5 +1,5 @@
 <template>
-  <div class="reporting-page">
+  <div class="resp-page reporting-page">
     <ReportPageHeader
       title="Báo cáo tồn kho"
       description="Theo dõi hiệu suất sản phẩm, sức khỏe tồn kho, tỷ lệ hàng sắp hết và giá trị hàng tồn."

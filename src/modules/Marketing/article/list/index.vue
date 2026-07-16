@@ -39,7 +39,7 @@
 
     <div class="p-8 max-w-[1400px] mx-auto">
       <div
-        class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6"
+        class="resp-cards-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6"
       >
         <div
           v-for="item in articleList"

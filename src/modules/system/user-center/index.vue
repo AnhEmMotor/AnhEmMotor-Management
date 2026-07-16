@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-full p-0 bg-transparent border-none shadow-none">
+  <div class="resp-page w-full h-full p-0 bg-transparent border-none shadow-none">
     <div class="relative flex-b mt-2.5 max-md:block max-md:mt-1">
       <div class="w-112 mr-5 max-md:w-full max-md:mr-0">
         <div class="art-card-sm relative p-9 pb-6 overflow-hidden text-center">

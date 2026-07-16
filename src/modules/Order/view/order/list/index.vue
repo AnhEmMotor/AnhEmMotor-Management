@@ -1,5 +1,5 @@
 <template>
-  <div class="online-orders-page flex flex-col gap-4 pb-5">
+  <div class="resp-page online-orders-page flex flex-col gap-4 pb-5">
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
       <ArtStatsCard

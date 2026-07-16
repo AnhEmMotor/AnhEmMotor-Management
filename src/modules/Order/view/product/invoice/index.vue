@@ -1,5 +1,5 @@
 <template>
-  <div class="invoices-page flex flex-col gap-4 pb-5">
+  <div class="resp-page invoices-page flex flex-col gap-4 pb-5">
     <!-- Header Actions -->
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-3">
