@@ -50,6 +50,15 @@ export const factoryMenu: AppRouteRecord[] = [
             },
           },
           {
+            path: "warranty-catalog",
+            name: "FactoryWarrantyCatalog",
+            component: "/Factory/view/service/warranty-category/index",
+            meta: {
+              title: "Danh mục bảo hành",
+              icon: "ri:shield-check-line",
+            },
+          },
+          {
             path: "repair",
             name: "WorkshopRepair",
             component: "/Factory/view/service/workshop/repair-orders/index",
