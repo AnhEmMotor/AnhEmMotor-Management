@@ -89,6 +89,12 @@ export function fetchAddLeadActivity(
   });
 }
 
+export function fetchDeleteLead(id: number) {
+  return request.del<boolean>({
+    url: `/api/v1/Lead/${id}`,
+  });
+}
+
 export function fetchAssignLead(id: number, userId: string | null) {
   return request.post<number>({
     url: `/api/v1/Lead/${id}/assign`,
@@ -138,6 +144,8 @@ export interface Profile360Data {
   careReminders: CareReminder[];
   timelineEvents: TimelineEvent[];
   summary: Profile360Summary;
+  maintenanceHistories?: any[];
+  warrantyClaims?: any[];
 }
 
 export interface OutputSummary {

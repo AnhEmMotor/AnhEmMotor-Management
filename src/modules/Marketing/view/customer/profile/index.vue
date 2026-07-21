@@ -224,6 +224,7 @@ import { useLeadTable } from "@/modules/Marketing/logic/useLeadTable";
 import CustomerDetailExpansion from "./CustomerDetailExpansion.vue";
 import CustomerFormDialog from "./CustomerFormDialog.vue";
 import { ElMessageBox, ElMessage } from "element-plus";
+import { fetchDeleteLead } from "@/api/customer";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/vi";
@@ -272,9 +273,14 @@ const handleDelete = (customer: any) => {
       type: "warning",
       confirmButtonClass: "el-button--danger",
     },
-  ).then(() => {
-    ElMessage.success("Đã xóa hồ sơ khách hàng thành công");
-    refreshData();
+  ).then(async () => {
+    try {
+      await fetchDeleteLead(customer.id);
+      ElMessage.success("Đã xóa hồ sơ khách hàng thành công");
+      refreshData();
+    } catch {
+      ElMessage.error("Lỗi khi xóa hồ sơ khách hàng. Vui lòng thử lại.");
+    }
   });
 };
 

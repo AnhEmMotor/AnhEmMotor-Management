@@ -37,7 +37,7 @@ export function useLeadTable() {
 
   const selectedIds = ref<number[]>([]);
   const salesList = ref<{ id: string; name: string }[]>([]);
-  const currentFilters = ref<LeadListParams>({});
+  const currentFilters = ref<any>({});
 
   const fetchSalesList = async () => {
     try {
@@ -111,26 +111,84 @@ export function useLeadTable() {
     };
   };
 
+  const rawLeads = ref<Lead[]>([]);
+
+  const applyLocalFilterAndPagination = () => {
+    let filtered = [...rawLeads.value];
+
+    // Filter by quick search: fullName or phoneNumber
+    const fullNameFilter = currentFilters.value.fullName;
+    if (fullNameFilter && String(fullNameFilter).trim()) {
+      const query = String(fullNameFilter).trim().toLowerCase();
+      filtered = filtered.filter(
+        (lead) =>
+          (lead.fullName && lead.fullName.toLowerCase().includes(query)) ||
+          (lead.phoneNumber && lead.phoneNumber.includes(query)),
+      );
+    }
+
+    // Filter by Source
+    const sourceFilter = currentFilters.value.source;
+    if (sourceFilter) {
+      filtered = filtered.filter((lead) => lead.source === sourceFilter);
+    }
+
+    // Filter by Status (mapped to Lead category types)
+    const statusFilter = currentFilters.value.status;
+    if (statusFilter) {
+      if (statusFilter === "Official" || statusFilter === "Won") {
+        filtered = filtered.filter(
+          (lead) =>
+            lead.status === "Delivered" ||
+            lead.status === "Closed" ||
+            lead.status === "Won" ||
+            lead.status === "Official",
+        );
+      } else if (statusFilter === "Purchasing") {
+        filtered = filtered.filter(
+          (lead) => lead.status === "Deposited" || lead.status === "Paperwork",
+        );
+      } else if (statusFilter === "Potential") {
+        filtered = filtered.filter(
+          (lead) =>
+            lead.status === "New" ||
+            lead.status === "Consulting" ||
+            lead.status === "Contacted" ||
+            lead.status === "Potential" ||
+            lead.status === "TestDriving" ||
+            lead.status === "TestDrive",
+        );
+      } else {
+        filtered = filtered.filter((lead) => lead.status === statusFilter);
+      }
+    }
+
+    // Sort by priority and then by createdAt descending
+    filtered.sort((a, b) => {
+      const pA = getPriority(a).level;
+      const pB = getPriority(b).level;
+      if (pB !== pA) return pB - pA;
+
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA;
+    });
+
+    pagination.total = filtered.length;
+
+    // Local pagination slice
+    const startIndex = (pagination.current - 1) * pagination.size;
+    const endIndex = startIndex + pagination.size;
+    data.value = filtered.slice(startIndex, endIndex);
+  };
+
   const refreshData = async () => {
     loading.value = true;
     try {
-      const res = await fetchGetLeadList({
-        Page: pagination.current,
-        PageSize: pagination.size,
-        Sorts: "-createdAt",
-        ...currentFilters.value,
-      });
+      const res = await fetchGetLeadList();
       const leads = Array.isArray(res) ? res : (res.items ?? res.records ?? []);
-
-      data.value = leads.sort((a: any, b: any) => {
-        const pA = getPriority(a).level;
-        const pB = getPriority(b).level;
-        return pB - pA;
-      });
-
-      pagination.total = Array.isArray(res)
-        ? data.value.length
-        : (res.totalCount ?? res.total ?? data.value.length);
+      rawLeads.value = leads;
+      applyLocalFilterAndPagination();
     } catch (_err: any) {
       ElMessage.error("Lỗi khi lấy dữ liệu");
     } finally {
@@ -140,37 +198,26 @@ export function useLeadTable() {
 
   const handleSizeChange = (size: number) => {
     pagination.size = size;
-    refreshData();
+    pagination.current = 1;
+    applyLocalFilterAndPagination();
   };
 
   const handleCurrentChange = (current: number) => {
     pagination.current = current;
-    refreshData();
+    applyLocalFilterAndPagination();
   };
 
   const handleSearch = (params: any = {}) => {
-    const filters = [
-      params.status ? `Status==${params.status}` : "",
-      params.source ? `Source==${params.source}` : "",
-      params.assignedToId ? `AssignedToId==${params.assignedToId}` : "",
-      params.isVerified !== undefined && params.isVerified !== ""
-        ? `IsVerified==${params.isVerified}`
-        : "",
-    ]
-      .filter(Boolean)
-      .join(",");
-    currentFilters.value = {
-      Filters: filters || undefined,
-    };
+    currentFilters.value = { ...params };
     pagination.current = 1;
-    refreshData();
+    applyLocalFilterAndPagination();
   };
 
   const handleAssignSingle = async (leadId: number, saleId: string | null) => {
     try {
       await fetchAssignLead(leadId, saleId);
       ElMessage.success("Đã cập nhật nhân viên phụ trách");
-      refreshData();
+      await refreshData();
     } catch {
       ElMessage.error("Lỗi khi giao khách hàng. Vui lòng thử lại.");
     }
@@ -179,7 +226,7 @@ export function useLeadTable() {
   const handleReset = () => {
     currentFilters.value = {};
     pagination.current = 1;
-    refreshData();
+    applyLocalFilterAndPagination();
   };
 
   const handleAssignSale = (leadId: number, saleId: any) => {
