@@ -269,9 +269,8 @@ export function useWarrantyCategoryTable() {
         totalTerms: MOCK_WARRANTY_TERMS.length,
         activeTerms: MOCK_WARRANTY_TERMS.filter((t) => t.status === "Active")
           .length,
-        inactiveTerms: MOCK_WARRANTY_TERMS.filter(
-          (t) => t.status === "Inactive",
-        ).length,
+        inactiveTerms: MOCK_WARRANTY_TERMS.filter((t) => t.status !== "Active")
+          .length,
         brandsCovered: new Set(MOCK_WARRANTY_TERMS.map((t) => t.brandId)).size,
       };
     }
@@ -354,7 +353,9 @@ export function useWarrantyCategoryTable() {
   });
 
   onMounted(() => {
-    (data as unknown as Ref<WarrantyTerm[]>).value = [...MOCK_WARRANTY_TERMS];
+    getData().catch(() => {
+      (data as unknown as Ref<WarrantyTerm[]>).value = [...MOCK_WARRANTY_TERMS];
+    });
   });
 
   const getStatusType = (status: string) => {
@@ -422,11 +423,11 @@ export function useWarrantyCategoryTable() {
     await loadBrands();
   };
 
-  const handleEdit = (row: WarrantyTerm) => {
+  const handleEdit = async (row: WarrantyTerm) => {
     dialogTitle.value = "Cập nhật điều khoản bảo hành";
     formData.value = { ...row };
     dialogVisible.value = true;
-    brandOptions.value = [...BRANDS_FOR_SELECT];
+    await loadBrands();
   };
 
   const handleView = async (row: WarrantyTerm) => {
@@ -500,7 +501,7 @@ export function useWarrantyCategoryTable() {
       label: "Tìm kiếm",
       type: "input",
       props: {
-        placeholder: "Tên điều khoản, hãng xe, loại lỗi...",
+        placeholder: "Tên điều khoản...",
         clearable: true,
       },
     },
