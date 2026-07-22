@@ -7,12 +7,14 @@ import type {
   GetSupplierContractStatisticsUseCase,
   GetSuppliersForSelectUseCase,
   RestoreSupplierContractUseCase,
+  UploadSupplierContractFileUseCase,
   UpdateSupplierContractStatusUseCase,
   UpdateSupplierContractUseCase,
 } from "@/application/supplier/contract.usecases";
 import type {
   SupplierContractDto,
   SupplierContractListParams,
+  SupplierContractMutation,
   SupplierContractStatus,
 } from "@/domain/supplier/contract.types";
 
@@ -38,14 +40,20 @@ class RealGetSupplierContractAuditLogsUseCase implements GetSupplierContractAudi
 }
 
 class RealCreateSupplierContractUseCase implements CreateSupplierContractUseCase {
-  async execute(data: Partial<SupplierContractDto>) {
+  async execute(data: SupplierContractMutation) {
     return SupplierContractApi.create(data);
   }
 }
 
 class RealUpdateSupplierContractUseCase implements UpdateSupplierContractUseCase {
-  async execute(id: string, data: Partial<SupplierContractDto>) {
+  async execute(id: string, data: SupplierContractMutation) {
     return SupplierContractApi.update(id, data);
+  }
+}
+
+class RealUploadSupplierContractFileUseCase implements UploadSupplierContractFileUseCase {
+  async execute(id: string, file: File) {
+    return SupplierContractApi.uploadFile(id, file);
   }
 }
 
@@ -86,6 +94,7 @@ export interface SupplierContractUseCases {
   create: CreateSupplierContractUseCase;
   update: UpdateSupplierContractUseCase;
   updateStatus: UpdateSupplierContractStatusUseCase;
+  uploadContractFile: UploadSupplierContractFileUseCase;
   delete: DeleteSupplierContractUseCase;
   restore: RestoreSupplierContractUseCase;
   getStatistics: GetSupplierContractStatisticsUseCase;
@@ -100,6 +109,7 @@ export function createSupplierContractUseCases(): SupplierContractUseCases {
     create: new RealCreateSupplierContractUseCase(),
     update: new RealUpdateSupplierContractUseCase(),
     updateStatus: new RealUpdateSupplierContractStatusUseCase(),
+    uploadContractFile: new RealUploadSupplierContractFileUseCase(),
     delete: new RealDeleteSupplierContractUseCase(),
     restore: new RealRestoreSupplierContractUseCase(),
     getStatistics: new RealGetSupplierContractStatisticsUseCase(),

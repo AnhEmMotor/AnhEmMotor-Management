@@ -2,8 +2,10 @@
   <div class="resp-page p-4">
     <el-card shadow="never" class="border-none">
       <template #header>
-        <div class="flex justify-between items-center">
-          <div class="flex items-center gap-3">
+        <div
+          class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div class="flex min-w-0 items-center gap-3">
             <ElButton @click="goBack" circle size="small"
               ><ElIcon><Back /></ElIcon
             ></ElButton>
@@ -28,7 +30,7 @@
             </ElTag>
           </div>
 
-          <div class="flex gap-2">
+          <div class="flex w-full gap-2 sm:w-auto sm:justify-end">
             <template v-if="!isEditing">
               <ElButton
                 v-if="editForm.status === 'pending'"
@@ -55,7 +57,7 @@
             </template>
             <template v-else>
               <ElButton @click="cancelEdit">Hủy bỏ</ElButton>
-              <ElButton type="success" @click="savePolicy">
+              <ElButton type="success" :loading="saving" @click="savePolicy">
                 {{ isCreating ? "Kích hoạt" : "Lưu thay đổi" }}
               </ElButton>
             </template>
@@ -84,32 +86,6 @@
           :closable="false"
         />
 
-        <div
-          v-if="
-            !isCreating &&
-            (editForm.status === 'active' || editForm.status === 'expired')
-          "
-          class="mb-6"
-        >
-          <h4 class="font-bold text-gray-700 mb-3 flex items-center gap-2">
-            <ElIcon><DataLine /></ElIcon> Thống kê hiệu suất
-          </h4>
-          <div class="resp-stats-3 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="bg-gray-50 p-4 rounded border border-gray-200">
-              <p class="text-gray-500 text-sm mb-1">Tổng chi hoa hồng</p>
-              <p class="text-xl font-bold text-blue-600">24.500.000 đ</p>
-            </div>
-            <div class="bg-gray-50 p-4 rounded border border-gray-200">
-              <p class="text-gray-500 text-sm mb-1">Số lượng bán (Xe)</p>
-              <p class="text-xl font-bold text-green-600">45</p>
-            </div>
-            <div class="bg-gray-50 p-4 rounded border border-gray-200">
-              <p class="text-gray-500 text-sm mb-1">Nhân viên xuất sắc nhất</p>
-              <p class="text-xl font-bold text-purple-600">Nguyễn Văn A (12)</p>
-            </div>
-          </div>
-        </div>
-
         <ElForm :model="editForm" label-position="top" :disabled="!isEditing">
           <ElCard shadow="never" class="mb-6 bg-gray-50/50">
             <template #header>
@@ -133,8 +109,8 @@
                 <ElOption
                   v-for="p in allPolicies"
                   :key="p.id"
-                  :label="`${p.name} (${formatDate(p.startDate)} - ${formatDate(p.endDate)})`"
-                  :value="p.id"
+                  :label="`${p.name} (hiệu lực ${formatDate(p.startDate)})`"
+                  :value="Number(p.id)"
                 />
               </ElSelect>
             </ElFormItem>
@@ -147,26 +123,15 @@
                 />
               </ElFormItem>
 
-              <ElFormItem label="Thời gian hiệu lực">
-                <div class="flex items-center gap-2 w-full">
-                  <ElDatePicker
-                    v-model="editForm.startDate"
-                    type="date"
-                    value-format="YYYY-MM-DD"
-                    format="DD/MM/YYYY"
-                    placeholder="Bắt đầu"
-                    class="!w-full"
-                  />
-                  <span class="text-gray-400 mx-2">-</span>
-                  <ElDatePicker
-                    v-model="editForm.endDate"
-                    type="date"
-                    value-format="YYYY-MM-DD"
-                    format="DD/MM/YYYY"
-                    placeholder="Kết thúc"
-                    class="!w-full"
-                  />
-                </div>
+              <ElFormItem label="Ngày bắt đầu hiệu lực">
+                <ElDatePicker
+                  v-model="editForm.startDate"
+                  type="date"
+                  value-format="YYYY-MM-DD"
+                  format="DD/MM/YYYY"
+                  placeholder="Chọn ngày bắt đầu"
+                  class="!w-full"
+                />
               </ElFormItem>
 
               <ElFormItem label="Phân hệ áp dụng">
@@ -184,8 +149,8 @@
                 </ElSelect>
               </ElFormItem>
 
-              <template v-if="editForm.department === 'vehicle_sales'">
-                <ElFormItem label="Xe">
+              <template v-if="currentProductConfig">
+                <ElFormItem :label="currentProductConfig.productLabel">
                   <ElSelect
                     v-model="editForm.productId"
                     filterable
@@ -193,28 +158,28 @@
                     clearable
                     reserve-keyword
                     class="w-full"
-                    placeholder="Chọn xe từ quản lý sản phẩm"
+                    :placeholder="currentProductConfig.productPlaceholder"
                     :loading="vehicleOptionsLoading"
                     :remote-method="handleVehicleSearch"
                     @change="handleVehicleChange"
                     @clear="clearVehicleSelection"
                   >
                     <ElOption
-                      v-for="vehicle in vehicleOptions"
-                      :key="vehicle.productId"
-                      :label="vehicle.label"
-                      :value="vehicle.productId"
+                      v-for="product in productOptions"
+                      :key="product.productId"
+                      :label="product.label"
+                      :value="product.productId"
                     />
                   </ElSelect>
                 </ElFormItem>
 
-                <ElFormItem label="Phiên bản xe">
+                <ElFormItem :label="currentProductConfig.variantLabel">
                   <ElSelect
                     v-model="editForm.productVariantId"
                     filterable
                     clearable
                     class="w-full"
-                    placeholder="Chọn phiên bản"
+                    :placeholder="currentProductConfig.variantPlaceholder"
                     :disabled="!editForm.productId"
                     @change="handleVariantChange"
                     @clear="clearVariantSelection"
@@ -228,13 +193,13 @@
                   </ElSelect>
                 </ElFormItem>
 
-                <ElFormItem label="Màu xe" class="md:col-span-2">
+                <ElFormItem :label="currentProductConfig.colorLabel">
                   <ElSelect
                     v-model="editForm.productVariantColorId"
                     filterable
                     clearable
                     class="w-full"
-                    placeholder="Chọn màu xe"
+                    :placeholder="currentProductConfig.colorPlaceholder"
                     :disabled="
                       !editForm.productVariantId || colorOptions.length === 0
                     "
@@ -257,21 +222,29 @@
                     </ElOption>
                   </ElSelect>
                 </ElFormItem>
+
+                <ElFormItem
+                  v-if="editForm.department === 'vehicle_sales'"
+                  label="Giá xe"
+                >
+                  <ElInput :model-value="selectedProductPriceLabel" readonly>
+                    <template #prefix>
+                      <ElIcon><Money /></ElIcon>
+                    </template>
+                  </ElInput>
+                </ElFormItem>
               </template>
 
-              <ElFormItem
-                label="Đối tượng cụ thể (Ghi chú)"
-                class="md:col-span-2"
-              >
+              <ElFormItem label="Ghi chú áp dụng" class="md:col-span-2">
                 <ElInput
                   v-model="editForm.target"
-                  placeholder="Ví dụ: Chỉ áp dụng cho thử việc..."
+                  placeholder="Ví dụ: Áp dụng cho chiến dịch tháng 7..."
                 />
               </ElFormItem>
             </div>
             <div class="mt-2 text-sm text-blue-600 bg-blue-50 p-2 rounded">
-              <ElIcon><InfoFilled /></ElIcon> Điều kiện ghi nhận: Hóa đơn xe đã
-              thanh toán 100% hoặc Xe đã bàn giao.
+              <ElIcon><InfoFilled /></ElIcon>
+              {{ recognitionConditionText }}
             </div>
           </ElCard>
 
@@ -491,12 +464,6 @@
             </div>
           </div>
         </ElCard>
-
-        <!-- Audit Log -->
-        <div class="text-center text-xs text-gray-400 mt-8">
-          <p>Tạo bởi: Admin Bình (01/06/2026 14:30)</p>
-          <p>Cập nhật cuối: Kế toán trưởng An (15/06/2026 18:00)</p>
-        </div>
       </div>
     </el-card>
   </div>
@@ -505,22 +472,14 @@
 <script setup lang="ts">
 import { computed, ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { commissionPolicyApi } from "@/api/operations/commission-policy.api";
+import {
+  commissionPolicyApi,
+  type CommissionPolicyResponse,
+} from "@/api/operations/commission-policy.api";
 import { ProductApi } from "@/api/product";
 import type { ProductVariantLiteForInput } from "@/domain/product/product.types";
 import { ElMessage, ElMessageBox } from "element-plus";
-import {
-  Plus,
-  Delete,
-  Back,
-  CopyDocument,
-  Document,
-  User,
-  Aim,
-  Money,
-  DataLine,
-  InfoFilled,
-} from "@element-plus/icons-vue";
+import { Plus, Delete, Back, Money, InfoFilled } from "@element-plus/icons-vue";
 
 defineOptions({ name: "HRCommissionPolicyDetail" });
 
@@ -528,10 +487,24 @@ type ProductVariantColorOption = NonNullable<
   ProductVariantLiteForInput["colors"]
 >[number];
 
-interface VehicleOption {
+interface ProductOption {
   productId: number;
   label: string;
   categoryId?: number | null;
+}
+
+type DepartmentKey = "vehicle_sales" | "parts_sales" | "mechanic";
+
+interface DepartmentProductConfig {
+  productLabel: string;
+  productPlaceholder: string;
+  variantLabel: string;
+  variantPlaceholder: string;
+  colorLabel: string;
+  colorPlaceholder: string;
+  targetGroup: string;
+  unit: string;
+  accepts: (variant: ProductVariantLiteForInput) => boolean;
 }
 
 interface CommissionTier {
@@ -541,21 +514,25 @@ interface CommissionTier {
   bonusRate?: number | string | null;
 }
 
-const route = useRoute();
-const router = useRouter();
+interface PolicyUiConfiguration {
+  department?: DepartmentKey;
+  basis?: string;
+  laborPercentage?: number;
+  partsPercentage?: number;
+  productVariantId?: number | null;
+  productVariantColorId?: number | null;
+  tiers?: CommissionTier[];
+  note?: string;
+}
 
-const isCreating = ref(false);
-const isEditing = ref(false);
-const enableTiers = ref(true);
-const cloneFromId = ref<number | null>(null);
-
-const editForm = ref<{
+interface PolicyFormModel {
   id?: number;
   name?: string;
   department?: string;
   status?: string;
   target?: string;
   productId?: number | null;
+  categoryId?: number | null;
   productVariantId?: number | null;
   productVariantColorId?: number | null;
   vehicleName?: string;
@@ -563,31 +540,30 @@ const editForm = ref<{
   vehicleColorName?: string;
   vehicleColorCode?: string;
   startDate?: string;
-  endDate?: string;
   basis?: string;
   percentage?: number;
   laborPercentage?: number;
   partsPercentage?: number;
   tiers?: CommissionTier[];
-  [key: string]: any;
-}>({});
+}
 
-const allPolicies = ref<any[]>([]);
+const route = useRoute();
+const router = useRouter();
+
+const isCreating = ref(false);
+const isEditing = ref(false);
+const saving = ref(false);
+const enableTiers = ref(true);
+const cloneFromId = ref<number | null>(null);
+
+const editForm = ref<PolicyFormModel>({});
+
+const allPolicies = ref<PolicyFormModel[]>([]);
 
 const vehicleVariants = ref<ProductVariantLiteForInput[]>([]);
 const vehicleOptionsLoading = ref(false);
 
-const vehicleKeywords = [
-  "xe",
-  "motor",
-  "motorcycle",
-  "scooter",
-  "honda",
-  "yamaha",
-  "suzuki",
-  "sym",
-  "piaggio",
-];
+const vehicleKeywords = ["xe", "motor", "motorcycle", "scooter"];
 
 const getVehicleDisplayName = (variant: ProductVariantLiteForInput) => {
   const displayName = variant.displayName?.trim();
@@ -599,17 +575,67 @@ const getVehicleDisplayName = (variant: ProductVariantLiteForInput) => {
 
 const isVehicleVariant = (variant: ProductVariantLiteForInput) => {
   const managementType = variant.managementType?.toLowerCase();
-  if (managementType === "vin_number") return true;
+  if (managementType) return managementType === "vin_number";
 
   const displayName = variant.displayName?.toLowerCase() || "";
   return vehicleKeywords.some((keyword) => displayName.includes(keyword));
 };
 
-const vehicleOptions = computed<VehicleOption[]>(() => {
-  const vehicleItems = vehicleVariants.value.filter(isVehicleVariant);
+const departmentProductConfig: Record<DepartmentKey, DepartmentProductConfig> =
+  {
+    vehicle_sales: {
+      productLabel: "Xe",
+      productPlaceholder: "Chọn xe từ quản lý sản phẩm",
+      variantLabel: "Phiên bản xe",
+      variantPlaceholder: "Chọn phiên bản xe",
+      colorLabel: "Màu xe",
+      colorPlaceholder: "Chọn màu xe",
+      targetGroup: "VehicleSales",
+      unit: "xe",
+      accepts: isVehicleVariant,
+    },
+    parts_sales: {
+      productLabel: "Phụ tùng / phụ kiện",
+      productPlaceholder: "Chọn phụ tùng hoặc phụ kiện",
+      variantLabel: "Phiên bản / quy cách",
+      variantPlaceholder: "Chọn phiên bản hoặc quy cách",
+      colorLabel: "Màu / thuộc tính",
+      colorPlaceholder: "Chọn màu hoặc thuộc tính",
+      targetGroup: "PartsSales",
+      unit: "sản phẩm",
+      accepts: (variant) => !isVehicleVariant(variant),
+    },
+    mechanic: {
+      productLabel: "Phụ tùng áp dụng tại xưởng",
+      productPlaceholder: "Chọn phụ tùng áp dụng tại xưởng",
+      variantLabel: "Phiên bản / quy cách",
+      variantPlaceholder: "Chọn phiên bản hoặc quy cách",
+      colorLabel: "Màu / thuộc tính",
+      colorPlaceholder: "Chọn màu hoặc thuộc tính",
+      targetGroup: "Mechanic",
+      unit: "phiếu",
+      accepts: (variant) => !isVehicleVariant(variant),
+    },
+  };
+
+const currentDepartment = computed<DepartmentKey>(() => {
+  const department = editForm.value.department as DepartmentKey;
+  return departmentProductConfig[department] ? department : "vehicle_sales";
+});
+
+const currentProductConfig = computed(
+  () => departmentProductConfig[currentDepartment.value],
+);
+
+const productOptions = computed<ProductOption[]>(() => {
+  const matchingItems = vehicleVariants.value.filter(
+    currentProductConfig.value.accepts,
+  );
   const sourceItems =
-    vehicleItems.length > 0 ? vehicleItems : vehicleVariants.value;
-  const optionsByProductId = new Map<number, VehicleOption>();
+    currentDepartment.value === "vehicle_sales" && matchingItems.length === 0
+      ? vehicleVariants.value
+      : matchingItems;
+  const optionsByProductId = new Map<number, ProductOption>();
 
   sourceItems.forEach((variant) => {
     const productId = Number(variant.productId);
@@ -671,7 +697,7 @@ const getColorSwatchStyle = (color: ProductVariantColorOption) => ({
 });
 
 const syncVehicleSelectionMetadata = () => {
-  const selectedVehicle = vehicleOptions.value.find(
+  const selectedVehicle = productOptions.value.find(
     (vehicle) => vehicle.productId === Number(editForm.value.productId),
   );
   const selectedColor = colorOptions.value.find(
@@ -680,6 +706,7 @@ const syncVehicleSelectionMetadata = () => {
   );
 
   editForm.value.vehicleName = selectedVehicle?.label || "";
+  editForm.value.categoryId = selectedVehicle?.categoryId ?? null;
   editForm.value.vehicleVariantName = selectedVariant.value
     ? getVariantLabel(selectedVariant.value)
     : "";
@@ -703,6 +730,7 @@ const clearVariantSelection = () => {
 
 const clearVehicleSelection = () => {
   editForm.value.productId = null;
+  editForm.value.categoryId = null;
   editForm.value.vehicleName = "";
   clearVariantSelection();
 };
@@ -755,7 +783,7 @@ const loadVehicleOptions = async (search = "") => {
     syncVehicleSelectionMetadata();
   } catch (error) {
     console.error("Failed to load vehicle options:", error);
-    ElMessage.error("Không thể tải danh sách xe từ quản lý sản phẩm");
+    ElMessage.error("Không thể tải danh sách sản phẩm áp dụng");
   } finally {
     vehicleOptionsLoading.value = false;
   }
@@ -767,8 +795,8 @@ const handleVehicleSearch = (query: string) => {
 
 watch(
   () => editForm.value.department,
-  (department) => {
-    if (department !== "vehicle_sales") {
+  (department, previousDepartment) => {
+    if (previousDepartment && department !== previousDepartment) {
       clearVehicleSelection();
     }
   },
@@ -782,7 +810,7 @@ const simParts = ref("");
 const simResult = ref<number | null>(null);
 const simBreakdown = ref<string>("");
 
-const formatDate = (dateStr: string) => {
+const formatDate = (dateStr?: string) => {
   if (!dateStr) return "---";
   const date = new Date(dateStr);
   return date.toLocaleDateString("vi-VN", {
@@ -808,6 +836,24 @@ const selectedRewardBasePrice = computed(() => {
     .find((price) => Number.isFinite(price) && price > 0);
 
   return fallbackPrice || 0;
+});
+
+const selectedProductPriceLabel = computed(() => {
+  return selectedRewardBasePrice.value > 0
+    ? formatCurrency(selectedRewardBasePrice.value)
+    : "Chưa có giá bán";
+});
+
+const recognitionConditionText = computed(() => {
+  if (currentDepartment.value === "vehicle_sales") {
+    return "Điều kiện ghi nhận: hóa đơn xe đã thanh toán 100% hoặc xe đã bàn giao.";
+  }
+
+  if (currentDepartment.value === "parts_sales") {
+    return "Điều kiện ghi nhận: sản phẩm đã thanh toán và không thuộc đơn hoàn trả.";
+  }
+
+  return "Điều kiện ghi nhận: phiếu sửa chữa đã hoàn tất và đã xác nhận thanh toán.";
 });
 
 const hasTierBonusRate = (tier: CommissionTier) => {
@@ -875,33 +921,56 @@ watch(
   },
 );
 
-const mapBackendPolicy = (p: any) => {
+const POLICY_UI_CONFIG_PREFIX = "AEM_POLICY_UI_V1:";
+
+const parsePolicyUiConfiguration = (notes?: string): PolicyUiConfiguration => {
+  if (!notes?.startsWith(POLICY_UI_CONFIG_PREFIX)) return {};
+
+  try {
+    const parsed: unknown = JSON.parse(
+      notes.slice(POLICY_UI_CONFIG_PREFIX.length),
+    );
+    return parsed && typeof parsed === "object"
+      ? (parsed as PolicyUiConfiguration)
+      : {};
+  } catch {
+    return {};
+  }
+};
+
+const mapBackendPolicy = (p: CommissionPolicyResponse): PolicyFormModel => {
+  const uiConfiguration = parsePolicyUiConfiguration(p.notes);
   const target = p.targetGroup || "";
   const dept =
-    target.includes("Kỹ thuật") || target === "Mechanic"
+    uiConfiguration.department ||
+    (target.includes("Kỹ thuật") || target === "Mechanic"
       ? "mechanic"
       : target.includes("Phụ tùng") || target === "PartsSales"
         ? "parts_sales"
-        : "vehicle_sales";
+        : "vehicle_sales");
+
   return {
     id: p.id,
     name: p.name,
     department: dept,
     status: p.isActive ? "active" : "expired",
     productId: p.productId ?? null,
-    productVariantId: null,
-    productVariantColorId: null,
+    categoryId: p.categoryId ?? null,
+    productVariantId: uiConfiguration.productVariantId ?? null,
+    productVariantColorId: uiConfiguration.productVariantColorId ?? null,
     startDate: p.effectiveDate?.split("T")[0] || "",
-    endDate: "",
-    target: p.targetGroup || "",
-    notes: p.notes || "",
+    target: uiConfiguration.note || "",
     percentage: p.type === "Percentage" ? Number(p.value) : undefined,
-    basis: "revenue",
-    laborPercentage: dept === "mechanic" ? Number(p.value) : undefined,
-    partsPercentage: dept === "mechanic" ? Number(p.value) * 0.1 : undefined,
+    basis: uiConfiguration.basis || "revenue",
+    laborPercentage:
+      uiConfiguration.laborPercentage ??
+      (dept === "mechanic" ? Number(p.value) : undefined),
+    partsPercentage: uiConfiguration.partsPercentage,
     tiers:
       dept === "vehicle_sales"
-        ? [{ from: 1, to: 999, bonus: Number(p.value) }]
+        ? uiConfiguration.tiers || [
+            { from: 1, to: 999, bonus: Number(p.value) },
+          ]
         : undefined,
   };
 };
@@ -911,7 +980,15 @@ const goBack = () => {
 };
 
 onMounted(async () => {
-  await loadVehicleOptions();
+  try {
+    const [policies] = await Promise.all([
+      commissionPolicyApi.getAll(),
+      loadVehicleOptions(),
+    ]);
+    allPolicies.value = (policies || []).map(mapBackendPolicy);
+  } catch {
+    allPolicies.value = [];
+  }
 
   const policyId = route.params.id;
   const dept = route.query.dept as string;
@@ -923,6 +1000,7 @@ onMounted(async () => {
       department: dept || "vehicle_sales",
       status: "pending",
       productId: null,
+      categoryId: null,
       productVariantId: null,
       productVariantColorId: null,
       tiers: [
@@ -989,23 +1067,124 @@ const cancelEdit = () => {
   }
 };
 
-const savePolicy = () => {
-  syncTierBonusAmounts();
-  ElMessage.success(
-    isCreating.value
-      ? "Kích hoạt chính sách mới thành công!"
-      : "Lưu thay đổi thành công!",
-  );
-  goBack();
+const getConfiguredPolicyValue = () => {
+  if (currentDepartment.value === "vehicle_sales") {
+    const firstTier = [...(editForm.value.tiers || [])].sort(
+      (a, b) => a.from - b.from,
+    )[0];
+    return firstTier ? getTierBonusAmount(firstTier) : 0;
+  }
+
+  if (currentDepartment.value === "parts_sales") {
+    return Number(editForm.value.percentage) || 0;
+  }
+
+  const laborPercentage = Number(editForm.value.laborPercentage) || 0;
+  const partsPercentage = Number(editForm.value.partsPercentage) || 0;
+  return laborPercentage > 0 ? laborPercentage : partsPercentage;
 };
 
-const deletePolicy = () => {
-  ElMessageBox.confirm("Xóa chính sách này?", "Xác nhận", { type: "error" })
-    .then(() => {
-      ElMessage.success("Đã xóa chính sách!");
-      goBack();
-    })
-    .catch(() => {});
+const buildPolicyPayload = (): Partial<CommissionPolicyResponse> => {
+  const uiConfiguration: PolicyUiConfiguration = {
+    department: currentDepartment.value,
+    basis: editForm.value.basis || "revenue",
+    productVariantId: editForm.value.productVariantId ?? null,
+    productVariantColorId: editForm.value.productVariantColorId ?? null,
+    note: editForm.value.target?.trim() || undefined,
+  };
+
+  if (currentDepartment.value === "vehicle_sales") {
+    uiConfiguration.tiers = editForm.value.tiers || [];
+  } else if (currentDepartment.value === "mechanic") {
+    uiConfiguration.laborPercentage =
+      Number(editForm.value.laborPercentage) || 0;
+    uiConfiguration.partsPercentage =
+      Number(editForm.value.partsPercentage) || 0;
+  }
+
+  return {
+    id: editForm.value.id,
+    name: editForm.value.name?.trim() || "",
+    type:
+      currentDepartment.value === "vehicle_sales"
+        ? "FixedAmount"
+        : "Percentage",
+    value: getConfiguredPolicyValue(),
+    productId: editForm.value.productId ?? undefined,
+    categoryId: editForm.value.categoryId ?? undefined,
+    targetGroup: currentProductConfig.value.targetGroup,
+    effectiveDate:
+      editForm.value.startDate || new Date().toISOString().split("T")[0],
+    notes: `${POLICY_UI_CONFIG_PREFIX}${JSON.stringify(uiConfiguration)}`,
+    unit: currentProductConfig.value.unit,
+    isActive: editForm.value.status !== "expired",
+  };
+};
+
+const validatePolicy = () => {
+  if (!editForm.value.name?.trim()) {
+    ElMessage.warning("Vui lòng nhập tên chính sách");
+    return false;
+  }
+
+  if (!editForm.value.startDate) {
+    ElMessage.warning("Vui lòng chọn ngày bắt đầu hiệu lực");
+    return false;
+  }
+
+  if (!editForm.value.productId) {
+    ElMessage.warning(
+      `Vui lòng chọn ${currentProductConfig.value.productLabel.toLowerCase()}`,
+    );
+    return false;
+  }
+
+  if (getConfiguredPolicyValue() <= 0) {
+    ElMessage.warning("Mức hoa hồng phải lớn hơn 0");
+    return false;
+  }
+
+  return true;
+};
+
+const savePolicy = async () => {
+  syncTierBonusAmounts();
+  if (!validatePolicy()) return;
+
+  saving.value = true;
+  try {
+    const payload = buildPolicyPayload();
+    if (isCreating.value) {
+      await commissionPolicyApi.create(payload);
+    } else {
+      await commissionPolicyApi.update(Number(editForm.value.id), payload);
+    }
+
+    ElMessage.success(
+      isCreating.value
+        ? "Kích hoạt chính sách mới thành công"
+        : "Lưu thay đổi thành công",
+    );
+    goBack();
+  } catch (error) {
+    console.error("Failed to save commission policy:", error);
+    ElMessage.error("Không thể lưu chính sách hoa hồng");
+  } finally {
+    saving.value = false;
+  }
+};
+
+const deletePolicy = async () => {
+  try {
+    await ElMessageBox.confirm("Xóa chính sách này?", "Xác nhận", {
+      type: "error",
+    });
+    await commissionPolicyApi.delete(Number(editForm.value.id));
+    ElMessage.success("Đã xóa chính sách");
+    goBack();
+  } catch {
+    // Người dùng đóng hộp thoại xác nhận hoặc API từ chối thao tác.
+  }
 };
 
 const duplicatePolicy = () => {

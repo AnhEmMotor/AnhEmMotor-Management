@@ -74,9 +74,8 @@
               >Đối tượng: <strong>{{ policy.target }}</strong></span
             >
             <span class="block mt-2">
-              Hiệu lực: <br />
-              📅 {{ formatDate(policy.startDate) }} -
-              {{ formatDate(policy.endDate) }}
+              Hiệu lực từ: <br />
+              📅 {{ formatDate(policy.startDate) }}
             </span>
           </div>
 
@@ -172,17 +171,10 @@ const mapBackendPolicy = (p: any) => {
     name: p.name,
     department: dept,
     status: p.isActive ? "active" : "expired",
+    productId: p.productId ?? null,
+    categoryId: p.categoryId ?? null,
     startDate: p.effectiveDate?.split("T")[0] || "",
-    endDate: "",
     target: p.targetGroup || "",
-    percentage: p.type === "Percentage" ? Number(p.value) : undefined,
-    basis: "revenue",
-    laborPercentage: dept === "mechanic" ? Number(p.value) : undefined,
-    partsPercentage: dept === "mechanic" ? Number(p.value) * 0.1 : undefined,
-    tiers:
-      dept === "vehicle_sales"
-        ? [{ from: 1, to: 999, bonus: Number(p.value) }]
-        : undefined,
   };
 };
 

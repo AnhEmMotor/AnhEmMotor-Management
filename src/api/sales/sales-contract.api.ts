@@ -54,7 +54,6 @@ export const SalesContractApi = {
     return request.post<{ scannedFileUrl: string }>({
       url: `/api/v1/contracts/sales/${contractId}/scanned-file`,
       data: formData,
-      headers: { "Content-Type": "multipart/form-data" },
     });
   },
 
