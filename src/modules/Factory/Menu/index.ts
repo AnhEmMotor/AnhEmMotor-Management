@@ -1,5 +1,6 @@
 import { AppRouteRecord } from "@/types/router";
 import type { Component } from "vue";
+import { Permissions } from "@/domain/constants/permissions";
 
 export const factoryMenu: AppRouteRecord[] = [
   {
@@ -38,6 +39,7 @@ export const factoryMenu: AppRouteRecord[] = [
             meta: {
               title: "Dashboard xưởng",
               icon: "ri:dashboard-line",
+              permissions: [Permissions.Factory.DashboardManagement.View],
             },
           },
           {
@@ -47,6 +49,9 @@ export const factoryMenu: AppRouteRecord[] = [
             meta: {
               title: "Lịch sửa chữa",
               icon: "ri:calendar-check-line",
+              permissions: [
+                Permissions.Factory.BookingAppointmentManagement.View,
+              ],
             },
           },
           {
@@ -65,6 +70,7 @@ export const factoryMenu: AppRouteRecord[] = [
             meta: {
               title: "Sửa chữa",
               icon: "ri:wrench-line",
+              permissions: [Permissions.Factory.RepairOrderManagement.View],
             },
           },
           {
@@ -174,6 +180,7 @@ export const factoryMenu: AppRouteRecord[] = [
         meta: {
           title: "Thống kê xưởng",
           icon: "ri:bar-chart-line",
+          permissions: [Permissions.Factory.DashboardManagement.View],
         },
       },
     ],
