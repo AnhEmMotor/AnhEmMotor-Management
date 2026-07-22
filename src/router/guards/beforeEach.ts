@@ -64,7 +64,12 @@ export function setupBeforeEachGuard(router: Router): void {
     try {
       const menuList = await getMenuProcessor().getMenuList();
       const menuStore = useMenuStore();
+
+      routeRegistry?.unregister();
+      routeRegistry?.register(menuList);
+
       menuStore.setMenuList(menuList);
+      menuStore.addRemoveRouteFns(routeRegistry?.getRemoveRouteFns() || []);
 
       const userStore = useUserStore();
       const userPermissions = userStore.info?.buttons || [];

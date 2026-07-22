@@ -1,4 +1,5 @@
 import { AppRouteRecord } from "@/types/router";
+import { Permissions } from "@/domain/constants/permissions";
 
 export const marketingMenu: AppRouteRecord[] = [
   {
@@ -41,6 +42,7 @@ export const marketingMenu: AppRouteRecord[] = [
           title: "menus.marketing.banner",
           icon: "ri:advertisement-line",
           keepAlive: true,
+          permissions: [Permissions.Marketing.BannerManagement.View],
         },
       },
       {
@@ -51,6 +53,7 @@ export const marketingMenu: AppRouteRecord[] = [
           title: "menus.marketing.article",
           icon: "ri:book-2-line",
           keepAlive: true,
+          permissions: [Permissions.Marketing.NewsManagement.View],
           authList: [
             { title: "Thêm mới", authMark: "add" },
             { title: "Chỉnh sửa", authMark: "edit" },
@@ -102,6 +105,7 @@ export const marketingMenu: AppRouteRecord[] = [
           title: "menus.marketing.comment",
           icon: "ri:chat-1-line",
           keepAlive: true,
+          permissions: [Permissions.Marketing.CustomerManagement.View],
         },
       },
       {
@@ -112,6 +116,7 @@ export const marketingMenu: AppRouteRecord[] = [
           title: "menus.marketing.contact",
           icon: "ri:message-2-line",
           keepAlive: true,
+          permissions: [Permissions.Marketing.ContactManagement.View],
         },
       },
       {
@@ -140,6 +145,7 @@ export const marketingMenu: AppRouteRecord[] = [
             meta: {
               title: "menus.marketing.customerPotential",
               icon: "ri:user-search-line",
+              permissions: [Permissions.Marketing.LeadManagement.View],
             },
           },
           {
@@ -149,6 +155,7 @@ export const marketingMenu: AppRouteRecord[] = [
             meta: {
               title: "menus.marketing.customerProfile",
               icon: "ri:profile-line",
+              permissions: [Permissions.Marketing.CustomerManagement.View],
             },
           },
           {
@@ -170,6 +177,7 @@ export const marketingMenu: AppRouteRecord[] = [
             meta: {
               title: "menus.marketing.customerAsset",
               icon: "ri:car-line",
+              permissions: [Permissions.Marketing.CustomerAssetManagement.View],
             },
           },
           {
@@ -179,6 +187,7 @@ export const marketingMenu: AppRouteRecord[] = [
             meta: {
               title: "menus.marketing.customerCare",
               icon: "ri:gift-line",
+              permissions: [Permissions.Marketing.CustomerCareManagement.View],
             },
           },
           {
@@ -188,6 +197,9 @@ export const marketingMenu: AppRouteRecord[] = [
             meta: {
               title: "menus.marketing.customerVoucher",
               icon: "ri:coupon-3-line",
+              permissions: [
+                Permissions.Marketing.CustomerVoucherManagement.View,
+              ],
             },
           },
           {
@@ -224,6 +236,7 @@ export const marketingMenu: AppRouteRecord[] = [
           title: "menus.marketing.booking",
           icon: "ri:calendar-event-line",
           keepAlive: true,
+          permissions: [Permissions.Marketing.BookingManagement.View],
         },
       },
     ],

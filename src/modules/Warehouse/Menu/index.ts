@@ -1,4 +1,5 @@
 import { AppRouteRecord } from "@/types/router";
+import { Permissions } from "@/domain/constants/permissions";
 
 export const warehouseMenu: AppRouteRecord[] = [
   {
@@ -31,6 +32,7 @@ export const warehouseMenu: AppRouteRecord[] = [
           title: "Quản lý sản phẩm",
           icon: "ri:shopping-bag-3-line",
           keepAlive: true,
+          permissions: [Permissions.Warehouse.ProductManagement.View],
         },
       },
       {
@@ -41,6 +43,7 @@ export const warehouseMenu: AppRouteRecord[] = [
           title: "Quản lý đối tác",
           icon: "ri:team-line",
           keepAlive: true,
+          permissions: [Permissions.Warehouse.SupplierManagement.View],
         },
       },
       {
@@ -51,6 +54,7 @@ export const warehouseMenu: AppRouteRecord[] = [
           title: "Quản lý yêu cầu mua hàng",
           icon: "ri:git-pull-request-line",
           keepAlive: true,
+          permissions: [Permissions.Warehouse.PurchaseRequestManagement.View],
         },
       },
       {
@@ -61,6 +65,7 @@ export const warehouseMenu: AppRouteRecord[] = [
           title: "Quản lý phiếu nhập kho",
           icon: "ri:file-list-3-line",
           keepAlive: true,
+          permissions: [Permissions.Warehouse.ReceiptManagement.View],
         },
       },
       {
@@ -71,6 +76,7 @@ export const warehouseMenu: AppRouteRecord[] = [
           title: "Quản lý công nợ",
           icon: "ri:money-cny-box-line",
           keepAlive: true,
+          permissions: [Permissions.Warehouse.DebtPaymentManagement.View],
         },
       },
       {
@@ -101,6 +107,7 @@ export const warehouseMenu: AppRouteRecord[] = [
           title: "Hợp đồng nhà cung cấp",
           icon: "ri:file-contract-line",
           keepAlive: true,
+          permissions: [Permissions.Warehouse.SupplierContractManagement.View],
         },
       },
       {
