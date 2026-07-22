@@ -131,20 +131,22 @@
         </el-table-column>
         <el-table-column
           label="Hành động"
-          min-width="120"
+          min-width="200"
           fixed="right"
           align="center"
         >
           <template #default="{ row }">
-            <el-button
-              type="primary"
-              size="small"
-              :icon="View"
-              plain
-              @click="openDetail(row.id)"
-              v-auth="Permissions.Factory.CustomerManagement.View"
-            >
-              Xem chi tiết
+            <div class="flex items-center justify-center gap-2">
+              <el-button
+                type="primary"
+                size="small"
+                :icon="Edit"
+                plain
+                @click="openDetail(row.id)"
+                v-auth="Permissions.Factory.CustomerManagement.View"
+              >
+                Chỉnh sửa
+              </el-button>
               <el-button
                 type="danger"
                 size="small"
@@ -157,7 +159,7 @@
               >
                 Xóa
               </el-button>
-            </el-button>
+            </div>
           </template>
         </el-table-column>
       </el-table>

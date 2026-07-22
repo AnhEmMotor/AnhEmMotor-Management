@@ -8,6 +8,10 @@
       <ArtHeaderBar :isPortal="true" />
     </div>
 
+    <video autoplay loop muted playsinline class="portal-video-bg">
+      <source src="@/assets/images/background_1.mp4" type="video/mp4" />
+    </video>
+
     <div class="portal-bg-overlay"></div>
     <div class="portal-header relative z-10"></div>
 
@@ -240,15 +244,24 @@ const workspaces = computed(() =>
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-image: url("https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=1920");
-  background-attachment: fixed;
-  background-position: center;
-  background-size: cover;
+
+  /* Removed invalid background-image for mp4 */
+
+  .portal-video-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: 0;
+    pointer-events: none;
+  }
 
   .portal-bg-overlay {
     position: fixed;
     inset: 0;
-    z-index: 0;
+    z-index: 1;
     background-color: var(--el-bg-color-page);
     opacity: 0.45;
     -webkit-backdrop-filter: blur(3px);
