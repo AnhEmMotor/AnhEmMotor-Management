@@ -390,6 +390,7 @@ export default {
       title: "Contract Management",
       sales: "Sales Contract",
       supplier: "Supplier Contract",
+      finance: "Finance Contract",
     },
     customer: {
       title: "Customer Management",

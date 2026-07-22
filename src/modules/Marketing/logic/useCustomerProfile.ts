@@ -1,8 +1,9 @@
-import { ref, reactive, watch } from "vue";
+import { ref, reactive } from "vue";
 import { ElMessage } from "element-plus";
 import {
   fetchUpdateLead,
   fetchAddLeadActivity,
+  fetchGetProfile360,
   type Lead,
 } from "@/api/customer/lead.api";
 
@@ -45,9 +46,11 @@ export function useCustomerProfile() {
     }[]
   >([]);
 
+  const vehicles = ref<any[]>([]);
+  const maintenanceHistories = ref<any[]>([]);
   const onVerifiedChange = ref<(() => void) | null>(null);
 
-  const loadFromLead = (lead: Lead) => {
+  const loadFromLead = async (lead: Lead) => {
     isVerified.value = lead.isVerified ?? false;
     customerInfo.id = lead.id;
     customerInfo.fullName = lead.fullName;
@@ -58,24 +61,55 @@ export function useCustomerProfile() {
     customerInfo.address.province = lead.province || "Đồng Nai";
     customerInfo.address.city = "Biên Hòa";
 
+    // Initialize with local activities notes
     if (lead.activities && lead.activities.length > 0) {
       timelineEvents.value = lead.activities
         .slice()
         .reverse()
+        .filter((a) => a.activityType.toLowerCase() === "note")
         .map((a) => ({
           id: a.id,
-          type: a.activityType.toLowerCase() === "note" ? "sale" : "ai",
+          type: "sale",
           content: a.description,
           time: a.createdAt,
-          icon:
-            a.activityType.toLowerCase() === "note"
-              ? "ri:edit-line"
-              : "ri:robot-line",
-          color:
-            a.activityType.toLowerCase() === "note" ? "#f59e0b" : "#6366f1",
+          icon: "ri:edit-line",
+          color: "#f59e0b",
         }));
     } else {
       timelineEvents.value = [];
+    }
+
+    // Load full 360 profile to get actual vehicles and service history
+    try {
+      const profileData = await fetchGetProfile360(lead.id);
+      vehicles.value = profileData.vehicles || [];
+      maintenanceHistories.value = profileData.maintenanceHistories || [];
+
+      if (profileData.timelineEvents && profileData.timelineEvents.length > 0) {
+        timelineEvents.value = profileData.timelineEvents
+          .filter((evt: any) => evt.type !== "ai")
+          .map((evt: any) => ({
+            id: evt.relatedId || Date.now(),
+            type: evt.type === "activity" ? "sale" : evt.type,
+            content: evt.description || evt.title,
+            time: evt.date,
+            icon:
+              evt.type === "service"
+                ? "ri:settings-line"
+                : evt.type === "activity"
+                  ? "ri:edit-line"
+                  : "ri:shopping-cart-line",
+            color:
+              evt.type === "service"
+                ? "#f59e0b"
+                : evt.type === "activity"
+                  ? "#10b981"
+                  : "#3b82f6",
+          }));
+      }
+    } catch {
+      vehicles.value = [];
+      maintenanceHistories.value = [];
     }
   };
 
@@ -137,5 +171,7 @@ export function useCustomerProfile() {
     addNote,
     loadFromLead,
     onVerifiedChange,
+    vehicles,
+    maintenanceHistories,
   };
 }

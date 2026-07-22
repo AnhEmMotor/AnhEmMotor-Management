@@ -11,8 +11,18 @@ export const marketingMenu: AppRouteRecord[] = [
       roles: ["Admin", "SuperAdmin"],
       permissions: ["Permissions.Marketing"],
     },
-    redirect: "/Marketing/intro",
+    redirect: "/Marketing/dashboard",
     children: [
+      {
+        path: "dashboard",
+        name: "MarketingDashboard",
+        component: "/Marketing/view/dashboard/index",
+        meta: {
+          title: "Dashboard tiếp thị",
+          icon: "ri:dashboard-3-line",
+          keepAlive: true,
+        },
+      },
       {
         path: "intro",
         name: "MarketingIntro",

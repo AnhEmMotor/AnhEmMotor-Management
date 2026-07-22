@@ -371,6 +371,113 @@
           </div>
         </ElTabPane>
 
+        <ElTabPane label="Lịch sử bảo dưỡng" name="maintenance">
+          <div class="p-1">
+            <div
+              v-if="
+                !profile.maintenanceHistories ||
+                profile.maintenanceHistories.length === 0
+              "
+              class="text-center text-gray-400 py-12"
+            >
+              Chưa có lịch sử bảo dưỡng / sửa chữa
+            </div>
+            <div class="flex flex-col gap-4" v-else>
+              <div
+                v-for="m in profile.maintenanceHistories"
+                :key="m.id"
+                class="asset-card bg-white rounded-xl border border-gray-100 p-4"
+              >
+                <div
+                  class="flex items-center justify-between mb-3 border-b border-gray-50 pb-2"
+                >
+                  <div>
+                    <span class="font-bold text-gray-900"
+                      >Phiếu bảo dưỡng #{{ m.maintenanceNumber }}</span
+                    >
+                    <div class="text-[11px] text-gray-500">
+                      Ngày thực hiện: {{ formatDate(m.maintenanceDate) }}
+                    </div>
+                  </div>
+                  <ElTag type="success" size="small" effect="plain" round
+                    >{{ m.mileage.toLocaleString() }} km</ElTag
+                  >
+                </div>
+                <div class="text-xs flex flex-col gap-2">
+                  <div>
+                    <span class="text-gray-400 font-medium">Dòng xe:</span>
+                    {{ m.variantName || "Winner X 2024" }} ({{
+                      m.licensePlate || "Chưa biển số"
+                    }})
+                  </div>
+                  <div>
+                    <span class="text-gray-400 font-medium"
+                      >Nội dung sửa chữa:</span
+                    >
+                    {{ m.description }}
+                  </div>
+                  <div
+                    class="grid grid-cols-3 gap-2 mt-2 pt-2 border-t border-dashed border-gray-100"
+                  >
+                    <div>
+                      <span class="text-gray-400 block mb-0.5"
+                        >Tiền phụ tùng:</span
+                      >
+                      <span class="font-semibold text-gray-800">{{
+                        formatMoney(m.partsCost)
+                      }}</span>
+                    </div>
+                    <div>
+                      <span class="text-gray-400 block mb-0.5">Tiền công:</span>
+                      <span class="font-semibold text-gray-800">{{
+                        formatMoney(m.laborCost)
+                      }}</span>
+                    </div>
+                    <div>
+                      <span class="text-gray-400 block mb-0.5">Tổng cộng:</span>
+                      <span class="font-bold text-red-600">{{
+                        formatMoney(m.totalCost)
+                      }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ElTabPane>
+
+        <ElTabPane label="Yêu cầu bảo hành" name="warranty">
+          <div class="p-1">
+            <div
+              v-if="
+                !profile.warrantyClaims || profile.warrantyClaims.length === 0
+              "
+              class="text-center text-gray-400 py-12"
+            >
+              Chưa có yêu cầu bảo hành nào
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" v-else>
+              <div
+                v-for="w in profile.warrantyClaims"
+                :key="w.id"
+                class="asset-card bg-white rounded-xl border border-gray-100 p-4"
+              >
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-bold text-gray-900"
+                    >Mã yêu cầu: {{ w.claimNumber }}</span
+                  >
+                  <ElTag type="warning" size="small" round>{{
+                    w.statusText || "Đang xử lý"
+                  }}</ElTag>
+                </div>
+                <div class="text-xs text-gray-500">
+                  Ngày tạo: {{ formatDate(w.createdAt) }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </ElTabPane>
+
         <ElTabPane label="Chăm sóc" name="care">
           <div class="p-1">
             <div

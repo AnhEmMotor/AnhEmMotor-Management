@@ -413,6 +413,7 @@ export default {
       title: "Quản lý Hợp đồng",
       sales: "Hợp đồng Mua bán Xe",
       supplier: "Hợp đồng Nhà cung cấp",
+      finance: "Hợp đồng Tài chính",
     },
     customer: {
       title: "Quản lý khách hàng",

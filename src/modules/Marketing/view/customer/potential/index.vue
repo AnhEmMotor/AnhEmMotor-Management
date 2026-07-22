@@ -9,7 +9,9 @@
       </h2>
     </div>
 
-    <div class="resp-stats-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div
+      class="resp-stats-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+    >
       <ArtStatsCard
         title="Tổng khách tiềm năng"
         :count="pagination.total"
@@ -222,17 +224,37 @@
               </div>
             </div>
 
-            <div class="action-column flex-shrink-0">
+            <div class="action-column flex-shrink-0 flex gap-2">
               <ElButton
                 type="danger"
                 circle
                 class="size-11 flex-cc shadow-lg shadow-red-100 hover:scale-110 transition-transform"
+                @click="handleDelete(lead)"
+              >
+                <ArtSvgIcon icon="ri:delete-bin-7-line" class="text-lg" />
+              </ElButton>
+              <ElButton
+                type="primary"
+                circle
+                class="size-11 flex-cc shadow-lg shadow-blue-100 hover:scale-110 transition-transform"
                 @click="$router.push('/Marketing/customer/profile')"
               >
                 <ArtSvgIcon icon="ri:arrow-right-line" class="text-lg" />
               </ElButton>
             </div>
           </div>
+        </div>
+        <!-- Pagination -->
+        <div class="flex justify-end mt-4 px-4">
+          <ElPagination
+            v-model:current-page="pagination.current"
+            v-model:page-size="pagination.size"
+            :page-sizes="[10, 20, 50, 100]"
+            :total="pagination.total"
+            layout="total, sizes, prev, pager, next, jumper"
+            @current-change="handleCurrentChange"
+            @size-change="handleSizeChange"
+          />
         </div>
       </div>
     </div>
@@ -251,6 +273,9 @@ dayjs.locale("vi");
 
 defineOptions({ name: "CustomerPotential" });
 
+import { fetchDeleteLead } from "@/api/customer";
+import { ElMessageBox, ElMessage } from "element-plus";
+
 const {
   data,
   loading,
@@ -262,7 +287,31 @@ const {
   salesList,
   toggleSelect,
   getPriority,
+  refreshData,
+  handleCurrentChange,
+  handleSizeChange,
 } = useLeadTable();
+
+const handleDelete = (lead: any) => {
+  ElMessageBox.confirm(
+    `Bạn có chắc chắn muốn xóa khách hàng tiềm năng ${lead.fullName}? Dữ liệu này không thể khôi phục.`,
+    "Cảnh báo xóa dữ liệu",
+    {
+      confirmButtonText: "XÓA NGAY",
+      cancelButtonText: "HỦY",
+      type: "warning",
+      confirmButtonClass: "el-button--danger",
+    },
+  ).then(async () => {
+    try {
+      await fetchDeleteLead(lead.id);
+      ElMessage.success("Đã xóa khách hàng tiềm năng thành công");
+      await refreshData();
+    } catch {
+      ElMessage.error("Lỗi khi xóa khách hàng tiềm năng. Vui lòng thử lại.");
+    }
+  });
+};
 
 const searchModel = ref({});
 
