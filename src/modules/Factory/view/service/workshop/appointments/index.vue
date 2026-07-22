@@ -747,12 +747,17 @@ const submitCancel = async () => {
   }
 };
 
-// --- Tạo phiếu từ lịch đã xác nhận ---
 const handleCreateOrder = (row: BookingAppointment) => {
   if (row.serviceType === "WarrantyService") {
-    router.push("/factory/workshop/warranty");
+    router.push({
+      path: "/factory/workshop/warranty",
+      query: { phone: row.phone, action: "create" },
+    });
   } else {
-    router.push("/factory/workshop/repair-history/create");
+    router.push({
+      path: "/factory/workshop/repair-orders",
+      query: { phone: row.phone, action: "create" },
+    });
   }
 };
 

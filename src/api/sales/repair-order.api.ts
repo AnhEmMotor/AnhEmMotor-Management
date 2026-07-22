@@ -50,10 +50,15 @@ export interface RepairOrderList {
 
 export interface CreateRepairOrderPayload {
   vehicleId?: number;
-  customerName: string;
-  customerPhone: string;
+  customerName?: string;
+  customerPhone?: string;
+  vinNumber?: string;
+  licensePlate?: string;
+  vehicleName?: string;
+  vehicleColor?: string;
   mileage: number;
   description: string;
+  technicianId?: number;
 }
 
 export interface UpdateRepairOrderPayload {
@@ -99,12 +104,13 @@ export interface CompleteRepairOrderPayload {
 
 export const RepairOrderApi = {
   getList(params: any) {
-    const { current, size, ...rest } = params;
+    // Support both { Page, PageSize } (direct) and { current, size } (paginator) formats
+    const { current, size, Page, PageSize, ...rest } = params;
     return request.get<RepairOrderList>({
       url: "/api/v1/RepairOrders",
       params: {
-        Page: current,
-        PageSize: size,
+        Page: Page ?? current ?? 1,
+        PageSize: PageSize ?? size ?? 10,
         ...rest,
       },
     });

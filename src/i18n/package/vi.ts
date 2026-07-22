@@ -15,6 +15,7 @@ export default {
     requestFailed: "Có lỗi từ hệ thống",
     requestConfigError: "Lỗi cấu hình yêu cầu",
   },
+  WorkshopAppointments: "Lịch hẹn xưởng",
   topBar: {
     search: {
       title: "Tìm kiếm",
