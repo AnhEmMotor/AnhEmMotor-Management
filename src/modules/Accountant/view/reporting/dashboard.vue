@@ -15,7 +15,7 @@
       </template>
     </ReportPageHeader>
 
-    <div class="resp-stats-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+    <div class="reporting-kpi-grid dashboard-report__kpis">
       <ArtStatsCard
         title="Doanh thu thực tế"
         :count="formatCurrency(summary.todayRevenue)"
@@ -26,6 +26,7 @@
             ? 'bg-report-red-dark'
             : 'bg-report-red'
         "
+        :loading="loading"
       />
       <ArtStatsCard
         title="Lợi nhuận ròng"
@@ -33,6 +34,7 @@
         :description="`Tháng này: ${formatCurrency(summary.monthlyProfit)}`"
         icon="ri:line-chart-line"
         icon-style="bg-report-red-light"
+        :loading="loading"
       />
       <ArtStatsCard
         title="Đơn hàng chờ xử lý"
@@ -40,6 +42,7 @@
         :description="`Quá hạn: ${summary.overdueOrdersCount}`"
         icon="ri:timer-line"
         icon-style="bg-report-red-dark"
+        :loading="loading"
       />
       <ArtStatsCard
         title="Cảnh báo tồn kho"
@@ -49,104 +52,110 @@
         :icon-style="
           summary.lowStockCount > 0 ? 'bg-report-red-dark' : 'bg-report-gray'
         "
+        :loading="loading"
       />
     </div>
 
-    <!-- Khu vực Trung tâm: Biểu đồ và Tóm tắt tháng -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-      <div
-        class="lg:col-span-2 bg-(--el-bg-color-overlay) p-4 rounded-lg shadow border border-(--art-card-border)"
-      >
-        <h3 class="font-bold mb-4">Biểu đồ doanh thu theo chu kỳ</h3>
+    <div
+      class="reporting-section-grid three-columns dashboard-report__overview"
+    >
+      <ElCard class="reporting-card dashboard-report__chart-card lg:col-span-2">
+        <template #header>
+          <div class="dashboard-report__card-header">
+            <span>Biểu đồ doanh thu theo chu kỳ</span>
+            <span>{{ selectedRangeLabel }}</span>
+          </div>
+        </template>
         <div
           ref="revenueChartRef"
-          class="h-64 w-full bg-(--el-fill-color-light) rounded"
+          class="reporting-chart dashboard-report__chart"
         ></div>
-      </div>
-      <div
-        class="bg-(--el-bg-color-overlay) p-4 rounded-lg shadow border border-(--art-card-border)"
-      >
-        <h3 class="font-bold mb-4">Tóm tắt mục tiêu tháng</h3>
-        <div class="space-y-4">
-          <div class="flex justify-between">
-            <span class="text-(--el-text-color-secondary)">Đã đạt:</span>
-            <span class="font-bold">{{
-              formatCurrency(summary.monthAchieved)
-            }}</span>
+      </ElCard>
+      <ElCard class="reporting-card dashboard-report__summary-card">
+        <template #header>
+          <div class="dashboard-report__card-header">
+            <span>Tóm tắt vận hành</span>
+            <span>{{ selectedRangeLabel }}</span>
           </div>
-          <div class="flex justify-between gap-4">
+        </template>
+        <div class="reporting-page__summary-grid">
+          <div class="reporting-page__summary-row">
+            <span class="reporting-muted">Doanh thu tháng:</span>
+            <strong>{{ formatCurrency(summary.monthlyRevenue) }}</strong>
+          </div>
+          <div class="reporting-page__summary-row">
             <span class="reporting-muted">Tháng trước:</span>
             <strong>{{ formatCurrency(summary.lastMonthRevenue) }}</strong>
           </div>
-          <div
-            class="flex justify-between gap-4 border-t border-slate-100 pt-3"
-          >
+          <div class="reporting-page__summary-row">
             <span>Xe bán tháng này:</span>
-            <strong class="text-primary">{{
+            <strong class="text-report-red">{{
               summary.monthlyVehiclesSold
             }}</strong>
           </div>
-          <div class="flex justify-between gap-4">
+          <div class="reporting-page__summary-row">
             <span class="reporting-muted">Tổng SKU:</span>
             <strong>{{ summary.totalSKUCount }}</strong>
           </div>
         </div>
-      </div>
+      </ElCard>
     </div>
 
-    <!-- Phân tích song song -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-      <div
-        class="bg-(--el-bg-color-overlay) p-4 rounded-lg shadow border border-(--art-card-border)"
-      >
-        <h3 class="font-bold mb-4">Doanh thu theo thương hiệu</h3>
-        <div ref="brandChartRef" class="h-64 w-full"></div>
-      </div>
-      <div
-        class="bg-(--el-bg-color-overlay) p-4 rounded-lg shadow border border-(--art-card-border)"
-      >
-        <h3 class="font-bold mb-4">Hiệu suất Sale (Top Ranking)</h3>
-        <table class="w-full text-left text-sm">
-          <thead>
-            <tr
-              class="border-b border-(--el-border-color-light) text-(--el-text-color-secondary)"
-            >
-              <th class="pb-2">Nhân viên</th>
-              <th class="pb-2">Doanh số</th>
-              <th class="pb-2">KPI</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="staff in topStaff"
-              :key="staff.employeeName"
-              class="border-b border-(--art-card-border) last:border-0"
-            >
-              <td class="py-2 font-medium">{{ staff.employeeName }}</td>
-              <td class="py-2">{{ formatCurrency(staff.totalSales) }}</td>
-              <td class="py-2">
-                <span
-                  :class="[
-                    'px-2 py-1 rounded-full text-xs',
-                    getKpiClass(staff.kpiStatus),
-                  ]"
-                >
-                  {{ staff.kpiStatus }}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="reporting-section-grid two-columns dashboard-report__analysis">
+      <ElCard class="reporting-card dashboard-report__chart-card">
+        <template #header>Doanh thu theo thương hiệu</template>
+        <div
+          ref="brandChartRef"
+          class="reporting-chart dashboard-report__chart"
+        ></div>
+      </ElCard>
+      <ElCard class="reporting-card dashboard-report__table-card">
+        <template #header>Hiệu suất Sale (Top Ranking)</template>
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[520px] text-left text-sm">
+            <thead>
+              <tr
+                class="border-b border-(--el-border-color-light) text-(--el-text-color-secondary)"
+              >
+                <th class="pb-2">Nhân viên</th>
+                <th class="pb-2">Doanh số</th>
+                <th class="pb-2">KPI</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="staff in topStaff"
+                :key="staff.employeeName"
+                class="border-b border-(--art-card-border) last:border-0"
+              >
+                <td class="py-2 font-medium">{{ staff.employeeName }}</td>
+                <td class="py-2">{{ formatCurrency(staff.totalSales) }}</td>
+                <td class="py-2">
+                  <span
+                    :class="[
+                      'px-2 py-1 rounded-full text-xs',
+                      getKpiClass(staff.kpiStatus),
+                    ]"
+                  >
+                    {{ staff.kpiStatus }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <ElEmpty
+            v-if="topStaff.length === 0"
+            description="Chưa có dữ liệu"
+            :image-size="72"
+          />
+        </div>
+      </ElCard>
     </div>
 
-    <!-- Dòng giao dịch thời gian thực -->
-    <div
-      class="bg-(--el-bg-color-overlay) p-4 rounded-lg shadow border border-(--art-card-border)"
-    >
-      <h3 class="font-bold mb-4">Luồng nhật ký giao dịch (Real-time)</h3>
+    <ElCard class="reporting-card dashboard-report__transactions">
+      <template #header>Luồng nhật ký giao dịch gần nhất</template>
       <div class="overflow-x-auto">
-        <table class="w-full text-left text-sm">
+        <table class="w-full min-w-[680px] text-left text-sm">
           <thead>
             <tr
               class="border-b border-(--el-border-color-light) text-(--el-text-color-secondary)"
@@ -179,8 +188,13 @@
             </tr>
           </tbody>
         </table>
+        <ElEmpty
+          v-if="transactions.length === 0"
+          description="Chưa có dữ liệu"
+          :image-size="72"
+        />
       </div>
-    </div>
+    </ElCard>
 
     <ElCard class="reporting-card mt-4">
       <template #header>Đơn hàng gần đây</template>
@@ -223,59 +237,101 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import * as echarts from "echarts";
+import { storeToRefs } from "pinia";
 import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
 import { statisticsApi } from "@/api/operations";
+import { useSettingStore } from "@/application/store/setting";
 import ReportPageHeader from "./ReportPageHeader.vue";
 import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
 import type {
   StaffPerformance,
   TransactionLog,
 } from "@/services/analytics.types";
+import type * as Statistical from "@/types/api/statistical";
+
+type Period = "today" | "month" | "year" | "custom";
+
+const settingStore = useSettingStore();
+const { isDark } = storeToRefs(settingStore);
 
 const revenueChartRef = ref<HTMLElement | null>(null);
 const brandChartRef = ref<HTMLElement | null>(null);
 let revenueChart: echarts.ECharts | null = null;
 let brandChart: echarts.ECharts | null = null;
-const recentOrders = ref<any[]>([]);
-const dailyRevenue = ref<any[]>([]);
-const chartTextColor = "#6b7280";
-const chartAxisLineColor = "#e5e7eb";
-const chartGridLineColor = "#f3f4f6";
+const recentOrders = ref<Statistical.RecentOrderResponse[]>([]);
+const dailyRevenue = ref<Statistical.DailyRevenueResponse[]>([]);
+const loading = ref(false);
 
-const currentPeriod = ref<any>("today");
-const periodStart = ref("");
-const periodEnd = ref("");
-const onPeriodChange = () => {};
+const currentPeriod = ref<Period>("month");
+const periodStart = ref(toDateInput(startOfMonth(new Date())));
+const periodEnd = ref(toDateInput(new Date()));
 
-const summary = ref<any>({
-  totalRevenue: 0,
-  netProfit: 0,
-  pendingAmount: 0,
-  alertsCount: 0,
-  monthTarget: 0,
-  monthAchieved: 0,
-  monthRemaining: 0,
-  monthForecast: 0,
-  isRevenueAlert: false,
-  isPendingAlert: false,
-  isStockAlert: false,
+const summary = ref<Statistical.DashboardStatsResponse>({
+  todayRevenue: 0,
+  revenueChangePercentage: 0,
+  monthlyRevenue: 0,
+  todayProfit: 0,
+  monthlyProfit: 0,
+  lastMonthRevenue: 0,
+  lastMonthProfit: 0,
+  total7dRevenue: 0,
+  total7dProfit: 0,
+  bestDayRevenue: 0,
+  overdueOrdersCount: 0,
+  lowStockCount: 0,
+  overstockCount: 0,
+  overdueDebtAmount: 0,
+  todayVehiclesSold: 0,
+  monthlyVehiclesSold: 0,
+  currentInventoryCount: 0,
+  totalSKUCount: 0,
+  brandDistribution: [],
+  activeInstallmentCount: 0,
+  lateInstallmentCount: 0,
+  totalCustomerDebt: 0,
+  topSellingProducts: [],
+  brandRevenueDistribution: [],
+  todayActivities: [],
+  pendingOrdersCount: 0,
+  newCustomersCount: 0,
 });
 const topStaff = ref<StaffPerformance[]>([]);
 const transactions = ref<TransactionLog[]>([]);
 
+const selectedRangeLabel = computed(
+  () => `${formatDate(periodStart.value)} - ${formatDate(periodEnd.value)}`,
+);
+function onPeriodChange(period?: Period) {
+  if (period && period !== "custom") setDateRange(period);
+  void loadData();
+}
+
 async function loadData() {
+  loading.value = true;
   try {
-    const res = await statisticsApi.getDashboardOverview();
+    const res = await statisticsApi.getDashboardOverview(
+      periodStart.value,
+      periodEnd.value,
+    );
     summary.value = res.summary;
-    recentOrders.value = res.recentOrders.slice(0, 10);
-    dailyRevenue.value = res.dailyRevenue;
-    if (res.topStaff) topStaff.value = res.topStaff;
-    if (res.recentTransactions) transactions.value = res.recentTransactions;
+    recentOrders.value = (res.recentOrders || []).slice(0, 10);
+    dailyRevenue.value = res.dailyRevenue || [];
+    topStaff.value = Array.isArray(res.topStaff) ? res.topStaff : [];
+    transactions.value = Array.isArray(res.recentTransactions)
+      ? res.recentTransactions
+      : [];
+    await nextTick();
     updateCharts();
   } catch (e) {
     console.error("Failed to load dashboard overview:", e);
+    recentOrders.value = [];
+    dailyRevenue.value = [];
+    topStaff.value = [];
+    transactions.value = [];
+  } finally {
+    loading.value = false;
   }
 }
 
@@ -285,20 +341,20 @@ function updateCharts() {
     const data = dailyRevenue.value;
     revenueChart.setOption({
       backgroundColor: "transparent",
-      textStyle: { color: chartTextColor },
+      textStyle: { color: chartTextColor() },
       tooltip: { trigger: "axis" },
       grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
       xAxis: {
         type: "category",
         data: data.map((d) => d.reportDay),
         axisTick: { alignWithLabel: true },
-        axisLabel: { color: chartTextColor },
-        axisLine: { lineStyle: { color: chartAxisLineColor } },
+        axisLabel: { color: chartTextColor() },
+        axisLine: { lineStyle: { color: chartAxisLineColor() } },
       },
       yAxis: {
         type: "value",
-        axisLabel: { color: chartTextColor },
-        splitLine: { lineStyle: { color: chartGridLineColor } },
+        axisLabel: { color: chartTextColor() },
+        splitLine: { lineStyle: { color: chartGridLineColor() } },
       },
       series: [
         {
@@ -324,9 +380,9 @@ function updateCharts() {
     brandChart.setOption({
       backgroundColor: "transparent",
       color: ["#e84a4a", "#ff6b6b", "#f97316", "#22c55e", "#3b82f6", "#a855f7"],
-      textStyle: { color: chartTextColor },
+      textStyle: { color: chartTextColor() },
       tooltip: { trigger: "item" },
-      legend: { bottom: 0, textStyle: { color: chartTextColor } },
+      legend: { bottom: 0, textStyle: { color: chartTextColor() } },
       series: [
         {
           type: "pie",
@@ -376,10 +432,78 @@ function getKpiClass(status: string) {
   }
 }
 
+function setDateRange(period: Period) {
+  const today = new Date();
+
+  if (period === "today") {
+    periodStart.value = toDateInput(today);
+    periodEnd.value = toDateInput(today);
+    return;
+  }
+
+  if (period === "month") {
+    periodStart.value = toDateInput(startOfMonth(today));
+    periodEnd.value = toDateInput(today);
+    return;
+  }
+
+  if (period === "year") {
+    periodStart.value = toDateInput(new Date(today.getFullYear(), 0, 1));
+    periodEnd.value = toDateInput(today);
+  }
+}
+
+function startOfMonth(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+function toDateInput(date: Date) {
+  const localDate = new Date(date);
+  localDate.setMinutes(localDate.getMinutes() - localDate.getTimezoneOffset());
+  return localDate.toISOString().slice(0, 10);
+}
+
+function formatDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "-";
+  return new Intl.DateTimeFormat("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(date);
+}
+
+function chartTextColor() {
+  return isDark.value ? "#CBD5E1" : "#475569";
+}
+
+function chartAxisLineColor() {
+  return isDark.value ? "rgb(255 255 255 / 14%)" : "#E2E8F0";
+}
+
+function chartGridLineColor() {
+  return isDark.value ? "rgb(255 255 255 / 8%)" : "#F1F5F9";
+}
+
 function handleResize() {
   revenueChart?.resize();
   brandChart?.resize();
 }
+
+watch(isDark, async () => {
+  await nextTick();
+  updateCharts();
+});
+
+watch([periodStart, periodEnd], () => {
+  if (
+    currentPeriod.value === "custom" &&
+    periodStart.value &&
+    periodEnd.value
+  ) {
+    void loadData();
+  }
+});
 
 onMounted(() => {
   loadData();
@@ -391,3 +515,49 @@ onUnmounted(() => {
   brandChart?.dispose();
 });
 </script>
+
+<style scoped lang="scss">
+.dashboard-report__kpis,
+.dashboard-report__overview,
+.dashboard-report__analysis,
+.dashboard-report__transactions {
+  margin-bottom: 16px;
+}
+
+.dashboard-report__card-header {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+
+  span:last-child {
+    overflow: hidden;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--report-muted);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.dashboard-report__chart {
+  min-height: 300px;
+}
+
+.dashboard-report__table-card table,
+.dashboard-report__transactions table {
+  color: var(--report-muted-strong);
+}
+
+.dashboard-report__table-card th,
+.dashboard-report__transactions th {
+  color: var(--report-muted);
+}
+
+@media (width <= 767px) {
+  .dashboard-report__chart {
+    min-height: 240px;
+  }
+}
+</style>

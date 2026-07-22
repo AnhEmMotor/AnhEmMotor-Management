@@ -1,101 +1,30 @@
 import request from "@/common/utils/http";
 import type { PagedResult } from "@/types/api";
+import type {
+  SupplierContractAuditLogDto,
+  SupplierContractDto,
+  SupplierContractListParams,
+  SupplierContractMutation,
+  SupplierContractStatisticsResponse,
+  SupplierContractStatus,
+} from "@/domain/supplier/contract.types";
 
-export type SupplierContractStatus =
-  | "Draft"
-  | "PendingApproval"
-  | "Active"
-  | "Expired"
-  | "Terminated"
-  | "Completed";
-
-export interface SupplierContractItemDto {
-  productVariantId: number;
-  wholesalePrice: number;
-}
-
-export interface SupplierContractSkuItem {
-  id?: string;
-  skuCode?: string;
-  productName?: string;
-  category?: string;
-  wholesalePrice: number;
-  moq?: number;
-}
-
-export interface SupplierContractAuditLogDto {
-  id: string;
-  supplierContractId: string;
-  action: string;
-  details?: string;
-  changedBy?: string;
-  ipAddress?: string;
-  oldValue?: string;
-  newValue?: string;
-  createdAt?: string;
-}
-
-export interface SupplierContractDto {
-  id: string;
-  supplierId?: string;
-  supplierName?: string;
-  supplierCode?: string;
-  contractNumber: string;
-  contractFilePath?: string;
-  effectiveDate: string;
-  expirationDate?: string;
-  contractValue: number;
-  status: SupplierContractStatus;
-  terms?: string;
-  note?: string;
-
-  creditLimit?: number;
-  paymentWindowDays?: number;
-  bankAccountNumber?: string;
-  bankName?: string;
-  minimumVolumePerMonth?: number;
-  discountRate?: number;
-  parentContractId?: string;
-
-  createdAt?: string;
-  updatedAt?: string;
-  deletedAt?: string;
-
-  supplierContactName?: string;
-  supplierPhone?: string;
-  supplierEmail?: string;
-  supplierAddress?: string;
-  skuPriceList?: SupplierContractSkuItem[];
-  auditLogs?: SupplierContractAuditLogDto[];
-}
-
-export interface SupplierContractListParams {
-  current: number;
-  size: number;
-  Filters?: string;
-  Sorts?: string;
-  name?: string;
-  contractNumber?: string;
-  status?: string[];
-  supplierId?: string;
-}
-
-export interface SupplierContractStatisticsResponse {
-  totalContracts: number;
-  activeContracts: number;
-  pendingApproval: number;
-  expiredContracts: number;
-  expiringContracts: number;
-}
+export type {
+  SupplierContractDto,
+  SupplierContractListParams,
+  SupplierContractStatisticsResponse,
+} from "@/domain/supplier/contract.types";
 
 export const SupplierContractApi = {
   getList(params: SupplierContractListParams) {
-    const { current, size, ...rest } = params;
+    const { current, size, filters, sorts, ...rest } = params;
     return request.get<PagedResult<SupplierContractDto>>({
       url: "/api/v1/SupplierContracts",
       params: {
         Page: current,
         PageSize: size,
+        Filters: filters,
+        Sorts: sorts,
         ...rest,
       },
     });
@@ -114,25 +43,27 @@ export const SupplierContractApi = {
   },
 
   getDeletedList(params: SupplierContractListParams) {
-    const { current, size, ...rest } = params;
+    const { current, size, filters, sorts, ...rest } = params;
     return request.get<PagedResult<SupplierContractDto>>({
       url: "/api/v1/SupplierContracts/deleted",
       params: {
         Page: current,
         PageSize: size,
+        Filters: filters,
+        Sorts: sorts,
         ...rest,
       },
     });
   },
 
-  create(data: Partial<SupplierContractDto>) {
+  create(data: SupplierContractMutation) {
     return request.post<SupplierContractDto>({
       url: "/api/v1/SupplierContracts",
       data,
     });
   },
 
-  update(id: string, data: Partial<SupplierContractDto>) {
+  update(id: string, data: SupplierContractMutation) {
     return request.put<SupplierContractDto>({
       url: `/api/v1/SupplierContracts/${id}`,
       data,
@@ -143,6 +74,15 @@ export const SupplierContractApi = {
     return request.put<SupplierContractDto>({
       url: `/api/v1/SupplierContracts/${id}`,
       data,
+    });
+  },
+
+  uploadFile(id: string, file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+    return request.post<{ contractFilePath: string }>({
+      url: `/api/v1/SupplierContracts/${id}/file`,
+      data: formData,
     });
   },
 
@@ -165,7 +105,7 @@ export const SupplierContractApi = {
   },
 
   getSuppliersForSelect() {
-    return request.get<{ id: string; name: string }[]>({
+    return request.get<{ id: number; name: string }[]>({
       url: "/api/v1/SupplierContracts/suppliers-for-select",
     });
   },

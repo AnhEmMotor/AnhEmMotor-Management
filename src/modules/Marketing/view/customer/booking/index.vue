@@ -1,6 +1,6 @@
 <template>
   <div
-    class="resp-page customer-booking-page flex flex-col h-screen bg-[#F8FAFC] dark:bg-[#020617] text-[#0F172A] dark:text-[#E2E8F0]"
+    class="resp-page customer-booking-page flex min-h-screen flex-col bg-[#F8FAFC] text-[#0F172A] dark:bg-[#020617] dark:text-[#E2E8F0]"
   >
     <div
       class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-3 shrink-0 shadow-sm relative z-20"
@@ -56,7 +56,42 @@
     </div>
 
     <div
-      class="flex-1 flex overflow-hidden max-w-[1600px] mx-auto w-full p-4 gap-4"
+      class="booking-kpi-grid grid grid-cols-1 gap-3 px-4 pt-4 sm:grid-cols-2 lg:grid-cols-4"
+    >
+      <ArtStatsCard
+        title="Tổng lịch trong tháng"
+        :count="bookingKpis.total"
+        :description="calendarMonthLabel"
+        icon="ri:calendar-check-line"
+        icon-style="bg-report-red"
+      />
+      <ArtStatsCard
+        title="Chờ xác nhận"
+        :count="bookingKpis.pending"
+        description="Cần Marketing xử lý"
+        icon="ri:timer-flash-line"
+        :icon-style="
+          bookingKpis.pending > 0 ? 'bg-report-red-dark' : 'bg-report-gray'
+        "
+      />
+      <ArtStatsCard
+        title="Lịch lái thử"
+        :count="bookingKpis.testDrive"
+        description="Yêu cầu từ Store và nội bộ"
+        icon="ri:motorbike-line"
+        icon-style="bg-report-red-light"
+      />
+      <ArtStatsCard
+        title="Lịch dịch vụ"
+        :count="bookingKpis.service"
+        description="Bảo dưỡng, sửa chữa, bảo hành"
+        icon="ri:tools-line"
+        icon-style="bg-report-red-dark"
+      />
+    </div>
+
+    <div
+      class="flex w-full max-w-[1600px] flex-1 flex-col gap-4 p-4 lg:flex-row lg:overflow-hidden"
     >
       <div
         class="flex-1 min-w-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden flex flex-col"
@@ -458,6 +493,7 @@ import { ref, computed, onMounted } from "vue";
 import { ElMessage, ElLoading, ElMessageBox } from "element-plus";
 import { BookingApi, Booking } from "@/api/sales";
 import { BookingAppointmentApi } from "@/api/booking-appointment.api";
+import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
 
 defineOptions({ name: "BookingCalendar" });
 
@@ -484,11 +520,40 @@ const bookingForm = ref({
 const typeOptions = [
   { value: "TestDrive", label: "Lái thử" },
   { value: "Consulting", label: "Tư vấn" },
+  { value: "Maintenance", label: "Bảo dưỡng" },
   { value: "RepairService", label: "Sửa chữa" },
   { value: "WarrantyService", label: "Bảo hành" },
 ];
 
 const bookings = ref<any[]>([]);
+
+const serviceBookingTypes = new Set([
+  "Maintenance",
+  "RepairService",
+  "WarrantyService",
+]);
+
+const monthBookings = computed(() => {
+  const year = currentDate.value.getFullYear();
+  const month = currentDate.value.getMonth();
+
+  return bookings.value.filter((booking) => {
+    const date = new Date(booking.preferredDate);
+    return date.getFullYear() === year && date.getMonth() === month;
+  });
+});
+
+const bookingKpis = computed(() => ({
+  total: monthBookings.value.length,
+  pending: monthBookings.value.filter((booking) => booking.status === "Pending")
+    .length,
+  testDrive: monthBookings.value.filter(
+    (booking) => booking.bookingType === "TestDrive",
+  ).length,
+  service: monthBookings.value.filter((booking) =>
+    serviceBookingTypes.has(booking.bookingType),
+  ).length,
+}));
 
 const calendarMonthLabel = computed(() => {
   const d = currentDate.value;
@@ -522,18 +587,7 @@ const fetchBookings = async () => {
         time: timeStr,
         date: dateStr,
         type: b.bookingType,
-        typeLabel:
-          b.bookingType === "TestDrive"
-            ? "Lái thử"
-            : b.bookingType === "Consulting"
-              ? "Tư vấn"
-              : b.bookingType === "RepairService"
-                ? "Sửa chữa"
-                : b.bookingType === "WarrantyService"
-                  ? "Bảo hành"
-                  : b.bookingType === "Maintenance"
-                    ? "Bảo trì"
-                    : "Tư vấn",
+        typeLabel: getBookingTypeLabel(b.bookingType),
         content: b.note || "",
       };
     });
@@ -541,6 +595,10 @@ const fetchBookings = async () => {
     ElMessage.error(err.message || "Lỗi khi tải danh sách đặt lịch");
   }
 };
+
+const getBookingTypeLabel = (bookingType: string) =>
+  typeOptions.find((option) => option.value === bookingType)?.label ??
+  "Đặt lịch";
 
 onMounted(fetchBookings);
 
@@ -567,7 +625,8 @@ const getBookings = (day: string) =>
 const getBookingPillClass = (booking: any) => {
   if (booking.status === "Pending") return "pill-pending";
   if (booking.type === "TestDrive") return "pill-testdrive";
-  if (booking.type === "RepairService") return "pill-repair";
+  if (["Maintenance", "RepairService"].includes(booking.type))
+    return "pill-repair";
   if (booking.type === "WarrantyService") return "pill-warranty";
   return "pill-default";
 };
@@ -577,7 +636,7 @@ const getBookingClasses = (booking: any) => {
     return "bg-amber-50 border-amber-200 text-amber-600 dark:bg-amber-950/20 dark:border-amber-800 dark:text-amber-300";
   if (booking.type === "TestDrive")
     return "bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-950/20 dark:border-blue-800 dark:text-blue-300";
-  if (booking.type === "RepairService")
+  if (["Maintenance", "RepairService"].includes(booking.type))
     return "bg-orange-50 border-orange-200 text-orange-600 dark:bg-orange-950/20 dark:border-orange-800 dark:text-orange-300";
   if (booking.type === "WarrantyService")
     return "bg-purple-50 border-purple-200 text-purple-600 dark:bg-purple-950/20 dark:border-purple-800 dark:text-purple-300";
@@ -734,6 +793,7 @@ const handleDeleteBooking = async () => {
     &::-webkit-scrollbar {
       width: 4px;
     }
+
     &::-webkit-scrollbar-track {
       background: transparent;
     }
@@ -751,6 +811,7 @@ const handleDeleteBooking = async () => {
     :deep(.el-calendar) {
       height: 100%;
     }
+
     :deep(.el-calendar__body) {
       padding: 0;
     }
@@ -767,6 +828,7 @@ const handleDeleteBooking = async () => {
       &:hover {
         background-color: #f1f5f9;
       }
+
       &.is-selected {
         background-color: #eff6ff;
       }
@@ -883,6 +945,7 @@ const handleDeleteBooking = async () => {
       box-shadow: none;
       padding: 0 8px;
     }
+
     :deep(.el-input__inner) {
       font-size: 11px;
     }
@@ -897,6 +960,7 @@ const handleDeleteBooking = async () => {
     margin-right: 0;
     border-bottom: 1px solid #f1f5f9;
   }
+
   .el-dialog__body {
     padding: 12px 20px 0;
   }
@@ -916,6 +980,7 @@ const handleDeleteBooking = async () => {
   thead th {
     border-bottom-color: rgb(255 255 255 / 6%) !important;
   }
+
   td {
     border-color: rgb(255 255 255 / 6%) !important;
   }

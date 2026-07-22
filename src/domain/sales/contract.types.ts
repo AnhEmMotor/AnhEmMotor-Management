@@ -4,11 +4,13 @@ export interface SalesContractListDto {
   id: string;
   contractNumber: string;
   orderId: number;
+  outputId?: number;
   status: SalesContractStatus;
-  customerName: string;
-  vehicle: string;
-  deliveryDeadline?: string;
-  progress: string;
+  customerFullName?: string;
+  vehicleModel?: string;
+  vehicleVersion?: string;
+  vehicleColor?: string;
+  finalPaymentDeadline?: string;
   actualSalePrice: number;
   signedDate?: string;
   scannedFileUrl?: string;
