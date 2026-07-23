@@ -25,6 +25,7 @@ export interface DashboardKpisData {
   startDate: string;
   endDate: string;
   cards: DashboardKpisCard[];
+  alerts?: any;
 }
 
 export interface MonthlyData {

@@ -242,7 +242,8 @@ export function useWarrantyCategoryTable() {
   const fetchStatistics = async () => {
     try {
       const rawRes = await WarrantyTermApi.getStatistics();
-      const res: any = rawRes?.value ?? rawRes?.data ?? rawRes ?? {};
+      const res: any =
+        (rawRes as any)?.value ?? (rawRes as any)?.data ?? rawRes ?? {};
       statistics.value = {
         totalTerms: res.totalCount ?? res.totalTerms ?? 0,
         activeTerms: res.activeCount ?? res.activeTerms ?? 0,
@@ -343,10 +344,10 @@ export function useWarrantyCategoryTable() {
     await refreshData();
     if (data.value.length === 0) {
       (data as unknown as Ref<WarrantyTerm[]>).value = [...MOCK_WARRANTY_TERMS];
-      pagination.total = MOCK_WARRANTY_TERMS.length;
+      (pagination as any).total = MOCK_WARRANTY_TERMS.length;
     }
     fetchStatistics();
-    fetchBrands();
+    loadBrands();
   });
 
   const getStatusType = (status: string) => {
