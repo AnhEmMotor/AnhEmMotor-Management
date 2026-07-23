@@ -72,6 +72,7 @@ test("detail removes addendum actions and all visible statuses are Vietnamese", 
   );
   assert.doesNotMatch(detailSource, /trạng thái Signed|\(Fulfilled\)/);
   assert.match(listSource, /Draft:\s*["']Nháp["']/);
+  assert.match(listSource, /Approved:\s*["']Đã duyệt["']/);
   assert.match(listSource, /Signed:\s*["']Đã ký["']/);
   assert.match(listSource, /Fulfilled:\s*["']Hoàn tất["']/);
 });

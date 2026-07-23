@@ -77,6 +77,7 @@
             @change="fetchData"
           >
             <el-option label="Nháp" value="Draft" />
+            <el-option label="Đã duyệt" value="Approved" />
             <el-option label="Đã ký" value="Signed" />
             <el-option label="Hoàn tất" value="Fulfilled" />
           </el-select>
@@ -434,6 +435,8 @@ const getStatusType = (status: string) => {
   switch (status) {
     case "Draft":
       return "warning";
+    case "Approved":
+      return "success";
     case "Signed":
       return "primary";
     case "Fulfilled":
@@ -446,6 +449,7 @@ const getStatusType = (status: string) => {
 const getStatusLabel = (status: string) => {
   const map: Record<string, string> = {
     Draft: "Nháp",
+    Approved: "Đã duyệt",
     Signed: "Đã ký",
     Fulfilled: "Hoàn tất",
   };
