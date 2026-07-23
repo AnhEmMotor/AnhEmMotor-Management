@@ -86,5 +86,15 @@ assert.match(
   /uploadFile\(id:\s*string,\s*file:\s*File\)/,
   "API frontend phải có endpoint tải file hợp đồng NCC",
 );
+assert.match(
+  detailSource,
+  /@click="handleApproveContract"/,
+  "Chi tiết hợp đồng NCC phải có thao tác duyệt trực tiếp",
+);
+assert.match(
+  detailSource,
+  /updateStatus\.execute\(contract\.value\.id,\s*"Active"\)/,
+  "Duyệt hợp đồng NCC phải cập nhật trạng thái Active qua API thật",
+);
 
 console.log("supplier contract workflow regression passed");

@@ -1,4 +1,4 @@
-export type SalesContractStatus = "Draft" | "Signed" | "Fulfilled";
+export type SalesContractStatus = "Draft" | "Approved" | "Signed" | "Fulfilled";
 
 export interface SalesContractListDto {
   id: string;

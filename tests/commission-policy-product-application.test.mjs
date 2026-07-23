@@ -37,10 +37,17 @@ test("vehicle, parts and workshop policy forms share product-backed selectors", 
   assert.match(source, /ProductApi\.getVariantsForInput/);
 });
 
-test("general information shows the selected vehicle price", async () => {
+test("general information shows product price for every commission department", async () => {
   const source = await loadPolicyDetail();
 
-  assert.match(source, /label="Giá xe"/);
+  assert.match(source, /priceLabel:\s*"Giá xe"/);
+  assert.match(source, /priceLabel:\s*"Giá phụ tùng \/ phụ kiện"/);
+  assert.match(source, /priceLabel:\s*"Giá phụ tùng"/);
+  assert.match(source, /:label="currentProductConfig\.priceLabel"/);
+  assert.doesNotMatch(
+    source,
+    /v-if="editForm\.department === 'vehicle_sales'"\s+label="Giá xe"/,
+  );
   assert.match(source, /selectedProductPriceLabel/);
   assert.match(source, /selectedRewardBasePrice/);
 });

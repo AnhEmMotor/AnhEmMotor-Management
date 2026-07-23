@@ -154,9 +154,10 @@
               class="interest-column flex-1 px-4 border-l border-r border-gray-50 dark:border-slate-800"
             >
               <div class="flex flex-col gap-2">
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 w-full">
                   <span
-                    class="text-base font-bold text-gray-700 dark:text-slate-200"
+                    class="text-base font-bold text-gray-700 dark:text-slate-200 truncate flex-1 min-w-0"
+                    :title="lead.interestedVehicle || 'Chưa xác định'"
                     >{{ lead.interestedVehicle || "Chưa xác định" }}</span
                   >
                   <ElTag
@@ -164,7 +165,7 @@
                     size="small"
                     :type="getVehicleBrandType(lead.interestedVehicle)"
                     effect="dark"
-                    class="rounded-md border-none px-2 uppercase font-bold text-[10px]"
+                    class="rounded-md border-none px-2 uppercase font-bold text-[10px] shrink-0"
                   >
                     {{ getBrand(lead.interestedVehicle) }}
                   </ElTag>
@@ -207,12 +208,14 @@
                   >Sale phụ trách</span
                 >
                 <ElSelect
-                  :model-value="lead.saleId || null"
+                  :model-value="lead.assignedToId || null"
                   @change="(val) => handleAssignSale(lead.id, val)"
                   size="small"
                   class="sale-select"
-                  :class="{ 'is-unassigned': !lead.saleId }"
-                  :placeholder="!lead.saleId ? 'CHƯA BÀN GIAO' : 'Giao Sale...'"
+                  :class="{ 'is-unassigned': !lead.assignedToId }"
+                  :placeholder="
+                    !lead.assignedToId ? 'CHƯA BÀN GIAO' : 'Giao Sale...'
+                  "
                 >
                   <ElOption
                     v-for="sale in salesList"

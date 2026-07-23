@@ -12,6 +12,22 @@ export interface DashboardKpi {
   netProfitChangePercent: number;
 }
 
+export interface DashboardKpisCard {
+  label: string;
+  value: number;
+  change: number;
+  icon: string;
+  unit: string;
+}
+
+export interface DashboardKpisData {
+  period: string;
+  startDate: string;
+  endDate: string;
+  cards: DashboardKpisCard[];
+  alerts?: any;
+}
+
 export interface MonthlyData {
   month: string;
   income: number;
@@ -26,7 +42,7 @@ export interface MonthlyRevenueProfit {
 }
 
 export const fetchDashboardKpis = () => {
-  return request.get<DashboardKpi>({
+  return request.get<DashboardKpisData>({
     url: "/api/v1/admin/analytics/dashboard-kpis",
   });
 };
@@ -160,4 +176,23 @@ export const statisticsApi = {
       url: "/api/v1/Statistics/customer-service-analytics",
     });
   },
+};
+
+export interface RecentAuditLog {
+  timestamp: string;
+  category: string;
+  action: string;
+  actorId: string | null;
+  actorName: string;
+  targetType: string;
+  targetId: number | null;
+  targetName: string;
+  details: string;
+}
+
+export const fetchRecentAuditLogs = (limit = 20) => {
+  return request.get<RecentAuditLog[]>({
+    url: "/api/v1/admin/analytics/recent-audit-logs",
+    params: { limit },
+  });
 };

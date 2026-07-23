@@ -55,3 +55,17 @@ test("sales-contract detail print action invokes the browser print flow", () => 
     /@click="handlePrint"[\s\S]{0,160}v-auth="Permissions\.Admin\.ContractManagement\.View"/,
   );
 });
+
+test("sales-contract detail requires Admin approval before signed-scan upload", () => {
+  assert.match(detailSource, /@click="handleApproveContract"/);
+  assert.match(detailSource, />\s*Duyệt Hợp Đồng\s*</);
+  assert.match(detailSource, /status:\s*"Approved"/);
+  assert.match(
+    detailSource,
+    /Permissions\.Order\.OrderManagement\.ChangeStatus/,
+  );
+  assert.match(
+    detailSource,
+    /canUploadSignedScan[\s\S]*contractData\.value\.status === "Approved"/,
+  );
+});

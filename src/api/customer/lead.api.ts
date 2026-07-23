@@ -98,7 +98,7 @@ export function fetchDeleteLead(id: number) {
 export function fetchAssignLead(id: number, userId: string | null) {
   return request.post<number>({
     url: `/api/v1/Lead/${id}/assign`,
-    data: userId,
+    data: { userId },
   });
 }
 

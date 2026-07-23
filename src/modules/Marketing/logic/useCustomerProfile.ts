@@ -9,6 +9,7 @@ import {
 
 export function useCustomerProfile() {
   const isVerified = ref(false);
+  const error = ref("");
   const customerInfo = reactive({
     id: 0,
     fullName: "",
@@ -81,6 +82,7 @@ export function useCustomerProfile() {
 
     // Load full 360 profile to get actual vehicles and service history
     try {
+      error.value = "";
       const profileData = await fetchGetProfile360(lead.id);
       vehicles.value = profileData.vehicles || [];
       maintenanceHistories.value = profileData.maintenanceHistories || [];
@@ -107,7 +109,8 @@ export function useCustomerProfile() {
                   : "#3b82f6",
           }));
       }
-    } catch {
+    } catch (err: any) {
+      error.value = err?.message || "Không thể tải hồ sơ 360 của khách hàng.";
       vehicles.value = [];
       maintenanceHistories.value = [];
     }
@@ -173,5 +176,6 @@ export function useCustomerProfile() {
     onVerifiedChange,
     vehicles,
     maintenanceHistories,
+    error,
   };
 }
