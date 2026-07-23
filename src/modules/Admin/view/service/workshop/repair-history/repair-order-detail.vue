@@ -1018,9 +1018,13 @@ const loadCatalogs = async () => {
     const resTech = await EmployeeApi.getList();
     technicians.value = resTech || [];
 
-    // Load services
-    const resSrv = await ServiceApi.getList({ size: 100 });
-    servicesCatalog.value = resSrv.items || [];
+    // Load services (endpoint may not exist in backend yet — soft fail)
+    try {
+      const resSrv = await ServiceApi.getList({ size: 100 });
+      servicesCatalog.value = resSrv.items || [];
+    } catch (_e) {
+      servicesCatalog.value = [];
+    }
 
     // Load product variants (FIFO output)
     const resParts = await ProductApi.getVariantsForOutput({ size: 100 });

@@ -113,6 +113,25 @@
             {{ getStatusText(row.status) }}
           </ElTag>
         </template>
+        <template #serviceType="{ row }">
+          <ElButton
+            v-if="row.serviceType === 'RepairService'"
+            link
+            type="primary"
+            @click="goToRepair(row)"
+          >
+            Sửa chữa
+          </ElButton>
+          <ElButton
+            v-else-if="row.serviceType === 'WarrantyService'"
+            link
+            type="warning"
+            @click="goToWarranty(row)"
+          >
+            Bảo hành
+          </ElButton>
+          <span v-else class="text-slate-400">-</span>
+        </template>
         <template #operation="{ row }">
           <div class="flex gap-1 justify-center">
             <ElTooltip
@@ -415,7 +434,13 @@ const columns = computed(() => {
     { prop: "id", label: "ID", width: 80, align: "center" },
     { prop: "fullName", label: "Họ tên", minWidth: 140 },
     { prop: "phone", label: "SĐT", minWidth: 120 },
-    { prop: "serviceType", label: "Loại dịch vụ", minWidth: 130 },
+    {
+      prop: "serviceType",
+      label: "Loại dịch vụ",
+      minWidth: 130,
+      useSlot: true,
+      slot: "serviceType",
+    },
     {
       prop: "appointmentAt",
       label: "Ngày / giờ hẹn",
@@ -759,6 +784,20 @@ const handleCreateOrder = (row: BookingAppointment) => {
       query: { phone: row.phone, action: "create" },
     });
   }
+};
+
+const goToRepair = (row: BookingAppointment) => {
+  router.push({
+    path: "/factory/workshop/counter/repair-history/create",
+    query: { phone: row.phone, serviceType: "RepairService" },
+  });
+};
+
+const goToWarranty = (row: BookingAppointment) => {
+  router.push({
+    path: "/factory/workshop/warranty",
+    query: { phone: row.phone, action: "create" },
+  });
 };
 
 // Initial load

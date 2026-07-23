@@ -629,7 +629,7 @@
             <ElOption
               v-for="part in availableParts"
               :key="part.id"
-              :label="part.name"
+              :label="part.displayName || part.name"
               :value="part.id"
             />
           </ElSelect>
@@ -732,6 +732,8 @@ const steps = [
 const calculatedStatus = computed(() => {
   if (!order.value) return "InProgress";
   if (order.value.status) return order.value.status;
+  if (!order.value.technicianId && !order.value.technicianName)
+    return "Pending";
   if (order.value.totalCost > 0) return "Completed";
   return "InProgress";
 });
@@ -991,9 +993,9 @@ const confirmAddPart = () => {
     localItems.value.push({
       type: "Part",
       id: part.id,
-      name: part.name,
+      name: part.displayName || part.name,
       count: 1,
-      price: part.retailPrice || 0,
+      price: part.price || 0,
       notes: "",
     });
   }
@@ -1084,7 +1086,8 @@ const getStatusType = (
     string,
     "primary" | "success" | "warning" | "info" | "danger"
   > = {
-    InProgress: "warning",
+    Pending: "warning",
+    InProgress: "primary",
     QcPending: "primary",
     Completed: "success",
   };
@@ -1093,6 +1096,7 @@ const getStatusType = (
 
 const getStatusText = (status: string) => {
   const map: Record<string, string> = {
+    Pending: "Chờ tiếp nhận",
     InProgress: "Đang sửa chữa",
     QcPending: "Đang QC",
     Completed: "Hoàn tất",

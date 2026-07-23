@@ -564,7 +564,7 @@ onMounted(async () => {
   }
   try {
     const res: any = await getVoucherById(id);
-    voucher.value = res?.value ?? res?.data ?? null;
+    voucher.value = res?.value ?? res?.data ?? res ?? null;
     if (!voucher.value) ElMessage.error("Không tìm thấy voucher");
   } catch {
     ElMessage.error("Không thể tải thông tin voucher");

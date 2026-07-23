@@ -49,9 +49,6 @@ export const factoryMenu: AppRouteRecord[] = [
             meta: {
               title: "Lịch sửa chữa",
               icon: "ri:calendar-check-line",
-              permissions: [
-                Permissions.Factory.BookingAppointmentManagement.View,
-              ],
             },
           },
           {
@@ -114,27 +111,6 @@ export const factoryMenu: AppRouteRecord[] = [
               icon: "ri:search-eye-line",
             },
           },
-        ],
-      },
-      {
-        path: "workshop/counter",
-        name: "WorkshopCounter",
-        redirect: "/factory/workshop/counter/payment",
-        meta: {
-          title: "menus.service.workshop.counter.title",
-          icon: "ri:money-dollar-circle-line",
-        },
-        children: [
-          {
-            path: "payment",
-            name: "CounterPaymentList",
-            component:
-              "/Factory/view/service/workshop/counter/payment-list/index",
-            meta: {
-              title: "Phiếu thu xưởng",
-              icon: "ri:receipt-line",
-            },
-          },
           {
             path: "repair-history",
             name: "WorkshopRepairHistory",
@@ -155,7 +131,7 @@ export const factoryMenu: AppRouteRecord[] = [
               isHide: true,
               isHideTab: true,
               keepAlive: true,
-              activePath: "/factory/workshop/repair-history",
+              activePath: "/factory/workshop/counter/repair-history",
             },
           },
           {
@@ -168,7 +144,29 @@ export const factoryMenu: AppRouteRecord[] = [
               isHide: true,
               isHideTab: true,
               keepAlive: true,
-              activePath: "/factory/workshop/repair-history",
+              activePath: "/factory/workshop/counter/repair-history",
+            },
+          },
+        ],
+      },
+
+      {
+        path: "workshop/counter",
+        name: "WorkshopCounter",
+        redirect: "/factory/workshop/counter/payment",
+        meta: {
+          title: "menus.service.workshop.counter.title",
+          icon: "ri:money-dollar-circle-line",
+        },
+        children: [
+          {
+            path: "payment",
+            name: "CounterPaymentList",
+            component:
+              "/Factory/view/service/workshop/counter/payment-list/index",
+            meta: {
+              title: "Phiếu thu xưởng",
+              icon: "ri:receipt-line",
             },
           },
         ],

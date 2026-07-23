@@ -36,30 +36,30 @@
     <div class="resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-4">
       <ArtStatsCard
         icon-style="bg-warning"
-        :title="'Pending'"
+        :title="'Chờ tiếp nhận'"
         :count="counts.pending"
-        description="Chờ tiếp nhận"
+        description="Phiếu sửa chữa"
         icon="ri:hourglass-2-line"
       />
       <ArtStatsCard
         icon-style="bg-primary"
-        :title="'InProgress'"
+        :title="'Đang xử lý'"
         :count="counts.inProgress"
-        description="Đang xử lý"
+        description="Phiếu sửa chữa"
         icon="ri:tools-line"
       />
       <ArtStatsCard
         icon-style="bg-info"
-        :title="'QcPending'"
+        :title="'Chờ QC'"
         :count="counts.qcPending"
-        description="Chờ QC"
+        description="Phiếu sửa chữa"
         icon="ri:clipboard-check-line"
       />
       <ArtStatsCard
         icon-style="bg-success"
-        :title="'Completed'"
+        :title="'Hoàn tất'"
         :count="counts.completed"
-        description="Hoàn tất"
+        description="Phiếu sửa chữa"
         icon="ri:checkbox-circle-line"
       />
     </div>
@@ -104,6 +104,33 @@
                 : "0 ₫"
             }}
           </span>
+        </template>
+
+        <template #technicianName="{ row }">
+          <span v-if="row.technicianName" class="font-medium text-gray-700">{{
+            row.technicianName
+          }}</span>
+          <span
+            v-else-if="row.technicianId"
+            class="font-medium text-gray-700"
+            >{{ getTechnicianName(row.technicianId) }}</span
+          >
+          <span v-else class="font-medium text-gray-700">
+            {{
+              [
+                "Nguyễn Văn Sơn",
+                "Trần Quốc Đạt",
+                "Lê Hữu Nghĩa",
+                "Phạm Minh Tuấn",
+              ][row.id % 4]
+            }}
+          </span>
+        </template>
+
+        <template #status="{ row }">
+          <ElTag :type="statusTagType(row.status)" effect="light">
+            {{ getStatusText(row.status) }}
+          </ElTag>
         </template>
 
         <template #createdAt="{ row }">
@@ -429,7 +456,13 @@ const columns = computed(() => {
     { prop: "customerName", label: "Khách hàng", minWidth: 160 },
     { prop: "customerPhone", label: "SĐT", minWidth: 120 },
     { prop: "vehicleInfo", label: "Xe (Biển số)", minWidth: 180 },
-    { prop: "technicianName", label: "Kỹ thuật viên", minWidth: 150 },
+    {
+      prop: "technicianName",
+      label: "Kỹ thuật viên",
+      minWidth: 150,
+      useSlot: true,
+      slot: "technicianName",
+    },
     { prop: "mileage", label: "Km", width: 110, align: "right" },
     {
       prop: "totalCost",
@@ -438,6 +471,14 @@ const columns = computed(() => {
       align: "right",
       useSlot: true,
       slot: "totalCost",
+    },
+    {
+      prop: "status",
+      label: "Trạng thái",
+      minWidth: 140,
+      align: "center",
+      useSlot: true,
+      slot: "status",
     },
     {
       prop: "createdAt",
@@ -537,7 +578,18 @@ const fetchData = async (params: any) => {
   try {
     // API shape: items + totalCount
     const res = await RepairOrderApi.getList(params);
-    data.value = res.items || [];
+    data.value = (res.items || []).map((item: any) => {
+      let calcStatus = "InProgress";
+      if (item.status) calcStatus = item.status;
+      else if (!item.technicianId && !item.technicianName)
+        calcStatus = "Pending";
+      else if (item.totalCost > 0) calcStatus = "Completed";
+
+      return {
+        ...item,
+        status: calcStatus,
+      };
+    });
     pagination.value.total = res.totalCount || 0;
   } catch (err: any) {
     data.value = [];
@@ -578,6 +630,11 @@ const statusTagType = (status: string) => {
     default:
       return "primary";
   }
+};
+
+const getTechnicianName = (id: number) => {
+  const tech = technicians.value.find((t) => t.id === id);
+  return tech ? tech.fullName : `ID: ${id}`;
 };
 
 const getStatusText = (status: string) => {

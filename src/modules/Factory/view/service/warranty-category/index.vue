@@ -83,21 +83,40 @@
           </ElTag>
         </template>
         <template #termName="{ row }">
-          <span class="font-semibold">{{ row.termName }}</span>
+          <span
+            class="font-semibold text-primary cursor-pointer hover:underline"
+            @click="handleView(row)"
+          >
+            {{ row.termName }}
+          </span>
         </template>
         <template #duration="{ row }">
-          <span>{{ formatDuration(row) }}</span>
+          <div class="flex items-center gap-1.5 justify-center">
+            <i
+              class="ri-time-line text-amber-500"
+              v-if="row.durationMonths || row.durationKm"
+            ></i>
+            <span class="font-medium text-slate-700 whitespace-nowrap">{{
+              formatDuration(row)
+            }}</span>
+          </div>
         </template>
         <template #coverage="{ row }">
-          <span class="text-sm" :title="row.coverage">
-            {{
-              row.coverage
-                ? row.coverage.length > 50
-                  ? row.coverage.slice(0, 50) + "..."
-                  : row.coverage
-                : "-"
-            }}
-          </span>
+          <ElTooltip
+            :content="row.coverage"
+            placement="top"
+            :disabled="!row.coverage || row.coverage.length <= 40"
+          >
+            <span class="text-sm text-gray-600">
+              {{
+                row.coverage
+                  ? row.coverage.length > 40
+                    ? row.coverage.slice(0, 40) + "..."
+                    : row.coverage
+                  : "-"
+              }}
+            </span>
+          </ElTooltip>
         </template>
         <template #status="{ row }">
           <ElTag :type="getStatusType(row.status)" size="small">
@@ -106,7 +125,6 @@
         </template>
         <template #operation="{ row }">
           <div class="operation-cell">
-            <ArtButtonTable type="view" @click="handleView(row)" />
             <ArtButtonTable type="edit" @click="handleEdit(row)" />
             <ArtButtonTable type="delete" @click="handleDelete(row)" />
           </div>
