@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-4 pb-5">
+  <div class="resp-page flex flex-col gap-4 pb-5">
     <ArtSearchBar
       v-model="searchForm"
       :items="searchItems"

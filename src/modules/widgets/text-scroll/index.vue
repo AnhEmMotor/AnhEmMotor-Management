@@ -1,5 +1,5 @@
 <template>
-  <div class="page-content space-y-5">
+  <div class="resp-page page-content space-y-5">
     <ArtTextScroll :text="$t('admin.t269')" />
     <ArtTextScroll type="success" :text="$t('admin.t270')" />
 

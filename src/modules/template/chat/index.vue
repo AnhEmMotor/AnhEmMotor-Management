@@ -1,6 +1,6 @@
 <template>
   <div
-    class="page-content flex !p-0 max-md:flex-col"
+    class="resp-page page-content flex !p-0 max-md:flex-col"
     :style="{ height: containerMinHeight }"
   >
     <ElRow>

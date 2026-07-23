@@ -1,5 +1,5 @@
 <template>
-  <div class="customer-profile-management flex flex-col gap-6 pb-10">
+  <div class="resp-page customer-profile-management flex flex-col gap-6 pb-10">
     <div class="page-header flex items-center justify-between px-4">
       <h2
         class="m-0 text-2xl font-bold text-gray-800 dark:text-slate-100 tracking-tight flex items-center gap-2"
@@ -224,6 +224,7 @@ import { useLeadTable } from "@/modules/Marketing/logic/useLeadTable";
 import CustomerDetailExpansion from "./CustomerDetailExpansion.vue";
 import CustomerFormDialog from "./CustomerFormDialog.vue";
 import { ElMessageBox, ElMessage } from "element-plus";
+import { fetchDeleteLead } from "@/api/customer";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/vi";
@@ -272,9 +273,14 @@ const handleDelete = (customer: any) => {
       type: "warning",
       confirmButtonClass: "el-button--danger",
     },
-  ).then(() => {
-    ElMessage.success("Đã xóa hồ sơ khách hàng thành công");
-    refreshData();
+  ).then(async () => {
+    try {
+      await fetchDeleteLead(customer.id);
+      ElMessage.success("Đã xóa hồ sơ khách hàng thành công");
+      refreshData();
+    } catch {
+      ElMessage.error("Lỗi khi xóa hồ sơ khách hàng. Vui lòng thử lại.");
+    }
   });
 };
 

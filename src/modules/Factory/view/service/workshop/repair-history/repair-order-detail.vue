@@ -1,6 +1,6 @@
 <template>
   <div
-    class="repair-order-detail-page flex flex-col min-h-screen bg-[#F8FAFC] font-inter text-[#0F172A]"
+    class="resp-page repair-order-detail-page flex flex-col min-h-screen bg-[#F8FAFC] font-inter text-[#0F172A]"
   >
     <!-- Header -->
     <div

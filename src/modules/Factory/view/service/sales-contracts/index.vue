@@ -1,5 +1,5 @@
 <template>
-  <div class="contract-sales-container">
+  <div class="resp-page contract-sales-container">
     <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
       <el-card shadow="hover" class="kpi-card">
         <div class="flex items-center justify-between">
@@ -54,7 +54,7 @@
         </div>
       </template>
       <div>
-        <div class="mb-4 grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+        <div class="mb-4 resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
           <el-input
             v-model="searchQuery"
             placeholder="Số hợp đồng, Tên KH, Số CCCD, Số khung/máy"

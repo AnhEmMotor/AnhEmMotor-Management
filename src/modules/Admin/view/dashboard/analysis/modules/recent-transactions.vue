@@ -1,5 +1,5 @@
 <template>
-  <div class="art-card p-5 mb-5">
+  <div class="resp-page art-card p-5 mb-5">
     <div class="flex justify-between items-center mb-4">
       <h4 class="m-0 font-bold text-lg">GIAO DỊCH GẦN NHẤT</h4>
       <ElButton link type="primary">Xem tất cả</ElButton>

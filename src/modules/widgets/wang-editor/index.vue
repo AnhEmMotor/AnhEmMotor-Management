@@ -1,5 +1,5 @@
 <template>
-  <div class="page-content mb-5">
+  <div class="resp-page page-content mb-5">
     <ElCard class="editor-card">
       <template #header>
         <div class="card-header">

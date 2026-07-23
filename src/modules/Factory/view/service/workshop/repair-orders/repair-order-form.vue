@@ -123,7 +123,7 @@
             </h3>
 
             <!-- Search Customer + Vehicle info + Gallery -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="resp-stats-3 grid grid-cols-1 md:grid-cols-3 gap-4">
               <div class="md:col-span-1">
                 <label
                   class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2"
@@ -191,7 +191,7 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label
                   class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2"
@@ -250,7 +250,7 @@
               Điều phối kỹ thuật & khảo sát
             </h3>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label
                   class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2"

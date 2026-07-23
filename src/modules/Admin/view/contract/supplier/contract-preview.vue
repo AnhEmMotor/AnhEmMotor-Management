@@ -1,398 +1,496 @@
 <template>
-  <div class="supplier-contract-detail">
-    <!-- Expiration Pipeline Status -->
-    <el-card shadow="never" class="mb-4">
-      <div class="flex justify-between items-center">
+  <div
+    v-loading="loading"
+    class="resp-page reporting-page supplier-contract-detail"
+  >
+    <ReportPageHeader
+      title="Chi tiết hợp đồng nhà cung cấp"
+      description="Kiểm tra điều khoản thương mại, hiệu lực, bảng giá và chứng từ gốc của hợp đồng."
+      icon="ri:file-contract-line"
+    >
+      <template #actions>
+        <ElButton :disabled="!contract.id" @click="handlePrint">
+          <ElIcon><Printer /></ElIcon>
+          In thông tin
+        </ElButton>
+        <ElButton
+          v-if="contract.status === 'Active'"
+          type="warning"
+          @click="handleCreateAddendum"
+        >
+          <ElIcon><Plus /></ElIcon>
+          Tạo phụ lục
+        </ElButton>
+        <ElButton @click="goBack">
+          <ElIcon><Back /></ElIcon>
+          Quay lại
+        </ElButton>
+      </template>
+    </ReportPageHeader>
+
+    <div class="reporting-kpi-grid supplier-contract-kpi-grid">
+      <ArtStatsCard
+        title="Số hợp đồng"
+        :count="contract.contractNumber || '-'"
+        description="Mã hồ sơ đang xem"
+        icon="ri:hashtag"
+        icon-style="bg-report-red"
+      />
+      <ArtStatsCard
+        title="Nhà cung cấp"
+        :count="supplierName"
+        description="Đối tác ký kết"
+        icon="ri:truck-line"
+        icon-style="bg-report-red-light"
+      />
+      <ArtStatsCard
+        title="Giá trị hợp đồng"
+        :count="formatCurrency(contract.contractValue)"
+        description="Giá trị thương mại"
+        icon="ri:money-dollar-circle-line"
+        icon-style="bg-report-red-dark"
+      />
+      <ArtStatsCard
+        title="Trạng thái pháp lý"
+        :count="getStatusLabel(contract.status)"
+        :description="expirationSummary"
+        icon="ri:shield-check-line"
+        icon-style="bg-report-gray"
+      />
+    </div>
+
+    <ElCard shadow="never" class="pipeline-card reporting-card">
+      <div class="pipeline-card__heading">
         <div>
-          <div class="text-sm text-gray-500 mb-1">
-            Chi tiết Hợp đồng Nhà cung cấp
-          </div>
-          <div class="flex items-center gap-2">
-            <el-tag :type="contractStatusType" size="large">
-              {{ getStatusLabel(contract.status) }}
-            </el-tag>
-            <el-tag
-              v-if="expirationWarningType"
-              :type="expirationWarningType"
-              size="large"
-            >
-              {{ expirationWarningLabel }}
-            </el-tag>
-          </div>
-          <div v-if="daysUntilExpiry > 0" class="mt-2">
-            <el-progress
-              :percentage="expiryProgressPercent"
-              :status="expiryProgressStatus"
-              :stroke-width="6"
-              :show-text="false"
-              style="width: 300px"
-            />
-            <span class="text-xs text-gray-400 ml-2"
-              >Còn {{ daysUntilExpiry }} ngày</span
-            >
-          </div>
+          <strong>Vòng đời hợp đồng</strong>
+          <span>Theo dõi tiến độ từ bản nháp đến khi hoàn tất</span>
         </div>
-        <div class="flex gap-2">
-          <ElButton
-            v-if="contract.status === 'Active'"
-            type="warning"
-            @click="handleCreateAddendum"
+        <ElTag :type="contractStatusType" effect="light">
+          {{ getStatusLabel(contract.status) }}
+        </ElTag>
+      </div>
+      <div class="pipeline-scroll">
+        <div class="pipeline-steps">
+          <div class="pipeline-track"></div>
+          <div
+            class="pipeline-track pipeline-track--active"
+            :style="{ width: `${activeStep * 25}%` }"
+          ></div>
+          <div
+            v-for="(step, index) in lifecycleSteps"
+            :key="step.status"
+            class="pipeline-step"
           >
-            <ElIcon><Plus /></ElIcon> Tạo phụ lục
-          </ElButton>
-          <ElButton @click="handlePrint" :disabled="!contract.id"
-            >In hợp đồng</ElButton
-          >
-          <ElButton @click="goBack">Quay lại</ElButton>
+            <span
+              class="pipeline-step__circle"
+              :class="{
+                'pipeline-step__circle--done': index < activeStep,
+                'pipeline-step__circle--active': index === activeStep,
+              }"
+            >
+              <ElIcon v-if="index < activeStep"><Check /></ElIcon>
+              <span v-else>{{ index + 1 }}</span>
+            </span>
+            <strong>{{ step.label }}</strong>
+            <small>{{ step.description }}</small>
+          </div>
         </div>
       </div>
-    </el-card>
+    </ElCard>
 
-    <!-- Smart Alert Card -->
-    <el-alert
+    <ElAlert
       v-if="showExpirationAlert"
-      type="warning"
+      :type="
+        daysUntilExpiry != null && daysUntilExpiry < 0 ? 'error' : 'warning'
+      "
       :closable="false"
       show-icon
-      class="mb-4"
-    >
-      <template #title>
-        <div class="flex justify-between items-center w-full">
-          <span
-            >Cảnh báo: Hợp đồng sắp hết hạn (còn
-            {{ daysUntilExpiry }} ngày)</span
-          >
-          <ElButton type="primary" size="small" @click="handleCreateAddendum">
-            Khởi tạo phụ lục gia hạn
-          </ElButton>
-        </div>
-      </template>
-      <div class="mt-2 text-sm">
-        <p>
-          <strong>Đại diện NCC:</strong> {{ supplierContactInfo.name || "-" }} |
-          {{ supplierContactInfo.phone || "-" }}
-        </p>
-      </div>
-    </el-alert>
+      class="expiration-alert"
+      :title="expirationAlertTitle"
+      :description="expirationAlertDescription"
+    />
 
-    <el-row :gutter="20">
-      <!-- Left Column: 70% -->
-      <el-col :span="17">
-        <!-- Section 1: Supplier Profile -->
-        <el-card shadow="never" class="mb-4">
-          <template #header>
-            <div class="card-header font-bold">
-              Thông tin Đối tác (Nhà cung cấp)
-            </div>
-          </template>
-          <el-descriptions :column="2" border size="small">
-            <el-descriptions-item label="Tên NCC">{{
-              supplierName || "-"
-            }}</el-descriptions-item>
-            <el-descriptions-item label="Mã NCC">{{
-              supplierCode || "-"
-            }}</el-descriptions-item>
-            <el-descriptions-item label="Người đại diện">{{
-              supplierContactInfo.name || "-"
-            }}</el-descriptions-item>
-            <el-descriptions-item label="Số điện thoại">{{
-              supplierContactInfo.phone || "-"
-            }}</el-descriptions-item>
-            <el-descriptions-item label="Email">{{
-              supplierContactInfo.email || "-"
-            }}</el-descriptions-item>
-            <el-descriptions-item label="Địa chỉ kho giao nhận">{{
-              supplierAddress || "-"
-            }}</el-descriptions-item>
-          </el-descriptions>
-        </el-card>
-
-        <!-- Section 2: Credit & Payment Terms -->
-        <el-card shadow="never" class="mb-4">
-          <template #header>
-            <div class="card-header font-bold">
-              Hạn mức Tín dụng & Công nợ Thương mại
-            </div>
-          </template>
-          <el-descriptions :column="2" border size="small">
-            <el-descriptions-item label="Hạn mức công nợ tối đa">
-              <span class="font-bold text-primary">{{
-                formatCurrency(creditLimit)
-              }}</span>
-            </el-descriptions-item>
-            <el-descriptions-item label="Thời hạn thanh toán">
-              {{ paymentWindowDays ? paymentWindowDays + " ngày" : "-" }}
-            </el-descriptions-item>
-            <el-descriptions-item label="Ngân hàng">{{
-              bankName || "-"
-            }}</el-descriptions-item>
-            <el-descriptions-item label="Số tài khoản">{{
-              bankAccountNumber || "-"
-            }}</el-descriptions-item>
-          </el-descriptions>
-        </el-card>
-
-        <!-- Section 3: Price Matrix & Volume Commitments -->
-        <el-card shadow="never" class="mb-4">
-          <template #header>
-            <div class="card-header font-bold">
-              Chính sách Giá sỉ & Cam kết Sản lượng
-            </div>
-          </template>
-          <div class="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <span class="text-sm text-gray-500"
-                >Sản lượng tối thiểu/tháng:</span
-              >
-              <div class="font-medium">
-                {{
-                  minimumMonthlyVolume
-                    ? minimumMonthlyVolume + " sản phẩm"
-                    : "-"
-                }}
-              </div>
-            </div>
-            <div>
-              <span class="text-sm text-gray-500">Tỷ lệ chiết khấu:</span>
-              <div class="font-medium text-success">
-                {{ commissionRate ? commissionRate + "%" : "-" }}
-              </div>
-            </div>
-          </div>
-          <div class="flex justify-between items-center mb-3">
-            <span class="font-bold text-sm">Bảng giá nhập sỉ (SKU)</span>
-            <ElInput
-              v-model="skuSearch"
-              placeholder="Tìm kiếm theo SKU..."
-              size="small"
-              style="width: 260px"
-              clearable
-            >
-              <template #prefix
-                ><ElIcon><Search /></ElIcon
-              ></template>
-            </ElInput>
-          </div>
-          <ElTable
-            :data="filteredSkuList"
-            border
-            stripe
-            size="small"
-            max-height="400"
-          >
-            <ElTableColumn prop="skuCode" label="Mã SKU" width="140" />
-            <ElTableColumn
-              prop="productName"
-              label="Tên sản phẩm"
-              min-width="180"
-            />
-            <ElTableColumn prop="category" label="Danh mục" width="150" />
-            <ElTableColumn
-              prop="wholesalePrice"
-              label="Giá nhập sỉ"
-              width="140"
-              align="right"
-            >
-              <template #default="{ row }">
-                {{ formatCurrency(row.wholesalePrice) }}
+    <div class="supplier-contract-print-area">
+      <ElRow :gutter="16" class="supplier-contract-layout">
+        <ElCol :xs="24" :sm="24" :md="15">
+          <div class="supplier-contract-main-column">
+            <ElCard shadow="never" class="reporting-card detail-card">
+              <template #header>
+                <div class="detail-card__header">
+                  <ElIcon><Document /></ElIcon>
+                  <span>Thông tin hợp đồng</span>
+                </div>
               </template>
-            </ElTableColumn>
-            <ElTableColumn prop="moq" label="MOQ" width="80" align="center" />
-          </ElTable>
-          <div
-            v-if="skuList.length === 0"
-            class="text-center text-gray-400 text-sm py-4"
-          >
-            Chưa có dữ liệu bảng giá sỉ. Hợp đồng ở trạng thái Draft chưa có
-            hiệu lực.
-          </div>
-        </el-card>
+              <dl class="detail-grid">
+                <div class="detail-field">
+                  <dt>Số hợp đồng</dt>
+                  <dd class="tabular-value">
+                    {{ contract.contractNumber || "-" }}
+                  </dd>
+                </div>
+                <div class="detail-field">
+                  <dt>Nhà cung cấp</dt>
+                  <dd>{{ supplierName }}</dd>
+                </div>
+                <div class="detail-field">
+                  <dt>Ngày hiệu lực</dt>
+                  <dd>{{ formatDate(contract.effectiveDate) }}</dd>
+                </div>
+                <div class="detail-field">
+                  <dt>Ngày hết hạn</dt>
+                  <dd>
+                    {{
+                      contract.expirationDate
+                        ? formatDate(contract.expirationDate)
+                        : "Không xác định"
+                    }}
+                  </dd>
+                </div>
+                <div class="detail-field">
+                  <dt>Giá trị hợp đồng</dt>
+                  <dd class="detail-field__accent tabular-value">
+                    {{ formatCurrency(contract.contractValue) }}
+                  </dd>
+                </div>
+                <div class="detail-field">
+                  <dt>Hợp đồng gốc</dt>
+                  <dd>
+                    {{
+                      contract.parentContractId
+                        ? "Phụ lục hợp đồng"
+                        : "Hợp đồng chính"
+                    }}
+                  </dd>
+                </div>
+              </dl>
+            </ElCard>
 
-        <!-- Section 4: Contract Validity -->
-        <el-card shadow="never" class="mb-4">
-          <template #header>
-            <div class="card-header font-bold">Thời hạn Hiệu lực Pháp lý</div>
-          </template>
-          <el-descriptions :column="2" border size="small">
-            <el-descriptions-item label="Ngày bắt đầu">{{
-              formatDate(contract.effectiveDate)
-            }}</el-descriptions-item>
-            <el-descriptions-item label="Ngày hết hạn">
-              {{
-                contract.expirationDate
-                  ? formatDate(contract.expirationDate)
-                  : "Không xác định"
-              }}
-            </el-descriptions-item>
-            <el-descriptions-item label="Ngày tạo">
-              {{ formatDateTime(contract.createdAt) }}
-            </el-descriptions-item>
-            <el-descriptions-item label="Cập nhật lần cuối">
-              {{ formatDateTime(contract.updatedAt) }}
-            </el-descriptions-item>
-          </el-descriptions>
-        </el-card>
-
-        <!-- Section 5: Digital Archiving -->
-        <el-card shadow="never" class="mb-4">
-          <template #header>
-            <div class="card-header font-bold">Chứng từ Gốc đính kèm</div>
-          </template>
-          <div v-if="contract.contractFilePath">
-            <div class="mb-3">
-              <ElTag type="success" size="small">Đã tải lên</ElTag>
-              <span class="text-sm text-gray-500 ml-2">{{
-                contractFileInfo.name
-              }}</span>
-            </div>
-            <div class="flex gap-2">
-              <ElButton type="primary" size="small" @click="handleViewFile">
-                <ElIcon><Document /></ElIcon> Xem file
-              </ElButton>
-              <ElButton size="small" @click="handleDownloadFile">
-                <ElIcon><Download /></ElIcon> Tải xuống
-              </ElButton>
-            </div>
-          </div>
-          <div v-else class="text-center py-6">
-            <ElIcon class="text-gray-300 text-4xl mb-2"><Document /></ElIcon>
-            <p class="text-gray-400 text-sm">
-              Chưa tải lên file scan/PDF hợp đồng
-            </p>
-            <ElUpload
-              :http-request="customUploadRequest"
-              :show-file-list="false"
-              accept=".pdf,.jpg,.png"
-              class="mt-3"
-            >
-              <ElButton type="primary" size="small">Tải lên chứng từ</ElButton>
-            </ElUpload>
-          </div>
-        </el-card>
-      </el-col>
-
-      <!-- Right Column: 30% - Legal & Alert Tools -->
-      <el-col :span="7">
-        <!-- Document Viewer -->
-        <el-card shadow="never" class="mb-4">
-          <template #header>
-            <div class="card-header font-bold">Hợp đồng gốc</div>
-          </template>
-          <div v-if="contract.contractFilePath" class="text-center">
-            <div class="bg-gray-50 rounded-lg p-6 mb-3">
-              <ElIcon class="text-4xl text-primary"><Document /></ElIcon>
-              <p class="text-sm mt-2">
-                {{ contractFileInfo.name || "Hợp đồng NCC" }}
-              </p>
-            </div>
-            <ElButton
-              type="primary"
-              size="small"
-              @click="handleViewFile"
-              class="w-full"
-            >
-              Mở trình xem PDF
-            </ElButton>
-          </div>
-          <div v-else class="text-center py-8 text-gray-400 text-sm">
-            Chưa có file hợp đồng
-          </div>
-        </el-card>
-
-        <!-- Quick Actions -->
-        <el-card shadow="never" class="mb-4">
-          <template #header>
-            <div class="card-header font-bold">Công cụ & Trạng thái</div>
-          </template>
-          <div class="space-y-3">
-            <div class="text-sm">
-              <span class="text-gray-500">Trạng thái pháp lý:</span>
-              <el-tag :type="contractStatusType" size="small" class="ml-2">
-                {{ getStatusLabel(contract.status) }}
-              </el-tag>
-            </div>
-            <el-divider style="margin: 12px 0" />
-            <div class="space-y-2">
-              <ElButton
-                v-if="canEditStatus"
-                type="primary"
-                size="small"
-                class="w-full"
-                @click="showStatusDialog = true"
-              >
-                Cập nhật trạng thái
-              </ElButton>
-              <ElButton
-                v-if="contract.status === 'Active'"
-                type="warning"
-                size="small"
-                class="w-full"
-                @click="handleCreateAddendum"
-              >
-                Tạo phụ lục gia hạn
-              </ElButton>
-              <ElButton
-                type="danger"
-                size="small"
-                class="w-full"
-                :disabled="!canSoftDelete"
-                @click="handleSoftDelete"
-              >
-                Xóa mềm (Soft Delete)
-              </ElButton>
-            </div>
-          </div>
-        </el-card>
-
-        <!-- Audit Log -->
-        <el-card shadow="never">
-          <template #header>
-            <div class="card-header font-bold">Nhật ký</div>
-          </template>
-          <div
-            v-if="auditLogs.length > 0"
-            class="space-y-2 max-h-300 overflow-y-auto"
-          >
-            <div
-              v-for="log in auditLogs"
-              :key="log.id"
-              class="text-sm border-b border-gray-100 pb-2"
-            >
-              <div class="flex justify-between items-start">
-                <span class="font-medium">{{ log.action }}</span>
-                <span class="text-xs text-gray-400">{{
-                  formatDateTime(log.createdAt)
-                }}</span>
+            <ElCard shadow="never" class="reporting-card detail-card">
+              <template #header>
+                <div class="detail-card__header">
+                  <ElIcon><Wallet /></ElIcon>
+                  <span>Điều khoản thương mại</span>
+                </div>
+              </template>
+              <dl class="detail-grid">
+                <div class="detail-field">
+                  <dt>Hạn mức công nợ</dt>
+                  <dd class="tabular-value">
+                    {{ formatOptionalCurrency(contract.creditLimit) }}
+                  </dd>
+                </div>
+                <div class="detail-field">
+                  <dt>Hạn thanh toán</dt>
+                  <dd>
+                    {{
+                      contract.paymentWindowDays != null
+                        ? `${contract.paymentWindowDays} ngày`
+                        : "-"
+                    }}
+                  </dd>
+                </div>
+                <div class="detail-field">
+                  <dt>Chiết khấu</dt>
+                  <dd>
+                    {{
+                      contract.discountRate != null
+                        ? `${contract.discountRate}%`
+                        : "-"
+                    }}
+                  </dd>
+                </div>
+                <div class="detail-field">
+                  <dt>Sản lượng tối thiểu/tháng</dt>
+                  <dd class="tabular-value">
+                    {{
+                      contract.minimumVolumePerMonth != null
+                        ? formatNumber(contract.minimumVolumePerMonth)
+                        : "-"
+                    }}
+                  </dd>
+                </div>
+                <div class="detail-field">
+                  <dt>Ngân hàng</dt>
+                  <dd>{{ contract.bankName || "-" }}</dd>
+                </div>
+                <div class="detail-field">
+                  <dt>Số tài khoản</dt>
+                  <dd class="tabular-value">
+                    {{ contract.bankAccountNumber || "-" }}
+                  </dd>
+                </div>
+              </dl>
+              <ElDivider />
+              <div class="contract-copy-grid">
+                <section>
+                  <h4>Điều khoản chính</h4>
+                  <p>{{ contract.terms || "Chưa cập nhật điều khoản." }}</p>
+                </section>
+                <section>
+                  <h4>Ghi chú nội bộ</h4>
+                  <p>{{ contract.note || "Chưa có ghi chú." }}</p>
+                </section>
               </div>
-              <p v-if="log.details" class="text-gray-500 text-xs mt-1">
-                {{ log.details }}
-              </p>
-              <p class="text-xs text-gray-400 mt-1">{{ log.changedBy }}</p>
-            </div>
-          </div>
-          <div v-else class="text-sm text-gray-400 text-center py-4">
-            Chưa có nhật ký
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
+            </ElCard>
 
-    <!-- Status Update Dialog -->
+            <ElCard shadow="never" class="reporting-card detail-card sku-card">
+              <template #header>
+                <div class="detail-card__header detail-card__header--spread">
+                  <div>
+                    <ElIcon><Goods /></ElIcon>
+                    <span>Bảng giá nhập sỉ</span>
+                  </div>
+                  <ElInput
+                    v-model="skuSearch"
+                    placeholder="Tìm SKU hoặc sản phẩm"
+                    clearable
+                    size="small"
+                    class="sku-search"
+                  >
+                    <template #prefix>
+                      <ElIcon><Search /></ElIcon>
+                    </template>
+                  </ElInput>
+                </div>
+              </template>
+              <ElTable
+                :data="filteredSkuList"
+                border
+                stripe
+                size="small"
+                empty-text="Chưa có dữ liệu bảng giá sỉ"
+              >
+                <ElTableColumn
+                  prop="skuCode"
+                  label="Mã SKU"
+                  min-width="120"
+                  align="center"
+                  header-align="center"
+                />
+                <ElTableColumn
+                  prop="productName"
+                  label="Tên sản phẩm"
+                  min-width="180"
+                  align="center"
+                  header-align="center"
+                />
+                <ElTableColumn
+                  prop="category"
+                  label="Danh mục"
+                  min-width="140"
+                  align="center"
+                  header-align="center"
+                />
+                <ElTableColumn
+                  prop="wholesalePrice"
+                  label="Giá nhập sỉ"
+                  min-width="145"
+                  align="right"
+                  header-align="center"
+                >
+                  <template #default="{ row }">
+                    <span class="tabular-value">{{
+                      formatCurrency(row.wholesalePrice)
+                    }}</span>
+                  </template>
+                </ElTableColumn>
+                <ElTableColumn
+                  prop="moq"
+                  label="MOQ"
+                  width="90"
+                  align="center"
+                  header-align="center"
+                >
+                  <template #default="{ row }">{{ row.moq ?? "-" }}</template>
+                </ElTableColumn>
+              </ElTable>
+            </ElCard>
+          </div>
+        </ElCol>
+
+        <ElCol :xs="24" :sm="24" :md="9">
+          <aside class="supplier-contract-side-column">
+            <ElCard shadow="never" class="reporting-card detail-card">
+              <template #header>
+                <div class="detail-card__header">
+                  <ElIcon><OfficeBuilding /></ElIcon>
+                  <span>Thông tin nhà cung cấp</span>
+                </div>
+              </template>
+              <dl class="supplier-profile">
+                <div>
+                  <dt>Tên nhà cung cấp</dt>
+                  <dd>{{ supplierName }}</dd>
+                </div>
+                <div>
+                  <dt>Mã số thuế / Mã NCC</dt>
+                  <dd>{{ contract.supplierCode || "-" }}</dd>
+                </div>
+                <div>
+                  <dt>Người liên hệ</dt>
+                  <dd>{{ supplierContactInfo.name }}</dd>
+                </div>
+                <div>
+                  <dt>Điện thoại</dt>
+                  <dd>{{ supplierContactInfo.phone }}</dd>
+                </div>
+                <div>
+                  <dt>Email</dt>
+                  <dd>{{ supplierContactInfo.email }}</dd>
+                </div>
+                <div>
+                  <dt>Địa chỉ</dt>
+                  <dd>{{ contract.supplierAddress || "-" }}</dd>
+                </div>
+              </dl>
+            </ElCard>
+
+            <ElCard shadow="never" class="reporting-card detail-card file-card">
+              <template #header>
+                <div class="detail-card__header">
+                  <ElIcon><Paperclip /></ElIcon>
+                  <span>Chứng từ hợp đồng</span>
+                </div>
+              </template>
+              <div v-if="contract.contractFilePath" class="file-summary">
+                <span class="file-summary__icon">
+                  <ElIcon><Document /></ElIcon>
+                </span>
+                <div>
+                  <strong>{{ contractFileInfo.name }}</strong>
+                  <small>File hợp đồng đã lưu trên hệ thống</small>
+                </div>
+              </div>
+              <ElEmpty
+                v-else
+                description="Chưa có file hợp đồng"
+                :image-size="64"
+              />
+              <div class="file-actions">
+                <ElButton
+                  v-if="contract.contractFilePath"
+                  type="primary"
+                  plain
+                  @click="handleViewFile"
+                >
+                  Xem file
+                </ElButton>
+                <ElButton
+                  v-if="contract.contractFilePath"
+                  plain
+                  @click="handleDownloadFile"
+                >
+                  Tải xuống
+                </ElButton>
+                <ElUpload
+                  :http-request="customUploadRequest"
+                  :before-upload="validateContractFile"
+                  :show-file-list="false"
+                  :disabled="uploadingFile"
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                >
+                  <ElButton :loading="uploadingFile" type="primary">
+                    {{
+                      contract.contractFilePath ? "Thay file" : "Tải file lên"
+                    }}
+                  </ElButton>
+                </ElUpload>
+              </div>
+            </ElCard>
+
+            <ElCard shadow="never" class="reporting-card detail-card">
+              <template #header>
+                <div class="detail-card__header">
+                  <ElIcon><Operation /></ElIcon>
+                  <span>Thao tác hợp đồng</span>
+                </div>
+              </template>
+              <div class="detail-actions">
+                <ElButton
+                  v-if="canEditStatus"
+                  type="primary"
+                  @click="openStatusDialog"
+                >
+                  Cập nhật trạng thái
+                </ElButton>
+                <ElButton
+                  v-if="contract.status === 'Active'"
+                  type="warning"
+                  @click="handleCreateAddendum"
+                >
+                  Tạo phụ lục hợp đồng
+                </ElButton>
+                <ElButton
+                  v-if="canSoftDelete"
+                  type="danger"
+                  plain
+                  @click="handleSoftDelete"
+                >
+                  Xóa hợp đồng
+                </ElButton>
+              </div>
+              <div class="record-timestamps">
+                <span>Tạo lúc {{ formatDateTime(contract.createdAt) }}</span>
+                <span>Cập nhật {{ formatDateTime(contract.updatedAt) }}</span>
+              </div>
+            </ElCard>
+
+            <ElCard
+              shadow="never"
+              class="reporting-card detail-card audit-card"
+            >
+              <template #header>
+                <div class="detail-card__header">
+                  <ElIcon><Clock /></ElIcon>
+                  <span>Nhật ký thay đổi</span>
+                </div>
+              </template>
+              <ElTimeline v-if="auditLogs.length">
+                <ElTimelineItem
+                  v-for="log in auditLogs"
+                  :key="log.id"
+                  :timestamp="formatDateTime(log.createdAt)"
+                  placement="top"
+                >
+                  <strong>{{ getAuditActionLabel(log.action) }}</strong>
+                  <p>{{ log.details || "Không có mô tả chi tiết." }}</p>
+                  <small v-if="log.changedBy"
+                    >Thực hiện bởi {{ log.changedBy }}</small
+                  >
+                </ElTimelineItem>
+              </ElTimeline>
+              <ElEmpty v-else description="Chưa có nhật ký" :image-size="64" />
+            </ElCard>
+          </aside>
+        </ElCol>
+      </ElRow>
+    </div>
+
     <ElDialog
       v-model="showStatusDialog"
       title="Cập nhật trạng thái hợp đồng"
-      width="400px"
+      width="420px"
       class="supplier-contract-preview-dialog"
+      append-to-body
     >
       <ElForm label-position="top">
-        <ElFormItem label="Trạng thái mới">
-          <ElSelect v-model="newStatus" class="w-full" :disabled="isLocked">
-            <ElOption label="Nháp" value="Draft" />
-            <ElOption label="Chờ phê duyệt" value="PendingApproval" />
-            <ElOption label="Đang hiệu lực" value="Active" />
-            <ElOption label="Đã hết hạn" value="Expired" />
-            <ElOption label="Đã thanh lý" value="Terminated" />
-            <ElOption label="Đã hoàn thành" value="Completed" />
+        <ElFormItem label="Trạng thái hiện tại">
+          <ElTag :type="contractStatusType">{{
+            getStatusLabel(contract.status)
+          }}</ElTag>
+        </ElFormItem>
+        <ElFormItem label="Chuyển sang">
+          <ElSelect
+            v-model="newStatus"
+            class="w-full"
+            placeholder="Chọn trạng thái"
+          >
+            <ElOption
+              v-for="status in allowedStatusTransitions"
+              :key="status"
+              :label="getStatusLabel(status)"
+              :value="status"
+            />
           </ElSelect>
         </ElFormItem>
       </ElForm>
@@ -401,9 +499,11 @@
         <ElButton
           type="primary"
           :loading="updatingStatus"
+          :disabled="!newStatus"
           @click="handleUpdateStatus"
-          >Cập nhật</ElButton
         >
+          Xác nhận
+        </ElButton>
       </template>
     </ElDialog>
   </div>
@@ -412,11 +512,30 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { ElMessage, ElMessageBox } from "element-plus";
-import { Document, Download, Plus, Search } from "@element-plus/icons-vue";
+import {
+  ElMessage,
+  ElMessageBox,
+  type UploadRequestOptions,
+} from "element-plus";
+import {
+  Back,
+  Check,
+  Clock,
+  Document,
+  Goods,
+  OfficeBuilding,
+  Operation,
+  Paperclip,
+  Plus,
+  Printer,
+  Search,
+  Wallet,
+} from "@element-plus/icons-vue";
+import ReportPageHeader from "@/modules/Accountant/view/reporting/ReportPageHeader.vue";
 import type {
   SupplierContractAuditLogDto,
   SupplierContractDto,
+  SupplierContractSkuItem,
   SupplierContractStatus,
 } from "@/domain/supplier/contract.types";
 import { createSupplierContractUseCases } from "@/infrastructure/supplier/usecasesFactory";
@@ -424,7 +543,6 @@ import { createSupplierContractUseCases } from "@/infrastructure/supplier/usecas
 defineOptions({ name: "ContractSupplierPreview" });
 
 const usecases = createSupplierContractUseCases();
-
 const route = useRoute();
 const router = useRouter();
 
@@ -435,121 +553,146 @@ const contract = ref<SupplierContractDto>({
   contractValue: 0,
   status: "Draft",
 });
-const showStatusDialog = ref(false);
-const newStatus = ref<SupplierContractStatus | "">("");
-const updatingStatus = ref(false);
-const skuSearch = ref("");
 const auditLogs = ref<SupplierContractAuditLogDto[]>([]);
+const skuSearch = ref("");
+const loading = ref(false);
+const uploadingFile = ref(false);
+const updatingStatus = ref(false);
+const showStatusDialog = ref(false);
+const newStatus = ref<SupplierContractStatus>();
+
+const lifecycleSteps = [
+  { status: "Draft", label: "Bản nháp", description: "Hoàn thiện nội dung" },
+  {
+    status: "PendingApproval",
+    label: "Chờ duyệt",
+    description: "Kiểm tra điều khoản",
+  },
+  { status: "Active", label: "Hiệu lực", description: "Đang áp dụng" },
+  { status: "Completed", label: "Hoàn tất", description: "Đã kết thúc" },
+] as const;
+
+const statusTransitions: Record<
+  SupplierContractStatus,
+  SupplierContractStatus[]
+> = {
+  Draft: ["PendingApproval", "Terminated"],
+  PendingApproval: ["Draft", "Active", "Terminated"],
+  Active: ["Completed", "Expired", "Terminated"],
+  Expired: ["Completed", "Terminated"],
+  Terminated: [],
+  Completed: [],
+};
+
+const activeStep = computed(() => {
+  if (contract.value.status === "Draft") return 0;
+  if (contract.value.status === "PendingApproval") return 1;
+  if (contract.value.status === "Active") return 2;
+  return 3;
+});
 
 const contractStatusType = computed(() => {
-  const st = contract.value.status;
-  if (st === "Active") return "success";
-  if (st === "PendingApproval") return "warning";
-  if (st === "Expired" || st === "Terminated") return "danger";
-  if (st === "Completed") return "success";
+  if (
+    contract.value.status === "Active" ||
+    contract.value.status === "Completed"
+  ) {
+    return "success";
+  }
+  if (contract.value.status === "PendingApproval") return "warning";
+  if (
+    contract.value.status === "Expired" ||
+    contract.value.status === "Terminated"
+  ) {
+    return "danger";
+  }
   return "info";
 });
 
-const daysUntilExpiry = computed(() => {
-  if (!contract.value.expirationDate) return 0;
-  const now = new Date();
-  const expiry = new Date(contract.value.expirationDate);
-  const diff = expiry.getTime() - now.getTime();
-  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
-});
-
-const expiryProgressPercent = computed(() => {
-  if (!contract.value.expirationDate || !contract.value.effectiveDate) return 0;
-  const now = new Date();
-  const start = new Date(contract.value.effectiveDate);
-  const end = new Date(contract.value.expirationDate);
-  const total = end.getTime() - start.getTime();
-  const remaining = end.getTime() - now.getTime();
-  if (total <= 0) return 0;
-  return Math.max(0, Math.min(100, Math.round((remaining / total) * 100)));
-});
-
-const expiryProgressStatus = computed(() => {
-  const days = daysUntilExpiry.value;
-  if (days <= 0) return "exception";
-  if (days <= 30) return "warning";
-  return "success";
-});
-
-const expirationWarningType = computed(() => {
-  const days = daysUntilExpiry.value;
-  if (days <= 0) return "danger";
-  if (days <= 30) return "warning";
-  return "";
-});
-
-const expirationWarningLabel = computed(() => {
-  const days = daysUntilExpiry.value;
-  if (days <= 0) return "Đã quá hạn";
-  if (days <= 30) return `Sắp hết hạn (còn ${days} ngày)`;
-  return "Đang hiệu lực";
-});
-
-const showExpirationAlert = computed(() => {
-  return (
-    expirationWarningType.value === "warning" ||
-    expirationWarningType.value === "danger"
-  );
-});
-
-const isLocked = computed(() => contract.value.status === "Active");
-
-const canEditStatus = computed(() => {
-  return !isLocked.value && contract.value.status !== "Completed";
-});
-
-const canSoftDelete = computed(() => {
-  return contract.value.status !== "Active";
-});
-
-const supplierName = computed(() => contract.value.supplierName || "-");
-const supplierCode = computed(() => contract.value.supplierCode || "-");
-const supplierAddress = computed(() => contract.value.supplierAddress || "-");
+const supplierName = computed(
+  () => contract.value.supplierName?.trim() || "Chưa xác định",
+);
 
 const supplierContactInfo = computed(() => ({
-  name: contract.value.supplierContactName || contract.value.supplierName || "",
-  phone: contract.value.supplierPhone || "",
-  email: contract.value.supplierEmail || "",
+  name:
+    contract.value.supplierContactName?.trim() ||
+    contract.value.supplierName?.trim() ||
+    "-",
+  phone: contract.value.supplierPhone?.trim() || "-",
+  email: contract.value.supplierEmail?.trim() || "-",
 }));
 
-const creditLimit = computed(() => contract.value.creditLimit || 0);
-const paymentWindowDays = computed(() => contract.value.paymentWindowDays || 0);
-const bankName = computed(() => contract.value.bankName || "");
-const bankAccountNumber = computed(
-  () => contract.value.bankAccountNumber || "",
+const skuList = computed<SupplierContractSkuItem[]>(
+  () => contract.value.skuPriceList ?? [],
 );
-const minimumMonthlyVolume = computed(
-  () => contract.value.minimumVolumePerMonth || 0,
-);
-const commissionRate = computed(() => contract.value.discountRate || 0);
 
-const skuList = ref<any[]>(contract.value.skuPriceList || []);
 const filteredSkuList = computed(() => {
-  if (!skuSearch.value) return skuList.value;
-  const q = skuSearch.value.toLowerCase();
-  return skuList.value.filter(
-    (item: any) =>
-      (item.skuCode || "").toLowerCase().includes(q) ||
-      (item.productName || "").toLowerCase().includes(q) ||
-      (item.category || "").toLowerCase().includes(q),
+  const keyword = skuSearch.value.trim().toLocaleLowerCase("vi-VN");
+  if (!keyword) return skuList.value;
+  return skuList.value.filter((item) =>
+    [item.skuCode, item.productName, item.category].some((value) =>
+      value?.toLocaleLowerCase("vi-VN").includes(keyword),
+    ),
   );
 });
+
+const daysUntilExpiry = computed<number | null>(() => {
+  if (!contract.value.expirationDate) return null;
+  const expiry = new Date(contract.value.expirationDate);
+  if (Number.isNaN(expiry.getTime())) return null;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  expiry.setHours(0, 0, 0, 0);
+  return Math.ceil((expiry.getTime() - today.getTime()) / 86_400_000);
+});
+
+const showExpirationAlert = computed(
+  () => daysUntilExpiry.value != null && daysUntilExpiry.value <= 30,
+);
+
+const expirationSummary = computed(() => {
+  if (daysUntilExpiry.value == null) return "Không giới hạn ngày hết hạn";
+  if (daysUntilExpiry.value < 0)
+    return `Quá hạn ${Math.abs(daysUntilExpiry.value)} ngày`;
+  if (daysUntilExpiry.value === 0) return "Hết hạn hôm nay";
+  return `Còn ${daysUntilExpiry.value} ngày hiệu lực`;
+});
+
+const expirationAlertTitle = computed(() =>
+  daysUntilExpiry.value != null && daysUntilExpiry.value < 0
+    ? "Hợp đồng đã hết hạn"
+    : "Hợp đồng sắp hết hạn",
+);
+
+const expirationAlertDescription = computed(() => {
+  if (daysUntilExpiry.value == null) return "";
+  if (daysUntilExpiry.value < 0) {
+    return `Hợp đồng đã quá hạn ${Math.abs(daysUntilExpiry.value)} ngày. Hãy cập nhật trạng thái hoặc tạo phụ lục nếu tiếp tục hợp tác.`;
+  }
+  return `Còn ${daysUntilExpiry.value} ngày đến hạn. Hãy rà soát điều khoản và chuẩn bị phụ lục khi cần gia hạn.`;
+});
+
+const allowedStatusTransitions = computed(
+  () => statusTransitions[contract.value.status] ?? [],
+);
+const canEditStatus = computed(() => allowedStatusTransitions.value.length > 0);
+const canSoftDelete = computed(() => contract.value.status !== "Active");
 
 const contractFileInfo = computed(() => {
   const path = contract.value.contractFilePath;
   if (!path) return { name: "", url: "" };
-  const name =
-    path.split("/").pop() || path.split("\\").pop() || "contract-file";
+  const cleanPath = path.split("?")[0];
+  const encodedName = cleanPath.split("/").pop() || cleanPath.split("\\").pop();
+  let name = encodedName || "hop-dong-nha-cung-cap";
+  try {
+    name = decodeURIComponent(name);
+  } catch {
+    // Keep the server-provided filename when it is not URI encoded.
+  }
   return { name, url: path };
 });
 
 const getStatusLabel = (status: string) => {
-  const map: Record<string, string> = {
+  const labels: Record<string, string> = {
     Draft: "Nháp",
     PendingApproval: "Chờ phê duyệt",
     Active: "Đang hiệu lực",
@@ -557,52 +700,105 @@ const getStatusLabel = (status: string) => {
     Terminated: "Đã thanh lý",
     Completed: "Đã hoàn thành",
   };
-  return map[status] || status;
+  return labels[status] || status;
 };
 
-const formatCurrency = (value: number) => {
-  if (!value && value !== 0) return "-";
-  return new Intl.NumberFormat("vi-VN", {
+const getAuditActionLabel = (action: string) => {
+  const labels: Record<string, string> = {
+    Create: "Tạo hợp đồng",
+    Update: "Cập nhật nội dung",
+    StatusChange: "Đổi trạng thái",
+    Delete: "Xóa hợp đồng",
+  };
+  return labels[action] || action;
+};
+
+const formatNumber = (value: number) =>
+  new Intl.NumberFormat("vi-VN").format(value);
+
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat("vi-VN", {
     style: "currency",
     currency: "VND",
-  }).format(value);
-};
+    maximumFractionDigits: 0,
+  }).format(value ?? 0);
+
+const formatOptionalCurrency = (value?: number) =>
+  value == null ? "-" : formatCurrency(value);
 
 const formatDate = (dateString?: string) => {
   if (!dateString) return "-";
-  try {
-    return new Date(dateString).toLocaleDateString("vi-VN");
-  } catch {
-    return dateString;
-  }
+  const date = new Date(dateString);
+  return Number.isNaN(date.getTime()) ? "-" : date.toLocaleDateString("vi-VN");
 };
 
 const formatDateTime = (dateString?: string) => {
   if (!dateString) return "-";
+  const date = new Date(dateString);
+  return Number.isNaN(date.getTime()) ? "-" : date.toLocaleString("vi-VN");
+};
+
+const validateContractFile = (file: File) => {
+  if (!/\.(pdf|doc|docx|jpg|jpeg|png)$/i.test(file.name)) {
+    ElMessage.error("Chỉ hỗ trợ PDF, Word, JPG, JPEG hoặc PNG.");
+    return false;
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    ElMessage.error("File hợp đồng không được vượt quá 10MB.");
+    return false;
+  }
+  return true;
+};
+
+const createUploadError = (message: string) =>
+  Object.assign(new Error(message), {
+    status: 0,
+    method: "POST",
+    url: "",
+  });
+
+const customUploadRequest = async (options: UploadRequestOptions) => {
+  if (!contract.value.id) {
+    options.onError(createUploadError("Thiếu mã hợp đồng"));
+    return;
+  }
+  uploadingFile.value = true;
   try {
-    return new Date(dateString).toLocaleString("vi-VN");
+    const response = await usecases.uploadContractFile.execute(
+      contract.value.id,
+      options.file as File,
+    );
+    contract.value.contractFilePath = response.contractFilePath;
+    ElMessage.success("Đã lưu file hợp đồng.");
+    options.onSuccess(response);
   } catch {
-    return dateString;
+    ElMessage.error("Không thể tải file hợp đồng lên.");
+    options.onError(createUploadError("Tải file hợp đồng thất bại"));
+  } finally {
+    uploadingFile.value = false;
   }
 };
 
-const handlePrint = () => {
-  window.print();
-};
-const goBack = () => router.push({ name: "SupplierContract" });
-
 const handleViewFile = () => {
-  const url = contractFileInfo.value.url;
-  if (url) window.open(url, "_blank");
+  if (contractFileInfo.value.url) {
+    window.open(contractFileInfo.value.url, "_blank", "noopener,noreferrer");
+  }
 };
 
 const handleDownloadFile = () => {
-  const url = contractFileInfo.value.url;
-  if (!url) return;
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = contractFileInfo.value.name;
-  a.click();
+  if (!contractFileInfo.value.url) return;
+  const link = document.createElement("a");
+  link.href = contractFileInfo.value.url;
+  link.download = contractFileInfo.value.name;
+  link.rel = "noopener";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+};
+
+const openStatusDialog = () => {
+  newStatus.value = undefined;
+  showStatusDialog.value = true;
 };
 
 const handleUpdateStatus = async () => {
@@ -610,12 +806,11 @@ const handleUpdateStatus = async () => {
   updatingStatus.value = true;
   try {
     await usecases.updateStatus.execute(contract.value.id, newStatus.value);
-    ElMessage.success("Cập nhật trạng thái thành công.");
-    contract.value.status = newStatus.value;
+    ElMessage.success("Đã cập nhật trạng thái hợp đồng.");
     showStatusDialog.value = false;
-    newStatus.value = "";
+    await fetchDetail();
   } catch {
-    ElMessage.error("Không thể cập nhật trạng thái.");
+    ElMessage.error("Không thể cập nhật trạng thái hợp đồng.");
   } finally {
     updatingStatus.value = false;
   }
@@ -625,178 +820,525 @@ const handleSoftDelete = async () => {
   if (!contract.value.id) return;
   try {
     await ElMessageBox.confirm(
-      `Bạn có chắc muốn xóa mềm hợp đồng "${contract.value.contractNumber}"? Bản ghi sẽ được lưu trữ với DeletedAt.`,
-      "Xác nhận xóa mềm",
+      `Bạn có chắc muốn xóa hợp đồng "${contract.value.contractNumber}"?`,
+      "Xác nhận xóa",
       {
-        confirmButtonText: "Xóa mềm",
+        confirmButtonText: "Xóa",
         cancelButtonText: "Hủy",
         type: "warning",
       },
     );
     await usecases.delete.execute(contract.value.id);
-    ElMessage.success("Đã xóa mềm hợp đồng.");
-    router.push({ name: "SupplierContract" });
-  } catch {
-    // cancelled
+    ElMessage.success("Đã xóa hợp đồng.");
+    await router.push({ name: "SupplierContract" });
+  } catch (error) {
+    if (error !== "cancel" && error !== "close") {
+      ElMessage.error("Không thể xóa hợp đồng.");
+    }
   }
 };
 
 const handleCreateAddendum = () => {
-  ElMessage.info("Tính năng tạo phụ lục đang được phát triển.");
+  if (!contract.value.id) return;
+  router.push({
+    name: "SupplierContract",
+    query: { parentContractId: contract.value.id },
+  });
 };
 
-const customUploadRequest = async (options: any) => {
-  try {
-    const url = URL.createObjectURL(options.file);
-    await usecases.update.execute(contract.value.id, { contractFilePath: url });
-    contract.value.contractFilePath = url;
-    ElMessage.success("Tải lên chứng từ thành công.");
-    options.onSuccess?.({});
-  } catch {
-    ElMessage.error("Tải lên thất bại.");
-    options.onError?.({});
-  }
-};
+const handlePrint = () => window.print();
+const goBack = () => router.push({ name: "SupplierContract" });
 
 const fetchDetail = async () => {
-  const id = route.params.id as string;
-  if (!id) return;
+  const id = route.params.id;
+  if (typeof id !== "string" || !id) {
+    ElMessage.error("Mã hợp đồng không hợp lệ.");
+    return;
+  }
+  loading.value = true;
   try {
-    const res = await usecases.getContractDetail.execute(id);
-    contract.value = res;
-    skuList.value = res.skuPriceList || [];
-    auditLogs.value = res.auditLogs || [];
+    const [detail, logs] = await Promise.all([
+      usecases.getContractDetail.execute(id),
+      usecases.getAuditLogs.execute(id),
+    ]);
+    contract.value = detail;
+    auditLogs.value = logs.length ? logs : (detail.auditLogs ?? []);
   } catch {
-    ElMessage.error("Không thể tải chi tiết hợp đồng.");
+    ElMessage.error("Không thể tải chi tiết hợp đồng nhà cung cấp.");
+  } finally {
+    loading.value = false;
   }
 };
 
-onMounted(() => {
-  fetchDetail();
-});
+onMounted(fetchDetail);
 </script>
 
 <style scoped lang="scss">
 .supplier-contract-detail {
-  padding: 16px;
-  color: #f8fafc;
-
-  :deep(.el-card) {
-    background-color: #151619;
-    border-color: #2c2f36;
-    box-shadow: none;
-  }
-
-  :deep(.el-card__header),
-  :deep(.el-card__body),
-  :deep(.el-form-item__label),
-  :deep(.el-descriptions__label),
-  :deep(.el-descriptions__content),
-  :deep(.el-table),
-  :deep(.el-table__cell),
-  :deep(.el-table .cell),
-  :deep(.el-input__inner),
-  :deep(.el-select__selected-item),
-  :deep(.el-progress__text),
-  :deep(.el-upload__text),
-  :deep(.el-upload__tip) {
-    color: #f8fafc !important;
-  }
-
-  :deep(.el-descriptions__cell),
-  :deep(.el-descriptions__label),
-  :deep(.el-descriptions__content),
-  :deep(.el-table th.el-table__cell),
-  :deep(.el-table tr),
-  :deep(.el-table td.el-table__cell) {
-    background-color: #151619 !important;
-    border-color: #2c2f36 !important;
-  }
-
-  :deep(.el-table) {
-    --el-table-border-color: #2c2f36;
-    --el-table-header-bg-color: #111214;
-    --el-table-row-hover-bg-color: #202227;
-    --el-table-tr-bg-color: #151619;
-  }
-
-  :deep(.el-input__wrapper),
-  :deep(.el-select__wrapper),
-  :deep(.el-upload-dragger) {
-    background-color: #101114;
-    border-color: #333741;
-    box-shadow: 0 0 0 1px #333741 inset;
-  }
-
-  :deep(.el-input__inner::placeholder) {
-    color: #cbd5e1;
-  }
-
-  :deep(.text-gray-300),
-  :deep(.text-gray-400),
-  :deep(.text-gray-500),
-  :deep(.text-gray-600),
-  :deep(.text-gray-700),
-  :deep(.text-gray-800),
-  :deep(.text-gray-900) {
-    color: #f8fafc !important;
-  }
-
-  :deep(.bg-gray-50),
-  :deep(.bg-gray-100),
-  :deep(.bg-gray-200),
-  :deep(.bg-white) {
-    background-color: #151619 !important;
-  }
-
-  :deep(.border-gray-100),
-  :deep(.border-gray-200),
-  :deep(.border-b) {
-    border-color: #2c2f36 !important;
-  }
-
-  :deep(.el-alert) {
-    background-color: rgb(245 158 11 / 12%);
-    border: 1px solid rgb(245 158 11 / 35%);
-  }
-
-  :deep(.el-alert__title),
-  :deep(.el-alert__description),
-  :deep(.el-alert__content),
-  :deep(.el-alert p) {
-    color: #f8fafc !important;
-  }
+  min-height: 100%;
+  padding: 12px;
+  color: var(--el-text-color-primary);
 }
 
-.card-header {
+.supplier-contract-detail :deep(.el-card) {
+  color: var(--el-text-color-primary);
+  background-color: var(--el-bg-color);
+  border-color: var(--el-border-color-light);
+  box-shadow: none;
+}
+
+.supplier-contract-detail :deep(.el-card__header) {
+  color: var(--el-text-color-primary);
+  border-color: var(--el-border-color-light);
+}
+
+.supplier-contract-kpi-grid {
+  margin-bottom: 16px;
+}
+
+.bg-report-red {
+  background-color: #e84a4a !important;
+}
+
+.bg-report-gray {
+  background-color: var(--el-fill-color-dark) !important;
+}
+
+.pipeline-card {
+  margin-bottom: 16px;
+}
+
+.pipeline-card :deep(.el-card__body) {
+  padding: 14px 16px 16px;
+}
+
+.pipeline-card__heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.pipeline-card__heading > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.pipeline-card__heading strong {
   font-size: 14px;
+}
+
+.pipeline-card__heading span {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+
+.pipeline-scroll {
+  overflow-x: auto;
+}
+
+.pipeline-steps {
+  position: relative;
+  display: flex;
+  min-width: 520px;
+}
+
+.pipeline-track {
+  position: absolute;
+  top: 16px;
+  right: 12.5%;
+  left: 12.5%;
+  z-index: 0;
+  height: 2px;
+  background-color: var(--el-border-color);
+}
+
+.pipeline-track--active {
+  right: auto;
+  max-width: 75%;
+  background-color: #e84a4a;
+  transition: width 240ms ease;
+}
+
+.pipeline-step {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  min-width: 110px;
+  text-align: center;
+}
+
+.pipeline-step__circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-bottom: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--el-text-color-placeholder);
+  background-color: var(--el-fill-color-light);
+  border: 2px solid var(--el-border-color);
+  border-radius: 50%;
+}
+
+.pipeline-step__circle--done {
+  color: #e84a4a;
+  background-color: var(--el-fill-color-blank);
+  border-color: #e84a4a;
+}
+
+.pipeline-step__circle--active {
+  color: #fff;
+  background-color: #e84a4a;
+  border-color: #e84a4a;
+  box-shadow: 0 0 0 3px rgb(232 74 74 / 20%);
+}
+
+.pipeline-step strong {
+  font-size: 12px;
+  color: var(--el-text-color-primary);
+}
+
+.pipeline-step small {
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+}
+
+.expiration-alert {
+  margin-bottom: 16px;
+}
+
+.supplier-contract-layout {
+  row-gap: 16px;
+}
+
+.supplier-contract-main-column,
+.supplier-contract-side-column {
+  display: grid;
+  gap: 16px;
+}
+
+.detail-card__header,
+.detail-card__header > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.detail-card__header .el-icon {
+  color: #e84a4a;
+}
+
+.detail-card__header--spread {
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  margin: 0;
+  border-top: 1px solid var(--el-border-color-lighter);
+  border-left: 1px solid var(--el-border-color-lighter);
+}
+
+.detail-field {
+  min-width: 0;
+  padding: 10px 12px;
+  border-right: 1px solid var(--el-border-color-lighter);
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+
+.detail-field dt,
+.supplier-profile dt {
+  margin-bottom: 4px;
+  font-size: 11px;
   font-weight: 600;
+  color: var(--el-text-color-secondary);
+}
+
+.detail-field dd,
+.supplier-profile dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+
+.detail-field__accent {
+  color: #e84a4a !important;
+}
+
+.tabular-value {
+  font-variant-numeric: tabular-nums;
+}
+
+.contract-copy-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.contract-copy-grid section {
+  min-width: 0;
+  padding: 12px;
+  background-color: var(--el-fill-color-light);
+  border-radius: 8px;
+}
+
+.contract-copy-grid h4 {
+  margin: 0 0 6px;
+  font-size: 12px;
+}
+
+.contract-copy-grid p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--el-text-color-regular);
+  white-space: pre-wrap;
+}
+
+.sku-search {
+  width: min(260px, 42vw);
+}
+
+.sku-card :deep(.el-table) {
+  --el-table-border-color: var(--el-border-color-lighter);
+  --el-table-header-bg-color: var(--el-fill-color-light);
+  --el-table-tr-bg-color: var(--el-bg-color);
+  --el-table-row-hover-bg-color: var(--el-fill-color-light);
+
+  color: var(--el-text-color-primary);
+}
+
+.supplier-profile {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.supplier-profile > div {
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+
+.supplier-profile > div:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.file-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 12px;
+  background-color: var(--el-fill-color-light);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px;
+}
+
+.file-summary__icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  color: #e84a4a;
+  background-color: rgb(232 74 74 / 10%);
+  border-radius: 8px;
+}
+
+.file-summary > div {
+  min-width: 0;
+}
+
+.file-summary strong,
+.file-summary small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-summary strong {
+  font-size: 12px;
+}
+
+.file-summary small {
+  margin-top: 3px;
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+}
+
+.file-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.file-actions :deep(.el-button) {
+  margin-left: 0;
+}
+
+.detail-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.detail-actions :deep(.el-button) {
+  width: 100%;
+  margin-left: 0;
+}
+
+.record-timestamps {
+  display: grid;
+  gap: 4px;
+  padding-top: 12px;
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+  border-top: 1px solid var(--el-border-color-lighter);
+}
+
+.audit-card :deep(.el-card__body) {
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+.audit-card :deep(.el-timeline) {
+  padding-left: 4px;
+}
+
+.audit-card :deep(.el-timeline-item__timestamp),
+.audit-card small {
+  font-size: 10px;
+  color: var(--el-text-color-secondary);
+}
+
+.audit-card strong {
+  font-size: 12px;
+}
+
+.audit-card p {
+  margin: 4px 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--el-text-color-regular);
+}
+
+:global(.supplier-contract-preview-dialog.el-dialog) {
+  color: var(--el-text-color-primary);
+  background-color: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-light);
+}
+
+:global(html.dark .supplier-contract-detail .el-card) {
+  background-color: #151619;
+  border-color: rgb(255 255 255 / 12%);
+}
+
+:global(html.dark .supplier-contract-detail .el-card__header) {
+  color: #f8fafc;
+  border-color: rgb(255 255 255 / 12%);
+}
+
+:global(html.dark .supplier-contract-detail .el-table) {
+  --el-table-border-color: rgb(255 255 255 / 12%);
+  --el-table-header-bg-color: #111214;
+  --el-table-tr-bg-color: #151619;
+  --el-table-row-hover-bg-color: #202227;
+}
+
+:global(html.dark .supplier-contract-detail .el-input__wrapper),
+:global(html.dark .supplier-contract-detail .el-select__wrapper),
+:global(html.dark .supplier-contract-preview-dialog .el-select__wrapper) {
+  background-color: #101114;
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 14%) inset;
+}
+
+:global(html.dark .supplier-contract-detail .el-input__inner),
+:global(html.dark .supplier-contract-preview-dialog .el-select__selected-item),
+:global(html.dark .supplier-contract-preview-dialog .el-form-item__label),
+:global(html.dark .supplier-contract-preview-dialog .el-dialog__title) {
   color: #f8fafc;
 }
 
-.max-h-300 {
-  max-height: 300px;
+:global(html.dark .supplier-contract-preview-dialog.el-dialog) {
+  background-color: #151619;
+  border-color: rgb(255 255 255 / 12%);
 }
-</style>
 
-<style lang="scss">
-.supplier-contract-preview-dialog {
-  background: #151619;
-  border: 1px solid #2c2f36;
-
-  .el-dialog__title,
-  .el-dialog__body,
-  .el-form-item__label,
-  .el-select__selected-item,
-  .el-input__inner {
-    color: #f8fafc !important;
+@media (width <= 768px) {
+  .supplier-contract-detail {
+    padding: 8px;
   }
 
-  .el-input__wrapper,
-  .el-select__wrapper {
-    background-color: #101114;
-    border-color: #333741;
-    box-shadow: 0 0 0 1px #333741 inset;
+  .detail-grid,
+  .contract-copy-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-card__header--spread {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .sku-search {
+    width: 100%;
+  }
+
+  .file-actions,
+  .file-actions :deep(.el-upload),
+  .file-actions :deep(.el-button) {
+    width: 100%;
+  }
+}
+
+@media print {
+  :global(body *) {
+    visibility: hidden !important;
+  }
+
+  .supplier-contract-print-area,
+  .supplier-contract-print-area * {
+    visibility: visible !important;
+  }
+
+  .supplier-contract-print-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    color: #000 !important;
+    background: #fff !important;
+  }
+
+  .supplier-contract-print-area :deep(.el-card) {
+    color: #000 !important;
+    background: #fff !important;
+    break-inside: avoid;
+  }
+
+  .file-actions,
+  .detail-actions,
+  .audit-card {
+    display: none !important;
   }
 }
 </style>

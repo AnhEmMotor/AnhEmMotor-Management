@@ -1,5 +1,5 @@
 <template>
-  <div class="app-layout">
+  <div class="resp-page app-layout">
     <aside id="app-sidebar">
       <ArtSidebarMenu />
     </aside>

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="lead-detail-expansion bg-gray-50/50 dark:bg-slate-950 p-6 border-t border-gray-100 dark:border-slate-700 shadow-inner"
+    class="resp-page lead-detail-expansion bg-gray-50/50 dark:bg-slate-950 p-6 border-t border-gray-100 dark:border-slate-700 shadow-inner"
   >
     <div class="grid grid-cols-12 gap-6">
       <div class="col-span-12 lg:col-span-3 flex flex-col gap-6">
@@ -130,19 +130,8 @@
               </h4>
             </div>
             <div class="flex gap-1">
-              <ElTag
-                size="small"
-                type="info"
-                effect="plain"
-                class="cursor-pointer"
-                >AI Chat</ElTag
-              >
-              <ElTag
-                size="small"
-                type="warning"
-                effect="plain"
-                class="cursor-pointer"
-                >Ghi chú</ElTag
+              <ElTag size="small" type="warning" effect="plain"
+                >Nhật ký hoạt động</ElTag
               >
             </div>
           </div>
@@ -175,7 +164,14 @@
                     <span
                       class="text-[9px] font-bold uppercase tracking-wider text-gray-400 dark:text-slate-500"
                     >
-                      {{ event.type === "ai" ? "AI Assistant" : "Sale Note" }}
+                      {{
+                        event.type === "service"
+                          ? "Sửa chữa / Bảo dưỡng"
+                          : event.type === "output_created" ||
+                              event.type === "output_status"
+                            ? "Giao dịch"
+                            : "Ghi chú Sale"
+                      }}
                     </span>
                   </div>
                   <p
@@ -252,28 +248,39 @@
             <h4
               class="m-0 font-bold text-gray-700 dark:text-slate-100 uppercase text-[10px] tracking-wider"
             >
-              Thông tin xe
+              Tài sản xe máy
             </h4>
           </div>
 
           <div
-            class="p-3 rounded-xl border border-gray-50 dark:border-slate-700 bg-gray-50/30 dark:bg-slate-800"
+            v-if="vehicles.length === 0"
+            class="text-xs text-gray-400 text-center py-4"
+          >
+            Chưa sở hữu xe
+          </div>
+          <div
+            v-for="v in vehicles"
+            :key="v.id"
+            class="p-3 mb-2 rounded-xl border border-gray-50 dark:border-slate-700 bg-gray-50/30 dark:bg-slate-800"
           >
             <div class="flex justify-between items-center mb-1">
               <span
-                class="text-[10px] font-bold text-gray-500 dark:text-slate-300"
-                >Winner X 2024</span
+                class="text-[10px] font-bold text-gray-700 dark:text-slate-200"
+                >{{ v.variantName || "Winner X 2024" }}</span
               >
               <ElTag
                 size="small"
-                type="success"
+                :type="v.status === 'Sold' ? 'success' : 'info'"
                 effect="plain"
                 class="text-[9px]"
-                >Đã có biển</ElTag
+                >{{ v.status || "Active" }}</ElTag
               >
             </div>
-            <span class="text-[10px] font-bold text-blue-600 block"
-              >60-B1 123.45</span
+            <span class="text-[10px] font-bold text-blue-600 block">{{
+              v.licensePlate || "Chưa biển số"
+            }}</span>
+            <span class="text-[9px] text-gray-400 block mt-1"
+              >VIN: {{ v.vinNumber }}</span
             >
           </div>
         </div>
@@ -299,6 +306,7 @@ const {
   handleVerify,
   addNote,
   loadFromLead,
+  vehicles,
 } = useCustomerProfile();
 
 watch(

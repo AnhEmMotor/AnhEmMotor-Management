@@ -1,5 +1,5 @@
 <template>
-  <div class="p-6 bg-slate-50 min-h-screen">
+  <div class="resp-page p-6 bg-slate-50 min-h-screen">
     <!-- Header -->
     <div
       class="flex items-center justify-between mb-6 flex-wrap gap-4 bg-white p-6 rounded-xl shadow-sm border border-slate-100"
@@ -131,20 +131,22 @@
         </el-table-column>
         <el-table-column
           label="Hành động"
-          min-width="120"
+          min-width="200"
           fixed="right"
           align="center"
         >
           <template #default="{ row }">
-            <el-button
-              type="primary"
-              size="small"
-              :icon="View"
-              plain
-              @click="openDetail(row.id)"
-              v-auth="Permissions.Factory.CustomerManagement.View"
-            >
-              Xem chi tiết
+            <div class="flex items-center justify-center gap-2">
+              <el-button
+                type="primary"
+                size="small"
+                :icon="Edit"
+                plain
+                @click="openDetail(row.id)"
+                v-auth="Permissions.Factory.CustomerManagement.View"
+              >
+                Chỉnh sửa
+              </el-button>
               <el-button
                 type="danger"
                 size="small"
@@ -157,7 +159,7 @@
               >
                 Xóa
               </el-button>
-            </el-button>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -199,7 +201,7 @@
             <el-icon class="text-primary"><User /></el-icon>
             Thông tin khách hàng
           </h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
             <el-form-item label="Số điện thoại" prop="customerPhone">
               <el-input
                 v-model="form.customerPhone"
@@ -243,7 +245,7 @@
             <el-icon class="text-primary"><Setting /></el-icon>
             Thông tin xe
           </h3>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="resp-stats-3 grid grid-cols-1 md:grid-cols-3 gap-4">
             <el-form-item
               label="Biển số xe"
               prop="licensePlate"
@@ -316,7 +318,7 @@
             Kiểm tra thông số kỹ thuật bảo hành
           </h3>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
             <el-form-item
               label="Ngày mua xe / Ngày bắt đầu BH"
               prop="purchaseDate"

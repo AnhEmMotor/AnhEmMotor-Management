@@ -1,5 +1,5 @@
 <template>
-  <div class="customer-care-page p-8 min-h-full">
+  <div class="resp-page customer-care-page p-8 min-h-full">
     <div v-if="!isDetailView">
       <div class="flex justify-between items-center mb-8">
         <div>
@@ -28,7 +28,7 @@
       <div
         class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[32px] p-6 mb-8 shadow-sm"
       >
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-4">
           <div class="col-span-2">
             <ElInput
               v-model="searchQuery"

@@ -1,5 +1,5 @@
 <template>
-  <div class="page-content">
+  <div class="resp-page page-content">
     <div class="max-w-150">
       <ArtVideoPlayer
         playerId="my-video-1"

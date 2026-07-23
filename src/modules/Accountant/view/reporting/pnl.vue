@@ -1,5 +1,5 @@
 <template>
-  <div class="pnl-report">
+  <div class="resp-page pnl-report">
     <div class="reporting-actions mb-4">
       <ElDatePicker
         type="month"

@@ -8,6 +8,7 @@ export type SupplierContractStatus =
 
 export interface SupplierContractSkuItem {
   id?: string;
+  productVariantId: number;
   skuCode?: string;
   productName?: string;
   category?: string;
@@ -29,7 +30,7 @@ export interface SupplierContractAuditLogDto {
 
 export interface SupplierContractDto {
   id: string;
-  supplierId?: string;
+  supplierId?: number;
   supplierName?: string;
   supplierCode?: string;
   contractNumber: string;
@@ -77,6 +78,30 @@ export interface SupplierContractListParams {
   name?: string;
   contractNumber?: string;
   status?: string[];
+  supplierId?: string | number;
+}
+
+export interface SupplierContractMutation {
+  supplierId?: number;
+  contractNumber?: string;
+  contractFilePath?: string;
+  effectiveDate?: string;
+  expirationDate?: string;
+  contractValue?: number;
+  status?: SupplierContractStatus;
+  terms?: string;
+  note?: string;
+  creditLimit?: number;
+  paymentWindowDays?: number;
+  bankAccountNumber?: string;
+  bankName?: string;
+  minimumVolumePerMonth?: number;
+  discountRate?: number;
+  parentContractId?: string;
+  contractItems?: Array<{
+    productVariantId: number;
+    wholesalePrice: number;
+  }>;
 }
 
 export interface GetSupplierContractDetailResult {

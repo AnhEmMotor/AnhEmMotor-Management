@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="resp-page">
     <div class="page-title">
       <h1>Trung tâm thống kê</h1>
       <p class="sub-title">

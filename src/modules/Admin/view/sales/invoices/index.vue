@@ -1,7 +1,7 @@
 <template>
-  <div class="invoices-page flex flex-col gap-4 pb-5">
+  <div class="resp-page invoices-page flex flex-col gap-4 pb-5">
     <!-- Header Actions -->
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between max-md:flex-wrap max-md:gap-3">
       <div class="flex items-center gap-3">
         <ElInput
           v-model="searchQuery"
@@ -38,6 +38,7 @@
     <ElCard shadow="never" class="invoice-list-card">
       <ElTable
         :data="paginatedInvoices"
+class="resp-table"
         style="width: 100%"
         v-loading="loadingList"
         @row-click="handleRowClick"
@@ -146,6 +147,7 @@
       v-model="dialog.visible"
       :title="dialog.title"
       width="65%"
+class="resp-dialog"
       :close-on-click-modal="false"
       destroy-on-close
     >
@@ -309,6 +311,7 @@
       v-model="createDialog.visible"
       title="Tạo hóa đơn mới"
       width="65%"
+class="resp-dialog"
       :close-on-click-modal="false"
       destroy-on-close
     >

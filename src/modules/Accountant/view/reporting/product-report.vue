@@ -1,5 +1,5 @@
 <template>
-  <div class="product-report">
+  <div class="resp-page product-report">
     <div class="reporting-kpi-grid">
       <ArtStatsCard
         title="Tổng SKU"

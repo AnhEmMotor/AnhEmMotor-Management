@@ -1,5 +1,5 @@
 <template>
-  <div class="reporting-page contract-supplier-container">
+  <div class="resp-page reporting-page contract-supplier-container">
     <ReportPageHeader
       title="Hợp đồng Nhà cung cấp"
       description="Theo dõi hiệu lực hợp đồng, hạn mức công nợ, chiết khấu và các hợp đồng cần phê duyệt trong một màn hình."
@@ -90,7 +90,7 @@
         @pagination:current-change="handleCurrentChange"
       >
         <template #supplierName="{ row }">
-          <span>{{ row.supplierName || "-" }}</span>
+          <span class="supplier-name-cell">{{ getSupplierName(row) }}</span>
         </template>
         <template #contractValue="{ row }">
           <span class="font-medium">{{
@@ -99,7 +99,7 @@
         </template>
         <template #creditLimit="{ row }">
           <span class="font-medium text-primary">{{
-            formatCurrency((row as any).creditLimit || 0)
+            formatCurrency((row as SupplierContractDto).creditLimit || 0)
           }}</span>
         </template>
         <template #discountRate="{ row }">
@@ -122,35 +122,43 @@
         </template>
         <template #operation="{ row }">
           <div class="supplier-operation-cell">
-            <ArtButtonTable type="view" @click="handleView(row)" />
-            <ElButton
+            <ElTooltip content="Xem chi tiết" placement="top">
+              <ArtButtonTable
+                type="view"
+                class="supplier-operation-icon"
+                @click="handleView(row)"
+              />
+            </ElTooltip>
+            <ElTooltip
               v-if="row.status === 'PendingApproval' || row.status === 'Draft'"
-              v-ripple
-              size="small"
-              type="success"
-              class="supplier-operation-button"
-              @click="handleApprove(row)"
+              content="Duyệt hợp đồng"
+              placement="top"
             >
-              Duyệt
-            </ElButton>
-            <ElButton
-              v-ripple
-              size="small"
-              type="primary"
-              class="supplier-operation-button"
-              @click="handleEdit(row)"
-              :disabled="row.status === 'Active'"
-              >Sửa</ElButton
+              <ArtButtonTable
+                icon="ri:check-line"
+                icon-class="bg-success/12 text-success"
+                class="supplier-operation-icon"
+                @click="handleApprove(row)"
+              />
+            </ElTooltip>
+            <ElTooltip content="Chỉnh sửa" placement="top">
+              <ArtButtonTable
+                type="edit"
+                class="supplier-operation-icon"
+                @click="handleEdit(row)"
+              />
+            </ElTooltip>
+            <ElTooltip
+              v-if="row.status !== 'Active'"
+              content="Xóa"
+              placement="top"
             >
-            <ElButton
-              v-ripple
-              size="small"
-              type="danger"
-              class="supplier-operation-button"
-              @click="handleDelete(row)"
-              :disabled="row.status === 'Active'"
-              >Xóa</ElButton
-            >
+              <ArtButtonTable
+                type="delete"
+                class="supplier-operation-icon"
+                @click="handleDelete(row)"
+              />
+            </ElTooltip>
           </div>
         </template>
       </ArtTable>
@@ -253,6 +261,7 @@
                   drag
                   class="w-full contract-file-upload"
                   :disabled="isFormLocked"
+                  :before-upload="validateContractFile"
                   accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
                 >
                   <div
@@ -309,6 +318,47 @@
                   :disabled="isFormLocked"
                 />
               </ElFormItem>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+                <ElFormItem label="Hạn mức công nợ">
+                  <ElInputNumber
+                    v-model="formData.creditLimit"
+                    :min="0"
+                    :precision="0"
+                    class="w-full"
+                  />
+                </ElFormItem>
+                <ElFormItem label="Hạn thanh toán (ngày)">
+                  <ElInputNumber
+                    v-model="formData.paymentWindowDays"
+                    :min="0"
+                    :precision="0"
+                    class="w-full"
+                  />
+                </ElFormItem>
+                <ElFormItem label="Sản lượng tối thiểu/tháng">
+                  <ElInputNumber
+                    v-model="formData.minimumVolumePerMonth"
+                    :min="0"
+                    :precision="0"
+                    class="w-full"
+                  />
+                </ElFormItem>
+                <ElFormItem label="Chiết khấu (%)">
+                  <ElInputNumber
+                    v-model="formData.discountRate"
+                    :min="0"
+                    :max="100"
+                    :precision="2"
+                    class="w-full"
+                  />
+                </ElFormItem>
+              </div>
+              <ElFormItem label="Ngân hàng">
+                <ElInput v-model="formData.bankName" />
+              </ElFormItem>
+              <ElFormItem label="Số tài khoản">
+                <ElInput v-model="formData.bankAccountNumber" />
+              </ElFormItem>
               <ElFormItem label="Ghi chú">
                 <ElInput
                   v-model="formData.note"
@@ -350,13 +400,22 @@
 <script setup lang="ts">
 import { Plus, UploadFilled } from "@element-plus/icons-vue";
 import { ref, reactive, onMounted, computed } from "vue";
-import { useRouter } from "vue-router";
-import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
+import { useRoute, useRouter } from "vue-router";
+import {
+  ElMessage,
+  ElMessageBox,
+  type FormInstance,
+  type UploadRequestOptions,
+  type UploadUserFile,
+} from "element-plus";
 import type { ColumnOption } from "@/types/component";
 import ReportPageHeader from "@/modules/Accountant/view/reporting/ReportPageHeader.vue";
 import type {
   SupplierContractDto,
+  SupplierContractListParams,
+  SupplierContractMutation,
   SupplierContractSkuItem,
+  SupplierContractStatus,
 } from "@/domain/supplier/contract.types";
 
 interface SupplierContractForm {
@@ -365,10 +424,10 @@ interface SupplierContractForm {
   effectiveDate: string;
   expirationDate?: string;
   contractValue: number;
-  status: string;
+  status: SupplierContractStatus;
   terms?: string;
   note?: string;
-  supplierId?: string | undefined;
+  supplierId?: number;
   creditLimit: number | undefined;
   paymentWindowDays: number | undefined;
   bankName?: string;
@@ -377,6 +436,7 @@ interface SupplierContractForm {
   discountRate: number | undefined;
   contractItems: SupplierContractSkuItem[];
   contractFilePath?: string;
+  parentContractId?: string;
 }
 
 import { createSupplierContractUseCases } from "@/infrastructure/supplier/usecasesFactory";
@@ -385,6 +445,7 @@ defineOptions({ name: "SupplierContract" });
 
 const usecases = createSupplierContractUseCases();
 
+const route = useRoute();
 const router = useRouter();
 
 const loading = ref(false);
@@ -394,7 +455,13 @@ const submitting = ref(false);
 const formRef = ref<FormInstance>();
 const tableRef = ref();
 const supplierLoading = ref(false);
-const supplierOptions = ref<{ id: string; name: string }[]>([]);
+interface SupplierOption {
+  id: number;
+  name: string;
+}
+
+const supplierOptions = ref<SupplierOption[]>([]);
+const allSupplierOptions = ref<SupplierOption[]>([]);
 
 const stats = reactive({
   totalContracts: 0,
@@ -406,7 +473,8 @@ const stats = reactive({
 
 const pagination = reactive({ current: 1, size: 10, total: 0 });
 const data = ref<SupplierContractDto[]>([]);
-const fileList = ref<any[]>([]);
+const fileList = ref<UploadUserFile[]>([]);
+const pendingContractFile = ref<File>();
 const contractFilePreviewUrl = ref("");
 const contractFileName = ref("");
 
@@ -498,13 +566,27 @@ const searchItems = ref([
 ]);
 
 const columns = ref<ColumnOption[]>([
-  { label: "Nhà cung cấp", prop: "supplierName", minWidth: 160, useSlot: true },
-  { label: "Số hợp đồng", prop: "contractNumber", minWidth: 150 },
+  {
+    label: "Số hợp đồng",
+    prop: "contractNumber",
+    minWidth: 150,
+    align: "center",
+    headerAlign: "center",
+  },
+  {
+    label: "Nhà cung cấp",
+    prop: "supplierName",
+    minWidth: 180,
+    align: "center",
+    headerAlign: "center",
+    useSlot: true,
+  },
   {
     label: "Giá trị",
     prop: "contractValue",
     width: 130,
     align: "right",
+    headerAlign: "center",
     useSlot: true,
   },
   {
@@ -512,6 +594,7 @@ const columns = ref<ColumnOption[]>([
     prop: "creditLimit",
     width: 130,
     align: "right",
+    headerAlign: "center",
     useSlot: true,
   },
   {
@@ -519,6 +602,7 @@ const columns = ref<ColumnOption[]>([
     prop: "discountRate",
     width: 100,
     align: "center",
+    headerAlign: "center",
     useSlot: true,
   },
   {
@@ -526,6 +610,7 @@ const columns = ref<ColumnOption[]>([
     prop: "status",
     width: 130,
     align: "center",
+    headerAlign: "center",
     useSlot: true,
   },
   {
@@ -533,6 +618,7 @@ const columns = ref<ColumnOption[]>([
     prop: "effectiveDate",
     width: 120,
     align: "center",
+    headerAlign: "center",
     useSlot: true,
   },
   {
@@ -540,14 +626,16 @@ const columns = ref<ColumnOption[]>([
     prop: "expirationDate",
     width: 120,
     align: "center",
+    headerAlign: "center",
     useSlot: true,
   },
   {
     label: "Thao tác",
     prop: "operation",
-    width: 280,
+    width: 190,
     fixed: "right" as const,
     align: "center",
+    headerAlign: "center",
     useSlot: true,
   },
 ]);
@@ -558,6 +646,13 @@ const isFormLocked = computed(() => {
 });
 
 const formRules = {
+  supplierId: [
+    {
+      required: true,
+      message: "Vui lòng chọn nhà cung cấp",
+      trigger: "change",
+    },
+  ],
   contractNumber: [
     { required: true, message: "Vui lòng nhập số hợp đồng", trigger: "blur" },
   ],
@@ -622,22 +717,39 @@ const formatDate = (dateString?: string) => {
   return new Date(dateString).toLocaleDateString("vi-VN");
 };
 
-const searchSuppliers = async (query: string) => {
-  if (!query) {
-    supplierOptions.value = [];
-    return;
-  }
+const loadSupplierOptions = async () => {
   supplierLoading.value = true;
   try {
     const res = await usecases.getSuppliersForSelect.execute();
-    supplierOptions.value = res.filter((s: any) =>
-      s.name.toLowerCase().includes(query.toLowerCase()),
-    );
+    allSupplierOptions.value = res;
+    supplierOptions.value = res;
   } catch {
+    allSupplierOptions.value = [];
     supplierOptions.value = [];
   } finally {
     supplierLoading.value = false;
   }
+};
+
+const searchSuppliers = (query: string) => {
+  const keyword = query.trim().toLocaleLowerCase("vi-VN");
+  supplierOptions.value = keyword
+    ? allSupplierOptions.value.filter((supplier) =>
+        supplier.name.toLocaleLowerCase("vi-VN").includes(keyword),
+      )
+    : allSupplierOptions.value;
+};
+
+const getSupplierName = (row: SupplierContractDto) => {
+  if (row.supplierName?.trim()) return row.supplierName;
+  if (row.supplierId != null) {
+    return (
+      allSupplierOptions.value.find(
+        (supplier) => supplier.id === row.supplierId,
+      )?.name || "Chưa xác định"
+    );
+  }
+  return "Chưa gán nhà cung cấp";
 };
 
 const isImageFile = (fileName: string) => {
@@ -658,27 +770,47 @@ const clearContractFile = () => {
   revokeContractFilePreview();
   contractFileName.value = "";
   fileList.value = [];
-  formData.value.contractFilePath = undefined;
+  pendingContractFile.value = undefined;
+  formData.value.contractFilePath = "";
 };
 
-const customUploadRequest = async (options: any) => {
+const validateContractFile = (file: File) => {
+  const allowedExtensions = /\.(pdf|doc|docx|jpg|jpeg|png)$/i;
+  if (!allowedExtensions.test(file.name)) {
+    ElMessage.error("Chỉ hỗ trợ PDF, Word, JPG, JPEG hoặc PNG.");
+    return false;
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    ElMessage.error("File hợp đồng không được vượt quá 10MB.");
+    return false;
+  }
+  return true;
+};
+
+const createUploadError = (message: string) =>
+  Object.assign(new Error(message), {
+    status: 0,
+    method: "POST",
+    url: "",
+  });
+
+const customUploadRequest = async (options: UploadRequestOptions) => {
   try {
     revokeContractFilePreview();
-    const url = URL.createObjectURL(options.file);
-    fileList.value = [
-      { name: options.file.name, url, response: "ok", isTemp: true },
-    ];
-    formData.value.contractFilePath = url;
-    contractFileName.value = options.file.name;
-    if (isImageFile(options.file.name)) {
+    const selectedFile = options.file as File;
+    const url = URL.createObjectURL(selectedFile);
+    fileList.value = [{ name: selectedFile.name, url, status: "ready" }];
+    pendingContractFile.value = selectedFile;
+    contractFileName.value = selectedFile.name;
+    if (isImageFile(selectedFile.name)) {
       contractFilePreviewUrl.value = url;
     } else {
       contractFilePreviewUrl.value = "";
     }
-    options.onSuccess?.({});
+    options.onSuccess({});
   } catch {
     ElMessage.error("Tải lên thất bại");
-    options.onError?.({});
+    options.onError(createUploadError("Không thể đọc file hợp đồng"));
   }
 };
 
@@ -724,15 +856,15 @@ const loadData = async () => {
       );
     }
 
-    const params: any = {
+    const params: SupplierContractListParams = {
       current: pagination.current,
       size: pagination.size,
-      Filters: filters.join(",") || undefined,
-      Sorts: "EffectiveDate desc",
+      filters: filters.join(",") || undefined,
+      sorts: "EffectiveDate desc",
     };
     const res = await usecases.getContracts.execute(params);
-    data.value = res.items || [];
-    pagination.total = res.totalCount || 0;
+    data.value = res.items ?? [];
+    pagination.total = res.totalCount ?? 0;
   } catch (error) {
     console.error("Failed to load contracts:", error);
     ElMessage.error("Không thể tải danh sách hợp đồng");
@@ -771,45 +903,72 @@ const handleAdd = () => {
     minimumVolumePerMonth: undefined,
     discountRate: undefined,
     contractItems: [],
+    parentContractId: undefined,
   };
   fileList.value = [];
+  pendingContractFile.value = undefined;
   revokeContractFilePreview();
   contractFileName.value = "";
   dialogVisible.value = true;
 };
 
-const handleEdit = (row: SupplierContractDto) => {
-  dialogTitle.value = "Cập nhật hợp đồng";
-  const skuItems: SupplierContractSkuItem[] =
-    (row as any).skuPriceList?.map((item: any) => ({
-      ...item,
-    })) || [];
-
+const populateFormFromContract = (
+  source: SupplierContractDto,
+  options: { asAddendum?: boolean } = {},
+) => {
+  const asAddendum = options.asAddendum === true;
+  const skuItems = (source.skuPriceList ?? []).map((item) => ({ ...item }));
   formData.value = {
-    ...row,
-    creditLimit: (row as any).creditLimit,
-    paymentWindowDays: (row as any).paymentWindowDays,
-    bankName: (row as any).bankName,
-    bankAccountNumber: (row as any).bankAccountNumber,
-    minimumVolumePerMonth: (row as any).minimumVolumePerMonth,
-    discountRate: (row as any).discountRate,
+    id: asAddendum ? undefined : source.id,
+    contractNumber: asAddendum ? "" : source.contractNumber,
+    effectiveDate: asAddendum ? "" : source.effectiveDate,
+    expirationDate: asAddendum ? "" : source.expirationDate,
+    contractValue: source.contractValue,
+    status: asAddendum ? "Draft" : source.status,
+    terms: source.terms,
+    note: source.note,
+    supplierId: source.supplierId,
+    creditLimit: source.creditLimit,
+    paymentWindowDays: source.paymentWindowDays,
+    bankName: source.bankName,
+    bankAccountNumber: source.bankAccountNumber,
+    minimumVolumePerMonth: source.minimumVolumePerMonth,
+    discountRate: source.discountRate,
+    contractFilePath: asAddendum ? undefined : source.contractFilePath,
+    parentContractId: asAddendum ? source.id : source.parentContractId,
     contractItems: skuItems,
   };
+  pendingContractFile.value = undefined;
   revokeContractFilePreview();
-  if (row.contractFilePath) {
+  if (!asAddendum && source.contractFilePath) {
     fileList.value = [
-      { name: "contract-file", url: row.contractFilePath, response: "ok" },
+      {
+        name: source.contractFilePath.split("/").pop() || "contract-file",
+        url: source.contractFilePath,
+        status: "success",
+      },
     ];
     contractFileName.value =
-      row.contractFilePath.split("/").pop() || "contract-file";
-    if (isImageFile(row.contractFilePath)) {
-      contractFilePreviewUrl.value = row.contractFilePath;
+      source.contractFilePath.split("/").pop() || "contract-file";
+    if (isImageFile(source.contractFilePath)) {
+      contractFilePreviewUrl.value = source.contractFilePath;
     } else {
       contractFilePreviewUrl.value = "";
     }
   } else {
     fileList.value = [];
     contractFileName.value = "";
+  }
+};
+
+const handleEdit = async (row: SupplierContractDto) => {
+  dialogTitle.value = "Cập nhật hợp đồng";
+  try {
+    const detail = await usecases.getContractDetail.execute(row.id);
+    populateFormFromContract(detail);
+  } catch {
+    ElMessage.error("Không thể tải đầy đủ dữ liệu hợp đồng để chỉnh sửa.");
+    return;
   }
   dialogVisible.value = true;
 };
@@ -856,8 +1015,21 @@ const handleApprove = async (row: SupplierContractDto) => {
   }
 };
 
-const handleCreateAddendum = () => {
-  ElMessage.info("Tính năng tạo phụ lục đang được phát triển.");
+const openAddendum = async (parentContractId: string) => {
+  try {
+    const parentContract =
+      await usecases.getContractDetail.execute(parentContractId);
+    populateFormFromContract(parentContract, { asAddendum: true });
+    dialogTitle.value = `Tạo phụ lục cho ${parentContract.contractNumber}`;
+    dialogVisible.value = true;
+  } catch {
+    ElMessage.error("Không thể tải hợp đồng gốc để tạo phụ lục.");
+  }
+};
+
+const handleCreateAddendum = async () => {
+  if (!formData.value.id) return;
+  await openAddendum(formData.value.id);
 };
 
 const submitForm = async () => {
@@ -866,26 +1038,56 @@ const submitForm = async () => {
     if (!valid) return;
     submitting.value = true;
     try {
-      const { contractItems, ...rest } = formData.value;
-      const payload: any = { ...rest, skuPriceList: contractItems };
-      delete payload.supplierName;
-      delete payload.supplierCode;
-      delete payload.supplierContactName;
-      delete payload.supplierPhone;
-      delete payload.supplierEmail;
-      delete payload.supplierAddress;
-      delete payload.createdAt;
-      delete payload.updatedAt;
-      delete payload.deletedAt;
+      const { contractItems } = formData.value;
+      const payload: SupplierContractMutation = {
+        supplierId: formData.value.supplierId,
+        contractNumber: formData.value.contractNumber.trim(),
+        effectiveDate: formData.value.effectiveDate,
+        expirationDate: formData.value.expirationDate || undefined,
+        contractValue: formData.value.contractValue,
+        status: formData.value.status,
+        terms: formData.value.terms,
+        note: formData.value.note,
+        creditLimit: formData.value.creditLimit,
+        paymentWindowDays: formData.value.paymentWindowDays,
+        bankName: formData.value.bankName,
+        bankAccountNumber: formData.value.bankAccountNumber,
+        minimumVolumePerMonth: formData.value.minimumVolumePerMonth,
+        discountRate: formData.value.discountRate,
+        parentContractId: formData.value.parentContractId,
+        contractFilePath: formData.value.contractFilePath,
+        contractItems: contractItems.map((item) => ({
+          productVariantId: item.productVariantId,
+          wholesalePrice: item.wholesalePrice,
+        })),
+      };
 
+      let savedContract: SupplierContractDto;
       if (formData.value.id) {
-        await usecases.update.execute(formData.value.id, payload);
+        savedContract = await usecases.update.execute(
+          formData.value.id,
+          payload,
+        );
         ElMessage.success("Cập nhật thành công");
       } else {
-        await usecases.create.execute(payload);
+        savedContract = await usecases.create.execute(payload);
         ElMessage.success("Tạo mới thành công");
       }
+      if (pendingContractFile.value) {
+        try {
+          await usecases.uploadContractFile.execute(
+            savedContract.id,
+            pendingContractFile.value,
+          );
+        } catch (error) {
+          console.error("Failed to upload supplier contract file:", error);
+          ElMessage.warning(
+            "Hợp đồng đã lưu nhưng file đính kèm chưa tải lên được. Vui lòng thử lại ở trang chi tiết.",
+          );
+        }
+      }
       dialogVisible.value = false;
+      pendingContractFile.value = undefined;
       loadData();
       loadStats();
     } catch (error) {
@@ -910,9 +1112,13 @@ const handleCurrentChange = (page: number) => {
   pagination.current = page;
   loadData();
 };
-onMounted(() => {
-  loadStats();
-  loadData();
+onMounted(async () => {
+  await Promise.all([loadStats(), loadData(), loadSupplierOptions()]);
+  const parentContractId = route.query.parentContractId;
+  if (typeof parentContractId === "string" && parentContractId) {
+    await openAddendum(parentContractId);
+    await router.replace({ name: "SupplierContract" });
+  }
 });
 </script>
 
@@ -1055,9 +1261,21 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: nowrap;
   width: 100%;
+}
+
+.supplier-operation-icon {
+  margin-right: 0 !important;
+}
+
+.supplier-name-cell {
+  display: block;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .supplier-operation-cell :deep(.el-button) {

@@ -1,5 +1,8 @@
 <template>
   <div class="login-page">
+    <video autoplay loop muted playsinline class="login-video-bg">
+      <source src="@/assets/images/background_1.mp4" type="video/mp4" />
+    </video>
     <div class="login-bg-overlay"></div>
     <div
       class="login-container relative z-10 flex items-center justify-center min-h-screen"
@@ -334,16 +337,25 @@ const handleFacebookLogin = async () => {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-image: url("https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=1920");
-  background-attachment: fixed;
-  background-position: center;
-  background-size: cover;
+
+  /* Removed invalid CSS background for video */
   overflow: hidden;
+
+  .login-video-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: 0;
+    pointer-events: none;
+  }
 
   .login-bg-overlay {
     position: absolute;
     inset: 0;
-    z-index: 0;
+    z-index: 1;
     background-color: var(--el-bg-color-page);
     opacity: 0.45;
     -webkit-backdrop-filter: blur(3px);

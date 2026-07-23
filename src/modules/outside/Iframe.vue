@@ -1,5 +1,5 @@
 <template>
-  <div class="box-border w-full h-full" v-loading="isLoading">
+  <div class="resp-page box-border w-full h-full" v-loading="isLoading">
     <iframe
       ref="iframeRef"
       :src="iframeUrl"

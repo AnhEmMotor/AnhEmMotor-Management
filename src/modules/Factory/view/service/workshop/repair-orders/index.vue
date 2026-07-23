@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-4 pb-5">
+  <div class="resp-page flex flex-col gap-4 pb-5">
     <div class="flex items-start justify-between gap-4">
       <div>
         <h1 class="text-2xl font-bold">
@@ -33,7 +33,7 @@
     </div>
 
     <!-- KPI / Stats theo trạng thái -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-4">
       <ArtStatsCard
         icon-style="bg-warning"
         :title="'Pending'"
@@ -151,7 +151,7 @@
         :disabled="submitting"
       >
         <!-- 1) Luôn hỏi SĐT trước -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
               class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
@@ -187,7 +187,7 @@
         </div>
 
         <!-- 2) VIN/Số khung + Biển số + Tên xe/phiên bản/màu -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
               class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
@@ -221,7 +221,7 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
               class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
@@ -256,24 +256,34 @@
         </div>
 
         <!-- 3) Thợ kỹ thuật -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
               class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
             >
-              Thợ kỹ thuật (Tên)
+              Thợ kỹ thuật
             </label>
-            <ElInput
-              v-model="createForm.technicianName"
-              placeholder="Nhập tên thợ kỹ thuật"
-            />
+            <ElSelect
+              v-model="createForm.technicianId"
+              placeholder="Chọn kỹ thuật viên (tùy chọn)"
+              class="w-full"
+              clearable
+              filterable
+            >
+              <ElOption
+                v-for="emp in technicians"
+                :key="emp.id"
+                :label="emp.fullName + ' (' + emp.jobTitle + ')'"
+                :value="emp.id"
+              />
+            </ElSelect>
           </div>
 
           <div></div>
         </div>
 
         <!-- 4) ODO + mô tả lỗi -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
               class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
@@ -383,12 +393,13 @@
 <script setup lang="ts">
 import dayjs from "dayjs";
 import { Permissions } from "@/domain/constants/permissions";
-import { computed, ref } from "vue";
-import { useRouter } from "vue-router";
+import { computed, ref, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { Refresh, Plus, Delete as TrashBin } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 
 import { RepairOrderApi, type RepairOrder } from "@/api/sales";
+import { VehicleApi } from "@/api/vehicle/vehicle.api";
 
 import {
   EmployeeApi,
@@ -415,6 +426,8 @@ const columns = computed(() => {
   return [
     { prop: "id", label: "ID", width: 90, align: "center" },
     { prop: "maintenanceNumber", label: "Mã phiếu", minWidth: 150 },
+    { prop: "customerName", label: "Khách hàng", minWidth: 160 },
+    { prop: "customerPhone", label: "SĐT", minWidth: 120 },
     { prop: "vehicleInfo", label: "Xe (Biển số)", minWidth: 180 },
     { prop: "technicianName", label: "Kỹ thuật viên", minWidth: 150 },
     { prop: "mileage", label: "Km", width: 110, align: "right" },
@@ -601,7 +614,7 @@ const createForm = ref({
   vehicleColor: "",
 
   // Assign technician (main tech)
-  technicianName: "",
+  technicianId: undefined as number | undefined,
 });
 
 const openCreateDialog = () => {
@@ -617,34 +630,61 @@ const openCreateDialog = () => {
     licensePlate: "",
     vehicleName: "",
     vehicleColor: "",
-    technicianName: "",
+    technicianId: undefined,
   };
 };
 
-// Stub: Auto-fill khi user nhập SĐT (phần backend/call sẽ bổ sung sau)
+// Auto-fill khi user nhập SĐT
 const handleCustomerPhoneBlur = async () => {
-  // Nếu dự án chưa có endpoint auto-fill Customer/Vehicle Portfolio theo SĐT,
-  // giữ nguyên trạng thái isNewCustomer = true để UI hoạt động.
-  // Khi có API: gọi, nếu có dữ liệu => set isNewCustomer=false và fill: customerName/vinNumber/licensePlate/vehicleName/vehicleColor
-  createForm.value.isNewCustomer = !createForm.value.customerName;
+  const phone = createForm.value.customerPhone?.trim();
+  if (!phone) return;
+  try {
+    const res = await VehicleApi.getPortfolio({
+      query: phone,
+      queryType: "phone",
+      page: 1,
+      pageSize: 10,
+    });
+    const vehicle = res?.vehicle;
+    if (vehicle && vehicle.fullName) {
+      createForm.value.isNewCustomer = false;
+      createForm.value.customerName = vehicle.fullName;
+      createForm.value.vinNumber = vehicle.vinNumber || "";
+      createForm.value.licensePlate = vehicle.licensePlate || "";
+      createForm.value.vehicleName = vehicle.variantName || "";
+      createForm.value.vehicleColor = vehicle.colorName || "";
+    } else {
+      createForm.value.isNewCustomer = true;
+    }
+  } catch (e) {
+    createForm.value.isNewCustomer = true;
+  }
 };
 
 const submitCreate = async () => {
   submitting.value = true;
   try {
-    // Payload hiện tại của RepairOrderApi đang chỉ yêu cầu: customerName, customerPhone, mileage, description.
-    // Các field VIN/biển số/tên xe/màu sẽ cần backend hỗ trợ để map tự động.
     const payload = {
       customerPhone: createForm.value.customerPhone,
       customerName: createForm.value.customerName,
       mileage: createForm.value.mileage,
       description: createForm.value.description,
 
-      // Field cho luồng “chỉ định thợ chính” (nếu backend đã hỗ trợ)
-      technicianName: createForm.value.technicianName,
+      vinNumber: createForm.value.isNewCustomer
+        ? createForm.value.vinNumber
+        : undefined,
+      licensePlate: createForm.value.isNewCustomer
+        ? createForm.value.licensePlate
+        : undefined,
+      vehicleName: createForm.value.isNewCustomer
+        ? createForm.value.vehicleName
+        : undefined,
+      vehicleColor: createForm.value.isNewCustomer
+        ? createForm.value.vehicleColor
+        : undefined,
+      technicianId: createForm.value.technicianId,
     };
 
-    // Ghi chú: technicianName hiện chỉ phục vụ UI; cần backend hỗ trợ field tương ứng để lưu DB.
     await RepairOrderApi.create(payload as any);
 
     ElMessage.success("Tạo phiếu thành công");
@@ -703,6 +743,16 @@ const submitAssign = async () => {
     submitting.value = false;
   }
 };
+
+const route = useRoute();
+onMounted(async () => {
+  await fetchTechnicians();
+  if (route.query.action === "create" && route.query.phone) {
+    createDialogVisible.value = true;
+    createForm.value.customerPhone = route.query.phone as string;
+    await handleCustomerPhoneBlur();
+  }
+});
 
 // Initial load
 refreshData();

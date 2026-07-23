@@ -1,5 +1,5 @@
 <template>
-  <div class="sales-report-page">
+  <div class="resp-page sales-report-page">
     <!-- Filter Bar -->
     <div class="filter-bar">
       <div class="filter-bar__left">

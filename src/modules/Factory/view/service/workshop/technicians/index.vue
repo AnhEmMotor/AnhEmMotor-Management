@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 technicians-container">
+  <div class="resp-page p-4 technicians-container">
     <!-- Header -->
     <div class="flex items-start justify-between gap-4 mb-6 flex-wrap">
       <div>
@@ -34,7 +34,7 @@
         Chưa có dữ liệu hiệu suất nhân sự kỹ thuật.
       </div>
 
-      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div v-else class="resp-cards-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <!-- Tech Card -->
         <ElCard
           v-for="tech in techniciansList"

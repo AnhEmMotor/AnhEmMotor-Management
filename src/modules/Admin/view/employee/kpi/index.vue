@@ -1,5 +1,5 @@
 <template>
-  <div class="hr-kpi-container">
+  <div class="resp-page hr-kpi-container">
     <el-card shadow="never">
       <template #header>
         <div class="card-header">

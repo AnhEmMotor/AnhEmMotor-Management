@@ -1,5 +1,5 @@
 <template>
-  <main class="hr-payroll-container reporting-page">
+  <main class="resp-page hr-payroll-container reporting-page">
     <section class="payroll-hero" aria-labelledby="payroll-page-title">
       <div>
         <span class="payroll-hero__eyebrow">Quản trị nhân sự</span>

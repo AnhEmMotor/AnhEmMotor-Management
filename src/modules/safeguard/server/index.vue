@@ -1,5 +1,5 @@
 <template>
-  <div class="page-content mb-5">
+  <div class="resp-page page-content mb-5">
     <div class="w-full">
       <div class="flex flex-wrap w-[calc(100%+20px)]">
         <div

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="tracking-container relative w-full h-[calc(100vh-120px)] min-h-[600px] overflow-hidden bg-gray-100 rounded-lg flex border border-gray-200"
+    class="resp-page tracking-container relative w-full h-[calc(100vh-120px)] min-h-[600px] overflow-hidden bg-gray-100 rounded-lg flex border border-gray-200"
   >
     <!-- LEFT SIDEBAR: 30% Width -->
     <div

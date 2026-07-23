@@ -1,7 +1,21 @@
 <template>
-  <div class="expense-management">
-    <div class="reporting-actions mb-4">
-      <ElButton type="primary" @click="openExpenseForm">
+  <div class="resp-page expense-management">
+    <div
+      class="reporting-actions resp-search mb-4 flex items-center justify-between flex-wrap gap-3"
+    >
+      <ElInput
+        v-model="searchInput"
+        placeholder="Tìm kiếm tên khoản chi..."
+        clearable
+        style="width: 300px"
+        @clear="onSearch"
+        @keyup.enter="onSearch"
+      >
+        <template #prefix>
+          <ElIcon><Search /></ElIcon>
+        </template>
+      </ElInput>
+      <ElButton type="primary" @click="openCreateForm">
         <ElIcon><Plus /></ElIcon>
         Thêm khoản chi
       </ElButton>
@@ -9,7 +23,7 @@
 
     <ElTable
       :data="tableExpenses"
-      class="reporting-table"
+      class="reporting-table resp-table"
       v-loading="props.loading"
       empty-text="Không có dữ liệu chi phí"
     >
@@ -37,23 +51,47 @@
       <ElTableColumn prop="note" label="Ghi chú" min-width="220" />
       <ElTableColumn label="Hành động" width="120" align="center">
         <template #default="{ row }">
-          <ElButton type="danger" link @click="deleteExpense(row.id)"
+          <ElButton type="primary" link @click="editExpense(row as Expense)"
+            >Sửa</ElButton
+          >
+          <ElButton
+            type="danger"
+            link
+            @click="deleteExpense((row as Expense).id)"
             >Xóa</ElButton
           >
         </template>
       </ElTableColumn>
     </ElTable>
 
+    <div class="flex justify-end mt-4">
+      <ElPagination
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        :page-sizes="[10, 20, 50]"
+        :total="totalCount"
+        layout="total, sizes, prev, pager, next, jumper"
+        @size-change="fetchExpenses"
+        @current-change="fetchExpenses"
+      />
+    </div>
+
     <ElDialog
       v-if="isFormVisible"
       v-model="isFormVisible"
-      title="Ghi nhận khoản chi"
+      :title="dialogTitle"
       width="520px"
-      class="reporting-dialog"
+      class="reporting-dialog resp-dialog"
       destroy-on-close
       align-center
     >
-      <ExpenseForm @close="isFormVisible = false" @submit="handleAddExpense" />
+      <ExpenseForm
+        :mode="formMode"
+        :expense-id="editingId"
+        :initial-data="editingData"
+        @close="closeForm"
+        @submit="handleFormSubmit"
+      />
     </ElDialog>
   </div>
 </template>
@@ -61,7 +99,7 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from "vue";
 import { ElMessageBox } from "element-plus";
-import { Plus } from "@element-plus/icons-vue";
+import { Search, Plus } from "@element-plus/icons-vue";
 import { AnalyticsService } from "@/services/analytics.service";
 import type { Expense } from "@/services/analytics.types";
 import ExpenseForm from "./expense-form.vue";
@@ -78,35 +116,125 @@ const props = withDefaults(
   defineProps<{
     expenses?: Expense[];
     loading?: boolean;
+    totalCount?: number;
   }>(),
-  {
-    loading: false,
-  },
+  { loading: false, totalCount: 0 },
 );
 
 const emit = defineEmits<{
   add: [];
+  edit: [expense: Expense];
   delete: [id: number];
+  search: [keyword: string];
+  refresh: [];
 }>();
+
+const searchInput = ref("");
+const currentPage = ref(1);
+const pageSize = ref(20);
+const localTotalCount = ref(0);
 
 const localExpenses = ref<Expense[]>([]);
 const isFormVisible = ref(false);
+const formMode = ref<"create" | "edit">("create");
+const editingId = ref<number | undefined>(undefined);
+const editingData = ref<Partial<Expense>>({});
+
 const isControlled = computed(() => props.expenses !== undefined);
+
 const tableExpenses = computed(() => props.expenses ?? localExpenses.value);
 
-async function loadExpenses() {
-  if (isControlled.value) return;
-  localExpenses.value = await AnalyticsService.getExpenses();
+const paginatedTotal = computed(
+  () => props.totalCount || localTotalCount.value,
+);
+
+const dialogTitle = computed(() =>
+  formMode.value === "edit" ? "Cập nhật khoản chi" : "Ghi nhận khoản chi",
+);
+
+function isControlledMode() {
+  return props.expenses !== undefined;
 }
 
-async function handleAddExpense(formData: ExpenseFormData) {
-  await AnalyticsService.createExpense(formData);
-  await loadExpenses();
+function buildFilters(keyword?: string): string | undefined {
+  if (!keyword || keyword.trim() === "") return undefined;
+  return `Name@=${keyword.trim()}`;
+}
+
+async function fetchExpenses() {
+  if (isControlledMode()) return;
+  const keyword = searchInput.value;
+  try {
+    const result = await AnalyticsService.getExpenses({
+      page: currentPage.value,
+      pageSize: pageSize.value,
+      filters: buildFilters(keyword),
+      sorts: "ExpenseDate desc",
+    });
+    localExpenses.value = result.items;
+    localTotalCount.value = result.totalCount;
+  } catch {
+    localExpenses.value = [];
+  }
+}
+
+function onSearch() {
+  currentPage.value = 1;
+  fetchExpenses();
+}
+
+function openCreateForm() {
+  if (isControlledMode()) {
+    emit("add");
+    return;
+  }
+  formMode.value = "create";
+  editingId.value = undefined;
+  editingData.value = {};
+  isFormVisible.value = true;
+}
+
+function editExpense(row: Expense) {
+  if (isControlledMode()) {
+    emit("edit", row);
+    return;
+  }
+  formMode.value = "edit";
+  editingId.value = row.id;
+  editingData.value = {
+    name: row.name,
+    category: row.category,
+    amount: row.amount,
+    expenseDate: row.expenseDate,
+    note: row.note,
+  };
+  isFormVisible.value = true;
+}
+
+function closeForm() {
   isFormVisible.value = false;
+  editingId.value = undefined;
+  editingData.value = {};
+}
+
+async function handleFormSubmit(
+  formData: ExpenseFormData & { editId?: number },
+) {
+  try {
+    if (formData.editId) {
+      await AnalyticsService.updateExpense(formData.editId, formData);
+    } else {
+      await AnalyticsService.createExpense(formData);
+    }
+    await fetchExpenses();
+    closeForm();
+  } catch {
+    ElMessage.error("Không thể lưu khoản chi. Vui lòng thử lại.");
+  }
 }
 
 async function deleteExpense(id: number) {
-  if (isControlled.value) {
+  if (isControlledMode()) {
     emit("delete", id);
     return;
   }
@@ -124,15 +252,7 @@ async function deleteExpense(id: number) {
     return;
   }
   await AnalyticsService.deleteExpense(id);
-  await loadExpenses();
-}
-
-function openExpenseForm() {
-  if (isControlled.value) {
-    emit("add");
-    return;
-  }
-  isFormVisible.value = true;
+  await fetchExpenses();
 }
 
 function formatCurrency(value: number) {
@@ -142,5 +262,5 @@ function formatCurrency(value: number) {
   }).format(value);
 }
 
-onMounted(loadExpenses);
+onMounted(fetchExpenses);
 </script>

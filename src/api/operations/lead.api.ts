@@ -20,7 +20,6 @@ export interface LeadResponse {
   address: string;
   addressDetail: string;
   ward: string;
-  district: string;
   province: string;
   gender: string;
   birthday?: string;

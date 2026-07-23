@@ -1,5 +1,5 @@
 <template>
-  <div class="hr-policy-container flex flex-col gap-4 h-full p-4">
+  <div class="resp-page hr-policy-container flex flex-col gap-4 h-full p-4">
     <!-- Header -->
     <div class="flex items-center justify-between">
       <h1
@@ -47,7 +47,7 @@
 
       <div
         v-if="filteredPolicies.length > 0"
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+        class="resp-cards-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
       >
         <div
           v-for="policy in filteredPolicies"
@@ -74,9 +74,8 @@
               >Đối tượng: <strong>{{ policy.target }}</strong></span
             >
             <span class="block mt-2">
-              Hiệu lực: <br />
-              📅 {{ formatDate(policy.startDate) }} -
-              {{ formatDate(policy.endDate) }}
+              Hiệu lực từ: <br />
+              📅 {{ formatDate(policy.startDate) }}
             </span>
           </div>
 
@@ -172,17 +171,10 @@ const mapBackendPolicy = (p: any) => {
     name: p.name,
     department: dept,
     status: p.isActive ? "active" : "expired",
+    productId: p.productId ?? null,
+    categoryId: p.categoryId ?? null,
     startDate: p.effectiveDate?.split("T")[0] || "",
-    endDate: "",
     target: p.targetGroup || "",
-    percentage: p.type === "Percentage" ? Number(p.value) : undefined,
-    basis: "revenue",
-    laborPercentage: dept === "mechanic" ? Number(p.value) : undefined,
-    partsPercentage: dept === "mechanic" ? Number(p.value) * 0.1 : undefined,
-    tiers:
-      dept === "vehicle_sales"
-        ? [{ from: 1, to: 999, bonus: Number(p.value) }]
-        : undefined,
   };
 };
 

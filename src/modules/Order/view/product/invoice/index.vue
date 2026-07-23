@@ -1,5 +1,5 @@
 <template>
-  <div class="invoices-page flex flex-col gap-4 pb-5">
+  <div class="resp-page invoices-page flex flex-col gap-4 pb-5">
     <!-- Header Actions -->
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-3">
@@ -890,5 +890,100 @@ html.dark {
 
 .detail-content {
   padding: 10px 0;
+}
+
+@media print {
+  @page {
+    margin: 5mm !important;
+  }
+
+  html,
+  body {
+    width: 210mm !important;
+    height: 297mm !important;
+  }
+
+  /* Hide the main dashboard during print */
+  #app {
+    display: none !important;
+  }
+
+  /* Hide all Element Plus overlays by default */
+  .el-overlay {
+    display: none !important;
+  }
+
+  /* Only display the overlay containing the invoice modal */
+  .el-overlay:has(.premium-invoice-modal) {
+    display: block !important;
+    position: static !important;
+    z-index: auto !important;
+  }
+
+  /* Reset overlay dialog wrapper container */
+  .el-overlay:has(.premium-invoice-modal) .el-overlay-dialog {
+    position: static !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    background: white !important;
+  }
+
+  /* Reset dialog dimensions to fit the print page width */
+  .premium-invoice-modal {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: white !important;
+    color: black !important;
+    transform: none !important;
+  }
+
+  .premium-invoice-modal :deep(.el-dialog__headerbtn),
+  .premium-invoice-modal :deep(.el-dialog__footer) {
+    display: none !important;
+  }
+
+  .premium-invoice-modal :deep(.el-dialog__body) {
+    padding: 10px !important;
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  .premium-invoice-body {
+    padding: 0 !important;
+    background: white !important;
+
+    .info-card {
+      padding: 12px !important;
+      border: 1px solid #e2e8f0 !important;
+      box-shadow: none !important;
+      background: white !important;
+      margin-bottom: 12px !important;
+      break-inside: avoid;
+    }
+
+    .mb-6 {
+      margin-bottom: 12px !important;
+    }
+
+    .p-4 {
+      padding: 10px !important;
+    }
+
+    .space-y-3 > :not([hidden]) ~ :not([hidden]) {
+      margin-top: 6px !important;
+    }
+
+    .pb-2 {
+      padding-bottom: 6px !important;
+    }
+  }
 }
 </style>

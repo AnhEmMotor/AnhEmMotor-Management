@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-5">
+  <div class="resp-page pt-5">
     <h1 class="page-title">{{ $t("admin.t172") }}</h1>
     <ElRow :gutter="20">
       <ElCol :xs="24" :sm="12" :md="12" class="mb-5">

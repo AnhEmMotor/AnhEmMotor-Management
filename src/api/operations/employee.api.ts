@@ -15,6 +15,18 @@ export interface EmployeeResponse {
   avatarUrl?: string;
 }
 
+export interface EmployeeUpsertRequest {
+  fullName: string;
+  email: string;
+  jobTitle: string;
+  baseSalary: number;
+  identityNumber: string;
+  address: string;
+  contractDate: string;
+  bankName: string;
+  bankAccountNumber: string;
+}
+
 export const EmployeeApi = {
   getList() {
     return request.get<EmployeeResponse[]>({
@@ -26,20 +38,20 @@ export const EmployeeApi = {
       url: `/api/v1/hr/employees/${id}`,
     });
   },
-  create(data: any) {
-    return request.post<EmployeeResponse>({
+  create(data: EmployeeUpsertRequest) {
+    return request.post<number>({
       url: "/api/v1/hr/employees",
       data,
     });
   },
-  update(id: number, data: any) {
-    return request.put<EmployeeResponse>({
+  update(id: number, data: EmployeeUpsertRequest) {
+    return request.put<number>({
       url: `/api/v1/hr/employees/${id}`,
       data,
     });
   },
   delete(id: number) {
-    return request.del<any>({
+    return request.del<number>({
       url: `/api/v1/hr/employees/${id}`,
     });
   },

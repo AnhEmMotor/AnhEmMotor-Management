@@ -2,6 +2,7 @@ import type {
   SupplierContractAuditLogDto,
   SupplierContractDto,
   SupplierContractListParams,
+  SupplierContractMutation,
   SupplierContractStatisticsResponse,
   SupplierContractStatus,
 } from "@/domain/supplier/contract.types";
@@ -22,14 +23,18 @@ export interface GetSupplierContractAuditLogsUseCase {
 }
 
 export interface CreateSupplierContractUseCase {
-  execute(data: Partial<SupplierContractDto>): Promise<SupplierContractDto>;
+  execute(data: SupplierContractMutation): Promise<SupplierContractDto>;
 }
 
 export interface UpdateSupplierContractUseCase {
   execute(
     id: string,
-    data: Partial<SupplierContractDto>,
+    data: SupplierContractMutation,
   ): Promise<SupplierContractDto>;
+}
+
+export interface UploadSupplierContractFileUseCase {
+  execute(id: string, file: File): Promise<{ contractFilePath: string }>;
 }
 
 export interface UpdateSupplierContractStatusUseCase {
@@ -52,5 +57,5 @@ export interface GetSupplierContractStatisticsUseCase {
 }
 
 export interface GetSuppliersForSelectUseCase {
-  execute(): Promise<{ id: string; name: string }[]>;
+  execute(): Promise<{ id: number; name: string }[]>;
 }

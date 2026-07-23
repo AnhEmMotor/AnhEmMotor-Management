@@ -1,7 +1,7 @@
 <template>
   <div
     v-loading="loading"
-    class="purchasing-pipeline-page flex flex-col gap-6 pb-10 h-screen"
+    class="resp-page purchasing-pipeline-page flex flex-col gap-6 pb-10 h-screen"
   >
     <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-7 gap-4 px-4 pt-4">
       <div

@@ -1,5 +1,5 @@
 <template>
-  <div class="art-card p-5 h-full">
+  <div class="resp-page art-card p-5 h-full">
     <div class="flex justify-between items-center mb-6">
       <h4 class="m-0 font-bold text-lg">NGUỒN DOANH THU</h4>
       <span class="text-sm text-gray-500 dark:text-gray-400">— Hôm nay</span>

@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="loading" class="flex flex-col gap-4 pb-5">
+  <div v-loading="loading" class="resp-page flex flex-col gap-4 pb-5">
     <div class="flex items-center gap-4">
       <button
         @click="goBack"
@@ -35,7 +35,7 @@
             <span class="font-semibold">Thông tin khách hàng & dịch vụ</span>
           </div>
         </template>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div>
             <span class="text-slate-500">Khách hàng:</span>
             <b class="text-slate-900 ml-2">{{ detail.customerName }}</b>

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-4 pb-5">
+  <div class="resp-page flex flex-col gap-4 pb-5">
     <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
       <ArtStatsCard
         title="Tổng giao dịch"

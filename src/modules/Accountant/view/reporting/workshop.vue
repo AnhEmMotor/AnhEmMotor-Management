@@ -1,5 +1,5 @@
 <template>
-  <div class="reporting-page">
+  <div class="resp-page reporting-page">
     <ReportPageHeader
       title="Báo cáo xưởng dịch vụ"
       description="Theo dõi tiến độ sửa chữa, thời gian hoàn thành, doanh thu dịch vụ và phiếu quá hạn."

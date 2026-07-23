@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="resp-page">
     <h1 class="text-4xl font-medium mt-5">{{ $t("admin.t21") }}</h1>
     <p class="mt-3.5 text-g-600">{{ $t("admin.t22") }}</p>
 
@@ -34,7 +34,6 @@
     </ul>
 
     <ElDrawer
-      lDrawer
       v-model="showDrawer"
       :lock-scroll="false"
       :size="360"
@@ -76,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { commentApi } from "@/api/marketing/comment.api";
 
 defineOptions({ name: "ArticleComment" });

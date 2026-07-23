@@ -1,5 +1,5 @@
 <template>
-  <div class="reporting-page">
+  <div class="resp-page reporting-page">
     <ReportPageHeader
       title="Báo cáo hợp đồng"
       description="Quản lý và theo dõi hợp đồng mua bán xe và hợp đồng với nhà cung cấp."

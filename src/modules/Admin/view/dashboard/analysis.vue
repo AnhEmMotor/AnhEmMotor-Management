@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="user">
-      <div class="admin-dashboard">
+      <div class="resp-page admin-dashboard">
         <div class="art-card">
           <div class="mb-6 flex justify-between items-center flex-wrap gap-4">
             <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">

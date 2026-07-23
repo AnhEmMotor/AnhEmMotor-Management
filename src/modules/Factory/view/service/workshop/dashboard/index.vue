@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 dashboard-workshop">
+  <div class="resp-page p-4 dashboard-workshop">
     <div class="flex items-start justify-between gap-4 flex-wrap">
       <div>
         <div class="flex items-center gap-3">

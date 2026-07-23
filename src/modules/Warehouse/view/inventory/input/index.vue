@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col gap-4 pb-5">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div class="resp-page flex flex-col gap-4 pb-5">
+    <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
       <ArtStatsCard
         title="Tổng xe nhập tháng"
         :count="stats.totalVehicles"

@@ -1,5 +1,5 @@
 <template>
-  <div class="fulfillment-container p-4">
+  <div class="resp-page fulfillment-container p-4">
     <!-- Header & Statistics -->
     <el-card shadow="never" class="mb-4">
       <div class="flex items-center justify-between mb-4 flex-wrap gap-4">

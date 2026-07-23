@@ -1,5 +1,5 @@
 <template>
-  <div class="reporting-page reporting-page--financial">
+  <div class="resp-page reporting-page reporting-page--financial">
     <ReportPageHeader
       title="Báo cáo tài chính"
       description="Tổng hợp P&L và chi phí vận hành để theo dõi hiệu quả tài chính theo kỳ."
@@ -15,7 +15,9 @@
       </template>
     </ReportPageHeader>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+    <div
+      class="resp-stats-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4"
+    >
       <ArtStatsCard
         title="Tổng thu nhập"
         :count="formatCurrency(pnlData.totalRevenue)"
@@ -247,7 +249,7 @@ async function loadPnlReport(month?: number, year?: number) {
 async function loadExpenses() {
   loading.value = true;
   try {
-    expenses.value = await AnalyticsService.getExpenses();
+    expenses.value = (await AnalyticsService.getExpenses()).items;
   } finally {
     loading.value = false;
   }

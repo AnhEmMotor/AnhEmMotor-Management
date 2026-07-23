@@ -1,5 +1,5 @@
 <template>
-  <div class="asset-wizard pb-4">
+  <div class="resp-page asset-wizard pb-4">
     <ElSteps
       :active="activeStep"
       finish-status="success"

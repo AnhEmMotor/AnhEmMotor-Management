@@ -1,5 +1,5 @@
 <template>
-  <div class="reporting-page">
+  <div class="resp-page reporting-page">
     <ReportPageHeader
       title="Báo cáo bán hàng"
       description="Phân tích doanh thu, lợi nhuận, sản phẩm bán chạy và phương thức thanh toán."

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="returns-detail-page p-6 flex flex-col gap-6 animate__animated animate__fadeIn"
+    class="resp-page returns-detail-page p-6 flex flex-col gap-6 animate__animated animate__fadeIn"
   >
     <!-- Header: Nút back và Tiêu đề -->
     <div class="flex items-center gap-4">
@@ -47,7 +47,7 @@
         />
 
         <div
-          class="grid grid-cols-1 md:grid-cols-3 gap-6 p-5 rounded-lg border bg-fill-blank border-color"
+          class="resp-stats-3 grid grid-cols-1 md:grid-cols-3 gap-6 p-5 rounded-lg border bg-fill-blank border-color"
         >
           <div class="flex flex-col">
             <span class="text-xs uppercase text-secondary"

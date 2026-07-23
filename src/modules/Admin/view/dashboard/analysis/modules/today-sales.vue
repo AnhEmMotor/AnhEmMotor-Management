@@ -1,5 +1,5 @@
 <template>
-  <div class="art-card h-82 p-5 mb-5 overflow-hidden max-lg:h-auto max-sm:mb-4">
+  <div class="resp-page art-card h-82 p-5 mb-5 overflow-hidden max-lg:h-auto max-sm:mb-4">
     <div class="art-card-header pr-0">
       <div class="title">
         <h4>{{ $t("admin.t40") }}</h4>

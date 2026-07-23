@@ -1,17 +1,17 @@
 <template>
-  <div class="contract-preview-container">
+  <div class="resp-page contract-preview-container">
     <!-- Modern Page Header -->
     <ReportPageHeader
-      title="Mẫu Hợp Đồng Mua Bán Xe Máy"
-      description="Trình xem trước và quản lý hợp đồng bán hàng — theo dõi vòng đời đặt cọc, ký kết và bàn giao xe."
+      title="Chi tiết hợp đồng mua xe"
+      description="Kiểm tra thông tin, in hợp đồng và lưu bản quét có chữ ký của khách hàng."
       icon="ri:file-contract-line"
     >
       <template #actions>
         <el-button
           @click="handlePrint"
-          v-auth="Permissions.Admin.ContractManagement.Edit"
+          v-auth="Permissions.Admin.ContractManagement.View"
         >
-          <el-icon><Printer /></el-icon>&nbsp;In Hợp Đồng
+          <el-icon><Printer /></el-icon> In Hợp Đồng
         </el-button>
         <el-button
           v-if="contractData.status === 'Draft'"
@@ -19,15 +19,15 @@
           @click="handleSaveDraft"
           v-auth="Permissions.Admin.ContractManagement.Edit"
         >
-          <el-icon><Document /></el-icon>&nbsp;Lưu Bản Nháp
+          <el-icon><Document /></el-icon> Lưu Bản Nháp
         </el-button>
         <el-button
-          v-if="contractData.status === 'Signed'"
-          type="warning"
-          @click="handleCreateAddendum"
-          v-auth="Permissions.Admin.ContractManagement.Create"
+          v-if="contractData.status === 'Draft'"
+          type="danger"
+          @click="handleDelete"
+          v-auth="Permissions.Admin.ContractManagement.Delete"
         >
-          <el-icon><DocumentCopy /></el-icon>&nbsp;Tạo Phụ Lục
+          <el-icon><Delete /></el-icon> Xóa Hợp Đồng
         </el-button>
         <el-button
           v-if="contractData.status === 'Signed' && activeStep >= 1"
@@ -35,7 +35,7 @@
           @click="handleHandover"
           v-auth="Permissions.Admin.ContractManagement.View"
         >
-          <el-icon><CircleCheck /></el-icon>&nbsp;Xác Nhận Bàn Giao
+          <el-icon><CircleCheck /></el-icon> Xác Nhận Bàn Giao
         </el-button>
       </template>
     </ReportPageHeader>
@@ -93,8 +93,8 @@
 
         <div
           v-for="(step, index) in [
-            { label: 'Đặt cọc', desc: 'Đã nhận cọc và khởi tạo' },
-            { label: 'Thanh toán đủ', desc: 'Hoàn tất nghĩa vụ tài chính' },
+            { label: 'Soạn thảo', desc: 'Kiểm tra và in hợp đồng' },
+            { label: 'Đã ký bản giấy', desc: 'Đã lưu bản quét có chữ ký' },
             { label: 'Bàn giao xe', desc: 'Hoàn thành hợp đồng' },
           ]"
           :key="index"
@@ -134,24 +134,20 @@
           :closable="false"
           show-icon
           title="Hợp đồng đang ở trạng thái Nháp"
-          description="Cần ký kết và tải lên bản scan chứng từ thực tế để chuyển sang trạng thái Đã ký."
+          description="In hợp đồng để khách hàng ký duyệt, sau đó tải bản quét lên ngay tại trang này."
         />
       </div>
     </el-card>
 
     <!-- Split-Screen / Preview Mode -->
-    <el-row :gutter="20">
+    <el-row :gutter="16" class="contract-document-layout">
       <!-- Cột bên trái: Form nhập liệu & upload -->
-      <el-col :span="10">
-        <el-card
-          shadow="never"
-          class="form-card reporting-card"
-          body-style="height: 600px; overflow-y: auto;"
-        >
+      <el-col :xs="24" :sm="24" :md="10" class="form-column">
+        <el-card shadow="never" class="form-card reporting-card">
           <template #header>
             <div class="card-header font-bold flex items-center gap-2">
               <el-icon class="text-report-red"><EditPen /></el-icon>
-              Thông tin Hợp đồng & Phụ lục
+              Thông tin hợp đồng
             </div>
           </template>
 
@@ -191,27 +187,25 @@
           <el-divider />
 
           <!-- Khu vực Tải lên Pháp lý (Upload Zone) -->
-          <div
-            ref="uploadZoneRef"
-            class="upload-zone mt-4"
-            :class="{ 'highlight-upload': isHighlightUpload }"
-          >
+          <div v-loading="isUploading" class="upload-zone mt-4">
             <div class="flex items-center gap-2 mb-2">
               <el-icon class="text-report-red text-lg"
                 ><UploadFilled
               /></el-icon>
               <h4 class="font-bold m-0">Bản quét Chứng từ Thực tế</h4>
             </div>
-            <p class="text-xs text-gray-500 mb-2">
-              Tải lên bản gốc có chữ ký/dấu vân tay để xác nhận hợp đồng có hiệu
-              lực (Signed).
+            <p class="upload-description text-xs mb-2">
+              Sau khi cửa hàng và khách hàng ký bản giấy, tải lên bản quét để
+              lưu hồ sơ và xác nhận hợp đồng đã ký.
             </p>
             <el-upload
               class="upload-demo"
               drag
               :http-request="customUploadRequest"
-              :disabled="isContractSigned"
-              accept=".pdf,.jpg,.jpeg,.png"
+              :before-upload="validateScanFile"
+              :disabled="isContractSigned || isUploading"
+              :show-file-list="false"
+              accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
             >
               <el-icon class="el-icon--upload"><upload-filled /></el-icon>
               <div class="el-upload__text">
@@ -223,24 +217,22 @@
                 </div>
               </template>
             </el-upload>
-            <div
-              v-if="contractData.scannedFileUrl"
-              class="mt-2 text-green-600 text-sm"
-            >
-              <i class="el-icon-document-checked"></i> Đã tải lên file hợp đồng
-              có chữ ký.
+            <div v-if="contractData.scannedFileUrl" class="uploaded-file mt-3">
+              <div class="uploaded-file__status">
+                <el-icon><CircleCheck /></el-icon>
+                <span>Đã lưu bản quét hợp đồng có chữ ký</span>
+              </div>
+              <el-button type="primary" link @click="handleViewScannedFile">
+                Xem bản quét
+              </el-button>
             </div>
           </div>
         </el-card>
       </el-col>
 
       <!-- Cột bên phải: Trình xem trước (Preview) -->
-      <el-col :span="14">
-        <el-card
-          shadow="never"
-          class="preview-card reporting-card"
-          body-style="padding: 0; background-color: #f3f4f6; height: 650px;"
-        >
+      <el-col :xs="24" :sm="24" :md="14" class="preview-column">
+        <el-card shadow="never" class="preview-card reporting-card">
           <div
             class="preview-toolbar p-2 bg-gray-200 border-b flex justify-between items-center"
           >
@@ -255,14 +247,8 @@
             }}</el-tag>
           </div>
 
-          <div
-            class="a4-preview-container p-6"
-            style="height: calc(100% - 40px); overflow-y: auto"
-          >
-            <div
-              class="a4-paper bg-white shadow-lg p-8 mx-auto"
-              style="width: 210mm; max-width: 100%; min-height: 297mm"
-            >
+          <div class="a4-preview-container p-6">
+            <div class="a4-paper bg-white shadow-lg p-8 mx-auto">
               <h2 class="text-center font-bold text-xl mb-4">
                 HỢP ĐỒNG MUA BÁN XE MÁY
               </h2>
@@ -399,13 +385,14 @@ import { useRoute } from "vue-router";
 import {
   UploadFilled,
   Document,
-  DocumentCopy,
   EditPen,
   Printer,
   CircleCheck,
   Check,
+  Delete,
 } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
+import type { UploadRawFile, UploadRequestOptions } from "element-plus";
 import { SalesContractApi } from "@/api/sales";
 import type { SalesContractStatus } from "@/domain/sales/contract.types";
 import ReportPageHeader from "@/modules/Accountant/view/reporting/ReportPageHeader.vue";
@@ -448,8 +435,9 @@ const contractData = ref({
   scannedFileUrl: null as string | null,
 });
 
-const uploadZoneRef = ref<HTMLElement | null>(null);
-const isHighlightUpload = ref(false);
+const isUploading = ref(false);
+const MAX_SCAN_FILE_SIZE = 10 * 1024 * 1024;
+const ALLOWED_SCAN_EXTENSIONS = [".pdf", ".jpg", ".jpeg", ".png"];
 
 const activeStep = computed(() => {
   if (contractData.value.status === "Fulfilled") return 2;
@@ -529,18 +517,6 @@ onMounted(loadData);
 
 const handlePrint = () => {
   window.print();
-  if (contractData.value.status === "Draft") {
-    setTimeout(() => {
-      uploadZoneRef.value?.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-      isHighlightUpload.value = true;
-      setTimeout(() => {
-        isHighlightUpload.value = false;
-      }, 3000);
-    }, 500);
-  }
 };
 
 const handleSaveDraft = async () => {
@@ -557,11 +533,47 @@ const handleSaveDraft = async () => {
   }
 };
 
-const handleCreateAddendum = () => {
-  ElMessage.info("Chức năng tạo Phụ lục hợp đồng đang được phát triển.");
+const handleDelete = async () => {
+  try {
+    await ElMessageBox.confirm(
+      "Bạn có chắc muốn xóa hợp đồng này? Hành động này không thể hoàn tác.",
+      "Xác nhận xóa",
+      {
+        confirmButtonText: "Xóa",
+        cancelButtonText: "Hủy",
+        type: "error",
+      },
+    );
+    await SalesContractApi.delete(contractData.value.id);
+    ElMessage.success("Đã xóa hợp đồng thành công.");
+  } catch (_e: any) {
+    if (_e !== "cancel") {
+      ElMessage.error("Xóa hợp đồng thất bại.");
+    }
+  }
 };
 
-const customUploadRequest = async (options: any) => {
+const validateScanFile = (file: UploadRawFile) => {
+  const fileName = file.name.toLowerCase();
+  const hasAllowedExtension = ALLOWED_SCAN_EXTENSIONS.some((extension) =>
+    fileName.endsWith(extension),
+  );
+
+  if (!hasAllowedExtension) {
+    ElMessage.error("Chỉ hỗ trợ file PDF, JPG, JPEG hoặc PNG.");
+    return false;
+  }
+
+  if (file.size > MAX_SCAN_FILE_SIZE) {
+    ElMessage.error("File hợp đồng không được vượt quá 10MB.");
+    return false;
+  }
+
+  return true;
+};
+
+const customUploadRequest = async (options: UploadRequestOptions) => {
+  isUploading.value = true;
   try {
     const res = await SalesContractApi.uploadScannedFile(
       contractData.value.id,
@@ -570,20 +582,39 @@ const customUploadRequest = async (options: any) => {
     contractData.value.scannedFileUrl = res.scannedFileUrl;
     contractData.value.status = "Signed";
     ElMessage.success(
-      "Đã tải lên bản gốc thành công. Hợp đồng chuyển sang trạng thái Signed. Đã khóa chỉnh sửa.",
+      "Đã lưu bản quét. Hợp đồng chuyển sang trạng thái Đã ký.",
     );
-    options.onSuccess();
+    options.onSuccess(res);
   } catch (_e) {
-    ElMessage.error("Upload file thất bại.");
-    options.onError();
+    ElMessage.error("Không thể tải bản quét lên. Vui lòng thử lại.");
+    const uploadError = Object.assign(
+      new Error("Sales contract scan upload failed"),
+      {
+        status: 0,
+        method: "POST",
+        url: `/api/v1/contracts/sales/${contractData.value.id}/scanned-file`,
+      },
+    );
+    options.onError(uploadError as Parameters<typeof options.onError>[0]);
+  } finally {
+    isUploading.value = false;
   }
+};
+
+const handleViewScannedFile = () => {
+  if (!contractData.value.scannedFileUrl) return;
+  window.open(
+    contractData.value.scannedFileUrl,
+    "_blank",
+    "noopener,noreferrer",
+  );
 };
 
 const handleHandover = async () => {
   if (contractData.value.status !== "Signed") {
     ElMessageBox.alert(
-      "Hợp đồng chưa được ký kết (thiếu bản scan). Không thể xuất bãi và bàn giao xe!",
-      "Cảnh báo Rào Chắn",
+      "Chưa có bản quét hợp đồng đã ký. Không thể xuất bãi và bàn giao xe.",
+      "Chưa đủ hồ sơ",
       { confirmButtonText: "Đóng", type: "error" },
     );
     return;
@@ -594,7 +625,7 @@ const handleHandover = async () => {
       status: "Fulfilled",
     });
     contractData.value.status = "Fulfilled";
-    ElMessage.success("Đã hoàn tất bàn giao xe. Hợp đồng đóng (Fulfilled).");
+    ElMessage.success("Đã hoàn tất bàn giao xe và đóng hợp đồng.");
   } catch (_e) {
     ElMessage.error("Cập nhật trạng thái bàn giao thất bại.");
   }
@@ -615,77 +646,67 @@ const formatDate = (dateString: string) => {
 
 <style scoped lang="scss">
 .contract-preview-container {
-  height: calc(100vh - 100px);
-  padding: 16px;
-  overflow-y: auto;
+  min-height: 100%;
+  padding: 12px;
+  color: var(--el-text-color-primary);
 
-  // =============================================
-  // Dark theme — tất cả el-card trong trang
-  // =============================================
   :deep(.el-card) {
-    background-color: #151619;
-    border-color: #2c2f36;
+    color: var(--el-text-color-primary);
+    background-color: var(--el-bg-color);
+    border-color: var(--el-border-color-light);
     box-shadow: none;
   }
 
   :deep(.el-card__header) {
-    color: #f8fafc;
-    border-color: #2c2f36;
+    color: var(--el-text-color-primary);
+    border-color: var(--el-border-color-light);
   }
 
   :deep(.el-card__body) {
-    color: #f8fafc;
+    color: var(--el-text-color-primary);
   }
 
-  // Form labels
   :deep(.el-form-item__label) {
-    color: #cbd5e1;
+    color: var(--el-text-color-regular);
+    font-size: 13px;
+    font-weight: 600;
   }
 
-  // Inputs & Textarea
   :deep(.el-textarea__inner),
   :deep(.el-input__inner) {
-    color: #f8fafc;
-    background-color: #101114;
-    border-color: #333741;
+    color: var(--el-text-color-primary);
+    background-color: transparent;
   }
 
   :deep(.el-input__wrapper),
   :deep(.el-select__wrapper),
   :deep(.el-upload-dragger) {
-    background-color: #101114;
-    border-color: #333741;
-    box-shadow: 0 0 0 1px #333741 inset;
+    background-color: var(--el-fill-color-blank);
+    border-color: var(--el-border-color);
+    box-shadow: 0 0 0 1px var(--el-border-color) inset;
   }
 
   :deep(.el-input__inner::placeholder),
   :deep(.el-textarea__inner::placeholder) {
-    color: #64748b;
+    color: var(--el-text-color-placeholder);
   }
 
-  // Upload text
   :deep(.el-upload__text),
   :deep(.el-upload__tip) {
-    color: #94a3b8;
+    color: var(--el-text-color-secondary);
   }
 
-  // =============================================
-  // Pipeline toolbar — preview card header
-  // =============================================
   :deep(.preview-toolbar) {
-    background-color: #1e2028 !important;
-    border-color: #2c2f36 !important;
+    background-color: var(--el-fill-color-light) !important;
+    border-color: var(--el-border-color-light) !important;
   }
 
   :deep(.preview-toolbar .text-gray-600) {
-    color: #94a3b8 !important;
+    color: var(--el-text-color-regular) !important;
   }
 
-  // =============================================
-  // A4 Paper — giữ nguyên màu trắng
-  // =============================================
   :deep(.a4-preview-container) {
-    background-color: #1e2028;
+    background-color: var(--el-fill-color-light);
   }
 
   :deep(.a4-paper),
@@ -704,8 +725,49 @@ const formatDate = (dateString: string) => {
   }
 }
 
+:global(html.dark .contract-preview-container .el-card) {
+  background-color: #151619;
+  border-color: rgb(255 255 255 / 12%);
+}
+
+:global(html.dark .contract-preview-container .el-card__header) {
+  color: #f8fafc;
+  border-color: rgb(255 255 255 / 12%);
+}
+
+:global(html.dark .contract-preview-container .el-card__body) {
+  color: #f8fafc;
+}
+
+:global(html.dark .contract-preview-container .el-form-item__label) {
+  color: #cbd5e1;
+}
+
+:global(html.dark .contract-preview-container .el-input__wrapper),
+:global(html.dark .contract-preview-container .el-select__wrapper),
+:global(html.dark .contract-preview-container .el-upload-dragger) {
+  background-color: #101114;
+  border-color: rgb(255 255 255 / 14%);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 14%) inset;
+}
+
+:global(html.dark .contract-preview-container .el-input__inner),
+:global(html.dark .contract-preview-container .el-textarea__inner) {
+  color: #f8fafc;
+}
+
+:global(html.dark .contract-preview-container .preview-toolbar),
+:global(html.dark .contract-preview-container .a4-preview-container) {
+  background-color: #1e2028 !important;
+  border-color: rgb(255 255 255 / 12%) !important;
+}
+
+:global(html.dark .contract-preview-container .preview-toolbar .text-gray-600) {
+  color: #cbd5e1 !important;
+}
+
 .pipeline-card :deep(.el-card__body) {
-  padding: 18px 20px;
+  padding: 14px 16px;
 }
 
 .bg-report-red {
@@ -721,33 +783,26 @@ const formatDate = (dateString: string) => {
 }
 
 .bg-report-gray {
-  background-color: #2d2d2d !important;
+  background-color: var(--el-fill-color-dark) !important;
 }
 
-// =============================================
-// Pipeline track lines
-// =============================================
 .pipeline-track-bg {
-  background-color: #2c2f36;
+  background-color: var(--el-border-color);
 }
 
 .pipeline-track-active {
   background-color: #e84a4a;
 }
 
-// =============================================
-// Pipeline step circles — tách biệt khỏi dark theme override
-// =============================================
 .step-circle {
-  // Base: pending (chưa đến)
-  background-color: #1e2028;
-  border-color: #3d4149;
-  color: #64748b;
+  color: var(--el-text-color-secondary);
+  background-color: var(--el-fill-color-light);
+  border-color: var(--el-border-color);
 
   &.step-circle--done {
-    background-color: #1e2028;
+    background-color: var(--el-fill-color-blank);
     border-color: #e84a4a;
-    color: #ff6b6b;
+    color: #e84a4a;
   }
 
   &.step-circle--active {
@@ -758,48 +813,62 @@ const formatDate = (dateString: string) => {
   }
 
   &.step-circle--pending {
-    background-color: #1e2028;
-    border-color: #3d4149;
-    color: #64748b;
+    color: var(--el-text-color-placeholder);
+    background-color: var(--el-fill-color-light);
+    border-color: var(--el-border-color);
   }
 }
 
-// =============================================
-// Pipeline step labels
-// =============================================
 .step-label {
-  color: #475569;
+  color: var(--el-text-color-secondary);
   font-weight: 400;
 
   &.step-label--active {
-    color: #f1f5f9;
+    color: var(--el-text-color-primary);
     font-weight: 600;
   }
 
   &.step-label--inactive {
-    color: #475569;
+    color: var(--el-text-color-placeholder);
     font-weight: 400;
   }
 }
 
 .step-desc {
-  color: #64748b;
+  color: var(--el-text-color-secondary);
 }
 
-// Pipeline card subtitle
 .pipeline-card {
   .text-gray-500 {
-    color: #94a3b8 !important;
+    color: var(--el-text-color-secondary) !important;
   }
 }
 
+.contract-document-layout {
+  row-gap: 16px;
+}
+
+.form-card :deep(.el-card__body) {
+  min-height: 600px;
+  padding: 14px;
+}
+
+.preview-card :deep(.el-card__body) {
+  min-height: 650px;
+  padding: 0;
+  background-color: var(--el-fill-color-light);
+}
+
 .a4-preview-container {
-  height: 600px;
+  height: 610px;
   overflow-y: auto;
   border-radius: 0 0 8px 8px;
 }
 
 .a4-paper {
+  width: 210mm;
+  max-width: 100%;
+  min-height: 297mm;
   font-family: "Times New Roman", Times, serif;
   font-size: 14px;
   line-height: 1.5;
@@ -812,11 +881,11 @@ const formatDate = (dateString: string) => {
 }
 
 .upload-zone {
-  padding: 20px;
+  padding: 16px;
   text-align: center;
-  background-color: #151619;
-  border: 1px dashed #333741;
-  border-radius: 6px;
+  background-color: var(--el-fill-color-light);
+  border: 1px dashed var(--el-border-color);
+  border-radius: 8px;
   transition:
     background-color 0.4s ease,
     border-color 0.4s ease,
@@ -825,27 +894,139 @@ const formatDate = (dateString: string) => {
   will-change: box-shadow, border-color;
 }
 
-.highlight-upload {
-  background-color: rgb(232 74 74 / 12%);
-  border-color: #e84a4a;
-  box-shadow:
-    0 0 0 2px rgb(232 74 74 / 30%),
-    0 0 20px rgb(232 74 74 / 25%);
-  animation: pulse-upload 1.5s ease-in-out 2;
+.upload-description {
+  color: var(--el-text-color-secondary);
 }
 
-@keyframes pulse-upload {
-  0%,
-  100% {
-    box-shadow:
-      0 0 0 2px rgb(232 74 74 / 30%),
-      0 0 20px rgb(232 74 74 / 25%);
+.uploaded-file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  color: var(--el-color-success);
+  text-align: left;
+  background-color: var(--el-color-success-light-9);
+  border: 1px solid var(--el-color-success-light-7);
+  border-radius: 6px;
+}
+
+.uploaded-file__status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+:global(html.dark .contract-preview-container .step-circle--done) {
+  color: #ff6b6b;
+  background-color: #1e2028;
+}
+
+:global(html.dark .contract-preview-container .step-circle--pending) {
+  color: #64748b;
+  background-color: #1e2028;
+  border-color: rgb(255 255 255 / 14%);
+}
+
+:global(html.dark .contract-preview-container .step-label--active) {
+  color: #f1f5f9;
+}
+
+:global(html.dark .contract-preview-container .step-label--inactive),
+:global(html.dark .contract-preview-container .step-desc) {
+  color: #94a3b8;
+}
+
+:global(html.dark .contract-preview-container .upload-zone) {
+  background-color: #151619;
+  border-color: rgb(255 255 255 / 14%);
+}
+
+:global(html.dark .contract-preview-container .upload-description) {
+  color: #94a3b8;
+}
+
+:global(html.dark .contract-preview-container .uploaded-file) {
+  color: #86efac;
+  background-color: rgb(34 197 94 / 12%);
+  border-color: rgb(34 197 94 / 28%);
+}
+
+@media (width <= 768px) {
+  .contract-preview-container {
+    padding: 8px;
   }
 
-  50% {
-    box-shadow:
-      0 0 0 4px rgb(232 74 74 / 50%),
-      0 0 32px rgb(232 74 74 / 45%);
+  .pipeline-steps-wrapper {
+    min-width: 420px;
+  }
+
+  .pipeline-card :deep(.el-card__body) {
+    overflow-x: auto;
+  }
+
+  .form-card :deep(.el-card__body),
+  .preview-card :deep(.el-card__body) {
+    min-height: auto;
+  }
+
+  .a4-preview-container {
+    height: auto;
+    min-height: 420px;
+    padding: 12px;
+  }
+
+  .a4-paper {
+    padding: 16px;
+    font-size: 13px;
+  }
+
+  .uploaded-file {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media print {
+  @page {
+    size: a4;
+    margin: 12mm;
+  }
+
+  :global(body *) {
+    visibility: hidden !important;
+  }
+
+  .a4-paper,
+  .a4-paper * {
+    visibility: visible !important;
+  }
+
+  .a4-paper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-width: none;
+    min-height: auto;
+    padding: 0;
+    margin: 0;
+    color: #000 !important;
+    background: #fff !important;
+    box-shadow: none !important;
+  }
+
+  .a4-paper,
+  .a4-paper table,
+  .a4-paper tr,
+  .a4-paper td,
+  .a4-paper th {
+    color: #000 !important;
+    background: #fff !important;
+    print-color-adjust: exact;
   }
 }
 </style>

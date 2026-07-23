@@ -4,7 +4,7 @@
       $route.path.toLowerCase() === '/marketing/customer' ||
       $route.path.toLowerCase() === '/marketing/customer/'
     "
-    class="customer-management-page min-h-full bg-[#F8FAFC] text-[#0F172A]"
+    class="resp-page customer-management-page min-h-full bg-[#F8FAFC] text-[#0F172A]"
   >
     <div class="bg-white border-b border-slate-200 px-6 py-4 shadow-sm">
       <div class="flex items-center justify-between">

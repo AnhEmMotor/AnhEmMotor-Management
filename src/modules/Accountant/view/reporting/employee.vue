@@ -1,5 +1,5 @@
 <template>
-  <div class="reporting-page employee-report-page">
+  <div class="resp-page reporting-page employee-report-page">
     <ReportPageHeader
       title="Báo cáo nhân sự & hoa hồng"
       description="Theo dõi doanh số theo nhân viên, hoa hồng chi trả và trạng thái KPI trong kỳ."
@@ -51,12 +51,14 @@
         :loading="loading"
       />
       <ArtStatsCard
-        title="Cần cải thiện"
-        :count="reportSummary.needImprovementCount"
-        description="Nhân viên cần theo dõi KPI sát hơn"
+        title="Cần theo dõi"
+        :count="
+          reportSummary.needImprovementCount + reportSummary.withoutKpiCount
+        "
+        :description="`${reportSummary.needImprovementCount} chưa đạt · ${reportSummary.withoutKpiCount} chưa được giao KPI`"
         icon="ri:alarm-warning-line"
         :icon-style="
-          reportSummary.needImprovementCount > 0
+          reportSummary.needImprovementCount + reportSummary.withoutKpiCount > 0
             ? 'bg-report-red-dark'
             : 'bg-report-gray'
         "
@@ -223,12 +225,19 @@
           align="right"
         >
           <template #default="{ row }">
-            {{ formatCurrency(row.targetSales) }}
+            {{
+              row.targetSales > 0
+                ? formatCurrency(row.targetSales)
+                : "Chưa giao"
+            }}
           </template>
         </ElTableColumn>
         <ElTableColumn label="Tiến độ KPI" min-width="180">
           <template #default="{ row }">
-            <div class="employee-report__progress-cell">
+            <div
+              v-if="row.targetSales > 0"
+              class="employee-report__progress-cell"
+            >
               <ElProgress
                 :percentage="Math.min(getAchievementRate(row), 130)"
                 :stroke-width="8"
@@ -236,6 +245,7 @@
               />
               <span>{{ formatPercent(getAchievementRate(row)) }}</span>
             </div>
+            <span v-else class="reporting-muted">Chưa có mục tiêu</span>
           </template>
         </ElTableColumn>
         <ElTableColumn
@@ -314,12 +324,18 @@ const hasData = computed(() => performance.value.length > 0);
 const reportSummary = computed(() => {
   const totalSales = sumBy(performance.value, "totalSales");
   const totalTarget = sumBy(performance.value, "targetSales");
+  const targetedSales = performance.value
+    .filter((item) => item.targetSales > 0)
+    .reduce((total, item) => total + (item.totalSales || 0), 0);
   const totalCommission = sumBy(performance.value, "commissionPaid");
   const achievedCount = performance.value.filter(
     (item) => item.kpiStatus === "Đạt" || item.kpiStatus === "Vượt KPI",
   ).length;
   const needImprovementCount = performance.value.filter(
     (item) => item.kpiStatus === "Cần cải thiện",
+  ).length;
+  const withoutKpiCount = performance.value.filter(
+    (item) => item.kpiStatus === "Chưa đặt KPI",
   ).length;
 
   return {
@@ -329,7 +345,8 @@ const reportSummary = computed(() => {
     totalCommission,
     achievedCount,
     needImprovementCount,
-    achievementRate: totalTarget > 0 ? (totalSales / totalTarget) * 100 : 0,
+    withoutKpiCount,
+    achievementRate: totalTarget > 0 ? (targetedSales / totalTarget) * 100 : 0,
   };
 });
 
@@ -345,10 +362,13 @@ const selectedRangeLabel = computed(
 );
 
 const kpiStatusSummary = computed(() =>
-  (["Vượt KPI", "Đạt", "Cần cải thiện"] as KpiStatus[]).map((status) => ({
-    status,
-    count: performance.value.filter((item) => item.kpiStatus === status).length,
-  })),
+  (["Vượt KPI", "Đạt", "Cần cải thiện", "Chưa đặt KPI"] as KpiStatus[]).map(
+    (status) => ({
+      status,
+      count: performance.value.filter((item) => item.kpiStatus === status)
+        .length,
+    }),
+  ),
 );
 
 const topPerformers = computed(() =>
@@ -493,7 +513,7 @@ function renderKpiStatusChart() {
   }
 
   kpiStatusChart.setOption({
-    color: ["#22C55E", "#E84A4A", "#EF4444"],
+    color: ["#22C55E", "#E84A4A", "#EF4444", "#94A3B8"],
     tooltip: { trigger: "item" },
     legend: {
       bottom: 0,
@@ -590,6 +610,8 @@ function getKpiTagType(
       return "primary";
     case "Cần cải thiện":
       return "danger";
+    case "Chưa đặt KPI":
+      return "info";
     default:
       return "info";
   }

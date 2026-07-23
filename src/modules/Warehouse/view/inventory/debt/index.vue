@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col gap-4 pb-5">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+  <div class="resp-page flex flex-col gap-4 pb-5">
+    <div class="resp-stats-3 grid grid-cols-1 md:grid-cols-3 gap-4">
       <div class="md:col-span-1 flex flex-col justify-between">
         <ArtStatsCard
           title="Tổng nợ NCC"

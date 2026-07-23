@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-5 mb-5">
+  <div class="resp-page page-content space-y-5 mb-5">
     <div class="text-2xl font-medium mt-5 max-sm:text-2xl max-sm:mt-3">
       {{ $t("admin.t254") }}
     </div>

@@ -1,5 +1,5 @@
 <template>
-  <div class="reporting-page">
+  <div class="resp-page reporting-page">
     <ReportPageHeader
       title="Báo cáo khách hàng & Lead"
       description="Phân tích chất lượng tệp khách hàng, phễu chuyển đổi và theo dõi nguồn khách hàng."
@@ -124,7 +124,7 @@
       <ElTable
         v-loading="loading"
         :data="filteredLeads"
-        class="reporting-table"
+        class="reporting-table resp-table"
         empty-text="Không tìm thấy khách hàng"
       >
         <ElTableColumn prop="name" label="Tên khách hàng" min-width="150">
@@ -188,6 +188,7 @@
       v-model="detailVisible"
       title="Chi tiết khách hàng / Lead"
       width="500px"
+class="resp-dialog"
       append-to-body
     >
       <div v-if="selectedLead" class="space-y-4">

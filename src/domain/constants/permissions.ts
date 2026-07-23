@@ -77,6 +77,30 @@ export const Permissions = {
       Confirm: "Permissions.Marketing.BookingManagement.Confirm",
       Delete: "Permissions.Marketing.BookingManagement.Delete",
     },
+    ContactManagement: {
+      View: "Permissions.Marketing.ContactManagement.View",
+      Create: "Permissions.Marketing.ContactManagement.Create",
+      Edit: "Permissions.Marketing.ContactManagement.Edit",
+      Delete: "Permissions.Marketing.ContactManagement.Delete",
+    },
+    CustomerAssetManagement: {
+      View: "Permissions.Marketing.CustomerAssetManagement.View",
+      Create: "Permissions.Marketing.CustomerAssetManagement.Create",
+      Edit: "Permissions.Marketing.CustomerAssetManagement.Edit",
+      Delete: "Permissions.Marketing.CustomerAssetManagement.Delete",
+    },
+    CustomerCareManagement: {
+      View: "Permissions.Marketing.CustomerCareManagement.View",
+      Create: "Permissions.Marketing.CustomerCareManagement.Create",
+      Edit: "Permissions.Marketing.CustomerCareManagement.Edit",
+      Delete: "Permissions.Marketing.CustomerCareManagement.Delete",
+    },
+    CustomerVoucherManagement: {
+      View: "Permissions.Marketing.CustomerVoucherManagement.View",
+      Create: "Permissions.Marketing.CustomerVoucherManagement.Create",
+      Edit: "Permissions.Marketing.CustomerVoucherManagement.Edit",
+      Delete: "Permissions.Marketing.CustomerVoucherManagement.Delete",
+    },
   },
   Warehouse: {
     Module: "Permissions.Warehouse",
@@ -189,6 +213,14 @@ export const Permissions = {
       SubmitQc: "Permissions.Factory.RepairOrderManagement.SubmitQc",
       Complete: "Permissions.Factory.RepairOrderManagement.Complete",
       Cancel: "Permissions.Factory.RepairOrderManagement.Cancel",
+    },
+    BookingAppointmentManagement: {
+      View: "Permissions.Factory.BookingAppointmentManagement.View",
+      Create: "Permissions.Factory.BookingAppointmentManagement.Create",
+      Edit: "Permissions.Factory.BookingAppointmentManagement.Edit",
+      Delete: "Permissions.Factory.BookingAppointmentManagement.Delete",
+      Confirm: "Permissions.Factory.BookingAppointmentManagement.Confirm",
+      Cancel: "Permissions.Factory.BookingAppointmentManagement.Cancel",
     },
     SparePartSelection: {
       View: "Permissions.Factory.SparePartSelection.View",

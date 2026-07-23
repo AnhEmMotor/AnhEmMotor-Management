@@ -31,7 +31,9 @@ export interface ProductVariant {
   url_slug?: string;
   stock_quantity?: number;
   weight?: number | null;
-  dimensions?: string;
+  length?: number | null;
+  width?: number | null;
+  height?: number | null;
   wheelbase?: number | null;
   seat_height?: number | null;
   ground_clearance?: number | null;
@@ -56,7 +58,9 @@ export interface Product {
   brand: string;
   description: string;
   weight: number;
-  dimensions: string;
+  length?: number;
+  width?: number;
+  height?: number;
   origin: string;
   unit: string;
   cover_image_url: string;

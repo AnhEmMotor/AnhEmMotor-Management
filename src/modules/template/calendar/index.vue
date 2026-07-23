@@ -1,5 +1,5 @@
 <template>
-  <div class="page-content mb-5">
+  <div class="resp-page page-content mb-5">
     <ElCalendar v-model="currentDate">
       <template #date-cell="{ data }">
         <div

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-4 pb-5">
+  <div class="resp-page flex flex-col gap-4 pb-5">
     <!-- Header -->
     <div
       class="flex items-start justify-between gap-4 flex-wrap bg-white p-6 rounded-xl shadow-sm border border-slate-100"
@@ -21,7 +21,7 @@
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-4">
       <ElCard shadow="never" class="border-l-4 border-l-red-400">
         <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">
           Chưa thanh toán
@@ -67,7 +67,7 @@
 
     <!-- Filters -->
     <ElCard shadow="never">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-4">
         <div>
           <label
             class="block text-[11px] font-black text-slate-400 uppercase tracking-wider mb-2"
@@ -241,7 +241,7 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           <ElFormItem label="Tạm tính" prop="subTotal">
             <ElInputNumber
               v-model="paymentForm.subTotal"
@@ -270,7 +270,7 @@
           </div>
         </ElFormItem>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           <ElFormItem label="Phương thức TT" prop="paymentMethod">
             <ElSelect v-model="paymentForm.paymentMethod" class="w-full">
               <ElOption

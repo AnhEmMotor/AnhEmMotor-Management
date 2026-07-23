@@ -1,5 +1,5 @@
 <template>
-  <div class="page-content mb-5">
+  <div class="resp-page page-content mb-5">
     <ElRow>
       <ElCard class="w-75 mr-5 mb-7.5">
         <template #header>

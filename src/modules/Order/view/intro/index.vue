@@ -1,5 +1,5 @@
 <template>
-  <div class="banner-container">
+  <div class="resp-page banner-container">
     <div class="banner-image">
       <img src="@/assets/images/banner/order_banner.jpg" alt="Order Banner" />
     </div>

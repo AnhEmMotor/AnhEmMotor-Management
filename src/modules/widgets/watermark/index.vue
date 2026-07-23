@@ -1,5 +1,5 @@
 <template>
-  <div class="page-content mb-5">
+  <div class="resp-page page-content mb-5">
     <ElCard class="mb-7.5">
       <template #header>Cơ bảnVanBanWatermark</template>
       <ElWatermark

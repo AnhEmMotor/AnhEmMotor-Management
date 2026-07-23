@@ -1,14 +1,16 @@
 <template>
-  <div class="contract-sales-container">
-    <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+  <div class="resp-page contract-sales-container">
+    <div class="mb-4 resp-stats-4 grid grid-cols-1 gap-4 md:grid-cols-3">
       <el-card shadow="hover" class="kpi-card">
         <div class="flex items-center justify-between">
           <div>
-            <div class="text-sm text-gray-500">Hợp đồng mới (Draft)</div>
+            <div class="text-sm text-gray-500">Hợp đồng mới</div>
             <div class="text-2xl font-bold text-orange-500">
               {{ statistics.draftCount }}
             </div>
-            <div class="text-xs text-gray-400 mt-1">Cần xử lý gấp để ký</div>
+            <div class="text-xs text-gray-400 mt-1">
+              Cần hoàn thiện thông tin
+            </div>
           </div>
           <el-icon class="text-4xl text-orange-200"><Document /></el-icon>
         </div>
@@ -28,7 +30,7 @@
       <el-card shadow="hover" class="kpi-card">
         <div class="flex items-center justify-between">
           <div>
-            <div class="text-sm text-gray-500">Đã ký (Signed)</div>
+            <div class="text-sm text-gray-500">Đã ký</div>
             <div class="text-2xl font-bold text-blue-500">
               {{ statistics.signedCount }}
             </div>
@@ -56,7 +58,9 @@
         </div>
       </template>
       <div>
-        <div class="mb-4 grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+        <div
+          class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-4 max-md:flex-wrap max-md:gap-2 items-center"
+        >
           <el-input
             v-model="searchQuery"
             placeholder="Số hợp đồng, Tên KH, Số CCCD, Số khung/máy"
@@ -72,21 +76,17 @@
             class="w-full"
             @change="fetchData"
           >
-            <el-option label="Nháp (Draft)" value="Draft" />
-            <el-option label="Đã ký (Signed)" value="Signed" />
-            <el-option label="Hoàn tất (Fulfilled)" value="Fulfilled" />
+            <el-option label="Nháp" value="Draft" />
+            <el-option label="Đã ký" value="Signed" />
+            <el-option label="Hoàn tất" value="Fulfilled" />
           </el-select>
-          <el-select
+          <el-input
             v-model="vehicleFilter"
             placeholder="Dòng xe"
             clearable
             class="w-full"
-            @change="fetchData"
-          >
-            <el-option label="Honda SH" value="SH" />
-            <el-option label="Honda Vision" value="Vision" />
-            <el-option label="Yamaha Exciter" value="Exciter" />
-          </el-select>
+            @keyup.enter="fetchData"
+          />
           <el-button
             type="primary"
             :icon="Search"
@@ -99,6 +99,7 @@
         <el-table
           :data="tableData"
           border
+          class="resp-table"
           style="width: 100%"
           v-loading="loading"
         >
@@ -130,9 +131,9 @@
             min-width="180"
           />
 
-          <el-table-column label="Hạn Bàn Giao" width="130">
+          <el-table-column label="Hạn Bàn Giao" width="170">
             <template #default="scope">
-              <div class="flex flex-col items-start">
+              <div class="delivery-deadline flex flex-col items-start gap-1">
                 <span
                   :class="{
                     'text-red-500 font-bold': isOverdue(
@@ -144,11 +145,11 @@
                 </span>
                 <el-tag
                   size="small"
-                  :type="getStatusType(scope.row.status)"
-                  effect="dark"
-                  class="mt-1 contract-status-tag"
+                  :type="getDeadlineTagType(scope.row.deliveryDeadline)"
+                  effect="plain"
+                  class="delivery-deadline__hint"
                 >
-                  {{ getStatusLabel(scope.row.status) }}
+                  {{ getDeliveryDeadlineHint(scope.row.deliveryDeadline) }}
                 </el-tag>
               </div>
             </template>
@@ -162,82 +163,27 @@
           >
             <template #default="scope">
               <el-tag :type="getStatusType(scope.row.status)" effect="dark">
-                {{ scope.row.status }}
+                {{ getStatusLabel(scope.row.status) }}
               </el-tag>
             </template>
           </el-table-column>
 
           <el-table-column
             label="Thao Tác"
-            width="110"
+            width="140"
             align="center"
             fixed="right"
           >
             <template #default="scope">
-              <el-dropdown trigger="click">
-                <el-button
-                  type="primary"
-                  link
-                  v-auth="Permissions.Admin.ContractManagement.Edit"
-                >
-                  Thao tác
-                  <el-icon class="el-icon--right"><ArrowDown /></el-icon>
-                </el-button>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item
-                      @click="goToPreview(scope.row.id)"
-                      :icon="View"
-                      v-auth="Permissions.Admin.ContractManagement.View"
-                    >
-                      Xem chi tiết
-                    </el-dropdown-item>
-                    <template v-if="scope.row.status === 'Draft'">
-                      <el-dropdown-item
-                        @click="goToPreview(scope.row.id)"
-                        :icon="Edit"
-                        v-auth="Permissions.Admin.ContractManagement.Edit"
-                      >
-                        Xem trước &amp; Chỉnh sửa
-                      </el-dropdown-item>
-                      <el-dropdown-item
-                        :icon="UploadFilled"
-                        v-auth="Permissions.Admin.ContractManagement.View"
-                      >
-                        Tải lên bản quét PDF
-                      </el-dropdown-item>
-                      <el-dropdown-item
-                        divided
-                        disabled
-                        v-auth="Permissions.Admin.ContractManagement.View"
-                      >
-                        <el-icon class="text-orange-500"
-                          ><WarningFilled
-                        /></el-icon>
-                        <span class="text-orange-500">Ký HĐ để giao xe</span>
-                      </el-dropdown-item>
-                    </template>
-                    <template v-else-if="scope.row.status === 'Signed'">
-                      <el-dropdown-item
-                        :icon="DocumentAdd"
-                        v-auth="Permissions.Admin.ContractManagement.Create"
-                        >Tạo phụ lục</el-dropdown-item
-                      >
-                      <el-dropdown-item
-                        v-if="isOverdue(scope.row.deliveryDeadline)"
-                        divided
-                        disabled
-                        v-auth="Permissions.Admin.ContractManagement.Edit"
-                      >
-                        <el-icon class="text-red-500"
-                          ><WarnTriangleFilled
-                        /></el-icon>
-                        <span class="text-red-500">Trễ hạn bàn giao!</span>
-                      </el-dropdown-item>
-                    </template>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
+              <el-button
+                type="primary"
+                link
+                :icon="View"
+                @click="goToPreview(scope.row.id)"
+                v-auth="Permissions.Admin.ContractManagement.View"
+              >
+                Mở hợp đồng
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -261,6 +207,7 @@
       v-model="dialogVisible"
       title="Thêm hợp đồng"
       width="600px"
+      class="resp-dialog"
       append-to-body
       destroy-on-close
     >
@@ -328,49 +275,12 @@
           />
         </el-form-item>
 
-        <el-form-item label="File hợp đồng (Bản scan/Word/PDF)">
-          <el-upload
-            :http-request="customUploadRequest"
-            :show-file-list="false"
-            drag
-            class="w-full contract-file-upload"
-            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-          >
-            <div
-              v-if="contractFilePreviewUrl"
-              class="contract-upload-preview flex flex-col items-center justify-center p-4 border border-dashed rounded-lg"
-            >
-              <img
-                :src="contractFilePreviewUrl"
-                alt="Xem trước file"
-                class="max-h-[150px] object-contain rounded"
-              />
-              <span class="text-xs text-gray-500 mt-2"
-                >Bấm để chọn file khác</span
-              >
-            </div>
-            <template v-else>
-              <el-icon class="el-icon--upload"><UploadFilled /></el-icon>
-              <div class="el-upload__text text-sm">
-                Kéo thả file hoặc <em>bấm vào đây</em> để tải lên
-              </div>
-            </template>
-            <template #tip>
-              <div class="el-upload__tip text-xs text-gray-400">
-                Hỗ trợ PDF, Word (.doc, .docx), JPG, PNG (tối đa 10MB)
-              </div>
-            </template>
-          </el-upload>
-          <div
-            v-if="contractFileName"
-            class="contract-upload-filebar flex items-center justify-between mt-2 p-2 bg-gray-50 dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-lg text-xs"
-          >
-            <span class="truncate font-medium">{{ contractFileName }}</span>
-            <el-button link type="danger" @click.stop="clearContractFile"
-              >Xóa</el-button
-            >
-          </div>
-        </el-form-item>
+        <el-alert
+          type="info"
+          :closable="false"
+          show-icon
+          title="Bản quét PDF được tải lên tại trang chi tiết sau khi tạo hợp đồng."
+        />
       </el-form>
 
       <template #footer>
@@ -405,17 +315,15 @@ import {
   Document,
   Warning,
   Money,
-  Edit,
-  UploadFilled,
-  DocumentAdd,
-  WarningFilled,
-  WarnTriangleFilled,
-  ArrowDown,
   Plus,
 } from "@element-plus/icons-vue";
 
 import { ElMessage } from "element-plus";
 import { SalesContractApi, SalesOrderApi } from "@/api/sales";
+import type {
+  SalesContractListDto,
+  SalesContractStatus,
+} from "@/domain/sales/contract.types";
 
 const { t: $t } = useI18n();
 const router = useRouter();
@@ -425,7 +333,17 @@ const searchQuery = ref("");
 const statusFilter = ref("");
 const vehicleFilter = ref("");
 
-const tableData = ref<any[]>([]);
+interface SalesContractListRow {
+  id: string;
+  contractNumber: string;
+  orderId: number;
+  status: SalesContractStatus;
+  customerName: string;
+  vehicle: string;
+  deliveryDeadline?: string;
+}
+
+const tableData = ref<SalesContractListRow[]>([]);
 const statistics = reactive({
   draftCount: 0,
   overdueCount: 0,
@@ -447,6 +365,28 @@ const debouncedSearch = () => {
   }, 400);
 };
 
+const formatVehicleTransaction = (contract: SalesContractListDto): string => {
+  const vehicleDetails = [
+    contract.vehicleModel,
+    contract.vehicleVersion,
+    contract.vehicleColor,
+  ].filter((value): value is string => Boolean(value?.trim()));
+
+  return vehicleDetails.join(" • ") || "Chưa có thông tin xe";
+};
+
+const mapSalesContractRow = (
+  contract: SalesContractListDto,
+): SalesContractListRow => ({
+  id: contract.id,
+  contractNumber: contract.contractNumber,
+  orderId: contract.orderId,
+  status: contract.status,
+  customerName: contract.customerFullName?.trim() || "Chưa có khách hàng",
+  vehicle: formatVehicleTransaction(contract),
+  deliveryDeadline: contract.finalPaymentDeadline,
+});
+
 const fetchData = async () => {
   loading.value = true;
   try {
@@ -465,15 +405,7 @@ const fetchData = async () => {
     if (vehicleFilter.value) params.vehicleModel = vehicleFilter.value;
 
     const res = await SalesContractApi.getList(params);
-    tableData.value = res.items.map((c: any) => ({
-      ...c,
-      progress:
-        c.status === "Fulfilled"
-          ? "delivered"
-          : c.status === "Signed"
-            ? "paid"
-            : "deposit",
-    }));
+    tableData.value = res.items.map(mapSalesContractRow);
     pagination.total = res.total;
   } catch (_e) {
     ElMessage.error("Không tải được danh sách hợp đồng.");
@@ -513,34 +445,82 @@ const getStatusType = (status: string) => {
 
 const getStatusLabel = (status: string) => {
   const map: Record<string, string> = {
-    Draft: "Nháp (Draft)",
-    Signed: "Đã ký (Signed)",
-    Fulfilled: "Hoàn tất (Fulfilled)",
+    Draft: "Nháp",
+    Signed: "Đã ký",
+    Fulfilled: "Hoàn tất",
   };
   return map[status] || status;
 };
 
-const getProgressActive = (progress: string) => {
-  switch (progress) {
-    case "deposit":
-      return 1;
-    case "paid":
-      return 2;
-    case "delivered":
-      return 3;
-    default:
-      return 0;
-  }
+const VIETNAM_TIME_ZONE = "Asia/Ho_Chi_Minh";
+const MILLISECONDS_PER_DAY = 86_400_000;
+const vietnamDateFormatter = new Intl.DateTimeFormat("vi-VN", {
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+  timeZone: VIETNAM_TIME_ZONE,
+});
+const vietnamCalendarDayFormatter = new Intl.DateTimeFormat("en-CA", {
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+  timeZone: VIETNAM_TIME_ZONE,
+});
+
+const toVietnamCalendarDay = (value: string | Date): number | null => {
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+
+  const parts = vietnamCalendarDayFormatter.formatToParts(date);
+  const dateParts = Object.fromEntries(
+    parts.map((part) => [part.type, part.value]),
+  );
+
+  return Date.UTC(
+    Number(dateParts.year),
+    Number(dateParts.month) - 1,
+    Number(dateParts.day),
+  );
 };
 
-const isOverdue = (dateStr: string) => {
-  if (!dateStr) return false;
-  return new Date(dateStr) < new Date();
+const getDeliveryDaysRemaining = (dateStr?: string): number | null => {
+  if (!dateStr) return null;
+  const deadlineDay = toVietnamCalendarDay(dateStr);
+  const today = toVietnamCalendarDay(new Date());
+  if (deadlineDay === null || today === null) return null;
+
+  return Math.round((deadlineDay - today) / MILLISECONDS_PER_DAY);
 };
 
-const formatDate = (dateStr: string) => {
-  if (!dateStr) return "";
-  return new Date(dateStr).toLocaleDateString("vi-VN");
+const isOverdue = (dateStr?: string) => {
+  const days = getDeliveryDaysRemaining(dateStr);
+  return days !== null && days < 0;
+};
+
+const formatDate = (dateStr?: string) => {
+  if (!dateStr) return "Chưa xác định";
+  const date = new Date(dateStr);
+  return Number.isNaN(date.getTime())
+    ? "Chưa xác định"
+    : vietnamDateFormatter.format(date);
+};
+
+const getDeliveryDeadlineHint = (dateStr?: string): string => {
+  const days = getDeliveryDaysRemaining(dateStr);
+  if (days === null) return "Chưa có thời hạn";
+  if (days > 0) return `Còn ${days} ngày`;
+  if (days < 0) return `Trễ ${Math.abs(days)} ngày`;
+  return "Đến hạn hôm nay";
+};
+
+const getDeadlineTagType = (
+  dateStr?: string,
+): "danger" | "warning" | "info" => {
+  const days = getDeliveryDaysRemaining(dateStr);
+  if (days === null) return "info";
+  if (days < 0) return "danger";
+  if (days <= 2) return "warning";
+  return "info";
 };
 
 const dialogVisible = ref(false);
@@ -548,34 +528,6 @@ const orderSearchLoading = ref(false);
 const submitLoading = ref(false);
 const orderOptions = ref<any[]>([]);
 const formRef = ref<any>(null);
-
-const selectedFile = ref<File | null>(null);
-const contractFileName = ref("");
-const contractFilePreviewUrl = ref("");
-
-const customUploadRequest = async (options: any) => {
-  const file = options.file as File;
-  selectedFile.value = file;
-  contractFileName.value = file.name;
-  if (/\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(file.name)) {
-    contractFilePreviewUrl.value = URL.createObjectURL(file);
-  } else {
-    contractFilePreviewUrl.value = "";
-  }
-  options.onSuccess?.({});
-};
-
-const clearContractFile = () => {
-  selectedFile.value = null;
-  contractFileName.value = "";
-  if (
-    contractFilePreviewUrl.value &&
-    contractFilePreviewUrl.value.startsWith("blob:")
-  ) {
-    URL.revokeObjectURL(contractFilePreviewUrl.value);
-  }
-  contractFilePreviewUrl.value = "";
-};
 
 const form = reactive({
   orderId: null as number | null,
@@ -597,9 +549,6 @@ const handleOpenAddDialog = () => {
   form.warrantyPeriod = "3 năm hoặc 30.000km";
   form.warrantyScope = "Toàn quốc";
   form.note = "";
-  selectedFile.value = null;
-  contractFileName.value = "";
-  contractFilePreviewUrl.value = "";
   if (formRef.value) {
     formRef.value.resetFields();
   }
@@ -639,17 +588,14 @@ const handleSubmit = async () => {
       });
 
       const createdContractId = res?.id;
-      if (createdContractId && selectedFile.value) {
-        await SalesContractApi.uploadScannedFile(
-          createdContractId,
-          selectedFile.value,
-        );
-      }
-
       ElMessage.success("Thêm hợp đồng thành công.");
       dialogVisible.value = false;
-      fetchData();
-      loadStatistics();
+      if (createdContractId) {
+        goToPreview(createdContractId);
+      } else {
+        fetchData();
+        loadStatistics();
+      }
     } catch (_e) {
       ElMessage.error("Không thể tạo hợp đồng mới.");
     } finally {

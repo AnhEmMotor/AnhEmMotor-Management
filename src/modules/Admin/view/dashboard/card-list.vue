@@ -1,5 +1,6 @@
 <template>
-  <ElRow :gutter="20" class="flex">
+  <div class="resp-page">
+<ElRow :gutter="20" class="flex">
     <ElCol
       v-for="(item, index) in dataList"
       :key="index"
@@ -33,6 +34,7 @@
       </div>
     </ElCol>
   </ElRow>
+</div>
 </template>
 
 <script setup lang="ts">

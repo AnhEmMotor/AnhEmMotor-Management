@@ -1,5 +1,5 @@
 <template>
-  <div class="page-content">
+  <div class="resp-page page-content">
     <h1>{{ $t("admin.t129") }}</h1>
   </div>
 </template>

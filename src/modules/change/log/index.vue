@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto pt-5 mb-5">
+  <div class="resp-page mx-auto pt-5 mb-5">
     <h3 class="text-2xl font-medium text-g-900 mb-8">{{ $t("admin.t35") }}</h3>
 
     <div class="space-y-5">

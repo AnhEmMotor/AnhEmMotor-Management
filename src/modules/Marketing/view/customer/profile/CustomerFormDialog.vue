@@ -3,7 +3,7 @@
     v-model="visible"
     :title="form.id ? 'CẬP NHẬT HỒ SƠ' : 'THÊM KHÁCH HÀNG MỚI'"
     width="650px"
-    class="premium-dialog"
+    class="resp-dialog premium-dialog"
     destroy-on-close
     :show-close="false"
   >
@@ -172,7 +172,6 @@ const form = ref({
   identificationNumber: "",
   addressDetail: "",
   ward: "",
-  district: "",
   province: "",
   score: 0,
   isVerified: false,
@@ -197,7 +196,6 @@ watch(
         identificationNumber: newData.identificationNumber ?? "",
         addressDetail: newData.addressDetail ?? "",
         ward: newData.ward ?? "",
-        district: newData.district ?? "",
         province: newData.province ?? "",
         score: newData.score ?? 0,
         isVerified: newData.isVerified ?? false,
@@ -218,7 +216,6 @@ watch(
         identificationNumber: "",
         addressDetail: "",
         ward: "",
-        district: "",
         province: "",
         score: 0,
         isVerified: false,
@@ -248,7 +245,6 @@ const handleSubmit = async () => {
         identificationNumber: form.value.identificationNumber,
         addressDetail: form.value.addressDetail,
         ward: form.value.ward,
-        district: form.value.district,
         province: form.value.province,
         score: form.value.score,
         isVerified: form.value.isVerified,
@@ -267,7 +263,6 @@ const handleSubmit = async () => {
         identificationNumber: form.value.identificationNumber,
         addressDetail: form.value.addressDetail,
         ward: form.value.ward,
-        district: form.value.district,
         province: form.value.province,
         score: form.value.score,
       });

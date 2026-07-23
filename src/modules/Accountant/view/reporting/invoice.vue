@@ -1,5 +1,5 @@
 <template>
-  <div class="reporting-page">
+  <div class="resp-page reporting-page">
     <ReportPageHeader
       title="Thống kê hóa đơn"
       description="Quản lý và đối soát dòng tiền đa kênh từ hóa đơn bán hàng và dịch vụ."
@@ -90,7 +90,7 @@
 
       <ElTable
         :data="paginatedInvoices"
-        class="reporting-table"
+        class="reporting-table resp-table"
         empty-text="Không tìm thấy hóa đơn"
       >
         <ElTableColumn prop="id" label="Mã hóa đơn" min-width="130" />

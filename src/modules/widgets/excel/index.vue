@@ -1,5 +1,5 @@
 <template>
-  <div class="page-content">
+  <div class="resp-page page-content">
     <ArtExcelImport
       @import-success="handleImportSuccess"
       @import-error="handleImportError"

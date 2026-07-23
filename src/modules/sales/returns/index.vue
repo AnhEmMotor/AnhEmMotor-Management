@@ -1,5 +1,5 @@
 <template>
-  <div class="returns-page flex flex-col gap-4 h-full">
+  <div class="resp-page returns-page flex flex-col gap-4 h-full">
     <!-- List Layout -->
     <div class="list-layout flex gap-4" style="height: calc(100vh - 120px)">
       <!-- Request List -->

@@ -84,6 +84,18 @@ html.dark {
   border-radius: calc(var(--custom-radius) / 2 + 2px);
 }
 
+@utility resp-stats-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+@utility resp-stats-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
 @layer utilities {
   .flex-c {
     @apply flex items-center;

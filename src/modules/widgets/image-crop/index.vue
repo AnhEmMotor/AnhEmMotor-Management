@@ -1,5 +1,5 @@
 <template>
-  <div class="page-content">
+  <div class="resp-page page-content">
     <ArtCutterImg
       v-model:imgUrl="imageUrl"
       :boxWidth="530"

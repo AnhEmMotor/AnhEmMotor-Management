@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="comment-page min-h-full text-[#0F172A] dark:text-slate-100 bg-[#F8FAFC] dark:bg-[#020617]"
+      class="resp-page comment-page min-h-full text-[#0F172A] dark:text-slate-100 bg-[#F8FAFC] dark:bg-[#020617]"
     >
       <div
         class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4 shadow-sm"

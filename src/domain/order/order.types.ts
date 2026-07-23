@@ -5,6 +5,8 @@ export interface OrderProduct {
   productId?: number;
   productName?: string;
   productVariantName?: string;
+  colorName?: string;
+  colorCode?: string;
   count: number;
   price?: number;
   costPrice?: number;
@@ -21,6 +23,8 @@ export interface SalesOrder {
   customerName?: string;
   customerAddress?: string;
   customerPhone?: string;
+  provinceId?: number;
+  wardCode?: string;
   notes?: string;
   statusId: string;
   paymentMethod?: "COD" | "VNPay" | "PayOS" | string;
@@ -56,6 +60,8 @@ export interface CreateSalesOrderByManager {
   customerName: string;
   customerAddress: string;
   customerPhone: string;
+  provinceId?: number;
+  wardCode?: string;
   notes?: string;
   statusId?: string;
   depositRatio?: number;

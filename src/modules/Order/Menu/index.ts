@@ -106,6 +106,7 @@ export const orderMenu: AppRouteRecord[] = [
               title: "Hợp đồng mua xe",
               icon: "ri:file-paper-2-line",
               keepAlive: true,
+              permissions: [Permissions.Order.ContractManagement.View],
             },
           },
           {
@@ -138,6 +139,7 @@ export const orderMenu: AppRouteRecord[] = [
               title: "Danh sách sản phẩm",
               icon: "ri:list-unordered",
               keepAlive: true,
+              permissions: [Permissions.Order.ProductManagement.View],
             },
           },
         ],
@@ -182,6 +184,7 @@ export const orderMenu: AppRouteRecord[] = [
           title: "Thống kê đơn hàng",
           icon: "ri:bar-chart-line",
           keepAlive: true,
+          permissions: [Permissions.Order.OrderManagement.View],
         },
       },
     ],

@@ -52,7 +52,7 @@ export interface StaffPerformance {
   totalSales: number;
   targetSales: number;
   commissionPaid: number;
-  kpiStatus: "Vượt KPI" | "Đạt" | "Cần cải thiện";
+  kpiStatus: "Vượt KPI" | "Đạt" | "Cần cải thiện" | "Chưa đặt KPI";
   isTopSeller: boolean;
 }
 
@@ -63,6 +63,7 @@ export interface Expense {
   expenseDate: string;
   category: number; // 0: Fixed, 1: Variable
   note?: string;
+  updatedAt?: string;
 }
 
 export interface TransactionLog {

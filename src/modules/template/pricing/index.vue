@@ -1,6 +1,6 @@
 <template>
   <div
-    class="pt-24 px-20 max-md:!pt-15 max-sm:!px-5 max-md:!px-8 bg-transparent !border-none"
+    class="resp-page pt-24 px-20 max-md:!pt-15 max-sm:!px-5 max-md:!px-8 bg-transparent !border-none"
   >
     <div class="mb-10 text-center">
       <h1 class="mb-2 text-4xl font-medium max-sm:text-3xl">

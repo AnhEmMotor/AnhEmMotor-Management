@@ -369,7 +369,9 @@ export function useProductTable() {
           url_slug: "",
           stock_quantity: 0,
           weight: null,
-          dimensions: "",
+          length: null,
+          width: null,
+          height: null,
           wheelbase: null,
           seat_height: null,
           ground_clearance: null,
@@ -512,7 +514,9 @@ export function useProductTable() {
           v.stock_quantity = v.stock_quantity ?? 0;
 
           v.weight = v.weight || null;
-          v.dimensions = v.dimensions || "";
+          v.length = v.length || null;
+          v.width = v.width || null;
+          v.height = v.height || null;
           v.wheelbase = v.wheelbase || null;
           v.seat_height = v.seat_height || null;
           v.ground_clearance = v.ground_clearance || null;
@@ -547,7 +551,9 @@ export function useProductTable() {
             url_slug: "",
             stock_quantity: 0,
             weight: null,
-            dimensions: "",
+            length: null,
+            width: null,
+            height: null,
             wheelbase: null,
             seat_height: null,
             ground_clearance: null,
@@ -715,7 +721,9 @@ export function useProductTable() {
             colors: serializedColors,
             sku: v.sku,
             weight: v.weight,
-            dimensions: v.dimensions,
+            length: v.length,
+            width: v.width,
+            height: v.height,
             wheelbase: v.wheelbase,
             seat_height: v.seat_height,
             ground_clearance: v.ground_clearance,
@@ -784,7 +792,9 @@ export function useProductTable() {
       url_slug: "",
       stock_quantity: 0,
       weight: null,
-      dimensions: "",
+      length: null,
+      width: null,
+      height: null,
       wheelbase: null,
       seat_height: null,
       ground_clearance: null,
