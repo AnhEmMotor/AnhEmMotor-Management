@@ -23,6 +23,14 @@
         </el-button>
         <el-button
           v-if="contractData.status === 'Draft'"
+          type="success"
+          @click="handleApproveContract"
+          v-auth="Permissions.Order.OrderManagement.ChangeStatus"
+        >
+          <el-icon><CircleCheck /></el-icon> Duyệt Hợp Đồng
+        </el-button>
+        <el-button
+          v-if="contractData.status === 'Draft'"
           type="danger"
           @click="handleDelete"
           v-auth="Permissions.Admin.ContractManagement.Delete"
@@ -33,7 +41,7 @@
           v-if="contractData.status === 'Signed' && activeStep >= 1"
           type="success"
           @click="handleHandover"
-          v-auth="Permissions.Admin.ContractManagement.View"
+          v-auth="Permissions.Order.OrderManagement.ChangeStatus"
         >
           <el-icon><CircleCheck /></el-icon> Xác Nhận Bàn Giao
         </el-button>
@@ -87,16 +95,12 @@
         <div
           class="pipeline-track-active absolute top-4 left-[12.5%] h-0.5 z-0 transition-all duration-700"
           :style="{
-            width: activeStep === 0 ? '0%' : activeStep === 1 ? '37.5%' : '75%',
+            width: `${activeStep * 25}%`,
           }"
         ></div>
 
         <div
-          v-for="(step, index) in [
-            { label: 'Soạn thảo', desc: 'Kiểm tra và in hợp đồng' },
-            { label: 'Đã ký bản giấy', desc: 'Đã lưu bản quét có chữ ký' },
-            { label: 'Bàn giao xe', desc: 'Hoàn thành hợp đồng' },
-          ]"
+          v-for="(step, index) in lifecycleSteps"
           :key="index"
           class="flex-1 flex flex-col items-center relative z-10"
         >
@@ -134,7 +138,16 @@
           :closable="false"
           show-icon
           title="Hợp đồng đang ở trạng thái Nháp"
-          description="In hợp đồng để khách hàng ký duyệt, sau đó tải bản quét lên ngay tại trang này."
+          description="Admin cần kiểm tra và duyệt hợp đồng trước khi cửa hàng in để khách hàng ký."
+        />
+      </div>
+      <div v-else-if="contractData.status === 'Approved'" class="mt-4">
+        <el-alert
+          type="success"
+          :closable="false"
+          show-icon
+          title="Hợp đồng đã được Admin duyệt"
+          description="Có thể in bản giấy cho khách hàng ký và tải bản quét đã ký lên để lưu hồ sơ."
         />
       </div>
     </el-card>
@@ -151,7 +164,7 @@
             </div>
           </template>
 
-          <el-form label-position="top" :disabled="isContractSigned">
+          <el-form label-position="top" :disabled="isContractLocked">
             <el-form-item label="Điều khoản Đặc biệt (Quà tặng, Cam kết riêng)">
               <el-input
                 v-model="contractData.specialTerms"
@@ -203,7 +216,7 @@
               drag
               :http-request="customUploadRequest"
               :before-upload="validateScanFile"
-              :disabled="isContractSigned || isUploading"
+              :disabled="!canUploadSignedScan || isUploading"
               :show-file-list="false"
               accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
             >
@@ -439,18 +452,31 @@ const isUploading = ref(false);
 const MAX_SCAN_FILE_SIZE = 10 * 1024 * 1024;
 const ALLOWED_SCAN_EXTENSIONS = [".pdf", ".jpg", ".jpeg", ".png"];
 
+const lifecycleSteps = [
+  { label: "Soạn thảo", desc: "Kiểm tra nội dung hợp đồng" },
+  { label: "Đã duyệt", desc: "Admin đã phê duyệt" },
+  { label: "Đã ký bản giấy", desc: "Đã lưu bản quét có chữ ký" },
+  { label: "Bàn giao xe", desc: "Hoàn thành hợp đồng" },
+];
+
 const activeStep = computed(() => {
-  if (contractData.value.status === "Fulfilled") return 2;
-  if (contractData.value.status === "Signed") return 1;
+  if (contractData.value.status === "Fulfilled") return 3;
+  if (contractData.value.status === "Signed") return 2;
+  if (contractData.value.status === "Approved") return 1;
   return 0;
 });
 
-const isContractSigned = computed(() => contractData.value.status !== "Draft");
+const isContractLocked = computed(() => contractData.value.status !== "Draft");
+const canUploadSignedScan = computed(
+  () => contractData.value.status === "Approved",
+);
 
 const _contractStatusType = computed(() => {
   switch (contractData.value.status) {
     case "Draft":
       return "info";
+    case "Approved":
+      return "success";
     case "Signed":
       return "success";
     case "Fulfilled":
@@ -464,6 +490,8 @@ const getStatusLabel = (status: SalesContractStatus): string => {
   switch (status) {
     case "Draft":
       return "Nháp";
+    case "Approved":
+      return "Đã duyệt";
     case "Signed":
       return "Đã ký";
     case "Fulfilled":
@@ -530,6 +558,35 @@ const handleSaveDraft = async () => {
     ElMessage.success("Đã lưu bản nháp hợp đồng.");
   } catch (_e) {
     ElMessage.error("Lưu bản nháp thất bại.");
+  }
+};
+
+const handleApproveContract = async () => {
+  try {
+    await ElMessageBox.confirm(
+      `Duyệt hợp đồng "${contractData.value.contractNumber}" để chuyển sang bước ký bản giấy?`,
+      "Xác nhận duyệt hợp đồng",
+      {
+        confirmButtonText: "Duyệt hợp đồng",
+        cancelButtonText: "Hủy",
+        type: "success",
+      },
+    );
+    await SalesContractApi.update(contractData.value.id, {
+      specialTerms: contractData.value.specialTerms,
+      warrantyPeriod: contractData.value.warrantyPeriod,
+      warrantyScope: contractData.value.warrantyScope,
+      note: contractData.value.note,
+    });
+    await SalesContractApi.updateStatus(contractData.value.id, {
+      status: "Approved",
+    });
+    contractData.value.status = "Approved";
+    ElMessage.success("Đã duyệt hợp đồng. Có thể in và lấy chữ ký khách hàng.");
+  } catch (error) {
+    if (error !== "cancel" && error !== "close") {
+      ElMessage.error("Không thể duyệt hợp đồng.");
+    }
   }
 };
 

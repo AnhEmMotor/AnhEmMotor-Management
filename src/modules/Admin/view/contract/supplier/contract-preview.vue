@@ -14,6 +14,17 @@
           In thông tin
         </ElButton>
         <ElButton
+          v-if="
+            contract.status === 'Draft' || contract.status === 'PendingApproval'
+          "
+          type="success"
+          :loading="approvingContract"
+          @click="handleApproveContract"
+        >
+          <ElIcon><Check /></ElIcon>
+          Duyệt hợp đồng
+        </ElButton>
+        <ElButton
           v-if="contract.status === 'Active'"
           type="warning"
           @click="handleCreateAddendum"
@@ -558,6 +569,7 @@ const skuSearch = ref("");
 const loading = ref(false);
 const uploadingFile = ref(false);
 const updatingStatus = ref(false);
+const approvingContract = ref(false);
 const showStatusDialog = ref(false);
 const newStatus = ref<SupplierContractStatus>();
 
@@ -813,6 +825,31 @@ const handleUpdateStatus = async () => {
     ElMessage.error("Không thể cập nhật trạng thái hợp đồng.");
   } finally {
     updatingStatus.value = false;
+  }
+};
+
+const handleApproveContract = async () => {
+  if (!contract.value.id) return;
+  try {
+    await ElMessageBox.confirm(
+      `Bạn có chắc chắn muốn duyệt hợp đồng "${contract.value.contractNumber}"?`,
+      "Xác nhận duyệt",
+      {
+        confirmButtonText: "Duyệt",
+        cancelButtonText: "Hủy",
+        type: "success",
+      },
+    );
+    approvingContract.value = true;
+    await usecases.updateStatus.execute(contract.value.id, "Active");
+    ElMessage.success("Đã duyệt hợp đồng thành công.");
+    await fetchDetail();
+  } catch (error) {
+    if (error !== "cancel" && error !== "close") {
+      ElMessage.error("Không thể duyệt hợp đồng.");
+    }
+  } finally {
+    approvingContract.value = false;
   }
 };
 

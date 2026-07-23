@@ -223,10 +223,7 @@
                   </ElSelect>
                 </ElFormItem>
 
-                <ElFormItem
-                  v-if="editForm.department === 'vehicle_sales'"
-                  label="Giá xe"
-                >
+                <ElFormItem :label="currentProductConfig.priceLabel">
                   <ElInput :model-value="selectedProductPriceLabel" readonly>
                     <template #prefix>
                       <ElIcon><Money /></ElIcon>
@@ -502,6 +499,7 @@ interface DepartmentProductConfig {
   variantPlaceholder: string;
   colorLabel: string;
   colorPlaceholder: string;
+  priceLabel: string;
   targetGroup: string;
   unit: string;
   accepts: (variant: ProductVariantLiteForInput) => boolean;
@@ -590,6 +588,7 @@ const departmentProductConfig: Record<DepartmentKey, DepartmentProductConfig> =
       variantPlaceholder: "Chọn phiên bản xe",
       colorLabel: "Màu xe",
       colorPlaceholder: "Chọn màu xe",
+      priceLabel: "Giá xe",
       targetGroup: "VehicleSales",
       unit: "xe",
       accepts: isVehicleVariant,
@@ -601,6 +600,7 @@ const departmentProductConfig: Record<DepartmentKey, DepartmentProductConfig> =
       variantPlaceholder: "Chọn phiên bản hoặc quy cách",
       colorLabel: "Màu / thuộc tính",
       colorPlaceholder: "Chọn màu hoặc thuộc tính",
+      priceLabel: "Giá phụ tùng / phụ kiện",
       targetGroup: "PartsSales",
       unit: "sản phẩm",
       accepts: (variant) => !isVehicleVariant(variant),
@@ -612,6 +612,7 @@ const departmentProductConfig: Record<DepartmentKey, DepartmentProductConfig> =
       variantPlaceholder: "Chọn phiên bản hoặc quy cách",
       colorLabel: "Màu / thuộc tính",
       colorPlaceholder: "Chọn màu hoặc thuộc tính",
+      priceLabel: "Giá phụ tùng",
       targetGroup: "Mechanic",
       unit: "phiếu",
       accepts: (variant) => !isVehicleVariant(variant),
