@@ -642,15 +642,17 @@ const handleCustomerPhoneBlur = async () => {
     const res = await VehicleApi.getPortfolio({
       query: phone,
       queryType: "phone",
+      page: 1,
+      pageSize: 10,
     });
-    if (res && res.customerName) {
+    const vehicle = res?.vehicle;
+    if (vehicle && vehicle.fullName) {
       createForm.value.isNewCustomer = false;
-      createForm.value.customerName = res.customerName;
-      createForm.value.vinNumber = res.vinNumber || "";
-      createForm.value.licensePlate = res.licensePlate || "";
-      createForm.value.vehicleName = res.vehicleName || res.productName || "";
-      createForm.value.vehicleColor =
-        res.vehicleColor || res.productColor || "";
+      createForm.value.customerName = vehicle.fullName;
+      createForm.value.vinNumber = vehicle.vinNumber || "";
+      createForm.value.licensePlate = vehicle.licensePlate || "";
+      createForm.value.vehicleName = vehicle.variantName || "";
+      createForm.value.vehicleColor = vehicle.colorName || "";
     } else {
       createForm.value.isNewCustomer = true;
     }
