@@ -136,11 +136,12 @@
                     >Người phụ trách</span
                   >
                   <ElSelect
-                    :model-value="customer.saleId || null"
+                    :model-value="customer.assignedToId || null"
+                    @change="(val) => handleAssignSale(customer.id, val)"
                     size="small"
                     class="sale-select-premium"
                     :placeholder="
-                      !customer.saleId ? 'CHƯA BÀN GIAO' : 'Giao Sale...'
+                      !customer.assignedToId ? 'CHƯA BÀN GIAO' : 'Giao Sale...'
                     "
                   >
                     <ElOption
@@ -242,6 +243,7 @@ const {
   handleReset,
   salesList,
   getPriority,
+  handleAssignSale,
 } = useLeadTable();
 
 const searchModel = ref({});
