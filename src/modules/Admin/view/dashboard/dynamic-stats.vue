@@ -17,9 +17,9 @@
           v-for="(item, index) in list"
           :key="index"
         >
-          <span class="text-g-800 font-medium">{{ item.username }}</span>
-          <span class="mx-2 text-g-600">{{ item.type }}</span>
-          <span class="text-theme">{{ item.target }}</span>
+          <Badge status="info" :text="item.category" />
+          <span class="mx-2 text-g-600">{{ item.action }}</span>
+          <span class="text-theme">{{ item.targetType }}</span>
         </div>
       </ElScrollbar>
     </div>
@@ -28,33 +28,63 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from "vue";
-import { fetchRecentTransactions } from "@/api/dashboard.api";
+import { fetchRecentAuditLogs } from "@/api/dashboard.api";
 
-interface DynamicItem {
-  username: string;
-  type: string;
-  target: string;
+const CATEGORY_COLORS: Record<string, string> = {
+  order: "text-blue-600",
+  inventory: "text-amber-500",
+  customer: "text-emerald-500",
+  operations: "text-rose-500",
+  finance: "text-purple-500",
+};
+
+interface AuditLogItem {
+  timestamp: string;
+  category: string;
+  action: string;
+  actorId: string | null;
+  actorName: string;
+  targetType: string;
+  targetId: number | null;
+  targetName: string;
+  details: string;
 }
 
-const list = reactive<DynamicItem[]>([]);
+const list = reactive<AuditLogItem[]>([]);
 const isLoading = ref(false);
+
+function fmtTime(iso: string): string {
+  const date = new Date(iso);
+  return date.toLocaleString("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "target",
+  });
+}
+
+const targetTypeLabel: Record<string, string> = {
+  Order: "Đơn hàng",
+  Vehicle: "Xe",
+  Part: "Phụ tùng",
+  Customer: "Khách hàng",
+  Feedback: "Phản hồi",
+  Appointment: "Lịch hẹn",
+  FinanceContract: "Hợp đồng",
+};
 
 async function fetchData() {
   isLoading.value = true;
   try {
-    const data = await fetchRecentTransactions(20);
+    const data = await fetchRecentAuditLogs(20);
     list.length = 0;
-    data.forEach((tx: any) => {
-      const username =
-        tx.staffName && tx.staffName !== "N/A"
-          ? tx.staffName
-          : tx.customerName || "Hệ thống";
-      const type = tx.isRevenue ? "tạo giao dịch" : "thêm chi phí";
-      const target = tx.productName || "N/A";
-      list.push({ username, type, target });
+    data.forEach((log: AuditLogItem) => {
+      list.push({ ...log });
     });
   } catch (error) {
-    console.error("Failed to fetch recent transactions:", error);
+    console.error("Failed to fetch recent audit logs:", error);
   } finally {
     isLoading.value = false;
   }
