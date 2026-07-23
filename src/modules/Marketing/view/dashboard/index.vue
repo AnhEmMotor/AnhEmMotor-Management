@@ -644,15 +644,26 @@ const initCharts = () => {
     trendChart.setOption({
       tooltip: { trigger: "axis" },
       legend: {
+        top: 0,
+        left: "center",
         data: ["Khách hàng mới (Leads)", "Lịch hẹn lái thử"],
         textStyle: { color: textColor },
       },
-      grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
+      grid: {
+        left: "3%",
+        right: "4%",
+        top: "12%",
+        bottom: "5%",
+        containLabel: true,
+      },
       xAxis: {
         type: "category",
         boundaryGap: false,
         data: dates.map((d) => d.substring(5)),
-        axisLabel: { color: textColor },
+        axisLabel: {
+          color: textColor,
+          margin: 12,
+        },
       },
       yAxis: {
         type: "value",

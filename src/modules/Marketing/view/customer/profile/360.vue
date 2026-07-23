@@ -225,7 +225,13 @@
                   :type="v.status === 'Sold' ? 'success' : 'info'"
                   size="small"
                   round
-                  >{{ v.status }}</ElTag
+                  >{{
+                    v.status === "Sold"
+                      ? "Đã bàn giao"
+                      : v.status === "Available"
+                        ? "Có sẵn / Đang sử dụng"
+                        : v.status || "Đang hoạt động"
+                  }}</ElTag
                 >
               </div>
             </div>

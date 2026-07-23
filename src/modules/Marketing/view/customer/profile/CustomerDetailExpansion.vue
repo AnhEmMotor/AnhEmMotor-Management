@@ -2,7 +2,15 @@
   <div
     class="resp-page lead-detail-expansion bg-gray-50/50 dark:bg-slate-950 p-6 border-t border-gray-100 dark:border-slate-700 shadow-inner"
   >
-    <div class="grid grid-cols-12 gap-6">
+    <!-- Thể hiện lỗi thân thiện khi API 360 bị lỗi 404/500 -->
+    <div
+      v-if="error"
+      class="bg-white dark:bg-slate-900 rounded-3xl p-8 text-center border border-gray-100 dark:border-slate-800 shadow-sm flex flex-col items-center justify-center min-h-[200px]"
+    >
+      <ElEmpty :description="error" />
+    </div>
+
+    <div v-else class="grid grid-cols-12 gap-6">
       <div class="col-span-12 lg:col-span-3 flex flex-col gap-6">
         <div
           class="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col items-center text-center"
@@ -139,7 +147,7 @@
           <div
             class="flex-1 overflow-y-auto pr-2 max-h-[450px] timeline-wrapper"
           >
-            <ElTimeline>
+            <ElTimeline v-if="timelineEvents && timelineEvents.length > 0">
               <ElTimelineItem
                 v-for="event in timelineEvents"
                 :key="event.id"
@@ -182,6 +190,9 @@
                 </div>
               </ElTimelineItem>
             </ElTimeline>
+            <div v-else class="text-center py-12 text-gray-400 text-xs">
+              Chưa có nhật ký hoạt động nào.
+            </div>
           </div>
 
           <div
@@ -273,8 +284,15 @@
                 :type="v.status === 'Sold' ? 'success' : 'info'"
                 effect="plain"
                 class="text-[9px]"
-                >{{ v.status || "Active" }}</ElTag
               >
+                {{
+                  v.status === "Sold"
+                    ? "Đã bàn giao"
+                    : v.status === "Available"
+                      ? "Có sẵn / Đang sử dụng"
+                      : v.status || "Đang hoạt động"
+                }}
+              </ElTag>
             </div>
             <span class="text-[10px] font-bold text-blue-600 block">{{
               v.licensePlate || "Chưa biển số"
@@ -307,6 +325,7 @@ const {
   addNote,
   loadFromLead,
   vehicles,
+  error,
 } = useCustomerProfile();
 
 watch(
