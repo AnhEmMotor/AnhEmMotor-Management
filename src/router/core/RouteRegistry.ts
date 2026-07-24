@@ -44,6 +44,15 @@ export class RouteRegistry {
       }
     });
 
+    // Đăng ký wildcard route 404 sau cùng để tránh đè lên các routing động khi F5/reload trang
+    const remove404Fn = this.router.addRoute({
+      path: "/:pathMatch(.*)*",
+      name: "Exception404",
+      component: () => import("@view/error/404.vue"),
+      meta: { title: "404", isHideTab: true },
+    });
+    removeRouteFns.push(remove404Fn);
+
     this.removeRouteFns = removeRouteFns;
     this.registered = true;
   }

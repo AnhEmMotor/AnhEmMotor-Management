@@ -416,6 +416,7 @@ export default {
       customerProfile360: "Customer 360 Profile",
       customerAsset: "Assets",
       customerCare: "Customer Care",
+      customerVoucher: "Promotions & Vouchers",
       customerProgress: "Progress",
       booking: "Booking Management",
       conversion: "Conversion Tools",
