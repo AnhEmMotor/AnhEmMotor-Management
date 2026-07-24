@@ -415,10 +415,21 @@
               class="flex-1 w-full"
               v-else-if="editForm.department === 'parts_sales'"
             >
-              <label class="block text-sm text-gray-700 mb-2"
-                >Giá trị (VNĐ)</label
-              >
-              <ElInput v-model="simInputVal" type="number" />
+              <label class="block text-sm text-gray-700 mb-2">
+                {{
+                  editForm.basis === "profit"
+                    ? "Lợi nhuận gộp (VNĐ)"
+                    : "Doanh thu (VNĐ)"
+                }}
+              </label>
+              <ElInput
+                v-model="simInputVal"
+                data-testid="parts-commission-input"
+                inputmode="numeric"
+                placeholder="Ví dụ: 1.000.000"
+                clearable
+                @keyup.enter="runSimulation"
+              />
             </div>
             <div
               class="flex-1 w-full grid grid-cols-2 gap-4"
@@ -428,17 +439,35 @@
                 <label class="block text-sm text-gray-700 mb-2"
                   >Tiền công (VNĐ)</label
                 >
-                <ElInput v-model="simLabor" type="number" />
+                <ElInput
+                  v-model="simLabor"
+                  data-testid="mechanic-labor-input"
+                  inputmode="numeric"
+                  placeholder="Ví dụ: 2.000.000"
+                  clearable
+                  @keyup.enter="runSimulation"
+                />
               </div>
               <div>
                 <label class="block text-sm text-gray-700 mb-2"
                   >Phụ tùng (VNĐ)</label
                 >
-                <ElInput v-model="simParts" type="number" />
+                <ElInput
+                  v-model="simParts"
+                  data-testid="mechanic-parts-input"
+                  inputmode="numeric"
+                  placeholder="Ví dụ: 1.000.000"
+                  clearable
+                  @keyup.enter="runSimulation"
+                />
               </div>
             </div>
 
-            <ElButton type="primary" @click="runSimulation" class="px-6"
+            <ElButton
+              type="primary"
+              data-testid="calculate-commission"
+              @click="runSimulation"
+              class="px-6"
               >Tính toán</ElButton
             >
           </div>
@@ -477,6 +506,11 @@ import { ProductApi } from "@/api/product";
 import type { ProductVariantLiteForInput } from "@/domain/product/product.types";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Plus, Delete, Back, Money, InfoFilled } from "@element-plus/icons-vue";
+import {
+  calculateMechanicCommission,
+  calculatePartsCommission,
+  parseCurrencyInput,
+} from "./commission-simulator";
 
 defineOptions({ name: "HRCommissionPolicyDetail" });
 
@@ -1256,9 +1290,15 @@ const getStatusRibbonClass = (status: string) => {
 const runSimulation = () => {
   const dataToUse = editForm.value;
   simBreakdown.value = "";
+  simResult.value = null;
 
   if (dataToUse.department === "vehicle_sales") {
     const qty = Number(simInput.value) || 0;
+    if (qty <= 0) {
+      ElMessage.warning("Vui lòng nhập số lượng xe bán được");
+      return;
+    }
+
     let totalBonus = 0;
 
     if (enableTiers.value && dataToUse.tiers && dataToUse.tiers.length > 0) {
@@ -1294,15 +1334,40 @@ const runSimulation = () => {
 
     simResult.value = totalBonus;
   } else if (dataToUse.department === "parts_sales") {
-    const amount = Number(simInputVal.value) || 0;
+    const amount = parseCurrencyInput(simInputVal.value);
     const pct = Number(dataToUse.percentage) || 0;
-    simResult.value = amount * (pct / 100);
+    if (amount <= 0) {
+      ElMessage.warning(
+        dataToUse.basis === "profit"
+          ? "Vui lòng nhập lợi nhuận gộp"
+          : "Vui lòng nhập doanh thu",
+      );
+      return;
+    }
+
+    simResult.value = calculatePartsCommission(amount, pct);
+    simBreakdown.value = `${formatCurrency(amount)} × ${pct}% = ${formatCurrency(
+      simResult.value,
+    )}`;
   } else if (dataToUse.department === "mechanic") {
-    const labor = Number(simLabor.value) || 0;
-    const parts = Number(simParts.value) || 0;
+    const labor = parseCurrencyInput(simLabor.value);
+    const parts = parseCurrencyInput(simParts.value);
     const lPct = Number(dataToUse.laborPercentage) || 0;
     const pPct = Number(dataToUse.partsPercentage) || 0;
-    simResult.value = labor * (lPct / 100) + parts * (pPct / 100);
+    if (labor <= 0 && parts <= 0) {
+      ElMessage.warning("Vui lòng nhập tiền công hoặc giá trị phụ tùng");
+      return;
+    }
+
+    simResult.value = calculateMechanicCommission({
+      labor,
+      parts,
+      laborPercentage: lPct,
+      partsPercentage: pPct,
+    });
+    simBreakdown.value =
+      `${formatCurrency(labor)} × ${lPct}% + ` +
+      `${formatCurrency(parts)} × ${pPct}% = ${formatCurrency(simResult.value)}`;
   }
 };
 </script>
