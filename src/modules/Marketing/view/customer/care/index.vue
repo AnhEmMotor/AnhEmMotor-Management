@@ -71,6 +71,7 @@
         class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[40px] shadow-sm overflow-hidden"
       >
         <ElTable
+          v-loading="loadingCustomers"
           :data="filteredCustomers"
           style="width: 100%"
           class="combat-table"
@@ -137,7 +138,7 @@
       </div>
     </div>
 
-    <div v-else class="animate-fade-in">
+    <div v-else v-loading="loadingDetails" class="animate-fade-in">
       <div class="flex justify-between items-center mb-8">
         <div class="flex items-center gap-6">
           <button
@@ -163,14 +164,10 @@
         </div>
         <div class="flex gap-3">
           <button
-            class="h-11 px-6 bg-emerald-500 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-lg hover:bg-emerald-600 transition-all"
+            @click="handleCallZalo(activeCustomer)"
+            class="h-11 px-6 bg-emerald-500 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-lg hover:bg-emerald-600 transition-all flex items-center gap-2"
           >
-            Gọi Zalo
-          </button>
-          <button
-            class="h-11 px-6 bg-blue-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-lg hover:bg-blue-700 transition-all"
-          >
-            Gửi Ưu đãi
+            <ArtSvgIcon icon="ri:phone-line" /> Gọi Zalo
           </button>
         </div>
       </div>
@@ -256,17 +253,41 @@
               >
             </div>
             <div
-              class="mt-8 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center gap-4"
+              v-if="
+                activeCustomer?.reminders && activeCustomer.reminders.length > 0
+              "
+              class="mt-8 space-y-3"
             >
               <div
-                class="size-10 rounded-xl bg-red-500 text-white flex-cc shrink-0 animate-pulse"
+                v-for="reminder in activeCustomer.reminders"
+                :key="reminder.title"
+                class="p-4 bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/50 rounded-2xl flex items-center gap-4"
               >
-                <ArtSvgIcon icon="ri:alarm-warning-line" />
+                <div
+                  class="size-10 rounded-xl bg-red-500 text-white flex-cc shrink-0 animate-pulse"
+                >
+                  <ArtSvgIcon icon="ri:alarm-warning-line" />
+                </div>
+                <p
+                  class="m-0 text-[10px] font-bold text-red-600 dark:text-red-400 uppercase leading-relaxed"
+                >
+                  {{ reminder.title }}: {{ reminder.description }}
+                </p>
+              </div>
+            </div>
+            <div
+              v-else
+              class="mt-8 p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-850 rounded-2xl flex items-center gap-4"
+            >
+              <div
+                class="size-10 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 flex-cc shrink-0"
+              >
+                <ArtSvgIcon icon="ri:check-double-line" />
               </div>
               <p
-                class="m-0 text-[10px] font-bold text-red-600 uppercase leading-relaxed"
+                class="m-0 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase leading-relaxed"
               >
-                Nhắc nhở: Quá hạn thay nhớt lần 3 (12 ngày)
+                Không có nhắc nhở chăm sóc nào quá hạn
               </p>
             </div>
           </div>
@@ -335,7 +356,17 @@
               </ElTabPane>
               <ElTabPane label="LỊCH SỬ MUA XE & DỊCH VỤ" name="purchase">
                 <div class="p-10 space-y-10">
-                  <div class="grid grid-cols-2 gap-6">
+                  <h3
+                    class="m-0 text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-slate-200 mb-6"
+                  >
+                    Phương tiện sở hữu
+                  </h3>
+                  <div
+                    v-if="
+                      activeCustomer?.bikes && activeCustomer.bikes.length > 0
+                    "
+                    class="grid grid-cols-2 gap-6"
+                  >
                     <div
                       v-for="bike in activeCustomer?.bikes"
                       :key="bike.id"
@@ -347,7 +378,9 @@
                           class="size-20 rounded-2xl object-cover shadow-lg"
                         />
                         <div>
-                          <h4 class="m-0 text-lg font-bold text-slate-800">
+                          <h4
+                            class="m-0 text-lg font-bold text-slate-800 dark:text-slate-100"
+                          >
                             {{ bike.model }}
                           </h4>
                           <p
@@ -358,40 +391,68 @@
                         </div>
                       </div>
                       <div class="grid grid-cols-2 gap-3">
-                        <div class="p-3 bg-slate-50 rounded-2xl">
+                        <div
+                          class="p-3 bg-slate-50 dark:bg-slate-850 rounded-2xl"
+                        >
                           <p
-                            class="m-0 text-[9px] font-bold text-slate-300 uppercase mb-1"
+                            class="m-0 text-[9px] font-bold text-slate-400 uppercase mb-1"
                           >
-                            Thanh toán
+                            Trạng thái
                           </p>
-                          <p class="m-0 text-xs font-bold text-slate-700">
+                          <p
+                            class="m-0 text-xs font-bold text-slate-700 dark:text-slate-300"
+                          >
                             {{ bike.payment }}
                           </p>
                         </div>
-                        <div class="p-3 bg-slate-50 rounded-2xl">
+                        <div
+                          class="p-3 bg-slate-50 dark:bg-slate-850 rounded-2xl"
+                        >
                           <p
-                            class="m-0 text-[9px] font-bold text-slate-300 uppercase mb-1"
+                            class="m-0 text-[9px] font-bold text-slate-400 uppercase mb-1"
                           >
-                            Giá trị
+                            Hóa đơn
                           </p>
-                          <p class="m-0 text-xs font-bold text-blue-600">
+                          <p
+                            class="m-0 text-xs font-bold text-blue-600 dark:text-blue-400"
+                          >
                             {{ bike.price }}
                           </p>
                         </div>
                       </div>
                     </div>
                   </div>
+                  <div
+                    v-else
+                    class="p-8 text-center text-slate-400 dark:text-slate-500 bg-slate-50/50 dark:bg-slate-950/20 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800"
+                  >
+                    <ArtSvgIcon
+                      icon="ri:car-line"
+                      class="text-3xl mb-2 opacity-50 block mx-auto text-slate-400 dark:text-slate-500"
+                    />
+                    <span class="text-xs font-bold uppercase tracking-wider"
+                      >Chưa sở hữu phương tiện nào</span
+                    >
+                  </div>
 
-                  <div class="pt-8 border-t border-slate-100">
+                  <div
+                    class="pt-8 border-t border-slate-100 dark:border-slate-800"
+                  >
                     <h3
                       class="m-0 text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-slate-200 mb-6"
                     >
                       Nhật ký bảo dưỡng & Sửa chữa
                     </h3>
-                    <div class="space-y-4">
+                    <div
+                      v-if="
+                        activeCustomer?.maintenanceHistories &&
+                        activeCustomer.maintenanceHistories.length > 0
+                      "
+                      class="space-y-4"
+                    >
                       <div
-                        v-for="i in 1"
-                        :key="i"
+                        v-for="maint in activeCustomer.maintenanceHistories"
+                        :key="maint.id"
                         class="p-5 bg-slate-50/50 dark:bg-slate-950/20 rounded-2xl flex justify-between items-center border border-transparent hover:border-slate-200 dark:hover:border-slate-800 transition-all"
                       >
                         <div class="flex items-center gap-4">
@@ -404,20 +465,32 @@
                             <p
                               class="m-0 text-sm font-bold text-slate-800 dark:text-slate-200"
                             >
-                              Bảo dưỡng định kỳ lần {{ i }}
+                              {{ maint.title }} - {{ maint.description }}
                             </p>
                             <p
                               class="m-0 text-[10px] font-bold text-slate-400 uppercase"
                             >
-                              Ngày 12/01/2024 - Thợ: Nguyễn Bình
+                              Ngày {{ maint.date }}
                             </p>
                           </div>
                         </div>
                         <span
                           class="text-sm font-bold text-slate-700 dark:text-slate-200"
-                          >350,000đ</span
+                          >{{ maint.cost }}</span
                         >
                       </div>
+                    </div>
+                    <div
+                      v-else
+                      class="p-8 text-center text-slate-400 dark:text-slate-500 bg-slate-50/50 dark:bg-slate-950/20 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800"
+                    >
+                      <ArtSvgIcon
+                        icon="ri:tools-line"
+                        class="text-3xl mb-2 opacity-50 block mx-auto text-slate-400 dark:text-slate-500"
+                      />
+                      <span class="text-xs font-bold uppercase tracking-wider"
+                        >Chưa có lịch sử bảo dưỡng & sửa chữa</span
+                      >
                     </div>
                   </div>
                 </div>
@@ -427,91 +500,16 @@
         </div>
       </div>
     </div>
-
-    <!-- Dialog Thêm khách hàng chăm sóc mới -->
-    <ElDialog
-      v-model="addDialogVisible"
-      title="THÊM KHÁCH HÀNG CHĂM SÓC"
-      width="600px"
-      class="premium-dialog"
-      destroy-on-close
-    >
-      <ElForm :model="form" label-position="top" class="grid grid-cols-2 gap-4">
-        <ElFormItem label="Họ và tên khách hàng" class="col-span-2 is-required">
-          <ElInput v-model="form.name" placeholder="Ví dụ: Nguyễn Văn A" />
-        </ElFormItem>
-
-        <ElFormItem label="Số điện thoại" class="is-required">
-          <ElInput v-model="form.phone" placeholder="Ví dụ: 0901234567" />
-        </ElFormItem>
-
-        <ElFormItem label="Địa chỉ Email">
-          <ElInput v-model="form.email" placeholder="Ví dụ: vana@gmail.com" />
-        </ElFormItem>
-
-        <ElFormItem label="Số CCCD/Định danh">
-          <ElInput v-model="form.identity" placeholder="Nhập số căn cước..." />
-        </ElFormItem>
-
-        <ElFormItem label="Phân loại khách hàng" class="is-required">
-          <ElSelect
-            v-model="form.type"
-            placeholder="Chọn phân loại..."
-            class="w-full"
-          >
-            <ElOption label="Khách hàng VIP" value="VIP" />
-            <ElOption label="Khách hàng cũ" value="Old" />
-            <ElOption label="Khách mới" value="New" />
-          </ElSelect>
-        </ElFormItem>
-
-        <ElFormItem label="Điểm Loyalty tích lũy">
-          <ElInputNumber v-model="form.points" :min="0" class="w-full" />
-        </ElFormItem>
-
-        <ElFormItem label="Hạng thành viên">
-          <ElSelect
-            v-model="form.tier"
-            placeholder="Chọn hạng..."
-            class="w-full"
-          >
-            <ElOption label="Gold Member" value="Gold Member" />
-            <ElOption label="Silver Member" value="Silver Member" />
-            <ElOption label="Platinum Member" value="Platinum Member" />
-            <ElOption label="Standard Member" value="Standard Member" />
-          </ElSelect>
-        </ElFormItem>
-
-        <ElFormItem label="Địa chỉ khách hàng" class="col-span-2">
-          <ElInput v-model="form.address" placeholder="Nhập địa chỉ..." />
-        </ElFormItem>
-
-        <ElFormItem
-          label="Nhu cầu nổi bật (Nhập cách nhau bằng dấu phẩy)"
-          class="col-span-2"
-        >
-          <ElInput
-            v-model="form.needsStr"
-            placeholder="Ví dụ: Tay ga cao cấp, Thích màu đen mờ, Trả góp..."
-          />
-        </ElFormItem>
-      </ElForm>
-
-      <template #footer>
-        <div class="flex gap-3 justify-end">
-          <ElButton @click="addDialogVisible = false">Hủy bỏ</ElButton>
-          <ElButton type="primary" @click="submitAddCustomer"
-            >Lưu khách hàng</ElButton
-          >
-        </div>
-      </template>
-    </ElDialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
+import { fetchGetLoyaltyMembers } from "@/api/customer/loyalty.api";
+import { fetchGetProfile360 } from "@/api/customer/lead.api";
+import dayjs from "dayjs";
 
 defineOptions({ name: "CustomerCareFocusMode" });
 
@@ -529,7 +527,7 @@ const filteredCustomers = computed(() => {
       c.name.toLowerCase().includes(q) ||
       c.phone.includes(q) ||
       c.identity.includes(q) ||
-      (c.bikes && c.bikes.some((b) => b.model.toLowerCase().includes(q)));
+      (c.bikes && c.bikes.some((b: any) => b.model.toLowerCase().includes(q)));
 
     const matchesFilter =
       filterType.value === "all" || c.type === filterType.value;
@@ -538,100 +536,10 @@ const filteredCustomers = computed(() => {
   });
 });
 
-const customers = ref([
-  {
-    id: 1,
-    name: "Nguyễn Văn A",
-    phone: "0901.234.567",
-    type: "VIP",
-    typeLabel: "Khách hàng VIP",
-    lastContact: "02/05/2024",
-    points: 4250,
-    tier: "Gold Member",
-    address: "123 Đường 30/4, P. Trung Dũng, Biên Hòa, Đồng Nai",
-    email: "vana@gmail.com",
-    source: "Website",
-    identity: "072095001234",
-    needs: [
-      "Tay ga cao cấp",
-      "Thích màu đen mờ",
-      "Đổi xe cũ",
-      "Quan tâm trả góp",
-    ],
-    bikes: [
-      {
-        id: 1,
-        model: "Honda SH 160i Sporty",
-        price: "102.500.000đ",
-        deliveryDate: "12/12/2023",
-        img: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=800",
-        payment: "Trả thẳng",
-      },
-      {
-        id: 2,
-        model: "Honda Vision",
-        price: "32.000.000đ",
-        deliveryDate: "15/05/2022",
-        img: "https://images.unsplash.com/photo-1449495169669-7b118f960237?auto=format&fit=crop&q=80&w=400",
-        payment: "Trả góp 0%",
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: "Trần Thị B",
-    phone: "0938.888.999",
-    type: "Old",
-    typeLabel: "Khách hàng cũ",
-    lastContact: "28/04/2024",
-    points: 1200,
-    tier: "Silver Member",
-    address: "Long Thành, Đồng Nai",
-    source: "Facebook Fanpage",
-    identity: "072093005678",
-    needs: ["Tiết kiệm xăng", "Đi làm xa", "Màu xanh"],
-    bikes: [
-      {
-        id: 1,
-        model: "Honda Vision 2023",
-        price: "34.500.000đ",
-        deliveryDate: "10/10/2023",
-        img: "https://images.unsplash.com/photo-1449495169669-7b118f960237?auto=format&fit=crop&q=80&w=400",
-        payment: "Tiền mặt",
-      },
-    ],
-  },
-]);
-
-const timeline = ref([
-  {
-    id: 1,
-    type: "call",
-    date: "02/05/2024 10:15",
-    staff: "Sale: Minh Tuấn",
-    category: "Tư vấn đổi xe",
-    content:
-      "Khách hàng có nhu cầu đổi từ Vision lên SH 160i. Đã báo giá sơ bộ và hẹn lái thử vào cuối tuần này. Khách đang cân nhắc giữa màu Đen mờ và Đỏ đô.",
-  },
-  {
-    id: 2,
-    type: "note",
-    date: "28/04/2024 15:30",
-    staff: "Admin: Lan Anh",
-    category: "Hậu mãi",
-    content:
-      "Gửi tin nhắn Zalo chúc mừng sinh nhật khách hàng kèm Voucher giảm giá 20% thay nhớt tại showroom.",
-  },
-  {
-    id: 3,
-    type: "call",
-    date: "15/03/2024 09:00",
-    staff: "Kỹ thuật: Hoàng",
-    category: "Nhắc bảo dưỡng",
-    content:
-      "Nhắc khách bảo dưỡng lần 3 theo lịch hẹn. Khách báo đang đi công tác, sẽ ghé vào tuần sau.",
-  },
-]);
+const loadingCustomers = ref(false);
+const loadingDetails = ref(false);
+const customers = ref<any[]>([]);
+const timeline = ref<any[]>([]);
 
 const getTypeClasses = (type: string) => {
   if (type === "VIP") return "bg-amber-50 text-amber-600 border-amber-100";
@@ -639,79 +547,132 @@ const getTypeClasses = (type: string) => {
   return "bg-slate-50 text-slate-500 border-slate-200";
 };
 
-const addDialogVisible = ref(false);
-const form = ref({
-  name: "",
-  phone: "",
-  email: "",
-  identity: "",
-  type: "New",
-  points: 0,
-  tier: "Standard Member",
-  address: "",
-  needsStr: "",
-});
+const router = useRouter();
 
 const handleAddCustomer = () => {
-  form.value = {
-    name: "",
-    phone: "",
-    email: "",
-    identity: "",
-    type: "New",
-    points: 0,
-    tier: "Standard Member",
-    address: "",
-    needsStr: "",
-  };
-  addDialogVisible.value = true;
+  router.push("/Marketing/customer/profile");
 };
 
-const submitAddCustomer = () => {
-  if (!form.value.name || !form.value.phone) {
-    ElMessage.warning("Vui lòng nhập Họ tên và Số điện thoại");
+const loadLoyaltyMembers = async () => {
+  loadingCustomers.value = true;
+  try {
+    const res = await fetchGetLoyaltyMembers();
+    let items: any[] = [];
+    if (Array.isArray(res)) {
+      items = res;
+    } else if (res && Array.isArray(res.items)) {
+      items = res.items;
+    } else if (res && Array.isArray(res.records)) {
+      items = res.records;
+    }
+
+    customers.value = items.map((m) => {
+      const typeMap: Record<string, { type: string; label: string }> = {
+        standard: { type: "New", label: "Khách mới" },
+        silver: { type: "Old", label: "Hội viên Bạc" },
+        gold: { type: "VIP", label: "Hội viên Vàng" },
+        platinum: { type: "VIP", label: "Hội viên Bạch Kim" },
+      };
+      const tierKey = (m.tier || "").toLowerCase();
+      const mappedType = typeMap[tierKey] || {
+        type: "New",
+        label: m.tier || "Standard",
+      };
+
+      return {
+        id: m.id,
+        name: m.fullName,
+        phone: m.phoneNumber,
+        type: mappedType.type,
+        typeLabel: mappedType.label,
+        lastContact: "Chưa cập nhật",
+        points: m.points || 0,
+        tier: m.tier || "Standard Member",
+        address: "",
+        email: "",
+        identity: "",
+        needs: [],
+        bikes: [],
+      };
+    });
+  } catch (err: any) {
+    ElMessage.error(err.message || "Không thể tải danh sách hội viên.");
+  } finally {
+    loadingCustomers.value = false;
+  }
+};
+
+const viewDetails = async (row: any) => {
+  loadingDetails.value = true;
+  isDetailView.value = true;
+  try {
+    const profileData = await fetchGetProfile360(row.id);
+    activeCustomer.value = {
+      id: row.id,
+      name: row.name,
+      phone: row.phone,
+      identity: profileData.identificationNumber || "Chưa cập nhật",
+      tier: row.tier,
+      typeLabel: row.typeLabel,
+      address: profileData.address || "Chưa cập nhật",
+      needs: profileData.interestedVehicle
+        ? [profileData.interestedVehicle]
+        : ["Chưa cập nhật sở thích"],
+      bikes: (profileData.vehicles || []).map((v: any) => ({
+        id: v.id,
+        model: `${v.variantName} (${v.colorName})`,
+        price: "Xem chi tiết HĐ",
+        deliveryDate: v.purchaseDate
+          ? dayjs(v.purchaseDate).format("DD/MM/YYYY")
+          : "Chưa rõ",
+        img: "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=200",
+        payment: v.status || "Đã bàn giao",
+      })),
+      maintenanceHistories: (profileData.maintenanceHistories || []).map(
+        (m: any) => ({
+          id: m.id,
+          title: `Bảo dưỡng #${m.maintenanceNumber}`,
+          date: m.maintenanceDate
+            ? dayjs(m.maintenanceDate).format("DD/MM/YYYY")
+            : "Chưa rõ",
+          cost: m.totalCost ? `${m.totalCost.toLocaleString()}đ` : "0đ",
+          description: m.description || "Bảo dưỡng định kỳ",
+        }),
+      ),
+      reminders: profileData.careReminders || [],
+    };
+
+    timeline.value = (profileData.timelineEvents || []).map((evt: any) => ({
+      id: evt.relatedId || Date.now(),
+      type: evt.type === "service" ? "call" : "note",
+      date: evt.date ? dayjs(evt.date).format("DD/MM/YYYY HH:mm") : "Chưa rõ",
+      staff: evt.type === "service" ? "Kỹ thuật viên" : "Nhân viên chăm sóc",
+      category:
+        evt.type === "service"
+          ? "Bảo dưỡng"
+          : evt.type === "activity"
+            ? "Ghi chú"
+            : "Giao dịch",
+      content: evt.description || evt.title,
+    }));
+  } catch (err: any) {
+    ElMessage.error(err.message || "Lỗi khi tải hồ sơ khách hàng.");
+    isDetailView.value = false;
+  } finally {
+    loadingDetails.value = false;
+  }
+};
+
+const handleCallZalo = (customer: any) => {
+  if (!customer?.phone) {
+    ElMessage.warning("Không có số điện thoại khách hàng");
     return;
   }
-
-  const needsList = form.value.needsStr
-    ? form.value.needsStr
-        .split(",")
-        .map((s) => s.trim())
-        .filter((s) => s)
-    : [];
-
-  const typeLabels: Record<string, string> = {
-    VIP: "Khách hàng VIP",
-    Old: "Khách hàng cũ",
-    New: "Khách mới",
-  };
-
-  const newCust = {
-    id: Date.now(),
-    name: form.value.name,
-    phone: form.value.phone,
-    type: form.value.type,
-    typeLabel: typeLabels[form.value.type] || "Khách mới",
-    lastContact: new Date().toLocaleDateString("vi-VN"),
-    points: form.value.points,
-    tier: form.value.tier,
-    address: form.value.address,
-    email: form.value.email,
-    source: "Showroom",
-    identity: form.value.identity,
-    needs: needsList,
-    bikes: [],
-  };
-
-  customers.value.unshift(newCust);
-  ElMessage.success("Đã thêm khách hàng mới thành công!");
-  addDialogVisible.value = false;
+  const cleanPhone = customer.phone.replace(/[^0-9]/g, "");
+  window.open(`https://zalo.me/${cleanPhone}`, "_blank");
 };
 
-const viewDetails = (row: any) => {
-  activeCustomer.value = row;
-  isDetailView.value = true;
-};
+onMounted(loadLoyaltyMembers);
 </script>
 
 <style lang="scss" scoped>
