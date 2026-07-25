@@ -67,7 +67,19 @@ export class MenuProcessor {
         hasGranularPermission = permissions.includes(itemPermission);
       }
 
-      if (hasRolePermission && hasGranularPermission) {
+      let filteredChildren: AppRouteRecord[] | undefined;
+      if (item.children?.length) {
+        filteredChildren = this.filterMenuByPermissionsAndRoles(
+          item.children,
+          permissions,
+          roles,
+        );
+      }
+
+      const hasVisibleChildren =
+        filteredChildren && filteredChildren.length > 0;
+
+      if (hasRolePermission && (hasGranularPermission || hasVisibleChildren)) {
         const filteredItem = { ...item };
 
         if (filteredItem.name === "Dashboard") {
@@ -79,8 +91,8 @@ export class MenuProcessor {
               filteredItem.meta = {} as any;
             }
             filteredItem.meta.title = "menus.dashboard.console";
-            if (filteredItem.children) {
-              filteredItem.children = filteredItem.children.map((c) => {
+            if (filteredChildren) {
+              filteredChildren = filteredChildren.map((c) => {
                 const newChild = { ...c };
                 if (!newChild.meta) newChild.meta = {} as any;
                 newChild.meta.isHide = true;
@@ -90,13 +102,12 @@ export class MenuProcessor {
           }
         }
 
-        if (filteredItem.children?.length) {
-          filteredItem.children = this.filterMenuByPermissionsAndRoles(
-            filteredItem.children,
-            permissions,
-            roles,
-          );
+        if (filteredChildren) {
+          filteredItem.children = filteredChildren;
+        } else if (item.children?.length) {
+          filteredItem.children = [];
         }
+
         acc.push(filteredItem);
       }
 
