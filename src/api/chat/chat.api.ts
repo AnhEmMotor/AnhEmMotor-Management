@@ -6,7 +6,6 @@ export interface ChatSession {
 }
 
 export interface ChatMessage {
-  id: string;
   role: "User" | "Assistant" | "System";
   message: string;
   createdAt: string;
