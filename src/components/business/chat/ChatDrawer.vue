@@ -14,6 +14,68 @@ import {
   HubConnection,
 } from "@microsoft/signalr";
 import { useUserStore } from "@/application/store/user";
+import "@wangeditor/editor/dist/css/style.css";
+import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
+import { marked } from "marked";
+import hljs from "highlight.js";
+import "highlight.js/styles/atom-one-dark.css";
+
+// Configure marked
+const renderer = new marked.Renderer();
+renderer.code = function (tokenOrCode: any, maybeLang: string | undefined) {
+  let code = "";
+  let lang = maybeLang;
+
+  if (typeof tokenOrCode === "object" && tokenOrCode !== null) {
+    code = tokenOrCode.text || "";
+    lang = tokenOrCode.lang;
+  } else {
+    code = tokenOrCode || "";
+  }
+
+  const language = lang && hljs.getLanguage(lang) ? lang : "plaintext";
+  const highlighted = hljs.highlight(code, { language }).value;
+
+  // Escape code for data attribute to prevent XSS/breaking HTML
+  const encodedCode = encodeURIComponent(code);
+
+  return `
+    <div class="code-block-wrapper relative group rounded-md overflow-hidden my-3 border border-gray-700 shadow-sm">
+      <div class="flex justify-between items-center px-3 py-1.5 bg-[#282c34] text-xs text-gray-400 border-b border-gray-700">
+        <span class="uppercase font-semibold tracking-wider">${language}</span>
+        <button class="copy-btn hover:text-white transition-colors flex items-center gap-1 cursor-pointer" data-code="${encodedCode}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          Copy
+        </button>
+      </div>
+      <pre class="!m-0 !p-3 bg-[#282c34] overflow-x-auto text-[13px] leading-relaxed text-gray-300"><code class="hljs language-${language}">${highlighted}</code></pre>
+    </div>
+  `;
+};
+marked.use({ renderer });
+
+const handleCopy = (e: Event) => {
+  const target = e.target as HTMLElement;
+  const btn = target.closest(".copy-btn") as HTMLElement;
+  if (btn) {
+    const code = decodeURIComponent(btn.getAttribute("data-code") || "");
+    navigator.clipboard
+      .writeText(code)
+      .then(() => {
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML =
+          '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied!';
+        btn.classList.add("text-green-400");
+        setTimeout(() => {
+          btn.innerHTML = originalHtml;
+          btn.classList.remove("text-green-400");
+        }, 2000);
+      })
+      .catch(() => {
+        ElMessage.error("Không thể copy đoạn code này");
+      });
+  }
+};
 
 const props = defineProps<{
   modelValue: boolean;
@@ -22,6 +84,14 @@ const props = defineProps<{
 const emit = defineEmits(["update:modelValue"]);
 
 const drawerVisible = ref(props.modelValue);
+
+const isRichTextMode = ref(false);
+const editorRef = shallowRef();
+const editorConfig = { placeholder: "Nhập câu hỏi của bạn..." };
+
+const handleCreated = (editor: any) => {
+  editorRef.value = editor;
+};
 
 watch(
   () => props.modelValue,
@@ -44,7 +114,18 @@ const sessions = ref<ChatSession[]>([]);
 const activeSessionId = ref<string | null>(null);
 const messages = ref<ChatMessage[]>([]);
 const newMessage = ref("");
-const isSending = ref(false);
+
+const activeStreams = ref<Record<string, ChatMessage>>({});
+const activeStreamSessions = ref<Set<string>>(new Set());
+const isCreatingSession = ref(false);
+const isSending = computed(
+  () =>
+    isCreatingSession.value ||
+    (activeSessionId.value
+      ? activeStreamSessions.value.has(activeSessionId.value)
+      : false),
+);
+
 const isLoadingSessions = ref(false);
 const isLoadingHistory = ref(false);
 const messagesContainer = ref<HTMLElement | null>(null);
@@ -66,7 +147,7 @@ const startConnection = async () => {
     .withUrl(baseUrl + "/hubs/manager-chat", {
       accessTokenFactory: () => token,
     })
-    .configureLogging(LogLevel.Information)
+    .configureLogging(LogLevel.None)
     .build();
 
   try {
@@ -84,6 +165,10 @@ const stopConnection = async () => {
 
 onBeforeUnmount(() => {
   stopConnection();
+  const editor = editorRef.value;
+  if (editor != null) {
+    editor.destroy();
+  }
 });
 
 const loadSessions = async () => {
@@ -104,6 +189,11 @@ const selectSession = async (id: string) => {
     isLoadingHistory.value = true;
     const res = await ChatApi.getSessionHistory(id);
     messages.value = res || [];
+
+    if (activeStreams.value[id]) {
+      messages.value.push(activeStreams.value[id]);
+    }
+
     scrollToBottom();
   } catch (error) {
     ElMessage.error("Khong the tai lich su chat");
@@ -192,11 +282,16 @@ const saveSessionTitle = async (id: string) => {
 };
 
 const sendMessage = async () => {
-  if (!newMessage.value.trim() || isSending.value) return;
+  let text = newMessage.value.trim();
+  if (isRichTextMode.value && text === "<p><br></p>") {
+    text = "";
+  }
+  if (!text || isSending.value) return;
 
-  const text = newMessage.value.trim();
   newMessage.value = "";
-  isSending.value = true;
+  if (isRichTextMode.value && editorRef.value) {
+    editorRef.value.clear();
+  }
 
   // Optimistic UI update for user message
   const userMsgId = Date.now().toString();
@@ -208,26 +303,28 @@ const sendMessage = async () => {
   });
   scrollToBottom();
 
-  // Auto create session if none selected
-  if (!activeSessionId.value) {
+  let sessionId = activeSessionId.value;
+  if (!sessionId) {
+    isCreatingSession.value = true;
     const newId = await createNewSession("", text, false);
-    if (!newId) {
-      isSending.value = false;
-      return;
-    }
-    activeSessionId.value = newId;
+    isCreatingSession.value = false;
+    if (!newId) return;
+    sessionId = newId;
+    activeSessionId.value = sessionId;
   }
-
-  const sessionId = activeSessionId.value!;
 
   // Prepare AI message placeholder for streaming
   const aiMsgId = (Date.now() + 1).toString();
-  messages.value.push({
+  const aiMsg = {
     id: aiMsgId,
     role: "AI",
     message: "",
     createdAt: new Date().toISOString(),
-  });
+  };
+
+  activeStreams.value[sessionId] = aiMsg;
+  activeStreamSessions.value.add(sessionId);
+  messages.value.push(aiMsg);
   scrollToBottom();
 
   try {
@@ -244,26 +341,33 @@ const sendMessage = async () => {
 
     stream.subscribe({
       next: (chunk: string) => {
-        // Append chunk to the last message (which is AI)
-        const aiMsg = messages.value[messages.value.length - 1];
-        aiMsg.message += chunk;
-        scrollToBottom();
+        if (activeStreams.value[sessionId]) {
+          activeStreams.value[sessionId].message += chunk;
+        }
+        if (activeSessionId.value === sessionId) {
+          scrollToBottom();
+        }
       },
       error: (err: any) => {
         console.error("Stream error:", err);
         ElMessage.error("Loi khi nhan luong tin nhan");
-        isSending.value = false;
+        activeStreamSessions.value.delete(sessionId);
+        delete activeStreams.value[sessionId];
       },
       complete: () => {
-        isSending.value = false;
+        activeStreamSessions.value.delete(sessionId);
+        delete activeStreams.value[sessionId];
       },
     });
   } catch (error) {
     ElMessage.error("Loi khi gui tin nhan qua SignalR");
-    messages.value = messages.value.filter(
-      (m) => m.id !== userMsgId && m.id !== aiMsgId,
-    );
-    isSending.value = false;
+    if (activeSessionId.value === sessionId) {
+      messages.value = messages.value.filter(
+        (m) => m.id !== userMsgId && m.id !== aiMsgId,
+      );
+    }
+    activeStreamSessions.value.delete(sessionId);
+    delete activeStreams.value[sessionId];
   }
 };
 
@@ -361,9 +465,6 @@ const formatTime = (isoString: string) => {
                 />
               </div>
             </div>
-            <div class="text-xs text-gray-500 mt-1">
-              {{ formatTime(session.updatedAt || session.createdAt) }}
-            </div>
           </div>
         </div>
       </div>
@@ -388,6 +489,7 @@ const formatTime = (isoString: string) => {
           class="flex-1 overflow-y-auto p-4 bg-gray-50 flex flex-col gap-4"
           ref="messagesContainer"
           v-loading="isLoadingHistory"
+          @click="handleCopy"
         >
           <div
             v-if="!activeSessionId && messages.length === 0"
@@ -417,7 +519,19 @@ const formatTime = (isoString: string) => {
                       : 'bg-white text-gray-800 border border-gray-200 rounded-bl-none'
                   "
                 >
-                  <div class="whitespace-pre-wrap">{{ msg.message }}</div>
+                  <div
+                    v-if="msg.role === 'AI'"
+                    v-html="marked.parse(msg.message || '')"
+                    class="prose prose-sm max-w-none text-gray-800"
+                  ></div>
+                  <div
+                    v-else-if="msg.message.includes('<')"
+                    v-html="msg.message"
+                    class="prose prose-sm max-w-none text-white"
+                  ></div>
+                  <div v-else class="whitespace-pre-wrap">
+                    {{ msg.message }}
+                  </div>
                   <div
                     class="text-[10px] mt-1 text-right"
                     :class="
@@ -451,7 +565,17 @@ const formatTime = (isoString: string) => {
 
         <!-- Input Area -->
         <div class="p-4 border-t border-gray-200 bg-white">
-          <div class="flex gap-2">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-xs text-gray-500 font-medium">Chế độ nhập:</span>
+            <el-switch
+              v-model="isRichTextMode"
+              active-text="Rich Text"
+              inactive-text="Văn bản thường"
+              inline-prompt
+            />
+          </div>
+
+          <div v-if="!isRichTextMode" class="flex gap-2">
             <el-input
               v-model="newMessage"
               placeholder="Nhập câu hỏi của bạn..."
@@ -468,6 +592,41 @@ const formatTime = (isoString: string) => {
             >
               Gửi
             </el-button>
+          </div>
+
+          <div v-else class="flex flex-col gap-2">
+            <div
+              style="border: 1px solid #dcdfe6; border-radius: 4px; z-index: 10"
+            >
+              <Toolbar
+                style="border-bottom: 1px solid #dcdfe6"
+                :editor="editorRef"
+                :defaultConfig="{}"
+                mode="simple"
+              />
+              <Editor
+                style="height: 150px; overflow-y: hidden"
+                v-model="newMessage"
+                :defaultConfig="editorConfig"
+                mode="simple"
+                @onCreated="handleCreated"
+              />
+            </div>
+            <div class="flex justify-end mt-1">
+              <el-button
+                type="primary"
+                :icon="Position"
+                @click="sendMessage"
+                :disabled="
+                  !newMessage.trim() ||
+                  isSending ||
+                  newMessage === '<p><br></p>'
+                "
+                :loading="isSending"
+              >
+                Gửi
+              </el-button>
+            </div>
           </div>
         </div>
       </div>

@@ -3,8 +3,6 @@ import request from "@/utils/http";
 export interface ChatSession {
   id: string;
   title: string;
-  updatedAt: string;
-  createdAt: string;
 }
 
 export interface ChatMessage {
