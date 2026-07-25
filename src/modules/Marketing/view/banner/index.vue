@@ -54,13 +54,28 @@
             class="aspect-[21/9] bg-slate-900 relative overflow-hidden group/img"
           >
             <img
-              :src="
-                viewMode === 'Desktop'
-                  ? banner.desktopImageUrl
-                  : banner.mobileImageUrl
-              "
+              v-if="!isBannerImageMissing(banner)"
+              :src="getBannerImageUrl(banner)"
               class="w-full h-full object-cover opacity-80 group-hover/img:scale-105 transition-transform duration-700"
+              @error="markBannerImageMissing(banner)"
             />
+            <div
+              v-else
+              class="absolute inset-0 flex-cc flex-col gap-3 bg-slate-900 text-center px-6"
+            >
+              <ArtSvgIcon
+                icon="ri:image-off-line"
+                class="text-4xl text-slate-500"
+              />
+              <div>
+                <p class="m-0 text-sm font-bold text-white">
+                  Ảnh không còn tồn tại
+                </p>
+                <p class="m-0 mt-1 text-[10px] text-slate-400">
+                  Nội dung banner vẫn được giữ. Hãy chỉnh sửa để tải ảnh mới.
+                </p>
+              </div>
+            </div>
 
             <div
               class="absolute top-4 right-4 flex bg-white/10 backdrop-blur-md p-1 rounded-xl border border-white/20"
@@ -238,7 +253,7 @@
               >
                 <img
                   v-if="bannerForm.desktopImageUrl"
-                  :src="bannerForm.desktopImageUrl"
+                  :src="resolveBannerImageUrl(bannerForm.desktopImageUrl)"
                   class="w-full h-full object-cover"
                 />
                 <template v-else>
@@ -275,7 +290,7 @@
               >
                 <img
                   v-if="bannerForm.mobileImageUrl"
-                  :src="bannerForm.mobileImageUrl"
+                  :src="resolveBannerImageUrl(bannerForm.mobileImageUrl)"
                   class="w-full h-full object-cover"
                 />
                 <template v-else>
@@ -326,6 +341,7 @@ import { ref, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { BannerApi } from "@/api/marketing";
 import { FileApi } from "@/api/operations";
+import type { Banner } from "@/domain/marketing/banner.types";
 
 import { useI18n } from "vue-i18n";
 
@@ -338,10 +354,67 @@ const dialogVisible = ref(false);
 const dialogTitle = ref("");
 const isEditing = ref(false);
 
-const banners = ref<any[]>([]);
+const banners = ref<Banner[]>([]);
 const placementOptions = ref<any[]>([]);
+const missingBannerImages = ref(new Set<string>());
 
-const getPlacementLabel = (value: string) => {
+const apiMediaPathPrefix = "/api/v1/MediaFile/view-image/";
+
+const normalizeBannerImageUrl = (value?: string) => {
+  const imageUrl = value?.trim() || "";
+  if (!imageUrl || !/^https?:\/\//i.test(imageUrl)) {
+    return imageUrl;
+  }
+  try {
+    const parsedUrl = new URL(imageUrl);
+    if (
+      parsedUrl.pathname
+        .toLowerCase()
+        .startsWith(apiMediaPathPrefix.toLowerCase())
+    ) {
+      return `${parsedUrl.pathname}${parsedUrl.search}`;
+    }
+  } catch {
+    return imageUrl;
+  }
+  return imageUrl;
+};
+
+const resolveBannerImageUrl = (value?: string) => {
+  const normalizedUrl = normalizeBannerImageUrl(value);
+  if (!normalizedUrl.startsWith("/api/")) {
+    return normalizedUrl;
+  }
+  const apiBase =
+    import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT?.replace(
+      /\/$/,
+      "",
+    ) || "";
+  return `${apiBase}${normalizedUrl}`;
+};
+
+const getBannerImageKey = (banner: Banner) =>
+  `${banner.id}:${viewMode.value.toLowerCase()}`;
+
+const getBannerImageUrl = (banner: Banner) =>
+  resolveBannerImageUrl(
+    viewMode.value === "Desktop"
+      ? banner.desktopImageUrl
+      : banner.mobileImageUrl || banner.desktopImageUrl,
+  );
+
+const isBannerImageMissing = (banner: Banner) =>
+  !getBannerImageUrl(banner) ||
+  missingBannerImages.value.has(getBannerImageKey(banner));
+
+const markBannerImageMissing = (banner: Banner) => {
+  missingBannerImages.value = new Set(missingBannerImages.value).add(
+    getBannerImageKey(banner),
+  );
+};
+
+const getPlacementLabel = (value?: string) => {
+  if (!value) return "";
   const opt = placementOptions.value.find((o) => o.value === value);
   return opt ? opt.label : value;
 };
@@ -361,6 +434,7 @@ const fetchBanners = async () => {
   try {
     const res = await BannerApi.getList({ size: 100 });
     banners.value = res.items || [];
+    missingBannerImages.value = new Set();
   } catch {
     ElMessage.error("Lỗi khi tải danh sách banner");
   }
@@ -454,6 +528,11 @@ const saveBanner = async () => {
   try {
     const payload = {
       ...bannerForm.value,
+      desktopImageUrl: normalizeBannerImageUrl(
+        bannerForm.value.desktopImageUrl,
+      ),
+      mobileImageUrl:
+        normalizeBannerImageUrl(bannerForm.value.mobileImageUrl) || undefined,
     };
 
     if (isEditing.value && bannerForm.value.id) {
