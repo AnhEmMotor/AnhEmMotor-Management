@@ -17,6 +17,7 @@ export interface VoucherItem {
   validTo: string;
   assignedCustomerIds?: number[];
   createdAt?: string;
+  status?: string;
 }
 
 export interface VoucherValidateResponse {

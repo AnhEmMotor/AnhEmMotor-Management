@@ -394,186 +394,186 @@
             </div>
           </div>
         </el-card>
+      </div>
 
-        <!-- Cột phải (30%) - Định danh & Đối soát -->
-        <div class="lg:col-span-3 space-y-6">
-          <!-- Thông tin xe & khách hàng -->
-          <el-card class="shadow-sm border-slate-100">
-            <template #header>
-              <div class="font-bold text-slate-800 flex items-center gap-2">
-                <el-icon class="text-primary"><User /></el-icon>
-                <span>THÔNG TIN KHÁCH HÀNG</span>
-              </div>
-            </template>
-            <div class="space-y-3 text-sm text-slate-600">
-              <div>
-                <span
-                  class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
-                  >Chủ sở hữu</span
-                >
-                <span class="text-slate-800 font-bold text-base">{{
-                  claim?.customerName || "N/A"
-                }}</span>
-              </div>
-              <div class="border-t border-slate-100 pt-2">
-                <span
-                  class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
-                  >Số điện thoại</span
-                >
-                <span class="text-slate-800 font-medium">{{
-                  claim?.customerPhone || "N/A"
-                }}</span>
-              </div>
-              <div class="border-t border-slate-100 pt-2">
-                <span
-                  class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
-                  >Địa chỉ liên lạc</span
-                >
-                <span class="text-slate-800 text-xs">{{
-                  claim?.customerAddress || "N/A"
-                }}</span>
-              </div>
+      <!-- Cột phải (30%) - Định danh & Đối soát -->
+      <div class="lg:col-span-3 space-y-6">
+        <!-- Thông tin xe & khách hàng -->
+        <el-card class="shadow-sm border-slate-100">
+          <template #header>
+            <div class="font-bold text-slate-800 flex items-center gap-2">
+              <el-icon class="text-primary"><User /></el-icon>
+              <span>THÔNG TIN KHÁCH HÀNG</span>
             </div>
-          </el-card>
-
-          <el-card class="shadow-sm border-slate-100">
-            <template #header>
-              <div class="font-bold text-slate-800 flex items-center gap-2">
-                <el-icon class="text-primary"><Setting /></el-icon>
-                <span>THÔNG TIN PHƯƠNG TIỆN</span>
-              </div>
-            </template>
-            <div class="space-y-3 text-sm text-slate-600">
-              <div>
-                <span
-                  class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
-                  >Biển số xe</span
-                >
-                <el-tag
-                  effect="plain"
-                  class="font-bold text-slate-700 border-slate-300 mt-0.5"
-                >
-                  {{ claim?.vehiclePlate || "N/A" }}
-                </el-tag>
-              </div>
-              <div class="border-t border-slate-100 pt-2">
-                <span
-                  class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
-                  >Số khung (VIN)</span
-                >
-                <span class="text-slate-800 font-mono font-medium">{{
-                  claim?.vehicleVin || "N/A"
-                }}</span>
-              </div>
-              <div class="border-t border-slate-100 pt-2">
-                <span
-                  class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
-                  >Màu sắc xe</span
-                >
-                <span class="text-slate-800 font-medium">{{
-                  claim?.vehicleColor || "N/A"
-                }}</span>
-              </div>
-              <div class="border-t border-slate-100 pt-2">
-                <span
-                  class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
-                  >Dòng xe / Đời xe</span
-                >
-                <span class="text-slate-800 font-medium">{{
-                  claim?.vehicleYear || "N/A"
-                }}</span>
-              </div>
-              <div class="border-t border-slate-100 pt-2">
-                <span
-                  class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
-                  >Tình trạng bảo hành xe</span
-                >
-                <span
-                  class="font-bold"
-                  :class="
-                    claim?.warrantyRemaining === 'Hết hạn'
-                      ? 'text-rose-600'
-                      : 'text-emerald-600'
-                  "
-                >
-                  {{ claim?.warrantyRemaining || "N/A" }}
-                </span>
-              </div>
-            </div>
-          </el-card>
-
-          <!-- Đối soát hãng -->
-          <el-card class="shadow-sm border-slate-100">
-            <template #header>
-              <div class="font-bold text-slate-800 flex items-center gap-2">
-                <el-icon class="text-primary"><OfficeBuilding /></el-icon>
-                <span>ĐỐI SOÁT HÃNG</span>
-              </div>
-            </template>
-            <div class="space-y-3 text-sm text-slate-600">
-              <div>
-                <span
-                  class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
-                  >Trung tâm tiếp nhận</span
-                >
-                <span class="text-slate-800 font-medium">{{
-                  claim?.serviceCenterName || "N/A"
-                }}</span>
-              </div>
-              <div class="border-t border-slate-100 pt-2">
-                <span
-                  class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
-                  >Mã số hồ sơ hãng</span
-                >
-                <span class="text-slate-800 font-mono font-medium">{{
-                  claim?.manufacturerClaimNumber || "Chưa liên kết hãng"
-                }}</span>
-              </div>
-              <div class="border-t border-slate-100 pt-2">
-                <span
-                  class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
-                  >Quyết định của Hãng</span
-                >
-                <span class="text-slate-800 font-medium">{{
-                  claim?.manufacturerDecision || "Đang chờ hãng xem xét"
-                }}</span>
-              </div>
-            </div>
-          </el-card>
-
-          <!-- Chi phí tổng hợp -->
-          <el-card class="shadow-sm border-slate-100 bg-slate-900 text-white">
-            <template #header>
-              <div class="font-bold text-white flex items-center gap-2">
-                <el-icon class="text-primary"><Money /></el-icon>
-                <span>CHI PHÍ ĐỐI VỚI KHÁCH</span>
-              </div>
-            </template>
-            <div class="space-y-3 text-sm">
-              <div class="flex justify-between">
-                <span class="text-slate-400">Tiền công thợ:</span>
-                <span class="line-through text-slate-500">0 đ</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-slate-400">Tiền linh kiện phát sinh:</span>
-                <span class="text-amber-400 font-bold">{{
-                  formatPrice(totalPartsCost)
-                }}</span>
-              </div>
-              <div
-                class="border-t border-slate-800 pt-3 flex justify-between items-baseline"
+          </template>
+          <div class="space-y-3 text-sm text-slate-600">
+            <div>
+              <span
+                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+                >Chủ sở hữu</span
               >
-                <span class="text-slate-300 font-bold">TỔNG THU KHÁCH:</span>
-                <span class="text-xl font-extrabold text-primary">{{
-                  formatPrice(totalPartsCost)
-                }}</span>
-              </div>
-              <div class="text-[10px] text-slate-400 italic text-center mt-2">
-                (Áp dụng chính sách miễn phí 100% công sửa chữa bảo hành)
-              </div>
+              <span class="text-slate-800 font-bold text-base">{{
+                claim?.customerName || "N/A"
+              }}</span>
             </div>
-          </el-card>
-        </div>
+            <div class="border-t border-slate-100 pt-2">
+              <span
+                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+                >Số điện thoại</span
+              >
+              <span class="text-slate-800 font-medium">{{
+                claim?.customerPhone || "N/A"
+              }}</span>
+            </div>
+            <div class="border-t border-slate-100 pt-2">
+              <span
+                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+                >Địa chỉ liên lạc</span
+              >
+              <span class="text-slate-800 text-xs">{{
+                claim?.customerAddress || "N/A"
+              }}</span>
+            </div>
+          </div>
+        </el-card>
+
+        <el-card class="shadow-sm border-slate-100">
+          <template #header>
+            <div class="font-bold text-slate-800 flex items-center gap-2">
+              <el-icon class="text-primary"><Setting /></el-icon>
+              <span>THÔNG TIN PHƯƠNG TIỆN</span>
+            </div>
+          </template>
+          <div class="space-y-3 text-sm text-slate-600">
+            <div>
+              <span
+                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+                >Biển số xe</span
+              >
+              <el-tag
+                effect="plain"
+                class="font-bold text-slate-700 border-slate-300 mt-0.5"
+              >
+                {{ claim?.vehiclePlate || "N/A" }}
+              </el-tag>
+            </div>
+            <div class="border-t border-slate-100 pt-2">
+              <span
+                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+                >Số khung (VIN)</span
+              >
+              <span class="text-slate-800 font-mono font-medium">{{
+                claim?.vehicleVin || "N/A"
+              }}</span>
+            </div>
+            <div class="border-t border-slate-100 pt-2">
+              <span
+                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+                >Màu sắc xe</span
+              >
+              <span class="text-slate-800 font-medium">{{
+                claim?.vehicleColor || "N/A"
+              }}</span>
+            </div>
+            <div class="border-t border-slate-100 pt-2">
+              <span
+                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+                >Dòng xe / Đời xe</span
+              >
+              <span class="text-slate-800 font-medium">{{
+                claim?.vehicleYear || "N/A"
+              }}</span>
+            </div>
+            <div class="border-t border-slate-100 pt-2">
+              <span
+                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+                >Tình trạng bảo hành xe</span
+              >
+              <span
+                class="font-bold"
+                :class="
+                  claim?.warrantyRemaining === 'Hết hạn'
+                    ? 'text-rose-600'
+                    : 'text-emerald-600'
+                "
+              >
+                {{ claim?.warrantyRemaining || "N/A" }}
+              </span>
+            </div>
+          </div>
+        </el-card>
+
+        <!-- Đối soát hãng -->
+        <el-card class="shadow-sm border-slate-100">
+          <template #header>
+            <div class="font-bold text-slate-800 flex items-center gap-2">
+              <el-icon class="text-primary"><OfficeBuilding /></el-icon>
+              <span>ĐỐI SOÁT HÃNG</span>
+            </div>
+          </template>
+          <div class="space-y-3 text-sm text-slate-600">
+            <div>
+              <span
+                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+                >Trung tâm tiếp nhận</span
+              >
+              <span class="text-slate-800 font-medium">{{
+                claim?.serviceCenterName || "N/A"
+              }}</span>
+            </div>
+            <div class="border-t border-slate-100 pt-2">
+              <span
+                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+                >Mã số hồ sơ hãng</span
+              >
+              <span class="text-slate-800 font-mono font-medium">{{
+                claim?.manufacturerClaimNumber || "Chưa liên kết hãng"
+              }}</span>
+            </div>
+            <div class="border-t border-slate-100 pt-2">
+              <span
+                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+                >Quyết định của Hãng</span
+              >
+              <span class="text-slate-800 font-medium">{{
+                claim?.manufacturerDecision || "Đang chờ hãng xem xét"
+              }}</span>
+            </div>
+          </div>
+        </el-card>
+
+        <!-- Chi phí tổng hợp -->
+        <el-card class="shadow-sm border-slate-100 bg-slate-900 text-white">
+          <template #header>
+            <div class="font-bold text-white flex items-center gap-2">
+              <el-icon class="text-primary"><Money /></el-icon>
+              <span>CHI PHÍ ĐỐI VỚI KHÁCH</span>
+            </div>
+          </template>
+          <div class="space-y-3 text-sm">
+            <div class="flex justify-between">
+              <span class="text-slate-400">Tiền công thợ:</span>
+              <span class="line-through text-slate-500">0 đ</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">Tiền linh kiện phát sinh:</span>
+              <span class="text-amber-400 font-bold">{{
+                formatPrice(totalPartsCost)
+              }}</span>
+            </div>
+            <div
+              class="border-t border-slate-800 pt-3 flex justify-between items-baseline"
+            >
+              <span class="text-slate-300 font-bold">TỔNG THU KHÁCH:</span>
+              <span class="text-xl font-extrabold text-primary">{{
+                formatPrice(totalPartsCost)
+              }}</span>
+            </div>
+            <div class="text-[10px] text-slate-400 italic text-center mt-2">
+              (Áp dụng chính sách miễn phí 100% công sửa chữa bảo hành)
+            </div>
+          </div>
+        </el-card>
       </div>
     </div>
   </div>

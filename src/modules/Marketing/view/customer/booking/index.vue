@@ -467,6 +467,30 @@
 
           <!-- Nhánh 2: Sửa chữa / Bảo hành (Xưởng) -->
           <div v-else class="space-y-2">
+            <label
+              class="text-[8px] font-bold text-orange-600 uppercase tracking-wider block"
+              >Nhân viên kỹ thuật phụ trách</label
+            >
+
+            <ElSelect
+              v-model="linkedTechnician.id"
+              placeholder="Chọn nhân viên kỹ thuật..."
+              clearable
+              class="w-full compact-select"
+            >
+              <ElOption
+                v-for="emp in technicianList"
+                :key="emp.id"
+                :label="emp.name"
+                :value="emp.id"
+              />
+            </ElSelect>
+
+            <p class="m-0 text-[8px] italic text-slate-400">
+              Sau khi tạo lịch, hặn sẽ xuất hiện trong màn Lịch sửa chữa của
+              xưởng.
+            </p>
+
             <p
               class="m-0 text-[9px] text-orange-700 dark:text-orange-300 leading-relaxed font-bold"
             >
@@ -694,6 +718,10 @@ const linkedLead = ref<{ id: number | null; assignedToId: string | null }>({
   id: null,
   assignedToId: null,
 });
+const linkedTechnician = ref<{ id: number | null; name: string | null }>({
+  id: null,
+  name: null,
+});
 
 const isWorkshopType = computed(() => {
   return (
@@ -736,7 +764,7 @@ const handleAssignSalesperson = async (val: string | null) => {
 
 const goToWorkshopCalendar = () => {
   dialogVisible.value = false;
-  router.push("/factory/service/booking/calendar");
+  router.push("/factory/workshop/appointments");
 };
 
 const bookingForm = ref({
@@ -812,9 +840,35 @@ const fetchBookings = async () => {
   }
 };
 
+// Load technician list for workshop type assignments
+const technicianList = ref<{ id: number; name: string }[]>([]);
+
+const loadTechnicianList = async () => {
+  try {
+    const res = await EmployeeApi.getList({ Page: 1, PageSize: 200 });
+    const items = (res as any).items || (res as any).records || [];
+    technicianList.value = items
+      .filter((e: any) => {
+        const pos = (e.positionName || e.position || "").toLowerCase();
+        return (
+          pos.includes("kỹ thuật") ||
+          pos.includes("thợ") ||
+          pos.includes("technician")
+        );
+      })
+      .map((e: any) => ({
+        id: e.id,
+        name: e.fullName || e.name || String(e.id),
+      }));
+  } catch {
+    technicianList.value = [];
+  }
+};
+
 onMounted(() => {
   fetchBookings();
   fetchSalesList();
+  loadTechnicianList();
 });
 
 const PENDING_PAGE_SIZE = 10;

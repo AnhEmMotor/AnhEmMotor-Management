@@ -16,11 +16,8 @@ export const VoucherApi = {
   getById(id: number) {
     return request.get<VoucherItem>({ url: `/api/v1/voucher/${id}` });
   },
-  lookupByCode(code: string) {
-    return request.get<VoucherItem[]>({
-      url: "/api/v1/voucher",
-      params: { code },
-    });
+  getByCode(code: string) {
+    return request.get<VoucherItem>({ url: `/api/v1/voucher/code/${code}` });
   },
   validate(voucherId: number, outputId: number) {
     return request.post<VoucherValidateResponse>({

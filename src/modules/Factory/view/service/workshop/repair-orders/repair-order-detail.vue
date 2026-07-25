@@ -360,7 +360,7 @@
                       >Tổng cộng:</span
                     >
                     <span class="font-bold text-red-600 text-lg">{{
-                      formatCurrency(totalAmount)
+                      formatCurrency(discountedTotal)
                     }}</span>
                   </div>
                 </div>
@@ -400,6 +400,56 @@
               </p>
 
               <ElRow :gutter="20">
+                <ElCol :span="24" class="mb-4">
+                  <ElDivider content-position="left"
+                    >🎫 Mã giảm giá (Voucher)</ElDivider
+                  >
+                  <div class="flex items-start gap-3">
+                    <ElInput
+                      v-model="voucherCode"
+                      placeholder="Nhập mã voucher..."
+                      class="flex-1"
+                      @keyup.enter="applyVoucher"
+                      :disabled="voucherApplying"
+                    >
+                      <template #append>
+                        <ElButton
+                          :loading="voucherApplying"
+                          type="primary"
+                          @click="applyVoucher"
+                        >
+                          Áp dụng
+                        </ElButton>
+                      </template>
+                    </ElInput>
+                  </div>
+                  <div
+                    v-if="appliedVoucher"
+                    class="flex items-center gap-2 p-2 bg-emerald-50 border border-emerald-200 rounded-lg mt-2"
+                  >
+                    <span class="text-emerald-600">🎫</span>
+                    <span class="text-sm font-bold text-emerald-700">{{
+                      appliedVoucher.code
+                    }}</span>
+                    <span class="text-xs text-emerald-600"
+                      >-{{
+                        formatCurrency(appliedVoucher.discountAmount)
+                      }}</span
+                    >
+                    <ElButton
+                      link
+                      type="danger"
+                      size="small"
+                      @click="removeVoucher"
+                    >
+                      Hủy
+                    </ElButton>
+                  </div>
+                  <p v-if="voucherError" class="text-xs text-red-500 mt-1">
+                    {{ voucherError }}
+                  </p>
+                </ElCol>
+
                 <ElCol :span="8">
                   <ElFormItem
                     label="Phương thức thanh toán"
@@ -460,7 +510,8 @@
                     Tổng tiền hóa đơn
                   </div>
                   <div class="font-bold text-lg mt-1 text-slate-800">
-                    {{ formatCurrency(order.totalCost) }}
+                    formatCurrency(Math.max(0, (order.totalCost || 0) -
+                    (appliedVoucher?.value?.discountAmount || 0)))
                   </div>
                 </ElCol>
                 <ElCol :span="6">
@@ -694,6 +745,7 @@ import {
   ServiceCategoryApi,
   type ServiceCategoryResponse,
 } from "@/api/product";
+import { useVoucher } from "@/common/composables/useVoucher";
 import { EmployeeApi, type EmployeeResponse } from "@/api/operations";
 
 defineOptions({ name: "ServiceWorkshopRepairOrderDetail" });
@@ -760,7 +812,22 @@ const totalPartsCost = computed(() =>
     .reduce((acc, item) => acc + item.price * item.count, 0),
 );
 
-const totalAmount = computed(() => totalLaborCost.value + totalPartsCost.value);
+const discountedTotal = computed(() =>
+  Math.max(0, totalAmount.value - voucherDiscount.value),
+);
+
+const voucherOrderTotal = computed(() => totalAmount.value);
+const voucherOrderId = computed(() => orderId);
+const {
+  voucherCode,
+  appliedVoucher,
+  applying: voucherApplying,
+  errorMsg: voucherError,
+  discountAmount: voucherDiscount,
+  handleApply: applyVoucher,
+  handleRemove: removeVoucher,
+  reset: resetVoucher,
+} = useVoucher(voucherOrderTotal, voucherOrderId);
 
 const loadOrderDetail = async () => {
   if (!orderId) {
@@ -1045,6 +1112,8 @@ const completeRepairOrder = async () => {
       paymentMethod: paymentMethod.value,
       paymentStatus: paymentStatus.value,
       notes: checkoutNotes.value || undefined,
+      voucherId: appliedVoucher.value?.voucherId,
+      discountAmount: appliedVoucher.value?.discountAmount || 0,
     });
     ElMessage.success("Đã hoàn tất phiếu sửa chữa");
     await loadOrderDetail();

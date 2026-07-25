@@ -65,6 +65,7 @@ export interface CreateSalesOrderByManager {
   notes?: string;
   statusId?: string;
   depositRatio?: number;
+  discount?: number;
   products: Array<{
     productVariantId: number;
     productVariantColorId?: number;

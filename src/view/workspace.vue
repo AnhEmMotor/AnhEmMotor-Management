@@ -16,7 +16,7 @@
     <div class="portal-header relative z-10"></div>
 
     <div class="portal-container relative z-10">
-      <div class="workspace-grid max-w-[1350px] mx-auto">
+      <div class="workspace-grid max-w-[1150px] mx-auto">
         <el-card
           v-for="(workspace, index) in workspaces"
           :key="index"
@@ -113,6 +113,7 @@ import {
   Box,
   UserFilled,
   Wallet,
+  Document,
 } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
 import { useCommon } from "@/common/composables/useCommon";
@@ -200,6 +201,15 @@ const workspaces = computed(() =>
       shadowColor: "rgba(124, 58, 237, 0.15)",
       hasAccess: hasAuth(Permissions.Order.Module),
       path: "/Order/management/draft",
+    },
+    {
+      title: "HDSD Phần Mềm",
+      subtitle: "Software User Manual",
+      icon: markRaw(Document),
+      color: "#0284c7",
+      shadowColor: "rgba(2, 132, 199, 0.15)",
+      hasAccess: true,
+      path: "/manual",
     },
   ].filter((workspace) => workspace.hasAccess),
 );
@@ -339,7 +349,7 @@ const workspaces = computed(() =>
     .workspace-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 24px;
+      gap: 20px;
       margin: auto;
       width: 100%;
 
@@ -349,6 +359,11 @@ const workspaces = computed(() =>
 
       @media (width >= 1024px) {
         grid-template-columns: repeat(3, 1fr);
+
+        /* Cân bằng thẻ cuối cùng ra giữa nếu nó đứng một mình ở hàng cuối */
+        .workspace-card:last-child:nth-child(3n + 1) {
+          grid-column: 2;
+        }
       }
 
       .workspace-card {
@@ -382,24 +397,24 @@ const workspaces = computed(() =>
           display: flex;
           flex-direction: column;
           flex: 1;
-          padding: 20px 24px;
+          padding: 16px 20px;
         }
 
         .card-header {
           display: flex;
           align-items: flex-start;
           justify-content: space-between;
-          min-height: 48px;
-          margin-bottom: 12px;
+          min-height: 40px;
+          margin-bottom: 10px;
 
           .icon-wrapper {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 48px;
-            height: 48px;
-            font-size: 22px;
-            border-radius: 14px;
+            width: 42px;
+            height: 42px;
+            font-size: 20px;
+            border-radius: 12px;
             transition: all 0.3s;
           }
 
@@ -426,7 +441,7 @@ const workspaces = computed(() =>
 
           .workspace-title {
             margin-bottom: 4px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 800;
             line-height: 1.3;
             color: var(--el-text-color-primary);
@@ -435,10 +450,10 @@ const workspaces = computed(() =>
           .workspace-subtitle {
             display: inline-block;
             margin-bottom: 0;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.5px;
             opacity: 0.9;
           }
         }

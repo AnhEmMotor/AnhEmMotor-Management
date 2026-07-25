@@ -37,6 +37,12 @@ export const staticRoutes: AppRouteRecordRaw[] = [
     meta: { title: "Workspace", isHideTab: true },
   },
   {
+    path: "/manual",
+    name: "ManualIndex",
+    component: () => import("@view/manual/index.vue"),
+    meta: { title: "Hướng dẫn sử dụng", isHideTab: true },
+  },
+  {
     path: "/403",
     name: "Exception403",
     component: () => import("@view/error/403.vue"),

@@ -280,6 +280,52 @@
               </div>
             </div>
 
+            <ElDivider content-position="left" class="!my-4"
+              >Mã giảm giá (Voucher)</ElDivider
+            >
+            <ElInput
+              v-model="voucherCode"
+              placeholder="Nhập mã voucher..."
+              class="combat-input"
+              @keyup.enter="applyVoucher"
+              :disabled="voucherApplying"
+            >
+              <template #append>
+                <ElButton
+                  :loading="voucherApplying"
+                  type="primary"
+                  @click="applyVoucher"
+                >
+                  Áp dụng
+                </ElButton>
+              </template>
+            </ElInput>
+            <div
+              v-if="appliedVoucher"
+              class="flex items-center gap-2 p-2 bg-emerald-50 border border-emerald-200 rounded-lg mt-2"
+            >
+              <ArtSvgIcon icon="ri:coupon-3-fill" class="text-emerald-600" />
+              <span class="text-sm font-bold text-emerald-700">{{
+                appliedVoucher.code
+              }}</span>
+              <span class="text-xs text-emerald-600"
+                >-{{ formatCurrency(appliedVoucher.discountAmount) }}</span
+              >
+              <ElButton
+                link
+                type="danger"
+                size="small"
+                :loading="voucherApplying"
+                @click="removeVoucher"
+                style="margin-left: auto"
+              >
+                <ArtSvgIcon icon="ri:close-circle-line" />
+              </ElButton>
+            </div>
+            <p v-if="voucherError" class="text-xs text-red-500 mt-1">
+              {{ voucherError }}
+            </p>
+
             <div class="pt-4 border-t border-slate-100">
               <button
                 @click="handleSubmit"
@@ -308,11 +354,14 @@
 
 <script setup lang="ts">
 import { Permissions } from "@/domain/constants/permissions";
-import { ref, reactive } from "vue";
+import { ref, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
+import { useVoucher } from "@/common/composables/useVoucher";
+import type { AppliedVoucher } from "@/domain/voucher/voucher.types";
 import { VehicleApi, Vehicle } from "@/api/vehicle";
 import { RepairOrderApi } from "@/api/sales";
+import { VoucherApi } from "@/api/voucher.api";
 
 defineOptions({ name: "CustomerWorkshopCreate" });
 
@@ -331,6 +380,13 @@ const form = reactive({
   description: "",
   notes: "",
 });
+
+const voucherId = ref<number | null>(null);
+const voucherDiscount = ref(0);
+const voucherCode = ref("");
+const voucherApplying = ref(false);
+const appliedVoucher = ref<AppliedVoucher | null>(null);
+const voucherError = ref("");
 
 // Search customer vehicles by Phone Number
 const searchCustomer = async () => {
@@ -417,6 +473,75 @@ const goBack = () => {
 const formatDate = (dateStr: string) => {
   if (!dateStr) return "-";
   return new Date(dateStr).toLocaleDateString("vi-VN");
+};
+
+const {
+  voucherCode: vcCode,
+  appliedVoucher: vcApplied,
+  applying: vcApplying,
+  errorMsg: vcError,
+  discountAmount: vcDiscount,
+  handleApply: vcApply,
+  handleRemove: vcRemove,
+} = useVoucher(
+  () => 0,
+  () => 0,
+);
+
+watch(voucherCode, (val: string) => {
+  vcCode.value = val;
+});
+watch(appliedVoucher, (val) => {
+  vcApplied.value = val;
+});
+watch(voucherApplying, (val) => {
+  vcApplying.value = val;
+});
+watch(voucherError, (val) => {
+  vcError.value = val;
+});
+watch(voucherDiscount, (val) => {
+  let num = typeof val === "number" ? val : 0;
+  vcDiscount.value = num;
+});
+
+const applyVoucher = async () => {
+  voucherError.value = "";
+  const code = voucherCode.value.trim().toUpperCase();
+  if (!code) {
+    voucherError.value = "Vui lòng nhập mã voucher";
+    return;
+  }
+  voucherApplying.value = true;
+  try {
+    await vcApply();
+    voucherCode.value = vcCode.value;
+    appliedVoucher.value = vcApplied.value;
+    voucherDiscount.value = vcDiscount.value;
+    ElMessage.success(
+      "Đã áp dụng voucher " + (appliedVoucher.value?.code || ""),
+    );
+  } catch (err: any) {
+    voucherError.value = err?.message || "Không thể áp dụng voucher";
+  } finally {
+    voucherApplying.value = false;
+  }
+};
+
+const removeVoucher = async () => {
+  if (!appliedVoucher.value) return;
+  voucherApplying.value = true;
+  try {
+    await vcRemove();
+    appliedVoucher.value = null;
+    voucherDiscount.value = 0;
+    voucherCode.value = "";
+    voucherError.value = "";
+  } catch (err: any) {
+    voucherError.value = err?.message || "Không thể bỏ voucher";
+  } finally {
+    voucherApplying.value = false;
+  }
 };
 </script>
 

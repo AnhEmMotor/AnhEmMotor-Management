@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="resp-page invoices-page flex flex-col gap-4 pb-5">
     <!-- Header Actions -->
     <div class="flex items-center justify-between">
@@ -416,6 +416,51 @@
           </ElFormItem>
         </div>
 
+        <ElDivider content-position="left">🎫 Mã giảm giá (Voucher)</ElDivider>
+        <div class="flex items-start gap-3 mb-4">
+          <ElInput
+            v-model="voucherCode"
+            placeholder="Nhập mã voucher..."
+            class="flex-1"
+            @keyup.enter="applyVoucher"
+            :disabled="voucherApplying"
+          >
+            <template #append>
+              <ElButton
+                :loading="voucherApplying"
+                type="primary"
+                @click="applyVoucher"
+              >
+                Áp dụng
+              </ElButton>
+            </template>
+          </ElInput>
+        </div>
+        <div
+          v-if="appliedVoucher"
+          class="flex items-center gap-2 p-2 bg-emerald-50 border border-emerald-200 rounded-lg mb-4"
+        >
+          <span class="text-emerald-600 text-lg">🎫</span>
+          <span class="text-sm font-bold text-emerald-700">{{
+            appliedVoucher.code
+          }}</span>
+          <span class="text-xs text-emerald-600"
+            >-{{ formatCurrency(appliedVoucher.discountAmount) }}</span
+          >
+          <ElButton
+            link
+            type="danger"
+            size="small"
+            :loading="voucherApplying"
+            @click="removeVoucher"
+          >
+            Hủy
+          </ElButton>
+        </div>
+        <p v-if="voucherError" class="text-xs text-red-500 -mt-2 mb-2">
+          {{ voucherError }}
+        </p>
+
         <ElDivider content-position="left">💳 Thanh toán</ElDivider>
         <div class="grid grid-cols-2 gap-4">
           <ElFormItem label="Phương thức" required>
@@ -467,6 +512,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
+import { useVoucher } from "@/common/composables/useVoucher";
 import { Search, Plus } from "@element-plus/icons-vue";
 import {
   invoiceApi,
@@ -549,6 +595,8 @@ const createDialog = reactive({
     paymentBreakdown: [],
     items: [],
     subTotal: 0,
+    voucherId: undefined as number | undefined,
+    discountAmount: 0,
     taxAmount: 0,
   } as any,
 });
@@ -722,7 +770,11 @@ async function handleSave() {
   }
   actionLoading.value = true;
   try {
-    await invoiceApi.createAdmin(createDialog.form);
+    await invoiceApi.createAdmin({
+      ...createDialog.form,
+      voucherId: createDialog.form.voucherId,
+      discountAmount: createDialog.form.discountAmount,
+    });
     ElMessage.success("Tạo hóa đơn thành công");
     createDialog.visible = false;
     fetchInvoices();
@@ -732,6 +784,34 @@ async function handleSave() {
     actionLoading.value = false;
   }
 }
+
+// ==================== VOUCHER ====================
+const voucherTotal = computed(
+  () =>
+    createDialog.form.vehiclePrice +
+      createDialog.form.registrationFee +
+      createDialog.form.insuranceFee || 0,
+);
+const {
+  voucherCode,
+  appliedVoucher,
+  applying: voucherApplying,
+  errorMsg: voucherError,
+  discountAmount: voucherDiscount,
+  handleApply: applyVoucher,
+  handleRemove: removeVoucher,
+  reset: resetVoucher,
+} = useVoucher(voucherTotal, () => undefined);
+
+watch(appliedVoucher, (val) => {
+  if (val) {
+    createDialog.form.discountAmount = val.discountAmount;
+    createDialog.form.voucherId = val.voucherId;
+  } else {
+    createDialog.form.discountAmount = 0;
+    createDialog.form.voucherId = undefined;
+  }
+});
 
 // ==================== HELPERS ====================
 function formatDate(dateStr: string) {

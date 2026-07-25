@@ -420,6 +420,52 @@
           />
         </ElFormItem>
 
+        <ElDivider content-position="left" class="!my-4"
+          >Mã giảm giá (Voucher)</ElDivider
+        >
+        <div class="flex items-start gap-3">
+          <ElInput
+            v-model="voucherCode"
+            placeholder="Nhập mã voucher..."
+            class="flex-1"
+            @keyup.enter="applyVoucher"
+            :disabled="voucherApplying"
+          >
+            <template #append>
+              <ElButton
+                :loading="voucherApplying"
+                type="primary"
+                @click="applyVoucher"
+              >
+                Áp dụng
+              </ElButton>
+            </template>
+          </ElInput>
+        </div>
+        <div
+          v-if="appliedVoucher"
+          class="flex items-center gap-2 p-2 bg-emerald-50 border border-emerald-200 rounded-lg"
+        >
+          <ArtSvgIcon icon="ri:coupon-3-fill" class="text-emerald-600" />
+          <span class="text-sm font-bold text-emerald-700">{{
+            appliedVoucher.code
+          }}</span>
+          <span class="text-xs text-emerald-600"
+            >-{{ formatCurrency(appliedVoucher.discountAmount) }}</span
+          >
+          <ElButton
+            link
+            type="danger"
+            size="small"
+            :loading="voucherApplying"
+            @click="removeVoucher"
+          >
+            <ArtSvgIcon icon="ri:close-circle-line" />
+          </ElButton>
+        </div>
+        <p v-if="voucherError" class="text-xs text-red-500 mt-1">
+          {{ voucherError }}
+        </p>
         <div class="bg-gray-50 rounded-lg p-4 flex flex-col gap-2 text-sm">
           <div class="flex justify-between">
             <span>Tạm tính</span>
@@ -569,6 +615,8 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { SalesOrderApi } from "@/api/sales";
 import { ProductApi } from "@/api/product";
 import { fetchGetUserList } from "@/api/auth";
+import { VoucherApi } from "@/api/voucher.api";
+import { useVoucher } from "@/common/composables/useVoucher";
 import { Permissions } from "@/domain/constants/permissions";
 import type {
   SalesOrder,
@@ -646,6 +694,7 @@ const formData = reactive({
   wardCode: undefined as string | undefined,
   statusId: "pending",
   depositRatio: 0,
+  discount: 0,
   notes: "",
   products: [] as OrderFormProduct[],
 });
@@ -736,7 +785,9 @@ const formTotal = computed(() =>
 const depositAmount = computed(() =>
   Math.round(formTotal.value * (Number(formData.depositRatio || 0) / 100)),
 );
-const remainingAmount = computed(() => formTotal.value - depositAmount.value);
+const remainingAmount = computed(
+  () => formTotal.value - depositAmount.value - voucherDiscount.value,
+);
 
 const isBuyerProductLocked = computed(() =>
   getLockedList("buyerAndProducts").includes(originalStatusId.value),
@@ -1034,7 +1085,7 @@ async function handleSubmit() {
     return ElMessage.warning("Vui lòng chọn sản phẩm và số lượng hợp lệ");
   }
 
-  const payload = {
+  const payload: any = {
     buyerId: formData.buyerId,
     customerName: formData.customerName,
     customerPhone: formData.customerPhone,
@@ -1051,6 +1102,11 @@ async function handleSubmit() {
       count: item.count,
     })),
   };
+
+  if (appliedVoucher.value) {
+    payload.voucherId = appliedVoucher.value.voucherId;
+    payload.discountAmount = appliedVoucher.value.discountAmount;
+  }
 
   saving.value = true;
   try {
@@ -1131,6 +1187,19 @@ function removeProductRow(index: number) {
   formData.products.splice(index, 1);
 }
 
+const voucherOrderTotal = computed(() => formTotal.value);
+const voucherOrderId = computed(() => editingOrder.value?.id);
+const {
+  voucherCode,
+  appliedVoucher,
+  applying: voucherApplying,
+  errorMsg: voucherError,
+  discountAmount: voucherDiscount,
+  handleApply: applyVoucher,
+  handleRemove: removeVoucher,
+  reset: resetVoucher,
+} = useVoucher(voucherOrderTotal, voucherOrderId);
+
 function resetForm() {
   formData.buyerId = "";
   formData.customerName = "";
@@ -1142,6 +1211,7 @@ function resetForm() {
   formData.depositRatio = 0;
   formData.notes = "";
   formData.products = [];
+  resetVoucher();
 }
 
 function fillForm(order: SalesOrder) {
