@@ -552,7 +552,7 @@ export default {
       customerProfile360: "Hồ sơ 360",
       customerAsset: "Tài sản",
       customerCare: "Chăm sóc",
-      customerVoucher: "Voucher khách hàng",
+      customerVoucher: "Khuyến mãi & Voucher",
       customerProgress: "Tiến độ",
       booking: "Quản lý Lịch hẹn",
       conversion: "Công cụ chuyển đổi",
