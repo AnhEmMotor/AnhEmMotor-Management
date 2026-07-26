@@ -344,6 +344,7 @@ import { FileApi } from "@/api/operations";
 import type { Banner } from "@/domain/marketing/banner.types";
 
 import { useI18n } from "vue-i18n";
+import { formatImageUrl } from "@/common/utils/image";
 
 defineOptions({ name: "MarketingBannerManagement" });
 
@@ -382,15 +383,7 @@ const normalizeBannerImageUrl = (value?: string) => {
 
 const resolveBannerImageUrl = (value?: string) => {
   const normalizedUrl = normalizeBannerImageUrl(value);
-  if (!normalizedUrl.startsWith("/api/")) {
-    return normalizedUrl;
-  }
-  const apiBase =
-    import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT?.replace(
-      /\/$/,
-      "",
-    ) || "";
-  return `${apiBase}${normalizedUrl}`;
+  return formatImageUrl(normalizedUrl);
 };
 
 const getBannerImageKey = (banner: Banner) =>

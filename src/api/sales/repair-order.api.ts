@@ -41,6 +41,9 @@ export interface RepairOrder {
   licensePlate?: string;
   vehicle?: any;
   totalAmount?: number;
+  voucherCode?: string;
+  voucherDiscount?: number;
+  voucherFinalTotal?: number;
 }
 
 export interface RepairOrderList {

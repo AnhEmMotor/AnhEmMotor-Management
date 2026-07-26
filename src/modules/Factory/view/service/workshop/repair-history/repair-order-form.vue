@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div
     class="resp-page repair-order-form-page flex flex-col min-h-screen bg-[#F8FAFC] font-inter text-[#0F172A]"
   >
@@ -288,7 +288,7 @@
               placeholder="Nhập mã voucher..."
               class="combat-input"
               @keyup.enter="applyVoucher"
-              :disabled="voucherApplying"
+              :disabled="submitting"
             >
               <template #append>
                 <ElButton
@@ -308,16 +308,15 @@
               <span class="text-sm font-bold text-emerald-700">{{
                 appliedVoucher.code
               }}</span>
-              <span class="text-xs text-emerald-600"
-                >-{{ formatCurrency(appliedVoucher.discountAmount) }}</span
-              >
+              <span class="text-xs text-emerald-600">{{
+                formatCurrency(appliedVoucher.discountAmount)
+              }}</span>
               <ElButton
                 link
                 type="danger"
                 size="small"
                 :loading="voucherApplying"
                 @click="removeVoucher"
-                style="margin-left: auto"
               >
                 <ArtSvgIcon icon="ri:close-circle-line" />
               </ElButton>

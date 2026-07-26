@@ -130,7 +130,7 @@
           <div class="article-card__media">
             <img
               v-if="item.coverImageUrl && !failedImages.has(item.id)"
-              :src="item.coverImageUrl"
+              :src="formatImageUrl(item.coverImageUrl)"
               :alt="`Ảnh bìa: ${item.title}`"
               loading="lazy"
               @error="markImageFailed(item.id)"
@@ -224,6 +224,7 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { router } from "@/router";
 import { NewsApi } from "@/api/marketing";
 import { useCommon } from "@/common/composables/useCommon";
+import { formatImageUrl } from "@/common/utils/image";
 
 defineOptions({ name: "ArticleListAnalytics" });
 
