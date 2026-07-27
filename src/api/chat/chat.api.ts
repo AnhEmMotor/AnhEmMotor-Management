@@ -20,6 +20,22 @@ export interface ChatSessionHistory {
   messages: ChatMessage[];
 }
 
+// SignalR trả về chuỗi JSON theo camelCase
+export interface ChatRunEventDto {
+  seq: number;
+  type: string;
+  payload: string;
+}
+
+export interface ActiveRunDto {
+  runId: string;
+  status: string;
+  lastSeq: number;
+  startedAt: string | null;
+  userMessage: string;
+  partialOutput: string;
+}
+
 export const ManagerChatApi = {
   getSessions() {
     return request.get<ChatSession[]>({
@@ -37,6 +53,12 @@ export const ManagerChatApi = {
   getSessionHistory(sessionId: string) {
     return request.get<ChatMessage[]>({
       url: `/api/v1/manager-chat/sessions/${sessionId}/history`,
+    });
+  },
+
+  getActiveRun(sessionId: string) {
+    return request.get<ActiveRunDto | null>({
+      url: `/api/v1/manager-chat/sessions/${sessionId}/active-run`,
     });
   },
 

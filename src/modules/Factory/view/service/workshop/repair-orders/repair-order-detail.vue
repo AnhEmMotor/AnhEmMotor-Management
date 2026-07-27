@@ -812,6 +812,8 @@ const totalPartsCost = computed(() =>
     .reduce((acc, item) => acc + item.price * item.count, 0),
 );
 
+const totalAmount = computed(() => totalLaborCost.value + totalPartsCost.value);
+
 const discountedTotal = computed(() =>
   Math.max(0, totalAmount.value - voucherDiscount.value),
 );
@@ -827,7 +829,10 @@ const {
   handleApply: applyVoucher,
   handleRemove: removeVoucher,
   reset: resetVoucher,
-} = useVoucher(voucherOrderTotal, voucherOrderId);
+} = useVoucher(
+  () => voucherOrderTotal.value,
+  () => voucherOrderId.value,
+);
 
 const loadOrderDetail = async () => {
   if (!orderId) {

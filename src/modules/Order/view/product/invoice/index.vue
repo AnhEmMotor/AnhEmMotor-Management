@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="resp-page invoices-page flex flex-col gap-4 pb-5">
     <!-- Header Actions -->
     <div class="flex items-center justify-between">
@@ -801,7 +801,10 @@ const {
   handleApply: applyVoucher,
   handleRemove: removeVoucher,
   reset: resetVoucher,
-} = useVoucher(voucherTotal, () => undefined);
+} = useVoucher(
+  () => voucherTotal.value,
+  () => undefined,
+);
 
 watch(appliedVoucher, (val) => {
   if (val) {

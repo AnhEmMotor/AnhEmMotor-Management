@@ -358,10 +358,17 @@ import { ref, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { useVoucher } from "@/common/composables/useVoucher";
-import type { AppliedVoucher } from "@/domain/voucher/voucher.types";
+import type { AppliedVoucherInfo } from "@/domain/voucher/voucher.types";
 import { VehicleApi, Vehicle } from "@/api/vehicle";
 import { RepairOrderApi } from "@/api/sales";
 import { VoucherApi } from "@/api/voucher.api";
+
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(value || 0);
+};
 
 defineOptions({ name: "CustomerWorkshopCreate" });
 
@@ -385,7 +392,7 @@ const voucherId = ref<number | null>(null);
 const voucherDiscount = ref(0);
 const voucherCode = ref("");
 const voucherApplying = ref(false);
-const appliedVoucher = ref<AppliedVoucher | null>(null);
+const appliedVoucher = ref<AppliedVoucherInfo | null>(null);
 const voucherError = ref("");
 
 // Search customer vehicles by Phone Number
@@ -502,7 +509,7 @@ watch(voucherError, (val) => {
 });
 watch(voucherDiscount, (val) => {
   let num = typeof val === "number" ? val : 0;
-  vcDiscount.value = num;
+  // vcDiscount is readonly
 });
 
 const applyVoucher = async () => {

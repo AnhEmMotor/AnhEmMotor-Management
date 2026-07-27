@@ -4,6 +4,7 @@ import {
   ManagerChatApi as ChatApi,
   type ChatSession,
   type ChatMessage,
+  type ChatRunEventDto,
 } from "@/api/chat/chat.api";
 import { Plus, Delete, Position, Loading, Edit } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -22,15 +23,15 @@ import "highlight.js/styles/atom-one-dark.css";
 
 // Configure marked
 const renderer = new marked.Renderer();
-renderer.code = function (tokenOrCode: any, maybeLang: string | undefined) {
+renderer.code = function (token: any) {
   let code = "";
-  let lang = maybeLang;
+  let lang = undefined;
 
-  if (typeof tokenOrCode === "object" && tokenOrCode !== null) {
-    code = tokenOrCode.text || "";
-    lang = tokenOrCode.lang;
+  if (typeof token === "object" && token !== null) {
+    code = token.text || "";
+    lang = token.lang;
   } else {
-    code = tokenOrCode || "";
+    code = token || "";
   }
 
   const language = lang && hljs.getLanguage(lang) ? lang : "plaintext";
@@ -118,6 +119,15 @@ const newMessage = ref("");
 
 const activeStreams = ref<Record<string, ChatMessage>>({});
 const activeStreamSessions = ref<Set<string>>(new Set());
+
+interface RunWatcher {
+  runId: string;
+  lastSeq: number;
+  watchdog: ReturnType<typeof setTimeout> | null;
+  eventCount: number;
+}
+const RUN_WATCHDOG_MS = 45000;
+const runWatchers = ref<Record<string, RunWatcher>>({});
 const isCreatingSession = ref(false);
 const isSending = computed(
   () =>
@@ -148,8 +158,15 @@ const startConnection = async () => {
     .withUrl(baseUrl + "/hubs/manager-chat", {
       accessTokenFactory: () => token,
     })
+    .withAutomaticReconnect()
     .configureLogging(LogLevel.None)
     .build();
+
+  connection.value.onreconnected(() => {
+    Object.entries(runWatchers.value).forEach(([sessionId, watcher]) => {
+      subscribeToRun(sessionId, watcher.runId, watcher.lastSeq);
+    });
+  });
 
   try {
     await connection.value.start();
@@ -161,6 +178,133 @@ const startConnection = async () => {
 const stopConnection = async () => {
   if (connection.value?.state === HubConnectionState.Connected) {
     await connection.value.stop();
+  }
+};
+
+const clearWatchdog = (sessionId: string) => {
+  const watcher = runWatchers.value[sessionId];
+  if (watcher?.watchdog) clearTimeout(watcher.watchdog);
+};
+
+const armWatchdog = (sessionId: string) => {
+  clearWatchdog(sessionId);
+  const watcher = runWatchers.value[sessionId];
+  if (!watcher) return;
+  watcher.watchdog = setTimeout(() => {
+    const aiMsg = activeStreams.value[sessionId];
+    if (aiMsg) {
+      aiMsg.message += "\n\n_(Mất kết nối với AI. Vui lòng thử lại.)_";
+    }
+    ElMessage.warning("Phiên trả lời bị gián đoạn");
+    cleanupRun(sessionId);
+  }, RUN_WATCHDOG_MS);
+};
+
+const persistWatcher = (sessionId: string) => {
+  const watcher = runWatchers.value[sessionId];
+  if (!watcher) return;
+  localStorage.setItem(
+    `chatRun:${sessionId}`,
+    JSON.stringify({
+      sessionId,
+      runId: watcher.runId,
+      lastSeq: watcher.lastSeq,
+    }),
+  );
+};
+
+const cleanupRun = (sessionId: string) => {
+  clearWatchdog(sessionId);
+  delete runWatchers.value[sessionId];
+  activeStreamSessions.value.delete(sessionId);
+  delete activeStreams.value[sessionId];
+  localStorage.removeItem(`chatRun:${sessionId}`);
+};
+
+const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
+  runWatchers.value[sessionId] = {
+    runId,
+    lastSeq: afterSeq,
+    watchdog: null,
+    eventCount: 0,
+  };
+  activeStreamSessions.value.add(sessionId);
+  armWatchdog(sessionId);
+
+  const stream = connection.value!.stream("SubscribeRun", runId, afterSeq);
+  stream.subscribe({
+    next: (evt: ChatRunEventDto) => {
+      const watcher = runWatchers.value[sessionId];
+      if (!watcher) return;
+      watcher.lastSeq = evt.seq;
+
+      const aiMsg = activeStreams.value[sessionId];
+      switch (evt.type) {
+        case "text_delta":
+          if (aiMsg) aiMsg.message += evt.payload;
+          if (activeSessionId.value === sessionId) scrollToBottom();
+          break;
+        case "run_heartbeat":
+          armWatchdog(sessionId);
+          break;
+        case "run_completed":
+        case "run_cancelled":
+          cleanupRun(sessionId);
+          break;
+        case "error":
+          ElMessage.error(evt.payload || "Đã có lỗi xảy ra khi AI trả lời");
+          cleanupRun(sessionId);
+          break;
+        default:
+          // Bỏ qua event lạ để tương thích ngược khi backend thêm loại event mới
+          break;
+      }
+
+      watcher.eventCount++;
+      if (watcher.eventCount % 20 === 0) persistWatcher(sessionId);
+    },
+    error: (err: any) => {
+      console.error("SubscribeRun error:", err);
+      cleanupRun(sessionId);
+    },
+    complete: () => {
+      cleanupRun(sessionId);
+    },
+  });
+};
+
+const resumeActiveRun = async (sessionId: string) => {
+  try {
+    const activeRun = await ChatApi.getActiveRun(sessionId);
+    if (!activeRun) return;
+
+    const aiMsg: ChatMessage = {
+      id: `run-${activeRun.runId}`,
+      role: "AI",
+      message: activeRun.partialOutput,
+      createdAt: activeRun.startedAt || new Date().toISOString(),
+    };
+    activeStreams.value[sessionId] = aiMsg;
+    messages.value.push(aiMsg);
+
+    if (connection.value?.state !== HubConnectionState.Connected) {
+      await startConnection();
+    }
+    subscribeToRun(sessionId, activeRun.runId, activeRun.lastSeq);
+  } catch (error) {
+    console.error("Không thể khôi phục run đang chạy:", error);
+  }
+};
+
+const cancelCurrentRun = async () => {
+  const sessionId = activeSessionId.value;
+  if (!sessionId) return;
+  const watcher = runWatchers.value[sessionId];
+  if (!watcher) return;
+  try {
+    await connection.value?.invoke("CancelRun", watcher.runId);
+  } catch (error) {
+    ElMessage.error("Không thể dừng AI");
   }
 };
 
@@ -193,6 +337,8 @@ const selectSession = async (id: string) => {
 
     if (activeStreams.value[id]) {
       messages.value.push(activeStreams.value[id]);
+    } else {
+      await resumeActiveRun(id);
     }
 
     scrollToBottom();
@@ -333,42 +479,21 @@ const sendMessage = async () => {
       await startConnection();
     }
 
-    // Call SignalR stream
-    const stream = connection.value!.stream(
-      "SendMessageStream",
+    const runId: string = await connection.value!.invoke(
+      "StartRun",
       sessionId,
       text,
     );
-
-    stream.subscribe({
-      next: (chunk: string) => {
-        if (activeStreams.value[sessionId]) {
-          activeStreams.value[sessionId].message += chunk;
-        }
-        if (activeSessionId.value === sessionId) {
-          scrollToBottom();
-        }
-      },
-      error: (err: any) => {
-        console.error("Stream error:", err);
-        ElMessage.error("Loi khi nhan luong tin nhan");
-        activeStreamSessions.value.delete(sessionId);
-        delete activeStreams.value[sessionId];
-      },
-      complete: () => {
-        activeStreamSessions.value.delete(sessionId);
-        delete activeStreams.value[sessionId];
-      },
-    });
+    subscribeToRun(sessionId, runId, 0);
   } catch (error) {
-    ElMessage.error("Loi khi gui tin nhan qua SignalR");
+    console.error("StartRun error:", error);
+    ElMessage.error("Lỗi khi gửi tin nhắn qua SignalR");
     if (activeSessionId.value === sessionId) {
       messages.value = messages.value.filter(
         (m) => m.id !== userMsgId && m.id !== aiMsgId,
       );
     }
-    activeStreamSessions.value.delete(sessionId);
-    delete activeStreams.value[sessionId];
+    cleanupRun(sessionId);
   }
 };
 
@@ -393,6 +518,7 @@ const formatTime = (isoString: string) => {
     direction="rtl"
     size="800px"
     :with-header="false"
+    class="ai-chat-drawer-no-padding"
   >
     <div class="flex h-full border-l border-gray-200">
       <!-- Left: Session List -->
@@ -585,11 +711,19 @@ const formatTime = (isoString: string) => {
               class="flex-1"
             />
             <el-button
+              v-if="isSending"
+              type="danger"
+              plain
+              @click="cancelCurrentRun"
+            >
+              Dừng
+            </el-button>
+            <el-button
+              v-else
               type="primary"
               :icon="Position"
               @click="sendMessage"
-              :disabled="!newMessage.trim() || isSending"
-              :loading="isSending"
+              :disabled="!newMessage.trim()"
             >
               Gửi
             </el-button>
@@ -615,15 +749,19 @@ const formatTime = (isoString: string) => {
             </div>
             <div class="flex justify-end mt-1">
               <el-button
+                v-if="isSending"
+                type="danger"
+                plain
+                @click="cancelCurrentRun"
+              >
+                Dừng
+              </el-button>
+              <el-button
+                v-else
                 type="primary"
                 :icon="Position"
                 @click="sendMessage"
-                :disabled="
-                  !newMessage.trim() ||
-                  isSending ||
-                  newMessage === '<p><br></p>'
-                "
-                :loading="isSending"
+                :disabled="!newMessage.trim() || newMessage === '<p><br></p>'"
               >
                 Gửi
               </el-button>
@@ -638,5 +776,46 @@ const formatTime = (isoString: string) => {
 <style scoped>
 :deep(.el-drawer__body) {
   padding: 0;
+}
+
+:deep(.prose ul) {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+:deep(.prose ol) {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+:deep(.prose li) {
+  margin-bottom: 0.25rem;
+}
+
+:deep(.prose p) {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+:deep(.prose p:first-child) {
+  margin-top: 0;
+}
+
+:deep(.prose p:last-child) {
+  margin-bottom: 0;
+}
+
+:deep(.prose strong) {
+  font-weight: 600;
+}
+</style>
+
+<style>
+.ai-chat-drawer-no-padding .el-drawer__body {
+  padding: 0 !important;
 }
 </style>

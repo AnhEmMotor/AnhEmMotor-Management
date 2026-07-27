@@ -690,6 +690,7 @@ import { BookingApi, Booking } from "@/api/sales";
 import { BookingAppointmentApi } from "@/api/booking-appointment.api";
 import { fetchGetUserList } from "@/api/auth/system-manage.api";
 import { fetchGetLeadList, fetchAssignLead } from "@/api/customer";
+import { EmployeeApi } from "@/api/operations";
 
 defineOptions({ name: "BookingCalendar" });
 
@@ -845,7 +846,7 @@ const technicianList = ref<{ id: number; name: string }[]>([]);
 
 const loadTechnicianList = async () => {
   try {
-    const res = await EmployeeApi.getList({ Page: 1, PageSize: 200 });
+    const res = await EmployeeApi.getList();
     const items = (res as any).items || (res as any).records || [];
     technicianList.value = items
       .filter((e: any) => {

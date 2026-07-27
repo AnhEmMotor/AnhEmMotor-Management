@@ -100,6 +100,8 @@ export interface CompleteRepairOrderPayload {
   paymentMethod: string;
   paymentStatus: string;
   notes?: string;
+  voucherId?: number;
+  discountAmount?: number;
 }
 
 export const RepairOrderApi = {

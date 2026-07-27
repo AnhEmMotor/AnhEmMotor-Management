@@ -457,7 +457,7 @@
 
       <!-- Voucher Section -->
       <div
-        v-if="order.id"
+        v-if="order?.id"
         class="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm mt-4"
       >
         <h4
@@ -621,7 +621,10 @@ const {
   handleApply: handleApplyVoucher,
   handleRemove: removeVoucher,
   reset: resetVoucher,
-} = useVoucher(voucherOrderTotal, voucherOrderId);
+} = useVoucher(
+  () => voucherOrderTotal.value,
+  () => voucherOrderId.value,
+);
 
 const loadOrder = async () => {
   if (!Number.isFinite(orderId)) {
