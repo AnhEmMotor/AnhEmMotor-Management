@@ -231,9 +231,7 @@ export const useUserStore = defineStore(
               if (data && (data.userName || data.id)) {
                 info.value = mapUserInfo(data, true);
               }
-            } catch (e) {
-              console.error("Failed to parse SSE message data:", e);
-            }
+            } catch (e) {}
           },
           onclose() {
             sseStatus.value = "disconnected";

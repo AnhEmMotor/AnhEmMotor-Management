@@ -76,7 +76,6 @@ const getErrorMessage = (status: number): string => {
 
 export function handleError(error: AxiosError<ErrorResponse>): never {
   if (error.code === "ERR_CANCELED") {
-    console.warn("Request cancelled:", error.message);
     throw new HttpError($t("httpMsg.requestCancelled"), ApiStatus.error);
   }
 
@@ -112,7 +111,6 @@ export function showError(error: HttpError, showMessage: boolean = true): void {
       type: "error",
       position: "bottom-right",
     });
-    console.error("[HTTP Error]", error.toLogData());
   }
 }
 
