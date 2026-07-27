@@ -112,6 +112,7 @@ watch(drawerVisible, (val) => {
 
 const sessions = ref<ChatSession[]>([]);
 const activeSessionId = ref<string | null>(null);
+
 const messages = ref<ChatMessage[]>([]);
 const newMessage = ref("");
 
@@ -315,7 +316,7 @@ const sendMessage = async () => {
 
   // Prepare AI message placeholder for streaming
   const aiMsgId = (Date.now() + 1).toString();
-  const aiMsg = {
+  const aiMsg: ChatMessage = {
     id: aiMsgId,
     role: "AI",
     message: "",

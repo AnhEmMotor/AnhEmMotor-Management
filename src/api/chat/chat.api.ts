@@ -5,8 +5,11 @@ export interface ChatSession {
   title: string;
 }
 
+export type ChatRole = "User" | "AI" | "System";
+
 export interface ChatMessage {
-  role: "User" | "Assistant" | "System";
+  id?: string;
+  role: ChatRole;
   message: string;
   createdAt: string;
 }
@@ -47,13 +50,6 @@ export const ManagerChatApi = {
     return request.put({
       url: `/api/v1/manager-chat/sessions/${sessionId}`,
       data: { title },
-    });
-  },
-
-  sendMessage(sessionId: string, message: string) {
-    return request.post<ChatMessage>({
-      url: `/api/v1/manager-chat/sessions/${sessionId}/message`,
-      data: { content: message },
     });
   },
 };
