@@ -55,7 +55,6 @@ export const hrRoutes: AppRouteRecord = {
       meta: {
         title: "menus.hr.kpi",
         icon: "ri:bar-chart-box-line",
-        isHide: true,
       },
     },
     {

@@ -1147,7 +1147,7 @@ import {
   FeedbackStatuses,
   CandidateStatuses,
 } from "@/infrastructure/api/contact.api";
-import type { Contact } from "@/types";
+import { resolveContactId, type Contact } from "@/types";
 
 defineOptions({ name: "ContactManagement" });
 const contactStore = useContactStore();
@@ -1324,10 +1324,19 @@ const getFullCvUrl = (url: string | undefined) => {
 
 const handleReply = async () => {
   if (!replyDraft.value.trim() || !contactStore.activeItem) return;
+  const contactId = resolveContactId(contactStore.activeItem);
+  if (contactId === null) {
+    ElMessage.error(
+      "Không tìm thấy mã liên hệ gốc. Vui lòng tải lại dữ liệu trước khi phản hồi.",
+    );
+    return;
+  }
   try {
     const sent = await contactStore.sendReply(
-      contactStore.activeItem.contactId,
+      contactId,
       replyDraft.value,
+      contactStore.activeItem.id,
+      activeTab.value,
     );
     if (sent) replyDraft.value = "";
   } catch {
@@ -1385,10 +1394,14 @@ const handleStatus = async (newStatus: string) => {
 
 const saveNote = async () => {
   if (!contactStore.activeItem) return;
-  await contactStore.saveInternalNote(
-    contactStore.activeItem.contactId,
-    noteDraft.value,
-  );
+  const contactId = resolveContactId(contactStore.activeItem);
+  if (contactId === null) {
+    ElMessage.error(
+      "Không tìm thấy mã liên hệ gốc. Vui lòng tải lại dữ liệu trước khi lưu ghi chú.",
+    );
+    return;
+  }
+  await contactStore.saveInternalNote(contactId, noteDraft.value);
 };
 
 const downloadCvUrl = (url: string) => {

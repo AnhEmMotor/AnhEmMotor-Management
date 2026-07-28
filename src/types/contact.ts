@@ -105,6 +105,8 @@ export namespace Contact {
 
   export interface CreateReplyPayload {
     contactId: number;
+    contactItemId?: number;
+    contactType?: string;
     message: string;
     markAsProcessed: boolean;
   }
@@ -134,3 +136,27 @@ export namespace Contact {
     ...CandidateStatuses,
   ] as readonly string[];
 }
+
+export const resolveContactId = (
+  item: Contact.ContactItem | null | undefined,
+): number | null => {
+  const explicitContactId = item?.contactId;
+  if (
+    typeof explicitContactId === "number" &&
+    Number.isInteger(explicitContactId) &&
+    explicitContactId > 0
+  ) {
+    return explicitContactId;
+  }
+
+  const nestedContactId = item?.contact?.id;
+  if (
+    typeof nestedContactId === "number" &&
+    Number.isInteger(nestedContactId) &&
+    nestedContactId > 0
+  ) {
+    return nestedContactId;
+  }
+
+  return null;
+};

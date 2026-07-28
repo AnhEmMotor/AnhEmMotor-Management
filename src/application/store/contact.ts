@@ -102,10 +102,17 @@ export const useContactStore = defineStore("contactStore", () => {
     }
   };
 
-  const sendReply = async (contactId: number, message: string) => {
+  const sendReply = async (
+    contactId: number,
+    message: string,
+    contactItemId: number,
+    contactType: string,
+  ) => {
     try {
       await ContactApi.reply({
         contactId,
+        contactItemId,
+        contactType,
         message,
         markAsProcessed: true,
       });
