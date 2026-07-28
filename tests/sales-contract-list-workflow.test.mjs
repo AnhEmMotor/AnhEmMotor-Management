@@ -18,6 +18,13 @@ const typesPath = new URL(
 const listSource = readFileSync(listPath, "utf8");
 const detailSource = readFileSync(detailPath, "utf8");
 const typesSource = readFileSync(typesPath, "utf8");
+const orderListSource = readFileSync(
+  new URL(
+    "../src/modules/Order/view/order/contract/index.vue",
+    import.meta.url,
+  ),
+  "utf8",
+);
 
 test("sales-contract list maps the backend customer and vehicle fields", () => {
   assert.match(typesSource, /customerFullName\??:\s*string/);
@@ -72,7 +79,24 @@ test("detail removes addendum actions and all visible statuses are Vietnamese", 
   );
   assert.doesNotMatch(detailSource, /trạng thái Signed|\(Fulfilled\)/);
   assert.match(listSource, /Draft:\s*["']Nháp["']/);
+  assert.match(listSource, /PendingApproval:\s*["']Chờ Admin duyệt["']/);
   assert.match(listSource, /Approved:\s*["']Đã duyệt["']/);
   assert.match(listSource, /Signed:\s*["']Đã ký["']/);
   assert.match(listSource, /Fulfilled:\s*["']Hoàn tất["']/);
+});
+
+test("order contracts only select confirmed orders and keep signed-file upload out of creation", () => {
+  assert.match(orderListSource, /SalesOrderApi\.getConfirmedList/);
+  assert.match(orderListSource, /ineligibleOrderStatuses/);
+  assert.match(orderListSource, /Đơn hàng đã xác nhận #/);
+  assert.match(orderListSource, /Đủ điều kiện lập hợp đồng/);
+  assert.doesNotMatch(orderListSource, /contract-file-upload/);
+  assert.doesNotMatch(orderListSource, /uploadScannedFile/);
+  assert.match(orderListSource, /goToPreview\(createdContractId\)/);
+});
+
+test("sales-contract status model exposes the submit-for-approval lifecycle", () => {
+  assert.match(typesSource, /"PendingApproval"/);
+  assert.match(orderListSource, /PendingApproval:\s*"Chờ Admin duyệt"/);
+  assert.match(listSource, /PendingApproval:\s*"Chờ Admin duyệt"/);
 });

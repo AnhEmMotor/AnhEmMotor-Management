@@ -1114,6 +1114,8 @@
       <ElSelect
         v-model="assignedUser"
         :placeholder="$t('contact.assignDialog.selectUser')"
+        :loading="userOptionsLoading"
+        no-data-text="Không có nhân viên khả dụng"
         class="w-full"
         filterable
         clearable
@@ -1139,6 +1141,7 @@ import { ElMessage } from "element-plus";
 import { storeToRefs } from "pinia";
 import { useContactStore } from "@/application/store/contact";
 import { useSettingStore } from "@/application/store/setting";
+import { fetchGetUserList } from "@/api/auth";
 import {
   SupportStatuses,
   FeedbackStatuses,
@@ -1158,11 +1161,41 @@ const noteDraft = ref("");
 const assignDialogVisible = ref(false);
 const assignedUser = ref("");
 
-const userOptions = ref<{ id: string; name: string }[]>([
-  { id: "1", name: "Nguyễn Văn A" },
-  { id: "2", name: "Trần Thị B" },
-  { id: "3", name: "Lê Văn C" },
-]);
+type AssignableUser = {
+  id: string;
+  fullName?: string;
+  userName?: string;
+  email?: string;
+  status?: string;
+};
+
+type AssignableUserList = {
+  items?: AssignableUser[];
+  records?: AssignableUser[];
+};
+
+const userOptions = ref<{ id: string; name: string }[]>([]);
+const userOptionsLoading = ref(false);
+
+const fetchAssignableUsers = async () => {
+  userOptionsLoading.value = true;
+  try {
+    const response = await fetchGetUserList({ Page: 1, PageSize: 100 });
+    const payload = response as unknown as AssignableUserList;
+    const users = payload.items ?? payload.records ?? [];
+    userOptions.value = users
+      .filter((user) => user.id && user.status !== "Banned")
+      .map((user) => ({
+        id: user.id,
+        name: user.fullName || user.userName || user.email || user.id,
+      }));
+  } catch {
+    userOptions.value = [];
+    ElMessage.error("Không thể tải danh sách nhân viên");
+  } finally {
+    userOptionsLoading.value = false;
+  }
+};
 
 const tableHeaderStyle = computed(() => ({
   background: isDark.value ? "#111827" : "#f8fafc",
@@ -1174,9 +1207,9 @@ const tableHeaderStyle = computed(() => ({
   borderColor: isDark.value ? "rgb(255 255 255 / 10%)" : "#f1f5f9",
 }));
 
-onMounted(() => {
+onMounted(async () => {
   contactStore.setFilter(activeTab.value, statusFilter.value);
-  contactStore.fetchList();
+  await Promise.all([contactStore.fetchList(), fetchAssignableUsers()]);
 });
 
 watch(activeTab, () => {
@@ -1292,8 +1325,11 @@ const getFullCvUrl = (url: string | undefined) => {
 const handleReply = async () => {
   if (!replyDraft.value.trim() || !contactStore.activeItem) return;
   try {
-    await contactStore.sendReply(contactStore.activeItem.id, replyDraft.value);
-    replyDraft.value = "";
+    const sent = await contactStore.sendReply(
+      contactStore.activeItem.contactId,
+      replyDraft.value,
+    );
+    if (sent) replyDraft.value = "";
   } catch {
     /* handled */
   }
@@ -1350,7 +1386,7 @@ const handleStatus = async (newStatus: string) => {
 const saveNote = async () => {
   if (!contactStore.activeItem) return;
   await contactStore.saveInternalNote(
-    contactStore.activeItem.id,
+    contactStore.activeItem.contactId,
     noteDraft.value,
   );
 };
@@ -1359,15 +1395,21 @@ const downloadCvUrl = (url: string) => {
   if (url) window.open(url, "_blank");
 };
 const openAssignDialog = () => {
+  assignedUser.value =
+    (contactStore.activeItem as Contact.SupportRequest | null)
+      ?.assignedUserId ?? "";
   assignDialogVisible.value = true;
 };
 const handleAssign = async () => {
-  if (!assignedUser.value) {
-    ElMessage.warning("Vui lòng chọn nhân viên");
+  if (!contactStore.activeItem || activeTab.value !== "support") {
+    ElMessage.warning("Chỉ yêu cầu hỗ trợ mới có thể phân công");
     return;
   }
-  assignDialogVisible.value = false;
-  ElMessage.success("Đã phân công xử lý");
+  const assigned = await contactStore.assignSupportRequest(
+    contactStore.activeItem.id,
+    assignedUser.value || null,
+  );
+  if (assigned) assignDialogVisible.value = false;
 };
 </script>
 

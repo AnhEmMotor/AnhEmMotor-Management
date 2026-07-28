@@ -11,10 +11,11 @@ export const CandidateStatuses = [
 ] as const;
 
 export interface PaginatedContactResponse {
-  records: Contact.ContactItem[];
+  items: Contact.ContactItem[];
   totalCount: number;
-  page: number;
+  pageNumber: number;
   pageSize: number;
+  totalPages: number;
 }
 
 export const ContactApi = {
@@ -41,7 +42,7 @@ export const ContactApi = {
     });
   },
   reply(data: Contact.CreateReplyPayload) {
-    return request.post<void>({ url: "/api/v1/Contacts/reply", data });
+    return request.post<number>({ url: "/api/v1/Contacts/reply", data });
   },
   updateInternalNote(data: Contact.UpdateInternalNotePayload) {
     return request.patch<void>({ url: "/api/v1/Contacts/internal-note", data });

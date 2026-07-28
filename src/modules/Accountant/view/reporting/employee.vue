@@ -29,13 +29,13 @@
       <ArtStatsCard
         title="Doanh số nhân viên"
         :count="formatCurrency(reportSummary.totalSales)"
-        :description="`${reportSummary.employeeCount} nhân viên có dữ liệu`"
+        :description="`${reportSummary.employeeCount} hồ sơ nhân sự trong kỳ`"
         icon="ri:line-chart-line"
         icon-style="bg-report-red"
         :loading="loading"
       />
       <ArtStatsCard
-        title="Hoa hồng chi trả"
+        title="Hoa hồng được duyệt"
         :count="formatCurrency(reportSummary.totalCommission)"
         :description="`Tỷ lệ hoa hồng: ${formatPercent(commissionRate)}`"
         icon="ri:hand-coin-line"
@@ -71,6 +71,47 @@
       <span>{{ errorMessage }}</span>
     </div>
 
+    <ElCard class="reporting-card employee-report__source-card">
+      <template #header>
+        <div class="employee-report__card-header">
+          <span>Tình trạng nguồn dữ liệu</span>
+          <span>{{ selectedRangeLabel }}</span>
+        </div>
+      </template>
+      <div class="employee-report__source-grid">
+        <div>
+          <span>Đơn hàng hoàn tất</span>
+          <strong
+            >{{ sourceCoverage.sales }}/{{
+              reportSummary.employeeCount
+            }}</strong
+          >
+        </div>
+        <div>
+          <span>KPI đã giao</span>
+          <strong
+            >{{ sourceCoverage.kpi }}/{{ reportSummary.employeeCount }}</strong
+          >
+        </div>
+        <div>
+          <span>Hoa hồng phát sinh</span>
+          <strong
+            >{{ sourceCoverage.commission }}/{{
+              reportSummary.employeeCount
+            }}</strong
+          >
+        </div>
+      </div>
+      <p v-if="hasData && !hasMetricData" class="employee-report__source-note">
+        API đã tải hồ sơ nhân sự, nhưng chưa phát sinh doanh số hoặc hoa hồng
+        trong kỳ. Hãy kiểm tra dữ liệu đơn hàng, KPI và chính sách hoa hồng ở
+        các module nguồn.
+      </p>
+      <p v-else-if="!hasData" class="employee-report__source-note">
+        API chưa trả hồ sơ nhân sự cho kỳ đang chọn.
+      </p>
+    </ElCard>
+
     <div class="employee-report__charts">
       <ElCard
         class="reporting-card employee-report__chart-card employee-report__chart-card--wide"
@@ -82,13 +123,13 @@
           </div>
         </template>
         <div
-          v-if="hasData"
+          v-if="hasMetricData"
           ref="salesCommissionChartRef"
           class="reporting-chart employee-report__chart"
         ></div>
         <ElEmpty
           v-else
-          description="Chưa có dữ liệu"
+          description="Chưa phát sinh doanh số hoặc hoa hồng trong kỳ"
           :image-size="90"
           class="employee-report__empty"
         />
@@ -102,13 +143,13 @@
           </div>
         </template>
         <div
-          v-if="hasData"
+          v-if="hasKpiData"
           ref="kpiStatusChartRef"
           class="reporting-chart employee-report__chart"
         ></div>
         <ElEmpty
           v-else
-          description="Chưa có dữ liệu"
+          description="Chưa có KPI trong kỳ"
           :image-size="90"
           class="employee-report__empty"
         />
@@ -215,7 +256,11 @@
           align="right"
         >
           <template #default="{ row }">
-            {{ formatCurrency(row.totalSales) }}
+            {{
+              row.hasSalesData || row.hasKpiData
+                ? formatCurrency(row.totalSales)
+                : "Chưa phát sinh"
+            }}
           </template>
         </ElTableColumn>
         <ElTableColumn
@@ -250,14 +295,45 @@
         </ElTableColumn>
         <ElTableColumn
           prop="commissionPaid"
-          label="Hoa hồng chi trả"
+          label="Hoa hồng được duyệt"
           min-width="170"
           align="right"
         >
           <template #default="{ row }">
             <span class="font-semibold text-primary">
-              {{ formatCurrency(row.commissionPaid) }}
+              {{
+                row.hasCommissionData
+                  ? formatCurrency(row.commissionPaid)
+                  : "Chưa phát sinh"
+              }}
             </span>
+          </template>
+        </ElTableColumn>
+        <ElTableColumn label="Nguồn dữ liệu" min-width="210">
+          <template #default="{ row }">
+            <div class="employee-report__source-tags">
+              <ElTag
+                :type="row.hasSalesData ? 'success' : 'info'"
+                effect="plain"
+                size="small"
+              >
+                Đơn hàng
+              </ElTag>
+              <ElTag
+                :type="row.hasKpiData ? 'success' : 'info'"
+                effect="plain"
+                size="small"
+              >
+                KPI
+              </ElTag>
+              <ElTag
+                :type="row.hasCommissionData ? 'success' : 'info'"
+                effect="plain"
+                size="small"
+              >
+                Hoa hồng
+              </ElTag>
+            </div>
           </template>
         </ElTableColumn>
         <ElTableColumn
@@ -320,6 +396,20 @@ let salesCommissionChart: echarts.ECharts | null = null;
 let kpiStatusChart: echarts.ECharts | null = null;
 
 const hasData = computed(() => performance.value.length > 0);
+const hasMetricData = computed(() =>
+  performance.value.some(
+    (item) => item.totalSales > 0 || item.commissionPaid > 0,
+  ),
+);
+const hasKpiData = computed(() =>
+  performance.value.some((item) => item.hasKpiData),
+);
+
+const sourceCoverage = computed(() => ({
+  sales: performance.value.filter((item) => item.hasSalesData).length,
+  kpi: performance.value.filter((item) => item.hasKpiData).length,
+  commission: performance.value.filter((item) => item.hasCommissionData).length,
+}));
 
 const reportSummary = computed(() => {
   const totalSales = sumBy(performance.value, "totalSales");
@@ -373,6 +463,7 @@ const kpiStatusSummary = computed(() =>
 
 const topPerformers = computed(() =>
   [...performance.value]
+    .filter((item) => item.totalSales > 0 || item.commissionPaid > 0)
     .sort((first, second) => second.totalSales - first.totalSales)
     .slice(0, 5),
 );
@@ -434,14 +525,17 @@ async function loadPerformance() {
 }
 
 function renderCharts() {
-  if (!hasData.value) {
+  if (!hasMetricData.value) {
     salesCommissionChart?.clear();
-    kpiStatusChart?.clear();
-    return;
+  } else {
+    renderSalesCommissionChart();
   }
 
-  renderSalesCommissionChart();
-  renderKpiStatusChart();
+  if (!hasKpiData.value) {
+    kpiStatusChart?.clear();
+  } else {
+    renderKpiStatusChart();
+  }
 }
 
 function renderSalesCommissionChart() {
@@ -714,6 +808,41 @@ onBeforeUnmount(() => {
   border-color: rgb(245 158 11 / 30%);
 }
 
+.employee-report__source-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.employee-report__source-grid > div {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: var(--el-fill-color-light);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 10px;
+}
+
+.employee-report__source-grid span,
+.employee-report__source-note {
+  color: var(--report-muted-strong);
+}
+
+.employee-report__source-note {
+  margin: 12px 0 0;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.employee-report__source-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
 .employee-report__charts,
 .employee-report__insights {
   display: grid;
@@ -850,6 +979,10 @@ onBeforeUnmount(() => {
 }
 
 @media (width >= 1024px) {
+  .employee-report__source-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .employee-report__charts {
     grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
   }

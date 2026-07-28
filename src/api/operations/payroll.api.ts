@@ -9,7 +9,8 @@ export interface PayrollSummaryResponse {
   confirmedCommission: number;
   paidCommission: number;
   totalActualReceived: number;
-  volumeBonus: number;
+  kpiBonus: number;
+  volumeBonus?: number;
   /** Full salary for the selected month: base salary + eligible commission + volume bonus. */
   totalNetPayable: number;
 }
