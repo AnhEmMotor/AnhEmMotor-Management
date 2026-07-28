@@ -1,6 +1,6 @@
 <template>
   <div class="resp-page contract-sales-container">
-    <div class="mb-4 resp-stats-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+    <div class="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
       <el-card shadow="hover" class="kpi-card">
         <div class="flex items-center justify-between">
           <div>
@@ -13,6 +13,20 @@
             </div>
           </div>
           <el-icon class="text-4xl text-orange-200"><Document /></el-icon>
+        </div>
+      </el-card>
+      <el-card shadow="hover" class="kpi-card">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-sm text-gray-500">Chờ Admin duyệt</div>
+            <div class="text-2xl font-bold text-amber-500">
+              {{ statistics.pendingApprovalCount }}
+            </div>
+            <div class="text-xs text-gray-400 mt-1">
+              Hợp đồng nhân viên đã gửi
+            </div>
+          </div>
+          <el-icon class="text-4xl text-amber-200"><Timer /></el-icon>
         </div>
       </el-card>
       <el-card shadow="hover" class="kpi-card">
@@ -77,6 +91,7 @@
             @change="fetchData"
           >
             <el-option label="Nháp" value="Draft" />
+            <el-option label="Chờ Admin duyệt" value="PendingApproval" />
             <el-option label="Đã duyệt" value="Approved" />
             <el-option label="Đã ký" value="Signed" />
             <el-option label="Hoàn tất" value="Fulfilled" />
@@ -317,6 +332,7 @@ import {
   Warning,
   Money,
   Plus,
+  Timer,
 } from "@element-plus/icons-vue";
 
 import { ElMessage } from "element-plus";
@@ -347,6 +363,7 @@ interface SalesContractListRow {
 const tableData = ref<SalesContractListRow[]>([]);
 const statistics = reactive({
   draftCount: 0,
+  pendingApprovalCount: 0,
   overdueCount: 0,
   signedCount: 0,
 });
@@ -419,6 +436,7 @@ const loadStatistics = async () => {
   try {
     const stats = await SalesContractApi.getStatistics();
     statistics.draftCount = stats.draftCount;
+    statistics.pendingApprovalCount = stats.pendingApprovalCount;
     statistics.overdueCount = stats.overdueCount;
     statistics.signedCount = stats.signedCount;
   } catch (_e) {
@@ -434,6 +452,8 @@ onMounted(() => {
 const getStatusType = (status: string) => {
   switch (status) {
     case "Draft":
+      return "info";
+    case "PendingApproval":
       return "warning";
     case "Approved":
       return "success";
@@ -449,6 +469,7 @@ const getStatusType = (status: string) => {
 const getStatusLabel = (status: string) => {
   const map: Record<string, string> = {
     Draft: "Nháp",
+    PendingApproval: "Chờ Admin duyệt",
     Approved: "Đã duyệt",
     Signed: "Đã ký",
     Fulfilled: "Hoàn tất",

@@ -7,6 +7,13 @@ const detailPath = new URL(
   import.meta.url,
 );
 const detailSource = readFileSync(detailPath, "utf8");
+const orderDetailSource = readFileSync(
+  new URL(
+    "../src/modules/Order/view/order/contract/contract-preview.vue",
+    import.meta.url,
+  ),
+  "utf8",
+);
 const apiSource = readFileSync(
   new URL("../src/api/sales/sales-contract.api.ts", import.meta.url),
   "utf8",
@@ -28,6 +35,15 @@ test("sales-contract detail keeps app chrome theme-aware and the A4 contract leg
     /\.a4-paper[\s\S]*font-family:\s*['"]?Times New Roman/i,
   );
   assert.doesNotMatch(detailSource, /text-color=["']#f8fafc["']/i);
+});
+
+test("order contract detail is responsive and does not leak the dark palette into light mode", () => {
+  assert.equal((orderDetailSource.match(/<style\b/g) ?? []).length, 1);
+  assert.match(orderDetailSource, /:xs="24"[\s\S]*:md="10"/);
+  assert.match(orderDetailSource, /var\(--el-(?:bg|fill|text|border)-color/);
+  assert.match(orderDetailSource, /html\.dark/);
+  assert.match(orderDetailSource, /@media\s+\(width <= 768px\)/);
+  assert.match(orderDetailSource, /@media\s+print/);
 });
 
 test("sales-contract detail uploads image or PDF scans through the API", () => {
@@ -57,15 +73,36 @@ test("sales-contract detail print action invokes the browser print flow", () => 
 });
 
 test("sales-contract detail requires Admin approval before signed-scan upload", () => {
-  assert.match(detailSource, /@click="handleApproveContract"/);
-  assert.match(detailSource, />\s*Duyệt Hợp Đồng\s*</);
-  assert.match(detailSource, /status:\s*"Approved"/);
   assert.match(
     detailSource,
-    /Permissions\.Order\.OrderManagement\.ChangeStatus/,
+    /v-if="contractData\.status === 'PendingApproval'"[\s\S]{0,180}@click="handleApproveContract"/,
   );
+  assert.match(detailSource, /@click="handleApproveContract"/);
+  assert.match(detailSource, />\s*Duyệt Hợp Đồng\s*</);
+  assert.match(detailSource, /SalesContractApi\.approve/);
+  assert.match(detailSource, /Permissions\.Admin\.ContractManagement\.Edit/);
   assert.match(
     detailSource,
     /canUploadSignedScan[\s\S]*contractData\.value\.status === "Approved"/,
   );
+});
+
+test("order staff submit a draft for Admin approval before printing or uploading a scan", () => {
+  assert.match(orderDetailSource, />\s*Gửi Admin duyệt\s*</);
+  assert.match(orderDetailSource, /SalesContractApi\.submitForApproval/);
+  assert.match(
+    orderDetailSource,
+    /canPrintContract[\s\S]*"Approved",\s*"Signed",\s*"Fulfilled"/,
+  );
+  assert.match(
+    orderDetailSource,
+    /canUploadSignedScan[\s\S]*contractData\.value\.status === "Approved"/,
+  );
+  assert.match(apiSource, /sales\/\$\{contractId\}\/submit-for-approval/);
+  assert.match(apiSource, /sales\/\$\{contractId\}\/approve/);
+  assert.match(
+    controllerSource,
+    /HttpPost\("\{id:guid\}\/submit-for-approval"\)/,
+  );
+  assert.match(controllerSource, /HttpPost\("\{id:guid\}\/approve"\)/);
 });

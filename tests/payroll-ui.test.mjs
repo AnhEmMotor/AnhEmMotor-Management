@@ -14,7 +14,8 @@ test("payroll page exposes a clear period header and formatted KPI hierarchy", a
   assert.match(source, /class="payroll-period-badge"/);
   assert.match(source, /class="[^"]*payroll-kpi-grid[^"]*"/);
   assert.match(source, /:count="formatCurrency\(stats\.totalPayroll\)"/);
-  assert.match(source, /:count="formatCurrency\(stats\.totalVolumeBonus\)"/);
+  assert.match(source, /:count="formatCurrency\(stats\.totalKpiBonus\)"/);
+  assert.match(source, /title="Tổng thưởng KPI"/);
   assert.match(source, /Kỳ lương và nhân sự/);
   assert.match(source, /Chi tiết bảng lương/);
 });

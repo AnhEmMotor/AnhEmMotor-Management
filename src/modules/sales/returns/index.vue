@@ -39,7 +39,7 @@
             >
               <ElOption label="⏳ Chờ duyệt" value="pending" />
               <ElOption label="🔍 Đang kiểm định" value="inspecting" />
-              <ElOption label="✅ Đã xử lý" value="completed" />
+              <ElOption label="✅ Đã duyệt hoàn tiền" value="completed" />
               <ElOption label="❌ Đã từ chối" value="rejected" />
             </ElSelect>
           </div>
@@ -202,7 +202,7 @@
               }}</span>
             </div>
             <div v-if="selectedRequest.returnAction" class="text-sm">
-              <span class="text-gray-600">Hướng xử lý:</span>
+              <span class="text-gray-600">Kết quả duyệt:</span>
               <ElTag size="small" class="ml-2">{{
                 getActionLabel(selectedRequest.returnAction)
               }}</ElTag>
@@ -257,49 +257,36 @@
             v-if="selectedRequest.status === 'pending'"
             class="flex justify-end gap-2"
           >
-            <ElButton @click="handleReject" :loading="actionLoading">
-              ❌ Từ chối yêu cầu
-            </ElButton>
-            <ElButton
-              v-if="selectedRequest.type === 'cancel'"
-              type="primary"
-              @click="handleDecision('refund')"
-              :loading="actionLoading"
-            >
-              ✓ Duyệt hủy & Hoàn tiền
-            </ElButton>
-            <ElTag v-else type="warning" size="large"
-              >Đang chờ kho tiếp nhận và kiểm tra</ElTag
-            >
+            <template v-if="selectedRequest.type === 'cancel'">
+              <ElButton @click="handleReject" :loading="actionLoading">
+                Từ chối
+              </ElButton>
+              <ElButton
+                type="primary"
+                @click="handleDecision"
+                :loading="actionLoading"
+              >
+                Duyệt hoàn tiền
+              </ElButton>
+            </template>
+            <ElTag v-else type="warning" size="large">
+              Đang chờ kho tiếp nhận và kiểm tra
+            </ElTag>
           </div>
 
           <div
             v-else-if="selectedRequest.status === 'inspecting'"
             class="flex justify-end gap-2"
           >
+            <ElButton @click="handleReject" :loading="actionLoading">
+              Từ chối
+            </ElButton>
             <ElButton
               type="primary"
-              plain
               :loading="actionLoading"
-              @click="handleDecision('restock')"
+              @click="handleDecision"
             >
-              Nhập kho bán lẻ
-            </ElButton>
-            <ElButton
-              type="danger"
-              plain
-              :loading="actionLoading"
-              @click="handleDecision('defect')"
-            >
-              Cách ly chờ hủy
-            </ElButton>
-            <ElButton
-              type="warning"
-              plain
-              :loading="actionLoading"
-              @click="handleDecision('refund')"
-            >
-              Hoàn tiền
+              Duyệt hoàn tiền
             </ElButton>
           </div>
 
@@ -307,7 +294,7 @@
             v-else
             class="text-sm text-gray-500 flex items-center justify-end w-full"
           >
-            Đã xử lý lúc
+            Đã cập nhật quyết định lúc
             {{ formatDateTime(selectedRequest.inspectedAt) || "---" }}
           </div>
         </div>
@@ -398,6 +385,8 @@ interface ReturnItem {
   returnAction?: string;
   rejectionReason?: string;
   returnProofImage?: string;
+  refundAmount?: number;
+  returnShippingCost?: number;
 }
 
 // ==================== STATE ====================
@@ -496,7 +485,7 @@ function getStatusLabel(status: string): string {
     case "inspecting":
       return "Đang kiểm định";
     case "completed":
-      return "Đã xử lý";
+      return "Đã duyệt hoàn tiền";
     case "rejected":
       return "Đã từ chối";
     default:
@@ -523,12 +512,10 @@ function getStatusTagType(
 
 function getActionLabel(action?: string): string {
   switch (action) {
-    case "restock":
-      return "Nhập kho lại";
-    case "defect":
-      return "Hàng lỗi";
     case "refund":
-      return "Hoàn tiền";
+      return "Đã duyệt hoàn tiền";
+    case "rejected":
+      return "Đã từ chối";
     default:
       return action || "---";
   }
@@ -566,6 +553,9 @@ async function selectRequest(req: ReturnItem) {
       returnInternalNote: detail.returnInternalNote,
       returnAction: detail.returnAction,
       rejectionReason: detail.rejectionReason,
+      returnProofImage: detail.returnProofImage,
+      refundAmount: detail.refundAmount,
+      returnShippingCost: detail.returnShippingCost,
     };
     detailDialogVisible.value = true;
   } catch (error) {
@@ -625,38 +615,34 @@ async function confirmReject() {
   }
 }
 
-async function handleDecision(action: "restock" | "defect" | "refund") {
+async function handleDecision() {
   if (!selectedRequest.value) return;
-
-  const actionMap: Record<string, string> = {
-    restock: "Nhập kho bán lẻ",
-    defect: "Cách ly chờ hủy",
-    refund: "Hoàn tiền",
-  };
 
   try {
     actionLoading.value = true;
     await ElMessageBox.confirm(
-      `Xác nhận quyết định xử lý: <strong>${actionMap[action]}</strong> cho yêu cầu ${selectedRequest.value.rmaCode}?`,
-      "Xác nhận xử lý",
+      `Duyệt hoàn tiền cho yêu cầu ${selectedRequest.value.rmaCode}? Kết quả duyệt sẽ được ghi nhận để thông báo đến khách hàng.`,
+      "Xác nhận duyệt hoàn tiền",
       {
         type: "success",
-        confirmButtonText: "Xác nhận",
-        dangerouslyUseHTMLString: true,
+        confirmButtonText: "Duyệt hoàn tiền",
+        cancelButtonText: "Hủy",
       },
     );
 
     await inspectReturn(selectedRequest.value.id, {
-      action: action,
+      action: "refund",
       boxCondition: selectedRequest.value.boxCondition || "",
       productCondition: selectedRequest.value.productCondition || "",
       returnProofImage: selectedRequest.value.returnProofImage || "",
       returnInternalNote: selectedRequest.value.returnInternalNote || "",
+      refundAmount: selectedRequest.value.refundAmount,
+      returnShippingCost: selectedRequest.value.returnShippingCost,
     });
 
     selectedRequest.value.status = "completed";
-    selectedRequest.value.returnAction = action;
-    ElMessage.success(`Đã xử lý thành công: ${actionMap[action]}`);
+    selectedRequest.value.returnAction = "refund";
+    ElMessage.success("Đã duyệt hoàn tiền");
     await fetchData();
   } catch (error) {
     if (error !== "cancel") {

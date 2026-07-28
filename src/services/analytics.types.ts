@@ -53,6 +53,10 @@ export interface StaffPerformance {
   targetSales: number;
   commissionPaid: number;
   kpiStatus: "Vượt KPI" | "Đạt" | "Cần cải thiện" | "Chưa đặt KPI";
+  hasSalesData?: boolean;
+  hasKpiData?: boolean;
+  hasCommissionData?: boolean;
+  salesSource?: string;
   isTopSeller: boolean;
 }
 

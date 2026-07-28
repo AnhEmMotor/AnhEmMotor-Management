@@ -10,6 +10,7 @@ export const useContactStore = defineStore("contactStore", () => {
   const page = ref(1);
   const pageSize = ref(20);
   const loading = ref(false);
+  const errorMessage = ref("");
   const activeItem = ref<Contact.ContactItem | null>(null);
   const contactType = ref<string>("");
   const status = ref<string>("");
@@ -23,6 +24,7 @@ export const useContactStore = defineStore("contactStore", () => {
 
   const fetchList = async () => {
     loading.value = true;
+    errorMessage.value = "";
     try {
       const res = await ContactApi.getPaginated({
         contactType: contactType.value || undefined,
@@ -31,19 +33,17 @@ export const useContactStore = defineStore("contactStore", () => {
         page: page.value,
         pageSize: pageSize.value,
       });
-      const items = (res as any).items ?? res.records;
-      if (items && items.length > 0) {
-        records.value = items;
-        totalCount.value = res.totalCount;
-      } else {
-        records.value = [];
-        totalCount.value = 0;
-      }
-      page.value = (res as any).pageNumber ?? res.page;
+      records.value = res.items;
+      totalCount.value = res.totalCount;
+      page.value = res.pageNumber;
       pageSize.value = res.pageSize;
+      return true;
     } catch {
       records.value = [];
       totalCount.value = 0;
+      errorMessage.value = "Không thể tải dữ liệu liên hệ từ máy chủ";
+      ElMessage.error(errorMessage.value);
+      return false;
     } finally {
       loading.value = false;
     }
@@ -87,54 +87,39 @@ export const useContactStore = defineStore("contactStore", () => {
   const updateStatus = async (id: number, type: string, newStatus: string) => {
     try {
       await ContactApi.updateStatus(id, type, { status: newStatus });
-      const idx = records.value.findIndex((r: any) => r.id === id);
+      const idx = records.value.findIndex((record) => record.id === id);
       if (idx !== -1) {
-        (records.value[idx] as any).status = newStatus;
+        records.value[idx].status = newStatus;
       }
-      if (activeItem.value && (activeItem.value as any).id === id) {
-        (activeItem.value as any).status = newStatus;
+      if (activeItem.value?.id === id) {
+        activeItem.value.status = newStatus;
       }
       ElMessage.success("Đã cập nhật trạng thái");
+      return true;
     } catch {
-      const idx = records.value.findIndex((r: any) => r.id === id);
-      if (idx !== -1) {
-        (records.value[idx] as any).status = newStatus;
-      }
-      if (activeItem.value && (activeItem.value as any).id === id) {
-        (activeItem.value as any).status = newStatus;
-      }
-      ElMessage.success("Đã cập nhật trạng thái (Local)");
+      ElMessage.error("Không thể cập nhật trạng thái trên máy chủ");
+      return false;
     }
   };
 
-  const sendReply = async (
-    contactId: number,
-    message: string,
-    userName?: string,
-  ) => {
+  const sendReply = async (contactId: number, message: string) => {
     try {
-      const res = await ContactApi.reply({
+      await ContactApi.reply({
         contactId,
         message,
-        isInternal: false,
+        markAsProcessed: true,
       });
-      ElMessage.success("Đã gửi phản hồi");
-      if (activeItem.value && (activeItem.value as any).contact) {
-        const contactObj = (activeItem.value as any).contact;
-        if (!contactObj.replies) {
-          contactObj.replies = [];
-        }
-        contactObj.replies.push({
-          id: (res as any) || Date.now(),
-          contactId,
-          message,
-          repliedByName: userName || "Bạn",
-          isInternal: false,
-          createdAt: new Date().toISOString(),
-        });
+      const refreshed = await fetchList();
+      if (refreshed) {
+        activeItem.value =
+          records.value.find((record) => record.contactId === contactId) ??
+          null;
+        ElMessage.success("Đã gửi phản hồi");
       }
+      return refreshed;
     } catch {
-      ElMessage.success("Đã gửi phản hồi (Local)");
+      ElMessage.error("Không thể gửi phản hồi lên máy chủ");
+      return false;
     }
   };
 
@@ -142,17 +127,35 @@ export const useContactStore = defineStore("contactStore", () => {
     try {
       await ContactApi.updateInternalNote({ contactId, internalNote });
       if (activeItem.value) {
-        if ((activeItem.value as any).contact) {
-          (activeItem.value as any).contact.internalNote = internalNote;
+        if (activeItem.value.contact) {
+          activeItem.value.contact.internalNote = internalNote;
         }
-        (activeItem.value as any).internalNote = internalNote;
       }
       ElMessage.success("Đã lưu ghi chú");
+      return true;
     } catch {
-      if (activeItem.value) {
-        (activeItem.value as any).internalNote = internalNote;
+      ElMessage.error("Không thể lưu ghi chú lên máy chủ");
+      return false;
+    }
+  };
+
+  const assignSupportRequest = async (
+    supportRequestId: number,
+    userId: string | null,
+  ) => {
+    try {
+      await ContactApi.assign(supportRequestId, userId);
+      const refreshed = await fetchList();
+      if (refreshed) {
+        activeItem.value =
+          records.value.find((record) => record.id === supportRequestId) ??
+          null;
+        ElMessage.success(userId ? "Đã phân công xử lý" : "Đã bỏ phân công");
       }
-      ElMessage.success("Đã lưu ghi chú (Local)");
+      return refreshed;
+    } catch {
+      ElMessage.error("Không thể cập nhật phân công trên máy chủ");
+      return false;
     }
   };
 
@@ -170,6 +173,7 @@ export const useContactStore = defineStore("contactStore", () => {
     page,
     pageSize,
     loading,
+    errorMessage,
     activeItem,
     contactType,
     status,
@@ -186,6 +190,7 @@ export const useContactStore = defineStore("contactStore", () => {
     updateStatus,
     sendReply,
     saveInternalNote,
+    assignSupportRequest,
     setUnreadBadge,
     incrementBadge,
     setAssignedFilter,

@@ -64,9 +64,22 @@ export const SalesContractApi = {
     });
   },
 
+  submitForApproval(contractId: string) {
+    return request.post<SalesContractDetailDto>({
+      url: `/api/v1/contracts/sales/${contractId}/submit-for-approval`,
+    });
+  },
+
+  approve(contractId: string) {
+    return request.post<SalesContractDetailDto>({
+      url: `/api/v1/contracts/sales/${contractId}/approve`,
+    });
+  },
+
   getStatistics() {
     return request.get<{
       draftCount: number;
+      pendingApprovalCount: number;
       overdueCount: number;
       signedCount: number;
     }>({

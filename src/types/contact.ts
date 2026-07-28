@@ -65,10 +65,11 @@ export namespace Contact {
   export type ContactItem = SupportRequest | CustomerFeedback | JobApplication;
 
   export interface PaginatedResponse {
-    records: ContactItem[];
+    items: ContactItem[];
     totalCount: number;
-    page: number;
+    pageNumber: number;
     pageSize: number;
+    totalPages: number;
   }
 
   export interface UpdateStatusRequest {
@@ -105,7 +106,7 @@ export namespace Contact {
   export interface CreateReplyPayload {
     contactId: number;
     message: string;
-    isInternal: boolean;
+    markAsProcessed: boolean;
   }
 
   export interface UpdateInternalNotePayload {
