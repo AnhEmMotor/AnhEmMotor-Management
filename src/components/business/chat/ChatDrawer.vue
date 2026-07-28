@@ -150,6 +150,12 @@ const steeringStuckWatchdogs = ref<
   Record<string, ReturnType<typeof setTimeout>>
 >({});
 
+type SteeringStatus = "received" | "applied" | "stuck";
+const steeringStatus = ref<Record<string, SteeringStatus>>({});
+const currentSteeringStatus = computed(() =>
+  activeSessionId.value ? steeringStatus.value[activeSessionId.value] : null,
+);
+
 const clearSteeringStuckWatchdog = (sessionId: string) => {
   const w = steeringStuckWatchdogs.value[sessionId];
   if (w) clearTimeout(w);
@@ -159,9 +165,7 @@ const clearSteeringStuckWatchdog = (sessionId: string) => {
 const armSteeringStuckWatchdog = (sessionId: string) => {
   clearSteeringStuckWatchdog(sessionId);
   steeringStuckWatchdogs.value[sessionId] = setTimeout(() => {
-    ElMessage.warning(
-      "AI có vẻ chưa xử lý kịp đính chính của bạn. Bạn có thể bấm Dừng và hỏi lại từ đầu.",
-    );
+    steeringStatus.value[sessionId] = "stuck";
   }, STEERING_STUCK_MS);
 };
 const isCreatingSession = ref(false);
@@ -254,6 +258,7 @@ const cleanupRun = (sessionId: string) => {
   clearSteeringStuckWatchdog(sessionId);
   delete runWatchers.value[sessionId];
   delete steeringBuffers.value[sessionId];
+  delete steeringStatus.value[sessionId];
   activeStreamSessions.value.delete(sessionId);
   delete activeStreams.value[sessionId];
   localStorage.removeItem(`chatRun:${sessionId}`);
@@ -286,8 +291,18 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
         case "run_heartbeat":
           armWatchdog(sessionId);
           break;
+        case "steering_received":
+          steeringStatus.value[sessionId] = "received";
+          armSteeringStuckWatchdog(sessionId);
+          break;
         case "steering_applied":
           clearSteeringStuckWatchdog(sessionId);
+          steeringStatus.value[sessionId] = "applied";
+          setTimeout(() => {
+            if (steeringStatus.value[sessionId] === "applied") {
+              delete steeringStatus.value[sessionId];
+            }
+          }, 2000);
           break;
         case "turn_boundary": {
           const nextAiMsg: ChatMessage = {
@@ -303,6 +318,7 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
         }
         case "run_redirected":
           clearSteeringStuckWatchdog(sessionId);
+          delete steeringStatus.value[sessionId];
           break;
         case "run_completed":
         case "run_cancelled":
@@ -365,7 +381,15 @@ const cancelCurrentRun = async () => {
   }
 };
 
+const handleVisibilityChange = () => {
+  if (document.visibilityState === "visible" && drawerVisible.value) {
+    loadSessions();
+  }
+};
+document.addEventListener("visibilitychange", handleVisibilityChange);
+
 onBeforeUnmount(() => {
+  document.removeEventListener("visibilitychange", handleVisibilityChange);
   stopConnection();
   const editor = editorRef.value;
   if (editor != null) {
@@ -574,6 +598,21 @@ const sendMessage = async () => {
   if (sessionId && activeStreamSessions.value.has(sessionId)) {
     sendSteering(sessionId, text);
     return;
+  }
+
+  // Run có thể vừa được tab khác khởi động mà tab này chưa kịp subscribe —
+  // kiểm tra lại với server trước khi tạo run mới, tránh 2 run cùng chạy.
+  if (sessionId && !activeStreams.value[sessionId]) {
+    try {
+      const activeRun = await ChatApi.getActiveRun(sessionId);
+      if (activeRun) {
+        await resumeActiveRun(sessionId);
+        sendSteering(sessionId, text);
+        return;
+      }
+    } catch (error) {
+      console.error("Không thể kiểm tra run đang chạy:", error);
+    }
   }
 
   const userMsgId = Date.now().toString();
@@ -837,6 +876,33 @@ const formatTime = (isoString: string) => {
 
         <!-- Input Area -->
         <div class="p-4 border-t border-gray-200 bg-white">
+          <div
+            v-if="currentSteeringStatus"
+            class="mb-2 flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-xs"
+            :class="
+              currentSteeringStatus === 'stuck'
+                ? 'bg-orange-50 text-orange-600'
+                : 'bg-blue-50 text-blue-600'
+            "
+          >
+            <span v-if="currentSteeringStatus === 'received'"
+              >⏳ Đã ghi nhận, AI sẽ xử lý ở bước tiếp theo</span
+            >
+            <span v-else-if="currentSteeringStatus === 'applied'"
+              >✓ AI đã tiếp nhận</span
+            >
+            <span v-else>⏳ AI đang hoàn tất bước hiện tại...</span>
+            <el-button
+              v-if="currentSteeringStatus === 'stuck'"
+              size="small"
+              type="danger"
+              plain
+              @click="cancelCurrentRun"
+            >
+              Dừng và hỏi lại
+            </el-button>
+          </div>
+
           <div class="flex justify-between items-center mb-2">
             <span class="text-xs text-gray-500 font-medium">Chế độ nhập:</span>
             <el-switch
