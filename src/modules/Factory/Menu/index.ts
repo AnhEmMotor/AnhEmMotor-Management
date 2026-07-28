@@ -131,7 +131,7 @@ export const factoryMenu: AppRouteRecord[] = [
               isHide: true,
               isHideTab: true,
               keepAlive: true,
-              activePath: "/factory/workshop/counter/repair-history",
+              activePath: "/factory/workshop/repair-history",
             },
           },
           {
@@ -144,7 +144,7 @@ export const factoryMenu: AppRouteRecord[] = [
               isHide: true,
               isHideTab: true,
               keepAlive: true,
-              activePath: "/factory/workshop/counter/repair-history",
+              activePath: "/factory/workshop/repair-history",
             },
           },
         ],

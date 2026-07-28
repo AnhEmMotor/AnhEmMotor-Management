@@ -457,7 +457,7 @@ const handleSubmit = async () => {
 
     // Redirect to detail page
     const newId = res;
-    router.push(`/factory/workshop/counter/repair-history/repair/${newId}`);
+    router.push(`/factory/workshop/repair-history/repair/${newId}`);
   } catch (err: any) {
     ElMessage.error(err.message || "Lỗi khi khởi tạo phiếu sửa chữa");
   } finally {
@@ -466,7 +466,7 @@ const handleSubmit = async () => {
 };
 
 const goBack = () => {
-  router.push("/factory/workshop/counter/repair-history");
+  router.push("/factory/workshop/repair-history");
 };
 
 const formatDate = (dateStr: string) => {
