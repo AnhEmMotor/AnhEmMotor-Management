@@ -5,8 +5,16 @@ import {
   type ChatSession,
   type ChatMessage,
   type ChatRunEventDto,
+  type SteeringResultDto,
 } from "@/api/chat/chat.api";
-import { Plus, Delete, Position, Loading, Edit } from "@element-plus/icons-vue";
+import {
+  Plus,
+  Delete,
+  Position,
+  Loading,
+  Edit,
+  Menu,
+} from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import {
   HubConnectionBuilder,
@@ -125,9 +133,37 @@ interface RunWatcher {
   lastSeq: number;
   watchdog: ReturnType<typeof setTimeout> | null;
   eventCount: number;
+  steeringCount: number;
 }
 const RUN_WATCHDOG_MS = 45000;
+const STEERING_MERGE_MS = 900;
+const STEERING_STUCK_MS = 20000;
+const MAX_STEERING_PER_RUN = 5;
 const runWatchers = ref<Record<string, RunWatcher>>({});
+
+interface SteeringBuffer {
+  parts: string[];
+  timer: ReturnType<typeof setTimeout> | null;
+}
+const steeringBuffers = ref<Record<string, SteeringBuffer>>({});
+const steeringStuckWatchdogs = ref<
+  Record<string, ReturnType<typeof setTimeout>>
+>({});
+
+const clearSteeringStuckWatchdog = (sessionId: string) => {
+  const w = steeringStuckWatchdogs.value[sessionId];
+  if (w) clearTimeout(w);
+  delete steeringStuckWatchdogs.value[sessionId];
+};
+
+const armSteeringStuckWatchdog = (sessionId: string) => {
+  clearSteeringStuckWatchdog(sessionId);
+  steeringStuckWatchdogs.value[sessionId] = setTimeout(() => {
+    ElMessage.warning(
+      "AI có vẻ chưa xử lý kịp đính chính của bạn. Bạn có thể bấm Dừng và hỏi lại từ đầu.",
+    );
+  }, STEERING_STUCK_MS);
+};
 const isCreatingSession = ref(false);
 const isSending = computed(
   () =>
@@ -215,7 +251,9 @@ const persistWatcher = (sessionId: string) => {
 
 const cleanupRun = (sessionId: string) => {
   clearWatchdog(sessionId);
+  clearSteeringStuckWatchdog(sessionId);
   delete runWatchers.value[sessionId];
+  delete steeringBuffers.value[sessionId];
   activeStreamSessions.value.delete(sessionId);
   delete activeStreams.value[sessionId];
   localStorage.removeItem(`chatRun:${sessionId}`);
@@ -227,6 +265,7 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
     lastSeq: afterSeq,
     watchdog: null,
     eventCount: 0,
+    steeringCount: 0,
   };
   activeStreamSessions.value.add(sessionId);
   armWatchdog(sessionId);
@@ -246,6 +285,24 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
           break;
         case "run_heartbeat":
           armWatchdog(sessionId);
+          break;
+        case "steering_applied":
+          clearSteeringStuckWatchdog(sessionId);
+          break;
+        case "turn_boundary": {
+          const nextAiMsg: ChatMessage = {
+            id: `run-${watcher.runId}-seg-${evt.seq}`,
+            role: "AI",
+            message: "",
+            createdAt: new Date().toISOString(),
+          };
+          activeStreams.value[sessionId] = nextAiMsg;
+          messages.value.push(nextAiMsg);
+          if (activeSessionId.value === sessionId) scrollToBottom();
+          break;
+        }
+        case "run_redirected":
+          clearSteeringStuckWatchdog(sessionId);
           break;
         case "run_completed":
         case "run_cancelled":
@@ -379,8 +436,8 @@ const deleteSession = async (id: string, e: Event) => {
       "Bạn có chắc muốn xoá phiên chat này?",
       "Xác nhận",
       {
-        confirmButtonText: "Xoa",
-        cancelButtonText: "Huy",
+        confirmButtonText: "Xoá",
+        cancelButtonText: "Huỷ",
         type: "warning",
       },
     );
@@ -428,19 +485,97 @@ const saveSessionTitle = async (id: string) => {
   }
 };
 
+const beginNewRun = (sessionId: string, runId: string) => {
+  const aiMsg: ChatMessage = {
+    id: `run-${runId}`,
+    role: "AI",
+    message: "",
+    createdAt: new Date().toISOString(),
+  };
+  activeStreams.value[sessionId] = aiMsg;
+  activeStreamSessions.value.add(sessionId);
+  messages.value.push(aiMsg);
+  subscribeToRun(sessionId, runId, 0);
+};
+
+const flushSteeringBuffer = async (sessionId: string) => {
+  const buf = steeringBuffers.value[sessionId];
+  if (!buf) return;
+  const merged = buf.parts.join("\n");
+  delete steeringBuffers.value[sessionId];
+
+  const watcher = runWatchers.value[sessionId];
+  if (!watcher) return;
+
+  if (watcher.steeringCount >= MAX_STEERING_PER_RUN) {
+    ElMessage.warning(
+      "Đã gửi quá nhiều đính chính cho lần trả lời này. Hãy bấm Dừng và hỏi lại từ đầu.",
+    );
+    return;
+  }
+
+  try {
+    const result: SteeringResultDto = await connection.value!.invoke(
+      "SendSteering",
+      watcher.runId,
+      merged,
+    );
+    watcher.steeringCount++;
+
+    messages.value.push({
+      id: `steering-${watcher.runId}-${watcher.steeringCount}`,
+      role: "User",
+      message: merged,
+      createdAt: new Date().toISOString(),
+    });
+
+    if (result.mode === "restart") {
+      cleanupRun(sessionId);
+      if (activeSessionId.value === sessionId) {
+        beginNewRun(sessionId, result.runId);
+      }
+    } else {
+      armSteeringStuckWatchdog(sessionId);
+    }
+    if (activeSessionId.value === sessionId) scrollToBottom();
+  } catch (error) {
+    ElMessage.error("Không thể gửi đính chính, vui lòng thử lại");
+  }
+};
+
+const sendSteering = (sessionId: string, text: string) => {
+  let buf = steeringBuffers.value[sessionId];
+  if (!buf) {
+    buf = { parts: [], timer: null };
+    steeringBuffers.value[sessionId] = buf;
+  }
+  buf.parts.push(text);
+  if (buf.timer) clearTimeout(buf.timer);
+  buf.timer = setTimeout(
+    () => flushSteeringBuffer(sessionId),
+    STEERING_MERGE_MS,
+  );
+};
+
 const sendMessage = async () => {
   let text = newMessage.value.trim();
   if (isRichTextMode.value && text === "<p><br></p>") {
     text = "";
   }
-  if (!text || isSending.value) return;
+  if (!text || isCreatingSession.value) return;
 
   newMessage.value = "";
   if (isRichTextMode.value && editorRef.value) {
     editorRef.value.clear();
   }
 
-  // Optimistic UI update for user message
+  let sessionId = activeSessionId.value;
+
+  if (sessionId && activeStreamSessions.value.has(sessionId)) {
+    sendSteering(sessionId, text);
+    return;
+  }
+
   const userMsgId = Date.now().toString();
   messages.value.push({
     id: userMsgId,
@@ -450,7 +585,6 @@ const sendMessage = async () => {
   });
   scrollToBottom();
 
-  let sessionId = activeSessionId.value;
   if (!sessionId) {
     isCreatingSession.value = true;
     const newId = await createNewSession("", text, false);
@@ -459,20 +593,6 @@ const sendMessage = async () => {
     sessionId = newId;
     activeSessionId.value = sessionId;
   }
-
-  // Prepare AI message placeholder for streaming
-  const aiMsgId = (Date.now() + 1).toString();
-  const aiMsg: ChatMessage = {
-    id: aiMsgId,
-    role: "AI",
-    message: "",
-    createdAt: new Date().toISOString(),
-  };
-
-  activeStreams.value[sessionId] = aiMsg;
-  activeStreamSessions.value.add(sessionId);
-  messages.value.push(aiMsg);
-  scrollToBottom();
 
   try {
     if (connection.value?.state !== HubConnectionState.Connected) {
@@ -484,14 +604,12 @@ const sendMessage = async () => {
       sessionId,
       text,
     );
-    subscribeToRun(sessionId, runId, 0);
+    beginNewRun(sessionId, runId);
   } catch (error) {
     console.error("StartRun error:", error);
     ElMessage.error("Lỗi khi gửi tin nhắn qua SignalR");
     if (activeSessionId.value === sessionId) {
-      messages.value = messages.value.filter(
-        (m) => m.id !== userMsgId && m.id !== aiMsgId,
-      );
+      messages.value = messages.value.filter((m) => m.id !== userMsgId);
     }
     cleanupRun(sessionId);
   }
@@ -516,13 +634,13 @@ const formatTime = (isoString: string) => {
     v-model="drawerVisible"
     title="AI Chat Manager"
     direction="rtl"
-    size="800px"
+    size="75%"
     :with-header="false"
     class="ai-chat-drawer-no-padding"
   >
     <div class="flex h-full border-l border-gray-200">
       <!-- Left: Session List -->
-      <div class="w-1/3 flex flex-col border-r border-gray-200 bg-gray-50">
+      <div class="chat-left-col flex-col border-r border-gray-200 bg-gray-50">
         <div
           class="p-4 border-b border-gray-200 flex justify-between items-center bg-white"
         >
@@ -597,17 +715,44 @@ const formatTime = (isoString: string) => {
       </div>
 
       <!-- Right: Chat Area -->
-      <div class="w-2/3 flex flex-col bg-white">
+      <div class="chat-right-col flex-col bg-white">
         <!-- Chat Header -->
         <div
           class="p-4 border-b border-gray-200 flex justify-between items-center shadow-sm z-10"
         >
-          <h2 class="font-semibold text-lg text-gray-800">
-            {{
-              sessions.find((s) => s.id === activeSessionId)?.title ||
-              "Chưa chọn phiên chat"
-            }}
-          </h2>
+          <div class="flex items-center gap-2">
+            <!-- Mobile Dropdown -->
+            <div class="chat-mobile-dropdown">
+              <el-dropdown trigger="hover">
+                <el-button :icon="Menu" circle size="small" />
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item
+                      v-for="session in sessions"
+                      :key="session.id"
+                      @click="selectSession(session.id)"
+                      :class="{
+                        'font-bold text-blue-600':
+                          activeSessionId === session.id,
+                      }"
+                    >
+                      {{ session.title }}
+                    </el-dropdown-item>
+                    <el-dropdown-item
+                      :divided="sessions.length > 0"
+                      @click="startNewChat()"
+                    >
+                      + Tạo phiên chat mới
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
+
+            <h2 class="font-semibold text-lg text-gray-800">
+              {{ sessions.find((s) => s.id === activeSessionId)?.title || "" }}
+            </h2>
+          </div>
           <el-button @click="drawerVisible = false">Đóng</el-button>
         </div>
 
@@ -705,11 +850,23 @@ const formatTime = (isoString: string) => {
           <div v-if="!isRichTextMode" class="flex gap-2">
             <el-input
               v-model="newMessage"
-              placeholder="Nhập câu hỏi của bạn..."
+              :placeholder="
+                isSending
+                  ? 'Gửi thêm thông tin hoặc đính chính...'
+                  : 'Nhập câu hỏi của bạn...'
+              "
               @keyup.enter="sendMessage"
-              :disabled="isSending"
+              :disabled="isCreatingSession"
               class="flex-1"
             />
+            <el-button
+              type="primary"
+              :icon="Position"
+              @click="sendMessage"
+              :disabled="!newMessage.trim() || isCreatingSession"
+            >
+              Gửi
+            </el-button>
             <el-button
               v-if="isSending"
               type="danger"
@@ -717,15 +874,6 @@ const formatTime = (isoString: string) => {
               @click="cancelCurrentRun"
             >
               Dừng
-            </el-button>
-            <el-button
-              v-else
-              type="primary"
-              :icon="Position"
-              @click="sendMessage"
-              :disabled="!newMessage.trim()"
-            >
-              Gửi
             </el-button>
           </div>
 
@@ -747,7 +895,15 @@ const formatTime = (isoString: string) => {
                 @onCreated="handleCreated"
               />
             </div>
-            <div class="flex justify-end mt-1">
+            <div class="flex justify-end gap-2 mt-1">
+              <el-button
+                type="primary"
+                :icon="Position"
+                @click="sendMessage"
+                :disabled="!newMessage.trim() || newMessage === '<p><br></p>'"
+              >
+                Gửi
+              </el-button>
               <el-button
                 v-if="isSending"
                 type="danger"
@@ -755,15 +911,6 @@ const formatTime = (isoString: string) => {
                 @click="cancelCurrentRun"
               >
                 Dừng
-              </el-button>
-              <el-button
-                v-else
-                type="primary"
-                :icon="Position"
-                @click="sendMessage"
-                :disabled="!newMessage.trim() || newMessage === '<p><br></p>'"
-              >
-                Gửi
               </el-button>
             </div>
           </div>
@@ -817,5 +964,37 @@ const formatTime = (isoString: string) => {
 <style>
 .ai-chat-drawer-no-padding .el-drawer__body {
   padding: 0 !important;
+}
+
+.chat-left-col {
+  display: flex;
+  width: 20%;
+}
+
+.chat-right-col {
+  display: flex;
+  width: 80%;
+}
+
+.chat-mobile-dropdown {
+  display: none;
+}
+
+@media (width <= 1280px) {
+  .ai-chat-drawer-no-padding {
+    width: 100% !important;
+  }
+
+  .chat-left-col {
+    display: none !important;
+  }
+
+  .chat-right-col {
+    width: 100% !important;
+  }
+
+  .chat-mobile-dropdown {
+    display: block !important;
+  }
 }
 </style>

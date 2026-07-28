@@ -12,6 +12,12 @@ export interface ChatMessage {
   role: ChatRole;
   message: string;
   createdAt: string;
+  isSteering?: boolean;
+}
+
+export interface SteeringResultDto {
+  runId: string;
+  mode: "queue" | "interrupt" | "restart";
 }
 
 export interface ChatSessionHistory {
