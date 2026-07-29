@@ -340,6 +340,12 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
           if (aiMsg) aiMsg.message += evt.payload;
           if (activeSessionId.value === sessionId) scrollToBottom();
           break;
+        case "message_correction":
+          // Guardrail phát hiện câu vừa stream sai (bịa số, hứa hẹn suông, lộ dữ liệu...) sau khi
+          // sinh xong — THAY toàn bộ nội dung đã hiện, không phải nối thêm.
+          if (aiMsg) aiMsg.message = evt.payload;
+          if (activeSessionId.value === sessionId) scrollToBottom();
+          break;
         case "run_heartbeat":
           armWatchdog(sessionId);
           break;
