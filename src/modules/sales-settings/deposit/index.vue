@@ -34,19 +34,43 @@
           </div>
         </ElFormItem>
 
-        <ElFormItem label="Tỷ lệ đặt cọc">
-          <ElInputNumber
-            v-model="form.depositRatio"
-            :min="1"
-            :max="99"
-            :step="1"
-            :precision="0"
-            :formatter="(value) => (value ? `${value}%` : '')"
-            :parser="(value) => value.replace('%', '')"
-            controls-position="right"
-            class="w-full"
-          />
-          <div class="field-hint">Backend cho phép từ 1% đến 99%.</div>
+        <ElFormItem label="Cơ chế đặt cọc">
+          <div class="flex flex-col gap-3 w-full">
+            <ElRadioGroup v-model="form.depositType" class="flex gap-4">
+              <ElRadio value="percentage">Theo tỷ lệ (%)</ElRadio>
+              <ElRadio value="fixed">Số tiền cố định (VND)</ElRadio>
+            </ElRadioGroup>
+
+            <div v-if="form.depositType === 'percentage'" class="w-full">
+              <ElInputNumber
+                v-model="form.depositRatio"
+                :min="1"
+                :max="99"
+                :step="1"
+                :precision="0"
+                :formatter="(value) => (value ? `${value}%` : '')"
+                :parser="(value) => value.replace('%', '')"
+                controls-position="right"
+                class="w-full"
+              />
+              <div class="field-hint">Backend cho phép từ 1% đến 99%.</div>
+            </div>
+
+            <div v-else class="w-full">
+              <ElInputNumber
+                v-model="form.fixedDepositAmount"
+                :min="0"
+                :step="500000"
+                :precision="0"
+                controls-position="right"
+                class="w-full"
+              />
+              <div class="field-hint">
+                {{ formatCurrency(form.fixedDepositAmount) }} (Mức cọc cứng áp
+                dụng cho mỗi xe máy)
+              </div>
+            </div>
+          </div>
         </ElFormItem>
       </ElForm>
     </ElCard>
@@ -91,6 +115,8 @@ defineOptions({ name: "SalesDepositSettings" });
 
 const DEFAULT_ORDER_THRESHOLD = 100000000;
 const DEFAULT_DEPOSIT_RATIO = 50;
+const DEFAULT_DEPOSIT_TYPE = "percentage";
+const DEFAULT_FIXED_DEPOSIT_AMOUNT = 2000000;
 
 const loading = ref(false);
 const saving = ref(false);
@@ -99,6 +125,8 @@ const sampleOrderTotal = ref(100000000);
 const form = reactive({
   orderThreshold: DEFAULT_ORDER_THRESHOLD,
   depositRatio: DEFAULT_DEPOSIT_RATIO,
+  depositType: DEFAULT_DEPOSIT_TYPE,
+  fixedDepositAmount: DEFAULT_FIXED_DEPOSIT_AMOUNT,
 });
 
 const sampleNeedsDeposit = computed(
@@ -107,6 +135,9 @@ const sampleNeedsDeposit = computed(
 
 const sampleDeposit = computed(() => {
   if (!sampleNeedsDeposit.value) return 0;
+  if (form.depositType === "fixed") {
+    return form.fixedDepositAmount;
+  }
   return Math.round((sampleOrderTotal.value * form.depositRatio) / 100);
 });
 
@@ -131,6 +162,11 @@ const loadSettings = async () => {
       DEFAULT_ORDER_THRESHOLD,
     );
     form.depositRatio = toNumber(settings.Deposit_ratio, DEFAULT_DEPOSIT_RATIO);
+    form.depositType = (settings as any).Deposit_type || DEFAULT_DEPOSIT_TYPE;
+    form.fixedDepositAmount = toNumber(
+      (settings as any).Fixed_deposit_amount,
+      DEFAULT_FIXED_DEPOSIT_AMOUNT,
+    );
   } finally {
     loading.value = false;
   }
@@ -142,6 +178,8 @@ const handleSave = async () => {
     await SettingApi.update({
       Order_value_exceeds: String(Math.round(form.orderThreshold)),
       Deposit_ratio: String(form.depositRatio),
+      Deposit_type: form.depositType,
+      Fixed_deposit_amount: String(Math.round(form.fixedDepositAmount)),
     });
     ElMessage.success("Đã lưu cài đặt đặt cọc");
     await loadSettings();

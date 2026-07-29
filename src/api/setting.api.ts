@@ -3,7 +3,9 @@ import request from "@/utils/http";
 export type SettingKey =
   | "Deposit_ratio"
   | "Inventory_alert_level"
-  | "Order_value_exceeds";
+  | "Order_value_exceeds"
+  | "Deposit_type"
+  | "Fixed_deposit_amount";
 
 export type SettingsMap = Partial<Record<SettingKey, string | null>>;
 
