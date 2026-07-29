@@ -114,7 +114,12 @@
                 <div class="i-ri-search-line"></div>
               </template>
             </ElInput>
-            <ElButton type="primary" plain>
+            <ElButton
+              type="primary"
+              plain
+              :disabled="loading"
+              @click="exportCustomerExcel"
+            >
               <div class="i-ri-file-excel-2-line mr-1"></div>
               Xuất Excel
             </ElButton>
@@ -188,7 +193,7 @@
       v-model="detailVisible"
       title="Chi tiết khách hàng / Lead"
       width="500px"
-class="resp-dialog"
+      class="resp-dialog"
       append-to-body
     >
       <div v-if="selectedLead" class="space-y-4">
@@ -248,6 +253,7 @@ import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
 import { fetchCustomerAnalytics } from "@/api/operations";
 import ReportPageHeader from "./ReportPageHeader.vue";
 import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
+import { exportReportWorkbook } from "@/utils/report-excel";
 
 const funnelChartRef = ref<HTMLElement | null>(null);
 const sourceChartRef = ref<HTMLElement | null>(null);
@@ -321,6 +327,37 @@ let histogramChart: echarts.ECharts | null = null;
 
 function onPeriodChange() {
   loadData();
+}
+
+function exportCustomerExcel() {
+  exportReportWorkbook({
+    fileName: `Bao_cao_khach_hang_${new Date().toISOString().slice(0, 10)}`,
+    sheets: [
+      {
+        name: "Tổng quan",
+        rows: [
+          {
+            "Tổng lead": kpi.value.totalLeads,
+            "Khách hàng mới": kpi.value.newCustomers,
+            "Lead nóng": kpi.value.hotLeads,
+            "Tỷ lệ chuyển đổi": `${conversionRate.value}%`,
+          },
+        ],
+      },
+      {
+        name: "Danh sách khách hàng",
+        rows: filteredLeads.value.map((item) => ({
+          "Mã lead": item.id,
+          "Khách hàng": item.customerName,
+          "Số điện thoại": item.phone,
+          Nguồn: item.source,
+          "Điểm lead": item.leadScore,
+          "Trạng thái": item.status,
+          "Liên hệ gần nhất": item.lastContact,
+        })),
+      },
+    ],
+  });
 }
 
 function renderCharts() {

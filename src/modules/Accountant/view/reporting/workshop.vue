@@ -6,12 +6,22 @@
       icon="ri:tools-line"
     >
       <template #actions>
-        <ReportPeriodSwitcher
-          v-model="currentPeriod"
-          v-model:start-date="periodStart"
-          v-model:end-date="periodEnd"
-          @update:modelValue="onPeriodChange"
-        />
+        <div class="reporting-actions">
+          <ReportPeriodSwitcher
+            v-model="currentPeriod"
+            v-model:start-date="periodStart"
+            v-model:end-date="periodEnd"
+            @update:modelValue="onPeriodChange"
+          />
+          <ElButton
+            type="primary"
+            :disabled="loading"
+            @click="exportWorkshopExcel"
+          >
+            <ArtSvgIcon icon="ri:file-excel-2-line" />
+            Xuất Excel
+          </ElButton>
+        </div>
       </template>
     </ReportPageHeader>
 
@@ -116,6 +126,7 @@ import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
 import ArtBarChart from "@/components/core/charts/art-bar-chart/index.vue";
 import ReportPageHeader from "./ReportPageHeader.vue";
 import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
+import { exportReportWorkbook } from "@/utils/report-excel";
 
 const currentPeriod = ref<"today" | "month" | "year" | "custom">("month");
 const periodStart = ref("");
@@ -156,6 +167,45 @@ const paginatedRepairOrders = computed(() => {
 
 function onPeriodChange() {
   loadData();
+}
+
+function exportWorkshopExcel() {
+  exportReportWorkbook({
+    fileName: `Bao_cao_xuong_${new Date().toISOString().slice(0, 10)}`,
+    sheets: [
+      {
+        name: "Tổng quan",
+        rows: [
+          {
+            "Phiếu đang sửa": kpi.value.inProgressCount,
+            "Thời gian hoàn thành TB (giờ)": kpi.value.avgCompletionHours,
+            "Doanh thu xưởng": kpi.value.monthlyRevenue,
+            "Phiếu quá hạn": kpi.value.overdueCount,
+          },
+        ],
+      },
+      {
+        name: "Phiếu sửa chữa",
+        rows: repairOrders.value.map((item) => ({
+          "Mã phiếu": item.orderCode,
+          "Khách hàng": item.customerName,
+          "Thông tin xe": item.vehicleInfo,
+          "Kỹ thuật viên": item.technicianName,
+          "Trạng thái": item.status,
+          "Ngày bắt đầu": item.startedAt,
+          "Tiền công": item.laborFee,
+        })),
+      },
+      {
+        name: "So sánh doanh thu",
+        rows: chartXAxisData.value.map((month, index) => ({
+          Tháng: month,
+          "Doanh thu xưởng": chartData.value[0]?.data[index] ?? 0,
+          "Doanh thu bán xe": chartData.value[1]?.data[index] ?? 0,
+        })),
+      },
+    ],
+  });
 }
 
 async function loadData() {

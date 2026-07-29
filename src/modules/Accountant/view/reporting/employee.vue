@@ -21,6 +21,14 @@
           >
             Làm mới
           </ElButton>
+          <ElButton
+            type="primary"
+            :disabled="loading"
+            @click="exportEmployeeExcel"
+          >
+            <ArtSvgIcon icon="ri:file-excel-2-line" />
+            Xuất Excel
+          </ElButton>
         </div>
       </template>
     </ReportPageHeader>
@@ -371,6 +379,7 @@ import { AnalyticsService } from "@/services/analytics.service";
 import type { StaffPerformance } from "@/services/analytics.types";
 import ReportPageHeader from "./ReportPageHeader.vue";
 import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
+import { exportReportWorkbook } from "@/utils/report-excel";
 
 type Period = "today" | "month" | "year" | "custom";
 type KpiStatus = StaffPerformance["kpiStatus"];
@@ -522,6 +531,54 @@ async function loadPerformance() {
     await nextTick();
     renderCharts();
   }
+}
+
+function exportEmployeeExcel() {
+  exportReportWorkbook({
+    fileName: `Bao_cao_nhan_su_hoa_hong_${periodStart.value}_${periodEnd.value}`,
+    sheets: [
+      {
+        name: "Tổng quan",
+        rows: [
+          {
+            "Từ ngày": periodStart.value,
+            "Đến ngày": periodEnd.value,
+            "Số nhân viên": reportSummary.value.employeeCount,
+            "Tổng doanh số": reportSummary.value.totalSales,
+            "Tổng mục tiêu": reportSummary.value.totalTarget,
+            "Tổng hoa hồng": reportSummary.value.totalCommission,
+            "Tỷ lệ hoàn thành KPI (%)": reportSummary.value.achievementRate,
+            "Tỷ lệ hoa hồng (%)": commissionRate.value,
+          },
+        ],
+      },
+      {
+        name: "Theo nhân viên",
+        rows: performance.value.map((item) => ({
+          "Nhân viên": item.employeeName,
+          "Chức vụ": item.role,
+          "Doanh số": item.totalSales,
+          "Mục tiêu": item.targetSales,
+          "Hoa hồng": item.commissionPaid,
+          "Trạng thái KPI": item.kpiStatus,
+          "Nguồn doanh số": item.salesSource,
+          "Có dữ liệu bán hàng": item.hasSalesData ? "Có" : "Không",
+          "Có dữ liệu KPI": item.hasKpiData ? "Có" : "Không",
+          "Có dữ liệu hoa hồng": item.hasCommissionData ? "Có" : "Không",
+        })),
+      },
+      {
+        name: "Theo chức vụ",
+        rows: roleSummary.value.map((item) => ({
+          "Chức vụ": item.role,
+          "Số nhân viên": item.employeeCount,
+          "Doanh số": item.totalSales,
+          "Mục tiêu": item.targetSales,
+          "Hoa hồng": item.commissionPaid,
+        })),
+      },
+    ],
+  });
 }
 
 function renderCharts() {

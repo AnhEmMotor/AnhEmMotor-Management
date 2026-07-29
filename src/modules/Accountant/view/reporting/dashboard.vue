@@ -6,12 +6,22 @@
       icon="ri:dashboard-3-line"
     >
       <template #actions>
-        <ReportPeriodSwitcher
-          v-model="currentPeriod"
-          v-model:start-date="periodStart"
-          v-model:end-date="periodEnd"
-          @update:modelValue="onPeriodChange"
-        />
+        <div class="reporting-actions">
+          <ReportPeriodSwitcher
+            v-model="currentPeriod"
+            v-model:start-date="periodStart"
+            v-model:end-date="periodEnd"
+            @update:modelValue="onPeriodChange"
+          />
+          <ElButton
+            type="primary"
+            :disabled="loading"
+            @click="exportDashboardExcel"
+          >
+            <ArtSvgIcon icon="ri:file-excel-2-line" />
+            Xuất Excel
+          </ElButton>
+        </div>
       </template>
     </ReportPageHeader>
 
@@ -243,6 +253,7 @@ import { storeToRefs } from "pinia";
 import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
 import { statisticsApi } from "@/api/operations";
 import { useSettingStore } from "@/application/store/setting";
+import { exportReportWorkbook } from "@/utils/report-excel";
 import ReportPageHeader from "./ReportPageHeader.vue";
 import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
 import type {
@@ -306,6 +317,73 @@ const selectedRangeLabel = computed(
 function onPeriodChange(period?: Period) {
   if (period && period !== "custom") setDateRange(period);
   void loadData();
+}
+
+function exportDashboardExcel() {
+  exportReportWorkbook({
+    fileName: `Tong_quan_dieu_hanh_${periodStart.value}_${periodEnd.value}`,
+    sheets: [
+      {
+        name: "Tổng quan",
+        rows: [
+          {
+            "Từ ngày": periodStart.value,
+            "Đến ngày": periodEnd.value,
+            "Doanh thu hôm nay": summary.value.todayRevenue,
+            "Doanh thu tháng": summary.value.monthlyRevenue,
+            "Lợi nhuận hôm nay": summary.value.todayProfit,
+            "Lợi nhuận tháng": summary.value.monthlyProfit,
+            "Xe bán hôm nay": summary.value.todayVehiclesSold,
+            "Xe bán trong tháng": summary.value.monthlyVehiclesSold,
+            "Đơn chờ xử lý": summary.value.pendingOrdersCount,
+            "Công nợ quá hạn": summary.value.overdueDebtAmount,
+            "Tồn kho hiện tại": summary.value.currentInventoryCount,
+            "SKU sắp hết": summary.value.lowStockCount,
+          },
+        ],
+      },
+      {
+        name: "Doanh thu theo ngày",
+        rows: dailyRevenue.value.map((item) => ({
+          Ngày: item.reportDay,
+          "Doanh thu": item.totalRevenue,
+        })),
+      },
+      {
+        name: "Hiệu suất nhân viên",
+        rows: topStaff.value.map((item) => ({
+          "Nhân viên": item.employeeName,
+          "Chức vụ": item.role,
+          "Doanh số": item.totalSales,
+          "Mục tiêu": item.targetSales,
+          "Hoa hồng": item.commissionPaid,
+          "Trạng thái KPI": item.kpiStatus,
+        })),
+      },
+      {
+        name: "Giao dịch gần nhất",
+        rows: transactions.value.map((item) => ({
+          "Thời gian": item.timestamp,
+          "Khách hàng": item.customerName,
+          "Sản phẩm": item.productName,
+          "Loại giao dịch": item.isRevenue ? "Thu" : "Chi",
+          "Số tiền": item.amount,
+          "Trạng thái": item.status,
+          "Nhân viên": item.staffName,
+        })),
+      },
+      {
+        name: "Đơn hàng gần đây",
+        rows: recentOrders.value.map((item) => ({
+          "Mã đơn": item.orderCode || item.id,
+          "Khách hàng": item.buyerName,
+          "Số tiền": item.totalAmount,
+          "Trạng thái": item.statusId,
+          "Thời gian": item.createdAt,
+        })),
+      },
+    ],
+  });
 }
 
 async function loadData() {

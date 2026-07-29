@@ -6,14 +6,24 @@
       icon="ri:file-list-line"
     >
       <template #actions>
-        <ReportPeriodSwitcher
-          v-model="currentPeriod"
-          :start-date="periodStart"
-          :end-date="periodEnd"
-          @update:modelValue="onPeriodChange"
-          @update:start-date="onStartDateChange"
-          @update:end-date="onEndDateChange"
-        />
+        <div class="reporting-actions">
+          <ReportPeriodSwitcher
+            v-model="currentPeriod"
+            :start-date="periodStart"
+            :end-date="periodEnd"
+            @update:modelValue="onPeriodChange"
+            @update:start-date="onStartDateChange"
+            @update:end-date="onEndDateChange"
+          />
+          <ElButton
+            type="primary"
+            :disabled="isLoading"
+            @click="exportContractExcel"
+          >
+            <ArtSvgIcon icon="ri:file-excel-2-line" />
+            Xuất Excel
+          </ElButton>
+        </div>
       </template>
     </ReportPageHeader>
 
@@ -173,6 +183,7 @@ import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
 import { statisticsApi, type ContractOverviewResponse } from "@/api/operations";
 import { useSettingStore } from "@/application/store/setting";
 import { storeToRefs } from "pinia";
+import { exportReportWorkbook } from "@/utils/report-excel";
 
 const settingStore = useSettingStore();
 const { isDark } = storeToRefs(settingStore);
@@ -251,6 +262,51 @@ const paginatedContracts = computed(() => {
   const start = (currentPage.value - 1) * pageSize.value;
   return filteredContracts.value.slice(start, start + pageSize.value);
 });
+
+function exportContractExcel() {
+  exportReportWorkbook({
+    fileName: `Bao_cao_hop_dong_${toDateInput(new Date(periodStart.value))}_${toDateInput(new Date(periodEnd.value))}`,
+    sheets: [
+      {
+        name: "Tổng quan",
+        rows: [
+          {
+            "Hợp đồng bán xe": summaryData.value.totalSalesCount,
+            "Giá trị hợp đồng bán xe": summaryData.value.totalSalesValue,
+            "Hợp đồng nhà cung cấp": summaryData.value.totalSupplierCount,
+            "Giá trị hợp đồng NCC": summaryData.value.totalSupplierValue,
+          },
+        ],
+      },
+      {
+        name: "Danh sách hợp đồng",
+        rows: filteredContracts.value.map((item) => ({
+          "Mã hợp đồng": item.contractNumber,
+          Loại: item.type,
+          "Đối tác": item.partnerName,
+          "Giá trị": item.value,
+          "Trạng thái": item.status,
+          Ngày: item.date,
+        })),
+      },
+      {
+        name: "Xu hướng",
+        rows: trendData.value.map((item) => ({
+          Ngày: item.day,
+          "Giá trị hợp đồng bán xe": item.salesValue,
+          "Giá trị hợp đồng NCC": item.supplierValue,
+        })),
+      },
+      {
+        name: "Trạng thái",
+        rows: statusData.value.map((item) => ({
+          "Trạng thái": item.name,
+          "Số lượng": item.value,
+        })),
+      },
+    ],
+  });
+}
 
 async function loadContractOverview() {
   isLoading.value = true;
