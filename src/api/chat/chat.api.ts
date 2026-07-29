@@ -7,12 +7,20 @@ export interface ChatSession {
 
 export type ChatRole = "User" | "AI" | "System";
 
+export interface ChatMessageToolCall {
+  name: string;
+  label: string;
+  summary?: string;
+  status: "running" | "done";
+}
+
 export interface ChatMessage {
   id?: string;
   role: ChatRole;
   message: string;
   createdAt: string;
   isSteering?: boolean;
+  toolCalls?: ChatMessageToolCall[];
 }
 
 export interface SteeringResultDto {
@@ -42,6 +50,11 @@ export interface ActiveRunDto {
   partialOutput: string;
 }
 
+export interface ChatToolLabelDto {
+  name: string;
+  label: string;
+}
+
 export const ManagerChatApi = {
   getSessions() {
     return request.get<ChatSession[]>({
@@ -65,6 +78,12 @@ export const ManagerChatApi = {
   getActiveRun(sessionId: string) {
     return request.get<ActiveRunDto | null>({
       url: `/api/v1/manager-chat/sessions/${sessionId}/active-run`,
+    });
+  },
+
+  getToolCatalog() {
+    return request.get<ChatToolLabelDto[]>({
+      url: "/api/v1/manager-chat/tool-catalog",
     });
   },
 

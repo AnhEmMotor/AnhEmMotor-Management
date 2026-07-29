@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref, watch, nextTick, onBeforeUnmount } from "vue";
+import { useQuery } from "@tanstack/vue-query";
 import {
   ManagerChatApi as ChatApi,
   type ChatSession,
   type ChatMessage,
+  type ChatMessageToolCall,
   type ChatRunEventDto,
   type SteeringResultDto,
 } from "@/api/chat/chat.api";
@@ -14,6 +16,8 @@ import {
   Loading,
   Edit,
   Menu,
+  CircleCheck,
+  ArrowRight,
 } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import {
@@ -155,6 +159,54 @@ const steeringStatus = ref<Record<string, SteeringStatus>>({});
 const currentSteeringStatus = computed(() =>
   activeSessionId.value ? steeringStatus.value[activeSessionId.value] : null,
 );
+
+const { data: toolCatalog } = useQuery({
+  queryKey: ["chat-tool-catalog"],
+  queryFn: () => ChatApi.getToolCatalog(),
+  staleTime: Infinity,
+});
+const toolLabelByName = computed(() => {
+  const map: Record<string, string> = {};
+  for (const tool of toolCatalog.value ?? []) map[tool.name] = tool.label;
+  return map;
+});
+const toolCallText = (tool: ChatMessageToolCall) => {
+  const lowered = tool.label.charAt(0).toLowerCase() + tool.label.slice(1);
+  const prefix = `${tool.status === "done" ? "Đã" : "Đang"} ${lowered}`;
+  return tool.summary ? `${prefix} — ${tool.summary}` : prefix;
+};
+
+const parseToolEventPayload = (
+  payload: string,
+): { name: string; summary?: string } => {
+  try {
+    const parsed = JSON.parse(payload);
+    if (
+      parsed &&
+      typeof parsed === "object" &&
+      typeof parsed.name === "string"
+    ) {
+      return { name: parsed.name, summary: parsed.summary || undefined };
+    }
+  } catch {
+    return { name: payload };
+  }
+  return { name: payload };
+};
+
+// Panel lịch sử tool thu gọn theo mặc định sau khi xong, mở khi đang chạy — trừ khi người dùng
+// tự bấm mở/đóng thì giữ theo lựa chọn đó (override) cho tới khi tin nhắn bị gỡ khỏi state.
+const toolPanelOverride = ref<Record<string, boolean>>({});
+const isToolPanelOpen = (msg: ChatMessage) => {
+  if (msg.id && msg.id in toolPanelOverride.value) {
+    return toolPanelOverride.value[msg.id];
+  }
+  return (msg.toolCalls ?? []).some((t) => t.status === "running");
+};
+const toggleToolPanel = (msg: ChatMessage) => {
+  if (!msg.id) return;
+  toolPanelOverride.value[msg.id] = !isToolPanelOpen(msg);
+};
 
 const clearSteeringStuckWatchdog = (sessionId: string) => {
   const w = steeringStuckWatchdogs.value[sessionId];
@@ -320,6 +372,34 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
           clearSteeringStuckWatchdog(sessionId);
           delete steeringStatus.value[sessionId];
           break;
+        case "tool_start": {
+          if (!aiMsg) break;
+          const { name, summary } = parseToolEventPayload(evt.payload || "");
+          const label = toolLabelByName.value[name] || name || "dữ liệu";
+          aiMsg.toolCalls = [
+            ...(aiMsg.toolCalls ?? []),
+            { name, label, summary, status: "running" },
+          ];
+          break;
+        }
+        case "tool_end": {
+          const list = aiMsg?.toolCalls;
+          if (list) {
+            const { name } = parseToolEventPayload(evt.payload || "");
+            const lastRunningIdx = list.findLastIndex(
+              (t) => t.name === name && t.status === "running",
+            );
+            if (lastRunningIdx !== -1) {
+              const updated = [...list];
+              updated[lastRunningIdx] = {
+                ...updated[lastRunningIdx],
+                status: "done",
+              };
+              aiMsg!.toolCalls = updated;
+            }
+          }
+          break;
+        }
         case "run_completed":
         case "run_cancelled":
           cleanupRun(sessionId);
@@ -818,7 +898,9 @@ const formatTime = (isoString: string) => {
           <template v-else>
             <template v-for="msg in messages" :key="msg.id">
               <div
-                v-if="msg.message"
+                v-if="
+                  msg.message || (msg.role === 'AI' && msg.toolCalls?.length)
+                "
                 class="flex w-full"
                 :class="msg.role === 'User' ? 'justify-end' : 'justify-start'"
               >
@@ -830,6 +912,51 @@ const formatTime = (isoString: string) => {
                       : 'bg-white text-gray-800 border border-gray-200 rounded-bl-none'
                   "
                 >
+                  <div
+                    v-if="msg.toolCalls?.length"
+                    class="mb-2 -mx-1 rounded-lg border border-gray-100 bg-gray-50"
+                  >
+                    <button
+                      class="flex w-full items-center gap-1.5 px-2 py-1.5 text-xs text-gray-500 hover:text-gray-700"
+                      @click="toggleToolPanel(msg)"
+                    >
+                      <el-icon
+                        class="transition-transform"
+                        :style="{
+                          transform: isToolPanelOpen(msg)
+                            ? 'rotate(90deg)'
+                            : 'rotate(0deg)',
+                        }"
+                        ><ArrowRight
+                      /></el-icon>
+                      <span>{{ msg.toolCalls.length }} công cụ đã dùng</span>
+                    </button>
+                    <div
+                      v-if="isToolPanelOpen(msg)"
+                      class="flex flex-col gap-1 px-3 pb-2"
+                    >
+                      <div
+                        v-for="(tool, idx) in msg.toolCalls"
+                        :key="`${tool.name}-${idx}`"
+                        class="flex items-center gap-2 text-xs"
+                        :class="
+                          tool.status === 'done'
+                            ? 'text-gray-400'
+                            : 'text-gray-700'
+                        "
+                      >
+                        <el-icon
+                          v-if="tool.status === 'running'"
+                          class="is-loading text-blue-500"
+                          ><Loading
+                        /></el-icon>
+                        <el-icon v-else class="text-green-500"
+                          ><CircleCheck
+                        /></el-icon>
+                        <span>{{ toolCallText(tool) }}</span>
+                      </div>
+                    </div>
+                  </div>
                   <div
                     v-if="msg.role === 'AI'"
                     v-html="marked.parse(msg.message || '')"
@@ -860,7 +987,8 @@ const formatTime = (isoString: string) => {
                 isSending &&
                 messages.length > 0 &&
                 messages[messages.length - 1].role === 'AI' &&
-                !messages[messages.length - 1].message
+                !messages[messages.length - 1].message &&
+                !messages[messages.length - 1].toolCalls?.length
               "
               class="flex justify-start w-full"
             >
