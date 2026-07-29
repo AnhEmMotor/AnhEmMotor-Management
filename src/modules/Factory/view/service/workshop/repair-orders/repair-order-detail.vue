@@ -510,8 +510,15 @@
                     Tổng tiền hóa đơn
                   </div>
                   <div class="font-bold text-lg mt-1 text-slate-800">
-                    formatCurrency(Math.max(0, (order.totalCost || 0) -
-                    (appliedVoucher?.value?.discountAmount || 0)))
+                    {{
+                      formatCurrency(
+                        Math.max(
+                          0,
+                          (order.totalCost || 0) -
+                            (appliedVoucher?.value?.discountAmount || 0),
+                        ),
+                      )
+                    }}
                   </div>
                 </ElCol>
                 <ElCol :span="6">
@@ -844,7 +851,7 @@ const loadOrderDetail = async () => {
       try {
         const parsed = JSON.parse(res.partsJson);
         if (Array.isArray(parsed)) {
-          parsed.forEach((p) => {
+          parsed.forEach((p: any) => {
             itemsList.push({
               type: p.productVariantId ? "Part" : "Service",
               id: p.productVariantId || p.serviceId || 0,
@@ -854,6 +861,32 @@ const loadOrderDetail = async () => {
               notes: p.notes || "",
             });
           });
+        } else if (parsed && typeof parsed === "object") {
+          if (Array.isArray(parsed.Parts)) {
+            parsed.Parts.forEach((p: any) => {
+              itemsList.push({
+                type: "Part",
+                id: p.ProductVariantId || p.productVariantId || 0,
+                name:
+                  p.ProductVariantName || p.productVariantName || "Phụ tùng",
+                count: p.Count || p.count || 1,
+                price: p.Price || p.price || 0,
+                notes: p.Notes || p.notes || "",
+              });
+            });
+          }
+          if (Array.isArray(parsed.Services)) {
+            parsed.Services.forEach((s: any) => {
+              itemsList.push({
+                type: "Service",
+                id: s.ServiceId || s.serviceId || 0,
+                name: s.ServiceName || s.serviceName || "Dịch vụ",
+                count: s.Count || s.count || 1,
+                price: s.Price || s.price || s.LaborCost || s.laborCost || 0,
+                notes: s.Notes || s.notes || "",
+              });
+            });
+          }
         }
       } catch (e) {
         console.warn("Failed to parse partsJson", e);
