@@ -29,10 +29,10 @@
 
     <ul>
       <div class="pb-5 text-lg font-medium">
-        Bình luận ({{ comments.length }})
+        Bình luận ({{ localComments.length }})
       </div>
       <CommentItem
-        v-for="comment in comments.slice().reverse()"
+        v-for="comment in localComments.slice().reverse()"
         :key="comment.id"
         :comment="comment"
         :show-reply-form="showReplyForm"
@@ -45,10 +45,30 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import CommentItem from "./widget/CommentItem.vue";
-import { commentList, Comment } from "@/mock/temp/commentDetail";
-const comments = commentList;
+
+interface Comment {
+  id: number;
+  author: string;
+  content: string;
+  timestamp: string;
+  replies: Comment[];
+}
+
+const props = defineProps<{
+  comments: Comment[];
+}>();
+
+const localComments = ref<Comment[]>([...(props.comments || [])]);
+
+watch(
+  () => props.comments,
+  (newVal) => {
+    localComments.value = [...(newVal || [])];
+  },
+  { deep: true },
+);
 
 const newComment = ref<Partial<Comment>>({
   author: "",
@@ -63,7 +83,7 @@ const addComment = () => {
     return;
   }
 
-  comments.value.push({
+  localComments.value.push({
     id: Date.now(),
     author: newComment.value.author.trim(),
     content: newComment.value.content.trim(),
@@ -73,7 +93,7 @@ const addComment = () => {
 
   newComment.value.author = "";
   newComment.value.content = "";
-  ElMessage.success("Đăng tải bình luận thành công");
+  ElMessage.success("Đăng tải bình luận thành công (Local)");
 };
 
 const addReply = (
@@ -86,7 +106,7 @@ const addReply = (
     return;
   }
 
-  const comment = findComment(comments.value, commentId);
+  const comment = findComment(localComments.value, commentId);
   if (comment) {
     comment.replies.push({
       id: Date.now(),
@@ -96,7 +116,7 @@ const addReply = (
       replies: [],
     });
     showReplyForm.value = null;
-    ElMessage.success("Đăng tải câu trả lời thành công");
+    ElMessage.success("Đăng tải câu trả lời thành công (Local)");
   }
 };
 
