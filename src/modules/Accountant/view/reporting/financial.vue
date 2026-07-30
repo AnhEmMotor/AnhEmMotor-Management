@@ -6,12 +6,22 @@
       icon="ri:money-dollar-box-line"
     >
       <template #actions>
-        <ReportPeriodSwitcher
-          v-model="currentPeriod"
-          v-model:start-date="periodStart"
-          v-model:end-date="periodEnd"
-          @update:modelValue="onPeriodChange"
-        />
+        <div class="reporting-actions">
+          <ReportPeriodSwitcher
+            v-model="currentPeriod"
+            v-model:start-date="periodStart"
+            v-model:end-date="periodEnd"
+            @update:modelValue="onPeriodChange"
+          />
+          <ElButton
+            type="primary"
+            :loading="loading"
+            @click="exportFinancialExcel"
+          >
+            <ArtSvgIcon icon="ri:file-excel-2-line" />
+            Xuất Excel
+          </ElButton>
+        </div>
       </template>
     </ReportPageHeader>
 
@@ -148,6 +158,7 @@ import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
 import PnlReportComponent from "./pnl.vue";
 import ExpenseTable from "./expense.vue";
 import ExpenseForm from "./expense-form.vue";
+import { exportReportWorkbook } from "@/utils/report-excel";
 
 type ExpenseFormData = {
   name: string;
@@ -253,6 +264,42 @@ async function loadExpenses() {
   } finally {
     loading.value = false;
   }
+}
+
+async function exportFinancialExcel() {
+  await Promise.all([loadPnlReport(), loadExpenses()]);
+
+  exportReportWorkbook({
+    fileName: `Bao_cao_tai_chinh_${new Date().toISOString().slice(0, 10)}`,
+    sheets: [
+      {
+        name: "Tổng hợp P&L",
+        rows: [
+          {
+            Kỳ: periodLabel.value,
+            "Tổng doanh thu": pnlData.value.totalRevenue,
+            "Giá vốn hàng bán": pnlData.value.totalCostOfGoodsSold,
+            "Chi phí vận hành": pnlData.value.totalOperatingExpenses,
+            "Lợi nhuận gộp": pnlData.value.grossProfit,
+            "Biên lợi nhuận gộp": grossMarginLabel.value,
+            "Lợi nhuận ròng": pnlData.value.netProfit,
+            "Biên lợi nhuận ròng": netMarginLabel.value,
+          },
+        ],
+      },
+      {
+        name: "Chi phí",
+        rows: expenses.value.map((item) => ({
+          "Mã chi phí": item.id,
+          "Tên chi phí": item.name,
+          "Phân loại": item.category === 0 ? "Cố định" : "Biến đổi",
+          "Số tiền": item.amount,
+          "Ngày chi": item.expenseDate,
+          "Ghi chú": item.note,
+        })),
+      },
+    ],
+  });
 }
 
 function openExpenseForm() {

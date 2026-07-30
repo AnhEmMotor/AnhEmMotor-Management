@@ -17,6 +17,14 @@
           <ArtSvgIcon icon="ri:refresh-line" />
           Tải lại
         </ElButton>
+        <ElButton
+          type="primary"
+          :disabled="loading"
+          @click="exportPayrollExcel"
+        >
+          <ArtSvgIcon icon="ri:file-excel-2-line" />
+          Xuất Excel
+        </ElButton>
       </div>
     </section>
 
@@ -202,6 +210,7 @@ import {
   payrollApi,
   type PayrollSummaryResponse,
 } from "@/api/operations/payroll.api";
+import { exportReportWorkbook } from "@/utils/report-excel";
 
 defineOptions({ name: "HRPayroll" });
 
@@ -283,6 +292,44 @@ const formatCurrency = (value: number | null | undefined) =>
 
 const getKpiBonus = (item: PayrollSummaryResponse) =>
   item.kpiBonus ?? item.volumeBonus ?? 0;
+
+const exportPayrollExcel = () => {
+  const selectedMonth = searchForm.value.month || currentMonth.toString();
+
+  exportReportWorkbook({
+    fileName: `Bang_luong_nhan_su_${selectedMonth}_${currentYear}`,
+    sheets: [
+      {
+        name: "Tổng hợp",
+        rows: [
+          {
+            Tháng: selectedMonth,
+            Năm: currentYear,
+            "Số nhân viên": stats.employeeCount,
+            "Tổng quỹ lương": stats.totalPayroll,
+            "Tổng thưởng KPI": stats.totalKpiBonus,
+            "Hoa hồng đã chi": stats.paid,
+            "Giá trị chờ chi": stats.pending,
+          },
+        ],
+      },
+      {
+        name: "Bảng lương",
+        rows: data.value.map((item) => ({
+          "Mã nhân viên": item.employeeId,
+          "Nhân viên": item.fullName,
+          "Chức vụ": item.jobTitle,
+          "Lương cơ bản": item.baseSalary,
+          "Hoa hồng chờ xác nhận": item.pendingCommission,
+          "Hoa hồng chờ chi": item.confirmedCommission,
+          "Hoa hồng đã chi": item.paidCommission,
+          "Thưởng KPI": getKpiBonus(item),
+          "Thực nhận": item.totalNetPayable,
+        })),
+      },
+    ],
+  });
+};
 
 type PayrollSummaryApiResult =
   | PayrollSummaryResponse[]
