@@ -12,6 +12,11 @@ export interface ChatMessageToolCall {
   label: string;
   summary?: string;
   status: "running" | "done";
+  truncated?: boolean;
+  totalCount?: number;
+  asOf?: string;
+  warnings?: string[];
+  filtersApplied?: Record<string, string>;
 }
 
 export interface ChatMessage {
@@ -97,6 +102,13 @@ export const ManagerChatApi = {
     return request.put({
       url: `/api/v1/manager-chat/sessions/${sessionId}`,
       data: { title },
+    });
+  },
+
+  submitFeedback(runId: string, comment?: string) {
+    return request.post({
+      url: `/api/v1/manager-chat/runs/${runId}/feedback`,
+      data: { comment: comment ?? "" },
     });
   },
 };

@@ -173,10 +173,14 @@ const toolLabelByName = computed(() => {
 const toolCallText = (tool: ChatMessageToolCall) => {
   const lowered = tool.label.charAt(0).toLowerCase() + tool.label.slice(1);
   const prefix = `${tool.status === "done" ? "Đã" : "Đang"} ${lowered}`;
-  return tool.summary ? `${prefix} — ${tool.summary}` : prefix;
+  let text = tool.summary ? `${prefix} — ${tool.summary}` : prefix;
+  const period = tool.filtersApplied?.["Khoảng thời gian"];
+  if (period) text += ` (${period})`;
+  if (tool.truncated) text += ` — chỉ hiện một phần dữ liệu`;
+  return text;
 };
 
-const parseToolEventPayload = (
+const parseToolStartPayload = (
   payload: string,
 ): { name: string; summary?: string } => {
   try {
@@ -192,6 +196,63 @@ const parseToolEventPayload = (
     return { name: payload };
   }
   return { name: payload };
+};
+
+const parseToolEndPayload = (
+  payload: string,
+): Pick<
+  ChatMessageToolCall,
+  "name" | "truncated" | "totalCount" | "asOf" | "warnings" | "filtersApplied"
+> => {
+  try {
+    const parsed = JSON.parse(payload);
+    if (
+      parsed &&
+      typeof parsed === "object" &&
+      typeof parsed.name === "string"
+    ) {
+      return {
+        name: parsed.name,
+        truncated: parsed.truncated,
+        totalCount: parsed.totalCount,
+        asOf: parsed.asOf,
+        warnings: parsed.warnings,
+        filtersApplied: parsed.filtersApplied,
+      };
+    }
+  } catch {
+    return { name: payload };
+  }
+  return { name: payload };
+};
+
+const runIdFromMessageId = (id?: string): string | undefined => {
+  if (!id || !id.startsWith("run-")) return undefined;
+  return id.slice("run-".length).split("-seg-")[0];
+};
+
+const submittingFeedback = ref<Record<string, boolean>>({});
+const submitMessageFeedback = async (msg: ChatMessage) => {
+  const runId = runIdFromMessageId(msg.id);
+  if (!runId || submittingFeedback.value[msg.id!]) return;
+  try {
+    const { value: comment } = await ElMessageBox.prompt(
+      "Mô tả ngắn gọn số liệu nào chưa đúng (không bắt buộc)",
+      "Báo cáo số liệu chưa đúng",
+      {
+        confirmButtonText: "Gửi",
+        cancelButtonText: "Huỷ",
+        inputType: "textarea",
+      },
+    );
+    submittingFeedback.value[msg.id!] = true;
+    await ChatApi.submitFeedback(runId, comment);
+    ElMessage.success("Đã ghi nhận phản hồi, cảm ơn bạn!");
+  } catch {
+    // người dùng bấm Huỷ hoặc API lỗi — không cần báo thêm
+  } finally {
+    submittingFeedback.value[msg.id!] = false;
+  }
 };
 
 // Panel lịch sử tool thu gọn theo mặc định sau khi xong, mở khi đang chạy — trừ khi người dùng
@@ -380,18 +441,21 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
           break;
         case "tool_start": {
           if (!aiMsg) break;
-          const { name, summary } = parseToolEventPayload(evt.payload || "");
+          const { name, summary } = parseToolStartPayload(evt.payload || "");
           const label = toolLabelByName.value[name] || name || "dữ liệu";
           aiMsg.toolCalls = [
             ...(aiMsg.toolCalls ?? []),
             { name, label, summary, status: "running" },
           ];
+          if (activeSessionId.value === sessionId) scrollToBottom();
           break;
         }
         case "tool_end": {
           const list = aiMsg?.toolCalls;
           if (list) {
-            const { name } = parseToolEventPayload(evt.payload || "");
+            const { name, ...envelopeSummary } = parseToolEndPayload(
+              evt.payload || "",
+            );
             const lastRunningIdx = list.findLastIndex(
               (t) => t.name === name && t.status === "running",
             );
@@ -399,11 +463,13 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
               const updated = [...list];
               updated[lastRunningIdx] = {
                 ...updated[lastRunningIdx],
+                ...envelopeSummary,
                 status: "done",
               };
               aiMsg!.toolCalls = updated;
             }
           }
+          if (activeSessionId.value === sessionId) scrollToBottom();
           break;
         }
         case "run_completed":
@@ -445,6 +511,7 @@ const resumeActiveRun = async (sessionId: string) => {
     };
     activeStreams.value[sessionId] = aiMsg;
     messages.value.push(aiMsg);
+    if (activeSessionId.value === sessionId) scrollToBottom();
 
     if (connection.value?.state !== HubConnectionState.Connected) {
       await startConnection();
@@ -605,6 +672,7 @@ const beginNewRun = (sessionId: string, runId: string) => {
   activeStreams.value[sessionId] = aiMsg;
   activeStreamSessions.value.add(sessionId);
   messages.value.push(aiMsg);
+  if (activeSessionId.value === sessionId) scrollToBottom();
   subscribeToRun(sessionId, runId, 0);
 };
 
@@ -961,6 +1029,15 @@ const formatTime = (isoString: string) => {
                         /></el-icon>
                         <span>{{ toolCallText(tool) }}</span>
                       </div>
+                      <div
+                        v-for="warning in msg.toolCalls.flatMap(
+                          (t) => t.warnings ?? [],
+                        )"
+                        :key="warning"
+                        class="text-xs text-amber-600"
+                      >
+                        ⚠ {{ warning }}
+                      </div>
                     </div>
                   </div>
                   <div
@@ -977,12 +1054,19 @@ const formatTime = (isoString: string) => {
                     {{ msg.message }}
                   </div>
                   <div
-                    class="text-[10px] mt-1 text-right"
+                    class="text-[10px] mt-1 flex items-center justify-end gap-2"
                     :class="
                       msg.role === 'User' ? 'text-blue-200' : 'text-gray-400'
                     "
                   >
-                    {{ formatTime(msg.createdAt) }}
+                    <button
+                      v-if="msg.role === 'AI' && msg.toolCalls?.length"
+                      class="hover:text-amber-600 hover:underline"
+                      @click="submitMessageFeedback(msg)"
+                    >
+                      Số liệu chưa đúng
+                    </button>
+                    <span>{{ formatTime(msg.createdAt) }}</span>
                   </div>
                 </div>
               </div>
@@ -993,8 +1077,7 @@ const formatTime = (isoString: string) => {
                 isSending &&
                 messages.length > 0 &&
                 messages[messages.length - 1].role === 'AI' &&
-                !messages[messages.length - 1].message &&
-                !messages[messages.length - 1].toolCalls?.length
+                !messages[messages.length - 1].message
               "
               class="flex justify-start w-full"
             >
