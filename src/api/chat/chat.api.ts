@@ -38,6 +38,7 @@ export interface ChatMessage {
   isSteering?: boolean;
   reasoningSteps?: ChatReasoningStep[];
   reasoningElapsedSeconds?: number;
+  plan?: ChatPlanDto;
 }
 
 export interface SteeringResultDto {
@@ -70,6 +71,51 @@ export interface ActiveRunDto {
 export interface ChatToolLabelDto {
   name: string;
   label: string;
+}
+
+export type PlanStepStatus =
+  | "pending"
+  | "running"
+  | "done"
+  | "failed"
+  | "skipped"
+  | "invalid";
+
+export interface PlanStepDto {
+  id: string;
+  order: number;
+  title: string;
+  detail: string;
+  expectedTools: string[];
+  status: PlanStepStatus;
+  editedByUser: boolean;
+  result: string | null;
+}
+
+export type ChatPlanStatus =
+  | "Drafting"
+  | "Ready"
+  | "Approved"
+  | "Executing"
+  | "Completed"
+  | "Rejected";
+
+export interface ChatPlanDto {
+  runId: string;
+  version: number;
+  status: ChatPlanStatus;
+  steps: PlanStepDto[];
+  lastEditedBy: string;
+  approvedAt: string | null;
+}
+
+export interface PlanStepOperation {
+  type: "edit" | "add" | "remove" | "reorder";
+  stepId?: string;
+  title?: string;
+  detail?: string;
+  expectedTools?: string[];
+  order?: number;
 }
 
 export const ManagerChatApi = {
@@ -121,6 +167,35 @@ export const ManagerChatApi = {
     return request.post({
       url: `/api/v1/manager-chat/runs/${runId}/feedback`,
       data: { comment: comment ?? "" },
+    });
+  },
+
+  getPlan(runId: string) {
+    return request.get<ChatPlanDto>({
+      url: `/api/v1/manager-chat/runs/${runId}/plan`,
+    });
+  },
+
+  updatePlan(runId: string, version: number, operations: PlanStepOperation[]) {
+    return request.patch<ChatPlanDto>({
+      url: `/api/v1/manager-chat/runs/${runId}/plan`,
+      data: { version, operations },
+      showErrorMessage: false,
+    });
+  },
+
+  approvePlan(runId: string, version: number) {
+    return request.post({
+      url: `/api/v1/manager-chat/runs/${runId}/plan/approve`,
+      data: { version },
+      showErrorMessage: false,
+    });
+  },
+
+  rejectPlan(runId: string) {
+    return request.post({
+      url: `/api/v1/manager-chat/runs/${runId}/plan/reject`,
+      showErrorMessage: false,
     });
   },
 };

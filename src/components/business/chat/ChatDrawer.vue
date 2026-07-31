@@ -8,8 +8,10 @@ import {
   type ChatMessageToolCall,
   type ChatReasoningStep,
   type ChatRunEventDto,
+  type ChatPlanDto,
   type SteeringResultDto,
 } from "@/api/chat/chat.api";
+import PlanCard from "./PlanCard.vue";
 import {
   Plus,
   Delete,
@@ -132,6 +134,7 @@ const newMessage = ref("");
 
 const activeStreams = ref<Record<string, ChatMessage>>({});
 const activeStreamSessions = ref<Set<string>>(new Set());
+const activePlans = ref<Record<string, ChatMessage>>({});
 
 interface RunWatcher {
   runId: string;
@@ -294,9 +297,7 @@ const isReasoningPanelOpen = (msg: ChatMessage) => {
   if (msg.id && msg.id in reasoningPanelOverride.value) {
     return reasoningPanelOverride.value[msg.id];
   }
-  return (msg.reasoningSteps ?? []).some(
-    (s) => s.kind === "tool" && s.status === "running",
-  );
+  return msg.reasoningElapsedSeconds == null;
 };
 const toggleReasoningPanel = (msg: ChatMessage) => {
   if (!msg.id) return;
@@ -304,9 +305,11 @@ const toggleReasoningPanel = (msg: ChatMessage) => {
 };
 
 const reasoningStartedAt = ref<Record<string, number>>({});
-const markReasoningStarted = (msg: ChatMessage) => {
+const markReasoningStarted = (msg: ChatMessage, startedAt?: string | null) => {
   if (msg.id && !(msg.id in reasoningStartedAt.value)) {
-    reasoningStartedAt.value[msg.id] = Date.now();
+    reasoningStartedAt.value[msg.id] = startedAt
+      ? new Date(startedAt).getTime()
+      : Date.now();
   }
 };
 const finishReasoningTiming = (msg: ChatMessage | undefined) => {
@@ -314,14 +317,6 @@ const finishReasoningTiming = (msg: ChatMessage | undefined) => {
   msg.reasoningElapsedSeconds =
     (Date.now() - reasoningStartedAt.value[msg.id]) / 1000;
   delete reasoningStartedAt.value[msg.id];
-};
-
-const isDev = import.meta.env.DEV;
-const copyReasoningLog = async (msg: ChatMessage) => {
-  await navigator.clipboard.writeText(
-    JSON.stringify(msg.reasoningSteps ?? [], null, 2),
-  );
-  ElMessage.success("Đã sao chép nhật ký suy nghĩ");
 };
 
 const clearSteeringStuckWatchdog = (sessionId: string) => {
@@ -429,6 +424,7 @@ const cleanupRun = (sessionId: string) => {
   delete steeringStatus.value[sessionId];
   activeStreamSessions.value.delete(sessionId);
   delete activeStreams.value[sessionId];
+  delete activePlans.value[sessionId];
   localStorage.removeItem(`chatRun:${sessionId}`);
 };
 
@@ -486,6 +482,7 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
             createdAt: new Date().toISOString(),
           };
           activeStreams.value[sessionId] = nextAiMsg;
+          markReasoningStarted(nextAiMsg);
           messages.value.push(nextAiMsg);
           if (activeSessionId.value === sessionId) scrollToBottom();
           break;
@@ -560,6 +557,88 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
           ElMessage.error(evt.payload || "Đã có lỗi xảy ra khi AI trả lời");
           cleanupRun(sessionId);
           break;
+        case "plan_started": {
+          ChatApi.getPlan(watcher.runId)
+            .then((plan) => {
+              const planMsg: ChatMessage = {
+                id: `plan-${watcher.runId}`,
+                role: "AI",
+                message: "",
+                createdAt: new Date().toISOString(),
+                plan,
+              };
+              activePlans.value[sessionId] = planMsg;
+              messages.value.push(planMsg);
+              if (activeSessionId.value === sessionId) scrollToBottom();
+            })
+            .catch((err) => console.error("Không thể tải kế hoạch:", err));
+          break;
+        }
+        case "plan_step_added": {
+          const planMsg = activePlans.value[sessionId];
+          if (!planMsg?.plan) break;
+          try {
+            const { step } = JSON.parse(evt.payload || "{}");
+            if (step) planMsg.plan.steps = [...planMsg.plan.steps, step];
+          } catch (err) {
+            console.error("plan_step_added payload lỗi:", err);
+          }
+          if (activeSessionId.value === sessionId) scrollToBottom();
+          break;
+        }
+        case "plan_ready": {
+          const planMsg = activePlans.value[sessionId];
+          if (planMsg?.plan) planMsg.plan.status = "Ready";
+          break;
+        }
+        case "plan_step_started": {
+          const planMsg = activePlans.value[sessionId];
+          if (!planMsg?.plan) break;
+          try {
+            const { stepId } = JSON.parse(evt.payload || "{}");
+            const step = planMsg.plan.steps.find((s) => s.id === stepId);
+            if (step) step.status = "running";
+          } catch (err) {
+            console.error("plan_step_started payload lỗi:", err);
+          }
+          break;
+        }
+        case "plan_step_completed": {
+          const planMsg = activePlans.value[sessionId];
+          if (!planMsg?.plan) break;
+          try {
+            const { stepId, status, summary } = JSON.parse(evt.payload || "{}");
+            const step = planMsg.plan.steps.find((s) => s.id === stepId);
+            if (step) {
+              step.status = status ?? "done";
+              step.result = summary ?? step.result;
+            }
+          } catch (err) {
+            console.error("plan_step_completed payload lỗi:", err);
+          }
+          break;
+        }
+        case "plan_edited":
+        case "plan_invalidated": {
+          const planMsg = activePlans.value[sessionId];
+          if (!planMsg) break;
+          ChatApi.getPlan(watcher.runId)
+            .then((plan) => {
+              planMsg.plan = plan;
+            })
+            .catch((err) => console.error("Không thể tải lại kế hoạch:", err));
+          break;
+        }
+        case "plan_approved": {
+          const planMsg = activePlans.value[sessionId];
+          if (planMsg?.plan) planMsg.plan.status = "Executing";
+          break;
+        }
+        case "plan_rejected": {
+          const planMsg = activePlans.value[sessionId];
+          if (planMsg?.plan) planMsg.plan.status = "Rejected";
+          break;
+        }
         default:
           // Bỏ qua event lạ để tương thích ngược khi backend thêm loại event mới
           break;
@@ -578,19 +657,35 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
   });
 };
 
+const PLAN_RUN_STATUSES = new Set(["AwaitingApproval", "Executing"]);
+
 const resumeActiveRun = async (sessionId: string) => {
   try {
     const activeRun = await ChatApi.getActiveRun(sessionId);
     if (!activeRun) return;
 
-    const aiMsg: ChatMessage = {
-      id: `run-${activeRun.runId}`,
-      role: "AI",
-      message: activeRun.partialOutput,
-      createdAt: activeRun.startedAt || new Date().toISOString(),
-    };
-    activeStreams.value[sessionId] = aiMsg;
-    messages.value.push(aiMsg);
+    if (PLAN_RUN_STATUSES.has(activeRun.status)) {
+      const plan = await ChatApi.getPlan(activeRun.runId);
+      const planMsg: ChatMessage = {
+        id: `plan-${activeRun.runId}`,
+        role: "AI",
+        message: "",
+        createdAt: activeRun.startedAt || new Date().toISOString(),
+        plan,
+      };
+      activePlans.value[sessionId] = planMsg;
+      messages.value.push(planMsg);
+    } else {
+      const aiMsg: ChatMessage = {
+        id: `run-${activeRun.runId}`,
+        role: "AI",
+        message: activeRun.partialOutput,
+        createdAt: activeRun.startedAt || new Date().toISOString(),
+      };
+      activeStreams.value[sessionId] = aiMsg;
+      markReasoningStarted(aiMsg, activeRun.startedAt);
+      messages.value.push(aiMsg);
+    }
     if (activeSessionId.value === sessionId) scrollToBottom();
 
     if (connection.value?.state !== HubConnectionState.Connected) {
@@ -750,6 +845,7 @@ const beginNewRun = (sessionId: string, runId: string) => {
     createdAt: new Date().toISOString(),
   };
   activeStreams.value[sessionId] = aiMsg;
+  markReasoningStarted(aiMsg);
   activeStreamSessions.value.add(sessionId);
   messages.value.push(aiMsg);
   if (activeSessionId.value === sessionId) scrollToBottom();
@@ -1051,8 +1147,14 @@ const formatTime = (isoString: string) => {
 
           <template v-else>
             <template v-for="msg in messages" :key="msg.id">
+              <div v-if="msg.plan" class="flex w-full justify-start">
+                <PlanCard
+                  :plan="msg.plan"
+                  @update:plan="(p) => (msg.plan = p)"
+                />
+              </div>
               <div
-                v-if="
+                v-else-if="
                   msg.message ||
                   (msg.role === 'AI' && msg.reasoningSteps?.length)
                 "
@@ -1088,7 +1190,12 @@ const formatTime = (isoString: string) => {
                         Đã suy nghĩ trong
                         {{ msg.reasoningElapsedSeconds.toFixed(1) }} giây
                       </span>
-                      <span v-else>Đang suy nghĩ...</span>
+                      <template v-else>
+                        <el-icon class="is-loading text-blue-500"
+                          ><Loading
+                        /></el-icon>
+                        <span>Đang suy nghĩ...</span>
+                      </template>
                     </button>
                     <div
                       v-if="isReasoningPanelOpen(msg)"
@@ -1102,9 +1209,16 @@ const formatTime = (isoString: string) => {
                         :key="idx"
                       >
                         <div
+                          v-if="idx > 0 && step.kind === 'thinking'"
+                          class="border-t border-gray-200 mt-1 pt-1"
+                        ></div>
+                        <div
                           v-if="step.kind === 'thinking'"
                           class="flex items-start gap-2 text-xs text-gray-500"
                         >
+                          <span class="tabular-nums text-gray-400"
+                            >{{ idx + 1 }}.</span
+                          >
                           <span>💭</span>
                           <span>{{ step.text }}</span>
                         </div>
@@ -1117,6 +1231,9 @@ const formatTime = (isoString: string) => {
                               : 'text-gray-700'
                           "
                         >
+                          <span class="tabular-nums text-gray-400"
+                            >{{ idx + 1 }}.</span
+                          >
                           <el-icon
                             v-if="step.status === 'running'"
                             class="is-loading text-blue-500"
@@ -1137,13 +1254,6 @@ const formatTime = (isoString: string) => {
                       >
                         ⚠ {{ warning }}
                       </div>
-                      <button
-                        v-if="isDev"
-                        class="self-start text-[11px] text-gray-400 hover:text-gray-600 hover:underline"
-                        @click="copyReasoningLog(msg)"
-                      >
-                        Sao chép nhật ký
-                      </button>
                     </div>
                   </div>
                   <div
@@ -1183,7 +1293,8 @@ const formatTime = (isoString: string) => {
                 isSending &&
                 messages.length > 0 &&
                 messages[messages.length - 1].role === 'AI' &&
-                !messages[messages.length - 1].message
+                !messages[messages.length - 1].message &&
+                !messages[messages.length - 1].reasoningSteps?.length
               "
               class="flex justify-start w-full"
             >
