@@ -6,6 +6,7 @@ import {
   type ChatSession,
   type ChatMessage,
   type ChatMessageToolCall,
+  type ChatReasoningStep,
   type ChatRunEventDto,
   type SteeringResultDto,
 } from "@/api/chat/chat.api";
@@ -182,7 +183,7 @@ const toolCallText = (tool: ChatMessageToolCall) => {
 
 const parseToolStartPayload = (
   payload: string,
-): { name: string; summary?: string } => {
+): Pick<ChatMessageToolCall, "name" | "summary" | "argsPreview"> => {
   try {
     const parsed = JSON.parse(payload);
     if (
@@ -190,7 +191,11 @@ const parseToolStartPayload = (
       typeof parsed === "object" &&
       typeof parsed.name === "string"
     ) {
-      return { name: parsed.name, summary: parsed.summary || undefined };
+      return {
+        name: parsed.name,
+        summary: parsed.summary || undefined,
+        argsPreview: parsed.argsPreview || undefined,
+      };
     }
   } catch {
     return { name: payload };
@@ -202,7 +207,15 @@ const parseToolEndPayload = (
   payload: string,
 ): Pick<
   ChatMessageToolCall,
-  "name" | "truncated" | "totalCount" | "asOf" | "warnings" | "filtersApplied"
+  | "name"
+  | "summary"
+  | "durationMs"
+  | "resultPreview"
+  | "truncated"
+  | "totalCount"
+  | "asOf"
+  | "warnings"
+  | "filtersApplied"
 > => {
   try {
     const parsed = JSON.parse(payload);
@@ -213,6 +226,9 @@ const parseToolEndPayload = (
     ) {
       return {
         name: parsed.name,
+        summary: parsed.summary || undefined,
+        durationMs: parsed.durationMs,
+        resultPreview: parsed.resultPreview || undefined,
         truncated: parsed.truncated,
         totalCount: parsed.totalCount,
         asOf: parsed.asOf,
@@ -224,6 +240,22 @@ const parseToolEndPayload = (
     return { name: payload };
   }
   return { name: payload };
+};
+
+const parseThinkingPayload = (payload: string): string => {
+  try {
+    const parsed = JSON.parse(payload);
+    if (
+      parsed &&
+      typeof parsed === "object" &&
+      typeof parsed.text === "string"
+    ) {
+      return parsed.text;
+    }
+  } catch {
+    return payload;
+  }
+  return payload;
 };
 
 const runIdFromMessageId = (id?: string): string | undefined => {
@@ -255,18 +287,41 @@ const submitMessageFeedback = async (msg: ChatMessage) => {
   }
 };
 
-// Panel lịch sử tool thu gọn theo mặc định sau khi xong, mở khi đang chạy — trừ khi người dùng
+// Panel suy nghĩ thu gọn theo mặc định sau khi xong, mở khi đang chạy — trừ khi người dùng
 // tự bấm mở/đóng thì giữ theo lựa chọn đó (override) cho tới khi tin nhắn bị gỡ khỏi state.
-const toolPanelOverride = ref<Record<string, boolean>>({});
-const isToolPanelOpen = (msg: ChatMessage) => {
-  if (msg.id && msg.id in toolPanelOverride.value) {
-    return toolPanelOverride.value[msg.id];
+const reasoningPanelOverride = ref<Record<string, boolean>>({});
+const isReasoningPanelOpen = (msg: ChatMessage) => {
+  if (msg.id && msg.id in reasoningPanelOverride.value) {
+    return reasoningPanelOverride.value[msg.id];
   }
-  return (msg.toolCalls ?? []).some((t) => t.status === "running");
+  return (msg.reasoningSteps ?? []).some(
+    (s) => s.kind === "tool" && s.status === "running",
+  );
 };
-const toggleToolPanel = (msg: ChatMessage) => {
+const toggleReasoningPanel = (msg: ChatMessage) => {
   if (!msg.id) return;
-  toolPanelOverride.value[msg.id] = !isToolPanelOpen(msg);
+  reasoningPanelOverride.value[msg.id] = !isReasoningPanelOpen(msg);
+};
+
+const reasoningStartedAt = ref<Record<string, number>>({});
+const markReasoningStarted = (msg: ChatMessage) => {
+  if (msg.id && !(msg.id in reasoningStartedAt.value)) {
+    reasoningStartedAt.value[msg.id] = Date.now();
+  }
+};
+const finishReasoningTiming = (msg: ChatMessage | undefined) => {
+  if (!msg?.id || !(msg.id in reasoningStartedAt.value)) return;
+  msg.reasoningElapsedSeconds =
+    (Date.now() - reasoningStartedAt.value[msg.id]) / 1000;
+  delete reasoningStartedAt.value[msg.id];
+};
+
+const isDev = import.meta.env.DEV;
+const copyReasoningLog = async (msg: ChatMessage) => {
+  await navigator.clipboard.writeText(
+    JSON.stringify(msg.reasoningSteps ?? [], null, 2),
+  );
+  ElMessage.success("Đã sao chép nhật ký suy nghĩ");
 };
 
 const clearSteeringStuckWatchdog = (sessionId: string) => {
@@ -439,34 +494,58 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
           clearSteeringStuckWatchdog(sessionId);
           delete steeringStatus.value[sessionId];
           break;
+        case "thinking": {
+          if (!aiMsg) break;
+          markReasoningStarted(aiMsg);
+          const text = parseThinkingPayload(evt.payload || "");
+          aiMsg.reasoningSteps = [
+            ...(aiMsg.reasoningSteps ?? []),
+            { kind: "thinking", text },
+          ];
+          if (activeSessionId.value === sessionId) scrollToBottom();
+          break;
+        }
         case "tool_start": {
           if (!aiMsg) break;
-          const { name, summary } = parseToolStartPayload(evt.payload || "");
+          markReasoningStarted(aiMsg);
+          const { name, summary, argsPreview } = parseToolStartPayload(
+            evt.payload || "",
+          );
           const label = toolLabelByName.value[name] || name || "dữ liệu";
-          aiMsg.toolCalls = [
-            ...(aiMsg.toolCalls ?? []),
-            { name, label, summary, status: "running" },
+          aiMsg.reasoningSteps = [
+            ...(aiMsg.reasoningSteps ?? []),
+            {
+              kind: "tool",
+              name,
+              label,
+              summary,
+              argsPreview,
+              status: "running",
+            },
           ];
           if (activeSessionId.value === sessionId) scrollToBottom();
           break;
         }
         case "tool_end": {
-          const list = aiMsg?.toolCalls;
+          const list = aiMsg?.reasoningSteps;
           if (list) {
-            const { name, ...envelopeSummary } = parseToolEndPayload(
+            const { name, ...toolResult } = parseToolEndPayload(
               evt.payload || "",
             );
             const lastRunningIdx = list.findLastIndex(
-              (t) => t.name === name && t.status === "running",
+              (s) =>
+                s.kind === "tool" && s.name === name && s.status === "running",
             );
-            if (lastRunningIdx !== -1) {
+            const current =
+              lastRunningIdx !== -1 ? list[lastRunningIdx] : undefined;
+            if (current?.kind === "tool") {
               const updated = [...list];
               updated[lastRunningIdx] = {
-                ...updated[lastRunningIdx],
-                ...envelopeSummary,
+                ...current,
+                ...toolResult,
                 status: "done",
               };
-              aiMsg!.toolCalls = updated;
+              aiMsg!.reasoningSteps = updated;
             }
           }
           if (activeSessionId.value === sessionId) scrollToBottom();
@@ -474,6 +553,7 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
         }
         case "run_completed":
         case "run_cancelled":
+          finishReasoningTiming(aiMsg);
           cleanupRun(sessionId);
           break;
         case "error":
@@ -973,7 +1053,8 @@ const formatTime = (isoString: string) => {
             <template v-for="msg in messages" :key="msg.id">
               <div
                 v-if="
-                  msg.message || (msg.role === 'AI' && msg.toolCalls?.length)
+                  msg.message ||
+                  (msg.role === 'AI' && msg.reasoningSteps?.length)
                 "
                 class="flex w-full"
                 :class="msg.role === 'User' ? 'justify-end' : 'justify-start'"
@@ -987,57 +1068,82 @@ const formatTime = (isoString: string) => {
                   "
                 >
                   <div
-                    v-if="msg.toolCalls?.length"
+                    v-if="msg.reasoningSteps?.length"
                     class="mb-2 -mx-1 rounded-lg border border-gray-100 bg-gray-50"
                   >
                     <button
                       class="flex w-full items-center gap-1.5 px-2 py-1.5 text-xs text-gray-500 hover:text-gray-700"
-                      @click="toggleToolPanel(msg)"
+                      @click="toggleReasoningPanel(msg)"
                     >
                       <el-icon
                         class="transition-transform"
                         :style="{
-                          transform: isToolPanelOpen(msg)
+                          transform: isReasoningPanelOpen(msg)
                             ? 'rotate(90deg)'
                             : 'rotate(0deg)',
                         }"
                         ><ArrowRight
                       /></el-icon>
-                      <span>{{ msg.toolCalls.length }} công cụ đã dùng</span>
+                      <span v-if="msg.reasoningElapsedSeconds != null">
+                        Đã suy nghĩ trong
+                        {{ msg.reasoningElapsedSeconds.toFixed(1) }} giây
+                      </span>
+                      <span v-else>Đang suy nghĩ...</span>
                     </button>
                     <div
-                      v-if="isToolPanelOpen(msg)"
+                      v-if="isReasoningPanelOpen(msg)"
                       class="flex flex-col gap-1 px-3 pb-2"
                     >
-                      <div
-                        v-for="(tool, idx) in msg.toolCalls"
-                        :key="`${tool.name}-${idx}`"
-                        class="flex items-center gap-2 text-xs"
-                        :class="
-                          tool.status === 'done'
-                            ? 'text-gray-400'
-                            : 'text-gray-700'
-                        "
-                      >
-                        <el-icon
-                          v-if="tool.status === 'running'"
-                          class="is-loading text-blue-500"
-                          ><Loading
-                        /></el-icon>
-                        <el-icon v-else class="text-green-500"
-                          ><CircleCheck
-                        /></el-icon>
-                        <span>{{ toolCallText(tool) }}</span>
+                      <div class="text-[11px] italic text-gray-400">
+                        Đây là diễn giải của AI, không phải nhật ký hệ thống
                       </div>
+                      <template
+                        v-for="(step, idx) in msg.reasoningSteps"
+                        :key="idx"
+                      >
+                        <div
+                          v-if="step.kind === 'thinking'"
+                          class="flex items-start gap-2 text-xs text-gray-500"
+                        >
+                          <span>💭</span>
+                          <span>{{ step.text }}</span>
+                        </div>
+                        <div
+                          v-else
+                          class="flex items-center gap-2 text-xs"
+                          :class="
+                            step.status === 'done'
+                              ? 'text-gray-400'
+                              : 'text-gray-700'
+                          "
+                        >
+                          <el-icon
+                            v-if="step.status === 'running'"
+                            class="is-loading text-blue-500"
+                            ><Loading
+                          /></el-icon>
+                          <el-icon v-else class="text-green-500"
+                            ><CircleCheck
+                          /></el-icon>
+                          <span>{{ toolCallText(step) }}</span>
+                        </div>
+                      </template>
                       <div
-                        v-for="warning in msg.toolCalls.flatMap(
-                          (t) => t.warnings ?? [],
-                        )"
+                        v-for="warning in msg.reasoningSteps
+                          .filter((s) => s.kind === 'tool')
+                          .flatMap((s) => s.warnings ?? [])"
                         :key="warning"
                         class="text-xs text-amber-600"
                       >
                         ⚠ {{ warning }}
                       </div>
+                      <button
+                        v-if="isDev"
+                        class="self-start text-[11px] text-gray-400 hover:text-gray-600 hover:underline"
+                        @click="copyReasoningLog(msg)"
+                      >
+                        Sao chép nhật ký
+                      </button>
                     </div>
                   </div>
                   <div
@@ -1060,7 +1166,7 @@ const formatTime = (isoString: string) => {
                     "
                   >
                     <button
-                      v-if="msg.role === 'AI' && msg.toolCalls?.length"
+                      v-if="msg.role === 'AI' && msg.reasoningSteps?.length"
                       class="hover:text-amber-600 hover:underline"
                       @click="submitMessageFeedback(msg)"
                     >

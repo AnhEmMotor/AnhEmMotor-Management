@@ -7,11 +7,18 @@ export interface ChatSession {
 
 export type ChatRole = "User" | "AI" | "System";
 
+export interface ChatToolPreview {
+  preview: string;
+}
+
 export interface ChatMessageToolCall {
   name: string;
   label: string;
   summary?: string;
   status: "running" | "done";
+  durationMs?: number;
+  argsPreview?: ChatToolPreview;
+  resultPreview?: ChatToolPreview;
   truncated?: boolean;
   totalCount?: number;
   asOf?: string;
@@ -19,13 +26,18 @@ export interface ChatMessageToolCall {
   filtersApplied?: Record<string, string>;
 }
 
+export type ChatReasoningStep =
+  | { kind: "thinking"; text: string }
+  | ({ kind: "tool" } & ChatMessageToolCall);
+
 export interface ChatMessage {
   id?: string;
   role: ChatRole;
   message: string;
   createdAt: string;
   isSteering?: boolean;
-  toolCalls?: ChatMessageToolCall[];
+  reasoningSteps?: ChatReasoningStep[];
+  reasoningElapsedSeconds?: number;
 }
 
 export interface SteeringResultDto {
