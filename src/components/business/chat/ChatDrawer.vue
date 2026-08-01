@@ -22,6 +22,7 @@ import "highlight.js/styles/atom-one-dark.css";
 
 // Configure marked
 const renderer = new marked.Renderer();
+// @ts-ignore - marked v4 Renderer.code signature compatibility
 renderer.code = function (tokenOrCode: any, maybeLang: string | undefined) {
   let code = "";
   let lang = maybeLang;

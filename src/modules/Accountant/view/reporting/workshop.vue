@@ -127,6 +127,7 @@ import ArtBarChart from "@/components/core/charts/art-bar-chart/index.vue";
 import ReportPageHeader from "./ReportPageHeader.vue";
 import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
 import { exportReportWorkbook } from "@/utils/report-excel";
+import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
 
 const currentPeriod = ref<"today" | "month" | "year" | "custom">("month");
 const periodStart = ref("");

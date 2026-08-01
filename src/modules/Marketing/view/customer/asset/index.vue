@@ -174,7 +174,7 @@
                   class="size-16 rounded-xl bg-gray-100 dark:bg-slate-700 overflow-hidden shrink-0 border border-gray-100 dark:border-slate-600"
                 >
                   <img
-                    src="https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=200"
+                    :src="getImageUrl(asset.imageUrl)"
                     class="size-full object-cover"
                   />
                 </div>
@@ -182,7 +182,7 @@
                   <h2
                     class="m-0 text-xl font-bold text-gray-800 dark:text-white tracking-tight"
                   >
-                    {{ asset.product?.name || `Xe máy #${asset.id}` }}
+                    {{ asset.productName || `Xe máy #${asset.id}` }}
                   </h2>
                   <div class="flex gap-2">
                     <ElTag
@@ -455,6 +455,13 @@ const getInitials = (name: string) => {
   return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
 };
 
+const getImageUrl = (url?: string) => {
+  if (!url)
+    return "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=200";
+  if (url.startsWith("http")) return url;
+  return `${import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || ""}${url}`;
+};
+
 const loadLeads = async () => {
   loadingLeads.value = true;
   try {
@@ -609,11 +616,22 @@ const vaultFolders = computed(() => [
 
 const getAssetSpecs = (v: any) => {
   return [
+    {
+      label: "Thể loại",
+      value: v?.categoryName || "Xe máy",
+      icon: "ri:motorbike-line",
+    },
+    {
+      label: "Phiên bản",
+      value: v?.variantName || "-",
+      icon: "ri:settings-5-line",
+    },
+    { label: "Màu sắc", value: v?.colorName || "-", icon: "ri:palette-line" },
     { label: "Số khung", value: v?.vinNumber || "-", icon: "ri:barcode-line" },
     {
       label: "Số máy",
       value: v?.engineNumber || "-",
-      icon: "ri:settings-5-line",
+      icon: "ri:settings-3-line",
     },
     {
       label: "Ngày mua",

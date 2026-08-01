@@ -1,5 +1,5 @@
 <template>
-  <div class="resp-page sales-setting-page flex flex-col gap-4 pb-5">
+  <div class="sales-setting-page flex flex-col gap-4 pb-5">
     <ElCard class="setting-card" shadow="never">
       <template #header>
         <div class="card-header">
@@ -7,188 +7,232 @@
             <h3>Cài đặt đặt cọc</h3>
             <p>
               Điều chỉnh ngưỡng giá trị đơn hàng và phần trăm khách cần thanh
-              toán trước.
+              toán trước theo từng loại đơn hàng.
             </p>
           </div>
-          <ElButton type="primary" :loading="saving" @click="handleSave"
-            >Lưu cài đặt</ElButton
-          >
+          <ElButton type="primary" :loading="saving" @click="handleSave">
+            Lưu cài đặt
+          </ElButton>
         </div>
       </template>
 
-      <ElForm
-        label-position="top"
-        class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4"
-      >
-        <ElFormItem label="Đơn hàng vượt quá">
-          <ElInputNumber
-            v-model="form.orderThreshold"
-            :min="0"
-            :step="1000000"
-            :precision="0"
-            controls-position="right"
-            class="w-full"
-          />
-          <div class="field-hint">
-            {{ formatCurrency(form.orderThreshold) }}
-          </div>
-        </ElFormItem>
-
-        <ElFormItem label="Cơ chế đặt cọc">
-          <div class="flex flex-col gap-3 w-full">
-            <ElRadioGroup v-model="form.depositType" class="flex gap-4">
-              <ElRadio value="percentage">Theo tỷ lệ (%)</ElRadio>
-              <ElRadio value="fixed">Số tiền cố định (VND)</ElRadio>
-            </ElRadioGroup>
-
-            <div v-if="form.depositType === 'percentage'" class="w-full">
+      <ElTabs v-model="activeTab" class="deposit-tabs">
+        <ElTabPane
+          v-for="item in settings"
+          :key="item.orderType"
+          :label="item.orderType"
+          :name="item.orderType"
+        >
+          <ElForm
+            label-position="top"
+            class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4"
+          >
+            <ElFormItem label="Ngưỡng giá trị đơn hàng">
               <ElInputNumber
-                v-model="form.depositRatio"
-                :min="1"
-                :max="99"
-                :step="1"
-                :precision="0"
-                :formatter="(value) => (value ? `${value}%` : '')"
-                :parser="(value) => value.replace('%', '')"
-                controls-position="right"
-                class="w-full"
-              />
-              <div class="field-hint">Backend cho phép từ 1% đến 99%.</div>
-            </div>
-
-            <div v-else class="w-full">
-              <ElInputNumber
-                v-model="form.fixedDepositAmount"
+                v-model="item.orderThreshold"
                 :min="0"
-                :step="500000"
+                :step="1000000"
                 :precision="0"
                 controls-position="right"
                 class="w-full"
               />
               <div class="field-hint">
-                {{ formatCurrency(form.fixedDepositAmount) }} (Mức cọc cứng áp
-                dụng cho mỗi xe máy)
+                {{ formatCurrency(item.orderThreshold) }}
               </div>
+            </ElFormItem>
+
+            <ElFormItem label="Tỷ lệ đặt cọc">
+              <ElInputNumber
+                v-model="item.depositRatio"
+                :min="1"
+                :max="99"
+                :step="1"
+                :precision="0"
+                :formatter="(value: any) => (value ? `${value}%` : '')"
+                :parser="(value: any) => value.replace('%', '')"
+                controls-position="right"
+                class="w-full"
+              />
+              <div class="field-hint">Backend cho phép từ 1% đến 99%.</div>
+            </ElFormItem>
+          </ElForm>
+
+          <ElDivider content-position="left">Mô phỏng tính toán</ElDivider>
+          <div class="summary-grid">
+            <div class="summary-item">
+              <span>Đơn hàng mô phỏng: </span>
+              <strong>{{ formatCurrency(item.orderThreshold) }}</strong>
+            </div>
+            <div class="summary-item">
+              <span>Số tiền cần đặt cọc: </span>
+              <strong>{{
+                formatCurrency(
+                  calculateDeposit(
+                    item.orderThreshold,
+                    item.orderThreshold,
+                    item.depositRatio,
+                  ),
+                )
+              }}</strong>
+            </div>
+            <div class="summary-item">
+              <span>Còn lại sau đặt cọc: </span>
+              <strong>{{
+                formatCurrency(
+                  Math.max(
+                    item.orderThreshold -
+                      calculateDeposit(
+                        item.orderThreshold,
+                        item.orderThreshold,
+                        item.depositRatio,
+                      ),
+                    0,
+                  ),
+                )
+              }}</strong>
             </div>
           </div>
-        </ElFormItem>
-      </ElForm>
+        </ElTabPane>
+      </ElTabs>
     </ElCard>
 
-    <ElCard class="setting-card" shadow="never">
+    <ElCard shadow="never" class="mt-4">
       <template #header>
         <div class="card-header">
-          <div>
-            <h3>Xem trước cách tính</h3>
-            <p>Phần này giúp kiểm tra nhanh logic đang áp dụng trên Store.</p>
-          </div>
+          <h3>Lịch sử thay đổi cài đặt đặt cọc</h3>
         </div>
       </template>
 
-      <div class="preview-grid">
-        <div class="preview-item">
-          <span>Giá trị đơn mẫu để xem thử</span>
-          <strong class="mt-2 text-xl font-bold">{{
-            formatCurrency(sampleOrderTotal)
-          }}</strong>
-        </div>
-
-        <div class="preview-item highlight">
-          <span>Số tiền cần đặt cọc</span>
-          <strong>{{ formatCurrency(sampleDeposit) }}</strong>
-        </div>
-        <div class="preview-item">
-          <span>Còn lại sau đặt cọc</span>
-          <strong>{{ formatCurrency(sampleRemaining) }}</strong>
-        </div>
-      </div>
+      <ElTable
+        :data="history"
+        v-loading="loadingHistory"
+        border
+        stripe
+        style="width: 100%"
+      >
+        <ElTableColumn type="index" label="Lần" width="60" align="center" />
+        <ElTableColumn prop="createdAt" label="Ngày thay đổi" width="180">
+          <template #default="{ row }">
+            {{ formatDate(row.createdAt) }}
+          </template>
+        </ElTableColumn>
+        <ElTableColumn prop="orderType" label="Loại đơn hàng" width="200" />
+        <ElTableColumn prop="orderThreshold" label="Ngưỡng giá trị">
+          <template #default="{ row }">
+            {{ formatCurrency(row.orderThreshold) }}
+          </template>
+        </ElTableColumn>
+        <ElTableColumn prop="depositRatio" label="Tỷ lệ đặt cọc" width="120">
+          <template #default="{ row }"> {{ row.depositRatio }}% </template>
+        </ElTableColumn>
+        <ElTableColumn label="Số tiền cần đặt cọc (Mô phỏng)" width="220">
+          <template #default="{ row }">
+            {{
+              formatCurrency(
+                calculateDeposit(
+                  row.orderThreshold,
+                  row.orderThreshold,
+                  row.depositRatio,
+                ),
+              )
+            }}
+          </template>
+        </ElTableColumn>
+        <ElTableColumn label="Còn lại (Mô phỏng)" width="200">
+          <template #default="{ row }">
+            {{
+              formatCurrency(
+                Math.max(
+                  row.orderThreshold -
+                    calculateDeposit(
+                      row.orderThreshold,
+                      row.orderThreshold,
+                      row.depositRatio,
+                    ),
+                  0,
+                ),
+              )
+            }}
+          </template>
+        </ElTableColumn>
+        <ElTableColumn prop="createdBy" label="Người thực hiện" width="150" />
+      </ElTable>
     </ElCard>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
-import { SettingApi } from "@/api/setting.api";
+import {
+  DepositSettingApi,
+  DepositSettingItemDto,
+  DepositSettingHistoryResponse,
+} from "@/api/deposit-setting.api";
+import dayjs from "dayjs";
 
 defineOptions({ name: "SalesDepositSettings" });
 
-const DEFAULT_ORDER_THRESHOLD = 100000000;
-const DEFAULT_DEPOSIT_RATIO = 50;
-const DEFAULT_DEPOSIT_TYPE = "percentage";
-const DEFAULT_FIXED_DEPOSIT_AMOUNT = 2000000;
-
 const loading = ref(false);
+const loadingHistory = ref(false);
 const saving = ref(false);
+
+const activeTab = ref("Xe máy");
 const sampleOrderTotal = ref(100000000);
 
-const form = reactive({
-  orderThreshold: DEFAULT_ORDER_THRESHOLD,
-  depositRatio: DEFAULT_DEPOSIT_RATIO,
-  depositType: DEFAULT_DEPOSIT_TYPE,
-  fixedDepositAmount: DEFAULT_FIXED_DEPOSIT_AMOUNT,
-});
+const settings = ref<DepositSettingItemDto[]>([]);
+const history = ref<DepositSettingHistoryResponse[]>([]);
 
-const sampleNeedsDeposit = computed(
-  () => sampleOrderTotal.value >= form.orderThreshold,
-);
-
-const sampleDeposit = computed(() => {
-  if (!sampleNeedsDeposit.value) return 0;
-  if (form.depositType === "fixed") {
-    return form.fixedDepositAmount;
-  }
-  return Math.round((sampleOrderTotal.value * form.depositRatio) / 100);
-});
-
-const sampleRemaining = computed(() =>
-  Math.max(sampleOrderTotal.value - sampleDeposit.value, 0),
-);
+const calculateDeposit = (total: number, threshold: number, ratio: number) => {
+  if (total < threshold) return 0;
+  return Math.round((total * ratio) / 100);
+};
 
 const formatCurrency = (value: number) =>
   `${Math.round(value || 0).toLocaleString("vi-VN")} đ`;
 
-const toNumber = (value: string | null | undefined, fallback: number) => {
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : fallback;
+const formatDate = (date: string) => {
+  if (!date) return "";
+  return dayjs(date).format("DD-MM-YYYY HH:mm");
 };
 
 const loadSettings = async () => {
   loading.value = true;
   try {
-    const settings = await SettingApi.getAll();
-    form.orderThreshold = toNumber(
-      settings.Order_value_exceeds,
-      DEFAULT_ORDER_THRESHOLD,
-    );
-    form.depositRatio = toNumber(settings.Deposit_ratio, DEFAULT_DEPOSIT_RATIO);
-    form.depositType = (settings as any).Deposit_type || DEFAULT_DEPOSIT_TYPE;
-    form.fixedDepositAmount = toNumber(
-      (settings as any).Fixed_deposit_amount,
-      DEFAULT_FIXED_DEPOSIT_AMOUNT,
-    );
+    const data = await DepositSettingApi.getSettings();
+    settings.value = data;
+    if (data.length > 0 && !activeTab.value) {
+      activeTab.value = data[0].orderType;
+    }
   } finally {
     loading.value = false;
+  }
+};
+
+const loadHistory = async () => {
+  loadingHistory.value = true;
+  try {
+    history.value = await DepositSettingApi.getHistory();
+  } finally {
+    loadingHistory.value = false;
   }
 };
 
 const handleSave = async () => {
   saving.value = true;
   try {
-    await SettingApi.update({
-      Order_value_exceeds: String(Math.round(form.orderThreshold)),
-      Deposit_ratio: String(form.depositRatio),
-      Deposit_type: form.depositType,
-      Fixed_deposit_amount: String(Math.round(form.fixedDepositAmount)),
-    });
+    await DepositSettingApi.updateSettings(settings.value);
     ElMessage.success("Đã lưu cài đặt đặt cọc");
-    await loadSettings();
+    await Promise.all([loadSettings(), loadHistory()]);
   } finally {
     saving.value = false;
   }
 };
 
-onMounted(loadSettings);
+onMounted(() => {
+  loadSettings();
+  loadHistory();
+});
 </script>
 
 <style scoped lang="scss">
@@ -199,80 +243,59 @@ onMounted(loadSettings);
 .setting-card {
   background: var(--el-bg-color);
   border-color: var(--el-border-color-light);
+  border-radius: 12px;
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    p {
+      margin: 0;
+      color: var(--el-text-color-secondary);
+      font-size: 0.875rem;
+    }
+  }
 }
 
-.card-header {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  justify-content: space-between;
-
-  h3 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--el-text-color-primary);
-  }
-
-  p {
-    margin: 6px 0 0;
-    font-size: 13px;
-    color: var(--el-text-color-secondary);
-  }
+.deposit-tabs {
+  margin-top: -10px;
 }
 
 .field-hint {
-  margin-top: 6px;
-  font-size: 12px;
+  font-size: 0.8rem;
   color: var(--el-text-color-secondary);
+  margin-top: 4px;
 }
 
-.preview-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.preview-item {
+.summary-grid {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-height: 88px;
+  gap: 24px;
+  background: var(--el-fill-color-light);
   padding: 16px;
-  background: var(--el-fill-color-lighter);
-  border: 1px solid var(--el-border-color-light);
-  border-radius: 14px;
+  border-radius: 8px;
+  margin-top: 16px;
+  flex-wrap: wrap;
 
-  span {
-    font-size: 13px;
-    color: var(--el-text-color-secondary);
-  }
+  .summary-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 
-  strong {
-    margin-top: 8px;
-    font-size: 20px;
-    color: var(--el-text-color-primary);
-  }
+    span {
+      color: var(--el-text-color-secondary);
+    }
 
-  &.highlight strong {
-    color: var(--el-color-danger);
-  }
-
-  small {
-    margin-top: 6px;
-    font-size: 12px;
-    color: var(--el-text-color-secondary);
-  }
-}
-
-@media (width <= 900px) {
-  .preview-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .card-header {
-    flex-direction: column;
-    align-items: flex-start;
+    strong {
+      font-size: 1.1rem;
+      color: var(--el-color-primary);
+    }
   }
 }
 </style>
