@@ -152,6 +152,45 @@
           </ElForm>
         </div>
 
+        <!-- Usage Limits -->
+        <div
+          class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-6"
+        >
+          <h3
+            class="text-sm font-bold text-gray-800 dark:text-slate-100 uppercase tracking-widest mb-6 flex items-center gap-2"
+          >
+            <ArtSvgIcon
+              icon="ri:shield-flash-line"
+              class="text-amber-500 text-lg"
+            />
+            Giới hạn sử dụng
+          </h3>
+          <ElForm
+            :model="form"
+            label-position="top"
+            class="grid grid-cols-2 gap-x-6 gap-y-2"
+          >
+            <ElFormItem label="Tổng số lượt sử dụng tối đa">
+              <ElInputNumber
+                v-model="form.totalUsageLimit"
+                :min="0"
+                class="w-full"
+                controls-position="right"
+                placeholder="Để 0 nếu không giới hạn tổng lượt dùng"
+              />
+            </ElFormItem>
+            <ElFormItem label="Số lần sử dụng tối đa trên mỗi khách hàng">
+              <ElInputNumber
+                v-model="form.usageLimitPerUser"
+                :min="0"
+                class="w-full"
+                controls-position="right"
+                placeholder="Để 0 nếu không giới hạn lượt dùng mỗi khách"
+              />
+            </ElFormItem>
+          </ElForm>
+        </div>
+
         <!-- Audience Config -->
         <div
           class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-6 mb-10"
@@ -268,6 +307,8 @@ const form = ref<any>({
   discountType: "PERCENT",
   discountValue: 0,
   maxDiscountAmount: undefined,
+  totalUsageLimit: 0,
+  usageLimitPerUser: 1,
   assignedCustomers: [],
 });
 
@@ -315,7 +356,7 @@ const handleSave = async () => {
     applyFor:
       form.value.applyFor === "ALL"
         ? 0
-        : form.value.applyFor === "MOTORCYCLE"
+        : form.value.applyFor === "VEHICLE"
           ? 1
           : 2,
     channel:
@@ -348,27 +389,28 @@ onMounted(async () => {
     voucherId.value = Number(id);
     try {
       const res: any = await getVoucherById(voucherId.value);
-      if (res.data) {
+      const data = res?.value ?? res?.data ?? res;
+      if (data) {
         form.value = {
-          ...res.data,
+          ...data,
           applyFor:
-            res.data.applyFor === 0
+            data.applyFor === 0
               ? "ALL"
-              : res.data.applyFor === 1
-                ? "MOTORCYCLE"
-                : "ACCESSORY",
+              : data.applyFor === 1
+                ? "VEHICLE"
+                : "PART",
           channel:
-            res.data.channel === 0
+            data.channel === 0
               ? "ALL"
-              : res.data.channel === 1
+              : data.channel === 1
                 ? "STORE"
                 : "WEBSITE",
-          type: res.data.type === 0 ? "PUBLIC" : "PRIVATE",
-          discountType: res.data.discountType === 0 ? "PERCENT" : "FIXED",
-          assignedCustomers: res.data.assignedCustomerIds || [],
+          type: data.type === 0 ? "PUBLIC" : "PRIVATE",
+          discountType: data.discountType === 0 ? "PERCENT" : "AMOUNT",
+          assignedCustomers: data.assignedCustomerIds || [],
         };
-        if (res.data.validFrom && res.data.validTo) {
-          dateRange.value = [res.data.validFrom, res.data.validTo];
+        if (data.validFrom && data.validTo) {
+          dateRange.value = [data.validFrom, data.validTo];
         }
       }
     } catch (e) {

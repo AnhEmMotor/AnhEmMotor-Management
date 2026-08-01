@@ -198,6 +198,38 @@
             </template>
           </ElTableColumn>
 
+          <ElTableColumn label="Lượt sử dụng" width="180">
+            <template #default="{ row }">
+              <div
+                class="flex flex-col text-xs font-semibold text-gray-600 dark:text-gray-400"
+              >
+                <span>
+                  <span class="text-gray-400 font-normal">Đã dùng:</span>
+                  <span class="font-bold text-gray-800 dark:text-slate-200">
+                    {{ row.usedCount }}</span
+                  >
+                </span>
+                <span>
+                  <span class="text-gray-400 font-normal">Còn lại:</span>
+                  <span
+                    v-if="row.totalUsageLimit > 0"
+                    :class="
+                      row.totalUsageLimit - row.usedCount <= 0
+                        ? 'text-red-500 font-bold'
+                        : 'font-bold text-emerald-600'
+                    "
+                  >
+                    {{ Math.max(0, row.totalUsageLimit - row.usedCount) }} /
+                    {{ row.totalUsageLimit }}
+                  </span>
+                  <span v-else class="text-gray-500 font-normal font-mono"
+                    >∞ (Vô hạn)</span
+                  >
+                </span>
+              </div>
+            </template>
+          </ElTableColumn>
+
           <ElTableColumn label="Thời hạn" width="200">
             <template #default="{ row }">
               <div
