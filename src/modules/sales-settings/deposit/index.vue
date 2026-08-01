@@ -130,7 +130,7 @@ const form = reactive({
 });
 
 const sampleNeedsDeposit = computed(
-  () => sampleOrderTotal.value >= form.orderThreshold,
+  () => sampleOrderTotal.value > form.orderThreshold,
 );
 
 const sampleDeposit = computed(() => {
