@@ -31,6 +31,15 @@ export namespace Contact {
     status: string;
     assignedUserId?: string;
     assignedUserName?: string;
+    assignedAt?: string;
+    startedAt?: string;
+    closedAt?: string;
+    employeeRatingOfCustomer?: number;
+    employeeRatingComment?: string;
+    employeeRatedAt?: string;
+    customerRatingOfEmployee?: number;
+    customerRatingComment?: string;
+    customerRatedAt?: string;
     contact?: ContactBasic;
     createdAt?: string;
   }
@@ -86,6 +95,11 @@ export namespace Contact {
     content: string;
   }
 
+  export interface CreateSupportRequestResponse {
+    id: number;
+    trackingToken: string;
+  }
+
   export interface CreateFeedbackPayload {
     rating: number;
     feedbackArea: string;
@@ -114,6 +128,11 @@ export namespace Contact {
   export interface UpdateInternalNotePayload {
     contactId: number;
     internalNote: string;
+  }
+
+  export interface SupportRatingPayload {
+    rating: number;
+    comment?: string;
   }
 
   export const SupportStatuses = [

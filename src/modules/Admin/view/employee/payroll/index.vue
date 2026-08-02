@@ -621,22 +621,17 @@ onMounted(() => {
 }
 
 .payroll-kpi-grid :deep(> :first-child) {
-  color: #fff;
-  background:
-    radial-gradient(circle at 88% 10%, rgb(255 255 255 / 18%), transparent 30%),
-    linear-gradient(135deg, var(--payroll-red), var(--payroll-red-dark));
-  border-color: transparent;
-  box-shadow: 0 12px 26px rgb(197 58 58 / 18%);
+  color: var(--el-text-color-primary);
+  background: var(--el-bg-color-overlay);
+  border-color: var(--el-border-color-lighter);
 }
 
-.payroll-kpi-grid :deep(> :first-child p),
+.payroll-kpi-grid :deep(> :first-child p) {
+  color: var(--el-text-color-secondary) !important;
+}
+
 .payroll-kpi-grid :deep(> :first-child .art-count-to) {
-  color: #fff !important;
-}
-
-.payroll-kpi-grid :deep(> :first-child .art-stats-card-icon) {
-  background: rgb(255 255 255 / 16%) !important;
-  border: 1px solid rgb(255 255 255 / 18%);
+  color: var(--el-text-color-primary) !important;
 }
 
 .payroll-kpi-grid :deep(.art-count-to),

@@ -23,12 +23,31 @@ test("employee report distinguishes missing source data from real zero values", 
     readSource(employeeReportPath),
     readSource(staffRepositoryPath),
   ]);
+  const staffPerformanceMethod = repository.slice(
+    repository.indexOf("GetStaffPerformanceAsync"),
+    repository.indexOf("private static string GetKpiStatus"),
+  );
 
-  assert.match(repository, /HasSalesData\s*=/);
-  assert.match(repository, /HasKpiData\s*=/);
-  assert.match(repository, /HasCommissionData\s*=/);
+  assert.match(staffPerformanceMethod, /HasSalesData\s*=/);
+  assert.match(staffPerformanceMethod, /HasKpiData\s*=/);
+  assert.match(staffPerformanceMethod, /HasCommissionData\s*=/);
   assert.match(
-    repository,
+    staffPerformanceMethod,
+    /OrderStatus\.Completed/,
+    "completed orders must use the canonical lowercase order status constant",
+  );
+  assert.doesNotMatch(
+    staffPerformanceMethod,
+    /o\.StatusId\s*==\s*"Completed"/,
+    "the legacy uppercase status made every real completed order disappear",
+  );
+  assert.match(
+    staffPerformanceMethod,
+    /endExclusive\s*=\s*end\.Date\.AddDays\(1\)/,
+    "the selected end date must include the full day",
+  );
+  assert.match(
+    staffPerformanceMethod,
     /ActualValue/,
     "the report should use KPI actuals when order attribution has not been mapped",
   );
@@ -53,6 +72,22 @@ test("payroll presents KPI money separately and includes it in take-home pay", a
     response,
     /BaseSalary\s*\+\s*ConfirmedCommission\s*\+\s*PaidCommission\s*\+\s*KpiBonus/,
   );
+});
+
+test("payroll total card keeps readable theme-aware text in light mode", async () => {
+  const page = await readSource(payrollPagePath);
+  const payrollCardStyles = page.slice(
+    page.indexOf(".payroll-kpi-grid :deep(> :first-child)"),
+    page.indexOf(":global(html.dark)"),
+  );
+
+  assert.doesNotMatch(
+    payrollCardStyles,
+    /color:\s*#fff(?:fff)?\s*!important|color:\s*#fff(?:fff)?\s*;/,
+    "light-mode payroll cards must not force white text",
+  );
+  assert.match(payrollCardStyles, /var\(--el-text-color-primary\)/);
+  assert.match(payrollCardStyles, /var\(--el-text-color-secondary\)/);
 });
 
 test("contract report filters real contract dates, maps suppliers, and localizes statuses", async () => {

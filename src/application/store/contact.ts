@@ -166,6 +166,27 @@ export const useContactStore = defineStore("contactStore", () => {
     }
   };
 
+  const rateSupportCustomer = async (
+    supportRequestId: number,
+    rating: number,
+    comment: string,
+  ) => {
+    try {
+      await ContactApi.rateCustomer(supportRequestId, { rating, comment });
+      const refreshed = await fetchList();
+      if (refreshed) {
+        activeItem.value =
+          records.value.find((record) => record.id === supportRequestId) ??
+          null;
+        ElMessage.success("Đã lưu đánh giá khách hàng");
+      }
+      return refreshed;
+    } catch {
+      ElMessage.error("Không thể lưu đánh giá khách hàng");
+      return false;
+    }
+  };
+
   const setUnreadBadge = (count: number) => {
     unreadBadge.value = count;
   };
@@ -198,6 +219,7 @@ export const useContactStore = defineStore("contactStore", () => {
     sendReply,
     saveInternalNote,
     assignSupportRequest,
+    rateSupportCustomer,
     setUnreadBadge,
     incrementBadge,
     setAssignedFilter,

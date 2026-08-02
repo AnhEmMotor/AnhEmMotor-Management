@@ -225,6 +225,13 @@
                     </div>
                   </div>
 
+                  <SupportWorkflowPanel
+                    v-if="activeSupportRequest"
+                    :request="activeSupportRequest"
+                    :submitting="ratingSubmitting"
+                    @rate-customer="handleRateCustomer"
+                  />
+
                   <!-- Reply -->
                   <div class="pt-2">
                     <h4
@@ -245,7 +252,7 @@
                     <div class="flex justify-between items-center mt-3">
                       <div class="flex gap-2">
                         <ElButton
-                          v-if="activeItem && activeItem.status !== 'Closed'"
+                          v-if="activeItem?.status === 'InProgress'"
                           size="small"
                           type="success"
                           plain
@@ -258,9 +265,7 @@
                           />Đóng yêu cầu
                         </ElButton>
                         <ElButton
-                          v-if="
-                            activeItem && activeItem.status !== 'InProgress'
-                          "
+                          v-if="activeItem?.status === 'Assigned'"
                           size="small"
                           type="primary"
                           plain
@@ -273,19 +278,7 @@
                           />Đang xử lý
                         </ElButton>
                         <ElButton
-                          v-if="activeItem && activeItem.status !== 'New'"
-                          size="small"
-                          type="info"
-                          plain
-                          class="font-bold text-[10px]"
-                          @click="handleStatus('New')"
-                        >
-                          <ArtSvgIcon
-                            icon="ri:arrow-go-back-line"
-                            class="mr-1"
-                          />Mở lại (Mới)
-                        </ElButton>
-                        <ElButton
+                          v-if="activeItem?.status !== 'Closed'"
                           size="small"
                           plain
                           class="font-bold text-[10px]"
@@ -299,6 +292,7 @@
                       </div>
                       <ElButton
                         type="primary"
+                        :disabled="activeItem?.status !== 'InProgress'"
                         class="font-bold text-xs uppercase"
                         style="background: #001529; border-color: #001529"
                         @click="handleReply"
@@ -1148,6 +1142,7 @@ import {
   CandidateStatuses,
 } from "@/infrastructure/api/contact.api";
 import { resolveContactId, type Contact } from "@/types";
+import SupportWorkflowPanel from "./components/SupportWorkflowPanel.vue";
 
 defineOptions({ name: "ContactManagement" });
 const contactStore = useContactStore();
@@ -1160,6 +1155,7 @@ const replyDraft = ref("");
 const noteDraft = ref("");
 const assignDialogVisible = ref(false);
 const assignedUser = ref("");
+const ratingSubmitting = ref(false);
 
 type AssignableUser = {
   id: string;
@@ -1220,6 +1216,11 @@ watch(activeTab, () => {
 });
 
 const activeItem = computed(() => contactStore.activeItem as any);
+const activeSupportRequest = computed<Contact.SupportRequest | null>(() =>
+  activeTab.value === "support"
+    ? (contactStore.activeItem as Contact.SupportRequest | null)
+    : null,
+);
 
 watch(
   activeItem,
@@ -1390,6 +1391,23 @@ const handleStatus = async (newStatus: string) => {
     activeTab.value,
     newStatus,
   );
+};
+
+const handleRateCustomer = async (payload: {
+  rating: number;
+  comment: string;
+}) => {
+  if (!activeSupportRequest.value) return;
+  ratingSubmitting.value = true;
+  try {
+    await contactStore.rateSupportCustomer(
+      activeSupportRequest.value.id,
+      payload.rating,
+      payload.comment,
+    );
+  } finally {
+    ratingSubmitting.value = false;
+  }
 };
 
 const saveNote = async () => {

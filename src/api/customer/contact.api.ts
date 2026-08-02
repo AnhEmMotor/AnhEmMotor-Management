@@ -1,7 +1,12 @@
 import request from "@/common/utils/http";
 import { Contact } from "@/types";
 
-export const SupportStatuses = ["New", "InProgress", "Closed"] as const;
+export const SupportStatuses = [
+  "New",
+  "Assigned",
+  "InProgress",
+  "Closed",
+] as const;
 export const FeedbackStatuses = ["Pending", "Read", "Resolved"] as const;
 export const CandidateStatuses = [
   "New",
@@ -48,7 +53,7 @@ export const ContactApi = {
     return request.patch<void>({ url: "/api/v1/Contacts/internal-note", data });
   },
   createSupportRequest(data: Contact.CreateSupportRequestPayload) {
-    return request.post<number>({
+    return request.post<Contact.CreateSupportRequestResponse>({
       url: "/api/v1/Contacts/support-request",
       data,
     });
@@ -66,6 +71,12 @@ export const ContactApi = {
     return request.patch<void>({
       url: `/api/v1/Contacts/${id}/assign`,
       data: { assignedUserId },
+    });
+  },
+  rateCustomer(id: number, data: Contact.SupportRatingPayload) {
+    return request.post<void>({
+      url: `/api/v1/Contacts/support-request/${id}/employee-rating`,
+      data,
     });
   },
 };
