@@ -3,9 +3,9 @@
     class="layout-sidebar"
     v-if="showLeftMenu || isDualMenu"
     :class="{
-  'no-border': menuList.length === 0,
-  'show-mobile': menuOpen && isMobileScreen,
-}"
+      'no-border': menuList.length === 0,
+      'show-mobile': menuOpen && isMobileScreen,
+    }"
   >
     <div
       v-if="isDualMenu"
@@ -259,6 +259,16 @@ const menuList = computed(() => {
     (menu) => menu.path === currentTopPath,
   );
   return currentMenu?.children ?? [];
+});
+
+// Nếu quyền hạn thay đổi khiến sidebar của phân hệ đang xem trở nên rỗng,
+// tự động đưa người dùng về trang workspace thay vì để họ kẹt lại trang không còn quyền.
+watch(menuList, (list) => {
+  if (route.path === "/workspace" || route.meta.isFirstLevel) return;
+  if (isIframe(route.path)) return;
+  if (list.length === 0) {
+    router.replace("/workspace");
+  }
 });
 
 const scrollbarStyle = computed(() => {

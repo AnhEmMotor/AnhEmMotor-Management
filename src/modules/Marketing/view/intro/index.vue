@@ -2,7 +2,7 @@
   <div class="resp-page banner-container">
     <div class="banner-image">
       <img
-        src="@/assets/images/banner/order_banner.jpg"
+        src="@/assets/images/banner/marketing_banner.webp"
         alt="Marketing Banner"
       />
     </div>

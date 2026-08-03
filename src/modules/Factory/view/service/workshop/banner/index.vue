@@ -2,7 +2,7 @@
   <div class="resp-page banner-container">
     <div class="banner-image">
       <img
-        src="@/assets/images/banner/banner_factory.jpg"
+        src="@/assets/images/banner/banner_factory.webp"
         alt="Workshop Banner"
       />
     </div>

@@ -417,6 +417,7 @@ export default {
       customerAsset: "Assets",
       customerCare: "Customer Care",
       customerVoucher: "Customer Voucher",
+      customerStoreChat: "Store AI Chat",
       customerProgress: "Progress",
       booking: "Booking Management",
       conversion: "Conversion Tools",

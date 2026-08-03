@@ -553,6 +553,7 @@ export default {
       customerAsset: "Tài sản",
       customerCare: "Chăm sóc",
       customerVoucher: "Voucher khách hàng",
+      customerStoreChat: "Chat AI Store",
       customerProgress: "Tiến độ",
       booking: "Quản lý Lịch hẹn",
       conversion: "Công cụ chuyển đổi",
