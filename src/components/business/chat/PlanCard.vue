@@ -70,6 +70,27 @@
             >
               {{ step.result }}
             </div>
+            <div v-if="step.comments?.length" class="mt-1 space-y-1">
+              <div
+                v-for="c in step.comments"
+                :key="c.id"
+                class="text-xs bg-amber-50 dark:bg-amber-950/30 rounded px-2 py-1"
+              >
+                💬 {{ c.text }}
+              </div>
+            </div>
+            <div
+              v-if="canEdit && step.status !== 'skipped'"
+              class="flex gap-1 mt-1"
+            >
+              <ElInput
+                v-model="commentDrafts[step.id]"
+                size="small"
+                placeholder="Bình luận cho bước này…"
+                @keyup.enter="submitComment(step)"
+              />
+              <ElButton size="small" @click="submitComment(step)">💬</ElButton>
+            </div>
           </template>
         </div>
         <div
@@ -100,19 +121,8 @@
       + Thêm bước
     </button>
 
-    <div class="flex justify-end gap-2 mt-3">
-      <ElButton size="small" :disabled="!canEdit" @click="onReject"
-        >Huỷ</ElButton
-      >
-      <ElButton
-        size="small"
-        type="primary"
-        :disabled="plan.status !== 'Ready'"
-        :loading="approving"
-        @click="onApprove"
-      >
-        Duyệt & chạy
-      </ElButton>
+    <div v-if="canEdit" class="text-xs text-gray-400 mt-3 text-center">
+      💬 Gõ "duyệt" hoặc "huỷ" trong khung chat để thực hiện kế hoạch
     </div>
   </div>
 </template>
@@ -155,7 +165,6 @@ const canEdit = computed(
 const hasInvalidStep = computed(() =>
   props.plan.steps.some((s) => s.status === "invalid"),
 );
-const approving = ref(false);
 
 const STATUS_LABELS: Record<string, string> = {
   Drafting: "Đang tạo…",
@@ -252,31 +261,20 @@ const onReorder = async () => {
   await applyOperations(operations);
 };
 
-const onReject = async () => {
-  try {
-    await ChatApi.rejectPlan(props.plan.runId);
-    emit("update:plan", { ...props.plan, status: "Rejected" });
-  } catch {
-    ElMessage.error("Không thể huỷ kế hoạch.");
-  }
-};
+// Duyệt/huỷ/sửa kế hoạch giờ đi qua chat (POST .../plan/chat), không còn nút bấm — xem
+// ChatDrawer.vue sendPlanChat. Bình luận theo bước cũng gọi cùng endpoint đó, kèm targetStepId
+// để backend ghép thẳng thành operation "comment" mà không cần LLM diễn giải (Stage 10.9).
+const commentDrafts = ref<Record<string, string>>({});
 
-const onApprove = async () => {
-  approving.value = true;
+const submitComment = async (step: PlanStepDto) => {
+  const text = (commentDrafts.value[step.id] || "").trim();
+  if (!text) return;
+  commentDrafts.value[step.id] = "";
   try {
-    await ChatApi.approvePlan(props.plan.runId, props.plan.version);
-    emit("update:plan", { ...props.plan, status: "Executing" });
-  } catch (err) {
-    if (err instanceof HttpError && err.code === 409) {
-      ElMessage.warning("Kế hoạch vừa được cập nhật, vui lòng xem lại");
-    } else {
-      ElMessage.error(
-        "Không thể duyệt kế hoạch — có thể một số bước không còn khả dụng, vui lòng xem lại.",
-      );
-    }
-    await refetchPlan();
-  } finally {
-    approving.value = false;
+    const result = await ChatApi.sendPlanChat(props.plan.runId, text, step.id);
+    if (result.plan) applyPlanUpdate(result.plan);
+  } catch {
+    ElMessage.error("Không thể gửi bình luận.");
   }
 };
 </script>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, nextTick, onBeforeUnmount } from "vue";
+import { ref, computed, watch, nextTick, onBeforeUnmount } from "vue";
 import { useQuery } from "@tanstack/vue-query";
 import {
   ManagerChatApi as ChatApi,
@@ -134,7 +134,11 @@ const newMessage = ref("");
 
 const activeStreams = ref<Record<string, ChatMessage>>({});
 const activeStreamSessions = ref<Set<string>>(new Set());
-const activePlans = ref<Record<string, ChatMessage>>({});
+const activePlans = ref<Record<string, ChatPlanDto>>({});
+const planPanelOpen = ref(false);
+const currentPlan = computed(() =>
+  activeSessionId.value ? activePlans.value[activeSessionId.value] : undefined,
+);
 
 interface RunWatcher {
   runId: string;
@@ -143,7 +147,7 @@ interface RunWatcher {
   eventCount: number;
   steeringCount: number;
 }
-const RUN_WATCHDOG_MS = 45000;
+const RUN_WATCHDOG_MS = 90000;
 const STEERING_MERGE_MS = 900;
 const STEERING_STUCK_MS = 20000;
 const MAX_STEERING_PER_RUN = 5;
@@ -290,25 +294,40 @@ const submitMessageFeedback = async (msg: ChatMessage) => {
   }
 };
 
-// Panel suy nghĩ thu gọn theo mặc định sau khi xong, mở khi đang chạy — trừ khi người dùng
-// tự bấm mở/đóng thì giữ theo lựa chọn đó (override) cho tới khi tin nhắn bị gỡ khỏi state.
+// Panel suy nghĩ luôn thu gọn theo mặc định (kể cả khi đang chạy) — trừ khi người dùng tự bấm
+// mở thì giữ theo lựa chọn đó (override) cho tới khi tin nhắn bị gỡ khỏi state.
 const reasoningPanelOverride = ref<Record<string, boolean>>({});
 const isReasoningPanelOpen = (msg: ChatMessage) => {
   if (msg.id && msg.id in reasoningPanelOverride.value) {
     return reasoningPanelOverride.value[msg.id];
   }
-  return msg.reasoningElapsedSeconds == null;
+  return false;
 };
 const toggleReasoningPanel = (msg: ChatMessage) => {
   if (!msg.id) return;
   reasoningPanelOverride.value[msg.id] = !isReasoningPanelOpen(msg);
 };
 
+// Tin nhắn tạo trước khi backend lưu ReasoningElapsedSeconds vẫn có thể thiếu elapsed dù đã xong
+// từ lâu. Chỉ tin nhắn ĐANG thật sự live-stream (chính là activeStreams hiện tại) mới được coi là
+// "đang suy nghĩ" khi thiếu elapsed; còn lại xem như đã xong, không hiện spinner treo vô hạn.
+const isMessageLive = (msg: ChatMessage) => {
+  const sessionId = activeSessionId.value;
+  return !!sessionId && activeStreams.value[sessionId] === msg;
+};
+
+// Backend trả DateTime dạng UTC nhưng thiếu hậu tố "Z"/offset (Kind=Unspecified khi serialize) —
+// new Date() mặc định hiểu chuỗi không có timezone là GIỜ LOCAL, lệch hẳn theo múi giờ trình duyệt.
+const parseUtcTimestamp = (isoString: string): number => {
+  const hasTimezone = /[zZ]|[+-]\d{2}:\d{2}$/.test(isoString);
+  return new Date(hasTimezone ? isoString : `${isoString}Z`).getTime();
+};
+
 const reasoningStartedAt = ref<Record<string, number>>({});
 const markReasoningStarted = (msg: ChatMessage, startedAt?: string | null) => {
   if (msg.id && !(msg.id in reasoningStartedAt.value)) {
     reasoningStartedAt.value[msg.id] = startedAt
-      ? new Date(startedAt).getTime()
+      ? parseUtcTimestamp(startedAt)
       : Date.now();
   }
 };
@@ -449,6 +468,7 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
       const aiMsg = activeStreams.value[sessionId];
       switch (evt.type) {
         case "text_delta":
+          armWatchdog(sessionId);
           if (aiMsg) aiMsg.message += evt.payload;
           if (activeSessionId.value === sessionId) scrollToBottom();
           break;
@@ -492,6 +512,7 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
           delete steeringStatus.value[sessionId];
           break;
         case "thinking": {
+          armWatchdog(sessionId);
           if (!aiMsg) break;
           markReasoningStarted(aiMsg);
           const text = parseThinkingPayload(evt.payload || "");
@@ -503,6 +524,7 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
           break;
         }
         case "tool_start": {
+          armWatchdog(sessionId);
           if (!aiMsg) break;
           markReasoningStarted(aiMsg);
           const { name, summary, argsPreview } = parseToolStartPayload(
@@ -524,6 +546,7 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
           break;
         }
         case "tool_end": {
+          armWatchdog(sessionId);
           const list = aiMsg?.reasoningSteps;
           if (list) {
             const { name, ...toolResult } = parseToolEndPayload(
@@ -560,43 +583,40 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
         case "plan_started": {
           ChatApi.getPlan(watcher.runId)
             .then((plan) => {
-              const planMsg: ChatMessage = {
-                id: `plan-${watcher.runId}`,
-                role: "AI",
-                message: "",
-                createdAt: new Date().toISOString(),
-                plan,
-              };
-              activePlans.value[sessionId] = planMsg;
-              messages.value.push(planMsg);
-              if (activeSessionId.value === sessionId) scrollToBottom();
+              activePlans.value[sessionId] = plan;
+              if (activeSessionId.value === sessionId)
+                planPanelOpen.value = true;
             })
             .catch((err) => console.error("Không thể tải kế hoạch:", err));
           break;
         }
         case "plan_step_added": {
-          const planMsg = activePlans.value[sessionId];
-          if (!planMsg?.plan) break;
+          const plan = activePlans.value[sessionId];
+          if (!plan) break;
           try {
             const { step } = JSON.parse(evt.payload || "{}");
-            if (step) planMsg.plan.steps = [...planMsg.plan.steps, step];
+            if (step) plan.steps = [...plan.steps, step];
           } catch (err) {
             console.error("plan_step_added payload lỗi:", err);
           }
-          if (activeSessionId.value === sessionId) scrollToBottom();
           break;
         }
         case "plan_ready": {
-          const planMsg = activePlans.value[sessionId];
-          if (planMsg?.plan) planMsg.plan.status = "Ready";
+          const plan = activePlans.value[sessionId];
+          if (plan) plan.status = "Ready";
+          // Từ đây graph đã kết thúc (route plan→END, không interrupt) — sidecar không còn
+          // emit run_heartbeat trong lúc chờ duyệt (có thể tới 24h). Watchdog 45s không còn ý
+          // nghĩa "mất kết nối" ở trạng thái này, phải tắt để không xoá nhầm activePlans.
+          clearWatchdog(sessionId);
           break;
         }
         case "plan_step_started": {
-          const planMsg = activePlans.value[sessionId];
-          if (!planMsg?.plan) break;
+          armWatchdog(sessionId);
+          const plan = activePlans.value[sessionId];
+          if (!plan) break;
           try {
             const { stepId } = JSON.parse(evt.payload || "{}");
-            const step = planMsg.plan.steps.find((s) => s.id === stepId);
+            const step = plan.steps.find((s) => s.id === stepId);
             if (step) step.status = "running";
           } catch (err) {
             console.error("plan_step_started payload lỗi:", err);
@@ -604,11 +624,12 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
           break;
         }
         case "plan_step_completed": {
-          const planMsg = activePlans.value[sessionId];
-          if (!planMsg?.plan) break;
+          armWatchdog(sessionId);
+          const plan = activePlans.value[sessionId];
+          if (!plan) break;
           try {
             const { stepId, status, summary } = JSON.parse(evt.payload || "{}");
-            const step = planMsg.plan.steps.find((s) => s.id === stepId);
+            const step = plan.steps.find((s) => s.id === stepId);
             if (step) {
               step.status = status ?? "done";
               step.result = summary ?? step.result;
@@ -620,23 +641,24 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
         }
         case "plan_edited":
         case "plan_invalidated": {
-          const planMsg = activePlans.value[sessionId];
-          if (!planMsg) break;
+          if (!activePlans.value[sessionId]) break;
           ChatApi.getPlan(watcher.runId)
             .then((plan) => {
-              planMsg.plan = plan;
+              activePlans.value[sessionId] = plan;
             })
             .catch((err) => console.error("Không thể tải lại kế hoạch:", err));
           break;
         }
         case "plan_approved": {
-          const planMsg = activePlans.value[sessionId];
-          if (planMsg?.plan) planMsg.plan.status = "Executing";
+          const plan = activePlans.value[sessionId];
+          if (plan) plan.status = "Executing";
+          // Run chạy thật trở lại (enqueue lại sau khi duyệt) — bật lại watchdog bảo vệ.
+          armWatchdog(sessionId);
           break;
         }
         case "plan_rejected": {
-          const planMsg = activePlans.value[sessionId];
-          if (planMsg?.plan) planMsg.plan.status = "Rejected";
+          const plan = activePlans.value[sessionId];
+          if (plan) plan.status = "Rejected";
           break;
         }
         default:
@@ -657,24 +679,17 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
   });
 };
 
-const PLAN_RUN_STATUSES = new Set(["AwaitingApproval", "Executing"]);
-
 const resumeActiveRun = async (sessionId: string) => {
   try {
     const activeRun = await ChatApi.getActiveRun(sessionId);
     if (!activeRun) return;
 
-    if (PLAN_RUN_STATUSES.has(activeRun.status)) {
-      const plan = await ChatApi.getPlan(activeRun.runId);
-      const planMsg: ChatMessage = {
-        id: `plan-${activeRun.runId}`,
-        role: "AI",
-        message: "",
-        createdAt: activeRun.startedAt || new Date().toISOString(),
-        plan,
-      };
-      activePlans.value[sessionId] = planMsg;
-      messages.value.push(planMsg);
+    // ChatRun.Status không có giá trị "Executing" (đó là ChatPlanStatus) — dùng thẳng việc
+    // getPlan có trả về plan hay không (404 = run này không có plan) để quyết định hiện panel.
+    const plan = await ChatApi.getPlan(activeRun.runId).catch(() => null);
+    if (plan) {
+      activePlans.value[sessionId] = plan;
+      if (activeSessionId.value === sessionId) planPanelOpen.value = true;
     } else {
       const aiMsg: ChatMessage = {
         id: `run-${activeRun.runId}`,
@@ -692,6 +707,11 @@ const resumeActiveRun = async (sessionId: string) => {
       await startConnection();
     }
     subscribeToRun(sessionId, activeRun.runId, activeRun.lastSeq);
+    // subscribeToRun luôn arm watchdog vô điều kiện — tắt lại ngay nếu đang chờ duyệt, vì
+    // không còn run_heartbeat nào tới cho tới khi user duyệt/huỷ (có thể tới 24h).
+    if (activeRun.status === "AwaitingApproval") {
+      clearWatchdog(sessionId);
+    }
   } catch (error) {
     console.error("Không thể khôi phục run đang chạy:", error);
   }
@@ -911,6 +931,38 @@ const sendSteering = (sessionId: string, text: string) => {
   );
 };
 
+const PLAN_CHAT_STATUSES = new Set(["Drafting", "Ready"]);
+
+// Thay cho nút Duyệt/Huỷ trên PlanCard: mọi tin nhắn gõ trong lúc plan đang Drafting/Ready đi qua
+// đây (POST .../plan/chat) thay vì sendSteering — SendSteering cố ý từ chối AwaitingApproval vì
+// graph đã kết thúc (route plan→END, không interrupt), gõ chat lúc đó trước đây âm thầm tạo hẳn
+// 1 run mới không liên quan gì tới plan (Stage 10.9).
+const sendPlanChat = async (sessionId: string, runId: string, text: string) => {
+  messages.value.push({
+    id: `planchat-${runId}-${Date.now()}`,
+    role: "User",
+    message: text,
+    createdAt: new Date().toISOString(),
+  });
+  scrollToBottom();
+  try {
+    const result = await ChatApi.sendPlanChat(runId, text);
+    if (result.plan) activePlans.value[sessionId] = result.plan;
+    if (result.reply) {
+      messages.value.push({
+        id: `planchat-reply-${runId}-${Date.now()}`,
+        role: "AI",
+        message: result.reply,
+        createdAt: new Date().toISOString(),
+      });
+    }
+    scrollToBottom();
+  } catch (error) {
+    console.error("sendPlanChat error:", error);
+    ElMessage.error("Không thể gửi tin nhắn cho kế hoạch, vui lòng thử lại");
+  }
+};
+
 const sendMessage = async () => {
   let text = newMessage.value.trim();
   if (isRichTextMode.value && text === "<p><br></p>") {
@@ -925,6 +977,12 @@ const sendMessage = async () => {
 
   let sessionId = activeSessionId.value;
 
+  const pendingPlan = sessionId ? activePlans.value[sessionId] : undefined;
+  if (sessionId && pendingPlan && PLAN_CHAT_STATUSES.has(pendingPlan.status)) {
+    await sendPlanChat(sessionId, pendingPlan.runId, text);
+    return;
+  }
+
   if (sessionId && activeStreamSessions.value.has(sessionId)) {
     sendSteering(sessionId, text);
     return;
@@ -937,7 +995,12 @@ const sendMessage = async () => {
       const activeRun = await ChatApi.getActiveRun(sessionId);
       if (activeRun) {
         await resumeActiveRun(sessionId);
-        sendSteering(sessionId, text);
+        const resumedPlan = activePlans.value[sessionId];
+        if (resumedPlan && PLAN_CHAT_STATUSES.has(resumedPlan.status)) {
+          await sendPlanChat(sessionId, resumedPlan.runId, text);
+        } else {
+          sendSteering(sessionId, text);
+        }
         return;
       }
     } catch (error) {
@@ -993,7 +1056,7 @@ const scrollToBottom = async () => {
 
 const formatTime = (isoString: string) => {
   if (!isoString) return "";
-  const date = new Date(isoString);
+  const date = new Date(parseUtcTimestamp(isoString));
   return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 };
 </script>
@@ -1122,7 +1185,17 @@ const formatTime = (isoString: string) => {
               {{ sessions.find((s) => s.id === activeSessionId)?.title || "" }}
             </h2>
           </div>
-          <el-button @click="drawerVisible = false">Đóng</el-button>
+          <div class="flex items-center gap-2">
+            <el-button
+              v-if="currentPlan"
+              size="small"
+              :type="planPanelOpen ? 'primary' : 'default'"
+              @click="planPanelOpen = !planPanelOpen"
+            >
+              📋 Kế hoạch
+            </el-button>
+            <el-button @click="drawerVisible = false">Đóng</el-button>
+          </div>
         </div>
 
         <!-- Messages Area -->
@@ -1147,14 +1220,8 @@ const formatTime = (isoString: string) => {
 
           <template v-else>
             <template v-for="msg in messages" :key="msg.id">
-              <div v-if="msg.plan" class="flex w-full justify-start">
-                <PlanCard
-                  :plan="msg.plan"
-                  @update:plan="(p) => (msg.plan = p)"
-                />
-              </div>
               <div
-                v-else-if="
+                v-if="
                   msg.message ||
                   (msg.role === 'AI' && msg.reasoningSteps?.length)
                 "
@@ -1190,12 +1257,13 @@ const formatTime = (isoString: string) => {
                         Đã suy nghĩ trong
                         {{ msg.reasoningElapsedSeconds.toFixed(1) }} giây
                       </span>
-                      <template v-else>
+                      <template v-else-if="isMessageLive(msg)">
                         <el-icon class="is-loading text-blue-500"
                           ><Loading
                         /></el-icon>
                         <span>Đang suy nghĩ...</span>
                       </template>
+                      <span v-else>Đã suy nghĩ</span>
                     </button>
                     <div
                       v-if="isReasoningPanelOpen(msg)"
@@ -1416,6 +1484,31 @@ const formatTime = (isoString: string) => {
           </div>
         </div>
       </div>
+
+      <!-- Right: Plan Panel (Stage 10.9) -->
+      <div
+        v-if="planPanelOpen && currentPlan"
+        class="chat-plan-col flex-col border-l border-gray-200 bg-white"
+      >
+        <div
+          class="p-3 border-b border-gray-200 flex justify-between items-center"
+        >
+          <h3 class="font-semibold text-sm text-gray-800">📋 Kế hoạch</h3>
+          <el-button size="small" text @click="planPanelOpen = false"
+            >✕</el-button
+          >
+        </div>
+        <div class="flex-1 overflow-y-auto p-3">
+          <PlanCard
+            :plan="currentPlan"
+            @update:plan="
+              (p) => {
+                if (activeSessionId) activePlans[activeSessionId] = p;
+              }
+            "
+          />
+        </div>
+      </div>
     </div>
   </el-drawer>
 </template>
@@ -1473,14 +1566,21 @@ const formatTime = (isoString: string) => {
 
 .chat-right-col {
   display: flex;
-  width: 80%;
+  flex: 1;
+  min-width: 0;
+}
+
+.chat-plan-col {
+  display: flex;
+  width: 360px;
+  flex-shrink: 0;
 }
 
 .chat-mobile-dropdown {
   display: none;
 }
 
-@media (width <= 1280px) {
+@media (width <= 768px) {
   .ai-chat-drawer-no-padding {
     width: 100% !important;
   }
@@ -1491,6 +1591,10 @@ const formatTime = (isoString: string) => {
 
   .chat-right-col {
     width: 100% !important;
+  }
+
+  .chat-plan-col {
+    display: none !important;
   }
 
   .chat-mobile-dropdown {

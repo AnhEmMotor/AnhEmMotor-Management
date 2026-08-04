@@ -38,7 +38,6 @@ export interface ChatMessage {
   isSteering?: boolean;
   reasoningSteps?: ChatReasoningStep[];
   reasoningElapsedSeconds?: number;
-  plan?: ChatPlanDto;
 }
 
 export interface SteeringResultDto {
@@ -81,6 +80,13 @@ export type PlanStepStatus =
   | "skipped"
   | "invalid";
 
+export interface PlanStepCommentDto {
+  id: string;
+  text: string;
+  author: string;
+  createdAt: string;
+}
+
 export interface PlanStepDto {
   id: string;
   order: number;
@@ -90,6 +96,7 @@ export interface PlanStepDto {
   status: PlanStepStatus;
   editedByUser: boolean;
   result: string | null;
+  comments: PlanStepCommentDto[] | null;
 }
 
 export type ChatPlanStatus =
@@ -110,12 +117,19 @@ export interface ChatPlanDto {
 }
 
 export interface PlanStepOperation {
-  type: "edit" | "add" | "remove" | "reorder";
+  type: "edit" | "add" | "remove" | "reorder" | "comment";
   stepId?: string;
   title?: string;
   detail?: string;
   expectedTools?: string[];
   order?: number;
+  comment?: string;
+}
+
+export interface PlanChatResultDto {
+  action: "approved" | "rejected" | "edited" | "unclear";
+  plan: ChatPlanDto | null;
+  reply: string | null;
 }
 
 export const ManagerChatApi = {
@@ -184,17 +198,10 @@ export const ManagerChatApi = {
     });
   },
 
-  approvePlan(runId: string, version: number) {
-    return request.post({
-      url: `/api/v1/manager-chat/runs/${runId}/plan/approve`,
-      data: { version },
-      showErrorMessage: false,
-    });
-  },
-
-  rejectPlan(runId: string) {
-    return request.post({
-      url: `/api/v1/manager-chat/runs/${runId}/plan/reject`,
+  sendPlanChat(runId: string, content: string, targetStepId?: string) {
+    return request.post<PlanChatResultDto>({
+      url: `/api/v1/manager-chat/runs/${runId}/plan/chat`,
+      data: { content, targetStepId },
       showErrorMessage: false,
     });
   },
