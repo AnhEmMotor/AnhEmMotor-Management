@@ -188,6 +188,35 @@ const toolCallText = (tool: ChatMessageToolCall) => {
   return text;
 };
 
+const CITATION_PATTERN = /\[(c\d+)\]/g;
+
+const renderAiMessage = (msg: ChatMessage) => {
+  const html = marked.parse(msg.message || "", { async: false }) as string;
+  return html.replace(CITATION_PATTERN, (match, id: string) => {
+    if (!msg.citations?.[id]) return match;
+    return `<button type="button" class="citation-chip" data-citation-id="${id}">[${id}]</button>`;
+  });
+};
+
+const openCitation = (msg: ChatMessage, event: MouseEvent) => {
+  const target = (event.target as HTMLElement).closest(
+    "[data-citation-id]",
+  ) as HTMLElement | null;
+  if (!target) return;
+  const citation = msg.citations?.[target.dataset.citationId ?? ""];
+  if (!citation) return;
+  const title = [citation.sourceFile, citation.heading]
+    .filter(Boolean)
+    .join(" — ");
+  ElMessageBox.alert(
+    citation.content || "(không có nội dung)",
+    title || "Nguồn trích dẫn",
+    {
+      confirmButtonText: "Đóng",
+    },
+  );
+};
+
 const parseToolStartPayload = (
   payload: string,
 ): Pick<ChatMessageToolCall, "name" | "summary" | "argsPreview"> => {
@@ -223,6 +252,7 @@ const parseToolEndPayload = (
   | "asOf"
   | "warnings"
   | "filtersApplied"
+  | "citations"
 > => {
   try {
     const parsed = JSON.parse(payload);
@@ -241,6 +271,7 @@ const parseToolEndPayload = (
         asOf: parsed.asOf,
         warnings: parsed.warnings,
         filtersApplied: parsed.filtersApplied,
+        citations: parsed.citations,
       };
     }
   } catch {
@@ -566,6 +597,14 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
                 status: "done",
               };
               aiMsg!.reasoningSteps = updated;
+            }
+            if (toolResult.citations?.length && aiMsg) {
+              aiMsg.citations = {
+                ...(aiMsg.citations ?? {}),
+                ...Object.fromEntries(
+                  toolResult.citations.map((c) => [c.citationId, c]),
+                ),
+              };
             }
           }
           if (activeSessionId.value === sessionId) scrollToBottom();
@@ -1326,7 +1365,8 @@ const formatTime = (isoString: string) => {
                   </div>
                   <div
                     v-if="msg.role === 'AI'"
-                    v-html="marked.parse(msg.message || '')"
+                    v-html="renderAiMessage(msg)"
+                    @click="openCitation(msg, $event)"
                     class="prose prose-sm max-w-none text-gray-800"
                   ></div>
                   <div
@@ -1551,6 +1591,24 @@ const formatTime = (isoString: string) => {
 
 :deep(.prose strong) {
   font-weight: 600;
+}
+
+:deep(.citation-chip) {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 0.35rem;
+  margin: 0 0.1rem;
+  border-radius: 9999px;
+  background-color: #e0e7ff;
+  color: #4338ca;
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+:deep(.citation-chip:hover) {
+  background-color: #c7d2fe;
 }
 </style>
 

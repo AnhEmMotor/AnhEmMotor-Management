@@ -11,6 +11,13 @@ export interface ChatToolPreview {
   preview: string;
 }
 
+export interface ChatCitation {
+  citationId: string;
+  sourceFile?: string;
+  heading?: string;
+  content?: string;
+}
+
 export interface ChatMessageToolCall {
   name: string;
   label: string;
@@ -24,6 +31,7 @@ export interface ChatMessageToolCall {
   asOf?: string;
   warnings?: string[];
   filtersApplied?: Record<string, string>;
+  citations?: ChatCitation[];
 }
 
 export type ChatReasoningStep =
@@ -38,6 +46,7 @@ export interface ChatMessage {
   isSteering?: boolean;
   reasoningSteps?: ChatReasoningStep[];
   reasoningElapsedSeconds?: number;
+  citations?: Record<string, ChatCitation>;
 }
 
 export interface SteeringResultDto {
