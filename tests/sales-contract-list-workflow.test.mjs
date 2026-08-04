@@ -25,6 +25,14 @@ const orderListSource = readFileSync(
   ),
   "utf8",
 );
+const orderMenuSource = readFileSync(
+  new URL("../src/modules/Order/Menu/index.ts", import.meta.url),
+  "utf8",
+);
+const adminContractRoutesSource = readFileSync(
+  new URL("../src/router/modules/contract.ts", import.meta.url),
+  "utf8",
+);
 
 test("sales-contract list maps the backend customer and vehicle fields", () => {
   assert.match(typesSource, /customerFullName\??:\s*string/);
@@ -99,4 +107,21 @@ test("sales-contract status model exposes the submit-for-approval lifecycle", ()
   assert.match(typesSource, /"PendingApproval"/);
   assert.match(orderListSource, /PendingApproval:\s*"Chờ Admin duyệt"/);
   assert.match(listSource, /PendingApproval:\s*"Chờ Admin duyệt"/);
+});
+
+test("order contract detail keeps the Order sidebar and exposes the submit action", () => {
+  assert.match(orderMenuSource, /name:\s*["']OrderSalesContractPreview["']/);
+  assert.match(
+    orderListSource,
+    /router\.push\(\{\s*name:\s*["']OrderSalesContractPreview["']/,
+  );
+  assert.match(
+    adminContractRoutesSource,
+    /name:\s*["']SalesContractPreview["']/,
+  );
+  assert.equal(
+    (orderMenuSource.match(/name:\s*["']SalesContractPreview["']/g) ?? [])
+      .length,
+    0,
+  );
 });

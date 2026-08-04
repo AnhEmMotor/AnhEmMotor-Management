@@ -109,3 +109,37 @@ test("contract report filters real contract dates, maps suppliers, and localizes
     "supplier contracts should be filtered by their business effective date",
   );
 });
+
+test("contract detail list filters by type, status, and keyword before paginating", async () => {
+  const page = await readSource(contractReportPath);
+
+  assert.match(page, /const filteredContracts\s*=\s*computed/);
+  assert.match(page, /typeFilter\.value/);
+  assert.match(page, /statusFilter\.value/);
+  assert.match(page, /searchQuery\.value\.trim\(\)/);
+  assert.match(page, /filteredContracts\.value\.slice/);
+  assert.match(page, /:total="filteredContracts\.length"/);
+  assert.match(page, /@click="resetContractFilters"/);
+  assert.match(
+    page,
+    /watch\(\s*\[typeFilter,\s*statusFilter,\s*searchQuery\][\s\S]{0,180}currentPage\.value\s*=\s*1/,
+  );
+});
+
+test("contract charts separate sales and supplier statuses with an overall horizontal bar", async () => {
+  const page = await readSource(contractReportPath);
+
+  assert.match(page, /<template #header>Trạng thái hợp đồng<\/template>/);
+  assert.match(page, /<template #header>Hợp đồng mua bán<\/template>/);
+  assert.match(page, /<template #header>Hợp đồng nhà cung cấp<\/template>/);
+  assert.doesNotMatch(page, /Biến động giá trị hợp đồng theo thời gian/);
+  assert.doesNotMatch(page, /Top 5 Nhà cung cấp phát sinh/);
+  assert.match(page, /const salesContractStatusData\s*=\s*computed/);
+  assert.match(page, /const supplierContractStatusData\s*=\s*computed/);
+  assert.match(
+    page,
+    /Horizontal Bar Chart:[\s\S]*xAxis:\s*\{[\s\S]*type:\s*"value"[\s\S]*yAxis:\s*\{[\s\S]*type:\s*"category"[\s\S]*type:\s*"bar"/,
+  );
+  assert.match(page, /salesContractStatusData\.value\.map/);
+  assert.match(page, /supplierContractStatusData\.value\.map/);
+});

@@ -612,7 +612,10 @@ const handleSubmit = async () => {
 };
 
 const goToPreview = (id?: string) => {
-  router.push({ name: "SalesContractPreview", params: { id: id || "" } });
+  router.push({
+    name: "OrderSalesContractPreview",
+    params: { id: id || "" },
+  });
 };
 </script>
 
