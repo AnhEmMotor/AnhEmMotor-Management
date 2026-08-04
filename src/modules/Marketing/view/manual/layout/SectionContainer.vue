@@ -1,166 +1,124 @@
 <template>
   <div class="section-container">
-    <el-button class="back-btn" @click="$emit('back')" icon="Back" type="primary" plain>
+    <el-button
+      class="back-btn"
+      @click="$emit('back')"
+      icon="Back"
+      type="primary"
+      plain
+    >
       Quay lai Tong quan
     </el-button>
     <div class="section-header">
-      <el-icon class="section-icon" :style="{ color: section.color }">
-        <component :is="section.icon" />
-      </el-icon>
+      <div
+        class="icon-wrapper"
+        :style="{ '--section-shadow-color': section.shadowColor }"
+      >
+        <el-icon class="section-icon" :style="{ color: section.color }">
+          <component :is="section.icon" />
+        </el-icon>
+      </div>
       <h1 class="section-title">{{ section.title }}</h1>
     </div>
     <p class="section-desc">{{ section.description }}</p>
     <div class="pages-list">
-      <div v-for="page in section.pages" :key="page.id" class="page-card">
-        <div class="page-header">
-          <h3 class="page-title">{{ page.title }}</h3>
-          <el-tag v-if="page.permission" type="info" size="small" effect="plain">
-            {{ page.permission }}
-          </el-tag>
-        </div>
-        <p class="page-desc">{{ page.description }}</p>
-        <div class="route-badge">
-          <el-icon><Location /></el-icon>
-          <code>{{ page.route }}</code>
-        </div>
-        <div class="steps-box">
-          <div v-for="(step, i) in page.steps" :key="i" class="step-row">
-            <span class="step-num">{{ i + 1 }}</span>
-            <span class="step-text">{{ step }}</span>
-          </div>
-        </div>
-        <el-alert v-if="page.tips && page.tips.length" type="info" :closable="false" class="tips-box">
-          <template #title><strong>Meo huu ich:</strong></template>
-          <ul class="tips-list">
-            <li v-for="(t, i) in page.tips" :key="i">{{ t }}</li>
-          </ul>
-        </el-alert>
-      </div>
+      <PageCard v-for="page in section.pages" :key="page.id" :page="page" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { GuideSection } from "../data/guideData"
-import { Location } from '@element-plus/icons-vue'
-defineProps<{ section: GuideSection }>()
-defineEmits<{ back: [] }>()
+import type { GuideSection } from "../data/guideData";
+import PageCard from "./PageCard.vue";
+
+defineProps<{ section: GuideSection }>();
+defineEmits<{ back: [] }>();
 </script>
 
 <style scoped lang="scss">
 .section-container {
-  padding: 24px;
-  max-width: 1000px;
+  padding: 24px 20px;
+  max-width: 900px;
   margin: 0 auto;
+  animation: fadeIn 0.4s ease-out;
 }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .back-btn {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateX(-4px);
+    box-shadow: 0 4px 12px rgb(var(--el-color-primary-rgb), 0.2);
+  }
 }
+
 .section-header {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 10px;
+  gap: 16px;
+  margin-bottom: 8px;
 }
-.section-icon {
-  font-size: 36px;
-}
-.section-title {
-  font-size: 28px;
-  font-weight: 800;
-  color: var(--el-text-color-primary);
-  margin: 0;
-}
-.section-desc {
-  font-size: 15px;
-  color: var(--el-text-color-secondary);
-  margin: 0 0 28px 50px;
-}
-.pages-list {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-.page-card {
-  background: var(--el-bg-color-overlay);
-  border: 1px solid var(--el-border-color-light);
-  border-radius: 16px;
-  padding: 24px 28px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-}
-.page-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 6px;
-}
-.page-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--el-text-color-primary);
-  margin: 0;
-}
-.page-desc {
-  font-size: 14px;
-  color: var(--el-text-color-regular);
-  margin: 0 0 14px;
-}
-.route-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 12px;
-  background: var(--el-fill-color-light);
-  border-radius: 6px;
-  margin-bottom: 18px;
-  font-size: 13px;
-  color: var(--el-text-color-secondary);
-}
-.route-badge code {
-  font-family: 'SF Mono', Monaco, monospace;
-  font-size: 13px;
-}
-.steps-box {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-.step-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-}
-.step-num {
-  flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: var(--el-color-primary);
-  color: white;
+
+.icon-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  font-size: 13px;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--section-shadow-color, rgb(0 0 0 / 5%));
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05) rotate(-5deg);
+  }
 }
-.step-text {
-  flex: 1;
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--el-text-color-regular);
-  padding-top: 3px;
+
+.section-icon {
+  font-size: 26px;
 }
-.tips-box {
-  border-radius: 10px;
+
+.section-title {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--el-text-color-primary);
+  margin: 0;
+  background: linear-gradient(
+    135deg,
+    var(--el-text-color-primary) 0%,
+    var(--el-text-color-regular) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
-.tips-list {
-  margin: 6px 0 0 20px;
-  padding: 0;
+
+.section-desc {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--el-text-color-secondary);
+  margin: 0 0 24px 64px;
+  max-width: 700px;
 }
-.tips-list li {
-  font-size: 13px;
-  line-height: 1.7;
-  color: var(--el-text-color-regular);
+
+.pages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 </style>
