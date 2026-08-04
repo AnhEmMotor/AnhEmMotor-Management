@@ -1071,7 +1071,7 @@ async function handleSubmit() {
     return ElMessage.warning("Vui lòng chọn sản phẩm và số lượng hợp lệ");
   }
 
-  const payload = {
+  const payload: any = {
     buyerId: formData.buyerId,
     customerName: formData.customerName,
     customerPhone: formData.customerPhone,
@@ -1184,7 +1184,10 @@ const {
   handleApply: applyVoucher,
   handleRemove: removeVoucher,
   reset: resetVoucher,
-} = useVoucher(voucherOrderTotal, voucherOrderId);
+} = useVoucher(
+  () => voucherOrderTotal.value,
+  () => voucherOrderId.value,
+);
 
 function resetForm() {
   resetVoucher();

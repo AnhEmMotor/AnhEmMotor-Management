@@ -387,6 +387,14 @@ const voucherApplying = ref(false);
 const appliedVoucher = ref<AppliedVoucherInfo | null>(null);
 const voucherError = ref("");
 
+function formatCurrency(value?: number): string {
+  if (value == null) return "0 đ";
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(value);
+}
+
 // Search customer vehicles by Phone Number
 const searchCustomer = async () => {
   const phone = searchPhone.value.trim();
@@ -488,7 +496,8 @@ const {
   handleRemove: vcRemove,
 } = useVoucher(
   () => 0,
-  () => 0,
+  () => undefined,
+  true,
 );
 
 watch(voucherCode, (val: string) => {
@@ -503,6 +512,10 @@ watch(voucherApplying, (val) => {
 watch(voucherError, (val) => {
   vcError.value = val;
 });
+      if (appliedVoucher.value) {
+        (payload as any).voucherId = appliedVoucher.value.voucherId;
+        (payload as any).discountAmount = appliedVoucher.value.discountAmount;
+      }
 const applyVoucher = async () => {
   voucherError.value = "";
   const code = voucherCode.value.trim().toUpperCase();
@@ -589,3 +602,4 @@ const removeVoucher = async () => {
   }
 }
 </style>
+

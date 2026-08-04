@@ -67,7 +67,6 @@
             </div>
           </div>
 
-          <CommentWidget :comments="commentList as any[]" />
         </div>
       </template>
     </ElDrawer>
@@ -153,3 +152,4 @@ const openDrawer = (item: CommentItem) => {
   clickItem.value = item;
 };
 </script>
+

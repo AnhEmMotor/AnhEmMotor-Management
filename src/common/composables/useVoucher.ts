@@ -9,6 +9,7 @@ import type {
 export function useVoucher(
   orderTotal: ComputedRef<number> | (() => number),
   orderId: ComputedRef<number | undefined> | (() => number | undefined),
+  isMock: boolean = false,
 ) {
   const getTotal = (): number =>
     typeof orderTotal === "function"
@@ -72,7 +73,9 @@ export function useVoucher(
         return;
       }
 
-      const oid = getId();
+  const discount = calculateDiscount(voucher);
+  const oid = getId();
+  if (!oid) {
       if (!oid) {
         errorMsg.value = "Vui lòng lưu đơn hàng trước khi áp dụng voucher";
         appliedVoucher.value = null;
@@ -87,7 +90,6 @@ export function useVoucher(
       }
 
       const applied = await VoucherApi.apply(voucher.id, oid);
-      const discount = calculateDiscount(voucher);
 
       appliedVoucher.value = {
         orderVoucherId: applied.orderVoucherId,
@@ -116,10 +118,16 @@ export function useVoucher(
     if (!appliedVoucher.value) return;
     removing.value = true;
     try {
-      const res = await VoucherApi.remove(appliedVoucher.value.orderVoucherId);
-      ElMessage.success(
-        `Đã bỏ voucher ${appliedVoucher.value.code} - Hoàn ${res.refundedAmount.toLocaleString()}đ`,
-      );
+      if (!isMock) {
+        const res = await VoucherApi.remove(
+          appliedVoucher.value.orderVoucherId,
+        );
+        ElMessage.success(
+          `Đã bỏ voucher ${appliedVoucher.value.code} - Hoàn ${res.refundedAmount.toLocaleString()}đ`,
+        );
+      } else {
+        ElMessage.success(`Đã bỏ voucher ${appliedVoucher.value.code}`);
+      }
       appliedVoucher.value = null;
     } catch (err: any) {
       ElMessage.error(err?.message || "Không thể bỏ voucher");

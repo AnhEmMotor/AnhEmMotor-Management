@@ -1260,26 +1260,40 @@
                       >
                         Cover mặc định của biến thể
                       </label>
-                      <ElUpload
-                        class="variant-uploader"
-                        action="#"
-                        :show-file-list="false"
-                        :auto-upload="true"
-                        :http-request="
-                          (opt) => handleVariantCoverUpload(opt, variant)
-                        "
-                      >
-                        <div
-                          class="w-28 h-28 rounded-lg border border-dashed border-gray-300 hover:border-primary/50 flex items-center justify-center text-gray-400 cursor-pointer overflow-hidden bg-gray-50"
+                      <div class="flex gap-4 items-start mt-2">
+                        <ElUpload
+                          class="variant-uploader"
+                          action="#"
+                          :show-file-list="false"
+                          :auto-upload="true"
+                          :http-request="
+                            (opt) => handleVariantCoverUpload(opt, variant)
+                          "
                         >
-                          <img
-                            v-if="variant.cover_image_url"
-                            :src="variant.cover_image_url"
-                            class="w-full h-full object-cover"
+                          <div
+                            class="w-28 h-28 rounded-lg border border-dashed border-gray-300 hover:border-primary/50 flex items-center justify-center text-gray-400 cursor-pointer overflow-hidden bg-gray-50 shrink-0"
+                          >
+                            <img
+                              v-if="variant.cover_image_url"
+                              :src="variant.cover_image_url"
+                              class="w-full h-full object-cover"
+                            />
+                            <ElIcon v-else><Plus /></ElIcon>
+                          </div>
+                        </ElUpload>
+                        <div class="flex-1 mt-2">
+                          <label
+                            class="el-form-item__label !text-xs !text-gray-500 !h-auto !leading-none !pb-1.5 !mb-0 block italic"
+                          >
+                            Hoặc dán link ảnh online (http...):
+                          </label>
+                          <ElInput
+                            v-model="variant.cover_image_url"
+                            placeholder="https://..."
+                            clearable
                           />
-                          <ElIcon v-else><Plus /></ElIcon>
                         </div>
-                      </ElUpload>
+                      </div>
                     </div>
 
                     <div class="mt-4 border-t border-gray-100 pt-4">
@@ -1489,32 +1503,47 @@
                           class="border border-gray-100 rounded-lg p-4 bg-white shadow-sm flex flex-col gap-4 relative mb-2"
                         >
                           <div class="flex items-start gap-4 w-full">
-                            <div class="flex-1 grid grid-cols-2 gap-4">
-                              <div>
-                                <label
-                                  class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
-                                >
-                                  Tên màu <span class="text-red-500">*</span>
-                                </label>
-                                <ElInput
-                                  v-model="color.name"
-                                  placeholder="Đỏ nhám, Đen bóng..."
-                                />
+                            <div class="flex-1 flex flex-col gap-3">
+                              <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                  <label
+                                    class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
+                                  >
+                                    Tên màu <span class="text-red-500">*</span>
+                                  </label>
+                                  <ElInput
+                                    v-model="color.name"
+                                    placeholder="Đỏ nhám, Đen bóng..."
+                                  />
+                                </div>
+                                <div>
+                                  <label
+                                    class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
+                                  >
+                                    Mã màu <span class="text-red-500">*</span>
+                                  </label>
+                                  <div class="flex gap-2 items-center w-full">
+                                    <ElColorPicker v-model="color.code" />
+                                    <ElInput
+                                      v-model="color.code"
+                                      placeholder="#000000"
+                                      class="flex-1"
+                                    />
+                                  </div>
+                                </div>
                               </div>
                               <div>
                                 <label
-                                  class="el-form-item__label !text-sm !text-gray-700 !h-auto !leading-none !pb-1.5 !mb-0 block"
+                                  class="el-form-item__label !text-xs !text-gray-500 !h-auto !leading-none !pb-1.5 !mb-0 block italic"
                                 >
-                                  Mã màu <span class="text-red-500">*</span>
+                                  Hoặc dán link ảnh online (http...):
                                 </label>
-                                <div class="flex gap-2 items-center w-full">
-                                  <ElColorPicker v-model="color.code" />
-                                  <ElInput
-                                    v-model="color.code"
-                                    placeholder="#000000"
-                                    class="flex-1"
-                                  />
-                                </div>
+                                <ElInput
+                                  v-model="color.image"
+                                  placeholder="https://..."
+                                  clearable
+                                  size="small"
+                                />
                               </div>
                             </div>
 

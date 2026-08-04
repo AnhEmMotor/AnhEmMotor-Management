@@ -790,6 +790,8 @@ const steps = [
 
 const calculatedStatus = computed(() => {
   if (!order.value) return "InProgress";
+  const stored = sessionStorage.getItem(`ro_status_${orderId}`);
+  if (stored) return stored;
   if (order.value.status) return order.value.status;
   if (!order.value.technicianId && !order.value.technicianName)
     return "Pending";
@@ -819,13 +821,10 @@ const totalPartsCost = computed(() =>
     .reduce((acc, item) => acc + item.price * item.count, 0),
 );
 
-const totalAmount = computed(() => order.value?.totalCost || 0);
 const discountedTotal = computed(() =>
-  Math.max(0, totalAmount.value - voucherDiscount.value),
+  Math.max(0, voucherOrderTotal.value - voucherDiscount.value),
 );
 
-const voucherOrderTotal = totalAmount;
-const voucherOrderId = computed(() => orderId);
 const {
   voucherCode,
   appliedVoucher,
@@ -835,7 +834,11 @@ const {
   handleApply: applyVoucher,
   handleRemove: removeVoucher,
   reset: resetVoucher,
-} = useVoucher(voucherOrderTotal, voucherOrderId);
+} = useVoucher(
+  () => voucherOrderTotal.value,
+  () => voucherOrderId.value,
+  true,
+);
 
 const loadOrderDetail = async () => {
   if (!orderId) {
@@ -1029,6 +1032,7 @@ const submitAssign = async () => {
       nextMaintenanceOdo: order.value.nextMaintenanceOdo || undefined,
     });
     ElMessage.success("Phân công kỹ thuật viên thành công");
+    sessionStorage.setItem(`ro_status_${orderId}`, "InProgress");
     assignDialogVisible.value = false;
     await loadOrderDetail();
   } catch (err: any) {
@@ -1130,6 +1134,7 @@ const saveIssueParts = async (targetStatus: "InProgress" | "QcPending") => {
       status: targetStatus,
     });
     ElMessage.success("Đã cập nhật hạng mục");
+    sessionStorage.setItem(`ro_status_${orderId}`, targetStatus);
     await loadOrderDetail();
   } catch (err: any) {
     ElMessage.error(err?.message || "Cập nhật thất bại");
@@ -1148,8 +1153,9 @@ const completeRepairOrder = async () => {
       notes: checkoutNotes.value || undefined,
       voucherId: appliedVoucher.value?.voucherId,
       discountAmount: appliedVoucher.value?.discountAmount || 0,
-    });
+    } as any);
     ElMessage.success("Đã hoàn tất phiếu sửa chữa");
+    sessionStorage.setItem(`ro_status_${orderId}`, "Completed");
     await loadOrderDetail();
   } catch (err: any) {
     ElMessage.error(err?.message || "Hoàn tất thất bại");
@@ -1217,3 +1223,4 @@ onMounted(() => {
   font-family: monospace;
 }
 </style>
+

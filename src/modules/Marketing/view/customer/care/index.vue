@@ -112,14 +112,37 @@
         class="customer-table"
         @row-dblclick="(row) => openProfile(asLead(row))"
       >
-        <ElTableColumn label="Khách hàng" min-width="250">
+        <ElTableColumn label="Khách hàng" min-width="200">
           <template #default="{ row }">
             <div class="customer-cell">
               <div class="customer-avatar">{{ getInitials(row.fullName) }}</div>
               <div class="customer-cell__copy">
                 <strong>{{ row.fullName || "Chưa cập nhật" }}</strong>
-                <span>{{ row.phoneNumber || "Chưa có số điện thoại" }}</span>
+                <span class="text-xs text-slate-400">
+                  {{
+                    row.gender === "Male"
+                      ? "Nam"
+                      : row.gender === "Female"
+                        ? "Nữ"
+                        : row.gender === "Other"
+                          ? "Khác"
+                          : "Giới tính chưa rõ"
+                  }}
+                </span>
               </div>
+            </div>
+          </template>
+        </ElTableColumn>
+
+        <ElTableColumn label="Thông tin liên hệ" min-width="220">
+          <template #default="{ row }">
+            <div class="flex flex-col gap-0.5">
+              <span class="table-primary font-semibold">{{
+                row.phoneNumber || "Chưa có SĐT"
+              }}</span>
+              <span class="table-secondary text-xs">{{
+                row.email || "Chưa có email"
+              }}</span>
             </div>
           </template>
         </ElTableColumn>
@@ -170,32 +193,38 @@
           </template>
         </ElTableColumn>
 
+        <ElTableColumn label="Ngày tạo" min-width="135">
+          <template #default="{ row }">
+            <span class="table-secondary">{{
+              formatDateTime(row.createdAt)
+            }}</span>
+          </template>
+        </ElTableColumn>
+
         <ElTableColumn label="Thao tác" width="210" fixed="right" align="right">
           <template #default="{ row }">
             <div class="row-actions">
               <ElTooltip content="Gọi điện">
-                <a
-                  :href="`tel:${normalizePhone(row.phoneNumber)}`"
+                <button
+                  type="button"
                   class="icon-action"
                   :class="{ 'is-disabled': !row.phoneNumber }"
                   aria-label="Gọi điện cho khách hàng"
-                  @click.stop
+                  @click.stop="callPhone(row.phoneNumber)"
                 >
                   <ArtSvgIcon icon="ri:phone-line" />
-                </a>
+                </button>
               </ElTooltip>
               <ElTooltip content="Mở Zalo">
-                <a
-                  :href="getZaloUrl(row.phoneNumber)"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  type="button"
                   class="icon-action"
                   :class="{ 'is-disabled': !row.phoneNumber }"
                   aria-label="Mở Zalo của khách hàng"
-                  @click.stop
+                  @click.stop="openZalo(row.phoneNumber)"
                 >
                   <ArtSvgIcon icon="ri:chat-smile-2-line" />
-                </a>
+                </button>
               </ElTooltip>
               <ElTooltip content="Ghi nhận chăm sóc">
                 <button
@@ -1148,6 +1177,20 @@ function normalizePhone(phone?: string) {
 function getZaloUrl(phone?: string) {
   const normalized = normalizePhone(phone);
   return normalized ? `https://zalo.me/${normalized}` : undefined;
+}
+
+function callPhone(phone?: string) {
+  const normalized = normalizePhone(phone);
+  if (normalized) {
+    window.location.href = `tel:${normalized}`;
+  }
+}
+
+function openZalo(phone?: string) {
+  const url = getZaloUrl(phone);
+  if (url) {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
 }
 
 function formatDateTime(value?: string) {
