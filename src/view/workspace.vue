@@ -202,15 +202,7 @@ const workspaces = computed(() =>
       hasAccess: hasAuth(Permissions.Order.Module),
       path: "/Order/management/draft",
     },
-    {
-      title: "HDSD Phần Mềm",
-      subtitle: "Software User Manual",
-      icon: markRaw(Document),
-      color: "#0284c7",
-      shadowColor: "rgba(2, 132, 199, 0.15)",
-      hasAccess: true,
-      path: "/manual",
-    },
+
   ].filter((workspace) => workspace.hasAccess),
 );
 </script>

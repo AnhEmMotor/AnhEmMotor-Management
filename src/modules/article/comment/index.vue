@@ -67,7 +67,7 @@ clickItem.userName
 </div>
 </div>
 
-<CommentWidget />
+<CommentWidget :comments="commentList as any[]" />
 </div>
 </template>
 </ElDrawer>

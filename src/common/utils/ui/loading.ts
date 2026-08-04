@@ -28,14 +28,13 @@ export const loadingService = {
             });
             render(closeVnode, loadingContainer);
 
-            // Wait for transition to complete before removing
             setTimeout(() => {
               if (loadingContainer) {
                 render(null, loadingContainer);
                 loadingContainer.remove();
                 loadingContainer = null;
               }
-            }, 400);
+            }, 50);
           }
           loadingInstance = null;
         },

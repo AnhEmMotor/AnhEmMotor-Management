@@ -1,6 +1,7 @@
 import { AppRouteRecord } from "@/types/router";
 import type { Component } from "vue";
 import { Permissions } from "@/domain/constants/permissions";
+import { factoryManualRoutes } from "@/router/modules/factory-manual";
 
 export const factoryMenu: AppRouteRecord[] = [
   {
@@ -181,6 +182,7 @@ export const factoryMenu: AppRouteRecord[] = [
           permissions: [Permissions.Factory.DashboardManagement.View],
         },
       },
+      ...factoryManualRoutes,
     ],
   },
 ];

@@ -488,7 +488,7 @@ const fetchData = async () => {
             ? "paid"
             : "deposit",
     }));
-    pagination.total = res.total;
+    pagination.total = res.totalCount;
   } catch (_e) {
     ElMessage.error("Không tải được danh sách hợp đồng.");
   } finally {

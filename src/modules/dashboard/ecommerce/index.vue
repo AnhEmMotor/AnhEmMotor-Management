@@ -551,6 +551,8 @@ const summary = ref<DashboardSummary>({
   isRevenueAlert: false,
   isPendingAlert: false,
   isStockAlert: false,
+  activeInstallmentCount: 0,
+  lateInstallmentCount: 0,
   totalExpense: 0,
   grossProfit: 0,
 });

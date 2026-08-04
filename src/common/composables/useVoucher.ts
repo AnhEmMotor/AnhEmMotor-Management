@@ -7,9 +7,17 @@ import type {
 } from "@/domain/voucher/voucher.types";
 
 export function useVoucher(
-  orderTotal: () => number,
-  orderId: () => number | undefined,
+  orderTotal: ComputedRef<number> | (() => number),
+  orderId: ComputedRef<number | undefined> | (() => number | undefined),
 ) {
+  const getTotal = (): number =>
+    typeof orderTotal === "function"
+      ? (orderTotal as () => number)()
+      : (orderTotal as ComputedRef<number>).value;
+  const getId = () =>
+    typeof orderId === "function"
+      ? orderId()
+      : (orderId as ComputedRef<number | undefined>).value;
   const voucherCode = ref("");
   const appliedVoucher = ref<AppliedVoucherInfo | null>(null);
   const applying = ref(false);
@@ -20,11 +28,11 @@ export function useVoucher(
     () => appliedVoucher.value?.discountAmount ?? 0,
   );
   const finalTotal = computed(() =>
-    Math.max(0, orderTotal() - discountAmount.value),
+    Math.max(0, getTotal() - discountAmount.value),
   );
 
   const validateMinSpend = (voucher: VoucherItem): boolean => {
-    if (voucher.minOrderValue > 0 && orderTotal() < voucher.minOrderValue) {
+    if (voucher.minOrderValue > 0 && getTotal() < voucher.minOrderValue) {
       return false;
     }
     return true;
@@ -32,7 +40,7 @@ export function useVoucher(
 
   const calculateDiscount = (voucher: VoucherItem): number => {
     if (voucher.discountType === "PERCENT") {
-      let discount = (orderTotal() * voucher.discountValue) / 100;
+      let discount = (getTotal() * voucher.discountValue) / 100;
       if (voucher.maxDiscountAmount && discount > voucher.maxDiscountAmount) {
         discount = voucher.maxDiscountAmount;
       }
@@ -64,7 +72,7 @@ export function useVoucher(
         return;
       }
 
-      const oid = orderId();
+      const oid = getId();
       if (!oid) {
         errorMsg.value = "Vui lòng lưu đơn hàng trước khi áp dụng voucher";
         appliedVoucher.value = null;

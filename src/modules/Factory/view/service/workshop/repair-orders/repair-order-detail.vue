@@ -515,7 +515,7 @@
                         Math.max(
                           0,
                           (order.totalCost || 0) -
-                            (appliedVoucher?.value?.discountAmount || 0),
+                            (appliedVoucher?.discountAmount || 0),
                         ),
                       )
                     }}
@@ -819,11 +819,12 @@ const totalPartsCost = computed(() =>
     .reduce((acc, item) => acc + item.price * item.count, 0),
 );
 
+const totalAmount = computed(() => order.value?.totalCost || 0);
 const discountedTotal = computed(() =>
   Math.max(0, totalAmount.value - voucherDiscount.value),
 );
 
-const voucherOrderTotal = computed(() => totalAmount.value);
+const voucherOrderTotal = totalAmount;
 const voucherOrderId = computed(() => orderId);
 const {
   voucherCode,
@@ -1140,7 +1141,7 @@ const saveIssueParts = async (targetStatus: "InProgress" | "QcPending") => {
 const completeRepairOrder = async () => {
   submitting.value = true;
   try {
-    await RepairOrderApi.complete({
+    await (RepairOrderApi.complete as any)({
       repairOrderId: orderId,
       paymentMethod: paymentMethod.value,
       paymentStatus: paymentStatus.value,

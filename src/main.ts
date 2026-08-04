@@ -34,7 +34,7 @@ async function bootstrap() {
   app.use(pinia);
 
   // Proactively refresh access token before routing
-  await refreshTokenOnStartup();
+  refreshTokenOnStartup();
 
   initRouter(app);
   setupGlobDirectives(app);

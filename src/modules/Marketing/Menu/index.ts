@@ -1,5 +1,6 @@
 import { AppRouteRecord } from "@/types/router";
 import { Permissions } from "@/domain/constants/permissions";
+import { marketingManualRoutes } from "@/router/modules/marketing-manual";
 
 export const marketingMenu: AppRouteRecord[] = [
   {
@@ -239,6 +240,7 @@ export const marketingMenu: AppRouteRecord[] = [
           permissions: [Permissions.Marketing.BookingManagement.View],
         },
       },
+      ...marketingManualRoutes,
     ],
   },
 ];

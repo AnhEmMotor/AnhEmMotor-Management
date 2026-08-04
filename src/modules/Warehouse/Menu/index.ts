@@ -1,5 +1,6 @@
 import { AppRouteRecord } from "@/types/router";
 import { Permissions } from "@/domain/constants/permissions";
+import { warehouseManualRoutes } from "@/router/modules/warehouse-manual";
 
 export const warehouseMenu: AppRouteRecord[] = [
   {
@@ -120,6 +121,7 @@ export const warehouseMenu: AppRouteRecord[] = [
           keepAlive: true,
         },
       },
+      ...warehouseManualRoutes,
     ],
   },
 ];

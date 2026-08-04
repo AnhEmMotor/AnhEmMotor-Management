@@ -1031,7 +1031,7 @@ async function createSupportSession() {
 
   sessionCreating.value = true;
   try {
-    const createdId = await ContactApi.createSupportRequest({
+    const createdResponse = await ContactApi.createSupportRequest({
       fullName: lead.fullName,
       phoneNumber: lead.phoneNumber,
       email: lead.email || "",
@@ -1045,7 +1045,7 @@ async function createSupportSession() {
     });
     supportDialogVisible.value = false;
     activeWorkspace.value = "support";
-    await Promise.all([loadLeads(), loadSupportSessions(createdId)]);
+    await Promise.all([loadLeads(), loadSupportSessions(createdResponse.id)]);
     ElMessage.success("Đã tạo phiên hỗ trợ");
   } catch {
     ElMessage.error("Không thể tạo phiên hỗ trợ");

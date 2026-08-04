@@ -22,7 +22,7 @@
     >
       <Transition
         :name="showTransitionMask ? '' : actualTransition"
-        mode="out-in"
+        mode="default"
         appear
       >
         <KeepAlive :max="10" :exclude="keepAliveExclude">
@@ -37,7 +37,7 @@
 
       <Transition
         :name="showTransitionMask ? '' : actualTransition"
-        mode="out-in"
+        mode="default"
         appear
       >
         <component

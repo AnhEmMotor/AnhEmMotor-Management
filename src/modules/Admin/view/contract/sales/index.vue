@@ -424,7 +424,7 @@ const fetchData = async () => {
 
     const res = await SalesContractApi.getList(params);
     tableData.value = res.items.map(mapSalesContractRow);
-    pagination.total = res.total;
+    pagination.total = res.totalCount || 0;
   } catch (_e) {
     ElMessage.error("Không tải được danh sách hợp đồng.");
   } finally {

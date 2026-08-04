@@ -11,7 +11,7 @@ export type AppRouteRecordRaw = RouteRecordRaw & {
 export const configureNProgress = () => {
   NProgress.configure({
     easing: "ease",
-    speed: 300,
+    speed: 150,
     showSpinner: false,
     parent: "body",
   });

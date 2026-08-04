@@ -27,6 +27,8 @@ export interface DashboardSummary {
   isRevenueAlert: boolean;
   isPendingAlert: boolean;
   isStockAlert: boolean;
+  activeInstallmentCount: number;
+  lateInstallmentCount: number;
   revenueChangePercentage?: number;
   channelData?: any[];
 }
