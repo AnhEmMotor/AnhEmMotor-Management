@@ -5,11 +5,12 @@ export class RoutePermissionValidator {
     targetPath: string,
     menuList: AppRouteRecord[],
   ): boolean {
-    if (targetPath === "/") {
+    const normalizedTarget = this.normalizePath(targetPath);
+    if (normalizedTarget === "/" || normalizedTarget === "") {
       return true;
     }
 
-    return this.matchRoute(targetPath, menuList);
+    return this.matchRoute(normalizedTarget, menuList);
   }
 
   static buildMenuPathSet(
@@ -25,10 +26,7 @@ export class RoutePermissionValidator {
         continue;
       }
 
-      const menuPath = menuItem.path.startsWith("/")
-        ? menuItem.path
-        : `/${menuItem.path}`;
-      pathSet.add(menuPath);
+      pathSet.add(this.normalizePath(menuItem.path));
 
       if (menuItem.children?.length) {
         this.buildMenuPathSet(menuItem.children, pathSet);
@@ -39,8 +37,9 @@ export class RoutePermissionValidator {
   }
 
   static checkPathPrefix(targetPath: string, pathSet: Set<string>): boolean {
+    const normalizedTarget = this.normalizePath(targetPath);
     for (const menuPath of pathSet) {
-      if (targetPath.startsWith(`${menuPath}/`)) {
+      if (normalizedTarget.startsWith(`${menuPath}/`)) {
         return true;
       }
     }
@@ -52,26 +51,26 @@ export class RoutePermissionValidator {
       return false;
     }
 
+    const normalizedTarget = this.normalizePath(targetPath);
+
     for (const route of routes) {
       if (!route.path) {
         continue;
       }
 
-      const routePath = route.path.startsWith("/")
-        ? route.path
-        : `/${route.path}`;
+      const routePath = this.normalizePath(route.path);
 
       if (
-        routePath === targetPath ||
-        this.isDynamicRouteMatch(targetPath, routePath) ||
-        targetPath.startsWith(`${routePath}/`)
+        routePath === normalizedTarget ||
+        this.isDynamicRouteMatch(normalizedTarget, routePath) ||
+        normalizedTarget.startsWith(`${routePath}/`)
       ) {
         return true;
       }
 
       if (
         route.children?.length &&
-        this.matchRoute(targetPath, route.children)
+        this.matchRoute(normalizedTarget, route.children)
       ) {
         return true;
       }
@@ -81,16 +80,19 @@ export class RoutePermissionValidator {
   }
 
   static isDynamicRouteMatch(targetPath: string, routePath: string): boolean {
-    if (!routePath.includes(":")) {
+    const normalizedTarget = this.normalizePath(targetPath);
+    const normalizedRoute = this.normalizePath(routePath);
+
+    if (!normalizedRoute.includes(":")) {
       return false;
     }
 
-    const pattern = routePath
+    const pattern = normalizedRoute
       .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
       .replace(/:([^/]+)/g, "[^/]+")
       .replace(/\\\*/g, ".*");
 
-    return new RegExp(`^${pattern}$`).test(targetPath);
+    return new RegExp(`^${pattern}$`).test(normalizedTarget);
   }
 
   static validatePath(
@@ -105,5 +107,17 @@ export class RoutePermissionValidator {
     }
 
     return { path: homePath, hasPermission: false };
+  }
+
+  private static normalizePath(path: string): string {
+    if (!path) return "";
+    let normalized = path.trim().toLowerCase();
+    if (!normalized.startsWith("/")) {
+      normalized = "/" + normalized;
+    }
+    if (normalized.endsWith("/") && normalized.length > 1) {
+      normalized = normalized.slice(0, -1);
+    }
+    return normalized;
   }
 }

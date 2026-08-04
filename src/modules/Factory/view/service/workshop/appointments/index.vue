@@ -788,7 +788,7 @@ const handleCreateOrder = (row: BookingAppointment) => {
 
 const goToRepair = (row: BookingAppointment) => {
   router.push({
-    path: "/factory/workshop/counter/repair-history/create",
+    path: "/factory/workshop/repair-history/create",
     query: { phone: row.phone, serviceType: "RepairService" },
   });
 };

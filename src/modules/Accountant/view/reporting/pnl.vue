@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="resp-page pnl-report">
     <div class="reporting-actions mb-4">
       <ElDatePicker
@@ -12,6 +12,10 @@
       />
       <ElButton @click="loadReport" type="primary" :loading="props.loading">
         Truy xuất dữ liệu
+      </ElButton>
+      <ElButton type="success" @click="exportPnlExcel">
+        <ArtSvgIcon icon="ri:file-excel-2-line" />
+        Xuất Excel
       </ElButton>
     </div>
 
@@ -92,8 +96,12 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted } from "vue";
+import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
 import { AnalyticsService } from "@/services/analytics.service";
 import type { PnlReport } from "@/services/analytics.types";
+import { exportReportWorkbook } from "@/utils/report-excel";
+import ReportPageHeader from "./ReportPageHeader.vue";
+import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
 
 const props = withDefaults(
   defineProps<{
@@ -131,6 +139,34 @@ async function loadReport() {
   localReport.value = await AnalyticsService.getPnlReport(month, year);
 }
 
+function exportPnlExcel() {
+  const r = displayReport.value;
+  exportReportWorkbook({
+    fileName: "Bao_cao_loi_nhuan",
+    sheets: [
+      {
+        name: "P&L Tổng hợp",
+        rows: [
+          { Hạng_mục: "Tổng thu nhập", Giá_trị: r.totalRevenue },
+          {
+            Hạng_mục: "Giá vốn hàng bán (COGS)",
+            Giá_trị: r.totalCostOfGoodsSold,
+          },
+          { Hạng_mục: "Lợi nhuận gộp", Giá_trị: r.grossProfit },
+          { Hạng_mục: "Chi phí vận hành", Giá_trị: r.totalOperatingExpenses },
+          { Hạng_mục: "Lợi nhuận ròng cuối cùng", Giá_trị: r.netProfit },
+        ],
+      },
+      {
+        name: "Chi phí chi tiết",
+        rows: r.expenseDetails.map((e: any) => ({
+          Phan_loai: e.category,
+          So_tien: e.amount,
+        })),
+      },
+    ],
+  });
+}
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("vi-VN", {
     style: "currency",

@@ -3,9 +3,12 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const policyDetailPath = "../src/modules/Admin/view/employee/policy/detail.vue";
+const policyListPath = "../src/modules/Admin/view/employee/policy/index.vue";
 
 const loadPolicyDetail = () =>
   readFile(new URL(policyDetailPath, import.meta.url), { encoding: "utf8" });
+const loadPolicyList = () =>
+  readFile(new URL(policyListPath, import.meta.url), { encoding: "utf8" });
 
 test("commission policies persist their real product scope", async () => {
   const source = await loadPolicyDetail();
@@ -62,4 +65,19 @@ test("policy detail contains no fabricated performance statistics", async () => 
     source,
     /partsPercentage:\s*dept === "mechanic"\s*\?\s*Number\(p\.value\)\s*\*\s*0\.1/,
   );
+});
+
+test("policy cards expose parts and technician commission values", async () => {
+  const source = await loadPolicyList();
+
+  assert.match(source, /data-testid="policy-commission-value"/);
+  assert.match(source, /Phụ tùng \/ phụ kiện/);
+  assert.match(source, /Mức hoa hồng kỹ thuật viên/);
+  assert.match(source, /formatPercentage\(policy\.laborPercentage\)/);
+  assert.match(source, /formatPercentage\(policy\.partsPercentage\)/);
+  assert.match(source, /formatPercentage\(policy\.value\)/);
+  assert.match(source, /parsePolicyUiConfiguration\(p\.notes\)/);
+  assert.match(source, /uiConfiguration\.laborPercentage/);
+  assert.match(source, /uiConfiguration\.partsPercentage/);
+  assert.match(source, /p\.type === "Percentage"/);
 });

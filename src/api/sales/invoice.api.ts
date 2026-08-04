@@ -114,6 +114,7 @@ export interface UpdateAdminInvoiceRequest {
   salesPerson?: string;
   deliveryDate?: string;
   paymentBreakdown?: Array<{ method: string; amount: number; note?: string }>;
+  voucherCode?: string;
 }
 
 export interface UpdateInvoiceStatusRequest {
@@ -145,10 +146,7 @@ export const invoiceApi = {
       totalCount: number;
       pageNumber: number;
       pageSize: number;
-    }>({
-      url: "/api/v1/Admin/invoices",
-      params,
-    });
+    }>({ url: "/api/v1/Admin/invoices", params });
   },
   getAdminDetail(id: number) {
     return request.get<AdminInvoiceDetailResponse>({

@@ -38,15 +38,15 @@ import "highlight.js/styles/atom-one-dark.css";
 
 // Configure marked
 const renderer = new marked.Renderer();
-renderer.code = function (token: any) {
+renderer.code = function (tokenOrCode: any, maybeLang?: string) {
   let code = "";
-  let lang = undefined;
+  let lang = maybeLang;
 
-  if (typeof token === "object" && token !== null) {
-    code = token.text || "";
-    lang = token.lang;
+  if (typeof tokenOrCode === "object" && tokenOrCode !== null) {
+    code = tokenOrCode.text || "";
+    lang = tokenOrCode.lang;
   } else {
-    code = token || "";
+    code = tokenOrCode || "";
   }
 
   const language = lang && hljs.getLanguage(lang) ? lang : "plaintext";

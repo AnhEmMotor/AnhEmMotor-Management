@@ -6,12 +6,24 @@
       icon="ri:file-list-line"
     >
       <template #actions>
-        <ReportPeriodSwitcher
-          v-model="currentPeriod"
-          v-model:start-date="periodStart"
-          v-model:end-date="periodEnd"
-          @update:modelValue="onPeriodChange"
-        />
+        <div class="reporting-actions">
+          <ReportPeriodSwitcher
+            v-model="currentPeriod"
+            :start-date="periodStart"
+            :end-date="periodEnd"
+            @update:modelValue="onPeriodChange"
+            @update:start-date="onStartDateChange"
+            @update:end-date="onEndDateChange"
+          />
+          <ElButton
+            type="primary"
+            :disabled="isLoading"
+            @click="exportContractExcel"
+          >
+            <ArtSvgIcon icon="ri:file-excel-2-line" />
+            Xuất Excel
+          </ElButton>
+        </div>
       </template>
     </ReportPageHeader>
 
@@ -47,8 +59,17 @@
       />
     </div>
 
+    <ElAlert
+      v-if="errorMessage"
+      :title="errorMessage"
+      type="error"
+      :closable="false"
+      show-icon
+      class="mt-4"
+    />
+
     <!-- TẦNG 2: BIỂU ĐỒ XU HƯỚNG FULL-WIDTH -->
-    <ElCard class="reporting-card mt-4">
+    <ElCard v-loading="isLoading" class="reporting-card mt-4">
       <template #header>Biến động giá trị hợp đồng theo thời gian</template>
       <div ref="trendChartRef" class="reporting-chart"></div>
     </ElCard>
@@ -159,9 +180,10 @@ import * as echarts from "echarts";
 import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
 import ReportPageHeader from "./ReportPageHeader.vue";
 import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
-import { statisticsApi } from "@/api/operations";
+import { statisticsApi, type ContractOverviewResponse } from "@/api/operations";
 import { useSettingStore } from "@/application/store/setting";
 import { storeToRefs } from "pinia";
+import { exportReportWorkbook } from "@/utils/report-excel";
 
 const settingStore = useSettingStore();
 const { isDark } = storeToRefs(settingStore);
@@ -204,11 +226,12 @@ const summaryData = ref({
   totalSupplierValue: 0,
 });
 
-const trendData = ref<any[]>([]);
-const statusData = ref<any[]>([]);
-const topSuppliersData = ref<any[]>([]);
-const contractsData = ref<any[]>([]);
+const trendData = ref<ContractOverviewResponse["trendData"]>([]);
+const statusData = ref<ContractOverviewResponse["statusData"]>([]);
+const topSuppliersData = ref<ContractOverviewResponse["topSuppliersData"]>([]);
+const contractsData = ref<ContractOverviewResponse["contractsData"]>([]);
 const isLoading = ref(false);
+const errorMessage = ref("");
 
 const filteredContracts = computed(() => {
   let result = contractsData.value;
@@ -240,29 +263,145 @@ const paginatedContracts = computed(() => {
   return filteredContracts.value.slice(start, start + pageSize.value);
 });
 
-async function onPeriodChange() {
+function exportContractExcel() {
+  exportReportWorkbook({
+    fileName: `Bao_cao_hop_dong_${toDateInput(new Date(periodStart.value))}_${toDateInput(new Date(periodEnd.value))}`,
+    sheets: [
+      {
+        name: "Tổng quan",
+        rows: [
+          {
+            "Hợp đồng bán xe": summaryData.value.totalSalesCount,
+            "Giá trị hợp đồng bán xe": summaryData.value.totalSalesValue,
+            "Hợp đồng nhà cung cấp": summaryData.value.totalSupplierCount,
+            "Giá trị hợp đồng NCC": summaryData.value.totalSupplierValue,
+          },
+        ],
+      },
+      {
+        name: "Danh sách hợp đồng",
+        rows: filteredContracts.value.map((item) => ({
+          "Mã hợp đồng": item.contractNumber,
+          Loại: item.type,
+          "Đối tác": item.partnerName,
+          "Giá trị": item.value,
+          "Trạng thái": item.status,
+          Ngày: item.date,
+        })),
+      },
+      {
+        name: "Xu hướng",
+        rows: trendData.value.map((item) => ({
+          Ngày: item.day,
+          "Giá trị hợp đồng bán xe": item.salesValue,
+          "Giá trị hợp đồng NCC": item.supplierValue,
+        })),
+      },
+      {
+        name: "Trạng thái",
+        rows: statusData.value.map((item) => ({
+          "Trạng thái": item.name,
+          "Số lượng": item.value,
+        })),
+      },
+    ],
+  });
+}
+
+async function loadContractOverview() {
   isLoading.value = true;
+  errorMessage.value = "";
   try {
     const res = await statisticsApi.getContractOverview(
       periodStart.value,
       periodEnd.value,
     );
-    summaryData.value = res.kpi || {
-      totalSalesCount: (res as any).totalSalesCount || 0,
-      totalSalesValue: (res as any).totalSalesValue || 0,
-      totalSupplierCount: (res as any).totalSupplierCount || 0,
-      totalSupplierValue: (res as any).totalSupplierValue || 0,
-    };
+    summaryData.value = res.kpi;
     trendData.value = res.trendData || [];
-    statusData.value = res.statusData || [];
+    statusData.value = (res.statusData || []).map((item) => ({
+      ...item,
+      name: translateContractStatus(item.name),
+    }));
     topSuppliersData.value = res.topSuppliersData || [];
-    contractsData.value = res.contractsData || [];
+    contractsData.value = (res.contractsData || []).map((item) => ({
+      ...item,
+      status: translateContractStatus(item.status),
+    }));
+    currentPage.value = 1;
     renderCharts();
   } catch (error) {
     console.error("Failed to load contract overview", error);
+    errorMessage.value =
+      error instanceof Error
+        ? error.message
+        : "Không thể tải báo cáo hợp đồng trong khoảng thời gian đã chọn";
   } finally {
     isLoading.value = false;
   }
+}
+
+function onPeriodChange(period: "today" | "month" | "year" | "custom") {
+  if (period !== "custom") {
+    setPeriodRange(period);
+  }
+
+  if (periodStart.value && periodEnd.value) {
+    void loadContractOverview();
+  }
+}
+
+function onStartDateChange(value: string) {
+  const shouldReload = currentPeriod.value === "custom";
+  periodStart.value = value;
+  currentPeriod.value = "custom";
+  if (shouldReload && value && periodEnd.value) {
+    void loadContractOverview();
+  }
+}
+
+function onEndDateChange(value: string) {
+  const shouldReload = currentPeriod.value === "custom";
+  periodEnd.value = value;
+  currentPeriod.value = "custom";
+  if (shouldReload && periodStart.value && value) {
+    void loadContractOverview();
+  }
+}
+
+function setPeriodRange(period: "today" | "month" | "year") {
+  const today = new Date();
+  const start =
+    period === "today"
+      ? today
+      : period === "month"
+        ? new Date(today.getFullYear(), today.getMonth(), 1)
+        : new Date(today.getFullYear(), 0, 1);
+
+  periodStart.value = toDateInput(start);
+  periodEnd.value = toDateInput(today);
+}
+
+function toDateInput(date: Date) {
+  const localDate = new Date(date);
+  localDate.setMinutes(localDate.getMinutes() - localDate.getTimezoneOffset());
+  return localDate.toISOString().slice(0, 10);
+}
+
+function translateContractStatus(status: string) {
+  const labels: Record<string, string> = {
+    Draft: "Nháp",
+    PendingApproval: "Chờ phê duyệt",
+    Approved: "Đã phê duyệt",
+    Signed: "Đã ký",
+    Active: "Đang hiệu lực",
+    Fulfilled: "Đã hoàn tất",
+    Completed: "Đã hoàn thành",
+    Expired: "Đã hết hạn",
+    Terminated: "Đã thanh lý",
+    Cancelled: "Đã hủy",
+  };
+
+  return labels[status] ?? status;
 }
 
 function renderCharts() {
@@ -356,7 +495,8 @@ function renderCharts() {
           label: {
             show: true,
             position: "right",
-            formatter: (params: any) => formatShortCurrency(params.value),
+            formatter: (params: { value?: number | string }) =>
+              formatShortCurrency(Number(params.value) || 0),
             fontSize: 12,
           },
         },
@@ -410,7 +550,7 @@ function handleResize() {
 }
 
 onMounted(() => {
-  onPeriodChange();
+  void loadContractOverview();
   window.addEventListener("resize", handleResize);
 });
 

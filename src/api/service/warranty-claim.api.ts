@@ -12,6 +12,7 @@ export interface WarrantyClaimListItem {
   id: number;
   claimNumber: string;
   vehiclePlate: string;
+  vehicleVin?: string;
   customerName: string;
   customerPhone: string;
   statusText: string;

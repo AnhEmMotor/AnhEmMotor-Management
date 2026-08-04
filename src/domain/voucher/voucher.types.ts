@@ -12,6 +12,7 @@ export interface VoucherItem {
   maxDiscountAmount?: number;
   minOrderValue: number;
   totalUsageLimit: number;
+  usageLimitPerUser: number;
   usedCount: number;
   validFrom: string;
   validTo: string;

@@ -46,7 +46,7 @@ export interface InspectReturnCommand {
   productCondition?: string;
   returnProofImage?: string;
   returnInternalNote?: string;
-  action: string; // 'restock', 'defect', 'refund'
+  action: "" | "refund";
   refundAmount?: number;
   returnShippingCost?: number;
 }

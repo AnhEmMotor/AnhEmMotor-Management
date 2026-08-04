@@ -804,6 +804,7 @@ const {
 } = useVoucher(
   () => voucherTotal.value,
   () => undefined,
+  true,
 );
 
 watch(appliedVoucher, (val) => {

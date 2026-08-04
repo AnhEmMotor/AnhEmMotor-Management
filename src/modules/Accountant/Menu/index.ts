@@ -1,5 +1,6 @@
 import { AppRouteRecord } from "@/types/router";
 import { Permissions } from "@/domain/constants/permissions";
+import { accountantManualRoutes } from "@/router/modules/accountant-manual";
 
 export const accountancyMenu: AppRouteRecord[] = [
   {
@@ -145,6 +146,7 @@ export const accountancyMenu: AppRouteRecord[] = [
           permission: Permissions.Accountant.DashboardManagement.View,
         },
       },
+      ...accountantManualRoutes,
     ],
   },
 ];

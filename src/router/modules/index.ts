@@ -19,6 +19,7 @@ import { reportingRoutes } from "./reporting";
 import { hrRoutes } from "./hr";
 import { helpRoutes } from "./help";
 import { salesRoutes } from "./sales";
+import { adminManualRoutes } from "./admin-manual";
 
 import { factoryMenu } from "@/modules/Factory/Menu";
 import { adminServiceRoutes } from "./admin-service";
@@ -37,6 +38,7 @@ const coreRoutes: AppRouteRecord[] = [
   contractRoutes,
   ...marketingMenu,
   reportingRoutes,
+  adminManualRoutes,
 ];
 
 const developmentRoutes: AppRouteRecord[] = [

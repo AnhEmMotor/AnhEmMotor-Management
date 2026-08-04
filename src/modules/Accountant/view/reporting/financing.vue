@@ -12,6 +12,14 @@
           v-model:end-date="periodEnd"
           @update:modelValue="onPeriodChange"
         />
+        <ElButton
+          type="success"
+          :disabled="!installments.length"
+          @click="exportFinancingExcel"
+        >
+          <ArtSvgIcon icon="ri:file-excel-2-line" />
+          Xuất Excel
+        </ElButton>
       </template>
     </ReportPageHeader>
 
@@ -112,10 +120,13 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { statisticsApi } from "@/api/operations";
+import { AnalyticsService } from "@/services/analytics.service";
 import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
 import ReportPageHeader from "./ReportPageHeader.vue";
 import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
 import ReportPlaceholder from "./ReportPlaceholder.vue";
+import { exportReportWorkbook } from "@/utils/report-excel";
+import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
 
 const currentPeriod = ref<"today" | "month" | "year" | "custom">("month");
 const periodStart = ref("");
@@ -141,63 +152,7 @@ const installments = ref<
   }>
 >([]);
 const loading = ref(false);
-
-const approvalRate = computed(() => {
-  if (!kpi.value.totalApplications) return "0";
-  return (
-    (kpi.value.disbursedCount / kpi.value.totalApplications) *
-    100
-  ).toFixed(1);
-});
-
-function onPeriodChange() {
-  loadData();
-}
-
-async function loadData() {
-  loading.value = true;
-  try {
-    const data = await statisticsApi.getFinancingOverview(
-      currentPeriod.value === "custom" ? undefined : currentPeriod.value,
-      periodStart.value,
-      periodEnd.value,
-    );
-    kpi.value = data.kpi;
-    installments.value = data.installments;
-  } finally {
-    loading.value = false;
-  }
-}
-
-function statusType(
-  status: string,
-): "primary" | "success" | "info" | "danger" | "warning" {
-  const map: Record<
-    string,
-    "primary" | "success" | "info" | "danger" | "warning"
-  > = {
-    "Chờ duyệt": "info",
-    "Đã duyệt": "primary",
-    "Chờ giải ngân": "warning",
-    "Đã giải ngân": "success",
-    "Từ chối": "danger",
-  };
-  return map[status] || "info";
-}
-
-function cavetType(
-  status: string,
-): "primary" | "success" | "info" | "danger" | "warning" {
-  const map: Record<
-    string,
-    "primary" | "success" | "info" | "danger" | "warning"
-  > = {
-    "Công ty tài chính giữ": "warning",
-    "Cửa hàng giữ hộ": "info",
-    "Đã giao khách": "success",
-  };
-  return map[status] || "info";
-}
+const approvalRate = ref(0);
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("vi-VN", {
@@ -209,6 +164,74 @@ function formatCurrency(value: number) {
 function formatDate(iso: string) {
   if (!iso) return "-";
   return new Date(iso).toLocaleDateString("vi-VN");
+}
+
+function statusType(status: string) {
+  const map: Record<string, "success" | "warning" | "danger" | "info"> = {
+    "Đã giải ngân": "success",
+    "Đang chờ": "warning",
+    Từ_chối: "danger",
+  };
+  return map[status] || "info";
+}
+
+function cavetType(status: string) {
+  const map: Record<string, "success" | "warning" | "danger" | "info"> = {
+    "Đã cấp": "success",
+    "Đang xử lý": "warning",
+    Từ_chối: "danger",
+  };
+  return map[status] || "info";
+}
+
+async function loadData() {
+  loading.value = true;
+  try {
+    const res = await AnalyticsService.getDashboardSummary();
+    kpi.value = {
+      totalApplications: res.activeInstallmentCount + res.lateInstallmentCount,
+      disbursedCount: 0,
+      pendingCount: res.activeInstallmentCount,
+      overdueCount: res.lateInstallmentCount,
+    };
+    approvalRate.value = 0;
+    installments.value = [];
+  } catch {
+    kpi.value = {
+      totalApplications: 0,
+      disbursedCount: 0,
+      pendingCount: 0,
+      overdueCount: 0,
+    };
+    installments.value = [];
+  } finally {
+    loading.value = false;
+  }
+}
+
+function onPeriodChange() {
+  loadData();
+}
+
+function exportFinancingExcel() {
+  exportReportWorkbook({
+    fileName: "Bao_cao_tra_gop",
+    sheets: [
+      {
+        name: "Ho so tra gop",
+        rows: installments.value.map((row) => ({
+          Ma_ho_so: row.applicationCode,
+          Khach_hang: row.customerName,
+          Doi_tac: row.partnerName,
+          Xe: row.vehicleName,
+          So_tien: row.amount,
+          Trang_thai: row.status,
+          Cavet: row.cavetStatus ?? "",
+          Ngay_tao: row.createdAt,
+        })),
+      },
+    ],
+  });
 }
 
 onMounted(() => {

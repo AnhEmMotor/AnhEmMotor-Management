@@ -1105,7 +1105,7 @@ async function handleSubmit() {
 
   if (appliedVoucher.value) {
     payload.voucherId = appliedVoucher.value.voucherId;
-    payload.discountAmount = appliedVoucher.value.discountAmount;
+    (payload as any).discountAmount = appliedVoucher.value.discountAmount;
   }
 
   saving.value = true;

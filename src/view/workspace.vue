@@ -16,7 +16,7 @@
     <div class="portal-header relative z-10"></div>
 
     <div class="portal-container relative z-10">
-      <div class="workspace-grid max-w-[1150px] mx-auto">
+      <div class="workspace-grid max-w-[1300px] mx-auto">
         <el-card
           v-for="(workspace, index) in workspaces"
           :key="index"
@@ -356,7 +356,7 @@ const workspaces = computed(() => {
     .workspace-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 20px;
+      gap: 18px;
       margin: auto;
       width: 100%;
 
@@ -418,9 +418,9 @@ const workspaces = computed(() => {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 42px;
-            height: 42px;
-            font-size: 20px;
+            width: 52px;
+            height: 52px;
+            font-size: 24px;
             border-radius: 12px;
             transition: all 0.3s;
           }
@@ -431,8 +431,8 @@ const workspaces = computed(() => {
             animation: pulse-badge 2s infinite;
 
             .badge-text {
-              padding: 4px 10px;
-              font-size: 11px;
+              padding: 6px 12px;
+              font-size: 12px;
               font-weight: 700;
               letter-spacing: 0.3px;
               border-radius: 20px;
@@ -448,16 +448,16 @@ const workspaces = computed(() => {
 
           .workspace-title {
             margin-bottom: 4px;
-            font-size: 16px;
+            font-size: 17px;
             font-weight: 800;
-            line-height: 1.3;
+            line-height: 1.4;
             color: var(--el-text-color-primary);
           }
 
           .workspace-subtitle {
             display: inline-block;
             margin-bottom: 0;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;

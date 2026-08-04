@@ -41,6 +41,9 @@ export interface RepairOrder {
   licensePlate?: string;
   vehicle?: any;
   totalAmount?: number;
+  voucherCode?: string;
+  voucherDiscount?: number;
+  voucherFinalTotal?: number;
 }
 
 export interface RepairOrderList {
@@ -59,6 +62,9 @@ export interface CreateRepairOrderPayload {
   mileage: number;
   description: string;
   technicianId?: number;
+  notes?: string;
+  voucherId?: number;
+  discountAmount?: number;
 }
 
 export interface UpdateRepairOrderPayload {

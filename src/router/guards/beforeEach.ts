@@ -87,7 +87,13 @@ export function setupBeforeEachGuard(router: Router): void {
           currentRoute.path,
           menuList,
         );
+        console.log(
+          `[RouteGuard Debug] auth:permissions-changed target: ${currentRoute.path}, hasAccess: ${hasAccess}`,
+        );
         if (!hasAccess) {
+          console.warn(
+            `[RouteGuard Debug] auth:permissions-changed Redirecting to /workspace`,
+          );
           window.location.href = "/workspace";
         }
       }
@@ -163,7 +169,13 @@ async function handleRouteGuard(
           to.path,
           menuStore.menuList,
         );
+        console.log(
+          `[RouteGuard Debug] handleRouteGuard to: ${to.path}, matched.length: ${to.matched.length}, hasAccess: ${hasAccess}`,
+        );
         if (!hasAccess) {
+          console.warn(
+            `[RouteGuard Debug] Redirecting to /workspace because hasAccess is false`,
+          );
           return { path: "/workspace", replace: true };
         }
       }
@@ -344,13 +356,16 @@ async function handleDynamicRoutes(
         homePath.value || "/",
       );
 
+    console.log(
+      `[RouteGuard Debug] handleDynamicRoutes to: ${to.path}, hasPermission: ${hasPermission}, validatedPath: ${validatedPath}`,
+    );
     routeInitInProgress = false;
 
     if (!hasPermission) {
       closeLoading();
 
       console.warn(
-        `[RouteGuard] User khong co quyen truy cap duong: ${to.path}, da chuyen den Trang Chu`,
+        `[RouteGuard] User khong co quyen truy cap duong: ${to.path}, da chuyen den Trang Chu: ${validatedPath}`,
       );
 
       return {

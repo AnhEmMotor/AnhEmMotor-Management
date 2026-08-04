@@ -225,6 +225,13 @@
                     </div>
                   </div>
 
+                  <SupportWorkflowPanel
+                    v-if="activeSupportRequest"
+                    :request="activeSupportRequest"
+                    :submitting="ratingSubmitting"
+                    @rate-customer="handleRateCustomer"
+                  />
+
                   <!-- Reply -->
                   <div class="pt-2">
                     <h4
@@ -245,7 +252,7 @@
                     <div class="flex justify-between items-center mt-3">
                       <div class="flex gap-2">
                         <ElButton
-                          v-if="activeItem && activeItem.status !== 'Closed'"
+                          v-if="activeItem?.status === 'InProgress'"
                           size="small"
                           type="success"
                           plain
@@ -258,9 +265,7 @@
                           />Đóng yêu cầu
                         </ElButton>
                         <ElButton
-                          v-if="
-                            activeItem && activeItem.status !== 'InProgress'
-                          "
+                          v-if="activeItem?.status === 'Assigned'"
                           size="small"
                           type="primary"
                           plain
@@ -273,19 +278,7 @@
                           />Đang xử lý
                         </ElButton>
                         <ElButton
-                          v-if="activeItem && activeItem.status !== 'New'"
-                          size="small"
-                          type="info"
-                          plain
-                          class="font-bold text-[10px]"
-                          @click="handleStatus('New')"
-                        >
-                          <ArtSvgIcon
-                            icon="ri:arrow-go-back-line"
-                            class="mr-1"
-                          />Mở lại (Mới)
-                        </ElButton>
-                        <ElButton
+                          v-if="activeItem?.status !== 'Closed'"
                           size="small"
                           plain
                           class="font-bold text-[10px]"
@@ -299,6 +292,7 @@
                       </div>
                       <ElButton
                         type="primary"
+                        :disabled="activeItem?.status !== 'InProgress'"
                         class="font-bold text-xs uppercase"
                         style="background: #001529; border-color: #001529"
                         @click="handleReply"
@@ -1114,6 +1108,8 @@
       <ElSelect
         v-model="assignedUser"
         :placeholder="$t('contact.assignDialog.selectUser')"
+        :loading="userOptionsLoading"
+        no-data-text="Không có nhân viên khả dụng"
         class="w-full"
         filterable
         clearable
@@ -1139,12 +1135,14 @@ import { ElMessage } from "element-plus";
 import { storeToRefs } from "pinia";
 import { useContactStore } from "@/application/store/contact";
 import { useSettingStore } from "@/application/store/setting";
+import { fetchGetUserList } from "@/api/auth";
 import {
   SupportStatuses,
   FeedbackStatuses,
   CandidateStatuses,
 } from "@/infrastructure/api/contact.api";
-import type { Contact } from "@/types";
+import { resolveContactId, type Contact } from "@/types";
+import SupportWorkflowPanel from "./components/SupportWorkflowPanel.vue";
 
 defineOptions({ name: "ContactManagement" });
 const contactStore = useContactStore();
@@ -1157,12 +1155,43 @@ const replyDraft = ref("");
 const noteDraft = ref("");
 const assignDialogVisible = ref(false);
 const assignedUser = ref("");
+const ratingSubmitting = ref(false);
 
-const userOptions = ref<{ id: string; name: string }[]>([
-  { id: "1", name: "Nguyễn Văn A" },
-  { id: "2", name: "Trần Thị B" },
-  { id: "3", name: "Lê Văn C" },
-]);
+type AssignableUser = {
+  id: string;
+  fullName?: string;
+  userName?: string;
+  email?: string;
+  status?: string;
+};
+
+type AssignableUserList = {
+  items?: AssignableUser[];
+  records?: AssignableUser[];
+};
+
+const userOptions = ref<{ id: string; name: string }[]>([]);
+const userOptionsLoading = ref(false);
+
+const fetchAssignableUsers = async () => {
+  userOptionsLoading.value = true;
+  try {
+    const response = await fetchGetUserList({ Page: 1, PageSize: 100 });
+    const payload = response as unknown as AssignableUserList;
+    const users = payload.items ?? payload.records ?? [];
+    userOptions.value = users
+      .filter((user) => user.id && user.status !== "Banned")
+      .map((user) => ({
+        id: user.id,
+        name: user.fullName || user.userName || user.email || user.id,
+      }));
+  } catch {
+    userOptions.value = [];
+    ElMessage.error("Không thể tải danh sách nhân viên");
+  } finally {
+    userOptionsLoading.value = false;
+  }
+};
 
 const tableHeaderStyle = computed(() => ({
   background: isDark.value ? "#111827" : "#f8fafc",
@@ -1174,9 +1203,9 @@ const tableHeaderStyle = computed(() => ({
   borderColor: isDark.value ? "rgb(255 255 255 / 10%)" : "#f1f5f9",
 }));
 
-onMounted(() => {
+onMounted(async () => {
   contactStore.setFilter(activeTab.value, statusFilter.value);
-  contactStore.fetchList();
+  await Promise.all([contactStore.fetchList(), fetchAssignableUsers()]);
 });
 
 watch(activeTab, () => {
@@ -1187,6 +1216,11 @@ watch(activeTab, () => {
 });
 
 const activeItem = computed(() => contactStore.activeItem as any);
+const activeSupportRequest = computed<Contact.SupportRequest | null>(() =>
+  activeTab.value === "support"
+    ? (contactStore.activeItem as Contact.SupportRequest | null)
+    : null,
+);
 
 watch(
   activeItem,
@@ -1291,9 +1325,21 @@ const getFullCvUrl = (url: string | undefined) => {
 
 const handleReply = async () => {
   if (!replyDraft.value.trim() || !contactStore.activeItem) return;
+  const contactId = resolveContactId(contactStore.activeItem);
+  if (contactId === null) {
+    ElMessage.error(
+      "Không tìm thấy mã liên hệ gốc. Vui lòng tải lại dữ liệu trước khi phản hồi.",
+    );
+    return;
+  }
   try {
-    await contactStore.sendReply(contactStore.activeItem.id, replyDraft.value);
-    replyDraft.value = "";
+    const sent = await contactStore.sendReply(
+      contactId,
+      replyDraft.value,
+      contactStore.activeItem.id,
+      activeTab.value,
+    );
+    if (sent) replyDraft.value = "";
   } catch {
     /* handled */
   }
@@ -1347,27 +1393,54 @@ const handleStatus = async (newStatus: string) => {
   );
 };
 
+const handleRateCustomer = async (payload: {
+  rating: number;
+  comment: string;
+}) => {
+  if (!activeSupportRequest.value) return;
+  ratingSubmitting.value = true;
+  try {
+    await contactStore.rateSupportCustomer(
+      activeSupportRequest.value.id,
+      payload.rating,
+      payload.comment,
+    );
+  } finally {
+    ratingSubmitting.value = false;
+  }
+};
+
 const saveNote = async () => {
   if (!contactStore.activeItem) return;
-  await contactStore.saveInternalNote(
-    contactStore.activeItem.id,
-    noteDraft.value,
-  );
+  const contactId = resolveContactId(contactStore.activeItem);
+  if (contactId === null) {
+    ElMessage.error(
+      "Không tìm thấy mã liên hệ gốc. Vui lòng tải lại dữ liệu trước khi lưu ghi chú.",
+    );
+    return;
+  }
+  await contactStore.saveInternalNote(contactId, noteDraft.value);
 };
 
 const downloadCvUrl = (url: string) => {
   if (url) window.open(url, "_blank");
 };
 const openAssignDialog = () => {
+  assignedUser.value =
+    (contactStore.activeItem as Contact.SupportRequest | null)
+      ?.assignedUserId ?? "";
   assignDialogVisible.value = true;
 };
 const handleAssign = async () => {
-  if (!assignedUser.value) {
-    ElMessage.warning("Vui lòng chọn nhân viên");
+  if (!contactStore.activeItem || activeTab.value !== "support") {
+    ElMessage.warning("Chỉ yêu cầu hỗ trợ mới có thể phân công");
     return;
   }
-  assignDialogVisible.value = false;
-  ElMessage.success("Đã phân công xử lý");
+  const assigned = await contactStore.assignSupportRequest(
+    contactStore.activeItem.id,
+    assignedUser.value || null,
+  );
+  if (assigned) assignDialogVisible.value = false;
 };
 </script>
 

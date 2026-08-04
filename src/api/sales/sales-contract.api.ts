@@ -16,7 +16,7 @@ export const SalesContractApi = {
     vehicleModel?: string;
   }) {
     const { current, size, ...rest } = params;
-    return request.get<{ items: SalesContractListDto[]; total: number }>({
+    return request.get<{ items: SalesContractListDto[]; totalCount: number }>({
       url: "/api/v1/contracts/sales",
       params: { Page: current, PageSize: size, ...rest },
     });
@@ -64,9 +64,22 @@ export const SalesContractApi = {
     });
   },
 
+  submitForApproval(contractId: string) {
+    return request.post<SalesContractDetailDto>({
+      url: `/api/v1/contracts/sales/${contractId}/submit-for-approval`,
+    });
+  },
+
+  approve(contractId: string) {
+    return request.post<SalesContractDetailDto>({
+      url: `/api/v1/contracts/sales/${contractId}/approve`,
+    });
+  },
+
   getStatistics() {
     return request.get<{
       draftCount: number;
+      pendingApprovalCount: number;
       overdueCount: number;
       signedCount: number;
     }>({

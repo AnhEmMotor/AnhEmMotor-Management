@@ -457,7 +457,7 @@
 
       <!-- Voucher Section -->
       <div
-        v-if="order?.id"
+        v-if="order"
         class="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm mt-4"
       >
         <h4
@@ -482,13 +482,14 @@
               >
             </div>
           </div>
-        </div>
-
-        <div
-          v-else-if="!orderId"
-          class="rounded-xl border border-slate-100 bg-slate-50 p-4 text-xs text-slate-400"
-        >
-          Voucher chỉ áp dụng được sau khi lưu phiếu.
+          <ElButton
+            link
+            type="danger"
+            size="small"
+            :loading="voucherApplying"
+            @click="removeVoucher"
+            >Hủy</ElButton
+          >
         </div>
 
         <div v-else class="flex gap-3">
@@ -496,7 +497,7 @@
             v-model="voucherCode"
             placeholder="Nhập mã giảm giá"
             class="flex-1"
-            :disabled="voucherApplying"
+            :disabled="submitting"
             @keyup.enter="handleApplyVoucher"
           />
           <ElButton
@@ -521,8 +522,49 @@
             >-{{ formatCurrency(voucherDiscount) }}</span
           >
         </div>
+
+        <div class="mt-4 pt-4 border-t border-slate-100 space-y-2">
+          <div class="flex justify-between text-xs text-slate-500">
+            <span>Tiền công sửa chữa:</span>
+            <span class="font-bold text-slate-700">{{
+              formatCurrency(order.laborCost || 0)
+            }}</span>
+          </div>
+          <div class="flex justify-between text-xs text-slate-500">
+            <span>Tiền phụ tùng vật tư:</span>
+            <span class="font-bold text-slate-700">{{
+              formatCurrency(order.partsCost || 0)
+            }}</span>
+          </div>
+          <div class="flex justify-between text-xs text-slate-500">
+            <span>Tổng trước giảm:</span>
+            <span class="font-bold text-slate-700">{{
+              formatCurrency(repairOrderTotal)
+            }}</span>
+          </div>
+          <div
+            v-if="voucherDiscount > 0"
+            class="flex justify-between text-xs text-green-600"
+          >
+            <span>Giảm giá voucher:</span>
+            <span class="font-bold"
+              >-{{ formatCurrency(voucherDiscount) }}</span
+            >
+          </div>
+          <div
+            class="flex justify-between text-base border-t border-slate-100 pt-2 mt-2"
+          >
+            <span class="font-black uppercase text-slate-800"
+              >Phí sau voucher:</span
+            >
+            <span class="font-black text-primary text-lg">{{
+              formatCurrency(voucherFinalTotal)
+            }}</span>
+          </div>
+        </div>
       </div>
 
+      <!-- Empty state when no order -->
       <!-- Empty state when no order -->
       <div v-else class="text-center py-20 text-slate-400">
         <div class="text-4xl mb-4">🔧</div>
@@ -624,6 +666,7 @@ const {
 } = useVoucher(
   () => voucherOrderTotal.value,
   () => voucherOrderId.value,
+  true,
 );
 
 const loadOrder = async () => {

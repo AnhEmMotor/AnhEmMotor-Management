@@ -80,65 +80,53 @@
         </div>
       </div>
 
-      <ElDrawer
-        lDrawer
+      <ElDialog
         v-model="showDrawer"
         :lock-scroll="false"
-        :size="360"
-        modal-class="comment-modal"
+        width="600px"
+        class="comment-modal"
+        :show-close="true"
+        title="Chi tiết bình luận bài viết"
+        destroy-on-close
       >
-        <template #header>
-          <h4 class="dark:text-white">
-            {{ $t("marketing.comment.detailTitle") }}
-          </h4>
-        </template>
         <template #default>
           <div class="drawer-default">
             <div
-              class="comment-item relative p-4 aspect-16/12 rounded-2xl border border-transparent"
-              :style="{ '--comment-bg': clickItem.color }"
+              class="mb-4 bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700"
             >
-              <p class="text-g-500 dark:text-slate-400 text-sm">
-                {{ clickItem.date }}
-              </p>
-              <p class="mt-4 text-sm text-gray-800 dark:text-slate-200">
-                {{ clickItem.content }}
-              </p>
-              <div class="absolute bottom-4 left-0 px-4 flex-cb w-full">
-                <div class="flex-c">
-                  <div
-                    class="flex-c mr-5 text-xs text-g-600 dark:text-slate-400"
-                  >
-                    <ArtSvgIcon icon="ri:heart-line" class="mr-1 text-base" />
-                    <span>{{ clickItem.collection }}</span>
-                  </div>
-                  <div
-                    class="flex-c mr-5 text-xs text-g-600 dark:text-slate-400"
-                  >
-                    <ArtSvgIcon
-                      icon="ri:message-3-line"
-                      class="mr-1 text-base"
-                    />
-                    <span>{{ clickItem.comment }}</span>
-                  </div>
-                </div>
-                <div>
-                  <span class="text-sm text-gray-700 dark:text-slate-300">{{
-                    clickItem.userName
-                  }}</span>
-                </div>
+              <img
+                v-if="clickItem.articleImage"
+                :src="clickItem.articleImage"
+                alt="Article Cover"
+                class="w-full h-48 object-cover rounded-lg mb-3 shadow-sm border border-gray-100 dark:border-slate-700"
+              />
+              <div class="flex items-center gap-2 mb-2">
+                <ArtSvgIcon
+                  icon="ri:article-line"
+                  class="text-xl text-blue-500 shrink-0"
+                />
+                <h3
+                  class="text-base font-bold text-slate-800 dark:text-white line-clamp-2"
+                  :title="clickItem.collection"
+                >
+                  {{ clickItem.collection }}
+                </h3>
               </div>
+              <p class="text-sm text-slate-500 dark:text-slate-400">
+                Bài viết này đang có
+                <span class="font-bold text-red-500">{{
+                  articleComments.length
+                }}</span>
+                bình luận.
+              </p>
             </div>
 
-            <div class="mt-4">
-              <h4 class="text-base font-bold mb-2 dark:text-white">
-                {{ $t("marketing.comment.replyTitle") }}
-              </h4>
-              <CommentWidget :comment-id="clickItem.id" />
+            <div class="mt-6">
+              <CommentWidget :comments="formattedArticleComments" />
             </div>
           </div>
         </template>
-      </ElDrawer>
+      </ElDialog>
     </div>
   </div>
 </template>
@@ -153,19 +141,115 @@ defineOptions({ name: "MarketingComment" });
 const loadingComments = ref(false);
 const comments = ref<CommentItem[]>([]);
 
+const getArticleInfo = (
+  type: string,
+  slug: string,
+  title: string,
+  image: string,
+) => {
+  if (type === "promotion") {
+    const pTitles: Record<string, string> = {
+      "sieu-uu-dai-chao-he-rinh-xe-cuc-da":
+        "SIÊU ƯU ĐÃI CHÀO HÈ - RINH XE CỰC ĐÃ",
+      "tra-gop-0-phan-tram-so-huu-xe-sang":
+        "TRẢ GÓP 0% - DỄ DÀNG SỞ HỮU XE SANG",
+      "doi-cu-lay-moi-gia-tri-toi-da": "ĐỔI CŨ LẤY MỚI - GIÁ TRỊ TỐI ĐA",
+      "bao-duong-mien-phi-an-tam-moi-neo-duong":
+        "BẢO DƯỠNG MIỄN PHÍ - AN TÂM TRÊN MỌI NẺO ĐƯỜNG",
+      "combo-phu-kien-an-toan-len-do-chuan-chat":
+        "COMBO PHỤ KIỆN AN TOÀN - LÊN ĐỒ CHUẨN CHẤT",
+      "dat-coc-xe-moi-nhan-qua-giao-xe": "ĐẶT CỌC XE MỚI - NHẬN QUÀ GIAO XE",
+      "kiem-tra-xe-mien-phi-truoc-mua-mua":
+        "KIỂM TRA XE MIỄN PHÍ TRƯỚC MÙA MƯA",
+      "duyet-tra-gop-online-nhan-xe-trong-ngay":
+        "DUYỆT TRẢ GÓP ONLINE - NHẬN XE TRONG NGÀY",
+      "thu-cu-xe-tay-ga-tro-gia-len-doi": "THU CŨ XE TAY GA - TRỢ GIÁ LÊN ĐỜI",
+    };
+    const pImages: Record<string, string> = {
+      "sieu-uu-dai-chao-he-rinh-xe-cuc-da":
+        "/featured_vario_160_promotion_marketing_1778828577524.webp",
+      "tra-gop-0-phan-tram-so-huu-xe-sang":
+        "/card_yamaha_exciter_lifestyle_1778828605125.webp",
+      "doi-cu-lay-moi-gia-tri-toi-da":
+        "/premium_motorcycle_showroom_visit_1778827603878.webp",
+      "bao-duong-mien-phi-an-tam-moi-neo-duong":
+        "/promotion_process_process_background_1778827621728.webp",
+      "combo-phu-kien-an-toan-len-do-chuan-chat": "/service-4.webp",
+      "dat-coc-xe-moi-nhan-qua-giao-xe":
+        "/hero_honda_sh_2025_spotlight_1778828554894.webp",
+      "kiem-tra-xe-mien-phi-truoc-mua-mua": "/service-hero-cinematic.webp",
+      "duyet-tra-gop-online-nhan-xe-trong-ngay":
+        "/promotion_step_3_procedure_3d_premium_1778927862992.webp",
+      "thu-cu-xe-tay-ga-tro-gia-len-doi":
+        "/premium_motorcycle_showroom_visit_1778827603878.webp",
+    };
+    const img = pImages[slug] ? `http://localhost:3000${pImages[slug]}` : "";
+    return { title: pTitles[slug] || `Khuyến mãi: ${slug}`, image: img };
+  }
+  if (type === "technology") {
+    const tTitles: Record<string, string> = {
+      "phan-phoi-xe-may": "Phân phối xe máy chính hãng",
+      "phu-tung-do-choi-xe": "Phụ tùng & Đồ chơi xe",
+      "bao-duong-sua-chua": "Bảo dưỡng & Sửa chữa",
+      "tra-gop-tai-chinh": "Trả góp & Tài chính",
+    };
+    const tImages: Record<string, string> = {
+      "phan-phoi-xe-may":
+        "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=600",
+      "phu-tung-do-choi-xe":
+        "http://localhost:3000/images/technology/engine_xray.webp",
+      "bao-duong-sua-chua":
+        "http://localhost:3000/images/technology/safety_blueprint.webp",
+      "tra-gop-tai-chinh":
+        "https://images.unsplash.com/photo-1580048915913-4f8f5cb481c4?q=80&w=600",
+    };
+    return {
+      title: tTitles[slug] || `Công nghệ: ${slug}`,
+      image: tImages[slug] || "",
+    };
+  }
+  let finalImage = image || "";
+  if (
+    finalImage &&
+    !finalImage.startsWith("http") &&
+    !finalImage.startsWith("//")
+  ) {
+    const baseUrl =
+      import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT ||
+      "http://localhost:5000";
+    const cleanUrl = finalImage.startsWith("/")
+      ? finalImage.substring(1)
+      : finalImage;
+    finalImage = `${baseUrl}/${cleanUrl}`;
+  }
+  return {
+    title: title || (type ? `${type}: ${slug}` : "Bài viết khác"),
+    image: finalImage,
+  };
+};
+
 const loadComments = async () => {
   loadingComments.value = true;
   try {
     const res = await commentApi.getAll();
     const dataList = (res as any).data || res || [];
-    comments.value = dataList.map((c: any) => ({
-      id: c.id,
-      date: c.createdAt,
-      content: c.content,
-      collection: 0,
-      comment: 0,
-      userName: c.authorName,
-    }));
+    comments.value = dataList.map((c: any) => {
+      const info = getArticleInfo(
+        c.articleType,
+        c.articleSlug,
+        c.newsTitle,
+        c.newsImage,
+      );
+      return {
+        id: c.id,
+        date: c.createdAt,
+        content: c.content,
+        collection: info.title,
+        articleImage: info.image,
+        comment: 0,
+        userName: c.authorName,
+      };
+    });
   } catch (error) {
     console.error("Failed to load comments:", error);
   } finally {
@@ -177,7 +261,8 @@ interface CommentItem {
   id: number;
   date: string;
   content: string;
-  collection: number;
+  collection: string;
+  articleImage?: string;
   comment: number;
   userName: string;
   color?: string;
@@ -198,7 +283,7 @@ const clickItem = ref<CommentItem>({
   id: 0,
   date: "",
   content: "",
-  collection: 0,
+  collection: "",
   comment: 0,
   userName: "",
   color: "",
@@ -208,6 +293,22 @@ const commentsWithColors = computed(() => {
   return comments.value.map((item: CommentItem, index: number) => ({
     ...item,
     color: COLOR_LIST[index % COLOR_LIST.length],
+  }));
+});
+
+const articleComments = computed(() => {
+  return commentsWithColors.value.filter(
+    (c) => c.collection === clickItem.value.collection,
+  );
+});
+
+const formattedArticleComments = computed(() => {
+  return articleComments.value.map((c) => ({
+    id: c.id,
+    author: c.userName,
+    content: c.content,
+    timestamp: c.date,
+    replies: [],
   }));
 });
 

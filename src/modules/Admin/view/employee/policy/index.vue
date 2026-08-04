@@ -80,6 +80,73 @@
           </div>
 
           <div
+            class="mb-4 rounded-lg border border-red-100 bg-red-50/70 p-3 dark:border-red-900/60 dark:bg-red-950/20"
+            data-testid="policy-commission-value"
+          >
+            <template v-if="policy.department === 'mechanic'">
+              <div
+                class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
+              >
+                Mức hoa hồng kỹ thuật viên
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div
+                  class="rounded-md bg-white/80 px-2 py-2 dark:bg-gray-900/70"
+                >
+                  <span
+                    class="block text-[11px] text-gray-500 dark:text-gray-400"
+                    >Tiền công</span
+                  >
+                  <strong class="text-base text-red-600 dark:text-red-400">
+                    {{ formatPercentage(policy.laborPercentage) }}
+                  </strong>
+                </div>
+                <div
+                  class="rounded-md bg-white/80 px-2 py-2 dark:bg-gray-900/70"
+                >
+                  <span
+                    class="block text-[11px] text-gray-500 dark:text-gray-400"
+                    >Phụ tùng</span
+                  >
+                  <strong class="text-base text-red-600 dark:text-red-400">
+                    {{ formatPercentage(policy.partsPercentage) }}
+                  </strong>
+                </div>
+              </div>
+            </template>
+
+            <template v-else-if="policy.department === 'parts_sales'">
+              <div class="flex items-end justify-between gap-3">
+                <span
+                  class="text-xs font-semibold text-gray-600 dark:text-gray-300"
+                >
+                  Phụ tùng / phụ kiện
+                </span>
+                <strong class="text-xl text-red-600 dark:text-red-400">
+                  {{ formatPercentage(policy.value) }}
+                </strong>
+              </div>
+              <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                Tính trên
+                {{ policy.basis === "profit" ? "lợi nhuận gộp" : "doanh thu" }}
+              </div>
+            </template>
+
+            <template v-else>
+              <div class="flex items-end justify-between gap-3">
+                <span
+                  class="text-xs font-semibold text-gray-600 dark:text-gray-300"
+                >
+                  Mức hoa hồng
+                </span>
+                <strong class="text-lg text-red-600 dark:text-red-400">
+                  {{ formatPolicyValue(policy) }}
+                </strong>
+              </div>
+            </template>
+          </div>
+
+          <div
             class="mt-auto pt-3 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center"
           >
             <span class="text-xs font-medium text-gray-500"
@@ -99,9 +166,29 @@ import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { Plus, Right } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
-import { commissionPolicyApi } from "@/api/operations/commission-policy.api";
+import {
+  commissionPolicyApi,
+  type CommissionPolicyResponse,
+} from "@/api/operations/commission-policy.api";
 
 defineOptions({ name: "HRCommissionPolicy" });
+
+type DepartmentKey = "vehicle_sales" | "parts_sales" | "mechanic";
+
+interface PolicyUiConfiguration {
+  department?: DepartmentKey;
+  basis?: string;
+  laborPercentage?: number;
+  partsPercentage?: number;
+}
+
+interface PolicyValueFields {
+  type: string;
+  value: number;
+  unit?: string;
+}
+
+const POLICY_UI_CONFIG_PREFIX = "AEM_POLICY_UI_V1:";
 
 const router = useRouter();
 const loading = ref(false);
@@ -120,6 +207,27 @@ const formatDate = (dateStr: string) => {
     month: "2-digit",
     year: "numeric",
   });
+};
+
+const formatPercentage = (value?: number) => {
+  const numericValue = Number(value);
+  const safeValue = Number.isFinite(numericValue) ? numericValue : 0;
+  return `${new Intl.NumberFormat("vi-VN", {
+    maximumFractionDigits: 2,
+  }).format(safeValue)}%`;
+};
+
+const formatPolicyValue = (policy: PolicyValueFields) => {
+  if (policy.type === "Percentage") {
+    return formatPercentage(policy.value);
+  }
+
+  const amount = Number(policy.value);
+  const safeAmount = Number.isFinite(amount) ? amount : 0;
+  const unit = policy.unit?.trim();
+  return `${new Intl.NumberFormat("vi-VN").format(safeAmount)} ₫${
+    unit ? ` / ${unit}` : ""
+  }`;
 };
 
 const getStatusRibbonClass = (status: string) => {
@@ -158,14 +266,39 @@ const getPolicyItemClass = (policy: any) => {
   return `${base} bg-gray-50 dark:bg-gray-800 opacity-80`;
 };
 
-const mapBackendPolicy = (p: any) => {
+const parsePolicyUiConfiguration = (notes?: string): PolicyUiConfiguration => {
+  if (!notes?.startsWith(POLICY_UI_CONFIG_PREFIX)) return {};
+
+  try {
+    const parsed: unknown = JSON.parse(
+      notes.slice(POLICY_UI_CONFIG_PREFIX.length),
+    );
+    return parsed && typeof parsed === "object"
+      ? (parsed as PolicyUiConfiguration)
+      : {};
+  } catch {
+    return {};
+  }
+};
+
+const getDepartmentTargetLabel = (department: DepartmentKey) => {
+  if (department === "mechanic") return "Kỹ thuật viên xưởng";
+  if (department === "parts_sales") return "Sale phụ tùng / phụ kiện";
+  return "Sale xe máy";
+};
+
+const mapBackendPolicy = (p: CommissionPolicyResponse) => {
+  const uiConfiguration = parsePolicyUiConfiguration(p.notes);
   const target = p.targetGroup || "";
-  const dept =
-    target.includes("Kỹ thuật") || target === "Mechanic"
+  const dept: DepartmentKey =
+    uiConfiguration.department ||
+    (target.includes("Kỹ thuật") || target === "Mechanic"
       ? "mechanic"
-      : target.includes("Phụ tùng") || target === "PartsSales"
+      : target.includes("Phụ tùng") ||
+          target === "PartsSales" ||
+          p.type === "Percentage"
         ? "parts_sales"
-        : "vehicle_sales";
+        : "vehicle_sales");
   return {
     id: p.id,
     name: p.name,
@@ -174,7 +307,15 @@ const mapBackendPolicy = (p: any) => {
     productId: p.productId ?? null,
     categoryId: p.categoryId ?? null,
     startDate: p.effectiveDate?.split("T")[0] || "",
-    target: p.targetGroup || "",
+    target: getDepartmentTargetLabel(dept),
+    type: p.type,
+    value: Number(p.value) || 0,
+    unit: p.unit,
+    basis: uiConfiguration.basis || "revenue",
+    laborPercentage:
+      uiConfiguration.laborPercentage ??
+      (dept === "mechanic" ? Number(p.value) || 0 : 0),
+    partsPercentage: uiConfiguration.partsPercentage ?? 0,
   };
 };
 

@@ -2,19 +2,19 @@
   <div class="resp-page flex flex-col gap-4 pb-5">
     <div class="resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-4">
       <ArtStatsCard
-        title="T?ng phi?u"
+        title="Tổng phiếu"
         :count="pagination.total"
         icon="ri:file-list-3-line"
         iconStyle="bg-primary"
       />
       <ArtStatsCard
-        title="Ch? x? l�"
+        title="Chờ xử lý"
         :count="pendingCount"
         icon="ri:time-line"
         iconStyle="bg-warning"
       />
       <ArtStatsCard
-        title="Ho�n t?t"
+        title="Hoàn tất"
         :count="completedCount"
         icon="ri:checkbox-circle-line"
         iconStyle="bg-success"
@@ -49,7 +49,7 @@
             @click="handleAdd"
             v-auth="Permissions.Order.SalesInvoiceManagement.Create"
           >
-            <ElIcon class="mr-1"><Plus /></ElIcon> T?o phi?u b�n
+            <ElIcon class="mr-1"><Plus /></ElIcon> Tạo phiếu bán
           </ElButton>
         </template>
       </ArtTableHeader>
@@ -89,7 +89,7 @@
           <div class="flex gap-2 justify-center">
             <ElTooltip
               v-if="canEditRow(row)"
-              content="Xem / ch?nh s?a"
+              content="Xem / chỉnh sửa"
               placement="top"
             >
               <ElButton
@@ -104,7 +104,7 @@
             </ElTooltip>
             <ElTooltip
               v-if="canChangeStatusRow(row)"
-              content="�?i tr?ng th�i"
+              content="Đổi trạng thái"
               placement="top"
             >
               <ElButton
@@ -119,7 +119,7 @@
             </ElTooltip>
             <ElTooltip
               v-if="canDeleteRow(row)"
-              content="X�a phi?u"
+              content="Xóa phiếu"
               placement="top"
             >
               <ElButton
@@ -134,7 +134,7 @@
             </ElTooltip>
             <ElTooltip
               v-if="canCopyPaymentLink(row)"
-              content="Copy link thanh to�n"
+              content="Copy link thanh toán"
               placement="top"
             >
               <ElButton
@@ -173,7 +173,7 @@
 
         <ElRow :gutter="20">
           <ElCol :span="24">
-            <ElFormItem label="Kh�ch h�ng" required>
+            <ElFormItem label="Khách hàng" required>
               <ElSelect
                 v-model="formData.buyerId"
                 filterable
@@ -181,7 +181,7 @@
                 clearable
                 :remote-method="searchCustomers"
                 :loading="customerLoading"
-                placeholder="T�m theo t�n, email ho?c s? di?n tho?i"
+                placeholder="Tìm theo tên, email hoặc số điện thoại"
                 class="w-full"
                 :disabled="isBuyerProductLocked"
                 @change="handleCustomerChange"
@@ -197,7 +197,7 @@
           </ElCol>
 
           <ElCol :span="24" :md="12">
-            <ElFormItem label="Ngu?i nh?n" required>
+            <ElFormItem label="Người nhận" required>
               <ElInput
                 v-model="formData.customerName"
                 :disabled="isDeliveryInfoLocked"
@@ -206,7 +206,7 @@
           </ElCol>
 
           <ElCol :span="24" :md="12">
-            <ElFormItem label="S? di?n tho?i" required>
+            <ElFormItem label="Số điện thoại" required>
               <ElInput
                 v-model="formData.customerPhone"
                 :disabled="isDeliveryInfoLocked"
@@ -215,12 +215,12 @@
           </ElCol>
 
           <ElCol :span="24" :md="12">
-            <ElFormItem label="T?nh/Th�nh ph?">
+            <ElFormItem label="Tỉnh/Thành phố">
               <ElSelect
                 v-model="formData.provinceId"
                 filterable
                 clearable
-                placeholder="Ch?n T?nh/Th�nh ph?"
+                placeholder="Chọn Tỉnh/Thành phố"
                 class="w-full"
                 :disabled="isDeliveryInfoLocked"
                 @change="handleProvinceChange"
@@ -236,12 +236,12 @@
           </ElCol>
 
           <ElCol :span="24" :md="12">
-            <ElFormItem label="Phu?ng/X�">
+            <ElFormItem label="Phường/Xã">
               <ElSelect
                 v-model="formData.wardCode"
                 filterable
                 clearable
-                placeholder="Ch?n Phu?ng/X�"
+                placeholder="Chọn Phường/Xã"
                 class="w-full"
                 :disabled="isDeliveryInfoLocked || !formData.provinceId"
               >
@@ -256,7 +256,7 @@
           </ElCol>
 
           <ElCol :span="24">
-            <ElFormItem label="�?a ch? giao h�ng" required>
+            <ElFormItem label="Địa chỉ giao hàng" required>
               <ElInput
                 v-model="formData.customerAddress"
                 :disabled="isDeliveryInfoLocked"
@@ -265,7 +265,7 @@
           </ElCol>
 
           <ElCol :span="24" :md="12">
-            <ElFormItem label="T? l? d?t c?c">
+            <ElFormItem label="Tỷ lệ đặt cọc">
               <ElInputNumber
                 v-model="formData.depositRatio"
                 :min="0"
@@ -281,7 +281,7 @@
         <!-- Invoice Info if requested -->
         <ElAlert
           v-if="editingOrder && editingOrder.isCompanyInvoice"
-          title="Y�u c?u xu?t h�a don c�ng ty (VAT)"
+          title="Yêu cầu xuất hóa đơn công ty (VAT)"
           type="info"
           :closable="false"
           show-icon
@@ -291,20 +291,20 @@
             class="mt-2 text-xs space-y-1.5 font-medium text-[var(--el-text-color-regular)]"
           >
             <div>
-              <strong>T�n c�ng ty:</strong> {{ editingOrder.companyName }}
+              <strong>Tên công ty:</strong> {{ editingOrder.companyName }}
             </div>
             <div>
-              <strong>M� s? thu?:</strong> {{ editingOrder.companyTaxCode }}
+              <strong>Mã số thuế:</strong> {{ editingOrder.companyTaxCode }}
             </div>
             <div>
-              <strong>�?a ch? c�ng ty:</strong>
+              <strong>Địa chỉ công ty:</strong>
               {{ editingOrder.companyAddress }}
             </div>
             <div v-if="editingOrder.companyEmail">
-              <strong>Email nh?n H�:</strong> {{ editingOrder.companyEmail }}
+              <strong>Email nhận HĐ:</strong> {{ editingOrder.companyEmail }}
             </div>
             <div v-if="editingOrder.budgetCode">
-              <strong>M� don v? ng�n s�ch:</strong>
+              <strong>Mã đơn vị ngân sách:</strong>
               {{ editingOrder.budgetCode }}
             </div>
           </div>
@@ -313,7 +313,7 @@
         <div class="border-t border-gray-100 pt-4 mt-2">
           <div class="flex justify-between items-center mb-3">
             <span class="text-sm font-semibold text-gray-700"
-              >S?n ph?m b�n ra</span
+              >Sản phẩm bán ra</span
             >
             <ElButton
               type="success"
@@ -322,7 +322,7 @@
               @click="addProductRow"
               :disabled="isBuyerProductLocked"
             >
-              <ElIcon class="mr-1"><Plus /></ElIcon> Th�m s?n ph?m
+              <ElIcon class="mr-1"><Plus /></ElIcon> Thêm sản phẩm
             </ElButton>
           </div>
 
@@ -333,7 +333,7 @@
             class="w-full"
             max-height="320"
           >
-            <ElTableColumn label="S?n ph?m" min-width="280">
+            <ElTableColumn label="Sản phẩm" min-width="280">
               <template #default="{ row }">
                 <ElSelect
                   v-model="row.productVariantId"
@@ -341,7 +341,7 @@
                   remote
                   :remote-method="searchProducts"
                   :loading="productLoading"
-                  placeholder="T�m s?n ph?m"
+                  placeholder="Tìm sản phẩm"
                   class="w-full"
                   :disabled="isBuyerProductLocked"
                   @change="(id: number) => handleProductChange(row as any, id)"
@@ -362,12 +362,12 @@
                 </ElSelect>
               </template>
             </ElTableColumn>
-            <ElTableColumn label="M�u" width="180">
+            <ElTableColumn label="Màu" width="180">
               <template #default="{ row }">
                 <ElSelect
                   v-model="row.productVariantColorId"
                   clearable
-                  placeholder="Kh�ng ch?n"
+                  placeholder="Không chọn"
                   class="w-full"
                   :disabled="
                     isBuyerProductLocked || !getProductColors(row).length
@@ -377,7 +377,7 @@
                     v-for="color in getProductColors(row)"
                     :key="color.id"
                     :label="
-                      color.colorName || color.colorCode || `M�u #${color.id}`
+                      color.colorName || color.colorCode || `Màu #${color.id}`
                     "
                     :value="color.id"
                   />
@@ -396,19 +396,19 @@
                 />
               </template>
             </ElTableColumn>
-            <ElTableColumn label="�on gi�" width="150" align="right">
+            <ElTableColumn label="Đơn giá" width="150" align="right">
               <template #default="{ row }">
                 {{ formatCurrency(row.price || 0) }}
               </template>
             </ElTableColumn>
-            <ElTableColumn label="Th�nh ti?n" width="160" align="right">
+            <ElTableColumn label="Thành tiền" width="160" align="right">
               <template #default="{ row }">
                 <span class="font-medium">{{
                   formatCurrency((row.count || 0) * (row.price || 0))
                 }}</span>
               </template>
             </ElTableColumn>
-            <ElTableColumn label="VIN d� g�n" min-width="220">
+            <ElTableColumn label="VIN đã gán" min-width="220">
               <template #default="{ row }">
                 <div
                   v-if="row.assignedVehicles?.length"
@@ -426,7 +426,7 @@
                 <span v-else class="text-xs text-gray-400">---</span>
               </template>
             </ElTableColumn>
-            <ElTableColumn label="Thao t�c" width="100" align="center">
+            <ElTableColumn label="Thao tác" width="100" align="center">
               <template #default="{ $index }">
                 <ElButton
                   circle
@@ -443,94 +443,39 @@
           </ElTable>
         </div>
 
-        <ElFormItem label="Ghi ch�" class="mt-4">
+        <ElFormItem label="Ghi chú" class="mt-4">
           <ElInput
             v-model="formData.notes"
             type="textarea"
             :rows="3"
-            placeholder="Ghi ch� n?i b? ho?c y�u c?u giao h�ng"
+            placeholder="Ghi chú nội bộ hoặc yêu cầu giao hàng"
             :disabled="isNotesLocked"
           />
         </ElFormItem>
 
-        <ElDivider content-position="left" class="!my-4"
-          >M� gi?m gi� (Voucher)</ElDivider
-        >
-        <div class="flex items-start gap-3">
-          <ElInput
-            v-model="voucherCode"
-            placeholder="Nh?p m� voucher..."
-            class="flex-1"
-            @keyup.enter="applyVoucher"
-            :disabled="voucherApplying"
-          >
-            <template #append>
-              <ElButton
-                :loading="voucherApplying"
-                type="primary"
-                @click="applyVoucher"
-              >
-                �p d?ng
-              </ElButton>
-            </template>
-          </ElInput>
-        </div>
-        <div
-          v-if="appliedVoucher"
-          class="flex items-center gap-2 p-2 bg-emerald-50 border border-emerald-200 rounded-lg"
-        >
-          <ArtSvgIcon icon="ri:coupon-3-fill" class="text-emerald-600" />
-          <span class="text-sm font-bold text-emerald-700">{{
-            appliedVoucher.code
-          }}</span>
-          <span class="text-xs text-emerald-600"
-            >-{{ formatCurrency(appliedVoucher.discountAmount) }}</span
-          >
-          <ElButton
-            link
-            type="danger"
-            size="small"
-            :loading="voucherApplying"
-            @click="removeVoucher"
-          >
-            <ArtSvgIcon icon="ri:close-circle-line" />
-          </ElButton>
-        </div>
-        <p v-if="voucherError" class="text-xs text-red-500 mt-1">
-          {{ voucherError }}
-        </p>
         <div class="bg-gray-50 rounded-lg p-4 flex flex-col gap-2 text-sm">
           <div class="flex justify-between">
-            <span>T?m t�nh</span>
+            <span>Tạm tính</span>
             <span class="font-semibold">{{ formatCurrency(formTotal) }}</span>
           </div>
           <div class="flex justify-between">
-            <span>Ti?n d?t c?c</span>
+            <span>Tiền đặt cọc</span>
             <span>{{ formatCurrency(depositAmount) }}</span>
-          </div>
-          <div
-            v-if="voucherDiscount > 0"
-            class="flex justify-between text-green-600"
-          >
-            <span>Gi?m gi� voucher</span>
-            <span class="font-semibold"
-              >-{{ formatCurrency(voucherDiscount) }}</span
-            >
           </div>
           <div
             class="flex justify-between text-base text-primary font-bold border-t border-gray-200 pt-2"
           >
-            <span>C�n l?i</span>
-            <span>{{ formatCurrency(Math.max(0, remainingAmount)) }}</span>
+            <span>Còn lại</span>
+            <span>{{ formatCurrency(remainingAmount) }}</span>
           </div>
         </div>
       </ElForm>
 
       <template #footer>
         <div class="flex justify-end gap-2">
-          <ElButton @click="dialogVisible = false">H?y</ElButton>
+          <ElButton @click="dialogVisible = false">Hủy</ElButton>
           <ElButton type="primary" :loading="saving" @click="handleSubmit">
-            {{ editingOrder ? "Luu phi?u" : "T?o phi?u" }}
+            {{ editingOrder ? "Lưu phiếu" : "Tạo phiếu" }}
           </ElButton>
         </div>
       </template>
@@ -538,17 +483,17 @@
 
     <ElDialog
       v-model="statusDialogVisible"
-      title="�?i tr?ng th�i phi?u b�n"
+      title="Đổi trạng thái phiếu bán"
       width="520px"
       append-to-body
       destroy-on-close
     >
       <ElForm label-width="120px">
-        <ElFormItem label="Tr?ng th�i m?i" required>
+        <ElFormItem label="Trạng thái mới" required>
           <ElSelect
             v-model="targetStatusId"
             class="w-full"
-            placeholder="Ch?n tr?ng th�i"
+            placeholder="Chọn trạng thái"
           >
             <ElOption
               v-for="status in statusChangeOptions"
@@ -561,13 +506,13 @@
       </ElForm>
       <template #footer>
         <div class="flex justify-end gap-2">
-          <ElButton @click="statusDialogVisible = false">H?y</ElButton>
+          <ElButton @click="statusDialogVisible = false">Hủy</ElButton>
           <ElButton
             type="primary"
             :loading="statusSaving"
             @click="handlePrepareStatusChange"
           >
-            Ti?p t?c
+            Tiếp tục
           </ElButton>
         </div>
       </template>
@@ -575,7 +520,7 @@
 
     <ElDialog
       v-model="vinDialogVisible"
-      title="Ch?n VIN xu?t b�n"
+      title="Chọn VIN xuất bán"
       width="860px"
       append-to-body
       destroy-on-close
@@ -583,7 +528,7 @@
       <div v-if="vehicleRequirements" class="flex flex-col gap-4">
         <ElAlert
           v-if="vehicleRequirements.items.some((item) => !item.canFulfill)"
-          title="M?t s? s?n ph?m chua d? VIN h?p l? trong kho, kh�ng th? d?i tr?ng th�i."
+          title="Một số sản phẩm chưa đủ VIN hợp lệ trong kho, không thể đổi trạng thái."
           type="error"
           show-icon
           :closable="false"
@@ -594,7 +539,7 @@
           size="small"
           class="w-full"
         >
-          <ElTableColumn label="S?n ph?m" min-width="240">
+          <ElTableColumn label="Sản phẩm" min-width="240">
             <template #default="{ row }">
               <div class="flex flex-col">
                 <span class="font-medium">{{ row.productName || "---" }}</span>
@@ -608,7 +553,7 @@
               </div>
             </template>
           </ElTableColumn>
-          <ElTableColumn label="C?n ch?n" width="100" align="center">
+          <ElTableColumn label="Cần chọn" width="100" align="center">
             <template #default="{ row }">{{ row.requiredCount }}</template>
           </ElTableColumn>
           <ElTableColumn label="VIN" min-width="320">
@@ -621,7 +566,7 @@
                 collapse-tags-tooltip
                 class="w-full"
                 :disabled="!row.canFulfill"
-                :placeholder="`Ch?n ${row.requiredCount} VIN`"
+                :placeholder="`Chọn ${row.requiredCount} VIN`"
               >
                 <ElOption
                   v-for="vehicle in getVehicleOptions(row as any)"
@@ -636,13 +581,13 @@
       </div>
       <template #footer>
         <div class="flex justify-end gap-2">
-          <ElButton @click="vinDialogVisible = false">H?y</ElButton>
+          <ElButton @click="vinDialogVisible = false">Hủy</ElButton>
           <ElButton
             type="primary"
             :loading="statusSaving"
             @click="handleSubmitVinStatusChange"
           >
-            C?p nh?t tr?ng th�i
+            Cập nhật trạng thái
           </ElButton>
         </div>
       </template>
@@ -658,6 +603,7 @@ import { SalesOrderApi } from "@/api/sales";
 import { ProductApi } from "@/api/product";
 import { fetchGetUserList } from "@/api/auth";
 import { Permissions } from "@/domain/constants/permissions";
+import { useVoucher } from "@/common/composables/useVoucher";
 import type {
   SalesOrder,
   VehicleAssignmentOption,
@@ -665,8 +611,6 @@ import type {
 } from "@/domain/order/order.types";
 import type { ProductVariantLiteForInput } from "@/domain/product/product.types";
 import type { ColumnOption } from "@/types/component";
-import { useVoucher } from "@/common/composables/useVoucher";
-import { VoucherApi } from "@/api/voucher.api";
 
 type StatusOption = { id: string; name: string };
 type CustomerOption = {
@@ -742,18 +686,18 @@ const formData = reactive({
 
 const searchItems = computed(() => [
   {
-    label: "T? kh�a",
+    label: "Từ khóa",
     key: "search",
     type: "input",
-    props: { clearable: true, placeholder: "T�n, email, S�T ho?c ghi ch�" },
+    props: { clearable: true, placeholder: "Tên, email, SĐT hoặc ghi chú" },
   },
   {
-    label: "Tr?ng th�i",
+    label: "Trạng thái",
     key: "statusId",
     type: "select",
     props: {
       clearable: true,
-      placeholder: "T?t c?",
+      placeholder: "Tất cả",
       options: statusMap.value.map((item) => ({
         label: getStatusLabel(item.id),
         value: item.id,
@@ -765,36 +709,36 @@ const searchItems = computed(() => [
 const columnChecks = ref<ColumnOption[]>([
   {
     prop: "createdAt",
-    label: "Th?i gian",
+    label: "Thời gian",
     width: 170,
     checked: true,
     useSlot: true,
   },
   {
     prop: "customer",
-    label: "Kh�ch h�ng",
+    label: "Khách hàng",
     minWidth: 220,
     checked: true,
     useSlot: true,
   },
-  { prop: "notes", label: "Ghi ch�", minWidth: 220, checked: true },
+  { prop: "notes", label: "Ghi chú", minWidth: 220, checked: true },
   {
     prop: "statusId",
-    label: "Tr?ng th�i",
+    label: "Trạng thái",
     width: 170,
     checked: true,
     useSlot: true,
   },
   {
     prop: "total",
-    label: "T?ng ti?n",
+    label: "Tổng tiền",
     width: 160,
     checked: true,
     useSlot: true,
   },
   {
     prop: "operation",
-    label: "Thao t�c",
+    label: "Thao tác",
     width: 150,
     fixed: "right" as const,
     checked: true,
@@ -806,7 +750,7 @@ const columns = computed(() =>
   columnChecks.value.filter((item) => item.checked),
 );
 const dialogTitle = computed(() =>
-  editingOrder.value ? "S?a phi?u b�n h�ng" : "T?o phi?u b�n h�ng",
+  editingOrder.value ? "Sửa phiếu bán hàng" : "Tạo phiếu bán hàng",
 );
 const pendingCount = computed(
   () => orders.value.filter((item) => item.statusId === "pending").length,
@@ -850,7 +794,7 @@ const lockedHint = computed(() => {
     !isNotesLocked.value
   )
     return "";
-  return `Phi?u dang ? tr?ng th�i ${getStatusLabel(originalStatusId.value)}, m?t s? tru?ng d� b? kh�a theo backend.`;
+  return `Phiếu đang ở trạng thái ${getStatusLabel(originalStatusId.value)}, một số trường đã bị khóa theo backend.`;
 });
 const statusChangeOptions = computed(() => {
   const current = statusOrder.value?.statusId || "";
@@ -977,12 +921,12 @@ async function handleEdit(row: SalesOrder) {
 
 async function handleDelete(row: SalesOrder) {
   await ElMessageBox.confirm(
-    `X�a phi?u b�n c?a ${row.customerName || row.buyerName || "kh�ch h�ng n�y"}?`,
-    "X�c nh?n",
+    `Xóa phiếu bán của ${row.customerName || row.buyerName || "khách hàng này"}?`,
+    "Xác nhận",
     { type: "warning" },
   );
   await SalesOrderApi.delete(row.id);
-  ElMessage.success("�� x�a phi?u b�n");
+  ElMessage.success("Đã xóa phiếu bán");
   fetchOrders();
 }
 
@@ -1012,7 +956,7 @@ function handleOpenStatusDialog(row: SalesOrder) {
 
 async function handlePrepareStatusChange() {
   if (!statusOrder.value || !targetStatusId.value) {
-    return ElMessage.warning("Vui l�ng ch?n tr?ng th�i m?i");
+    return ElMessage.warning("Vui lòng chọn trạng thái mới");
   }
   statusSaving.value = true;
   try {
@@ -1038,14 +982,14 @@ async function handlePrepareStatusChange() {
         [],
       );
       statusDialogVisible.value = false;
-      ElMessage.success("�� c?p nh?t tr?ng th�i");
+      ElMessage.success("Đã cập nhật trạng thái");
       fetchOrders();
     }
   } catch (error: any) {
     console.error(error);
     const msg =
       error.response?.data?.errors?.[0]?.message ||
-      "L?i h? th?ng khi d?i tr?ng th�i";
+      "Lỗi hệ thống khi đổi trạng thái";
     ElMessage.error(msg);
   } finally {
     statusSaving.value = false;
@@ -1057,16 +1001,16 @@ async function handleCopyPaymentLink(row: SalesOrder) {
     const res = await SalesOrderApi.getPaymentLink(row.id);
     const url = res.url;
     if (!url) {
-      return ElMessage.warning("�on h�ng n�y chua c� link thanh to�n");
+      return ElMessage.warning("Đơn hàng này chưa có link thanh toán");
     }
     try {
       await navigator.clipboard.writeText(url);
-      ElMessage.success("�� copy link thanh to�n v�o clipboard");
+      ElMessage.success("Đã copy link thanh toán vào clipboard");
     } catch {
       ElMessage.info(`Link: ${url}`);
     }
   } catch {
-    ElMessage.error("Kh�ng th? l?y link thanh to�n");
+    ElMessage.error("Không thể lấy link thanh toán");
   }
 }
 
@@ -1082,7 +1026,7 @@ async function handleSubmitVinStatusChange() {
   if (!statusOrder.value || !targetStatusId.value || !vehicleRequirements.value)
     return;
   if (vehicleRequirements.value.items.some((item) => !item.canFulfill)) {
-    return ElMessage.error("Kh�ng d? VIN h?p l? d? c?p nh?t tr?ng th�i");
+    return ElMessage.error("Không đủ VIN hợp lệ để cập nhật trạng thái");
   }
   const invalidItem = vehicleRequirements.value.items.find(
     (item) =>
@@ -1091,7 +1035,7 @@ async function handleSubmitVinStatusChange() {
   );
   if (invalidItem) {
     return ElMessage.warning(
-      `Vui l�ng ch?n d? ${invalidItem.requiredCount} VIN cho ${invalidItem.productName}`,
+      `Vui lòng chọn đủ ${invalidItem.requiredCount} VIN cho ${invalidItem.productName}`,
     );
   }
   const selectedIds = vehicleRequirements.value.items.flatMap(
@@ -1104,7 +1048,7 @@ async function handleSubmitVinStatusChange() {
       targetStatusId.value,
       selectedIds,
     );
-    ElMessage.success("�� c?p nh?t tr?ng th�i");
+    ElMessage.success("Đã cập nhật trạng thái");
     vinDialogVisible.value = false;
     fetchOrders();
   } finally {
@@ -1113,18 +1057,18 @@ async function handleSubmitVinStatusChange() {
 }
 
 async function handleSubmit() {
-  if (!formData.buyerId) return ElMessage.warning("Vui l�ng ch?n kh�ch h�ng");
+  if (!formData.buyerId) return ElMessage.warning("Vui lòng chọn khách hàng");
   if (
     !formData.customerName ||
     !formData.customerPhone ||
     !formData.customerAddress
   ) {
-    return ElMessage.warning("Vui l�ng nh?p d? th�ng tin giao h�ng");
+    return ElMessage.warning("Vui lòng nhập đủ thông tin giao hàng");
   }
   if (!formData.products.length)
-    return ElMessage.warning("Phi?u b�n ph?i c� �t nh?t m?t s?n ph?m");
+    return ElMessage.warning("Phiếu bán phải có ít nhất một sản phẩm");
   if (formData.products.some((item) => !item.productVariantId || !item.count)) {
-    return ElMessage.warning("Vui l�ng ch?n s?n ph?m v� s? lu?ng h?p l?");
+    return ElMessage.warning("Vui lòng chọn sản phẩm và số lượng hợp lệ");
   }
 
   const payload: any = {
@@ -1146,18 +1090,18 @@ async function handleSubmit() {
   };
 
   if (appliedVoucher.value) {
-    payload.voucherId = appliedVoucher.value.voucherId;
-    payload.discountAmount = appliedVoucher.value.discountAmount;
+    (payload as any).voucherId = appliedVoucher.value.voucherId;
+    (payload as any).discountAmount = appliedVoucher.value.discountAmount;
   }
 
   saving.value = true;
   try {
     if (editingOrder.value) {
       await SalesOrderApi.updateForManager(editingOrder.value.id, payload);
-      ElMessage.success("�� c?p nh?t phi?u b�n");
+      ElMessage.success("Đã cập nhật phiếu bán");
     } else {
       await SalesOrderApi.createByManager(payload);
-      ElMessage.success("�� t?o phi?u b�n");
+      ElMessage.success("Đã tạo phiếu bán");
     }
     dialogVisible.value = false;
     fetchOrders();
@@ -1313,7 +1257,7 @@ function fillForm(order: SalesOrder) {
         dummyColors.push({
           id: product.productVariantColorId,
           colorName:
-            product.colorName || `M�u #${product.productVariantColorId}`,
+            product.colorName || `Màu #${product.productVariantColorId}`,
           colorCode: product.colorCode || "",
         });
       }
@@ -1322,7 +1266,7 @@ function fillForm(order: SalesOrder) {
         id: product.productVariantId,
         productId: product.productVariantId,
         displayName:
-          product.productName || `S?n ph?m #${product.productVariantId}`,
+          product.productName || `Sản phẩm #${product.productVariantId}`,
         coverImageUrl: product.coverImageUrl || "",
         price: product.price || 0,
         categoryId: 0,

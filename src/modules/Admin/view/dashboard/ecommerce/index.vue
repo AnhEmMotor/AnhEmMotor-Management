@@ -480,15 +480,15 @@ import {
 import type { ECharts } from "echarts";
 
 import { AnalyticsService } from "@/services/analytics.service";
-import {
-  fetchRevenueByCategory,
-  fetchDailyCategoryRevenue,
-} from "@/api/dashboard.api";
 import type {
   DashboardSummary,
   StaffPerformance,
   TransactionLog,
 } from "@/services/analytics.types";
+import {
+  fetchRevenueByCategory,
+  fetchDailyCategoryRevenue,
+} from "@/api/dashboard.api";
 
 defineOptions({ name: "Ecommerce" });
 
@@ -520,6 +520,8 @@ const summary = ref<DashboardSummary>({
   delayedLoansCount: 0,
   lowStockVehiclesCount: 0,
   missedAppointmentsCount: 0,
+  activeInstallmentCount: 0,
+  lateInstallmentCount: 0,
   monthTarget: 0,
   monthAchieved: 0,
   monthRemaining: 0,
@@ -660,6 +662,8 @@ function normalizeSummary(s: any): DashboardSummary {
     monthAchieved: safeNum(s.monthAchieved),
     monthRemaining: safeNum(s.monthRemaining),
     monthForecast: safeNum(s.monthForecast),
+    activeInstallmentCount: safeNum(s.activeInstallmentCount),
+    lateInstallmentCount: safeNum(s.lateInstallmentCount),
   };
 }
 

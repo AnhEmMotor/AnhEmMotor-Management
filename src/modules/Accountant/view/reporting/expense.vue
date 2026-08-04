@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="resp-page expense-management">
     <div
       class="reporting-actions resp-search mb-4 flex items-center justify-between flex-wrap gap-3"
@@ -18,6 +18,10 @@
       <ElButton type="primary" @click="openCreateForm">
         <ElIcon><Plus /></ElIcon>
         Thêm khoản chi
+      </ElButton>
+      <ElButton type="success" @click="exportExpenseExcel">
+        <ArtSvgIcon icon="ri:file-excel-2-line" />
+        Xuất Excel
       </ElButton>
     </div>
 
@@ -100,6 +104,9 @@
 import { computed, ref, onMounted } from "vue";
 import { ElMessageBox } from "element-plus";
 import { Search, Plus } from "@element-plus/icons-vue";
+import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
+import { exportReportWorkbook } from "@/utils/report-excel";
+import { ElMessage } from "element-plus";
 import { AnalyticsService } from "@/services/analytics.service";
 import type { Expense } from "@/services/analytics.types";
 import ExpenseForm from "./expense-form.vue";
@@ -253,6 +260,25 @@ async function deleteExpense(id: number) {
   }
   await AnalyticsService.deleteExpense(id);
   await fetchExpenses();
+}
+
+function exportExpenseExcel() {
+  exportReportWorkbook({
+    fileName: "Bao_cao_khoan_chi",
+    sheets: [
+      {
+        name: "Danh sách khoan chi",
+        rows: tableExpenses.value.map((e: any) => ({
+          ID: e.id,
+          Ngay_ghi_nhan: e.expenseDate,
+          Ten_khoan_chi: e.name,
+          Phan_loai: e.category === 0 ? "Cố định" : "Biến đổi",
+          So_tien: e.amount,
+          Ghi_chú: e.note || "",
+        })),
+      },
+    ],
+  });
 }
 
 function formatCurrency(value: number) {

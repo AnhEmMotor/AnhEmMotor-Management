@@ -1233,7 +1233,7 @@ const doPrint = () => {
 };
 
 const goBack = () => {
-  router.push("/factory/workshop/counter/repair-history");
+  router.push("/factory/workshop/repair-history");
 };
 
 // Helper formatting functions

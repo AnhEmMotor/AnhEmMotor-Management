@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="resp-page reporting-page">
     <ReportPageHeader
       title="Báo cáo bán hàng"
@@ -6,12 +6,22 @@
       icon="ri:funds-line"
     >
       <template #actions>
-        <ReportPeriodSwitcher
-          v-model="currentPeriod"
-          v-model:start-date="periodStart"
-          v-model:end-date="periodEnd"
-          @update:modelValue="onPeriodChange"
-        />
+        <div class="reporting-actions">
+          <ReportPeriodSwitcher
+            v-model="currentPeriod"
+            v-model:start-date="periodStart"
+            v-model:end-date="periodEnd"
+            @update:modelValue="onPeriodChange"
+          />
+          <ElButton
+            type="primary"
+            :disabled="loading"
+            @click="exportRevenueExcel"
+          >
+            <ArtSvgIcon icon="ri:file-excel-2-line" />
+            Xuất Excel
+          </ElButton>
+        </div>
       </template>
     </ReportPageHeader>
 
@@ -154,6 +164,8 @@
 import { onMounted, onUnmounted, ref } from "vue";
 import * as echarts from "echarts";
 import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
+import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
+import { exportReportWorkbook } from "@/utils/report-excel";
 import { statisticsApi } from "@/api/operations";
 import type * as Statistical from "@/types/api/statistical";
 import ReportPageHeader from "./ReportPageHeader.vue";
@@ -169,6 +181,7 @@ const chartTextColor = "#aeb0bd";
 const chartAxisLineColor = "rgba(255, 255, 255, 0.16)";
 const chartGridLineColor = "rgba(255, 255, 255, 0.1)";
 
+const loading = ref(false);
 const currentPeriod = ref<"today" | "month" | "year" | "custom">("month");
 const periodStart = ref("");
 const periodEnd = ref("");
@@ -198,6 +211,13 @@ async function onExpandChange(row: Statistical.DailyRevenueTableResponse) {
   } catch {
     detailMap.value[day] = { loading: false, items: [] };
   }
+}
+
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(value);
 }
 
 function onPeriodChange() {
@@ -305,11 +325,30 @@ function renderCharts() {
   }
 }
 
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(value);
+function exportRevenueExcel() {
+  const start = periodStart.value || "N/A";
+  const end = periodEnd.value || "N/A";
+  exportReportWorkbook({
+    fileName: `Bao_cao_ban_hang_${start}_${end}`,
+    sheets: [
+      {
+        name: "Doanh thu theo ngay",
+        rows: (data.value.dailyTableData || []).map((d: any) => ({
+          Ngay: d.reportDay,
+          Doanh_thu: d.totalRevenue,
+          Loi_nhuan: d.totalProfit,
+          So_don: d.orderCount,
+        })),
+      },
+      {
+        name: "Xu huong doanh thu",
+        rows: (data.value.revenueTrend || []).map((r: any) => ({
+          Ngay: r.reportDay,
+          Doanh_thu: r.totalRevenue,
+        })),
+      },
+    ],
+  });
 }
 
 function handleResize() {
