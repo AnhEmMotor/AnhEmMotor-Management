@@ -1198,7 +1198,10 @@ const {
   handleApply: applyVoucher,
   handleRemove: removeVoucher,
   reset: resetVoucher,
-} = useVoucher(voucherOrderTotal, voucherOrderId);
+} = useVoucher(
+  () => voucherOrderTotal.value,
+  () => voucherOrderId.value,
+);
 
 function resetForm() {
   formData.buyerId = "";

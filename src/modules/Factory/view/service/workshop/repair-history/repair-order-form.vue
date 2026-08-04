@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div
     class="resp-page repair-order-form-page flex flex-col min-h-screen bg-[#F8FAFC] font-inter text-[#0F172A]"
   >
@@ -357,7 +357,7 @@ import { ref, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { useVoucher } from "@/common/composables/useVoucher";
-import type { AppliedVoucher } from "@/domain/voucher/voucher.types";
+import type { AppliedVoucherInfo } from "@/domain/voucher/voucher.types";
 import { VehicleApi, Vehicle } from "@/api/vehicle";
 import { RepairOrderApi } from "@/api/sales";
 import { VoucherApi } from "@/api/voucher.api";
@@ -384,8 +384,16 @@ const voucherId = ref<number | null>(null);
 const voucherDiscount = ref(0);
 const voucherCode = ref("");
 const voucherApplying = ref(false);
-const appliedVoucher = ref<AppliedVoucher | null>(null);
+const appliedVoucher = ref<AppliedVoucherInfo | null>(null);
 const voucherError = ref("");
+
+function formatCurrency(value?: number): string {
+  if (value == null) return "0 đ";
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(value);
+}
 
 // Search customer vehicles by Phone Number
 const searchCustomer = async () => {
@@ -484,7 +492,8 @@ const {
   handleRemove: vcRemove,
 } = useVoucher(
   () => 0,
-  () => 0,
+  () => undefined,
+  true,
 );
 
 watch(voucherCode, (val: string) => {
@@ -499,9 +508,9 @@ watch(voucherApplying, (val) => {
 watch(voucherError, (val) => {
   vcError.value = val;
 });
-watch(voucherDiscount, (val) => {
+watch(vcDiscount, (val) => {
   let num = typeof val === "number" ? val : 0;
-  vcDiscount.value = num;
+  voucherDiscount.value = num;
 });
 
 const applyVoucher = async () => {

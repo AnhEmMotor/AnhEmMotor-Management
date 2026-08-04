@@ -246,7 +246,7 @@
         <ElDivider content-position="left">🎫 Mã giảm giá (Voucher)</ElDivider>
         <ElFormItem label="Nhập mã voucher">
           <ElInput
-            v-model="dialog.form.voucherCode"
+            v-model="invoiceVoucherCode"
             placeholder="Nhập mã voucher..."
             @keyup.enter="applyInvoiceVoucher"
             clearable
@@ -293,7 +293,7 @@
         <ElDivider content-position="left">🎫 Mã giảm giá (Voucher)</ElDivider>
         <ElFormItem label="Nhập mã voucher">
           <ElInput
-            v-model="dialog.form.voucherCode"
+            v-model="invoiceVoucherCode"
             placeholder="Nhập mã voucher..."
             @keyup.enter="applyInvoiceVoucher"
             clearable
@@ -340,7 +340,7 @@
         <ElDivider content-position="left">🎫 Mã giảm giá (Voucher)</ElDivider>
         <ElFormItem label="Nhập mã voucher">
           <ElInput
-            v-model="dialog.form.voucherCode"
+            v-model="invoiceVoucherCode"
             placeholder="Nhập mã voucher..."
             @keyup.enter="applyInvoiceVoucher"
             clearable

@@ -22,18 +22,10 @@ import "highlight.js/styles/atom-one-dark.css";
 
 // Configure marked
 const renderer = new marked.Renderer();
-renderer.code = function (tokenOrCode: any, maybeLang: string | undefined) {
-  let code = "";
-  let lang = maybeLang;
-
-  if (typeof tokenOrCode === "object" && tokenOrCode !== null) {
-    code = tokenOrCode.text || "";
-    lang = tokenOrCode.lang;
-  } else {
-    code = tokenOrCode || "";
-  }
-
-  const language = lang && hljs.getLanguage(lang) ? lang : "plaintext";
+renderer.code = function (token: any) {
+  const code = token.text || "";
+  const language =
+    token.lang && hljs.getLanguage(token.lang) ? token.lang : "plaintext";
   const highlighted = hljs.highlight(code, { language }).value;
 
   // Escape code for data attribute to prevent XSS/breaking HTML

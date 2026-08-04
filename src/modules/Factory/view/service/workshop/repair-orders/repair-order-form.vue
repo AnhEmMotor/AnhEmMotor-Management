@@ -663,7 +663,11 @@ const {
   handleApply: handleApplyVoucher,
   handleRemove: removeVoucher,
   reset: resetVoucher,
-} = useVoucher(voucherOrderTotal, voucherOrderId);
+} = useVoucher(
+  () => voucherOrderTotal.value,
+  () => voucherOrderId.value,
+  true,
+);
 
 const loadOrder = async () => {
   if (!Number.isFinite(orderId)) {

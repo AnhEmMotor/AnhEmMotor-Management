@@ -9,6 +9,7 @@ import type {
 export function useVoucher(
   orderTotal: () => number,
   orderId: () => number | undefined,
+  isMock: boolean = false,
 ) {
   const voucherCode = ref("");
   const appliedVoucher = ref<AppliedVoucherInfo | null>(null);
@@ -64,6 +65,26 @@ export function useVoucher(
         return;
       }
 
+      const discount = calculateDiscount(voucher);
+
+      if (isMock) {
+        appliedVoucher.value = {
+          orderVoucherId: 999999,
+          voucherId: voucher.id,
+          code: voucher.code,
+          name: voucher.name,
+          discountType: voucher.discountType,
+          discountValue: voucher.discountValue,
+          maxDiscountAmount: voucher.maxDiscountAmount,
+          discountAmount: discount,
+          minOrderValue: voucher.minOrderValue,
+        };
+        ElMessage.success(
+          `Đã áp dụng voucher ${voucher.code} - Giảm ${discount.toLocaleString()}đ`,
+        );
+        return;
+      }
+
       const oid = orderId();
       if (!oid) {
         errorMsg.value = "Vui lòng lưu đơn hàng trước khi áp dụng voucher";
@@ -79,7 +100,6 @@ export function useVoucher(
       }
 
       const applied = await VoucherApi.apply(voucher.id, oid);
-      const discount = calculateDiscount(voucher);
 
       appliedVoucher.value = {
         orderVoucherId: applied.orderVoucherId,
@@ -108,10 +128,16 @@ export function useVoucher(
     if (!appliedVoucher.value) return;
     removing.value = true;
     try {
-      const res = await VoucherApi.remove(appliedVoucher.value.orderVoucherId);
-      ElMessage.success(
-        `Đã bỏ voucher ${appliedVoucher.value.code} - Hoàn ${res.refundedAmount.toLocaleString()}đ`,
-      );
+      if (!isMock) {
+        const res = await VoucherApi.remove(
+          appliedVoucher.value.orderVoucherId,
+        );
+        ElMessage.success(
+          `Đã bỏ voucher ${appliedVoucher.value.code} - Hoàn ${res.refundedAmount.toLocaleString()}đ`,
+        );
+      } else {
+        ElMessage.success(`Đã bỏ voucher ${appliedVoucher.value.code}`);
+      }
       appliedVoucher.value = null;
     } catch (err: any) {
       ElMessage.error(err?.message || "Không thể bỏ voucher");

@@ -67,7 +67,7 @@
             </div>
           </div>
 
-          <CommentWidget />
+          <CommentWidget :comments="[]" />
         </div>
       </template>
     </ElDrawer>
