@@ -112,7 +112,7 @@ export const orderMenu: AppRouteRecord[] = [
           },
           {
             path: "contract/preview/:id?",
-            name: "SalesContractPreview",
+            name: "OrderSalesContractPreview",
             component: "/Order/view/order/contract/contract-preview",
             meta: {
               title: "Chi tiết Hợp đồng",
