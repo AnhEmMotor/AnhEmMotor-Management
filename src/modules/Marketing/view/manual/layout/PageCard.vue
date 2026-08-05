@@ -14,7 +14,33 @@
     <div class="steps-box">
       <div v-for="(step, i) in page.steps" :key="i" class="step-row">
         <span class="step-num">{{ i + 1 }}</span>
-        <span class="step-text" v-html="step"></span>
+        <div
+          style="
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+          "
+        >
+          <span class="step-text" v-html="processStepHtml(step)"></span>
+          <div
+            v-if="isAdmin && getStepFileName(step)"
+            style="margin-top: 10px; margin-left: 12px"
+          >
+            <el-upload
+              action="#"
+              :show-file-list="false"
+              :http-request="
+                (options) => handleUpload(options, getStepFileName(step))
+              "
+              accept="image/*"
+            >
+              <el-button size="small" type="primary" plain :icon="Upload">
+                Cập nhật ảnh minh họa
+              </el-button>
+            </el-upload>
+          </div>
+        </div>
       </div>
     </div>
     <el-alert
@@ -32,12 +58,46 @@
 </template>
 
 <script setup lang="ts">
-import { Location } from "@element-plus/icons-vue";
+import { ref, computed } from "vue";
+import { Location, Upload } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
 import type { GuidePage } from "../data/guideData";
+import { FileApi } from "@/api/operations";
+import { useUserStore } from "@/application/store/user";
 
 defineProps<{
   page: GuidePage;
 }>();
+
+const userStore = useUserStore();
+const cacheBuster = ref(Date.now());
+
+const isAdmin = computed(() => {
+  return userStore.isLogin;
+});
+
+const getStepFileName = (step: string) => {
+  const match = step.match(/\/manuals\/([^./]+)\.png/);
+  return match ? match[1] : "";
+};
+
+const processStepHtml = (step: string) => {
+  if (!step.includes("<img")) return step;
+  return step.replace(/src='([^']+)'/g, (match, src) => {
+    const separator = src.includes("?") ? "&" : "?";
+    return `src='${src}${separator}cb=${cacheBuster.value}'`;
+  });
+};
+
+const handleUpload = async (options: any, targetFileName: string) => {
+  try {
+    await FileApi.uploadManualImage(options.file, targetFileName);
+    cacheBuster.value = Date.now();
+    ElMessage.success("Cập nhật ảnh minh họa thành công!");
+  } catch (err: any) {
+    ElMessage.error(err.message || "Tải ảnh lên thất bại");
+  }
+};
 </script>
 
 <style scoped lang="scss">

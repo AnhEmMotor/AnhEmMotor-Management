@@ -459,7 +459,10 @@ const getImageUrl = (url?: string) => {
   if (!url)
     return "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=200";
   if (url.startsWith("http")) return url;
-  return `${import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || ""}${url}`;
+  const baseUrl =
+    import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT ||
+    "http://localhost:5000";
+  return `${baseUrl.replace(/\/$/, "")}/${url.replace(/^\//, "")}`;
 };
 
 const loadLeads = async () => {
