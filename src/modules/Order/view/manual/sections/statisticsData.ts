@@ -5,14 +5,17 @@ export const sectionData = {
     {
       id: "order-statistics",
       title: "Thống kê đơn hàng",
-      description: "Xem biểu đồ thống kê đơn hàng theo thời gian, theo nhân viên.",
+      description:
+        "Xem biểu đồ thống kê đơn hàng theo thời gian, theo nhân viên.",
       route: "/Order/statistics",
       steps: [
         "Lọc thời gian (tuần, tháng, năm) để xem biểu đồ.",
         "Phân tích tỷ lệ đơn hoàn thành, đơn hủy, đơn đang xử lý.",
-        "So sánh hiệu suất bán hàng giữa các nhân viên Sales."
+        "So sánh hiệu suất bán hàng giữa các nhân viên Sales.",
       ],
-      tips: ["Sử dụng báo cáo này để khen thưởng nhân viên xuất sắc mỗi tháng."]
-    }
-  ]
-}
+      tips: [
+        "Sử dụng báo cáo này để khen thưởng nhân viên xuất sắc mỗi tháng.",
+      ],
+    },
+  ],
+};

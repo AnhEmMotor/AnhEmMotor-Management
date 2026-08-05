@@ -10,9 +10,9 @@ export const sectionData = {
       steps: [
         "Xem danh sách hàng hóa và số lượng tồn kho.",
         "Kiểm tra giá trị tồn kho hiện tại.",
-        "Xuất báo cáo kiểm kê định kỳ."
+        "Xuất báo cáo kiểm kê định kỳ.",
       ],
-      tips: ["Dữ liệu tồn kho được đồng bộ trực tiếp từ phân hệ Kho."]
-    }
-  ]
-}
+      tips: ["Dữ liệu tồn kho được đồng bộ trực tiếp từ phân hệ Kho."],
+    },
+  ],
+};

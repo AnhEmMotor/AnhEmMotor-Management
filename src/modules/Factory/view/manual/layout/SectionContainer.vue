@@ -1,6 +1,12 @@
 <template>
   <div class="section-container">
-    <el-button class="back-btn" @click="$emit('back')" icon="Back" type="primary" plain>
+    <el-button
+      class="back-btn"
+      @click="$emit('back')"
+      icon="Back"
+      type="primary"
+      plain
+    >
       Quay lai Tong quan
     </el-button>
     <div class="section-header">
@@ -14,7 +20,12 @@
       <div v-for="page in section.pages" :key="page.id" class="page-card">
         <div class="page-header">
           <h3 class="page-title">{{ page.title }}</h3>
-          <el-tag v-if="page.permission" type="info" size="small" effect="plain">
+          <el-tag
+            v-if="page.permission"
+            type="info"
+            size="small"
+            effect="plain"
+          >
             {{ page.permission }}
           </el-tag>
         </div>
@@ -29,7 +40,12 @@
             <span class="step-text">{{ step }}</span>
           </div>
         </div>
-        <el-alert v-if="page.tips && page.tips.length" type="info" :closable="false" class="tips-box">
+        <el-alert
+          v-if="page.tips && page.tips.length"
+          type="info"
+          :closable="false"
+          class="tips-box"
+        >
           <template #title><strong>Meo huu ich:</strong></template>
           <ul class="tips-list">
             <li v-for="(t, i) in page.tips" :key="i">{{ t }}</li>
@@ -41,10 +57,10 @@
 </template>
 
 <script setup lang="ts">
-import type { GuideSection } from "../data/guideData"
-import { Location } from '@element-plus/icons-vue'
-defineProps<{ section: GuideSection }>()
-defineEmits<{ back: [] }>()
+import type { GuideSection } from "../data/guideData";
+import { Location } from "@element-plus/icons-vue";
+defineProps<{ section: GuideSection }>();
+defineEmits<{ back: [] }>();
 </script>
 
 <style scoped lang="scss">
@@ -53,58 +69,69 @@ defineEmits<{ back: [] }>()
   max-width: 1000px;
   margin: 0 auto;
 }
+
 .back-btn {
   margin-bottom: 20px;
 }
+
 .section-header {
   display: flex;
   align-items: center;
   gap: 14px;
   margin-bottom: 10px;
 }
+
 .section-icon {
   font-size: 36px;
 }
+
 .section-title {
   font-size: 28px;
   font-weight: 800;
   color: var(--el-text-color-primary);
   margin: 0;
 }
+
 .section-desc {
   font-size: 15px;
   color: var(--el-text-color-secondary);
   margin: 0 0 28px 50px;
 }
+
 .pages-list {
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
+
 .page-card {
   background: var(--el-bg-color-overlay);
   border: 1px solid var(--el-border-color-light);
   border-radius: 16px;
   padding: 24px 28px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 12px rgb(0 0 0 / 4%);
 }
+
 .page-header {
   display: flex;
   align-items: center;
   gap: 12px;
   margin-bottom: 6px;
 }
+
 .page-title {
   font-size: 18px;
   font-weight: 700;
   color: var(--el-text-color-primary);
   margin: 0;
 }
+
 .page-desc {
   font-size: 14px;
   color: var(--el-text-color-regular);
   margin: 0 0 14px;
 }
+
 .route-badge {
   display: inline-flex;
   align-items: center;
@@ -116,21 +143,25 @@ defineEmits<{ back: [] }>()
   font-size: 13px;
   color: var(--el-text-color-secondary);
 }
+
 .route-badge code {
-  font-family: 'SF Mono', Monaco, monospace;
+  font-family: "SF Mono", Monaco, monospace;
   font-size: 13px;
 }
+
 .steps-box {
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin-bottom: 16px;
 }
+
 .step-row {
   display: flex;
   align-items: flex-start;
   gap: 14px;
 }
+
 .step-num {
   flex-shrink: 0;
   width: 28px;
@@ -144,6 +175,7 @@ defineEmits<{ back: [] }>()
   font-weight: 700;
   font-size: 13px;
 }
+
 .step-text {
   flex: 1;
   font-size: 14px;
@@ -151,13 +183,16 @@ defineEmits<{ back: [] }>()
   color: var(--el-text-color-regular);
   padding-top: 3px;
 }
+
 .tips-box {
   border-radius: 10px;
 }
+
 .tips-list {
   margin: 6px 0 0 20px;
   padding: 0;
 }
+
 .tips-list li {
   font-size: 13px;
   line-height: 1.7;

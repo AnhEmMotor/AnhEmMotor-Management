@@ -62,6 +62,9 @@ export interface CreateRepairOrderPayload {
   mileage: number;
   description: string;
   technicianId?: number;
+  notes?: string;
+  voucherId?: number;
+  discountAmount?: number;
 }
 
 export interface UpdateRepairOrderPayload {
@@ -103,6 +106,8 @@ export interface CompleteRepairOrderPayload {
   paymentMethod: string;
   paymentStatus: string;
   notes?: string;
+  voucherId?: number;
+  discountAmount?: number;
 }
 
 export const RepairOrderApi = {

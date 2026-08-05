@@ -10,9 +10,9 @@ export const sectionData = {
       steps: [
         "Tra cứu hóa đơn theo ngày xuất hoặc mã khách hàng.",
         "Gửi lại hóa đơn qua email nếu khách hàng yêu cầu.",
-        "Hủy hoặc xuất hóa đơn thay thế khi có sai sót."
+        "Hủy hoặc xuất hóa đơn thay thế khi có sai sót.",
       ],
-      tips: ["Tuyệt đối cẩn thận khi thực hiện thao tác hủy hóa đơn."]
-    }
-  ]
-}
+      tips: ["Tuyệt đối cẩn thận khi thực hiện thao tác hủy hóa đơn."],
+    },
+  ],
+};

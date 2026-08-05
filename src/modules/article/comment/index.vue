@@ -66,7 +66,10 @@
               }}</span>
             </div>
           </div>
-
+        </div>
+      </template>
+    </ElDrawer>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -129,4 +132,3 @@ const openDrawer = (item: CommentItem) => {
   clickItem.value = item;
 };
 </script>
-

@@ -1,4 +1,4 @@
-import { AppRouteRecord } from "@/types/router"
+import { AppRouteRecord } from "@/types/router";
 
 export const accountantManualRoutes: AppRouteRecord[] = [
   {
@@ -22,4 +22,4 @@ export const accountantManualRoutes: AppRouteRecord[] = [
       activePath: "/Accountant/manual",
     },
   },
-]
+];

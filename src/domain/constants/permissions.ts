@@ -101,6 +101,11 @@ export const Permissions = {
       Edit: "Permissions.Marketing.CustomerVoucherManagement.Edit",
       Delete: "Permissions.Marketing.CustomerVoucherManagement.Delete",
     },
+    StoreChatManagement: {
+      View: "Permissions.Marketing.StoreChatManagement.View",
+      Claim: "Permissions.Marketing.StoreChatManagement.Claim",
+      Delete: "Permissions.Marketing.StoreChatManagement.Delete",
+    },
   },
   Warehouse: {
     Module: "Permissions.Warehouse",

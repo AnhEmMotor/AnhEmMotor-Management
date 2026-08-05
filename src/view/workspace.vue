@@ -120,13 +120,20 @@ import { useCommon } from "@/common/composables/useCommon";
 import ArtHeaderBar from "@/components/core/layouts/art-header-bar/index.vue";
 import ArtGlobalComponent from "@/components/core/layouts/art-global-component/index.vue";
 import { useWorktabStore } from "@/application/store/worktab";
+import { useMenuStore } from "@/application/store/menu";
 import { onMounted, computed } from "vue";
-import { useAuth } from "@/common/composables/useAuth";
-import { Permissions } from "@/domain/constants/permissions";
+import { moduleHasAccess } from "@/router/core/ModuleMenu";
+import { adminMenu } from "@/modules/Admin/Menu";
+import { marketingMenu } from "@/modules/Marketing/Menu";
+import { warehouseMenu } from "@/modules/Warehouse/Menu";
+import { factoryMenu } from "@/modules/Factory/Menu";
+import { accountancyMenu } from "@/modules/Accountant/Menu";
+import { orderMenu } from "@/modules/Order/Menu";
 
 const router = useRouter();
 const { homePath } = useCommon();
 const worktabStore = useWorktabStore();
+const menuStore = useMenuStore();
 
 onMounted(() => {
   worktabStore.clearAll();
@@ -142,17 +149,17 @@ const handleWorkspaceClick = (workspace: any) => {
   }
 };
 
-const { hasAuth } = useAuth();
+const workspaces = computed(() => {
+  const menuList = menuStore.menuList;
 
-const workspaces = computed(() =>
-  [
+  return [
     {
       title: "Ban Điều Hành & Chủ Showroom",
       subtitle: "Executive Overview",
       icon: markRaw(DataAnalysis),
       color: "#e11d48",
       shadowColor: "rgba(225, 29, 72, 0.25)",
-      hasAccess: hasAuth(Permissions.Admin.Module),
+      hasAccess: moduleHasAccess(adminMenu, menuList),
       badge: { isDot: true, type: "danger" },
       path: "/admin/dashboard/intro",
     },
@@ -162,7 +169,7 @@ const workspaces = computed(() =>
       icon: markRaw(UserFilled),
       color: "#059669",
       shadowColor: "rgba(5, 150, 105, 0.25)",
-      hasAccess: hasAuth(Permissions.Marketing.Module),
+      hasAccess: moduleHasAccess(marketingMenu, menuList),
       badge: { isDot: false, value: 5, label: "đơn mới", type: "warning" },
       path: "/Marketing/intro",
     },
@@ -172,7 +179,7 @@ const workspaces = computed(() =>
       icon: markRaw(Box),
       color: "#d97706",
       shadowColor: "rgba(217, 119, 6, 0.15)",
-      hasAccess: hasAuth(Permissions.Warehouse.Module),
+      hasAccess: moduleHasAccess(warehouseMenu, menuList),
       path: "/Warehouse/intro",
     },
     {
@@ -181,7 +188,7 @@ const workspaces = computed(() =>
       icon: markRaw(Service),
       color: "#2563eb",
       shadowColor: "rgba(37, 99, 235, 0.15)",
-      hasAccess: hasAuth(Permissions.Factory.Module),
+      hasAccess: moduleHasAccess(factoryMenu, menuList),
       path: "/factory/workshop/banner",
     },
     {
@@ -190,7 +197,7 @@ const workspaces = computed(() =>
       icon: markRaw(Wallet),
       color: "#7c3aed",
       shadowColor: "rgba(124, 58, 237, 0.15)",
-      hasAccess: hasAuth(Permissions.Accountant.Module),
+      hasAccess: moduleHasAccess(accountancyMenu, menuList),
       path: "/Accountant/intro",
     },
     {
@@ -199,12 +206,20 @@ const workspaces = computed(() =>
       icon: markRaw(Wallet),
       color: "#7c3aed",
       shadowColor: "rgba(124, 58, 237, 0.15)",
-      hasAccess: hasAuth(Permissions.Order.Module),
+      hasAccess: moduleHasAccess(orderMenu, menuList),
       path: "/Order/management/draft",
     },
-
-  ].filter((workspace) => workspace.hasAccess),
-);
+    {
+      title: "HDSD Phần Mềm",
+      subtitle: "Software User Manual",
+      icon: markRaw(Document),
+      color: "#0284c7",
+      shadowColor: "rgba(2, 132, 199, 0.15)",
+      hasAccess: true,
+      path: "/manual",
+    },
+  ].filter((workspace) => workspace.hasAccess);
+});
 </script>
 
 <style lang="scss" scoped>

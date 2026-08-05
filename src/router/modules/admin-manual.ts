@@ -1,4 +1,4 @@
-import { AppRouteRecord } from "@/types/router"
+import { AppRouteRecord } from "@/types/router";
 
 export const adminManualRoutes: AppRouteRecord = {
   path: "/admin/manual",
@@ -30,4 +30,4 @@ export const adminManualRoutes: AppRouteRecord = {
       },
     },
   ],
-}
+};

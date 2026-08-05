@@ -10,9 +10,11 @@ export const sectionData = {
       steps: [
         "Thiết lập định mức tồn kho an toàn cho từng nhóm hàng.",
         "Cấu hình các quy tắc đánh mã vạch tự động.",
-        "Xác định phương pháp tính giá vốn (FIFO, LIFO...)."
+        "Xác định phương pháp tính giá vốn (FIFO, LIFO...).",
       ],
-      tips: ["Nên thiết lập cảnh báo tồn kho để hệ thống tự động nhắc nhở đặt hàng."]
-    }
-  ]
-}
+      tips: [
+        "Nên thiết lập cảnh báo tồn kho để hệ thống tự động nhắc nhở đặt hàng.",
+      ],
+    },
+  ],
+};

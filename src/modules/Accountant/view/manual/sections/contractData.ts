@@ -10,9 +10,11 @@ export const sectionData = {
       steps: [
         "Lọc hợp đồng theo trạng thái (chờ duyệt, đã ký, đã hủy).",
         "Theo dõi tiến độ thanh toán của từng hợp đồng.",
-        "Xuất danh sách hợp đồng để đối soát nội bộ."
+        "Xuất danh sách hợp đồng để đối soát nội bộ.",
       ],
-      tips: ["Chú ý các hợp đồng sắp đến hạn thanh toán để nhắc nhở khách hàng."]
-    }
-  ]
-}
+      tips: [
+        "Chú ý các hợp đồng sắp đến hạn thanh toán để nhắc nhở khách hàng.",
+      ],
+    },
+  ],
+};

@@ -1,9 +1,11 @@
 <template>
-  <div
-    class="manual-layout h-screen flex flex-col overflow-hidden relative"
-  >
+  <div class="manual-layout h-screen flex flex-col overflow-hidden relative">
     <!-- Background Image -->
-    <img src="@/assets/images/HDSD.jpg" class="manual-image-bg" alt="background" />
+    <img
+      src="@/assets/images/HDSD.jpg"
+      class="manual-image-bg"
+      alt="background"
+    />
     <div class="manual-bg-overlay"></div>
 
     <!-- Header -->
@@ -21,19 +23,23 @@
       <div
         class="manual-content flex-1 overflow-y-auto custom-scrollbar p-8 md:p-12 relative flex flex-col"
       >
-        <div class="animate-fade-in-up w-full max-w-[1300px] mx-auto flex-1 flex flex-col justify-center">
+        <div
+          class="animate-fade-in-up w-full max-w-[1300px] mx-auto flex-1 flex flex-col justify-center"
+        >
           <!-- Overview -->
           <div v-if="activeSection === 'overview'">
-            <div class="mb-8 mx-auto max-w-2xl bg-black/40 backdrop-blur-md rounded-2xl py-6 px-8 border border-white/10 shadow-2xl text-center">
+            <div
+              class="mb-8 mx-auto max-w-2xl bg-black/40 backdrop-blur-md rounded-2xl py-6 px-8 border border-white/10 shadow-2xl text-center"
+            >
               <h1
                 class="text-4xl font-black mb-2 text-white"
-                style="text-shadow: 0 2px 10px rgba(0,0,0,0.8);"
+                style="text-shadow: 0 2px 10px rgb(0 0 0 / 80%)"
               >
                 Trung Tâm Hướng Dẫn Sử Dụng
               </h1>
               <p
                 class="text-lg text-white"
-                style="text-shadow: 0 1px 8px rgba(0,0,0,0.8); opacity: 0.95;"
+                style="text-shadow: 0 1px 8px rgb(0 0 0 / 80%); opacity: 0.95"
               >
                 Chọn một phân hệ dưới đây để xem tài liệu hướng dẫn chi tiết.
               </p>
@@ -41,7 +47,9 @@
 
             <div class="workspace-grid mt-4">
               <el-card
-                v-for="(section, index) in availableSections.filter(s => s.id !== 'overview')"
+                v-for="(section, index) in availableSections.filter(
+                  (s) => s.id !== 'overview',
+                )"
                 :key="section.id"
                 class="workspace-card relative animate-fade-in-up"
                 :style="{
@@ -79,18 +87,26 @@
           </div>
 
           <!-- Specific Modules -->
-          <div v-else :key="activeSection" class="bg-[var(--el-bg-color-overlay)] p-8 md:p-10 rounded-2xl shadow-xl backdrop-blur-xl border border-[var(--el-border-color-light)]">
-            <el-button 
-              class="mb-6" 
-              @click="activeSection = 'overview'" 
-              icon="Back" 
-              type="primary" 
+          <div
+            v-else
+            :key="activeSection"
+            class="bg-[var(--el-bg-color-overlay)] p-8 md:p-10 rounded-2xl shadow-xl backdrop-blur-xl border border-[var(--el-border-color-light)]"
+          >
+            <el-button
+              class="mb-6"
+              @click="activeSection = 'overview'"
+              icon="Back"
+              type="primary"
               plain
             >
               Quay lại Tổng quan
             </el-button>
             <div class="flex items-center gap-3 mb-3">
-              <el-icon class="text-3xl" :style="{ color: currentSectionData?.color || 'var(--el-color-primary)' }"
+              <el-icon
+                class="text-3xl"
+                :style="{
+                  color: currentSectionData?.color || 'var(--el-color-primary)',
+                }"
                 ><component :is="currentSectionData?.icon"
               /></el-icon>
               <h1

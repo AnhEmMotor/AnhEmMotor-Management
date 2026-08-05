@@ -10,9 +10,9 @@ export const sectionData = {
       steps: [
         "Tra cứu lượng khách hàng mới và khách hàng cũ.",
         "Xem báo cáo doanh thu theo từng nhóm khách hàng.",
-        "Đánh giá hiệu quả của các chương trình khuyến mãi."
+        "Đánh giá hiệu quả của các chương trình khuyến mãi.",
       ],
-      tips: ["Báo cáo này hỗ trợ đắc lực cho các chiến dịch Marketing."]
-    }
-  ]
-}
+      tips: ["Báo cáo này hỗ trợ đắc lực cho các chiến dịch Marketing."],
+    },
+  ],
+};

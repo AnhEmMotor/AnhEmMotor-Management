@@ -1,1 +1,1 @@
-import type { FeatureItem } from "./data/guideData"
+import type { FeatureItem } from "./data/guideData";

@@ -661,9 +661,9 @@ function normalizeSummary(s: any): DashboardSummary {
     monthTarget: safeNum(s.monthTarget),
     monthAchieved: safeNum(s.monthAchieved),
     monthRemaining: safeNum(s.monthRemaining),
-monthForecast: safeNum(s.monthForecast),
-  activeInstallmentCount: safeNum(s.activeInstallmentCount),
-  lateInstallmentCount: safeNum(s.lateInstallmentCount),
+    monthForecast: safeNum(s.monthForecast),
+    activeInstallmentCount: safeNum(s.activeInstallmentCount),
+    lateInstallmentCount: safeNum(s.lateInstallmentCount),
   };
 }
 
@@ -815,4 +815,3 @@ onMounted(() => {
   }
 }
 </style>
-

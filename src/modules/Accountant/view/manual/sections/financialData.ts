@@ -10,9 +10,9 @@ export const sectionData = {
       steps: [
         "Chọn kỳ báo cáo (tháng/quý/năm).",
         "Xem biểu đồ doanh thu và chi phí.",
-        "Xuất báo cáo dạng Excel hoặc PDF."
+        "Xuất báo cáo dạng Excel hoặc PDF.",
       ],
-      tips: ["Dữ liệu được cập nhật tự động (real-time) từ các phân hệ khác."]
-    }
-  ]
-}
+      tips: ["Dữ liệu được cập nhật tự động (real-time) từ các phân hệ khác."],
+    },
+  ],
+};

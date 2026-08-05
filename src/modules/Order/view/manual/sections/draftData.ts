@@ -10,9 +10,11 @@ export const sectionData = {
       steps: [
         "Mở lại phiếu tạm để cập nhật thông tin khách hàng hoặc sản phẩm.",
         "Xác nhận và chuyển phiếu tạm thành Đơn đặt hàng chính thức.",
-        "Xóa bỏ phiếu tạm nếu khách hàng hủy giao dịch."
+        "Xóa bỏ phiếu tạm nếu khách hàng hủy giao dịch.",
       ],
-      tips: ["Nên kiểm tra phiếu tạm mỗi cuối ngày để không bỏ sót khách hàng."]
-    }
-  ]
-}
+      tips: [
+        "Nên kiểm tra phiếu tạm mỗi cuối ngày để không bỏ sót khách hàng.",
+      ],
+    },
+  ],
+};

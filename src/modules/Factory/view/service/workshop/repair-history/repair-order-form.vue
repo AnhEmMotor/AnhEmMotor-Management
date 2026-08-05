@@ -2,7 +2,6 @@
   <div
     class="resp-page repair-order-form-page flex flex-col min-h-screen bg-[#F8FAFC] font-inter text-[#0F172A]"
   >
-    <!-- Header -->
     <div
       class="bg-white border-b border-slate-200 px-8 py-5 shrink-0 shadow-sm relative z-20"
     >
@@ -18,24 +17,21 @@
             <h1
               class="m-0 text-lg font-black tracking-tight text-slate-900 leading-none"
             >
-              Ti?p nh?n xe & Kh?i t?o phi?u d?ch v?
+              Tiếp nhận xe & Khởi tạo phiếu dịch vụ
             </h1>
             <p
               class="m-0 text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-2"
             >
-              Giai do?n 1: Ti?p nh?n th�ng tin & Kh?o s�t ban d?u
+              Giai đoạn 1: Tiếp nhận thông tin & Khảo sát ban đầu
             </p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Form Area -->
     <div class="flex-1 max-w-[1200px] mx-auto w-full p-6">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Search & Customer Info -->
         <div class="lg:col-span-2 space-y-6">
-          <!-- Step 1: Tra c?u kh�ch h�ng -->
           <div
             class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-5"
           >
@@ -46,13 +42,13 @@
                 class="size-5 rounded bg-blue-50 text-blue-600 flex-cc text-xs"
                 >1</span
               >
-              Tra c?u th�ng tin kh�ch h�ng
+              Tra cứu thông tin khách hàng
             </h3>
 
             <div class="flex gap-3">
               <ElInput
                 v-model="searchPhone"
-                placeholder="Nh?p s? di?n tho?i kh�ch h�ng..."
+                placeholder="Nhập số điện thoại khách hàng..."
                 clearable
                 @keyup.enter="searchCustomer"
                 class="combat-input flex-1"
@@ -74,16 +70,15 @@
                   class="animate-spin size-3 border-2 border-white border-t-transparent rounded-full"
                   v-else
                 ></span>
-                T�m ki?m
+                Tìm kiếm
               </button>
             </div>
 
-            <!-- Vehicles Result List -->
             <div v-if="vehicles.length > 0" class="space-y-3 pt-2">
               <p
                 class="text-[10px] font-black text-slate-400 uppercase tracking-wider m-0"
               >
-                Xe li�n k?t t�m th?y ({{ vehicles.length }}):
+                Xe liên kết tìm thấy ({{ vehicles.length }}):
               </p>
               <div
                 v-for="vehicle in vehicles"
@@ -103,11 +98,11 @@
                     }}</span>
                     <span
                       class="px-1.5 py-0.5 bg-slate-100 rounded text-[9px] font-mono font-bold text-slate-500"
-                      >{{ vehicle.licensePlate || "Chua c� bi?n" }}</span
+                      >{{ vehicle.licensePlate || "Chưa có biển" }}</span
                     >
                   </div>
                   <p class="text-[10px] text-slate-400 mt-1 m-0">
-                    S�T: {{ vehicle.phoneNumber }} | S? khung:
+                    SĐT: {{ vehicle.phoneNumber }} | Số khung:
                     {{ vehicle.vinNumber || "-" }}
                   </p>
                 </div>
@@ -137,13 +132,12 @@
                 class="text-amber-500 text-lg"
               />
               <div class="text-xs text-amber-800">
-                Kh�ng t�m th?y xe n�o li�n k?t v?i s? di?n tho?i n�y. B?n c� th?
-                nh?p th? c�ng ? ph?n b�n du?i.
+                Không tìm thấy xe nào liên kết với số điện thoại này. Bạn có thể
+                nhập thủ công ở phần bên dưới.
               </div>
             </div>
           </div>
 
-          <!-- Step 2: Th�ng tin chi ti?t kh�ch & xe -->
           <div
             class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-6"
           >
@@ -154,18 +148,18 @@
                 class="size-5 rounded bg-blue-50 text-blue-600 flex-cc text-xs"
                 >2</span
               >
-              Th�ng tin chi ti?t
+              Thông tin chi tiết
             </h3>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
                 <label
                   class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2"
-                  >H? v� t�n kh�ch h�ng *</label
+                  >Họ và tên khách hàng *</label
                 >
                 <ElInput
                   v-model="form.customerName"
-                  placeholder="Nh?p t�n kh�ch h�ng"
+                  placeholder="Nhập tên khách hàng"
                   class="combat-input"
                 />
               </div>
@@ -173,11 +167,11 @@
               <div>
                 <label
                   class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2"
-                  >S? di?n tho?i *</label
+                  >Số điện thoại *</label
                 >
                 <ElInput
                   v-model="form.customerPhone"
-                  placeholder="Nh?p s? di?n tho?i"
+                  placeholder="Nhập số điện thoại"
                   class="combat-input"
                 />
               </div>
@@ -190,29 +184,29 @@
               <p
                 class="font-bold text-slate-700 m-0 uppercase text-[9px] tracking-wider"
               >
-                Th�ng tin xe dang ch?n:
+                Thông tin xe đang chọn:
               </p>
               <div class="grid grid-cols-2 gap-y-2 text-slate-500">
                 <div>
-                  Bi?n s?:
+                  Biển số:
                   <span class="font-bold text-slate-800 font-mono">{{
-                    selectedVehicle.licensePlate || "Chua dang k�"
+                    selectedVehicle.licensePlate || "Chưa đăng ký"
                   }}</span>
                 </div>
                 <div>
-                  S? khung:
+                  Số khung:
                   <span class="font-mono text-slate-800">{{
                     selectedVehicle.vinNumber || "-"
                   }}</span>
                 </div>
                 <div>
-                  S? m�y:
+                  Số máy:
                   <span class="font-mono text-slate-800">{{
                     selectedVehicle.engineNumber || "-"
                   }}</span>
                 </div>
                 <div>
-                  Ng�y mua:
+                  Ngày mua:
                   <span class="text-slate-800">{{
                     formatDate(selectedVehicle.purchaseDate)
                   }}</span>
@@ -222,7 +216,6 @@
           </div>
         </div>
 
-        <!-- Failure Details & Submit -->
         <div class="space-y-6">
           <div
             class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-5"
@@ -234,33 +227,33 @@
                 class="size-5 rounded bg-blue-50 text-blue-600 flex-cc text-xs"
                 >3</span
               >
-              Nghi?m thu xe
+              Nghiệm thu xe
             </h3>
 
             <div class="space-y-4">
               <div>
                 <label
                   class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2"
-                  >S? KM đồng h? hi?n t?i *</label
+                  >Số KM đồng hồ hiện tại *</label
                 >
                 <ElInputNumber
                   v-model="form.mileage"
                   :min="0"
                   class="w-full combat-number-input"
-                  placeholder="Nh?p s? km"
+                  placeholder="Nhập số km"
                 />
               </div>
 
               <div>
                 <label
                   class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2"
-                  >M� t? t�nh tr?ng l?i/B?o du?ng *</label
+                  >Mô tả tình trạng lỗi/Bảo dưỡng *</label
                 >
                 <ElInput
                   v-model="form.description"
                   type="textarea"
                   :rows="4"
-                  placeholder="Nh?p m� t? l?i (V� d?: Xe k�u c?ch c?ch ph?n l?c m�y, c?n thay nh?t d?nh k?...)"
+                  placeholder="Nhập mô tả lỗi (Ví dụ: Xe kêu cạch cạch phần lốc máy, cần thay nhớt định kỳ...)"
                   class="combat-textarea"
                 />
               </div>
@@ -268,24 +261,24 @@
               <div>
                 <label
                   class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2"
-                  >Ghi nh?n ngo?i quan (Xu?c, m�p...)</label
+                  >Ghi nhận ngoại quan (Xước, móp...)</label
                 >
                 <ElInput
                   v-model="form.notes"
                   type="textarea"
                   :rows="2"
-                  placeholder="V� d?: Xe tr?y xu?c nh? b?ng tr�i, m�m tru?c hoi tr?y..."
+                  placeholder="Ví dụ: Xe trầy xước nhẹ bửng trái, mâm trước hơi trầy..."
                   class="combat-textarea"
                 />
               </div>
             </div>
 
             <ElDivider content-position="left" class="!my-4"
-              >M� gi?m gi� (Voucher)</ElDivider
+              >Mã giảm giá (Voucher)</ElDivider
             >
             <ElInput
               v-model="voucherCode"
-              placeholder="Nh?p m� voucher..."
+              placeholder="Nhập mã voucher..."
               class="combat-input"
               @keyup.enter="applyVoucher"
               :disabled="submitting"
@@ -296,7 +289,7 @@
                   type="primary"
                   @click="applyVoucher"
                 >
-                  �p đồng
+                  Áp dụng
                 </ElButton>
               </template>
             </ElInput>
@@ -305,12 +298,12 @@
               class="flex items-center gap-2 p-2 bg-emerald-50 border border-emerald-200 rounded-lg mt-2"
             >
               <ArtSvgIcon icon="ri:coupon-3-fill" class="text-emerald-600" />
-  <span class="text-sm font-bold text-emerald-700">{{ appliedVoucher.code }}</span>
-  <span class="text-xs text-emerald-600">{{ (appliedVoucher.discountAmount || 0).toLocaleString("vi-VN") }} đồng</span>
-
-
-
-
+              <span class="text-sm font-bold text-emerald-700">{{
+                appliedVoucher.code
+              }}</span>
+              <span class="text-xs text-emerald-600">{{
+                formatCurrency(appliedVoucher.discountAmount)
+              }}</span>
               <ElButton
                 link
                 type="danger"
@@ -341,7 +334,7 @@
                   class="animate-spin size-3 border-2 border-white border-t-transparent rounded-full"
                   v-else
                 ></span>
-                T?o phi?u s?a ch?a
+                Tạo phiếu sửa chữa
               </button>
             </div>
           </div>
@@ -360,7 +353,7 @@ import { useVoucher } from "@/common/composables/useVoucher";
 import type { AppliedVoucherInfo } from "@/domain/voucher/voucher.types";
 import { VehicleApi, Vehicle } from "@/api/vehicle";
 import { RepairOrderApi } from "@/api/sales";
-import { VoucherApi } from "@/api/voucher.api";
+import type { CreateRepairOrderPayload } from "@/api/sales/repair-order.api";
 
 defineOptions({ name: "CustomerWorkshopCreate" });
 
@@ -380,26 +373,29 @@ const form = reactive({
   notes: "",
 });
 
-const voucherId = ref<number | null>(null);
 const voucherDiscount = ref(0);
 const voucherCode = ref("");
 const voucherApplying = ref(false);
 const appliedVoucher = ref<AppliedVoucherInfo | null>(null);
 const voucherError = ref("");
 
-function formatCurrency(value?: number): string {
+const formatCurrency = (value?: number): string => {
   if (value == null) return "0 đ";
   return new Intl.NumberFormat("vi-VN", {
     style: "currency",
     currency: "VND",
   }).format(value);
-}
+};
 
-// Search customer vehicles by Phone Number
+const formatDate = (dateStr: string): string => {
+  if (!dateStr) return "-";
+  return new Date(dateStr).toLocaleDateString("vi-VN");
+};
+
 const searchCustomer = async () => {
   const phone = searchPhone.value.trim();
   if (!phone) {
-    ElMessage.warning("Vui l�ng nh?p s? di?n tho?i");
+    ElMessage.warning("Vui lòng nhập số điện thoại");
     return;
   }
 
@@ -421,37 +417,35 @@ const searchCustomer = async () => {
       selectVehicle(vehicles.value[0]);
     }
   } catch (err: any) {
-    ElMessage.error(err.message || "L?i khi tra c?u kh�ch h�ng");
+    ElMessage.error(err.message || "Lỗi khi tra cứu khách hàng");
   } finally {
     searching.value = false;
   }
 };
 
-// Select a vehicle to prefill fields
 const selectVehicle = (vehicle: Vehicle) => {
   selectedVehicle.value = vehicle;
   form.customerName = vehicle.fullName;
   form.customerPhone = vehicle.phoneNumber;
 };
 
-// Create Repair Order
 const handleSubmit = async () => {
   if (!form.customerName.trim()) {
-    ElMessage.warning("Vui l�ng nh?p h? v� t�n kh�ch h�ng");
+    ElMessage.warning("Vui lòng nhập họ và tên khách hàng");
     return;
   }
   if (!form.customerPhone.trim()) {
-    ElMessage.warning("Vui l�ng nh?p s? di?n tho?i");
+    ElMessage.warning("Vui lòng nhập số điện thoại");
     return;
   }
   if (!form.description.trim()) {
-    ElMessage.warning("Vui l�ng nh?p m� t? l?i/y�u c?u s?a ch?a");
+    ElMessage.warning("Vui lòng nhập mô tả lỗi/yêu cầu sửa chữa");
     return;
   }
 
   submitting.value = true;
   try {
-    const payload = {
+    const payload: CreateRepairOrderPayload = {
       vehicleId: selectedVehicle.value?.id || undefined,
       customerName: form.customerName.trim(),
       customerPhone: form.customerPhone.trim(),
@@ -460,14 +454,18 @@ const handleSubmit = async () => {
       notes: form.notes.trim() || undefined,
     };
 
-    const res = await RepairOrderApi.create(payload);
-    ElMessage.success("T?o phi?u ti?p nh?n xe th�nh c�ng!");
+    if (appliedVoucher.value) {
+      payload.voucherId = appliedVoucher.value.voucherId;
+      payload.discountAmount = appliedVoucher.value.discountAmount;
+    }
 
-    // Redirect to detail page
+    const res = await RepairOrderApi.create(payload);
+    ElMessage.success("Tạo phiếu tiếp nhận xe thành công!");
+
     const newId = res;
     router.push(`/factory/workshop/repair-history/repair/${newId}`);
   } catch (err: any) {
-    ElMessage.error(err.message || "L?i khi kh?i t?o phi?u s?a ch?a");
+    ElMessage.error(err.message || "Lỗi khi khởi tạo phiếu sửa chữa");
   } finally {
     submitting.value = false;
   }
@@ -475,15 +473,6 @@ const handleSubmit = async () => {
 
 const goBack = () => {
   router.push("/factory/workshop/repair-history");
-};
-
-function formatCurrency(value: number) {
-  if (!value) return '0 ?';
-  return new Intl.NumberFormat('vi-VN').format(value) + ' ?';
-}
-const formatDate = (dateStr: string) => {
-  if (!dateStr) return "-";
-  return new Date(dateStr).toLocaleDateString("vi-VN");
 };
 
 const {
@@ -512,15 +501,12 @@ watch(voucherApplying, (val) => {
 watch(voucherError, (val) => {
   vcError.value = val;
 });
-      if (appliedVoucher.value) {
-        (payload as any).voucherId = appliedVoucher.value.voucherId;
-        (payload as any).discountAmount = appliedVoucher.value.discountAmount;
-      }
+
 const applyVoucher = async () => {
   voucherError.value = "";
   const code = voucherCode.value.trim().toUpperCase();
   if (!code) {
-    voucherError.value = "Vui l�ng nh?p m� voucher";
+    voucherError.value = "Vui lòng nhập mã voucher";
     return;
   }
   voucherApplying.value = true;
@@ -530,10 +516,10 @@ const applyVoucher = async () => {
     appliedVoucher.value = vcApplied.value;
     voucherDiscount.value = vcDiscount.value;
     ElMessage.success(
-      "�� �p đồng voucher " + (appliedVoucher.value?.code || ""),
+      "Đã áp dụng voucher " + (appliedVoucher.value?.code || ""),
     );
   } catch (err: any) {
-    voucherError.value = err?.message || "Kh�ng th? �p đồng voucher";
+    voucherError.value = err?.message || "Không thể áp dụng voucher";
   } finally {
     voucherApplying.value = false;
   }
@@ -549,7 +535,7 @@ const removeVoucher = async () => {
     voucherCode.value = "";
     voucherError.value = "";
   } catch (err: any) {
-    voucherError.value = err?.message || "Kh�ng th? b? voucher";
+    voucherError.value = err?.message || "Không thể bỏ voucher";
   } finally {
     voucherApplying.value = false;
   }
@@ -602,4 +588,3 @@ const removeVoucher = async () => {
   }
 }
 </style>
-

@@ -140,7 +140,10 @@
               <p
                 class="text-slate-800 text-sm bg-slate-50 p-4 rounded-lg border border-slate-100 whitespace-pre-line leading-relaxed"
               >
-                {{ fixMojibake(claim?.issueDescription) || "Chưa có mô tả chi tiết lỗi." }}
+                {{
+                  fixMojibake(claim?.issueDescription) ||
+                  "Chưa có mô tả chi tiết lỗi."
+                }}
               </p>
             </div>
 
@@ -202,10 +205,7 @@
             style="width: 100%"
             header-cell-class-name="bg-slate-50 font-semibold text-slate-700"
           >
-            <el-table-column
-              label="Tên Linh Kiện"
-              min-width="180"
-            >
+            <el-table-column label="Tên Linh Kiện" min-width="180">
               <template #default="{ row }">
                 {{ fixMojibake(row.partName) }}
               </template>
@@ -338,10 +338,7 @@
                   style="width: 100%"
                   header-cell-class-name="bg-white font-semibold text-slate-600"
                 >
-                  <el-table-column
-                    label="Tên Linh Kiện"
-                    min-width="160"
-                  >
+                  <el-table-column label="Tên Linh Kiện" min-width="160">
                     <template #default="{ row }">
                       {{ fixMojibake(row.partName) }}
                     </template>
@@ -626,28 +623,31 @@ const generateMockPlate = (id: number) => {
   const n1 = (id * 17) % 10;
   const p1 = (id * 123) % 999;
   const p2 = (id * 45) % 99;
-  return `29-${l1}${n1} ${String(p1).padStart(3, '0')}.${String(p2).padStart(2, '0')}`;
+  return `29-${l1}${n1} ${String(p1).padStart(3, "0")}.${String(p2).padStart(2, "0")}`;
 };
 
 const fixMojibake = (text: string | null | undefined) => {
   if (!text) return "";
-  
+
   // Demo text replacements for severely corrupted DB strings
-  if (text.includes("60km/h")) return "Kêu máy ở dải tốc độ cao (trên 60km/h), cảm giác giật cục khi tăng ga nhanh.";
-  if (text.includes("C") && text.includes("bi") && text.includes("n")) return "Bộ bi nồi côn";
+  if (text.includes("60km/h"))
+    return "Kêu máy ở dải tốc độ cao (trên 60km/h), cảm giác giật cục khi tăng ga nhanh.";
+  if (text.includes("C") && text.includes("bi") && text.includes("n"))
+    return "Bộ bi nồi côn";
   if (text.includes("curoa")) return "Dây curoa truyền động";
   if (text.includes("12V-7Ah")) return "Bình ắc quy 12V-7Ah";
-  if (text.includes("2 th") || text.includes("qua")) return "Bình ắc quy chết liên tục sau 2 tháng, đã thay 1 lần vẫn bị tình trạng không đề xe được qua đêm.";
+  if (text.includes("2 th") || text.includes("qua"))
+    return "Bình ắc quy chết liên tục sau 2 tháng, đã thay 1 lần vẫn bị tình trạng không đề xe được qua đêm.";
 
   let result = text;
   let count = 0;
-  while (result.includes('Ã') && count < 3) {
+  while (result.includes("Ã") && count < 3) {
     try {
       let decoded = decodeURIComponent(escape(result));
       if (decoded === result) break;
       result = decoded;
       count++;
-    } catch(e) {
+    } catch (e) {
       break;
     }
   }

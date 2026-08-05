@@ -10,9 +10,9 @@ export const sectionData = {
       steps: [
         "Xem nhanh doanh thu, chi phí và lợi nhuận.",
         "Phân tích biểu đồ xu hướng tăng trưởng.",
-        "Tùy chỉnh khoảng thời gian báo cáo."
+        "Tùy chỉnh khoảng thời gian báo cáo.",
       ],
-      tips: ["Sử dụng các bộ lọc để xem chi tiết theo từng tiêu chí."]
-    }
-  ]
-}
+      tips: ["Sử dụng các bộ lọc để xem chi tiết theo từng tiêu chí."],
+    },
+  ],
+};

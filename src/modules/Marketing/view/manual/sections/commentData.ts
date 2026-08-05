@@ -10,9 +10,11 @@ export const sectionData = {
       steps: [
         "Xem danh sách bình luận mới nhất.",
         "Duyệt hoặc ẩn bình luận có nội dung không phù hợp.",
-        "Trả lời các câu hỏi từ khách hàng trực tiếp."
+        "Trả lời các câu hỏi từ khách hàng trực tiếp.",
       ],
-      tips: ["Việc phản hồi bình luận nhanh chóng giúp tăng uy tín cho cửa hàng."]
-    }
-  ]
-}
+      tips: [
+        "Việc phản hồi bình luận nhanh chóng giúp tăng uy tín cho cửa hàng.",
+      ],
+    },
+  ],
+};

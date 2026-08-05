@@ -821,8 +821,10 @@ const totalPartsCost = computed(() =>
     .reduce((acc, item) => acc + item.price * item.count, 0),
 );
 
+const totalAmount = computed(() => totalLaborCost.value + totalPartsCost.value);
+
 const discountedTotal = computed(() =>
-  Math.max(0, voucherOrderTotal.value - voucherDiscount.value),
+  Math.max(0, totalAmount.value - voucherDiscount.value),
 );
 
 const {
@@ -835,8 +837,8 @@ const {
   handleRemove: removeVoucher,
   reset: resetVoucher,
 } = useVoucher(
-  () => voucherOrderTotal.value,
-  () => voucherOrderId.value,
+  () => totalAmount.value,
+  () => orderId,
   true,
 );
 
@@ -1223,4 +1225,3 @@ onMounted(() => {
   font-family: monospace;
 }
 </style>
-

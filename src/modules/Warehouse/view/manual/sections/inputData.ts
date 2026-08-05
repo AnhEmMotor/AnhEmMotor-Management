@@ -10,9 +10,9 @@ export const sectionData = {
       steps: [
         "Đối chiếu hàng hóa thực tế với Phiếu giao hàng.",
         "Lập Phiếu nhập kho trên hệ thống.",
-        "Quét mã vạch và phân bổ vị trí lưu trữ trong kho."
+        "Quét mã vạch và phân bổ vị trí lưu trữ trong kho.",
       ],
-      tips: ["Luôn kiểm tra kỹ chất lượng hàng hóa trước khi ký nhận."]
-    }
-  ]
-}
+      tips: ["Luôn kiểm tra kỹ chất lượng hàng hóa trước khi ký nhận."],
+    },
+  ],
+};

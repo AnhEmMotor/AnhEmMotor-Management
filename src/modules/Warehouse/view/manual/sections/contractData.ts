@@ -10,9 +10,11 @@ export const sectionData = {
       steps: [
         "Upload bản mềm hợp đồng đã ký kết.",
         "Cập nhật các điều khoản chiết khấu, thưởng doanh số.",
-        "Nhận cảnh báo khi hợp đồng sắp hết hạn."
+        "Nhận cảnh báo khi hợp đồng sắp hết hạn.",
       ],
-      tips: ["Luôn đảm bảo gia hạn hợp đồng trước khi hết hạn để không bị gián đoạn cung cấp."]
-    }
-  ]
-}
+      tips: [
+        "Luôn đảm bảo gia hạn hợp đồng trước khi hết hạn để không bị gián đoạn cung cấp.",
+      ],
+    },
+  ],
+};

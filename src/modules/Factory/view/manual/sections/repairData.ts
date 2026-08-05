@@ -11,9 +11,9 @@ export const sectionData = {
         "Tạo phiếu sửa chữa mới khi tiếp nhận xe.",
         "Phân công kỹ thuật viên thực hiện.",
         "Cập nhật trạng thái sửa chữa, linh kiện thay thế.",
-        "Hoàn tất phiếu sửa chữa."
+        "Hoàn tất phiếu sửa chữa.",
       ],
-      tips: ["Chú ý kiểm tra kỹ tình trạng xe trước khi tiếp nhận."]
-    }
-  ]
-}
+      tips: ["Chú ý kiểm tra kỹ tình trạng xe trước khi tiếp nhận."],
+    },
+  ],
+};

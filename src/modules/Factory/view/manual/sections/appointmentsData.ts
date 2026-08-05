@@ -10,9 +10,9 @@ export const sectionData = {
       steps: [
         "Xem danh sách lịch hẹn trong ngày.",
         "Tiếp nhận lịch hẹn và chuyển sang trạng thái đang xử lý.",
-        "Xác nhận hoàn thành hoặc hủy lịch."
+        "Xác nhận hoàn thành hoặc hủy lịch.",
       ],
-      tips: ["Nên gọi điện thoại xác nhận với khách hàng trước khi tiếp nhận."]
-    }
-  ]
-}
+      tips: ["Nên gọi điện thoại xác nhận với khách hàng trước khi tiếp nhận."],
+    },
+  ],
+};

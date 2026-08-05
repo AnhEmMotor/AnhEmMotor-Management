@@ -10,9 +10,9 @@ export const sectionData = {
       steps: [
         "Xem danh sách công nợ theo từng nhà cung cấp.",
         "Lập kế hoạch thanh toán cho các khoản nợ đến hạn.",
-        "Ghi nhận thanh toán và cấn trừ công nợ."
+        "Ghi nhận thanh toán và cấn trừ công nợ.",
       ],
-      tips: ["Chú ý các điều khoản chiết khấu thanh toán sớm trong hợp đồng."]
-    }
-  ]
-}
+      tips: ["Chú ý các điều khoản chiết khấu thanh toán sớm trong hợp đồng."],
+    },
+  ],
+};

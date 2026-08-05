@@ -10,9 +10,9 @@ export const sectionData = {
       steps: [
         "Xem doanh thu từ tiền công và phụ tùng.",
         "Kiểm tra các khoản chi phí phát sinh tại xưởng.",
-        "Phân tích hiệu quả hoạt động của xưởng."
+        "Phân tích hiệu quả hoạt động của xưởng.",
       ],
-      tips: ["Dữ liệu được lấy từ các phiếu sửa chữa và bảo hành đã hoàn tất."]
-    }
-  ]
-}
+      tips: ["Dữ liệu được lấy từ các phiếu sửa chữa và bảo hành đã hoàn tất."],
+    },
+  ],
+};

@@ -1,6 +1,7 @@
 export const sectionData = {
   title: "Dashboard tiếp thị",
-  description: "Tổng quan hiệu suất của các chiến dịch Marketing và khách hàng.",
+  description:
+    "Tổng quan hiệu suất của các chiến dịch Marketing và khách hàng.",
   pages: [
     {
       id: "marketing-dashboard",
@@ -10,9 +11,9 @@ export const sectionData = {
       steps: [
         "Lọc thời gian để xem các biến động tương tác.",
         "Phân tích biểu đồ nguồn khách hàng.",
-        "Đánh giá ROI của các chiến dịch."
+        "Đánh giá ROI của các chiến dịch.",
       ],
-      tips: ["Dữ liệu tương tác được tự động thu thập từ website chính."]
-    }
-  ]
-}
+      tips: ["Dữ liệu tương tác được tự động thu thập từ website chính."],
+    },
+  ],
+};

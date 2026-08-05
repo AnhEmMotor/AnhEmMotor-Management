@@ -10,9 +10,11 @@ export const sectionData = {
       steps: [
         "Xem tổng quan số lượng đơn đang giao, đã giao, giao thất bại.",
         "Tra cứu vị trí đơn hàng qua bản đồ (nếu có tích hợp GPS).",
-        "Xác nhận hoàn tất giao hàng và thu tiền (COD)."
+        "Xác nhận hoàn tất giao hàng và thu tiền (COD).",
       ],
-      tips: ["Luôn liên hệ khách trước khi giao để đảm bảo khách có mặt nhận xe."]
-    }
-  ]
-}
+      tips: [
+        "Luôn liên hệ khách trước khi giao để đảm bảo khách có mặt nhận xe.",
+      ],
+    },
+  ],
+};

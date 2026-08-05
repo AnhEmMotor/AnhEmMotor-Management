@@ -10,9 +10,9 @@ export const sectionData = {
       steps: [
         "Mở tab công nợ phải thu hoặc phải trả.",
         "Lọc theo khoảng thời gian và đối tượng.",
-        "Tiến hành ghi nhận thanh toán khi có giao dịch."
+        "Tiến hành ghi nhận thanh toán khi có giao dịch.",
       ],
-      tips: ["Chú ý các khoản nợ được đánh dấu đỏ (quá hạn)."]
-    }
-  ]
-}
+      tips: ["Chú ý các khoản nợ được đánh dấu đỏ (quá hạn)."],
+    },
+  ],
+};

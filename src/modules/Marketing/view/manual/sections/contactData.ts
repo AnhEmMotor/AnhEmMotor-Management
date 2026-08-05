@@ -5,14 +5,15 @@ export const sectionData = {
     {
       id: "contact-management",
       title: "Liên hệ",
-      description: "Xem và xử lý các thông tin liên hệ được gửi qua Form trên Website.",
+      description:
+        "Xem và xử lý các thông tin liên hệ được gửi qua Form trên Website.",
       route: "/Marketing/contact",
       steps: [
         "Xem chi tiết yêu cầu liên hệ của khách hàng.",
         "Phân công nhân viên xử lý liên hệ.",
-        "Cập nhật trạng thái sau khi đã tư vấn."
+        "Cập nhật trạng thái sau khi đã tư vấn.",
       ],
-      tips: ["Nên liên hệ ngay trong vòng 24h để tăng tỷ lệ chốt sales."]
-    }
-  ]
-}
+      tips: ["Nên liên hệ ngay trong vòng 24h để tăng tỷ lệ chốt sales."],
+    },
+  ],
+};

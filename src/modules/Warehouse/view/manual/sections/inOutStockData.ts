@@ -10,9 +10,9 @@ export const sectionData = {
       steps: [
         "Lọc thời gian cần xem báo cáo.",
         "Xem số dư đầu kỳ, số lượng nhập/xuất trong kỳ.",
-        "Kiểm tra số dư cuối kỳ và đối chiếu với thực tế."
+        "Kiểm tra số dư cuối kỳ và đối chiếu với thực tế.",
       ],
-      tips: ["Nên chạy báo cáo này trước mỗi kỳ kiểm kê kho."]
-    }
-  ]
-}
+      tips: ["Nên chạy báo cáo này trước mỗi kỳ kiểm kê kho."],
+    },
+  ],
+};

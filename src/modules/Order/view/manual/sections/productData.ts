@@ -10,9 +10,11 @@ export const sectionData = {
       steps: [
         "Xem danh sách toàn bộ sản phẩm đang kinh doanh.",
         "Cập nhật giá bán, hình ảnh hoặc các thông số kỹ thuật.",
-        "Ẩn hoặc ngừng kinh doanh đối với sản phẩm cũ."
+        "Ẩn hoặc ngừng kinh doanh đối với sản phẩm cũ.",
       ],
-      tips: ["Hãy chắc chắn cập nhật đúng giá bán để tránh sai sót khi tạo đơn hàng."]
-    }
-  ]
-}
+      tips: [
+        "Hãy chắc chắn cập nhật đúng giá bán để tránh sai sót khi tạo đơn hàng.",
+      ],
+    },
+  ],
+};

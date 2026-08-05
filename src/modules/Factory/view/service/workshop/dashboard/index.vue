@@ -343,10 +343,26 @@ function handleCycleChange() {
   const now = new Date();
   if (cycle.value === "today") {
     fromDate.value = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    toDate.value = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+    toDate.value = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      23,
+      59,
+      59,
+      999,
+    );
   } else if (cycle.value === "this_month") {
     fromDate.value = new Date(now.getFullYear(), now.getMonth(), 1);
-    toDate.value = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+    toDate.value = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0,
+      23,
+      59,
+      59,
+      999,
+    );
   } else if (cycle.value === "this_year") {
     fromDate.value = new Date(now.getFullYear(), 0, 1);
     toDate.value = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);

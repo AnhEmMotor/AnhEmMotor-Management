@@ -1,6 +1,7 @@
 export const sectionData = {
   title: "Bảo Hành",
-  description: "Quản lý các yêu cầu bảo hành từ khách hàng và trạng thái phê duyệt từ hãng.",
+  description:
+    "Quản lý các yêu cầu bảo hành từ khách hàng và trạng thái phê duyệt từ hãng.",
   pages: [
     {
       id: "warranty-requests",
@@ -11,9 +12,11 @@ export const sectionData = {
         "Tiếp nhận yêu cầu bảo hành từ khách hàng.",
         "Kiểm tra điều kiện bảo hành của phụ tùng, xe.",
         "Tạo hồ sơ và gửi lên hãng chờ phê duyệt.",
-        "Cập nhật trạng thái bảo hành."
+        "Cập nhật trạng thái bảo hành.",
       ],
-      tips: ["Luôn đối chiếu mã số khung (VIN) và biển số xe để tránh nhầm lẫn."]
-    }
-  ]
-}
+      tips: [
+        "Luôn đối chiếu mã số khung (VIN) và biển số xe để tránh nhầm lẫn.",
+      ],
+    },
+  ],
+};

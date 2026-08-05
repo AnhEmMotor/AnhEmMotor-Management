@@ -10,9 +10,9 @@ export const sectionData = {
       steps: [
         "Tạo bài viết mới, thêm ảnh bìa, danh mục.",
         "Soạn thảo nội dung qua trình biên tập phong phú.",
-        "Thiết lập SEO (Tiêu đề, Mô tả) và bấm Xuất bản."
+        "Thiết lập SEO (Tiêu đề, Mô tả) và bấm Xuất bản.",
       ],
-      tips: ["Hãy tối ưu SEO cho bài viết để tăng thứ hạng tìm kiếm."]
-    }
-  ]
-}
+      tips: ["Hãy tối ưu SEO cho bài viết để tăng thứ hạng tìm kiếm."],
+    },
+  ],
+};

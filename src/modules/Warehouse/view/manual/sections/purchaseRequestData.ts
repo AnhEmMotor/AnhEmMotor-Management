@@ -10,9 +10,11 @@ export const sectionData = {
       steps: [
         "Tạo phiếu yêu cầu mua hàng mới.",
         "Chờ Quản lý hoặc Kế toán trưởng phê duyệt.",
-        "Chuyển thành Đơn đặt hàng với Nhà cung cấp (PO)."
+        "Chuyển thành Đơn đặt hàng với Nhà cung cấp (PO).",
       ],
-      tips: ["Đính kèm báo giá từ ít nhất 3 nhà cung cấp để dễ dàng được duyệt."]
-    }
-  ]
-}
+      tips: [
+        "Đính kèm báo giá từ ít nhất 3 nhà cung cấp để dễ dàng được duyệt.",
+      ],
+    },
+  ],
+};

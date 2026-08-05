@@ -227,6 +227,16 @@ export const marketingMenu: AppRouteRecord[] = [
               activePath: "/Marketing/customer/voucher",
             },
           },
+          {
+            path: "store-chat",
+            name: "CustomerStoreChat",
+            component: "/Marketing/view/customer/store-chat/index",
+            meta: {
+              title: "menus.marketing.customerStoreChat",
+              icon: "ri:customer-service-2-line",
+              permissions: [Permissions.Marketing.StoreChatManagement.View],
+            },
+          },
         ],
       },
       {

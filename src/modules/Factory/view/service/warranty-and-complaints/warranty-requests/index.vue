@@ -710,7 +710,7 @@ const generateMockPlate = (id: number) => {
   const n1 = (id * 17) % 10;
   const p1 = (id * 123) % 999;
   const p2 = (id * 45) % 99;
-  return `29-${l1}${n1} ${String(p1).padStart(3, '0')}.${String(p2).padStart(2, '0')}`;
+  return `29-${l1}${n1} ${String(p1).padStart(3, "0")}.${String(p2).padStart(2, "0")}`;
 };
 
 // Drawer states

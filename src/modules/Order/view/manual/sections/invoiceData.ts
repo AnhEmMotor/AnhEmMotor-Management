@@ -10,9 +10,11 @@ export const sectionData = {
       steps: [
         "Truy xuất hóa đơn từ Đơn đặt hàng đã hoàn tất.",
         "Bổ sung thông tin xuất hóa đơn (MST, Tên công ty) nếu có.",
-        "Xuất file mềm (PDF) hoặc in hóa đơn giao khách."
+        "Xuất file mềm (PDF) hoặc in hóa đơn giao khách.",
       ],
-      tips: ["Sau khi xuất hóa đơn, hệ thống sẽ tự động ghi nhận doanh thu vào Kế toán."]
-    }
-  ]
-}
+      tips: [
+        "Sau khi xuất hóa đơn, hệ thống sẽ tự động ghi nhận doanh thu vào Kế toán.",
+      ],
+    },
+  ],
+};

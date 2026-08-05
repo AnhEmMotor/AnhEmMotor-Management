@@ -10,9 +10,11 @@ export const sectionData = {
       steps: [
         "Tiếp nhận đơn đặt hàng từ Sales.",
         "Xác nhận tình trạng thanh toán và duyệt đơn.",
-        "Chuyển trạng thái đơn hàng để bộ phận Kho xuất xe."
+        "Chuyển trạng thái đơn hàng để bộ phận Kho xuất xe.",
       ],
-      tips: ["Luôn đối chiếu với Kế toán trước khi chuyển trạng thái Đã duyệt."]
-    }
-  ]
-}
+      tips: [
+        "Luôn đối chiếu với Kế toán trước khi chuyển trạng thái Đã duyệt.",
+      ],
+    },
+  ],
+};

@@ -10,9 +10,9 @@ export const sectionData = {
       steps: [
         "Xem xét lý do hoàn trả từ khách hàng.",
         "Tiến hành kiểm tra tình trạng hàng hóa thực tế.",
-        "Xác nhận hoàn tiền và nhập lại kho."
+        "Xác nhận hoàn tiền và nhập lại kho.",
       ],
-      tips: ["Quá trình này cần sự phối hợp xác nhận từ Kỹ thuật và Kế toán."]
-    }
-  ]
-}
+      tips: ["Quá trình này cần sự phối hợp xác nhận từ Kỹ thuật và Kế toán."],
+    },
+  ],
+};

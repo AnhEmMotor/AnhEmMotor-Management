@@ -8,7 +8,7 @@
     }"
   >
     <RouterView></RouterView>
-    <VueQueryDevtools />
+    <VueQueryDevtools buttonPosition="bottom-left" />
     <ChatFloatingButton v-if="!isAuthPage" />
   </ElConfigProvider>
 </template>
