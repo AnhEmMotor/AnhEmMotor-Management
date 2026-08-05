@@ -1,4 +1,4 @@
-import { ref, computed } from "vue";
+import { ref, computed, type ComputedRef } from "vue";
 import { ElMessage } from "element-plus";
 import { VoucherApi } from "@/api/voucher.api";
 import type {
@@ -19,6 +19,7 @@ export function useVoucher(
     typeof orderId === "function"
       ? orderId()
       : (orderId as ComputedRef<number | undefined>).value;
+
   const voucherCode = ref("");
   const appliedVoucher = ref<AppliedVoucherInfo | null>(null);
   const applying = ref(false);
@@ -73,9 +74,8 @@ export function useVoucher(
         return;
       }
 
-  const discount = calculateDiscount(voucher);
-  const oid = getId();
-  if (!oid) {
+      const discount = calculateDiscount(voucher);
+      const oid = getId();
       if (!oid) {
         errorMsg.value = "Vui lòng lưu đơn hàng trước khi áp dụng voucher";
         appliedVoucher.value = null;
