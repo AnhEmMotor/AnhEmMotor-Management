@@ -174,7 +174,7 @@
                   class="size-16 rounded-xl bg-gray-100 dark:bg-slate-700 overflow-hidden shrink-0 border border-gray-100 dark:border-slate-600"
                 >
                   <img
-                    src="https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=200"
+                    :src="getImageUrl(asset.imageUrl)"
                     class="size-full object-cover"
                   />
                 </div>
@@ -182,7 +182,7 @@
                   <h2
                     class="m-0 text-xl font-bold text-gray-800 dark:text-white tracking-tight"
                   >
-                    {{ asset.product?.name || `Xe máy #${asset.id}` }}
+                    {{ asset.productName || `Xe máy #${asset.id}` }}
                   </h2>
                   <div class="flex gap-2">
                     <ElTag
@@ -206,11 +206,13 @@
               </div>
               <div class="flex gap-2">
                 <button
+                  @click="openEditDialog(asset)"
                   class="rounded-xl font-bold text-[9px] uppercase h-8 px-3 border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-600 transition-all shadow-sm flex items-center justify-center gap-1.5"
                 >
                   <ArtSvgIcon icon="ri:edit-line" /> Sửa
                 </button>
                 <button
+                  @click="handleReportClick"
                   class="bg-white text-slate-800 border border-slate-200 dark:bg-slate-700 dark:text-slate-100 dark:border-slate-600 rounded-xl font-bold text-[9px] uppercase h-8 px-3 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition-all flex items-center justify-center gap-1.5"
                 >
                   <ArtSvgIcon icon="ri:file-pdf-line" class="text-blue-500" />
@@ -374,6 +376,35 @@
         </div>
       </template>
     </ElDialog>
+
+    <!-- Dialog Sửa biển số xe -->
+    <ElDialog
+      v-model="editDialogVisible"
+      title="CẬP NHẬT BIỂN SỐ XE"
+      width="500px"
+      class="premium-dialog"
+      destroy-on-close
+    >
+      <ElForm :model="editForm" label-position="top">
+        <ElFormItem label="Biển số xe mới" class="is-required">
+          <ElInput
+            v-model="editForm.licensePlate"
+            placeholder="Ví dụ: 29A1-123.45"
+          />
+        </ElFormItem>
+      </ElForm>
+      <template #footer>
+        <div class="flex gap-3 justify-end">
+          <ElButton @click="editDialogVisible = false">Hủy bỏ</ElButton>
+          <ElButton
+            type="primary"
+            :loading="editSubmitLoading"
+            @click="handleEditSubmit"
+            >Lưu thay đổi</ElButton
+          >
+        </div>
+      </template>
+    </ElDialog>
   </div>
 </template>
 
@@ -398,9 +429,15 @@ const selectedLeadId = ref<number | null>(null);
 const filters = reactive<{ keyword: string }>({ keyword: "" });
 
 const addDialogVisible = ref(false);
+const editDialogVisible = ref(false);
+const editSubmitLoading = ref(false);
 const submitLoading = ref(false);
 const leadList = ref<any[]>([]);
 const productList = ref<any[]>([]);
+const editForm = ref({
+  id: 0,
+  licensePlate: "",
+});
 
 const form = ref({
   productId: null as number | null,
@@ -416,6 +453,16 @@ const getInitials = (name: string) => {
   const words = name.trim().split(" ");
   if (words.length === 1) return words[0].charAt(0).toUpperCase();
   return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
+};
+
+const getImageUrl = (url?: string) => {
+  if (!url)
+    return "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=200";
+  if (url.startsWith("http")) return url;
+  const baseUrl =
+    import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT ||
+    "http://localhost:5000";
+  return `${baseUrl.replace(/\/$/, "")}/${url.replace(/^\//, "")}`;
 };
 
 const loadLeads = async () => {
@@ -509,12 +556,12 @@ const handleAddSubmit = async () => {
   submitLoading.value = true;
   try {
     await VehicleApi.create({
-      lead_id: form.value.leadId,
-      product_id: form.value.productId,
-      vin_number: form.value.vinNumber,
-      engine_number: form.value.engineNumber,
-      license_plate: form.value.licensePlate,
-      purchase_date: form.value.purchaseDate,
+      leadId: form.value.leadId,
+      productId: form.value.productId,
+      vinNumber: form.value.vinNumber,
+      engineNumber: form.value.engineNumber,
+      licensePlate: form.value.licensePlate,
+      purchaseDate: form.value.purchaseDate,
     });
 
     ElMessage.success("Đã thêm phương tiện mới thành công!");
@@ -572,11 +619,22 @@ const vaultFolders = computed(() => [
 
 const getAssetSpecs = (v: any) => {
   return [
+    {
+      label: "Thể loại",
+      value: v?.categoryName || "Xe máy",
+      icon: "ri:motorbike-line",
+    },
+    {
+      label: "Phiên bản",
+      value: v?.variantName || "-",
+      icon: "ri:settings-5-line",
+    },
+    { label: "Màu sắc", value: v?.colorName || "-", icon: "ri:palette-line" },
     { label: "Số khung", value: v?.vinNumber || "-", icon: "ri:barcode-line" },
     {
       label: "Số máy",
       value: v?.engineNumber || "-",
-      icon: "ri:settings-5-line",
+      icon: "ri:settings-3-line",
     },
     {
       label: "Ngày mua",
@@ -589,6 +647,42 @@ const getAssetSpecs = (v: any) => {
       icon: "ri:git-commit-line",
     },
   ];
+};
+
+const openEditDialog = (asset: any) => {
+  editForm.value = {
+    id: asset.id,
+    licensePlate: asset.licensePlate || "",
+  };
+  editDialogVisible.value = true;
+};
+
+const handleEditSubmit = async () => {
+  if (!editForm.value.licensePlate.trim()) {
+    ElMessage.warning("Vui lòng nhập biển số xe");
+    return;
+  }
+
+  editSubmitLoading.value = true;
+  try {
+    await VehicleApi.updateLicensePlate(
+      editForm.value.id,
+      editForm.value.licensePlate.trim(),
+    );
+    ElMessage.success("Cập nhật biển số xe thành công!");
+    editDialogVisible.value = false;
+    if (selectedLeadId.value) {
+      loadCustomerAssets(selectedLeadId.value);
+    }
+  } catch (err: any) {
+    ElMessage.error(err.message || "Lỗi khi cập nhật biển số xe");
+  } finally {
+    editSubmitLoading.value = false;
+  }
+};
+
+const handleReportClick = () => {
+  ElMessage.info("Tính năng Báo cáo/Xuất PDF đang được phát triển.");
 };
 
 onMounted(loadLeads);

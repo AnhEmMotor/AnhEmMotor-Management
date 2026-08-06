@@ -33,9 +33,7 @@ export const useSettingStore = defineStore(
           localStorage.setItem("setting", JSON.stringify(parsed));
         }
       }
-    } catch (e) {
-      console.error("Failed to migrate local storage settings:", e);
-    }
+    } catch (e) {}
 
     const menuType = ref(SETTING_DEFAULT_CONFIG.menuType);
 

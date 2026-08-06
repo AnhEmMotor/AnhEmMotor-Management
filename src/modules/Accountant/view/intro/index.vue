@@ -2,7 +2,7 @@
   <div class="resp-page banner-container">
     <div class="banner-image">
       <img
-        src="@/assets/images/banner/accountant_banner.png"
+        src="@/assets/images/banner/accountant_banner.webp"
         alt="Accountant Banner"
       />
     </div>

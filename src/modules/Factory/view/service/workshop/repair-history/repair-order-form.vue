@@ -2,7 +2,6 @@
   <div
     class="resp-page repair-order-form-page flex flex-col min-h-screen bg-[#F8FAFC] font-inter text-[#0F172A]"
   >
-    <!-- Header -->
     <div
       class="bg-white border-b border-slate-200 px-8 py-5 shrink-0 shadow-sm relative z-20"
     >
@@ -30,12 +29,9 @@
       </div>
     </div>
 
-    <!-- Form Area -->
     <div class="flex-1 max-w-[1200px] mx-auto w-full p-6">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Search & Customer Info -->
         <div class="lg:col-span-2 space-y-6">
-          <!-- Step 1: Tra cứu khách hàng -->
           <div
             class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-5"
           >
@@ -78,7 +74,6 @@
               </button>
             </div>
 
-            <!-- Vehicles Result List -->
             <div v-if="vehicles.length > 0" class="space-y-3 pt-2">
               <p
                 class="text-[10px] font-black text-slate-400 uppercase tracking-wider m-0"
@@ -143,7 +138,6 @@
             </div>
           </div>
 
-          <!-- Step 2: Thông tin chi tiết khách & xe -->
           <div
             class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-6"
           >
@@ -222,7 +216,6 @@
           </div>
         </div>
 
-        <!-- Failure Details & Submit -->
         <div class="space-y-6">
           <div
             class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-5"
@@ -280,6 +273,51 @@
               </div>
             </div>
 
+            <ElDivider content-position="left" class="!my-4"
+              >Mã giảm giá (Voucher)</ElDivider
+            >
+            <ElInput
+              v-model="voucherCode"
+              placeholder="Nhập mã voucher..."
+              class="combat-input"
+              @keyup.enter="applyVoucher"
+              :disabled="submitting"
+            >
+              <template #append>
+                <ElButton
+                  :loading="voucherApplying"
+                  type="primary"
+                  @click="applyVoucher"
+                >
+                  Áp dụng
+                </ElButton>
+              </template>
+            </ElInput>
+            <div
+              v-if="appliedVoucher"
+              class="flex items-center gap-2 p-2 bg-emerald-50 border border-emerald-200 rounded-lg mt-2"
+            >
+              <ArtSvgIcon icon="ri:coupon-3-fill" class="text-emerald-600" />
+              <span class="text-sm font-bold text-emerald-700">{{
+                appliedVoucher.code
+              }}</span>
+              <span class="text-xs text-emerald-600">{{
+                formatCurrency(appliedVoucher.discountAmount)
+              }}</span>
+              <ElButton
+                link
+                type="danger"
+                size="small"
+                :loading="voucherApplying"
+                @click="removeVoucher"
+              >
+                <ArtSvgIcon icon="ri:close-circle-line" />
+              </ElButton>
+            </div>
+            <p v-if="voucherError" class="text-xs text-red-500 mt-1">
+              {{ voucherError }}
+            </p>
+
             <div class="pt-4 border-t border-slate-100">
               <button
                 @click="handleSubmit"
@@ -308,11 +346,14 @@
 
 <script setup lang="ts">
 import { Permissions } from "@/domain/constants/permissions";
-import { ref, reactive } from "vue";
+import { ref, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
+import { useVoucher } from "@/common/composables/useVoucher";
+import type { AppliedVoucherInfo } from "@/domain/voucher/voucher.types";
 import { VehicleApi, Vehicle } from "@/api/vehicle";
 import { RepairOrderApi } from "@/api/sales";
+import type { CreateRepairOrderPayload } from "@/api/sales/repair-order.api";
 
 defineOptions({ name: "CustomerWorkshopCreate" });
 
@@ -332,7 +373,25 @@ const form = reactive({
   notes: "",
 });
 
-// Search customer vehicles by Phone Number
+const voucherDiscount = ref(0);
+const voucherCode = ref("");
+const voucherApplying = ref(false);
+const appliedVoucher = ref<AppliedVoucherInfo | null>(null);
+const voucherError = ref("");
+
+const formatCurrency = (value?: number): string => {
+  if (value == null) return "0 đ";
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(value);
+};
+
+const formatDate = (dateStr: string): string => {
+  if (!dateStr) return "-";
+  return new Date(dateStr).toLocaleDateString("vi-VN");
+};
+
 const searchCustomer = async () => {
   const phone = searchPhone.value.trim();
   if (!phone) {
@@ -364,14 +423,12 @@ const searchCustomer = async () => {
   }
 };
 
-// Select a vehicle to prefill fields
 const selectVehicle = (vehicle: Vehicle) => {
   selectedVehicle.value = vehicle;
   form.customerName = vehicle.fullName;
   form.customerPhone = vehicle.phoneNumber;
 };
 
-// Create Repair Order
 const handleSubmit = async () => {
   if (!form.customerName.trim()) {
     ElMessage.warning("Vui lòng nhập họ và tên khách hàng");
@@ -388,7 +445,7 @@ const handleSubmit = async () => {
 
   submitting.value = true;
   try {
-    const payload = {
+    const payload: CreateRepairOrderPayload = {
       vehicleId: selectedVehicle.value?.id || undefined,
       customerName: form.customerName.trim(),
       customerPhone: form.customerPhone.trim(),
@@ -397,12 +454,16 @@ const handleSubmit = async () => {
       notes: form.notes.trim() || undefined,
     };
 
+    if (appliedVoucher.value) {
+      payload.voucherId = appliedVoucher.value.voucherId;
+      payload.discountAmount = appliedVoucher.value.discountAmount;
+    }
+
     const res = await RepairOrderApi.create(payload);
     ElMessage.success("Tạo phiếu tiếp nhận xe thành công!");
 
-    // Redirect to detail page
     const newId = res;
-    router.push(`/factory/workshop/counter/repair-history/repair/${newId}`);
+    router.push(`/factory/workshop/repair-history/repair/${newId}`);
   } catch (err: any) {
     ElMessage.error(err.message || "Lỗi khi khởi tạo phiếu sửa chữa");
   } finally {
@@ -411,12 +472,73 @@ const handleSubmit = async () => {
 };
 
 const goBack = () => {
-  router.push("/factory/workshop/counter/repair-history");
+  router.push("/factory/workshop/repair-history");
 };
 
-const formatDate = (dateStr: string) => {
-  if (!dateStr) return "-";
-  return new Date(dateStr).toLocaleDateString("vi-VN");
+const {
+  voucherCode: vcCode,
+  appliedVoucher: vcApplied,
+  applying: vcApplying,
+  errorMsg: vcError,
+  discountAmount: vcDiscount,
+  handleApply: vcApply,
+  handleRemove: vcRemove,
+} = useVoucher(
+  () => 0,
+  () => undefined,
+  true,
+);
+
+watch(voucherCode, (val: string) => {
+  vcCode.value = val;
+});
+watch(appliedVoucher, (val) => {
+  vcApplied.value = val;
+});
+watch(voucherApplying, (val) => {
+  vcApplying.value = val;
+});
+watch(voucherError, (val) => {
+  vcError.value = val;
+});
+
+const applyVoucher = async () => {
+  voucherError.value = "";
+  const code = voucherCode.value.trim().toUpperCase();
+  if (!code) {
+    voucherError.value = "Vui lòng nhập mã voucher";
+    return;
+  }
+  voucherApplying.value = true;
+  try {
+    await vcApply();
+    voucherCode.value = vcCode.value;
+    appliedVoucher.value = vcApplied.value;
+    voucherDiscount.value = vcDiscount.value;
+    ElMessage.success(
+      "Đã áp dụng voucher " + (appliedVoucher.value?.code || ""),
+    );
+  } catch (err: any) {
+    voucherError.value = err?.message || "Không thể áp dụng voucher";
+  } finally {
+    voucherApplying.value = false;
+  }
+};
+
+const removeVoucher = async () => {
+  if (!appliedVoucher.value) return;
+  voucherApplying.value = true;
+  try {
+    await vcRemove();
+    appliedVoucher.value = null;
+    voucherDiscount.value = 0;
+    voucherCode.value = "";
+    voucherError.value = "";
+  } catch (err: any) {
+    voucherError.value = err?.message || "Không thể bỏ voucher";
+  } finally {
+    voucherApplying.value = false;
+  }
 };
 </script>
 

@@ -16,7 +16,7 @@
     <div class="portal-header relative z-10"></div>
 
     <div class="portal-container relative z-10">
-      <div class="workspace-grid max-w-[1350px] mx-auto">
+      <div class="workspace-grid max-w-[1300px] mx-auto">
         <el-card
           v-for="(workspace, index) in workspaces"
           :key="index"
@@ -113,19 +113,27 @@ import {
   Box,
   UserFilled,
   Wallet,
+  Document,
 } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
 import { useCommon } from "@/common/composables/useCommon";
 import ArtHeaderBar from "@/components/core/layouts/art-header-bar/index.vue";
 import ArtGlobalComponent from "@/components/core/layouts/art-global-component/index.vue";
 import { useWorktabStore } from "@/application/store/worktab";
+import { useMenuStore } from "@/application/store/menu";
 import { onMounted, computed } from "vue";
-import { useAuth } from "@/common/composables/useAuth";
-import { Permissions } from "@/domain/constants/permissions";
+import { moduleHasAccess } from "@/router/core/ModuleMenu";
+import { adminMenu } from "@/modules/Admin/Menu";
+import { marketingMenu } from "@/modules/Marketing/Menu";
+import { warehouseMenu } from "@/modules/Warehouse/Menu";
+import { factoryMenu } from "@/modules/Factory/Menu";
+import { accountancyMenu } from "@/modules/Accountant/Menu";
+import { orderMenu } from "@/modules/Order/Menu";
 
 const router = useRouter();
 const { homePath } = useCommon();
 const worktabStore = useWorktabStore();
+const menuStore = useMenuStore();
 
 onMounted(() => {
   worktabStore.clearAll();
@@ -141,17 +149,17 @@ const handleWorkspaceClick = (workspace: any) => {
   }
 };
 
-const { hasAuth } = useAuth();
+const workspaces = computed(() => {
+  const menuList = menuStore.menuList;
 
-const workspaces = computed(() =>
-  [
+  return [
     {
       title: "Ban Điều Hành & Chủ Showroom",
       subtitle: "Executive Overview",
       icon: markRaw(DataAnalysis),
       color: "#e11d48",
       shadowColor: "rgba(225, 29, 72, 0.25)",
-      hasAccess: hasAuth(Permissions.Admin.Module),
+      hasAccess: moduleHasAccess(adminMenu, menuList),
       badge: { isDot: true, type: "danger" },
       path: "/admin/dashboard/intro",
     },
@@ -161,7 +169,7 @@ const workspaces = computed(() =>
       icon: markRaw(UserFilled),
       color: "#059669",
       shadowColor: "rgba(5, 150, 105, 0.25)",
-      hasAccess: hasAuth(Permissions.Marketing.Module),
+      hasAccess: moduleHasAccess(marketingMenu, menuList),
       badge: { isDot: false, value: 5, label: "đơn mới", type: "warning" },
       path: "/Marketing/intro",
     },
@@ -171,7 +179,7 @@ const workspaces = computed(() =>
       icon: markRaw(Box),
       color: "#d97706",
       shadowColor: "rgba(217, 119, 6, 0.15)",
-      hasAccess: hasAuth(Permissions.Warehouse.Module),
+      hasAccess: moduleHasAccess(warehouseMenu, menuList),
       path: "/Warehouse/intro",
     },
     {
@@ -180,7 +188,7 @@ const workspaces = computed(() =>
       icon: markRaw(Service),
       color: "#2563eb",
       shadowColor: "rgba(37, 99, 235, 0.15)",
-      hasAccess: hasAuth(Permissions.Factory.Module),
+      hasAccess: moduleHasAccess(factoryMenu, menuList),
       path: "/factory/workshop/banner",
     },
     {
@@ -189,7 +197,7 @@ const workspaces = computed(() =>
       icon: markRaw(Wallet),
       color: "#7c3aed",
       shadowColor: "rgba(124, 58, 237, 0.15)",
-      hasAccess: hasAuth(Permissions.Accountant.Module),
+      hasAccess: moduleHasAccess(accountancyMenu, menuList),
       path: "/Accountant/intro",
     },
     {
@@ -198,11 +206,11 @@ const workspaces = computed(() =>
       icon: markRaw(Wallet),
       color: "#7c3aed",
       shadowColor: "rgba(124, 58, 237, 0.15)",
-      hasAccess: hasAuth(Permissions.Order.Module),
+      hasAccess: moduleHasAccess(orderMenu, menuList),
       path: "/Order/management/draft",
     },
-  ].filter((workspace) => workspace.hasAccess),
-);
+  ].filter((workspace) => workspace.hasAccess);
+});
 </script>
 
 <style lang="scss" scoped>
@@ -339,7 +347,7 @@ const workspaces = computed(() =>
     .workspace-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 24px;
+      gap: 18px;
       margin: auto;
       width: 100%;
 
@@ -349,6 +357,11 @@ const workspaces = computed(() =>
 
       @media (width >= 1024px) {
         grid-template-columns: repeat(3, 1fr);
+
+        /* Cân bằng thẻ cuối cùng ra giữa nếu nó đứng một mình ở hàng cuối */
+        .workspace-card:last-child:nth-child(3n + 1) {
+          grid-column: 2;
+        }
       }
 
       .workspace-card {
@@ -382,24 +395,24 @@ const workspaces = computed(() =>
           display: flex;
           flex-direction: column;
           flex: 1;
-          padding: 20px 24px;
+          padding: 16px 20px;
         }
 
         .card-header {
           display: flex;
           align-items: flex-start;
           justify-content: space-between;
-          min-height: 48px;
-          margin-bottom: 12px;
+          min-height: 40px;
+          margin-bottom: 10px;
 
           .icon-wrapper {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 48px;
-            height: 48px;
-            font-size: 22px;
-            border-radius: 14px;
+            width: 52px;
+            height: 52px;
+            font-size: 24px;
+            border-radius: 12px;
             transition: all 0.3s;
           }
 
@@ -409,8 +422,8 @@ const workspaces = computed(() =>
             animation: pulse-badge 2s infinite;
 
             .badge-text {
-              padding: 4px 10px;
-              font-size: 11px;
+              padding: 6px 12px;
+              font-size: 12px;
               font-weight: 700;
               letter-spacing: 0.3px;
               border-radius: 20px;
@@ -426,9 +439,9 @@ const workspaces = computed(() =>
 
           .workspace-title {
             margin-bottom: 4px;
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 800;
-            line-height: 1.3;
+            line-height: 1.4;
             color: var(--el-text-color-primary);
           }
 
@@ -438,7 +451,7 @@ const workspaces = computed(() =>
             font-size: 12px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.5px;
             opacity: 0.9;
           }
         }

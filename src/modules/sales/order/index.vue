@@ -603,6 +603,7 @@ import { SalesOrderApi } from "@/api/sales";
 import { ProductApi } from "@/api/product";
 import { fetchGetUserList } from "@/api/auth";
 import { Permissions } from "@/domain/constants/permissions";
+import { useVoucher } from "@/common/composables/useVoucher";
 import type {
   SalesOrder,
   VehicleAssignmentOption,
@@ -769,7 +770,9 @@ const formTotal = computed(() =>
 const depositAmount = computed(() =>
   Math.round(formTotal.value * (Number(formData.depositRatio || 0) / 100)),
 );
-const remainingAmount = computed(() => formTotal.value - depositAmount.value);
+const remainingAmount = computed(
+  () => formTotal.value - depositAmount.value - voucherDiscount.value,
+);
 
 const isBuyerProductLocked = computed(() =>
   getLockedList("buyerAndProducts").includes(originalStatusId.value),
@@ -1068,7 +1071,7 @@ async function handleSubmit() {
     return ElMessage.warning("Vui lòng chọn sản phẩm và số lượng hợp lệ");
   }
 
-  const payload = {
+  const payload: any = {
     buyerId: formData.buyerId,
     customerName: formData.customerName,
     customerPhone: formData.customerPhone,
@@ -1085,6 +1088,11 @@ async function handleSubmit() {
       count: item.count,
     })),
   };
+
+  if (appliedVoucher.value) {
+    (payload as any).voucherId = appliedVoucher.value.voucherId;
+    (payload as any).discountAmount = appliedVoucher.value.discountAmount;
+  }
 
   saving.value = true;
   try {
@@ -1165,7 +1173,24 @@ function removeProductRow(index: number) {
   formData.products.splice(index, 1);
 }
 
+const voucherOrderTotal = computed(() => formTotal.value);
+const voucherOrderId = computed(() => editingOrder.value?.id);
+const {
+  voucherCode,
+  appliedVoucher,
+  applying: voucherApplying,
+  errorMsg: voucherError,
+  discountAmount: voucherDiscount,
+  handleApply: applyVoucher,
+  handleRemove: removeVoucher,
+  reset: resetVoucher,
+} = useVoucher(
+  () => voucherOrderTotal.value,
+  () => voucherOrderId.value,
+);
+
 function resetForm() {
+  resetVoucher();
   formData.buyerId = "";
   formData.customerName = "";
   formData.customerPhone = "";

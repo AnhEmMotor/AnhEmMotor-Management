@@ -80,7 +80,12 @@
                 <div class="i-ri-search-line"></div>
               </template>
             </ElInput>
-            <ElButton type="primary" plain>
+            <ElButton
+              type="primary"
+              plain
+              :disabled="isLoading"
+              @click="exportInvoiceExcel"
+            >
               <div class="i-ri-file-excel-2-line mr-1"></div>
               Xuất Excel
             </ElButton>
@@ -290,6 +295,7 @@ import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
 import ReportPageHeader from "./ReportPageHeader.vue";
 import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
 import { statisticsApi } from "@/api/operations";
+import { exportReportWorkbook } from "@/utils/report-excel";
 
 const currentPeriod = ref<"today" | "month" | "year" | "custom">("month");
 const periodStart = ref(
@@ -346,6 +352,68 @@ const paginatedInvoices = computed(() => {
   const end = start + pageSize.value;
   return filteredInvoices.value.slice(start, end);
 });
+
+function exportInvoiceExcel() {
+  exportReportWorkbook({
+    fileName: `Thong_ke_hoa_don_${periodStart.value}_${periodEnd.value}`,
+    sheets: [
+      {
+        name: "Tổng quan",
+        rows: [
+          {
+            "Từ ngày": periodStart.value,
+            "Đến ngày": periodEnd.value,
+            "Tổng giá trị hóa đơn": summaryData.value.totalInvoiced,
+            "Đã thu đủ": summaryData.value.collectedCash,
+            "Đang chờ đối soát": summaryData.value.pendingTransit,
+            "Giá trị đã hủy": summaryData.value.canceledAmount,
+          },
+        ],
+      },
+      {
+        name: "Danh sách hóa đơn",
+        rows: filteredInvoices.value.map((item) => ({
+          "Mã hóa đơn": item.id,
+          Ngày: item.date,
+          Kênh: item.channel,
+          "Dòng sản phẩm": item.category,
+          "Phương thức thanh toán": item.paymentMethod,
+          "Số tiền": item.amount,
+          "Trạng thái": item.status,
+          "Khách hàng": item.details?.customerName,
+          CCCD: item.details?.cccd,
+          "Sản phẩm": item.details?.productName,
+          VIN: item.details?.vin,
+          "Số máy": item.details?.engineNo,
+          "Đơn vị vận chuyển": item.details?.shippingProvider,
+          "Mã vận đơn": item.details?.trackingCode,
+        })),
+      },
+      {
+        name: "Xu hướng doanh thu",
+        rows: trendData.value.map((item) => ({
+          Ngày: item.day,
+          "Doanh thu tại quầy": item.offlineRev,
+          "Doanh thu online": item.onlineRev,
+        })),
+      },
+      {
+        name: "Theo dòng sản phẩm",
+        rows: productData.value.map((item) => ({
+          "Dòng sản phẩm": item.name,
+          "Giá trị": item.value,
+        })),
+      },
+      {
+        name: "Phương thức thanh toán",
+        rows: paymentData.value.map((item) => ({
+          "Phương thức": item.name,
+          "Tỷ lệ": item.value,
+        })),
+      },
+    ],
+  });
+}
 
 function openDetail(row: any) {
   selectedInvoice.value = row;

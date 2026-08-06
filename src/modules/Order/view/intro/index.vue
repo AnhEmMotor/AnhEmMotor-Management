@@ -1,7 +1,7 @@
 <template>
   <div class="resp-page banner-container">
     <div class="banner-image">
-      <img src="@/assets/images/banner/order_banner.jpg" alt="Order Banner" />
+      <img src="@/assets/images/banner/order_banner.webp" alt="Order Banner" />
     </div>
 
     <!-- Info Cards Section -->

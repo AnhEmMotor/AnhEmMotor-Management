@@ -22,10 +22,10 @@
           <el-icon><Document /></el-icon> Lưu Bản Nháp
         </el-button>
         <el-button
-          v-if="contractData.status === 'Draft'"
+          v-if="contractData.status === 'PendingApproval'"
           type="success"
           @click="handleApproveContract"
-          v-auth="Permissions.Order.OrderManagement.ChangeStatus"
+          v-auth="Permissions.Admin.ContractManagement.Edit"
         >
           <el-icon><CircleCheck /></el-icon> Duyệt Hợp Đồng
         </el-button>
@@ -89,14 +89,12 @@
       <div class="pipeline-steps-wrapper relative flex w-full">
         <!-- Track line nền xám -->
         <div
-          class="pipeline-track-bg absolute top-4 left-[12.5%] right-[12.5%] h-0.5 z-0"
+          class="pipeline-track-bg absolute top-4 left-[10%] right-[10%] h-0.5 z-0"
         ></div>
         <!-- Track line đỏ tiến trình -->
         <div
-          class="pipeline-track-active absolute top-4 left-[12.5%] h-0.5 z-0 transition-all duration-700"
-          :style="{
-            width: `${activeStep * 25}%`,
-          }"
+          class="pipeline-track-active absolute top-4 left-[10%] h-0.5 z-0 transition-all duration-700"
+          :style="{ width: `${activeStep * 20}%` }"
         ></div>
 
         <div
@@ -137,8 +135,17 @@
           type="warning"
           :closable="false"
           show-icon
-          title="Hợp đồng đang ở trạng thái Nháp"
-          description="Admin cần kiểm tra và duyệt hợp đồng trước khi cửa hàng in để khách hàng ký."
+          title="Hợp đồng chưa được gửi duyệt"
+          description="Nhân viên đang hoàn thiện bản nháp. Admin chỉ duyệt sau khi hợp đồng chuyển sang Chờ duyệt."
+        />
+      </div>
+      <div v-else-if="contractData.status === 'PendingApproval'" class="mt-4">
+        <el-alert
+          type="warning"
+          :closable="false"
+          show-icon
+          title="Hợp đồng đang chờ Admin duyệt"
+          description="Kiểm tra dữ liệu đơn hàng, khách hàng, xe và điều khoản trước khi phê duyệt."
         />
       </div>
       <div v-else-if="contractData.status === 'Approved'" class="mt-4">
@@ -454,15 +461,17 @@ const ALLOWED_SCAN_EXTENSIONS = [".pdf", ".jpg", ".jpeg", ".png"];
 
 const lifecycleSteps = [
   { label: "Soạn thảo", desc: "Kiểm tra nội dung hợp đồng" },
+  { label: "Chờ duyệt", desc: "Nhân viên đã gửi Admin" },
   { label: "Đã duyệt", desc: "Admin đã phê duyệt" },
   { label: "Đã ký bản giấy", desc: "Đã lưu bản quét có chữ ký" },
   { label: "Bàn giao xe", desc: "Hoàn thành hợp đồng" },
 ];
 
 const activeStep = computed(() => {
-  if (contractData.value.status === "Fulfilled") return 3;
-  if (contractData.value.status === "Signed") return 2;
-  if (contractData.value.status === "Approved") return 1;
+  if (contractData.value.status === "Fulfilled") return 4;
+  if (contractData.value.status === "Signed") return 3;
+  if (contractData.value.status === "Approved") return 2;
+  if (contractData.value.status === "PendingApproval") return 1;
   return 0;
 });
 
@@ -475,6 +484,8 @@ const _contractStatusType = computed(() => {
   switch (contractData.value.status) {
     case "Draft":
       return "info";
+    case "PendingApproval":
+      return "warning";
     case "Approved":
       return "success";
     case "Signed":
@@ -490,6 +501,8 @@ const getStatusLabel = (status: SalesContractStatus): string => {
   switch (status) {
     case "Draft":
       return "Nháp";
+    case "PendingApproval":
+      return "Chờ Admin duyệt";
     case "Approved":
       return "Đã duyệt";
     case "Signed":
@@ -572,16 +585,8 @@ const handleApproveContract = async () => {
         type: "success",
       },
     );
-    await SalesContractApi.update(contractData.value.id, {
-      specialTerms: contractData.value.specialTerms,
-      warrantyPeriod: contractData.value.warrantyPeriod,
-      warrantyScope: contractData.value.warrantyScope,
-      note: contractData.value.note,
-    });
-    await SalesContractApi.updateStatus(contractData.value.id, {
-      status: "Approved",
-    });
-    contractData.value.status = "Approved";
+    const updated = await SalesContractApi.approve(contractData.value.id);
+    contractData.value.status = updated.status;
     ElMessage.success("Đã duyệt hợp đồng. Có thể in và lấy chữ ký khách hàng.");
   } catch (error) {
     if (error !== "cancel" && error !== "close") {

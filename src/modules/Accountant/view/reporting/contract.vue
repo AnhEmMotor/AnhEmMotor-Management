@@ -6,12 +6,24 @@
       icon="ri:file-list-line"
     >
       <template #actions>
-        <ReportPeriodSwitcher
-          v-model="currentPeriod"
-          v-model:start-date="periodStart"
-          v-model:end-date="periodEnd"
-          @update:modelValue="onPeriodChange"
-        />
+        <div class="reporting-actions">
+          <ReportPeriodSwitcher
+            v-model="currentPeriod"
+            :start-date="periodStart"
+            :end-date="periodEnd"
+            @update:modelValue="onPeriodChange"
+            @update:start-date="onStartDateChange"
+            @update:end-date="onEndDateChange"
+          />
+          <ElButton
+            type="primary"
+            :disabled="isLoading"
+            @click="exportContractExcel"
+          >
+            <ArtSvgIcon icon="ri:file-excel-2-line" />
+            Xuất Excel
+          </ElButton>
+        </div>
       </template>
     </ReportPageHeader>
 
@@ -47,20 +59,29 @@
       />
     </div>
 
-    <!-- TẦNG 2: BIỂU ĐỒ XU HƯỚNG FULL-WIDTH -->
-    <ElCard class="reporting-card mt-4">
-      <template #header>Biến động giá trị hợp đồng theo thời gian</template>
+    <ElAlert
+      v-if="errorMessage"
+      :title="errorMessage"
+      type="error"
+      :closable="false"
+      show-icon
+      class="mt-4"
+    />
+
+    <!-- TẦNG 2: BIỂU ĐỒ TRẠNG THÁI TỔNG THỂ FULL-WIDTH -->
+    <ElCard v-loading="isLoading" class="reporting-card mt-4">
+      <template #header>Trạng thái hợp đồng</template>
       <div ref="trendChartRef" class="reporting-chart"></div>
     </ElCard>
 
-    <!-- TẦNG 3: CẶP ĐÔI BIỂU ĐỒ PHÂN TÍCH TỶ LỆ (CHIA ĐÔI 50/50) -->
+    <!-- TẦNG 3: TRẠNG THÁI THEO TỪNG LOẠI HỢP ĐỒNG -->
     <div class="reporting-section-grid two-columns mt-4">
       <ElCard class="reporting-card">
-        <template #header>Trạng thái hợp đồng</template>
+        <template #header>Hợp đồng mua bán</template>
         <div ref="statusChartRef" class="reporting-chart"></div>
       </ElCard>
       <ElCard class="reporting-card">
-        <template #header>Top 5 Nhà cung cấp phát sinh</template>
+        <template #header>Hợp đồng nhà cung cấp</template>
         <div ref="topSuppliersChartRef" class="reporting-chart"></div>
       </ElCard>
     </div>
@@ -68,27 +89,43 @@
     <!-- TẦNG 4: BẢNG DỮ LIỆU CHI TIẾT -->
     <ElCard class="reporting-card mt-4">
       <template #header>
-        <div class="flex justify-between items-center">
-          <span>Danh sách chi tiết hợp đồng</span>
-          <div class="flex gap-2">
+        <div class="contract-list-header">
+          <div class="contract-list-title-group">
+            <span>Danh sách chi tiết hợp đồng</span>
+            <div class="contract-list-count">
+              Hiển thị {{ filteredContracts.length }}/{{ contractsData.length }}
+              hợp đồng
+            </div>
+          </div>
+          <div class="contract-filter-bar">
             <ElSelect
               v-model="typeFilter"
               placeholder="Loại hợp đồng"
               clearable
-              class="w-40"
             >
               <ElOption label="Bán xe" value="Bán xe" />
               <ElOption label="Nhà cung cấp" value="Nhà cung cấp" />
             </ElSelect>
+            <ElSelect v-model="statusFilter" placeholder="Trạng thái" clearable>
+              <ElOption
+                v-for="status in availableStatuses"
+                :key="status"
+                :label="status"
+                :value="status"
+              />
+            </ElSelect>
             <ElInput
               v-model="searchQuery"
               placeholder="Tìm mã HĐ, tên đối tác..."
-              class="w-64"
+              clearable
             >
               <template #prefix>
                 <div class="i-ri-search-line"></div>
               </template>
             </ElInput>
+            <ElButton v-if="hasActiveFilters" @click="resetContractFilters">
+              Xóa lọc
+            </ElButton>
           </div>
         </div>
       </template>
@@ -159,9 +196,10 @@ import * as echarts from "echarts";
 import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
 import ReportPageHeader from "./ReportPageHeader.vue";
 import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
-import { statisticsApi } from "@/api/operations";
+import { statisticsApi, type ContractOverviewResponse } from "@/api/operations";
 import { useSettingStore } from "@/application/store/setting";
 import { storeToRefs } from "pinia";
+import { exportReportWorkbook } from "@/utils/report-excel";
 
 const settingStore = useSettingStore();
 const { isDark } = storeToRefs(settingStore);
@@ -174,6 +212,7 @@ const periodEnd = ref(new Date().toISOString());
 
 const searchQuery = ref("");
 const typeFilter = ref("");
+const statusFilter = ref("");
 
 // Refs for ECharts DOM elements
 const trendChartRef = ref<HTMLElement | null>(null);
@@ -204,28 +243,78 @@ const summaryData = ref({
   totalSupplierValue: 0,
 });
 
-const trendData = ref<any[]>([]);
-const statusData = ref<any[]>([]);
-const topSuppliersData = ref<any[]>([]);
-const contractsData = ref<any[]>([]);
+const trendData = ref<ContractOverviewResponse["trendData"]>([]);
+const statusData = ref<ContractOverviewResponse["statusData"]>([]);
+const topSuppliersData = ref<ContractOverviewResponse["topSuppliersData"]>([]);
+const contractsData = ref<ContractOverviewResponse["contractsData"]>([]);
 const isLoading = ref(false);
+const errorMessage = ref("");
+
+const normalizeFilterValue = (value?: string) =>
+  (value ?? "").trim().toLocaleLowerCase("vi-VN");
+
+type ContractStatusChartItem = {
+  name: string;
+  value: number;
+};
+
+function summarizeContractStatuses(type: string): ContractStatusChartItem[] {
+  const normalizedType = normalizeFilterValue(type);
+  const statusCounts = new Map<string, number>();
+
+  contractsData.value
+    .filter((item) => normalizeFilterValue(item.type) === normalizedType)
+    .forEach((item) => {
+      statusCounts.set(item.status, (statusCounts.get(item.status) ?? 0) + 1);
+    });
+
+  return Array.from(statusCounts, ([name, value]) => ({ name, value }));
+}
+
+const salesContractStatusData = computed(() =>
+  summarizeContractStatuses("Bán xe"),
+);
+
+const supplierContractStatusData = computed(() =>
+  summarizeContractStatuses("Nhà cung cấp"),
+);
+
+const availableStatuses = computed(() =>
+  Array.from(
+    new Set(contractsData.value.map((item) => item.status).filter(Boolean)),
+  ).sort((left, right) => left.localeCompare(right, "vi-VN")),
+);
+
+const hasActiveFilters = computed(
+  () =>
+    Boolean(typeFilter.value) ||
+    Boolean(statusFilter.value) ||
+    Boolean(searchQuery.value.trim()),
+);
 
 const filteredContracts = computed(() => {
   let result = contractsData.value;
 
   if (typeFilter.value) {
-    const qType = typeFilter.value.toLowerCase();
+    const selectedType = normalizeFilterValue(typeFilter.value);
     result = result.filter(
-      (i) => i.type && i.type.toLowerCase().includes(qType),
+      (item) => normalizeFilterValue(item.type) === selectedType,
     );
   }
 
-  if (searchQuery.value) {
-    const q = searchQuery.value.toLowerCase();
+  if (statusFilter.value) {
+    const selectedStatus = normalizeFilterValue(statusFilter.value);
     result = result.filter(
-      (i) =>
-        i.contractNumber.toLowerCase().includes(q) ||
-        i.partnerName.toLowerCase().includes(q),
+      (item) => normalizeFilterValue(item.status) === selectedStatus,
+    );
+  }
+
+  const q = searchQuery.value.trim().toLocaleLowerCase("vi-VN");
+  if (q) {
+    result = result.filter(
+      (item) =>
+        normalizeFilterValue(item.contractNumber).includes(q) ||
+        normalizeFilterValue(item.partnerName).includes(q),
     );
   }
 
@@ -240,166 +329,289 @@ const paginatedContracts = computed(() => {
   return filteredContracts.value.slice(start, start + pageSize.value);
 });
 
-async function onPeriodChange() {
+watch([typeFilter, statusFilter, searchQuery], () => {
+  currentPage.value = 1;
+});
+
+function resetContractFilters() {
+  typeFilter.value = "";
+  statusFilter.value = "";
+  searchQuery.value = "";
+  currentPage.value = 1;
+}
+
+function exportContractExcel() {
+  exportReportWorkbook({
+    fileName: `Bao_cao_hop_dong_${toDateInput(new Date(periodStart.value))}_${toDateInput(new Date(periodEnd.value))}`,
+    sheets: [
+      {
+        name: "Tổng quan",
+        rows: [
+          {
+            "Hợp đồng bán xe": summaryData.value.totalSalesCount,
+            "Giá trị hợp đồng bán xe": summaryData.value.totalSalesValue,
+            "Hợp đồng nhà cung cấp": summaryData.value.totalSupplierCount,
+            "Giá trị hợp đồng NCC": summaryData.value.totalSupplierValue,
+          },
+        ],
+      },
+      {
+        name: "Danh sách hợp đồng",
+        rows: filteredContracts.value.map((item) => ({
+          "Mã hợp đồng": item.contractNumber,
+          Loại: item.type,
+          "Đối tác": item.partnerName,
+          "Giá trị": item.value,
+          "Trạng thái": item.status,
+          Ngày: item.date,
+        })),
+      },
+      {
+        name: "Xu hướng",
+        rows: trendData.value.map((item) => ({
+          Ngày: item.day,
+          "Giá trị hợp đồng bán xe": item.salesValue,
+          "Giá trị hợp đồng NCC": item.supplierValue,
+        })),
+      },
+      {
+        name: "Trạng thái",
+        rows: statusData.value.map((item) => ({
+          "Trạng thái": item.name,
+          "Số lượng": item.value,
+        })),
+      },
+    ],
+  });
+}
+
+async function loadContractOverview() {
   isLoading.value = true;
+  errorMessage.value = "";
   try {
     const res = await statisticsApi.getContractOverview(
       periodStart.value,
       periodEnd.value,
     );
-    summaryData.value = res.kpi || {
-      totalSalesCount: (res as any).totalSalesCount || 0,
-      totalSalesValue: (res as any).totalSalesValue || 0,
-      totalSupplierCount: (res as any).totalSupplierCount || 0,
-      totalSupplierValue: (res as any).totalSupplierValue || 0,
-    };
+    summaryData.value = res.kpi;
     trendData.value = res.trendData || [];
-    statusData.value = res.statusData || [];
+    statusData.value = (res.statusData || []).map((item) => ({
+      ...item,
+      name: translateContractStatus(item.name),
+    }));
     topSuppliersData.value = res.topSuppliersData || [];
-    contractsData.value = res.contractsData || [];
+    contractsData.value = (res.contractsData || []).map((item) => ({
+      ...item,
+      status: translateContractStatus(item.status),
+    }));
+    currentPage.value = 1;
     renderCharts();
   } catch (error) {
     console.error("Failed to load contract overview", error);
+    errorMessage.value =
+      error instanceof Error
+        ? error.message
+        : "Không thể tải báo cáo hợp đồng trong khoảng thời gian đã chọn";
   } finally {
     isLoading.value = false;
   }
 }
 
-function renderCharts() {
-  // 1. Line Chart: Xu hướng HĐ
-  if (trendChartRef.value) {
-    if (!trendChart) trendChart = echarts.init(trendChartRef.value);
-    trendChart.setOption({
-      backgroundColor: "transparent",
-      tooltip: { trigger: "axis" },
-      legend: {
-        textStyle: { color: chartTextColor.value },
-        top: 0,
-        right: 0,
-      },
-      grid: {
-        left: "3%",
-        right: "4%",
-        bottom: "3%",
-        containLabel: true,
-      },
-      xAxis: {
-        type: "category",
-        data: trendData.value.map((d) => d.day),
-        axisLabel: { color: chartTextColor.value },
-        axisLine: { lineStyle: { color: chartAxisLineColor.value } },
-      },
-      yAxis: {
-        type: "value",
-        axisLabel: { color: chartTextColor.value },
-        splitLine: { lineStyle: { color: chartGridLineColor.value } },
-      },
-      series: [
-        {
-          name: "Giá trị Bán xe",
-          type: "line",
-          smooth: true,
-          data: trendData.value.map((d) => d.salesValue),
-          itemStyle: { color: "#22c55e" }, // Xanh lục
-          lineStyle: { color: "#22c55e", width: 3 },
-          areaStyle: {
-            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: "rgba(34, 197, 94, 0.4)" },
-              { offset: 1, color: "rgba(34, 197, 94, 0.05)" },
-            ]),
-          },
-        },
-        {
-          name: "Giá trị NCC",
-          type: "line",
-          smooth: true,
-          data: trendData.value.map((d) => d.supplierValue),
-          itemStyle: { color: "#f43f5e" }, // Đỏ hồng
-          lineStyle: { color: "#f43f5e", width: 3 },
-          areaStyle: {
-            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: "rgba(244, 63, 94, 0.4)" },
-              { offset: 1, color: "rgba(244, 63, 94, 0.05)" },
-            ]),
-          },
-        },
-      ],
-    });
+function onPeriodChange(period: "today" | "month" | "year" | "custom") {
+  if (period !== "custom") {
+    setPeriodRange(period);
   }
 
-  // 2. Bar Chart: Top NCC
+  if (periodStart.value && periodEnd.value) {
+    void loadContractOverview();
+  }
+}
+
+function onStartDateChange(value: string) {
+  const shouldReload = currentPeriod.value === "custom";
+  periodStart.value = value;
+  currentPeriod.value = "custom";
+  if (shouldReload && value && periodEnd.value) {
+    void loadContractOverview();
+  }
+}
+
+function onEndDateChange(value: string) {
+  const shouldReload = currentPeriod.value === "custom";
+  periodEnd.value = value;
+  currentPeriod.value = "custom";
+  if (shouldReload && periodStart.value && value) {
+    void loadContractOverview();
+  }
+}
+
+function setPeriodRange(period: "today" | "month" | "year") {
+  const today = new Date();
+  const start =
+    period === "today"
+      ? today
+      : period === "month"
+        ? new Date(today.getFullYear(), today.getMonth(), 1)
+        : new Date(today.getFullYear(), 0, 1);
+
+  periodStart.value = toDateInput(start);
+  periodEnd.value = toDateInput(today);
+}
+
+function toDateInput(date: Date) {
+  const localDate = new Date(date);
+  localDate.setMinutes(localDate.getMinutes() - localDate.getTimezoneOffset());
+  return localDate.toISOString().slice(0, 10);
+}
+
+function translateContractStatus(status: string) {
+  const labels: Record<string, string> = {
+    Draft: "Nháp",
+    PendingApproval: "Chờ phê duyệt",
+    Approved: "Đã phê duyệt",
+    Signed: "Đã ký",
+    Active: "Đang hiệu lực",
+    Fulfilled: "Đã hoàn tất",
+    Completed: "Đã hoàn thành",
+    Expired: "Đã hết hạn",
+    Terminated: "Đã thanh lý",
+    Cancelled: "Đã hủy",
+  };
+
+  return labels[status] ?? status;
+}
+
+function renderCharts() {
+  // 1. Horizontal Bar Chart: Trạng thái hợp đồng tổng thể
+  if (trendChartRef.value) {
+    if (!trendChart) trendChart = echarts.init(trendChartRef.value);
+    trendChart.setOption(
+      {
+        backgroundColor: "transparent",
+        tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+        grid: {
+          left: "3%",
+          right: "6%",
+          bottom: "3%",
+          containLabel: true,
+        },
+        xAxis: {
+          type: "value",
+          minInterval: 1,
+          axisLabel: { color: chartTextColor.value },
+          splitLine: { lineStyle: { color: chartGridLineColor.value } },
+        },
+        yAxis: {
+          type: "category",
+          data: statusData.value.map((item) => item.name),
+          axisLabel: { color: chartTextColor.value },
+          axisLine: { lineStyle: { color: chartAxisLineColor.value } },
+        },
+        series: [
+          {
+            name: "Số hợp đồng",
+            type: "bar",
+            data: statusData.value.map((item) => item.value),
+            barMaxWidth: 34,
+            itemStyle: {
+              color: "#e84a4a",
+              borderRadius: [0, 6, 6, 0],
+            },
+            label: {
+              show: true,
+              position: "right",
+              color: chartTextColor.value,
+              formatter: "{c}",
+              fontWeight: "bold",
+            },
+          },
+        ],
+      },
+      true,
+    );
+  }
+
+  // 2. Pie Chart: Hợp đồng nhà cung cấp
   if (topSuppliersChartRef.value) {
     if (!topSuppliersChart)
       topSuppliersChart = echarts.init(topSuppliersChartRef.value);
-    topSuppliersChart.setOption({
-      backgroundColor: "transparent",
-      tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
-      grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
-      yAxis: {
-        type: "category",
-        data: topSuppliersData.value.map((r) => r.name),
-        axisLabel: { color: chartTextColor.value },
-        axisLine: { lineStyle: { color: chartAxisLineColor.value } },
-      },
-      xAxis: {
-        type: "value",
-        axisLabel: { color: chartTextColor.value },
-        splitLine: { lineStyle: { color: chartGridLineColor.value } },
-      },
-      series: [
-        {
-          name: "Giá trị HĐ",
-          type: "bar",
-          data: topSuppliersData.value.map((r) => r.value),
-          itemStyle: { color: "#3b82f6", borderRadius: [0, 4, 4, 0] },
-          barWidth: "50%",
-          label: {
-            show: true,
-            position: "right",
-            formatter: (params: any) => formatShortCurrency(params.value),
-            fontSize: 12,
-          },
+    topSuppliersChart.setOption(
+      {
+        backgroundColor: "transparent",
+        tooltip: { trigger: "item" },
+        legend: {
+          orient: "vertical",
+          left: "left",
+          textStyle: { color: chartTextColor.value },
         },
-      ],
-    });
+        series: [
+          {
+            type: "pie",
+            radius: ["40%", "70%"],
+            center: ["60%", "50%"],
+            data: supplierContractStatusData.value.map((item) => ({
+              name: item.name,
+              value: item.value,
+            })),
+            itemStyle: {
+              borderRadius: 5,
+              borderColor: isDark.value ? "rgba(30, 41, 59, 1)" : "#fff",
+              borderWidth: 2,
+            },
+            label: {
+              show: true,
+              color: chartTextColor.value,
+              formatter: "{b}: {c}",
+              fontSize: 13,
+              fontWeight: "bold",
+            },
+          },
+        ],
+        color: ["#f59e0b", "#e84a4a", "#3b82f6", "#22c55e", "#8b5cf6"],
+      },
+      true,
+    );
   }
 
-  // 3. Pie Chart: Trạng thái
+  // 3. Pie Chart: Hợp đồng mua bán
   if (statusChartRef.value) {
     if (!statusChart) statusChart = echarts.init(statusChartRef.value);
-    statusChart.setOption({
-      backgroundColor: "transparent",
-      tooltip: { trigger: "item" },
-      legend: {
-        orient: "vertical",
-        left: "left",
-        textStyle: { color: chartTextColor.value },
-      },
-      series: [
-        {
-          type: "pie",
-          radius: ["40%", "70%"],
-          center: ["60%", "50%"],
-          data: statusData.value.map((d) => ({
-            name: d.name,
-            value: d.value,
-          })),
-          itemStyle: {
-            borderRadius: 5,
-            borderColor: isDark.value ? "rgba(30, 41, 59, 1)" : "#fff",
-            borderWidth: 2,
-          },
-          label: {
-            show: true,
-            color: chartTextColor.value,
-            formatter: "{b}: {c}",
-            fontSize: 13,
-            fontWeight: "bold",
-          },
+    statusChart.setOption(
+      {
+        backgroundColor: "transparent",
+        tooltip: { trigger: "item" },
+        legend: {
+          orient: "vertical",
+          left: "left",
+          textStyle: { color: chartTextColor.value },
         },
-      ],
-      color: ["#3b82f6", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6"],
-    });
+        series: [
+          {
+            type: "pie",
+            radius: ["40%", "70%"],
+            center: ["60%", "50%"],
+            data: salesContractStatusData.value.map((item) => ({
+              name: item.name,
+              value: item.value,
+            })),
+            itemStyle: {
+              borderRadius: 5,
+              borderColor: isDark.value ? "rgba(30, 41, 59, 1)" : "#fff",
+              borderWidth: 2,
+            },
+            label: {
+              show: true,
+              color: chartTextColor.value,
+              formatter: "{b}: {c}",
+              fontSize: 13,
+              fontWeight: "bold",
+            },
+          },
+        ],
+        color: ["#3b82f6", "#22c55e", "#f59e0b", "#e84a4a", "#8b5cf6"],
+      },
+      true,
+    );
   }
 }
 
@@ -410,7 +622,7 @@ function handleResize() {
 }
 
 onMounted(() => {
-  onPeriodChange();
+  void loadContractOverview();
   window.addEventListener("resize", handleResize);
 });
 
@@ -471,6 +683,55 @@ function formatNumber(val: number) {
 
 .reporting-section-grid.two-columns {
   @apply grid-cols-1 lg:grid-cols-2;
+}
+
+.contract-list-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contract-list-title-group {
+  min-width: 0;
+}
+
+.contract-list-count {
+  margin-top: 4px;
+  color: var(--el-text-color-secondary);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.contract-filter-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.contract-filter-bar :deep(.el-select),
+.contract-filter-bar :deep(.el-input),
+.contract-filter-bar :deep(.el-button) {
+  width: 100%;
+}
+
+@media (width >= 768px) {
+  .contract-list-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .contract-filter-bar {
+    grid-template-columns:
+      minmax(140px, 160px) minmax(140px, 180px) minmax(220px, 280px)
+      auto;
+    width: auto;
+  }
+
+  .contract-filter-bar :deep(.el-button) {
+    width: auto;
+  }
 }
 
 /* Custom icon colors */

@@ -1,6 +1,7 @@
 import { AppRouteRecord } from "@/types/router";
 import type { Component } from "vue";
 import { Permissions } from "@/domain/constants/permissions";
+import { factoryManualRoutes } from "@/router/modules/factory-manual";
 
 export const factoryMenu: AppRouteRecord[] = [
   {
@@ -131,7 +132,7 @@ export const factoryMenu: AppRouteRecord[] = [
               isHide: true,
               isHideTab: true,
               keepAlive: true,
-              activePath: "/factory/workshop/counter/repair-history",
+              activePath: "/factory/workshop/repair-history",
             },
           },
           {
@@ -144,7 +145,7 @@ export const factoryMenu: AppRouteRecord[] = [
               isHide: true,
               isHideTab: true,
               keepAlive: true,
-              activePath: "/factory/workshop/counter/repair-history",
+              activePath: "/factory/workshop/repair-history",
             },
           },
         ],
@@ -181,6 +182,7 @@ export const factoryMenu: AppRouteRecord[] = [
           permissions: [Permissions.Factory.DashboardManagement.View],
         },
       },
+      ...factoryManualRoutes,
     ],
   },
 ];

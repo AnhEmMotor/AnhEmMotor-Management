@@ -360,7 +360,7 @@
                       >Tổng cộng:</span
                     >
                     <span class="font-bold text-red-600 text-lg">{{
-                      formatCurrency(totalAmount)
+                      formatCurrency(discountedTotal)
                     }}</span>
                   </div>
                 </div>
@@ -400,6 +400,56 @@
               </p>
 
               <ElRow :gutter="20">
+                <ElCol :span="24" class="mb-4">
+                  <ElDivider content-position="left"
+                    >🎫 Mã giảm giá (Voucher)</ElDivider
+                  >
+                  <div class="flex items-start gap-3">
+                    <ElInput
+                      v-model="voucherCode"
+                      placeholder="Nhập mã voucher..."
+                      class="flex-1"
+                      @keyup.enter="applyVoucher"
+                      :disabled="voucherApplying"
+                    >
+                      <template #append>
+                        <ElButton
+                          :loading="voucherApplying"
+                          type="primary"
+                          @click="applyVoucher"
+                        >
+                          Áp dụng
+                        </ElButton>
+                      </template>
+                    </ElInput>
+                  </div>
+                  <div
+                    v-if="appliedVoucher"
+                    class="flex items-center gap-2 p-2 bg-emerald-50 border border-emerald-200 rounded-lg mt-2"
+                  >
+                    <span class="text-emerald-600">🎫</span>
+                    <span class="text-sm font-bold text-emerald-700">{{
+                      appliedVoucher.code
+                    }}</span>
+                    <span class="text-xs text-emerald-600"
+                      >-{{
+                        formatCurrency(appliedVoucher.discountAmount)
+                      }}</span
+                    >
+                    <ElButton
+                      link
+                      type="danger"
+                      size="small"
+                      @click="removeVoucher"
+                    >
+                      Hủy
+                    </ElButton>
+                  </div>
+                  <p v-if="voucherError" class="text-xs text-red-500 mt-1">
+                    {{ voucherError }}
+                  </p>
+                </ElCol>
+
                 <ElCol :span="8">
                   <ElFormItem
                     label="Phương thức thanh toán"
@@ -460,7 +510,15 @@
                     Tổng tiền hóa đơn
                   </div>
                   <div class="font-bold text-lg mt-1 text-slate-800">
-                    {{ formatCurrency(order.totalCost) }}
+                    {{
+                      formatCurrency(
+                        Math.max(
+                          0,
+                          (order.totalCost || 0) -
+                            (appliedVoucher?.discountAmount || 0),
+                        ),
+                      )
+                    }}
                   </div>
                 </ElCol>
                 <ElCol :span="6">
@@ -694,6 +752,7 @@ import {
   ServiceCategoryApi,
   type ServiceCategoryResponse,
 } from "@/api/product";
+import { useVoucher } from "@/common/composables/useVoucher";
 import { EmployeeApi, type EmployeeResponse } from "@/api/operations";
 
 defineOptions({ name: "ServiceWorkshopRepairOrderDetail" });
@@ -731,6 +790,8 @@ const steps = [
 
 const calculatedStatus = computed(() => {
   if (!order.value) return "InProgress";
+  const stored = sessionStorage.getItem(`ro_status_${orderId}`);
+  if (stored) return stored;
   if (order.value.status) return order.value.status;
   if (!order.value.technicianId && !order.value.technicianName)
     return "Pending";
@@ -762,6 +823,25 @@ const totalPartsCost = computed(() =>
 
 const totalAmount = computed(() => totalLaborCost.value + totalPartsCost.value);
 
+const discountedTotal = computed(() =>
+  Math.max(0, totalAmount.value - voucherDiscount.value),
+);
+
+const {
+  voucherCode,
+  appliedVoucher,
+  applying: voucherApplying,
+  errorMsg: voucherError,
+  discountAmount: voucherDiscount,
+  handleApply: applyVoucher,
+  handleRemove: removeVoucher,
+  reset: resetVoucher,
+} = useVoucher(
+  () => totalAmount.value,
+  () => orderId,
+  true,
+);
+
 const loadOrderDetail = async () => {
   if (!orderId) {
     ElMessage.error("Mã phiếu sửa chữa không hợp lệ");
@@ -777,7 +857,7 @@ const loadOrderDetail = async () => {
       try {
         const parsed = JSON.parse(res.partsJson);
         if (Array.isArray(parsed)) {
-          parsed.forEach((p) => {
+          parsed.forEach((p: any) => {
             itemsList.push({
               type: p.productVariantId ? "Part" : "Service",
               id: p.productVariantId || p.serviceId || 0,
@@ -787,6 +867,32 @@ const loadOrderDetail = async () => {
               notes: p.notes || "",
             });
           });
+        } else if (parsed && typeof parsed === "object") {
+          if (Array.isArray(parsed.Parts)) {
+            parsed.Parts.forEach((p: any) => {
+              itemsList.push({
+                type: "Part",
+                id: p.ProductVariantId || p.productVariantId || 0,
+                name:
+                  p.ProductVariantName || p.productVariantName || "Phụ tùng",
+                count: p.Count || p.count || 1,
+                price: p.Price || p.price || 0,
+                notes: p.Notes || p.notes || "",
+              });
+            });
+          }
+          if (Array.isArray(parsed.Services)) {
+            parsed.Services.forEach((s: any) => {
+              itemsList.push({
+                type: "Service",
+                id: s.ServiceId || s.serviceId || 0,
+                name: s.ServiceName || s.serviceName || "Dịch vụ",
+                count: s.Count || s.count || 1,
+                price: s.Price || s.price || s.LaborCost || s.laborCost || 0,
+                notes: s.Notes || s.notes || "",
+              });
+            });
+          }
         }
       } catch (e) {
         console.warn("Failed to parse partsJson", e);
@@ -928,6 +1034,7 @@ const submitAssign = async () => {
       nextMaintenanceOdo: order.value.nextMaintenanceOdo || undefined,
     });
     ElMessage.success("Phân công kỹ thuật viên thành công");
+    sessionStorage.setItem(`ro_status_${orderId}`, "InProgress");
     assignDialogVisible.value = false;
     await loadOrderDetail();
   } catch (err: any) {
@@ -1029,6 +1136,7 @@ const saveIssueParts = async (targetStatus: "InProgress" | "QcPending") => {
       status: targetStatus,
     });
     ElMessage.success("Đã cập nhật hạng mục");
+    sessionStorage.setItem(`ro_status_${orderId}`, targetStatus);
     await loadOrderDetail();
   } catch (err: any) {
     ElMessage.error(err?.message || "Cập nhật thất bại");
@@ -1040,13 +1148,16 @@ const saveIssueParts = async (targetStatus: "InProgress" | "QcPending") => {
 const completeRepairOrder = async () => {
   submitting.value = true;
   try {
-    await RepairOrderApi.complete({
+    await (RepairOrderApi.complete as any)({
       repairOrderId: orderId,
       paymentMethod: paymentMethod.value,
       paymentStatus: paymentStatus.value,
       notes: checkoutNotes.value || undefined,
-    });
+      voucherId: appliedVoucher.value?.voucherId,
+      discountAmount: appliedVoucher.value?.discountAmount || 0,
+    } as any);
     ElMessage.success("Đã hoàn tất phiếu sửa chữa");
+    sessionStorage.setItem(`ro_status_${orderId}`, "Completed");
     await loadOrderDetail();
   } catch (err: any) {
     ElMessage.error(err?.message || "Hoàn tất thất bại");

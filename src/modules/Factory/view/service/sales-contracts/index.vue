@@ -54,7 +54,9 @@
         </div>
       </template>
       <div>
-        <div class="mb-4 resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+        <div
+          class="mb-4 resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-4 items-center"
+        >
           <el-input
             v-model="searchQuery"
             placeholder="Số hợp đồng, Tên KH, Số CCCD, Số khung/máy"
@@ -488,7 +490,7 @@ const fetchData = async () => {
             ? "paid"
             : "deposit",
     }));
-    pagination.total = res.total;
+    pagination.total = res.totalCount;
   } catch (_e) {
     ElMessage.error("Không tải được danh sách hợp đồng.");
   } finally {

@@ -280,7 +280,7 @@
 
     <ElDialog
       v-model="dialogVisible"
-      width="480px"
+      width="650px"
       custom-class="compact-booking-dialog"
       :show-close="false"
     >
@@ -294,12 +294,12 @@
           </div>
           <div>
             <h3
-              class="m-0 text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-100"
+              class="m-0 text-base font-bold uppercase tracking-wider text-slate-800 dark:text-slate-100"
             >
               {{ dialogTitle }}
             </h3>
             <span
-              class="inline-block mt-1 px-1.5 py-0.5 rounded text-[7px] font-bold uppercase"
+              class="inline-block mt-1 px-2 py-1 rounded text-[10px] font-bold uppercase"
               :class="
                 bookingForm.status === 'Confirmed'
                   ? 'bg-emerald-100 text-emerald-600'
@@ -319,7 +319,7 @@
       <div class="py-3 space-y-3">
         <div>
           <label
-            class="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-1 block px-1"
+            class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block px-1"
             >Tên khách hàng</label
           >
           <ElInput
@@ -332,7 +332,7 @@
         <div class="grid grid-cols-3 gap-3">
           <div>
             <label
-              class="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-1 block px-1"
+              class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block px-1"
               >SĐT</label
             >
             <ElInput
@@ -343,7 +343,7 @@
           </div>
           <div>
             <label
-              class="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-1 block px-1"
+              class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block px-1"
               >Ngày hẹn</label
             >
             <ElDatePicker
@@ -356,7 +356,7 @@
           </div>
           <div>
             <label
-              class="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-1 block px-1"
+              class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block px-1"
               >Giờ hẹn</label
             >
             <ElTimeSelect
@@ -372,7 +372,7 @@
 
         <div>
           <label
-            class="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block px-1"
+            class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block px-1"
             >Loại yêu cầu</label
           >
           <div class="grid grid-cols-4 gap-1.5">
@@ -380,7 +380,7 @@
               v-for="t in typeOptions"
               :key="t.value"
               @click="bookingForm.type = t.value"
-              class="h-7 rounded-lg text-[8px] font-bold uppercase border transition-all"
+              class="h-9 rounded-lg text-xs font-bold uppercase border transition-all"
               :class="
                 bookingForm.type === t.value
                   ? 'bg-[#001529] text-white border-[#001529]'
@@ -394,7 +394,7 @@
 
         <div>
           <label
-            class="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-1 block px-1"
+            class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block px-1"
             >Nội dung</label
           >
           <ElInput
@@ -415,13 +415,13 @@
               : 'bg-blue-50/50 border-blue-100 dark:bg-blue-950/10 dark:border-blue-900/30'
           "
         >
-          <div class="flex items-center justify-between mb-1.5">
+          <div class="flex items-center justify-between mb-2.5">
             <span
-              class="text-[8px] font-bold uppercase tracking-wider text-slate-400"
+              class="text-xs font-bold uppercase tracking-wider text-slate-500"
               >Phân luồng xử lý</span
             >
             <span
-              class="text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded"
+              class="text-[10px] font-extrabold uppercase px-2 py-1 rounded"
               :class="
                 isWorkshopType
                   ? 'bg-orange-100 text-orange-600 dark:bg-orange-900/40 dark:text-orange-300'
@@ -436,10 +436,9 @@
             </span>
           </div>
 
-          <!-- Nhánh 1: Marketing / Lái thử / Tư vấn -->
-          <div v-if="!isWorkshopType" class="space-y-1.5">
+          <div v-if="!isWorkshopType" class="space-y-2.5">
             <label
-              class="text-[8px] font-bold text-slate-500 uppercase tracking-wider block"
+              class="text-[11px] font-bold text-slate-600 uppercase tracking-wider block"
               >Nhân viên kinh doanh phụ trách</label
             >
             <ElSelect
@@ -459,16 +458,39 @@
             </ElSelect>
             <p
               v-if="!linkedLead.id"
-              class="m-0 text-[8px] italic text-slate-400"
+              class="m-0 text-[11px] italic text-slate-500"
             >
               Khách hàng chưa đăng ký hồ sơ tiềm năng trong CRM để phân công.
             </p>
           </div>
 
-          <!-- Nhánh 2: Sửa chữa / Bảo hành (Xưởng) -->
-          <div v-else class="space-y-2">
+          <div v-else class="space-y-3">
+            <label
+              class="text-[11px] font-bold text-orange-600 uppercase tracking-wider block"
+              >Nhân viên kỹ thuật phụ trách</label
+            >
+
+            <ElSelect
+              v-model="linkedTechnician.id"
+              placeholder="Chọn nhân viên kỹ thuật..."
+              clearable
+              class="w-full compact-select"
+            >
+              <ElOption
+                v-for="emp in technicianList"
+                :key="emp.id"
+                :label="emp.name"
+                :value="emp.id"
+              />
+            </ElSelect>
+
+            <p class="m-0 text-[11px] italic text-slate-500">
+              Sau khi tạo lịch, hẹn sẽ xuất hiện trong màn Lịch sửa chữa của
+              xưởng.
+            </p>
+
             <p
-              class="m-0 text-[9px] text-orange-700 dark:text-orange-300 leading-relaxed font-bold"
+              class="m-0 text-xs text-orange-700 dark:text-orange-300 leading-relaxed font-bold mt-2"
             >
               Lịch hẹn này thuộc phân hệ kỹ thuật. Đã được chuyển về Quản lý
               xưởng để tiếp nhận và điều phối kỹ thuật viên.
@@ -476,9 +498,9 @@
             <button
               type="button"
               @click="goToWorkshopCalendar"
-              class="h-7 w-full bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold text-[8px] uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-sm transition-all"
+              class="h-9 w-full mt-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold text-[11px] uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm transition-all"
             >
-              <ArtSvgIcon icon="ri:tools-line" class="text-xs" />
+              <ArtSvgIcon icon="ri:tools-line" class="text-sm" />
               Đi tới Lịch sửa chữa xưởng
             </button>
           </div>
@@ -486,14 +508,14 @@
 
         <div
           v-if="bookingForm.status === 'Pending' && isEditing"
-          class="p-2 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-100 dark:border-blue-900/40 flex items-start gap-2"
+          class="p-3 mt-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-100 dark:border-blue-900/40 flex items-start gap-3"
         >
           <ArtSvgIcon
             icon="ri:mail-line"
-            class="text-blue-500 text-xs mt-0.5 shrink-0"
+            class="text-blue-500 text-base mt-0.5 shrink-0"
           />
           <p
-            class="m-0 text-[9px] font-bold text-blue-700 dark:text-blue-300 leading-snug"
+            class="m-0 text-xs font-bold text-blue-700 dark:text-blue-300 leading-snug"
           >
             Xác nhận sẽ tự động gửi Mail/SMS thông báo tới khách hàng.
           </p>
@@ -505,7 +527,7 @@
           <button
             v-if="isEditing"
             @click="handleDeleteBooking"
-            class="text-red-400 hover:text-red-600 font-bold text-[8px] uppercase tracking-wider"
+            class="text-red-500 hover:text-red-700 font-bold text-xs uppercase tracking-wider"
           >
             Hủy lịch
           </button>
@@ -513,20 +535,20 @@
           <div class="flex gap-2">
             <button
               @click="dialogVisible = false"
-              class="h-8 px-4 text-slate-400 font-bold text-[9px] uppercase"
+              class="h-10 px-5 text-slate-500 font-bold text-[11px] uppercase"
             >
               Đóng
             </button>
             <button
               v-if="bookingForm.status === 'Pending' && isEditing"
               @click="confirmBooking(activeBooking)"
-              class="h-8 px-4 bg-red-500 text-white rounded-lg font-bold text-[9px] uppercase shadow hover:bg-red-600 transition-all"
+              class="h-10 px-6 bg-red-500 text-white rounded-lg font-bold text-[11px] uppercase shadow hover:bg-red-600 transition-all"
             >
               Xác nhận
             </button>
             <button
               @click="handleSaveBooking"
-              class="h-8 px-4 bg-blue-600 text-white rounded-lg font-bold text-[9px] uppercase shadow hover:bg-blue-700 transition-all"
+              class="h-10 px-6 bg-blue-600 text-white rounded-lg font-bold text-[11px] uppercase shadow hover:bg-blue-700 transition-all"
             >
               {{ isEditing ? "Cập nhật" : "Tạo mới" }}
             </button>
@@ -666,6 +688,7 @@ import { BookingApi, Booking } from "@/api/sales";
 import { BookingAppointmentApi } from "@/api/booking-appointment.api";
 import { fetchGetUserList } from "@/api/auth/system-manage.api";
 import { fetchGetLeadList, fetchAssignLead } from "@/api/customer";
+import { EmployeeApi } from "@/api/operations/employee.api";
 
 defineOptions({ name: "BookingCalendar" });
 
@@ -693,6 +716,10 @@ const isAdmin = computed(() => true);
 const linkedLead = ref<{ id: number | null; assignedToId: string | null }>({
   id: null,
   assignedToId: null,
+});
+const linkedTechnician = ref<{ id: number | null; name: string | null }>({
+  id: null,
+  name: null,
 });
 
 const isWorkshopType = computed(() => {
@@ -736,7 +763,7 @@ const handleAssignSalesperson = async (val: string | null) => {
 
 const goToWorkshopCalendar = () => {
   dialogVisible.value = false;
-  router.push("/factory/service/booking/calendar");
+  router.push("/factory/workshop/appointments");
 };
 
 const bookingForm = ref({
@@ -812,9 +839,35 @@ const fetchBookings = async () => {
   }
 };
 
+// Load technician list for workshop type assignments
+const technicianList = ref<{ id: number; name: string }[]>([]);
+
+const loadTechnicianList = async () => {
+  try {
+    const res = await EmployeeApi.getList();
+    const items = (res as any).items || (res as any).records || [];
+    technicianList.value = items
+      .filter((e: any) => {
+        const pos = (e.positionName || e.position || "").toLowerCase();
+        return (
+          pos.includes("kỹ thuật") ||
+          pos.includes("thợ") ||
+          pos.includes("technician")
+        );
+      })
+      .map((e: any) => ({
+        id: e.id,
+        name: e.fullName || e.name || String(e.id),
+      }));
+  } catch {
+    technicianList.value = [];
+  }
+};
+
 onMounted(() => {
   fetchBookings();
   fetchSalesList();
+  loadTechnicianList();
 });
 
 const PENDING_PAGE_SIZE = 10;
@@ -1236,11 +1289,12 @@ const handleDeleteBooking = async () => {
       border: 1px solid #e2e8f0;
       border-radius: 8px;
       box-shadow: none;
-      padding: 0 8px;
+      padding: 0 10px;
+      min-height: 36px;
     }
 
     :deep(.el-input__inner) {
-      font-size: 11px;
+      font-size: 13px;
     }
   }
 
@@ -1250,17 +1304,17 @@ const handleDeleteBooking = async () => {
       border: 1px solid #e2e8f0;
       border-radius: 8px;
       box-shadow: none;
-      padding: 0 8px;
-      min-height: 32px;
-      height: 32px;
+      padding: 0 10px;
+      min-height: 38px;
+      height: 38px;
     }
 
     :deep(.el-select__placeholder) {
-      font-size: 11px;
+      font-size: 13px;
     }
 
     :deep(.el-select__selected-item) {
-      font-size: 11px;
+      font-size: 13px;
     }
   }
 }

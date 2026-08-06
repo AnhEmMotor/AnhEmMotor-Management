@@ -24,8 +24,14 @@ test("Store contact and both booking types feed the Marketing inbox contracts", 
   const marketingBooking = read(
     "../src/modules/Marketing/view/customer/booking/index.vue",
   );
+  const contactApi = read("../src/api/customer/contact.api.ts");
+  const contactStore = read("../src/application/store/contact.ts");
+  const contactManagement = read(
+    "../src/modules/Marketing/view/contact/index.vue",
+  );
 
   assert.match(contactRepository, /\/api\/v1\/Contacts\/support-request/);
+  assert.match(contactRepository, /resolveContactCategory/);
   assert.match(bookingRepository, /\/api\/v1\/Bookings/);
   assert.match(testDrivePage, /bookingType:\s*"TestDrive"/);
   assert.match(serviceBookingPage, /bookingType:\s*"Maintenance"/);
@@ -33,6 +39,19 @@ test("Store contact and both booking types feed the Marketing inbox contracts", 
   assert.match(bookingHandler, /GetBookingTypeLabel/);
   assert.match(marketingBooking, /const bookingKpis = computed/);
   assert.match(marketingBooking, /value:\s*"Maintenance"/);
+  assert.match(contactApi, /items:\s*Contact\.ContactItem\[\]/);
+  assert.match(contactApi, /pageNumber:\s*number/);
+  assert.match(contactStore, /ContactApi\.assign/);
+  assert.match(contactStore, /markAsProcessed:\s*true/);
+  assert.doesNotMatch(contactStore, /isInternal:\s*false/);
+  assert.doesNotMatch(contactStore, /\(Local\)/);
+  assert.doesNotMatch(contactStore, /Date\.now\(\)/);
+  assert.match(contactManagement, /fetchGetUserList/);
+  assert.match(
+    contactManagement,
+    /contactStore\.activeItem\.contactId,\s*replyDraft\.value/,
+  );
+  assert.doesNotMatch(contactManagement, /Nguyễn Văn A|Trần Thị B|Lê Văn C/);
 });
 
 test("Employee KPI status is derived from configured targets without fabricated fallbacks", () => {

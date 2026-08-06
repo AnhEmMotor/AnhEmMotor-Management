@@ -5,7 +5,7 @@
         <span class="payroll-hero__eyebrow">Quản trị nhân sự</span>
         <h1 id="payroll-page-title">{{ $t("menus.hr.payroll") }}</h1>
         <p>
-          Theo dõi lương cơ bản, hoa hồng và khoản thưởng theo từng kỳ chi trả.
+          Tổng hợp lương cơ bản, hoa hồng và thưởng KPI theo từng kỳ chi trả.
         </p>
       </div>
       <div class="payroll-hero__actions">
@@ -16,6 +16,14 @@
         <ElButton :loading="loading" @click="loadData">
           <ArtSvgIcon icon="ri:refresh-line" />
           Tải lại
+        </ElButton>
+        <ElButton
+          type="primary"
+          :disabled="loading"
+          @click="exportPayrollExcel"
+        >
+          <ArtSvgIcon icon="ri:file-excel-2-line" />
+          Xuất Excel
         </ElButton>
       </div>
     </section>
@@ -32,8 +40,8 @@
           iconStyle="bg-primary"
         />
         <ArtStatsCard
-          title="Tổng thưởng tháng"
-          :count="formatCurrency(stats.totalVolumeBonus)"
+          title="Tổng thưởng KPI"
+          :count="formatCurrency(stats.totalKpiBonus)"
           icon="ri:gift-line"
           iconStyle="bg-danger"
         />
@@ -91,7 +99,8 @@
             <div>
               <h2>Chi tiết bảng lương</h2>
               <p>
-                Lương, hoa hồng đủ điều kiện và thực nhận của từng nhân viên.
+                Lương cơ bản + hoa hồng đủ điều kiện + thưởng KPI của từng nhân
+                viên.
               </p>
             </div>
           </div>
@@ -147,17 +156,17 @@
             }}</span>
           </template>
 
-          <template #volumeBonus="{ row }">
+          <template #kpiBonus="{ row }">
             <div class="payroll-bonus-cell">
               <span class="payroll-money">{{
-                formatCurrency(row.volumeBonus)
+                formatCurrency(getKpiBonus(row))
               }}</span>
               <ElTag
-                v-if="row.volumeBonus > 0"
+                v-if="getKpiBonus(row) > 0"
                 type="danger"
                 size="small"
                 effect="light"
-                >Đạt ngưỡng</ElTag
+                >Đạt KPI</ElTag
               >
             </div>
           </template>
@@ -201,6 +210,7 @@ import {
   payrollApi,
   type PayrollSummaryResponse,
 } from "@/api/operations/payroll.api";
+import { exportReportWorkbook } from "@/utils/report-excel";
 
 defineOptions({ name: "HRPayroll" });
 
@@ -211,7 +221,7 @@ const stats = reactive({
   paid: 0,
   pending: 0,
   employeeCount: 0,
-  totalVolumeBonus: 0,
+  totalKpiBonus: 0,
 });
 
 const pagination = reactive({ current: 1, size: 10, total: 0 });
@@ -250,8 +260,8 @@ const columns = ref<ColumnOption[]>([
     useSlot: true,
   },
   {
-    label: "Thưởng đạt ngưỡng",
-    prop: "volumeBonus",
+    label: "Thưởng KPI",
+    prop: "kpiBonus",
     width: 160,
     align: "right",
     useSlot: true,
@@ -279,6 +289,47 @@ const formatCurrency = (value: number | null | undefined) =>
     style: "currency",
     currency: "VND",
   }).format(value || 0);
+
+const getKpiBonus = (item: PayrollSummaryResponse) =>
+  item.kpiBonus ?? item.volumeBonus ?? 0;
+
+const exportPayrollExcel = () => {
+  const selectedMonth = searchForm.value.month || currentMonth.toString();
+
+  exportReportWorkbook({
+    fileName: `Bang_luong_nhan_su_${selectedMonth}_${currentYear}`,
+    sheets: [
+      {
+        name: "Tổng hợp",
+        rows: [
+          {
+            Tháng: selectedMonth,
+            Năm: currentYear,
+            "Số nhân viên": stats.employeeCount,
+            "Tổng quỹ lương": stats.totalPayroll,
+            "Tổng thưởng KPI": stats.totalKpiBonus,
+            "Hoa hồng đã chi": stats.paid,
+            "Giá trị chờ chi": stats.pending,
+          },
+        ],
+      },
+      {
+        name: "Bảng lương",
+        rows: data.value.map((item) => ({
+          "Mã nhân viên": item.employeeId,
+          "Nhân viên": item.fullName,
+          "Chức vụ": item.jobTitle,
+          "Lương cơ bản": item.baseSalary,
+          "Hoa hồng chờ xác nhận": item.pendingCommission,
+          "Hoa hồng chờ chi": item.confirmedCommission,
+          "Hoa hồng đã chi": item.paidCommission,
+          "Thưởng KPI": getKpiBonus(item),
+          "Thực nhận": item.totalNetPayable,
+        })),
+      },
+    ],
+  });
+};
 
 type PayrollSummaryApiResult =
   | PayrollSummaryResponse[]
@@ -316,8 +367,8 @@ const loadData = async () => {
     pagination.total = filteredData.length;
 
     // Calculate stats client-side from the summary data
-    const totalVolumeBonus = summaryData.reduce(
-      (sum, item) => sum + (item.volumeBonus || 0),
+    const totalKpiBonus = summaryData.reduce(
+      (sum, item) => sum + getKpiBonus(item),
       0,
     );
     const totalPayrollVal = summaryData.reduce(
@@ -326,7 +377,10 @@ const loadData = async () => {
     );
     const pendingVal = summaryData.reduce(
       (sum, item) =>
-        sum + (item.confirmedCommission || 0) + (item.volumeBonus || 0),
+        sum +
+        (item.baseSalary || 0) +
+        (item.confirmedCommission || 0) +
+        getKpiBonus(item),
       0,
     );
     const paidVal = summaryData.reduce(
@@ -338,7 +392,7 @@ const loadData = async () => {
     stats.paid = paidVal;
     stats.pending = pendingVal;
     stats.employeeCount = summaryData.length;
-    stats.totalVolumeBonus = totalVolumeBonus;
+    stats.totalKpiBonus = totalKpiBonus;
   } catch (error) {
     console.error("Failed to load payroll:", error);
     ElMessage.error("Không thể tải danh sách bảng lương");
@@ -567,22 +621,17 @@ onMounted(() => {
 }
 
 .payroll-kpi-grid :deep(> :first-child) {
-  color: #fff;
-  background:
-    radial-gradient(circle at 88% 10%, rgb(255 255 255 / 18%), transparent 30%),
-    linear-gradient(135deg, var(--payroll-red), var(--payroll-red-dark));
-  border-color: transparent;
-  box-shadow: 0 12px 26px rgb(197 58 58 / 18%);
+  color: var(--el-text-color-primary);
+  background: var(--el-bg-color-overlay);
+  border-color: var(--el-border-color-lighter);
 }
 
-.payroll-kpi-grid :deep(> :first-child p),
+.payroll-kpi-grid :deep(> :first-child p) {
+  color: var(--el-text-color-secondary) !important;
+}
+
 .payroll-kpi-grid :deep(> :first-child .art-count-to) {
-  color: #fff !important;
-}
-
-.payroll-kpi-grid :deep(> :first-child .art-stats-card-icon) {
-  background: rgb(255 255 255 / 16%) !important;
-  border: 1px solid rgb(255 255 255 / 18%);
+  color: var(--el-text-color-primary) !important;
 }
 
 .payroll-kpi-grid :deep(.art-count-to),

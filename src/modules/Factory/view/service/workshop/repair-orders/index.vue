@@ -106,6 +106,38 @@
           </span>
         </template>
 
+        <template #voucherDiscount="{ row }">
+          <span
+            v-if="row.voucherDiscount && row.voucherDiscount > 0"
+            class="font-medium text-emerald-600"
+            >{{
+              row.totalCost
+                ? new Intl.NumberFormat("vi-VN").format(row.voucherDiscount) +
+                  " ₫"
+                : "0 ₫"
+            }}</span
+          >
+          <span v-else class="text-slate-300">-</span>
+        </template>
+        <template #voucherFinalTotal="{ row }">
+          <span class="font-medium text-orange-600">{{
+            row.voucherFinalTotal
+              ? new Intl.NumberFormat("vi-VN").format(row.voucherFinalTotal) +
+                " ₫"
+              : row.totalCost
+                ? new Intl.NumberFormat("vi-VN").format(row.totalCost) + " ₫"
+                : "0 ₫"
+          }}</span>
+        </template>
+        <template #voucherCode="{ row }">
+          <span
+            v-if="row.voucherCode"
+            class="bg-green-50 text-green-700 px-2 py-0.5 rounded text-xs font-bold"
+            >{{ row.voucherCode }}</span
+          >
+          <span v-else class="text-slate-300">-</span>
+        </template>
+
         <template #technicianName="{ row }">
           <span v-if="row.technicianName" class="font-medium text-gray-700">{{
             row.technicianName
@@ -306,11 +338,6 @@
             </ElSelect>
           </div>
 
-          <div></div>
-        </div>
-
-        <!-- 4) ODO + mô tả lỗi -->
-        <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
               class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
@@ -324,18 +351,38 @@
               placeholder="0"
             />
           </div>
+        </div>
 
+        <!-- 4) Mã giảm giá -->
+        <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
               class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
             >
-              Mô tả tình trạng
+              Mã giảm giá
             </label>
             <ElInput
-              v-model="createForm.description"
-              placeholder="Ví dụ: thay nhớt, mòn phanh..."
+              v-model="createForm.voucherCode"
+              placeholder="Nhập mã giảm giá (nếu có)"
+              clearable
             />
           </div>
+          <div></div>
+        </div>
+
+        <!-- 5) Mô tả tình trạng -->
+        <div class="mt-4">
+          <label
+            class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
+          >
+            Mô tả tình trạng (Ghi chú)
+          </label>
+          <ElInput
+            v-model="createForm.description"
+            type="textarea"
+            :rows="3"
+            placeholder="Ví dụ: thay nhớt, mòn phanh..."
+          />
         </div>
       </ElForm>
 
@@ -466,11 +513,27 @@ const columns = computed(() => {
     { prop: "mileage", label: "Km", width: 110, align: "right" },
     {
       prop: "totalCost",
-      label: "Tổng",
+      label: "Tạm tính",
       width: 140,
       align: "right",
       useSlot: true,
       slot: "totalCost",
+    },
+    {
+      prop: "voucherDiscount",
+      label: "Phí sau voucher",
+      width: 140,
+      align: "right",
+      useSlot: true,
+      slot: "voucherDiscount",
+    },
+    {
+      prop: "voucherFinalTotal",
+      label: "Tổng tiền",
+      width: 140,
+      align: "right",
+      useSlot: true,
+      slot: "voucherFinalTotal",
     },
     {
       prop: "status",
@@ -662,6 +725,7 @@ const createForm = ref({
   customerName: "",
   mileage: 0,
   description: "",
+  voucherCode: "",
 
   // Auto-fill vehicle/customer info (Vehicle Portfolio)
   isNewCustomer: true,
@@ -681,6 +745,7 @@ const openCreateDialog = () => {
     customerName: "",
     mileage: 0,
     description: "",
+    voucherCode: "",
 
     isNewCustomer: true,
     vinNumber: "",
@@ -726,6 +791,7 @@ const submitCreate = async () => {
       customerName: createForm.value.customerName,
       mileage: createForm.value.mileage,
       description: createForm.value.description,
+      voucherCode: createForm.value.voucherCode,
 
       vinNumber: createForm.value.isNewCustomer
         ? createForm.value.vinNumber

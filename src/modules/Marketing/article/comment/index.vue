@@ -66,8 +66,6 @@
               }}</span>
             </div>
           </div>
-
-          <CommentWidget />
         </div>
       </template>
     </ElDrawer>

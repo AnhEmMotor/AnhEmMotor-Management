@@ -1,807 +1,2087 @@
 <template>
-  <div class="resp-page customer-care-page p-8 min-h-full">
-    <div v-if="!isDetailView">
-      <div class="flex justify-between items-center mb-8">
-        <div>
-          <h1
-            class="m-0 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 uppercase"
-          >
-            Chăm sóc Khách hàng
-          </h1>
-          <p
-            class="m-0 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1"
-          >
-            Quản lý vòng đời & Trải nghiệm khách hàng Anh Em Motor
-          </p>
+  <main class="resp-page customer-care-page min-h-full p-4 sm:p-6 lg:p-8">
+    <header class="page-heading">
+      <div>
+        <div class="eyebrow">
+          <span class="eyebrow__dot"></span>
+          Trung tâm chăm sóc khách hàng
         </div>
-        <div class="flex gap-3">
-          <button
-            @click="handleAddCustomer"
-            class="h-11 px-8 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-bold text-[11px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center gap-2"
-          >
-            <ArtSvgIcon icon="ri:user-add-line" class="text-blue-500" /> Thêm
-            khách hàng mới
-          </button>
-        </div>
+        <h1>Khách hàng & hỗ trợ</h1>
+        <p>
+          Phân loại khách hàng, ghi nhận tương tác và xử lý các phiên hỗ trợ
+          trên cùng một trang.
+        </p>
       </div>
 
-      <div
-        class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[32px] p-6 mb-8 shadow-sm"
+      <div class="page-heading__actions">
+        <ElButton :loading="refreshing" @click="refreshAll">
+          <ArtSvgIcon icon="ri:refresh-line" class="mr-1.5" />
+          Làm mới
+        </ElButton>
+        <ElButton type="primary" @click="openAddCustomerDialog">
+          <ArtSvgIcon icon="ri:user-add-line" class="mr-1.5" />
+          Thêm khách hàng
+        </ElButton>
+      </div>
+    </header>
+
+    <section class="metric-grid" aria-label="Tổng quan chăm sóc khách hàng">
+      <article class="metric-card metric-card--accent">
+        <span class="metric-card__label">Tổng khách hàng</span>
+        <strong>{{ leads.length }}</strong>
+        <small>Dữ liệu hồ sơ Lead hiện có</small>
+      </article>
+      <article class="metric-card">
+        <span class="metric-card__label">Khách VIP</span>
+        <strong>{{ classificationCounts.VIP }}</strong>
+        <small>Đang được ưu tiên chăm sóc</small>
+      </article>
+      <article class="metric-card">
+        <span class="metric-card__label">Phiên đang mở</span>
+        <strong>{{ openSessionCount }}</strong>
+        <small>Chờ hoặc đang được xử lý</small>
+      </article>
+      <article class="metric-card">
+        <span class="metric-card__label">Cần chăm sóc</span>
+        <strong>{{ classificationCounts.NeedsAttention }}</strong>
+        <small>Đã được nhân viên đánh dấu</small>
+      </article>
+    </section>
+
+    <nav class="workspace-tabs" aria-label="Khu vực chăm sóc khách hàng">
+      <button
+        type="button"
+        :class="{ 'is-active': activeWorkspace === 'customers' }"
+        @click="activeWorkspace = 'customers'"
       >
-        <div class="resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div class="col-span-2">
-            <ElInput
-              v-model="searchQuery"
-              placeholder="Tìm tên, SĐT hoặc Biển số khách hàng..."
-              class="combat-input-large"
-            >
-              <template #prefix
-                ><ArtSvgIcon icon="ri:search-2-line"
-              /></template>
-            </ElInput>
-          </div>
-          <div>
-            <ElSelect
-              v-model="filterType"
-              placeholder="Tất cả phân loại"
-              class="w-full premium-select"
-            >
-              <ElOption label="Tất cả khách hàng" value="all" />
-              <ElOption label="Khách hàng VIP" value="VIP" />
-              <ElOption label="Khách hàng cũ" value="Old" />
-              <ElOption label="Khách mới" value="New" />
-            </ElSelect>
-          </div>
-          <div class="flex items-center gap-2">
-            <div
-              class="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl border border-blue-100 flex items-center gap-2 shrink-0"
-            >
-              <span class="text-[9px] font-bold uppercase tracking-tighter"
-                >Đang quản lý:</span
-              >
-              <span class="text-sm font-bold">{{
-                filteredCustomers.length
+        <ArtSvgIcon icon="ri:group-line" />
+        Khách hàng
+        <span>{{ filteredLeads.length }}</span>
+      </button>
+      <button
+        type="button"
+        :class="{ 'is-active': activeWorkspace === 'support' }"
+        @click="activeWorkspace = 'support'"
+      >
+        <ArtSvgIcon icon="ri:chat-3-line" />
+        Phiên chat hỗ trợ
+        <span>{{ filteredSessions.length }}</span>
+      </button>
+    </nav>
+
+    <section v-show="activeWorkspace === 'customers'" class="workspace-panel">
+      <div class="filter-bar">
+        <ElInput
+          v-model="customerSearch"
+          clearable
+          placeholder="Tìm theo tên, số điện thoại, email hoặc CCCD"
+          class="filter-bar__search"
+        >
+          <template #prefix>
+            <ArtSvgIcon icon="ri:search-line" />
+          </template>
+        </ElInput>
+        <ElSelect
+          v-model="classificationFilter"
+          class="filter-bar__select"
+          aria-label="Lọc phân loại khách hàng"
+        >
+          <ElOption label="Tất cả phân loại" value="all" />
+          <ElOption
+            v-for="option in classificationOptions"
+            :key="option.value"
+            :label="option.label"
+            :value="option.value"
+          />
+        </ElSelect>
+      </div>
+
+      <ElAlert
+        v-if="leadError"
+        :title="leadError"
+        type="error"
+        show-icon
+        :closable="false"
+        class="m-4"
+      />
+
+      <ElTable
+        v-loading="leadLoading"
+        :data="filteredLeads"
+        row-key="id"
+        class="customer-table"
+        @row-dblclick="(row) => openProfile(asLead(row))"
+      >
+        <ElTableColumn label="Khách hàng" min-width="200">
+          <template #default="{ row }">
+            <div class="customer-cell">
+              <div class="customer-avatar">{{ getInitials(row.fullName) }}</div>
+              <div class="customer-cell__copy">
+                <strong>{{ row.fullName || "Chưa cập nhật" }}</strong>
+                <span class="text-xs text-slate-400">
+                  {{
+                    row.gender === "Male"
+                      ? "Nam"
+                      : row.gender === "Female"
+                        ? "Nữ"
+                        : row.gender === "Other"
+                          ? "Khác"
+                          : "Giới tính chưa rõ"
+                  }}
+                </span>
+              </div>
+            </div>
+          </template>
+        </ElTableColumn>
+
+        <ElTableColumn label="Thông tin liên hệ" min-width="220">
+          <template #default="{ row }">
+            <div class="flex flex-col gap-0.5">
+              <span class="table-primary font-semibold">{{
+                row.phoneNumber || "Chưa có SĐT"
+              }}</span>
+              <span class="table-secondary text-xs">{{
+                row.email || "Chưa có email"
               }}</span>
             </div>
-          </div>
-        </div>
-      </div>
+          </template>
+        </ElTableColumn>
 
-      <div
-        class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[40px] shadow-sm overflow-hidden"
-      >
-        <ElTable
-          :data="filteredCustomers"
-          style="width: 100%"
-          class="combat-table"
-        >
-          <ElTableColumn label="Khách hàng" min-width="240">
-            <template #default="{ row }">
-              <div class="flex items-center gap-4 py-2">
-                <div
-                  class="size-10 rounded-xl bg-slate-100 flex-cc text-slate-500 font-bold"
+        <ElTableColumn label="Phân loại" min-width="190">
+          <template #default="{ row }">
+            <ElSelect
+              :model-value="getClassification(asLead(row))"
+              size="small"
+              :loading="classificationUpdatingId === row.id"
+              class="classification-select"
+              @change="
+                (value: CustomerClassification) =>
+                  updateClassification(asLead(row), value)
+              "
+            >
+              <ElOption
+                v-for="option in classificationOptions"
+                :key="option.value"
+                :label="option.label"
+                :value="option.value"
+              />
+            </ElSelect>
+          </template>
+        </ElTableColumn>
+
+        <ElTableColumn label="Nhu cầu hiện tại" min-width="190">
+          <template #default="{ row }">
+            <span class="table-primary">
+              {{ row.interestedVehicle || "Chưa ghi nhận nhu cầu" }}
+            </span>
+          </template>
+        </ElTableColumn>
+
+        <ElTableColumn label="Tương tác gần nhất" min-width="180">
+          <template #default="{ row }">
+            <span class="table-secondary">{{
+              getLastInteraction(asLead(row))
+            }}</span>
+          </template>
+        </ElTableColumn>
+
+        <ElTableColumn label="Phụ trách" min-width="170">
+          <template #default="{ row }">
+            <span class="table-primary">
+              {{ row.assignedToName || "Chưa phân công" }}
+            </span>
+          </template>
+        </ElTableColumn>
+
+        <ElTableColumn label="Ngày tạo" min-width="135">
+          <template #default="{ row }">
+            <span class="table-secondary">{{
+              formatDateTime(row.createdAt)
+            }}</span>
+          </template>
+        </ElTableColumn>
+
+        <ElTableColumn label="Thao tác" width="210" fixed="right" align="right">
+          <template #default="{ row }">
+            <div class="row-actions">
+              <ElTooltip content="Gọi điện">
+                <button
+                  type="button"
+                  class="icon-action"
+                  :class="{ 'is-disabled': !row.phoneNumber }"
+                  aria-label="Gọi điện cho khách hàng"
+                  @click.stop="callPhone(row.phoneNumber)"
                 >
-                  {{ row.name.charAt(0) }}
-                </div>
-                <div>
-                  <p
-                    class="m-0 text-sm font-bold text-slate-800 dark:text-slate-100 leading-none mb-1"
-                  >
-                    {{ row.name }}
-                  </p>
-                  <p
-                    class="m-0 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tighter"
-                  >
-                    {{ row.phone }}
-                  </p>
-                </div>
-              </div>
-            </template>
-          </ElTableColumn>
-          <ElTableColumn label="Phân loại" width="150">
-            <template #default="{ row }">
-              <span
-                class="px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest border"
-                :class="getTypeClasses(row.type)"
-              >
-                {{ row.typeLabel }}
-              </span>
-            </template>
-          </ElTableColumn>
-          <ElTableColumn label="Lần cuối bảo dưỡng" width="180">
-            <template #default="{ row }">
-              <span
-                class="text-xs font-bold text-slate-500 dark:text-slate-400"
-                >{{ row.lastContact }}</span
-              >
-            </template>
-          </ElTableColumn>
-          <ElTableColumn label="Trạng thái Loyalty" width="160">
-            <template #default="{ row }">
-              <span class="text-[10px] font-bold text-amber-500"
-                >{{ row.points }} pts</span
-              >
-            </template>
-          </ElTableColumn>
-          <ElTableColumn label="Thao tác" width="120" align="right">
-            <template #default="{ row }">
-              <button
-                @click="viewDetails(row)"
-                class="h-9 px-4 bg-blue-600 text-white rounded-lg font-bold text-[10px] uppercase tracking-widest shadow-md hover:bg-blue-700 transition-all"
-              >
-                Chi tiết
-              </button>
-            </template>
-          </ElTableColumn>
-        </ElTable>
-      </div>
-    </div>
+                  <ArtSvgIcon icon="ri:phone-line" />
+                </button>
+              </ElTooltip>
+              <ElTooltip content="Mở Zalo">
+                <button
+                  type="button"
+                  class="icon-action"
+                  :class="{ 'is-disabled': !row.phoneNumber }"
+                  aria-label="Mở Zalo của khách hàng"
+                  @click.stop="openZalo(row.phoneNumber)"
+                >
+                  <ArtSvgIcon icon="ri:chat-smile-2-line" />
+                </button>
+              </ElTooltip>
+              <ElTooltip content="Ghi nhận chăm sóc">
+                <button
+                  type="button"
+                  class="icon-action"
+                  aria-label="Ghi nhận chăm sóc khách hàng"
+                  @click.stop="openCareDialog(asLead(row))"
+                >
+                  <ArtSvgIcon icon="ri:heart-add-2-line" />
+                </button>
+              </ElTooltip>
+              <ElTooltip content="Tạo phiên hỗ trợ">
+                <button
+                  type="button"
+                  class="icon-action"
+                  aria-label="Tạo phiên hỗ trợ khách hàng"
+                  @click.stop="openSupportDialog(asLead(row))"
+                >
+                  <ArtSvgIcon icon="ri:message-3-line" />
+                </button>
+              </ElTooltip>
+              <ElTooltip content="Hồ sơ 360">
+                <button
+                  type="button"
+                  class="icon-action icon-action--primary"
+                  aria-label="Mở hồ sơ khách hàng 360"
+                  @click.stop="openProfile(asLead(row))"
+                >
+                  <ArtSvgIcon icon="ri:arrow-right-up-line" />
+                </button>
+              </ElTooltip>
+            </div>
+          </template>
+        </ElTableColumn>
 
-    <div v-else class="animate-fade-in">
-      <div class="flex justify-between items-center mb-8">
-        <div class="flex items-center gap-6">
-          <button
-            @click="isDetailView = false"
-            class="size-12 rounded-2xl bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-300 flex-cc hover:bg-slate-900 hover:text-white transition-all shadow-sm"
-          >
-            <ArtSvgIcon icon="ri:arrow-left-line" />
-          </button>
+        <template #empty>
+          <div class="empty-state">
+            <ArtSvgIcon icon="ri:user-search-line" />
+            <strong>Chưa có khách hàng phù hợp</strong>
+            <span>Thử đổi từ khóa hoặc tạo hồ sơ khách hàng mới.</span>
+          </div>
+        </template>
+      </ElTable>
+    </section>
+
+    <section
+      v-show="activeWorkspace === 'support'"
+      class="support-workspace"
+      aria-label="Phiên chat hỗ trợ khách hàng"
+    >
+      <aside class="session-sidebar">
+        <div class="session-sidebar__header">
           <div>
-            <h1
-              class="m-0 text-3xl font-bold text-slate-900 dark:text-white tracking-tight"
-            >
-              {{ activeCustomer?.name }}
-            </h1>
-            <p
-              class="m-0 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mt-2 flex items-center gap-2"
-            >
-              <ArtSvgIcon icon="ri:shield-user-line" class="text-amber-500" />
-              Hồ sơ Customer 360 -
-              {{ activeCustomer?.typeLabel }}
-            </p>
+            <span>Hộp thư hỗ trợ</span>
+            <strong>{{ filteredSessions.length }} phiên</strong>
           </div>
+          <ElButton
+            circle
+            type="primary"
+            aria-label="Tạo phiên hỗ trợ"
+            @click="openSupportDialog()"
+          >
+            <ArtSvgIcon icon="ri:add-line" />
+          </ElButton>
         </div>
-        <div class="flex gap-3">
+
+        <div class="session-sidebar__filters">
+          <ElInput
+            v-model="sessionSearch"
+            clearable
+            placeholder="Tìm phiên hỗ trợ"
+          >
+            <template #prefix>
+              <ArtSvgIcon icon="ri:search-line" />
+            </template>
+          </ElInput>
+          <ElSelect
+            v-model="sessionStatusFilter"
+            aria-label="Lọc trạng thái phiên"
+          >
+            <ElOption label="Tất cả trạng thái" value="all" />
+            <ElOption label="Mới" value="New" />
+            <ElOption label="Đang xử lý" value="InProgress" />
+            <ElOption label="Đã đóng" value="Closed" />
+          </ElSelect>
+        </div>
+
+        <ElAlert
+          v-if="sessionError"
+          :title="sessionError"
+          type="error"
+          show-icon
+          :closable="false"
+          class="mx-3 mb-3"
+        />
+
+        <div v-loading="sessionLoading" class="session-list">
           <button
-            class="h-11 px-6 bg-emerald-500 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-lg hover:bg-emerald-600 transition-all"
+            v-for="session in filteredSessions"
+            :key="session.id"
+            type="button"
+            class="session-item"
+            :class="{ 'is-active': activeSession?.id === session.id }"
+            @click="selectSession(session)"
           >
-            Gọi Zalo
+            <span class="session-item__avatar">
+              {{ getInitials(getSessionCustomerName(session)) }}
+            </span>
+            <span class="session-item__body">
+              <span class="session-item__topline">
+                <strong>{{ getSessionCustomerName(session) }}</strong>
+                <small>{{ formatRelativeDate(session.createdAt) }}</small>
+              </span>
+              <span class="session-item__subject">{{ session.subject }}</span>
+              <span class="session-item__preview">{{
+                getSessionPreview(session)
+              }}</span>
+            </span>
+            <span
+              class="status-dot"
+              :class="`status-dot--${session.status.toLowerCase()}`"
+            ></span>
           </button>
-          <button
-            class="h-11 px-6 bg-blue-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-lg hover:bg-blue-700 transition-all"
+
+          <div
+            v-if="!sessionLoading && filteredSessions.length === 0"
+            class="empty-state empty-state--compact"
           >
-            Gửi Ưu đãi
-          </button>
+            <ArtSvgIcon icon="ri:chat-off-line" />
+            <strong>Chưa có phiên hỗ trợ</strong>
+            <span
+              >Tạo phiên mới để ghi nhận yêu cầu qua điện thoại hoặc Zalo.</span
+            >
+          </div>
         </div>
+      </aside>
+
+      <article v-if="activeSession" class="chat-panel">
+        <header class="chat-panel__header">
+          <div class="customer-cell">
+            <div class="customer-avatar customer-avatar--online">
+              {{ getInitials(getSessionCustomerName(activeSession)) }}
+            </div>
+            <div class="customer-cell__copy">
+              <strong>{{ getSessionCustomerName(activeSession) }}</strong>
+              <span>
+                {{
+                  activeSession.contact?.phoneNumber ||
+                  activeSession.email ||
+                  "Chưa có thông tin liên hệ"
+                }}
+              </span>
+            </div>
+          </div>
+
+          <div class="chat-panel__actions">
+            <ElSelect
+              :model-value="activeSession.status"
+              size="small"
+              :loading="sessionStatusUpdating"
+              aria-label="Cập nhật trạng thái phiên hỗ trợ"
+              @change="updateSessionStatus"
+            >
+              <ElOption label="Mới" value="New" />
+              <ElOption label="Đang xử lý" value="InProgress" />
+              <ElOption label="Đã đóng" value="Closed" />
+            </ElSelect>
+            <ElButton
+              v-if="matchedLead"
+              size="small"
+              @click="openProfile(matchedLead)"
+            >
+              Hồ sơ 360
+            </ElButton>
+          </div>
+        </header>
+
+        <div class="conversation-context">
+          <span>{{ activeSession.category || "Hỗ trợ chung" }}</span>
+          <strong>{{ activeSession.subject }}</strong>
+          <small>Mã phiên #{{ activeSession.id }}</small>
+        </div>
+
+        <div ref="messageListRef" class="message-list">
+          <div
+            v-for="message in activeMessages"
+            :key="message.id"
+            class="message-row"
+            :class="{
+              'message-row--outgoing': message.direction === 'outgoing',
+            }"
+          >
+            <div class="message-bubble">
+              <span class="message-bubble__sender">{{ message.sender }}</span>
+              <p>{{ message.message }}</p>
+              <time>{{ formatDateTime(message.createdAt) }}</time>
+            </div>
+          </div>
+        </div>
+
+        <footer class="composer">
+          <ElInput
+            v-model="replyDraft"
+            type="textarea"
+            :rows="2"
+            maxlength="2000"
+            show-word-limit
+            resize="none"
+            :disabled="activeSession.status === 'Closed'"
+            :placeholder="
+              activeSession.status === 'Closed'
+                ? 'Mở lại phiên để tiếp tục phản hồi'
+                : 'Nhập phản hồi cho khách hàng...'
+            "
+            @keydown.enter.exact.prevent="sendChatReply"
+          />
+          <div class="composer__footer">
+            <span>Enter để gửi · Shift + Enter để xuống dòng</span>
+            <ElButton
+              type="primary"
+              :loading="replySending"
+              :disabled="
+                activeSession.status === 'Closed' || !replyDraft.trim()
+              "
+              @click="sendChatReply"
+            >
+              <ArtSvgIcon icon="ri:send-plane-fill" class="mr-1.5" />
+              Gửi phản hồi
+            </ElButton>
+          </div>
+        </footer>
+      </article>
+
+      <div v-else class="chat-placeholder">
+        <div class="chat-placeholder__icon">
+          <ArtSvgIcon icon="ri:chat-3-line" />
+        </div>
+        <strong>Chọn một phiên hỗ trợ</strong>
+        <span>Nội dung trao đổi và công cụ xử lý sẽ hiển thị tại đây.</span>
       </div>
+    </section>
 
-      <div class="grid grid-cols-12 gap-8">
-        <div class="col-span-12 lg:col-span-4 space-y-6">
-          <div
-            class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[40px] p-8 text-slate-800 dark:text-slate-100 shadow-sm relative overflow-hidden"
-          >
-            <ArtSvgIcon
-              icon="ri:fingerprint-line"
-              class="absolute -right-4 -top-4 text-9xl opacity-5 dark:opacity-10 text-slate-300 dark:text-white"
-            />
-            <h3
-              class="m-0 text-xs font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-8 flex items-center gap-2"
-            >
-              Dữ liệu cốt lõi
-            </h3>
-            <div class="space-y-6 relative z-10">
-              <div
-                class="flex justify-between border-b border-slate-100 dark:border-white/10 pb-4"
-              >
-                <span
-                  class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase"
-                  >Số điện thoại</span
-                >
-                <span
-                  class="text-sm font-bold text-slate-800 dark:text-slate-100"
-                  >{{ activeCustomer?.phone }}</span
-                >
-              </div>
-              <div
-                class="flex justify-between border-b border-slate-100 dark:border-white/10 pb-4"
-              >
-                <span
-                  class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase"
-                  >CCCD / CMND</span
-                >
-                <span
-                  class="text-sm font-bold text-slate-800 dark:text-slate-100"
-                  >{{ activeCustomer?.identity }}</span
-                >
-              </div>
-              <div
-                class="flex justify-between border-b border-slate-100 dark:border-white/10 pb-4"
-              >
-                <span
-                  class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase"
-                  >Hạng Loyalty</span
-                >
-                <span class="text-sm font-bold text-amber-500">{{
-                  activeCustomer?.tier
-                }}</span>
-              </div>
-              <div>
-                <span
-                  class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase mb-3 block"
-                  >Địa chỉ thường trú</span
-                >
-                <p
-                  class="m-0 text-sm font-bold text-slate-800 dark:text-slate-100 leading-relaxed"
-                >
-                  {{ activeCustomer?.address }}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div
-            class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[40px] p-8 shadow-sm"
-          >
-            <h3
-              class="m-0 text-xs font-bold uppercase tracking-widest text-slate-800 mb-6"
-            >
-              Nhu cầu & Sở thích
-            </h3>
-            <div class="flex flex-wrap gap-2">
-              <span
-                v-for="tag in activeCustomer?.needs"
-                :key="tag"
-                class="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-[10px] font-bold uppercase border border-blue-100"
-                >{{ tag }}</span
-              >
-            </div>
-            <div
-              class="mt-8 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center gap-4"
-            >
-              <div
-                class="size-10 rounded-xl bg-red-500 text-white flex-cc shrink-0 animate-pulse"
-              >
-                <ArtSvgIcon icon="ri:alarm-warning-line" />
-              </div>
-              <p
-                class="m-0 text-[10px] font-bold text-red-600 uppercase leading-relaxed"
-              >
-                Nhắc nhở: Quá hạn thay nhớt lần 3 (12 ngày)
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-span-12 lg:col-span-8 space-y-8">
-          <div
-            class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[40px] shadow-sm overflow-hidden"
-          >
-            <ElTabs v-model="activeTab" class="combat-tabs-large">
-              <ElTabPane label="DÒNG THỜI GIAN TƯƠNG TÁC" name="timeline">
-                <div class="p-10 space-y-8 relative">
-                  <div
-                    class="absolute left-[59px] top-12 bottom-12 w-0.5 bg-slate-100 dark:bg-slate-800"
-                  ></div>
-                  <div
-                    v-for="log in timeline"
-                    :key="log.id"
-                    class="flex gap-8 relative"
-                  >
-                    <div
-                      class="size-14 rounded-2xl flex-cc z-10 shadow-xl"
-                      :class="
-                        log.type === 'call'
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-slate-800 text-white'
-                      "
-                    >
-                      <ArtSvgIcon
-                        :icon="
-                          log.type === 'call'
-                            ? 'ri:phone-line'
-                            : 'ri:message-3-line'
-                        "
-                        class="text-xl"
-                      />
-                    </div>
-                    <div
-                      class="flex-1 bg-slate-50/50 dark:bg-slate-950/20 p-8 rounded-[32px] border border-slate-100 dark:border-slate-800"
-                    >
-                      <div class="flex justify-between items-center mb-4">
-                        <div class="flex items-center gap-3">
-                          <span
-                            class="text-[11px] font-bold text-slate-400 uppercase tracking-widest"
-                            >{{ log.date }}</span
-                          >
-                          <span class="size-1 rounded-full bg-slate-300"></span>
-                          <span
-                            class="text-[11px] font-bold text-blue-500 uppercase tracking-widest"
-                            >{{ log.staff }}</span
-                          >
-                        </div>
-                        <span
-                          class="px-3 py-1 bg-white text-[9px] font-bold uppercase rounded-lg border border-slate-200 shadow-sm"
-                          >{{ log.category }}</span
-                        >
-                      </div>
-                      <p
-                        class="m-0 text-base font-bold text-slate-700 leading-relaxed"
-                      >
-                        {{ log.content }}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </ElTabPane>
-              <ElTabPane label="LỊCH SỬ MUA XE & DỊCH VỤ" name="purchase">
-                <div class="p-10 space-y-10">
-                  <div class="grid grid-cols-2 gap-6">
-                    <div
-                      v-for="bike in activeCustomer?.bikes"
-                      :key="bike.id"
-                      class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[32px] p-6 shadow-sm hover:border-blue-300 dark:hover:border-blue-800 transition-all"
-                    >
-                      <div class="flex gap-5 mb-4">
-                        <img
-                          :src="bike.img"
-                          class="size-20 rounded-2xl object-cover shadow-lg"
-                        />
-                        <div>
-                          <h4 class="m-0 text-lg font-bold text-slate-800">
-                            {{ bike.model }}
-                          </h4>
-                          <p
-                            class="m-0 text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest"
-                          >
-                            {{ bike.deliveryDate }}
-                          </p>
-                        </div>
-                      </div>
-                      <div class="grid grid-cols-2 gap-3">
-                        <div class="p-3 bg-slate-50 rounded-2xl">
-                          <p
-                            class="m-0 text-[9px] font-bold text-slate-300 uppercase mb-1"
-                          >
-                            Thanh toán
-                          </p>
-                          <p class="m-0 text-xs font-bold text-slate-700">
-                            {{ bike.payment }}
-                          </p>
-                        </div>
-                        <div class="p-3 bg-slate-50 rounded-2xl">
-                          <p
-                            class="m-0 text-[9px] font-bold text-slate-300 uppercase mb-1"
-                          >
-                            Giá trị
-                          </p>
-                          <p class="m-0 text-xs font-bold text-blue-600">
-                            {{ bike.price }}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="pt-8 border-t border-slate-100">
-                    <h3
-                      class="m-0 text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-slate-200 mb-6"
-                    >
-                      Nhật ký bảo dưỡng & Sửa chữa
-                    </h3>
-                    <div class="space-y-4">
-                      <div
-                        v-for="i in 1"
-                        :key="i"
-                        class="p-5 bg-slate-50/50 dark:bg-slate-950/20 rounded-2xl flex justify-between items-center border border-transparent hover:border-slate-200 dark:hover:border-slate-800 transition-all"
-                      >
-                        <div class="flex items-center gap-4">
-                          <div
-                            class="size-10 rounded-xl bg-white dark:bg-slate-850 border border-slate-100 dark:border-slate-700 flex-cc text-slate-400 dark:text-slate-300"
-                          >
-                            <ArtSvgIcon icon="ri:tools-line" />
-                          </div>
-                          <div>
-                            <p
-                              class="m-0 text-sm font-bold text-slate-800 dark:text-slate-200"
-                            >
-                              Bảo dưỡng định kỳ lần {{ i }}
-                            </p>
-                            <p
-                              class="m-0 text-[10px] font-bold text-slate-400 uppercase"
-                            >
-                              Ngày 12/01/2024 - Thợ: Nguyễn Bình
-                            </p>
-                          </div>
-                        </div>
-                        <span
-                          class="text-sm font-bold text-slate-700 dark:text-slate-200"
-                          >350,000đ</span
-                        >
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </ElTabPane>
-            </ElTabs>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Dialog Thêm khách hàng chăm sóc mới -->
     <ElDialog
-      v-model="addDialogVisible"
-      title="THÊM KHÁCH HÀNG CHĂM SÓC"
-      width="600px"
-      class="premium-dialog"
+      v-model="addCustomerDialogVisible"
+      title="Thêm khách hàng"
+      width="min(620px, calc(100vw - 32px))"
       destroy-on-close
     >
-      <ElForm :model="form" label-position="top" class="grid grid-cols-2 gap-4">
-        <ElFormItem label="Họ và tên khách hàng" class="col-span-2 is-required">
-          <ElInput v-model="form.name" placeholder="Ví dụ: Nguyễn Văn A" />
-        </ElFormItem>
-
-        <ElFormItem label="Số điện thoại" class="is-required">
-          <ElInput v-model="form.phone" placeholder="Ví dụ: 0901234567" />
-        </ElFormItem>
-
-        <ElFormItem label="Địa chỉ Email">
-          <ElInput v-model="form.email" placeholder="Ví dụ: vana@gmail.com" />
-        </ElFormItem>
-
-        <ElFormItem label="Số CCCD/Định danh">
-          <ElInput v-model="form.identity" placeholder="Nhập số căn cước..." />
-        </ElFormItem>
-
-        <ElFormItem label="Phân loại khách hàng" class="is-required">
-          <ElSelect
-            v-model="form.type"
-            placeholder="Chọn phân loại..."
-            class="w-full"
-          >
-            <ElOption label="Khách hàng VIP" value="VIP" />
-            <ElOption label="Khách hàng cũ" value="Old" />
-            <ElOption label="Khách mới" value="New" />
-          </ElSelect>
-        </ElFormItem>
-
-        <ElFormItem label="Điểm Loyalty tích lũy">
-          <ElInputNumber v-model="form.points" :min="0" class="w-full" />
-        </ElFormItem>
-
-        <ElFormItem label="Hạng thành viên">
-          <ElSelect
-            v-model="form.tier"
-            placeholder="Chọn hạng..."
-            class="w-full"
-          >
-            <ElOption label="Gold Member" value="Gold Member" />
-            <ElOption label="Silver Member" value="Silver Member" />
-            <ElOption label="Platinum Member" value="Platinum Member" />
-            <ElOption label="Standard Member" value="Standard Member" />
-          </ElSelect>
-        </ElFormItem>
-
-        <ElFormItem label="Địa chỉ khách hàng" class="col-span-2">
-          <ElInput v-model="form.address" placeholder="Nhập địa chỉ..." />
-        </ElFormItem>
-
-        <ElFormItem
-          label="Nhu cầu nổi bật (Nhập cách nhau bằng dấu phẩy)"
-          class="col-span-2"
-        >
+      <ElForm label-position="top" class="dialog-form-grid">
+        <ElFormItem label="Họ và tên" class="dialog-form-grid__wide" required>
           <ElInput
-            v-model="form.needsStr"
-            placeholder="Ví dụ: Tay ga cao cấp, Thích màu đen mờ, Trả góp..."
+            v-model="customerForm.fullName"
+            placeholder="Nhập họ và tên"
+          />
+        </ElFormItem>
+        <ElFormItem label="Số điện thoại" required>
+          <ElInput
+            v-model="customerForm.phoneNumber"
+            placeholder="0901234567"
+          />
+        </ElFormItem>
+        <ElFormItem label="Email">
+          <ElInput
+            v-model="customerForm.email"
+            placeholder="khachhang@email.com"
+          />
+        </ElFormItem>
+        <ElFormItem label="CCCD / CMND">
+          <ElInput
+            v-model="customerForm.identificationNumber"
+            placeholder="Nhập số định danh"
+          />
+        </ElFormItem>
+        <ElFormItem label="Phân loại">
+          <ElSelect v-model="customerForm.classification" class="w-full">
+            <ElOption
+              v-for="option in classificationOptions"
+              :key="option.value"
+              :label="option.label"
+              :value="option.value"
+            />
+          </ElSelect>
+        </ElFormItem>
+        <ElFormItem label="Ngày sinh">
+          <ElDatePicker
+            v-model="customerForm.birthday"
+            type="date"
+            value-format="YYYY-MM-DD"
+            format="DD/MM/YYYY"
+            class="w-full"
+            placeholder="Chọn ngày sinh"
+          />
+        </ElFormItem>
+        <ElFormItem label="Giới tính">
+          <ElSelect v-model="customerForm.gender" class="w-full" clearable>
+            <ElOption label="Nam" value="Male" />
+            <ElOption label="Nữ" value="Female" />
+            <ElOption label="Khác" value="Other" />
+          </ElSelect>
+        </ElFormItem>
+      </ElForm>
+      <template #footer>
+        <ElButton @click="addCustomerDialogVisible = false">Hủy</ElButton>
+        <ElButton
+          type="primary"
+          :loading="customerCreating"
+          @click="createCustomer"
+        >
+          Lưu khách hàng
+        </ElButton>
+      </template>
+    </ElDialog>
+
+    <ElDialog
+      v-model="careDialogVisible"
+      title="Ghi nhận chăm sóc"
+      width="min(520px, calc(100vw - 32px))"
+      destroy-on-close
+    >
+      <div v-if="careCustomer" class="dialog-customer-summary">
+        <div class="customer-avatar">
+          {{ getInitials(careCustomer.fullName) }}
+        </div>
+        <div>
+          <strong>{{ careCustomer.fullName }}</strong>
+          <span>{{ careCustomer.phoneNumber }}</span>
+        </div>
+      </div>
+      <ElForm label-position="top">
+        <ElFormItem label="Hình thức" required>
+          <ElSelect v-model="careForm.activityType" class="w-full">
+            <ElOption label="Gọi điện" value="Call" />
+            <ElOption label="Tin nhắn / Zalo" value="Message" />
+            <ElOption label="Đặt lịch hẹn" value="Booking" />
+            <ElOption label="Ghi chú" value="Note" />
+          </ElSelect>
+        </ElFormItem>
+        <ElFormItem label="Nội dung" required>
+          <ElInput
+            v-model="careForm.description"
+            type="textarea"
+            :rows="4"
+            maxlength="1000"
+            show-word-limit
+            placeholder="Ghi rõ nội dung đã trao đổi với khách hàng"
           />
         </ElFormItem>
       </ElForm>
-
       <template #footer>
-        <div class="flex gap-3 justify-end">
-          <ElButton @click="addDialogVisible = false">Hủy bỏ</ElButton>
-          <ElButton type="primary" @click="submitAddCustomer"
-            >Lưu khách hàng</ElButton
-          >
-        </div>
+        <ElButton @click="careDialogVisible = false">Hủy</ElButton>
+        <ElButton
+          type="primary"
+          :loading="careSaving"
+          @click="saveCareActivity"
+        >
+          Lưu tương tác
+        </ElButton>
       </template>
     </ElDialog>
-  </div>
+
+    <ElDialog
+      v-model="supportDialogVisible"
+      title="Tạo phiên hỗ trợ"
+      width="min(560px, calc(100vw - 32px))"
+      destroy-on-close
+    >
+      <ElForm label-position="top">
+        <ElFormItem label="Khách hàng" required>
+          <ElSelect
+            v-model="supportForm.leadId"
+            filterable
+            class="w-full"
+            placeholder="Chọn khách hàng"
+          >
+            <ElOption
+              v-for="lead in leads"
+              :key="lead.id"
+              :label="`${lead.fullName} · ${lead.phoneNumber || 'Chưa có SĐT'}`"
+              :value="lead.id"
+            />
+          </ElSelect>
+        </ElFormItem>
+        <ElFormItem label="Chủ đề" required>
+          <ElInput
+            v-model="supportForm.subject"
+            placeholder="Ví dụ: Hỗ trợ lịch bảo dưỡng"
+          />
+        </ElFormItem>
+        <ElFormItem label="Nhóm yêu cầu" required>
+          <ElSelect v-model="supportForm.category" class="w-full">
+            <ElOption label="Tư vấn sản phẩm" value="ProductConsultation" />
+            <ElOption label="Đơn hàng" value="Order" />
+            <ElOption label="Bảo hành / bảo dưỡng" value="AfterSales" />
+            <ElOption label="Tài chính trả góp" value="Finance" />
+            <ElOption label="Hỗ trợ khác" value="Other" />
+          </ElSelect>
+        </ElFormItem>
+        <ElFormItem label="Nội dung yêu cầu ban đầu" required>
+          <ElInput
+            v-model="supportForm.content"
+            type="textarea"
+            :rows="4"
+            maxlength="2000"
+            show-word-limit
+            placeholder="Ghi lại yêu cầu khách đã gửi qua điện thoại, website hoặc Zalo"
+          />
+        </ElFormItem>
+      </ElForm>
+      <template #footer>
+        <ElButton @click="supportDialogVisible = false">Hủy</ElButton>
+        <ElButton
+          type="primary"
+          :loading="sessionCreating"
+          @click="createSupportSession"
+        >
+          Tạo phiên
+        </ElButton>
+      </template>
+    </ElDialog>
+  </main>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
+import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
+import dayjs from "dayjs";
+import {
+  fetchAddLeadActivity,
+  fetchCreateLead,
+  fetchGetLeadList,
+  type Lead,
+  type LeadActivity,
+  type LeadPaginatedResponse,
+} from "@/api/customer/lead.api";
+import { ContactApi } from "@/api/customer/contact.api";
+import type { Contact } from "@/types";
 
-defineOptions({ name: "CustomerCareFocusMode" });
+defineOptions({ name: "CustomerCare" });
 
-const searchQuery = ref("");
-const filterType = ref("all");
-const isDetailView = ref(false);
-const activeTab = ref("timeline");
-const activeCustomer = ref<any>(null);
+type CustomerClassification = "New" | "Returning" | "VIP" | "NeedsAttention";
+type Workspace = "customers" | "support";
+type ChatDirection = "incoming" | "outgoing";
 
-const filteredCustomers = computed(() => {
-  return customers.value.filter((c) => {
-    const q = searchQuery.value.trim().toLowerCase();
-    const matchesSearch =
-      !q ||
-      c.name.toLowerCase().includes(q) ||
-      c.phone.includes(q) ||
-      c.identity.includes(q) ||
-      (c.bikes && c.bikes.some((b) => b.model.toLowerCase().includes(q)));
+interface ChatMessage {
+  id: string;
+  message: string;
+  sender: string;
+  createdAt?: string;
+  direction: ChatDirection;
+}
 
-    const matchesFilter =
-      filterType.value === "all" || c.type === filterType.value;
+const CLASSIFICATION_ACTIVITY = "CustomerClassification";
+const router = useRouter();
 
-    return matchesSearch && matchesFilter;
+const classificationOptions: Array<{
+  value: CustomerClassification;
+  label: string;
+}> = [
+  { value: "New", label: "Khách mới" },
+  { value: "Returning", label: "Khách quay lại" },
+  { value: "VIP", label: "Khách VIP" },
+  { value: "NeedsAttention", label: "Cần chăm sóc" },
+];
+
+const activeWorkspace = ref<Workspace>("customers");
+const leads = ref<Lead[]>([]);
+const supportSessions = ref<Contact.SupportRequest[]>([]);
+const leadLoading = ref(false);
+const sessionLoading = ref(false);
+const refreshing = ref(false);
+const leadError = ref("");
+const sessionError = ref("");
+
+const customerSearch = ref("");
+const classificationFilter = ref<CustomerClassification | "all">("all");
+const sessionSearch = ref("");
+const sessionStatusFilter = ref("all");
+const activeSession = ref<Contact.SupportRequest | null>(null);
+const replyDraft = ref("");
+const replySending = ref(false);
+const sessionStatusUpdating = ref(false);
+const messageListRef = ref<HTMLElement | null>(null);
+
+const addCustomerDialogVisible = ref(false);
+const customerCreating = ref(false);
+const customerForm = ref(createEmptyCustomerForm());
+
+const careDialogVisible = ref(false);
+const careCustomer = ref<Lead | null>(null);
+const careSaving = ref(false);
+const careForm = ref({ activityType: "Call", description: "" });
+
+const supportDialogVisible = ref(false);
+const sessionCreating = ref(false);
+const supportForm = ref(createEmptySupportForm());
+const classificationUpdatingId = ref<number | null>(null);
+
+function createEmptyCustomerForm() {
+  return {
+    fullName: "",
+    phoneNumber: "",
+    email: "",
+    identificationNumber: "",
+    birthday: "",
+    gender: "",
+    classification: "New" as CustomerClassification,
+  };
+}
+
+function createEmptySupportForm() {
+  return {
+    leadId: null as number | null,
+    subject: "",
+    category: "Other",
+    content: "",
+  };
+}
+
+function asLead(value: unknown): Lead {
+  return value as Lead;
+}
+
+function isSupportRequest(
+  item: Contact.ContactItem,
+): item is Contact.SupportRequest {
+  return "subject" in item && "category" in item && "contactId" in item;
+}
+
+function getLatestClassificationActivity(
+  activities?: LeadActivity[],
+): LeadActivity | undefined {
+  return [...(activities ?? [])]
+    .filter((activity) => activity.activityType === CLASSIFICATION_ACTIVITY)
+    .sort(
+      (first, second) =>
+        new Date(second.createdAt).getTime() -
+        new Date(first.createdAt).getTime(),
+    )[0];
+}
+
+function getClassification(lead: Lead): CustomerClassification {
+  const stored = getLatestClassificationActivity(lead.activities)?.description;
+  if (classificationOptions.some((option) => option.value === stored)) {
+    return stored as CustomerClassification;
+  }
+
+  const legacyTier = lead.tier?.toLowerCase() ?? "";
+  if (legacyTier.includes("vip") || legacyTier.includes("platinum"))
+    return "VIP";
+  if (
+    legacyTier.includes("thân thiết") ||
+    legacyTier.includes("gold") ||
+    legacyTier.includes("silver")
+  ) {
+    return "Returning";
+  }
+  return "New";
+}
+
+function getClassificationLabel(value: CustomerClassification) {
+  return (
+    classificationOptions.find((option) => option.value === value)?.label ??
+    "Khách mới"
+  );
+}
+
+const filteredLeads = computed(() => {
+  const query = customerSearch.value.trim().toLowerCase();
+  return leads.value.filter((lead) => {
+    const searchable = [
+      lead.fullName,
+      lead.phoneNumber,
+      lead.email,
+      lead.identificationNumber,
+      lead.interestedVehicle,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+    const matchesQuery = !query || searchable.includes(query);
+    const matchesClassification =
+      classificationFilter.value === "all" ||
+      getClassification(lead) === classificationFilter.value;
+    return matchesQuery && matchesClassification;
   });
 });
 
-const customers = ref([
-  {
-    id: 1,
-    name: "Nguyễn Văn A",
-    phone: "0901.234.567",
-    type: "VIP",
-    typeLabel: "Khách hàng VIP",
-    lastContact: "02/05/2024",
-    points: 4250,
-    tier: "Gold Member",
-    address: "123 Đường 30/4, P. Trung Dũng, Biên Hòa, Đồng Nai",
-    email: "vana@gmail.com",
-    source: "Website",
-    identity: "072095001234",
-    needs: [
-      "Tay ga cao cấp",
-      "Thích màu đen mờ",
-      "Đổi xe cũ",
-      "Quan tâm trả góp",
-    ],
-    bikes: [
-      {
-        id: 1,
-        model: "Honda SH 160i Sporty",
-        price: "102.500.000đ",
-        deliveryDate: "12/12/2023",
-        img: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=800",
-        payment: "Trả thẳng",
-      },
-      {
-        id: 2,
-        model: "Honda Vision",
-        price: "32.000.000đ",
-        deliveryDate: "15/05/2022",
-        img: "https://images.unsplash.com/photo-1449495169669-7b118f960237?auto=format&fit=crop&q=80&w=400",
-        payment: "Trả góp 0%",
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: "Trần Thị B",
-    phone: "0938.888.999",
-    type: "Old",
-    typeLabel: "Khách hàng cũ",
-    lastContact: "28/04/2024",
-    points: 1200,
-    tier: "Silver Member",
-    address: "Long Thành, Đồng Nai",
-    source: "Facebook Fanpage",
-    identity: "072093005678",
-    needs: ["Tiết kiệm xăng", "Đi làm xa", "Màu xanh"],
-    bikes: [
-      {
-        id: 1,
-        model: "Honda Vision 2023",
-        price: "34.500.000đ",
-        deliveryDate: "10/10/2023",
-        img: "https://images.unsplash.com/photo-1449495169669-7b118f960237?auto=format&fit=crop&q=80&w=400",
-        payment: "Tiền mặt",
-      },
-    ],
-  },
-]);
-
-const timeline = ref([
-  {
-    id: 1,
-    type: "call",
-    date: "02/05/2024 10:15",
-    staff: "Sale: Minh Tuấn",
-    category: "Tư vấn đổi xe",
-    content:
-      "Khách hàng có nhu cầu đổi từ Vision lên SH 160i. Đã báo giá sơ bộ và hẹn lái thử vào cuối tuần này. Khách đang cân nhắc giữa màu Đen mờ và Đỏ đô.",
-  },
-  {
-    id: 2,
-    type: "note",
-    date: "28/04/2024 15:30",
-    staff: "Admin: Lan Anh",
-    category: "Hậu mãi",
-    content:
-      "Gửi tin nhắn Zalo chúc mừng sinh nhật khách hàng kèm Voucher giảm giá 20% thay nhớt tại showroom.",
-  },
-  {
-    id: 3,
-    type: "call",
-    date: "15/03/2024 09:00",
-    staff: "Kỹ thuật: Hoàng",
-    category: "Nhắc bảo dưỡng",
-    content:
-      "Nhắc khách bảo dưỡng lần 3 theo lịch hẹn. Khách báo đang đi công tác, sẽ ghé vào tuần sau.",
-  },
-]);
-
-const getTypeClasses = (type: string) => {
-  if (type === "VIP") return "bg-amber-50 text-amber-600 border-amber-100";
-  if (type === "Old") return "bg-blue-50 text-blue-600 border-blue-100";
-  return "bg-slate-50 text-slate-500 border-slate-200";
-};
-
-const addDialogVisible = ref(false);
-const form = ref({
-  name: "",
-  phone: "",
-  email: "",
-  identity: "",
-  type: "New",
-  points: 0,
-  tier: "Standard Member",
-  address: "",
-  needsStr: "",
+const classificationCounts = computed(() => {
+  const counts: Record<CustomerClassification, number> = {
+    New: 0,
+    Returning: 0,
+    VIP: 0,
+    NeedsAttention: 0,
+  };
+  leads.value.forEach((lead) => {
+    counts[getClassification(lead)] += 1;
+  });
+  return counts;
 });
 
-const handleAddCustomer = () => {
-  form.value = {
-    name: "",
-    phone: "",
-    email: "",
-    identity: "",
-    type: "New",
-    points: 0,
-    tier: "Standard Member",
-    address: "",
-    needsStr: "",
-  };
-  addDialogVisible.value = true;
-};
+const filteredSessions = computed(() => {
+  const query = sessionSearch.value.trim().toLowerCase();
+  return supportSessions.value.filter((session) => {
+    const searchable = [
+      getSessionCustomerName(session),
+      session.contact?.phoneNumber,
+      session.email,
+      session.subject,
+      session.content,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+    const matchesQuery = !query || searchable.includes(query);
+    const matchesStatus =
+      sessionStatusFilter.value === "all" ||
+      session.status === sessionStatusFilter.value;
+    return matchesQuery && matchesStatus;
+  });
+});
 
-const submitAddCustomer = () => {
-  if (!form.value.name || !form.value.phone) {
-    ElMessage.warning("Vui lòng nhập Họ tên và Số điện thoại");
+const openSessionCount = computed(
+  () =>
+    supportSessions.value.filter((session) => session.status !== "Closed")
+      .length,
+);
+
+const matchedLead = computed(() => {
+  if (!activeSession.value) return null;
+  const contact = activeSession.value.contact;
+  const phone = normalizePhone(contact?.phoneNumber ?? "");
+  const email = (
+    contact?.email ??
+    activeSession.value.email ??
+    ""
+  ).toLowerCase();
+  return (
+    leads.value.find((lead) => {
+      const samePhone =
+        phone.length > 0 && normalizePhone(lead.phoneNumber) === phone;
+      const sameEmail =
+        email.length > 0 && (lead.email ?? "").toLowerCase() === email;
+      return samePhone || sameEmail;
+    }) ?? null
+  );
+});
+
+const activeMessages = computed<ChatMessage[]>(() => {
+  if (!activeSession.value) return [];
+  const initialMessage: ChatMessage = {
+    id: `request-${activeSession.value.id}`,
+    message: activeSession.value.content,
+    sender: getSessionCustomerName(activeSession.value),
+    createdAt: activeSession.value.createdAt,
+    direction: "incoming",
+  };
+  const replies = (activeSession.value.contact?.replies ?? [])
+    .filter((reply) => !reply.isInternal)
+    .map<ChatMessage>((reply) => ({
+      id: `reply-${reply.id}`,
+      message: reply.message,
+      sender: reply.repliedByName || "Nhân viên hỗ trợ",
+      createdAt: reply.createdAt,
+      direction: "outgoing",
+    }))
+    .sort(
+      (first, second) =>
+        new Date(first.createdAt ?? 0).getTime() -
+        new Date(second.createdAt ?? 0).getTime(),
+    );
+  return [initialMessage, ...replies];
+});
+
+async function loadLeads() {
+  leadLoading.value = true;
+  leadError.value = "";
+  try {
+    const response = await fetchGetLeadList({ Page: 1, PageSize: 500 });
+    const paginated = response as LeadPaginatedResponse<Lead>;
+    leads.value = Array.isArray(response)
+      ? response
+      : (paginated.items ?? paginated.records ?? []);
+  } catch {
+    leads.value = [];
+    leadError.value = "Không thể tải danh sách khách hàng. Vui lòng thử lại.";
+  } finally {
+    leadLoading.value = false;
+  }
+}
+
+async function loadSupportSessions(preferredSessionId?: number) {
+  sessionLoading.value = true;
+  sessionError.value = "";
+  const currentId = preferredSessionId ?? activeSession.value?.id;
+  try {
+    const response = await ContactApi.getPaginated({
+      contactType: "support",
+      page: 1,
+      pageSize: 200,
+    });
+    supportSessions.value = response.items
+      .filter(isSupportRequest)
+      .sort(
+        (first, second) =>
+          new Date(second.createdAt ?? 0).getTime() -
+          new Date(first.createdAt ?? 0).getTime(),
+      );
+    activeSession.value =
+      supportSessions.value.find((session) => session.id === currentId) ??
+      supportSessions.value[0] ??
+      null;
+  } catch {
+    supportSessions.value = [];
+    activeSession.value = null;
+    sessionError.value = "Không thể tải các phiên hỗ trợ. Vui lòng thử lại.";
+  } finally {
+    sessionLoading.value = false;
+  }
+}
+
+async function refreshAll() {
+  refreshing.value = true;
+  try {
+    await Promise.all([loadLeads(), loadSupportSessions()]);
+  } finally {
+    refreshing.value = false;
+  }
+}
+
+function openAddCustomerDialog() {
+  customerForm.value = createEmptyCustomerForm();
+  addCustomerDialogVisible.value = true;
+}
+
+async function createCustomer() {
+  const form = customerForm.value;
+  if (!form.fullName.trim() || !normalizePhone(form.phoneNumber)) {
+    ElMessage.warning("Vui lòng nhập họ tên và số điện thoại");
     return;
   }
 
-  const needsList = form.value.needsStr
-    ? form.value.needsStr
-        .split(",")
-        .map((s) => s.trim())
-        .filter((s) => s)
-    : [];
+  customerCreating.value = true;
+  try {
+    const createdId = await fetchCreateLead({
+      fullName: form.fullName.trim(),
+      phoneNumber: normalizePhone(form.phoneNumber),
+      email: form.email.trim(),
+      identificationNumber: form.identificationNumber.trim(),
+      birthday: form.birthday || undefined,
+      gender: form.gender,
+    });
+    if (createdId) {
+      await fetchAddLeadActivity(createdId, {
+        activityType: CLASSIFICATION_ACTIVITY,
+        description: form.classification,
+      });
+    }
+    ElMessage.success("Đã tạo hồ sơ khách hàng");
+    addCustomerDialogVisible.value = false;
+    await loadLeads();
+  } catch {
+    ElMessage.error("Không thể tạo khách hàng. Kiểm tra dữ liệu và thử lại.");
+  } finally {
+    customerCreating.value = false;
+  }
+}
 
-  const typeLabels: Record<string, string> = {
-    VIP: "Khách hàng VIP",
-    Old: "Khách hàng cũ",
-    New: "Khách mới",
+async function updateClassification(
+  lead: Lead,
+  classification: CustomerClassification,
+) {
+  if (classification === getClassification(lead)) return;
+  classificationUpdatingId.value = lead.id;
+  try {
+    await fetchAddLeadActivity(lead.id, {
+      activityType: CLASSIFICATION_ACTIVITY,
+      description: classification,
+    });
+    ElMessage.success(
+      `Đã phân loại ${lead.fullName} là ${getClassificationLabel(classification)}`,
+    );
+    await loadLeads();
+  } catch {
+    ElMessage.error("Không thể cập nhật phân loại khách hàng");
+  } finally {
+    classificationUpdatingId.value = null;
+  }
+}
+
+function openCareDialog(lead: Lead) {
+  careCustomer.value = lead;
+  careForm.value = { activityType: "Call", description: "" };
+  careDialogVisible.value = true;
+}
+
+async function saveCareActivity() {
+  if (!careCustomer.value || !careForm.value.description.trim()) {
+    ElMessage.warning("Vui lòng nhập nội dung tương tác");
+    return;
+  }
+  careSaving.value = true;
+  try {
+    await fetchAddLeadActivity(careCustomer.value.id, {
+      activityType: careForm.value.activityType,
+      description: careForm.value.description.trim(),
+    });
+    ElMessage.success("Đã lưu tương tác chăm sóc");
+    careDialogVisible.value = false;
+    await loadLeads();
+  } catch {
+    ElMessage.error("Không thể lưu tương tác chăm sóc");
+  } finally {
+    careSaving.value = false;
+  }
+}
+
+function openSupportDialog(lead?: Lead) {
+  supportForm.value = {
+    ...createEmptySupportForm(),
+    leadId: lead?.id ?? null,
   };
+  supportDialogVisible.value = true;
+}
 
-  const newCust = {
-    id: Date.now(),
-    name: form.value.name,
-    phone: form.value.phone,
-    type: form.value.type,
-    typeLabel: typeLabels[form.value.type] || "Khách mới",
-    lastContact: new Date().toLocaleDateString("vi-VN"),
-    points: form.value.points,
-    tier: form.value.tier,
-    address: form.value.address,
-    email: form.value.email,
-    source: "Showroom",
-    identity: form.value.identity,
-    needs: needsList,
-    bikes: [],
-  };
+async function createSupportSession() {
+  const form = supportForm.value;
+  const lead = leads.value.find((item) => item.id === form.leadId);
+  if (!lead || !form.subject.trim() || !form.content.trim()) {
+    ElMessage.warning("Vui lòng chọn khách hàng và nhập đầy đủ nội dung phiên");
+    return;
+  }
 
-  customers.value.unshift(newCust);
-  ElMessage.success("Đã thêm khách hàng mới thành công!");
-  addDialogVisible.value = false;
-};
+  sessionCreating.value = true;
+  try {
+    const createdResponse = await ContactApi.createSupportRequest({
+      fullName: lead.fullName,
+      phoneNumber: lead.phoneNumber,
+      email: lead.email || "",
+      subject: form.subject.trim(),
+      category: form.category,
+      content: form.content.trim(),
+    });
+    await fetchAddLeadActivity(lead.id, {
+      activityType: "SupportSession",
+      description: `Đã tạo phiên hỗ trợ: ${form.subject.trim()}`,
+    });
+    supportDialogVisible.value = false;
+    activeWorkspace.value = "support";
+    await Promise.all([loadLeads(), loadSupportSessions(createdResponse.id)]);
+    ElMessage.success("Đã tạo phiên hỗ trợ");
+  } catch {
+    ElMessage.error("Không thể tạo phiên hỗ trợ");
+  } finally {
+    sessionCreating.value = false;
+  }
+}
 
-const viewDetails = (row: any) => {
-  activeCustomer.value = row;
-  isDetailView.value = true;
-};
+function selectSession(session: Contact.SupportRequest) {
+  activeSession.value = session;
+}
+
+async function sendChatReply() {
+  const message = replyDraft.value.trim();
+  if (
+    !activeSession.value ||
+    !message ||
+    activeSession.value.status === "Closed"
+  ) {
+    return;
+  }
+  replySending.value = true;
+  const sessionId = activeSession.value.id;
+  try {
+    await ContactApi.reply({
+      contactId: activeSession.value.contactId,
+      message,
+      markAsProcessed: true,
+    });
+    replyDraft.value = "";
+    await loadSupportSessions(sessionId);
+    ElMessage.success("Đã gửi phản hồi");
+  } catch {
+    ElMessage.error("Không thể gửi phản hồi");
+  } finally {
+    replySending.value = false;
+  }
+}
+
+async function updateSessionStatus(status: string) {
+  if (!activeSession.value || status === activeSession.value.status) return;
+  sessionStatusUpdating.value = true;
+  const sessionId = activeSession.value.id;
+  try {
+    await ContactApi.updateStatus(sessionId, "support", { status });
+    await loadSupportSessions(sessionId);
+    ElMessage.success("Đã cập nhật trạng thái phiên");
+  } catch {
+    ElMessage.error("Không thể cập nhật trạng thái phiên");
+  } finally {
+    sessionStatusUpdating.value = false;
+  }
+}
+
+function openProfile(lead: Lead) {
+  router.push(`/Marketing/customer/profile/${lead.id}`);
+}
+
+function getLastInteraction(lead: Lead) {
+  const activities = [...(lead.activities ?? [])]
+    .filter((activity) => activity.activityType !== CLASSIFICATION_ACTIVITY)
+    .sort(
+      (first, second) =>
+        new Date(second.createdAt).getTime() -
+        new Date(first.createdAt).getTime(),
+    );
+  return activities[0]?.createdAt
+    ? formatDateTime(activities[0].createdAt)
+    : "Chưa có tương tác";
+}
+
+function getSessionCustomerName(session: Contact.SupportRequest) {
+  return session.contact?.fullName || session.email || "Khách hàng";
+}
+
+function getSessionPreview(session: Contact.SupportRequest) {
+  const replies = (session.contact?.replies ?? [])
+    .filter((reply) => !reply.isInternal)
+    .sort(
+      (first, second) =>
+        new Date(second.createdAt ?? 0).getTime() -
+        new Date(first.createdAt ?? 0).getTime(),
+    );
+  return replies[0]?.message || session.content;
+}
+
+function getInitials(name?: string) {
+  const parts = (name ?? "").trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "KH";
+  return parts
+    .slice(-2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
+
+function normalizePhone(phone?: string) {
+  return (phone ?? "").replace(/\D/g, "");
+}
+
+function getZaloUrl(phone?: string) {
+  const normalized = normalizePhone(phone);
+  return normalized ? `https://zalo.me/${normalized}` : undefined;
+}
+
+function callPhone(phone?: string) {
+  const normalized = normalizePhone(phone);
+  if (normalized) {
+    window.location.href = `tel:${normalized}`;
+  }
+}
+
+function openZalo(phone?: string) {
+  const url = getZaloUrl(phone);
+  if (url) {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+}
+
+function formatDateTime(value?: string) {
+  return value ? dayjs(value).format("DD/MM/YYYY HH:mm") : "Chưa cập nhật";
+}
+
+function formatRelativeDate(value?: string) {
+  if (!value) return "";
+  const date = dayjs(value);
+  const now = dayjs();
+  if (date.isSame(now, "day")) return date.format("HH:mm");
+  if (date.isSame(now.subtract(1, "day"), "day")) return "Hôm qua";
+  return date.format("DD/MM");
+}
+
+async function scrollMessagesToBottom() {
+  await nextTick();
+  if (messageListRef.value) {
+    messageListRef.value.scrollTop = messageListRef.value.scrollHeight;
+  }
+}
+
+watch(
+  () => [activeSession.value?.id, activeMessages.value.length],
+  scrollMessagesToBottom,
+);
+
+onMounted(refreshAll);
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
 .customer-care-page {
-  .combat-input-large :deep(.el-input__wrapper) {
-    height: 52px;
-    background-color: var(--el-fill-color-blank);
-    border: 1px solid var(--el-border-color-light);
-    border-radius: 20px;
-    box-shadow: none;
+  --care-accent: #e84a4a;
+  --care-accent-soft: color-mix(in srgb, var(--care-accent) 10%, transparent);
+  --care-border: var(--el-border-color-lighter);
+  --care-surface: var(--el-bg-color);
+  --care-surface-soft: var(--el-fill-color-lighter);
+  --care-text: var(--el-text-color-primary);
+  --care-muted: var(--el-text-color-secondary);
 
-    &:focus {
-      border-color: #3b82f6;
-    }
+  color: var(--care-text);
+}
+
+.page-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 22px;
+
+  h1 {
+    margin: 8px 0 6px;
+    font-size: clamp(1.55rem, 2.4vw, 2.25rem);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.035em;
   }
 
-  .premium-select :deep(.el-input__wrapper) {
-    height: 52px;
-    background-color: var(--el-fill-color-blank);
-    border: 1px solid var(--el-border-color-light);
-    border-radius: 20px;
-    box-shadow: none;
+  p {
+    max-width: 680px;
+    margin: 0;
+    color: var(--care-muted);
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+}
+
+.page-heading__actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 10px;
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--care-accent);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.eyebrow__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 3px;
+  background: var(--care-accent);
+  box-shadow: 0 0 0 5px var(--care-accent-soft);
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.metric-card {
+  display: flex;
+  min-height: 126px;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 18px 20px;
+  overflow: hidden;
+  border: 1px solid var(--care-border);
+  border-radius: 18px;
+  background: var(--care-surface);
+
+  strong {
+    font-size: 1.75rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.04em;
   }
 
-  .combat-table {
-    :deep(.el-table__header-wrapper th) {
-      padding: 20px 0;
-      font-size: 10px;
-      font-weight: 900;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      background-color: var(--el-fill-color-light);
+  small {
+    color: var(--care-muted);
+    font-size: 0.72rem;
+  }
+}
+
+.metric-card--accent {
+  position: relative;
+  border-color: color-mix(in srgb, var(--care-accent) 30%, var(--care-border));
+  background:
+    radial-gradient(circle at 100% 0%, rgb(255 255 255 / 20%), transparent 45%),
+    var(--care-accent);
+  color: white;
+  box-shadow: 0 14px 32px
+    color-mix(in srgb, var(--care-accent) 22%, transparent);
+
+  small,
+  .metric-card__label {
+    color: rgb(255 255 255 / 76%);
+  }
+}
+
+.metric-card__label {
+  color: var(--care-muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.workspace-tabs {
+  display: flex;
+  gap: 6px;
+  width: fit-content;
+  max-width: 100%;
+  margin-bottom: 12px;
+  padding: 5px;
+  overflow-x: auto;
+  border: 1px solid var(--care-border);
+  border-radius: 14px;
+  background: var(--care-surface);
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 38px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--care-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      color 180ms ease,
+      background-color 180ms ease,
+      transform 180ms ease;
+
+    &:active {
+      transform: scale(0.98);
     }
 
-    :deep(.el-table__row) {
-      transition: all 0.3s;
+    span {
+      min-width: 24px;
+      padding: 2px 6px;
+      border-radius: 7px;
+      background: var(--care-surface-soft);
+      font-size: 0.68rem;
+      font-variant-numeric: tabular-nums;
+      text-align: center;
+    }
 
-      &:hover {
-        cursor: pointer;
-        background-color: var(--el-fill-color-hover);
+    &.is-active {
+      background: var(--care-text);
+      color: var(--care-surface);
+
+      span {
+        background: rgb(255 255 255 / 14%);
       }
     }
   }
+}
 
-  .combat-tabs-large {
-    :deep(.el-tabs__header) {
-      padding: 0 40px;
-      margin: 0;
-      background: transparent;
-      border-bottom: 1px solid var(--el-border-color-light);
+.workspace-panel,
+.support-workspace {
+  overflow: hidden;
+  border: 1px solid var(--care-border);
+  border-radius: 20px;
+  background: var(--care-surface);
+  box-shadow: 0 16px 44px rgb(15 23 42 / 4%);
+}
+
+.filter-bar {
+  display: flex;
+  gap: 10px;
+  padding: 14px;
+  border-bottom: 1px solid var(--care-border);
+}
+
+.filter-bar__search {
+  max-width: 520px;
+}
+
+.filter-bar__select {
+  width: 220px;
+}
+
+.customer-table {
+  width: 100%;
+
+  :deep(.el-table__header th) {
+    height: 48px;
+    background: var(--care-surface-soft);
+    color: var(--care-muted);
+    font-size: 0.67rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  :deep(.el-table__row td) {
+    padding: 12px 0;
+  }
+
+  :deep(.el-table__body tr:hover > td.el-table__cell) {
+    background: color-mix(in srgb, var(--care-accent) 3%, var(--care-surface));
+  }
+}
+
+.customer-cell {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 12px;
+}
+
+.customer-avatar {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 13px;
+  background: var(--care-surface-soft);
+  color: var(--care-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.customer-avatar--online {
+  position: relative;
+  background: var(--care-accent-soft);
+  color: var(--care-accent);
+
+  &::after {
+    position: absolute;
+    right: -1px;
+    bottom: -1px;
+    width: 10px;
+    height: 10px;
+    border: 2px solid var(--care-surface);
+    border-radius: 50%;
+    background: #22c55e;
+    content: "";
+  }
+}
+
+.customer-cell__copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+
+  strong {
+    overflow: hidden;
+    color: var(--care-text);
+    font-size: 0.84rem;
+    font-weight: 750;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  span {
+    overflow: hidden;
+    color: var(--care-muted);
+    font-size: 0.72rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.classification-select {
+  width: 160px;
+}
+
+.table-primary,
+.table-secondary {
+  display: block;
+  overflow: hidden;
+  font-size: 0.76rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.table-primary {
+  color: var(--care-text);
+  font-weight: 650;
+}
+
+.table-secondary {
+  color: var(--care-muted);
+}
+
+.row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 5px;
+}
+
+.icon-action {
+  display: inline-grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 1px solid var(--care-border);
+  border-radius: 9px;
+  background: var(--care-surface);
+  color: var(--care-muted);
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    color 180ms ease,
+    background-color 180ms ease,
+    transform 180ms ease;
+
+  &:hover {
+    border-color: color-mix(
+      in srgb,
+      var(--care-accent) 40%,
+      var(--care-border)
+    );
+    background: var(--care-accent-soft);
+    color: var(--care-accent);
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--care-accent);
+    outline-offset: 2px;
+  }
+
+  &.is-disabled {
+    pointer-events: none;
+    opacity: 0.35;
+  }
+}
+
+.icon-action--primary {
+  border-color: var(--care-accent);
+  background: var(--care-accent);
+  color: white;
+
+  &:hover {
+    background: color-mix(in srgb, var(--care-accent) 88%, black);
+    color: white;
+  }
+}
+
+.empty-state {
+  display: flex;
+  min-height: 260px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 7px;
+  color: var(--care-muted);
+  text-align: center;
+
+  > :first-child {
+    margin-bottom: 4px;
+    font-size: 2rem;
+    opacity: 0.6;
+  }
+
+  strong {
+    color: var(--care-text);
+    font-size: 0.86rem;
+  }
+
+  span {
+    max-width: 360px;
+    font-size: 0.74rem;
+  }
+}
+
+.empty-state--compact {
+  min-height: 220px;
+  padding: 20px;
+}
+
+.support-workspace {
+  display: grid;
+  min-height: 650px;
+  grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+}
+
+.session-sidebar {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  border-right: 1px solid var(--care-border);
+}
+
+.session-sidebar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 72px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--care-border);
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  span {
+    color: var(--care-muted);
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  strong {
+    font-size: 1rem;
+  }
+}
+
+.session-sidebar__filters {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border-bottom: 1px solid var(--care-border);
+}
+
+.session-list {
+  min-height: 420px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.session-item {
+  position: relative;
+  display: flex;
+  width: 100%;
+  gap: 11px;
+  padding: 14px 16px;
+  border: 0;
+  border-bottom: 1px solid var(--care-border);
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 180ms ease;
+
+  &:hover {
+    background: var(--care-surface-soft);
+  }
+
+  &.is-active {
+    background: var(--care-accent-soft);
+
+    &::before {
+      position: absolute;
+      top: 12px;
+      bottom: 12px;
+      left: 0;
+      width: 3px;
+      border-radius: 0 3px 3px 0;
+      background: var(--care-accent);
+      content: "";
     }
+  }
+}
 
-    :deep(.el-tabs__nav-wrap::after) {
+.session-item__avatar {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--care-surface-soft);
+  color: var(--care-muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.session-item__body {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.session-item__topline {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+
+  strong {
+    overflow: hidden;
+    font-size: 0.78rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  small {
+    flex-shrink: 0;
+    color: var(--care-muted);
+    font-size: 0.62rem;
+  }
+}
+
+.session-item__subject,
+.session-item__preview {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.session-item__subject {
+  color: var(--care-text);
+  font-size: 0.7rem;
+  font-weight: 650;
+}
+
+.session-item__preview {
+  color: var(--care-muted);
+  font-size: 0.67rem;
+}
+
+.status-dot {
+  position: absolute;
+  right: 10px;
+  bottom: 9px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--care-muted);
+}
+
+.status-dot--new {
+  background: #f59e0b;
+}
+
+.status-dot--inprogress {
+  background: #3b82f6;
+}
+
+.status-dot--closed {
+  background: #22c55e;
+}
+
+.chat-panel {
+  display: grid;
+  min-width: 0;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+}
+
+.chat-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 72px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--care-border);
+}
+
+.chat-panel__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  :deep(.el-select) {
+    width: 135px;
+  }
+}
+
+.conversation-context {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 18px;
+  border-bottom: 1px solid var(--care-border);
+  background: var(--care-surface-soft);
+
+  span {
+    padding: 4px 7px;
+    border-radius: 6px;
+    background: var(--care-surface);
+    color: var(--care-accent);
+    font-size: 0.62rem;
+    font-weight: 800;
+  }
+
+  strong {
+    overflow: hidden;
+    font-size: 0.72rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  small {
+    color: var(--care-muted);
+    font-size: 0.62rem;
+  }
+}
+
+.message-list {
+  min-height: 360px;
+  max-height: 470px;
+  padding: 22px;
+  overflow-y: auto;
+  background:
+    radial-gradient(circle at 8% 10%, var(--care-accent-soft), transparent 24%),
+    var(--care-surface);
+}
+
+.message-row {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 12px;
+}
+
+.message-row--outgoing {
+  justify-content: flex-end;
+
+  .message-bubble {
+    border-color: transparent;
+    background: var(--care-accent);
+    color: white;
+
+    time,
+    .message-bubble__sender {
+      color: rgb(255 255 255 / 72%);
+    }
+  }
+}
+
+.message-bubble {
+  max-width: min(72%, 620px);
+  padding: 11px 13px 9px;
+  border: 1px solid var(--care-border);
+  border-radius: 5px 16px 16px;
+  background: var(--care-surface);
+  box-shadow: 0 8px 20px rgb(15 23 42 / 5%);
+
+  p {
+    margin: 4px 0 6px;
+    font-size: 0.79rem;
+    line-height: 1.55;
+    white-space: pre-wrap;
+  }
+
+  time,
+  .message-bubble__sender {
+    display: block;
+    color: var(--care-muted);
+    font-size: 0.6rem;
+  }
+
+  .message-bubble__sender {
+    font-weight: 800;
+  }
+
+  time {
+    text-align: right;
+  }
+}
+
+.composer {
+  padding: 14px 16px;
+  border-top: 1px solid var(--care-border);
+  background: var(--care-surface);
+}
+
+.composer__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 9px;
+
+  span {
+    color: var(--care-muted);
+    font-size: 0.65rem;
+  }
+}
+
+.chat-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--care-muted);
+  text-align: center;
+}
+
+.chat-placeholder__icon {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 4px;
+  place-items: center;
+  border-radius: 22px;
+  background: var(--care-accent-soft);
+  color: var(--care-accent);
+  font-size: 1.6rem;
+  transform: rotate(-4deg);
+}
+
+.chat-placeholder strong {
+  color: var(--care-text);
+  font-size: 0.9rem;
+}
+
+.chat-placeholder span {
+  max-width: 340px;
+  font-size: 0.75rem;
+}
+
+.dialog-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 14px;
+}
+
+.dialog-form-grid__wide {
+  grid-column: 1 / -1;
+}
+
+.dialog-customer-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px;
+  border-radius: 14px;
+  background: var(--care-surface-soft);
+
+  > div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  strong {
+    font-size: 0.84rem;
+  }
+
+  span {
+    color: var(--care-muted);
+    font-size: 0.72rem;
+  }
+}
+
+@media (width <= 1023px) {
+  .metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .support-workspace {
+    min-height: auto;
+    grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+  }
+}
+
+@media (width <= 767px) {
+  .page-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .page-heading__actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .metric-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .metric-card {
+    min-height: 110px;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+  }
+
+  .filter-bar__search,
+  .filter-bar__select {
+    width: 100%;
+    max-width: none;
+  }
+
+  .support-workspace {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .session-sidebar {
+    max-height: 410px;
+    border-right: 0;
+    border-bottom: 1px solid var(--care-border);
+  }
+
+  .chat-panel {
+    min-height: 620px;
+  }
+
+  .chat-panel__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .chat-panel__actions {
+    width: 100%;
+
+    :deep(.el-select) {
+      flex: 1;
+      width: auto;
+    }
+  }
+
+  .conversation-context {
+    grid-template-columns: 1fr auto;
+
+    span {
       display: none;
     }
-
-    :deep(.el-tabs__item) {
-      height: 80px;
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: 0.1em;
-      color: var(--el-text-color-regular);
-
-      &.is-active {
-        color: #3b82f6;
-      }
-    }
-
-    :deep(.el-tabs__active-bar) {
-      height: 4px;
-      background: #3b82f6;
-      border-radius: 4px;
-    }
-  }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.98) translateY(10px);
   }
 
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
+  .message-bubble {
+    max-width: 88%;
+  }
+
+  .composer__footer {
+    align-items: stretch;
+    flex-direction: column;
+
+    :deep(.el-button) {
+      width: 100%;
+    }
+  }
+
+  .dialog-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dialog-form-grid__wide {
+    grid-column: auto;
   }
 }
 </style>

@@ -1,5 +1,18 @@
-<template>
+﻿<template>
   <div class="resp-page product-report">
+    <ReportPageHeader
+      title="Báo cáo sản phẩm"
+      description="Theo dõi hiệu suất sản phẩm"
+      icon="ri:barcode-line"
+    >
+      <template #actions>
+        <ElButton type="primary" @click="exportProductReportExcel">
+          <ArtSvgIcon icon="ri:file-excel-2-line" />
+          Xuất Excel
+        </ElButton>
+      </template>
+    </ReportPageHeader>
+
     <div class="reporting-kpi-grid">
       <ArtStatsCard
         title="Tổng SKU"
@@ -139,11 +152,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, computed } from "vue";
+import { onMounted, onUnmounted, ref, computed, nextTick } from "vue";
 import * as echarts from "echarts";
 import { ElPagination } from "element-plus";
 import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
+import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
+import { exportReportWorkbook } from "@/utils/report-excel";
 import { statisticsApi } from "@/api/operations";
+import ReportPageHeader from "./ReportPageHeader.vue";
 import type * as Statistical from "@/types/api/statistical";
 
 const topRevenueChartRef = ref<HTMLElement | null>(null);
@@ -201,7 +217,8 @@ async function load() {
   }
 }
 
-function renderCharts() {
+async function renderCharts() {
+  await nextTick();
   if (topRevenueChartRef.value) {
     if (!topRevenueChart)
       topRevenueChart = echarts.init(topRevenueChartRef.value);
@@ -288,6 +305,39 @@ function renderCharts() {
 function truncate(text: string | undefined | null, maxLen: number): string {
   if (!text) return "";
   return text.length > maxLen ? text.slice(0, maxLen) + "..." : text;
+}
+
+function exportProductReportExcel() {
+  exportReportWorkbook({
+    fileName: "Bao_cao_san_pham",
+    sheets: [
+      {
+        name: "Tổng quan",
+        rows: [
+          {
+            Tong_SKU: data.value.highlights.totalSKUs,
+            San_pham_ban_chay: data.value.highlights.bestSellerName,
+            Da_ban_30_ngay: data.value.highlights.bestSellerSold,
+            Hang_e_ton_kho: data.value.highlights.deadStockName,
+            Gia_tri_hang_e: data.value.highlights.deadStockValue,
+            Vong_quay_TB: data.value.highlights.avgTurnover,
+          },
+        ],
+      },
+      {
+        name: "Hieu suat san pham",
+        rows: data.value.productPerformanceTable.map((p: any) => ({
+          San_pham: p.productName,
+          Gia_ban: p.sellPrice,
+          Da_ban_30_ngay: p.soldCount30Days,
+          Ton_kho: p.stockQuantity,
+          Ton_kho_toi_da: p.maxStockQuantity,
+          Ty_suat_loi_nhuan: p.marginPercentage,
+          Trang_thai: p.status || "-",
+        })),
+      },
+    ],
+  });
 }
 
 function formatShortLabel(val: number): string {

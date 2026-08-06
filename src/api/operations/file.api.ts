@@ -39,4 +39,17 @@ export const FileApi = {
       },
     });
   },
+
+  uploadManualImage(file: File, targetFileName: string) {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    return request.post<any>({
+      url: `/api/v1/MediaFile/manual/upload?targetFileName=${targetFileName}`,
+      data: formData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  },
 };

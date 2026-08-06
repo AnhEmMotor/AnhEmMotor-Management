@@ -1,5 +1,6 @@
 import { AppRouteRecord } from "@/types/router";
 import { Permissions } from "@/domain/constants/permissions";
+import { orderManualRoutes } from "@/router/modules/order-manual";
 
 export const orderMenu: AppRouteRecord[] = [
   {
@@ -111,7 +112,7 @@ export const orderMenu: AppRouteRecord[] = [
           },
           {
             path: "contract/preview/:id?",
-            name: "SalesContractPreview",
+            name: "OrderSalesContractPreview",
             component: "/Order/view/order/contract/contract-preview",
             meta: {
               title: "Chi tiết Hợp đồng",
@@ -187,6 +188,7 @@ export const orderMenu: AppRouteRecord[] = [
           permissions: [Permissions.Order.OrderManagement.View],
         },
       },
+      ...orderManualRoutes,
     ],
   },
 ];

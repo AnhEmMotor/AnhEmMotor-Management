@@ -31,6 +31,15 @@ export namespace Contact {
     status: string;
     assignedUserId?: string;
     assignedUserName?: string;
+    assignedAt?: string;
+    startedAt?: string;
+    closedAt?: string;
+    employeeRatingOfCustomer?: number;
+    employeeRatingComment?: string;
+    employeeRatedAt?: string;
+    customerRatingOfEmployee?: number;
+    customerRatingComment?: string;
+    customerRatedAt?: string;
     contact?: ContactBasic;
     createdAt?: string;
   }
@@ -65,10 +74,11 @@ export namespace Contact {
   export type ContactItem = SupportRequest | CustomerFeedback | JobApplication;
 
   export interface PaginatedResponse {
-    records: ContactItem[];
+    items: ContactItem[];
     totalCount: number;
-    page: number;
+    pageNumber: number;
     pageSize: number;
+    totalPages: number;
   }
 
   export interface UpdateStatusRequest {
@@ -83,6 +93,11 @@ export namespace Contact {
     email: string;
     orderCode?: string;
     content: string;
+  }
+
+  export interface CreateSupportRequestResponse {
+    id: number;
+    trackingToken: string;
   }
 
   export interface CreateFeedbackPayload {
@@ -104,13 +119,20 @@ export namespace Contact {
 
   export interface CreateReplyPayload {
     contactId: number;
+    contactItemId?: number;
+    contactType?: string;
     message: string;
-    isInternal: boolean;
+    markAsProcessed: boolean;
   }
 
   export interface UpdateInternalNotePayload {
     contactId: number;
     internalNote: string;
+  }
+
+  export interface SupportRatingPayload {
+    rating: number;
+    comment?: string;
   }
 
   export const SupportStatuses = [
@@ -133,3 +155,27 @@ export namespace Contact {
     ...CandidateStatuses,
   ] as readonly string[];
 }
+
+export const resolveContactId = (
+  item: Contact.ContactItem | null | undefined,
+): number | null => {
+  const explicitContactId = item?.contactId;
+  if (
+    typeof explicitContactId === "number" &&
+    Number.isInteger(explicitContactId) &&
+    explicitContactId > 0
+  ) {
+    return explicitContactId;
+  }
+
+  const nestedContactId = item?.contact?.id;
+  if (
+    typeof nestedContactId === "number" &&
+    Number.isInteger(nestedContactId) &&
+    nestedContactId > 0
+  ) {
+    return nestedContactId;
+  }
+
+  return null;
+};

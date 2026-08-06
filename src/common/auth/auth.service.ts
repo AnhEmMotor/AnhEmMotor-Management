@@ -13,7 +13,6 @@ const AuthService = {
       const response = await AuthApis.fetchLogin(credentials);
       return await this.handleLoginSuccess(response.accessToken);
     } catch (error) {
-      console.error("[AuthService] Login failed:", error);
       localStorage.removeItem("user");
       throw error;
     }
@@ -26,7 +25,6 @@ const AuthService = {
       const response = await AuthApis.fetchGoogleLogin(credentials);
       return await this.handleLoginSuccess(response.accessToken);
     } catch (error) {
-      console.error("[AuthService] Google Login failed:", error);
       localStorage.removeItem("user");
       throw error;
     }
@@ -39,7 +37,6 @@ const AuthService = {
       const response = await AuthApis.fetchFacebookLogin(credentials);
       return await this.handleLoginSuccess(response.accessToken);
     } catch (error) {
-      console.error("[AuthService] Facebook Login failed:", error);
       localStorage.removeItem("user");
       throw error;
     }
@@ -68,7 +65,6 @@ const AuthService = {
       const response = await AuthApis.fetchGetUserInfo();
       return response as Api.Auth.UserInfo;
     } catch (error) {
-      console.error("[AuthService] Get user info failed:", error);
       return null;
     }
   },

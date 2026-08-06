@@ -17,7 +17,9 @@
           v-for="(item, index) in list"
           :key="index"
         >
-          <Badge status="info" :text="item.category" />
+          <el-tag type="info" size="small" effect="light">{{
+            item.category
+          }}</el-tag>
           <span class="mx-2 text-g-600">{{ item.action }}</span>
           <span class="text-theme">{{ item.targetType }}</span>
         </div>

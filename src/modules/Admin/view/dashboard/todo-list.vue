@@ -43,7 +43,9 @@
           class="flex-cb h-17.5 border-b border-g-300 text-sm last:border-b-0"
         >
           <div class="flex-cb gap-2 w-full pr-2">
-            <Badge :status="item.priority" :text="item.categoryBadge" />
+            <el-tag :type="item.priority" size="small" effect="light">{{
+              item.categoryBadge
+            }}</el-tag>
             <span class="text-g-800 font-medium truncate">{{
               item.title
             }}</span>

@@ -1,7 +1,9 @@
 <template>
   <div class="resp-page invoices-page flex flex-col gap-4 pb-5">
     <!-- Header Actions -->
-    <div class="flex items-center justify-between max-md:flex-wrap max-md:gap-3">
+    <div
+      class="flex items-center justify-between max-md:flex-wrap max-md:gap-3"
+    >
       <div class="flex items-center gap-3">
         <ElInput
           v-model="searchQuery"
@@ -38,7 +40,7 @@
     <ElCard shadow="never" class="invoice-list-card">
       <ElTable
         :data="paginatedInvoices"
-class="resp-table"
+        class="resp-table"
         style="width: 100%"
         v-loading="loadingList"
         @row-click="handleRowClick"
@@ -147,7 +149,7 @@ class="resp-table"
       v-model="dialog.visible"
       :title="dialog.title"
       width="65%"
-class="resp-dialog"
+      class="resp-dialog"
       :close-on-click-modal="false"
       destroy-on-close
     >
@@ -241,6 +243,146 @@ class="resp-dialog"
           </ElFormItem>
         </div>
 
+        <ElDivider content-position="left">🎫 Mã giảm giá (Voucher)</ElDivider>
+        <ElFormItem label="Nhập mã voucher">
+          <ElInput
+            v-model="invoiceVoucherCode"
+            placeholder="Nhập mã voucher..."
+            @keyup.enter="applyInvoiceVoucher"
+            clearable
+          >
+            <template #append>
+              <ElButton
+                :loading="invoiceVoucherApplying"
+                type="primary"
+                @click="applyInvoiceVoucher"
+                >Áp dụng</ElButton
+              >
+            </template>
+          </ElInput>
+        </ElFormItem>
+        <div
+          v-if="appliedInvoiceVoucher"
+          class="flex items-center gap-2 p-2 bg-emerald-50 border border-emerald-200 rounded-lg"
+        >
+          <ElIcon class="text-emerald-600"><Ticket /></ElIcon>
+          <div class="flex flex-col">
+            <span class="text-sm font-bold text-emerald-700">{{
+              appliedInvoiceVoucher.code
+            }}</span>
+            <span class="text-xs text-emerald-600"
+              >-{{ formatCurrency(appliedInvoiceVoucher.discountAmount) }}</span
+            >
+          </div>
+          <ElButton
+            v-if="!dialog.readonly"
+            link
+            type="danger"
+            size="small"
+            :loading="invoiceVoucherApplying"
+            @click="removeInvoiceVoucher"
+            class="ml-auto"
+          >
+            <ElIcon><Close /></ElIcon>
+          </ElButton>
+        </div>
+        <p v-if="invoiceVoucherError" class="text-xs text-red-500 mt-1">
+          {{ invoiceVoucherError }}
+        </p>
+
+        <ElDivider content-position="left">🎫 Mã giảm giá (Voucher)</ElDivider>
+        <ElFormItem label="Nhập mã voucher">
+          <ElInput
+            v-model="invoiceVoucherCode"
+            placeholder="Nhập mã voucher..."
+            @keyup.enter="applyInvoiceVoucher"
+            clearable
+          >
+            <template #append>
+              <ElButton
+                :loading="invoiceVoucherApplying"
+                type="primary"
+                @click="applyInvoiceVoucher"
+                >Áp dụng</ElButton
+              >
+            </template>
+          </ElInput>
+        </ElFormItem>
+        <div
+          v-if="appliedInvoiceVoucher"
+          class="flex items-center gap-2 p-2 bg-emerald-50 border border-emerald-200 rounded-lg"
+        >
+          <ElIcon class="text-emerald-600"><Ticket /></ElIcon>
+          <div class="flex flex-col">
+            <span class="text-sm font-bold text-emerald-700">{{
+              appliedInvoiceVoucher.code
+            }}</span>
+            <span class="text-xs text-emerald-600"
+              >-{{ formatCurrency(appliedInvoiceVoucher.discountAmount) }}</span
+            >
+          </div>
+          <ElButton
+            v-if="!dialog.readonly"
+            link
+            type="danger"
+            size="small"
+            :loading="invoiceVoucherApplying"
+            @click="removeInvoiceVoucher"
+            class="ml-auto"
+          >
+            <ElIcon><Close /></ElIcon>
+          </ElButton>
+        </div>
+        <p v-if="invoiceVoucherError" class="text-xs text-red-500 mt-1">
+          {{ invoiceVoucherError }}
+        </p>
+
+        <ElDivider content-position="left">🎫 Mã giảm giá (Voucher)</ElDivider>
+        <ElFormItem label="Nhập mã voucher">
+          <ElInput
+            v-model="invoiceVoucherCode"
+            placeholder="Nhập mã voucher..."
+            @keyup.enter="applyInvoiceVoucher"
+            clearable
+          >
+            <template #append>
+              <ElButton
+                :loading="invoiceVoucherApplying"
+                type="primary"
+                @click="applyInvoiceVoucher"
+                >Áp dụng</ElButton
+              >
+            </template>
+          </ElInput>
+        </ElFormItem>
+        <div
+          v-if="appliedInvoiceVoucher"
+          class="flex items-center gap-2 p-2 bg-emerald-50 border border-emerald-200 rounded-lg"
+        >
+          <ElIcon class="text-emerald-600"><Ticket /></ElIcon>
+          <div class="flex flex-col">
+            <span class="text-sm font-bold text-emerald-700">{{
+              appliedInvoiceVoucher.code
+            }}</span>
+            <span class="text-xs text-emerald-600"
+              >-{{ formatCurrency(appliedInvoiceVoucher.discountAmount) }}</span
+            >
+          </div>
+          <ElButton
+            v-if="!dialog.readonly"
+            link
+            type="danger"
+            size="small"
+            :loading="invoiceVoucherApplying"
+            @click="removeInvoiceVoucher"
+            class="ml-auto"
+          >
+            <ElIcon><Close /></ElIcon>
+          </ElButton>
+        </div>
+        <p v-if="invoiceVoucherError" class="text-xs text-red-500 mt-1">
+          {{ invoiceVoucherError }}
+        </p>
         <ElDivider content-position="left">💳 Thanh toán</ElDivider>
         <div class="grid grid-cols-2 gap-4">
           <ElFormItem label="Phương thức">
@@ -311,7 +453,7 @@ class="resp-dialog"
       v-model="createDialog.visible"
       title="Tạo hóa đơn mới"
       width="65%"
-class="resp-dialog"
+      class="resp-dialog"
       :close-on-click-modal="false"
       destroy-on-close
     >
@@ -428,7 +570,8 @@ class="resp-dialog"
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { Search, Plus } from "@element-plus/icons-vue";
+import { Search, Plus, Ticket, Close } from "@element-plus/icons-vue";
+import { VoucherApi } from "@/api/voucher.api";
 import {
   invoiceApi,
   type AdminInvoiceDetailResponse,
@@ -474,6 +617,11 @@ const searchQuery = ref("");
 const filterStatus = ref<string>("");
 const totalCount = ref(0);
 const pagination = reactive({ current: 1, size: 10 });
+const invoiceVoucherCode = ref("");
+const appliedInvoiceVoucher = ref<any>(null);
+const invoiceVoucherApplying = ref(false);
+const invoiceVoucherError = ref("");
+const invoiceVoucherDiscount = ref(0);
 
 const dialog = reactive({
   visible: false,
@@ -693,6 +841,84 @@ async function handleMarkCompleted(row: any) {
     }
   } finally {
     actionLoading.value = false;
+  }
+}
+
+// ==================== VOUCHER ====================
+async function applyInvoiceVoucher() {
+  invoiceVoucherError.value = "";
+  const code = invoiceVoucherCode.value.trim().toUpperCase();
+  if (!code) {
+    invoiceVoucherError.value = "Vui lòng nhập mã voucher";
+    return;
+  }
+  const oid = dialog.invoice?.id || createDialog.form;
+  if (!oid || typeof oid !== "number") {
+    invoiceVoucherError.value =
+      "Vui lòng lưu hóa đơn trước khi áp dụng voucher";
+    return;
+  }
+  invoiceVoucherApplying.value = true;
+  try {
+    const voucher = await VoucherApi.getByCode(code);
+    if (!voucher) {
+      invoiceVoucherError.value = "Mã voucher không tồn tại";
+      return;
+    }
+    const totalAmount =
+      Number(dialog.form.vehiclePrice || 0) +
+      Number(dialog.form.registrationFee || 0) +
+      Number(dialog.form.insuranceFee || 0);
+    if (voucher.minOrderValue > 0 && totalAmount < voucher.minOrderValue) {
+      invoiceVoucherError.value = `Hóa đơn tối thiểu ${voucher.minOrderValue.toLocaleString()}đ để áp dụng voucher này`;
+      return;
+    }
+    const validation = await VoucherApi.validate(voucher.id, oid);
+    if (!validation.isValid) {
+      invoiceVoucherError.value = validation.message || "Voucher không hợp lệ";
+      return;
+    }
+    const applied = await VoucherApi.apply(voucher.id, oid);
+    let disc =
+      voucher.discountType === "PERCENT"
+        ? Math.round((totalAmount * voucher.discountValue) / 100)
+        : Math.round(voucher.discountValue);
+    if (voucher.maxDiscountAmount && disc > voucher.maxDiscountAmount) {
+      disc = voucher.maxDiscountAmount;
+    }
+    invoiceVoucherDiscount.value = disc;
+    appliedInvoiceVoucher.value = {
+      orderVoucherId: applied.orderVoucherId,
+      voucherId: voucher.id,
+      code: voucher.code,
+      name: voucher.name,
+      discountType: voucher.discountType,
+      discountValue: voucher.discountValue,
+      maxDiscountAmount: voucher.maxDiscountAmount,
+      discountAmount: disc,
+      minOrderValue: voucher.minOrderValue,
+    };
+    ElMessage.success("Đã áp dụng voucher " + voucher.code);
+  } catch (err: any) {
+    invoiceVoucherError.value = err?.message || "Không thể áp dụng voucher";
+  } finally {
+    invoiceVoucherApplying.value = false;
+  }
+}
+
+async function removeInvoiceVoucher() {
+  if (!appliedInvoiceVoucher.value) return;
+  invoiceVoucherApplying.value = true;
+  try {
+    await VoucherApi.remove(appliedInvoiceVoucher.value.orderVoucherId);
+    ElMessage.success("Đã bỏ voucher " + appliedInvoiceVoucher.value.code);
+    appliedInvoiceVoucher.value = null;
+    invoiceVoucherDiscount.value = 0;
+    invoiceVoucherCode.value = "";
+  } catch (err: any) {
+    ElMessage.error(err?.message || "Không thể bỏ voucher");
+  } finally {
+    invoiceVoucherApplying.value = false;
   }
 }
 

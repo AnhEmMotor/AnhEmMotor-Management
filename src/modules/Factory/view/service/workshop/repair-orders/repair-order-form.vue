@@ -455,6 +455,116 @@
         </div>
       </div>
 
+      <!-- Voucher Section -->
+      <div
+        v-if="order"
+        class="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm mt-4"
+      >
+        <h4
+          class="text-xs font-black uppercase text-slate-400 tracking-wider mb-3 flex items-center gap-2"
+        >
+          <Icon name="fa6-solid:ticket" class="text-primary" />
+          Mã giảm giá
+        </h4>
+
+        <div
+          v-if="appliedVoucher"
+          class="flex items-center justify-between rounded-xl border border-green-200 bg-green-50 p-4"
+        >
+          <div class="flex items-center gap-3">
+            <Icon name="fa6-solid:circle-check" class="text-green-600" />
+            <div>
+              <span class="text-sm font-bold text-green-800">{{
+                appliedVoucher.code
+              }}</span>
+              <span class="text-xs text-green-600 ml-2"
+                >-{{ formatCurrency(voucherDiscount) }}</span
+              >
+            </div>
+          </div>
+          <ElButton
+            link
+            type="danger"
+            size="small"
+            :loading="voucherApplying"
+            @click="removeVoucher"
+            >Hủy</ElButton
+          >
+        </div>
+
+        <div v-else class="flex gap-3">
+          <ElInput
+            v-model="voucherCode"
+            placeholder="Nhập mã giảm giá"
+            class="flex-1"
+            :disabled="submitting"
+            @keyup.enter="handleApplyVoucher"
+          />
+          <ElButton
+            type="primary"
+            :loading="voucherApplying"
+            @click="handleApplyVoucher"
+          >
+            Áp dụng
+          </ElButton>
+        </div>
+
+        <p v-if="voucherError" class="text-xs text-red-500 mt-2 font-bold">
+          {{ voucherError }}
+        </p>
+
+        <div
+          v-if="voucherDiscount > 0"
+          class="flex justify-between items-center mt-3 pt-3 border-t border-slate-100"
+        >
+          <span class="text-sm font-bold text-green-600">Giảm giá voucher</span>
+          <span class="text-sm font-black text-green-600"
+            >-{{ formatCurrency(voucherDiscount) }}</span
+          >
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-slate-100 space-y-2">
+          <div class="flex justify-between text-xs text-slate-500">
+            <span>Tiền công sửa chữa:</span>
+            <span class="font-bold text-slate-700">{{
+              formatCurrency(order.laborCost || 0)
+            }}</span>
+          </div>
+          <div class="flex justify-between text-xs text-slate-500">
+            <span>Tiền phụ tùng vật tư:</span>
+            <span class="font-bold text-slate-700">{{
+              formatCurrency(order.partsCost || 0)
+            }}</span>
+          </div>
+          <div class="flex justify-between text-xs text-slate-500">
+            <span>Tổng trước giảm:</span>
+            <span class="font-bold text-slate-700">{{
+              formatCurrency(repairOrderTotal)
+            }}</span>
+          </div>
+          <div
+            v-if="voucherDiscount > 0"
+            class="flex justify-between text-xs text-green-600"
+          >
+            <span>Giảm giá voucher:</span>
+            <span class="font-bold"
+              >-{{ formatCurrency(voucherDiscount) }}</span
+            >
+          </div>
+          <div
+            class="flex justify-between text-base border-t border-slate-100 pt-2 mt-2"
+          >
+            <span class="font-black uppercase text-slate-800"
+              >Phí sau voucher:</span
+            >
+            <span class="font-black text-primary text-lg">{{
+              formatCurrency(voucherFinalTotal)
+            }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty state when no order -->
       <!-- Empty state when no order -->
       <div v-else class="text-center py-20 text-slate-400">
         <div class="text-4xl mb-4">🔧</div>
@@ -465,7 +575,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 
@@ -476,6 +586,7 @@ import {
 } from "@/api/sales";
 import { EmployeeApi, type EmployeeResponse } from "@/api/operations";
 import { VehicleApi } from "@/api/vehicle/vehicle.api";
+import { useVoucher } from "@/common/composables/useVoucher";
 
 defineOptions({ name: "ServiceWorkshopRepairOrderForm" });
 
@@ -537,6 +648,26 @@ const syncForm = (value: RepairOrder) => {
   selectedTechId.value = value.technicianId || null;
   selectedVehicleId.value = value.vehicleId || null;
 };
+
+const repairOrderTotal = computed(() =>
+  Number(order.value?.totalAmount || order.value?.totalCost || 0),
+);
+const voucherOrderTotal = computed(() => repairOrderTotal.value);
+const voucherOrderId = computed(() => orderId || undefined);
+const {
+  voucherCode,
+  appliedVoucher,
+  applying: voucherApplying,
+  errorMsg: voucherError,
+  discountAmount: voucherDiscount,
+  handleApply: handleApplyVoucher,
+  handleRemove: removeVoucher,
+  reset: resetVoucher,
+} = useVoucher(
+  () => voucherOrderTotal.value,
+  () => voucherOrderId.value,
+  true,
+);
 
 const loadOrder = async () => {
   if (!Number.isFinite(orderId)) {
@@ -714,6 +845,10 @@ const formatCurrency = (value: number) => {
     currency: "VND",
   }).format(value);
 };
+
+const voucherFinalTotal = computed(() =>
+  Math.max(0, repairOrderTotal.value - voucherDiscount.value),
+);
 
 const formatDate = (dateStr: string) => {
   if (!dateStr) return "-";

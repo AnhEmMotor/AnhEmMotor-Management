@@ -29,7 +29,9 @@
           </div>
         </div>
         <div class="absolute top-2 right-3">
-          <Badge status="info" text="Có thể click" />
+          <el-tag type="info" size="small" effect="plain" round
+            >Có thể click</el-tag
+          >
         </div>
       </div>
     </div>

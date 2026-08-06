@@ -1,5 +1,6 @@
 import { AppRouteRecord } from "@/types/router";
 import { Permissions } from "@/domain/constants/permissions";
+import { marketingManualRoutes } from "@/router/modules/marketing-manual";
 
 export const marketingMenu: AppRouteRecord[] = [
   {
@@ -226,6 +227,16 @@ export const marketingMenu: AppRouteRecord[] = [
               activePath: "/Marketing/customer/voucher",
             },
           },
+          {
+            path: "store-chat",
+            name: "CustomerStoreChat",
+            component: "/Marketing/view/customer/store-chat/index",
+            meta: {
+              title: "menus.marketing.customerStoreChat",
+              icon: "ri:customer-service-2-line",
+              permissions: [Permissions.Marketing.StoreChatManagement.View],
+            },
+          },
         ],
       },
       {
@@ -239,6 +250,7 @@ export const marketingMenu: AppRouteRecord[] = [
           permissions: [Permissions.Marketing.BookingManagement.View],
         },
       },
+      ...marketingManualRoutes,
     ],
   },
 ];
