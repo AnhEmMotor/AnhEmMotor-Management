@@ -229,6 +229,7 @@
                     v-if="activeSupportRequest"
                     :request="activeSupportRequest"
                     :submitting="ratingSubmitting"
+                    :can-rate-customer="isAssignedToCurrentUser"
                     @rate-customer="handleRateCustomer"
                   />
 
@@ -252,7 +253,10 @@
                     <div class="flex justify-between items-center mt-3">
                       <div class="flex gap-2">
                         <ElButton
-                          v-if="activeItem?.status === 'InProgress'"
+                          v-if="
+                            activeItem?.status === 'InProgress' &&
+                            isAssignedToCurrentUser
+                          "
                           size="small"
                           type="success"
                           plain
@@ -265,18 +269,31 @@
                           />Đóng yêu cầu
                         </ElButton>
                         <ElButton
-                          v-if="activeItem?.status === 'Assigned'"
+                          v-if="
+                            activeItem?.status === 'Assigned' &&
+                            isAssignedToCurrentUser
+                          "
                           size="small"
                           type="primary"
                           plain
                           class="font-bold text-[10px]"
                           @click="handleStatus('InProgress')"
                         >
-                          <ArtSvgIcon
-                            icon="ri:loader-4-line"
-                            class="mr-1"
-                          />Đang xử lý
+                          <ArtSvgIcon icon="ri:loader-4-line" class="mr-1" />Bắt
+                          đầu hỗ trợ
                         </ElButton>
+                        <ElTag
+                          v-if="
+                            ['Assigned', 'InProgress'].includes(
+                              activeItem?.status,
+                            ) && !isAssignedToCurrentUser
+                          "
+                          type="info"
+                          effect="plain"
+                          size="small"
+                        >
+                          Chỉ nhân viên được phân công có thể xử lý
+                        </ElTag>
                         <ElButton
                           v-if="activeItem?.status !== 'Closed'"
                           size="small"
@@ -292,7 +309,10 @@
                       </div>
                       <ElButton
                         type="primary"
-                        :disabled="activeItem?.status !== 'InProgress'"
+                        :disabled="
+                          activeItem?.status !== 'InProgress' ||
+                          !isAssignedToCurrentUser
+                        "
                         class="font-bold text-xs uppercase"
                         style="background: #001529; border-color: #001529"
                         @click="handleReply"
@@ -1135,6 +1155,7 @@ import { ElMessage } from "element-plus";
 import { storeToRefs } from "pinia";
 import { useContactStore } from "@/application/store/contact";
 import { useSettingStore } from "@/application/store/setting";
+import { useUserStore } from "@/application/store/user";
 import { fetchGetUserList } from "@/api/auth";
 import {
   SupportStatuses,
@@ -1146,6 +1167,7 @@ import SupportWorkflowPanel from "./components/SupportWorkflowPanel.vue";
 
 defineOptions({ name: "ContactManagement" });
 const contactStore = useContactStore();
+const userStore = useUserStore();
 const { isDark } = storeToRefs(useSettingStore());
 
 const activeTab = ref("support");
@@ -1221,6 +1243,15 @@ const activeSupportRequest = computed<Contact.SupportRequest | null>(() =>
     ? (contactStore.activeItem as Contact.SupportRequest | null)
     : null,
 );
+const isAssignedToCurrentUser = computed(() => {
+  const assignedUserId = activeSupportRequest.value?.assignedUserId;
+  const currentUserId = userStore.getUserInfo.userId;
+  return Boolean(
+    assignedUserId &&
+    currentUserId &&
+    assignedUserId.toLowerCase() === String(currentUserId).toLowerCase(),
+  );
+});
 
 watch(
   activeItem,
@@ -1386,6 +1417,10 @@ const activeItemCoverLetter = computed(
 
 const handleStatus = async (newStatus: string) => {
   if (!contactStore.activeItem) return;
+  if (activeTab.value === "support" && !isAssignedToCurrentUser.value) {
+    ElMessage.warning("Chỉ nhân viên được phân công mới có thể xử lý yêu cầu");
+    return;
+  }
   await contactStore.updateStatus(
     contactStore.activeItem.id,
     activeTab.value,
@@ -1398,6 +1433,10 @@ const handleRateCustomer = async (payload: {
   comment: string;
 }) => {
   if (!activeSupportRequest.value) return;
+  if (!isAssignedToCurrentUser.value) {
+    ElMessage.warning("Chỉ nhân viên được phân công mới có thể đánh giá");
+    return;
+  }
   ratingSubmitting.value = true;
   try {
     await contactStore.rateSupportCustomer(
