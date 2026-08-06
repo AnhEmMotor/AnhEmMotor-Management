@@ -24,7 +24,7 @@
         class="manual-content flex-1 overflow-y-auto custom-scrollbar p-8 md:p-12 relative flex flex-col"
       >
         <div
-          class="animate-fade-in-up w-full max-w-[1300px] mx-auto flex-1 flex flex-col justify-center"
+          class="w-full max-w-[1300px] mx-auto flex-1 flex flex-col justify-center"
         >
           <!-- Overview -->
           <div v-if="activeSection === 'overview'">
@@ -47,15 +47,14 @@
 
             <div class="workspace-grid mt-4">
               <el-card
-                v-for="(section, index) in availableSections.filter(
+                v-for="section in availableSections.filter(
                   (s) => s.id !== 'overview',
                 )"
                 :key="section.id"
-                class="workspace-card relative animate-fade-in-up"
+                class="workspace-card relative"
                 :style="{
                   '--theme-color': section.color,
                   '--hover-shadow-color': section.shadowColor,
-                  'animation-delay': `${index * 0.1}s`,
                 }"
                 shadow="never"
                 @click="openSection(section)"
@@ -341,22 +340,6 @@ const currentSectionData = computed(() =>
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background-color: var(--el-border-color-dark);
   border-radius: 10px;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in-up {
-  animation: fadeInUp 0.4s ease-out forwards;
 }
 
 .prose h3 {
