@@ -34,37 +34,60 @@
       </div>
     </div>
 
-    <div v-if="request.status === 'Closed'" class="support-workflow__ratings">
-      <article class="support-workflow__rating-card">
-        <p>Nhân viên đánh giá khách hàng</p>
-        <ElRate v-model="employeeRating" :disabled="submitting" />
-        <ElInput
-          v-model="employeeComment"
-          type="textarea"
-          :rows="2"
-          maxlength="1000"
-          show-word-limit
-          placeholder="Ghi nhận mức độ hợp tác của khách hàng"
-        />
-        <ElButton
-          type="primary"
-          :loading="submitting"
-          :disabled="employeeRating === 0"
-          @click="submitEmployeeRating"
-        >
-          Lưu đánh giá khách hàng
-        </ElButton>
-      </article>
+    <div v-if="request.status === 'Closed'" class="rating-history">
+      <div class="rating-history__heading">
+        <div>
+          <p class="support-workflow__eyebrow">Đánh giá hai chiều</p>
+          <h4>Lịch sử đánh giá</h4>
+        </div>
+        <ElTag type="warning" effect="plain" round>
+          {{ ratingHistory.length }} lượt
+        </ElTag>
+      </div>
 
-      <article
-        class="support-workflow__rating-card support-workflow__rating-card--customer"
+      <div v-if="ratingHistory.length" class="rating-history__list">
+        <article
+          v-for="entry in ratingHistory"
+          :key="entry.key"
+          class="rating-history__item"
+        >
+          <div class="rating-history__identity">
+            <span class="rating-history__icon">
+              <ArtSvgIcon :icon="entry.icon" />
+            </span>
+            <div>
+              <strong>{{ entry.label }}</strong>
+              <span>{{ formatTime(entry.ratedAt) }}</span>
+            </div>
+          </div>
+          <div class="rating-history__score">
+            <ElRate :model-value="entry.rating" disabled />
+            <b>{{ entry.rating }}/5 sao</b>
+          </div>
+        </article>
+      </div>
+      <p v-else class="rating-history__empty">Chưa có lượt đánh giá nào.</p>
+
+      <div
+        v-if="canRateCustomer && request.employeeRatingOfCustomer == null"
+        class="rating-history__action"
       >
-        <p>Khách hàng đánh giá nhân viên</p>
-        <ElRate :model-value="request.customerRatingOfEmployee ?? 0" disabled />
-        <span class="support-workflow__rating-note">
-          {{ request.customerRatingComment || "Khách hàng chưa gửi đánh giá." }}
-        </span>
-      </article>
+        <div>
+          <strong>Nhân viên đánh giá khách hàng</strong>
+          <span>Chọn số sao theo mức độ hợp tác trong quá trình hỗ trợ.</span>
+        </div>
+        <div class="rating-history__action-controls">
+          <ElRate v-model="employeeRating" :disabled="submitting" />
+          <ElButton
+            type="primary"
+            :loading="submitting"
+            :disabled="employeeRating === 0"
+            @click="submitEmployeeRating"
+          >
+            Lưu số sao
+          </ElButton>
+        </div>
+      </div>
     </div>
   </section>
 </template>
@@ -76,6 +99,7 @@ import type { Contact } from "@/types";
 const props = defineProps<{
   request: Contact.SupportRequest;
   submitting?: boolean;
+  canRateCustomer?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -98,13 +122,11 @@ const steps = [
 ] as const;
 
 const employeeRating = ref(0);
-const employeeComment = ref("");
 
 watch(
   () => [props.request.id, props.request.employeeRatingOfCustomer] as const,
   () => {
     employeeRating.value = props.request.employeeRatingOfCustomer ?? 0;
-    employeeComment.value = props.request.employeeRatingComment ?? "";
   },
   { immediate: true },
 );
@@ -116,8 +138,42 @@ const currentStepIndex = computed(() => {
 
 const currentStepLabel = computed(() => steps[currentStepIndex.value].label);
 
+const ratingHistory = computed(() => {
+  const entries: Array<{
+    key: string;
+    label: string;
+    icon: string;
+    rating: number;
+    ratedAt?: string;
+  }> = [];
+
+  if (props.request.employeeRatingOfCustomer != null) {
+    entries.push({
+      key: "employee-to-customer",
+      label: "Nhân viên đánh giá khách hàng",
+      icon: "ri:user-star-line",
+      rating: props.request.employeeRatingOfCustomer,
+      ratedAt: props.request.employeeRatedAt,
+    });
+  }
+
+  if (props.request.customerRatingOfEmployee != null) {
+    entries.push({
+      key: "customer-to-employee",
+      label: "Khách hàng đánh giá nhân viên",
+      icon: "ri:star-smile-line",
+      rating: props.request.customerRatingOfEmployee,
+      ratedAt: props.request.customerRatedAt,
+    });
+  }
+
+  return entries.sort((left, right) =>
+    (left.ratedAt ?? "").localeCompare(right.ratedAt ?? ""),
+  );
+});
+
 const formatTime = (value?: string) => {
-  if (!value) return "Chưa ghi nhận";
+  if (!value) return "Chưa ghi nhận thời gian";
   return new Intl.DateTimeFormat("vi-VN", {
     dateStyle: "short",
     timeStyle: "short",
@@ -137,7 +193,7 @@ const stepTime = (status: (typeof steps)[number]["status"]) => {
 const submitEmployeeRating = () => {
   emit("rateCustomer", {
     rating: employeeRating.value,
-    comment: employeeComment.value.trim(),
+    comment: "",
   });
 };
 </script>
@@ -150,7 +206,8 @@ const submitEmployeeRating = () => {
   background: var(--el-bg-color);
 }
 
-.support-workflow__heading {
+.support-workflow__heading,
+.rating-history__heading {
   display: flex;
   gap: 12px;
   align-items: center;
@@ -158,11 +215,13 @@ const submitEmployeeRating = () => {
   margin-bottom: 16px;
 
   h3,
+  h4,
   p {
     margin: 0;
   }
 
-  h3 {
+  h3,
+  h4 {
     color: var(--el-text-color-primary);
     font-size: 15px;
   }
@@ -238,42 +297,104 @@ const submitEmployeeRating = () => {
   background: var(--el-color-success);
 }
 
-.support-workflow__ratings {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
+.rating-history {
   margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--el-border-color-lighter);
 }
 
-.support-workflow__rating-card {
-  display: flex;
-  flex-direction: column;
+.rating-history__list {
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 10px;
+}
+
+.rating-history__item,
+.rating-history__action {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 12px;
+  background: var(--el-fill-color-lighter);
+}
+
+.rating-history__identity,
+.rating-history__score,
+.rating-history__action-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.rating-history__identity > div,
+.rating-history__action > div:first-child {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.rating-history__identity strong,
+.rating-history__action strong {
+  color: var(--el-text-color-primary);
+  font-size: 12px;
+}
+
+.rating-history__identity span,
+.rating-history__action span,
+.rating-history__empty {
+  color: var(--el-text-color-secondary);
+  font-size: 10px;
+}
+
+.rating-history__icon {
+  display: grid;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  color: var(--el-color-warning);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--el-color-warning) 12%, transparent);
+  place-items: center;
+}
+
+.rating-history__score b {
+  color: var(--el-text-color-primary);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.rating-history__empty {
+  margin: 0;
   padding: 14px;
   border-radius: 12px;
   background: var(--el-fill-color-lighter);
+  text-align: center;
+}
 
-  p {
-    margin: 0;
-    color: var(--el-text-color-primary);
-    font-size: 12px;
-    font-weight: 700;
+.rating-history__action {
+  margin-top: 10px;
+  border-color: color-mix(in srgb, var(--el-color-primary) 32%, transparent);
+}
+
+@media (width < 640px) {
+  .rating-history__item,
+  .rating-history__action {
+    align-items: flex-start;
+    flex-direction: column;
   }
-}
 
-.support-workflow__rating-card--customer {
-  align-content: start;
-}
-
-.support-workflow__rating-note {
-  color: var(--el-text-color-secondary);
-  font-size: 11px;
-  line-height: 1.5;
+  .rating-history__action-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
 }
 
 @media (width >= 768px) {
   .support-workflow__track,
-  .support-workflow__ratings {
+  .rating-history__list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
