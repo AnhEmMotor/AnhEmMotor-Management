@@ -52,6 +52,10 @@ Update the information in `.env`:
 ```properties
 # Backend API URL (Production or Local)
 VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT=https://localhost:5000
+
+# Public URL of the Store frontend — used to link staff to a live product
+# page from the store-chat handoff view (Marketing > Customer > Store Chat)
+VITE_PUBLIC_STORE_URL=http://localhost:3000
 ```
 
 ### Local Development
@@ -68,13 +72,14 @@ The project uses GitHub Actions for auto-deployments.
 
 #### Required Secrets on GitHub Repo:
 
-| Secret Name                         | Description                          |
-| ----------------------------------- | ------------------------------------ |
-| `PUBLIC_API_URL_FOR_BROWSER_CLIENT` | Backend API URL (Production)         |
-| `PRODUCTION_SERVER_IP`              | Production Server IP                 |
-| `PRODUCTION_SERVER_USERNAME`        | SSH Username (usually root)          |
-| `SERVER_REMOTE_ACCESS_PRIVATE_KEY`  | Private SSH Key to access the server |
-| `SSH_PORT_FOR_PRODUCTION_SERVER`    | SSH Port (default 22)                |
+| Secret Name                         | Description                            |
+| ----------------------------------- | -------------------------------------- |
+| `PUBLIC_API_URL_FOR_BROWSER_CLIENT` | Backend API URL (Production)           |
+| `PUBLIC_STORE_URL`                  | Store frontend public URL (Production) |
+| `PRODUCTION_SERVER_IP`              | Production Server IP                   |
+| `PRODUCTION_SERVER_USERNAME`        | SSH Username (usually root)            |
+| `SERVER_REMOTE_ACCESS_PRIVATE_KEY`  | Private SSH Key to access the server   |
+| `SSH_PORT_FOR_PRODUCTION_SERVER`    | SSH Port (default 22)                  |
 
 #### Workflow
 
@@ -145,6 +150,10 @@ Cập nhật thông tin trong `.env`:
 ```properties
 # URL của Backend API (Production hoặc Local)
 VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT=https://localhost:5000
+
+# URL public của Store (trang khách hàng) — dùng để tạo link mở trang sản
+# phẩm thật từ màn Store Chat (Marketing > Khách hàng > Store Chat)
+VITE_PUBLIC_STORE_URL=http://localhost:3000
 ```
 
 ### Chạy Local Development
@@ -161,13 +170,14 @@ Dự án sử dụng GitHub Actions để auto deploy.
 
 #### Secrets cần cấu hình trên GitHub Repo:
 
-| Secret Name                         | Mô tả                            |
-| ----------------------------------- | -------------------------------- |
-| `PUBLIC_API_URL_FOR_BROWSER_CLIENT` | URL của Backend API (Production) |
-| `PRODUCTION_SERVER_IP`              | IP của Server deploy             |
-| `PRODUCTION_SERVER_USERNAME`        | Username SSH (thường là root)    |
-| `SERVER_REMOTE_ACCESS_PRIVATE_KEY`  | Key SSH private để access server |
-| `SSH_PORT_FOR_PRODUCTION_SERVER`    | Port SSH (mặc định 22)           |
+| Secret Name                         | Mô tả                             |
+| ----------------------------------- | --------------------------------- |
+| `PUBLIC_API_URL_FOR_BROWSER_CLIENT` | URL của Backend API (Production)  |
+| `PUBLIC_STORE_URL`                  | URL public của Store (Production) |
+| `PRODUCTION_SERVER_IP`              | IP của Server deploy              |
+| `PRODUCTION_SERVER_USERNAME`        | Username SSH (thường là root)     |
+| `SERVER_REMOTE_ACCESS_PRIVATE_KEY`  | Key SSH private để access server  |
+| `SSH_PORT_FOR_PRODUCTION_SERVER`    | Port SSH (mặc định 22)            |
 
 #### Workflow
 
