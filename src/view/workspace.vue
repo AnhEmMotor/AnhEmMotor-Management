@@ -209,15 +209,6 @@ const workspaces = computed(() => {
       hasAccess: moduleHasAccess(orderMenu, menuList),
       path: "/Order/management/draft",
     },
-    {
-      title: "Hướng dẫn sử dụng",
-      subtitle: "User Guide",
-      icon: markRaw(Document),
-      color: "#0284c7",
-      shadowColor: "rgba(2, 132, 199, 0.15)",
-      hasAccess: true,
-      path: "/manual",
-    },
   ].filter((workspace) => workspace.hasAccess);
 });
 </script>
