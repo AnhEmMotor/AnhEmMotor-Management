@@ -788,7 +788,7 @@ const loadSessions = async () => {
   try {
     isLoadingSessions.value = true;
     const res = await ChatApi.getSessions();
-    sessions.value = res || [];
+    sessions.value = Array.isArray(res) ? res : [];
   } catch (error) {
     ElMessage.error("Không thể tải danh sách phiên chat");
   } finally {
