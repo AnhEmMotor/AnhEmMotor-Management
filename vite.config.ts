@@ -69,7 +69,7 @@ export default ({ mode }: { mode: string }) => {
       minify: "terser",
       terserOptions: {
         compress: {
-          drop_console: true,
+          pure_funcs: ["console.log", "console.debug"],
           drop_debugger: true,
         },
       },
