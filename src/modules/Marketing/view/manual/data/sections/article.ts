@@ -17,7 +17,7 @@ export const articleSection: GuideSection = {
       description: "Tạo và xuất bản bài viết mới.",
       steps: [
         "Chọn <b>Quản lý Bài viết</b>, sau đó nhấn <b>Thêm bài viết</b>.",
-        "Sử dụng trình soạn thảo văn bản (Editor) để nhập nội dung. Bạn có thể định dạng chữ, chèn hình ảnh và liên kết.<br><img src='https://placehold.co/600x300/e2e8f0/1e293b?text=Trinh+Soan+Thao' style='max-width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #eee;' />",
+        "Sử dụng trình soạn thảo văn bản (Editor) để nhập nội dung. Bạn có thể định dạng chữ, chèn hình ảnh và liên kết.<br><img src='/api/v1/MediaFile/view-image/manuals/article-create-step-1.png' style='max-width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #eee;' />",
         "Nhập <b>Tiêu đề</b>, chọn <b>Chuyên mục</b> và <b>Hình thu nhỏ (Thumbnail)</b> cho bài viết.",
         "Cấu hình SEO (Title, Description, Keyword) ở phần dưới để bài viết dễ dàng tiếp cận trên các công cụ tìm kiếm.",
         "Nhấn <b>Lưu nháp</b> nếu chưa xong, hoặc <b>Xuất bản</b> để bài viết hiển thị ngay lập tức.",
@@ -25,6 +25,24 @@ export const articleSection: GuideSection = {
       tips: [
         "Nên viết tiêu đề hấp dẫn và chứa từ khóa quan trọng.",
         "Hình thu nhỏ nên có tỷ lệ 16:9 để hiển thị đẹp nhất trên mọi thiết bị.",
+      ],
+    },
+    {
+      id: "article-list",
+      title: "Danh Sách & Quản Lý Bài Viết",
+      route: "/Marketing/article",
+      description:
+        "Tra cứu, chỉnh sửa thông tin, ẩn/hiện hoặc xóa các bài viết tin tức và chương trình khuyến mãi hiện có.",
+      steps: [
+        "Mở trang <b>Quản lý Bài viết</b> từ menu bên trái.",
+        "Xem danh sách toàn bộ các bài viết được hiển thị trong bảng. Bạn có thể xem nhanh tiêu đề, hình đại diện, danh mục, số lượt xem và trạng thái xuất bản.",
+        "Sử dụng ô tìm kiếm phía trên để tìm bài viết theo tiêu đề, hoặc bộ lọc chuyên mục để khoanh vùng bài viết.<br><img src='/api/v1/MediaFile/view-image/manuals/article-list-step-2.png' style='max-width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #eee;' />",
+        "Để chỉnh sửa bài viết, nhấn vào nút <b>Sửa</b> (biểu tượng bút chì) ở dòng tương ứng.",
+        "Để xóa bài viết khỏi hệ thống, nhấn nút <b>Xóa</b> (biểu tượng thùng rác) và xác nhận.",
+      ],
+      tips: [
+        "Thường xuyên dọn dẹp các bài viết khuyến mãi đã hết hạn để tránh khách hàng hiểu nhầm.",
+        "Bạn có thể xem trước hiển thị thực tế của bài viết trên trang tin tức bằng nút 'Xem chi tiết'.",
       ],
     },
   ],

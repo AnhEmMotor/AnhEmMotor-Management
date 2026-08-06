@@ -15,6 +15,9 @@ export interface Vehicle {
   productVariantColorId?: number;
   colorName?: string;
   brandName?: string;
+  productName?: string;
+  categoryName?: string;
+  imageUrl?: string;
   warrantyPeriod?: string;
   isActive: boolean;
   currentOdo?: number;

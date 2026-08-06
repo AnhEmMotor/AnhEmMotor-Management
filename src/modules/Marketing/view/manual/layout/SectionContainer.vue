@@ -7,7 +7,7 @@
       type="primary"
       plain
     >
-      Quay lai Tong quan
+      Quay lại Tổng quan
     </el-button>
     <div class="section-header">
       <div

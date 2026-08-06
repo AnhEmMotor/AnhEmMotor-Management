@@ -18,7 +18,7 @@ export const commentSection: GuideSection = {
       description: "Theo dõi và tương tác với ý kiến phản hồi của người dùng.",
       steps: [
         "Tại trang <b>Quản lý Bình luận</b>, bạn sẽ thấy danh sách tất cả các bình luận.",
-        "Các bình luận có trạng thái <b>Chờ duyệt</b> cần được bạn xem xét trước khi hiển thị công khai.<br><img src='https://placehold.co/600x300/e2e8f0/1e293b?text=Duyet+Binh+Luan' style='max-width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #eee;' />",
+        "Các bình luận có trạng thái <b>Chờ duyệt</b> cần được bạn xem xét trước khi hiển thị công khai.<br><img src='/api/v1/MediaFile/view-image/manuals/comment-manage-step-1.png' style='max-width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #eee;' />",
         "Nhấn <b>Duyệt</b> để cho phép hiển thị, hoặc <b>Ẩn/Xóa</b> đối với các bình luận vi phạm tiêu chuẩn.",
         "Sử dụng nút <b>Phản hồi</b> để trả lời câu hỏi của khách hàng bằng tư cách của Quản trị viên.",
       ],
