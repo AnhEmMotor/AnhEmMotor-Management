@@ -19,7 +19,7 @@ export const bannerSection: GuideSection = {
       description: "Quản lý tất cả các banner đang chạy và đã dừng.",
       steps: [
         "Vào mục <b>Quản lý Banner</b> để xem danh sách.",
-        `Nhấn nút <b>+ Thêm Mới</b> để tạo một banner mới.<br><img src='${formatImageUrl("manuals/banner-list-step-1.webp")}' style='max-width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #eee;' />`,
+        `Nhấn nút <b>+ Thêm Mới</b> để tạo một banner mới.<br><img src='${formatImageUrl("api/v1/MediaFile/view-image/manuals/banner-list-step-1.webp")}' style='max-width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #eee;' />`,
         "Điền đầy đủ các thông tin: Tên banner, hình ảnh, đường dẫn liên kết (nếu có) và trạng thái hiển thị.",
         "Để chỉnh sửa hoặc xóa, nhấn vào biểu tượng tương ứng trên từng dòng của bảng danh sách.",
       ],
