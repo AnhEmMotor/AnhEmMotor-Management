@@ -1,5 +1,6 @@
 import type { GuideSection } from "../guideData";
 import { Message } from "@element-plus/icons-vue";
+import { formatImageUrl } from "@/common/utils/image";
 
 export const contactSection: GuideSection = {
   id: "contact",
@@ -19,7 +20,7 @@ export const contactSection: GuideSection = {
       steps: [
         "Vào <b>Quản lý Liên hệ</b> để nhận các yêu cầu mới nhất.",
         "Click vào một dòng để xem chi tiết thông tin khách hàng: Tên, SĐT, Email và Nội dung cần tư vấn.",
-        "Sau khi gọi điện hoặc gửi email phản hồi khách hàng, hãy cập nhật trạng thái từ <b>Chưa xử lý</b> sang <b>Đang xử lý</b> hoặc <b>Đã hoàn thành</b>.<br><img src='/api/v1/MediaFile/view-image/manuals/contact-process-step-2.webp' style='max-width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #eee;' />",
+        `Sau khi gọi điện hoặc gửi email phản hồi khách hàng, hãy cập nhật trạng thái từ <b>Chưa xử lý</b> sang <b>Đang xử lý</b> hoặc <b>Đã hoàn thành</b>.<br><img src='${formatImageUrl("manuals/contact-process-step-2.webp")}' style='max-width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #eee;' />`,
         "Ghi chú lại nội dung đã trao đổi với khách hàng vào phần <b>Ghi chú nội bộ</b> để các nhân viên khác cùng nắm.",
       ],
     },

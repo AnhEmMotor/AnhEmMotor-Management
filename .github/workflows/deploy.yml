@@ -26,6 +26,7 @@ jobs:
       - name: Build project
         env:
           VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT: ${{ secrets.PUBLIC_API_URL_FOR_BROWSER_CLIENT }}
+          VITE_PUBLIC_STORE_URL: ${{ secrets.PUBLIC_STORE_URL }}
         run: npm run build
 
       - name: Deploy to Server
