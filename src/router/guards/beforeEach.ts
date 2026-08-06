@@ -340,12 +340,9 @@ async function handleDynamicRoutes(
 
     if (isStaticRoute(to.path)) {
       routeInitInProgress = false;
-      return {
-        path: to.path,
-        query: to.query,
-        hash: to.hash,
-        replace: true,
-      };
+      setWorktab(to);
+      setPageTitle(to);
+      return true;
     }
 
     const { homePath } = useCommon();
