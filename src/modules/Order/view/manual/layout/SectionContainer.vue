@@ -7,7 +7,7 @@
       type="primary"
       plain
     >
-      Quay lai Tong quan
+      Quay lại Tổng quan
     </el-button>
     <div class="section-header">
       <el-icon class="section-icon" :style="{ color: section.color }">
