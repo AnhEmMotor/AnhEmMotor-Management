@@ -3,63 +3,33 @@ import { DataAnalysis } from "@element-plus/icons-vue";
 
 export const sectionData: GuideSection = {
   id: "dashboard",
-  title: "Bảng Điều Khiển (Dashboard)",
-  subtitle: "Dashboard",
+  title: "Bảng Điều Khiển Tổng",
+  subtitle: "HQ Dashboard",
   description:
-    "Trang tổng quan hệ thống cung cấp góc nhìn toàn diện cho Ban Giám Đốc về tình hình hoạt động của toàn bộ các chi nhánh, nhân sự, và tình hình kinh doanh.",
+    "Trạm quan trắc cao nhất dành cho Ban Giám Đốc (BOD). Cung cấp bức tranh toàn cảnh về hoạt động kinh doanh, nhân sự và dịch vụ của toàn bộ hệ thống đại lý theo thời gian thực.",
   icon: DataAnalysis,
-  color: "#0284c7",
-  shadowColor: "rgba(2,132,199,0.15)",
+  color: "#2563eb",
+  shadowColor: "rgba(37,99,235,0.15)",
   route: "/admin/dashboard",
+  imageUrl: "/images/manual/dashboard_overview_1785990505505.png",
   pages: [
     {
-      id: "d-intro",
-      title: "Giới thiệu & Tổng quan",
-      route: "/admin/dashboard/intro",
+      id: "d-overview",
+      title: "Tổng quan Toàn hệ thống",
+      route: "/admin/dashboard",
       description:
-        "Trang thông tin tổng quát khi Admin mới đăng nhập vào hệ thống.",
+        "Xem nhanh các chỉ số cốt lõi: Doanh thu, Lợi nhuận gộp, Số xe bán ra, và Số xe vào xưởng hôm nay.",
       steps: [
-        "Truy cập vào menu Bảng Điều Khiển -> Giới thiệu.",
-        "Xem thông tin chung về hệ thống, phiên bản phần mềm hiện tại.",
-        "Sử dụng các phím tắt nhanh để đi tới các phân hệ quan trọng.",
+        "1. Màn hình đầu tiên sau khi đăng nhập (đối với tài khoản Admin/Giám đốc).",
+        "2. Xem 4 thẻ KPI trên cùng: Màu xanh biểu thị tăng trưởng, màu đỏ biểu thị sụt giảm so với tuần/tháng trước.",
+        "3. Biểu đồ Đường cong Doanh thu (Revenue Trend): So sánh tổng doanh thu Bán Hàng (Sales) và doanh thu Xưởng (Workshop).",
+        "4. Bản đồ nhiệt (Heatmap) hoặc Biểu đồ Cột: Hiển thị chi nhánh nào đang dẫn đầu về doanh số.",
+        "5. Xem danh sách Cảnh báo: Các chi nhánh đang bị rớt doanh số, hoặc lượng hàng tồn kho đang vượt quá định mức an toàn.",
+        "6. Sử dụng công cụ [Lọc Ngày/Tháng] ở góc phải để đối chiếu dữ liệu cùng kỳ năm ngoái.",
       ],
       tips: [
-        "Đây là trang mặc định khi đăng nhập.",
-        "Bạn có thể tìm thấy thông tin hỗ trợ kỹ thuật tại đây nếu hệ thống gặp sự cố.",
-      ],
-    },
-    {
-      id: "d-analysis",
-      title: "Phân tích & Thống kê (Analysis)",
-      route: "/admin/dashboard/analysis",
-      description:
-        "Báo cáo tổng hợp số lượng khách hàng, nhân sự và các chỉ số hoạt động.",
-      steps: [
-        "Truy cập vào menu Bảng Điều Khiển -> Phân tích.",
-        "Xem biểu đồ tổng quan về nhân sự theo phòng ban.",
-        "Theo dõi số lượng khách hàng tiềm năng và khách hàng mới cập nhật trong tháng.",
-        "Sử dụng bộ lọc thời gian ở góc trên cùng để thay đổi chu kỳ thống kê.",
-      ],
-      tips: [
-        "Biểu đồ tròn thể hiện tỷ lệ phần trăm rất trực quan.",
-        "Có thể trỏ chuột vào biểu đồ để xem con số chi tiết.",
-      ],
-    },
-    {
-      id: "d-ecommerce",
-      title: "Kinh Doanh (Ecommerce)",
-      route: "/admin/dashboard/ecommerce",
-      description:
-        "Bảng điều khiển chuyên sâu về doanh thu bán hàng và lợi nhuận.",
-      steps: [
-        "Truy cập vào menu Bảng Điều Khiển -> Kinh Doanh.",
-        "Theo dõi biểu đồ doanh thu bán xe và phụ tùng theo thời gian thực.",
-        "Xem top các sản phẩm bán chạy nhất trong tuần/tháng.",
-        "Theo dõi chỉ số tăng trưởng (Growth Rate) so với kỳ trước.",
-      ],
-      tips: [
-        "Màu xanh lá hiển thị tăng trưởng dương, màu đỏ là tăng trưởng âm.",
-        "Dữ liệu ở đây được đồng bộ real-time từ các showroom.",
+        "Chế độ [Dark Mode] và [Full Screen] rất thích hợp để mở Dashboard này 24/7 trên màn hình lớn trong phòng họp Giám đốc.",
+        "Nhấn vào một cột chi nhánh trên biểu đồ để xem chi tiết (Drill-down) sâu vào doanh số của từng nhân viên tại chi nhánh đó.",
       ],
     },
   ],

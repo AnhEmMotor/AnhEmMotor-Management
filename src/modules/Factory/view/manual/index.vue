@@ -18,7 +18,7 @@ const section = computed(() => {
 });
 
 function goOverview() {
-  router.push("/factory/manual");
+  router.push("/Factory/manual");
 }
 </script>
 

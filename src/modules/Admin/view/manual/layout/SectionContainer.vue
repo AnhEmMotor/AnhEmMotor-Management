@@ -3,11 +3,11 @@
     <el-button
       class="back-btn"
       @click="$emit('back')"
-      icon="Back"
+      :icon="Back"
       type="primary"
       plain
     >
-      Quay lai Tong quan
+      Quay lại
     </el-button>
     <div class="section-header">
       <el-icon class="section-icon" :style="{ color: section.color }">
@@ -16,6 +16,13 @@
       <h1 class="section-title">{{ section.title }}</h1>
     </div>
     <p class="section-desc">{{ section.description }}</p>
+    <div v-if="section.imageUrl" class="section-image-wrapper">
+      <img
+        :src="section.imageUrl"
+        alt="Section Illustration"
+        class="section-image"
+      />
+    </div>
     <div class="pages-list">
       <div v-for="page in section.pages" :key="page.id" class="page-card">
         <div class="page-header">
@@ -58,7 +65,7 @@
 
 <script setup lang="ts">
 import type { GuideSection } from "../data/guideData";
-import { Location } from "@element-plus/icons-vue";
+import { Location, Back } from "@element-plus/icons-vue";
 defineProps<{ section: GuideSection }>();
 defineEmits<{ back: [] }>();
 </script>
@@ -66,7 +73,7 @@ defineEmits<{ back: [] }>();
 <style scoped lang="scss">
 .section-container {
   padding: 24px;
-  max-width: 1000px;
+  max-width: 1600px;
   margin: 0 auto;
 }
 
@@ -98,10 +105,26 @@ defineEmits<{ back: [] }>();
   margin: 0 0 28px 50px;
 }
 
+.section-image-wrapper {
+  margin: 0 0 32px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 8%);
+  border: 1px solid var(--el-border-color-lighter);
+  max-width: 1200px;
+}
+
+.section-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 .pages-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
   gap: 24px;
+  align-items: start;
 }
 
 .page-card {

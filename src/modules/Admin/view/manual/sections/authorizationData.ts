@@ -1,50 +1,55 @@
 import type { GuideSection } from "../data/guideData";
-import { Lock, User, Key } from "@element-plus/icons-vue";
+import { UserFilled } from "@element-plus/icons-vue";
 
 export const sectionData: GuideSection = {
   id: "authorization",
-  title: "Phân Quyền Hệ Thống",
+  title: "Quản Trị Người Dùng & Quyền",
   subtitle: "Authorization",
   description:
-    "Quản lý toàn diện tài khoản người dùng, thiết lập vai trò (Roles) và cấp phát quyền (Permissions) truy cập vào các module trên hệ thống.",
-  icon: Lock,
-  color: "#7c3aed",
-  shadowColor: "rgba(124, 58, 237, 0.15)",
+    "Trung tâm kiểm soát an ninh của hệ thống. Nơi Quản trị viên cấp cao phân quyền chi tiết đến từng nút bấm cho hàng ngàn nhân viên tại các chi nhánh.",
+  icon: UserFilled,
+  color: "#d97706",
+  shadowColor: "rgba(217,119,6,0.15)",
   route: "/admin/authorization",
+  imageUrl: "/images/manual/authorization_roles_1785990556798.png",
   pages: [
     {
-      id: "a1",
-      title: "Quản lý Người dùng (Users)",
+      id: "a-users",
+      title: "Quản lý Tài khoản (Users)",
       route: "/admin/authorization/users",
       description:
-        "Tạo mới, khóa, hoặc thiết lập lại tài khoản cho nhân sự toàn công ty.",
+        "Tạo mới, khóa, hoặc thiết lập lại mật khẩu cho tài khoản người dùng trên toàn hệ thống.",
       steps: [
-        "Vào menu Phân quyền -> Quản lý User.",
-        "Sử dụng thanh tìm kiếm để tìm nhân viên theo Tên, Email hoặc Số điện thoại.",
-        "Nhấp nút 'Chỉnh sửa' (bút chì) để khóa/mở khóa tài khoản hoặc reset mật khẩu.",
-        "Sử dụng tính năng 'Phân quyền' ngay trên dòng của user để gán một vai trò cụ thể cho họ.",
+        "1. Truy cập [Quản trị Người Dùng] -> [Danh sách Tài khoản].",
+        "2. Nhấn nút [Thêm Tài Khoản] để tạo người dùng mới.",
+        "3. Điền các thông tin bắt buộc: Tên đăng nhập (Username), Email định danh, và Mật khẩu khởi tạo.",
+        "4. Phân bổ người dùng vào một [Chi nhánh] cụ thể (Cực kỳ quan trọng để giới hạn tầm nhìn dữ liệu của họ).",
+        "5. Gán người dùng vào một hoặc nhiều [Nhóm Quyền] (Roles).",
+        "6. Nếu một nhân viên nghỉ việc, tìm tên họ và chuyển trạng thái sang 'Ngưng hoạt động' (Inactive) thay vì xóa, để giữ lại lịch sử thao tác.",
+        "7. Quản trị viên có quyền bấm [Reset Mật khẩu] và hệ thống sẽ gửi mật khẩu mới về email của nhân viên đó.",
       ],
       tips: [
-        "Chỉ có SuperAdmin hoặc người được cấp quyền Authorization.User.Manage mới thực hiện được.",
-        "Tài khoản bị khóa sẽ lập tức bị văng ra khỏi hệ thống và không thể đăng nhập lại.",
+        "Nên quy chuẩn cách đặt Tên đăng nhập (Ví dụ: [Mã chi nhánh]_[Tên nhân viên] như HCM_NguyenVanA) để dễ quản lý.",
+        "Một nhân viên có thể thuộc nhiều chi nhánh nếu họ đóng vai trò Quản lý Vùng.",
       ],
     },
     {
-      id: "a2",
-      title: "Quản lý Vai trò (Roles & Permissions)",
+      id: "a-roles",
+      title: "Thiết lập Nhóm Quyền (Roles)",
       route: "/admin/authorization/roles",
       description:
-        "Tạo các nhóm quyền hạn mẫu và áp dụng nhanh chóng cho nhiều người dùng.",
+        "Tạo các mẫu quyền (Role templates) như 'Thu Ngân', 'Cố Vấn Dịch Vụ', 'Kế Toán' để gán hàng loạt cho nhân viên.",
       steps: [
-        "Vào menu Phân quyền -> Vai trò (Role).",
-        "Nhấp 'Thêm mới' để tạo một chức danh mới (VD: Kế toán trưởng, Quản lý kho).",
-        "Nhấp 'Phân quyền' (icon chìa khóa) trên role đó để mở bảng phân quyền chi tiết.",
-        "Tick chọn các quyền cụ thể như Xem, Thêm, Sửa, Xóa, Phê Duyệt cho từng module tương ứng.",
-        "Nhấp 'Lưu thay đổi' để hoàn tất.",
+        "1. Chuyển sang tab [Nhóm Quyền (Roles)].",
+        "2. Nhấn [Tạo Nhóm Quyền Mới] và đặt tên (VD: Kế Toán Tổng Hợp).",
+        "3. Trong màn hình chi tiết Role, hệ thống liệt kê hơn 500 quyền hạn (Permissions) từ tất cả các phân hệ.",
+        "4. Tích chọn các quyền mà Role này được phép thao tác. Ví dụ: Được xem Báo cáo (View Report), Được xuất Hóa đơn (Issue Invoice), KHÔNG được phép Xóa dữ liệu (Delete).",
+        "5. Lưu cấu hình. Ngay lập tức, tất cả các tài khoản đang mang Role này sẽ được cập nhật quyền mới nhất.",
+        "6. Sử dụng tính năng [Sao chép Role] nếu bạn muốn tạo một nhóm quyền mới gần giống nhóm cũ và chỉ tinh chỉnh một chút.",
       ],
       tips: [
-        "Sử dụng Role giúp quản lý phân quyền tập trung, khi cần sửa quyền, chỉ cần sửa ở Role là toàn bộ nhân viên có Role đó sẽ được cập nhật.",
-        "Mỗi người có thể có nhiều Role cùng lúc, quyền hạn sẽ được cộng dồn.",
+        "Luôn áp dụng nguyên tắc 'Đặc quyền tối thiểu' (Least Privilege) - Chỉ cấp đúng những quyền nhân viên cần để làm việc.",
+        "Tránh gán quyền đơn lẻ trực tiếp cho User. Hãy gom quyền vào Role, rồi gán Role cho User để không bị rối.",
       ],
     },
   ],

@@ -19,6 +19,7 @@ export interface GuideSection {
   color: string;
   shadowColor: string;
   route?: string;
+  imageUrl?: string;
   pages?: GuidePage[];
 }
 export interface FeatureItem {

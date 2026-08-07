@@ -58,7 +58,7 @@ function cardStyle(item: any, idx: number) {
 }
 
 function goTo(id: string) {
-  router.push("/admin/manual/" + id);
+  router.push("/Factory/manual/" + id);
 }
 </script>
 

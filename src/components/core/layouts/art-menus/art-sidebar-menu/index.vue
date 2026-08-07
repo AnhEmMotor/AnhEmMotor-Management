@@ -263,13 +263,13 @@ const menuList = computed(() => {
 
 // Nếu quyền hạn thay đổi khiến sidebar của phân hệ đang xem trở nên rỗng,
 // tự động đưa người dùng về trang workspace thay vì để họ kẹt lại trang không còn quyền.
-watch(menuList, (list) => {
-  if (route.path === "/workspace" || route.meta.isFirstLevel) return;
-  if (isIframe(route.path)) return;
-  if (list.length === 0) {
-    router.replace("/workspace");
-  }
-});
+// watch(menuList, (list) => {
+//   if (route.path === "/workspace" || route.meta.isFirstLevel) return;
+//   if (isIframe(route.path)) return;
+//   if (list.length === 0) {
+//     router.replace("/workspace");
+//   }
+// });
 
 const scrollbarStyle = computed(() => {
   const isCollapsed = isDualMenu.value && !menuOpen.value;

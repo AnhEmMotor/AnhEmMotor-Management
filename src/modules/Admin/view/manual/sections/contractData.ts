@@ -1,66 +1,54 @@
 import type { GuideSection } from "../data/guideData";
-import { Document, Lock } from "@element-plus/icons-vue";
+import { Document } from "@element-plus/icons-vue";
 
 export const sectionData: GuideSection = {
   id: "contract",
-  title: "Quản Lý Hợp Đồng",
-  subtitle: "Contract Management",
+  title: "Quản Lý Hợp Đồng & Mẫu In",
+  subtitle: "Contract & Templates",
   description:
-    "Phân hệ quản lý toàn bộ vòng đời của Hợp đồng Bán xe và Hợp đồng với Nhà Cung Cấp, đồng thời xử lý quy trình phê duyệt số hóa.",
+    "Nơi Ban Giám Đốc và Pháp chế thiết lập các mẫu hợp đồng chuẩn, quản lý thư viện điều khoản và theo dõi trạng thái pháp lý của toàn bộ hợp đồng sinh ra từ các phân hệ.",
   icon: Document,
-  color: "#d97706",
-  shadowColor: "rgba(217,119,6,0.15)",
+  color: "#7c3aed",
+  shadowColor: "rgba(124,58,237,0.15)",
   route: "/admin/contract",
+  imageUrl: "/images/manual/contract_management_1785990526494.png",
   pages: [
     {
-      id: "c1",
-      title: "Hợp đồng Bán xe",
+      id: "c-sales",
+      title: "Hợp đồng Bán Xe",
       route: "/admin/contract/sales",
       description:
-        "Quản lý và tra cứu toàn bộ hợp đồng mua bán xe máy trên toàn hệ thống.",
+        "Tổng hợp tất cả hợp đồng mua bán xe đã ký kết từ các chi nhánh đổ về.",
       steps: [
-        "Vào menu Hợp đồng -> Hợp đồng bán.",
-        "Sử dụng công cụ tìm kiếm và lọc để tra cứu hợp đồng theo khách hàng hoặc chi nhánh.",
-        "Nhấp vào một hợp đồng để xem chi tiết thông tin: người mua, thông tin xe, giá trị, điều khoản thanh toán.",
-        "Bạn có thể 'Xem trước' hợp đồng để xuất định dạng PDF để in ấn hoặc gửi cho khách hàng.",
+        "1. Truy cập [Quản Lý Hợp Đồng] -> [Hợp đồng Bán xe].",
+        "2. Bảng dữ liệu hiển thị trạng thái từng hợp đồng: Đang hiệu lực, Đã thanh lý, hoặc Bị Hủy.",
+        "3. Admin có thể click vào xem nội dung chi tiết từng bản Hợp đồng dạng PDF gốc.",
+        "4. Nếu xảy ra tranh chấp pháp lý, Admin có thể tra cứu nhanh bằng mã Hợp đồng hoặc Số CCCD khách hàng.",
+        "5. Tính năng Audit Log (Lịch sử chỉnh sửa) cho phép Admin truy vết xem Nhân viên Sales nào đã tự ý sửa điều khoản hợp đồng trước khi in.",
+        "6. Đối với các hợp đồng có sai sót nghiêm trọng, Admin có quyền sử dụng nút [Vô hiệu hóa] (Invalidate) để hủy bỏ tính pháp lý trên hệ thống.",
       ],
       tips: [
-        "Chỉ những người dùng có quyền Xem Hợp Đồng Bán mới truy cập được trang này.",
-        "Các hợp đồng ở trạng thái 'Đã hủy' sẽ bị mờ đi để dễ phân biệt.",
+        "Tính năng lọc theo Chi nhánh giúp Giám đốc Vùng kiểm soát số lượng hợp đồng phát sinh mỗi ngày.",
+        "Có thể đồng bộ dữ liệu này với phần mềm CRM (Quản lý quan hệ khách hàng) của bên thứ ba qua API.",
       ],
     },
     {
-      id: "c2",
-      title: "Hợp đồng Nhà cung cấp",
-      route: "/admin/contract/supplier",
+      id: "c-templates",
+      title: "Quản lý Biểu mẫu (Templates)",
+      route: "/admin/contract/templates",
       description:
-        "Quản lý các bản cam kết và hợp đồng với đối tác cung cấp xe máy, phụ tùng.",
+        "Bộ công cụ xây dựng các mẫu hợp đồng, biên bản bàn giao, phiếu thu chi dùng chung cho toàn công ty.",
       steps: [
-        "Vào menu Hợp đồng -> Hợp đồng Nhà cung cấp.",
-        "Xem danh sách và trạng thái hiệu lực của từng hợp đồng.",
-        "Nhấp 'Chỉnh sửa' để gia hạn hoặc thay đổi điều khoản.",
-        "Nhấp 'Tạm dừng' nếu không còn nhập hàng từ nhà cung cấp này nữa.",
+        "1. Chuyển sang tab [Quản lý Biểu mẫu].",
+        "2. Bạn sẽ thấy danh sách các mẫu in mặc định (Hợp đồng trả góp, Hợp đồng tiền mặt, Biên bản giao xe...).",
+        "3. Mở một biểu mẫu lên. Trình soạn thảo Rich-Text (tương tự MS Word) sẽ hiện ra.",
+        "4. Chèn các [Biến dữ liệu động] (Variables). Ví dụ: chèn biến {{CustomerName}}, hệ thống sẽ tự động điền 'Nguyễn Văn A' khi in hợp đồng thực tế.",
+        "5. Định dạng font chữ, chèn Logo công ty, hoặc thêm bảng biểu lịch thanh toán.",
+        "6. Bấm [Phát hành Biểu mẫu]. Ngay lập tức, tất cả Sales tại các chi nhánh khi in hợp đồng sẽ sử dụng mẫu mới nhất này.",
       ],
       tips: [
-        "Lưu trữ hợp đồng nhà cung cấp ở đây giúp phòng Kế toán có căn cứ để làm chứng từ.",
-        "Chỉ Admin hoặc những người được cấp quyền cấp cao mới được tạo/sửa Hợp đồng Nhà cung cấp.",
-      ],
-    },
-    {
-      id: "c3",
-      title: "Phê duyệt Hợp đồng (Admin Only)",
-      route: "/admin/contract-approval",
-      description:
-        "Quy trình số hóa giúp Ban Giám Đốc xét duyệt nhanh các hợp đồng được gửi lên.",
-      steps: [
-        "Vào menu Hợp đồng -> Admin duyệt hợp đồng.",
-        "Tại đây sẽ liệt kê các hợp đồng đang ở trạng thái 'Chờ phê duyệt'.",
-        "Click vào biểu tượng 'Kính lúp' để xem nội dung chi tiết.",
-        "Nhấp nút 'Duyệt' để chấp thuận hoặc 'Từ chối' kèm theo lý do cụ thể.",
-      ],
-      tips: [
-        "Việc từ chối sẽ tự động chuyển trạng thái hợp đồng về 'Đã từ chối' và gửi thông báo cho nhân viên tạo.",
-        "Hợp đồng sau khi được duyệt sẽ không thể bị xóa.",
+        "Khi Pháp chế cập nhật luật mới, bạn chỉ cần sửa 1 lần tại đây, 100% chi nhánh sẽ được tự động đồng bộ (Không còn tình trạng nhân viên dùng nhầm mẫu cũ).",
+        "Có thể khôi phục lại (Rollback) các phiên bản biểu mẫu trước đó nếu lỡ tay xóa nhầm nội dung.",
       ],
     },
   ],

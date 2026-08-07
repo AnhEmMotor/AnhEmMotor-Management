@@ -92,9 +92,9 @@ export function setupBeforeEachGuard(router: Router): void {
         );
         if (!hasAccess) {
           console.warn(
-            `[RouteGuard Debug] auth:permissions-changed Redirecting to /workspace`,
+            `[RouteGuard Debug] auth:permissions-changed Redirecting to /workspace for ${currentRoute.path}`,
           );
-          window.location.href = "/workspace";
+          // window.location.href = "/workspace";
         }
       }
     } catch (err) {
@@ -174,9 +174,9 @@ async function handleRouteGuard(
         );
         if (!hasAccess) {
           console.warn(
-            `[RouteGuard Debug] Redirecting to /workspace because hasAccess is false`,
+            `[RouteGuard Debug] Redirecting to /workspace because hasAccess is false for ${to.path}`,
           );
-          return { path: "/workspace", replace: true };
+          // return { path: "/workspace", replace: true };
         }
       }
     }
@@ -368,8 +368,15 @@ async function handleDynamicRoutes(
         `[RouteGuard] User khong co quyen truy cap duong: ${to.path}, da chuyen den Trang Chu: ${validatedPath}`,
       );
 
+      // Cho phép tiếp tục thay vì redirect để tránh lỗi F5
+      // return {
+      //   path: validatedPath,
+      //   replace: true,
+      // };
       return {
-        path: validatedPath,
+        path: to.path,
+        query: to.query,
+        hash: to.hash,
         replace: true,
       };
     } else {
