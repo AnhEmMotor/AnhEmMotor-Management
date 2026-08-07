@@ -77,7 +77,7 @@ const isAdmin = computed(() => {
 });
 
 const getStepFileName = (step: string) => {
-  const match = step.match(/\/manuals\/([^./]+)\.png/);
+  const match = step.match(/\/manuals\/([^./]+)\.webp/);
   return match ? match[1] : "";
 };
 

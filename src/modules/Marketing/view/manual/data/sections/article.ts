@@ -1,5 +1,6 @@
 import type { GuideSection } from "../guideData";
 import { Document } from "@element-plus/icons-vue";
+import { formatImageUrl } from "@/common/utils/image";
 
 export const articleSection: GuideSection = {
   id: "article",
@@ -17,7 +18,7 @@ export const articleSection: GuideSection = {
       description: "Tạo và xuất bản bài viết mới.",
       steps: [
         "Chọn <b>Quản lý Bài viết</b>, sau đó nhấn <b>Thêm bài viết</b>.",
-        "Sử dụng trình soạn thảo văn bản (Editor) để nhập nội dung. Bạn có thể định dạng chữ, chèn hình ảnh và liên kết.<br><img src='/api/v1/MediaFile/view-image/manuals/article-create-step-1.png' style='max-width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #eee;' />",
+        `Sử dụng trình soạn thảo văn bản (Editor) để nhập nội dung. Bạn có thể định dạng chữ, chèn hình ảnh và liên kết.<br><img src='${formatImageUrl("api/v1/MediaFile/view-image/manuals/article-create-step-1.webp")}' style='max-width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #eee;' />`,
         "Nhập <b>Tiêu đề</b>, chọn <b>Chuyên mục</b> và <b>Hình thu nhỏ (Thumbnail)</b> cho bài viết.",
         "Cấu hình SEO (Title, Description, Keyword) ở phần dưới để bài viết dễ dàng tiếp cận trên các công cụ tìm kiếm.",
         "Nhấn <b>Lưu nháp</b> nếu chưa xong, hoặc <b>Xuất bản</b> để bài viết hiển thị ngay lập tức.",
@@ -36,7 +37,7 @@ export const articleSection: GuideSection = {
       steps: [
         "Mở trang <b>Quản lý Bài viết</b> từ menu bên trái.",
         "Xem danh sách toàn bộ các bài viết được hiển thị trong bảng. Bạn có thể xem nhanh tiêu đề, hình đại diện, danh mục, số lượt xem và trạng thái xuất bản.",
-        "Sử dụng ô tìm kiếm phía trên để tìm bài viết theo tiêu đề, hoặc bộ lọc chuyên mục để khoanh vùng bài viết.<br><img src='/api/v1/MediaFile/view-image/manuals/article-list-step-2.png' style='max-width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #eee;' />",
+        `Sử dụng ô tìm kiếm phía trên để tìm bài viết theo tiêu đề, hoặc bộ lọc chuyên mục để khoanh vùng bài viết.<br><img src='${formatImageUrl("api/v1/MediaFile/view-image/manuals/article-list-step-2.webp")}' style='max-width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #eee;' />`,
         "Để chỉnh sửa bài viết, nhấn vào nút <b>Sửa</b> (biểu tượng bút chì) ở dòng tương ứng.",
         "Để xóa bài viết khỏi hệ thống, nhấn nút <b>Xóa</b> (biểu tượng thùng rác) và xác nhận.",
       ],

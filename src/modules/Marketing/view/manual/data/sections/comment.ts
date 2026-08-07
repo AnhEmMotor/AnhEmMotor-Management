@@ -1,5 +1,6 @@
 import type { GuideSection } from "../guideData";
 import { ChatDotRound } from "@element-plus/icons-vue";
+import { formatImageUrl } from "@/common/utils/image";
 
 export const commentSection: GuideSection = {
   id: "comment",
@@ -18,7 +19,7 @@ export const commentSection: GuideSection = {
       description: "Theo dõi và tương tác với ý kiến phản hồi của người dùng.",
       steps: [
         "Tại trang <b>Quản lý Bình luận</b>, bạn sẽ thấy danh sách tất cả các bình luận.",
-        "Các bình luận có trạng thái <b>Chờ duyệt</b> cần được bạn xem xét trước khi hiển thị công khai.<br><img src='/api/v1/MediaFile/view-image/manuals/comment-manage-step-1.png' style='max-width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #eee;' />",
+        `Các bình luận có trạng thái <b>Chờ duyệt</b> cần được bạn xem xét trước khi hiển thị công khai.<br><img src='${formatImageUrl("api/v1/MediaFile/view-image/manuals/comment-manage-step-1.webp")}' style='max-width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #eee;' />`,
         "Nhấn <b>Duyệt</b> để cho phép hiển thị, hoặc <b>Ẩn/Xóa</b> đối với các bình luận vi phạm tiêu chuẩn.",
         "Sử dụng nút <b>Phản hồi</b> để trả lời câu hỏi của khách hàng bằng tư cách của Quản trị viên.",
       ],

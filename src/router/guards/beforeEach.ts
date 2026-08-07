@@ -61,6 +61,11 @@ export function setupBeforeEachGuard(router: Router): void {
   routeRegistry = new RouteRegistry(router);
 
   window.addEventListener("auth:permissions-changed", async () => {
+    // Bỏ qua khi handleDynamicRoutes đang bootstrap route (F5/lần tải đầu) — nếu không sẽ đua
+    // với việc đăng ký route và redirect nhầm dựa trên currentRoute còn cũ/chưa ổn định.
+    if (routeInitInProgress || !routeRegistry?.isRegistered()) {
+      return;
+    }
     try {
       const menuList = await getMenuProcessor().getMenuList();
       const menuStore = useMenuStore();
@@ -340,12 +345,9 @@ async function handleDynamicRoutes(
 
     if (isStaticRoute(to.path)) {
       routeInitInProgress = false;
-      return {
-        path: to.path,
-        query: to.query,
-        hash: to.hash,
-        replace: true,
-      };
+      setWorktab(to);
+      setPageTitle(to);
+      return true;
     }
 
     const { homePath } = useCommon();
