@@ -71,7 +71,7 @@
           >
             <ElImage
               v-if="row.cover_image_url"
-              :src="row.cover_image_url"
+              :src="formatImageUrl(row.cover_image_url)"
               class="w-full h-full"
               fit="cover"
               :preview-src-list="[row.cover_image_url]"
@@ -1266,7 +1266,7 @@
                           >
                             <img
                               v-if="variant.cover_image_url"
-                              :src="variant.cover_image_url"
+                              :src="formatImageUrl(variant.cover_image_url)"
                               class="w-full h-full object-cover"
                             />
                             <ElIcon v-else><Plus /></ElIcon>
@@ -1555,7 +1555,7 @@
                               >
                                 <img
                                   v-if="color.image"
-                                  :src="color.image"
+                                  :src="formatImageUrl(color.image)"
                                   class="w-12 h-12 object-cover rounded border border-gray-100"
                                 />
                                 <div
@@ -1605,7 +1605,10 @@
                           :key="imgIdx"
                           class="relative w-20 h-20 rounded-lg overflow-hidden border border-gray-200 group/gallery"
                         >
-                          <img :src="img" class="w-full h-full object-cover" />
+                          <img
+                            :src="formatImageUrl(img)"
+                            class="w-full h-full object-cover"
+                          />
                           <div
                             class="absolute inset-0 bg-black/50 opacity-0 group-hover/gallery:opacity-100 flex items-center justify-center transition-opacity"
                           >
@@ -2327,6 +2330,7 @@ import {
 } from "@element-plus/icons-vue";
 import { useProductTable } from "@/modules/Order/logic/product/list/hooks/useProductTable";
 import { FileApi } from "@/api/operations";
+import { formatImageUrl } from "@/common/utils/image";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 defineOptions({ name: "ProductList" });

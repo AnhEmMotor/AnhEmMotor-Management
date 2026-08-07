@@ -239,7 +239,7 @@
             <div class="flex items-start justify-between gap-3">
               <div class="flex items-center gap-3 min-w-0">
                 <ElImage
-                  :src="variant.coverImageUrl || ''"
+                  :src="formatImageUrl(variant.coverImageUrl) || ''"
                   class="w-12 h-12 rounded object-cover border border-gray-100 flex-shrink-0"
                   fit="cover"
                 >
@@ -347,6 +347,7 @@ import { useCommon } from "@/common/composables/useCommon";
 import { NewsApi } from "@/api/marketing";
 import { ProductApi } from "@/api/product";
 import type { ProductVariantLiteForInput } from "@/domain/product/product.types";
+import { formatImageUrl } from "@/common/utils/image";
 
 defineOptions({ name: "ArticlePublishWorkflow" });
 

@@ -270,7 +270,7 @@
               <template #default="{ row }">
                 <img
                   v-if="row.coverImageUrl"
-                  :src="row.coverImageUrl"
+                  :src="formatImageUrl(row.coverImageUrl)"
                   class="w-12 h-12 object-cover rounded"
                 />
                 <span v-else class="text-gray-400">---</span>
@@ -336,6 +336,7 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { SalesOrderApi } from "@/api/sales";
 import type { SalesOrder, OrderProduct } from "@/domain/order/order.types";
 import type { ColumnOption } from "@/types/component";
+import { formatImageUrl } from "@/common/utils/image";
 
 // ============================================
 // ORIGINAL CODE

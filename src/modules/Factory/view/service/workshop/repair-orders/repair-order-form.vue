@@ -177,7 +177,7 @@
                   <img
                     v-for="(img, idx) in vehicleGallery"
                     :key="idx"
-                    :src="img"
+                    :src="formatImageUrl(img)"
                     class="w-16 h-16 object-cover rounded-lg border border-slate-200 cursor-pointer"
                     @click="openImagePreview(img)"
                   />
@@ -587,6 +587,7 @@ import {
 import { EmployeeApi, type EmployeeResponse } from "@/api/operations";
 import { VehicleApi } from "@/api/vehicle/vehicle.api";
 import { useVoucher } from "@/common/composables/useVoucher";
+import { formatImageUrl } from "@/common/utils/image";
 
 defineOptions({ name: "ServiceWorkshopRepairOrderForm" });
 

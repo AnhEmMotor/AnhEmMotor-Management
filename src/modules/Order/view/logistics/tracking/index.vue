@@ -191,7 +191,7 @@
                     >
                       <img
                         v-if="item.thumbnailUrl"
-                        :src="item.thumbnailUrl"
+                        :src="formatImageUrl(item.thumbnailUrl)"
                         class="w-full h-full object-cover"
                       />
                       <el-icon v-else class="text-gray-300 text-2xl"
@@ -283,6 +283,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, nextTick } from "vue";
 import { useI18n } from "vue-i18n";
+import { formatImageUrl } from "@/common/utils/image";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import {
@@ -304,8 +305,6 @@ import {
   Location,
   Box,
   Picture,
-  Calendar,
-  Van,
 } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import dayjs from "dayjs";
@@ -369,16 +368,18 @@ onUnmounted(() => {
 function initMap() {
   map.value = L.map("map", {
     zoomControl: false,
-    attributionControl: false,
   }).setView([10.9576, 106.8427], 9);
 
-  L.tileLayer(
-    "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
-    {
-      subdomains: "abcd",
-      maxZoom: 20,
-    },
-  ).addTo(map.value as any);
+  // Same OSM data source as the OSRM routing calls (fetchRoadRoute), so the drawn
+  // route and the visible roads stay in sync — third-party tile caches (e.g. CartoDB)
+  // re-render from OSM on their own schedule and can lag behind real-world changes.
+  // ponytail: OSM's own tile server asks that heavy/production traffic self-host instead —
+  // switch to a paid provider (MapTiler/Mapbox) or self-hosted tiles if this page's traffic grows.
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    subdomains: "abc",
+    maxZoom: 19,
+    attribution: "© OpenStreetMap contributors",
+  }).addTo(map.value as any);
 
   L.control.zoom({ position: "bottomright" }).addTo(map.value as any);
 
@@ -407,15 +408,8 @@ async function selectOrder(order: ActiveShipmentItem) {
     const res = await getShipmentTracking(order.trackingNumber);
     trackingData.value = (res as any).data || res;
 
-    // Mock ETA if missing for demonstration
-    if (!(trackingData.value as any).estimatedDeliveryDate) {
-      (trackingData.value as any).estimatedDeliveryDate = dayjs()
-        .add(order.isStuck ? 2 : 24, "hour")
-        .toISOString();
-    }
-
     nextTick(() => {
-      drawTrackingData();
+      void drawTrackingData();
     });
   } catch (error) {
     console.error(error);
@@ -440,7 +434,43 @@ function clearMap() {
   if (polylineLayer.value) polylineLayer.value.clearLayers();
 }
 
-function drawTrackingData() {
+// A coordinate with no nearby road (bad data, offshore, etc.) still gets snapped by OSRM
+// to the nearest road it can find, however far — reject snaps beyond this to avoid
+// drawing a route that jumps absurdly far from the requested point.
+const MAX_SNAP_DISTANCE_METERS = 2000;
+
+// ponytail: public OSRM demo server, no key but rate-limited/best-effort —
+// swap for a self-hosted OSRM or paid routing API if this page's traffic grows.
+async function fetchRoadRoute(
+  from: [number, number],
+  to: [number, number],
+): Promise<[number, number][] | null> {
+  try {
+    const url = `https://router.project-osrm.org/route/v1/driving/${from[1]},${from[0]};${to[1]},${to[0]}?overview=full&geometries=geojson`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data?.code !== "Ok") return null;
+
+    const badSnap = (
+      data.waypoints as { distance: number }[] | undefined
+    )?.some((wp) => wp.distance > MAX_SNAP_DISTANCE_METERS);
+    if (badSnap) return null;
+
+    const coords = data?.routes?.[0]?.geometry?.coordinates as
+      | number[][]
+      | undefined;
+    if (!coords?.length) return null;
+    return coords.map(([lng, lat]) => [lat, lng]);
+  } catch (error) {
+    console.error(
+      "OSRM route fetch failed, falling back to straight line",
+      error,
+    );
+    return null;
+  }
+}
+
+async function drawTrackingData() {
   clearMap();
   if (
     !trackingData.value ||
@@ -450,46 +480,34 @@ function drawTrackingData() {
   )
     return;
 
-  const milestones = trackingData.value.milestones || [];
-
   // Find coordinates directly from the API response
   const startCoords: any = [
     trackingData.value.originLatitude || 10.9576,
     trackingData.value.originLongitude || 106.8427,
   ];
 
-  let currentCoords: any = [...startCoords];
-  let currentMilestone = null;
-
-  if (milestones.length > 0) {
-    currentMilestone =
-      milestones.find((m) => m.isCurrent) || milestones[milestones.length - 1];
-    if (currentMilestone.latitude && currentMilestone.longitude) {
-      currentCoords = [currentMilestone.latitude, currentMilestone.longitude];
-    }
-  }
-
-  // Mock Destination if missing (just slightly far from current for demo)
+  // Mock Destination if missing (just slightly far from start for demo)
   const destCoords: any = [
-    trackingData.value.destinationLatitude || currentCoords[0] + 0.05,
-    trackingData.value.destinationLongitude || currentCoords[1] + 0.05,
+    trackingData.value.destinationLatitude || startCoords[0] + 0.05,
+    trackingData.value.destinationLongitude || startCoords[1] + 0.05,
   ];
 
-  // DRAW POLYLINES
-  // 1. Start -> Current (Solid line - Completed)
-  L.polyline([startCoords, currentCoords], {
+  const requestedTrackingNumber = trackingData.value.trackingNumber;
+  const fullPath = await fetchRoadRoute(startCoords, destCoords);
+
+  // Bail if the map was torn down, or another order was selected, while we awaited the route.
+  if (
+    !map.value ||
+    !polylineLayer.value ||
+    trackingData.value?.trackingNumber !== requestedTrackingNumber
+  )
+    return;
+
+  // DRAW ROUTE: single line, start to destination, following actual roads
+  L.polyline(fullPath || [startCoords, destCoords], {
     color: "#3b82f6", // blue-500
     weight: 5,
     opacity: 0.9,
-    lineJoin: "round",
-  }).addTo(polylineLayer.value as any);
-
-  // 2. Current -> End (Dashed grey line - Expected)
-  L.polyline([currentCoords, destCoords], {
-    color: "#9ca3af", // gray-400
-    weight: 4,
-    opacity: 0.8,
-    dashArray: "8, 8",
     lineJoin: "round",
   }).addTo(polylineLayer.value as any);
 
@@ -505,31 +523,7 @@ function drawTrackingData() {
     .bindTooltip("Showroom Biên Hòa", { direction: "top" })
     .addTo(markersLayer.value as any);
 
-  // 2. Current (Bưu cục) - Only if we have milestone or if we just want to show current = start
-  const pulseColor = "#3b82f6";
-  const pulseClass = "marker-safe-pulse";
-
-  const currentIcon = L.divIcon({
-    className: `custom-marker ${pulseClass}`,
-    html: `<div style="border-color: ${pulseColor};" class="relative w-9 h-9 rounded-full border-[3px] shadow-lg bg-white flex items-center justify-center z-50">
-            <div style="background-color: ${pulseColor};" class="w-3.5 h-3.5 rounded-full"></div>
-           </div>`,
-    iconSize: [36, 36],
-    iconAnchor: [18, 18],
-  });
-
-  const currentTooltipText = currentMilestone
-    ? `<b>Bưu cục hiện tại</b><br/>${currentMilestone.location}`
-    : `<b>Đang chờ lấy hàng</b>`;
-
-  L.marker(currentCoords, { icon: currentIcon })
-    .bindTooltip(currentTooltipText, {
-      direction: "top",
-      offset: [0, -18],
-    })
-    .addTo(markersLayer.value as any);
-
-  // 3. Destination (Customer)
+  // 2. Destination (Customer)
   const endIcon = L.divIcon({
     className: "custom-marker",
     html: `<div class="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center shadow-lg border-2 border-white"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>`,
@@ -541,7 +535,7 @@ function drawTrackingData() {
     .addTo(markersLayer.value as any);
 
   // Auto zoom to fit the route
-  const bounds = L.latLngBounds([startCoords, currentCoords, destCoords]);
+  const bounds = L.latLngBounds([startCoords, destCoords]);
   map.value.flyToBounds(bounds, { padding: [80, 80], duration: 1.2 });
 }
 
@@ -560,11 +554,6 @@ function formatCurrency(amount: number) {
 }
 
 function formatDate(dateStr: string) {
-  return dayjs(dateStr).format("HH:mm - DD/MM/YYYY");
-}
-
-function formatEtaDate(dateStr?: string) {
-  if (!dateStr) return "Đang cập nhật...";
   return dayjs(dateStr).format("HH:mm - DD/MM/YYYY");
 }
 </script>
@@ -608,55 +597,5 @@ function formatEtaDate(dateStr?: string) {
 
 :deep(.tracking-timeline .el-timeline-item__tail) {
   border-left: 2px solid #e5e7eb;
-}
-
-/* Radar Pulse Animations */
-:deep(.marker-safe-pulse::after) {
-  position: absolute;
-  inset: -8px;
-  pointer-events: none;
-  content: "";
-  border: 2px solid #3b82f6;
-  border-radius: 50%;
-  animation: safe-ripple 1.5s infinite cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-:deep(.marker-risk-pulse::after) {
-  position: absolute;
-  inset: -8px;
-  pointer-events: none;
-  content: "";
-  background: rgb(239 68 68 / 20%);
-  border: 2px solid #ef4444;
-  border-radius: 50%;
-  animation: risk-ripple 1s infinite cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes safe-ripple {
-  0% {
-    opacity: 1;
-    transform: scale(0.6);
-  }
-
-  100% {
-    opacity: 0;
-    transform: scale(2.2);
-  }
-}
-
-@keyframes risk-ripple {
-  0% {
-    opacity: 1;
-    transform: scale(0.8);
-  }
-
-  50% {
-    opacity: 0.8;
-  }
-
-  100% {
-    opacity: 0;
-    transform: scale(2);
-  }
 }
 </style>

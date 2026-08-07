@@ -263,7 +263,7 @@
             <ElImage
               v-for="(img, idx) in drawer.request.evidenceImages"
               :key="idx"
-              :src="img"
+              :src="formatImageUrl(img)"
               class="w-24 h-24 rounded border cursor-pointer"
               fit="cover"
               :preview-src-list="drawer.request.evidenceImages"
@@ -395,6 +395,7 @@ import {
   updateReturnRequestStatus,
 } from "@/api/sales/returns.api";
 import type { ReturnRequestDetail } from "@/domain/sales/returns.types";
+import { formatImageUrl } from "@/common/utils/image";
 
 defineOptions({ name: "OrderReturns" });
 

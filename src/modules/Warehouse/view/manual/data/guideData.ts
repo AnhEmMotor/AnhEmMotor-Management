@@ -20,6 +20,7 @@ export interface GuideSection {
   shadowColor: string;
   route?: string;
   pages?: GuidePage[];
+  imageUrl?: string;
 }
 export interface FeatureItem {
   title: string;
