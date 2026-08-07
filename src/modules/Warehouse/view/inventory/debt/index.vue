@@ -361,20 +361,8 @@ import { Refresh, Plus } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { DebtApi } from "@/api/supplier";
 import * as echarts from "echarts";
-import { exportReportWorkbook } from "@/utils/report-excel";
 
 defineOptions({ name: "InventoryDebt" });
-
-interface SupplierDebtExportRow {
-  id: number | string;
-  name: string;
-  phone?: string;
-  totalDebt: number;
-}
-
-interface SupplierDebtExportResponse {
-  items?: SupplierDebtExportRow[];
-}
 
 // const activeTab = ref("suppliers");
 
@@ -453,48 +441,15 @@ const fetchSupplierDebts = async () => {
 const exportSupplierDebtExcel = async () => {
   exporting.value = true;
   try {
-    const params: Record<string, string | number> = {
-      pageIndex: 1,
-      pageSize: Math.max(total.value, supplierDebts.value.length, 1000),
-    };
-    if (dateRange.value?.length === 2) {
-      params.startDate = dateRange.value[0];
-      params.endDate = dateRange.value[1];
-    }
-
-    const response = (await DebtApi.getSuppliersWithDebt(params)) as
-      | SupplierDebtExportRow[]
-      | SupplierDebtExportResponse;
-    const rows = Array.isArray(response) ? response : response?.items || [];
-
-    exportReportWorkbook({
-      fileName: `Cong_no_nha_cung_cap_${new Date().toISOString().slice(0, 10)}`,
-      sheets: [
-        {
-          name: "Tổng quan",
-          rows: [
-            {
-              "Từ ngày": dateRange.value?.[0],
-              "Đến ngày": dateRange.value?.[1],
-              "Số nhà cung cấp": rows.length,
-              "Tổng công nợ": rows.reduce(
-                (sum, item) => sum + (item.totalDebt || 0),
-                0,
-              ),
-            },
-          ],
-        },
-        {
-          name: "Công nợ nhà cung cấp",
-          rows: rows.map((item) => ({
-            "Mã nhà cung cấp": item.id,
-            "Nhà cung cấp": item.name,
-            "Số điện thoại": item.phone,
-            "Công nợ còn lại": item.totalDebt,
-          })),
-        },
-      ],
-    });
+    const blob = await DebtApi.exportExcel();
+    const url = window.URL.createObjectURL(new Blob([blob]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "Cong_no_nha_cung_cap.xlsx");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
   } catch (error) {
     console.error(error);
     ElMessage.error("Không thể xuất công nợ nhà cung cấp");

@@ -8,6 +8,13 @@ export const DebtApi = {
     });
   },
 
+  exportExcel() {
+    return request.get<Blob>({
+      url: "/api/v1/DebtPayments/suppliers/export",
+      responseType: "blob",
+    });
+  },
+
   paySupplierDebt(
     supplierId: number,
     amount: number,

@@ -56,7 +56,10 @@
 
           <div class="aspect-video overflow-hidden relative">
             <img
-              :src="item.coverImageUrl || '/assets/image/placeholder.png'"
+              :src="
+                formatImageUrl(item.coverImageUrl) ||
+                '/assets/image/placeholder.png'
+              "
               class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
             <div
@@ -151,6 +154,7 @@ import { router } from "@/router";
 import { NewsApi } from "@/api/marketing";
 import { useCommon } from "@/common/composables/useCommon";
 import { ElMessage, ElMessageBox } from "element-plus";
+import { formatImageUrl } from "@/common/utils/image";
 
 defineOptions({ name: "ArticleListAnalytics" });
 
@@ -212,7 +216,10 @@ const handleCurrentChange = (val: number) => {
 };
 
 const toEdit = (item: any) =>
-  router.push({ name: "ArticlePublish", query: { id: item.id, slug: item.slug } });
+  router.push({
+    name: "ArticlePublish",
+    query: { id: item.id, slug: item.slug },
+  });
 const toAddArticle = () => router.push({ name: "ArticlePublish" });
 
 const toDelete = (item: any) => {

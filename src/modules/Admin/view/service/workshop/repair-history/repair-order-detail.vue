@@ -727,7 +727,10 @@
           >
             <div class="flex items-center gap-3">
               <img
-                :src="variant.coverImageUrl || 'https://placehold.co/50x50'"
+                :src="
+                  formatImageUrl(variant.coverImageUrl) ||
+                  'https://placehold.co/50x50'
+                "
                 class="size-10 rounded-lg object-cover border border-slate-100"
               />
               <div>
@@ -897,6 +900,7 @@ import { RepairOrderApi, RepairOrder } from "@/api/sales";
 import { EmployeeApi, EmployeeResponse } from "@/api/operations";
 import { ServiceApi, ServiceResponse } from "@/api/service";
 import { ProductApi } from "@/api/product";
+import { formatImageUrl } from "@/common/utils/image";
 
 defineOptions({ name: "CustomerWorkshopDetail" });
 

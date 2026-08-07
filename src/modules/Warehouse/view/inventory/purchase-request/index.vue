@@ -685,7 +685,7 @@
             <div class="flex items-start justify-between gap-3">
               <div class="flex items-center gap-3 min-w-0">
                 <ElImage
-                  :src="variant.coverImageUrl || ''"
+                  :src="formatImageUrl(variant.coverImageUrl)"
                   class="w-12 h-12 rounded object-cover border border-gray-100 flex-shrink-0"
                   fit="cover"
                 >
@@ -855,6 +855,7 @@ import "driver.js/dist/driver.css";
 import AuditTrailModal from "@/components/business/audit-trail-modal/index.vue";
 import { usePurchaseRequestTable } from "@/views/inventory/purchase-request/hooks/usePurchaseRequestTable";
 import ImportResultDialog from "@/components/business/import-result-dialog/index.vue";
+import { formatImageUrl } from "@/common/utils/image";
 
 defineOptions({ name: "PurchaseRequest" });
 
