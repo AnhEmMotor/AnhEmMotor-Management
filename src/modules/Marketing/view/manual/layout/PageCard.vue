@@ -49,7 +49,7 @@
       :closable="false"
       class="tips-box"
     >
-      <template #title><strong>Meo huu ich:</strong></template>
+      <template #title><strong>Mẹo hữu ích:</strong></template>
       <ul class="tips-list">
         <li v-for="(t, i) in page.tips" :key="i">{{ t }}</li>
       </ul>
