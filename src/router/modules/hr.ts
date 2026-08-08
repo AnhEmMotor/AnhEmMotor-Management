@@ -48,15 +48,15 @@ export const hrRoutes: AppRouteRecord = {
         isHide: true,
       },
     },
-    {
-      path: "kpi",
-      name: "HRKPI",
-      component: "/Admin/view/employee/kpi/index",
-      meta: {
-        title: "menus.hr.kpi",
-        icon: "ri:bar-chart-box-line",
-      },
-    },
+    // {
+    //   path: "kpi",
+    //   name: "HRKPI",
+    //   component: "/Admin/view/employee/kpi/index",
+    //   meta: {
+    //     title: "menus.hr.kpi",
+    //     icon: "ri:bar-chart-box-line",
+    //   },
+    // },
     {
       path: "hr-report",
       name: "HRCommissionReport",

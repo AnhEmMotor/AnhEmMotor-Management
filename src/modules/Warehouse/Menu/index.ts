@@ -37,6 +37,17 @@ export const warehouseMenu: AppRouteRecord[] = [
         },
       },
       {
+        path: "product/brand",
+        name: "WarehouseProductBrand",
+        component: "/Warehouse/view/product/brand/index",
+        meta: {
+          title: "Quản lý thương hiệu",
+          icon: "ri:medal-line",
+          keepAlive: true,
+          permissions: [Permissions.Warehouse.BrandManagement.View],
+        },
+      },
+      {
         path: "supplier",
         name: "WarehouseSupplier",
         component: "/Warehouse/view/inventory/supplier/index",

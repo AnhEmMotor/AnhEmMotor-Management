@@ -42,16 +42,7 @@
         :loading="loading"
         @refresh="fetchOrders"
       >
-        <template #left>
-          <ElButton
-            type="primary"
-            v-ripple
-            @click="handleAdd"
-            v-auth="Permissions.Order.SalesInvoiceManagement.Create"
-          >
-            <ElIcon class="mr-1"><Plus /></ElIcon> Tạo phiếu bán
-          </ElButton>
-        </template>
+        <template #left> </template>
       </ArtTableHeader>
 
       <ArtTable
@@ -794,7 +785,7 @@ const lockedHint = computed(() => {
     !isNotesLocked.value
   )
     return "";
-  return `Phiếu đang ở trạng thái ${getStatusLabel(originalStatusId.value)}, một số trường đã bị khóa theo backend.`;
+  return `Phiếu đang ở trạng thái ${getStatusLabel(originalStatusId.value)}, một số trường đã bị khóa.`;
 });
 const statusChangeOptions = computed(() => {
   const current = statusOrder.value?.statusId || "";
@@ -975,6 +966,8 @@ async function handlePrepareStatusChange() {
         selectedVehicleIdsByOutputInfo[item.outputInfoId] =
           item.assignedVehicles?.map((v: any) => v.id) || [];
       });
+      statusDialogVisible.value = false;
+      vinDialogVisible.value = true;
     } else {
       await SalesOrderApi.updateStatus(
         statusOrder.value.id,

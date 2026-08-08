@@ -73,6 +73,11 @@ export const ContactApi = {
       data: { assignedUserId },
     });
   },
+  getAssignableUsers() {
+    return request.get<
+      { id: string; fullName?: string; email?: string; phoneNumber?: string }[]
+    >({ url: "/api/v1/Contacts/assignable-users" });
+  },
   rateCustomer(id: number, data: Contact.SupportRatingPayload) {
     return request.post<void>({
       url: `/api/v1/Contacts/support-request/${id}/employee-rating`,
