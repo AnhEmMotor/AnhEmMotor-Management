@@ -119,6 +119,8 @@ export const RepairOrderApi = {
       params: {
         Page: Page ?? current ?? 1,
         PageSize: PageSize ?? size ?? 10,
+        page: Page ?? current ?? 1,
+        pageSize: PageSize ?? size ?? 10,
         ...rest,
       },
     });

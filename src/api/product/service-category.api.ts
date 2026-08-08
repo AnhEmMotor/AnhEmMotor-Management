@@ -19,7 +19,7 @@ export const ServiceCategoryApi = {
   getList(params?: any) {
     const { current, size, ...rest } = params || {};
     return request.get<ServiceCategoryList>({
-      url: "/api/v1/ServiceCategories",
+      url: "/api/v1/ProductCategory/for-manager",
       params: {
         Page: current,
         PageSize: size,

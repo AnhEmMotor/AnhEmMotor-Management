@@ -780,7 +780,7 @@ const handleCreateOrder = (row: BookingAppointment) => {
     });
   } else {
     router.push({
-      path: "/factory/workshop/repair-orders",
+      path: "/factory/workshop/repair",
       query: { phone: row.phone, action: "create" },
     });
   }

@@ -96,6 +96,16 @@
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
+        <template #customerName="{ row }">
+          <span v-if="row.customerName" class="font-medium text-gray-800">{{ row.customerName }}</span>
+          <span v-else class="text-slate-400 italic">Khách lẻ</span>
+        </template>
+        
+        <template #customerPhone="{ row }">
+          <span v-if="row.customerPhone">{{ row.customerPhone }}</span>
+          <span v-else class="text-slate-400 italic">Trống</span>
+        </template>
+
         <template #totalCost="{ row }">
           <span class="font-medium text-emerald-600">
             {{
@@ -500,8 +510,20 @@ const columns = computed(() => {
   return [
     { prop: "id", label: "ID", width: 90, align: "center" },
     { prop: "maintenanceNumber", label: "Mã phiếu", minWidth: 150 },
-    { prop: "customerName", label: "Khách hàng", minWidth: 160 },
-    { prop: "customerPhone", label: "SĐT", minWidth: 120 },
+    {
+      prop: "customerName",
+      label: "Khách hàng",
+      minWidth: 160,
+      useSlot: true,
+      slot: "customerName",
+    },
+    {
+      prop: "customerPhone",
+      label: "SĐT",
+      minWidth: 120,
+      useSlot: true,
+      slot: "customerPhone",
+    },
     { prop: "vehicleInfo", label: "Xe (Biển số)", minWidth: 180 },
     {
       prop: "technicianName",
@@ -641,7 +663,14 @@ const fetchData = async (params: any) => {
   try {
     // API shape: items + totalCount
     const res = await RepairOrderApi.getList(params);
-    data.value = (res.items || []).map((item: any) => {
+    const rawItems = res.items || [];
+
+    // Filter out rows that do not have customerName or customerPhone or are 'Khách lẻ'
+    const validItems = rawItems.filter(
+      (item: any) => item.customerName && item.customerPhone && item.customerName !== 'Khách lẻ'
+    );
+
+    data.value = validItems.map((item: any) => {
       let calcStatus = "InProgress";
       if (item.status) calcStatus = item.status;
       else if (!item.technicianId && !item.technicianName)
@@ -736,6 +765,9 @@ const createForm = ref({
 
   // Assign technician (main tech)
   technicianId: undefined as number | undefined,
+  
+  // Existing vehicle ID
+  vehicleId: undefined as number | undefined,
 });
 
 const openCreateDialog = () => {
@@ -753,6 +785,7 @@ const openCreateDialog = () => {
     vehicleName: "",
     vehicleColor: "",
     technicianId: undefined,
+    vehicleId: undefined,
   };
 };
 
@@ -775,8 +808,10 @@ const handleCustomerPhoneBlur = async () => {
       createForm.value.licensePlate = vehicle.licensePlate || "";
       createForm.value.vehicleName = vehicle.variantName || "";
       createForm.value.vehicleColor = vehicle.colorName || "";
+      createForm.value.vehicleId = vehicle.id;
     } else {
       createForm.value.isNewCustomer = true;
+      createForm.value.vehicleId = undefined;
     }
   } catch (e) {
     createForm.value.isNewCustomer = true;
@@ -787,6 +822,7 @@ const submitCreate = async () => {
   submitting.value = true;
   try {
     const payload = {
+      vehicleId: createForm.value.isNewCustomer ? undefined : createForm.value.vehicleId,
       customerPhone: createForm.value.customerPhone,
       customerName: createForm.value.customerName,
       mileage: createForm.value.mileage,
