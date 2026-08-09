@@ -103,7 +103,7 @@
               <img
                 v-if="clickItem.articleImage"
                 :src="clickItem.articleImage"
-                @error="(e) => (e.target.style.display = 'none')"
+                @error="(e: any) => (e.target.style.display = 'none')"
                 alt="Article Cover"
                 class="w-full h-48 object-cover rounded-lg mb-3 shadow-sm border border-gray-100 dark:border-slate-700"
               />
