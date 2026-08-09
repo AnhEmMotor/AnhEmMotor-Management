@@ -138,7 +138,7 @@ import {
   type PlanStepDto,
   type PlanStepOperation,
 } from "@/api/chat/chat.api";
-import { HttpError } from "@/utils/http/error";
+import { HttpError } from "@/common/utils/http/error";
 
 const props = defineProps<{
   plan: ChatPlanDto;

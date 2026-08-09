@@ -1,4 +1,4 @@
-import request from "@/utils/http";
+import request from "@/common/utils/http";
 
 export type StoreChatMode = "Ai" | "Waiting" | "Human";
 

@@ -71,6 +71,15 @@
     </div>
 
     <div
+      class="menu-model"
+      @click="handleMenuClose"
+      :style="{
+        opacity: !menuOpen ? 0 : 1,
+        transform: showMobileModal ? 'scale(1)' : 'scale(0)',
+      }"
+    />
+
+    <div
       v-show="menuList.length > 0"
       class="menu-left"
       :class="`menu-left-${getMenuTheme.theme} menu-left-${!menuOpen ? 'close' : 'open'}`"
@@ -78,14 +87,15 @@
     >
       <div
         class="header"
-        @click="navigateToHome"
+        @click="!isMobileScreen && navigateToHome()"
         :style="{
           background: getMenuTheme.background,
         }"
       >
-        <ArtLogo v-if="!isDualMenu" class="logo" />
+        <ArtLogo v-if="!isDualMenu && !isMobileScreen" class="logo" />
 
         <p
+          v-if="!isMobileScreen"
           :class="{ 'is-dual-menu-name': isDualMenu }"
           :style="{
             color: getMenuTheme.systemNameColor,
@@ -94,6 +104,14 @@
         >
           {{ AppConfig.systemInfo.name }}
         </p>
+
+        <div
+          v-if="isMobileScreen"
+          class="mobile-close-btn"
+          @click.stop="handleMenuClose"
+        >
+          <ArtSvgIcon icon="ri:close-line" />
+        </div>
       </div>
       <ElScrollbar :style="scrollbarStyle">
         <ElMenu
@@ -128,15 +146,6 @@
           "
         />
       </div>
-
-      <div
-        class="menu-model"
-        @click="toggleMenuVisibility"
-        :style="{
-          opacity: !menuOpen ? 0 : 1,
-          transform: showMobileModal ? 'scale(1)' : 'scale(0)',
-        }"
-      />
     </div>
   </div>
 </template>
@@ -338,28 +347,38 @@ const toggleDualMenuMode = (): void => {
   settingStore.setDualMenuShowText(!dualMenuShowText.value);
 };
 
-watch(width, (newWidth: number) => {
-  if (newWidth < MOBILE_BREAKPOINT) {
+let menuOpenBeforeMobile: boolean | null = null;
+
+watch(width, (newWidth: number, oldWidth: number) => {
+  const isMobile = newWidth < MOBILE_BREAKPOINT;
+  const wasMobile = oldWidth < MOBILE_BREAKPOINT;
+  if (isMobile && !wasMobile) {
+    menuOpenBeforeMobile = menuOpen.value;
     settingStore.setMenuOpen(false);
-    if (!menuOpen.value) {
-      showMobileModal.value = false;
-    }
-  } else {
+    showMobileModal.value = false;
+  } else if (!isMobile && wasMobile) {
+    settingStore.setMenuOpen(menuOpenBeforeMobile ?? true);
+    showMobileModal.value = false;
+  } else if (!isMobile) {
     showMobileModal.value = false;
   }
 });
 
-watch(menuOpen, (isMenuOpen: boolean) => {
-  if (!isMobileScreen.value) {
-    showMobileModal.value = false;
-  } else {
-    if (isMenuOpen) {
-      showMobileModal.value = true;
+watch(
+  menuOpen,
+  (isMenuOpen: boolean) => {
+    if (!isMobileScreen.value) {
+      showMobileModal.value = false;
     } else {
-      delayHideMobileModal();
+      if (isMenuOpen) {
+        showMobileModal.value = true;
+      } else {
+        delayHideMobileModal();
+      }
     }
-  }
-});
+  },
+  { immediate: true },
+);
 </script>
 
 <style lang="scss" scoped>

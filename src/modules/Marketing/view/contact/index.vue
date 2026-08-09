@@ -1164,7 +1164,7 @@ import { storeToRefs } from "pinia";
 import { useContactStore } from "@/application/store/contact";
 import { useSettingStore } from "@/application/store/setting";
 import { useUserStore } from "@/application/store/user";
-import { fetchGetUserList } from "@/api/auth";
+import { ContactApi } from "@/api/customer/contact.api";
 import {
   SupportStatuses,
   FeedbackStatuses,
@@ -1187,33 +1187,18 @@ const assignDialogVisible = ref(false);
 const assignedUser = ref("");
 const ratingSubmitting = ref(false);
 
-type AssignableUser = {
-  id: string;
-  fullName?: string;
-  userName?: string;
-  email?: string;
-  status?: string;
-};
-
-type AssignableUserList = {
-  items?: AssignableUser[];
-  records?: AssignableUser[];
-};
-
 const userOptions = ref<{ id: string; name: string }[]>([]);
 const userOptionsLoading = ref(false);
 
 const fetchAssignableUsers = async () => {
   userOptionsLoading.value = true;
   try {
-    const response = await fetchGetUserList({ Page: 1, PageSize: 100 });
-    const payload = response as unknown as AssignableUserList;
-    const users = payload.items ?? payload.records ?? [];
-    userOptions.value = users
-      .filter((user) => user.id && user.status !== "Banned")
+    const users = await ContactApi.getAssignableUsers();
+    userOptions.value = (users || [])
+      .filter((user) => user.id)
       .map((user) => ({
         id: user.id,
-        name: user.fullName || user.userName || user.email || user.id,
+        name: user.fullName || user.email || user.id,
       }));
   } catch {
     userOptions.value = [];
@@ -1473,9 +1458,13 @@ const downloadCvUrl = (url: string) => {
   if (url) window.open(url, "_blank");
 };
 const openAssignDialog = () => {
-  assignedUser.value =
+  const currentAssignedUserId =
     (contactStore.activeItem as Contact.SupportRequest | null)
       ?.assignedUserId ?? "";
+  const isValidOption = userOptions.value.some(
+    (option) => option.id === currentAssignedUserId,
+  );
+  assignedUser.value = isValidOption ? currentAssignedUserId : "";
   assignDialogVisible.value = true;
 };
 const handleAssign = async () => {

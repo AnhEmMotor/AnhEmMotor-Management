@@ -13,6 +13,14 @@ import {
 } from "@/api/chat/chat.api";
 import PlanCard from "./PlanCard.vue";
 import {
+  getSuggestedPages,
+  getFollowUpSuggestions,
+  EMPTY_STATE_SUGGESTIONS,
+  type SuggestedPage,
+} from "./chatPageSuggestions";
+import { useMenuStore } from "@/application/store/menu";
+import { handleMenuJump } from "@/common/utils/navigation";
+import {
   Plus,
   Delete,
   Position,
@@ -178,6 +186,61 @@ const toolLabelByName = computed(() => {
   for (const tool of toolCatalog.value ?? []) map[tool.name] = tool.label;
   return map;
 });
+const { menuList } = storeToRefs(useMenuStore());
+const isDoneToolStep = (
+  step: ChatReasoningStep,
+): step is Extract<ChatReasoningStep, { kind: "tool" }> =>
+  step.kind === "tool" && step.status === "done";
+const suggestedPagesFor = (msg: ChatMessage) => {
+  const doneTools = (msg.reasoningSteps ?? [])
+    .filter(isDoneToolStep)
+    .map((s) => ({ name: s.name, label: s.label }));
+  return getSuggestedPages(doneTools, menuList.value);
+};
+const goToSuggestedPage = (item: SuggestedPage) => {
+  if (!item.page) return;
+  handleMenuJump(item.page);
+  drawerVisible.value = false;
+};
+
+// Gợi ý prompt: rỗng khi chưa có tin nhắn nào -> câu mở đầu; sau khi AI trả lời xong (tin nhắn AI
+// cuối cùng, không còn đang stream) -> câu hỏi tiếp theo dựa trên tool vừa dùng. Ẩn khi người dùng
+// đang gõ, để không đè lên nội dung họ đang nhập.
+const messageInputRef = ref();
+const activeSuggestions = computed<string[]>(() => {
+  if (newMessage.value.trim()) return [];
+  if (messages.value.length === 0) return EMPTY_STATE_SUGGESTIONS;
+  if (isSending.value) return [];
+  const lastMsg = messages.value[messages.value.length - 1];
+  if (!lastMsg || lastMsg.role !== "AI") return [];
+  // AI tự sinh gợi ý bám theo hội thoại (tag <goi_y> ở backend) được ưu tiên hơn map tĩnh —
+  // map tĩnh chỉ còn là fallback khi AI không phát gợi ý (bị guardrail chặn, model không tuân thủ,
+  // hoặc tin nhắn cũ trước khi có tính năng này).
+  const aiSuggestion = (lastMsg.reasoningSteps ?? []).find(
+    (s) => s.kind === "suggestion",
+  );
+  if (aiSuggestion) return [aiSuggestion.text];
+  const doneToolNames = (lastMsg.reasoningSteps ?? [])
+    .filter(isDoneToolStep)
+    .map((s) => s.name);
+  return getFollowUpSuggestions(doneToolNames);
+});
+const topSuggestion = computed(() => activeSuggestions.value[0] ?? "");
+const applySuggestion = (text: string) => {
+  newMessage.value = text;
+  nextTick(() => messageInputRef.value?.focus());
+};
+// Gợi ý mở đầu (chưa có tin nhắn nào): bấm là gửi luôn, không cần gõ lại/bấm Gửi lần nữa.
+const sendSuggestion = (text: string) => {
+  newMessage.value = text;
+  sendMessage();
+};
+const handleInputTab = (e: Event) => {
+  if (newMessage.value.trim() || !topSuggestion.value) return;
+  e.preventDefault();
+  applySuggestion(topSuggestion.value);
+};
+
 const toolCallText = (tool: ChatMessageToolCall) => {
   const lowered = tool.label.charAt(0).toLowerCase() + tool.label.slice(1);
   const prefix = `${tool.status === "done" ? "Đã" : "Đang"} ${lowered}`;
@@ -189,9 +252,15 @@ const toolCallText = (tool: ChatMessageToolCall) => {
 };
 
 const CITATION_PATTERN = /\[(c\d+)\]/g;
+// Phòng hờ: tag gợi ý đáng lẽ đã bị backend bóc ra trước khi tới text_delta (xem call_model_node),
+// nhưng nếu lỡ lọt vào msg.message thì cũng không hiển thị ra cho người dùng thấy.
+const SUGGESTION_PATTERN = /<goi_y>[\s\S]*?<\/goi_y>/g;
 
 const renderAiMessage = (msg: ChatMessage) => {
-  const html = marked.parse(msg.message || "", { async: false }) as string;
+  const html = marked.parse(
+    (msg.message || "").replace(SUGGESTION_PATTERN, ""),
+    { async: false },
+  ) as string;
   return html.replace(CITATION_PATTERN, (match, id: string) => {
     if (!msg.citations?.[id]) return match;
     return `<button type="button" class="citation-chip" data-citation-id="${id}">[${id}]</button>`;
@@ -552,6 +621,17 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
             { kind: "thinking", text },
           ];
           if (activeSessionId.value === sessionId) scrollToBottom();
+          break;
+        }
+        case "suggested_prompt": {
+          if (!aiMsg) break;
+          const text = parseThinkingPayload(evt.payload || "");
+          if (text) {
+            aiMsg.reasoningSteps = [
+              ...(aiMsg.reasoningSteps ?? []),
+              { kind: "suggestion", text },
+            ];
+          }
           break;
         }
         case "tool_start": {
@@ -1246,15 +1326,37 @@ const formatTime = (isoString: string) => {
         >
           <div
             v-if="!activeSessionId && messages.length === 0"
-            class="m-auto text-gray-400"
+            class="m-auto flex flex-col items-center gap-3 text-gray-400"
           >
-            Bắt đầu gõ tin nhắn để tạo phiên chat mới
+            <span>Bắt đầu gõ tin nhắn để tạo phiên chat mới</span>
+            <div class="flex max-w-md flex-wrap justify-center gap-2">
+              <button
+                v-for="s in EMPTY_STATE_SUGGESTIONS"
+                :key="s"
+                type="button"
+                class="prompt-suggestion-chip"
+                @click="sendSuggestion(s)"
+              >
+                {{ s }}
+              </button>
+            </div>
           </div>
           <div
             v-else-if="messages.length === 0 && !isLoadingHistory"
-            class="m-auto text-gray-400"
+            class="m-auto flex flex-col items-center gap-3 text-gray-400"
           >
-            Bắt đầu cuộc trò chuyện...
+            <span>Bắt đầu cuộc trò chuyện...</span>
+            <div class="flex max-w-md flex-wrap justify-center gap-2">
+              <button
+                v-for="s in EMPTY_STATE_SUGGESTIONS"
+                :key="s"
+                type="button"
+                class="prompt-suggestion-chip"
+                @click="sendSuggestion(s)"
+              >
+                {{ s }}
+              </button>
+            </div>
           </div>
 
           <template v-else>
@@ -1330,7 +1432,7 @@ const formatTime = (isoString: string) => {
                           <span>{{ step.text }}</span>
                         </div>
                         <div
-                          v-else
+                          v-else-if="step.kind === 'tool'"
                           class="flex items-center gap-2 text-xs"
                           :class="
                             step.status === 'done'
@@ -1376,6 +1478,25 @@ const formatTime = (isoString: string) => {
                   ></div>
                   <div v-else class="whitespace-pre-wrap">
                     {{ msg.message }}
+                  </div>
+                  <div
+                    v-if="msg.role === 'AI' && suggestedPagesFor(msg).length"
+                    class="mt-2 flex flex-wrap gap-1.5"
+                  >
+                    <button
+                      v-for="item in suggestedPagesFor(msg)"
+                      :key="item.routeName"
+                      type="button"
+                      class="page-suggestion-chip"
+                      :class="{ 'page-suggestion-chip--disabled': !item.page }"
+                      :disabled="!item.page"
+                      @click="goToSuggestedPage(item)"
+                    >
+                      → {{ item.label
+                      }}<template v-if="!item.page">
+                        · Không còn quyền</template
+                      >
+                    </button>
                   </div>
                   <div
                     class="text-[10px] mt-1 flex items-center justify-end gap-2"
@@ -1455,15 +1576,32 @@ const formatTime = (isoString: string) => {
             />
           </div>
 
+          <div
+            v-if="activeSuggestions.length && messages.length > 0"
+            class="mb-2 flex flex-wrap gap-1.5"
+          >
+            <button
+              v-for="s in activeSuggestions"
+              :key="s"
+              type="button"
+              class="prompt-suggestion-chip"
+              @click="applySuggestion(s)"
+            >
+              💡 {{ s }}
+            </button>
+          </div>
+
           <div v-if="!isRichTextMode" class="flex gap-2">
             <el-input
+              ref="messageInputRef"
               v-model="newMessage"
               :placeholder="
                 isSending
                   ? 'Gửi thêm thông tin hoặc đính chính...'
-                  : 'Nhập câu hỏi của bạn...'
+                  : topSuggestion || 'Nhập câu hỏi của bạn...'
               "
               @keyup.enter="sendMessage"
+              @keydown.tab="handleInputTab"
               :disabled="isCreatingSession"
               class="flex-1"
             />
@@ -1608,6 +1746,52 @@ const formatTime = (isoString: string) => {
 }
 
 :deep(.citation-chip:hover) {
+  background-color: #c7d2fe;
+}
+
+.page-suggestion-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.6rem;
+  border-radius: 9999px;
+  background-color: #e0e7ff;
+  color: #4338ca;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+  border: none;
+}
+
+.page-suggestion-chip:hover {
+  background-color: #c7d2fe;
+}
+
+.page-suggestion-chip--disabled {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.page-suggestion-chip--disabled:hover {
+  background-color: #f3f4f6;
+}
+
+.prompt-suggestion-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.6rem 1.1rem;
+  border-radius: 9999px;
+  background-color: #e0e7ff;
+  color: #4338ca;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+  border: none;
+}
+
+.prompt-suggestion-chip:hover {
   background-color: #c7d2fe;
 }
 </style>

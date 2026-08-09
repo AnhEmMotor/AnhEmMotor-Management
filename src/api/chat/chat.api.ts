@@ -1,4 +1,4 @@
-import request from "@/utils/http";
+import request from "@/common/utils/http";
 
 export interface ChatSession {
   id: string;
@@ -36,6 +36,7 @@ export interface ChatMessageToolCall {
 
 export type ChatReasoningStep =
   | { kind: "thinking"; text: string }
+  | { kind: "suggestion"; text: string }
   | ({ kind: "tool" } & ChatMessageToolCall);
 
 export interface ChatMessage {

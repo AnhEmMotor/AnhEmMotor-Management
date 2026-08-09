@@ -173,10 +173,10 @@
           >
             <ElImage
               v-if="row.logoUrl"
-              :src="row.logoUrl"
+              :src="formatImageUrl(row.logoUrl)"
               class="w-full h-full"
               fit="contain"
-              :preview-src-list="[row.logoUrl]"
+              :preview-src-list="[formatImageUrl(row.logoUrl)]"
               preview-teleported
             />
             <ElIcon v-else class="text-gray-300"><Picture /></ElIcon>
@@ -263,7 +263,10 @@
             :http-request="handleUpload"
           >
             <div v-if="formData.logoUrl" class="relative group">
-              <img :src="formData.logoUrl" class="logo-preview" />
+              <img
+                :src="formatImageUrl(formData.logoUrl)"
+                class="logo-preview"
+              />
               <div
                 class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex-c transition-opacity rounded-lg"
               >
@@ -422,6 +425,7 @@
 
 <script setup lang="ts">
 import { Permissions } from "@/domain/constants/permissions";
+import { formatImageUrl } from "@/common/utils/image";
 import { ref } from "vue";
 import {
   Plus,

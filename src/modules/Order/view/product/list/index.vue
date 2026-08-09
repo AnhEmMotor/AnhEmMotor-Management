@@ -2278,7 +2278,7 @@
               >
                 <ElImage
                   v-if="brand.logoUrl"
-                  :src="brand.logoUrl"
+                  :src="formatImageUrl(brand.logoUrl)"
                   class="w-full h-full"
                   fit="contain"
                 />

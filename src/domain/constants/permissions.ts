@@ -82,6 +82,7 @@ export const Permissions = {
       Create: "Permissions.Marketing.ContactManagement.Create",
       Edit: "Permissions.Marketing.ContactManagement.Edit",
       Delete: "Permissions.Marketing.ContactManagement.Delete",
+      Assign: "Permissions.Marketing.ContactManagement.Assign",
     },
     CustomerAssetManagement: {
       View: "Permissions.Marketing.CustomerAssetManagement.View",
