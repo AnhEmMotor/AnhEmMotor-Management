@@ -30,7 +30,7 @@
         :min="0"
         :step="100000"
         controls-position="right"
-        class="w-full"
+        style="width: 100%"
       />
     </ElFormItem>
 
@@ -41,7 +41,7 @@
         value-format="YYYY-MM-DD"
         placeholder="Chọn ngày"
         popper-class="reporting-date-popper"
-        class="w-full"
+        style="width: 100%"
       />
     </ElFormItem>
 

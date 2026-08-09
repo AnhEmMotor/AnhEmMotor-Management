@@ -107,7 +107,7 @@
       v-model="dialogVisible"
       :title="dialogTitle"
       width="600px"
-class="resp-dialog"
+      class="resp-dialog"
       append-to-body
       destroy-on-close
     >

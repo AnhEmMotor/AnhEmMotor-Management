@@ -22,12 +22,7 @@ export function useResponsive() {
   const between = (lo: keyof typeof BP, hi: keyof typeof BP) =>
     computed(() => width.value >= BP[lo] && width.value < BP[hi]);
 
-  const colSpan = (
-    sm: number,
-    md: number,
-    lg = md,
-    xl = lg,
-  ) =>
+  const colSpan = (sm: number, md: number, lg = md, xl = lg) =>
     computed(() => {
       if (width.value >= BP.xl) return xl;
       if (width.value >= BP.lg) return lg;

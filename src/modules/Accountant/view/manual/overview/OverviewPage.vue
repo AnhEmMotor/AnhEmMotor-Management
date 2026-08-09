@@ -51,7 +51,7 @@ function cardStyle(item: any, idx: number) {
     transition: "all .22s ease",
     borderRadius: "16px",
     border: "1px solid " + item.color + "22",
-    background: "#fff",
+    background: "var(--el-bg-color-overlay)",
     animationDelay: idx * 50 + "ms",
     animation: "cardIn .35s ease both",
   };

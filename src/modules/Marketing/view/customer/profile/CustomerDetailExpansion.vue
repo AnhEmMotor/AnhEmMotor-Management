@@ -227,7 +227,7 @@
             <h4
               class="m-0 font-bold uppercase text-[10px] tracking-wider opacity-80"
             >
-              AI Insight
+              Quan Tâm
             </h4>
           </div>
 
@@ -361,17 +361,30 @@ const handleNoteSubmit = () => {
   }
 }
 
-:global(.dark) .lead-detail-expansion {
+:global(html.dark) .lead-detail-expansion {
   background-color: #0f172a !important;
 
-  .premium-input :deep(.el-input__wrapper) {
+  .premium-input :deep(.el-input__wrapper),
+  .premium-input :deep(.el-input__wrapper.is-focus),
+  .premium-input :deep(.el-input__wrapper:focus-within) {
     background-color: #1e293b !important;
-    border-color: #334155 !important;
+    border-color: #3b82f6 !important;
     box-shadow: none !important;
   }
 
-  .premium-input :deep(.el-input__inner) {
+  .premium-input :deep(.el-input__inner),
+  .premium-input :deep(.el-input__inner:focus) {
+    background-color: transparent !important;
     color: #f8fafc !important;
+  }
+
+  .premium-input :deep(.el-input__inner:-webkit-autofill),
+  .premium-input :deep(.el-input__inner:-webkit-autofill:hover),
+  .premium-input :deep(.el-input__inner:-webkit-autofill:focus),
+  .premium-input :deep(.el-input__inner:-webkit-autofill:active) {
+    -webkit-box-shadow: 0 0 0 30px #1e293b inset !important;
+    -webkit-text-fill-color: #f8fafc !important;
+    transition: background-color 5000s ease-in-out 0s;
   }
 
   .premium-input :deep(.el-input__inner::placeholder) {

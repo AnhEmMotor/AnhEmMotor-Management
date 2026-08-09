@@ -11,6 +11,7 @@
       zoom: 0.9;
     }
   }
+
   @media (width <= 768px) {
     .art-header-bar {
       zoom: 0.85;
@@ -22,6 +23,7 @@
     @media (width <= 640px) {
       padding: 8px !important;
     }
+
     @media (width >= 641px) and (width <= 1024px) {
       padding: 12px !important;
     }
@@ -42,11 +44,12 @@
 
     &.show-mobile {
       transform: translateX(0);
+
       .menu-model {
         display: block !important;
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.4);
+        background: rgb(0 0 0 / 40%);
         z-index: 1999;
       }
     }
@@ -71,6 +74,7 @@
           }
         }
       }
+
       .el-table__body-wrapper {
         .el-table__body {
           td {
@@ -101,14 +105,17 @@
     .el-dialog__header {
       padding: 12px 14px !important;
     }
+
     .el-dialog__body {
       padding: 10px 14px !important;
     }
+
     .el-dialog__footer {
       padding: 10px 14px !important;
     }
   }
 }
+
 .resp-dialog {
   @include resp-dialog;
 }
@@ -125,9 +132,17 @@
   }
 }
 
-.resp-form-2 { @include resp-form-grid(2); }
-.resp-form-3 { @include resp-form-grid(3); }
-.resp-form-4 { @include resp-form-grid(4); }
+.resp-form-2 {
+  @include resp-form-grid(2);
+}
+
+.resp-form-3 {
+  @include resp-form-grid(3);
+}
+
+.resp-form-4 {
+  @include resp-form-grid(4);
+}
 
 // --- Card grid responsive ---
 @mixin resp-card-grid($cols: 3) {
@@ -138,16 +153,23 @@
   @media (width <= 1280px) {
     grid-template-columns: repeat($cols - 1, 1fr);
   }
+
   @media (width <= 1024px) {
     grid-template-columns: repeat(2, 1fr);
   }
+
   @media (width <= 640px) {
     grid-template-columns: 1fr;
   }
 }
 
-.resp-cards-3 { @include resp-card-grid(3); }
-.resp-cards-4 { @include resp-card-grid(4); }
+.resp-cards-3 {
+  @include resp-card-grid(3);
+}
+
+.resp-cards-4 {
+  @include resp-card-grid(4);
+}
 
 // --- Stat card / KPI box ---
 @mixin resp-stats($cols: 4) {
@@ -158,14 +180,20 @@
   @media (width <= 1280px) {
     grid-template-columns: repeat(2, 1fr);
   }
+
   @media (width <= 640px) {
     grid-template-columns: 1fr;
     gap: 10px;
   }
 }
 
-.resp-stats-4 { @include resp-stats(4); }
-.resp-stats-3 { @include resp-stats(3); }
+.resp-stats-4 {
+  @include resp-stats(4);
+}
+
+.resp-stats-3 {
+  @include resp-stats(3);
+}
 
 // --- Search bar ---
 @mixin resp-search {
@@ -186,4 +214,6 @@
   }
 }
 
-.resp-search { @include resp-search; }
+.resp-search {
+  @include resp-search;
+}

@@ -82,7 +82,6 @@
             </ElInput>
             <ElButton
               type="primary"
-              plain
               :disabled="isLoading"
               @click="exportInvoiceExcel"
             >
@@ -147,9 +146,9 @@
           fixed="right"
         >
           <template #default="{ row }">
-            <ElButton link type="primary" @click="openDetail(row)"
-              >Chi tiết</ElButton
-            >
+            <ElButton size="small" type="primary" @click="openDetail(row)">
+              Chi tiết
+            </ElButton>
           </template>
         </ElTableColumn>
       </ElTable>
@@ -165,12 +164,13 @@
       </div>
     </ElCard>
 
-    <!-- DRAWER: CHI TIẾT HÓA ĐƠN -->
-    <ElDrawer
+    <!-- DIALOG: CHI TIẾT HÓA ĐƠN -->
+    <ElDialog
       v-model="drawerVisible"
       title="Chi tiết hóa đơn"
-      size="400px"
+      width="550px"
       append-to-body
+      align-center
     >
       <template v-if="selectedInvoice">
         <div class="mb-6">
@@ -284,7 +284,7 @@
           </div>
         </div>
       </template>
-    </ElDrawer>
+    </ElDialog>
   </div>
 </template>
 
@@ -498,7 +498,11 @@ function renderCharts() {
       grid: { left: "3%", right: "10%", bottom: "3%", containLabel: true },
       xAxis: {
         type: "value",
-        axisLabel: { color: chartTextColor, fontSize: 13 },
+        axisLabel: { 
+          color: chartTextColor, 
+          fontSize: 13,
+          formatter: (value: number) => formatShortCurrency(value)
+        },
         splitLine: { lineStyle: { color: chartGridLineColor } },
       },
       yAxis: {
@@ -537,6 +541,7 @@ function renderCharts() {
             value: d.value,
           })),
           label: {
+            show: false,
             formatter: "{b}: {c}%",
             color: chartTextColor,
             fontSize: 14,

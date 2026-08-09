@@ -63,7 +63,7 @@ function select(value: string | number | boolean | undefined) {
 <style scoped lang="scss">
 .report-period-switcher {
   display: inline-flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 10px;
   align-items: center;
   justify-content: flex-end;
@@ -73,7 +73,7 @@ function select(value: string | number | boolean | undefined) {
 
 .report-period-switcher__custom {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px;
   align-items: center;
 }

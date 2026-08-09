@@ -1,5 +1,7 @@
 <template>
-  <div class="resp-page art-card p-5 h-[27.8rem] mb-5 overflow-hidden max-sm:mb-4">
+  <div
+    class="resp-page art-card p-5 h-[27.8rem] mb-5 overflow-hidden max-sm:mb-4"
+  >
     <div class="art-card-header">
       <div class="title">
         <h4>{{ $t("dashboard.ecommerce.hotProducts") }}</h4>

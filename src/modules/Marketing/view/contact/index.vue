@@ -111,7 +111,9 @@
                 >
                   <template #default="{ row }">
                     <span class="badge" :class="categoryStyle(row.category)">{{
-                      $t("contact.category." + row.category)
+                      $te("contact.category." + row.category)
+                        ? $t("contact.category." + row.category)
+                        : row.category
                     }}</span>
                   </template>
                 </ElTableColumn>
@@ -426,6 +428,12 @@
                   :label="$t('contact.columnCategory')"
                   width="140"
                   show-overflow-tooltip
+                  :formatter="
+                    (row, col, val) =>
+                      $te('contact.category.' + val)
+                        ? $t('contact.category.' + val)
+                        : val
+                  "
                 />
                 <ElTableColumn :label="$t('contact.columnStatus')" width="120">
                   <template #default="{ row }">
@@ -1618,7 +1626,7 @@ const handleAssign = async () => {
     border-radius: 12px;
 
     &:focus {
-      background: white;
+      background: var(--contact-surface);
       border-color: #3b82f6;
     }
   }

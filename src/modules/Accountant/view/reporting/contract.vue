@@ -600,7 +600,7 @@ function renderCharts() {
               borderWidth: 2,
             },
             label: {
-              show: true,
+              show: false,
               color: chartTextColor.value,
               formatter: "{b}: {c}",
               fontSize: 13,

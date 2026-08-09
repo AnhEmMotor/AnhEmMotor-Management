@@ -92,22 +92,26 @@ src/api/
 ### 1. Duplicate Files in `product/`
 
 **Problem**: The `src/api/product/` subdirectory already exists with 3 files that are **exact duplicates** of root files:
+
 - `product.api.ts` (root) vs `product/product.api.ts` (duplicate)
 - `category.api.ts` (root) vs `product/category.api.ts` (duplicate)
 - `technology.api.ts` (root) vs `product/technology.api.ts` (duplicate)
 
-**Solution**: 
+**Solution**:
+
 - Option A: **Move all product-related APIs into `product/`** and delete root duplicates, update all imports
 - Option B: **Delete `product/` subdirectory** and keep all in root (but then we lose grouping)
 
 **Recommendation**: **Option A** - consolidate everything into `product/` folder because:
-  - The folder already exists with the same files
-  - Makes sense from domain grouping perspective
-  - Reduces flat file count
+
+- The folder already exists with the same files
+- Makes sense from domain grouping perspective
+- Reduces flat file count
 
 ### 2. `debt.api.ts` - Dual Domain Belonging
 
 **Problem**: `debt.api.ts` appears to be related to both **supplier debt** and **finance contracts**. It could fit in either:
+
 - `supplier/` (supplier debt tracking)
 - `finance/` (financial debt management)
 
@@ -126,12 +130,14 @@ src/api/
 ## Implementation Steps
 
 ### Phase 1: Preparation & Analysis
+
 1. **Review duplicate files** in `src/api/product/` to confirm they are identical to root
 2. **Determine final placement** for `debt.api.ts` and `service-category.api.ts`
 3. **Check all imports** of these APIs to understand impact scope (use grep/Grep tool)
 4. **Decide on barrel files**: Create `index.ts` in each new folder for cleaner imports (optional but recommended)
 
 ### Phase 2: Create New Structure
+
 1. Create new domain folders in `src/api/` (copy from proposed list above)
 2. For each folder, create an `index.ts` that re-exports all API modules:
    ```typescript
@@ -143,6 +149,7 @@ src/api/
    ```
 
 ### Phase 3: Move & Update Files
+
 1. **Move product-related files**:
    - Move `src/api/product.api.ts` → `src/api/product/product.api.ts` (or consolidate)
    - Move `src/api/category.api.ts` → `src/api/product/category.api.ts`
@@ -161,12 +168,14 @@ src/api/
    - Be careful with extensions: `.api.ts` may be omitted
 
 ### Phase 4: Verification
+
 1. Run `vue-tsc --noEmit` to check TypeScript errors
 2. Run `npm run build` to ensure build succeeds
 3. Search for any remaining imports from old paths
 4. Test a few key features that use these APIs
 
 ### Phase 5: Cleanup
+
 1. Remove any empty directories left behind
 2. Ensure no duplicate API definitions remain
 3. Update any documentation or README if needed
@@ -176,9 +185,11 @@ src/api/
 ## Critical Files to Modify
 
 **Files being moved** (~38 files):
+
 - All files in `src/api/` (except `logistics/` which stays)
 
 **Import sites**:
+
 - All files that import from `@/api/` (need to find exact count - likely 50+ files across:
   - `src/modules/**/logic/**/hooks/*.ts`
   - `src/modules/**/view/**/*.vue`
@@ -204,29 +215,32 @@ src/api/
 
 ## Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Missed import updates | Build/runtime failures | Use comprehensive grep to find all `@/api/` imports and update systematically |
-| Wrong domain placement | Confusion, harder maintenance | Review API purpose carefully; if uncertain, keep in root for now |
-| Circular dependencies | Build errors | Check if any API modules import from each other (unlikely) |
-| Breaking existing code | Feature breakage | Test critical features after migration |
-| Duplicate files not identified | Confusion, two versions | Carefully compare root vs `product/` duplicates before deleting |
+| Risk                           | Impact                        | Mitigation                                                                    |
+| ------------------------------ | ----------------------------- | ----------------------------------------------------------------------------- |
+| Missed import updates          | Build/runtime failures        | Use comprehensive grep to find all `@/api/` imports and update systematically |
+| Wrong domain placement         | Confusion, harder maintenance | Review API purpose carefully; if uncertain, keep in root for now              |
+| Circular dependencies          | Build errors                  | Check if any API modules import from each other (unlikely)                    |
+| Breaking existing code         | Feature breakage              | Test critical features after migration                                        |
+| Duplicate files not identified | Confusion, two versions       | Carefully compare root vs `product/` duplicates before deleting               |
 
 ---
 
 ## Alternative Approaches Considered
 
 ### Alternative 1: Keep Flat Structure
+
 - **Pros**: No migration effort, no import changes
 - **Cons**: Hard to navigate, 38+ files in one folder, no domain boundaries
 - **Decision**: Rejected - does not address user's request for cleaner organization
 
 ### Alternative 2: Group by Technical Layer Instead of Domain
+
 - e.g., `src/api/rest/`, `src/api/graphql/`, `src/api/websocket/`
 - **Cons**: Current codebase appears to be all REST APIs; not useful
 - **Decision**: Rejected - domain grouping is more meaningful
 
 ### Alternative 3: Keep Product Subdirectory but Don't Move Others
+
 - **Pros**: Minimal change
 - **Cons**: Inconsistent - some grouped, some flat
 - **Decision**: Rejected - user wants comprehensive reorganization
@@ -236,6 +250,7 @@ src/api/
 ## Summary
 
 This reorganization will:
+
 - ✅ Improve code discoverability and navigation
 - ✅ Establish clear domain boundaries
 - ✅ Reduce clutter in `src/api/` root

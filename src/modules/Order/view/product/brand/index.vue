@@ -1,6 +1,9 @@
 <template>
   <div class="resp-page flex flex-col gap-4 pb-5">
-    <div id="tour-stats" class="resp-stats-3 grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div
+      id="tour-stats"
+      class="resp-stats-3 grid grid-cols-1 md:grid-cols-3 gap-4"
+    >
       <ArtStatsCard
         title="Tổng số lượng thương hiệu"
         :count="statistics.totalBrands"

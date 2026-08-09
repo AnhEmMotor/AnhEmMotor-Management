@@ -109,6 +109,7 @@
               v-model="searchQuery"
               placeholder="Tìm tên khách hàng..."
               class="w-64"
+              @input="leadCurrentPage = 1"
             >
               <template #prefix>
                 <div class="i-ri-search-line"></div>
@@ -116,7 +117,6 @@
             </ElInput>
             <ElButton
               type="primary"
-              plain
               :disabled="loading"
               @click="exportCustomerExcel"
             >
@@ -128,7 +128,7 @@
       </template>
       <ElTable
         v-loading="loading"
-        :data="filteredLeads"
+        :data="paginatedLeads"
         class="reporting-table resp-table"
         empty-text="Không tìm thấy khách hàng"
       >
@@ -172,7 +172,11 @@
           prop="lastContact"
           label="Liên hệ gần nhất"
           min-width="160"
-        />
+        >
+          <template #default="{ row }">
+            {{ formatDate(row.lastContact) }}
+          </template>
+        </ElTableColumn>
         <ElTableColumn
           label="Thao tác"
           width="100"
@@ -186,6 +190,17 @@
           </template>
         </ElTableColumn>
       </ElTable>
+
+      <div class="flex justify-end mt-4">
+        <ElPagination
+          v-model:current-page="leadCurrentPage"
+          v-model:page-size="leadPageSize"
+          :page-sizes="[10, 20, 50]"
+          :total="filteredLeads.length"
+          layout="total, sizes, prev, pager, next, jumper"
+          background
+        />
+      </div>
     </ElCard>
 
     <!-- DIALOG CHI TIẾT LEAD -->
@@ -260,6 +275,8 @@ const sourceChartRef = ref<HTMLElement | null>(null);
 const histogramChartRef = ref<HTMLElement | null>(null);
 const searchQuery = ref("");
 const loading = ref(false);
+const leadCurrentPage = ref(1);
+const leadPageSize = ref(10);
 const currentPeriod = ref<"today" | "month" | "year" | "custom">("month");
 const periodStart = ref("");
 const periodEnd = ref("");
@@ -285,7 +302,7 @@ const conversionRate = computed(() => {
   const converted = leads.value.filter(
     (l) => l.status === "Đã chuyển đổi",
   ).length;
-  return ((converted / kpi.value.totalLeads) * 100).toFixed(1);
+  return ((converted / leads.value.length) * 100).toFixed(1);
 });
 
 const filteredLeads = computed(() => {
@@ -293,6 +310,21 @@ const filteredLeads = computed(() => {
   const q = searchQuery.value.toLowerCase();
   return leads.value.filter((l) => l.customerName.toLowerCase().includes(q));
 });
+
+const paginatedLeads = computed(() => {
+  const start = (leadCurrentPage.value - 1) * leadPageSize.value;
+  return filteredLeads.value.slice(start, start + leadPageSize.value);
+});
+
+function formatDate(value: string | null | undefined): string {
+  if (!value) return "—";
+  const d = new Date(value);
+  if (isNaN(d.getTime())) return "—";
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+}
 
 function getSourceType(source: string) {
   const map: Record<string, string> = {
@@ -353,7 +385,7 @@ function exportCustomerExcel() {
           Nguồn: item.source,
           "Điểm lead": item.leadScore,
           "Trạng thái": item.status,
-          "Liên hệ gần nhất": item.lastContact,
+          "Liên hệ gần nhất": formatDate(item.lastContact),
         })),
       },
     ],

@@ -34,7 +34,10 @@
         Chưa có dữ liệu hiệu suất nhân sự kỹ thuật.
       </div>
 
-      <div v-else class="resp-cards-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div
+        v-else
+        class="resp-cards-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+      >
         <!-- Tech Card -->
         <ElCard
           v-for="tech in techniciansList"

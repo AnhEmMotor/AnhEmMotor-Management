@@ -113,7 +113,9 @@
             </div>
           </div>
 
-          <div class="mt-4 resp-stats-3 grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+          <div
+            class="mt-4 resp-stats-3 grid grid-cols-1 md:grid-cols-3 gap-3 text-sm"
+          >
             <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
               <div
                 class="text-slate-400 text-[10px] font-black uppercase tracking-wider"

@@ -1111,6 +1111,7 @@ export default {
       Billing: "Thanh toán & Hóa đơn",
       Quality: "Chất lượng xe",
       Service: "Thái độ phục vụ",
+      Speed: "Tốc độ phục vụ",
       Rating: "Đánh giá & Rating",
       General: "Chung",
       Sales: "Tư vấn bán hàng",

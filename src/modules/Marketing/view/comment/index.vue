@@ -37,42 +37,48 @@
             class="mt-10 grid grid-cols-5 gap-5 max-2xl:grid-cols-4 max-xl:grid-cols-3 max-lg:grid-cols-2 max-sm:grid-cols-1 mb-5"
           >
             <li
-              class="comment-item relative p-4 c-p aspect-16/12 duration-300 hover:-translate-y-1.5 cursor-pointer rounded-2xl border border-transparent"
-              :style="{ '--comment-bg': item.color }"
+              class="comment-item flex flex-col p-4 duration-300 hover:-translate-y-1.5 cursor-pointer rounded-2xl border border-transparent"
+              :style="{ '--comment-bg': item.color, minHeight: '170px' }"
               v-for="item in commentsWithColors"
               :key="item.id"
               @click="openDrawer(item)"
             >
-              <p class="text-g-600 dark:text-slate-400 text-sm">
-                {{ item.date }}
-              </p>
+              <div class="flex justify-between items-start mb-2">
+                <p class="text-slate-500 dark:text-slate-400 text-xs">
+                  {{ item.date }}
+                </p>
+                <span
+                  class="text-xs font-bold text-slate-700 dark:text-slate-300 truncate max-w-[100px] text-right"
+                >
+                  {{ item.userName }}
+                </span>
+              </div>
               <p
-                class="mt-4 text-sm text-gray-800 dark:text-slate-200 line-clamp-3"
+                class="text-sm text-slate-800 dark:text-slate-200 line-clamp-3 mb-4 flex-1"
               >
                 {{ item.content }}
               </p>
-              <div class="absolute bottom-4 left-0 px-4 flex-cb w-full">
-                <div class="flex-c">
-                  <div
-                    class="flex-c mr-5 text-xs text-g-600 dark:text-slate-400"
-                  >
-                    <ArtSvgIcon icon="ri:heart-line" class="mr-1 text-base" />
-                    <span>{{ item.collection }}</span>
-                  </div>
-                  <div
-                    class="flex-c mr-5 text-xs text-g-600 dark:text-slate-400"
-                  >
-                    <ArtSvgIcon
-                      icon="ri:message-3-line"
-                      class="mr-1 text-base"
-                    />
-                    <span>{{ item.comment }}</span>
-                  </div>
+              <div
+                class="flex items-center justify-between w-full mt-auto pt-2 border-t border-slate-200/50 dark:border-slate-700/50"
+              >
+                <div
+                  class="flex items-center text-xs text-slate-500 dark:text-slate-400 truncate pr-3"
+                  :title="item.collection"
+                >
+                  <ArtSvgIcon
+                    icon="ri:article-line"
+                    class="mr-1.5 text-sm shrink-0"
+                  />
+                  <span class="truncate">{{ item.collection }}</span>
                 </div>
-                <div>
-                  <span class="text-sm text-gray-700 dark:text-slate-300">{{
-                    item.userName
-                  }}</span>
+                <div
+                  class="flex items-center text-xs text-slate-500 dark:text-slate-400 shrink-0"
+                >
+                  <ArtSvgIcon
+                    icon="ri:chat-3-line"
+                    class="mr-1.5 text-sm shrink-0"
+                  />
+                  <span>{{ item.comment }}</span>
                 </div>
               </div>
             </li>
@@ -97,6 +103,7 @@
               <img
                 v-if="clickItem.articleImage"
                 :src="clickItem.articleImage"
+                @error="(e) => (e.target.style.display = 'none')"
                 alt="Article Cover"
                 class="w-full h-48 object-cover rounded-lg mb-3 shadow-sm border border-gray-100 dark:border-slate-700"
               />
@@ -209,6 +216,8 @@ const getArticleInfo = (
     };
   }
   let finalImage = image || "";
+  if (finalImage === "null") finalImage = "";
+
   if (
     finalImage &&
     !finalImage.startsWith("http") &&

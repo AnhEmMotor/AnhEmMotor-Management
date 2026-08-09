@@ -97,10 +97,12 @@
         @pagination:current-change="handleCurrentChange"
       >
         <template #customerName="{ row }">
-          <span v-if="row.customerName" class="font-medium text-gray-800">{{ row.customerName }}</span>
+          <span v-if="row.customerName" class="font-medium text-gray-800">{{
+            row.customerName
+          }}</span>
           <span v-else class="text-slate-400 italic">Khách lẻ</span>
         </template>
-        
+
         <template #customerPhone="{ row }">
           <span v-if="row.customerPhone">{{ row.customerPhone }}</span>
           <span v-else class="text-slate-400 italic">Trống</span>
@@ -667,7 +669,10 @@ const fetchData = async (params: any) => {
 
     // Filter out rows that do not have customerName or customerPhone or are 'Khách lẻ'
     const validItems = rawItems.filter(
-      (item: any) => item.customerName && item.customerPhone && item.customerName !== 'Khách lẻ'
+      (item: any) =>
+        item.customerName &&
+        item.customerPhone &&
+        item.customerName !== "Khách lẻ",
     );
 
     data.value = validItems.map((item: any) => {
@@ -765,7 +770,7 @@ const createForm = ref({
 
   // Assign technician (main tech)
   technicianId: undefined as number | undefined,
-  
+
   // Existing vehicle ID
   vehicleId: undefined as number | undefined,
 });
@@ -822,7 +827,9 @@ const submitCreate = async () => {
   submitting.value = true;
   try {
     const payload = {
-      vehicleId: createForm.value.isNewCustomer ? undefined : createForm.value.vehicleId,
+      vehicleId: createForm.value.isNewCustomer
+        ? undefined
+        : createForm.value.vehicleId,
       customerPhone: createForm.value.customerPhone,
       customerName: createForm.value.customerName,
       mileage: createForm.value.mileage,

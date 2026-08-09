@@ -816,6 +816,8 @@ const fetchBookings = async () => {
       return {
         ...b,
         customerName: b.fullName,
+        phone: b.phoneNumber,
+        email: b.email,
         time: timeStr,
         date: dateStr,
         type: b.bookingType,

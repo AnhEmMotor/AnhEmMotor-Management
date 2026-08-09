@@ -1,7 +1,7 @@
-﻿<template>
+<template>
   <div class="resp-page expense-management">
     <div
-      class="reporting-actions resp-search mb-4 flex items-center justify-between flex-wrap gap-3"
+      class="reporting-actions resp-search mb-4 flex items-center justify-between flex-nowrap overflow-x-auto gap-3"
     >
       <ElInput
         v-model="searchInput"
@@ -31,7 +31,11 @@
       v-loading="props.loading"
       empty-text="Không có dữ liệu chi phí"
     >
-      <ElTableColumn prop="expenseDate" label="Ngày ghi nhận" min-width="140" />
+      <ElTableColumn prop="expenseDate" label="Ngày ghi nhận" min-width="140">
+        <template #default="{ row }">
+          {{ formatDate(row.expenseDate) }}
+        </template>
+      </ElTableColumn>
       <ElTableColumn prop="name" label="Tên khoản chi" min-width="220" />
       <ElTableColumn prop="category" label="Phân loại" min-width="150">
         <template #default="{ row }">
@@ -73,7 +77,7 @@
         v-model:current-page="currentPage"
         v-model:page-size="pageSize"
         :page-sizes="[10, 20, 50]"
-        :total="totalCount"
+        :total="paginatedTotal"
         layout="total, sizes, prev, pager, next, jumper"
         @size-change="fetchExpenses"
         @current-change="fetchExpenses"
@@ -151,9 +155,10 @@ const isControlled = computed(() => props.expenses !== undefined);
 
 const tableExpenses = computed(() => props.expenses ?? localExpenses.value);
 
-const paginatedTotal = computed(
-  () => props.totalCount || localTotalCount.value,
-);
+const paginatedTotal = computed(() => {
+  if (isControlled.value) return props.expenses?.length || 0;
+  return props.totalCount || localTotalCount.value;
+});
 
 const dialogTitle = computed(() =>
   formMode.value === "edit" ? "Cập nhật khoản chi" : "Ghi nhận khoản chi",
@@ -286,6 +291,14 @@ function formatCurrency(value: number) {
     style: "currency",
     currency: "VND",
   }).format(value);
+}
+
+function formatDate(dateStr: string) {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  return `${d.getDate().toString().padStart(2, "0")}/${(d.getMonth() + 1)
+    .toString()
+    .padStart(2, "0")}/${d.getFullYear()}`;
 }
 
 onMounted(fetchExpenses);

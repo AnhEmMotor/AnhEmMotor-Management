@@ -75,7 +75,7 @@
         <div class="reporting-page__summary-grid">
           <div class="reporting-page__summary-row">
             <span class="reporting-muted">Lợi nhuận gộp</span>
-            <strong class="text-report-red-light">{{
+            <strong style="color: var(--pnl-gross-text)">{{
               formatCurrency(pnlData.grossProfit)
             }}</strong>
           </div>
@@ -85,7 +85,7 @@
           </div>
           <div class="reporting-page__summary-row">
             <span class="reporting-muted">Tổng chi phí vận hành</span>
-            <strong class="text-report-red-light">{{
+            <strong style="color: var(--pnl-expense-text)">{{
               formatCurrency(pnlData.totalOperatingExpenses)
             }}</strong>
           </div>
@@ -97,7 +97,7 @@
             class="reporting-page__summary-row reporting-page__summary-row--accent"
           >
             <span>Lợi nhuận ròng cuối kỳ</span>
-            <strong class="text-report-red">{{
+            <strong style="color: var(--pnl-net-text)">{{
               formatCurrency(pnlData.netProfit)
             }}</strong>
           </div>
@@ -225,11 +225,7 @@ function onPeriodChange() {
 }
 
 async function loadData() {
-  if (activeTab.value === "pnl") {
-    await loadPnlReport();
-  } else {
-    await loadExpenses();
-  }
+  await Promise.all([loadPnlReport(), loadExpenses()]);
 }
 
 function onTabChange(tab: string | number) {

@@ -108,7 +108,7 @@
       v-model="dialogVisible"
       :title="`Lịch sử giao dịch biến động kho: ${selectedRowName}`"
       width="850px"
-class="resp-dialog"
+      class="resp-dialog"
       append-to-body
       destroy-on-close
     >
