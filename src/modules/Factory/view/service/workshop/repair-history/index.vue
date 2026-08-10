@@ -432,6 +432,7 @@ const repairOrders = ref<RepairOrder[]>([]);
 const totalCount = ref(0);
 const currentPage = ref(1);
 const pageSize = ref(10);
+const allValidItems = ref<any[]>([]);
 const searchQuery = ref("");
 const statusFilter = ref("");
 
@@ -445,75 +446,89 @@ const stats = reactive({
 const loadData = async () => {
   loading.value = true;
   try {
-    // Build Sieve Filters
-    const filterArray: string[] = [];
-    if (statusFilter.value) {
-      filterArray.push(`Status==${statusFilter.value}`);
-    }
-    if (searchQuery.value) {
-      // Sieve filters logic: search phone, name, or license plate
-      const q = searchQuery.value.trim();
-      if (/^\d+$/.test(q)) {
-        filterArray.push(`CustomerPhone@=${q}`);
-      } else {
-        // Search either name or license plate
-        filterArray.push(`CustomerName@=${q}|LicensePlate@=${q}`);
-      }
-    }
-
+    // Fetch all for local filtering since Sieve can't filter derived fields
     const res = await RepairOrderApi.getList({
-      current: currentPage.value,
-      size: pageSize.value,
-      Filters: filterArray.join(","),
+      Page: 1,
+      PageSize: 5000,
       Sorts: "createdAt desc",
     });
+    const rawItems = res.items || [];
 
-    repairOrders.value = res.items || [];
-    totalCount.value = res.totalCount || 0;
+    // Filter out generic retail customers
+    const validItems = rawItems.filter(
+      (item: any) =>
+        item.customerName &&
+        item.customerPhone &&
+        item.customerName !== "Khách lẻ",
+    );
 
-    // Fetch stats (we can query lists with small page size to get counts, or fetch all active)
-    await loadStats();
+    allValidItems.value = validItems.map((item: any) => {
+      let calcStatus = "InProgress";
+      if (item.status) calcStatus = item.status;
+      else if (!item.technicianId && !item.technicianName)
+        calcStatus = "Pending";
+      else if (item.totalCost > 0) calcStatus = "Completed";
+
+      return {
+        ...item,
+        status: calcStatus,
+      };
+    });
+
+    applyLocalFilterAndPagination();
+    loadStats();
   } catch (err: any) {
+    allValidItems.value = [];
+    repairOrders.value = [];
+    totalCount.value = 0;
     ElMessage.error(err.message || "Lỗi khi tải danh sách phiếu sửa chữa");
   } finally {
     loading.value = false;
   }
 };
 
-const loadStats = async () => {
-  try {
-    // Fetch stats by making queries
-    const resPending = await RepairOrderApi.getList({
-      current: 1,
-      size: 1,
-      Filters: "Status==Pending",
-    });
-    const resInProgress = await RepairOrderApi.getList({
-      current: 1,
-      size: 1,
-      Filters: "Status==InProgress",
-    });
-    const resQc = await RepairOrderApi.getList({
-      current: 1,
-      size: 1,
-      Filters: "Status==QcPending",
-    });
+const applyLocalFilterAndPagination = () => {
+  let filtered = allValidItems.value;
 
-    // For completed today, we query completed status. For a precise count, it requires date filter,
-    // but a general completed count is suitable for demo.
-    const resCompleted = await RepairOrderApi.getList({
-      current: 1,
-      size: 1,
-      Filters: "Status==Completed",
-    });
-
-    stats.pending = resPending.totalCount || 0;
-    stats.inProgress = resInProgress.totalCount || 0;
-    stats.qcPending = resQc.totalCount || 0;
-    stats.completedToday = resCompleted.totalCount || 0;
-  } catch (e) {
-    console.error("Failed to load stats", e);
+  if (statusFilter.value) {
+    filtered = filtered.filter((x) => x.status === statusFilter.value);
   }
+
+  if (searchQuery.value) {
+    const q = searchQuery.value.trim().toLowerCase();
+    filtered = filtered.filter(
+      (x) =>
+        (x.customerPhone || "").toLowerCase().includes(q) ||
+        (x.customerName || "").toLowerCase().includes(q) ||
+        (x.vehicleInfo || "").toLowerCase().includes(q),
+    );
+  }
+
+  totalCount.value = filtered.length;
+
+  const start = (currentPage.value - 1) * pageSize.value;
+  const end = start + pageSize.value;
+  repairOrders.value = filtered.slice(start, end);
+};
+
+const loadStats = () => {
+  const safe = allValidItems.value || [];
+  let pending = 0;
+  let inProgress = 0;
+  let qcPending = 0;
+  let completedToday = 0;
+
+  safe.forEach((x: any) => {
+    if (x.status === "Pending") pending++;
+    else if (x.status === "InProgress") inProgress++;
+    else if (x.status === "QcPending") qcPending++;
+    else if (x.status === "Completed") completedToday++;
+  });
+
+  stats.pending = pending;
+  stats.inProgress = inProgress;
+  stats.qcPending = qcPending;
+  stats.completedToday = completedToday;
 };
 
 onMounted(() => {
@@ -526,24 +541,24 @@ const handleSearch = () => {
   if (searchTimeout) clearTimeout(searchTimeout);
   searchTimeout = setTimeout(() => {
     currentPage.value = 1;
-    loadData();
+    applyLocalFilterAndPagination();
   }, 400);
 };
 
 const handleFilterChange = () => {
   currentPage.value = 1;
-  loadData();
+  applyLocalFilterAndPagination();
 };
 
 const handleSizeChange = (val: number) => {
   pageSize.value = val;
   currentPage.value = 1;
-  loadData();
+  applyLocalFilterAndPagination();
 };
 
 const handleCurrentChange = (val: number) => {
   currentPage.value = val;
-  loadData();
+  applyLocalFilterAndPagination();
 };
 
 // Navigation
