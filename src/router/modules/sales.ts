@@ -19,6 +19,7 @@ export const salesRoutes: AppRouteRecord = {
         title: 'Quản lý Hủy đơn / Trả hàng',
         icon: 'ri:arrow-go-back-line',
         keepAlive: true,
+        isHide: true,
       },
     },
     {
