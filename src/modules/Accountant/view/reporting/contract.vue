@@ -179,7 +179,6 @@ const searchQuery = ref('');
 const typeFilter = ref('');
 const statusFilter = ref('');
 
-// Refs for ECharts DOM elements
 const trendChartRef = ref<HTMLElement | null>(null);
 const statusChartRef = ref<HTMLElement | null>(null);
 const topSuppliersChartRef = ref<HTMLElement | null>(null);
@@ -188,7 +187,6 @@ let trendChart: echarts.ECharts | null = null;
 let statusChart: echarts.ECharts | null = null;
 let topSuppliersChart: echarts.ECharts | null = null;
 
-// Theming constants
 const chartTextColor = computed(() => (isDark.value ? '#9ca3af' : '#4b5563'));
 const chartAxisLineColor = computed(() =>
   isDark.value ? 'rgba(255, 255, 255, 0.16)' : 'rgba(0, 0, 0, 0.1)'
@@ -433,7 +431,6 @@ function translateContractStatus(status: string) {
 }
 
 function renderCharts() {
-  
   if (trendChartRef.value) {
     if (!trendChart) trendChart = echarts.init(trendChartRef.value);
     trendChart.setOption(
@@ -482,7 +479,6 @@ function renderCharts() {
     );
   }
 
-  
   if (topSuppliersChartRef.value) {
     if (!topSuppliersChart) topSuppliersChart = echarts.init(topSuppliersChartRef.value);
     topSuppliersChart.setOption(
@@ -523,7 +519,6 @@ function renderCharts() {
     );
   }
 
-  
   if (statusChartRef.value) {
     if (!statusChart) statusChart = echarts.init(statusChartRef.value);
     statusChart.setOption(
@@ -582,7 +577,6 @@ onUnmounted(() => {
   statusChart?.dispose();
   topSuppliersChart?.dispose();
 });
-
 
 function formatCurrency(val: number) {
   if (!val) return '0 ₫';
