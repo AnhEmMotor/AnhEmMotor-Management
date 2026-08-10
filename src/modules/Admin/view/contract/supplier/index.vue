@@ -169,13 +169,13 @@
       v-model="dialogVisible"
       :title="dialogTitle"
       width="900px"
-      class="reporting-dialog contract-supplier-dialog"
+      class="contract-supplier-dialog"
       append-to-body
       destroy-on-close
     >
       <ElForm
         :model="formData"
-        label-width="160px"
+        label-position="top"
         class="mt-4"
         :rules="formRules"
         ref="formRef"
@@ -1474,59 +1474,5 @@ html.dark .contract-supplier-container :deep(.el-tag) {
   padding: 8px 10px;
   margin-top: 8px;
   border-radius: 8px;
-}
-
-:global(html.dark .contract-supplier-dialog.el-dialog) {
-  --el-color-primary: #e84a4a;
-  --el-bg-color: #161618;
-  --el-bg-color-overlay: #1c1c20;
-  --el-fill-color-blank: #161618;
-  --el-border-color: rgb(255 255 255 / 9%);
-  --el-text-color-primary: #f8fafc;
-  --el-text-color-regular: #f8fafc;
-  --el-text-color-secondary: #f8fafc;
-
-  color: #f8fafc;
-  background: #161618;
-  border: 1px solid rgb(255 255 255 / 9%);
-}
-
-:global(html.dark .contract-supplier-dialog .el-dialog__title),
-:global(html.dark .contract-supplier-dialog .el-form-item__label),
-:global(html.dark .contract-supplier-dialog .el-upload__text),
-:global(html.dark .contract-supplier-dialog .el-upload__tip),
-:global(html.dark .contract-supplier-dialog .text-gray-400),
-:global(html.dark .contract-supplier-dialog .text-gray-500),
-:global(html.dark .contract-supplier-dialog .text-gray-600) {
-  color: #f8fafc !important;
-}
-
-:global(html.dark .contract-supplier-dialog .el-input__wrapper),
-:global(html.dark .contract-supplier-dialog .el-input-number),
-:global(html.dark .contract-supplier-dialog .el-date-editor),
-:global(html.dark .contract-supplier-dialog .el-select__wrapper),
-:global(html.dark .contract-supplier-dialog .el-textarea__inner),
-:global(html.dark .contract-supplier-dialog .el-upload-dragger) {
-  color: #f8fafc;
-  background: #101114;
-  border-color: rgb(255 255 255 / 14%);
-  box-shadow: none;
-}
-
-:global(html.dark .contract-supplier-dialog .el-input__inner),
-:global(html.dark .contract-supplier-dialog .el-select__placeholder),
-:global(html.dark .contract-supplier-dialog .el-select__selected-item),
-:global(html.dark .contract-supplier-dialog .el-textarea__inner) {
-  color: #f8fafc;
-}
-
-:global(html.dark .contract-supplier-dialog .contract-upload-preview img) {
-  border: 1px solid rgb(255 255 255 / 14%);
-}
-
-:global(html.dark .contract-supplier-dialog .contract-upload-filebar) {
-  color: #f8fafc;
-  background: #111214;
-  border: 1px solid rgb(255 255 255 / 12%);
 }
 </style>

@@ -382,11 +382,23 @@ const toggleUserStatus = (row: any) => {
     },
   )
     .then(async () => {
-      await fetchChangeUserStatus(row.id, newStatus);
-      ElMessage.success(`Đã ${actionText} tài khoản thành công!`);
-      refreshData();
+      try {
+        await fetchChangeUserStatus(row.id, newStatus);
+        ElMessage.success(`Đã ${actionText} tài khoản thành công!`);
+        refreshData();
+      } catch (error: any) {
+        ElMessage.error(
+          error?.response?.data?.message ||
+            error?.message ||
+            "Thay đổi trạng thái thất bại",
+        );
+      }
     })
-    .catch(() => {});
+    .catch((err) => {
+      if (err !== "cancel" && err !== "close") {
+        console.error(err);
+      }
+    });
 };
 
 const deleteUser = (row: any): void => {
@@ -400,11 +412,23 @@ const deleteUser = (row: any): void => {
     },
   )
     .then(async () => {
-      await fetchDeleteUser(row.id);
-      ElMessage.success("Xóa tài khoản người dùng thành công!");
-      refreshData();
+      try {
+        await fetchDeleteUser(row.id);
+        ElMessage.success("Xóa tài khoản người dùng thành công!");
+        refreshData();
+      } catch (error: any) {
+        ElMessage.error(
+          error?.response?.data?.message ||
+            error?.message ||
+            "Xóa tài khoản thất bại",
+        );
+      }
     })
-    .catch(() => {});
+    .catch((err) => {
+      if (err !== "cancel" && err !== "close") {
+        console.error(err);
+      }
+    });
 };
 </script>
 

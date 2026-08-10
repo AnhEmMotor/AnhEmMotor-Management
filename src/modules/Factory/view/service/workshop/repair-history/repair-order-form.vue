@@ -323,7 +323,7 @@
                 @click="handleSubmit"
                 :disabled="submitting"
                 class="w-full h-11 bg-emerald-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg hover:bg-emerald-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-                v-auth="Permissions.Marketing.CustomerManagement.View"
+                v-auth="Permissions.Factory.RepairOrderManagement.Create"
               >
                 <ArtSvgIcon
                   icon="ri:checkbox-circle-line"

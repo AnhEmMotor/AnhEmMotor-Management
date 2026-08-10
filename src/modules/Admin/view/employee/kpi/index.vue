@@ -114,6 +114,7 @@
           type="daterange"
           value-format="YYYY-MM-DD"
           range-separator="—"
+          class="w-full"
           :start-placeholder="t('menus.hr.kpiManagement.form.periodStart')"
           :end-placeholder="t('menus.hr.kpiManagement.form.periodEnd')"
           @change="resetPage"

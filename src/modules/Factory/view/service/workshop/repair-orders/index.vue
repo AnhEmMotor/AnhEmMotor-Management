@@ -97,10 +97,12 @@
         @pagination:current-change="handleCurrentChange"
       >
         <template #customerName="{ row }">
-          <span v-if="row.customerName" class="font-medium text-gray-800">{{ row.customerName }}</span>
+          <span v-if="row.customerName" class="font-medium text-gray-800">{{
+            row.customerName
+          }}</span>
           <span v-else class="text-slate-400 italic">Khách lẻ</span>
         </template>
-        
+
         <template #customerPhone="{ row }">
           <span v-if="row.customerPhone">{{ row.customerPhone }}</span>
           <span v-else class="text-slate-400 italic">Trống</span>
@@ -500,7 +502,11 @@ const tableRef = ref();
 const pagination = ref<any>({ current: 1, size: 10, total: 0 });
 
 // Table data
-const data = ref<RepairOrder[]>([]);
+const allValidItems = ref<any[]>([]); // To hold all processed items from backend
+const data = ref<RepairOrder[]>([]); // To hold currently displayed page
+
+// Search Params
+const searchParams = ref<any>({});
 
 // Column checks (ArtTableHeader v-model)
 const columnChecks = ref<any[]>([]);
@@ -605,72 +611,84 @@ const searchItems = [
     prop: "status",
     type: "select",
     options: [
-      "Pending",
-      "InProgress",
-      "QcPending",
-      "Completed",
-      "Cancelled",
-    ].map((s) => ({
-      label: s,
-      value: s,
-    })),
+      { label: "Chờ xử lý", value: "Pending" },
+      { label: "Đang sửa", value: "InProgress" },
+      { label: "Chờ QC", value: "QcPending" },
+      { label: "Hoàn thành", value: "Completed" },
+      { label: "Đã hủy", value: "Cancelled" },
+    ],
   },
 ];
 
 const refreshData = async () => {
-  await fetchData({
-    Page: pagination.value.current,
-    PageSize: pagination.value.size,
-  });
+  await fetchData();
 };
 
-const handleSearch = async (params: any) => {
-  const filters: string[] = [];
+const applyLocalFilterAndPagination = () => {
+  let filtered = allValidItems.value;
 
-  if (params.licensePlate) filters.push(`LicensePlate@=${params.licensePlate}`);
-  if (params.customerPhone)
-    filters.push(`CustomerPhone@=${params.customerPhone}`);
-  if (params.status) filters.push(`Status==${params.status}`);
+  if (searchParams.value.licensePlate) {
+    const term = searchParams.value.licensePlate.toLowerCase();
+    filtered = filtered.filter((x) =>
+      (x.vehicleInfo || "").toLowerCase().includes(term),
+    );
+  }
+  if (searchParams.value.customerPhone) {
+    const term = searchParams.value.customerPhone.toLowerCase();
+    filtered = filtered.filter((x) =>
+      (x.customerPhone || "").toLowerCase().includes(term),
+    );
+  }
+  if (searchParams.value.status) {
+    filtered = filtered.filter((x) => x.status === searchParams.value.status);
+  }
 
-  await fetchData({
-    Page: pagination.value.current,
-    PageSize: pagination.value.size,
-    Filters: filters.join(","),
-  });
+  pagination.value.total = filtered.length;
+
+  const start = (pagination.value.current - 1) * pagination.value.size;
+  const end = start + pagination.value.size;
+  data.value = filtered.slice(start, end);
 };
 
-const handleReset = async () => {
-  await fetchData({
-    Page: pagination.value.current,
-    PageSize: pagination.value.size,
-    Filters: "",
-  });
+const handleSearch = (params: any) => {
+  searchParams.value = params || {};
+  pagination.value.current = 1;
+  applyLocalFilterAndPagination();
 };
 
-const handleSizeChange = async (size: number) => {
+const handleReset = () => {
+  searchParams.value = {};
+  pagination.value.current = 1;
+  applyLocalFilterAndPagination();
+};
+
+const handleSizeChange = (size: number) => {
   pagination.value.size = size;
   pagination.value.current = 1;
-  await refreshData();
+  applyLocalFilterAndPagination();
 };
 
-const handleCurrentChange = async (current: number) => {
+const handleCurrentChange = (current: number) => {
   pagination.value.current = current;
-  await refreshData();
+  applyLocalFilterAndPagination();
 };
 
-const fetchData = async (params: any) => {
+const fetchData = async () => {
   loading.value = true;
   try {
-    // API shape: items + totalCount
-    const res = await RepairOrderApi.getList(params);
+    // Fetch all records for local filtering/pagination
+    const res = await RepairOrderApi.getList({ Page: 1, PageSize: 5000 });
     const rawItems = res.items || [];
 
     // Filter out rows that do not have customerName or customerPhone or are 'Khách lẻ'
     const validItems = rawItems.filter(
-      (item: any) => item.customerName && item.customerPhone && item.customerName !== 'Khách lẻ'
+      (item: any) =>
+        item.customerName &&
+        item.customerPhone &&
+        item.customerName !== "Khách lẻ",
     );
 
-    data.value = validItems.map((item: any) => {
+    allValidItems.value = validItems.map((item: any) => {
       let calcStatus = "InProgress";
       if (item.status) calcStatus = item.status;
       else if (!item.technicianId && !item.technicianName)
@@ -682,8 +700,10 @@ const fetchData = async (params: any) => {
         status: calcStatus,
       };
     });
-    pagination.value.total = res.totalCount || 0;
+
+    applyLocalFilterAndPagination();
   } catch (err: any) {
+    allValidItems.value = [];
     data.value = [];
     pagination.value.total = 0;
     ElMessage.error(err?.message || "Không thể tải danh sách phiếu sửa chữa");
@@ -694,7 +714,7 @@ const fetchData = async (params: any) => {
 
 // Stats theo trạng thái
 const counts = computed(() => {
-  const safe = data.value || [];
+  const safe = allValidItems.value || [];
   const byStatus = safe.reduce(
     (acc: any, x: any) => {
       const s = x.status;
@@ -765,7 +785,7 @@ const createForm = ref({
 
   // Assign technician (main tech)
   technicianId: undefined as number | undefined,
-  
+
   // Existing vehicle ID
   vehicleId: undefined as number | undefined,
 });
@@ -822,7 +842,9 @@ const submitCreate = async () => {
   submitting.value = true;
   try {
     const payload = {
-      vehicleId: createForm.value.isNewCustomer ? undefined : createForm.value.vehicleId,
+      vehicleId: createForm.value.isNewCustomer
+        ? undefined
+        : createForm.value.vehicleId,
       customerPhone: createForm.value.customerPhone,
       customerName: createForm.value.customerName,
       mileage: createForm.value.mileage,

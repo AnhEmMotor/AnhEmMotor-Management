@@ -177,8 +177,8 @@ export const useSupplierContractTable = () => {
     id: undefined,
     supplierId: undefined,
     contractNumber: "",
-    effectiveDate: "",
-    expirationDate: "",
+    effectiveDate: undefined,
+    expirationDate: undefined,
     contractValue: 0,
     status: "Draft",
     creditLimit: 0,
@@ -192,8 +192,8 @@ export const useSupplierContractTable = () => {
       id: undefined,
       supplierId: undefined,
       contractNumber: "",
-      effectiveDate: "",
-      expirationDate: "",
+      effectiveDate: undefined,
+      expirationDate: undefined,
       contractValue: 0,
       status: "Draft",
       creditLimit: 0,
@@ -220,11 +220,15 @@ export const useSupplierContractTable = () => {
   const submitForm = async () => {
     submitting.value = true;
     try {
+      const payload = { ...formData };
+      if (!payload.expirationDate) delete payload.expirationDate;
+      if (!payload.effectiveDate) delete payload.effectiveDate;
+
       if (formData.id) {
-        await SupplierContractApi.update(formData.id, formData);
+        await SupplierContractApi.update(formData.id, payload as any);
         ElMessage.success("Cập nhật hợp đồng thành công");
       } else {
-        await SupplierContractApi.create(formData);
+        await SupplierContractApi.create(payload as any);
         ElMessage.success("Thêm mới hợp đồng thành công");
       }
       dialogVisible.value = false;

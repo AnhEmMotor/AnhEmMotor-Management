@@ -420,7 +420,7 @@ async function fetchData() {
       rmaCode: `RMA-${String(r.id).padStart(3, "0")}`,
       originalTrackingNumber: r.originalTrackingNumber,
       type: inferType(r),
-      status: r.status,
+      status: (r.status || "").toLowerCase() as any,
       customerName: r.customerName,
       carrier: r.carrier,
       reason: r.reason,
@@ -449,13 +449,19 @@ function inferType(r: { reason: string }): "return" | "cancel" {
 // ==================== COMPUTED ====================
 const filteredRequests = computed(() => {
   let result = requests.value;
+
+  if (filterStatus.value) {
+    result = result.filter((r) => r.status === filterStatus.value);
+  }
+
   if (searchQuery.value) {
     const q = searchQuery.value.toLowerCase();
     result = result.filter(
       (r) =>
         r.rmaCode.toLowerCase().includes(q) ||
-        r.originalTrackingNumber.toLowerCase().includes(q) ||
-        r.customerName.toLowerCase().includes(q),
+        (r.originalTrackingNumber &&
+          r.originalTrackingNumber.toLowerCase().includes(q)) ||
+        (r.customerName && r.customerName.toLowerCase().includes(q)),
     );
   }
   return result;
