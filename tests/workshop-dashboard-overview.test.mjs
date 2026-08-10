@@ -46,11 +46,6 @@ assert.doesNotMatch(
   /ArtBarChart/,
   'Dashboard must stay limited to two useful charts'
 );
-assert.match(
-  sharedSource,
-  /serviceRevenue:\s*\[8_420_000,[\s\S]*?18_750_000\]/,
-  'Mock preview must populate a realistic six-month revenue series'
-);
 assert.match(sharedSource, /Tiến độ phiếu sửa chữa/, 'Dashboard must summarize repair flow');
 assert.match(sharedSource, /Việc cần xử lý/, 'Dashboard must prioritize operational alerts');
 assert.match(
@@ -63,20 +58,10 @@ assert.match(
   /statisticsApi\.getWorkshopDashboardOverview/,
   'Dashboard must stay connected to the real workshop overview API'
 );
-assert.match(
+assert.doesNotMatch(
   sharedSource,
-  /Xem dữ liệu mẫu/,
-  'Dashboard must offer an explicit sample-data preview switch'
-);
-assert.match(
-  sharedSource,
-  /mockMode\.value[\s\S]*?applyMockData\(\)/,
-  'Sample data must only be applied while the explicit preview mode is active'
-);
-assert.match(
-  sharedSource,
-  /toàn bộ số liệu bên dưới là dữ liệu mẫu/,
-  'Preview mode must clearly identify mock values as sample data'
+  /mock|dữ liệu mẫu|applyMockData|mockMode/i,
+  'Dashboard must rely exclusively on the real API without sample-data fallbacks'
 );
 assert.match(
   sharedSource,
