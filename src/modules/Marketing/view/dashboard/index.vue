@@ -626,17 +626,37 @@ const initCharts = () => {
       ['Deposited', 'Paperwork', 'Delivered', 'Closed', 'Won', 'Official'].includes(l.status)
     ).length;
 
+    const funnelData = [
+      { value: totalLeads, name: `Tổng số Leads: ${totalLeads}` },
+      {
+        value: contactedLeads,
+        name: `Tư vấn/Liên hệ: ${contactedLeads}`,
+      },
+      {
+        value: testDriveLeads,
+        name: `Đặt lái thử xe: ${testDriveLeads}`,
+      },
+      { value: wonLeads, name: `Chốt mua/Cọc: ${wonLeads}` },
+    ];
+
     funnelChart.setOption({
       tooltip: { trigger: 'item', formatter: '{b} : {c} ({d}%)' },
-      legend: { show: false },
+      legend: {
+        show: true,
+        type: 'scroll',
+        bottom: 0,
+        left: 'center',
+        textStyle: { color: textColor },
+        data: funnelData.map((item) => item.name),
+      },
       series: [
         {
           name: 'Phễu chuyển đổi',
           type: 'funnel',
           left: '10%',
           right: '10%',
-          top: '10%',
-          bottom: '10%',
+          top: '4%',
+          bottom: '24%',
           width: '80%',
           min: 0,
           max: totalLeads || 10,
@@ -644,21 +664,10 @@ const initCharts = () => {
           maxSize: '100%',
           sort: 'descending',
           gap: 2,
-          label: { show: true, position: 'inside' },
+          label: { show: false },
           labelLine: { show: false },
           itemStyle: { borderColor: '#fff', borderWidth: 1 },
-          data: [
-            { value: totalLeads, name: `Tổng số Leads: ${totalLeads}` },
-            {
-              value: contactedLeads,
-              name: `Tư vấn/Liên hệ: ${contactedLeads}`,
-            },
-            {
-              value: testDriveLeads,
-              name: `Đặt lái thử xe: ${testDriveLeads}`,
-            },
-            { value: wonLeads, name: `Chốt mua/Cọc: ${wonLeads}` },
-          ].filter((item) => item.value >= 0),
+          data: funnelData,
         },
       ],
     });
