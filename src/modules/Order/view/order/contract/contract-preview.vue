@@ -34,6 +34,15 @@
           <el-icon><Promotion /></el-icon> Gửi Admin duyệt
         </el-button>
         <el-button
+          v-if="contractData.status === 'Approved'"
+          type="primary"
+          :loading="isMarkingAsSigned"
+          @click="handleMarkAsSigned"
+          v-auth="Permissions.Order.ContractManagement.Edit"
+        >
+          <el-icon><EditPen /></el-icon> Đã ký
+        </el-button>
+        <el-button
           v-if="contractData.status === 'Signed'"
           type="success"
           @click="handleHandover"
@@ -414,6 +423,7 @@ const contractData = ref({
 
 const isUploading = ref(false);
 const isSubmittingApproval = ref(false);
+const isMarkingAsSigned = ref(false);
 const MAX_SCAN_FILE_SIZE = 10 * 1024 * 1024;
 const ALLOWED_SCAN_EXTENSIONS = ['.pdf', '.jpg', '.jpeg', '.png'];
 
@@ -434,7 +444,7 @@ const activeStep = computed(() => {
 });
 
 const isContractLocked = computed(() => contractData.value.status !== 'Draft');
-const canUploadSignedScan = computed(() => contractData.value.status === 'Approved');
+const canUploadSignedScan = computed(() => ['Approved', 'Signed'].includes(contractData.value.status));
 const canPrintContract = computed(() =>
   ['Approved', 'Signed', 'Fulfilled'].includes(contractData.value.status)
 );
@@ -547,6 +557,32 @@ const handleSubmitForApproval = async () => {
     }
   } finally {
     isSubmittingApproval.value = false;
+  }
+};
+
+const handleMarkAsSigned = async () => {
+  try {
+    await ElMessageBox.confirm(
+      `Xác nhận hợp đồng "${contractData.value.contractNumber}" đã được ký kết?`,
+      'Xác nhận đã ký',
+      {
+        confirmButtonText: 'Đã ký',
+        cancelButtonText: 'Hủy',
+        type: 'warning',
+      }
+    );
+    isMarkingAsSigned.value = true;
+    const updated = await SalesContractApi.updateStatus(contractData.value.id, {
+      status: 'Signed',
+    });
+    contractData.value.status = updated.status;
+    ElMessage.success('Hợp đồng đã chuyển sang trạng thái Đã ký.');
+  } catch (error) {
+    if (error !== 'cancel' && error !== 'close') {
+      ElMessage.error('Không thể cập nhật trạng thái hợp đồng.');
+    }
+  } finally {
+    isMarkingAsSigned.value = false;
   }
 };
 
