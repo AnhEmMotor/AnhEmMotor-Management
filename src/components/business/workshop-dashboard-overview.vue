@@ -494,6 +494,7 @@ interface TechnicianRow {
 }
 
 const router = useRouter();
+const route = useRoute();
 const loading = ref(false);
 const loadError = ref('');
 const lastUpdated = ref('');
