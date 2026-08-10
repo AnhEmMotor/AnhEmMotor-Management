@@ -311,7 +311,6 @@ const loadStatistics = async () => {
     statistics.overdueCount = stats.overdueCount;
     statistics.signedCount = stats.signedCount;
   } catch (_e) {
-    // silent fail for stats
   }
 };
 

@@ -21,7 +21,6 @@
     </div>
 
     <div v-if="detail" class="space-y-6 max-w-[800px]">
-      <!-- Customer & Service Info -->
       <ElCard>
         <template #header>
           <div class="flex items-center gap-2">
@@ -53,7 +52,6 @@
         </div>
       </ElCard>
 
-      <!-- Financial -->
       <ElCard class="bg-red-50/30 border-red-100">
         <template #header>
           <div class="flex items-center gap-2 text-red-900">
@@ -91,7 +89,6 @@
         </div>
       </ElCard>
 
-      <!-- Meta -->
       <div class="text-xs text-slate-400 text-center">
         Mã phiếu: {{ detail.paymentNumber }} | Tạo lúc:
         {{ detail.createdAt ? formatDateTime(detail.createdAt) : '-' }}

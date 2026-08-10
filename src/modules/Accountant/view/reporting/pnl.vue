@@ -28,7 +28,6 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Thu nhập -->
           <tr class="pnl-row pnl-row--income">
             <td class="p-4">TỔNG THU NHẬP</td>
             <td class="p-4 text-right">
@@ -42,7 +41,6 @@
             </td>
           </tr>
 
-          <!-- Giá vốn -->
           <tr class="pnl-row pnl-row--cost">
             <td class="p-4">GIÁ VỐN HÀNG BÁN (COGS)</td>
             <td class="p-4 text-right">
@@ -50,7 +48,6 @@
             </td>
           </tr>
 
-          <!-- Lợi nhuận gộp -->
           <tr class="pnl-row pnl-row--gross">
             <td class="p-4 text-lg">LỢI NHUẬN GỘP</td>
             <td class="p-4 text-right text-lg">
@@ -58,7 +55,6 @@
             </td>
           </tr>
 
-          <!-- Chi phí vận hành -->
           <tr class="pnl-row pnl-row--expense">
             <td class="p-4">CHI PHÍ VẬN HÀNH</td>
             <td class="p-4 text-right">
@@ -76,7 +72,6 @@
             </td>
           </tr>
 
-          <!-- Lợi nhuận ròng -->
           <tr class="pnl-row pnl-row--net">
             <td class="p-4">LỢI NHUẬN RÒNG CUỐI CÙNG</td>
             <td class="p-4 text-right">
@@ -115,7 +110,7 @@ const emit = defineEmits<{
   load: [month: number, year: number];
 }>();
 
-const selectedMonth = ref(new Date().toISOString().slice(0, 7)); // YYYY-MM
+const selectedMonth = ref(new Date().toISOString().slice(0, 7)); 
 const localReport = ref<PnlReport>({
   period: '',
   totalRevenue: 0,

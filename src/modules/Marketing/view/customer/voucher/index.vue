@@ -2,7 +2,6 @@
   <div
     class="resp-page voucher-management-page flex flex-col h-screen bg-[#F8F9FA] dark:bg-[#020617] overflow-hidden"
   >
-    <!-- Header -->
     <div
       class="h-16 bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between px-6 shrink-0 shadow-sm z-10"
     >
@@ -29,7 +28,6 @@
       </ElButton>
     </div>
 
-    <!-- Toolbar -->
     <div
       class="h-14 bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between px-6 shrink-0 z-10"
     >
@@ -62,7 +60,6 @@
       </div>
     </div>
 
-    <!-- Main Table -->
     <div class="flex-1 overflow-auto p-6">
       <div
         class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 overflow-hidden"
@@ -265,10 +262,8 @@ interface Voucher {
 
 const vouchers = ref<Voucher[]>([]);
 
-// ================= State =================
 const filters = ref({ keyword: '', type: 'ALL' });
 
-// ================= Computed =================
 const filteredVouchers = computed(() => {
   let result = vouchers.value;
 
@@ -286,7 +281,6 @@ const filteredVouchers = computed(() => {
   return result;
 });
 
-// ================= Methods =================
 const formatCurrency = (val?: number) => {
   if (val === undefined || val === null) return '0đ';
   return new Intl.NumberFormat('vi-VN', {
@@ -328,8 +322,6 @@ const getChannelLabel = (val: string) => {
 const fetchVouchers = async () => {
   try {
     const res: any = await getVouchers({});
-    // API trả về Result<PagedResult<VoucherResponse>>:
-    // res = { value: { items: [...], totalCount, ... }, isSuccess: true }
     vouchers.value = res?.value?.items || res?.items || res?.data || [];
   } catch (error) {
     console.error('Failed to fetch vouchers', error);

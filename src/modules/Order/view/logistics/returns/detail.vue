@@ -2,7 +2,6 @@
   <div
     class="resp-page returns-detail-page p-6 flex flex-col gap-6 animate__animated animate__fadeIn"
   >
-    <!-- Header: Nút back và Tiêu đề -->
     <div class="flex items-center gap-4">
       <ElButton :icon="Back" circle @click="goBack" />
       <h1 class="m-0 text-xl font-black tracking-tight text-slate-900 dark:text-white leading-none">
@@ -10,7 +9,6 @@
       </h1>
     </div>
 
-    <!-- Nội dung chính -->
     <div
       v-loading="loadingDetail"
       class="bg-white rounded-xl shadow-sm border border-color p-6"
@@ -31,7 +29,6 @@
       </div>
 
       <div class="flex flex-col gap-6">
-        <!-- LÝ DO -->
         <ElAlert
           :title="`Lý do hoàn: ${detail.reason}`"
           :type="getReasonAlertType(detail.reason)"
@@ -133,7 +130,6 @@
               </ElFormItem>
             </div>
 
-            <!-- Financial Input Fields -->
             <div class="grid grid-cols-2 gap-8 mt-2">
               <ElFormItem label="Giá trị hoàn lại cho khách (VND)">
                 <ElInputNumber
@@ -288,7 +284,6 @@ const fetchDetail = async (id: number) => {
     const res = await getReturnDetail(id);
     detail.value = res as unknown as ReturnDetailDto;
 
-    // Reset form
     inspectForm.value = {
       boxCondition: detail.value?.boxCondition || 'Còn nguyên vẹn',
       productCondition: detail.value?.productCondition || 'Sử dụng tốt',
@@ -356,13 +351,12 @@ const submitInspection = async () => {
     );
 
     submitting.value = true;
-    inspectForm.value.action = ''; // Admin se duyet sau
+    inspectForm.value.action = ''; 
 
     await inspectReturn(detail.value.id, inspectForm.value);
 
     ElMessage.success(`Chuyển Admin phê duyệt thành công`);
 
-    // Reload
     fetchDetail(detail.value.id);
   } catch (e: any) {
     if (e !== 'cancel') {

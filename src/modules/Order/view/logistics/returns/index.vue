@@ -1,6 +1,5 @@
 <template>
   <div class="resp-page returns-page flex flex-col gap-4 animate__animated animate__fadeIn">
-    <!-- Header with Search & Tabs -->
     <ElCard class="shrink-0" body-class="pb-0">
       <div class="flex justify-between items-center mb-4">
         <h1
@@ -26,7 +25,6 @@
       </ElTabs>
     </ElCard>
 
-    <!-- Main List Data Table -->
     <div class="flex-1 h-[calc(100vh-220px)] mt-2">
       <ElTable
         :data="filteredReturns"
@@ -95,14 +93,12 @@ defineOptions({ name: 'ReverseLogistics' });
 
 const router = useRouter();
 
-// State for List
 const returnsList = ref<ReturnOrderDto[]>([]);
 const loadingList = ref(false);
 const searchQuery = ref('');
 const statusFilter = ref('');
 const selectedRows = ref<ReturnOrderDto[]>([]);
 
-// Filter logic
 const filteredReturns = computed(() => {
   if (!searchQuery.value) return returnsList.value;
   const q = searchQuery.value.toLowerCase();
@@ -118,7 +114,6 @@ onMounted(() => {
   fetchReturns();
 });
 
-// Fetch Data
 const fetchReturns = async () => {
   loadingList.value = true;
   try {
@@ -190,7 +185,6 @@ const getActionLabel = (action?: string) => {
   return map[action] || action;
 };
 
-// Selection logic
 const handleSelectionChange = (rows: ReturnOrderDto[]) => {
   selectedRows.value = rows;
 };

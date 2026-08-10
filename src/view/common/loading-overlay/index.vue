@@ -2,7 +2,6 @@
   <transition name="fade-scale">
     <div v-if="visible" class="success-transition-overlay">
       <div class="transition-content">
-        <!-- Hiệu ứng xe máy chuyển động -->
         <div class="motorcycle-wrapper">
           <div class="motorcycle-container">
             <div class="system-text-icon">Hệ thống kinh doanh xe máy</div>

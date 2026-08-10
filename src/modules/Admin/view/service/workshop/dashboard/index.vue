@@ -20,7 +20,6 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <!-- Cycle -->
         <ElRadioGroup v-model="cycle" @change="handleCycleChange">
           <ElRadioButton value="today">Hôm nay</ElRadioButton>
           <ElRadioButton value="this_month">Tháng này</ElRadioButton>
@@ -49,7 +48,6 @@
       </div>
     </div>
 
-    <!-- KPI Cards (Module 6) -->
     <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
       <ArtStatsCard
         icon="ri:tools-line"
@@ -85,7 +83,6 @@
       />
     </div>
 
-    <!-- Alerts -->
     <div class="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3 items-start">
       <ElCard class="lg:col-span-1">
         <template #header>
@@ -145,7 +142,6 @@
         </div>
       </ElCard>
 
-      <!-- Warranty & complaints (merged into workshop dashboard) -->
       <ElCard class="lg:col-span-1" :class="{ 'mt-0': true }">
         <template #header>
           <span class="font-semibold">Đánh giá & khiếu nại dịch vụ</span>
@@ -197,7 +193,6 @@
       </ElCard>
     </div>
 
-    <!-- Charts -->
     <div class="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
       <ElCard class="lg:col-span-2 overflow-hidden relative">
         <template #header>
@@ -291,7 +286,6 @@ type PartsShortageAlert = {
 
 const loading = ref(false);
 
-// (B) Date cycle state
 const cycle = ref<Cycle>('this_month');
 const fromDate = ref<Date | null>(new Date());
 const toDate = ref<Date | null>(new Date());
@@ -307,7 +301,6 @@ function handleDateChange() {
   refresh();
 }
 
-// KPI (Module 6)
 const kpi = ref({
   inProgress: 0,
   avgFinishHours: 0,
@@ -329,16 +322,13 @@ const analytics = ref({
   repairOrderStatusCounts: [] as Array<{ status: string; count: number }>,
 });
 
-// Alerts
 const alerts = ref({
   overdue: [] as OverdueAlert[],
   partsShortage: [] as PartsShortageAlert[],
 });
 
-// Technician performance table
 const technicianRows = ref<any[]>([]);
 
-// Warranty & complaints (merged into workshop dashboard)
 const warrantyAndComplaints = ref({
   loading: false,
   warrantyRequestsCount: 0,
@@ -392,7 +382,6 @@ const statusBarChart = computed(() => {
   };
 });
 
-// Charts
 const serviceVsSalesChart = computed(() => {
   return {
     xAxisData: analytics.value.revenueTrend.labels,
@@ -590,7 +579,6 @@ onMounted(() => {
 
 <style scoped>
 .dashboard-workshop {
-  /* Dọn dẹp/ẩn các icon lạ (widget thả nổi) đè lên viền */
   & :deep([id*='waifu']),
   & :deep([class*='waifu']),
   & :deep([id*='live2d']),
@@ -605,7 +593,6 @@ onMounted(() => {
   overflow: hidden !important;
 }
 
-/* Kích hoạt chế độ tối (bắt buộc) cho các thẻ/card trong Dashboard nếu global CSS Tailwind chưa load kịp */
 :global(html.dark) .dashboard-workshop {
   --default-box-color: #161618 !important;
   --default-bg-color: #070707 !important;

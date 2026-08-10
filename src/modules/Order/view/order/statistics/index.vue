@@ -1,6 +1,5 @@
 <template>
   <div class="resp-page flex flex-col gap-4 pb-5">
-    <!-- Header & Quick Search -->
     <div class="flex items-center justify-between gap-4">
       <div class="flex-1 max-w-xl">
         <ElInput
@@ -22,14 +21,12 @@
       </div>
     </div>
 
-    <!-- HÀNG ĐỢI CÔNG VIỆC CẦN XỬ LÝ NGAY -->
     <div class="flex items-center justify-between mt-2">
       <span class="font-semibold text-lg uppercase"> 📊 Hàng Đợi Công Việc Cần Xử Lý Ngay </span>
       <span class="text-xs text-gray-500">(Click vào số để mở danh sách đơn)</span>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <!-- ĐƠN MỚI CHỜ DUYỆT -->
       <ArtStatsCard
         title="ĐƠN MỚI CHỜ DUYỆT"
         :count="workload.pendingOrders"
@@ -39,7 +36,6 @@
         class="cursor-pointer"
         @click="handleFilter('pending')"
       />
-      <!-- TRỄ LỊCH SLA -->
       <ArtStatsCard
         title="TRỄ LỊCH SLA"
         :count="workload.slaDelayed"
@@ -50,7 +46,6 @@
         class="cursor-pointer animate-pulse"
         @click="handleFilter('sla')"
       />
-      <!-- ĐƠN LỖI TIỀN -->
       <ArtStatsCard
         title="ĐƠN LỖI TIỀN"
         :count="workload.paymentErrors"
@@ -60,7 +55,6 @@
         class="cursor-pointer"
         @click="handleFilter('payment')"
       />
-      <!-- ĐÒI ĐỔI TRẢ -->
       <ArtStatsCard
         title="ĐÒI ĐỔI TRẢ"
         :count="workload.returnRequests"
@@ -73,7 +67,6 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-      <!-- ĐỒ THỊ LƯỢNG ĐƠN THEO GIỜ IN-DAY -->
       <ElCard class="art-table-card lg:col-span-2">
         <template #header>
           <div class="flex items-center justify-between">
@@ -83,7 +76,6 @@
         <div ref="hourlyChartRef" class="h-64 w-full"></div>
       </ElCard>
 
-      <!-- HIỆU SUẤT TRỰC ĐƠN HÔM NAY & TỶ LỆ NHẬN HÀNG -->
       <div class="flex flex-col gap-4">
         <ElCard class="art-table-card">
           <template #header>
@@ -122,7 +114,6 @@
       </div>
     </div>
 
-    <!-- DANH SÁCH ĐƠN HÀNG CẦN CHÚ Ý ĐẶC BIỆT -->
     <ElCard class="flex-1 art-table-card border-red-200 dark:border-red-900">
       <template #header>
         <div class="flex items-center justify-between">
@@ -173,7 +164,6 @@ defineOptions({ name: 'OrderStatisticsDashboard' });
 const settingStore = useSettingStore();
 const isDark = computed(() => settingStore.systemThemeType === 'dark');
 
-// --- STATE ---
 const searchQuery = ref('');
 const countdownTimer = ref(30);
 let timerInterval: ReturnType<typeof setInterval> | null = null;
@@ -185,7 +175,6 @@ const methodChartRef = ref<HTMLDivElement | null>(null);
 let hourlyChartInstance: echarts.ECharts | null = null;
 let methodChartInstance: echarts.ECharts | null = null;
 
-// --- API DATA ---
 const workload = ref({
   pendingOrders: 0,
   slaDelayed: 0,
@@ -232,7 +221,6 @@ const loadStats = async () => {
     loadingStats.value = false;
   }
 };
-// --- COMPUTED ---
 const productivityProgress = computed(() => {
   const { target, completed } = productivity.value;
   return Math.round((completed / target) * 100);
@@ -270,10 +258,9 @@ const exceptionColumns = computed(() => [
   },
 ]);
 
-// --- METHODS ---
 const handleFilter = (type: string) => {
   if (activeFilter.value === type) {
-    activeFilter.value = null; // Toggle off
+    activeFilter.value = null; 
   } else {
     activeFilter.value = type;
   }
@@ -300,7 +287,6 @@ const checkSLAAlerts = () => {
       type: 'error',
       duration: 5000,
     });
-    // Optional: Simulate ping sound
     try {
       const audio = new Audio('/ping.mp3');
       audio.play().catch((e) => console.warn('Audio autoplay blocked by browser', e));
@@ -314,9 +300,7 @@ const startTimer = () => {
   timerInterval = setInterval(() => {
     countdownTimer.value--;
     if (countdownTimer.value <= 0) {
-      // Simulate API Refresh
       countdownTimer.value = 30;
-      // In a real app, call API here
       console.log('Auto-refreshing data...');
       loadStats();
     }
@@ -328,7 +312,6 @@ const resetAutoRefresh = () => {
   console.log('Manual refresh triggered');
 };
 
-// --- CHARTS ---
 const getThemeColors = () => {
   if (isDark.value) {
     return {

@@ -36,7 +36,6 @@
       </template>
     </ReportPageHeader>
 
-    <!-- KPI Cards Row -->
     <div class="reporting-kpi-grid mb-4">
       <ArtStatsCard
         title="Số hợp đồng"
@@ -68,7 +67,6 @@
       />
     </div>
 
-    <!-- Progress Pipeline -->
     <el-card shadow="never" class="mb-4 pipeline-card">
       <div class="text-sm text-gray-500 mb-4 font-medium">Trạng thái vòng đời hợp đồng</div>
 
@@ -122,9 +120,7 @@
       </div>
     </el-card>
 
-    <!-- Split-Screen / Preview Mode -->
     <el-row :gutter="20">
-      <!-- Cột bên trái: Form nhập liệu & upload -->
       <el-col :span="10">
         <el-card
           shadow="never"
@@ -173,7 +169,6 @@
 
           <el-divider />
 
-          <!-- Khu vực Tải lên Pháp lý (Upload Zone) -->
           <div
             ref="uploadZoneRef"
             class="upload-zone mt-4"
@@ -207,7 +202,6 @@
         </el-card>
       </el-col>
 
-      <!-- Cột bên phải: Trình xem trước (Preview) -->
       <el-col :span="14">
         <el-card
           shadow="never"

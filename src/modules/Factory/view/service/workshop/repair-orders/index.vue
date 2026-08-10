@@ -21,7 +21,6 @@
       </div>
     </div>
 
-    <!-- KPI / Stats theo trạng thái -->
     <div class="resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-4">
       <ArtStatsCard
         icon-style="bg-warning"
@@ -53,7 +52,6 @@
       />
     </div>
 
-    <!-- Search -->
     <ArtSearchBar
       :items="searchItems"
       :label-width="140"
@@ -169,7 +167,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Dialog: Create Repair Order (giai đoạn 1 - tiếp nhận) -->
     <ElDialog
       v-model="createDialogVisible"
       title="Tạo phiếu sửa chữa"
@@ -180,7 +177,6 @@
       destroy-on-close
     >
       <ElForm :model="createForm" label-width="140px" class="space-y-4" :disabled="submitting">
-        <!-- 1) Luôn hỏi SĐT trước -->
         <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
@@ -216,7 +212,6 @@
           Khách chưa có hồ sơ. Vui lòng nhập đầy đủ thông tin khách và xe.
         </div>
 
-        <!-- 2) VIN/Số khung + Biển số + Tên xe/phiên bản/màu -->
         <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
@@ -277,7 +272,6 @@
           </div>
         </div>
 
-        <!-- 3) Thợ kỹ thuật -->
         <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
@@ -311,7 +305,6 @@
           </div>
         </div>
 
-        <!-- 4) Mã giảm giá -->
         <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
@@ -328,7 +321,6 @@
           <div></div>
         </div>
 
-        <!-- 5) Mô tả tình trạng -->
         <div class="mt-4">
           <label
             class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
@@ -354,7 +346,6 @@
       </template>
     </ElDialog>
 
-    <!-- Dialog: Assign technician -->
     <ElDialog
       v-model="assignDialogVisible"
       title="Phân công kỹ thuật"
@@ -420,20 +411,15 @@ import { EmployeeApi, type EmployeeResponse } from '@/api/operations/employee.ap
 
 defineOptions({ name: 'ServiceWorkshopRepairOrders' });
 
-// NOTE: Dùng useTable pattern dự án nếu có. Ở đây tạo UI tối giản nhưng tương thích shape của ArtTable.
 const loading = ref(false);
 const tableRef = ref();
 
-// Pagination
 const pagination = ref<any>({ current: 1, size: 10, total: 0 });
 
-// Table data
 const data = ref<RepairOrder[]>([]);
 
-// Column checks (ArtTableHeader v-model)
 const columnChecks = ref<any[]>([]);
 
-// Columns (ArtTable)
 const columns = computed(() => {
   return [
     { prop: 'id', label: 'ID', width: 90, align: 'center' },
@@ -582,11 +568,9 @@ const handleCurrentChange = async (current: number) => {
 const fetchData = async (params: any) => {
   loading.value = true;
   try {
-    // API shape: items + totalCount
     const res = await RepairOrderApi.getList(params);
     const rawItems = res.items || [];
 
-    // Filter out rows that do not have customerName or customerPhone or are 'Khách lẻ'
     const validItems = rawItems.filter(
       (item: any) => item.customerName && item.customerPhone && item.customerName !== 'Khách lẻ'
     );
@@ -612,7 +596,6 @@ const fetchData = async (params: any) => {
   }
 };
 
-// Stats theo trạng thái
 const counts = computed(() => {
   const safe = data.value || [];
   const byStatus = safe.reduce(
@@ -666,7 +649,6 @@ const openDetail = (row: RepairOrder) => {
   router.push(`/factory/workshop/repair/${row.id}`);
 };
 
-// Dialog: Create
 const createDialogVisible = ref(false);
 const submitting = ref(false);
 const createForm = ref({
@@ -676,17 +658,14 @@ const createForm = ref({
   description: '',
   voucherCode: '',
 
-  // Auto-fill vehicle/customer info (Vehicle Portfolio)
   isNewCustomer: true,
   vinNumber: '',
   licensePlate: '',
   vehicleName: '',
   vehicleColor: '',
 
-  // Assign technician (main tech)
   technicianId: undefined as number | undefined,
 
-  // Existing vehicle ID
   vehicleId: undefined as number | undefined,
 });
 
@@ -709,7 +688,6 @@ const openCreateDialog = () => {
   };
 };
 
-// Auto-fill khi user nhập SĐT
 const handleCustomerPhoneBlur = async () => {
   const phone = createForm.value.customerPhone?.trim();
   if (!phone) return;
@@ -768,7 +746,6 @@ const submitCreate = async () => {
   }
 };
 
-// Dialog: Assign technician
 const assignDialogVisible = ref(false);
 const assignForm = ref({ repairOrderId: 0, technicianId: 1 });
 const technicians = ref<EmployeeResponse[]>([]);
@@ -825,6 +802,5 @@ onMounted(async () => {
   }
 });
 
-// Initial load
 refreshData();
 </script>

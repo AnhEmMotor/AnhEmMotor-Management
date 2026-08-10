@@ -2,7 +2,6 @@
   <div
     class="repair-order-form-page flex flex-col min-h-screen bg-[#F8FAFC] font-inter text-[#0F172A]"
   >
-    <!-- Header Bar -->
     <div class="bg-white border-b border-slate-200 px-8 py-5 shrink-0 shadow-sm relative z-20">
       <div class="flex justify-between items-center max-w-[1400px] mx-auto flex-wrap gap-3">
         <div class="flex items-center gap-4">
@@ -56,10 +55,8 @@
       </div>
     </div>
 
-    <!-- Main -->
     <div class="flex-1 max-w-[1400px] mx-auto w-full p-6" v-loading="loading">
       <div v-if="order" class="space-y-6">
-        <!-- Pipeline State Machine -->
         <div class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm">
           <h3 class="text-[10px] font-black uppercase text-slate-400 tracking-wider m-0">
             Pipeline (Tiến độ phiếu)
@@ -89,8 +86,6 @@
           </div>
         </div>
 
-        <!-- Phase blocks -->
-        <!-- Phase 1: Vehicle check-in -->
         <div v-if="order.status === 'Pending'" class="space-y-4">
           <div class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-4">
             <h3
@@ -100,7 +95,6 @@
               Thông tin tiếp nhận xe
             </h3>
 
-            <!-- Search Customer + Vehicle info + Gallery -->
             <div class="resp-stats-3 grid grid-cols-1 md:grid-cols-3 gap-4">
               <div class="md:col-span-1">
                 <label
@@ -197,7 +191,6 @@
           </div>
         </div>
 
-        <!-- Phase 2: Diagnosis panel -->
         <div v-if="order.status === 'InProgress' || order.status === 'QcPending'" class="space-y-4">
           <div class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-4">
             <h3
@@ -282,7 +275,6 @@
           </div>
         </div>
 
-        <!-- Phase 3: Execution (parts consumption status) -->
         <div v-if="order.status === 'InProgress' || order.status === 'QcPending'" class="space-y-4">
           <div class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-5">
             <h3
@@ -371,7 +363,6 @@
         </div>
       </div>
 
-      <!-- Voucher Section -->
       <div v-if="order" class="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm mt-4">
         <h4
           class="text-xs font-black uppercase text-slate-400 tracking-wider mb-3 flex items-center gap-2"
@@ -456,8 +447,6 @@
         </div>
       </div>
 
-      <!-- Empty state when no order -->
-      <!-- Empty state when no order -->
       <div v-else class="text-center py-20 text-slate-400">
         <div class="text-4xl mb-4">🔧</div>
         <div>Đang tải thông tin phiếu sửa chữa...</div>
@@ -744,7 +733,6 @@ const formatDate = (dateStr: string) => {
   });
 };
 
-// Tra cứu xe theo SĐT
 let phoneTimeout: any = null;
 function handlePhoneInput() {
   if (phoneTimeout) clearTimeout(phoneTimeout);
@@ -769,7 +757,6 @@ function handlePhoneInput() {
   }
 }
 
-// Tra cứu xe theo biển số
 let plateTimeout: any = null;
 function handlePlateInput() {
   if (plateTimeout) clearTimeout(plateTimeout);
@@ -800,7 +787,6 @@ function applyVehicleData(vehicle: any) {
   form.vehicleColor = vehicle.colorName || 'N/A';
   form.vehicleYear = vehicle.productId ? String(vehicle.productId) : '';
   selectedVehicleId.value = vehicle.id;
-  // Gallery: placeholder - backend chưa có endpoint gallery riêng
   vehicleGallery.value = [];
 }
 

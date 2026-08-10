@@ -298,7 +298,6 @@ onMounted(() => {
   overflow: hidden;
 }
 
-// Dark Mode overrides
 :global(html.dark .comment-page) {
   background-color: #05070b !important;
   color: #f8fafc !important;

@@ -2,7 +2,6 @@
   <div
     class="resp-page voucher-save-page flex flex-col h-screen bg-[#F8F9FA] dark:bg-[#020617] overflow-hidden"
   >
-    <!-- Header -->
     <div
       class="h-16 bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between px-6 shrink-0 shadow-sm z-10"
     >
@@ -32,10 +31,8 @@
       </div>
     </div>
 
-    <!-- Main Content -->
     <div class="flex-1 overflow-y-auto p-6 custom-scrollbar">
       <div class="max-w-7xl mx-auto flex flex-col gap-6">
-        <!-- General Info -->
         <div
           class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-6"
         >
@@ -86,7 +83,6 @@
           </ElForm>
         </div>
 
-        <!-- Value Config -->
         <div
           class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-6"
         >
@@ -128,7 +124,6 @@
           </ElForm>
         </div>
 
-        <!-- Usage Limits -->
         <div
           class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-6"
         >
@@ -160,7 +155,6 @@
           </ElForm>
         </div>
 
-        <!-- Audience Config -->
         <div
           class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-6 mb-10"
         >
@@ -220,7 +214,6 @@
           </ElForm>
         </div>
 
-        <!-- Bottom Actions -->
         <div
           class="flex justify-end gap-4 mb-10 border-t border-gray-100 dark:border-slate-800 pt-6"
         >
@@ -303,7 +296,6 @@ const handleSave = async () => {
     ...form.value,
     validFrom: new Date(dateRange.value[0]).toISOString(),
     validTo: new Date(dateRange.value[1]).toISOString(),
-    // Convert ENUMS
     applyFor: form.value.applyFor === 'ALL' ? 0 : form.value.applyFor === 'VEHICLE' ? 1 : 2,
     channel: form.value.channel === 'ALL' ? 0 : form.value.channel === 'STORE' ? 1 : 2,
     type: form.value.type === 'PUBLIC' ? 0 : 1,

@@ -1,6 +1,5 @@
 <template>
   <div class="resp-page returns-page flex flex-col gap-4 pb-5">
-    <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
       <ArtStatsCard
         v-for="tab in tabs"
@@ -14,7 +13,6 @@
       />
     </div>
 
-    <!-- Search Bar -->
     <ArtSearchBar
       v-model="searchForm"
       :items="searchItems"
@@ -24,7 +22,6 @@
       @reset="handleReset"
     />
 
-    <!-- Table -->
     <ElCard class="art-table-card">
       <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="fetchData">
         <template #left>
@@ -97,7 +94,6 @@
         </template>
       </ArtTable>
 
-      <!-- Pagination -->
       <div class="flex justify-end mt-4">
         <ElPagination
           v-model:current-page="pagination.current"
@@ -110,7 +106,6 @@
       </div>
     </ElCard>
 
-    <!-- Detail Drawer -->
     <ElDrawer
       v-model="drawer.visible"
       :title="
@@ -121,7 +116,6 @@
       :destroy-on-close="true"
     >
       <div v-if="drawer.request" class="request-detail">
-        <!-- Request Summary -->
         <div class="summary grid grid-cols-2 gap-4 mb-4">
           <div>
             <strong>Mã đơn:</strong>
@@ -166,7 +160,6 @@
           </div>
         </div>
 
-        <!-- Products Table -->
         <div class="products-section mb-4">
           <h4 class="font-bold mb-2 text-gray-700">
             {{ drawer.request.type === 'return' ? 'Sản phẩm trả lại' : 'Sản phẩm liên quan' }}
@@ -220,7 +213,6 @@
           </ElTable>
         </div>
 
-        <!-- Evidence Images -->
         <div v-if="drawer.request.evidenceImages?.length" class="mb-4">
           <h4 class="font-bold mb-2 text-gray-700">Ảnh bằng chứng</h4>
           <div class="flex gap-2 flex-wrap">
@@ -236,7 +228,6 @@
           </div>
         </div>
 
-        <!-- Action Buttons -->
         <div class="mt-4 flex justify-end gap-2 border-t pt-4">
           <ElButton @click="drawer.visible = false">Đóng</ElButton>
           <ElButton
@@ -257,7 +248,6 @@
       </div>
     </ElDrawer>
 
-    <!-- Reject Dialog -->
     <ElDialog
       v-model="rejectDialog.visible"
       title="Từ chối yêu cầu"
@@ -284,7 +274,6 @@
       </template>
     </ElDialog>
 
-    <!-- Process Dialog (Inspect & Resolve) -->
     <ElDialog
       v-model="processDialog.visible"
       :title="`Xử lý yêu cầu #${processDialog.request?.orderCode || processDialog.request?.id || ''}`"
@@ -357,7 +346,6 @@ import { formatImageUrl } from '@/common/utils/image';
 
 defineOptions({ name: 'OrderReturns' });
 
-// ==================== TABS ====================
 type TabId = 'all' | 'pending' | 'inspecting' | 'completed' | 'rejected';
 
 interface TabItem {
@@ -402,7 +390,6 @@ const tabs: TabItem[] = [
 
 const activeTab = ref<TabId>('all');
 
-// ==================== STATE ====================
 const requests = ref<ReturnRequestDetail[]>([]);
 const loading = ref(false);
 const actionLoading = ref(false);
@@ -439,7 +426,6 @@ const processForm = reactive({
   returnAction: 'refund' as 'restock' | 'defect' | 'refund',
 });
 
-// ==================== SEARCH ITEMS ====================
 const searchItems = computed(() => [
   {
     label: 'Từ khóa',
@@ -452,7 +438,6 @@ const searchItems = computed(() => [
   },
 ]);
 
-// ==================== TABLE COLUMNS ====================
 const columnChecks = ref([
   {
     prop: 'orderCode',
@@ -495,16 +480,13 @@ const columnChecks = ref([
 
 const columns = computed(() => columnChecks.value.filter((item) => item.checked));
 
-// ==================== COMPUTED ====================
 const filteredRequests = computed(() => {
   let result = requests.value;
 
-  // Filter by tab
   if (activeTab.value !== 'all') {
     result = result.filter((r) => r.status === activeTab.value);
   }
 
-  // Filter by keyword
   if (searchForm.keyword.trim()) {
     const q = searchForm.keyword.toLowerCase().trim();
     result = result.filter((r) => {
@@ -527,12 +509,10 @@ const paginatedRequests = computed(() => {
   return filteredRequests.value.slice(start, end);
 });
 
-// ==================== LIFECYCLE ====================
 onMounted(() => {
   fetchData();
 });
 
-// ==================== FETCH ====================
 async function fetchData() {
   loading.value = true;
   try {
@@ -556,7 +536,6 @@ function getCountForTab(tabId: TabId): number {
   return requests.value.filter((r) => r.status === tabId).length;
 }
 
-// ==================== SEARCH & PAGINATION ====================
 function handleSearch() {
   pagination.current = 1;
   fetchData();
@@ -577,10 +556,8 @@ function handleSizeChange() {
 }
 
 function handleCurrentChange() {
-  // Pagination handled by computed
 }
 
-// ==================== ROW ACTIONS ====================
 function handleRowClick(row: ReturnRequestDetail) {
   drawer.request = row;
   drawer.visible = true;
@@ -658,7 +635,6 @@ async function confirmProcess() {
   }
 }
 
-// ==================== HELPERS ====================
 function formatDateTime(dateStr?: string): string {
   if (!dateStr) return '---';
   const d = new Date(dateStr);

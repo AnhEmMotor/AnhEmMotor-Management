@@ -15,7 +15,6 @@
       </template>
     </ReportPageHeader>
 
-    <!-- TẦNG 1: BỘ CHỈ SỐ KPI -->
     <div v-if="loading" class="reporting-kpi-grid">
       <ArtStatsCard
         title="Tổng lead mới"
@@ -81,7 +80,6 @@
       />
     </div>
 
-    <!-- TẦNG 2: CẶP BIỂU ĐỒ TRUNG TÂM -->
     <div class="reporting-section-grid two-columns mt-4">
       <ElCard class="reporting-card">
         <template #header>Phễu chuyển đổi theo kênh</template>
@@ -93,13 +91,11 @@
       </ElCard>
     </div>
 
-    <!-- TẦNG 3: BIỂU ĐỒ PHÂN BỔ ĐIỂM LEAD (FULL-WIDTH) -->
     <ElCard class="reporting-card mt-4">
       <template #header>Phân bổ điểm Lead (Chất lượng khách hàng)</template>
       <div ref="histogramChartRef" class="reporting-chart"></div>
     </ElCard>
 
-    <!-- TẦNG 4: BẢNG DANH SÁCH LEAD ƯU TIÊN -->
     <ElCard class="reporting-card mt-4">
       <template #header>
         <div class="flex justify-between items-center">
@@ -182,7 +178,6 @@
       </div>
     </ElCard>
 
-    <!-- DIALOG CHI TIẾT LEAD -->
     <ElDialog
       v-model="detailVisible"
       title="Chi tiết khách hàng / Lead"
@@ -361,7 +356,6 @@ function exportCustomerExcel() {
 }
 
 function renderCharts() {
-  // 1. Funnel: Phân bổ điểm Lead (bar chart theo score range)
   if (funnelChartRef.value) {
     if (!funnelChart) funnelChart = echarts.init(funnelChartRef.value);
     const scoreBuckets = [
@@ -411,7 +405,6 @@ function renderCharts() {
     });
   }
 
-  // 2. Donut Chart: Nguồn khách hàng
   if (sourceChartRef.value) {
     if (!sourceChart) sourceChart = echarts.init(sourceChartRef.value);
     const sourceMap = new Map<string, number>();
@@ -442,7 +435,6 @@ function renderCharts() {
     });
   }
 
-  // 3. Histogram Chart: Phân bổ nguồn theo trạng thái (stacked bar)
   if (histogramChartRef.value) {
     if (!histogramChart) histogramChart = echarts.init(histogramChartRef.value);
     const sources = Array.from(new Set(leads.value.map((l) => l.source || 'Khác')));
@@ -543,5 +535,4 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* kept minimal to match project style */
 </style>

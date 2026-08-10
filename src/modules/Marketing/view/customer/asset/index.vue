@@ -2,7 +2,6 @@
   <div
     class="resp-page customer-asset-page flex flex-col h-screen bg-[#F8F9FA] dark:bg-[#020617] overflow-hidden"
   >
-    <!-- Header -->
     <div
       class="h-16 bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between px-6 shrink-0 shadow-sm z-10"
     >
@@ -29,7 +28,6 @@
       </ElButton>
     </div>
 
-    <!-- Toolbar -->
     <div
       class="h-14 bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between px-6 shrink-0 z-10"
     >
@@ -56,9 +54,7 @@
       </div>
     </div>
 
-    <!-- Main layout -->
     <div class="flex flex-1 overflow-hidden">
-      <!-- Left sidebar: lead list -->
       <div
         class="w-[380px] bg-white dark:bg-slate-900 border-r border-gray-100 dark:border-slate-800 flex flex-col shrink-0"
       >
@@ -112,7 +108,6 @@
         </div>
       </div>
 
-      <!-- Right: customer assets list -->
       <div
         v-if="selectedLead"
         class="flex-1 overflow-y-auto p-8 custom-scrollbar bg-gray-50/50 dark:bg-slate-900/50"
@@ -199,7 +194,6 @@
               </div>
             </div>
 
-            <!-- Specs grid -->
             <div class="grid grid-cols-4 gap-3 mb-6">
               <div
                 v-for="spec in getAssetSpecs(asset)"
@@ -219,7 +213,6 @@
               </div>
             </div>
 
-            <!-- Digital Vault -->
             <div>
               <div class="flex items-center gap-2 mb-3">
                 <div class="w-1 h-3 bg-navy rounded-full"></div>
@@ -272,7 +265,6 @@
       </div>
     </div>
 
-    <!-- Dialog Thêm tài sản mới -->
     <ElDialog
       v-model="addDialogVisible"
       title="THÊM PHƯƠNG TIỆN MỚI"
@@ -339,7 +331,6 @@
       </template>
     </ElDialog>
 
-    <!-- Dialog Sửa biển số xe -->
     <ElDialog
       v-model="editDialogVisible"
       title="CẬP NHẬT BIỂN SỐ XE"
@@ -517,7 +508,6 @@ const handleAddSubmit = async () => {
     ElMessage.success('Đã thêm phương tiện mới thành công!');
     addDialogVisible.value = false;
 
-    // Nếu khách hàng vừa thêm xe đang được chọn, tải lại danh sách xe
     if (selectedLeadId.value === form.value.leadId) {
       loadCustomerAssets(selectedLeadId.value);
     } else {

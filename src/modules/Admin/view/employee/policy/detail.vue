@@ -353,7 +353,6 @@
           </ElCard>
         </ElForm>
 
-        <!-- STEP 3: Simulator -->
         <ElCard shadow="never" class="mb-6 bg-blue-50/50 border-blue-100">
           <template #header>
             <div class="font-bold flex items-center gap-2 text-blue-800">
@@ -769,7 +768,6 @@ watch(
   }
 );
 
-// Simulator state
 const simInput = ref(0);
 const simInputVal = ref('');
 const simLabor = ref('');
@@ -1124,7 +1122,6 @@ const deletePolicy = async () => {
     ElMessage.success('Đã xóa chính sách');
     goBack();
   } catch {
-    // Người dùng đóng hộp thoại xác nhận hoặc API từ chối thao tác.
   }
 };
 
@@ -1141,7 +1138,6 @@ const duplicatePolicy = () => {
   ElMessage.success('Đã nhân bản thành bản nháp mới!');
 };
 
-// Tier logic
 const addTier = () => {
   if (!editForm.value.tiers) editForm.value.tiers = [];
   editForm.value.tiers.push({ from: 1, to: 999, bonus: 0, bonusRate: 0 });
@@ -1192,7 +1188,6 @@ const getStatusRibbonClass = (status: string) => {
   }
 };
 
-// Simulator Logic
 const runSimulation = () => {
   const dataToUse = editForm.value;
   simBreakdown.value = '';
@@ -1208,7 +1203,6 @@ const runSimulation = () => {
     let totalBonus = 0;
 
     if (enableTiers.value && dataToUse.tiers && dataToUse.tiers.length > 0) {
-      // Sort tiers to be safe
       const sortedTiers = [...dataToUse.tiers].sort((a, b) => a.from - b.from);
       let remainingQty = qty;
       let breakdownTexts: string[] = [];
@@ -1217,7 +1211,6 @@ const runSimulation = () => {
         const tier = sortedTiers[i];
         if (remainingQty <= 0) break;
 
-        // Calculate max items in this tier
         const tierMax = tier.to ? tier.to - tier.from + 1 : 99999;
         const itemsInTier = Math.min(remainingQty, tierMax);
 
@@ -1272,7 +1265,6 @@ const runSimulation = () => {
 
 <style scoped lang="scss">
 .policy-detail-page {
-  // Styles for the new page
 }
 
 .vehicle-color-swatch {
@@ -1291,7 +1283,6 @@ const runSimulation = () => {
   box-shadow: 0 2px 8px rgb(0 0 0 / 10%) !important;
 }
 
-/* Make disabled inputs look elegant and readable */
 :deep(.el-form--disabled .el-input__wrapper),
 :deep(.el-form--disabled .el-select__wrapper) {
   background-color: #f8fafc !important;

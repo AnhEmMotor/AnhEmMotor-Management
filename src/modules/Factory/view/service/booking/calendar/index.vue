@@ -182,7 +182,6 @@ const getEvents = (day: string) => {
     })
     .map((event) => ({
       ...event,
-      // fallback classes
       bgClass: event.bgClass ?? 'bg-slate-500',
       textClass: event.textClass ?? 'text-white',
     }));
@@ -238,7 +237,6 @@ const handleEventClick = (event: BookingEventVM) => {
 };
 
 const handleSaveEvent = async () => {
-  // UI first: chỉ validate tối thiểu
   if (!bookingForm.value.customerName) return;
   if (!bookingForm.value.phone) return;
   if (!bookingForm.value.date) return;
@@ -273,7 +271,6 @@ const handleConfirm = async () => {
   try {
     await confirmBooking.execute(editingBookingId.value);
     ElMessage.success('Xác nhận thành công');
-    // Theo workflow: trạng thái Pending -> Confirmed, refresh lại lịch
     events.value = await getBookingEvents.execute();
     dialogVisible.value = false;
   } catch (e: any) {

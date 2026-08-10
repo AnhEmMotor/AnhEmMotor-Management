@@ -1,6 +1,5 @@
 <template>
   <div class="resp-page contract-preview-container">
-    <!-- Modern Page Header -->
     <ReportPageHeader
       title="Chi tiết hợp đồng mua xe"
       description="Kiểm tra thông tin, in hợp đồng và lưu bản quét có chữ ký của khách hàng."
@@ -45,7 +44,6 @@
       </template>
     </ReportPageHeader>
 
-    <!-- KPI Cards Row -->
     <div class="reporting-kpi-grid mb-4">
       <ArtStatsCard
         title="Số hợp đồng"
@@ -77,14 +75,11 @@
       />
     </div>
 
-    <!-- Progress Pipeline -->
     <el-card shadow="never" class="mb-4 pipeline-card">
       <div class="text-sm text-gray-500 mb-4 font-medium">Trạng thái vòng đời hợp đồng</div>
 
       <div class="pipeline-steps-wrapper relative flex w-full">
-        <!-- Track line nền xám -->
         <div class="pipeline-track-bg absolute top-4 left-[10%] right-[10%] h-0.5 z-0"></div>
-        <!-- Track line đỏ tiến trình -->
         <div
           class="pipeline-track-active absolute top-4 left-[10%] h-0.5 z-0 transition-all duration-700"
           :style="{ width: `${activeStep * 20}%` }"
@@ -95,7 +90,6 @@
           :key="index"
           class="flex-1 flex flex-col items-center relative z-10"
         >
-          <!-- Circle bọc bằng class riêng step-circle để tránh bị override -->
           <div
             class="step-circle w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 transition-all duration-300"
             :class="[
@@ -148,9 +142,7 @@
       </div>
     </el-card>
 
-    <!-- Split-Screen / Preview Mode -->
     <el-row :gutter="16" class="contract-document-layout">
-      <!-- Cột bên trái: Form nhập liệu & upload -->
       <el-col :xs="24" :sm="24" :md="10" class="form-column">
         <el-card shadow="never" class="form-card reporting-card">
           <template #header>
@@ -195,7 +187,6 @@
 
           <el-divider />
 
-          <!-- Khu vực Tải lên Pháp lý (Upload Zone) -->
           <div v-loading="isUploading" class="upload-zone mt-4">
             <div class="flex items-center gap-2 mb-2">
               <el-icon class="text-report-red text-lg"><UploadFilled /></el-icon>
@@ -233,7 +224,6 @@
         </el-card>
       </el-col>
 
-      <!-- Cột bên phải: Trình xem trước (Preview) -->
       <el-col :xs="24" :sm="24" :md="14" class="preview-column">
         <el-card shadow="never" class="preview-card reporting-card">
           <div class="preview-toolbar p-2 bg-gray-200 border-b flex justify-between items-center">

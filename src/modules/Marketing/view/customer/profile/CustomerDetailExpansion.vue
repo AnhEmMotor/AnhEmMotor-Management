@@ -2,7 +2,6 @@
   <div
     class="resp-page lead-detail-expansion bg-gray-50/50 dark:bg-slate-950 p-6 border-t border-gray-100 dark:border-slate-700 shadow-inner"
   >
-    <!-- Thể hiện lỗi thân thiện khi API 360 bị lỗi 404/500 -->
     <div
       v-if="error"
       class="bg-white dark:bg-slate-900 rounded-3xl p-8 text-center border border-gray-100 dark:border-slate-800 shadow-sm flex flex-col items-center justify-center min-h-[200px]"

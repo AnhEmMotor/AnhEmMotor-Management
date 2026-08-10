@@ -23,7 +23,6 @@
       </template>
     </ReportPageHeader>
 
-    <!-- KPI TẦNG 1 -->
     <div class="reporting-kpi-grid">
       <ArtStatsCard
         title="Tổng số HĐ Bán xe"
@@ -64,13 +63,11 @@
       class="mt-4"
     />
 
-    <!-- TẦNG 2: BIỂU ĐỒ TRẠNG THÁI TỔNG THỂ FULL-WIDTH -->
     <ElCard v-loading="isLoading" class="reporting-card mt-4">
       <template #header>Trạng thái hợp đồng</template>
       <div ref="trendChartRef" class="reporting-chart"></div>
     </ElCard>
 
-    <!-- TẦNG 3: TRẠNG THÁI THEO TỪNG LOẠI HỢP ĐỒNG -->
     <div class="reporting-section-grid two-columns mt-4">
       <ElCard class="reporting-card">
         <template #header>Hợp đồng mua bán</template>
@@ -82,7 +79,6 @@
       </ElCard>
     </div>
 
-    <!-- TẦNG 4: BẢNG DỮ LIỆU CHI TIẾT -->
     <ElCard class="reporting-card mt-4">
       <template #header>
         <div class="contract-list-header">
@@ -688,7 +684,6 @@ function formatNumber(val: number) {
   }
 }
 
-/* Custom icon colors */
 .bg-report-blue {
   @apply bg-blue-500/10 text-blue-500;
 }

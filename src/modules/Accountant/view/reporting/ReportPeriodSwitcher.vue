@@ -115,7 +115,6 @@ function select(value: string | number | boolean | undefined) {
 }
 
 :deep(.el-radio-button__original-radio:checked + .el-radio-button__inner) {
-  /* color, background, and border handled by reporting.scss */
 }
 
 :deep(.el-input__wrapper) {

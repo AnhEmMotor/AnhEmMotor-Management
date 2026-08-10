@@ -1,6 +1,5 @@
 <template>
   <div class="resp-page sales-report-page">
-    <!-- Filter Bar -->
     <div class="filter-bar">
       <div class="filter-bar__left">
         <ElSelect
@@ -52,7 +51,6 @@
         </ElButton>
       </div>
     </div>
-    <!-- KPI Cards -->
     <div class="kpi-grid">
       <div class="kpi-card kpi-card--revenue">
         <div class="kpi-card__icon">
@@ -140,9 +138,7 @@
       </div>
     </div>
 
-    <!-- Charts Section -->
     <div class="charts-grid">
-      <!-- Revenue Trend Chart -->
       <ElCard class="chart-card">
         <template #header>
           <div class="chart-card__header">
@@ -152,7 +148,6 @@
         <div ref="trendChartRef" class="chart-container"></div>
       </ElCard>
 
-      <!-- Revenue Structure Pie Chart -->
       <ElCard class="chart-card">
         <template #header>
           <div class="chart-card__header">
@@ -163,9 +158,7 @@
       </ElCard>
     </div>
 
-    <!-- Top Rankings -->
     <div class="rankings-grid">
-      <!-- Top 5 Motorbikes -->
       <ElCard class="ranking-card">
         <template #header>
           <div class="ranking-card__header">
@@ -188,7 +181,6 @@
         </ElTable>
       </ElCard>
 
-      <!-- Top 5 Parts -->
       <ElCard class="ranking-card">
         <template #header>
           <div class="ranking-card__header">
@@ -211,7 +203,6 @@
         </ElTable>
       </ElCard>
 
-      <!-- Top 3 Employees -->
       <ElCard class="ranking-card">
         <template #header>
           <div class="ranking-card__header">
@@ -245,7 +236,6 @@
       </ElCard>
     </div>
 
-    <!-- Detailed Data Table -->
     <ElCard class="detail-card">
       <template #header>
         <div class="detail-card__header">
@@ -311,7 +301,6 @@
       </div>
     </ElCard>
 
-    <!-- Detail Drawer -->
     <ElDrawer v-model="drawerVisible" title="Chi tiết doanh thu ngày" size="40%">
       <div v-if="drawerData" class="drawer-detail">
         <div class="drawer-detail__header">
@@ -397,21 +386,17 @@ import type {
 
 defineOptions({ name: 'SalesReport' });
 
-// Filter state
 const filterBranch = ref('all');
 const filterPeriod = ref('month');
 const filterCategory = ref('all');
 
-// Table state
 const tableSearch = ref('');
 const tablePage = ref(1);
 const tablePageSize = ref(10);
 
-// Drawer state
 const drawerVisible = ref(false);
 const drawerData = ref<any>(null);
 
-// Chart refs
 const trendChartRef = ref<HTMLElement | null>(null);
 const pieChartRef = ref<HTMLElement | null>(null);
 let trendChart: echarts.ECharts | null = null;
@@ -437,7 +422,6 @@ const topParts = ref<any[]>([]);
 
 const topEmployees = ref<any[]>([]);
 
-// Detail data for table
 const detailData = ref<any[]>([]);
 
 const filteredDetailData = computed(() => {
@@ -511,7 +495,6 @@ function handleSizeChange() {
 }
 
 function handlePageChange() {
-  // handled by v-model
 }
 
 function handleViewDetail(row: any) {

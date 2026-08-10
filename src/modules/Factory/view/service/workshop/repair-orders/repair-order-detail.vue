@@ -40,13 +40,10 @@
       </div>
     </div>
 
-    <!-- Main Content -->
     <div v-loading="loading">
       <ElRow :gutter="20" v-if="order">
-        <!-- Left Column -->
         <ElCol :span="8">
           <div class="flex flex-col gap-4">
-            <!-- Tiến độ -->
             <div class="bg-white rounded-xl border border-gray-100 p-5">
               <h3 class="text-sm font-bold m-0 mb-4 text-slate-800">Tiến độ quy trình</h3>
               <ElSteps :active="currentStepIndex" direction="vertical" class="mt-2">
@@ -59,7 +56,6 @@
               </ElSteps>
             </div>
 
-            <!-- ── Phân công kỹ thuật viên (inline) ── -->
             <div
               class="bg-white rounded-xl border border-gray-100 p-5"
               v-if="calculatedStatus !== 'Completed'"
@@ -83,7 +79,6 @@
                 </ElTag>
               </div>
 
-              <!-- Người đang phụ trách -->
               <div
                 v-if="currentTechnicianName"
                 class="flex items-center gap-3 mb-4 p-3 bg-amber-50 border border-amber-100 rounded-xl"
@@ -104,7 +99,6 @@
                 Chưa có kỹ thuật viên nào được giao phiếu này.
               </div>
 
-              <!-- Quick-assign form -->
               <ElForm label-position="top" :disabled="submitting">
                 <ElFormItem label="Chọn / Thay đổi kỹ thuật viên">
                   <ElSelect
@@ -137,7 +131,6 @@
               </ElForm>
             </div>
 
-            <!-- KTV khi đã hoàn tất -->
             <div
               class="bg-white rounded-xl border border-gray-100 p-5"
               v-else-if="currentTechnicianName"
@@ -158,7 +151,6 @@
               </div>
             </div>
 
-            <!-- Thông tin xe & khách -->
             <div class="bg-white rounded-xl border border-gray-100 p-5">
               <h3 class="text-sm font-bold m-0 mb-4 text-slate-800">Thông tin Khách hàng & Xe</h3>
               <ElDescriptions :column="1" border size="small">
@@ -184,7 +176,6 @@
               </ElDescriptions>
             </div>
 
-            <!-- Ghi chú -->
             <div class="bg-white rounded-xl border border-gray-100 p-5">
               <h3 class="text-sm font-bold m-0 mb-4 text-slate-800">Triệu chứng & Lỗi ghi nhận</h3>
               <div
@@ -196,10 +187,8 @@
           </div>
         </ElCol>
 
-        <!-- Right Column -->
         <ElCol :span="16">
           <div class="flex flex-col gap-4">
-            <!-- Phase 2: Hạng mục & Vật tư -->
             <div
               class="bg-white rounded-xl border border-gray-100 p-5"
               v-if="calculatedStatus === 'InProgress' || calculatedStatus === 'QcPending'"
@@ -310,7 +299,6 @@
                 </div>
               </div>
 
-              <!-- Action buttons -->
               <div
                 class="flex justify-end gap-3 mt-5 pt-4 border-t"
                 v-if="calculatedStatus === 'InProgress'"
@@ -328,7 +316,6 @@
               </div>
             </div>
 
-            <!-- Phase 3: QC & Checkout -->
             <div
               v-if="calculatedStatus === 'QcPending'"
               class="bg-white rounded-xl border border-gray-100 p-5"
@@ -472,7 +459,6 @@
       </ElRow>
     </div>
 
-    <!-- Edit Dialog -->
     <ElDialog v-model="editDialogVisible" title="Chỉnh sửa phiếu sửa chữa" width="500px">
       <ElForm :model="editForm" label-width="120px" class="space-y-4" :disabled="submitting">
         <ElFormItem label="Số KM hiện tại">
@@ -518,7 +504,6 @@
       </template>
     </ElDialog>
 
-    <!-- Assign Dialog -->
     <ElDialog v-model="assignDialogVisible" title="Phân công Kỹ thuật viên" width="400px">
       <ElForm :model="assignForm" label-position="top" :disabled="submitting">
         <ElFormItem label="Chọn kỹ thuật viên">
@@ -540,7 +525,6 @@
       </template>
     </ElDialog>
 
-    <!-- Parts Dialog -->
     <ElDialog v-model="partsDialogVisible" title="Thêm phụ tùng" width="500px">
       <ElForm label-position="top">
         <ElFormItem label="Chọn phụ tùng">
@@ -562,7 +546,6 @@
       </template>
     </ElDialog>
 
-    <!-- Services Dialog -->
     <ElDialog v-model="servicesDialogVisible" title="Thêm dịch vụ" width="500px">
       <ElForm label-position="top">
         <ElFormItem label="Chọn dịch vụ">
@@ -690,7 +673,6 @@ const loadOrderDetail = async () => {
   try {
     const res = await RepairOrderApi.getDetail(orderId);
     order.value = res;
-    // Attempt to parse partsJson
     const itemsList: LocalItem[] = [];
     if (res.partsJson) {
       try {
@@ -737,7 +719,6 @@ const loadOrderDetail = async () => {
       }
     }
     localItems.value = itemsList;
-    // Pre-populate assign form with current technician
     assignForm.value.technicianId = (res as any).technicianId || undefined;
   } catch (err: any) {
     ElMessage.error(err?.message || 'Không thể tải thông tin phiếu');
@@ -746,7 +727,6 @@ const loadOrderDetail = async () => {
   }
 };
 
-// --- EDIT DIALOG ---
 const editDialogVisible = ref(false);
 const editForm = ref({
   mileage: 0,
@@ -801,7 +781,6 @@ const technicians = ref<EmployeeResponse[]>([]);
 const loadingTechnicians = ref(false);
 
 const currentTechnicianName = computed(() => {
-  // Nếu có technicianName từ API (order) và user chưa đổi KTV khác
   if (order.value && (order.value as any).technicianName) {
     if (assignForm.value.technicianId !== (order.value as any).technicianId) {
       const foundLocally = technicians.value.find((t) => t.id === assignForm.value.technicianId);
@@ -810,7 +789,6 @@ const currentTechnicianName = computed(() => {
     return (order.value as any).technicianName;
   }
 
-  // Fallback tìm trong local (dùng khi form đang mở và user chọn)
   if (!assignForm.value.technicianId) return '';
   const found = technicians.value.find((t) => t.id === assignForm.value.technicianId);
   return found?.fullName || '';
@@ -874,7 +852,6 @@ const submitAssign = async () => {
   }
 };
 
-// --- PARTS & SERVICES DIALOGS ---
 const partsDialogVisible = ref(false);
 const selectedPartId = ref<number | undefined>(undefined);
 const availableParts = ref<any[]>([]);
@@ -903,7 +880,7 @@ const confirmAddService = () => {
       id: srv.id,
       name: srv.name,
       count: 1,
-      price: 0, // Nhập giá thủ công hoặc lấy mặc định nếu có
+      price: 0, 
       notes: '',
     });
   }

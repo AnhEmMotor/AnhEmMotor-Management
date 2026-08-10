@@ -109,7 +109,6 @@ async function load() {
       }
     }
   } catch {
-    // silent fallback
   }
 }
 

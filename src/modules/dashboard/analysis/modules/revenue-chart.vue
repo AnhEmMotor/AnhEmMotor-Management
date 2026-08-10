@@ -1,7 +1,6 @@
 <template>
   <div class="art-card p-5 mb-5">
     <ElRow :gutter="20">
-      <!-- Biểu đồ -->
       <ElCol :xl="18" :lg="16" :md="24" :sm="24" :xs="24">
         <h4 class="m-0 mb-4 font-bold text-lg">BIỂU ĐỒ DOANH THU CHÍNH</h4>
         <div style="height: 300px">
@@ -16,7 +15,6 @@
         </div>
       </ElCol>
 
-      <!-- 3 con số tóm tắt -->
       <ElCol
         :xl="6"
         :lg="8"
@@ -60,12 +58,10 @@ const props = defineProps({
   },
 });
 
-// Mock data based on period
 const xAxisData = computed(() => {
   if (props.period === 'today') {
     return ['8h', '10h', '12h', '14h', '16h', '18h'];
   }
-  // month
   return Array.from({ length: 30 }, (_, i) => (i + 1).toString());
 });
 
@@ -74,11 +70,10 @@ const chartData = computed(() => {
     return [
       {
         name: 'Doanh thu',
-        data: [15, 22, 10, 25, 30, 18], // Triệu đồng
+        data: [15, 22, 10, 25, 30, 18], 
       },
     ];
   }
-  // month
   return [
     {
       name: 'Doanh thu',

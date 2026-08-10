@@ -1,15 +1,12 @@
 <template>
   <div class="resp-page voucher-detail-page flex flex-col gap-5 pb-10">
-    <!-- Loading -->
     <div v-if="loading" class="flex items-center justify-center py-20">
       <ElSkeleton :rows="6" animated />
     </div>
 
-    <!-- Error -->
     <ElEmpty v-else-if="!voucher" description="Không tìm thấy thông tin voucher" />
 
     <template v-else>
-      <!-- ── Header card ── -->
       <div
         class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-5"
       >
@@ -34,7 +31,6 @@
           </ElTag>
         </div>
 
-        <!-- KPI Row -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div class="kpi-card bg-gray-50 dark:bg-slate-800 rounded-xl p-3 text-center">
             <div class="text-xs text-gray-500 dark:text-slate-400 mb-1">Mức giảm</div>
@@ -74,9 +70,7 @@
         </div>
       </div>
 
-      <!-- ── Content grid ── -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <!-- Cấu hình áp dụng -->
         <div
           class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-5"
         >
@@ -162,7 +156,6 @@
           </div>
         </div>
 
-        <!-- Thời gian hiệu lực -->
         <div
           class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-5"
         >
@@ -174,7 +167,6 @@
           </h3>
 
           <div class="flex flex-col gap-3">
-            <!-- Start -->
             <div
               class="detail-row flex items-center justify-between py-2.5 border-b border-gray-50 dark:border-slate-800"
             >
@@ -191,7 +183,6 @@
               }}</span>
             </div>
 
-            <!-- End -->
             <div
               class="detail-row flex items-center justify-between py-2.5 border-b border-gray-50 dark:border-slate-800"
             >
@@ -217,7 +208,6 @@
               </span>
             </div>
 
-            <!-- Progress bar -->
             <div class="py-3">
               <div class="flex justify-between text-xs text-gray-400 mb-1.5">
                 <span>Tiến độ</span>
@@ -232,7 +222,6 @@
               </div>
             </div>
 
-            <!-- Countdown -->
             <div
               v-if="!isExpired && !isUpcoming"
               class="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-3 flex items-center gap-2"
@@ -258,7 +247,6 @@
               >
             </div>
 
-            <!-- Created -->
             <div class="flex items-center justify-between pt-1">
               <span class="text-xs text-gray-400 dark:text-slate-500">Ngày tạo</span>
               <span class="text-xs text-gray-500 dark:text-slate-400">
@@ -269,7 +257,6 @@
         </div>
       </div>
 
-      <!-- ── Private: Assigned Customers ── -->
       <div
         v-if="voucher.type === 'PRIVATE'"
         class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-5"
@@ -341,7 +328,6 @@ interface VoucherDetail {
 const loading = ref(true);
 const voucher = ref<VoucherDetail | null>(null);
 
-// ─── Helpers ──────────────────────────────────────────────
 const formatCurrency = (val?: number) => {
   if (!val && val !== 0) return '0đ';
   return new Intl.NumberFormat('vi-VN', {
@@ -351,7 +337,6 @@ const formatCurrency = (val?: number) => {
 };
 const formatDateTime = (val: string) => dayjs(val).format('DD/MM/YYYY HH:mm');
 
-// ─── Time computed ─────────────────────────────────────────
 const isExpired = computed(() =>
   voucher.value ? dayjs().isAfter(dayjs(voucher.value.validTo)) : false
 );
@@ -380,7 +365,6 @@ const progressLabel = computed(() => {
   return `${progressPercent.value}% đã qua`;
 });
 
-// ─── Status tag ────────────────────────────────────────────
 const statusTag = computed(() => {
   if (isUpcoming.value)
     return {
@@ -401,7 +385,6 @@ const statusTag = computed(() => {
   };
 });
 
-// ─── ApplyFor / Channel config ─────────────────────────────
 const applyForConfig = computed(() => {
   switch (voucher.value?.applyFor) {
     case 'VEHICLE':
@@ -447,11 +430,9 @@ const channelConfig = computed(() => {
   }
 });
 
-// ─── Navigation ────────────────────────────────────────────
 const goBack = () => router.push('/Marketing/customer/voucher');
 const goEdit = () => router.push(`/Marketing/customer/voucher/save?id=${voucher.value?.id}`);
 
-// ─── Data fetch ────────────────────────────────────────────
 onMounted(async () => {
   const id = Number(route.params.id);
   if (!id) {

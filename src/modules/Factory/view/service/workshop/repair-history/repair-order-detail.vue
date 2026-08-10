@@ -2,7 +2,6 @@
   <div
     class="resp-page repair-order-detail-page flex flex-col min-h-screen bg-[#F8FAFC] font-inter text-[#0F172A]"
   >
-    <!-- Header -->
     <div class="bg-white border-b border-slate-200 px-8 py-5 shrink-0 shadow-sm relative z-20">
       <div class="flex justify-between items-center max-w-[1400px] mx-auto">
         <div class="flex items-center gap-5">
@@ -43,12 +42,9 @@
       </div>
     </div>
 
-    <!-- Main Container -->
     <div class="flex-1 max-w-[1400px] mx-auto w-full p-6" v-loading="loading">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6" v-if="order">
-        <!-- Left Side: Basic Info & Steps Workflow -->
         <div class="lg:col-span-1 space-y-6">
-          <!-- Stepper Workflow -->
           <div class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-6">
             <h3 class="text-[10px] font-black uppercase text-slate-400 tracking-wider m-0">
               Tiến độ quy trình
@@ -56,7 +52,6 @@
 
             <div class="relative pl-6 border-l-2 border-slate-100 space-y-6">
               <div v-for="step in steps" :key="step.status" class="relative">
-                <!-- Dot Indicator -->
                 <div
                   class="absolute -left-[31px] top-0 size-4 rounded-full border-2 flex-cc transition-all"
                   :class="getStepDotClass(step.status)"
@@ -81,7 +76,6 @@
             </div>
           </div>
 
-          <!-- Customer & Vehicle Info -->
           <div class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-4">
             <h3 class="text-[10px] font-black uppercase text-slate-400 tracking-wider m-0">
               Thông tin khách hàng & Xe
@@ -117,7 +111,6 @@
             </div>
           </div>
 
-          <!-- Description of failure -->
           <div class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-3">
             <h3 class="text-[10px] font-black uppercase text-slate-400 tracking-wider m-0">
               Triệu chứng & Lỗi ghi nhận
@@ -138,9 +131,7 @@
           </div>
         </div>
 
-        <!-- Right Side: Workflow actions based on state -->
         <div class="lg:col-span-2 space-y-6">
-          <!-- Phase 1: Assign Technician -->
           <div
             v-if="order.status === 'Pending'"
             class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-5"
@@ -179,7 +170,6 @@
             </div>
           </div>
 
-          <!-- Phase 2: Add Services & Parts / Sửa chữa -->
           <div
             v-if="order.status === 'InProgress' || order.status === 'QcPending'"
             class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-5"
@@ -210,7 +200,6 @@
               </div>
             </div>
 
-            <!-- Services & Parts Table -->
             <div class="border border-slate-100 rounded-2xl overflow-hidden">
               <table class="w-full text-xs border-collapse">
                 <thead>
@@ -226,7 +215,6 @@
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
-                  <!-- Services -->
                   <tr
                     v-for="(srv, index) in localServices"
                     :key="'srv-' + index"
@@ -271,7 +259,6 @@
                     </td>
                   </tr>
 
-                  <!-- Parts -->
                   <tr
                     v-for="(part, index) in localParts"
                     :key="'part-' + index"
@@ -332,7 +319,6 @@
               </table>
             </div>
 
-            <!-- Cost Summary -->
             <div class="flex justify-end pt-2">
               <div class="w-72 space-y-2 text-xs">
                 <div class="flex justify-between text-slate-500">
@@ -352,7 +338,6 @@
               </div>
             </div>
 
-            <!-- Actions -->
             <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
               <button
                 @click="saveIssueParts('InProgress')"
@@ -373,7 +358,6 @@
             </div>
           </div>
 
-          <!-- Phase 3: QC & Checkout / Bàn giao xe -->
           <div
             v-if="order.status === 'QcPending'"
             class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-5"
@@ -446,7 +430,6 @@
             </div>
           </div>
 
-          <!-- Phase 4: Completed details -->
           <div
             v-if="order.status === 'Completed'"
             class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-4"
@@ -496,7 +479,6 @@
               </div>
             </div>
 
-            <!-- Items Table in Locked State -->
             <div class="border border-slate-100 rounded-2xl overflow-hidden mt-5">
               <table class="w-full text-xs border-collapse">
                 <thead>
@@ -556,8 +538,6 @@
       </div>
     </div>
 
-    <!-- Dialogs -->
-    <!-- Service Search Dialog -->
     <ElDialog
       v-model="serviceDialogVisible"
       title="Thêm dịch vụ bảo trì"
@@ -605,7 +585,6 @@
       </div>
     </ElDialog>
 
-    <!-- Parts Search Dialog -->
     <ElDialog
       v-model="partsDialogVisible"
       title="Thêm phụ tùng"
@@ -659,7 +638,6 @@
       </div>
     </ElDialog>
 
-    <!-- Printable Invoice Template Dialog -->
     <ElDialog
       v-model="printInvoiceVisible"
       title="In Hóa Đơn Dịch Vụ"
@@ -794,16 +772,13 @@ const loading = ref(false);
 const submitting = ref(false);
 const order = ref<any>(null);
 
-// Selection options
 const technicians = ref<EmployeeResponse[]>([]);
 const selectedTechId = ref<number | null>(null);
 
-// Dialogs visible
 const serviceDialogVisible = ref(false);
 const partsDialogVisible = ref(false);
 const printInvoiceVisible = ref(false);
 
-// Services & Parts lists
 const servicesCatalog = ref<ServiceResponse[]>([]);
 const partsCatalog = ref<any[]>([]);
 
@@ -813,7 +788,6 @@ const partsSearch = ref('');
 const localServices = ref<any[]>([]);
 const localParts = ref<any[]>([]);
 
-// Checkout fields
 const paymentMethod = ref('Cash');
 const paymentStatus = ref('Paid');
 const checkoutNotes = ref('');
@@ -841,7 +815,6 @@ const steps = [
   },
 ];
 
-// Computed totals
 const totalLaborCost = computed(() => {
   return localServices.value.reduce((acc, curr) => acc + (curr.laborCost || 0), 0);
 });
@@ -863,7 +836,6 @@ const loadOrderDetail = async () => {
     if (order.value) {
       selectedTechId.value = order.value.technicianId || null;
 
-      // Load details into local working state
       localServices.value = (order.value.details || [])
         .filter((d: any) => d.type === 'Service')
         .map((d: any) => ({
@@ -894,11 +866,9 @@ const loadOrderDetail = async () => {
 
 const loadCatalogs = async () => {
   try {
-    // Load technicians
     const resTech = await EmployeeApi.getList();
     technicians.value = resTech || [];
 
-    // Load services (endpoint may not exist in backend yet — soft fail)
     try {
       const resSrv = await ServiceApi.getList({ size: 100 });
       servicesCatalog.value = resSrv.items || [];
@@ -906,7 +876,6 @@ const loadCatalogs = async () => {
       servicesCatalog.value = [];
     }
 
-    // Load product variants (FIFO output)
     const resParts = await ProductApi.getVariantsForOutput({ size: 100 });
     partsCatalog.value = resParts.items || [];
   } catch (e) {
@@ -919,7 +888,6 @@ onMounted(() => {
   loadCatalogs();
 });
 
-// Assign technician (Move to InProgress)
 const assignTechnician = async () => {
   if (!selectedTechId.value) return;
   submitting.value = true;
@@ -937,7 +905,6 @@ const assignTechnician = async () => {
   }
 };
 
-// Services Dialog
 const openServiceDialog = () => {
   serviceSearch.value = '';
   serviceDialogVisible.value = true;
@@ -950,7 +917,6 @@ const filteredServices = computed(() => {
 });
 
 const addServiceItem = (srv: ServiceResponse) => {
-  // Check duplicate
   if (localServices.value.some((s) => s.serviceId === srv.id)) {
     ElMessage.warning('Dịch vụ này đã có trong danh sách');
     return;
@@ -968,7 +934,6 @@ const removeService = (index: number) => {
   localServices.value.splice(index, 1);
 };
 
-// Parts Dialog
 const openPartsDialog = () => {
   partsSearch.value = '';
   partsDialogVisible.value = true;
@@ -981,7 +946,6 @@ const filteredParts = computed(() => {
 });
 
 const addPartItem = (part: any) => {
-  // Check duplicate
   if (localParts.value.some((p) => p.productVariantId === part.id)) {
     ElMessage.warning('Phụ tùng này đã có trong danh sách');
     return;
@@ -1000,7 +964,6 @@ const removePart = (index: number) => {
   localParts.value.splice(index, 1);
 };
 
-// Save parts & services
 const saveIssueParts = async (targetStatus: 'InProgress' | 'QcPending') => {
   submitting.value = true;
   try {
@@ -1034,7 +997,6 @@ const saveIssueParts = async (targetStatus: 'InProgress' | 'QcPending') => {
   }
 };
 
-// Complete checkout
 const completeRepairOrder = async () => {
   submitting.value = true;
   try {
@@ -1053,7 +1015,6 @@ const completeRepairOrder = async () => {
   }
 };
 
-// Invoices print
 const openPrintInvoice = () => {
   printInvoiceVisible.value = true;
 };
@@ -1089,7 +1050,7 @@ const doPrint = () => {
               .space-y-2 > * { margin-bottom: 8px; }
               .space-y-1.5 > * { margin-bottom: 6px; }
             }
-          </style>
+</style>
         </head>
         <body>
           ${printContent.innerHTML}
@@ -1110,7 +1071,6 @@ const goBack = () => {
   router.push('/factory/workshop/repair-history');
 };
 
-// Helper formatting functions
 const formatCurrency = (val: number) => {
   if (!val) return '0đ';
   return new Intl.NumberFormat('vi-VN', {
@@ -1131,7 +1091,6 @@ const formatDate = (dateStr: string) => {
   });
 };
 
-// Stepper workflow helper classes
 const isStepActive = (status: string) => {
   if (!order.value) return false;
   const statusOrder = ['Pending', 'InProgress', 'QcPending', 'Completed'];

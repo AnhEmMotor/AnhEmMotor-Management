@@ -272,36 +272,6 @@
             }}
           </template>
         </ElTableColumn>
-        <!-- <ElTableColumn
-          prop="targetSales"
-          label="Mục tiêu"
-          min-width="150"
-          align="right"
-        >
-          <template #default="{ row }">
-            {{
-              row.targetSales > 0
-                ? formatCurrency(row.targetSales)
-                : "Chưa giao"
-            }}
-          </template>
-        </ElTableColumn>
-        <ElTableColumn label="Tiến độ KPI" min-width="180">
-          <template #default="{ row }">
-            <div
-              v-if="row.targetSales > 0"
-              class="employee-report__progress-cell"
-            >
-              <ElProgress
-                :percentage="Math.min(getAchievementRate(row), 130)"
-                :stroke-width="8"
-                :show-text="false"
-              />
-              <span>{{ formatPercent(getAchievementRate(row)) }}</span>
-            </div>
-            <span v-else class="reporting-muted">Chưa có mục tiêu</span>
-          </template>
-        </ElTableColumn> -->
         <ElTableColumn
           prop="commissionPaid"
           label="Hoa hồng được duyệt"
@@ -320,31 +290,12 @@
               <ElTag :type="row.hasSalesData ? 'success' : 'info'" effect="plain" size="small">
                 Đơn hàng
               </ElTag>
-              <!-- <ElTag
-                :type="row.hasKpiData ? 'success' : 'info'"
-                effect="plain"
-                size="small"
-              >
-                KPI
-              </ElTag> -->
               <ElTag :type="row.hasCommissionData ? 'success' : 'info'" effect="plain" size="small">
                 Hoa hồng
               </ElTag>
             </div>
           </template>
         </ElTableColumn>
-        <!-- <ElTableColumn
-          prop="kpiStatus"
-          label="Trạng thái KPI"
-          min-width="150"
-          align="center"
-        >
-          <template #default="{ row }">
-            <ElTag :type="getKpiTagType(row.kpiStatus)" effect="light" round>
-              {{ row.kpiStatus }}
-            </ElTag>
-          </template>
-        </ElTableColumn> -->
       </ElTable>
     </ElCard>
   </div>

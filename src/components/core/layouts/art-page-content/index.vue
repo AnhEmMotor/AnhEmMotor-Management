@@ -33,7 +33,6 @@
       </Transition>
     </RouterView>
 
-    <!-- Global Footer -->
     <div
       class="flex items-center justify-center py-6 mt-4 text-sm text-gray-500 dark:text-gray-400 gap-2"
     >

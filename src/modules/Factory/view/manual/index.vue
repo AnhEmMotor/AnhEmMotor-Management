@@ -21,5 +21,4 @@ function goOverview() {
 </script>
 
 <style scoped lang="scss">
-/* section detail page styles */
 </style>

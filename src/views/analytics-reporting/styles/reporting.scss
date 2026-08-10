@@ -1,5 +1,4 @@
 .reporting-page {
-  // Light mode (default) - sử dụng Element Plus theme variables
   --report-bg: var(--el-bg-color-overlay);
   --report-panel: var(--el-bg-color-overlay);
   --report-panel-soft: var(--el-fill-color-light);
@@ -14,7 +13,6 @@
   --report-input-bg: var(--el-fill-color-blank);
   --report-radio-bg: var(--el-fill-color-blank);
 
-  // Element Plus color overrides for consistent red theme
   --el-color-primary: var(--report-red);
   --el-color-primary-light-3: #f26f6f;
   --el-color-primary-light-5: #f58f8f;

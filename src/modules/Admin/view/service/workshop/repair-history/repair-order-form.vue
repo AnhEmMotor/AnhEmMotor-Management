@@ -2,7 +2,6 @@
   <div
     class="resp-page repair-order-form-page flex flex-col min-h-screen bg-[#F8FAFC] font-inter text-[#0F172A]"
   >
-    <!-- Header -->
     <div class="bg-white border-b border-slate-200 px-8 py-5 shrink-0 shadow-sm relative z-20">
       <div class="flex justify-between items-center max-w-[1200px] mx-auto">
         <div class="flex items-center gap-5">
@@ -24,12 +23,9 @@
       </div>
     </div>
 
-    <!-- Form Area -->
     <div class="flex-1 max-w-[1200px] mx-auto w-full p-6">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Search & Customer Info -->
         <div class="lg:col-span-2 space-y-6">
-          <!-- Step 1: Tra cứu khách hàng -->
           <div class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-5">
             <h3
               class="text-sm font-black uppercase text-slate-800 tracking-wider m-0 flex items-center gap-2"
@@ -64,7 +60,6 @@
               </button>
             </div>
 
-            <!-- Vehicles Result List -->
             <div v-if="vehicles.length > 0" class="space-y-3 pt-2">
               <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider m-0">
                 Xe liên kết tìm thấy ({{ vehicles.length }}):
@@ -122,7 +117,6 @@
             </div>
           </div>
 
-          <!-- Step 2: Thông tin chi tiết khách & xe -->
           <div class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-6">
             <h3
               class="text-sm font-black uppercase text-slate-800 tracking-wider m-0 flex items-center gap-2"
@@ -192,7 +186,6 @@
           </div>
         </div>
 
-        <!-- Failure Details & Submit -->
         <div class="space-y-6">
           <div class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-5">
             <h3
@@ -293,7 +286,6 @@ const form = reactive({
   notes: '',
 });
 
-// Search customer vehicles by Phone Number
 const searchCustomer = async () => {
   const phone = searchPhone.value.trim();
   if (!phone) {
@@ -325,14 +317,12 @@ const searchCustomer = async () => {
   }
 };
 
-// Select a vehicle to prefill fields
 const selectVehicle = (vehicle: Vehicle) => {
   selectedVehicle.value = vehicle;
   form.customerName = vehicle.fullName;
   form.customerPhone = vehicle.phoneNumber;
 };
 
-// Create Repair Order
 const handleSubmit = async () => {
   if (!form.customerName.trim()) {
     ElMessage.warning('Vui lòng nhập họ và tên khách hàng');
@@ -361,7 +351,6 @@ const handleSubmit = async () => {
     const res = await RepairOrderApi.create(payload);
     ElMessage.success('Tạo phiếu tiếp nhận xe thành công!');
 
-    // Redirect to detail page
     const newId = res;
     router.push(`/admin/service/repair-history/repair/${newId}`);
   } catch (err: any) {

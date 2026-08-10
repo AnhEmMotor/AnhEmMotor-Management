@@ -1,6 +1,5 @@
 <template>
   <div class="resp-page hr-policy-container flex flex-col gap-4 h-full p-4">
-    <!-- Header -->
     <div class="flex items-center justify-between">
       <h1
         class="text-2xl font-bold uppercase text-gray-800 dark:text-gray-100 flex items-center gap-2"
@@ -12,7 +11,6 @@
       </ElButton>
     </div>
 
-    <!-- Department Tabs -->
     <ElTabs v-model="activeTab" class="department-tabs">
       <ElTabPane name="vehicle_sales">
         <template #label>
@@ -31,7 +29,6 @@
       </ElTabPane>
     </ElTabs>
 
-    <!-- FULL WIDTH: Policy List Grid -->
     <div class="list-container flex-1 overflow-y-auto">
       <div class="flex items-center justify-between mb-4">
         <span class="font-bold text-gray-800 dark:text-gray-200">
@@ -50,7 +47,6 @@
           :class="[getPolicyItemClass(policy)]"
           @click="selectPolicy(policy)"
         >
-          <!-- Status Ribbon -->
           <div
             class="absolute top-0 right-0 px-3 py-1 text-xs font-bold rounded-bl-lg"
             :class="getStatusRibbonClass(policy.status)"
@@ -297,8 +293,6 @@ const loadPolicies = async () => {
 };
 
 const handleReset = () => {
-  // pagination.current = 1;
-  // loadData();
 };
 const selectPolicy = (policy: any) => {
   router.push({

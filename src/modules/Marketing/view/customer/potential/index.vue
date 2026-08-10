@@ -230,7 +230,6 @@
             </div>
           </div>
         </div>
-        <!-- Pagination -->
         <div class="flex justify-end mt-4 px-4">
           <ElPagination
             v-model:current-page="pagination.current"

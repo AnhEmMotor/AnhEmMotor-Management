@@ -168,7 +168,6 @@
       </div>
     </el-card>
 
-    <!-- Create Contract Dialog -->
     <el-dialog
       v-model="dialogVisible"
       title="Thêm hợp đồng"
@@ -387,7 +386,6 @@ const loadStatistics = async () => {
     statistics.overdueCount = stats.overdueCount;
     statistics.signedCount = stats.signedCount;
   } catch (_e) {
-    // silent fail for stats
   }
 };
 

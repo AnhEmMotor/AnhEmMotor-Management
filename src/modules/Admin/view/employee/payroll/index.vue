@@ -23,7 +23,6 @@
     </section>
 
     <el-card shadow="never" class="reporting-card payroll-content-card">
-      <!-- KPI Summary Cards Grid -->
       <div
         class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-3 mb-4 reporting-kpi-grid payroll-kpi-grid"
       >
@@ -33,12 +32,6 @@
           icon="ri:money-dollar-circle-line"
           iconStyle="bg-primary"
         />
-        <!-- <ArtStatsCard
-          title="Tổng thưởng KPI"
-          :count="formatCurrency(stats.totalKpiBonus)"
-          icon="ri:gift-line"
-          iconStyle="bg-danger"
-        /> -->
         <ArtStatsCard
           title="Đã thanh toán"
           :count="formatCurrency(stats.paid)"
@@ -59,7 +52,6 @@
         />
       </div>
 
-      <!-- Search & Filters -->
       <div class="payroll-filter-panel mb-4">
         <div class="payroll-section-heading">
           <div>
@@ -83,7 +75,6 @@
         />
       </div>
 
-      <!-- Table Card -->
       <ElCard class="flex-1 art-table-card payroll-table-card">
         <div class="payroll-section-heading payroll-section-heading--table">
           <div>
@@ -147,20 +138,6 @@
             }}</span>
           </template>
 
-          <!-- <template #kpiBonus="{ row }">
-            <div class="payroll-bonus-cell">
-              <span class="payroll-money">{{
-                formatCurrency(getKpiBonus(row))
-              }}</span>
-              <ElTag
-                v-if="getKpiBonus(row) > 0"
-                type="danger"
-                size="small"
-                effect="light"
-                >Đạt KPI</ElTag
-              >
-            </div>
-          </template> -->
 
           <template #totalNetPayable="{ row }">
             <strong class="payroll-money payroll-money--total">{{
@@ -602,11 +579,6 @@ onMounted(() => {
   color: #ff8b8b;
 }
 
-// @media (width >= 1280px) {
-//   .payroll-kpi-grid :deep(> :first-child) {
-//     grid-column: span 2 / span 2;
-//   }
-// }
 
 @media (width <= 767px) {
   .hr-payroll-container {

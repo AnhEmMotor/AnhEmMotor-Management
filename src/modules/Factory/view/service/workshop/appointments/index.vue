@@ -20,7 +20,6 @@
       </div>
     </div>
 
-    <!-- KPI -->
     <div class="resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-4">
       <ArtStatsCard
         icon-style="bg-primary"
@@ -52,7 +51,6 @@
       />
     </div>
 
-    <!-- Search -->
     <ArtSearchBar
       :items="searchItems"
       :label-width="140"
@@ -137,7 +135,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Dialog: Create / Edit / Detail -->
     <ElDialog
       v-model="formDialogVisible"
       :title="
@@ -262,7 +259,6 @@
       </template>
     </ElDialog>
 
-    <!-- Dialog: Confirm -->
     <ElDialog
       v-model="confirmDialogVisible"
       title="Xác nhận lịch hẹn"
@@ -297,7 +293,6 @@
       </template>
     </ElDialog>
 
-    <!-- Dialog: Cancel (No-show) -->
     <ElDialog
       v-model="cancelDialogVisible"
       title="Hủy lịch hẹn"
@@ -344,7 +339,6 @@ const data = ref<BookingAppointment[]>([]);
 const columnChecks = ref<any[]>([]);
 const pagination = ref<any>({ current: 1, size: 10, total: 0 });
 
-// Form mode: "create" | "edit" | "detail"
 const formMode = ref<'create' | 'edit' | 'detail'>('create');
 
 const columns = computed(() => {
@@ -429,7 +423,6 @@ const getStatusText = (status: string) => {
   return map[status] || status;
 };
 
-// --- Search ---
 const searchItems = [
   {
     key: 'keyword',
@@ -522,7 +515,6 @@ const fetchData = async (params: any) => {
   }
 };
 
-// --- Form (Create / Edit / Detail) ---
 const formDialogVisible = ref(false);
 const isEdit = ref(false);
 const editId = ref<number | null>(null);
@@ -634,7 +626,6 @@ const submitForm = async () => {
   }
 };
 
-// --- Confirm ---
 const confirmDialogVisible = ref(false);
 const confirmRow = ref<BookingAppointment>({} as BookingAppointment);
 const confirmForm = ref({ appointmentAt: '' as string | null });
@@ -662,7 +653,6 @@ const submitConfirm = async () => {
   }
 };
 
-// --- Cancel (No-show) ---
 const cancelDialogVisible = ref(false);
 const cancelRow = ref<BookingAppointment>({} as BookingAppointment);
 const cancelForm = ref({ cancelReason: '' });
@@ -718,7 +708,6 @@ const goToWarranty = (row: BookingAppointment) => {
   });
 };
 
-// Initial load
 refreshData();
 </script>
 

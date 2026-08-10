@@ -1,6 +1,5 @@
 <template>
   <div class="resp-page p-4 statistics-container">
-    <!-- Header -->
     <div class="flex items-start justify-between gap-4 mb-6 flex-wrap">
       <div>
         <h1 class="text-2xl font-bold flex items-center gap-2">
@@ -29,7 +28,6 @@
       </div>
     </div>
 
-    <!-- Summary Cards Grid -->
     <div class="resp-stats-3 grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <ArtStatsCard
         icon="ri:money-dollar-circle-line"
@@ -57,9 +55,7 @@
       />
     </div>
 
-    <!-- Charts Section -->
     <div class="mb-6">
-      <!-- Monthly Sales Comparison Line Chart -->
       <ElCard class="hide-header-border" shadow="hover">
         <template #header>
           <div class="font-bold text-slate-800">Tình Hình Doanh Thu Theo Tuần</div>
@@ -76,7 +72,6 @@
       </ElCard>
     </div>
 
-    <!-- Status Breakdown Bar Chart -->
     <ElCard class="hide-header-border" shadow="hover">
       <template #header>
         <div class="font-bold text-slate-800">Biểu Đồ Trạng Thái Phiếu Sửa Chữa</div>

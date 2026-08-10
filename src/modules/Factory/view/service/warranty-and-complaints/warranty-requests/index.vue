@@ -1,6 +1,5 @@
 <template>
   <div class="resp-page p-6 bg-slate-50 min-h-screen">
-    <!-- Header -->
     <div
       class="flex items-center justify-between mb-6 flex-wrap gap-4 bg-white p-6 rounded-xl shadow-sm border border-slate-100"
     >
@@ -27,7 +26,6 @@
       </div>
     </div>
 
-    <!-- Filters & Actions -->
     <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 mb-6">
       <el-form :inline="true" :model="filters" class="flex flex-wrap gap-4 items-center">
         <el-form-item label="Tìm kiếm" class="mb-0">
@@ -65,7 +63,6 @@
       </el-form>
     </div>
 
-    <!-- Table List -->
     <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
       <el-table
         :data="tableData"
@@ -139,7 +136,6 @@
         </el-table-column>
       </el-table>
 
-      <!-- Pagination -->
       <div class="flex justify-end p-4 border-t border-slate-100">
         <el-pagination
           v-model:current-page="pagination.current"
@@ -153,7 +149,6 @@
       </div>
     </div>
 
-    <!-- Dialog / Drawer Tạo Mới Phiếu Bảo Hành -->
     <el-drawer
       v-model="drawerVisible"
       title="TẠO MỚI PHIẾU BẢO HÀNH"
@@ -168,7 +163,6 @@
         label-position="top"
         class="space-y-6"
       >
-        <!-- Nhóm 1: Thông tin khách hàng -->
         <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
           <h3
             class="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-4 flex items-center gap-2"
@@ -194,7 +188,6 @@
             </el-form-item>
           </div>
 
-          <!-- Lịch sử bảo hành của khách hàng -->
           <div
             v-if="customerHistory.length > 0"
             class="mt-4 p-3 bg-white rounded border border-slate-100"
@@ -212,7 +205,6 @@
           </div>
         </div>
 
-        <!-- Nhóm 2: Thông tin xe -->
         <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
           <h3
             class="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-4 flex items-center gap-2"
@@ -237,7 +229,6 @@
             </el-form-item>
           </div>
 
-          <!-- Lịch sử sửa chữa/bảo hành xe -->
           <div
             v-if="vehicleHistory.length > 0"
             class="mt-4 p-3 bg-white rounded border border-slate-100"
@@ -270,7 +261,6 @@
           </div>
         </div>
 
-        <!-- Nhóm 3: Kiểm tra thông số kỹ thuật bảo hành -->
         <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
           <h3
             class="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-4 flex items-center gap-2"
@@ -311,7 +301,6 @@
             </el-form-item>
           </div>
 
-          <!-- Kết quả thẩm định điều kiện bảo hành -->
           <div v-if="vehicleSearched" class="mt-4">
             <div
               v-if="isWarrantyValid"
@@ -363,7 +352,6 @@
           </div>
         </div>
 
-        <!-- Loại bảo hành -->
         <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
           <h3
             class="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-3 flex items-center gap-2"
@@ -377,7 +365,6 @@
           </el-radio-group>
         </div>
 
-        <!-- Nhóm 4: Thông tin tiếp nhận -->
         <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
           <h3
             class="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-4 flex items-center gap-2"
@@ -411,7 +398,6 @@
               />
             </el-form-item>
 
-            <!-- Nghiệp vụ linh kiện phụ tùng -->
             <div>
               <div class="flex items-center justify-between mb-2">
                 <span class="text-xs font-bold text-slate-700 uppercase tracking-wider"
@@ -512,7 +498,6 @@
               </el-table>
             </div>
 
-            <!-- Tổng chi phí -->
             <div
               class="mt-4 p-4 bg-white rounded-lg border border-slate-200 grid grid-cols-1 md:grid-cols-3 gap-4"
             >
@@ -588,7 +573,6 @@ import dayjs from 'dayjs';
 
 const router = useRouter();
 
-// Filters & State
 const loading = ref(false);
 const submitting = ref(false);
 const drawerVisible = ref(false);
@@ -626,7 +610,6 @@ const generateMockPlate = (id: number) => {
   return `29-${l1}${n1} ${String(p1).padStart(3, '0')}.${String(p2).padStart(2, '0')}`;
 };
 
-// Drawer states
 const technicians = ref<any[]>([]);
 const customerHistory = ref<any[]>([]);
 const vehicleHistory = ref<any[]>([]);
@@ -635,7 +618,6 @@ const isReadOnlyCustomer = ref(false);
 const selectedVehicleId = ref<number | null>(null);
 const warrantyType = ref<'standard' | 'exception'>('standard');
 
-// Form
 const form = reactive({
   customerPhone: '',
   customerName: '',
@@ -660,13 +642,11 @@ const form = reactive({
   }>,
 });
 
-// Part inline validation rules
 const partRules = {
   selectedVariantId: [{ required: true, message: 'Chọn phụ tùng', trigger: 'change' }],
   unitPrice: [{ required: true, message: 'Nhập đơn giá', trigger: 'blur' }],
 };
 
-// Form main validation rules
 const formRules = reactive<FormRules>({
   customerPhone: [
     { required: true, message: 'Vui lòng nhập số điện thoại', trigger: 'blur' },
@@ -701,7 +681,6 @@ const formRules = reactive<FormRules>({
   issueDescription: [{ required: true, message: 'Vui lòng nhập mô tả lỗi', trigger: 'blur' }],
 });
 
-// Computed properties
 const warrantyExpiryDate = computed(() => {
   if (!form.purchaseDate) return null;
   return dayjs(form.purchaseDate).add(form.warrantyPeriodMonths, 'month').toDate();
@@ -732,7 +711,6 @@ const totalPartsCost = computed(() => {
   }, 0);
 });
 
-// Methods
 const formatDate = (val: string) => {
   if (!val) return 'N/A';
   return dayjs(val).format('DD/MM/YYYY HH:mm');
@@ -770,7 +748,6 @@ const getStatusLabel = (status: string) => {
   return status;
 };
 
-// APIs integration
 async function loadData() {
   loading.value = true;
   try {
@@ -845,9 +822,7 @@ async function handleDelete(id: number) {
   }
 }
 
-// Dialog/Drawer Functions
 async function openCreateDrawer() {
-  // Clear form
   Object.assign(form, {
     customerPhone: '',
     customerName: '',
@@ -871,17 +846,14 @@ async function openCreateDrawer() {
   drawerVisible.value = true;
   void loadAvailableParts();
 
-  // Load employees
   try {
     const res = await EmployeeApi.getList();
-    // Filter technicians
     technicians.value = res || [];
   } catch (error) {
     console.error('Lỗi lấy danh sách nhân viên:', error);
   }
 }
 
-// Tra cứu theo SĐT
 let phoneTimeout: any = null;
 function handlePhoneInput() {
   if (phoneTimeout) clearTimeout(phoneTimeout);
@@ -900,7 +872,6 @@ function handlePhoneInput() {
         if (res && res.vehicle) {
           form.customerName = res.vehicle.fullName;
           isReadOnlyCustomer.value = true;
-          // Hiển thị danh sách xe của khách
           customerHistory.value = [res.vehicle];
         } else {
           isReadOnlyCustomer.value = false;
@@ -916,7 +887,6 @@ function handlePhoneInput() {
   }
 }
 
-// Tra cứu theo Biển số xe
 let plateTimeout: any = null;
 function handlePlateInput() {
   if (plateTimeout) clearTimeout(plateTimeout);
@@ -946,7 +916,6 @@ function handlePlateInput() {
           vehicleSearched.value = true;
 
           selectedVehicleId.value = res.vehicle.id;
-          // Lịch sử sửa chữa/bảo hành xe
           vehicleHistory.value = res.history || [];
           calculateWarrantyStatus();
         } else {
@@ -966,7 +935,6 @@ function handlePlateInput() {
 }
 
 function calculateWarrantyStatus() {
-  // Trigger update state computed
 }
 
 const availableParts = ref<any[]>([]);
@@ -995,7 +963,6 @@ function handlePartSelect(variantId: number, row: any) {
   }
 }
 
-// Parts management
 function addPart() {
   form.parts.push({
     selectedVariantId: undefined,
@@ -1022,7 +989,6 @@ function handlePartTypeChange(row: any) {
   row.total = row.unitPrice * row.quantity;
 }
 
-// Submit Form
 async function submitForm() {
   if (!formRef.value) return;
 
@@ -1037,7 +1003,6 @@ async function submitForm() {
       return;
     }
 
-    // Check điều kiện bảo hành
     if (!isWarrantyValid.value && !form.confirmExpiredWarranty) {
       ElMessageBox.alert(
         'Xe đã hết thời hạn bảo hành! Bạn phải tích chọn xác nhận tạo phiếu bảo hành ngoại lệ ở Nhóm 3 để tiếp tục.',
@@ -1052,7 +1017,6 @@ async function submitForm() {
 
     submitting.value = true;
     try {
-      // Map data to api (flatten based on quantity)
       const partsPayload: any[] = [];
       for (const p of form.parts) {
         const qty = p.quantity || 1;

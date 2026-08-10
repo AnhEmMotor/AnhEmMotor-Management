@@ -1,6 +1,5 @@
 <template>
   <div class="resp-page p-4 technicians-container">
-    <!-- Header -->
     <div class="flex items-start justify-between gap-4 mb-6 flex-wrap">
       <div>
         <h1 class="text-2xl font-bold flex items-center gap-2">
@@ -20,14 +19,12 @@
       </div>
     </div>
 
-    <!-- Tech Performance Grid -->
     <div v-loading="loading">
       <div v-if="techniciansList.length === 0" class="py-12 text-center text-slate-400">
         Chưa có dữ liệu hiệu suất nhân sự kỹ thuật.
       </div>
 
       <div v-else class="resp-cards-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Tech Card -->
         <ElCard
           v-for="tech in techniciansList"
           :key="tech.name"
@@ -35,7 +32,6 @@
           shadow="hover"
         >
           <div class="flex items-start gap-4">
-            <!-- Profile Avatar with Initial -->
             <ElAvatar :size="48" class="bg-primary-light text-primary font-bold text-lg">
               {{ tech.name.charAt(0) }}
             </ElAvatar>
@@ -50,7 +46,6 @@
             </div>
           </div>
 
-          <!-- Quick Metrics -->
           <div
             class="grid grid-cols-2 gap-4 my-5 py-3 px-4 rounded-xl bg-slate-50 dark:bg-slate-900/40"
           >
@@ -68,7 +63,6 @@
             </div>
           </div>
 
-          <!-- Quality Metric -->
           <div class="space-y-1.5">
             <div class="flex items-center justify-between text-xs">
               <span class="text-slate-500 font-medium">Tỷ lệ khiếu nại (Chỉ tiêu chất lượng)</span>
@@ -115,12 +109,10 @@ interface TechPerformance {
 
 const techniciansList = ref<TechPerformance[]>([]);
 
-// Format currency
 const formatVnd = (value: number) => {
   return new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 }).format(value) + 'đ';
 };
 
-// Fetch data from dashboard overview API
 const loadTechnicians = async () => {
   loading.value = true;
   try {

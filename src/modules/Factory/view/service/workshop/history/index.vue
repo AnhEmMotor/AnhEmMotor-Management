@@ -1,6 +1,5 @@
 <template>
   <div class="resp-page flex flex-col gap-4 pb-5">
-    <!-- Header -->
     <div class="flex items-start justify-between gap-4 flex-wrap">
       <div>
         <h1 class="text-2xl font-bold">
@@ -20,7 +19,6 @@
       </div>
     </div>
 
-    <!-- Smart Search Bar -->
     <ElCard>
       <template #header>
         <span class="font-semibold">Smart Search</span>
@@ -70,10 +68,8 @@
       </div>
     </ElCard>
 
-    <!-- Vehicle Meta Card + Alerts + Timeline -->
     <ElCard v-loading="loading">
       <div v-if="vehicle" class="space-y-5">
-        <!-- Vehicle Meta Card -->
         <div class="rounded-2xl border border-slate-200 p-5 bg-white">
           <div class="flex items-start justify-between gap-4 flex-wrap">
             <div>
@@ -121,7 +117,6 @@
           </div>
         </div>
 
-        <!-- Predictive section removed -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <ElCard class="lg:col-span-2">
             <template #header>
@@ -175,7 +170,6 @@
           </ElCard>
         </div>
 
-        <!-- Timeline View -->
         <div>
           <div class="flex items-center justify-between gap-3 flex-wrap mb-3">
             <div>
@@ -301,7 +295,6 @@
       </div>
     </ElCard>
 
-    <!-- Footer Actions -->
     <ElCard v-if="vehicle" class="mt-0">
       <div class="flex items-center justify-between gap-4 flex-wrap">
         <div class="text-sm text-slate-600">

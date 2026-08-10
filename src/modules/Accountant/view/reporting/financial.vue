@@ -199,8 +199,6 @@ function formatPercent(numerator: number, denominator: number) {
 }
 
 function onPeriodChange() {
-  // TODO: Pass period params to API when backend supports it
-  // Expected: GET /api/v1/Statistics/financial-pnl?period=...&start=...&end=...
   loadData();
 }
 

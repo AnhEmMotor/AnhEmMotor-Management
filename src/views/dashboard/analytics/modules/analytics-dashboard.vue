@@ -90,7 +90,6 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-// note: v-chart is registered globally in project via plugins/echarts.ts; use directly.
 
 interface MonthlyPoint {
   month: string;
@@ -100,7 +99,6 @@ interface MonthlyPoint {
 
 const isLoading = ref(false);
 
-// Data is loaded from API.
 const monthly = computed<MonthlyPoint[]>(() => []);
 
 const chartTextColor = '#aeb0bd';

@@ -31,10 +31,8 @@
             </div>
           </div>
 
-          <!-- KPIs via CardList (kept) -->
           <CardList :time-filter="timeRange" :date-range="dateRange" />
 
-          <!-- Trend charts + Channel chart -->
           <ElRow :gutter="20" class="my-5">
             <ElCol :xs="24" :sm="24" :md="12">
               <div class="art-card p-5">
@@ -64,7 +62,6 @@
             </ElCol>
           </ElRow>
 
-          <!-- Table -->
           <div class="art-card !mt-0">
             <h3 class="font-bold text-gray-800 dark:text-gray-100 mb-4">Chi tiết theo kênh</h3>
             <ElTable :data="paginatedTableData" stripe class="w-full">
@@ -268,7 +265,6 @@ async function loadCharts() {
   try {
     const daily = await fetchDailyCategoryRevenue(days);
 
-    // Line chart: visits by hour (mock) + doanh thu theo kênh (API)
     const rawByDay = daily.reduce<Record<string, DailyCategoryRevenueRow[]>>((acc, cur) => {
       const day = cur.reportDay ?? '';
       if (!acc[day]) acc[day] = [];
@@ -316,7 +312,6 @@ async function loadCharts() {
       color: palette,
     });
 
-    // Bar chart: tổng theo kênh
     barChart.setOption({
       tooltip: { trigger: 'axis' },
       grid: { left: 10, right: 10, bottom: 20, top: 10, containLabel: true },
@@ -355,7 +350,6 @@ async function loadCharts() {
       ],
     });
   } catch {
-    // noop - dev fallback
   }
 }
 

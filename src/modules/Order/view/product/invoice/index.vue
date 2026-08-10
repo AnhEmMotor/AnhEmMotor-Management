@@ -1,6 +1,5 @@
 <template>
   <div class="resp-page invoices-page flex flex-col gap-4 pb-5">
-    <!-- Header Actions -->
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-3">
         <ElInput
@@ -34,7 +33,6 @@
       </ElButton>
     </div>
 
-    <!-- Invoice List -->
     <ElCard shadow="never" class="invoice-list-card">
       <ElTable
         :data="paginatedInvoices"
@@ -107,7 +105,6 @@
       </ElTable>
     </ElCard>
 
-    <!-- Pagination -->
     <div class="flex justify-end mt-4">
       <ElPagination
         v-model:currentPage="pagination.current"
@@ -120,7 +117,6 @@
       />
     </div>
 
-    <!-- Detail Dialog -->
     <ElDialog
       v-model="dialog.visible"
       width="800px"
@@ -146,7 +142,6 @@
       </template>
 
       <div v-if="dialog.invoice" class="premium-invoice-body">
-        <!-- Status Banner -->
         <div
           class="flex justify-between items-center bg-gray-50 p-4 rounded-xl mb-6 border border-gray-100"
         >
@@ -170,7 +165,6 @@
         </div>
 
         <div class="grid grid-cols-2 gap-6 mb-6">
-          <!-- Customer Info -->
           <div class="info-card">
             <div
               class="card-header flex items-center gap-2 text-gray-700 font-semibold mb-4 pb-2 border-b"
@@ -202,7 +196,6 @@
             </div>
           </div>
 
-          <!-- Vehicle Info -->
           <div class="info-card">
             <div
               class="card-header flex items-center gap-2 text-gray-700 font-semibold mb-4 pb-2 border-b"
@@ -235,7 +228,6 @@
           </div>
         </div>
 
-        <!-- Financial Breakdown -->
         <div class="bg-blue-50/50 p-5 rounded-xl border border-blue-100">
           <div class="flex items-center gap-2 text-blue-800 font-semibold mb-4">
             <Icon icon="ri:bill-line" />
@@ -298,7 +290,6 @@
       </template>
     </ElDialog>
 
-    <!-- Create Dialog -->
     <ElDialog
       v-model="createDialog.visible"
       title="Tạo hóa đơn mới"
@@ -493,7 +484,6 @@ import type { PurchaseInvoiceListResult } from '@/domain/purchase-invoice/types'
 
 defineOptions({ name: 'SalesInvoices' });
 
-// ==================== TYPES ====================
 interface InvoiceRow {
   id: number;
   invoiceNumber: string;
@@ -520,7 +510,6 @@ interface InvoiceRow {
   createdAt: string;
 }
 
-// ==================== STATE ====================
 const invoices = ref<InvoiceRow[]>([]);
 const loadingList = ref(false);
 const actionLoading = ref(false);
@@ -568,7 +557,6 @@ const createDialog = reactive({
   } as any,
 });
 
-// ==================== COMPUTED ====================
 const filteredInvoices = computed(() => {
   let result = invoices.value;
   if (searchQuery.value) {
@@ -594,7 +582,6 @@ const paginatedInvoices = computed(() => {
   return filteredInvoices.value.slice(start, end);
 });
 
-// ==================== FETCH ====================
 async function fetchInvoices() {
   loadingList.value = true;
   try {
@@ -625,7 +612,6 @@ function handleSearch() {
   fetchInvoices();
 }
 
-// ==================== PURCHASE INVOICE ====================
 async function searchPurchaseInvoices(query: string) {
   if (!query || query.length < 2) {
     purchaseInvoiceOptions.value = [];
@@ -666,7 +652,6 @@ function onPurchaseInvoiceSelected(invoiceId: number | undefined) {
   }
 }
 
-// ==================== DIALOG ACTIONS ====================
 function handleView(row: any) {
   dialog.visible = true;
   dialog.readonly = true;
@@ -752,7 +737,6 @@ async function handleSave() {
   }
 }
 
-// ==================== VOUCHER ====================
 const voucherTotal = computed(
   () =>
     createDialog.form.vehiclePrice +
@@ -784,7 +768,6 @@ watch(appliedVoucher, (val) => {
   }
 });
 
-// ==================== HELPERS ====================
 function formatDate(dateStr: string) {
   if (!dateStr) return '-';
   return new Date(dateStr).toLocaleDateString('vi-VN');
@@ -836,7 +819,6 @@ function getPaymentTagType(method: string): 'primary' | 'success' | 'warning' | 
   return map[method] || 'info';
 }
 
-// ==================== LIFECYCLE ====================
 onMounted(() => {
   fetchInvoices();
 });
@@ -944,24 +926,20 @@ html.dark {
     height: 297mm !important;
   }
 
-  /* Hide the main dashboard during print */
   #app {
     display: none !important;
   }
 
-  /* Hide all Element Plus overlays by default */
   .el-overlay {
     display: none !important;
   }
 
-  /* Only display the overlay containing the invoice modal */
   .el-overlay:has(.premium-invoice-modal) {
     display: block !important;
     position: static !important;
     z-index: auto !important;
   }
 
-  /* Reset overlay dialog wrapper container */
   .el-overlay:has(.premium-invoice-modal) .el-overlay-dialog {
     position: static !important;
     height: auto !important;
@@ -970,7 +948,6 @@ html.dark {
     background: white !important;
   }
 
-  /* Reset dialog dimensions to fit the print page width */
   .premium-invoice-modal {
     position: static !important;
     display: block !important;

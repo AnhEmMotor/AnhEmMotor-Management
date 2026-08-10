@@ -330,7 +330,6 @@ import * as echarts from 'echarts';
 
 defineOptions({ name: 'InventoryDebt' });
 
-// const activeTab = ref("suppliers");
 
 const supplierDebts = ref<any[]>([]);
 const exporting = ref(false);
@@ -518,7 +517,6 @@ const handleSizeChange = (val: number) => {
 };
 const totalSuppliersDebt = ref(0);
 
-// Missing Proofs logic
 const missingProofsVisible = ref(false);
 const missingProofsLoading = ref(false);
 const missingProofsData = ref<any[]>([]);
@@ -553,7 +551,6 @@ const mpFetch = async () => {
   }
 };
 
-// Image Viewer logic
 const imageViewerVisible = ref(false);
 const currentImageUrls = ref<string[]>([]);
 const additionalProofFiles = ref<any[]>([]);
@@ -589,7 +586,6 @@ const saveProofImages = async () => {
   try {
     const proofUrls: string[] = [...currentImageUrls.value];
 
-    // Upload new files
     if (additionalProofFiles.value.length > 0) {
       for (const file of additionalProofFiles.value) {
         if (file.raw) {
@@ -605,7 +601,6 @@ const saveProofImages = async () => {
     ElMessage.success('Cập nhật ảnh minh chứng thành công!');
     imageViewerVisible.value = false;
 
-    // Refresh current views
     fetchSupplierDebts();
     if (paymentLogsVisible.value && selectedSupplierLogs.value) {
       openPaymentLogs(selectedSupplierLogs.value);

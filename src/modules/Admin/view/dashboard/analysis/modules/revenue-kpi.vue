@@ -1,7 +1,6 @@
 <template>
   <div class="resp-page">
     <ElRow :gutter="20">
-      <!-- Card 1: Doanh thu thực tế -->
       <ElCol :xl="6" :lg="6" :md="12" :sm="24" :xs="24" class="mb-4">
         <div class="art-card h-full p-4 flex flex-col justify-between">
           <div>
@@ -23,7 +22,6 @@
         </div>
       </ElCol>
 
-      <!-- Card 2: Lợi nhuận ròng -->
       <ElCol :xl="6" :lg="6" :md="12" :sm="24" :xs="24" class="mb-4">
         <div class="art-card h-full p-4 flex flex-col justify-between">
           <div>
@@ -42,7 +40,6 @@
         </div>
       </ElCol>
 
-      <!-- Card 3: Tiền đang treo -->
       <ElCol :xl="6" :lg="6" :md="12" :sm="24" :xs="24" class="mb-4">
         <div class="art-card h-full p-4 flex flex-col justify-between">
           <div>
@@ -64,7 +61,6 @@
         </div>
       </ElCol>
 
-      <!-- Card 4: Cảnh báo cần xử lý -->
       <ElCol :xl="6" :lg="6" :md="12" :sm="24" :xs="24" class="mb-4">
         <div class="art-card h-full p-4">
           <p class="text-sm text-gray-500 dark:text-gray-400 mb-2 font-semibold">CẦN XỬ LÝ</p>

@@ -170,7 +170,6 @@ const fetchList = async () => {
       Filters: filters,
     });
     articleList.value = res?.items || res || [];
-    // Simulate status since backend just uses IsPublished boolean
     articleList.value = articleList.value.map((item) => ({
       ...item,
       status: item.isPublished ? 'Published' : 'Draft',
@@ -261,7 +260,6 @@ onActivated(() => {
   }
 }
 
-// Dark Mode overrides
 :global(html.dark .article-list-page) {
   background-color: #05070b !important;
   color: #f8fafc !important;

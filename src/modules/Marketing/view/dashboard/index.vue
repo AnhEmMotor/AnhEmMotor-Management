@@ -1,6 +1,5 @@
 <template>
   <div class="resp-page marketing-dashboard p-6">
-    <!-- Bộ Điều Hướng Chu Kỳ (Header) -->
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-bold text-gray-800 dark:text-slate-100 flex items-center gap-2">
         <span>📢</span> Tổng quan tiếp thị & chăm sóc khách hàng
@@ -42,9 +41,7 @@
       </div>
     </div>
 
-    <!-- 4 Thẻ KPI Chỉ Số Phía Trên (KPI Cards) -->
     <ElRow :gutter="20" class="mb-6">
-      <!-- KPI 1: Tổng số Leads -->
       <ElCol :sm="24" :md="12" :lg="6">
         <div
           class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm h-full flex flex-col justify-between border-l-4 border-l-blue-500"
@@ -72,7 +69,6 @@
         </div>
       </ElCol>
 
-      <!-- KPI 2: Lead Mới Chưa Xử Lý -->
       <ElCol :sm="24" :md="12" :lg="6">
         <div
           class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm h-full flex flex-col justify-between border-l-4 border-l-orange-500"
@@ -98,7 +94,6 @@
         </div>
       </ElCol>
 
-      <!-- KPI 3: Tỷ Lệ Chuyển Đổi Lead -->
       <ElCol :sm="24" :md="12" :lg="6">
         <div
           class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm h-full flex flex-col justify-between border-l-4 border-l-green-500"
@@ -125,7 +120,6 @@
         </div>
       </ElCol>
 
-      <!-- KPI 4: Lịch Hẹn Đặt Lái Thử -->
       <ElCol :sm="24" :md="12" :lg="6">
         <div
           class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm h-full flex flex-col justify-between border-l-4 border-l-purple-500"
@@ -154,9 +148,7 @@
       </ElCol>
     </ElRow>
 
-    <!-- Grid Biểu Đồ (Charts Row 1) -->
     <ElRow :gutter="20" class="mb-6">
-      <!-- Biểu đồ 1: Xu hướng đăng ký Lead -->
       <ElCol :xs="24" :lg="16">
         <div
           class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm"
@@ -170,7 +162,6 @@
         </div>
       </ElCol>
 
-      <!-- Biểu đồ 2: Phễu chuyển đổi -->
       <ElCol :xs="24" :lg="8">
         <div
           class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm h-full"
@@ -185,9 +176,7 @@
       </ElCol>
     </ElRow>
 
-    <!-- Grid Biểu Đồ (Charts Row 2) -->
     <ElRow :gutter="20" class="mb-6">
-      <!-- Biểu đồ 3: Cơ cấu nguồn khách hàng -->
       <ElCol :xs="24" :md="12">
         <div
           class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm"
@@ -201,7 +190,6 @@
         </div>
       </ElCol>
 
-      <!-- Bảng xếp hạng hiệu suất Nhân viên kinh doanh -->
       <ElCol :xs="24" :md="12">
         <div
           class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm h-full flex flex-col justify-between"
@@ -261,7 +249,6 @@
       </ElCol>
     </ElRow>
 
-    <!-- Bảng ở cuối: Lịch hẹn mới nhận gần đây -->
     <div
       class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm"
     >
@@ -313,17 +300,14 @@ defineOptions({ name: 'MarketingDashboard' });
 
 const router = useRouter();
 
-// Trạng thái dữ liệu
 const loading = ref(false);
 const rawLeads = ref<Lead[]>([]);
 const rawBookings = ref<Booking[]>([]);
 
-// Lọc thời gian
 const currentPeriod = ref('month');
 const customStart = ref('');
 const customEnd = ref('');
 
-// Refs biểu đồ Echarts
 const trendChartRef = ref<HTMLDivElement | null>(null);
 const funnelChartRef = ref<HTMLDivElement | null>(null);
 const sourceChartRef = ref<HTMLDivElement | null>(null);
@@ -332,7 +316,6 @@ let trendChart: echarts.ECharts | null = null;
 let funnelChart: echarts.ECharts | null = null;
 let sourceChart: echarts.ECharts | null = null;
 
-// Chuyển chế độ lọc thời gian
 const setPeriod = (period: string) => {
   currentPeriod.value = period;
   if (period !== 'custom') {
@@ -341,7 +324,6 @@ const setPeriod = (period: string) => {
   }
 };
 
-// Xác định khoảng thời gian hiện tại và kỳ trước để so sánh
 const dateRanges = computed(() => {
   const now = new Date();
   let start = new Date();
@@ -370,7 +352,6 @@ const dateRanges = computed(() => {
     prevStart = new Date(now.getFullYear() - 1, 0, 1);
     prevEnd = new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59, 999);
   } else {
-    // Chế độ custom
     start = customStart.value
       ? new Date(customStart.value)
       : new Date(now.getFullYear(), now.getMonth(), 1);
@@ -385,7 +366,6 @@ const dateRanges = computed(() => {
   return { start, end, prevStart, prevEnd };
 });
 
-// Lọc dữ liệu động theo chu kỳ
 const filteredLeads = computed(() => {
   const range = dateRanges.value;
   return rawLeads.value.filter((l) => {
@@ -418,7 +398,6 @@ const prevFilteredBookings = computed(() => {
   });
 });
 
-// Thống kê tổng hợp các chỉ số KPI
 const summary = computed(() => {
   const curLeads = filteredLeads.value.length;
   const prevLeads = prevFilteredLeads.value.length;
@@ -432,13 +411,11 @@ const summary = computed(() => {
   const newLeads = filteredLeads.value.filter((l) => l.status === 'New').length;
   const newLeadsRatio = curLeads === 0 ? 0 : Math.round((newLeads / curLeads) * 100);
 
-  // Tính tỷ lệ chuyển đổi: status Delivered, Closed, Won, Official
   const wonLeads = filteredLeads.value.filter((l) =>
     ['Delivered', 'Closed', 'Won', 'Official'].includes(l.status)
   ).length;
   const conversionRate = curLeads === 0 ? 0 : Math.round((wonLeads / curLeads) * 100);
 
-  // Lịch đặt lái thử
   const curTestDriveBookings = filteredBookings.value.filter(
     (b) => b.bookingType === 'TestDrive'
   ).length;
@@ -463,14 +440,12 @@ const summary = computed(() => {
   };
 });
 
-// Lịch hẹn mới nhận (Recent 5 bookings)
 const recentBookings = computed(() => {
   return [...filteredBookings.value]
     .sort((a, b) => new Date(b.preferredDate).getTime() - new Date(a.preferredDate).getTime())
     .slice(0, 5);
 });
 
-// Bảng xếp hạng hiệu suất nhân viên kinh doanh
 const staffPerformanceList = computed(() => {
   const staffMap: { [key: string]: { total: number; won: number } } = {};
   filteredLeads.value.forEach((l) => {
@@ -492,7 +467,6 @@ const staffPerformanceList = computed(() => {
     .sort((a, b) => b.won - a.won || b.rate - a.rate || b.total - a.total);
 });
 
-// Định dạng dữ liệu thời gian hiển thị
 const formatDateTime = (val?: string) => {
   if (!val) return '-';
   const d = new Date(val);
@@ -531,7 +505,6 @@ const goToBookings = () => {
   router.push('/Marketing/booking');
 };
 
-// Gọi API nạp dữ liệu
 const loadData = async () => {
   loading.value = true;
   try {
@@ -547,22 +520,18 @@ const loadData = async () => {
   }
 };
 
-// Hàm vẽ/Cập nhật các biểu đồ ECharts
 const initCharts = () => {
   const isDark = document.documentElement.classList.contains('dark');
   const textColor = isDark ? '#e3e3e8' : '#323251';
   const lineColor = isDark ? '#333' : '#f2f4f5';
 
-  // 1. Biểu đồ Xu hướng (Line)
   if (trendChartRef.value) {
     if (!trendChart) trendChart = echarts.init(trendChartRef.value);
 
-    // Group leads and bookings by date in current period
     const dateMap: { [key: string]: { leads: number; bookings: number } } = {};
     const range = dateRanges.value;
     const start = new Date(range.start);
 
-    // Điền ngày vào mảng để vẽ trục X liên tục
     while (start <= range.end) {
       const dateStr = start.toISOString().split('T')[0];
       dateMap[dateStr] = { leads: 0, bookings: 0 };
@@ -643,7 +612,6 @@ const initCharts = () => {
     });
   }
 
-  // 2. Biểu đồ Phễu (Funnel)
   if (funnelChartRef.value) {
     if (!funnelChart) funnelChart = echarts.init(funnelChartRef.value);
 
@@ -696,7 +664,6 @@ const initCharts = () => {
     });
   }
 
-  // 3. Biểu đồ Cơ cấu Nguồn khách hàng (Pie)
   if (sourceChartRef.value) {
     if (!sourceChart) sourceChart = echarts.init(sourceChartRef.value);
 
@@ -759,12 +726,10 @@ const initCharts = () => {
   }
 };
 
-// Cập nhật lại các biểu đồ khi thay đổi các bộ lọc
 watch([filteredLeads, filteredBookings], () => {
   initCharts();
 });
 
-// Thay đổi kích thước biểu đồ khi cửa sổ co giãn
 const handleResize = () => {
   trendChart?.resize();
   funnelChart?.resize();

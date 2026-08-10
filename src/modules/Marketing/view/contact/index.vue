@@ -39,7 +39,6 @@
 
     <div class="p-4">
       <ElTabs v-model="activeTab" @tab-change="onTabChange" class="contact-tabs">
-        <!-- TAB 1: YÊU CẦU HỖ TRỢ -->
         <ElTabPane :label="$t('contact.tabSupport')" name="support">
           <div class="split-layout">
             <div class="list-panel">
@@ -142,7 +141,6 @@
                 </p>
               </div>
               <div v-else class="detail-content flex flex-col h-full">
-                <!-- Header -->
                 <div class="detail-header p-5 border-b border-slate-100 bg-[#FAFCFF]">
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
@@ -169,9 +167,7 @@
                   </div>
                 </div>
 
-                <!-- Scrollable Content -->
                 <div class="flex-1 overflow-y-auto p-5 space-y-5">
-                  <!-- Content Body -->
                   <div>
                     <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
                       Nội dung yêu cầu
@@ -193,7 +189,6 @@
                     @rate-customer="handleRateCustomer"
                   />
 
-                  <!-- Reply -->
                   <div class="pt-2">
                     <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
                       Soạn thảo phản hồi
@@ -264,7 +259,6 @@
                   </div>
                 </div>
 
-                <!-- Footer (Sticky Internal Notes) -->
                 <div class="border-t border-slate-100 p-5 bg-slate-50">
                   <div class="flex items-center justify-between mb-2">
                     <h4 class="text-xs font-bold text-indigo-500 uppercase tracking-wider m-0">
@@ -297,7 +291,6 @@
           </div>
         </ElTabPane>
 
-        <!-- TAB 2: ĐÓNG GÓP Ý KIẾN -->
         <ElTabPane :label="$t('contact.tabFeedback')" name="feedback">
           <div class="split-layout">
             <div class="list-panel">
@@ -398,7 +391,6 @@
                 </p>
               </div>
               <div v-else class="detail-content flex flex-col h-full">
-                <!-- Header -->
                 <div class="detail-header p-5 border-b border-slate-100 bg-[#FAFCFF]">
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
@@ -434,9 +426,7 @@
                   </div>
                 </div>
 
-                <!-- Scrollable Content -->
                 <div class="flex-1 overflow-y-auto p-5 space-y-5">
-                  <!-- Content Body -->
                   <div>
                     <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
                       Nội dung đóng góp
@@ -450,7 +440,6 @@
                     </div>
                   </div>
 
-                  <!-- Reply -->
                   <div class="pt-2">
                     <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
                       Soạn thảo phản hồi
@@ -510,7 +499,6 @@
                   </div>
                 </div>
 
-                <!-- Footer (Sticky Internal Notes) -->
                 <div class="border-t border-slate-100 p-5 bg-slate-50">
                   <div class="flex items-center justify-between mb-2">
                     <h4 class="text-xs font-bold text-indigo-500 uppercase tracking-wider m-0">
@@ -543,7 +531,6 @@
           </div>
         </ElTabPane>
 
-        <!-- TAB 3: HỒ SƠ ỨNG VIÊN -->
         <ElTabPane :label="$t('contact.tabCandidate')" name="candidate">
           <div class="split-layout">
             <div class="list-panel">
@@ -642,7 +629,6 @@
                 </p>
               </div>
               <div v-else class="detail-content flex flex-col h-full">
-                <!-- Header -->
                 <div class="detail-header p-5 border-b border-slate-100 bg-[#FAFCFF]">
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
@@ -671,16 +657,13 @@
                   </div>
                 </div>
 
-                <!-- Scrollable Content -->
                 <div class="flex-1 overflow-y-auto p-5 space-y-5">
-                  <!-- CV File and Preview Section -->
                   <div>
                     <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
                       Hồ sơ ứng viên (CV)
                     </h4>
 
                     <div v-if="cvFileUrl">
-                      <!-- File Header / Download bar -->
                       <div
                         class="cv-file-header flex items-center justify-between p-3 bg-slate-100 dark:bg-slate-800 rounded-t-xl border border-slate-200 dark:border-slate-700 border-b-0"
                       >
@@ -728,11 +711,9 @@
                         </ElButton>
                       </div>
 
-                      <!-- Preview Frame -->
                       <div
                         class="border border-slate-200 dark:border-slate-700 rounded-b-xl overflow-hidden h-[450px] bg-slate-50 dark:bg-slate-900 shadow-inner flex items-center justify-center p-2"
                       >
-                        <!-- Legacy CV warning card -->
                         <div
                           v-if="isLegacyCv"
                           class="flex flex-col items-center justify-center text-center p-6 text-slate-500 dark:text-slate-400"
@@ -752,7 +733,6 @@
                           </p>
                         </div>
 
-                        <!-- Image Preview -->
                         <img
                           v-else-if="isCvImage"
                           :src="getFullCvUrl(cvFileUrl)"
@@ -760,14 +740,12 @@
                           alt="CV Preview"
                         />
 
-                        <!-- PDF Preview -->
                         <iframe
                           v-else-if="isCvPdf"
                           :src="getFullCvUrl(cvFileUrl)"
                           class="w-full h-full border-none rounded-lg"
                         />
 
-                        <!-- Word Document Placeholder -->
                         <div
                           v-else-if="isCvWord"
                           class="flex flex-col items-center justify-center text-center p-6 text-slate-500"
@@ -792,7 +770,6 @@
                           </ElButton>
                         </div>
 
-                        <!-- Generic File Placeholder -->
                         <div
                           v-else
                           class="flex flex-col items-center justify-center text-center p-6 text-slate-500"
@@ -816,7 +793,6 @@
                       </div>
                     </div>
 
-                    <!-- Empty State -->
                     <div
                       v-else
                       class="flex flex-col items-center justify-center py-12 bg-slate-50 border border-dashed border-slate-200 rounded-xl text-slate-400"
@@ -829,7 +805,6 @@
                     </div>
                   </div>
 
-                  <!-- Cover Letter -->
                   <div>
                     <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
                       Thư giới thiệu
@@ -844,9 +819,7 @@
                   </div>
                 </div>
 
-                <!-- Footer (Sticky Action & Internal Notes) -->
                 <div class="border-t border-slate-100 p-5 bg-slate-50 space-y-4">
-                  <!-- Process Actions -->
                   <div>
                     <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
                       Quy trình xử lý hồ sơ
@@ -890,7 +863,6 @@
                     </div>
                   </div>
 
-                  <!-- Inline Internal Notes -->
                   <div class="pt-2 border-t border-slate-200/60">
                     <div class="flex items-center justify-between mb-2">
                       <h4 class="text-xs font-bold text-indigo-500 uppercase tracking-wider m-0">
@@ -926,7 +898,6 @@
       </ElTabs>
     </div>
 
-    <!-- ASSIGN DIALOG -->
     <ElDialog v-model="assignDialogVisible" :title="$t('contact.assignDialog.title')" width="400px">
       <ElSelect
         v-model="assignedUser"
@@ -1145,7 +1116,6 @@ const handleReply = async () => {
     );
     if (sent) replyDraft.value = '';
   } catch {
-    /* handled */
   }
 };
 

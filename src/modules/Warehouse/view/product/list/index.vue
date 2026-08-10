@@ -2275,7 +2275,6 @@ const submitNewTech = async () => {
     });
     newTechDialogVisible.value = false;
   } catch (_err) {
-    // Error message is already handled in createTechnology
   } finally {
     creatingTech.value = false;
   }
@@ -2305,7 +2304,6 @@ const submitNewTechCat = async () => {
     newTechForm.value.categoryId = newCat.id;
     newTechCatDialogVisible.value = false;
   } catch (_err) {
-    // Test
   } finally {
     creatingTechCat.value = false;
   }
@@ -2357,7 +2355,6 @@ const submitEditTech = async () => {
     });
     editTechDialogVisible.value = false;
   } catch (_err) {
-    // Error message is handled in updateTechnology
   } finally {
     updatingTech.value = false;
   }

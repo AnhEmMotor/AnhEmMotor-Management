@@ -15,7 +15,6 @@
       </template>
     </ReportPageHeader>
 
-    <!-- TẦNG 1: 4 THẺ CHỈ SỐ KPI NHANH -->
     <div class="reporting-kpi-grid">
       <ArtStatsCard
         title="Tổng giá trị hóa đơn"
@@ -47,13 +46,11 @@
       />
     </div>
 
-    <!-- TẦNG 2: BIỂU ĐỒ XU HƯỚNG FULL-WIDTH -->
     <ElCard class="reporting-card mt-4">
       <template #header>Biến động doanh thu hóa đơn theo kênh</template>
       <div ref="trendChartRef" class="reporting-chart"></div>
     </ElCard>
 
-    <!-- TẦNG 3: CẶP ĐÔI BIỂU ĐỒ PHÂN TÍCH TỶ LỆ (CHIA ĐÔI 50/50) -->
     <div class="reporting-section-grid two-columns mt-4">
       <ElCard class="reporting-card">
         <template #header>Cơ cấu dòng sản phẩm</template>
@@ -65,7 +62,6 @@
       </ElCard>
     </div>
 
-    <!-- TẦNG 4: BẢNG DỮ LIỆU CHI TIẾT (ĐẨY XUỐNG ĐÁY TRANG) -->
     <ElCard class="reporting-card mt-4">
       <template #header>
         <div class="flex justify-between items-center">
@@ -136,7 +132,6 @@
       </div>
     </ElCard>
 
-    <!-- DIALOG: CHI TIẾT HÓA ĐƠN -->
     <ElDialog
       v-model="drawerVisible"
       title="Chi tiết hóa đơn"
@@ -179,7 +174,6 @@
             </div>
           </div>
 
-          <!-- Thông tin chuyên sâu (Drill-down) -->
           <div
             v-if="selectedInvoice.category === 'Xe máy'"
             class="border border-gray-200 dark:border-gray-700 rounded-lg p-4"
@@ -265,7 +259,6 @@ const searchQuery = ref('');
 const drawerVisible = ref(false);
 const selectedInvoice = ref<any>(null);
 
-// Refs cho ECharts
 const trendChartRef = ref<HTMLElement | null>(null);
 const productChartRef = ref<HTMLElement | null>(null);
 const paymentChartRef = ref<HTMLElement | null>(null);
@@ -393,7 +386,6 @@ async function onPeriodChange() {
 }
 
 function renderCharts() {
-  // 1. Line Chart: Xu hướng kênh
   if (trendChartRef.value) {
     if (!trendChart) trendChart = echarts.init(trendChartRef.value);
     trendChart.setOption({
@@ -425,7 +417,7 @@ function renderCharts() {
           type: 'line',
           smooth: true,
           data: trendData.value.map((d) => d.offlineRev),
-          itemStyle: { color: '#22c55e' }, // Xanh lục
+          itemStyle: { color: '#22c55e' }, 
           lineStyle: { color: '#22c55e', width: 3 },
         },
         {
@@ -433,14 +425,13 @@ function renderCharts() {
           type: 'line',
           smooth: true,
           data: trendData.value.map((d) => d.onlineRev),
-          itemStyle: { color: '#3b82f6' }, // Xanh dương
+          itemStyle: { color: '#3b82f6' }, 
           lineStyle: { color: '#3b82f6', width: 3 },
         },
       ],
     });
   }
 
-  // 2. Bar Chart: Cơ cấu dòng sản phẩm
   if (productChartRef.value) {
     if (!productChart) productChart = echarts.init(productChartRef.value);
     productChart.setOption({
@@ -474,7 +465,6 @@ function renderCharts() {
     });
   }
 
-  // 3. Pie Chart: Phương thức thanh toán
   if (paymentChartRef.value) {
     if (!paymentChart) paymentChart = echarts.init(paymentChartRef.value);
     paymentChart.setOption({
@@ -551,7 +541,6 @@ onUnmounted(() => {
 <style scoped>
 @reference '@styles/core/tailwind.css';
 
-/* Optional styles to make the icons in the drawer header display block */
 .i-ri-motorbike-line,
 .i-ri-settings-4-line {
   display: inline-block;

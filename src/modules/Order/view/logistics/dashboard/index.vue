@@ -16,7 +16,6 @@
       />
     </div>
 
-    <!-- Header & Statistics -->
     <el-card shadow="never" class="mb-4">
       <div class="flex items-center justify-between mb-4 flex-wrap gap-4">
         <div>
@@ -29,9 +28,7 @@
         </div>
       </div>
 
-      <!-- Filters Form -->
       <div class="flex items-center gap-4 flex-wrap">
-        <!-- Status -->
         <div class="flex items-center">
           <span class="text-sm font-medium mr-2 text-gray-700">Trạng thái:</span>
           <el-select
@@ -57,7 +54,6 @@
       </div>
     </el-card>
 
-    <!-- Orders Table -->
     <el-card shadow="never" class="art-table-card">
       <ArtTable
         ref="tableRef"
@@ -68,14 +64,12 @@
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
-        <!-- Status Slot -->
         <template #status="{ row }">
           <el-tag :type="getStatusTagType(row.status)" size="small">
             {{ getStatusLabel(row.status) }}
           </el-tag>
         </template>
 
-        <!-- Tracking Number Slot -->
         <template #trackingNumber="{ row }">
           <el-tag v-if="row.trackingNumber" type="success" effect="plain" class="font-mono">
             {{ row.trackingNumber }}
@@ -83,22 +77,18 @@
           <span v-else class="text-gray-400 font-mono italic">Chưa liên kết</span>
         </template>
 
-        <!-- COD Amount Slot -->
         <template #codAmount="{ row }">
           <span class="font-semibold text-red-500">{{ formatCurrency(row.codAmount) }}</span>
         </template>
 
-        <!-- Shipping Cost Slot -->
         <template #shippingCost="{ row }">
           <span class="text-gray-600">{{ formatCurrency(row.shippingCost) }}</span>
         </template>
 
-        <!-- Created At Slot -->
         <template #createdAt="{ row }">
           <span class="text-xs text-gray-500">{{ formatDate(row.createdAt) }}</span>
         </template>
 
-        <!-- Delivered At Slot -->
         <template #deliveredAt="{ row }">
           <span v-if="row.deliveredAt" class="text-xs text-gray-500">{{
             formatDate(row.deliveredAt)
@@ -106,14 +96,12 @@
           <span v-else class="text-gray-400 italic text-xs">-</span>
         </template>
 
-        <!-- Actions Slot -->
         <template #actions="{ row }">
           <el-button type="primary" size="small" @click="openDetail(row)"> Chi tiết </el-button>
         </template>
       </ArtTable>
     </el-card>
 
-    <!-- Detail Sliding Drawer -->
     <el-drawer
       v-model="drawerVisible"
       title="Chi tiết quy trình Vận đơn"
@@ -122,7 +110,6 @@
     >
       <div v-loading="loadingDetail" class="p-2">
         <div v-if="detailData.id" class="flex flex-col gap-6">
-          <!-- Header and Steps inside Drawer -->
           <div
             class="flex items-center justify-between flex-wrap gap-4 border-b pb-4 border-gray-100"
           >
@@ -137,7 +124,6 @@
             </div>
           </div>
 
-          <!-- Alerts inside Drawer -->
           <el-alert
             v-if="isReturned"
             title="Đơn hàng này đã bị hoàn trả / hủy giao hàng từ đối tác."
@@ -160,9 +146,7 @@
             :closable="false"
           />
 
-          <!-- Multi-column Layout inside Drawer -->
           <div class="flex flex-col gap-6">
-            <!-- Left side: Picking Checklist -->
             <div>
               <el-card shadow="never">
                 <template #header>
@@ -173,7 +157,6 @@
                 </template>
 
                 <el-table :data="detailData.items" stripe style="width: 100%" size="small">
-                  <!-- Removed Checkbox Column -->
 
                   <el-table-column :label="t('logistics.fulfillment.table.image')" width="65">
                     <template #default="scope">
@@ -214,7 +197,6 @@
                     </template>
                   </el-table-column>
 
-                  <!-- Removed Shelf Location Column -->
 
                   <el-table-column
                     :label="t('logistics.fulfillment.table.qty')"
@@ -231,21 +213,17 @@
                     </template>
                   </el-table-column>
 
-                  <!-- Removed Picked Status Column -->
                 </el-table>
               </el-card>
             </div>
 
-            <!-- Right side: Customer Info & Timeline -->
             <div>
               <div class="flex flex-col gap-4">
-                <!-- Dispatch Panel -->
                 <el-card shadow="never">
                   <template #header>
                     <span class="font-bold">{{ t('logistics.fulfillment.dispatchPanel') }}</span>
                   </template>
 
-                  <!-- Customer Info -->
                   <div class="mb-4">
                     <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
                       {{ t('logistics.fulfillment.customer') }}
@@ -265,7 +243,6 @@
 
                   <el-divider class="my-3" />
 
-                  <!-- Financial -->
                   <div class="mb-4">
                     <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
                       {{ t('logistics.fulfillment.financial') }}
@@ -334,7 +311,6 @@ onMounted(async () => {
   }
 });
 
-// Filters & State
 const loading = ref(false);
 const filterParams = ref({
   dateRange: [] as any[],
@@ -345,7 +321,6 @@ const filterParams = ref({
 
 const orderList = ref<FulfillmentDetailResponse[]>([]);
 
-// Dashboard Stats State
 type RangeValue = 'today' | 'month' | 'year';
 const range = ref<RangeValue>('today');
 const ranges = computed(() => [
@@ -391,7 +366,6 @@ const formatMoney = (value: number) => {
   }
 };
 
-// Filter Client-side for region (Province/City)
 const filteredOrderList = computed(() => {
   let list = orderList.value;
   if (filterParams.value.region) {
@@ -401,7 +375,6 @@ const filteredOrderList = computed(() => {
   return list;
 });
 
-// Pagination
 const pagination = ref({
   current: 1,
   size: 10,
@@ -427,7 +400,6 @@ const handleCurrentChange = (val: number) => {
   pagination.value.current = val;
 };
 
-// Table Columns Config
 const columns = computed(() => [
   {
     label: 'Mã vận đơn 3PL',
@@ -455,7 +427,6 @@ const columns = computed(() => [
   { label: 'Thao tác', prop: 'actions', minWidth: 100, useSlot: true },
 ]);
 
-// Drawer Detail State
 const drawerVisible = ref(false);
 const selectedOrderId = ref<number | null>(null);
 const loadingDetail = ref(false);
@@ -519,7 +490,6 @@ const sortedMilestones = computed(() => {
   );
 });
 
-// Methods
 const fetchOrders = async () => {
   loading.value = true;
   try {
@@ -572,7 +542,6 @@ const fetchDetail = async (id: number) => {
     const res = await getFulfillmentDetail(id);
     detailData.value = (res as any).data || res;
 
-    // Fetch Milestones from 3PL tracking if tracking number exists
     if (detailData.value.trackingNumber) {
       loadingTracking.value = true;
       try {
@@ -635,7 +604,6 @@ const handleUpdateStatus = async (newStatus: number) => {
   }
 };
 
-// Utilities
 const getCarrierLabel = (carrier: string) => {
   switch (carrier) {
     case 'GHTK':

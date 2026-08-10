@@ -41,6 +41,5 @@ const periodStart = ref('');
 const periodEnd = ref('');
 
 function onPeriodChange() {
-  // Period change triggers prop updates to children automatically
 }
 </script>

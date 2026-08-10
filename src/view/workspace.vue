@@ -240,7 +240,6 @@ const workspaces = computed(() => {
   flex-direction: column;
   height: 100vh;
 
-  /* Removed invalid background-image for mp4 */
 
   .portal-video-bg {
     position: fixed;
@@ -345,7 +344,6 @@ const workspaces = computed(() => {
       @media (width >= 1024px) {
         grid-template-columns: repeat(3, 1fr);
 
-        /* Cân bằng thẻ cuối cùng ra giữa nếu nó đứng một mình ở hàng cuối */
         .workspace-card:last-child:nth-child(3n + 1) {
           grid-column: 2;
         }

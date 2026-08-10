@@ -1,6 +1,5 @@
 <template>
   <div class="supplier-contract-detail">
-    <!-- Expiration Pipeline Status -->
     <el-card shadow="never" class="mb-4">
       <div class="flex justify-between items-center">
         <div>
@@ -38,7 +37,6 @@
       </div>
     </el-card>
 
-    <!-- Smart Alert Card -->
     <el-alert v-if="showExpirationAlert" type="warning" :closable="false" show-icon class="mb-4">
       <template #title>
         <div class="flex justify-between items-center w-full">
@@ -57,9 +55,7 @@
     </el-alert>
 
     <el-row :gutter="20">
-      <!-- Left Column: 70% -->
       <el-col :span="17">
-        <!-- Section 1: Supplier Profile -->
         <el-card shadow="never" class="mb-4">
           <template #header>
             <div class="card-header font-bold">Thông tin Đối tác (Nhà cung cấp)</div>
@@ -82,7 +78,6 @@
           </el-descriptions>
         </el-card>
 
-        <!-- Section 2: Credit & Payment Terms -->
         <el-card shadow="never" class="mb-4">
           <template #header>
             <div class="card-header font-bold">Hạn mức Tín dụng & Công nợ Thương mại</div>
@@ -101,7 +96,6 @@
           </el-descriptions>
         </el-card>
 
-        <!-- Section 3: Price Matrix & Volume Commitments -->
         <el-card shadow="never" class="mb-4">
           <template #header>
             <div class="card-header font-bold">Chính sách Giá sỉ & Cam kết Sản lượng</div>
@@ -150,7 +144,6 @@
           </div>
         </el-card>
 
-        <!-- Section 4: Contract Validity -->
         <el-card shadow="never" class="mb-4">
           <template #header>
             <div class="card-header font-bold">Thời hạn Hiệu lực Pháp lý</div>
@@ -171,7 +164,6 @@
           </el-descriptions>
         </el-card>
 
-        <!-- Section 5: Digital Archiving -->
         <el-card shadow="never" class="mb-4">
           <template #header>
             <div class="card-header font-bold">Chứng từ Gốc đính kèm</div>
@@ -205,9 +197,7 @@
         </el-card>
       </el-col>
 
-      <!-- Right Column: 30% - Legal & Alert Tools -->
       <el-col :span="7">
-        <!-- Document Viewer -->
         <el-card shadow="never" class="mb-4">
           <template #header>
             <div class="card-header font-bold">Hợp đồng gốc</div>
@@ -226,7 +216,6 @@
           <div v-else class="text-center py-8 text-gray-400 text-sm">Chưa có file hợp đồng</div>
         </el-card>
 
-        <!-- Quick Actions -->
         <el-card shadow="never" class="mb-4">
           <template #header>
             <div class="card-header font-bold">Công cụ & Trạng thái</div>
@@ -271,7 +260,6 @@
           </div>
         </el-card>
 
-        <!-- Audit Log -->
         <el-card shadow="never">
           <template #header>
             <div class="card-header font-bold">Nhật ký</div>
@@ -297,7 +285,6 @@
       </el-col>
     </el-row>
 
-    <!-- Status Update Dialog -->
     <ElDialog
       v-model="showStatusDialog"
       title="Cập nhật trạng thái hợp đồng"
@@ -546,7 +533,6 @@ const handleSoftDelete = async () => {
     ElMessage.success('Đã xóa mềm hợp đồng.');
     router.push({ name: 'SupplierContract' });
   } catch {
-    // cancelled
   }
 };
 

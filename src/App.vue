@@ -49,11 +49,6 @@ onMounted(() => {
 </script>
 
 <style lang="scss">
-/* 
- * FORCE GLOBAL DARK MODE VARIABLES 
- * This ensures dark mode works perfectly across ALL pages in the app,
- * bypassing any Tailwind CSS caching or Element Plus theme variable issues.
- */
 html.dark {
   --art-color: #fff !important;
   --default-bg-color: #070707 !important;

@@ -1,6 +1,5 @@
 <template>
   <div class="resp-page ecommerce">
-    <!-- Bộ Điều Hướng Chu Kỳ -->
     <div class="flex justify-between items-center mb-6 flex-wrap gap-3">
       <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">📊 Tổng quan kinh doanh</h1>
       <div class="flex items-center gap-2 flex-wrap">
@@ -27,9 +26,7 @@
       </div>
     </div>
 
-    <!-- KPI Cards -->
     <ElRow :gutter="20" class="mb-5">
-      <!-- Card 1: Doanh thu thực tế -->
       <ElCol :sm="24" :md="12" :lg="6">
         <div
           :class="[
@@ -81,7 +78,6 @@
         </div>
       </ElCol>
 
-      <!-- Card 2: Lợi nhuận ròng -->
       <ElCol :sm="24" :md="12" :lg="6">
         <div class="art-card p-5 h-full border-l-4 border-green-500">
           <div
@@ -108,7 +104,6 @@
         </div>
       </ElCol>
 
-      <!-- Card 3: Tiền đang treo -->
       <ElCol :sm="24" :md="12" :lg="6">
         <div
           class="art-card p-5 h-full border-l-4"
@@ -149,7 +144,6 @@
         </div>
       </ElCol>
 
-      <!-- Card 4: Cần xử lý -->
       <ElCol :sm="24" :md="12" :lg="6">
         <div class="art-card p-5 h-full border-l-4 border-gray-500">
           <div
@@ -187,7 +181,6 @@
       </ElCol>
     </ElRow>
 
-    <!-- Charts + Monthly summary -->
     <ElRow :gutter="20" class="mb-5">
       <ElCol :sm="24" :lg="16">
         <div class="art-card p-5 h-full">
@@ -245,7 +238,6 @@
       </ElCol>
     </ElRow>
 
-    <!-- Nguồn doanh thu + Staff -->
     <ElRow :gutter="20" class="mb-5">
       <ElCol :sm="24" :lg="12">
         <div class="art-card p-5 h-full">
@@ -320,7 +312,6 @@
       </ElCol>
     </ElRow>
 
-    <!-- Dòng giao dịch gần đây -->
     <ElRow>
       <ElCol :span="24">
         <div class="art-card p-5">

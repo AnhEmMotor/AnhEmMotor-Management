@@ -1,8 +1,6 @@
 <template>
   <div class="resp-page returns-page flex flex-col gap-4 h-full">
-    <!-- List Layout -->
     <div class="list-layout flex gap-4" style="height: calc(100vh - 120px)">
-      <!-- Request List -->
       <div class="left-panel w-full flex flex-col gap-3">
         <ElCard class="list-card flex flex-col" shadow="never">
           <template #header>
@@ -14,7 +12,6 @@
             </div>
           </template>
 
-          <!-- Search & Filter -->
           <div class="filter-bar flex gap-2 mb-3">
             <ElInput
               v-model="searchQuery"
@@ -42,7 +39,6 @@
             </ElSelect>
           </div>
 
-          <!-- Request List -->
           <div class="request-list flex-1 overflow-y-auto">
             <div
               v-for="req in filteredRequests"
@@ -91,7 +87,6 @@
       </div>
     </div>
 
-    <!-- CENTER DETAIL DIALOG -->
     <ElDialog
       v-model="detailDialogVisible"
       :title="'Chi tiết hồ sơ sự cố - ' + (selectedRequest?.rmaCode || '')"
@@ -100,7 +95,6 @@
       class="rounded-xl"
     >
       <div v-if="selectedRequest" class="flex flex-col gap-3">
-        <!-- Request Info Grid -->
         <div class="info-grid grid grid-cols-2 gap-3 mb-4">
           <div class="info-item">
             <span class="text-xs text-gray-500">Mã phiếu xử lý</span>
@@ -152,7 +146,6 @@
           </div>
         </div>
 
-        <!-- Reason -->
         <div class="reason-section mb-4">
           <h4 class="font-bold text-gray-700 mb-2">Lý do khiếu nại</h4>
           <ElAlert type="warning" :closable="false" class="reason-text">
@@ -160,7 +153,6 @@
           </ElAlert>
         </div>
 
-        <!-- Inspection Info -->
         <div
           v-if="
             selectedRequest.boxCondition ||
@@ -192,7 +184,6 @@
           </div>
         </div>
 
-        <!-- Rejection Reason (shown when rejected) -->
         <div
           v-if="selectedRequest.status === 'rejected' && selectedRequest.rejectionReason"
           class="rejection-section mb-4"
@@ -203,7 +194,6 @@
           </ElAlert>
         </div>
 
-        <!-- Original Order Products -->
         <div class="products-section mb-4">
           <h4 class="font-bold text-gray-700 mb-2">Sản phẩm liên quan</h4>
           <ElTable :data="selectedRequest.items" border size="small" max-height="200">
@@ -225,7 +215,6 @@
           </ElTable>
         </div>
 
-        <!-- Action Buttons -->
         <div class="mt-4 flex flex-col gap-2 border-t pt-4">
           <div v-if="selectedRequest.status === 'pending'" class="flex justify-end gap-2">
             <template v-if="selectedRequest.type === 'cancel'">
@@ -252,7 +241,6 @@
       </div>
     </ElDialog>
 
-    <!-- Rejection Dialog -->
     <ElDialog
       v-model="rejectDialog.visible"
       title="Từ chối yêu cầu"
@@ -279,7 +267,6 @@
       </template>
     </ElDialog>
 
-    <!-- Evidence Preview Dialog -->
     <ElDialog v-model="previewDialog.visible" :title="previewDialog.title" width="600px">
       <img
         v-if="previewDialog.type === 'image'"
@@ -304,7 +291,6 @@ import { getReturns, getReturnDetail, inspectReturn, rejectReturn } from '@/api/
 
 defineOptions({ name: 'SalesReturns' });
 
-// ==================== TYPES ====================
 interface ReturnItem {
   id: number;
   rmaCode: string;
@@ -331,7 +317,6 @@ interface ReturnItem {
   returnShippingCost?: number;
 }
 
-// ==================== STATE ====================
 const requests = ref<ReturnItem[]>([]);
 const selectedRequest = ref<ReturnItem | null>(null);
 const searchQuery = ref('');
@@ -350,7 +335,6 @@ const previewDialog = reactive({
   type: 'image' as 'image' | 'video',
 });
 
-// ==================== FETCH ====================
 async function fetchData() {
   try {
     loading.value = true;
@@ -382,7 +366,6 @@ function inferType(r: { reason: string }): 'return' | 'cancel' {
   return 'return';
 }
 
-// ==================== COMPUTED ====================
 const filteredRequests = computed(() => {
   let result = requests.value;
   if (searchQuery.value) {
@@ -399,7 +382,6 @@ const filteredRequests = computed(() => {
 
 const pendingCount = computed(() => requests.value.filter((r) => r.status === 'pending').length);
 
-// ==================== METHODS ====================
 function formatDateTime(dateStr?: string): string {
   if (!dateStr) return '---';
   const d = new Date(dateStr);
@@ -497,7 +479,6 @@ async function selectRequest(req: ReturnItem) {
 }
 
 function handleSearch() {
-  // Filter is reactive via computed
 }
 
 function previewEvidence(evidence: { url: string; label: string; type: string }) {
@@ -507,7 +488,6 @@ function previewEvidence(evidence: { url: string; label: string; type: string })
   previewDialog.visible = true;
 }
 
-// ==================== ACTIONS ====================
 function handleReject() {
   if (!selectedRequest.value) return;
   rejectDialog.visible = true;

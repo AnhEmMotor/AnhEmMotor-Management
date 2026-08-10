@@ -190,7 +190,6 @@ const menuList = computed(() => {
   const menuStore = useMenuStore();
   const allMenus = menuStore.menuList;
 
-  // Lọc menu theo phân hệ hiện tại (Admin hoặc Factory)
   const isPathInMenu = (menus: any[], targetPath: string): boolean => {
     return menus.some((m) => {
       if (m.path && m.path.startsWith('/') && targetPath.startsWith(m.path)) return true;
@@ -220,15 +219,12 @@ const menuList = computed(() => {
   } else if (isAccountant) {
     allowedPaths = accountancyMenu.map((m) => m.path);
   } else {
-    // Mặc định fallback về admin nếu không match
     allowedPaths = adminMenu.map((m) => m.path);
   }
 
   const workspaceMenus = allMenus.filter((m) => allowedPaths.includes(m.path));
 
   if (!isTopLeftMenu.value && !isDualMenu.value) {
-    // Nếu phân hệ chỉ có 1 root wrapper (vd: /Accountant, /Marketing, /Order, /Warehouse)
-    // thì trả về children trực tiếp để sidebar hiển thị phẳng (không lồng thêm 1 cấp)
     if (workspaceMenus.length === 1 && workspaceMenus[0].children?.length) {
       return workspaceMenus[0].children;
     }
@@ -248,15 +244,6 @@ const menuList = computed(() => {
   return currentMenu?.children ?? [];
 });
 
-// Nếu quyền hạn thay đổi khiến sidebar của phân hệ đang xem trở nên rỗng,
-// tự động đưa người dùng về trang workspace thay vì để họ kẹt lại trang không còn quyền.
-// watch(menuList, (list) => {
-//   if (route.path === "/workspace" || route.meta.isFirstLevel) return;
-//   if (isIframe(route.path)) return;
-//   if (list.length === 0) {
-//     router.replace("/workspace");
-//   }
-// });
 
 const scrollbarStyle = computed(() => {
   const isCollapsed = isDualMenu.value && !menuOpen.value;
@@ -296,7 +283,6 @@ const findIframeMenuList = (currentPath: string, menuList: any[]) => {
   return [];
 };
 
-// Removed unused homePath
 
 const navigateToHome = (): void => {
   router.push('/workspace');

@@ -1,10 +1,8 @@
 <template>
   <div class="manual-layout h-screen flex flex-col overflow-hidden relative">
-    <!-- Background Image -->
     <img src="@/assets/images/HDSD.jpg" class="manual-image-bg" alt="background" />
     <div class="manual-bg-overlay"></div>
 
-    <!-- Header -->
     <div
       id="app-header"
       class="w-full sticky top-0 z-50 shadow-sm relative"
@@ -13,14 +11,11 @@
       <ArtHeaderBar :isPortal="true" />
     </div>
 
-    <!-- Main Workspace -->
     <div class="manual-container flex flex-1 overflow-hidden relative z-10">
-      <!-- Content Area -->
       <div
         class="manual-content flex-1 overflow-y-auto custom-scrollbar p-8 md:p-12 relative flex flex-col"
       >
         <div class="w-full max-w-[1300px] mx-auto flex-1 flex flex-col justify-center">
-          <!-- Overview -->
           <div v-if="activeSection === 'overview'">
             <div
               class="mb-8 mx-auto max-w-2xl bg-black/40 backdrop-blur-md rounded-2xl py-6 px-8 border border-white/10 shadow-2xl text-center"
@@ -75,7 +70,6 @@
             </div>
           </div>
 
-          <!-- Specific Modules -->
           <div
             v-else
             :key="activeSection"
@@ -107,7 +101,6 @@
             </p>
 
             <div class="prose max-w-none" style="color: var(--el-text-color-regular)">
-              <!-- Mock Content -->
               <h3 class="text-xl font-bold mb-4" style="color: var(--el-text-color-primary)">
                 1. Giới thiệu phân hệ
               </h3>

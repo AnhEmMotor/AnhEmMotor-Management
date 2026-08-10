@@ -291,14 +291,12 @@ const exporting = ref(false);
 const loadingData = ref(false);
 const inventoryThreshold = ref(5);
 
-// Pagination state
 const paginationState = ref({
   current: 1,
   size: 10,
   total: 0,
 });
 
-// Dialog & Detail viewing state
 const dialogVisible = ref(false);
 const activeTab = ref('receipts');
 const selectedRow = ref<StockItem | null>(null);
@@ -306,13 +304,11 @@ const selectedRowName = ref('');
 const mockReceipts = ref<MockReceipt[]>([]);
 const mockInvoices = ref<MockInvoice[]>([]);
 
-// Receipt full detail dialog state
 const receiptDetailVisible = ref(false);
 const receiptDetailData = ref<any>(null);
 
 const tableData = ref<StockItem[]>([]);
 
-// Fetch full receipt details
 const viewReceiptDetail = async (id?: number) => {
   if (!id) return;
   try {
@@ -327,7 +323,6 @@ const viewReceiptDetail = async (id?: number) => {
   }
 };
 
-// API mapper function
 const mapToStockItems = (apiItems: any[]): StockItem[] => {
   if (!apiItems) return [];
   return apiItems.map((prod: any) => {
@@ -376,7 +371,6 @@ const mapToStockItems = (apiItems: any[]): StockItem[] => {
   });
 };
 
-// Fetch data from API
 const fetchData = async () => {
   loadingData.value = true;
   try {
@@ -422,7 +416,6 @@ onMounted(async () => {
   fetchData();
 });
 
-// Compute overall stats for the cards based on current page table data
 const totalStats = computed(() => {
   return tableData.value.reduce(
     (acc, p) => {
@@ -435,7 +428,6 @@ const totalStats = computed(() => {
   );
 });
 
-// Table columns definition
 const columns = [
   {
     label: 'Tên Sản phẩm / Biến thể / Màu sắc',
@@ -516,12 +508,10 @@ const handleCurrentChange = (val: number) => {
   fetchData();
 };
 
-// Filter tree recursively (just return tableData since filtered at backend)
 const filteredTableData = computed(() => {
   return tableData.value;
 });
 
-// Table row styling helpers
 const getNameClass = (row: StockItem) => {
   if (row.level === 0) return 'text-gray-900 font-bold text-sm md:text-base';
   if (row.level === 1) return 'text-gray-700 font-medium text-sm';

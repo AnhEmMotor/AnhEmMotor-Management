@@ -366,7 +366,6 @@
           />
         </div>
 
-        <!-- Phân luồng & Phân công vai trò / Điều phối xưởng -->
         <div
           class="p-2.5 rounded-xl border transition-all"
           :class="
@@ -501,7 +500,6 @@
       </template>
     </ElDialog>
 
-    <!-- Dialog hiển thị danh sách lịch hẹn trong ngày -->
     <ElDialog
       v-model="dayListDialogVisible"
       width="440px"
@@ -776,7 +774,6 @@ const fetchBookings = async () => {
   }
 };
 
-// Load technician list for workshop type assignments
 const technicianList = ref<{ id: number; name: string }[]>([]);
 
 const loadTechnicianList = async () => {
@@ -887,7 +884,6 @@ const handleBookingClick = async (booking: any) => {
   bookingForm.value = { ...booking };
   dialogVisible.value = true;
 
-  // Reset linkedLead
   linkedLead.value = { id: null, assignedToId: null };
 
   const bookingPhone = booking.phone || booking.phoneNumber;
@@ -934,7 +930,6 @@ const handleSaveBooking = async () => {
   if (!bookingForm.value.phone) return ElMessage.warning('Vui lòng nhập số điện thoại.');
   if (!bookingForm.value.date) return ElMessage.warning('Vui lòng chọn ngày hẹn.');
 
-  // Check overlap on frontend
   const hasOverlap = bookings.value.some(
     (b) =>
       b.date === bookingForm.value.date &&
@@ -997,7 +992,6 @@ const handleSaveBooking = async () => {
           notes: bookingForm.value.content,
         });
       } catch {
-        /* best-effort */
       }
     }
 

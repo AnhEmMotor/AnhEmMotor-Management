@@ -1,6 +1,5 @@
 <template>
   <div class="resp-page p-6 bg-slate-50 min-h-screen">
-    <!-- Header -->
     <div
       class="flex items-center justify-between mb-6 flex-wrap gap-4 bg-white p-6 rounded-xl shadow-sm border border-slate-100"
     >
@@ -19,7 +18,6 @@
       </div>
 
       <div class="flex items-center gap-2 flex-wrap">
-        <!-- Nút từ chối bảo hành -->
         <el-button
           v-if="canReject"
           type="danger"
@@ -31,7 +29,6 @@
           Từ Chối Bảo Hành
         </el-button>
 
-        <!-- Các nút chuyển đổi trạng thái workflow -->
         <el-button
           v-if="currentStatusValue === 1"
           type="primary"
@@ -88,7 +85,6 @@
       </div>
     </div>
 
-    <!-- Pipeline progress -->
     <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 mb-6">
       <div class="flex items-center justify-between mb-4">
         <span class="font-semibold text-slate-800 text-sm">TIẾN TRÌNH XỬ LÝ HỒ SƠ</span>
@@ -106,9 +102,7 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-10 gap-6">
-      <!-- Cột trái (70%) - Chi tiết nghiệp vụ -->
       <div class="lg:col-span-7 space-y-6">
-        <!-- Mô tả sự cố -->
         <el-card class="shadow-sm border-slate-100" header-class="font-bold text-slate-800">
           <template #header>
             <div class="flex items-center gap-2">
@@ -161,7 +155,6 @@
           </div>
         </el-card>
 
-        <!-- Danh sách phụ tùng bồi hoàn -->
         <el-card class="shadow-sm border-slate-100">
           <template #header>
             <div class="flex items-center gap-2 justify-between">
@@ -220,7 +213,6 @@
           </el-table>
         </el-card>
 
-        <!-- Lịch sử bảo hành của xe -->
         <el-card class="shadow-sm border-slate-100" v-loading="historyLoading">
           <template #header>
             <div class="flex items-center gap-2 justify-between">
@@ -238,7 +230,6 @@
               </div>
             </div>
           </template>
-          <!-- Empty state -->
           <div
             v-if="!historyLoading && (!historyClaims || historyClaims.length === 0)"
             class="text-center py-10 text-slate-400"
@@ -246,7 +237,6 @@
             <el-icon class="text-4xl mb-2"><Timer /></el-icon>
             <p class="text-sm">Chưa có lịch sử bảo hành cho xe này.</p>
           </div>
-          <!-- History list -->
           <div v-else class="space-y-6">
             <div
               v-for="hc in historyClaims"
@@ -331,9 +321,7 @@
         </el-card>
       </div>
 
-      <!-- Cột phải (30%) - Định danh & Đối soát -->
       <div class="lg:col-span-3 space-y-6">
-        <!-- Thông tin xe & khách hàng -->
         <el-card class="shadow-sm border-slate-100">
           <template #header>
             <div class="font-bold text-slate-800 flex items-center gap-2">
@@ -417,7 +405,6 @@
           </div>
         </el-card>
 
-        <!-- Đối soát hãng -->
         <el-card class="shadow-sm border-slate-100">
           <template #header>
             <div class="font-bold text-slate-800 flex items-center gap-2">
@@ -453,7 +440,6 @@
           </div>
         </el-card>
 
-        <!-- Chi phí tổng hợp -->
         <el-card class="shadow-sm border-slate-100 bg-slate-900 text-white">
           <template #header>
             <div class="font-bold text-white flex items-center gap-2">
@@ -530,7 +516,6 @@ const generateMockPlate = (id: number) => {
 const fixMojibake = (text: string | null | undefined) => {
   if (!text) return '';
 
-  // Demo text replacements for severely corrupted DB strings
   if (text.includes('60km/h'))
     return 'Kêu máy ở dải tốc độ cao (trên 60km/h), cảm giác giật cục khi tăng ga nhanh.';
   if (text.includes('C') && text.includes('bi') && text.includes('n')) return 'Bộ bi nồi côn';
@@ -554,15 +539,14 @@ const fixMojibake = (text: string | null | undefined) => {
   return result;
 };
 
-// Trạng thái hiện tại dạng số để dễ so sánh và điều khiển workflow
 const currentStatusValue = computed(() => {
   return claim.value?.status ?? 1;
 });
 
 const activeStepIndex = computed(() => {
   const val = currentStatusValue.value;
-  if (val === 6) return 0; // Từ chối
-  return val - 1; // 1 -> 0, 5 -> 4
+  if (val === 6) return 0; 
+  return val - 1; 
 });
 
 const canReject = computed(() => {
@@ -586,7 +570,6 @@ const totalPartsCost = computed(() => {
   }, 0);
 });
 
-// --- Warranty History ---
 const historyClaims = ref<any[]>([]);
 const historyLoading = ref(false);
 const totalHistoryPartsCost = computed(() => {
@@ -596,7 +579,6 @@ const totalHistoryPartsCost = computed(() => {
   }, 0);
 });
 
-// Methods
 const formatDateOnly = (val: any) => {
   if (!val) return 'N/A';
   return dayjs(val).format('DD/MM/YYYY');
@@ -665,7 +647,6 @@ async function loadHistory() {
   }
 }
 
-// APIs
 async function load() {
   loading.value = true;
   try {
@@ -682,7 +663,6 @@ async function load() {
   }
 }
 
-// Cập nhật trạng thái
 async function handleUpdateStatus(statusNum: number) {
   const labels: Record<number, string> = {
     2: 'gửi hãng thẩm định',
@@ -718,7 +698,6 @@ async function handleUpdateStatus(statusNum: number) {
   }
 }
 
-// Thẩm định duyệt bồi hoàn từ hãng (đặc thù chuyển status 3 và ghi nhận quyết định hãng)
 async function handleApproveClaim() {
   try {
     const { value: decisionText } = await ElMessageBox.prompt(
@@ -739,7 +718,7 @@ async function handleApproveClaim() {
 
     submitting.value = true;
     await WarrantyClaimApi.updateStatus(claimId, {
-      status: 3, // Approved
+      status: 3, 
       manufacturerDecision: decisionText,
     });
     ElMessage.success('Đã duyệt bồi hoàn bảo hành thành công!');
@@ -754,7 +733,6 @@ async function handleApproveClaim() {
   }
 }
 
-// Kích hoạt thu hồi đặc biệt
 async function handleRecall() {
   try {
     await ElMessageBox.confirm(
@@ -769,7 +747,7 @@ async function handleRecall() {
 
     submitting.value = true;
     await WarrantyClaimApi.updateStatus(claimId, {
-      status: 5, // Đóng hồ sơ bồi hoàn
+      status: 5, 
       isRecall: true,
       manufacturerDecision: 'Hãng phê duyệt triệu hồi xe lỗi và cấp xe mới.',
     });

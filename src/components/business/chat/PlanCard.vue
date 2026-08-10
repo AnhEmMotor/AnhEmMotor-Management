@@ -225,9 +225,6 @@ const onReorder = async () => {
   await applyOperations(operations);
 };
 
-// Duyệt/huỷ/sửa kế hoạch giờ đi qua chat (POST .../plan/chat), không còn nút bấm — xem
-// ChatDrawer.vue sendPlanChat. Bình luận theo bước cũng gọi cùng endpoint đó, kèm targetStepId
-// để backend ghép thẳng thành operation "comment" mà không cần LLM diễn giải (Stage 10.9).
 const commentDrafts = ref<Record<string, string>>({});
 
 const submitComment = async (step: PlanStepDto) => {

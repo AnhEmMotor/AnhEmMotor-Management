@@ -541,7 +541,6 @@ const fetchTableData = async () => {
   try {
     let month: number | undefined = undefined;
     let year: number | undefined = undefined;
-    // Extract month and year from startDate or default to current
     if (props.startDate) {
       const d = new Date(props.startDate);
       month = d.getMonth() + 1;

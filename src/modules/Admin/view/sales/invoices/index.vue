@@ -1,6 +1,5 @@
 <template>
   <div class="resp-page invoices-page flex flex-col gap-4 pb-5">
-    <!-- Header Actions -->
     <div class="flex items-center justify-between max-md:flex-wrap max-md:gap-3">
       <div class="flex items-center gap-3">
         <ElInput
@@ -34,7 +33,6 @@
       </ElButton>
     </div>
 
-    <!-- Invoice List -->
     <ElCard shadow="never" class="invoice-list-card">
       <ElTable
         :data="paginatedInvoices"
@@ -116,7 +114,6 @@
         </ElTableColumn>
       </ElTable>
 
-      <!-- Pagination -->
       <div class="flex justify-end mt-4">
         <ElPagination
           v-model:current-page="pagination.current"
@@ -130,7 +127,6 @@
       </div>
     </ElCard>
 
-    <!-- Invoice Detail / Edit Dialog -->
     <ElDialog
       v-model="dialog.visible"
       :title="dialog.title"
@@ -393,7 +389,6 @@
       </template>
     </ElDialog>
 
-    <!-- Create Dialog -->
     <ElDialog
       v-model="createDialog.visible"
       title="Tạo hóa đơn mới"
@@ -511,7 +506,6 @@ import {
 
 defineOptions({ name: 'SalesInvoices' });
 
-// ==================== TYPES ====================
 interface InvoiceRow {
   id: number;
   invoiceNumber: string;
@@ -538,7 +532,6 @@ interface InvoiceRow {
   createdAt: string;
 }
 
-// ==================== STATE ====================
 const invoices = ref<InvoiceRow[]>([]);
 const loadingList = ref(false);
 const actionLoading = ref(false);
@@ -582,7 +575,6 @@ const createDialog = reactive({
   } as CreateAdminInvoiceRequest,
 });
 
-// ==================== COMPUTED ====================
 const filteredInvoices = computed(() => {
   let result = invoices.value;
   if (searchQuery.value) {
@@ -608,7 +600,6 @@ const paginatedInvoices = computed(() => {
   return filteredInvoices.value.slice(start, end);
 });
 
-// ==================== FETCH ====================
 async function fetchInvoices() {
   loadingList.value = true;
   try {
@@ -645,7 +636,6 @@ function handleCurrentChange() {
   fetchInvoices();
 }
 
-// ==================== DIALOG ACTIONS ====================
 function handleRowClick(row: any) {
   dialog.readonly = true;
   dialog.title = `Hóa đơn ${row.invoiceNumber}`;
@@ -771,7 +761,6 @@ async function handleMarkCompleted(row: any) {
   }
 }
 
-// ==================== VOUCHER ====================
 async function applyInvoiceVoucher() {
   invoiceVoucherError.value = '';
   const code = invoiceVoucherCode.value.trim().toUpperCase();
@@ -848,7 +837,6 @@ async function removeInvoiceVoucher() {
   }
 }
 
-// ==================== HELPERS ====================
 function formatCurrency(value?: number): string {
   if (value == null) return '0 đ';
   return new Intl.NumberFormat('vi-VN', {

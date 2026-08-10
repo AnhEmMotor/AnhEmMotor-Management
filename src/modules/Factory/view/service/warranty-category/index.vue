@@ -13,7 +13,6 @@
       </template>
     </ReportPageHeader>
 
-    <!-- KPI Cards -->
     <div class="warranty-kpi-grid">
       <ArtStatsCard
         title="Tổng điều khoản"
@@ -41,7 +40,6 @@
       />
     </div>
 
-    <!-- Search Bar -->
     <ElCard class="warranty-filter-card">
       <ArtSearchBar
         v-model="searchForm"
@@ -53,7 +51,6 @@
       />
     </ElCard>
 
-    <!-- Table -->
     <ElCard class="warranty-table-card">
       <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
@@ -125,7 +122,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Create/Edit/View Dialog -->
     <ElDialog
       v-model="dialogVisible"
       :title="dialogTitle"

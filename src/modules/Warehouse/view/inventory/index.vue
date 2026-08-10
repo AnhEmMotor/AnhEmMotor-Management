@@ -6,5 +6,4 @@
 </template>
 
 <script setup lang="ts">
-// Inventory module index - main landing page
 </script>

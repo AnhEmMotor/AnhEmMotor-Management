@@ -242,7 +242,6 @@
           </ElCol>
         </ElRow>
 
-        <!-- Invoice Info if requested -->
         <ElAlert
           v-if="editingOrder && editingOrder.isCompanyInvoice"
           title="Yêu cầu xuất hóa đơn công ty (VAT)"

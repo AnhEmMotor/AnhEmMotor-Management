@@ -44,7 +44,6 @@ import { marked } from 'marked';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/atom-one-dark.css';
 
-// Configure marked
 const renderer = new marked.Renderer();
 renderer.code = function (tokenOrCode: any, maybeLang?: string) {
   let code = '';
@@ -60,7 +59,6 @@ renderer.code = function (tokenOrCode: any, maybeLang?: string) {
   const language = lang && hljs.getLanguage(lang) ? lang : 'plaintext';
   const highlighted = hljs.highlight(code, { language }).value;
 
-  // Escape code for data attribute to prevent XSS/breaking HTML
   const encodedCode = encodeURIComponent(code);
 
   return `
@@ -201,9 +199,6 @@ const goToSuggestedPage = (item: SuggestedPage) => {
   drawerVisible.value = false;
 };
 
-// Gợi ý prompt: rỗng khi chưa có tin nhắn nào -> câu mở đầu; sau khi AI trả lời xong (tin nhắn AI
-// cuối cùng, không còn đang stream) -> câu hỏi tiếp theo dựa trên tool vừa dùng. Ẩn khi người dùng
-// đang gõ, để không đè lên nội dung họ đang nhập.
 const messageInputRef = ref();
 const activeSuggestions = computed<string[]>(() => {
   if (newMessage.value.trim()) return [];
@@ -211,9 +206,6 @@ const activeSuggestions = computed<string[]>(() => {
   if (isSending.value) return [];
   const lastMsg = messages.value[messages.value.length - 1];
   if (!lastMsg || lastMsg.role !== 'AI') return [];
-  // AI tự sinh gợi ý bám theo hội thoại (tag <goi_y> ở backend) được ưu tiên hơn map tĩnh —
-  // map tĩnh chỉ còn là fallback khi AI không phát gợi ý (bị guardrail chặn, model không tuân thủ,
-  // hoặc tin nhắn cũ trước khi có tính năng này).
   const aiSuggestion = (lastMsg.reasoningSteps ?? []).find((s) => s.kind === 'suggestion');
   if (aiSuggestion) return [aiSuggestion.text];
   const doneToolNames = (lastMsg.reasoningSteps ?? []).filter(isDoneToolStep).map((s) => s.name);
@@ -224,7 +216,6 @@ const applySuggestion = (text: string) => {
   newMessage.value = text;
   nextTick(() => messageInputRef.value?.focus());
 };
-// Gợi ý mở đầu (chưa có tin nhắn nào): bấm là gửi luôn, không cần gõ lại/bấm Gửi lần nữa.
 const sendSuggestion = (text: string) => {
   newMessage.value = text;
   sendMessage();
@@ -246,8 +237,6 @@ const toolCallText = (tool: ChatMessageToolCall) => {
 };
 
 const CITATION_PATTERN = /\[(c\d+)\]/g;
-// Phòng hờ: tag gợi ý đáng lẽ đã bị backend bóc ra trước khi tới text_delta (xem call_model_node),
-// nhưng nếu lỡ lọt vào msg.message thì cũng không hiển thị ra cho người dùng thấy.
 const SUGGESTION_PATTERN = /<goi_y>[\s\S]*?<\/goi_y>/g;
 
 const renderAiMessage = (msg: ChatMessage) => {
@@ -361,14 +350,11 @@ const submitMessageFeedback = async (msg: ChatMessage) => {
     await ChatApi.submitFeedback(runId, comment);
     ElMessage.success('Đã ghi nhận phản hồi, cảm ơn bạn!');
   } catch {
-    // người dùng bấm Huỷ hoặc API lỗi — không cần báo thêm
   } finally {
     submittingFeedback.value[msg.id!] = false;
   }
 };
 
-// Panel suy nghĩ luôn thu gọn theo mặc định (kể cả khi đang chạy) — trừ khi người dùng tự bấm
-// mở thì giữ theo lựa chọn đó (override) cho tới khi tin nhắn bị gỡ khỏi state.
 const reasoningPanelOverride = ref<Record<string, boolean>>({});
 const isReasoningPanelOpen = (msg: ChatMessage) => {
   if (msg.id && msg.id in reasoningPanelOverride.value) {
@@ -381,16 +367,11 @@ const toggleReasoningPanel = (msg: ChatMessage) => {
   reasoningPanelOverride.value[msg.id] = !isReasoningPanelOpen(msg);
 };
 
-// Tin nhắn tạo trước khi backend lưu ReasoningElapsedSeconds vẫn có thể thiếu elapsed dù đã xong
-// từ lâu. Chỉ tin nhắn ĐANG thật sự live-stream (chính là activeStreams hiện tại) mới được coi là
-// "đang suy nghĩ" khi thiếu elapsed; còn lại xem như đã xong, không hiện spinner treo vô hạn.
 const isMessageLive = (msg: ChatMessage) => {
   const sessionId = activeSessionId.value;
   return !!sessionId && activeStreams.value[sessionId] === msg;
 };
 
-// Backend trả DateTime dạng UTC nhưng thiếu hậu tố "Z"/offset (Kind=Unspecified khi serialize) —
-// new Date() mặc định hiểu chuỗi không có timezone là GIỜ LOCAL, lệch hẳn theo múi giờ trình duyệt.
 const parseUtcTimestamp = (isoString: string): number => {
   const hasTimezone = /[zZ]|[+-]\d{2}:\d{2}$/.test(isoString);
   return new Date(hasTimezone ? isoString : `${isoString}Z`).getTime();
@@ -440,7 +421,6 @@ const startConnection = async () => {
   if (connection.value?.state === HubConnectionState.Connected) return;
 
   const token = userStore.accessToken;
-  // using env API_URL or fallback
   const baseUrl =
     import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'https://localhost:7147';
   connection.value = new HubConnectionBuilder()
@@ -540,8 +520,6 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
           if (activeSessionId.value === sessionId) scrollToBottom();
           break;
         case 'message_correction':
-          // Guardrail phát hiện câu vừa stream sai (bịa số, hứa hẹn suông, lộ dữ liệu...) sau khi
-          // sinh xong — THAY toàn bộ nội dung đã hiện, không phải nối thêm.
           if (aiMsg) aiMsg.message = evt.payload;
           if (activeSessionId.value === sessionId) scrollToBottom();
           break;
@@ -675,9 +653,6 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
         case 'plan_ready': {
           const plan = activePlans.value[sessionId];
           if (plan) plan.status = 'Ready';
-          // Từ đây graph đã kết thúc (route plan→END, không interrupt) — sidecar không còn
-          // emit run_heartbeat trong lúc chờ duyệt (có thể tới 24h). Watchdog 45s không còn ý
-          // nghĩa "mất kết nối" ở trạng thái này, phải tắt để không xoá nhầm activePlans.
           clearWatchdog(sessionId);
           break;
         }
@@ -723,7 +698,6 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
         case 'plan_approved': {
           const plan = activePlans.value[sessionId];
           if (plan) plan.status = 'Executing';
-          // Run chạy thật trở lại (enqueue lại sau khi duyệt) — bật lại watchdog bảo vệ.
           armWatchdog(sessionId);
           break;
         }
@@ -733,7 +707,6 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
           break;
         }
         default:
-          // Bỏ qua event lạ để tương thích ngược khi backend thêm loại event mới
           break;
       }
 
@@ -755,8 +728,6 @@ const resumeActiveRun = async (sessionId: string) => {
     const activeRun = await ChatApi.getActiveRun(sessionId);
     if (!activeRun) return;
 
-    // ChatRun.Status không có giá trị "Executing" (đó là ChatPlanStatus) — dùng thẳng việc
-    // getPlan có trả về plan hay không (404 = run này không có plan) để quyết định hiện panel.
     const plan = await ChatApi.getPlan(activeRun.runId).catch(() => null);
     if (plan) {
       activePlans.value[sessionId] = plan;
@@ -778,8 +749,6 @@ const resumeActiveRun = async (sessionId: string) => {
       await startConnection();
     }
     subscribeToRun(sessionId, activeRun.runId, activeRun.lastSeq);
-    // subscribeToRun luôn arm watchdog vô điều kiện — tắt lại ngay nếu đang chờ duyệt, vì
-    // không còn run_heartbeat nào tới cho tới khi user duyệt/huỷ (có thể tới 24h).
     if (activeRun.status === 'AwaitingApproval') {
       clearWatchdog(sessionId);
     }
@@ -997,10 +966,6 @@ const sendSteering = (sessionId: string, text: string) => {
 
 const PLAN_CHAT_STATUSES = new Set(['Drafting', 'Ready']);
 
-// Thay cho nút Duyệt/Huỷ trên PlanCard: mọi tin nhắn gõ trong lúc plan đang Drafting/Ready đi qua
-// đây (POST .../plan/chat) thay vì sendSteering — SendSteering cố ý từ chối AwaitingApproval vì
-// graph đã kết thúc (route plan→END, không interrupt), gõ chat lúc đó trước đây âm thầm tạo hẳn
-// 1 run mới không liên quan gì tới plan (Stage 10.9).
 const sendPlanChat = async (sessionId: string, runId: string, text: string) => {
   messages.value.push({
     id: `planchat-${runId}-${Date.now()}`,
@@ -1052,8 +1017,6 @@ const sendMessage = async () => {
     return;
   }
 
-  // Run có thể vừa được tab khác khởi động mà tab này chưa kịp subscribe —
-  // kiểm tra lại với server trước khi tạo run mới, tránh 2 run cùng chạy.
   if (sessionId && !activeStreams.value[sessionId]) {
     try {
       const activeRun = await ChatApi.getActiveRun(sessionId);
@@ -1131,7 +1094,6 @@ const formatTime = (isoString: string) => {
     class="ai-chat-drawer-no-padding"
   >
     <div class="flex h-full border-l border-gray-200">
-      <!-- Left: Session List -->
       <div class="chat-left-col flex-col border-r border-gray-200 bg-gray-50">
         <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-white">
           <h2 class="font-semibold text-lg">Phiên Chat</h2>
@@ -1192,12 +1154,9 @@ const formatTime = (isoString: string) => {
         </div>
       </div>
 
-      <!-- Right: Chat Area -->
       <div class="chat-right-col flex-col bg-white">
-        <!-- Chat Header -->
         <div class="p-4 border-b border-gray-200 flex justify-between items-center shadow-sm z-10">
           <div class="flex items-center gap-2">
-            <!-- Mobile Dropdown -->
             <div class="chat-mobile-dropdown">
               <el-dropdown trigger="hover">
                 <el-button :icon="Menu" circle size="small" />
@@ -1238,7 +1197,6 @@ const formatTime = (isoString: string) => {
           </div>
         </div>
 
-        <!-- Messages Area -->
         <div
           class="flex-1 overflow-y-auto p-4 bg-gray-50 flex flex-col gap-4"
           ref="messagesContainer"
@@ -1426,7 +1384,6 @@ const formatTime = (isoString: string) => {
           </template>
         </div>
 
-        <!-- Input Area -->
         <div class="p-4 border-t border-gray-200 bg-white">
           <div
             v-if="currentSteeringStatus"
@@ -1538,7 +1495,6 @@ const formatTime = (isoString: string) => {
         </div>
       </div>
 
-      <!-- Right: Plan Panel (Stage 10.9) -->
       <div
         v-if="planPanelOpen && currentPlan"
         class="chat-plan-col flex-col border-l border-gray-200 bg-white"

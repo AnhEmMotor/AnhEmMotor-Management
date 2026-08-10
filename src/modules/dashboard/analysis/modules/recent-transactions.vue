@@ -35,7 +35,6 @@
               >🔴</span
             >
             <span v-else class="ml-1 w-4"></span>
-            <!-- spacer -->
           </div>
         </template>
       </ElTableColumn>

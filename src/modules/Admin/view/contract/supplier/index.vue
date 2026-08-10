@@ -149,7 +149,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Create/Edit Dialog -->
     <ElDialog
       v-model="dialogVisible"
       :title="dialogTitle"
@@ -232,7 +231,6 @@
             </ElFormItem>
           </el-col>
 
-          <!-- Right Column (File Upload & Terms) -->
           <el-col :span="12">
             <div class="border-l pl-4">
               <ElFormItem label="File hợp đồng">
@@ -1054,14 +1052,6 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-/*
-  Quy ước quan trọng để tránh lỗi màu:
-  - Mọi rule KHÔNG nằm trong "html.dark ..." sẽ áp dụng cho CẢ light mode
-    và dark mode. Vì vậy các màu chữ/nền cứng (ví dụ #f8fafc, #161618...)
-    chỉ được đặt bên trong khối "html.dark" ở cuối file.
-  - Ở light mode, Element Plus tự set màu chữ/nền hợp lý theo theme mặc định,
-    nên ta không cần (và không nên) ép màu ở đây.
-*/
 
 .supplier-create-button {
   height: 40px;
@@ -1243,9 +1233,6 @@ onMounted(async () => {
   }
 }
 
-/* ============================================================
-   DARK MODE ONLY — mọi màu chữ/nền tối đặt trong đây.
-   ============================================================ */
 html.dark .contract-supplier-container {
   min-height: 100vh;
   color: #f8fafc;
@@ -1275,24 +1262,11 @@ html.dark .supplier-table-card :deep(.el-pagination *) {
   opacity: 1 !important;
 }
 
-/* FIX #1: .art-table-card nằm CÙNG thẻ ElCard với .supplier-table-card
-   (không phải phần tử con), nên selector cũ
-   "html.dark .supplier-table-card :deep(.art-table-card)" dùng
-   descendant-combinator không bao giờ khớp -> card bảng KHÔNG
-   được set nền/viền tối như mong muốn. Sửa lại thành selector nối
-   liền (cùng phần tử), giống cách viết ".supplier-kpi-grid :deep(.art-card)"
-   nhưng đúng ngữ cảnh vì đây là chính phần tử, không phải con cháu. */
 html.dark .supplier-table-card.art-table-card {
   background: #161618 !important;
   border-color: rgb(255 255 255 / 9%) !important;
 }
 
-/* FIX #2: .supplier-filter-card TRƯỚC ĐÂY không có bất kỳ rule nền/viền
-   riêng nào cho dark mode (khác với kpi-card và table-card). Điều này khiến
-   card tìm kiếm ở dark mode rơi vào style mặc định khác biệt, làm padding/viền
-   hiển thị "bó sát" hơn so với light mode và so với các card khác trong cùng
-   trang. Thêm rule tường minh để đồng bộ diện mạo + đảm bảo padding không bị
-   ghi đè bởi style global khác. */
 html.dark .supplier-filter-card {
   background: #161618 !important;
   border-color: rgb(255 255 255 / 9%) !important;

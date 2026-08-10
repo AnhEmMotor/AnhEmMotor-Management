@@ -119,7 +119,6 @@
               <ElIcon><Delete /></ElIcon> Xóa ({{ selectedRows.length }})
             </ElButton>
 
-            <!-- Assuming stats will return deletedSuppliersCount if needed, or we just show the button -->
             <ElButton
               type="info"
               v-ripple
@@ -144,7 +143,6 @@
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
-        <!-- Thêm cột checkbox thông qua config columns (type: 'selection') hoặc ArtTable sẽ tự xử lý nếu có type='selection' trong columns definition -->
         <template #partnerTypeId="{ row }">
           <ElTag :type="getPartnerTypeTag(row.partnerTypeId)" size="small">
             {{ getPartnerTypeName(row.partnerTypeId) }}
@@ -594,7 +592,6 @@ const {
   handleExport,
 } = useSupplierTable();
 
-// Update search items dropdown options
 import { watchEffect } from 'vue';
 watchEffect(() => {
   if (partnerTypes.value && searchItems.value[1].props) {
@@ -616,7 +613,6 @@ const getPartnerTypeName = (type: string) => {
   return partnerType?.name || type;
 };
 
-// Define columns inside index to allow selection
 const columns = ref([
   { type: 'selection' as const, width: 50, align: 'center' },
   ...baseColumns.value,

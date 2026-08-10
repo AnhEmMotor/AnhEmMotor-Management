@@ -28,7 +28,6 @@ defineOptions({ name: 'CustomerStoreChat' });
 const userStore = useUserStore();
 const myUserId = computed(() => userStore.info?.userId);
 
-// ================= Danh sách phiên =================
 const sessions = ref<StoreChatSessionListItem[]>([]);
 const isLoadingSessions = ref(false);
 const filter = ref<'active' | 'all'>('active');
@@ -54,7 +53,6 @@ const loadSessions = async () => {
   }
 };
 
-// ================= Hội thoại đang xem =================
 const activeSessionId = ref<string | null>(null);
 const activeSession = computed(
   () => sessions.value.find((s) => s.id === activeSessionId.value) ?? null
@@ -98,26 +96,18 @@ const parseCards = (cardsJson: string | null) => {
 
 const formatTime = (iso: string) => new Date(iso).toLocaleString('vi-VN');
 
-// Tên hiển thị: ContactName (khách vãng lai đã điền) > CustomerName (đã đăng nhập) > "Khách vãng lai".
 const displayName = (session: StoreChatSessionListItem) =>
   session.contactName || session.customerName || 'Khách vãng lai';
 
-// Nội dung tin nhắn có thể do khách vãng lai gõ hoặc AI sinh ra — escape HTML trước khi qua marked để
-// không render thẳng thẻ/script nào từ nội dung chưa tin cậy (XSS), cùng cách Store xử lý ở chatMarkdown.js.
 const escapeHtml = (text: string) =>
   text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const renderMarkdown = (content: string) => marked.parse(escapeHtml(content), { breaks: true });
 
-// Tin nhắn Staff soạn bằng ArtWangEditor (rich-text) — nội dung đã là HTML qua editor sanitize sẵn,
-// không phải markdown thô như Ai/Visitor — escape+marked sẽ hiện nguyên văn thẻ <p>/<strong> cho khách.
 const renderMessageContent = (msg: StoreChatMessage) =>
   msg.sender === 'Staff' ? msg.content : renderMarkdown(msg.content);
 
-// ================= SignalR =================
 const connection = ref<HubConnection | null>(null);
 
-// Bong bóng AI đang build dần khi stream — -1 khi không có lượt trả lời nào đang chạy. Cùng cách
-// Store xử lý ở FloatingContact.vue để 2 bên nhất quán trải nghiệm xem AI gõ chữ realtime.
 let streamingIdx = -1;
 const newStreamingMsg = (): StoreChatMessage => ({
   id: 'streaming',
@@ -140,7 +130,6 @@ const startConnection = async () => {
     .configureLogging(LogLevel.None)
     .build();
 
-  // Phiên đổi trạng thái (khách bấm gặp nhân viên / đồng nghiệp claim/release) — refetch cho đơn giản.
   connection.value.on('SessionUpdated', () => {
     loadSessions();
   });
@@ -189,7 +178,6 @@ onBeforeUnmount(() => {
   connection.value?.stop();
 });
 
-// ================= Trả phiên lại AI =================
 const actingSessionIds = ref<Set<string>>(new Set());
 
 const release = async (session: StoreChatSessionListItem) => {
@@ -204,7 +192,6 @@ const release = async (session: StoreChatSessionListItem) => {
   }
 };
 
-// ================= Xoá phiên (vĩnh viễn) =================
 const deleteSession = async (session: StoreChatSessionListItem) => {
   try {
     await ElMessageBox.confirm(
@@ -213,7 +200,7 @@ const deleteSession = async (session: StoreChatSessionListItem) => {
       { confirmButtonText: 'Xoá', cancelButtonText: 'Huỷ', type: 'warning' }
     );
   } catch {
-    return; // Bấm Huỷ
+    return; 
   }
 
   actingSessionIds.value.add(session.id);
@@ -232,9 +219,6 @@ const deleteSession = async (session: StoreChatSessionListItem) => {
   }
 };
 
-// ================= Gán sản phẩm vào tin nhắn =================
-// Cùng dữ liệu AI gắn tự động (variant-cards: biến thể + toàn bộ màu sẵn có, khách tự bấm chọn màu
-// trong khung chat) — nhân viên chỉ chọn biến thể, không cần chọn trước 1 màu cụ thể.
 const productPickerVisible = ref(false);
 const productSearchKeyword = ref('');
 const isSearchingProducts = ref(false);
@@ -337,16 +321,12 @@ const variantDisplayLabel = (variant: StoreChatVariantCard) => {
   return colorNames ? `${label} → ${colorNames}` : label;
 };
 
-// ================= Gửi tin nhắn =================
-// Không còn bước "Nhận" riêng — gõ tin nhắn vào phiên Ai/Waiting nào cũng tự nhận luôn (Stage 06+).
-// Chỉ chặn khi phiên đã là Human do MỘT nhân viên khác phụ trách.
 const newMessage = ref('');
 const canReply = computed(
   () =>
     activeSession.value?.mode !== 'Human' || activeSession.value?.assignedStaffId === myUserId.value
 );
 
-// ArtWangEditor để trống thực ra vẫn còn thẻ rỗng "<p><br></p>" chứ không phải chuỗi rỗng.
 const isRichTextEmpty = (html: string) => !html || html === '<p><br></p>';
 const canSendMessage = computed(
   () => !isRichTextEmpty(newMessage.value) || pendingCards.value.length > 0
@@ -375,7 +355,6 @@ const sendMessage = async () => {
   <div
     class="flex h-[calc(100vh-140px)] border border-gray-200 rounded-lg overflow-hidden bg-white"
   >
-    <!-- Danh sách phiên -->
     <div class="w-80 flex flex-col border-r border-gray-200 bg-gray-50 shrink-0">
       <div class="p-3 border-b border-gray-200 bg-white">
         <el-radio-group v-model="filter" size="small">
@@ -447,7 +426,6 @@ const sendMessage = async () => {
       </div>
     </div>
 
-    <!-- Hội thoại -->
     <div class="flex-1 flex flex-col">
       <div v-if="!activeSessionId" class="m-auto text-gray-400">
         Chọn 1 phiên chat để xem hội thoại
@@ -677,8 +655,6 @@ const sendMessage = async () => {
 </template>
 
 <style scoped>
-/* Tailwind Typography (prose) bị reset list-style/padding bởi CSS toàn cục của Element Plus — cùng
-   fix đã áp dụng ở ChatDrawer.vue cho đúng vấn đề markdown gạch đầu dòng không hiện bullet. */
 :deep(.prose ul) {
   list-style-type: disc;
   padding-left: 1.5rem;

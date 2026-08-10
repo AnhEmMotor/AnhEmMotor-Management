@@ -44,10 +44,8 @@ const customRange = ref<[string, string] | null>(null);
 const priceUnit = ref('VND');
 
 function onPeriodChange() {
-  // placeholder
 }
 
 function onCustomRangeChange() {
-  // placeholder
 }
 </script>

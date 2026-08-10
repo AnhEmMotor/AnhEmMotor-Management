@@ -1,6 +1,5 @@
 <template>
   <div class="resp-page p-6 bg-slate-50 min-h-screen">
-    <!-- Header -->
     <div
       class="flex items-center justify-between mb-6 flex-wrap gap-4 bg-white p-6 rounded-xl shadow-sm border border-slate-100"
     >
@@ -15,7 +14,6 @@
       </div>
     </div>
 
-    <!-- Filters & Actions -->
     <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 mb-6">
       <el-form :inline="true" :model="filters" class="flex flex-wrap gap-4 items-center">
         <el-form-item label="Tìm kiếm" class="mb-0">
@@ -49,7 +47,6 @@
       </el-form>
     </div>
 
-    <!-- Table List -->
     <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
       <el-table
         :data="tableData"
@@ -109,7 +106,6 @@
         </el-table-column>
       </el-table>
 
-      <!-- Pagination -->
       <div class="flex justify-end p-4 border-t border-slate-100">
         <el-pagination
           v-model:current-page="pagination.current"
@@ -137,7 +133,6 @@ import dayjs from 'dayjs';
 
 const router = useRouter();
 
-// Filters & State
 const loading = ref(false);
 const filters = reactive({
   search: '',

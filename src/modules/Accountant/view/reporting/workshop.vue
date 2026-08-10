@@ -220,7 +220,6 @@ async function loadData() {
       ];
     }
   } catch (error) {
-    // Fallback error handling
     kpi.value = {
       inProgressCount: 0,
       avgCompletionHours: 0,

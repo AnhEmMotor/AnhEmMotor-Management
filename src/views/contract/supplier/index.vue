@@ -135,7 +135,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Create/Edit Dialog -->
     <ElDialog
       v-model="dialogVisible"
       :title="dialogTitle"
@@ -282,7 +281,6 @@
           </el-col>
         </el-row>
 
-        <!-- SKU Price List Table -->
         <div class="mb-4">
           <div class="flex justify-between items-center mb-2">
             <span class="font-bold text-sm">Bảng giá nhập sỉ (SKU)</span>

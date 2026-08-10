@@ -72,7 +72,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Create/Edit Dialog -->
     <ElDialog
       v-model="dialogVisible"
       :title="dialogTitle"
@@ -246,12 +245,11 @@ const toggleActive = async (row: any) => {
     await ServiceApi.update(row.id, { isActive: row.isActive });
     ElMessage.success('Cập nhật trạng thái thành công');
   } catch (err: any) {
-    row.isActive = !row.isActive; // revert
+    row.isActive = !row.isActive; 
     ElMessage.error(err.message || 'Cập nhật trạng thái thất bại');
   }
 };
 </script>
 
 <style scoped>
-/* Optional: custom styles */
 </style>

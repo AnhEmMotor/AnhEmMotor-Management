@@ -2,7 +2,6 @@
   <div
     class="resp-page workshop-dashboard-page flex flex-col min-h-screen bg-[#F8FAFC] dark:bg-[#020617] font-inter text-[#0F172A] dark:text-[#E2E8F0]"
   >
-    <!-- Header -->
     <div
       class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-8 py-5 shrink-0 shadow-sm relative z-20"
     >
@@ -39,9 +38,7 @@
       </div>
     </div>
 
-    <!-- Main Content Area -->
     <div class="flex-1 max-w-[1600px] mx-auto w-full p-6 space-y-6">
-      <!-- Stats Cards -->
       <div class="resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-6">
         <div
           class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-[24px] shadow-sm flex items-center justify-between"
@@ -120,11 +117,9 @@
         </div>
       </div>
 
-      <!-- Filters & Table Area -->
       <div
         class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[32px] shadow-sm overflow-hidden flex flex-col"
       >
-        <!-- Filter Bar -->
         <div
           class="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 flex flex-wrap gap-4 items-center justify-between"
         >
@@ -169,7 +164,6 @@
           </div>
         </div>
 
-        <!-- Card Grid Layout (Replaced Table) -->
         <div class="p-6 bg-slate-50/30">
           <div
             class="mb-4 text-slate-500 text-[13px] italic font-medium flex items-center gap-2"
@@ -196,7 +190,6 @@
               :key="row.id"
               class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[20px] shadow-sm hover:shadow-md transition-shadow flex flex-col relative overflow-hidden"
             >
-              <!-- Card Header -->
               <div
                 class="p-5 border-b border-slate-100 dark:border-slate-800 flex items-start justify-between bg-white dark:bg-slate-900"
               >
@@ -230,10 +223,8 @@
                 </div>
               </div>
 
-              <!-- Card Body -->
               <div class="p-5 flex-1 flex flex-col">
                 <div class="grid grid-cols-2 gap-y-4 gap-x-4 mb-4 flex-1">
-                  <!-- Biển số & Số khung -->
                   <div class="flex flex-col">
                     <span
                       class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-1"
@@ -261,7 +252,6 @@
                     </div>
                   </div>
 
-                  <!-- Liên hệ -->
                   <div class="flex flex-col">
                     <span
                       class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-1"
@@ -273,7 +263,6 @@
                     }}</span>
                   </div>
 
-                  <!-- Kỹ thuật viên -->
                   <div class="flex flex-col">
                     <span
                       class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-1"
@@ -301,7 +290,6 @@
                     </span>
                   </div>
 
-                  <!-- Chi phí -->
                   <div class="flex flex-col">
                     <span
                       class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-1"
@@ -321,7 +309,6 @@
                   </div>
                 </div>
 
-                <!-- Footer Stats -->
                 <div
                   class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800"
                 >
@@ -340,7 +327,6 @@
                 </div>
               </div>
 
-              <!-- Card Footer Action -->
               <div
                 class="border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 flex"
               >
@@ -354,7 +340,6 @@
             </div>
           </div>
 
-          <!-- Pagination -->
           <div
             class="flex justify-between items-center mt-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[20px] shadow-sm px-6 py-4"
           >
@@ -405,18 +390,15 @@ const stats = reactive({
 const loadData = async () => {
   loading.value = true;
   try {
-    // Build Sieve Filters
     const filterArray: string[] = [];
     if (statusFilter.value) {
       filterArray.push(`Status==${statusFilter.value}`);
     }
     if (searchQuery.value) {
-      // Sieve filters logic: search phone, name, or license plate
       const q = searchQuery.value.trim();
       if (/^\d+$/.test(q)) {
         filterArray.push(`CustomerPhone@=${q}`);
       } else {
-        // Search either name or license plate
         filterArray.push(`CustomerName@=${q}|LicensePlate@=${q}`);
       }
     }
@@ -431,7 +413,6 @@ const loadData = async () => {
     repairOrders.value = res.items || [];
     totalCount.value = res.totalCount || 0;
 
-    // Fetch stats (we can query lists with small page size to get counts, or fetch all active)
     await loadStats();
   } catch (err: any) {
     ElMessage.error(err.message || 'Lỗi khi tải danh sách phiếu sửa chữa');
@@ -442,7 +423,6 @@ const loadData = async () => {
 
 const loadStats = async () => {
   try {
-    // Fetch stats by making queries
     const resPending = await RepairOrderApi.getList({
       current: 1,
       size: 1,
@@ -459,8 +439,6 @@ const loadStats = async () => {
       Filters: 'Status==QcPending',
     });
 
-    // For completed today, we query completed status. For a precise count, it requires date filter,
-    // but a general completed count is suitable for demo.
     const resCompleted = await RepairOrderApi.getList({
       current: 1,
       size: 1,
@@ -480,7 +458,6 @@ onMounted(() => {
   loadData();
 });
 
-// Search / Filtering handlers
 let searchTimeout: any = null;
 const handleSearch = () => {
   if (searchTimeout) clearTimeout(searchTimeout);
@@ -506,7 +483,6 @@ const handleCurrentChange = (val: number) => {
   loadData();
 };
 
-// Navigation
 const goToCreate = () => {
   router.push('/admin/service/repair-history/create');
 };
@@ -515,7 +491,6 @@ const goToDetail = (id: number) => {
   router.push(`/admin/service/repair-history/repair/${id}`);
 };
 
-// Helper formatting functions
 const formatCurrency = (val: number) => {
   if (!val) return '0đ';
   return new Intl.NumberFormat('vi-VN', {

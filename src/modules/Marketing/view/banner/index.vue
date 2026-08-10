@@ -584,7 +584,6 @@ const handleDelete = (banner: any) => {
   }
 }
 
-// Dark Mode overrides
 :global(html.dark .banner-management-page) {
   background-color: #05070b !important;
   color: #f8fafc !important;

@@ -184,7 +184,6 @@
       </div>
     </el-card>
 
-    <!-- Create Contract Dialog -->
     <el-dialog
       v-model="dialogVisible"
       title="Thêm hợp đồng"

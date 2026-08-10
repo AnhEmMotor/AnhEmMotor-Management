@@ -1,6 +1,5 @@
 <template>
   <div class="resp-page ecommerce">
-    <!-- Bộ Điều Hướng Chu Kỳ -->
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-bold text-gray-800">📊 Tổng quan kinh doanh</h1>
       <div class="flex justify-end gap-2">
@@ -40,9 +39,7 @@
       </div>
     </div>
 
-    <!-- KPI Cards -->
     <ElRow :gutter="20" class="mb-5">
-      <!-- Card 1: Doanh thu thực tế -->
       <ElCol :sm="24" :md="12" :lg="6">
         <div
           :class="[
@@ -93,7 +90,6 @@
         </div>
       </ElCol>
 
-      <!-- Card 2: Lợi nhuận ròng -->
       <ElCol :sm="24" :md="12" :lg="6">
         <div class="art-card p-5 h-full border-l-4 border-green-500 flex flex-col justify-between">
           <div>
@@ -119,7 +115,6 @@
         </div>
       </ElCol>
 
-      <!-- Card 3: Tiền đang treo -->
       <ElCol :sm="24" :md="12" :lg="6">
         <div
           :class="[
@@ -158,7 +153,6 @@
         </div>
       </ElCol>
 
-      <!-- Card 4: Cần xử lý -->
       <ElCol :sm="24" :md="12" :lg="6">
         <div class="art-card p-5 h-full border-l-4 border-gray-500 flex flex-col justify-between">
           <div>
@@ -208,7 +202,6 @@
       </ElCol>
     </ElRow>
 
-    <!-- Khu vực Trung tâm: Biểu đồ và Tóm tắt tháng -->
     <ElRow :gutter="20" class="mb-5">
       <ElCol :sm="24" :lg="16">
         <div class="art-card p-5 h-full">
@@ -261,9 +254,7 @@
       </ElCol>
     </ElRow>
 
-    <!-- Phân tích song song -->
     <ElRow :gutter="20" class="mb-5">
-      <!-- Nguồn doanh thu -->
       <ElCol :sm="24" :lg="12">
         <div class="art-card p-5 h-full">
           <div class="art-card-header mb-6">
@@ -293,7 +284,6 @@
         </div>
       </ElCol>
 
-      <!-- Hiệu suất nhân viên -->
       <ElCol :sm="24" :lg="12">
         <div class="art-card p-5 h-full">
           <div class="art-card-header mb-6">
@@ -351,7 +341,6 @@
       </ElCol>
     </ElRow>
 
-    <!-- Dòng giao dịch thời gian thực -->
     <ElRow :gutter="20">
       <ElCol :span="24">
         <div class="art-card p-5">

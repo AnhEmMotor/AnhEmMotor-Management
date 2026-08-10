@@ -1,6 +1,5 @@
 <template>
   <div class="resp-page flex flex-col gap-4 pb-5">
-    <!-- Header -->
     <div
       class="flex items-start justify-between gap-4 flex-wrap bg-white p-6 rounded-xl shadow-sm border border-slate-100"
     >
@@ -18,7 +17,6 @@
       </div>
     </div>
 
-    <!-- Stats Cards -->
     <div class="resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-4">
       <ElCard shadow="never" class="border-l-4 border-l-red-400">
         <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Chưa thanh toán</div>
@@ -55,7 +53,6 @@
       </ElCard>
     </div>
 
-    <!-- Filters -->
     <ElCard shadow="never">
       <div class="resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-4">
         <div>
@@ -104,7 +101,6 @@
       </div>
     </ElCard>
 
-    <!-- Table -->
     <ElCard shadow="never">
       <ArtTable
         row-key="id"
@@ -167,7 +163,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Payment Dialog -->
     <ElDialog
       v-model="paymentDialogVisible"
       :title="paymentDialogTitle"
@@ -269,7 +264,6 @@
       </template>
     </ElDialog>
 
-    <!-- Receipt Preview Dialog -->
     <ElDialog
       v-model="receiptDialogVisible"
       title="Phiếu thu dịch vụ"
@@ -497,7 +491,6 @@ const formatDateTime = (d?: string) => {
   return dayjs(d).format('DD/MM/YYYY HH:mm');
 };
 
-// Payment Dialog
 const paymentDialogVisible = ref(false);
 const paymentFormRef = ref<FormInstance>();
 const editingPaymentId = ref<number | null>(null);
@@ -590,7 +583,6 @@ async function handlePaymentSubmit() {
   });
 }
 
-// Receipt Dialog
 const receiptDialogVisible = ref(false);
 const receiptData = ref<any>(null);
 
@@ -617,7 +609,7 @@ function doPrint() {
       .total { font-size: 16px; font-weight: bold; border-top: 1px dashed #000; padding-top: 8px; margin-top: 8px; }
       .center { text-align: center; }
       @media print { body { padding: 10px; } }
-    </style>
+</style>
     </head>
     <body>
       <h2>ANH EM MOTOR</h2>
@@ -643,7 +635,6 @@ function doPrint() {
   w.print();
 }
 
-// Detail
 const router = useRouter();
 function openDetail(id: number) {
   router.push({
@@ -652,7 +643,6 @@ function openDetail(id: number) {
   });
 }
 
-// Fetch
 async function fetchData() {
   loading.value = true;
   try {

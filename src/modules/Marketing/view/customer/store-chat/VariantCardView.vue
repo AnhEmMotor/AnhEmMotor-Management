@@ -16,8 +16,6 @@ const props = defineProps<{
   colors?: ColorOption[];
 }>();
 
-// Cùng khuôn với ChatDrawer.vue (VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT) — luôn có fallback, tránh
-// href thành "undefined/product/..." nếu biến môi trường chưa được cấu hình ở nơi đang chạy.
 const { VITE_PUBLIC_STORE_URL } = import.meta.env;
 const storeUrl = VITE_PUBLIC_STORE_URL || 'http://localhost:3000';
 

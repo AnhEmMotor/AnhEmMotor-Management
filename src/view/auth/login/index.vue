@@ -8,7 +8,6 @@
       <el-card class="login-card max-w-md w-full m-4 border-0" shadow="hover">
         <div class="text-center mb-8">
           <div class="flex justify-center mb-4">
-            <!-- Add Logo here if available -->
             <div
               class="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center shadow-lg"
               style="background-color: var(--el-color-primary)"
@@ -101,7 +100,6 @@
           <div class="mt-6 grid grid-cols-2 gap-3 w-full">
             <div>
               <div class="relative w-full h-full cursor-pointer overflow-hidden rounded-md">
-                <!-- Nút custom hiển thị cho người dùng -->
                 <el-button class="w-full social-btn google-btn h-full">
                   <template #icon>
                     <svg
@@ -131,7 +129,6 @@
                   Google
                 </el-button>
 
-                <!-- Nút chính thức của Google (vô hình) phủ lên trên -->
                 <div class="absolute inset-0 z-10 overflow-hidden" style="opacity: 0.01">
                   <GoogleLogin
                     v-if="authConfig?.googleClientId"
@@ -165,7 +162,6 @@
       </el-card>
     </div>
 
-    <!-- Success Transition Overlay -->
     <LoadingOverlay :visible="isSuccessTransition" text="Đang khởi tạo không gian làm việc" />
   </div>
 </template>
@@ -216,16 +212,13 @@ const handleLogin = async () => {
       if (form.rememberMe) {
         localStorage.setItem(REMEMBERED_USER_KEY, form.usernameOrEmail);
       }
-      // Set user login state and info
       userStore.setLoginStatus(true);
       if (result.userInfo) {
         userStore.setUserInfo(result.userInfo);
       }
 
-      // Trigger success transition
       isSuccessTransition.value = true;
 
-      // Delay navigation to show animation
       setTimeout(() => {
         router.push('/workspace');
       }, 1500);
@@ -315,7 +308,6 @@ const handleFacebookLogin = async () => {
   flex-direction: column;
   height: 100vh;
 
-  /* Removed invalid CSS background for video */
   overflow: hidden;
 
   .login-video-bg {

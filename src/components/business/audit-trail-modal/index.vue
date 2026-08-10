@@ -13,7 +13,6 @@
       <ElEmpty v-if="!loading && logs.length === 0" description="Chưa có lịch sử chỉnh sửa nào" />
 
       <template v-else>
-        <!-- Bảng cho Supplier Debt -->
         <ElTable
           v-if="type === 'supplier-debt-settlement'"
           :data="logs"
@@ -50,7 +49,6 @@
           </ElTableColumn>
         </ElTable>
 
-        <!-- Timeline cho các thực thể khác -->
         <ElTimeline v-else>
           <ElTimelineItem
             v-for="(log, index) in logs"

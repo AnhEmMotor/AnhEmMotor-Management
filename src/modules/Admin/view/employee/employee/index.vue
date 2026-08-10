@@ -1,6 +1,5 @@
 <template>
   <div class="resp-page hr-employee-container flex h-full flex-col gap-4">
-    <!-- Header -->
     <div class="employee-page__header flex items-center justify-between gap-3">
       <h1 class="employee-page__title text-2xl font-semibold">
         {{ $t('menus.hr.employee') }}
@@ -15,7 +14,6 @@
       </ElButton>
     </div>
 
-    <!-- Stats -->
     <div class="resp-stats-3 grid grid-cols-1 gap-4 md:grid-cols-3">
       <ArtStatsCard
         title="Tổng hồ sơ"
@@ -37,7 +35,6 @@
       />
     </div>
 
-    <!-- Main Content -->
     <ElCard class="flex-1 art-table-card flex flex-col" shadow="never">
       <div class="mb-4">
         <ArtSearchBar
@@ -104,7 +101,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Detail Dialog -->
     <ElDialog
       v-model="detailVisible"
       title="Hồ sơ chi tiết nhân viên"
@@ -176,7 +172,6 @@
       </template>
     </ElDialog>
 
-    <!-- Form Dialog -->
     <ElDialog
       v-model="dialogVisible"
       :title="dialogTitle"

@@ -4,9 +4,7 @@
       <img src="@/assets/images/banner/order_banner.webp" alt="Order Banner" />
     </div>
 
-    <!-- Info Cards Section -->
     <div class="info-cards-container">
-      <!-- Card 1: Hỗ trợ kỹ thuật -->
       <div class="info-card">
         <div class="card-badge bg-green">
           <ArtSvgIcon icon="ri:customer-service-2-line" /> HỖ TRỢ KỸ THUẬT
@@ -65,7 +63,6 @@
         </div>
       </div>
 
-      <!-- Card 2: Bán Hàng & Đơn Hàng -->
       <div class="info-card">
         <div class="card-header">
           <div class="card-badge bg-orange">BÁN HÀNG & ĐƠN HÀNG</div>
@@ -120,7 +117,6 @@
 
 <script setup lang="ts">
 import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
-// Order banner intro component
 </script>
 
 <style scoped lang="scss">
@@ -150,7 +146,6 @@ import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
   box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
 }
 
-/* Info Cards Container */
 .info-cards-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -164,7 +159,6 @@ import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
   }
 }
 
-/* Info Card Common */
 .info-card {
   background-color: #fff;
   border-radius: 12px;
@@ -194,7 +188,7 @@ import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
 
 .bg-orange {
   background-color: #ea580c;
-} /* Changed to match Order branding */
+} 
 .text-orange {
   color: #ea580c;
 }
@@ -225,7 +219,6 @@ import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
   margin: 0 0 20px;
 }
 
-/* Left Card Details */
 .address-line {
   display: flex;
   align-items: flex-start;
@@ -260,7 +253,7 @@ import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  border: 1px solid #fed7aa; /* Subtle orange border */
+  border: 1px solid #fed7aa; 
   border-radius: 8px;
   background-color: #fff;
   transition: all 0.2s;
@@ -293,7 +286,6 @@ import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
   }
 }
 
-/* Right Card Details */
 .card-header {
   display: flex;
   justify-content: space-between;
