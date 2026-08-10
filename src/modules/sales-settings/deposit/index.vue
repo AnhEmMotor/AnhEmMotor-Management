@@ -167,8 +167,8 @@ const formatThreshold = (value: any) => {
 };
 
 const parseThreshold = (value: any) => {
-  if (!value) return 0;
-  return Number(`${value}`.replace(/\./g, ''));
+  if (!value) return '';
+  return `${value}`.replace(/\./g, '');
 };
 
 const formatDate = (date: string) => {
