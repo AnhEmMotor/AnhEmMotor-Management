@@ -1,6 +1,7 @@
 import { ref, onMounted, type Ref } from 'vue';
 import { useTable } from '@/common/composables/useTable';
 import { WarrantyTermApi } from '@/api/warranty';
+import { BrandApi } from '@/api/product';
 import type { WarrantyTerm, WarrantyTermStatus } from '@/domain/warranty/warranty-category.types';
 import { ElMessage, ElMessageBox } from 'element-plus';
 
@@ -227,7 +228,20 @@ export function useWarrantyCategoryTable() {
     activeTerms: 0,
     inactiveTerms: 0,
     brandsCovered: 0,
+    coveredBrandIds: [] as number[],
   });
+
+  const updateSearchBrandOptions = () => {
+    const brandSearchItem = searchItems.value.find((item) => item.key === 'brandId');
+    if (brandSearchItem) {
+      const coveredIds = statistics.value.coveredBrandIds || [];
+      const opts = brandOptions.value.filter((b) => coveredIds.includes(b.id));
+      brandSearchItem.props.options = opts.map((b: any) => ({
+        label: b.name,
+        value: b.id,
+      }));
+    }
+  };
 
   const handleSelectionChange = (selection: WarrantyTerm[]) => {
     selectedRows.value = selection;
@@ -242,14 +256,18 @@ export function useWarrantyCategoryTable() {
         activeTerms: res.activeCount ?? res.activeTerms ?? 0,
         inactiveTerms: res.expiredCount ?? res.inactiveTerms ?? 0,
         brandsCovered: res.brandsCovered ?? 0,
+        coveredBrandIds: res.coveredBrandIds ?? [],
       };
+      updateSearchBrandOptions();
     } catch (_err) {
       statistics.value = {
         totalTerms: MOCK_WARRANTY_TERMS.length,
         activeTerms: MOCK_WARRANTY_TERMS.filter((t) => t.status === 'Active').length,
         inactiveTerms: MOCK_WARRANTY_TERMS.filter((t) => t.status !== 'Active').length,
         brandsCovered: new Set(MOCK_WARRANTY_TERMS.map((t) => t.brandId)).size,
+        coveredBrandIds: Array.from(new Set(MOCK_WARRANTY_TERMS.map((t) => t.brandId))),
       };
+      updateSearchBrandOptions();
     }
   };
 
@@ -372,9 +390,14 @@ export function useWarrantyCategoryTable() {
   const loadBrands = async () => {
     brandsLoading.value = true;
     try {
-      brandOptions.value = [...BRANDS_FOR_SELECT];
+      const res: any = await BrandApi.getList({ current: 1, size: 500 });
+      const items = res?.items || res?.data?.items || [];
+      const opts = items.map((b: any) => ({ id: b.id, name: b.name }));
+      brandOptions.value = opts;
+
+      updateSearchBrandOptions();
     } catch {
-      brandOptions.value = [...BRANDS_FOR_SELECT];
+      brandOptions.value = [];
     } finally {
       brandsLoading.value = false;
     }
@@ -490,10 +513,7 @@ export function useWarrantyCategoryTable() {
       label: 'Hãng xe',
       type: 'select',
       props: {
-        options: BRANDS_FOR_SELECT.map((b) => ({
-          label: b.name,
-          value: b.id,
-        })),
+        options: [],
         clearable: true,
         filterable: true,
         placeholder: 'Tất cả hãng',

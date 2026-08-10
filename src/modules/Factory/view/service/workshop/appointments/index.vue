@@ -336,6 +336,8 @@ const router = useRouter();
 const loading = ref(false);
 const tableRef = ref();
 const data = ref<BookingAppointment[]>([]);
+const allValidItems = ref<BookingAppointment[]>([]);
+const searchParams = ref<any>({});
 const columnChecks = ref<any[]>([]);
 const pagination = ref<any>({ current: 1, size: 10, total: 0 });
 
@@ -392,7 +394,7 @@ const columns = computed(() => {
 });
 
 const counts = computed(() => {
-  const safe = data.value || [];
+  const safe = allValidItems.value || [];
   return {
     total: safe.length,
     pending: safe.filter((x) => x.status === 'Pending').length,
@@ -454,59 +456,71 @@ const searchItems = [
   },
 ];
 
-const buildFilters = (params: any): string[] => {
-  const filters: string[] = [];
-  if (params.keyword) {
-    filters.push(`(FullName@cn=${params.keyword},Phone@cn=${params.keyword})`);
+const applyLocalFilterAndPagination = () => {
+  let filtered = allValidItems.value;
+
+  if (searchParams.value.keyword) {
+    const q = searchParams.value.keyword.toLowerCase();
+    filtered = filtered.filter(
+      (x) =>
+        (x.fullName || "").toLowerCase().includes(q) ||
+        (x.phone || "").toLowerCase().includes(q),
+    );
   }
-  if (params.serviceType) filters.push(`ServiceType==${params.serviceType}`);
-  if (params.status) filters.push(`Status==${params.status}`);
-  return filters;
+  if (searchParams.value.serviceType) {
+    filtered = filtered.filter(
+      (x) => x.serviceType === searchParams.value.serviceType,
+    );
+  }
+  if (searchParams.value.status) {
+    filtered = filtered.filter((x) => x.status === searchParams.value.status);
+  }
+
+  pagination.value.total = filtered.length;
+  const start = (pagination.value.current - 1) * pagination.value.size;
+  const end = start + pagination.value.size;
+  data.value = filtered.slice(start, end);
 };
 
-const handleSearch = async (params: any) => {
+const handleSearch = (params: any) => {
+  searchParams.value = params || {};
   pagination.value.current = 1;
-  await fetchData({
-    Page: 1,
-    PageSize: pagination.value.size,
-    Filters: buildFilters(params).join(','),
-  });
+  applyLocalFilterAndPagination();
 };
 
-const handleReset = async () => {
+const handleReset = () => {
+  searchParams.value = {};
   pagination.value.current = 1;
-  await fetchData({
-    Page: 1,
-    PageSize: pagination.value.size,
-    Filters: '',
-  });
+  applyLocalFilterAndPagination();
 };
 
-const handleSizeChange = async (size: number) => {
+const handleSizeChange = (size: number) => {
   pagination.value.size = size;
   pagination.value.current = 1;
-  await refreshData();
+  applyLocalFilterAndPagination();
 };
 
-const handleCurrentChange = async (current: number) => {
+const handleCurrentChange = (current: number) => {
   pagination.value.current = current;
-  await refreshData();
+  applyLocalFilterAndPagination();
 };
 
 const refreshData = async () => {
-  await fetchData({
-    Page: pagination.value.current,
-    PageSize: pagination.value.size,
-  });
+  await fetchData();
 };
 
-const fetchData = async (params: any) => {
+const fetchData = async () => {
   loading.value = true;
   try {
-    const res = await BookingAppointmentApi.getList(params);
-    data.value = res.items || [];
-    pagination.value.total = res.totalCount || 0;
+    const res = await BookingAppointmentApi.getList({
+      Page: 1,
+      PageSize: 5000,
+      Sorts: "createdAt desc",
+    });
+    allValidItems.value = res.items || [];
+    applyLocalFilterAndPagination();
   } catch (err: any) {
+    allValidItems.value = [];
     data.value = [];
     pagination.value.total = 0;
     ElMessage.error(err?.message || 'Không thể tải danh sách lịch hẹn');

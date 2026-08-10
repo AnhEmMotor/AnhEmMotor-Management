@@ -208,7 +208,7 @@
             <el-option
               v-for="item in orderOptions"
               :key="item.id"
-              :label="`${item.customerName} - ${item.customerPhone} (Đơn hàng #${item.id})`"
+              :label="`${item.customerName || 'Khách lẻ'} - ${item.customerPhone || 'Không có SĐT'} (Đơn hàng #${item.id})`"
               :value="item.id"
             />
           </el-select>
@@ -517,6 +517,7 @@ const searchOrders = async (query: string) => {
       current: 1,
       size: 50,
       Search: query || undefined,
+      withoutContract: true,
       Sorts: '-CreatedAt',
     });
     orderOptions.value = res.items || [];

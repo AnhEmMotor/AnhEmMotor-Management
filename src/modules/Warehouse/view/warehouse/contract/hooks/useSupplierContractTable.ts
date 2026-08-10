@@ -215,6 +215,10 @@ export const useSupplierContractTable = () => {
   const submitForm = async () => {
     submitting.value = true;
     try {
+      const payload = { ...formData };
+      if (!payload.expirationDate) delete payload.expirationDate;
+      if (!payload.effectiveDate) delete payload.effectiveDate;
+
       if (formData.id) {
         await SupplierContractApi.update(formData.id, formData);
         ElMessage.success('Cập nhật hợp đồng thành công');

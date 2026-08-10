@@ -374,6 +374,7 @@ const repairOrders = ref<RepairOrder[]>([]);
 const totalCount = ref(0);
 const currentPage = ref(1);
 const pageSize = ref(10);
+const allValidItems = ref<any[]>([]);
 const searchQuery = ref('');
 const statusFilter = ref('');
 
@@ -406,12 +407,30 @@ const loadData = async () => {
       Filters: filterArray.join(','),
       Sorts: 'createdAt desc',
     });
+    const rawItems = res.items || [];
 
-    repairOrders.value = res.items || [];
-    totalCount.value = res.totalCount || 0;
+    const validItems = rawItems.filter(
+      (item: any) => item.customerName && item.customerPhone && item.customerName !== 'Khách lẻ'
+    );
 
-    await loadStats();
+    allValidItems.value = validItems.map((item: any) => {
+      let calcStatus = 'InProgress';
+      if (item.status) calcStatus = item.status;
+      else if (!item.technicianId && !item.technicianName) calcStatus = 'Pending';
+      else if (item.totalCost > 0) calcStatus = 'Completed';
+
+      return {
+        ...item,
+        status: calcStatus,
+      };
+    });
+
+    applyLocalFilterAndPagination();
+    loadStats();
   } catch (err: any) {
+    allValidItems.value = [];
+    repairOrders.value = [];
+    totalCount.value = 0;
     ElMessage.error(err.message || 'Lỗi khi tải danh sách phiếu sửa chữa');
   } finally {
     loading.value = false;
@@ -451,6 +470,15 @@ const loadStats = async () => {
   }
 };
 
+const applyLocalFilterAndPagination = () => {
+  const filtered = allValidItems.value || [];
+  totalCount.value = filtered.length;
+
+  const start = (currentPage.value - 1) * pageSize.value;
+  const end = start + pageSize.value;
+  repairOrders.value = filtered.slice(start, end);
+};
+
 onMounted(() => {
   loadData();
 });
@@ -460,24 +488,24 @@ const handleSearch = () => {
   if (searchTimeout) clearTimeout(searchTimeout);
   searchTimeout = setTimeout(() => {
     currentPage.value = 1;
-    loadData();
+    applyLocalFilterAndPagination();
   }, 400);
 };
 
 const handleFilterChange = () => {
   currentPage.value = 1;
-  loadData();
+  applyLocalFilterAndPagination();
 };
 
 const handleSizeChange = (val: number) => {
   pageSize.value = val;
   currentPage.value = 1;
-  loadData();
+  applyLocalFilterAndPagination();
 };
 
 const handleCurrentChange = (val: number) => {
   currentPage.value = val;
-  loadData();
+  applyLocalFilterAndPagination();
 };
 
 const goToCreate = () => {

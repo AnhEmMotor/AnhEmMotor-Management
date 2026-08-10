@@ -20,6 +20,7 @@ export const ServiceApi = {
     const { current, size, ...rest } = params || {};
     return request.get<ServiceList>({
       url: '/api/Services',
+      showErrorMessage: false,
       params: {
         Page: current,
         PageSize: size,

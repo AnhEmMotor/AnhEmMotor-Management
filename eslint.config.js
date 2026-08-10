@@ -59,6 +59,7 @@ export default tseslint.config(
       '@typescript-eslint/ban-ts-comment': 'off',
       '@typescript-eslint/no-empty-object-type': 'off',
       '@typescript-eslint/no-unused-expressions': 'off',
+      '@typescript-eslint/no-namespace': 'off',
       'no-undef': 'off',
       'no-empty': 'off',
       'no-constant-condition': 'off',
