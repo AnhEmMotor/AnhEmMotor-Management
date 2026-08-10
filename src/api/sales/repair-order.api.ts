@@ -44,6 +44,7 @@ export interface RepairOrder {
   voucherCode?: string;
   voucherDiscount?: number;
   voucherFinalTotal?: number;
+  serviceType?: string;
 }
 
 export interface RepairOrderList {
