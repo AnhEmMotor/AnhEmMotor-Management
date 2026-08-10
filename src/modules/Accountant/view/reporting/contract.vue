@@ -433,7 +433,7 @@ function translateContractStatus(status: string) {
 }
 
 function renderCharts() {
-  // 1. Horizontal Bar Chart: Trạng thái hợp đồng tổng thể
+  
   if (trendChartRef.value) {
     if (!trendChart) trendChart = echarts.init(trendChartRef.value);
     trendChart.setOption(
@@ -482,7 +482,7 @@ function renderCharts() {
     );
   }
 
-  // 2. Pie Chart: Hợp đồng nhà cung cấp
+  
   if (topSuppliersChartRef.value) {
     if (!topSuppliersChart) topSuppliersChart = echarts.init(topSuppliersChartRef.value);
     topSuppliersChart.setOption(
@@ -523,7 +523,7 @@ function renderCharts() {
     );
   }
 
-  // 3. Pie Chart: Hợp đồng mua bán
+  
   if (statusChartRef.value) {
     if (!statusChart) statusChart = echarts.init(statusChartRef.value);
     statusChart.setOption(
@@ -583,7 +583,7 @@ onUnmounted(() => {
   topSuppliersChart?.dispose();
 });
 
-// Format Utilities
+
 function formatCurrency(val: number) {
   if (!val) return '0 ₫';
   return new Intl.NumberFormat('vi-VN', {

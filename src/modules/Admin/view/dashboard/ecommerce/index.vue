@@ -649,11 +649,11 @@ onMounted(() => {
         if (!t) return;
         transactions.value = [t, ...transactions.value].slice(0, 50);
       } catch {
-        // ignore
+        
       }
     },
     onerror() {
-      // stream not available, ignore
+      
     },
   });
 });

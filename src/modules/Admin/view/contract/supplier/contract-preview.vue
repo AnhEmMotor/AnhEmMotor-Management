@@ -620,7 +620,7 @@ const contractFileInfo = computed(() => {
   try {
     name = decodeURIComponent(name);
   } catch {
-    // Keep the server-provided filename when it is not URI encoded.
+    
   }
   return { name, url: path };
 });

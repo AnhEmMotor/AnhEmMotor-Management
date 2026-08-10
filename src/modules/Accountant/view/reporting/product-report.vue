@@ -169,8 +169,8 @@ import { watch } from 'vue';
 watch(
   () => [props.startDate, props.endDate],
   () => {
-    // Backend getProductReport currently doesn't accept date params
-    // load();
+    
+    
   }
 );
 

@@ -1,4 +1,3 @@
-/* eslint @typescript-eslint/no-namespace: "off" */
 export namespace Contact {
   export interface ContactReply {
     id: number;
@@ -135,19 +134,9 @@ export namespace Contact {
     comment?: string;
   }
 
-  export const SupportStatuses = [
-    "New",
-    "Assigned",
-    "InProgress",
-    "Closed",
-  ] as const;
-  export const FeedbackStatuses = ["Pending", "Read", "Resolved"] as const;
-  export const CandidateStatuses = [
-    "New",
-    "Interview",
-    "Offer",
-    "Rejected",
-  ] as const;
+  export const SupportStatuses = ['New', 'Assigned', 'InProgress', 'Closed'] as const;
+  export const FeedbackStatuses = ['Pending', 'Read', 'Resolved'] as const;
+  export const CandidateStatuses = ['New', 'Interview', 'Offer', 'Rejected'] as const;
 
   export const AllStatuses = [
     ...SupportStatuses,
@@ -156,12 +145,10 @@ export namespace Contact {
   ] as readonly string[];
 }
 
-export const resolveContactId = (
-  item: Contact.ContactItem | null | undefined,
-): number | null => {
+export const resolveContactId = (item: Contact.ContactItem | null | undefined): number | null => {
   const explicitContactId = item?.contactId;
   if (
-    typeof explicitContactId === "number" &&
+    typeof explicitContactId === 'number' &&
     Number.isInteger(explicitContactId) &&
     explicitContactId > 0
   ) {
@@ -170,7 +157,7 @@ export const resolveContactId = (
 
   const nestedContactId = item?.contact?.id;
   if (
-    typeof nestedContactId === "number" &&
+    typeof nestedContactId === 'number' &&
     Number.isInteger(nestedContactId) &&
     nestedContactId > 0
   ) {
