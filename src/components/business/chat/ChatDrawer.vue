@@ -1093,9 +1093,13 @@ const formatTime = (isoString: string) => {
     :with-header="false"
     class="ai-chat-drawer-no-padding"
   >
-    <div class="flex h-full border-l border-gray-200">
-      <div class="chat-left-col flex-col border-r border-gray-200 bg-gray-50">
-        <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-white">
+    <div class="flex h-full border-l border-gray-200 dark:border-gray-700">
+      <div
+        class="chat-left-col flex-col border-r border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900"
+      >
+        <div
+          class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-white dark:bg-gray-800"
+        >
           <h2 class="font-semibold text-lg">Phiên Chat</h2>
           <el-button type="primary" :icon="Plus" circle @click="startNewChat()" />
         </div>
@@ -1111,8 +1115,8 @@ const formatTime = (isoString: string) => {
             class="p-3 mb-2 rounded-lg cursor-pointer transition-colors group relative"
             :class="
               activeSessionId === session.id
-                ? 'bg-blue-100 border border-blue-300'
-                : 'bg-white hover:bg-gray-100 border border-transparent'
+                ? 'bg-blue-100 dark:bg-blue-900/30 border border-blue-300 dark:border-blue-700'
+                : 'bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-transparent'
             "
             @click="selectSession(session.id)"
           >
@@ -1154,8 +1158,10 @@ const formatTime = (isoString: string) => {
         </div>
       </div>
 
-      <div class="chat-right-col flex-col bg-white">
-        <div class="p-4 border-b border-gray-200 flex justify-between items-center shadow-sm z-10">
+      <div class="chat-right-col flex-col bg-white dark:bg-gray-800">
+        <div
+          class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center shadow-sm z-10"
+        >
           <div class="flex items-center gap-2">
             <div class="chat-mobile-dropdown">
               <el-dropdown trigger="hover">
@@ -1180,7 +1186,9 @@ const formatTime = (isoString: string) => {
               </el-dropdown>
             </div>
 
-            <h2 class="font-semibold text-lg text-gray-800">
+            <h2
+              class="font-semibold text-lg text-gray-800 dark:text-gray-100 dark:text-gray-200 dark:text-gray-100"
+            >
               {{ sessions.find((s) => s.id === activeSessionId)?.title || '' }}
             </h2>
           </div>
@@ -1198,7 +1206,7 @@ const formatTime = (isoString: string) => {
         </div>
 
         <div
-          class="flex-1 overflow-y-auto p-4 bg-gray-50 flex flex-col gap-4"
+          class="flex-1 overflow-y-auto p-4 bg-gray-50 dark:bg-gray-900 flex flex-col gap-4"
           ref="messagesContainer"
           v-loading="isLoadingHistory"
           @click="handleCopy"
@@ -1250,15 +1258,15 @@ const formatTime = (isoString: string) => {
                   :class="
                     msg.role === 'User'
                       ? 'bg-blue-600 text-white rounded-br-none'
-                      : 'bg-white text-gray-800 border border-gray-200 rounded-bl-none'
+                      : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-bl-none'
                   "
                 >
                   <div
                     v-if="msg.reasoningSteps?.length"
-                    class="mb-2 -mx-1 rounded-lg border border-gray-100 bg-gray-50"
+                    class="mb-2 -mx-1 rounded-lg border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900"
                   >
                     <button
-                      class="flex w-full items-center gap-1.5 px-2 py-1.5 text-xs text-gray-500 hover:text-gray-700"
+                      class="flex w-full items-center gap-1.5 px-2 py-1.5 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
                       @click="toggleReasoningPanel(msg)"
                     >
                       <el-icon
@@ -1285,7 +1293,7 @@ const formatTime = (isoString: string) => {
                       <template v-for="(step, idx) in msg.reasoningSteps" :key="idx">
                         <div
                           v-if="idx > 0 && step.kind === 'thinking'"
-                          class="border-t border-gray-200 mt-1 pt-1"
+                          class="border-t border-gray-200 dark:border-gray-700 mt-1 pt-1"
                         ></div>
                         <div
                           v-if="step.kind === 'thinking'"
@@ -1298,7 +1306,11 @@ const formatTime = (isoString: string) => {
                         <div
                           v-else-if="step.kind === 'tool'"
                           class="flex items-center gap-2 text-xs"
-                          :class="step.status === 'done' ? 'text-gray-400' : 'text-gray-700'"
+                          :class="
+                            step.status === 'done'
+                              ? 'text-gray-400 dark:text-gray-500'
+                              : 'text-gray-700 dark:text-gray-300'
+                          "
                         >
                           <span class="tabular-nums text-gray-400">{{ idx + 1 }}.</span>
                           <el-icon v-if="step.status === 'running'" class="is-loading text-blue-500"
@@ -1375,7 +1387,7 @@ const formatTime = (isoString: string) => {
               class="flex justify-start w-full"
             >
               <div
-                class="bg-white border border-gray-200 rounded-2xl rounded-bl-none px-4 py-3 shadow-sm flex items-center gap-2"
+                class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl rounded-bl-none px-4 py-3 shadow-sm flex items-center gap-2"
               >
                 <el-icon class="is-loading"><Loading /></el-icon>
                 <span class="text-gray-500 text-sm">Đang suy nghĩ...</span>
@@ -1384,14 +1396,14 @@ const formatTime = (isoString: string) => {
           </template>
         </div>
 
-        <div class="p-4 border-t border-gray-200 bg-white">
+        <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
           <div
             v-if="currentSteeringStatus"
             class="mb-2 flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-xs"
             :class="
               currentSteeringStatus === 'stuck'
-                ? 'bg-orange-50 text-orange-600'
-                : 'bg-blue-50 text-blue-600'
+                ? 'bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400'
+                : 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
             "
           >
             <span v-if="currentSteeringStatus === 'received'"
@@ -1497,9 +1509,11 @@ const formatTime = (isoString: string) => {
 
       <div
         v-if="planPanelOpen && currentPlan"
-        class="chat-plan-col flex-col border-l border-gray-200 bg-white"
+        class="chat-plan-col flex-col border-l border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
       >
-        <div class="p-3 border-b border-gray-200 flex justify-between items-center">
+        <div
+          class="p-3 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center"
+        >
           <h3 class="font-semibold text-sm text-gray-800">📋 Kế hoạch</h3>
           <el-button size="small" text @click="planPanelOpen = false">✕</el-button>
         </div>
@@ -1620,6 +1634,33 @@ const formatTime = (isoString: string) => {
 
 .prompt-suggestion-chip:hover {
   background-color: #c7d2fe;
+}
+
+html.dark :deep(.citation-chip) {
+  background-color: #3730a3;
+  color: #e0e7ff;
+}
+
+html.dark :deep(.citation-chip:hover) {
+  background-color: #312e81;
+}
+
+html.dark .page-suggestion-chip {
+  background-color: #3730a3;
+  color: #e0e7ff;
+}
+
+html.dark .page-suggestion-chip:hover {
+  background-color: #312e81;
+}
+
+html.dark .prompt-suggestion-chip {
+  background-color: #3730a3;
+  color: #e0e7ff;
+}
+
+html.dark .prompt-suggestion-chip:hover {
+  background-color: #312e81;
 }
 </style>
 
