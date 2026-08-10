@@ -409,20 +409,15 @@ const loadData = async () => {
     });
     const rawItems = res.items || [];
 
-    // Filter out generic retail customers
     const validItems = rawItems.filter(
-      (item: any) =>
-        item.customerName &&
-        item.customerPhone &&
-        item.customerName !== "Khách lẻ",
+      (item: any) => item.customerName && item.customerPhone && item.customerName !== 'Khách lẻ'
     );
 
     allValidItems.value = validItems.map((item: any) => {
-      let calcStatus = "InProgress";
+      let calcStatus = 'InProgress';
       if (item.status) calcStatus = item.status;
-      else if (!item.technicianId && !item.technicianName)
-        calcStatus = "Pending";
-      else if (item.totalCost > 0) calcStatus = "Completed";
+      else if (!item.technicianId && !item.technicianName) calcStatus = 'Pending';
+      else if (item.totalCost > 0) calcStatus = 'Completed';
 
       return {
         ...item,
@@ -436,7 +431,7 @@ const loadData = async () => {
     allValidItems.value = [];
     repairOrders.value = [];
     totalCount.value = 0;
-    ElMessage.error(err.message || "Lỗi khi tải danh sách phiếu sửa chữa");
+    ElMessage.error(err.message || 'Lỗi khi tải danh sách phiếu sửa chữa');
   } finally {
     loading.value = false;
   }
@@ -473,32 +468,15 @@ const loadStats = async () => {
   } catch (e) {
     console.error('Failed to load stats', e);
   }
+};
 
+const applyLocalFilterAndPagination = () => {
+  const filtered = allValidItems.value || [];
   totalCount.value = filtered.length;
 
   const start = (currentPage.value - 1) * pageSize.value;
   const end = start + pageSize.value;
   repairOrders.value = filtered.slice(start, end);
-};
-
-const loadStats = () => {
-  const safe = allValidItems.value || [];
-  let pending = 0;
-  let inProgress = 0;
-  let qcPending = 0;
-  let completedToday = 0;
-
-  safe.forEach((x: any) => {
-    if (x.status === "Pending") pending++;
-    else if (x.status === "InProgress") inProgress++;
-    else if (x.status === "QcPending") qcPending++;
-    else if (x.status === "Completed") completedToday++;
-  });
-
-  stats.pending = pending;
-  stats.inProgress = inProgress;
-  stats.qcPending = qcPending;
-  stats.completedToday = completedToday;
 };
 
 onMounted(() => {
